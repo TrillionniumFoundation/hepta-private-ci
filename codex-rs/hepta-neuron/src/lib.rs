@@ -17,6 +17,9 @@ use codex_hepta_types::StableId;
 
 pub use codex_hepta_infer_core::NeuronFeatureReceiptV1;
 pub use codex_hepta_infer_core::NeuronFeatureRequestV1;
+pub use codex_hepta_infer_core::NeuronFeatureObservationV1;
+pub use codex_hepta_infer_core::NeuronFeatureTerminalStatusV1;
+pub use codex_hepta_infer_core::NeuronModelRuntimeTupleV1;
 pub use codex_hepta_infer_core::durable_control::DurableInferenceControl;
 
 mod cell;
@@ -54,6 +57,7 @@ mod cell_v13_process;
 #[cfg(target_os = "linux")]
 mod cell_v13_protocol;
 mod deletion;
+mod feature_control;
 mod inference_control;
 mod journal;
 mod journal_lock;
@@ -73,6 +77,8 @@ mod sparse;
 mod witness;
 
 pub use cell::commit_cell_step;
+pub use feature_control::ControlledNeuronFeaturePortV1;
+pub use feature_control::NeuronFeatureWorkerV1;
 pub use cell::decide_cell;
 pub use cell::enter_cell_step;
 pub use cell::prepare_cell_step;

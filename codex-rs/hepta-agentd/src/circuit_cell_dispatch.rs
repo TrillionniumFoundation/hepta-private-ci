@@ -5,6 +5,7 @@ use codex_hepta_neuron::NeuronFeatureReceiptV1;
 use codex_hepta_neuron::NeuronFeatureRequestV1;
 use codex_hepta_neuron::NeuronInferenceControlPort;
 use codex_hepta_neuron::NeuronModelError;
+use codex_hepta_neuron::CellInferenceAdmissionV1;
 
 use crate::CircuitCellTimeV1;
 
@@ -45,6 +46,10 @@ where
     P: NeuronInferenceControlPort,
     C: FnMut() -> CircuitCellTimeV1,
 {
+    fn bind_cell_inference(&mut self, admission: &CellInferenceAdmissionV1) -> Result<(), NeuronModelError> {
+        self.control.bind_cell_inference(admission)
+    }
+
     fn execute_feature(
         &mut self,
         request: &NeuronFeatureRequestV1,

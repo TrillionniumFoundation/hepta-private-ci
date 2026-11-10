@@ -22,6 +22,15 @@ use crate::runtime_types::validate_model_output;
 /// execute work. Missing/failed/indeterminate observations retain Cell pending
 /// state. No default implementation claims that absence proves no contact.
 pub trait CellInferenceReadbackPortV1 {
+    /// Bind the original pending Cell admission for readback only. Implementers
+    /// must neither issue another claim nor dispatch during this hook.
+    fn bind_cell_readback(
+        &mut self,
+        _admission: &CellInferenceAdmissionV1,
+    ) -> Result<(), NeuronModelError> {
+        Ok(())
+    }
+
     fn read_feature(
         &mut self,
         request: &NeuronFeatureRequestV1,
@@ -64,7 +73,9 @@ pub fn infer_cell(
     control: &mut impl NeuronInferenceControlPort,
     now_micros: u64,
 ) -> Result<InferredCellStepV1, CellExecutionError> {
-    owner.admit_inference(admission_for_step(&prepared, now_micros)?)?;
+    let admission = admission_for_step(&prepared, now_micros)?;
+    owner.admit_inference(admission.clone())?;
+    control.bind_cell_inference(&admission).map_err(CellExecutionError::Backend)?;
     let output = InferenceControlModelPort::new(control)
         .execute(&prepared.model_request)
         .map_err(CellExecutionError::Backend)?;
@@ -99,7 +110,8 @@ pub fn infer_cell_with_clock(
     let admitted_at_micros = clock_micros();
     let mut admission = admission_for_step(&prepared, admitted_at_micros)?;
     admission.host_queue_age_micros = None;
-    owner.admit_inference(admission)?;
+    owner.admit_inference(admission.clone())?;
+    control.bind_cell_inference(&admission).map_err(CellExecutionError::Backend)?;
     let dispatch_at_micros = clock_micros();
     let host_queue_age_micros = dispatch_at_micros
         .checked_sub(admitted_at_micros)
@@ -170,7 +182,7 @@ pub fn recover_cell_inference(
     }
     let prepared = prepare_from_snapshot(
         definition,
-        pending.snapshot,
+        pending.snapshot.clone(),
         encoder,
         input,
         now_micros,
@@ -185,6 +197,7 @@ pub fn recover_cell_inference(
         .host_queue_age_micros
         .ok_or(CellExecutionError::UnmeasuredQueueCost)?;
     let request = feature_request(&prepared.model_request);
+    readback.bind_cell_readback(&pending).map_err(CellExecutionError::Backend)?;
     let receipt = readback
         .read_feature(&request)
         .map_err(CellExecutionError::Backend)?
