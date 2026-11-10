@@ -322,7 +322,6 @@ class EpisodicMemoryTests(unittest.TestCase):
         self.assertIsNone(state.get("k"))
         self.assertIsNone(WorkingState("episode-1").get("k"))
 
-
     def test_snapshot_rejects_fifo_directory_and_symlink_before_read(self):
         self.put("fact", "Still readable")
         regular = self.root / "safe-snapshot.json"
