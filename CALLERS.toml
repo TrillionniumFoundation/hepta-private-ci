@@ -2970,9 +2970,9 @@ required_function_order = [
 
 [[protected_file]]
 path = "codex-rs/hepta-automation/src/circuit_learning_outbox.rs"
-required = ["pub async fn retire_acknowledged_circuit_learning(", "BEGIN IMMEDIATE", "retired = 1"]
+required = ["pub async fn retire_acknowledged_circuit_learning(", "BEGIN IMMEDIATE", "UPDATE circuit_learning_outbox_v1 SET retired = 1 WHERE owner_agent_id = ? AND run_id = ?"]
 forbidden = ["DELETE FROM circuit_learning_outbox_v1"]
-required_function_order = [{ function = "fn retire_acknowledged_circuit_learning(", sequence = [".begin_with(\"BEGIN IMMEDIATE\")", "read(self, &mut tx, &intent.source_run_id)", "&row.intent != intent", "row.request_digest.as_ref() != Some(request)", "row.acknowledged_head.as_ref() != Some(head)", "sqlx::query(\"UPDATE circuit_learning_outbox_v1 SET retired = 1 WHERE owner_agent_id = ? AND run_id = ?\")", "tx.commit().await"], literal_calls = [".begin_with(\"BEGIN IMMEDIATE\")", "sqlx::query(\"UPDATE circuit_learning_outbox_v1 SET retired = 1 WHERE owner_agent_id = ? AND run_id = ?\")"], top_level = [".begin_with(", "sqlx::query(", "tx.commit().await"] }]
+required_function_order = [{ function = "fn retire_acknowledged_circuit_learning(", sequence = [".begin_with(", "read(self, &mut tx, &intent.source_run_id)", "&row.intent != intent", "row.request_digest.as_ref() != Some(request)", "row.acknowledged_head.as_ref() != Some(head)", "sqlx::query(", ".bind(self.owner_agent_id().as_str())", ".bind(&intent.source_run_id)", ".execute(&mut *tx)", "tx.commit().await"], top_level = [".begin_with(", "read(self, &mut tx, &intent.source_run_id)", "if &row.intent != intent", "sqlx::query(", "tx.commit().await"] }]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/circuit_learning_delivery.rs"
