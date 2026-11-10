@@ -131,6 +131,7 @@ pub struct LearningIterationRuntimeBootstrapV1 {
     receiver: mpsc::Receiver<LearningIterationCommandV1>,
     sender: mpsc::Sender<LearningIterationCommandV1>,
     circuit_delivery_request: Option<LearningIterationRequestV1>,
+    circuit_delivery_source: delivery::CircuitLearningSourceV1,
     enforce_circuit_admission: bool,
 }
 
@@ -226,6 +227,7 @@ fn learning_iteration_channel(
             receiver,
             sender,
             circuit_delivery_request: None,
+            circuit_delivery_source: delivery::CircuitLearningSourceV1::HostStageOwners,
             enforce_circuit_admission: false,
         },
     ))

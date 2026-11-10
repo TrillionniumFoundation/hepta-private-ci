@@ -57,6 +57,9 @@ mod history;
 #[path = "objective_learning_outbox.rs"]
 mod learning_outbox;
 
+#[path = "objective_learning_source.rs"]
+mod learning_source;
+
 #[path = "objective_submission.rs"]
 mod submission;
 

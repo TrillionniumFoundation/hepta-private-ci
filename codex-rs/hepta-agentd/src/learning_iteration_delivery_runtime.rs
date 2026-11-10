@@ -6,14 +6,33 @@ use codex_hepta_automation::AutomationStore;
 
 use super::*;
 
+#[derive(Clone, Copy)]
+pub(super) enum CircuitLearningSourceV1 {
+    HostStageOwners,
+    OriginalObjective,
+}
+
 pub(crate) struct CircuitLearningDeliveryRuntimeV1 {
     handle: LearningIterationHandleV1,
     spawn_generation: u64,
     pub(crate) request: LearningIterationRequestV1,
     owners: LearningIterationOwnersV1,
+    source: CircuitLearningSourceV1,
 }
 
 impl LearningIterationRuntimeBootstrapV1 {
+    /// Only the original Root-capability consumer selects this mandatory
+    /// Objective/Circuit source join. The generic host-owned channel retains
+    /// its existing explicit stage-owner contract.
+    pub(crate) fn with_original_circuit_learning_delivery(
+        self,
+        request: LearningIterationRequestV1,
+    ) -> Result<Self, AgentdError> {
+        let mut bootstrap = self.with_circuit_learning_delivery(request)?;
+        bootstrap.circuit_delivery_source = CircuitLearningSourceV1::OriginalObjective;
+        Ok(bootstrap)
+    }
+
     /// Connect this owner's exact request to ordinary Circuit completion.
     /// The ordinary runtime requires its Circuit profile and governed
     /// plasticity owner, then supervises delivery beside this same worker.
@@ -56,6 +75,7 @@ impl LearningIterationRuntimeBootstrapV1 {
                 spawn_generation: self.spawn_generation,
                 request,
                 owners: self.owners.clone(),
+                source: self.circuit_delivery_source,
             })
     }
 }
@@ -100,6 +120,12 @@ impl CircuitLearningDeliveryRuntimeV1 {
             let claimed = row.request_digest.is_some();
             if !claimed && !state.automation_admission_ready()? {
                 continue;
+            }
+            if !claimed && matches!(self.source, CircuitLearningSourceV1::OriginalObjective) {
+                tokio::select! {
+                    _ = cancellation.cancelled() => return Ok(()),
+                    result = state.require_circuit_learning_source(&self.request) => result?,
+                }
             }
             let delivery = async {
                 if claimed {

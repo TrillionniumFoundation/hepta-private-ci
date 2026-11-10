@@ -24,6 +24,8 @@ SESSION = AGENT + "authority_host_learning_session.rs"
 HANDOFF = AGENT + "root_production_learning_handoff.rs"
 INPUTS = AGENT + "root_production_learning_inputs.rs"
 CONFIG = AGENT + "config_root_learning.rs"
+DELIVERY = AGENT + "learning_iteration_delivery_runtime.rs"
+SOURCE = AGENT + "objective_learning_source.rs"
 LAUNCHER = AGENT + "production_launcher.rs"
 CLI = AGENT + "bin/hepta-authority-host.rs"
 CALLERS = {
@@ -48,6 +50,8 @@ CALLERS = {
     "root_learning_original_config_hold": (LAUNCHER,),
     "root_learning_original_stage_assembly": (),
     "root_learning_original_runtime_consume": (CONFIG,),
+    "root_learning_original_delivery_source": (INPUTS,),
+    "root_learning_completed_circuit_source": (DELIVERY,),
     "root_original_registered_ready_serve": (CLI,),
     "root_original_private_sealed_bytes": (REGISTRATION,),
 }
@@ -225,6 +229,17 @@ class RootLearningBootstrapSourceClosureTests(unittest.TestCase):
         self.rejects(AGENT + "runtime.rs", "fn run_with_shutdown(", "config.require_root_learning_assembled()?")
         self.rejects(CONFIG, "fn with_root_learning_stage_owners(", "inputs.into_learning_runtime(stages, verifier, capacity)?")
 
+    def test_original_root_source_join_cannot_be_dropped_or_downgraded(self):
+        self.rejects(INPUTS, "fn into_learning_runtime(", "bootstrap.with_original_circuit_learning_delivery(self.initial.request)?")
+        self.rejects(DELIVERY, "fn with_original_circuit_learning_delivery(", "bootstrap.circuit_delivery_source = CircuitLearningSourceV1::OriginalObjective")
+        self.rejects(DELIVERY, "fn run(", "if !claimed && matches!(self.source, CircuitLearningSourceV1::OriginalObjective)")
+        self.rejects(DELIVERY, "fn run(", "state.require_circuit_learning_source(&self.request)")
+        for occurrence in range(2):
+            self.rejects(SOURCE, "fn require_circuit_learning_source(", "self.require_learning_source_authentication(&original.0)?", occurrence)
+        self.rejects(SOURCE, "fn require_learning_source_authentication(", "authbus_ingress::require_objective_ready(self)?")
+        self.rejects(SOURCE, "fn require_learning_source_authentication(", "authbus_ingress::attached(self)?.trust(self)?")
+        self.rejects(SOURCE, "fn authenticate_learning_source_at(", "authentication_is_current(record, trust, identity, admitted_ms)?")
+
     def test_pending_guard_must_execute_at_top_level(self):
         guard = "config.require_root_learning_assembled()?;"
         for path, function in ((LAUNCHER, "fn run("), (AGENT + "runtime.rs", "fn run_with_shutdown(")):
@@ -241,7 +256,11 @@ class RootLearningBootstrapSourceClosureTests(unittest.TestCase):
         for path, function, markers in (
             (PROFILE, "fn require_binding(", ("self.frozen_scope(&initial)?",)),
             (PROFILE, "fn new_scoped_v2(", (
-                "HostAuthorityLearningScopeV2::new(&initial, scope, update_rule)?",
+                "HostAuthorityLearningScopeV2::new(\n"
+                "            &initial,\n"
+                "            scope,\n"
+                "            update_rule,\n"
+                "        )?",
                 "profile.schema_version = 2", "profile.require_binding(identity, &profile.writer_proof_digest)?",
             )),
             (PROFILE, "fn decode_scope(", (

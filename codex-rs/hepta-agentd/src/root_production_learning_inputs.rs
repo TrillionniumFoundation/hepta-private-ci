@@ -204,9 +204,10 @@ impl AgentdRootLearningInputsV1 {
                 capacity,
             ),
         }?;
+        let bootstrap: LearningIterationRuntimeBootstrapV1 = bootstrap;
         Ok((
             handle,
-            bootstrap.with_circuit_learning_delivery(self.initial.request)?,
+            bootstrap.with_original_circuit_learning_delivery(self.initial.request)?,
         ))
     }
 }
