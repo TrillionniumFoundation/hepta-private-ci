@@ -240,7 +240,8 @@ pub(super) async fn start(
     }, Generation::new(1).expect("generation"), /*max_records*/ 64);
     let (mut circuit, mut bindings) = super::super::configuration();
     bindings[0].cell = definition;
-    circuit.parameter_bundle_digest = Sha256Digest::parse(bundle.digest()?.to_string())?;
+    circuit.parameter_bundle_digest = Sha256Digest::parse(bundle.digest()?.to_string())
+        .map_err(anyhow::Error::msg)?;
     circuit.route_policy_digest = crate::circuit_cell_route_policy_digest_v1(&bindings)?;
     circuit.limits.work_budget = 20_000_000;
     circuit.limits.max_elapsed_ms = 60_000;
