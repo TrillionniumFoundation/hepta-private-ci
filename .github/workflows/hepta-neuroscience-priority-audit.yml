@@ -4,6 +4,10 @@ on:
   push:
     branches:
       - research/neuroscience-priority-audit-20261110-475c
+  pull_request:
+    branches:
+      - research/neuroscience-mechanisms-20261110
+    types: [opened, synchronize, reopened]
   workflow_dispatch:
 
 permissions:
