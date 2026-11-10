@@ -1,0 +1,55 @@
+test_allocation_or_selector_changes_fail_before_material_read (ndu_real_runtime.test_candidate_retention_public_plan.PublicRetentionPlanTests.test_allocation_or_selector_changes_fail_before_material_read) ... ok
+test_exhaustion_never_relaxes_old_source_exclusions (ndu_real_runtime.test_candidate_retention_public_plan.PublicRetentionPlanTests.test_exhaustion_never_relaxes_old_source_exclusions) ... ok
+test_frozen_pairs_use_public_selector_and_new_schema (ndu_real_runtime.test_candidate_retention_public_plan.PublicRetentionPlanTests.test_frozen_pairs_use_public_selector_and_new_schema) ... ok
+test_independent_cohort_rebuild_rejects_omitted_family_or_changed_episode (ndu_real_runtime.test_candidate_retention_public_plan.PublicRetentionPlanTests.test_independent_cohort_rebuild_rejects_omitted_family_or_changed_episode) ... ok
+test_new_execution_sources_must_be_pinned_before_actor_planning (ndu_real_runtime.test_candidate_retention_public_plan.PublicRetentionPlanTests.test_new_execution_sources_must_be_pinned_before_actor_planning) ... ok
+test_absent_evidence_remains_unknown_in_frozen_report (ndu_real_runtime.test_candidate_retention_public.PublicRetentionReportTests.test_absent_evidence_remains_unknown_in_frozen_report) ... ok
+test_attempt_costs_are_byte_bound_and_invalid_values_reject (ndu_real_runtime.test_candidate_retention_public.PublicRetentionReportTests.test_attempt_costs_are_byte_bound_and_invalid_values_reject) ... ok
+test_known_success_without_memory_or_selector_chain_is_not_attributable (ndu_real_runtime.test_candidate_retention_public.PublicRetentionReportTests.test_known_success_without_memory_or_selector_chain_is_not_attributable) ... ok
+test_malformed_episode_shape_keeps_attempt_cost_and_other_denominators (ndu_real_runtime.test_candidate_retention_public.PublicRetentionReportTests.test_malformed_episode_shape_keeps_attempt_cost_and_other_denominators) ... ok
+test_report_rejects_rebound_selector_budget_or_old_source (ndu_real_runtime.test_candidate_retention_public.PublicRetentionReportTests.test_report_rejects_rebound_selector_budget_or_old_source) ... ok
+test_unknown_noop_and_source_pairs_keep_all_denominators (ndu_real_runtime.test_candidate_retention_public.PublicRetentionReportTests.test_unknown_noop_and_source_pairs_keep_all_denominators) ... ok
+test_cli_uses_mem6_report_and_failed_run_exits_nonzero (ndu_real_runtime.test_candidate_retention_public.PublicRetentionRunnerTests.test_cli_uses_mem6_report_and_failed_run_exits_nonzero) ... ok
+test_runner_passes_both_memory_modes_to_fixed_selector_host (ndu_real_runtime.test_candidate_retention_public.PublicRetentionRunnerTests.test_runner_passes_both_memory_modes_to_fixed_selector_host) ... ok
+test_both_retention_arms_reach_real_ocr_actor_with_fixed_public_selector (ndu_real_runtime.test_candidate_retention_public_actor.PublicRetentionActorProcessTests.test_both_retention_arms_reach_real_ocr_actor_with_fixed_public_selector) ... ok
+test_incomplete_or_reassigned_pairs_are_rejected (ndu_real_runtime.test_candidate_retention_inference.SourceInferenceTests.test_incomplete_or_reassigned_pairs_are_rejected) ... ok
+test_numeric_threshold_does_not_grant_scientific_adoption (ndu_real_runtime.test_candidate_retention_inference.SourceInferenceTests.test_numeric_threshold_does_not_grant_scientific_adoption) ... ok
+test_sources_receive_equal_weight_despite_unequal_case_counts (ndu_real_runtime.test_candidate_retention_inference.SourceInferenceTests.test_sources_receive_equal_weight_despite_unequal_case_counts) ... ok
+test_unknowns_keep_labels_and_use_memory_adverse_bounds (ndu_real_runtime.test_candidate_retention_inference.SourceInferenceTests.test_unknowns_keep_labels_and_use_memory_adverse_bounds) ... ok
+test_bounded_tombstones_prevent_replay_and_admission_rolls_back (ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests.test_bounded_tombstones_prevent_replay_and_admission_rolls_back) ... ok
+test_byte_admission_failure_preserves_existing_data_and_generation (ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests.test_byte_admission_failure_preserves_existing_data_and_generation) ... ok
+test_caller_cannot_mutate_stored_provenance_or_returned_record (ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests.test_caller_cannot_mutate_stored_provenance_or_returned_record) ... ok
+test_current_authority_is_required_and_snapshot_has_its_identity (ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests.test_current_authority_is_required_and_snapshot_has_its_identity) ... ok
+test_namespace_isolation_and_foreign_dependency_rejection (ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests.test_namespace_isolation_and_foreign_dependency_rejection) ... ok
+test_revoke_removes_payload_and_old_snapshot_never_reactivates_it (ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests.test_revoke_removes_payload_and_old_snapshot_never_reactivates_it) ... ok
+test_snapshot_corruption_and_forged_record_are_rejected (ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests.test_snapshot_corruption_and_forged_record_are_rejected) ... ok
+test_update_cannot_create_an_indirect_dependency_cycle (ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests.test_update_cannot_create_an_indirect_dependency_cycle) ... ok
+test_update_revokes_transitive_dependencies_and_filters_old_snapshot (ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests.test_update_revokes_transitive_dependencies_and_filters_old_snapshot) ... ok
+test_working_state_is_copied_bounded_and_cleared_on_new_session (ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests.test_working_state_is_copied_bounded_and_cleared_on_new_session) ... ok
+test_exact_kv_and_bm25_only_read_approved_sources (ndu_real_runtime.test_episodic_retrieval.EpisodicRetrievalTests.test_exact_kv_and_bm25_only_read_approved_sources) ... ok
+test_modes_separate_store_read_retrieval_and_delivery (ndu_real_runtime.test_episodic_retrieval.EpisodicRetrievalTests.test_modes_separate_store_read_retrieval_and_delivery) ... ok
+test_new_process_cli_reads_then_rejects_revoked_snapshot (ndu_real_runtime.test_episodic_retrieval.EpisodicRetrievalTests.test_new_process_cli_reads_then_rejects_revoked_snapshot) ... ok
+test_real_callback_and_its_ablation_do_not_mutate_evidence (ndu_real_runtime.test_episodic_retrieval.EpisodicRetrievalTests.test_real_callback_and_its_ablation_do_not_mutate_evidence) ... ok
+test_receipt_rejects_changed_context_records_or_audit_fields (ndu_real_runtime.test_episodic_retrieval.EpisodicRetrievalTests.test_receipt_rejects_changed_context_records_or_audit_fields) ... ok
+test_uniform_replay_and_icl_are_bounded_deterministic_baselines (ndu_real_runtime.test_episodic_retrieval.EpisodicRetrievalTests.test_uniform_replay_and_icl_are_bounded_deterministic_baselines) ... ok
+test_exited_writers_new_readers_and_actual_deliveries (ndu_real_runtime.test_episodic_qualification.FreshProcessQualificationTests.test_exited_writers_new_readers_and_actual_deliveries) ... FAIL
+
+======================================================================
+FAIL: test_exited_writers_new_readers_and_actual_deliveries (ndu_real_runtime.test_episodic_qualification.FreshProcessQualificationTests.test_exited_writers_new_readers_and_actual_deliveries)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/484c2ed46043/hepta-mem/scripts/ndu_real_runtime/test_episodic_qualification.py", line 14, in test_exited_writers_new_readers_and_actual_deliveries
+    self.assertEqual((report["status"], report["passed_scenarios"]), ("PASS", 18))
+AssertionError: Tuples differ: ('FAIL', 0) != ('PASS', 18)
+
+First differing element 0:
+'FAIL'
+'PASS'
+
+- ('FAIL', 0)
++ ('PASS', 18)
+
+----------------------------------------------------------------------
+Ran 35 tests in 6.987s
+
+FAILED (failures=1)

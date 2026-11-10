@@ -1,0 +1,24 @@
+{
+  "schema": "hepta.mem6.ci-log-download.v1",
+  "source_commit": "8cf848babdd897e9f38642d5faf3ba0f72a1303c",
+  "run_id": 42822523591,
+  "job_id": 129851376338,
+  "last_job_state": "queued",
+  "observed_at_utc": "2026-11-10 13:18:43 UTC",
+  "response": {
+    "content": [
+      {
+        "type": "text",
+        "text": "GitHub API error 404: ﻿<?xml version=\"1.0\" encoding=\"utf-8\"?><Error><Code>BlobNotFound</Code><Message>The specified blob does not exist.\nRequestId:5250f40d-101e-00da-2b16-719763000000\nTime:2026-11-10T13:18:59.7427340Z</Message></Error>"
+      }
+    ],
+    "structuredContent": {
+      "error": "GitHub API error 404: ﻿<?xml version=\"1.0\" encoding=\"utf-8\"?><Error><Code>BlobNotFound</Code><Message>The specified blob does not exist.\nRequestId:5250f40d-101e-00da-2b16-719763000000\nTime:2026-11-10T13:18:59.7427340Z</Message></Error>",
+      "error_code": "NOT_FOUND",
+      "error_data": {
+        "error_str": "GitHub API error 404: ﻿<?xml version=\"1.0\" encoding=\"utf-8\"?><Error><Code>BlobNotFound</Code><Message>The specified blob does not exist.\nRequestId:5250f40d-101e-00da-2b16-719763000000\nTime:2026-11-10T13:18:59.7427340Z</Message></Error>"
+      }
+    },
+    "isError": true
+  }
+}

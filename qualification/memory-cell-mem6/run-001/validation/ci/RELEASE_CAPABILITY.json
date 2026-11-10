@@ -1,0 +1,63 @@
+{
+  "schema": "hepta.mem6.release-capability-inspection.v1",
+  "host_checks": "Only command lookup and version commands; no auth/config/environment/credential reads, install, push, release creation or upload.",
+  "ai395": {
+    "start": {
+      "status": "fulfilled",
+      "value": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"audit_recorded\":true,\"automatic_retry\":false,\"host\":\"ai395\",\"persistent_across_runtime_restart\":true,\"reused\":false,\"session_id\":\"dpty-aa797fdf5336a7045cb56521de2e7d3a05a5ff753dc6d35afb465046ef2eaffc\",\"status\":{\"boot\":\"b1620269-aaef-43e7-bf47-bc6eb1c1a447\",\"bytes_seen\":34,\"bytes_stored\":34,\"capture_error\":null,\"closed\":false,\"created_unix_ms\":1794317521067,\"exit_code\":0,\"output_complete\":true,\"owner_pid\":419003,\"pid\":419004,\"state\":\"exited\"}}"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      }
+    },
+    "read": {
+      "status": "fulfilled",
+      "value": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"archive_path\":\"/home/qq/.local/state/hepta-runtime-mac-worker/terminals/dpty-aa797fdf5336a7045cb56521de2e7d3a05a5ff753dc6d35afb465046ef2eaffc/output.log\",\"available_end\":34,\"bytes_hex\":\"2f7573722f62696e2f6769740d0a6769742076657273696f6e20322e35332e300d0a\",\"chunk_sha256\":\"59b9bfa3fc4d2f229f74c6024d93b2f70154afb0740af6883e02ceec4d339f4b\",\"host\":\"ai395\",\"next_offset\":34,\"offset\":0,\"output_complete\":true,\"persistent_across_runtime_restart\":true,\"session_id\":\"dpty-aa797fdf5336a7045cb56521de2e7d3a05a5ff753dc6d35afb465046ef2eaffc\",\"status\":{\"boot\":\"b1620269-aaef-43e7-bf47-bc6eb1c1a447\",\"bytes_seen\":34,\"bytes_stored\":34,\"capture_error\":null,\"closed\":false,\"created_unix_ms\":1794317521067,\"exit_code\":0,\"output_complete\":true,\"owner_pid\":419003,\"pid\":419004,\"state\":\"exited\"},\"storage\":\"target_archive\",\"text\":\"/usr/bin/git\\r\\ngit version 2.53.0\\r\\n\",\"text_is_lossy\":false,\"truncated_before_offset\":false,\"utf8_pending\":false}"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      }
+    }
+  },
+  "desktop": {
+    "start": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\"audit_recorded\":true,\"automatic_retry\":false,\"host\":\"desktop\",\"persistent_across_runtime_restart\":true,\"reused\":false,\"session_id\":\"dpty-8d952837f078e8e14faf72e6cd625ac8abb895074ffe73f70972df1dc5e69c43\",\"status\":{\"boot\":\"14f92beb-43c6-4786-839e-b57307ae8048\",\"bytes_seen\":27,\"bytes_stored\":27,\"capture_error\":null,\"created_unix_ms\":1794317579115,\"output_complete\":false,\"owner_pid\":1322260,\"pid\":1322266,\"state\":\"running\"}}"
+        }
+      ],
+      "structuredContent": null,
+      "isError": false
+    },
+    "read": {
+      "status": "fulfilled",
+      "value": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"archive_path\":\"/home/qian-qi/.local/state/hepta-runtime-mac-worker/terminals/dpty-8d952837f078e8e14faf72e6cd625ac8abb895074ffe73f70972df1dc5e69c43/output.log\",\"available_end\":153,\"bytes_hex\":\"2f7573722f62696e2f67680d0a2f7573722f62696e2f6769740d0a67682076657273696f6e20322e34352e302028323032352d30372d3138205562756e747520322e34352e302d317562756e7475302e33290d0a68747470733a2f2f6769746875622e636f6d2f636c692f636c692f72656c65617365732f7461672f76322e34352e300d0a6769742076657273696f6e20322e34332e300d0a\",\"chunk_sha256\":\"5c199ed6c9cd79e155d15a185f84c64d8b6e9154fba7eac579c4f8662eaffc34\",\"host\":\"desktop\",\"next_offset\":153,\"offset\":0,\"output_complete\":true,\"persistent_across_runtime_restart\":true,\"session_id\":\"dpty-8d952837f078e8e14faf72e6cd625ac8abb895074ffe73f70972df1dc5e69c43\",\"status\":{\"boot\":\"14f92beb-43c6-4786-839e-b57307ae8048\",\"bytes_seen\":153,\"bytes_stored\":153,\"capture_error\":null,\"closed\":false,\"created_unix_ms\":1794317579115,\"exit_code\":0,\"output_complete\":true,\"owner_pid\":1322260,\"pid\":1322266,\"state\":\"exited\"},\"storage\":\"target_archive\",\"text\":\"/usr/bin/gh\\r\\n/usr/bin/git\\r\\ngh version 2.45.0 (2025-07-18 Ubuntu 2.45.0-1ubuntu0.3)\\r\\nhttps://github.com/cli/cli/releases/tag/v2.45.0\\r\\ngit version 2.43.0\\r\\n\",\"text_is_lossy\":false,\"truncated_before_offset\":false,\"utf8_pending\":false}"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      }
+    }
+  },
+  "github_connector_release_upload_tool_present": false,
+  "github_connector_generic_fetch_is_get_only": true,
+  "upload_authority_verified": false,
+  "upload_attempted": false,
+  "official_cli_docs": "https://cli.github.com/manual/gh_release_upload",
+  "official_api_docs": "https://docs.github.com/en/rest/releases/assets#upload-a-release-asset"
+}

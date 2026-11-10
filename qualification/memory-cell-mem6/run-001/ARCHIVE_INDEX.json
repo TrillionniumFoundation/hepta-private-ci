@@ -1,0 +1,403 @@
+{
+  "archive_descriptor": {
+    "chunk_size": 65536,
+    "expected_bytes": 61412948,
+    "expected_chunk_count": 938,
+    "expected_manifest_sha256": "3c7799846836a18b6a5470e03cda92919ede2fcf76c8ee9ede20ae0e945ce336",
+    "expected_sha256": "f77acd9feb27fda3f8000b0d089dbdbe258a4adfb7acedcb2e0cd590cc4f361e",
+    "expected_version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+    "host": "ai395",
+    "remote_path": "/home/qq/mem6-attribution-20261110-484c/archive-v1/mem6-cas-001.tar.xz"
+  },
+  "archive_restore_status": "PENDING",
+  "blob_policy_max_bytes": 512000,
+  "complete_archive_published": false,
+  "full_owner_cold_recovery": false,
+  "independent_trust_domain": false,
+  "missing_byte_ranges": [
+    {
+      "end_exclusive": 24182784,
+      "start": 24117248
+    },
+    {
+      "end_exclusive": 61412948,
+      "start": 24379392
+    }
+  ],
+  "next_required_offset": 24117248,
+  "origin_host": "ai395",
+  "origin_host_archive_all_members_verified": true,
+  "part_max_bytes": 500000,
+  "prefix_bytes": 24117248,
+  "prefix_sha256": "bd1c67ea996843e72256f204648013fca1148d8926da88f2f371dfe5d63ed5ed",
+  "published_bytes": 24313856,
+  "published_parts": [
+    {
+      "archive_offset": 0,
+      "bytes": 500000,
+      "kind": "contiguous_prefix",
+      "path": "raw-transfer/prefix-0000.part",
+      "sha256": "2d382817f0d90127f825cb35d3170b1c97370cf0f2fdd5d7c62a7981db97288c"
+    },
+    {
+      "archive_offset": 500000,
+      "bytes": 500000,
+      "kind": "contiguous_prefix",
+      "path": "raw-transfer/prefix-0001.part",
+      "sha256": "55bcfbc59953af009dc794672c2b01fb76a8819f8624ce5bd8493c2dd0f4eff0"
+    },
+    {
+      "archive_offset": 1000000,
+      "bytes": 500000,
+      "kind": "contiguous_prefix",
+      "path": "raw-transfer/prefix-0002.part",
+      "sha256": "4d54e5dc672d51010499327b8358b87205e947d3009c97fbce6ee856af2a2b8b"
+    },
+    {
+      "archive_offset": 1500000,
+      "bytes": 500000,
+      "kind": "contiguous_prefix",
+      "path": "raw-transfer/prefix-0003.part",
+      "sha256": "be3af714be1e60f4b2f1a86152b7f928582605531e4bd5830f5ea35131d22c36"
+    },
+    {
+      "archive_offset": 2000000,
+      "bytes": 500000,
+      "kind": "contiguous_prefix",
+      "path": "raw-transfer/prefix-0004.part",
+      "sha256": "f05a10a228d0577cbf436934e99cffa0a800c546687733dfadc6d4e1ce933db9"
+    },
+    {
+      "archive_offset": 2500000,
+      "bytes": 500000,
+      "kind": "contiguous_prefix",
+      "path": "raw-transfer/prefix-0005.part",
+      "sha256": "518306f34403c1aff123e068378c62ef59eb8235c8fcb3e0e17f9583a608f191"
+    },
+    {
+      "archive_offset": 3000000,
+      "bytes": 500000,
+      "kind": "contiguous_prefix",
+      "path": "raw-transfer/prefix-0006.part",
+      "sha256": "1f0a65d60a3daf0861e0c3f06ae281c8faf7cdd67e07ccdd7239926a46177caa"
+    },
+    {
+      "archive_offset": 3500000,
+      "bytes": 500000,
+      "kind": "contiguous_prefix",
+      "path": "raw-transfer/prefix-0007.part",
+      "sha256": "17caae59826b3b64cc6e813c871cf21dfaeaba68f0c533a6897cff163c2cf6f2"
+    },
+    {
+      "archive_offset": 4000000,
+      "bytes": 500000,
+      "kind": "contiguous_prefix",
+      "path": "raw-transfer/prefix-0008.part",
+      "sha256": "6c84b79da123c4a872114e718edfb201a61af10509c01522e4444d16b819bf0d"
+    },
+    {
+      "archive_offset": 4500000,
+      "bytes": 500000,
+      "kind": "contiguous_prefix",
+      "path": "raw-transfer/prefix-0009.part",
+      "sha256": "509b39000d5d243861b8c27106f28f35a39bdca2ae7a02578dd81aa15dc70b23"
+    },
+    {
+      "archive_offset": 5000000,
+      "bytes": 500000,
+      "kind": "contiguous_prefix",
+      "path": "raw-transfer/prefix-0010.part",
+      "sha256": "2bc9db9ddf13575b0e118197de6d4d987c93157c87e117e91e0ac2f30201cb93"
+    },
+    {
+      "archive_offset": 5500000,
+      "bytes": 500000,
+      "kind": "contiguous_prefix",
+      "path": "raw-transfer/prefix-0011.part",
+      "sha256": "edc24be5950fa7c0e78cb0a3cfae10c3f0157428dacc86e12471f322411a11b3"
+    },
+    {
+      "archive_offset": 6000000,
+      "bytes": 500000,
+      "kind": "contiguous_prefix",
+      "path": "raw-transfer/prefix-0012.part",
+      "sha256": "175b6ffb9867e6f60c421c94fd38b5bc81cc27bdc8e62a0dd22af821365c2077"
+    },
+    {
+      "archive_offset": 6500000,
+      "bytes": 500000,
+      "kind": "contiguous_prefix",
+      "path": "raw-transfer/prefix-0013.part",
+      "sha256": "3c99b24b758eea994540f39cade6124bbc924ac6ed1ff2c091edc0eba47a8855"
+    },
+    {
+      "archive_offset": 7000000,
+      "bytes": 500000,
+      "kind": "contiguous_prefix",
+      "path": "raw-transfer/prefix-0014.part",
+      "sha256": "525c5b3666647deaa225155a91b34dc5cee26d7f60619ba8bb0a7ead9a1d1008"
+    },
+    {
+      "archive_offset": 7500000,
+      "bytes": 500000,
+      "kind": "contiguous_prefix",
+      "path": "raw-transfer/prefix-0015.part",
+      "sha256": "dd1ce7b571f07626732c9046db714e9e56ce92eb7ba93b131f55c0c7bd1efdfc"
+    },
+    {
+      "archive_offset": 8000000,
+      "bytes": 500000,
+      "kind": "contiguous_prefix",
+      "path": "raw-transfer/prefix-0016.part",
+      "sha256": "3ba4dc955723b8b279b8fb34ee7434609a63bd070fb5d70f78f1ef51825c2681"
+    },
+    {
+      "archive_offset": 8500000,
+      "bytes": 500000,
+      "kind": "contiguous_prefix",
+      "path": "raw-transfer/prefix-0017.part",
+      "sha256": "726c7d0d73ec737e66f8846478af21e84a3b1af1eac188c2df913af686a7dc0a"
+    },
+    {
+      "archive_offset": 9000000,
+      "bytes": 500000,
+      "kind": "contiguous_prefix",
+      "path": "raw-transfer/prefix-0018.part",
+      "sha256": "5bc90cb47f6214a87545fdac69954231fa086111ad322a000454561000edf088"
+    },
+    {
+      "archive_offset": 9500000,
+      "bytes": 500000,
+      "kind": "contiguous_prefix",
+      "path": "raw-transfer/prefix-0019.part",
+      "sha256": "3e569490722b08575557c312cbdd6b86071f84cc6cfb96771ff2e82c4af52420"
+    },
+    {
+      "archive_offset": 10000000,
+      "bytes": 500000,
+      "kind": "contiguous_prefix",
+      "path": "raw-transfer/prefix-0020.part",
+      "sha256": "a5d5f6ee4119e53892b34332efcff445ce13beb1e7a9a1d14b7a75104dc08634"
+    },
+    {
+      "archive_offset": 10500000,
+      "bytes": 500000,
+      "kind": "contiguous_prefix",
+      "path": "raw-transfer/prefix-0021.part",
+      "sha256": "2de46913caaec7829deb67fddf336548bc40be0ba6e6de50392ad6d3192e69c6"
+    },
+    {
+      "archive_offset": 11000000,
+      "bytes": 500000,
+      "kind": "contiguous_prefix",
+      "path": "raw-transfer/prefix-0022.part",
+      "sha256": "69d34985f3799e5fddff0864a35f4469cd3c53a6aca296a8f5e12d2edda855b5"
+    },
+    {
+      "archive_offset": 11500000,
+      "bytes": 500000,
+      "kind": "contiguous_prefix",
+      "path": "raw-transfer/prefix-0023.part",
+      "sha256": "f6626a60c2edfff0775afc13bb485f854d96e32b708e707afbc43a9a583381fb"
+    },
+    {
+      "archive_offset": 12000000,
+      "bytes": 500000,
+      "kind": "contiguous_prefix",
+      "path": "raw-transfer/prefix-0024.part",
+      "sha256": "9571028e5ace2b0d33f956cbb39e59d5c5f306b66318d92198213ce32ea589ec"
+    },
+    {
+      "archive_offset": 12500000,
+      "bytes": 500000,
+      "kind": "contiguous_prefix",
+      "path": "raw-transfer/prefix-0025.part",
+      "sha256": "c8df882edbd852a4120613f1d270d002ea27a04217043ec7c825399f6808fc2b"
+    },
+    {
+      "archive_offset": 13000000,
+      "bytes": 500000,
+      "kind": "contiguous_prefix",
+      "path": "raw-transfer/prefix-0026.part",
+      "sha256": "c1d355e571d3c1438747d42e7712324462077cf2da0e1157e8f3313eec78207e"
+    },
+    {
+      "archive_offset": 13500000,
+      "bytes": 500000,
+      "kind": "contiguous_prefix",
+      "path": "raw-transfer/prefix-0027.part",
+      "sha256": "57185ccb3dce06d75f2977aa8866c7ec9e299ba0dba38e9c1a02fdb7db2fcd8d"
+    },
+    {
+      "archive_offset": 14000000,
+      "bytes": 500000,
+      "kind": "contiguous_prefix",
+      "path": "raw-transfer/prefix-0028.part",
+      "sha256": "6a821e8a20566486bac8dc631eec0f01bebb58ef628585a9e5232fc2bfd7185d"
+    },
+    {
+      "archive_offset": 14500000,
+      "bytes": 500000,
+      "kind": "contiguous_prefix",
+      "path": "raw-transfer/prefix-0029.part",
+      "sha256": "206c9e9a3878f638ed7bd01510abbe5d6860548bdabe41cf21a9dfbe8fc1a4db"
+    },
+    {
+      "archive_offset": 15000000,
+      "bytes": 500000,
+      "kind": "contiguous_prefix",
+      "path": "raw-transfer/prefix-0030.part",
+      "sha256": "1fb6a576b56e034d6090c798c4f367b9c23efe9489d5b76e362d38ce1c8b463d"
+    },
+    {
+      "archive_offset": 15500000,
+      "bytes": 500000,
+      "kind": "contiguous_prefix",
+      "path": "raw-transfer/prefix-0031.part",
+      "sha256": "64b68ef3761c620145c81df12f2684e7c127f2c5246d8d9372f9b2375dc5a850"
+    },
+    {
+      "archive_offset": 16000000,
+      "bytes": 500000,
+      "kind": "contiguous_prefix",
+      "path": "raw-transfer/prefix-0032.part",
+      "sha256": "6a50055a36cab6a63282dd4ee3e3a14d3945abb07918f8823d1bc180880f2798"
+    },
+    {
+      "archive_offset": 16500000,
+      "bytes": 500000,
+      "kind": "contiguous_prefix",
+      "path": "raw-transfer/prefix-0033.part",
+      "sha256": "33eadc08b624ee4fee76e5fc1c95c5ac539b1e0db111ae6abb1e0c497b351116"
+    },
+    {
+      "archive_offset": 17000000,
+      "bytes": 500000,
+      "kind": "contiguous_prefix",
+      "path": "raw-transfer/prefix-0034.part",
+      "sha256": "da92b5bd0fa2f5bab396a0a89f683aae0589ca3b3b31547bc8738eaf1f4fc4fe"
+    },
+    {
+      "archive_offset": 17500000,
+      "bytes": 500000,
+      "kind": "contiguous_prefix",
+      "path": "raw-transfer/prefix-0035.part",
+      "sha256": "46d5b3f1adbe21376cb0744079571fb12b59619f12ff7bb713b55258841180db"
+    },
+    {
+      "archive_offset": 18000000,
+      "bytes": 500000,
+      "kind": "contiguous_prefix",
+      "path": "raw-transfer/prefix-0036.part",
+      "sha256": "e75294b2bb3cc7563b24e53c5aecaa0e4446fee5e0aeab78fae2c975ee10c28a"
+    },
+    {
+      "archive_offset": 18500000,
+      "bytes": 500000,
+      "kind": "contiguous_prefix",
+      "path": "raw-transfer/prefix-0037.part",
+      "sha256": "112e04e08fc3a0c5c30d63fe5d6a7f681c0967a2a47ecda4d55fabefd4a121cf"
+    },
+    {
+      "archive_offset": 19000000,
+      "bytes": 500000,
+      "kind": "contiguous_prefix",
+      "path": "raw-transfer/prefix-0038.part",
+      "sha256": "50ea2715afdf7be38425e66db73940783057d8b2736fcba46c5d004520283bf4"
+    },
+    {
+      "archive_offset": 19500000,
+      "bytes": 500000,
+      "kind": "contiguous_prefix",
+      "path": "raw-transfer/prefix-0039.part",
+      "sha256": "9f8bbfa13d7082667aa8fd94537a4c4092d5871270c4499c1cbb94b1755d0ce2"
+    },
+    {
+      "archive_offset": 20000000,
+      "bytes": 500000,
+      "kind": "contiguous_prefix",
+      "path": "raw-transfer/prefix-0040.part",
+      "sha256": "a7db6f81a9c8da4a3c2ac79d65d5d5807fbd9b88a86dcc12d7616750cbeb5d21"
+    },
+    {
+      "archive_offset": 20500000,
+      "bytes": 500000,
+      "kind": "contiguous_prefix",
+      "path": "raw-transfer/prefix-0041.part",
+      "sha256": "0960ca62544421184474302fe41fed7e462b45a1237c6eacd299619dab43fa15"
+    },
+    {
+      "archive_offset": 21000000,
+      "bytes": 500000,
+      "kind": "contiguous_prefix",
+      "path": "raw-transfer/prefix-0042.part",
+      "sha256": "738c0d1466461b8b5931065498b133c6e899a1a2ad67653cb3553b3f9a68ff75"
+    },
+    {
+      "archive_offset": 21500000,
+      "bytes": 500000,
+      "kind": "contiguous_prefix",
+      "path": "raw-transfer/prefix-0043.part",
+      "sha256": "e815da355a17361bfff853b24182f7201fc1b25fade49a355ad6f5f33162f90c"
+    },
+    {
+      "archive_offset": 22000000,
+      "bytes": 500000,
+      "kind": "contiguous_prefix",
+      "path": "raw-transfer/prefix-0044.part",
+      "sha256": "bd5a1ee2eedb80ee7b53df5f807d0a5be30bfc910ec384a2fa66b6dcbcabdd5c"
+    },
+    {
+      "archive_offset": 22500000,
+      "bytes": 500000,
+      "kind": "contiguous_prefix",
+      "path": "raw-transfer/prefix-0045.part",
+      "sha256": "e1adc8f8bf72d7c82e556ab085fc8cbff952bbb3fce3685e5a8514f7846c493f"
+    },
+    {
+      "archive_offset": 23000000,
+      "bytes": 500000,
+      "kind": "contiguous_prefix",
+      "path": "raw-transfer/prefix-0046.part",
+      "sha256": "03a051a8f8093c1fb58e730938d0d7b45215269444738699cce1b24c6c356bab"
+    },
+    {
+      "archive_offset": 23500000,
+      "bytes": 500000,
+      "kind": "contiguous_prefix",
+      "path": "raw-transfer/prefix-0047.part",
+      "sha256": "dab63775a4cc428068674b687be60d14e7d01b35f7ad4ef1341f883e30dfbab1"
+    },
+    {
+      "archive_offset": 24000000,
+      "bytes": 117248,
+      "kind": "contiguous_prefix",
+      "path": "raw-transfer/prefix-0048.part",
+      "sha256": "415626fcc283ef21e15b5f3308a504aa804e7331e84cc07dafcb11bae5fc04f0"
+    },
+    {
+      "archive_offset": 24182784,
+      "bytes": 65536,
+      "kind": "supplemental_chunk",
+      "path": "raw-transfer/extra-000024182784.part",
+      "sha256": "0e8a19e6848467b20416bfce8bebdf83c03a2e2b5f98a27ee0cafd184eda4120"
+    },
+    {
+      "archive_offset": 24248320,
+      "bytes": 65536,
+      "kind": "supplemental_chunk",
+      "path": "raw-transfer/extra-000024248320.part",
+      "sha256": "a9d3ac521f7f8e4b4f6cc314a8362257d78cf23618b0afc636ad6a958f4efa04"
+    },
+    {
+      "archive_offset": 24313856,
+      "bytes": 65536,
+      "kind": "supplemental_chunk",
+      "path": "raw-transfer/extra-000024313856.part",
+      "sha256": "dd5fac7cd586b0edec01aa1ed05fa70f2def66ccc804d0425e9266402c500bcd"
+    }
+  ],
+  "schema": "hepta.mem6.published-transfer-checkpoint.v1",
+  "status": "PARTIAL",
+  "whole_archive_local_sha256_verified": false
+}
