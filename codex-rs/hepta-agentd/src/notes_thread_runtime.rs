@@ -488,7 +488,11 @@ impl AgentdNotesThreadToolRuntime {
                         && value["status"] != "unknown"
                         && (params.tool == READ_TOOL
                             || (value["state"] == "Committed"
-                                && value["receipt_utf8"].is_string()));
+                                && value["receipt_utf8"].is_string()))
+                        && crate::notes_action_observer::original_notes_tool_succeeded(
+                            &params.tool,
+                            &value,
+                        );
                     (value, success)
                 }
                 Err(error) => {
