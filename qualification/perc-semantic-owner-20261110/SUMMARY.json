@@ -1,0 +1,142 @@
+{
+  "schema": "perc1.semantic-owned-final-qualification.v1",
+  "engineering_status": "PASS_BOUNDED_COMPONENT_GATES",
+  "scientific_status": "HOLD",
+  "candidate_adopted": false,
+  "baseline_commit": "72569fba94a38f7bb0628409cbb05b62fa6c9627",
+  "source_head": "72ea7a144babd7e0df6138a3d7688768115d6088",
+  "candidate_source_files": 14,
+  "source_stages": 7,
+  "benchmark": {
+    "distinct_synthetic_confirmation_tasks": 30,
+    "training_seeds": [
+      1101,
+      2202,
+      3303
+    ],
+    "fits": 6,
+    "optimizer_updates": 1200,
+    "completed_encoder_batches": 432,
+    "online_completed_encoder_batches": 216,
+    "overall": {
+      "dense": {
+        "correct": 63,
+        "cpu_ns": 6735355054,
+        "encoder_calls": 108,
+        "online_wall_ns": 6735790162,
+        "reads": 138,
+        "tasks": 90,
+        "total_source_reads": 246
+      },
+      "direct_roi_oracle": {
+        "correct": 90,
+        "cpu_ns": 44525132,
+        "encoder_calls": 0,
+        "online_wall_ns": 44437444,
+        "reads": 90,
+        "tasks": 90,
+        "total_source_reads": 90
+      },
+      "global": {
+        "correct": 49,
+        "cpu_ns": 6703872700,
+        "encoder_calls": 108,
+        "online_wall_ns": 6704176951,
+        "reads": 149,
+        "tasks": 90,
+        "total_source_reads": 257
+      },
+      "rules": {
+        "correct": 90,
+        "cpu_ns": 197102032,
+        "encoder_calls": 0,
+        "online_wall_ns": 196993453,
+        "reads": 90,
+        "tasks": 90,
+        "total_source_reads": 198
+      }
+    },
+    "independent_real_sources": false,
+    "same_cohort_persistence_rerun_not_extra_confirmation": true
+  },
+  "owned_cli": {
+    "engineering_status": "PASS",
+    "completed_encoder_batches": 1,
+    "replay_exact": true,
+    "cold_readback_exact": true,
+    "next_task": {
+      "amount": "0042.50",
+      "content_sha256": "b7371a1e93deeaa3eab25bd63c91761a8d1d493bf085d94972e1968aa216f366",
+      "encoder_calls": 0,
+      "entity": "Hepta Labs",
+      "receipt_sha256": "bc0ae49e0e546dd5da604089831615f1132a5a5d8b73ee3bc1fed15182e0a1eb",
+      "schema": "perc1.next-task-exact-span.v1",
+      "scope": "registered exact byte spans consumed from a retained receipt; no semantic generalization claim",
+      "source_files_present": false
+    },
+    "over_budget_no_new_reservation_or_capture": true
+  },
+  "native": {
+    "status": "PASS_NATIVE_CELL_ENCODER_ONLY",
+    "consumed_bytes": 28968,
+    "feature_scalars": 64,
+    "truncated_bytes": 0,
+    "canonical_roundtrip_equal": true,
+    "negative_controls": {
+      "encoder": true,
+      "frontier": true,
+      "model": true,
+      "raster": true,
+      "scope": true
+    },
+    "actual_consume_executions": 1
+  },
+  "tests": {
+    "discovered": 127,
+    "passed": 126,
+    "skipped": 1,
+    "failures": 0,
+    "errors": 0,
+    "seconds": 21.996,
+    "skip": "Existing real-document integration requires unavailable PERC_TEST_DOCUMENT_DATASET.",
+    "official_checkpoint_used": true
+  },
+  "format": {
+    "canonical_just_fmt_returncode": 0,
+    "python_ast_unchanged": true
+  },
+  "remaining_gates": [
+    "Independent real-source confirmation and net terminal benefit",
+    "Live desktop/camera acquisition and production daemon integration",
+    "Native Cell ownership and inference integration",
+    "Distributed owner fencing",
+    "Energy and complete provider billing"
+  ],
+  "production_daemon_integrated": false,
+  "native_cell_owner_exercised": false,
+  "native_inference_exercised": false,
+  "authority_granted": false,
+  "evidence_reports": {
+    "REPORT_BENCHMARK_V2.json": "b6be7681e6813bf61a9e83904ee49bbcc055caf69f70f2697357dca818a18daa",
+    "REPORT_BENCHMARK_V1.json": "067787c65280aee4f7c9d93ea7ffbca7f328f8f50899dbc97ecfb93285b70f5a",
+    "PROCESS_BENCHMARK_V2.txt": "8b573e8b2907ca4666c955f509546036b38fa413bc35cab0817de6c66aecd78c",
+    "REPORT_OWNED_CLI.json": "e3e13b7640fef0f77e0d5926c4a8e0ace88be60f4ed7ebcae33a2d0f0e12da9b",
+    "PROCESS_OWNED_CLI.json": "afbaf1b4d3f9b96802e29d5aff03156b1e496e9ba2a3a52f8e6b4dc2698820b5",
+    "REPORT_NATIVE_CELL.json": "da61e7c4bc2c017819f50de7b3ea76b400021abc9110f30697bbf9256df7c7e4",
+    "NATIVE_GATES.json": "c19f347836d03fe6b64aef75733774cf3aabd3b9f5755bfc8304fd463740c548",
+    "INTEGRITY_V2.json": "e1a1689aca42291b03d2d8073cdc19e7aa6897d9d732e7d949317e4117eaf270",
+    "V1_V2_COMPARISON.json": "2523dab2681fc95513f6355cf4a00196c0f6b0c7b73ec1ee568545f4e180defb",
+    "ACCOUNTING_ADDENDUM.json": "4fd7af68db6b5949f1ce6440d10fc718c6a3c2ac2b7efe5c376478fc7c1e80d1",
+    "ATTEMPT_LEDGER.json": "cb3119f3228d6d99891e764c98b9af336dad66b4b5d472dc1eb66d8e48959feb",
+    "TESTS.json": "ca655a27bbb7106c90ed6840dd8c5451967a65fa0f6d3f6e281da9fc7694c295",
+    "TESTS.log": "a7486440fa5923a4d1b659f157a9b6fe9e8fa0a5d8170c5beff0e24905622c6c",
+    "FORMAT.json": "d16c83c9fb020132f90ccdeebc7cf22797cb706eee1a5d7deb80821c21915028",
+    "SOURCE_COMMITS.json": "df83f60dc84e45338ab4ab09a42bc2d0c0730be31490222d48d38015b6e62250",
+    "SOURCE_FINAL.json": "b8f56a7f3afd78b63e6cbb085a139b3f1cf94668289e09e18f1320b5ca72416c"
+  },
+  "historical_checkpoints_superseded": [
+    "333f516f9b8778e11a62679786736014432ddfe8",
+    "f657866c310e930ea4ba9ab4f158777071d96d7d"
+  ],
+  "connector_outage_resolved": true
+}

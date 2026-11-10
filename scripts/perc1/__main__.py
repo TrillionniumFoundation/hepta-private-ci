@@ -5,8 +5,6 @@ import json
 import sys
 from pathlib import Path
 
-from .fixture import smoke, write_json
-from .report import build_report
 from .schema import Dataset, Invalid, load
 
 
@@ -21,11 +19,27 @@ def main():
     for name in ("manifest", "dataset", "traces", "evaluator"):
         cmd.add_argument(name)
     cmd.add_argument("--output")
+    for name in ("capture", "capture-read"):
+        cmd = commands.add_parser(name)
+        cmd.add_argument("--config", required=True)
+        cmd.add_argument("--operation", required=True)
+        if name == "capture":
+            cmd.add_argument("--request", required=True)
     args = parser.parse_args()
     try:
         if args.command == "smoke":
+            from .fixture import smoke
+
             result = smoke(args.output)
+        elif args.command in ("capture", "capture-read"):
+            from .entry import load_request, run_capture
+
+            request = load_request(args.request) if args.command == "capture" else None
+            result = run_capture(args.config, args.operation, request)
         else:
+            from .fixture import write_json
+            from .report import build_report
+
             dataset = Dataset(load(args.dataset), Path(args.dataset).parent)
             result = build_report(
                 load(args.manifest), dataset, load(args.traces), load(args.evaluator)
@@ -33,7 +47,7 @@ def main():
             if args.output:
                 write_json(args.output, result)
         print(json.dumps(result, sort_keys=True, allow_nan=False))
-        return 0
+        return 2 if result.get("status") == "failed" else 0
     except (Invalid, OSError, ValueError, TypeError, KeyError, UnicodeError) as error:
         message = (
             str(error)
