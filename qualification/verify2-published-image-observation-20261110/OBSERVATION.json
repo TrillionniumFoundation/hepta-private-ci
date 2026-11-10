@@ -1,0 +1,62 @@
+{
+  "schema": "hepta.published-image-observation-review.v1",
+  "archive_bytes": 25379,
+  "archive_sha256": "b8e15ca3900794e597a1937e2c8bae2f3c98c741cc79804fe358208a4f13808d",
+  "git_blob": "c5da0254b7e00228dcbeb8428be1577f0df5d0fa",
+  "reports": [
+    {
+      "verified_files": 33,
+      "result": {
+        "schema": "hepta.pinned-rbe-openssh-observation.v1",
+        "operation_id": "9f512093-532f-4d2b-9c51-f9015452b387",
+        "expected_source": "643ce1bd8d9e6076242d46f77b107009b10f47db",
+        "requested_image": "docker.io/mbolin491/codex-bazel@sha256:0a8e56bfaa3b2e5279db0d3bb2d62b44ba5e5d63a37d97eb8790f49da570af70",
+        "status": "FAILED",
+        "fixture_probe_passed": null,
+        "actual_remote_executor_observed": false,
+        "original_operator_target_passed": null,
+        "image_pin_changed": false,
+        "physical_cost_complete": false,
+        "net_utility": null,
+        "scientific_admission": "HOLD",
+        "production_authority": "NONE",
+        "rbe_git_blob": "57e301ac776d9c7196e9c854bc6e27ce2718d886",
+        "source_tree": "8359f400ddc31e7d21003fc1ba64d97a155f8685",
+        "local_image_config_id": "sha256:0a8e56bfaa3b2e5279db0d3bb2d62b44ba5e5d63a37d97eb8790f49da570af70",
+        "error": "RuntimeError('probe exited 125')"
+      }
+    },
+    {
+      "verified_files": 33,
+      "result": {
+        "schema": "hepta.pinned-rbe-openssh-observation.v1",
+        "operation_id": "5b549a12-c661-4b87-b2c1-8f59dffa3484",
+        "expected_source": "643ce1bd8d9e6076242d46f77b107009b10f47db",
+        "requested_image": "docker.io/mbolin491/codex-bazel@sha256:0a8e56bfaa3b2e5279db0d3bb2d62b44ba5e5d63a37d97eb8790f49da570af70",
+        "status": "TOOL_MISSING_IN_PUBLISHED_IMAGE",
+        "fixture_probe_passed": false,
+        "actual_remote_executor_observed": false,
+        "original_operator_target_passed": null,
+        "image_pin_changed": false,
+        "physical_cost_complete": false,
+        "net_utility": null,
+        "scientific_admission": "HOLD",
+        "production_authority": "NONE",
+        "rbe_git_blob": "57e301ac776d9c7196e9c854bc6e27ce2718d886",
+        "source_tree": "8359f400ddc31e7d21003fc1ba64d97a155f8685",
+        "local_image_config_id": "sha256:0a8e56bfaa3b2e5279db0d3bb2d62b44ba5e5d63a37d97eb8790f49da570af70",
+        "error": "RuntimeError('probe exited 20')"
+      }
+    }
+  ],
+  "source_commit": "643ce1bd8d9e6076242d46f77b107009b10f47db",
+  "source_tree": "8359f400ddc31e7d21003fc1ba64d97a155f8685",
+  "host": "ai395",
+  "recovery_job": "1a1c5184a94-cf39-5e5",
+  "container_cleanup_exit": 0,
+  "published_image_tool_visibility_subgate": "OBSERVED_MISSING",
+  "actual_remote_executor_qualification": "OPEN",
+  "image_pin_changed": false,
+  "scientific_admission": "HOLD",
+  "production_authority": "NONE"
+}
