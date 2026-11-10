@@ -184,7 +184,7 @@ class SemanticGateTests(unittest.TestCase):
     def test_invalid_nonfinite_native_cost(self):
         self.call["wall_seconds"] = float("nan")
         self.publish()
-        with self.assertRaisesRegex(ValueError, "numerical"):
+        with self.assertRaisesRegex(ValueError, "nonfinite JSON"):
             self.assess()
 
 
