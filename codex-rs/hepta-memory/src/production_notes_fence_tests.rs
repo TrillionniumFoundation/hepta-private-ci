@@ -36,3 +36,96 @@ fn notes_fence_terminal_receipt_requires_exact_original_binding() {
     changed["payload_sha256"] = serde_json::json!("0".repeat(64));
     assert!(NotesTerminalReceipt::from_json(&payload(), &changed.to_string()).is_err());
 }
+
+#[test]
+fn notes_fence_proof_binds_original_cancel_and_committed_event() {
+    let original = serde_json::json!({
+        "schema_version": 1,
+        "action": "replace_note",
+        "operation_id": "original",
+        "destination_id": target().destination_id(),
+        "target": target(),
+        "expected_revision": 7,
+        "text": "late text"
+    })
+    .to_string();
+    let cancellation = serde_json::json!({
+        "schema_version": 1,
+        "action": "fence_note_operation",
+        "operation_id": "cancel",
+        "destination_id": target().destination_id(),
+        "target": target(),
+        "original_operation_id": "original",
+        "original_payload_sha256": Sha256Digest::for_bytes(original.as_bytes()).as_str(),
+        "expected_revision": 7
+    })
+    .to_string();
+    let receipt = serde_json::json!({
+        "schema_version": 1,
+        "target": target(),
+        "operation_id": "cancel",
+        "payload_sha256": Sha256Digest::for_bytes(cancellation.as_bytes()).as_str(),
+        "result": {
+            "status": "fenced",
+            "original_operation_id": "original",
+            "original_payload_sha256": Sha256Digest::for_bytes(original.as_bytes()).as_str(),
+            "previous_revision": 7,
+            "revision": 8,
+            "text_sha256": Sha256Digest::for_bytes(b"").as_str()
+        }
+    })
+    .to_string();
+    let terminal_sha = Sha256Digest::for_bytes(b"terminal-event");
+    let proof = NotesFenceProof::from_committed_event(
+        "original",
+        &original,
+        "cancel",
+        &cancellation,
+        "event-4",
+        &terminal_sha,
+        &receipt,
+    )
+    .unwrap();
+    let settlement = proof.settlement_json().unwrap();
+    verify_fence_settlement(
+        &settlement,
+        "original",
+        &original,
+        "cancel",
+        &cancellation,
+        "event-4",
+        &terminal_sha,
+        &receipt,
+    )
+    .unwrap();
+
+    let mut changed: serde_json::Value = serde_json::from_str(&settlement).unwrap();
+    changed["cancellation_terminal_event_id"] = serde_json::json!("event-5");
+    assert!(
+        verify_fence_settlement(
+            &changed.to_string(),
+            "original",
+            &original,
+            "cancel",
+            &cancellation,
+            "event-4",
+            &terminal_sha,
+            &receipt,
+        )
+        .is_err()
+    );
+    let mut changed_receipt: serde_json::Value = serde_json::from_str(&receipt).unwrap();
+    changed_receipt["result"]["original_operation_id"] = serde_json::json!("another");
+    assert!(
+        NotesFenceProof::from_committed_event(
+            "original",
+            &original,
+            "cancel",
+            &cancellation,
+            "event-4",
+            &terminal_sha,
+            &changed_receipt.to_string(),
+        )
+        .is_err()
+    );
+}
