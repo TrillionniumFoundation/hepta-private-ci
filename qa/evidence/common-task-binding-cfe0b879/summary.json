@@ -1,0 +1,66 @@
+{
+  "authority_granted": false,
+  "behavior_tests": {
+    "actual_methods": 72,
+    "exit_code": 0,
+    "full_log_sha256": "99d12b9c2634eb64bbc4988180b9d941adb7e37d317efe7175297d14c0289ab3",
+    "record": "TEST_RESULT.json",
+    "scope": "Exact-file local Python regression projection; not full repository, native daemon, or hosted workflow qualification"
+  },
+  "behavior_tests_after_future_maintenance": false,
+  "canonical_maintenance_after_this_behavior_run": "PENDING_ROOT",
+  "compatibility": {
+    "old_result_byte_compatibility_claimed": false,
+    "semantic_completeness_verified": false,
+    "source_independence_verified": false,
+    "stage_a_legacy_extensions_retained": true,
+    "units_v1_retained": true,
+    "units_v2_adds_task_artifact_bytes_binding": true
+  },
+  "historical_results_rewritten": false,
+  "new_independent_confirmation_samples": 0,
+  "new_model_fits": 0,
+  "new_real_task_runs": 0,
+  "parent_commit": null,
+  "parent_commit_pending_root": true,
+  "parent_from_stage": "A",
+  "production_adoption": false,
+  "projection_integration_base_commit": "bc045ef97fb1b820f74257e7b3a89285673b0d2c",
+  "schema": "hepta.common-units-two-stage-summary.v1",
+  "scientific_acceptance": "HOLD",
+  "source_files": [
+    {
+      "before_sha256": "9d37026a14b65672f66411ce3ec56c6799890da0d42443da7530be30605bbb6a",
+      "bytes": 29622,
+      "git_blob_sha1": "727c1abf011d8b55915df7902a12628679742fcf",
+      "parent_base_blob": "2a9a32b3cd5e19945a0e8d829f3816918ee7b95a",
+      "path": "scripts/hepta_cell_research_gate.py",
+      "sha256": "5fdeb37089b3dcef50f90f02df7513f92478a8ff48a41ca531547f18960e850d"
+    },
+    {
+      "before_sha256": "8139672d1d197b7925abee50023214d5e245c65d4c508015d1353fbc16558ff2",
+      "bytes": 10020,
+      "git_blob_sha1": "20d8bea78a14e650f327e96001335c40b5742126",
+      "parent_base_blob": "d468ef1a396a009227fe20d1a27684cb1d3af4d9",
+      "path": "scripts/hepta_cell_research_units.py",
+      "sha256": "4e916be68fc2997e0bf939e745f6e34f260db0ebda732ff8932ebc0c3d800b27"
+    },
+    {
+      "before_sha256": "f73cac3a190d5d02e36ab25d0231c49a67c0b417d0eada138f0a9307e3949380",
+      "bytes": 21545,
+      "git_blob_sha1": "38fc575695eb176764791dd9d8099ca4d773893d",
+      "parent_base_blob": "0b69e818a83f94521ba5e474896c2cd1a6733460",
+      "path": "scripts/test_hepta_cell_research_units.py",
+      "sha256": "80e2cfb37c4f0c440f202f9c0d995897275e2380993b3daadf5c2d59da7a4937"
+    },
+    {
+      "before_sha256": "9d0636521c97ae24c17ce37cd73ff4e0b0a55fe848ae31d22663e588fad0cb53",
+      "bytes": 4316,
+      "git_blob_sha1": "bb21f46a877cef91fd30b01928e573c124872001",
+      "parent_base_blob": "304e3fb83e8646f77010052b5b03a73aaedb697f",
+      "path": ".github/workflows/hepta-cell-research-stages.yml",
+      "sha256": "5096873357ac8372222131e5acac9607467d81adf7d84b835b1251bd49a7971e"
+    }
+  ],
+  "stage": "B"
+}

@@ -402,9 +402,14 @@ def experiment_review(
     unit_document, unit_review = None, None
     if grouped:
         unit_document = evidence.read(document["units"])
+        unit_schema = (
+            unit_document.get("schema") if isinstance(unit_document, dict) else None
+        )
+        if unit_schema not in units_adapter.SCHEMAS:
+            raise ValueError("unsupported research units schema")
         bound(
             unit_document,
-            "hepta.cell-research-units.v1",
+            unit_schema,
             units_adapter.FIELDS,
             experiment,
             configuration_pin,
