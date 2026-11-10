@@ -2553,7 +2553,7 @@ impl LocalLeaseOutbox {
                     ));
                 }
             }
-        } else if outbox.topic == crate::NOTES_REPLACE_TOPIC_V1 {
+        } else if crate::production_notes::is_notes_topic(&outbox.topic) {
             match evidence {
                 ReconciliationEvidence::NotesTerminal(receipt) => receipt
                     .matches(&outbox.payload_json)
@@ -2899,7 +2899,7 @@ impl LocalLeaseOutbox {
         .await?
         .ok_or_else(|| corrupt("event admission has no paired outbox row"))?;
         ensure_current_occurrence_fence(self, &admission, &outbox)?;
-        if outbox.topic == crate::NOTES_REPLACE_TOPIC_V1
+        if crate::production_notes::is_notes_topic(&outbox.topic)
             && matches!(kind, "reconcile_committed" | "reconcile_rejected")
         {
             return Err(LocalLeaseOutboxError::AccessDenied(
@@ -2935,6 +2935,7 @@ impl LocalLeaseOutbox {
         if matches!(
             outbox.topic.as_str(),
             crate::NOTES_REPLACE_TOPIC_V1
+                | crate::NOTES_FENCE_TOPIC_V1
                 | crate::CALCULATOR_EVALUATE_TOPIC_V1
                 | crate::HOS2_INSTALL_TOPIC_V1
         ) && kind == "rolled_back"
@@ -5775,3 +5776,4 @@ pub(crate) async fn verify_local_lease_outbox(
         .map_err(crate::cognitive_store::unavailable)?;
     Ok(())
 }
+

@@ -106,6 +106,8 @@ pub(crate) use retirement_ack::RecordedRetirementAck;
 
 #[path = "production_notes_owner.rs"]
 mod notes_owner;
+#[path = "production_notes_cancellation.rs"]
+mod notes_cancellation;
 pub(crate) use notes_owner::NotesPreDispatchRejection;
 pub use notes_owner::NotesRetirementPermit;
 
@@ -1097,7 +1099,7 @@ impl ProductionDurableWriter {
                             LocalReconcileOutcome::Committed,
                         )
                         .await?;
-                    } else if request.topic == crate::NOTES_REPLACE_TOPIC_V1 {
+                    } else if crate::production_notes::is_notes_topic(&request.topic) {
                         self.settle_notes_terminal(
                             &request,
                             &receipt,
@@ -1125,7 +1127,7 @@ impl ProductionDurableWriter {
                             LocalReconcileOutcome::Rejected,
                         )
                         .await?;
-                    } else if request.topic == crate::NOTES_REPLACE_TOPIC_V1 {
+                    } else if crate::production_notes::is_notes_topic(&request.topic) {
                         self.settle_notes_terminal(
                             &request,
                             &reason,
@@ -1789,7 +1791,7 @@ impl ProductionDurableWriter {
             .await;
         }
         if let Ok(receipt) = &settled
-            && receipt.request.topic == crate::NOTES_REPLACE_TOPIC_V1
+            && crate::production_notes::is_notes_topic(&receipt.request.topic)
             && receipt.state == LocalOutcomeState::Committed
         {
             let _ = self
@@ -1814,7 +1816,7 @@ impl ProductionDurableWriter {
         inherited: bool,
         reason: String,
     ) -> Result<ProductionOutcomeReceipt, ProductionWriterError> {
-        if request.topic == crate::NOTES_REPLACE_TOPIC_V1 {
+        if crate::production_notes::is_notes_topic(&request.topic) {
             self.verify_authority().await?;
             let proof =
                 NotesPreDispatchRejection::at_rejected_entry(request, dispatch_event_id, reason);
@@ -1858,7 +1860,7 @@ impl ProductionDurableWriter {
                 let local = if request.topic == crate::HOS2_INSTALL_TOPIC_V1 {
                     self.settle_hos2_terminal(&request, &receipt, LocalReconcileOutcome::Committed)
                         .await?
-                } else if request.topic == crate::NOTES_REPLACE_TOPIC_V1 {
+                } else if crate::production_notes::is_notes_topic(&request.topic) {
                     self.settle_notes_terminal(&request, &receipt, LocalReconcileOutcome::Committed)
                         .await?
                 } else if request.topic == crate::CALCULATOR_EVALUATE_TOPIC_V1 {
@@ -1886,7 +1888,7 @@ impl ProductionDurableWriter {
                 let local = if request.topic == crate::HOS2_INSTALL_TOPIC_V1 {
                     self.settle_hos2_terminal(&request, &reason, LocalReconcileOutcome::Rejected)
                         .await?
-                } else if request.topic == crate::NOTES_REPLACE_TOPIC_V1 {
+                } else if crate::production_notes::is_notes_topic(&request.topic) {
                     self.settle_notes_terminal(&request, &reason, LocalReconcileOutcome::Rejected)
                         .await?
                 } else if request.topic == crate::CALCULATOR_EVALUATE_TOPIC_V1 {
@@ -1957,7 +1959,7 @@ impl ProductionDurableWriter {
                         LocalReconcileOutcome::Committed,
                     )
                     .await
-                } else if request.topic == crate::NOTES_REPLACE_TOPIC_V1 {
+                } else if crate::production_notes::is_notes_topic(&request.topic) {
                     self.settle_notes_terminal(
                         &request,
                         &target_receipt,
@@ -1993,7 +1995,7 @@ impl ProductionDurableWriter {
                 let local = if request.topic == crate::HOS2_INSTALL_TOPIC_V1 {
                     self.settle_hos2_terminal(&request, &reason, LocalReconcileOutcome::Rejected)
                         .await?
-                } else if request.topic == crate::NOTES_REPLACE_TOPIC_V1 {
+                } else if crate::production_notes::is_notes_topic(&request.topic) {
                     self.settle_notes_terminal(&request, &reason, LocalReconcileOutcome::Rejected)
                         .await?
                 } else if request.topic == crate::CALCULATOR_EVALUATE_TOPIC_V1 {
@@ -4492,3 +4494,4 @@ mod final_use_dispatch_tests {
         );
     }
 }
+

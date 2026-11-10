@@ -30,7 +30,7 @@ impl ProductionRetirementAck {
     ) -> Result<Self, String> {
         if !matches!(
             request.topic.as_str(),
-            crate::NOTES_REPLACE_TOPIC_V1 | crate::CALCULATOR_EVALUATE_TOPIC_V1
+            crate::NOTES_REPLACE_TOPIC_V1 | crate::NOTES_FENCE_TOPIC_V1 | crate::CALCULATOR_EVALUATE_TOPIC_V1
         ) || request.payload_sha256 != Sha256Digest::for_bytes(request.payload_json.as_bytes())
         {
             return Err("retirement ACK has invalid original application binding".into());
@@ -224,3 +224,4 @@ impl ProductionDurableWriter {
         Ok(())
     }
 }
+
