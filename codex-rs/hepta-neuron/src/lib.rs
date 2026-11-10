@@ -45,12 +45,16 @@ pub use plasticity::ParameterGroupMapV1;
 pub use plasticity::PlasticityError;
 pub use plasticity::PlasticitySufficientStatisticsV1;
 pub use plasticity::PlasticityTrustRegionV1;
+pub use plasticity::TemporalCreditArmV1;
+pub use plasticity::TemporalCreditContractV1;
+pub use plasticity::TemporalCreditError;
+pub use plasticity::TemporalCreditReceiptV1;
+pub use plasticity::TemporalEligibilityActionV1;
+pub use plasticity::TemporalFeedbackV1;
+pub use plasticity::TemporalGroupDeltaV1;
+pub use plasticity::TemporalSplitV1;
 pub use plasticity::accumulate_plasticity;
-pub use plasticity::{
-    TemporalCreditArmV1, TemporalCreditContractV1, TemporalCreditError, TemporalCreditReceiptV1,
-    TemporalEligibilityActionV1, TemporalFeedbackV1, TemporalGroupDeltaV1, TemporalSplitV1,
-    accumulate_temporal_credit_q24,
-};
+pub use plasticity::accumulate_temporal_credit_q24;
 pub use population_v2::ActivationPopulationV2;
 pub use population_v2::PopulationSparseCheckpointV2;
 pub use population_v2::PopulationSparseConfigV2;
