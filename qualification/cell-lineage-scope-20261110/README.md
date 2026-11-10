@@ -23,7 +23,7 @@ This patch introduces a **pure Python, fail-closed, read-only enrollment/update 
 
 This is a **configuration example**, not a universal kernel assignment: actual Cell enrollment accepts other lineage/kernel pairings with explicit valid update scopes, except that initial LEARN remains a deterministic orchestrator. At most three *instances* may be simultaneously trainable; the others remain frozen. Seven means functional responsibilities, not neural architectures or an upper bound on instances.
 
-`CellRoster` requires all seven responsibilities, distinct principal/agent/cell/run state partitions and exact base/organ/encoder/tokenizer/normalizer/composition/numeric-profile alignment for any shared semantic feature group. Such a group never grants cross-principal/agent residency or temporal state sharing by implication.
+`CellRoster` requires all seven responsibilities, distinct principal/agent/cell/run state partitions and exact base/organ/encoder/tokenizer/normalizer/composition/numeric-profile alignment for any shared semantic feature group. Such a group also requires one matching state owner and data-use scope: it never grants cross-principal/agent/data residency or temporal state sharing by implication.
 
 `review_update` binds original bundle digest/generation, Dataset-to-Training source, frozen update rule, frozen evaluation profile, permitted component changes, optimizer step ceiling, and a non-omittable cost-axis inventory. Unknown cost or absent original evaluation receipt keeps HOLD. Even with all declared fields present, its only positive status is `REVIEW_ONLY`: a digest is not authentic execution evidence, real model loading, independent data, held-out outcomes or acceptance.
 
