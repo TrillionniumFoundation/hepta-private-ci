@@ -1,0 +1,34 @@
+[
+  {
+    "stage": "tests",
+    "argv": [
+      "/workspace/scratch/40a1a085876c/verify-tools/bin/just",
+      "test",
+      "-p",
+      "codex-hepta-agentd",
+      "-p",
+      "codex-hepta-infer-worker-host",
+      "-p",
+      "codex-hepta-memory"
+    ],
+    "cwd": "/workspace/scratch/40a1a085876c/mac-fixture-reconciliation",
+    "exit_code": 1,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_sha256": "c58719c24f0673fed01587310439c0f2b9dcfd4fffd40ad310a12cd782bb0d55",
+    "stdout": "",
+    "stderr_file": "tests.stderr"
+  },
+  {
+    "stage": "fmt",
+    "argv": [
+      "/workspace/scratch/40a1a085876c/verify-tools/bin/just",
+      "fmt"
+    ],
+    "cwd": "/workspace/scratch/40a1a085876c/mac-fixture-reconciliation",
+    "exit_code": 1,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_sha256": "5ca88535b20335a60afdd52707c98eefe48bc843b59690df4eefefe2ab5528c9",
+    "stdout": "",
+    "stderr_file": "fmt.stderr"
+  }
+]

@@ -1,0 +1,79 @@
+{
+  "scope": "VERIFY common test-fixture source reuse",
+  "base_commit": "a2cd828aad47c56ac8c01dc2e423454eca7eafae",
+  "base_tree": "35decac9eb973c81b303911b2696433729ee1fd5",
+  "source_pr": 5402,
+  "source_commit": "083636159a1c2cf2570dfe6443c6210338fc5277",
+  "retained_source_commit": "0658441ebe58e3cc1ef21d58ad00fd27f50a4cbe",
+  "source_original_base": "f49128e503b24bb52ccdb32a860939e6392c8e08",
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_cell_tests.rs",
+      "preimage_blob": "899777518dfa9264be42c5ee7da862d01eef40d1",
+      "common_preimage_blob": "899777518dfa9264be42c5ee7da862d01eef40d1",
+      "postimage_blob": "92278376303d94b3715fdc81ce553fbdaf8450fa"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
+      "preimage_blob": "4df4cbb327370a74b5f2c4f6a32f578f1d7c105a",
+      "common_preimage_blob": "4df4cbb327370a74b5f2c4f6a32f578f1d7c105a",
+      "postimage_blob": "d4febb0e80cd39554370de03af686fa1839aa6ed"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_checkpoint_observation_tests.rs",
+      "preimage_blob": "5ebcea8545b9a38589324624360bb1ed2a8f731c",
+      "common_preimage_blob": "5ebcea8545b9a38589324624360bb1ed2a8f731c",
+      "postimage_blob": "293beadf5c54dcd9e0438b3e7e3381143eb84634"
+    }
+  ],
+  "scope_excludes": [
+    "nextest overrides",
+    "supervisor fixture/timing edits",
+    "already repaired tui path assertion",
+    "all seven absent #5618 paths",
+    "production paths/permission/schema/owner guards",
+    "dependency and lock changes",
+    "new workflow"
+  ],
+  "observed_ci": {
+    "run_id": 42773881466,
+    "api_head_sha": "a2cd828aad47c56ac8c01dc2e423454eca7eafae",
+    "actual_checkout": "534459a988e278a506338649977eb7f4a8b81fff",
+    "actual_tree": "35decac9eb973c81b303911b2696433729ee1fd5",
+    "tree_equivalent_to_base": true,
+    "mac_arm_job": 129692220121,
+    "mac_intel_job": 129692220034,
+    "worker_error": "path must be shorter than SUN_LEN",
+    "cell_setup_error": "fixture failed: Invalid",
+    "checkpoint_error": "Unavailable(\"cognitive recovery root does not exist\")",
+    "causal_scope": "Worker path-length violation is explicit. Other observed messages do not independently prove a unique cause; these exact preimage-matched existing fixture repairs still require native execution."
+  },
+  "local_validation": {
+    "environment": "synthetic local sparse Git replay of three exact original bodies and unchanged original helper scripts; not a complete repository checkout",
+    "diff_check": "PASS",
+    "source_bytes_unchanged_after_commands": true,
+    "tests_started": 0,
+    "test_result": "NOT_RUN: cargo unavailable",
+    "format_result": "NOT_RUN: rustfmt unavailable before any formatter ran",
+    "initial_sparse_scope_attempt": "A prior pre-Git just fmt invocation failed in git diff scope discovery; no formatting or tests ran.",
+    "helper_blobs": {
+      "justfile": "a215a76cf407ace9715bca39c20497014e7dd4dc",
+      "scripts/just-shell.py": "bb2db6ebc4312a301ee39d2793fde16289d046d8",
+      "scripts/format.py": "d4eabe70b68605933240e9129245f7f4cccbde5d",
+      "scripts/run-nextest.py": "1ed63abe84267b320cbfb0123a70aac5507f4595"
+    },
+    "command_records": "LOCAL_COMMANDS.json"
+  },
+  "historical_validation": "#5402's separate native selected-case records apply to their original source, not to this new common head. #5628's real twelve-case macOS contrast is a different ACT source and is not imported or transferred.",
+  "remaining_gates": [
+    "same-head native tests/format/full CI",
+    "17 common Automation Invalid setup failures in older circuit_admission_tests/circuit_store_tests helpers",
+    "all other original macOS/Linux/Windows failures",
+    "exact joint dependency security qualification",
+    "independent real terminal labels",
+    "full physical/historical costs",
+    "prospective error/coverage/net benefit"
+  ],
+  "scientific_admission": "HOLD",
+  "production_authority": "NONE"
+}
