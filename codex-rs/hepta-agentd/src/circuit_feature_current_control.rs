@@ -1,7 +1,7 @@
 //! CURRENT gates around the original Feature control, including its native
 //! entry clock after both durable admission and dispatch fsyncs.
 
-use codex_hepta_infer_core::durable_control::DurableInferenceControl;
+use codex_hepta_neuron::DurableInferenceControl;
 use codex_hepta_neuron::CellInferenceAdmissionV1;
 use codex_hepta_neuron::CellInferenceReadbackPortV1;
 use codex_hepta_neuron::ControlledNeuronFeaturePortV1;
