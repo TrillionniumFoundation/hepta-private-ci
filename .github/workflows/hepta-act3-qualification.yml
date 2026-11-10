@@ -94,6 +94,13 @@ jobs:
           "$RUNNER_TEMP/act3-venv/bin/python" -m unittest discover -s scripts/act2_learning -p test_browser_family.py -v > "$RUNNER_TEMP/act3-records/browser-tests.log" 2>&1
           "$RUNNER_TEMP/act3-venv/bin/python" scripts/act2_learning/qualify_families.py --archive qualification/act2-learning-20261110/run2 --families browser --output "$RUNNER_TEMP/act3-records/browser-panel" > "$RUNNER_TEMP/act3-records/browser-panel.log" 2>&1
           "$RUNNER_TEMP/act3-venv/bin/python" scripts/act2_learning/audit_families.py "$RUNNER_TEMP/act3-records/browser-panel" > "$RUNNER_TEMP/act3-records/browser-audit.json"
+      - name: Require mixed filesystem and browser effects
+        if: github.ref_name == 'research/act3-composite-20261110' || github.ref_name == 'research/act3-procedural-replay-20261110'
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/act3-venv/bin/python" -m unittest discover -s scripts/act2_learning -p test_composite_family.py -v > "$RUNNER_TEMP/act3-records/composite-tests.log" 2>&1
+          "$RUNNER_TEMP/act3-venv/bin/python" scripts/act2_learning/qualify_families.py --archive qualification/act2-learning-20261110/run2 --families composition --output "$RUNNER_TEMP/act3-records/composite-panel" > "$RUNNER_TEMP/act3-records/composite-panel.log" 2>&1
+          "$RUNNER_TEMP/act3-venv/bin/python" scripts/act2_learning/audit_families.py "$RUNNER_TEMP/act3-records/composite-panel" > "$RUNNER_TEMP/act3-records/composite-audit.json"
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
