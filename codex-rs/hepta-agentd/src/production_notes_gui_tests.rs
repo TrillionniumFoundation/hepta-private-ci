@@ -703,8 +703,15 @@ async fn notes_actual_ui_original_owner_roundtrip() -> Result<(), Box<dyn Error>
     );
     let reattached_current = reattached.observe_document()?;
     assert_eq!(reattached_current, current);
-    host.writer().validate_notes_document_read(&reattached_current).await?;
-    assert!(host.writer().validate_notes_document_read(&first_current).await.is_err());
+    host.writer()
+        .validate_notes_document_read(&reattached_current)
+        .await?;
+    assert!(
+        host.writer()
+            .validate_notes_document_read(&first_current)
+            .await
+            .is_err()
+    );
     // Close only this test's App, then attempt a real independent read. This
     // is readback loss, not a durable cancellation or late-commit tombstone.
     session.cancel_notes()?;

@@ -73,7 +73,9 @@ impl NotesPrivateChannel for FenceDelayChannel {
             self.probe
                 .precontact_invalidation
                 .store(true, Ordering::SeqCst);
-            return Err("explicit test delay: original authorized frame has not touched the App FD".into());
+            return Err(
+                "explicit test delay: original authorized frame has not touched the App FD".into(),
+            );
         }
         self.probe
             .app_effect_exchanges
@@ -107,7 +109,8 @@ impl NotesPrivateChannel for FenceDelayChannel {
 
 #[tokio::test]
 #[ignore = "requires explicitly isolated Xvfb and pinned fence-capable companion Session/App"]
-async fn notes_actual_ui_authorized_fence_excludes_delayed_original() -> Result<(), Box<dyn Error>> {
+async fn notes_actual_ui_authorized_fence_excludes_delayed_original() -> Result<(), Box<dyn Error>>
+{
     if std::env::var("TRILL_NOTES_PROBE_ISOLATED").as_deref() != Ok("1")
         || std::env::var_os("DISPLAY").is_none()
     {
@@ -173,7 +176,8 @@ async fn notes_actual_ui_authorized_fence_excludes_delayed_original() -> Result<
                 parent,
                 final_use,
                 move |effect, recovery| {
-                    let channel = Arc::new(FenceDelayChannel::new(effect, recovery, channel_probe)?);
+                    let channel =
+                        Arc::new(FenceDelayChannel::new(effect, recovery, channel_probe)?);
                     *installed
                         .lock()
                         .map_err(|_| std::io::Error::other("fence test channel lock"))? =
@@ -204,8 +208,16 @@ async fn notes_actual_ui_authorized_fence_excludes_delayed_original() -> Result<
                 receipt_pending: false,
             }
         );
-        let operation_id = if delayed { "notes-fence-delayed-original" } else { "notes-fence-applied-original" };
-        let cancellation_id = if delayed { "notes-fence-before-original" } else { "notes-fence-after-applied" };
+        let operation_id = if delayed {
+            "notes-fence-delayed-original"
+        } else {
+            "notes-fence-applied-original"
+        };
+        let cancellation_id = if delayed {
+            "notes-fence-before-original"
+        } else {
+            "notes-fence-after-applied"
+        };
         let text = "original authorized text / 取消先赢时不得出现";
         let payload = serde_json::to_string(&serde_json::json!({
             "schema_version":1,"action":"replace_note","operation_id":operation_id,
@@ -217,28 +229,45 @@ async fn notes_actual_ui_authorized_fence_excludes_delayed_original() -> Result<
             StableId::new(config.identity().agent_id.as_str())?,
             Generation::new(1)?,
         )?;
-        let original = host.writer().prepare_operation(intent, NOTES_REPLACE_TOPIC_V1, payload.clone()).await?;
+        let original = host
+            .writer()
+            .prepare_operation(intent, NOTES_REPLACE_TOPIC_V1, payload.clone())
+            .await?;
         let original_result = host
             .dispatch_to_with_grant_provider(&identity.destination_id(), original.clone())
             .await?;
         assert_eq!(
             original_result.state,
-            if delayed { LocalOutcomeState::Indeterminate } else { LocalOutcomeState::Committed }
+            if delayed {
+                LocalOutcomeState::Indeterminate
+            } else {
+                LocalOutcomeState::Committed
+            }
         );
         assert_eq!(issuer.requests.load(Ordering::SeqCst), 1);
         assert_eq!(probe.dispatch_attempts.load(Ordering::SeqCst), 1);
-        assert_eq!(probe.app_effect_exchanges.load(Ordering::SeqCst), if delayed { 0 } else { 1 });
-        let cancellation = host.writer()
-            .prepare_notes_cancellation(&original.occurrence_key, cancellation_id).await?;
+        assert_eq!(
+            probe.app_effect_exchanges.load(Ordering::SeqCst),
+            if delayed { 0 } else { 1 }
+        );
+        let cancellation = host
+            .writer()
+            .prepare_notes_cancellation(&original.occurrence_key, cancellation_id)
+            .await?;
         let cancellation_result = host
             .dispatch_to_with_grant_provider(&identity.destination_id(), cancellation.clone())
             .await?;
         let cancellation_receipt: serde_json::Value = serde_json::from_str(
-            cancellation_result.target_receipt.as_deref()
+            cancellation_result
+                .target_receipt
+                .as_deref()
                 .or(cancellation_result.target_reason.as_deref())
-                .ok_or("missing actual fence response")?
+                .ok_or("missing actual fence response")?,
         )?;
-        let retained = host.writer().retained_operation(&cancellation.occurrence_key).await?
+        let retained = host
+            .writer()
+            .retained_operation(&cancellation.occurrence_key)
+            .await?
             .ok_or("missing original cancellation operation")?;
         let expected_result = if delayed {
             serde_json::json!({"status":"fenced","original_operation_id":operation_id,
@@ -255,7 +284,11 @@ async fn notes_actual_ui_authorized_fence_excludes_delayed_original() -> Result<
         );
         assert_eq!(
             cancellation_result.state,
-            if delayed { LocalOutcomeState::Committed } else { LocalOutcomeState::Rejected }
+            if delayed {
+                LocalOutcomeState::Committed
+            } else {
+                LocalOutcomeState::Rejected
+            }
         );
         assert_eq!(retained.topic, codex_hepta_memory::NOTES_FENCE_TOPIC_V1);
         let grants_before_late = issuer.requests.load(Ordering::SeqCst);
@@ -276,14 +309,35 @@ async fn notes_actual_ui_authorized_fence_excludes_delayed_original() -> Result<
         let current = observer.observe_document()?;
         assert_eq!(current.target, identity);
         assert_eq!(current.revision, 1);
-        assert_eq!(current.text_sha256, Sha256Digest::for_bytes(if delayed { b"" } else { text.as_bytes() }));
-        assert_eq!(host.writer().status(&original.occurrence_key).await?, original_result.state);
-        assert_eq!(host.writer().status(&cancellation.occurrence_key).await?, cancellation_result.state);
         assert_eq!(
-            (probe.dispatch_attempts.load(Ordering::SeqCst), probe.app_effect_exchanges.load(Ordering::SeqCst),
-                probe.held_invalidations.load(Ordering::SeqCst), probe.late_deliveries.load(Ordering::SeqCst),
-                issuer.requests.load(Ordering::SeqCst), primary_device.installs.load(Ordering::SeqCst)),
-            (2, 2, if delayed { 1 } else { 0 }, if delayed { 1 } else { 0 }, 2, 0)
+            current.text_sha256,
+            Sha256Digest::for_bytes(if delayed { b"" } else { text.as_bytes() })
+        );
+        assert_eq!(
+            host.writer().status(&original.occurrence_key).await?,
+            original_result.state
+        );
+        assert_eq!(
+            host.writer().status(&cancellation.occurrence_key).await?,
+            cancellation_result.state
+        );
+        assert_eq!(
+            (
+                probe.dispatch_attempts.load(Ordering::SeqCst),
+                probe.app_effect_exchanges.load(Ordering::SeqCst),
+                probe.held_invalidations.load(Ordering::SeqCst),
+                probe.late_deliveries.load(Ordering::SeqCst),
+                issuer.requests.load(Ordering::SeqCst),
+                primary_device.installs.load(Ordering::SeqCst)
+            ),
+            (
+                2,
+                2,
+                if delayed { 1 } else { 0 },
+                if delayed { 1 } else { 0 },
+                2,
+                0
+            )
         );
         cases.push(serde_json::json!({
             "case":if delayed {"fence_before_delayed_original"} else {"apply_before_fence"},

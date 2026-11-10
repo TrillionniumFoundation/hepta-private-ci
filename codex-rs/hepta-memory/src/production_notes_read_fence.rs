@@ -39,12 +39,18 @@ impl ProductionDurableWriter {
         if self.live_verifier.is_none() {
             return Err(ProductionWriterError::LiveVerifierRequired);
         }
-        document.target.validate().map_err(ProductionWriterError::Invalid)?;
+        document
+            .target
+            .validate()
+            .map_err(ProductionWriterError::Invalid)?;
         Sha256Digest::parse(document.text_sha256.as_str())
             .map_err(ProductionWriterError::Invalid)?;
         self.verify_authority().await?;
         self.lease.verify_current().await?;
-        let mut transaction = self.store.begin_checkpoint_barrier().await
+        let mut transaction = self
+            .store
+            .begin_checkpoint_barrier()
+            .await
             .map_err(|error| ProductionWriterError::Durability(error.to_string()))?;
         let checked = async {
             self.lease.require_current_transaction(&mut transaction).await?;
@@ -128,7 +134,9 @@ impl ProductionDurableWriter {
             self.lease.require_current_transaction(&mut transaction).await?;
             Ok(())
         }.await;
-        transaction.rollback().await
+        transaction
+            .rollback()
+            .await
             .map_err(|error| ProductionWriterError::Durability(error.to_string()))?;
         self.verify_authority().await?;
         checked

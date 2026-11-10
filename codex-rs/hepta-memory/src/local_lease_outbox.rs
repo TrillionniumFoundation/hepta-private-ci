@@ -53,6 +53,7 @@ enum ReconciliationEvidence<'a> {
     Hos2Terminal(&'a Hos2TerminalReceipt),
     NotesTerminal(&'a crate::production_notes::NotesTerminalReceipt),
     NotesPreDispatchRejected(&'a crate::production_writer::NotesPreDispatchRejection),
+    NotesFenceExcluded(&'a crate::production_notes::NotesFenceProof),
     CalculatorTerminal(&'a crate::production_calculator::CalculatorTerminalReceipt),
     CalculatorPreDispatchRejected(&'a crate::production_writer::CalculatorPreDispatchRejection),
     Hos2ProtocolConflict(&'a Hos2ProtocolConflict),
@@ -2390,6 +2391,17 @@ impl LocalLeaseOutbox {
         .await
     }
 
+    pub(crate) async fn reconcile_notes_fenced_original(
+        &self,
+        proof: &crate::production_notes::NotesFenceProof,
+    ) -> Result<LocalOutcomeReceipt, LocalLeaseOutboxError> {
+        self.append_reconciliation(
+            proof.original_operation_id().to_string(),
+            ReconciliationEvidence::NotesFenceExcluded(proof),
+        )
+        .await
+    }
+
     pub(crate) async fn reconcile_calculator_terminal(
         &self,
         occurrence_key: &str,
@@ -2448,6 +2460,7 @@ impl LocalLeaseOutbox {
             ReconciliationEvidence::Hos2Terminal(receipt) => receipt.outcome(),
             ReconciliationEvidence::NotesTerminal(receipt) => receipt.outcome(),
             ReconciliationEvidence::NotesPreDispatchRejected(_) => LocalReconcileOutcome::Rejected,
+            ReconciliationEvidence::NotesFenceExcluded(_) => LocalReconcileOutcome::Rejected,
             ReconciliationEvidence::CalculatorTerminal(receipt) => receipt.outcome(),
             ReconciliationEvidence::CalculatorPreDispatchRejected(_) => {
                 LocalReconcileOutcome::Rejected
@@ -2466,6 +2479,11 @@ impl LocalLeaseOutbox {
                     LocalReconcileOutcome::Committed => {
                         ("reconcile_committed", LocalOutcomeState::Committed)
                     }
+                    LocalReconcileOutcome::Rejected
+                        if matches!(evidence, ReconciliationEvidence::NotesFenceExcluded(_)) =>
+                    {
+                        ("notes_fence_excluded", LocalOutcomeState::Rejected)
+                    }
                     LocalReconcileOutcome::Rejected => {
                         ("reconcile_rejected", LocalOutcomeState::Rejected)
                     }
@@ -2478,6 +2496,9 @@ impl LocalLeaseOutbox {
         let payload = match evidence {
             ReconciliationEvidence::NotesTerminal(receipt) => receipt.as_str().to_string(),
             ReconciliationEvidence::NotesPreDispatchRejected(proof) => proof.parts().2.to_string(),
+            ReconciliationEvidence::NotesFenceExcluded(proof) => proof
+                .settlement_json()
+                .map_err(LocalLeaseOutboxError::Invalid)?,
             ReconciliationEvidence::CalculatorTerminal(receipt) => receipt.as_str().to_string(),
             ReconciliationEvidence::CalculatorPreDispatchRejected(proof) => {
                 proof.parts().2.to_string()
@@ -2537,6 +2558,7 @@ impl LocalLeaseOutbox {
                     .map_err(LocalLeaseOutboxError::Invalid)?,
                 ReconciliationEvidence::NotesTerminal(_)
                 | ReconciliationEvidence::NotesPreDispatchRejected(_)
+                | ReconciliationEvidence::NotesFenceExcluded(_)
                 | ReconciliationEvidence::CalculatorTerminal(_)
                 | ReconciliationEvidence::CalculatorPreDispatchRejected(_) => {
                     return Err(LocalLeaseOutboxError::Invalid(
@@ -2569,6 +2591,16 @@ impl LocalLeaseOutbox {
                             "Notes pre-entry proof targets a different operation".to_string(),
                         ));
                     }
+                }
+                ReconciliationEvidence::NotesFenceExcluded(proof) => {
+                    verify_notes_fence_proof_in_transaction(
+                        &mut transaction,
+                        self,
+                        &occurrence_key,
+                        &outbox,
+                        proof,
+                    )
+                    .await?;
                 }
                 ReconciliationEvidence::General(LocalReconcileOutcome::StillIndeterminate) => {}
                 ReconciliationEvidence::General(
@@ -2617,7 +2649,8 @@ impl LocalLeaseOutbox {
                 ReconciliationEvidence::Hos2Terminal(_)
                 | ReconciliationEvidence::Hos2ProtocolConflict(_)
                 | ReconciliationEvidence::NotesTerminal(_)
-                | ReconciliationEvidence::NotesPreDispatchRejected(_) => {
+                | ReconciliationEvidence::NotesPreDispatchRejected(_)
+                | ReconciliationEvidence::NotesFenceExcluded(_) => {
                     return Err(LocalLeaseOutboxError::Invalid(
                         "another destination's evidence targets Calculator".into(),
                     ));
@@ -4531,6 +4564,9 @@ fn advance_outcome_state(
             Some(LocalOutcomeState::Queued | LocalOutcomeState::Indeterminate),
             "reconcile_rejected",
         ) => LocalOutcomeState::Rejected,
+        (Some(LocalOutcomeState::Indeterminate), "notes_fence_excluded") => {
+            LocalOutcomeState::Rejected
+        }
         (Some(LocalOutcomeState::Indeterminate), "reconcile_still_indeterminate") => {
             LocalOutcomeState::Indeterminate
         }
@@ -4800,6 +4836,66 @@ fn verify_event_outbox_pairing(
         )));
     }
     retirement_ack::verify_retirement_pairing(events, outbox_rows)?;
+    verify_notes_fence_settlement_pairing(events, outbox_rows)?;
+    Ok(())
+}
+
+fn verify_notes_fence_settlement_pairing(
+    events: &[EventRow],
+    outbox_rows: &[OutboxRow],
+) -> Result<(), LocalLeaseOutboxError> {
+    for settlement_event in events
+        .iter()
+        .filter(|event| event.kind == "notes_fence_excluded")
+    {
+        let (original_id, cancellation_id, terminal_event_id, terminal_event_sha256) =
+            crate::production_notes::fence_settlement_reference(&settlement_event.payload_json)
+                .map_err(corrupt)?;
+        if original_id != settlement_event.occurrence_key || cancellation_id == original_id {
+            return Err(corrupt(
+                "Notes fence settlement occurrence identity mismatch",
+            ));
+        }
+        let original_outbox = outbox_rows
+            .iter()
+            .find(|outbox| outbox.occurrence_key == original_id)
+            .ok_or_else(|| corrupt("Notes fence settlement original outbox is absent"))?;
+        let cancellation_outbox = outbox_rows
+            .iter()
+            .find(|outbox| outbox.occurrence_key == cancellation_id)
+            .ok_or_else(|| corrupt("Notes fence settlement cancellation outbox is absent"))?;
+        if original_outbox.topic != crate::NOTES_REPLACE_TOPIC_V1
+            || cancellation_outbox.topic != crate::NOTES_FENCE_TOPIC_V1
+        {
+            return Err(corrupt("Notes fence settlement outbox topics mismatch"));
+        }
+        let terminal_event = events
+            .iter()
+            .find(|event| {
+                event.event_id == terminal_event_id
+                    && event.occurrence_key == cancellation_id
+                    && event.kind == "reconcile_committed"
+            })
+            .ok_or_else(|| corrupt("Notes fence settlement terminal event is absent"))?;
+        if terminal_event.sequence >= settlement_event.sequence
+            || terminal_event.event_sha256.as_str() != terminal_event_sha256
+        {
+            return Err(corrupt(
+                "Notes fence settlement does not follow its exact terminal event",
+            ));
+        }
+        crate::production_notes::verify_fence_settlement(
+            &settlement_event.payload_json,
+            &original_id,
+            &original_outbox.payload_json,
+            &cancellation_id,
+            &cancellation_outbox.payload_json,
+            &terminal_event.event_id,
+            &terminal_event.event_sha256,
+            &terminal_event.payload_json,
+        )
+        .map_err(corrupt)?;
+    }
     Ok(())
 }
 
@@ -4971,6 +5067,85 @@ async fn find_transition(
         Ok(event)
     })
     .transpose()
+}
+
+async fn verify_notes_fence_proof_in_transaction(
+    transaction: &mut Transaction<'_, Sqlite>,
+    handle: &LocalLeaseOutbox,
+    original_operation_id: &str,
+    original_outbox: &OutboxRow,
+    proof: &crate::production_notes::NotesFenceProof,
+) -> Result<(), LocalLeaseOutboxError> {
+    // Verify the complete source journal and operation ledger under the same
+    // SQLite write transaction that will append the settlement.  The proof is
+    // only a non-serializable carrier; these durable rows remain authoritative.
+    handle.verify_current_in_transaction(transaction).await?;
+    if proof.original_operation_id() != original_operation_id
+        || original_outbox.topic != crate::NOTES_REPLACE_TOPIC_V1
+        || proof.cancellation_operation_id() == original_operation_id
+    {
+        return Err(LocalLeaseOutboxError::AccessDenied(
+            "Notes fence proof targets a different original operation".to_string(),
+        ));
+    }
+    let cancellation_outbox = find_outbox(
+        transaction,
+        &handle.lease_id,
+        proof.cancellation_operation_id(),
+        &handle.owner_agent_id,
+    )
+    .await?
+    .ok_or_else(|| {
+        LocalLeaseOutboxError::Invalid("Notes fence proof has no cancellation outbox".to_string())
+    })?;
+    if cancellation_outbox.topic != crate::NOTES_FENCE_TOPIC_V1 {
+        return Err(LocalLeaseOutboxError::Invalid(
+            "Notes fence proof references a non-fence operation".to_string(),
+        ));
+    }
+    let cancellation_state = current_outcome(
+        transaction,
+        &handle.lease_id,
+        proof.cancellation_operation_id(),
+        &handle.owner_agent_id,
+    )
+    .await?;
+    if cancellation_state != LocalOutcomeState::Committed {
+        return Err(LocalLeaseOutboxError::IllegalTransition(
+            "Notes cancellation is not durably committed".to_string(),
+        ));
+    }
+    let terminal = find_transition(
+        transaction,
+        &handle.lease_id,
+        proof.cancellation_operation_id(),
+        "reconcile_committed",
+        &handle.owner_agent_id,
+    )
+    .await?
+    .ok_or_else(|| corrupt("committed Notes cancellation has no terminal event"))?;
+    if terminal.event_id != proof.cancellation_terminal_event_id()
+        || terminal.event_sha256.as_str() != proof.cancellation_terminal_event_sha256()
+        || terminal.payload_json != proof.cancellation_receipt()
+    {
+        return Err(LocalLeaseOutboxError::AccessDenied(
+            "Notes fence proof differs from the committed source event".to_string(),
+        ));
+    }
+    let settlement = proof
+        .settlement_json()
+        .map_err(LocalLeaseOutboxError::Invalid)?;
+    crate::production_notes::verify_fence_settlement(
+        &settlement,
+        original_operation_id,
+        &original_outbox.payload_json,
+        proof.cancellation_operation_id(),
+        &cancellation_outbox.payload_json,
+        &terminal.event_id,
+        &terminal.event_sha256,
+        &terminal.payload_json,
+    )
+    .map_err(LocalLeaseOutboxError::Invalid)
 }
 
 async fn latest_occurrence_event(
@@ -5776,4 +5951,3 @@ pub(crate) async fn verify_local_lease_outbox(
         .map_err(crate::cognitive_store::unavailable)?;
     Ok(())
 }
-

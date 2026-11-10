@@ -15,10 +15,10 @@ use std::sync::atomic::Ordering;
 
 #[path = "production_notes_previous_tests.rs"]
 mod previous_tests;
-#[path = "production_retained_operation_tests.rs"]
-mod retained_operation_tests;
 #[path = "production_notes_read_fence_tests.rs"]
 mod read_fence_tests;
+#[path = "production_retained_operation_tests.rs"]
+mod retained_operation_tests;
 
 type TestResult<T = ()> = Result<T, Box<dyn Error>>;
 const LEASE: &str = "notes-owner-recovery-fixture";
@@ -583,7 +583,6 @@ async fn notes_queued_cancellation_remains_available_before_effect_boundary() ->
     store.close().await;
     Ok(())
 }
-
 
 #[path = "production_notes_cancellation_owner_tests.rs"]
 mod cancellation_tests;
