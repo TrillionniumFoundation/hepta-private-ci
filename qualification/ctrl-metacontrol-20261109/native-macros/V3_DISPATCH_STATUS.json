@@ -1,0 +1,45 @@
+{
+  "schema": "ndu.ctrl.native-macro-dispatch-status.v1",
+  "attempt": "V3",
+  "state": "UNKNOWN",
+  "business_job_id": null,
+  "remote_execution_observed": null,
+  "native_terminal_failure_established": false,
+  "collector_sha256": "3cde01b7256d9840804d616d8b3e42319fd6d65e9dd25c06e2b746d43e0044fa",
+  "plan_raw_sha256": "089000db0cc4b7ea8b64133c54c466f7f12d9facf618eb7498ed367f1e114243",
+  "runner_raw_sha256": "080cc02caa0b7817f0f43999125b3e3324f7b78aa384257d1b14582f417b8de5",
+  "planned_pairs": 3,
+  "planned_episodes": 6,
+  "planned_original_fit_sources": 1,
+  "declared_reserved_future_sources": 37,
+  "future_collection_submitted_by_this_attempt": false,
+  "dispatch_observations": {
+    "original_start": "MCP timeout; no durable job identity returned",
+    "same_request_reconciliation_count": 1,
+    "same_request_reconciliation": "MCP timeout; no durable job identity returned",
+    "read_only_metadata_observation": "h_view/search timed out",
+    "new_business_key_submitted": false
+  },
+  "static_diagnosis": {
+    "old_optional_memory_mode_parse_would_reject_valid_default_reset": true,
+    "this_proves_original_terminal_state": false,
+    "fix_pr": 5677,
+    "fix_commit": "361cf2730d5bc484e6fe934a93cd13ecc52bedf8",
+    "bootstrap_verify_bytes_before_execution_gap_identified": true
+  },
+  "original_frozen_files_preserved": true,
+  "next_business_attempt_authorized_before_original_terminal_reconciliation": false,
+  "private_dispatch_record": {
+    "sha256": "d1f075c1b4241536079abc92f3285c104922abecf0284d252163662bdd568f93",
+    "bytes": 2351,
+    "persistence": "verified_private_durable_backup",
+    "public_contents": "private paths, full tool arguments and operation key withheld",
+    "native_host_copy": "UNKNOWN: write MCP timeout; independent file-info not yet confirmed"
+  },
+  "actual_paired_results_available": false,
+  "policy_benefit_qualified": false,
+  "production_admission": false,
+  "qualification": "HOLD_NO_GO",
+  "private_backup_persistence": "verified_private_durable_backup",
+  "frozen_identity_scope": "declared frozen collector, plan and runner bytes; not evidence of execution"
+}
