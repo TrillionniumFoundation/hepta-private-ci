@@ -21,6 +21,7 @@ AGENT = "codex-rs/hepta-agentd/src/"
 ARTIFACTS = "codex-rs/hepta-learning-artifacts/src/"
 BRIDGE = AGENT + "neuron_cell_learning_evaluation.rs"
 READBACK = AGENT + "learning_iteration_evaluation_evidence.rs"
+GENERATION_READBACK = AGENT + "learning_iteration_generation_evidence.rs"
 CODEC = AGENT + "learning_iteration_checkpoint_codec.rs"
 PREPARE = "fn prepare_cell_learning_evaluation_v1"
 READ = "fn read_cell_learning_evaluation_v1"
@@ -28,7 +29,7 @@ CALLERS = {
     "cell_learning_evaluation_profile_freeze": (),
     "cell_learning_evaluation_receipt_prepare": (READBACK,),
     "cell_learning_evaluation_original_readback": (),
-    "learning_evidence_original_owner_readback": (READBACK,),
+    "learning_evidence_original_owner_readback": (READBACK, GENERATION_READBACK),
     "root_learning_original_stage_assembly": (),
 }
 
