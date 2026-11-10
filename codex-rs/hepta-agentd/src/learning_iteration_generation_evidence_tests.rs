@@ -434,7 +434,20 @@ async fn substituted_receipt_and_unpublished_actor_never_contact_evidence_owner(
         NeuronGenerationLearningReadErrorV1::Observation(AgentdError::GenerationFenced(_))
     ))));
     tasks.shutdown().await;
+
+    // Host shutdown deliberately does not retire the original generation
+    // service. A second service on the same host would violate its predecessor
+    // fence. Use a distinct original publication fixture for the evidence
+    // substitution cut; no test may bypass generation retirement.
+    let mut f = Fixture::new(Profile::Retained).await?;
     let mut tasks = f.start()?;
+    let observation = LearningIterationObservationV1::Selection {
+        candidate_bundle: f.coordinator.snapshot().request.selected_bundle.digest()?,
+        selection_digest: d("not an original publication"),
+    };
+    let receipt = learning_test_receipt(&f.coordinator, observation);
+    let fixture = evidence_fixture(&f, receipt.clone())?;
+    let (client, mut server) = fixture.client()?;
     assert!(matches!(read_generation_learning_stage_v1(GenerationLearningStageReadbackRequestV1 {
         runtime: &f.runtime.handle, snapshot: f.coordinator.snapshot(), receipt: &receipt,
         read: f.read(None), verifier: &f.verifier,
