@@ -452,7 +452,10 @@ class OriginalNotesSourceGuardTests(unittest.TestCase):
             "request.completed_task_receipt.to_string() != intent.completed_task_receipt.as_str()",
             "request.envelope.objective_digest.to_string() != intent.objective_digest.as_str()",
         ):
-            with self.subTest(marker=marker), self.assertRaises(MODULE.VerificationFailure):
+            with (
+                self.subTest(marker=marker),
+                self.assertRaises(MODULE.VerificationFailure),
+            ):
                 self.check_source(
                     "circuit_learning_delivery",
                     self.replace_once(marker, "false", within="fn request_digest("),
@@ -463,16 +466,23 @@ class OriginalNotesSourceGuardTests(unittest.TestCase):
             "row.request_digest.as_ref() != Some(&request_digest)",
             ".ok_or(Error::CommitUncertain)?",
         ):
-            with self.subTest(marker=marker), self.assertRaises(MODULE.VerificationFailure):
+            with (
+                self.subTest(marker=marker),
+                self.assertRaises(MODULE.VerificationFailure),
+            ):
                 self.check_source(
                     "circuit_learning_delivery",
                     self.replace_once(
-                        marker, f"/* {marker} */", within="fn retire_acknowledged_delivery("
+                        marker,
+                        f"/* {marker} */",
+                        within="fn retire_acknowledged_delivery(",
                     ),
                 )
 
     def test_ack_cleanup_unused_helper_cannot_supply_request_validation(self):
-        marker = "let request_digest = request_digest(store, request, owners, &row.intent)?;"
+        marker = (
+            "let request_digest = request_digest(store, request, owners, &row.intent)?;"
+        )
         with self.assertRaises(MODULE.VerificationFailure):
             self.check_source(
                 "circuit_learning_delivery",
