@@ -17,9 +17,9 @@ It does not qualify independent real-task scheduling benefit.
 
 `original-records.zip` retains complete SQLite journals, candidate files,
 subprocess outputs, scoped validation logs, source bodies, original CI logs and
-all four preceding preparation/diagnostic runs. `MEMBERS.json` lists all 134
+all five preceding preparation/diagnostic runs. `MEMBERS.json` lists every
 member sizes and SHA256 values. `RESULT.json` binds the archive and source.
-The final run is `smoke-sealed`; preceding runs are not independent trials or
+The final run is `smoke-exact-source`; preceding runs are not independent trials or
 extra training. Complete historical cost remains unknown, never imputed zero.
 
 Risk .5 and the perfect-channel fit panels are explicitly declared engineering
@@ -30,8 +30,10 @@ callback/caller interruption are controlled injections. Timeout uses a real
 owned child process and an actual timeout; unknown exit status stays null.
 
 Pinned Ruff formatting and F/E9 checks passed. Formatting ASTs match tested
-beforeimages; no unit suite was repeated after formatting. Scoped Codespell
-passed. Final actual subprocess execution used the formatted source. Full
+beforeimages. An additional 74-test run followed correction of local hydration
+bytes to match remote Git blobs, including the original package description.
+Twenty-four final code/config files were read back exactly. Scoped Codespell
+passed. Final subprocess execution used that exact source. Full
 package and same-head platform checks remain CI obligations.
 
 Source stack: #5568 (original roster/labels and Windows cleanup), #5584 (spelling
