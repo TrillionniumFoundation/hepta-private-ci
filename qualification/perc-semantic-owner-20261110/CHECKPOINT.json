@@ -1,0 +1,128 @@
+{
+  "schema": "perc1.publication-checkpoint.v1",
+  "baseline_commit": "72569fba94a38f7bb0628409cbb05b62fa6c9627",
+  "candidate_branch": "research/perc3-semantic-owner-20261110",
+  "scientific_status": "HOLD",
+  "candidate_adopted": false,
+  "source_publication": "PENDING_LOCAL_EXECUTION_CONNECTOR_RECOVERY",
+  "native_cell_consumption": "UNCONFIRMED_SUBMISSION",
+  "production_daemon_integrated": false,
+  "benchmark": {
+    "final_run": "full-v2",
+    "distinct_synthetic_confirmation_tasks": 30,
+    "training_seeds": [
+      1101,
+      2202,
+      3303
+    ],
+    "fits": 6,
+    "optimizer_updates": 1200,
+    "completed_encoder_calls": 432,
+    "online_completed_encoder_calls": 216,
+    "report_sha256": "b6be7681e6813bf61a9e83904ee49bbcc055caf69f70f2697357dca818a18daa",
+    "independent_real_sources": false,
+    "v2_repeats_v1_after_wire_persistence_fix": true,
+    "integrity_audit": {
+      "original_wire_receipts": 360,
+      "pca_backbone_rows": 288,
+      "quoted_source_spans": 467,
+      "equal_public_packet_task_seed_groups": 90
+    },
+    "logical_input_observations": {
+      "rules": 198,
+      "global": 257,
+      "dense": 246
+    },
+    "physical_input_file_reads": {
+      "rules": 198,
+      "global": 365,
+      "dense": 354
+    },
+    "all_attempt_costs_including_smoke_and_same_cohort_rerun": {
+      "fits": 18,
+      "optimizer_updates": 2460,
+      "completed_encoder_calls": 918
+    }
+  },
+  "owned_cli": {
+    "engineering_status": "PASS",
+    "report_sha256": "e3e13b7640fef0f77e0d5926c4a8e0ace88be60f4ed7ebcae33a2d0f0e12da9b",
+    "completed_encoder_calls": 1,
+    "backbone_features_shape": [
+      4,
+      576
+    ],
+    "replay_exact": true,
+    "cold_readback_exact": true,
+    "cold_read_after_deleting_run_owned_image_text_and_weights": true,
+    "next_task_amount": "0042.50",
+    "next_task_entity": "Hepta Labs",
+    "missing_source_failure_retained": true,
+    "failed_attempt_budget_retained": true,
+    "over_budget_no_new_reservation_or_capture": true,
+    "original_shared_weights_unchanged": true,
+    "native_wire_sha256": "a5aa87283757cfbe943d4e95e14b5962f0a501232cdbbb9ea08781abff69b3e7",
+    "native_wire_bytes": 28968,
+    "raster_rgb_sha256": "07ae47aa70fd2fb5f58a23824a1d55d8ae8b80836041173b7f6adf844f8e53cf",
+    "raster_rgb_bytes": 6912,
+    "complete_process_envelope": {
+      "wall_seconds": 4.858137091,
+      "waited_cpu_seconds": 4.711349,
+      "largest_waited_rss_bytes": 329220096
+    },
+    "acquisition_scope": "operator-pinned local file snapshots; generated engineering fixture"
+  },
+  "tests": {
+    "discovered": 127,
+    "passed": 126,
+    "skipped": 1,
+    "failures": 0,
+    "errors": 0,
+    "seconds": 21.996,
+    "skip_reason": "Existing real-document integration requires PERC_TEST_DOCUMENT_DATASET; no dataset was fabricated.",
+    "fixed_checkpoint_used": true,
+    "sources_unchanged": true,
+    "canonical_just_fmt_returncode": 0,
+    "python_ast_unchanged": true
+  },
+  "resume": {
+    "repository": "desktop:/home/qian-qi/worktrees/hepta-perc-semantic-20261110-d338",
+    "evidence": "desktop:/home/qian-qi/perc-semantic-evidence-20261110-d338",
+    "inspect_before_repeating": [
+      "review-native-v1/native-readback/RUN.json",
+      "review-native-v1/native-readback/RESULT.json",
+      "full-v2/ATTEMPT_LEDGER.json",
+      "full-v2/INTEGRITY_V2.json",
+      "full-v2/FILE_MANIFEST.json"
+    ],
+    "source_files": [
+      "scripts/perc1/__main__.py",
+      "scripts/perc1/semantic_contract.py",
+      "scripts/test_perc1_semantic_contract.py",
+      "scripts/perc1/owner.py",
+      "scripts/test_perc1_owner.py",
+      "scripts/perc1/capture_entry.py",
+      "scripts/perc1/entry.py",
+      "scripts/test_perc1_entry.py",
+      "scripts/perc1/semantic_data.py",
+      "scripts/perc1/semantic_policy.py",
+      "scripts/perc1/semantic_benchmark.py",
+      "scripts/test_perc1_semantic_benchmark.py",
+      "scripts/perc1/owned_qualification.py",
+      "scripts/perc1_native_cell_probe.py"
+    ],
+    "next_actions": [
+      "Reconcile the submitted native consume command and semantic audit metadata without rerunning model inference.",
+      "Freeze and retain complete raw evidence including failed earlier attempts.",
+      "Publish the tested source in reviewable stages and the exact evidence archive with a SHA-256-only size exception if needed.",
+      "Read back remote commit bytes and inspect CI status; do not equate this report-only checkpoint with source validation."
+    ]
+  },
+  "blocker": {
+    "kind": "MCP_INTERNAL_ERROR",
+    "code": -32603,
+    "scope": "HeptaRuntime PTY, read, file-info and health tools",
+    "permission_request_rejected": false,
+    "ambiguous_actions_not_resubmitted": true
+  }
+}
