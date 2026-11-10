@@ -306,5 +306,19 @@ class LineagePolicyTests(unittest.TestCase):
                     review_update(r, evidence(c, costs=costs))
 
 
+    def test_extreme_measured_costs_fail_closed_without_float_overflow(self):
+        r = roster()
+        c = next(cell for cell in r.cells if cell.lineage == "PRED")
+        for axis, value in (
+            ("transport_bytes", 10**400),
+            ("resident_byte_seconds", float("inf")),
+            ("provider_charges", float(2**64)),
+        ):
+            with self.subTest(axis=axis, value=repr(value)):
+                bad = dict(evidence(c).costs, **{axis: value})
+                with self.assertRaisesRegex(LineagePolicyError, "invalid measured cost"):
+                    review_update(r, evidence(c, costs=bad))
+
+
 if __name__ == "__main__":
     unittest.main()

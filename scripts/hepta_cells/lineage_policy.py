@@ -275,7 +275,15 @@ def review_update(roster: CellRoster, evidence: UpdateEvidence) -> UpdateReview:
         value = evidence.costs[axis]
         if value is None:
             missing.append(axis)
-        elif type(value) not in (float, int) or not math.isfinite(value) or value < 0:
+        elif (
+            type(value) not in (float, int)
+            or value < 0
+            or value >= 2**64
+            or (type(value) is float and not math.isfinite(value))
+        ):
+            # A Python int has arbitrary precision; math.isfinite(int) first
+            # converts it to float and can raise OverflowError. Bound numeric
+            # claims to unsigned-64-bit magnitude before any float operation.
             raise LineagePolicyError(f"invalid measured cost: {axis}")
     if evidence.evaluation_receipt_digest is None:
         missing.append("original_signed_evaluation")
