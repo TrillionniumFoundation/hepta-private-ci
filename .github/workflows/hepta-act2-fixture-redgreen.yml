@@ -23,13 +23,19 @@ jobs:
       CARGO_PROFILE_DEV_DEBUG: "0"
       NEXTEST_TEST_THREADS: "2"
       CARGO_NET_GIT_FETCH_WITH_CLI: "true"
-      ACT2_FIXTURE_WORK: ${{ runner.temp }}/act2-fixture-redgreen
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ github.sha }}
           fetch-depth: 1
           persist-credentials: false
+      - name: Initialize bounded evidence root
+        shell: bash
+        run: |
+          set -euo pipefail
+          work="$RUNNER_TEMP/act2-fixture-redgreen"
+          mkdir "$work"
+          echo "ACT2_FIXTURE_WORK=$work" >> "$GITHUB_ENV"
       - uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489
         with:
           components: rustfmt,clippy
@@ -54,14 +60,6 @@ jobs:
           cargo --version
           just --version
           cargo nextest --version
-          python3 - <<'PY'
-          import os
-          from pathlib import Path
-          work = Path(os.environ["ACT2_FIXTURE_WORK"])
-          if work.parent.resolve(strict=True) != Path(os.environ["RUNNER_TEMP"]).resolve(strict=True):
-              raise SystemExit("evidence root escaped RUNNER_TEMP")
-          work.mkdir()
-          PY
       - name: Run baseline canonical, baseline alias and repaired alias cases
         run: |
           python3 scripts/hepta_act2_fixture_redgreen.py \
