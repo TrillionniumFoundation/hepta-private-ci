@@ -463,3 +463,102 @@ fn scalar_projection_is_declared_different_from_matched_shuffled_control() {
     assert_eq!(scalar.group_deltas[1].delta_q24, Q / 16);
     assert_ne!(scalar, routed);
 }
+
+#[test]
+fn online_prefix_denies_future_receipt_even_though_retrospective_math_is_zero() {
+    let mut cutoff = contract();
+    cutoff.cutoff_sequence = 2;
+    let a = actions();
+    let f = feedback();
+    let g = groups();
+    let retrospect = good(credit(&a, &f, &g, cutoff, TemporalCreditArmV1::Routed));
+    assert_eq!(retrospect.withheld_future_feedback_count, 2);
+    assert_eq!(retrospect.matched_feedback_count, 0);
+    assert!(
+        retrospect
+            .group_deltas
+            .iter()
+            .all(|delta| delta.delta_q24 == 0)
+    );
+
+    // This receipt can NOT be passed into the online training path at t=2.
+    assert_eq!(
+        accumulate_temporal_credit_q24_online_prefix(
+            &a,
+            &f,
+            &g,
+            cutoff,
+            TemporalCreditArmV1::Routed,
+        ),
+        Err(TemporalCreditError::FutureFeedbackNotAvailable)
+    );
+
+    // No observed feedback at t=2 is an explicit no-update numerical input.
+    let prefix = good(accumulate_temporal_credit_q24_online_prefix(
+        &a,
+        &[],
+        &g,
+        cutoff,
+        TemporalCreditArmV1::Routed,
+    ));
+    assert_eq!(prefix.matched_feedback_count, 0);
+    assert_eq!(prefix.unobserved_action_count, a.len() as u32);
+    assert_eq!(prefix.withheld_future_feedback_count, 0);
+    assert!(prefix.group_deltas.iter().all(|delta| delta.delta_q24 == 0));
+    assert!(!prefix.authority.grants_any());
+    assert_ne!(prefix.transcript_digest, retrospect.transcript_digest);
+}
+
+#[test]
+fn online_prefix_has_exact_parity_for_already_available_training_feedback() {
+    let a = actions();
+    let f = feedback();
+    let g = groups();
+    let contract = contract();
+    for arm in [
+        TemporalCreditArmV1::Routed,
+        TemporalCreditArmV1::Shuffled,
+        TemporalCreditArmV1::Scalar,
+        TemporalCreditArmV1::NoEligibility,
+    ] {
+        let online = good(accumulate_temporal_credit_q24_online_prefix(
+            &a, &f, &g, contract, arm,
+        ));
+        let retrospective = good(credit(&a, &f, &g, contract, arm));
+        assert_eq!(online, retrospective);
+        assert!(!online.authority.grants_any());
+    }
+}
+
+#[test]
+fn online_prefix_denies_single_future_receipt_mixed_with_valid_earlier_data() {
+    let a = actions();
+    let mut f = feedback();
+    let g = groups();
+    // First action was observed on time; second has not yet arrived.
+    let mut cutoff = contract();
+    cutoff.cutoff_sequence = 4;
+    assert_eq!(
+        accumulate_temporal_credit_q24_online_prefix(
+            &a,
+            &f,
+            &g,
+            cutoff,
+            TemporalCreditArmV1::Routed,
+        ),
+        Err(TemporalCreditError::FutureFeedbackNotAvailable)
+    );
+    f.retain(|receipt| receipt.available_sequence <= cutoff.cutoff_sequence);
+    let prefix = good(accumulate_temporal_credit_q24_online_prefix(
+        &a,
+        &f,
+        &g,
+        cutoff,
+        TemporalCreditArmV1::Routed,
+    ));
+    assert_eq!(prefix.matched_feedback_count, 1);
+    assert_eq!(prefix.unobserved_action_count, 1);
+    assert_eq!(prefix.group_deltas[0].delta_q24, Q / 8);
+    assert_eq!(prefix.group_deltas[1].delta_q24, 0);
+    assert!(!prefix.authority.grants_any());
+}

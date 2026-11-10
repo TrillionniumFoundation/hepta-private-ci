@@ -107,6 +107,8 @@ pub enum TemporalCreditError {
     UnknownAction,
     FutureAction,
     FeedbackBeforeAction,
+    /// The online training input contains a receipt not yet visible at cutoff.
+    FutureFeedbackNotAvailable,
     FrozenEvaluationLeak,
     OwnerOrModelDrift,
     SourceOrCheckpointDrift,
@@ -159,6 +161,34 @@ fn decay_power_q24(mut base: i64, mut exponent: u64) -> Result<i64, TemporalCred
         }
     }
     Ok(result)
+}
+
+/// Online/prefix-safe numerical research comparator.
+///
+/// Callers constructing a training-time proposal may pass ONLY feedback that
+/// was already available at the cutoff sequence. The retrospective comparator
+/// below intentionally accepts future receipts for censoring diagnostics and
+/// reports withheld_future_feedback_count; that retrospective transcript
+/// depends on the presence and metadata of future receipts even though its
+/// numerical deltas do not. It MUST NOT be used as an online decision input.
+///
+/// This is only a declared availability fence. The actual owner must
+/// authenticate arrival time, action/source/feedback receipts and snapshot
+/// provenance. Successful return never grants adopt/update authority.
+pub fn accumulate_temporal_credit_q24_online_prefix(
+    actions: &[TemporalEligibilityActionV1],
+    feedback: &[TemporalFeedbackV1],
+    parameter_groups: &[ParameterGroupMapV1],
+    contract: TemporalCreditContractV1,
+    arm: TemporalCreditArmV1,
+) -> Result<TemporalCreditReceiptV1, TemporalCreditError> {
+    if feedback
+        .iter()
+        .any(|receipt| receipt.available_sequence > contract.cutoff_sequence)
+    {
+        return Err(TemporalCreditError::FutureFeedbackNotAvailable);
+    }
+    accumulate_temporal_credit_q24(actions, feedback, parameter_groups, contract, arm)
 }
 
 /// Pure read-only reference. Group order and action/feedback order are canonical.

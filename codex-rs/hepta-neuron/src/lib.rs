@@ -49,7 +49,7 @@ pub use plasticity::accumulate_plasticity;
 pub use plasticity::{
     TemporalCreditArmV1, TemporalCreditContractV1, TemporalCreditError, TemporalCreditReceiptV1,
     TemporalEligibilityActionV1, TemporalFeedbackV1, TemporalGroupDeltaV1, TemporalSplitV1,
-    accumulate_temporal_credit_q24,
+    accumulate_temporal_credit_q24, accumulate_temporal_credit_q24_online_prefix,
 };
 pub use population_v2::ActivationPopulationV2;
 pub use population_v2::PopulationSparseCheckpointV2;

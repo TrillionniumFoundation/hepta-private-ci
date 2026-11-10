@@ -16,6 +16,17 @@ region; it binds declared source receipt, checkpoint, model, owner scope,
 generation and logical action identity to each feedback record. It rejects
 future action credit, evaluation-split labels, duplicates, stale identity and
 feedback that precedes its action. It reports missing/late feedback separately.
+**Online-prefix fence (separate API):**
+accumulate_temporal_credit_q24_online_prefix rejects any supplied feedback
+with a declared arrival sequence later than the frozen training cutoff, even
+when the retrospective math would have withheld its numerical delta. The
+retrospective receipt reports future-feedback counts and includes future
+metadata in its transcript digest: it is **not** a permissible online training
+or adoption input. At cutoff, absent feedback is omitted and remains
+unobserved, never imputed as zero reward/success; the numerical proposal has
+no update authority. This fence validates only self-declared logical times,
+not honest arrival, effect authenticity, model provenance, or an owner signature.
+
 It does **not** authenticate those declarations against a real source/owner
 or run a native trained Head. Any apparent owner field is untrusted until
 an independent verifier validates real receipts. No candidate is adopted.
