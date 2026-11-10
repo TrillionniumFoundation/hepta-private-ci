@@ -37,10 +37,12 @@ def inspect(manifest: Path) -> dict:
         record = record if isinstance(record, dict) else {}
     if not isinstance(record.get('source_head'), str) or not HEX40.fullmatch(record['source_head']):
         fail('source_head')
-    ids = [record.get(field) for field in ('operation_id', 'source_task_id', 'next_task_id')]
+    ids = [record.get(field) for field in ('operation_id', 'next_operation_id', 'source_task_id', 'next_task_id')]
     if any(not isinstance(x, str) or not x or len(x) > 160 for x in ids):
         fail('operation_or_task_id')
-    if ids[1] == ids[2]:
+    if ids[0] == ids[1]:
+        fail('next_operation_not_distinct')
+    if ids[2] == ids[3]:
         fail('next_task_not_distinct')
     baseline, chosen = record.get('baseline_bundle'), record.get('selected_bundle')
     if any(not isinstance(x, str) or not HEX64.fullmatch(x) for x in (baseline, chosen)):
@@ -100,9 +102,12 @@ def inspect(manifest: Path) -> dict:
                 checks += 1
         except (OSError, ValueError):
             fail(f'receipt_unreadable:{stage}')
-        if entry.get('operation_id') != ids[0]:
+        expected_operation = ids[1] if stage == 'next_use' else ids[0]
+        if entry.get('operation_id') != expected_operation:
             fail(f'foreign_operation:{stage}')
-        expected_task = ids[2] if stage == 'next_use' else ids[1]
+        if stage == 'next_use' and entry.get('learning_operation_id') != ids[0]:
+            fail('next_use_unbound_to_learning')
+        expected_task = ids[3] if stage == 'next_use' else ids[2]
         if entry.get('task_id') != expected_task:
             fail(f'foreign_task:{stage}')
         if stage in ('published_current', 'final_use', 'next_use') and entry.get('bundle_sha256') != chosen:
