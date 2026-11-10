@@ -34,7 +34,7 @@ jobs:
           components: rustfmt,clippy
       - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
         with:
-          tool: just@1.51.0,nextest@0.9.103
+          tool: just@1.51.0,nextest@0.9.103,uv@0.9.26
       - name: Resolve the two exact source identities
         shell: bash
         run: |
@@ -44,6 +44,7 @@ jobs:
           git config --global credential.helper '!gh auth git-credential'
           git fetch --no-tags --depth=2 origin 8bebf0a3c207a49bfd0a99367fd6e06f52a6cb98
           git cat-file -e 8b1c1789916514471c6cacdf0f6c45467255fef9^{commit}
+          git fetch --no-tags --depth=1 origin 631e99f78898543e8dc1e8671632baf73945940e
           rustc --version --verbose
           cargo --version
           just --version
@@ -60,6 +61,17 @@ jobs:
         run: |
           python3 scripts/hepta_act2_fixture_redgreen.py \
             --repository "$GITHUB_WORKSPACE" --work-root "$ACT2_FIXTURE_WORK"
+      - name: Format the qualification driver with its owning Python tool
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$ACT2_FIXTURE_WORK/records"
+          uv --version > "$ACT2_FIXTURE_WORK/records/uv-version.txt"
+          just fmt --base 631e99f78898543e8dc1e8671632baf73945940e \
+            > "$ACT2_FIXTURE_WORK/records/driver-formatter.log" 2>&1
+          git diff --binary > "$ACT2_FIXTURE_WORK/records/driver-format.patch"
+          cp scripts/hepta_act2_fixture_redgreen.py "$ACT2_FIXTURE_WORK/records/formatted-driver.py"
       - name: Run scoped fix and final official formatting after the contrast
         shell: bash
         run: |
