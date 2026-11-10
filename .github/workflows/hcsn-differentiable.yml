@@ -118,14 +118,20 @@ jobs:
             --output "$RUNNER_TEMP/hcsn-differentiable/error-budget.json" 2>&1 \
             | tee "$RUNNER_TEMP/hcsn-differentiable/error-budget.log"
 
-      - name: Verify historical evidence integrity and current links
+      - name: Verify historical and current evidence integrity and links
         id: evidence
         if: ${{ !cancelled() && steps.runtime.outcome == 'success' }}
         run: |
           python -m qualification.hcsn_differentiable.evidence_chain \
+            --manifest qualification/hcsn_differentiable/evidence/p0p5-20261110/MANIFEST.json \
+            --manifest qualification/hcsn_differentiable/evidence/p0p5-followup-20261110/MANIFEST.json \
             --manifest qualification/hcsn_differentiable/evidence/localization-v2-20261108/MANIFEST.json \
             --manifest qualification/hcsn_differentiable/evidence/math-closure-20261108/MANIFEST.json \
             --markdown qualification/hcsn_differentiable/CURRENT.md \
+            --markdown qualification/hcsn_differentiable/evidence/p0p5-20261110/README.md \
+            --markdown qualification/hcsn_differentiable/evidence/p0p5-followup-20261110/README.md \
+            --markdown qualification/hcsn_differentiable/evidence/p0p5-20261110/p1/width16-v6/INDEX.md \
+            --markdown proposals/localization-v3/README.md \
             --output "$RUNNER_TEMP/hcsn-differentiable/evidence-integrity.json"
 
       - name: Check the independent finite DP and QVI oracle
