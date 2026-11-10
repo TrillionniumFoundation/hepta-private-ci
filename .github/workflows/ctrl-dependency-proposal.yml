@@ -18,7 +18,6 @@ concurrency:
 
 env:
   PYTHONDONTWRITEBYTECODE: "1"
-  CANDIDATE_LOGS: ${{ runner.temp }}/ctrl-dependency-proposal
 
 jobs:
   candidate:
@@ -30,6 +29,9 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 16
           persist-credentials: false
+
+      - name: Bind external evidence directory on the actual runner
+        run: echo "CANDIDATE_LOGS=$RUNNER_TEMP/ctrl-dependency-proposal" >> "$GITHUB_ENV"
 
       - uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489
 
@@ -114,6 +116,7 @@ jobs:
           DENY: ${{ steps.deny.outcome }}
         run: |
           set -euo pipefail
+          export CANDIDATE_LOGS="${CANDIDATE_LOGS:-$RUNNER_TEMP/ctrl-dependency-proposal}"
           mkdir -p "$CANDIDATE_LOGS"
           git add -N codex-rs/third_party/sqlx-sqlite-0.9.0 || true
           git diff --binary --full-index HEAD > "$CANDIDATE_LOGS/candidate.patch"

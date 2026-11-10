@@ -31,3 +31,8 @@ new Python files in an isolated checkout with the original formatter and locked
 project; source bytes were unchanged. Prettier, YAML, action pins and Bash syntax
 also passed. No Cargo resolution, patched build or security qualification is
 claimed by those preparation tests; the actual workflow must establish them.
+
+The first workflow validation attempt (`42776575326`, zero jobs) is retained as
+a failure. Its runner-only temporary path was incorrectly placed in global
+workflow env. The follow-up binds it inside an actual runner step; no dependency
+calculation or test ran during that first rejected attempt.
