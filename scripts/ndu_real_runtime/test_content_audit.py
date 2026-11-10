@@ -237,6 +237,12 @@ class ContentAuditTests(unittest.TestCase):
                     report["episodes"][0]["rows"][0]["first_observed_discrepancy"],
                     expected,
                 )
+                if fault == "wire":
+                    self.assertIsNone(
+                        report["episodes"][0]["rows"][0][
+                            "posthoc_reference_diagnostic"
+                        ]["content_failure_present_at_actor_payload"]
+                    )
 
     def test_failed_or_unisolated_launch_cannot_prove_selected_used(self):
         for fault in ("exit", "isolation", "boolean"):
@@ -251,6 +257,11 @@ class ContentAuditTests(unittest.TestCase):
                 self.assertIsNone(row["selected_used"])
                 self.assertEqual(
                     row["first_observed_discrepancy"], "isolated_actor_completed"
+                )
+                self.assertIsNone(
+                    row["posthoc_reference_diagnostic"][
+                        "content_failure_present_at_actor_payload"
+                    ]
                 )
 
     def test_current_witness_is_distinct_from_legacy_and_tampered_input_is_rejected(

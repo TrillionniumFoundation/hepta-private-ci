@@ -187,7 +187,11 @@ def _episode(root, entry, manifest, total):
                 "delivery_reference_match": delivered_match,
                 "scorer_text_quality_matches_normalizer": scorer_matches,
                 "content_failure_present_at_actor_payload": not action_match
-                if wire_receipts and wire_binding
+                if (
+                    checks["isolated_actor_completed"]
+                    and checks["raw_actor_wire_receipt"]
+                    and checks["wire_to_trajectory"]
+                )
                 else None,
             }
         failures = [name for name, passed in checks.items() if passed is False]
