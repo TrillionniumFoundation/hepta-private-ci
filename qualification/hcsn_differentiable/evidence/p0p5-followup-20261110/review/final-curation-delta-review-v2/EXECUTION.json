@@ -1,0 +1,77 @@
+{
+  "argv": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-B",
+    "/workspace/scratch/c385a7439f8e/final-curation-delta-review-v2/review_delta.py",
+    "--repository",
+    "/workspace/scratch/c385a7439f8e/hcsn-repo",
+    "--expected-manifest-sha256",
+    "bc8721b37d4a69c28a25a028dd6375ebbeaaa41111bafc97a22b7239609f5bc6",
+    "--bindings",
+    "/workspace/scratch/c385a7439f8e/final-curation-delta-review-v2/bindings.json",
+    "--output",
+    "/workspace/scratch/c385a7439f8e/final-curation-delta-review-v2/execution"
+  ],
+  "finished_utc": "2026-11-10T18:49:47.171253+00:00",
+  "native_runtime_reobserved": false,
+  "numerical_oracle_rerun": false,
+  "returncode": 0,
+  "schema": "independent-final-curation-delta-execution-v2",
+  "source_after": {
+    "/workspace/scratch/c385a7439f8e/final-curation-delta-review-v2/bindings.json": {
+      "bytes": 74261,
+      "sha256": "bb16c99cae45400c1b029bede4abbe16fa6e545976e8c807ddafd0ec649b281d"
+    },
+    "/workspace/scratch/c385a7439f8e/final-curation-delta-review-v2/build_bindings.py": {
+      "bytes": 11478,
+      "sha256": "52dd3ec8a0402e71f97a82420743670508ed78c2ff72fed359785ecb82d4bc01"
+    },
+    "/workspace/scratch/c385a7439f8e/final-curation-delta-review-v2/review_delta.py": {
+      "bytes": 9433,
+      "sha256": "64a423de18d6c8c26736fe115f01b2f9731c84a6a689250d652680578b41f487"
+    },
+    "/workspace/scratch/c385a7439f8e/final-curation-delta-review-v2/run_once.py": {
+      "bytes": 2136,
+      "sha256": "14accbfec30bba367209897d34fd4fca0ea62c7b993b45ac51464e203d510efe"
+    },
+    "/workspace/scratch/c385a7439f8e/final-curation-independent-review-v1/review_final_curation_v1.py": {
+      "bytes": 14392,
+      "sha256": "d6326f10d24e1d160e8e6c73259d5eedf810012936595024379dc66038fc3fa5"
+    }
+  },
+  "source_before": {
+    "/workspace/scratch/c385a7439f8e/final-curation-delta-review-v2/bindings.json": {
+      "bytes": 74261,
+      "sha256": "bb16c99cae45400c1b029bede4abbe16fa6e545976e8c807ddafd0ec649b281d"
+    },
+    "/workspace/scratch/c385a7439f8e/final-curation-delta-review-v2/build_bindings.py": {
+      "bytes": 11478,
+      "sha256": "52dd3ec8a0402e71f97a82420743670508ed78c2ff72fed359785ecb82d4bc01"
+    },
+    "/workspace/scratch/c385a7439f8e/final-curation-delta-review-v2/review_delta.py": {
+      "bytes": 9433,
+      "sha256": "64a423de18d6c8c26736fe115f01b2f9731c84a6a689250d652680578b41f487"
+    },
+    "/workspace/scratch/c385a7439f8e/final-curation-delta-review-v2/run_once.py": {
+      "bytes": 2136,
+      "sha256": "14accbfec30bba367209897d34fd4fca0ea62c7b993b45ac51464e203d510efe"
+    },
+    "/workspace/scratch/c385a7439f8e/final-curation-independent-review-v1/review_final_curation_v1.py": {
+      "bytes": 14392,
+      "sha256": "d6326f10d24e1d160e8e6c73259d5eedf810012936595024379dc66038fc3fa5"
+    }
+  },
+  "sources_unchanged": true,
+  "started_utc": "2026-11-10T18:49:46.620928+00:00",
+  "stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "stdout": {
+    "bytes": 597,
+    "sha256": "ba67594d8446cfafe7feaab902075cb91074c4695fd9b992e5970f47b05f844a"
+  },
+  "training_performed": false,
+  "waited_child_cpu_seconds": 0.49149999999999994,
+  "whole_waited_process_wall_seconds": 0.550129093000578
+}
