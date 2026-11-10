@@ -165,3 +165,6 @@ async fn public_constructor_refuses_the_daemons_own_uid_before_any_request() -> 
 
 #[path = "learning_iteration_evidence_root_tests.rs"]
 mod root;
+
+#[path = "learning_iteration_generation_evidence_tests.rs"]
+mod generation;
