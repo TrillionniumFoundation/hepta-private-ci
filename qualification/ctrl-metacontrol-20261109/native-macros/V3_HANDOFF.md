@@ -27,3 +27,26 @@ still UNKNOWN: both the write and independent file-info returned MCP timeout
 full tool arguments and the operation key.
 No actual paired outcome, scientific gain or production qualification follows
 from the dispatch attempt or the static diagnoses.
+
+## Later read-only native reconciliation (2026-11-10)
+
+The earlier write and independent file-info **timeouts remain in the historical
+record**. A later, successful native-host `file_info` observed a regular
+**2,351-byte**, **0600** file with the exact SHA-256 already recorded above.
+A separate native `read_multiple_files` call returned the complete contents
+with that same hash and size. This upgrades **the native private backup copy**
+from unverified to read-back verified; no private path, operation key, argument
+body or transport internals are published.
+
+After recovering the original argument object from the verified copy, an
+additional `h_shell_start` invocation used **that exact original
+idempotency key and arguments**, not a new business request. The tool returned
+an internal failure and no durable job ID. A read-only `file_info` lookup of
+the designated V3 collection-result path reported no such file at that
+observation. Neither observation establishes that the original operation
+never executed, nor that it terminated or produced any external effect.
+
+Thus the **original V3 business status remains UNKNOWN**, with zero accepted
+paired results. Do not retry under a new key, relabel the original request,
+touch reserved future sources or enable FinalUse. The default-reset parser fix
+and a future exact-bytes bootstrap remain separate from this original attempt.
