@@ -25,7 +25,7 @@ from .episodic_receipt import (
     STRATEGIES,
     assemble_context,
     hashlib_sha,
-    verify_read_receipt,
+    verify_read_receipt as verify_read_receipt,
 )
 
 
@@ -130,6 +130,12 @@ def read_memory(
     delivery_off performs retrieval/association but emits no actor content;
     association_off skips only the supplied association callback. A missing
     callback is explicitly unavailable, and is not a neural-head ablation.
+
+    Before returning selected content, recheck the live authority after ranking.
+    That last read is the call's linearization point: an intervening update,
+    revocation or scope change aborts delivery rather than returning stale facts.
+    It does not fence a later external effect or invalidate already returned
+    context; an effect owner must obtain its own current authorization.
     """
     wall, cpu = time.perf_counter(), time.process_time()
     bounded_text(session_id, "session id")
@@ -150,6 +156,8 @@ def read_memory(
         bounded_text(source, "source id")
     if len(set(source_ids)) != len(source_ids):
         raise ValueError("duplicate source id")
+    # A ranking callback must not change this call's original source admission.
+    source_ids = tuple(source_ids)
     integer(limit, "retrieval limit", 1, 128)
     integer(max_context_bytes, "context byte bound", 0, 65536)
     integer(seed, "replay seed", 0, 2**63 - 1)
@@ -196,6 +204,7 @@ def read_memory(
     }
     selected, delivered, context = [], [], ""
     if mode != "off":
+        namespace, authority_path = store.namespace, store.path
         view = store.view(snapshot_path=snapshot_path)
         receipt.update(store_read=True, view_receipt=view["receipt"])
         records, dependency_rejections = authorized_source_closure(
@@ -235,6 +244,36 @@ def read_memory(
                 receipt.update(association_status="applied", association_called=True)
             receipt["selected_ids"] = [r["record_id"] for r in selected]
             if mode != "delivery_off":
+                if selected:
+                    if store.namespace != namespace or store.path != authority_path:
+                        raise ValueError(
+                            "memory authority changed before context delivery"
+                        )
+                    current = store.view()
+                    authorized, _ = authorized_source_closure(
+                        current["records"], source_ids
+                    )
+                    by_id = {r["record_id"]: r for r in authorized}
+                    if (
+                        store.namespace != namespace
+                        or store.path != authority_path
+                        or any(
+                            current["receipt"][field] != view["receipt"][field]
+                            for field in (
+                                "authority_id",
+                                "authority_generation",
+                                "frontier_sha256",
+                            )
+                        )
+                        or any(
+                            r["namespace"] != namespace
+                            or by_id.get(r["record_id"]) != r
+                            for r in selected
+                        )
+                    ):
+                        raise ValueError(
+                            "memory authority changed before context delivery"
+                        )
                 context, delivered, dropped = assemble_context(
                     selected, max_context_bytes
                 )

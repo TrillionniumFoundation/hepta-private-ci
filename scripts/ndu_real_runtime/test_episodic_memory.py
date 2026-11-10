@@ -194,6 +194,100 @@ class EpisodicMemoryTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.store.view(snapshot)
 
+    def test_redigested_snapshot_cannot_move_records_before_their_write(self):
+        fact = self.put("fact", "Known")
+        snapshot = self.root / "snapshot.json"
+        self.store.export_snapshot(snapshot)
+        original = json.loads(snapshot.read_text())
+        before = self.store.view()
+        for mutation in ("generation", "write_sequence", "version"):
+            with self.subTest(mutation=mutation):
+                envelope = json.loads(json.dumps(original))
+                if mutation == "generation":
+                    envelope["body"]["generation"] = 0
+                else:
+                    record = envelope["body"]["records"][0]
+                    record[mutation] = 2
+                    record["record_id"] = digest(
+                        {
+                            key: value
+                            for key, value in record.items()
+                            if key != "record_id"
+                        }
+                    )
+                envelope["sha256"] = digest(envelope["body"])
+                snapshot.write_text(json.dumps(envelope))
+                with self.assertRaises(ValueError):
+                    self.store.view(snapshot)
+                self.assertEqual(self.store.view(), before)
+        # The true old snapshot remains a legal read after unrelated writes.
+        snapshot.write_text(json.dumps(original))
+        self.put("other", "Later value")
+        self.assertEqual(self.store.view(snapshot)["records"], [fact])
+
+    def test_redigested_snapshot_requires_a_consistent_historical_roster(self):
+        root = self.put("fact", "Known")
+        self.put("derived", "Derived known", [root["record_id"]])
+        snapshot = self.root / "snapshot.json"
+        self.store.export_snapshot(snapshot)
+        original = json.loads(snapshot.read_text())
+        before = self.store.view()
+        for mutation in (
+            "namespace",
+            "duplicate_slot",
+            "missing_dependency",
+            "dependency_order",
+        ):
+            with self.subTest(mutation=mutation):
+                envelope = json.loads(json.dumps(original))
+                records = envelope["body"]["records"]
+                if mutation == "missing_dependency":
+                    records.pop(0)
+                elif mutation == "duplicate_slot":
+                    # A snapshot cannot contain two versions of one logical fact.
+                    replacement = dict(records[0], version=2, write_sequence=2)
+                    replacement["record_id"] = digest(
+                        {
+                            key: value
+                            for key, value in replacement.items()
+                            if key != "record_id"
+                        }
+                    )
+                    records.append(replacement)
+                else:
+                    record = records[0] if mutation == "namespace" else records[1]
+                    record[
+                        "namespace" if mutation == "namespace" else "write_sequence"
+                    ] = "team-b" if mutation == "namespace" else root["write_sequence"]
+                    record["record_id"] = digest(
+                        {
+                            key: value
+                            for key, value in record.items()
+                            if key != "record_id"
+                        }
+                    )
+                envelope["sha256"] = digest(envelope["body"])
+                snapshot.write_text(json.dumps(envelope))
+                with self.assertRaises(ValueError):
+                    self.store.view(snapshot)
+                self.assertEqual(self.store.view(), before)
+
+    def test_empty_snapshot_and_valid_old_dependency_chain_remain_readable(self):
+        empty = self.root / "empty.json"
+        self.store.export_snapshot(empty)
+        self.assertEqual(self.store.view(empty)["records"], [])
+        first = self.put("fact", "Known")
+        second = self.put("derived", "Derived known", [first["record_id"]])
+        snapshot = self.root / "old-chain.json"
+        self.store.export_snapshot(snapshot)
+        self.put("later", "Later fact")
+        self.assertEqual(self.store.view(empty)["records"], [])
+        self.assertEqual(self.store.view(snapshot)["records"], [first, second])
+        self.store.revoke("source-a", "fact")
+        stale = self.store.view(snapshot)
+        self.assertEqual(stale["records"], [])
+        self.assertEqual(stale["receipt"]["snapshot_rejections"], 2)
+
     def test_update_cannot_create_an_indirect_dependency_cycle(self):
         fact = self.put("a", "A")
         dependent = self.put("b", "B", [fact["record_id"]])
