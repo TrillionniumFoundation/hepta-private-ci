@@ -3242,6 +3242,7 @@ required = ["struct PublishedTask", "original: Mutex<Box<dyn OriginalVersion>>",
 forbidden = ["SigningKey", ".sign(", "File::open", "UnixStream::connect", "pub original:", "pub publication:", "pub current:", "pub binding:", "unwrap_or", "permit_all"]
 required_order = [
   ["fn from_update<", "original.previous() != &previous.binding", "previous.manifest.digest()", "previous.receipt.checkpoint_after != previous.source.checkpoint_digest()", "old.scope.run_id == source.scope.run_id || old.observation == source.observation", "Self::from_parts(journal, Publication::Update"],
+  ["fn require_current(&self) -> Result<(), AgentdError> {\n        self.0.current.check_current", "self.0.publication.target()", "self.0.original.lock().map_err(invalid)?.require_current()?", "self.0.current.check_current(self.0.publication.target())"],
   ["fn from_parts<", "journal.owner_binding() != Some(target)", "target.task_digest() != circuit_feature_task_digest_v1(", "target.source_frontier() != source.source_frontier.into_array()", "manifest.profile != crate::CellQ24GenerationWorkerV1::PROFILE", "manifest.bundle_digest != definition.bundle_digest.into_array()", "current.check_current(target)", "original: Mutex::new(Box::new(journal))", "result.require_current()?"],
   ["fn open_cell<", "self.require_current()?", "!(3..=16).contains(&max_records)", "CellOwnerJournalV1::open_guarded(", "max_records, target.clone(), current", "self.require_current()?", "PublishedCircuitCellOwnerV1::new(journal, self.clone())"],
 ]
