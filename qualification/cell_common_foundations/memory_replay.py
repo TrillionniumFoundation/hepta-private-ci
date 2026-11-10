@@ -142,7 +142,7 @@ class ReplayPool:
         self.versions[source] = version
         self.items = [e for e in self.items if self.versions[e.source] == e.version]
 
-    def select(self, policy, entry_budget=1, timestep_budget=8):
+    def select(self, policy, entry_budget=1, timestep_budget=8, *, audit=False):
         if (
             policy not in POLICIES
             or type(entry_budget) is not int
@@ -155,6 +155,9 @@ class ReplayPool:
             or self.calls >= 4096
         ):
             raise ValueError("selection budget exhausted or invalid")
+        if type(audit) is not bool:
+            raise ValueError("audit flag must be boolean")
+        rng_before = canonical_digest(self.rng.bit_generator.state) if audit else None
         kind = "error" if policy == "error_prioritized" else policy
         candidates = [e for e in self.items if policy == "uniform" or e.kind == kind]
         if policy == "none":
@@ -176,7 +179,47 @@ class ReplayPool:
             a.nbytes for e in selected for a in e.arrays()
         )
         self.distinct.update(e.item_id for e in selected)
-        return selected
+        if not audit:
+            return selected
+        # Capture the *eligible, ordered pool at decision time*, not the final
+        # checkpoint (which may have evicted old-priority observations).
+        # This is a local consistency receipt, not an authenticated owner proof.
+        candidates_at_selection = [
+            {
+                "item_id": e.item_id,
+                "scope": e.scope,
+                "source": e.source,
+                "version": e.version,
+                "split": e.split,
+                "kind": e.kind,
+                "priority": float(e.priority),
+                "timesteps": len(e.episode[0]),
+                "payload_digest": canonical_digest(e.payload()),
+            }
+            for e in candidates
+        ]
+        receipt = {
+            "schema": "hepta.replay-selection-audit.v1",
+            "policy": policy,
+            "scope": self.scope,
+            "versions": dict(self.versions),
+            "selection_index": self.calls,
+            "entry_budget": entry_budget,
+            "timestep_budget": timestep_budget,
+            "rng_before_digest": rng_before,
+            "rng_after_digest": canonical_digest(self.rng.bit_generator.state),
+            "ordered_candidates": candidates_at_selection,
+            "selected_ids": [e.item_id for e in selected],
+            "eligible_candidate_reads": len(candidates),
+            "priority_value_reads": (
+                len(candidates) if policy == "error_prioritized" else 0
+            ),
+            "candidate_payload_digests_computed": len(candidates),
+            "decision_timesteps": steps,
+            "authority": "SYNTHETIC_CONSISTENCY_ONLY",
+        }
+        receipt["digest"] = canonical_digest(receipt)
+        return selected, receipt
 
     def checkpoint(self):
         p = {
@@ -229,6 +272,81 @@ class ReplayPool:
         pool.distinct = set(p["distinct"])
         pool.rng.bit_generator.state = p["rng"]
         return pool
+
+
+def verify_priority_selection_audit(receipt):
+    """Recheck one historical priority decision without a current replay pool.
+
+    This proves internal order/selection consistency for recorded candidate
+    priorities. It does *not* establish that priorities came from real observed
+    losses, that the candidate list was exhaustive, or owner authentication.
+    """
+    if not isinstance(receipt, dict) or receipt.get("policy") != "error_prioritized":
+        raise ValueError("only priority audit receipts support this verification")
+    payload = {key: value for key, value in receipt.items() if key != "digest"}
+    if receipt.get("digest") != canonical_digest(payload):
+        raise ValueError("priority audit digest mismatch")
+    if (
+        receipt.get("schema") != "hepta.replay-selection-audit.v1"
+        or receipt.get("authority") != "SYNTHETIC_CONSISTENCY_ONLY"
+        or not isinstance(receipt.get("scope"), str)
+        or not receipt["scope"]
+        or type(receipt.get("selection_index")) is not int
+        or not 1 <= receipt["selection_index"] <= 4096
+        or type(receipt.get("entry_budget")) is not int
+        or not 0 <= receipt["entry_budget"] <= 32
+        or type(receipt.get("timestep_budget")) is not int
+        or not 0 <= receipt["timestep_budget"] <= 1024
+    ):
+        raise ValueError("invalid priority audit contract")
+    candidates = receipt.get("ordered_candidates")
+    versions = receipt.get("versions")
+    if (
+        not isinstance(candidates, list)
+        or not isinstance(versions, dict)
+        or len(candidates) > 256
+        or receipt.get("eligible_candidate_reads") != len(candidates)
+        or receipt.get("priority_value_reads") != len(candidates)
+        or receipt.get("candidate_payload_digests_computed") != len(candidates)
+    ):
+        raise ValueError("priority audit accounting mismatch")
+    ids = [e.get("item_id") for e in candidates if isinstance(e, dict)]
+    if len(ids) != len(candidates) or len(set(ids)) != len(ids):
+        raise ValueError("duplicate or invalid priority candidates")
+    for entry in candidates:
+        if (
+            not isinstance(entry["item_id"], str)
+            or not entry["item_id"]
+            or entry.get("scope") != receipt["scope"]
+            or entry.get("split") != "train"
+            or entry.get("kind") != "error"
+            or versions.get(entry.get("source")) != entry.get("version")
+            or not isinstance(entry.get("payload_digest"), str)
+            or len(entry["payload_digest"]) != 64
+            or type(entry.get("timesteps")) is not int
+            or not 1 <= entry["timesteps"] <= 32
+            or not isinstance(entry.get("priority"), (int, float))
+            or not np.isfinite(entry["priority"])
+            or entry["priority"] < 0
+        ):
+            raise ValueError("ineligible historical candidate")
+    if candidates != sorted(candidates, key=lambda e: (-e["priority"], e["item_id"])):
+        raise ValueError("priority candidates not in declared order")
+    selected, steps = [], 0
+    for entry in candidates:
+        n = entry["timesteps"]
+        if (
+            len(selected) < receipt["entry_budget"]
+            and steps + n <= receipt["timestep_budget"]
+        ):
+            selected.append(entry["item_id"])
+            steps += n
+    if (
+        receipt.get("selected_ids") != selected
+        or receipt.get("decision_timesteps") != steps
+    ):
+        raise ValueError("historical priority decision mismatched candidate ordering")
+    return True
 
 
 def replay_specs(seeds=(11, 29, 47)):
@@ -403,13 +521,15 @@ def run_replay_attempt(spec):
         receipts.append(receipt)
         pool.add(ReplayItem(**{**item.payload(), "priority": result["loss"]}))
         if position >= 16:
-            chosen = pool.select(
-                spec["method"], spec["entry_budget"], spec["timestep_budget"]
+            chosen, selection_audit = pool.select(
+                spec["method"], spec["entry_budget"], spec["timestep_budget"],
+                audit=True,
             )
             selections.append(
                 {
                     "position": position,
                     "ids": [e.item_id for e in chosen],
+                    "selection_audit": selection_audit,
                     "entry_presentations": len(chosen),
                     "timesteps": sum(len(e.episode[0]) for e in chosen),
                     "numeric_payload_bytes": sum(
