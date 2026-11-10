@@ -22,8 +22,8 @@ as new identities rather than rewriting the V3 evidence.
 The private complete original arguments, canonical argument digest and original
 errors now have a verified private durable backup: 2,351 bytes with the full
 digest recorded in the sanitized status file. Its separate native-host copy is
-still UNKNOWN: the write timed out at MCP and independent file-info confirmation
-has not completed. Public handoff files omit backup identifiers, private paths,
+still UNKNOWN: both the write and independent file-info returned MCP timeout
+(-32603). Public handoff files omit backup identifiers, private paths,
 full tool arguments and the operation key.
 No actual paired outcome, scientific gain or production qualification follows
 from the dispatch attempt or the static diagnoses.
