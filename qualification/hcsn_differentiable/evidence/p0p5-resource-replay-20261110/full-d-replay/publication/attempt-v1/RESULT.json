@@ -1,0 +1,135 @@
+{
+  "absolute_own_process_CPU_seconds": 3.29368794,
+  "anonymous_release_before": {
+    "HTTP_status": "404",
+    "authorization_header_sent": false,
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/releases/440410488"
+  },
+  "archive": {
+    "all_member_sha_and_crc_verified": true,
+    "archive": {
+      "bytes": 19144412,
+      "original_path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/best-full-D-archive-upload-v1/hcsn-best-full-D-independent-replay-20261110-v1.zip",
+      "sha256": "ff41e5ef909708a5c2472f6786d0e82b6d69a80d968047de2746bcaf84daaac5"
+    },
+    "copied_original_models": false,
+    "members": 254,
+    "original_controller_container_zip_preserved_native_not_reuploaded": {
+      "bytes": 16811170,
+      "path": "/home/qian-qi/hepta-hcsn-best-full-D-replay-20261110-c385-v1.zip",
+      "sha256": "88183d8933634e83a6a48d70393c8e81bc738b377af35f0940b1704dd284b7b0"
+    },
+    "originals_unchanged": true,
+    "package_CPU_seconds": 3.2066186780000003,
+    "package_wall_seconds": 3.2191201529931277,
+    "replay_file_member_coverage": "Every original replay-directory file is included byte-for-byte under replay/; this combined archive is a distinct container.",
+    "scientific_admission": "HOLD",
+    "small_handoff": {
+      "bytes": 257038,
+      "original_path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/best-full-D-archive-upload-v1/hcsn-best-full-D-small-originals-20261110-v1.zip",
+      "sha256": "82f0d43ec6921e0a2b4bb42180d37000f400e13657186264679c382ca393f04d"
+    },
+    "status": "packaged_all_six_readonly_replays",
+    "summary_sha256": "a258f3c7d5ff27d78377bce15a1bf97427f3b5e9f92646b3b64f4c135ecfff0a",
+    "training_adequacy_established": false
+  },
+  "archive_receipt_sha256": "b15a7ffb3d8b34d7a4a9d9076366dbbf4a3bc48e71e1d980b2ca824f78ec0c20",
+  "assets": [],
+  "automatic_retry": false,
+  "commands": [
+    {
+      "argv": [
+        "/usr/bin/gh",
+        "api",
+        "repos/TrillionniumFoundation/hepta-private-ci/releases/440410488"
+      ],
+      "label": "draft-before",
+      "returncode": 0,
+      "status": "completed",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "723182fb1593ad5304c614684df9bcc7661445b2480b22dd11154c709fff0572",
+      "timeout_seconds": 120,
+      "waited_child_CPU_seconds": 0.158235,
+      "wall_seconds": 1.9800786569248885
+    },
+    {
+      "argv": [
+        "/usr/bin/curl",
+        "--disable",
+        "--silent",
+        "--show-error",
+        "--location",
+        "--max-time",
+        "60",
+        "--output",
+        "/dev/null",
+        "--write-out",
+        "%{http_code}",
+        "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/releases/440410488"
+      ],
+      "label": "anonymous-release-before",
+      "returncode": 0,
+      "status": "completed",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "6b3c238ebcf1f3c07cf0e556faa82c6b8fe96840ff4b6b7e9962a2d855843a0b",
+      "timeout_seconds": 70,
+      "waited_child_CPU_seconds": 0.09355399999999998,
+      "wall_seconds": 1.6338066800963134
+    },
+    {
+      "argv": [
+        "/usr/bin/gh",
+        "api",
+        "--paginate",
+        "--slurp",
+        "repos/TrillionniumFoundation/hepta-private-ci/releases/440410488/assets?per_page=100"
+      ],
+      "error_type": "ValueError",
+      "label": "asset-list-before",
+      "returncode": 1,
+      "status": "completed",
+      "stderr_sha256": "8fbdf01d7bfc79357ac4103cac53e183b4d56414792487feadb6ab4e69c935ae",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "timeout_seconds": 120,
+      "waited_child_CPU_seconds": 0.09751899999999997,
+      "wall_seconds": 0.08319777599535882
+    },
+    {
+      "argv": [
+        "/usr/bin/gh",
+        "api",
+        "repos/TrillionniumFoundation/hepta-private-ci/releases/440410488"
+      ],
+      "label": "draft-finally-readback",
+      "returncode": 0,
+      "status": "completed",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "723182fb1593ad5304c614684df9bcc7661445b2480b22dd11154c709fff0572",
+      "timeout_seconds": 120,
+      "waited_child_CPU_seconds": 0.15332800000000002,
+      "wall_seconds": 1.4728574429173023
+    }
+  ],
+  "computation_CPU_seconds": 3.224157606,
+  "cost_scope": "Main-entry packaging/network interval; outer wrapper records complete process. Nested package/command times overlap. Replay and validation occurred in previous separately measured processes.",
+  "driver_sha256": "a8b1ff0338d82bc4665f73f6d18aaa7d49031fd8ec1a75abdac95cc4901ebb98",
+  "energy_joules": null,
+  "error": "Traceback (most recent call last):\n  File \"/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/best-full-D-archive-launch-v1/archive_upload_native.py\", line 218, in main\n    found = [row for row in assets('asset-list-before') if row['name'] == path.name]\n                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/best-full-D-archive-launch-v1/archive_upload_native.py\", line 202, in assets\n    pages = json.loads(command(label, ['/usr/bin/gh', 'api', '--paginate', '--slurp', f'repos/{REPO}/releases/{RELEASE}/assets?per_page=100']))\n                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/best-full-D-archive-launch-v1/archive_upload_native.py\", line 178, in command\n    require(done.returncode == 0, label + ' failed; no retry')\n  File \"/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/best-full-D-archive-launch-v1/archive_upload_native.py\", line 25, in require\n    raise ValueError(message)\nValueError: asset-list-before failed; no retry\n",
+  "final_draft_identity_verified": {
+    "draft": true,
+    "id": 440410488,
+    "tag_name": "hcsn-research-20261110-c385"
+  },
+  "finished_utc": "2026-11-10T20:04:51.187412+00:00",
+  "main_entry_wall_seconds": 8.400339979911223,
+  "overwrite_existing_assets": false,
+  "own_peak_rss_bytes": 31637504,
+  "publish_requested": false,
+  "release_id": 440410488,
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "schema": "independent-best-D-draft-publication-v1",
+  "scientific_admission": "HOLD",
+  "started_utc": "2026-11-10T20:04:42.787314+00:00",
+  "status": "failed_or_unknown_preserved_no_retry",
+  "waited_children_CPU_seconds": 0.502636
+}

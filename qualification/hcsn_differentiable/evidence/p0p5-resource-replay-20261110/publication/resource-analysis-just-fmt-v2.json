@@ -1,0 +1,29 @@
+{
+  "argv": [
+    "uv",
+    "tool",
+    "run",
+    "--offline",
+    "--from",
+    "rust-just",
+    "just",
+    "fmt"
+  ],
+  "returncode": 0,
+  "whole_child_wall_seconds": 0.2280788530006248,
+  "waited_child_CPU_seconds": 0.20960099999999998,
+  "stdout": "No changed files need formatting. Use --all for a full repository check.\n",
+  "stderr": "",
+  "source_before": {
+    "analyze_resources.py": "dc398a012bd25d611c0bbbfc09f64a3c76c7d1d367c84c5178864140c769ee95",
+    "test_analysis.py": "73b19bac0dc8281df37b8300928d399fa924c5af6c061cd4e2bdfa073ece2172",
+    "PLAN.json": "a893ceda6bff869455adf37e9d7ad61a7a8999379a9d1639fdc9dc5951a1472e",
+    "README.md": "97393f04f3204f11d0b35e7a9b01a21ac12ef6b416a8722586df0979b52da44c"
+  },
+  "source_after": {
+    "analyze_resources.py": "dc398a012bd25d611c0bbbfc09f64a3c76c7d1d367c84c5178864140c769ee95",
+    "test_analysis.py": "73b19bac0dc8281df37b8300928d399fa924c5af6c061cd4e2bdfa073ece2172",
+    "PLAN.json": "a893ceda6bff869455adf37e9d7ad61a7a8999379a9d1639fdc9dc5951a1472e",
+    "README.md": "97393f04f3204f11d0b35e7a9b01a21ac12ef6b416a8722586df0979b52da44c"
+  }
+}

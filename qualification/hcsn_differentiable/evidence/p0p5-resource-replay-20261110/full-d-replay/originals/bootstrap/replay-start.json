@@ -1,0 +1,57 @@
+{
+  "actual_checkpoint_replay_started": true,
+  "bootstrap_source_sha256": "7a91182d8723dee34549fe0dc7fec851e5cf65d00558c30e83bc0f596b99a21e",
+  "concurrency": "May overlap one independent numerical-audit worker; no idle-host or speed-comparison claim.",
+  "confirmation_E_access": false,
+  "native_validation": {
+    "actual_trained_checkpoint_read": false,
+    "argv": [
+      "/home/qian-qi/hepta-hcsn-trainer-20261108-s3-v1/dependency-recovery-v2/venv/bin/python",
+      "-B",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "/home/qian-qi/hepta-hcsn-best-full-D-replay-program-20261110-c385-v1",
+      "-p",
+      "test_*.py",
+      "-v"
+    ],
+    "backward_calls": 0,
+    "child_peak_rss_bytes": 640815104,
+    "observed_tests": 16,
+    "optimizer_steps": 0,
+    "passed": true,
+    "program_after": {
+      "manifest_sha256": "8cd0fdcf94a5af733173d6fc513b2b379df8bdd9f28604116658fe40a7c19e12",
+      "verified_members": 13
+    },
+    "returncode": 0,
+    "stderr_sha256": "59eafa888ddfc56384f12078553bee86b59cd371a5a2717c70c9321b79ca9453",
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "timed_out": false,
+    "unittest_seconds": 0.199,
+    "waited_child_CPU_seconds": 2.478329,
+    "whole_child_wall_seconds": 2.672905263956636
+  },
+  "original_training_adequacy": false,
+  "program_before": {
+    "manifest_sha256": "8cd0fdcf94a5af733173d6fc513b2b379df8bdd9f28604116658fe40a7c19e12",
+    "verified_members": 13
+  },
+  "program_sha256": "a748888f26409ff6f5fff8db8a9266cf67d0a5f5516dc88b566cd3c296fca206",
+  "replay_argv": [
+    "/home/qian-qi/hepta-hcsn-trainer-20261108-s3-v1/dependency-recovery-v2/venv/bin/python",
+    "-B",
+    "/home/qian-qi/hepta-hcsn-best-full-D-replay-program-20261110-c385-v1/launch.py",
+    "--output",
+    "/home/qian-qi/hepta-hcsn-best-full-D-replay-20261110-c385-v1",
+    "--launch-directory",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/best-full-D-replay-launch-v1"
+  ],
+  "replay_started_utc": "2026-11-10T19:48:08.234241+00:00",
+  "schema": "independent-six-best-D-bootstrap-v1",
+  "scientific_admission": "HOLD",
+  "stable_key": "hcsn-best-full-d-replay-c385-v1",
+  "started_utc": "2026-11-10T19:48:05.546197+00:00"
+}

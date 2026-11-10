@@ -1,0 +1,51 @@
+{
+  "schema": "archival-ignored-logs-recovery-local-v1",
+  "missing_logs": [
+    {
+      "path": "qualification/hcsn_differentiable/evidence/p0p5-20261110/local-qualification/error-budget.log",
+      "bytes": 103,
+      "sha256": "a479f72d982d2c1b288eeda81ca82e93011c6b9f2595e86e0aa0400c55fc8bb6",
+      "ignore_rule": ".gitignore:47:*.log\tqualification/hcsn_differentiable/evidence/p0p5-20261110/local-qualification/error-budget.log"
+    },
+    {
+      "path": "qualification/hcsn_differentiable/evidence/p0p5-20261110/local-qualification/qualification.log",
+      "bytes": 26960,
+      "sha256": "f01f9c17a4b12541d489e47463bc6edde21cf3ba8e1690772ef0df91dcf4ceeb",
+      "ignore_rule": ".gitignore:47:*.log\tqualification/hcsn_differentiable/evidence/p0p5-20261110/local-qualification/qualification.log"
+    },
+    {
+      "path": "qualification/hcsn_differentiable/evidence/p0p5-20261110/p0/targeted-tests.log",
+      "bytes": 2858,
+      "sha256": "0820b3f1cedb58d5d069b48e35801bb9d395aec4f3f2d2a5e2665d62cc336ac5",
+      "ignore_rule": ".gitignore:47:*.log\tqualification/hcsn_differentiable/evidence/p0p5-20261110/p0/targeted-tests.log"
+    },
+    {
+      "path": "qualification/hcsn_differentiable/evidence/p0p5-20261110/p3/qvi-tests.log",
+      "bytes": 680,
+      "sha256": "9d52325bf33eafc650f0aef8a3ada28dc12ba8199cc0d14393afe4cc13c1817a",
+      "ignore_rule": ".gitignore:47:*.log\tqualification/hcsn_differentiable/evidence/p0p5-20261110/p3/qvi-tests.log"
+    },
+    {
+      "path": "qualification/hcsn_differentiable/evidence/p0p5-20261110/p4/generator-tests.log",
+      "bytes": 665,
+      "sha256": "5a0da9fb465d5c2dc436c0faba22d6acbc2b9132a1fb63fba2942fb29c70f20c",
+      "ignore_rule": ".gitignore:47:*.log\tqualification/hcsn_differentiable/evidence/p0p5-20261110/p4/generator-tests.log"
+    }
+  ],
+  "evidence_recovery": {
+    "local_parent": "3b49154eec2a537cc9360eb631ca1bc47ed05be5",
+    "local_commit": "3135d0cdd9965f8905f9d685a68516046d2e30be",
+    "tree": "cbaf567ce25fb0289ee9a87a38a48e741b05f93f",
+    "message": "evidence(hcsn): include manifest-bound original logs in committed trees\n\nThe existing repository ignore rule excluded five original .log files from the archival commit even though the working-tree evidence check passed. Add their exact already-manifested bytes without altering the frozen manifest, source, results or logs. Committed-tree coverage is checked separately from working-tree integrity.",
+    "stat": " .../local-qualification/error-budget.log           |   1 +\n .../local-qualification/qualification.log          | 116 +++++++++++++++++++++\n .../evidence/p0p5-20261110/p0/targeted-tests.log   |  20 ++++\n .../evidence/p0p5-20261110/p3/qvi-tests.log        |   8 ++\n .../evidence/p0p5-20261110/p4/generator-tests.log  |   8 ++\n 5 files changed, 153 insertions(+)\n"
+  },
+  "protocol_merge": {
+    "local_commit": "ee68bf135e3fbcf96a64528f1e3bd673b7c2ed0c",
+    "tree": "728edee63510ee28f3a057aa987b21eb3079a3b6",
+    "parents": [
+      "0a04fba23a9fa8d95aaf179e089b2f3e109555cd",
+      "3135d0cdd9965f8905f9d685a68516046d2e30be"
+    ]
+  },
+  "original_manifest_unchanged": true
+}

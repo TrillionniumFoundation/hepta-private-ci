@@ -1,0 +1,21 @@
+test_D_only_exact_order_and_hash (test_replay.DataTests.test_D_only_exact_order_and_hash) ... ok
+test_wrong_declared_D_order_fails (test_replay.DataTests.test_wrong_declared_D_order_fails) ... ok
+test_forward_buffer_mutation_is_rejected (test_replay.ForwardAndProcessTests.test_forward_buffer_mutation_is_rejected) ... ok
+test_missing_executable_keeps_failure_cost (test_replay.ForwardAndProcessTests.test_missing_executable_keeps_failure_cost) ... ok
+test_padded_no_grad_order_and_unchanged_tensors (test_replay.ForwardAndProcessTests.test_padded_no_grad_order_and_unchanged_tensors) ... ok
+test_rc0_without_artifact_is_HOLD (test_replay.ForwardAndProcessTests.test_rc0_without_artifact_is_HOLD) ... ok
+test_real_subprocess_timeout_is_retained (test_replay.ForwardAndProcessTests.test_real_subprocess_timeout_is_retained) ... ok
+test_changed_confusion_or_nll_is_rejected (test_replay.MetricTests.test_changed_confusion_or_nll_is_rejected) ... ok
+test_nonfinite_and_out_of_range_rejected (test_replay.MetricTests.test_nonfinite_and_out_of_range_rejected) ... ok
+test_perfect_confident_boundary_bin_and_missing_classes (test_replay.MetricTests.test_perfect_confident_boundary_bin_and_missing_classes) ... ok
+test_uniform_logits_known_metrics (test_replay.MetricTests.test_uniform_logits_known_metrics) ... ok
+test_censored_report_needs_no_selected_logits (test_replay.SelectionTests.test_censored_report_needs_no_selected_logits) ... ok
+test_first_strict_maximum_tie (test_replay.SelectionTests.test_first_strict_maximum_tie) ... ok
+test_hard_kill_and_false_adequacy_rejected (test_replay.SelectionTests.test_hard_kill_and_false_adequacy_rejected) ... ok
+test_last_checkpoint_substitution_rejected (test_replay.SelectionTests.test_last_checkpoint_substitution_rejected) ... ok
+test_source_tampering_rejected (test_replay.SelectionTests.test_source_tampering_rejected) ... ok
+
+----------------------------------------------------------------------
+Ran 16 tests in 0.199s
+
+OK

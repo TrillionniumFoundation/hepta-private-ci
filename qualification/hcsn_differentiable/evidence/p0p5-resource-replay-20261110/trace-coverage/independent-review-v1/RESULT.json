@@ -1,0 +1,245 @@
+{
+  "denominator_scope": "Full seen-valid-state denominator reconstructed from seeded epoch order, effective batch32 padding, microbatch8, manifest lengths and observed capture count; dropped probability states themselves are not available.",
+  "examined_retained_record_labels": 2066,
+  "examined_retained_valid_sample_states": 16492,
+  "execution_scope": "Pure JSON and seeded-order reconstruction; no Torch import, model, forward, optimizer or numerical oracle.",
+  "fits": [
+    {
+      "all_retained_before_first_update": true,
+      "captures": 2101,
+      "derived_epochs": [
+        1
+      ],
+      "derived_phases": [
+        "main"
+      ],
+      "excluded_padding": 89539,
+      "name": "hcsn-s101-lr0.001",
+      "original_report_sha256": "ebb51a9ffb60e91ec3aa0d7cc896957765b20fd69a3522aad0a2006d933b96c0",
+      "post_update_retained_records": 0,
+      "reconstructed_seen_valid_sample_states": 4166205,
+      "retained_fraction": 0.0006600731361034802,
+      "retained_record_slots": 346,
+      "retained_valid_sample_states": 2750,
+      "seen_record_slots": 537856,
+      "trace_sha256": "a18a966ca862b35fe4f9f20ff42b2a447b15e9e3b943c7ac4a442ef51fa7eb03"
+    },
+    {
+      "all_retained_before_first_update": true,
+      "captures": 2137,
+      "derived_epochs": [
+        1
+      ],
+      "derived_phases": [
+        "main"
+      ],
+      "excluded_padding": 90847,
+      "name": "hcsn-s101-lr0.003",
+      "original_report_sha256": "5cd6f329a00a78c9c0b948dd209897bfaa62c1cbaef1c3c0ba76675dc4e6f1bf",
+      "post_update_retained_records": 0,
+      "reconstructed_seen_valid_sample_states": 4237601,
+      "retained_fraction": 0.0006489520839739277,
+      "retained_record_slots": 346,
+      "retained_valid_sample_states": 2750,
+      "seen_record_slots": 547072,
+      "trace_sha256": "6e9a3c4d2ca97535b6af9d4510d25418cdce5ba92144ead0a911c3f3b50b3f00"
+    },
+    {
+      "all_retained_before_first_update": true,
+      "captures": 2111,
+      "derived_epochs": [
+        1
+      ],
+      "derived_phases": [
+        "main"
+      ],
+      "excluded_padding": 90240,
+      "name": "hcsn-s211-lr0.001",
+      "original_report_sha256": "27246c56ac32c62ff375c0c0e170807f01eaa7e108619f7fc6d21c5d49f29033",
+      "post_update_retained_records": 0,
+      "reconstructed_seen_valid_sample_states": 4185984,
+      "retained_fraction": 0.0006555209002232211,
+      "retained_record_slots": 343,
+      "retained_valid_sample_states": 2744,
+      "seen_record_slots": 540416,
+      "trace_sha256": "e3da3c17b463abe861e04870b2294b19c19f70f42d6565cb11a9c293273712ea"
+    },
+    {
+      "all_retained_before_first_update": true,
+      "captures": 2121,
+      "derived_epochs": [
+        1
+      ],
+      "derived_phases": [
+        "main"
+      ],
+      "excluded_padding": 90352,
+      "name": "hcsn-s211-lr0.003",
+      "original_report_sha256": "66182f0b1f0eae1699c6be05e9d3f1cb5f5c20c484f9af6a8b12f302357dd3c1",
+      "post_update_retained_records": 0,
+      "reconstructed_seen_valid_sample_states": 4205328,
+      "retained_fraction": 0.0006525055833932574,
+      "retained_record_slots": 343,
+      "retained_valid_sample_states": 2744,
+      "seen_record_slots": 542976,
+      "trace_sha256": "4dd27e3d4f55a433c95760994417b9b9b1210d93f3251c2498532c9ca55d101c"
+    },
+    {
+      "all_retained_before_first_update": true,
+      "captures": 2102,
+      "derived_epochs": [
+        1
+      ],
+      "derived_phases": [
+        "main"
+      ],
+      "excluded_padding": 89719,
+      "name": "hcsn-s307-lr0.001",
+      "original_report_sha256": "cae58fc7825505e687e7416516968f65017753d3337183a78a2847d5b0e20dd0",
+      "post_update_retained_records": 0,
+      "reconstructed_seen_valid_sample_states": 4168073,
+      "retained_fraction": 0.0006602571500067297,
+      "retained_record_slots": 344,
+      "retained_valid_sample_states": 2752,
+      "seen_record_slots": 538112,
+      "trace_sha256": "28c1ca19427ddfe5e295166be56bb8867b7642f551a00ed92fed087707bbc3b9"
+    },
+    {
+      "all_retained_before_first_update": true,
+      "captures": 2112,
+      "derived_epochs": [
+        1
+      ],
+      "derived_phases": [
+        "main"
+      ],
+      "excluded_padding": 90056,
+      "name": "hcsn-s307-lr0.003",
+      "original_report_sha256": "e1a463fa16677c7122f265f6b8dc362f3adf75f364d8e074bc901cb4c161c443",
+      "post_update_retained_records": 0,
+      "reconstructed_seen_valid_sample_states": 4188216,
+      "retained_fraction": 0.0006570816786908793,
+      "retained_record_slots": 344,
+      "retained_valid_sample_states": 2752,
+      "seen_record_slots": 540672,
+      "trace_sha256": "d2bc1c91d37f73d88a145d77f81e2d413a1395d846617c62e8600f30e63dc502"
+    }
+  ],
+  "inputs_unchanged": true,
+  "model_reads": 0,
+  "provenance_scope": "Label scan source/output commitments, original archive summary trace SHA/footer, original result/plan identities and exact local v8 source are bound. Large raw probability-trace bytes were not reread independently here.",
+  "schema": "independent-retained-trace-labels-JSON-review-v1",
+  "scientific_admission": "HOLD",
+  "source_inputs": {
+    "/workspace/scratch/c385a7439f8e/final-retained-trace-labels-archive-v1/MANIFEST.json": {
+      "bytes": 2497,
+      "sha256": "6564990e763f2d930ab3d43c65a20b569dfcdedc3ecc59f4b8c11a45e332d6d3"
+    },
+    "/workspace/scratch/c385a7439f8e/final-retained-trace-labels-archive-v1/originals/RESULT.json": {
+      "bytes": 14423,
+      "sha256": "b1a3b00e4108fa444b35a837cf2f16b5d12dbef9ec83a8b3a61043cf9799fa8e"
+    },
+    "/workspace/scratch/c385a7439f8e/final-retained-trace-labels-archive-v1/originals/hcsn-s101-lr0.001.json": {
+      "bytes": 209217,
+      "sha256": "4a3e744c89f7b97c12c5413eb6b8c016e39adc471f0d0cdf92e754c821f36449"
+    },
+    "/workspace/scratch/c385a7439f8e/final-retained-trace-labels-archive-v1/originals/hcsn-s101-lr0.003.json": {
+      "bytes": 209217,
+      "sha256": "c98611036cfeabd6fe8f5300899d80036d87e17498ccb3035b927b9463baa172"
+    },
+    "/workspace/scratch/c385a7439f8e/final-retained-trace-labels-archive-v1/originals/hcsn-s211-lr0.001.json": {
+      "bytes": 207408,
+      "sha256": "44fcc0dec5bbe098577ba3b2f95e9678cd764a2380775bf2a4876e917b1f4e5a"
+    },
+    "/workspace/scratch/c385a7439f8e/final-retained-trace-labels-archive-v1/originals/hcsn-s211-lr0.003.json": {
+      "bytes": 207408,
+      "sha256": "6b7336e82808759c1166b419c95ca748097bc0620d0525af036fc3c425bf206b"
+    },
+    "/workspace/scratch/c385a7439f8e/final-retained-trace-labels-archive-v1/originals/hcsn-s307-lr0.001.json": {
+      "bytes": 209545,
+      "sha256": "04b3dcbab538a1419e126a7cc15800880d43e79649df165de327fde68424aeee"
+    },
+    "/workspace/scratch/c385a7439f8e/final-retained-trace-labels-archive-v1/originals/hcsn-s307-lr0.003.json": {
+      "bytes": 209545,
+      "sha256": "b42ec2565ef9cf153bd2b8a5fc9ece485ba12fadfbb76cb75991d9b495faa422"
+    },
+    "/workspace/scratch/c385a7439f8e/fresh42-terminal-small-v1/campaign-v2/hcsn-s101-lr0.001/plan.json": {
+      "bytes": 1110,
+      "sha256": "73d317f53b370307bda2ebf529107b26452bca15c6e39e7fe38c3716cefc3b10"
+    },
+    "/workspace/scratch/c385a7439f8e/fresh42-terminal-small-v1/campaign-v2/hcsn-s101-lr0.001/result.json": {
+      "bytes": 193769,
+      "sha256": "ebb51a9ffb60e91ec3aa0d7cc896957765b20fd69a3522aad0a2006d933b96c0"
+    },
+    "/workspace/scratch/c385a7439f8e/fresh42-terminal-small-v1/campaign-v2/hcsn-s101-lr0.003/plan.json": {
+      "bytes": 1110,
+      "sha256": "33bb3cebd05a70dfd2e51c69bf134f3bb63fbc86bf0a4b8f0b94bd22b8c61ef0"
+    },
+    "/workspace/scratch/c385a7439f8e/fresh42-terminal-small-v1/campaign-v2/hcsn-s101-lr0.003/result.json": {
+      "bytes": 190488,
+      "sha256": "5cd6f329a00a78c9c0b948dd209897bfaa62c1cbaef1c3c0ba76675dc4e6f1bf"
+    },
+    "/workspace/scratch/c385a7439f8e/fresh42-terminal-small-v1/campaign-v2/hcsn-s211-lr0.001/plan.json": {
+      "bytes": 1110,
+      "sha256": "74a25f964a655a0302440cd431f69a46cd4ea62a056c2282f11547ebbec2d8a7"
+    },
+    "/workspace/scratch/c385a7439f8e/fresh42-terminal-small-v1/campaign-v2/hcsn-s211-lr0.001/result.json": {
+      "bytes": 193343,
+      "sha256": "27246c56ac32c62ff375c0c0e170807f01eaa7e108619f7fc6d21c5d49f29033"
+    },
+    "/workspace/scratch/c385a7439f8e/fresh42-terminal-small-v1/campaign-v2/hcsn-s211-lr0.003/plan.json": {
+      "bytes": 1110,
+      "sha256": "66db280cced4549900ebab518b327004efb264b3c2d35fcbebf2e449979c49e4"
+    },
+    "/workspace/scratch/c385a7439f8e/fresh42-terminal-small-v1/campaign-v2/hcsn-s211-lr0.003/result.json": {
+      "bytes": 190303,
+      "sha256": "66182f0b1f0eae1699c6be05e9d3f1cb5f5c20c484f9af6a8b12f302357dd3c1"
+    },
+    "/workspace/scratch/c385a7439f8e/fresh42-terminal-small-v1/campaign-v2/hcsn-s307-lr0.001/plan.json": {
+      "bytes": 1110,
+      "sha256": "359c278aea86b9d748f95c5b91efb5d5281302405f84ee07d4afbd6ce36e379e"
+    },
+    "/workspace/scratch/c385a7439f8e/fresh42-terminal-small-v1/campaign-v2/hcsn-s307-lr0.001/result.json": {
+      "bytes": 196970,
+      "sha256": "cae58fc7825505e687e7416516968f65017753d3337183a78a2847d5b0e20dd0"
+    },
+    "/workspace/scratch/c385a7439f8e/fresh42-terminal-small-v1/campaign-v2/hcsn-s307-lr0.003/plan.json": {
+      "bytes": 1110,
+      "sha256": "482db61c6c7002fa0660672ea30b30268d394073ec459fdbe472b0cbdaf02a3a"
+    },
+    "/workspace/scratch/c385a7439f8e/fresh42-terminal-small-v1/campaign-v2/hcsn-s307-lr0.003/result.json": {
+      "bytes": 187215,
+      "sha256": "e1a463fa16677c7122f265f6b8dc362f3adf75f364d8e074bc901cb4c161c443"
+    },
+    "/workspace/scratch/c385a7439f8e/fresh42-terminal-small-v1/fresh42-terminal-archives-v1/SUMMARY.json": {
+      "bytes": 969832,
+      "sha256": "3df311d7dcfbf67bcb9090265050991bb571bafcd849c1baa3ce400cc2281f80"
+    },
+    "/workspace/scratch/c385a7439f8e/uci-cloud-prepared-v1/data-manifest.json": {
+      "bytes": 101622,
+      "sha256": "0eb233da8d0b766c35356ba450d0572f1e6a87a47f1d8a17cd32c2ae6f25a1cb"
+    },
+    "/workspace/scratch/c385a7439f8e/v8-local-validation/source/proposals/localization-v3/cores.py": {
+      "bytes": 16079,
+      "sha256": "95fcf93747520414a062183affd546f599bc415b2a9daa47e59db20f67412302"
+    },
+    "/workspace/scratch/c385a7439f8e/v8-local-validation/source/proposals/localization-v3/hcsn_study_support.py": {
+      "bytes": 3733,
+      "sha256": "be6ef7c077c66eb8e650058987159351357f6232290673226587b48d4071c613"
+    },
+    "/workspace/scratch/c385a7439f8e/v8-local-validation/source/proposals/localization-v3/train.py": {
+      "bytes": 22822,
+      "sha256": "06cb85c7a0da85fb8d656526c2b07285979bc6c47c2e00c154e89f43bcfc1a22"
+    },
+    "/workspace/scratch/c385a7439f8e/v8-local-validation/source/qualification/hcsn_differentiable/training_domain.py": {
+      "bytes": 9899,
+      "sha256": "4dda92ee43218594454a0693fd86ce687a842380d4ac0b4ba5ba6a14fd176ddf"
+    }
+  },
+  "source_package": {
+    "bytes": 39664,
+    "sha256": "46a74ada1d695fd15e2d09303d41674ee61eeaa765cf34205d5a37c355630be2"
+  },
+  "status": "all_six_labels_and_count_reconstructions_agree",
+  "whole_training_numerical_admission": "HOLD"
+}

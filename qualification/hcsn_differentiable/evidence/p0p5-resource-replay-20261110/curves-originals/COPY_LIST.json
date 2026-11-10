@@ -1,0 +1,65 @@
+{
+  "analysis_json": "/workspace/scratch/c385a7439f8e/fresh42-c1-curves-recovered-v1/CURVES.json",
+  "counts": {
+    "before_development": 42,
+    "complete_epochs": 2927,
+    "reports": 49
+  },
+  "files": [
+    {
+      "bytes": 500000,
+      "sha256": "f0cefc646332f6b3531a5f2a314d0c73e27cd4ecc410c7d3855eb7833903ee06",
+      "source": "/workspace/scratch/c385a7439f8e/fresh42-c1-curves-recovered-v1/hcsn-original42-c1-curves-20261110-v1.zip.part00"
+    },
+    {
+      "bytes": 466326,
+      "sha256": "49bcbb3df13704f8c4dabcb8a4351c488640e81a6f0c1e4dcb6972d067373e0a",
+      "source": "/workspace/scratch/c385a7439f8e/fresh42-c1-curves-recovered-v1/hcsn-original42-c1-curves-20261110-v1.zip.part01"
+    },
+    {
+      "bytes": 16201,
+      "sha256": "5678368911fc03fc6803978b59cab3e584dd3d266185d3b026dfb0eef9ffcc05",
+      "source": "/workspace/scratch/c385a7439f8e/fresh42-c1-curves-recovered-v1/RECOVERY-RECEIPT.json"
+    },
+    {
+      "bytes": 1106,
+      "sha256": "49aecf607fc3b1a63b71b39e468290de7bf08a5cd8515270bfbb6d2b3018b75a",
+      "source": "/workspace/scratch/c385a7439f8e/fresh42-c1-curves-recovered-v1/RESULT.json"
+    },
+    {
+      "bytes": 540,
+      "sha256": "df00d5d59a2274f69b669710602dfd1b0aeaaff2eb7450950c786086598466bb",
+      "source": "/workspace/scratch/c385a7439f8e/fresh42-c1-curves-recovered-v1/MEMBER-MANIFEST.json"
+    },
+    {
+      "bytes": 1613,
+      "sha256": "8fa0f47551862f19a61d6c32db05ff87bce74cd4f6ee244ca8a15a952d0900aa",
+      "source": "/workspace/scratch/c385a7439f8e/fresh42-c1-curves-recovered-v1/native.stdout"
+    },
+    {
+      "bytes": 731,
+      "sha256": "31ea2d0b6b346cf3a451c2e85f3b0bea3147240819beb59eb499d74745492a19",
+      "source": "/workspace/scratch/c385a7439f8e/fresh42-c1-curves-recovered-v1/terminal-status.json"
+    },
+    {
+      "bytes": 13242,
+      "sha256": "9feaa4979ccd9ebf32416ef2eec13ca32a7147d7b342d149e8ee6f029475a0bb",
+      "source": "/workspace/scratch/c385a7439f8e/fresh42-c1-curves-recovered-v1/export_fresh42_c1_curves_v1.py"
+    },
+    {
+      "bytes": 646,
+      "sha256": "bdc90fb263931a8a43d3b87dd79f9bece8580ec296ae34d44cb9364f0765ac9a",
+      "source": "/workspace/scratch/c385a7439f8e/fresh42-curves-export-start-request.json"
+    },
+    {
+      "bytes": 1336,
+      "sha256": "7d8ed57a34b15c6677d25211ed364ebd088374fe70dcb7ee7016397a000729a3",
+      "source": "/workspace/scratch/c385a7439f8e/fresh42-curves-export-start-response.json"
+    }
+  ],
+  "full_recovered_archive": "/workspace/scratch/c385a7439f8e/hcsn-original42-c1-curves-20261110-v1.zip",
+  "inputs_and_source_identities": "/workspace/scratch/c385a7439f8e/fresh42-c1-curves-recovered-v1/INPUT-SOURCE-IDENTITIES.json",
+  "reassembly": "concatenate the two .part files in numeric order; verify full ZIP SHA0ab09b443b102e056849900eb2fcb2d20933a78d6ef321373ae354f98e9b5f1d before extracting",
+  "root_files_modified": false,
+  "schema": "hcsn-curves-copy-list-v1"
+}

@@ -1,0 +1,315 @@
+{
+  "absolute_own_process_CPU_seconds": 1.600037728,
+  "anonymous_release_after": {
+    "HTTP_status": "404",
+    "authorization_header_sent": false,
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/releases/440410488"
+  },
+  "anonymous_release_before": {
+    "HTTP_status": "404",
+    "authorization_header_sent": false,
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/releases/440410488"
+  },
+  "archive": {
+    "all_member_sha_and_crc_verified": true,
+    "archive": {
+      "bytes": 19144412,
+      "original_path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/best-full-D-archive-upload-v1/hcsn-best-full-D-independent-replay-20261110-v1.zip",
+      "sha256": "ff41e5ef909708a5c2472f6786d0e82b6d69a80d968047de2746bcaf84daaac5"
+    },
+    "copied_original_models": false,
+    "members": 254,
+    "original_controller_container_zip_preserved_native_not_reuploaded": {
+      "bytes": 16811170,
+      "path": "/home/qian-qi/hepta-hcsn-best-full-D-replay-20261110-c385-v1.zip",
+      "sha256": "88183d8933634e83a6a48d70393c8e81bc738b377af35f0940b1704dd284b7b0"
+    },
+    "originals_unchanged": true,
+    "package_CPU_seconds": 3.2066186780000003,
+    "package_wall_seconds": 3.2191201529931277,
+    "replay_file_member_coverage": "Every original replay-directory file is included byte-for-byte under replay/; this combined archive is a distinct container.",
+    "scientific_admission": "HOLD",
+    "small_handoff": {
+      "bytes": 257038,
+      "original_path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/best-full-D-archive-upload-v1/hcsn-best-full-D-small-originals-20261110-v1.zip",
+      "sha256": "82f0d43ec6921e0a2b4bb42180d37000f400e13657186264679c382ca393f04d"
+    },
+    "status": "packaged_all_six_readonly_replays",
+    "summary_sha256": "a258f3c7d5ff27d78377bce15a1bf97427f3b5e9f92646b3b64f4c135ecfff0a",
+    "training_adequacy_established": false
+  },
+  "archive_receipt_sha256": "b15a7ffb3d8b34d7a4a9d9076366dbbf4a3bc48e71e1d980b2ca824f78ec0c20",
+  "assets": [
+    {
+      "all_members_and_CRC_verified": true,
+      "anonymous_asset_API": {
+        "HTTP_status": "404",
+        "authorization_header_sent": false,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/releases/assets/732788592"
+      },
+      "anonymous_asset_browser": {
+        "HTTP_status": "404",
+        "authorization_header_sent": false,
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/releases/download/untagged-0807e6b5e132bde20abf/hcsn-best-full-D-independent-replay-20261110-v1.zip"
+      },
+      "asset_id": 732788592,
+      "authenticated_full_readback_verified": true,
+      "authenticated_readback_sha256": "ff41e5ef909708a5c2472f6786d0e82b6d69a80d968047de2746bcaf84daaac5",
+      "bytes": 19144412,
+      "disposition": "uploaded_once",
+      "name": "hcsn-best-full-D-independent-replay-20261110-v1.zip",
+      "sha256": "ff41e5ef909708a5c2472f6786d0e82b6d69a80d968047de2746bcaf84daaac5"
+    }
+  ],
+  "automatic_retry": false,
+  "commands": [
+    {
+      "argv": [
+        "/usr/bin/gh",
+        "api",
+        "repos/TrillionniumFoundation/hepta-private-ci/releases/440410488"
+      ],
+      "label": "draft-before",
+      "returncode": 0,
+      "status": "completed",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "723182fb1593ad5304c614684df9bcc7661445b2480b22dd11154c709fff0572",
+      "timeout_seconds": 120,
+      "waited_child_CPU_seconds": 0.173765,
+      "wall_seconds": 1.4606399789918214
+    },
+    {
+      "argv": [
+        "/usr/bin/curl",
+        "--disable",
+        "--silent",
+        "--show-error",
+        "--location",
+        "--max-time",
+        "60",
+        "--output",
+        "/dev/null",
+        "--write-out",
+        "%{http_code}",
+        "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/releases/440410488"
+      ],
+      "label": "anonymous-release-before",
+      "returncode": 0,
+      "status": "completed",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "6b3c238ebcf1f3c07cf0e556faa82c6b8fe96840ff4b6b7e9962a2d855843a0b",
+      "timeout_seconds": 70,
+      "waited_child_CPU_seconds": 0.08837099999999998,
+      "wall_seconds": 1.370410175062716
+    },
+    {
+      "argv": [
+        "/usr/bin/gh",
+        "api",
+        "repos/TrillionniumFoundation/hepta-private-ci/releases/440410488/assets?per_page=100&page=1"
+      ],
+      "label": "asset-list-before-page-1",
+      "returncode": 0,
+      "status": "completed",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "4b1a6d5cfd05fb7f247d396f7047ffe742085fb1dd8b0354ebda7bf12ef07b0d",
+      "timeout_seconds": 120,
+      "waited_child_CPU_seconds": 0.16352499999999998,
+      "wall_seconds": 1.7278430708684027
+    },
+    {
+      "argv": [
+        "/usr/bin/gh",
+        "release",
+        "upload",
+        "hcsn-research-20261110-c385",
+        "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/best-full-D-archive-upload-v1/hcsn-best-full-D-independent-replay-20261110-v1.zip",
+        "--repo",
+        "TrillionniumFoundation/hepta-private-ci"
+      ],
+      "label": "upload-once",
+      "returncode": 0,
+      "status": "completed",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "timeout_seconds": 300,
+      "waited_child_CPU_seconds": 0.30030100000000004,
+      "wall_seconds": 12.11672817892395
+    },
+    {
+      "argv": [
+        "/usr/bin/gh",
+        "api",
+        "repos/TrillionniumFoundation/hepta-private-ci/releases/440410488"
+      ],
+      "label": "draft-after-upload",
+      "returncode": 0,
+      "status": "completed",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "2cda742ad380a8ecd46343384993e7cb17ad958bad9bd1076cc89ada1936c81f",
+      "timeout_seconds": 120,
+      "waited_child_CPU_seconds": 0.154184,
+      "wall_seconds": 1.4906396770384163
+    },
+    {
+      "argv": [
+        "/usr/bin/gh",
+        "api",
+        "repos/TrillionniumFoundation/hepta-private-ci/releases/440410488/assets?per_page=100&page=1"
+      ],
+      "label": "asset-list-after-page-1",
+      "returncode": 0,
+      "status": "completed",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "c57c3d859e385cf8d2c4910a976698c54065cfc940475a481aa2398ff790e7f2",
+      "timeout_seconds": 120,
+      "waited_child_CPU_seconds": 0.15560100000000002,
+      "wall_seconds": 1.982732807053253
+    },
+    {
+      "argv": [
+        "/usr/bin/gh",
+        "release",
+        "download",
+        "hcsn-research-20261110-c385",
+        "--repo",
+        "TrillionniumFoundation/hepta-private-ci",
+        "--pattern",
+        "hcsn-best-full-D-independent-replay-20261110-v1.zip",
+        "--dir",
+        "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/best-full-D-asset-upload-v2/authenticated-readback"
+      ],
+      "label": "authenticated-download",
+      "returncode": 0,
+      "status": "completed",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "timeout_seconds": 600,
+      "waited_child_CPU_seconds": 0.809062,
+      "wall_seconds": 8.1419537961483
+    },
+    {
+      "argv": [
+        "/usr/bin/curl",
+        "--disable",
+        "--silent",
+        "--show-error",
+        "--location",
+        "--max-time",
+        "60",
+        "--output",
+        "/dev/null",
+        "--write-out",
+        "%{http_code}",
+        "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/releases/assets/732788592"
+      ],
+      "label": "anonymous-asset-api",
+      "returncode": 0,
+      "status": "completed",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "6b3c238ebcf1f3c07cf0e556faa82c6b8fe96840ff4b6b7e9962a2d855843a0b",
+      "timeout_seconds": 70,
+      "waited_child_CPU_seconds": 0.08907500000000002,
+      "wall_seconds": 1.6177927369717509
+    },
+    {
+      "argv": [
+        "/usr/bin/curl",
+        "--disable",
+        "--silent",
+        "--show-error",
+        "--location",
+        "--max-time",
+        "60",
+        "--output",
+        "/dev/null",
+        "--write-out",
+        "%{http_code}",
+        "https://github.com/TrillionniumFoundation/hepta-private-ci/releases/download/untagged-0807e6b5e132bde20abf/hcsn-best-full-D-independent-replay-20261110-v1.zip"
+      ],
+      "label": "anonymous-asset-browser",
+      "returncode": 0,
+      "status": "completed",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "6b3c238ebcf1f3c07cf0e556faa82c6b8fe96840ff4b6b7e9962a2d855843a0b",
+      "timeout_seconds": 70,
+      "waited_child_CPU_seconds": 0.08999999999999975,
+      "wall_seconds": 1.6255045461002737
+    },
+    {
+      "argv": [
+        "/usr/bin/gh",
+        "api",
+        "repos/TrillionniumFoundation/hepta-private-ci/releases/440410488"
+      ],
+      "label": "draft-final",
+      "returncode": 0,
+      "status": "completed",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "2cda742ad380a8ecd46343384993e7cb17ad958bad9bd1076cc89ada1936c81f",
+      "timeout_seconds": 120,
+      "waited_child_CPU_seconds": 0.15058400000000016,
+      "wall_seconds": 1.4876953400671482
+    },
+    {
+      "argv": [
+        "/usr/bin/curl",
+        "--disable",
+        "--silent",
+        "--show-error",
+        "--location",
+        "--max-time",
+        "60",
+        "--output",
+        "/dev/null",
+        "--write-out",
+        "%{http_code}",
+        "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/releases/440410488"
+      ],
+      "label": "anonymous-release-after",
+      "returncode": 0,
+      "status": "completed",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "6b3c238ebcf1f3c07cf0e556faa82c6b8fe96840ff4b6b7e9962a2d855843a0b",
+      "timeout_seconds": 70,
+      "waited_child_CPU_seconds": 0.09582000000000002,
+      "wall_seconds": 1.6350000721868128
+    },
+    {
+      "argv": [
+        "/usr/bin/gh",
+        "api",
+        "repos/TrillionniumFoundation/hepta-private-ci/releases/440410488"
+      ],
+      "label": "draft-finally-readback",
+      "returncode": 0,
+      "status": "completed",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "2cda742ad380a8ecd46343384993e7cb17ad958bad9bd1076cc89ada1936c81f",
+      "timeout_seconds": 120,
+      "waited_child_CPU_seconds": 0.1692659999999998,
+      "wall_seconds": 1.4877036057878286
+    }
+  ],
+  "computation_CPU_seconds": 1.532250731,
+  "cost_scope": "Main-entry packaging/network interval; outer wrapper records complete process. Nested package/command times overlap. Replay and validation occurred in previous separately measured processes.",
+  "driver_sha256": "66fd8d70141ca681ff6ee71977b6644a8766ee8dfb2f732a6a32bfd3a1a4bfe4",
+  "energy_joules": null,
+  "final_draft_identity_verified": {
+    "draft": true,
+    "id": 440410488,
+    "tag_name": "hcsn-research-20261110-c385"
+  },
+  "finished_utc": "2026-11-10T20:08:18.264797+00:00",
+  "main_entry_wall_seconds": 37.65866370592266,
+  "overwrite_existing_assets": false,
+  "own_peak_rss_bytes": 30269440,
+  "publish_requested": false,
+  "release_id": 440410488,
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "schema": "independent-best-D-draft-publication-v2",
+  "scientific_admission": "HOLD",
+  "started_utc": "2026-11-10T20:07:40.606375+00:00",
+  "status": "full_replay_asset_verified_draft_unchanged",
+  "waited_children_CPU_seconds": 2.439554
+}
