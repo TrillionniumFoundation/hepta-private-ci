@@ -147,6 +147,18 @@ class LocalDeliveryTests(unittest.TestCase):
             delivery.commit_delivery(self.output, self.result, changed, before_commit=lambda: None)
         self.assertFalse(self.output.exists())
 
+    def test_replaced_fifo_is_refused_without_blocking_cold_readback(self):
+        self.commit()
+        target = self.output / "generated.txt"
+        target.unlink()
+        os.mkfifo(target)
+        refused = subprocess.run([
+            sys.executable, "-m", "scripts.ndu_bimodal.cli", "read-delivery",
+            "--output", str(self.output), "--identity", self.identity,
+        ], capture_output=True, text=True, timeout=2)
+        self.assertNotEqual(refused.returncode, 0)
+        self.assertEqual(refused.stdout, "")
+
     def test_local_receipt_cannot_claim_production_adoption(self):
         original = dict(self.result)
         del original["delivery"]
