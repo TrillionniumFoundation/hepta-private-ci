@@ -223,3 +223,6 @@ impl CellGenerationWorkerV2 for CellTemporalQ24GenerationWorkerV1 {
     }
 }
 
+#[cfg(test)]
+#[path = "cell_temporal_q24_tests.rs"]
+mod tests;
