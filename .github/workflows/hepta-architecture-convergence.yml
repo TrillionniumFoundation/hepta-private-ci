@@ -38,6 +38,35 @@ jobs:
           ref: ${{ env.SOURCE_SHA }}
           fetch-depth: 1
           persist-credentials: false
+      - name: Freeze current PR base against exact source
+        id: current_pr_base
+        if: github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          BASE_REF: ${{ github.event.pull_request.base.ref }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$PR_NUMBER"
+          evidence="$RUNNER_TEMP/hepta-command-records/pr-base-snapshot"
+          mkdir -p "$evidence"
+          gh api "repos/$REPO/pulls/$PR_NUMBER" > "$evidence/pr.json" 2> "$evidence/pr.stderr"
+          observed_source="$(jq -er '.head.sha' "$evidence/pr.json")"
+          observed_base_ref="$(jq -er '.base.ref' "$evidence/pr.json")"
+          observed_base="$(jq -er '.base.sha' "$evidence/pr.json")"
+          test "$observed_source" = "$SOURCE_SHA"
+          test "$observed_base_ref" = "$BASE_REF"
+          [[ "$observed_base" =~ ^[0-9a-f]{40}$ ]]
+          jq -n --arg event_base "$BASE_SHA" --arg current_base "$observed_base" \
+            --arg source "$SOURCE_SHA" --arg base_ref "$BASE_REF" \
+            '{schema:"hepta-current-pr-base-v1", event_base:$event_base,
+              current_base:$current_base, expected_source:$source,
+              base_ref:$base_ref, source_matched:true, base_ref_matched:true,
+              event_base_is_current:($event_base==$current_base)}' > "$evidence/binding.json"
+          printf 'sha=%s\n' "$observed_base" >> "$GITHUB_OUTPUT"
+          printf 'BASE_SHA=%s\n' "$observed_base" >> "$GITHUB_ENV"
       - name: Fetch exact qualification history
         env:
           GH_TOKEN: ${{ github.token }}
@@ -103,7 +132,7 @@ jobs:
         if: matrix.lane == 'base-merge'
         uses: ./.github/actions/hepta-synthetic-merge
         with:
-          base-sha: ${{ env.BASE_SHA }}
+          base-sha: ${{ steps.current_pr_base.outputs.sha || env.BASE_SHA }}
           source-sha: ${{ env.SOURCE_SHA }}
           pr-number: ${{ github.event.pull_request.number }}
           author-name: Hepta Docs CI
