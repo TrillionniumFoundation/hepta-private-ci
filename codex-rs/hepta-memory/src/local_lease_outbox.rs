@@ -5096,9 +5096,7 @@ async fn verify_notes_fence_proof_in_transaction(
     )
     .await?
     .ok_or_else(|| {
-        LocalLeaseOutboxError::Invalid(
-            "Notes fence proof has no cancellation outbox".to_string(),
-        )
+        LocalLeaseOutboxError::Invalid("Notes fence proof has no cancellation outbox".to_string())
     })?;
     if cancellation_outbox.topic != crate::NOTES_FENCE_TOPIC_V1 {
         return Err(LocalLeaseOutboxError::Invalid(
@@ -5953,4 +5951,3 @@ pub(crate) async fn verify_local_lease_outbox(
         .map_err(crate::cognitive_store::unavailable)?;
     Ok(())
 }
-

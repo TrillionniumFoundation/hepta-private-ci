@@ -2,7 +2,11 @@ use super::*;
 use pretty_assertions::assert_eq;
 
 fn target() -> NotesTargetIdentity {
-    NotesTargetIdentity { session_instance: "a".repeat(32), task_id: 1, incarnation: "b".repeat(32) }
+    NotesTargetIdentity {
+        session_instance: "a".repeat(32),
+        task_id: 1,
+        incarnation: "b".repeat(32),
+    }
 }
 
 fn payload() -> String {
@@ -23,13 +27,19 @@ fn notes_fence_terminal_receipt_requires_exact_original_binding() {
     let good = receipt();
     let checked = NotesTerminalReceipt::from_json(&payload(), &good.to_string()).unwrap();
     assert_eq!(checked.outcome(), crate::LocalReconcileOutcome::Committed);
-    assert_eq!(checked.document_state().unwrap(), (target(), 8, Sha256Digest::parse(&"d".repeat(64)).unwrap()));
-    for (key, value) in [("original_operation_id", serde_json::json!("another")),
+    assert_eq!(
+        checked.document_state().unwrap(),
+        (target(), 8, Sha256Digest::parse(&"d".repeat(64)).unwrap())
+    );
+    for (key, value) in [
+        ("original_operation_id", serde_json::json!("another")),
         ("original_payload_sha256", serde_json::json!("e".repeat(64))),
-        ("previous_revision", serde_json::json!(6)), ("revision", serde_json::json!(9)),
-        ("text_sha256", serde_json::json!("bad"))]
-    {
-        let mut changed = good.clone(); changed["result"][key] = value;
+        ("previous_revision", serde_json::json!(6)),
+        ("revision", serde_json::json!(9)),
+        ("text_sha256", serde_json::json!("bad")),
+    ] {
+        let mut changed = good.clone();
+        changed["result"][key] = value;
         assert!(NotesTerminalReceipt::from_json(&payload(), &changed.to_string()).is_err());
     }
     let mut changed = good;

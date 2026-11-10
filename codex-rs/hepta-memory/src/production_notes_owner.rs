@@ -190,28 +190,22 @@ impl ProductionDurableWriter {
                 "Notes fence source states do not permit original settlement".to_string(),
             ));
         }
-        let (event_id, receipt, receipt_digest, event_digest): (
-            String,
-            String,
-            String,
-            String,
-        ) = sqlx::query_as(
-            "SELECT event_id, payload_json, payload_sha256, event_sha256
+        let (event_id, receipt, receipt_digest, event_digest): (String, String, String, String) =
+            sqlx::query_as(
+                "SELECT event_id, payload_json, payload_sha256, event_sha256
              FROM cognitive_local_events
              WHERE lease_id = ? AND occurrence_key = ?
                AND event_kind = 'reconcile_committed'
              LIMIT 1",
-        )
-        .bind(self.lease_id())
-        .bind(cancellation_operation_id)
-        .fetch_optional(self.store.observation_pool())
-        .await
-        .map_err(|error| ProductionWriterError::Durability(error.to_string()))?
-        .ok_or_else(|| {
-            ProductionWriterError::Invalid(
-                "committed Notes fence event is absent".to_string(),
             )
-        })?;
+            .bind(self.lease_id())
+            .bind(cancellation_operation_id)
+            .fetch_optional(self.store.observation_pool())
+            .await
+            .map_err(|error| ProductionWriterError::Durability(error.to_string()))?
+            .ok_or_else(|| {
+                ProductionWriterError::Invalid("committed Notes fence event is absent".to_string())
+            })?;
         if Sha256Digest::for_bytes(receipt.as_bytes()).as_str() != receipt_digest {
             return Err(ProductionWriterError::Invalid(
                 "committed Notes fence event digest mismatch".to_string(),
@@ -347,4 +341,3 @@ impl ProductionDurableWriter {
 #[cfg(test)]
 #[path = "production_notes_owner_tests.rs"]
 mod tests;
-

@@ -107,10 +107,10 @@ pub(crate) use retirement_ack::RecordedRetirementAck;
 #[path = "production_notes_owner.rs"]
 mod notes_owner;
 
-#[path = "production_notes_read_fence.rs"]
-mod notes_read_fence;
 #[path = "production_notes_cancellation.rs"]
 mod notes_cancellation;
+#[path = "production_notes_read_fence.rs"]
+mod notes_read_fence;
 pub(crate) use notes_owner::NotesPreDispatchRejection;
 pub use notes_owner::NotesRetirementPermit;
 
@@ -4497,4 +4497,3 @@ mod final_use_dispatch_tests {
         );
     }
 }
-

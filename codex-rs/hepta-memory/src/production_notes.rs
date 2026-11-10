@@ -34,10 +34,11 @@ pub use previous::ProductionNotesRecoveryTarget;
 #[path = "production_notes_fence.rs"]
 mod fence;
 pub use fence::NOTES_FENCE_TOPIC_V1;
-pub(crate) use fence::{
-    NotesFenceProof, cancellation_payload, fence_settlement_reference, is_notes_topic,
-    verify_fence_settlement,
-};
+pub(crate) use fence::NotesFenceProof;
+pub(crate) use fence::cancellation_payload;
+pub(crate) use fence::fence_settlement_reference;
+pub(crate) use fence::is_notes_topic;
+pub(crate) use fence::verify_fence_settlement;
 
 pub const NOTES_REPLACE_TOPIC_V1: &str = "trill.notes.replace.v1";
 pub const NOTES_REQUEST_MAX_BYTES: usize = 8192;
@@ -332,7 +333,8 @@ impl NotesTerminalReceipt {
         if payload.is_empty() || payload.len() > NOTES_REQUEST_MAX_BYTES {
             return Err("Notes terminal original payload bound".into());
         }
-        let value: serde_json::Value = serde_json::from_str(payload).map_err(|_| "invalid Notes payload")?;
+        let value: serde_json::Value =
+            serde_json::from_str(payload).map_err(|_| "invalid Notes payload")?;
         if value["action"] == "fence_note_operation" {
             return fence::terminal_receipt(payload, evidence);
         }
@@ -558,4 +560,3 @@ mod tests;
 #[cfg(test)]
 #[path = "production_notes_model_tests.rs"]
 mod model_tests;
-
