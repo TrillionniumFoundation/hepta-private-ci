@@ -98,13 +98,25 @@ provenance, byte drops, and local elapsed/CPU time. `verify_read_receipt` checks
 internal content consistency, not honest execution. Receipts are evaluator
 artifacts and must never become an alternate actor memory channel.
 
+The MEM7 integrity extension applies the source allowlist to declared transitive
+dependencies before retrieval and association. It cannot detect undeclared
+copying by an untrusted writer. `episodic_receipt.py` now also checks mode and
+association semantics, exact roster permutations and delivery/drop partitions,
+source/provenance consistency, bounds, and delivered-record chronology against
+the claimed authority generation. Recomputing a digest does not make these
+contradictions valid. Historical v1 receipts without the dependency-rejection
+counter remain readable; their absence does not prove that filtering occurred.
+The verifier still cannot establish source authentication, actual execution,
+omitted record byte costs, current authority honesty or external effect fencing.
+
 ## Reviewable stages and validation
 
 Stage 1 is `episodic_memory.py` with `test_episodic_memory.py`: storage,
 working-state lifetime, update/revocation, and snapshot/frontier correctness.
-Stage 2 is `episodic_retrieval.py` with `test_episodic_retrieval.py`: deterministic
-baselines, intervention receipts, and new-process reads. Each module is below
-500 lines. The components use only the Python standard library.
+Stage 2 is `episodic_retrieval.py` and `episodic_receipt.py` with
+`test_episodic_retrieval.py`: deterministic baselines, intervention receipts,
+and new-process reads. Each implementation module is below 500 lines. The
+components use only the Python standard library.
 
 ```sh
 python -m unittest scripts.ndu_real_runtime.test_episodic_memory scripts.ndu_real_runtime.test_episodic_retrieval -v

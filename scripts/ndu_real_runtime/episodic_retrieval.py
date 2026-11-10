@@ -5,8 +5,7 @@ head is supplied: a caller may supply a version-bound permutation callback.
 """
 
 import argparse
-from collections import Counter
-import hashlib
+from collections import Counter, defaultdict, deque
 import json
 import math
 import random
@@ -14,12 +13,20 @@ import re
 import time
 
 from .episodic_memory import (
-    EpisodicStore, bounded_text, canonical_bytes, digest, integer, sha256, validate_record,
+    EpisodicStore,
+    bounded_text,
+    canonical_bytes,
+    digest,
+    integer,
+    sha256,
 )
-
-
-MODES = {"on", "off", "retrieval_off", "delivery_off", "association_off"}
-STRATEGIES = {"exact_kv", "bm25", "uniform_replay", "icl"}
+from .episodic_receipt import (
+    MODES,
+    STRATEGIES,
+    assemble_context,
+    hashlib_sha,
+    verify_read_receipt,
+)
 
 
 def _tokens(value):
@@ -29,8 +36,10 @@ def _tokens(value):
 def exact_kv(records, key, limit):
     """Exact case-sensitive key matching within the caller's approved sources."""
     bounded_text(key, "exact key")
-    return sorted((r for r in records if r["key"] == key),
-                  key=lambda r: (r["source_id"], r["key"], r["record_id"]))[:limit]
+    return sorted(
+        (r for r in records if r["key"] == key),
+        key=lambda r: (r["source_id"], r["key"], r["record_id"]),
+    )[:limit]
 
 
 def bm25(records, query, limit):
@@ -50,37 +59,71 @@ def bm25(records, query, limit):
         for term in sorted(terms):
             count = document[term]
             if count:
-                idf = math.log1p((len(records) - frequencies[term] + 0.5) /
-                                (frequencies[term] + 0.5))
-                score += idf * count * 2.2 / (count + 1.2 * (0.25 + 0.75 * length / average))
+                idf = math.log1p(
+                    (len(records) - frequencies[term] + 0.5) / (frequencies[term] + 0.5)
+                )
+                score += (
+                    idf * count * 2.2 / (count + 1.2 * (0.25 + 0.75 * length / average))
+                )
         if score > 0:
             scored.append((score, record))
     scored.sort(key=lambda pair: (-pair[0], pair[1]["record_id"]))
     return [record for _, record in scored[:limit]]
 
 
-def assemble_context(records, max_context_bytes):
-    """Admit whole JSON records under a UTF-8 budget; never truncate a fact."""
-    integer(max_context_bytes, "context byte bound", 0, 65536)
-    lines, delivered, dropped = [], [], []
-    used = 0
-    for record in records:
-        line = canonical_bytes({k: record[k] for k in (
-            "record_id", "namespace", "source_id", "key", "version", "text", "provenance"
-        )}).decode()
-        addition = len(line.encode()) + bool(lines)
-        if used + addition > max_context_bytes:
-            dropped.append(record["record_id"])
+def authorized_source_closure(records, source_ids):
+    """Filter dependency ancestry, not just the record's own source_id.
+
+    An allowed-source summary can depend transitively on an unapproved source.
+    Such a derived record must never enter retrieval, ranking or delivery.
+    This assumes the store's dependency declarations are complete; it does not
+    authenticate writers or detect undeclared copying between sources.
+    """
+    allowed = set(source_ids)
+    eligible = {
+        record["record_id"]: record
+        for record in records
+        if record["source_id"] in allowed
+    }
+    original_count = len(eligible)
+    dependents = defaultdict(list)
+    pending = deque()
+    for record_id, record in eligible.items():
+        if any(dependency not in eligible for dependency in record["dependencies"]):
+            pending.append(record_id)
+        for dependency in record["dependencies"]:
+            if dependency in eligible:
+                dependents[dependency].append(record_id)
+    # Each allowed record/dependency edge is visited at most once; a long
+    # adversarial chain must not turn source filtering into quadratic work.
+    while pending:
+        record_id = pending.popleft()
+        if record_id not in eligible:
             continue
-        lines.append(line)
-        delivered.append(record)
-        used += addition
-    return "\n".join(lines), delivered, dropped
+        del eligible[record_id]
+        pending.extend(dependents[record_id])
+    return (
+        [record for record in records if record["record_id"] in eligible],
+        original_count - len(eligible),
+    )
 
 
-def read_memory(store, *, session_id, source_ids, query="", key=None, mode="on",
-                strategy="bm25", limit=8, max_context_bytes=8192,
-                snapshot_path=None, seed=0, association=None, association_id=None):
+def read_memory(
+    store,
+    *,
+    session_id,
+    source_ids,
+    query="",
+    key=None,
+    mode="on",
+    strategy="bm25",
+    limit=8,
+    max_context_bytes=8192,
+    snapshot_path=None,
+    seed=0,
+    association=None,
+    association_id=None,
+):
     """Return delivered records/context and an audit-only, hash-bound read receipt.
 
     off never opens a view; retrieval_off reads the store but skips retrieval;
@@ -90,7 +133,12 @@ def read_memory(store, *, session_id, source_ids, query="", key=None, mode="on",
     """
     wall, cpu = time.perf_counter(), time.process_time()
     bounded_text(session_id, "session id")
-    if not isinstance(mode, str) or mode not in MODES or not isinstance(strategy, str) or strategy not in STRATEGIES:
+    if (
+        not isinstance(mode, str)
+        or mode not in MODES
+        or not isinstance(strategy, str)
+        or strategy not in STRATEGIES
+    ):
         raise ValueError("explicit supported mode and strategy required")
     if mode != "off" and not isinstance(store, EpisodicStore):
         raise ValueError("an existing current authority store is required")
@@ -114,25 +162,47 @@ def read_memory(store, *, session_id, source_ids, query="", key=None, mode="on",
     elif association_id is not None:
         raise ValueError("association identity supplied without an implementation")
     receipt = {
-        "schema": "hepta.mem6.read-receipt.v1", "session_id": session_id,
-        "mode": mode, "strategy": strategy, "source_ids": sorted(source_ids),
-        "query_sha256": digest({"query": query, "key": key}), "limit": limit,
-        "max_context_bytes": max_context_bytes, "replay_seed": seed,
-        "store_read": False, "retrieval_executed": False, "view_receipt": None,
-        "eligible_count": 0, "retrieved_ids": [], "selected_ids": [],
-        "delivered_ids": [], "byte_dropped_ids": [], "context_bytes": 0,
-        "association_status": ("disabled" if mode == "association_off" else
-                               "not_run" if association is not None else "unavailable"),
-        "association_id": association_id, "association_called": False,
+        "schema": "hepta.mem6.read-receipt.v1",
+        "session_id": session_id,
+        "mode": mode,
+        "strategy": strategy,
+        "source_ids": sorted(source_ids),
+        "query_sha256": digest({"query": query, "key": key}),
+        "limit": limit,
+        "max_context_bytes": max_context_bytes,
+        "replay_seed": seed,
+        "store_read": False,
+        "retrieval_executed": False,
+        "view_receipt": None,
+        "eligible_count": 0,
+        "source_dependency_rejections": 0,
+        "retrieved_ids": [],
+        "selected_ids": [],
+        "delivered_ids": [],
+        "byte_dropped_ids": [],
+        "context_bytes": 0,
+        "association_status": (
+            "disabled"
+            if mode == "association_off"
+            else "not_run"
+            if association is not None
+            else "unavailable"
+        ),
+        "association_id": association_id,
+        "association_called": False,
         "association_authentication_established": False,
-        "scientific_acceptance": "HOLD", "real_task_benefit_established": False,
+        "scientific_acceptance": "HOLD",
+        "real_task_benefit_established": False,
     }
     selected, delivered, context = [], [], ""
     if mode != "off":
         view = store.view(snapshot_path=snapshot_path)
         receipt.update(store_read=True, view_receipt=view["receipt"])
-        records = [r for r in view["records"] if r["source_id"] in set(source_ids)]
+        records, dependency_rejections = authorized_source_closure(
+            view["records"], source_ids
+        )
         receipt["eligible_count"] = len(records)
+        receipt["source_dependency_rejections"] = dependency_rejections
         if mode != "retrieval_off":
             receipt["retrieval_executed"] = True
             if strategy == "exact_kv":
@@ -143,53 +213,46 @@ def read_memory(store, *, session_id, source_ids, query="", key=None, mode="on",
                 ordered = sorted(records, key=lambda r: r["record_id"])
                 selected = random.Random(seed).sample(ordered, min(limit, len(ordered)))
             else:
-                selected = sorted(records, key=lambda r: (r["write_sequence"], r["record_id"]))[:limit]
+                selected = sorted(
+                    records, key=lambda r: (r["write_sequence"], r["record_id"])
+                )[:limit]
             receipt["retrieved_ids"] = [r["record_id"] for r in selected]
             if mode != "association_off" and association is not None:
                 # Deep-copy callback inputs so ranking cannot rewrite source facts.
                 order = association(query, tuple(json.loads(canonical_bytes(selected))))
                 ids = receipt["retrieved_ids"]
-                if (not isinstance(order, (tuple, list)) or len(order) != len(ids)
-                        or any(not isinstance(value, str) for value in order)
-                        or set(order) != set(ids)):
-                    raise ValueError("association must return an exact record-id permutation")
+                if (
+                    not isinstance(order, (tuple, list))
+                    or len(order) != len(ids)
+                    or any(not isinstance(value, str) for value in order)
+                    or set(order) != set(ids)
+                ):
+                    raise ValueError(
+                        "association must return an exact record-id permutation"
+                    )
                 by_id = {r["record_id"]: r for r in selected}
                 selected = [by_id[record_id] for record_id in order]
                 receipt.update(association_status="applied", association_called=True)
             receipt["selected_ids"] = [r["record_id"] for r in selected]
             if mode != "delivery_off":
-                context, delivered, dropped = assemble_context(selected, max_context_bytes)
-                receipt.update(delivered_ids=[r["record_id"] for r in delivered],
-                               byte_dropped_ids=dropped, context_bytes=len(context.encode()))
-    receipt.update(context_sha256=hashlib_sha(context),
-                   decision_cpu_seconds=time.process_time() - cpu,
-                   decision_wall_seconds=time.perf_counter() - wall,
-                   provenance=[{"record_id": r["record_id"], **r["provenance"]} for r in delivered])
+                context, delivered, dropped = assemble_context(
+                    selected, max_context_bytes
+                )
+                receipt.update(
+                    delivered_ids=[r["record_id"] for r in delivered],
+                    byte_dropped_ids=dropped,
+                    context_bytes=len(context.encode()),
+                )
+    receipt.update(
+        context_sha256=hashlib_sha(context),
+        decision_cpu_seconds=time.process_time() - cpu,
+        decision_wall_seconds=time.perf_counter() - wall,
+        provenance=[
+            {"record_id": r["record_id"], **r["provenance"]} for r in delivered
+        ],
+    )
     receipt["receipt_sha256"] = digest(receipt)
     return {"records": delivered, "context": context, "receipt": receipt}
-
-
-def hashlib_sha(text):
-    # A content digest covers the actual delivered bytes, including the empty case.
-    return hashlib.sha256(text.encode()).hexdigest()
-
-
-def verify_read_receipt(result):
-    """Check receipt consistency, not execution authentication or owner honesty."""
-    try:
-        receipt = result["receipt"]
-        records = [validate_record(r) for r in result["records"]]
-        context, _, dropped = assemble_context(records, receipt["max_context_bytes"])
-        return (
-            receipt["receipt_sha256"] == digest({k: v for k, v in receipt.items() if k != "receipt_sha256"})
-            and receipt["context_sha256"] == hashlib_sha(result["context"])
-            and receipt["context_bytes"] == len(result["context"].encode())
-            and receipt["delivered_ids"] == [r["record_id"] for r in result["records"]]
-            and set(receipt["delivered_ids"]) <= set(receipt["selected_ids"])
-            and context == result["context"] and not dropped
-        )
-    except (KeyError, TypeError, ValueError):
-        return False
 
 
 def main():
@@ -210,13 +273,30 @@ def main():
     if args.mode != "off" and args.store is None:
         parser.error("--store is required whenever persistence is accessed")
     # Off must work even when no authority is available; it reads no state.
-    store = None if args.mode == "off" else EpisodicStore(
-        args.store, namespace=args.namespace, create=False)
-    print(json.dumps(read_memory(
-        store, session_id=args.session, source_ids=args.source, query=args.query,
-        key=args.key, mode=args.mode, strategy=args.strategy, snapshot_path=args.snapshot,
-        limit=args.limit, max_context_bytes=args.max_context_bytes, seed=args.seed,
-    ), sort_keys=True, ensure_ascii=False))
+    store = (
+        None
+        if args.mode == "off"
+        else EpisodicStore(args.store, namespace=args.namespace, create=False)
+    )
+    print(
+        json.dumps(
+            read_memory(
+                store,
+                session_id=args.session,
+                source_ids=args.source,
+                query=args.query,
+                key=args.key,
+                mode=args.mode,
+                strategy=args.strategy,
+                snapshot_path=args.snapshot,
+                limit=args.limit,
+                max_context_bytes=args.max_context_bytes,
+                seed=args.seed,
+            ),
+            sort_keys=True,
+            ensure_ascii=False,
+        )
+    )
 
 
 if __name__ == "__main__":
