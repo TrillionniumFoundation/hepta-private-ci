@@ -682,13 +682,56 @@
               "act2_run": 42893302150,
               "act2_status": "SUCCESS_EXACT_SOURCE_WITH_FINAL_CLEAN_FIX",
               "blocking_run": 42893302790,
-              "blocking_status": "QUEUED_WITH_INDEPENDENT_EXTERNAL_FENCE_FAILURE",
+              "blocking_status": "TERMINAL_FAILURE_MIXED_EXTERNAL_AND_UNRESOLVED_BAZEL_RESULTS",
               "blocking_external_failure": {
                 "job": 130101597293,
                 "name": "Blob size policy / Blob size policy",
                 "status": "FAILURE_BEFORE_CHECKOUT",
                 "exact_result": "openai/fence resident service exited before readiness with unsupported_resolver_layout; checkout and blob-size checks were skipped; the subsequent local-action path was absent because checkout never ran",
                 "classification": "hosted Fence/runner setup failure; not a source, blob-size, CALLERS or semantic test result"
+              },
+              "blocking_terminal_classification": {
+                "cargo_deny": {
+                  "job": 130102573547,
+                  "status": "FAILURE_GITHUB_INTERNAL_SERVER_ERROR",
+                  "correlation_id": "f28b1d82-925e-4b84-be20-dd1ae0294b94",
+                  "classification": "the original job annotation is an internal server error, so this run supplies no dependency, license or advisory verdict"
+                },
+                "macos_intel_bazel": {
+                  "job": 130102574610,
+                  "status": "FAILURE_REMOTE_BUILDBUDDY_UNAVAILABLE",
+                  "exit_code": 34,
+                  "exact_result": "three Rust compile actions and the Build Event Protocol upload reported UNAVAILABLE/io exception; all four retries to remote.buildbuddy.io failed",
+                  "classification": "remote execution/service availability failure; not a demonstrated Rust compile diagnostic or test assertion failure"
+                },
+                "windows_bazel_shards": [
+                  {
+                    "shard": "1/4",
+                    "job": 130102574984,
+                    "status": "FAILURE_EXIT_3_TARGET_UNKNOWN",
+                    "classification": "no failed target is named by the public original annotation; semantic cause remains UNKNOWN"
+                  },
+                  {
+                    "shard": "2/4",
+                    "job": 130102574642,
+                    "status": "FAILURE_TARGET_NAMED_CAUSE_UNKNOWN",
+                    "failed_target": "//codex-rs/app-server:app-server-all-test"
+                  },
+                  {
+                    "shard": "3/4",
+                    "job": 130102574589,
+                    "status": "FAILURE_TARGET_NAMED_CAUSE_UNKNOWN",
+                    "failed_target": "//codex-rs/tui:tui-unit-tests"
+                  },
+                  {
+                    "shard": "4/4",
+                    "job": 130102574505,
+                    "status": "FAILURE_TARGET_NAMED_CAUSE_UNKNOWN",
+                    "failed_target": "//codex-rs/core:core-all-test"
+                  }
+                ],
+                "shared_annotation": "all four Windows shards and cargo-deny also expose GitHub internal server correlation f28b1d82-925e-4b84-be20-dd1ae0294b94; that co-occurrence does not erase the three named target failures or prove their cause",
+                "passing_scope": "Bazel tests on Linux gnu and musl, Linux and Windows clippy, and Linux and Windows release builds passed at this exact source; no whole-run pass is inferred"
               },
               "architecture_run": 42893302196,
               "architecture_status": "SUCCESS_SOURCE_HEAD_BASE_MERGE_AND_REQUIRED",
@@ -875,7 +918,9 @@
       "id": "BROAD_CI",
       "status": "PARTIAL_EXACT_RESULTS_RETAINED",
       "required": "classify remaining Bazel/permission/file-lock/sandbox/cargo-deny failures by exact run; do not infer advisory from a passing negative fixture",
-      "exact_source": "c0d5d0ededb6627103c390e86b8714135977025c",
+      "prior_exact_source": "c0d5d0ededb6627103c390e86b8714135977025c",
+      "latest_exact_source": "378c06a898728a7fa60498ef051843e38d592e67",
+      "latest_exact_tree": "1c8af7b5c875f449d2fb04dc4b08d97a6c45c8d1",
       "observed": [
         {
           "run": 42794187139,
@@ -911,6 +956,17 @@
           "job": 129794493172,
           "reason": "16 E0659 ambiguous assert_eq errors in production_notes_fence_gui_tests.rs before any test executed",
           "fix_pr": 5783
+        },
+        {
+          "run": 42893302790,
+          "scope": "blocking-ci exact current ACT source",
+          "status": "TERMINAL_FAILURE_MIXED_CLASSIFICATION",
+          "source": "378c06a898728a7fa60498ef051843e38d592e67",
+          "tree": "1c8af7b5c875f449d2fb04dc4b08d97a6c45c8d1",
+          "external_failures": "blob policy failed before checkout on unsupported_resolver_layout; cargo-deny exposed GitHub internal server correlation f28b1d82-925e-4b84-be20-dd1ae0294b94 without a dependency verdict; macOS Intel Bazel exit 34 followed remote.buildbuddy.io UNAVAILABLE after four retries",
+          "windows_failures": "shard 1 exit 3 with target UNKNOWN; shard 2 app-server-all-test, shard 3 tui-unit-tests and shard 4 core-all-test named as failed targets but their underlying causes remain UNKNOWN",
+          "passing_scope": "Linux gnu/musl Bazel tests, Linux and Windows clippy, and Linux and Windows release builds passed",
+          "classification": "not a whole-run pass; no failed Windows target is repaired or relabelled, and the shared GitHub internal error annotation is not used to erase target-level failures"
         }
       ]
     },
