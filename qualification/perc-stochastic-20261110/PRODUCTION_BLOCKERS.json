@@ -1,0 +1,52 @@
+{
+  "status": "OPEN",
+  "scope": "PERC ordinary source-authorized capture plus durable budget reservation/recovery composition",
+  "latest_inspected": {
+    "pr": 5654,
+    "head": "107148c320fc0f25fcf9babd020d42ddcee1dfbf",
+    "parent_pr": 5627,
+    "parent_head": "92edcfbe238ce1e4a3721370e8d496f801ca29ff"
+  },
+  "evidence": [
+    {
+      "path": "codex-rs/hepta-agentd/src/main.rs",
+      "blob": "133a0c12daa683e16cdb79f902dea88092ebfb52",
+      "finding": "No Perception/perception/capture, AgentdCircuitCellOwnerV1, with_root_learning_stage_owners, or read_file_bounded_authorized reference in inspected ordinary entrypoint"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config_root_learning.rs",
+      "blob": "792703744b84ab6df841035f1e6652e3c7bd71ad",
+      "finding": "Actual stage owners must be supplied; require_root_learning_assembled rejects retained inputs without assembly"
+    },
+    {
+      "path": "CALLERS.toml",
+      "blob": "340c8540440b2b36c37e82878add9b95107298b2",
+      "finding": "root_learning_original_stage_assembly product_callers=[]; both new Q24 training-plan/candidate-validation product_callers=[]"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_production_learning_inputs.rs",
+      "blob": "f12e808a049e0fa1418df0a578c0f9dde9bbe538",
+      "finding": "into_learning_runtime still accepts actual StageOwnerPorts supplied by host; config_root_learning is its registered product caller"
+    },
+    {
+      "path": "codex-rs/file-system/src/lib.rs",
+      "blob": "c55e315b00db632204153a3c34ffbfa6affed6b6",
+      "finding": "read_file_bounded_authorized exists with explicit PathUri+sandbox+bound; stable handle preserves authorized file decision"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/circuit_admission.rs",
+      "blob": "7705f3ae3e51502cb33964faf961ba12d04e2992",
+      "finding": "claim_circuit_computation and read-only recover_circuit_computation exist; token grants computation only, no external-effect authority"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_cell.rs",
+      "blob": "3b4ca45c53d2633bf96d2c1b0fca3ed1ae30c114",
+      "finding": "execute consumes Circuit admission plus already supplied CellStepInput; retains reservation on errors and recovers committed operation, does not itself establish source read permission"
+    }
+  ],
+  "limit": "This is an exact-source product assembly audit, not a whole-repository global absence proof or runtime execution.",
+  "dependency_status": {
+    "status": "OPEN",
+    "reason": "Narrow RMCP/SQLite/SQLx manifest integration not executed on PERC; Cargo/Bazel lock preimages differ. Current-source resolution, regenerated locks, fresh cargo-deny, native compatibility and original-state migration still required."
+  }
+}

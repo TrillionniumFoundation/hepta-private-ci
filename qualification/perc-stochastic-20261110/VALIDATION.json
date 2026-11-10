@@ -1,0 +1,10 @@
+{
+  "tests": 33,
+  "failures": 0,
+  "skips": 0,
+  "command": "PYTHONPATH=scripts python -m unittest test_perc1_mlp_head test_perc1_process_meter test_perc1_acquisition test_perc1_source_reuse test_perc1_repeat_training -v",
+  "test_log_sha256": "52dab9edca23ba75a6a49a9ca59dbc6d498efd2e1b4c16fef2d3683cdab22c1c",
+  "native_tests_rerun": false,
+  "format_ast_equal": true,
+  "scope": "5 MLP, 6 process meter, 10 acquisition, 11 source-reuse, 1 runner pin regression"
+}
