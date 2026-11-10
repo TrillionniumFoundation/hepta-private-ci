@@ -56,6 +56,17 @@ class NativeBundleClaimReviewTests(unittest.TestCase):
         with self.assertRaisesRegex(LineagePolicyError, "Bundle bytes"):
             review_native_bundle_claims(r, e, disguised, candidate, partition)
 
+    def test_wrong_candidate_predecessor_is_still_rejected(self):
+        r, e, source, candidate, partition = case()
+        unrelated = pin(777)
+        wrong = replace(
+            candidate, rollback_predecessor=unrelated,
+            training_lineage=dict(candidate.training_lineage, source_bundle=unrelated),
+        )
+        claimed = replace(e, candidate_bundle=wrong.digest())
+        with self.assertRaisesRegex(LineagePolicyError, "invalid original native bundle"):
+            review_native_bundle_claims(r, claimed, source, wrong, partition)
+
     def test_candidate_component_bytes_must_match_the_reviewed_claim(self):
         r, e, source, candidate, partition = case()
         changed = replace(
