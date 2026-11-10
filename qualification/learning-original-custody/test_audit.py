@@ -17,6 +17,7 @@ class AuditTests(unittest.TestCase):
             'schema': 'hepta-original-learning-custody-precheck-v1',
             'source_head': 'a' * 40,
             'operation_id': 'op-1',
+            'next_operation_id': 'op-2',
             'source_task_id': 'task-A',
             'next_task_id': 'task-B',
             'baseline_bundle': 'a' * 64,
@@ -37,7 +38,8 @@ class AuditTests(unittest.TestCase):
             self.record['original_receipts'][stage] = {
                 'file': p.name,
                 'sha256': hashlib.sha256(p.read_bytes()).hexdigest(),
-                'operation_id': 'op-1',
+                'operation_id': 'op-2' if stage == 'next_use' else 'op-1',
+                'learning_operation_id': 'op-1' if stage == 'next_use' else None,
                 'task_id': 'task-B' if stage == 'next_use' else 'task-A',
                 'bundle_sha256': 'b' * 64,
             }
@@ -65,6 +67,13 @@ class AuditTests(unittest.TestCase):
         issues = self.check()['issues']
         self.assertIn('next_task_not_distinct', issues)
         self.assertIn('wrong_consumed_version:next_use', issues)
+
+    def test_next_operation_and_learning_lineage(self):
+        self.record['next_operation_id'] = 'op-1'
+        self.assertIn('next_operation_not_distinct', self.check()['issues'])
+        self.record['next_operation_id'] = 'op-2'
+        self.record['original_receipts']['next_use']['learning_operation_id'] = 'foreign-op'
+        self.assertIn('next_use_unbound_to_learning', self.check()['issues'])
 
     def test_corrupt_original_bytes(self):
         (self.root / 'evaluation.receipt').write_bytes(b'changed')
