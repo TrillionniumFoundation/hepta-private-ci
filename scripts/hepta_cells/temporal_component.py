@@ -47,6 +47,10 @@ class TemporalComponent:
     def initial_state(self):
         return self.kernel.initial_state(self.episode_id)
 
+    @property
+    def bundle(self):
+        return copy.deepcopy(self._bundle)
+
     def step(self, payload, state, context):
         if (
             context.partition.cell_id != self.kernel.cell_id
