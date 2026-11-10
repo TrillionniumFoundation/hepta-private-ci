@@ -36,7 +36,10 @@ env:
 jobs:
   original-regressions:
     runs-on: windows-latest
-    timeout-minutes: 65
+    # The exact 19-group serial matrix spent 63.3 minutes on native helper
+    # preparation plus its first 15 groups, so the former 65-minute bound
+    # cancelled four groups before the driver could write its final receipt.
+    timeout-minutes: 120
     steps:
       - name: Checkout the exact source head
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
