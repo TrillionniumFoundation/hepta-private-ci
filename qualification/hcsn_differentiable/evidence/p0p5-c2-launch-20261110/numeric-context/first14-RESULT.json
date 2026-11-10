@@ -1,0 +1,626 @@
+{
+  "C2_decision_modified": false,
+  "extraction_CPU_sample_seconds": 0.033166979,
+  "extraction_wall_sample_seconds": 0.004640831997676287,
+  "first9_scope": "Original immutable observer full report with per-case result/outer SHA and copied numeric fields.",
+  "mass_residual_limit": 5e-11,
+  "no_model_or_oracle_execution": true,
+  "observed_case_count": 14,
+  "original_14_stage_outer_wall_seconds_nested_not_additional": 4227.775166584412,
+  "original_14_waited_stage_CPU_seconds_nested_not_additional": 4225.459782999999,
+  "original_observer_sha256": "15a18874be1496c84234dcf1c61f9ddd0ec4bb4adf83d4e575487d88066e348b",
+  "original_observer_summary_sha256": "15791776e7a93c1a4ed42f06865da5cbeb8eaa0decc8b3002d467d52a2b272e2",
+  "original_passed_fixture_count": 14,
+  "plan_sha256": "6ae8bb984d994f0d3fa6963e37d0f4180366a3a7bafd316d887e74f2ef1c7d26",
+  "primary_scaled_pass_definition": "Derived alias for original result.status == passed_fixture, independently checked against the stored scalar gate. The raw original JSON has no primary_scaled_pass field.",
+  "reference_refinement_limit": 2e-08,
+  "rows": [
+    {
+      "name": "hcsn-s101-lr0.001",
+      "numerical_fields": {
+        "horizon": 1.0000868,
+        "intervals": 32,
+        "mass_residual": 1.1102230246251565e-15,
+        "projected": [
+          1.0794795591102748,
+          0.6486393357192403,
+          0.607041166659345,
+          0.8934028661156896
+        ],
+        "reference": [
+          1.0757305345637782,
+          0.6442671530091515,
+          0.6029003353964014,
+          0.8938522957930193
+        ],
+        "reference_refinement_delta": 1.1102230246251565e-16,
+        "scaled_errors": [
+          0.0034850963378267315,
+          0.004372182710088768,
+          0.004140831262943623,
+          0.000449429677329638
+        ],
+        "status": "passed_fixture"
+      },
+      "observer_original_sha256": "15a18874be1496c84234dcf1c61f9ddd0ec4bb4adf83d4e575487d88066e348b",
+      "original_numerical_status_field": "result.status",
+      "original_numerical_status_value": "passed_fixture",
+      "original_outer_sha256": "e70548df79a5d1c3eee74cf37a15858efecdb8cda6a811eb7f8c410643453c2b",
+      "original_outer_wall_seconds": 133.09035099600442,
+      "original_result_path": "/home/qian-qi/hepta-hcsn-final-numerics-20261110-c385-v1/hcsn-s101-lr0.001/finite-best-0.json",
+      "original_result_sha256": "c197562ab5a1dd520c5bb629200a8050c0593d79b1cef81d7160e940b77591dd",
+      "original_returncode": 0,
+      "original_waited_stage_CPU_seconds": 132.91058999999993,
+      "primary_scaled_pass": true,
+      "primary_scaled_pass_is_derived_alias": true,
+      "source_scope": "Original source-bound observer copied these fields after checking the full stage hash, status, source/input stability and plan SHA.",
+      "stage": "finite-best-0"
+    },
+    {
+      "name": "hcsn-s101-lr0.003",
+      "numerical_fields": {
+        "horizon": 1.0000868,
+        "intervals": 32,
+        "mass_residual": 1.5543122344752192e-15,
+        "projected": [
+          1.0954187613846895,
+          0.6671647299712875,
+          0.6253529639875308,
+          0.8933366992804926
+        ],
+        "reference": [
+          1.0917093762879242,
+          0.6628369495900082,
+          0.621252858239872,
+          0.8937799582661845
+        ],
+        "reference_refinement_delta": 2.0339168074202737e-16,
+        "scaled_errors": [
+          0.0033977770799937007,
+          0.004327780381279345,
+          0.004100105747658844,
+          0.0004432589856918634
+        ],
+        "status": "passed_fixture"
+      },
+      "observer_original_sha256": "15a18874be1496c84234dcf1c61f9ddd0ec4bb4adf83d4e575487d88066e348b",
+      "original_numerical_status_field": "result.status",
+      "original_numerical_status_value": "passed_fixture",
+      "original_outer_sha256": "b682aaf6c22127fbe5269297a0eaaa4c2db2fc6404ceaff3cd7ebf235eb32214",
+      "original_outer_wall_seconds": 134.60006773285568,
+      "original_result_path": "/home/qian-qi/hepta-hcsn-final-numerics-20261110-c385-v1/hcsn-s101-lr0.003/finite-best-0.json",
+      "original_result_sha256": "244fea0975f5a44f09144b8d835b2b8e2a909e2e8e60e398290e246d298eb66d",
+      "original_returncode": 0,
+      "original_waited_stage_CPU_seconds": 134.5000199999999,
+      "primary_scaled_pass": true,
+      "primary_scaled_pass_is_derived_alias": true,
+      "source_scope": "Original source-bound observer copied these fields after checking the full stage hash, status, source/input stability and plan SHA.",
+      "stage": "finite-best-0"
+    },
+    {
+      "name": "hcsn-s211-lr0.001",
+      "numerical_fields": {
+        "horizon": 1.0000868,
+        "intervals": 32,
+        "mass_residual": 1.3322676295501878e-15,
+        "projected": [
+          0.6605432664656066,
+          0.14279871274700356,
+          0.13288814205332802,
+          0.9694833616837557
+        ],
+        "reference": [
+          0.6592837307072912,
+          0.14125370249395247,
+          0.13146382142965438,
+          0.9698852008329587
+        ],
+        "reference_refinement_delta": 1.1102230246251565e-16,
+        "scaled_errors": [
+          0.0012595357583153888,
+          0.0015450102530510934,
+          0.0014243206236736472,
+          0.00040183914920299824
+        ],
+        "status": "passed_fixture"
+      },
+      "observer_original_sha256": "15a18874be1496c84234dcf1c61f9ddd0ec4bb4adf83d4e575487d88066e348b",
+      "original_numerical_status_field": "result.status",
+      "original_numerical_status_value": "passed_fixture",
+      "original_outer_sha256": "5e603ff5c453cf04fc1c9a91dc258405eddafc0fc3535e6e42262f9dfaf290f7",
+      "original_outer_wall_seconds": 131.82535831187852,
+      "original_result_path": "/home/qian-qi/hepta-hcsn-final-numerics-20261110-c385-v1/hcsn-s211-lr0.001/finite-best-0.json",
+      "original_result_sha256": "e2eac3d82d3cf74c398d8ff1688b37d003905d98a668b112c6342dedefe87c32",
+      "original_returncode": 0,
+      "original_waited_stage_CPU_seconds": 131.6903820000001,
+      "primary_scaled_pass": true,
+      "primary_scaled_pass_is_derived_alias": true,
+      "source_scope": "Original source-bound observer copied these fields after checking the full stage hash, status, source/input stability and plan SHA.",
+      "stage": "finite-best-0"
+    },
+    {
+      "name": "hcsn-s211-lr0.003",
+      "numerical_fields": {
+        "horizon": 1.0000868,
+        "intervals": 32,
+        "mass_residual": 1.1102230246251565e-15,
+        "projected": [
+          0.8806220669744476,
+          0.41097071549030834,
+          0.38171651837107284,
+          0.9176976558012258
+        ],
+        "reference": [
+          0.8774572820859364,
+          0.40722084214659315,
+          0.3782082132091018,
+          0.9182476602189379
+        ],
+        "reference_refinement_delta": 1.1102230246251565e-16,
+        "scaled_errors": [
+          0.0031647848885111296,
+          0.003749873343715182,
+          0.003508305161971037,
+          0.0005500044177121355
+        ],
+        "status": "passed_fixture"
+      },
+      "observer_original_sha256": "15a18874be1496c84234dcf1c61f9ddd0ec4bb4adf83d4e575487d88066e348b",
+      "original_numerical_status_field": "result.status",
+      "original_numerical_status_value": "passed_fixture",
+      "original_outer_sha256": "805adb073368ef0fc5079917ca9811d4aa2ebc5d471902b9e290d1e8fef837d3",
+      "original_outer_wall_seconds": 120.96162994694896,
+      "original_result_path": "/home/qian-qi/hepta-hcsn-final-numerics-20261110-c385-v1/hcsn-s211-lr0.003/finite-best-0.json",
+      "original_result_sha256": "f63864a6457943259cefcb771c5df9cf20575dd7d79ea6552ad44d7de192753a",
+      "original_returncode": 0,
+      "original_waited_stage_CPU_seconds": 120.92695999999972,
+      "primary_scaled_pass": true,
+      "primary_scaled_pass_is_derived_alias": true,
+      "source_scope": "Original source-bound observer copied these fields after checking the full stage hash, status, source/input stability and plan SHA.",
+      "stage": "finite-best-0"
+    },
+    {
+      "name": "hcsn-s307-lr0.001",
+      "numerical_fields": {
+        "horizon": 1.0000868,
+        "intervals": 32,
+        "mass_residual": 1.3322676295501878e-15,
+        "projected": [
+          0.6388235406726439,
+          0.1161922584548342,
+          0.10836385574288829,
+          0.9778394679160444
+        ],
+        "reference": [
+          0.6379642137966726,
+          0.11515307093917729,
+          0.10739699989253826,
+          0.9780659293414892
+        ],
+        "reference_refinement_delta": 1.1102230246251565e-16,
+        "scaled_errors": [
+          0.0008593268759713446,
+          0.001039187515656917,
+          0.0009668558503500291,
+          0.00022646142544480163
+        ],
+        "status": "passed_fixture"
+      },
+      "observer_original_sha256": "15a18874be1496c84234dcf1c61f9ddd0ec4bb4adf83d4e575487d88066e348b",
+      "original_numerical_status_field": "result.status",
+      "original_numerical_status_value": "passed_fixture",
+      "original_outer_sha256": "f07666e5be78082e143eb566144d74f07a9c0e78b942e85e2e45561bff1290ee",
+      "original_outer_wall_seconds": 135.48321830900386,
+      "original_result_path": "/home/qian-qi/hepta-hcsn-final-numerics-20261110-c385-v1/hcsn-s307-lr0.001/finite-best-0.json",
+      "original_result_sha256": "521075fcc132152ed7cf7b90de41cc3df2cb6d6d487665caa4213d5e5d80257d",
+      "original_returncode": 0,
+      "original_waited_stage_CPU_seconds": 135.37178099999994,
+      "primary_scaled_pass": true,
+      "primary_scaled_pass_is_derived_alias": true,
+      "source_scope": "Original source-bound observer copied these fields after checking the full stage hash, status, source/input stability and plan SHA.",
+      "stage": "finite-best-0"
+    },
+    {
+      "name": "hcsn-s307-lr0.003",
+      "numerical_fields": {
+        "horizon": 1.0000868,
+        "intervals": 32,
+        "mass_residual": 8.881784197001252e-16,
+        "projected": [
+          0.8013441799151755,
+          0.31012839222607064,
+          0.29126786662724935,
+          0.9512486034547005
+        ],
+        "reference": [
+          0.7996158954352617,
+          0.3080994862419657,
+          0.28935234402613835,
+          0.9515136378625221
+        ],
+        "reference_refinement_delta": 1.1102230246251565e-16,
+        "scaled_errors": [
+          0.0017282844799137997,
+          0.002028905984104934,
+          0.0019155226011109971,
+          0.00026503440782155163
+        ],
+        "status": "passed_fixture"
+      },
+      "observer_original_sha256": "15a18874be1496c84234dcf1c61f9ddd0ec4bb4adf83d4e575487d88066e348b",
+      "original_numerical_status_field": "result.status",
+      "original_numerical_status_value": "passed_fixture",
+      "original_outer_sha256": "369177eb8fcae41e59fe963808acd836d580c09a44133bd534fcd04a8d969a31",
+      "original_outer_wall_seconds": 133.66554080997594,
+      "original_result_path": "/home/qian-qi/hepta-hcsn-final-numerics-20261110-c385-v1/hcsn-s307-lr0.003/finite-best-0.json",
+      "original_result_sha256": "a77633bdcf5586aae5de3daaf1bf086f2ecb2d13201a7c24b677cdf454ed26d2",
+      "original_returncode": 0,
+      "original_waited_stage_CPU_seconds": 133.58359899999977,
+      "primary_scaled_pass": true,
+      "primary_scaled_pass_is_derived_alias": true,
+      "source_scope": "Original source-bound observer copied these fields after checking the full stage hash, status, source/input stability and plan SHA.",
+      "stage": "finite-best-0"
+    },
+    {
+      "name": "hcsn-s101-lr0.001",
+      "numerical_fields": {
+        "horizon": 4.2436074999999995,
+        "intervals": 128,
+        "mass_residual": 5.662137425588298e-15,
+        "projected": [
+          2.811115337814299,
+          2.0774617200501306,
+          1.5903605551169007,
+          0.9194454225548402
+        ],
+        "reference": [
+          2.804002394314097,
+          2.067956066133388,
+          1.5826373040668555,
+          0.9196153776609127
+        ],
+        "reference_refinement_delta": 1.5837690108631088e-16,
+        "scaled_errors": [
+          0.0025367109224390264,
+          0.004596642101065659,
+          0.004879987998639306,
+          0.00016995510607253905
+        ],
+        "status": "passed_fixture"
+      },
+      "observer_original_sha256": "15a18874be1496c84234dcf1c61f9ddd0ec4bb4adf83d4e575487d88066e348b",
+      "original_numerical_status_field": "result.status",
+      "original_numerical_status_value": "passed_fixture",
+      "original_outer_sha256": "06d3cefeaa150c63a66bcf5e115436073604b7178ed40f6d9113e05d3d485cb2",
+      "original_outer_wall_seconds": 521.7077636418398,
+      "original_result_path": "/home/qian-qi/hepta-hcsn-final-numerics-20261110-c385-v1/hcsn-s101-lr0.001/finite-best-1.json",
+      "original_result_sha256": "114929bf372a4c2d607df53533b5835dfeec0f4e6d24967d4bbd6cb22a2f0290",
+      "original_returncode": 0,
+      "original_waited_stage_CPU_seconds": 521.5288860000003,
+      "primary_scaled_pass": true,
+      "primary_scaled_pass_is_derived_alias": true,
+      "source_scope": "Original source-bound observer copied these fields after checking the full stage hash, status, source/input stability and plan SHA.",
+      "stage": "finite-best-1"
+    },
+    {
+      "name": "hcsn-s101-lr0.003",
+      "numerical_fields": {
+        "horizon": 4.2436074999999995,
+        "intervals": 128,
+        "mass_residual": 6.106226635438361e-15,
+        "projected": [
+          2.823332885345284,
+          2.0898198094326803,
+          1.6045836692656053,
+          0.9198531110737358
+        ],
+        "reference": [
+          2.816277325947538,
+          2.0803804517598476,
+          1.5969191786650805,
+          0.9200246519880029
+        ],
+        "reference_refinement_delta": 2.1346538296608011e-16,
+        "scaled_errors": [
+          0.0025052786288977656,
+          0.004537322807877599,
+          0.004799548219423212,
+          0.00017154091426707652
+        ],
+        "status": "passed_fixture"
+      },
+      "observer_original_sha256": "15a18874be1496c84234dcf1c61f9ddd0ec4bb4adf83d4e575487d88066e348b",
+      "original_numerical_status_field": "result.status",
+      "original_numerical_status_value": "passed_fixture",
+      "original_outer_sha256": "e8a2c6b65309ab3f5f378699d966c1a0792ce4fb622c8d366b3eda877bc8e8e8",
+      "original_outer_wall_seconds": 524.6478981350083,
+      "original_result_path": "/home/qian-qi/hepta-hcsn-final-numerics-20261110-c385-v1/hcsn-s101-lr0.003/finite-best-1.json",
+      "original_result_sha256": "e4a68e88322ccdb1c2cbd097354485018f6f9d6faa22c7a8304e26498389ba4b",
+      "original_returncode": 0,
+      "original_waited_stage_CPU_seconds": 524.392877,
+      "primary_scaled_pass": true,
+      "primary_scaled_pass_is_derived_alias": true,
+      "source_scope": "Original source-bound observer copied these fields after checking the full stage hash, status, source/input stability and plan SHA.",
+      "stage": "finite-best-1"
+    },
+    {
+      "name": "hcsn-s211-lr0.001",
+      "numerical_fields": {
+        "horizon": 4.2436074999999995,
+        "intervals": 128,
+        "mass_residual": 5.440092820663267e-15,
+        "projected": [
+          1.9889345549340853,
+          0.9762964295895201,
+          0.6881651228116699,
+          0.9384626969622947
+        ],
+        "reference": [
+          1.983156537788226,
+          0.967724625636853,
+          0.6818840075287281,
+          0.9387483293208274
+        ],
+        "reference_refinement_delta": 1.1196524363763696e-16,
+        "scaled_errors": [
+          0.002913545671136653,
+          0.0085718039526671,
+          0.006281115282941729,
+          0.00028563235853273916
+        ],
+        "status": "passed_fixture"
+      },
+      "observer_original_sha256": "15a18874be1496c84234dcf1c61f9ddd0ec4bb4adf83d4e575487d88066e348b",
+      "original_numerical_status_field": "result.status",
+      "original_numerical_status_value": "passed_fixture",
+      "original_outer_sha256": "268c9550647e59c8890972ddc35780880ddf51275e515f48c8bdeb625c87fc45",
+      "original_outer_wall_seconds": 514.6454504989088,
+      "original_result_path": "/home/qian-qi/hepta-hcsn-final-numerics-20261110-c385-v1/hcsn-s211-lr0.001/finite-best-1.json",
+      "original_result_sha256": "0bc26c2e650b16e7755127ba52c7eeb1ba0ded4859706308c577f1ad7424058d",
+      "original_returncode": 0,
+      "original_waited_stage_CPU_seconds": 514.3709979999999,
+      "primary_scaled_pass": true,
+      "primary_scaled_pass_is_derived_alias": true,
+      "source_scope": "Original source-bound observer copied these fields after checking the full stage hash, status, source/input stability and plan SHA.",
+      "stage": "finite-best-1"
+    },
+    {
+      "name": "hcsn-s211-lr0.003",
+      "numerical_fields": {
+        "horizon": 4.2436074999999995,
+        "intervals": 128,
+        "mass_residual": 5.440092820663267e-15,
+        "projected": [
+          2.5223997506032525,
+          1.7122581619552628,
+          1.2709021592021366,
+          0.9222703571599862
+        ],
+        "reference": [
+          2.5153585292867904,
+          1.702637707796236,
+          1.263269103647962,
+          0.92245653341564
+        ],
+        "reference_refinement_delta": 1.304121269653007e-16,
+        "relative_errors": [
+          0.002799291327450883,
+          0.0056503236801202835,
+          0.006042303680294642,
+          0.0002018265890149884
+        ],
+        "scaled_errors": [
+          0.002799291327450883,
+          0.0056503236801202835,
+          0.006042303680294642,
+          0.0001861762556538693
+        ],
+        "status": "passed_fixture"
+      },
+      "original_numerical_status_field": "result.status",
+      "original_numerical_status_value": "passed_fixture",
+      "original_outer_sha256": "7350687636c0d4838c4a3b1ff23057d0055cbd154365f70263b2d16b238b0e17",
+      "original_outer_wall_seconds": 487.53494366491213,
+      "original_result_path": "/home/qian-qi/hepta-hcsn-final-numerics-20261110-c385-v1/hcsn-s211-lr0.003/finite-best-1.json",
+      "original_result_sha256": "292980d3ea4feac7471a469bcb5972c9288db924845ff2d1625a52c21fcbd8cf",
+      "original_returncode": 0,
+      "original_waited_stage_CPU_seconds": 487.269908,
+      "primary_scaled_pass": true,
+      "primary_scaled_pass_is_derived_alias": true,
+      "source_scope": "Complete original result and original outer receipt recovered and SHA-verified in cloud.",
+      "stage": "finite-best-1"
+    },
+    {
+      "name": "hcsn-s307-lr0.001",
+      "numerical_fields": {
+        "horizon": 4.2436074999999995,
+        "intervals": 128,
+        "mass_residual": 5.218048215738236e-15,
+        "projected": [
+          1.850491634441381,
+          0.766315893143452,
+          0.537351361929711,
+          0.9473629785381177
+        ],
+        "reference": [
+          1.8454890748189852,
+          0.7586559643405963,
+          0.5319016963389154,
+          0.9476951417940992
+        ],
+        "reference_refinement_delta": 1.2031748545940894e-16,
+        "relative_errors": [
+          0.0027106958749601954,
+          0.010096709395165061,
+          0.010245625513710013,
+          0.00035049589401997544
+        ],
+        "scaled_errors": [
+          0.0027106958749601954,
+          0.007659928802855709,
+          0.005449665590795627,
+          0.0003321632559815102
+        ],
+        "status": "passed_fixture"
+      },
+      "original_numerical_status_field": "result.status",
+      "original_numerical_status_value": "passed_fixture",
+      "original_outer_sha256": "9cb22067468b4475dbe96362b81a7d6b86baecb826f9e66a06f741d77a9a890e",
+      "original_outer_wall_seconds": 527.3435200939421,
+      "original_result_path": "/home/qian-qi/hepta-hcsn-final-numerics-20261110-c385-v1/hcsn-s307-lr0.001/finite-best-1.json",
+      "original_result_sha256": "a5364145555beb495170f140cee20ddeb58f258ad16377eb9ee7f20d897ecce8",
+      "original_returncode": 0,
+      "original_waited_stage_CPU_seconds": 527.0846700000003,
+      "primary_scaled_pass": true,
+      "primary_scaled_pass_is_derived_alias": true,
+      "source_scope": "Complete original result and original outer receipt recovered and SHA-verified in cloud.",
+      "stage": "finite-best-1"
+    },
+    {
+      "name": "hcsn-s307-lr0.003",
+      "numerical_fields": {
+        "horizon": 4.2436074999999995,
+        "intervals": 128,
+        "mass_residual": 5.218048215738236e-15,
+        "projected": [
+          2.158115648448568,
+          1.174703840525501,
+          0.8743965581919727,
+          0.9405836367271915
+        ],
+        "reference": [
+          2.1526399667630316,
+          1.1667232734231376,
+          0.8684390748545295,
+          0.9408711942806152
+        ],
+        "reference_refinement_delta": 1.1102230246251565e-16,
+        "relative_errors": [
+          0.0025437052967898183,
+          0.0068401542029316005,
+          0.006859989963534398,
+          0.0003056290331468321
+        ],
+        "scaled_errors": [
+          0.0025437052967898183,
+          0.0068401542029316005,
+          0.00595748333744317,
+          0.0002875575534236896
+        ],
+        "status": "passed_fixture"
+      },
+      "original_numerical_status_field": "result.status",
+      "original_numerical_status_value": "passed_fixture",
+      "original_outer_sha256": "091b664532b182822da1debd01c14b2d9eebf8c42bb5ee09e370c2e8ef45b983",
+      "original_outer_wall_seconds": 527.4608499549795,
+      "original_result_path": "/home/qian-qi/hepta-hcsn-final-numerics-20261110-c385-v1/hcsn-s307-lr0.003/finite-best-1.json",
+      "original_result_sha256": "ad09d693048b07f9a509418463441a98ca1e64c8a25b6e353dda43976db0c111",
+      "original_returncode": 0,
+      "original_waited_stage_CPU_seconds": 527.2663009999994,
+      "primary_scaled_pass": true,
+      "primary_scaled_pass_is_derived_alias": true,
+      "source_scope": "Complete original result and original outer receipt recovered and SHA-verified in cloud.",
+      "stage": "finite-best-1"
+    },
+    {
+      "name": "hcsn-s101-lr0.001",
+      "numerical_fields": {
+        "horizon": 1.0000908,
+        "intervals": 32,
+        "mass_residual": 1.1102230246251565e-15,
+        "projected": [
+          0.5589693377741851,
+          0.018592947546583617,
+          0.017408526117780647,
+          0.9969253477653316
+        ],
+        "reference": [
+          0.5588605977956593,
+          0.01846495317450689,
+          0.017287558443176622,
+          0.9969417009004564
+        ],
+        "reference_refinement_delta": 3.469446951953614e-18,
+        "relative_errors": [
+          0.000194574423308233,
+          0.006931746366594537,
+          0.006997383407358534,
+          1.6403301326501106e-05
+        ],
+        "scaled_errors": [
+          0.00010873997852578476,
+          0.0001279943720767264,
+          0.00012096767460402502,
+          1.6353135124824725e-05
+        ],
+        "status": "passed_fixture"
+      },
+      "original_numerical_status_field": "result.status",
+      "original_numerical_status_value": "passed_fixture",
+      "original_outer_sha256": "9d5185e3f39ba2effbcb4bcefd44536d04b3552619a9a7548284921ea985936c",
+      "original_outer_wall_seconds": 168.7049796790816,
+      "original_result_path": "/home/qian-qi/hepta-hcsn-final-numerics-20261110-c385-v1/hcsn-s101-lr0.001/finite-best-2.json",
+      "original_result_sha256": "468666a32eb15ae5bbe152f7fcd57fe6b6db1bce9f22ecb8948088d43348d54f",
+      "original_returncode": 0,
+      "original_waited_stage_CPU_seconds": 168.58457999999996,
+      "primary_scaled_pass": true,
+      "primary_scaled_pass_is_derived_alias": true,
+      "source_scope": "Complete original result and original outer receipt recovered and SHA-verified in cloud.",
+      "stage": "finite-best-2"
+    },
+    {
+      "name": "hcsn-s101-lr0.003",
+      "numerical_fields": {
+        "horizon": 1.0000908,
+        "intervals": 32,
+        "mass_residual": 6.661338147750939e-16,
+        "projected": [
+          0.5440094826615425,
+          0.0005218912566480812,
+          0.0004684618053990198,
+          0.9997308964761501
+        ],
+        "reference": [
+          0.5439940646569165,
+          0.0005011394182881747,
+          0.00045001314019793917,
+          0.9997426876778529
+        ],
+        "reference_refinement_delta": 1.1102230246251565e-16,
+        "relative_errors": [
+          2.8342229497917067e-05,
+          0.04140931166578758,
+          0.04099583668371542,
+          1.1794236505187446e-05
+        ],
+        "scaled_errors": [
+          1.541800462601106e-05,
+          2.0751838359906512e-05,
+          1.8448665201080644e-05,
+          1.1791201702804344e-05
+        ],
+        "status": "passed_fixture"
+      },
+      "original_numerical_status_field": "result.status",
+      "original_numerical_status_value": "passed_fixture",
+      "original_outer_sha256": "c9cfc6564150e45aa8249724a1c9f3bcc200d7059b479351c3853a3da5283e52",
+      "original_outer_wall_seconds": 166.1035948090721,
+      "original_result_path": "/home/qian-qi/hepta-hcsn-final-numerics-20261110-c385-v1/hcsn-s101-lr0.003/finite-best-2.json",
+      "original_result_sha256": "4fd9974d31a98dcab3af1e31933378cd26279d17dc63918a5e253179694f6088",
+      "original_returncode": 0,
+      "original_waited_stage_CPU_seconds": 165.97823099999982,
+      "primary_scaled_pass": true,
+      "primary_scaled_pass_is_derived_alias": true,
+      "source_scope": "Complete original result and original outer receipt recovered and SHA-verified in cloud.",
+      "stage": "finite-best-2"
+    }
+  ],
+  "scaled_definition": "abs(projected-reference)/max(1,abs(reference)); not a blanket relative1% guarantee.",
+  "scaled_limit": 0.01,
+  "schema": "terminal-finite-first14-source-chain-addendum-v1",
+  "scientific_admission": "HOLD",
+  "scope": "Only the first14 already completed finite fixtures, as used by the frozen C2 decision; no later fixtures or full-domain admission.",
+  "source_sha256": "eda9e611d1098e0755d77f1ee79ff821a07bbbd10c65957aa22488f0a308d566",
+  "subsequent5_scope": "Complete original per-stage result and outer files.",
+  "whole_training_domain_admission": "HOLD"
+}

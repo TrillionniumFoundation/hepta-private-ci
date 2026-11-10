@@ -1,0 +1,24 @@
+test_bound_parent_modified_after_admission_prevents_first_step (test_c2_execution.ExecutionTests.test_bound_parent_modified_after_admission_prevents_first_step) ... ok
+test_budget_exhausted_before_restoration_does_not_refund_parent (test_c2_execution.ExecutionTests.test_budget_exhausted_before_restoration_does_not_refund_parent) ... ok
+test_changed_parent_during_resume_observation_stops_before_step (test_c2_execution.ExecutionTests.test_changed_parent_during_resume_observation_stops_before_step) ... ok
+test_epoch_commit_failure_does_not_advance_retained_boundary (test_c2_execution.ExecutionTests.test_epoch_commit_failure_does_not_advance_retained_boundary) ... ok
+test_program_input_mismatch_is_before_any_new_step (test_c2_execution.ExecutionTests.test_program_input_mismatch_is_before_any_new_step) ... ok
+test_real_partial_discard_and_two_epoch_replay_equal_uninterrupted (test_c2_execution.ExecutionTests.test_real_partial_discard_and_two_epoch_replay_equal_uninterrupted) ... ok
+test_resume_witness_io_failure_prevents_optimization (test_c2_execution.ExecutionTests.test_resume_witness_io_failure_prevents_optimization) ... ok
+test_runtime_mismatch_rejects_rebound_manifest_before_model_step (test_c2_execution.ExecutionTests.test_runtime_mismatch_rejects_rebound_manifest_before_model_step) ... ok
+test_terminal_capture_budget_failure_cannot_return_completed (test_c2_execution.ExecutionTests.test_terminal_capture_budget_failure_cannot_return_completed) ... ok
+test_truncated_actual_microbatch_stops_before_first_optimizer_step (test_c2_execution.ExecutionTests.test_truncated_actual_microbatch_stops_before_first_optimizer_step) ... ok
+test_wrong_parent_outer_even_rehashed_still_rejected_by_roster (test_c2_execution.ExecutionTests.test_wrong_parent_outer_even_rehashed_still_rejected_by_roster) ... ok
+test_complete_six_seed_lr_roster_cannot_select_by_quality_or_drop_seed (test_c2_execution.ProtocolTests.test_complete_six_seed_lr_roster_cannot_select_by_quality_or_drop_seed) ... ok
+test_epoch_clocks_single_sample_exact_cumulative (test_c2_execution.ProtocolTests.test_epoch_clocks_single_sample_exact_cumulative) ... ok
+test_full_parent_cost_and_prelaunch_work_consume_deadline (test_c2_execution.ProtocolTests.test_full_parent_cost_and_prelaunch_work_consume_deadline) ... ok
+test_future_failure_still_harvests_other_dispatches_and_unknown_cost (test_c2_execution.ProtocolTests.test_future_failure_still_harvests_other_dispatches_and_unknown_cost) ... ok
+test_immutable_checkpoint_and_json_reject_overwrite (test_c2_execution.ProtocolTests.test_immutable_checkpoint_and_json_reject_overwrite) ... ok
+test_no_decision_cannot_enable_real_execution (test_c2_execution.ProtocolTests.test_no_decision_cannot_enable_real_execution) ... ok
+test_rss_and_finalization_reserve_do_not_extend_budget (test_c2_execution.ProtocolTests.test_rss_and_finalization_reserve_do_not_extend_budget) ... ok
+test_wait4_captures_real_child_cpu_and_timeout_failure (test_c2_execution.ProtocolTests.test_wait4_captures_real_child_cpu_and_timeout_failure) ... ok
+
+----------------------------------------------------------------------
+Ran 19 tests in 3.766s
+
+OK
