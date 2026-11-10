@@ -1,0 +1,114 @@
+{
+  "schema": 1,
+  "base_commit": "71738345326b98d88b738250d2b84ecbcb466eb8",
+  "implementation_test_commit": "300ebaaedd9ec578ffcd2bc341c2394ead6a92c8",
+  "maintained_commit": "83b6295394edf9d1a73f2db5bd2f5d4a22d28e36",
+  "maintained_runtime_tree": "3b1abbb3438fd847c376b2a0b1f5e78a97bd2896",
+  "canonical_fixture_repair_commit": "03e60a334498446b79148285905592ffb938c59a",
+  "native_gate": {
+    "source": "300ebaaedd9ec578ffcd2bc341c2394ead6a92c8",
+    "agentd_passed": 795,
+    "automation_passed": 84,
+    "neuron_passed": 205,
+    "total_passed": 1084,
+    "failed": 0,
+    "nextest_skipped": 67,
+    "junit_skipped_elements": 0,
+    "raw_log_sha256": "74b6917a90141ce0b0dd12848a889f51deeb6e9c04db186631b12e374db2ad76",
+    "junit_sha256": "2c1b35ac0cf3b6376a135e1e3a3ac9f2247f3c38e096090dbfdf0bc4c643adbb",
+    "source_unchanged": true
+  },
+  "maintenance": {
+    "just_fix_exit": 0,
+    "just_fmt_exit": 0,
+    "strict_clippy_exit": 0,
+    "strict_clippy_seconds": 104.35,
+    "strict_clippy_log_sha256": "17d62bb3ad015d64d6a77eb17e42a91d97dcc0c35f73218bca98a2d4cc2ca21e",
+    "patch_sha256": "6845df2a530bd082814c7897ba4433ab25366a4bd34e19c2b53e0ec056ef4253",
+    "changed_rust_paths": 22,
+    "test_only_redundant_clone_removed": true,
+    "automatic_fix_only_snapshot_retained": false,
+    "same_source_behavioral_reruns_after_maintenance": false
+  },
+  "caller": {
+    "status": "PASS_HEPTA_CALLER_CLOSED_SET",
+    "rust_files": 6175,
+    "boundaries": 182,
+    "protected_files": 165,
+    "authority_granted": false,
+    "sha256": "711c1736aaddd2fd132316b1887b06bf44d9530d2c8173a6c47fc5946fe8cb33"
+  },
+  "evidence": {
+    "archive": "native-framework-r6-evidence.zip",
+    "bytes": 416304,
+    "files": 71,
+    "sha256": "5a80b6db30c8d69e108d88cc535327425ca0440f5363bf6d71b5cf1fd5fb41c0",
+    "downloaded_bytes_independently_verified": true,
+    "r3_original_junit_retained": false
+  },
+  "fixture_repair_validation": {
+    "source": "03e60a334498446b79148285905592ffb938c59a",
+    "linux": {
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0,
+      "source_unchanged": true,
+      "raw_log_sha256": "38d4ad37713017d197874ab1706de039fbdc363804de3b3f3e9ca0235a353551",
+      "junit_sha256": "42f9f7d1d34c06094dbd64fbce48b2d7d35ea9ecceaf8314a93dd908b1faabbc",
+      "format_check_exit": 0,
+      "archive": {
+        "path": "canonical-root-linux-evidence.zip",
+        "bytes": 12552,
+        "sha256": "db5ecd555c1eb3fbba055b792885ba6d0cecead7f3e186b70c3ac66648069ae2"
+      }
+    },
+    "macos": {
+      "status": "RUNNING_OWNING_ALIAS_PROFILE",
+      "initial_checkout_fetch_attempt": "FAILED_BEFORE_TESTS",
+      "continued_from_verified_exact_cached_objects": true
+    }
+  },
+  "original_failures_retained": [
+    {
+      "attempt": "r1",
+      "scope": "build",
+      "error": "Clang stddef.h unavailable; no behavioral tests ran"
+    },
+    {
+      "attempt": "r2",
+      "scope": "build",
+      "error": "Original sparse-checkout compile inputs missing"
+    },
+    {
+      "attempt": "r3",
+      "passed": 255,
+      "failed": 33,
+      "flaky_passes": 13,
+      "error": "Temporary path ENOSPC / SQLite Unavailable; Agentd test macro compilation error"
+    },
+    {
+      "attempt": "r4",
+      "passed": 1070,
+      "failed": 13,
+      "skipped": 67,
+      "error": "Actual helper runtime metadata absent"
+    },
+    {
+      "attempt": "r5",
+      "passed": 1083,
+      "failed": 0,
+      "skipped": 67
+    }
+  ],
+  "production_acceptance": false,
+  "scientific_acceptance": false,
+  "all_repository_ci_passed": false,
+  "remaining": [
+    "Ordinary daemon backend and production stage-owner assembly",
+    "Scoped V2 distinct-operation support",
+    "Automatic successor requests and real durable training",
+    "Producer/native export parity and general migration",
+    "Inference-control transport qualification",
+    "Independent real-task benefit and complete cost evidence"
+  ]
+}
