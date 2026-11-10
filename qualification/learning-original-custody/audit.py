@@ -12,7 +12,8 @@ from pathlib import Path
 import re
 
 STAGES = ('experience', 'dataset', 'training', 'evaluation', 'proposal',
-          'selection', 'published_current', 'final_use', 'next_use')
+          'selection', 'published_current', 'final_use', 'next_use',
+          'learning_next_use')
 EVALUATION_NO_UPDATE_STAGES = tuple(stage for stage in STAGES if stage != 'proposal')
 TRAINER_NO_UPDATE_STAGES = tuple(stage for stage in STAGES if stage not in ('evaluation', 'proposal'))
 HEX64 = re.compile(r'^[0-9a-f]{64}$')
@@ -127,10 +128,18 @@ def inspect(manifest: Path) -> dict:
             fail(f'foreign_operation:{stage}')
         if stage == 'next_use' and entry.get('learning_operation_id') != ids[0]:
             fail('next_use_unbound_to_learning')
+        # The ordinary consumer and the learning coordinator's terminal
+        # NextUse are DIFFERENT originals. The coordinator receipt is part of
+        # the learning operation; it cannot be replaced with a consumer receipt.
+        if stage == 'learning_next_use':
+            if entry.get('next_operation_id') != ids[1]:
+                fail('learning_next_use_unbound_to_consumer_operation')
+            if entry.get('next_task_id') != ids[3]:
+                fail('learning_next_use_unbound_to_consumer_task')
         expected_task = ids[3] if stage == 'next_use' else ids[2]
         if entry.get('task_id') != expected_task:
             fail(f'foreign_task:{stage}')
-        if stage in ('published_current', 'final_use', 'next_use') and entry.get('bundle_sha256') != chosen:
+        if stage in ('published_current', 'final_use', 'next_use', 'learning_next_use') and entry.get('bundle_sha256') != chosen:
             fail(f'wrong_consumed_version:{stage}')
 
     # Each admitted attempt must have a terminal or explicitly unresolved
