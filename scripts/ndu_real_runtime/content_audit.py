@@ -149,6 +149,11 @@ def _episode(root, entry, manifest, total):
                 except (ValueError, KeyError, TypeError):
                     evaluation_binding = False
         checks = {
+            "isolated_actor_completed": (
+                type(launch.get("exit_code")) is int
+                and launch["exit_code"] == 0
+                and launch.get("enforced_before_actor_exec") is True
+            ),
             "candidate_selection": selection_check,
             "raw_actor_wire_receipt": wire_receipts,
             "wire_to_trajectory": wire_binding,
@@ -226,7 +231,8 @@ def _episode(root, entry, manifest, total):
         "case_id_sha256": canonical_sha(case_id),
         "trajectory_sha256": entry["trajectory"]["sha256"],
         "launch_sha256": entry["launch"]["sha256"],
-        "launch_completed": launch.get("exit_code") == 0
+        "launch_completed": type(launch.get("exit_code")) is int
+        and launch["exit_code"] == 0
         and launch.get("enforced_before_actor_exec") is True,
         "rows": rows,
     }
