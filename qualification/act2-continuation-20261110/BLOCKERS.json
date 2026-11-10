@@ -268,9 +268,9 @@
         "hosted_status": "PENDING_NEW_HEAD_NO_PASS_TRANSFER",
         "qualification_driver": {
           "pr": 5715,
-          "source": "dbf0e8e7fc334177617b8bc956e416fddd501d77",
-          "tree": "0b51835eb4949fe8bfba274bb48b122eeebcc5f6",
-          "act2_run": 42891433945,
+          "source": "378c06a898728a7fa60498ef051843e38d592e67",
+          "tree": "1c8af7b5c875f449d2fb04dc4b08d97a6c45c8d1",
+          "act2_run": 42893302150,
           "act2_run_status": "PENDING",
           "format_job": {
             "status": "NO_JOB_OBSERVED"
@@ -286,22 +286,72 @@
             "source": "35b912b0a9b3c424c266e59c45a2878c878f32e7",
             "tree": "553bb5ff6d6212a8165e2da375db4270ecd08647",
             "act2_run": 42888691385,
-            "act2_status": "IN_PROGRESS_BUILDING_PINNED_SESSION_APP",
+            "act2_status": "TERMINAL_FAILURE_ONLY_AT_FINAL_CLIPPY_DIRTY_SOURCE_CHECK",
             "format_job": {
               "id": 130083736674,
               "status": "SUCCESS"
             },
             "native_job": {
               "id": 130083735960,
-              "status": "IN_PROGRESS",
+              "status": "FAILURE",
               "completed_stages": [
-                "Automation original runner",
-                "complete Memory and typed-fence owner tests",
-                "exact 1025-operation capacity boundary",
-                "Notes projection, private readback and original-owner tests"
+                "Automation original runner: 172/172",
+                "complete Memory and typed-fence owner tests: 417/417",
+                "exact 1025-operation capacity boundary: 1/1",
+                "Notes projection, private readback and original-owner tests: 12/12",
+                "locked pinned Session/App build",
+                "real Notes goal: 1/1",
+                "actual-App fence: 1/1"
               ],
-              "current_step": "build pinned real Session and App",
-              "later_steps": "real Notes goal, actual-App fence and final lint remain pending"
+              "terminal_step": "just fix --locked -p codex-hepta-automation -p codex-hepta-agentd -p codex-hepta-memory",
+              "terminal_result": "command exited successfully but changed three source files; exact-head cleanliness guard failed",
+              "classification": "all substantive ACT stages passed at this exact source, but the workflow remains FAILURE and is not a whole-run PASS"
+            },
+            "exact_results": {
+              "automation": "172 passed, 0 failed; 281.071 seconds; log sha256 6ecbe643378517935e59f532d8d0f7970e1831e43e7a9e315677fa37a0dc318c",
+              "memory": "417 passed, 0 failed; 121.655 seconds; log sha256 3d0b8eeb2205f284b4b7f404f22d4bd369a8f45f49d1ac6b4124eb60b417075d",
+              "capacity": "1 passed, 0 failed; 19.123 seconds; log sha256 bb6d2b080d93fdba74ea74e997ced85c70beab41511dc5a9880057f0fe2e5ea8",
+              "notes_owner_and_readback": "12 passed, 0 failed; 497.932 seconds; log sha256 aaf6413182d725004d7e4f29052736f158963625b5f97a78244949aa12890c5b",
+              "real_notes_goal": "1 passed, 0 failed; 7.549 seconds; log sha256 fb26d013ea745aed88f47c05d57947093eb80be95f2478f85aa05fa8c94517cc",
+              "actual_app_fence": "1 passed, 0 failed; 4.821 seconds; log sha256 f2be40d64c905ea7bf22444dbfe16fd748008ff265d0db93dfa06a32e067166d"
+            },
+            "locks_sha256": {
+              "codex-rs/Cargo.lock": "e47a4418a1e62ea67fa14085fa1c479e90187fed2af9e245893fbd1b5577e425",
+              "desktop/ui/Cargo.lock": "a8b00de25b9b5d47cba0d3458ab24f1c20871a6a2420f91e9c7bf0c1d792c35f"
+            },
+            "pinned_desktop": {
+              "source": "cc33ab6c44f3c945d83cb96be71d861e5613f99e",
+              "tree": "66f1b4f08d3b501139c09df08441595910f93987"
+            },
+            "binary_sha256": {
+              "trill-session": "8695c15a09563888dab46e2f8bab5ef080c0d5eb47013e28b0edca573ab2759d",
+              "trill-app-window": "42e65dc89a6b73347a5f3291cc93c3b8e0148a99003eab791f82b7fd6a2f5d8a"
+            },
+            "artifacts": [
+              {
+                "id": 13799147097,
+                "name": "act2-native-35b912b0a9b3c424c266e59c45a2878c878f32e7-1",
+                "size_bytes": 128987,
+                "sha256": "a175ea8b31c1df520b663c0704c1fc8a87b28221607d5af19cefebc2c38d5f2d",
+                "retained_zip": "qualification/act2-continuation-20261110/act2-native-42888691385.zip"
+              },
+              {
+                "id": 13796419158,
+                "name": "act2-format-35b912b0a9b3c424c266e59c45a2878c878f32e7-1",
+                "size_bytes": 188125,
+                "sha256": "590b442e03558c69525faa2612641ca6eb27e9bd09050bcd34689693fec5ea97",
+                "retained_zip": "qualification/act2-continuation-20261110/act2-format-42888691385.zip"
+              }
+            ],
+            "scope_limits": {
+              "complete_model_facing_handler_exercised": false,
+              "production_authority": false,
+              "post_close_current_readback": "UNKNOWN",
+              "cold_recovery_qualified": false,
+              "physical_fifo_reordering_qualified": false,
+              "full_model_handler_qualified": false,
+              "native_kernel_qualified": false,
+              "fence_profile": "fixture-authority-actual-app-precontact-delay-fence"
             },
             "blocking_run": {
               "run": 42888691521,
@@ -310,7 +360,7 @@
               "exact_result": "CALLERS.toml still required retained.topic != NOTES_REPLACE_TOPIC_V1 although typed cancellation owner deliberately uses the closed replace-or-fence helper; no runtime test failed",
               "other_open_failure": "cargo-deny job failed but raw log was not yet readable; no cause inferred"
             },
-            "classification": "ACT-2 execution remains independent and in progress; blocking policy failure is repaired only in the new successor and no result transfers"
+            "classification": "substantive ACT stages are independently observed at this exact source; the terminal workflow is still FAILURE, CALLERS repair and clippy cleanup belong to later exact sources, and no result transfers"
           },
           "terminal_capacity_success_macro_failure_head": {
             "source": "b453724b33e3db689aaed2287444feb8b5a44452",
@@ -520,9 +570,32 @@
             "local_results": "PASS_HEPTA_CALLER_PROOF_SELF_TEST and PASS_HEPTA_CALLER_CLOSED_SET over 6149 Rust files with authorityGranted=false",
             "hosted": {
               "act2_run": 42891433945,
-              "status": "PENDING_NO_RESULT_TRANSFER"
+              "status": "IN_PROGRESS_SUPERSEDED_HEAD_NO_RESULT_TRANSFER",
+              "blocking_run": 42891434290,
+              "blocking_status": "QUEUED",
+              "other_workflows": "later cancelled after a newer exact head; cancellation is not a pass"
             },
             "does_not_change": "production code, dependency or lock, caller set, operation, permission, FinalUse, readback, tombstone, receipt or promotion semantics"
+          },
+          "clippy_cleanup_successor": {
+            "source": "378c06a898728a7fa60498ef051843e38d592e67",
+            "tree": "1c8af7b5c875f449d2fb04dc4b08d97a6c45c8d1",
+            "parent": "dbf0e8e7fc334177617b8bc956e416fddd501d77",
+            "change": "apply the exact final just-fix output: remove two redundant Sha256Digest parse map_err closures, remove one needless repeat-string borrow, and replace one redundant error closure; then format",
+            "local_result": "formatter and diff checks passed; targeted local tests are NOT_RUN because the environment failed before tests while building rama-dns with missing system stddef.h",
+            "hosted": {
+              "act2_run": 42893302150,
+              "act2_status": "PENDING",
+              "blocking_run": 42893302790,
+              "blocking_status": "PENDING",
+              "architecture_run": 42893302196,
+              "architecture_status": "IN_PROGRESS",
+              "windows_private_run": 42893302159,
+              "windows_private_status": "IN_PROGRESS",
+              "windows_original_run": 42893302139,
+              "windows_original_status": "IN_PROGRESS"
+            },
+            "does_not_change": "dependencies, locks, caller set, operation, permission, FinalUse, readback, tombstone, receipt or promotion semantics; predecessor results do not transfer"
           }
         },
         "compile_fix": {
