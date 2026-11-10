@@ -40,6 +40,38 @@ class EpisodicRetrievalTests(unittest.TestCase):
         self.assertEqual(read_memory(other, session_id="fresh", source_ids=["s1"],
                                      query="gate")["records"], [])
 
+    def test_foreign_dependency_and_transitive_summary_are_not_retrieved(self):
+        """An allowlisted source must not launder disallowed source evidence."""
+        derived = self.store.put(
+            "s1", "derived", "Derived fact reveals restricted source C30",
+            provenance=provenance(), dependencies=[self.foreign["record_id"]],
+        )
+        chained = self.store.put(
+            "s1", "descendant", "Second-order C30 summary",
+            provenance=provenance(), dependencies=[derived["record_id"]],
+        )
+        before = self.root / "cross-source-before.json"
+        self.store.export_snapshot(before)
+        rejected_ids = {derived["record_id"], chained["record_id"]}
+        for strategy in ("exact_kv", "bm25", "uniform_replay", "icl"):
+            with self.subTest(strategy=strategy):
+                result = self.read(
+                    strategy=strategy, key="derived" if strategy == "exact_kv" else None,
+                    query="C30", snapshot_path=before,
+                )
+                self.assertFalse(
+                    rejected_ids.intersection(r["record_id"] for r in result["records"])
+                )
+                self.assertEqual(result["receipt"]["source_dependency_rejections"], 2)
+                self.assertTrue(verify_read_receipt(result))
+        approved = read_memory(
+            self.store, session_id="both-sources", source_ids=["s1", "s2"],
+            strategy="exact_kv", key="derived",
+        )
+        self.assertEqual(approved["records"], [derived])
+        self.assertEqual(approved["receipt"]["source_dependency_rejections"], 0)
+        self.assertTrue(verify_read_receipt(approved))
+
     def test_modes_separate_store_read_retrieval_and_delivery(self):
         with patch.object(self.store, "view", side_effect=AssertionError("unexpected read")):
             off = self.read(mode="off")
