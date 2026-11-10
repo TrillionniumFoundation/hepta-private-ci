@@ -211,6 +211,22 @@ class ReplayTests(unittest.TestCase):
                 self.assertEqual(set(before), {"a1", "b1"})
                 self.assertEqual(after, ("b1",))
 
+    def test_explicit_identity_cannot_tombstone_unrelated_implicit_event(self):
+        # These use the same string but are different identity namespaces.
+        # Without a namespace tag, the fake explicit tombstone deleted keep.
+        records = [
+            MemoryRecord("keep", "fact", "K", digest("keep"), 1),
+            MemoryRecord("delete", "fact", "K", digest("delete"), 2,
+                         tombstoned=True, logical_id="keep"),
+            MemoryRecord("other", "episode", "K", digest("other"), 3),
+        ]
+        for policy in ("exact", "uniform", "stratified"):
+            with self.subTest(policy=policy):
+                selected = select_replay(records, policy=policy, query_key="K",
+                                         now_sequence=5, max_items=10,
+                                         seed="fixed")
+                self.assertEqual(set(selected), {"keep", "other"})
+
     def test_revocation_is_sticky_and_ambiguous_revision_is_rejected(self):
         a = MemoryRecord("a1", "fact", "K", digest("a1"), 1, logical_id="a")
         revoked = MemoryRecord("a2", "fact", "K", digest("a2"), 2,
