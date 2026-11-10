@@ -3100,3 +3100,58 @@ forbidden = []
 required_function_order = [
   { function = "fn require_signer_binding(", sequence = ["self.signers.get(&supplied.principal.principal_id)", "canonical.roles.sort()", "if enrolled != &canonical", "enrolled.principal.validate(now)?", "enrolled.revoked_at.is_some_and", "enrolled.roles.contains(&expected_role)", "Ok(())"] },
 ]
+
+
+[[protected_file]]
+path = "codex-rs/hepta-neuron/src/cell_inference.rs"
+required = ["control.bind_cell_inference(&admission)", "readback.bind_cell_readback(&pending)"]
+forbidden = []
+required_function_order = [
+  { function = "fn infer_cell_with_clock(", sequence = ["admission.host_queue_age_micros = None", "owner.admit_inference(admission.clone())?", "control.bind_cell_inference(&admission)", "let dispatch_at_micros = clock_micros()", "if dispatch_at_micros >= prepared.input.deadline_micros", "control.execute_feature(&request)", "owner.record_host_queue_age(", ".pending_inference(&prepared.input.scope)?", "pending.model_request != prepared.model_request"] },
+  { function = "fn recover_cell_inference(", sequence = [".pending_inference(&input.scope)?", "pending.semantic_request_digest != digest", "owner.snapshot(&input.scope)? != pending.snapshot", "let prepared = prepare_from_snapshot(", "pending.snapshot.clone()", "prepared.model_request != pending.model_request", "prepared.input.deadline_micros != pending.deadline_micros", "CellExecutionError::UnmeasuredQueueCost", "readback.bind_cell_readback(&pending)", ".read_feature(&request)"] },
+]
+
+
+[[protected_file]]
+path = "codex-rs/hepta-neuron/src/feature_control.rs"
+required = ["snapshot.checkpoint.as_ref().map_or(Digest32::ZERO, SparseCheckpoint::digest).as_array()", "admission.semantic_request_digest", "admission.admitted_at_micros", "admission.deadline_micros", "worker.runtime_tuple()", "NeuronFeatureControlBindingV1::from_admission("]
+forbidden = ["SigningKey", "File::open", "UnixStream::connect", "unwrap_or", "permit_all"]
+required_function_order = [
+  { function = "fn execute_feature(", sequence = ["self.require_request(request)?", "self.owner.generation_record(&binding.journal)", "self.read_original()?", "self.owner.generation_has_unresolved()", "let admitted = (self.clock)()", "admitted < binding.not_before_micros", "self.owner.admit_generation(", "if token.is_none()", "let dispatch = (self.clock)()", "dispatch < admitted || dispatch >= deadline", "self.owner.dispatch_generation(", "let entered = (self.clock)()", "entered < dispatch || entered >= deadline", "self.worker.execute(request)?", "let completed = (self.clock)()", "completed < entered || observation.status == NeuronFeatureTerminalStatusV1::Indeterminate", "observation.queue_age_micros.checked_add(queue)", "if completed >= deadline", "observation.status = NeuronFeatureTerminalStatusV1::Cancelled", "observation.drive_q24.clear()", "observation.prediction_q24.clear()", "build_neuron_feature_receipt_v1(", "codec::encode(&receipt)?", "self.owner.settle_generation(", "Ok(receipt)"] },
+  { function = "fn read_feature(", sequence = ["self.require_request(request)?", "self.read_original()"] },
+  { function = "fn read_original(", sequence = ["self.binding.as_ref().ok_or(NeuronModelError::Rejected)?", "self.owner.generation_record(&binding.journal)", "codec::decode(&binding.expected, &binding.runtime, &result.bytes)"] },
+]
+
+
+[[protected_file]]
+path = "codex-rs/hepta-neuron/src/feature_control_codec.rs"
+required = ["#[serde(deny_unknown_fields)]", "if bytes.len() > MAX_RESULT_BYTES as usize", "saved.request_digest != expected.into_array()", "receipt.receipt_digest.into_array() != saved.receipt_digest || encode(&receipt)? != bytes"]
+forbidden = ["SigningKey", "File::open", "UnixStream::connect", "unwrap_or", "permit_all"]
+
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/cell_composed_q24_feature.rs"
+required = ["&bundle.components != c", "definition.bundle_digest != digest", "definition.state_schema_digest != c.state_schema", "r.model_id != bundle.artifact_id", "r.model_manifest_digest != digest", "r.generation != bundle.generation", "r.encoder_digest != c.encoder", "r.head_digest != c.heads", "r.weights_digest != model.effective_weights_digest()", "r.tokenizer_digest != c.tokenizer", "r.preprocessor_digest != c.normalizer", "r.normalization_digest != c.normalizer", "r.quantization_digest != c.numeric_profile", "r.runtime_digest != Self::runtime_profile_digest()", "r.input_feature_dimension != model.input_width()", "r.state_width != model.output_width()", "request.checkpoint.is_some()", "capacity()", "Instant::now()"]
+forbidden = ["SigningKey", "File::open", "UnixStream::connect", "unwrap_or", "permit_all"]
+required_function_order = [
+  { function = "fn execute(", sequence = ["request.model_id != self.runtime.model_id", "request.weights_digest != self.model.effective_weights_digest()", "self.model.owned_allocation_bytes()", "self.model.hidden_with_allocations(&request.feature_vector_q24)", "self.model.heads.apply(&hidden)", "output[..width].to_vec()", "output[width..].to_vec()", "let allocated =", "let latency_micros = elapsed(started)?", "Ok(NeuronFeatureObservationV1"] },
+]
+
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/circuit_task_source_journal.rs"
+required = ["if identity != &self.identity", "self.require_active(record.snapshot.run_id.as_str())?", "request.validate_record(record, self.fence.generation)?", "self.fenced || self.witness.current()"]
+forbidden = ["SigningKey", "File::open", "UnixStream::connect", "unwrap_or", "permit_all"]
+required_function_order = [
+  { function = "fn retain(", sequence = ["codec::bounded(payload)?", "self.require_current()?", "self.journal.readback(&key)", "if bytes != payload", "ProductEvaluationExecutionStateV1::Pending", "Err(Error::ReconciliationRequired)", "mode == CircuitTaskInputModeV1::Prepare", "self.journal.claim(&key)", "self.anchor_append(before)?", "self.journal.complete(&key, payload)", "self.anchor_append(before)?", "self.require_bytes(stage, run, payload)"] },
+]
+
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/circuit_task_source.rs"
+required = ["if !completed.is_empty()", "dispatch.run_id != request.start.run_id", "dispatch.program_id != program.program_id", "dispatch.node_id != program.entry_node", "dispatch.round != 0", "dispatch.scope_digest != request.start.scope_digest", "dispatch.input_digest != request.start.input_digest"]
+forbidden = ["SigningKey", "File::open", "UnixStream::connect", "unwrap_or", "permit_all"]
+required_function_order = [
+  { function = "fn resolve(", sequence = ["owner.require_active(&request.start.run_id)?", "let retained = owner.read(", "codec::require_request(&retained, request)?", "if !completed.is_empty()", "circuit_cell_operation_id_v1(dispatch)?", "codec::dispatch_input(dispatch, &input)?", "owner.retain(", "Ok(input)"] },
+  { function = "fn publish_result(", sequence = ["owner.request(identity, record)", "owner.require_bytes(", "let saved_input = owner.read(", "codec::decode_input(&saved_input)", "codec::result(", "owner.retain("] },
+]

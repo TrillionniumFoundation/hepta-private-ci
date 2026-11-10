@@ -60,5 +60,25 @@ class OriginalLearningOwnerClosureTests(unittest.TestCase):
         for marker in ("if enrolled != &canonical", "enrolled.principal.validate(now)?", "enrolled.revoked_at.is_some_and", "enrolled.roles.contains(&expected_role)"):
             with self.subTest(marker=marker): self.rejects(path, "fn require_signer_binding(", marker)
 
+    def test_feature_dispatch_must_receive_original_durable_cell_admission(self):
+        path = "codex-rs/hepta-neuron/src/cell_inference.rs"
+        for marker in ("owner.admit_inference(admission.clone())?", "control.bind_cell_inference(&admission)", "if dispatch_at_micros >= prepared.input.deadline_micros", "owner.record_host_queue_age("):
+            with self.subTest(marker=marker): self.rejects(path, "fn infer_cell_with_clock(", marker)
+        for marker in ("pending.semantic_request_digest != digest", "owner.snapshot(&input.scope)? != pending.snapshot", "prepared.model_request != pending.model_request", "CellExecutionError::UnmeasuredQueueCost", "readback.bind_cell_readback(&pending)"):
+            with self.subTest(marker=marker): self.rejects(path, "fn recover_cell_inference(", marker)
+
+    def test_native_control_fences_unknown_execution_and_persists_before_return(self):
+        path = "codex-rs/hepta-neuron/src/feature_control.rs"
+        for marker in ("self.require_request(request)?", "self.owner.generation_has_unresolved()", "self.owner.admit_generation(", "self.owner.dispatch_generation(", "entered < dispatch || entered >= deadline", "completed < entered || observation.status == NeuronFeatureTerminalStatusV1::Indeterminate", "observation.drive_q24.clear()", "self.owner.settle_generation("):
+            with self.subTest(marker=marker): self.rejects(path, "fn execute_feature(", marker)
+
+    def test_source_pending_and_readback_cannot_become_new_work(self):
+        path = AGENT + "circuit_task_source_journal.rs"
+        for marker in ("if bytes != payload", "ProductEvaluationExecutionStateV1::Pending", "mode == CircuitTaskInputModeV1::Prepare", "self.journal.claim(&key)", "self.anchor_append(before)?", "self.require_bytes(stage, run, payload)"):
+            with self.subTest(marker=marker): self.rejects(path, "fn retain(", marker)
+        path = AGENT + "circuit_task_source.rs"
+        for marker in ("owner.require_active(&request.start.run_id)?", "codec::require_request(&retained, request)?", "if !completed.is_empty()", "dispatch.input_digest != request.start.input_digest", "circuit_cell_operation_id_v1(dispatch)?"):
+            with self.subTest(marker=marker): self.rejects(path, "fn resolve(", marker)
+
 if __name__ == "__main__":
     unittest.main()
