@@ -14,6 +14,7 @@ try:
         replay_specs,
         run_replay_attempt,
         verify_priority_selection_audit,
+        verify_priority_selection_against_checkpoint,
     )
 except ImportError:
     from memory_replay import (
@@ -25,6 +26,7 @@ except ImportError:
         replay_specs,
         run_replay_attempt,
         verify_priority_selection_audit,
+        verify_priority_selection_against_checkpoint,
     )
 
 
@@ -140,15 +142,84 @@ class MemoryReplayTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "declared order"):
             verify_priority_selection_audit(changed)
 
+    def test_full_pool_snapshot_rejects_checksum_rewritten_candidate_omission(self):
+        pool = self.pool(capacity=16)
+        checkpoint = pool.checkpoint()
+        selected, receipt = pool.select("error_prioritized", 1, 8, audit=True)
+        row = {
+            "selection_audit": receipt,
+            "preselection_checkpoint": checkpoint,
+            "ids": [item.item_id for item in selected],
+            "entry_presentations": len(selected),
+            "timesteps": sum(len(item.episode[0]) for item in selected),
+            "numeric_payload_bytes": sum(
+                a.nbytes for item in selected for a in item.arrays()
+            ),
+        }
+        self.assertTrue(verify_priority_selection_against_checkpoint(row))
+        # Internal digest/order checks alone accept a smaller forged roster
+        # when the attacker also fixes its counts, selection and digest.
+        forged = deepcopy(row)
+        audit = forged["selection_audit"]
+        audit["ordered_candidates"].pop()
+        audit["eligible_candidate_reads"] -= 1
+        audit["priority_value_reads"] -= 1
+        audit["candidate_payload_digests_computed"] -= 1
+        try:
+            from .protocol import canonical_digest
+        except ImportError:
+            from protocol import canonical_digest
+        audit["digest"] = canonical_digest(
+            {k: v for k, v in audit.items() if k != "digest"}
+        )
+        self.assertTrue(verify_priority_selection_audit(audit))
+        with self.assertRaisesRegex(ValueError, "inventory differs"):
+            verify_priority_selection_against_checkpoint(forged)
+        pool.update_version("error", "v2")
+        self.assertTrue(verify_priority_selection_against_checkpoint(row))
+        stale = deepcopy(row)
+        stale["preselection_checkpoint"] = pool.checkpoint()
+        with self.assertRaisesRegex(ValueError, "source context|index does not follow"):
+            verify_priority_selection_against_checkpoint(stale)
+
+    def test_snapshot_verifier_is_read_only_and_checks_actual_selection_bytes(self):
+        pool = self.pool(capacity=16)
+        before = pool.checkpoint()
+        selected, receipt = pool.select("error_prioritized", 2, 16, audit=True)
+        row = {
+            "selection_audit": receipt,
+            "preselection_checkpoint": before,
+            "ids": [item.item_id for item in selected],
+            "entry_presentations": len(selected),
+            "timesteps": sum(len(item.episode[0]) for item in selected),
+            "numeric_payload_bytes": sum(
+                a.nbytes for item in selected for a in item.arrays()
+            ),
+        }
+        module = sys.modules[run_replay_attempt.__module__]
+        with (
+            mock.patch.object(module, "gradient", side_effect=AssertionError),
+            mock.patch.object(module, "propose", side_effect=AssertionError),
+        ):
+            self.assertTrue(verify_priority_selection_against_checkpoint(row))
+        self.assertEqual(pool.calls, before["payload"]["calls"] + 1)
+        wrong = deepcopy(row)
+        wrong["numeric_payload_bytes"] = 0
+        with self.assertRaisesRegex(ValueError, "byte accounting changed"):
+            verify_priority_selection_against_checkpoint(wrong)
+
     def test_selection_auditing_does_not_alter_gradient_budget_or_rng(self):
         control, audited = self.pool(), self.pool()
         for method in ("uniform", "fact", "error", "error_prioritized", "none"):
             ordinary = control.select(method, 1, 8)
             with_audit, receipt = audited.select(method, 1, 8, audit=True)
-            self.assertEqual([e.item_id for e in ordinary],
-                             [e.item_id for e in with_audit])
+            self.assertEqual(
+                [e.item_id for e in ordinary], [e.item_id for e in with_audit]
+            )
             self.assertEqual(control.checkpoint(), audited.checkpoint())
-            self.assertEqual(receipt["selected_ids"], [e.item_id for e in ordinary])
+            self.assertEqual(
+                receipt["selected_ids"], [e.item_id for e in ordinary]
+            )
             self.assertEqual(receipt["selection_index"], audited.calls)
 
     def test_items_do_not_alias_input_or_returned_arrays(self):
@@ -226,6 +297,9 @@ class MemoryReplayTests(unittest.TestCase):
                 self.assertEqual(selection["timesteps"], audit["decision_timesteps"])
                 if row["method"] == "error_prioritized":
                     self.assertTrue(verify_priority_selection_audit(audit))
+                    self.assertTrue(
+                        verify_priority_selection_against_checkpoint(selection)
+                    )
             self.assertEqual(
                 row["replay_numeric_payload_bytes"],
                 row["replay_timesteps"]
