@@ -22,6 +22,9 @@ use super::*;
 #[path = "learning_iteration_capacity_tests.rs"]
 mod capacity_tests;
 
+#[path = "learning_iteration_readback_budget_tests.rs"]
+mod readback_budget_tests;
+
 struct CurrentEvidencePorts {
     inner: Arc<IterationPorts>,
     planned: Mutex<Option<LearningIterationSnapshotV1>>,

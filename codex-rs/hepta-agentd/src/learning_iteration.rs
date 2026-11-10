@@ -33,6 +33,9 @@ mod delivery;
 
 const MAX_LEARNING_QUEUE: usize = 64;
 const MAX_ITERATION_SECONDS: u64 = 86_400;
+// A complete history needs multiple sequential original-owner reads. Keep
+// their total reconciliation bounded independently of the old work deadline.
+const READBACK_TIMEOUT: Duration = Duration::from_secs(30);
 
 #[derive(Debug)]
 pub enum LearningIterationRuntimeErrorV1 {
@@ -318,9 +321,13 @@ impl LearningIterationRuntimeBootstrapV1 {
         if remaining > MAX_ITERATION_SECONDS {
             return Err(LearningIterationRuntimeErrorV1::DeadlineExceeded);
         }
-        // Expired operations may reconcile a completed receipt. New stages and
-        // create-if-absent checkpoints are still rejected inside process.
-        tokio::time::timeout(Duration::from_secs(remaining.max(1)), async {
+        // Only explicit readback receives a separate reconciliation budget.
+        // Submission keeps its work deadline even while restoring a checkpoint.
+        let timeout = match mode {
+            LearningIterationModeV1::Readback => READBACK_TIMEOUT,
+            LearningIterationModeV1::Submit => Duration::from_secs(remaining.max(1)),
+        };
+        tokio::time::timeout(timeout, async {
             match mode {
                 LearningIterationModeV1::Readback => {
                     self.process_readback(state, request, now_unix_seconds)
