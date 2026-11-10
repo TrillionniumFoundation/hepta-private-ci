@@ -73,6 +73,8 @@ def _validate_record_fields(record):
     bounded_text(record["text"], "record text", 4096)
     for field in ("version", "write_sequence"):
         integer(record[field], field, 1, 2**63 - 1)
+    if record["version"] > record["write_sequence"]:
+        raise ValueError("record version cannot exceed its write sequence")
     provenance = record["provenance"]
     if not isinstance(provenance, dict) or set(provenance) != PROVENANCE:
         raise ValueError("complete source provenance required")
@@ -422,7 +424,8 @@ class EpisodicStore:
                     raise ValueError("invalid snapshot envelope")
                 body = envelope["body"]
                 if (
-                    envelope["sha256"] != digest(body)
+                    not isinstance(body, dict)
+                    or envelope["sha256"] != digest(body)
                     or set(body)
                     != {"schema", "authority_id", "namespace", "generation", "records"}
                     or body["schema"] != SNAPSHOT_SCHEMA
@@ -444,6 +447,30 @@ class EpisodicStore:
                 candidates = [validate_record(r) for r in body["records"]]
                 if len({r["record_id"] for r in candidates}) != len(candidates):
                     raise ValueError("duplicate snapshot record")
+                # Validate the whole historical roster before filtering against
+                # the live frontier. A valid digest is not evidence that a new
+                # fact existed in an earlier generation, or that a partial
+                # dependency chain was ever a coherent snapshot.
+                if any(
+                    r["namespace"] != self.namespace
+                    or r["write_sequence"] > body["generation"]
+                    for r in candidates
+                ):
+                    raise ValueError("snapshot record namespace or chronology mismatch")
+                if len({(r["source_id"], r["key"]) for r in candidates}) != len(
+                    candidates
+                ):
+                    raise ValueError("duplicate snapshot fact slot")
+                by_id = {r["record_id"]: r for r in candidates}
+                if any(
+                    dependency not in by_id
+                    or by_id[dependency]["write_sequence"] >= r["write_sequence"]
+                    for r in candidates
+                    for dependency in r["dependencies"]
+                ):
+                    raise ValueError(
+                        "snapshot dependency missing or not earlier than its dependent"
+                    )
                 records = [r for r in candidates if current.get(r["record_id"]) == r]
                 rejected, snapshot_sha = (
                     len(candidates) - len(records),

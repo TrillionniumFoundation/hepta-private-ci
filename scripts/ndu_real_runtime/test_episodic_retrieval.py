@@ -1,6 +1,7 @@
 """New-process retrieval and mechanism controls, with synthetic engineering data."""
 
 import json
+import os
 from pathlib import Path
 import subprocess
 import sys
@@ -8,6 +9,7 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
+from . import episodic_retrieval
 from .episodic_memory import EpisodicStore, canonical_bytes, digest
 from .episodic_retrieval import (
     assemble_context,
@@ -177,6 +179,165 @@ class EpisodicRetrievalTests(unittest.TestCase):
             [self.gate["record_id"], self.route["record_id"]],
         )
         self.assertTrue(verify_read_receipt(small))
+
+    def test_ranking_cannot_deliver_a_fact_revoked_or_updated_during_the_read(self):
+        for action in ("revoke", "update"):
+            with self.subTest(action=action):
+                self.store.put("s1", "race", "Old gate B12", provenance=provenance())
+
+                def association(query, records):
+                    if action == "revoke":
+                        self.store.revoke("s1", "race")
+                    else:
+                        self.store.put(
+                            "s1", "race", "New gate C30", provenance=provenance()
+                        )
+                    return [r["record_id"] for r in records]
+
+                with self.assertRaisesRegex(ValueError, "before context delivery"):
+                    self.read(
+                        strategy="exact_kv",
+                        key="race",
+                        association=association,
+                        association_id="b" * 64,
+                    )
+                current = self.read(strategy="exact_kv", key="race")
+                self.assertEqual(
+                    [r["text"] for r in current["records"]],
+                    [] if action == "revoke" else ["New gate C30"],
+                )
+                self.assertTrue(verify_read_receipt(current))
+
+    def test_inflight_revocation_of_a_dependency_aborts_summary_delivery(self):
+        dependent = self.store.put(
+            "s1",
+            "derived",
+            "Follow the B12 route",
+            provenance=provenance(),
+            dependencies=[self.gate["record_id"]],
+        )
+
+        def association(query, records):
+            self.assertEqual(records, (dependent,))
+            self.store.revoke("s1", "gate")
+            return [dependent["record_id"]]
+
+        with self.assertRaisesRegex(ValueError, "before context delivery"):
+            self.read(
+                strategy="exact_kv",
+                key="derived",
+                association=association,
+                association_id="b" * 64,
+            )
+        self.assertEqual(self.read(strategy="exact_kv", key="derived")["records"], [])
+
+    def test_separate_writer_process_cannot_revoke_between_retrieval_and_delivery(self):
+        snapshot = self.root / "inflight-before.json"
+        self.store.export_snapshot(snapshot)
+        original_bm25 = episodic_retrieval.bm25
+
+        def retrieve_then_revoke(records, query, limit):
+            selected = original_bm25(records, query, limit)
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    "-B",
+                    "-c",
+                    "import sys; "
+                    "from scripts.ndu_real_runtime.episodic_memory import EpisodicStore; "
+                    "s = EpisodicStore(sys.argv[1], namespace='n', create=False); "
+                    "s.revoke('s1', 'gate')",
+                    str(self.store.path),
+                ],
+                cwd=Path(__file__).resolve().parents[2],
+                capture_output=True,
+                timeout=20,
+                check=True,
+            )
+            self.assertEqual((completed.stdout, completed.stderr), (b"", b""))
+            return selected
+
+        # Synchronize a real independent writer in the vulnerable interval;
+        # retrieval and authority operations themselves remain the real paths.
+        with patch.object(episodic_retrieval, "bm25", side_effect=retrieve_then_revoke):
+            with self.assertRaisesRegex(ValueError, "before context delivery"):
+                self.read(strategy="bm25", snapshot_path=snapshot)
+        self.assertEqual(self.read(strategy="exact_kv", key="gate")["records"], [])
+
+    def test_inflight_namespace_or_authority_replacement_aborts_delivery(self):
+        def change_namespace(query, records):
+            self.store.namespace = "foreign"
+            return [r["record_id"] for r in records]
+
+        try:
+            with self.assertRaisesRegex(ValueError, "before context delivery"):
+                self.read(association=change_namespace, association_id="b" * 64)
+        finally:
+            self.store.namespace = "n"
+
+        other = EpisodicStore(self.root / "other.sqlite", namespace="n")
+        for record in (self.gate, self.route, self.foreign):
+            other.put(
+                record["source_id"],
+                record["key"],
+                record["text"],
+                provenance=record["provenance"],
+            )
+        self.assertEqual(
+            self.store.view()["receipt"]["authority_generation"],
+            other.view()["receipt"]["authority_generation"],
+        )
+
+        def replace_authority(query, records):
+            os.replace(other.path, self.store.path)
+            return [r["record_id"] for r in records]
+
+        with self.assertRaisesRegex(ValueError, "before context delivery"):
+            self.read(association=replace_authority, association_id="b" * 64)
+
+    def test_callback_cannot_change_original_source_allowlist(self):
+        allowed = ["s1"]
+
+        def association(query, records):
+            allowed[:] = ["s2"]
+            return [r["record_id"] for r in records]
+
+        result = self.read(
+            source_ids=allowed,
+            strategy="exact_kv",
+            key="gate",
+            association=association,
+            association_id="b" * 64,
+        )
+        self.assertEqual(result["records"], [self.gate])
+        self.assertEqual(result["receipt"]["source_ids"], ["s1"])
+        self.assertTrue(verify_read_receipt(result))
+
+    def test_suppressed_delivery_does_not_revalidate_or_emit_revoked_content(self):
+        def association(query, records):
+            self.store.revoke("s1", "gate")
+            return [r["record_id"] for r in records]
+
+        with patch.object(self.store, "view", wraps=self.store.view) as view:
+            result = self.read(
+                mode="delivery_off",
+                association=association,
+                association_id="b" * 64,
+            )
+            self.assertEqual(view.call_count, 1)
+        self.assertEqual((result["records"], result["context"]), ([], ""))
+        self.assertTrue(verify_read_receipt(result))
+        for mode, reads in (("off", 0), ("retrieval_off", 1)):
+            with self.subTest(mode=mode):
+                with patch.object(self.store, "view", wraps=self.store.view) as view:
+                    result = self.read(
+                        mode=mode,
+                        association=lambda *args: self.fail("unexpected ranking"),
+                        association_id="b" * 64,
+                    )
+                    self.assertEqual(view.call_count, reads)
+                self.assertEqual((result["records"], result["context"]), ([], ""))
+                self.assertTrue(verify_read_receipt(result))
 
     def test_receipt_rejects_changed_context_records_or_audit_fields(self):
         result = self.read()
