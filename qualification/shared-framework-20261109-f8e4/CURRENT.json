@@ -63,9 +63,29 @@
       }
     },
     "macos": {
-      "status": "RUNNING_OWNING_ALIAS_PROFILE",
-      "initial_checkout_fetch_attempt": "FAILED_BEFORE_TESTS",
-      "continued_from_verified_exact_cached_objects": true
+      "status": "HOLD_EXECUTION_CHANNEL_UNAVAILABLE",
+      "source": "03e60a334498446b79148285905592ffb938c59a",
+      "tree": "2a132e5bce1d43703aeea28f43034c41f6a23d44",
+      "native_test_result_observed": null,
+      "cached_clone_identity_verified": true,
+      "first_attempt": "GitHub HTTPS connect timeout before test execution",
+      "latest_observed_phase": "source checkout/materialization",
+      "original_checkout_terminal": "UNOBSERVED",
+      "planned_alias_profile": "task-owned tmp-alias symlink to task-owned tmp",
+      "continuation_pty": "dpty-85491c529ede32745cf71cbaca036d63658f78aee097b68b8fa7af8ad583a62b",
+      "guarded_reconciliation_key": "framework-f8e4-macos-route-owned-git-interrupt-20261110-v1",
+      "guarded_reconciliation_state": "UNKNOWN_ACK",
+      "source_pack_key": "framework-f8e4-mac-source-materialization-pack-20261110-v1",
+      "source_pack_state": "UNKNOWN_ACK; subsequent file/coverage reads timed out",
+      "transfer_started_observed": false,
+      "qualification": false,
+      "recovery_rule": "Reconcile original full requests on the original controller/host; do not infer absence or replay under new keys.",
+      "last_read": {
+        "result": "OBSERVER_TIMEOUT",
+        "timeout_seconds": 45,
+        "last_observed_output_offset": 938,
+        "terminal_proved": false
+      }
     }
   },
   "original_failures_retained": [
@@ -110,5 +130,9 @@
     "Producer/native export parity and general migration",
     "Inference-control transport qualification",
     "Independent real-task benefit and complete cost evidence"
+  ],
+  "recovery_records": [
+    "UNKNOWN_RUNTIME_REQUESTS.json",
+    "UNKNOWN_MAC_REQUEST.json"
   ]
 }

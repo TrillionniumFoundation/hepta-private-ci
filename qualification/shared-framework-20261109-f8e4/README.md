@@ -28,7 +28,7 @@ Every published maintained blob and tree was independently matched to the recove
 | Strict Clippy after maintenance | Three packages, `-D warnings`, exit 0; source unchanged |
 | Full original caller scan | 6,175 Rust files, 182 boundaries, 165 protected files; PASS, authorityGranted=false |
 | Separate fixture repair on Linux | Two original causal tests pass; pinned Rustfmt check passes; source unchanged |
-| Owning macOS alias profile | Running; not yet qualified |
+| Owning macOS alias profile | HOLD: source retrieval and runtime RPC timeouts; no native result observed |
 
 The 1,084-test result remains bound to its pre-maintenance source. No unchanged maintained source was behaviorally rerun just after fix/fmt. The later two-test run verifies a separate fix for an actual macOS fixture failure: canonicalize the task-owned TempDir before cold-reopening the original strict store. Production path validation and all original assertions remain intact.
 
@@ -52,3 +52,9 @@ Circuit milliseconds and Cell microseconds are separate clock scopes. Receipt ti
 Retirement frees active capacity after exact intent/request/ACK matching in the original SQLite transaction. Historical identities remain readable and storage continues to grow. Claim-before-checkpoint loss stays readback-only. Distinct-operation registries currently use V1; scoped V2 still binds one exact request. Slow serial owner calls can block later entries until their original timeout, and fatal refusal stops the service.
 
 **Production and scientific acceptance remain HOLD.** Required repository CI has not passed. No original owner, permission, evaluator or required check is replaced.
+
+## Current macOS execution blocker
+
+The exact repair commit/tree was verified in the retained Mac clone. The first secondary fetch failed with a GitHub HTTPS connection timeout; the continuation was last observed in checkout/materialization. Its terminal state and native test result remain unobserved. A guarded reconciliation and a bounded source-object transfer preparation then lost usable launch acknowledgements; subsequent read-only artifact probes timed out. These operations remain UNKNOWN, not failed/no-effect. No transfer or Mac index mutation was treated as authorized by an absent acknowledgement. Continue only by reconciling the original full requests on their original controller and hosts.
+
+Complete original UNKNOWN request parameters are preserved in [runtime recovery](UNKNOWN_RUNTIME_REQUESTS.json) and [Mac request recovery](UNKNOWN_MAC_REQUEST.json). A final 45-second read returned observer timeout; it proves no terminal state. Reconcile the original checkout before any object import or new execution.
