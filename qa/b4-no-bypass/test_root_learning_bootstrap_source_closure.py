@@ -241,7 +241,13 @@ class RootLearningBootstrapSourceClosureTests(unittest.TestCase):
         for path, function, markers in (
             (PROFILE, "fn require_binding(", ("self.frozen_scope(&initial)?",)),
             (PROFILE, "fn new_scoped_v2(", (
-                "HostAuthorityLearningScopeV2::new(&initial, scope, update_rule)?",
+                (
+                    "HostAuthorityLearningScopeV2::new(\n"
+                    "            &initial,\n"
+                    "            scope,\n"
+                    "            update_rule,\n"
+                    "        )?"
+                ),
                 "profile.schema_version = 2", "profile.require_binding(identity, &profile.writer_proof_digest)?",
             )),
             (PROFILE, "fn decode_scope(", (
