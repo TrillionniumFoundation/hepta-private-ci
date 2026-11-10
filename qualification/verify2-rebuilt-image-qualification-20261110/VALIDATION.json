@@ -1,0 +1,190 @@
+{
+  "original_artifact_id": 13758137359,
+  "original_bytes": 72284511,
+  "original_sha256": "35ae029913ac9e4256a9696a8a4c3a3466bb9ced30b5fb0a6e743aedbbd424ed",
+  "verified_files": 40,
+  "zero_exit_receipts": 10,
+  "result": {
+    "schema": "hepta.rbe.openssh-image-qualification.v1",
+    "status": "IMAGE_PROBE_PASS_OPERATOR_ACCEPTANCE_OPEN",
+    "operation_id": "5e848928-e666-44a7-aaa2-e56b13767df9",
+    "expected_source_commit": "d9a2cfce60ab2eeb81e581b17ba90ca314c19355",
+    "registry_publication_performed": false,
+    "image_pin_changed": false,
+    "operator_acceptance_blocker_closed": false,
+    "scientific_admission": "HOLD",
+    "production_authority": "NONE",
+    "archive": {
+      "status": "RETAINED_COMPLETE",
+      "limit_bytes": 536870912,
+      "command": [
+        "docker",
+        "image",
+        "save",
+        "sha256:bea8b1e7a719c0c00ea88001721d72ecfa1aa30ff31ab6966307b9b8e3e53b03"
+      ],
+      "exit_code": 0,
+      "partial_or_complete_identity": {
+        "bytes": 211754496,
+        "sha256": "30abb7d26bdde47707c32a6d28125c2830eab52e30b908660ae3e62687a2abb1"
+      }
+    },
+    "source_tree": "cb1d28211414cf8c0e5d5cd43cb52cc8bedc984d",
+    "dockerfile_git_blob": "86aec25ca45c527cf4d424e8aadecba3b45ce749",
+    "local_image_id": "sha256:bea8b1e7a719c0c00ea88001721d72ecfa1aa30ff31ab6966307b9b8e3e53b03",
+    "resolved_base_material": {
+      "uri": "pkg:docker/ubuntu@24.04?platform=linux%2Famd64",
+      "digest": {
+        "sha256": "fe81560990fae86dc4743202b2cb4d3df98d0bcf949173cecef15ce1127ef852"
+      }
+    },
+    "build_output_digest": "sha256:bea8b1e7a719c0c00ea88001721d72ecfa1aa30ff31ab6966307b9b8e3e53b03",
+    "registry_publication_digest": null,
+    "probe_passed": true
+  },
+  "probe_stdout": "/usr/bin/ssh-keygen\nf0b9e19ffa077d62ef6795a44d50c721f03456067a874395e015ec69c276dca6  /usr/bin/ssh-keygen\nlibc6:amd64\t2.39-0ubuntu8.9\nopenssh-client\t1:9.6p1-3ubuntu13.20\n\tlinux-vdso.so.1 (0x00007fe67344a000)\n\tlibselinux.so.1 => /lib/x86_64-linux-gnu/libselinux.so.1 (0x00007fe6733a2000)\n\tlibcrypto.so.3 => /lib/x86_64-linux-gnu/libcrypto.so.3 (0x00007fe672e8e000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007fe672c7b000)\n\tlibpcre2-8.so.0 => /lib/x86_64-linux-gnu/libpcre2-8.so.0 (0x00007fe672be1000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007fe67344c000)\nGood \"hepta-rbe-image\" signature for qualification with ED25519 key SHA256:mxEDkWarH3e+nJAjLBGvTtuP3d9QmefoExCy4Ui9OnU\nCould not verify signature.\nTAMPER_REFUSAL_EXIT=255\nRBE_OPENSSH_PROBE_PASS\n",
+  "probe_stderr": "OpenSSH_9.6p1 Ubuntu-3ubuntu13.20, OpenSSL 3.0.13 30 Jan 2024\nSigning file message\nWrite signature to message.sig\nSignature verification failed: incorrect signature\r\n",
+  "tar_configs": [
+    {
+      "path": "blobs/sha256/bea8b1e7a719c0c00ea88001721d72ecfa1aa30ff31ab6966307b9b8e3e53b03",
+      "sha256": "bea8b1e7a719c0c00ea88001721d72ecfa1aa30ff31ab6966307b9b8e3e53b03",
+      "json": {
+        "architecture": "amd64",
+        "config": {
+          "User": "ubuntu",
+          "Env": [
+            "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+          ],
+          "Cmd": [
+            "/bin/bash"
+          ],
+          "WorkingDir": "/workspace",
+          "Labels": {
+            "org.opencontainers.image.version": "24.04"
+          }
+        },
+        "created": "2026-11-10T11:13:56.807539325Z",
+        "history": [
+          {
+            "created": "2026-10-25T14:17:45.134994061Z",
+            "created_by": "/bin/sh -c #(nop)  ARG RELEASE",
+            "empty_layer": true
+          },
+          {
+            "created": "2026-10-25T14:17:45.174235109Z",
+            "created_by": "/bin/sh -c #(nop)  ARG LAUNCHPAD_BUILD_ARCH",
+            "empty_layer": true
+          },
+          {
+            "created": "2026-10-25T14:17:45.213100118Z",
+            "created_by": "/bin/sh -c #(nop)  LABEL org.opencontainers.image.version=24.04",
+            "empty_layer": true
+          },
+          {
+            "created": "2026-10-25T14:17:47.432058459Z",
+            "created_by": "/bin/sh -c #(nop) ADD file:eed88e94d6aa7c9da62836e137f889e03988c1a6b237b0cedb6ca666dfaa98ea in / "
+          },
+          {
+            "created": "2026-10-25T14:17:47.841356155Z",
+            "created_by": "/bin/sh -c #(nop)  CMD [\"/bin/bash\"]",
+            "empty_layer": true
+          },
+          {
+            "created": "2026-11-10T11:13:56.046629324Z",
+            "created_by": "RUN /bin/sh -c apt-get update &&     apt-get install -y --no-install-recommends     curl git python3 ca-certificates openssh-client &&     rm -rf /var/lib/apt/lists/* # buildkit",
+            "comment": "buildkit.dockerfile.v0"
+          },
+          {
+            "created": "2026-11-10T11:13:56.778768187Z",
+            "created_by": "RUN /bin/sh -c curl -LSfs \"https://github.com/facebook/dotslash/releases/download/v0.5.8/dotslash-ubuntu-22.04.$(uname -m).tar.gz\" | tar fxz - -C /usr/local/bin # buildkit",
+            "comment": "buildkit.dockerfile.v0"
+          },
+          {
+            "created": "2026-11-10T11:13:56.807539325Z",
+            "created_by": "USER ubuntu",
+            "comment": "buildkit.dockerfile.v0",
+            "empty_layer": true
+          },
+          {
+            "created": "2026-11-10T11:13:56.807539325Z",
+            "created_by": "WORKDIR /workspace",
+            "comment": "buildkit.dockerfile.v0"
+          }
+        ],
+        "os": "linux",
+        "rootfs": {
+          "type": "layers",
+          "diff_ids": [
+            "sha256:bec87777bc2fb2edcdf9af11df1531469e7df911309c1413082b18fcb8610278",
+            "sha256:21b07fc45776e3ab627a71a9b3dcf466e429c2385f850f65a02439df7edd6ae5",
+            "sha256:06e299f5ae97eb498899f0080ee427e1cff9802a8937c891cfb2da564a65d13a",
+            "sha256:6ea8c14229daa222490792777d4e6e775dcefd5bca0a43e25694dff1e8eedf91"
+          ]
+        }
+      }
+    },
+    {
+      "path": "manifest.json",
+      "sha256": "5dd37e0ad99fe585b3d906e1481eee4820a03f113ba80fdda9f1e23c83155be0",
+      "json": [
+        {
+          "Config": "blobs/sha256/bea8b1e7a719c0c00ea88001721d72ecfa1aa30ff31ab6966307b9b8e3e53b03",
+          "RepoTags": null,
+          "Layers": [
+            "blobs/sha256/bec87777bc2fb2edcdf9af11df1531469e7df911309c1413082b18fcb8610278",
+            "blobs/sha256/21b07fc45776e3ab627a71a9b3dcf466e429c2385f850f65a02439df7edd6ae5",
+            "blobs/sha256/06e299f5ae97eb498899f0080ee427e1cff9802a8937c891cfb2da564a65d13a",
+            "blobs/sha256/6ea8c14229daa222490792777d4e6e775dcefd5bca0a43e25694dff1e8eedf91"
+          ],
+          "LayerSources": {
+            "sha256:06e299f5ae97eb498899f0080ee427e1cff9802a8937c891cfb2da564a65d13a": {
+              "mediaType": "application/vnd.oci.image.layer.v1.tar",
+              "size": 1649664,
+              "digest": "sha256:06e299f5ae97eb498899f0080ee427e1cff9802a8937c891cfb2da564a65d13a"
+            },
+            "sha256:21b07fc45776e3ab627a71a9b3dcf466e429c2385f850f65a02439df7edd6ae5": {
+              "mediaType": "application/vnd.oci.image.layer.v1.tar",
+              "size": 129392128,
+              "digest": "sha256:21b07fc45776e3ab627a71a9b3dcf466e429c2385f850f65a02439df7edd6ae5"
+            },
+            "sha256:6ea8c14229daa222490792777d4e6e775dcefd5bca0a43e25694dff1e8eedf91": {
+              "mediaType": "application/vnd.oci.image.layer.v1.tar",
+              "size": 1536,
+              "digest": "sha256:6ea8c14229daa222490792777d4e6e775dcefd5bca0a43e25694dff1e8eedf91"
+            },
+            "sha256:bec87777bc2fb2edcdf9af11df1531469e7df911309c1413082b18fcb8610278": {
+              "mediaType": "application/vnd.oci.image.layer.v1.tar",
+              "size": 80693760,
+              "digest": "sha256:bec87777bc2fb2edcdf9af11df1531469e7df911309c1413082b18fcb8610278"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "omit_from_small_archive": [
+    "rbe-openssh-image/tested-image.tar"
+  ],
+  "source_blob_readback": [
+    {
+      "path": ".github/workflows/Dockerfile.bazel",
+      "sha": "86aec25ca45c527cf4d424e8aadecba3b45ce749"
+    },
+    {
+      "path": ".github/workflows/hepta-rbe-openssh-image.yml",
+      "sha": "08c3bb6856414e723ab1a8307bec6d9351680778"
+    },
+    {
+      "path": "scripts/qualify_rbe_openssh.py",
+      "sha": "aabcbdc987875165098cc25a339af70cb9e035a1"
+    },
+    {
+      "path": "scripts/test_qualify_rbe_openssh.py",
+      "sha": "6de3eb57f1d64092f9b1500144ce0ac837fcd600"
+    }
+  ],
+  "full_original_library_file_id": "libfile_fde3_f-42d68b3c5da08191b20a8d9982381eaf_0ce1b0b60ad08191b6976e2fe4851ad1",
+  "run_id": 42785608600,
+  "job_id": 129725923450,
+  "full_ci_closed": false
+}
