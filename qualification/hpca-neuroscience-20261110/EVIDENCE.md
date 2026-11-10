@@ -36,7 +36,7 @@
 | H4 new accuracy | Error-priority 0.29861111 | Uniform 0.93055556 | **Severe regression**; do not adopt |
 | H4 old/new accuracy | Exact-key 1.0 / 1.0 | Hashed models below 1.0 | Deterministic source lookup strongest for these known keys |
 
-The equal neural replay arms perform 560 candidate optimizer updates; exact key retrieval makes no parameter updates and performs 32 reference reads per seed. It is not valid to compare gradient counts alone as full resource cost. Revoked keys and superseded revision 2 are excluded from all replay candidates. Under this fixture, their denial is checked, not independently verified against production owner stores.
+The equal neural replay arms perform 560 candidate optimizer updates; exact key retrieval makes no parameter updates and performs 32 reference reads per seed. It is not valid to compare gradient counts alone as full resource cost. Revoked keys and superseded key-2 revision 1 are excluded from all replay candidates. Under this fixture, their denial is checked, not independently verified against production owner stores.
 
 ## Gating implications
 
