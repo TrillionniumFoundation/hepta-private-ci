@@ -86,7 +86,7 @@ class TrainedPosteriorVisitTests(unittest.TestCase):
         for mu in (-0.25, 0.0, 0.25):
             # A declared signed-drift *stress*, not another trained checkpoint.
             with torch.no_grad():
-                raw_mu.copy_(math.atanh(mu / 0.8))
+                raw_mu.fill_(math.atanh(mu / 0.8))
             result = forward_with_fresh_state()
             for row in result.trace:
                 p = row[0]["probability"]
