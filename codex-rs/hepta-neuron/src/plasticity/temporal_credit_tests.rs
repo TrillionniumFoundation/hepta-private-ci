@@ -187,6 +187,72 @@ fn withheld_future_does_not_change_numerical_candidate() {
 }
 
 #[test]
+fn future_labels_neither_observe_past_actions_nor_change_frozen_training_digest() {
+    let mut context = contract();
+    context.cutoff_sequence = 2;
+    let actions = actions();
+    let groups = groups();
+    let absent = good(credit(&actions, &[], &groups, context, TemporalCreditArmV1::Routed));
+    let supplied = good(credit(
+        &actions,
+        &feedback(),
+        &groups,
+        context,
+        TemporalCreditArmV1::Routed,
+    ));
+    assert_eq!(supplied.withheld_future_feedback_count, 2);
+    assert_eq!(supplied.unobserved_action_count, 2);
+    assert_eq!(absent.unobserved_action_count, 2);
+    assert_eq!(supplied.causal_training_digest, absent.causal_training_digest);
+    assert_ne!(supplied.transcript_digest, absent.transcript_digest);
+
+    let mut later_labels = feedback();
+    later_labels[0].modulator_q24 = vec![-Q, 0];
+    later_labels[1].modulator_q24 = vec![Q, 0];
+    later_labels[0].feedback_receipt_digest = hash(b"different-future-receipt-1");
+    later_labels[1].feedback_receipt_digest = hash(b"different-future-receipt-2");
+    let changed = good(credit(
+        &actions,
+        &later_labels,
+        &groups,
+        context,
+        TemporalCreditArmV1::Routed,
+    ));
+    assert_eq!(changed.causal_training_digest, absent.causal_training_digest);
+    assert_eq!(changed.group_deltas, absent.group_deltas);
+    assert_ne!(changed.transcript_digest, supplied.transcript_digest);
+    assert!(!changed.authority.grants_any());
+
+    // Once the cutoff advances, real available feedback must change the
+    // prefix key; a forged post-cutoff event must not influence an earlier key.
+    let current = good(credit(
+        &actions,
+        &feedback(),
+        &groups,
+        contract(),
+        TemporalCreditArmV1::Routed,
+    ));
+    assert_ne!(current.causal_training_digest, absent.causal_training_digest);
+    assert_eq!(current.unobserved_action_count, 0);
+}
+
+#[test]
+fn expired_but_available_feedback_counts_as_observed_without_training_credit() {
+    let mut context = contract();
+    context.maximum_feedback_lag = 1;
+    let result = good(credit(
+        &actions(),
+        &feedback(),
+        &groups(),
+        context,
+        TemporalCreditArmV1::Routed,
+    ));
+    assert_eq!(result.expired_feedback_count, 2);
+    assert_eq!(result.unobserved_action_count, 0);
+    assert_eq!(result.matched_feedback_count, 0);
+}
+
+#[test]
 fn no_feedback_is_an_explicit_missing_outcome_not_an_implicit_success() {
     let result = good(credit(
         &actions(),

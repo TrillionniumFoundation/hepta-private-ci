@@ -90,10 +90,16 @@ pub struct TemporalCreditReceiptV1 {
     pub matched_feedback_count: u32,
     pub expired_feedback_count: u32,
     pub withheld_future_feedback_count: u32,
-    /// Actions with no supplied effect receipt (not zero-valued successes).
+    /// Actions with no effect available **at the frozen cutoff**, including future receipts.
     pub unobserved_action_count: u32,
     pub projection_count: u32,
+    /// Complete supplied-input audit digest; may commit to post-cutoff labels and
+    /// therefore MUST NOT be a feature, key or selection signal at the cutoff.
     pub transcript_digest: Digest32,
+    /// Frozen-prefix digest: depends only on actions and feedback available by
+    /// cutoff, never on a future label or the number of supplied future labels.
+    /// This remains self-declared, NOT independently owner-attested.
+    pub causal_training_digest: Digest32,
     pub authority: AuthorityPosture,
 }
 
@@ -240,6 +246,7 @@ pub fn accumulate_temporal_credit_q24(
     });
     let mut seen_receipts = BTreeSet::new();
     let mut seen_targets = BTreeSet::new();
+    let mut observed_targets = BTreeSet::new();
     let mut sums = vec![0_i128; groups.len()];
     let mut matched = 0_u32;
     let mut expired = 0_u32;
@@ -281,6 +288,7 @@ pub fn accumulate_temporal_credit_q24(
             withheld += 1;
             continue;
         }
+        observed_targets.insert(item.action_id.clone());
         if lag > contract.maximum_feedback_lag {
             expired += 1;
             continue;
@@ -321,7 +329,7 @@ pub fn accumulate_temporal_credit_q24(
         }
     }
 
-    let unobserved = u32::try_from(actions.len() - seen_targets.len())
+    let unobserved = u32::try_from(actions.len() - observed_targets.len())
         .map_err(|_| TemporalCreditError::Arithmetic)?;
     let mut projection_count = 0_u32;
     let mut deltas = Vec::with_capacity(groups.len());
@@ -386,6 +394,21 @@ pub fn accumulate_temporal_credit_q24(
         canonical.extend_from_slice(&action.sequence.to_be_bytes());
         push_q24(&mut canonical, &action.eligibility_q24);
     }
+    // Keep a complete-input audit separately from the causally available
+    // prefix. A later feedback receipt must not change the frozen training key.
+    let mut causal = canonical.clone();
+    causal.extend_from_slice(b"\0cutoff-only-v1");
+    let prefix_feedback = feedback_sorted
+        .iter()
+        .filter(|item| item.available_sequence <= contract.cutoff_sequence)
+        .collect::<Vec<_>>();
+    causal.extend_from_slice(&(prefix_feedback.len() as u64).to_be_bytes());
+    for item in &prefix_feedback {
+        push_id(&mut causal, &item.action_id);
+        causal.extend_from_slice(item.feedback_receipt_digest.as_array());
+        causal.extend_from_slice(&item.available_sequence.to_be_bytes());
+        push_q24(&mut causal, &item.modulator_q24);
+    }
     canonical.extend_from_slice(&(feedback_sorted.len() as u64).to_be_bytes());
     for item in &feedback_sorted {
         push_id(&mut canonical, &item.action_id);
@@ -396,9 +419,14 @@ pub fn accumulate_temporal_credit_q24(
     for group in &deltas {
         push_id(&mut canonical, &group.group_id);
         canonical.extend_from_slice(&group.delta_q24.to_be_bytes());
+        push_id(&mut causal, &group.group_id);
+        causal.extend_from_slice(&group.delta_q24.to_be_bytes());
     }
     for count in [matched, expired, withheld, unobserved, projection_count] {
         canonical.extend_from_slice(&count.to_be_bytes());
+    }
+    for count in [matched, expired, unobserved, projection_count] {
+        causal.extend_from_slice(&count.to_be_bytes());
     }
 
     Ok(TemporalCreditReceiptV1 {
@@ -410,6 +438,7 @@ pub fn accumulate_temporal_credit_q24(
         unobserved_action_count: unobserved,
         projection_count,
         transcript_digest: Digest32::of_bytes(&canonical),
+        causal_training_digest: Digest32::of_bytes(&causal),
         authority: AuthorityPosture::DENY_ALL,
     })
 }
