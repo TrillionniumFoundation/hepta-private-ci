@@ -23,6 +23,7 @@ jobs:
       CARGO_PROFILE_DEV_DEBUG: "0"
       NEXTEST_TEST_THREADS: "2"
       CARGO_NET_GIT_FETCH_WITH_CLI: "true"
+      ACT2_FIXTURE_WORK: ${{ runner.temp }}/act2-fixture-redgreen
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -34,7 +35,11 @@ jobs:
           components: rustfmt,clippy
       - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
         with:
-          tool: just@1.51.0,nextest@0.9.103,uv@0.9.26
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Install uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+        with:
+          version: "0.11.3"
       - name: Resolve the two exact source identities
         shell: bash
         run: |
@@ -52,10 +57,10 @@ jobs:
           python3 - <<'PY'
           import os
           from pathlib import Path
-          work = Path(os.environ["RUNNER_TEMP"]).resolve(strict=True) / "act2-fixture-redgreen"
+          work = Path(os.environ["ACT2_FIXTURE_WORK"])
+          if work.parent.resolve(strict=True) != Path(os.environ["RUNNER_TEMP"]).resolve(strict=True):
+              raise SystemExit("evidence root escaped RUNNER_TEMP")
           work.mkdir()
-          with Path(os.environ["GITHUB_ENV"]).open("a") as stream:
-              stream.write(f"ACT2_FIXTURE_WORK={work}\n")
           PY
       - name: Run baseline canonical, baseline alias and repaired alias cases
         run: |
