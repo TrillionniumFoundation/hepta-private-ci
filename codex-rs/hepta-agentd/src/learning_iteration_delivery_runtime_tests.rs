@@ -545,3 +545,43 @@ fn ordinary_delivery_bootstrap_rejects_duplicate_and_foreign_request() {
         Err(crate::AgentdError::GenerationFenced(_))
     ));
 }
+
+#[tokio::test]
+async fn original_root_delivery_refuses_missing_objective_before_claim_or_stage_work() {
+    let daemon = AgentdFixture::new();
+    let (store, request) = completed_circuit(&daemon).await;
+    let ports = Arc::new(recovery_ports(
+        Decision::EvaluatedNoUpdate,
+        Trust::Independent,
+    ));
+    let (state, cognitive) = admitted_state(&daemon).await;
+    ok(state.attach_circuit_learning_source(request.source_run_id.clone()));
+    let strict = ok(runtime(&daemon, &ports)
+        .with_original_circuit_learning_delivery(request.clone()));
+    assert!(matches!(
+        strict.with_circuit_learning_delivery(request.clone()),
+        Err(crate::AgentdError::Invalid(_))
+    ));
+    let mut bootstrap = ok(runtime(&daemon, &ports)
+        .with_original_circuit_learning_delivery(request.clone()));
+    let delivery = bootstrap.take_circuit_delivery().expect("Root delivery");
+    let result = tokio::time::timeout(
+        Duration::from_secs(5),
+        delivery.run(store.clone(), state, CancellationToken::new()),
+    )
+    .await
+    .expect("source refusal");
+    assert!(matches!(
+        result,
+        Err(crate::AgentdError::Invalid(message))
+            if message.contains("original learning Objective owner is unavailable")
+    ));
+    let row = ok(store.circuit_learning_delivery(request.source_run_id.as_str()).await)
+        .expect("original completion");
+    assert_eq!(row.request_digest, None);
+    assert_eq!(row.acknowledged_head, None);
+    assert!(ok(ports.executed.lock()).is_empty());
+    assert!(ok(ports.checkpoint_calls.lock()).is_empty());
+    cognitive.close().await;
+    store.close().await;
+}
