@@ -6,6 +6,7 @@ Only detects reuse of IDs in supplied records; not scientific qualification.
 import argparse
 import hashlib
 import json
+import os
 import re
 from pathlib import Path
 
@@ -131,8 +132,17 @@ def main():
     report = audit(args.candidate, args.prior)
     serialized = json.dumps(report, indent=2, sort_keys=True) + "\n"
     if args.output:
-        require(not args.output.exists(), "refuse to overwrite an audit")
-        args.output.write_text(serialized, encoding="utf8")
+        # O_EXCL is atomic even if another writer races our output path.
+        # It also rejects dangling symlinks, unlike Path.exists().
+        flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL
+        if hasattr(os, "O_NOFOLLOW"):
+            flags |= os.O_NOFOLLOW
+        try:
+            fd = os.open(args.output, flags, 0o600)
+        except FileExistsError as exc:
+            raise ValueError("refuse to overwrite an audit") from exc
+        with os.fdopen(fd, "w", encoding="utf8") as stream:
+            stream.write(serialized)
     print(serialized, end="")
     return 2 if report["overlap"] else 0
 
