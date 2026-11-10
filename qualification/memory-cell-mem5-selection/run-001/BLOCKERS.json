@@ -76,9 +76,9 @@
     },
     {
       "id": "MEM-REQUIRED-REPO-CI",
-      "status": "OPEN_CARGO_DENY_AND_NATIVE_BAZEL_FAILURES",
-      "evidence": "At08:15:29 frozen source build/format passed; cargo-deny129705041583 failed with unreadable logs/source cause UNKNOWN; macOS ARM Bazel129705042127 and Windows shard1 129705042213 failed with complete bound logs. Native owner/fixture and policy refusals are observed; a unified cause or MEM-selector cause is not established. Architecture source-head129691795736 remains in progress; other required jobs pending.",
-      "required": "Source-specific required jobs pass; preserve unsuppressed dependency advisories and all original failed records"
+      "status": "OPEN_FOUR_SOURCE_PINNED_CARGO_ADVISORIES_AND_PLATFORM_BAZEL_FAILURES",
+      "evidence": "Frozen source 5fa run42775149122 cargo-deny job129705041583 original decoded log successfully recovered: RUSTSEC-2026-0459 libsqlite3-sys0.37.0; RUSTSEC-2026-0457/0461/0462 rmcp3.1.3; bans/licenses/sources OK, advisories FAIL. Windows shards 1-4 plus macOS ARM/Intel Bazel have terminal failures at observed snapshot, without unified root. Architecture source-head+base-merge passed but required roll-up queued. See required-ci-081529/CARGO_DENY_RECOVERED.json and original Actions jobs.",
+      "required": "Remediate the four vulnerabilities via compatible dependency upgrades/backports with no new suppressions; isolate actual macOS/Windows owner/fixture/security-policy failures without relaxing assertion or sandbox; obtain all terminal passing required source-specific checks."
     }
   ]
 }
