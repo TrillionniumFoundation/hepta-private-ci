@@ -115,6 +115,26 @@ impl CircuitLearningDeliveryRuntimeV1 {
             let Some(row) = row else {
                 continue;
             };
+            // A crash between the original ACK and retirement must not require
+            // renewed stage signatures merely to release this local slot.
+            // Exact historical ACK cleanup publishes no learning snapshot.
+            if row.acknowledged_head.is_some() {
+                let retirement = crate::circuit_learning_delivery::retire_acknowledged_delivery(
+                    &store, request, &self.owners, &row,
+                );
+                let result = tokio::select! {
+                    _ = cancellation.cancelled() => return Ok(()),
+                    result = retirement => result,
+                };
+                match result {
+                    Ok(()) => completed[index] = true,
+                    Err(LearningIterationRuntimeErrorV1::CommitUncertain) => {}
+                    Err(error) => return Err(AgentdError::Protocol(format!(
+                        "Circuit learning ACK retirement refused: {error}"
+                    ))),
+                }
+                continue;
+            }
             let claimed = row.request_digest.is_some();
             if !claimed && !state.automation_admission_ready()? {
                 continue;

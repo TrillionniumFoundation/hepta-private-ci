@@ -441,6 +441,70 @@ class OriginalNotesSourceGuardTests(unittest.TestCase):
 
         return mutate
 
+    def test_ack_cleanup_actual_original_source_passes(self):
+        self.check_source("circuit_learning_delivery")
+
+    def test_ack_cleanup_requires_complete_original_request_scope(self):
+        for marker in (
+            "request.agent_id.as_str() != store.owner_agent_id().as_str()",
+            "request.source_run_id.as_str() != intent.source_run_id",
+            "request.operation_id.as_str() != intent.operation_id",
+            "request.completed_task_receipt.to_string() != intent.completed_task_receipt.as_str()",
+            "request.envelope.objective_digest.to_string() != intent.objective_digest.as_str()",
+        ):
+            with self.subTest(marker=marker), self.assertRaises(MODULE.VerificationFailure):
+                self.check_source(
+                    "circuit_learning_delivery",
+                    self.replace_once(marker, "false", within="fn request_digest("),
+                )
+
+    def test_ack_cleanup_comment_cannot_supply_claim_or_ack_guard(self):
+        for marker in (
+            "row.request_digest.as_ref() != Some(&request_digest)",
+            ".ok_or(Error::CommitUncertain)?",
+        ):
+            with self.subTest(marker=marker), self.assertRaises(MODULE.VerificationFailure):
+                self.check_source(
+                    "circuit_learning_delivery",
+                    self.replace_once(
+                        marker, f"/* {marker} */", within="fn retire_acknowledged_delivery("
+                    ),
+                )
+
+    def test_ack_cleanup_unused_helper_cannot_supply_request_validation(self):
+        marker = "let request_digest = request_digest(store, request, owners, &row.intent)?;"
+        with self.assertRaises(MODULE.VerificationFailure):
+            self.check_source(
+                "circuit_learning_delivery",
+                self.replace_once(
+                    marker,
+                    "fn unused() { " + marker + " }",
+                    within="fn retire_acknowledged_delivery(",
+                ),
+            )
+
+    def test_ack_retirement_refuses_an_unregistered_typed_caller(self):
+        manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text())
+        boundary = next(
+            row
+            for row in MODULE._boundary_rows(manifest)
+            if row.identifier == "circuit_learning_exact_ack_retirement"
+        )
+        index = {
+            path: MODULE._strip_cfg_test_items(
+                MODULE._strip_rust_non_code((ROOT / path).read_text())
+            )
+            for path in boundary.product_callers
+        }
+        index["codex-rs/unregistered/src/lib.rs"] = (
+            "fn unregistered(store: &AutomationStore) {"
+            " store.retire_acknowledged_circuit_learning(intent, request, head); }"
+        )
+        with self.assertRaisesRegex(MODULE.VerificationFailure, "unexpected"):
+            MODULE._verify_boundary(
+                ROOT, boundary, index, tuple(manifest["ignored_path_fragments"])
+            )
+
     def test_current_original_notes_sources_pass(self):
         for filename in (
             "notes_thread_seed",

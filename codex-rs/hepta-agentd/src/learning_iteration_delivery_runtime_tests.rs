@@ -22,6 +22,9 @@ use super::*;
 #[path = "circuit_learning_delivery_registry_tests.rs"]
 mod registry_tests;
 
+#[path = "circuit_learning_retirement_recovery_tests.rs"]
+mod retirement_recovery_tests;
+
 struct CurrentEvidencePorts {
     inner: Arc<IterationPorts>,
     planned: Mutex<Option<LearningIterationSnapshotV1>>,
