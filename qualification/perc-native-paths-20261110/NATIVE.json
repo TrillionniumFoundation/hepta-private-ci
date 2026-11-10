@@ -1,0 +1,46 @@
+{
+  "source_base": "74128de4165d7947ee218a58b0b1d971ce9c7277",
+  "native_host": "ai395",
+  "original_job": "1a1c46792ed-cf39-2f0",
+  "continuation_job": "1a1c46beb13-cf39-315",
+  "rust_toolchain": "1.96.0",
+  "rustfmt": "1.9.0",
+  "format": {
+    "command": "just fmt",
+    "exit_code": 0,
+    "all_seven_reviewed_postimages_unchanged": true,
+    "postimage_log_sha256": "c66e9066fff0ec89afa5dab75a0b7d2d7decb33e737c8f060be1cd39f1f70136"
+  },
+  "historical_setup_failure": "nextest linker /tmp capacity; fixed with owned TMPDIR without deleting other tasks",
+  "nextest_install": {
+    "version": "0.9.151",
+    "elapsed_seconds": 201.4507,
+    "log_sha256": "f7567038300e98664a5bf1952f44dec1f600ce5c3d5261cafbc77ea6a91b1280"
+  },
+  "neuron": {
+    "command": "just test --locked -p codex-hepta-neuron --lib perception_cross_language_fixture_round_trips_and_binds_raw_evidence",
+    "exit_code": 0,
+    "passed": 1,
+    "filtered": 200,
+    "elapsed_seconds": 8.62665,
+    "log_sha256": "db28b6b901c039e9325a7dadd463247be2d4d7407a6cac58bee7eb4bb0436d11"
+  },
+  "automation": {
+    "command": "just test --locked -p codex-hepta-automation --lib circuit_",
+    "exit_code": 101,
+    "tests_executed": false,
+    "stage": "BUILD_BLOCKED",
+    "cause": "aws-lc-sys 0.46.0 bindgen: fatal error stddef.h file not found with libclang 21.1.8",
+    "elapsed_seconds": 21.4487,
+    "log_sha256": "c196ede224f6903f31ece37926e79dfe017084644599c997d3107f6b24cf54c4"
+  },
+  "header_retry": {
+    "key": "perc-native-resume-20261110-741-clang-resource-v3",
+    "state": "launch acknowledgement pending reconciliation; never replace key or blind resubmit"
+  },
+  "agentd_tests_executed": false,
+  "native_windows_execution": false,
+  "scientific_qualified": false,
+  "production_activation": false,
+  "status": "HOLD"
+}
