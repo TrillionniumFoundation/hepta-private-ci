@@ -9,7 +9,9 @@ import unittest
 from unittest.mock import patch
 
 from . import metacontrol_study as study
+from .critic_context import context_digest
 from .metacontrol import ObservedContinuation, PublicControlState, _digest
+from .test_metacontrol import CRITIC
 
 
 def fixture_rows(prefix, groups=10):
@@ -37,14 +39,19 @@ def fixture_rows(prefix, groups=10):
                     0.4 if action == "READ_ROI" else 0.6 if feature > 0 else 0.2,
                     0.02,
                     False,
+                    context=CRITIC,
+                    evidence_context_sha256=context_digest(CRITIC),
                 )
                 rows.append(
                     {
-                        "schema": "ndu.real.metacontrol-observation.v1",
+                        "schema": "ndu.real.metacontrol-observation.v2",
                         "context_id": context,
-                        "observation": asdict(row),
+                        "observation": {**asdict(row), "context": CRITIC.to_wire()},
                         "evidence": {
                             "kind": "fixture",
+                            "critic_context_sha256": context_digest(CRITIC),
+                            "utility_profile_sha256": CRITIC.utility_sha256,
+                            "tariff_sha256": CRITIC.tariff_sha256,
                             "source_sha256": _digest(source),
                             "state_sha256": _digest(asdict(state)),
                             "stop_delivery_sha256": stop_digest,
@@ -81,6 +88,7 @@ class MetacontrolStudyTests(unittest.TestCase):
     def setup_inputs(self, *, future_rows=None):
         options = {
             "expected_source_sha256": _digest(study.source_manifest()),
+            "context": CRITIC,
             "latency_weight": 0.01,
             "allow_fixtures": True,
             "output": self.root / "result",
@@ -144,7 +152,7 @@ class MetacontrolStudyTests(unittest.TestCase):
         path, pin = options["train"], options["train_sha256"]
         path.write_bytes(path.read_bytes() + b" ")
         with self.assertRaisesRegex(ValueError, "SHA256"):
-            study.read_input(path, pin, allow_fixtures=True)
+            study.read_input(path, pin, allow_fixtures=True, context=CRITIC)
         with self.assertRaisesRegex(ValueError, "source"):
             study.run_study(**{**options, "expected_source_sha256": "0" * 64})
         duplicate_planning = fixture_rows("double-cost", 2)
@@ -153,7 +161,7 @@ class MetacontrolStudyTests(unittest.TestCase):
         ] = True
         path, pin = self.put("double-cost", duplicate_planning)
         with self.assertRaisesRegex(ValueError, "cost scope"):
-            study.read_input(path, pin, allow_fixtures=True)
+            study.read_input(path, pin, allow_fixtures=True, context=CRITIC)
 
     def test_source_alias_and_inconsistent_same_state_scores_reject(self):
         aliases = fixture_rows("train")
@@ -167,7 +175,7 @@ class MetacontrolStudyTests(unittest.TestCase):
         rows = fixture_rows("bad", groups=2)
         rows[1]["observation"]["stop_quality"] = 0.3
         path, pin = self.put("bad", rows)
-        supplied, _ = study.read_input(path, pin, allow_fixtures=True)
+        supplied, _ = study.read_input(path, pin, allow_fixtures=True, context=CRITIC)
         with self.assertRaisesRegex(ValueError, "conflicting identities"):
             study._table_groups(supplied)
 
@@ -207,7 +215,7 @@ class MetacontrolStudyTests(unittest.TestCase):
             ]
             path, pin = self.put(kind, rows)
             with self.assertRaisesRegex(ValueError, "suffix macro"):
-                study.read_input(path, pin, allow_fixtures=True)
+                study.read_input(path, pin, allow_fixtures=True, context=CRITIC)
         rows = [
             row
             for row in fixture_rows("mislabelled", 2)
@@ -216,7 +224,7 @@ class MetacontrolStudyTests(unittest.TestCase):
         rows[0]["observation"]["continuation_quality"] = 1.0
         path, pin = self.put("mislabelled", rows)
         with self.assertRaisesRegex(ValueError, "cannot change delivery"):
-            study.read_input(path, pin, allow_fixtures=True)
+            study.read_input(path, pin, allow_fixtures=True, context=CRITIC)
 
     def test_supported_outcomes_do_not_fill_unsupported_policy_predictions(self):
         rows = fixture_rows("future")

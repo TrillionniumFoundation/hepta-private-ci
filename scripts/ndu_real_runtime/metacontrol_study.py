@@ -16,7 +16,19 @@ import time
 
 import numpy as np
 
-from . import controllers, metacontrol, metacontrol_checkpoint, objective
+from . import (
+    controllers,
+    critic_context,
+    metacontrol,
+    metacontrol_checkpoint,
+    objective,
+)
+from .critic_context import (
+    CriticContext,
+    CriticContextError,
+    context_digest,
+    require_context,
+)
 from .metacontrol import (
     ObservedContinuation,
     PublicControlState,
@@ -29,6 +41,9 @@ from .metacontrol_checkpoint import load_heads, save_heads
 
 METHODS = ("STOP", "light", "tuned-fixed", "point", "unconditional", "conditional")
 EVIDENCE_FIELDS = {
+    "critic_context_sha256",
+    "utility_profile_sha256",
+    "tariff_sha256",
     "kind",
     "source_sha256",
     "state_sha256",
@@ -49,7 +64,13 @@ def source_manifest():
         Path(__file__),
         *[
             Path(module.__file__)
-            for module in (metacontrol, metacontrol_checkpoint, controllers, objective)
+            for module in (
+                critic_context,
+                metacontrol,
+                metacontrol_checkpoint,
+                controllers,
+                objective,
+            )
         ],
     ]
     return {path.name: hashlib.sha256(path.read_bytes()).hexdigest() for path in files}
@@ -61,7 +82,8 @@ def _write(path, value):
         stream.write("\n")
 
 
-def read_input(path, expected_sha256, *, allow_fixtures=False):
+def read_input(path, expected_sha256, *, allow_fixtures=False, context=None):
+    require_context(context)
     path = Path(path)
     if (
         path.is_symlink()
@@ -85,9 +107,16 @@ def read_input(path, expected_sha256, *, allow_fixtures=False):
             raise ValueError("Blank JSONL record")
         value = json.loads(line, object_pairs_hook=unique)
         if (
+            isinstance(value, dict)
+            and value.get("schema") == "ndu.real.metacontrol-observation.v1"
+        ):
+            raise CriticContextError(
+                "recalibration_required: legacy observations lack critic identity"
+            )
+        if (
             not isinstance(value, dict)
             or set(value) != {"schema", "context_id", "observation", "evidence"}
-            or value["schema"] != "ndu.real.metacontrol-observation.v1"
+            or value["schema"] != "ndu.real.metacontrol-observation.v2"
             or not isinstance(value["context_id"], str)
             or not 0 < len(value["context_id"]) <= 512
         ):
@@ -98,8 +127,13 @@ def read_input(path, expected_sha256, *, allow_fixtures=False):
         ):
             raise ValueError("Incomplete or extended paired observation")
         record = ObservedContinuation(
-            **{**observed, "state": PublicControlState.from_wire(observed["state"])}
+            **{
+                **observed,
+                "state": PublicControlState.from_wire(observed["state"]),
+                "context": CriticContext.from_wire(observed["context"]),
+            }
         )
+        require_context(record.context, context)
         if not isinstance(evidence, dict) or set(evidence) != EVIDENCE_FIELDS:
             raise ValueError("Incomplete execution evidence declaration")
         if evidence["kind"] not in {"measured_paired_snapshot", "fixture"} or (
@@ -114,6 +148,18 @@ def read_input(path, expected_sha256, *, allow_fixtures=False):
             raise ValueError("Invalid source, delivery or evaluator evidence digest")
         if evidence["state_sha256"] != _digest(asdict(record.state)):
             raise ValueError("Public state differs from its evidence pin")
+        if any(
+            evidence[name] != expected
+            for name, expected in (
+                ("critic_context_sha256", context_digest(context)),
+                ("utility_profile_sha256", context.utility_sha256),
+                ("tariff_sha256", context.tariff_sha256),
+                ("evaluator_sha256", context.evaluator_sha256),
+            )
+        ):
+            raise CriticContextError(
+                "recalibration_required: original outcome context differs"
+            )
         if evidence["continuation_steps"] != [record.action, "STOP"]:
             raise ValueError(
                 "Primitive comparison cannot hide a READ plus delivery suffix macro"
@@ -152,6 +198,9 @@ def _table_groups(rows):
         invariant = {
             name: evidence[name]
             for name in (
+                "critic_context_sha256",
+                "utility_profile_sha256",
+                "tariff_sha256",
                 "kind",
                 "source_sha256",
                 "state_sha256",
@@ -217,7 +266,7 @@ def _light_table(rows):
     return {cell: _source_mean(values) for cell, values in cells.items()}
 
 
-def _decision(method, table, candidate, light, fixed, tariff):
+def _decision(method, table, candidate, light, fixed, tariff, *, context):
     started = time.perf_counter()
     state, reserve = table["state"], table["invariant"]["finalization_reserve"]
     affordable = {
@@ -252,6 +301,7 @@ def _decision(method, table, candidate, light, fixed, tariff):
             light_action=light_action,
             action_cost_bounds=table["bounds"],
             finalization_reserve=reserve,
+            context=context,
         )
         if detail["fallback"]:
             unsupported = list(detail["unsupported"]) or ["no supported continuation"]
@@ -309,10 +359,12 @@ def _run_study(
     calibration_sha256,
     future_sha256,
     expected_source_sha256,
+    context=None,
     latency_weight=0.01,
     allow_fixtures=False,
 ):
     started = time.perf_counter()
+    require_context(context)
     manifest = source_manifest()
     if _digest(manifest) != expected_source_sha256:
         raise ValueError("Study source differs from the predeclared source manifest")
@@ -328,7 +380,9 @@ def _run_study(
     folder = Path(output)
     folder.mkdir(parents=True, exist_ok=False)
     registration = {
-        "schema": "ndu.real.metacontrol-study.v1",
+        "schema": "ndu.real.metacontrol-study.v2",
+        "context": context.to_wire(),
+        "critic_context_sha256": context_digest(context),
         "input_sha256": pins,
         "source_manifest": manifest,
         "source_sha256": expected_source_sha256,
@@ -346,7 +400,9 @@ def _run_study(
 
     def ingest(phase, path):
         nonlocal expected_evaluation
-        rows, raw = read_input(path, pins[phase], allow_fixtures=allow_fixtures)
+        rows, raw = read_input(
+            path, pins[phase], allow_fixtures=allow_fixtures, context=context
+        )
         source_ids, source_digests = set(), set()
         group_binding, digest_binding = {}, {}
         for _, record, evidence in rows:
@@ -384,20 +440,28 @@ def _run_study(
 
     train_rows, cal_rows = ingest("train", train), ingest("calibration", calibration)
     _table_groups(train_rows)
-    candidate = metacontrol.fit_heads([r for _, r, _ in train_rows])
-    calibration_report = candidate.calibrate([r for _, r, _ in cal_rows])
+    candidate = metacontrol.fit_heads([r for _, r, _ in train_rows], context=context)
+    calibration_report = candidate.calibrate(
+        [r for _, r, _ in cal_rows], context=context
+    )
     light = _light_table(train_rows)
     cal_tables, trials = _table_groups(cal_rows), []
     for action in registration["fixed_trials"]:
         decisions = [
             {
                 "source_group": source,
-                "context_id": context,
+                "context_id": context_id,
                 **_decision(
-                    "tuned-fixed", table, candidate, light, action, latency_weight
+                    "tuned-fixed",
+                    table,
+                    candidate,
+                    light,
+                    action,
+                    latency_weight,
+                    context=context,
                 ),
             }
-            for (source, context), table in sorted(cal_tables.items())
+            for (source, context_id), table in sorted(cal_tables.items())
         ]
         score = _source_mean(
             [
@@ -420,10 +484,11 @@ def _run_study(
         if available
         else "STOP"
     )
-    checkpoint_sha = save_heads(candidate, folder / "controller.json")
+    checkpoint_sha = save_heads(candidate, folder / "controller.json", context=context)
     frozen = {
         "candidate_identity": candidate.identity(),
         "checkpoint_sha256": checkpoint_sha,
+        "critic_context_sha256": context_digest(context),
         "light_table": [[list(key), value] for key, value in sorted(light.items())],
         "fixed_action": fixed,
         "fixed_selection_supported": bool(available),
@@ -431,7 +496,9 @@ def _run_study(
         "calibration": calibration_report,
     }
     _write(folder / "freeze.json", frozen)
-    candidate = load_heads((folder / "controller.json").read_bytes(), checkpoint_sha)
+    candidate = load_heads(
+        (folder / "controller.json").read_bytes(), checkpoint_sha, context=context
+    )
     # This is the first operation that reads any future input bytes.
     future_rows = ingest("future", future)
     kinds = {e["kind"] for rows in raw_inputs.values() for _, _, e in rows}
@@ -439,9 +506,11 @@ def _run_study(
         raise ValueError("Do not mix measured observations and fixtures in one study")
     future_tables = _table_groups(future_rows)
     outcomes = []
-    for (source, context), table in sorted(future_tables.items()):
+    for (source, context_id), table in sorted(future_tables.items()):
         policies = {
-            method: _decision(method, table, candidate, light, fixed, latency_weight)
+            method: _decision(
+                method, table, candidate, light, fixed, latency_weight, context=context
+            )
             for method in METHODS
         }
         if not available:
@@ -452,7 +521,7 @@ def _run_study(
         outcomes.append(
             {
                 "source_group": source,
-                "context_id": context,
+                "context_id": context_id,
                 "complete_action_table": table["complete"],
                 "policies": policies,
             }
@@ -483,7 +552,7 @@ def _run_study(
             "Frozen candidate or study source changed during future evaluation"
         )
     report = {
-        "schema": "ndu.real.metacontrol-study-report.v1",
+        "schema": "ndu.real.metacontrol-study-report.v2",
         "registration": registration,
         "evidence_kind": next(iter(kinds)),
         "policy_evaluation_performed": False,
@@ -507,7 +576,9 @@ def _run_study(
         "energy_joules": None,
         "whole_study_wall_seconds": time.perf_counter() - started,
         "external_evidence_independently_authenticated": False,
-        "diagnostics": candidate.diagnostics([r for _, r, _ in future_rows]),
+        "diagnostics": candidate.diagnostics(
+            [r for _, r, _ in future_rows], context=context
+        ),
         "summaries": summaries,
         "outcomes": outcomes,
         "contrasts": {
@@ -548,6 +619,8 @@ def main():
         parser.add_argument("--" + phase + "-sha256")
     parser.add_argument("--output", type=Path)
     parser.add_argument("--expected-source-sha256")
+    parser.add_argument("--critic-context", type=Path)
+    parser.add_argument("--critic-context-sha256")
     parser.add_argument("--latency-weight", type=float, default=0.01)
     parser.add_argument("--allow-fixtures", action="store_true")
     args = parser.parse_args()
@@ -568,15 +641,39 @@ def main():
             "calibration_sha256",
             "future_sha256",
             "expected_source_sha256",
+            "critic_context",
+            "critic_context_sha256",
         )
     ):
         parser.error("All input files, SHA256 pins, output and source pin are required")
+    path = args.critic_context
+    if path.is_symlink() or not path.is_file() or not 0 < path.stat().st_size <= 16384:
+        raise CriticContextError(
+            "recalibration_required: bounded critic context file required"
+        )
+    raw = path.read_bytes()
+    if hashlib.sha256(raw).hexdigest() != args.critic_context_sha256:
+        raise CriticContextError(
+            "recalibration_required: critic context file pin differs"
+        )
+
+    def unique(pairs):
+        value = dict(pairs)
+        if len(value) != len(pairs):
+            raise CriticContextError(
+                "recalibration_required: duplicate critic context field"
+            )
+        return value
+
+    context = CriticContext.from_wire(json.loads(raw, object_pairs_hook=unique))
     report = run_study(
+        context=context,
         **{
             key: value
             for key, value in vars(args).items()
-            if key != "print_source_manifest"
-        }
+            if key
+            not in {"print_source_manifest", "critic_context", "critic_context_sha256"}
+        },
     )
     print(
         json.dumps(
