@@ -167,6 +167,33 @@ jobs:
           PYTHONPATH: scripts
         run: python3 scripts/hepta_ci_v8.py
 
+      - name: Build exact-source subprocess helpers required by native reverse-consumer tests
+        env:
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          TESTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          HEPTA_CI_LANE: source-head
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --timeout-seconds 1800 \
+            --output "$RUNNER_TEMP/impact-helper-build.json" -- \
+            python3 scripts/hepta_cell_test_helpers.py \
+              --package codex-cli \
+              --package codex-code-mode-host \
+              --package codex-rmcp-client \
+              --package codex-hepta-infer-worker-host \
+              --output-dir "$RUNNER_TEMP/impact-test-helpers" \
+              --github-env "$GITHUB_ENV"
+
+      - name: Reverify source and immutable helper bytes before consumer tests
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_cell_test_helpers.py \
+            --package codex-cli \
+            --package codex-code-mode-host \
+            --package codex-rmcp-client \
+            --package codex-hepta-infer-worker-host \
+            --output-dir "$RUNNER_TEMP/impact-test-helpers" --verify-only
+
       - name: Test affected owners and reverse consumers, not a hand-written package list
         env:
           SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
@@ -186,6 +213,9 @@ jobs:
           path: |
             ${{ runner.temp }}/cargo-impact.json
             ${{ runner.temp }}/impact-test.json*
+            ${{ runner.temp }}/impact-helper-build.json*
+            ${{ runner.temp }}/impact-test-helpers
+            !${{ runner.temp }}/impact-test-helpers/bin/**
           if-no-files-found: error
           retention-days: 14
 
