@@ -252,7 +252,9 @@ class ResearchUnitsTests(unittest.TestCase):
         for case in record["units"]["cases"]:
             del case["task_artifact"]
         legacy = self.screen(record)
-        self.assertAlmostEqual(legacy["comparisons"]["rag"]["minimum_fit_mean_gain"], 0.4)
+        self.assertAlmostEqual(
+            legacy["comparisons"]["rag"]["minimum_fit_mean_gain"], 0.4
+        )
         self.assertFalse(legacy["new_milestone_eligible"])
 
     def test_repeated_task_failures_keep_outcomes_costs_and_unknown_coverage(self):
@@ -262,7 +264,9 @@ class ResearchUnitsTests(unittest.TestCase):
             if row["case_id"] == "failed-repeat" and row["arm"] == "candidate":
                 row.update(status="failed", net_utility=-0.3)
         result = self.screen(record)
-        self.assertAlmostEqual(result["comparisons"]["rag"]["minimum_fit_mean_gain"], -0.25)
+        self.assertAlmostEqual(
+            result["comparisons"]["rag"]["minimum_fit_mean_gain"], -0.25
+        )
         self.assertEqual(result["attempt_counts"], {"completed": 30, "failed": 2})
         self.assertEqual(result["statistical_units"]["planned_attempts"], 32)
         self.assertEqual(result["observed_campaign_total"], 896)
@@ -272,7 +276,9 @@ class ResearchUnitsTests(unittest.TestCase):
         for row in record["attempts"]["rows"]:
             if row["status"] == "failed":
                 row["costs"]["recovery"] = None
-                record["units"]["cost_coverage"][row["attempt_id"]]["recovery"] = "unknown"
+                record["units"]["cost_coverage"][row["attempt_id"]]["recovery"] = (
+                    "unknown"
+                )
         incomplete = self.screen(record)
         self.assertEqual(incomplete["attempt_counts"], result["attempt_counts"])
         self.assertEqual(incomplete["attempt_denominator"], 32)
