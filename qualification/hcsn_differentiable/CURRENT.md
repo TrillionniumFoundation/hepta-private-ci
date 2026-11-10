@@ -13,6 +13,10 @@ The [terminal and verification follow-up](evidence/p0p5-followup-20261110/README
 preserves later observations separately: all 42 original attempts are terminal,
 and all six HCSN attempts exhausted their budgets without establishing adequate
 training. The earlier 472-file snapshot is unchanged.
+The [resource and replay follow-up](evidence/p0p5-resource-replay-20261110/README.md)
+adds independently checked resource curves, fresh full-D replay of all six
+HCSN best checkpoints, and measured original-trace coverage. These completed
+checks retain the training and whole-trajectory qualification limits below.
 
 ## Admission status
 
@@ -21,6 +25,7 @@ training. The earlier 472-file snapshot is unchanged.
 | Mathematical/API contract | Versioned definitions, drift regimes, reset and repeated-readout semantics | Defined and tested |
 | Local numerical regression | 92 tests and four unchanged error-budget fixtures on the archived source | Passed within those fixtures |
 | Actual training-domain accuracy | Recorded posteriors, physical visits, finite schedules and high-precision derivatives | Selected fixtures pass; full training domain HOLD |
+| Recorded quality and resource comparison | Original 42 attempts, separate C1 view and all six HCSN best-checkpoint full-D replays | Reproduced within the observed budgets; HCSN training remains censored |
 | Fair, sufficiently trained real-task benefit | Full-data development attempts and independent replay; output-interface diagnosis | HOLD |
 | Endogenous optimal boundary | Independent finite DP/QVI fixture, three boundary groups | Finite fixture only; neural/continuum benefit HOLD |
 | Real asynchronous multimodal benefit | Existing real localization data; new non-diffusion controls | HOLD |
@@ -101,7 +106,18 @@ The [actual terminal trace summary](evidence/p0p5-followup-20261110/original42/r
 now records only 343--346 retained records per HCSN fit before the byte budget
 was reached, out of 537,856--547,072 seen record slots. All six traces are
 explicitly truncated. These slot counts are not identical to valid sample-state
-counts. A [separately frozen terminal-model plan](evidence/p0p5-followup-20261110/plans/final-hcsn-numerical-plan-v1/PLAN.json)
+counts. The [original-label scan](evidence/p0p5-resource-replay-20261110/trace-coverage/recovery-v1/RESULT.json)
+and [independent order/count review](evidence/p0p5-resource-replay-20261110/trace-coverage/independent-review-v1/REVIEW.md)
+establish that all six fits together retained **2,066 record slots containing
+16,492 valid sample-position-layer states**. Every retained `update_index` is
+**0**: post-update retained slots and valid states are both **zero**. Main phase
+and epoch 1 are derived from the original journal, manifest order and runner,
+not literal epoch labels in the raw trace. The independent JSON review
+reconstructs order and counts without rereading the large probability arrays.
+It does not recover discarded states. Supplemental final-checkpoint exports
+cannot fill this missing optimization trajectory.
+
+A [separately frozen terminal-model plan](evidence/p0p5-followup-20261110/plans/final-hcsn-numerical-plan-v1/PLAN.json)
 binds six checkpoints and 54 primary plus six supplemental finite cases;
 its [independent input review](evidence/p0p5-followup-20261110/review/final-hcsn-plan-independent-review-v1/RESULT.json)
 verifies the source, episodes and schedules. Preparation does not grant a
@@ -244,7 +260,8 @@ The original controller uses nine workers, with six HCSN fits first in its
 roster. There is no separate baseline semaphore; baseline concurrency can
 grow after HCSN workers finish. Its nominal per-fit wall ceiling is 14,400
 seconds, but a 15,000-second campaign deadline shortens later fits' actual
-grants. Comparisons must use each outer receipt's actual hard ceiling and
+grants: `min(14400, 15000 - dispatch_elapsed)`. Comparisons must use each
+outer receipt's actual hard ceiling and
 retain censoring, rather than claiming every fit received four hours.
 
 The campaign was dispatched at 14:49:15 UTC. A recovered
@@ -324,10 +341,44 @@ required before deciding whether any further training is justified.
 
 ### Development outcomes and HCSN censoring
 
-The [six-core table](evidence/p0p5-20261110/review/baseline36-c1-native-v1/v2/output/CORE_TABLE.json)
-selects one learning rate per core by mean D macro-F1 across all three seeds.
-Each selected roster uses learning rate 0.003 and has three adequate chains.
-D remains tuning data; confirmation subject E has not been scored.
+The [resource analysis](evidence/p0p5-resource-replay-20261110/resource-analysis-v1/output-v1/REPORT.md)
+binds all 49 original/C1 reports and independently recomputes 2,969 confusion
+matrices: 2,927 complete-epoch observations and 42 explicitly timed
+before-training evaluations. Its [independent review](evidence/p0p5-resource-replay-20261110/independent-resource-review-v1/REVIEW.md)
+agrees on both the original 42-attempt view and the separate view adding C1.
+The analysis plan was frozen after terminal scores were known; the 300/900/1,800
+second cuts and F1 target .30 were already declared in the original plan.
+D remains tuning data, and confirmation subject E has not been scored.
+
+Each cell below is mean best recorded D macro-F1 at or before the original
+per-fit process-wall cutoff, across all three seeds at one common LR selected
+from .001 and .003. Both LR rosters remain in the result; every defined cell
+selects .003. Imports, diagnostics and cold-cache work consume the same budget.
+
+| Core | Original 300 seconds | Original 900 seconds | Original 1,800 seconds |
+| --- | ---: | ---: | ---: |
+| GRU | .4250 | .4250 | .4250 |
+| CfC | .3490 | .3490 | .3490 |
+| Surrogate-gradient PLIF | .1500 | .1500 | .1500 |
+| Analytic event-time LIF | .1841 | .3130 | .3130 |
+| S4D-Lin | .3597 | .3597 | .3597 |
+| Causal attention | .4026 | .4026 | .4026 |
+| HCSN, budget-censored | Missing | .0256 | .1086 |
+
+Missing means no completed evaluation, with no zero filling or interpolation.
+None of the six HCSN candidates completed an evaluation by 300 seconds. At
+900 seconds, the selected HCSN roster contains two complete-epoch results and
+one explicitly timed before-training evaluation. The separate C1 view changes
+only the S4D-Lin mean in these three columns, to .3669. C1's extra calendar
+phase is not retroactively part of the original 100-epoch protocol. These
+at-most process-wall budgets do not imply matched energy, CPU grants or
+simultaneous calendar completion.
+
+The terminal table uses the separate C1 view and first strict-best
+complete-epoch metrics. Each selected baseline roster uses LR .003 and has
+three adequate chains; the selected HCSN roster also uses .003 but has none.
+The retained [earlier six-core audit table](evidence/p0p5-20261110/review/baseline36-c1-native-v1/v2/output/CORE_TABLE.json)
+and its original clock samples remain unchanged.
 
 | Core | D macro-F1, mean +/- sample SD | Median first observed D F1 >= 0.30, seconds | All six original fits plus C1 process-wall sum, seconds |
 | --- | --- | --- | --- |
@@ -339,22 +390,40 @@ D remains tuning data; confirmation subject E has not been scored.
 | Causal attention | 0.4026 +/- 0.0487 | 66.3 | 1,461.6 |
 | HCSN, budget-censored | 0.3576 +/- 0.0318 | 9,587.0 | 86,261.1 |
 
-The HCSN row comes from the
-[six original terminal reports](evidence/p0p5-followup-20261110/original42/receipts-v1/HCSN-TERMINAL-SUMMARY.json),
-using each candidate's strict-best complete-epoch D metric and a common LR .003.
+The HCSN row uses the
+[six original terminal reports](evidence/p0p5-followup-20261110/original42/receipts-v1/HCSN-TERMINAL-SUMMARY.json)
+and each candidate's strict-best complete-epoch D metric at common LR .003.
 Its three selected scores are .353904163, .391093236 and .327756295, at best
 epochs 47, 40 and 43. They are not the last-epoch scores. Unlike the selected
 baseline rosters, **zero of these three HCSN fits meets training adequacy**.
-The failed reports contain no final selected-logit artifact; independent fresh
-full-D replay is separate from these recorded metrics and from numerical audits.
+Across both learning rates, **all six original HCSN fits remain inadequate**.
+Their budget-failure reports legitimately contain no final selected-logit
+artifact. The [independent full-D replay](evidence/p0p5-resource-replay-20261110/full-d-replay/REVIEW.md)
+therefore binds each best checkpoint to its original strict-best epoch. All
+six replay runs evaluate all 128 D windows and 31,952 valid events, with
+identical confusion matrices and maximum scalar metric difference 2.22e-16
+under the predeclared 2e-12 gate for macro-F1, accuracy, NLL, Brier and ECE.
+Source, checkpoint, data, common tensors and
+physics are checked before and after; new logits, labels and source-row order
+are archived. No optimizer is constructed, restored or stepped, and no
+backward pass or E evaluation is performed. This confirms same-development
+reproducibility, without granting training adequacy or numerical admission.
 
 The cost column charges both learning rates and all seeds, including failed
 memorization and C1. It sums overlapping process durations, not campaign
-calendar time; historical tuning, diagnostics and independent review are
-separately charged in COSTS.json. Threshold times retain the original report
-and epoch-clock conventions. These descriptive outcomes do not complete a
-sufficiently trained seven-core comparison and provide no independent-confirmation
-or energy result.
+calendar time. Each original fit's startup and diagnostics are already
+included in this column; historical tuning, extra probes and independent
+review are separately charged in the cost ledgers. Target times use the first observed
+complete-epoch crossing of .30 uniformly across cores; unlike the budget
+quality table, they exclude before-training evaluations. They are sampled
+epoch times, not exact continuous crossing times. The analysis retains the
+earlier table's separate later report-clock samples and their differences.
+Uncrossed seeds stay censored; a median is shown only when all three selected
+seeds cross. Original per-epoch process CPU is measured, but C1 cumulative
+CPU is only a lower bound because the original parent's full exit CPU is
+unavailable. CPU is not substituted for the wall-budget axis. These outcomes
+do not complete a sufficiently trained seven-core comparison and provide no
+independent-confirmation or energy result.
 
 The [native attention profile](evidence/p0p5-20261110/review/native-attention-path-v1/worker-result.json)
 also observes CPU flash SDPA forward/backward on the actual Xeon E5-2673 v3
@@ -376,6 +445,18 @@ also includes source extraction and its native thirteen-test child: 14,383.00494
 wall seconds and 95,899.502808 child CPU seconds. These enclosing and nested
 scopes overlap. The [follow-up cost ledger](evidence/p0p5-followup-20261110/COSTS.json)
 also retains archive, authenticated readback and independent-review costs.
+The [resource/replay cost ledger](evidence/p0p5-resource-replay-20261110/COSTS.json)
+adds the resource calculation and independent review, six full-D replays,
+trace-label recovery, publication attempts and hosted-artifact retrieval.
+The full-D controller records 730.309 wall seconds and 735.747 child CPU
+seconds. Its enclosing bootstrap includes that controller, extraction and
+native validation; these scopes must not be summed. Failed publication and
+retrieval attempts remain charged. Complete hosted-job CPU, physical energy,
+billing and historical totals remain unknown.
+The [source and cost closure appendix](evidence/p0p5-resource-closure-20261110/README.md)
+retains later verification/publication failures, successful committed-tree
+readbacks and nested hosted-fixture timers. These do not establish complete
+hosted-job or research totals, or certify this later CURRENT edit.
 
 The raw campaign controller wall time was 2,040.85864 seconds; summed attempt
 wall time was 5,573.793 seconds and measured child CPU time was 5,564.147 seconds.
@@ -406,7 +487,8 @@ failed under an 8 GiB address-space limit. This was the earlier configuration
 without the common learned adapter; it is neither an OS-kill claim nor a
 measurement of the later v6 configuration. Its full three-attempt controller
 and both successful 128-cell probes are charged in the cost ledger.
-Complete same-budget quality and resources-to-quality comparisons remain HOLD.
+The bounded observed resource curves above are now reproducible. Sufficiently
+trained seven-core comparisons and comparative energy results remain HOLD.
 
 Separate native effective-batch-32 probes measured microbatch four and eight.
 Their warm update times were 25.227 and 21.676 seconds, with peak RSS about
@@ -457,21 +539,62 @@ cost scopes and draft evidence assets. The repository is public; large raw
 assets are retained in an unpublished draft release and require appropriate
 repository access. Authenticated byte readback, not a successful upload request,
 is the archival check. Main has not been merged or modified by this work.
+The [latest asset index](evidence/p0p5-resource-replay-20261110/assets.json)
+records 29 known payloads with retained complete authenticated readbacks:
+28 previously verified payloads plus the new full-D archive. This is not a
+fresh count of all release API entries. The new asset's anonymous probes
+returned 404 and the release remained unpublished; old metadata-only and
+failed-starter entries retain their earlier limitations.
 
 Local science tests, numerical qualifications, training adequacy, scientific
-benefit and overall repository CI remain separate. Hosted science run
-42827955616 passed its 92 tests, four original numerical fixtures, historical
-evidence checks and QVI/control tests. Its source head and tested PR merge
-commit have identical tree 0fd8f2f35e190442025005ca17a4662af522a491; the exact
-14-file artifact was downloaded and hash/CRC verified. That earlier run does
-not qualify the later training/continuation source or current evidence assembly.
-The [17:37 UTC observation](evidence/p0p5-20261110/publication/ci-observation-1737.json)
-remains historical. A [later observation](evidence/p0p5-followup-20261110/publication/hcsn-ci-observation-followup-v1.json)
-records the architecture workflow succeeding for source PR5803 while its
-blocking workflow remained queued. New evidence/protocol branches had separate
-queued or running checks. No repository-wide success is inferred.
-Source-head and tested-tree identities must be read from the actual job,
-rather than inferred from a branch name.
+benefit and overall repository CI remain separate. The latest retained hosted
+science run **42890048946**, attempt 1, succeeded for source head
+`cd3b7ac49294174a98e02636247615534c19bd89` and tested merge
+`f63b067ac577a6eea363c37d1358f65dc7b4f4ba`. Both have tree
+`4bb4995c3c1058d268c032a0d15cdfe9297a6ff8`. Its exact
+[14-file artifact](evidence/p0p5-resource-replay-20261110/publication-and-science/science-run-42890048946-attempt1-artifact-13797877354.zip),
+artifact 13797877354, is retained with complete hash/CRC verification. It
+contains 92 science tests, four historical numerical error-budget fixtures,
+the four-manifest 785-file integrity check, three QVI tests, three control
+tests and source/index immutability. This success does not qualify the
+training domain or the later five-manifest evidence assembly.
+
+The [20:00 UTC CI observations](evidence/p0p5-resource-replay-20261110/ci/hcsn-ci-current-head-observation-v1.json)
+and [job details](evidence/p0p5-resource-replay-20261110/ci/hcsn-ci-failure-and-current-jobs-v1.json)
+supersede the earlier queued observations within their own head/time scopes.
+Source PR5803's blocking run **42849616115** failed at head
+`56de11a29bbbb8a9aba93e67731cdee4909b4e15`. Retained Windows logs show
+filename-too-long checkout failures; the contract log shows a README
+readiness-discovery-link gate failure. Other cargo-deny and Bazel jobs also
+failed, but two requested job-log retrievals failed and their underlying
+causes remain unestablished. Original logs and retrieval errors remain in the
+[CI log archive](evidence/p0p5-resource-replay-20261110/ci/current-ci-decoded-logs-v1.zip).
+These old-head failures do not establish the result of a later unobserved
+head. At the retained observation, the newer head's blocking run was queued.
+There is no repository-wide all-green claim.
+
+The [committed-object closure](evidence/p0p5-resource-replay-20261110/publication/committed-current-evidence-closure-v2/RESULT.json)
+verifies 794 distinct blobs at the same earlier tree, after restoring fifteen
+ignored original logs that were absent from their first committed evidence
+trees. The retained failure and exact repaired bytes are in the new index;
+this earlier closure does not certify a future commit.
+
+From the repository root, verify the new package and its linked status pages
+using the module entry point:
+
+```bash
+python -B -m qualification.hcsn_differentiable.evidence_chain \
+  --manifest qualification/hcsn_differentiable/evidence/p0p5-resource-replay-20261110/MANIFEST.json \
+  --markdown qualification/hcsn_differentiable/CURRENT.md \
+  --markdown qualification/hcsn_differentiable/evidence/p0p5-resource-replay-20261110/README.md \
+  --markdown qualification/hcsn_differentiable/evidence/p0p5-resource-replay-20261110/resource-analysis-v1/output-v1/REPORT.md \
+  --output /tmp/hcsn-resource-replay-integrity.json
+```
+
+The science workflow checks all six historical/current manifests. Running
+the Python file directly can shadow the standard-library `operator` module;
+use `python -B -m` as above. Integrity validates bytes and links; it does not
+grant scientific or training-domain credit.
 
 The [API publication receipt](evidence/p0p5-20261110/publication/api-source-prs-v1.json)
 binds four draft PRs to exact remote heads and complete source trees equal to
