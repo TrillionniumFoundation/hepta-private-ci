@@ -328,5 +328,20 @@ class AuditTests(unittest.TestCase):
         manifest.write_bytes(b' ' * (MAX_MANIFEST_BYTES + 1))
         self.assertIn('bad_manifest:ValueError', inspect(manifest)['issues'])
 
+    def test_normal_nested_receipt_directory_is_allowed(self):
+        nested = self.root / 'original'
+        nested.mkdir()
+        (self.root / 'training.receipt').rename(nested / 'training.receipt')
+        self.record['original_receipts']['training']['file'] = 'original/training.receipt'
+        self.assertEqual(self.check()['integrity'], 'PASS')
+
+    def test_symlinked_ancestor_cannot_substitute_receipt_origin(self):
+        nested = self.root / 'original'
+        nested.mkdir()
+        (self.root / 'training.receipt').rename(nested / 'training.receipt')
+        (self.root / 'alias').symlink_to(nested, target_is_directory=True)
+        self.record['original_receipts']['training']['file'] = 'alias/training.receipt'
+        self.assertIn('receipt_unreadable:training', self.check()['issues'])
+
 if __name__ == '__main__':
     unittest.main()
