@@ -154,6 +154,30 @@ def factorial_evidence(rows: Iterable[FactorialRow]) -> dict:
         if row.arm in block:
             raise FactorialContractError("duplicate arm in paired block")
         block[row.arm] = row
+    # Hold a model/evaluator cohort fixed per seed and arm across families.
+    # Different family-specific tasks/feedback are intentionally allowed.
+    cohort_by_seed_arm: dict[tuple[int, str], tuple[str, ...]] = {}
+    family_roster_by_seed: dict[int, dict[str, int]] = {}
+    for (_, seed, family), block in blocks.items():
+        counts = family_roster_by_seed.setdefault(seed, {})
+        counts[family] = counts.get(family, 0) + 1
+        for arm, row in block.items():
+            if row.train_data_digest == row.workload_digest:
+                raise FactorialContractError(
+                    "identical training and future-task digests: disjointness violated")
+            lock = (row.train_data_digest, row.evaluator_digest,
+                    row.capacity_contract_digest, row.core_model_digest,
+                    row.controller_digest)
+            key = (seed, arm)
+            if key in cohort_by_seed_arm and cohort_by_seed_arm[key] != lock:
+                raise FactorialContractError(
+                    "frozen per-seed model/evaluator/cohort identity drift across families")
+            cohort_by_seed_arm[key] = lock
+    if len({tuple(sorted(counts.items())) for counts
+            in family_roster_by_seed.values()}) != 1:
+        raise FactorialContractError(
+            "unequal family/episode roster across training seed clusters")
+
     seed_contrasts: dict[str, dict[int, list[float]]] = {
         name: {} for name in CONTRASTS
     }
@@ -163,6 +187,9 @@ def factorial_evidence(rows: Iterable[FactorialRow]) -> dict:
     seed_retention: dict[str, dict[int, list[float]]] = {
         name: {} for name in CONTRASTS
     }
+    family_seed_net: dict[str, dict[str, dict[int, list[float]]]] = {}
+    family_seed_cost: dict[str, dict[str, dict[int, list[float]]]] = {}
+    family_seed_retention: dict[str, dict[str, dict[int, list[float]]]] = {}
     actual_by_arm: dict[str, dict[str, list[int]]] = {
         arm: {name: [] for name in (
             "wall_time_us", "cpu_time_us", "gpu_time_us", "failed_actions")}
@@ -209,12 +236,18 @@ def factorial_evidence(rows: Iterable[FactorialRow]) -> dict:
             costs = {arm: row.full_cost for arm, row in block.items()}
             for name, weights in CONTRASTS.items():
                 seed_contrasts[name].setdefault(seed, []).append(_contrast(net, weights))
+                family_seed_net.setdefault(family, {}).setdefault(
+                    name, {}).setdefault(seed, []).append(_contrast(net, weights))
+                family_seed_cost.setdefault(family, {}).setdefault(
+                    name, {}).setdefault(seed, []).append(_contrast(costs, weights))
                 seed_costs[name].setdefault(seed, []).append(_contrast(costs, weights))
         if any(row.retention_value is None for row in block.values()):
             missing_retention_blocks += 1
         else:
             retention = {arm: row.retention_value for arm, row in block.items()}
             for name, weights in CONTRASTS.items():
+                family_seed_retention.setdefault(family, {}).setdefault(
+                    name, {}).setdefault(seed, []).append(_contrast(retention, weights))
                 seed_retention[name].setdefault(seed, []).append(_contrast(retention, weights))
 
     # Conservative complete-case gate: no conditioning on observed outcomes.
@@ -241,7 +274,42 @@ def factorial_evidence(rows: Iterable[FactorialRow]) -> dict:
         }
     for name, p in _holm_p(raw_p).items():
         contrasts[name]["holm_four_contrasts_p"] = p
+    # Descriptive family slices cannot be selected after observing outcomes.
+    # Any missing outcome blocks all per-family net-value calculations.
+    family_contrasts = {}
+    for family in sorted({family for (_, _, family) in blocks}):
+        family_contrasts[family] = {}
+        for name in CONTRASTS:
+            def seed_means(source: dict) -> list[float]:
+                return [sum(v) / len(v) for _, v in
+                        sorted(source.get(family, {}).get(name, {}).items())]
+            net_values = seed_means(family_seed_net) if outcomes_complete else []
+            cost_values = seed_means(family_seed_cost) if outcomes_complete else []
+            retention_values = (seed_means(family_seed_retention)
+                                if retention_complete else [])
+            family_contrasts[family][name] = {
+                "mean_net_delta": (sum(net_values) / len(net_values)
+                                   if net_values else None),
+                "mean_cost_delta": (sum(cost_values) / len(cost_values)
+                                    if cost_values else None),
+                "mean_retention_delta": (sum(retention_values) / len(retention_values)
+                                         if retention_values else None),
+                "seed_clusters": len(net_values) if outcomes_complete else None,
+            }
+    adverse_families = {
+        name: ([family for family in sorted(family_contrasts)
+                if family_contrasts[family][name]["mean_net_delta"] < 0]
+               if outcomes_complete else None)
+        for name in CONTRASTS
+    }
     return {
+        "registered_family_episode_counts": dict(
+            sorted(next(iter(family_roster_by_seed.values())).items())),
+        "family_contrasts": family_contrasts,
+        "negative_net_families_by_contrast": adverse_families,
+        "family_diagnostic_note": (
+            "Descriptive paired net-value signs, not per-family efficacy tests; "
+            "no family may be dropped after outcomes are observed."),
         "schema": SCHEMA,
         "factorial_cells": {"A": "Ordinary+ordinary", "B": "Ordinary+NDU",
                             "C": "Hepta+ordinary", "D": "Hepta+NDU"},
