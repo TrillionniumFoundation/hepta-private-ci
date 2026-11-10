@@ -25,6 +25,13 @@ async fn notes_cancellation_is_distinct_and_recovered_through_original_typed_own
     let original_request: serde_json::Value = serde_json::from_str(&payload)?;
     assert_eq!(request["original_operation_id"], original);
     assert_eq!(request["original_payload_sha256"], Sha256Digest::for_bytes(payload.as_bytes()).as_str());
+    assert!(
+        writer
+            .settle_notes_original_from_fence(&original, &cancellation.occurrence_key)
+            .await
+            .is_err(),
+        "a queued fence cannot settle the original"
+    );
     writer.mark_indeterminate(&cancellation.occurrence_key, "explicit fixture lost fence reply").await?;
     assert!(writer.reconcile(&cancellation.occurrence_key, LocalReconcileOutcome::Committed).await.is_err());
     let revision = original_request["expected_revision"].as_u64().ok_or("expected revision")?;
@@ -36,11 +43,47 @@ async fn notes_cancellation_is_distinct_and_recovered_through_original_typed_own
     let dispatch = writer.reconciliation_request(&cancellation.occurrence_key, &identity.destination_id()).await?;
     writer.settle_notes_terminal(&dispatch, &fence_receipt, LocalReconcileOutcome::Committed).await?;
     assert_eq!(writer.retained_notes_terminal_receipt(&cancellation.occurrence_key).await?, Some(fence_receipt.clone()));
-    assert_eq!(writer.status(&original).await?, LocalOutcomeState::Indeterminate);
+    let settled = writer
+        .settle_notes_original_from_fence(&original, &cancellation.occurrence_key)
+        .await?;
+    assert_eq!(settled.state, LocalOutcomeState::Rejected);
+    assert!(!settled.external_effect);
+    assert_eq!(writer.status(&original).await?, LocalOutcomeState::Rejected);
+    assert_eq!(writer.retained_notes_terminal_receipt(&original).await?, None);
+    let source_settlement: String = sqlx::query_scalar(
+        "SELECT payload_json FROM cognitive_local_events
+         WHERE lease_id = ? AND occurrence_key = ?
+           AND event_kind = 'notes_fence_excluded'",
+    )
+    .bind(writer.lease_id())
+    .bind(&original)
+    .fetch_one(&store.pool)
+    .await?;
+    let source_settlement: serde_json::Value = serde_json::from_str(&source_settlement)?;
+    assert_eq!(
+        source_settlement["disposition"],
+        "original_excluded_by_committed_fence"
+    );
+    assert_eq!(
+        source_settlement["cancellation_operation_id"],
+        cancellation.occurrence_key
+    );
+    assert!(source_settlement.get("status").is_none());
     let target = Observer { destination: identity.destination_id(), receipt: fence_receipt,
         observations: AtomicUsize::new(0), retirements: AtomicUsize::new(0), lose_first_ack: AtomicBool::new(false) };
     writer.retire_notes_receipt(&target, &cancellation.occurrence_key).await?;
     assert_eq!(target.retirements.load(Ordering::SeqCst), 1);
     assert_eq!(target.observations.load(Ordering::SeqCst), 0);
+    drop(writer);
+    drop(store);
+    let reopened = CognitiveStore::open(&layout).await?;
+    let replayed: String = sqlx::query_scalar(
+        "SELECT event_kind FROM cognitive_local_events
+         WHERE occurrence_key = ? ORDER BY event_sequence DESC LIMIT 1",
+    )
+    .bind(&original)
+    .fetch_one(&reopened.pool)
+    .await?;
+    assert_eq!(replayed, "notes_fence_excluded");
     Ok(())
 }

@@ -49,6 +49,208 @@ enum FenceResult {
     Unknown { current_revision: u64 },
 }
 
+/// Source-only evidence that one committed fence excludes one exact original
+/// Notes replacement.  The fields are deliberately private and this type does
+/// not implement either serde trait: callers cannot manufacture it from a
+/// cancellation receipt or JSON alone.
+pub(crate) struct NotesFenceProof {
+    settlement: NotesFenceSettlement,
+    cancellation_receipt: String,
+}
+
+#[derive(Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
+struct NotesFenceSettlement {
+    schema_version: u16,
+    disposition: FenceSettlementDisposition,
+    original_operation_id: String,
+    original_payload_sha256: String,
+    cancellation_operation_id: String,
+    cancellation_payload_sha256: String,
+    cancellation_terminal_event_id: String,
+    cancellation_terminal_event_sha256: String,
+    cancellation_receipt_sha256: String,
+}
+
+#[derive(Deserialize, Serialize)]
+#[serde(rename_all = "snake_case")]
+enum FenceSettlementDisposition {
+    OriginalExcludedByCommittedFence,
+}
+
+impl NotesFenceProof {
+    pub(crate) fn from_committed_event(
+        original_operation_id: &str,
+        original_payload: &str,
+        cancellation_operation_id: &str,
+        cancellation_payload: &str,
+        cancellation_terminal_event_id: &str,
+        cancellation_terminal_event_sha256: &Sha256Digest,
+        cancellation_receipt: &str,
+    ) -> Result<Self, String> {
+        verify_fence_excludes_original(
+            original_operation_id,
+            original_payload,
+            cancellation_operation_id,
+            cancellation_payload,
+            cancellation_receipt,
+        )?;
+        let settlement = NotesFenceSettlement {
+            schema_version: 1,
+            disposition: FenceSettlementDisposition::OriginalExcludedByCommittedFence,
+            original_operation_id: original_operation_id.to_owned(),
+            original_payload_sha256: Sha256Digest::for_bytes(original_payload.as_bytes())
+                .as_str()
+                .to_owned(),
+            cancellation_operation_id: cancellation_operation_id.to_owned(),
+            cancellation_payload_sha256: Sha256Digest::for_bytes(cancellation_payload.as_bytes())
+                .as_str()
+                .to_owned(),
+            cancellation_terminal_event_id: cancellation_terminal_event_id.to_owned(),
+            cancellation_terminal_event_sha256: cancellation_terminal_event_sha256
+                .as_str()
+                .to_owned(),
+            cancellation_receipt_sha256: Sha256Digest::for_bytes(
+                cancellation_receipt.as_bytes(),
+            )
+            .as_str()
+            .to_owned(),
+        };
+        Ok(Self {
+            settlement,
+            cancellation_receipt: cancellation_receipt.to_owned(),
+        })
+    }
+
+    pub(crate) fn original_operation_id(&self) -> &str {
+        &self.settlement.original_operation_id
+    }
+
+    pub(crate) fn cancellation_operation_id(&self) -> &str {
+        &self.settlement.cancellation_operation_id
+    }
+
+    pub(crate) fn cancellation_terminal_event_id(&self) -> &str {
+        &self.settlement.cancellation_terminal_event_id
+    }
+
+    pub(crate) fn cancellation_terminal_event_sha256(&self) -> &str {
+        &self.settlement.cancellation_terminal_event_sha256
+    }
+
+    pub(crate) fn cancellation_receipt(&self) -> &str {
+        &self.cancellation_receipt
+    }
+
+    pub(crate) fn settlement_json(&self) -> Result<String, String> {
+        serde_json::to_string(&self.settlement).map_err(|error| error.to_string())
+    }
+}
+
+pub(crate) fn verify_fence_settlement(
+    settlement_json: &str,
+    original_operation_id: &str,
+    original_payload: &str,
+    cancellation_operation_id: &str,
+    cancellation_payload: &str,
+    cancellation_terminal_event_id: &str,
+    cancellation_terminal_event_sha256: &Sha256Digest,
+    cancellation_receipt: &str,
+) -> Result<(), String> {
+    let settlement: NotesFenceSettlement =
+        serde_json::from_str(settlement_json).map_err(|_| "invalid Notes fence settlement")?;
+    if settlement.schema_version != 1
+        || !matches!(
+            settlement.disposition,
+            FenceSettlementDisposition::OriginalExcludedByCommittedFence
+        )
+        || settlement.original_operation_id != original_operation_id
+        || settlement.original_payload_sha256
+            != Sha256Digest::for_bytes(original_payload.as_bytes()).as_str()
+        || settlement.cancellation_operation_id != cancellation_operation_id
+        || settlement.cancellation_payload_sha256
+            != Sha256Digest::for_bytes(cancellation_payload.as_bytes()).as_str()
+        || settlement.cancellation_terminal_event_id != cancellation_terminal_event_id
+        || settlement.cancellation_terminal_event_sha256
+            != cancellation_terminal_event_sha256.as_str()
+        || settlement.cancellation_receipt_sha256
+            != Sha256Digest::for_bytes(cancellation_receipt.as_bytes()).as_str()
+    {
+        return Err("Notes fence settlement binding mismatch".to_string());
+    }
+    verify_fence_excludes_original(
+        original_operation_id,
+        original_payload,
+        cancellation_operation_id,
+        cancellation_payload,
+        cancellation_receipt,
+    )
+}
+
+pub(crate) fn fence_settlement_reference(
+    settlement_json: &str,
+) -> Result<(String, String, String, String), String> {
+    let settlement: NotesFenceSettlement =
+        serde_json::from_str(settlement_json).map_err(|_| "invalid Notes fence settlement")?;
+    if settlement.schema_version != 1
+        || !matches!(
+            settlement.disposition,
+            FenceSettlementDisposition::OriginalExcludedByCommittedFence
+        )
+    {
+        return Err("invalid Notes fence settlement identity".to_string());
+    }
+    Ok((
+        settlement.original_operation_id,
+        settlement.cancellation_operation_id,
+        settlement.cancellation_terminal_event_id,
+        settlement.cancellation_terminal_event_sha256,
+    ))
+}
+
+fn verify_fence_excludes_original(
+    original_operation_id: &str,
+    original_payload: &str,
+    cancellation_operation_id: &str,
+    cancellation_payload: &str,
+    cancellation_receipt: &str,
+) -> Result<(), String> {
+    let original_value: serde_json::Value =
+        serde_json::from_str(original_payload).map_err(|_| "invalid original Notes payload")?;
+    let original_target: NotesTargetIdentity = serde_json::from_value(
+        original_value["target"].clone(),
+    )
+    .map_err(|_| "invalid original Notes target")?;
+    let original = parse_replace(&original_target, original_payload)?;
+    if original.operation_id != original_operation_id {
+        return Err("Notes fence original operation mismatch".to_string());
+    }
+    let (cancellation, _) = fence_intent(
+        &original_target,
+        cancellation_payload,
+        StableId::new("fence-proof-check").map_err(|error| error.to_string())?,
+        Generation::new(1).map_err(|error| error.to_string())?,
+    )?;
+    if cancellation.operation_id != cancellation_operation_id
+        || cancellation.original_operation_id != original_operation_id
+        || cancellation.original_payload_sha256
+            != Sha256Digest::for_bytes(original_payload.as_bytes()).as_str()
+        || cancellation.expected_revision != original.expected_revision
+    {
+        return Err("Notes fence causal original binding mismatch".to_string());
+    }
+    let (result, _) = fence_response(
+        &original_target,
+        cancellation_receipt.as_bytes(),
+        &cancellation,
+        Sha256Digest::for_bytes(cancellation_payload.as_bytes()).as_str(),
+    )?;
+    if !matches!(result, FenceResult::Fenced { .. }) {
+        return Err("Notes fence did not exclude the original operation".to_string());
+    }
+    Ok(())
+}
+
 pub(super) fn fence_intent(
     target: &NotesTargetIdentity,
     raw: &str,
