@@ -74,7 +74,7 @@
     },
     {
       "id": "ORIGINAL_CANCELLATION_RESPONSIBILITY",
-      "status": "IMPLEMENTED_AWAITING_EXACT_HOSTED_QUALIFICATION",
+      "status": "IMPLEMENTED_WITH_COMPILE_FIX_AWAITING_EXACT_HOSTED_QUALIFICATION",
       "pr": 5693,
       "source": "c0d5d0ededb6627103c390e86b8714135977025c",
       "tree": "76472eac11a1292700c0d8deeff03059bc18bd27",
@@ -117,11 +117,45 @@
         },
         {
           "run": 42794187545,
-          "scope": "architecture",
-          "status": "PENDING"
+          "scope": "architecture convergence",
+          "status": "SOURCE_HEAD_FAILURE_BASE_MERGE_SUCCESS",
+          "source_head_job": 129794493172,
+          "exact_result": "source-head exit 101 before tests; 16 E0659 ambiguous assert_eq errors in nested actual-App fence tests; source/tree remained clean; base-merge job passed",
+          "classification": "test-module macro import ambiguity; no typed fence transaction or replay assertion executed"
         }
       ],
-      "required": "read exact terminal native/real-App/cross-platform results at this source; no earlier commit count transfers"
+      "required": "read exact terminal native/real-App/cross-platform results at this source; no earlier commit count transfers",
+      "compile_fix": {
+        "pr": 5783,
+        "source": "eb6a0eb06eba09dcb6006f82f3e94c77adc23503",
+        "tree": "d5e59a826f3e95021321704c6871e815e265bce7",
+        "parent": "c0d5d0ededb6627103c390e86b8714135977025c",
+        "change": "one explicit pretty_assertions::assert_eq import in the nested actual-App fence test module",
+        "local_status": "PENDING_SHARED_CARGO_TARGET_LOCK_NO_PASS_CLAIMED",
+        "hosted": [
+          {
+            "run": 42834018167,
+            "scope": "architecture convergence",
+            "status": "QUEUED"
+          },
+          {
+            "run": 42834018357,
+            "scope": "blocking-ci",
+            "status": "QUEUED"
+          },
+          {
+            "run": 42834018212,
+            "scope": "Windows private-state",
+            "status": "IN_PROGRESS"
+          },
+          {
+            "run": 42834018023,
+            "scope": "v8 metadata",
+            "status": "IN_PROGRESS"
+          }
+        ],
+        "limits": "no production code, dependency, lock, CALLERS, operation, permission, FinalUse, readback, tombstone, receipt or promotion change; no earlier result transfers"
+      }
     },
     {
       "id": "FULL_DYNAMIC_TOOL_AUTHORITY",
@@ -251,6 +285,14 @@
           "run": 42794187545,
           "scope": "architecture",
           "status": "PENDING"
+        },
+        {
+          "run": 42794187545,
+          "scope": "architecture source-head",
+          "status": "FAILURE_TEST_MACRO_AMBIGUITY",
+          "job": 129794493172,
+          "reason": "16 E0659 ambiguous assert_eq errors in production_notes_fence_gui_tests.rs before any test executed",
+          "fix_pr": 5783
         }
       ]
     },
