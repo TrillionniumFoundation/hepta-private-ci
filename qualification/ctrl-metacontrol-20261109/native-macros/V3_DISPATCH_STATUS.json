@@ -18,7 +18,14 @@
     "same_request_reconciliation_count": 1,
     "same_request_reconciliation": "MCP timeout; no durable job identity returned",
     "read_only_metadata_observation": "h_view/search timed out",
-    "new_business_key_submitted": false
+    "new_business_key_submitted": false,
+    "later_same_request_reconciliation": {
+      "exact_original_arguments_recovered_from_hash_verified_private_copy": true,
+      "argument_digest_matches_declared": true,
+      "one_more_same_key_call": "h_shell_start returned internal tool failure without durable job identity",
+      "new_business_key_submitted": false,
+      "proves_original_terminal_state": false
+    }
   },
   "static_diagnosis": {
     "old_optional_memory_mode_parse_would_reject_valid_default_reset": true,
@@ -34,12 +41,27 @@
     "bytes": 2351,
     "persistence": "verified_private_durable_backup",
     "public_contents": "private paths, full tool arguments and operation key withheld",
-    "native_host_copy": "UNKNOWN: write and independent file-info both returned MCP timeout (-32603)"
+    "native_host_copy": "UNKNOWN: write and independent file-info both returned MCP timeout (-32603)",
+    "native_host_copy_followup_20261110": {
+      "result": "VERIFIED_READ_ONLY",
+      "native_file_info": "exact source copy observed after the earlier independent file_info timeout",
+      "native_read_multiple_files": "complete 2351-byte UTF-8 copy read independently; content hash matches",
+      "size_bytes": 2351,
+      "sha256": "d1f075c1b4241536079abc92f3285c104922abecf0284d252163662bdd568f93",
+      "posix_mode": "0600",
+      "earlier_write_and_file_info_timeouts_preserved": true,
+      "proves_original_execution": false
+    }
   },
   "actual_paired_results_available": false,
   "policy_benefit_qualified": false,
   "production_admission": false,
   "qualification": "HOLD_NO_GO",
   "private_backup_persistence": "verified_private_durable_backup",
-  "frozen_identity_scope": "declared frozen collector, plan and runner bytes; not evidence of execution"
+  "frozen_identity_scope": "declared frozen collector, plan and runner bytes; not evidence of execution",
+  "read_only_effect_observation_20261110": {
+    "designated_collection_result_path": "not found at read-only file_info observation",
+    "proves_non_execution": false,
+    "original_result_status": "UNKNOWN"
+  }
 }
