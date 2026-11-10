@@ -30,7 +30,15 @@ pub async fn deliver_circuit_learning_v1(
     request: LearningIterationRequestV1,
     owners: LearningIterationOwnersV1,
 ) -> Result<LearningIterationSnapshotV1, Error> {
-    delivery(store, backend, request, owners, DeliveryMode::FirstAttempt, None).await
+    delivery(
+        store,
+        backend,
+        request,
+        owners,
+        DeliveryMode::FirstAttempt,
+        None,
+    )
+    .await
 }
 
 /// Root-only new-claim path. Recheck the original Objective/Circuit owners
@@ -62,7 +70,15 @@ pub async fn reconcile_circuit_learning_v1(
     request: LearningIterationRequestV1,
     owners: LearningIterationOwnersV1,
 ) -> Result<LearningIterationSnapshotV1, Error> {
-    delivery(store, backend, request, owners, DeliveryMode::Readback, None).await
+    delivery(
+        store,
+        backend,
+        request,
+        owners,
+        DeliveryMode::Readback,
+        None,
+    )
+    .await
 }
 
 async fn delivery(
