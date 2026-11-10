@@ -48,18 +48,37 @@ pub trait AgentdCircuitTaskInvocationProviderV1: Send + Sync {
 
 impl AgentdState {
     /// Enable completion delivery only for the explicit learning bootstrap's
-    /// one source. Ordinary tasks cannot fill a learning queue by default.
+    /// sources. Ordinary tasks cannot fill a learning queue by default.
+    #[cfg(test)]
     pub(crate) fn attach_circuit_learning_source(
         &self,
         source_run_id: StableId,
     ) -> Result<(), AgentdError> {
+        self.attach_circuit_learning_sources(vec![source_run_id])
+    }
+
+    pub(crate) fn attach_circuit_learning_sources(
+        &self,
+        sources: Vec<StableId>,
+    ) -> Result<(), AgentdError> {
+        if sources.is_empty()
+            || sources.len() > crate::learning_iteration::MAX_REGISTERED_CIRCUIT_LEARNING
+            || sources.iter().enumerate().any(|(index, source)| sources[..index].contains(source))
+        {
+            return Err(AgentdError::Invalid("Circuit learning source registry differs".into()));
+        }
         self.circuit_learning_source
-            .set(source_run_id)
+            .set(sources)
             .map_err(|_| AgentdError::Invalid("Circuit learning source already attached".into()))
     }
 
+    #[cfg(test)]
     pub(crate) fn circuit_learning_source(&self) -> Option<&StableId> {
-        self.circuit_learning_source.get()
+        self.circuit_learning_sources().first()
+    }
+
+    pub(crate) fn circuit_learning_sources(&self) -> &[StableId] {
+        self.circuit_learning_source.get().map(Vec::as_slice).unwrap_or_default()
     }
 
     pub(crate) fn circuit_task_enabled(&self) -> bool {
@@ -170,11 +189,12 @@ impl AgentdState {
         self.require_current_run_start(record)?;
         provider.publish_result(self.identity(), record, &receipt)?;
         self.require_current_run_start(record)?;
-        // Only the explicitly configured iteration's source enters the outbox.
+        // Only explicitly registered iteration sources enter the outbox.
         // This also runs on its completed-task readback path after ACK loss.
         if self
-            .circuit_learning_source()
-            .is_some_and(|source| source.as_str() == record.snapshot.run_id.as_str())
+            .circuit_learning_sources()
+            .iter()
+            .any(|source| source.as_str() == record.snapshot.run_id.as_str())
         {
             let objective = codex_hepta_contracts::Sha256Digest::parse(
                 record.snapshot.objective_digest.to_string(),

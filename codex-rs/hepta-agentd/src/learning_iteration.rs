@@ -30,6 +30,10 @@ use crate::PlasticityRuntimeCallErrorV1;
 
 #[path = "learning_iteration_delivery_runtime.rs"]
 mod delivery;
+#[path = "circuit_learning_delivery_registry.rs"]
+mod registry;
+pub use registry::CircuitLearningDeliveryRegistryV1;
+pub(crate) use registry::MAX_REGISTERED_CIRCUIT_LEARNING;
 
 const MAX_LEARNING_QUEUE: usize = 64;
 const MAX_ITERATION_SECONDS: u64 = 86_400;
@@ -162,7 +166,7 @@ pub struct LearningIterationRuntimeBootstrapV1 {
     scope: Option<FrozenLearningScopeV2>,
     receiver: mpsc::Receiver<LearningIterationCommandV1>,
     sender: mpsc::Sender<LearningIterationCommandV1>,
-    circuit_delivery_request: Option<LearningIterationRequestV1>,
+    circuit_delivery_registry: Option<CircuitLearningDeliveryRegistryV1>,
     enforce_circuit_admission: bool,
 }
 
@@ -257,7 +261,7 @@ fn learning_iteration_channel(
             scope,
             receiver,
             sender,
-            circuit_delivery_request: None,
+            circuit_delivery_registry: None,
             enforce_circuit_admission: false,
         },
     ))

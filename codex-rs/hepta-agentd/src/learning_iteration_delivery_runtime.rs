@@ -1,4 +1,4 @@
-//! Supervised delivery of one explicitly registered completed Circuit task.
+//! Supervised serial delivery of explicitly registered completed Circuit tasks.
 //! The host supplies the exact request, original stage owners and checkpoint;
 //! this consumer cannot provision them or infer authority from the outbox.
 
@@ -9,7 +9,7 @@ use super::*;
 pub(crate) struct CircuitLearningDeliveryRuntimeV1 {
     handle: LearningIterationHandleV1,
     spawn_generation: u64,
-    pub(crate) request: LearningIterationRequestV1,
+    pub(crate) requests: Vec<LearningIterationRequestV1>,
     owners: LearningIterationOwnersV1,
 }
 
@@ -20,41 +20,52 @@ impl LearningIterationRuntimeBootstrapV1 {
     /// The retained sender prevents dropping the returned external handle from
     /// silently disconnecting delivery. No second queue or owner is created.
     ///
-    /// This is a one-iteration host composition, not a descriptor loader or a
-    /// general training scheduler. A claimed operation without a recoverable
-    /// checkpoint stays pending; absence is never permission to train again.
+    /// This remains an explicit host composition. A claimed operation without
+    /// a recoverable checkpoint stays pending; absence is never retry permission.
     pub fn with_circuit_learning_delivery(
-        mut self,
+        self,
         request: LearningIterationRequestV1,
     ) -> Result<Self, AgentdError> {
-        if self.circuit_delivery_request.is_some() {
+        self.with_circuit_learning_registry(CircuitLearningDeliveryRegistryV1::new(vec![request])?)
+    }
+
+    /// Register a bounded set without inferring successor requests. The host's
+    /// existing ports must recover each exact operation; all original scope,
+    /// receipt, checkpoint and current-authority checks remain in the worker.
+    pub fn with_circuit_learning_registry(
+        mut self,
+        registry: CircuitLearningDeliveryRegistryV1,
+    ) -> Result<Self, AgentdError> {
+        if self.circuit_delivery_registry.is_some() {
             return Err(AgentdError::Invalid(
                 "Circuit learning delivery already configured".into(),
             ));
         }
-        if request.agent_id.as_str() != self.agent_id.as_str() {
-            return Err(AgentdError::GenerationFenced(
-                "Circuit learning request belongs to another agent".into(),
-            ));
+        for request in &registry.requests {
+            if request.agent_id.as_str() != self.agent_id.as_str() {
+                return Err(AgentdError::GenerationFenced(
+                    "Circuit learning request belongs to another agent".into(),
+                ));
+            }
+            self.require_frozen_scope(request)
+                .map_err(|error| AgentdError::Invalid(error.to_string()))?;
+            LearningIterationCoordinatorV1::new(request.clone(), self.owners.clone())
+                .map_err(|error| AgentdError::Invalid(error.to_string()))?;
         }
-        self.require_frozen_scope(&request)
-            .map_err(|error| AgentdError::Invalid(error.to_string()))?;
-        LearningIterationCoordinatorV1::new(request.clone(), self.owners.clone())
-            .map_err(|error| AgentdError::Invalid(error.to_string()))?;
-        self.circuit_delivery_request = Some(request);
+        self.circuit_delivery_registry = Some(registry);
         self.enforce_circuit_admission = true;
         Ok(self)
     }
 
     pub(crate) fn take_circuit_delivery(&mut self) -> Option<CircuitLearningDeliveryRuntimeV1> {
-        self.circuit_delivery_request
+        self.circuit_delivery_registry
             .take()
-            .map(|request| CircuitLearningDeliveryRuntimeV1 {
+            .map(|registry| CircuitLearningDeliveryRuntimeV1 {
                 handle: LearningIterationHandleV1 {
                     sender: self.sender.clone(),
                 },
                 spawn_generation: self.spawn_generation,
-                request,
+                requests: registry.requests,
                 owners: self.owners.clone(),
             })
     }
@@ -67,8 +78,10 @@ impl CircuitLearningDeliveryRuntimeV1 {
         state: Arc<AgentdState>,
         cancellation: CancellationToken,
     ) -> Result<(), AgentdError> {
-        if store.owner_agent_id().as_str() != self.request.agent_id.as_str()
-            || state.identity().agent_id.as_str() != self.request.agent_id.as_str()
+        if self.requests.iter().any(|request| {
+            store.owner_agent_id().as_str() != request.agent_id.as_str()
+            || state.identity().agent_id.as_str() != request.agent_id.as_str()
+        })
             || state.identity().spawn_generation != self.spawn_generation
         {
             return Err(AgentdError::GenerationFenced(
@@ -77,6 +90,7 @@ impl CircuitLearningDeliveryRuntimeV1 {
         }
         let mut interval = tokio::time::interval(Duration::from_secs(1));
         interval.set_missed_tick_behavior(tokio::time::MissedTickBehavior::Skip);
+        let mut completed = vec![false; self.requests.len()];
         loop {
             tokio::select! {
                 _ = cancellation.cancelled() => return Ok(()),
@@ -87,9 +101,13 @@ impl CircuitLearningDeliveryRuntimeV1 {
             if require_ready(&state).is_err() {
                 continue;
             }
+            for (index, request) in self.requests.iter().enumerate() {
+            if completed[index] {
+                continue;
+            }
             let row = tokio::select! {
                 _ = cancellation.cancelled() => return Ok(()),
-                row = store.circuit_learning_delivery(self.request.source_run_id.as_str()) => row,
+                row = store.circuit_learning_delivery(request.source_run_id.as_str()) => row,
             }
             .map_err(|error| {
                 AgentdError::Protocol(format!("Circuit learning outbox: {error:?}"))
@@ -106,7 +124,7 @@ impl CircuitLearningDeliveryRuntimeV1 {
                     crate::reconcile_circuit_learning_v1(
                         &store,
                         Some(&self.handle),
-                        self.request.clone(),
+                        request.clone(),
                         self.owners.clone(),
                     )
                     .await
@@ -114,7 +132,7 @@ impl CircuitLearningDeliveryRuntimeV1 {
                     crate::deliver_circuit_learning_v1(
                         &store,
                         Some(&self.handle),
-                        self.request.clone(),
+                        request.clone(),
                         self.owners.clone(),
                     )
                     .await
@@ -126,10 +144,7 @@ impl CircuitLearningDeliveryRuntimeV1 {
             };
             match result {
                 Ok(_) => {
-                    // A required supervised service must not exit merely
-                    // because its one exact delivery has been acknowledged.
-                    cancellation.cancelled().await;
-                    return Ok(());
+                    completed[index] = true;
                 }
                 Err(
                     LearningIterationRuntimeErrorV1::CommitUncertain
@@ -143,6 +158,11 @@ impl CircuitLearningDeliveryRuntimeV1 {
                         "Circuit learning delivery refused: {error}"
                     )));
                 }
+            }
+            }
+            if completed.iter().all(|completed| *completed) {
+                cancellation.cancelled().await;
+                return Ok(());
             }
         }
     }

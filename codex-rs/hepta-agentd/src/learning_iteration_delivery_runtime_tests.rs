@@ -19,6 +19,9 @@ use tokio::sync::Notify;
 
 use super::*;
 
+#[path = "circuit_learning_delivery_registry_tests.rs"]
+mod registry_tests;
+
 struct CurrentEvidencePorts {
     inner: Arc<IterationPorts>,
     planned: Mutex<Option<LearningIterationSnapshotV1>>,
@@ -172,6 +175,13 @@ impl LearningIterationOwnerPortsV1 for CurrentEvidencePorts {
 async fn completed_circuit(
     daemon: &AgentdFixture,
 ) -> (AutomationStore, LearningIterationRequestV1) {
+    completed_circuit_named(daemon, "ordinary-learning-run").await
+}
+
+async fn completed_circuit_named(
+    daemon: &AgentdFixture,
+    run_id: &str,
+) -> (AutomationStore, LearningIterationRequestV1) {
     let store = ok(AutomationStore::open(&daemon.identity.layout).await);
     let mut request = iteration_request(daemon);
     let (mut definition, _) = crate::circuit_cell::tests::configuration();
@@ -189,7 +199,7 @@ async fn completed_circuit(
         "delivery-fence",
     ));
     let start = CircuitStartV2 {
-        run_id: "ordinary-learning-run".into(),
+        run_id: run_id.into(),
         scope_digest: Sha256Digest::for_bytes(b"test-scope"),
         input_digest: Sha256Digest::for_bytes(b"test-input"),
         created_at_ms: 10,
