@@ -66,3 +66,29 @@ Fresh native CI, both lockfiles, consumer results and final formatting are still
 required. Dependency security closure, full VERIFY acceptance, registry image
 admission and independent scientific benefit remain OPEN/HOLD; missing physical
 costs and independent real labels remain null.
+
+## Auth-status discovery diagnostic compatibility
+
+The original #5789 candidate compiled but failed five auth-status cases because
+rmcp 3.9.0's `AuthError::DiscoveryRequestFailed` displays only its URL while
+retaining the transport/HTTP/redirect cause through `source()`. Upstream
+[rmcp-v3.9.0 auth.rs](https://github.com/modelcontextprotocol/rust-sdk/blob/rmcp-v3.9.0/crates/rmcp/src/transport/auth.rs)
+and the retained original failure log establish this changed error shape.
+
+Convert the error to anyhow, capture its complete chain for the public diagnostic,
+and attach that diagnostic as context to the same original error. This preserves
+underlying typed downcasts and source-chain information rather than converting
+it to a string-only replacement. The returned outcome is still an error. Request
+construction, redirect/issuer checks, timeouts, headers and response processing
+are unchanged. Retain every original assertion and the full seven-consumer run.
+The other four direct-SDK OAuth tests, three streamable-HTTP cases, Matrix restart
+failure and vendor-format conflict remain separate unresolved failures.
+
+Only the exact auth-status source path is added to the disposable preparation
+allowlist. Existing pins and refusal of unreviewed paths remain. Local rustfmt
+syntax/format check and preparation Ruff checks pass; all five original
+preparation tests pass. Full native consumer tests are NOT_RUN locally: this
+scratch checkout lacks the Rust workspace/justfile; `just fmt` fails for that
+reason. Fresh qualification is required and no five-test improvement is claimed
+before those original tests actually run. No dependency, suppression, permission,
+production admission, scientific or cost acceptance changes.

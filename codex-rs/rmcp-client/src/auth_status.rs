@@ -267,7 +267,11 @@ async fn discover_streamable_http_oauth_with_manager(
             scopes_supported: normalize_scopes(resolution.metadata.scopes_supported),
         })),
         Err(AuthError::NoAuthorizationSupport) => Ok(None),
-        Err(err) => Err(err.into()),
+        Err(err) => {
+            let error = anyhow::Error::from(err);
+            let diagnostic = format!("{error:#}");
+            Err(error.context(diagnostic))
+        }
     }
 }
 
