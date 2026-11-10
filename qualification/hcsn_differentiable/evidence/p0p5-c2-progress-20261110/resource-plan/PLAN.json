@@ -1,0 +1,119 @@
+{
+  "P5_benefit_gate": "unchanged",
+  "analysis_budget": {
+    "automatic_retry": false,
+    "peak_RSS_bytes": 536870912,
+    "threads": 1,
+    "whole_hard_wall_seconds": 120,
+    "workers": 1
+  },
+  "confirmation_E_access": false,
+  "cost_accounting": {
+    "CPU": "C2 per-child wait4 is exact for that child; the original post-report exit CPU was not fully measured. Any cumulative CPU that depends on it remains a lower bound or unknown with named missing components.",
+    "GPU_VRAM_bytes": null,
+    "billed_currency": null,
+    "calendar": "C1 and C2 are later calendar phases. Explicitly retain different concurrency and concurrent independent auditing; do not claim an idle or controlled-throughput host.",
+    "energy_joules": null,
+    "independent_audits_and_transport": "Itemize separately from fit costs; failed transfers and preflight costs remain, with unknown CPU/billing stated as unknown.",
+    "memory": "Report observed per-attempt peak RSS and the maximum across a candidate chain. Do not sum peaks as if simultaneous, call it GPU memory, or claim it was measured exactly at the quality crossing.",
+    "no_cost_refund_for_discarded_work": true,
+    "outer_vs_inner": "Use one declared non-overlapping outer scope for each sum. Preserve process wall, attempt-wrapper wall, controller elapsed and calendar as separate fields; do not sum nested alternatives.",
+    "tuning": "All two-learning-rate/three-seed opportunities and historical diagnostics remain charged, including failed or inadequate candidates. A selected-checkpoint inference timer is not training cost.",
+    "wall": "For each candidate, preserve the original complete outer process wall plus the full C1 or C2 attempt wrapper wall. Include failed diagnostics, failed starts, discarded partial updates, imports, capture, evaluation and finalization when inside that attempt scope."
+  },
+  "fixed_inputs": {
+    "/workspace/scratch/c385a7439f8e/c2-terminal-independent-auditor-program-v1.zip": {
+      "bytes": 73473,
+      "sha256": "87bedabde7f37ec8d70a80305691f1116e80493174a5cd33bf7058f635230b3a"
+    },
+    "/workspace/scratch/c385a7439f8e/c2-terminal-independent-auditor-v1/MANIFEST.json": {
+      "bytes": 3081,
+      "sha256": "4cc126ad4cf11e12c80408a868f8c673be70bccdce95a02228fda9d1543ef8d2"
+    },
+    "/workspace/scratch/c385a7439f8e/hcsn-repo/qualification/hcsn_differentiable/evidence/p0p5-c2-launch-20261110/decision/DECISION.json": {
+      "bytes": 7524,
+      "sha256": "bee192193f0f12599f783f348b6dea8c10b2a18df359487c3cc0c0c44d071370"
+    },
+    "/workspace/scratch/c385a7439f8e/hcsn-repo/qualification/hcsn_differentiable/evidence/p0p5-resource-replay-20261110/resource-analysis-v1/PLAN.json": {
+      "bytes": 3097,
+      "sha256": "a893ceda6bff869455adf37e9d7ad61a7a8999379a9d1639fdc9dc5951a1472e"
+    },
+    "/workspace/scratch/c385a7439f8e/hcsn-repo/qualification/hcsn_differentiable/evidence/p0p5-resource-replay-20261110/resource-analysis-v1/analyze_resources.py": {
+      "bytes": 19222,
+      "sha256": "dc398a012bd25d611c0bbbfc09f64a3c76c7d1d367c84c5178864140c769ee95"
+    },
+    "/workspace/scratch/c385a7439f8e/hcsn-repo/qualification/hcsn_differentiable/evidence/p0p5-resource-replay-20261110/resource-analysis-v1/output-v1/POINTS.json": {
+      "bytes": 257663,
+      "sha256": "90e9f27b5ce07243621cf6b234c9ef0a406ff328ee42ed106e127f8193a1cf8f"
+    },
+    "/workspace/scratch/c385a7439f8e/hcsn-repo/qualification/hcsn_differentiable/evidence/p0p5-resource-replay-20261110/resource-analysis-v1/output-v1/RESULT.json": {
+      "bytes": 402835,
+      "sha256": "9a5ca0f21e3a881862eafd9e67e35793a9eaeb5a1d4dbcaebcaf6d3720e01367"
+    }
+  },
+  "frozen_utc": "2026-11-10T21:53:46.269130+00:00",
+  "longer_resource_terminal_view": {
+    "HCSN_roster": [
+      "hcsn-s101-lr0.001",
+      "hcsn-s101-lr0.003",
+      "hcsn-s211-lr0.001",
+      "hcsn-s211-lr0.003",
+      "hcsn-s307-lr0.001",
+      "hcsn-s307-lr0.003"
+    ],
+    "HCSN_selection": "Use the independently bound first strict-best complete epoch for each of all six candidates. Select one common learning rate by the mean all-11-class D macro-F1 across seeds101/211/307; exact ties choose .001. If any candidate quality is missing or unverified, withhold the new common-LR selection and retain individual raw known results.",
+    "adequacy_gate": "A descriptive quality value never grants adequate training. A sufficiently-trained comparison requires independently supported adequacy for every selected seed in every compared core.",
+    "baseline_selection": "Use the previously independently checked original plus C1 all-candidate reports, keeping their fixed common-LR rule and inadequacy/failure statuses.",
+    "failed_fit_rule": "Retain independently reproducible scores as diagnostic observations where available, but never convert failed recording, missing terminal artifacts or resource censoring into an adequate successful fit.",
+    "population": "All seven original cores; retain six candidates per core, all original failures, and the separate C1/C2 phase ancestry.",
+    "reported_statistics": [
+      "individual scores",
+      "mean across all three seeds",
+      "sample standard deviation with divisor2",
+      "producer adequacy",
+      "independently supported adequacy",
+      "termination reason",
+      "selected epoch"
+    ],
+    "uncertainty": "Three-seed SD describes initialization variability on reused D, not held-out population uncertainty or a significance test."
+  },
+  "not_authorized_by_this_plan": [
+    "training",
+    "model forward or backward",
+    "new numerical oracle calls",
+    "E access",
+    "new seeds or learning rates",
+    "rewriting frozen old results",
+    "energy estimates from assumed power"
+  ],
+  "original_budget_view": {
+    "cutoffs_seconds": [
+      300,
+      900,
+      1800
+    ],
+    "earlier_missing_values": "Remain missing; no interpolation and no replacement by later scores.",
+    "old_HCSN_adequacy": "All original six remain budget-censored, even if a later C2 continuation becomes adequate.",
+    "operation": "Copy and verify the earlier original42 and separate C1 results without recalculating them with C2-selected hyperparameters."
+  },
+  "prospective_scope": "Reporting rules fixed after C2 launch, its first three complete-epoch observations and the report of one candidate terminal. This is not preregistration of the experiment; complete final all-candidate outcomes are not yet available.",
+  "purpose": "Separate the original same-budget views from a longer-resource C2 terminal view, with every opportunity and cost retained.",
+  "required_before_analysis": [
+    "All six original C2 opportunities have immutable terminal status, or a separately reviewed terminal postmortem records missing outputs without pretending successful completion.",
+    "Actual source/data/parent identities and all source-bound terminal costs are frozen.",
+    "The independent terminal auditor has its external terminal receipt, complete archive identity and resource-bound assessment; internal finalized flags alone do not grant admission.",
+    "Any missing, failed, over-budget or changed-source audit outcome remains explicit, not a missing seed silently dropped from a mean."
+  ],
+  "schema": "c2-resource-analysis-reporting-plan-v1",
+  "scientific_admission": "HOLD",
+  "status": "preparation_only_not_executed",
+  "time_to_quality": {
+    "crossing_rule": "First complete epoch that reaches the original target, preserving its actual cumulative charged wall. Keep before-training eligibility separate; do not mix it into the epoch-crossing definition.",
+    "group_median": "Report only when all three selected seeds have observed crossings. Otherwise report the count and individual censoring, never a successful-seed median.",
+    "per_seed": "Retain the individual first crossing or right-censoring status; do not interpolate.",
+    "selection_scope": "The longer-resource terminal common-LR view is labeled separately; it cannot change the earlier frozen original-budget choice or its original target-time result.",
+    "target_macro_F1": 0.3
+  },
+  "verification": "One stdlib analysis over byte-bound saved metadata. Recompute confusion-matrix metrics, common-LR arithmetic and first-maximum/timing records independently; compare to the terminal auditor without calling producer admission code. Preserve any disagreement and withhold the affected aggregate.",
+  "whole_training_numerical_admission": "HOLD"
+}
