@@ -173,6 +173,7 @@ class CandidateActorProcessTests(unittest.TestCase):
         from .controllers import ControlPlan
         from .episode import EpisodeHost
         from .neural import ReceiptPortfolioModel
+        from .candidate_selector import PROFILE as SELECTOR_PROFILE
 
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
@@ -236,7 +237,13 @@ class CandidateActorProcessTests(unittest.TestCase):
             tessdata = re.search(r'List of available languages in "([^"]+)"', languages)
             self.assertIsNotNone(tessdata, languages)
             outcomes = {}
-            for mode in (None, "current_only", "bounded"):
+            for mode in (
+                None,
+                "current_only",
+                "bounded",
+                "selector_neural",
+                "selector_rule",
+            ):
                 host = EpisodeHost(
                     {
                         "material_root": str(root),
@@ -265,7 +272,28 @@ class CandidateActorProcessTests(unittest.TestCase):
                         "model_sha256": binding(root / "weights.pt", root)["sha256"],
                         "core": "ordinary",
                         "controller": "tuned_fixed",
-                        **({"candidate_memory": profile(mode)} if mode else {}),
+                        **(
+                            {
+                                "candidate_memory": profile(
+                                    "bounded" if mode.startswith("selector_") else mode
+                                )
+                            }
+                            if mode
+                            else {}
+                        ),
+                        **(
+                            {
+                                "candidate_selector": {
+                                    "schema": SELECTOR_PROFILE["schema"],
+                                    "mode": "frozen_neural"
+                                    if mode == "selector_neural"
+                                    else "public_rule",
+                                    "profile_sha256": canonical_sha(SELECTOR_PROFILE),
+                                }
+                            }
+                            if mode and mode.startswith("selector_")
+                            else {}
+                        ),
                     },
                     root / str(mode),
                 )
@@ -315,6 +343,32 @@ class CandidateActorProcessTests(unittest.TestCase):
                                 "text"
                             ],
                         )
+                        if mode.startswith("selector_"):
+                            selector = json.loads(
+                                (
+                                    host.actor_output
+                                    / host.steps[2]["selector_audit"]["path"]
+                                ).read_text()
+                            )
+                            paired = selector["receipt"]
+                            self.assertEqual(
+                                selector["candidates"], audit["offered_candidates"]
+                            )
+                            self.assertEqual(
+                                canonical_sha(selector["features"]),
+                                audit["offered_features_sha256"],
+                            )
+                            expected_index = (
+                                paired["frozen_neural_index"]
+                                if mode == "selector_neural"
+                                else paired["public_rule_index"]
+                            )
+                            self.assertEqual(audit["selected_index"], expected_index)
+                            self.assertTrue(paired["same_support_for_both"])
+                            self.assertEqual(
+                                host.selector_audit_tail,
+                                host.steps[-1]["selector_audit"]["sha256"],
+                            )
                         outcomes[mode] = audit
                 finally:
                     if process.poll() is None:
