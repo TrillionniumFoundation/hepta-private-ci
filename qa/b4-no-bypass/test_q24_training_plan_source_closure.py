@@ -97,6 +97,18 @@ class Q24TrainingPlanSourceClosureTests(unittest.TestCase):
                 with self.assertRaisesRegex(PROOF.VerificationFailure, "unexpected"):
                     PROOF._verify_boundary(ROOT, row, sources, ())
 
+    def test_rejection_guards_cannot_be_disabled_by_a_false_condition(self):
+        source = (ROOT / PLAN).read_text()
+        for guard in (
+            "if optimizer_rule.is_zero()",
+            "if coordinator.next_stage() != Some(LearningIterationStageV1::Training)",
+            "if snapshot.request != self.prefix.request",
+        ):
+            with self.subTest(guard=guard):
+                self.assertEqual(source.count(guard), 1)
+                weakened = "if false && " + guard.removeprefix("if ")
+                self.rejects_source(source.replace(guard, weakened, 1))
+
     def test_canonical_rule_keeps_baseline_row_and_nonzero_optimizer(self):
         for marker in (
             "optimizer_rule.is_zero()",
