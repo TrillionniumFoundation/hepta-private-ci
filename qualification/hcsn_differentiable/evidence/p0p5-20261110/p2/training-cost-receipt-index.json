@@ -1,0 +1,141 @@
+{
+  "aggregation_policy": "No grand wall total is asserted. Aggregate CPU only when scope is known and nonoverlapping; all failed tuning attempts remain charged by their original controller receipts.",
+  "energy_joules": null,
+  "excluded_from_total_because_not_yet_retrieved": [
+    "native effective32 source-v6 profile full controller receipt",
+    "native historical preflights and failed gates",
+    "native initial uncached/cached128 and failed full32 profile original receipts",
+    "fresh42 running campaign plus eventual continuation"
+  ],
+  "missing_scopes": [
+    "unknown historic setup/cloud-reservation costs",
+    "human/tool orchestration work",
+    "complete-system energy"
+  ],
+  "receipts": [
+    {
+      "bytes": 177101,
+      "cost_fields": {
+        "children_cpu_seconds": 5564.147296,
+        "controller_cpu_seconds": 7.577257231,
+        "energy_joules": null,
+        "status": "completed_attempt_roster",
+        "sum_attempt_wall_seconds": 5573.7926801696885,
+        "whole_wall_seconds": 2040.8586417329498
+      },
+      "cost_scope_note": "use original field scopes; elapsed wall across parallel attempts is not additive end-to-end time",
+      "host": "native-desktop",
+      "receipt": "native-raw36-RESULT.json",
+      "sha256": "bda95b55099dcd71929f516488f1f160ef99759c9b5b72f9f62c30b1a17500d8",
+      "summary_only": true
+    },
+    {
+      "bytes": 29690,
+      "cost_fields": {
+        "children_cpu_seconds": 166.14058200000002,
+        "controller_cpu_seconds": 1.174226759,
+        "energy_joules": null,
+        "status": "completed_attempt_roster",
+        "sum_attempt_wall_seconds": 193.72803420199944,
+        "whole_wall_seconds": 193.8218310279999
+      },
+      "cost_scope_note": "use original field scopes; elapsed wall across parallel attempts is not additive end-to-end time",
+      "host": "cloud",
+      "receipt": "cloud-adapter-pilot-v6/campaign/RESULT.json",
+      "sha256": "ba3d6cf513e66bca7ad7424bbad3d0341f8a7c0714dc9077a0c9ac0323dcc378",
+      "summary_only": true
+    },
+    {
+      "bytes": 749,
+      "cost_fields": {
+        "whole_process_wall_seconds": 193.88803248400018
+      },
+      "cost_scope_note": "encloses campaign and gate test; overlapping wall scope, do not add again to campaign wall",
+      "host": "cloud",
+      "receipt": "cloud-adapter-pilot-v6/driver-result.json",
+      "sha256": "caa9b801ceb9ba05fb3d48093435749e4b2ee9f1be9ac0faa925bde51899933e",
+      "summary_only": true
+    },
+    {
+      "bytes": 40717,
+      "cost_fields": {
+        "cpu_seconds": 62.450978633999995,
+        "energy_joules": null,
+        "peak_rss_bytes": 276520960,
+        "status": "completed_fixed_diagnostic_budget",
+        "wall_seconds": 62.86857323299955
+      },
+      "cost_scope_note": "inner driver excludes interpreter import/startup; full subprocess CPU unavailable in this receipt",
+      "host": "cloud",
+      "receipt": "cloud-plif-diagnostic-1024-v1/RESULT.json",
+      "sha256": "53d91e7cad56dfe411c6ad9c7776ed1fbb33b16be2376b681e7ef0377bb7200e",
+      "summary_only": true
+    },
+    {
+      "bytes": 5007,
+      "cost_fields": {
+        "children_cpu_seconds": 195.961645,
+        "energy_joules": null,
+        "whole_wall_seconds": 268.24924396000006
+      },
+      "cost_scope_note": "use original field scopes; elapsed wall across parallel attempts is not additive end-to-end time",
+      "host": "cloud",
+      "receipt": "cloud-plif-grid-v1/RESULT.json",
+      "sha256": "0b3d371561e5842f1ba3994b38c947cf4bcc953af710a026124d40994a9a5cc7",
+      "summary_only": true
+    },
+    {
+      "bytes": 1249,
+      "cost_fields": {
+        "children_cpu_seconds": 33.401925,
+        "energy_joules": null,
+        "whole_wall_seconds": 33.86635217999992
+      },
+      "cost_scope_note": "use original field scopes; elapsed wall across parallel attempts is not additive end-to-end time",
+      "host": "cloud",
+      "receipt": "cloud-plif-analog-v1/RESULT.json",
+      "sha256": "d0c3e647606cbd4ca9cfe680771efc7f85f1e2873f709080c0df09af870e324d",
+      "summary_only": true
+    },
+    {
+      "bytes": 515,
+      "cost_fields": {
+        "children_cpu_seconds": 139.02490600000002,
+        "energy_joules": null,
+        "whole_wall_seconds": 138.87124470900017
+      },
+      "cost_scope_note": "use original field scopes; elapsed wall across parallel attempts is not additive end-to-end time",
+      "host": "cloud",
+      "receipt": "cloud-plif-analog-1024-v2/RESULT.json",
+      "sha256": "9ffed0662957a91be3b27925757296ba2522f63709cb6d2b4a92b48953fa617d",
+      "summary_only": true
+    },
+    {
+      "bytes": 1640,
+      "cost_fields": {
+        "energy_joules": null,
+        "status": "completed",
+        "timeout_seconds": 180,
+        "whole_process_wall_seconds": 18.459365853000236
+      },
+      "cost_scope_note": "full subprocess wall; inner CPU separately retained in probe RESULT, full subprocess CPU unavailable",
+      "host": "cloud",
+      "receipt": "cloud-hcsn-micro1-cost-v6/process-result.json",
+      "sha256": "979ee0054df1efeaebf082d939cf0e8142e12dbdd82367e05e337d4e60b482da",
+      "summary_only": true
+    },
+    {
+      "bytes": 515,
+      "cost_fields": {
+        "whole_wall_seconds": 3.867777897000451
+      },
+      "cost_scope_note": "use original field scopes; elapsed wall across parallel attempts is not additive end-to-end time",
+      "host": "cloud",
+      "receipt": "v8-local-validation/tests.json",
+      "sha256": "a0901c52a3d91fbe8f18b0b2a555265320db66534b68390db0be71a0fc5a90a4",
+      "summary_only": true
+    }
+  ],
+  "schema": "hcsn-training-cost-receipt-index-v1",
+  "status": "provisional_fresh42_running"
+}

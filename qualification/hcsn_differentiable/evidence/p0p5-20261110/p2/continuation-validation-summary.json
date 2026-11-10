@@ -1,0 +1,63 @@
+{
+  "schema": "hcsn-continuation-validation-summary-v1",
+  "status": "eleven_tests_passed_across_two_immutable_source_snapshots",
+  "scientific_training_credit": false,
+  "exact_checkpoint_arms": [
+    "gru",
+    "snn_plif",
+    "hcsn",
+    "ssm_s4d",
+    "attention"
+  ],
+  "exact_fields": [
+    "model",
+    "model_configuration",
+    "optimizer",
+    "torch_rng",
+    "order_rng",
+    "epochs_completed",
+    "main_updates",
+    "data_manifest_sha256"
+  ],
+  "fixture_scope": "explicit synthetic 11-class ABC/D-shaped rows; fresh four epochs vs two plus continuation to four; no UCI or scientific qualification credit",
+  "guard_scope": [
+    "parent last/plan/result/best byte tampering",
+    "missing last without best fallback",
+    "bound partial run rejection",
+    "rehashed non-tensor PLIF configuration mismatch",
+    "changed episode identity",
+    "consumed original outer wall budget"
+  ],
+  "plateau_scope": "significant-improvement anchor and inherited stale count; continued epoch4 stop equals uninterrupted; old best checkpoint retained byte-for-byte",
+  "s4_scope": "official exact e757cef; actual adapter kernel LR unset; zero-decay hints merge with global zero decay; no different-LR-group claim",
+  "attempts": [
+    {
+      "directory": "continuation-validation-v1",
+      "result_sha256": "8032373b66cb17c0f038b02ef052b282ba044a8a581906b206535a1d510e2251",
+      "raw_child_returncode": 0,
+      "wrapper_exit_code": 0,
+      "tests": 10
+    },
+    {
+      "directory": "continuation-validation-v2-attention",
+      "result_sha256": "a8904fb7ab434b7bc567775a07aae81619ccd6f16e8a1b24fc0b4366e44e53d6",
+      "reconciled_result_sha256": "4ce10c9b7318aeffa46d25fa714b8fecf6bbdb29d0ce5fbb2fbefddbc814bfcd",
+      "raw_child_returncode": 0,
+      "wrapper_exit_code": 1,
+      "wrapper_error": "plural-only unittest summary regex; preserved and independently reconciled without rerun",
+      "tests": 1
+    }
+  ],
+  "total_recorded_test_subprocess_wall_seconds": 8.952845777999755,
+  "total_recorded_child_cpu_seconds": 8.096846,
+  "peak_rss_bytes": 295669760,
+  "cost_scope": "Two recorded test subprocesses including Python/import overhead; orchestration/source-copy/reconciliation costs not totaled",
+  "energy_joules": null,
+  "currency_cost": null,
+  "source_changes_between_attempts": [
+    "proposals/localization-v3/test_continuation.py"
+  ],
+  "continuation_sha256": "a9dd9399a2368779557a725a3cbfbfd7d74dda3deff3d486a73acfc89d4750ec",
+  "continuation_state_sha256": "adea3ecb49da20915ab9fef17dcd5a3d195f08e5be644eb3ca29c8927dd1bd45",
+  "test_continuation_sha256": "c086645c7eea320f26ad4a89fd3491617fed039cc060f4eaecc54b3e0fc64348"
+}
