@@ -75,6 +75,30 @@ pub trait ProductEvaluationExecutionAttestorV1 {
     ) -> Result<SignedLearningEvidenceV1, ProductProviderErrorV1>;
 }
 
+/// Derive the exact original execution identity before a host supplies its
+/// evaluator capability. This is a binding calculation, not a claim, signing
+/// request or authorization to consume the holdout.
+pub fn product_evaluation_execution_key_v1(
+    plan: &ProductFrozenEvaluationPlanV1,
+    namespace: Digest32,
+    evaluator: &AuthenticatedPrincipalV1,
+) -> Result<ProductEvaluationExecutionKeyV1, ProductEvaluationError> {
+    plan.validate_integrity()?;
+    if namespace.is_zero() {
+        return Err(ProductEvaluationError::Binding("original execution namespace"));
+    }
+    evaluator.validate(evaluator.authenticated_at)
+        .map_err(|_| ProductEvaluationError::Binding("original execution evaluator"))?;
+    let mut binding = b"hepta.intelligence-eval.execution-key.v1".to_vec();
+    binding.extend_from_slice(namespace.as_array());
+    binding.extend_from_slice(plan.receipt_seal.as_array());
+    super::push_principal(&mut binding, evaluator);
+    Ok(ProductEvaluationExecutionKeyV1 {
+        plan_id: plan.frozen_plan.plan_id.clone(),
+        binding_digest: Digest32::of_bytes(&binding),
+    })
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum ProductEvaluationExecutionErrorV1 {
     Pending,
@@ -144,14 +168,7 @@ impl<S: FinalHoldoutCasStoreV1> ProductEvaluationRunnerV1<S> {
             .holdout
             .read_consumption(&request.plan.frozen_plan)
             .map_err(ProductEvaluationError::from)?;
-        let mut binding = b"hepta.intelligence-eval.execution-key.v1".to_vec();
-        binding.extend_from_slice(namespace.as_array());
-        binding.extend_from_slice(request.plan.receipt_seal.as_array());
-        super::push_principal(&mut binding, request.evaluator);
-        let key = ProductEvaluationExecutionKeyV1 {
-            plan_id: request.plan.frozen_plan.plan_id.clone(),
-            binding_digest: Digest32::of_bytes(&binding),
-        };
+        let key = product_evaluation_execution_key_v1(request.plan, namespace, request.evaluator)?;
         let bytes = match executions.claim(&key)? {
             ProductEvaluationExecutionClaimV1::Existing(
                 ProductEvaluationExecutionStateV1::Pending,

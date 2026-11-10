@@ -82,6 +82,32 @@ fn sign(
 }
 
 #[test]
+fn original_owner_enrollment_is_read_only_exact_and_current() {
+    let mut host = trust();
+    host.signers[1].roles.push(LearningEvidenceRoleV1::Observer);
+    host.signers[1].revoked_at = Some(80);
+    let mut owner = host.signers[1].clone();
+    let verifier = LearningEvidenceVerifierV1::new(host).expect("host trust");
+    owner.roles.reverse();
+    assert_eq!(verifier.require_signer_binding(LearningEvidenceRoleV1::Evaluator, &owner, 50), Ok(()));
+    assert_eq!(verifier.require_signer_binding(LearningEvidenceRoleV1::Generator, &owner, 50), Err(SignedEvidenceError::RoleMismatch));
+    assert_eq!(verifier.require_signer_binding(LearningEvidenceRoleV1::Evaluator, &owner, 80), Err(SignedEvidenceError::Revoked));
+    assert!(matches!(verifier.require_signer_binding(LearningEvidenceRoleV1::Evaluator, &owner, 101), Err(SignedEvidenceError::Principal(_))));
+    let mut changed = owner.clone();
+    changed.controller_id = id("substituted-controller");
+    assert_eq!(verifier.require_signer_binding(LearningEvidenceRoleV1::Evaluator, &changed, 50), Err(SignedEvidenceError::InvalidTrust));
+    changed = owner.clone();
+    changed.revoked_at = None;
+    assert_eq!(verifier.require_signer_binding(LearningEvidenceRoleV1::Evaluator, &changed, 50), Err(SignedEvidenceError::InvalidTrust));
+    changed = owner.clone();
+    changed.roles.push(LearningEvidenceRoleV1::Evaluator);
+    assert_eq!(verifier.require_signer_binding(LearningEvidenceRoleV1::Evaluator, &changed, 50), Err(SignedEvidenceError::InvalidTrust));
+    changed = owner;
+    changed.principal.principal_id = id("unregistered");
+    assert_eq!(verifier.require_signer_binding(LearningEvidenceRoleV1::Evaluator, &changed, 50), Err(SignedEvidenceError::UnknownSigner));
+}
+
+#[test]
 fn signed_evidence_binds_actual_bytes_and_credential_not_digest_claims() {
     let verifier = LearningEvidenceVerifierV1::new(trust()).expect("host trust");
     let signed = sign(
