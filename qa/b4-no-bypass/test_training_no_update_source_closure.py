@@ -57,8 +57,8 @@ class TrainingNoUpdateSourceClosureTests(unittest.TestCase):
         for marker in (
             "self.require_current()?;", "if original_dataset_cut != &self.plan.prefix",
             "self.journal.readback(&self.key)?", "return Err(Error::Pending)",
-            "self.decode(&payload)?", "self.plan.scope.validate_observation(&observation)",
-            "self.plan.scope.binding()", "self.key.binding_digest.as_array(), &payload",
+            "self.decode(&payload)?", "self.plan\n            .scope\n            .validate_observation(&observation)",
+            "self.plan.scope.binding()", "self.key.binding_digest.as_array(),\n                &payload",
         ):
             with self.subTest(marker=marker):
                 self.rejects(READBACK, marker)
