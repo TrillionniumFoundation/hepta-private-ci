@@ -614,3 +614,6 @@ fn q24_actual_composition_uses_original_publication_next_task_and_cold_readback(
 
 #[path = "cell_composed_q24_candidate_tests.rs"]
 mod private_head;
+
+#[path = "cell_composed_q24_training_plan_tests.rs"]
+mod training_plan;
