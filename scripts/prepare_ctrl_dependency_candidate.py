@@ -22,9 +22,12 @@ PINNED = {
 }
 PROPOSAL_FILES = {
     "scripts/prepare_ctrl_dependency_candidate.py",
+    "scripts/align_ctrl_bindgen_syn.py",
     "scripts/tests/test_prepare_ctrl_dependency_candidate.py",
     ".github/workflows/ctrl-dependency-proposal.yml",
     "qualification/ctrl-metacontrol-20261109/DEPENDENCY_PROPOSAL.md",
+    "qualification/ctrl-metacontrol-20261109/DEPENDENCY_SYN_REPAIR.md",
+    "qualification/ndu-conditional-stop-20261109/METHOD.zh-CN.md",
 }
 
 

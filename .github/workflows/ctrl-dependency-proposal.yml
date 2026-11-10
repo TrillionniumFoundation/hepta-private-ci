@@ -5,6 +5,8 @@ on:
     paths:
       - .github/workflows/ctrl-dependency-proposal.yml
       - scripts/prepare_ctrl_dependency_candidate.py
+      - scripts/align_ctrl_bindgen_syn.py
+      - qualification/ctrl-metacontrol-20261109/DEPENDENCY_SYN_REPAIR.md
       - scripts/tests/test_prepare_ctrl_dependency_candidate.py
       - qualification/ctrl-metacontrol-20261109/DEPENDENCY_PROPOSAL.md
   workflow_dispatch:
@@ -62,7 +64,8 @@ jobs:
         run: |
           set -euo pipefail
           cargo update -p libsqlite3-sys --precise 0.39.1 2>&1 | tee "$CANDIDATE_LOGS/cargo-update.log"
-          cargo metadata --locked --no-deps --format-version 1 > "$CANDIDATE_LOGS/metadata.json"
+          python3 ../scripts/align_ctrl_bindgen_syn.py --lock Cargo.lock --output "$CANDIDATE_LOGS/bindgen-syn-alignment.json"
+          cargo metadata --locked --all-features --format-version 1 > "$CANDIDATE_LOGS/metadata.json"
           python3 - <<'PY'
           import os, pathlib, tomllib, json
           packages = tomllib.loads(pathlib.Path('Cargo.lock').read_text())['package']
@@ -70,6 +73,19 @@ jobs:
           for name, version in expected.items():
               assert [p['version'] for p in packages if p['name'] == name] == [version]
           assert [p for p in packages if p['name'] == 'sqlx-sqlite'][0].get('source') is None
+          metadata = json.loads(pathlib.Path(os.environ['CANDIDATE_LOGS'], 'metadata.json').read_text())
+          package_by_id = {p['id']: p for p in metadata['packages']}
+          nodes = {n['id']: n for n in metadata['resolve']['nodes']}
+          assert len(package_by_id) == len(metadata['packages']) == len(nodes)
+          assert set(package_by_id) == set(nodes)
+          def syn_edges(name, version):
+              ids = [p['id'] for p in metadata['packages'] if (p['name'], p['version']) == (name, version)]
+              assert len(ids) == 1, (name, version)
+              return {e['pkg'] for e in nodes[ids[0]]['deps'] if package_by_id[e['pkg']]['name'] == 'syn'}
+          syn2 = {p['id'] for p in metadata['packages'] if (p['name'], p['version']) == ('syn', '2.0.119')}
+          assert len(syn2) == 1
+          assert syn_edges('bindgen', '0.73.2') == syn_edges('prettyplease', '0.2.37') == syn2
+          assert any((p['name'], p['version']) == ('syn', '3.0.9') for p in metadata['packages'])
           pathlib.Path(os.environ['CANDIDATE_LOGS'], 'resolved-targets.json').write_text(json.dumps(expected, indent=2))
           PY
 
@@ -129,6 +145,8 @@ jobs:
                     'stages': stages, 'scoped_stages_all_passed': all(v == 'success' for v in stages.values()),
                     'production_adoption': False, 'custom_http_boundaries_qualified': False,
                     'files': {p.name: hashlib.sha256(p.read_bytes()).hexdigest() for p in root.iterdir() if p.is_file()}}
+          alignment_path = root / 'bindgen-syn-alignment.json'
+          report['bindgen_syn_alignment'] = json.loads(alignment_path.read_text()) if alignment_path.is_file() else None
           (root / 'result.json').write_text(json.dumps(report, indent=2))
           PY
 
