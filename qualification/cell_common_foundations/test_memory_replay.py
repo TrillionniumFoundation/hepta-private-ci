@@ -213,10 +213,13 @@ class MemoryReplayTests(unittest.TestCase):
         for method in ("uniform", "fact", "error", "error_prioritized", "none"):
             ordinary = control.select(method, 1, 8)
             with_audit, receipt = audited.select(method, 1, 8, audit=True)
-            self.assertEqual([e.item_id for e in ordinary],
-                             [e.item_id for e in with_audit])
+            self.assertEqual(
+                [e.item_id for e in ordinary], [e.item_id for e in with_audit]
+            )
             self.assertEqual(control.checkpoint(), audited.checkpoint())
-            self.assertEqual(receipt["selected_ids"], [e.item_id for e in ordinary])
+            self.assertEqual(
+                receipt["selected_ids"], [e.item_id for e in ordinary]
+            )
             self.assertEqual(receipt["selection_index"], audited.calls)
 
     def test_items_do_not_alias_input_or_returned_arrays(self):
