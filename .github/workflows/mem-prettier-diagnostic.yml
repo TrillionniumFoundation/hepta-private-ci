@@ -1,0 +1,34 @@
+name: MEM targeted Prettier diagnostic
+
+on:
+  push:
+    branches:
+      - research/mem-ci-remediation-20261110
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  format-inspect:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - name: Checkout exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Print formatter version and exact suggested changes
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --version
+          corepack enable
+          corepack pnpm install --frozen-lockfile --ignore-scripts
+          corepack pnpm exec prettier --version
+          corepack pnpm exec prettier --write .github/workflows/hcsn-differentiable.yml
+          echo '__BEGIN_HCSN_FORMAT_DIFF__'
+          git --no-pager diff --no-ext-diff -- .github/workflows/hcsn-differentiable.yml
+          echo '__END_HCSN_FORMAT_DIFF__'
+          git status --short
