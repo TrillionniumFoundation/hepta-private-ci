@@ -16,11 +16,11 @@ original fitting sources. After all declared tuning trials, the selected setting
 refits those original sources; future evaluation is a separate operation with
 complete declared source coverage and the same frozen plan identity.
 
-The prospective native plan has fit40 split32/8 and37 remaining source groups,
-excluding oldtune8/calibration6/diagnostic6. Its private exact plan SHA256 is
+The prospective native plan has fit40 split32/8 and 37 remaining source groups,
+excluding old tuning8/calibration6/diagnostic6. Its private exact plan SHA256 is
 `e602e8cc91fc26168b70a482c42ec63843872e97d1eee346b65d7e9c5231e15a`.
 This separation concerns the verified original study exposure, not global model
-pretraining. Four declared learning-rate/L2 trials each have1,000 fixed steps.
+pretraining. Four declared learning-rate/L2 trials each have 1,000 fixed steps.
 The native wrapper and actual run receipts follow separately.
 
 Six NumPy protocol tests pass. They exercise source leakage, partial future

@@ -14,8 +14,8 @@ Torch state dictionary; the command never installs it.
 
 The exact private prospective plan and native request are SHA-pinned in
 ANSWER_REPAIR_NATIVE_PLAN.json. The original fit40 is internally split32/8;
-four fixed1,000-step settings are tuned before a40-source refit. The future37
-sources and all20 old tuning/calibration/diagnostic sources stay outside fitting.
+four fixed 1,000-step settings are tuned before a 40-source refit. The future37
+sources and all 20 old tuning/calibration/diagnostic sources stay outside fitting.
 No future label file is an input to this command. A new private native directory
 retains exact sources, plan, request and dispatch input before the first fitting
 label opens. Existing input files and historical receipts are not overwritten.
