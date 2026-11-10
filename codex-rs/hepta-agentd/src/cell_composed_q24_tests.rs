@@ -611,3 +611,6 @@ fn q24_actual_composition_uses_original_publication_next_task_and_cold_readback(
     next_control.shutdown()?;
     Ok(())
 }
+
+#[path = "cell_composed_q24_candidate_tests.rs"]
+mod private_head;

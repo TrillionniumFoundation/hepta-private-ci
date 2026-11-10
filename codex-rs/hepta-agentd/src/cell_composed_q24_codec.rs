@@ -11,10 +11,11 @@ pub(super) const Q: i64 = 1 << 24;
 const H: i64 = 8 * Q;
 const MAX_ASSET: u64 = 32_780;
 
+#[derive(Eq, PartialEq)]
 pub(super) struct Matrix {
     pub(super) rows: usize,
     pub(super) cols: usize,
-    values: Vec<i64>,
+    pub(super) values: Vec<i64>,
 }
 
 impl Matrix {
@@ -50,6 +51,7 @@ impl Matrix {
     }
 }
 
+#[derive(Eq, PartialEq)]
 pub(super) struct Adapter {
     pub(super) down: Matrix,
     pub(super) up: Matrix,

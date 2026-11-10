@@ -358,6 +358,7 @@ mod neuron_cell_evaluation;
 mod neuron_cell_learning_evaluation;
 pub use cell_composed_q24::CellQ24GenerationWorkerV1;
 pub use cell_composed_q24::CellQ24ModelFilesV1;
+pub use cell_composed_q24::CellQ24PrivateHeadV1;
 pub use cell_composed_q24::LoadedCellQ24ModelV1;
 mod neuron_generation;
 #[cfg(unix)]
