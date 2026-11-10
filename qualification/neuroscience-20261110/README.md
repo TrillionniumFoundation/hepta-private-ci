@@ -85,9 +85,15 @@ must occur in the original StageOwner and lifecycle with an independent reviewer
 `select_replay` is an algorithmic selector: uniform is hash-seeded, stratified
 round-robins kinds, and exact is source-key matching. These methods are
 **not** interchangeable: exact-key RAG is a strong baseline. The selector
-excludes tombstoned, revoked or future-dated entries; actual deletion owner
-must still enforce CAS/purge/irreversibility and budget independent of this
-demo.
+excludes tombstoned, revoked or future-dated entries. An optional explicit
+`logical_id` groups successive revisions of one declared memory object; only
+the most recent visible non-revoked revision can be replayed, and a visible
+tombstone or rights revocation blocks the whole group (even against an unsigned
+later revision). A matching query `key` alone does not imply common ownership
+or deletion: distinct objects can share a key. Logical IDs and timestamps are
+self-declared, not attested; actual deletion owner must still enforce authenticated
+CAS/purge/irreversibility, valid re-grant policies, and budget independently of
+this demo.
 
 ## Frozen full-cost evaluation input
 
