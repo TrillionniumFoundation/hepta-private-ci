@@ -1,0 +1,46 @@
+name: Hepta published RBE image observation
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/hepta-pinned-rbe-openssh.yml
+      - scripts/observe_pinned_rbe_openssh.py
+      - scripts/test_observe_pinned_rbe_openssh.py
+  push:
+    branches: [research/verify2-pinned-rbe-*]
+    paths:
+      - .github/workflows/hepta-pinned-rbe-openssh.yml
+      - scripts/observe_pinned_rbe_openssh.py
+      - scripts/test_observe_pinned_rbe_openssh.py
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pinned-rbe-observation-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  published-amd64:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    env:
+      REVIEWED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Validate immutable image identity rejection
+        run: python3 -B -m unittest discover -s scripts -p test_observe_pinned_rbe_openssh.py -v
+      - name: Observe the exact published image without rebuilding
+        run: python3 -B scripts/observe_pinned_rbe_openssh.py --expected-source "$REVIEWED_SHA" --output "$RUNNER_TEMP/pinned-rbe-observation"
+      - name: Retain observations including original failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: pinned-rbe-amd64-${{ github.event.pull_request.head.sha || github.sha }}
+          path: ${{ runner.temp }}/pinned-rbe-observation
+          if-no-files-found: error
+          retention-days: 30
