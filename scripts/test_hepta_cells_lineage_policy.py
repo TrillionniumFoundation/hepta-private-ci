@@ -138,6 +138,12 @@ class LineagePolicyTests(unittest.TestCase):
         changed = replace(mem, agent_id="other-agent")
         with self.assertRaisesRegex(LineagePolicyError, "feature group"):
             CellRoster(tuple(changed if c is mem else c for c in base))
+        changed = replace(mem, data_scope="other-permitted-data")
+        with self.assertRaisesRegex(LineagePolicyError, "feature group"):
+            CellRoster(tuple(changed if c is mem else c for c in base))
+        changed = replace(mem, state_owner="different-owner")
+        with self.assertRaisesRegex(LineagePolicyError, "feature group"):
+            CellRoster(tuple(changed if c is mem else c for c in base))
 
     def test_temporal_cannot_share_live_feature_pool(self):
         with self.assertRaisesRegex(LineagePolicyError, "semantic features"):
