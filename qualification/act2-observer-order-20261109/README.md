@@ -1,6 +1,6 @@
 # ACT-2 attached Notes observer order
 
-**Scoped native qualification passed on the original tested source. Full ACT-2 promotion remains HOLD.**
+**Independent source-pinned runs passed on both the original and maintained fence source. Full ACT-2 promotion remains HOLD.**
 
 [Implementation PR #5591](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5591)
 adds one shared in-memory revision/content fence across clones of an attached
@@ -117,3 +117,15 @@ postimage above. Owned temporary-root fixture normalization is a separate
 pending candidate in [PR #5618](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5618).
 It does not establish a unique historical root cause or resolve separate
 permission, file-lock, sandbox and other repository failures.
+
+## Fresh qualification of the maintained source
+
+[Run 42769615520](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42769615520)
+independently qualified exact `8b1c1789916514471c6cacdf0f6c45467255fef9`, tree
+`b9879a77f0b7a7d8f766aaf2308b719e6bcaa29e`: 169 automation, 10 selected Notes,
+and 1 real App test passed (2/778/787 skipped). Both new clone tests explicitly
+passed. All five commands retained clean source; scoped fix made no changes and
+both official formatter patches are empty. [The separate original artifacts and
+verification](maintained-run/README.md) establish this fresh pass, rather than
+transferring counts from `111d5773`. This run does not include the later model-tool
+success projection change in #5619, whose result remains separately scoped.
