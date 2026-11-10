@@ -66,6 +66,15 @@ class AuditTests(unittest.TestCase):
         self.record['operator_custody']['evaluator'] = 'organization-1'
         self.assertIn('same_operator_multiple_roles', self.check()['issues'])
 
+    def test_case_and_spacing_aliases_do_not_fake_custody_separation(self):
+        self.record['operator_custody']['selector'] = '  ORGANIZATION-1  '
+        self.assertIn('same_operator_multiple_roles', self.check()['issues'])
+
+    def test_nfkc_aliases_do_not_fake_custody_separation_on_no_update(self):
+        self.trainer_no_update()
+        self.record['operator_custody']['selector'] = 'ＯＲＧＡＮＩＺＡＴＩＯＮ－１'
+        self.assertIn('same_operator_multiple_roles', self.check()['issues'])
+
     def trainer_no_update(self):
         self.record['decision'] = 'no_update'
         self.record['no_update_origin'] = 'trainer'
