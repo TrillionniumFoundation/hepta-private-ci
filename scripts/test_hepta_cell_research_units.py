@@ -233,7 +233,7 @@ class ResearchUnitsTests(unittest.TestCase):
             self.screen(self.experiment("MEM-1"))["numerical_screen_ready"]
         )
         self.assertTrue(
-            self.screen(self.experiment("CTRL-1"))["numerical_screen_ready"]
+            self.screen(self.experiment("CTRL-1"))["descriptive_threshold_met"]
         )
         record = self.experiment()
         fixtures.ResearchGateTests.put(self, record)
