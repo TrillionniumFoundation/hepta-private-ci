@@ -35,6 +35,12 @@ The chain checks internal consistency; it does not authenticate wall time,
 prevent database-owner rewrites or prove evaluator independence. Authentication
 callback signatures/attestations are not retained or reverified on reopening.
 
+Exact-checkpoint recovery also accepts `expected_ledger_sha256`. A truncated
+internally valid history or a different current head refuses. Reconcile a newer
+head read-only before updating the external pin. The companion
+[treatment journal](TREATMENT.md) retains checker lifecycle, host treatment and
+partial costs under a separately pinned ledger root.
+
 Reports retain Brier/log loss, both error denominators, acceptance coverage,
 per-disposition label acquisition and each planned frontier's missing forecasts.
 Missing-label bounds describe this finite dataset, not future confidence bounds.

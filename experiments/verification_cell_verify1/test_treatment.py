@@ -1,6 +1,9 @@
 """Actual local checker calls are engineering fixtures, not independent trials."""
 
 from pathlib import Path
+from contextlib import closing
+from dataclasses import asdict, replace
+import sqlite3
 import subprocess
 import sys
 import tempfile
@@ -11,7 +14,7 @@ from .checker_effects import CheckerSpec, EffectScope, PairedPanel, fit_checker_
 from .contracts import digest
 from .prospective import FrozenAttempt, ShadowJournal
 from .shadow_risk import Prediction, Snapshot, Target, TerminalLabel
-from .shadow_schedule import observation_context
+from .shadow_schedule import CheckObservation, observation_context
 from .treatment import TreatmentJournal
 
 
@@ -233,6 +236,119 @@ class TreatmentTests(unittest.TestCase):
             ],
             ["operation-0", "operation-1", "operation-2"],
         )
+
+    def test_unrecorded_prediction_and_model_drift_refuse(self):
+        with self.assertRaises(ValueError):
+            self.choose()
+        self.shadow.record(self.predictions[0])
+        with self.assertRaises(ValueError):
+            self.choose(prediction=replace(self.predictions[0], probability=0.9))
+        with self.assertRaises(ValueError):
+            self.choose(effects=replace(self.effects, model_sha256=digest("different")))
+        self.choose()
+
+    def test_registry_is_create_only_and_frozen_before_forecasts(self):
+        with self.assertRaises((ValueError, sqlite3.DatabaseError)):
+            TreatmentJournal.create(self.shadow, self.checkers)
+        other = Path(self.temporary.name) / "other.sqlite"
+        with (
+            closing(sqlite3.connect(self.path)) as source,
+            closing(sqlite3.connect(other)) as destination,
+        ):
+            source.backup(destination)
+        with closing(sqlite3.connect(other)) as connection, connection:
+            for (name,) in connection.execute(
+                "SELECT name FROM sqlite_master WHERE type='table'"
+            ).fetchall():
+                if name not in ("frozen", "events"):
+                    connection.execute('DROP TABLE "' + name.replace('"', '""') + '"')
+        shadow = ShadowJournal(other)
+        shadow.record(self.predictions[0])
+        with self.assertRaises(ValueError):
+            TreatmentJournal.create(shadow, self.checkers)
+
+    def test_original_operation_never_replays_and_unknown_is_an_observed_result(self):
+        self.shadow.record(self.predictions[0])
+        choice = self.choose()
+        self.journal.start(choice["record_sha256"], "original-op")
+        for operation in ("original-op", "new-op"):
+            with self.assertRaises(ValueError):
+                self.journal.start(choice["record_sha256"], operation)
+        self.journal.complete(
+            "original-op",
+            "unknown",
+            digest("lost-readback"),
+            dict(wall_seconds=0.1, cpu_seconds=None, energy_joules=None),
+        )
+        with self.assertRaises(ValueError):
+            self.journal.complete(
+                "original-op",
+                "pass",
+                digest("later"),
+                dict(wall_seconds=0.2, cpu_seconds=None, energy_joules=None),
+            )
+        self.disposition(disposition="unknown")
+        self.finish_all(primary="unknown", truth=None)
+        self.assertEqual(
+            self.journal.report()["by_disposition"]["unknown"]["known_labels"], 1
+        )
+
+    def test_no_post_finish_choice_dispatch_or_changed_disposition(self):
+        self.shadow.record(self.predictions[0])
+        choice = self.choose()
+        self.disposition()
+        self.finish_all()
+        for operation in (
+            lambda: self.choose(),
+            lambda: self.journal.start(choice["record_sha256"], "late-op"),
+            lambda: self.disposition(disposition="accept"),
+        ):
+            with self.assertRaises(ValueError):
+                operation()
+
+    def test_observation_cannot_be_injected_without_actual_operation(self):
+        self.shadow.record(self.predictions[0])
+        observation = CheckObservation(
+            "readback",
+            self.checkers[0].version_sha256,
+            digest(asdict(self.predictions[0].snapshot)),
+            "pass",
+            digest("invented"),
+        )
+        with self.assertRaises(ValueError):
+            self.choose(observations=(observation,))
+
+    def test_accept_requires_literal_host_gate_and_pending_cannot_accept(self):
+        for gate in (False, None, 1, "yes"):
+            with self.subTest(gate=gate), self.assertRaises(ValueError):
+                self.disposition(disposition="accept", hard_checks_complete=gate)
+        self.shadow.record(self.predictions[0])
+        choice = self.choose()
+        self.journal.start(choice["record_sha256"], "original-op")
+        with self.assertRaises(ValueError):
+            self.disposition(disposition="accept")
+
+    def test_repair_cannot_silently_change_terminal_estimand(self):
+        self.shadow.record(self.predictions[0])
+        with self.assertRaises(ValueError):
+            self.choose(actions=("accept", "repair"))
+
+    def test_expected_treatment_checkpoint_rejects_truncation(self):
+        self.shadow.record(self.predictions[0])
+        self.choose()
+        with self.shadow._transaction() as connection:
+            root = self.journal._read(connection)[4]
+        TreatmentJournal(ShadowJournal(self.path), expected_ledger_sha256=root)
+        with self.shadow._transaction() as connection:
+            connection.execute("DELETE FROM treatment_events")
+        with self.assertRaisesRegex(ValueError, "ledger root changed"):
+            TreatmentJournal(ShadowJournal(self.path), expected_ledger_sha256=root)
+
+    def test_terminal_disposition_mismatch_refuses_joined_report(self):
+        self.disposition(disposition="reject")
+        self.finish_all(primary="accept", truth=True)
+        with self.assertRaises(ValueError):
+            self.journal.report()
 
 
 if __name__ == "__main__":

@@ -98,14 +98,22 @@ class ShadowJournal:
     wall time or protect against the database owner rewriting the whole run.
     """
 
-    def __init__(self, path, *, expected_manifest_sha256=None):
+    def __init__(
+        self, path, *, expected_manifest_sha256=None, expected_ledger_sha256=None
+    ):
         self.path = Path(path).resolve()
         _require(self.path.is_file(), "existing journal required")
         if expected_manifest_sha256 is not None:
             _sha(expected_manifest_sha256, "expected_manifest_sha256")
+        if expected_ledger_sha256 is not None:
+            _sha(expected_ledger_sha256, "expected_ledger_sha256")
         self.manifest_sha256 = expected_manifest_sha256
         with self._transaction() as connection:
-            manifest, *_ = self._read(connection)
+            manifest, _, _, _, ledger, _ = self._read(connection)
+            _require(
+                expected_ledger_sha256 is None or ledger == expected_ledger_sha256,
+                "recovered ledger does not match retained checkpoint",
+            )
         self.manifest_sha256 = digest(manifest)
 
     @classmethod
