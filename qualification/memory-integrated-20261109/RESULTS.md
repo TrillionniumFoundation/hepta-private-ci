@@ -206,3 +206,19 @@ cross-document/task memory require their own implementation and qualification.
 This tranche establishes the instrumentation, actual actor integration and
 measured negative comparisons needed to make those choices without promoting
 an unsupported mechanism.
+
+## Later CI readback
+
+The dedicated [source-head MEM job](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42623193194/job/129180236433)
+subsequently completed successfully on `56d4330beb785017b161fc6f0b6cee38259a0368`,
+with a clean before/after tree `2610c944fd64e65fba0201d8205d50ba1c308acd`.
+Its four groups passed 17, 6, 7 and 7 tests (37 total, zero failed). The
+[retained command receipts](observations/later-ci-readback.json) bind each group
+to that exact source. This supersedes only the earlier queued observation.
+
+The broader [blocking run](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42623199935)
+failed on its merge checkout. Prettier named `hcsn-differentiable.yml`; other
+platform checks also failed. Cargo-deny failed, but log retrieval did not return
+a decoded log and its cause remains UNKNOWN. No baseline reproduction was
+performed. These failures remain gates; dedicated MEM success does not imply
+repository success, scientific promotion, or production adoption.
