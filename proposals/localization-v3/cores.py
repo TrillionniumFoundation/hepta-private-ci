@@ -34,6 +34,29 @@ def explicit_hcsn_grid(configuration):
     return GridSpec(**configuration)
 
 
+def explicit_plif_configuration(configuration):
+    """Checkpoint-carried dynamics/readout; threshold is not a tensor buffer."""
+    names = {"init_tau", "threshold", "input_weight_gain", "readout", "trace_decay"}
+    if not isinstance(configuration, dict) or set(configuration) != names:
+        raise ValueError(f"PLIF requires exactly these fields: {sorted(names)}")
+    result = dict(configuration)
+    for key in names - {"readout"}:
+        if isinstance(result[key], bool) or not isinstance(result[key], (int, float)):
+            raise ValueError(f"PLIF {key} must be a finite real")
+        result[key] = float(result[key])
+        if not math.isfinite(result[key]):
+            raise ValueError(f"PLIF {key} must be a finite real")
+    if (
+        result["init_tau"] <= 1
+        or result["threshold"] <= 0
+        or result["input_weight_gain"] <= 0
+        or not 0 <= result["trace_decay"] < 1
+        or result["readout"] not in {"spikes", "membrane", "spike_trace"}
+    ):
+        raise ValueError("PLIF configuration outside the declared domain")
+    return result
+
+
 def tensor_digest(module):
     digest = hashlib.sha256()
     for name, value in sorted(module.state_dict().items()):
@@ -105,17 +128,29 @@ class CfCCore(nn.Module):
 
 
 class PLIFCore(nn.Module):
-    def __init__(self, width):
+    def __init__(self, width, configuration=None):
         super().__init__()
         _require_version("spikingjelly", "0.0.0.0.14")
         from spikingjelly.activation_based import neuron, surrogate
 
+        self.configuration = explicit_plif_configuration(
+            configuration
+            or {
+                "init_tau": 2.0,
+                "threshold": 1.0,
+                "input_weight_gain": 1.0,
+                "readout": "spikes",
+                "trace_decay": 0.75,
+            }
+        )
         self.input = nn.Linear(width, width)
         self.recurrent = nn.Linear(width, width, bias=False)
+        with torch.no_grad():
+            self.input.weight.mul_(self.configuration["input_weight_gain"])
         self.node = neuron.ParametricLIFNode(
-            init_tau=2.0,
+            init_tau=self.configuration["init_tau"],
             decay_input=False,
-            v_threshold=1.0,
+            v_threshold=self.configuration["threshold"],
             v_reset=None,
             surrogate_function=surrogate.ATan(alpha=2.0),
             detach_reset=True,
@@ -126,15 +161,39 @@ class PLIFCore(nn.Module):
 
     def forward(self, x, dt):
         self.node.reset()
-        state, rows = torch.zeros_like(x[:, 0]), []
+        state, trace = torch.zeros_like(x[:, 0]), torch.zeros_like(x[:, 0])
+        rows, spikes = [], []
         for observation in x.unbind(1):
             state = self.node(self.input(observation) + self.recurrent(state))
-            rows.append(state)
+            spikes.append(state)
+            decay = self.configuration["trace_decay"]
+            trace = decay * trace + (1 - decay) * state
+            readout = self.configuration["readout"]
+            rows.append(
+                state
+                if readout == "spikes"
+                else self.node.v
+                if readout == "membrane"
+                else trace
+            )
         result = torch.stack(rows, 1)
+        spike = torch.stack(spikes, 1).detach()
         self.diagnostics = {
-            "spike_fraction": float(result.detach().mean()),
-            "active_neurons": int((result.detach().sum((0, 1)) > 0).sum()),
+            "spike_fraction": float(spike.mean()),
+            "spike_count": float(spike.sum()),
+            "active_neurons": int((spike.sum((0, 1)) > 0).sum()),
             "tau": float(1 / self.node.w.detach().sigmoid()),
+            "threshold": self.node.v_threshold,
+            "readout": self.configuration["readout"],
+            "trace_decay": self.configuration["trace_decay"],
+            "trace_injection": 1 - self.configuration["trace_decay"],
+            "trace_e_folding_event_steps": -1
+            / math.log(self.configuration["trace_decay"])
+            if self.configuration["trace_decay"] > 0
+            else None,
+            "trace_reciprocal_injection_event_steps": 1
+            / (1 - self.configuration["trace_decay"]),
+            "diagnostic_scope": "all padded compute positions; loss excludes padding",
             "time_semantics": "event-indexed; physical dt also appears in common input",
         }
         return result
@@ -262,12 +321,17 @@ class CoreStudyModel(nn.Module):
         freeze_shared=True,
         cache_frozen_tables=False,
         learn_core_adapter=False,
+        plif_configuration=None,
     ):
         super().__init__()
         if arm not in ARMS or width < 2 or width % 2:
             raise ValueError("unknown arm or invalid even width")
         if arm != "hcsn" and (hcsn_grid is not None or cache_frozen_tables):
             raise ValueError("HCSN configuration supplied to a different temporal core")
+        if arm != "snn_plif" and plif_configuration is not None:
+            raise ValueError("PLIF configuration supplied to a different temporal core")
+        if plif_configuration is not None:
+            explicit_plif_configuration(plif_configuration)
         # These RNG streams are independent of constructor RNG consumption.
         with torch.random.fork_rng():
             torch.manual_seed(seed + 1000003)
@@ -281,7 +345,7 @@ class CoreStudyModel(nn.Module):
             elif arm == "cfc":
                 self.core = CfCCore(width)
             elif arm == "snn_plif":
-                self.core = PLIFCore(width)
+                self.core = PLIFCore(width, plif_configuration)
             elif arm == "event_time_lif":
                 self.core = EventLIFCore(width)
             elif arm == "ssm_s4d":
@@ -306,6 +370,19 @@ class CoreStudyModel(nn.Module):
                     self.temporal_adapter.weight.copy_(torch.eye(width))
                     self.temporal_adapter.bias.zero_()
         self.learn_core_adapter = learn_core_adapter
+        self.construction_configuration = {
+            "arm": arm,
+            "width": width,
+            "seed": seed,
+            "s4_repo": str(s4_repo) if s4_repo is not None else None,
+            "hcsn_grid": hcsn_grid,
+            "freeze_shared": freeze_shared,
+            "cache_frozen_tables": cache_frozen_tables,
+            "learn_core_adapter": learn_core_adapter,
+            "plif_configuration": self.core.configuration
+            if arm == "snn_plif"
+            else None,
+        }
         self.arm, self.width = arm, width
         self.double()
         self.frontend.requires_grad_(not freeze_shared)
