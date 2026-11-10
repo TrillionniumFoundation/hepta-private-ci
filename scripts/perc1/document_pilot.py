@@ -101,14 +101,19 @@ def _projection(dataset, worker, output):
     return projection, cost
 
 
-def _actor_pairs(dataset, collector, representation, solver_sha256, output):
+def _actor_pairs(
+    dataset, collector, representation, solver_sha256, output, *, channel="neural"
+):
     """Collect controlled executions before any evaluator labels enter these rows."""
+    require(channel in ("neural", "public"), "unknown pair feature channel")
     records, cost = [], asdict(Cost())
     for episode in dataset.episodes.values():
         if episode["split"] not in ("train", "dev"):
             continue
         require(len(episode["initial_ids"]) == 1, "pilot requires one initial capture")
-        initial = collector.observe(episode["initial_ids"][0], representation)
+        initial = collector.observe(
+            episode["initial_ids"][0], representation, encode=channel == "neural"
+        )
         initial_cost = collector.accounted_cost(initial)
         cost = _add(cost, initial_cost)
         before_start = time.perf_counter_ns()
@@ -137,11 +142,14 @@ def _actor_pairs(dataset, collector, representation, solver_sha256, output):
                 prefix,
                 max(0, actor.CAP - Cost.parse(initial_cost).total),
                 representation,
+                channel=channel,
             )
             feature_cost = asdict(
                 Cost(decision=_micro(time.perf_counter_ns() - started))
             )
-            extra = collector.observe(candidate, representation)
+            extra = collector.observe(
+                candidate, representation, encode=channel == "neural"
+            )
             extra_cost = collector.accounted_cost(extra)
             started = time.perf_counter_ns()
             after_answer = actor.terminal(dataset, episode, [initial, extra])
@@ -181,7 +189,8 @@ def _actor_pairs(dataset, collector, representation, solver_sha256, output):
                     "with_answer": after_answer,
                 }
             )
-    _write(output / (representation + "-actor-pairs.json"), records)
+    name = representation if channel == "neural" else "public"
+    _write(output / (name + "-actor-pairs.json"), records)
     return records, cost
 
 
