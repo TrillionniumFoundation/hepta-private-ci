@@ -13,6 +13,7 @@ import re
 
 STAGES = ('experience', 'dataset', 'training', 'evaluation', 'selection',
           'published_current', 'final_use', 'next_use')
+TRAINER_NO_UPDATE_STAGES = tuple(stage for stage in STAGES if stage != 'evaluation')
 HEX64 = re.compile(r'^[0-9a-f]{64}$')
 HEX40 = re.compile(r'^[0-9a-f]{40}$')
 ATTEMPT_STATES = frozenset(('completed', 'failed', 'cancelled', 'pending', 'unknown'))
@@ -53,23 +54,37 @@ def inspect(manifest: Path) -> dict:
     elif (decision == 'adopt' and chosen == baseline) or (decision == 'no_update' and chosen != baseline):
         fail('selection_version_mismatch')
 
-    # Identity *claims* must be present and different; independent control is
-    # NOT proved by these strings, different keys, or this script's output.
+    # Original TrainingNoUpdateV2 has no candidate, Evaluation or Proposal;
+    # it still needs Selection and a different task consuming the retained
+    # version. Evaluator-side NoUpdate is a separate, evaluated path.
+    origin = record.get('no_update_origin')
+    if decision == 'no_update':
+        if origin not in ('trainer', 'evaluation'):
+            fail('no_update_origin')
+    elif origin is not None:
+        fail('no_update_origin_not_applicable')
+    trainer_no_update = decision == 'no_update' and origin == 'trainer'
+    stages = TRAINER_NO_UPDATE_STAGES if trainer_no_update else STAGES
+
+    # Claimed roles do not prove authentic custody or independent operators.
+    # The original trainer, selector and observer remain separate on both paths.
     custody = record.get('operator_custody')
     custody = custody if isinstance(custody, dict) else {}
-    operators = [custody.get(name) for name in ('trainer', 'evaluator', 'holdout')]
+    roles = ('trainer', 'selector', 'observer') if trainer_no_update else (
+        'trainer', 'evaluator', 'holdout', 'selector', 'observer')
+    operators = [custody.get(name) for name in roles]
     if any(not isinstance(x, str) or not x.strip() for x in operators):
         fail('operator_custody_missing')
     elif len(set(operators)) != len(operators):
         fail('same_operator_multiple_roles')
 
     entries = record.get('original_receipts')
-    if not isinstance(entries, dict) or set(entries) != set(STAGES):
+    if not isinstance(entries, dict) or set(entries) != set(stages):
         fail('receipt_coverage')
         entries = entries if isinstance(entries, dict) else {}
     seen_paths = set()
     seen_digests = set()
-    for stage in STAGES:
+    for stage in stages:
         entry = entries.get(stage)
         if not isinstance(entry, dict):
             fail(f'missing_receipt:{stage}')
@@ -152,7 +167,7 @@ def inspect(manifest: Path) -> dict:
     # This checks supplied files and self-declarations, not their signatures,
     # current trust, live owner isolation, actual custody or opportunity cost.
     return {'status': 'HOLD', 'integrity': 'PASS' if not issues else 'FAIL',
-            'receipt_bytes_matched': checks, 'receipt_bytes_required': len(STAGES),
+            'receipt_bytes_matched': checks, 'receipt_bytes_required': len(stages),
             'declared_attempt_cost_usd': str(total), 'issues': issues,
             'owner_authenticated': False, 'independent_holdout_proved': False,
             'original_stage_replay_proved': False, 'full_cost_completeness_proved': False,
