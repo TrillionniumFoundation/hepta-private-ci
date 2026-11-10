@@ -142,6 +142,18 @@ async fn cold_ack_cleanup_releases_slot_without_contacting_unavailable_learning_
     let (store, request, acknowledged) = acknowledged_before_retirement(&daemon, &original).await;
     let inspection = inspect(&store).await;
     assert_eq!(retired(&inspection, &request).await, 0);
+    let write_attempt = sqlx::query(
+        "UPDATE circuit_learning_outbox_v1 SET retired = 1 WHERE owner_agent_id = ? AND run_id = ?",
+    )
+    .bind(request.agent_id.as_str())
+    .bind(request.source_run_id.as_str())
+    .execute(&inspection)
+    .await;
+    assert!(
+        write_attempt.is_err(),
+        "original post-recovery inspection must not write the outbox"
+    );
+    assert_eq!(retired(&inspection, &request).await, 0);
     let ports = Arc::new(UnavailableLearningPorts {
         calls: AtomicUsize::new(0),
     });
