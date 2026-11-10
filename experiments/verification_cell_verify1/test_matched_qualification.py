@@ -26,11 +26,16 @@ def example(n=8, clusters=None):
         "evaluator_version_sha256": sha("evaluator"),
         "baseline": base,
         "candidate": candidate,
-        "pairs": [{
-            "pair_id": f"case{i}", "cluster_id": f"cluster{clusters[i] if clusters else i}",
-            "first_arm": base if i % 2 else candidate,
-            "environment_a": f"env{i}a", "environment_b": f"env{i}b",
-        } for i in range(n)],
+        "pairs": [
+            {
+                "pair_id": f"case{i}",
+                "cluster_id": f"cluster{clusters[i] if clusters else i}",
+                "first_arm": base if i % 2 else candidate,
+                "environment_a": f"env{i}a",
+                "environment_b": f"env{i}b",
+            }
+            for i in range(n)
+        ],
         "losses": {
             "accept": {"correct": 0.0, "error": 1.0},
             "reject": {"correct": 1.0, "error": 0.0},
@@ -52,29 +57,37 @@ def example(n=8, clusters=None):
     for p in manifest["pairs"]:
         for arm, err in ((base, True), (candidate, False)):
             env = p["environment_a"] if arm == p["first_arm"] else p["environment_b"]
-            rows.append({
-                "pair_id": p["pair_id"], "arm": arm,
-                "environment_id": env, "disposition": "accept",
-                "terminal_error": err,
-                "label_evidence_sha256": sha(p["pair_id"] + arm + "label"),
-                "label_issued_ns": 120,
-                "label_observed_step": 3,
-                "decision_issued_ns": 110,
-                "evaluator_id": "external-readback",
-                "label_attestation": "signed-receipt-stub-do-not-use-in-production",
-                "cost_units": 0.1 if arm == candidate else 0,
-                "cost_roster_sha256": sha(p["pair_id"] + arm + "roster"),
-                "cost_receipt_sha256": sha(p["pair_id"] + arm + "cost"),
-                "source_sha256": sha("source"),
-            })
+            rows.append(
+                {
+                    "pair_id": p["pair_id"],
+                    "arm": arm,
+                    "environment_id": env,
+                    "disposition": "accept",
+                    "terminal_error": err,
+                    "label_evidence_sha256": sha(p["pair_id"] + arm + "label"),
+                    "label_issued_ns": 120,
+                    "label_observed_step": 3,
+                    "decision_issued_ns": 110,
+                    "evaluator_id": "external-readback",
+                    "label_attestation": "signed-receipt-stub-do-not-use-in-production",
+                    "cost_units": 0.1 if arm == candidate else 0,
+                    "cost_roster_sha256": sha(p["pair_id"] + arm + "roster"),
+                    "cost_receipt_sha256": sha(p["pair_id"] + arm + "cost"),
+                    "source_sha256": sha("source"),
+                }
+            )
     return manifest, rows
 
 
 class MatchedQualificationTests(unittest.TestCase):
     def analyze(self, manifest, rows, **kwargs):
-        return analyze_matched(manifest, rows,
-                               verify_label=lambda m, row: True,
-                               verify_cost=lambda m, row: True, **kwargs)
+        return analyze_matched(
+            manifest,
+            rows,
+            verify_label=lambda m, row: True,
+            verify_cost=lambda m, row: True,
+            **kwargs,
+        )
 
     def test_positive_paired_signal_is_only_reviewable_not_promoted(self):
         m, rows = example()
@@ -95,6 +108,41 @@ class MatchedQualificationTests(unittest.TestCase):
         self.assertFalse(result["gates"]["terminal_error_reduction"])
         self.assertFalse(result["gates"]["externally_reviewable"])
 
+    def test_zero_reduction_threshold_does_not_turn_cost_savings_into_error_reduction(
+        self,
+    ):
+        m, rows = example()
+        m["criteria"]["min_terminal_error_reduction_per_task"] = 0.0
+        for row in rows:
+            row["terminal_error"] = True
+            row["cost_units"] = 1.0 if row["arm"] == "fixed" else 0.0
+        result = self.analyze(m, rows)
+        self.assertEqual(result["terminal_error_rate_reduction"], 0)
+        self.assertEqual(result["paired_mean_loss_improvement"], 1)
+        self.assertTrue(result["gates"]["paired_statistical_threshold"])
+        self.assertFalse(result["gates"]["terminal_error_reduction"])
+        self.assertFalse(result["gates"]["externally_reviewable"])
+
+    def test_unequal_clusters_test_the_same_pair_weighted_gain_as_reported(self):
+        m, rows = example(101, clusters=list(range(5)) + [5] * 96)
+        m["criteria"]["min_terminal_error_reduction_per_task"] = 0.01
+        m["criteria"]["min_mean_gain"] = 0.001
+        for index, pair in enumerate(m["pairs"]):
+            for row in rows[2 * index : 2 * index + 2]:
+                row["cost_units"] = 0
+                if index >= 5:
+                    row["terminal_error"] = False
+                    row["cost_units"] = 0.05 if row["arm"] == "voi" else 0
+        result = self.analyze(m, rows)
+        self.assertAlmostEqual(result["paired_mean_loss_improvement"], 0.2 / 101)
+        self.assertEqual(result["paired_group_signflip_one_sided_p"], 0.5)
+        self.assertEqual(
+            result["signflip_statistic"], "whole_cluster_contributions_to_paired_mean"
+        )
+        self.assertTrue(result["gates"]["mean_total_loss_improvement"])
+        self.assertFalse(result["gates"]["paired_statistical_threshold"])
+        self.assertFalse(result["gates"]["externally_reviewable"])
+
     def test_refuse_reject_everything_even_when_wrong_accepts_fall(self):
         m, rows = example()
         for r in rows:
@@ -110,10 +158,15 @@ class MatchedQualificationTests(unittest.TestCase):
     def test_missing_horizon_not_replaced_by_interrupted_disposition(self):
         m, rows = example()
         r = rows[1]
-        r.update(disposition="interrupted", terminal_error=None,
-                 label_evidence_sha256=None, label_issued_ns=None,
-                 label_observed_step=None,
-                 label_attestation=None, evaluator_id=None)
+        r.update(
+            disposition="interrupted",
+            terminal_error=None,
+            label_evidence_sha256=None,
+            label_issued_ns=None,
+            label_observed_step=None,
+            label_attestation=None,
+            evaluator_id=None,
+        )
         result = self.analyze(m, rows)
         self.assertEqual(result["arms"]["voi"]["missing_terminal_labels"], 1)
         self.assertIsNone(result["paired_mean_loss_improvement"])
@@ -122,8 +175,9 @@ class MatchedQualificationTests(unittest.TestCase):
 
     def test_missing_cost_and_not_run_preserved_in_denominator(self):
         m, rows = example()
-        rows[0].update(cost_units=None, cost_roster_sha256=None,
-                       cost_receipt_sha256=None)
+        rows[0].update(
+            cost_units=None, cost_roster_sha256=None, cost_receipt_sha256=None
+        )
         result = self.analyze(m, rows)
         self.assertFalse(result["gates"]["physical_costs_complete_claim_verified"])
         self.assertIsNone(result["paired_mean_loss_improvement"])
@@ -133,19 +187,27 @@ class MatchedQualificationTests(unittest.TestCase):
         self.assertEqual(result["arms"]["voi"]["unobserved"], 1)
         self.assertEqual(result["arms"]["voi"]["planned"], 8)
         self.assertIsNone(result["arms"]["voi"]["acceptance_coverage"])
-        self.assertEqual(result["arms"]["voi"]["acceptance_coverage_bounds"], [7/8, 1])
-        self.assertEqual(result["arms"]["voi"]["accepted_errors_per_planned_bounds"], [0, 1/8])
+        self.assertEqual(
+            result["arms"]["voi"]["acceptance_coverage_bounds"], [7 / 8, 1]
+        )
+        self.assertEqual(
+            result["arms"]["voi"]["accepted_errors_per_planned_bounds"], [0, 1 / 8]
+        )
 
     def test_callback_missing_or_truthy_string_does_not_verify(self):
         m, rows = example()
         self.assertFalse(analyze_matched(m, rows)["gates"]["externally_reviewable"])
-        result = analyze_matched(m, rows,
-                verify_label=lambda *args: "True", verify_cost=lambda *args: True)
+        result = analyze_matched(
+            m, rows, verify_label=lambda *args: "True", verify_cost=lambda *args: True
+        )
         self.assertFalse(result["gates"]["independent_labels_receipt_authenticated"])
+
         def raise_error(*args):
             raise RuntimeError("external unavailable")
-        result = analyze_matched(m, rows, verify_label=raise_error,
-                                 verify_cost=lambda *args: True)
+
+        result = analyze_matched(
+            m, rows, verify_label=raise_error, verify_cost=lambda *args: True
+        )
         self.assertFalse(result["gates"]["externally_reviewable"])
 
     def test_multiple_cases_from_same_template_are_one_stat_group(self):
@@ -188,13 +250,21 @@ class MatchedQualificationTests(unittest.TestCase):
     def test_unknown_accepted_truth_has_explicit_worst_case(self):
         m, rows = example()
         # A missing terminal label cannot be silently converted into a clean accept.
-        rows[1].update(terminal_error=None, label_evidence_sha256=None,
-                       label_issued_ns=None, label_observed_step=None,
-                       label_attestation=None,
-                       evaluator_id=None)
+        rows[1].update(
+            terminal_error=None,
+            label_evidence_sha256=None,
+            label_issued_ns=None,
+            label_observed_step=None,
+            label_attestation=None,
+            evaluator_id=None,
+        )
         result = self.analyze(m, rows)
-        self.assertEqual(result["arms"]["voi"]["accepted_error_rate_bounds"], [0.0, 1/8])
-        self.assertEqual(result["arms"]["voi"]["accepted_errors_per_planned_bounds"], [0, 1/8])
+        self.assertEqual(
+            result["arms"]["voi"]["accepted_error_rate_bounds"], [0.0, 1 / 8]
+        )
+        self.assertEqual(
+            result["arms"]["voi"]["accepted_errors_per_planned_bounds"], [0, 1 / 8]
+        )
 
 
 if __name__ == "__main__":
