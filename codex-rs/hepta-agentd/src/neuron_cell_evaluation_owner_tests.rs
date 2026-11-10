@@ -12,6 +12,7 @@ use codex_hepta_learning_ledger::LearningEvidenceTrustV1;
 use codex_hepta_learning_ledger::TrustedLearningSignerV1;
 use codex_hepta_types::Generation;
 use ed25519_dalek::SigningKey;
+use pretty_assertions::assert_eq;
 
 use super::*;
 use crate::LearningOriginalOwnerErrorV1;
