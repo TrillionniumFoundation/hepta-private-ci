@@ -1,0 +1,53 @@
+name: Hepta RBE OpenSSH image qualification
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/hepta-rbe-openssh-image.yml
+      - .github/workflows/Dockerfile.bazel
+      - scripts/qualify_rbe_openssh.py
+      - scripts/test_qualify_rbe_openssh.py
+  push:
+    branches: [research/verify2-rbe-image-*]
+    paths:
+      - .github/workflows/hepta-rbe-openssh-image.yml
+      - .github/workflows/Dockerfile.bazel
+      - scripts/qualify_rbe_openssh.py
+      - scripts/test_qualify_rbe_openssh.py
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: rbe-openssh-image-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  native-amd64:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      REVIEWED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Validate metadata rejection rules
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/rbe-openssh-validation"
+          python3 -B -m unittest discover -s scripts -p test_qualify_rbe_openssh.py -v 2>&1 | tee "$RUNNER_TEMP/rbe-openssh-validation/tests.log"
+      - name: Build and measure exact local image without publishing
+        run: python3 -B scripts/qualify_rbe_openssh.py --output "$RUNNER_TEMP/rbe-openssh-image" --expected-source "$REVIEWED_SHA"
+      - name: Retain complete command records and bounded image archive
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: rbe-openssh-amd64-${{ github.event.pull_request.head.sha || github.sha }}
+          path: |
+            ${{ runner.temp }}/rbe-openssh-image
+            ${{ runner.temp }}/rbe-openssh-validation
+          if-no-files-found: error
+          retention-days: 7
