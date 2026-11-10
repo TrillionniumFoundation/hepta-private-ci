@@ -42,11 +42,16 @@ fn plan() -> ActionCheckPlanV1 {
 }
 
 fn now() -> ActionCheckClockV1 {
-    ActionCheckClockV1::Known { clock_id: "same-host-clock".to_string(), at_ms: 30 }
+    ActionCheckClockV1::Known {
+        clock_id: "same-host-clock".to_string(),
+        at_ms: 30,
+    }
 }
 
 fn recommendation(plan: &ActionCheckPlanV1) -> ActionCheckRecommendationV1 {
-    plan.assess(&plan.binding, &now()).expect("assessment").recommendation
+    plan.assess(&plan.binding, &now())
+        .expect("assessment")
+        .recommendation
 }
 
 #[test]
@@ -94,13 +99,20 @@ fn exact_boundary_and_maximum_costs_do_not_round_or_overflow() {
 #[test]
 fn missing_and_stale_time_stay_unknown_and_future_receipts_are_rejected() {
     let mut plan = plan();
-    let later = ActionCheckClockV1::Known { clock_id: "same-host-clock".to_string(), at_ms: 31 };
+    let later = ActionCheckClockV1::Known {
+        clock_id: "same-host-clock".to_string(),
+        at_ms: 31,
+    };
     assert_eq!(
-        plan.assess(&plan.binding, &later).expect("stale").recommendation,
+        plan.assess(&plan.binding, &later)
+            .expect("stale")
+            .recommendation,
         ActionCheckRecommendationV1::Unknown
     );
     assert_eq!(
-        plan.assess(&plan.binding, &ActionCheckClockV1::Unknown).expect("unknown").recommendation,
+        plan.assess(&plan.binding, &ActionCheckClockV1::Unknown)
+            .expect("unknown")
+            .recommendation,
         ActionCheckRecommendationV1::Unknown
     );
     plan.timing = ActionCheckTimeV1::Unknown;
@@ -112,10 +124,16 @@ fn missing_and_stale_time_stay_unknown_and_future_receipts_are_rejected() {
         max_age_ms: 19,
     };
     assert_eq!(recommendation(&plan), ActionCheckRecommendationV1::Unknown);
-    if let ActionCheckTimeV1::Known { available_at_ms, .. } = &mut plan.timing {
+    if let ActionCheckTimeV1::Known {
+        available_at_ms, ..
+    } = &mut plan.timing
+    {
         *available_at_ms = 32;
     }
-    assert_eq!(plan.assess(&plan.binding, &now()), Err(ActionSkillError::Observation));
+    assert_eq!(
+        plan.assess(&plan.binding, &now()),
+        Err(ActionSkillError::Observation)
+    );
 }
 
 #[test]
@@ -123,10 +141,73 @@ fn plan_identity_changes_with_pins_and_original_attempt_is_required() {
     let mut plan = plan();
     let original = plan.assess(&plan.binding, &now()).expect("original");
     plan.generation += 1;
-    assert_ne!(plan.assess(&plan.binding, &now()).expect("new").assessment_digest, original.assessment_digest);
+    assert_ne!(
+        plan.assess(&plan.binding, &now())
+            .expect("new")
+            .assessment_digest,
+        original.assessment_digest
+    );
     let mut other = plan.binding.clone();
     other.effect_intent_digest = Sha256Digest::for_bytes(b"other-attempt");
-    assert_eq!(plan.assess(&other, &now()), Err(ActionSkillError::Invocation));
+    assert_eq!(
+        plan.assess(&other, &now()),
+        Err(ActionSkillError::Invocation)
+    );
     plan.estimate.error_ppm = 1_000_001;
-    assert_eq!(plan.assess(&plan.binding, &now()), Err(ActionSkillError::Invocation));
+    assert_eq!(
+        plan.assess(&plan.binding, &now()),
+        Err(ActionSkillError::Invocation)
+    );
+}
+
+#[test]
+fn deserialized_original_binding_is_validated_before_assessment() {
+    let original = serde_json::to_value(plan()).expect("serialized plan");
+    let roundtrip: ActionCheckPlanV1 = serde_json::from_value(original.clone()).expect("plan");
+    assert_eq!(
+        recommendation(&roundtrip),
+        ActionCheckRecommendationV1::Check
+    );
+    for (path, invalid) in [
+        (
+            "/binding/provider_intent/schema_version",
+            serde_json::json!(0),
+        ),
+        (
+            "/binding/provider_intent/key",
+            serde_json::json!("invalid-key"),
+        ),
+        (
+            "/binding/provider_intent/payload_sha256",
+            serde_json::json!("invalid-digest"),
+        ),
+        (
+            "/binding/effect_intent_digest",
+            serde_json::json!("invalid-digest"),
+        ),
+        (
+            "/binding/contract_digest",
+            serde_json::json!("invalid-digest"),
+        ),
+        ("/binding/destination_id", serde_json::json!("")),
+        (
+            "/binding/destination_id",
+            serde_json::json!("destination with spaces"),
+        ),
+        (
+            "/binding/destination_id",
+            serde_json::json!("d".repeat(129)),
+        ),
+    ] {
+        let mut value = original.clone();
+        *value.pointer_mut(path).expect("binding field") = invalid;
+        let plan: ActionCheckPlanV1 = serde_json::from_value(value).expect("plan shape");
+        for current in [now(), ActionCheckClockV1::Unknown] {
+            assert_eq!(
+                plan.assess(&plan.binding, &current),
+                Err(ActionSkillError::Invocation),
+                "{path}"
+            );
+        }
+    }
 }

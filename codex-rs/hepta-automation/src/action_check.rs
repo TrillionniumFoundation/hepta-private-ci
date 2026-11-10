@@ -102,11 +102,20 @@ impl ActionCheckPlanV1 {
     ) -> Result<ActionCheckAssessmentV1, ActionSkillError> {
         let estimate = &self.estimate;
         if self.binding != *original_binding
+            || original_binding.provider_intent.validate().is_err()
+            || original_binding.destination_id.is_empty()
+            || original_binding.destination_id.len() > 128
+            || original_binding
+                .destination_id
+                .chars()
+                .any(char::is_whitespace)
             || self.generation == 0
             || self.cost_unit.is_empty()
             || self.cost_unit.len() > 64
             || self.cost_unit.chars().any(char::is_whitespace)
             || [
+                &original_binding.effect_intent_digest,
+                &original_binding.contract_digest,
                 &self.effective_model_digest,
                 &self.source_frontier_digest,
                 &self.checker_digest,
@@ -134,7 +143,10 @@ impl ActionCheckPlanV1 {
                     available_at_ms,
                     max_age_ms,
                 },
-                ActionCheckClockV1::Known { clock_id: current_clock, at_ms },
+                ActionCheckClockV1::Known {
+                    clock_id: current_clock,
+                    at_ms,
+                },
             ) => {
                 if [clock_id, current_clock].into_iter().any(|id| {
                     id.is_empty() || id.len() > 128 || id.chars().any(char::is_whitespace)
@@ -160,16 +172,18 @@ impl ActionCheckPlanV1 {
         let benefit = true_positive
             * u128::from(estimate.remediation_success_ppm)
             * u128::from(estimate.error_loss);
-        let costs = true_positive
-            * PROBABILITY_SCALE
-            * u128::from(estimate.true_positive_response_cost)
-            + (PROBABILITY_SCALE - risk)
-                * u128::from(estimate.false_positive_ppm)
-                * PROBABILITY_SCALE
-                * u128::from(estimate.false_positive_response_cost)
-            + PROBABILITY_SCALE.pow(3) * u128::from(estimate.check_cost);
+        let costs =
+            true_positive * PROBABILITY_SCALE * u128::from(estimate.true_positive_response_cost)
+                + (PROBABILITY_SCALE - risk)
+                    * u128::from(estimate.false_positive_ppm)
+                    * PROBABILITY_SCALE
+                    * u128::from(estimate.false_positive_response_cost)
+                + PROBABILITY_SCALE.pow(3) * u128::from(estimate.check_cost);
         Ok(ActionCheckAssessmentV1 {
-            assessment_digest: evidence_digest(b"hepta.action-check.assessment.v1\0", &(self, current))?,
+            assessment_digest: evidence_digest(
+                b"hepta.action-check.assessment.v1\0",
+                &(self, current),
+            )?,
             recommendation: if !fresh {
                 ActionCheckRecommendationV1::Unknown
             } else if benefit > costs {
