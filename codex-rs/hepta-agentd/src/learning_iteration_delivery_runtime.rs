@@ -136,6 +136,26 @@ impl CircuitLearningDeliveryRuntimeV1 {
                         self.owners.clone(),
                     )
                     .await
+                } else if matches!(self.source, CircuitLearningSourceV1::OriginalObjective) {
+                    // The original Objective/Circuit read and SQLite claim do
+                    // not form an atomic transaction. Authenticate the same
+                    // original owners again after the claim, before any stage
+                    // owner can start training or create a checkpoint.
+                    let source_state = Arc::clone(&state);
+                    let source_request = self.request.clone();
+                    crate::circuit_learning_delivery::deliver_circuit_learning_with_post_claim_source_v1(
+                        &store,
+                        Some(&self.handle),
+                        self.request.clone(),
+                        self.owners.clone(),
+                        Box::pin(async move {
+                            source_state
+                                .require_circuit_learning_source(&source_request)
+                                .await
+                                .map_err(|_| LearningIterationRuntimeErrorV1::WrongScope)
+                        }),
+                    )
+                    .await
                 } else {
                     crate::deliver_circuit_learning_v1(
                         &store,
