@@ -84,8 +84,18 @@ def main():
         "python": platform.python_version(),
         "operations": [],
         "cases": [
-            {"name": name, "verbatim_argv": verbatim, "status": "NOT_STARTED"}
-            for name, verbatim in (("drive", False), ("verbatim", True))
+            {
+                "name": name,
+                "verbatim_argv": verbatim,
+                "executable_verbatim_argv": executable_verbatim,
+                "status": "NOT_STARTED",
+            }
+            for name, verbatim, executable_verbatim in (
+                ("drive", False, False),
+                ("verbatim", True, False),
+                ("verbatim-executable-drive", False, True),
+                ("verbatim-executable-verbatim", True, True),
+            )
         ],
         "production_authority": "NONE",
         "original_operator_target_qualified": False,
@@ -167,8 +177,12 @@ def main():
                     case.update(
                         directory=str(directory),
                         key_argument=path(key),
+                        executable_argument=spell(
+                            executable, case["executable_verbatim_argv"]
+                        ),
                         statement_sha256=sha(statement),
                     )
+                    executable_argument = case["executable_argument"]
                     run(
                         name + "-directory-acl",
                         [str(system / "icacls.exe"), str(directory)],
@@ -176,7 +190,7 @@ def main():
                     generated = run(
                         name + "-generate",
                         [
-                            str(executable),
+                            executable_argument,
                             "-q",
                             "-t",
                             "ed25519",
@@ -195,7 +209,7 @@ def main():
                     public_key = key.with_name(key.name + ".pub")
                     run(
                         name + "-fingerprint",
-                        [str(executable), "-E", "sha256", "-lf", path(public_key)],
+                        [executable_argument, "-E", "sha256", "-lf", path(public_key)],
                     )
                     public = public_key.read_text(encoding="utf-8").strip()
                     if public.split()[0] != "ssh-ed25519":
@@ -205,7 +219,7 @@ def main():
                     signed = run(
                         name + "-sign",
                         [
-                            str(executable),
+                            executable_argument,
                             "-Y",
                             "sign",
                             "-f",
@@ -229,7 +243,7 @@ def main():
                         run(
                             name + "-" + suffix,
                             [
-                                str(executable),
+                                executable_argument,
                                 "-Y",
                                 "verify",
                                 "-f",
@@ -260,7 +274,7 @@ def main():
                 case["status"] = "NOT_RUN_PREFLIGHT_FAILURE"
     report["diagnostic_success"] = (
         "exception" not in report
-        and len(report["cases"]) == 2
+        and len(report["cases"]) == 4
         and all(c["status"] == "ALL_STAGES_OBSERVED" for c in report["cases"])
         and all(r["expected_exit_observed"] for r in report["operations"])
         and report.get("executable_identity_unchanged") is True
