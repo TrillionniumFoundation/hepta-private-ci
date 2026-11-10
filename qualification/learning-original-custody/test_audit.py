@@ -204,6 +204,28 @@ class AuditTests(unittest.TestCase):
         self.record['attempts'] = self.record['attempts'][:1]
         self.assertIn('attempt_inventory_mismatch', self.check()['issues'])
 
+    def test_extreme_finite_decimal_cost_fails_closed(self):
+        # Decimal accepts this finite literal; default-context addition
+        # overflows. No supplied manifest may crash the HOLD-only audit.
+        self.record['attempts'][0]['cost_usd'] = '1e999999999'
+        result = self.check()
+        self.assertEqual(result['integrity'], 'FAIL')
+        self.assertIn('attempt_cost:0', result['issues'])
+        self.assertEqual(result['declared_attempt_cost_usd'], '0.8')
+
+    def test_high_precision_cost_cannot_silently_round(self):
+        self.record['attempts'][0]['cost_usd'] = '0.123456789012345678901234567891'
+        result = self.check()
+        self.assertEqual(result['integrity'], 'FAIL')
+        self.assertIn('attempt_cost:0', result['issues'])
+
+    def test_small_failed_attempt_cost_cannot_be_lost_in_sum(self):
+        self.record['attempts'][0]['cost_usd'] = '9999999999999999999999999999'
+        self.record['attempts'][1]['cost_usd'] = '0.01'
+        result = self.check()
+        self.assertEqual(result['integrity'], 'FAIL')
+        self.assertIn('attempt_cost:1', result['issues'])
+
     def test_unknown_is_not_success(self):
         self.record['attempts'][2]['state'] = 'unknown'
         self.assertIn('unresolved_attempts', self.check()['issues'])

@@ -5,7 +5,7 @@ Hashes bytes but cannot authenticate a signature, an owner, a human operator, or
 an economic benefit. NEVER emits CLOSED or grants any runtime capability.
 """
 import argparse
-from decimal import Decimal, InvalidOperation
+from decimal import Decimal, DecimalException, Inexact, InvalidOperation, localcontext
 import hashlib
 import json
 import os
@@ -210,8 +210,13 @@ def inspect(manifest: Path) -> dict:
             amount = Decimal(attempt['cost_usd'])
             if not amount.is_finite() or amount < 0:
                 raise InvalidOperation()
-            total += amount
-        except InvalidOperation:
+            # An enormous exponent can overflow the decimal context; a long
+            # fractional amount can otherwise lose nonzero failure costs.
+            # Neither is acceptable as a successful cost reconciliation.
+            with localcontext() as arithmetic:
+                arithmetic.traps[Inexact] = True
+                total = total + amount
+        except DecimalException:
             fail(f'attempt_cost:{n}')
     if len(got) != len(set(x for x in got if isinstance(x, str))) or (
         all(isinstance(x, str) for x in admitted) and set(x for x in got if isinstance(x, str)) != set(admitted)
