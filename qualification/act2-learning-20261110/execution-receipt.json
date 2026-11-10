@@ -1,0 +1,29 @@
+{
+  "command": [
+    "python3",
+    "/workspace/scratch/bea4b0a478f1/act2-closure-learning/scripts/act2_learning/run.py",
+    "--output",
+    "/workspace/scratch/bea4b0a478f1/act2-closure-learning/qualification/act2-learning-20261110/run1",
+    "--training-repeats",
+    "8"
+  ],
+  "source_before": {
+    "models.py": "f16718a16a52dfe79c3d527555ce23eefb3d401820746182d33a8bf8cc885ee2",
+    "run.py": "1693c1f81708d755aae92405ade26fcad7055eef9ebf9860a45012671fec0b2f",
+    "sqlite_destination.py": "ca4bfe52b1fe9344cf05fbd18713877af6cd77cc57f4877c9addb5321a2b04c4"
+  },
+  "environment_override": {
+    "OPENBLAS_NUM_THREADS": "1"
+  },
+  "started_unix_ns": 1794294032150493032,
+  "exit_code": 0,
+  "elapsed_ns": 6501581273,
+  "finished_unix_ns": 1794294038652080755,
+  "source_after": {
+    "models.py": "f16718a16a52dfe79c3d527555ce23eefb3d401820746182d33a8bf8cc885ee2",
+    "run.py": "1693c1f81708d755aae92405ade26fcad7055eef9ebf9860a45012671fec0b2f",
+    "sqlite_destination.py": "ca4bfe52b1fe9344cf05fbd18713877af6cd77cc57f4877c9addb5321a2b04c4"
+  },
+  "log_bytes": 467,
+  "log_sha256": "9a761311878a542238644d10a1d9e54db1480af93de56675e6d514503bea9a61"
+}
