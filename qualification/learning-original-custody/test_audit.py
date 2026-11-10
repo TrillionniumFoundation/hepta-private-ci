@@ -251,6 +251,27 @@ class AuditTests(unittest.TestCase):
         manifest.write_text(json.dumps(self.record))
         self.assertIn('bad_manifest:ValueError', inspect(manifest)['issues'])
 
+    def test_manifest_reader_never_uses_unbounded_read_bytes(self):
+        from unittest import mock
+        manifest = self.root / 'manifest.json'
+        manifest.write_text(json.dumps(self.record))
+        with mock.patch.object(Path, 'read_bytes',
+                               side_effect=AssertionError('unbounded read')):
+            result = inspect(manifest)
+        self.assertEqual(result['integrity'], 'PASS')
+        self.assertEqual(result['status'], 'HOLD')
+
+    def test_oversized_sparse_receipt_rejected_on_open_descriptor(self):
+        from audit import MAX_RECEIPT_BYTES
+        # Sparse file avoids allocating 64 MiB while exercising fstat after
+        # the open; no receipt bytes are hashed for this stage.
+        with (self.root / 'training.receipt').open('wb') as stream:
+            stream.truncate(MAX_RECEIPT_BYTES + 1)
+        result = self.check()
+        self.assertIn('receipt_unreadable:training', result['issues'])
+        self.assertEqual(result['receipt_bytes_matched'], len(STAGES) - 1)
+        self.assertEqual(result['status'], 'HOLD')
+
     def test_manifest_size_bounded_before_parsing(self):
         from audit import MAX_MANIFEST_BYTES
         manifest = self.root / 'manifest.json'
