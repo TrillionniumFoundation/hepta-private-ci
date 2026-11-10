@@ -1,0 +1,156 @@
+{
+  "schema": "hepta.verify.host-observation.v1",
+  "observed_at_utc": "2026-11-10T12:54:51.868163+00:00",
+  "scope": "Read-only bounded discovery of configured main and desktop hosts; no exhaustive corpus claim.",
+  "local_repo_snapshot": "/workspace/scratch/3a9f1e34ac14/hepta-verify4",
+  "verified_completed_inventory_streams": [
+    {
+      "host": "desktop",
+      "job_id": "1a1c57da6ef-2e65-15c",
+      "stdout_eof": true,
+      "stderr_eof": true,
+      "stderr_bytes": 0,
+      "working_directory": "/home/qian-qi",
+      "discovered_paths": [
+        "/opt/hepta-private-ci"
+      ],
+      "available_executables": [
+        "/usr/bin/gh",
+        "/usr/bin/git"
+      ],
+      "qualification": "Inventory readback only; checkout identity and current GitHub permissions not established."
+    },
+    {
+      "host": "main",
+      "job_id": "1a1c57cc651-2e65-14f",
+      "stdout_eof": true,
+      "stderr_eof": true,
+      "stderr_bytes": 0,
+      "working_directory": "/Users/qianqi",
+      "available_executables": [
+        "/usr/bin/git"
+      ],
+      "qualification": "gh absent from command -v output in the initial default PATH; actual binary availability not independently established by this inventory."
+    }
+  ],
+  "read_only_path_evidence": {
+    "main_publisher_script": "/Users/qianqi/work/stark-git-data-publisher-v4-20261110.py",
+    "publisher_configured_gh": "/opt/homebrew/bin/gh",
+    "publisher_semantics": "Retained Chain-specific script uses local gh Git Data API, verifies ProfHepta, pins parent commit/tree/ref, checks exact blob/commit identities, and reads back publication.",
+    "publisher_caveat": "Script was read, not executed. It is restricted to Trillionnium-Chain and must not be run unchanged for hepta-private-ci. Its configured gh path does not prove fresh authentication.",
+    "historical_source_paths": [
+      "/Users/qianqi/work/hepta-decisioncell-src",
+      "/Users/qianqi/work/cell-six-stage-20261108-r1",
+      "/Users/qianqi/work/learning-owner-c112-20261109/source"
+    ],
+    "historical_source_qualification": "AGENTS.md paths observed through bounded depth-3 listing. Current branch/head and suitability as a current VERIFY checkout were not established."
+  },
+  "unknown_outcome_requests": [
+    {
+      "host": "desktop",
+      "tool": "h.shell_start",
+      "idempotency_key": "verify4-desktop-repo-github-inventory-20261110-02",
+      "requested_work": "Read-only repo identity/status and GitHub repository permission metadata probe.",
+      "result": "MCP request timed out",
+      "job_id": null,
+      "launch_outcome": "UNKNOWN",
+      "retried": false
+    },
+    {
+      "host": "main",
+      "tool": "h.shell_start",
+      "idempotency_key": "verify4-main-repo-inventory-20261110-02",
+      "requested_work": "Read-only top-level workspace directory and gh executable path existence probe.",
+      "result": "MCP request timed out",
+      "job_id": null,
+      "launch_outcome": "UNKNOWN",
+      "retried": false
+    },
+    {
+      "host": "main",
+      "tool": "h.process_start",
+      "idempotency_key": "verify4-main-gh-read-20261110-03",
+      "requested_work": "/opt/homebrew/bin/gh api repos/TrillionniumFoundation/hepta-private-ci --jq {full_name,default_branch,permissions}",
+      "result": "MCP request timed out",
+      "job_id": null,
+      "launch_outcome": "UNKNOWN",
+      "retried": false
+    }
+  ],
+  "connectivity_observations": [
+    {
+      "host": "main",
+      "interface": "h.view",
+      "result": "Read-only publisher source and bounded repository-path listing succeeded."
+    },
+    {
+      "host": "desktop",
+      "interface": "h.view",
+      "result": "Remote helper failed with exit 255; SSH connection closed. No credential material inspected."
+    },
+    {
+      "host": "main",
+      "interface": "h.search_start/results",
+      "result": "Bounded search acknowledged and terminal result retrieved."
+    }
+  ],
+  "bounded_search": {
+    "host": "main",
+    "root": "/Users/qianqi/work",
+    "kind": "files",
+    "query": "*verify*",
+    "query_mode": "glob",
+    "ignore_case": true,
+    "search_id": "543aa096923f30da8451d43899bbfa06b23ff643f1b7da154785fe6a0318db5e",
+    "limits": {
+      "entries": 10000,
+      "results": 100,
+      "seconds": 15,
+      "bytes": 67108864
+    },
+    "excluded_patterns": [
+      "**/.git/**",
+      "**/target/**",
+      "**/node_modules/**",
+      "**/.venv/**"
+    ],
+    "observed": {
+      "state": "limited",
+      "reason": "entry_limit",
+      "entries": 10000,
+      "results": 7,
+      "coverage_complete": false,
+      "traversal_complete": false,
+      "bytes": 0
+    },
+    "qualification": "The seven returned paths were unrelated tooling/weight verification scripts. This limited search did not locate an admissible VERIFY field corpus and does not establish that no corpus exists."
+  },
+  "field_evidence": {
+    "new_independent_real_tasks_admitted": 0,
+    "meaning": "No new independent real tasks were admitted by this investigation; this is not a count of every task potentially available on user hosts.",
+    "available_evidence_type": "Existing package documentation describes controlled SQLite cases and callback trust boundaries.",
+    "exact_missing_material": [
+      "A frozen prospective VERIFY task/source-group roster linked to actual task owners and admissible independent sampling or matched assignment design.",
+      "Original owner-selected acceptance policy and current trust configuration for the independent terminal adjudicator.",
+      "Authenticated terminal labels whose retained attestations bind the study, task, source, subject, version, evaluator, and horizon and can be reverified after recovery.",
+      "Actual per-task execution/check/repair/disposition receipts and complete physical cost records, including unchecked and abstained cases."
+    ],
+    "existing_documented_limits": [
+      "PROSPECTIVE.md states original authentication callback signatures/attestations were not retained or reverified on reopening.",
+      "MODEL_PILOT.md describes source groups reusing synthetic generation mechanisms, not independent natural tasks.",
+      "VERIFY2.md states no production signer, evaluator, or acceptance owner is installed by the research package."
+    ],
+    "intended_native_authorities": [
+      "codex-rs/hepta-agentd/src/evidence_host.rs: owner-configured trust, current host generation, signing claims, bounded ingress.",
+      "codex-rs/hepta-agentd/src/automation_effect_host.rs: owner-selected endpoint/scope, revocation refresh, dispatch fence, destination status and terminal acknowledgement."
+    ]
+  },
+  "actions": {
+    "user_data_mutations": 0,
+    "external_messages_sent": 0,
+    "deployments": 0,
+    "unknown_jobs_relaunched": 0,
+    "publisher_executed": false
+  },
+  "publication_handoff": "Parent will use the working selected GitHub connector because fresh local gh execution could not be confirmed. Reconcile any unknown operation using its original idempotency key; do not create replacement keys."
+}

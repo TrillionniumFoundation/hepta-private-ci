@@ -1,0 +1,83 @@
+{
+  "schema": "hepta.verify4.eval-regressions.v1",
+  "started_at_utc": "2026-11-10T12:52:53.094140+00:00",
+  "baseline_remote_commit": "a2cd828aad47c56ac8c01dc2e423454eca7eafae",
+  "baseline_source_sha256": "7bc6e21c589e85a2e7f3d99b6634083715555856d87b2c5e6500a6d985dd1738",
+  "current_source_sha256": "4d4cdb8731ba8299e04e68b8f2d587c9562480e3349d7fc0fb9463a951bc9d1c",
+  "cases": [
+    {
+      "name": "no_authenticated_design",
+      "baseline_externally_reviewable": true,
+      "current_externally_reviewable": false,
+      "baseline_p": 0.00390625,
+      "current_inferential_p": null,
+      "current_conditional_p": 0.00390625,
+      "current_gates": {
+        "roster_complete": true,
+        "horizon_labels_complete": true,
+        "physical_costs_complete_claim_verified": true,
+        "independent_labels_receipt_authenticated": true,
+        "whole_cluster_assignment_consistent": true,
+        "frozen_design_receipt_bound": false,
+        "independent_randomized_design_authenticated": false,
+        "coverage": true,
+        "accepted_error_noninferiority": true,
+        "terminal_error_reduction": true,
+        "mean_total_loss_improvement": true,
+        "paired_statistical_threshold": false,
+        "externally_reviewable": false
+      }
+    },
+    {
+      "name": "mixed_within_cluster_assignment",
+      "baseline_externally_reviewable": true,
+      "current_externally_reviewable": false,
+      "baseline_p": 0.00390625,
+      "current_inferential_p": null,
+      "current_conditional_p": 0.00390625,
+      "current_gates": {
+        "roster_complete": true,
+        "horizon_labels_complete": true,
+        "physical_costs_complete_claim_verified": true,
+        "independent_labels_receipt_authenticated": true,
+        "whole_cluster_assignment_consistent": false,
+        "frozen_design_receipt_bound": true,
+        "independent_randomized_design_authenticated": false,
+        "coverage": true,
+        "accepted_error_noninferiority": true,
+        "terminal_error_reduction": true,
+        "mean_total_loss_improvement": true,
+        "paired_statistical_threshold": false,
+        "externally_reviewable": false
+      }
+    },
+    {
+      "name": "zero_net_benefit",
+      "baseline_externally_reviewable": true,
+      "current_externally_reviewable": false,
+      "baseline_p": 1.0,
+      "current_inferential_p": 1.0,
+      "current_conditional_p": 1.0,
+      "current_gates": {
+        "roster_complete": true,
+        "horizon_labels_complete": true,
+        "physical_costs_complete_claim_verified": true,
+        "independent_labels_receipt_authenticated": true,
+        "whole_cluster_assignment_consistent": true,
+        "frozen_design_receipt_bound": true,
+        "independent_randomized_design_authenticated": true,
+        "coverage": true,
+        "accepted_error_noninferiority": true,
+        "terminal_error_reduction": true,
+        "mean_total_loss_improvement": false,
+        "paired_statistical_threshold": true,
+        "externally_reviewable": false
+      }
+    }
+  ],
+  "real_independent_tasks": 0,
+  "production_authority": "NONE",
+  "scientific_admission": "HOLD",
+  "elapsed_wall_seconds": 0.0057360289999905945,
+  "exit_code": 0
+}
