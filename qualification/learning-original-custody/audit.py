@@ -96,8 +96,16 @@ def inspect(manifest: Path) -> dict:
 
     try:
         root = manifest.resolve(strict=True).parent
-        # Limit the read itself, not merely the size of an already loaded blob.
-        with manifest.open('rb') as stream:
+        # Limit the read AND refuse special-file and symlink manifest leaves.
+        # A bounded read from a blocking FIFO is still an unbounded wait.
+        nofollow = getattr(os, 'O_NOFOLLOW', None)
+        if nofollow is None:
+            raise ValueError('no-follow manifest open not supported')
+        flags = os.O_RDONLY | nofollow | getattr(os, 'O_NONBLOCK', 0)
+        with os.fdopen(os.open(manifest, flags), 'rb') as stream:
+            opened = os.fstat(stream.fileno())
+            if not stat.S_ISREG(opened.st_mode) or opened.st_size > MAX_MANIFEST_BYTES:
+                raise ValueError('manifest not regular or exceeds maximum bytes')
             raw_manifest = stream.read(MAX_MANIFEST_BYTES + 1)
         if len(raw_manifest) > MAX_MANIFEST_BYTES:
             raise ValueError('manifest exceeds maximum bytes')

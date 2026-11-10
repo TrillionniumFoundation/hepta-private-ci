@@ -1,6 +1,7 @@
 """Synthetic negatives only: they are not independent learning evidence."""
 import hashlib
 import json
+import os
 from pathlib import Path
 import tempfile
 import unittest
@@ -321,6 +322,25 @@ class AuditTests(unittest.TestCase):
         self.assertIn('receipt_unreadable:training', result['issues'])
         self.assertEqual(result['receipt_bytes_matched'], len(STAGES) - 1)
         self.assertEqual(result['status'], 'HOLD')
+
+    @unittest.skipUnless(hasattr(os, 'mkfifo'), 'POSIX FIFO required')
+    def test_fifo_manifest_is_rejected_without_waiting_for_writer(self):
+        # The original bounded stream.read still blocked on a FIFO before
+        # reading any bytes; O_NONBLOCK plus fstat must fail before the read.
+        manifest = self.root / 'manifest.json'
+        os.mkfifo(manifest)
+        result = inspect(manifest)
+        self.assertEqual(result['integrity'], 'FAIL')
+        self.assertIn('bad_manifest:ValueError', result['issues'])
+
+    def test_symlink_manifest_leaf_is_not_accepted_as_original(self):
+        target = self.root / 'actual-manifest.json'
+        target.write_text(json.dumps(self.record))
+        manifest = self.root / 'manifest.json'
+        manifest.symlink_to(target)
+        result = inspect(manifest)
+        self.assertEqual(result['integrity'], 'FAIL')
+        self.assertIn('bad_manifest:OSError', result['issues'])
 
     def test_manifest_size_bounded_before_parsing(self):
         from audit import MAX_MANIFEST_BYTES
