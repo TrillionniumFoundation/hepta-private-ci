@@ -408,6 +408,114 @@ class FunctionOrderTests(unittest.TestCase):
             )
 
 
+class LiteralCallOrderTests(unittest.TestCase):
+    begin = '.begin_with("BEGIN IMMEDIATE")'
+    query = 'sqlx::query("UPDATE tasks SET retired = 1 WHERE owner = ? AND run = ?")'
+    source = f"fn retire() {{ pool{begin}; read(); check(); {query}; commit(); }}"
+
+    def verify(self, source, *, literal_calls=None):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "source.rs").write_text(source)
+            row = {
+                "path": "source.rs",
+                "required": [],
+                "forbidden": [],
+                "required_function_order": [
+                    {
+                        "function": "fn retire(",
+                        "sequence": [
+                            self.begin,
+                            "read()",
+                            "check()",
+                            self.query,
+                            "commit()",
+                        ],
+                        "literal_calls": [self.begin, self.query]
+                        if literal_calls is None
+                        else literal_calls,
+                        "top_level": [".begin_with(", "sqlx::query(", "commit()"],
+                    }
+                ],
+            }
+            return MODULE._verify_protected_files(root, {"protected_file": [row]})
+
+    def test_exact_literal_calls_in_original_function_pass(self):
+        self.assertEqual(self.verify(self.source), ["source.rs"])
+
+    def test_changed_or_removed_transaction_sql_is_rejected(self):
+        for old, new in (
+            ("BEGIN IMMEDIATE", "BEGIN DEFERRED"),
+            ("retired = 1", "retired = 0"),
+            (" WHERE owner = ? AND run = ?", ""),
+            (self.query, ""),
+        ):
+            with self.subTest(new=new), self.assertRaises(MODULE.VerificationFailure):
+                self.verify(self.source.replace(old, new))
+
+    def test_comments_or_quoted_examples_cannot_supply_sql(self):
+        for replacement in (
+            f"/* {self.query} */",
+            f"// {self.query}\n",
+            f'let example = r#"{self.query}"#',
+        ):
+            with (
+                self.subTest(replacement=replacement),
+                self.assertRaises(MODULE.VerificationFailure),
+            ):
+                self.verify(self.source.replace(self.query, replacement))
+
+    def test_nested_or_conditional_sql_is_rejected(self):
+        for replacement in (
+            f"fn unused() {{ {self.query}; }}",
+            f"let unused = || {{ {self.query}; }}",
+            f"if false {{ {self.query}; }}",
+        ):
+            with (
+                self.subTest(replacement=replacement),
+                self.assertRaises(MODULE.VerificationFailure),
+            ):
+                self.verify(self.source.replace(self.query, replacement))
+
+    def test_update_before_identity_checks_and_duplicate_queries_are_rejected(self):
+        early = self.source.replace(self.query + "; ", "").replace(
+            "read();", self.query + "; read();"
+        )
+        duplicate = self.source.replace(self.query, self.query + "; " + self.query)
+        for source in (early, duplicate):
+            with (
+                self.subTest(source=source),
+                self.assertRaises(MODULE.VerificationFailure),
+            ):
+                self.verify(source)
+
+    def test_other_quoted_code_cannot_supply_an_ordinary_guard(self):
+        with self.assertRaises(MODULE.VerificationFailure):
+            self.verify(self.source.replace("read();", 'let example = "read()";'))
+
+    def test_configured_literal_cannot_supply_an_ordinary_guard(self):
+        extra = 'inspect("read()")'
+        with self.assertRaises(MODULE.VerificationFailure):
+            self.verify(
+                self.source.replace("read();", extra + ";"),
+                literal_calls=[self.begin, self.query, extra],
+            )
+
+    def test_literal_call_configuration_requires_actual_literal_call_syntax(self):
+        for markers in (
+            "bad",
+            ["read()"],
+            ['"literal"'],
+            ["/* comment */ read()"],
+            [self.begin, self.begin],
+        ):
+            with (
+                self.subTest(markers=markers),
+                self.assertRaises(MODULE.VerificationFailure),
+            ):
+                self.verify(self.source, literal_calls=markers)
+
+
 class OriginalNotesSourceGuardTests(unittest.TestCase):
     """Exercise registered guards against mutations of the actual product source."""
 

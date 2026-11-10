@@ -9,12 +9,12 @@ Seven responsibilities retain heterogeneous implementations: frozen shared seman
 - Temporal output capacity is checked before numerical work. An insufficient prefix remainder yields a measured, state-preserving Rejected proposal that the original journal can settle. Cancellation, deadline and control-only STOP retain priority. Regression covers exact/full remainder, ACK, cold reopen, cost, replay and STOP.
 - Check assessment validates the original provider intent, both binding digests and destination shape, including Unknown clock input. Parent clock validation remains present. Recommendations remain advisory.
 - Recovery after a committed exact ACK retires the local outbox slot without contacting unavailable training/checkpoint/signature owners. Full request/owner digest, source, operation, task receipt and objective stay bound; the original SQLite transaction revalidates the ACK and history. No learning snapshot or new acceptance is issued. Cold SQLite and mismatch regressions cover this boundary.
-- The retirement caller set is unchanged. Ordered guards and five static regressions cover the cleanup path.
+- The retirement caller set is unchanged. Ordered guards and five static regressions cover cleanup. Two inherited format-only markers are aligned with unchanged Rust. Exact SQL call spans are validated without allowing quoted data to satisfy ordinary guards; eight additional regressions cover the literal-aware verifier.
 - The existing native workflow retains its helper/library/JUnit gates, adds this branch, disables Cargo HTTP multiplexing and permits five dependency-transfer retries.
 
 ## Validation
 
-Fresh recovery: caller suite 57/57 passed; validator self-test and selected protected-source checks passed. The full repository caller scan and new native candidate are pending. The recovery receipt binds the original recovered bytes; later newline/format maintenance is recorded separately.
+Fresh recovery: caller suite 65/65 passed; validator self-test and all 166 protected-source checks passed. The complete boundary scan is running. Native run r3 on source `2d8295c6d904ab7b770fed345a1cd2a6308c76ca` observed 653 passes and 435 failures; several original fixture failures explicitly report ENOSPC. /tmp inode accounting was 1,048,519 used of 1,048,576 (57 free). A separate run with an owned temporary directory and independent JUnit is pending. The shared target JUnit was overwritten by another one-test run and is excluded from r3 qualification. The recovery receipt binds the original recovered bytes; later newline/format maintenance is recorded separately.
 
 Earlier local scoped just test could not execute because cargo-nextest was absent. Scoped just fix lacked the pinned offline crossterm Git dependency. just fmt succeeded with available Rust 1.95, whereas this repository pins 1.96. These observations do not establish native qualification. No failed or unrun test is counted as passing.
 
