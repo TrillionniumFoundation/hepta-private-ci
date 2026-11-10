@@ -10,6 +10,18 @@ use pretty_assertions::assert_eq;
 use super::*;
 use crate::CellQ24FeatureWorkerV1;
 
+fn feature_model(root: &Path) -> anyhow::Result<LoadedCellQ24ModelV1> {
+    // The ordinary sparse Cell admits width >= 5 and at most 20% activity.
+    // Construct real five-output model bytes before freezing the baseline;
+    // the two-output GenerationV2 fixture is not a valid sparse Cell profile.
+    drop(load(root, /*factor*/ 1)?);
+    fs::write(root.join("heads"), matrix(/*rows*/ 10, /*cols*/ 2, &[
+        Q, 0, 0, Q, 0, 0, 0, 0, 0, 0,
+        -Q, 0, 0, -Q, 0, 0, 0, 0, 0, 0,
+    ]))?;
+    private_head::reopen(root)
+}
+
 fn definition(model: &LoadedCellQ24ModelV1, bundle: &CellCompatibilityBundleV1) -> anyhow::Result<CellDefinitionV1> {
     let mut definition = crate::circuit_cell::tests::support::definition();
     let c = model.components();
@@ -37,8 +49,6 @@ fn definition(model: &LoadedCellQ24ModelV1, bundle: &CellCompatibilityBundleV1) 
     r.calibration.generation = bundle.generation;
     r.resource_envelope.p99_latency_micros = 10_000_000;
     definition.max_queue_age_micros = 10_000_000;
-    definition.candidates.retain(|candidate| candidate.kind != CellCandidateKindV1::SlowPath);
-    definition.candidates[1].activation_index = 1;
     definition.semantic_digest()?;
     Ok(definition)
 }
@@ -84,19 +94,19 @@ fn serve(root: &Path, model: Arc<LoadedCellQ24ModelV1>, bundle: &CellCompatibili
 #[test]
 fn q24_feature_real_trained_rows_execute_in_fresh_ordinary_cell_inputs() -> anyhow::Result<()> {
     let model_root = tempfile::tempdir()?;
-    let baseline = Arc::new(load(model_root.path(), /*factor*/ 1)?);
+    let baseline = Arc::new(feature_model(model_root.path())?);
     let selected = bundle(&baseline, /*prior*/ None)?;
     let original_heads = fs::read(model_root.path().join("heads"))?;
     let original_components = baseline.components().clone();
     let values = [Q / 4, Q / 2];
     let before_root = tempfile::tempdir()?;
     let before = serve(before_root.path(), Arc::clone(&baseline), &selected, values)?;
-    assert_eq!(before.representation.drive_q24, vec![Q / 2, 3 * Q / 2]);
-    assert_eq!(before.representation.prediction_q24, vec![-Q / 2, -3 * Q / 2]);
+    assert_eq!(before.representation.drive_q24, vec![Q / 2, 3 * Q / 2, 0, 0, 0]);
+    assert_eq!(before.representation.prediction_q24, vec![-Q / 2, -3 * Q / 2, 0, 0, 0]);
     let rule = CellQ24SgdRuleV1 { epochs: 2, learning_rate_q24: Q / 2 };
     for (head, target, changed_index) in [
         (CellQ24PrivateHeadV1::Drive { index: 0 }, 2 * Q, 0),
-        (CellQ24PrivateHeadV1::Prediction { index: 0 }, 0, 2),
+        (CellQ24PrivateHeadV1::Prediction { index: 0 }, 0, 5),
     ] {
         let data = batch(target)?;
         let (plan, _) = plan(Arc::clone(&baseline), &selected, &data, head, rule, "none")?;
@@ -127,7 +137,7 @@ fn q24_feature_real_trained_rows_execute_in_fresh_ordinary_cell_inputs() -> anyh
 #[test]
 fn q24_feature_original_pending_reopens_control_and_cell_without_native_reexecution() -> anyhow::Result<()> {
     let model_root = tempfile::tempdir()?;
-    let model = Arc::new(load(model_root.path(), /*factor*/ 1)?);
+    let model = Arc::new(feature_model(model_root.path())?);
     let bundle = bundle(&model, /*prior*/ None)?;
     let definition = definition(&model, &bundle)?;
     let input = input(&definition, [Q / 4, Q / 2]);
@@ -180,7 +190,7 @@ fn q24_feature_original_pending_reopens_control_and_cell_without_native_reexecut
 #[test]
 fn q24_feature_rejects_changed_material_pins_and_noncanonical_input() -> anyhow::Result<()> {
     let root = tempfile::tempdir()?;
-    let model = Arc::new(load(root.path(), /*factor*/ 1)?);
+    let model = Arc::new(feature_model(root.path())?);
     let bundle = bundle(&model, /*prior*/ None)?;
     let original = definition(&model, &bundle)?;
     for field in ["weights", "encoder", "runtime", "quantization", "manifest"] {
