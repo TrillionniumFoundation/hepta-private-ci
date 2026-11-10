@@ -239,7 +239,14 @@
           {
             "run": 42817568264,
             "scope": "blocking-ci",
-            "status": "IN_PROGRESS"
+            "status": "FAILURE_INHERITED_MACRO_COMPILE_THEN_RUNNER_DISK_EXHAUSTION",
+            "job": 129888035992,
+            "exact_result": "affected-owner reverse-consumer command reached codex-hepta-agentd and failed with the same 16 inherited E0659 assert_eq ambiguities; while other compilation continued the hosted runner fell to 92 MB free and then failed writing codex-core query cache with No space left on device",
+            "classification": "no borrowed wait-adapter semantic assertion failed; macro seam is independently fixed only in later sources and disk exhaustion is a hosted resource failure; this run is not a pass",
+            "artifact_id": 13782662700,
+            "artifact_size_bytes": 24516,
+            "artifact_sha256": "f9b943573ed570d07713982952053ecfca7138b494820a98c09acd0d4e33c347",
+            "retained_zip": "qualification/act2-continuation-20261110/hepta-cargo-impact-42817568264.zip"
           },
           {
             "run": 42817568241,
