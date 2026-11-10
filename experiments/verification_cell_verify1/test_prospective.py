@@ -232,6 +232,22 @@ class ProspectiveTests(unittest.TestCase):
         with self.assertRaises((ValueError, sqlite3.DatabaseError)):
             ShadowJournal(self.path).report()
 
+    def test_expected_ledger_checkpoint_rejects_truncated_valid_history(self):
+        journal = self.create()
+        journal.record(self.prediction())
+        with journal._transaction() as connection:
+            retained = journal._read(connection)[4]
+        recovered = ShadowJournal(self.path, expected_ledger_sha256=retained)
+        recovered.record(self.prediction(step=2))
+        with self.assertRaisesRegex(ValueError, "retained checkpoint"):
+            ShadowJournal(self.path, expected_ledger_sha256=retained)
+        with journal._transaction() as connection:
+            current = journal._read(connection)[4]
+            connection.execute("DELETE FROM events WHERE seq = 2")
+        with self.assertRaisesRegex(ValueError, "retained checkpoint"):
+            ShadowJournal(self.path, expected_ledger_sha256=current)
+        ShadowJournal(self.path, expected_ledger_sha256=retained)
+
     def test_frozen_manifest_remains_pinned_on_live_and_expected_reopen(self):
         import json
 
