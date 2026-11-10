@@ -225,5 +225,37 @@ class AuditTests(unittest.TestCase):
         self.assertIn('selection_version_mismatch', self.check()['issues'])
 
 
+    def test_duplicate_top_level_operation_rejected_before_byte_check(self):
+        manifest = self.root / 'manifest.json'
+        original = json.dumps(self.record)
+        forged = original.replace('"operation_id": "op-1"',
+                                  '"operation_id": "foreign", "operation_id": "op-1"', 1)
+        self.assertNotEqual(forged, original)
+        manifest.write_text(forged)
+        result = inspect(manifest)
+        self.assertEqual(result['integrity'], 'FAIL')
+        self.assertIn('bad_manifest:ValueError', result['issues'])
+
+    def test_duplicate_nested_receipt_metadata_rejected(self):
+        manifest = self.root / 'manifest.json'
+        original = json.dumps(self.record)
+        forged = original.replace('"task_id": "task-A"',
+                                  '"task_id": "task-A", "task_id": "foreign"', 1)
+        self.assertNotEqual(forged, original)
+        manifest.write_text(forged)
+        self.assertIn('bad_manifest:ValueError', inspect(manifest)['issues'])
+
+    def test_nonfinite_json_constant_rejected(self):
+        manifest = self.root / 'manifest.json'
+        self.record['extra'] = float('nan')
+        manifest.write_text(json.dumps(self.record))
+        self.assertIn('bad_manifest:ValueError', inspect(manifest)['issues'])
+
+    def test_manifest_size_bounded_before_parsing(self):
+        from audit import MAX_MANIFEST_BYTES
+        manifest = self.root / 'manifest.json'
+        manifest.write_bytes(b' ' * (MAX_MANIFEST_BYTES + 1))
+        self.assertIn('bad_manifest:ValueError', inspect(manifest)['issues'])
+
 if __name__ == '__main__':
     unittest.main()
