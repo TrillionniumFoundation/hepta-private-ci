@@ -1,0 +1,24 @@
+{
+  "scope": "Independent original-file readback; does not authenticate native owner or prove full physical cost",
+  "files": [
+    {
+      "name": "RESULT.json",
+      "sha256": "4f5fed3a18729a94152d70dc26add68703224abfc00e856ad6e31398d34cce11",
+      "size": 2852,
+      "text": "{\n  \"base_weights_sha256\": \"db6e3d05270163368d10176299a7d5be3ccee2d8e773fcfbb32454ff1c0f9f54\",\n  \"baseline_fitting\": {\n    \"nll\": 0.1156530363861655,\n    \"quality\": 0.5375,\n    \"source_count\": 40,\n    \"states_without_correct_candidate\": 74,\n    \"unique_states\": 160\n  },\n  \"candidate_fitting\": {\n    \"nll\": 0.021815428377846995,\n    \"quality\": 0.5375,\n    \"source_count\": 40,\n    \"states_without_correct_candidate\": 74,\n    \"unique_states\": 160\n  },\n  \"candidate_weights_sha256\": \"d39de4ed9385039b073446f5fb827d5d90d48dd32a7950746b437479feaed34e\",\n  \"changed_parameter_names\": [\n    \"answer.weight\"\n  ],\n  \"cold_reload_equal\": true,\n  \"cpu_seconds\": 3.98610073,\n  \"device\": \"cpu\",\n  \"duration_scope\": \"worker includes import/read/encode/tune/refit/export; excludes launcher and final receipt serialization\",\n  \"energy_joules\": null,\n  \"fit_sources\": 40,\n  \"future_labels_opened\": false,\n  \"head_sha256\": \"12ba89f47820be17549393420e9d97e2fdb53653f8ae3a670cfd845dd24d5427\",\n  \"independent_future_evaluation_performed\": false,\n  \"max_rss_kib\": 269992,\n  \"native_runner_sha256\": \"bc3127fda76e20b3a11d503e4027c7dedaebf1c0a9a2d8de9b9354908def21c2\",\n  \"numpy_export_selection_disagreements\": 0,\n  \"original_rows\": 200,\n  \"production_update\": \"no-update\",\n  \"provider_charges\": null,\n  \"repair_core_sha256\": \"4f2b7e852fe94b1e15aa084e97ea87db7b0926ac85ab735b462c992873ac3955\",\n  \"request_sha256\": \"3ea9d00f6dc1be41427272a1f79169d3b2bd4b56d8b1b97ec7693be9c9b4824e\",\n  \"schema\": \"ndu.ctrl.answer-repair-native-result.v1\",\n  \"selected_trial\": 2,\n  \"source_files_verified\": 60,\n  \"status\": \"completed\",\n  \"torch\": \"2.9.1+cpu\",\n  \"tuning_trials\": [\n    {\n      \"inner_tune\": {\n        \"nll\": 0.001871651042811385,\n        \"quality\": 0.625,\n        \"source_count\": 8,\n        \"states_without_correct_candidate\": 12,\n        \"unique_states\": 32\n      },\n      \"l2\": 0.0,\n      \"learning_rate\": 0.03,\n      \"steps\": 1000,\n      \"trial\": 0\n    },\n    {\n      \"inner_tune\": {\n        \"nll\": 0.006725074712852825,\n        \"quality\": 0.625,\n        \"source_count\": 8,\n        \"states_without_correct_candidate\": 12,\n        \"unique_states\": 32\n      },\n      \"l2\": 0.1,\n      \"learning_rate\": 0.03,\n      \"steps\": 1000,\n      \"trial\": 1\n    },\n    {\n      \"inner_tune\": {\n        \"nll\": 0.00047633806371554817,\n        \"quality\": 0.625,\n        \"source_count\": 8,\n        \"states_without_correct_candidate\": 12,\n        \"unique_states\": 32\n      },\n      \"l2\": 0.0,\n      \"learning_rate\": 0.1,\n      \"steps\": 1000,\n      \"trial\": 2\n    },\n    {\n      \"inner_tune\": {\n        \"nll\": 0.00671275588417677,\n        \"quality\": 0.625,\n        \"source_count\": 8,\n        \"states_without_correct_candidate\": 12,\n        \"unique_states\": 32\n      },\n      \"l2\": 0.1,\n      \"learning_rate\": 0.1,\n      \"steps\": 1000,\n      \"trial\": 3\n    }\n  ],\n  \"wall_seconds\": 4.045888961991295\n}\n"
+    },
+    {
+      "name": "OUTER_RESULT.json",
+      "sha256": "bb7babc024f0bf65a5b2397c2cd5a107ba8929489c589cf47dacc458e937e71a",
+      "size": 315,
+      "text": "{\"failure\": null, \"outer_worker_wall_seconds\": 4.274599069030955, \"request_sha256\": \"3ea9d00f6dc1be41427272a1f79169d3b2bd4b56d8b1b97ec7693be9c9b4824e\", \"returncode\": 0, \"schema\": \"ndu.ctrl.answer-repair-outer-result.v1\", \"scope\": \"Includes private staging and child; excludes HeptaRuntime control-plane transport\"}\n"
+    },
+    {
+      "name": "FROZEN.json",
+      "sha256": "2cdad8ce005d9196704ad71e7e441efddc107593c151840e6980d7434125d0c8",
+      "size": 737,
+      "text": "{\"bootstrap_sha256\": \"21493391a685927666c170b3c11a51723016cc6ab3a3d811ab6d0fb5eac79f15\", \"dispatch_stdin_sha256\": \"b62387d0a4af8a41edac161ceff2d99f43c071f2dfdbad2615ea6f629346ec25\", \"files\": {\"PLAN.json\": \"e602e8cc91fc26168b70a482c42ec63843872e97d1eee346b65d7e9c5231e15a\", \"REQUEST.json\": \"3ea9d00f6dc1be41427272a1f79169d3b2bd4b56d8b1b97ec7693be9c9b4824e\", \"answer_repair.py\": \"4f2b7e852fe94b1e15aa084e97ea87db7b0926ac85ab735b462c992873ac3955\", \"answer_repair_native.py\": \"bc3127fda76e20b3a11d503e4027c7dedaebf1c0a9a2d8de9b9354908def21c2\"}, \"operation_key\": \"ctrl-answer-repair-fit40-20261110-e323-v1\", \"request_sha256\": \"3ea9d00f6dc1be41427272a1f79169d3b2bd4b56d8b1b97ec7693be9c9b4824e\", \"schema\": \"ndu.ctrl.answer-repair-dispatch.v1\"}\n"
+    }
+  ],
+  "atomic_snapshot": false
+}
