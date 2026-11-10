@@ -265,22 +265,19 @@
             ]
           }
         ],
-        "hosted_status": "PENDING_NO_PASS_TRANSFER",
+        "hosted_status": "PENDING_NEW_HEAD_NO_PASS_TRANSFER",
         "qualification_driver": {
           "pr": 5715,
-          "source": "e82fce5f8e57d60472409d5738ba6729eda0876c",
-          "tree": "a87e115dd03b52523ead78ef129f31f18456b504",
-          "act2_run": 42849794415,
-          "act2_run_status": "IN_PROGRESS_AUTOMATION_PACKAGE",
+          "source": "b453724b33e3db689aaed2287444feb8b5a44452",
+          "tree": "30146c1d55d28ae17596ee5ff994e251bf7902c9",
+          "act2_run": 42878607106,
+          "act2_run_status": "QUEUED",
           "format_job": {
-            "id": 129946993520,
-            "status": "SUCCESS"
+            "status": "NOT_STARTED_NO_JOB_OBSERVED"
           },
           "native_job": {
-            "id": 129946994156,
-            "status": "IN_PROGRESS",
-            "current_step": "Run the affected automation package through its original runner",
-            "later_steps": "memory, exact 1025 capacity, Notes owner/readback, pinned Session/App, real goal, actual-App fence and lint are pending; no result inferred"
+            "status": "NOT_STARTED_NO_JOB_OBSERVED",
+            "later_steps": "all exact-source hosted stages remain pending; no local result is relabelled as hosted"
           },
           "exact_head_checkout": true,
           "preserves": "Hepta source/tree, both locks, pinned desktop source, Session/App binary hashes, native/real-App outputs and always-uploaded raw records",
@@ -308,6 +305,56 @@
                 "sha256": "34f96a518609d1d0dc8b17ff05d7aa3547b67af06d36f9ec87c6cd692d0dd2d2"
               }
             ]
+          },
+          "terminal_watchdog_head": {
+            "source": "e82fce5f8e57d60472409d5738ba6729eda0876c",
+            "tree": "a87e115dd03b52523ead78ef129f31f18456b504",
+            "run": 42849794415,
+            "status": "FAILURE_CAPACITY_WATCHDOG_BEFORE_NOT_RUN_REAL_APP",
+            "format_job": {
+              "id": 129946993520,
+              "status": "SUCCESS"
+            },
+            "native_job": {
+              "id": 129946994156,
+              "status": "FAILURE"
+            },
+            "exact_results": {
+              "automation": "172 passed, 0 failed; 259.214 seconds",
+              "memory": "417 passed, 0 failed; 131.524 seconds",
+              "capacity": "0 passed; exact ignored 1025-operation test hit the dedicated 360.017-second watchdog before assertions completed",
+              "notes_owner_and_readback": "NOT_RUN",
+              "ui_build": "NOT_RUN",
+              "real_notes_goal": "NOT_RUN",
+              "actual_app_fence": "NOT_RUN",
+              "lint_and_final_format": "NOT_RUN"
+            },
+            "source_clean_before_and_after": true,
+            "locks_sha256": {
+              "codex-rs/Cargo.lock": "e47a4418a1e62ea67fa14085fa1c479e90187fed2af9e245893fbd1b5577e425",
+              "desktop/ui/Cargo.lock": "a8b00de25b9b5d47cba0d3458ab24f1c20871a6a2420f91e9c7bf0c1d792c35f"
+            },
+            "pinned_desktop": {
+              "source": "cc33ab6c44f3c945d83cb96be71d861e5613f99e",
+              "tree": "66f1b4f08d3b501139c09df08441595910f93987"
+            },
+            "artifacts": [
+              {
+                "id": 13788972910,
+                "name": "act2-native-e82fce5f8e57d60472409d5738ba6729eda0876c-1",
+                "size_bytes": 45828,
+                "sha256": "1c5507bf0e29001cc62f6f73d7615e72a4c237cf90fd4380310c2905ea9b6ea5",
+                "retained_zip": "qualification/act2-continuation-20261110/act2-native-42849794415.zip"
+              },
+              {
+                "id": 13787064077,
+                "name": "act2-format-e82fce5f8e57d60472409d5738ba6729eda0876c-1",
+                "size_bytes": 187316,
+                "sha256": "174d1a89465387ba62aff3a36c22c8270d117c5d1f3868a81aedbcd616ceedfa",
+                "retained_zip": "qualification/act2-continuation-20261110/act2-format-42849794415.zip"
+              }
+            ],
+            "classification": "capacity qualification harness timeout caused by limit-one repeated discovery over a growing journal; no semantic assertion completed and no later actual-App stage executed"
           },
           "previous_exact_head": {
             "source": "71bf0cd62da76797115e8efb0b29fb498696e196",
@@ -359,6 +406,20 @@
             "changed_file": "codex-rs/.config/nextest.toml",
             "change": "exact 1025-transaction capacity test gets serialized 360-second bounded watchdog and retries=0",
             "does_not_change": "test body, 1025 transactions, assertions, production code, locks, CALLERS, operation, permission, FinalUse, readback, tombstone, receipt or promotion"
+          },
+          "capacity_batch_fix": {
+            "source": "b453724b33e3db689aaed2287444feb8b5a44452",
+            "tree": "30146c1d55d28ae17596ee5ff994e251bf7902c9",
+            "parent": "e82fce5f8e57d60472409d5738ba6729eda0876c",
+            "changed_file": "codex-rs/hepta-memory/src/production_notes_read_fence_tests.rs",
+            "change": "retain 1025 exact original operations and per-request destination receipts, but reconcile in five existing production-bounded pages of at most 256 instead of a limit-one full-ledger rescan after every insertion",
+            "local_exact_results": "ignored capacity test passed twice in 16.535 and 15.968 seconds; complete non-ignored codex-hepta-memory package passed 417/417 with 10 existing skips",
+            "preserves": "1024 readable boundary, 1025 overflow rejection, unchanged recovery anchor, exact operation/receipt binding and no dispatch fallback",
+            "does_not_change": "production code, dependency or lock, CALLERS, original operation, permission, FinalUse, readback, tombstone, receipt or promotion semantics",
+            "hosted": {
+              "act2_run": 42878607106,
+              "status": "QUEUED_NO_RESULT_TRANSFER"
+            }
           }
         },
         "compile_fix": {
@@ -478,6 +539,11 @@
       "source": "c0d5d0ededb6627103c390e86b8714135977025c",
       "run": 42794187070,
       "reason": "Windows original CI fails closed on hosted parent FILE_DELETE_CHILD; same two sandbox groups already failed at parent 4dc5f724 in run 42784395131; no guard weakened"
+    },
+    {
+      "source": "e82fce5f8e57d60472409d5738ba6729eda0876c",
+      "run": 42849794415,
+      "reason": "exact 1025-operation qualification hit its dedicated 360.017-second watchdog after Automation 172/172 and Memory 417/417; no capacity assertion or later actual-App stage completed"
     }
   ],
   "continuation": {
