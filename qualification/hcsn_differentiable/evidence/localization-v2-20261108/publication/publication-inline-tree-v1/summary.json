@@ -1,0 +1,18 @@
+{
+  "status": "failed_api_rate_limited",
+  "job_id": "1a1bb0ee3af-13c47-4b",
+  "exit_code": 1,
+  "timed_out": false,
+  "phase": "initial_read_only_parent_commit",
+  "github_mutation_reached": false,
+  "stage_verified_count": 0,
+  "error_http_status": 403,
+  "rate_resource": "core",
+  "rate_limit": 5000,
+  "rate_remaining": 0,
+  "rate_reset_epoch": 1794140250,
+  "rate_reset_utc": "2026-11-08T12:17:30Z",
+  "rate_observation_job": "1a1bb15475f-13c47-78",
+  "source_plan_sha256": "52e1e4baf0b45012031ff3d9d6cb9ec44c7d2cdffd6a4fc2e60d6403abfee253",
+  "next_step": "Parent-authorized bounded restart after reset using same immutable inputs and same journal; not yet executed at this snapshot."
+}

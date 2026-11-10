@@ -1,0 +1,12 @@
+Traceback (most recent call last):
+  File "<stdin>", line 14, in <module>
+  File "/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/runpy.py", line 268, in run_path
+    return _run_module_code(code, init_globals, run_name,
+  File "/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/runpy.py", line 97, in _run_module_code
+    _run_code(code, mod_globals, init_globals,
+  File "/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/runpy.py", line 87, in _run_code
+    exec(code, run_globals)
+  File "/Users/qianqi/hepta-hcsn-math-closure-20261108-v1/publication/recover_second_blob.py", line 52, in <module>
+    raise RuntimeError('read-only exact-object reconciliation failed: ' + read.stderr[-1000:])
+RuntimeError: read-only exact-object reconciliation failed: Get "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/084a445f325e542357229a34f911634abb04aa8b": dial tcp 140.82.112.6:443: i/o timeout
+

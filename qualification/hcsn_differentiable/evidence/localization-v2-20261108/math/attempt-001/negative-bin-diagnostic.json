@@ -1,0 +1,79 @@
+{
+  "native_job_id": "1a1badb5acf-12894-1dd0",
+  "reference_decimal_digits": 80,
+  "physics_hex": [
+    "0x0.0p+0",
+    "-0x1.eb851eb851eb7p-4",
+    "0x1.6666666666666p-2",
+    "0x1.608b71f63c8d5p+0",
+    "0x1.3333333333333p-3"
+  ],
+  "records": [
+    {
+      "duration": 0.0810876,
+      "minimum_active_bin": 0,
+      "minimum_phase_bin": 0,
+      "status": "passed",
+      "variant": "baseline"
+    },
+    {
+      "duration": 0.0810876,
+      "error": "point transition became negative; the numerical scale is unresolved",
+      "minimum_active_bin": -1.1102230246251565e-16,
+      "minimum_phase_bin": 0,
+      "negative_details": [
+        {
+          "count_negative": 2,
+          "edges": [
+            0,
+            0.009375
+          ],
+          "indices": [
+            87,
+            20,
+            0
+          ],
+          "kind": "active",
+          "mp_active_bin": "1.118858573369923048040421964063422109637e-16",
+          "tails": [
+            0.9999999999999996,
+            0.9999999999999997
+          ],
+          "value": -1.1102230246251565e-16,
+          "x": 0.8222875841068623,
+          "x_hex": "0x1.a502e0d34aa95p-1"
+        }
+      ],
+      "status": "failed",
+      "variant": "space"
+    },
+    {
+      "duration": 0.0810876,
+      "minimum_active_bin": 0,
+      "minimum_phase_bin": 0,
+      "status": "passed",
+      "variant": "phase"
+    },
+    {
+      "duration": 0.0810876,
+      "minimum_active_bin": 0,
+      "minimum_phase_bin": 0,
+      "status": "passed",
+      "variant": "tail"
+    },
+    {
+      "duration": 0.0405438,
+      "minimum_active_bin": 0,
+      "minimum_phase_bin": 0,
+      "status": "passed",
+      "variant": "time"
+    },
+    {
+      "duration": 0.0810876,
+      "minimum_active_bin": 0,
+      "minimum_phase_bin": 0,
+      "status": "passed",
+      "variant": "quadrature"
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "argv": [
+    "/opt/homebrew/bin/gh",
+    "api",
+    "--method",
+    "POST",
+    "repos/TrillionniumFoundation/hepta-private-ci/git/trees",
+    "--input",
+    "/Users/qianqi/hepta-hcsn-math-closure-20261108-v1/publication/journal-inline-tree-v1/stage-05-tree.request.json"
+  ],
+  "attempt": 1,
+  "classification": "network_failure_on_replay_safe_read_or_git_object",
+  "input_body_sha256": "d8394e5fccff5248b1dc5605d12e8cd81ce8ed4fb1ecb45a95c4dee0b8a751e4",
+  "maximum_attempts": 4,
+  "pull_request_creation_replayed": false,
+  "same_command_and_body_on_retry": true,
+  "stderr": "Post \"https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees\": dial tcp 20.250.119.72:443: i/o timeout\n",
+  "transmission_outcome": "not inferred; correctness uses read idempotence or content-addressed/unique-ref semantics"
+}

@@ -1,0 +1,19 @@
+{
+  "argv": [
+    "/opt/homebrew/bin/gh",
+    "api",
+    "--method",
+    "POST",
+    "repos/TrillionniumFoundation/hepta-private-ci/git/blobs",
+    "--input",
+    "/Users/qianqi/hepta-hcsn-math-closure-20261108-v1/publication/journal-inline-tree-v1/blob-bffde92c23ea84e55e7238837bd3154197fed5fb.request.json"
+  ],
+  "attempt": 1,
+  "classification": "network_failure_on_replay_safe_read_or_git_object",
+  "input_body_sha256": "797d80c3215661eb0f3b3977f5b264bf725ee2710a959eecfd11cd20375d2ecb",
+  "maximum_attempts": 4,
+  "pull_request_creation_replayed": false,
+  "same_command_and_body_on_retry": true,
+  "stderr": "Post \"https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs\": dial tcp 140.82.112.5:443: i/o timeout\n",
+  "transmission_outcome": "not inferred; correctness uses read idempotence or content-addressed/unique-ref semantics"
+}

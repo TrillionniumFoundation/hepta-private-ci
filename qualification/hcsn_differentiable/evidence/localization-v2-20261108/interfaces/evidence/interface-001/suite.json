@@ -1,0 +1,3300 @@
+{
+  "arms": [
+    "gru",
+    "cfc",
+    "snn_plif",
+    "ssm_s4d",
+    "attention",
+    "hcsn"
+  ],
+  "attempts": [
+    {
+      "arm": "gru",
+      "budget": {
+        "cuda": false,
+        "external_memory_enforcement": "caller-provided hard envelope required",
+        "gradient_norm_cap": 1.0,
+        "learning_rate": 0.001,
+        "per_arm_seed_seconds": 180,
+        "rss_bytes": 2147483648,
+        "suite_seconds": 1800,
+        "threads": 1,
+        "updates_per_fit": 4,
+        "window_events": 32
+      },
+      "checkpoint_sha256": "550e434a48ee8e3a084b358b27d1eec7c7c04bc048e0e06564381ea57f78ce42",
+      "completed_updates_recorded": 4,
+      "dev_logits_sha256": "ffb49a051cfe122aa8c8fce0957346ac5b9c3c1413015b20593f440c31a87918",
+      "development_cross_entropy": 2.1598075851150957,
+      "energy_missing_reason": "no whole-system meter",
+      "events_sha256": "c670d2e5884d9b558bf943b2da74326e897d33801dfbd0e6c80dde83dd063b06",
+      "exit_code": 0,
+      "features_sha256": "f53de6fcb1d7b497126ed002bc69b310b6ae287550e0a204a6184d4a8a2a296e",
+      "formal_fits_started": 0,
+      "frontend_sha256": "11bd263a2ae3515347b3ab4e3228c83c66cc3e9296f36c9943efb4fc3a794c55",
+      "frozen_parameters_unchanged": true,
+      "independent_unit": "freshly_initialized_training_run",
+      "initialization_sha256": "5768d7c1ddbc17e7c0405c6bd4622dfa4b3af29d3a31ea6142e6e023e30ece4e",
+      "loss_records": [
+        {
+          "diagnostics": {},
+          "loss_before_update": 1.9199821333895424,
+          "preclip_gradient_norm": 1.2590766561501692,
+          "window": [
+            0,
+            32
+          ]
+        },
+        {
+          "diagnostics": {},
+          "loss_before_update": 1.9282973599297044,
+          "preclip_gradient_norm": 1.3231128803406431,
+          "window": [
+            32,
+            64
+          ]
+        },
+        {
+          "diagnostics": {},
+          "loss_before_update": 1.9962781124210365,
+          "preclip_gradient_norm": 1.326007245057259,
+          "window": [
+            64,
+            96
+          ]
+        },
+        {
+          "diagnostics": {},
+          "loss_before_update": 2.2571577405730654,
+          "preclip_gradient_norm": 1.1491303096186072,
+          "window": [
+            96,
+            128
+          ]
+        }
+      ],
+      "model": {
+        "arm": "gru",
+        "claim_boundary": "Tiny interface fixture; unequal capacities; four updates do not establish adequate training.",
+        "device": "cpu",
+        "dtype": "float64",
+        "episode_state": "fresh for every forward",
+        "packages": {
+          "torch": "2.8.0+cu128"
+        },
+        "parameter_bytes": 3416,
+        "source_files_sha256": {
+          "/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/torch/nn/modules/linear.py": "fa22acbb48e41bff3be26779c2f242b15663b8157e54f0d55987721add97d16f",
+          "/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/torch/nn/modules/rnn.py": "10f560ff680379df780263dd0b09051390359e879e9a2ad6bcffb68dd2ff8d70",
+          "/home/qian-qi/hepta-hcsn-localization-v2-20261108-v1/source/proposals/localization-v2/models.py": "d964656caf16183cd552d9ab766d1b52ab76760130f72cde783ad50c8e1299fd"
+        },
+        "source_hash_scope": "Python module definitions/helpers; native libraries identified by Torch build version",
+        "time_semantics": "causal event sequence with shared real-dt feature",
+        "torch_git_version": "a1cb3cc05d46d198467bebbb6e8fba50a325d4e7",
+        "trainable_parameters": 427
+      },
+      "output_directory": "/home/qian-qi/hepta-hcsn-localization-v2-20261108-v1/interface-001/gru-20261108",
+      "peak_rss_bytes": 625102848,
+      "physical_energy_joules": null,
+      "process_cpu_seconds": 3.170006474,
+      "process_wall_seconds": 4.177095761988312,
+      "provider_charges": null,
+      "seed": 20261108,
+      "smoke_fits_started": 1,
+      "source_after": {
+        "proposals/localization-v2/data.py": "0b0676b7ec22cca17b525da25de9c767c2dd06086b177a1de1e201e235952001",
+        "proposals/localization-v2/models.py": "d964656caf16183cd552d9ab766d1b52ab76760130f72cde783ad50c8e1299fd",
+        "proposals/localization-v2/run_interface.py": "dd3f4c109f2f2d23f1b66b8cb21861a5de995f4c632d7286c22d8ff8e24ab684",
+        "qualification/hcsn_differentiable/__init__.py": "bcde159e1a07a1da1df4b22caccae7f974443d34bbd071a6e845791f3e8b4123",
+        "qualification/hcsn_differentiable/benchmark_admission.py": "468f53365852f75d18708b504855ac1b5ad8e982fb4d82a6c5f7ee5bac9eabb0",
+        "qualification/hcsn_differentiable/checkpoint.py": "9565cba284f479bbab7c8ee61ca7a5330ddb9a9c4efed7786d92a37f7a93c793",
+        "qualification/hcsn_differentiable/contract.py": "79e1127dc126fb8ac97ce7542bac2c9d70c71e0fd2d24416f146d4ec82be099e",
+        "qualification/hcsn_differentiable/encoder.py": "8297a3a994e0ff7b97e4d73b4ac92f8bdc8a691dfdf145fc8fcc45be5cad7b18",
+        "qualification/hcsn_differentiable/error_budget.py": "0b378dfea9f72cd946f40248c7573bff324db7fff9570b15cab67d9a2cb78b58",
+        "qualification/hcsn_differentiable/finite_renewal.py": "6f582ab64695ba676f5d1b4f47ceb39c6b4f8a70cde85eafe21ab3aaaca823de",
+        "qualification/hcsn_differentiable/localization_smoke.py": "99c214040e1c2bd3057fb77641c2b75faad3c3c61d48c27fda33629d1332e372",
+        "qualification/hcsn_differentiable/network.py": "04726551b6d4a53de2eb0daa1d8f5f30d96c7852bcf3ee769220ff584e56a687",
+        "qualification/hcsn_differentiable/operator.py": "a372ca8eef2b41714f632e0b1db2a58f98409fbb23858eb83bfe93a7833f1677",
+        "qualification/hcsn_differentiable/regenerative.py": "551bdc384257ab0ae510903165b580c50e761410777480989406395750a71ae1",
+        "qualification/hcsn_differentiable/run_qualification.py": "d84e5fdac31da852f9e4639899dae3e797ee6c0a4e2dd81772d03eff5e43e4c6",
+        "qualification/hcsn_differentiable/value.py": "59847f1a39e834e2eb927840ee608b5914b7a61c1ebb4be7fce956b1285b8101"
+      },
+      "source_before": {
+        "proposals/localization-v2/data.py": "0b0676b7ec22cca17b525da25de9c767c2dd06086b177a1de1e201e235952001",
+        "proposals/localization-v2/models.py": "d964656caf16183cd552d9ab766d1b52ab76760130f72cde783ad50c8e1299fd",
+        "proposals/localization-v2/run_interface.py": "dd3f4c109f2f2d23f1b66b8cb21861a5de995f4c632d7286c22d8ff8e24ab684",
+        "qualification/hcsn_differentiable/__init__.py": "bcde159e1a07a1da1df4b22caccae7f974443d34bbd071a6e845791f3e8b4123",
+        "qualification/hcsn_differentiable/benchmark_admission.py": "468f53365852f75d18708b504855ac1b5ad8e982fb4d82a6c5f7ee5bac9eabb0",
+        "qualification/hcsn_differentiable/checkpoint.py": "9565cba284f479bbab7c8ee61ca7a5330ddb9a9c4efed7786d92a37f7a93c793",
+        "qualification/hcsn_differentiable/contract.py": "79e1127dc126fb8ac97ce7542bac2c9d70c71e0fd2d24416f146d4ec82be099e",
+        "qualification/hcsn_differentiable/encoder.py": "8297a3a994e0ff7b97e4d73b4ac92f8bdc8a691dfdf145fc8fcc45be5cad7b18",
+        "qualification/hcsn_differentiable/error_budget.py": "0b378dfea9f72cd946f40248c7573bff324db7fff9570b15cab67d9a2cb78b58",
+        "qualification/hcsn_differentiable/finite_renewal.py": "6f582ab64695ba676f5d1b4f47ceb39c6b4f8a70cde85eafe21ab3aaaca823de",
+        "qualification/hcsn_differentiable/localization_smoke.py": "99c214040e1c2bd3057fb77641c2b75faad3c3c61d48c27fda33629d1332e372",
+        "qualification/hcsn_differentiable/network.py": "04726551b6d4a53de2eb0daa1d8f5f30d96c7852bcf3ee769220ff584e56a687",
+        "qualification/hcsn_differentiable/operator.py": "a372ca8eef2b41714f632e0b1db2a58f98409fbb23858eb83bfe93a7833f1677",
+        "qualification/hcsn_differentiable/regenerative.py": "551bdc384257ab0ae510903165b580c50e761410777480989406395750a71ae1",
+        "qualification/hcsn_differentiable/run_qualification.py": "d84e5fdac31da852f9e4639899dae3e797ee6c0a4e2dd81772d03eff5e43e4c6",
+        "qualification/hcsn_differentiable/value.py": "59847f1a39e834e2eb927840ee608b5914b7a61c1ebb4be7fce956b1285b8101"
+      },
+      "source_unchanged": true,
+      "status": "completed_interface_only",
+      "torch": "2.8.0+cu128",
+      "trainable_parameters": 427,
+      "wall_seconds": 3.3535729399882257
+    },
+    {
+      "arm": "cfc",
+      "budget": {
+        "cuda": false,
+        "external_memory_enforcement": "caller-provided hard envelope required",
+        "gradient_norm_cap": 1.0,
+        "learning_rate": 0.001,
+        "per_arm_seed_seconds": 180,
+        "rss_bytes": 2147483648,
+        "suite_seconds": 1800,
+        "threads": 1,
+        "updates_per_fit": 4,
+        "window_events": 32
+      },
+      "checkpoint_sha256": "aa379ff601f65e9152bae704f3d661b202845e6ec7715bc11f85fccd9a0a83b4",
+      "completed_updates_recorded": 4,
+      "dev_logits_sha256": "b049d1d802eae85976c19b39952e578a95fc0794cda03b20c8087f9aa510c14b",
+      "development_cross_entropy": 1.8962730016087226,
+      "energy_missing_reason": "no whole-system meter",
+      "events_sha256": "e01574d5e04d4c0f7383a19027911100dd74f994b252f8eb70ebc445aede08e9",
+      "exit_code": 0,
+      "features_sha256": "f53de6fcb1d7b497126ed002bc69b310b6ae287550e0a204a6184d4a8a2a296e",
+      "formal_fits_started": 0,
+      "frontend_sha256": "11bd263a2ae3515347b3ab4e3228c83c66cc3e9296f36c9943efb4fc3a794c55",
+      "frozen_parameters_unchanged": true,
+      "independent_unit": "freshly_initialized_training_run",
+      "initialization_sha256": "48a21d8ac009a961e71d0f253574a76b78eefb4b2b02174cb3307bb897370fa5",
+      "loss_records": [
+        {
+          "diagnostics": {},
+          "loss_before_update": 1.9591008249706245,
+          "preclip_gradient_norm": 1.2266711628915619,
+          "window": [
+            0,
+            32
+          ]
+        },
+        {
+          "diagnostics": {},
+          "loss_before_update": 1.9484465857628175,
+          "preclip_gradient_norm": 1.2184857669836129,
+          "window": [
+            32,
+            64
+          ]
+        },
+        {
+          "diagnostics": {},
+          "loss_before_update": 1.924048943222196,
+          "preclip_gradient_norm": 1.1836279258155327,
+          "window": [
+            64,
+            96
+          ]
+        },
+        {
+          "diagnostics": {},
+          "loss_before_update": 2.1767230320927133,
+          "preclip_gradient_norm": 0.9065325747035714,
+          "window": [
+            96,
+            128
+          ]
+        }
+      ],
+      "model": {
+        "arm": "cfc",
+        "claim_boundary": "Tiny interface fixture; unequal capacities; four updates do not establish adequate training.",
+        "device": "cpu",
+        "dtype": "float64",
+        "episode_state": "fresh for every forward",
+        "packages": {
+          "ncps": "1.0.1",
+          "numpy": "2.3.5",
+          "torch": "2.8.0+cu128"
+        },
+        "parameter_bytes": 6456,
+        "source_files_sha256": {
+          "/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/torch/nn/modules/activation.py": "79dfe46d31be2e8e8ce68908838f42eb83ecc2ffb364e065149d112c8afc8e02",
+          "/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/torch/nn/modules/container.py": "f1397f5d49ab49c17679ef5fbc0403288ad2680dff2b61d5df04d068a6bfc29f",
+          "/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/torch/nn/modules/linear.py": "fa22acbb48e41bff3be26779c2f242b15663b8157e54f0d55987721add97d16f",
+          "/home/qian-qi/hepta-hcsn-localization-v2-20261108-v1/source/proposals/localization-v2/models.py": "d964656caf16183cd552d9ab766d1b52ab76760130f72cde783ad50c8e1299fd",
+          "/home/qian-qi/hepta-hcsn-localization-v2-20261108-v1/venv/lib/python3.12/site-packages/ncps/torch/cfc.py": "3e5c1ddf4bf0829cfaa9c6415d30b8081fdaf2e1f681d02631c497626b67f0ea",
+          "/home/qian-qi/hepta-hcsn-localization-v2-20261108-v1/venv/lib/python3.12/site-packages/ncps/torch/cfc_cell.py": "79dcc1cbb3b6898dc2310e9086a2e031e31cbaeb129d69adcbf45eaa16d6b74d"
+        },
+        "source_hash_scope": "Python module definitions/helpers; native libraries identified by Torch build version",
+        "time_semantics": "official CfC receives real timespans",
+        "torch_git_version": "a1cb3cc05d46d198467bebbb6e8fba50a325d4e7",
+        "trainable_parameters": 807
+      },
+      "output_directory": "/home/qian-qi/hepta-hcsn-localization-v2-20261108-v1/interface-001/cfc-20261108",
+      "peak_rss_bytes": 625803264,
+      "physical_energy_joules": null,
+      "process_cpu_seconds": 3.030346203,
+      "process_wall_seconds": 3.826384849147871,
+      "provider_charges": null,
+      "seed": 20261108,
+      "smoke_fits_started": 1,
+      "source_after": {
+        "proposals/localization-v2/data.py": "0b0676b7ec22cca17b525da25de9c767c2dd06086b177a1de1e201e235952001",
+        "proposals/localization-v2/models.py": "d964656caf16183cd552d9ab766d1b52ab76760130f72cde783ad50c8e1299fd",
+        "proposals/localization-v2/run_interface.py": "dd3f4c109f2f2d23f1b66b8cb21861a5de995f4c632d7286c22d8ff8e24ab684",
+        "qualification/hcsn_differentiable/__init__.py": "bcde159e1a07a1da1df4b22caccae7f974443d34bbd071a6e845791f3e8b4123",
+        "qualification/hcsn_differentiable/benchmark_admission.py": "468f53365852f75d18708b504855ac1b5ad8e982fb4d82a6c5f7ee5bac9eabb0",
+        "qualification/hcsn_differentiable/checkpoint.py": "9565cba284f479bbab7c8ee61ca7a5330ddb9a9c4efed7786d92a37f7a93c793",
+        "qualification/hcsn_differentiable/contract.py": "79e1127dc126fb8ac97ce7542bac2c9d70c71e0fd2d24416f146d4ec82be099e",
+        "qualification/hcsn_differentiable/encoder.py": "8297a3a994e0ff7b97e4d73b4ac92f8bdc8a691dfdf145fc8fcc45be5cad7b18",
+        "qualification/hcsn_differentiable/error_budget.py": "0b378dfea9f72cd946f40248c7573bff324db7fff9570b15cab67d9a2cb78b58",
+        "qualification/hcsn_differentiable/finite_renewal.py": "6f582ab64695ba676f5d1b4f47ceb39c6b4f8a70cde85eafe21ab3aaaca823de",
+        "qualification/hcsn_differentiable/localization_smoke.py": "99c214040e1c2bd3057fb77641c2b75faad3c3c61d48c27fda33629d1332e372",
+        "qualification/hcsn_differentiable/network.py": "04726551b6d4a53de2eb0daa1d8f5f30d96c7852bcf3ee769220ff584e56a687",
+        "qualification/hcsn_differentiable/operator.py": "a372ca8eef2b41714f632e0b1db2a58f98409fbb23858eb83bfe93a7833f1677",
+        "qualification/hcsn_differentiable/regenerative.py": "551bdc384257ab0ae510903165b580c50e761410777480989406395750a71ae1",
+        "qualification/hcsn_differentiable/run_qualification.py": "d84e5fdac31da852f9e4639899dae3e797ee6c0a4e2dd81772d03eff5e43e4c6",
+        "qualification/hcsn_differentiable/value.py": "59847f1a39e834e2eb927840ee608b5914b7a61c1ebb4be7fce956b1285b8101"
+      },
+      "source_before": {
+        "proposals/localization-v2/data.py": "0b0676b7ec22cca17b525da25de9c767c2dd06086b177a1de1e201e235952001",
+        "proposals/localization-v2/models.py": "d964656caf16183cd552d9ab766d1b52ab76760130f72cde783ad50c8e1299fd",
+        "proposals/localization-v2/run_interface.py": "dd3f4c109f2f2d23f1b66b8cb21861a5de995f4c632d7286c22d8ff8e24ab684",
+        "qualification/hcsn_differentiable/__init__.py": "bcde159e1a07a1da1df4b22caccae7f974443d34bbd071a6e845791f3e8b4123",
+        "qualification/hcsn_differentiable/benchmark_admission.py": "468f53365852f75d18708b504855ac1b5ad8e982fb4d82a6c5f7ee5bac9eabb0",
+        "qualification/hcsn_differentiable/checkpoint.py": "9565cba284f479bbab7c8ee61ca7a5330ddb9a9c4efed7786d92a37f7a93c793",
+        "qualification/hcsn_differentiable/contract.py": "79e1127dc126fb8ac97ce7542bac2c9d70c71e0fd2d24416f146d4ec82be099e",
+        "qualification/hcsn_differentiable/encoder.py": "8297a3a994e0ff7b97e4d73b4ac92f8bdc8a691dfdf145fc8fcc45be5cad7b18",
+        "qualification/hcsn_differentiable/error_budget.py": "0b378dfea9f72cd946f40248c7573bff324db7fff9570b15cab67d9a2cb78b58",
+        "qualification/hcsn_differentiable/finite_renewal.py": "6f582ab64695ba676f5d1b4f47ceb39c6b4f8a70cde85eafe21ab3aaaca823de",
+        "qualification/hcsn_differentiable/localization_smoke.py": "99c214040e1c2bd3057fb77641c2b75faad3c3c61d48c27fda33629d1332e372",
+        "qualification/hcsn_differentiable/network.py": "04726551b6d4a53de2eb0daa1d8f5f30d96c7852bcf3ee769220ff584e56a687",
+        "qualification/hcsn_differentiable/operator.py": "a372ca8eef2b41714f632e0b1db2a58f98409fbb23858eb83bfe93a7833f1677",
+        "qualification/hcsn_differentiable/regenerative.py": "551bdc384257ab0ae510903165b580c50e761410777480989406395750a71ae1",
+        "qualification/hcsn_differentiable/run_qualification.py": "d84e5fdac31da852f9e4639899dae3e797ee6c0a4e2dd81772d03eff5e43e4c6",
+        "qualification/hcsn_differentiable/value.py": "59847f1a39e834e2eb927840ee608b5914b7a61c1ebb4be7fce956b1285b8101"
+      },
+      "source_unchanged": true,
+      "status": "completed_interface_only",
+      "torch": "2.8.0+cu128",
+      "trainable_parameters": 807,
+      "wall_seconds": 3.054459927137941
+    },
+    {
+      "arm": "snn_plif",
+      "budget": {
+        "cuda": false,
+        "external_memory_enforcement": "caller-provided hard envelope required",
+        "gradient_norm_cap": 1.0,
+        "learning_rate": 0.001,
+        "per_arm_seed_seconds": 180,
+        "rss_bytes": 2147483648,
+        "suite_seconds": 1800,
+        "threads": 1,
+        "updates_per_fit": 4,
+        "window_events": 32
+      },
+      "checkpoint_sha256": "4cd9fc0e26ecc94a453b259497029f654cd4adfffd91b3312a263a6bdde6f4be",
+      "completed_updates_recorded": 4,
+      "dev_logits_sha256": "0558bb1a541822cbc8455d8bff143b0a90d7ee879c11f1492d95a7ec9c89fb3e",
+      "development_cross_entropy": 2.514125738120914,
+      "energy_missing_reason": "no whole-system meter",
+      "events_sha256": "129e77db09a4b8d9a795847655db2c2171391eac4a99a70d9db4e396dae6d1a2",
+      "exit_code": 0,
+      "features_sha256": "f53de6fcb1d7b497126ed002bc69b310b6ae287550e0a204a6184d4a8a2a296e",
+      "formal_fits_started": 0,
+      "frontend_sha256": "11bd263a2ae3515347b3ab4e3228c83c66cc3e9296f36c9943efb4fc3a794c55",
+      "frozen_parameters_unchanged": true,
+      "independent_unit": "freshly_initialized_training_run",
+      "initialization_sha256": "064e61098ba969bf8e0f251fc34bda65f41884b3a8ae84718db0454c35c7d9de",
+      "loss_records": [
+        {
+          "diagnostics": {
+            "learned_tau": 2.0,
+            "spike_fraction": 0.0
+          },
+          "loss_before_update": 2.474203896392973,
+          "preclip_gradient_norm": 1.0127812534246299,
+          "window": [
+            0,
+            32
+          ]
+        },
+        {
+          "diagnostics": {
+            "learned_tau": 1.9990005010681686,
+            "spike_fraction": 0.0
+          },
+          "loss_before_update": 2.4723725108993455,
+          "preclip_gradient_norm": 1.0062978767687865,
+          "window": [
+            32,
+            64
+          ]
+        },
+        {
+          "diagnostics": {
+            "learned_tau": 1.9980362971418475,
+            "spike_fraction": 0.015625
+          },
+          "loss_before_update": 2.490171252441611,
+          "preclip_gradient_norm": 1.0265896578426932,
+          "window": [
+            64,
+            96
+          ]
+        },
+        {
+          "diagnostics": {
+            "learned_tau": 1.9970758747245356,
+            "spike_fraction": 0.0
+          },
+          "loss_before_update": 2.468709045701564,
+          "preclip_gradient_norm": 1.042818484659491,
+          "window": [
+            96,
+            128
+          ]
+        }
+      ],
+      "model": {
+        "arm": "snn_plif",
+        "claim_boundary": "Tiny interface fixture; unequal capacities; four updates do not establish adequate training.",
+        "device": "cpu",
+        "dtype": "float64",
+        "episode_state": "fresh for every forward",
+        "last_forward_spike_fraction": null,
+        "learned_tau": 2.0,
+        "packages": {
+          "spikingjelly": "0.0.0.0.14",
+          "torch": "2.8.0+cu128"
+        },
+        "parameter_bytes": 1408,
+        "source_files_sha256": {
+          "/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/torch/nn/modules/linear.py": "fa22acbb48e41bff3be26779c2f242b15663b8157e54f0d55987721add97d16f",
+          "/home/qian-qi/hepta-hcsn-localization-v2-20261108-v1/source/proposals/localization-v2/models.py": "d964656caf16183cd552d9ab766d1b52ab76760130f72cde783ad50c8e1299fd",
+          "/home/qian-qi/hepta-hcsn-localization-v2-20261108-v1/venv/lib/python3.12/site-packages/spikingjelly/activation_based/functional.py": "cb16b4d0f77e156ee55b8b590c8d9432b070fead5ac614c5c6adb84753f41793",
+          "/home/qian-qi/hepta-hcsn-localization-v2-20261108-v1/venv/lib/python3.12/site-packages/spikingjelly/activation_based/neuron.py": "a6ca9213da5ab5897fadeea305b45bc4a1868d206aad1579bb88637b47397816",
+          "/home/qian-qi/hepta-hcsn-localization-v2-20261108-v1/venv/lib/python3.12/site-packages/spikingjelly/activation_based/surrogate.py": "c95f5501bb0583025be9ab0e4524a7f215ab25980f5867628a7d700d9e488fbf"
+        },
+        "source_hash_scope": "Python module definitions/helpers; native libraries identified by Torch build version",
+        "time_semantics": "event-indexed PLIF; log1p(real dt) input; no variable-dt decay claim",
+        "torch_git_version": "a1cb3cc05d46d198467bebbb6e8fba50a325d4e7",
+        "trainable_parameters": 176
+      },
+      "output_directory": "/home/qian-qi/hepta-hcsn-localization-v2-20261108-v1/interface-001/snn_plif-20261108",
+      "peak_rss_bytes": 633683968,
+      "physical_energy_joules": null,
+      "process_cpu_seconds": 3.440051565,
+      "process_wall_seconds": 4.327757783001289,
+      "provider_charges": null,
+      "seed": 20261108,
+      "smoke_fits_started": 1,
+      "source_after": {
+        "proposals/localization-v2/data.py": "0b0676b7ec22cca17b525da25de9c767c2dd06086b177a1de1e201e235952001",
+        "proposals/localization-v2/models.py": "d964656caf16183cd552d9ab766d1b52ab76760130f72cde783ad50c8e1299fd",
+        "proposals/localization-v2/run_interface.py": "dd3f4c109f2f2d23f1b66b8cb21861a5de995f4c632d7286c22d8ff8e24ab684",
+        "qualification/hcsn_differentiable/__init__.py": "bcde159e1a07a1da1df4b22caccae7f974443d34bbd071a6e845791f3e8b4123",
+        "qualification/hcsn_differentiable/benchmark_admission.py": "468f53365852f75d18708b504855ac1b5ad8e982fb4d82a6c5f7ee5bac9eabb0",
+        "qualification/hcsn_differentiable/checkpoint.py": "9565cba284f479bbab7c8ee61ca7a5330ddb9a9c4efed7786d92a37f7a93c793",
+        "qualification/hcsn_differentiable/contract.py": "79e1127dc126fb8ac97ce7542bac2c9d70c71e0fd2d24416f146d4ec82be099e",
+        "qualification/hcsn_differentiable/encoder.py": "8297a3a994e0ff7b97e4d73b4ac92f8bdc8a691dfdf145fc8fcc45be5cad7b18",
+        "qualification/hcsn_differentiable/error_budget.py": "0b378dfea9f72cd946f40248c7573bff324db7fff9570b15cab67d9a2cb78b58",
+        "qualification/hcsn_differentiable/finite_renewal.py": "6f582ab64695ba676f5d1b4f47ceb39c6b4f8a70cde85eafe21ab3aaaca823de",
+        "qualification/hcsn_differentiable/localization_smoke.py": "99c214040e1c2bd3057fb77641c2b75faad3c3c61d48c27fda33629d1332e372",
+        "qualification/hcsn_differentiable/network.py": "04726551b6d4a53de2eb0daa1d8f5f30d96c7852bcf3ee769220ff584e56a687",
+        "qualification/hcsn_differentiable/operator.py": "a372ca8eef2b41714f632e0b1db2a58f98409fbb23858eb83bfe93a7833f1677",
+        "qualification/hcsn_differentiable/regenerative.py": "551bdc384257ab0ae510903165b580c50e761410777480989406395750a71ae1",
+        "qualification/hcsn_differentiable/run_qualification.py": "d84e5fdac31da852f9e4639899dae3e797ee6c0a4e2dd81772d03eff5e43e4c6",
+        "qualification/hcsn_differentiable/value.py": "59847f1a39e834e2eb927840ee608b5914b7a61c1ebb4be7fce956b1285b8101"
+      },
+      "source_before": {
+        "proposals/localization-v2/data.py": "0b0676b7ec22cca17b525da25de9c767c2dd06086b177a1de1e201e235952001",
+        "proposals/localization-v2/models.py": "d964656caf16183cd552d9ab766d1b52ab76760130f72cde783ad50c8e1299fd",
+        "proposals/localization-v2/run_interface.py": "dd3f4c109f2f2d23f1b66b8cb21861a5de995f4c632d7286c22d8ff8e24ab684",
+        "qualification/hcsn_differentiable/__init__.py": "bcde159e1a07a1da1df4b22caccae7f974443d34bbd071a6e845791f3e8b4123",
+        "qualification/hcsn_differentiable/benchmark_admission.py": "468f53365852f75d18708b504855ac1b5ad8e982fb4d82a6c5f7ee5bac9eabb0",
+        "qualification/hcsn_differentiable/checkpoint.py": "9565cba284f479bbab7c8ee61ca7a5330ddb9a9c4efed7786d92a37f7a93c793",
+        "qualification/hcsn_differentiable/contract.py": "79e1127dc126fb8ac97ce7542bac2c9d70c71e0fd2d24416f146d4ec82be099e",
+        "qualification/hcsn_differentiable/encoder.py": "8297a3a994e0ff7b97e4d73b4ac92f8bdc8a691dfdf145fc8fcc45be5cad7b18",
+        "qualification/hcsn_differentiable/error_budget.py": "0b378dfea9f72cd946f40248c7573bff324db7fff9570b15cab67d9a2cb78b58",
+        "qualification/hcsn_differentiable/finite_renewal.py": "6f582ab64695ba676f5d1b4f47ceb39c6b4f8a70cde85eafe21ab3aaaca823de",
+        "qualification/hcsn_differentiable/localization_smoke.py": "99c214040e1c2bd3057fb77641c2b75faad3c3c61d48c27fda33629d1332e372",
+        "qualification/hcsn_differentiable/network.py": "04726551b6d4a53de2eb0daa1d8f5f30d96c7852bcf3ee769220ff584e56a687",
+        "qualification/hcsn_differentiable/operator.py": "a372ca8eef2b41714f632e0b1db2a58f98409fbb23858eb83bfe93a7833f1677",
+        "qualification/hcsn_differentiable/regenerative.py": "551bdc384257ab0ae510903165b580c50e761410777480989406395750a71ae1",
+        "qualification/hcsn_differentiable/run_qualification.py": "d84e5fdac31da852f9e4639899dae3e797ee6c0a4e2dd81772d03eff5e43e4c6",
+        "qualification/hcsn_differentiable/value.py": "59847f1a39e834e2eb927840ee608b5914b7a61c1ebb4be7fce956b1285b8101"
+      },
+      "source_unchanged": true,
+      "status": "completed_interface_only",
+      "torch": "2.8.0+cu128",
+      "trainable_parameters": 176,
+      "wall_seconds": 3.47252615285106
+    },
+    {
+      "arm": "ssm_s4d",
+      "budget": {
+        "cuda": false,
+        "external_memory_enforcement": "caller-provided hard envelope required",
+        "gradient_norm_cap": 1.0,
+        "learning_rate": 0.001,
+        "per_arm_seed_seconds": 180,
+        "rss_bytes": 2147483648,
+        "suite_seconds": 1800,
+        "threads": 1,
+        "updates_per_fit": 4,
+        "window_events": 32
+      },
+      "checkpoint_sha256": "3f18b58511a04c7a7895c18138671a108a4b96162c7b2da56923cbee505b9ae4",
+      "completed_updates_recorded": 4,
+      "dev_logits_sha256": "4242d6d368ecb96ea35c80abce4143419ff7c586c9dbc75dfbbec0d5c537a8f5",
+      "development_cross_entropy": 2.0425506785648064,
+      "energy_missing_reason": "no whole-system meter",
+      "events_sha256": "f558d4df113a9c08db517d1a8b57a5dec038d0e40edd01956c08eb485ce1a3a8",
+      "exit_code": 0,
+      "features_sha256": "f53de6fcb1d7b497126ed002bc69b310b6ae287550e0a204a6184d4a8a2a296e",
+      "formal_fits_started": 0,
+      "frontend_sha256": "11bd263a2ae3515347b3ab4e3228c83c66cc3e9296f36c9943efb4fc3a794c55",
+      "frozen_parameters_unchanged": true,
+      "independent_unit": "freshly_initialized_training_run",
+      "initialization_sha256": "6168d1b8a29142a7a57302d300be8aeb0ff3bb3a56f34f2d2c770ceff34b80d9",
+      "loss_records": [
+        {
+          "diagnostics": {},
+          "loss_before_update": 2.063226128511275,
+          "preclip_gradient_norm": 0.9781932272472611,
+          "window": [
+            0,
+            32
+          ]
+        },
+        {
+          "diagnostics": {},
+          "loss_before_update": 2.05712466741322,
+          "preclip_gradient_norm": 0.9763488077276109,
+          "window": [
+            32,
+            64
+          ]
+        },
+        {
+          "diagnostics": {},
+          "loss_before_update": 2.0585300274297307,
+          "preclip_gradient_norm": 0.9758746487705144,
+          "window": [
+            64,
+            96
+          ]
+        },
+        {
+          "diagnostics": {},
+          "loss_before_update": 2.141762140865122,
+          "preclip_gradient_norm": 0.7943071936418978,
+          "window": [
+            96,
+            128
+          ]
+        }
+      ],
+      "model": {
+        "arm": "ssm_s4d",
+        "claim_boundary": "Tiny interface fixture; unequal capacities; four updates do not establish adequate training.",
+        "device": "cpu",
+        "dtype": "float64",
+        "episode_state": "fresh for every forward",
+        "packages": {
+          "einops": "0.8.1",
+          "torch": "2.8.0+cu128"
+        },
+        "parameter_bytes": 2680,
+        "persistent_state_interface": "not exposed by upstream FFT forward",
+        "source_files_sha256": {
+          "/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/torch/nn/modules/activation.py": "79dfe46d31be2e8e8ce68908838f42eb83ecc2ffb364e065149d112c8afc8e02",
+          "/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/torch/nn/modules/container.py": "f1397f5d49ab49c17679ef5fbc0403288ad2680dff2b61d5df04d068a6bfc29f",
+          "/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/torch/nn/modules/conv.py": "dc3f09f7ade5d39b15eac1c937331de1142808e2f769d601511f495e89848fbb",
+          "/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/torch/nn/modules/linear.py": "fa22acbb48e41bff3be26779c2f242b15663b8157e54f0d55987721add97d16f",
+          "/home/qian-qi/hepta-hcsn-localization-v2-20261108-v1/dependencies/s4/models/s4/s4d.py": "4aab484e96dba85b2eba14f54c42df103a314a087ca184bfcca30e77d0faea2c",
+          "/home/qian-qi/hepta-hcsn-localization-v2-20261108-v1/dependencies/s4/src/models/nn/__init__.py": "499b0fb6449625962b445ae2c22faa9751ed563b3b5e4e17559843f3ff15cd0c",
+          "/home/qian-qi/hepta-hcsn-localization-v2-20261108-v1/dependencies/s4/src/models/nn/activation.py": "552c1b8b37f89f32528047835a4d02d8abb3d5ccc3fd783faf97c0f3fe2b65e5",
+          "/home/qian-qi/hepta-hcsn-localization-v2-20261108-v1/dependencies/s4/src/models/nn/dropout.py": "4cbe734786c1149f8ed8d6d2bdced4a519c172afbfc8d369dc7f493cfdde027f",
+          "/home/qian-qi/hepta-hcsn-localization-v2-20261108-v1/dependencies/s4/src/models/nn/linear.py": "60c8827cacfccb00f33f12e36fb0d6862671256cd1631a8ba9dc98c363574458",
+          "/home/qian-qi/hepta-hcsn-localization-v2-20261108-v1/dependencies/s4/src/models/nn/normalization.py": "b01adaf8941004c6f7ce88055e9a6b72387795e133acbfe604f34f586e16f1bc",
+          "/home/qian-qi/hepta-hcsn-localization-v2-20261108-v1/source/proposals/localization-v2/models.py": "d964656caf16183cd552d9ab766d1b52ab76760130f72cde783ad50c8e1299fd"
+        },
+        "source_hash_scope": "Python module definitions/helpers; native libraries identified by Torch build version",
+        "time_semantics": "official causal S4D-Lin FFT on event index; real dt feature; not Mamba",
+        "torch_git_version": "a1cb3cc05d46d198467bebbb6e8fba50a325d4e7",
+        "trainable_parameters": 335,
+        "verified_checkout_commit": "e757cef57d89e448c413de7325ed5601aceaac13"
+      },
+      "output_directory": "/home/qian-qi/hepta-hcsn-localization-v2-20261108-v1/interface-001/ssm_s4d-20261108",
+      "peak_rss_bytes": 628363264,
+      "physical_energy_joules": null,
+      "process_cpu_seconds": 2.9832825859999996,
+      "process_wall_seconds": 3.9275432580616325,
+      "provider_charges": null,
+      "seed": 20261108,
+      "smoke_fits_started": 1,
+      "source_after": {
+        "proposals/localization-v2/data.py": "0b0676b7ec22cca17b525da25de9c767c2dd06086b177a1de1e201e235952001",
+        "proposals/localization-v2/models.py": "d964656caf16183cd552d9ab766d1b52ab76760130f72cde783ad50c8e1299fd",
+        "proposals/localization-v2/run_interface.py": "dd3f4c109f2f2d23f1b66b8cb21861a5de995f4c632d7286c22d8ff8e24ab684",
+        "qualification/hcsn_differentiable/__init__.py": "bcde159e1a07a1da1df4b22caccae7f974443d34bbd071a6e845791f3e8b4123",
+        "qualification/hcsn_differentiable/benchmark_admission.py": "468f53365852f75d18708b504855ac1b5ad8e982fb4d82a6c5f7ee5bac9eabb0",
+        "qualification/hcsn_differentiable/checkpoint.py": "9565cba284f479bbab7c8ee61ca7a5330ddb9a9c4efed7786d92a37f7a93c793",
+        "qualification/hcsn_differentiable/contract.py": "79e1127dc126fb8ac97ce7542bac2c9d70c71e0fd2d24416f146d4ec82be099e",
+        "qualification/hcsn_differentiable/encoder.py": "8297a3a994e0ff7b97e4d73b4ac92f8bdc8a691dfdf145fc8fcc45be5cad7b18",
+        "qualification/hcsn_differentiable/error_budget.py": "0b378dfea9f72cd946f40248c7573bff324db7fff9570b15cab67d9a2cb78b58",
+        "qualification/hcsn_differentiable/finite_renewal.py": "6f582ab64695ba676f5d1b4f47ceb39c6b4f8a70cde85eafe21ab3aaaca823de",
+        "qualification/hcsn_differentiable/localization_smoke.py": "99c214040e1c2bd3057fb77641c2b75faad3c3c61d48c27fda33629d1332e372",
+        "qualification/hcsn_differentiable/network.py": "04726551b6d4a53de2eb0daa1d8f5f30d96c7852bcf3ee769220ff584e56a687",
+        "qualification/hcsn_differentiable/operator.py": "a372ca8eef2b41714f632e0b1db2a58f98409fbb23858eb83bfe93a7833f1677",
+        "qualification/hcsn_differentiable/regenerative.py": "551bdc384257ab0ae510903165b580c50e761410777480989406395750a71ae1",
+        "qualification/hcsn_differentiable/run_qualification.py": "d84e5fdac31da852f9e4639899dae3e797ee6c0a4e2dd81772d03eff5e43e4c6",
+        "qualification/hcsn_differentiable/value.py": "59847f1a39e834e2eb927840ee608b5914b7a61c1ebb4be7fce956b1285b8101"
+      },
+      "source_before": {
+        "proposals/localization-v2/data.py": "0b0676b7ec22cca17b525da25de9c767c2dd06086b177a1de1e201e235952001",
+        "proposals/localization-v2/models.py": "d964656caf16183cd552d9ab766d1b52ab76760130f72cde783ad50c8e1299fd",
+        "proposals/localization-v2/run_interface.py": "dd3f4c109f2f2d23f1b66b8cb21861a5de995f4c632d7286c22d8ff8e24ab684",
+        "qualification/hcsn_differentiable/__init__.py": "bcde159e1a07a1da1df4b22caccae7f974443d34bbd071a6e845791f3e8b4123",
+        "qualification/hcsn_differentiable/benchmark_admission.py": "468f53365852f75d18708b504855ac1b5ad8e982fb4d82a6c5f7ee5bac9eabb0",
+        "qualification/hcsn_differentiable/checkpoint.py": "9565cba284f479bbab7c8ee61ca7a5330ddb9a9c4efed7786d92a37f7a93c793",
+        "qualification/hcsn_differentiable/contract.py": "79e1127dc126fb8ac97ce7542bac2c9d70c71e0fd2d24416f146d4ec82be099e",
+        "qualification/hcsn_differentiable/encoder.py": "8297a3a994e0ff7b97e4d73b4ac92f8bdc8a691dfdf145fc8fcc45be5cad7b18",
+        "qualification/hcsn_differentiable/error_budget.py": "0b378dfea9f72cd946f40248c7573bff324db7fff9570b15cab67d9a2cb78b58",
+        "qualification/hcsn_differentiable/finite_renewal.py": "6f582ab64695ba676f5d1b4f47ceb39c6b4f8a70cde85eafe21ab3aaaca823de",
+        "qualification/hcsn_differentiable/localization_smoke.py": "99c214040e1c2bd3057fb77641c2b75faad3c3c61d48c27fda33629d1332e372",
+        "qualification/hcsn_differentiable/network.py": "04726551b6d4a53de2eb0daa1d8f5f30d96c7852bcf3ee769220ff584e56a687",
+        "qualification/hcsn_differentiable/operator.py": "a372ca8eef2b41714f632e0b1db2a58f98409fbb23858eb83bfe93a7833f1677",
+        "qualification/hcsn_differentiable/regenerative.py": "551bdc384257ab0ae510903165b580c50e761410777480989406395750a71ae1",
+        "qualification/hcsn_differentiable/run_qualification.py": "d84e5fdac31da852f9e4639899dae3e797ee6c0a4e2dd81772d03eff5e43e4c6",
+        "qualification/hcsn_differentiable/value.py": "59847f1a39e834e2eb927840ee608b5914b7a61c1ebb4be7fce956b1285b8101"
+      },
+      "source_unchanged": true,
+      "status": "completed_interface_only",
+      "torch": "2.8.0+cu128",
+      "trainable_parameters": 335,
+      "wall_seconds": 3.0612333728931844
+    },
+    {
+      "arm": "attention",
+      "budget": {
+        "cuda": false,
+        "external_memory_enforcement": "caller-provided hard envelope required",
+        "gradient_norm_cap": 1.0,
+        "learning_rate": 0.001,
+        "per_arm_seed_seconds": 180,
+        "rss_bytes": 2147483648,
+        "suite_seconds": 1800,
+        "threads": 1,
+        "updates_per_fit": 4,
+        "window_events": 32
+      },
+      "checkpoint_sha256": "5f9386bed0282f31cfa36ae97cfb8d5269cb1e97c2c92ef79db1a59f6943a3be",
+      "completed_updates_recorded": 4,
+      "dev_logits_sha256": "a3eddef89b2d496fc1e5258f402108f76970e00577fc8322707ee17413532e70",
+      "development_cross_entropy": 2.6698695147734797,
+      "energy_missing_reason": "no whole-system meter",
+      "events_sha256": "fad576e2b84940ed543edbd6b5b99dc8bbf19d56909888f67849efa0b26b3be8",
+      "exit_code": 0,
+      "features_sha256": "f53de6fcb1d7b497126ed002bc69b310b6ae287550e0a204a6184d4a8a2a296e",
+      "formal_fits_started": 0,
+      "frontend_sha256": "11bd263a2ae3515347b3ab4e3228c83c66cc3e9296f36c9943efb4fc3a794c55",
+      "frozen_parameters_unchanged": true,
+      "independent_unit": "freshly_initialized_training_run",
+      "initialization_sha256": "64aa056974b9672eaaa3c95971d0207ac032a10a239d302dc18d656361f21acd",
+      "loss_records": [
+        {
+          "diagnostics": {},
+          "loss_before_update": 3.53145198099777,
+          "preclip_gradient_norm": 3.7159543788859666,
+          "window": [
+            0,
+            32
+          ]
+        },
+        {
+          "diagnostics": {},
+          "loss_before_update": 3.43171867371087,
+          "preclip_gradient_norm": 3.791159921985694,
+          "window": [
+            32,
+            64
+          ]
+        },
+        {
+          "diagnostics": {},
+          "loss_before_update": 3.2736053383960098,
+          "preclip_gradient_norm": 3.9136689575539294,
+          "window": [
+            64,
+            96
+          ]
+        },
+        {
+          "diagnostics": {},
+          "loss_before_update": 2.9738057817087773,
+          "preclip_gradient_norm": 3.619291665099344,
+          "window": [
+            96,
+            128
+          ]
+        }
+      ],
+      "model": {
+        "arm": "attention",
+        "claim_boundary": "Tiny interface fixture; unequal capacities; four updates do not establish adequate training.",
+        "device": "cpu",
+        "dtype": "float64",
+        "episode_state": "fresh for every forward",
+        "packages": {
+          "torch": "2.8.0+cu128"
+        },
+        "parameter_bytes": 9432,
+        "source_files_sha256": {
+          "/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/torch/nn/modules/activation.py": "79dfe46d31be2e8e8ce68908838f42eb83ecc2ffb364e065149d112c8afc8e02",
+          "/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/torch/nn/modules/container.py": "f1397f5d49ab49c17679ef5fbc0403288ad2680dff2b61d5df04d068a6bfc29f",
+          "/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/torch/nn/modules/dropout.py": "1fc9974c3cf2078dd4bc257f73afb6a6714adfec2e9d099d47cf923e766d3490",
+          "/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/torch/nn/modules/linear.py": "fa22acbb48e41bff3be26779c2f242b15663b8157e54f0d55987721add97d16f",
+          "/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/torch/nn/modules/normalization.py": "bb4a027c559afd1fdca5ee6475ac68d2536879b96286e3b45352331fbbbe1897",
+          "/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/torch/nn/modules/transformer.py": "5489e57073dbbfa2d0ca2f8515fe914b606d8e63103ad92a01b6a227b10a36c2",
+          "/home/qian-qi/hepta-hcsn-localization-v2-20261108-v1/source/proposals/localization-v2/models.py": "d964656caf16183cd552d9ab766d1b52ab76760130f72cde783ad50c8e1299fd"
+        },
+        "source_hash_scope": "Python module definitions/helpers; native libraries identified by Torch build version",
+        "time_semantics": "causal event sequence with shared real-dt feature",
+        "torch_git_version": "a1cb3cc05d46d198467bebbb6e8fba50a325d4e7",
+        "trainable_parameters": 1179
+      },
+      "output_directory": "/home/qian-qi/hepta-hcsn-localization-v2-20261108-v1/interface-001/attention-20261108",
+      "peak_rss_bytes": 628789248,
+      "physical_energy_joules": null,
+      "process_cpu_seconds": 2.980739308,
+      "process_wall_seconds": 3.7764025579672307,
+      "provider_charges": null,
+      "seed": 20261108,
+      "smoke_fits_started": 1,
+      "source_after": {
+        "proposals/localization-v2/data.py": "0b0676b7ec22cca17b525da25de9c767c2dd06086b177a1de1e201e235952001",
+        "proposals/localization-v2/models.py": "d964656caf16183cd552d9ab766d1b52ab76760130f72cde783ad50c8e1299fd",
+        "proposals/localization-v2/run_interface.py": "dd3f4c109f2f2d23f1b66b8cb21861a5de995f4c632d7286c22d8ff8e24ab684",
+        "qualification/hcsn_differentiable/__init__.py": "bcde159e1a07a1da1df4b22caccae7f974443d34bbd071a6e845791f3e8b4123",
+        "qualification/hcsn_differentiable/benchmark_admission.py": "468f53365852f75d18708b504855ac1b5ad8e982fb4d82a6c5f7ee5bac9eabb0",
+        "qualification/hcsn_differentiable/checkpoint.py": "9565cba284f479bbab7c8ee61ca7a5330ddb9a9c4efed7786d92a37f7a93c793",
+        "qualification/hcsn_differentiable/contract.py": "79e1127dc126fb8ac97ce7542bac2c9d70c71e0fd2d24416f146d4ec82be099e",
+        "qualification/hcsn_differentiable/encoder.py": "8297a3a994e0ff7b97e4d73b4ac92f8bdc8a691dfdf145fc8fcc45be5cad7b18",
+        "qualification/hcsn_differentiable/error_budget.py": "0b378dfea9f72cd946f40248c7573bff324db7fff9570b15cab67d9a2cb78b58",
+        "qualification/hcsn_differentiable/finite_renewal.py": "6f582ab64695ba676f5d1b4f47ceb39c6b4f8a70cde85eafe21ab3aaaca823de",
+        "qualification/hcsn_differentiable/localization_smoke.py": "99c214040e1c2bd3057fb77641c2b75faad3c3c61d48c27fda33629d1332e372",
+        "qualification/hcsn_differentiable/network.py": "04726551b6d4a53de2eb0daa1d8f5f30d96c7852bcf3ee769220ff584e56a687",
+        "qualification/hcsn_differentiable/operator.py": "a372ca8eef2b41714f632e0b1db2a58f98409fbb23858eb83bfe93a7833f1677",
+        "qualification/hcsn_differentiable/regenerative.py": "551bdc384257ab0ae510903165b580c50e761410777480989406395750a71ae1",
+        "qualification/hcsn_differentiable/run_qualification.py": "d84e5fdac31da852f9e4639899dae3e797ee6c0a4e2dd81772d03eff5e43e4c6",
+        "qualification/hcsn_differentiable/value.py": "59847f1a39e834e2eb927840ee608b5914b7a61c1ebb4be7fce956b1285b8101"
+      },
+      "source_before": {
+        "proposals/localization-v2/data.py": "0b0676b7ec22cca17b525da25de9c767c2dd06086b177a1de1e201e235952001",
+        "proposals/localization-v2/models.py": "d964656caf16183cd552d9ab766d1b52ab76760130f72cde783ad50c8e1299fd",
+        "proposals/localization-v2/run_interface.py": "dd3f4c109f2f2d23f1b66b8cb21861a5de995f4c632d7286c22d8ff8e24ab684",
+        "qualification/hcsn_differentiable/__init__.py": "bcde159e1a07a1da1df4b22caccae7f974443d34bbd071a6e845791f3e8b4123",
+        "qualification/hcsn_differentiable/benchmark_admission.py": "468f53365852f75d18708b504855ac1b5ad8e982fb4d82a6c5f7ee5bac9eabb0",
+        "qualification/hcsn_differentiable/checkpoint.py": "9565cba284f479bbab7c8ee61ca7a5330ddb9a9c4efed7786d92a37f7a93c793",
+        "qualification/hcsn_differentiable/contract.py": "79e1127dc126fb8ac97ce7542bac2c9d70c71e0fd2d24416f146d4ec82be099e",
+        "qualification/hcsn_differentiable/encoder.py": "8297a3a994e0ff7b97e4d73b4ac92f8bdc8a691dfdf145fc8fcc45be5cad7b18",
+        "qualification/hcsn_differentiable/error_budget.py": "0b378dfea9f72cd946f40248c7573bff324db7fff9570b15cab67d9a2cb78b58",
+        "qualification/hcsn_differentiable/finite_renewal.py": "6f582ab64695ba676f5d1b4f47ceb39c6b4f8a70cde85eafe21ab3aaaca823de",
+        "qualification/hcsn_differentiable/localization_smoke.py": "99c214040e1c2bd3057fb77641c2b75faad3c3c61d48c27fda33629d1332e372",
+        "qualification/hcsn_differentiable/network.py": "04726551b6d4a53de2eb0daa1d8f5f30d96c7852bcf3ee769220ff584e56a687",
+        "qualification/hcsn_differentiable/operator.py": "a372ca8eef2b41714f632e0b1db2a58f98409fbb23858eb83bfe93a7833f1677",
+        "qualification/hcsn_differentiable/regenerative.py": "551bdc384257ab0ae510903165b580c50e761410777480989406395750a71ae1",
+        "qualification/hcsn_differentiable/run_qualification.py": "d84e5fdac31da852f9e4639899dae3e797ee6c0a4e2dd81772d03eff5e43e4c6",
+        "qualification/hcsn_differentiable/value.py": "59847f1a39e834e2eb927840ee608b5914b7a61c1ebb4be7fce956b1285b8101"
+      },
+      "source_unchanged": true,
+      "status": "completed_interface_only",
+      "torch": "2.8.0+cu128",
+      "trainable_parameters": 1179,
+      "wall_seconds": 3.0298164549749345
+    },
+    {
+      "arm": "hcsn",
+      "budget": {
+        "cuda": false,
+        "external_memory_enforcement": "caller-provided hard envelope required",
+        "gradient_norm_cap": 1.0,
+        "learning_rate": 0.001,
+        "per_arm_seed_seconds": 180,
+        "rss_bytes": 2147483648,
+        "suite_seconds": 1800,
+        "threads": 1,
+        "updates_per_fit": 4,
+        "window_events": 32
+      },
+      "checkpoint_sha256": "a108b25c995ed2c4b71afb5e80e61e354fac4bb2d679bb31d277100664af1144",
+      "completed_updates_recorded": 4,
+      "dev_logits_sha256": "c8d89929505c9e789adae2312f4bb92af62d04b0d7a7254a1decbd03f5700fe0",
+      "development_cross_entropy": 2.2842263834093726,
+      "energy_missing_reason": "no whole-system meter",
+      "events_sha256": "528300ecfb6c314a1ed437281a157e708e634891f5ac06331194f10d2df96dee",
+      "exit_code": 0,
+      "features_sha256": "f53de6fcb1d7b497126ed002bc69b310b6ae287550e0a204a6184d4a8a2a296e",
+      "formal_fits_started": 0,
+      "frontend_sha256": "11bd263a2ae3515347b3ab4e3228c83c66cc3e9296f36c9943efb4fc3a794c55",
+      "frozen_parameters_unchanged": true,
+      "independent_unit": "freshly_initialized_training_run",
+      "initialization_sha256": "8f6c252f6584a8f67c03ebcf4be6de6ffdf7511b9319278f5ee27c9417aa94d4",
+      "loss_records": [
+        {
+          "diagnostics": {
+            "advance_calls": 32,
+            "bptt": "full",
+            "event_semantics": "conditional expected interval counts, not sampled spikes",
+            "layer_count": 1,
+            "maximum_mass_residual": 2.220446049250313e-16,
+            "maximum_negative_probability": 0.0,
+            "minimum_observation_evidence": 0.9891201927714738,
+            "sequence_position": 32,
+            "truncate_every": null,
+            "truncation_unit": "global shared input positions, including padding"
+          },
+          "loss_before_update": 2.3355866687503637,
+          "preclip_gradient_norm": 1.3764453121568905,
+          "window": [
+            0,
+            32
+          ]
+        },
+        {
+          "diagnostics": {
+            "advance_calls": 32,
+            "bptt": "full",
+            "event_semantics": "conditional expected interval counts, not sampled spikes",
+            "layer_count": 1,
+            "maximum_mass_residual": 4.440892098500626e-16,
+            "maximum_negative_probability": 0.0,
+            "minimum_observation_evidence": 0.9903419546341742,
+            "sequence_position": 32,
+            "truncate_every": null,
+            "truncation_unit": "global shared input positions, including padding"
+          },
+          "loss_before_update": 2.3334744998255945,
+          "preclip_gradient_norm": 1.3774056384417372,
+          "window": [
+            32,
+            64
+          ]
+        },
+        {
+          "diagnostics": {
+            "advance_calls": 32,
+            "bptt": "full",
+            "event_semantics": "conditional expected interval counts, not sampled spikes",
+            "layer_count": 1,
+            "maximum_mass_residual": 4.440892098500626e-16,
+            "maximum_negative_probability": 0.0,
+            "minimum_observation_evidence": 0.9908699035430101,
+            "sequence_position": 32,
+            "truncate_every": null,
+            "truncation_unit": "global shared input positions, including padding"
+          },
+          "loss_before_update": 2.3248380360424075,
+          "preclip_gradient_norm": 1.3706498623069334,
+          "window": [
+            64,
+            96
+          ]
+        },
+        {
+          "diagnostics": {
+            "advance_calls": 32,
+            "bptt": "full",
+            "event_semantics": "conditional expected interval counts, not sampled spikes",
+            "layer_count": 1,
+            "maximum_mass_residual": 4.440892098500626e-16,
+            "maximum_negative_probability": 0.0,
+            "minimum_observation_evidence": 0.9856495641396059,
+            "sequence_position": 32,
+            "truncate_every": null,
+            "truncation_unit": "global shared input positions, including padding"
+          },
+          "loss_before_update": 2.376925954783057,
+          "preclip_gradient_norm": 1.141892794506105,
+          "window": [
+            96,
+            128
+          ]
+        }
+      ],
+      "model": {
+        "actual_physics_hex": {
+          "absolute_reset": "0x1.608b71f63c8d5p+0",
+          "discount": "0x1.3333333333333p-3",
+          "log_boundary": "0x0.0p+0",
+          "mu": "-0x1.eb851eb851eb7p-4",
+          "sigma": "0x1.6666666666666p-2"
+        },
+        "arm": "hcsn",
+        "device": "cpu",
+        "dtype": "float64",
+        "profile": {
+          "acceptance": "All four gates must pass. A result admits only unchanged frozen physics, this exact grid, and A01 first128/D01 first64 smoke. No automatically inherited previous qualification.",
+          "archive_sha256": "6660124b4d1fd98963c56a6804bbb0ca0c5ee12edc9b772c8a867148af20d0da",
+          "clock_diagnostic_sha256": "8a8b312b5a3c1e3102849aaedfb114cd3e0bcd62646c0a6d0436f52fe63ac36b",
+          "clock_semantics": "integer tick deltas / 10000000 seconds; exact SQL-style display compatibility is not creator attribution",
+          "cpu_threads": 1,
+          "cuda_allowed": false,
+          "data_sha256": "1fbc965b8d7faf499ea854428b2138132d94e6a26404bc8e4b0c62144f513e8a",
+          "grid": {
+            "active_cells": 128,
+            "endpoint": 2.4,
+            "initial_log_std": 0.08,
+            "phase_cells": 16,
+            "quadrature_order": 32,
+            "refractory": 0.2,
+            "tail_rate": 1.0
+          },
+          "initial_margin": 0.55,
+          "limits": {
+            "combined_value_error": 0.01,
+            "linear_solve_residual_estimate": 2e-10,
+            "phase_refinement_delta": 0.005,
+            "probability_mass_error": 5e-11,
+            "quadrature_refinement_delta": 1e-05,
+            "sequence_mass_drift": 2e-06,
+            "space_refinement_delta": 0.005,
+            "tail_refinement_delta": 0.005,
+            "time_refinement_delta": 0.005
+          },
+          "physics": {
+            "discount": 0.15,
+            "log_absolute_reset": 0.32,
+            "log_boundary": 0.0,
+            "mu": -0.12,
+            "sigma": 0.35,
+            "trainable": false
+          },
+          "predecessor_profile_sha256": "09fbea17afe5e95a98cd9efbf84a92b2b7c61a8653bcaf241f6d00ba769b59df",
+          "predeclared_refinement_anchors": "positive locked-gap min, middle, max; global gap p95,p99,max, deduplicated",
+          "profile_id": "localization-frozen-default-physics-d02-k145-stable-intervals-v2",
+          "refractory_change": "A different physical model (0.2s), not a correction of old 0.1s evidence.",
+          "repair": "Direct Gaussian interval logdiff reflection replaces adjacent survivor-tail subtraction; no physical/grid/limit changes.",
+          "rss_budget_bytes": 2147483648,
+          "schema": "hcsn-localization-v2-budget-profile-v1",
+          "scope_limits": [
+            "all 325 global gaps: positivity/mass interface audit only; not full-dataset learning qualification",
+            "perpetual fixed-step values and refinements: common conditioned Gaussian prior only",
+            "row continuation defects and row perpetual errors are diagnostics, not certified bounds",
+            "unconditioned 32/64/128-event schedules do not bound observed/conditioned network dynamics",
+            "trained likelihood depends on physical channels and content; local transport errors may amplify; no universal rollout error bound",
+            "physics training, new starting laws, other durations/windows or changes require a fresh numerical profile",
+            "no accuracy ranking, independent seed training or GPU/energy/performance claims"
+          ],
+          "selection": {
+            "A01": 128,
+            "D01": 64
+          },
+          "source_archive_sha256": "cb49a5f1aa24e15e25f46dd9fc8722de8fba4fa471d69a52142d37e8d98c3a2a",
+          "source_base_archive_sha256": "353f7c0f50d187adeccbd1fff0638d1a649fe2c547c03ebf23e3fceafa846ff8",
+          "wall_budget_seconds": 300
+        },
+        "profile_sha256": "a6661067b366f386d96782687dee6ace5718ffcd8148b2def3bca286c7293600",
+        "qualification_sha256": "1c31a015de53ad720bfa7ac3e952fdbe494a8251161f5741c49239b247a53ddc"
+      },
+      "output_directory": "/home/qian-qi/hepta-hcsn-localization-v2-20261108-v1/interface-001/hcsn-20261108",
+      "peak_rss_bytes": 742342656,
+      "physical_energy_joules": null,
+      "process_cpu_seconds": 34.196331099,
+      "process_wall_seconds": 35.1666763080284,
+      "provider_charges": null,
+      "seed": 20261108,
+      "smoke_fits_started": 1,
+      "source_after": {
+        "proposals/localization-v2/data.py": "0b0676b7ec22cca17b525da25de9c767c2dd06086b177a1de1e201e235952001",
+        "proposals/localization-v2/models.py": "d964656caf16183cd552d9ab766d1b52ab76760130f72cde783ad50c8e1299fd",
+        "proposals/localization-v2/run_interface.py": "dd3f4c109f2f2d23f1b66b8cb21861a5de995f4c632d7286c22d8ff8e24ab684",
+        "qualification/hcsn_differentiable/__init__.py": "bcde159e1a07a1da1df4b22caccae7f974443d34bbd071a6e845791f3e8b4123",
+        "qualification/hcsn_differentiable/benchmark_admission.py": "468f53365852f75d18708b504855ac1b5ad8e982fb4d82a6c5f7ee5bac9eabb0",
+        "qualification/hcsn_differentiable/checkpoint.py": "9565cba284f479bbab7c8ee61ca7a5330ddb9a9c4efed7786d92a37f7a93c793",
+        "qualification/hcsn_differentiable/contract.py": "79e1127dc126fb8ac97ce7542bac2c9d70c71e0fd2d24416f146d4ec82be099e",
+        "qualification/hcsn_differentiable/encoder.py": "8297a3a994e0ff7b97e4d73b4ac92f8bdc8a691dfdf145fc8fcc45be5cad7b18",
+        "qualification/hcsn_differentiable/error_budget.py": "0b378dfea9f72cd946f40248c7573bff324db7fff9570b15cab67d9a2cb78b58",
+        "qualification/hcsn_differentiable/finite_renewal.py": "6f582ab64695ba676f5d1b4f47ceb39c6b4f8a70cde85eafe21ab3aaaca823de",
+        "qualification/hcsn_differentiable/localization_smoke.py": "99c214040e1c2bd3057fb77641c2b75faad3c3c61d48c27fda33629d1332e372",
+        "qualification/hcsn_differentiable/network.py": "04726551b6d4a53de2eb0daa1d8f5f30d96c7852bcf3ee769220ff584e56a687",
+        "qualification/hcsn_differentiable/operator.py": "a372ca8eef2b41714f632e0b1db2a58f98409fbb23858eb83bfe93a7833f1677",
+        "qualification/hcsn_differentiable/regenerative.py": "551bdc384257ab0ae510903165b580c50e761410777480989406395750a71ae1",
+        "qualification/hcsn_differentiable/run_qualification.py": "d84e5fdac31da852f9e4639899dae3e797ee6c0a4e2dd81772d03eff5e43e4c6",
+        "qualification/hcsn_differentiable/value.py": "59847f1a39e834e2eb927840ee608b5914b7a61c1ebb4be7fce956b1285b8101"
+      },
+      "source_before": {
+        "proposals/localization-v2/data.py": "0b0676b7ec22cca17b525da25de9c767c2dd06086b177a1de1e201e235952001",
+        "proposals/localization-v2/models.py": "d964656caf16183cd552d9ab766d1b52ab76760130f72cde783ad50c8e1299fd",
+        "proposals/localization-v2/run_interface.py": "dd3f4c109f2f2d23f1b66b8cb21861a5de995f4c632d7286c22d8ff8e24ab684",
+        "qualification/hcsn_differentiable/__init__.py": "bcde159e1a07a1da1df4b22caccae7f974443d34bbd071a6e845791f3e8b4123",
+        "qualification/hcsn_differentiable/benchmark_admission.py": "468f53365852f75d18708b504855ac1b5ad8e982fb4d82a6c5f7ee5bac9eabb0",
+        "qualification/hcsn_differentiable/checkpoint.py": "9565cba284f479bbab7c8ee61ca7a5330ddb9a9c4efed7786d92a37f7a93c793",
+        "qualification/hcsn_differentiable/contract.py": "79e1127dc126fb8ac97ce7542bac2c9d70c71e0fd2d24416f146d4ec82be099e",
+        "qualification/hcsn_differentiable/encoder.py": "8297a3a994e0ff7b97e4d73b4ac92f8bdc8a691dfdf145fc8fcc45be5cad7b18",
+        "qualification/hcsn_differentiable/error_budget.py": "0b378dfea9f72cd946f40248c7573bff324db7fff9570b15cab67d9a2cb78b58",
+        "qualification/hcsn_differentiable/finite_renewal.py": "6f582ab64695ba676f5d1b4f47ceb39c6b4f8a70cde85eafe21ab3aaaca823de",
+        "qualification/hcsn_differentiable/localization_smoke.py": "99c214040e1c2bd3057fb77641c2b75faad3c3c61d48c27fda33629d1332e372",
+        "qualification/hcsn_differentiable/network.py": "04726551b6d4a53de2eb0daa1d8f5f30d96c7852bcf3ee769220ff584e56a687",
+        "qualification/hcsn_differentiable/operator.py": "a372ca8eef2b41714f632e0b1db2a58f98409fbb23858eb83bfe93a7833f1677",
+        "qualification/hcsn_differentiable/regenerative.py": "551bdc384257ab0ae510903165b580c50e761410777480989406395750a71ae1",
+        "qualification/hcsn_differentiable/run_qualification.py": "d84e5fdac31da852f9e4639899dae3e797ee6c0a4e2dd81772d03eff5e43e4c6",
+        "qualification/hcsn_differentiable/value.py": "59847f1a39e834e2eb927840ee608b5914b7a61c1ebb4be7fce956b1285b8101"
+      },
+      "source_unchanged": true,
+      "status": "completed_interface_only",
+      "torch": "2.8.0+cu128",
+      "trainable_parameters": 9804,
+      "wall_seconds": 34.31482992693782
+    },
+    {
+      "arm": "gru",
+      "budget": {
+        "cuda": false,
+        "external_memory_enforcement": "caller-provided hard envelope required",
+        "gradient_norm_cap": 1.0,
+        "learning_rate": 0.001,
+        "per_arm_seed_seconds": 180,
+        "rss_bytes": 2147483648,
+        "suite_seconds": 1800,
+        "threads": 1,
+        "updates_per_fit": 4,
+        "window_events": 32
+      },
+      "checkpoint_sha256": "88852b182efaf0c192a9a005e22b839277da8c03af23ccdfa57ea4ed18894e44",
+      "completed_updates_recorded": 4,
+      "dev_logits_sha256": "4d1e3ce9143d2ce28c15a12baf2ab881cf1e9b5282d54fba10464c030b78156c",
+      "development_cross_entropy": 2.7903312071784874,
+      "energy_missing_reason": "no whole-system meter",
+      "events_sha256": "94d1c9c7f4e0c6f560364b5ff25c383e4031485d41c7ac8097572c3d7235378d",
+      "exit_code": 0,
+      "features_sha256": "f53de6fcb1d7b497126ed002bc69b310b6ae287550e0a204a6184d4a8a2a296e",
+      "formal_fits_started": 0,
+      "frontend_sha256": "11bd263a2ae3515347b3ab4e3228c83c66cc3e9296f36c9943efb4fc3a794c55",
+      "frozen_parameters_unchanged": true,
+      "independent_unit": "freshly_initialized_training_run",
+      "initialization_sha256": "d0cb78f92313d5abc3ddadece2c1d759609620c7b3b2eab5e8434caaf6e2a9b9",
+      "loss_records": [
+        {
+          "diagnostics": {},
+          "loss_before_update": 2.2831409005747645,
+          "preclip_gradient_norm": 1.2968670509071818,
+          "window": [
+            0,
+            32
+          ]
+        },
+        {
+          "diagnostics": {},
+          "loss_before_update": 2.2933850964113756,
+          "preclip_gradient_norm": 1.2715077320933224,
+          "window": [
+            32,
+            64
+          ]
+        },
+        {
+          "diagnostics": {},
+          "loss_before_update": 2.322952655492,
+          "preclip_gradient_norm": 1.2861937043750797,
+          "window": [
+            64,
+            96
+          ]
+        },
+        {
+          "diagnostics": {},
+          "loss_before_update": 2.325112791257073,
+          "preclip_gradient_norm": 1.0518305536878603,
+          "window": [
+            96,
+            128
+          ]
+        }
+      ],
+      "model": {
+        "arm": "gru",
+        "claim_boundary": "Tiny interface fixture; unequal capacities; four updates do not establish adequate training.",
+        "device": "cpu",
+        "dtype": "float64",
+        "episode_state": "fresh for every forward",
+        "packages": {
+          "torch": "2.8.0+cu128"
+        },
+        "parameter_bytes": 3416,
+        "source_files_sha256": {
+          "/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/torch/nn/modules/linear.py": "fa22acbb48e41bff3be26779c2f242b15663b8157e54f0d55987721add97d16f",
+          "/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/torch/nn/modules/rnn.py": "10f560ff680379df780263dd0b09051390359e879e9a2ad6bcffb68dd2ff8d70",
+          "/home/qian-qi/hepta-hcsn-localization-v2-20261108-v1/source/proposals/localization-v2/models.py": "d964656caf16183cd552d9ab766d1b52ab76760130f72cde783ad50c8e1299fd"
+        },
+        "source_hash_scope": "Python module definitions/helpers; native libraries identified by Torch build version",
+        "time_semantics": "causal event sequence with shared real-dt feature",
+        "torch_git_version": "a1cb3cc05d46d198467bebbb6e8fba50a325d4e7",
+        "trainable_parameters": 427
+      },
+      "output_directory": "/home/qian-qi/hepta-hcsn-localization-v2-20261108-v1/interface-001/gru-20261109",
+      "peak_rss_bytes": 627138560,
+      "physical_energy_joules": null,
+      "process_cpu_seconds": 3.013292431,
+      "process_wall_seconds": 3.875127805164084,
+      "provider_charges": null,
+      "seed": 20261109,
+      "smoke_fits_started": 1,
+      "source_after": {
+        "proposals/localization-v2/data.py": "0b0676b7ec22cca17b525da25de9c767c2dd06086b177a1de1e201e235952001",
+        "proposals/localization-v2/models.py": "d964656caf16183cd552d9ab766d1b52ab76760130f72cde783ad50c8e1299fd",
+        "proposals/localization-v2/run_interface.py": "dd3f4c109f2f2d23f1b66b8cb21861a5de995f4c632d7286c22d8ff8e24ab684",
+        "qualification/hcsn_differentiable/__init__.py": "bcde159e1a07a1da1df4b22caccae7f974443d34bbd071a6e845791f3e8b4123",
+        "qualification/hcsn_differentiable/benchmark_admission.py": "468f53365852f75d18708b504855ac1b5ad8e982fb4d82a6c5f7ee5bac9eabb0",
+        "qualification/hcsn_differentiable/checkpoint.py": "9565cba284f479bbab7c8ee61ca7a5330ddb9a9c4efed7786d92a37f7a93c793",
+        "qualification/hcsn_differentiable/contract.py": "79e1127dc126fb8ac97ce7542bac2c9d70c71e0fd2d24416f146d4ec82be099e",
+        "qualification/hcsn_differentiable/encoder.py": "8297a3a994e0ff7b97e4d73b4ac92f8bdc8a691dfdf145fc8fcc45be5cad7b18",
+        "qualification/hcsn_differentiable/error_budget.py": "0b378dfea9f72cd946f40248c7573bff324db7fff9570b15cab67d9a2cb78b58",
+        "qualification/hcsn_differentiable/finite_renewal.py": "6f582ab64695ba676f5d1b4f47ceb39c6b4f8a70cde85eafe21ab3aaaca823de",
+        "qualification/hcsn_differentiable/localization_smoke.py": "99c214040e1c2bd3057fb77641c2b75faad3c3c61d48c27fda33629d1332e372",
+        "qualification/hcsn_differentiable/network.py": "04726551b6d4a53de2eb0daa1d8f5f30d96c7852bcf3ee769220ff584e56a687",
+        "qualification/hcsn_differentiable/operator.py": "a372ca8eef2b41714f632e0b1db2a58f98409fbb23858eb83bfe93a7833f1677",
+        "qualification/hcsn_differentiable/regenerative.py": "551bdc384257ab0ae510903165b580c50e761410777480989406395750a71ae1",
+        "qualification/hcsn_differentiable/run_qualification.py": "d84e5fdac31da852f9e4639899dae3e797ee6c0a4e2dd81772d03eff5e43e4c6",
+        "qualification/hcsn_differentiable/value.py": "59847f1a39e834e2eb927840ee608b5914b7a61c1ebb4be7fce956b1285b8101"
+      },
+      "source_before": {
+        "proposals/localization-v2/data.py": "0b0676b7ec22cca17b525da25de9c767c2dd06086b177a1de1e201e235952001",
+        "proposals/localization-v2/models.py": "d964656caf16183cd552d9ab766d1b52ab76760130f72cde783ad50c8e1299fd",
+        "proposals/localization-v2/run_interface.py": "dd3f4c109f2f2d23f1b66b8cb21861a5de995f4c632d7286c22d8ff8e24ab684",
+        "qualification/hcsn_differentiable/__init__.py": "bcde159e1a07a1da1df4b22caccae7f974443d34bbd071a6e845791f3e8b4123",
+        "qualification/hcsn_differentiable/benchmark_admission.py": "468f53365852f75d18708b504855ac1b5ad8e982fb4d82a6c5f7ee5bac9eabb0",
+        "qualification/hcsn_differentiable/checkpoint.py": "9565cba284f479bbab7c8ee61ca7a5330ddb9a9c4efed7786d92a37f7a93c793",
+        "qualification/hcsn_differentiable/contract.py": "79e1127dc126fb8ac97ce7542bac2c9d70c71e0fd2d24416f146d4ec82be099e",
+        "qualification/hcsn_differentiable/encoder.py": "8297a3a994e0ff7b97e4d73b4ac92f8bdc8a691dfdf145fc8fcc45be5cad7b18",
+        "qualification/hcsn_differentiable/error_budget.py": "0b378dfea9f72cd946f40248c7573bff324db7fff9570b15cab67d9a2cb78b58",
+        "qualification/hcsn_differentiable/finite_renewal.py": "6f582ab64695ba676f5d1b4f47ceb39c6b4f8a70cde85eafe21ab3aaaca823de",
+        "qualification/hcsn_differentiable/localization_smoke.py": "99c214040e1c2bd3057fb77641c2b75faad3c3c61d48c27fda33629d1332e372",
+        "qualification/hcsn_differentiable/network.py": "04726551b6d4a53de2eb0daa1d8f5f30d96c7852bcf3ee769220ff584e56a687",
+        "qualification/hcsn_differentiable/operator.py": "a372ca8eef2b41714f632e0b1db2a58f98409fbb23858eb83bfe93a7833f1677",
+        "qualification/hcsn_differentiable/regenerative.py": "551bdc384257ab0ae510903165b580c50e761410777480989406395750a71ae1",
+        "qualification/hcsn_differentiable/run_qualification.py": "d84e5fdac31da852f9e4639899dae3e797ee6c0a4e2dd81772d03eff5e43e4c6",
+        "qualification/hcsn_differentiable/value.py": "59847f1a39e834e2eb927840ee608b5914b7a61c1ebb4be7fce956b1285b8101"
+      },
+      "source_unchanged": true,
+      "status": "completed_interface_only",
+      "torch": "2.8.0+cu128",
+      "trainable_parameters": 427,
+      "wall_seconds": 3.0312718520872295
+    },
+    {
+      "arm": "cfc",
+      "budget": {
+        "cuda": false,
+        "external_memory_enforcement": "caller-provided hard envelope required",
+        "gradient_norm_cap": 1.0,
+        "learning_rate": 0.001,
+        "per_arm_seed_seconds": 180,
+        "rss_bytes": 2147483648,
+        "suite_seconds": 1800,
+        "threads": 1,
+        "updates_per_fit": 4,
+        "window_events": 32
+      },
+      "checkpoint_sha256": "1e758bf920aee803646e169a598901d843703535676dd375f135fcf4b87e146b",
+      "completed_updates_recorded": 4,
+      "dev_logits_sha256": "e7d3cc7be4b5fa2831beebfe297b0f2dce8523edd1f7ff70458274eb177a9248",
+      "development_cross_entropy": 2.4786866422990896,
+      "energy_missing_reason": "no whole-system meter",
+      "events_sha256": "be950ba982fbe79ec19433bc02e79f7a4e48573939b93f5e0cc97eb3a4a2ede5",
+      "exit_code": 0,
+      "features_sha256": "f53de6fcb1d7b497126ed002bc69b310b6ae287550e0a204a6184d4a8a2a296e",
+      "formal_fits_started": 0,
+      "frontend_sha256": "11bd263a2ae3515347b3ab4e3228c83c66cc3e9296f36c9943efb4fc3a794c55",
+      "frozen_parameters_unchanged": true,
+      "independent_unit": "freshly_initialized_training_run",
+      "initialization_sha256": "d404e77df84cf67418c2877935bc06b6c5cd4cbf3efa080fa21e9f2c92427da5",
+      "loss_records": [
+        {
+          "diagnostics": {},
+          "loss_before_update": 2.4028347733317372,
+          "preclip_gradient_norm": 1.0976566062856925,
+          "window": [
+            0,
+            32
+          ]
+        },
+        {
+          "diagnostics": {},
+          "loss_before_update": 2.378508712311857,
+          "preclip_gradient_norm": 1.096847354551397,
+          "window": [
+            32,
+            64
+          ]
+        },
+        {
+          "diagnostics": {},
+          "loss_before_update": 2.416997621396875,
+          "preclip_gradient_norm": 1.0998076399340653,
+          "window": [
+            64,
+            96
+          ]
+        },
+        {
+          "diagnostics": {},
+          "loss_before_update": 2.369964499476524,
+          "preclip_gradient_norm": 0.9911554989849437,
+          "window": [
+            96,
+            128
+          ]
+        }
+      ],
+      "model": {
+        "arm": "cfc",
+        "claim_boundary": "Tiny interface fixture; unequal capacities; four updates do not establish adequate training.",
+        "device": "cpu",
+        "dtype": "float64",
+        "episode_state": "fresh for every forward",
+        "packages": {
+          "ncps": "1.0.1",
+          "numpy": "2.3.5",
+          "torch": "2.8.0+cu128"
+        },
+        "parameter_bytes": 6456,
+        "source_files_sha256": {
+          "/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/torch/nn/modules/activation.py": "79dfe46d31be2e8e8ce68908838f42eb83ecc2ffb364e065149d112c8afc8e02",
+          "/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/torch/nn/modules/container.py": "f1397f5d49ab49c17679ef5fbc0403288ad2680dff2b61d5df04d068a6bfc29f",
+          "/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/torch/nn/modules/linear.py": "fa22acbb48e41bff3be26779c2f242b15663b8157e54f0d55987721add97d16f",
+          "/home/qian-qi/hepta-hcsn-localization-v2-20261108-v1/source/proposals/localization-v2/models.py": "d964656caf16183cd552d9ab766d1b52ab76760130f72cde783ad50c8e1299fd",
+          "/home/qian-qi/hepta-hcsn-localization-v2-20261108-v1/venv/lib/python3.12/site-packages/ncps/torch/cfc.py": "3e5c1ddf4bf0829cfaa9c6415d30b8081fdaf2e1f681d02631c497626b67f0ea",
+          "/home/qian-qi/hepta-hcsn-localization-v2-20261108-v1/venv/lib/python3.12/site-packages/ncps/torch/cfc_cell.py": "79dcc1cbb3b6898dc2310e9086a2e031e31cbaeb129d69adcbf45eaa16d6b74d"
+        },
+        "source_hash_scope": "Python module definitions/helpers; native libraries identified by Torch build version",
+        "time_semantics": "official CfC receives real timespans",
+        "torch_git_version": "a1cb3cc05d46d198467bebbb6e8fba50a325d4e7",
+        "trainable_parameters": 807
+      },
+      "output_directory": "/home/qian-qi/hepta-hcsn-localization-v2-20261108-v1/interface-001/cfc-20261109",
+      "peak_rss_bytes": 626728960,
+      "physical_energy_joules": null,
+      "process_cpu_seconds": 3.0750088420000004,
+      "process_wall_seconds": 3.9254975949879736,
+      "provider_charges": null,
+      "seed": 20261109,
+      "smoke_fits_started": 1,
+      "source_after": {
+        "proposals/localization-v2/data.py": "0b0676b7ec22cca17b525da25de9c767c2dd06086b177a1de1e201e235952001",
+        "proposals/localization-v2/models.py": "d964656caf16183cd552d9ab766d1b52ab76760130f72cde783ad50c8e1299fd",
+        "proposals/localization-v2/run_interface.py": "dd3f4c109f2f2d23f1b66b8cb21861a5de995f4c632d7286c22d8ff8e24ab684",
+        "qualification/hcsn_differentiable/__init__.py": "bcde159e1a07a1da1df4b22caccae7f974443d34bbd071a6e845791f3e8b4123",
+        "qualification/hcsn_differentiable/benchmark_admission.py": "468f53365852f75d18708b504855ac1b5ad8e982fb4d82a6c5f7ee5bac9eabb0",
+        "qualification/hcsn_differentiable/checkpoint.py": "9565cba284f479bbab7c8ee61ca7a5330ddb9a9c4efed7786d92a37f7a93c793",
+        "qualification/hcsn_differentiable/contract.py": "79e1127dc126fb8ac97ce7542bac2c9d70c71e0fd2d24416f146d4ec82be099e",
+        "qualification/hcsn_differentiable/encoder.py": "8297a3a994e0ff7b97e4d73b4ac92f8bdc8a691dfdf145fc8fcc45be5cad7b18",
+        "qualification/hcsn_differentiable/error_budget.py": "0b378dfea9f72cd946f40248c7573bff324db7fff9570b15cab67d9a2cb78b58",
+        "qualification/hcsn_differentiable/finite_renewal.py": "6f582ab64695ba676f5d1b4f47ceb39c6b4f8a70cde85eafe21ab3aaaca823de",
+        "qualification/hcsn_differentiable/localization_smoke.py": "99c214040e1c2bd3057fb77641c2b75faad3c3c61d48c27fda33629d1332e372",
+        "qualification/hcsn_differentiable/network.py": "04726551b6d4a53de2eb0daa1d8f5f30d96c7852bcf3ee769220ff584e56a687",
+        "qualification/hcsn_differentiable/operator.py": "a372ca8eef2b41714f632e0b1db2a58f98409fbb23858eb83bfe93a7833f1677",
+        "qualification/hcsn_differentiable/regenerative.py": "551bdc384257ab0ae510903165b580c50e761410777480989406395750a71ae1",
+        "qualification/hcsn_differentiable/run_qualification.py": "d84e5fdac31da852f9e4639899dae3e797ee6c0a4e2dd81772d03eff5e43e4c6",
+        "qualification/hcsn_differentiable/value.py": "59847f1a39e834e2eb927840ee608b5914b7a61c1ebb4be7fce956b1285b8101"
+      },
+      "source_before": {
+        "proposals/localization-v2/data.py": "0b0676b7ec22cca17b525da25de9c767c2dd06086b177a1de1e201e235952001",
+        "proposals/localization-v2/models.py": "d964656caf16183cd552d9ab766d1b52ab76760130f72cde783ad50c8e1299fd",
+        "proposals/localization-v2/run_interface.py": "dd3f4c109f2f2d23f1b66b8cb21861a5de995f4c632d7286c22d8ff8e24ab684",
+        "qualification/hcsn_differentiable/__init__.py": "bcde159e1a07a1da1df4b22caccae7f974443d34bbd071a6e845791f3e8b4123",
+        "qualification/hcsn_differentiable/benchmark_admission.py": "468f53365852f75d18708b504855ac1b5ad8e982fb4d82a6c5f7ee5bac9eabb0",
+        "qualification/hcsn_differentiable/checkpoint.py": "9565cba284f479bbab7c8ee61ca7a5330ddb9a9c4efed7786d92a37f7a93c793",
+        "qualification/hcsn_differentiable/contract.py": "79e1127dc126fb8ac97ce7542bac2c9d70c71e0fd2d24416f146d4ec82be099e",
+        "qualification/hcsn_differentiable/encoder.py": "8297a3a994e0ff7b97e4d73b4ac92f8bdc8a691dfdf145fc8fcc45be5cad7b18",
+        "qualification/hcsn_differentiable/error_budget.py": "0b378dfea9f72cd946f40248c7573bff324db7fff9570b15cab67d9a2cb78b58",
+        "qualification/hcsn_differentiable/finite_renewal.py": "6f582ab64695ba676f5d1b4f47ceb39c6b4f8a70cde85eafe21ab3aaaca823de",
+        "qualification/hcsn_differentiable/localization_smoke.py": "99c214040e1c2bd3057fb77641c2b75faad3c3c61d48c27fda33629d1332e372",
+        "qualification/hcsn_differentiable/network.py": "04726551b6d4a53de2eb0daa1d8f5f30d96c7852bcf3ee769220ff584e56a687",
+        "qualification/hcsn_differentiable/operator.py": "a372ca8eef2b41714f632e0b1db2a58f98409fbb23858eb83bfe93a7833f1677",
+        "qualification/hcsn_differentiable/regenerative.py": "551bdc384257ab0ae510903165b580c50e761410777480989406395750a71ae1",
+        "qualification/hcsn_differentiable/run_qualification.py": "d84e5fdac31da852f9e4639899dae3e797ee6c0a4e2dd81772d03eff5e43e4c6",
+        "qualification/hcsn_differentiable/value.py": "59847f1a39e834e2eb927840ee608b5914b7a61c1ebb4be7fce956b1285b8101"
+      },
+      "source_unchanged": true,
+      "status": "completed_interface_only",
+      "torch": "2.8.0+cu128",
+      "trainable_parameters": 807,
+      "wall_seconds": 3.0905363289639354
+    },
+    {
+      "arm": "snn_plif",
+      "budget": {
+        "cuda": false,
+        "external_memory_enforcement": "caller-provided hard envelope required",
+        "gradient_norm_cap": 1.0,
+        "learning_rate": 0.001,
+        "per_arm_seed_seconds": 180,
+        "rss_bytes": 2147483648,
+        "suite_seconds": 1800,
+        "threads": 1,
+        "updates_per_fit": 4,
+        "window_events": 32
+      },
+      "checkpoint_sha256": "c5a25bf58ea7454df4f858991fd38e52845720319aaea4277fec3c298777d71b",
+      "completed_updates_recorded": 4,
+      "dev_logits_sha256": "4467bfeac9fd4d31918218fc0d7dc6f725c23954e1059e8b6304c16b1e1e9bbd",
+      "development_cross_entropy": 2.902871325442215,
+      "energy_missing_reason": "no whole-system meter",
+      "events_sha256": "c1f10c65cd98569c7f06aa3592b9667b62f9cae930ba12dac668bcc358d6c8a3",
+      "exit_code": 0,
+      "features_sha256": "f53de6fcb1d7b497126ed002bc69b310b6ae287550e0a204a6184d4a8a2a296e",
+      "formal_fits_started": 0,
+      "frontend_sha256": "11bd263a2ae3515347b3ab4e3228c83c66cc3e9296f36c9943efb4fc3a794c55",
+      "frozen_parameters_unchanged": true,
+      "independent_unit": "freshly_initialized_training_run",
+      "initialization_sha256": "c1d478d3746bb9e8bc5c6f32223534cc5c66bf1b5b6382015f39f4a8ec6751b7",
+      "loss_records": [
+        {
+          "diagnostics": {
+            "learned_tau": 2.0,
+            "spike_fraction": 0.0
+          },
+          "loss_before_update": 2.819557675085654,
+          "preclip_gradient_norm": 1.174505222976829,
+          "window": [
+            0,
+            32
+          ]
+        },
+        {
+          "diagnostics": {
+            "learned_tau": 1.9990005000039008,
+            "spike_fraction": 0.0
+          },
+          "loss_before_update": 2.8176770520607803,
+          "preclip_gradient_norm": 1.1244602307421707,
+          "window": [
+            32,
+            64
+          ]
+        },
+        {
+          "diagnostics": {
+            "learned_tau": 1.998013966283095,
+            "spike_fraction": 0.0078125
+          },
+          "loss_before_update": 2.8271476979127224,
+          "preclip_gradient_norm": 1.0970058083806233,
+          "window": [
+            64,
+            96
+          ]
+        },
+        {
+          "diagnostics": {
+            "learned_tau": 1.9970331524847198,
+            "spike_fraction": 0.046875
+          },
+          "loss_before_update": 2.7622467542425033,
+          "preclip_gradient_norm": 1.0985186714879982,
+          "window": [
+            96,
+            128
+          ]
+        }
+      ],
+      "model": {
+        "arm": "snn_plif",
+        "claim_boundary": "Tiny interface fixture; unequal capacities; four updates do not establish adequate training.",
+        "device": "cpu",
+        "dtype": "float64",
+        "episode_state": "fresh for every forward",
+        "last_forward_spike_fraction": null,
+        "learned_tau": 2.0,
+        "packages": {
+          "spikingjelly": "0.0.0.0.14",
+          "torch": "2.8.0+cu128"
+        },
+        "parameter_bytes": 1408,
+        "source_files_sha256": {
+          "/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/torch/nn/modules/linear.py": "fa22acbb48e41bff3be26779c2f242b15663b8157e54f0d55987721add97d16f",
+          "/home/qian-qi/hepta-hcsn-localization-v2-20261108-v1/source/proposals/localization-v2/models.py": "d964656caf16183cd552d9ab766d1b52ab76760130f72cde783ad50c8e1299fd",
+          "/home/qian-qi/hepta-hcsn-localization-v2-20261108-v1/venv/lib/python3.12/site-packages/spikingjelly/activation_based/functional.py": "cb16b4d0f77e156ee55b8b590c8d9432b070fead5ac614c5c6adb84753f41793",
+          "/home/qian-qi/hepta-hcsn-localization-v2-20261108-v1/venv/lib/python3.12/site-packages/spikingjelly/activation_based/neuron.py": "a6ca9213da5ab5897fadeea305b45bc4a1868d206aad1579bb88637b47397816",
+          "/home/qian-qi/hepta-hcsn-localization-v2-20261108-v1/venv/lib/python3.12/site-packages/spikingjelly/activation_based/surrogate.py": "c95f5501bb0583025be9ab0e4524a7f215ab25980f5867628a7d700d9e488fbf"
+        },
+        "source_hash_scope": "Python module definitions/helpers; native libraries identified by Torch build version",
+        "time_semantics": "event-indexed PLIF; log1p(real dt) input; no variable-dt decay claim",
+        "torch_git_version": "a1cb3cc05d46d198467bebbb6e8fba50a325d4e7",
+        "trainable_parameters": 176
+      },
+      "output_directory": "/home/qian-qi/hepta-hcsn-localization-v2-20261108-v1/interface-001/snn_plif-20261109",
+      "peak_rss_bytes": 633520128,
+      "physical_energy_joules": null,
+      "process_cpu_seconds": 3.3448009069999998,
+      "process_wall_seconds": 4.226151465903968,
+      "provider_charges": null,
+      "seed": 20261109,
+      "smoke_fits_started": 1,
+      "source_after": {
+        "proposals/localization-v2/data.py": "0b0676b7ec22cca17b525da25de9c767c2dd06086b177a1de1e201e235952001",
+        "proposals/localization-v2/models.py": "d964656caf16183cd552d9ab766d1b52ab76760130f72cde783ad50c8e1299fd",
+        "proposals/localization-v2/run_interface.py": "dd3f4c109f2f2d23f1b66b8cb21861a5de995f4c632d7286c22d8ff8e24ab684",
+        "qualification/hcsn_differentiable/__init__.py": "bcde159e1a07a1da1df4b22caccae7f974443d34bbd071a6e845791f3e8b4123",
+        "qualification/hcsn_differentiable/benchmark_admission.py": "468f53365852f75d18708b504855ac1b5ad8e982fb4d82a6c5f7ee5bac9eabb0",
+        "qualification/hcsn_differentiable/checkpoint.py": "9565cba284f479bbab7c8ee61ca7a5330ddb9a9c4efed7786d92a37f7a93c793",
+        "qualification/hcsn_differentiable/contract.py": "79e1127dc126fb8ac97ce7542bac2c9d70c71e0fd2d24416f146d4ec82be099e",
+        "qualification/hcsn_differentiable/encoder.py": "8297a3a994e0ff7b97e4d73b4ac92f8bdc8a691dfdf145fc8fcc45be5cad7b18",
+        "qualification/hcsn_differentiable/error_budget.py": "0b378dfea9f72cd946f40248c7573bff324db7fff9570b15cab67d9a2cb78b58",
+        "qualification/hcsn_differentiable/finite_renewal.py": "6f582ab64695ba676f5d1b4f47ceb39c6b4f8a70cde85eafe21ab3aaaca823de",
+        "qualification/hcsn_differentiable/localization_smoke.py": "99c214040e1c2bd3057fb77641c2b75faad3c3c61d48c27fda33629d1332e372",
+        "qualification/hcsn_differentiable/network.py": "04726551b6d4a53de2eb0daa1d8f5f30d96c7852bcf3ee769220ff584e56a687",
+        "qualification/hcsn_differentiable/operator.py": "a372ca8eef2b41714f632e0b1db2a58f98409fbb23858eb83bfe93a7833f1677",
+        "qualification/hcsn_differentiable/regenerative.py": "551bdc384257ab0ae510903165b580c50e761410777480989406395750a71ae1",
+        "qualification/hcsn_differentiable/run_qualification.py": "d84e5fdac31da852f9e4639899dae3e797ee6c0a4e2dd81772d03eff5e43e4c6",
+        "qualification/hcsn_differentiable/value.py": "59847f1a39e834e2eb927840ee608b5914b7a61c1ebb4be7fce956b1285b8101"
+      },
+      "source_before": {
+        "proposals/localization-v2/data.py": "0b0676b7ec22cca17b525da25de9c767c2dd06086b177a1de1e201e235952001",
+        "proposals/localization-v2/models.py": "d964656caf16183cd552d9ab766d1b52ab76760130f72cde783ad50c8e1299fd",
+        "proposals/localization-v2/run_interface.py": "dd3f4c109f2f2d23f1b66b8cb21861a5de995f4c632d7286c22d8ff8e24ab684",
+        "qualification/hcsn_differentiable/__init__.py": "bcde159e1a07a1da1df4b22caccae7f974443d34bbd071a6e845791f3e8b4123",
+        "qualification/hcsn_differentiable/benchmark_admission.py": "468f53365852f75d18708b504855ac1b5ad8e982fb4d82a6c5f7ee5bac9eabb0",
+        "qualification/hcsn_differentiable/checkpoint.py": "9565cba284f479bbab7c8ee61ca7a5330ddb9a9c4efed7786d92a37f7a93c793",
+        "qualification/hcsn_differentiable/contract.py": "79e1127dc126fb8ac97ce7542bac2c9d70c71e0fd2d24416f146d4ec82be099e",
+        "qualification/hcsn_differentiable/encoder.py": "8297a3a994e0ff7b97e4d73b4ac92f8bdc8a691dfdf145fc8fcc45be5cad7b18",
+        "qualification/hcsn_differentiable/error_budget.py": "0b378dfea9f72cd946f40248c7573bff324db7fff9570b15cab67d9a2cb78b58",
+        "qualification/hcsn_differentiable/finite_renewal.py": "6f582ab64695ba676f5d1b4f47ceb39c6b4f8a70cde85eafe21ab3aaaca823de",
+        "qualification/hcsn_differentiable/localization_smoke.py": "99c214040e1c2bd3057fb77641c2b75faad3c3c61d48c27fda33629d1332e372",
+        "qualification/hcsn_differentiable/network.py": "04726551b6d4a53de2eb0daa1d8f5f30d96c7852bcf3ee769220ff584e56a687",
+        "qualification/hcsn_differentiable/operator.py": "a372ca8eef2b41714f632e0b1db2a58f98409fbb23858eb83bfe93a7833f1677",
+        "qualification/hcsn_differentiable/regenerative.py": "551bdc384257ab0ae510903165b580c50e761410777480989406395750a71ae1",
+        "qualification/hcsn_differentiable/run_qualification.py": "d84e5fdac31da852f9e4639899dae3e797ee6c0a4e2dd81772d03eff5e43e4c6",
+        "qualification/hcsn_differentiable/value.py": "59847f1a39e834e2eb927840ee608b5914b7a61c1ebb4be7fce956b1285b8101"
+      },
+      "source_unchanged": true,
+      "status": "completed_interface_only",
+      "torch": "2.8.0+cu128",
+      "trainable_parameters": 176,
+      "wall_seconds": 3.362251583021134
+    },
+    {
+      "arm": "ssm_s4d",
+      "budget": {
+        "cuda": false,
+        "external_memory_enforcement": "caller-provided hard envelope required",
+        "gradient_norm_cap": 1.0,
+        "learning_rate": 0.001,
+        "per_arm_seed_seconds": 180,
+        "rss_bytes": 2147483648,
+        "suite_seconds": 1800,
+        "threads": 1,
+        "updates_per_fit": 4,
+        "window_events": 32
+      },
+      "checkpoint_sha256": "078278e5ef3bbdf30e7e976e74f01d596a8fc0caaa867ad852f60e1bd2cd72f6",
+      "completed_updates_recorded": 4,
+      "dev_logits_sha256": "23e144a238353158b160292c52567bb945d8f79fa1f1674ae3e386a8da0138af",
+      "development_cross_entropy": 2.583715101857672,
+      "energy_missing_reason": "no whole-system meter",
+      "events_sha256": "e54b65be4c52841b1aa47a663405cbccf32974908ac34520f2515aa3346bf74b",
+      "exit_code": 0,
+      "features_sha256": "f53de6fcb1d7b497126ed002bc69b310b6ae287550e0a204a6184d4a8a2a296e",
+      "formal_fits_started": 0,
+      "frontend_sha256": "11bd263a2ae3515347b3ab4e3228c83c66cc3e9296f36c9943efb4fc3a794c55",
+      "frozen_parameters_unchanged": true,
+      "independent_unit": "freshly_initialized_training_run",
+      "initialization_sha256": "0f5fde37f190ff669c219e368d15a06c0514ba9438380e348c1ace6cd6c3b731",
+      "loss_records": [
+        {
+          "diagnostics": {},
+          "loss_before_update": 2.6060304436086517,
+          "preclip_gradient_norm": 1.0816550621155108,
+          "window": [
+            0,
+            32
+          ]
+        },
+        {
+          "diagnostics": {},
+          "loss_before_update": 2.602408493593398,
+          "preclip_gradient_norm": 1.0827823383895785,
+          "window": [
+            32,
+            64
+          ]
+        },
+        {
+          "diagnostics": {},
+          "loss_before_update": 2.5996887842367973,
+          "preclip_gradient_norm": 1.0830779949997213,
+          "window": [
+            64,
+            96
+          ]
+        },
+        {
+          "diagnostics": {},
+          "loss_before_update": 2.567262229400518,
+          "preclip_gradient_norm": 0.8885702148560073,
+          "window": [
+            96,
+            128
+          ]
+        }
+      ],
+      "model": {
+        "arm": "ssm_s4d",
+        "claim_boundary": "Tiny interface fixture; unequal capacities; four updates do not establish adequate training.",
+        "device": "cpu",
+        "dtype": "float64",
+        "episode_state": "fresh for every forward",
+        "packages": {
+          "einops": "0.8.1",
+          "torch": "2.8.0+cu128"
+        },
+        "parameter_bytes": 2680,
+        "persistent_state_interface": "not exposed by upstream FFT forward",
+        "source_files_sha256": {
+          "/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/torch/nn/modules/activation.py": "79dfe46d31be2e8e8ce68908838f42eb83ecc2ffb364e065149d112c8afc8e02",
+          "/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/torch/nn/modules/container.py": "f1397f5d49ab49c17679ef5fbc0403288ad2680dff2b61d5df04d068a6bfc29f",
+          "/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/torch/nn/modules/conv.py": "dc3f09f7ade5d39b15eac1c937331de1142808e2f769d601511f495e89848fbb",
+          "/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/torch/nn/modules/linear.py": "fa22acbb48e41bff3be26779c2f242b15663b8157e54f0d55987721add97d16f",
+          "/home/qian-qi/hepta-hcsn-localization-v2-20261108-v1/dependencies/s4/models/s4/s4d.py": "4aab484e96dba85b2eba14f54c42df103a314a087ca184bfcca30e77d0faea2c",
+          "/home/qian-qi/hepta-hcsn-localization-v2-20261108-v1/dependencies/s4/src/models/nn/__init__.py": "499b0fb6449625962b445ae2c22faa9751ed563b3b5e4e17559843f3ff15cd0c",
+          "/home/qian-qi/hepta-hcsn-localization-v2-20261108-v1/dependencies/s4/src/models/nn/activation.py": "552c1b8b37f89f32528047835a4d02d8abb3d5ccc3fd783faf97c0f3fe2b65e5",
+          "/home/qian-qi/hepta-hcsn-localization-v2-20261108-v1/dependencies/s4/src/models/nn/dropout.py": "4cbe734786c1149f8ed8d6d2bdced4a519c172afbfc8d369dc7f493cfdde027f",
+          "/home/qian-qi/hepta-hcsn-localization-v2-20261108-v1/dependencies/s4/src/models/nn/linear.py": "60c8827cacfccb00f33f12e36fb0d6862671256cd1631a8ba9dc98c363574458",
+          "/home/qian-qi/hepta-hcsn-localization-v2-20261108-v1/dependencies/s4/src/models/nn/normalization.py": "b01adaf8941004c6f7ce88055e9a6b72387795e133acbfe604f34f586e16f1bc",
+          "/home/qian-qi/hepta-hcsn-localization-v2-20261108-v1/source/proposals/localization-v2/models.py": "d964656caf16183cd552d9ab766d1b52ab76760130f72cde783ad50c8e1299fd"
+        },
+        "source_hash_scope": "Python module definitions/helpers; native libraries identified by Torch build version",
+        "time_semantics": "official causal S4D-Lin FFT on event index; real dt feature; not Mamba",
+        "torch_git_version": "a1cb3cc05d46d198467bebbb6e8fba50a325d4e7",
+        "trainable_parameters": 335,
+        "verified_checkout_commit": "e757cef57d89e448c413de7325ed5601aceaac13"
+      },
+      "output_directory": "/home/qian-qi/hepta-hcsn-localization-v2-20261108-v1/interface-001/ssm_s4d-20261109",
+      "peak_rss_bytes": 628703232,
+      "physical_energy_joules": null,
+      "process_cpu_seconds": 2.951913686,
+      "process_wall_seconds": 3.775221707066521,
+      "provider_charges": null,
+      "seed": 20261109,
+      "smoke_fits_started": 1,
+      "source_after": {
+        "proposals/localization-v2/data.py": "0b0676b7ec22cca17b525da25de9c767c2dd06086b177a1de1e201e235952001",
+        "proposals/localization-v2/models.py": "d964656caf16183cd552d9ab766d1b52ab76760130f72cde783ad50c8e1299fd",
+        "proposals/localization-v2/run_interface.py": "dd3f4c109f2f2d23f1b66b8cb21861a5de995f4c632d7286c22d8ff8e24ab684",
+        "qualification/hcsn_differentiable/__init__.py": "bcde159e1a07a1da1df4b22caccae7f974443d34bbd071a6e845791f3e8b4123",
+        "qualification/hcsn_differentiable/benchmark_admission.py": "468f53365852f75d18708b504855ac1b5ad8e982fb4d82a6c5f7ee5bac9eabb0",
+        "qualification/hcsn_differentiable/checkpoint.py": "9565cba284f479bbab7c8ee61ca7a5330ddb9a9c4efed7786d92a37f7a93c793",
+        "qualification/hcsn_differentiable/contract.py": "79e1127dc126fb8ac97ce7542bac2c9d70c71e0fd2d24416f146d4ec82be099e",
+        "qualification/hcsn_differentiable/encoder.py": "8297a3a994e0ff7b97e4d73b4ac92f8bdc8a691dfdf145fc8fcc45be5cad7b18",
+        "qualification/hcsn_differentiable/error_budget.py": "0b378dfea9f72cd946f40248c7573bff324db7fff9570b15cab67d9a2cb78b58",
+        "qualification/hcsn_differentiable/finite_renewal.py": "6f582ab64695ba676f5d1b4f47ceb39c6b4f8a70cde85eafe21ab3aaaca823de",
+        "qualification/hcsn_differentiable/localization_smoke.py": "99c214040e1c2bd3057fb77641c2b75faad3c3c61d48c27fda33629d1332e372",
+        "qualification/hcsn_differentiable/network.py": "04726551b6d4a53de2eb0daa1d8f5f30d96c7852bcf3ee769220ff584e56a687",
+        "qualification/hcsn_differentiable/operator.py": "a372ca8eef2b41714f632e0b1db2a58f98409fbb23858eb83bfe93a7833f1677",
+        "qualification/hcsn_differentiable/regenerative.py": "551bdc384257ab0ae510903165b580c50e761410777480989406395750a71ae1",
+        "qualification/hcsn_differentiable/run_qualification.py": "d84e5fdac31da852f9e4639899dae3e797ee6c0a4e2dd81772d03eff5e43e4c6",
+        "qualification/hcsn_differentiable/value.py": "59847f1a39e834e2eb927840ee608b5914b7a61c1ebb4be7fce956b1285b8101"
+      },
+      "source_before": {
+        "proposals/localization-v2/data.py": "0b0676b7ec22cca17b525da25de9c767c2dd06086b177a1de1e201e235952001",
+        "proposals/localization-v2/models.py": "d964656caf16183cd552d9ab766d1b52ab76760130f72cde783ad50c8e1299fd",
+        "proposals/localization-v2/run_interface.py": "dd3f4c109f2f2d23f1b66b8cb21861a5de995f4c632d7286c22d8ff8e24ab684",
+        "qualification/hcsn_differentiable/__init__.py": "bcde159e1a07a1da1df4b22caccae7f974443d34bbd071a6e845791f3e8b4123",
+        "qualification/hcsn_differentiable/benchmark_admission.py": "468f53365852f75d18708b504855ac1b5ad8e982fb4d82a6c5f7ee5bac9eabb0",
+        "qualification/hcsn_differentiable/checkpoint.py": "9565cba284f479bbab7c8ee61ca7a5330ddb9a9c4efed7786d92a37f7a93c793",
+        "qualification/hcsn_differentiable/contract.py": "79e1127dc126fb8ac97ce7542bac2c9d70c71e0fd2d24416f146d4ec82be099e",
+        "qualification/hcsn_differentiable/encoder.py": "8297a3a994e0ff7b97e4d73b4ac92f8bdc8a691dfdf145fc8fcc45be5cad7b18",
+        "qualification/hcsn_differentiable/error_budget.py": "0b378dfea9f72cd946f40248c7573bff324db7fff9570b15cab67d9a2cb78b58",
+        "qualification/hcsn_differentiable/finite_renewal.py": "6f582ab64695ba676f5d1b4f47ceb39c6b4f8a70cde85eafe21ab3aaaca823de",
+        "qualification/hcsn_differentiable/localization_smoke.py": "99c214040e1c2bd3057fb77641c2b75faad3c3c61d48c27fda33629d1332e372",
+        "qualification/hcsn_differentiable/network.py": "04726551b6d4a53de2eb0daa1d8f5f30d96c7852bcf3ee769220ff584e56a687",
+        "qualification/hcsn_differentiable/operator.py": "a372ca8eef2b41714f632e0b1db2a58f98409fbb23858eb83bfe93a7833f1677",
+        "qualification/hcsn_differentiable/regenerative.py": "551bdc384257ab0ae510903165b580c50e761410777480989406395750a71ae1",
+        "qualification/hcsn_differentiable/run_qualification.py": "d84e5fdac31da852f9e4639899dae3e797ee6c0a4e2dd81772d03eff5e43e4c6",
+        "qualification/hcsn_differentiable/value.py": "59847f1a39e834e2eb927840ee608b5914b7a61c1ebb4be7fce956b1285b8101"
+      },
+      "source_unchanged": true,
+      "status": "completed_interface_only",
+      "torch": "2.8.0+cu128",
+      "trainable_parameters": 335,
+      "wall_seconds": 2.9847863509785384
+    },
+    {
+      "arm": "attention",
+      "budget": {
+        "cuda": false,
+        "external_memory_enforcement": "caller-provided hard envelope required",
+        "gradient_norm_cap": 1.0,
+        "learning_rate": 0.001,
+        "per_arm_seed_seconds": 180,
+        "rss_bytes": 2147483648,
+        "suite_seconds": 1800,
+        "threads": 1,
+        "updates_per_fit": 4,
+        "window_events": 32
+      },
+      "checkpoint_sha256": "8c4313b83e49692285a6b4ffa9ffb8a5383f6d791d4b6c1dda2c1c2be48f6564",
+      "completed_updates_recorded": 4,
+      "dev_logits_sha256": "19b01f7f4539804906f227115d8cbc01d792759019eb3b72c07fd0893a37a80c",
+      "development_cross_entropy": 2.2942670618938763,
+      "energy_missing_reason": "no whole-system meter",
+      "events_sha256": "bc496c1f14126e54164c4aa7d4cc12b3479619f1fb496e41f7235aab0da36f11",
+      "exit_code": 0,
+      "features_sha256": "f53de6fcb1d7b497126ed002bc69b310b6ae287550e0a204a6184d4a8a2a296e",
+      "formal_fits_started": 0,
+      "frontend_sha256": "11bd263a2ae3515347b3ab4e3228c83c66cc3e9296f36c9943efb4fc3a794c55",
+      "frozen_parameters_unchanged": true,
+      "independent_unit": "freshly_initialized_training_run",
+      "initialization_sha256": "7164562a1f1def26e38f39eacff264985bfbef2ed312d12bc3c5c9cc8ed019df",
+      "loss_records": [
+        {
+          "diagnostics": {},
+          "loss_before_update": 2.5935923559611838,
+          "preclip_gradient_norm": 3.181819717053265,
+          "window": [
+            0,
+            32
+          ]
+        },
+        {
+          "diagnostics": {},
+          "loss_before_update": 2.4887469022319206,
+          "preclip_gradient_norm": 3.076597272631973,
+          "window": [
+            32,
+            64
+          ]
+        },
+        {
+          "diagnostics": {},
+          "loss_before_update": 2.460273271963376,
+          "preclip_gradient_norm": 3.02408798291105,
+          "window": [
+            64,
+            96
+          ]
+        },
+        {
+          "diagnostics": {},
+          "loss_before_update": 2.305440728999768,
+          "preclip_gradient_norm": 2.5523873723653283,
+          "window": [
+            96,
+            128
+          ]
+        }
+      ],
+      "model": {
+        "arm": "attention",
+        "claim_boundary": "Tiny interface fixture; unequal capacities; four updates do not establish adequate training.",
+        "device": "cpu",
+        "dtype": "float64",
+        "episode_state": "fresh for every forward",
+        "packages": {
+          "torch": "2.8.0+cu128"
+        },
+        "parameter_bytes": 9432,
+        "source_files_sha256": {
+          "/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/torch/nn/modules/activation.py": "79dfe46d31be2e8e8ce68908838f42eb83ecc2ffb364e065149d112c8afc8e02",
+          "/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/torch/nn/modules/container.py": "f1397f5d49ab49c17679ef5fbc0403288ad2680dff2b61d5df04d068a6bfc29f",
+          "/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/torch/nn/modules/dropout.py": "1fc9974c3cf2078dd4bc257f73afb6a6714adfec2e9d099d47cf923e766d3490",
+          "/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/torch/nn/modules/linear.py": "fa22acbb48e41bff3be26779c2f242b15663b8157e54f0d55987721add97d16f",
+          "/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/torch/nn/modules/normalization.py": "bb4a027c559afd1fdca5ee6475ac68d2536879b96286e3b45352331fbbbe1897",
+          "/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/torch/nn/modules/transformer.py": "5489e57073dbbfa2d0ca2f8515fe914b606d8e63103ad92a01b6a227b10a36c2",
+          "/home/qian-qi/hepta-hcsn-localization-v2-20261108-v1/source/proposals/localization-v2/models.py": "d964656caf16183cd552d9ab766d1b52ab76760130f72cde783ad50c8e1299fd"
+        },
+        "source_hash_scope": "Python module definitions/helpers; native libraries identified by Torch build version",
+        "time_semantics": "causal event sequence with shared real-dt feature",
+        "torch_git_version": "a1cb3cc05d46d198467bebbb6e8fba50a325d4e7",
+        "trainable_parameters": 1179
+      },
+      "output_directory": "/home/qian-qi/hepta-hcsn-localization-v2-20261108-v1/interface-001/attention-20261109",
+      "peak_rss_bytes": 627802112,
+      "physical_energy_joules": null,
+      "process_cpu_seconds": 3.31810696,
+      "process_wall_seconds": 4.225544468965381,
+      "provider_charges": null,
+      "seed": 20261109,
+      "smoke_fits_started": 1,
+      "source_after": {
+        "proposals/localization-v2/data.py": "0b0676b7ec22cca17b525da25de9c767c2dd06086b177a1de1e201e235952001",
+        "proposals/localization-v2/models.py": "d964656caf16183cd552d9ab766d1b52ab76760130f72cde783ad50c8e1299fd",
+        "proposals/localization-v2/run_interface.py": "dd3f4c109f2f2d23f1b66b8cb21861a5de995f4c632d7286c22d8ff8e24ab684",
+        "qualification/hcsn_differentiable/__init__.py": "bcde159e1a07a1da1df4b22caccae7f974443d34bbd071a6e845791f3e8b4123",
+        "qualification/hcsn_differentiable/benchmark_admission.py": "468f53365852f75d18708b504855ac1b5ad8e982fb4d82a6c5f7ee5bac9eabb0",
+        "qualification/hcsn_differentiable/checkpoint.py": "9565cba284f479bbab7c8ee61ca7a5330ddb9a9c4efed7786d92a37f7a93c793",
+        "qualification/hcsn_differentiable/contract.py": "79e1127dc126fb8ac97ce7542bac2c9d70c71e0fd2d24416f146d4ec82be099e",
+        "qualification/hcsn_differentiable/encoder.py": "8297a3a994e0ff7b97e4d73b4ac92f8bdc8a691dfdf145fc8fcc45be5cad7b18",
+        "qualification/hcsn_differentiable/error_budget.py": "0b378dfea9f72cd946f40248c7573bff324db7fff9570b15cab67d9a2cb78b58",
+        "qualification/hcsn_differentiable/finite_renewal.py": "6f582ab64695ba676f5d1b4f47ceb39c6b4f8a70cde85eafe21ab3aaaca823de",
+        "qualification/hcsn_differentiable/localization_smoke.py": "99c214040e1c2bd3057fb77641c2b75faad3c3c61d48c27fda33629d1332e372",
+        "qualification/hcsn_differentiable/network.py": "04726551b6d4a53de2eb0daa1d8f5f30d96c7852bcf3ee769220ff584e56a687",
+        "qualification/hcsn_differentiable/operator.py": "a372ca8eef2b41714f632e0b1db2a58f98409fbb23858eb83bfe93a7833f1677",
+        "qualification/hcsn_differentiable/regenerative.py": "551bdc384257ab0ae510903165b580c50e761410777480989406395750a71ae1",
+        "qualification/hcsn_differentiable/run_qualification.py": "d84e5fdac31da852f9e4639899dae3e797ee6c0a4e2dd81772d03eff5e43e4c6",
+        "qualification/hcsn_differentiable/value.py": "59847f1a39e834e2eb927840ee608b5914b7a61c1ebb4be7fce956b1285b8101"
+      },
+      "source_before": {
+        "proposals/localization-v2/data.py": "0b0676b7ec22cca17b525da25de9c767c2dd06086b177a1de1e201e235952001",
+        "proposals/localization-v2/models.py": "d964656caf16183cd552d9ab766d1b52ab76760130f72cde783ad50c8e1299fd",
+        "proposals/localization-v2/run_interface.py": "dd3f4c109f2f2d23f1b66b8cb21861a5de995f4c632d7286c22d8ff8e24ab684",
+        "qualification/hcsn_differentiable/__init__.py": "bcde159e1a07a1da1df4b22caccae7f974443d34bbd071a6e845791f3e8b4123",
+        "qualification/hcsn_differentiable/benchmark_admission.py": "468f53365852f75d18708b504855ac1b5ad8e982fb4d82a6c5f7ee5bac9eabb0",
+        "qualification/hcsn_differentiable/checkpoint.py": "9565cba284f479bbab7c8ee61ca7a5330ddb9a9c4efed7786d92a37f7a93c793",
+        "qualification/hcsn_differentiable/contract.py": "79e1127dc126fb8ac97ce7542bac2c9d70c71e0fd2d24416f146d4ec82be099e",
+        "qualification/hcsn_differentiable/encoder.py": "8297a3a994e0ff7b97e4d73b4ac92f8bdc8a691dfdf145fc8fcc45be5cad7b18",
+        "qualification/hcsn_differentiable/error_budget.py": "0b378dfea9f72cd946f40248c7573bff324db7fff9570b15cab67d9a2cb78b58",
+        "qualification/hcsn_differentiable/finite_renewal.py": "6f582ab64695ba676f5d1b4f47ceb39c6b4f8a70cde85eafe21ab3aaaca823de",
+        "qualification/hcsn_differentiable/localization_smoke.py": "99c214040e1c2bd3057fb77641c2b75faad3c3c61d48c27fda33629d1332e372",
+        "qualification/hcsn_differentiable/network.py": "04726551b6d4a53de2eb0daa1d8f5f30d96c7852bcf3ee769220ff584e56a687",
+        "qualification/hcsn_differentiable/operator.py": "a372ca8eef2b41714f632e0b1db2a58f98409fbb23858eb83bfe93a7833f1677",
+        "qualification/hcsn_differentiable/regenerative.py": "551bdc384257ab0ae510903165b580c50e761410777480989406395750a71ae1",
+        "qualification/hcsn_differentiable/run_qualification.py": "d84e5fdac31da852f9e4639899dae3e797ee6c0a4e2dd81772d03eff5e43e4c6",
+        "qualification/hcsn_differentiable/value.py": "59847f1a39e834e2eb927840ee608b5914b7a61c1ebb4be7fce956b1285b8101"
+      },
+      "source_unchanged": true,
+      "status": "completed_interface_only",
+      "torch": "2.8.0+cu128",
+      "trainable_parameters": 1179,
+      "wall_seconds": 3.3310222590807825
+    },
+    {
+      "arm": "hcsn",
+      "budget": {
+        "cuda": false,
+        "external_memory_enforcement": "caller-provided hard envelope required",
+        "gradient_norm_cap": 1.0,
+        "learning_rate": 0.001,
+        "per_arm_seed_seconds": 180,
+        "rss_bytes": 2147483648,
+        "suite_seconds": 1800,
+        "threads": 1,
+        "updates_per_fit": 4,
+        "window_events": 32
+      },
+      "checkpoint_sha256": "5babb23d110700fce422bd3b6629ca8c827ff10f0f4a5742ab6855ddbaaf9bb5",
+      "completed_updates_recorded": 4,
+      "dev_logits_sha256": "ff1dd221925ef6fa14c442d97bb72ef0646a215cb86437e7df27541e7043319e",
+      "development_cross_entropy": 2.4586006764512107,
+      "energy_missing_reason": "no whole-system meter",
+      "events_sha256": "bc19573d4680f068329ba9b2d07c366b07ce996ad0791431dce50c2e2060ba48",
+      "exit_code": 0,
+      "features_sha256": "f53de6fcb1d7b497126ed002bc69b310b6ae287550e0a204a6184d4a8a2a296e",
+      "formal_fits_started": 0,
+      "frontend_sha256": "11bd263a2ae3515347b3ab4e3228c83c66cc3e9296f36c9943efb4fc3a794c55",
+      "frozen_parameters_unchanged": true,
+      "independent_unit": "freshly_initialized_training_run",
+      "initialization_sha256": "7604bbcc6121c4a26267cf60fef8f078f0b4108bc70c9cd49316bf5353fbed7d",
+      "loss_records": [
+        {
+          "diagnostics": {
+            "advance_calls": 32,
+            "bptt": "full",
+            "event_semantics": "conditional expected interval counts, not sampled spikes",
+            "layer_count": 1,
+            "maximum_mass_residual": 2.220446049250313e-16,
+            "maximum_negative_probability": 0.0,
+            "minimum_observation_evidence": 0.9767887857134487,
+            "sequence_position": 32,
+            "truncate_every": null,
+            "truncation_unit": "global shared input positions, including padding"
+          },
+          "loss_before_update": 2.5214129782003862,
+          "preclip_gradient_norm": 1.4142363325055396,
+          "window": [
+            0,
+            32
+          ]
+        },
+        {
+          "diagnostics": {
+            "advance_calls": 32,
+            "bptt": "full",
+            "event_semantics": "conditional expected interval counts, not sampled spikes",
+            "layer_count": 1,
+            "maximum_mass_residual": 2.220446049250313e-16,
+            "maximum_negative_probability": 0.0,
+            "minimum_observation_evidence": 0.9898405869747953,
+            "sequence_position": 32,
+            "truncate_every": null,
+            "truncation_unit": "global shared input positions, including padding"
+          },
+          "loss_before_update": 2.5000218637017664,
+          "preclip_gradient_norm": 1.4134381237613338,
+          "window": [
+            32,
+            64
+          ]
+        },
+        {
+          "diagnostics": {
+            "advance_calls": 32,
+            "bptt": "full",
+            "event_semantics": "conditional expected interval counts, not sampled spikes",
+            "layer_count": 1,
+            "maximum_mass_residual": 2.220446049250313e-16,
+            "maximum_negative_probability": 0.0,
+            "minimum_observation_evidence": 0.9901025223471175,
+            "sequence_position": 32,
+            "truncate_every": null,
+            "truncation_unit": "global shared input positions, including padding"
+          },
+          "loss_before_update": 2.4805949118936375,
+          "preclip_gradient_norm": 1.3993091321975253,
+          "window": [
+            64,
+            96
+          ]
+        },
+        {
+          "diagnostics": {
+            "advance_calls": 32,
+            "bptt": "full",
+            "event_semantics": "conditional expected interval counts, not sampled spikes",
+            "layer_count": 1,
+            "maximum_mass_residual": 3.3306690738754696e-16,
+            "maximum_negative_probability": 0.0,
+            "minimum_observation_evidence": 0.9899982930503114,
+            "sequence_position": 32,
+            "truncate_every": null,
+            "truncation_unit": "global shared input positions, including padding"
+          },
+          "loss_before_update": 2.5259737322103506,
+          "preclip_gradient_norm": 1.1751744785046951,
+          "window": [
+            96,
+            128
+          ]
+        }
+      ],
+      "model": {
+        "actual_physics_hex": {
+          "absolute_reset": "0x1.608b71f63c8d5p+0",
+          "discount": "0x1.3333333333333p-3",
+          "log_boundary": "0x0.0p+0",
+          "mu": "-0x1.eb851eb851eb7p-4",
+          "sigma": "0x1.6666666666666p-2"
+        },
+        "arm": "hcsn",
+        "device": "cpu",
+        "dtype": "float64",
+        "profile": {
+          "acceptance": "All four gates must pass. A result admits only unchanged frozen physics, this exact grid, and A01 first128/D01 first64 smoke. No automatically inherited previous qualification.",
+          "archive_sha256": "6660124b4d1fd98963c56a6804bbb0ca0c5ee12edc9b772c8a867148af20d0da",
+          "clock_diagnostic_sha256": "8a8b312b5a3c1e3102849aaedfb114cd3e0bcd62646c0a6d0436f52fe63ac36b",
+          "clock_semantics": "integer tick deltas / 10000000 seconds; exact SQL-style display compatibility is not creator attribution",
+          "cpu_threads": 1,
+          "cuda_allowed": false,
+          "data_sha256": "1fbc965b8d7faf499ea854428b2138132d94e6a26404bc8e4b0c62144f513e8a",
+          "grid": {
+            "active_cells": 128,
+            "endpoint": 2.4,
+            "initial_log_std": 0.08,
+            "phase_cells": 16,
+            "quadrature_order": 32,
+            "refractory": 0.2,
+            "tail_rate": 1.0
+          },
+          "initial_margin": 0.55,
+          "limits": {
+            "combined_value_error": 0.01,
+            "linear_solve_residual_estimate": 2e-10,
+            "phase_refinement_delta": 0.005,
+            "probability_mass_error": 5e-11,
+            "quadrature_refinement_delta": 1e-05,
+            "sequence_mass_drift": 2e-06,
+            "space_refinement_delta": 0.005,
+            "tail_refinement_delta": 0.005,
+            "time_refinement_delta": 0.005
+          },
+          "physics": {
+            "discount": 0.15,
+            "log_absolute_reset": 0.32,
+            "log_boundary": 0.0,
+            "mu": -0.12,
+            "sigma": 0.35,
+            "trainable": false
+          },
+          "predecessor_profile_sha256": "09fbea17afe5e95a98cd9efbf84a92b2b7c61a8653bcaf241f6d00ba769b59df",
+          "predeclared_refinement_anchors": "positive locked-gap min, middle, max; global gap p95,p99,max, deduplicated",
+          "profile_id": "localization-frozen-default-physics-d02-k145-stable-intervals-v2",
+          "refractory_change": "A different physical model (0.2s), not a correction of old 0.1s evidence.",
+          "repair": "Direct Gaussian interval logdiff reflection replaces adjacent survivor-tail subtraction; no physical/grid/limit changes.",
+          "rss_budget_bytes": 2147483648,
+          "schema": "hcsn-localization-v2-budget-profile-v1",
+          "scope_limits": [
+            "all 325 global gaps: positivity/mass interface audit only; not full-dataset learning qualification",
+            "perpetual fixed-step values and refinements: common conditioned Gaussian prior only",
+            "row continuation defects and row perpetual errors are diagnostics, not certified bounds",
+            "unconditioned 32/64/128-event schedules do not bound observed/conditioned network dynamics",
+            "trained likelihood depends on physical channels and content; local transport errors may amplify; no universal rollout error bound",
+            "physics training, new starting laws, other durations/windows or changes require a fresh numerical profile",
+            "no accuracy ranking, independent seed training or GPU/energy/performance claims"
+          ],
+          "selection": {
+            "A01": 128,
+            "D01": 64
+          },
+          "source_archive_sha256": "cb49a5f1aa24e15e25f46dd9fc8722de8fba4fa471d69a52142d37e8d98c3a2a",
+          "source_base_archive_sha256": "353f7c0f50d187adeccbd1fff0638d1a649fe2c547c03ebf23e3fceafa846ff8",
+          "wall_budget_seconds": 300
+        },
+        "profile_sha256": "a6661067b366f386d96782687dee6ace5718ffcd8148b2def3bca286c7293600",
+        "qualification_sha256": "1c31a015de53ad720bfa7ac3e952fdbe494a8251161f5741c49239b247a53ddc"
+      },
+      "output_directory": "/home/qian-qi/hepta-hcsn-localization-v2-20261108-v1/interface-001/hcsn-20261109",
+      "peak_rss_bytes": 782454784,
+      "physical_energy_joules": null,
+      "process_cpu_seconds": 34.968122033,
+      "process_wall_seconds": 35.91917204204947,
+      "provider_charges": null,
+      "seed": 20261109,
+      "smoke_fits_started": 1,
+      "source_after": {
+        "proposals/localization-v2/data.py": "0b0676b7ec22cca17b525da25de9c767c2dd06086b177a1de1e201e235952001",
+        "proposals/localization-v2/models.py": "d964656caf16183cd552d9ab766d1b52ab76760130f72cde783ad50c8e1299fd",
+        "proposals/localization-v2/run_interface.py": "dd3f4c109f2f2d23f1b66b8cb21861a5de995f4c632d7286c22d8ff8e24ab684",
+        "qualification/hcsn_differentiable/__init__.py": "bcde159e1a07a1da1df4b22caccae7f974443d34bbd071a6e845791f3e8b4123",
+        "qualification/hcsn_differentiable/benchmark_admission.py": "468f53365852f75d18708b504855ac1b5ad8e982fb4d82a6c5f7ee5bac9eabb0",
+        "qualification/hcsn_differentiable/checkpoint.py": "9565cba284f479bbab7c8ee61ca7a5330ddb9a9c4efed7786d92a37f7a93c793",
+        "qualification/hcsn_differentiable/contract.py": "79e1127dc126fb8ac97ce7542bac2c9d70c71e0fd2d24416f146d4ec82be099e",
+        "qualification/hcsn_differentiable/encoder.py": "8297a3a994e0ff7b97e4d73b4ac92f8bdc8a691dfdf145fc8fcc45be5cad7b18",
+        "qualification/hcsn_differentiable/error_budget.py": "0b378dfea9f72cd946f40248c7573bff324db7fff9570b15cab67d9a2cb78b58",
+        "qualification/hcsn_differentiable/finite_renewal.py": "6f582ab64695ba676f5d1b4f47ceb39c6b4f8a70cde85eafe21ab3aaaca823de",
+        "qualification/hcsn_differentiable/localization_smoke.py": "99c214040e1c2bd3057fb77641c2b75faad3c3c61d48c27fda33629d1332e372",
+        "qualification/hcsn_differentiable/network.py": "04726551b6d4a53de2eb0daa1d8f5f30d96c7852bcf3ee769220ff584e56a687",
+        "qualification/hcsn_differentiable/operator.py": "a372ca8eef2b41714f632e0b1db2a58f98409fbb23858eb83bfe93a7833f1677",
+        "qualification/hcsn_differentiable/regenerative.py": "551bdc384257ab0ae510903165b580c50e761410777480989406395750a71ae1",
+        "qualification/hcsn_differentiable/run_qualification.py": "d84e5fdac31da852f9e4639899dae3e797ee6c0a4e2dd81772d03eff5e43e4c6",
+        "qualification/hcsn_differentiable/value.py": "59847f1a39e834e2eb927840ee608b5914b7a61c1ebb4be7fce956b1285b8101"
+      },
+      "source_before": {
+        "proposals/localization-v2/data.py": "0b0676b7ec22cca17b525da25de9c767c2dd06086b177a1de1e201e235952001",
+        "proposals/localization-v2/models.py": "d964656caf16183cd552d9ab766d1b52ab76760130f72cde783ad50c8e1299fd",
+        "proposals/localization-v2/run_interface.py": "dd3f4c109f2f2d23f1b66b8cb21861a5de995f4c632d7286c22d8ff8e24ab684",
+        "qualification/hcsn_differentiable/__init__.py": "bcde159e1a07a1da1df4b22caccae7f974443d34bbd071a6e845791f3e8b4123",
+        "qualification/hcsn_differentiable/benchmark_admission.py": "468f53365852f75d18708b504855ac1b5ad8e982fb4d82a6c5f7ee5bac9eabb0",
+        "qualification/hcsn_differentiable/checkpoint.py": "9565cba284f479bbab7c8ee61ca7a5330ddb9a9c4efed7786d92a37f7a93c793",
+        "qualification/hcsn_differentiable/contract.py": "79e1127dc126fb8ac97ce7542bac2c9d70c71e0fd2d24416f146d4ec82be099e",
+        "qualification/hcsn_differentiable/encoder.py": "8297a3a994e0ff7b97e4d73b4ac92f8bdc8a691dfdf145fc8fcc45be5cad7b18",
+        "qualification/hcsn_differentiable/error_budget.py": "0b378dfea9f72cd946f40248c7573bff324db7fff9570b15cab67d9a2cb78b58",
+        "qualification/hcsn_differentiable/finite_renewal.py": "6f582ab64695ba676f5d1b4f47ceb39c6b4f8a70cde85eafe21ab3aaaca823de",
+        "qualification/hcsn_differentiable/localization_smoke.py": "99c214040e1c2bd3057fb77641c2b75faad3c3c61d48c27fda33629d1332e372",
+        "qualification/hcsn_differentiable/network.py": "04726551b6d4a53de2eb0daa1d8f5f30d96c7852bcf3ee769220ff584e56a687",
+        "qualification/hcsn_differentiable/operator.py": "a372ca8eef2b41714f632e0b1db2a58f98409fbb23858eb83bfe93a7833f1677",
+        "qualification/hcsn_differentiable/regenerative.py": "551bdc384257ab0ae510903165b580c50e761410777480989406395750a71ae1",
+        "qualification/hcsn_differentiable/run_qualification.py": "d84e5fdac31da852f9e4639899dae3e797ee6c0a4e2dd81772d03eff5e43e4c6",
+        "qualification/hcsn_differentiable/value.py": "59847f1a39e834e2eb927840ee608b5914b7a61c1ebb4be7fce956b1285b8101"
+      },
+      "source_unchanged": true,
+      "status": "completed_interface_only",
+      "torch": "2.8.0+cu128",
+      "trainable_parameters": 9804,
+      "wall_seconds": 35.080750704044476
+    },
+    {
+      "arm": "gru",
+      "budget": {
+        "cuda": false,
+        "external_memory_enforcement": "caller-provided hard envelope required",
+        "gradient_norm_cap": 1.0,
+        "learning_rate": 0.001,
+        "per_arm_seed_seconds": 180,
+        "rss_bytes": 2147483648,
+        "suite_seconds": 1800,
+        "threads": 1,
+        "updates_per_fit": 4,
+        "window_events": 32
+      },
+      "checkpoint_sha256": "daaa71940a7dd79483f2d16c1813b17b90dd138435f91701c140eef7498ecfff",
+      "completed_updates_recorded": 4,
+      "dev_logits_sha256": "d903889fd171379b6edadeb310de8505259509e914323811065907ce0046d4bc",
+      "development_cross_entropy": 2.553856843466943,
+      "energy_missing_reason": "no whole-system meter",
+      "events_sha256": "b25c7975345d09446709afedac8a5851e0313b421cdb4ed5abb302dd5c47efa1",
+      "exit_code": 0,
+      "features_sha256": "f53de6fcb1d7b497126ed002bc69b310b6ae287550e0a204a6184d4a8a2a296e",
+      "formal_fits_started": 0,
+      "frontend_sha256": "11bd263a2ae3515347b3ab4e3228c83c66cc3e9296f36c9943efb4fc3a794c55",
+      "frozen_parameters_unchanged": true,
+      "independent_unit": "freshly_initialized_training_run",
+      "initialization_sha256": "9d8ef2de05936226962b5e1c8751dc20c4d202c8fd631735bf1f4722d0efab11",
+      "loss_records": [
+        {
+          "diagnostics": {},
+          "loss_before_update": 2.561244498025633,
+          "preclip_gradient_norm": 1.310207089564805,
+          "window": [
+            0,
+            32
+          ]
+        },
+        {
+          "diagnostics": {},
+          "loss_before_update": 2.5841472530794896,
+          "preclip_gradient_norm": 1.357120202722681,
+          "window": [
+            32,
+            64
+          ]
+        },
+        {
+          "diagnostics": {},
+          "loss_before_update": 2.5426217328485103,
+          "preclip_gradient_norm": 1.284716104491063,
+          "window": [
+            64,
+            96
+          ]
+        },
+        {
+          "diagnostics": {},
+          "loss_before_update": 2.595527135644854,
+          "preclip_gradient_norm": 1.1578568381178447,
+          "window": [
+            96,
+            128
+          ]
+        }
+      ],
+      "model": {
+        "arm": "gru",
+        "claim_boundary": "Tiny interface fixture; unequal capacities; four updates do not establish adequate training.",
+        "device": "cpu",
+        "dtype": "float64",
+        "episode_state": "fresh for every forward",
+        "packages": {
+          "torch": "2.8.0+cu128"
+        },
+        "parameter_bytes": 3416,
+        "source_files_sha256": {
+          "/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/torch/nn/modules/linear.py": "fa22acbb48e41bff3be26779c2f242b15663b8157e54f0d55987721add97d16f",
+          "/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/torch/nn/modules/rnn.py": "10f560ff680379df780263dd0b09051390359e879e9a2ad6bcffb68dd2ff8d70",
+          "/home/qian-qi/hepta-hcsn-localization-v2-20261108-v1/source/proposals/localization-v2/models.py": "d964656caf16183cd552d9ab766d1b52ab76760130f72cde783ad50c8e1299fd"
+        },
+        "source_hash_scope": "Python module definitions/helpers; native libraries identified by Torch build version",
+        "time_semantics": "causal event sequence with shared real-dt feature",
+        "torch_git_version": "a1cb3cc05d46d198467bebbb6e8fba50a325d4e7",
+        "trainable_parameters": 427
+      },
+      "output_directory": "/home/qian-qi/hepta-hcsn-localization-v2-20261108-v1/interface-001/gru-20261110",
+      "peak_rss_bytes": 627060736,
+      "physical_energy_joules": null,
+      "process_cpu_seconds": 2.8907964429999997,
+      "process_wall_seconds": 3.6749881252180785,
+      "provider_charges": null,
+      "seed": 20261110,
+      "smoke_fits_started": 1,
+      "source_after": {
+        "proposals/localization-v2/data.py": "0b0676b7ec22cca17b525da25de9c767c2dd06086b177a1de1e201e235952001",
+        "proposals/localization-v2/models.py": "d964656caf16183cd552d9ab766d1b52ab76760130f72cde783ad50c8e1299fd",
+        "proposals/localization-v2/run_interface.py": "dd3f4c109f2f2d23f1b66b8cb21861a5de995f4c632d7286c22d8ff8e24ab684",
+        "qualification/hcsn_differentiable/__init__.py": "bcde159e1a07a1da1df4b22caccae7f974443d34bbd071a6e845791f3e8b4123",
+        "qualification/hcsn_differentiable/benchmark_admission.py": "468f53365852f75d18708b504855ac1b5ad8e982fb4d82a6c5f7ee5bac9eabb0",
+        "qualification/hcsn_differentiable/checkpoint.py": "9565cba284f479bbab7c8ee61ca7a5330ddb9a9c4efed7786d92a37f7a93c793",
+        "qualification/hcsn_differentiable/contract.py": "79e1127dc126fb8ac97ce7542bac2c9d70c71e0fd2d24416f146d4ec82be099e",
+        "qualification/hcsn_differentiable/encoder.py": "8297a3a994e0ff7b97e4d73b4ac92f8bdc8a691dfdf145fc8fcc45be5cad7b18",
+        "qualification/hcsn_differentiable/error_budget.py": "0b378dfea9f72cd946f40248c7573bff324db7fff9570b15cab67d9a2cb78b58",
+        "qualification/hcsn_differentiable/finite_renewal.py": "6f582ab64695ba676f5d1b4f47ceb39c6b4f8a70cde85eafe21ab3aaaca823de",
+        "qualification/hcsn_differentiable/localization_smoke.py": "99c214040e1c2bd3057fb77641c2b75faad3c3c61d48c27fda33629d1332e372",
+        "qualification/hcsn_differentiable/network.py": "04726551b6d4a53de2eb0daa1d8f5f30d96c7852bcf3ee769220ff584e56a687",
+        "qualification/hcsn_differentiable/operator.py": "a372ca8eef2b41714f632e0b1db2a58f98409fbb23858eb83bfe93a7833f1677",
+        "qualification/hcsn_differentiable/regenerative.py": "551bdc384257ab0ae510903165b580c50e761410777480989406395750a71ae1",
+        "qualification/hcsn_differentiable/run_qualification.py": "d84e5fdac31da852f9e4639899dae3e797ee6c0a4e2dd81772d03eff5e43e4c6",
+        "qualification/hcsn_differentiable/value.py": "59847f1a39e834e2eb927840ee608b5914b7a61c1ebb4be7fce956b1285b8101"
+      },
+      "source_before": {
+        "proposals/localization-v2/data.py": "0b0676b7ec22cca17b525da25de9c767c2dd06086b177a1de1e201e235952001",
+        "proposals/localization-v2/models.py": "d964656caf16183cd552d9ab766d1b52ab76760130f72cde783ad50c8e1299fd",
+        "proposals/localization-v2/run_interface.py": "dd3f4c109f2f2d23f1b66b8cb21861a5de995f4c632d7286c22d8ff8e24ab684",
+        "qualification/hcsn_differentiable/__init__.py": "bcde159e1a07a1da1df4b22caccae7f974443d34bbd071a6e845791f3e8b4123",
+        "qualification/hcsn_differentiable/benchmark_admission.py": "468f53365852f75d18708b504855ac1b5ad8e982fb4d82a6c5f7ee5bac9eabb0",
+        "qualification/hcsn_differentiable/checkpoint.py": "9565cba284f479bbab7c8ee61ca7a5330ddb9a9c4efed7786d92a37f7a93c793",
+        "qualification/hcsn_differentiable/contract.py": "79e1127dc126fb8ac97ce7542bac2c9d70c71e0fd2d24416f146d4ec82be099e",
+        "qualification/hcsn_differentiable/encoder.py": "8297a3a994e0ff7b97e4d73b4ac92f8bdc8a691dfdf145fc8fcc45be5cad7b18",
+        "qualification/hcsn_differentiable/error_budget.py": "0b378dfea9f72cd946f40248c7573bff324db7fff9570b15cab67d9a2cb78b58",
+        "qualification/hcsn_differentiable/finite_renewal.py": "6f582ab64695ba676f5d1b4f47ceb39c6b4f8a70cde85eafe21ab3aaaca823de",
+        "qualification/hcsn_differentiable/localization_smoke.py": "99c214040e1c2bd3057fb77641c2b75faad3c3c61d48c27fda33629d1332e372",
+        "qualification/hcsn_differentiable/network.py": "04726551b6d4a53de2eb0daa1d8f5f30d96c7852bcf3ee769220ff584e56a687",
+        "qualification/hcsn_differentiable/operator.py": "a372ca8eef2b41714f632e0b1db2a58f98409fbb23858eb83bfe93a7833f1677",
+        "qualification/hcsn_differentiable/regenerative.py": "551bdc384257ab0ae510903165b580c50e761410777480989406395750a71ae1",
+        "qualification/hcsn_differentiable/run_qualification.py": "d84e5fdac31da852f9e4639899dae3e797ee6c0a4e2dd81772d03eff5e43e4c6",
+        "qualification/hcsn_differentiable/value.py": "59847f1a39e834e2eb927840ee608b5914b7a61c1ebb4be7fce956b1285b8101"
+      },
+      "source_unchanged": true,
+      "status": "completed_interface_only",
+      "torch": "2.8.0+cu128",
+      "trainable_parameters": 427,
+      "wall_seconds": 2.9084048729855567
+    },
+    {
+      "arm": "cfc",
+      "budget": {
+        "cuda": false,
+        "external_memory_enforcement": "caller-provided hard envelope required",
+        "gradient_norm_cap": 1.0,
+        "learning_rate": 0.001,
+        "per_arm_seed_seconds": 180,
+        "rss_bytes": 2147483648,
+        "suite_seconds": 1800,
+        "threads": 1,
+        "updates_per_fit": 4,
+        "window_events": 32
+      },
+      "checkpoint_sha256": "070aea9a60899795e47eb9522a576a47ca1ee628f18b77796405b8886a3f4e48",
+      "completed_updates_recorded": 4,
+      "dev_logits_sha256": "baeac8dc42fe2a024f0f6687a180eed407930260f882eea0bb5aca9e62b77938",
+      "development_cross_entropy": 2.8130714051867933,
+      "energy_missing_reason": "no whole-system meter",
+      "events_sha256": "0a1216fd8710ac1cab7d240ce539b4f62e01fe1ce5ecafdf02be9f4c516c44b5",
+      "exit_code": 0,
+      "features_sha256": "f53de6fcb1d7b497126ed002bc69b310b6ae287550e0a204a6184d4a8a2a296e",
+      "formal_fits_started": 0,
+      "frontend_sha256": "11bd263a2ae3515347b3ab4e3228c83c66cc3e9296f36c9943efb4fc3a794c55",
+      "frozen_parameters_unchanged": true,
+      "independent_unit": "freshly_initialized_training_run",
+      "initialization_sha256": "7f15b83bb7e16712cc467f1ddebd8b86806c39a932ae0269ab543ad1d1d848e1",
+      "loss_records": [
+        {
+          "diagnostics": {},
+          "loss_before_update": 2.761024126478455,
+          "preclip_gradient_norm": 1.2511856674655444,
+          "window": [
+            0,
+            32
+          ]
+        },
+        {
+          "diagnostics": {},
+          "loss_before_update": 2.746231549791883,
+          "preclip_gradient_norm": 1.2643068813855387,
+          "window": [
+            32,
+            64
+          ]
+        },
+        {
+          "diagnostics": {},
+          "loss_before_update": 2.769928124526679,
+          "preclip_gradient_norm": 1.2924525643618994,
+          "window": [
+            64,
+            96
+          ]
+        },
+        {
+          "diagnostics": {},
+          "loss_before_update": 2.613346992287,
+          "preclip_gradient_norm": 1.1242231699403642,
+          "window": [
+            96,
+            128
+          ]
+        }
+      ],
+      "model": {
+        "arm": "cfc",
+        "claim_boundary": "Tiny interface fixture; unequal capacities; four updates do not establish adequate training.",
+        "device": "cpu",
+        "dtype": "float64",
+        "episode_state": "fresh for every forward",
+        "packages": {
+          "ncps": "1.0.1",
+          "numpy": "2.3.5",
+          "torch": "2.8.0+cu128"
+        },
+        "parameter_bytes": 6456,
+        "source_files_sha256": {
+          "/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/torch/nn/modules/activation.py": "79dfe46d31be2e8e8ce68908838f42eb83ecc2ffb364e065149d112c8afc8e02",
+          "/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/torch/nn/modules/container.py": "f1397f5d49ab49c17679ef5fbc0403288ad2680dff2b61d5df04d068a6bfc29f",
+          "/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/torch/nn/modules/linear.py": "fa22acbb48e41bff3be26779c2f242b15663b8157e54f0d55987721add97d16f",
+          "/home/qian-qi/hepta-hcsn-localization-v2-20261108-v1/source/proposals/localization-v2/models.py": "d964656caf16183cd552d9ab766d1b52ab76760130f72cde783ad50c8e1299fd",
+          "/home/qian-qi/hepta-hcsn-localization-v2-20261108-v1/venv/lib/python3.12/site-packages/ncps/torch/cfc.py": "3e5c1ddf4bf0829cfaa9c6415d30b8081fdaf2e1f681d02631c497626b67f0ea",
+          "/home/qian-qi/hepta-hcsn-localization-v2-20261108-v1/venv/lib/python3.12/site-packages/ncps/torch/cfc_cell.py": "79dcc1cbb3b6898dc2310e9086a2e031e31cbaeb129d69adcbf45eaa16d6b74d"
+        },
+        "source_hash_scope": "Python module definitions/helpers; native libraries identified by Torch build version",
+        "time_semantics": "official CfC receives real timespans",
+        "torch_git_version": "a1cb3cc05d46d198467bebbb6e8fba50a325d4e7",
+        "trainable_parameters": 807
+      },
+      "output_directory": "/home/qian-qi/hepta-hcsn-localization-v2-20261108-v1/interface-001/cfc-20261110",
+      "peak_rss_bytes": 626982912,
+      "physical_energy_joules": null,
+      "process_cpu_seconds": 3.032590161,
+      "process_wall_seconds": 3.825724798021838,
+      "provider_charges": null,
+      "seed": 20261110,
+      "smoke_fits_started": 1,
+      "source_after": {
+        "proposals/localization-v2/data.py": "0b0676b7ec22cca17b525da25de9c767c2dd06086b177a1de1e201e235952001",
+        "proposals/localization-v2/models.py": "d964656caf16183cd552d9ab766d1b52ab76760130f72cde783ad50c8e1299fd",
+        "proposals/localization-v2/run_interface.py": "dd3f4c109f2f2d23f1b66b8cb21861a5de995f4c632d7286c22d8ff8e24ab684",
+        "qualification/hcsn_differentiable/__init__.py": "bcde159e1a07a1da1df4b22caccae7f974443d34bbd071a6e845791f3e8b4123",
+        "qualification/hcsn_differentiable/benchmark_admission.py": "468f53365852f75d18708b504855ac1b5ad8e982fb4d82a6c5f7ee5bac9eabb0",
+        "qualification/hcsn_differentiable/checkpoint.py": "9565cba284f479bbab7c8ee61ca7a5330ddb9a9c4efed7786d92a37f7a93c793",
+        "qualification/hcsn_differentiable/contract.py": "79e1127dc126fb8ac97ce7542bac2c9d70c71e0fd2d24416f146d4ec82be099e",
+        "qualification/hcsn_differentiable/encoder.py": "8297a3a994e0ff7b97e4d73b4ac92f8bdc8a691dfdf145fc8fcc45be5cad7b18",
+        "qualification/hcsn_differentiable/error_budget.py": "0b378dfea9f72cd946f40248c7573bff324db7fff9570b15cab67d9a2cb78b58",
+        "qualification/hcsn_differentiable/finite_renewal.py": "6f582ab64695ba676f5d1b4f47ceb39c6b4f8a70cde85eafe21ab3aaaca823de",
+        "qualification/hcsn_differentiable/localization_smoke.py": "99c214040e1c2bd3057fb77641c2b75faad3c3c61d48c27fda33629d1332e372",
+        "qualification/hcsn_differentiable/network.py": "04726551b6d4a53de2eb0daa1d8f5f30d96c7852bcf3ee769220ff584e56a687",
+        "qualification/hcsn_differentiable/operator.py": "a372ca8eef2b41714f632e0b1db2a58f98409fbb23858eb83bfe93a7833f1677",
+        "qualification/hcsn_differentiable/regenerative.py": "551bdc384257ab0ae510903165b580c50e761410777480989406395750a71ae1",
+        "qualification/hcsn_differentiable/run_qualification.py": "d84e5fdac31da852f9e4639899dae3e797ee6c0a4e2dd81772d03eff5e43e4c6",
+        "qualification/hcsn_differentiable/value.py": "59847f1a39e834e2eb927840ee608b5914b7a61c1ebb4be7fce956b1285b8101"
+      },
+      "source_before": {
+        "proposals/localization-v2/data.py": "0b0676b7ec22cca17b525da25de9c767c2dd06086b177a1de1e201e235952001",
+        "proposals/localization-v2/models.py": "d964656caf16183cd552d9ab766d1b52ab76760130f72cde783ad50c8e1299fd",
+        "proposals/localization-v2/run_interface.py": "dd3f4c109f2f2d23f1b66b8cb21861a5de995f4c632d7286c22d8ff8e24ab684",
+        "qualification/hcsn_differentiable/__init__.py": "bcde159e1a07a1da1df4b22caccae7f974443d34bbd071a6e845791f3e8b4123",
+        "qualification/hcsn_differentiable/benchmark_admission.py": "468f53365852f75d18708b504855ac1b5ad8e982fb4d82a6c5f7ee5bac9eabb0",
+        "qualification/hcsn_differentiable/checkpoint.py": "9565cba284f479bbab7c8ee61ca7a5330ddb9a9c4efed7786d92a37f7a93c793",
+        "qualification/hcsn_differentiable/contract.py": "79e1127dc126fb8ac97ce7542bac2c9d70c71e0fd2d24416f146d4ec82be099e",
+        "qualification/hcsn_differentiable/encoder.py": "8297a3a994e0ff7b97e4d73b4ac92f8bdc8a691dfdf145fc8fcc45be5cad7b18",
+        "qualification/hcsn_differentiable/error_budget.py": "0b378dfea9f72cd946f40248c7573bff324db7fff9570b15cab67d9a2cb78b58",
+        "qualification/hcsn_differentiable/finite_renewal.py": "6f582ab64695ba676f5d1b4f47ceb39c6b4f8a70cde85eafe21ab3aaaca823de",
+        "qualification/hcsn_differentiable/localization_smoke.py": "99c214040e1c2bd3057fb77641c2b75faad3c3c61d48c27fda33629d1332e372",
+        "qualification/hcsn_differentiable/network.py": "04726551b6d4a53de2eb0daa1d8f5f30d96c7852bcf3ee769220ff584e56a687",
+        "qualification/hcsn_differentiable/operator.py": "a372ca8eef2b41714f632e0b1db2a58f98409fbb23858eb83bfe93a7833f1677",
+        "qualification/hcsn_differentiable/regenerative.py": "551bdc384257ab0ae510903165b580c50e761410777480989406395750a71ae1",
+        "qualification/hcsn_differentiable/run_qualification.py": "d84e5fdac31da852f9e4639899dae3e797ee6c0a4e2dd81772d03eff5e43e4c6",
+        "qualification/hcsn_differentiable/value.py": "59847f1a39e834e2eb927840ee608b5914b7a61c1ebb4be7fce956b1285b8101"
+      },
+      "source_unchanged": true,
+      "status": "completed_interface_only",
+      "torch": "2.8.0+cu128",
+      "trainable_parameters": 807,
+      "wall_seconds": 3.046443371102214
+    },
+    {
+      "arm": "snn_plif",
+      "budget": {
+        "cuda": false,
+        "external_memory_enforcement": "caller-provided hard envelope required",
+        "gradient_norm_cap": 1.0,
+        "learning_rate": 0.001,
+        "per_arm_seed_seconds": 180,
+        "rss_bytes": 2147483648,
+        "suite_seconds": 1800,
+        "threads": 1,
+        "updates_per_fit": 4,
+        "window_events": 32
+      },
+      "checkpoint_sha256": "a9032997e6acd8e83ee86a51528301dcc8bb25d4653cb3682bd20dc10bde68b4",
+      "completed_updates_recorded": 4,
+      "dev_logits_sha256": "32b9ef306685a23ea56c71b4078a7ba46731c6b16de166e30f9e2ed2c3285e7a",
+      "development_cross_entropy": 2.9992202273629935,
+      "energy_missing_reason": "no whole-system meter",
+      "events_sha256": "9921bbb30bb09171181642a4617875d2b85d9e612844db6f1cf59ab70e6579d3",
+      "exit_code": 0,
+      "features_sha256": "f53de6fcb1d7b497126ed002bc69b310b6ae287550e0a204a6184d4a8a2a296e",
+      "formal_fits_started": 0,
+      "frontend_sha256": "11bd263a2ae3515347b3ab4e3228c83c66cc3e9296f36c9943efb4fc3a794c55",
+      "frozen_parameters_unchanged": true,
+      "independent_unit": "freshly_initialized_training_run",
+      "initialization_sha256": "0ddfa248681f28d00fc528ee16b3ab4a5771854c8ad30204e6f2f9760d00e5f5",
+      "loss_records": [
+        {
+          "diagnostics": {
+            "learned_tau": 2.0,
+            "spike_fraction": 0.0
+          },
+          "loss_before_update": 2.982910478366494,
+          "preclip_gradient_norm": 1.0116093575137795,
+          "window": [
+            0,
+            32
+          ]
+        },
+        {
+          "diagnostics": {
+            "learned_tau": 1.999000502674097,
+            "spike_fraction": 0.0
+          },
+          "loss_before_update": 2.9810118651306396,
+          "preclip_gradient_norm": 1.0137395907121844,
+          "window": [
+            32,
+            64
+          ]
+        },
+        {
+          "diagnostics": {
+            "learned_tau": 1.9980024875354776,
+            "spike_fraction": 0.0078125
+          },
+          "loss_before_update": 2.9832087587286193,
+          "preclip_gradient_norm": 1.026125265007144,
+          "window": [
+            64,
+            96
+          ]
+        },
+        {
+          "diagnostics": {
+            "learned_tau": 1.997029412621555,
+            "spike_fraction": 0.0
+          },
+          "loss_before_update": 2.8199663821809753,
+          "preclip_gradient_norm": 0.8418010792148777,
+          "window": [
+            96,
+            128
+          ]
+        }
+      ],
+      "model": {
+        "arm": "snn_plif",
+        "claim_boundary": "Tiny interface fixture; unequal capacities; four updates do not establish adequate training.",
+        "device": "cpu",
+        "dtype": "float64",
+        "episode_state": "fresh for every forward",
+        "last_forward_spike_fraction": null,
+        "learned_tau": 2.0,
+        "packages": {
+          "spikingjelly": "0.0.0.0.14",
+          "torch": "2.8.0+cu128"
+        },
+        "parameter_bytes": 1408,
+        "source_files_sha256": {
+          "/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/torch/nn/modules/linear.py": "fa22acbb48e41bff3be26779c2f242b15663b8157e54f0d55987721add97d16f",
+          "/home/qian-qi/hepta-hcsn-localization-v2-20261108-v1/source/proposals/localization-v2/models.py": "d964656caf16183cd552d9ab766d1b52ab76760130f72cde783ad50c8e1299fd",
+          "/home/qian-qi/hepta-hcsn-localization-v2-20261108-v1/venv/lib/python3.12/site-packages/spikingjelly/activation_based/functional.py": "cb16b4d0f77e156ee55b8b590c8d9432b070fead5ac614c5c6adb84753f41793",
+          "/home/qian-qi/hepta-hcsn-localization-v2-20261108-v1/venv/lib/python3.12/site-packages/spikingjelly/activation_based/neuron.py": "a6ca9213da5ab5897fadeea305b45bc4a1868d206aad1579bb88637b47397816",
+          "/home/qian-qi/hepta-hcsn-localization-v2-20261108-v1/venv/lib/python3.12/site-packages/spikingjelly/activation_based/surrogate.py": "c95f5501bb0583025be9ab0e4524a7f215ab25980f5867628a7d700d9e488fbf"
+        },
+        "source_hash_scope": "Python module definitions/helpers; native libraries identified by Torch build version",
+        "time_semantics": "event-indexed PLIF; log1p(real dt) input; no variable-dt decay claim",
+        "torch_git_version": "a1cb3cc05d46d198467bebbb6e8fba50a325d4e7",
+        "trainable_parameters": 176
+      },
+      "output_directory": "/home/qian-qi/hepta-hcsn-localization-v2-20261108-v1/interface-001/snn_plif-20261110",
+      "peak_rss_bytes": 633970688,
+      "physical_energy_joules": null,
+      "process_cpu_seconds": 3.193003907,
+      "process_wall_seconds": 3.9762528699357063,
+      "provider_charges": null,
+      "seed": 20261110,
+      "smoke_fits_started": 1,
+      "source_after": {
+        "proposals/localization-v2/data.py": "0b0676b7ec22cca17b525da25de9c767c2dd06086b177a1de1e201e235952001",
+        "proposals/localization-v2/models.py": "d964656caf16183cd552d9ab766d1b52ab76760130f72cde783ad50c8e1299fd",
+        "proposals/localization-v2/run_interface.py": "dd3f4c109f2f2d23f1b66b8cb21861a5de995f4c632d7286c22d8ff8e24ab684",
+        "qualification/hcsn_differentiable/__init__.py": "bcde159e1a07a1da1df4b22caccae7f974443d34bbd071a6e845791f3e8b4123",
+        "qualification/hcsn_differentiable/benchmark_admission.py": "468f53365852f75d18708b504855ac1b5ad8e982fb4d82a6c5f7ee5bac9eabb0",
+        "qualification/hcsn_differentiable/checkpoint.py": "9565cba284f479bbab7c8ee61ca7a5330ddb9a9c4efed7786d92a37f7a93c793",
+        "qualification/hcsn_differentiable/contract.py": "79e1127dc126fb8ac97ce7542bac2c9d70c71e0fd2d24416f146d4ec82be099e",
+        "qualification/hcsn_differentiable/encoder.py": "8297a3a994e0ff7b97e4d73b4ac92f8bdc8a691dfdf145fc8fcc45be5cad7b18",
+        "qualification/hcsn_differentiable/error_budget.py": "0b378dfea9f72cd946f40248c7573bff324db7fff9570b15cab67d9a2cb78b58",
+        "qualification/hcsn_differentiable/finite_renewal.py": "6f582ab64695ba676f5d1b4f47ceb39c6b4f8a70cde85eafe21ab3aaaca823de",
+        "qualification/hcsn_differentiable/localization_smoke.py": "99c214040e1c2bd3057fb77641c2b75faad3c3c61d48c27fda33629d1332e372",
+        "qualification/hcsn_differentiable/network.py": "04726551b6d4a53de2eb0daa1d8f5f30d96c7852bcf3ee769220ff584e56a687",
+        "qualification/hcsn_differentiable/operator.py": "a372ca8eef2b41714f632e0b1db2a58f98409fbb23858eb83bfe93a7833f1677",
+        "qualification/hcsn_differentiable/regenerative.py": "551bdc384257ab0ae510903165b580c50e761410777480989406395750a71ae1",
+        "qualification/hcsn_differentiable/run_qualification.py": "d84e5fdac31da852f9e4639899dae3e797ee6c0a4e2dd81772d03eff5e43e4c6",
+        "qualification/hcsn_differentiable/value.py": "59847f1a39e834e2eb927840ee608b5914b7a61c1ebb4be7fce956b1285b8101"
+      },
+      "source_before": {
+        "proposals/localization-v2/data.py": "0b0676b7ec22cca17b525da25de9c767c2dd06086b177a1de1e201e235952001",
+        "proposals/localization-v2/models.py": "d964656caf16183cd552d9ab766d1b52ab76760130f72cde783ad50c8e1299fd",
+        "proposals/localization-v2/run_interface.py": "dd3f4c109f2f2d23f1b66b8cb21861a5de995f4c632d7286c22d8ff8e24ab684",
+        "qualification/hcsn_differentiable/__init__.py": "bcde159e1a07a1da1df4b22caccae7f974443d34bbd071a6e845791f3e8b4123",
+        "qualification/hcsn_differentiable/benchmark_admission.py": "468f53365852f75d18708b504855ac1b5ad8e982fb4d82a6c5f7ee5bac9eabb0",
+        "qualification/hcsn_differentiable/checkpoint.py": "9565cba284f479bbab7c8ee61ca7a5330ddb9a9c4efed7786d92a37f7a93c793",
+        "qualification/hcsn_differentiable/contract.py": "79e1127dc126fb8ac97ce7542bac2c9d70c71e0fd2d24416f146d4ec82be099e",
+        "qualification/hcsn_differentiable/encoder.py": "8297a3a994e0ff7b97e4d73b4ac92f8bdc8a691dfdf145fc8fcc45be5cad7b18",
+        "qualification/hcsn_differentiable/error_budget.py": "0b378dfea9f72cd946f40248c7573bff324db7fff9570b15cab67d9a2cb78b58",
+        "qualification/hcsn_differentiable/finite_renewal.py": "6f582ab64695ba676f5d1b4f47ceb39c6b4f8a70cde85eafe21ab3aaaca823de",
+        "qualification/hcsn_differentiable/localization_smoke.py": "99c214040e1c2bd3057fb77641c2b75faad3c3c61d48c27fda33629d1332e372",
+        "qualification/hcsn_differentiable/network.py": "04726551b6d4a53de2eb0daa1d8f5f30d96c7852bcf3ee769220ff584e56a687",
+        "qualification/hcsn_differentiable/operator.py": "a372ca8eef2b41714f632e0b1db2a58f98409fbb23858eb83bfe93a7833f1677",
+        "qualification/hcsn_differentiable/regenerative.py": "551bdc384257ab0ae510903165b580c50e761410777480989406395750a71ae1",
+        "qualification/hcsn_differentiable/run_qualification.py": "d84e5fdac31da852f9e4639899dae3e797ee6c0a4e2dd81772d03eff5e43e4c6",
+        "qualification/hcsn_differentiable/value.py": "59847f1a39e834e2eb927840ee608b5914b7a61c1ebb4be7fce956b1285b8101"
+      },
+      "source_unchanged": true,
+      "status": "completed_interface_only",
+      "torch": "2.8.0+cu128",
+      "trainable_parameters": 176,
+      "wall_seconds": 3.211057550041005
+    },
+    {
+      "arm": "ssm_s4d",
+      "budget": {
+        "cuda": false,
+        "external_memory_enforcement": "caller-provided hard envelope required",
+        "gradient_norm_cap": 1.0,
+        "learning_rate": 0.001,
+        "per_arm_seed_seconds": 180,
+        "rss_bytes": 2147483648,
+        "suite_seconds": 1800,
+        "threads": 1,
+        "updates_per_fit": 4,
+        "window_events": 32
+      },
+      "checkpoint_sha256": "e86c6166ce571622c837e5bf63b5158280b169bcac24e1aa619bbcd2edd31184",
+      "completed_updates_recorded": 4,
+      "dev_logits_sha256": "048a2aeab3a314a063abb8dcfe66b0046dafcf320537f37e4dbfff902785c139",
+      "development_cross_entropy": 2.206562702158608,
+      "energy_missing_reason": "no whole-system meter",
+      "events_sha256": "1b3afb9275d2bf1cf80ccd5e8f935fd00c02007006979ed916c2466c65456d68",
+      "exit_code": 0,
+      "features_sha256": "f53de6fcb1d7b497126ed002bc69b310b6ae287550e0a204a6184d4a8a2a296e",
+      "formal_fits_started": 0,
+      "frontend_sha256": "11bd263a2ae3515347b3ab4e3228c83c66cc3e9296f36c9943efb4fc3a794c55",
+      "frozen_parameters_unchanged": true,
+      "independent_unit": "freshly_initialized_training_run",
+      "initialization_sha256": "45a81a52caf348a914e70a3c56ba9d8b3dc985d7779ca98924ae261df66abfc2",
+      "loss_records": [
+        {
+          "diagnostics": {},
+          "loss_before_update": 2.2280068930698476,
+          "preclip_gradient_norm": 0.9933325138186664,
+          "window": [
+            0,
+            32
+          ]
+        },
+        {
+          "diagnostics": {},
+          "loss_before_update": 2.22424956758884,
+          "preclip_gradient_norm": 0.9924176967809814,
+          "window": [
+            32,
+            64
+          ]
+        },
+        {
+          "diagnostics": {},
+          "loss_before_update": 2.221143716640375,
+          "preclip_gradient_norm": 0.9910981750753118,
+          "window": [
+            64,
+            96
+          ]
+        },
+        {
+          "diagnostics": {},
+          "loss_before_update": 2.275305500165465,
+          "preclip_gradient_norm": 0.8096951375365612,
+          "window": [
+            96,
+            128
+          ]
+        }
+      ],
+      "model": {
+        "arm": "ssm_s4d",
+        "claim_boundary": "Tiny interface fixture; unequal capacities; four updates do not establish adequate training.",
+        "device": "cpu",
+        "dtype": "float64",
+        "episode_state": "fresh for every forward",
+        "packages": {
+          "einops": "0.8.1",
+          "torch": "2.8.0+cu128"
+        },
+        "parameter_bytes": 2680,
+        "persistent_state_interface": "not exposed by upstream FFT forward",
+        "source_files_sha256": {
+          "/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/torch/nn/modules/activation.py": "79dfe46d31be2e8e8ce68908838f42eb83ecc2ffb364e065149d112c8afc8e02",
+          "/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/torch/nn/modules/container.py": "f1397f5d49ab49c17679ef5fbc0403288ad2680dff2b61d5df04d068a6bfc29f",
+          "/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/torch/nn/modules/conv.py": "dc3f09f7ade5d39b15eac1c937331de1142808e2f769d601511f495e89848fbb",
+          "/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/torch/nn/modules/linear.py": "fa22acbb48e41bff3be26779c2f242b15663b8157e54f0d55987721add97d16f",
+          "/home/qian-qi/hepta-hcsn-localization-v2-20261108-v1/dependencies/s4/models/s4/s4d.py": "4aab484e96dba85b2eba14f54c42df103a314a087ca184bfcca30e77d0faea2c",
+          "/home/qian-qi/hepta-hcsn-localization-v2-20261108-v1/dependencies/s4/src/models/nn/__init__.py": "499b0fb6449625962b445ae2c22faa9751ed563b3b5e4e17559843f3ff15cd0c",
+          "/home/qian-qi/hepta-hcsn-localization-v2-20261108-v1/dependencies/s4/src/models/nn/activation.py": "552c1b8b37f89f32528047835a4d02d8abb3d5ccc3fd783faf97c0f3fe2b65e5",
+          "/home/qian-qi/hepta-hcsn-localization-v2-20261108-v1/dependencies/s4/src/models/nn/dropout.py": "4cbe734786c1149f8ed8d6d2bdced4a519c172afbfc8d369dc7f493cfdde027f",
+          "/home/qian-qi/hepta-hcsn-localization-v2-20261108-v1/dependencies/s4/src/models/nn/linear.py": "60c8827cacfccb00f33f12e36fb0d6862671256cd1631a8ba9dc98c363574458",
+          "/home/qian-qi/hepta-hcsn-localization-v2-20261108-v1/dependencies/s4/src/models/nn/normalization.py": "b01adaf8941004c6f7ce88055e9a6b72387795e133acbfe604f34f586e16f1bc",
+          "/home/qian-qi/hepta-hcsn-localization-v2-20261108-v1/source/proposals/localization-v2/models.py": "d964656caf16183cd552d9ab766d1b52ab76760130f72cde783ad50c8e1299fd"
+        },
+        "source_hash_scope": "Python module definitions/helpers; native libraries identified by Torch build version",
+        "time_semantics": "official causal S4D-Lin FFT on event index; real dt feature; not Mamba",
+        "torch_git_version": "a1cb3cc05d46d198467bebbb6e8fba50a325d4e7",
+        "trainable_parameters": 335,
+        "verified_checkout_commit": "e757cef57d89e448c413de7325ed5601aceaac13"
+      },
+      "output_directory": "/home/qian-qi/hepta-hcsn-localization-v2-20261108-v1/interface-001/ssm_s4d-20261110",
+      "peak_rss_bytes": 629170176,
+      "physical_energy_joules": null,
+      "process_cpu_seconds": 3.019491605,
+      "process_wall_seconds": 3.9264563869219273,
+      "provider_charges": null,
+      "seed": 20261110,
+      "smoke_fits_started": 1,
+      "source_after": {
+        "proposals/localization-v2/data.py": "0b0676b7ec22cca17b525da25de9c767c2dd06086b177a1de1e201e235952001",
+        "proposals/localization-v2/models.py": "d964656caf16183cd552d9ab766d1b52ab76760130f72cde783ad50c8e1299fd",
+        "proposals/localization-v2/run_interface.py": "dd3f4c109f2f2d23f1b66b8cb21861a5de995f4c632d7286c22d8ff8e24ab684",
+        "qualification/hcsn_differentiable/__init__.py": "bcde159e1a07a1da1df4b22caccae7f974443d34bbd071a6e845791f3e8b4123",
+        "qualification/hcsn_differentiable/benchmark_admission.py": "468f53365852f75d18708b504855ac1b5ad8e982fb4d82a6c5f7ee5bac9eabb0",
+        "qualification/hcsn_differentiable/checkpoint.py": "9565cba284f479bbab7c8ee61ca7a5330ddb9a9c4efed7786d92a37f7a93c793",
+        "qualification/hcsn_differentiable/contract.py": "79e1127dc126fb8ac97ce7542bac2c9d70c71e0fd2d24416f146d4ec82be099e",
+        "qualification/hcsn_differentiable/encoder.py": "8297a3a994e0ff7b97e4d73b4ac92f8bdc8a691dfdf145fc8fcc45be5cad7b18",
+        "qualification/hcsn_differentiable/error_budget.py": "0b378dfea9f72cd946f40248c7573bff324db7fff9570b15cab67d9a2cb78b58",
+        "qualification/hcsn_differentiable/finite_renewal.py": "6f582ab64695ba676f5d1b4f47ceb39c6b4f8a70cde85eafe21ab3aaaca823de",
+        "qualification/hcsn_differentiable/localization_smoke.py": "99c214040e1c2bd3057fb77641c2b75faad3c3c61d48c27fda33629d1332e372",
+        "qualification/hcsn_differentiable/network.py": "04726551b6d4a53de2eb0daa1d8f5f30d96c7852bcf3ee769220ff584e56a687",
+        "qualification/hcsn_differentiable/operator.py": "a372ca8eef2b41714f632e0b1db2a58f98409fbb23858eb83bfe93a7833f1677",
+        "qualification/hcsn_differentiable/regenerative.py": "551bdc384257ab0ae510903165b580c50e761410777480989406395750a71ae1",
+        "qualification/hcsn_differentiable/run_qualification.py": "d84e5fdac31da852f9e4639899dae3e797ee6c0a4e2dd81772d03eff5e43e4c6",
+        "qualification/hcsn_differentiable/value.py": "59847f1a39e834e2eb927840ee608b5914b7a61c1ebb4be7fce956b1285b8101"
+      },
+      "source_before": {
+        "proposals/localization-v2/data.py": "0b0676b7ec22cca17b525da25de9c767c2dd06086b177a1de1e201e235952001",
+        "proposals/localization-v2/models.py": "d964656caf16183cd552d9ab766d1b52ab76760130f72cde783ad50c8e1299fd",
+        "proposals/localization-v2/run_interface.py": "dd3f4c109f2f2d23f1b66b8cb21861a5de995f4c632d7286c22d8ff8e24ab684",
+        "qualification/hcsn_differentiable/__init__.py": "bcde159e1a07a1da1df4b22caccae7f974443d34bbd071a6e845791f3e8b4123",
+        "qualification/hcsn_differentiable/benchmark_admission.py": "468f53365852f75d18708b504855ac1b5ad8e982fb4d82a6c5f7ee5bac9eabb0",
+        "qualification/hcsn_differentiable/checkpoint.py": "9565cba284f479bbab7c8ee61ca7a5330ddb9a9c4efed7786d92a37f7a93c793",
+        "qualification/hcsn_differentiable/contract.py": "79e1127dc126fb8ac97ce7542bac2c9d70c71e0fd2d24416f146d4ec82be099e",
+        "qualification/hcsn_differentiable/encoder.py": "8297a3a994e0ff7b97e4d73b4ac92f8bdc8a691dfdf145fc8fcc45be5cad7b18",
+        "qualification/hcsn_differentiable/error_budget.py": "0b378dfea9f72cd946f40248c7573bff324db7fff9570b15cab67d9a2cb78b58",
+        "qualification/hcsn_differentiable/finite_renewal.py": "6f582ab64695ba676f5d1b4f47ceb39c6b4f8a70cde85eafe21ab3aaaca823de",
+        "qualification/hcsn_differentiable/localization_smoke.py": "99c214040e1c2bd3057fb77641c2b75faad3c3c61d48c27fda33629d1332e372",
+        "qualification/hcsn_differentiable/network.py": "04726551b6d4a53de2eb0daa1d8f5f30d96c7852bcf3ee769220ff584e56a687",
+        "qualification/hcsn_differentiable/operator.py": "a372ca8eef2b41714f632e0b1db2a58f98409fbb23858eb83bfe93a7833f1677",
+        "qualification/hcsn_differentiable/regenerative.py": "551bdc384257ab0ae510903165b580c50e761410777480989406395750a71ae1",
+        "qualification/hcsn_differentiable/run_qualification.py": "d84e5fdac31da852f9e4639899dae3e797ee6c0a4e2dd81772d03eff5e43e4c6",
+        "qualification/hcsn_differentiable/value.py": "59847f1a39e834e2eb927840ee608b5914b7a61c1ebb4be7fce956b1285b8101"
+      },
+      "source_unchanged": true,
+      "status": "completed_interface_only",
+      "torch": "2.8.0+cu128",
+      "trainable_parameters": 335,
+      "wall_seconds": 3.0509195430204272
+    },
+    {
+      "arm": "attention",
+      "budget": {
+        "cuda": false,
+        "external_memory_enforcement": "caller-provided hard envelope required",
+        "gradient_norm_cap": 1.0,
+        "learning_rate": 0.001,
+        "per_arm_seed_seconds": 180,
+        "rss_bytes": 2147483648,
+        "suite_seconds": 1800,
+        "threads": 1,
+        "updates_per_fit": 4,
+        "window_events": 32
+      },
+      "checkpoint_sha256": "15fdcffd53e252d87c10fa1126ff6c3e70c28892ae0a7be3ec24ed035ec1865d",
+      "completed_updates_recorded": 4,
+      "dev_logits_sha256": "59548c9f92de4534509c89ffd380ea798607ead39e951f59563f65f61bd76408",
+      "development_cross_entropy": 2.509779655130781,
+      "energy_missing_reason": "no whole-system meter",
+      "events_sha256": "c7e4fed1df737b85151487157cb53194b227772012141718fbcc2ff01d304595",
+      "exit_code": 0,
+      "features_sha256": "f53de6fcb1d7b497126ed002bc69b310b6ae287550e0a204a6184d4a8a2a296e",
+      "formal_fits_started": 0,
+      "frontend_sha256": "11bd263a2ae3515347b3ab4e3228c83c66cc3e9296f36c9943efb4fc3a794c55",
+      "frozen_parameters_unchanged": true,
+      "independent_unit": "freshly_initialized_training_run",
+      "initialization_sha256": "1ca6ef626d5bf6bc399acfe4def89f9a96310b1ab42f120c156b08d7e12225c3",
+      "loss_records": [
+        {
+          "diagnostics": {},
+          "loss_before_update": 2.5119791932470106,
+          "preclip_gradient_norm": 3.150418643594148,
+          "window": [
+            0,
+            32
+          ]
+        },
+        {
+          "diagnostics": {},
+          "loss_before_update": 2.4016000530972064,
+          "preclip_gradient_norm": 3.040086206844311,
+          "window": [
+            32,
+            64
+          ]
+        },
+        {
+          "diagnostics": {},
+          "loss_before_update": 2.358344332824524,
+          "preclip_gradient_norm": 3.0925742621412584,
+          "window": [
+            64,
+            96
+          ]
+        },
+        {
+          "diagnostics": {},
+          "loss_before_update": 2.2060767136743524,
+          "preclip_gradient_norm": 2.5594792152566446,
+          "window": [
+            96,
+            128
+          ]
+        }
+      ],
+      "model": {
+        "arm": "attention",
+        "claim_boundary": "Tiny interface fixture; unequal capacities; four updates do not establish adequate training.",
+        "device": "cpu",
+        "dtype": "float64",
+        "episode_state": "fresh for every forward",
+        "packages": {
+          "torch": "2.8.0+cu128"
+        },
+        "parameter_bytes": 9432,
+        "source_files_sha256": {
+          "/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/torch/nn/modules/activation.py": "79dfe46d31be2e8e8ce68908838f42eb83ecc2ffb364e065149d112c8afc8e02",
+          "/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/torch/nn/modules/container.py": "f1397f5d49ab49c17679ef5fbc0403288ad2680dff2b61d5df04d068a6bfc29f",
+          "/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/torch/nn/modules/dropout.py": "1fc9974c3cf2078dd4bc257f73afb6a6714adfec2e9d099d47cf923e766d3490",
+          "/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/torch/nn/modules/linear.py": "fa22acbb48e41bff3be26779c2f242b15663b8157e54f0d55987721add97d16f",
+          "/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/torch/nn/modules/normalization.py": "bb4a027c559afd1fdca5ee6475ac68d2536879b96286e3b45352331fbbbe1897",
+          "/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/torch/nn/modules/transformer.py": "5489e57073dbbfa2d0ca2f8515fe914b606d8e63103ad92a01b6a227b10a36c2",
+          "/home/qian-qi/hepta-hcsn-localization-v2-20261108-v1/source/proposals/localization-v2/models.py": "d964656caf16183cd552d9ab766d1b52ab76760130f72cde783ad50c8e1299fd"
+        },
+        "source_hash_scope": "Python module definitions/helpers; native libraries identified by Torch build version",
+        "time_semantics": "causal event sequence with shared real-dt feature",
+        "torch_git_version": "a1cb3cc05d46d198467bebbb6e8fba50a325d4e7",
+        "trainable_parameters": 1179
+      },
+      "output_directory": "/home/qian-qi/hepta-hcsn-localization-v2-20261108-v1/interface-001/attention-20261110",
+      "peak_rss_bytes": 628981760,
+      "physical_energy_joules": null,
+      "process_cpu_seconds": 2.949005583,
+      "process_wall_seconds": 3.7260263978969306,
+      "provider_charges": null,
+      "seed": 20261110,
+      "smoke_fits_started": 1,
+      "source_after": {
+        "proposals/localization-v2/data.py": "0b0676b7ec22cca17b525da25de9c767c2dd06086b177a1de1e201e235952001",
+        "proposals/localization-v2/models.py": "d964656caf16183cd552d9ab766d1b52ab76760130f72cde783ad50c8e1299fd",
+        "proposals/localization-v2/run_interface.py": "dd3f4c109f2f2d23f1b66b8cb21861a5de995f4c632d7286c22d8ff8e24ab684",
+        "qualification/hcsn_differentiable/__init__.py": "bcde159e1a07a1da1df4b22caccae7f974443d34bbd071a6e845791f3e8b4123",
+        "qualification/hcsn_differentiable/benchmark_admission.py": "468f53365852f75d18708b504855ac1b5ad8e982fb4d82a6c5f7ee5bac9eabb0",
+        "qualification/hcsn_differentiable/checkpoint.py": "9565cba284f479bbab7c8ee61ca7a5330ddb9a9c4efed7786d92a37f7a93c793",
+        "qualification/hcsn_differentiable/contract.py": "79e1127dc126fb8ac97ce7542bac2c9d70c71e0fd2d24416f146d4ec82be099e",
+        "qualification/hcsn_differentiable/encoder.py": "8297a3a994e0ff7b97e4d73b4ac92f8bdc8a691dfdf145fc8fcc45be5cad7b18",
+        "qualification/hcsn_differentiable/error_budget.py": "0b378dfea9f72cd946f40248c7573bff324db7fff9570b15cab67d9a2cb78b58",
+        "qualification/hcsn_differentiable/finite_renewal.py": "6f582ab64695ba676f5d1b4f47ceb39c6b4f8a70cde85eafe21ab3aaaca823de",
+        "qualification/hcsn_differentiable/localization_smoke.py": "99c214040e1c2bd3057fb77641c2b75faad3c3c61d48c27fda33629d1332e372",
+        "qualification/hcsn_differentiable/network.py": "04726551b6d4a53de2eb0daa1d8f5f30d96c7852bcf3ee769220ff584e56a687",
+        "qualification/hcsn_differentiable/operator.py": "a372ca8eef2b41714f632e0b1db2a58f98409fbb23858eb83bfe93a7833f1677",
+        "qualification/hcsn_differentiable/regenerative.py": "551bdc384257ab0ae510903165b580c50e761410777480989406395750a71ae1",
+        "qualification/hcsn_differentiable/run_qualification.py": "d84e5fdac31da852f9e4639899dae3e797ee6c0a4e2dd81772d03eff5e43e4c6",
+        "qualification/hcsn_differentiable/value.py": "59847f1a39e834e2eb927840ee608b5914b7a61c1ebb4be7fce956b1285b8101"
+      },
+      "source_before": {
+        "proposals/localization-v2/data.py": "0b0676b7ec22cca17b525da25de9c767c2dd06086b177a1de1e201e235952001",
+        "proposals/localization-v2/models.py": "d964656caf16183cd552d9ab766d1b52ab76760130f72cde783ad50c8e1299fd",
+        "proposals/localization-v2/run_interface.py": "dd3f4c109f2f2d23f1b66b8cb21861a5de995f4c632d7286c22d8ff8e24ab684",
+        "qualification/hcsn_differentiable/__init__.py": "bcde159e1a07a1da1df4b22caccae7f974443d34bbd071a6e845791f3e8b4123",
+        "qualification/hcsn_differentiable/benchmark_admission.py": "468f53365852f75d18708b504855ac1b5ad8e982fb4d82a6c5f7ee5bac9eabb0",
+        "qualification/hcsn_differentiable/checkpoint.py": "9565cba284f479bbab7c8ee61ca7a5330ddb9a9c4efed7786d92a37f7a93c793",
+        "qualification/hcsn_differentiable/contract.py": "79e1127dc126fb8ac97ce7542bac2c9d70c71e0fd2d24416f146d4ec82be099e",
+        "qualification/hcsn_differentiable/encoder.py": "8297a3a994e0ff7b97e4d73b4ac92f8bdc8a691dfdf145fc8fcc45be5cad7b18",
+        "qualification/hcsn_differentiable/error_budget.py": "0b378dfea9f72cd946f40248c7573bff324db7fff9570b15cab67d9a2cb78b58",
+        "qualification/hcsn_differentiable/finite_renewal.py": "6f582ab64695ba676f5d1b4f47ceb39c6b4f8a70cde85eafe21ab3aaaca823de",
+        "qualification/hcsn_differentiable/localization_smoke.py": "99c214040e1c2bd3057fb77641c2b75faad3c3c61d48c27fda33629d1332e372",
+        "qualification/hcsn_differentiable/network.py": "04726551b6d4a53de2eb0daa1d8f5f30d96c7852bcf3ee769220ff584e56a687",
+        "qualification/hcsn_differentiable/operator.py": "a372ca8eef2b41714f632e0b1db2a58f98409fbb23858eb83bfe93a7833f1677",
+        "qualification/hcsn_differentiable/regenerative.py": "551bdc384257ab0ae510903165b580c50e761410777480989406395750a71ae1",
+        "qualification/hcsn_differentiable/run_qualification.py": "d84e5fdac31da852f9e4639899dae3e797ee6c0a4e2dd81772d03eff5e43e4c6",
+        "qualification/hcsn_differentiable/value.py": "59847f1a39e834e2eb927840ee608b5914b7a61c1ebb4be7fce956b1285b8101"
+      },
+      "source_unchanged": true,
+      "status": "completed_interface_only",
+      "torch": "2.8.0+cu128",
+      "trainable_parameters": 1179,
+      "wall_seconds": 2.9602087328676134
+    },
+    {
+      "arm": "hcsn",
+      "budget": {
+        "cuda": false,
+        "external_memory_enforcement": "caller-provided hard envelope required",
+        "gradient_norm_cap": 1.0,
+        "learning_rate": 0.001,
+        "per_arm_seed_seconds": 180,
+        "rss_bytes": 2147483648,
+        "suite_seconds": 1800,
+        "threads": 1,
+        "updates_per_fit": 4,
+        "window_events": 32
+      },
+      "checkpoint_sha256": "14e87dd3c67a9bf86341bc6dc0499f1ba9b11e4b6ed1614fdf00a9cde713e8e8",
+      "completed_updates_recorded": 4,
+      "dev_logits_sha256": "bb19a92947767287ee2e2cbba788c20f72e73d35bb45b5655bf6944b202b59c3",
+      "development_cross_entropy": 2.444255038444939,
+      "energy_missing_reason": "no whole-system meter",
+      "events_sha256": "338461d66be6a89c0e750c9df14b3eb8e8d6fa8d4c694b695d1f9f56a7433e0d",
+      "exit_code": 0,
+      "features_sha256": "f53de6fcb1d7b497126ed002bc69b310b6ae287550e0a204a6184d4a8a2a296e",
+      "formal_fits_started": 0,
+      "frontend_sha256": "11bd263a2ae3515347b3ab4e3228c83c66cc3e9296f36c9943efb4fc3a794c55",
+      "frozen_parameters_unchanged": true,
+      "independent_unit": "freshly_initialized_training_run",
+      "initialization_sha256": "dcbbd68b8367cbc900d3317613167bdd542ed7ba3362258f34209e3bebe6d61f",
+      "loss_records": [
+        {
+          "diagnostics": {
+            "advance_calls": 32,
+            "bptt": "full",
+            "event_semantics": "conditional expected interval counts, not sampled spikes",
+            "layer_count": 1,
+            "maximum_mass_residual": 3.3306690738754696e-16,
+            "maximum_negative_probability": 0.0,
+            "minimum_observation_evidence": 0.9641237974724963,
+            "sequence_position": 32,
+            "truncate_every": null,
+            "truncation_unit": "global shared input positions, including padding"
+          },
+          "loss_before_update": 2.448926594517402,
+          "preclip_gradient_norm": 1.3875692036323717,
+          "window": [
+            0,
+            32
+          ]
+        },
+        {
+          "diagnostics": {
+            "advance_calls": 32,
+            "bptt": "full",
+            "event_semantics": "conditional expected interval counts, not sampled spikes",
+            "layer_count": 1,
+            "maximum_mass_residual": 2.220446049250313e-16,
+            "maximum_negative_probability": 0.0,
+            "minimum_observation_evidence": 0.9696341937281804,
+            "sequence_position": 32,
+            "truncate_every": null,
+            "truncation_unit": "global shared input positions, including padding"
+          },
+          "loss_before_update": 2.4287680633432336,
+          "preclip_gradient_norm": 1.391825806554393,
+          "window": [
+            32,
+            64
+          ]
+        },
+        {
+          "diagnostics": {
+            "advance_calls": 32,
+            "bptt": "full",
+            "event_semantics": "conditional expected interval counts, not sampled spikes",
+            "layer_count": 1,
+            "maximum_mass_residual": 3.3306690738754696e-16,
+            "maximum_negative_probability": 0.0,
+            "minimum_observation_evidence": 0.9686967238935495,
+            "sequence_position": 32,
+            "truncate_every": null,
+            "truncation_unit": "global shared input positions, including padding"
+          },
+          "loss_before_update": 2.4509185227835846,
+          "preclip_gradient_norm": 1.3847581280754804,
+          "window": [
+            64,
+            96
+          ]
+        },
+        {
+          "diagnostics": {
+            "advance_calls": 32,
+            "bptt": "full",
+            "event_semantics": "conditional expected interval counts, not sampled spikes",
+            "layer_count": 1,
+            "maximum_mass_residual": 2.220446049250313e-16,
+            "maximum_negative_probability": 0.0,
+            "minimum_observation_evidence": 0.9562791873195394,
+            "sequence_position": 32,
+            "truncate_every": null,
+            "truncation_unit": "global shared input positions, including padding"
+          },
+          "loss_before_update": 2.445663111365146,
+          "preclip_gradient_norm": 1.166599065830048,
+          "window": [
+            96,
+            128
+          ]
+        }
+      ],
+      "model": {
+        "actual_physics_hex": {
+          "absolute_reset": "0x1.608b71f63c8d5p+0",
+          "discount": "0x1.3333333333333p-3",
+          "log_boundary": "0x0.0p+0",
+          "mu": "-0x1.eb851eb851eb7p-4",
+          "sigma": "0x1.6666666666666p-2"
+        },
+        "arm": "hcsn",
+        "device": "cpu",
+        "dtype": "float64",
+        "profile": {
+          "acceptance": "All four gates must pass. A result admits only unchanged frozen physics, this exact grid, and A01 first128/D01 first64 smoke. No automatically inherited previous qualification.",
+          "archive_sha256": "6660124b4d1fd98963c56a6804bbb0ca0c5ee12edc9b772c8a867148af20d0da",
+          "clock_diagnostic_sha256": "8a8b312b5a3c1e3102849aaedfb114cd3e0bcd62646c0a6d0436f52fe63ac36b",
+          "clock_semantics": "integer tick deltas / 10000000 seconds; exact SQL-style display compatibility is not creator attribution",
+          "cpu_threads": 1,
+          "cuda_allowed": false,
+          "data_sha256": "1fbc965b8d7faf499ea854428b2138132d94e6a26404bc8e4b0c62144f513e8a",
+          "grid": {
+            "active_cells": 128,
+            "endpoint": 2.4,
+            "initial_log_std": 0.08,
+            "phase_cells": 16,
+            "quadrature_order": 32,
+            "refractory": 0.2,
+            "tail_rate": 1.0
+          },
+          "initial_margin": 0.55,
+          "limits": {
+            "combined_value_error": 0.01,
+            "linear_solve_residual_estimate": 2e-10,
+            "phase_refinement_delta": 0.005,
+            "probability_mass_error": 5e-11,
+            "quadrature_refinement_delta": 1e-05,
+            "sequence_mass_drift": 2e-06,
+            "space_refinement_delta": 0.005,
+            "tail_refinement_delta": 0.005,
+            "time_refinement_delta": 0.005
+          },
+          "physics": {
+            "discount": 0.15,
+            "log_absolute_reset": 0.32,
+            "log_boundary": 0.0,
+            "mu": -0.12,
+            "sigma": 0.35,
+            "trainable": false
+          },
+          "predecessor_profile_sha256": "09fbea17afe5e95a98cd9efbf84a92b2b7c61a8653bcaf241f6d00ba769b59df",
+          "predeclared_refinement_anchors": "positive locked-gap min, middle, max; global gap p95,p99,max, deduplicated",
+          "profile_id": "localization-frozen-default-physics-d02-k145-stable-intervals-v2",
+          "refractory_change": "A different physical model (0.2s), not a correction of old 0.1s evidence.",
+          "repair": "Direct Gaussian interval logdiff reflection replaces adjacent survivor-tail subtraction; no physical/grid/limit changes.",
+          "rss_budget_bytes": 2147483648,
+          "schema": "hcsn-localization-v2-budget-profile-v1",
+          "scope_limits": [
+            "all 325 global gaps: positivity/mass interface audit only; not full-dataset learning qualification",
+            "perpetual fixed-step values and refinements: common conditioned Gaussian prior only",
+            "row continuation defects and row perpetual errors are diagnostics, not certified bounds",
+            "unconditioned 32/64/128-event schedules do not bound observed/conditioned network dynamics",
+            "trained likelihood depends on physical channels and content; local transport errors may amplify; no universal rollout error bound",
+            "physics training, new starting laws, other durations/windows or changes require a fresh numerical profile",
+            "no accuracy ranking, independent seed training or GPU/energy/performance claims"
+          ],
+          "selection": {
+            "A01": 128,
+            "D01": 64
+          },
+          "source_archive_sha256": "cb49a5f1aa24e15e25f46dd9fc8722de8fba4fa471d69a52142d37e8d98c3a2a",
+          "source_base_archive_sha256": "353f7c0f50d187adeccbd1fff0638d1a649fe2c547c03ebf23e3fceafa846ff8",
+          "wall_budget_seconds": 300
+        },
+        "profile_sha256": "a6661067b366f386d96782687dee6ace5718ffcd8148b2def3bca286c7293600",
+        "qualification_sha256": "1c31a015de53ad720bfa7ac3e952fdbe494a8251161f5741c49239b247a53ddc"
+      },
+      "output_directory": "/home/qian-qi/hepta-hcsn-localization-v2-20261108-v1/interface-001/hcsn-20261110",
+      "peak_rss_bytes": 747880448,
+      "physical_energy_joules": null,
+      "process_cpu_seconds": 34.644544505,
+      "process_wall_seconds": 35.51810659887269,
+      "provider_charges": null,
+      "seed": 20261110,
+      "smoke_fits_started": 1,
+      "source_after": {
+        "proposals/localization-v2/data.py": "0b0676b7ec22cca17b525da25de9c767c2dd06086b177a1de1e201e235952001",
+        "proposals/localization-v2/models.py": "d964656caf16183cd552d9ab766d1b52ab76760130f72cde783ad50c8e1299fd",
+        "proposals/localization-v2/run_interface.py": "dd3f4c109f2f2d23f1b66b8cb21861a5de995f4c632d7286c22d8ff8e24ab684",
+        "qualification/hcsn_differentiable/__init__.py": "bcde159e1a07a1da1df4b22caccae7f974443d34bbd071a6e845791f3e8b4123",
+        "qualification/hcsn_differentiable/benchmark_admission.py": "468f53365852f75d18708b504855ac1b5ad8e982fb4d82a6c5f7ee5bac9eabb0",
+        "qualification/hcsn_differentiable/checkpoint.py": "9565cba284f479bbab7c8ee61ca7a5330ddb9a9c4efed7786d92a37f7a93c793",
+        "qualification/hcsn_differentiable/contract.py": "79e1127dc126fb8ac97ce7542bac2c9d70c71e0fd2d24416f146d4ec82be099e",
+        "qualification/hcsn_differentiable/encoder.py": "8297a3a994e0ff7b97e4d73b4ac92f8bdc8a691dfdf145fc8fcc45be5cad7b18",
+        "qualification/hcsn_differentiable/error_budget.py": "0b378dfea9f72cd946f40248c7573bff324db7fff9570b15cab67d9a2cb78b58",
+        "qualification/hcsn_differentiable/finite_renewal.py": "6f582ab64695ba676f5d1b4f47ceb39c6b4f8a70cde85eafe21ab3aaaca823de",
+        "qualification/hcsn_differentiable/localization_smoke.py": "99c214040e1c2bd3057fb77641c2b75faad3c3c61d48c27fda33629d1332e372",
+        "qualification/hcsn_differentiable/network.py": "04726551b6d4a53de2eb0daa1d8f5f30d96c7852bcf3ee769220ff584e56a687",
+        "qualification/hcsn_differentiable/operator.py": "a372ca8eef2b41714f632e0b1db2a58f98409fbb23858eb83bfe93a7833f1677",
+        "qualification/hcsn_differentiable/regenerative.py": "551bdc384257ab0ae510903165b580c50e761410777480989406395750a71ae1",
+        "qualification/hcsn_differentiable/run_qualification.py": "d84e5fdac31da852f9e4639899dae3e797ee6c0a4e2dd81772d03eff5e43e4c6",
+        "qualification/hcsn_differentiable/value.py": "59847f1a39e834e2eb927840ee608b5914b7a61c1ebb4be7fce956b1285b8101"
+      },
+      "source_before": {
+        "proposals/localization-v2/data.py": "0b0676b7ec22cca17b525da25de9c767c2dd06086b177a1de1e201e235952001",
+        "proposals/localization-v2/models.py": "d964656caf16183cd552d9ab766d1b52ab76760130f72cde783ad50c8e1299fd",
+        "proposals/localization-v2/run_interface.py": "dd3f4c109f2f2d23f1b66b8cb21861a5de995f4c632d7286c22d8ff8e24ab684",
+        "qualification/hcsn_differentiable/__init__.py": "bcde159e1a07a1da1df4b22caccae7f974443d34bbd071a6e845791f3e8b4123",
+        "qualification/hcsn_differentiable/benchmark_admission.py": "468f53365852f75d18708b504855ac1b5ad8e982fb4d82a6c5f7ee5bac9eabb0",
+        "qualification/hcsn_differentiable/checkpoint.py": "9565cba284f479bbab7c8ee61ca7a5330ddb9a9c4efed7786d92a37f7a93c793",
+        "qualification/hcsn_differentiable/contract.py": "79e1127dc126fb8ac97ce7542bac2c9d70c71e0fd2d24416f146d4ec82be099e",
+        "qualification/hcsn_differentiable/encoder.py": "8297a3a994e0ff7b97e4d73b4ac92f8bdc8a691dfdf145fc8fcc45be5cad7b18",
+        "qualification/hcsn_differentiable/error_budget.py": "0b378dfea9f72cd946f40248c7573bff324db7fff9570b15cab67d9a2cb78b58",
+        "qualification/hcsn_differentiable/finite_renewal.py": "6f582ab64695ba676f5d1b4f47ceb39c6b4f8a70cde85eafe21ab3aaaca823de",
+        "qualification/hcsn_differentiable/localization_smoke.py": "99c214040e1c2bd3057fb77641c2b75faad3c3c61d48c27fda33629d1332e372",
+        "qualification/hcsn_differentiable/network.py": "04726551b6d4a53de2eb0daa1d8f5f30d96c7852bcf3ee769220ff584e56a687",
+        "qualification/hcsn_differentiable/operator.py": "a372ca8eef2b41714f632e0b1db2a58f98409fbb23858eb83bfe93a7833f1677",
+        "qualification/hcsn_differentiable/regenerative.py": "551bdc384257ab0ae510903165b580c50e761410777480989406395750a71ae1",
+        "qualification/hcsn_differentiable/run_qualification.py": "d84e5fdac31da852f9e4639899dae3e797ee6c0a4e2dd81772d03eff5e43e4c6",
+        "qualification/hcsn_differentiable/value.py": "59847f1a39e834e2eb927840ee608b5914b7a61c1ebb4be7fce956b1285b8101"
+      },
+      "source_unchanged": true,
+      "status": "completed_interface_only",
+      "torch": "2.8.0+cu128",
+      "trainable_parameters": 9804,
+      "wall_seconds": 34.76437253691256
+    }
+  ],
+  "budget": {
+    "cuda": false,
+    "external_memory_enforcement": "caller-provided hard envelope required",
+    "gradient_norm_cap": 1.0,
+    "learning_rate": 0.001,
+    "per_arm_seed_seconds": 180,
+    "rss_bytes": 2147483648,
+    "suite_seconds": 1800,
+    "threads": 1,
+    "updates_per_fit": 4,
+    "window_events": 32
+  },
+  "claim_boundary": "Three independent initializations check real interfaces; tiny unequal models/four updates cannot rank six families or establish trained SNN quality.",
+  "data": {
+    "all_gap_ticks": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      51377,
+      51380,
+      51381,
+      51382,
+      51383,
+      51384,
+      51388,
+      116142,
+      148872,
+      165135,
+      166912,
+      168954,
+      170334,
+      170849,
+      171796,
+      172747,
+      173711,
+      173826,
+      173947,
+      174494,
+      174771,
+      174861,
+      175341,
+      175362,
+      175690,
+      175734,
+      175949,
+      176294,
+      176567,
+      176809,
+      176882,
+      176892,
+      177666,
+      177680,
+      178013,
+      178221,
+      178398,
+      178453,
+      178491,
+      178615,
+      178636,
+      178735,
+      178914,
+      178974,
+      179251,
+      179677,
+      179903,
+      180295,
+      180846,
+      180853,
+      180855,
+      181305,
+      181482,
+      181529,
+      181631,
+      182169,
+      182616,
+      182673,
+      182736,
+      182900,
+      183063,
+      183090,
+      183136,
+      183200,
+      183227,
+      183706,
+      183907,
+      184141,
+      184252,
+      184376,
+      184382,
+      184534,
+      184580,
+      184769,
+      184775,
+      184940,
+      185052,
+      185251,
+      185288,
+      185312,
+      185353,
+      185469,
+      185497,
+      185502,
+      185759,
+      185770,
+      185775,
+      185812,
+      185846,
+      185918,
+      186019,
+      186062,
+      186219,
+      186221,
+      186249,
+      186274,
+      186351,
+      186355,
+      186383,
+      186425,
+      186434,
+      186545,
+      186567,
+      186623,
+      186719,
+      186722,
+      186797,
+      186811,
+      186829,
+      186911,
+      187178,
+      187291,
+      187423,
+      187512,
+      187599,
+      187680,
+      187740,
+      187868,
+      188108,
+      188167,
+      188248,
+      188567,
+      188674,
+      188788,
+      188882,
+      188951,
+      189192,
+      189290,
+      189322,
+      189396,
+      189494,
+      189596,
+      189604,
+      189638,
+      189768,
+      189980,
+      189986,
+      190110,
+      190288,
+      190325,
+      190360,
+      190389,
+      190410,
+      190439,
+      190491,
+      190589,
+      190659,
+      190788,
+      191018,
+      191161,
+      191200,
+      191295,
+      191652,
+      191788,
+      191802,
+      191958,
+      192018,
+      192142,
+      192352,
+      192599,
+      192748,
+      192792,
+      192890,
+      192910,
+      192965,
+      193275,
+      193472,
+      193545,
+      193561,
+      193761,
+      194528,
+      195260,
+      195534,
+      195752,
+      195899,
+      196575,
+      196663,
+      197948,
+      218907,
+      218908,
+      218909,
+      218911,
+      218912,
+      218917,
+      218923,
+      270290,
+      270291,
+      270292,
+      270293,
+      270294,
+      270295,
+      270296,
+      270297,
+      270298,
+      270299,
+      343863,
+      343981,
+      352901,
+      354376,
+      358939,
+      359246,
+      373984,
+      399043,
+      402944,
+      444616,
+      448874,
+      450197,
+      452217,
+      452519,
+      452654,
+      452676,
+      452749,
+      453074,
+      453460,
+      454213,
+      454991,
+      455549,
+      455621,
+      458712,
+      458911,
+      459907,
+      460208,
+      460367,
+      461294,
+      461383,
+      461957,
+      463190,
+      463598,
+      464360,
+      489204,
+      489206,
+      540580,
+      540581,
+      540582,
+      540583,
+      540584,
+      540585,
+      540586,
+      540587,
+      540588,
+      540589,
+      540590,
+      540591,
+      540592,
+      540593,
+      540594,
+      540595,
+      540596,
+      540597,
+      540598,
+      617369,
+      630009,
+      720940,
+      721534,
+      759486,
+      759488,
+      759496,
+      810870,
+      810871,
+      810872,
+      810873,
+      810874,
+      810875,
+      810876,
+      810877,
+      810878,
+      810879,
+      810880,
+      810881,
+      810882,
+      810883,
+      810884,
+      810885,
+      810886,
+      810887,
+      810888,
+      894540,
+      985081,
+      991393,
+      999612,
+      1029774,
+      1029782,
+      1029785,
+      1081160,
+      1081161,
+      1081162,
+      1081163,
+      1081164,
+      1081165,
+      1081166,
+      1081167,
+      1081168,
+      1081169,
+      1081170,
+      1081171,
+      1081176,
+      1081182,
+      1197302,
+      1262620,
+      1300069,
+      1351450,
+      1351452,
+      1351453,
+      1351454,
+      1351455,
+      1351456,
+      1351457,
+      1351458,
+      1351459,
+      1570358,
+      1621741,
+      1621744,
+      1621745,
+      1621747,
+      1621750
+    ],
+    "archive_sha256": "6660124b4d1fd98963c56a6804bbb0ca0c5ee12edc9b772c8a867148af20d0da",
+    "author_sql_dotnet_attribution": "not established; only exact numerical compatibility",
+    "clock_display_mismatches": 0,
+    "clock_model": "100 ns year-1 ticks + fixed 2h; nearest 1/300s then nearest ms display",
+    "common_offset_hours": 2,
+    "data_sha256": "1fbc965b8d7faf499ea854428b2138132d94e6a26404bc8e4b0c62144f513e8a",
+    "date_millisecond_last_digits": {
+      "0": 54879,
+      "3": 55013,
+      "7": 54968
+    },
+    "description_sha256": "f6838d132df9eaaa891f82d7824e880e510dd51c97a73b22cf7fecae83f9f480",
+    "duplicate_timestamps": 1,
+    "events": 164860,
+    "features_sha256": "f53de6fcb1d7b497126ed002bc69b310b6ae287550e0a204a6184d4a8a2a296e",
+    "frontend_sha256": "11bd263a2ae3515347b3ab4e3228c83c66cc3e9296f36c9943efb4fc3a794c55",
+    "holdout_use": "E integrity/clock audit only; no feature fit, model selection or evaluation",
+    "maximum_gap_seconds": 0.162175,
+    "maximum_single_record_error_seconds": 0.002,
+    "selection": {
+      "dev": {
+        "events": 64,
+        "max_dt": 0.0540589,
+        "sequence": "D01"
+      },
+      "train": {
+        "events": 128,
+        "max_dt": 0.1081168,
+        "sequence": "A01"
+      }
+    },
+    "sequence_counts": {
+      "A01": 5830,
+      "A02": 5691,
+      "A03": 5326,
+      "A04": 5402,
+      "A05": 5224,
+      "B01": 6647,
+      "B02": 6091,
+      "B03": 5670,
+      "B04": 5789,
+      "B05": 5953,
+      "C01": 6297,
+      "C02": 6216,
+      "C03": 6267,
+      "C04": 6323,
+      "C05": 6490,
+      "D01": 7463,
+      "D02": 6416,
+      "D03": 6562,
+      "D04": 5454,
+      "D05": 6057,
+      "E01": 9098,
+      "E02": 8075,
+      "E03": 9112,
+      "E04": 8514,
+      "E05": 8893
+    },
+    "single_record_error_limit_seconds": 0.002,
+    "source_backward_pairs": 12,
+    "v1_failure_retained": "2 ms was applied to adjacent date differences; no old result is overwritten"
+  },
+  "formal_fits_started": 0,
+  "schema": "hcsn-localization-v2-interface-suite-v1",
+  "seeds": [
+    20261108,
+    20261109,
+    20261110
+  ],
+  "source_after": {
+    "proposals/localization-v2/data.py": "0b0676b7ec22cca17b525da25de9c767c2dd06086b177a1de1e201e235952001",
+    "proposals/localization-v2/models.py": "d964656caf16183cd552d9ab766d1b52ab76760130f72cde783ad50c8e1299fd",
+    "proposals/localization-v2/run_interface.py": "dd3f4c109f2f2d23f1b66b8cb21861a5de995f4c632d7286c22d8ff8e24ab684",
+    "qualification/hcsn_differentiable/__init__.py": "bcde159e1a07a1da1df4b22caccae7f974443d34bbd071a6e845791f3e8b4123",
+    "qualification/hcsn_differentiable/benchmark_admission.py": "468f53365852f75d18708b504855ac1b5ad8e982fb4d82a6c5f7ee5bac9eabb0",
+    "qualification/hcsn_differentiable/checkpoint.py": "9565cba284f479bbab7c8ee61ca7a5330ddb9a9c4efed7786d92a37f7a93c793",
+    "qualification/hcsn_differentiable/contract.py": "79e1127dc126fb8ac97ce7542bac2c9d70c71e0fd2d24416f146d4ec82be099e",
+    "qualification/hcsn_differentiable/encoder.py": "8297a3a994e0ff7b97e4d73b4ac92f8bdc8a691dfdf145fc8fcc45be5cad7b18",
+    "qualification/hcsn_differentiable/error_budget.py": "0b378dfea9f72cd946f40248c7573bff324db7fff9570b15cab67d9a2cb78b58",
+    "qualification/hcsn_differentiable/finite_renewal.py": "6f582ab64695ba676f5d1b4f47ceb39c6b4f8a70cde85eafe21ab3aaaca823de",
+    "qualification/hcsn_differentiable/localization_smoke.py": "99c214040e1c2bd3057fb77641c2b75faad3c3c61d48c27fda33629d1332e372",
+    "qualification/hcsn_differentiable/network.py": "04726551b6d4a53de2eb0daa1d8f5f30d96c7852bcf3ee769220ff584e56a687",
+    "qualification/hcsn_differentiable/operator.py": "a372ca8eef2b41714f632e0b1db2a58f98409fbb23858eb83bfe93a7833f1677",
+    "qualification/hcsn_differentiable/regenerative.py": "551bdc384257ab0ae510903165b580c50e761410777480989406395750a71ae1",
+    "qualification/hcsn_differentiable/run_qualification.py": "d84e5fdac31da852f9e4639899dae3e797ee6c0a4e2dd81772d03eff5e43e4c6",
+    "qualification/hcsn_differentiable/value.py": "59847f1a39e834e2eb927840ee608b5914b7a61c1ebb4be7fce956b1285b8101"
+  },
+  "source_before": {
+    "proposals/localization-v2/data.py": "0b0676b7ec22cca17b525da25de9c767c2dd06086b177a1de1e201e235952001",
+    "proposals/localization-v2/models.py": "d964656caf16183cd552d9ab766d1b52ab76760130f72cde783ad50c8e1299fd",
+    "proposals/localization-v2/run_interface.py": "dd3f4c109f2f2d23f1b66b8cb21861a5de995f4c632d7286c22d8ff8e24ab684",
+    "qualification/hcsn_differentiable/__init__.py": "bcde159e1a07a1da1df4b22caccae7f974443d34bbd071a6e845791f3e8b4123",
+    "qualification/hcsn_differentiable/benchmark_admission.py": "468f53365852f75d18708b504855ac1b5ad8e982fb4d82a6c5f7ee5bac9eabb0",
+    "qualification/hcsn_differentiable/checkpoint.py": "9565cba284f479bbab7c8ee61ca7a5330ddb9a9c4efed7786d92a37f7a93c793",
+    "qualification/hcsn_differentiable/contract.py": "79e1127dc126fb8ac97ce7542bac2c9d70c71e0fd2d24416f146d4ec82be099e",
+    "qualification/hcsn_differentiable/encoder.py": "8297a3a994e0ff7b97e4d73b4ac92f8bdc8a691dfdf145fc8fcc45be5cad7b18",
+    "qualification/hcsn_differentiable/error_budget.py": "0b378dfea9f72cd946f40248c7573bff324db7fff9570b15cab67d9a2cb78b58",
+    "qualification/hcsn_differentiable/finite_renewal.py": "6f582ab64695ba676f5d1b4f47ceb39c6b4f8a70cde85eafe21ab3aaaca823de",
+    "qualification/hcsn_differentiable/localization_smoke.py": "99c214040e1c2bd3057fb77641c2b75faad3c3c61d48c27fda33629d1332e372",
+    "qualification/hcsn_differentiable/network.py": "04726551b6d4a53de2eb0daa1d8f5f30d96c7852bcf3ee769220ff584e56a687",
+    "qualification/hcsn_differentiable/operator.py": "a372ca8eef2b41714f632e0b1db2a58f98409fbb23858eb83bfe93a7833f1677",
+    "qualification/hcsn_differentiable/regenerative.py": "551bdc384257ab0ae510903165b580c50e761410777480989406395750a71ae1",
+    "qualification/hcsn_differentiable/run_qualification.py": "d84e5fdac31da852f9e4639899dae3e797ee6c0a4e2dd81772d03eff5e43e4c6",
+    "qualification/hcsn_differentiable/value.py": "59847f1a39e834e2eb927840ee608b5914b7a61c1ebb4be7fce956b1285b8101"
+  },
+  "source_unchanged": true,
+  "started_utc": "2026-11-08T11:34:02.617684+00:00",
+  "status": "completed_interfaces_only",
+  "wall_seconds": 170.0403627799824
+}

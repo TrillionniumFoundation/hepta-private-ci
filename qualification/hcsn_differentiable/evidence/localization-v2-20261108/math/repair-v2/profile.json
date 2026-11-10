@@ -1,0 +1,61 @@
+{
+  "acceptance": "All four gates must pass. A result admits only unchanged frozen physics, this exact grid, and A01 first128/D01 first64 smoke. No automatically inherited previous qualification.",
+  "archive_sha256": "6660124b4d1fd98963c56a6804bbb0ca0c5ee12edc9b772c8a867148af20d0da",
+  "clock_diagnostic_sha256": "8a8b312b5a3c1e3102849aaedfb114cd3e0bcd62646c0a6d0436f52fe63ac36b",
+  "clock_semantics": "integer tick deltas / 10000000 seconds; exact SQL-style display compatibility is not creator attribution",
+  "cpu_threads": 1,
+  "cuda_allowed": false,
+  "data_sha256": "1fbc965b8d7faf499ea854428b2138132d94e6a26404bc8e4b0c62144f513e8a",
+  "grid": {
+    "active_cells": 128,
+    "endpoint": 2.4,
+    "initial_log_std": 0.08,
+    "phase_cells": 16,
+    "quadrature_order": 32,
+    "refractory": 0.2,
+    "tail_rate": 1.0
+  },
+  "initial_margin": 0.55,
+  "limits": {
+    "combined_value_error": 0.01,
+    "linear_solve_residual_estimate": 2e-10,
+    "phase_refinement_delta": 0.005,
+    "probability_mass_error": 5e-11,
+    "quadrature_refinement_delta": 1e-05,
+    "sequence_mass_drift": 2e-06,
+    "space_refinement_delta": 0.005,
+    "tail_refinement_delta": 0.005,
+    "time_refinement_delta": 0.005
+  },
+  "physics": {
+    "discount": 0.15,
+    "log_absolute_reset": 0.32,
+    "log_boundary": 0.0,
+    "mu": -0.12,
+    "sigma": 0.35,
+    "trainable": false
+  },
+  "predecessor_profile_sha256": "09fbea17afe5e95a98cd9efbf84a92b2b7c61a8653bcaf241f6d00ba769b59df",
+  "predeclared_refinement_anchors": "positive locked-gap min, middle, max; global gap p95,p99,max, deduplicated",
+  "profile_id": "localization-frozen-default-physics-d02-k145-stable-intervals-v2",
+  "refractory_change": "A different physical model (0.2s), not a correction of old 0.1s evidence.",
+  "repair": "Direct Gaussian interval logdiff reflection replaces adjacent survivor-tail subtraction; no physical/grid/limit changes.",
+  "rss_budget_bytes": 2147483648,
+  "schema": "hcsn-localization-v2-budget-profile-v1",
+  "scope_limits": [
+    "all 325 global gaps: positivity/mass interface audit only; not full-dataset learning qualification",
+    "perpetual fixed-step values and refinements: common conditioned Gaussian prior only",
+    "row continuation defects and row perpetual errors are diagnostics, not certified bounds",
+    "unconditioned 32/64/128-event schedules do not bound observed/conditioned network dynamics",
+    "trained likelihood depends on physical channels and content; local transport errors may amplify; no universal rollout error bound",
+    "physics training, new starting laws, other durations/windows or changes require a fresh numerical profile",
+    "no accuracy ranking, independent seed training or GPU/energy/performance claims"
+  ],
+  "selection": {
+    "A01": 128,
+    "D01": 64
+  },
+  "source_archive_sha256": "cb49a5f1aa24e15e25f46dd9fc8722de8fba4fa471d69a52142d37e8d98c3a2a",
+  "source_base_archive_sha256": "353f7c0f50d187adeccbd1fff0638d1a649fe2c547c03ebf23e3fceafa846ff8",
+  "wall_budget_seconds": 300
+}
