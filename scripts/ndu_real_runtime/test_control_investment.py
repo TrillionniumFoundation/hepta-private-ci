@@ -35,7 +35,11 @@ class ControlInvestmentTests(unittest.TestCase):
             row(f"s{i}", belief=float(i % 2), success=bool(i % 2), gain=i % 2)
             for i in range(24)
         ]
-        heads = fit_heads(samples, context=CRITIC_CONTEXT)
+        heads = calibrate_heads(
+            fit_heads(samples, context=CRITIC_CONTEXT),
+            [row(f"cal-{i}", split="calibration") for i in range(12)],
+            context=CRITIC_CONTEXT,
+        )
         low, high = samples[0]["state"], samples[1]["state"]
         self.assertLess(
             predict(heads, low, context=CRITIC_CONTEXT)["implementation"]["point"],
@@ -138,11 +142,9 @@ class ControlInvestmentTests(unittest.TestCase):
             calibration[:1],
             context=CRITIC_CONTEXT,
         )
-        self.assertIsNone(
-            predict(small, training[0]["state"], context=CRITIC_CONTEXT)["value"][
-                "conditional_residual"
-            ][1]
-        )
+        sparse = predict(small, training[0]["state"], context=CRITIC_CONTEXT)
+        self.assertTrue(sparse["recalibration_required"])
+        self.assertIsNone(sparse["value"]["point"])
 
 
 if __name__ == "__main__":
