@@ -2,7 +2,7 @@ name: ACT-2 observer qualification
 
 on:
   push:
-    branches: [validation/act2-observer-20261109, test/act2-real-observer-faults-20261109-r1, fix/act2-notes-observer-order-20261109, fix/act2-model-goal-success-20261110, feat/act2-notes-fence-owner-20261110]
+    branches: [validation/act2-observer-20261109, test/act2-real-observer-faults-20261109-r1, fix/act2-notes-observer-order-20261109, fix/act2-model-goal-success-20261110, feat/act2-notes-fence-owner-20261110, feat/act2-durable-read-floor-20261110]
 
 permissions:
   contents: read
@@ -13,7 +13,7 @@ concurrency:
 
 env:
   ACT2_BASE: 885dae0f3285267e9e9c49d8b43b0d009779f9e8
-  ACT2_UI_SOURCE: 0e884b4cf6831d7cb614b87786c40137a575672d
+  ACT2_UI_SOURCE: cc33ab6c44f3c945d83cb96be71d861e5613f99e
   CARGO_BUILD_JOBS: "2"
   CARGO_INCREMENTAL: "0"
   CARGO_PROFILE_TEST_DEBUG: "0"
@@ -138,6 +138,12 @@ jobs:
           python3 scripts/hepta_ci_exec.py --timeout-seconds 2400 --minimum-tests 3 \
             --output "$RUNNER_TEMP/act2-records/memory.json" \
             -- just test --locked -p codex-hepta-memory
+      - name: Explicitly exercise the 1024-row read-floor capacity boundary
+        run: |
+          python3 scripts/hepta_ci_exec.py --timeout-seconds 2400 --minimum-tests 1 \
+            --output "$RUNNER_TEMP/act2-records/read-floor-cap.json" \
+            -- just test --locked -p codex-hepta-memory --lib \
+            -E 'test(notes_document_floor_history_cap)' --run-ignored only --status-level all
       - name: Run Notes projection, private readback and original owner tests
         run: |
           python3 scripts/hepta_ci_exec.py --timeout-seconds 2400 --minimum-tests 8 \
@@ -165,6 +171,17 @@ jobs:
             HEPTA_NOTES_QUALIFICATION_OUTPUT="$RUNNER_TEMP/act2-records/notes-actual.json" \
             just test --locked -p codex-hepta-agentd --lib \
             -E 'test(notes_actual_ui_original_owner_roundtrip)' --run-ignored only --status-level all
+      - name: Exercise authorized fencing and delayed delivery in the actual App
+        run: |
+          python3 scripts/hepta_ci_exec.py --timeout-seconds 300 --minimum-tests 1 \
+            --output "$RUNNER_TEMP/act2-records/notes-real-fence.json" \
+            -- env -u WAYLAND_DISPLAY dbus-run-session -- \
+            xvfb-run -a -s '-screen 0 1280x800x24 -nolisten tcp' env \
+            WINIT_UNIX_BACKEND=x11 LIBGL_ALWAYS_SOFTWARE=1 TRILL_NOTES_PROBE_ISOLATED=1 \
+            HEPTA_NOTES_SESSION_BIN="$RUNNER_TEMP/act2-ui-target/debug/trill-session" \
+            HEPTA_NOTES_FENCE_QUALIFICATION_OUTPUT="$RUNNER_TEMP/act2-records/notes-fence-actual.json" \
+            just test --locked -p codex-hepta-agentd --lib \
+            -E 'test(notes_actual_ui_authorized_fence_excludes_delayed_original)' --run-ignored only --status-level all
       - name: Run scoped lint and final official formatting
         run: |
           python3 scripts/hepta_ci_exec.py --timeout-seconds 1800 \
