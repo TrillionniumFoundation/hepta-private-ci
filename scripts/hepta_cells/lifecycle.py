@@ -13,6 +13,8 @@ import sqlite3
 import time
 from typing import Callable
 
+from .population_owner import PopulationPolicy
+
 from .component_types import (
     Budget as Budget,
     CellError as CellError,
@@ -54,6 +56,7 @@ class CellOwner:
         qualify: Callable[[Qualification], bool] | None = None,
         *,
         limits: OwnerLimits | None = None,
+        population=None,
     ):
         if limits is not None and not isinstance(limits, OwnerLimits):
             raise CellError("limits must be OwnerLimits")
@@ -86,6 +89,7 @@ class CellOwner:
         """)
         self._begin()
         try:
+            self._population = PopulationPolicy(self.db, population)
             saved = self.db.execute(
                 "SELECT limits FROM owner_settings WHERE singleton=1"
             ).fetchone()
@@ -109,6 +113,10 @@ class CellOwner:
 
     def close(self):
         self.db.close()
+
+    @property
+    def population_plan(self):
+        return self._population.plan
 
     def _begin(self):
         self.db.execute("BEGIN IMMEDIATE")
@@ -204,6 +212,7 @@ class CellOwner:
                 )
             for resource in ("cells", "epochs", "checkpoints"):
                 self._capacity(resource, partition)
+            self._population.create(partition, component, budget, total_work_units)
             state = _bounded_json(
                 self._initial(component, identity), budget.max_state_bytes
             )
@@ -265,6 +274,8 @@ class CellOwner:
                 return json.loads(prior["receipt"])
             if _bounded_json(asdict(identity)) != cell["identity"]:
                 raise CellError("component identity differs from the active bundle")
+            if self._population.plan is not None:
+                self._population.describe(partition, component)
             self._idle(partition)
             if self._budget_halt(partition, cell) is not None:
                 raise CellError(
@@ -389,6 +400,7 @@ class CellOwner:
                 state_applied=apply_state,
                 requires_recovery=exceeded and identity.effectful,
             )
+            self._population.annotate(partition, receipt)
             self.db.execute(
                 "UPDATE cells SET state=?,sequence=sequence+1,remaining=remaining+? WHERE partition=?",
                 (state, intent["reserved"] - result.work_units, partition.digest),
@@ -569,6 +581,7 @@ class CellOwner:
             budget=json.loads(cell["budget"]),
             remaining_work_units=cell["remaining"],
         )
+        self._population.annotate(partition, snapshot)
         encoded = _bounded_json(snapshot, 1048576)
         checkpoint_id = hashlib.sha256(encoded.encode()).hexdigest()
         if not self.db.execute(
@@ -646,6 +659,7 @@ class CellOwner:
                 ).fetchone()
             ):
                 raise CellError("rollback target was never admitted for this partition")
+            self._population.transition(partition, component, current, mode)
             if mode == "restore":
                 row = self.db.execute(
                     "SELECT * FROM checkpoints WHERE digest=? AND partition=?",

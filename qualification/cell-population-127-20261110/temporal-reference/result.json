@@ -1,0 +1,985 @@
+{
+  "architecture_ranking_established": false,
+  "attempts": [
+    {
+      "checkpoint": "gru-41.npz",
+      "checkpoint_sha256": "02536e6e869c267a214819431298b48a532c4503a81266c0098077bf8c7c6248",
+      "checkpoint_state_exact": true,
+      "config": {
+        "action_dim": 2,
+        "hidden_dim": 4,
+        "input_dim": 3,
+        "kind": "gru",
+        "output_dim": 2,
+        "seed": 41
+      },
+      "continuation_state_exact": true,
+      "gradient_audit": {
+        "absolute_tolerance": 5e-08,
+        "coordinates_checked": 134,
+        "epsilon": 1e-06,
+        "loss": 0.6705607879145292,
+        "method": "all-coordinate central finite differences; independent forward loss",
+        "passed": true,
+        "relative_tolerance": 0.0002,
+        "schema": "hepta.cell.temporal-gradient-check.v1",
+        "tensors": [
+          {
+            "analytic_nonzero_scalars": 16,
+            "maximum_absolute_error": 6.050571415422423e-11,
+            "maximum_tolerance_ratio": 0.000864365463239097,
+            "parameter": "Un",
+            "passed": true,
+            "scalars": 16
+          },
+          {
+            "analytic_nonzero_scalars": 16,
+            "maximum_absolute_error": 7.389918833998151e-11,
+            "maximum_tolerance_ratio": 0.0013895227824817346,
+            "parameter": "Ur",
+            "passed": true,
+            "scalars": 16
+          },
+          {
+            "analytic_nonzero_scalars": 16,
+            "maximum_absolute_error": 6.08257403185387e-11,
+            "maximum_tolerance_ratio": 0.0009480503897853463,
+            "parameter": "Uz",
+            "passed": true,
+            "scalars": 16
+          },
+          {
+            "analytic_nonzero_scalars": 24,
+            "maximum_absolute_error": 8.21426017483251e-11,
+            "maximum_tolerance_ratio": 4.513479516423238e-05,
+            "parameter": "Wh",
+            "passed": true,
+            "scalars": 24
+          },
+          {
+            "analytic_nonzero_scalars": 12,
+            "maximum_absolute_error": 4.4773336947689923e-11,
+            "maximum_tolerance_ratio": 0.00017817716166114686,
+            "parameter": "Wn",
+            "passed": true,
+            "scalars": 12
+          },
+          {
+            "analytic_nonzero_scalars": 8,
+            "maximum_absolute_error": 3.474084971912347e-11,
+            "maximum_tolerance_ratio": 0.000686609271713843,
+            "parameter": "Wr",
+            "passed": true,
+            "scalars": 12
+          },
+          {
+            "analytic_nonzero_scalars": 8,
+            "maximum_absolute_error": 4.8536202834625897e-11,
+            "maximum_tolerance_ratio": 2.3924364198634846e-05,
+            "parameter": "Wy",
+            "passed": true,
+            "scalars": 8
+          },
+          {
+            "analytic_nonzero_scalars": 12,
+            "maximum_absolute_error": 6.645662297376231e-11,
+            "maximum_tolerance_ratio": 0.000254270296757002,
+            "parameter": "Wz",
+            "passed": true,
+            "scalars": 12
+          },
+          {
+            "analytic_nonzero_scalars": 4,
+            "maximum_absolute_error": 2.1865814714416842e-11,
+            "maximum_tolerance_ratio": 7.576898355384377e-07,
+            "parameter": "bh",
+            "passed": true,
+            "scalars": 4
+          },
+          {
+            "analytic_nonzero_scalars": 4,
+            "maximum_absolute_error": 3.0782765225723097e-11,
+            "maximum_tolerance_ratio": 2.213637684937682e-06,
+            "parameter": "bn",
+            "passed": true,
+            "scalars": 4
+          },
+          {
+            "analytic_nonzero_scalars": 4,
+            "maximum_absolute_error": 4.8505943619353564e-11,
+            "maximum_tolerance_ratio": 0.00032553740635491736,
+            "parameter": "br",
+            "passed": true,
+            "scalars": 4
+          },
+          {
+            "analytic_nonzero_scalars": 2,
+            "maximum_absolute_error": 5.751746301463356e-11,
+            "maximum_tolerance_ratio": 1.519570176107368e-06,
+            "parameter": "by",
+            "passed": true,
+            "scalars": 2
+          },
+          {
+            "analytic_nonzero_scalars": 4,
+            "maximum_absolute_error": 3.7658900303716436e-11,
+            "maximum_tolerance_ratio": 4.6595031823282884e-05,
+            "parameter": "bz",
+            "passed": true,
+            "scalars": 4
+          }
+        ],
+        "weights_sha256": "497f58c24f9863263c6418fbb7f3c63c1c36f586be96d21979a38da40e61bde0"
+      },
+      "kind": "gru",
+      "parent_unchanged": true,
+      "passed": true,
+      "resume_receipts": [
+        {
+          "batch_episodes": 8,
+          "candidate_optimizer_sha256": "a0a438cbe0783c5c10ba859f2be42cc13167dda35f756cc7c5786a7e798b1bd6",
+          "candidate_weights_sha256": "53e0ca37279cda740b2f149584c897a835948ff5bc1df099f7705dffc16ecaef",
+          "cell_id": "reference-prediction",
+          "config_sha256": "a88fe429ca76c3c1eeb4814d1f9b2db557c6e0df8f710227997c6f92e55907b2",
+          "data_sha256": "87b4b37294c613746e95b005ef4a265c29c97d8d54c72ded5d91b3e298084dfe",
+          "energy_joules": null,
+          "episode_state": "fresh for every complete batch and optimizer update",
+          "events_per_episode": 5,
+          "gradient_norm_cap": 5.0,
+          "learning_rate": 0.003,
+          "losses": [
+            0.6705607879145292
+          ],
+          "measurement_scope": "local candidate copy and episode fitting; excludes caller data preparation and serving",
+          "optimizer": "adam",
+          "parent_optimizer_sha256": "e80cf36179547c53e3aa202a743fbbe46a179183479b6f848cb1766685eac1bf",
+          "parent_weights_sha256": "497f58c24f9863263c6418fbb7f3c63c1c36f586be96d21979a38da40e61bde0",
+          "peak_ram_bytes": null,
+          "peak_vram_bytes": null,
+          "process_cpu_seconds": 0.0017665460000000355,
+          "requested_updates": 1,
+          "resources": {
+            "energy_joules": null,
+            "optimizer_array_bytes": 2144,
+            "parameter_array_bytes": 1072,
+            "parameters": 134,
+            "peak_ram_bytes": null,
+            "peak_vram_bytes": null,
+            "persistent_state_array_bytes": 32,
+            "serialized_state_bytes": 320
+          },
+          "schema": "hepta.cell.temporal-training.v1",
+          "status": "completed_candidate_only",
+          "upstream_commit": "3959aac6829a345ef674b7901cbdd62316305d89",
+          "validated_updates": 1,
+          "wall_seconds": 0.0017686740000044665
+        },
+        {
+          "batch_episodes": 8,
+          "candidate_optimizer_sha256": "a0a438cbe0783c5c10ba859f2be42cc13167dda35f756cc7c5786a7e798b1bd6",
+          "candidate_weights_sha256": "53e0ca37279cda740b2f149584c897a835948ff5bc1df099f7705dffc16ecaef",
+          "cell_id": "reference-prediction",
+          "config_sha256": "a88fe429ca76c3c1eeb4814d1f9b2db557c6e0df8f710227997c6f92e55907b2",
+          "data_sha256": "87b4b37294c613746e95b005ef4a265c29c97d8d54c72ded5d91b3e298084dfe",
+          "energy_joules": null,
+          "episode_state": "fresh for every complete batch and optimizer update",
+          "events_per_episode": 5,
+          "gradient_norm_cap": 5.0,
+          "learning_rate": 0.003,
+          "losses": [
+            0.6705607879145292
+          ],
+          "measurement_scope": "local candidate copy and episode fitting; excludes caller data preparation and serving",
+          "optimizer": "adam",
+          "parent_optimizer_sha256": "e80cf36179547c53e3aa202a743fbbe46a179183479b6f848cb1766685eac1bf",
+          "parent_weights_sha256": "497f58c24f9863263c6418fbb7f3c63c1c36f586be96d21979a38da40e61bde0",
+          "peak_ram_bytes": null,
+          "peak_vram_bytes": null,
+          "process_cpu_seconds": 0.0015770950000000283,
+          "requested_updates": 1,
+          "resources": {
+            "energy_joules": null,
+            "optimizer_array_bytes": 2144,
+            "parameter_array_bytes": 1072,
+            "parameters": 134,
+            "peak_ram_bytes": null,
+            "peak_vram_bytes": null,
+            "persistent_state_array_bytes": 32,
+            "serialized_state_bytes": 320
+          },
+          "schema": "hepta.cell.temporal-training.v1",
+          "status": "completed_candidate_only",
+          "upstream_commit": "3959aac6829a345ef674b7901cbdd62316305d89",
+          "validated_updates": 1,
+          "wall_seconds": 0.0015752799999972922
+        }
+      ],
+      "resumed_optimizer_update_exact": true,
+      "seed": 41,
+      "stream_batch_maximum_error": 1.1102230246251565e-16,
+      "training": {
+        "batch_episodes": 8,
+        "candidate_optimizer_sha256": "e80cf36179547c53e3aa202a743fbbe46a179183479b6f848cb1766685eac1bf",
+        "candidate_weights_sha256": "497f58c24f9863263c6418fbb7f3c63c1c36f586be96d21979a38da40e61bde0",
+        "cell_id": "reference-prediction",
+        "config_sha256": "a88fe429ca76c3c1eeb4814d1f9b2db557c6e0df8f710227997c6f92e55907b2",
+        "data_sha256": "87b4b37294c613746e95b005ef4a265c29c97d8d54c72ded5d91b3e298084dfe",
+        "energy_joules": null,
+        "episode_state": "fresh for every complete batch and optimizer update",
+        "events_per_episode": 5,
+        "gradient_norm_cap": 5.0,
+        "learning_rate": 0.003,
+        "losses": [
+          0.7016317136710615,
+          0.6932885821168999,
+          0.6853327572387616,
+          0.6777602532840046
+        ],
+        "measurement_scope": "local candidate copy and episode fitting; excludes caller data preparation and serving",
+        "optimizer": "adam",
+        "parent_optimizer_sha256": "f4c7534be4b79edd07958112d64d85c741165d717e3e6cd76d1e2e40028110ed",
+        "parent_weights_sha256": "01bb06d2d18f95d4a58854f71109594046dd06a1ea3979dadafca7059504404c",
+        "peak_ram_bytes": null,
+        "peak_vram_bytes": null,
+        "process_cpu_seconds": 0.01995195700000002,
+        "requested_updates": 4,
+        "resources": {
+          "energy_joules": null,
+          "optimizer_array_bytes": 2144,
+          "parameter_array_bytes": 1072,
+          "parameters": 134,
+          "peak_ram_bytes": null,
+          "peak_vram_bytes": null,
+          "persistent_state_array_bytes": 32,
+          "serialized_state_bytes": 320
+        },
+        "schema": "hepta.cell.temporal-training.v1",
+        "status": "completed_candidate_only",
+        "upstream_commit": "3959aac6829a345ef674b7901cbdd62316305d89",
+        "validated_updates": 4,
+        "wall_seconds": 0.003973810000047706
+      }
+    },
+    {
+      "checkpoint": "diag_ssm-41.npz",
+      "checkpoint_sha256": "30f37ed316b3e2ff2de85267cf2f5c7b1cca20379a4d9e019eaba3e01db6d4fb",
+      "checkpoint_state_exact": true,
+      "config": {
+        "action_dim": 2,
+        "hidden_dim": 4,
+        "input_dim": 3,
+        "kind": "diag_ssm",
+        "output_dim": 2,
+        "seed": 41
+      },
+      "continuation_state_exact": true,
+      "gradient_audit": {
+        "absolute_tolerance": 5e-08,
+        "coordinates_checked": 58,
+        "epsilon": 1e-06,
+        "loss": 0.5866121445649456,
+        "method": "all-coordinate central finite differences; independent forward loss",
+        "passed": true,
+        "relative_tolerance": 0.0002,
+        "schema": "hepta.cell.temporal-gradient-check.v1",
+        "tensors": [
+          {
+            "analytic_nonzero_scalars": 24,
+            "maximum_absolute_error": 9.299077697103031e-11,
+            "maximum_tolerance_ratio": 0.000369498077904976,
+            "parameter": "Wh",
+            "passed": true,
+            "scalars": 24
+          },
+          {
+            "analytic_nonzero_scalars": 12,
+            "maximum_absolute_error": 1.0795900978743944e-10,
+            "maximum_tolerance_ratio": 0.0007381330541652289,
+            "parameter": "Wx",
+            "passed": true,
+            "scalars": 12
+          },
+          {
+            "analytic_nonzero_scalars": 8,
+            "maximum_absolute_error": 4.583706678107369e-11,
+            "maximum_tolerance_ratio": 0.00010068257029885516,
+            "parameter": "Wy",
+            "passed": true,
+            "scalars": 8
+          },
+          {
+            "analytic_nonzero_scalars": 4,
+            "maximum_absolute_error": 1.471716585405014e-11,
+            "maximum_tolerance_ratio": 1.3226636969896386e-05,
+            "parameter": "bh",
+            "passed": true,
+            "scalars": 4
+          },
+          {
+            "analytic_nonzero_scalars": 4,
+            "maximum_absolute_error": 4.665570425659016e-11,
+            "maximum_tolerance_ratio": 0.0002125014928235772,
+            "parameter": "bx",
+            "passed": true,
+            "scalars": 4
+          },
+          {
+            "analytic_nonzero_scalars": 2,
+            "maximum_absolute_error": 3.410637050560439e-11,
+            "maximum_tolerance_ratio": 5.20181749114327e-06,
+            "parameter": "by",
+            "passed": true,
+            "scalars": 2
+          },
+          {
+            "analytic_nonzero_scalars": 4,
+            "maximum_absolute_error": 1.7970700014885432e-11,
+            "maximum_tolerance_ratio": 0.00017605021882288144,
+            "parameter": "decay",
+            "passed": true,
+            "scalars": 4
+          }
+        ],
+        "weights_sha256": "e2966881d717a5bf2ba42d57bb67ba8c6d6b16c45ec451266e7e79813cf4d195"
+      },
+      "kind": "diag_ssm",
+      "parent_unchanged": true,
+      "passed": true,
+      "resume_receipts": [
+        {
+          "batch_episodes": 8,
+          "candidate_optimizer_sha256": "98beeae8199b29da8cc927600c7aed34bd764454f89d7a8f4574937053626b17",
+          "candidate_weights_sha256": "aad7f046e1631c97333e744cf11ed10ccee91fa10b3362813cc9365c276f381e",
+          "cell_id": "reference-prediction",
+          "config_sha256": "a3d047231c19e3a3f56dce0c77ae857a9e9b4264f1e461f7e16222e41577bd51",
+          "data_sha256": "87b4b37294c613746e95b005ef4a265c29c97d8d54c72ded5d91b3e298084dfe",
+          "energy_joules": null,
+          "episode_state": "fresh for every complete batch and optimizer update",
+          "events_per_episode": 5,
+          "gradient_norm_cap": 5.0,
+          "learning_rate": 0.003,
+          "losses": [
+            0.5866121445649456
+          ],
+          "measurement_scope": "local candidate copy and episode fitting; excludes caller data preparation and serving",
+          "optimizer": "adam",
+          "parent_optimizer_sha256": "835bbd1d599712f3ef9fcdbca1983f6d4a75a31df767945d654324aab1595e12",
+          "parent_weights_sha256": "e2966881d717a5bf2ba42d57bb67ba8c6d6b16c45ec451266e7e79813cf4d195",
+          "peak_ram_bytes": null,
+          "peak_vram_bytes": null,
+          "process_cpu_seconds": 0.0011926939999999941,
+          "requested_updates": 1,
+          "resources": {
+            "energy_joules": null,
+            "optimizer_array_bytes": 928,
+            "parameter_array_bytes": 464,
+            "parameters": 58,
+            "peak_ram_bytes": null,
+            "peak_vram_bytes": null,
+            "persistent_state_array_bytes": 32,
+            "serialized_state_bytes": 320
+          },
+          "schema": "hepta.cell.temporal-training.v1",
+          "status": "completed_candidate_only",
+          "upstream_commit": "3959aac6829a345ef674b7901cbdd62316305d89",
+          "validated_updates": 1,
+          "wall_seconds": 0.0011931960000310937
+        },
+        {
+          "batch_episodes": 8,
+          "candidate_optimizer_sha256": "98beeae8199b29da8cc927600c7aed34bd764454f89d7a8f4574937053626b17",
+          "candidate_weights_sha256": "aad7f046e1631c97333e744cf11ed10ccee91fa10b3362813cc9365c276f381e",
+          "cell_id": "reference-prediction",
+          "config_sha256": "a3d047231c19e3a3f56dce0c77ae857a9e9b4264f1e461f7e16222e41577bd51",
+          "data_sha256": "87b4b37294c613746e95b005ef4a265c29c97d8d54c72ded5d91b3e298084dfe",
+          "energy_joules": null,
+          "episode_state": "fresh for every complete batch and optimizer update",
+          "events_per_episode": 5,
+          "gradient_norm_cap": 5.0,
+          "learning_rate": 0.003,
+          "losses": [
+            0.5866121445649456
+          ],
+          "measurement_scope": "local candidate copy and episode fitting; excludes caller data preparation and serving",
+          "optimizer": "adam",
+          "parent_optimizer_sha256": "835bbd1d599712f3ef9fcdbca1983f6d4a75a31df767945d654324aab1595e12",
+          "parent_weights_sha256": "e2966881d717a5bf2ba42d57bb67ba8c6d6b16c45ec451266e7e79813cf4d195",
+          "peak_ram_bytes": null,
+          "peak_vram_bytes": null,
+          "process_cpu_seconds": 0.000962120999999927,
+          "requested_updates": 1,
+          "resources": {
+            "energy_joules": null,
+            "optimizer_array_bytes": 928,
+            "parameter_array_bytes": 464,
+            "parameters": 58,
+            "peak_ram_bytes": null,
+            "peak_vram_bytes": null,
+            "persistent_state_array_bytes": 32,
+            "serialized_state_bytes": 320
+          },
+          "schema": "hepta.cell.temporal-training.v1",
+          "status": "completed_candidate_only",
+          "upstream_commit": "3959aac6829a345ef674b7901cbdd62316305d89",
+          "validated_updates": 1,
+          "wall_seconds": 0.0009604640000588915
+        }
+      ],
+      "resumed_optimizer_update_exact": true,
+      "seed": 41,
+      "stream_batch_maximum_error": 1.1102230246251565e-16,
+      "training": {
+        "batch_episodes": 8,
+        "candidate_optimizer_sha256": "835bbd1d599712f3ef9fcdbca1983f6d4a75a31df767945d654324aab1595e12",
+        "candidate_weights_sha256": "e2966881d717a5bf2ba42d57bb67ba8c6d6b16c45ec451266e7e79813cf4d195",
+        "cell_id": "reference-prediction",
+        "config_sha256": "a3d047231c19e3a3f56dce0c77ae857a9e9b4264f1e461f7e16222e41577bd51",
+        "data_sha256": "87b4b37294c613746e95b005ef4a265c29c97d8d54c72ded5d91b3e298084dfe",
+        "energy_joules": null,
+        "episode_state": "fresh for every complete batch and optimizer update",
+        "events_per_episode": 5,
+        "gradient_norm_cap": 5.0,
+        "learning_rate": 0.003,
+        "losses": [
+          0.5927711380303834,
+          0.5910390401122205,
+          0.5894353953265529,
+          0.5879606596679025
+        ],
+        "measurement_scope": "local candidate copy and episode fitting; excludes caller data preparation and serving",
+        "optimizer": "adam",
+        "parent_optimizer_sha256": "5764e311b07387379ebbdf80d72ccf92912a09916d4db044e4f0d96bf2474811",
+        "parent_weights_sha256": "de22aa424778df58da9cc6ad7c9710b6ec56b0f9c21adac6aef4562b1395276a",
+        "peak_ram_bytes": null,
+        "peak_vram_bytes": null,
+        "process_cpu_seconds": 0.0026610569999999667,
+        "requested_updates": 4,
+        "resources": {
+          "energy_joules": null,
+          "optimizer_array_bytes": 928,
+          "parameter_array_bytes": 464,
+          "parameters": 58,
+          "peak_ram_bytes": null,
+          "peak_vram_bytes": null,
+          "persistent_state_array_bytes": 32,
+          "serialized_state_bytes": 320
+        },
+        "schema": "hepta.cell.temporal-training.v1",
+        "status": "completed_candidate_only",
+        "upstream_commit": "3959aac6829a345ef674b7901cbdd62316305d89",
+        "validated_updates": 4,
+        "wall_seconds": 0.0026604170000155136
+      }
+    },
+    {
+      "checkpoint": "gru-67.npz",
+      "checkpoint_sha256": "25c1fc5ef127494d677707b0894d2be0f45886188133b2327852cec4cf1cfbcd",
+      "checkpoint_state_exact": true,
+      "config": {
+        "action_dim": 2,
+        "hidden_dim": 4,
+        "input_dim": 3,
+        "kind": "gru",
+        "output_dim": 2,
+        "seed": 67
+      },
+      "continuation_state_exact": true,
+      "gradient_audit": {
+        "absolute_tolerance": 5e-08,
+        "coordinates_checked": 134,
+        "epsilon": 1e-06,
+        "loss": 0.6063795399425421,
+        "method": "all-coordinate central finite differences; independent forward loss",
+        "passed": true,
+        "relative_tolerance": 0.0002,
+        "schema": "hepta.cell.temporal-gradient-check.v1",
+        "tensors": [
+          {
+            "analytic_nonzero_scalars": 16,
+            "maximum_absolute_error": 6.862194270934249e-11,
+            "maximum_tolerance_ratio": 0.0012149606211391741,
+            "parameter": "Un",
+            "passed": true,
+            "scalars": 16
+          },
+          {
+            "analytic_nonzero_scalars": 16,
+            "maximum_absolute_error": 8.214163241504345e-11,
+            "maximum_tolerance_ratio": 0.0016356808190174405,
+            "parameter": "Ur",
+            "passed": true,
+            "scalars": 16
+          },
+          {
+            "analytic_nonzero_scalars": 16,
+            "maximum_absolute_error": 7.217737803375153e-11,
+            "maximum_tolerance_ratio": 0.0014169710142443068,
+            "parameter": "Uz",
+            "passed": true,
+            "scalars": 16
+          },
+          {
+            "analytic_nonzero_scalars": 24,
+            "maximum_absolute_error": 6.141129271775014e-11,
+            "maximum_tolerance_ratio": 0.0007045605932904751,
+            "parameter": "Wh",
+            "passed": true,
+            "scalars": 24
+          },
+          {
+            "analytic_nonzero_scalars": 12,
+            "maximum_absolute_error": 6.395039576015393e-11,
+            "maximum_tolerance_ratio": 0.00039686618541646333,
+            "parameter": "Wn",
+            "passed": true,
+            "scalars": 12
+          },
+          {
+            "analytic_nonzero_scalars": 8,
+            "maximum_absolute_error": 4.743287882559349e-11,
+            "maximum_tolerance_ratio": 0.0009132275251514377,
+            "parameter": "Wr",
+            "passed": true,
+            "scalars": 12
+          },
+          {
+            "analytic_nonzero_scalars": 8,
+            "maximum_absolute_error": 5.0077839444662153e-11,
+            "maximum_tolerance_ratio": 5.541602446009306e-05,
+            "parameter": "Wy",
+            "passed": true,
+            "scalars": 8
+          },
+          {
+            "analytic_nonzero_scalars": 12,
+            "maximum_absolute_error": 8.384200725721803e-11,
+            "maximum_tolerance_ratio": 0.0008966400047872058,
+            "parameter": "Wz",
+            "passed": true,
+            "scalars": 12
+          },
+          {
+            "analytic_nonzero_scalars": 4,
+            "maximum_absolute_error": 9.212060281260648e-11,
+            "maximum_tolerance_ratio": 5.6942982853232894e-05,
+            "parameter": "bh",
+            "passed": true,
+            "scalars": 4
+          },
+          {
+            "analytic_nonzero_scalars": 4,
+            "maximum_absolute_error": 4.157816799188474e-11,
+            "maximum_tolerance_ratio": 0.00023775094133115135,
+            "parameter": "bn",
+            "passed": true,
+            "scalars": 4
+          },
+          {
+            "analytic_nonzero_scalars": 4,
+            "maximum_absolute_error": 5.677106064438421e-11,
+            "maximum_tolerance_ratio": 0.0006164840155467133,
+            "parameter": "br",
+            "passed": true,
+            "scalars": 4
+          },
+          {
+            "analytic_nonzero_scalars": 2,
+            "maximum_absolute_error": 3.6152483784412937e-11,
+            "maximum_tolerance_ratio": 1.9702197227378847e-05,
+            "parameter": "by",
+            "passed": true,
+            "scalars": 2
+          },
+          {
+            "analytic_nonzero_scalars": 4,
+            "maximum_absolute_error": 1.1002209169760913e-10,
+            "maximum_tolerance_ratio": 0.00025967479384631013,
+            "parameter": "bz",
+            "passed": true,
+            "scalars": 4
+          }
+        ],
+        "weights_sha256": "c2a04d6acc600faa8e155749e33218c242ce2587e4da17bf39bb800f9c7c8cdd"
+      },
+      "kind": "gru",
+      "parent_unchanged": true,
+      "passed": true,
+      "resume_receipts": [
+        {
+          "batch_episodes": 8,
+          "candidate_optimizer_sha256": "c9b8a85b3eeb9e92454482acc66515b24ae85585184b646cb234ba02c7623f80",
+          "candidate_weights_sha256": "74685662d38ac0057fefb477c1ce45fd0d488828674631da392fbf3daef1e7f5",
+          "cell_id": "reference-prediction",
+          "config_sha256": "0bdc20c23200bd411b94a95f5c1b9118c2a06ff3d2256fd3e2c3e7872a4d4c06",
+          "data_sha256": "87b4b37294c613746e95b005ef4a265c29c97d8d54c72ded5d91b3e298084dfe",
+          "energy_joules": null,
+          "episode_state": "fresh for every complete batch and optimizer update",
+          "events_per_episode": 5,
+          "gradient_norm_cap": 5.0,
+          "learning_rate": 0.003,
+          "losses": [
+            0.6063795399425421
+          ],
+          "measurement_scope": "local candidate copy and episode fitting; excludes caller data preparation and serving",
+          "optimizer": "adam",
+          "parent_optimizer_sha256": "edfd1a028fdf61ae05dfe05379ce8678439a6f1833672b51ed7ee8c610d296b2",
+          "parent_weights_sha256": "c2a04d6acc600faa8e155749e33218c242ce2587e4da17bf39bb800f9c7c8cdd",
+          "peak_ram_bytes": null,
+          "peak_vram_bytes": null,
+          "process_cpu_seconds": 0.0017803269999999705,
+          "requested_updates": 1,
+          "resources": {
+            "energy_joules": null,
+            "optimizer_array_bytes": 2144,
+            "parameter_array_bytes": 1072,
+            "parameters": 134,
+            "peak_ram_bytes": null,
+            "peak_vram_bytes": null,
+            "persistent_state_array_bytes": 32,
+            "serialized_state_bytes": 320
+          },
+          "schema": "hepta.cell.temporal-training.v1",
+          "status": "completed_candidate_only",
+          "upstream_commit": "3959aac6829a345ef674b7901cbdd62316305d89",
+          "validated_updates": 1,
+          "wall_seconds": 0.0017814280000720828
+        },
+        {
+          "batch_episodes": 8,
+          "candidate_optimizer_sha256": "c9b8a85b3eeb9e92454482acc66515b24ae85585184b646cb234ba02c7623f80",
+          "candidate_weights_sha256": "74685662d38ac0057fefb477c1ce45fd0d488828674631da392fbf3daef1e7f5",
+          "cell_id": "reference-prediction",
+          "config_sha256": "0bdc20c23200bd411b94a95f5c1b9118c2a06ff3d2256fd3e2c3e7872a4d4c06",
+          "data_sha256": "87b4b37294c613746e95b005ef4a265c29c97d8d54c72ded5d91b3e298084dfe",
+          "energy_joules": null,
+          "episode_state": "fresh for every complete batch and optimizer update",
+          "events_per_episode": 5,
+          "gradient_norm_cap": 5.0,
+          "learning_rate": 0.003,
+          "losses": [
+            0.6063795399425421
+          ],
+          "measurement_scope": "local candidate copy and episode fitting; excludes caller data preparation and serving",
+          "optimizer": "adam",
+          "parent_optimizer_sha256": "edfd1a028fdf61ae05dfe05379ce8678439a6f1833672b51ed7ee8c610d296b2",
+          "parent_weights_sha256": "c2a04d6acc600faa8e155749e33218c242ce2587e4da17bf39bb800f9c7c8cdd",
+          "peak_ram_bytes": null,
+          "peak_vram_bytes": null,
+          "process_cpu_seconds": 0.0017308529999999767,
+          "requested_updates": 1,
+          "resources": {
+            "energy_joules": null,
+            "optimizer_array_bytes": 2144,
+            "parameter_array_bytes": 1072,
+            "parameters": 134,
+            "peak_ram_bytes": null,
+            "peak_vram_bytes": null,
+            "persistent_state_array_bytes": 32,
+            "serialized_state_bytes": 320
+          },
+          "schema": "hepta.cell.temporal-training.v1",
+          "status": "completed_candidate_only",
+          "upstream_commit": "3959aac6829a345ef674b7901cbdd62316305d89",
+          "validated_updates": 1,
+          "wall_seconds": 0.0017293910000262258
+        }
+      ],
+      "resumed_optimizer_update_exact": true,
+      "seed": 67,
+      "stream_batch_maximum_error": 1.1102230246251565e-16,
+      "training": {
+        "batch_episodes": 8,
+        "candidate_optimizer_sha256": "edfd1a028fdf61ae05dfe05379ce8678439a6f1833672b51ed7ee8c610d296b2",
+        "candidate_weights_sha256": "c2a04d6acc600faa8e155749e33218c242ce2587e4da17bf39bb800f9c7c8cdd",
+        "cell_id": "reference-prediction",
+        "config_sha256": "0bdc20c23200bd411b94a95f5c1b9118c2a06ff3d2256fd3e2c3e7872a4d4c06",
+        "data_sha256": "87b4b37294c613746e95b005ef4a265c29c97d8d54c72ded5d91b3e298084dfe",
+        "energy_joules": null,
+        "episode_state": "fresh for every complete batch and optimizer update",
+        "events_per_episode": 5,
+        "gradient_norm_cap": 5.0,
+        "learning_rate": 0.003,
+        "losses": [
+          0.6162326554597803,
+          0.6136171407040857,
+          0.611111423707061,
+          0.6087028227771766
+        ],
+        "measurement_scope": "local candidate copy and episode fitting; excludes caller data preparation and serving",
+        "optimizer": "adam",
+        "parent_optimizer_sha256": "f4c7534be4b79edd07958112d64d85c741165d717e3e6cd76d1e2e40028110ed",
+        "parent_weights_sha256": "b873a1adaf436c9cd30530ab0f652cb34ba6cecdcbc6a39e146211ad15f37aa0",
+        "peak_ram_bytes": null,
+        "peak_vram_bytes": null,
+        "process_cpu_seconds": 0.004413752999999909,
+        "requested_updates": 4,
+        "resources": {
+          "energy_joules": null,
+          "optimizer_array_bytes": 2144,
+          "parameter_array_bytes": 1072,
+          "parameters": 134,
+          "peak_ram_bytes": null,
+          "peak_vram_bytes": null,
+          "persistent_state_array_bytes": 32,
+          "serialized_state_bytes": 320
+        },
+        "schema": "hepta.cell.temporal-training.v1",
+        "status": "completed_candidate_only",
+        "upstream_commit": "3959aac6829a345ef674b7901cbdd62316305d89",
+        "validated_updates": 4,
+        "wall_seconds": 0.004412416000036501
+      }
+    },
+    {
+      "checkpoint": "diag_ssm-67.npz",
+      "checkpoint_sha256": "0288ebed189a3499ef8b29710b3778d121f8c4a16a487b5400786a738bb7028b",
+      "checkpoint_state_exact": true,
+      "config": {
+        "action_dim": 2,
+        "hidden_dim": 4,
+        "input_dim": 3,
+        "kind": "diag_ssm",
+        "output_dim": 2,
+        "seed": 67
+      },
+      "continuation_state_exact": true,
+      "gradient_audit": {
+        "absolute_tolerance": 5e-08,
+        "coordinates_checked": 58,
+        "epsilon": 1e-06,
+        "loss": 0.602274761399167,
+        "method": "all-coordinate central finite differences; independent forward loss",
+        "passed": true,
+        "relative_tolerance": 0.0002,
+        "schema": "hepta.cell.temporal-gradient-check.v1",
+        "tensors": [
+          {
+            "analytic_nonzero_scalars": 24,
+            "maximum_absolute_error": 7.306543813988958e-11,
+            "maximum_tolerance_ratio": 0.00046439848623072905,
+            "parameter": "Wh",
+            "passed": true,
+            "scalars": 24
+          },
+          {
+            "analytic_nonzero_scalars": 12,
+            "maximum_absolute_error": 1.076545657089853e-10,
+            "maximum_tolerance_ratio": 0.0006138108856008845,
+            "parameter": "Wx",
+            "passed": true,
+            "scalars": 12
+          },
+          {
+            "analytic_nonzero_scalars": 8,
+            "maximum_absolute_error": 6.846333742982491e-11,
+            "maximum_tolerance_ratio": 5.76760951839596e-05,
+            "parameter": "Wy",
+            "passed": true,
+            "scalars": 8
+          },
+          {
+            "analytic_nonzero_scalars": 4,
+            "maximum_absolute_error": 3.5441261037050253e-11,
+            "maximum_tolerance_ratio": 1.1066443454691281e-05,
+            "parameter": "bh",
+            "passed": true,
+            "scalars": 4
+          },
+          {
+            "analytic_nonzero_scalars": 4,
+            "maximum_absolute_error": 8.170252842332193e-11,
+            "maximum_tolerance_ratio": 7.9517555467382e-05,
+            "parameter": "bx",
+            "passed": true,
+            "scalars": 4
+          },
+          {
+            "analytic_nonzero_scalars": 2,
+            "maximum_absolute_error": 2.9268462653497807e-11,
+            "maximum_tolerance_ratio": 4.892974372098028e-06,
+            "parameter": "by",
+            "passed": true,
+            "scalars": 2
+          },
+          {
+            "analytic_nonzero_scalars": 4,
+            "maximum_absolute_error": 3.1978652581879374e-11,
+            "maximum_tolerance_ratio": 0.00012458321508416572,
+            "parameter": "decay",
+            "passed": true,
+            "scalars": 4
+          }
+        ],
+        "weights_sha256": "be7e54e31437a3bab2a893ffdac9bef21d2d43fa0138fd0c64ec7a8dd972f203"
+      },
+      "kind": "diag_ssm",
+      "parent_unchanged": true,
+      "passed": true,
+      "resume_receipts": [
+        {
+          "batch_episodes": 8,
+          "candidate_optimizer_sha256": "2c6e220ef76824c58773e80cc8a1f28aff73b7e43e813d89298229ad41de7881",
+          "candidate_weights_sha256": "8bb8c480364a630658ae4b10dd1f4f08819c652ca6576b84f5dc755371f83760",
+          "cell_id": "reference-prediction",
+          "config_sha256": "999470dcd8df03007123357e29da2273e5f588419d6dbed8c7ea2b295d9a325f",
+          "data_sha256": "87b4b37294c613746e95b005ef4a265c29c97d8d54c72ded5d91b3e298084dfe",
+          "energy_joules": null,
+          "episode_state": "fresh for every complete batch and optimizer update",
+          "events_per_episode": 5,
+          "gradient_norm_cap": 5.0,
+          "learning_rate": 0.003,
+          "losses": [
+            0.602274761399167
+          ],
+          "measurement_scope": "local candidate copy and episode fitting; excludes caller data preparation and serving",
+          "optimizer": "adam",
+          "parent_optimizer_sha256": "85a095a08e8f072e345ddc0f1a08cb9981d3629e0ca3c8acf6697ed3f571b0d8",
+          "parent_weights_sha256": "be7e54e31437a3bab2a893ffdac9bef21d2d43fa0138fd0c64ec7a8dd972f203",
+          "peak_ram_bytes": null,
+          "peak_vram_bytes": null,
+          "process_cpu_seconds": 0.0009039739999999741,
+          "requested_updates": 1,
+          "resources": {
+            "energy_joules": null,
+            "optimizer_array_bytes": 928,
+            "parameter_array_bytes": 464,
+            "parameters": 58,
+            "peak_ram_bytes": null,
+            "peak_vram_bytes": null,
+            "persistent_state_array_bytes": 32,
+            "serialized_state_bytes": 320
+          },
+          "schema": "hepta.cell.temporal-training.v1",
+          "status": "completed_candidate_only",
+          "upstream_commit": "3959aac6829a345ef674b7901cbdd62316305d89",
+          "validated_updates": 1,
+          "wall_seconds": 0.0009064370000260169
+        },
+        {
+          "batch_episodes": 8,
+          "candidate_optimizer_sha256": "2c6e220ef76824c58773e80cc8a1f28aff73b7e43e813d89298229ad41de7881",
+          "candidate_weights_sha256": "8bb8c480364a630658ae4b10dd1f4f08819c652ca6576b84f5dc755371f83760",
+          "cell_id": "reference-prediction",
+          "config_sha256": "999470dcd8df03007123357e29da2273e5f588419d6dbed8c7ea2b295d9a325f",
+          "data_sha256": "87b4b37294c613746e95b005ef4a265c29c97d8d54c72ded5d91b3e298084dfe",
+          "energy_joules": null,
+          "episode_state": "fresh for every complete batch and optimizer update",
+          "events_per_episode": 5,
+          "gradient_norm_cap": 5.0,
+          "learning_rate": 0.003,
+          "losses": [
+            0.602274761399167
+          ],
+          "measurement_scope": "local candidate copy and episode fitting; excludes caller data preparation and serving",
+          "optimizer": "adam",
+          "parent_optimizer_sha256": "85a095a08e8f072e345ddc0f1a08cb9981d3629e0ca3c8acf6697ed3f571b0d8",
+          "parent_weights_sha256": "be7e54e31437a3bab2a893ffdac9bef21d2d43fa0138fd0c64ec7a8dd972f203",
+          "peak_ram_bytes": null,
+          "peak_vram_bytes": null,
+          "process_cpu_seconds": 0.0009014809999999818,
+          "requested_updates": 1,
+          "resources": {
+            "energy_joules": null,
+            "optimizer_array_bytes": 928,
+            "parameter_array_bytes": 464,
+            "parameters": 58,
+            "peak_ram_bytes": null,
+            "peak_vram_bytes": null,
+            "persistent_state_array_bytes": 32,
+            "serialized_state_bytes": 320
+          },
+          "schema": "hepta.cell.temporal-training.v1",
+          "status": "completed_candidate_only",
+          "upstream_commit": "3959aac6829a345ef674b7901cbdd62316305d89",
+          "validated_updates": 1,
+          "wall_seconds": 0.0009006290000570516
+        }
+      ],
+      "resumed_optimizer_update_exact": true,
+      "seed": 67,
+      "stream_batch_maximum_error": 5.551115123125783e-17,
+      "training": {
+        "batch_episodes": 8,
+        "candidate_optimizer_sha256": "85a095a08e8f072e345ddc0f1a08cb9981d3629e0ca3c8acf6697ed3f571b0d8",
+        "candidate_weights_sha256": "be7e54e31437a3bab2a893ffdac9bef21d2d43fa0138fd0c64ec7a8dd972f203",
+        "cell_id": "reference-prediction",
+        "config_sha256": "999470dcd8df03007123357e29da2273e5f588419d6dbed8c7ea2b295d9a325f",
+        "data_sha256": "87b4b37294c613746e95b005ef4a265c29c97d8d54c72ded5d91b3e298084dfe",
+        "energy_joules": null,
+        "episode_state": "fresh for every complete batch and optimizer update",
+        "events_per_episode": 5,
+        "gradient_norm_cap": 5.0,
+        "learning_rate": 0.003,
+        "losses": [
+          0.6099518726641429,
+          0.6078832400158696,
+          0.6059137243325307,
+          0.6040441913744292
+        ],
+        "measurement_scope": "local candidate copy and episode fitting; excludes caller data preparation and serving",
+        "optimizer": "adam",
+        "parent_optimizer_sha256": "5764e311b07387379ebbdf80d72ccf92912a09916d4db044e4f0d96bf2474811",
+        "parent_weights_sha256": "ed28ccd878df49c04c80c89a3fa2ad46c6d1fb67487bc0d3caf777237c4af4de",
+        "peak_ram_bytes": null,
+        "peak_vram_bytes": null,
+        "process_cpu_seconds": 0.0034988129999999895,
+        "requested_updates": 4,
+        "resources": {
+          "energy_joules": null,
+          "optimizer_array_bytes": 928,
+          "parameter_array_bytes": 464,
+          "parameters": 58,
+          "peak_ram_bytes": null,
+          "peak_vram_bytes": null,
+          "persistent_state_array_bytes": 32,
+          "serialized_state_bytes": 320
+        },
+        "schema": "hepta.cell.temporal-training.v1",
+        "status": "completed_candidate_only",
+        "upstream_commit": "3959aac6829a345ef674b7901cbdd62316305d89",
+        "validated_updates": 4,
+        "wall_seconds": 0.003520171999980448
+      }
+    }
+  ],
+  "base_commit": "a8df34d5da7562a9e54905b95d7487816c991039",
+  "energy_joules": null,
+  "hcsn_fits_started": 0,
+  "numpy": "2.3.5",
+  "observed_at_utc": "2026-11-10T12:47:11.105993+00:00",
+  "passed": true,
+  "process_cpu_seconds": 0.48676923600000005,
+  "production_qualified": false,
+  "protocol": {
+    "episodes": 8,
+    "events_per_episode": 5,
+    "gradient_norm_cap": 5.0,
+    "hidden_width": 4,
+    "input": "early binary cue; independent distractor; final query flag",
+    "kernels": [
+      "gru",
+      "diag_ssm"
+    ],
+    "learning_rate": 0.003,
+    "matching": "same input, dimensions and update budget; actual parameter counts differ",
+    "post_training_updates": 4,
+    "resume_updates": 1,
+    "schema": "hepta.cell.temporal-reference-protocol.v1",
+    "seeds": [
+      41,
+      67
+    ],
+    "selection": "none; numerical qualification only",
+    "target": "cue XOR candidate action; final label unknown"
+  },
+  "protocol_sha256": "01c23121f630f6cda4d06c37ad162be2024858babb5486450c132d60b925d9d1",
+  "real_task_benefit_established": false,
+  "schema": "hepta.cell.temporal-reference-qualification.v1",
+  "source_sha256": {
+    "scripts/hepta_cells/temporal.py": "d36cbe01181d5f5353df14a081312a90e8c7e340f85ea0f8b3b0c4cde8619dcb",
+    "scripts/hepta_cells/temporal_qualification.py": "a18362daecfbeb08d645e593078d60d5f7b3c3f3159a97b8c5731d92d05835a9",
+    "scripts/hepta_pred1/models.py": "d39e2b2aac855d256c2f0071932b89ce43df4b5a73054a7d9290dfb42ebb41f7",
+    "scripts/test_hepta_cells_temporal_qualification.py": "750b4208a6b9f65d6c9ae529d075716d02d3045ca6bb0139311f44c2a1e700c2"
+  },
+  "wall_seconds": 0.2471147699999392
+}
