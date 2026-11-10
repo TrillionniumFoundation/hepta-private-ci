@@ -40,11 +40,13 @@
         "desktop#301",
         "hepta#5641"
       ],
-      "status": "AWAITING_MAINTAINED_NATIVE",
+      "status": "MAINTAINED_NATIVE_QUEUED",
       "original_companion": "0e884b4cf6831d7cb614b87786c40137a575672d",
       "original_result": "RUST_2021_COMPILE_FAILURE",
-      "maintained_companion": "0e31d10234c8b94b0a411d2b3a0098ba3b056b2e",
-      "note": "the equivalent Rust 2021 correction already existed; it was retained instead of overwriting it"
+      "maintained_companion": "cc33ab6c44f3c945d83cb96be71d861e5613f99e",
+      "note": "0e31d102 was the retained Rust-2021 correction; cc33ab6 adds only formatter postimages. No pass is inferred while the exact native run is queued.",
+      "maintained_run": 42784159083,
+      "maintained_run_status": "QUEUED"
     },
     {
       "id": "SOURCE_FLOOR_AND_REAL_APP_FENCE",
@@ -56,18 +58,69 @@
         "not hidden history-membership corruption oracle",
         "not jointly rolled-back independent custody",
         "not later asynchronous report freshness"
-      ]
+      ],
+      "candidate": "4dc5f724c023aedeefddfa2e67de8083ce968126",
+      "exact_observer_run": 42794177546,
+      "exact_observer_run_status": "PENDING_NO_JOBS"
     },
     {
       "id": "ORIGINAL_CANCELLATION_RESPONSIBILITY",
-      "status": "NOT_IMPLEMENTED",
-      "required": "typed nonserializable proof from exact original/cancel durable journal causal binding; validate transactionally and on replay; no forged original App receipt"
+      "status": "IMPLEMENTED_AWAITING_EXACT_HOSTED_QUALIFICATION",
+      "pr": 5693,
+      "source": "c0d5d0ededb6627103c390e86b8714135977025c",
+      "tree": "76472eac11a1292700c0d8deeff03059bc18bd27",
+      "implemented": "private non-serializable NotesFenceProof binds exact original and committed cancel event; one transaction verifies causal cross-operation journal/outbox/ledger membership and writes typed notes_fence_excluded settlement; reopen/replay and tamper cases reject forged App receipt",
+      "local_result": "codex-hepta-memory 417 passed, 14 pre-existing skipped; scoped format clean",
+      "hosted": [
+        {
+          "run": 42794187139,
+          "scope": "Windows private-state declared scope",
+          "status": "SUCCESS",
+          "artifact_id": 13753905924,
+          "artifact_sha256": "36a838d29e584b3f630d72fd6ae48d28ec09d00b1cfdbbec30f91f9087f01618"
+        },
+        {
+          "run": 42794187291,
+          "scope": "v8 metadata/clean-worktree only",
+          "status": "SUCCESS",
+          "does_not_exercise": "typed fence"
+        },
+        {
+          "run": 42794187070,
+          "scope": "Windows original regressions",
+          "status": "IN_PROGRESS"
+        },
+        {
+          "run": 42794177546,
+          "scope": "ACT-2 observer native/real-App",
+          "status": "PENDING_NO_JOBS"
+        },
+        {
+          "run": 42794187515,
+          "scope": "blocking-ci",
+          "status": "PENDING"
+        },
+        {
+          "run": 42794187545,
+          "scope": "architecture",
+          "status": "PENDING"
+        }
+      ],
+      "required": "read exact terminal native/real-App/cross-platform results at this source; no earlier commit count transfers"
     },
     {
       "id": "FULL_DYNAMIC_TOOL_AUTHORITY",
       "status": "DEPLOYMENT_INPUTS_MISSING",
       "details": "HANDLER_GATES.json",
-      "required": "actual Core sealed thread, retained AuthBus human ACK, Root lookup and actual queued call through existing ingress"
+      "required": "actual Core sealed thread, retained AuthBus human ACK, Root lookup and actual queued call through existing ingress; no fixture in the reviewed repository supplies all of them",
+      "source_review": "c0d5d0ededb6627103c390e86b8714135977025c",
+      "observed_entry_chain": [
+        "hepta-authority-host serve-fresh-session consumes pre-held Root/session descriptors and sealed deployment",
+        "NotesLaunchMode::OriginalThreadToolV1 binds exact route plus NotesThreadSeedReceipt",
+        "AgentdNotesThreadToolRuntime connects through Agentd session_ingress and verifies the same physical AppServer/seed",
+        "verify_human_turn requires retained AuthBus delivery, Root human lookup and Core ReconcileOnly persisted queue",
+        "DynamicToolCallResponse resolves only the original request handle"
+      ]
     },
     {
       "id": "NATIVE_PROCESS_WAIT_ADAPTER",
@@ -76,8 +129,36 @@
     },
     {
       "id": "BROAD_CI",
-      "status": "OPEN",
-      "required": "classify remaining Bazel/permission/file-lock/sandbox/cargo-deny failures by exact run; do not infer advisory from a passing negative fixture"
+      "status": "PARTIAL_EXACT_RESULTS_RETAINED",
+      "required": "classify remaining Bazel/permission/file-lock/sandbox/cargo-deny failures by exact run; do not infer advisory from a passing negative fixture",
+      "exact_source": "c0d5d0ededb6627103c390e86b8714135977025c",
+      "observed": [
+        {
+          "run": 42794187139,
+          "scope": "Windows private-state declared scope",
+          "status": "SUCCESS"
+        },
+        {
+          "run": 42794187291,
+          "scope": "v8 metadata/clean-worktree only",
+          "status": "SUCCESS"
+        },
+        {
+          "run": 42794187070,
+          "scope": "Windows original regressions",
+          "status": "IN_PROGRESS"
+        },
+        {
+          "run": 42794187515,
+          "scope": "blocking-ci",
+          "status": "PENDING"
+        },
+        {
+          "run": 42794187545,
+          "scope": "architecture",
+          "status": "PENDING"
+        }
+      ]
     },
     {
       "id": "PRODUCT_LEARNING_AND_FIELD",
