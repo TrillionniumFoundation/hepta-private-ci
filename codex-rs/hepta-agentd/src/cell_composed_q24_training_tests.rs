@@ -2,6 +2,7 @@
 //! remains an explicit fixture; these are not daemon/Root or science results.
 
 use super::*;
+use pretty_assertions::assert_eq;
 use crate::CellQ24PrivateHeadV1;
 use crate::CellQ24SgdRuleV1;
 use crate::CellQ24SingleHeadTrainingPlanV1;
