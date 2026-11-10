@@ -20,10 +20,15 @@ use crate::CircuitCellExecutionV1;
 mod driver;
 #[path = "circuit_task_runtime.rs"]
 mod runtime;
+#[path = "circuit_task_source.rs"]
+mod source;
 
 pub use runtime::CircuitTaskHandleV1;
 pub use runtime::CircuitTaskRuntimeBootstrapV1;
 pub use runtime::circuit_task_channel_v1;
+pub use source::CircuitTaskSourceInputV1;
+pub use source::CircuitTaskSourcePublicationV1;
+pub use source::DurableCircuitTaskSourceV1;
 
 #[derive(Clone, Debug, Eq, PartialEq, thiserror::Error)]
 pub enum CircuitTaskErrorV1 {
