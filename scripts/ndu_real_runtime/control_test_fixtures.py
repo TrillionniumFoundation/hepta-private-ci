@@ -1,6 +1,20 @@
 """Manufactured schema examples for protocol tests, never scientific evidence."""
 
 from .control_observations import COSTS, PublicState, state_digest
+from .critic_context import CriticContext, context_digest
+
+
+CRITIC_CONTEXT = CriticContext(
+    encoder_sha256="2" * 64,
+    answer_sha256="3" * 64,
+    generator_sha256="4" * 64,
+    public_state_sha256="5" * 64,
+    action_sha256="6" * 64,
+    settlement_sha256="7" * 64,
+    utility_sha256="f" * 64,
+    tariff_sha256="1" * 64,
+    evaluator_sha256="e" * 64,
+)
 
 
 def observed():
@@ -14,7 +28,16 @@ def observed():
     )
 
 
-def row(source, *, split="train", context="stable", belief=0.2, success=True, gain=0.3):
+def row(
+    source,
+    *,
+    split="train",
+    context="stable",
+    belief=0.2,
+    success=True,
+    gain=0.3,
+    critic_context=CRITIC_CONTEXT,
+):
     state = PublicState(
         context, "READ", belief, True, 0.0, ("STOP", "READ", "REPAIR"), 9.0
     )
@@ -23,6 +46,7 @@ def row(source, *, split="train", context="stable", belief=0.2, success=True, ga
         source_id=source,
         pre_state_sha256=state_digest(state),
         branch_snapshot_sha256="d" * 64,
+        critic_context_sha256=context_digest(critic_context),
         action="READ",
         observation_id=source + "/observation",
         expected_candidate_id="c1",
@@ -37,9 +61,10 @@ def row(source, *, split="train", context="stable", belief=0.2, success=True, ga
         source_id=source,
         pre_state_sha256=state_digest(state),
         branch_snapshot_sha256="d" * 64,
-        evaluator_sha256="e" * 64,
-        utility_profile_sha256="f" * 64,
-        tariff_sha256="1" * 64,
+        critic_context_sha256=context_digest(critic_context),
+        evaluator_sha256=critic_context.evaluator_sha256,
+        utility_profile_sha256=critic_context.utility_sha256,
+        tariff_sha256=critic_context.tariff_sha256,
         all_costs_measured=True,
     )
     stop_cost, continue_cost = {k: 0.0 for k in COSTS}, {k: 0.0 for k in COSTS}
@@ -62,6 +87,7 @@ def row(source, *, split="train", context="stable", belief=0.2, success=True, ga
     )
     return dict(
         split=split,
+        context=critic_context,
         source_id=source,
         observation_id=source + "/observation",
         state=state,

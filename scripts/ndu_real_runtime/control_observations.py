@@ -6,7 +6,7 @@ measured costs already converted to the common utility profile. Missing evidence
 or any unknown price stays unknown. No native policy or production gate is changed.
 Residual summaries are descriptive, without conditional coverage guarantees.
 
-Minimal row contract: {split: "train", source_id, observation_id,
+Minimal row contract: {split: "train", source_id, observation_id, context: CriticContext,
 state: PublicState(...), implementation: observer_receipt_or_None,
 branch_snapshot_sha256, branches: {stop: receipt, continue: receipt}}.
 The test row() builder is a complete manufactured schema example, not evidence.
@@ -19,6 +19,8 @@ from dataclasses import asdict, dataclass
 import hashlib
 import json
 import math
+
+from .critic_context import context_digest, require_context
 
 
 ACTIONS = ("PLAN", "READ", "VERIFY", "REPAIR")
@@ -120,6 +122,7 @@ def implementation_label(observation):
 
 
 def _implementation_row_label(row):
+    context = require_context(row.get("context"))
     observation = row.get("implementation")
     label = implementation_label(observation)
     if label is None:
@@ -131,15 +134,17 @@ def _implementation_row_label(row):
         or observation.get("pre_state_sha256") != state_digest(row["state"])
         or observation.get("action") != row["state"].action
         or observation.get("observation_id") != row["observation_id"]
+        or observation.get("critic_context_sha256") != context_digest(context)
     ):
         raise ValueError(
-            "Implementation observation differs from its row source, state or snapshot"
+            "Implementation observation differs from row source, state, snapshot or critic context"
         )
     return label
 
 
 def continuation_label(row):
     """Paired actual gross returns minus the full marginal cost, charged once."""
+    context = require_context(row.get("context"))
     pair = row.get("branches")
     if not isinstance(pair, dict) or set(pair) != {"stop", "continue"}:
         return None
@@ -165,12 +170,17 @@ def continuation_label(row):
             or branch.get("pre_state_sha256") != state_digest(row["state"])
             or branch.get("action") != action
             or branch.get("continuation_count") != count
+            or branch.get("critic_context_sha256") != context_digest(context)
         ):
             raise ValueError(
-                "Branch source, pre-state or one-continuation identity differs"
+                "Branch source, pre-state, one-continuation or critic identity differs"
             )
-    for key in ("evaluator_sha256", "utility_profile_sha256", "tariff_sha256"):
-        if not _digest(stop.get(key)) or follow.get(key) != stop[key]:
+    for key, expected in (
+        ("evaluator_sha256", context.evaluator_sha256),
+        ("utility_profile_sha256", context.utility_sha256),
+        ("tariff_sha256", context.tariff_sha256),
+    ):
+        if stop.get(key) != expected or follow.get(key) != expected:
             raise ValueError("Paired evaluator/utility/cost profile differs")
     net = []
     for branch in (stop, follow):

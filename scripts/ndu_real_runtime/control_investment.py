@@ -7,6 +7,12 @@ residuals are descriptive; they do not prove conditional or all-attempt coverage
 from dataclasses import dataclass, replace
 import math
 
+from .critic_context import (
+    CriticContext,
+    CriticContextError,
+    context_digest,
+    require_context,
+)
 from .control_observations import (
     ACTIONS as ACTIONS,
     COSTS as COSTS,
@@ -53,17 +59,19 @@ class Heads:
     support: tuple
     training_sources: tuple
     feature_bounds: tuple
+    context: CriticContext
     calibration_sources: tuple = ()
     residuals: tuple = ()
     unknown_training_labels: tuple = ()
 
 
-def _rows(rows, split, excluded=()):
+def _rows(rows, split, context, excluded=()):
     rows = list(rows)
     if len(rows) > 4096:
         raise ValueError("Research row cap exceeded")
     seen = set()
     for row in rows:
+        require_context(row.get("context"), context)
         if (
             row.get("split") != split
             or type(row.get("source_id")) is not str
@@ -81,14 +89,15 @@ def _rows(rows, split, excluded=()):
     return rows
 
 
-def fit_heads(training_rows):
+def fit_heads(training_rows, *, context=None):
     """Small regularized logistic/linear heads; equal total weight per source.
 
     Fixed training schedule; caller freezes these weights before calibration or
     future evaluation. Input provenance must be independently authenticated outside
     this module; flags and hashes alone cannot prove observations are real.
     """
-    rows = _rows(training_rows, "train")
+    context = require_context(context)
+    rows = _rows(training_rows, "train", context)
     weights, supports, bounds, unknown = [], [], [], []
     for name, label in (
         ("implementation", _implementation_row_label),
@@ -129,6 +138,7 @@ def fit_heads(training_rows):
         tuple(supports),
         tuple(sorted({r["source_id"] for r in rows})),
         tuple(bounds),
+        context,
         unknown_training_labels=tuple(unknown),
     )
 
@@ -141,11 +151,13 @@ def _supported(heads, index, state):
     )
 
 
-def calibrate_heads(heads, calibration_rows, *, alpha=0.1):
+def calibrate_heads(heads, calibration_rows, *, context=None, alpha=0.1):
     """Freeze group-max absolute residuals on disjoint calibration sources."""
+    require_context(getattr(heads, "context", None))
+    context = require_context(context, heads.context)
     if not 0 < alpha < 1 or heads.calibration_sources:
         raise ValueError("Valid alpha and one fresh calibration partition required")
-    rows = _rows(calibration_rows, "calibration", heads.training_sources)
+    rows = _rows(calibration_rows, "calibration", context, heads.training_sources)
     summaries = []
     for index, (name, label) in enumerate(
         (("implementation", _implementation_row_label), ("value", continuation_label))
@@ -187,7 +199,7 @@ def calibrate_heads(heads, calibration_rows, *, alpha=0.1):
     )
 
 
-def predict(heads, state):
+def predict(heads, state, *, context=None):
     """Shadow inference has no reference, outcome, receipt or future-label input."""
     _features(state)
     output = {
@@ -196,6 +208,23 @@ def predict(heads, state):
         "conditional_coverage_proved": False,
         "estimand_scope": "complete_observed_cases",
     }
+    try:
+        require_context(getattr(heads, "context", None))
+        require_context(context, heads.context)
+    except CriticContextError as error:
+        output.update(recalibration_required=True, reason=str(error))
+        for name in ("implementation", "value"):
+            output[name] = {
+                "point": None,
+                "supported": False,
+                "unconditional_residual": None,
+                "conditional_residual": None,
+            }
+        return output
+    output.update(
+        recalibration_required=False,
+        critic_context_sha256=context_digest(heads.context),
+    )
     key = _context(state)
     for index, (name, weights) in enumerate(
         (("implementation", heads.probability), ("value", heads.value))

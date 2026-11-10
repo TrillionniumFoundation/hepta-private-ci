@@ -93,7 +93,7 @@ jobs:
           PY
           cat "$RUNNER_TEMP/ctrl-ci/runtime.json"
 
-      - name: Run all five suites with separate non-skipped test minima
+      - name: Run all six suites with separate non-skipped test minima
         shell: bash
         run: |
           set -euo pipefail
@@ -110,6 +110,7 @@ jobs:
           8 ndu_real_runtime.test_audit_content_trace
           4 ndu_real_runtime.test_control_observations
           5 ndu_real_runtime.test_control_investment
+          6 ndu_real_runtime.test_control_critic_context
           CASES
           exit "$status"
 
@@ -125,12 +126,14 @@ jobs:
             scripts/ndu_real_runtime/audit_content_trace.py
             scripts/ndu_real_runtime/control_observations.py
             scripts/ndu_real_runtime/control_investment.py
+            scripts/ndu_real_runtime/critic_context.py
             scripts/ndu_real_runtime/control_test_fixtures.py
             scripts/ndu_real_runtime/test_content_identity.py
             scripts/ndu_real_runtime/test_content_identity_integration.py
             scripts/ndu_real_runtime/test_audit_content_trace.py
             scripts/ndu_real_runtime/test_control_observations.py
             scripts/ndu_real_runtime/test_control_investment.py
+            scripts/ndu_real_runtime/test_control_critic_context.py
           )
           uv run --frozen --project scripts --python 3.12.14 \
             ruff format --check "${files[@]}"
