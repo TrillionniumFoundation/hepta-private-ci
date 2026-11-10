@@ -40,13 +40,22 @@
         "desktop#301",
         "hepta#5641"
       ],
-      "status": "MAINTAINED_NATIVE_QUEUED",
+      "status": "MAINTAINED_NATIVE_SCOPED_PASS",
       "original_companion": "0e884b4cf6831d7cb614b87786c40137a575672d",
       "original_result": "RUST_2021_COMPILE_FAILURE",
       "maintained_companion": "cc33ab6c44f3c945d83cb96be71d861e5613f99e",
-      "note": "0e31d102 was the retained Rust-2021 correction; cc33ab6 adds only formatter postimages. No pass is inferred while the exact native run is queued.",
+      "note": "Bounded destination fence/checkpoint candidate qualified at exact maintained Linux-native source. Does not settle source responsibility, full DynamicToolCall authority, common rollback, or production.",
       "maintained_run": 42784159083,
-      "maintained_run_status": "QUEUED"
+      "maintained_run_status": "SUCCESS",
+      "maintained_tree": "66f1b4f08d3b501139c09df08441595910f93987",
+      "cargo_lock_sha256": "a8b00de25b9b5d47cba0d3458ab24f1c20871a6a2420f91e9c7bf0c1d792c35f",
+      "artifact_id": 13756318832,
+      "artifact_sha256": "0eb7a8dbf15027dba76ba1f20cbfed88ce89e0a22455d15be8423e0cb859fbe9",
+      "test_result": "68 core/integration passed; original App 60 passed and 1 ignored; locked Session/App build, scoped Clippy and exact formatter clean",
+      "binary_sha256": {
+        "trill-session": "dcd8636abef49d14238fbbbaf7766039fd51a0dbf204974769b8027567e82358",
+        "trill-app-window": "d8426ebd6d8f29e867b6f92202eb76c32facfd83ec49c4be0fe7185fd68cc012"
+      }
     },
     {
       "id": "SOURCE_FLOOR_AND_REAL_APP_FENCE",
@@ -88,7 +97,13 @@
         {
           "run": 42794187070,
           "scope": "Windows original regressions",
-          "status": "IN_PROGRESS"
+          "status": "FAILURE_PREEXISTING_WINDOWS_HOST_SANDBOX",
+          "job": 129755068226,
+          "artifact_id": 13755863780,
+          "artifact_sha256": "0d84b1844dc2162a62d0c67adc2af1b0a8505ddf9a9603b415215a09e8fcb3fb",
+          "exact_result": "original-protected-owner 14/14 and operator-native 33/33 passed; original sandbox 1 leaky pass plus 6 failures and native delete routes 0/2",
+          "reason": "hosted Windows parent ACL exposes ambient FILE_DELETE_CHILD; guard fails closed",
+          "comparison": "parent 4dc5f724 run 42784395131 failed the same two groups for the same reason; not a typed fence regression, not a pass"
         },
         {
           "run": 42794177546,
@@ -146,7 +161,9 @@
         {
           "run": 42794187070,
           "scope": "Windows original regressions",
-          "status": "IN_PROGRESS"
+          "status": "FAILURE_PREEXISTING_WINDOWS_HOST_SANDBOX",
+          "artifact_id": 13755863780,
+          "reason": "ambient parent FILE_DELETE_CHILD; exact parent run 42784395131 has the same failure"
         },
         {
           "run": 42794187515,
@@ -176,6 +193,11 @@
       "source": "0e884b4cf6831d7cb614b87786c40137a575672d",
       "run": 42774237360,
       "reason": "Rust 2024 let-chain used in Rust 2021 crate; no tests executed"
+    },
+    {
+      "source": "c0d5d0ededb6627103c390e86b8714135977025c",
+      "run": 42794187070,
+      "reason": "Windows original CI fails closed on hosted parent FILE_DELETE_CHILD; same two sandbox groups already failed at parent 4dc5f724 in run 42784395131; no guard weakened"
     }
   ],
   "continuation": {
