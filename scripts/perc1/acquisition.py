@@ -279,6 +279,10 @@ def train_head(
 
 
 def _validate_head(head):
+    if type(head) is dict and head.get("schema") == "perc1.acquisition-mlp-head.v1":
+        from .mlp_head import validate_head
+
+        return validate_head(head)
     exact(
         head,
         "schema status scientific_qualified layout means scales coefficients calibration cost_value threshold training_receipt",
@@ -343,6 +347,10 @@ def _validate_head(head):
 
 
 def predict(head, public_features):
+    if type(head) is dict and head.get("schema") == "perc1.acquisition-mlp-head.v1":
+        from .mlp_head import predict as predict_mlp
+
+        return predict_mlp(head, public_features)
     _validate_head(head)
     vector = features(public_features)
     require(
