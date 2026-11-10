@@ -19,6 +19,9 @@ use std::process::Stdio;
 #[path = "production_notes_crash_owner_tests.rs"]
 mod crash_owner_tests;
 
+#[path = "production_notes_fence_gui_tests.rs"]
+mod fence_gui_tests;
+
 #[derive(Default)]
 struct NotesReplyLossProbe {
     lose_next_reply: AtomicBool,
@@ -340,7 +343,7 @@ async fn notes_actual_ui_original_owner_roundtrip() -> Result<(), Box<dyn Error>
         .take()
         .ok_or("missing actual Notes observation channel")?;
     let observer = crate::AgentdNotesDocumentObserver::new(
-        codex_hepta_memory::ProductionNotesTarget::new(identity.clone(), channel)?
+        codex_hepta_memory::ProductionNotesTarget::new(identity.clone(), channel.clone())?
             .document_observer(),
     );
     session.instance = Some(identity.session_instance.clone());
@@ -692,6 +695,16 @@ async fn notes_actual_ui_original_owner_roundtrip() -> Result<(), Box<dyn Error>
         repeated_tool_success.push(current_tool_success);
         repeated_observations.push(repeated);
     }
+    // A new attachment has no in-memory high-water. The original source still
+    // validates its fresh read and rejects the old real revision captured above.
+    let reattached = crate::AgentdNotesDocumentObserver::new(
+        codex_hepta_memory::ProductionNotesTarget::new(identity.clone(), channel)?
+            .document_observer(),
+    );
+    let reattached_current = reattached.observe_document()?;
+    assert_eq!(reattached_current, current);
+    host.writer().validate_notes_document_read(&reattached_current).await?;
+    assert!(host.writer().validate_notes_document_read(&first_current).await.is_err());
     // Close only this test's App, then attempt a real independent read. This
     // is readback loss, not a durable cancellation or late-commit tombstone.
     session.cancel_notes()?;
@@ -762,6 +775,12 @@ async fn notes_actual_ui_original_owner_roundtrip() -> Result<(), Box<dyn Error>
             "historical_goal_after_edits":drifted_tool_success,
             "repeated_current_goal":repeated_tool_success,
             "current_readback_unavailable":unavailable_tool_success,
+        },
+        "act2_original_owner_read_floor":{
+            "fresh_reattachment_accepted":true,
+            "recorded_old_real_observation_rejected":true,
+            "actual_app_checkpoint_replaced":false,
+            "source_checkpoint_rewound":false,
         },
         "notes_durable_tombstone_qualified":false,
         "second_application_receipt":second_application,"receipt_capacity_reused_after_durable_ack":true,

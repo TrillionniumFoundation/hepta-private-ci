@@ -232,6 +232,14 @@ impl AgentdNotesLiteralAdapter {
             .await
             .map_err(|_| invalid("Notes readback worker failed"))??;
             self.check_available()?;
+            tokio::time::timeout(
+                end.saturating_duration_since(Instant::now()),
+                self.writer.validate_notes_document_read(&observed),
+            )
+            .await
+            .map_err(|_| invalid("Notes UI original-owner read floor check timed out"))?
+            .map_err(|error| invalid(&error.to_string()))?;
+            self.check_available()?;
             Ok(observed)
         })
         .await

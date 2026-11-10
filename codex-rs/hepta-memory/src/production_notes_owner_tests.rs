@@ -17,6 +17,8 @@ use std::sync::atomic::Ordering;
 mod previous_tests;
 #[path = "production_retained_operation_tests.rs"]
 mod retained_operation_tests;
+#[path = "production_notes_read_fence_tests.rs"]
+mod read_fence_tests;
 
 type TestResult<T = ()> = Result<T, Box<dyn Error>>;
 const LEASE: &str = "notes-owner-recovery-fixture";
