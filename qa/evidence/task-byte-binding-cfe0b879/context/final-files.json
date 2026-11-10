@@ -1,0 +1,46 @@
+{
+  "schema": "hepta.cell-research-task-bytes.files.v1",
+  "base_commit": "ea973fd90863ce8319ce206e4ba4ac7f87c9fef9",
+  "validation": {
+    "start_utc": "2026-11-10T02:11:06.283489+00:00",
+    "end_utc": "2026-11-10T02:11:08.889798+00:00",
+    "exit_code": 0,
+    "wall_seconds": 2.606325733000176,
+    "python_version": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+    "python_executable": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "argv": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+      "-m",
+      "unittest",
+      "test_hepta_cell_research_units",
+      "test_hepta_cell_research_gate",
+      "-v"
+    ],
+    "cwd": "/workspace/scratch/cfe0b879a8b4/grouping_stage",
+    "log": {
+      "path": "context/validation.log",
+      "bytes": 6947,
+      "sha256": "ae65a8baa4ba466da85d6b2e57e4af896f9430f69957756a398aeba708f785fe"
+    }
+  },
+  "files": [
+    {
+      "path": "scripts/hepta_cell_research_gate.py",
+      "bytes": 29622,
+      "sha256": "5fdeb37089b3dcef50f90f02df7513f92478a8ff48a41ca531547f18960e850d",
+      "git_blob_sha1": "727c1abf011d8b55915df7902a12628679742fcf"
+    },
+    {
+      "path": "scripts/hepta_cell_research_units.py",
+      "bytes": 9982,
+      "sha256": "31f2d4f5f18bdae498a9e64073c2772ef368775d774bc9d57fa4f91293708bb6",
+      "git_blob_sha1": "ec9fb13b7434285d54a47da090b4f7fd85ffe758"
+    },
+    {
+      "path": "scripts/test_hepta_cell_research_units.py",
+      "bytes": 21475,
+      "sha256": "e5bf3c62a93ff901c8b46097b89abf20ae0b828e3d44fa65d1d5bf937ea33641",
+      "git_blob_sha1": "a8b1d6748588c796483c96e04ba7b8e09f6a865f"
+    }
+  ]
+}
