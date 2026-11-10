@@ -257,10 +257,15 @@ def select_replay(records: Iterable[MemoryRecord], *, policy: str, query_key: st
     # Visible revisions must be evaluated together. Filtering each tombstone
     # individually can resurrect an older revision from the same logical object.
     # A shared query key alone is NOT an identity: unrelated sources may share it.
-    by_logical_id: dict[str, list[MemoryRecord]] = {}
+    # Explicit logical IDs and implicit per-event IDs are distinct namespaces.
+    # Otherwise a self-declared tombstone for logical_id == another event_id
+    # could suppress an unrelated record that never opted into that identity.
+    by_logical_id: dict[tuple[str, str], list[MemoryRecord]] = {}
     for e in entries:
         if e.observed_sequence <= now_sequence:
-            by_logical_id.setdefault(e.logical_id or e.event_id, []).append(e)
+            identity = (("logical", e.logical_id) if e.logical_id is not None
+                        else ("event", e.event_id))
+            by_logical_id.setdefault(identity, []).append(e)
     eligible = []
     for versions in by_logical_id.values():
         if (len({e.observed_sequence for e in versions}) != len(versions)
