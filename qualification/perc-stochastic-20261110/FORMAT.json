@@ -1,0 +1,35 @@
+{
+  "command": "just fmt",
+  "exit_code": 0,
+  "ast_equal": true,
+  "files": {
+    "scripts/perc1/acquisition.py": {
+      "tested_sha256": "131e2053789066c2d3e20f834fc097f2a6cd4b40e653f2cd2b9a3f97a270aa5f",
+      "formatted_sha256": "131e2053789066c2d3e20f834fc097f2a6cd4b40e653f2cd2b9a3f97a270aa5f"
+    },
+    "scripts/perc1/mlp_head.py": {
+      "tested_sha256": "814dc5c5d9c3e576ae6a6da8cf55b1cbc043c72b7a19caa291ede53f04a7aa75",
+      "formatted_sha256": "03b110038ec43026625f2efbbc08ef075cd16e918e62631c2d9409073209e91d"
+    },
+    "scripts/test_perc1_mlp_head.py": {
+      "tested_sha256": "1d00631c3db70acdee5af6d3bd1cdf1f54c4482d9f12d22e2eff1eaa85b8639b",
+      "formatted_sha256": "1c0e6e6d19b46068dbd94f88344283ce94d8e4c25fbed244861331c11714b03c"
+    },
+    "scripts/perc1_process_meter.py": {
+      "tested_sha256": "ebdd01c14dfde6f6e33979a179aaa223d961c7caf947995c018d9dec563c7423",
+      "formatted_sha256": "e38d226aa616f9cde240990aa721c221fd9a05888dd8839641524e46a1e3c808"
+    },
+    "scripts/test_perc1_process_meter.py": {
+      "tested_sha256": "c78cc36dcf64001e074370591f0a3fadc4adb1a36c5b7ca9bd3531565aec5c91",
+      "formatted_sha256": "420b5238a4aff93e83976dba0a009fe2344dffd3d3c653a97023c1eed67e8f26"
+    },
+    "scripts/perc1_repeat_training.py": {
+      "tested_sha256": "180c494d9bfe44cc0106ce9a7625643b588aae8a6f56ebe790fb847a23bcef83",
+      "formatted_sha256": "c20f3a5ea02d5407355c99d2dcf96b39d56abe4fd77a1ac41ffccdcb1b3a3c40"
+    },
+    "scripts/test_perc1_repeat_training.py": {
+      "tested_sha256": "b4aa72295f8b37e913e21795973ac4425e50640501074b694bd8a3e3a91bf96e",
+      "formatted_sha256": "535819d4023e32b299194f23df2195e28d48958775cf6af93eb04135de2df4ff"
+    }
+  }
+}
