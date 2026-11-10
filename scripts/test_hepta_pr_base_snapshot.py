@@ -23,7 +23,9 @@ def command():
     assert workflow.index(MARKER) < workflow.index(
         "      - name: Fetch exact qualification history\n"
     )
-    assert "base-sha: ${{ steps.current_pr_base.outputs.sha || env.BASE_SHA }}" in workflow
+    assert (
+        "base-sha: ${{ steps.current_pr_base.outputs.sha || env.BASE_SHA }}" in workflow
+    )
     block = workflow.split(MARKER, 1)[1].split("      - name:", 1)[0]
     return textwrap.dedent(block.split("        run: |\n", 1)[1])
 
