@@ -5,6 +5,8 @@ on:
     paths:
       - .github/workflows/verify-dependency-proposal.yml
       - scripts/prepare_verify_dependency_candidate.py
+      - scripts/align_verify_bindgen_syn.py
+      - qualification/verify3-syn-alignment-20261110/README.md
       - scripts/tests/test_prepare_verify_dependency_candidate.py
       - qualification/verify3-dependency-reconciliation-20261110/DEPENDENCY_PROPOSAL.md
   workflow_dispatch:
@@ -62,6 +64,7 @@ jobs:
         run: |
           set -euo pipefail
           cargo update -p libsqlite3-sys --precise 0.39.1 2>&1 | tee "$CANDIDATE_LOGS/cargo-update.log"
+          python3 ../scripts/align_verify_bindgen_syn.py --lock Cargo.lock --output "$CANDIDATE_LOGS/bindgen-syn-alignment.json"
           cargo metadata --locked --all-features --format-version 1 \
             > "$CANDIDATE_LOGS/metadata-all-features.json" \
             2> "$CANDIDATE_LOGS/metadata-all-features.stderr.log"
@@ -94,10 +97,23 @@ jobs:
               matches = [p for p in packages if p['name'] == name]
               assert len(matches) == 1 and matches[0]['source'] is None
               assert pathlib.Path(matches[0]['manifest_path']).resolve() == pathlib.Path('third_party', vendor, 'Cargo.toml').resolve()
+          by_id = {p['id']: p for p in packages}
+          def one_node(name, version):
+              matches = [p for p in packages if (p['name'], p['version']) == (name, version)]
+              assert len(matches) == 1, (name, version)
+              return next(n for n in nodes if n['id'] == matches[0]['id'])
+          bindgen = one_node('bindgen', '0.73.2')
+          printer = one_node('prettyplease', '0.2.37')
+          def syn_ids(node):
+              return {edge['pkg'] for edge in node['deps'] if by_id[edge['pkg']]['name'] == 'syn'}
+          expected_syn = {p['id'] for p in packages if (p['name'], p['version']) == ('syn', '2.0.119')}
+          assert len(expected_syn) == 1 and syn_ids(bindgen) == syn_ids(printer) == expected_syn
+          assert any((p['name'], p['version']) == ('syn', '3.0.9') for p in packages)
           report = {'targets': expected, 'package_count': len(packages), 'resolve_node_count': len(nodes),
                     'full_locked_all_features_metadata_sha256': hashlib.sha256(metadata_path.read_bytes()).hexdigest(),
                     'pin_utils_present': False, 'single_sqlite_sys': True, 'sqlite_features': sqlite_features,
-                    'aws_config_manifest': next(p['manifest_path'] for p in packages if p['name'] == 'aws-config')}
+                    'aws_config_manifest': next(p['manifest_path'] for p in packages if p['name'] == 'aws-config'),
+                    'bindgen_prettyplease_syn': sorted(expected_syn)}
           (evidence / 'resolved-targets.json').write_text(json.dumps(report, indent=2))
           PY
 
