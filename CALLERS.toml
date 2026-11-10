@@ -3061,7 +3061,7 @@ id = "learning_original_evaluation_key"
 symbol = "product_evaluation_execution_key_v1"
 definition_path = "codex-rs/hepta-intelligence-eval/src/product_execution.rs"
 definition_markers = ["pub fn product_evaluation_execution_key_v1(", "plan.validate_integrity()?", "plan.receipt_seal.as_array()"]
-product_callers = ["codex-rs/hepta-intelligence-eval/src/product_execution.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_owner.rs"]
+product_callers = ["codex-rs/hepta-agentd/src/neuron_cell_evaluation_owner.rs"]
 caller_markers = ["product_evaluation_execution_key_v1("]
 
 
@@ -3154,4 +3154,14 @@ forbidden = ["SigningKey", "File::open", "UnixStream::connect", "unwrap_or", "pe
 required_function_order = [
   { function = "fn resolve(", sequence = ["owner.require_active(&request.start.run_id)?", "let retained = owner.read(", "codec::require_request(&retained, request)?", "if !completed.is_empty()", "circuit_cell_operation_id_v1(dispatch)?", "codec::dispatch_input(dispatch, &input)?", "owner.retain(", "Ok(input)"] },
   { function = "fn publish_result(", sequence = ["owner.request(identity, record)", "owner.require_bytes(", "let saved_input = owner.read(", "codec::decode_input(&saved_input)", "codec::result(", "owner.retain("] },
+]
+
+
+[[protected_file]]
+path = "codex-rs/hepta-intelligence-eval/src/product_execution.rs"
+required = []
+forbidden = []
+required_order = [[".read_consumption(&request.plan.frozen_plan)", "product_evaluation_execution_key_v1(request.plan, namespace, request.evaluator)?", "executions.claim(&key)?"]]
+required_function_order = [
+  { function = "fn product_evaluation_execution_key_v1(", sequence = ["plan.validate_integrity()?", "if namespace.is_zero()", "evaluator.validate(evaluator.authenticated_at)", "namespace.as_array()", "plan.receipt_seal.as_array()", "super::push_principal(&mut binding, evaluator)", "Ok(ProductEvaluationExecutionKeyV1"] },
 ]
