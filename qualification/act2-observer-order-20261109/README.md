@@ -138,6 +138,7 @@ in original run 42770759653: 169 automation, 12 selected Notes and 1 real App
 test passed (2/778/789 skipped). Actual shared-predicate success flags remain true
 for confirmed goals and false after document drift or readback loss. Complete
 model-facing handler qualification remains false. The exact formatter successor
-`631e99f78898543e8dc1e8671632baf73945940e` has a separate pending native run;
-no original pass is inherited by that source. These results are not part of the
-fence-only runs above.
+`631e99f78898543e8dc1e8671632baf73945940e` independently passed the same
+169/12/1 selected scopes in run 42771121382, with clean source and empty formatter
+patches. This is its own exact-source result; no original pass is inherited.
+These results are not part of the fence-only runs above.
