@@ -1,0 +1,166 @@
+#!/usr/bin/env python3
+"""Non-authoritative, fail-closed completeness precheck for an original learning loop.
+
+Hashes bytes but cannot authenticate a signature, an owner, a human operator, or
+an economic benefit. NEVER emits CLOSED or grants any runtime capability.
+"""
+import argparse
+from decimal import Decimal, InvalidOperation
+import hashlib
+import json
+from pathlib import Path
+import re
+
+STAGES = ('experience', 'dataset', 'training', 'evaluation', 'selection',
+          'published_current', 'final_use', 'next_use')
+HEX64 = re.compile(r'^[0-9a-f]{64}$')
+HEX40 = re.compile(r'^[0-9a-f]{40}$')
+ATTEMPT_STATES = frozenset(('completed', 'failed', 'cancelled', 'pending', 'unknown'))
+
+
+def inspect(manifest: Path) -> dict:
+    issues = []
+    total = Decimal('0')
+    checks = 0
+    def fail(code):
+        if code not in issues:
+            issues.append(code)
+
+    try:
+        root = manifest.resolve(strict=True).parent
+        record = json.loads(manifest.read_text(encoding='utf-8'))
+    except (OSError, UnicodeError, ValueError) as exc:
+        return {'status': 'HOLD', 'integrity': 'FAIL', 'issues': [f'bad_manifest:{type(exc).__name__}'],
+                'owner_authenticated': False, 'benefit_established': False}
+    if not isinstance(record, dict) or record.get('schema') != 'hepta-original-learning-custody-precheck-v1':
+        fail('schema')
+        record = record if isinstance(record, dict) else {}
+    if not isinstance(record.get('source_head'), str) or not HEX40.fullmatch(record['source_head']):
+        fail('source_head')
+    ids = [record.get(field) for field in ('operation_id', 'source_task_id', 'next_task_id')]
+    if any(not isinstance(x, str) or not x or len(x) > 160 for x in ids):
+        fail('operation_or_task_id')
+    if ids[1] == ids[2]:
+        fail('next_task_not_distinct')
+    baseline, chosen = record.get('baseline_bundle'), record.get('selected_bundle')
+    if any(not isinstance(x, str) or not HEX64.fullmatch(x) for x in (baseline, chosen)):
+        fail('version_digest')
+    decision = record.get('decision')
+    if decision not in ('adopt', 'no_update'):
+        fail('selection_decision')
+    elif (decision == 'adopt' and chosen == baseline) or (decision == 'no_update' and chosen != baseline):
+        fail('selection_version_mismatch')
+
+    # Identity *claims* must be present and different; independent control is
+    # NOT proved by these strings, different keys, or this script's output.
+    custody = record.get('operator_custody')
+    custody = custody if isinstance(custody, dict) else {}
+    operators = [custody.get(name) for name in ('trainer', 'evaluator', 'holdout')]
+    if any(not isinstance(x, str) or not x.strip() for x in operators):
+        fail('operator_custody_missing')
+    elif len(set(operators)) != len(operators):
+        fail('same_operator_multiple_roles')
+
+    entries = record.get('original_receipts')
+    if not isinstance(entries, dict) or set(entries) != set(STAGES):
+        fail('receipt_coverage')
+        entries = entries if isinstance(entries, dict) else {}
+    seen_paths = set()
+    seen_digests = set()
+    for stage in STAGES:
+        entry = entries.get(stage)
+        if not isinstance(entry, dict):
+            fail(f'missing_receipt:{stage}')
+            continue
+        path, sha = entry.get('file'), entry.get('sha256')
+        if not isinstance(path, str) or not path or Path(path).is_absolute() or '..' in Path(path).parts:
+            fail(f'unsafe_receipt_path:{stage}')
+            continue
+        if not isinstance(sha, str) or not HEX64.fullmatch(sha):
+            fail(f'invalid_receipt_digest:{stage}')
+            continue
+        if path in seen_paths or sha in seen_digests:
+            fail(f'duplicate_receipt:{stage}')
+        seen_paths.add(path)
+        seen_digests.add(sha)
+        try:
+            p = root / path
+            if p.is_symlink() or not p.is_file() or not p.resolve().is_relative_to(root):
+                raise ValueError('unsafe file')
+            if p.stat().st_size > 64 * 1024 * 1024:
+                raise ValueError('receipt too large')
+            with p.open('rb') as stream:
+                digest = hashlib.sha256()
+                for chunk in iter(lambda: stream.read(1024 * 1024), b''):
+                    digest.update(chunk)
+                digest = digest.hexdigest()
+            if digest != sha:
+                fail(f'receipt_bytes_mismatch:{stage}')
+            else:
+                checks += 1
+        except (OSError, ValueError):
+            fail(f'receipt_unreadable:{stage}')
+        if entry.get('operation_id') != ids[0]:
+            fail(f'foreign_operation:{stage}')
+        expected_task = ids[2] if stage == 'next_use' else ids[1]
+        if entry.get('task_id') != expected_task:
+            fail(f'foreign_task:{stage}')
+        if stage in ('published_current', 'final_use', 'next_use') and entry.get('bundle_sha256') != chosen:
+            fail(f'wrong_consumed_version:{stage}')
+
+    # Each admitted attempt must have a terminal or explicitly unresolved
+    # record, including failed/cancelled attempts; UNKNOWN is never success.
+    admitted, attempts = record.get('admitted_attempt_ids'), record.get('attempts')
+    if not isinstance(admitted, list) or not isinstance(attempts, list):
+        fail('attempt_inventory_missing')
+        admitted, attempts = [], []
+    if not admitted or any(not isinstance(x, str) or not x for x in admitted) or len(set(x for x in admitted if isinstance(x, str))) != len(admitted):
+        fail('attempt_inventory_invalid')
+    got = []
+    for n, attempt in enumerate(attempts):
+        if not isinstance(attempt, dict):
+            fail(f'attempt_type:{n}')
+            continue
+        aid = attempt.get('id')
+        if not isinstance(aid, str) or not aid:
+            fail(f'attempt_id:{n}')
+        got.append(aid)
+        if attempt.get('state') not in ATTEMPT_STATES:
+            fail(f'attempt_state:{n}')
+        if attempt.get('state') in ('pending', 'unknown'):
+            fail('unresolved_attempts')
+        if not isinstance(attempt.get('cost_usd'), str):
+            fail(f'attempt_cost:{n}')
+            continue
+        try:
+            amount = Decimal(attempt['cost_usd'])
+            if not amount.is_finite() or amount < 0:
+                raise InvalidOperation()
+            total += amount
+        except InvalidOperation:
+            fail(f'attempt_cost:{n}')
+    if len(got) != len(set(x for x in got if isinstance(x, str))) or (
+        all(isinstance(x, str) for x in admitted) and set(x for x in got if isinstance(x, str)) != set(admitted)
+    ):
+        fail('attempt_inventory_mismatch')
+    # This checks supplied files and self-declarations, not their signatures,
+    # current trust, live owner isolation, actual custody or opportunity cost.
+    return {'status': 'HOLD', 'integrity': 'PASS' if not issues else 'FAIL',
+            'receipt_bytes_matched': checks, 'receipt_bytes_required': len(STAGES),
+            'declared_attempt_cost_usd': str(total), 'issues': issues,
+            'owner_authenticated': False, 'independent_holdout_proved': False,
+            'original_stage_replay_proved': False, 'full_cost_completeness_proved': False,
+            'benefit_established': False}
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('manifest', type=Path)
+    args = parser.parse_args()
+    result = inspect(args.manifest)
+    print(json.dumps(result, sort_keys=True, indent=2))
+    return 0 if result['integrity'] == 'PASS' else 1
+
+
+if __name__ == '__main__':
+    raise SystemExit(main())
