@@ -1,0 +1,308 @@
+﻿2026-11-10T07:44:34.3131687Z Current runner version: '2.338.2'
+2026-11-10T07:44:34.3361752Z ##[group]Runner Image Provisioner
+2026-11-10T07:44:34.3362712Z Hosted Compute Agent
+2026-11-10T07:44:34.3363241Z Version: 20261103.629
+2026-11-10T07:44:34.3363801Z Commit: 15dbd9ccb5dbf34fae002b6ed1a2670f52df37bc
+2026-11-10T07:44:34.3364459Z Build Date: 2026-11-03T17:26:59Z
+2026-11-10T07:44:34.3365048Z Worker ID: {2efe0147-3623-418f-a641-eed4b9e5f3cb}
+2026-11-10T07:44:34.3365645Z Region: westus3
+2026-11-10T07:44:34.3366125Z Cloud: Azure
+2026-11-10T07:44:34.3366610Z ##[endgroup]
+2026-11-10T07:44:34.3368187Z ##[group]Operating System
+2026-11-10T07:44:34.3368933Z Microsoft Windows Server 2025
+2026-11-10T07:44:34.3369449Z 10.0.26100
+2026-11-10T07:44:34.3369964Z Datacenter
+2026-11-10T07:44:34.3370446Z ##[endgroup]
+2026-11-10T07:44:34.3370908Z ##[group]Runner Image
+2026-11-10T07:44:34.3371442Z Image: windows-2025-vs2026
+2026-11-10T07:44:34.3371961Z Version: 20261103.298.1
+2026-11-10T07:44:34.3373359Z Included Software: https://github.com/actions/runner-images/blob/win25-vs2026/20261103.298/images/windows/Windows2025-VS2026-Readme.md
+2026-11-10T07:44:34.3374831Z Image Release: https://github.com/actions/runner-images/releases/tag/win25-vs2026%2F20261103.298
+2026-11-10T07:44:34.3375699Z ##[endgroup]
+2026-11-10T07:44:34.3377016Z ##[group]GITHUB_TOKEN Permissions
+2026-11-10T07:44:34.3378945Z Contents: read
+2026-11-10T07:44:34.3379451Z Metadata: read
+2026-11-10T07:44:34.3379945Z ##[endgroup]
+2026-11-10T07:44:34.3382287Z Secret source: Actions
+2026-11-10T07:44:34.3383127Z Cache mode: write
+2026-11-10T07:44:34.3383747Z Prepare workflow directory
+2026-11-10T07:44:34.4570213Z Prepare all required actions
+2026-11-10T07:44:34.4625276Z Getting action download info
+2026-11-10T07:44:34.7568731Z Download action repository 'actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd' (SHA:de0fac2e4500dabe0009e67214ff5f5447ce83dd)
+2026-11-10T07:44:34.9142949Z Download action repository 'actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405' (SHA:a309ff8b426b58ec0e2a45f0f869d46889d02405)
+2026-11-10T07:44:35.1091483Z Download action repository 'actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+2026-11-10T07:44:35.7783481Z Complete job name: diagnostic
+2026-11-10T07:44:36.0292349Z ##[group]Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+2026-11-10T07:44:36.0294324Z with:
+2026-11-10T07:44:36.0294955Z   persist-credentials: false
+2026-11-10T07:44:36.0295882Z   ref: 68e9e6c80b9139d5a4b081e4cdd41341fc951142
+2026-11-10T07:44:36.0296917Z   repository: TrillionniumFoundation/hepta-private-ci
+2026-11-10T07:44:36.0303107Z   token: ***
+2026-11-10T07:44:36.0303701Z   ssh-strict: true
+2026-11-10T07:44:36.0304294Z   ssh-user: git
+2026-11-10T07:44:36.0304878Z   clean: true
+2026-11-10T07:44:36.0305498Z   sparse-checkout-cone-mode: true
+2026-11-10T07:44:36.0306241Z   fetch-depth: 1
+2026-11-10T07:44:36.0306837Z   fetch-tags: false
+2026-11-10T07:44:36.0307448Z   show-progress: true
+2026-11-10T07:44:36.0308102Z   lfs: false
+2026-11-10T07:44:36.0308673Z   submodules: false
+2026-11-10T07:44:36.0309287Z   set-safe-directory: true
+2026-11-10T07:44:36.0310282Z env:
+2026-11-10T07:44:36.0311023Z   REVIEWED_SHA: 68e9e6c80b9139d5a4b081e4cdd41341fc951142
+2026-11-10T07:44:36.0311908Z ##[endgroup]
+2026-11-10T07:44:36.1782577Z Syncing repository: TrillionniumFoundation/hepta-private-ci
+2026-11-10T07:44:36.1784947Z ##[group]Getting Git version info
+2026-11-10T07:44:36.1785963Z Working directory is 'D:\a\hepta-private-ci\hepta-private-ci'
+2026-11-10T07:44:36.2700273Z [command]"C:\Program Files\Git\bin\git.exe" version
+2026-11-10T07:44:36.9671965Z git version 2.56.0.windows.4
+2026-11-10T07:44:36.9744369Z ##[endgroup]
+2026-11-10T07:44:36.9765252Z Temporarily overriding HOME='D:\a\_temp\993ed485-7e0b-476e-ba8c-96fd6a5ffb90' before making global git config changes
+2026-11-10T07:44:36.9766196Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-10T07:44:36.9777039Z [command]"C:\Program Files\Git\bin\git.exe" config --global --add safe.directory D:\a\hepta-private-ci\hepta-private-ci
+2026-11-10T07:44:37.0774579Z Deleting the contents of 'D:\a\hepta-private-ci\hepta-private-ci'
+2026-11-10T07:44:37.0780334Z ##[group]Initializing the repository
+2026-11-10T07:44:37.0789250Z [command]"C:\Program Files\Git\bin\git.exe" init D:\a\hepta-private-ci\hepta-private-ci
+2026-11-10T07:44:37.3088524Z Initialized empty Git repository in D:/a/hepta-private-ci/hepta-private-ci/.git/
+2026-11-10T07:44:37.3142107Z [command]"C:\Program Files\Git\bin\git.exe" remote add origin https://github.com/TrillionniumFoundation/hepta-private-ci
+2026-11-10T07:44:37.4531562Z ##[endgroup]
+2026-11-10T07:44:37.4532709Z ##[group]Disabling automatic garbage collection
+2026-11-10T07:44:37.4543037Z [command]"C:\Program Files\Git\bin\git.exe" config --local gc.auto 0
+2026-11-10T07:44:37.4996946Z ##[endgroup]
+2026-11-10T07:44:37.4998013Z ##[group]Setting up auth
+2026-11-10T07:44:37.4999096Z Removing SSH command configuration
+2026-11-10T07:44:37.5017684Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+2026-11-10T07:44:37.5458978Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+2026-11-10T07:44:39.8164489Z Removing HTTP extra header
+2026-11-10T07:44:39.8175955Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-10T07:44:39.8606416Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+2026-11-10T07:44:40.4159015Z Removing includeIf entries pointing to credentials config files
+2026-11-10T07:44:40.4175517Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-10T07:44:40.4567792Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+2026-11-10T07:44:41.0101826Z [command]"C:\Program Files\Git\bin\git.exe" config --file D:\a\_temp\git-credentials-07daaa17-d190-47de-9e41-2ad7c5fb2dba.config http.https://github.com/.extraheader "AUTHORIZATION: basic ***"
+2026-11-10T07:44:41.0497901Z [command]"C:\Program Files\Git\bin\git.exe" config --local includeIf.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git.path D:\a\_temp\git-credentials-07daaa17-d190-47de-9e41-2ad7c5fb2dba.config
+2026-11-10T07:44:41.0883894Z [command]"C:\Program Files\Git\bin\git.exe" config --local includeIf.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path D:\a\_temp\git-credentials-07daaa17-d190-47de-9e41-2ad7c5fb2dba.config
+2026-11-10T07:44:41.1341536Z [command]"C:\Program Files\Git\bin\git.exe" config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-07daaa17-d190-47de-9e41-2ad7c5fb2dba.config
+2026-11-10T07:44:41.1726715Z [command]"C:\Program Files\Git\bin\git.exe" config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-07daaa17-d190-47de-9e41-2ad7c5fb2dba.config
+2026-11-10T07:44:41.2107383Z ##[endgroup]
+2026-11-10T07:44:41.2107798Z ##[group]Fetching the repository
+2026-11-10T07:44:41.2122004Z [command]"C:\Program Files\Git\bin\git.exe" -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin 68e9e6c80b9139d5a4b081e4cdd41341fc951142
+2026-11-10T07:44:46.7603320Z From https://github.com/TrillionniumFoundation/hepta-private-ci
+2026-11-10T07:44:46.7604201Z  * branch            68e9e6c80b9139d5a4b081e4cdd41341fc951142 -> FETCH_HEAD
+2026-11-10T07:44:46.7679521Z [command]"C:\Program Files\Git\bin\git.exe" rev-parse --verify --quiet 68e9e6c80b9139d5a4b081e4cdd41341fc951142^{object}
+2026-11-10T07:44:46.8136591Z 68e9e6c80b9139d5a4b081e4cdd41341fc951142
+2026-11-10T07:44:46.8181659Z ##[endgroup]
+2026-11-10T07:44:46.8182312Z ##[group]Determining the checkout info
+2026-11-10T07:44:46.8182971Z ##[endgroup]
+2026-11-10T07:44:46.8193822Z [command]"C:\Program Files\Git\bin\git.exe" sparse-checkout disable
+2026-11-10T07:44:46.8686584Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset-all extensions.worktreeConfig
+2026-11-10T07:44:46.9075157Z ##[group]Checking out the ref
+2026-11-10T07:44:46.9075838Z [command]"C:\Program Files\Git\bin\git.exe" checkout --progress --force 68e9e6c80b9139d5a4b081e4cdd41341fc951142
+2026-11-10T07:44:47.9769833Z Updating files:  34% (3929/11346)
+2026-11-10T07:44:48.0025881Z Updating files:  35% (3972/11346)
+2026-11-10T07:44:48.0297387Z Updating files:  36% (4085/11346)
+2026-11-10T07:44:48.0945619Z Updating files:  37% (4199/11346)
+2026-11-10T07:44:48.1289321Z Updating files:  38% (4312/11346)
+2026-11-10T07:44:48.1861647Z Updating files:  39% (4425/11346)
+2026-11-10T07:44:48.2418956Z Updating files:  40% (4539/11346)
+2026-11-10T07:44:48.2704198Z Updating files:  41% (4652/11346)
+2026-11-10T07:44:48.2959015Z Updating files:  42% (4766/11346)
+2026-11-10T07:44:48.3227826Z Updating files:  43% (4879/11346)
+2026-11-10T07:44:48.3489078Z Updating files:  44% (4993/11346)
+2026-11-10T07:44:48.3772218Z Updating files:  45% (5106/11346)
+2026-11-10T07:44:48.4053353Z Updating files:  46% (5220/11346)
+2026-11-10T07:44:48.4371814Z Updating files:  47% (5333/11346)
+2026-11-10T07:44:48.4667274Z Updating files:  48% (5447/11346)
+2026-11-10T07:44:48.6828496Z Updating files:  49% (5560/11346)
+2026-11-10T07:44:48.7106070Z Updating files:  50% (5673/11346)
+2026-11-10T07:44:48.7384664Z Updating files:  51% (5787/11346)
+2026-11-10T07:44:48.7709161Z Updating files:  52% (5900/11346)
+2026-11-10T07:44:48.7950426Z Updating files:  53% (6014/11346)
+2026-11-10T07:44:48.8275742Z Updating files:  54% (6127/11346)
+2026-11-10T07:44:48.8541941Z Updating files:  55% (6241/11346)
+2026-11-10T07:44:48.8796731Z Updating files:  56% (6354/11346)
+2026-11-10T07:44:48.9068955Z Updating files:  57% (6468/11346)
+2026-11-10T07:44:48.9389320Z Updating files:  58% (6581/11346)
+2026-11-10T07:44:48.9641727Z Updating files:  59% (6695/11346)
+2026-11-10T07:44:48.9703683Z Updating files:  60% (6808/11346)
+2026-11-10T07:44:48.9922156Z Updating files:  60% (6832/11346)
+2026-11-10T07:44:49.0202158Z Updating files:  61% (6922/11346)
+2026-11-10T07:44:49.0480460Z Updating files:  62% (7035/11346)
+2026-11-10T07:44:49.0761954Z Updating files:  63% (7148/11346)
+2026-11-10T07:44:49.1048712Z Updating files:  64% (7262/11346)
+2026-11-10T07:44:49.1330410Z Updating files:  65% (7375/11346)
+2026-11-10T07:44:49.1562142Z Updating files:  66% (7489/11346)
+2026-11-10T07:44:49.1850278Z Updating files:  67% (7602/11346)
+2026-11-10T07:44:49.2117141Z Updating files:  68% (7716/11346)
+2026-11-10T07:44:49.2483604Z Updating files:  69% (7829/11346)
+2026-11-10T07:44:49.2741498Z Updating files:  70% (7943/11346)
+2026-11-10T07:44:49.3021141Z Updating files:  71% (8056/11346)
+2026-11-10T07:44:49.3209202Z Updating files:  72% (8170/11346)
+2026-11-10T07:44:49.3382317Z Updating files:  73% (8283/11346)
+2026-11-10T07:44:49.3546373Z Updating files:  74% (8397/11346)
+2026-11-10T07:44:49.3801959Z Updating files:  75% (8510/11346)
+2026-11-10T07:44:49.4174993Z Updating files:  76% (8623/11346)
+2026-11-10T07:44:49.4374430Z Updating files:  77% (8737/11346)
+2026-11-10T07:44:49.4602690Z Updating files:  78% (8850/11346)
+2026-11-10T07:44:49.4823767Z Updating files:  79% (8964/11346)
+2026-11-10T07:44:49.5003997Z Updating files:  80% (9077/11346)
+2026-11-10T07:44:49.5307989Z Updating files:  81% (9191/11346)
+2026-11-10T07:44:49.5562368Z Updating files:  82% (9304/11346)
+2026-11-10T07:44:49.5893437Z Updating files:  83% (9418/11346)
+2026-11-10T07:44:49.6085402Z Updating files:  84% (9531/11346)
+2026-11-10T07:44:49.6344277Z Updating files:  85% (9645/11346)
+2026-11-10T07:44:49.6676341Z Updating files:  86% (9758/11346)
+2026-11-10T07:44:49.6916665Z Updating files:  87% (9872/11346)
+2026-11-10T07:44:49.7185993Z Updating files:  88% (9985/11346)
+2026-11-10T07:44:49.7519991Z Updating files:  89% (10098/11346)
+2026-11-10T07:44:49.7860580Z Updating files:  90% (10212/11346)
+2026-11-10T07:44:49.8142523Z Updating files:  91% (10325/11346)
+2026-11-10T07:44:49.8395062Z Updating files:  92% (10439/11346)
+2026-11-10T07:44:49.8662903Z Updating files:  93% (10552/11346)
+2026-11-10T07:44:49.8944943Z Updating files:  94% (10666/11346)
+2026-11-10T07:44:50.1396014Z Updating files:  95% (10779/11346)
+2026-11-10T07:44:50.1456588Z Updating files:  95% (10872/11346)
+2026-11-10T07:44:50.1808058Z Updating files:  96% (10893/11346)
+2026-11-10T07:44:50.2069812Z Updating files:  97% (11006/11346)
+2026-11-10T07:44:50.2343153Z Updating files:  98% (11120/11346)
+2026-11-10T07:44:50.2606283Z Updating files:  99% (11233/11346)
+2026-11-10T07:44:50.2606680Z Updating files: 100% (11346/11346)
+2026-11-10T07:44:50.2606942Z Updating files: 100% (11346/11346), done.
+2026-11-10T07:44:50.3016054Z Note: switching to '68e9e6c80b9139d5a4b081e4cdd41341fc951142'.
+2026-11-10T07:44:50.3016933Z 
+2026-11-10T07:44:50.3017348Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-11-10T07:44:50.3018080Z changes and commit them, and you can discard any commits you make in this
+2026-11-10T07:44:50.3019640Z state without impacting any branches by switching back to a branch.
+2026-11-10T07:44:50.3020104Z 
+2026-11-10T07:44:50.3020354Z If you want to create a new branch to retain commits you create, you may
+2026-11-10T07:44:50.3020963Z do so (now or later) by using -c with the switch command. Example:
+2026-11-10T07:44:50.3021315Z 
+2026-11-10T07:44:50.3021477Z   git switch -c <new-branch-name>
+2026-11-10T07:44:50.3021698Z 
+2026-11-10T07:44:50.3021828Z Or undo this operation with:
+2026-11-10T07:44:50.3022030Z 
+2026-11-10T07:44:50.3022144Z   git switch -
+2026-11-10T07:44:50.3022298Z 
+2026-11-10T07:44:50.3022535Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-11-10T07:44:50.3022804Z 
+2026-11-10T07:44:50.3023068Z HEAD is now at 68e9e6c diagnostic(verify): cross native OpenSSH executable and key path spellings
+2026-11-10T07:44:50.3280118Z ##[endgroup]
+2026-11-10T07:44:50.3810717Z [command]"C:\Program Files\Git\bin\git.exe" log -1 --format=%H
+2026-11-10T07:44:50.4164231Z 68e9e6c80b9139d5a4b081e4cdd41341fc951142
+2026-11-10T07:44:50.4215997Z ##[group]Removing auth
+2026-11-10T07:44:50.4216439Z Removing SSH command configuration
+2026-11-10T07:44:50.4231782Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+2026-11-10T07:44:50.4628124Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+2026-11-10T07:44:51.0464744Z Removing HTTP extra header
+2026-11-10T07:44:51.0474849Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-10T07:44:51.0868077Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+2026-11-10T07:44:51.6910376Z Removing includeIf entries pointing to credentials config files
+2026-11-10T07:44:51.6919939Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-10T07:44:51.7474009Z includeif.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git.path
+2026-11-10T07:44:51.7476059Z includeif.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path
+2026-11-10T07:44:51.7480078Z includeif.gitdir:/github/workspace/.git.path
+2026-11-10T07:44:51.7482074Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-10T07:44:51.7578779Z [command]"C:\Program Files\Git\bin\git.exe" config --local --get-all includeif.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git.path
+2026-11-10T07:44:51.8052608Z D:\a\_temp\git-credentials-07daaa17-d190-47de-9e41-2ad7c5fb2dba.config
+2026-11-10T07:44:51.8116078Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset includeif.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git.path D:\a\_temp\git-credentials-07daaa17-d190-47de-9e41-2ad7c5fb2dba.config
+2026-11-10T07:44:51.8651785Z [command]"C:\Program Files\Git\bin\git.exe" config --local --get-all includeif.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path
+2026-11-10T07:44:51.9122939Z D:\a\_temp\git-credentials-07daaa17-d190-47de-9e41-2ad7c5fb2dba.config
+2026-11-10T07:44:51.9185741Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset includeif.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path D:\a\_temp\git-credentials-07daaa17-d190-47de-9e41-2ad7c5fb2dba.config
+2026-11-10T07:44:51.9729891Z [command]"C:\Program Files\Git\bin\git.exe" config --local --get-all includeif.gitdir:/github/workspace/.git.path
+2026-11-10T07:44:52.0195733Z /github/runner_temp/git-credentials-07daaa17-d190-47de-9e41-2ad7c5fb2dba.config
+2026-11-10T07:44:52.0257055Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset includeif.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-07daaa17-d190-47de-9e41-2ad7c5fb2dba.config
+2026-11-10T07:44:52.0811485Z [command]"C:\Program Files\Git\bin\git.exe" config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-10T07:44:52.1272919Z /github/runner_temp/git-credentials-07daaa17-d190-47de-9e41-2ad7c5fb2dba.config
+2026-11-10T07:44:52.1335070Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-07daaa17-d190-47de-9e41-2ad7c5fb2dba.config
+2026-11-10T07:44:52.1865303Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+2026-11-10T07:44:52.7938307Z Removing credentials config 'D:\a\_temp\git-credentials-07daaa17-d190-47de-9e41-2ad7c5fb2dba.config'
+2026-11-10T07:44:52.7951088Z ##[endgroup]
+2026-11-10T07:44:52.8391670Z ##[group]Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+2026-11-10T07:44:52.8392168Z with:
+2026-11-10T07:44:52.8392364Z   python-version: 3.12
+2026-11-10T07:44:52.8392593Z   check-latest: false
+2026-11-10T07:44:52.8395247Z   token: ***
+2026-11-10T07:44:52.8395435Z   update-environment: true
+2026-11-10T07:44:52.8395729Z   allow-prereleases: false
+2026-11-10T07:44:52.8395931Z   freethreaded: false
+2026-11-10T07:44:52.8396118Z env:
+2026-11-10T07:44:52.8396330Z   REVIEWED_SHA: 68e9e6c80b9139d5a4b081e4cdd41341fc951142
+2026-11-10T07:44:52.8396605Z ##[endgroup]
+2026-11-10T07:44:53.0060849Z ##[group]Installed versions
+2026-11-10T07:44:53.0251168Z Successfully set up CPython (3.12.10)
+2026-11-10T07:44:53.0252172Z ##[endgroup]
+2026-11-10T07:44:53.0540315Z ##[group]Run $head = (git rev-parse HEAD).Trim()
+2026-11-10T07:44:53.0540779Z [36;1m$head = (git rev-parse HEAD).Trim()[0m
+2026-11-10T07:44:53.0541200Z [36;1mif ($head -cne $env:REVIEWED_SHA) { throw 'Reviewed source mismatch' }[0m
+2026-11-10T07:44:53.0541851Z [36;1mpython -B scripts/hepta_openssh_path_diagnostic.py --source-sha $head --output "$env:RUNNER_TEMP/openssh-path-diagnostic"[0m
+2026-11-10T07:44:53.0542402Z [36;1m$diagnosticExit = $LASTEXITCODE[0m
+2026-11-10T07:44:53.0542658Z [36;1mgit diff --exit-code[0m
+2026-11-10T07:44:53.0542917Z [36;1mif ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }[0m
+2026-11-10T07:44:53.0543202Z [36;1mexit $diagnosticExit[0m
+2026-11-10T07:44:53.1261898Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+2026-11-10T07:44:53.1262287Z env:
+2026-11-10T07:44:53.1262552Z   REVIEWED_SHA: 68e9e6c80b9139d5a4b081e4cdd41341fc951142
+2026-11-10T07:44:53.1267862Z   pythonLocation: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-11-10T07:44:53.1268348Z   PKG_CONFIG_PATH: C:\hostedtoolcache\windows\Python\3.12.10\x64/lib/pkgconfig
+2026-11-10T07:44:53.1268775Z   Python_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-11-10T07:44:53.1269147Z   Python2_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-11-10T07:44:53.1269518Z   Python3_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-11-10T07:44:53.1269821Z ##[endgroup]
+2026-11-10T07:44:55.6878194Z {"cases": [{"directory": "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\drive", "executable_argument": "C:\\Windows\\system32\\OpenSSH\\ssh-keygen.exe", "executable_verbatim_argv": false, "key_argument": "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\drive\\operator-key", "name": "drive", "statement_sha256": "2648aa5a8c9857daa43dd39c7b560b733dcdbea4edf4c50b9c88dfc42644a5fe", "status": "ALL_STAGES_OBSERVED", "verbatim_argv": false}, {"directory": "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\verbatim", "executable_argument": "C:\\Windows\\system32\\OpenSSH\\ssh-keygen.exe", "executable_verbatim_argv": false, "key_argument": "\\\\?\\C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\verbatim\\operator-key", "name": "verbatim", "statement_sha256": "2648aa5a8c9857daa43dd39c7b560b733dcdbea4edf4c50b9c88dfc42644a5fe", "status": "ALL_STAGES_OBSERVED", "verbatim_argv": true}, {"directory": "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\verbatim-executable-drive", "executable_argument": "\\\\?\\C:\\Windows\\system32\\OpenSSH\\ssh-keygen.exe", "executable_verbatim_argv": true, "key_argument": "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\verbatim-executable-drive\\operator-key", "name": "verbatim-executable-drive", "statement_sha256": "2648aa5a8c9857daa43dd39c7b560b733dcdbea4edf4c50b9c88dfc42644a5fe", "status": "ALL_STAGES_OBSERVED", "verbatim_argv": false}, {"directory": "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\verbatim-executable-verbatim", "executable_argument": "\\\\?\\C:\\Windows\\system32\\OpenSSH\\ssh-keygen.exe", "executable_verbatim_argv": true, "key_argument": "\\\\?\\C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\verbatim-executable-verbatim\\operator-key", "name": "verbatim-executable-verbatim", "statement_sha256": "2648aa5a8c9857daa43dd39c7b560b733dcdbea4edf4c50b9c88dfc42644a5fe", "status": "ALL_STAGES_OBSERVED", "verbatim_argv": true}], "diagnostic_success": true, "ephemeral_keys_removed": true, "executable": {"file_version": [9, 5, 6, 4], "path": "C:\\Windows\\system32\\OpenSSH\\ssh-keygen.exe", "product_version": [9, 5, 6, 4], "sha256_after": "c9dc170cd161db87e75eb6cf282f1325005b9e35628b9a36cb19883a8be1a34f", "sha256_before": "c9dc170cd161db87e75eb6cf282f1325005b9e35628b9a36cb19883a8be1a34f"}, "executable_identity_unchanged": true, "operations": [{"argv": ["C:\\Windows\\system32\\icacls.exe", "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\drive"], "elapsed_wall_seconds": 0.014009299999997893, "exit_code": 0, "expected_exit": 0, "expected_exit_observed": true, "name": "drive-directory-acl", "stderr": {"bytes": 0, "file": "drive-directory-acl.stderr.bin", "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "utf8": ""}, "stdin_mode": "DEVNULL", "stdin_sha256": null, "stdout": {"bytes": 365, "file": "drive-directory-acl.stdout.bin", "sha256": "f43cb8f8e7c7e459fb326655845db54389341fdbf32d2f8b5e04d601d0283d48", "utf8": "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\drive NT AUTHORITY\\SYSTEM:(OI)(CI)(F)\n                                                                       BUILTIN\\Administrators:(OI)(CI)(F)\n                                                                       OWNER RIGHTS:(OI)(CI)(F)\n\nSuccessfully processed 1 files; Failed processing 0 files\r\n"}}, {"argv": ["C:\\Windows\\system32\\OpenSSH\\ssh-keygen.exe", "-q", "-t", "ed25519", "-N", "", "-f", "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\drive\\operator-key"], "elapsed_wall_seconds": 0.018870900000010238, "exit_code": 0, "expected_exit": 0, "expected_exit_observed": true, "name": "drive-generate", "stderr": {"bytes": 0, "file": "drive-generate.stderr.bin", "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "utf8": ""}, "stdin_mode": "DEVNULL", "stdin_sha256": null, "stdout": {"bytes": 0, "file": "drive-generate.stdout.bin", "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "utf8": ""}}, {"argv": ["C:\\Windows\\system32\\OpenSSH\\ssh-keygen.exe", "-E", "sha256", "-lf", "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\drive\\operator-key.pub"], "elapsed_wall_seconds": 0.017293500000008066, "exit_code": 0, "expected_exit": 0, "expected_exit_observed": true, "name": "drive-fingerprint", "stderr": {"bytes": 0, "file": "drive-fingerprint.stderr.bin", "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "utf8": ""}, "stdin_mode": "DEVNULL", "stdin_sha256": null, "stdout": {"bytes": 92, "file": "drive-fingerprint.stdout.bin", "sha256": "0e9f163df45112f3c0d0fca44e5552dce0aab369ee778e8714a08d00e055189a", "utf8": "256 SHA256:kxCUqfOtjcEGlYZYc6zqlAQkWlSsi8oTZgfzOABtCXk runneradmin@runnervmm7ud1 (ED25519)\r\n"}}, {"argv": ["C:\\Windows\\system32\\OpenSSH\\ssh-keygen.exe", "-Y", "sign", "-f", "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\drive\\operator-key", "-n", "hepta-path-diagnostic", "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\drive\\statement"], "elapsed_wall_seconds": 0.020605799999998453, "exit_code": 0, "expected_exit": 0, "expected_exit_observed": true, "name": "drive-sign", "stderr": {"bytes": 200, "file": "drive-sign.stderr.bin", "sha256": "f7dc8d9a178e1fd3e03cfe0110d6f0136e0f993b27bb9c0e4049b13fee37c83a", "utf8": "Signing file C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\drive\\statement\r\nWrite signature to C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\drive\\statement.sig\r\n"}, "stdin_mode": "DEVNULL", "stdin_sha256": null, "stdout": {"bytes": 0, "file": "drive-sign.stdout.bin", "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "utf8": ""}}, {"argv": ["C:\\Windows\\system32\\OpenSSH\\ssh-keygen.exe", "-Y", "verify", "-f", "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\drive\\allowed_signers", "-I", "diagnostic", "-n", "hepta-path-diagnostic", "-s", "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\drive\\statement.sig"], "elapsed_wall_seconds": 0.021169299999996838, "exit_code": 0, "expected_exit": 0, "expected_exit_observed": true, "name": "drive-verify", "stderr": {"bytes": 0, "file": "drive-verify.stderr.bin", "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "utf8": ""}, "stdin_mode": "file", "stdin_sha256": "2648aa5a8c9857daa43dd39c7b560b733dcdbea4edf4c50b9c88dfc42644a5fe", "stdout": {"bytes": 123, "file": "drive-verify.stdout.bin", "sha256": "e47b4ae2ba563758e9ba46dd7d5c3ccd198dd213d9576fab99c6818679c15f3f", "utf8": "Good \"hepta-path-diagnostic\" signature for diagnostic with ED25519 key SHA256:kxCUqfOtjcEGlYZYc6zqlAQkWlSsi8oTZgfzOABtCXk\r\n"}}, {"argv": ["C:\\Windows\\system32\\OpenSSH\\ssh-keygen.exe", "-Y", "verify", "-f", "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\drive\\allowed_signers", "-I", "diagnostic", "-n", "wrong-namespace", "-s", "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\drive\\statement.sig"], "elapsed_wall_seconds": 0.018146100000009824, "exit_code": 4294967295, "expected_exit": "nonzero", "expected_exit_observed": true, "name": "drive-wrong-namespace", "stderr": {"bytes": 53, "file": "drive-wrong-namespace.stderr.bin", "sha256": "9bd29b8ad464abaa369873681c84108b9d1ab2a61b03448419c69b158ac25f00", "utf8": "Couldn't verify signature: namespace does not match\r\n"}, "stdin_mode": "file", "stdin_sha256": "2648aa5a8c9857daa43dd39c7b560b733dcdbea4edf4c50b9c88dfc42644a5fe", "stdout": {"bytes": 29, "file": "drive-wrong-namespace.stdout.bin", "sha256": "60d62558ded958e8877989fcb0872c91e0cac25a85d028a930fccba435c20e37", "utf8": "Could not verify signature.\r\n"}}, {"argv": ["C:\\Windows\\system32\\icacls.exe", "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\verbatim"], "elapsed_wall_seconds": 0.008583999999999037, "exit_code": 0, "expected_exit": 0, "expected_exit_observed": true, "name": "verbatim-directory-acl", "stderr": {"bytes": 0, "file": "verbatim-directory-acl.stderr.bin", "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "utf8": ""}, "stdin_mode": "DEVNULL", "stdin_sha256": null, "stdout": {"bytes": 374, "file": "verbatim-directory-acl.stdout.bin", "sha256": "ef5c4a467a11d25fd32fe7b878f3a950d692bc365209890e35886c4472cd3264", "utf8": "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\verbatim NT AUTHORITY\\SYSTEM:(OI)(CI)(F)\n                                                                          BUILTIN\\Administrators:(OI)(CI)(F)\n                                                                          OWNER RIGHTS:(OI)(CI)(F)\n\nSuccessfully processed 1 files; Failed processing 0 files\r\n"}}, {"argv": ["C:\\Windows\\system32\\OpenSSH\\ssh-keygen.exe", "-q", "-t", "ed25519", "-N", "", "-f", "\\\\?\\C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\verbatim\\operator-key"], "elapsed_wall_seconds": 0.017987899999994283, "exit_code": 0, "expected_exit": 0, "expected_exit_observed": true, "name": "verbatim-generate", "stderr": {"bytes": 0, "file": "verbatim-generate.stderr.bin", "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "utf8": ""}, "stdin_mode": "DEVNULL", "stdin_sha256": null, "stdout": {"bytes": 0, "file": "verbatim-generate.stdout.bin", "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "utf8": ""}}, {"argv": ["C:\\Windows\\system32\\OpenSSH\\ssh-keygen.exe", "-E", "sha256", "-lf", "\\\\?\\C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\verbatim\\operator-key.pub"], "elapsed_wall_seconds": 0.01598150000000942, "exit_code": 0, "expected_exit": 0, "expected_exit_observed": true, "name": "verbatim-fingerprint", "stderr": {"bytes": 0, "file": "verbatim-fingerprint.stderr.bin", "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "utf8": ""}, "stdin_mode": "DEVNULL", "stdin_sha256": null, "stdout": {"bytes": 92, "file": "verbatim-fingerprint.stdout.bin", "sha256": "9c653bf667bd31fb258d222ec90f41e8dbb7df8872a124d7ae714df28088a5d7", "utf8": "256 SHA256:ZW3d6/t4kUit/CD6AAt3Rn3F5Yw196PTnJZ82pBkEuc runneradmin@runnervmm7ud1 (ED25519)\r\n"}}, {"argv": ["C:\\Windows\\system32\\OpenSSH\\ssh-keygen.exe", "-Y", "sign", "-f", "\\\\?\\C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\verbatim\\operator-key", "-n", "hepta-path-diagnostic", "\\\\?\\C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\verbatim\\statement"], "elapsed_wall_seconds": 0.0191983999999934, "exit_code": 0, "expected_exit": 0, "expected_exit_observed": true, "name": "verbatim-sign", "stderr": {"bytes": 214, "file": "verbatim-sign.stderr.bin", "sha256": "4f45cafb9d4b1763b12743d41eb362f8b09c2d4bdb9ab7a4003abd935e6e1c54", "utf8": "Signing file \\\\?\\C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\verbatim\\statement\r\nWrite signature to \\\\?\\C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\verbatim\\statement.sig\r\n"}, "stdin_mode": "DEVNULL", "stdin_sha256": null, "stdout": {"bytes": 0, "file": "verbatim-sign.stdout.bin", "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "utf8": ""}}, {"argv": ["C:\\Windows\\system32\\OpenSSH\\ssh-keygen.exe", "-Y", "verify", "-f", "\\\\?\\C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\verbatim\\allowed_signers", "-I", "diagnostic", "-n", "hepta-path-diagnostic", "-s", "\\\\?\\C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\verbatim\\statement.sig"], "elapsed_wall_seconds": 0.019883499999991727, "exit_code": 0, "expected_exit": 0, "expected_exit_observed": true, "name": "verbatim-verify", "stderr": {"bytes": 0, "file": "verbatim-verify.stderr.bin", "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "utf8": ""}, "stdin_mode": "file", "stdin_sha256": "2648aa5a8c9857daa43dd39c7b560b733dcdbea4edf4c50b9c88dfc42644a5fe", "stdout": {"bytes": 123, "file": "verbatim-verify.stdout.bin", "sha256": "acdcda4d4ca9228a29e967e11e8cef38b4063ebe1acd942140b47321583fa55c", "utf8": "Good \"hepta-path-diagnostic\" signature for diagnostic with ED25519 key SHA256:ZW3d6/t4kUit/CD6AAt3Rn3F5Yw196PTnJZ82pBkEuc\r\n"}}, {"argv": ["C:\\Windows\\system32\\OpenSSH\\ssh-keygen.exe", "-Y", "verify", "-f", "\\\\?\\C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\verbatim\\allowed_signers", "-I", "diagnostic", "-n", "wrong-namespace", "-s", "\\\\?\\C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\verbatim\\statement.sig"], "elapsed_wall_seconds": 0.018280700000005368, "exit_code": 4294967295, "expected_exit": "nonzero", "expected_exit_observed": true, "name": "verbatim-wrong-namespace", "stderr": {"bytes": 53, "file": "verbatim-wrong-namespace.stderr.bin", "sha256": "9bd29b8ad464abaa369873681c84108b9d1ab2a61b03448419c69b158ac25f00", "utf8": "Couldn't verify signature: namespace does not match\r\n"}, "stdin_mode": "file", "stdin_sha256": "2648aa5a8c9857daa43dd39c7b560b733dcdbea4edf4c50b9c88dfc42644a5fe", "stdout": {"bytes": 29, "file": "verbatim-wrong-namespace.stdout.bin", "sha256": "60d62558ded958e8877989fcb0872c91e0cac25a85d028a930fccba435c20e37", "utf8": "Could not verify signature.\r\n"}}, {"argv": ["C:\\Windows\\system32\\icacls.exe", "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\verbatim-executable-drive"], "elapsed_wall_seconds": 0.008590100000006373, "exit_code": 0, "expected_exit": 0, "expected_exit_observed": true, "name": "verbatim-executable-drive-directory-acl", "stderr": {"bytes": 0, "file": "verbatim-executable-drive-directory-acl.stderr.bin", "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "utf8": ""}, "stdin_mode": "DEVNULL", "stdin_sha256": null, "stdout": {"bytes": 425, "file": "verbatim-executable-drive-directory-acl.stdout.bin", "sha256": "4ac6345b69e1883fd1fa64a6afd945f4fc790790f0e3f0a536cdbce42c9c1205", "utf8": "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\verbatim-executable-drive NT AUTHORITY\\SYSTEM:(OI)(CI)(F)\n                                                                                           BUILTIN\\Administrators:(OI)(CI)(F)\n                                                                                           OWNER RIGHTS:(OI)(CI)(F)\n\nSuccessfully processed 1 files; Failed processing 0 files\r\n"}}, {"argv": ["\\\\?\\C:\\Windows\\system32\\OpenSSH\\ssh-keygen.exe", "-q", "-t", "ed25519", "-N", "", "-f", "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\verbatim-executable-drive\\operator-key"], "elapsed_wall_seconds": 0.021035800000007043, "exit_code": 0, "expected_exit": 0, "expected_exit_observed": true, "name": "verbatim-executable-drive-generate", "stderr": {"bytes": 0, "file": "verbatim-executable-drive-generate.stderr.bin", "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "utf8": ""}, "stdin_mode": "DEVNULL", "stdin_sha256": null, "stdout": {"bytes": 0, "file": "verbatim-executable-drive-generate.stdout.bin", "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "utf8": ""}}, {"argv": ["\\\\?\\C:\\Windows\\system32\\OpenSSH\\ssh-keygen.exe", "-E", "sha256", "-lf", "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\verbatim-executable-drive\\operator-key.pub"], "elapsed_wall_seconds": 0.01731059999998763, "exit_code": 0, "expected_exit": 0, "expected_exit_observed": true, "name": "verbatim-executable-drive-fingerprint", "stderr": {"bytes": 0, "file": "verbatim-executable-drive-fingerprint.stderr.bin", "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "utf8": ""}, "stdin_mode": "DEVNULL", "stdin_sha256": null, "stdout": {"bytes": 92, "file": "verbatim-executable-drive-fingerprint.stdout.bin", "sha256": "9ea038f7aa53ea59a71edd4a1ff56bf2426c800322c48d234084cab0085890fe", "utf8": "256 SHA256:3W6VvhMcOERt2NAsZYJ1DuB/DkPtrKhghS9FyaeXpjs runneradmin@runnervmm7ud1 (ED25519)\r\n"}}, {"argv": ["\\\\?\\C:\\Windows\\system32\\OpenSSH\\ssh-keygen.exe", "-Y", "sign", "-f", "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\verbatim-executable-drive\\operator-key", "-n", "hepta-path-diagnostic", "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\verbatim-executable-drive\\statement"], "elapsed_wall_seconds": 0.022943499999996675, "exit_code": 0, "expected_exit": 0, "expected_exit_observed": true, "name": "verbatim-executable-drive-sign", "stderr": {"bytes": 240, "file": "verbatim-executable-drive-sign.stderr.bin", "sha256": "f7b08e99362be528227e23f6b2ace19d0768913b20a1655d071871e0d5a55566", "utf8": "Signing file C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\verbatim-executable-drive\\statement\r\nWrite signature to C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\verbatim-executable-drive\\statement.sig\r\n"}, "stdin_mode": "DEVNULL", "stdin_sha256": null, "stdout": {"bytes": 0, "file": "verbatim-executable-drive-sign.stdout.bin", "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "utf8": ""}}, {"argv": ["\\\\?\\C:\\Windows\\system32\\OpenSSH\\ssh-keygen.exe", "-Y", "verify", "-f", "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\verbatim-executable-drive\\allowed_signers", "-I", "diagnostic", "-n", "hepta-path-diagnostic", "-s", "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\verbatim-executable-drive\\statement.sig"], "elapsed_wall_seconds": 0.02256669999999872, "exit_code": 0, "expected_exit": 0, "expected_exit_observed": true, "name": "verbatim-executable-drive-verify", "stderr": {"bytes": 0, "file": "verbatim-executable-drive-verify.stderr.bin", "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "utf8": ""}, "stdin_mode": "file", "stdin_sha256": "2648aa5a8c9857daa43dd39c7b560b733dcdbea4edf4c50b9c88dfc42644a5fe", "stdout": {"bytes": 123, "file": "verbatim-executable-drive-verify.stdout.bin", "sha256": "14888c26ad13b3a34c346d5ca49940959e64c7f4885ab113fe95d8a434a8a2cd", "utf8": "Good \"hepta-path-diagnostic\" signature for diagnostic with ED25519 key SHA256:3W6VvhMcOERt2NAsZYJ1DuB/DkPtrKhghS9FyaeXpjs\r\n"}}, {"argv": ["\\\\?\\C:\\Windows\\system32\\OpenSSH\\ssh-keygen.exe", "-Y", "verify", "-f", "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\verbatim-executable-drive\\allowed_signers", "-I", "diagnostic", "-n", "wrong-namespace", "-s", "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\verbatim-executable-drive\\statement.sig"], "elapsed_wall_seconds": 0.02075460000000362, "exit_code": 4294967295, "expected_exit": "nonzero", "expected_exit_observed": true, "name": "verbatim-executable-drive-wrong-namespace", "stderr": {"bytes": 53, "file": "verbatim-executable-drive-wrong-namespace.stderr.bin", "sha256": "9bd29b8ad464abaa369873681c84108b9d1ab2a61b03448419c69b158ac25f00", "utf8": "Couldn't verify signature: namespace does not match\r\n"}, "stdin_mode": "file", "stdin_sha256": "2648aa5a8c9857daa43dd39c7b560b733dcdbea4edf4c50b9c88dfc42644a5fe", "stdout": {"bytes": 29, "file": "verbatim-executable-drive-wrong-namespace.stdout.bin", "sha256": "60d62558ded958e8877989fcb0872c91e0cac25a85d028a930fccba435c20e37", "utf8": "Could not verify signature.\r\n"}}, {"argv": ["C:\\Windows\\system32\\icacls.exe", "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\verbatim-executable-verbatim"], "elapsed_wall_seconds": 0.009765599999994379, "exit_code": 0, "expected_exit": 0, "expected_exit_observed": true, "name": "verbatim-executable-verbatim-directory-acl", "stderr": {"bytes": 0, "file": "verbatim-executable-verbatim-directory-acl.stderr.bin", "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "utf8": ""}, "stdin_mode": "DEVNULL", "stdin_sha256": null, "stdout": {"bytes": 434, "file": "verbatim-executable-verbatim-directory-acl.stdout.bin", "sha256": "ea0f10d60c286a4ff39156c76169f398d3d74c8079c1f749c0db794c1d40758f", "utf8": "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\verbatim-executable-verbatim NT AUTHORITY\\SYSTEM:(OI)(CI)(F)\n                                                                                              BUILTIN\\Administrators:(OI)(CI)(F)\n                                                                                              OWNER RIGHTS:(OI)(CI)(F)\n\nSuccessfully processed 1 files; Failed processing 0 files\r\n"}}, {"argv": ["\\\\?\\C:\\Windows\\system32\\OpenSSH\\ssh-keygen.exe", "-q", "-t", "ed25519", "-N", "", "-f", "\\\\?\\C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\verbatim-executable-verbatim\\operator-key"], "elapsed_wall_seconds": 0.02072610000000452, "exit_code": 0, "expected_exit": 0, "expected_exit_observed": true, "name": "verbatim-executable-verbatim-generate", "stderr": {"bytes": 0, "file": "verbatim-executable-verbatim-generate.stderr.bin", "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "utf8": ""}, "stdin_mode": "DEVNULL", "stdin_sha256": null, "stdout": {"bytes": 0, "file": "verbatim-executable-verbatim-generate.stdout.bin", "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "utf8": ""}}, {"argv": ["\\\\?\\C:\\Windows\\system32\\OpenSSH\\ssh-keygen.exe", "-E", "sha256", "-lf", "\\\\?\\C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\verbatim-executable-verbatim\\operator-key.pub"], "elapsed_wall_seconds": 0.016741899999999532, "exit_code": 0, "expected_exit": 0, "expected_exit_observed": true, "name": "verbatim-executable-verbatim-fingerprint", "stderr": {"bytes": 0, "file": "verbatim-executable-verbatim-fingerprint.stderr.bin", "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "utf8": ""}, "stdin_mode": "DEVNULL", "stdin_sha256": null, "stdout": {"bytes": 92, "file": "verbatim-executable-verbatim-fingerprint.stdout.bin", "sha256": "6c5c69f265442ff4600b5461b8b945941845e2e928d180780e712d4acd45fe5b", "utf8": "256 SHA256:dIK2Rz/RNJlklNxqmph1rzgTvrTiDrfd1rhInU5LYS8 runneradmin@runnervmm7ud1 (ED25519)\r\n"}}, {"argv": ["\\\\?\\C:\\Windows\\system32\\OpenSSH\\ssh-keygen.exe", "-Y", "sign", "-f", "\\\\?\\C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\verbatim-executable-verbatim\\operator-key", "-n", "hepta-path-diagnostic", "\\\\?\\C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\verbatim-executable-verbatim\\statement"], "elapsed_wall_seconds": 0.019686999999990462, "exit_code": 0, "expected_exit": 0, "expected_exit_observed": true, "name": "verbatim-executable-verbatim-sign", "stderr": {"bytes": 254, "file": "verbatim-executable-verbatim-sign.stderr.bin", "sha256": "b81bb946a95d1146df71dca7b047d2b95062663e44e04ea55f15da2dd8c18ed4", "utf8": "Signing file \\\\?\\C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\verbatim-executable-verbatim\\statement\r\nWrite signature to \\\\?\\C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\verbatim-executable-verbatim\\statement.sig\r\n"}, "stdin_mode": "DEVNULL", "stdin_sha256": null, "stdout": {"bytes": 0, "file": "verbatim-executable-verbatim-sign.stdout.bin", "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "utf8": ""}}, {"argv": ["\\\\?\\C:\\Windows\\system32\\OpenSSH\\ssh-keygen.exe", "-Y", "verify", "-f", "\\\\?\\C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\verbatim-executable-verbatim\\allowed_signers", "-I", "diagnostic", "-n", "hepta-path-diagnostic", "-s", "\\\\?\\C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\verbatim-executable-verbatim\\statement.sig"], "elapsed_wall_seconds": 0.021050299999998856, "exit_code": 0, "expected_exit": 0, "expected_exit_observed": true, "name": "verbatim-executable-verbatim-verify", "stderr": {"bytes": 0, "file": "verbatim-executable-verbatim-verify.stderr.bin", "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "utf8": ""}, "stdin_mode": "file", "stdin_sha256": "2648aa5a8c9857daa43dd39c7b560b733dcdbea4edf4c50b9c88dfc42644a5fe", "stdout": {"bytes": 123, "file": "verbatim-executable-verbatim-verify.stdout.bin", "sha256": "5d25f84a06cbebbb916ef23edbd503dea69c36c28e5d75d2eeef0f941885dff9", "utf8": "Good \"hepta-path-diagnostic\" signature for diagnostic with ED25519 key SHA256:dIK2Rz/RNJlklNxqmph1rzgTvrTiDrfd1rhInU5LYS8\r\n"}}, {"argv": ["\\\\?\\C:\\Windows\\system32\\OpenSSH\\ssh-keygen.exe", "-Y", "verify", "-f", "\\\\?\\C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\verbatim-executable-verbatim\\allowed_signers", "-I", "diagnostic", "-n", "wrong-namespace", "-s", "\\\\?\\C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\verbatim-executable-verbatim\\statement.sig"], "elapsed_wall_seconds": 0.01968469999999911, "exit_code": 4294967295, "expected_exit": "nonzero", "expected_exit_observed": true, "name": "verbatim-executable-verbatim-wrong-namespace", "stderr": {"bytes": 53, "file": "verbatim-executable-verbatim-wrong-namespace.stderr.bin", "sha256": "9bd29b8ad464abaa369873681c84108b9d1ab2a61b03448419c69b158ac25f00", "utf8": "Couldn't verify signature: namespace does not match\r\n"}, "stdin_mode": "file", "stdin_sha256": "2648aa5a8c9857daa43dd39c7b560b733dcdbea4edf4c50b9c88dfc42644a5fe", "stdout": {"bytes": 29, "file": "verbatim-executable-verbatim-wrong-namespace.stdout.bin", "sha256": "60d62558ded958e8877989fcb0872c91e0cac25a85d028a930fccba435c20e37", "utf8": "Could not verify signature.\r\n"}}], "original_operator_target_qualified": false, "os": "Windows-2025Server-10.0.26100-SP0", "production_authority": "NONE", "python": "3.12.10", "schema": "hepta.openssh-path-diagnostic.v1", "script_sha256": "7794f06e824e3f5cd6ee7cab29375206d11186e8fd37eeeb1dad4e3434b756d6", "source_sha": "68e9e6c80b9139d5a4b081e4cdd41341fc951142", "temporary_root": "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x"}
+2026-11-10T07:44:55.9396807Z ##[group]Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+2026-11-10T07:44:55.9397260Z with:
+2026-11-10T07:44:55.9397516Z   name: openssh-path-68e9e6c80b9139d5a4b081e4cdd41341fc951142
+2026-11-10T07:44:55.9397848Z   path: D:\a\_temp/openssh-path-diagnostic
+2026-11-10T07:44:55.9398105Z   if-no-files-found: error
+2026-11-10T07:44:55.9398318Z   compression-level: 6
+2026-11-10T07:44:55.9398504Z   overwrite: false
+2026-11-10T07:44:55.9398688Z   include-hidden-files: false
+2026-11-10T07:44:55.9398883Z env:
+2026-11-10T07:44:55.9399114Z   REVIEWED_SHA: 68e9e6c80b9139d5a4b081e4cdd41341fc951142
+2026-11-10T07:44:55.9399464Z   pythonLocation: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-11-10T07:44:55.9399873Z   PKG_CONFIG_PATH: C:\hostedtoolcache\windows\Python\3.12.10\x64/lib/pkgconfig
+2026-11-10T07:44:55.9400280Z   Python_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-11-10T07:44:55.9400689Z   Python2_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-11-10T07:44:55.9401053Z   Python3_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-11-10T07:44:55.9401342Z ##[endgroup]
+2026-11-10T07:44:56.1595458Z (node:5568) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-10T07:44:56.1596841Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-10T07:44:56.1804643Z With the provided path, there will be 49 files uploaded
+2026-11-10T07:44:56.1811949Z Artifact name is valid!
+2026-11-10T07:44:56.1813317Z Root directory input is valid!
+2026-11-10T07:44:56.5436296Z Beginning upload of artifact content to blob storage
+2026-11-10T07:44:56.6367998Z (node:5568) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+2026-11-10T07:44:56.8376418Z Uploaded bytes 14092
+2026-11-10T07:44:56.8961074Z Finished uploading artifact content to blob storage!
+2026-11-10T07:44:56.8962661Z SHA256 digest of uploaded artifact zip is 1f2057c52e6b8be9b31eb1dcde1f9bc720b4c2c48e5f423f51fdf8ec3a01f824
+2026-11-10T07:44:56.8965648Z Finalizing artifact upload
+2026-11-10T07:44:57.2838455Z Artifact openssh-path-68e9e6c80b9139d5a4b081e4cdd41341fc951142.zip successfully finalized. Artifact ID 13744367581
+2026-11-10T07:44:57.2840363Z Artifact openssh-path-68e9e6c80b9139d5a4b081e4cdd41341fc951142 has been successfully uploaded! Final size is 14092 bytes. Artifact ID is 13744367581
+2026-11-10T07:44:57.2851949Z Artifact download URL: https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42777387975/artifacts/13744367581
+2026-11-10T07:44:57.3269627Z Post job cleanup.
+2026-11-10T07:44:57.5798903Z Post job cleanup.
+2026-11-10T07:44:57.8325887Z [command]"C:\Program Files\Git\bin\git.exe" version
+2026-11-10T07:44:57.8711684Z git version 2.56.0.windows.4
+2026-11-10T07:44:57.8813102Z Temporarily overriding HOME='D:\a\_temp\f9280126-d47c-4639-bc0a-8945da57708e' before making global git config changes
+2026-11-10T07:44:57.8814441Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-10T07:44:57.8831726Z [command]"C:\Program Files\Git\bin\git.exe" config --global --add safe.directory D:\a\hepta-private-ci\hepta-private-ci
+2026-11-10T07:44:57.9416667Z Removing SSH command configuration
+2026-11-10T07:44:57.9417882Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+2026-11-10T07:44:57.9875553Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+2026-11-10T07:44:58.6841709Z Removing HTTP extra header
+2026-11-10T07:44:58.6852791Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-10T07:44:58.7329752Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+2026-11-10T07:44:59.9219393Z Removing includeIf entries pointing to credentials config files
+2026-11-10T07:44:59.9232861Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-10T07:44:59.9604316Z includeif.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git.path
+2026-11-10T07:44:59.9605402Z includeif.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path
+2026-11-10T07:44:59.9716593Z [command]"C:\Program Files\Git\bin\git.exe" config --local --get-all includeif.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git.path
+2026-11-10T07:45:00.0102611Z D:\a\_temp\git-credentials-07daaa17-d190-47de-9e41-2ad7c5fb2dba.config
+2026-11-10T07:45:00.0166405Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset includeif.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git.path D:\a\_temp\git-credentials-07daaa17-d190-47de-9e41-2ad7c5fb2dba.config
+2026-11-10T07:45:00.0616480Z [command]"C:\Program Files\Git\bin\git.exe" config --local --get-all includeif.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path
+2026-11-10T07:45:00.0995076Z D:\a\_temp\git-credentials-07daaa17-d190-47de-9e41-2ad7c5fb2dba.config
+2026-11-10T07:45:00.1069545Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset includeif.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path D:\a\_temp\git-credentials-07daaa17-d190-47de-9e41-2ad7c5fb2dba.config
+2026-11-10T07:45:00.1503311Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+2026-11-10T07:45:01.0263457Z Removing credentials config 'D:\a\_temp\git-credentials-07daaa17-d190-47de-9e41-2ad7c5fb2dba.config'
+2026-11-10T07:45:01.0537992Z Cleaning up orphan processes
+2026-11-10T07:45:01.0881511Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
