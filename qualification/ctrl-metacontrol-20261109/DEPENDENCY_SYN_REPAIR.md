@@ -23,3 +23,7 @@ Parsed TOML comparisons require every other package, checksum and dependency to 
 ## Qualification boundary
 
 This is **a new candidate for validation**, not evidence that its new GitHub Actions run passed. Do not transfer the successful original lock/Bazel/deny stages to the modified source without fresh logs. SQLCipher migration, legacy-init and custom rmcp OAuth/DNS/HTTP limits still require distinct owner and adversarial tests. No producer, stored label or independent policy benefit is established. Full task-specific costs remain unknown; the 37 reserved CTRL future sources remain sealed. Status: **HOLD_NO_GO / NoUpdate / no production activation**.
+
+## Inherited repository spelling gate
+
+The original source-head blocking CI also fails on two pre-existing codespell false positives in `METHOD.zh-CN.md` (the actual `people.bu.edu` domain and BAGEL `MoT` acronym). Reuse the **exact two-line postimage** from CTRL #5642 (`90dd73c9125a8170e3dcc240bf20ebba40fce29d`), which is derived from the precise original base blob `9b49597ff6057670b7af603c23e293ee8e649c5d`. No URL, analysis or other text changes. This shared spelling-only integration is distinct from dependency resolution, and cannot qualify the full blocking CI by itself.
