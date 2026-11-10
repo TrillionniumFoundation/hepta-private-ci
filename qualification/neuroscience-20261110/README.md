@@ -6,6 +6,32 @@ a live Cell owner, a StageOwner port, a production scheduler, an independently
 attested evaluation, or evidence of scientific gain. They do not change selected
 weights, install a learner, revive deleted records, or make any external effects.
 
+## Native Q24 research comparator
+
+`codex-rs/hepta-neuron/src/plasticity/temporal_credit.rs` now provides a
+bounded, **read-only Q24** temporal-credit comparator alongside the existing
+history-averaged `accumulate_plasticity`. Unlike the Python shadow, it uses
+the canonical fixed-point arithmetic, parameter-group projections and trust
+region; it binds declared source receipt, checkpoint, model, owner scope,
+generation and logical action identity to each feedback record. It rejects
+future action credit, evaluation-split labels, duplicates, stale identity and
+feedback that precedes its action. It reports missing/late feedback separately.
+It does **not** authenticate those declarations against a real source/owner
+or run a native trained Head. Any apparent owner field is untrusted until
+an independent verifier validates real receipts. No candidate is adopted.
+The native component is exercised with
+`cd codex-rs && cargo test -p codex-hepta-neuron --lib`.
+
+**Related parallel research:** PR #5739
+(https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5739)
+already contains an information-matched contextual policy-gradient comparator
+and synthetic costed microbenchmarks. Its report finds equivalence to the
+correctly routed rule on that proxy, some slower-lineage regressions, and
+exact-key RAG dominance. Do not double-count its synthetic seeds as independent
+confirmation, and do not rebrand a three-factor update as a new algorithm.
+The present Q24 code is a numerical/identity-contract extension, **not** a
+replication or refutation of PR #5739's task-level results.
+
 Existing canonical mechanisms remain in
 `codex-rs/hepta-neuron/src/{plasticity,qualification}.rs` and the
 `docs/learning/NEURAL_BIOMIMICRY_SPEC.md` contract. That plasticity reference
