@@ -1,0 +1,17 @@
+{
+  "schema": "pred-shadow-validation-v1",
+  "base_commit": "7fe7a0b58f0e3388d74cde6ccb16e504d8182f50",
+  "exit_code": 0,
+  "outer_wall_seconds": 4.435638287000984,
+  "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "numpy": "2.3.5",
+  "source_sha256_before_format": {
+    "scripts/hepta_pred1/shadow_model.py": "7ae3310f6bb61e89981a288fe634f6f56033e983225afc0707ac3c00f8311407",
+    "scripts/hepta_pred1/test_shadow_model.py": "d8f507490c81cec75fdc05256c9b3fa11b8a9c2bd9b2a5b1bd048251b87d2c19"
+  },
+  "scope": "software tests with synthetic native snapshots and random initialized NumPy models; no real task training",
+  "validation_log_sha256": "7e9320e4d9dca8a88b1465581787bfc988f810ebb11a74d4befee03638763a80",
+  "validation_log_bytes": 19733,
+  "validation_log_archive_sha256": "3e05f216bfe986c60bd2380077fc5eff69ad1aa7bda9080bf11ad2e63583f97d",
+  "validation_log_archive": "shadow-validation.txt.gz"
+}
