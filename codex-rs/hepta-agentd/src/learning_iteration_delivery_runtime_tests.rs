@@ -602,6 +602,43 @@ async fn original_root_delivery_refuses_missing_objective_before_claim_or_stage_
 }
 
 #[tokio::test]
+async fn original_root_delivery_checks_the_entire_registered_source_set() {
+    let daemon = AgentdFixture::new();
+    let (store, request) = completed_circuit(&daemon).await;
+    let (state, cognitive) = admitted_state(&daemon).await;
+    ok(state.attach_circuit_learning_sources(vec![
+        id("registered-other-source"),
+        request.source_run_id.clone(),
+    ]));
+
+    let mut unregistered = request.clone();
+    unregistered.source_run_id = id("unregistered-source");
+    let denied = state.require_circuit_learning_source(&unregistered).await;
+    assert!(matches!(
+        denied,
+        Err(crate::AgentdError::Invalid(message))
+            if message.contains("learning source differs from the original daemon scope")
+    ));
+
+    // The second registered source clears the scope gate and reaches the
+    // separate original Objective owner check. No absent owner is fabricated.
+    let registered = state.require_circuit_learning_source(&request).await;
+    assert!(matches!(
+        registered,
+        Err(crate::AgentdError::Invalid(message))
+            if message.contains("original learning Objective owner is unavailable")
+    ));
+    let row = ok(store
+        .circuit_learning_delivery(request.source_run_id.as_str())
+        .await)
+    .expect("original completion remains unclaimed");
+    assert_eq!(row.request_digest, None);
+    assert_eq!(row.acknowledged_head, None);
+    cognitive.close().await;
+    store.close().await;
+}
+
+#[tokio::test]
 async fn root_learning_post_claim_source_refusal_keeps_original_claim_without_stage_work() {
     let daemon = AgentdFixture::new();
     let (store, request) = completed_circuit(&daemon).await;
