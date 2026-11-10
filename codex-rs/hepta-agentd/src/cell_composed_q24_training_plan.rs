@@ -18,13 +18,13 @@ use codex_hepta_types::Digest32;
 use super::CellQ24PrivateHeadV1;
 use super::LoadedCellQ24ModelV1;
 
-#[path = "cell_composed_q24_training.rs"]
-mod training;
 #[path = "cell_composed_q24_training_owner.rs"]
 mod owner;
+#[path = "cell_composed_q24_training.rs"]
+mod training;
+pub use owner::CellQ24TrainingObservationV2;
 pub use owner::CellQ24TrainingOwnerErrorV1;
 pub use owner::CellQ24TrainingOwnerV1;
-pub use owner::CellQ24TrainingObservationV2;
 pub use training::CellQ24SgdRuleV1;
 pub use training::CellQ24TrainedCandidateV1;
 pub use training::CellQ24TrainingBatchV1;
@@ -89,8 +89,9 @@ impl CellQ24SingleHeadTrainingPlanV1 {
     ) -> Result<Self, CellQ24TrainingPlanErrorV1> {
         let coordinator = LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())?;
         let index = match head {
-            CellQ24PrivateHeadV1::Drive { index }
-            | CellQ24PrivateHeadV1::Prediction { index } => usize::from(index),
+            CellQ24PrivateHeadV1::Drive { index } | CellQ24PrivateHeadV1::Prediction { index } => {
+                usize::from(index)
+            }
         };
         if coordinator.next_stage() != Some(LearningIterationStageV1::Training)
             || baseline.components() != &snapshot.request.selected_bundle.components
@@ -110,7 +111,9 @@ impl CellQ24SingleHeadTrainingPlanV1 {
             rule,
         )?;
         if scope != expected {
-            return Err(CellQ24TrainingPlanErrorV1::Binding("original frozen row rule"));
+            return Err(CellQ24TrainingPlanErrorV1::Binding(
+                "original frozen row rule",
+            ));
         }
         scope.validate_snapshot(&snapshot)?;
         Ok(Self {
@@ -136,20 +139,28 @@ impl CellQ24SingleHeadTrainingPlanV1 {
             || !snapshot.receipts.starts_with(&self.prefix.receipts)
             || coordinator.next_stage() != Some(LearningIterationStageV1::Evaluation)
         {
-            return Err(CellQ24TrainingPlanErrorV1::Binding("exact Training extension"));
+            return Err(CellQ24TrainingPlanErrorV1::Binding(
+                "exact Training extension",
+            ));
         }
         self.scope.validate_snapshot(snapshot)?;
-        let receipt = snapshot.receipts.last().ok_or(
-            CellQ24TrainingPlanErrorV1::Binding("Training receipt"),
-        )?;
-        let LearningIterationObservationV1::Training { candidate: bundle, .. } =
-            &receipt.observation
+        let receipt = snapshot
+            .receipts
+            .last()
+            .ok_or(CellQ24TrainingPlanErrorV1::Binding("Training receipt"))?;
+        let LearningIterationObservationV1::Training {
+            candidate: bundle, ..
+        } = &receipt.observation
         else {
             return Err(CellQ24TrainingPlanErrorV1::Binding("Training observation"));
         };
         if candidate.components() != &bundle.components {
-            return Err(CellQ24TrainingPlanErrorV1::Binding("original candidate bytes"));
+            return Err(CellQ24TrainingPlanErrorV1::Binding(
+                "original candidate bytes",
+            ));
         }
-        Ok(self.baseline.validate_single_head_candidate(candidate, self.head)?)
+        Ok(self
+            .baseline
+            .validate_single_head_candidate(candidate, self.head)?)
     }
 }

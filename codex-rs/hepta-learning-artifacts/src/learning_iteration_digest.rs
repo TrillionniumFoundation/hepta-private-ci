@@ -185,7 +185,11 @@ pub fn learning_iteration_receipt_signing_bytes_v1(
             bytes.push(match outcome.reason {
                 LearningTrainingNoUpdateReasonV2::QuantizedWeightsUnchanged => 0,
             });
-            for digest in [outcome.retained_bundle, outcome.dataset, outcome.update_rule] {
+            for digest in [
+                outcome.retained_bundle,
+                outcome.dataset,
+                outcome.update_rule,
+            ] {
                 bytes.extend_from_slice(digest.as_array());
             }
             bytes.extend_from_slice(&outcome.steps.to_be_bytes());

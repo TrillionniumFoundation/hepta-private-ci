@@ -150,13 +150,14 @@ impl LearningIterationCoordinatorV1 {
             matches!(
                 receipt.observation,
                 LearningIterationObservationV1::TrainingNoUpdateV2(_)
-                | LearningIterationObservationV1::Evaluation {
-                    disposition: LearningEvaluationDispositionV1::NoUpdate,
-                    ..
-                } | LearningIterationObservationV1::Proposal {
-                    disposition: LearningProposalDispositionV1::NoAdmissibleUpdate,
-                    ..
-                }
+                    | LearningIterationObservationV1::Evaluation {
+                        disposition: LearningEvaluationDispositionV1::NoUpdate,
+                        ..
+                    }
+                    | LearningIterationObservationV1::Proposal {
+                        disposition: LearningProposalDispositionV1::NoAdmissibleUpdate,
+                        ..
+                    }
             )
         }) {
             LearningIterationDispositionV1::NoUpdate

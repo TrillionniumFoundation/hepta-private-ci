@@ -77,10 +77,20 @@ impl<W: AnchorWitnessStore> CellQ24TrainingOwnerV1<W> {
         if witness.current()?.is_some() {
             return Err(Error::Binding("training witness already initialized"));
         }
-        let journal = LockedFileProductEvaluationExecutionStoreV1::create(file, key.binding_digest)?;
-        witness.compare_and_swap(None, anchor(journal.anchor()))
+        let journal =
+            LockedFileProductEvaluationExecutionStoreV1::create(file, key.binding_digest)?;
+        witness
+            .compare_and_swap(None, anchor(journal.anchor()))
             .map_err(|_| Error::CommitUncertain)?;
-        Ok(Self { journal, witness, plan, batch, rule, key, fenced: false })
+        Ok(Self {
+            journal,
+            witness,
+            plan,
+            batch,
+            rule,
+            key,
+            fenced: false,
+        })
     }
 
     /// Open only the original journal/witness. A valid suffix after a lost
@@ -93,20 +103,36 @@ impl<W: AnchorWitnessStore> CellQ24TrainingOwnerV1<W> {
         rule: CellQ24SgdRuleV1,
     ) -> Result<Self, Error> {
         let key = job_key(&plan, &batch, rule)?;
-        let minimum = witness.current()?.ok_or(Error::Binding("original training witness"))?;
-        let sequence = minimum.sequence.checked_sub(1)
+        let minimum = witness
+            .current()?
+            .ok_or(Error::Binding("original training witness"))?;
+        let sequence = minimum
+            .sequence
+            .checked_sub(1)
             .ok_or(Error::Binding("training witness sequence"))?;
         let journal = LockedFileProductEvaluationExecutionStoreV1::recover(
-            file, key.binding_digest, ProductEvaluationExecutionAnchorV1 {
-                sequence, history_digest: minimum.checkpoint_digest,
+            file,
+            key.binding_digest,
+            ProductEvaluationExecutionAnchorV1 {
+                sequence,
+                history_digest: minimum.checkpoint_digest,
             },
         )?;
         let current = anchor(journal.anchor());
         if current != minimum {
-            witness.compare_and_swap(Some(minimum), current)
+            witness
+                .compare_and_swap(Some(minimum), current)
                 .map_err(|_| Error::CommitUncertain)?;
         }
-        Ok(Self { journal, witness, plan, batch, rule, key, fenced: false })
+        Ok(Self {
+            journal,
+            witness,
+            plan,
+            batch,
+            rule,
+            key,
+            fenced: false,
+        })
     }
 
     /// The durable claim and its independent witness precede all computation.
@@ -151,14 +177,21 @@ impl<W: AnchorWitnessStore> CellQ24TrainingOwnerV1<W> {
     }
 
     fn anchor_append(&mut self, before: JournalAnchor) -> Result<(), Error> {
-        if self.witness.compare_and_swap(Some(before), anchor(self.journal.anchor())).is_err() {
+        if self
+            .witness
+            .compare_and_swap(Some(before), anchor(self.journal.anchor()))
+            .is_err()
+        {
             self.fenced = true;
             return Err(Error::CommitUncertain);
         }
         Ok(())
     }
 
-    fn decode_state(&self, state: ProductEvaluationExecutionStateV1) -> Result<CellQ24TrainingOutcomeV1, Error> {
+    fn decode_state(
+        &self,
+        state: ProductEvaluationExecutionStateV1,
+    ) -> Result<CellQ24TrainingOutcomeV1, Error> {
         match state {
             ProductEvaluationExecutionStateV1::Pending => Err(Error::Pending),
             ProductEvaluationExecutionStateV1::Completed(payload) => self.decode(&payload),
@@ -166,7 +199,9 @@ impl<W: AnchorWitnessStore> CellQ24TrainingOwnerV1<W> {
     }
 
     fn decode(&self, mut bytes: &[u8]) -> Result<CellQ24TrainingOutcomeV1, Error> {
-        if take::<8>(&mut bytes)? != *b"HQ24TRES" || take::<32>(&mut bytes)? != self.key.binding_digest.into_array() {
+        if take::<8>(&mut bytes)? != *b"HQ24TRES"
+            || take::<32>(&mut bytes)? != self.key.binding_digest.into_array()
+        {
             return Err(Error::Binding("training result and original job"));
         }
         let tag = take::<1>(&mut bytes)?[0];
@@ -183,32 +218,58 @@ impl<W: AnchorWitnessStore> CellQ24TrainingOwnerV1<W> {
         let length = u32::from_le_bytes(take::<4>(&mut bytes)?) as usize;
         let optimizer = self.rule.digest(&self.batch)?;
         let update_rule = super::cell_q24_single_head_update_rule_v1(
-            &self.plan.prefix.request.selected_bundle, self.plan.head, optimizer,
-        ).map_err(CellQ24TrainingErrorV1::from)?;
+            &self.plan.prefix.request.selected_bundle,
+            self.plan.head,
+            optimizer,
+        )
+        .map_err(CellQ24TrainingErrorV1::from)?;
         let error_limit = u128::from(self.batch.rows()) * (16_u128 * (1 << 24)).pow(2);
-        if metrics.batch_digest != self.batch.digest() || metrics.optimizer_rule != optimizer
+        if metrics.batch_digest != self.batch.digest()
+            || metrics.optimizer_rule != optimizer
             || metrics.update_rule != update_rule
             || metrics.optimizer_steps != u64::from(self.rule.epochs) * u64::from(self.batch.rows())
-            || metrics.squared_error_before_q48 > error_limit || metrics.squared_error_after_q48 > error_limit
-            || metrics.elapsed_microseconds > self.plan.prefix.request.budget.maximum_training_milliseconds.saturating_mul(1_000)
+            || metrics.squared_error_before_q48 > error_limit
+            || metrics.squared_error_after_q48 > error_limit
+            || metrics.elapsed_microseconds
+                > self
+                    .plan
+                    .prefix
+                    .request
+                    .budget
+                    .maximum_training_milliseconds
+                    .saturating_mul(1_000)
             || bytes.len() != length
         {
             return Err(Error::Binding("original training metrics or result length"));
         }
         match tag {
             0 => {
-                let baseline = self.plan.prefix.request.selected_bundle.digest()
+                let baseline = self
+                    .plan
+                    .prefix
+                    .request
+                    .selected_bundle
+                    .digest()
                     .map_err(|_| Error::Binding("original baseline"))?;
-                if length != 0 || bundle_digest != baseline
+                if length != 0
+                    || bundle_digest != baseline
                     || metrics.squared_error_before_q48 != metrics.squared_error_after_q48
                 {
                     return Err(Error::Binding("unchanged quantized result"));
                 }
-                Ok(CellQ24TrainingOutcomeV1::NoUpdate { retained_bundle: baseline, metrics })
+                Ok(CellQ24TrainingOutcomeV1::NoUpdate {
+                    retained_bundle: baseline,
+                    metrics,
+                })
             }
             1 => {
                 let candidate = self.plan.rebuild_candidate(bytes.to_vec(), metrics)?;
-                if candidate.bundle.digest().map_err(|_| Error::Binding("candidate bundle"))? != bundle_digest {
+                if candidate
+                    .bundle
+                    .digest()
+                    .map_err(|_| Error::Binding("candidate bundle"))?
+                    != bundle_digest
+                {
                     return Err(Error::Binding("original candidate digest"));
                 }
                 Ok(CellQ24TrainingOutcomeV1::Candidate(Box::new(candidate)))
@@ -228,8 +289,11 @@ fn job_key(
         plan_id: plan.prefix.request.operation_id.clone(),
         binding_digest: Digest32::of_parts(&[
             b"hepta.cell.q24.original-training-job.v1\0",
-            plan.prefix.head_digest.as_array(), plan.scope.binding().as_array(),
-            plan.baseline.effective_weights_digest().as_array(), batch.digest().as_array(), optimizer.as_array(),
+            plan.prefix.head_digest.as_array(),
+            plan.scope.binding().as_array(),
+            plan.baseline.effective_weights_digest().as_array(),
+            batch.digest().as_array(),
+            optimizer.as_array(),
         ]),
     })
 }
@@ -237,21 +301,37 @@ fn job_key(
 fn anchor(value: ProductEvaluationExecutionAnchorV1) -> JournalAnchor {
     // The execution journal starts at zero; the original witness starts at one.
     // This bounded single-job journal has at most two execution events.
-    JournalAnchor { sequence: value.sequence + 1, checkpoint_digest: value.history_digest }
+    JournalAnchor {
+        sequence: value.sequence + 1,
+        checkpoint_digest: value.history_digest,
+    }
 }
 
 fn encode(outcome: &CellQ24TrainingOutcomeV1, binding: Digest32) -> Result<Vec<u8>, Error> {
     let (tag, bundle, heads, metrics) = match outcome {
         CellQ24TrainingOutcomeV1::Candidate(candidate) => (
-            1, candidate.bundle.digest().map_err(|_| Error::Binding("candidate bundle"))?,
-            candidate.heads.as_slice(), &candidate.metrics,
+            1,
+            candidate
+                .bundle
+                .digest()
+                .map_err(|_| Error::Binding("candidate bundle"))?,
+            candidate.heads.as_slice(),
+            &candidate.metrics,
         ),
-        CellQ24TrainingOutcomeV1::NoUpdate { retained_bundle, metrics } => (0, *retained_bundle, &[][..], metrics),
+        CellQ24TrainingOutcomeV1::NoUpdate {
+            retained_bundle,
+            metrics,
+        } => (0, *retained_bundle, &[][..], metrics),
     };
     let mut bytes = b"HQ24TRES".to_vec();
     bytes.extend_from_slice(binding.as_array());
     bytes.push(tag);
-    for digest in [bundle, metrics.batch_digest, metrics.optimizer_rule, metrics.update_rule] {
+    for digest in [
+        bundle,
+        metrics.batch_digest,
+        metrics.optimizer_rule,
+        metrics.update_rule,
+    ] {
         bytes.extend_from_slice(digest.as_array());
     }
     bytes.extend_from_slice(&metrics.optimizer_steps.to_le_bytes());
@@ -264,7 +344,11 @@ fn encode(outcome: &CellQ24TrainingOutcomeV1, binding: Digest32) -> Result<Vec<u
 }
 
 fn take<const N: usize>(bytes: &mut &[u8]) -> Result<[u8; N], Error> {
-    let (value, rest) = bytes.split_at_checked(N).ok_or(Error::Binding("truncated training result"))?;
+    let (value, rest) = bytes
+        .split_at_checked(N)
+        .ok_or(Error::Binding("truncated training result"))?;
     *bytes = rest;
-    value.try_into().map_err(|_| Error::Binding("training field"))
+    value
+        .try_into()
+        .map_err(|_| Error::Binding("training field"))
 }

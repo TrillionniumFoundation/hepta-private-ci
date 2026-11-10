@@ -173,10 +173,12 @@ pub struct LearningIterationSnapshotV1 {
 
 impl LearningIterationSnapshotV1 {
     pub fn training_no_update_v2(&self) -> Option<&LearningTrainingNoUpdateV2> {
-        self.receipts.iter().find_map(|receipt| match &receipt.observation {
-            LearningIterationObservationV1::TrainingNoUpdateV2(outcome) => Some(outcome),
-            _ => None,
-        })
+        self.receipts
+            .iter()
+            .find_map(|receipt| match &receipt.observation {
+                LearningIterationObservationV1::TrainingNoUpdateV2(outcome) => Some(outcome),
+                _ => None,
+            })
     }
 }
 
@@ -195,7 +197,9 @@ impl LearningIterationObservationV1 {
         match self {
             Self::Experience { .. } => LearningIterationStageV1::Experience,
             Self::Dataset { .. } => LearningIterationStageV1::Dataset,
-            Self::Training { .. } | Self::TrainingNoUpdateV2(_) => LearningIterationStageV1::Training,
+            Self::Training { .. } | Self::TrainingNoUpdateV2(_) => {
+                LearningIterationStageV1::Training
+            }
             Self::Evaluation { .. } => LearningIterationStageV1::Evaluation,
             Self::Proposal { .. } => LearningIterationStageV1::Proposal,
             Self::Selection { .. } => LearningIterationStageV1::Selection,

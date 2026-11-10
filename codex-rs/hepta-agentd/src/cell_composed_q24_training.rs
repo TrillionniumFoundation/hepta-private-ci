@@ -15,12 +15,12 @@ use codex_hepta_learning_artifacts::LearningIterationObservationV1;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
+use super::super::codec;
 use super::CellQ24PrivateHeadV1;
 use super::CellQ24SingleHeadTrainingPlanV1;
 use super::CellQ24TrainingPlanErrorV1;
 use super::LoadedCellQ24ModelV1;
 use super::cell_q24_single_head_update_rule_v1;
-use super::super::codec;
 
 const LIMIT: i64 = 8 * codec::Q;
 
@@ -67,7 +67,10 @@ impl CellQ24TrainingBatchV1 {
             || samples.iter().any(|sample| {
                 sample.input.len() != width
                     || !(-LIMIT..=LIMIT).contains(&sample.target)
-                    || sample.input.iter().any(|value| !(-LIMIT..=LIMIT).contains(value))
+                    || sample
+                        .input
+                        .iter()
+                        .any(|value| !(-LIMIT..=LIMIT).contains(value))
             })
         {
             return Err(CellQ24TrainingErrorV1::Binding("Q24 sample shape or range"));
@@ -112,10 +115,11 @@ pub struct CellQ24SgdRuleV1 {
 }
 
 impl CellQ24SgdRuleV1 {
-    pub fn digest(&self, batch: &CellQ24TrainingBatchV1) -> Result<Digest32, CellQ24TrainingErrorV1> {
-        if !(1..=256).contains(&self.epochs)
-            || !(1..=codec::Q).contains(&self.learning_rate_q24)
-        {
+    pub fn digest(
+        &self,
+        batch: &CellQ24TrainingBatchV1,
+    ) -> Result<Digest32, CellQ24TrainingErrorV1> {
+        if !(1..=256).contains(&self.epochs) || !(1..=codec::Q).contains(&self.learning_rate_q24) {
             return Err(CellQ24TrainingErrorV1::Binding("SGD rule"));
         }
         Ok(Digest32::of_parts(&[
@@ -172,10 +176,12 @@ impl CellQ24SingleHeadTrainingPlanV1 {
         let optimizer = self.validate_fit_input(&batch, rule)?;
         let plan = self;
         let budget = &plan.prefix.request.budget;
-        let now = SystemTime::now().duration_since(UNIX_EPOCH)
+        let now = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
             .map_err(|_| Binding("system clock"))?;
         let remaining = Duration::from_secs(plan.prefix.request.envelope.expiry_unix_seconds)
-            .checked_sub(now).ok_or(CellQ24TrainingErrorV1::DeadlineExceeded)?;
+            .checked_sub(now)
+            .ok_or(CellQ24TrainingErrorV1::DeadlineExceeded)?;
         let limit = remaining.min(Duration::from_millis(budget.maximum_training_milliseconds));
         let check = || {
             if cancellation.load(Ordering::Acquire) {
@@ -194,7 +200,9 @@ impl CellQ24SingleHeadTrainingPlanV1 {
         }
         let row = match plan.head {
             CellQ24PrivateHeadV1::Drive { index } => usize::from(index),
-            CellQ24PrivateHeadV1::Prediction { index } => plan.baseline.output_width() + usize::from(index),
+            CellQ24PrivateHeadV1::Prediction { index } => {
+                plan.baseline.output_width() + usize::from(index)
+            }
         };
         let start = row * plan.baseline.heads.cols;
         let end = start + plan.baseline.heads.cols;
@@ -211,7 +219,8 @@ impl CellQ24SingleHeadTrainingPlanV1 {
                     let delta = i128::from(rule.learning_rate_q24) * error * i128::from(*value)
                         / (i128::from(codec::Q) * i128::from(codec::Q));
                     *weight = (i128::from(*weight) - delta)
-                        .clamp(-i128::from(LIMIT), i128::from(LIMIT)) as i64;
+                        .clamp(-i128::from(LIMIT), i128::from(LIMIT))
+                        as i64;
                 }
                 steps += 1;
             }
@@ -219,7 +228,9 @@ impl CellQ24SingleHeadTrainingPlanV1 {
         check()?;
         let after = squared_error(&heads.values[start..end], &features);
         let update_rule = cell_q24_single_head_update_rule_v1(
-            &plan.prefix.request.selected_bundle, plan.head, optimizer,
+            &plan.prefix.request.selected_bundle,
+            plan.head,
+            optimizer,
         )?;
         let metrics = CellQ24TrainingMetricsV1 {
             batch_digest: batch.digest,
@@ -231,11 +242,18 @@ impl CellQ24SingleHeadTrainingPlanV1 {
             elapsed_microseconds: u64::try_from(started.elapsed().as_micros())
                 .map_err(|_| Binding("elapsed cost overflow"))?,
         };
-        let source_bundle = plan.prefix.request.selected_bundle.digest()
+        let source_bundle = plan
+            .prefix
+            .request
+            .selected_bundle
+            .digest()
             .map_err(|_| Binding("baseline bundle"))?;
         if heads == plan.baseline.heads {
             check()?;
-            return Ok(CellQ24TrainingOutcomeV1::NoUpdate { retained_bundle: source_bundle, metrics });
+            return Ok(CellQ24TrainingOutcomeV1::NoUpdate {
+                retained_bundle: source_bundle,
+                metrics,
+            });
         }
         let mut candidate = plan.rebuild_candidate(heads.encode(), metrics)?;
         candidate.metrics.elapsed_microseconds = u64::try_from(started.elapsed().as_micros())
@@ -254,11 +272,19 @@ impl CellQ24SingleHeadTrainingPlanV1 {
         use CellQ24TrainingErrorV1::Binding;
         let optimizer = rule.digest(batch)?;
         let plan = CellQ24SingleHeadTrainingPlanV1::from_dataset_cut(
-            self.prefix.clone(), self.scope.clone(), std::sync::Arc::clone(&self.baseline), self.head, optimizer,
+            self.prefix.clone(),
+            self.scope.clone(),
+            std::sync::Arc::clone(&self.baseline),
+            self.head,
+            optimizer,
         )?;
         let budget = &plan.prefix.request.budget;
         let expected_steps = u64::from(rule.epochs) * u64::from(batch.rows());
-        let dataset = plan.prefix.receipts.last().ok_or(Binding("Dataset receipt"))?;
+        let dataset = plan
+            .prefix
+            .receipts
+            .last()
+            .ok_or(Binding("Dataset receipt"))?;
         if !matches!(dataset.observation,
             LearningIterationObservationV1::Dataset { snapshot_digest, rows, bytes, .. }
                 if snapshot_digest == batch.source_dataset && rows == batch.rows()
@@ -283,11 +309,16 @@ impl CellQ24SingleHeadTrainingPlanV1 {
     ) -> Result<CellQ24TrainedCandidateV1, CellQ24TrainingErrorV1> {
         use CellQ24TrainingErrorV1::Binding;
         let plan = CellQ24SingleHeadTrainingPlanV1::from_dataset_cut(
-            self.prefix.clone(), self.scope.clone(), std::sync::Arc::clone(&self.baseline),
-            self.head, metrics.optimizer_rule,
+            self.prefix.clone(),
+            self.scope.clone(),
+            std::sync::Arc::clone(&self.baseline),
+            self.head,
+            metrics.optimizer_rule,
         )?;
         let update_rule = cell_q24_single_head_update_rule_v1(
-            &plan.prefix.request.selected_bundle, plan.head, metrics.optimizer_rule,
+            &plan.prefix.request.selected_bundle,
+            plan.head,
+            metrics.optimizer_rule,
         )?;
         if metrics.update_rule != update_rule {
             return Err(Binding("original retained update rule"));
@@ -303,21 +334,44 @@ impl CellQ24SingleHeadTrainingPlanV1 {
             encoder: plan.baseline.encoder.clone(),
             heads,
         };
-        let model = plan.baseline.validate_single_head_candidate(candidate, plan.head)
+        let model = plan
+            .baseline
+            .validate_single_head_candidate(candidate, plan.head)
             .map_err(CellQ24TrainingPlanErrorV1::from)?;
-        let source_bundle = plan.prefix.request.selected_bundle.digest()
+        let source_bundle = plan
+            .prefix
+            .request
+            .selected_bundle
+            .digest()
             .map_err(|_| Binding("baseline bundle"))?;
-        let dataset = plan.prefix.receipts.last().ok_or(Binding("Dataset receipt"))?;
-        let LearningIterationObservationV1::Dataset { snapshot_digest, .. } = dataset.observation else {
+        let dataset = plan
+            .prefix
+            .receipts
+            .last()
+            .ok_or(Binding("Dataset receipt"))?;
+        let LearningIterationObservationV1::Dataset {
+            snapshot_digest, ..
+        } = dataset.observation
+        else {
             return Err(Binding("Dataset cut"));
         };
         let bundle = CellCompatibilityBundleV1 {
-            artifact_id: StableId::new(format!("q24-sgd:{}", Digest32::of_parts(&[
-                b"hepta.cell.q24.trained-candidate.v1\0", plan.prefix.head_digest.as_array(),
-                update_rule.as_array(), components.heads.as_array(),
-            ])))
-                .map_err(|_| Binding("candidate identity"))?,
-            generation: plan.prefix.request.selected_bundle.generation.next()
+            artifact_id: StableId::new(format!(
+                "q24-sgd:{}",
+                Digest32::of_parts(&[
+                    b"hepta.cell.q24.trained-candidate.v1\0",
+                    plan.prefix.head_digest.as_array(),
+                    update_rule.as_array(),
+                    components.heads.as_array(),
+                ])
+            ))
+            .map_err(|_| Binding("candidate identity"))?,
+            generation: plan
+                .prefix
+                .request
+                .selected_bundle
+                .generation
+                .next()
                 .map_err(|_| Binding("candidate generation"))?,
             components,
             rollback_predecessor: Some(source_bundle),
@@ -330,14 +384,20 @@ impl CellQ24SingleHeadTrainingPlanV1 {
         };
         bundle.digest().map_err(|_| Binding("candidate bundle"))?;
         Ok(CellQ24TrainedCandidateV1 {
-            model, bundle, heads: bytes, metrics,
+            model,
+            bundle,
+            heads: bytes,
+            metrics,
         })
     }
 }
 
 fn squared_error(weights: &[i64], features: &[(Vec<i64>, i64)]) -> u128 {
-    features.iter().map(|(input, target)| {
-        let error = i128::from(codec::row_output(weights, input)) - i128::from(*target);
-        (error * error) as u128
-    }).sum()
+    features
+        .iter()
+        .map(|(input, target)| {
+            let error = i128::from(codec::row_output(weights, input)) - i128::from(*target);
+            (error * error) as u128
+        })
+        .sum()
 }

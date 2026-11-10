@@ -54,7 +54,8 @@ fn recovery_ports(decision: Decision, trust: Trust) -> IterationPorts {
                 controller_id: id(&format!(
                     "recovery-controller-{}",
                     if (matches!(trust, Trust::SharedController) && index == 2)
-                        || (matches!(trust, Trust::SharedSelectorController) && index == 1) {
+                        || (matches!(trust, Trust::SharedSelectorController) && index == 1)
+                    {
                         0
                     } else {
                         index
@@ -645,7 +646,9 @@ async fn actual_delivery_preserves_fresh_pending_and_never_resubmits_an_original
     .snapshot()
     .clone();
     let request_digest = ok(Sha256Digest::parse(partial.head_digest.to_string()));
-    assert!(ok(store.claim_circuit_learning(&intent, &request_digest).await));
+    assert!(ok(store
+        .claim_circuit_learning(&intent, &request_digest)
+        .await));
     let claimed = ok(store.pending_circuit_learning(/*limit*/ 1).await);
 
     // A replacement worker receives only readback for that durable claim.

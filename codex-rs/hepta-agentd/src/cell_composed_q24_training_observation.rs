@@ -26,10 +26,18 @@ pub struct CellQ24TrainingObservationV2 {
 }
 
 impl CellQ24TrainingObservationV2 {
-    pub fn iteration_head(&self) -> Digest32 { self.iteration_head }
-    pub fn scope_binding(&self) -> Digest32 { self.scope_binding }
-    pub fn evidence_digest(&self) -> Digest32 { self.evidence_digest }
-    pub fn observation(&self) -> &LearningIterationObservationV1 { &self.observation }
+    pub fn iteration_head(&self) -> Digest32 {
+        self.iteration_head
+    }
+    pub fn scope_binding(&self) -> Digest32 {
+        self.scope_binding
+    }
+    pub fn evidence_digest(&self) -> Digest32 {
+        self.evidence_digest
+    }
+    pub fn observation(&self) -> &LearningIterationObservationV1 {
+        &self.observation
+    }
 }
 
 impl<W: AnchorWitnessStore> CellQ24TrainingOwnerV1<W> {
@@ -49,24 +57,46 @@ impl<W: AnchorWitnessStore> CellQ24TrainingOwnerV1<W> {
             ProductEvaluationExecutionStateV1::Completed(payload) => payload,
         };
         let observation = match self.decode(&payload)? {
-            CellQ24TrainingOutcomeV1::Candidate(candidate) => LearningIterationObservationV1::Training {
-                candidate: Box::new(candidate.bundle), steps: candidate.metrics.optimizer_steps,
-                milliseconds: candidate.metrics.elapsed_microseconds.div_ceil(1_000).max(1),
-                artifact_bytes: candidate.heads.len() as u64,
-            },
-            CellQ24TrainingOutcomeV1::NoUpdate { retained_bundle, metrics } => {
-                let Some(LearningIterationObservationV1::Dataset { snapshot_digest, .. }) =
-                    self.plan.prefix.receipts.last().map(|receipt| &receipt.observation)
-                else { return Err(Error::Binding("original training Dataset receipt")); };
+            CellQ24TrainingOutcomeV1::Candidate(candidate) => {
+                LearningIterationObservationV1::Training {
+                    candidate: Box::new(candidate.bundle),
+                    steps: candidate.metrics.optimizer_steps,
+                    milliseconds: candidate
+                        .metrics
+                        .elapsed_microseconds
+                        .div_ceil(1_000)
+                        .max(1),
+                    artifact_bytes: candidate.heads.len() as u64,
+                }
+            }
+            CellQ24TrainingOutcomeV1::NoUpdate {
+                retained_bundle,
+                metrics,
+            } => {
+                let Some(LearningIterationObservationV1::Dataset {
+                    snapshot_digest, ..
+                }) = self
+                    .plan
+                    .prefix
+                    .receipts
+                    .last()
+                    .map(|receipt| &receipt.observation)
+                else {
+                    return Err(Error::Binding("original training Dataset receipt"));
+                };
                 LearningIterationObservationV1::TrainingNoUpdateV2(LearningTrainingNoUpdateV2 {
-                    retained_bundle, dataset: *snapshot_digest, update_rule: metrics.update_rule,
+                    retained_bundle,
+                    dataset: *snapshot_digest,
+                    update_rule: metrics.update_rule,
                     steps: metrics.optimizer_steps,
                     milliseconds: metrics.elapsed_microseconds.div_ceil(1_000).max(1),
                     reason: LearningTrainingNoUpdateReasonV2::QuantizedWeightsUnchanged,
                 })
             }
         };
-        self.plan.scope.validate_observation(&observation)
+        self.plan
+            .scope
+            .validate_observation(&observation)
             .map_err(|_| Error::Binding("original frozen training scope"))?;
         self.require_current()?;
         Ok(CellQ24TrainingObservationV2 {
@@ -74,7 +104,8 @@ impl<W: AnchorWitnessStore> CellQ24TrainingOwnerV1<W> {
             scope_binding: self.plan.scope.binding(),
             evidence_digest: Digest32::of_parts(&[
                 b"hepta.cell.q24.original-training-observation.v2\0",
-                self.key.binding_digest.as_array(), &payload,
+                self.key.binding_digest.as_array(),
+                &payload,
             ]),
             observation,
         })

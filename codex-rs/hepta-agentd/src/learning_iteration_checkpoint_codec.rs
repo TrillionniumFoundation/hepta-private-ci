@@ -202,7 +202,11 @@ pub(super) fn encode(snapshot: &LearningIterationSnapshotV1) -> Result<Vec<u8>, 
                 w.u8(match outcome.reason {
                     LearningTrainingNoUpdateReasonV2::QuantizedWeightsUnchanged => 0,
                 })?;
-                for digest in [outcome.retained_bundle, outcome.dataset, outcome.update_rule] {
+                for digest in [
+                    outcome.retained_bundle,
+                    outcome.dataset,
+                    outcome.update_rule,
+                ] {
                     w.digest(digest)?;
                 }
                 w.u64(outcome.steps)?;
@@ -339,8 +343,12 @@ pub(super) fn decode(bytes: &[u8]) -> Result<LearningIterationSnapshotV1, Error>
                         _ => return Err(Error::InvalidRecord),
                     };
                     LearningIterationObservationV1::TrainingNoUpdateV2(LearningTrainingNoUpdateV2 {
-                        retained_bundle: r.digest()?, dataset: r.digest()?, update_rule: r.digest()?,
-                        steps: r.u64()?, milliseconds: r.u64()?, reason,
+                        retained_bundle: r.digest()?,
+                        dataset: r.digest()?,
+                        update_rule: r.digest()?,
+                        steps: r.u64()?,
+                        milliseconds: r.u64()?,
+                        reason,
                     })
                 }
                 _ => return Err(Error::InvalidRecord),

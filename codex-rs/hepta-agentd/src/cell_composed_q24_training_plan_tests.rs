@@ -60,13 +60,19 @@ fn trained_material(
         cell_adapter: Some(file("cell")?),
     })?;
     let mut candidate = bundle(&model, Some(&prefix.request.selected_bundle))?;
-    let original_dataset = prefix.receipts.last()
+    let original_dataset = prefix
+        .receipts
+        .last()
         .ok_or_else(|| anyhow::anyhow!("fixture requires the Dataset receipt"))?;
     let dataset = match &original_dataset.observation {
-        LearningIterationObservationV1::Dataset { snapshot_digest, .. } => *snapshot_digest,
+        LearningIterationObservationV1::Dataset {
+            snapshot_digest, ..
+        } => *snapshot_digest,
         _ => anyhow::bail!("fixture Dataset prefix"),
     };
-    let lineage = candidate.training_lineage.as_mut()
+    let lineage = candidate
+        .training_lineage
+        .as_mut()
         .ok_or_else(|| anyhow::anyhow!("fixture requires candidate lineage"))?;
     lineage.dataset = dataset;
     lineage.update_rule = rule;
@@ -109,7 +115,11 @@ fn q24_frozen_plan_returns_exact_candidate_for_actual_worker_execution() -> anyh
         let optimizer = d("original optimizer contract");
         let rule = cell_q24_single_head_update_rule_v1(&selected, head, optimizer)?;
         let plan = CellQ24SingleHeadTrainingPlanV1::from_dataset_cut(
-            prefix.clone(), frozen(&prefix, head, optimizer)?, Arc::clone(&baseline), head, optimizer,
+            prefix.clone(),
+            frozen(&prefix, head, optimizer)?,
+            Arc::clone(&baseline),
+            head,
+            optimizer,
         )?;
         let mut values = HEADS;
         values[coefficient] = value;
@@ -117,9 +127,8 @@ fn q24_frozen_plan_returns_exact_candidate_for_actual_worker_execution() -> anyh
             trained_material(root.path(), &values, &prefix, rule)?;
         let candidate = plan.validate_training_candidate(&result, candidate)?;
         let config = configured(&candidate, &candidate_bundle)?;
-        let worker = candidate.into_worker(
-            &candidate_bundle, config.manifest.clone(), Arc::new(|| 11),
-        )?;
+        let worker =
+            candidate.into_worker(&candidate_bundle, config.manifest.clone(), Arc::new(|| 11))?;
         // Path replacement cannot change either resident checked allocation.
         fs::write(root.path().join("heads"), b"replaced-after-validation")?;
         let request = CellGenerationRequestV2 {
@@ -134,9 +143,15 @@ fn q24_frozen_plan_returns_exact_candidate_for_actual_worker_execution() -> anyh
         let output = worker.execute(&config.manifest, &request, &AtomicBool::new(false))?;
         let mut bytes = b"HQ24O001".to_vec();
         bytes.extend_from_slice(&2_u16.to_le_bytes());
-        for value in expected { bytes.extend_from_slice(&value.to_le_bytes()); }
+        for value in expected {
+            bytes.extend_from_slice(&value.to_le_bytes());
+        }
         assert_eq!(
-            (output.disposition, output.output_delta, output.successor_state),
+            (
+                output.disposition,
+                output.output_delta,
+                output.successor_state
+            ),
             (CellGenerationDispositionV2::Stopped, bytes, Vec::new()),
         );
         assert_eq!(result.receipts.len(), prefix.receipts.len() + 1);
@@ -160,27 +175,57 @@ fn q24_plan_binds_full_baseline_row_optimizer_and_original_scope() -> anyhow::Re
         (head, d("different optimizer")),
         (head, Digest32::ZERO),
     ] {
-        assert!(CellQ24SingleHeadTrainingPlanV1::from_dataset_cut(
-            prefix.clone(), scope.clone(), Arc::clone(&baseline), other_head, other_optimizer,
-        ).is_err());
+        assert!(
+            CellQ24SingleHeadTrainingPlanV1::from_dataset_cut(
+                prefix.clone(),
+                scope.clone(),
+                Arc::clone(&baseline),
+                other_head,
+                other_optimizer,
+            )
+            .is_err()
+        );
     }
     let changed = Arc::new(load(root.path(), /*factor*/ 2)?);
-    assert!(CellQ24SingleHeadTrainingPlanV1::from_dataset_cut(
-        prefix.clone(), scope.clone(), changed, head, optimizer,
-    ).is_err());
+    assert!(
+        CellQ24SingleHeadTrainingPlanV1::from_dataset_cut(
+            prefix.clone(),
+            scope.clone(),
+            changed,
+            head,
+            optimizer,
+        )
+        .is_err()
+    );
     let mut other_selected = selected;
     other_selected.artifact_id = StableId::new("different-original-bundle")?;
     let other_prefix = dataset_cut(&baseline, &other_selected)?;
-    assert!(CellQ24SingleHeadTrainingPlanV1::from_dataset_cut(
-        other_prefix, scope.clone(), Arc::clone(&baseline), head, optimizer,
-    ).is_err());
+    assert!(
+        CellQ24SingleHeadTrainingPlanV1::from_dataset_cut(
+            other_prefix,
+            scope,
+            Arc::clone(&baseline),
+            head,
+            optimizer,
+        )
+        .is_err()
+    );
     let organ_scope = FrozenLearningScopeV2::freeze(
-        &prefix.request, &prefix.owners, LearningUpdateScopeV2::Organ,
+        &prefix.request,
+        &prefix.owners,
+        LearningUpdateScopeV2::Organ,
         cell_q24_single_head_update_rule_v1(&prefix.request.selected_bundle, head, optimizer)?,
     )?;
-    assert!(CellQ24SingleHeadTrainingPlanV1::from_dataset_cut(
-        prefix, organ_scope, baseline, head, optimizer,
-    ).is_err());
+    assert!(
+        CellQ24SingleHeadTrainingPlanV1::from_dataset_cut(
+            prefix,
+            organ_scope,
+            baseline,
+            head,
+            optimizer,
+        )
+        .is_err()
+    );
     Ok(())
 }
 
@@ -195,32 +240,45 @@ fn q24_plan_refuses_other_valid_training_histories_or_material() -> anyhow::Resu
     let rule = cell_q24_single_head_update_rule_v1(&selected, head, optimizer)?;
     let scope = frozen(&prefix, head, optimizer)?;
     let plan = CellQ24SingleHeadTrainingPlanV1::from_dataset_cut(
-        prefix.clone(), scope.clone(), Arc::clone(&baseline), head, optimizer,
+        prefix.clone(),
+        scope.clone(),
+        Arc::clone(&baseline),
+        head,
+        optimizer,
     )?;
     for scenario in 0..5 {
         let mut other_prefix = prefix.clone();
         if scenario == 0 {
-            let mut replay = LearningIterationCoordinatorV1::new(
-                prefix.request.clone(), prefix.owners.clone(),
-            )?;
+            let mut replay =
+                LearningIterationCoordinatorV1::new(prefix.request.clone(), prefix.owners.clone())?;
             for (index, original) in prefix.receipts.iter().enumerate() {
                 let mut receipt = original.clone();
                 receipt.predecessor = replay.snapshot().head_digest;
-                if index == 1 { receipt.evidence_digest = d("different Dataset evidence"); }
+                if index == 1 {
+                    receipt.evidence_digest = d("different Dataset evidence");
+                }
                 replay.record(receipt, 20)?;
             }
             other_prefix = replay.snapshot().clone();
         }
         let mut values = HEADS;
         values[2] = Q / 2;
-        if scenario == 4 { values[7] = -Q / 2; }
-        let result_rule = if scenario == 3 { d("uncommitted rule") } else { rule };
+        if scenario == 4 {
+            values[7] = -Q / 2;
+        }
+        let result_rule = if scenario == 3 {
+            d("uncommitted rule")
+        } else {
+            rule
+        };
         let (candidate, candidate_bundle, mut result) =
             trained_material(root.path(), &values, &other_prefix, result_rule)?;
         let candidate = if scenario == 1 {
             values[2] = Q / 4;
             trained_material(root.path(), &values, &prefix, rule)?.0
-        } else { candidate };
+        } else {
+            candidate
+        };
         if scenario == 2 {
             let mut extended = LearningIterationCoordinatorV1::from_snapshot(result)?;
             extended.record(
@@ -231,19 +289,30 @@ fn q24_plan_refuses_other_valid_training_histories_or_material() -> anyhow::Resu
                         evaluation_profile: prefix.request.evaluation_profile,
                         disposition: LearningEvaluationDispositionV1::NoUpdate,
                     },
-                ), 20,
+                ),
+                20,
             )?;
             result = extended.snapshot().clone();
         }
         // Every rejected result is a valid complete coordinator history.
         LearningIterationCoordinatorV1::from_snapshot(result.clone())?;
-        assert!(plan.validate_training_candidate(&result, candidate).is_err());
+        assert!(
+            plan.validate_training_candidate(&result, candidate)
+                .is_err()
+        );
     }
     let mut values = HEADS;
     values[2] = Q / 2;
     let (_, _, after_training) = trained_material(root.path(), &values, &prefix, rule)?;
-    assert!(CellQ24SingleHeadTrainingPlanV1::from_dataset_cut(
-        after_training, scope, baseline, head, optimizer,
-    ).is_err());
+    assert!(
+        CellQ24SingleHeadTrainingPlanV1::from_dataset_cut(
+            after_training,
+            scope,
+            baseline,
+            head,
+            optimizer,
+        )
+        .is_err()
+    );
     Ok(())
 }
