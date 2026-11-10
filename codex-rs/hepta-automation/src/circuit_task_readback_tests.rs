@@ -25,9 +25,13 @@ async fn rows(store: &AutomationStore) -> (i64, i64, i64) {
 #[tokio::test]
 async fn task_readback_never_initializes_missing_or_repairs_lost_history() {
     let directory = tempfile::tempdir().expect("private owner fixture");
+    let canonical_directory = directory
+        .path()
+        .canonicalize()
+        .expect("canonical private owner");
     let fence = fence(/*generation*/ 1);
     let store = AutomationStore::open_root(
-        directory.path().join("automation"),
+        canonical_directory.join("automation"),
         fence.owner_agent_id.clone(),
     )
     .await
