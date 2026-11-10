@@ -1,0 +1,71 @@
+name: ACT-2 controlled SQLite learning
+
+on:
+  push:
+    branches: [research/act2-learning-cpu-20261110]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: act2-learning-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  controlled-research:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      OPENBLAS_NUM_THREADS: "1"
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,uv@0.9.26
+      - name: Bind source and install the bounded CPU dependency
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/act2-learning-records"
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test -z "$(git status --porcelain)"
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/act2-learning-records/source.txt"
+          python3 -m venv "$RUNNER_TEMP/act2-learning-venv"
+          "$RUNNER_TEMP/act2-learning-venv/bin/pip" install numpy==2.3.5
+          "$RUNNER_TEMP/act2-learning-venv/bin/python" --version > "$RUNNER_TEMP/act2-learning-records/python.txt"
+          "$RUNNER_TEMP/act2-learning-venv/bin/pip" freeze > "$RUNNER_TEMP/act2-learning-records/packages.txt"
+      - name: Execute the frozen five labelled arms and retain physical destination states
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/act2-learning-venv/bin/python" scripts/act2_learning/run.py \
+            --output "$RUNNER_TEMP/act2-learning-records/run" \
+            --training-repeats 8 > "$RUNNER_TEMP/act2-learning-records/execution.log" 2>&1
+          test -z "$(git status --porcelain)"
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/act2-learning-records/source-after.txt"
+      - name: Run the official owning formatter and retain exact postimages
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/act2-learning-records"
+          git config --global credential.helper '!gh auth git-credential'
+          git fetch --no-tags --depth=1 origin 631e99f78898543e8dc1e8671632baf73945940e
+          just fmt --base 631e99f78898543e8dc1e8671632baf73945940e > "$RUNNER_TEMP/act2-learning-records/formatter.log" 2>&1
+          git diff --binary > "$RUNNER_TEMP/act2-learning-records/format.patch"
+          python3 - <<'PY'
+          import hashlib, json, os, subprocess
+          from pathlib import Path
+          paths = subprocess.check_output(['git','diff','--name-only','-z']).decode().strip('\0').split('\0')
+          rows = [{'path': p, 'sha256': hashlib.sha256(Path(p).read_bytes()).hexdigest(), 'content': Path(p).read_text()} for p in paths if p]
+          Path(os.environ['RUNNER_TEMP'], 'act2-learning-records', 'formatted-files.json').write_text(json.dumps(rows, indent=2) + '\n')
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: act2-learning-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/act2-learning-records
+          if-no-files-found: error
+          retention-days: 14
