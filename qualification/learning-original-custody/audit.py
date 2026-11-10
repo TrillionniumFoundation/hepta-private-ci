@@ -11,9 +11,10 @@ import json
 from pathlib import Path
 import re
 
-STAGES = ('experience', 'dataset', 'training', 'evaluation', 'selection',
-          'published_current', 'final_use', 'next_use')
-TRAINER_NO_UPDATE_STAGES = tuple(stage for stage in STAGES if stage != 'evaluation')
+STAGES = ('experience', 'dataset', 'training', 'evaluation', 'proposal',
+          'selection', 'published_current', 'final_use', 'next_use')
+EVALUATION_NO_UPDATE_STAGES = tuple(stage for stage in STAGES if stage != 'proposal')
+TRAINER_NO_UPDATE_STAGES = tuple(stage for stage in STAGES if stage not in ('evaluation', 'proposal'))
 HEX64 = re.compile(r'^[0-9a-f]{64}$')
 HEX40 = re.compile(r'^[0-9a-f]{40}$')
 ATTEMPT_STATES = frozenset(('completed', 'failed', 'cancelled', 'pending', 'unknown'))
@@ -54,17 +55,21 @@ def inspect(manifest: Path) -> dict:
     elif (decision == 'adopt' and chosen == baseline) or (decision == 'no_update' and chosen != baseline):
         fail('selection_version_mismatch')
 
-    # Original TrainingNoUpdateV2 has no candidate, Evaluation or Proposal;
-    # it still needs Selection and a different task consuming the retained
-    # version. Evaluator-side NoUpdate is a separate, evaluated path.
+    # The original coordinator admits three different no-update cuts:
+    # TrainingNoUpdateV2 -> Selection; Evaluation(NoUpdate) -> Selection;
+    # Evaluation(Qualified) -> Proposal(NoAdmissibleUpdate) -> Selection.
+    # Adopt also requires its original anchored Proposal(UpdateCandidates).
+    # Never invent Evaluation or Proposal when that stage was not executed.
     origin = record.get('no_update_origin')
     if decision == 'no_update':
-        if origin not in ('trainer', 'evaluation'):
+        if origin not in ('trainer', 'evaluation', 'proposal'):
             fail('no_update_origin')
     elif origin is not None:
         fail('no_update_origin_not_applicable')
     trainer_no_update = decision == 'no_update' and origin == 'trainer'
-    stages = TRAINER_NO_UPDATE_STAGES if trainer_no_update else STAGES
+    evaluator_no_update = decision == 'no_update' and origin == 'evaluation'
+    stages = (TRAINER_NO_UPDATE_STAGES if trainer_no_update else
+              EVALUATION_NO_UPDATE_STAGES if evaluator_no_update else STAGES)
 
     # Claimed roles do not prove authentic custody or independent operators.
     # The original trainer, selector and observer remain separate on both paths.
