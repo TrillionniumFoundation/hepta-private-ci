@@ -1,0 +1,256 @@
+{
+  "status": "CONTROLLED_FAMILY_PROBES_COMPLETED",
+  "controlled_probe_tasks": 16,
+  "episodes": 384,
+  "new_independent_real_tasks": 0,
+  "summary": {
+    "filesystem": {
+      "fixed": {
+        "episodes": 128,
+        "complete": 96,
+        "claimed_success": 96,
+        "false_success": 0,
+        "duplicate_effects": 0,
+        "primitive_calls": 1600,
+        "owner_requests": 1600,
+        "selection_ns": 14696292,
+        "duration_ns": 346419287,
+        "guard_overrides": 0
+      },
+      "head": {
+        "episodes": 128,
+        "complete": 96,
+        "claimed_success": 96,
+        "false_success": 0,
+        "duplicate_effects": 0,
+        "primitive_calls": 1600,
+        "owner_requests": 1600,
+        "selection_ns": 25710310,
+        "duration_ns": 364015855,
+        "guard_overrides": 0
+      },
+      "gru": {
+        "episodes": 128,
+        "complete": 96,
+        "claimed_success": 96,
+        "false_success": 0,
+        "duplicate_effects": 0,
+        "primitive_calls": 1600,
+        "owner_requests": 1600,
+        "selection_ns": 73020931,
+        "duration_ns": 422921415,
+        "guard_overrides": 34
+      }
+    }
+  },
+  "paired_task_deltas": [
+    {
+      "task_id": "act3/filesystem/v1/n3/normal",
+      "arm": "head",
+      "mean_completion_delta": 0.0,
+      "regressing_seeds": 0
+    },
+    {
+      "task_id": "act3/filesystem/v1/n3/normal",
+      "arm": "gru",
+      "mean_completion_delta": 0.0,
+      "regressing_seeds": 0
+    },
+    {
+      "task_id": "act3/filesystem/v1/n3/lost_reply",
+      "arm": "head",
+      "mean_completion_delta": 0.0,
+      "regressing_seeds": 0
+    },
+    {
+      "task_id": "act3/filesystem/v1/n3/lost_reply",
+      "arm": "gru",
+      "mean_completion_delta": 0.0,
+      "regressing_seeds": 0
+    },
+    {
+      "task_id": "act3/filesystem/v1/n3/partial_failure",
+      "arm": "head",
+      "mean_completion_delta": 0.0,
+      "regressing_seeds": 0
+    },
+    {
+      "task_id": "act3/filesystem/v1/n3/partial_failure",
+      "arm": "gru",
+      "mean_completion_delta": 0.0,
+      "regressing_seeds": 0
+    },
+    {
+      "task_id": "act3/filesystem/v1/n3/opaque_after_apply",
+      "arm": "head",
+      "mean_completion_delta": 0.0,
+      "regressing_seeds": 0
+    },
+    {
+      "task_id": "act3/filesystem/v1/n3/opaque_after_apply",
+      "arm": "gru",
+      "mean_completion_delta": 0.0,
+      "regressing_seeds": 0
+    },
+    {
+      "task_id": "act3/filesystem/v1/n5/normal",
+      "arm": "head",
+      "mean_completion_delta": 0.0,
+      "regressing_seeds": 0
+    },
+    {
+      "task_id": "act3/filesystem/v1/n5/normal",
+      "arm": "gru",
+      "mean_completion_delta": 0.0,
+      "regressing_seeds": 0
+    },
+    {
+      "task_id": "act3/filesystem/v1/n5/lost_reply",
+      "arm": "head",
+      "mean_completion_delta": 0.0,
+      "regressing_seeds": 0
+    },
+    {
+      "task_id": "act3/filesystem/v1/n5/lost_reply",
+      "arm": "gru",
+      "mean_completion_delta": 0.0,
+      "regressing_seeds": 0
+    },
+    {
+      "task_id": "act3/filesystem/v1/n5/partial_failure",
+      "arm": "head",
+      "mean_completion_delta": 0.0,
+      "regressing_seeds": 0
+    },
+    {
+      "task_id": "act3/filesystem/v1/n5/partial_failure",
+      "arm": "gru",
+      "mean_completion_delta": 0.0,
+      "regressing_seeds": 0
+    },
+    {
+      "task_id": "act3/filesystem/v1/n5/opaque_after_apply",
+      "arm": "head",
+      "mean_completion_delta": 0.0,
+      "regressing_seeds": 0
+    },
+    {
+      "task_id": "act3/filesystem/v1/n5/opaque_after_apply",
+      "arm": "gru",
+      "mean_completion_delta": 0.0,
+      "regressing_seeds": 0
+    },
+    {
+      "task_id": "act3/filesystem/v2/n3/normal",
+      "arm": "head",
+      "mean_completion_delta": 0.0,
+      "regressing_seeds": 0
+    },
+    {
+      "task_id": "act3/filesystem/v2/n3/normal",
+      "arm": "gru",
+      "mean_completion_delta": 0.0,
+      "regressing_seeds": 0
+    },
+    {
+      "task_id": "act3/filesystem/v2/n3/lost_reply",
+      "arm": "head",
+      "mean_completion_delta": 0.0,
+      "regressing_seeds": 0
+    },
+    {
+      "task_id": "act3/filesystem/v2/n3/lost_reply",
+      "arm": "gru",
+      "mean_completion_delta": 0.0,
+      "regressing_seeds": 0
+    },
+    {
+      "task_id": "act3/filesystem/v2/n3/partial_failure",
+      "arm": "head",
+      "mean_completion_delta": 0.0,
+      "regressing_seeds": 0
+    },
+    {
+      "task_id": "act3/filesystem/v2/n3/partial_failure",
+      "arm": "gru",
+      "mean_completion_delta": 0.0,
+      "regressing_seeds": 0
+    },
+    {
+      "task_id": "act3/filesystem/v2/n3/opaque_after_apply",
+      "arm": "head",
+      "mean_completion_delta": 0.0,
+      "regressing_seeds": 0
+    },
+    {
+      "task_id": "act3/filesystem/v2/n3/opaque_after_apply",
+      "arm": "gru",
+      "mean_completion_delta": 0.0,
+      "regressing_seeds": 0
+    },
+    {
+      "task_id": "act3/filesystem/v2/n5/normal",
+      "arm": "head",
+      "mean_completion_delta": 0.0,
+      "regressing_seeds": 0
+    },
+    {
+      "task_id": "act3/filesystem/v2/n5/normal",
+      "arm": "gru",
+      "mean_completion_delta": 0.0,
+      "regressing_seeds": 0
+    },
+    {
+      "task_id": "act3/filesystem/v2/n5/lost_reply",
+      "arm": "head",
+      "mean_completion_delta": 0.0,
+      "regressing_seeds": 0
+    },
+    {
+      "task_id": "act3/filesystem/v2/n5/lost_reply",
+      "arm": "gru",
+      "mean_completion_delta": 0.0,
+      "regressing_seeds": 0
+    },
+    {
+      "task_id": "act3/filesystem/v2/n5/partial_failure",
+      "arm": "head",
+      "mean_completion_delta": 0.0,
+      "regressing_seeds": 0
+    },
+    {
+      "task_id": "act3/filesystem/v2/n5/partial_failure",
+      "arm": "gru",
+      "mean_completion_delta": 0.0,
+      "regressing_seeds": 0
+    },
+    {
+      "task_id": "act3/filesystem/v2/n5/opaque_after_apply",
+      "arm": "head",
+      "mean_completion_delta": 0.0,
+      "regressing_seeds": 0
+    },
+    {
+      "task_id": "act3/filesystem/v2/n5/opaque_after_apply",
+      "arm": "gru",
+      "mean_completion_delta": 0.0,
+      "regressing_seeds": 0
+    }
+  ],
+  "shared_browser_launch_ns": 0,
+  "shared_browser_close_ns": 0,
+  "campaign_wall_ns": 3609034053,
+  "production_adoption": false,
+  "learning_gain_qualified": false,
+  "fixed_reference_retained": true,
+  "full_operational_cost_qualified": false,
+  "source_stable": true,
+  "limitations": [
+    "controlled fixtures",
+    "same normalized observation vocabulary",
+    "same UID",
+    "no production Cell/FinalUse owner",
+    "not open-web tasks",
+    "no total lifetime cost claim"
+  ]
+}

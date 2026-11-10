@@ -7,6 +7,9 @@ on:
       - research/act3-cold-state-20261110
       - research/act3-cold-qualification-20261110
       - research/act3-tool-families-20261110
+      - research/act3-browser-20261110
+      - research/act3-composite-20261110
+      - research/act3-procedural-replay-20261110
 
 permissions:
   contents: read
@@ -68,6 +71,13 @@ jobs:
         run: |
           set -euo pipefail
           "$RUNNER_TEMP/act3-venv/bin/python" scripts/act2_learning/qualify_continuation.py --models qualification/act2-learning-20261110/run2 --include-long-task --output "$RUNNER_TEMP/act3-records/continuation" > "$RUNNER_TEMP/act3-records/continuation.log" 2>&1
+      - name: Qualify real filesystem effects and retained bytes
+        if: github.ref_name == 'research/act3-tool-families-20261110' || github.ref_name == 'research/act3-browser-20261110' || github.ref_name == 'research/act3-composite-20261110' || github.ref_name == 'research/act3-procedural-replay-20261110'
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/act3-venv/bin/python" -m unittest discover -s scripts/act2_learning -p test_file_family.py -v > "$RUNNER_TEMP/act3-records/filesystem-tests.log" 2>&1
+          "$RUNNER_TEMP/act3-venv/bin/python" scripts/act2_learning/qualify_families.py --archive qualification/act2-learning-20261110/run2 --families filesystem --output "$RUNNER_TEMP/act3-records/filesystem" > "$RUNNER_TEMP/act3-records/filesystem.log" 2>&1
+          "$RUNNER_TEMP/act3-venv/bin/python" scripts/act2_learning/audit_families.py "$RUNNER_TEMP/act3-records/filesystem" > "$RUNNER_TEMP/act3-records/filesystem-audit.json"
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
