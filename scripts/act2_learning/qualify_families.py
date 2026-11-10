@@ -75,7 +75,7 @@ def episode(task, arm, model, path, browser=None):
         from composite_family import CompositeDestination
 
         destination = CompositeDestination(path, task, browser)
-    state = np.zeros(12) if arm == "gru" else None
+    state = np.zeros(12) if model is not None and model.kind == "gru" else None
     decisions, claimed, overrides, selection_ns = [], False, 0, 0
     try:
         try:
@@ -117,7 +117,29 @@ def episode(task, arm, model, path, browser=None):
         destination.close()
 
 
-def qualify(archive, output, families, executable):
+def replay_identity(directory):
+    declared = json.loads((directory / "SHA256SUMS.json").read_text())
+    names = ["FROZEN_MANIFEST.json", "RESULT.json", "SHA256SUMS.json"] + [
+        f"{order}-seed-{seed}.npz"
+        for order in ("ordered", "shuffled")
+        for seed in range(700, 708)
+    ]
+    actual = {
+        name: hashlib.sha256((directory / name).read_bytes()).hexdigest()
+        for name in names
+    }
+    require(
+        all(
+            declared.get(name) == digest
+            for name, digest in actual.items()
+            if name != "SHA256SUMS.json"
+        ),
+        "replay artifact checksum mismatch",
+    )
+    return actual
+
+
+def qualify(archive, output, families, executable, replay_models=None):
     require(
         bool(families)
         and len(set(families)) == len(families)
@@ -129,12 +151,16 @@ def qualify(archive, output, families, executable):
     _, _, inputs = read_archive(archive)
     sources = source_identity(families)
     cohort, arms = tasks(families), ["fixed", "head", "gru"]
+    replay_inputs = replay_identity(replay_models) if replay_models else {}
+    if replay_models:
+        arms.extend(("ordered_replay", "shuffled_replay"))
     frozen = {
         "tasks": cohort,
         "seeds": list(range(700, 708)),
         "arms": arms,
         "source_sha256": sources,
         "archive_inputs_sha256": inputs,
+        "replay_inputs_sha256": replay_inputs,
         "shared_guard": True,
         "training_performed": False,
         "gate": "Report paired task quality and all measured costs; no field promotion from fixtures.",
@@ -160,11 +186,22 @@ def qualify(archive, output, families, executable):
             stack.callback(browser.close)
         for seed in frozen["seeds"]:
             models = {}
-            for kind, label in (("head", "B3_head"), ("gru", "B4_gru")):
+            specifications = [
+                (kind, kind, archive / f"{label}-seed-{seed}.npz")
+                for kind, label in (("head", "B3_head"), ("gru", "B4_gru"))
+            ]
+            if replay_models:
+                specifications.extend(
+                    (
+                        f"{order}_replay",
+                        "gru",
+                        replay_models / f"{order}-seed-{seed}.npz",
+                    )
+                    for order in ("ordered", "shuffled")
+                )
+            for arm, kind, checkpoint in specifications:
                 model = Model(kind, seed)
-                with np.load(
-                    archive / f"{label}-seed-{seed}.npz", allow_pickle=False
-                ) as saved:
+                with np.load(checkpoint, allow_pickle=False) as saved:
                     require(set(saved.files) == set(model.p), "checkpoint parameters")
                     for key, value in model.p.items():
                         require(
@@ -173,7 +210,7 @@ def qualify(archive, output, families, executable):
                             "checkpoint values",
                         )
                         model.p[key] = saved[key].copy()
-                models[kind] = model
+                models[arm] = model
             for index, task in enumerate(cohort):
                 offset = (index + seed) % len(arms)
                 for arm in arms[offset:] + arms[:offset]:
@@ -214,6 +251,11 @@ def qualify(archive, output, families, executable):
             archive_file.add(work, arcname="destinations")
     require(source_identity(families) == sources, "source changed during qualification")
     read_archive(archive)  # Detect model/archive drift, not a second evaluation.
+    if replay_models:
+        require(
+            replay_identity(replay_models) == replay_inputs,
+            "replay artifacts changed during qualification",
+        )
     compressed_jsonl(output / "episodes.jsonl.gz", rows)
     summary = {}
     for family in families:
@@ -240,7 +282,7 @@ def qualify(archive, output, families, executable):
     paired = []
     for task in cohort:
         panel = {(r["seed"], r["arm"]): r for r in rows if r["task_id"] == task["id"]}
-        for arm in ("head", "gru"):
+        for arm in arms[1:]:
             delta = [
                 int(panel[s, arm]["complete"]) - int(panel[s, "fixed"]["complete"])
                 for s in frozen["seeds"]
@@ -323,6 +365,7 @@ if __name__ == "__main__":
         default=["filesystem"],
     )
     parser.add_argument("--browser-executable")
+    parser.add_argument("--replay-models", type=Path)
     args = parser.parse_args()
     require(len(set(args.families)) == len(args.families), "duplicate family")
     qualify(
@@ -330,4 +373,5 @@ if __name__ == "__main__":
         args.output.resolve(),
         args.families,
         args.browser_executable,
+        args.replay_models.resolve() if args.replay_models else None,
     )

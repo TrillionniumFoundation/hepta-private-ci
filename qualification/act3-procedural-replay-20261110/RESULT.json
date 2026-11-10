@@ -1,0 +1,501 @@
+{
+  "status": "CONTROLLED_PROCEDURAL_REPLAY_COMPLETED",
+  "adoption": "NoUpdate",
+  "production_adoption": false,
+  "learning_gain_qualified": false,
+  "fixed_reference_retained": true,
+  "new_independent_real_tasks": 0,
+  "training": {
+    "fits": 16,
+    "optimizer_calls": 3520,
+    "reused_train_trajectories": 80,
+    "unique_normalized_trajectories": 9,
+    "tool_effect_calls": 0,
+    "factual_memory_training": false,
+    "train_archive_sha256": "5512824dc9706ef8c5735eb94c6d500ec0a60ad42ea084db448398ab878b6eec",
+    "source_stable": true
+  },
+  "training_examples_per_epoch": 368,
+  "label_presentations_per_order": 647680,
+  "ordered_npz_byte_identical_count": 8,
+  "ordered_original_behavior_mismatches": 0,
+  "replay_behavioral_tests": 4,
+  "family_boundary_tests": 3,
+  "filesystem": {
+    "controlled_probe_tasks": 16,
+    "episodes": 640,
+    "summary": {
+      "filesystem": {
+        "fixed": {
+          "episodes": 128,
+          "complete": 96,
+          "claimed_success": 96,
+          "false_success": 0,
+          "duplicate_effects": 0,
+          "primitive_calls": 1600,
+          "owner_requests": 1600,
+          "selection_ns": 15221668,
+          "duration_ns": 325580155,
+          "guard_overrides": 0
+        },
+        "head": {
+          "episodes": 128,
+          "complete": 96,
+          "claimed_success": 96,
+          "false_success": 0,
+          "duplicate_effects": 0,
+          "primitive_calls": 1600,
+          "owner_requests": 1600,
+          "selection_ns": 26782125,
+          "duration_ns": 341402882,
+          "guard_overrides": 0
+        },
+        "gru": {
+          "episodes": 128,
+          "complete": 96,
+          "claimed_success": 96,
+          "false_success": 0,
+          "duplicate_effects": 0,
+          "primitive_calls": 1600,
+          "owner_requests": 1600,
+          "selection_ns": 72901703,
+          "duration_ns": 520089364,
+          "guard_overrides": 34
+        },
+        "ordered_replay": {
+          "episodes": 128,
+          "complete": 96,
+          "claimed_success": 96,
+          "false_success": 0,
+          "duplicate_effects": 0,
+          "primitive_calls": 1600,
+          "owner_requests": 1600,
+          "selection_ns": 86855896,
+          "duration_ns": 453455025,
+          "guard_overrides": 34
+        },
+        "shuffled_replay": {
+          "episodes": 128,
+          "complete": 96,
+          "claimed_success": 96,
+          "false_success": 0,
+          "duplicate_effects": 0,
+          "primitive_calls": 1600,
+          "owner_requests": 1600,
+          "selection_ns": 92582460,
+          "duration_ns": 484374552,
+          "guard_overrides": 0
+        }
+      }
+    },
+    "paired_task_deltas": [
+      {
+        "task_id": "act3/filesystem/v1/n3/normal",
+        "arm": "head",
+        "mean_completion_delta": 0.0,
+        "regressing_seeds": 0
+      },
+      {
+        "task_id": "act3/filesystem/v1/n3/normal",
+        "arm": "gru",
+        "mean_completion_delta": 0.0,
+        "regressing_seeds": 0
+      },
+      {
+        "task_id": "act3/filesystem/v1/n3/normal",
+        "arm": "ordered_replay",
+        "mean_completion_delta": 0.0,
+        "regressing_seeds": 0
+      },
+      {
+        "task_id": "act3/filesystem/v1/n3/normal",
+        "arm": "shuffled_replay",
+        "mean_completion_delta": 0.0,
+        "regressing_seeds": 0
+      },
+      {
+        "task_id": "act3/filesystem/v1/n3/lost_reply",
+        "arm": "head",
+        "mean_completion_delta": 0.0,
+        "regressing_seeds": 0
+      },
+      {
+        "task_id": "act3/filesystem/v1/n3/lost_reply",
+        "arm": "gru",
+        "mean_completion_delta": 0.0,
+        "regressing_seeds": 0
+      },
+      {
+        "task_id": "act3/filesystem/v1/n3/lost_reply",
+        "arm": "ordered_replay",
+        "mean_completion_delta": 0.0,
+        "regressing_seeds": 0
+      },
+      {
+        "task_id": "act3/filesystem/v1/n3/lost_reply",
+        "arm": "shuffled_replay",
+        "mean_completion_delta": 0.0,
+        "regressing_seeds": 0
+      },
+      {
+        "task_id": "act3/filesystem/v1/n3/partial_failure",
+        "arm": "head",
+        "mean_completion_delta": 0.0,
+        "regressing_seeds": 0
+      },
+      {
+        "task_id": "act3/filesystem/v1/n3/partial_failure",
+        "arm": "gru",
+        "mean_completion_delta": 0.0,
+        "regressing_seeds": 0
+      },
+      {
+        "task_id": "act3/filesystem/v1/n3/partial_failure",
+        "arm": "ordered_replay",
+        "mean_completion_delta": 0.0,
+        "regressing_seeds": 0
+      },
+      {
+        "task_id": "act3/filesystem/v1/n3/partial_failure",
+        "arm": "shuffled_replay",
+        "mean_completion_delta": 0.0,
+        "regressing_seeds": 0
+      },
+      {
+        "task_id": "act3/filesystem/v1/n3/opaque_after_apply",
+        "arm": "head",
+        "mean_completion_delta": 0.0,
+        "regressing_seeds": 0
+      },
+      {
+        "task_id": "act3/filesystem/v1/n3/opaque_after_apply",
+        "arm": "gru",
+        "mean_completion_delta": 0.0,
+        "regressing_seeds": 0
+      },
+      {
+        "task_id": "act3/filesystem/v1/n3/opaque_after_apply",
+        "arm": "ordered_replay",
+        "mean_completion_delta": 0.0,
+        "regressing_seeds": 0
+      },
+      {
+        "task_id": "act3/filesystem/v1/n3/opaque_after_apply",
+        "arm": "shuffled_replay",
+        "mean_completion_delta": 0.0,
+        "regressing_seeds": 0
+      },
+      {
+        "task_id": "act3/filesystem/v1/n5/normal",
+        "arm": "head",
+        "mean_completion_delta": 0.0,
+        "regressing_seeds": 0
+      },
+      {
+        "task_id": "act3/filesystem/v1/n5/normal",
+        "arm": "gru",
+        "mean_completion_delta": 0.0,
+        "regressing_seeds": 0
+      },
+      {
+        "task_id": "act3/filesystem/v1/n5/normal",
+        "arm": "ordered_replay",
+        "mean_completion_delta": 0.0,
+        "regressing_seeds": 0
+      },
+      {
+        "task_id": "act3/filesystem/v1/n5/normal",
+        "arm": "shuffled_replay",
+        "mean_completion_delta": 0.0,
+        "regressing_seeds": 0
+      },
+      {
+        "task_id": "act3/filesystem/v1/n5/lost_reply",
+        "arm": "head",
+        "mean_completion_delta": 0.0,
+        "regressing_seeds": 0
+      },
+      {
+        "task_id": "act3/filesystem/v1/n5/lost_reply",
+        "arm": "gru",
+        "mean_completion_delta": 0.0,
+        "regressing_seeds": 0
+      },
+      {
+        "task_id": "act3/filesystem/v1/n5/lost_reply",
+        "arm": "ordered_replay",
+        "mean_completion_delta": 0.0,
+        "regressing_seeds": 0
+      },
+      {
+        "task_id": "act3/filesystem/v1/n5/lost_reply",
+        "arm": "shuffled_replay",
+        "mean_completion_delta": 0.0,
+        "regressing_seeds": 0
+      },
+      {
+        "task_id": "act3/filesystem/v1/n5/partial_failure",
+        "arm": "head",
+        "mean_completion_delta": 0.0,
+        "regressing_seeds": 0
+      },
+      {
+        "task_id": "act3/filesystem/v1/n5/partial_failure",
+        "arm": "gru",
+        "mean_completion_delta": 0.0,
+        "regressing_seeds": 0
+      },
+      {
+        "task_id": "act3/filesystem/v1/n5/partial_failure",
+        "arm": "ordered_replay",
+        "mean_completion_delta": 0.0,
+        "regressing_seeds": 0
+      },
+      {
+        "task_id": "act3/filesystem/v1/n5/partial_failure",
+        "arm": "shuffled_replay",
+        "mean_completion_delta": 0.0,
+        "regressing_seeds": 0
+      },
+      {
+        "task_id": "act3/filesystem/v1/n5/opaque_after_apply",
+        "arm": "head",
+        "mean_completion_delta": 0.0,
+        "regressing_seeds": 0
+      },
+      {
+        "task_id": "act3/filesystem/v1/n5/opaque_after_apply",
+        "arm": "gru",
+        "mean_completion_delta": 0.0,
+        "regressing_seeds": 0
+      },
+      {
+        "task_id": "act3/filesystem/v1/n5/opaque_after_apply",
+        "arm": "ordered_replay",
+        "mean_completion_delta": 0.0,
+        "regressing_seeds": 0
+      },
+      {
+        "task_id": "act3/filesystem/v1/n5/opaque_after_apply",
+        "arm": "shuffled_replay",
+        "mean_completion_delta": 0.0,
+        "regressing_seeds": 0
+      },
+      {
+        "task_id": "act3/filesystem/v2/n3/normal",
+        "arm": "head",
+        "mean_completion_delta": 0.0,
+        "regressing_seeds": 0
+      },
+      {
+        "task_id": "act3/filesystem/v2/n3/normal",
+        "arm": "gru",
+        "mean_completion_delta": 0.0,
+        "regressing_seeds": 0
+      },
+      {
+        "task_id": "act3/filesystem/v2/n3/normal",
+        "arm": "ordered_replay",
+        "mean_completion_delta": 0.0,
+        "regressing_seeds": 0
+      },
+      {
+        "task_id": "act3/filesystem/v2/n3/normal",
+        "arm": "shuffled_replay",
+        "mean_completion_delta": 0.0,
+        "regressing_seeds": 0
+      },
+      {
+        "task_id": "act3/filesystem/v2/n3/lost_reply",
+        "arm": "head",
+        "mean_completion_delta": 0.0,
+        "regressing_seeds": 0
+      },
+      {
+        "task_id": "act3/filesystem/v2/n3/lost_reply",
+        "arm": "gru",
+        "mean_completion_delta": 0.0,
+        "regressing_seeds": 0
+      },
+      {
+        "task_id": "act3/filesystem/v2/n3/lost_reply",
+        "arm": "ordered_replay",
+        "mean_completion_delta": 0.0,
+        "regressing_seeds": 0
+      },
+      {
+        "task_id": "act3/filesystem/v2/n3/lost_reply",
+        "arm": "shuffled_replay",
+        "mean_completion_delta": 0.0,
+        "regressing_seeds": 0
+      },
+      {
+        "task_id": "act3/filesystem/v2/n3/partial_failure",
+        "arm": "head",
+        "mean_completion_delta": 0.0,
+        "regressing_seeds": 0
+      },
+      {
+        "task_id": "act3/filesystem/v2/n3/partial_failure",
+        "arm": "gru",
+        "mean_completion_delta": 0.0,
+        "regressing_seeds": 0
+      },
+      {
+        "task_id": "act3/filesystem/v2/n3/partial_failure",
+        "arm": "ordered_replay",
+        "mean_completion_delta": 0.0,
+        "regressing_seeds": 0
+      },
+      {
+        "task_id": "act3/filesystem/v2/n3/partial_failure",
+        "arm": "shuffled_replay",
+        "mean_completion_delta": 0.0,
+        "regressing_seeds": 0
+      },
+      {
+        "task_id": "act3/filesystem/v2/n3/opaque_after_apply",
+        "arm": "head",
+        "mean_completion_delta": 0.0,
+        "regressing_seeds": 0
+      },
+      {
+        "task_id": "act3/filesystem/v2/n3/opaque_after_apply",
+        "arm": "gru",
+        "mean_completion_delta": 0.0,
+        "regressing_seeds": 0
+      },
+      {
+        "task_id": "act3/filesystem/v2/n3/opaque_after_apply",
+        "arm": "ordered_replay",
+        "mean_completion_delta": 0.0,
+        "regressing_seeds": 0
+      },
+      {
+        "task_id": "act3/filesystem/v2/n3/opaque_after_apply",
+        "arm": "shuffled_replay",
+        "mean_completion_delta": 0.0,
+        "regressing_seeds": 0
+      },
+      {
+        "task_id": "act3/filesystem/v2/n5/normal",
+        "arm": "head",
+        "mean_completion_delta": 0.0,
+        "regressing_seeds": 0
+      },
+      {
+        "task_id": "act3/filesystem/v2/n5/normal",
+        "arm": "gru",
+        "mean_completion_delta": 0.0,
+        "regressing_seeds": 0
+      },
+      {
+        "task_id": "act3/filesystem/v2/n5/normal",
+        "arm": "ordered_replay",
+        "mean_completion_delta": 0.0,
+        "regressing_seeds": 0
+      },
+      {
+        "task_id": "act3/filesystem/v2/n5/normal",
+        "arm": "shuffled_replay",
+        "mean_completion_delta": 0.0,
+        "regressing_seeds": 0
+      },
+      {
+        "task_id": "act3/filesystem/v2/n5/lost_reply",
+        "arm": "head",
+        "mean_completion_delta": 0.0,
+        "regressing_seeds": 0
+      },
+      {
+        "task_id": "act3/filesystem/v2/n5/lost_reply",
+        "arm": "gru",
+        "mean_completion_delta": 0.0,
+        "regressing_seeds": 0
+      },
+      {
+        "task_id": "act3/filesystem/v2/n5/lost_reply",
+        "arm": "ordered_replay",
+        "mean_completion_delta": 0.0,
+        "regressing_seeds": 0
+      },
+      {
+        "task_id": "act3/filesystem/v2/n5/lost_reply",
+        "arm": "shuffled_replay",
+        "mean_completion_delta": 0.0,
+        "regressing_seeds": 0
+      },
+      {
+        "task_id": "act3/filesystem/v2/n5/partial_failure",
+        "arm": "head",
+        "mean_completion_delta": 0.0,
+        "regressing_seeds": 0
+      },
+      {
+        "task_id": "act3/filesystem/v2/n5/partial_failure",
+        "arm": "gru",
+        "mean_completion_delta": 0.0,
+        "regressing_seeds": 0
+      },
+      {
+        "task_id": "act3/filesystem/v2/n5/partial_failure",
+        "arm": "ordered_replay",
+        "mean_completion_delta": 0.0,
+        "regressing_seeds": 0
+      },
+      {
+        "task_id": "act3/filesystem/v2/n5/partial_failure",
+        "arm": "shuffled_replay",
+        "mean_completion_delta": 0.0,
+        "regressing_seeds": 0
+      },
+      {
+        "task_id": "act3/filesystem/v2/n5/opaque_after_apply",
+        "arm": "head",
+        "mean_completion_delta": 0.0,
+        "regressing_seeds": 0
+      },
+      {
+        "task_id": "act3/filesystem/v2/n5/opaque_after_apply",
+        "arm": "gru",
+        "mean_completion_delta": 0.0,
+        "regressing_seeds": 0
+      },
+      {
+        "task_id": "act3/filesystem/v2/n5/opaque_after_apply",
+        "arm": "ordered_replay",
+        "mean_completion_delta": 0.0,
+        "regressing_seeds": 0
+      },
+      {
+        "task_id": "act3/filesystem/v2/n5/opaque_after_apply",
+        "arm": "shuffled_replay",
+        "mean_completion_delta": 0.0,
+        "regressing_seeds": 0
+      }
+    ],
+    "retained_audit": {
+      "status": "RETAINED_EFFECT_AUDIT_PASS",
+      "episodes": 640,
+      "effect_payloads_checked": 2080,
+      "controlled_probe_tasks": 16,
+      "new_independent_real_tasks": 0,
+      "archive_sha256": "2beb223fd59fe365aae4e4c304cfab1f06f61452f7a0eaa254b42fcafe36e96a"
+    }
+  },
+  "confirmation_trajectories_or_outcomes_used_for_fitting_or_selection": false,
+  "blind_or_sealed_experiment": false,
+  "full_operational_cost_qualified": false,
+  "browser_status": "NOT_RUN",
+  "composition_status": "NOT_RUN",
+  "learned_recovery_or_repair_policy": "NOT_TRAINED",
+  "holds": [
+    "independent real task benefit",
+    "production CellStateOwner/FinalUse integration",
+    "actual browser and mixed-family execution",
+    "cross-family neural cold recovery",
+    "complete lifetime operational costs",
+    "learned recovery-point/local-repair evidence",
+    "exact GitHub source hosted qualification"
+  ]
+}
