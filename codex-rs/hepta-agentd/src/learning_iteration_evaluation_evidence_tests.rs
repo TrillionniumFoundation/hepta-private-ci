@@ -12,6 +12,9 @@ use super::*;
 use crate::neuron_cell_evaluation::tests::learning::LearningFixture;
 use crate::prepare_cell_learning_evaluation_v1;
 
+#[path = "learning_iteration_evaluation_recovery_tests.rs"]
+mod recovery;
+
 fn request(
     fixture: &LearningFixture,
 ) -> CellLearningEvaluationReadbackRequestV1<'_, LockedFileFinalHoldoutCasStoreV1> {
