@@ -138,8 +138,11 @@ impl ChildOwner {
         })
     }
 
-    pub(super) fn pid(&self) -> u32 {
-        self.child.as_ref().expect("retained original child").id()
+    pub(super) fn pid(&self) -> anyhow::Result<u32> {
+        self.child
+            .as_ref()
+            .map(Child::id)
+            .ok_or_else(|| anyhow::anyhow!("retained original child required"))
     }
 
     pub(super) fn release(&mut self) -> anyhow::Result<()> {
@@ -156,7 +159,7 @@ impl ChildOwner {
             if self
                 .child
                 .as_mut()
-                .expect("retained child")
+                .ok_or_else(|| anyhow::anyhow!("retained original child required"))?
                 .try_wait()?
                 .is_some()
             {
@@ -171,7 +174,7 @@ impl ChildOwner {
         let output = self
             .child
             .take()
-            .expect("finished original child")
+            .ok_or_else(|| anyhow::anyhow!("finished original child required"))?
             .wait_with_output()?;
         anyhow::ensure!(
             output.status.success(),

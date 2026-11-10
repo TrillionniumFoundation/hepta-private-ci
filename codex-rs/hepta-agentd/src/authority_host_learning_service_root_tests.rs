@@ -198,9 +198,9 @@ fn root_learning_public_registration_serves_retained_writer_and_recovers_history
     support::write_json(&profile_file, &profile)?;
     let (offer, receive) = UnixDatagram::pair()?;
     let mut child = support::ChildOwner::spawn(receive, &state)?;
-    let child_pin = support::pidfd(child.pid())?;
+    let child_pin = support::pidfd(child.pid()?)?;
     let credential_deadline = Instant::now() + Duration::from_secs(2);
-    while crate::authority_host_runtime::verify_process_credentials(child.pid(), 60001, 60001)
+    while crate::authority_host_runtime::verify_process_credentials(child.pid()?, 60001, 60001)
         .is_err()
     {
         anyhow::ensure!(
@@ -211,11 +211,11 @@ fn root_learning_public_registration_serves_retained_writer_and_recovers_history
     }
     let registration = HostAuthorityRegistration {
         schema_version: 1,
-        peer_pid: child.pid(),
+        peer_pid: child.pid()?,
         boot_id: std::fs::read_to_string("/proc/sys/kernel/random/boot_id")?
             .trim()
             .into(),
-        process_start_ticks: support::start_ticks(child.pid())?,
+        process_start_ticks: support::start_ticks(child.pid()?)?,
         registered_identity,
         checkpoint_owner_agent_id: identity.agent_id,
         publisher_epoch: 1,
