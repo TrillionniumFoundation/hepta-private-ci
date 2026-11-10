@@ -64,6 +64,54 @@ def _exact_signflip(deltas):
     return tail / (2 ** len(deltas))
 
 
+def _design_status(manifest, design, verify_design):
+    """Check the supported allocation design; hashes alone establish no trust.
+
+    This scorer supports one independent fair coin per cluster, with that coin
+    assigning the same first arm to every pair in the cluster. Other matched or
+    observational designs need their own inference procedure.
+    """
+    assignments = defaultdict(set)
+    for pair in manifest["pairs"]:
+        assignments[pair["cluster_id"]].add(pair["first_arm"])
+    consistent = all(len(values) == 1 for values in assignments.values())
+    assignment_sha = _digest(sorted(manifest["pairs"], key=lambda p: p["pair_id"]))
+    keys = {
+        "schema",
+        "manifest_sha256",
+        "assignment_sha256",
+        "method",
+        "authority_id",
+        "frozen_ns",
+        "evidence_sha256",
+        "attestation",
+    }
+    bound = (
+        type(design) is dict
+        and set(design) == keys
+        and design["schema"] == "hepta.verify.cluster-randomization.v1"
+        and design["method"] == "independent_fair_cluster_coin"
+        and design["manifest_sha256"] == _digest(manifest)
+        and design["assignment_sha256"] == assignment_sha
+        and _text(design["authority_id"])
+        and _text(design["attestation"])
+        and _sha(design["evidence_sha256"])
+        and type(design["frozen_ns"]) is int
+        and 0 <= design["frozen_ns"] <= manifest["freeze_ns"]
+    )
+    authenticated = False
+    if bound and consistent:
+        receipt_sha = _digest(design)
+        try:
+            authenticated = (
+                verify_design is not None and verify_design(manifest, design) is True
+            )
+        except Exception:
+            authenticated = False
+        _require(_digest(design) == receipt_sha, "design changed during authentication")
+    return consistent, bound, authenticated, assignment_sha
+
+
 def _validate_manifest(manifest):
     keys = {
         "schema",
@@ -278,6 +326,10 @@ def _arm_metrics(rows, planned):
     missing_total = planned - sum(r["terminal_error"] is not None for r in rows)
     unobserved = planned - len(rows)
     possible_accepts = accepts + unobserved
+    known_clean = sum(r["terminal_error"] is False for r in rows)
+    blocked = [r for r in rows if r["disposition"] in ("reject", "interrupted")]
+    clean_blocked = sum(r["terminal_error"] is False for r in blocked)
+    blocked_missing = sum(r["terminal_error"] is None for r in blocked)
     return {
         "planned": planned,
         "observed": len(rows),
@@ -305,6 +357,36 @@ def _arm_metrics(rows, planned):
         ],
         "known_terminal_labels": planned - missing_total,
         "missing_terminal_labels": missing_total,
+        "by_disposition": {
+            disposition: {
+                "observed": sum(r["disposition"] == disposition for r in rows),
+                "known_clean": sum(
+                    r["disposition"] == disposition and r["terminal_error"] is False
+                    for r in rows
+                ),
+                "known_errors": sum(
+                    r["disposition"] == disposition and r["terminal_error"] is True
+                    for r in rows
+                ),
+                "missing_labels": sum(
+                    r["disposition"] == disposition and r["terminal_error"] is None
+                    for r in rows
+                ),
+            }
+            for disposition in DISPOSITIONS
+        },
+        "clean_blocked_count_known": clean_blocked,
+        "clean_blocked_per_planned_bounds": [
+            clean_blocked / planned,
+            (clean_blocked + blocked_missing + unobserved) / planned,
+        ],
+        "clean_blocked_rate_among_known_clean": (
+            clean_blocked / known_clean if known_clean else None
+        ),
+        # A clean outcome may have resulted from a successful intervention.
+        # These labels alone cannot identify an unnecessary intervention.
+        "causal_false_interruption_rate": None,
+        "clean_blocked_interpretation": "post_decision_clean_not_causal_false_positive",
         "unknown_dispositions": sum(r["disposition"] == "unknown" for r in rows),
         "cost_missing_or_unobserved": planned
         - sum(r["cost_units"] is not None for r in rows),
@@ -312,12 +394,26 @@ def _arm_metrics(rows, planned):
     }
 
 
-def analyze_matched(manifest, observations, *, verify_label=None, verify_cost=None):
+def analyze_matched(
+    manifest,
+    observations,
+    *,
+    verify_label=None,
+    verify_cost=None,
+    design=None,
+    verify_design=None,
+):
     """Return complete-denominator diagnostics, never self-authorized promotion.
 
     `verify_label(manifest,row)` must check independently held original evidence,
     including signed actor/version and canonical task relation. `verify_cost` must
     also prove full physical roster attribution, not merely receipt formatting.
+    `verify_design(manifest,design)` must authenticate independently held study
+    authority and original allocation evidence: criteria/roster fixed before
+    outcomes, independent fair cluster coins, and no cross-arm interference.
+    The checked component must not supply its own trusted verifier or trust root.
+    Receipt fields and timestamps are assertions until that host verifier checks
+    them. Without this bound receipt the sign-flip value is diagnostic only.
     Passing a callback is a host assertion; independent custody is not established
     by this implementation or by source-group strings.
     """
@@ -334,6 +430,13 @@ def analyze_matched(manifest, observations, *, verify_label=None, verify_cost=No
         seen[key] = row
     _require(verify_label is None or callable(verify_label), "invalid label verifier")
     _require(verify_cost is None or callable(verify_cost), "invalid cost verifier")
+    _require(
+        verify_design is None or callable(verify_design), "invalid design verifier"
+    )
+    input_sha = _digest([manifest, observations])
+    consistent, design_bound, design_ok, assignment_sha = _design_status(
+        manifest, design, verify_design
+    )
     arms = (manifest["baseline"], manifest["candidate"])
     results = {
         arm: _arm_metrics(
@@ -356,6 +459,10 @@ def analyze_matched(manifest, observations, *, verify_label=None, verify_cost=No
             except Exception:
                 okay = False
             cost_ok &= okay
+    _require(
+        _digest([manifest, observations]) == input_sha,
+        "validated inputs changed during authentication",
+    )
     fully_observed = len(seen) == 2 * len(pairs)
     all_labels_known = fully_observed and all(
         r["terminal_error"] is not None for r in observations
@@ -413,8 +520,12 @@ def analyze_matched(manifest, observations, *, verify_label=None, verify_cost=No
         and terminal_reduction > 0
         and terminal_reduction >= c["min_terminal_error_reduction_per_task"]
     )
-    gain_ok = paired_gain is not None and paired_gain >= c["min_mean_gain"]
-    p_ok = p_value is not None and p_value <= c["max_one_sided_p"]
+    gain_ok = (
+        paired_gain is not None
+        and paired_gain > 0
+        and paired_gain >= c["min_mean_gain"]
+    )
+    p_ok = design_ok and p_value is not None and p_value <= c["max_one_sided_p"]
     data_complete = all_labels_known and all_costs_known
     ready_for_external_review = (
         data_complete
@@ -427,7 +538,7 @@ def analyze_matched(manifest, observations, *, verify_label=None, verify_cost=No
         and p_ok
     )
     return {
-        "schema": "hepta.verify.matched-analysis.v1",
+        "schema": "hepta.verify.matched-analysis.v2",
         "manifest_sha256": _digest(manifest),
         "observations_sha256": _digest(
             sorted(observations, key=lambda row: (row["pair_id"], row["arm"]))
@@ -436,14 +547,21 @@ def analyze_matched(manifest, observations, *, verify_label=None, verify_cost=No
         "paired_mean_loss_improvement": paired_gain,
         "terminal_error_rate_reduction": terminal_reduction,
         "cluster_count": len({p["cluster_id"] for p in pairs.values()}),
-        "paired_group_signflip_one_sided_p": p_value,
+        "assignment_sha256": assignment_sha,
+        "design_receipt_sha256": _digest(design) if design_bound else None,
+        "conditional_group_signflip_one_sided_p": p_value,
+        "paired_group_signflip_one_sided_p": p_value if design_ok else None,
         "signflip_statistic": "whole_cluster_contributions_to_paired_mean",
         "signflip_validity_requires_independent_randomized_groups": True,
+        "conditional_signflip_is_inferential_evidence": False,
         "gates": {
             "roster_complete": fully_observed,
             "horizon_labels_complete": all_labels_known,
             "physical_costs_complete_claim_verified": cost_ok,
             "independent_labels_receipt_authenticated": label_ok,
+            "whole_cluster_assignment_consistent": consistent,
+            "frozen_design_receipt_bound": design_bound,
+            "independent_randomized_design_authenticated": design_ok,
             "coverage": coverage_ok,
             "accepted_error_noninferiority": error_ok,
             "terminal_error_reduction": terminal_improved,
