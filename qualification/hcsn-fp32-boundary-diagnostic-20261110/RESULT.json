@@ -1,0 +1,25 @@
+{
+  "grid_cases": 630,
+  "grid_outside_unit_count": 0,
+  "max_abs_cdf_error_fp32_vs_fp64": 1.1225468654618709e-7,
+  "reference_git_blob": "54e9e2440eb73399a95adf04d98674df68c191b3",
+  "scope": "synthetic CPU FP32 diagnostic only; no HCSN training/autograd/reset/NPU",
+  "worst_case": {
+    "fp32_cdf": 0.9478874802589417,
+    "fp64_cdf": 0.9478875925136282,
+    "horizon": 10,
+    "mu": -0.08,
+    "sigma": 0.02,
+    "x": 0.7
+  },
+  "zero_drift_counterexample": {
+    "fp32_erf_log_survival": -19.339619335797668,
+    "fp32_erf_survival": 3.989422570072065e-9,
+    "fp32_naive_cdf": 1,
+    "fp32_naive_log_survival_finite": false,
+    "fp32_naive_one_minus_cdf": 0,
+    "horizon": 1,
+    "sigma": 0.2,
+    "x": 1e-9
+  }
+}
