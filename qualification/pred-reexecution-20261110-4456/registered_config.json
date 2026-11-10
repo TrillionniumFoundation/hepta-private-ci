@@ -1,0 +1,45 @@
+{
+  "base_commit": "885dae0f3285267e9e9c49d8b43b0d009779f9e8",
+  "batch_size": 128,
+  "cost_profile": {
+    "candidate_planning_time": 0.0001,
+    "candidate_planning_work": 0.0001,
+    "head_time": 0.001,
+    "head_work": 0.001,
+    "state_step_time": 0.0001,
+    "state_step_work": 0.0001
+  },
+  "data_seeds": [
+    1075468529,
+    2756881551,
+    1237426659
+  ],
+  "dev_episodes": 512,
+  "epochs": 30,
+  "expanded_budget": 16.0,
+  "expanded_deadline": 20.0,
+  "history_length": 16,
+  "init_seeds": [
+    935845515,
+    71713534,
+    3897731431
+  ],
+  "learning_rate": 0.003,
+  "order_seeds": [
+    2568340592,
+    950574889,
+    3595434253
+  ],
+  "schema": "pred1-crossed-train-dev-v1",
+  "target_parameters": 3000,
+  "train_episodes": 4096,
+  "variants": [
+    "single_step",
+    "gru",
+    "diag_ssm",
+    "dual_timescale",
+    "gru_reset",
+    "gru_no_action",
+    "gru_no_time"
+  ]
+}

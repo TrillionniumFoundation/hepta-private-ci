@@ -1,0 +1,81 @@
+{
+  "schema": "pred189-resource-readiness-observation-v1",
+  "status": "EVALUATED_NOT_ALLOCATED",
+  "controller": "current Mac HeptaRuntime controller",
+  "host": "rog",
+  "version": "0.1.3-integrity+adoption-v1",
+  "evaluate_job_id": "1a1c45eb558-cf39-29d",
+  "evaluate_exit_code": 0,
+  "observed_at": "2026-11-10T07:32:27.721395+00:00",
+  "elapsed_seconds": 24.332,
+  "automatic_account_rotation": false,
+  "quota_is_allocation_guarantee": false,
+  "training_started": false,
+  "allocation_attempted": false,
+  "candidates": [
+    {
+      "provider": "kaggle",
+      "ready": true,
+      "blockers": [],
+      "profile_binding_ready": null,
+      "submission_ready": true,
+      "notebook_scope_ready": false,
+      "submission_route": "SaveKernel.targetless-new-title.v1",
+      "active_runtime_count": null
+    },
+    {
+      "provider": "kaggle",
+      "ready": true,
+      "blockers": [],
+      "profile_binding_ready": null,
+      "submission_ready": true,
+      "notebook_scope_ready": false,
+      "submission_route": "SaveKernel.targetless-new-title.v1",
+      "active_runtime_count": null
+    },
+    {
+      "provider": "kaggle",
+      "ready": true,
+      "blockers": [],
+      "profile_binding_ready": null,
+      "submission_ready": true,
+      "notebook_scope_ready": false,
+      "submission_route": "SaveKernel.targetless-new-title.v1",
+      "active_runtime_count": null
+    },
+    {
+      "provider": "colab",
+      "ready": true,
+      "blockers": [],
+      "profile_binding_ready": true,
+      "submission_ready": null,
+      "notebook_scope_ready": null,
+      "submission_route": null,
+      "active_runtime_count": 0
+    },
+    {
+      "provider": "colab",
+      "ready": true,
+      "blockers": [],
+      "profile_binding_ready": true,
+      "submission_ready": null,
+      "notebook_scope_ready": null,
+      "submission_route": null,
+      "active_runtime_count": 0
+    },
+    {
+      "provider": "colab",
+      "ready": true,
+      "blockers": [],
+      "profile_binding_ready": true,
+      "submission_ready": null,
+      "notebook_scope_ready": null,
+      "submission_route": null,
+      "active_runtime_count": 0
+    }
+  ],
+  "raw_output_sha256": "a19379c9b80adc3e9315c3dccda4c9d708dc7373a96dbf25f8b7b5d5498584fc",
+  "task_fit_note": "Readiness is not task-budget admission or allocation. Skill documents Colab profile <=600s; complete 189-fit wall time previously estimated near 30min. No plan was created; a parent choosing local CPU must register a separate execution and justify task-budget fit.",
+  "selection": "CURRENT_SESSION_CPU_FOR_ONE_COMPLETE_SEQUENTIAL_GRID",
+  "selection_reason": "Preserve the registered single-process grid; documented Colab profile limit is 600 seconds and the complete-grid planning estimate is about 30 minutes. No cloud allocation attempted."
+}
