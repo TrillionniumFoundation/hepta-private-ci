@@ -187,6 +187,100 @@ class ResearchUnitsTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "artifact bytes or identity changed"):
             self.screen(record)
 
+    def contrasting_task_experiment(self):
+        self.protocol["experiments"]["MEM-1"]["maximum_total_cost"] = 10000
+        self.manifest["protocol"] = self.bind("protocol.json", self.protocol)
+        record = self.task_bound_experiment()
+        for row in record["attempts"]["rows"]:
+            row["net_utility"] = (
+                1.7 if row["arm"] == "candidate" and row["case_id"] == "case-1" else 0.7
+            )
+            row["retention"] = 0.5
+        self.repeat_task(record, "negative-task")
+        record["units"]["cases"][-1]["task_artifact"] = self.bind(
+            "negative-task.json", {"terminal_goal": "another-fixture-goal"}
+        )
+        for row in record["attempts"]["rows"]:
+            if row["case_id"] == "negative-task" and row["arm"] == "candidate":
+                row["net_utility"] = -0.3
+        return record
+
+    def repeat_task(self, record, case_id):
+        record["units"]["cases"].append(
+            {**record["units"]["cases"][0], "case_id": case_id}
+        )
+        for row in copy.deepcopy(record["attempts"]["rows"]):
+            if row["case_id"] != "case-1":
+                continue
+            original = row["attempt_id"]
+            row.update(case_id=case_id, attempt_id=original + "/" + case_id)
+            record["attempts"]["rows"].append(row)
+            record["units"]["planned_attempts"].append(
+                {key: row[key] for key in ("attempt_id", "arm", "fit_id", "case_id")}
+            )
+            record["units"]["cost_coverage"][row["attempt_id"]] = copy.deepcopy(
+                record["units"]["cost_coverage"][original]
+            )
+
+    def test_task_aliases_do_not_reweight_distinct_tasks_within_a_family(self):
+        record = self.contrasting_task_experiment()
+        before = self.screen(record)
+        for index in range(8):
+            self.repeat_task(record, f"positive-alias-{index}")
+        after = self.screen(record)
+        self.assertEqual(after["comparisons"], before["comparisons"])
+        self.assertEqual(before["comparisons"]["rag"]["minimum_fit_mean_gain"], 0)
+        self.assertFalse(after["descriptive_threshold_met"])
+        self.assertEqual(
+            (before["attempt_denominator"], after["attempt_denominator"]), (24, 88)
+        )
+        self.assertEqual(
+            (before["observed_campaign_total"], after["observed_campaign_total"]),
+            (672, 2464),
+        )
+        for key in (
+            "natural_source_groups",
+            "task_families",
+            "model_initializations",
+            "distinct_task_artifacts",
+        ):
+            self.assertEqual(
+                before["statistical_units"][key], after["statistical_units"][key]
+            )
+        # Legacy v1 has no bound task identity: retain its original case weighting.
+        record["units"]["schema"] = "hepta.cell-research-units.v1"
+        for case in record["units"]["cases"]:
+            del case["task_artifact"]
+        legacy = self.screen(record)
+        self.assertAlmostEqual(legacy["comparisons"]["rag"]["minimum_fit_mean_gain"], 0.4)
+        self.assertFalse(legacy["new_milestone_eligible"])
+
+    def test_repeated_task_failures_keep_outcomes_costs_and_unknown_coverage(self):
+        record = self.contrasting_task_experiment()
+        self.repeat_task(record, "failed-repeat")
+        for row in record["attempts"]["rows"]:
+            if row["case_id"] == "failed-repeat" and row["arm"] == "candidate":
+                row.update(status="failed", net_utility=-0.3)
+        result = self.screen(record)
+        self.assertAlmostEqual(result["comparisons"]["rag"]["minimum_fit_mean_gain"], -0.25)
+        self.assertEqual(result["attempt_counts"], {"completed": 30, "failed": 2})
+        self.assertEqual(result["statistical_units"]["planned_attempts"], 32)
+        self.assertEqual(result["observed_campaign_total"], 896)
+        self.assertTrue(result["full_cost_records_complete"])
+        self.assertFalse(result["descriptive_threshold_met"])
+        self.assertFalse(self.assess()["authority_granted"])
+        for row in record["attempts"]["rows"]:
+            if row["status"] == "failed":
+                row["costs"]["recovery"] = None
+                record["units"]["cost_coverage"][row["attempt_id"]]["recovery"] = "unknown"
+        incomplete = self.screen(record)
+        self.assertEqual(incomplete["attempt_counts"], result["attempt_counts"])
+        self.assertEqual(incomplete["attempt_denominator"], 32)
+        self.assertIsNone(incomplete["observed_campaign_total"])
+        self.assertFalse(incomplete["full_cost_records_complete"])
+        self.assertEqual(incomplete["comparisons"], {})
+        self.assertIn("INCOMPLETE_COST_COVERAGE", incomplete["blockers"])
+
     def test_units_version_and_case_fields_are_strict_and_legacy_is_unchanged(self):
         legacy = self.screen(self.experiment())
         self.assertNotIn("task_artifact_bytes_verified", legacy["statistical_units"])

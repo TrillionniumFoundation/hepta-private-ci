@@ -205,19 +205,31 @@ def review(document, rows, evidence, sampling_spec, cost_categories):
 
 
 def balanced_fit_means(units, cases, baseline):
-    """Weight sources equally, then families, then observations within a family."""
+    """Weight sources, families and bound tasks equally within each fit.
+
+    V2 repetitions refine their original task's mean, without increasing that
+    task's weight relative to other tasks in the same source and family. V1 has
+    no task-byte binding and retains its existing per-case weighting. Raw
+    attempts, statuses and costs are accounted for separately and are not removed.
+    """
     case_map = {case["case_id"]: case for case in cases}
-    values = defaultdict(lambda: defaultdict(lambda: defaultdict(list)))
+    values = defaultdict(
+        lambda: defaultdict(lambda: defaultdict(lambda: defaultdict(list)))
+    )
     for (fit, case_id), unit in units.items():
         case = case_map[case_id]
+        task = case["task_artifact"]["sha256"] if "task_artifact" in case else case_id
         candidate, control = unit["candidate"], unit[baseline]
-        values[fit][case["source_group_id"]][case["task_family"]].append(
+        values[fit][case["source_group_id"]][case["task_family"]][task].append(
             tuple(candidate[key] - control[key] for key in ("net_utility", "retention"))
         )
     return [
         tuple(
             fmean(
-                fmean(fmean(row[index] for row in rows) for rows in families.values())
+                fmean(
+                    fmean(fmean(row[index] for row in rows) for rows in tasks.values())
+                    for tasks in families.values()
+                )
                 for families in sources.values()
             )
             for index in range(2)
