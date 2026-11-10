@@ -51,15 +51,14 @@ def text(f, n):
 
 
 expected_sha = "75f0d66a9bed98b735a0149e6f097dafedbf146b0201616d23d13c85092ed33b"
-if (
-    hashlib.sha256(pathlib.Path("bazel-linux-e4.zip").read_bytes()).hexdigest()
-    != expected_sha
-):
+with pathlib.Path("bazel-linux-e4.zip").open("rb") as source:
+    artifact = source.read(15851173 + 1)
+if len(artifact) != 15851173 or hashlib.sha256(artifact).hexdigest() != expected_sha:
     raise ValueError("source artifact identity mismatch")
 results = []
 entries = 0
 decoded = 0
-with zipfile.ZipFile("bazel-linux-e4.zip") as z:
+with zipfile.ZipFile(BytesIO(artifact)) as z:
     if z.namelist() != ["execution-log-test-test-3273.zst"]:
         raise ValueError("unexpected archive roster")
     with z.open(z.namelist()[0]) as compressed:
