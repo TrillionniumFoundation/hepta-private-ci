@@ -186,6 +186,7 @@ impl AutomationStore {
         Ok(history.map(|history| CircuitCommittedTraceV2 {
             run: history.run,
             completions: history.completions,
+            computation_times: history.computation_times,
             history_digest: history.last_digest,
         }))
     }

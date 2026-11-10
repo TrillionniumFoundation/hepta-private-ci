@@ -37,8 +37,8 @@ async fn scoped_circuit_enrollment_rejects_rebound_request_before_owner_work() {
         } else {
             let mut enrolled = ok(enrolled);
             assert_eq!(
-                ok(enrolled.take_circuit_delivery().ok_or("delivery")).request,
-                request
+                ok(enrolled.take_circuit_delivery().ok_or("delivery")).requests,
+                vec![request]
             );
         }
         assert!(ok(ports.executed.lock()).is_empty());

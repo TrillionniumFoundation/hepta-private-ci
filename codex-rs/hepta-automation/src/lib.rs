@@ -12,6 +12,7 @@
 #[cfg(test)]
 mod effect_executor;
 
+mod action_check;
 mod action_skill;
 mod action_skill_driver;
 #[cfg(test)]
@@ -50,6 +51,13 @@ mod taskflow_recovery;
 mod taskflow_step;
 mod timer_lifecycle;
 
+pub use action_check::ActionCheckAssessmentV1;
+pub use action_check::ActionCheckClockV1;
+pub use action_check::ActionCheckEstimateV1;
+pub use action_check::ActionCheckPlanV1;
+pub use action_check::ActionCheckReadbackV1;
+pub use action_check::ActionCheckRecommendationV1;
+pub use action_check::ActionCheckTimeV1;
 pub use action_skill::ACTION_SKILL_SCHEMA_VERSION;
 pub use action_skill::ActionCancellationStateV1;
 pub use action_skill::ActionConditionV1;
@@ -110,6 +118,7 @@ pub use circuit_state::CircuitCommandStatusV2;
 pub use circuit_state::CircuitCommandV2;
 pub use circuit_state::CircuitCommittedTraceV2;
 pub use circuit_state::CircuitCompletionV2;
+pub use circuit_state::CircuitComputationTimesV2;
 pub use circuit_state::CircuitDispatchV2;
 pub use circuit_state::CircuitEventV2;
 pub use circuit_state::CircuitRunV2;

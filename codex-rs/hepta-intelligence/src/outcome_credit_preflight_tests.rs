@@ -27,7 +27,8 @@ fn invalid_credit_does_not_commit_an_otherwise_valid_terminal_outcome() {
     );
     let before = writer.snapshot().expect("snapshot");
     let witness = writer.witness_frontier().expect("witness");
-    let cases: [(fn(&mut CreditAllocationBatchV1), CausalV2Error); 4] = [
+    type CreditCase = (fn(&mut CreditAllocationBatchV1), CausalV2Error);
+    let cases: [CreditCase; 4] = [
         (
             |batch| batch.conservation_residual = FixedQ32::from_raw(1),
             CausalV2Error::CreditConservation,

@@ -1,0 +1,24 @@
+{
+  "clip": 5.0,
+  "confirmation_episodes": 64,
+  "episode_steps": 12,
+  "hcsn_formal_fits_started_by_this_probe": 0,
+  "kernels": [
+    "gru",
+    "diag_ssm"
+  ],
+  "learning_rate": 0.02,
+  "matching": "nearest actual parameter count; report mismatch without padding",
+  "reference_gru_hidden": 12,
+  "rule_control": "exactly retain the observed first cue",
+  "schema": "hepta.stem-cell.engineering-probe.v1",
+  "scope": "synthetic delayed-cue correctness and state-owner integration",
+  "seeds": [
+    41,
+    67,
+    89
+  ],
+  "selection": "none; no tuning or production adoption from this probe",
+  "train_episodes": 64,
+  "updates": 40
+}

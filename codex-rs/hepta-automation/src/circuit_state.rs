@@ -253,12 +253,23 @@ pub struct CircuitCompletionV2 {
     pub selected_edges: Vec<String>,
 }
 
+/// Clock samples reconstructed from verified canonical Circuit events. They do
+/// not identify external occurrence time or authenticate physical wall clocks.
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
+pub struct CircuitComputationTimesV2 {
+    /// Original owner-clock claim sample, not the time of this readback.
+    pub claimed_at_ms: Option<u64>,
+    /// Original owner-clock completion/reconciliation sample.
+    pub completed_at_ms: Option<u64>,
+}
+
 /// Read only by AutomationStore from one verified SQLite snapshot. The event
 /// digest commits complete observed costs/outcomes as well as the final state.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct CircuitCommittedTraceV2 {
     pub(crate) run: CircuitRunV2,
     pub(crate) completions: BTreeMap<u64, CircuitCompletionV2>,
+    pub(crate) computation_times: BTreeMap<u64, CircuitComputationTimesV2>,
     pub(crate) history_digest: Sha256Digest,
 }
 
@@ -268,6 +279,9 @@ impl CircuitCommittedTraceV2 {
     }
     pub fn completions(&self) -> &BTreeMap<u64, CircuitCompletionV2> {
         &self.completions
+    }
+    pub fn computation_times(&self) -> &BTreeMap<u64, CircuitComputationTimesV2> {
+        &self.computation_times
     }
     pub fn history_digest(&self) -> &Sha256Digest {
         &self.history_digest

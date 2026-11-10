@@ -838,6 +838,14 @@ struct PromptRuntimeStore {
     fail_directory_sync_after_rename_once: AtomicBool,
 }
 
+impl Drop for PromptRuntimeStore {
+    fn drop(&mut self) {
+        // A concurrent fork may retain this file description until exec.
+        // The lock belongs to this owner, not to the inherited descriptor.
+        let _ = self._lock.unlock();
+    }
+}
+
 impl PromptRuntimeStore {
     fn open(directory: &Path) -> Result<(Self, PromptRuntimeState), AgentdPromptRuntimeError> {
         #[cfg(windows)]

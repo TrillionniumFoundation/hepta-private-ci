@@ -278,8 +278,11 @@ mod calculator_recovery_process;
 #[cfg(target_os = "linux")]
 mod calculator_recovery_selection;
 mod cell_composed_q24;
+mod cell_q24_backend;
+mod cell_temporal_q24;
 mod circuit_cell;
 mod circuit_cell_binding;
+mod circuit_cell_causal;
 mod circuit_cell_dispatch;
 mod circuit_cell_output;
 mod circuit_cell_ports;
@@ -354,12 +357,21 @@ mod learning_iteration_auth;
 mod learning_iteration_checkpoint;
 mod learning_iteration_ports;
 mod learning_iteration_proposal;
+#[cfg(all(test, unix))]
+mod learning_iteration_research_external;
+#[cfg(all(test, unix))]
+mod learning_iteration_research_external_material;
 mod neuron_cell_evaluation;
 mod neuron_cell_learning_evaluation;
 pub use cell_composed_q24::CellQ24GenerationWorkerV1;
 pub use cell_composed_q24::CellQ24ModelFilesV1;
 pub use cell_composed_q24::CellQ24PrivateHeadV1;
 pub use cell_composed_q24::LoadedCellQ24ModelV1;
+pub use cell_q24_backend::CellQ24BackendFilesV1;
+pub use cell_q24_backend::load_cell_q24_backend_v1;
+pub use cell_temporal_q24::CellTemporalQ24GenerationWorkerV1;
+pub use cell_temporal_q24::CellTemporalQ24ModelFilesV1;
+pub use cell_temporal_q24::LoadedCellTemporalQ24ModelV1;
 mod neuron_generation;
 #[cfg(unix)]
 mod neuron_generation_current;
@@ -514,6 +526,7 @@ pub use circuit_cell_binding::CircuitCellRouteV1;
 pub use circuit_cell_binding::circuit_cell_operation_id_v1;
 pub use circuit_cell_binding::circuit_cell_route_policy_digest_v1;
 pub use circuit_cell_binding::circuit_cell_scope_digest_v1;
+pub use circuit_cell_causal::CircuitCellCausalRecordV1;
 pub use circuit_cell_output::circuit_cell_output_schema_v1;
 pub use circuit_cell_ports::CircuitCellActionPortV1;
 pub use circuit_cell_ports::CircuitCellPortsV2;
@@ -717,6 +730,7 @@ pub use lane_b_runtime::RunReceipt;
 pub use lane_b_runtime::RunRecovery;
 pub use lane_b_runtime::RunSnapshot;
 pub use lane_b_runtime::RuntimeComposition;
+pub use learning_iteration::CircuitLearningDeliveryRegistryV1;
 pub use learning_iteration::LearningIterationHandleV1;
 pub use learning_iteration::LearningIterationRuntimeBootstrapV1;
 pub use learning_iteration::LearningIterationRuntimeErrorV1;
@@ -802,6 +816,8 @@ pub use neuron_generation_initial_bootstrap::ReadyAgentdGenerationInitialV1;
 pub use neuron_generation_initial_forward::prepare_agentd_generation_initial_forward_recovery_v1;
 pub use neuron_generation_process_bootstrap::load_neuron_generation_process_bootstrap_v1;
 pub use neuron_generation_process_bootstrap::neuron_generation_process_identity_digest_v1;
+#[cfg(unix)]
+pub use neuron_generation_runtime::AgentdGenerationLearningUseReadbackV1;
 #[cfg(unix)]
 pub use neuron_generation_runtime::NeuronGenerationLearningReadErrorV1;
 pub use neuron_generation_runtime::NeuronGenerationRuntimeBootstrapV2;

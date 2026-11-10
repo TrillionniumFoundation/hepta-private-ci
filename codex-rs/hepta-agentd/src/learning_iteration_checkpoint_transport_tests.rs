@@ -12,8 +12,7 @@ use std::os::fd::FromRawFd;
 use std::sync::Arc;
 use std::sync::atomic::Ordering;
 
-#[path = "learning_iteration_checkpoint_test_support.rs"]
-mod support;
+use crate::learning_iteration_checkpoint::test_support as support;
 use support::Decision;
 use support::FileCas;
 use support::owner;
@@ -21,6 +20,9 @@ use support::snapshots;
 
 #[path = "learning_iteration_checkpoint_transport_ports_tests.rs"]
 mod ports_tests;
+
+#[path = "learning_iteration_checkpoint_transport_scope_tests.rs"]
+mod scope_tests;
 
 fn pidfd() -> OwnedFd {
     // SAFETY: a live test PID and zero flags return a new owned descriptor.

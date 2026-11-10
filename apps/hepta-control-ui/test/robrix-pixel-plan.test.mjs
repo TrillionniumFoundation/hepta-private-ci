@@ -92,7 +92,7 @@ test('follow-latest rejects clipped, stale, unfinished and missing final status 
 
 // Regression controls for the independently recorded sidebar surface/labels.
 const {validateSidebarSurface,requireSidebarLabel,requireCompletedSidebarEvidence}=await import('../tools/robrix-sidebar-evidence.mjs');
-function observedSidebarSurface(){return{viewport:{width:640,height:800},metrics:{dpr:2,css:{x:0,y:0,width:640,height:800},buffer:{width:960,height:1200},drawingBuffer:{width:960,height:1200},contextLost:false,retained:true},drawDpiFactor:1.5,pngSize:{width:1280,height:1600}};}
+function observedSidebarSurface(){return{viewport:{width:640,height:800},metrics:{dpr:2,css:{x:0,y:0,width:640,height:800},visualViewport:{x:0,y:0,width:640,height:800,scale:1},buffer:{width:960,height:1200},drawingBuffer:{width:960,height:1200},contextLost:false,retained:true},drawDpiFactor:1.5,pngSize:{width:1280,height:1600}};}
 test('budgeted Rust draw scale and browser screenshot DPR are independently verified',()=>{
  validateSidebarSurface(observedSidebarSurface());
  const wrongPass=observedSidebarSurface();wrongPass.drawDpiFactor=2;
@@ -144,4 +144,40 @@ test('Console requires explicit unrequested read-only status, refresh and author
  for(let index=0;index<lines.length;index++)assert.equal(hasUnrequestedReadOnlyObservation(lines.filter((_,i)=>i!==index).join(' ')),false);
  assert.equal(hasUnrequestedReadOnlyObservation('Console is unavailable because owner services have not been composed.'),false);
  assert.equal(hasUnrequestedReadOnlyObservation('Refresh observations. Runtime active and writable.'),false);
+});
+
+
+test('recorded Firefox fractional visual bounds retain exact physical viewport coverage',()=>{
+ // Actual M4 Firefox155 DPR1 observations, before any sidebar input.
+ for(const [width,cssWidth]of [[640,640.2000122070312],[1280,1279.800048828125]]){
+  const value=observedSidebarSurface();value.viewport.width=width;
+  value.metrics.dpr=1;value.drawDpiFactor=1;
+  value.metrics.css={x:0,y:0,width:cssWidth,height:799.7999877929688};
+  value.metrics.visualViewport={...value.metrics.css,scale:1};
+  value.metrics.buffer=value.metrics.drawingBuffer={width,height:800};
+  value.pngSize={width,height:800};validateSidebarSurface(value);
+ }
+});
+test('fractional CSS bounds remain limited to half a device pixel and the same rounded pixel extent',()=>{
+ for(const dpr of [1,1.25,1.5,2])for(const direction of [-1,1]){
+  const value=observedSidebarSurface();value.metrics.dpr=dpr;value.drawDpiFactor=1;
+  value.metrics.buffer=value.metrics.drawingBuffer={width:640,height:800};
+  value.pngSize={width:Math.round(640*dpr),height:Math.round(800*dpr)};
+  value.metrics.css.width=640+direction*0.49/dpr;
+  value.metrics.visualViewport.width=value.metrics.css.width;validateSidebarSurface(value);
+  value.metrics.css.width=640+direction*0.51/dpr;
+  value.metrics.visualViewport.width=value.metrics.css.width;
+  assert.throws(()=>validateSidebarSurface(value),/half a physical pixel/);
+ }
+ const edge=observedSidebarSurface();edge.viewport.width=641;edge.metrics.dpr=1.25;edge.drawDpiFactor=1;
+ edge.metrics.buffer=edge.metrics.drawingBuffer={width:641,height:800};edge.pngSize={width:801,height:1000};
+ edge.metrics.css.width=edge.metrics.visualViewport.width=641.3;
+ assert.throws(()=>validateSidebarSurface(edge),/physical coverage/);
+});
+test('fractional viewport support still rejects moved, clipped and zoomed canvas surfaces',()=>{
+ for(const change of [v=>{v.metrics.css.x=v.metrics.visualViewport.x=0.1;},
+  v=>v.metrics.visualViewport.width-=0.1,v=>v.metrics.css.height-=0.1,
+  v=>v.metrics.visualViewport.scale=2,v=>v.metrics.css.width=NaN]){
+  const value=observedSidebarSurface();change(value);assert.throws(()=>validateSidebarSurface(value));
+ }
 });

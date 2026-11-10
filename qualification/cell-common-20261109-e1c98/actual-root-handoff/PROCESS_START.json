@@ -1,0 +1,40 @@
+{
+  "audit_recorded": true,
+  "job": {
+    "args": [
+      "/home/qq/hepta-cell-common-e1c98-20261109/run_common_native.py",
+      "root-handoff-f070-v1",
+      "f070113bb61cda492d2668b3afbbcda13e11fa52",
+      "/usr/bin/sudo",
+      "-n",
+      "/usr/bin/python3",
+      "/home/qq/hepta-cell-common-e1c98-20261109/root-handoff-controller-f070-v1.py",
+      "/home/qq/hepta-cell-common-e1c98-20261109/root-handoff-plan-f070-v1.json",
+      "20f345d3023f45b6a16481900733aaa25f9d2cc230b67eaab979d48d4c639880"
+    ],
+    "created_unix_ms": 1794227316153,
+    "cwd": "/home/qq/hepta-cell-common-e1c98-20261109",
+    "env_keys": [],
+    "executable": "/usr/bin/python3",
+    "execution_mode": "operator",
+    "host": "ai395",
+    "id": "1a1c04825b9-5e21-9aa",
+    "idempotency_key": "cell-common-e1c98-root-handoff-f070-v1-20f345d3",
+    "launch_error": null,
+    "launch_state": "launched",
+    "remote_job_dir": "/home/qq/.local/state/hepta-runtime-mac-worker/jobs/1a1c04825b9-5e21-9aa",
+    "request_digest": "a4026c4269a47ae8a21150757cfbbf25bb4ae5ceafbba5f2eb7aebaf7f5da591",
+    "request_fingerprint": 11818127404669631208,
+    "ssh_target": "ai395-lan",
+    "system_jobctl": false,
+    "unit": "hepta-runtime-job-1a1c04825b9-5e21-9aa"
+  },
+  "launch": {
+    "backend": "systemd",
+    "launcher_pid": null,
+    "ok": true,
+    "unit": "hepta-runtime-job-1a1c04825b9-5e21-9aa"
+  },
+  "local_record_pending": false,
+  "reused": false
+}

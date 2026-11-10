@@ -11,6 +11,7 @@ use std::sync::Mutex;
 use std::time::Duration;
 
 const OPERATION: &str = "runtime.learning.checkpoint.v1";
+const SCOPED_OPERATION: &str = "runtime.learning.checkpoint.v2";
 const FRAME_BOUND: usize = 16 * 1024;
 
 #[derive(Deserialize, Serialize)]
@@ -231,9 +232,13 @@ impl AgentdLearningCheckpointClientV1 {
         let request_id = channel.next_request_id;
         channel.next_request_id = request_id.checked_add(1).ok_or_else(&unavailable)?;
         let (schema, binding) = self.profile_identity();
+        let operation = match self.frozen_scope_binding() {
+            Some(_) => SCOPED_OPERATION,
+            None => OPERATION,
+        };
         let request = Request {
             schema,
-            operation: OPERATION.into(),
+            operation: operation.into(),
             request_id,
             binding,
             command,
@@ -273,8 +278,12 @@ impl LearningIterationCheckpointOwnerV1 {
         let request: Request =
             serde_json::from_slice(bytes).map_err(|_| HostIssuerTransportError::InvalidRequest)?;
         let (schema, binding) = self.profile_identity();
+        let operation = match self.frozen_scope_binding() {
+            Some(_) => SCOPED_OPERATION,
+            None => OPERATION,
+        };
         if request.schema != schema
-            || request.operation != OPERATION
+            || request.operation != operation
             || request.request_id != *next_request_id
             || request.request_id == 0
             || request.binding != binding

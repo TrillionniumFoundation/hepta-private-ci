@@ -1,0 +1,93 @@
+{
+  "artifact": {
+    "bytes": 3734,
+    "downloaded_and_read": true,
+    "expires_at": "2026-11-22T17:43:02Z",
+    "github_digest_matches": true,
+    "id": 13626804112,
+    "junit_path": "junit.xml",
+    "junit_sha256": "e4678a6a5d31626719a7b9cd1d1751a85d1be05c9c92927bc9e573462a4565b5",
+    "junit_skipped_elements": 0,
+    "junit_testcases": 111,
+    "members": [
+      "junit.xml"
+    ],
+    "name": "cell-local-update-a7e727468da41fe2ac826b8b38178a6958f7ffea-1",
+    "path": "native-junit.zip",
+    "sha256": "280dfbc3a5072d8d333783f4e15b972a9506df0cb0184c0ef71e88c06c476e28",
+    "stable_api_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/13626804112"
+  },
+  "command": "just test --locked -p codex-hepta-learning-artifacts --lib --test-threads 2",
+  "head_sha": "a7e727468da41fe2ac826b8b38178a6958f7ffea",
+  "job": {
+    "completed_at": "2026-11-08T17:43:05Z",
+    "conclusion": "success",
+    "id": 128809501443,
+    "name": "native-local-update",
+    "runner_labels": [
+      "ubuntu-24.04"
+    ],
+    "started_at": "2026-11-08T17:42:19Z",
+    "status": "completed",
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42506279859/job/128809501443"
+  },
+  "limits": [
+    "This evidence covers the exact initial native head only.",
+    "The ignored helper is identified from exact-head source; JUnit reports only the 111 executed cases.",
+    "The Mac checkout timed out and is not native test evidence."
+  ],
+  "main_checkout": {
+    "build_performed": false,
+    "exit_code": 124,
+    "host": "main",
+    "job_id": "1a1bc30ca40-138b0-c3",
+    "log_evidence": "main-checkout-logs.json",
+    "overall_attempts_source": "Parent agent reported an initial 100-second checkout timeout and a later 900-second retry (job 1a1bc30ca40-138b0-c3). The stored raw status/log cover the latter job.",
+    "overall_checkout_attempts": 2,
+    "path": "/Users/qianqi/work/cell-stem-routes-20261108-5e692/source",
+    "retry_by_evidence_collector": false,
+    "state": "timed_out",
+    "status_evidence": "main-checkout-status.json"
+  },
+  "maintenance": {
+    "fix_run": false,
+    "fmt_run": false
+  },
+  "parent_sha": "1eb72a1131285f5de98beeb7c95a27eab72d647e",
+  "raw_log": {
+    "bytes": 56892,
+    "path": "native-job.log",
+    "retrieval": "GitHub workflow-job-log API decoded UTF-8 response, preserved verbatim",
+    "sha256": "cfe998402317093da31f65b2690c85caa05bfb2d95eecc49753edb3eb1a16f9a"
+  },
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "result": {
+    "failed": 0,
+    "log_and_junit_passed_case_sets_match": true,
+    "new_cell_implementation_tests_passed": [
+      "cell_implementation::tests::adapter_training_is_explicit_and_does_not_expand_to_domain_adapter",
+      "cell_implementation::tests::deterministic_components_reject_neural_training_and_bad_lineage",
+      "cell_implementation::tests::local_head_update_cannot_change_shared_base_or_domain_or_encoding",
+      "cell_implementation::tests::python_bundle_and_native_reset_have_identical_commitments",
+      "cell_implementation::tests::temporal_kernel_updates_keep_state_meaning_and_input_contract_frozen"
+    ],
+    "nextest_run_id": "a8661dc0-6b89-430a-a507-e28c41a351aa",
+    "nextest_seconds": 0.651,
+    "passed": 111,
+    "skipped": 1,
+    "skipped_case": "owner_host::tests::owner_host_process_fault_worker",
+    "skipped_case_evidence": "skipped-test.json"
+  },
+  "run": {
+    "conclusion": "success",
+    "created_at": "2026-11-08T17:42:16Z",
+    "event": "push",
+    "id": 42506279859,
+    "status": "completed",
+    "updated_at": "2026-11-08T17:43:06Z",
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42506279859"
+  },
+  "schema_version": 1,
+  "source_identity": "source-identity.json",
+  "tree_sha": "0e5e5e96c1e75d447f4728e5ef1ca22a69c9dfcd"
+}

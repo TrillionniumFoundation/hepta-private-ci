@@ -209,6 +209,7 @@ def fit_grid(
             argv += ["--pretrained", pretrained["output"]]
         row = {
             "job_id": identity,
+            "source_pins": dict(intent["source_pins"]),
             "status": "PLANNED_NOT_EXECUTED",
             "seed": seed,
             "core": core,

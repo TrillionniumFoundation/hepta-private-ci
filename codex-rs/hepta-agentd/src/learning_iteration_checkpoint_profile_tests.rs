@@ -10,11 +10,12 @@ use pretty_assertions::assert_eq;
 
 use super::*;
 
-use super::support::Decision;
-use super::support::FileCas;
-use super::support::OWNER;
-use super::support::owner;
-use super::support::snapshots;
+use crate::learning_iteration_checkpoint::test_support as support;
+use support::Decision;
+use support::FileCas;
+use support::OWNER;
+use support::owner;
+use support::snapshots;
 
 #[test]
 fn changed_frozen_profile_cannot_restore_or_replace_the_original_checkpoint() -> anyhow::Result<()>

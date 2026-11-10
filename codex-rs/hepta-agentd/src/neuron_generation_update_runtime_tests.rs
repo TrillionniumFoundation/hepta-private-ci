@@ -26,6 +26,9 @@ mod adopted_learning;
 mod expected_context;
 #[path = "neuron_generation_learning_runtime_tests.rs"]
 mod learning;
+#[cfg(target_os = "linux")]
+#[path = "neuron_generation_real_learning_tests.rs"]
+mod real_learning;
 #[path = "neuron_generation_same_model_runtime_tests.rs"]
 mod same_model;
 #[path = "neuron_generation_update_successive_tests.rs"]

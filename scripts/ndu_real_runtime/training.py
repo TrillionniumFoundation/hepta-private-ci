@@ -856,8 +856,8 @@ def run(args):
     return code
 
 
-def main(argv=None):
-    parser = argparse.ArgumentParser(description=__doc__)
+def parse_args(argv=None):
+    parser = argparse.ArgumentParser(description=__doc__, allow_abbrev=False)
     parser.add_argument("--records", type=Path)
     parser.add_argument("--expected-records-sha256")
     parser.add_argument("--output", type=Path, required=True)
@@ -896,7 +896,11 @@ def main(argv=None):
         (args.bootstrap or args.content_only) and args.pretrained
     ):
         parser.error("Fit/content need --records; only a fit can reuse --pretrained")
-    return run(args)
+    return args
+
+
+def main(argv=None):
+    return run(parse_args(argv))
 
 
 if __name__ == "__main__":

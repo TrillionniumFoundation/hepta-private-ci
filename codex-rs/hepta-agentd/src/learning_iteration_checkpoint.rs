@@ -136,6 +136,26 @@ impl LearningIterationCheckpointOwnerV1 {
         self.initial.request.agent_id.as_str()
     }
 
+    /// An isolated research test's file owner, never a production Root grant.
+    #[cfg(test)]
+    pub(crate) fn from_research_store(
+        store: std::sync::Arc<dyn AuthorityFrontierStore<LearningIterationCheckpointRecordV1>>,
+        original_owner_id: String,
+        request: LearningIterationRequestV1,
+        owners: LearningIterationOwnersV1,
+    ) -> Result<Self, Error> {
+        let initial =
+            LearningIterationCoordinatorV1::new(request, owners).map_err(Error::Snapshot)?;
+        let owner = Self {
+            owner_id: original_owner_id,
+            store: Store::Test(store),
+            initial: initial.snapshot().clone(),
+            scope: None,
+        };
+        owner.load()?;
+        Ok(owner)
+    }
+
     /// Load the already registered original owner and verify its current data.
     /// Missing, foreign, corrupt or uncertain records never initialize genesis.
     /// The host supplies custody; Device/Notes owners are not interchangeable.
@@ -157,7 +177,8 @@ impl LearningIterationCheckpointOwnerV1 {
         Ok(owner)
     }
 
-    /// Open only the original schema-2 record with the exact frozen scope.
+    /// Open only a registered schema-2 record with this exact frozen scope.
+    /// No schema-1 conversion, migration or re-registration occurs here.
     pub fn from_registered_scoped_v2(
         store: HostAuthorityFrontierStore<LearningIterationCheckpointRecordV1>,
         original_owner_id: String,
@@ -173,6 +194,30 @@ impl LearningIterationCheckpointOwnerV1 {
         let owner = Self {
             owner_id: original_owner_id,
             store: Store::Host(store),
+            initial: initial.snapshot().clone(),
+            scope: Some(scope),
+        };
+        owner.load()?;
+        Ok(owner)
+    }
+
+    /// Isolated file-backed test custody for the same schema-2 checks.
+    #[cfg(test)]
+    pub(crate) fn from_research_store_scoped_v2(
+        store: std::sync::Arc<dyn AuthorityFrontierStore<LearningIterationCheckpointRecordV1>>,
+        original_owner_id: String,
+        request: LearningIterationRequestV1,
+        owners: LearningIterationOwnersV1,
+        scope: FrozenLearningScopeV2,
+    ) -> Result<Self, Error> {
+        scope
+            .validate_request(&request, &owners)
+            .map_err(Error::Snapshot)?;
+        let initial =
+            LearningIterationCoordinatorV1::new(request, owners).map_err(Error::Snapshot)?;
+        let owner = Self {
+            owner_id: original_owner_id,
+            store: Store::Test(store),
             initial: initial.snapshot().clone(),
             scope: Some(scope),
         };
@@ -331,6 +376,10 @@ impl LearningIterationCheckpointOwnerV1 {
 }
 
 #[cfg(test)]
+#[path = "learning_iteration_checkpoint_test_support.rs"]
+mod test_support;
+
+#[cfg(test)]
 #[path = "learning_iteration_checkpoint_tests.rs"]
 mod tests;
 
@@ -341,3 +390,7 @@ pub(crate) mod learning_test_support;
 #[cfg(test)]
 #[path = "learning_iteration_checkpoint_ports_tests.rs"]
 mod ports_tests;
+
+#[cfg(test)]
+#[path = "learning_iteration_checkpoint_profile_tests.rs"]
+mod profile_tests;

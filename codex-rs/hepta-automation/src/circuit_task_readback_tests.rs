@@ -27,7 +27,11 @@ async fn task_readback_never_initializes_missing_or_repairs_lost_history() {
     let directory = tempfile::tempdir().expect("private owner fixture");
     let fence = fence(/*generation*/ 1);
     let store = AutomationStore::open_root(
-        directory.path().join("automation"),
+        directory
+            .path()
+            .canonicalize()
+            .expect("canonical private owner")
+            .join("automation"),
         fence.owner_agent_id.clone(),
     )
     .await

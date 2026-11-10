@@ -1,0 +1,91 @@
+{
+  "schema": "hepta.common.ci-log-retrieval.v1",
+  "github_job_id": 129159652206,
+  "ci_result": "failure at Run cargo-deny; actual reason not observed",
+  "retrieval_is_not_ci_execution": true,
+  "attempts": [
+    {
+      "method": "GitHub plugin job logs",
+      "result": "tool text could not be decoded as JSON",
+      "retained_error": "SyntaxError: Unexpected token o, tool call e... is not valid JSON",
+      "raw_full_response_retained": false
+    },
+    {
+      "method": "GitHub plugin job logs",
+      "response": {
+        "tool_error_text": "tool call error: tool call failed for `codex_apps/github.fetch_workflow_job_logs`\n\nCaused by:\n    Transport closed"
+      }
+    },
+    {
+      "method": "Mac gh api GET of existing job logs",
+      "start_receipt": {
+        "audit_recorded": true,
+        "job": {
+          "args": [
+            "-"
+          ],
+          "created_unix_ms": 1794228732976,
+          "cwd": "/Users/qianqi",
+          "env_keys": [],
+          "executable": "/usr/bin/python3",
+          "execution_mode": "operator",
+          "host": "mac",
+          "id": "1a1c05dc430-5e21-9f4",
+          "idempotency_key": "e1c98-read-ci-cargo-deny-129159652206-v1",
+          "launch_error": null,
+          "launch_state": "launched",
+          "remote_job_dir": "/Users/qianqi/.local/state/hepta-runtime-mac-worker/jobs/1a1c05dc430-5e21-9f4",
+          "request_digest": "e2d70a239848af6b50f5c5d8ef22932d24a970aa51b2d7d07f37ebc596719a13",
+          "request_fingerprint": 16345544520559538000,
+          "ssh_target": "hepta-mac-local",
+          "system_jobctl": false,
+          "unit": "hepta-runtime-job-1a1c05dc430-5e21-9f4"
+        },
+        "launch": {
+          "backend": "detached",
+          "launcher_pid": 40036,
+          "ok": true,
+          "systemd_error": "systemd user units unavailable on this platform",
+          "unit": "hepta-runtime-job-1a1c05dc430-5e21-9f4"
+        },
+        "local_record_pending": false,
+        "reused": false
+      },
+      "read_receipt": {
+        "audit_recorded": true,
+        "job_id": "1a1c05dc430-5e21-9f4",
+        "stderr": {
+          "bytes_hex": "54726163656261636b20286d6f737420726563656e742063616c6c206c617374293a0a202046696c6520223c737464696e3e222c206c696e6520392c20696e203c6d6f64756c653e0a202046696c6520222f4170706c69636174696f6e732f58636f64652e6170702f436f6e74656e74732f446576656c6f7065722f4c6962726172792f4672616d65776f726b732f507974686f6e332e6672616d65776f726b2f56657273696f6e732f332e392f6c69622f707974686f6e332e392f73756270726f636573732e7079222c206c696e65203530372c20696e2072756e0a202020207374646f75742c20737464657272203d2070726f636573732e636f6d6d756e696361746528696e7075742c2074696d656f75743d74696d656f7574290a202046696c6520222f4170706c69636174696f6e732f58636f64652e6170702f436f6e74656e74732f446576656c6f7065722f4c6962726172792f4672616d65776f726b732f507974686f6e332e6672616d65776f726b2f56657273696f6e732f332e392f6c69622f707974686f6e332e392f73756270726f636573732e7079222c206c696e6520313133342c20696e20636f6d6d756e69636174650a202020207374646f75742c20737464657272203d2073656c662e5f636f6d6d756e696361746528696e7075742c20656e6474696d652c2074696d656f7574290a202046696c6520222f4170706c69636174696f6e732f58636f64652e6170702f436f6e74656e74732f446576656c6f7065722f4c6962726172792f4672616d65776f726b732f507974686f6e332e6672616d65776f726b2f56657273696f6e732f332e392f6c69622f707974686f6e332e392f73756270726f636573732e7079222c206c696e6520313938302c20696e205f636f6d6d756e69636174650a2020202073656c662e5f636865636b5f74696d656f757428656e6474696d652c206f7269675f74696d656f75742c207374646f75742c20737464657272290a202046696c6520222f4170706c69636174696f6e732f58636f64652e6170702f436f6e74656e74732f446576656c6f7065722f4c6962726172792f4672616d65776f726b732f507974686f6e332e6672616d65776f726b2f56657273696f6e732f332e392f6c69622f707974686f6e332e392f73756270726f636573732e7079222c206c696e6520313137382c20696e205f636865636b5f74696d656f75740a2020202072616973652054696d656f757445787069726564280a73756270726f636573732e54696d656f7574457870697265643a20436f6d6d616e6420275b272f6f70742f686f6d65627265772f62696e2f6768272c2027617069272c20272d2d6d6574686f64272c2027474554272c20277265706f732f5472696c6c696f6e6e69756d466f756e646174696f6e2f68657074612d707269766174652d63692f616374696f6e732f6a6f62732f3132393135393635323230362f6c6f6773275d272074696d6564206f7574206166746572203930207365636f6e64730a",
+          "eof": true,
+          "next_offset": 1109,
+          "offset": 0,
+          "size": 1109,
+          "text": "Traceback (most recent call last):\n  File \"<stdin>\", line 9, in <module>\n  File \"/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py\", line 507, in run\n    stdout, stderr = process.communicate(input, timeout=timeout)\n  File \"/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py\", line 1134, in communicate\n    stdout, stderr = self._communicate(input, endtime, timeout)\n  File \"/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py\", line 1980, in _communicate\n    self._check_timeout(endtime, orig_timeout, stdout, stderr)\n  File \"/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py\", line 1178, in _check_timeout\n    raise TimeoutExpired(\nsubprocess.TimeoutExpired: Command '['/opt/homebrew/bin/gh', 'api', '--method', 'GET', 'repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/129159652206/logs']' timed out after 90 seconds\n"
+        },
+        "stdout": {
+          "bytes_hex": "",
+          "eof": true,
+          "next_offset": 0,
+          "offset": 0,
+          "size": 0,
+          "text": ""
+        }
+      },
+      "result": "Python subprocess TimeoutExpired after 90 seconds; no log body retained"
+    },
+    {
+      "method": "Root separate GitHub plugin job logs request",
+      "reported_by": "/root",
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "tool call error: tool call failed for `codex_apps/github.fetch_workflow_job_logs`\n\nCaused by:\n    Transport closed"
+          }
+        ],
+        "isError": true
+      }
+    }
+  ],
+  "no_causal_inference": "Transport/timeout failures are failures to obtain the log; they are not evidence that the cargo-deny CI job failed due to network or V8."
+}
