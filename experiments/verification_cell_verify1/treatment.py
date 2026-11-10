@@ -117,7 +117,12 @@ class TreatmentJournal:
             roots,
         )
         state = dict(
-            choices={}, starts={}, completions={}, dispositions={}, shadow_seq=0
+            choices={},
+            starts={},
+            completions={},
+            dispositions={},
+            exposures={},
+            shadow_seq=0,
         )
         root = digest(registry)
         events = connection.execute(
@@ -372,6 +377,47 @@ class TreatmentJournal:
                     "acceptance has pending checker or mandatory gate",
                 )
             state["dispositions"][trajectory] = value
+            operations = {
+                key
+                for key, row in state["starts"].items()
+                if row["trajectory_id"] == trajectory
+            }
+            completed = operations.intersection(state["completions"])
+            pending = operations - completed
+            current_sha = (
+                digest(asdict(current[trajectory].snapshot))
+                if trajectory in current
+                else None
+            )
+            current_completed = {
+                key
+                for key in completed
+                if state["starts"][key]["snapshot_sha256"] == current_sha
+            }
+            choices = [
+                row
+                for row in state["choices"].values()
+                if row["trajectory_id"] == trajectory
+                and row["snapshot_sha256"] == current_sha
+            ]
+            last_status = choices[-1]["result"]["status"] if choices else None
+            if pending:
+                status = "pending"
+            elif completed:
+                status = "checked"
+            elif last_status == "defer":
+                status = "unchecked"
+            elif last_status in ("blocked", "unsupported"):
+                status = "abstained"
+            else:
+                status = "missing"
+            state["exposures"][trajectory] = dict(
+                status=status,
+                completed_operation_ids=sorted(completed),
+                pending_operation_ids=sorted(pending),
+                completed_current_frontier_count=len(current_completed),
+                stale_completed_operation_count=len(completed - current_completed),
+            )
         else:
             raise ValueError("unknown treatment event kind")
 
@@ -465,7 +511,7 @@ class TreatmentJournal:
             ),
         )
 
-    def report(self):
+    def report(self, *, authenticate=None):
         with self.shadow._transaction() as connection:
             registry, base, _, state, root, count = self._read(connection)
         manifest, predictions, finishes, labels, base_root, base_count = base
@@ -486,6 +532,29 @@ class TreatmentJournal:
             result["by_step"].setdefault(str(step), {})["missing_prediction_count"] = (
                 len(roster)
                 - sum(row.snapshot.observed_step == step for row in predictions)
+            )
+        exposures = {
+            key: state["exposures"].get(
+                key,
+                dict(
+                    status="missing",
+                    completed_operation_ids=[],
+                    pending_operation_ids=[],
+                    completed_current_frontier_count=0,
+                    stale_completed_operation_count=0,
+                ),
+            )
+            for key in sorted(roster)
+        }
+        check_statuses = ("checked", "unchecked", "abstained", "pending", "missing")
+        label_authentication = self.shadow.authentication_report(
+            authenticate=authenticate, expected_ledger_sha256=base_root
+        )
+        with self.shadow._transaction() as connection:
+            current = self._read(connection)
+            _require(
+                current[4] == root and current[1][4] == base_root,
+                "treatment ledger changed during authentication",
             )
         result.update(
             manifest=manifest,
@@ -508,10 +577,27 @@ class TreatmentJournal:
                         if row["trajectory_id"] == key
                     ],
                     "disposition": state["dispositions"].get(key),
+                    "check_exposure_at_disposition": exposures[key],
                 }
                 for key in sorted(roster)
             },
             missing_disposition_count=len(roster - set(state["dispositions"])),
+            check_denominators={
+                status: sum(row["status"] == status for row in exposures.values())
+                for status in check_statuses
+            },
+            check_denominators_by_source_group={
+                group: {
+                    status: sum(
+                        exposures[row["trajectory_id"]]["status"] == status
+                        for row in manifest["roster"]
+                        if row["source_group"] == group
+                    )
+                    for status in check_statuses
+                }
+                for group in sorted({row["source_group"] for row in manifest["roster"]})
+            },
+            label_authentication=label_authentication,
             missing_choice_count=len(
                 roster - {row["trajectory_id"] for row in state["choices"].values()}
             ),

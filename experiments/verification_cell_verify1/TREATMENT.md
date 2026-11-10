@@ -32,7 +32,30 @@ Recovery accepts a base `expected_ledger_sha256` in `ShadowJournal`, and a separ
 treatment `expected_ledger_sha256` in `TreatmentJournal`. These pins compare exact
 current checkpoints; reconcile newer heads read-only before updating a pin. They
 do not authenticate clocks, physical execution, gate evidence or independent
-label custody. Label callback attestations remain unretained.
+label custody. Use `report(authenticate=current_host_verifier)` to revalidate the
+base journal's retained label attestations. Legacy callback-only labels refuse
+strict authentication. Both journal heads must remain unchanged during verification.
+
+## Complete check-exposure denominator
+
+Reports partition every frozen attempt at its original host disposition:
+
+| Status | Definition |
+| --- | --- |
+| `checked` | At least one completed original checker reply and no pending call at disposition. An observed `unknown` reply is still a completed check, not a clean terminal label. |
+| `unchecked` | No checker executed; the latest recorded frontier has an explicit `defer` decision. |
+| `abstained` | No checker executed; the latest frontier explicitly returned `blocked` or `unsupported`. |
+| `pending` | An original check started but had no completion at disposition. |
+| `missing` | Missing disposition, no current-frontier decision, or a recommended check with no recorded execution. |
+
+`check_denominators` and `check_denominators_by_source_group` retain all five
+categories. Missing records are not fabricated abstentions. Late replies can
+resolve `pending_operation_ids` and add measured costs, while the historical
+`check_exposure_at_disposition` remains unchanged. An earlier completed check
+counts as trajectory exposure; `completed_current_frontier_count` and
+`stale_completed_operation_count` make its freshness explicit. An old `defer`
+does not cover a later frontier that was never scheduled. These categories do
+not replace the independent terminal error and disposition denominators.
 
 Local subprocess fixtures establish engineering behavior. Actual error reduction,
 acceptable coverage and complete-cost net utility still require frozen prospective

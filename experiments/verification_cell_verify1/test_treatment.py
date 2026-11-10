@@ -131,6 +131,113 @@ class TreatmentTests(unittest.TestCase):
             self.shadow.finish(identity, disposition)
             self.label(identity, disposition, error)
 
+    def test_check_denominators_include_explicit_abstention_and_unobserved_attempts(
+        self,
+    ):
+        for prediction in self.predictions[:3]:
+            self.shadow.record(prediction)
+        choice = self.choose()
+        self.journal.start(choice["record_sha256"], "checked-op")
+        self.journal.complete(
+            "checked-op",
+            "fail",
+            digest("original-reply"),
+            dict(wall_seconds=0.1, cpu_seconds=0.01, energy_joules=None),
+        )
+        self.disposition()
+        self.assertEqual(self.choose(1, remaining_budget=0)["status"], "defer")
+        self.disposition("1", "accept")
+        self.assertEqual(
+            self.choose(2, hard_checks_complete=False)["status"], "blocked"
+        )
+        self.disposition("2", "interrupted", hard_checks_complete=False)
+        self.finish_all()
+        report = TreatmentJournal(ShadowJournal(self.path)).report()
+        expected = dict(checked=1, unchecked=1, abstained=1, pending=0, missing=1)
+        self.assertEqual(report["check_denominators"], expected)
+        self.assertEqual(
+            report["check_denominators_by_source_group"], {"heldout": expected}
+        )
+        self.assertEqual(sum(expected.values()), report["trajectories"])
+        self.assertEqual(
+            report["treatments"]["3"]["check_exposure_at_disposition"]["status"],
+            "missing",
+        )
+
+    def test_late_original_reply_does_not_rewrite_pending_at_decision(self):
+        self.shadow.record(self.predictions[0])
+        choice = self.choose()
+        self.journal.start(choice["record_sha256"], "late-op")
+        self.disposition("0", "interrupted")
+        self.finish_all(primary="interrupted", truth=None)
+        before = TreatmentJournal(ShadowJournal(self.path)).report()
+        self.assertEqual(before["check_denominators"]["pending"], 1)
+        self.journal.complete(
+            "late-op",
+            "pass",
+            digest("late-original-reply"),
+            dict(wall_seconds=0.1, cpu_seconds=None, energy_joules=None),
+        )
+        after = TreatmentJournal(ShadowJournal(self.path)).report()
+        self.assertEqual(after["check_denominators"], before["check_denominators"])
+        self.assertEqual(after["pending_operation_ids"], [])
+        self.assertEqual(
+            after["treatments"]["0"]["check_exposure_at_disposition"],
+            dict(
+                status="pending",
+                completed_operation_ids=[],
+                pending_operation_ids=["late-op"],
+                completed_current_frontier_count=0,
+                stale_completed_operation_count=0,
+            ),
+        )
+        self.assertEqual(after["known_labels"], before["known_labels"])
+
+    def test_stale_choice_does_not_hide_missing_scheduling_at_new_frontier(self):
+        self.shadow.record(self.predictions[0])
+        self.assertEqual(self.choose(remaining_budget=0)["status"], "defer")
+        later = replace(
+            self.predictions[0],
+            snapshot=replace(self.predictions[0].snapshot, observed_step=2),
+        )
+        self.shadow.record(later)
+        self.disposition("0", "accept")
+        self.finish_all(primary="accept", truth=False)
+        report = TreatmentJournal(ShadowJournal(self.path)).report()
+        self.assertEqual(
+            report["check_denominators"],
+            dict(checked=0, unchecked=0, abstained=0, pending=0, missing=4),
+        )
+
+    def test_old_completed_check_is_exposure_without_current_evidence(self):
+        self.shadow.record(self.predictions[0])
+        choice = self.choose()
+        self.journal.start(choice["record_sha256"], "early-op")
+        self.journal.complete(
+            "early-op",
+            "pass",
+            digest("early-reply"),
+            dict(wall_seconds=0.1, cpu_seconds=None, energy_joules=None),
+        )
+        self.shadow.record(
+            replace(
+                self.predictions[0],
+                snapshot=replace(self.predictions[0].snapshot, observed_step=2),
+            )
+        )
+        self.disposition("0", "accept")
+        self.finish_all(primary="accept", truth=False)
+        report = self.journal.report()
+        exposure = report["treatments"]["0"]["check_exposure_at_disposition"]
+        self.assertEqual(
+            (
+                exposure["status"],
+                exposure["completed_current_frontier_count"],
+                exposure["stale_completed_operation_count"],
+            ),
+            ("checked", 0, 1),
+        )
+
     def test_real_read_only_subprocess_and_recovery_preserve_full_roster(self):
         self.shadow.record(self.predictions[0])
         choice = self.choose()
