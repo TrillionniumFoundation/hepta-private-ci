@@ -45,6 +45,15 @@ jobs:
           ref: ${{ env.SOURCE_SHA }}
           fetch-depth: 1
           persist-credentials: false
+      - name: Bind source-head identity before integrity tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/mem7-records"
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/mem7-records/source-before.txt"
+          git status --porcelain > "$RUNNER_TEMP/mem7-records/worktree-before.txt"
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test ! -s "$RUNNER_TEMP/mem7-records/worktree-before.txt"
       - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
         with:
           python-version: "3.12.16"
@@ -60,6 +69,16 @@ jobs:
         run: |
           python -B -m ndu_real_runtime.run_revocation_qualification \
             --source-commit "$SOURCE_SHA" --output "$RUNNER_TEMP/mem7-records/campaign"
+      - name: Bind source-head identity after integrity tests
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/mem7-records"
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/mem7-records/source-after.txt"
+          git status --porcelain > "$RUNNER_TEMP/mem7-records/worktree-after.txt"
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test ! -s "$RUNNER_TEMP/mem7-records/worktree-after.txt"
       - name: Retain integrity evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
