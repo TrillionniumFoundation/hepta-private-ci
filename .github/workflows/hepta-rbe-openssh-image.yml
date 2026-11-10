@@ -50,4 +50,5 @@ jobs:
             ${{ runner.temp }}/rbe-openssh-image
             ${{ runner.temp }}/rbe-openssh-validation
           if-no-files-found: error
+          include-hidden-files: true
           retention-days: 7
