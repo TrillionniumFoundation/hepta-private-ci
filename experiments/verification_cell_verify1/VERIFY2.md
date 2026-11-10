@@ -145,3 +145,11 @@ correctness. [Ning et al., EMNLP 2026](https://aclanthology.org/2026.emnlp-main.
 separate per-step score calibration from trajectory-level score events and
 their interpretation as actual task correctness. These motivate separate
 behavior, prediction and terminal-outcome tests; they do not qualify this code.
+
+## Forward collection
+
+Use the [frozen prospective journal](PROSPECTIVE.md) to preserve every planned
+attempt, ordered forecasts, original completion disposition and separately
+authenticated terminal labels. This adds a collection API, not a prospective
+benefit result. Checker dispatch, independent real-task labels and complete-cost
+scheduler comparisons remain required.
