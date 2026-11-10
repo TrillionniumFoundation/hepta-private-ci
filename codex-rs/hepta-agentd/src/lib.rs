@@ -357,6 +357,8 @@ mod learning_iteration_proposal;
 mod neuron_cell_evaluation;
 mod neuron_cell_learning_evaluation;
 pub use cell_composed_q24::CellQ24GenerationWorkerV1;
+pub use cell_composed_q24::CellQ24FeatureEncoderV1;
+pub use cell_composed_q24::CellQ24FeatureWorkerV1;
 pub use cell_composed_q24::CellQ24ModelFilesV1;
 pub use cell_composed_q24::CellQ24PrivateHeadV1;
 pub use cell_composed_q24::CellQ24SgdRuleV1;

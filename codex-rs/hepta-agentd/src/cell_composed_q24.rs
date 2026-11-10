@@ -37,6 +37,11 @@ mod codec;
 use codec::Adapter;
 use codec::Matrix;
 
+#[path = "cell_composed_q24_feature.rs"]
+mod feature;
+pub use feature::CellQ24FeatureEncoderV1;
+pub use feature::CellQ24FeatureWorkerV1;
+
 #[path = "cell_composed_q24_training_plan.rs"]
 mod training_plan;
 pub use training_plan::CellQ24SgdRuleV1;
@@ -189,18 +194,27 @@ impl LoadedCellQ24ModelV1 {
     }
 
     fn hidden(&self, input: &[i64]) -> Vec<i64> {
+        self.hidden_with_allocations(input).0
+    }
+
+    fn hidden_with_allocations(&self, input: &[i64]) -> (Vec<i64>, usize) {
         let encoded = self.encoder.apply(input);
         let mut hidden = self.base.apply(&encoded);
         let apply = |adapter: &Option<Adapter>| {
             adapter.as_ref().map_or_else(
-                || vec![0; hidden.len()],
-                |adapter| adapter.up.apply(&adapter.down.apply(&encoded)),
+                || (vec![0; hidden.len()], 0),
+                |adapter| {
+                    let down = adapter.down.apply(&encoded);
+                    (adapter.up.apply(&down), down.capacity())
+                },
             )
         };
-        let organ = apply(&self.organ);
-        let cell = apply(&self.cell);
+        let (organ, organ_down) = apply(&self.organ);
+        let (cell, cell_down) = apply(&self.cell);
         codec::combine(&mut hidden, &organ, &cell);
-        hidden
+        let allocated = encoded.capacity() + hidden.capacity() + organ.capacity()
+            + cell.capacity() + organ_down + cell_down;
+        (hidden, allocated)
     }
 
     /// Identity of the actual executable factor graph. Q24 rounding makes it
