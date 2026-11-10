@@ -22,11 +22,12 @@ jobs:
       OPENBLAS_NUM_THREADS: "1"
       OMP_NUM_THREADS: "1"
       MKL_NUM_THREADS: "1"
+      SOURCE_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
     steps:
       - name: Checkout exact candidate, no retained Git credentials
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ github.sha }}
+          ref: ${{ env.SOURCE_HEAD }}
           persist-credentials: false
       - name: Prepare pinned CPU Python environment
         run: |
@@ -38,6 +39,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p "$RUNNER_TEMP/hpca-evidence"
+          test "$(git rev-parse HEAD)" = "$SOURCE_HEAD"
           ruff check qualification/cell_common_foundations/{memory_replay,test_memory_replay}.py
           ruff format --check qualification/cell_common_foundations/{memory_replay,test_memory_replay}.py
           python -m unittest -v qualification.cell_common_foundations.test_memory_replay \
@@ -64,7 +66,8 @@ jobs:
                   assert all(s["selection_audit"]["selected_ids"] == s["ids"] for s in row["replay_selections"])
           packet = {
               "schema": "hepta.neuroscience-priority-audit-development.v1",
-              "exact_head": os.environ["GITHUB_SHA"],
+              "exact_head": os.environ["SOURCE_HEAD"],
+              "runner_event_sha": os.environ["GITHUB_SHA"],
               "source_kind": "FP64_SYNTHETIC_MODEL_TRAINING_NOT_INDEPENDENT_TASKS",
               "independent_real_task_count": 0,
               "scientific_acceptance": "HOLD_NO_GO",
