@@ -1,0 +1,621 @@
+{
+  "schema_version": 1,
+  "qualification": "ACT-2 current-goal tool success projection",
+  "result": "SCOPED_NATIVE_PASS_ON_TESTED_SOURCE",
+  "full_act2_promotion": "HOLD",
+  "audited_at_utc": "2026-11-10T07:09:07.106168+00:00",
+  "source": {
+    "tested_sha": "ae8a08059df73ccb875f4f541f76ad01080ba74b",
+    "tested_tree": "eedf15cce91f62cde4c85c6a2a9f124029ef6b5e",
+    "integration_base": "8bebf0a3c207a49bfd0a99367fd6e06f52a6cb98",
+    "maintained_sha": "631e99f78898543e8dc1e8671632baf73945940e",
+    "maintained_tree": "9e5eb5acbed52758844804679647d316f401cb56",
+    "companion_sha": "fd8d56c52b971c2d5d0e6430f296803b43ef60a3",
+    "companion_tree": "347fbb7e9931006c749b5bef0e1550c54bc08f27"
+  },
+  "workflow": {
+    "run_id": 42770759653,
+    "attempt": 1,
+    "status": "completed",
+    "conclusion": "success",
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42770759653",
+    "created_at": "2026-11-10T06:46:24Z",
+    "updated_at": "2026-11-10T07:06:36Z",
+    "jobs": [
+      {
+        "id": 129677732242,
+        "name": "format",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 129677732299,
+        "name": "native-and-real-notes",
+        "status": "completed",
+        "conclusion": "success"
+      }
+    ]
+  },
+  "commands": {
+    "automation": {
+      "after": {
+        "commit": "ae8a08059df73ccb875f4f541f76ad01080ba74b",
+        "dirty": false,
+        "parents": [
+          "8bebf0a3c207a49bfd0a99367fd6e06f52a6cb98"
+        ],
+        "tree": "eedf15cce91f62cde4c85c6a2a9f124029ef6b5e"
+      },
+      "base_sha": "",
+      "before": {
+        "commit": "ae8a08059df73ccb875f4f541f76ad01080ba74b",
+        "dirty": false,
+        "parents": [
+          "8bebf0a3c207a49bfd0a99367fd6e06f52a6cb98"
+        ],
+        "tree": "eedf15cce91f62cde4c85c6a2a9f124029ef6b5e"
+      },
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-automation"
+      ],
+      "command_exit_code": 0,
+      "elapsed_seconds": 250.75622253899996,
+      "exit_code": 0,
+      "finished_at": "2026-11-10T06:53:03.209045+00:00",
+      "job": "native-and-real-notes",
+      "lane": "source-head",
+      "log_bytes": 98999,
+      "log_file": "automation.json.d8d4e1a34c004a1ca3e0b5a8093c9cb9.log",
+      "log_sha256": "b0d03d9f992018ce1b06fe233021e6deaaf12f63301b60e0ea6f7d1284acc05a",
+      "minimum_tests": 6,
+      "observed_failed_tests": 0,
+      "observed_passed_tests": 169,
+      "output_limit_exceeded": false,
+      "returncode": 0,
+      "run_attempt": "1",
+      "run_id": "42770759653",
+      "schema_version": 1,
+      "source_sha": "ae8a08059df73ccb875f4f541f76ad01080ba74b",
+      "started_at": "2026-11-10T06:48:52.418388+00:00",
+      "status": "passed",
+      "tested_sha": "ae8a08059df73ccb875f4f541f76ad01080ba74b",
+      "timed_out": false,
+      "working_directory": "/home/runner/work/hepta-private-ci/hepta-private-ci"
+    },
+    "notes-owner": {
+      "after": {
+        "commit": "ae8a08059df73ccb875f4f541f76ad01080ba74b",
+        "dirty": false,
+        "parents": [
+          "8bebf0a3c207a49bfd0a99367fd6e06f52a6cb98"
+        ],
+        "tree": "eedf15cce91f62cde4c85c6a2a9f124029ef6b5e"
+      },
+      "base_sha": "",
+      "before": {
+        "commit": "ae8a08059df73ccb875f4f541f76ad01080ba74b",
+        "dirty": false,
+        "parents": [
+          "8bebf0a3c207a49bfd0a99367fd6e06f52a6cb98"
+        ],
+        "tree": "eedf15cce91f62cde4c85c6a2a9f124029ef6b5e"
+      },
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-agentd",
+        "--lib",
+        "-E",
+        "test(notes_act2) | test(notes_recovered_writer_persists_lost_reply_and_retires_without_replay) | test(notes_document_observer)"
+      ],
+      "command_exit_code": 0,
+      "elapsed_seconds": 427.393236688,
+      "exit_code": 0,
+      "finished_at": "2026-11-10T07:00:10.658649+00:00",
+      "job": "native-and-real-notes",
+      "lane": "source-head",
+      "log_bytes": 79267,
+      "log_file": "notes-owner.json.0121aa3a2ec44c748cf9954f19c3dee5.log",
+      "log_sha256": "449c7d81e58649da9cfa2b126c0da14e8d66baca4f6d7c3a696f890a4f57ed60",
+      "minimum_tests": 8,
+      "observed_failed_tests": 0,
+      "observed_passed_tests": 12,
+      "output_limit_exceeded": false,
+      "returncode": 0,
+      "run_attempt": "1",
+      "run_id": "42770759653",
+      "schema_version": 1,
+      "source_sha": "ae8a08059df73ccb875f4f541f76ad01080ba74b",
+      "started_at": "2026-11-10T06:53:03.264913+00:00",
+      "status": "passed",
+      "tested_sha": "ae8a08059df73ccb875f4f541f76ad01080ba74b",
+      "timed_out": false,
+      "working_directory": "/home/runner/work/hepta-private-ci/hepta-private-ci"
+    },
+    "notes-real-gui": {
+      "after": {
+        "commit": "ae8a08059df73ccb875f4f541f76ad01080ba74b",
+        "dirty": false,
+        "parents": [
+          "8bebf0a3c207a49bfd0a99367fd6e06f52a6cb98"
+        ],
+        "tree": "eedf15cce91f62cde4c85c6a2a9f124029ef6b5e"
+      },
+      "base_sha": "",
+      "before": {
+        "commit": "ae8a08059df73ccb875f4f541f76ad01080ba74b",
+        "dirty": false,
+        "parents": [
+          "8bebf0a3c207a49bfd0a99367fd6e06f52a6cb98"
+        ],
+        "tree": "eedf15cce91f62cde4c85c6a2a9f124029ef6b5e"
+      },
+      "command": [
+        "env",
+        "-u",
+        "WAYLAND_DISPLAY",
+        "dbus-run-session",
+        "--",
+        "xvfb-run",
+        "-a",
+        "-s",
+        "-screen 0 1280x800x24 -nolisten tcp",
+        "env",
+        "WINIT_UNIX_BACKEND=x11",
+        "LIBGL_ALWAYS_SOFTWARE=1",
+        "TRILL_NOTES_PROBE_ISOLATED=1",
+        "HEPTA_NOTES_SESSION_BIN=/home/runner/work/_temp/act2-ui-target/debug/trill-session",
+        "HEPTA_NOTES_QUALIFICATION_OUTPUT=/home/runner/work/_temp/act2-records/notes-actual.json",
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-agentd",
+        "--lib",
+        "-E",
+        "test(notes_actual_ui_original_owner_roundtrip)",
+        "--run-ignored",
+        "only",
+        "--status-level",
+        "all"
+      ],
+      "command_exit_code": 0,
+      "elapsed_seconds": 4.50986110000008,
+      "exit_code": 0,
+      "finished_at": "2026-11-10T07:02:00.223252+00:00",
+      "job": "native-and-real-notes",
+      "lane": "source-head",
+      "log_bytes": 175972,
+      "log_file": "notes-real-gui.json.a650e0899c0a4477b6639f9d2d1df928.log",
+      "log_sha256": "158725945a31634cb3894006246c994b9ab5a25066dd9b87b11bfda5aa1676a0",
+      "minimum_tests": 1,
+      "observed_failed_tests": 0,
+      "observed_passed_tests": 1,
+      "output_limit_exceeded": false,
+      "returncode": 0,
+      "run_attempt": "1",
+      "run_id": "42770759653",
+      "schema_version": 1,
+      "source_sha": "ae8a08059df73ccb875f4f541f76ad01080ba74b",
+      "started_at": "2026-11-10T07:01:55.702678+00:00",
+      "status": "passed",
+      "tested_sha": "ae8a08059df73ccb875f4f541f76ad01080ba74b",
+      "timed_out": false,
+      "working_directory": "/home/runner/work/hepta-private-ci/hepta-private-ci"
+    },
+    "ui-build": {
+      "after": {
+        "commit": "ae8a08059df73ccb875f4f541f76ad01080ba74b",
+        "dirty": false,
+        "parents": [
+          "8bebf0a3c207a49bfd0a99367fd6e06f52a6cb98"
+        ],
+        "tree": "eedf15cce91f62cde4c85c6a2a9f124029ef6b5e"
+      },
+      "base_sha": "",
+      "before": {
+        "commit": "ae8a08059df73ccb875f4f541f76ad01080ba74b",
+        "dirty": false,
+        "parents": [
+          "8bebf0a3c207a49bfd0a99367fd6e06f52a6cb98"
+        ],
+        "tree": "eedf15cce91f62cde4c85c6a2a9f124029ef6b5e"
+      },
+      "command": [
+        "env",
+        "CARGO_TARGET_DIR=/home/runner/work/_temp/act2-ui-target",
+        "rustup",
+        "run",
+        "1.96.0",
+        "cargo",
+        "build",
+        "--locked",
+        "--manifest-path",
+        "/home/runner/work/_temp/act2-ui-source/ui/Cargo.toml",
+        "-p",
+        "trill-session",
+        "-p",
+        "trill-app-window",
+        "--bins"
+      ],
+      "command_exit_code": 0,
+      "elapsed_seconds": 104.17052143199999,
+      "exit_code": 0,
+      "finished_at": "2026-11-10T07:01:54.881085+00:00",
+      "job": "native-and-real-notes",
+      "lane": "source-head",
+      "log_bytes": 19234,
+      "log_file": "ui-build.json.e9737bb231ec480482f7bc438b97f909.log",
+      "log_sha256": "a68bed97d7c010b8215005ccdbd17350e2328aaa9e6fdc12d4c80488454813a1",
+      "minimum_tests": 0,
+      "observed_failed_tests": 0,
+      "observed_passed_tests": 0,
+      "output_limit_exceeded": false,
+      "returncode": 0,
+      "run_attempt": "1",
+      "run_id": "42770759653",
+      "schema_version": 1,
+      "source_sha": "ae8a08059df73ccb875f4f541f76ad01080ba74b",
+      "started_at": "2026-11-10T07:00:10.710123+00:00",
+      "status": "passed",
+      "tested_sha": "ae8a08059df73ccb875f4f541f76ad01080ba74b",
+      "timed_out": false,
+      "working_directory": "/home/runner/work/hepta-private-ci/hepta-private-ci"
+    },
+    "fix": {
+      "after": {
+        "commit": "ae8a08059df73ccb875f4f541f76ad01080ba74b",
+        "dirty": false,
+        "parents": [
+          "8bebf0a3c207a49bfd0a99367fd6e06f52a6cb98"
+        ],
+        "tree": "eedf15cce91f62cde4c85c6a2a9f124029ef6b5e"
+      },
+      "base_sha": "",
+      "before": {
+        "commit": "ae8a08059df73ccb875f4f541f76ad01080ba74b",
+        "dirty": false,
+        "parents": [
+          "8bebf0a3c207a49bfd0a99367fd6e06f52a6cb98"
+        ],
+        "tree": "eedf15cce91f62cde4c85c6a2a9f124029ef6b5e"
+      },
+      "command": [
+        "just",
+        "fix",
+        "--locked",
+        "-p",
+        "codex-hepta-automation",
+        "-p",
+        "codex-hepta-agentd"
+      ],
+      "command_exit_code": 0,
+      "elapsed_seconds": 267.7123162009999,
+      "exit_code": 0,
+      "finished_at": "2026-11-10T07:06:27.989044+00:00",
+      "job": "native-and-real-notes",
+      "lane": "source-head",
+      "log_bytes": 56785,
+      "log_file": "fix.json.145d82c538d94564b5654864ba3193ed.log",
+      "log_sha256": "4796f6bd5861dfbff60afdb1746db42c9fe05485b9bc7ca650956a1503b98596",
+      "minimum_tests": 0,
+      "observed_failed_tests": 0,
+      "observed_passed_tests": 0,
+      "output_limit_exceeded": false,
+      "returncode": 0,
+      "run_attempt": "1",
+      "run_id": "42770759653",
+      "schema_version": 1,
+      "source_sha": "ae8a08059df73ccb875f4f541f76ad01080ba74b",
+      "started_at": "2026-11-10T07:02:00.276291+00:00",
+      "status": "passed",
+      "tested_sha": "ae8a08059df73ccb875f4f541f76ad01080ba74b",
+      "timed_out": false,
+      "working_directory": "/home/runner/work/hepta-private-ci/hepta-private-ci"
+    }
+  },
+  "test_counts": {
+    "automation": {
+      "passed": 169,
+      "failed": 0,
+      "skipped": 2
+    },
+    "notes-owner": {
+      "passed": 12,
+      "failed": 0,
+      "skipped": 778
+    },
+    "notes-real-gui": {
+      "passed": 1,
+      "failed": 0,
+      "skipped": 789
+    }
+  },
+  "test_summaries": {
+    "automation": [
+      "Summary [  18.638s] 169 tests run: 169 passed, 2 skipped"
+    ],
+    "notes-owner": [
+      "Summary [   2.753s] 12 tests run: 12 passed, 778 skipped"
+    ],
+    "notes-real-gui": [
+      "Summary [   2.851s] 1 test run: 1 passed, 789 skipped"
+    ],
+    "ui-build": [],
+    "fix": []
+  },
+  "new_goal_tests_passed": [
+    "notes_action_observer::tests::notes_act2_tool_success_requires_current_goal_after_readback_loss_or_drift",
+    "notes_action_observer::tests::notes_act2_tool_success_keeps_read_and_original_navigation_semantics"
+  ],
+  "model_tool_success_projection": {
+    "complete_model_facing_handler_exercised": false,
+    "current_readback_unavailable": [
+      false,
+      false
+    ],
+    "first_current_goal": [
+      true,
+      true
+    ],
+    "historical_goal_after_edits": [
+      false,
+      false
+    ],
+    "recovered_current_goal": [
+      true,
+      true
+    ],
+    "repeated_current_goal": [
+      [
+        true,
+        true
+      ],
+      [
+        true,
+        true
+      ],
+      [
+        true,
+        true
+      ]
+    ],
+    "tools": [
+      "hepta_notes_replace",
+      "hepta_notes_status"
+    ]
+  },
+  "actual_destination_facts": {
+    "first_goal_revision": 1,
+    "first_goal_after_edits_revision": 3,
+    "first_goal_after_edits_source_state": "Committed",
+    "first_goal_after_edits_historical_effect": "applied",
+    "first_goal_after_edits_current_goal": "unsatisfied",
+    "recovered_goal_revision": 3,
+    "repeated_fresh_status_count": 3,
+    "repeated_status_values_equal": true,
+    "actual_readback_error": "agentd protocol error: Connection refused (os error 111)",
+    "after_close_source_state": "Committed",
+    "after_close_historical_effect": "applied",
+    "after_close_current_document": null,
+    "after_close_current_goal": "unknown",
+    "effect_dispatch_attempts": 3,
+    "issuer_requests": 4,
+    "recovery_effect_replay": false,
+    "recovery_requested_new_grant": false,
+    "single_correlated_lifecycle_not_independent_trials": true
+  },
+  "maintenance": {
+    "tested_source_sha": "ae8a08059df73ccb875f4f541f76ad01080ba74b",
+    "tested_tree_sha": "eedf15cce91f62cde4c85c6a2a9f124029ef6b5e",
+    "integration_base_sha": "8bebf0a3c207a49bfd0a99367fd6e06f52a6cb98",
+    "maintained_source_sha": "631e99f78898543e8dc1e8671632baf73945940e",
+    "maintained_tree_sha": "9e5eb5acbed52758844804679647d316f401cb56",
+    "maintained_parent_sha": "ae8a08059df73ccb875f4f541f76ad01080ba74b",
+    "official_formatter_patch": {
+      "path": "evidence/official-format.patch",
+      "bytes": 651,
+      "sha256": "dbc2f2147aa0e0a391305b3f134b289fdda9e7578a6ab82e87b02810e3f9f834"
+    },
+    "official_postimage": {
+      "path": "codex-rs/hepta-agentd/src/notes_action_observer_tests.rs",
+      "bytes": 13145,
+      "sha256": "570b10609b16ecf40fdbd60e8d1b9f1924c6a03047cd81ddddeec61f9a727cb7",
+      "git_blob_sha": "0cac78f0e1c3297dfa1080aaf114b2651d27d480"
+    },
+    "maintenance_is_single_assertion_expression_line_wrapping": true,
+    "maintenance_commit_postimage_independently_read_back": true,
+    "original_native_result": "SCOPED_NATIVE_PASS_ON_TESTED_SOURCE",
+    "maintained_successor_result": "SEPARATE_RUN_42771121382_NOT_INHERITED",
+    "scoped_fix_modified_source": false,
+    "native_final_patch_identical_to_independent_formatter": true,
+    "behavior_tests_after_maintenance_in_original_run": false,
+    "maintenance_commit_single_file_delta_independently_read": true
+  },
+  "recorded_lock_hashes": "48b55c7ff5c23516fd0aeedca7c10a6e7902aeb5dc49fa4cef80971e1ae57d3f  codex-rs/Cargo.lock\na8b00de25b9b5d47cba0d3458ab24f1c20871a6a2420f91e9c7bf0c1d792c35f  /home/runner/work/_temp/act2-ui-source/ui/Cargo.lock\n",
+  "recorded_ui_binary_hashes": "6ec59c62cdeb4849d4c20a1234cac0c9b9fdd9dcbd9cae62cee31112aa409d7d  /home/runner/work/_temp/act2-ui-target/debug/trill-session\n5af4d1c90a172134942dc3a0bcd242a8c41e32cbc6274a5eddebd4383727715f  /home/runner/work/_temp/act2-ui-target/debug/trill-app-window\n",
+  "log_byte_counts_and_hashes_verified": true,
+  "raw_artifacts": [
+    {
+      "name": "native",
+      "bytes": 73109,
+      "sha256": "a307ba24f571eaf47cbd129304e58d4b850e8efb9336592c9f98a1ec250f7fe1",
+      "members": [
+        {
+          "name": "automation.json",
+          "bytes": 1445,
+          "sha256": "dec3c9e5a939f3b4fdcd16b52b36adbdd53ec1309587538c572f8793ca3c8961"
+        },
+        {
+          "name": "final-source.patch",
+          "bytes": 651,
+          "sha256": "dbc2f2147aa0e0a391305b3f134b289fdda9e7578a6ab82e87b02810e3f9f834"
+        },
+        {
+          "name": "automation.json.d8d4e1a34c004a1ca3e0b5a8093c9cb9.log",
+          "bytes": 98999,
+          "sha256": "b0d03d9f992018ce1b06fe233021e6deaaf12f63301b60e0ea6f7d1284acc05a"
+        },
+        {
+          "name": "fix.json",
+          "bytes": 1470,
+          "sha256": "dc608d1ba8a1459a85875040cd0020a060a24e489fa62d9031e5d4783c4c2414"
+        },
+        {
+          "name": "fix.json.145d82c538d94564b5654864ba3193ed.log",
+          "bytes": 56785,
+          "sha256": "4796f6bd5861dfbff60afdb1746db42c9fe05485b9bc7ca650956a1503b98596"
+        },
+        {
+          "name": "formatter.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "hepta-source.txt",
+          "bytes": 82,
+          "sha256": "310f7200e4dcf64cf5fcf4e4cd2ed276938a2d028e8b8e7ee1302ef58effe662"
+        },
+        {
+          "name": "locks.sha256",
+          "bytes": 205,
+          "sha256": "2440f1bfefdf2511f2a9d8f99f044d4c0d1f9b74ba352251859a8b9f71462638"
+        },
+        {
+          "name": "notes-actual.json",
+          "bytes": 22939,
+          "sha256": "9002bd65e6b863afd2a6ea4e4655b6fd1b202ed767e30aa6704a3150a84c7bd8"
+        },
+        {
+          "name": "notes-owner.json",
+          "bytes": 1593,
+          "sha256": "7b077c59f0535fe8227adca58008f193178681867c79b75d4247cad6517c731b"
+        },
+        {
+          "name": "notes-owner.json.0121aa3a2ec44c748cf9954f19c3dee5.log",
+          "bytes": 79267,
+          "sha256": "449c7d81e58649da9cfa2b126c0da14e8d66baca4f6d7c3a696f890a4f57ed60"
+        },
+        {
+          "name": "notes-real-gui.json",
+          "bytes": 2035,
+          "sha256": "afb90bfb178af850e13681e7b46edcaa116646db86f40b9bd4586aece6a0351a"
+        },
+        {
+          "name": "notes-real-gui.json.a650e0899c0a4477b6639f9d2d1df928.log",
+          "bytes": 175972,
+          "sha256": "158725945a31634cb3894006246c994b9ab5a25066dd9b87b11bfda5aa1676a0"
+        },
+        {
+          "name": "rustc.txt",
+          "bytes": 196,
+          "sha256": "f64c55ed9f210d80a9b248206104a47175faf5ec94a093e4ad132549209089fc"
+        },
+        {
+          "name": "source-after.txt",
+          "bytes": 82,
+          "sha256": "310f7200e4dcf64cf5fcf4e4cd2ed276938a2d028e8b8e7ee1302ef58effe662"
+        },
+        {
+          "name": "source-status-after.txt",
+          "bytes": 60,
+          "sha256": "2bf70255249b02a8fb0ba0543f28072daea9e9dda1c829e55b02711ee0849fae"
+        },
+        {
+          "name": "ui-binaries.sha256",
+          "bytes": 253,
+          "sha256": "8081de992f91107e3215433e0888f756b0d2bf35c8274502033dfe3c8e1013b0"
+        },
+        {
+          "name": "ui-build.json",
+          "bytes": 1678,
+          "sha256": "2c31768127bce5c95a02967393b3dd10f6670e1919c438914c35aca721e70f71"
+        },
+        {
+          "name": "ui-build.json.e9737bb231ec480482f7bc438b97f909.log",
+          "bytes": 19234,
+          "sha256": "a68bed97d7c010b8215005ccdbd17350e2328aaa9e6fdc12d4c80488454813a1"
+        },
+        {
+          "name": "ui-source.txt",
+          "bytes": 82,
+          "sha256": "9d94e4d13610f162a206a177596e847cab7fab6c751d8a4d99cb4323ef959d25"
+        }
+      ],
+      "path": "evidence/act2-native-42770759653.zip",
+      "artifact_id": 13742428405
+    },
+    {
+      "name": "format",
+      "bytes": 58130,
+      "sha256": "b25541da6c46bf4f41d5129ffdfe76677aa7eb4c3898bc3ec9c3a7cfd0f79b48",
+      "members": [
+        {
+          "name": "format.patch",
+          "bytes": 651,
+          "sha256": "dbc2f2147aa0e0a391305b3f134b289fdda9e7578a6ab82e87b02810e3f9f834"
+        },
+        {
+          "name": "formatted-files.json",
+          "bytes": 307017,
+          "sha256": "67d0b3e0b25d2d30a3a4bc653a029dad420a9c9e3f027b0625460026aa5a9cf8"
+        },
+        {
+          "name": "formatter.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "rustfmt-version.txt",
+          "bytes": 45,
+          "sha256": "58e77f09cbe97eb2d0ab9174e5523494d03814f2879c8e187ed66370320abc7c"
+        },
+        {
+          "name": "source-identity.txt",
+          "bytes": 82,
+          "sha256": "310f7200e4dcf64cf5fcf4e4cd2ed276938a2d028e8b8e7ee1302ef58effe662"
+        }
+      ],
+      "path": "evidence/act2-format-42770759653.zip",
+      "artifact_id": 13741417229
+    }
+  ],
+  "readable_actual_observation": {
+    "path": "evidence/notes-actual.json",
+    "bytes": 22939,
+    "sha256": "9002bd65e6b863afd2a6ea4e4655b6fd1b202ed767e30aa6704a3150a84c7bd8",
+    "byte_identical_native_archive_member": true
+  },
+  "review": {
+    "path": "goal-success-review.json",
+    "bytes": 6737,
+    "sha256": "d7e154f0c9411b0d16e68710367bf6d8c264e0b4d298239cefd4bb460f88a25d",
+    "scope": "Original static review, not an external independent institution or native execution."
+  },
+  "maintained_exact_source": {
+    "path": "maintained-run/RESULT.json",
+    "source_sha": "631e99f78898543e8dc1e8671632baf73945940e",
+    "source_tree": "9e5eb5acbed52758844804679647d316f401cb56",
+    "run_id": 42771121382,
+    "result": "SCOPED_NATIVE_PASS_ON_MAINTAINED_SOURCE",
+    "result_was_not_inherited": true
+  },
+  "excluded_claims": [
+    "Transferred original-candidate pass counts on maintained source; the maintained source instead has its own exact run",
+    "Complete model-facing handler execution",
+    "Full repository required CI or full caller scanner passed",
+    "Actual App checkpoint rollback qualification",
+    "Durable antirollback across restart or reattachment",
+    "Ordered asynchronous report delivery",
+    "Destination cancellation tombstones or late-commit exclusion",
+    "Production authority, native kernel or pixel qualification",
+    "Learned hierarchy training or independent net-benefit evidence",
+    "Independent binary/lock complete-file hash recomputation; artifacts record hashes without complete binary/lock bytes"
+  ]
+}

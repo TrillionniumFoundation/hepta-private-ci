@@ -1,0 +1,956 @@
+{
+  "schema_version": 1,
+  "source_head": "111d5773145dbe4add99a28b2d1111916a3dbd3b",
+  "blocking_run": 42744408777,
+  "actual_checkout": "e48870d3242d0041eae7865c8a1a07cb17619d7c",
+  "read_only": true,
+  "no_github_mutation": true,
+  "records": [
+    {
+      "job_id": 129601583793,
+      "run_id": 42744408777,
+      "actual_checkout": "e48870d3242d0041eae7865c8a1a07cb17619d7c",
+      "bytes": 134594,
+      "sha256": "9f2bbcfd13628bc9487be2f9be7d2611e49d33cec8d256aa31f61bcd7bb539c2",
+      "signals": [
+        {
+          "line": 126,
+          "text": "2026-11-10T03:16:04.8845620Z HEAD is now at e48870d Merge 111d5773145dbe4add99a28b2d1111916a3dbd3b into 4674a34528d0097949cc7d604f60de94585d0ba0",
+          "following": [
+            "2026-11-10T03:16:04.8874876Z ##[endgroup]",
+            "2026-11-10T03:16:04.8927386Z [command]/usr/bin/git log -1 --format=%H"
+          ]
+        },
+        {
+          "line": 985,
+          "text": "2026-11-10T03:16:25.2203163Z Diff in /home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-agentd/src/notes_document_observer.rs:52:",
+          "following": [
+            "2026-11-10T03:16:25.2204015Z                      && observed.text_sha256 != previous.text_sha256)",
+            "2026-11-10T03:16:25.2204459Z          }) {"
+          ]
+        }
+      ],
+      "archive": "job-129601583793-decoded-log.zip",
+      "log_member": "job-129601583793.log"
+    },
+    {
+      "job_id": 129595862908,
+      "run_id": 42744408777,
+      "actual_checkout": "e48870d3242d0041eae7865c8a1a07cb17619d7c",
+      "bytes": 84488,
+      "sha256": "f1d95a20bf40fb6cb7427d5c7d222a3a4339ddc486e48f4efbc36286bdc6b7e3",
+      "signals": [
+        {
+          "line": 164,
+          "text": "2026-11-10T03:03:03.8909010Z HEAD is now at e48870d Merge 111d5773145dbe4add99a28b2d1111916a3dbd3b into 4674a34528d0097949cc7d604f60de94585d0ba0",
+          "following": [
+            "2026-11-10T03:03:03.8941180Z ##[endgroup]",
+            "2026-11-10T03:03:03.9224260Z [command]/opt/homebrew/bin/git log -1 --format=%H"
+          ]
+        },
+        {
+          "line": 905,
+          "text": "2026-11-10T03:03:31.9154810Z   download of 3/c/csv failed",
+          "following": [
+            "2026-11-10T03:03:31.9155090Z ",
+            "2026-11-10T03:03:31.9155690Z Caused by:"
+          ]
+        },
+        {
+          "line": 911,
+          "text": "2026-11-10T03:03:31.9158560Z   [16] Error in the HTTP2 framing layer",
+          "following": [
+            "2026-11-10T03:03:31.9237990Z \u001b[31;1merror\u001b[0m: command `\u001b[1m/Users/runner/.rustup/toolchains/1.96.0-aarch64-apple-darwin/bin/cargo test --no-run --message-format json-render-diagnostics --package codex-hepta-paths --locked\u001b[0m` exited with code \u001b[1m101\u001b[0m",
+            "2026-11-10T03:03:31.9507610Z error: recipe `test` failed on line 89 with exit code 101"
+          ]
+        }
+      ],
+      "archive": "job-129595862908-decoded-log.zip",
+      "log_member": "job-129595862908.log"
+    },
+    {
+      "job_id": 129595863564,
+      "run_id": 42744408777,
+      "actual_checkout": "e48870d3242d0041eae7865c8a1a07cb17619d7c",
+      "bytes": 1298159,
+      "sha256": "faa68466a4fa4b1bc00636b2970dea87f2e0173c98d01d500d1990162ece035a",
+      "signals": [
+        {
+          "line": 207,
+          "text": "2026-11-10T02:49:57.7114070Z HEAD is now at e48870d Merge 111d5773145dbe4add99a28b2d1111916a3dbd3b into 4674a34528d0097949cc7d604f60de94585d0ba0",
+          "following": [
+            "2026-11-10T02:49:57.7223320Z ##[endgroup]",
+            "2026-11-10T02:49:57.7233090Z [command]/usr/local/bin/git log -1 --format=%H"
+          ]
+        },
+        {
+          "line": 1880,
+          "text": "2026-11-10T02:58:51.2377110Z thread 'circuit_drain::tests::drain_observation_includes_runs_beyond_the_first_page' (63979) panicked at hepta-automation/src/circuit_drain_tests.rs:95:6:",
+          "following": [
+            "2026-11-10T02:58:51.2378810Z open: Invalid",
+            "2026-11-10T02:58:51.2379900Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+          ]
+        },
+        {
+          "line": 1886,
+          "text": "2026-11-10T02:58:51.2384820Z thread 'circuit_drain::tests::stopped_circuit_blocks_drain_after_reopen_until_original_work_settles' (63980) panicked at hepta-automation/src/circuit_drain_tests.rs:16:10:",
+          "following": [
+            "2026-11-10T02:58:51.2388450Z open: Invalid",
+            "2026-11-10T02:58:51.2388790Z "
+          ]
+        },
+        {
+          "line": 1891,
+          "text": "2026-11-10T02:58:51.2393200Z thread 'circuit_journal::tests::expired::expired_recovery_rejects_live_stale_and_changed_original_requests' (63981) panicked at hepta-automation/src/circuit_recovery_budget_tests.rs:46:6:",
+          "following": [
+            "2026-11-10T02:58:51.2395060Z durable owner: Invalid",
+            "2026-11-10T02:58:51.2395340Z "
+          ]
+        },
+        {
+          "line": 1896,
+          "text": "2026-11-10T02:58:51.2398350Z thread 'circuit_journal::tests::expired::expired_recovery_settles_after_the_lease_allowance_is_exhausted' (63982) panicked at hepta-automation/src/circuit_recovery_budget_tests.rs:46:6:",
+          "following": [
+            "2026-11-10T02:58:51.2444270Z durable owner: Invalid",
+            "2026-11-10T02:58:51.2445210Z "
+          ]
+        },
+        {
+          "line": 1901,
+          "text": "2026-11-10T02:58:51.2450540Z thread 'circuit_journal::tests::expired::recovery_owner_settles_multiple_receipts_without_a_new_lease' (63983) panicked at hepta-automation/src/circuit_expired_recovery_tests.rs:235:6:",
+          "following": [
+            "2026-11-10T02:58:51.2454010Z store: Invalid",
+            "2026-11-10T02:58:51.2454360Z "
+          ]
+        },
+        {
+          "line": 1906,
+          "text": "2026-11-10T02:58:51.2459490Z thread 'circuit_journal::tests::lease_churn_cannot_spend_pending_receipt_slots_across_reopen' (63985) panicked at hepta-automation/src/circuit_recovery_budget_tests.rs:46:6:",
+          "following": [
+            "2026-11-10T02:58:51.2462040Z durable owner: Invalid",
+            "2026-11-10T02:58:51.2462730Z "
+          ]
+        },
+        {
+          "line": 1911,
+          "text": "2026-11-10T02:58:51.2469360Z thread 'circuit_journal::tests::legacy::legacy_stopped_history_reserves_actual_pending_settlement_slots' (63986) panicked at hepta-automation/src/circuit_recovery_budget_tests.rs:46:6:",
+          "following": [
+            "2026-11-10T02:58:51.2473980Z durable owner: Invalid",
+            "2026-11-10T02:58:51.2474690Z "
+          ]
+        },
+        {
+          "line": 1916,
+          "text": "2026-11-10T02:58:51.2481290Z thread 'circuit_journal::tests::stopped_polling_preserves_original_reconciliation_and_idempotent_retry' (63987) panicked at hepta-automation/src/circuit_recovery_budget_tests.rs:46:6:",
+          "following": [
+            "2026-11-10T02:58:51.2484110Z durable owner: Invalid",
+            "2026-11-10T02:58:51.2484730Z "
+          ]
+        },
+        {
+          "line": 1921,
+          "text": "2026-11-10T02:58:51.2489950Z thread 'circuit_learning_outbox::tests::completion_claim_and_ack_survive_reopen_without_releasing_delivery' (63988) panicked at hepta-automation/src/circuit_learning_outbox_tests.rs:20:6:",
+          "following": [
+            "2026-11-10T02:58:51.2493770Z called `Result::unwrap()` on an `Err` value: Invalid",
+            "2026-11-10T02:58:51.2494670Z "
+          ]
+        },
+        {
+          "line": 1926,
+          "text": "2026-11-10T02:58:51.2499940Z thread 'circuit_learning_outbox::tests::full_queue_preserves_existing_operation_and_corrupt_history_is_rejected' (63989) panicked at hepta-automation/src/circuit_learning_outbox_tests.rs:20:6:",
+          "following": [
+            "2026-11-10T02:58:51.2505010Z called `Result::unwrap()` on an `Err` value: Invalid",
+            "2026-11-10T02:58:51.2506430Z "
+          ]
+        },
+        {
+          "line": 1931,
+          "text": "2026-11-10T02:58:51.2512200Z thread 'circuit_learning_outbox::tests::unfinished_computation_cannot_enter_learning_queue' (63990) panicked at hepta-automation/src/circuit_learning_outbox_tests.rs:20:6:",
+          "following": [
+            "2026-11-10T02:58:51.2514960Z called `Result::unwrap()` on an `Err` value: Invalid",
+            "2026-11-10T02:58:51.2515550Z "
+          ]
+        },
+        {
+          "line": 1936,
+          "text": "2026-11-10T02:58:51.2519490Z thread 'circuit_task_readback::tests::task_readback_never_initializes_missing_or_repairs_lost_history' (64298) panicked at hepta-automation/src/circuit_task_readback_tests.rs:34:6:",
+          "following": [
+            "2026-11-10T02:58:51.2521470Z original owner: Invalid",
+            "2026-11-10T02:58:51.2521760Z "
+          ]
+        },
+        {
+          "line": 7936,
+          "text": "2026-11-10T03:00:13.2761750Z Error: Initialization",
+          "following": [
+            "2026-11-10T03:00:13.2761760Z ",
+            "2026-11-10T03:00:13.2761760Z "
+          ]
+        },
+        {
+          "line": 8181,
+          "text": "2026-11-10T03:02:56.9051000Z Error: timed out waiting for code-mode host endpoint",
+          "following": [
+            "2026-11-10T03:02:56.9053460Z ",
+            "2026-11-10T03:02:56.9058450Z Caused by:"
+          ]
+        },
+        {
+          "line": 8187,
+          "text": "2026-11-10T03:02:56.9064170Z Error: timed out waiting for code-mode host endpoint",
+          "following": [
+            "2026-11-10T03:02:56.9065710Z ",
+            "2026-11-10T03:02:56.9066920Z Caused by:"
+          ]
+        },
+        {
+          "line": 8199,
+          "text": "2026-11-10T03:02:56.9081530Z Error: timed out waiting for code-mode host endpoint",
+          "following": [
+            "2026-11-10T03:02:56.9083070Z ",
+            "2026-11-10T03:02:56.9084150Z Caused by:"
+          ]
+        },
+        {
+          "line": 8234,
+          "text": "2026-11-10T03:02:56.9495200Z Error: timed out waiting for code-mode host endpoint",
+          "following": [
+            "2026-11-10T03:02:56.9503020Z ",
+            "2026-11-10T03:02:56.9504390Z Caused by:"
+          ]
+        },
+        {
+          "line": 8240,
+          "text": "2026-11-10T03:02:56.9518650Z Error: timed out waiting for code-mode host endpoint",
+          "following": [
+            "2026-11-10T03:02:56.9520400Z ",
+            "2026-11-10T03:02:56.9521510Z Caused by:"
+          ]
+        },
+        {
+          "line": 8246,
+          "text": "2026-11-10T03:02:56.9538600Z Error: timed out waiting for code-mode host endpoint",
+          "following": [
+            "2026-11-10T03:02:56.9552410Z ",
+            "2026-11-10T03:02:56.9554710Z Caused by:"
+          ]
+        },
+        {
+          "line": 8252,
+          "text": "2026-11-10T03:02:56.9564290Z Error: timed out waiting for code-mode host endpoint",
+          "following": [
+            "2026-11-10T03:02:56.9566680Z ",
+            "2026-11-10T03:02:56.9568310Z Caused by:"
+          ]
+        },
+        {
+          "line": 8258,
+          "text": "2026-11-10T03:02:56.9581290Z Error: timed out waiting for code-mode host endpoint",
+          "following": [
+            "2026-11-10T03:02:56.9583050Z ",
+            "2026-11-10T03:02:56.9584760Z Caused by:"
+          ]
+        },
+        {
+          "line": 8264,
+          "text": "2026-11-10T03:02:56.9592570Z Error: timed out waiting for code-mode host endpoint",
+          "following": [
+            "2026-11-10T03:02:56.9594570Z ",
+            "2026-11-10T03:02:56.9596100Z Caused by:"
+          ]
+        },
+        {
+          "line": 8270,
+          "text": "2026-11-10T03:02:56.9603390Z Error: timed out waiting for code-mode host endpoint",
+          "following": [
+            "2026-11-10T03:02:56.9605300Z ",
+            "2026-11-10T03:02:56.9606850Z Caused by:"
+          ]
+        },
+        {
+          "line": 8276,
+          "text": "2026-11-10T03:02:56.9615160Z Error: timed out waiting for code-mode host endpoint",
+          "following": [
+            "2026-11-10T03:02:56.9617180Z ",
+            "2026-11-10T03:02:56.9618240Z Caused by:"
+          ]
+        },
+        {
+          "line": 8672,
+          "text": "2026-11-10T03:02:57.2409770Z thread 'circuit_cell::tests::credit_tests::signed_tests::signed_credit_rejects_cross_owner_ledger_episode_before_any_append' (69159) panicked at hepta-agentd/src/circuit_cell_test_support.rs:17:23:",
+          "following": [
+            "2026-11-10T03:02:57.2411400Z fixture failed: Invalid",
+            "2026-11-10T03:02:57.2412040Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+          ]
+        },
+        {
+          "line": 8678,
+          "text": "2026-11-10T03:02:57.2415070Z thread 'circuit_task::driver::tests::circuit_deadline_wakes_before_a_later_feedback_activation' (69440) panicked at hepta-agentd/src/circuit_cell_test_support.rs:17:23:",
+          "following": [
+            "2026-11-10T03:02:57.2416490Z fixture failed: Invalid",
+            "2026-11-10T03:02:57.2416750Z "
+          ]
+        },
+        {
+          "line": 8683,
+          "text": "2026-11-10T03:02:57.2419700Z thread 'circuit_task::driver::tests::delayed_feedback_waits_without_appending_empty_scheduling_events' (69441) panicked at hepta-agentd/src/circuit_cell_test_support.rs:17:23:",
+          "following": [
+            "2026-11-10T03:02:57.2421180Z fixture failed: Invalid",
+            "2026-11-10T03:02:57.2421430Z "
+          ]
+        },
+        {
+          "line": 8688,
+          "text": "2026-11-10T03:02:57.2423860Z thread 'circuit_task::driver::tests::elapsed_task_deadline_never_creates_a_run_or_contacts_a_cell' (69442) panicked at hepta-agentd/src/circuit_cell_test_support.rs:17:23:",
+          "following": [
+            "2026-11-10T03:02:57.2425270Z fixture failed: Invalid",
+            "2026-11-10T03:02:57.2425530Z "
+          ]
+        },
+        {
+          "line": 8693,
+          "text": "2026-11-10T03:02:57.2428370Z thread 'circuit_task::driver::tests::lost_circuit_completion_ack_reads_the_original_committed_cell_result' (69444) panicked at hepta-agentd/src/circuit_cell_test_support.rs:17:23:",
+          "following": [
+            "2026-11-10T03:02:57.2429860Z fixture failed: Invalid",
+            "2026-11-10T03:02:57.2430130Z "
+          ]
+        },
+        {
+          "line": 8698,
+          "text": "2026-11-10T03:02:57.2432720Z thread 'circuit_task::driver::tests::lost_claim_ack_cannot_become_a_fresh_cell_dispatch' (69446) panicked at hepta-agentd/src/circuit_cell_test_support.rs:17:23:",
+          "following": [
+            "2026-11-10T03:02:57.2434710Z fixture failed: Invalid",
+            "2026-11-10T03:02:57.2435130Z "
+          ]
+        },
+        {
+          "line": 8703,
+          "text": "2026-11-10T03:02:57.2438550Z thread 'circuit_task::driver::tests::task_reaches_durable_terminal_and_replays_the_exact_result' (69448) panicked at hepta-agentd/src/circuit_cell_test_support.rs:17:23:",
+          "following": [
+            "2026-11-10T03:02:57.2440650Z fixture failed: Invalid",
+            "2026-11-10T03:02:57.2441060Z "
+          ]
+        },
+        {
+          "line": 10656,
+          "text": "2026-11-10T03:07:26.7342680Z Error: timed out waiting for code-mode host endpoint",
+          "following": [
+            "2026-11-10T03:07:26.7343120Z ",
+            "2026-11-10T03:07:26.7343860Z Caused by:"
+          ]
+        },
+        {
+          "line": 10662,
+          "text": "2026-11-10T03:07:26.8137010Z Error: timed out waiting for code-mode host endpoint",
+          "following": [
+            "2026-11-10T03:07:26.8138230Z ",
+            "2026-11-10T03:07:26.8138480Z Caused by:"
+          ]
+        },
+        {
+          "line": 10674,
+          "text": "2026-11-10T03:07:26.8209640Z Error: timed out waiting for code-mode host endpoint",
+          "following": [
+            "2026-11-10T03:07:26.8210300Z ",
+            "2026-11-10T03:07:26.8210920Z Caused by:"
+          ]
+        },
+        {
+          "line": 10710,
+          "text": "2026-11-10T03:07:26.9044500Z Error: timed out waiting for code-mode host endpoint",
+          "following": [
+            "2026-11-10T03:07:26.9046100Z ",
+            "2026-11-10T03:07:26.9046460Z Caused by:"
+          ]
+        },
+        {
+          "line": 10716,
+          "text": "2026-11-10T03:07:26.9053840Z Error: timed out waiting for code-mode host endpoint",
+          "following": [
+            "2026-11-10T03:07:26.9059320Z ",
+            "2026-11-10T03:07:26.9065090Z Caused by:"
+          ]
+        },
+        {
+          "line": 10722,
+          "text": "2026-11-10T03:07:26.9137870Z Error: timed out waiting for code-mode host endpoint",
+          "following": [
+            "2026-11-10T03:07:26.9138880Z ",
+            "2026-11-10T03:07:26.9139280Z Caused by:"
+          ]
+        },
+        {
+          "line": 10728,
+          "text": "2026-11-10T03:07:26.9142230Z Error: timed out waiting for code-mode host endpoint",
+          "following": [
+            "2026-11-10T03:07:26.9142810Z ",
+            "2026-11-10T03:07:26.9142970Z Caused by:"
+          ]
+        },
+        {
+          "line": 10734,
+          "text": "2026-11-10T03:07:26.9157770Z Error: timed out waiting for code-mode host endpoint",
+          "following": [
+            "2026-11-10T03:07:26.9159860Z ",
+            "2026-11-10T03:07:26.9160030Z Caused by:"
+          ]
+        },
+        {
+          "line": 10740,
+          "text": "2026-11-10T03:07:26.9196810Z Error: timed out waiting for code-mode host endpoint",
+          "following": [
+            "2026-11-10T03:07:26.9198960Z ",
+            "2026-11-10T03:07:26.9199350Z Caused by:"
+          ]
+        },
+        {
+          "line": 10746,
+          "text": "2026-11-10T03:07:26.9214550Z Error: timed out waiting for code-mode host endpoint",
+          "following": [
+            "2026-11-10T03:07:26.9218000Z ",
+            "2026-11-10T03:07:26.9218790Z Caused by:"
+          ]
+        },
+        {
+          "line": 10752,
+          "text": "2026-11-10T03:07:26.9252360Z Error: timed out waiting for code-mode host endpoint",
+          "following": [
+            "2026-11-10T03:07:26.9255670Z ",
+            "2026-11-10T03:07:26.9294380Z Caused by:"
+          ]
+        },
+        {
+          "line": 10926,
+          "text": "2026-11-10T03:07:26.9880180Z thread 'circuit_cell::tests::credit_tests::signed_tests::signed_credit_rejects_cross_owner_ledger_episode_before_any_append' (69159) panicked at hepta-agentd/src/circuit_cell_test_support.rs:17:23:",
+          "following": [
+            "2026-11-10T03:07:26.9881960Z fixture failed: Invalid",
+            "2026-11-10T03:07:26.9882680Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+          ]
+        },
+        {
+          "line": 10932,
+          "text": "2026-11-10T03:07:26.9885840Z thread 'circuit_task::driver::tests::circuit_deadline_wakes_before_a_later_feedback_activation' (69440) panicked at hepta-agentd/src/circuit_cell_test_support.rs:17:23:",
+          "following": [
+            "2026-11-10T03:07:26.9887750Z fixture failed: Invalid",
+            "2026-11-10T03:07:26.9888020Z "
+          ]
+        },
+        {
+          "line": 10937,
+          "text": "2026-11-10T03:07:26.9890510Z thread 'circuit_task::driver::tests::delayed_feedback_waits_without_appending_empty_scheduling_events' (69441) panicked at hepta-agentd/src/circuit_cell_test_support.rs:17:23:",
+          "following": [
+            "2026-11-10T03:07:26.9891930Z fixture failed: Invalid",
+            "2026-11-10T03:07:26.9892180Z "
+          ]
+        },
+        {
+          "line": 10942,
+          "text": "2026-11-10T03:07:26.9894670Z thread 'circuit_task::driver::tests::elapsed_task_deadline_never_creates_a_run_or_contacts_a_cell' (69442) panicked at hepta-agentd/src/circuit_cell_test_support.rs:17:23:",
+          "following": [
+            "2026-11-10T03:07:26.9896040Z fixture failed: Invalid",
+            "2026-11-10T03:07:26.9896290Z "
+          ]
+        },
+        {
+          "line": 10947,
+          "text": "2026-11-10T03:07:26.9899070Z thread 'circuit_task::driver::tests::lost_circuit_completion_ack_reads_the_original_committed_cell_result' (69444) panicked at hepta-agentd/src/circuit_cell_test_support.rs:17:23:",
+          "following": [
+            "2026-11-10T03:07:26.9901650Z fixture failed: Invalid",
+            "2026-11-10T03:07:26.9902170Z "
+          ]
+        },
+        {
+          "line": 10952,
+          "text": "2026-11-10T03:07:26.9906340Z thread 'circuit_task::driver::tests::lost_claim_ack_cannot_become_a_fresh_cell_dispatch' (69446) panicked at hepta-agentd/src/circuit_cell_test_support.rs:17:23:",
+          "following": [
+            "2026-11-10T03:07:26.9907640Z fixture failed: Invalid",
+            "2026-11-10T03:07:26.9908070Z "
+          ]
+        },
+        {
+          "line": 10957,
+          "text": "2026-11-10T03:07:26.9913970Z thread 'circuit_task::driver::tests::task_reaches_durable_terminal_and_replays_the_exact_result' (69448) panicked at hepta-agentd/src/circuit_cell_test_support.rs:17:23:",
+          "following": [
+            "2026-11-10T03:07:26.9915720Z fixture failed: Invalid",
+            "2026-11-10T03:07:26.9916210Z "
+          ]
+        },
+        {
+          "line": 11062,
+          "text": "2026-11-10T03:07:27.0091390Z thread 'circuit_drain::tests::drain_observation_includes_runs_beyond_the_first_page' (63979) panicked at hepta-automation/src/circuit_drain_tests.rs:95:6:",
+          "following": [
+            "2026-11-10T03:07:27.0094060Z open: Invalid",
+            "2026-11-10T03:07:27.0094990Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+          ]
+        },
+        {
+          "line": 11068,
+          "text": "2026-11-10T03:07:27.0098880Z thread 'circuit_drain::tests::stopped_circuit_blocks_drain_after_reopen_until_original_work_settles' (63980) panicked at hepta-automation/src/circuit_drain_tests.rs:16:10:",
+          "following": [
+            "2026-11-10T03:07:27.0100280Z open: Invalid",
+            "2026-11-10T03:07:27.0100490Z "
+          ]
+        },
+        {
+          "line": 11073,
+          "text": "2026-11-10T03:07:27.0104130Z thread 'circuit_journal::tests::expired::expired_recovery_rejects_live_stale_and_changed_original_requests' (63981) panicked at hepta-automation/src/circuit_recovery_budget_tests.rs:46:6:",
+          "following": [
+            "2026-11-10T03:07:27.0105720Z durable owner: Invalid",
+            "2026-11-10T03:07:27.0105980Z "
+          ]
+        },
+        {
+          "line": 11078,
+          "text": "2026-11-10T03:07:27.0108600Z thread 'circuit_journal::tests::expired::expired_recovery_settles_after_the_lease_allowance_is_exhausted' (63982) panicked at hepta-automation/src/circuit_recovery_budget_tests.rs:46:6:",
+          "following": [
+            "2026-11-10T03:07:27.0110170Z durable owner: Invalid",
+            "2026-11-10T03:07:27.0110420Z "
+          ]
+        },
+        {
+          "line": 11083,
+          "text": "2026-11-10T03:07:27.0114600Z thread 'circuit_journal::tests::expired::recovery_owner_settles_multiple_receipts_without_a_new_lease' (63983) panicked at hepta-automation/src/circuit_expired_recovery_tests.rs:235:6:",
+          "following": [
+            "2026-11-10T03:07:27.0117240Z store: Invalid",
+            "2026-11-10T03:07:27.0117450Z "
+          ]
+        },
+        {
+          "line": 11088,
+          "text": "2026-11-10T03:07:27.0123530Z thread 'circuit_journal::tests::lease_churn_cannot_spend_pending_receipt_slots_across_reopen' (63985) panicked at hepta-automation/src/circuit_recovery_budget_tests.rs:46:6:",
+          "following": [
+            "2026-11-10T03:07:27.0126770Z durable owner: Invalid",
+            "2026-11-10T03:07:27.0127640Z "
+          ]
+        },
+        {
+          "line": 11093,
+          "text": "2026-11-10T03:07:27.0133660Z thread 'circuit_journal::tests::legacy::legacy_stopped_history_reserves_actual_pending_settlement_slots' (63986) panicked at hepta-automation/src/circuit_recovery_budget_tests.rs:46:6:",
+          "following": [
+            "2026-11-10T03:07:27.0136970Z durable owner: Invalid",
+            "2026-11-10T03:07:27.0137240Z "
+          ]
+        },
+        {
+          "line": 11098,
+          "text": "2026-11-10T03:07:27.0142990Z thread 'circuit_journal::tests::stopped_polling_preserves_original_reconciliation_and_idempotent_retry' (63987) panicked at hepta-automation/src/circuit_recovery_budget_tests.rs:46:6:",
+          "following": [
+            "2026-11-10T03:07:27.0146250Z durable owner: Invalid",
+            "2026-11-10T03:07:27.0146620Z "
+          ]
+        },
+        {
+          "line": 11103,
+          "text": "2026-11-10T03:07:27.0156220Z thread 'circuit_learning_outbox::tests::completion_claim_and_ack_survive_reopen_without_releasing_delivery' (63988) panicked at hepta-automation/src/circuit_learning_outbox_tests.rs:20:6:",
+          "following": [
+            "2026-11-10T03:07:27.0159360Z called `Result::unwrap()` on an `Err` value: Invalid",
+            "2026-11-10T03:07:27.0159920Z "
+          ]
+        },
+        {
+          "line": 11108,
+          "text": "2026-11-10T03:07:27.0164850Z thread 'circuit_learning_outbox::tests::full_queue_preserves_existing_operation_and_corrupt_history_is_rejected' (63989) panicked at hepta-automation/src/circuit_learning_outbox_tests.rs:20:6:",
+          "following": [
+            "2026-11-10T03:07:27.0166930Z called `Result::unwrap()` on an `Err` value: Invalid",
+            "2026-11-10T03:07:27.0167390Z "
+          ]
+        },
+        {
+          "line": 11113,
+          "text": "2026-11-10T03:07:27.0170750Z thread 'circuit_learning_outbox::tests::unfinished_computation_cannot_enter_learning_queue' (63990) panicked at hepta-automation/src/circuit_learning_outbox_tests.rs:20:6:",
+          "following": [
+            "2026-11-10T03:07:27.0173120Z called `Result::unwrap()` on an `Err` value: Invalid",
+            "2026-11-10T03:07:27.0173540Z "
+          ]
+        },
+        {
+          "line": 11118,
+          "text": "2026-11-10T03:07:27.0176100Z thread 'circuit_task_readback::tests::task_readback_never_initializes_missing_or_repairs_lost_history' (64298) panicked at hepta-automation/src/circuit_task_readback_tests.rs:34:6:",
+          "following": [
+            "2026-11-10T03:07:27.0177560Z original owner: Invalid",
+            "2026-11-10T03:07:27.0177810Z "
+          ]
+        },
+        {
+          "line": 11153,
+          "text": "2026-11-10T03:07:27.0209820Z Error: Initialization",
+          "following": [
+            "2026-11-10T03:07:27.0210070Z ",
+            "2026-11-10T03:07:27.0210070Z "
+          ]
+        }
+      ],
+      "archive": "job-129595863564-decoded-log.zip",
+      "log_member": "job-129595863564.log"
+    },
+    {
+      "job_id": 129595863651,
+      "run_id": 42744408777,
+      "actual_checkout": "e48870d3242d0041eae7865c8a1a07cb17619d7c",
+      "bytes": 1219680,
+      "sha256": "e24275e1651758fe64d10b17be9213cf508ee76c232dfd4071c81c747386d414",
+      "signals": [
+        {
+          "line": 164,
+          "text": "2026-11-10T03:06:27.3618240Z HEAD is now at e48870d Merge 111d5773145dbe4add99a28b2d1111916a3dbd3b into 4674a34528d0097949cc7d604f60de94585d0ba0",
+          "following": [
+            "2026-11-10T03:06:27.3640510Z ##[endgroup]",
+            "2026-11-10T03:06:27.3772260Z [command]/opt/homebrew/bin/git log -1 --format=%H"
+          ]
+        },
+        {
+          "line": 1427,
+          "text": "2026-11-10T03:10:07.4939490Z thread 'circuit_drain::tests::drain_observation_includes_runs_beyond_the_first_page' (48387) panicked at hepta-automation/src/circuit_drain_tests.rs:95:6:",
+          "following": [
+            "2026-11-10T03:10:07.4940130Z open: Invalid",
+            "2026-11-10T03:10:07.4940390Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+          ]
+        },
+        {
+          "line": 1433,
+          "text": "2026-11-10T03:10:07.4941700Z thread 'circuit_drain::tests::stopped_circuit_blocks_drain_after_reopen_until_original_work_settles' (48388) panicked at hepta-automation/src/circuit_drain_tests.rs:16:10:",
+          "following": [
+            "2026-11-10T03:10:07.4943460Z open: Invalid",
+            "2026-11-10T03:10:07.4943550Z "
+          ]
+        },
+        {
+          "line": 1438,
+          "text": "2026-11-10T03:10:07.6610280Z thread 'circuit_journal::tests::expired::expired_recovery_rejects_live_stale_and_changed_original_requests' (48389) panicked at hepta-automation/src/circuit_recovery_budget_tests.rs:46:6:",
+          "following": [
+            "2026-11-10T03:10:07.6610920Z durable owner: Invalid",
+            "2026-11-10T03:10:07.6611030Z "
+          ]
+        },
+        {
+          "line": 1443,
+          "text": "2026-11-10T03:10:07.6612180Z thread 'circuit_journal::tests::expired::expired_recovery_settles_after_the_lease_allowance_is_exhausted' (48390) panicked at hepta-automation/src/circuit_recovery_budget_tests.rs:46:6:",
+          "following": [
+            "2026-11-10T03:10:07.6612760Z durable owner: Invalid",
+            "2026-11-10T03:10:07.6612880Z "
+          ]
+        },
+        {
+          "line": 1448,
+          "text": "2026-11-10T03:10:07.6613910Z thread 'circuit_journal::tests::expired::recovery_owner_settles_multiple_receipts_without_a_new_lease' (48391) panicked at hepta-automation/src/circuit_expired_recovery_tests.rs:235:6:",
+          "following": [
+            "2026-11-10T03:10:07.6614490Z store: Invalid",
+            "2026-11-10T03:10:07.6614590Z "
+          ]
+        },
+        {
+          "line": 1453,
+          "text": "2026-11-10T03:10:07.6615580Z thread 'circuit_journal::tests::lease_churn_cannot_spend_pending_receipt_slots_across_reopen' (48393) panicked at hepta-automation/src/circuit_recovery_budget_tests.rs:46:6:",
+          "following": [
+            "2026-11-10T03:10:07.6616170Z durable owner: Invalid",
+            "2026-11-10T03:10:07.6616380Z "
+          ]
+        },
+        {
+          "line": 1458,
+          "text": "2026-11-10T03:10:07.6617520Z thread 'circuit_journal::tests::legacy::legacy_stopped_history_reserves_actual_pending_settlement_slots' (48394) panicked at hepta-automation/src/circuit_recovery_budget_tests.rs:46:6:",
+          "following": [
+            "2026-11-10T03:10:07.6618290Z durable owner: Invalid",
+            "2026-11-10T03:10:07.6618440Z "
+          ]
+        },
+        {
+          "line": 1463,
+          "text": "2026-11-10T03:10:07.6619740Z thread 'circuit_journal::tests::stopped_polling_preserves_original_reconciliation_and_idempotent_retry' (48395) panicked at hepta-automation/src/circuit_recovery_budget_tests.rs:46:6:",
+          "following": [
+            "2026-11-10T03:10:07.6732580Z durable owner: Invalid",
+            "2026-11-10T03:10:07.6732860Z "
+          ]
+        },
+        {
+          "line": 1468,
+          "text": "2026-11-10T03:10:07.6735130Z thread 'circuit_learning_outbox::tests::completion_claim_and_ack_survive_reopen_without_releasing_delivery' (48396) panicked at hepta-automation/src/circuit_learning_outbox_tests.rs:20:6:",
+          "following": [
+            "2026-11-10T03:10:07.6736010Z called `Result::unwrap()` on an `Err` value: Invalid",
+            "2026-11-10T03:10:07.6736260Z "
+          ]
+        },
+        {
+          "line": 1473,
+          "text": "2026-11-10T03:10:07.6737450Z thread 'circuit_learning_outbox::tests::full_queue_preserves_existing_operation_and_corrupt_history_is_rejected' (48397) panicked at hepta-automation/src/circuit_learning_outbox_tests.rs:20:6:",
+          "following": [
+            "2026-11-10T03:10:07.6738910Z called `Result::unwrap()` on an `Err` value: Invalid",
+            "2026-11-10T03:10:07.6739120Z "
+          ]
+        },
+        {
+          "line": 1478,
+          "text": "2026-11-10T03:10:07.6741220Z thread 'circuit_learning_outbox::tests::unfinished_computation_cannot_enter_learning_queue' (48398) panicked at hepta-automation/src/circuit_learning_outbox_tests.rs:20:6:",
+          "following": [
+            "2026-11-10T03:10:07.6743460Z called `Result::unwrap()` on an `Err` value: Invalid",
+            "2026-11-10T03:10:07.6743630Z "
+          ]
+        },
+        {
+          "line": 1483,
+          "text": "2026-11-10T03:10:07.6745040Z thread 'circuit_task_readback::tests::task_readback_never_initializes_missing_or_repairs_lost_history' (48458) panicked at hepta-automation/src/circuit_task_readback_tests.rs:34:6:",
+          "following": [
+            "2026-11-10T03:10:07.6745660Z original owner: Invalid",
+            "2026-11-10T03:10:07.6745820Z "
+          ]
+        },
+        {
+          "line": 7241,
+          "text": "2026-11-10T03:10:55.8129610Z Error: Initialization",
+          "following": [
+            "2026-11-10T03:10:55.8129790Z ",
+            "2026-11-10T03:10:55.8129790Z "
+          ]
+        },
+        {
+          "line": 8035,
+          "text": "2026-11-10T03:12:14.5835570Z thread 'circuit_cell::tests::credit_tests::signed_tests::signed_credit_rejects_cross_owner_ledger_episode_before_any_append' (51219) panicked at hepta-agentd/src/circuit_cell_test_support.rs:17:23:",
+          "following": [
+            "2026-11-10T03:12:14.5836190Z fixture failed: Invalid",
+            "2026-11-10T03:12:14.5836460Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+          ]
+        },
+        {
+          "line": 8041,
+          "text": "2026-11-10T03:12:14.5837730Z thread 'circuit_task::driver::tests::circuit_deadline_wakes_before_a_later_feedback_activation' (51335) panicked at hepta-agentd/src/circuit_cell_test_support.rs:17:23:",
+          "following": [
+            "2026-11-10T03:12:14.5838890Z fixture failed: Invalid",
+            "2026-11-10T03:12:14.5839010Z "
+          ]
+        },
+        {
+          "line": 8046,
+          "text": "2026-11-10T03:12:14.5840160Z thread 'circuit_task::driver::tests::delayed_feedback_waits_without_appending_empty_scheduling_events' (51336) panicked at hepta-agentd/src/circuit_cell_test_support.rs:17:23:",
+          "following": [
+            "2026-11-10T03:12:14.5841610Z fixture failed: Invalid",
+            "2026-11-10T03:12:14.5841750Z "
+          ]
+        },
+        {
+          "line": 8051,
+          "text": "2026-11-10T03:12:14.5842900Z thread 'circuit_task::driver::tests::elapsed_task_deadline_never_creates_a_run_or_contacts_a_cell' (51337) panicked at hepta-agentd/src/circuit_cell_test_support.rs:17:23:",
+          "following": [
+            "2026-11-10T03:12:14.5843500Z fixture failed: Invalid",
+            "2026-11-10T03:12:14.5843610Z "
+          ]
+        },
+        {
+          "line": 8056,
+          "text": "2026-11-10T03:12:14.5844680Z thread 'circuit_task::driver::tests::lost_circuit_completion_ack_reads_the_original_committed_cell_result' (51339) panicked at hepta-agentd/src/circuit_cell_test_support.rs:17:23:",
+          "following": [
+            "2026-11-10T03:12:14.5845240Z fixture failed: Invalid",
+            "2026-11-10T03:12:14.5845360Z "
+          ]
+        },
+        {
+          "line": 8061,
+          "text": "2026-11-10T03:12:14.5846280Z thread 'circuit_task::driver::tests::lost_claim_ack_cannot_become_a_fresh_cell_dispatch' (51340) panicked at hepta-agentd/src/circuit_cell_test_support.rs:17:23:",
+          "following": [
+            "2026-11-10T03:12:14.5846820Z fixture failed: Invalid",
+            "2026-11-10T03:12:14.5846930Z "
+          ]
+        },
+        {
+          "line": 8066,
+          "text": "2026-11-10T03:12:14.5847920Z thread 'circuit_task::driver::tests::task_reaches_durable_terminal_and_replays_the_exact_result' (51342) panicked at hepta-agentd/src/circuit_cell_test_support.rs:17:23:",
+          "following": [
+            "2026-11-10T03:12:14.5848480Z fixture failed: Invalid",
+            "2026-11-10T03:12:14.5848590Z "
+          ]
+        },
+        {
+          "line": 10162,
+          "text": "2026-11-10T03:14:58.1834880Z thread 'circuit_cell::tests::credit_tests::signed_tests::signed_credit_rejects_cross_owner_ledger_episode_before_any_append' (51219) panicked at hepta-agentd/src/circuit_cell_test_support.rs:17:23:",
+          "following": [
+            "2026-11-10T03:14:58.1835460Z fixture failed: Invalid",
+            "2026-11-10T03:14:58.1835720Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+          ]
+        },
+        {
+          "line": 10168,
+          "text": "2026-11-10T03:14:58.1836840Z thread 'circuit_task::driver::tests::circuit_deadline_wakes_before_a_later_feedback_activation' (51335) panicked at hepta-agentd/src/circuit_cell_test_support.rs:17:23:",
+          "following": [
+            "2026-11-10T03:14:58.1837340Z fixture failed: Invalid",
+            "2026-11-10T03:14:58.1837450Z "
+          ]
+        },
+        {
+          "line": 10173,
+          "text": "2026-11-10T03:14:58.1838380Z thread 'circuit_task::driver::tests::delayed_feedback_waits_without_appending_empty_scheduling_events' (51336) panicked at hepta-agentd/src/circuit_cell_test_support.rs:17:23:",
+          "following": [
+            "2026-11-10T03:14:58.1838900Z fixture failed: Invalid",
+            "2026-11-10T03:14:58.1839000Z "
+          ]
+        },
+        {
+          "line": 10178,
+          "text": "2026-11-10T03:14:58.1839890Z thread 'circuit_task::driver::tests::elapsed_task_deadline_never_creates_a_run_or_contacts_a_cell' (51337) panicked at hepta-agentd/src/circuit_cell_test_support.rs:17:23:",
+          "following": [
+            "2026-11-10T03:14:58.1840400Z fixture failed: Invalid",
+            "2026-11-10T03:14:58.1840500Z "
+          ]
+        },
+        {
+          "line": 10183,
+          "text": "2026-11-10T03:14:58.1841460Z thread 'circuit_task::driver::tests::lost_circuit_completion_ack_reads_the_original_committed_cell_result' (51339) panicked at hepta-agentd/src/circuit_cell_test_support.rs:17:23:",
+          "following": [
+            "2026-11-10T03:14:58.1841980Z fixture failed: Invalid",
+            "2026-11-10T03:14:58.1842080Z "
+          ]
+        },
+        {
+          "line": 10188,
+          "text": "2026-11-10T03:14:58.1842900Z thread 'circuit_task::driver::tests::lost_claim_ack_cannot_become_a_fresh_cell_dispatch' (51340) panicked at hepta-agentd/src/circuit_cell_test_support.rs:17:23:",
+          "following": [
+            "2026-11-10T03:14:58.1843380Z fixture failed: Invalid",
+            "2026-11-10T03:14:58.1843480Z "
+          ]
+        },
+        {
+          "line": 10193,
+          "text": "2026-11-10T03:14:58.1844360Z thread 'circuit_task::driver::tests::task_reaches_durable_terminal_and_replays_the_exact_result' (51342) panicked at hepta-agentd/src/circuit_cell_test_support.rs:17:23:",
+          "following": [
+            "2026-11-10T03:14:58.1844860Z fixture failed: Invalid",
+            "2026-11-10T03:14:58.1844960Z "
+          ]
+        },
+        {
+          "line": 10298,
+          "text": "2026-11-10T03:14:58.1894350Z thread 'circuit_drain::tests::drain_observation_includes_runs_beyond_the_first_page' (48387) panicked at hepta-automation/src/circuit_drain_tests.rs:95:6:",
+          "following": [
+            "2026-11-10T03:14:58.1894810Z open: Invalid",
+            "2026-11-10T03:14:58.1895050Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+          ]
+        },
+        {
+          "line": 10304,
+          "text": "2026-11-10T03:14:58.1896200Z thread 'circuit_drain::tests::stopped_circuit_blocks_drain_after_reopen_until_original_work_settles' (48388) panicked at hepta-automation/src/circuit_drain_tests.rs:16:10:",
+          "following": [
+            "2026-11-10T03:14:58.1896700Z open: Invalid",
+            "2026-11-10T03:14:58.1896780Z "
+          ]
+        },
+        {
+          "line": 10309,
+          "text": "2026-11-10T03:14:58.1897920Z thread 'circuit_journal::tests::expired::expired_recovery_rejects_live_stale_and_changed_original_requests' (48389) panicked at hepta-automation/src/circuit_recovery_budget_tests.rs:46:6:",
+          "following": [
+            "2026-11-10T03:14:58.1898460Z durable owner: Invalid",
+            "2026-11-10T03:14:58.1898560Z "
+          ]
+        },
+        {
+          "line": 10314,
+          "text": "2026-11-10T03:14:58.1899590Z thread 'circuit_journal::tests::expired::expired_recovery_settles_after_the_lease_allowance_is_exhausted' (48390) panicked at hepta-automation/src/circuit_recovery_budget_tests.rs:46:6:",
+          "following": [
+            "2026-11-10T03:14:58.1900130Z durable owner: Invalid",
+            "2026-11-10T03:14:58.1900230Z "
+          ]
+        },
+        {
+          "line": 10319,
+          "text": "2026-11-10T03:14:58.1901190Z thread 'circuit_journal::tests::expired::recovery_owner_settles_multiple_receipts_without_a_new_lease' (48391) panicked at hepta-automation/src/circuit_expired_recovery_tests.rs:235:6:",
+          "following": [
+            "2026-11-10T03:14:58.1901720Z store: Invalid",
+            "2026-11-10T03:14:58.1901800Z "
+          ]
+        },
+        {
+          "line": 10324,
+          "text": "2026-11-10T03:14:58.1902690Z thread 'circuit_journal::tests::lease_churn_cannot_spend_pending_receipt_slots_across_reopen' (48393) panicked at hepta-automation/src/circuit_recovery_budget_tests.rs:46:6:",
+          "following": [
+            "2026-11-10T03:14:58.1903200Z durable owner: Invalid",
+            "2026-11-10T03:14:58.1903300Z "
+          ]
+        },
+        {
+          "line": 10329,
+          "text": "2026-11-10T03:14:58.1904270Z thread 'circuit_journal::tests::legacy::legacy_stopped_history_reserves_actual_pending_settlement_slots' (48394) panicked at hepta-automation/src/circuit_recovery_budget_tests.rs:46:6:",
+          "following": [
+            "2026-11-10T03:14:58.1904810Z durable owner: Invalid",
+            "2026-11-10T03:14:58.1904920Z "
+          ]
+        },
+        {
+          "line": 10334,
+          "text": "2026-11-10T03:14:58.1905890Z thread 'circuit_journal::tests::stopped_polling_preserves_original_reconciliation_and_idempotent_retry' (48395) panicked at hepta-automation/src/circuit_recovery_budget_tests.rs:46:6:",
+          "following": [
+            "2026-11-10T03:14:58.1906430Z durable owner: Invalid",
+            "2026-11-10T03:14:58.1906530Z "
+          ]
+        },
+        {
+          "line": 10339,
+          "text": "2026-11-10T03:14:58.1907510Z thread 'circuit_learning_outbox::tests::completion_claim_and_ack_survive_reopen_without_releasing_delivery' (48396) panicked at hepta-automation/src/circuit_learning_outbox_tests.rs:20:6:",
+          "following": [
+            "2026-11-10T03:14:58.1908100Z called `Result::unwrap()` on an `Err` value: Invalid",
+            "2026-11-10T03:14:58.1908270Z "
+          ]
+        },
+        {
+          "line": 10344,
+          "text": "2026-11-10T03:14:58.1909290Z thread 'circuit_learning_outbox::tests::full_queue_preserves_existing_operation_and_corrupt_history_is_rejected' (48397) panicked at hepta-automation/src/circuit_learning_outbox_tests.rs:20:6:",
+          "following": [
+            "2026-11-10T03:14:58.1909900Z called `Result::unwrap()` on an `Err` value: Invalid",
+            "2026-11-10T03:14:58.1910060Z "
+          ]
+        },
+        {
+          "line": 10349,
+          "text": "2026-11-10T03:14:58.1910940Z thread 'circuit_learning_outbox::tests::unfinished_computation_cannot_enter_learning_queue' (48398) panicked at hepta-automation/src/circuit_learning_outbox_tests.rs:20:6:",
+          "following": [
+            "2026-11-10T03:14:58.1911500Z called `Result::unwrap()` on an `Err` value: Invalid",
+            "2026-11-10T03:14:58.1911670Z "
+          ]
+        },
+        {
+          "line": 10354,
+          "text": "2026-11-10T03:14:58.1912770Z thread 'circuit_task_readback::tests::task_readback_never_initializes_missing_or_repairs_lost_history' (48458) panicked at hepta-automation/src/circuit_task_readback_tests.rs:34:6:",
+          "following": [
+            "2026-11-10T03:14:58.1913310Z original owner: Invalid",
+            "2026-11-10T03:14:58.1913410Z "
+          ]
+        },
+        {
+          "line": 10388,
+          "text": "2026-11-10T03:14:58.1923640Z Error: Initialization",
+          "following": [
+            "2026-11-10T03:14:58.1923870Z ",
+            "2026-11-10T03:14:58.1923880Z "
+          ]
+        }
+      ],
+      "archive": "job-129595863651-decoded-log.zip",
+      "log_member": "job-129595863651.log"
+    }
+  ],
+  "direct_delta_failure": "Rust formatter wrapping of long Notes error string .into()",
+  "fixture_proposal": {
+    "pull_request": 5618,
+    "source": "8bebf0a3c207a49bfd0a99367fd6e06f52a6cb98",
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5618",
+    "status": "PUBLISHED_NATIVE_VALIDATION_PENDING",
+    "description": "Canonicalize the test-owned existing temporary parent before constructing strict automation/fleet roots.",
+    "diagnostic_limit": "A path-contract repair. Original failed invocations did not print input/canonical path pairs; this does not uniquely establish the cause of every historical Invalid.",
+    "windows_signed_credit_limit": "The Windows signed-credit fixture failed with Durable(Io(PermissionDenied)), a separate error not reclassified as Invalid or declared fixed.",
+    "runtime_guards_changed": false,
+    "test_files": 7,
+    "temporary_roots": 8,
+    "unique_automation_cases_per_mac_platform": 12,
+    "unique_agentd_cases_per_mac_platform": 7,
+    "new_candidate_pass_counts": null
+  },
+  "annotations": {
+    "fetch_status": "UNAVAILABLE_CONNECTOR_ENDPOINT_REJECTED",
+    "http_status": 400,
+    "error_code": "INVALID_ARGUMENT",
+    "not_absent_annotations": true
+  },
+  "promotion": "HOLD",
+  "retained_logs": {
+    "format": "complete decoded log bytes held as ZIP members",
+    "index": "ALL_ARCHIVES.json",
+    "standalone_raw_logs_in_package": false,
+    "original_github_http_archive_bytes_claimed": false
+  },
+  "windows_classification": "windows/RESULT.json"
+}
