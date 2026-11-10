@@ -1,0 +1,168 @@
+"""Prepare one disposable, source-pinned dependency proposal; never adopt it."""
+
+import argparse
+import hashlib
+import io
+import json
+from pathlib import Path
+import subprocess
+import tarfile
+import urllib.request
+
+
+BASE = "dd42001783d87d2f5a591fe700544bda61f9c028"
+ARCHIVE_SHA = "488e99c397a62007e4229aec669a179816339afc6d2620ca6fa420dbee2e982c"
+UPSTREAM = "10462fa4414c6c7f1ed1d39bb31678e3b726878c"
+VENDOR = "codex-rs/third_party/sqlx-sqlite-0.9.0"
+MATRIX = "codex-rs/third_party/matrix-sdk-sqlite-0.19.1"
+PINNED = {
+    "codex-rs/Cargo.toml": "d9f1bb1db407de3c2f1650edc4da5009ba3adaf1",
+    "codex-rs/Cargo.lock": "e2ccaea9223bfbbbd86deb97618c01a9b45e2ec6",
+    "MODULE.bazel.lock": "99920e713b6434ba20ec753838b06b5697ce1366",
+    "codex-rs/deny.toml": "17c0cd77fd1dd5c6433015e85efeaf9c1551be57",
+    "codex-rs/.cargo/audit.toml": "e8883f3d37384f3078b1b56911e6842fbfcb3d6e",
+    "scripts/check_hepta_rustsec_advisories.py": "aa06560a2495225d5c017d7e02c6b432c02e9819",
+    "scripts/tests/test_hepta_rustsec_guard.py": "09de4c68c6cc90b7ad7e658990084807709897d8",
+    ".github/workflows/cargo-deny.yml": "db7cad815476abfe22502ee9aa71617606d76a10",
+    MATRIX + "/Cargo.toml": "e9732a6d5d137442229d04b2439855a21c5b283b",
+    MATRIX + "/Cargo.toml.orig": "ed8456d7a2013e879d52c2a119738d0ea3df2fe7",
+}
+PROPOSAL_FILES = {
+    "scripts/prepare_verify_dependency_candidate.py",
+    "scripts/tests/test_prepare_verify_dependency_candidate.py",
+    ".github/workflows/verify-dependency-proposal.yml",
+    "qualification/verify3-dependency-reconciliation-20261110/DEPENDENCY_PROPOSAL.md",
+}
+
+
+def sha(raw):
+    return hashlib.sha256(raw).hexdigest()
+
+
+def git(root, *args):
+    return subprocess.check_output(["git", *args], cwd=root, text=True).strip()
+
+
+def replace_once(text, old, new):
+    if text.count(old) != 1:
+        raise ValueError("Expected one exact manifest preimage: " + old)
+    return text.replace(old, new)
+
+
+def unpack(raw, destination):
+    if sha(raw) != ARCHIVE_SHA:
+        raise ValueError(
+            "Official crate archive differs from the original lock checksum"
+        )
+    if destination.exists():
+        raise ValueError("Never overwrite an existing vendor directory")
+    files = {}
+    with tarfile.open(fileobj=io.BytesIO(raw), mode="r:gz") as archive:
+        for member in archive.getmembers():
+            name = Path(member.name)
+            if (
+                name.is_absolute()
+                or ".." in name.parts
+                or not name.parts
+                or name.parts[0] != "sqlx-sqlite-0.9.0"
+                or member.issym()
+                or member.islnk()
+                or not (member.isfile() or member.isdir())
+            ):
+                raise ValueError(
+                    "Archive member outside the fixed regular-file profile"
+                )
+            if member.isdir():
+                continue
+            relative = Path(*name.parts[1:]).as_posix()
+            if relative in files or not relative or member.size > 8 * 1024**2:
+                raise ValueError("Duplicate or oversized archive member")
+            files[relative] = archive.extractfile(member).read()
+            if len(files) > 512 or sum(map(len, files.values())) > 32 * 1024**2:
+                raise ValueError("Archive exceeds the fixed extraction budget")
+    for name, content in files.items():
+        path = destination / name
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(content)
+    return {name: sha(content) for name, content in files.items()}
+
+
+def prepare(root, output):
+    root, output = root.resolve(), output.resolve()
+    if output.is_relative_to(root):
+        raise ValueError("Execution evidence must remain outside the source checkout")
+    if git(root, "status", "--porcelain"):
+        raise ValueError("Candidate checkout must start clean")
+    git(root, "merge-base", "--is-ancestor", BASE, "HEAD")
+    changed = set(git(root, "diff", "--name-only", BASE, "HEAD").splitlines())
+    if not changed <= PROPOSAL_FILES:
+        raise ValueError("Existing source changed outside the reviewed proposal files")
+    for name, expected in PINNED.items():
+        if git(root, "hash-object", name) != expected:
+            raise ValueError("Pinned dependency input differs: " + name)
+    output.mkdir(parents=True, exist_ok=False)
+    before = {name: sha((root / name).read_bytes()) for name in PINNED}
+    url = "https://static.crates.io/crates/sqlx-sqlite/sqlx-sqlite-0.9.0.crate"
+    with urllib.request.urlopen(url, timeout=60) as response:
+        raw = response.read(8 * 1024**2 + 1)
+    if len(raw) > 8 * 1024**2:
+        raise ValueError("Crate download exceeds the declared bound")
+    originals = unpack(raw, root / VENDOR)
+    for name in ("Cargo.toml", "Cargo.toml.orig"):
+        path = root / VENDOR / name
+        path.write_text(
+            replace_once(path.read_text(), ">=0.30.1, <0.38.0", ">=0.30.1, <0.40.0")
+        )
+    path = root / "codex-rs/Cargo.toml"
+    text = replace_once(
+        path.read_text(),
+        'libsqlite3-sys = { version = "0.37",',
+        'libsqlite3-sys = { version = "=0.39.1",',
+    )
+    text = replace_once(
+        text, 'rmcp = { version = "=3.1.3",', 'rmcp = { version = "=3.9.0",'
+    )
+    matrix_line = (
+        'matrix-sdk-sqlite = { path = "third_party/matrix-sdk-sqlite-0.19.1" }'
+    )
+    text = replace_once(
+        text,
+        matrix_line,
+        matrix_line + '\nsqlx-sqlite = { path = "third_party/sqlx-sqlite-0.9.0" }',
+    )
+    path.write_text(text)
+    for name in ("Cargo.toml", "Cargo.toml.orig"):
+        path = root / MATRIX / name
+        path.write_text(
+            replace_once(path.read_text(), 'version = "=0.39.0"', 'version = "=0.41.1"')
+        )
+    for name, expected in originals.items():
+        if (
+            name not in {"Cargo.toml", "Cargo.toml.orig"}
+            and sha((root / VENDOR / name).read_bytes()) != expected
+        ):
+            raise ValueError(
+                "Vendored implementation differs from the official archive"
+            )
+    record = {
+        "schema": "hepta.verify.dependency-proposal.v1",
+        "base": BASE,
+        "proposal_source": git(root, "rev-parse", "HEAD"),
+        "before": before,
+        "official_archive_sha256": ARCHIVE_SHA,
+        "upstream_bound_backport": UPSTREAM,
+        "vendor_original_files": originals,
+        "targets": {"rmcp": "3.9.0", "libsqlite3-sys": "0.39.1", "rusqlite": "0.41.1"},
+        "status": "prepared_not_resolved",
+        "production_adoption": False,
+        "custom_http_boundaries_qualified": False,
+    }
+    (output / "preparation.json").write_text(json.dumps(record, indent=2) + "\n")
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--root", type=Path, required=True)
+    parser.add_argument("--output", type=Path, required=True)
+    args = parser.parse_args()
+    prepare(args.root, args.output)
