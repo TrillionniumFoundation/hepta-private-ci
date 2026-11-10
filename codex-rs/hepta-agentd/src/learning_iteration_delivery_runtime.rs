@@ -141,7 +141,7 @@ impl CircuitLearningDeliveryRuntimeV1 {
                     // not form an atomic transaction. Authenticate the same
                     // original owners again after the claim, before any stage
                     // owner can start training or create a checkpoint.
-                    let source_state = Arc::clone(&state);
+                    let source_state: Arc<AgentdState> = Arc::clone(&state);
                     let source_request = self.request.clone();
                     crate::circuit_learning_delivery::deliver_circuit_learning_with_post_claim_source_v1(
                         &store,
