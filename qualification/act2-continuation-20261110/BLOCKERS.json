@@ -708,29 +708,46 @@
                   {
                     "shard": "1/4",
                     "job": 130102574984,
-                    "status": "FAILURE_EXIT_3_TARGET_UNKNOWN",
-                    "classification": "no failed target is named by the public original annotation; semantic cause remains UNKNOWN"
+                    "status": "FAILURE_FAIL_CLOSED_WINDOWS_SANDBOX",
+                    "failed_target": "//codex-rs/exec-server:exec-server-exec_process-test",
+                    "exact_result": "remote_windows_sandbox_process_accepts_process_write failed; 2 passed, 1 failed, 21 ignored; exec-server rejected the request because legacy Windows sandbox isolation is unavailable under ambient parent FILE_DELETE_CHILD",
+                    "classification": "the original job log preserves the fail-closed sandbox cause; no product execution pass"
                   },
                   {
                     "shard": "2/4",
                     "job": 130102574642,
-                    "status": "FAILURE_TARGET_NAMED_CAUSE_UNKNOWN",
-                    "failed_target": "//codex-rs/app-server:app-server-all-test"
+                    "status": "FAILURE_FAIL_CLOSED_WINDOWS_SANDBOX",
+                    "failed_targets": [
+                      "//codex-rs/cli:cli-sandbox_cloud_config-test",
+                      "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests",
+                      "//codex-rs/app-server:app-server-all-test"
+                    ],
+                    "exact_result": "CLI managed-profile launch, legacy sandbox unit cases, app-server apply_patch approval and attached-image reads failed on disabled or unavailable legacy Windows sandbox; the retained reason is ambient parent FILE_DELETE_CHILD with no qualified replacement preserving the read policy"
                   },
                   {
                     "shard": "3/4",
                     "job": 130102574589,
-                    "status": "FAILURE_TARGET_NAMED_CAUSE_UNKNOWN",
-                    "failed_target": "//codex-rs/tui:tui-unit-tests"
+                    "status": "FAILURE_MULTIPLE_EXACT_ROOTS",
+                    "failed_targets": [
+                      "//codex-rs/hepta-neuron:hepta-neuron-unit-tests",
+                      "//codex-rs/hepta-agentd:hepta-agentd-unit-tests",
+                      "//codex-rs/tui:tui-unit-tests"
+                    ],
+                    "exact_result": "Hepta Neuron retained one CommitUncertain-versus-Conflict race and one Windows CRLF byte-fixture mismatch; Agentd retained a distinct Durable PermissionDenied plus Windows OS error 33 locked-file fixture failures; TUI retained a standard-canonicalize \\?\\ prefix mismatch",
+                    "fixture_successor": "draft #5863 fixes only the LF fixture identity and the TUI dunce-canonical path comparison; every other root remains open"
                   },
                   {
                     "shard": "4/4",
                     "job": 130102574505,
-                    "status": "FAILURE_TARGET_NAMED_CAUSE_UNKNOWN",
-                    "failed_target": "//codex-rs/core:core-all-test"
+                    "status": "FAILURE_FAIL_CLOSED_WINDOWS_SANDBOX",
+                    "failed_targets": [
+                      "//codex-rs/exec-server:exec-server-file_system_windows-test",
+                      "//codex-rs/core:core-all-test"
+                    ],
+                    "exact_result": "17 exec-server filesystem cases and repeated Core apply_patch/workspace-root/subagent cases failed because the legacy Windows sandbox is unavailable under ambient parent FILE_DELETE_CHILD; removing or reclassifying those cases would weaken the original contract"
                   }
                 ],
-                "shared_annotation": "all four Windows shards and cargo-deny also expose GitHub internal server correlation f28b1d82-925e-4b84-be20-dd1ae0294b94; that co-occurrence does not erase the three named target failures or prove their cause",
+                "shared_annotation": "all four Windows shards and cargo-deny also expose GitHub internal server correlation f28b1d82-925e-4b84-be20-dd1ae0294b94; the separately decoded original job logs now determine each Windows classification and the correlation does not erase those failures",
                 "passing_scope": "Bazel tests on Linux gnu and musl, Linux and Windows clippy, and Linux and Windows release builds passed at this exact source; no whole-run pass is inferred"
               },
               "architecture_run": 42893302196,
@@ -964,9 +981,26 @@
           "source": "378c06a898728a7fa60498ef051843e38d592e67",
           "tree": "1c8af7b5c875f449d2fb04dc4b08d97a6c45c8d1",
           "external_failures": "blob policy failed before checkout on unsupported_resolver_layout; cargo-deny exposed GitHub internal server correlation f28b1d82-925e-4b84-be20-dd1ae0294b94 without a dependency verdict; macOS Intel Bazel exit 34 followed remote.buildbuddy.io UNAVAILABLE after four retries",
-          "windows_failures": "shard 1 exit 3 with target UNKNOWN; shard 2 app-server-all-test, shard 3 tui-unit-tests and shard 4 core-all-test named as failed targets but their underlying causes remain UNKNOWN",
+          "windows_failures": "shards 1, 2 and 4 retain the same fail-closed legacy Windows sandbox boundary under ambient parent FILE_DELETE_CHILD; shard 3 contains separate Hepta race, CRLF fixture, PermissionDenied/file-lock fixtures and Windows canonical-path-prefix roots",
           "passing_scope": "Linux gnu/musl Bazel tests, Linux and Windows clippy, and Linux and Windows release builds passed",
           "classification": "not a whole-run pass; no failed Windows target is repaired or relabelled, and the shared GitHub internal error annotation is not used to erase target-level failures"
+        }
+      ],
+      "successor_candidates": [
+        {
+          "pr": 5863,
+          "source": "80419fb63f00d1ce6c4a9796b399b6d9d2fec519",
+          "tree": "027b91e170f99de6fb426a0c74b1d75ade94ec4e",
+          "parent": "378c06a898728a7fa60498ef051843e38d592e67",
+          "change": "pin the exact perception interoperability JSON to LF and compare the TUI corrupt-database path through dunce canonicalization on Windows",
+          "local_result": "git diff --check passed; Rust/just/Bazel native execution NOT_RUN because this environment has no toolchain",
+          "hosted_runs": {
+            "architecture": 42921479928,
+            "v8": 42921480095,
+            "blocking": 42921480204,
+            "status": "NEW_QUEUED_OR_IN_PROGRESS_NO_RESULT"
+          },
+          "scope_limit": "does not repair or relabel the Hepta journal lock/PermissionDenied failures, the generation-control race, or any fail-closed Windows sandbox result; no result transfers"
         }
       ]
     },
