@@ -33,7 +33,7 @@ use codex_hepta_neuron::CellTaskCostV2;
 use codex_hepta_types::Digest32;
 
 #[path = "cell_composed_q24_codec.rs"]
-mod codec;
+pub(crate) mod codec;
 use codec::Adapter;
 use codec::Matrix;
 

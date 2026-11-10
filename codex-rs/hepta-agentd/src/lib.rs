@@ -278,6 +278,7 @@ mod calculator_recovery_process;
 #[cfg(target_os = "linux")]
 mod calculator_recovery_selection;
 mod cell_composed_q24;
+mod cell_temporal_q24;
 mod circuit_cell;
 mod circuit_cell_causal;
 mod circuit_cell_binding;
@@ -336,6 +337,9 @@ mod neuron_cell_evaluation;
 pub use cell_composed_q24::CellQ24GenerationWorkerV1;
 pub use cell_composed_q24::CellQ24ModelFilesV1;
 pub use cell_composed_q24::LoadedCellQ24ModelV1;
+pub use cell_temporal_q24::CellTemporalQ24GenerationWorkerV1;
+pub use cell_temporal_q24::CellTemporalQ24ModelFilesV1;
+pub use cell_temporal_q24::LoadedCellTemporalQ24ModelV1;
 mod neuron_generation;
 #[cfg(unix)]
 mod neuron_generation_current;
