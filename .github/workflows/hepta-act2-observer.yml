@@ -2,7 +2,7 @@ name: ACT-2 observer qualification
 
 on:
   push:
-    branches: [validation/act2-observer-20261109, test/act2-real-observer-faults-20261109-r1]
+    branches: [validation/act2-observer-20261109, test/act2-real-observer-faults-20261109-r1, fix/act2-notes-observer-order-20261109]
 
 permissions:
   contents: read
@@ -180,3 +180,4 @@ jobs:
           path: ${{ runner.temp }}/act2-records
           if-no-files-found: error
           retention-days: 14
+
