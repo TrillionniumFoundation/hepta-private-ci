@@ -125,6 +125,49 @@ jobs:
           just bazel-lock-update 2>&1 | tee "$CANDIDATE_LOGS/bazel-lock-update.log"
           just bazel-lock-check 2>&1 | tee "$CANDIDATE_LOGS/bazel-lock-check.log"
 
+      - name: Build and bind the real CLI required by remote consumer tests
+        if: always() && steps.resolve.outcome == 'success'
+        id: consumer_binary
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          sha256sum Cargo.lock ../MODULE.bazel.lock > "$CANDIDATE_LOGS/consumer-cli-locks.sha256"
+          cargo build --locked -p codex-cli --bin codex --message-format=json-render-diagnostics \
+            2>&1 | tee "$CANDIDATE_LOGS/consumer-cli-build.log"
+          sha256sum --check "$CANDIDATE_LOGS/consumer-cli-locks.sha256"
+          python3 - <<'PYCLI'
+          import hashlib, json, os, pathlib, subprocess
+          evidence = pathlib.Path(os.environ['CANDIDATE_LOGS'])
+          manifest = pathlib.Path('cli/Cargo.toml').resolve()
+          artifacts = []
+          for line in (evidence / 'consumer-cli-build.log').read_text().splitlines():
+              if not line.startswith('{'):
+                  continue
+              record = json.loads(line)
+              if (record.get('reason') == 'compiler-artifact'
+                      and record.get('target', {}).get('name') == 'codex'
+                      and record['target']['kind'] == ['bin']
+                      and pathlib.Path(record['manifest_path']).resolve() == manifest):
+                  artifacts.append(record)
+          assert len(artifacts) == 1, 'Require one actual codex-cli binary artifact'
+          artifact = artifacts[0]
+          binary = pathlib.Path(artifact['executable'])
+          assert binary.is_absolute() and not binary.is_symlink() and binary.is_file()
+          assert os.access(binary, os.X_OK)
+          assert '\n' not in str(binary) and '\r' not in str(binary)
+          with binary.open('rb') as stream:
+              digest = hashlib.file_digest(stream, 'sha256').hexdigest()
+          receipt = {'source': subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip(),
+                     'package_id': artifact['package_id'], 'features': artifact['features'],
+                     'manifest': str(manifest), 'executable': str(binary), 'sha256': digest,
+                     'cargo_lock_sha256': hashlib.sha256(pathlib.Path('Cargo.lock').read_bytes()).hexdigest(),
+                     'bazel_lock_sha256': hashlib.sha256(pathlib.Path('../MODULE.bazel.lock').read_bytes()).hexdigest(),
+                     'production_adoption': False, 'native_consumers': 'REQUIRED_AFTER_BINDING'}
+          (evidence / 'consumer-cli-binding.json').write_text(json.dumps(receipt, indent=2))
+          with pathlib.Path(os.environ['GITHUB_ENV']).open('a') as output:
+              output.write(f'CARGO_BIN_EXE_codex={binary}\n')
+          PYCLI
+
       - name: Run scoped API and persistent-storage consumers
         if: always() && steps.resolve.outcome == 'success'
         id: consumers
@@ -187,6 +230,7 @@ jobs:
           POLICY: ${{ steps.policy.outcome }}
           RESOLVE: ${{ steps.resolve.outcome }}
           BAZEL: ${{ steps.bazel.outcome }}
+          CONSUMER_BINARY: ${{ steps.consumer_binary.outcome }}
           CONSUMERS: ${{ steps.consumers.outcome }}
           DENY: ${{ steps.deny.outcome }}
           FORMAT: ${{ steps.format.outcome }}
@@ -200,7 +244,7 @@ jobs:
           python3 - <<'PY'
           import hashlib, json, os, pathlib, subprocess
           root = pathlib.Path(os.environ['CANDIDATE_LOGS'])
-          stages = {key: os.environ[key] for key in ('PREPARE', 'RESOLVE', 'BAZEL', 'CONSUMERS', 'POLICY', 'DENY', 'FORMAT')}
+          stages = {key: os.environ[key] for key in ('PREPARE', 'RESOLVE', 'BAZEL', 'CONSUMER_BINARY', 'CONSUMERS', 'POLICY', 'DENY', 'FORMAT')}
           report = {'source': subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip(),
                     'stages': stages, 'scoped_stages_all_passed': all(v == 'success' for v in stages.values()),
                     'production_adoption': False, 'custom_http_boundaries_qualified': False,
