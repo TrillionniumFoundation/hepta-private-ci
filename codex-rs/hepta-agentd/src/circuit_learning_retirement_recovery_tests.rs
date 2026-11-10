@@ -3,8 +3,6 @@
 
 use pretty_assertions::assert_eq;
 use sqlx::SqlitePool;
-use sqlx::sqlite::SqliteConnectOptions;
-use sqlx::sqlite::SqlitePoolOptions;
 
 use super::*;
 
@@ -115,13 +113,15 @@ async fn acknowledged_before_retirement(
 }
 
 async fn inspect(store: &AutomationStore) -> SqlitePool {
-    ok(SqlitePoolOptions::new()
-        .max_connections(1)
-        .connect_with(
-            SqliteConnectOptions::new()
-                .filename(store.path())
-                .read_only(true),
-        )
+    let sqlite_home = ok(codex_utils_absolute_path::AbsolutePathBuf::try_from(
+        store
+            .path()
+            .parent()
+            .expect("the durable store has a parent directory")
+            .to_path_buf(),
+    ));
+    ok(codex_state::SqliteConfig::new_for_testing(sqlite_home)
+        .open_read_only_pool(store.path())
         .await)
 }
 
