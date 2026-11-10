@@ -4,9 +4,11 @@ on:
   push:
     branches:
       - research/neuroscience-priority-audit-20261110-475c
+      - research/neuroscience-replay-fullpool-audit-20261110-475c
   pull_request:
     branches:
       - research/neuroscience-mechanisms-20261110
+      - research/neuroscience-priority-audit-20261110-475c
     types: [opened, synchronize, reopened]
   workflow_dispatch:
 
@@ -54,7 +56,8 @@ jobs:
           from pathlib import Path
           import sys
           from qualification.cell_common_foundations.memory_replay import (
-              replay_specs, run_replay_attempt, verify_priority_selection_audit
+              replay_specs, run_replay_attempt, verify_priority_selection_audit,
+              verify_priority_selection_against_checkpoint,
           )
           target = Path(sys.argv[1])
           selected = [s for s in replay_specs((11,)) if s["method"] in ("uniform", "error_prioritized")]
@@ -63,6 +66,7 @@ jobs:
               if row["method"] == "error_prioritized":
                   assert len(row["replay_selections"]) == 16
                   assert all(verify_priority_selection_audit(s["selection_audit"]) for s in row["replay_selections"])
+                  assert all(verify_priority_selection_against_checkpoint(s) for s in row["replay_selections"])
                   assert all(s["selection_audit"]["selected_ids"] == s["ids"] for s in row["replay_selections"])
           packet = {
               "schema": "hepta.neuroscience-priority-audit-development.v1",
