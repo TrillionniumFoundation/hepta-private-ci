@@ -730,6 +730,16 @@
                 "artifact_sha256": "802d2a717354e8e62c1e43d4f628919506137c2661d857f94bc16b7016b606a8",
                 "retained_zip": "qualification/act2-continuation-20261110/windows-original-42893302139.zip",
                 "classification": "partial original evidence retained; cancellation is not a pass and the four missing groups are NOT_RUN; no result is transferred from private-state or predecessor runs"
+              },
+              "windows_timeout_successor": {
+                "pr": 5854,
+                "source": "92f888fc8dedaa96ca8cd7f3840e370b4a1ab4e3",
+                "parent": "378c06a898728a7fa60498ef051843e38d592e67",
+                "changed_file": ".github/workflows/hepta-windows-current-ci.yml",
+                "change": "raise only the bounded job watchdog from 65 to 120 minutes after helper preparation plus 15 groups consumed 3799.843 seconds",
+                "preserves": "all 19 groups, exact selectors and required tests, retries=0, one test thread, source identity, native helper custody, failure semantics, permissions, artifact retention and false production/final-product flags",
+                "run": 42904689024,
+                "status": "IN_PROGRESS_NEW_EXACT_SOURCE_NO_TRANSFER"
               }
             },
             "does_not_change": "dependencies, locks, caller set, operation, permission, FinalUse, readback, tombstone, receipt or promotion semantics; predecessor results do not transfer"
