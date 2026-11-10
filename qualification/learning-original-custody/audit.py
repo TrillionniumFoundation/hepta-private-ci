@@ -19,6 +19,21 @@ TRAINER_NO_UPDATE_STAGES = tuple(stage for stage in STAGES if stage not in ('eva
 HEX64 = re.compile(r'^[0-9a-f]{64}$')
 HEX40 = re.compile(r'^[0-9a-f]{40}$')
 ATTEMPT_STATES = frozenset(('completed', 'failed', 'cancelled', 'pending', 'unknown'))
+MAX_MANIFEST_BYTES = 2 * 1024 * 1024
+
+
+def _unique_json_object(pairs):
+    # A last-key-wins parse can hide conflicting custody/version declarations.
+    result = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError('duplicate JSON key')
+        result[key] = value
+    return result
+
+
+def _reject_nonfinite_json(_token):
+    raise ValueError('non-finite JSON constant')
 
 
 def inspect(manifest: Path) -> dict:
@@ -31,8 +46,13 @@ def inspect(manifest: Path) -> dict:
 
     try:
         root = manifest.resolve(strict=True).parent
-        record = json.loads(manifest.read_text(encoding='utf-8'))
-    except (OSError, UnicodeError, ValueError) as exc:
+        raw_manifest = manifest.read_bytes()
+        if len(raw_manifest) > MAX_MANIFEST_BYTES:
+            raise ValueError('manifest exceeds maximum bytes')
+        record = json.loads(raw_manifest.decode('utf-8'),
+                            object_pairs_hook=_unique_json_object,
+                            parse_constant=_reject_nonfinite_json)
+    except (OSError, UnicodeError, ValueError, RecursionError) as exc:
         return {'status': 'HOLD', 'integrity': 'FAIL', 'issues': [f'bad_manifest:{type(exc).__name__}'],
                 'owner_authenticated': False, 'benefit_established': False}
     if not isinstance(record, dict) or record.get('schema') != 'hepta-original-learning-custody-precheck-v1':
