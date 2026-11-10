@@ -12,6 +12,9 @@ use crate::CellQ24TrainingOutcomeV1;
 use crate::CellQ24TrainingSampleV1;
 use crate::cell_q24_single_head_update_rule_v1;
 
+#[path = "cell_composed_q24_training_owner_tests.rs"]
+mod owner;
+
 fn batch(target: i64) -> anyhow::Result<CellQ24TrainingBatchV1> {
     Ok(CellQ24TrainingBatchV1::new(d("dataset"), vec![CellQ24TrainingSampleV1 {
         input: vec![Q / 2, 0], target,

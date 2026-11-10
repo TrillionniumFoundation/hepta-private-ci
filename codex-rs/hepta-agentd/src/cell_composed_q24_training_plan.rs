@@ -20,6 +20,10 @@ use super::LoadedCellQ24ModelV1;
 
 #[path = "cell_composed_q24_training.rs"]
 mod training;
+#[path = "cell_composed_q24_training_owner.rs"]
+mod owner;
+pub use owner::CellQ24TrainingOwnerErrorV1;
+pub use owner::CellQ24TrainingOwnerV1;
 pub use training::CellQ24SgdRuleV1;
 pub use training::CellQ24TrainedCandidateV1;
 pub use training::CellQ24TrainingBatchV1;

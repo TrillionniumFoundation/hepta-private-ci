@@ -366,6 +366,8 @@ pub use cell_composed_q24::CellQ24TrainingBatchV1;
 pub use cell_composed_q24::CellQ24TrainingErrorV1;
 pub use cell_composed_q24::CellQ24TrainingMetricsV1;
 pub use cell_composed_q24::CellQ24TrainingOutcomeV1;
+pub use cell_composed_q24::CellQ24TrainingOwnerErrorV1;
+pub use cell_composed_q24::CellQ24TrainingOwnerV1;
 pub use cell_composed_q24::CellQ24TrainingPlanErrorV1;
 pub use cell_composed_q24::CellQ24TrainingSampleV1;
 pub use cell_composed_q24::LoadedCellQ24ModelV1;

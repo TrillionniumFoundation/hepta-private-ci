@@ -46,6 +46,8 @@ pub use training_plan::CellQ24TrainingBatchV1;
 pub use training_plan::CellQ24TrainingErrorV1;
 pub use training_plan::CellQ24TrainingMetricsV1;
 pub use training_plan::CellQ24TrainingOutcomeV1;
+pub use training_plan::CellQ24TrainingOwnerErrorV1;
+pub use training_plan::CellQ24TrainingOwnerV1;
 pub use training_plan::CellQ24TrainingPlanErrorV1;
 pub use training_plan::CellQ24TrainingSampleV1;
 pub use training_plan::cell_q24_single_head_update_rule_v1;
