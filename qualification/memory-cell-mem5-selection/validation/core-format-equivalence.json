@@ -1,0 +1,18 @@
+{
+  "formatter": "ruff 0.15.13",
+  "files": [
+    {
+      "path": "scripts/ndu_real_runtime/candidate_selector.py",
+      "tested_sha256": "df081f2282cbaf49a4f10c9c34749a3c54e19383f3d9245b01c7fe5377a3b020",
+      "formatted_sha256": "a335533f75545b3f7ef8349ba57801c5bdb8a7ae2d3a40ded1c52c925e15f807",
+      "ast_identical_including_type_comments": true
+    },
+    {
+      "path": "scripts/ndu_real_runtime/test_candidate_selector.py",
+      "tested_sha256": "aa21d08be922a8bc645eeb5381f04af9205cc2998420737eca61781a13ccaa3f",
+      "formatted_sha256": "899d059ca381eaa488456a4f6fcaab4eee4d1026f6148eb1b56f7f6273c6a695",
+      "ast_identical_including_type_comments": true
+    }
+  ],
+  "behavioral_tests_repeated_after_format": false
+}
