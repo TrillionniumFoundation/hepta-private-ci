@@ -65,21 +65,26 @@ def _exact_signflip(deltas):
 def _validate_manifest(manifest):
     keys = {"schema", "source_sha256", "target_sha256", "risk_model_sha256",
             "checker_model_sha256", "scheduler_sha256", "evaluator_id",
+            "continuation_policy_sha256", "horizon_end",
             "evaluator_version_sha256", "baseline", "candidate", "pairs",
             "losses", "criteria", "freeze_ns", "cost_unit"}
     _require(type(manifest) is dict and set(manifest) == keys, "manifest fields changed")
     _require(manifest["schema"] == "hepta.verify.matched-qualification.v1", "manifest schema")
     for key in ("source_sha256", "target_sha256", "risk_model_sha256",
-                "checker_model_sha256", "scheduler_sha256", "evaluator_version_sha256"):
+                "checker_model_sha256", "scheduler_sha256", "evaluator_version_sha256",
+                "continuation_policy_sha256"):
         _require(_sha(manifest[key]), "invalid " + key)
     for key in ("evaluator_id", "baseline", "candidate", "cost_unit"):
         _require(_text(manifest[key]), "invalid " + key)
     _require(manifest["baseline"] != manifest["candidate"], "same arms")
+    _require(type(manifest["horizon_end"]) is int and 0 < manifest["horizon_end"] <= 1000000,
+             "invalid terminal horizon")
     _require(type(manifest["freeze_ns"]) is int and 0 <= manifest["freeze_ns"] < 2**63,
              "invalid freeze time")
     pairs = manifest["pairs"]
     _require(type(pairs) is list and 0 < len(pairs) <= MAX_PAIRS, "invalid frozen pairs")
     pair_ids = set()
+    environment_sessions = set()
     for pair in pairs:
         _require(type(pair) is dict and set(pair) ==
                  {"pair_id", "cluster_id", "first_arm", "environment_a", "environment_b"},
@@ -93,6 +98,10 @@ def _validate_manifest(manifest):
                  "invalid assignment")
         _require(pair["environment_a"] != pair["environment_b"],
                  "same physical environment for paired effects")
+        for environment in (pair["environment_a"], pair["environment_b"]):
+            _require(environment not in environment_sessions,
+                     "reused physical environment session")
+            environment_sessions.add(environment)
     losses = manifest["losses"]
     _require(type(losses) is dict and set(losses) == set(DISPOSITIONS),
              "loss table incomplete")
@@ -117,7 +126,8 @@ def _validate_manifest(manifest):
 
 def _validate_observation(row, manifest, pairs):
     keys = {"pair_id", "arm", "environment_id", "disposition", "terminal_error",
-            "label_evidence_sha256", "label_issued_ns", "decision_issued_ns",
+            "label_evidence_sha256", "label_issued_ns", "label_observed_step",
+            "decision_issued_ns",
             "evaluator_id", "label_attestation", "cost_units",
             "cost_roster_sha256", "cost_receipt_sha256", "source_sha256"}
     _require(type(row) is dict and set(row) == keys, "observation fields changed")
@@ -137,12 +147,15 @@ def _validate_observation(row, manifest, pairs):
     if label is None:
         _require(row["label_evidence_sha256"] is None and
                  row["label_issued_ns"] is None and
+                 row["label_observed_step"] is None and
                  row["label_attestation"] is None and
                  row["evaluator_id"] is None, "fabricated missing-label receipt")
     else:
         _require(_sha(row["label_evidence_sha256"]) and
                  type(row["label_issued_ns"]) is int and
                  row["decision_issued_ns"] <= row["label_issued_ns"] < 2**63 and
+                 type(row["label_observed_step"]) is int and
+                 row["label_observed_step"] >= manifest["horizon_end"] and
                  _text(row["label_attestation"]) and
                  row["evaluator_id"] == manifest["evaluator_id"],
                  "unbound or early terminal label")
