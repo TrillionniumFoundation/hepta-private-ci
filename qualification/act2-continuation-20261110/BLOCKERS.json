@@ -587,7 +587,14 @@
               "act2_run": 42893302150,
               "act2_status": "PENDING",
               "blocking_run": 42893302790,
-              "blocking_status": "PENDING",
+              "blocking_status": "QUEUED_WITH_INDEPENDENT_EXTERNAL_FENCE_FAILURE",
+              "blocking_external_failure": {
+                "job": 130101597293,
+                "name": "Blob size policy / Blob size policy",
+                "status": "FAILURE_BEFORE_CHECKOUT",
+                "exact_result": "openai/fence resident service exited before readiness with unsupported_resolver_layout; checkout and blob-size checks were skipped; the subsequent local-action path was absent because checkout never ran",
+                "classification": "hosted Fence/runner setup failure; not a source, blob-size, CALLERS or semantic test result"
+              },
               "architecture_run": 42893302196,
               "architecture_status": "IN_PROGRESS",
               "windows_private_run": 42893302159,
