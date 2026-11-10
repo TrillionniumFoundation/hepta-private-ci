@@ -76,5 +76,25 @@
     "No claim of full CI pass",
     "Do not merge owner-fork lock without compat verification",
     "Preserve frozen MEM5 actor results and HOLD/NoUpdate"
-  ]
+  ],
+  "source_manifest_constraints": {
+    "file": "codex-rs/Cargo.toml",
+    "source_git_blob_sha1": "d9f1bb1db407de3c2f1650edc4da5009ba3adaf1",
+    "rmcp_workspace_exact_pin": {
+      "line": 481,
+      "declaration": "rmcp = { version = \"=3.1.3\", default-features = false }"
+    },
+    "sqlite_workspace_pin": {
+      "line": 443,
+      "declaration": "libsqlite3-sys = { version = \"0.37\", default-features = false }"
+    },
+    "matrix_sqlite_patch": {
+      "lines": [
+        693,
+        695
+      ],
+      "summary": "The source documents a local matrix-sdk-sqlite 0.19.1 compatibility patch preserving rusqlite 0.39 / libsqlite3-sys 0.37 to align with SQLx 0.9. Updating libsqlite3-sys independently is not validated."
+    },
+    "upgrade_boundary": "A verified, source-compatible workspace, lock and patch migration is required; simply bypassing deny or transplanting an unrelated owner-fork lock is not a remediation."
+  }
 }
