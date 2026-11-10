@@ -1,0 +1,49 @@
+name: Hepta Windows OpenSSH path diagnostic
+
+on:
+  pull_request:
+    paths:
+      - scripts/hepta_openssh_path_diagnostic.py
+      - .github/workflows/hepta-openssh-path-diagnostic.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: openssh-path-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  diagnostic:
+    runs-on: windows-2025
+    timeout-minutes: 5
+    env:
+      REVIEWED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+    steps:
+      - name: Check out exact reviewed source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Set up Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12"
+      - name: Observe both actual OpenSSH path spellings
+        shell: pwsh
+        run: |
+          $head = (git rev-parse HEAD).Trim()
+          if ($head -cne $env:REVIEWED_SHA) { throw 'Reviewed source mismatch' }
+          python -B scripts/hepta_openssh_path_diagnostic.py --source-sha $head --output "$env:RUNNER_TEMP/openssh-path-diagnostic"
+          $diagnosticExit = $LASTEXITCODE
+          git diff --exit-code
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          exit $diagnosticExit
+      - name: Preserve every diagnostic result including failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: openssh-path-${{ github.event.pull_request.head.sha || github.sha }}
+          path: ${{ runner.temp }}/openssh-path-diagnostic
+          if-no-files-found: error
