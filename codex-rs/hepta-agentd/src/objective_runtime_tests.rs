@@ -19,7 +19,7 @@ fn id(value: &str) -> StableId {
     StableId::new(value).expect("stable id")
 }
 
-fn record(
+pub(super) fn record(
     run_id: &str,
     sequence: u64,
     disposition: RunStartObjectiveDispositionV1,
