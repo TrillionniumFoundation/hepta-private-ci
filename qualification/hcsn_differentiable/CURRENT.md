@@ -25,6 +25,15 @@ trajectory audits remain pending in that snapshot. The
 [CI and verification appendix](evidence/p0p5-ci-launch-closure-20261110/README.md)
 binds later exact source trees and preserves the distinction between evidence
 integrity, scientific fixtures and repository-wide CI.
+The [C2 progress appendix](evidence/p0p5-c2-progress-20261110/README.md) and
+[terminal numerical appendix](evidence/p0p5-terminal-numerics-20261110/README.md)
+preserve later outcomes. The original numerical job ended at its unchanged
+three-hour limit with 49/60 finite fixtures completed; its postmortem collector
+completed separately. At the latest archived C2 observation, 22:45:40 UTC,
+five fits remained active and one had a producer terminal report. No all-six
+independent C2 adequacy, new common-rate selection or scientific benefit is
+inferred from those intermediate records. The subject-E exposure clarification
+below supersedes the older progress appendix's phrase "E remains unread".
 
 ## Admission status
 
@@ -32,8 +41,8 @@ integrity, scientific fixtures and repository-wide CI.
 | --- | --- | --- |
 | Mathematical/API contract | Versioned definitions, drift regimes, reset and repeated-readout semantics | Defined and tested |
 | Local numerical regression | 92 tests and four unchanged error-budget fixtures on the archived source | Passed within those fixtures |
-| Actual training-domain accuracy | Recorded posteriors, physical visits, finite schedules and high-precision derivatives | Selected fixtures pass; full training domain HOLD |
-| Recorded quality and resource comparison | Original 42 attempts, separate C1 view and six independent best-checkpoint replays; separate C2 continuation launched | Original budget results reproduced; C2 terminal adequacy pending |
+| Actual training-domain accuracy | 49/60 terminal finite fixtures pass the original scaled gate; 12 tiny-gap pressure failures and six log-risk ordinary-FD holds remain | Selected fixtures pass; full training domain HOLD |
+| Recorded quality and resource comparison | Original42/C1 results reproduced; C2 has one producer terminal and five active fits at22:45:40 | All-six independent C2 adequacy and later resource view pending |
 | Fair, sufficiently trained real-task benefit | Full-data development attempts and independent replay; output-interface diagnosis | HOLD |
 | Endogenous optimal boundary | Independent finite DP/QVI fixture, three boundary groups | Finite fixture only; neural/continuum benefit HOLD |
 | Real asynchronous multimodal benefit | Existing real localization data; new non-diffusion controls | HOLD |
@@ -131,6 +140,38 @@ its [independent input review](evidence/p0p5-followup-20261110/review/final-hcsn
 verifies the source, episodes and schedules. Preparation does not grant a
 numerical pass or restore historical trajectory coverage.
 
+The [original terminal execution](evidence/p0p5-terminal-numerics-20261110/numerical-audit/original-terminal/launch-receipt.json)
+has now ended at its unchanged 10,800-second limit, with
+`whole_budget_exhausted` and return code -9. The
+[complete named roster](evidence/p0p5-terminal-numerics-20261110/numerical-audit/STAGE-ROSTER.json)
+contains 85 complete artifact chains, one attempt without an outer completion,
+and ten stages without an observed start. Of 60 finite fixtures, **49 pass the
+original scaled gate and recorded source/input/resource checks**: all six
+models' first eight best-checkpoint fixtures, plus seed101/rate.001's255-gap
+case. One255-gap attempt is censored, four were not started, and all six
+last-checkpoint supplemental fixtures were not started. The separate completed
+metadata collector does not turn the original job into a completed audit.
+
+The [frozen error index](evidence/p0p5-terminal-numerics-20261110/numerical-audit/INDEX.json)
+records maximum scaled error **0.8571803953%** and maximum ordinary relative
+error **5.0700834100%**. The latter is a rare discounted-count quantity and
+does not use the same denominator as the scaled gate. The completed255-gap
+case has reference count about3.0395444371, projected count about3.0531732829,
+maximum scaled error about0.5472701%, and mass residual about1.1324e-14.
+These are finite continuations of reconstructed starting laws with future
+observations disabled. They do not qualify later C2 posteriors, every rare
+tail probability, or a continuous observation filter.
+
+The [independent JSON review](evidence/p0p5-terminal-numerics-20261110/numerics-independent-review/REPORT.md)
+reconstructs all196 reported quantities and342 stage-artifact bindings without
+rerunning a model or oracle. Its original reviewer filename assumption and
+narrow closure remain separate. The original source/model/data identities,
+487-member archive manifest, external collection finality and authenticated
+archive readback are preserved. The full launcher wall is10800.006360915 seconds;
+its10278.141465 seconds waited CPU is only a lower bound because the killed
+active worker was not reaped into that accounting. Nested stage/launcher/
+bootstrap costs must not be added together.
+
 The [saved first-14 finite-case provenance](evidence/p0p5-c2-launch-20261110/numeric-context/first14-RESULT.json)
 and [independent closure](evidence/p0p5-c2-launch-20261110/decision-provenance-review/RESULT.json)
 bind the partial results available before the C2 decision. Their original
@@ -159,6 +200,27 @@ ordinary FD differs by about `5.997e-10` against a `3e-10` gate. Autograd,
 the 80-digit derivative and high-precision FD agree on that derivative.
 Discount remains fixed in C2. Neither return code zero nor this diagnosis
 grants general gradient qualification, and no tolerance was changed.
+
+The [fixed-grid diagnosis](evidence/p0p5-terminal-numerics-20261110/mathematical-diagnosis/NOTE.md)
+separates exact-source QPR projection from its actual fixed Gauss quadrature.
+For a fixed interior uniform cell, exact adjacent transfer is proportional
+to sqrt(dt), so `(T_dt-I)/dt` has no finite fixed-grid matrix-generator limit.
+With finitely many strictly interior source nodes, the active off-diagonal
+scaled limit instead vanishes at sufficiently small dt. These are distinct
+limits, not a claim that the underlying continuous diffusion lacks a generator.
+The shared-generator description constrains the continuous reference and point
+kernels; it does not make the projected chain an exact semigroup.
+
+A [separate48-case scalar diagnostic](evidence/p0p5-terminal-numerics-20261110/local-diagnosis/fixed48/REPORT.md)
+ran once without models, posteriors or high-precision numerical-oracle calls.
+At256 cells/order32, the two pressure time steps give free zero-drift adjacent
+probability quadrature differences of+0.1354797523% and-0.0001402580933%.
+They are outside the declared deep fixed-node freezing regime. Isolated phase
+and equal-mass tail examples show separate information-loss mechanisms, but
+none of these scalars attributes a fraction of the12 actual perpetual-value
+failures. Underflows and engineering-resolution inconclusives remain explicit.
+The initial infrastructure launch failed before Python; its replacement ran
+the unchanged48-case program once. No qualification threshold was relaxed.
 
 The new stable log-first-hit primitive retains finite log F/log G when FP64
 probability underflows. Twenty-one sampled cases include near-boundary,
@@ -406,6 +468,41 @@ The original 300/900/1,800-second quality curves remain unchanged. C2 is a
 separate longer-resource/calendar phase, with no adequacy or benefit credit
 before terminal evidence and independent confirmation.
 
+The [22:45:40 UTC observation](evidence/p0p5-terminal-numerics-20261110/c2-at-224540/HANDOFF.json)
+binds a preceding complete snapshot and new epoch records. It observed five
+active fits and one producer terminal; model/probability arrays were not read.
+The following individual best scores are intermediate D-selected values,
+not a new common-LR comparison or confirmation result.
+
+| Seed | LR | Complete epoch | Strict best D macro-F1 | Observed state |
+| --- | --- | ---: | ---: | --- |
+| 101 | .001 | 64 | .2517440582 | Active |
+| 101 | .003 | 65 | .3793301616 | Active |
+| 211 | .001 | 64 | .2797005468 | Active |
+| 211 | .003 | 50 | .3910932361 | Producer plateau; independent C2 audit pending |
+| 307 | .001 | 64 | .2367156632 | Active |
+| 307 | .003 | 64 | .3498305889 | Active |
+
+The [first actual terminal report](evidence/p0p5-c2-progress-20261110/first-terminal/payload/fit/result.json)
+records three added complete epochs and36 new updates for seed211/rate.003.
+Its selected epoch40 checkpoint and D metrics are unchanged from the original
+run, so this continuation yields no selected-quality improvement. Producer
+adequacy is not yet independent C2 admission. Its
+[complete-attempt ledger](evidence/p0p5-c2-progress-20261110/first-terminal/COST-SCOPE-ADDENDUM.json)
+charges1266.1814752598293 seconds of C2 wrapper time, including the post-child
+verification tail, for a cumulative15643.131377664628 seconds. Exact cumulative
+CPU remains unknown; the new child's measured wait4 CPU is1263.453444 seconds.
+
+The [terminal auditor](evidence/p0p5-c2-progress-20261110/terminal-auditor/PLAN.json)
+is frozen and has28 synthetic tests, but has not audited actual C2 outputs.
+Its1800-second core envelope requires all six real terminals, durable native
+receipts, absent/zombie workers, immutable controller inputs and a new bound
+execution decision. The [later resource plan](evidence/p0p5-c2-progress-20261110/resource-plan/PLAN.json)
+preserves historical curves and charges every original/C2 attempt. Final
+wrapper tails belong in the bill, not retroactively in earlier quality-event
+timestamps. Neither preparation grants a new selection or an adequately
+trained comparison while the original C2 roster is incomplete.
+
 ### Development outcomes and HCSN censoring
 
 The [resource analysis](evidence/p0p5-resource-replay-20261110/resource-analysis-v1/output-v1/REPORT.md)
@@ -415,7 +512,14 @@ before-training evaluations. Its [independent review](evidence/p0p5-resource-rep
 agrees on both the original 42-attempt view and the separate view adding C1.
 The analysis plan was frozen after terminal scores were known; the 300/900/1,800
 second cuts and F1 target .30 were already declared in the original plan.
-D remains tuning data, and confirmation subject E has not been scored.
+D remains tuning data, and confirmation subject E has not been scored in this
+campaign. The [E exposure correction](evidence/p0p5-terminal-numerics-20261110/SCOPE-CORRECTIONS.json)
+supersedes "E remains unread" in the historical progress snapshot: the legacy
+full-data loader interpreted E schema, coordinates, label validity, clock and
+global gaps. This preparation and C2 do not interpret E; historical feature/
+schema blindness is not claimed. The separately proposed subject-E evaluation
+is unexecuted. It would not complete the original formal recipe of12 tuning
+configurations times3 seeds followed by five fresh confirmation seeds.
 
 Each cell below is mean best recorded D macro-F1 at or before the original
 per-fit process-wall cutoff, across all three seeds at one common LR selected
@@ -606,12 +710,18 @@ cost scopes and draft evidence assets. The repository is public; large raw
 assets are retained in an unpublished draft release and require appropriate
 repository access. Authenticated byte readback, not a successful upload request,
 is the archival check. Main has not been merged or modified by this work.
-The [latest asset index](evidence/p0p5-resource-replay-20261110/assets.json)
+The [earlier asset index](evidence/p0p5-resource-replay-20261110/assets.json)
 records 29 known payloads with retained complete authenticated readbacks:
 28 previously verified payloads plus the new full-D archive. This is not a
 fresh count of all release API entries. The new asset's anonymous probes
 returned 404 and the release remained unpublished; old metadata-only and
 failed-starter entries retain their earlier limitations.
+The [later numerical publication](evidence/p0p5-terminal-numerics-20261110/publication-originals/RESULT.json)
+adds two completely verified original archives, assets733215514 and733217675,
+for31 known payloads with full authenticated readbacks across these indexes.
+This remains a cumulative evidence count, not a fresh release API inventory.
+The main numerical archive is34,050,599 bytes; its exact hash, all487 original
+members and external collection finality are bound in the new appendix.
 
 Local science tests, numerical qualifications, training adequacy, scientific
 benefit and overall repository CI remain separate. The earlier hosted
@@ -658,6 +768,10 @@ passes on the narrow correction. The new appendix also preserves that exact
 failed-lint stdout, including the five strings it complained about; this one
 historical log is likewise excluded from prose spelling, with its bytes still
 fixed by the manifest. No evidence directory is broadly excluded.
+The new collector's exact `git-response.json` likewise contains an original
+Base64 ZIP payload. Its decoded35,529 bytes match the frozen collector capsule;
+one spelling finding inside that payload is excluded by its exact file path,
+while the original bytes and integrity checks remain unchanged.
 
 At the retained later observation, source
 `fdbc954bb259a709275771fe151b4f0c8d245b48` had successful science run42902660902
@@ -665,6 +779,18 @@ and canary42902660830, architecture42902660993 in progress, and blocking
 run42902661147 queued. No hosted spelling pass or repository-wide all-green
 result is inferred from that queue, and no old-head failure is assigned to
 an unobserved future head.
+
+The [next exact-head observation](evidence/p0p5-c2-progress-20261110/ci/observations-original.zip)
+reports science run42907725860 attempt1 successful at source
+`7351e1a2c60e318686d3c01372acbde149af4432`; that observation did not download its
+artifact. Its blocking run42907726032 had successful spelling and blob-size
+jobs, but failed contract, cargo-deny and Windows jobs. The later
+[original contract log](evidence/p0p5-terminal-numerics-20261110/ci-current/ORIGINALS.zip)
+identifies the README readiness-discovery failure. The
+[source explanation](evidence/p0p5-terminal-numerics-20261110/ci-current/CONTRACT-EXPLANATION.json)
+records an unchanged empty root README. The cargo-deny log request instead
+returned a transport error; its cause is not inferred. No all-green result
+or guarantee for the newly edited head follows from these historical runs.
 
 The [committed-object closure](evidence/p0p5-resource-replay-20261110/publication/committed-current-evidence-closure-v2/RESULT.json)
 verifies 794 distinct blobs at the same earlier tree, after restoring fifteen
@@ -676,24 +802,44 @@ verifies 1,068 distinct Git blobs at local commit
 `a33490f926debd60ce21f73b2ea64c1b90b8338a`, tree
 `aa5cc6bc55b0dc1cb68adf62886fb9646962de03`, matching the later hosted source.
 It still does not certify this newer CURRENT edit or C2 appendix.
+The [subsequent committed-blob proof](evidence/p0p5-c2-progress-20261110/prior-head-checks/committed-blobs/RESULT.json)
+verifies1,273 distinct files at local commit
+`a143bfda5036a54ed87afe21d184b5a9749fa0ee`, whose tree
+`772cbf882db520525d6fa5c805c296aa2e8b97eb` matches remote7351e1a2.
+Its [local integrity record](evidence/p0p5-c2-progress-20261110/prior-head-checks/worktree/RESULT.json)
+covers eight manifests,1,255 files,66 ZIPs and362 relative links with zero errors.
+Those are exact earlier-tree checks, not a claim about this later appendix.
 
 From the repository root, verify the new package and its linked status pages
 using the module entry point:
 
 ```bash
 python -B -m qualification.hcsn_differentiable.evidence_chain \
+  --manifest qualification/hcsn_differentiable/evidence/p0p5-20261110/MANIFEST.json \
+  --manifest qualification/hcsn_differentiable/evidence/p0p5-followup-20261110/MANIFEST.json \
   --manifest qualification/hcsn_differentiable/evidence/p0p5-resource-replay-20261110/MANIFEST.json \
+  --manifest qualification/hcsn_differentiable/evidence/p0p5-resource-closure-20261110/MANIFEST.json \
   --manifest qualification/hcsn_differentiable/evidence/p0p5-c2-launch-20261110/MANIFEST.json \
   --manifest qualification/hcsn_differentiable/evidence/p0p5-ci-launch-closure-20261110/MANIFEST.json \
+  --manifest qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/MANIFEST.json \
+  --manifest qualification/hcsn_differentiable/evidence/p0p5-terminal-numerics-20261110/MANIFEST.json \
+  --manifest qualification/hcsn_differentiable/evidence/localization-v2-20261108/MANIFEST.json \
+  --manifest qualification/hcsn_differentiable/evidence/math-closure-20261108/MANIFEST.json \
   --markdown qualification/hcsn_differentiable/CURRENT.md \
   --markdown qualification/hcsn_differentiable/evidence/p0p5-resource-replay-20261110/README.md \
   --markdown qualification/hcsn_differentiable/evidence/p0p5-resource-replay-20261110/resource-analysis-v1/output-v1/REPORT.md \
   --markdown qualification/hcsn_differentiable/evidence/p0p5-c2-launch-20261110/README.md \
   --markdown qualification/hcsn_differentiable/evidence/p0p5-ci-launch-closure-20261110/README.md \
-  --output /tmp/hcsn-resource-replay-integrity.json
+  --markdown qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/README.md \
+  --markdown qualification/hcsn_differentiable/evidence/p0p5-terminal-numerics-20261110/README.md \
+  --markdown qualification/hcsn_differentiable/evidence/p0p5-terminal-numerics-20261110/mathematical-diagnosis/NOTE.md \
+  --markdown qualification/hcsn_differentiable/evidence/p0p5-terminal-numerics-20261110/local-diagnosis/fixed48/REPORT.md \
+  --markdown qualification/hcsn_differentiable/evidence/p0p5-terminal-numerics-20261110/numerics-independent-review/REPORT.md \
+  --output /tmp/hcsn-terminal-numerics-integrity.json
 ```
 
-The science workflow checks all eight historical/current manifests. Running
+Choose a new result path if that output already exists. The science workflow
+checks all ten historical/current manifests. Running
 the Python file directly can shadow the standard-library `operator` module;
 use `python -B -m` as above. Integrity validates bytes and links; it does not
 grant scientific or training-domain credit.
