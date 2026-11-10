@@ -445,10 +445,19 @@
             {
               "run": 42856152534,
               "scope": "architecture",
-              "status": "IN_PROGRESS_SOURCE_HEAD_BASE_MERGE_SUCCESS",
+              "status": "SOURCE_HEAD_AND_BASE_MERGE_SUCCESS_REQUIRED_GATE_QUEUED",
               "source_head_job": 129969597529,
               "base_merge_job": 129969598287,
-              "result": "source-head still running; base-merge succeeded; no source-head pass inferred"
+              "required_gate_job": 130022314346,
+              "exact_result": "source-head and base-merge jobs completed success; source-head executed every selected architecture stage and retained 63 command/log records; aggregate Architecture required job remains queued",
+              "selected_results": "operations 53 plus inference 41/53/1; retirement 4; module/lifecycle/objective/prompt/final-use scopes passed; browser scope 11 passed with 780 filtered; optional real process restart scope 3 passed; tracked source remained clean",
+              "authority_limit": "candidate transport observation returned HTTP 403 but observation_status unknown, write_transport_denied null and activation/admin/PR-write/credential-separation authority all false; this is not independent write-denial proof",
+              "source_head_log_chars": 576884,
+              "artifact_id": 13790245736,
+              "artifact_size_bytes": 86958,
+              "artifact_sha256": "0dbef32c244fb9d37c9ba4628ceb092931bf4aa0064f6de9585b517f27b7f5bb",
+              "retained_zip": "qualification/act2-continuation-20261110/architecture-source-head-42856152534.zip",
+              "limit": "scoped architecture job success only; required aggregate gate and blocking-ci remain pending, and this does not qualify actual DynamicToolCall transport or ACT-2 real App"
             },
             {
               "run": 42856152117,
