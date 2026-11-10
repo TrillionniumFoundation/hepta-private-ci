@@ -35,7 +35,7 @@ fn historical_source_expiry_does_not_renew_actions_or_override_current_revocatio
         fleet_root: fleet_root.as_path().to_path_buf(),
         workspace,
         resources: registered.manifest.resources,
-        home_root: registered.layout.home_root().to_path().to_path_buf(),
+        home_root: registered.layout.home_root().to_path_buf(),
         run_root: registered.layout.run_root().to_path_buf(),
         control_socket: registered.layout.agentd_control_socket().to_path_buf(),
         app_server_socket: registered.layout.app_server_socket().to_path_buf(),
