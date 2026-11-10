@@ -1,5 +1,6 @@
 """Evaluator fixtures: they verify attribution, never claim real actor benefit."""
 
+from copy import deepcopy
 import hashlib
 from pathlib import Path
 import tempfile
@@ -7,8 +8,15 @@ import unittest
 
 from PIL import Image
 
-from ndu_real_materials.common import binding, json_bytes, write_json
+from ndu_real_materials.common import (
+    binding,
+    digest,
+    json_bytes,
+    strict_json,
+    write_json,
+)
 from .candidate_retention_report import (
+    EVENTS,
     REQUIRED_SOURCES,
     build_report,
     canonical_sha,
@@ -407,6 +415,336 @@ class CandidateRetentionReportTests(unittest.TestCase):
             report = generate(root, materials, plan_sha, manifest_sha)
             self.assertEqual(report["episodes"][1]["evidence_status"], "REJECTED")
             self.assertIsNone(report["episodes"][1]["unconditional_success"])
+
+
+def campaign(root, damaged_artifact, value):
+    """Write byte-bound original artifacts and real pixel-scoring inputs."""
+    materials = root / "materials"
+    materials.mkdir()
+    Image.new("RGB", (20, 20), "white").save(materials / "source.png")
+    source = binding(materials / "source.png", materials)
+    episodes, evidence, references = [], [], {}
+    for case_id in ("damaged", "healthy"):
+        for mode in ("current_only", "bounded"):
+            pack = fixture(mode)
+            expected, reference, packet, result, trajectory, audits, deliveries, _ = (
+                pack
+            )
+            expected.update(
+                case_id=case_id,
+                original_operation_id=case_id + "/" + mode,
+                pair_id=case_id,
+                source_group_id=case_id,
+                episode_group=case_id,
+                source_sha256=source["sha256"],
+            )
+            packet["case_id"] = case_id
+            expected["public_case_sha256"] = digest(json_bytes(packet))
+            reference.update(
+                case_id=case_id,
+                source_group=case_id,
+                episode_group=case_id,
+                source_image=source,
+            )
+            result.update(
+                **{
+                    key: expected[key]
+                    for key in (
+                        "case_id",
+                        "original_operation_id",
+                        "source_group_id",
+                        "episode_group",
+                        "source_sha256",
+                    )
+                }
+            )
+            for delivery in deliveries.values():
+                delivery["case_id"] = case_id
+            target = root / case_id / mode
+            target.mkdir(parents=True)
+            damaged = case_id == "damaged" and mode == "current_only"
+            audit_bindings, previous = [], None
+            for i, audit in enumerate(audits):
+                body = audit["value"]
+                body["scope"].update(
+                    original_operation_id=expected["original_operation_id"],
+                    case_id=case_id,
+                    source_image_sha256=source["sha256"],
+                )
+                body.update(
+                    public_case_sha256=expected["public_case_sha256"],
+                    previous_audit_sha256=previous,
+                )
+                if damaged and damaged_artifact == "audit" and i == 0:
+                    body = value
+                path = target / f"audit-{i}.json"
+                write_json(path, body)
+                bound = binding(path, root)
+                previous = bound["sha256"]
+                trajectory["steps"][i]["candidate_audit"] = bound
+                audit_bindings.append(bound)
+            item = {
+                "original_operation_id": expected["original_operation_id"],
+                "audits": audit_bindings,
+            }
+            for name, body in (
+                ("result", result),
+                ("trajectory", trajectory),
+                ("public_case", packet),
+                ("initial_delivery", deliveries["initial"]),
+                ("final_delivery", deliveries["final"]),
+            ):
+                if damaged and damaged_artifact == name:
+                    body = value
+                path = target / (name + ".json")
+                write_json(path, body)
+                item[name] = binding(path, root)
+            if mode == "current_only":
+                path = materials / (case_id + "-reference.json")
+                body = (
+                    value
+                    if case_id == "damaged" and damaged_artifact == "reference"
+                    else reference
+                )
+                write_json(path, body)
+                references[case_id] = binding(path, materials)
+            episodes.append(expected)
+            evidence.append(item)
+    write_json(materials / "rubric.json", {"version": 1})
+    index = {
+        "schema": "ndu.real.reference-index.v2",
+        "case_roles": dict.fromkeys(references, "development"),
+        "cases": references,
+        "rubric": binding(materials / "rubric.json", materials),
+    }
+    write_json(materials / "private/reference-index.v2.json", index)
+    repository = Path(__file__).resolve().parents[2]
+    plan = {
+        "schema": "ndu.real.candidate-retention-plan.v1",
+        "episodes": episodes,
+        "source_pins": [
+            binding(repository / name, repository) for name in sorted(REQUIRED_SOURCES)
+        ],
+        "evaluator_sha256": binding(
+            repository / "scripts/ndu_real_materials/evaluator.py", repository
+        )["sha256"],
+        "reference_index_sha256": binding(
+            materials / "private/reference-index.v2.json", materials
+        )["sha256"],
+        "rubric_sha256": index["rubric"]["sha256"],
+    }
+    write_json(root / "PLAN.json", plan)
+    plan_sha = binding(root / "PLAN.json", root)["sha256"]
+    write_json(
+        root / "EVIDENCE.json",
+        {
+            "schema": "ndu.real.candidate-retention-evidence.v1",
+            "plan_sha256": plan_sha,
+            "episodes": evidence,
+        },
+    )
+    return materials, plan_sha, binding(root / "EVIDENCE.json", root)["sha256"]
+
+
+class CandidateRetentionShapeTests(unittest.TestCase):
+    def test_unreadable_audit_preserves_denominator_and_later_scoring(self):
+        for failure in ("missing", "symlink"):
+            with self.subTest(failure=failure):
+                with tempfile.TemporaryDirectory() as directory:
+                    root = Path(directory)
+                    args = campaign(root, "unchanged", None)
+                    audit = root / "damaged/current_only/audit-0.json"
+                    original = audit.with_name("retained-audit-0.json")
+                    audit.rename(original)
+                    if failure == "symlink":
+                        try:
+                            audit.symlink_to(original.name)
+                        except (NotImplementedError, OSError) as error:
+                            self.skipTest(
+                                "symbolic links are unavailable: " + str(error)
+                            )
+                    report = generate(root, *args)
+                    rows = report["episodes"]
+                    self.assertEqual(report["planned_episodes"], 4)
+                    self.assertEqual(
+                        rows[0]["evidence_status"],
+                        "UNKNOWN" if failure == "missing" else "REJECTED",
+                    )
+                    self.assertEqual(
+                        {key: rows[0][key] for key in EVENTS}, dict.fromkeys(EVENTS)
+                    )
+                    self.assertEqual(
+                        [row["evidence_status"] for row in rows[1:]],
+                        ["VERIFIED", "VERIFIED", "VERIFIED"],
+                    )
+                    self.assertEqual(
+                        [row["unconditional_success"] for row in rows[2:]],
+                        [False, True],
+                    )
+
+    def test_frozen_source_pin_mismatch_refuses_report_before_scoring(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            materials, _, _ = campaign(root, "audit", [])
+            plan = strict_json((root / "PLAN.json").read_bytes())
+            frozen = next(
+                pin
+                for pin in plan["source_pins"]
+                if pin["path"].endswith("/candidate_retention_report.py")
+            )
+            frozen["sha256"] = digest(b"previously frozen reader source")
+            # This is a separately bound incompatible plan, never a rewrite of
+            # historical observations or a release of sealed evaluation data.
+            plan_raw = json_bytes(plan)
+            (root / "PLAN.json").write_bytes(plan_raw)
+            manifest = strict_json((root / "EVIDENCE.json").read_bytes())
+            manifest["plan_sha256"] = digest(plan_raw)
+            manifest_raw = json_bytes(manifest)
+            (root / "EVIDENCE.json").write_bytes(manifest_raw)
+            with self.assertRaisesRegex(ValueError, "registered bytes"):
+                generate(root, materials, digest(plan_raw), digest(manifest_raw))
+
+    def test_recursive_untrusted_json_shape_substitutions_never_abort(self):
+        def paths(value, prefix=()):
+            children = (
+                value.items()
+                if isinstance(value, dict)
+                else enumerate(value)
+                if isinstance(value, list)
+                else []
+            )
+            for key, child in children:
+                path = prefix + (key,)
+                yield path
+                yield from paths(child, path)
+
+        original = fixture()
+        # The PLAN roster is authoritative. Only evidence inputs are replaced.
+        for index in range(1, len(original)):
+            for path in [()] + list(paths(original[index])):
+                for value in ({}, [], None, 0, "malformed", True):
+                    with self.subTest(input=index, path=path, value=value):
+                        data = deepcopy(original)
+                        if not path:
+                            data[index] = value
+                        else:
+                            parent = data[index]
+                            for key in path[:-1]:
+                                parent = parent[key]
+                            parent[path[-1]] = value
+                        row = evaluate_episode(*data)
+                        self.assertEqual(
+                            row["original_operation_id"],
+                            original[0]["original_operation_id"],
+                        )
+                        self.assertIn(
+                            row["evidence_status"], {"VERIFIED", "UNKNOWN", "REJECTED"}
+                        )
+
+    def test_missing_trajectory_steps_remain_unknown(self):
+        data = fixture()
+        data[4] = {}
+        row = evaluate_episode(*data)
+        self.assertEqual(
+            {
+                key: row[key]
+                for key in ("evidence_status", "available", "unconditional_success")
+            },
+            {
+                "evidence_status": "UNKNOWN",
+                "available": None,
+                "unconditional_success": True,
+            },
+        )
+
+    def test_malformed_episode_objects_and_nested_fields_are_rejected(self):
+        mutations = [
+            lambda data: data.__setitem__(1, []),
+            lambda data: data.__setitem__(2, []),
+            lambda data: data.__setitem__(3, []),
+            lambda data: data.__setitem__(4, []),
+            lambda data: data.__setitem__(5, {}),
+            lambda data: data.__setitem__(6, []),
+            lambda data: data.__setitem__(7, []),
+            lambda data: data[3].update(terminal_status=[]),
+            lambda data: data[1].update(source_image=[]),
+            lambda data: data[2].update(requirements=[]),
+            lambda data: data[2].update(initial_delivery=[]),
+            lambda data: data[4].update(steps={}),
+            lambda data: data[4]["steps"].__setitem__(0, []),
+            lambda data: data[4]["steps"][0].update(action=[]),
+            lambda data: data[4]["steps"][0]["action"].update(arguments=[]),
+            lambda data: data[4]["steps"][0].update(candidate_audit=[]),
+            lambda data: data[5].__setitem__(0, []),
+            lambda data: data[5][0].update(value=[]),
+            lambda data: data[5][0]["value"].update(raw_candidates=[None]),
+            lambda data: data[5][0]["value"].update(offered_observed_steps={}),
+            lambda data: data[6].update(final=[]),
+            lambda data: data[7].update(final=[]),
+        ]
+        for index, mutate in enumerate(mutations):
+            with self.subTest(mutation=index):
+                data = fixture()
+                mutate(data)
+                row = evaluate_episode(*data)
+                self.assertEqual(row["evidence_status"], "REJECTED")
+                self.assertEqual(
+                    {key: row[key] for key in EVENTS}, dict.fromkeys(EVENTS)
+                )
+
+    def test_bound_bad_json_shapes_do_not_block_later_real_scoring(self):
+        for artifact in (
+            "reference",
+            "public_case",
+            "result",
+            "trajectory",
+            "audit",
+            "initial_delivery",
+            "final_delivery",
+        ):
+            for value in (None, [], 7, "malformed"):
+                with self.subTest(artifact=artifact, value=value):
+                    with tempfile.TemporaryDirectory() as directory:
+                        root = Path(directory)
+                        args = campaign(root, artifact, deepcopy(value))
+                        report = generate(root, *args)
+                        rows = report["episodes"]
+                        self.assertEqual(report["planned_episodes"], 4)
+                        self.assertEqual(rows[0]["evidence_status"], "REJECTED")
+                        self.assertEqual(
+                            {key: rows[0][key] for key in EVENTS}, dict.fromkeys(EVENTS)
+                        )
+                        self.assertEqual(
+                            [row["evidence_status"] for row in rows[2:]],
+                            ["VERIFIED", "VERIFIED"],
+                        )
+                        self.assertEqual(
+                            [row["unconditional_success"] for row in rows[2:]],
+                            [False, True],
+                        )
+                        self.assertEqual(
+                            report["panels"]["current_only/all_planned"]["p_available"][
+                                "denominator"
+                            ],
+                            2,
+                        )
+                        self.assertEqual(
+                            {
+                                key: report[key]
+                                for key in (
+                                    "scientific_acceptance",
+                                    "confirmatory_use",
+                                    "production_adoption",
+                                    "full_cost_adjusted",
+                                )
+                            },
+                            {
+                                "scientific_acceptance": "HOLD",
+                                "confirmatory_use": False,
+                                "production_adoption": False,
+                                "full_cost_adjusted": False,
+                            },
+                        )
 
 
 if __name__ == "__main__":

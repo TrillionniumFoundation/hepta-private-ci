@@ -69,6 +69,18 @@ def _digest(value):
     )
 
 
+def _object(value, name):
+    if not isinstance(value, dict):
+        raise ValueError(name + " must be an object")
+    return value
+
+
+def _list(value, name):
+    if not isinstance(value, list):
+        raise ValueError(name + " must be a list")
+    return value
+
+
 def unknown_episode(expected, reason, *, rejected=False, terminal_status="Unknown"):
     return {
         "original_operation_id": expected["original_operation_id"],
@@ -110,11 +122,6 @@ def evaluate_episode(
         return row
     if not isinstance(result, dict):
         return unknown_episode(expected, "result must be an object", rejected=True)
-    row["terminal_status"] = result.get("terminal_status", "Unknown")
-    row["timeout_reported"] = row["terminal_status"] == "Timeout" or (
-        isinstance(result.get("error"), dict)
-        and result["error"].get("type") in {"TimeoutError", "TimeoutExpired"}
-    )
     profile = expected["candidate_memory_profile"]
     profile_sha = canonical_sha(profile)
     scope = {
@@ -128,6 +135,18 @@ def evaluate_episode(
     }
     scope["source_image_sha256"] = expected["source_sha256"]
     try:
+        terminal_status = result.get("terminal_status", "Unknown")
+        if not isinstance(terminal_status, str):
+            raise ValueError("terminal status must be text")
+        row["terminal_status"] = terminal_status
+        error = result.get("error")
+        row["timeout_reported"] = terminal_status == "Timeout" or (
+            isinstance(error, dict)
+            and isinstance(error.get("type"), str)
+            and error["type"] in {"TimeoutError", "TimeoutExpired"}
+        )
+        _object(deliveries, "deliveries")
+        _object(scores, "scores")
         if (
             profile.get("schema") != "ndu.real.candidate-memory-profile.v1"
             or profile.get("mode") not in {"current_only", "bounded"}
@@ -165,6 +184,11 @@ def evaluate_episode(
             )
         if reference is None or public_case is None:
             return row
+        _object(reference, "reference")
+        _object(reference["source_image"], "reference source image")
+        _object(public_case, "public packet")
+        _object(public_case["requirements"], "public requirements")
+        _object(public_case["initial_delivery"], "public initial delivery")
         if (
             any(
                 reference.get(k) != expected[v]
@@ -191,8 +215,13 @@ def evaluate_episode(
             )
         initial, final = deliveries.get("initial"), deliveries.get("final")
         for delivery in (initial, final):
-            if delivery is not None and delivery.get("case_id") != expected["case_id"]:
-                raise ValueError("delivery case differs")
+            if delivery is not None:
+                _object(delivery, "delivery")
+                if delivery.get("case_id") != expected["case_id"]:
+                    raise ValueError("delivery case differs")
+        for score in scores.values():
+            if score is not None:
+                _object(score, "score")
         if initial is not None and (
             initial.get("text") != public_case["initial_delivery"]["text"]
         ):
@@ -211,11 +240,18 @@ def evaluate_episode(
             if row["terminal_status"] in {"Failed", "BudgetStop", "Timeout"}
             else None
         )
-        if trajectory is None or not isinstance(trajectory.get("steps"), list):
+        if trajectory is None:
             return row
-        steps = trajectory["steps"]
+        _object(trajectory, "trajectory")
+        if "steps" not in trajectory:
+            return row
+        steps = _list(trajectory["steps"], "trajectory steps")
         if len(steps) > 8:
             raise ValueError("trajectory exceeds frozen action horizon")
+        for step in steps:
+            _object(step, "trajectory step")
+            _object(step["action"], "executed action")
+            _object(step["action"]["arguments"], "executed action arguments")
         if result.get("actions") != [step["action"]["action"] for step in steps]:
             raise ValueError("result and executed trajectory actions disagree")
         writes = [
@@ -231,6 +267,7 @@ def evaluate_episode(
             if row["unconditional_success"] is True
             else None
         )
+        _list(audits, "candidate audits")
         if (
             not steps
             or len(audits) != len(steps)
@@ -240,8 +277,9 @@ def evaluate_episode(
             return row
         seen, diagnostic, previous = {}, [], None
         for i, (step, bound) in enumerate(zip(steps, audits)):
-            audit = bound["value"]
-            link = step.get("candidate_audit", {})
+            _object(bound, "bound candidate audit")
+            audit = _object(bound["value"], "candidate audit")
+            link = _object(step.get("candidate_audit", {}), "candidate audit link")
             if (
                 audit.get("schema") != "ndu.real.candidate-audit.v1"
                 or audit.get("scope") != scope
@@ -262,6 +300,7 @@ def evaluate_episode(
             raw, offered = audit["raw_candidates"], audit["offered_candidates"]
             processed = audit.get("observation_processed")
             selected = audit.get("selected_index")
+            origins = _list(audit["offered_observed_steps"], "candidate origins")
             if (
                 type(processed) is not bool
                 or not isinstance(raw, list)
@@ -296,6 +335,7 @@ def evaluate_episode(
             ):
                 raise ValueError("processed candidates lack feature identities")
             for candidate in raw + offered:
+                _object(candidate, "candidate")
                 box = candidate.get("bbox")
                 if (
                     set(candidate) != {"text", "bbox", "origin"}
@@ -311,7 +351,6 @@ def evaluate_episode(
                 ):
                     raise ValueError("invalid bounded public candidate")
             seen[i] = {canonical_sha(candidate) for candidate in raw}
-            origins = audit["offered_observed_steps"]
             if len(origins) != len(offered) or any(
                 type(origin) is not int
                 or canonical_sha(candidate) not in seen.get(origin, set())
@@ -554,7 +593,8 @@ def generate(root, material_root, expected_plan_sha256, expected_manifest_sha256
         or hashlib.sha256(evidence_raw).hexdigest() != expected_manifest_sha256
     ):
         raise ValueError("plan or evidence manifest differs from expected bytes")
-    plan, manifest = strict_json(plan_raw), strict_json(evidence_raw)
+    plan = _object(strict_json(plan_raw), "plan")
+    manifest = _object(strict_json(evidence_raw), "evidence manifest")
     if (
         plan.get("schema") != "ndu.real.candidate-retention-plan.v1"
         or manifest.get("schema") != "ndu.real.candidate-retention-evidence.v1"
@@ -563,7 +603,8 @@ def generate(root, material_root, expected_plan_sha256, expected_manifest_sha256
         raise ValueError("plan/evidence schema or binding differs")
     repository = Path(__file__).resolve().parents[2]
     verified = {}
-    for binding in plan["source_pins"]:
+    for binding in _list(plan["source_pins"], "source pins"):
+        _object(binding, "source pin")
         if binding["path"] in verified:
             raise ValueError("duplicate source pin")
         read_bound(repository, binding)
@@ -574,9 +615,11 @@ def generate(root, material_root, expected_plan_sha256, expected_manifest_sha256
         != plan["evaluator_sha256"]
     ):
         raise ValueError("complete frozen execution and evaluator source pins required")
-    planned = plan["episodes"]
+    planned = _list(plan["episodes"], "planned episodes")
     pairs = defaultdict(list)
     for expected in planned:
+        _object(expected, "planned episode")
+        _object(expected["candidate_memory_profile"], "planned memory profile")
         if any(
             not _digest(expected.get(key))
             for key in (
@@ -619,7 +662,10 @@ def generate(root, material_root, expected_plan_sha256, expected_manifest_sha256
             raise ValueError(
                 "paired arms changed frozen model, inputs, control or candidate budget"
             )
-    evidence = {e["original_operation_id"]: e for e in manifest["episodes"]}
+    evidence = {
+        _object(e, "episode evidence")["original_operation_id"]: e
+        for e in _list(manifest["episodes"], "episode evidence roster")
+    }
     if len(evidence) != len(manifest["episodes"]) or not evidence.keys() <= {
         e["original_operation_id"] for e in planned
     }:
@@ -629,9 +675,11 @@ def generate(root, material_root, expected_plan_sha256, expected_manifest_sha256
     )
     if hashlib.sha256(index_raw).hexdigest() != plan["reference_index_sha256"]:
         raise ValueError("independent reference index pin differs")
-    index = strict_json(index_raw)
+    index = _object(strict_json(index_raw), "reference index")
     if index.get("schema") != "ndu.real.reference-index.v2":
         raise ValueError("role-bound reference index required")
+    _object(index["case_roles"], "reference roles")
+    _object(index["cases"], "reference case bindings")
     rows = []
     for expected in planned:
         item = evidence.get(expected["original_operation_id"])
@@ -644,8 +692,11 @@ def generate(root, material_root, expected_plan_sha256, expected_manifest_sha256
                 or index["case_roles"][expected["case_id"]] != expected["split"]
             ):
                 raise ValueError("sealed or reassigned reference role")
-            reference = strict_json(
-                read_bound(material_root, index["cases"][expected["case_id"]])
+            reference = _object(
+                strict_json(
+                    read_bound(material_root, index["cases"][expected["case_id"]])
+                ),
+                "reference",
             )
             objects = {}
             for key in (
@@ -657,7 +708,9 @@ def generate(root, material_root, expected_plan_sha256, expected_manifest_sha256
             ):
                 binding = item.get(key)
                 objects[key] = (
-                    None if binding is None else strict_json(read_bound(root, binding))
+                    None
+                    if binding is None
+                    else _object(strict_json(read_bound(root, binding)), key)
                 )
             if (
                 item.get("public_case") is not None
@@ -668,11 +721,13 @@ def generate(root, material_root, expected_plan_sha256, expected_manifest_sha256
                 None
                 if binding is None
                 else {
-                    "value": strict_json(read_bound(root, binding)),
+                    "value": _object(
+                        strict_json(read_bound(root, binding)), "candidate audit"
+                    ),
                     "sha256": binding["sha256"],
                     "bytes": binding["bytes"],
                 }
-                for binding in item.get("audits", [])
+                for binding in _list(item.get("audits", []), "candidate audit bindings")
             ]
             deliveries, scores = {}, {}
             for phase in ("initial", "final"):
@@ -709,7 +764,7 @@ def generate(root, material_root, expected_plan_sha256, expected_manifest_sha256
             )
         except FileNotFoundError as error:
             rows.append(unknown_episode(expected, str(error)))
-        except (KeyError, ValueError, TypeError) as error:
+        except (KeyError, ValueError, TypeError, IndexError, OSError) as error:
             rows.append(unknown_episode(expected, str(error), rejected=True))
     for binding in plan["source_pins"]:
         read_bound(repository, binding)
