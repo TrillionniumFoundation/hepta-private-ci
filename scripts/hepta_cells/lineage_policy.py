@@ -175,7 +175,7 @@ class CellRoster:
             if cell.feature_share_group is not None:
                 # Shared model residency is not cross-principal/agent authorization.
                 identity = (
-                    cell.principal_id, cell.agent_id,
+                    cell.principal_id, cell.agent_id, cell.state_owner, cell.data_scope,
                     cell.components.shared_feature_identity,
                 )
                 old = groups.setdefault(cell.feature_share_group, identity)
