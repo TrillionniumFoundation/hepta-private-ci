@@ -10,8 +10,12 @@ use crate::*;
 
 async fn pending() -> (tempfile::TempDir, AutomationStore, CircuitCommandReceiptV2) {
     let directory = tempfile::tempdir().expect("private durable owner");
+    let canonical_directory = directory
+        .path()
+        .canonicalize()
+        .expect("canonical private owner");
     let store = AutomationStore::open_root(
-        directory.path().join("automation"),
+        canonical_directory.join("automation"),
         fence(/*generation*/ 1).owner_agent_id,
     )
     .await
@@ -488,8 +492,12 @@ async fn ready_completed_and_corrupt_activations_cannot_be_admitted_as_pending_w
 #[tokio::test]
 async fn run_deadline_rejects_new_claims_but_preserves_readback_of_existing_reservations() {
     let directory = tempfile::tempdir().expect("private owner");
+    let canonical_directory = directory
+        .path()
+        .canonicalize()
+        .expect("canonical private owner");
     let store = AutomationStore::open_root(
-        directory.path().join("automation"),
+        canonical_directory.join("automation"),
         fence(/*generation*/ 1).owner_agent_id,
     )
     .await
