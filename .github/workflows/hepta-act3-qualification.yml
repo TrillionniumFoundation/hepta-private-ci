@@ -1,0 +1,66 @@
+name: ACT-3 procedural qualification
+
+on:
+  push:
+    branches:
+      - research/act3-stop-diagnosis-20261110
+      - research/act3-cold-state-20261110
+      - research/act3-tool-families-20261110
+
+permissions:
+  contents: read
+
+concurrency:
+  group: act3-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  controlled-research:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      OPENBLAS_NUM_THREADS: "1"
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0
+      - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
+        with:
+          version: "0.11.3"
+      - name: Bind exact source and dependencies
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/act3-records"
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test -z "$(git status --porcelain)"
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/act3-records/source.txt"
+          python3 -m venv "$RUNNER_TEMP/act3-venv"
+          "$RUNNER_TEMP/act3-venv/bin/pip" install numpy==2.3.5
+          "$RUNNER_TEMP/act3-venv/bin/python" --version > "$RUNNER_TEMP/act3-records/python.txt"
+          "$RUNNER_TEMP/act3-venv/bin/pip" freeze > "$RUNNER_TEMP/act3-records/packages.txt"
+      - name: Replay the pinned panel and diagnose termination
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/act3-venv/bin/python" -m unittest discover -s scripts/act2_learning -p test_diagnose.py -v > "$RUNNER_TEMP/act3-records/diagnostic-tests.log" 2>&1
+          "$RUNNER_TEMP/act3-venv/bin/python" scripts/act2_learning/diagnose.py --archive qualification/act2-learning-20261110/run2 --output "$RUNNER_TEMP/act3-records/diagnostic.json" > "$RUNNER_TEMP/act3-records/diagnostic.log" 2>&1
+      - name: Check original owning formatter
+        run: |
+          set -euo pipefail
+          git config --local credential.helper '!gh auth git-credential'
+          git fetch --no-tags --depth=1 origin 0584b3344f70ed51d9e09224e105bfa4d1a4635f
+          just fmt --base 0584b3344f70ed51d9e09224e105bfa4d1a4635f --check > "$RUNNER_TEMP/act3-records/formatter.log" 2>&1
+          test -z "$(git status --porcelain)"
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/act3-records/source-after.txt"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: act3-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/act3-records
+          if-no-files-found: error
+          retention-days: 30
