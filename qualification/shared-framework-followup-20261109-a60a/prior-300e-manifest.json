@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "source_sha": "300ebaaedd9ec578ffcd2bc341c2394ead6a92c8",
+  "source_sha_after": null,
+  "source_status_before": "",
+  "source_status_after": null,
+  "workspace": "/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs",
+  "selected_packages": [
+    "codex-hepta-infer-worker-host"
+  ],
+  "builds": [
+    {
+      "package": "codex-hepta-infer-worker-host",
+      "binaries": [
+        "hepta-joint-propose"
+      ],
+      "command": [
+        "cargo",
+        "build",
+        "--locked",
+        "--message-format=json-render-diagnostics",
+        "-p",
+        "codex-hepta-infer-worker-host",
+        "--bin",
+        "hepta-joint-propose"
+      ],
+      "stdout": "/home/runner/work/_temp/shared-framework/helpers/codex-hepta-infer-worker-host.jsonl",
+      "stderr": "/home/runner/work/_temp/shared-framework/helpers/codex-hepta-infer-worker-host.stderr.log",
+      "exit_code": 101,
+      "cargo_finished": null,
+      "complete": false
+    }
+  ],
+  "artifacts": {},
+  "complete": false,
+  "exit_code": 1,
+  "error": "RuntimeError: codex-hepta-infer-worker-host build exited 101; see raw logs"
+}

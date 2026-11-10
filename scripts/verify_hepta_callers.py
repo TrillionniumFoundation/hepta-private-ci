@@ -558,7 +558,13 @@ def _verify_boundary(
     }
 
 
-def _verify_required_order(row: dict[str, Any], code: str, relative: str) -> None:
+def _verify_required_order(
+    row: dict[str, Any],
+    code: str,
+    relative: str,
+    *,
+    literal_positions: dict[str, int] | None = None,
+) -> None:
     sequences = row.get("required_order", [])
     if not isinstance(sequences, list) or any(
         not isinstance(sequence, list)
@@ -572,15 +578,21 @@ def _verify_required_order(row: dict[str, Any], code: str, relative: str) -> Non
     for sequence in sequences:
         offset = 0
         for marker in sequence:
-            found = code.find(marker, offset)
-            if found < 0:
+            found = (
+                literal_positions[marker]
+                if literal_positions is not None and marker in literal_positions
+                else code.find(marker, offset)
+            )
+            if found < offset:
                 raise VerificationFailure(
                     f"{relative}: required code order missing: {sequence!r}"
                 )
             offset = found + len(marker)
 
 
-def _verify_function_order(row: dict[str, Any], code: str, relative: str) -> None:
+def _verify_function_order(
+    row: dict[str, Any], code: str, relative: str, source: str
+) -> None:
     """Require call order inside one actual function, never across definitions."""
     rows = row.get("required_function_order", [])
     if not isinstance(rows, list):
@@ -631,10 +643,42 @@ def _verify_function_order(row: dict[str, Any], code: str, relative: str) -> Non
                 raise VerificationFailure(
                     f"{relative}: top-level function code required: {marker}"
                 )
+        # Locate only exact literal calls whose real code syntax survives the
+        # authoritative comment/literal/test/nested-function masks at that span.
+        # Other strings must never supply ordinary code guards.
+        literal_positions: dict[str, int] = {}
+        literal_calls = (
+            _string_tuple(item, "literal_calls") if "literal_calls" in item else ()
+        )
+        if len(set(literal_calls)) != len(literal_calls):
+            raise VerificationFailure(f"{relative}: duplicate literal call marker")
+        for marker in literal_calls:
+            masked = _strip_rust_non_code(marker)
+            if (
+                re.fullmatch(
+                    r'(?:\.[A-Za-z_]\w*|[A-Za-z_]\w*(?:::[A-Za-z_]\w*)*)\("(?:[^"\\]|\\.)*"\)',
+                    marker,
+                )
+                is None
+                or not masked.strip()
+                or masked == marker
+            ):
+                raise VerificationFailure(f"{relative}: exact literal call required")
+            matches = [
+                match.start()
+                for match in re.finditer(re.escape(marker), source[start : end + 1])
+                if body[match.start() : match.end()] == masked
+            ]
+            if len(matches) != 1:
+                raise VerificationFailure(
+                    f"{relative}: unique actual literal call required"
+                )
+            literal_positions[marker] = matches[0]
         _verify_required_order(
             {"required_order": [sequence]},
             body,
             relative + ":" + function,
+            literal_positions=literal_positions,
         )
 
 
@@ -658,7 +702,7 @@ def _verify_protected_files(root: Path, data: dict[str, Any]) -> list[str]:
                 )
         code = _strip_cfg_test_items(_strip_rust_non_code(text))
         _verify_required_order(row, code, relative)
-        _verify_function_order(row, code, relative)
+        _verify_function_order(row, code, relative, text)
         for marker in _string_tuple(row, "forbidden"):
             pattern = re.escape(marker)
             if marker and (marker[0].isalnum() or marker[0] == "_"):

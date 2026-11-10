@@ -146,3 +146,55 @@ fn unknown_clock_does_not_bypass_present_evidence_bounds() {
     };
     assert_eq!(plan.assess(&plan.binding, &ActionCheckClockV1::Unknown), Err(ActionSkillError::Observation));
 }
+
+#[test]
+fn deserialized_original_binding_is_validated_before_assessment() {
+    let original = serde_json::to_value(plan()).expect("serialized plan");
+    let roundtrip: ActionCheckPlanV1 = serde_json::from_value(original.clone()).expect("plan");
+    assert_eq!(
+        recommendation(&roundtrip),
+        ActionCheckRecommendationV1::Check
+    );
+    for (path, invalid) in [
+        (
+            "/binding/provider_intent/schema_version",
+            serde_json::json!(0),
+        ),
+        (
+            "/binding/provider_intent/key",
+            serde_json::json!("invalid-key"),
+        ),
+        (
+            "/binding/provider_intent/payload_sha256",
+            serde_json::json!("invalid-digest"),
+        ),
+        (
+            "/binding/effect_intent_digest",
+            serde_json::json!("invalid-digest"),
+        ),
+        (
+            "/binding/contract_digest",
+            serde_json::json!("invalid-digest"),
+        ),
+        ("/binding/destination_id", serde_json::json!("")),
+        (
+            "/binding/destination_id",
+            serde_json::json!("destination with spaces"),
+        ),
+        (
+            "/binding/destination_id",
+            serde_json::json!("d".repeat(129)),
+        ),
+    ] {
+        let mut value = original.clone();
+        *value.pointer_mut(path).expect("binding field") = invalid;
+        let plan: ActionCheckPlanV1 = serde_json::from_value(value).expect("plan shape");
+        for current in [now(), ActionCheckClockV1::Unknown] {
+            assert_eq!(
+                plan.assess(&plan.binding, &current),
+                Err(ActionSkillError::Invocation),
+                "{path}"
+            );
+        }
+    }
+}

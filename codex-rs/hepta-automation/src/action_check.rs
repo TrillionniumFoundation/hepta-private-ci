@@ -102,11 +102,17 @@ impl ActionCheckPlanV1 {
     ) -> Result<ActionCheckAssessmentV1, ActionSkillError> {
         let estimate = &self.estimate;
         if self.binding != *original_binding
+            || original_binding.provider_intent.validate().is_err()
+            || original_binding.destination_id.is_empty()
+            || original_binding.destination_id.len() > 128
+            || original_binding.destination_id.chars().any(char::is_whitespace)
             || self.generation == 0
             || self.cost_unit.is_empty()
             || self.cost_unit.len() > 64
             || self.cost_unit.chars().any(char::is_whitespace)
             || [
+                &original_binding.effect_intent_digest,
+                &original_binding.contract_digest,
                 &self.effective_model_digest,
                 &self.source_frontier_digest,
                 &self.checker_digest,

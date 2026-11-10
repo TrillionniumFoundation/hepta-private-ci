@@ -2,6 +2,8 @@
 //! learning authority: current source/frontier/signature checks remain there.
 
 use codex_hepta_automation::AutomationStore;
+use codex_hepta_automation::CircuitLearningDeliveryV1;
+use codex_hepta_automation::CircuitLearningIntentV1;
 use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_learning_artifacts::LearningIterationCoordinatorV1;
 use codex_hepta_learning_artifacts::LearningIterationOwnersV1;
@@ -37,6 +39,46 @@ pub async fn reconcile_circuit_learning_v1(
     delivery(store, backend, request, owners, DeliveryMode::Readback).await
 }
 
+/// Finish only local slot retirement after a previously committed exact ACK.
+/// This returns no learning snapshot and cannot submit, restore, attest or
+/// accept an iteration. The original durable ACK remains the cleanup witness.
+pub(crate) async fn retire_acknowledged_delivery(
+    store: &AutomationStore,
+    request: &LearningIterationRequestV1,
+    owners: &LearningIterationOwnersV1,
+    row: &CircuitLearningDeliveryV1,
+) -> Result<(), Error> {
+    let request_digest = request_digest(store, request, owners, &row.intent)?;
+    if row.request_digest.as_ref() != Some(&request_digest) {
+        return Err(Error::WrongScope);
+    }
+    let head = row.acknowledged_head.as_ref().ok_or(Error::CommitUncertain)?;
+    // The original owner re-reads and compares intent, request and ACK inside
+    // its transaction. A stale caller observation never authorizes cleanup.
+    store
+        .retire_acknowledged_circuit_learning(&row.intent, &request_digest, head)
+        .await
+        .map_err(|_| Error::CommitUncertain)
+}
+
+fn request_digest(
+    store: &AutomationStore,
+    request: &LearningIterationRequestV1,
+    owners: &LearningIterationOwnersV1,
+    intent: &CircuitLearningIntentV1,
+) -> Result<Sha256Digest, Error> {
+    if request.agent_id.as_str() != store.owner_agent_id().as_str()
+        || request.source_run_id.as_str() != intent.source_run_id
+        || request.operation_id.as_str() != intent.operation_id
+        || request.completed_task_receipt.to_string() != intent.completed_task_receipt.as_str()
+        || request.envelope.objective_digest.to_string() != intent.objective_digest.as_str()
+    {
+        return Err(Error::WrongScope);
+    }
+    let initial = LearningIterationCoordinatorV1::new(request.clone(), owners.clone())?;
+    Sha256Digest::parse(initial.snapshot().head_digest.to_string()).map_err(|_| Error::WrongScope)
+}
+
 async fn delivery(
     store: &AutomationStore,
     backend: Option<&LearningIterationHandleV1>,
@@ -53,16 +95,7 @@ async fn delivery(
             "completion intent is not available",
         ))?;
     let intent = &row.intent;
-    if request.agent_id.as_str() != store.owner_agent_id().as_str()
-        || request.operation_id.as_str() != intent.operation_id
-        || request.completed_task_receipt.to_string() != intent.completed_task_receipt.as_str()
-        || request.envelope.objective_digest.to_string() != intent.objective_digest.as_str()
-    {
-        return Err(Error::WrongScope);
-    }
-    let initial = LearningIterationCoordinatorV1::new(request.clone(), owners.clone())?;
-    let request_digest = Sha256Digest::parse(initial.snapshot().head_digest.to_string())
-        .map_err(|_| Error::WrongScope)?;
+    let request_digest = request_digest(store, &request, &owners, intent)?;
     // Refuse known queue/owner unavailability before recording a durable claim.
     // Loss after the claim remains uncertain and permits only original readback.
     let reservation = backend.reserve()?;

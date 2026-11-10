@@ -1,0 +1,26 @@
+{
+  "ruff": "0.15.13",
+  "tests_before_maintenance": {
+    "passed": 65,
+    "failed": 0,
+    "seconds": 3.225
+  },
+  "protected_source_rows_before_maintenance": 166,
+  "guard_model": "exact literal span positions; ordinary guards use original fully masked code",
+  "files": {
+    "scripts/verify_hepta_callers.py": {
+      "before_sha256": "8899ec2b328125b2049b808cac0eeda3f57bfc6db89348512a58777101ae6dfa",
+      "after_sha256": "8899ec2b328125b2049b808cac0eeda3f57bfc6db89348512a58777101ae6dfa",
+      "ast_equal_including_type_comments": true,
+      "ast_sha256": "2961cbdbfe736f15d3a5a4557994e160437eb8571ee17a7e24daccbb50685612"
+    },
+    "qa/b4-no-bypass/test_verify_hepta_callers.py": {
+      "before_sha256": "fc879da40eb15575788a310cf2ddbe4dc988bfa192f729d3d842c9a3bf12b787",
+      "after_sha256": "fc879da40eb15575788a310cf2ddbe4dc988bfa192f729d3d842c9a3bf12b787",
+      "ast_equal_including_type_comments": true,
+      "ast_sha256": "c0efb2d2a2bdd1f82c94ed3a8de05e51f3a274df8c412ee874d4912f104a6cbd"
+    }
+  },
+  "manifest_sha256": "2f4e3de84597c8c9e594f4a0c242767ef9224ba10462e49bec1c3541d7abf2f6",
+  "full_boundary_scan": "NOT_RESTARTED"
+}
