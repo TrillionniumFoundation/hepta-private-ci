@@ -426,7 +426,9 @@ class EpisodicStore:
                 try:
                     descriptor = os.open(snapshot, flags)
                 except OSError as exc:
-                    raise ValueError("snapshot must be an accessible regular file") from exc
+                    raise ValueError(
+                        "snapshot must be an accessible regular file"
+                    ) from exc
                 try:
                     if not stat.S_ISREG(os.fstat(descriptor).st_mode):
                         raise ValueError("snapshot must be a regular file")
