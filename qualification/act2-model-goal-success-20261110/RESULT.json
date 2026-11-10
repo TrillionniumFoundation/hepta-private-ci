@@ -598,8 +598,16 @@
     "sha256": "d7e154f0c9411b0d16e68710367bf6d8c264e0b4d298239cefd4bb460f88a25d",
     "scope": "Original static review, not an external independent institution or native execution."
   },
+  "maintained_exact_source": {
+    "path": "maintained-run/RESULT.json",
+    "source_sha": "631e99f78898543e8dc1e8671632baf73945940e",
+    "source_tree": "9e5eb5acbed52758844804679647d316f401cb56",
+    "run_id": 42771121382,
+    "result": "SCOPED_NATIVE_PASS_ON_MAINTAINED_SOURCE",
+    "result_was_not_inherited": true
+  },
   "excluded_claims": [
-    "Transferred native pass counts on maintained source",
+    "Transferred original-candidate pass counts on maintained source; the maintained source instead has its own exact run",
     "Complete model-facing handler execution",
     "Full repository required CI or full caller scanner passed",
     "Actual App checkpoint rollback qualification",

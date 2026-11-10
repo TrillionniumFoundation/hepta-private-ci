@@ -1,6 +1,6 @@
 # ACT-2 current-goal tool success
 
-**Scoped native qualification passed on the actual tested source. Full ACT-2 promotion remains HOLD.**
+**Scoped native qualification passed independently on both the original and maintained exact sources. Full ACT-2 promotion remains HOLD.**
 
 [PR #5619](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5619)
 requires the original Notes REPLACE/STATUS success bit to agree with the current
@@ -21,8 +21,33 @@ The official formatter successor is `631e99f78898543e8dc1e8671632baf73945940e`,
 tree `9e5eb5acbed52758844804679647d316f401cb56`. Its only maintenance delta wraps
 one test assertion expression. The complete published test file matches the
 independent formatter's postimage, Git blob
-`0cac78f0e1c3297dfa1080aaf114b2651d27d480`. Original test counts are not
-transferred to this successor; its separate run is `42771121382`.
+`0cac78f0e1c3297dfa1080aaf114b2651d27d480`. Original test counts were not
+transferred to this successor. Its separate
+[run 42771121382](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42771121382)
+completed successfully on the maintained source itself.
+
+## Maintained exact-source execution
+
+Run `42771121382` tested `631e99f78898543e8dc1e8671632baf73945940e`,
+tree `9e5eb5acbed52758844804679647d316f401cb56`, without source mutation:
+
+| Scope | Maintained-source result | Command elapsed |
+| --- | --- | ---: |
+| Automation package | 169 passed, 0 failed, 2 skipped | 286.417 s |
+| Notes observer, projection and original owner | 12 passed, 0 failed, 778 skipped | 499.500 s |
+| Selected real Session/App test | 1 passed, 0 failed, 789 skipped | 7.673 s |
+| Pinned Session/App locked build | exit 0 | 121.347 s |
+| Scoped lint/fix | exit 0 | 303.237 s |
+
+The official formatter job and final formatter both produced empty patches.
+Every command record binds the maintained commit/tree before and after, records
+exit 0, and reports neither timeout nor output truncation. The actual App JSON
+again records `[true,true]` for first/recovered/repeated current goals and
+`[false,false]` after drift or readback loss, with three effect attempts, four
+issuer requests, no replay and no new recovery grant. The full-handler,
+production-authority, durable-tombstone, native-kernel and pixel flags remain
+false. The maintained originals and their member hashes are retained under
+[`maintained-run/`](maintained-run/README.md).
 
 ## What is checked
 
@@ -111,5 +136,5 @@ expansion or scientific promotion is introduced by this evidence.
 ZIP bytes are preserved without repacking and match GitHub's artifact digests.
 Archive-member manifests and original command/source/lock/binary records are
 retained in RESULT. The formatter successor's complete postimage and its single
-file commit delta were independently read back; that mapping is separate from
-new native acceptance on the successor.
+file commit delta were independently read back. Its new native acceptance is
+the separate exact-source run above, not an inherited original-candidate pass.
