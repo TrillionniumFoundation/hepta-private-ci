@@ -15,6 +15,14 @@ use codex_hepta_types::StableId;
 
 use crate::SparseCheckpoint;
 
+mod temporal_credit;
+
+pub use temporal_credit::{
+    TemporalCreditArmV1, TemporalCreditContractV1, TemporalCreditError, TemporalCreditReceiptV1,
+    TemporalEligibilityActionV1, TemporalFeedbackV1, TemporalGroupDeltaV1, TemporalSplitV1,
+    accumulate_temporal_credit_q24,
+};
+
 const Q: i64 = 1 << 24;
 const ELIGIBILITY_L1: i64 = 4 * Q;
 const MAX_HISTORY: usize = 1024;
