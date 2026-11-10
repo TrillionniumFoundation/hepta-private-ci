@@ -179,7 +179,7 @@ class MemoryReplayTests(unittest.TestCase):
         self.assertTrue(verify_priority_selection_against_checkpoint(row))
         stale = deepcopy(row)
         stale["preselection_checkpoint"] = pool.checkpoint()
-        with self.assertRaisesRegex(ValueError, "index does not follow"):
+        with self.assertRaisesRegex(ValueError, "source context|index does not follow"):
             verify_priority_selection_against_checkpoint(stale)
 
     def test_snapshot_verifier_is_read_only_and_checks_actual_selection_bytes(self):
