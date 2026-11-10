@@ -1,0 +1,1696 @@
+{
+  "schema_version": 1,
+  "record_kind": "scoped_candidate_status",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "pull_request": {
+    "number": 5720,
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5720",
+    "draft": true
+  },
+  "source": {
+    "parent_commit": "abf75d8e2097785b2ad01897c15a7531eebe6e44",
+    "published_code_commit": "06f32191452df9f03bb5dc21ff8105db6b66d3d6",
+    "code_tree": "d6db19d921be786713a7b1f91aa2a460b2ead8fe",
+    "changed_paths": [
+      "CALLERS.toml",
+      "codex-rs/hepta-agentd/src/circuit_learning_delivery.rs",
+      "codex-rs/hepta-agentd/src/learning_iteration.rs",
+      "codex-rs/hepta-agentd/src/learning_iteration_capacity_tests.rs",
+      "codex-rs/hepta-agentd/src/learning_iteration_delivery_runtime.rs",
+      "codex-rs/hepta-agentd/src/learning_iteration_delivery_runtime_tests.rs",
+      "codex-rs/hepta-agentd/src/learning_iteration_evaluation_evidence.rs",
+      "codex-rs/hepta-agentd/src/learning_iteration_evaluation_evidence_tests.rs",
+      "codex-rs/hepta-agentd/src/learning_iteration_evaluation_recovery_tests.rs",
+      "codex-rs/hepta-agentd/src/learning_iteration_readback_budget_tests.rs",
+      "codex-rs/hepta-agentd/src/learning_iteration_recovery_tests.rs"
+    ],
+    "evidence_record_is_a_later_tree": true,
+    "frozen_validation_commit": "06f32191452df9f03bb5dc21ff8105db6b66d3d6",
+    "frozen_validation_tree": "d6db19d921be786713a7b1f91aa2a460b2ead8fe",
+    "evidence_kept_outside_checkout_during_validation": true,
+    "prior_published_code_commit": "204da40ebd7a1e5b41cb3c3a684f7d83e3398b37",
+    "prior_code_tree": "09815e81e8ce622bac96b6dba534fce0dbc94668",
+    "original_local_code_commit": "7ba319b1decb50aee4b99f293010b4161aba5808",
+    "original_local_code_tree_observed": "8ac7e89fb13e732e3c8c5191eba3a0dc40bbd792",
+    "current_commit_parent": "204da40ebd7a1e5b41cb3c3a684f7d83e3398b37",
+    "current_production_code_unchanged_from_prior": false,
+    "current_followup_changed_paths": [
+      "codex-rs/hepta-agentd/src/learning_iteration.rs",
+      "codex-rs/hepta-agentd/src/learning_iteration_delivery_runtime_tests.rs",
+      "codex-rs/hepta-agentd/src/learning_iteration_readback_budget_tests.rs"
+    ],
+    "current_source_identity_observation": "raw/source-06f3219-observation.json",
+    "frozen_static_validation_commits": [
+      "6c5e5fa199ef291c5dbbc0ab13fe3e565d750fec",
+      "204da40ebd7a1e5b41cb3c3a684f7d83e3398b37",
+      "06f32191452df9f03bb5dc21ff8105db6b66d3d6"
+    ],
+    "initial_published_code_commit": "6c5e5fa199ef291c5dbbc0ab13fe3e565d750fec",
+    "initial_published_code_tree": "8ac7e89fb13e732e3c8c5191eba3a0dc40bbd792",
+    "cumulative_diff_stat": {
+      "files": 11,
+      "insertions": 732,
+      "deletions": 25
+    },
+    "current_diff_stat": {
+      "files": 3,
+      "insertions": 200,
+      "deletions": 3
+    },
+    "current_publication_reported_by": "root coordinator",
+    "current_validation_target_commit": "06f32191452df9f03bb5dc21ff8105db6b66d3d6",
+    "current_validation_target_tree": "d6db19d921be786713a7b1f91aa2a460b2ead8fe",
+    "evidence_branch": "codex/framework-learning-evidence-20261110-b68b",
+    "evidence_source_identity_rule": "Independent evidence tree; every validation result binds its actual tested code SHA/tree, not the artifact commit SHA",
+    "code_pull_request_head_remains_frozen": true
+  },
+  "overall_status": "HOLD",
+  "implemented_scope": [
+    {
+      "id": "reserve_before_delivery_claim",
+      "status": "IMPLEMENTED_SCOPED_NATIVE_PASS",
+      "files": [
+        "codex-rs/hepta-agentd/src/learning_iteration.rs",
+        "codex-rs/hepta-agentd/src/circuit_learning_delivery.rs"
+      ],
+      "existing_design_source": "374af2c7b28c76e3ebf1e3a90593389c8f6f7bd0",
+      "properties": [
+        "known full/closed actor leaves intent unclaimed",
+        "same permit held through claim and existing Root source recheck",
+        "post-claim loss remains uncertain; reconciliation cannot resubmit"
+      ],
+      "implementation_source_sha": "06f32191452df9f03bb5dc21ff8105db6b66d3d6"
+    },
+    {
+      "id": "recovered_evaluation_original_predecessor",
+      "status": "IMPLEMENTED_SCOPED_NATIVE_PASS",
+      "files": [
+        "codex-rs/hepta-agentd/src/learning_iteration_evaluation_evidence.rs"
+      ],
+      "properties": [
+        "validate complete history before reconstructing Training prefix",
+        "retained Evaluation equality before owner I/O",
+        "retain original signed owner readback and current trust checks"
+      ],
+      "implementation_source_sha": "06f32191452df9f03bb5dc21ff8105db6b66d3d6"
+    },
+    {
+      "id": "independent_bounded_readback_budget",
+      "status": "IMPLEMENTED_SCOPED_NATIVE_PASS",
+      "implementation_source_sha": "06f32191452df9f03bb5dc21ff8105db6b66d3d6",
+      "files": [
+        "codex-rs/hepta-agentd/src/learning_iteration.rs",
+        "codex-rs/hepta-agentd/src/learning_iteration_readback_budget_tests.rs",
+        "codex-rs/hepta-agentd/src/learning_iteration_delivery_runtime_tests.rs"
+      ],
+      "defect": "expired original work gave pure readback only one second for all sequential original-owner authentication",
+      "readback_timeout_seconds": 30,
+      "preserved_common_maximum_future_expiry_seconds": 86400,
+      "properties": [
+        "common now/remaining/maximum-future-expiry validation unchanged for both modes",
+        "only explicit Readback uses a fixed total recovery budget",
+        "Submit retains remaining.max(1), including checkpoint restore",
+        "timeout remains CommitUncertain",
+        "original restore, request/owners/generation/scope and signed evidence validation preserved",
+        "no new stage execution/checkpoint write/operation identity or work-deadline extension",
+        "Root per-exchange/session bounds, CALLERS and typed scanner unchanged"
+      ],
+      "fixture_scope": "real actor/handle timeout with synthetic signed owner evidence and paused Tokio time; no real training or end-to-end Root transport qualification"
+    },
+    {
+      "id": "explicit_source_state_receiver",
+      "status": "SCOPED_SOURCE_GUARD_OBSERVED",
+      "files": [
+        "codex-rs/hepta-agentd/src/learning_iteration_delivery_runtime.rs"
+      ],
+      "change": "let source_state: Arc<AgentdState> = Arc::clone(&state);",
+      "scanner_relaxed": false,
+      "implementation_source_sha": "06f32191452df9f03bb5dc21ff8105db6b66d3d6",
+      "historical_source_validation_commits": [
+        "6c5e5fa199ef291c5dbbc0ab13fe3e565d750fec",
+        "204da40ebd7a1e5b41cb3c3a684f7d83e3398b37"
+      ],
+      "current_source_validation_commit": "06f32191452df9f03bb5dc21ff8105db6b66d3d6"
+    }
+  ],
+  "validation": {
+    "source_guard_before": {
+      "log": "raw/root-learning-source-closure-before.log",
+      "execution_metadata": "raw/root-learning-source-closure-before.json",
+      "tests_run": 10,
+      "errors": 1,
+      "exit_code": 1
+    },
+    "source_guard_after": {
+      "log": "raw/root-learning-source-closure-after.log",
+      "execution_metadata": "raw/root-learning-source-closure-after.json",
+      "tests_run": 10,
+      "errors": 0,
+      "exit_code": 0
+    },
+    "source_guard_limit": "Initial before/after metadata does not capture a complete source identity. Separate frozen-source executions below record the published commit/tree and clean Git status before/after. All are static source checks, not native behavior or production qualification.",
+    "native_behavior": {
+      "status": "PASS_SCOPED_NATIVE_TESTS_AND_MAINTENANCE",
+      "source_sha": "06f32191452df9f03bb5dc21ff8105db6b66d3d6",
+      "source_tree": "d6db19d921be786713a7b1f91aa2a460b2ead8fe",
+      "observed_terminal_result": "completed",
+      "observed_case_count": 75,
+      "new_cases_required": 7,
+      "new_cases_observed_passed": 7,
+      "execution_plan": "Completed one native test invocation and subsequent maintenance with unchanged source. No tests were repeated after maintenance.",
+      "source_outcome_inheritance": false,
+      "attempts": [
+        {
+          "attempt": "remote_native",
+          "source_sha": "06f32191452df9f03bb5dc21ff8105db6b66d3d6",
+          "source_tree": "d6db19d921be786713a7b1f91aa2a460b2ead8fe",
+          "status": "COMPLETED_SCOPED_NATIVE_PASS",
+          "reported_observation_error": "Internal",
+          "observed_terminal_result": "completed",
+          "observed_case_count": 75,
+          "original_result_evidence_attached": true,
+          "observation_source": "retained original native log/JUnit/gate/source snapshots independently verified",
+          "inferred_success": false,
+          "inferred_compile_failure": false,
+          "prior_observation": {
+            "status": "SUBMISSION_AND_EXECUTION_UNKNOWN",
+            "reported_observation_error": "Internal",
+            "resolution": "original request became observable running and then tests reported passed"
+          },
+          "reported_test_command_exit_code": 0,
+          "reported_cases_passed": 75,
+          "reported_cases_filtered_or_skipped": 802,
+          "reported_new_cases_passed": 7,
+          "reported_fresh_junit_gate": true,
+          "reported_source_preserved": true,
+          "test_command_exit_code": 0,
+          "evidence_directory": "raw/native-06f3219-test-pass",
+          "fresh_junit_verified": true,
+          "source_preserved_during_tests": true,
+          "driver_exit_code": 0,
+          "driver_finished_at": "2026-11-10T14:14:14.050929+00:00",
+          "maintenance_evidence_directory": "raw/native-06f3219-final",
+          "prior_observation_preserved": true
+        },
+        {
+          "attempt": "local_fallback",
+          "source_sha": "06f32191452df9f03bb5dc21ff8105db6b66d3d6",
+          "source_tree": "d6db19d921be786713a7b1f91aa2a460b2ead8fe",
+          "status": "CANCELLED_BEFORE_NATIVE",
+          "authorization_source": "root coordinator",
+          "execution_limit": "one local fallback owner",
+          "reported_preparation": "use existing caches; supply six locked dependencies; wait for other Cargo writer to release target and memory",
+          "observed_terminal_result": "cancelled_before_native",
+          "observed_case_count": 0,
+          "original_result_evidence_attached": true,
+          "controller_exit_code": 130,
+          "native_phase_present": false,
+          "source_clean_before_after_cancellation": true,
+          "source_snapshots_byte_identical": true,
+          "evidence_directory": "raw/native-local-06f3219",
+          "cancellation_receipt": "raw/native-local-06f3219/cancellation-receipt.json",
+          "summary": "raw/native-local-06f3219/validation-summary.json",
+          "observation_source": "original controller cancellation receipt, summary, phase logs and source snapshots",
+          "retained_driver_status_note": "driver status remains at resource-wait as interrupted before final checkpoint; terminal cancellation is documented separately",
+          "counts_as_test_failure": false,
+          "counts_as_test_pass": false,
+          "reported_dependency_preparation": {
+            "packages": 6,
+            "bytes": 719562,
+            "checksum_verified": true,
+            "observation_source": "root coordinator; package transport records not included here"
+          }
+        }
+      ],
+      "reported_test_command_exit_code": 0,
+      "reported_cases_passed": 75,
+      "reported_cases_filtered_or_skipped": 802,
+      "reported_new_cases_passed": 7,
+      "reported_fresh_junit_gate": true,
+      "reported_source_preserved": true,
+      "original_result_evidence_attached": true,
+      "observed_passed_count": 75,
+      "observed_failed_count": 0,
+      "nextest_filtered_count": 802,
+      "junit_skipped_count": 0,
+      "test_command_exit_code": 0,
+      "required_cases": {
+        "completed_and_intermediate_histories_read_original_evaluation_after_work_expiry": [
+          {
+            "classname": "codex-hepta-agentd",
+            "name": "learning_iteration_evidence_client::tests::evaluation::recovery::completed_and_intermediate_histories_read_original_evaluation_after_work_expiry",
+            "outcome": "passed",
+            "seconds": "6.429"
+          }
+        ],
+        "corrupted_or_replaced_evaluation_history_is_refused_before_owner_io": [
+          {
+            "classname": "codex-hepta-agentd",
+            "name": "learning_iteration_evidence_client::tests::evaluation::recovery::corrupted_or_replaced_evaluation_history_is_refused_before_owner_io",
+            "outcome": "passed",
+            "seconds": "3.124"
+          }
+        ],
+        "expired_learning_readback_allows_multiple_bounded_original_owner_reads": [
+          {
+            "classname": "codex-hepta-agentd",
+            "name": "plasticity_runtime::lifetime_tests::learning_iteration_tests::recovery_tests::delivery_runtime_tests::readback_budget_tests::expired_learning_readback_allows_multiple_bounded_original_owner_reads",
+            "outcome": "passed",
+            "seconds": "0.268"
+          }
+        ],
+        "full_learning_actor_leaves_completion_unclaimed_then_delivers_once": [
+          {
+            "classname": "codex-hepta-agentd",
+            "name": "plasticity_runtime::lifetime_tests::learning_iteration_tests::recovery_tests::delivery_runtime_tests::capacity_tests::full_learning_actor_leaves_completion_unclaimed_then_delivers_once",
+            "outcome": "passed",
+            "seconds": "2.273"
+          }
+        ],
+        "learning_submit_keeps_its_work_deadline_while_restoring_a_checkpoint": [
+          {
+            "classname": "codex-hepta-agentd",
+            "name": "plasticity_runtime::lifetime_tests::learning_iteration_tests::recovery_tests::delivery_runtime_tests::readback_budget_tests::learning_submit_keeps_its_work_deadline_while_restoring_a_checkpoint",
+            "outcome": "passed",
+            "seconds": "0.101"
+          }
+        ],
+        "lost_learning_delivery_response_reconciles_without_repeating_stages": [
+          {
+            "classname": "codex-hepta-agentd",
+            "name": "plasticity_runtime::lifetime_tests::learning_iteration_tests::recovery_tests::delivery_runtime_tests::capacity_tests::lost_learning_delivery_response_reconciles_without_repeating_stages",
+            "outcome": "passed",
+            "seconds": "2.107"
+          }
+        ],
+        "stalled_learning_readback_exhausts_its_budget_without_repeating_or_writing": [
+          {
+            "classname": "codex-hepta-agentd",
+            "name": "plasticity_runtime::lifetime_tests::learning_iteration_tests::recovery_tests::delivery_runtime_tests::readback_budget_tests::stalled_learning_readback_exhausts_its_budget_without_repeating_or_writing",
+            "outcome": "passed",
+            "seconds": "0.126"
+          }
+        ]
+      },
+      "raw_required_pass_records": {
+        "full_learning_actor_leaves_completion_unclaimed_then_delivers_once": [
+          {
+            "binary": "codex-hepta-agentd",
+            "name": "plasticity_runtime::lifetime_tests::learning_iteration_tests::recovery_tests::delivery_runtime_tests::capacity_tests::full_learning_actor_leaves_completion_unclaimed_then_delivers_once"
+          }
+        ],
+        "lost_learning_delivery_response_reconciles_without_repeating_stages": [
+          {
+            "binary": "codex-hepta-agentd",
+            "name": "plasticity_runtime::lifetime_tests::learning_iteration_tests::recovery_tests::delivery_runtime_tests::capacity_tests::lost_learning_delivery_response_reconciles_without_repeating_stages"
+          }
+        ],
+        "completed_and_intermediate_histories_read_original_evaluation_after_work_expiry": [
+          {
+            "binary": "codex-hepta-agentd",
+            "name": "learning_iteration_evidence_client::tests::evaluation::recovery::completed_and_intermediate_histories_read_original_evaluation_after_work_expiry"
+          }
+        ],
+        "corrupted_or_replaced_evaluation_history_is_refused_before_owner_io": [
+          {
+            "binary": "codex-hepta-agentd",
+            "name": "learning_iteration_evidence_client::tests::evaluation::recovery::corrupted_or_replaced_evaluation_history_is_refused_before_owner_io"
+          }
+        ],
+        "expired_learning_readback_allows_multiple_bounded_original_owner_reads": [
+          {
+            "binary": "codex-hepta-agentd",
+            "name": "plasticity_runtime::lifetime_tests::learning_iteration_tests::recovery_tests::delivery_runtime_tests::readback_budget_tests::expired_learning_readback_allows_multiple_bounded_original_owner_reads"
+          }
+        ],
+        "stalled_learning_readback_exhausts_its_budget_without_repeating_or_writing": [
+          {
+            "binary": "codex-hepta-agentd",
+            "name": "plasticity_runtime::lifetime_tests::learning_iteration_tests::recovery_tests::delivery_runtime_tests::readback_budget_tests::stalled_learning_readback_exhausts_its_budget_without_repeating_or_writing"
+          }
+        ],
+        "learning_submit_keeps_its_work_deadline_while_restoring_a_checkpoint": [
+          {
+            "binary": "codex-hepta-agentd",
+            "name": "plasticity_runtime::lifetime_tests::learning_iteration_tests::recovery_tests::delivery_runtime_tests::readback_budget_tests::learning_submit_keeps_its_work_deadline_while_restoring_a_checkpoint"
+          }
+        ]
+      },
+      "evidence_directory": "raw/native-06f3219-test-pass",
+      "remote_file_manifest": "raw/native-06f3219-test-pass/readback-manifest.json",
+      "remote_original_files_verified": 23,
+      "input_manifest": "raw/native-06f3219-test-pass/input-manifest.json",
+      "summary": "raw/native-06f3219-test-pass/native-pass-summary.json",
+      "result_gate": "raw/native-06f3219-test-pass/native-result-gate.json",
+      "source_clean_before_after_tests": true,
+      "source_snapshots_byte_identical": true,
+      "source_snapshots": [
+        "raw/native-06f3219-test-pass/source_before.json",
+        "raw/native-06f3219-test-pass/source_after_tests.json"
+      ],
+      "source_snapshot_sha256": "bd1a687dc6ca8a1483c531f7c1136c870dd6d7b59b077e56b799d3f5924490ea",
+      "fresh_junit_verified": true,
+      "junit": "raw/native-06f3219-test-pass/observed-junit-885d7831.xml",
+      "junit_bytes": 20505,
+      "junit_sha256": "e390fe7db52460fca225482d2ca3ad97d46ff1b0ce2ebc8631132317e182df76",
+      "junit_original_mtime_ns": 1794319588513173943,
+      "stderr": "raw/native-06f3219-test-pass/native-tests.stderr.log",
+      "stderr_bytes": 31107,
+      "stderr_sha256": "8558fb5d0b73802a6aa2818ea8ee20707789b84604a34fbb3556efd8aea0166d",
+      "native_started_at": "2026-11-10T14:03:14.350713+00:00",
+      "native_finished_at": "2026-11-10T14:06:28.534391+00:00",
+      "test_execution_duration_seconds": 44.064,
+      "observation_source": "original native log and JUnit, independent case/hash/freshness/source checks; original provider versions retained",
+      "driver_exit_code": 0,
+      "driver_finished_at": "2026-11-10T14:14:14.050929+00:00",
+      "maintenance_evidence_directory": "raw/native-06f3219-final"
+    },
+    "required_repository_ci": {
+      "status": "NOT_SATISFIED",
+      "observed_complete_success": false,
+      "windows": {
+        "run_id": 42820133051,
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42820133051",
+        "source_sha": "6c5e5fa199ef291c5dbbc0ab13fe3e565d750fec",
+        "reported_conclusion": "failure",
+        "status": "FAILURE_COMPILE_ERROR",
+        "raw_remote_evidence_pending": false,
+        "job_id": 129843260076,
+        "error_code": "E0659",
+        "error": "assert_eq macro ambiguity in new learning_iteration_capacity_tests.rs: parent pretty_assertions macro via super::* conflicts with prelude",
+        "cause_observation_source": "retained original job log plus run/jobs metadata; hashes verified against source manifest",
+        "belongs_to_prior_source": true,
+        "evidence_directory": "raw/windows-6c5e5fa",
+        "manifest": "raw/windows-6c5e5fa/MANIFEST.json",
+        "log": "raw/windows-6c5e5fa/job-129843260076-original.log",
+        "log_bytes": 220694,
+        "log_sha256": "9eaf47e27831e4ee5768c97116be7fb37b8bb37d5ed8cc491a1158b4d9bdacbe",
+        "compiler_error_count": 10,
+        "agentd_tests_executed": 0,
+        "preceding_windows_scope_tests": {
+          "executed": 22,
+          "passed": 22,
+          "invocations": [
+            {
+              "purpose": "private file handles, ACL, reparse and hardlink",
+              "executed": 15,
+              "passed": 15,
+              "skipped": 5
+            },
+            {
+              "purpose": "Prompt Registry durable owner",
+              "executed": 2,
+              "passed": 2,
+              "skipped": 26
+            },
+            {
+              "purpose": "signed final-use store",
+              "executed": 3,
+              "passed": 3,
+              "skipped": 147
+            },
+            {
+              "purpose": "authority-lease durable store",
+              "executed": 2,
+              "passed": 2,
+              "skipped": 148
+            }
+          ],
+          "distinct_from_python_source_checks": true,
+          "qualifies_learning_repairs": false
+        },
+        "skipped_later_steps": [
+          "source-level Rust formatting",
+          "directory acquisition original native attacks"
+        ]
+      },
+      "linux": {
+        "source_sha": "6c5e5fa199ef291c5dbbc0ab13fe3e565d750fec",
+        "reported_status": "queued",
+        "terminal_success_observed": false,
+        "belongs_to_prior_source": true
+      },
+      "observation_source": "Per-lane records: current Windows original evidence verified; current Linux last reported queued, terminal evidence pending",
+      "current_source_sha": "06f32191452df9f03bb5dc21ff8105db6b66d3d6",
+      "current_source_status": "PARTIAL_WINDOWS_PASS_LINUX_PENDING",
+      "source_outcome_inheritance": false,
+      "historical_windows_observations": [
+        {
+          "run_id": 42824184414,
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42824184414",
+          "source_sha": "204da40ebd7a1e5b41cb3c3a684f7d83e3398b37",
+          "reported_status": "completed",
+          "observed_terminal_result": "cancelled",
+          "raw_remote_evidence_pending": false,
+          "observation_source": "original run/jobs metadata verified against manifest; no original job log retained",
+          "qualifies_current_source": false,
+          "observation_is_last_reported_not_live": true,
+          "status": "CANCELLED",
+          "reported_conclusion": "cancelled",
+          "job_id": 129857015849,
+          "completed_at": "2026-11-10T13:45:21Z",
+          "evidence_directory": "raw/windows-204da40",
+          "manifest": "raw/windows-204da40/MANIFEST.json",
+          "agentd_step_conclusion": "cancelled",
+          "agentd_case_count": null,
+          "log_attached": false,
+          "skipped_later_steps": [
+            "source-level Rust formatting",
+            "directory acquisition original native attacks"
+          ],
+          "source_identity_rule": "run.head_sha, not nested mutable pull_requests.head.sha"
+        }
+      ],
+      "current_source_tree": "d6db19d921be786713a7b1f91aa2a460b2ead8fe",
+      "current_windows": {
+        "source_sha": "06f32191452df9f03bb5dc21ff8105db6b66d3d6",
+        "status": "PASS_SCOPED_WINDOWS_QUALIFICATION",
+        "observed_terminal_result": "success",
+        "run_id": 42827391087,
+        "raw_remote_evidence_pending": false,
+        "job_id": 129868257070,
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42827391087",
+        "reported_status": "completed",
+        "observation_source": "original run/job/commit metadata and job log, hashes independently verified",
+        "source_tree": "d6db19d921be786713a7b1f91aa2a460b2ead8fe",
+        "completed_at": "2026-11-10T14:05:49Z",
+        "evidence_directory": "raw/windows-06f3219",
+        "manifest": "raw/windows-06f3219/MANIFEST.json",
+        "log": "raw/windows-06f3219/job-129868257070-original.log",
+        "log_bytes": 235852,
+        "log_sha256": "b2981ec1505045dada5d4fa059a23b08c5ce9cb62d0d2b8c216692d8f7263e17",
+        "rust_tests_passed": 33,
+        "rust_runs": [
+          {
+            "executed": 15,
+            "passed": 15,
+            "skipped": 5
+          },
+          {
+            "executed": 2,
+            "passed": 2,
+            "skipped": 26
+          },
+          {
+            "executed": 3,
+            "passed": 3,
+            "skipped": 147
+          },
+          {
+            "executed": 2,
+            "passed": 2,
+            "skipped": 148
+          },
+          {
+            "executed": 11,
+            "passed": 11,
+            "skipped": 293
+          }
+        ],
+        "python_acquisition_guard_tests_passed": 6,
+        "native_acquisition_lanes": {
+          "positive": {
+            "exit_code": 0,
+            "lane": "positive",
+            "log_sha256": "66bc5efca6470b38bacf1444dd1c55e99ff04256e4606c991e271d972c713f42",
+            "observations": {
+              "creation": "denied=true created=false",
+              "substitution": "swapped=true denied=true redirected=false"
+            },
+            "production_sha256": "21600c6d3b738afbd53db9fffd088944fb7fe1fbc947efde9520fc49e439e1ac",
+            "statuses": {
+              "private_state_windows::directory::tests::rejects_ancestor_substitution_at_retained_open": "PASS",
+              "private_state_windows::directory::tests::rejects_junction_before_creating_private_leaf": "PASS"
+            }
+          },
+          "unchecked-create": {
+            "exit_code": 1,
+            "lane": "unchecked-create",
+            "log_sha256": "06c8abb373a576244c68a75307b5534f007f6e28c17daf2f64b452871bf11628",
+            "observations": {
+              "creation": "denied=true created=true",
+              "substitution": "swapped=true denied=true redirected=false"
+            },
+            "patch_sha256": "f55d66d0a5b10e98b6ba1ebb60a56081e6027eff85068e01107c3a1e7ea4f74c",
+            "production_sha256": "a1aa002dc62686156f92071c1ff572987559c73230bf1c4acc3ea072739d400e",
+            "statuses": {
+              "private_state_windows::directory::tests::rejects_ancestor_substitution_at_retained_open": "PASS",
+              "private_state_windows::directory::tests::rejects_junction_before_creating_private_leaf": "FAIL"
+            }
+          },
+          "path-check-open": {
+            "exit_code": 1,
+            "lane": "path-check-open",
+            "log_sha256": "0f07235330ce15efb95efdbcced2b9e6086d2d522eed5c8515de5a03fdb76bc0",
+            "observations": {
+              "creation": "denied=true created=false",
+              "substitution": "swapped=true denied=false redirected=true"
+            },
+            "patch_sha256": "102a2659d4e6d6b3bc0316ce2d2966f5045b4c8578ed3cbb257c502afebbc4d3",
+            "production_sha256": "01787b0a9cf467436ad0cc35aa47b7c05e24ec5dae9b562c2382d1e7c56acdd4",
+            "statuses": {
+              "private_state_windows::directory::tests::rejects_ancestor_substitution_at_retained_open": "FAIL",
+              "private_state_windows::directory::tests::rejects_junction_before_creating_private_leaf": "PASS"
+            }
+          }
+        },
+        "job_steps": 14,
+        "all_job_steps_succeeded": true,
+        "source_unchanged_step_succeeded": true,
+        "new_learning_regressions_executed": false,
+        "coverage_limit": "Windows selection exercises Prompt Runtime and security/owner durability; new capacity/readback learning tests were not selected and Evaluation reader is cfg Linux"
+      },
+      "current_linux": {
+        "source_sha": "06f32191452df9f03bb5dc21ff8105db6b66d3d6",
+        "status": "QUEUED",
+        "observed_terminal_result": null,
+        "run_id": 42827391368,
+        "raw_remote_evidence_pending": true,
+        "reported_status": "queued",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42827391368",
+        "observation_source": "framework_boundaries agent; terminal evidence not yet attached"
+      }
+    },
+    "maintenance": {
+      "status": "PASS_SOURCE_PRESERVED_WITH_WARNINGS",
+      "source_sha": "06f32191452df9f03bb5dc21ff8105db6b66d3d6",
+      "source_tree": "d6db19d921be786713a7b1f91aa2a460b2ead8fe",
+      "original_terminal_maintenance_evidence_attached": true,
+      "post_native_fix_fmt_reached": true,
+      "phase_exit_codes": {
+        "fix": 0,
+        "fmt-maintenance": 0,
+        "maintenance-diff": 0,
+        "diff-check": 0
+      },
+      "driver_exit_code": 0,
+      "driver_finished_at": "2026-11-10T14:14:14.050929+00:00",
+      "maintenance_changed_source": false,
+      "maintenance_diff_bytes": 0,
+      "source_snapshots_byte_identical": true,
+      "source_snapshot_sha256": "bd1a687dc6ca8a1483c531f7c1136c870dd6d7b59b077e56b799d3f5924490ea",
+      "source_snapshots": [
+        "raw/native-06f3219-final/source_before.json",
+        "raw/native-06f3219-final/source_after_tests.json",
+        "raw/native-06f3219-final/source_after_fix.json",
+        "raw/native-06f3219-final/source_after_maintenance.json",
+        "raw/native-06f3219-final/source_final.json"
+      ],
+      "final_source_clean": true,
+      "native_invocations_recorded": 1,
+      "tests_reexecuted_after_maintenance": false,
+      "evidence_directory": "raw/native-06f3219-final",
+      "remote_file_manifest": "raw/native-06f3219-final/readback-manifest.json",
+      "remote_original_files_verified": 16,
+      "summary": "raw/native-06f3219-final/completion-summary.json",
+      "status_record": "raw/native-06f3219-final/status.json",
+      "fix_stderr": "raw/native-06f3219-final/fix.stderr.log",
+      "fix_stderr_bytes": 46413,
+      "fix_stderr_sha256": "827a872df3d9c3779474310d19e1f4f9ca0adb8b3e014ddd1b65edd2fca2714b",
+      "warnings": {
+        "agentd_duplicate_mod_count": 2,
+        "agentd_test_support_files": [
+          "hepta-agentd/src/learning_iteration_checkpoint_test_support.rs",
+          "hepta-agentd/src/neuron_generation_runtime_test_support.rs"
+        ],
+        "dependency_lifetime_syntax_count": 2,
+        "dependency": "third_party/i18n-config-0.4.8",
+        "warning_free": false,
+        "source_changed": false,
+        "observation_source": "original fix.stderr.log; final summary duplicate_mod count is scoped to Agentd"
+      },
+      "reported_prepublication_checks": {
+        "reporter": "root coordinator and budget implementation agent",
+        "toolchain": "Rust 1.96",
+        "commands": [
+          "just fmt",
+          "git diff --check"
+        ],
+        "reported_result": "completed",
+        "original_outputs_attached": false
+      }
+    },
+    "planned_native_command": "just test --locked --offline --cargo-profile dev-small -p codex-hepta-agentd --lib -E 'test(learning_iteration) | test(circuit_learning_delivery) | test(root_production_learning_inputs)' --test-threads 2 --retries 0",
+    "planned_native_cwd": "codex-rs",
+    "frozen_static_checks": {
+      "status": "PASS_SCOPED_STATIC_CHECKS",
+      "source_sha": "06f32191452df9f03bb5dc21ff8105db6b66d3d6",
+      "source_tree": "d6db19d921be786713a7b1f91aa2a460b2ead8fe",
+      "clean_before_and_after": true,
+      "evidence_directory": "raw/static-06f3219",
+      "python_tests_total": 22,
+      "scope": "static source and privileged caller inventory only",
+      "source_outcome_inheritance": false,
+      "root_learning_bootstrap": {
+        "metadata": "raw/static-06f3219/root-learning-source-closure.json",
+        "log": "raw/static-06f3219/root-learning-source-closure.log",
+        "tests_run": 10,
+        "errors": 0,
+        "exit_code": 0,
+        "started_at": "2026-11-10T13:45:48.639840+00:00",
+        "finished_at": "2026-11-10T13:45:50.272397+00:00"
+      },
+      "cell_learning_evaluation": {
+        "metadata": "raw/static-06f3219/cell-evaluation-source-closure.json",
+        "log": "raw/static-06f3219/cell-evaluation-source-closure.log",
+        "tests_run": 8,
+        "errors": 0,
+        "exit_code": 0,
+        "started_at": "2026-11-10T13:45:50.914541+00:00",
+        "finished_at": "2026-11-10T13:45:51.501345+00:00"
+      },
+      "evaluation_recovery": {
+        "metadata": "raw/static-06f3219/evaluation-recovery-source-closure.json",
+        "log": "raw/static-06f3219/evaluation-recovery-source-closure.log",
+        "tests_run": 4,
+        "errors": 0,
+        "exit_code": 0,
+        "started_at": "2026-11-10T13:45:52.672007+00:00",
+        "finished_at": "2026-11-10T13:45:52.925106+00:00"
+      },
+      "caller_inventory": {
+        "metadata": "raw/static-06f3219/callers.json",
+        "log": "raw/static-06f3219/callers.log",
+        "status": "PASS_HEPTA_CALLER_CLOSED_SET",
+        "authorityGranted": false,
+        "rust_files_scanned": 6181,
+        "boundaries": 196,
+        "protected_files": 182,
+        "exit_code": 0,
+        "started_at": "2026-11-10T13:45:53.199245+00:00",
+        "finished_at": "2026-11-10T13:53:47.934005+00:00",
+        "bytes": 90873,
+        "sha256": "2c5cecb6700566bf7147bae7d5d96c9e8f0a0ca43b6c670c04ccd81d7373485c"
+      }
+    },
+    "prior_native_behavior_observation": {
+      "status": "FAILURE_COMPILE_ERROR",
+      "source_sha": "6c5e5fa199ef291c5dbbc0ab13fe3e565d750fec",
+      "source_tree": "8ac7e89fb13e732e3c8c5191eba3a0dc40bbd792",
+      "observed_terminal_result": "failed",
+      "test_command_exit_code": 101,
+      "driver_exit_code": 1,
+      "observed_case_count": 0,
+      "compiler_error_code": "E0659",
+      "compiler_error_count": 13,
+      "compiler_error_modules": {
+        "learning_iteration_capacity_tests.rs": 10,
+        "learning_iteration_evaluation_recovery_tests.rs": 3
+      },
+      "native_started_at": "2026-11-10T13:14:01.621957+00:00",
+      "native_finished_at": "2026-11-10T13:29:45.973748+00:00",
+      "source_before_after_final_byte_identical": true,
+      "source_clean": true,
+      "source_snapshots": [
+        "raw/native-6c5e5fa/source_before.json",
+        "raw/native-6c5e5fa/source_after_tests.json",
+        "raw/native-6c5e5fa/source_final.json"
+      ],
+      "evidence_directory": "raw/native-6c5e5fa",
+      "manifest": "raw/native-6c5e5fa/readback-manifest.json",
+      "original_files_in_manifest": 23,
+      "raw_remote_evidence_pending": false,
+      "stderr": "raw/native-6c5e5fa/native-tests.stderr.log",
+      "stderr_bytes": 76956,
+      "stderr_sha256": "c3c86d0a75194bbbadb05a27ea65c5fdb7a911fbdf95c1d5248f27df4bd982b9",
+      "preflight_read_only_fmt_check_exit_code": 0,
+      "post_test_fix_fmt_reached": false,
+      "observation_source": "original native files verified against readback manifest, original versions retained"
+    },
+    "frozen_static_checks_history": [
+      {
+        "source_sha": "6c5e5fa199ef291c5dbbc0ab13fe3e565d750fec",
+        "source_tree": "8ac7e89fb13e732e3c8c5191eba3a0dc40bbd792",
+        "clean_before_and_after": true,
+        "root_learning_bootstrap": {
+          "metadata": "raw/root-learning-source-closure-frozen.json",
+          "log": "raw/root-learning-source-closure-frozen.log",
+          "tests_run": 10,
+          "errors": 0,
+          "exit_code": 0
+        },
+        "cell_learning_evaluation": {
+          "metadata": "raw/evaluation-source-closure-frozen.json",
+          "log": "raw/evaluation-source-closure-0.log",
+          "tests_run": 8,
+          "errors": 0,
+          "exit_code": 0
+        },
+        "evaluation_recovery": {
+          "metadata": "raw/evaluation-source-closure-frozen.json",
+          "log": "raw/evaluation-source-closure-1.log",
+          "tests_run": 4,
+          "errors": 0,
+          "exit_code": 0
+        },
+        "caller_inventory": {
+          "metadata": "raw/callers-frozen.json",
+          "log": "raw/callers-frozen.log",
+          "status": "PASS_HEPTA_CALLER_CLOSED_SET",
+          "authorityGranted": false,
+          "rust_files_scanned": 6180,
+          "boundaries": 196,
+          "protected_files": 182,
+          "exit_code": 0,
+          "started_at": "2026-11-10T13:06:51.554951+00:00",
+          "finished_at": "2026-11-10T13:14:39.570597+00:00"
+        },
+        "python_tests_total": 22,
+        "scope": "static source and privileged caller inventory only"
+      },
+      {
+        "source_sha": "204da40ebd7a1e5b41cb3c3a684f7d83e3398b37",
+        "source_tree": "09815e81e8ce622bac96b6dba534fce0dbc94668",
+        "clean_before_and_after": true,
+        "evidence_directory": "raw/static-204da40",
+        "python_tests_total": 22,
+        "scope": "static source and privileged caller inventory only",
+        "root_learning_bootstrap": {
+          "metadata": "raw/static-204da40/root-learning-source-closure.json",
+          "log": "raw/static-204da40/root-learning-source-closure.log",
+          "tests_run": 10,
+          "errors": 0,
+          "exit_code": 0
+        },
+        "cell_learning_evaluation": {
+          "metadata": "raw/static-204da40/cell-evaluation-source-closure.json",
+          "log": "raw/static-204da40/cell-evaluation-source-closure.log",
+          "tests_run": 8,
+          "errors": 0,
+          "exit_code": 0
+        },
+        "evaluation_recovery": {
+          "metadata": "raw/static-204da40/evaluation-recovery-source-closure.json",
+          "log": "raw/static-204da40/evaluation-recovery-source-closure.log",
+          "tests_run": 4,
+          "errors": 0,
+          "exit_code": 0
+        },
+        "caller_inventory": {
+          "metadata": "raw/static-204da40/callers.json",
+          "log": "raw/static-204da40/callers.log",
+          "status": "PASS_HEPTA_CALLER_CLOSED_SET",
+          "authorityGranted": false,
+          "rust_files_scanned": 6180,
+          "boundaries": 196,
+          "protected_files": 182,
+          "exit_code": 0,
+          "started_at": "2026-11-10T13:26:58.144623+00:00",
+          "finished_at": "2026-11-10T13:34:03.723307+00:00",
+          "bytes": 90873,
+          "sha256": "1f65cd9dc1f5a286b155416ef8b4841f450d9d911d710a64c42ecbc564372b2e"
+        }
+      },
+      {
+        "status": "PASS_SCOPED_STATIC_CHECKS",
+        "source_sha": "06f32191452df9f03bb5dc21ff8105db6b66d3d6",
+        "source_tree": "d6db19d921be786713a7b1f91aa2a460b2ead8fe",
+        "clean_before_and_after": true,
+        "evidence_directory": "raw/static-06f3219",
+        "python_tests_total": 22,
+        "scope": "static source and privileged caller inventory only",
+        "source_outcome_inheritance": false,
+        "root_learning_bootstrap": {
+          "metadata": "raw/static-06f3219/root-learning-source-closure.json",
+          "log": "raw/static-06f3219/root-learning-source-closure.log",
+          "tests_run": 10,
+          "errors": 0,
+          "exit_code": 0,
+          "started_at": "2026-11-10T13:45:48.639840+00:00",
+          "finished_at": "2026-11-10T13:45:50.272397+00:00"
+        },
+        "cell_learning_evaluation": {
+          "metadata": "raw/static-06f3219/cell-evaluation-source-closure.json",
+          "log": "raw/static-06f3219/cell-evaluation-source-closure.log",
+          "tests_run": 8,
+          "errors": 0,
+          "exit_code": 0,
+          "started_at": "2026-11-10T13:45:50.914541+00:00",
+          "finished_at": "2026-11-10T13:45:51.501345+00:00"
+        },
+        "evaluation_recovery": {
+          "metadata": "raw/static-06f3219/evaluation-recovery-source-closure.json",
+          "log": "raw/static-06f3219/evaluation-recovery-source-closure.log",
+          "tests_run": 4,
+          "errors": 0,
+          "exit_code": 0,
+          "started_at": "2026-11-10T13:45:52.672007+00:00",
+          "finished_at": "2026-11-10T13:45:52.925106+00:00"
+        },
+        "caller_inventory": {
+          "metadata": "raw/static-06f3219/callers.json",
+          "log": "raw/static-06f3219/callers.log",
+          "status": "PASS_HEPTA_CALLER_CLOSED_SET",
+          "authorityGranted": false,
+          "rust_files_scanned": 6181,
+          "boundaries": 196,
+          "protected_files": 182,
+          "exit_code": 0,
+          "started_at": "2026-11-10T13:45:53.199245+00:00",
+          "finished_at": "2026-11-10T13:53:47.934005+00:00",
+          "bytes": 90873,
+          "sha256": "2c5cecb6700566bf7147bae7d5d96c9e8f0a0ca43b6c670c04ccd81d7373485c"
+        }
+      }
+    ],
+    "native_behavior_history": [
+      {
+        "status": "PENDING",
+        "source_sha": "204da40ebd7a1e5b41cb3c3a684f7d83e3398b37",
+        "source_tree": "09815e81e8ce622bac96b6dba534fce0dbc94668",
+        "observed_terminal_result": null,
+        "observed_case_count": null,
+        "execution_plan": "The prior 6c5e5fa invocation terminated naturally. Current-source validation remains separate; no new terminal result has been attached.",
+        "historical_observation_only": true,
+        "qualifies_current_source": false,
+        "note": "The prior candidate had no terminal native result attached when the validation target advanced."
+      }
+    ]
+  },
+  "new_native_regressions": [
+    "full_learning_actor_leaves_completion_unclaimed_then_delivers_once",
+    "lost_learning_delivery_response_reconciles_without_repeating_stages",
+    "completed_and_intermediate_histories_read_original_evaluation_after_work_expiry",
+    "corrupted_or_replaced_evaluation_history_is_refused_before_owner_io",
+    "expired_learning_readback_allows_multiple_bounded_original_owner_reads",
+    "stalled_learning_readback_exhausts_its_budget_without_repeating_or_writing",
+    "learning_submit_keeps_its_work_deadline_while_restoring_a_checkpoint"
+  ],
+  "empty_product_caller_boundaries_retained": [
+    "root_learning_original_stage_assembly",
+    "learning_evidence_original_owner_constructor",
+    "cell_learning_evaluation_profile_freeze",
+    "cell_learning_evaluation_original_readback"
+  ],
+  "six_boundary_status": [
+    {
+      "boundary": "cell_kernel",
+      "status": "PARTIAL_SOURCE_NOT_GENERALLY_MIGRATED",
+      "remaining": "V1 SparseConfig/SparseCheckpoint coupling; complete ordinary backend loaders"
+    },
+    {
+      "boundary": "representation",
+      "status": "PARTIAL_SOURCE_NOT_PRODUCT_QUALIFIED",
+      "remaining": "ordinary multimodal collection and semantic coordinate/time/missing-value/encoder-space closure"
+    },
+    {
+      "boundary": "learning_timescales",
+      "status": "PARTIAL_SOURCE_NOT_PRODUCT_QUALIFIED",
+      "remaining": "real resumable training custody and slow consolidation"
+    },
+    {
+      "boundary": "ordinary_learning_entry",
+      "status": "HOLD",
+      "remaining": "real stage-owner assembly and original evidence/selection/next-use custody"
+    },
+    {
+      "boundary": "shared_scheduling_compute",
+      "status": "SCOPED_CAPACITY_FIX_NATIVE_PASS",
+      "remaining": "general shared worker admission, batching/fairness and complete-cost benefit"
+    },
+    {
+      "boundary": "versions_migration",
+      "status": "SCOPED_RECOVERY_FIX_NATIVE_PASS",
+      "remaining": "general cross-kernel/state/topology migration and process cold recovery"
+    }
+  ],
+  "acceptance": {
+    "ordinary_production_learning": "HOLD",
+    "actual_training_evidence": "NOT_SUPPLIED_BY_FIXTURES",
+    "independent_holdout": "NOT_ESTABLISHED",
+    "published_selection_and_distinct_next_use": "NOT_ESTABLISHED",
+    "full_cold_restart": "NOT_ESTABLISHED",
+    "scientific_net_benefit": "NOT_ESTABLISHED",
+    "rsi": "NOT_ESTABLISHED"
+  },
+  "publication_effects": {
+    "main_merge": false,
+    "production_activation": false,
+    "new_external_effect_authority": false
+  },
+  "retained_files": [
+    {
+      "path": "raw/callers-frozen.json",
+      "bytes": 437,
+      "sha256": "03a6cce1b45648acc44ced2e17a10a5fb34182cf94a65994f484ff804b32a930"
+    },
+    {
+      "path": "raw/callers-frozen.log",
+      "bytes": 90873,
+      "sha256": "1f65cd9dc1f5a286b155416ef8b4841f450d9d911d710a64c42ecbc564372b2e"
+    },
+    {
+      "path": "raw/evaluation-source-closure-0.log",
+      "bytes": 106,
+      "sha256": "e1990b38b01902ee476915419c53d331f213b502ea6f184e625310fde56f38c9"
+    },
+    {
+      "path": "raw/evaluation-source-closure-1.log",
+      "bytes": 102,
+      "sha256": "f8ddc3f944eb1f66d649ee1a85cc521a1f16f7c215eecfeda4255b14a99e32fc"
+    },
+    {
+      "path": "raw/evaluation-source-closure-frozen.json",
+      "bytes": 1238,
+      "sha256": "c729c840d8655fe4854b3c40c94f9a40ffa5b9b106dc1ba47e00b757491f29fb"
+    },
+    {
+      "path": "raw/native-06f3219-final/completion-summary.json",
+      "bytes": 4984,
+      "sha256": "b8f3034a73dc85e6b86353aa32420397351ef66fe298ddf7542c0cdb4242f1d9"
+    },
+    {
+      "path": "raw/native-06f3219-final/diff-check.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "raw/native-06f3219-final/diff-check.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "raw/native-06f3219-final/fix.stderr.log",
+      "bytes": 46413,
+      "sha256": "827a872df3d9c3779474310d19e1f4f9ca0adb8b3e014ddd1b65edd2fca2714b"
+    },
+    {
+      "path": "raw/native-06f3219-final/fix.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "raw/native-06f3219-final/fmt-maintenance.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "raw/native-06f3219-final/fmt-maintenance.stdout.log",
+      "bytes": 73,
+      "sha256": "b6a6d5ad920f48c9b49a3ca8c2308227b7849b9e0a498dc452f3a7bd2f7fb752"
+    },
+    {
+      "path": "raw/native-06f3219-final/invocation.claim",
+      "bytes": 33,
+      "sha256": "60aced0d792e9bbd32a472ef38202b8c9f252a5eca6371dad59a17c1ca92d311"
+    },
+    {
+      "path": "raw/native-06f3219-final/maintenance-diff.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "raw/native-06f3219-final/maintenance-diff.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "raw/native-06f3219-final/native-result-gate.json",
+      "bytes": 8525,
+      "sha256": "a9e24bb7a75a8f5fb305f7563d97ff6dcd166f6c1427f86f260aa9baaf8aeafd"
+    },
+    {
+      "path": "raw/native-06f3219-final/readback-manifest.json",
+      "bytes": 4521,
+      "sha256": "bbf9b037b884d811bf3606d020d5e4f9a9a6039e01ce6e9ad016f61634451f23"
+    },
+    {
+      "path": "raw/native-06f3219-final/source_after_fix.json",
+      "bytes": 1745,
+      "sha256": "bd1a687dc6ca8a1483c531f7c1136c870dd6d7b59b077e56b799d3f5924490ea"
+    },
+    {
+      "path": "raw/native-06f3219-final/source_after_maintenance.json",
+      "bytes": 1745,
+      "sha256": "bd1a687dc6ca8a1483c531f7c1136c870dd6d7b59b077e56b799d3f5924490ea"
+    },
+    {
+      "path": "raw/native-06f3219-final/source_after_tests.json",
+      "bytes": 1745,
+      "sha256": "bd1a687dc6ca8a1483c531f7c1136c870dd6d7b59b077e56b799d3f5924490ea"
+    },
+    {
+      "path": "raw/native-06f3219-final/source_before.json",
+      "bytes": 1745,
+      "sha256": "bd1a687dc6ca8a1483c531f7c1136c870dd6d7b59b077e56b799d3f5924490ea"
+    },
+    {
+      "path": "raw/native-06f3219-final/source_final.json",
+      "bytes": 1745,
+      "sha256": "bd1a687dc6ca8a1483c531f7c1136c870dd6d7b59b077e56b799d3f5924490ea"
+    },
+    {
+      "path": "raw/native-06f3219-final/status.json",
+      "bytes": 10168,
+      "sha256": "23525b5d66bdc51252f581472125d0a1899adc7ac30c740c0fcb51ef99f289c9"
+    },
+    {
+      "path": "raw/native-06f3219-test-pass/cache-metadata.json",
+      "bytes": 283,
+      "sha256": "4043cd822b54001563dfbce65b8b5354ad4c8845d4117e662c7fa5bbd7b921de"
+    },
+    {
+      "path": "raw/native-06f3219-test-pass/checkout.stderr.log",
+      "bytes": 194,
+      "sha256": "f3563c082c337b22d0c4fe26304a0f7e8f52b8852079fbec8d16e47ceb63224b"
+    },
+    {
+      "path": "raw/native-06f3219-test-pass/checkout.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "raw/native-06f3219-test-pass/fetch.stderr.log",
+      "bytes": 151,
+      "sha256": "5508e7ab0fad800c42e62f43a024f6da82f4f679a6c21dfba379c5bb3b548aa6"
+    },
+    {
+      "path": "raw/native-06f3219-test-pass/fetch.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "raw/native-06f3219-test-pass/fmt-check.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "raw/native-06f3219-test-pass/fmt-check.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "raw/native-06f3219-test-pass/input-manifest.json",
+      "bytes": 512,
+      "sha256": "9ede9196f9d45bf744b3d821d662eb8933801b9d77c7cf4d06bb70b4cdc030d6"
+    },
+    {
+      "path": "raw/native-06f3219-test-pass/invocation.claim",
+      "bytes": 33,
+      "sha256": "60aced0d792e9bbd32a472ef38202b8c9f252a5eca6371dad59a17c1ca92d311"
+    },
+    {
+      "path": "raw/native-06f3219-test-pass/just-version.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "raw/native-06f3219-test-pass/just-version.stdout.log",
+      "bytes": 12,
+      "sha256": "4e91345369534015fde1a3e2fed862ad938bcfda47b993eb02536f7b3f095b87"
+    },
+    {
+      "path": "raw/native-06f3219-test-pass/native-pass-summary.json",
+      "bytes": 6017,
+      "sha256": "926438a877c23a09924306e3f580cfbfbfc5bf7a7121533fdab8f479e04e1a51"
+    },
+    {
+      "path": "raw/native-06f3219-test-pass/native-result-gate.json",
+      "bytes": 8525,
+      "sha256": "a9e24bb7a75a8f5fb305f7563d97ff6dcd166f6c1427f86f260aa9baaf8aeafd"
+    },
+    {
+      "path": "raw/native-06f3219-test-pass/native-tests.stderr.log",
+      "bytes": 31107,
+      "sha256": "8558fb5d0b73802a6aa2818ea8ee20707789b84604a34fbb3556efd8aea0166d"
+    },
+    {
+      "path": "raw/native-06f3219-test-pass/native-tests.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "raw/native-06f3219-test-pass/nextest-version.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "raw/native-06f3219-test-pass/nextest-version.stdout.log",
+      "bytes": 171,
+      "sha256": "f9bbf8f98ffb4c662e103de86c7afbec7f846fb9eb4b8cb7e5d5e9c05a06ee8e"
+    },
+    {
+      "path": "raw/native-06f3219-test-pass/observed-junit-885d7831.xml",
+      "bytes": 20505,
+      "sha256": "e390fe7db52460fca225482d2ca3ad97d46ff1b0ce2ebc8631132317e182df76"
+    },
+    {
+      "path": "raw/native-06f3219-test-pass/observed-junit-885d7831.xml.metadata.json",
+      "bytes": 3302,
+      "sha256": "2e55a551255b2bda2713f7112980790c5ff1cbde27157187158ecff0af1a5e82"
+    },
+    {
+      "path": "raw/native-06f3219-test-pass/readback-manifest.json",
+      "bytes": 6524,
+      "sha256": "1abfd1da6e9db487a07c12abbdf9658c95a1376033c03585a5cf2fcfcce6de39"
+    },
+    {
+      "path": "raw/native-06f3219-test-pass/rustc-version.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "raw/native-06f3219-test-pass/rustc-version.stdout.log",
+      "bytes": 196,
+      "sha256": "f64c55ed9f210d80a9b248206104a47175faf5ec94a093e4ad132549209089fc"
+    },
+    {
+      "path": "raw/native-06f3219-test-pass/rustfmt-version.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "raw/native-06f3219-test-pass/rustfmt-version.stdout.log",
+      "bytes": 45,
+      "sha256": "58e77f09cbe97eb2d0ab9174e5523494d03814f2879c8e187ed66370320abc7c"
+    },
+    {
+      "path": "raw/native-06f3219-test-pass/source_after_tests.json",
+      "bytes": 1745,
+      "sha256": "bd1a687dc6ca8a1483c531f7c1136c870dd6d7b59b077e56b799d3f5924490ea"
+    },
+    {
+      "path": "raw/native-06f3219-test-pass/source_before.json",
+      "bytes": 1745,
+      "sha256": "bd1a687dc6ca8a1483c531f7c1136c870dd6d7b59b077e56b799d3f5924490ea"
+    },
+    {
+      "path": "raw/native-06f3219-test-pass/validation-driver.py",
+      "bytes": 14876,
+      "sha256": "8f8359d1630fdbb6c662f6a209aad42ed6ef37aeabce90eef38fb758eaaf21eb"
+    },
+    {
+      "path": "raw/native-06f3219-test-pass/validation-request.json",
+      "bytes": 15422,
+      "sha256": "cfecddd55f390227e29abf996d891c4a6dc6cfd417791cc04259bfb8a479589e"
+    },
+    {
+      "path": "raw/native-6c5e5fa/cache-metadata.json",
+      "bytes": 242,
+      "sha256": "973182cffe82596783fa3017c60a6fc22769ba9341fdd8328bb1b42d2aa988ab"
+    },
+    {
+      "path": "raw/native-6c5e5fa/checkout.stderr.log",
+      "bytes": 213,
+      "sha256": "a8327db7e8b7e6f28c6445606536561109b6b0da9c9dbdbba8d6c1c0f3105516"
+    },
+    {
+      "path": "raw/native-6c5e5fa/checkout.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "raw/native-6c5e5fa/driver-error.txt",
+      "bytes": 134,
+      "sha256": "334413b811c95ce0b44cefdcb0420a85f23160e11221bde4e952247028b7e6f3"
+    },
+    {
+      "path": "raw/native-6c5e5fa/fetch.stderr.log",
+      "bytes": 151,
+      "sha256": "5508e7ab0fad800c42e62f43a024f6da82f4f679a6c21dfba379c5bb3b548aa6"
+    },
+    {
+      "path": "raw/native-6c5e5fa/fetch.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "raw/native-6c5e5fa/fmt-check.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "raw/native-6c5e5fa/fmt-check.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "raw/native-6c5e5fa/invocation.claim",
+      "bytes": 33,
+      "sha256": "8809836c3fee02df39ead59655429af77175b6e57b494b46d17b285cfdeb8c40"
+    },
+    {
+      "path": "raw/native-6c5e5fa/just-version.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "raw/native-6c5e5fa/just-version.stdout.log",
+      "bytes": 12,
+      "sha256": "4e91345369534015fde1a3e2fed862ad938bcfda47b993eb02536f7b3f095b87"
+    },
+    {
+      "path": "raw/native-6c5e5fa/native-tests.stderr.log",
+      "bytes": 76956,
+      "sha256": "c3c86d0a75194bbbadb05a27ea65c5fdb7a911fbdf95c1d5248f27df4bd982b9"
+    },
+    {
+      "path": "raw/native-6c5e5fa/native-tests.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "raw/native-6c5e5fa/nextest-version.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "raw/native-6c5e5fa/nextest-version.stdout.log",
+      "bytes": 171,
+      "sha256": "f9bbf8f98ffb4c662e103de86c7afbec7f846fb9eb4b8cb7e5d5e9c05a06ee8e"
+    },
+    {
+      "path": "raw/native-6c5e5fa/readback-manifest.json",
+      "bytes": 6289,
+      "sha256": "a8611d8ae677de9264fd1dbaf65b6904557dff81a8c23553eb0f81c233c30c6b"
+    },
+    {
+      "path": "raw/native-6c5e5fa/rustc-version.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "raw/native-6c5e5fa/rustc-version.stdout.log",
+      "bytes": 196,
+      "sha256": "f64c55ed9f210d80a9b248206104a47175faf5ec94a093e4ad132549209089fc"
+    },
+    {
+      "path": "raw/native-6c5e5fa/rustfmt-version.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "raw/native-6c5e5fa/rustfmt-version.stdout.log",
+      "bytes": 45,
+      "sha256": "58e77f09cbe97eb2d0ab9174e5523494d03814f2879c8e187ed66370320abc7c"
+    },
+    {
+      "path": "raw/native-6c5e5fa/source_after_tests.json",
+      "bytes": 1600,
+      "sha256": "00103242cdbe9c05ad04ebc312ea26522df72936214bcc1fb4ec0e803da2c243"
+    },
+    {
+      "path": "raw/native-6c5e5fa/source_before.json",
+      "bytes": 1600,
+      "sha256": "00103242cdbe9c05ad04ebc312ea26522df72936214bcc1fb4ec0e803da2c243"
+    },
+    {
+      "path": "raw/native-6c5e5fa/source_final.json",
+      "bytes": 1600,
+      "sha256": "00103242cdbe9c05ad04ebc312ea26522df72936214bcc1fb4ec0e803da2c243"
+    },
+    {
+      "path": "raw/native-6c5e5fa/status.json",
+      "bytes": 7176,
+      "sha256": "43b35ce7fe88f66877921ed2af810296405318805c49a72aec65d8191fd1e675"
+    },
+    {
+      "path": "raw/native-6c5e5fa/validation-summary.json",
+      "bytes": 1710,
+      "sha256": "209bcb7c353447aa3ce888e2caa1f87f84b38916b9f584e54bc0a7d08c6598ea"
+    },
+    {
+      "path": "raw/native-local-06f3219/cache-metadata.json",
+      "bytes": 310,
+      "sha256": "b33baf7ea9ec606bd3e157ce2cf940a450d3e2a84934aa25ac05e8051c22fef4"
+    },
+    {
+      "path": "raw/native-local-06f3219/cancellation-receipt.json",
+      "bytes": 518,
+      "sha256": "94db88ee3f62b8f6bed5c4d692d2d299386530b252d10b0f7bc9978acbaf2c52"
+    },
+    {
+      "path": "raw/native-local-06f3219/fmt-check.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "raw/native-local-06f3219/fmt-check.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "raw/native-local-06f3219/fmt-check.tail.txt",
+      "bytes": 18,
+      "sha256": "8edcb9791bc7b4d770e50113ce694c47474365b2398f62ce0abacf813b68d5cd"
+    },
+    {
+      "path": "raw/native-local-06f3219/invocation.claim",
+      "bytes": 39,
+      "sha256": "3973fc628125f12f780620795884f970b11ff07109f6b1b2447401f80cfa9a80"
+    },
+    {
+      "path": "raw/native-local-06f3219/just-version.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "raw/native-local-06f3219/just-version.stdout.log",
+      "bytes": 12,
+      "sha256": "4e91345369534015fde1a3e2fed862ad938bcfda47b993eb02536f7b3f095b87"
+    },
+    {
+      "path": "raw/native-local-06f3219/just-version.tail.txt",
+      "bytes": 30,
+      "sha256": "2e78d41ce5c45f786ca4eee016ae4cc271fb611b2397c85ab05fbe187b7f312e"
+    },
+    {
+      "path": "raw/native-local-06f3219/nextest-version.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "raw/native-local-06f3219/nextest-version.stdout.log",
+      "bytes": 171,
+      "sha256": "0525f6ec293e727519a57ddc6b879d5d5eafc896911f2ea5fccadf24033a78f7"
+    },
+    {
+      "path": "raw/native-local-06f3219/nextest-version.tail.txt",
+      "bytes": 189,
+      "sha256": "95bcaf682d58053e9ac24ec94c48ab48069cd2e998518c70dbb0d0033dab0109"
+    },
+    {
+      "path": "raw/native-local-06f3219/resource-observations.json",
+      "bytes": 13741,
+      "sha256": "8d9a391c185c578ddfe9376833f4bb63f331a3c383bce34798978cbf618b7ab6"
+    },
+    {
+      "path": "raw/native-local-06f3219/rustc-version.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "raw/native-local-06f3219/rustc-version.stdout.log",
+      "bytes": 196,
+      "sha256": "f64c55ed9f210d80a9b248206104a47175faf5ec94a093e4ad132549209089fc"
+    },
+    {
+      "path": "raw/native-local-06f3219/rustc-version.tail.txt",
+      "bytes": 214,
+      "sha256": "d7e2e3c315e6d39091935c6bb3a459036197241abc1abdc552d3e36ce1be4dde"
+    },
+    {
+      "path": "raw/native-local-06f3219/rustfmt-version.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "raw/native-local-06f3219/rustfmt-version.stdout.log",
+      "bytes": 45,
+      "sha256": "58e77f09cbe97eb2d0ab9174e5523494d03814f2879c8e187ed66370320abc7c"
+    },
+    {
+      "path": "raw/native-local-06f3219/rustfmt-version.tail.txt",
+      "bytes": 63,
+      "sha256": "1520a123b2cec7c77b35c2fd9401d107e8b2120bd32a5757105bb4a6823fe9de"
+    },
+    {
+      "path": "raw/native-local-06f3219/source-object-verify.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "raw/native-local-06f3219/source-object-verify.stdout.log",
+      "bytes": 82,
+      "sha256": "af17c5375a1b0619837f52521d26d0db93fcb86a56afe79c179832037626eb2c"
+    },
+    {
+      "path": "raw/native-local-06f3219/source-object-verify.tail.txt",
+      "bytes": 100,
+      "sha256": "76dd36ae67d0fab5fb5c9ab039a5992e279aa494d066d166b7fc1e78bac872ac"
+    },
+    {
+      "path": "raw/native-local-06f3219/source_after_cancellation.json",
+      "bytes": 1745,
+      "sha256": "bd1a687dc6ca8a1483c531f7c1136c870dd6d7b59b077e56b799d3f5924490ea"
+    },
+    {
+      "path": "raw/native-local-06f3219/source_before.json",
+      "bytes": 1745,
+      "sha256": "bd1a687dc6ca8a1483c531f7c1136c870dd6d7b59b077e56b799d3f5924490ea"
+    },
+    {
+      "path": "raw/native-local-06f3219/status.json",
+      "bytes": 5635,
+      "sha256": "4744bf442d909f0b3f27173bda14e7238589d247cdb636dabaacfdcfc2ca0367"
+    },
+    {
+      "path": "raw/native-local-06f3219/validation-summary.json",
+      "bytes": 445,
+      "sha256": "9c95ce027ee4f4cd89e61d88e123632275921a70406eb783a251d3c22aef8ca3"
+    },
+    {
+      "path": "raw/root-learning-source-closure-after.json",
+      "bytes": 305,
+      "sha256": "8963eb141885509472a08bf84eba12a5b6a6cb769e7d1678c995cc4b32d2a551"
+    },
+    {
+      "path": "raw/root-learning-source-closure-after.log",
+      "bytes": 109,
+      "sha256": "3a92d99a486ab02a0d1b2fdc856d9a2801b0783acf872dabbe442e189f8822b4"
+    },
+    {
+      "path": "raw/root-learning-source-closure-before.json",
+      "bytes": 305,
+      "sha256": "dff0614734f7bc23bc92a70cad2216b9461860e7b3e34daf72d3ab62318b6c78"
+    },
+    {
+      "path": "raw/root-learning-source-closure-before.log",
+      "bytes": 1893,
+      "sha256": "21d348c3bdffec2a6ad5b91d4d6b9535403cdc05ac46d30f30876f3169cccc0b"
+    },
+    {
+      "path": "raw/root-learning-source-closure-frozen.json",
+      "bytes": 523,
+      "sha256": "dbee5fadc05b4d43918cc055bd6796f71920a224e45e708ef5828f35ff2968d7"
+    },
+    {
+      "path": "raw/root-learning-source-closure-frozen.log",
+      "bytes": 109,
+      "sha256": "348b62f6960f298b855a1ed2394054514900e6926a56e281d7ded12592180aa0"
+    },
+    {
+      "path": "raw/source-06f3219-observation.json",
+      "bytes": 4783,
+      "sha256": "1d5ba4768c13c82b7acc0063a8026ff91b005b704e60864fb567c6b4d2c5bfa5"
+    },
+    {
+      "path": "raw/static-06f3219/callers.json",
+      "bytes": 535,
+      "sha256": "cfd248abb4670c1532ed9095132077492da44e0fa57610b583c4c61d153ecdfb"
+    },
+    {
+      "path": "raw/static-06f3219/callers.log",
+      "bytes": 90873,
+      "sha256": "2c5cecb6700566bf7147bae7d5d96c9e8f0a0ca43b6c670c04ccd81d7373485c"
+    },
+    {
+      "path": "raw/static-06f3219/cell-evaluation-source-closure.json",
+      "bytes": 620,
+      "sha256": "d0922a9ea1cd11b0f3df2dcacc062f9f91fe94882de756095ac242d4f6c8d993"
+    },
+    {
+      "path": "raw/static-06f3219/cell-evaluation-source-closure.log",
+      "bytes": 106,
+      "sha256": "2932789859511cc10b322dc2fb757d6c370fe95166ac9483b13ea9de5c27ff11"
+    },
+    {
+      "path": "raw/static-06f3219/evaluation-recovery-source-closure.json",
+      "bytes": 624,
+      "sha256": "7e1e31da4900a634b1924e1df7ed81e010a29deb553c80b0f49452ad2381a9bf"
+    },
+    {
+      "path": "raw/static-06f3219/evaluation-recovery-source-closure.log",
+      "bytes": 102,
+      "sha256": "61d6e91e129ef2ae810d9c5c34c12ac092fcc9df29c4123c39a99c93b9dcedf3"
+    },
+    {
+      "path": "raw/static-06f3219/root-learning-source-closure.json",
+      "bytes": 619,
+      "sha256": "d4c2e458fe27f0baa6d86ec379a2023403815d853b980c106b317db3358183ac"
+    },
+    {
+      "path": "raw/static-06f3219/root-learning-source-closure.log",
+      "bytes": 109,
+      "sha256": "8c02827698573463342aa6ec69a84fe770bb7c36b7c2e1e3ba42b9de455ed63a"
+    },
+    {
+      "path": "raw/static-204da40/callers.json",
+      "bytes": 535,
+      "sha256": "6cfae6beac6d6f2627d8ccda2f52a4995adcc34338547def240ef67d7940c1cc"
+    },
+    {
+      "path": "raw/static-204da40/callers.log",
+      "bytes": 90873,
+      "sha256": "1f65cd9dc1f5a286b155416ef8b4841f450d9d911d710a64c42ecbc564372b2e"
+    },
+    {
+      "path": "raw/static-204da40/cell-evaluation-source-closure.json",
+      "bytes": 620,
+      "sha256": "6256105da039ef115475b29e18fadd075a34fa6c93e2fd5f0e9a985c0d299bef"
+    },
+    {
+      "path": "raw/static-204da40/cell-evaluation-source-closure.log",
+      "bytes": 106,
+      "sha256": "10817f922d455f3b36191a9ff1e278291f74c069f5a96e65234c5f5bb729f115"
+    },
+    {
+      "path": "raw/static-204da40/evaluation-recovery-source-closure.json",
+      "bytes": 624,
+      "sha256": "1c988bb094f76815557f2df0665763613d38d6c1f4f62bda39b7ef63b329466c"
+    },
+    {
+      "path": "raw/static-204da40/evaluation-recovery-source-closure.log",
+      "bytes": 102,
+      "sha256": "04a3ba0eb1deb1cc4046427a4a131abbb0286628007dd92f3e9baa0c6cdcb807"
+    },
+    {
+      "path": "raw/static-204da40/root-learning-source-closure.json",
+      "bytes": 619,
+      "sha256": "8c0498b62e602afd225f75f53106487f49723367b594654eec05f1fc13c6e37a"
+    },
+    {
+      "path": "raw/static-204da40/root-learning-source-closure.log",
+      "bytes": 109,
+      "sha256": "0518ccf291a3dd05226123e01369595966bc68b6574da54c111a0c8ce2d3a30e"
+    },
+    {
+      "path": "raw/windows-06f3219/MANIFEST.json",
+      "bytes": 1603,
+      "sha256": "c2ffb5181b2ebc0f92ee109f1f3239723fdbfac125c8421e69ef00f208184fa1"
+    },
+    {
+      "path": "raw/windows-06f3219/commit-06f32191452df9f03bb5dc21ff8105db6b66d3d6.json",
+      "bytes": 14748,
+      "sha256": "a65e9aabc5b923f0f0d56b47509541c6886b24d0c324b2d0785e60c250660bad"
+    },
+    {
+      "path": "raw/windows-06f3219/hepta-windows-private-state-native.yml",
+      "bytes": 5497,
+      "sha256": "8b40215845511b17ab4f35efa47502d7fb790787489058dbf4c07fac5df056a1"
+    },
+    {
+      "path": "raw/windows-06f3219/job-129868257070-original.log",
+      "bytes": 235852,
+      "sha256": "b2981ec1505045dada5d4fa059a23b08c5ce9cb62d0d2b8c216692d8f7263e17"
+    },
+    {
+      "path": "raw/windows-06f3219/jobs-42827391087.json",
+      "bytes": 3809,
+      "sha256": "cca3f0fc181d58ce95263b62e1a2dfffca49e57b7709fc02629e7b761eb3fb40"
+    },
+    {
+      "path": "raw/windows-06f3219/run-42827391087.json",
+      "bytes": 15014,
+      "sha256": "8ae8255b37f55ad43279d483236a023983cc74840d1a68edad1a58dc31e9afc7"
+    },
+    {
+      "path": "raw/windows-06f3219/validation-summary.json",
+      "bytes": 995,
+      "sha256": "51c6efbf9a930888ed0b51ba60910c4955aec877689afb9bb9868ea195f08391"
+    },
+    {
+      "path": "raw/windows-204da40/MANIFEST.json",
+      "bytes": 650,
+      "sha256": "a61f756fa5b60b961a74d766c94254d400745d7c10d22a2209a316abccb84b5d"
+    },
+    {
+      "path": "raw/windows-204da40/jobs-42824184414.json",
+      "bytes": 3813,
+      "sha256": "3de821497a34186211426df33f981f64b1267a393a299fef8890d2976a472eee"
+    },
+    {
+      "path": "raw/windows-204da40/run-42824184414.json",
+      "bytes": 15016,
+      "sha256": "b233018e7df038eda3f41ed13a786ffaf336db1b41b3d4f141e053d22dca789c"
+    },
+    {
+      "path": "raw/windows-6c5e5fa/MANIFEST.json",
+      "bytes": 939,
+      "sha256": "7e5867a1004d307ece9085fa7150f1d99e0114fe78680ec6609b95aa7d95e17d"
+    },
+    {
+      "path": "raw/windows-6c5e5fa/hepta-windows-private-state-native.yml",
+      "bytes": 5497,
+      "sha256": "8b40215845511b17ab4f35efa47502d7fb790787489058dbf4c07fac5df056a1"
+    },
+    {
+      "path": "raw/windows-6c5e5fa/job-129843260076-original.log",
+      "bytes": 220694,
+      "sha256": "9eaf47e27831e4ee5768c97116be7fb37b8bb37d5ed8cc491a1158b4d9bdacbe"
+    },
+    {
+      "path": "raw/windows-6c5e5fa/jobs-42820133051.json",
+      "bytes": 2830,
+      "sha256": "f02fc208a746a88d258084c8084408ced1e79eccc9a7f1a77f339562cd10edb8"
+    },
+    {
+      "path": "raw/windows-6c5e5fa/pr-5720-observation.json",
+      "bytes": 3746,
+      "sha256": "dc228607df9b844a02cf00b5e0867f6f99677b35b5fe7a7bcf935c135cfa8930"
+    },
+    {
+      "path": "raw/windows-6c5e5fa/run-42820133051.json",
+      "bytes": 16561,
+      "sha256": "7ef3305f48bcfbcc1509918abed7ea0ea144e6b78ecd5f6e8570462215a3f15a"
+    }
+  ],
+  "separate_candidate_observation": {
+    "pull_request": 5719,
+    "source_sha": "dbb3bce393685469bd5587bb591d01099f1df697",
+    "workflow": "hepta-shared-framework.yml",
+    "run_id": 42820868946,
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42820868946",
+    "dispatch_observed": true,
+    "reported_status": "queued",
+    "qualifies_this_candidate": false,
+    "raw_remote_evidence_pending": true,
+    "observation_source": "root coordinator"
+  },
+  "followup_candidate": {
+    "status": "PUBLISHED_SCOPED_VERIFIED_REQUIRED_CI_PENDING",
+    "source_sha": "06f32191452df9f03bb5dc21ff8105db6b66d3d6",
+    "source_tree": "d6db19d921be786713a7b1f91aa2a460b2ead8fe",
+    "parent_sha": "204da40ebd7a1e5b41cb3c3a684f7d83e3398b37",
+    "changes_reported": "independent 30-second explicit Readback recovery budget; common deadline-shape guards and Submit timeout unchanged; three actor regressions",
+    "production_code_changed": true,
+    "inherits_prior_static_or_native_qualification": false,
+    "static_source_validation": "PASS_SCOPED_STATIC_CHECKS"
+  },
+  "unpublished_pending_work": [],
+  "followup_candidate_history": [
+    {
+      "status": "PUBLISHED_VERIFICATION_PENDING",
+      "source_sha": "204da40ebd7a1e5b41cb3c3a684f7d83e3398b37",
+      "source_tree": "09815e81e8ce622bac96b6dba534fce0dbc94668",
+      "parent_sha": "6c5e5fa199ef291c5dbbc0ab13fe3e565d750fec",
+      "changes_reported": "explicit pretty_assertions::assert_eq imports in both new test modules; three added lines only",
+      "production_code_changed": false,
+      "inherits_prior_static_or_native_qualification": false,
+      "static_source_validation": "OBSERVED_SEPARATE_CLEAN_SOURCE_CHECKS",
+      "is_current_candidate": false
+    }
+  ],
+  "record_updated_at": "2026-11-10T14:20:18.100723+00:00",
+  "scoped_code_validation": {
+    "source_sha": "06f32191452df9f03bb5dc21ff8105db6b66d3d6",
+    "source_tree": "d6db19d921be786713a7b1f91aa2a460b2ead8fe",
+    "static": "PASS_SCOPED_STATIC_CHECKS",
+    "native": "PASS_SCOPED_NATIVE_TESTS",
+    "windows": "PASS_SCOPED_WINDOWS_QUALIFICATION",
+    "maintenance": "PASS_SOURCE_PRESERVED_WITH_WARNINGS",
+    "required_ci": "HOLD_LINUX_PENDING",
+    "production_learning": "HOLD",
+    "status": "PASS_SCOPED_CODE_VERIFICATION"
+  },
+  "evidence_relocation_map": [
+    {
+      "originating_record": "raw/native-06f3219-final/completion-summary.json",
+      "field": "test_phase_artifacts",
+      "original_relative_reference": "../06f3219",
+      "packed_relative_reference": "../native-06f3219-test-pass",
+      "packed_directory_from_pack_root": "raw/native-06f3219-test-pass",
+      "original_record_unmodified": true
+    }
+  ]
+}

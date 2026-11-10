@@ -1,0 +1,279 @@
+{
+  "driver_exit_code": 0,
+  "environment": {
+    "CARGO_BUILD_JOBS": "2",
+    "CARGO_HOME": "/home/qian-qi/.cargo",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_TARGET_DIR": "/data/codex-organ-hepta5ece-complete-ten-owner-source-target-20261101-02",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "RUSTUP_TOOLCHAIN": "1.96.0"
+  },
+  "finished_at": "2026-11-10T14:14:14.050929+00:00",
+  "maintenance_changed_source": false,
+  "native_command_succeeded": true,
+  "native_result_gate_passed": true,
+  "native_result_source": "fresh-junit",
+  "phase": "complete",
+  "phases": [
+    {
+      "argv": [
+        "git",
+        "-c",
+        "credential.helper=!gh auth git-credential",
+        "fetch",
+        "--no-tags",
+        "https://github.com/TrillionniumFoundation/hepta-private-ci.git",
+        "codex/framework-learning-recovery-20261110-b68b"
+      ],
+      "cwd": "/home/qian-qi/hepta-framework-owner-assembly-20261110-b68b",
+      "elapsed_seconds": 6.864095491822809,
+      "finished_at": "2026-11-10T14:03:13.289093+00:00",
+      "name": "fetch",
+      "returncode": 0,
+      "started_at": "2026-11-10T14:03:06.423391+00:00",
+      "stderr": "fetch.stderr.log",
+      "stderr_bytes": 151,
+      "stderr_sha256": "5508e7ab0fad800c42e62f43a024f6da82f4f679a6c21dfba379c5bb3b548aa6",
+      "stdout": "fetch.stdout.log",
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "git",
+        "checkout",
+        "--detach",
+        "06f32191452df9f03bb5dc21ff8105db6b66d3d6"
+      ],
+      "cwd": "/home/qian-qi/hepta-framework-owner-assembly-20261110-b68b",
+      "elapsed_seconds": 0.041194010991603136,
+      "finished_at": "2026-11-10T14:03:13.399711+00:00",
+      "name": "checkout",
+      "returncode": 0,
+      "started_at": "2026-11-10T14:03:13.354350+00:00",
+      "stderr": "checkout.stderr.log",
+      "stderr_bytes": 194,
+      "stderr_sha256": "f3563c082c337b22d0c4fe26304a0f7e8f52b8852079fbec8d16e47ceb63224b",
+      "stdout": "checkout.stdout.log",
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "just",
+        "--version"
+      ],
+      "cwd": "/home/qian-qi/hepta-framework-owner-assembly-20261110-b68b",
+      "elapsed_seconds": 0.0035666348412632942,
+      "finished_at": "2026-11-10T14:03:13.522376+00:00",
+      "name": "just-version",
+      "returncode": 0,
+      "started_at": "2026-11-10T14:03:13.516636+00:00",
+      "stderr": "just-version.stderr.log",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "just-version.stdout.log",
+      "stdout_bytes": 12,
+      "stdout_sha256": "4e91345369534015fde1a3e2fed862ad938bcfda47b993eb02536f7b3f095b87"
+    },
+    {
+      "argv": [
+        "rustc",
+        "--version",
+        "--verbose"
+      ],
+      "cwd": "/home/qian-qi/hepta-framework-owner-assembly-20261110-b68b/codex-rs",
+      "elapsed_seconds": 0.03285852703265846,
+      "finished_at": "2026-11-10T14:03:13.560028+00:00",
+      "name": "rustc-version",
+      "returncode": 0,
+      "started_at": "2026-11-10T14:03:13.525138+00:00",
+      "stderr": "rustc-version.stderr.log",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "rustc-version.stdout.log",
+      "stdout_bytes": 196,
+      "stdout_sha256": "f64c55ed9f210d80a9b248206104a47175faf5ec94a093e4ad132549209089fc"
+    },
+    {
+      "argv": [
+        "rustfmt",
+        "--version"
+      ],
+      "cwd": "/home/qian-qi/hepta-framework-owner-assembly-20261110-b68b/codex-rs",
+      "elapsed_seconds": 0.019826740957796574,
+      "finished_at": "2026-11-10T14:03:13.585613+00:00",
+      "name": "rustfmt-version",
+      "returncode": 0,
+      "started_at": "2026-11-10T14:03:13.563274+00:00",
+      "stderr": "rustfmt-version.stderr.log",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "rustfmt-version.stdout.log",
+      "stdout_bytes": 45,
+      "stdout_sha256": "58e77f09cbe97eb2d0ab9174e5523494d03814f2879c8e187ed66370320abc7c"
+    },
+    {
+      "argv": [
+        "cargo",
+        "nextest",
+        "--version"
+      ],
+      "cwd": "/home/qian-qi/hepta-framework-owner-assembly-20261110-b68b/codex-rs",
+      "elapsed_seconds": 0.04035248211584985,
+      "finished_at": "2026-11-10T14:03:13.631848+00:00",
+      "name": "nextest-version",
+      "returncode": 0,
+      "started_at": "2026-11-10T14:03:13.588964+00:00",
+      "stderr": "nextest-version.stderr.log",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "nextest-version.stdout.log",
+      "stdout_bytes": 171,
+      "stdout_sha256": "f9bbf8f98ffb4c662e103de86c7afbec7f846fb9eb4b8cb7e5d5e9c05a06ee8e"
+    },
+    {
+      "argv": [
+        "just",
+        "fmt",
+        "--check",
+        "--base",
+        "abf75d8e2097785b2ad01897c15a7531eebe6e44"
+      ],
+      "cwd": "/home/qian-qi/hepta-framework-owner-assembly-20261110-b68b/codex-rs",
+      "elapsed_seconds": 0.5953672989271581,
+      "finished_at": "2026-11-10T14:03:14.232930+00:00",
+      "name": "fmt-check",
+      "returncode": 0,
+      "started_at": "2026-11-10T14:03:13.635051+00:00",
+      "stderr": "fmt-check.stderr.log",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "fmt-check.stdout.log",
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "just",
+        "test",
+        "--locked",
+        "--offline",
+        "--cargo-profile",
+        "dev-small",
+        "-p",
+        "codex-hepta-agentd",
+        "--lib",
+        "-E",
+        "test(learning_iteration) | test(circuit_learning_delivery) | test(root_production_learning_inputs)",
+        "--test-threads",
+        "2",
+        "--retries",
+        "0"
+      ],
+      "cwd": "/home/qian-qi/hepta-framework-owner-assembly-20261110-b68b/codex-rs",
+      "elapsed_seconds": 194.18136296002194,
+      "finished_at": "2026-11-10T14:06:28.534391+00:00",
+      "name": "native-tests",
+      "returncode": 0,
+      "started_at": "2026-11-10T14:03:14.350713+00:00",
+      "stderr": "native-tests.stderr.log",
+      "stderr_bytes": 31107,
+      "stderr_sha256": "8558fb5d0b73802a6aa2818ea8ee20707789b84604a34fbb3556efd8aea0166d",
+      "stdout": "native-tests.stdout.log",
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "just",
+        "fix",
+        "-p",
+        "codex-hepta-agentd",
+        "--locked",
+        "--offline",
+        "--profile",
+        "dev-small"
+      ],
+      "cwd": "/home/qian-qi/hepta-framework-owner-assembly-20261110-b68b/codex-rs",
+      "elapsed_seconds": 464.22878895304166,
+      "finished_at": "2026-11-10T14:14:13.137110+00:00",
+      "name": "fix",
+      "returncode": 0,
+      "started_at": "2026-11-10T14:06:28.899731+00:00",
+      "stderr": "fix.stderr.log",
+      "stderr_bytes": 46413,
+      "stderr_sha256": "827a872df3d9c3779474310d19e1f4f9ca0adb8b3e014ddd1b65edd2fca2714b",
+      "stdout": "fix.stdout.log",
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "just",
+        "fmt"
+      ],
+      "cwd": "/home/qian-qi/hepta-framework-owner-assembly-20261110-b68b/codex-rs",
+      "elapsed_seconds": 0.21050154604017735,
+      "finished_at": "2026-11-10T14:14:13.595152+00:00",
+      "name": "fmt-maintenance",
+      "returncode": 0,
+      "started_at": "2026-11-10T14:14:13.349679+00:00",
+      "stderr": "fmt-maintenance.stderr.log",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "fmt-maintenance.stdout.log",
+      "stdout_bytes": 73,
+      "stdout_sha256": "b6a6d5ad920f48c9b49a3ca8c2308227b7849b9e0a498dc452f3a7bd2f7fb752"
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--binary"
+      ],
+      "cwd": "/home/qian-qi/hepta-framework-owner-assembly-20261110-b68b",
+      "elapsed_seconds": 0.012810918968170881,
+      "finished_at": "2026-11-10T14:14:13.869954+00:00",
+      "name": "maintenance-diff",
+      "returncode": 0,
+      "started_at": "2026-11-10T14:14:13.807156+00:00",
+      "stderr": "maintenance-diff.stderr.log",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "maintenance-diff.stdout.log",
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "cwd": "/home/qian-qi/hepta-framework-owner-assembly-20261110-b68b",
+      "elapsed_seconds": 0.010555437067523599,
+      "finished_at": "2026-11-10T14:14:13.885373+00:00",
+      "name": "diff-check",
+      "returncode": 0,
+      "started_at": "2026-11-10T14:14:13.872636+00:00",
+      "stderr": "diff-check.stderr.log",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "diff-check.stdout.log",
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "pid": 1371549,
+  "repo": "/home/qian-qi/hepta-framework-owner-assembly-20261110-b68b",
+  "requested_head": "06f32191452df9f03bb5dc21ff8105db6b66d3d6",
+  "requested_tree": "d6db19d921be786713a7b1f91aa2a460b2ead8fe",
+  "schema": "hepta-framework-native-validation-v1",
+  "selected_native_tests_passed": true,
+  "source_preserved_during_tests": true,
+  "started_at": "2026-11-10T14:03:06.337562+00:00",
+  "state": "completed",
+  "tests_after_maintenance": false,
+  "updated_at": "2026-11-10T14:14:14.050958+00:00"
+}
