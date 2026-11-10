@@ -27,6 +27,7 @@ PROPOSAL_FILES = {
     ".github/workflows/ctrl-dependency-proposal.yml",
     "qualification/ctrl-metacontrol-20261109/DEPENDENCY_PROPOSAL.md",
     "qualification/ctrl-metacontrol-20261109/DEPENDENCY_SYN_REPAIR.md",
+    "qualification/ndu-conditional-stop-20261109/METHOD.zh-CN.md",
 }
 
 
