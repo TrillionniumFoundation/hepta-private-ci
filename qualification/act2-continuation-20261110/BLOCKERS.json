@@ -273,10 +273,13 @@
           "act2_run": 42888691385,
           "act2_run_status": "IN_PROGRESS",
           "format_job": {
-            "status": "IN_PROGRESS_OR_PENDING"
+            "id": 130083736674,
+            "status": "SUCCESS"
           },
           "native_job": {
-            "status": "IN_PROGRESS_OR_PENDING",
+            "id": 130083735960,
+            "status": "IN_PROGRESS",
+            "current_step": "complete Automation package through original runner",
             "later_steps": "all exact-source hosted stages require their own terminal records; no local or #5808 result is relabelled as this source"
           },
           "exact_head_checkout": true,
