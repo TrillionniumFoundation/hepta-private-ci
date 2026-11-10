@@ -1,11 +1,15 @@
 from dataclasses import replace
+import sys
 import unittest
+from unittest import mock
 
 try:
     from .memory_replay import (
         ReplayPool,
         KINDS,
         make_item,
+        raw_fingerprints,
+        audit_replay_splits,
         replay_specs,
         run_replay_attempt,
     )
@@ -14,6 +18,8 @@ except ImportError:
         ReplayPool,
         KINDS,
         make_item,
+        raw_fingerprints,
+        audit_replay_splits,
         replay_specs,
         run_replay_attempt,
     )
@@ -108,10 +114,57 @@ class MemoryReplayTests(unittest.TestCase):
         item.arrays()[0][:] = 0
         self.assertEqual(item.payload(), before)
 
+    def test_phase_and_split_rng_namespaces_do_not_reuse_raw_observations(self):
+        for seed in (11, 29, 47):
+            train = [make_item(seed + 800, i, 1, "train") for i in range(16)]
+            probe = [make_item(seed + 1800, i, 0, "holdout") for i in range(16)]
+            audit = audit_replay_splits(train, probe)
+            self.assertTrue(audit["passed"])
+            self.assertEqual(audit["cross_split_overlaps"]["input_message_sha256"], [])
+            for split in ("train", "probe"):
+                for kind in KINDS:
+                    self.assertEqual(
+                        audit["unique_input_payloads_by_kind"][split][kind], 4
+                    )
+        with self.assertRaises(ValueError):
+            make_item(11, 0, split="test")
+
+    def test_metadata_changes_cannot_hide_identical_raw_payloads(self):
+        item = make_item(11, 0)
+        relabeled = replace(item, item_id="different-id", split="holdout")
+        self.assertEqual(raw_fingerprints(item), raw_fingerprints(relabeled))
+        with self.assertRaisesRegex(ValueError, "raw-array overlap"):
+            audit_replay_splits([item], [relabeled])
+        x, y, f, m = relabeled.arrays()
+        conflicting_label = replace(relabeled, episode=(x, -y, f, m))
+        self.assertNotEqual(
+            raw_fingerprints(item)["supervised_payload_sha256"],
+            raw_fingerprints(conflicting_label)["supervised_payload_sha256"],
+        )
+        with self.assertRaisesRegex(ValueError, "raw-array overlap"):
+            audit_replay_splits([item], [conflicting_label])
+
+    def test_runtime_rejects_cross_split_duplicate_before_any_gradient(self):
+        module = sys.modules[run_replay_attempt.__module__]
+
+        def duplicated(seed, index, phase=0, split="train"):
+            item = make_item(11, index, phase, "train")
+            return replace(item, split=split, item_id=f"{split}:{phase}:{index}")
+
+        with (
+            mock.patch.object(module, "make_item", side_effect=duplicated),
+            mock.patch.object(module, "gradient") as grad,
+        ):
+            with self.assertRaisesRegex(ValueError, "raw-array overlap"):
+                run_replay_attempt(replay_specs((11,))[0])
+            grad.assert_not_called()
+
     def test_attempts_execute_updates_and_keep_paired_data_and_label_budget(self):
         rows = [run_replay_attempt(s) for s in replay_specs((11,))]
         self.assertEqual(len({r["data_digest"] for r in rows}), 1)
         self.assertEqual(len({r["unique_supervision_events"] for r in rows}), 1)
+        self.assertEqual(len({r["data_split_audit_digest"] for r in rows}), 1)
+        self.assertTrue(all(r["data_split_audit"]["passed"] for r in rows))
         self.assertEqual(rows[0]["replay_presentations"], 0)
         self.assertEqual(rows[0]["total_label_exposures"], 32)
         self.assertEqual(rows[0]["replay_numeric_payload_bytes"], 0)
