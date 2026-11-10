@@ -19,7 +19,7 @@ enum DeliveryMode {
     Readback,
 }
 
-type PostClaimSourceCheck<'a> =
+pub(crate) type PostClaimSourceCheck<'a> =
     Pin<Box<dyn Future<Output = Result<(), Error>> + Send + 'a>>;
 
 /// No backend leaves the intent pending. A prior durable claim, including one
