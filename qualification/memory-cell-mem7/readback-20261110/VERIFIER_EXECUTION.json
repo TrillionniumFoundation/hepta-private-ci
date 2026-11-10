@@ -1,0 +1,57 @@
+{
+  "commands": [
+    {
+      "child_cpu_seconds": 0.12719,
+      "command": [
+        "python",
+        "-B",
+        "qualification/memory-cell-mem7/readback-20261110/audit_retained.py",
+        "--root",
+        "qualification/memory-cell-mem7/run-001",
+        "--repository",
+        ".",
+        "--snapshot-index",
+        "qualification/memory-cell-mem7/readback-20261110/SNAPSHOT_INDEX.json"
+      ],
+      "exit_code": 0,
+      "label": "retained",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 2050,
+      "stdout_file": "RETAINED_READBACK.json",
+      "stdout_sha256": "5999141dff38443d65a3eaa26c93b6af37f598eb01bdc8b6f0d8bc972cf27405",
+      "wall_seconds": 0.1280149859994708
+    },
+    {
+      "child_cpu_seconds": 0.11086400000000002,
+      "command": [
+        "python",
+        "-B",
+        "qualification/memory-cell-mem7/readback-20261110/audit_hosted.py",
+        "--root",
+        "qualification/memory-cell-mem7/readback-20261110/hosted",
+        "--repository",
+        "."
+      ],
+      "exit_code": 0,
+      "label": "hosted",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 3184,
+      "stdout_file": "HOSTED_READBACK.json",
+      "stdout_sha256": "bd204b56aed6fe9ebd91a3b58f7e994a00c562e277fa3893689f39d1d925979d",
+      "wall_seconds": 0.11108633700132486
+    }
+  ],
+  "complete_physical_cost_measured": false,
+  "cost_scope": "local verifier child CPU and parent wall only",
+  "execution_kind": "read_only_evidence_verification",
+  "new_independent_real_tasks": 0,
+  "original_actor_runs_reexecuted": false,
+  "schema": "hepta.mem7.readback-execution.v1",
+  "source_files": {
+    "qualification/memory-cell-mem7/readback-20261110/audit_hosted.py": "b1d24f971a2c57f83d6038d107a631012a81c4e4848e06f7287d3c6967dc0252",
+    "qualification/memory-cell-mem7/readback-20261110/audit_retained.py": "5ac5dbb1e4ebbb8588512ee0e24136f6008a4e6c3ca14b37e0ec1feb3a9a431f"
+  },
+  "source_unchanged_during_verification": true
+}
