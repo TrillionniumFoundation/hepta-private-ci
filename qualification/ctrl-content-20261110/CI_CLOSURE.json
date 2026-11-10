@@ -1,0 +1,71 @@
+{
+  "schema": "ndu.ctrl.ci-followup.v1",
+  "base_commit": "43454a5c3f4728815f8181ff47f50e86300e4a30",
+  "local_protocol_tests": {
+    "run": 29,
+    "skipped": 0,
+    "failures": 0,
+    "seconds": 0.666,
+    "python": "3.12.14",
+    "numpy": "2.3.5",
+    "pillow": "13.0.0",
+    "log_sha256": "9b1f47b49df70f8b71dc61e7442e493423203ec3d1fea4d96f0e611c5590c1ad",
+    "scope": "published protocol code; manufactured fixtures and separate fixture scorer; no private native fit"
+  },
+  "format_attempts": [
+    {
+      "command": "just fmt",
+      "exit_code": 1,
+      "cause": "offline uv cache missing exact Ruff wheel; no source changed"
+    },
+    {
+      "command": "just fmt",
+      "exit_code": 0,
+      "scope": "12 changed CTRL Python files; original just recipe; frozen lock version matches actual Ruff0.15.13",
+      "source_bytes_unchanged": true,
+      "shim_used": false,
+      "dependency_sync": "disabled offline; existing exact-version Ruff binary on PATH"
+    }
+  ],
+  "source_sha256": {
+    "scripts/ndu_real_runtime/actor.py": "ead4c3fdd5326329bd2e47b7a570855845a4ac9a8a07d34200d14542b9b5106b",
+    "scripts/ndu_real_runtime/episode.py": "2bf2c3d4ba05c3d55c57ec989d083e53085435719933f518fcff5128a155fb07",
+    "scripts/ndu_real_runtime/content_identity.py": "45c411562e8508d98cc49412cda604a3a1e968999d7eaa133c1010017960ee00",
+    "scripts/ndu_real_runtime/audit_content_trace.py": "4d865cafd4ee62d88dc0157a145b8c12b6431d121d31d1bbe7204864a13d028e",
+    "scripts/ndu_real_runtime/control_observations.py": "4716b121e9a9ea96880aac857cda5ee5e2686c6cd72186ad2aa82fc244a2dba5",
+    "scripts/ndu_real_runtime/control_investment.py": "a7d19e4110403da9f844d8d04b50221bb0c89b0f9b8b7ed0627a90e3cb27ed4f",
+    "scripts/ndu_real_runtime/control_test_fixtures.py": "9c2ef882d24aaee6244a52b53b02ec147845c7f02970db3d0b4c8bdb5022250f",
+    "scripts/ndu_real_runtime/test_content_identity.py": "5832a97dce1107541bf27c680355f20ff26b9684535ab596b5c5a640fa46069d",
+    "scripts/ndu_real_runtime/test_content_identity_integration.py": "ddcf888327bf06e0758e496a8b0ddbb2fcf2969f15af7b84541dd68393e36a7b",
+    "scripts/ndu_real_runtime/test_audit_content_trace.py": "9302660c0d08b1cf9b1c0363c7a3b3bfe7f55bd46209d8a4144e8d8bd284ea4c",
+    "scripts/ndu_real_runtime/test_control_observations.py": "f587677d78d20be51018aac0b1fdc22150eed16f2a5cfe165dad842182b7aa8d",
+    "scripts/ndu_real_runtime/test_control_investment.py": "390f2f7a3274408c568966a15433b230716a487635b2c8d82f55f2fe2c04e6ce"
+  },
+  "workflow_checks": {
+    "yaml_parse": true,
+    "bash_blocks_parse": true,
+    "read_only_permissions": true,
+    "actions_pinned_40_hex": true,
+    "exact_source_checkout": true,
+    "five_non_skipped_test_minima": [
+      6,
+      6,
+      8,
+      4,
+      5
+    ],
+    "ci_dependencies": "Python3.12.14 NumPy2.3.5 Pillow11.3.0; runtime asserted in workflow"
+  },
+  "inherited_gate_repairs": [
+    "line-local spelling annotations for legitimate bu domain and MoT acronym",
+    "remove one trailing blank line from hcsn-differentiable.yml; identical normalization to sibling5603/5606"
+  ],
+  "remaining_full_repo_failures": [
+    "native paths bindgen fetch TLS error occurred before tests",
+    "Windows/macOS real inherited Rust failures remain",
+    "this exact cargo-deny job log unavailable; no advisory conclusion inferred"
+  ],
+  "new_workflow_execution": "not yet observed at publication",
+  "scientific_efficacy_qualified": false,
+  "production_admitted": false
+}
