@@ -9,7 +9,11 @@ use crate::*;
 #[tokio::test]
 async fn stopped_circuit_blocks_drain_after_reopen_until_original_work_settles() {
     let directory = tempfile::tempdir().expect("private owner");
-    let root = directory.path().join("automation");
+    let canonical_directory = directory
+        .path()
+        .canonicalize()
+        .expect("canonical private owner");
+    let root = canonical_directory.join("automation");
     let writer = fence(/*generation*/ 1);
     let store = AutomationStore::open_root(root.clone(), writer.owner_agent_id.clone())
         .await
@@ -86,9 +90,13 @@ async fn stopped_circuit_blocks_drain_after_reopen_until_original_work_settles()
 #[tokio::test]
 async fn drain_observation_includes_runs_beyond_the_first_page() {
     let directory = tempfile::tempdir().expect("private owner");
+    let canonical_directory = directory
+        .path()
+        .canonicalize()
+        .expect("canonical private owner");
     let writer = fence(/*generation*/ 1);
     let store = AutomationStore::open_root(
-        directory.path().join("automation"),
+        canonical_directory.join("automation"),
         writer.owner_agent_id.clone(),
     )
     .await
