@@ -234,17 +234,35 @@
           {
             "run": 42817568090,
             "scope": "v8 metadata",
-            "status": "IN_PROGRESS"
+            "status": "SUCCESS_DOES_NOT_EXERCISE_ADAPTER"
           },
           {
             "run": 42817568264,
             "scope": "blocking-ci",
-            "status": "QUEUED"
+            "status": "IN_PROGRESS"
           },
           {
             "run": 42817568241,
             "scope": "architecture",
-            "status": "QUEUED"
+            "status": "SOURCE_HEAD_FAILURE_BASE_MERGE_SUCCESS",
+            "source_head_job": 129834446953,
+            "base_merge_job": 129834447473,
+            "exact_result": "source-head passed scope/runner/repository controls, operations 53, retirement 4, lifecycle and FinalUse checks, then browser-servo compile exited 101 before tests with inherited 16 E0659 assert_eq ambiguity errors",
+            "classification": "inherited nested actual-App test macro ambiguity; no native process-wait semantic assertion failed",
+            "artifacts": [
+              {
+                "id": 13773217484,
+                "scope": "source-head",
+                "size_bytes": 95025899,
+                "sha256": "87deed2eebd0128ca27f1960cee277475908fb891cd4c2ebad247005ed4f076b"
+              },
+              {
+                "id": 13772700803,
+                "scope": "base-merge",
+                "size_bytes": 11188,
+                "sha256": "efc00cd5a8428775507200f20770221947168c46f5083a75521ed9130611a034"
+              }
+            ]
           }
         ],
         "hosted_status": "PENDING_NO_PASS_TRANSFER",
@@ -308,6 +326,39 @@
             "change": "exact 1025-transaction capacity test gets serialized 360-second bounded watchdog and retries=0",
             "does_not_change": "test body, 1025 transactions, assertions, production code, locks, CALLERS, operation, permission, FinalUse, readback, tombstone, receipt or promotion"
           }
+        },
+        "compile_fix": {
+          "pr": 5808,
+          "source": "cc3241d07e3781ca4f240e6536eeb2ffbe6a2453",
+          "tree": "b198f5e2a92c3cad316c85fc626f5a32a7d328cd",
+          "parent": "8539cca0d28a3b7eeea2ff7a941de549a1e418d9",
+          "change": "one explicit pretty_assertions::assert_eq import in inherited nested actual-App fence tests",
+          "changed_file_sha256": "166e441ef6522555dbdafbce0fe1bd0094bc913362d390a0166c974b483ccdc3",
+          "cargo_lock_sha256": "e47a4418a1e62ea67fa14085fa1c479e90187fed2af9e245893fbd1b5577e425",
+          "changed_files": 1,
+          "hosted": [
+            {
+              "run": 42856152006,
+              "scope": "v8 metadata",
+              "status": "QUEUED"
+            },
+            {
+              "run": 42856152495,
+              "scope": "blocking-ci",
+              "status": "QUEUED"
+            },
+            {
+              "run": 42856152534,
+              "scope": "architecture",
+              "status": "QUEUED"
+            },
+            {
+              "run": 42856152117,
+              "scope": "Windows private-state",
+              "status": "QUEUED"
+            }
+          ],
+          "limits": "no native wait, production, dependency, lock, CALLERS, operation, permission, FinalUse, readback, tombstone, receipt or promotion change; no earlier result transfers"
         }
       },
       "build_limit": "local Bazel lock refresh NOT_RUN because bazel binary unavailable; hosted Bazel/CI must decide each exact source"
