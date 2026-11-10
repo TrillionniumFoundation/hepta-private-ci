@@ -708,7 +708,29 @@
                 "limit": "Windows private-state/Prompt Registry/authority/prompt-runtime declared scope only; does not qualify ACT actual-App, Linux wait adapter, complete DynamicToolCall or production authority"
               },
               "windows_original_run": 42893302139,
-              "windows_original_status": "IN_PROGRESS"
+              "windows_original_status": "CANCELLED_PARTIAL_NO_PASS",
+              "windows_original_result": {
+                "job": 130099818859,
+                "completed_groups": 15,
+                "passed_groups": 13,
+                "failed_groups": 2,
+                "passed_tests": 130,
+                "failed_tests": 9,
+                "failed_group_result": "the same hosted ambient parent FILE_DELETE_CHILD fail-closed condition: sandbox original 1 leaky pass plus 6 failures; native delete routes 0/2",
+                "not_run_groups": [
+                  "exec-server-observation-wire (12)",
+                  "exec-server-protocol-observation-wire (3)",
+                  "direct-pty-native-observation (3)",
+                  "legacy-isolation-admission (10)"
+                ],
+                "final_receipt": "NOT_WRITTEN_AFTER_CANCELLATION",
+                "source_after": "NOT_WRITTEN_AFTER_CANCELLATION",
+                "artifact_id": 13804236630,
+                "artifact_size_bytes": 101622,
+                "artifact_sha256": "802d2a717354e8e62c1e43d4f628919506137c2661d857f94bc16b7016b606a8",
+                "retained_zip": "qualification/act2-continuation-20261110/windows-original-42893302139.zip",
+                "classification": "partial original evidence retained; cancellation is not a pass and the four missing groups are NOT_RUN; no result is transferred from private-state or predecessor runs"
+              }
             },
             "does_not_change": "dependencies, locks, caller set, operation, permission, FinalUse, readback, tombstone, receipt or promotion semantics; predecessor results do not transfer"
           }
