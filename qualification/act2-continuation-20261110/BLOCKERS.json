@@ -271,12 +271,14 @@
           "source": "378c06a898728a7fa60498ef051843e38d592e67",
           "tree": "1c8af7b5c875f449d2fb04dc4b08d97a6c45c8d1",
           "act2_run": 42893302150,
-          "act2_run_status": "PENDING",
+          "act2_run_status": "IN_PROGRESS",
           "format_job": {
-            "status": "NO_JOB_OBSERVED"
+            "id": 130112323362,
+            "status": "SUCCESS"
           },
           "native_job": {
-            "status": "NO_JOB_OBSERVED",
+            "id": 130112323090,
+            "status": "IN_PROGRESS_MEMORY_AND_TYPED_FENCE_OWNER",
             "later_steps": "all exact-source hosted stages require their own terminal records; no predecessor result is relabelled as this source"
           },
           "exact_head_checkout": true,
@@ -585,7 +587,7 @@
             "local_result": "formatter and diff checks passed; targeted local tests are NOT_RUN because the environment failed before tests while building rama-dns with missing system stddef.h",
             "hosted": {
               "act2_run": 42893302150,
-              "act2_status": "PENDING",
+              "act2_status": "IN_PROGRESS_FORMAT_SUCCESS_MEMORY_AND_TYPED_FENCE_OWNER_RUNNING",
               "blocking_run": 42893302790,
               "blocking_status": "QUEUED_WITH_INDEPENDENT_EXTERNAL_FENCE_FAILURE",
               "blocking_external_failure": {
@@ -598,7 +600,19 @@
               "architecture_run": 42893302196,
               "architecture_status": "IN_PROGRESS",
               "windows_private_run": 42893302159,
-              "windows_private_status": "IN_PROGRESS",
+              "windows_private_status": "SUCCESS_DECLARED_SCOPE",
+              "windows_private_result": {
+                "job": 130099803103,
+                "tests": "33 passed across five exact selections (15+2+3+2+11); scoped formatter and clean-worktree checks passed",
+                "artifact_id": 13801405796,
+                "artifact_size_bytes": 13527,
+                "artifact_sha256": "3d4916f3a103e4edd26e3370b44459ecc73d33dbb249dfac57aa76531e024f38",
+                "retained_zip": "qualification/act2-continuation-20261110/windows-private-state-42893302159.zip",
+                "positive_lane": "both retained-open ancestor substitution and pre-create junction tests PASS; swapped=true denied=true redirected=false, creation denied=true created=false",
+                "negative_lanes": "unchecked-create and path-check-open each exited 1 with the intended distinct weakened assertion failing",
+                "production_file_sha256": "21600c6d3b738afbd53db9fffd088944fb7fe1fbc947efde9520fc49e439e1ac",
+                "limit": "Windows private-state/Prompt Registry/authority/prompt-runtime declared scope only; does not qualify ACT actual-App, Linux wait adapter, complete DynamicToolCall or production authority"
+              },
               "windows_original_run": 42893302139,
               "windows_original_status": "IN_PROGRESS"
             },
