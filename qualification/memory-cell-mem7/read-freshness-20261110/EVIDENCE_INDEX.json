@@ -1,0 +1,33 @@
+{
+  "schema": "hepta.mem7.read-freshness-evidence-index.v1",
+  "source_commit": "4c3b1fb6d40de7c85aedd1964357e138fc7aa9d8",
+  "source_tree": "494fe36854e8d26cd9ae0b510e429fe931cef63d",
+  "archive": {
+    "path": "evidence.tar.xz",
+    "bytes": 150368,
+    "sha256": "bf756947683cce424fc3dbbb316e6bda95a72056ce98e967e47c56223043ffae",
+    "members": 166,
+    "uncompressed_bytes": 1161872,
+    "manifest_member": "MANIFEST.json",
+    "manifest_sha256": "2aabf552d60c23e1c2f2177da2760ef2f420a6e45f59566c192c5dabaa0bda97",
+    "all_members_reopened_and_verified": true
+  },
+  "entry_points": {
+    "exact_source_local_receipt": "local-validation/remote-source-integrity-reconciled.json",
+    "ai395_qualification": "ai395/AI395_FOCUSED_QUALIFICATION.json",
+    "ai395_member_index": "ai395/INDEX.json",
+    "source_hosted_ci_checkpoint": "local-validation/hosted-ci-source-checkpoint.json",
+    "archive_recovery_index": "archive-recovery/SECOND_HOST_RESTORE_INDEX.json",
+    "archive_recovery_receipt": "archive-recovery/RESTORE_RECEIPT.json",
+    "format_ast_verification": "format-stage/COMMON_FORMAT_STAGE.json",
+    "preferred_channel_terminal": "publication/preferred-channel-terminal.json",
+    "raw_trajectory_review": "raw-trajectory-followup/RAW_TRAJECTORY_FOLLOWUP.json",
+    "raw_trajectory_member_index": "raw-trajectory-followup/TRAJECTORY_EVIDENCE_INDEX.json"
+  },
+  "limits": [
+    "This is the follow-up evidence bundle, not the 61412948-byte original MEM6 raw archive.",
+    "Raw receipts retain failures, original timestamps and original source pins.",
+    "The prepublication 14-reader campaign retains its original commit; its tree equals the published repair tree.",
+    "Same-owner hashes and receipts do not establish independent trust or full owner/effect cold recovery."
+  ]
+}
