@@ -22,6 +22,8 @@ PRODUCT = "codex-rs/hepta-intelligence-eval/src/product_execution.rs"
 CALLERS = {
     "cell_original_evaluation_execution": (),
     "product_original_evaluation_execution": (CELL,),
+    "cell_completed_evaluation_readback": (),
+    "product_completed_evaluation_readback": (CELL,),
 }
 
 
@@ -110,6 +112,46 @@ class LearningEvaluationRecoverySourceClosureTests(unittest.TestCase):
             "if restored.candidate.plan_digest", marker + "if restored.candidate.plan_digest", 1
         )
         self.rejects(PRODUCT, changed)
+
+    def test_read_only_recovery_keeps_plan_journal_and_original_authentication(self):
+        cases = {
+            CELL: (
+                "fn readback_completed(",
+                (
+                    "plan.require_journals(journals)?",
+                    "if request.plan != &plan.product",
+                    ".readback_temporal_comparison(request, executions)",
+                    ".map_err(CellEvaluationErrorV1::Execution)?",
+                ),
+            ),
+            PRODUCT: (
+                "fn readback_temporal_comparison(",
+                (
+                    "let (key, _) = self.execution_context(request)?",
+                    "executions.readback(&key)?",
+                    "return Err(ProductEvaluationExecutionErrorV1::Pending)",
+                    "self.authenticate_completed_execution(request, key, &bytes)",
+                ),
+            ),
+        }
+        for path, (function, markers) in cases.items():
+            source = (ROOT / path).read_text()
+            start = source.index(function)
+            for marker in markers:
+                with self.subTest(path=path, marker=marker):
+                    offset = source.index(marker, start)
+                    self.rejects(path, source[:offset] + source[offset + len(marker) :])
+
+    def test_read_only_recovery_cannot_skip_checks_in_dead_blocks(self):
+        for path, function, marker in (
+            (CELL, "fn readback_completed(", "plan.require_journals(journals)?;"),
+            (PRODUCT, "fn authenticate_completed_execution(", "authenticate(request, &signed, &signing_payload(&key, body))?;"),
+        ):
+            with self.subTest(path=path, function=function):
+                source = (ROOT / path).read_text()
+                offset = source.index(marker, source.index(function))
+                changed = source[:offset] + "if false {" + marker + "}" + source[offset + len(marker) :]
+                self.rejects(path, changed)
 
 
 if __name__ == "__main__":

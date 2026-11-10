@@ -39,7 +39,11 @@ async fn pending_run() -> (
     definition.limits.work_budget = 5;
     let directory = tempfile::tempdir().expect("private owner directory");
     let store = AutomationStore::open_root(
-        directory.path().join("automation"),
+        directory
+            .path()
+            .canonicalize()
+            .expect("canonical private owner")
+            .join("automation"),
         fence(/*generation*/ 1).owner_agent_id,
     )
     .await

@@ -298,6 +298,18 @@ impl GenerationState {
             proposal.disposition,
             CellGenerationDispositionV2::Advanced | CellGenerationDispositionV2::Stopped
         );
+        // This profile has an explicit control-only STOP. It cannot create a
+        // numerical-use receipt or smuggle state/output into the stop event.
+        // Other profiles retain their original final-forward semantics.
+        let temporal_stop =
+            manifest.profile == "cell-diagonal-q24-temporal-v1" && request.input == b"HQ24STOP";
+        if temporal_stop
+            && (proposal.disposition == CellGenerationDispositionV2::Advanced
+                || proposal.successor_state != self.snapshot.state
+                || !proposal.output_delta.is_empty())
+        {
+            return Err(CellGenerationErrorV2::InvalidBinding);
+        }
         if !advances
             && (!proposal.output_delta.is_empty()
                 || proposal.successor_state != self.snapshot.state)
@@ -329,8 +341,10 @@ impl GenerationState {
                     bytes: proposal.output_delta.clone(),
                 });
             }
-            self.first_advance_input_digest
-                .get_or_insert_with(|| Digest32::of_bytes(&request.input).into_array());
+            if !temporal_stop {
+                self.first_advance_input_digest
+                    .get_or_insert_with(|| Digest32::of_bytes(&request.input).into_array());
+            }
             self.snapshot.state = proposal.successor_state.clone();
             self.snapshot
                 .prefix

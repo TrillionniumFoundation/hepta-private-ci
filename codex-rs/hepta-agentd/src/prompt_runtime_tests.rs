@@ -25,6 +25,7 @@ use codex_hepta_types::PromptDeliveryObservationV1;
 use codex_hepta_types::StableId;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
+use pretty_assertions::assert_eq;
 
 fn id(value: &str) -> StableId {
     StableId::new(value).unwrap_or_else(|error| panic!("valid id: {error}"))
@@ -125,6 +126,41 @@ fn delivered_terminal(
         delivery_observation: Some(observation),
         observed_unix_ms,
     }
+}
+
+#[test]
+fn owner_drop_releases_retained_descriptor_without_releasing_successor_lock() {
+    let temporary = tempfile::tempdir().expect("private owner directory");
+    let root = temporary
+        .path()
+        .canonicalize()
+        .expect("canonical owner directory")
+        .join("prompt-runtime-lock");
+    let first = AgentdPromptRuntimeOwner::open_state_dir(&root).expect("first owner");
+    stage_raw(&first, "thread:one", "turn:one", attachment());
+    // A duplicate retains the same open file description as a forked child.
+    let retained = first
+        .store
+        .as_ref()
+        .expect("durable owner")
+        ._lock
+        .try_clone()
+        .expect("retain inherited descriptor");
+    assert!(matches!(
+        AgentdPromptRuntimeOwner::open_state_dir(&root),
+        Err(AgentdPromptRuntimeError::StateLocked)
+    ));
+    drop(first);
+    let successor = AgentdPromptRuntimeOwner::open_state_dir(&root).expect("successor owner");
+    assert_eq!(successor.staged_count().expect("retained prompt"), 1);
+    drop(retained);
+    assert!(matches!(
+        AgentdPromptRuntimeOwner::open_state_dir(&root),
+        Err(AgentdPromptRuntimeError::StateLocked)
+    ));
+    drop(successor);
+    let reopened = AgentdPromptRuntimeOwner::open_state_dir(&root).expect("successor exit");
+    assert_eq!(reopened.staged_count().expect("retained prompt"), 1);
 }
 
 #[test]

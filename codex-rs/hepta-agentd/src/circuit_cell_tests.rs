@@ -25,6 +25,8 @@ use support::id;
 use support::input;
 use support::scope;
 
+#[path = "circuit_cell_causal_tests.rs"]
+mod causal_tests;
 #[path = "circuit_cell_clock_tests.rs"]
 mod clock_tests;
 #[path = "circuit_credit_tests.rs"]

@@ -19,6 +19,7 @@ import subprocess
 
 import hepta_cell_joint_config as joint
 import hepta_cell_research_foundation as foundation_adapter
+import hepta_cell_research_units as units_adapter
 
 
 STAGES = {
@@ -72,7 +73,16 @@ COST_CATEGORIES = (
     "improver_construction",
 )
 KINDS = {"real", "fixture", "diagnostic", "imagined"}
-STATUSES = {"completed", "failed", "cancelled", "unknown", "pending", "censored"}
+STATUSES = {
+    "completed",
+    "failed",
+    "cancelled",
+    "unknown",
+    "pending",
+    "censored",
+    "rejected",
+    "interrupted",
+}
 HEADER = "schema experiment_id joint_configuration_sha256 protocol_sha256"
 
 
@@ -160,10 +170,17 @@ def declare_bindings(document, declarations):
 
 
 def protocol_specs(protocol, evidence, configuration_sha):
+    schema = protocol.get("schema") if isinstance(protocol, dict) else None
+    if schema not in {
+        "hepta.cell-research-protocol.v1",
+        "hepta.cell-research-protocol.v2",
+    }:
+        raise ValueError("unsupported research protocol schema")
+    grouped = schema == "hepta.cell-research-protocol.v2"
     shape(
         protocol,
         "schema joint_configuration_sha256 registration cost_unit experiments",
-        "hepta.cell-research-protocol.v1",
+        schema,
     )
     if (
         digest(protocol["joint_configuration_sha256"]) != configuration_sha
@@ -178,7 +195,8 @@ def protocol_specs(protocol, evidence, configuration_sha):
     for experiment, spec in specs.items():
         shape(
             spec,
-            "baselines minimum_independent_fits minimum_net_gain retention_floor minimum_cost_fraction_saved maximum_total_cost decision_rule",
+            "baselines minimum_independent_fits minimum_net_gain retention_floor minimum_cost_fraction_saved maximum_total_cost decision_rule"
+            + (" sampling" if grouped else ""),
         )
         baselines = names(spec["baselines"], 32)
         if "candidate" in baselines or not set(BASELINES[experiment]) <= baselines:
@@ -196,6 +214,8 @@ def protocol_specs(protocol, evidence, configuration_sha):
             or spec["decision_rule"] != "all_fit_means"
         ):
             raise ValueError("invalid frozen thresholds or unsupported decision rule")
+        if grouped:
+            units_adapter.sampling_plan(spec["sampling"], evidence)
     return specs
 
 
@@ -210,10 +230,19 @@ def experiment_review(
     declared_bindings=None,
 ):
     document = evidence.read(binding)
+    schema = document.get("schema") if isinstance(document, dict) else None
+    if schema not in {
+        "hepta.cell-research-experiment.v1",
+        "hepta.cell-research-experiment.v2",
+    }:
+        raise ValueError("unsupported research experiment schema")
+    grouped = schema == "hepta.cell-research-experiment.v2"
+    if spec is not None and grouped != ("sampling" in spec):
+        raise ValueError("experiment and frozen protocol versions differ")
     bound(
         document,
-        "hepta.cell-research-experiment.v1",
-        "evidence_kind registry attempts design",
+        schema,
+        "evidence_kind registry attempts design" + (" units" if grouped else ""),
         experiment,
         configuration_sha or expected_configuration_sha,
         protocol_sha,
@@ -257,7 +286,13 @@ def experiment_review(
         configuration_pin,
         protocol_pin,
     )
-    registered = names(registry["attempt_ids"])
+    # V2 separately retains the nonempty planned roster. No observed attempts
+    # is a reportable incomplete campaign, not permission to erase that roster.
+    registered = (
+        set()
+        if grouped and registry["attempt_ids"] == []
+        else names(registry["attempt_ids"])
+    )
     for key in ("fit_artifacts", "common_start_artifacts"):
         if not isinstance(design[key], dict) or len(design[key]) > 4096:
             raise ValueError("invalid design artifact inventory")
@@ -290,7 +325,8 @@ def experiment_review(
             visited.add(child)
             child = lineage[child]
     rows = attempts["rows"]
-    if not isinstance(rows, list) or not 1 <= len(rows) <= 4096:
+    minimum_rows = 0 if grouped else 1
+    if not isinstance(rows, list) or not minimum_rows <= len(rows) <= 4096:
         raise ValueError("attempt rows are empty or exceed their bound")
     blockers, counts, seen = set(), Counter(), set()
     units, fits, costs, candidate_artifacts = (
@@ -321,14 +357,21 @@ def experiment_review(
         if row["evidence_kind"] != document["evidence_kind"]:
             raise ValueError("attempt evidence kind contradicts its envelope")
         counts[row["status"]] += 1
-        sha = digest(row["fit_sha256"])
-        if (
-            sha not in design["fit_artifacts"]
-            or fits.setdefault((arm, fit), sha) != sha
-        ):
-            raise ValueError("fit identity is absent or changes its artifact")
-        if arm == "candidate":
-            candidate_artifacts.add(sha)
+        if grouped and row["fit_sha256"] is None:
+            if row["status"] == "completed":
+                raise ValueError("completed attempt requires a fit artifact")
+            # Failed launches may have no model output. Keep their original
+            # status, outcome and costs without inventing a successful fit.
+            blockers.add("UNAVAILABLE_FIT_ARTIFACT")
+        else:
+            sha = digest(row["fit_sha256"])
+            if (
+                sha not in design["fit_artifacts"]
+                or fits.setdefault((arm, fit), sha) != sha
+            ):
+                raise ValueError("fit identity is absent or changes its artifact")
+            if arm == "candidate":
+                candidate_artifacts.add(sha)
         if arm in units[(fit, case)]:
             blockers.add("UNSUPPORTED_RETRY_EPISODE_ADAPTER")
         units[(fit, case)][arm] = row
@@ -356,6 +399,30 @@ def experiment_review(
                 digest(row[key])
     if seen != registered:
         raise ValueError("attempt inventory and raw rows have different denominators")
+    unit_document, unit_review = None, None
+    if grouped:
+        unit_document = evidence.read(document["units"])
+        unit_schema = (
+            unit_document.get("schema") if isinstance(unit_document, dict) else None
+        )
+        if unit_schema not in units_adapter.SCHEMAS:
+            raise ValueError("unsupported research units schema")
+        bound(
+            unit_document,
+            unit_schema,
+            units_adapter.FIELDS,
+            experiment,
+            configuration_pin,
+            protocol_pin,
+        )
+        unit_review = units_adapter.review(
+            unit_document,
+            rows,
+            evidence,
+            spec["sampling"] if spec is not None else None,
+            COST_CATEGORIES,
+        )
+        blockers.update(unit_review["blockers"])
     totals = {
         arm: None if None in values else math.fsum(values)
         for arm, values in costs.items()
@@ -414,11 +481,18 @@ def experiment_review(
                         candidate["retention"] - control["retention"],
                     )
                 )
-            gain = min(
-                fmean(value[0] for value in values) for values in by_fit.values()
+            means = (
+                units_adapter.balanced_fit_means(
+                    units, unit_document["cases"], baseline
+                )
+                if grouped
+                else [
+                    tuple(fmean(value[index] for value in values) for index in range(2))
+                    for values in by_fit.values()
+                ]
             )
-            retention = min(
-                fmean(value[1] for value in values) for values in by_fit.values()
+            gain, retention = (
+                min(values[index] for values in means) for index in range(2)
             )
             saving = (
                 1 - totals["candidate"] / totals[baseline]
@@ -460,6 +534,12 @@ def experiment_review(
         "evidence_kind_verified": False,
         "matched_budget_verified": False,
         "complete_attempt_inventory_verified": False,
+        "protocol_scope": "grouped_units_v2" if grouped else "legacy_v1_descriptive",
+        "new_milestone_eligible": False,
+        "statistical_units": unit_review,
+        "full_cost_records_complete": unit_review["full_cost_recorded"]
+        if grouped
+        else False,
         "attempt_counts": dict(counts),
         "attempt_denominator": len(rows),
         "distinct_candidate_artifacts": len(candidate_artifacts),

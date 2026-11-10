@@ -252,6 +252,21 @@ impl Harness {
             .expect("original history takeover"),
         );
     }
+
+    fn readback(&mut self) -> Result<ProductTemporalEvaluationReceiptV1, Error> {
+        let clock = || Ok(self.now);
+        self.runner.readback_temporal_comparison(
+            &ProductEvaluationExecutionRequestV1 {
+                plan: &self.frozen,
+                candidate_plan: &self.fixture.candidate_plan,
+                baseline_plan: &self.fixture.baseline_plan,
+                evaluator: &self.context.evaluator,
+                verifier: &self.verifier,
+                clock: &clock,
+            },
+            &mut self.executions,
+        )
+    }
 }
 
 #[test]
@@ -264,16 +279,43 @@ fn signed_completion_lost_ack_reopens_without_release_or_resigning() {
     test.reopen();
     let before = test.runner.holdout_anchor();
     assert_eq!(
-        test.run().expect("authenticated original readback"),
+        test.readback().expect("authenticated original readback"),
         original
     );
-    assert_eq!(test.run().expect("idempotent readback"), original);
+    assert_eq!(test.readback().expect("idempotent readback"), original);
     assert_eq!(
         (test.fixture.provider.release_count, test.attestor.calls),
         (1, 1)
     );
     assert_eq!(test.runner.holdout_anchor(), before);
     assert!(!original.authority.grants_any());
+}
+
+#[test]
+fn read_only_missing_execution_never_creates_a_claim() {
+    let mut test = Harness::new();
+    let before = test.runner.holdout_anchor();
+    assert_eq!(test.readback(), Err(Error::Store(StoreError::Missing)));
+    assert_eq!(test.executions.state, None);
+    assert_eq!(test.runner.holdout_anchor(), before);
+    assert_eq!(
+        (test.fixture.provider.release_count, test.attestor.calls),
+        (0, 0)
+    );
+}
+
+#[test]
+fn read_only_pending_execution_never_reissues_work() {
+    let mut test = Harness::new();
+    test.executions.lost = LostAck::Claim;
+    assert_eq!(test.run(), Err(Error::Store(StoreError::Indeterminate)));
+    let before = (test.runner.holdout_anchor(), test.executions.state.clone());
+    assert_eq!(test.readback(), Err(Error::Pending));
+    assert_eq!((test.runner.holdout_anchor(), test.executions.state), before);
+    assert_eq!(
+        (test.fixture.provider.release_count, test.attestor.calls),
+        (0, 0)
+    );
 }
 
 #[test]

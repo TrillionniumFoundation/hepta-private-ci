@@ -2,8 +2,19 @@
 import assert from 'node:assert/strict';
 export function validateSidebarSurface({viewport,metrics,drawDpiFactor,pngSize}){
  assert.ok([viewport.width,viewport.height].every(value=>Number.isInteger(value)&&value>0),'Viewport must be positive integer CSS dimensions');
- assert.deepEqual(metrics.css,{x:0,y:0,...viewport},'Canvas CSS bounds must match the full capture viewport');
  assert.ok(Number.isFinite(metrics.dpr)&&metrics.dpr>0,'Browser DPR must be finite and positive');
+ assert.deepEqual({x:metrics.css.x,y:metrics.css.y},{x:0,y:0},'Canvas origin must remain at the viewport origin');
+ const visible=metrics.visualViewport;
+ assert.ok(visible&&visible.scale===1,'An unzoomed visual viewport must be independently recorded');
+ assert.deepEqual(metrics.css,{x:visible.x,y:visible.y,width:visible.width,height:visible.height},'Canvas must exactly cover the observed visual viewport');
+ // Firefox may report fractional full-page CSS/visual bounds while innerWidth
+ // and innerHeight (used by the SDK drawable) are integers. Preserve exact
+ // visible coverage and device-pixel coverage; never allow a whole-pixel gap.
+ for(const axis of ['width','height']){
+  assert.ok(Number.isFinite(metrics.css[axis])&&metrics.css[axis]>0,'Canvas dimensions must be finite and positive');
+  assert.ok(Math.abs(metrics.css[axis]-viewport[axis])*metrics.dpr<=0.5,'CSS quantization must not exceed half a physical pixel');
+  assert.equal(Math.round(metrics.css[axis]*metrics.dpr),Math.round(viewport[axis]*metrics.dpr),'Canvas physical coverage must match the full capture viewport');
+ }
  assert.ok(Number.isFinite(drawDpiFactor)&&drawDpiFactor>0&&drawDpiFactor<=metrics.dpr,'Real Rust draw-pass DPI must be positive and bounded by browser DPR');
  // Pinned web.js budgets the drawable and floors physical dimensions, then
  // sends the same effective scale to Rust in window_info.dpi_factor. PNGs use

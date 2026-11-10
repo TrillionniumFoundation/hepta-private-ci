@@ -242,7 +242,7 @@ fn scoped_learning_handoff_requires_its_complete_original_profile() -> anyhow::R
         learning.frozen_scope(&initial)?,
         profile.frozen_scope(&initial)?
     );
-    for mutation in 0..5 {
+    for mutation in 0..6 {
         let mut changed = serde_json::to_value(&learning)?;
         match mutation {
             0 => changed["schema_version"] = serde_json::json!(1),
@@ -256,6 +256,7 @@ fn scoped_learning_handoff_requires_its_complete_original_profile() -> anyhow::R
                 changed["update_scope"]["update_rule"] =
                     serde_json::json!(Digest32::of_bytes(b"other-rule").to_string())
             }
+            5 => changed["update_scope"]["binding"] = serde_json::json!(Digest32::ZERO.to_string()),
             _ => unreachable!(),
         }
         let changed = serde_json::from_value(changed)?;

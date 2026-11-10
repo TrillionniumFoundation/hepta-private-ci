@@ -130,7 +130,7 @@ fn scoped_learning_profile_roundtrips_and_refuses_scope_substitution() -> anyhow
         let roundtrip: HostAuthorityLearningProfileV1 = serde_json::from_value(encoded.clone())?;
         assert_eq!(roundtrip.require_binding(&identity, &writer)?, *initial);
         assert_eq!(roundtrip.frozen_scope(initial)?, Some(expected));
-        for mutation in 0..6 {
+        for mutation in 0..7 {
             let mut changed = encoded.clone();
             match mutation {
                 0 => changed["schema_version"] = serde_json::json!(1),
@@ -152,6 +152,7 @@ fn scoped_learning_profile_roundtrips_and_refuses_scope_substitution() -> anyhow
                         serde_json::json!(Digest32::of_bytes(b"other-binding").to_string())
                 }
                 5 => changed["update_scope"]["scope"] = serde_json::json!("base_release"),
+                6 => changed["initial_snapshot"] = serde_json::json!("invalid"),
                 _ => unreachable!(),
             }
             let changed: HostAuthorityLearningProfileV1 = serde_json::from_value(changed)?;
@@ -169,6 +170,17 @@ fn scoped_learning_profile_roundtrips_and_refuses_scope_substitution() -> anyhow
             initial.owners.clone(),
             LearningUpdateScopeV2::BaseRelease,
             rule,
+        )
+        .is_err()
+    );
+    assert!(
+        HostAuthorityLearningProfileV1::new_scoped_v2(
+            &identity,
+            [7; 32],
+            initial.request.clone(),
+            initial.owners.clone(),
+            LearningUpdateScopeV2::Cell,
+            Digest32::ZERO,
         )
         .is_err()
     );

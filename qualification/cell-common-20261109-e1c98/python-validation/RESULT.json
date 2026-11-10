@@ -1,0 +1,54 @@
+{
+  "schema": "hepta.cell-common.python-validation.v1",
+  "source_commit": "8c1cf773d2e96c7f98ac3e09b544c5dbedb11a7e",
+  "source_tree": "93eda171c94d6d6cc738cffb70acb26137206461",
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "-B",
+    "-m",
+    "unittest",
+    "-v",
+    "cell_repo_mdv.test_memory",
+    "cell_repo_mdv.test_runner",
+    "cell_repo_mdv.test_compare",
+    "test_hepta_cells_bundle",
+    "test_hepta_cells_composition",
+    "test_hepta_cells_lifecycle",
+    "test_hepta_cells_semantic",
+    "test_hepta_cells_temporal",
+    "test_hepta_cells_temporal_component",
+    "scripts.codex_package.test_v8",
+    "scripts.test_hepta_ci_v8",
+    "test_hepta_cell_joint_config",
+    "test_root_learning_bootstrap_source_closure",
+    "test_learning_checkpoint_source_closure",
+    "test_smollm_task_inputs"
+  ],
+  "environment": {
+    "CODEX_REPO_ROOT": "/workspace/scratch/e1c98c14daab/candidate",
+    "PYTHONPATH": "/workspace/scratch/e1c98c14daab/candidate/scripts:/workspace/scratch/e1c98c14daab/candidate:/workspace/scratch/e1c98c14daab/candidate/scripts/research:/workspace/scratch/e1c98c14daab/candidate/qa/b4-no-bypass",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "OMP_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1"
+  },
+  "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "exit_code": 0,
+  "test_count": 128,
+  "test_seconds": 7.529,
+  "wall_seconds": 7.7623192249993735,
+  "child_cpu_seconds": 7.276272,
+  "source_code_diff_after": "",
+  "source_commit_after": "8c1cf773d2e96c7f98ac3e09b544c5dbedb11a7e",
+  "logs": {
+    "stdout.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stderr.log": {
+      "bytes": 22589,
+      "sha256": "2a4534916c957642bb7fa93f27f2e1167ade461bc7419486bf40310b94857a1b"
+    }
+  },
+  "scientific_samples": 0
+}

@@ -66,6 +66,7 @@ jobs:
               "authority_host_service::writer::learning_registration::tests::root_learning_registration_reopens_without_replacing_original_history",
               "authority_host_service::writer::learning_registration::tests::root_learning_sealed_pin_and_dedicated_uds_recover_original_checkpoint",
               "authority_host_service::writer::learning_registration::tests::root_scoped_learning_reopens_exact_scope_and_refuses_legacy_client",
+              "authority_host_service::writer::learning_registration::tests::root_learning_scoped_sealed_pin_preserves_scope_on_cold_reopen",
               "root_production_handoff::learning::tests::root_learning_handoff_reaches_dedicated_uid_with_original_root_pin",
               "authority_host_learning_service_root_tests::root_learning_public_registration_serves_retained_writer_and_recovers_history",
               "learning_iteration_evidence_client::tests::root::original_external_uid_returns_a_verified_receipt_through_held_pidfd",

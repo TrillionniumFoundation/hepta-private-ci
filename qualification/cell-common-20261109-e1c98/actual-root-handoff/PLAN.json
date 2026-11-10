@@ -1,0 +1,93 @@
+{
+  "controller_sha256": "8d81e563e4af9e146dd0227f25015d51f67d3af1c80587ed6784d0286bcf7303",
+  "model_job_id": "1a1c0435e71-5e21-994",
+  "model_terminal_record": {
+    "bytes": 2789,
+    "path": "/home/qq/hepta-cell-common-e1c98-20261109/evidence/smollm-execute-f070-v1.json",
+    "sha256": "f412c3041477fe97b2ddedbc44c27235a2ec937d335921feec93e2451f4c70c4"
+  },
+  "native_gate_records": [
+    {
+      "bytes": 2488,
+      "path": "/home/qq/hepta-cell-common-e1c98-20261109/evidence/helper-build-f070-v1.json",
+      "sha256": "3ab7041e6e5f66c96becc4d8897f5a8b5fdaddb9a5a88647a17672c51cd76cba"
+    },
+    {
+      "bytes": 3030,
+      "path": "/home/qq/hepta-cell-common-e1c98-20261109/evidence/native-libraries-f070-v1.json",
+      "sha256": "3dc1bc80d6a8bbf79b2a3ae39979531efd96268e87cd40000633ad1674885e18"
+    },
+    {
+      "bytes": 2715,
+      "path": "/home/qq/hepta-cell-common-e1c98-20261109/evidence/matrix-sdk-f070-v1.json",
+      "sha256": "f328bba88b09aba29773f64d6b05ac020ea3159666f5fa3ae29b95364e9cd159"
+    },
+    {
+      "bytes": 2463,
+      "path": "/home/qq/hepta-cell-common-e1c98-20261109/evidence/agentd-binaries-f070-v1.json",
+      "sha256": "aeefdbfc284a87616c3eed720b0d60e17abc337af152cbafa6a7e1122bab8e4b"
+    }
+  ],
+  "native_job_id": "1a1c03ab679-5e21-975",
+  "nextest_archive": {
+    "bytes": 90922965,
+    "path": "/home/qq/hepta-common-20261109-e1c98-model-no-update-002/preparation/native-nextest.tar.zst",
+    "resolved": "/home/qq/hepta-common-20261109-e1c98-model-no-update-002/preparation/native-nextest.tar.zst",
+    "sha256": "a439bbb5bdc4a8d36f1a34495033de2d94d65acf6fe0b665d4a654a3ab8f7244"
+  },
+  "preparation_result": {
+    "bytes": 7518,
+    "path": "/home/qq/hepta-common-20261109-e1c98-model-no-update-002/preparation/RESULT.json",
+    "sha256": "b58d2dbf01aec3168aaabc0acffc3a6f3973cafe4ad40e7a96952de803b308f6"
+  },
+  "qualification": "Actual Root same-process storage/transport component with explicit synthetic scope metadata; not deployed independent authority, daemon restart, ordinary P0, or scientific benefit.",
+  "root_parent": "/var/lib/hepta-common-e1c98-root-test-f070113b",
+  "schema": "hepta.common.actual-root-handoff.plan.v1",
+  "source": "/home/qq/hepta-cell-common-e1c98-20261109/source-fresh",
+  "source_archive": {
+    "bytes": 91972209,
+    "path": "/home/qq/hepta-common-20261109-e1c98-model-no-update-002/preparation/source.tar.gz",
+    "resolved": "/home/qq/hepta-common-20261109-e1c98-model-no-update-002/preparation/source.tar.gz",
+    "sha256": "36c55cbff0d7320d0df010e13d76a8a03a7669e6a54e01f81baf372b5ecacfc9"
+  },
+  "source_before": {
+    "head": "f070113bb61cda492d2668b3afbbcda13e11fa52",
+    "status": "",
+    "tree": "068b6a7749e94d7335c826d6c43c19198e02cc24"
+  },
+  "source_commit": "f070113bb61cda492d2668b3afbbcda13e11fa52",
+  "source_tree": "068b6a7749e94d7335c826d6c43c19198e02cc24",
+  "tools": {
+    "cargo": {
+      "bytes": 42865872,
+      "path": "/home/qq/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/cargo",
+      "resolved": "/home/qq/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/cargo",
+      "sha256": "f30f9fd1b1d0b8fd10dc33219eb4cd4bec3543f40e434ac71f5a03fd0359063f"
+    },
+    "cargo-nextest": {
+      "bytes": 24038232,
+      "name": "cargo-nextest",
+      "path": "/home/qq/hepta-learning-native-4f559bf-d9fb-20261108/transfer/cargo-nextest",
+      "resolved": "/home/qq/hepta-learning-native-4f559bf-d9fb-20261108/transfer/cargo-nextest",
+      "sha256": "e999c122a02c3fe74a1b66d254b6419a8a665e8bf540b1d31de7933a6d3753f1"
+    },
+    "just": {
+      "bytes": 5452040,
+      "name": "just",
+      "path": "/home/qq/hepta-learning-native-4f559bf-d9fb-20261108/transfer/just",
+      "resolved": "/home/qq/hepta-learning-native-4f559bf-d9fb-20261108/transfer/just",
+      "sha256": "4f864ee6df9b9f351c8b5f95bc9fe589c92080237c2a87c048218a635c3604f7"
+    },
+    "rustc": {
+      "bytes": 646032,
+      "path": "/home/qq/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "resolved": "/home/qq/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "sha256": "ba4b837efb6612dfa8d941c5a72b8a50d1d03a0f36216743b173949aa8d9eb75"
+    }
+  },
+  "tools_record": {
+    "bytes": 2546,
+    "path": "/home/qq/hepta-common-20261109-e1c98-model-no-update-002/preparation/tools.json",
+    "sha256": "fe01045392e7e2206defae85baf70cc41a0e560b6248016551483af009a12c30"
+  }
+}

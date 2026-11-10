@@ -117,7 +117,7 @@ class LearningCheckpointSourceClosureTests(unittest.TestCase):
         for marker in (
             "let (schema, binding) = self.profile_identity();",
             "request.schema != schema",
-            "request.operation != OPERATION",
+            "request.operation != operation",
             "request.request_id != *next_request_id",
             "request.binding != binding",
             "*next_request_id = next_request_id",
@@ -140,6 +140,20 @@ class LearningCheckpointSourceClosureTests(unittest.TestCase):
         guard = source[profile:counter]
         dispatch = source[counter:dispatched]
         self.rejects(TRANSPORT, function, guard + dispatch, dispatch + guard)
+
+    def test_scoped_profile_and_material_validation_cannot_be_omitted(self):
+        cases = (
+            ("fn from_root_stream_scoped_v2(", "scope.validate_snapshot(&initial)"),
+            ("fn from_root_stream_scoped_v2(", "Some(scope)"),
+            ("fn frozen_scope_binding(", "self.scope.as_ref().map(FrozenLearningScopeV2::binding)"),
+            ("fn restore(", "scope\n                            .validate_snapshot(&snapshot)"),
+            ("fn checkpoint(", "scope.validate_snapshot(snapshot)"),
+            ("fn exchange<T>(", "Some(_) => SCOPED_OPERATION"),
+            ("fn exchange_learning_checkpoint(", "Some(_) => SCOPED_OPERATION"),
+        )
+        for function, marker in cases:
+            with self.subTest(function=function, marker=marker):
+                self.rejects(TRANSPORT, function, marker)
 
     def test_unvalidated_reply_cannot_restore_the_consumed_connection(self):
         self.rejects(

@@ -343,6 +343,33 @@ impl<S: FinalHoldoutCasStoreV1> CellEvaluationRunnerV1<S> {
         })
     }
 
+    /// Recover an existing signed evaluation without authority to run another
+    /// holdout or request another signature. Missing and pending executions are
+    /// errors; original Cell journals and current owner fences remain required.
+    pub fn readback_completed(
+        &mut self,
+        plan: &CellEvaluationPlanV1,
+        journals: CellEvaluationJournalsV1<'_, impl AnchorWitnessStore, impl AnchorWitnessStore>,
+        request: &ProductEvaluationExecutionRequestV1<'_>,
+        executions: &mut impl ProductEvaluationExecutionStoreV1,
+    ) -> Result<CellEvaluationReceiptV1, CellEvaluationErrorV1> {
+        plan.require_journals(journals)?;
+        if request.plan != &plan.product {
+            return Err(CellEvaluationErrorV1::Binding(
+                "Cell execution product plan",
+            ));
+        }
+        let temporal = self
+            .product
+            .readback_temporal_comparison(request, executions)
+            .map_err(CellEvaluationErrorV1::Execution)?;
+        Ok(CellEvaluationReceiptV1 {
+            plan: plan.clone(),
+            temporal,
+            original_execution_evaluator: Some(request.evaluator.clone()),
+        })
+    }
+
     pub fn qualification_bundle(
         &self,
         receipt: &CellEvaluationReceiptV1,

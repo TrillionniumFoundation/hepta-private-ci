@@ -248,14 +248,16 @@ fn scoped_checkpoint_exchange_rejects_legacy_or_rebound_transport_before_storage
     )?;
     let before = std::fs::read(&path)?;
     let mut next = 1;
-    let request = serde_json::json!({"schema":2,"operation":"runtime.learning.checkpoint.v1",
+    let request = serde_json::json!({"schema":2,"operation":"runtime.learning.checkpoint.v2",
         "request_id":1,"binding":scope.binding().to_string(),"command":{"kind":"restore"}});
-    for mutation in 0..2 {
+    for mutation in 0..3 {
         let mut changed = request.clone();
         if mutation == 0 {
             changed["schema"] = serde_json::json!(1);
-        } else {
+        } else if mutation == 1 {
             changed["binding"] = serde_json::json!(initial.head_digest.to_string());
+        } else {
+            changed["operation"] = serde_json::json!("runtime.learning.checkpoint.v1");
         }
         assert!(
             owner

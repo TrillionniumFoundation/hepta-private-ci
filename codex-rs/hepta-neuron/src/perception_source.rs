@@ -238,7 +238,7 @@ impl PerceptionSourcePinV1 {
                     {
                         return Err(PerceptionErrorV1::InvalidCoordinates);
                     }
-                    return Ok(vec![start as usize..end as usize]);
+                    return Ok(std::iter::once(start as usize..end as usize).collect());
                 }
                 (
                     PerceptionSourceLayoutV1::Raster {

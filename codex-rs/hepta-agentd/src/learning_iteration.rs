@@ -30,6 +30,10 @@ use crate::PlasticityRuntimeCallErrorV1;
 
 #[path = "learning_iteration_delivery_runtime.rs"]
 mod delivery;
+#[path = "circuit_learning_delivery_registry.rs"]
+mod registry;
+pub use registry::CircuitLearningDeliveryRegistryV1;
+pub(crate) use registry::MAX_REGISTERED_CIRCUIT_LEARNING;
 
 const MAX_LEARNING_QUEUE: usize = 64;
 const MAX_ITERATION_SECONDS: u64 = 86_400;
@@ -77,6 +81,11 @@ pub struct LearningIterationHandleV1 {
     sender: mpsc::Sender<LearningIterationCommandV1>,
 }
 
+/// One bounded actor slot held before a durable delivery claim is recorded.
+pub(crate) struct LearningIterationReservationV1<'a> {
+    permit: mpsc::Permit<'a, LearningIterationCommandV1>,
+}
+
 impl LearningIterationHandleV1 {
     pub async fn submit(
         &self,
@@ -99,19 +108,46 @@ impl LearningIterationHandleV1 {
         request: LearningIterationRequestV1,
         mode: LearningIterationModeV1,
     ) -> Result<LearningIterationSnapshotV1, LearningIterationRuntimeErrorV1> {
+        self.reserve()?.call(request, mode).await
+    }
+
+    pub(crate) fn reserve(
+        &self,
+    ) -> Result<LearningIterationReservationV1<'_>, LearningIterationRuntimeErrorV1> {
+        let permit = self.sender.try_reserve().map_err(|error| match error {
+            mpsc::error::TrySendError::Full(_) => LearningIterationRuntimeErrorV1::QueueFull,
+            mpsc::error::TrySendError::Closed(_) => LearningIterationRuntimeErrorV1::Unavailable,
+        })?;
+        Ok(LearningIterationReservationV1 { permit })
+    }
+}
+
+impl LearningIterationReservationV1<'_> {
+    pub(crate) async fn submit(
+        self,
+        request: LearningIterationRequestV1,
+    ) -> Result<LearningIterationSnapshotV1, LearningIterationRuntimeErrorV1> {
+        self.call(request, LearningIterationModeV1::Submit).await
+    }
+
+    pub(crate) async fn readback(
+        self,
+        request: LearningIterationRequestV1,
+    ) -> Result<LearningIterationSnapshotV1, LearningIterationRuntimeErrorV1> {
+        self.call(request, LearningIterationModeV1::Readback).await
+    }
+
+    async fn call(
+        self,
+        request: LearningIterationRequestV1,
+        mode: LearningIterationModeV1,
+    ) -> Result<LearningIterationSnapshotV1, LearningIterationRuntimeErrorV1> {
         let (response, receive) = oneshot::channel();
-        self.sender
-            .try_send(LearningIterationCommandV1 {
-                mode,
-                request: Box::new(request),
-                response,
-            })
-            .map_err(|error| match error {
-                mpsc::error::TrySendError::Full(_) => LearningIterationRuntimeErrorV1::QueueFull,
-                mpsc::error::TrySendError::Closed(_) => {
-                    LearningIterationRuntimeErrorV1::Unavailable
-                }
-            })?;
+        self.permit.send(LearningIterationCommandV1 {
+            mode,
+            request: Box::new(request),
+            response,
+        });
         // Missing acknowledgement does not prove absence of a durable commit.
         receive
             .await
@@ -130,7 +166,7 @@ pub struct LearningIterationRuntimeBootstrapV1 {
     scope: Option<FrozenLearningScopeV2>,
     receiver: mpsc::Receiver<LearningIterationCommandV1>,
     sender: mpsc::Sender<LearningIterationCommandV1>,
-    circuit_delivery_request: Option<LearningIterationRequestV1>,
+    circuit_delivery_registry: Option<CircuitLearningDeliveryRegistryV1>,
     circuit_delivery_source: delivery::CircuitLearningSourceV1,
     enforce_circuit_admission: bool,
 }
@@ -226,7 +262,7 @@ fn learning_iteration_channel(
             scope,
             receiver,
             sender,
-            circuit_delivery_request: None,
+            circuit_delivery_registry: None,
             circuit_delivery_source: delivery::CircuitLearningSourceV1::HostStageOwners,
             enforce_circuit_admission: false,
         },
@@ -315,8 +351,8 @@ impl LearningIterationRuntimeBootstrapV1 {
         {
             return Err(LearningIterationRuntimeErrorV1::WrongScope);
         }
-        LearningIterationCoordinatorV1::new(request.clone(), self.owners.clone())?;
         self.require_frozen_scope(&request)?;
+        LearningIterationCoordinatorV1::new(request.clone(), self.owners.clone())?;
         require_ready(state)?;
         let snapshot = self
             .ports
@@ -354,8 +390,8 @@ impl LearningIterationRuntimeBootstrapV1 {
         {
             return Err(LearningIterationRuntimeErrorV1::WrongScope);
         }
-        let initial = LearningIterationCoordinatorV1::new(request.clone(), self.owners.clone())?;
         self.require_frozen_scope(&request)?;
+        let initial = LearningIterationCoordinatorV1::new(request.clone(), self.owners.clone())?;
         require_ready(state)?;
         let mut coordinator = match self.ports.restore(&request).await? {
             Some(snapshot) => {
@@ -435,10 +471,10 @@ impl LearningIterationRuntimeBootstrapV1 {
                 receipt
             };
             self.require_stage_admission(state)?;
-            let previous = coordinator.snapshot().head_digest;
             if let Some(scope) = &self.scope {
                 scope.validate_observation(&receipt.observation)?;
             }
+            let previous = coordinator.snapshot().head_digest;
             coordinator.record(receipt, clock()?)?;
             let committed = self
                 .ports

@@ -282,6 +282,9 @@ mod profile_tests;
 #[path = "learning_iteration_scope_tests.rs"]
 mod scope_tests;
 
+#[path = "objective_learning_source_membership_tests.rs"]
+mod source_membership_tests;
+
 fn iteration_request(daemon: &AgentdFixture) -> LearningIterationRequestV1 {
     LearningIterationRequestV1 {
         operation_id: id("proposal:agentd-lifetime"),

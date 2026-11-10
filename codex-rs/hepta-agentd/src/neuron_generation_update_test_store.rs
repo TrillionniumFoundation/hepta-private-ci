@@ -29,6 +29,17 @@ impl AuthorityClock for TestClock {
     }
 }
 
+pub(super) struct ResearchClock;
+
+impl AuthorityClock for ResearchClock {
+    fn now_unix_ms(&self) -> Result<u64, AuthorityTrustError> {
+        let elapsed = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .map_err(|_| AuthorityTrustError::Unavailable)?;
+        u64::try_from(elapsed.as_millis()).map_err(|_| AuthorityTrustError::Unavailable)
+    }
+}
+
 type AfterCommit = Box<dyn FnOnce() -> std::io::Result<()> + Send>;
 
 pub(super) struct FileCas<T> {
