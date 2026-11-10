@@ -16,6 +16,9 @@ use pretty_assertions::assert_eq;
 #[path = "cell_composed_q24_training_owner_tests.rs"]
 mod owner;
 
+#[path = "cell_composed_q24_feature_tests.rs"]
+mod feature;
+
 fn batch(target: i64) -> anyhow::Result<CellQ24TrainingBatchV1> {
     Ok(CellQ24TrainingBatchV1::new(
         d("dataset"),
