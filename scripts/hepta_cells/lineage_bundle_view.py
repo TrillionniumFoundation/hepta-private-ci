@@ -50,8 +50,12 @@ def review_native_bundle_claims(
     must authenticate its signatures. This function performs none of those acts.
     """
     if not isinstance(source, Bundle) or not isinstance(candidate, Bundle):
-        raise LineagePolicyError("native-compatible source and candidate Bundle required")
-    if type(state_partition) is not dict or set(state_partition) != set(_PARTITION_KEYS):
+        raise LineagePolicyError(
+            "native-compatible source and candidate Bundle required"
+        )
+    if type(state_partition) is not dict or set(state_partition) != set(
+        _PARTITION_KEYS
+    ):
         raise LineagePolicyError("complete native CellStatePartitionV1 required")
 
     # review_update already bounds generation, changed component scope, costs,
@@ -68,7 +72,9 @@ def review_native_bundle_claims(
         state_digest = hashlib.sha256(state_bytes).hexdigest()
         source_digest, candidate_digest = source.digest(), candidate.digest()
     except (TypeError, ValueError, OverflowError) as error:
-        raise LineagePolicyError("invalid original native bundle or partition claim") from error
+        raise LineagePolicyError(
+            "invalid original native bundle or partition claim"
+        ) from error
 
     # Bind the untrusted Bundle wire identities before validating succession.
     # Otherwise a changed artifact ID gets masked by an unrelated predecessor
@@ -82,7 +88,9 @@ def review_native_bundle_claims(
         or source.components != asdict(cell.components)
         or candidate.components != asdict(evidence.candidate_components)
     ):
-        raise LineagePolicyError("native Bundle bytes disagree with frozen lineage declarations")
+        raise LineagePolicyError(
+            "native Bundle bytes disagree with frozen lineage declarations"
+        )
 
     # The original native-mirror predecessor and component-scope validator is
     # still mandatory: matching claimed digests alone is not admissibility.
@@ -91,9 +99,13 @@ def review_native_bundle_claims(
             cell.kernel, source, candidate, cell.trainable_scope
         )
     except (TypeError, ValueError, OverflowError) as error:
-        raise LineagePolicyError("invalid original native bundle or partition claim") from error
+        raise LineagePolicyError(
+            "invalid original native bundle or partition claim"
+        ) from error
     if validated_candidate != candidate_digest:
-        raise LineagePolicyError("native Bundle bytes disagree with frozen lineage declarations")
+        raise LineagePolicyError(
+            "native Bundle bytes disagree with frozen lineage declarations"
+        )
 
     # The original bundle wire *includes* these fields. Requiring their equality
     # prevents re-labeling a candidate trained on another dataset or profile.
@@ -103,7 +115,9 @@ def review_native_bundle_claims(
         "update_rule": cell.update_rule,
         "evaluation_profile": cell.evaluation_profile,
     }:
-        raise LineagePolicyError("candidate native training lineage disagrees with frozen evidence")
+        raise LineagePolicyError(
+            "candidate native training lineage disagrees with frozen evidence"
+        )
 
     return NativeBundleClaimReview(
         status=review.status,
@@ -111,7 +125,8 @@ def review_native_bundle_claims(
         candidate_bundle_digest=candidate_digest,
         state_partition_digest=state_digest,
         original_state_owner_claim=cell.state_owner,
-        missing=tuple(review.reasons) + (
+        missing=tuple(review.reasons)
+        + (
             "original native state owner and Bundle artifact custody authentication",
             "original independent evaluator signature and held-out source authentication",
             "full-cost measured net benefit, old-task retention and cold owner recovery",

@@ -17,16 +17,19 @@ def case(lineage="VERIFY"):
     old = next(c for c in original.cells if c.lineage == lineage)
     source = Bundle("artifact:cell127-source", old.generation, asdict(old.components))
     enrolled = replace(old, bundle_digest=source.digest())
-    enrolled_roster = CellRoster(tuple(
-        enrolled if c is old else c for c in original.cells
-    ))
+    enrolled_roster = CellRoster(
+        tuple(enrolled if c is old else c for c in original.cells)
+    )
     candidate = source.successor(
         "artifact:cell127-candidate",
         dict(source.components, heads=pin(333)),
-        pin(201), enrolled.update_rule, enrolled.evaluation_profile,
+        pin(201),
+        enrolled.update_rule,
+        enrolled.evaluation_profile,
     )
     declaration = evidence(
-        enrolled, source_bundle=source.digest(),
+        enrolled,
+        source_bundle=source.digest(),
         training_source=source.digest(),
         candidate_bundle=candidate.digest(),
         candidate_generation=candidate.generation,
@@ -60,11 +63,14 @@ class NativeBundleClaimReviewTests(unittest.TestCase):
         r, e, source, candidate, partition = case()
         unrelated = pin(777)
         wrong = replace(
-            candidate, rollback_predecessor=unrelated,
+            candidate,
+            rollback_predecessor=unrelated,
             training_lineage=dict(candidate.training_lineage, source_bundle=unrelated),
         )
         claimed = replace(e, candidate_bundle=wrong.digest())
-        with self.assertRaisesRegex(LineagePolicyError, "invalid original native bundle"):
+        with self.assertRaisesRegex(
+            LineagePolicyError, "invalid original native bundle"
+        ):
             review_native_bundle_claims(r, claimed, source, wrong, partition)
 
     def test_candidate_component_bytes_must_match_the_reviewed_claim(self):
@@ -107,7 +113,9 @@ class NativeBundleClaimReviewTests(unittest.TestCase):
             with self.subTest(field=key):
                 changed = replace(
                     candidate,
-                    training_lineage=dict(candidate.training_lineage, **{key: pin(988)}),
+                    training_lineage=dict(
+                        candidate.training_lineage, **{key: pin(988)}
+                    ),
                 )
                 claimed = replace(e, candidate_bundle=changed.digest())
                 with self.assertRaisesRegex(LineagePolicyError, "training lineage"):
@@ -131,10 +139,13 @@ class NativeBundleClaimReviewTests(unittest.TestCase):
         changed = source.successor(
             "artifact:changed-encoder",
             dict(source.components, encoder=pin(1000), heads=pin(333)),
-            pin(201), e.update_rule, e.evaluation_profile,
+            pin(201),
+            e.update_rule,
+            e.evaluation_profile,
         )
         claimed = replace(
-            e, candidate_bundle=changed.digest(),
+            e,
+            candidate_bundle=changed.digest(),
             candidate_components=replace(e.candidate_components, encoder=pin(1000)),
         )
         with self.assertRaises(LineagePolicyError):
