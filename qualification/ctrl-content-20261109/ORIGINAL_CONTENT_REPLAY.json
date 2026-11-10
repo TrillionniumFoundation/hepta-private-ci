@@ -1,0 +1,53 @@
+{
+  "schema": "ndu.ctrl.original-content-replay.aggregate.v2",
+  "scope": "Post hoc read-only audit of six previously declared diagnostic WRITE_TEXT episodes",
+  "diagnostic_write_text_episodes": 6,
+  "source_files_verified": 60,
+  "plan_sha256": "7be396821d6a16352b5e71b66f0a374962153c269063134ced06b4ce924d9ee6",
+  "diagnostic_records_sha256": "28411d648b645d3683e3bbcdee7ac6ee9dbef69ad793acc8288d8696bff9c062",
+  "weights_sha256": "db6e3d05270163368d10176299a7d5be3ccee2d8e773fcfbb32454ff1c0f9f54",
+  "evaluator_sha256": "7988cb2eaaf8e3aad6f943fd762a1fd8847b5d44dbdc6eb5330ca2e45fc6ff45",
+  "executed_audit_module_sha256": "a41c6f2fae3439b9b1a081c7873d53cff623545256231af3bee94f03bd3a0b48",
+  "private_raw_stdout_sha256": "fc45072b1d7e2218dca156397410d75f2de917e49752da3bc5b9bb562f1d3cbf",
+  "private_runner_sha256": "c925d38a6dea76bd7199370a03aa5047d6192d2aadf4c918a3e50908035993af",
+  "run": {
+    "host": "ai395",
+    "job_id": "1a1c3408672-e62c-401",
+    "exit_code": 0,
+    "stdout_bytes": 7512,
+    "stderr_bytes": 0,
+    "stdout_durable": true,
+    "stdout_truncated": false,
+    "independent_stdout_file_copy_sha256_equal": true,
+    "cpu_only": true,
+    "wall_seconds_inside_worker": 0.7247418768238276,
+    "wall_scope": "Includes Torch import; excludes HeptaRuntime control-plane transport"
+  },
+  "counts": {
+    "normalized_reference_candidate_available": 6,
+    "replay_argmax_matches_reference": 0,
+    "replay_argmax_text_equals_serialized_payload": 6,
+    "action_text_reached_delivery": 6,
+    "action_text_still_in_terminal_delivery": 6,
+    "evaluator_received_delivery_bytes": 6,
+    "terminal_evaluator_received_delivery_bytes": 6,
+    "delivered_text_matches_reference": 0,
+    "evaluator_text_score_agrees": 6
+  },
+  "replay_top_two_logit_margin_range": [
+    1.4151971340179443,
+    5.413966655731201
+  ],
+  "observed_terminal_quality_range": [
+    0,
+    0
+  ],
+  "historical_selected_index_recorded": false,
+  "duplicate_payload_candidates_in_one_episode": true,
+  "conclusion": "Pinned frozen replay selects a nonmatching candidate in all six cases; original serialized action text is delivered unchanged through terminal scoring. Exact original selected index was not recorded.",
+  "training_performed": false,
+  "originals_modified": false,
+  "observer_authority_authenticated": false,
+  "policy_benefit_established": false,
+  "per_case_content_hashes_published": false
+}
