@@ -22,6 +22,7 @@ from .metering import Meter, atomic_json, file_sha, transport_receipt, canonical
 from .neural import FittedPredictor, ReceiptPortfolioModel
 from .objective import utility_profile
 from .ocr import FIELDS, candidate_features, extract_ocr, requested_field
+from .content_identity import selection_receipt
 from .state_codec import (
     checkpoint_binding,
     load_checkpoint,
@@ -491,6 +492,7 @@ def run():
             "case_id": packet["case_id"],
             "step": sequence,
             "action": output,
+            "content_selection": selection_receipt(candidates, selected_index, output),
             "public_features": list(public_state.features),
             "public_metadata": meta,
             "controller": details,

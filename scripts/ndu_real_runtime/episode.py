@@ -26,6 +26,7 @@ from .metering import Meter, atomic_json, canonical_sha, file_sha
 from .interval_costs import actor_receipts, close_observer_tail, reconcile
 from .objective import utility_profile
 from .trajectory import V2_SCHEMA
+from .content_identity import observe_delivery, validate_selection
 
 
 def bootstrap(config, module):
@@ -299,6 +300,7 @@ class EpisodeHost:
         )
         if set(arguments) != expected:
             raise ValueError("Action contains unexpected arguments")
+        validate_selection(value)
         with self.meter.stage("codec", "execute real " + name):
             if name in {"PREPARE_ROI", "RENDER_IMAGE"}:
                 box = arguments["bbox"]
@@ -582,6 +584,24 @@ class EpisodeHost:
                 if score["evaluator_source_sha256"] != self.config["evaluator_sha256"]:
                     raise ValueError(
                         "External scorer source differs from the predeclared pin"
+                    )
+                snapshot_index = self.snapshots.index(directory)
+                latest_write = next(
+                    (
+                        step
+                        for step in reversed(self.steps[:snapshot_index])
+                        if step["action"]["action"] == "WRITE_TEXT"
+                    ),
+                    None,
+                )
+                if latest_write is not None:
+                    atomic_json(
+                        directory / "content-continuity.json",
+                        observe_delivery(
+                            latest_write,
+                            (directory / "delivery.json").read_bytes(),
+                            score,
+                        ),
                     )
                 scores.append(score)
             meter_status = "SUCCEEDED"
