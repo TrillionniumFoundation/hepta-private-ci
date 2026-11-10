@@ -690,7 +690,10 @@ fn direct_or_wrong_evaluator_execution_cannot_enter_learning_evaluation() {
         ));
     }
     assert_eq!(
-        (fixture.fixture.provider.calls, fixture.fixture.provider.releases),
+        (
+            fixture.fixture.provider.calls,
+            fixture.fixture.provider.releases
+        ),
         (1, 1)
     );
 }

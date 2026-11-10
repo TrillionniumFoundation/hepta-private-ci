@@ -235,7 +235,9 @@ impl CellEvaluationReceiptV1 {
         evaluator: &AuthenticatedPrincipalV1,
     ) -> Result<(), CellEvaluationErrorV1> {
         if self.original_execution_evaluator.as_ref() != Some(evaluator) {
-            return Err(CellEvaluationErrorV1::Binding("original execution evaluator"));
+            return Err(CellEvaluationErrorV1::Binding(
+                "original execution evaluator",
+            ));
         }
         Ok(())
     }
