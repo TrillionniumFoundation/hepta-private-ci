@@ -17,6 +17,8 @@ def example(n=8, clusters=None):
         "schema": "hepta.verify.matched-qualification.v1",
         "source_sha256": sha("source"),
         "target_sha256": sha("fixed-horizon-policy"),
+        "continuation_policy_sha256": sha("no-interrupt-until-horizon"),
+        "horizon_end": 3,
         "risk_model_sha256": sha("risk"),
         "checker_model_sha256": sha("checker"),
         "scheduler_sha256": sha("scheduler"),
@@ -56,6 +58,7 @@ def example(n=8, clusters=None):
                 "terminal_error": err,
                 "label_evidence_sha256": sha(p["pair_id"] + arm + "label"),
                 "label_issued_ns": 120,
+                "label_observed_step": 3,
                 "decision_issued_ns": 110,
                 "evaluator_id": "external-readback",
                 "label_attestation": "signed-receipt-stub-do-not-use-in-production",
@@ -109,6 +112,7 @@ class MatchedQualificationTests(unittest.TestCase):
         r = rows[1]
         r.update(disposition="interrupted", terminal_error=None,
                  label_evidence_sha256=None, label_issued_ns=None,
+                 label_observed_step=None,
                  label_attestation=None, evaluator_id=None)
         result = self.analyze(m, rows)
         self.assertEqual(result["arms"]["voi"]["missing_terminal_labels"], 1)
@@ -157,6 +161,7 @@ class MatchedQualificationTests(unittest.TestCase):
             (0, {"environment_id": "other"}),
             (0, {"source_sha256": sha("other")}),
             (0, {"label_issued_ns": 109}),
+            (0, {"label_observed_step": 2}),
             (0, {"decision_issued_ns": 99}),
             (0, {"terminal_error": 1}),
             (0, {"cost_units": True}),
@@ -175,12 +180,17 @@ class MatchedQualificationTests(unittest.TestCase):
         broken["pairs"][0]["environment_b"] = broken["pairs"][0]["environment_a"]
         with self.assertRaises(ValueError):
             self.analyze(broken, rows)
+        broken = deepcopy(m)
+        broken["pairs"][1]["environment_b"] = broken["pairs"][0]["environment_a"]
+        with self.assertRaises(ValueError):
+            self.analyze(broken, rows)
 
     def test_unknown_accepted_truth_has_explicit_worst_case(self):
         m, rows = example()
         # A missing terminal label cannot be silently converted into a clean accept.
         rows[1].update(terminal_error=None, label_evidence_sha256=None,
-                       label_issued_ns=None, label_attestation=None,
+                       label_issued_ns=None, label_observed_step=None,
+                       label_attestation=None,
                        evaluator_id=None)
         result = self.analyze(m, rows)
         self.assertEqual(result["arms"]["voi"]["accepted_error_rate_bounds"], [0.0, 1/8])
