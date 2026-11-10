@@ -587,3 +587,65 @@ async fn original_root_delivery_refuses_missing_objective_before_claim_or_stage_
     cognitive.close().await;
     store.close().await;
 }
+
+#[tokio::test]
+async fn root_learning_post_claim_source_refusal_keeps_original_claim_without_stage_work() {
+    let daemon = AgentdFixture::new();
+    let (store, request) = completed_circuit(&daemon).await;
+    let ports = CurrentEvidencePorts::new();
+    let (handle, bootstrap) = ok(learning_iteration_channel_v1(
+        daemon.identity.agent_id.clone(),
+        /*spawn_generation*/ 1,
+        ports.inner.owners(),
+        ports.clone(),
+        ports.inner.verifier.clone(),
+        /*capacity*/ 1,
+    ));
+    let claimed_store = store.clone();
+    let source_run_id = request.source_run_id.clone();
+    let result =
+        crate::circuit_learning_delivery::deliver_circuit_learning_with_post_claim_source_v1(
+            &store,
+            Some(&handle),
+            request.clone(),
+            ports.inner.owners(),
+            Box::pin(async move {
+                let original = ok(claimed_store
+                    .circuit_learning_delivery(source_run_id.as_str())
+                    .await)
+                .expect("original learning claim must persist before source recheck");
+                assert!(
+                    original.request_digest.is_some(),
+                    "post-claim source check must run after durable claim"
+                );
+                assert_eq!(original.acknowledged_head, None);
+                Err(LearningIterationRuntimeErrorV1::WrongScope)
+            }),
+        )
+        .await;
+    assert!(matches!(
+        result,
+        Err(LearningIterationRuntimeErrorV1::WrongScope)
+    ));
+    let original = ok(store
+        .circuit_learning_delivery(request.source_run_id.as_str())
+        .await)
+    .expect("original claim remains available for read-only reconciliation");
+    let first = ok(LearningIterationCoordinatorV1::new(
+        request,
+        ports.inner.owners(),
+    ));
+    assert_eq!(
+        original.request_digest,
+        Some(ok(Sha256Digest::parse(
+            first.snapshot().head_digest.to_string()
+        )))
+    );
+    assert_eq!(original.acknowledged_head, None);
+    assert_eq!(ports.restores.load(Ordering::SeqCst), 0);
+    assert!(ok(ports.inner.executed.lock()).is_empty());
+    assert!(ok(ports.inner.checkpoint_calls.lock()).is_empty());
+    drop(handle);
+    drop(bootstrap);
+    store.close().await;
+}
