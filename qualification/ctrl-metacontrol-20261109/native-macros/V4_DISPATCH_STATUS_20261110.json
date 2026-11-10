@@ -1,0 +1,132 @@
+{
+  "attempt": "V4",
+  "business_job_id": null,
+  "dispatch_observation": {
+    "business_submission_count": 1,
+    "exact_request_retained_privately": {
+      "bytes": 911,
+      "sha256": "0ec91f6b0ca7bc82e8085d5f81ff558d21d2fb6c8f31fa5f17ae21159a4e172a"
+    },
+    "new_distinct_operation_key_used": true,
+    "original_v3_replayed": false,
+    "raw_start_response_retained_privately": {
+      "bytes": 210,
+      "sha256": "be87741b6d94997eccfd14c9df8ed54f530b646d25342b34ddc6119dc9887268"
+    },
+    "start_result": "MCP -32603 Internal error without durable job identity",
+    "start_result_proves_business_failure": false,
+    "v4_replay_count": 0
+  },
+  "last_read_only_health_probe": {
+    "business_operation_submitted": false,
+    "completed_at_utc": "2026-11-10T13:52:38Z",
+    "raw_error_bytes": 112,
+    "raw_error_sha256": "1d9ce63057d17b071322824f98648d9b5710de5f2bb2a6ee85b8f91084fab42d",
+    "result": "MCP -32603 Internal error",
+    "state_inference": "No new native job, terminal or artifact evidence"
+  },
+  "native_terminal_failure_established": false,
+  "next_step": "Recover the original V4 job identity and terminal/result evidence read-only; preserve UNKNOWN until reconciled. Do not submit another business key.",
+  "observed_at_utc": "2026-11-10T13:46:47.717311+00:00",
+  "physical_full_cost_observed": false,
+  "policy_benefit_qualified": false,
+  "private_contents_withheld": [
+    "native source paths",
+    "operation key",
+    "full tool arguments",
+    "source identifiers",
+    "reference text"
+  ],
+  "production_admission": false,
+  "qualification": "HOLD_NO_GO",
+  "read_only_recovery": {
+    "business_retry_performed": false,
+    "controller_registry_exact_key_search": "MCP -32603 Internal error",
+    "known_artifact_file_info": {
+      "BOOTSTRAP_RESULT.json": "MCP -32603 Internal error; no existence or absence inference",
+      "COLLECTION_RESULT-v4.json": "MCP -32603 Internal error; no existence or absence inference",
+      "POSTCHECK_CHILD.json": "MCP -32603 Internal error; no existence or absence inference",
+      "POSTCHECK_PARENT.json": "MCP -32603 Internal error; no existence or absence inference",
+      "PREFLIGHT_CHILD.json": "MCP -32603 Internal error; no existence or absence inference",
+      "PREFLIGHT_PARENT.json": "MCP -32603 Internal error; no existence or absence inference",
+      "results-v4/SUMMARY.json": "MCP -32603 Internal error; no existence or absence inference"
+    },
+    "paired_results_established": false,
+    "retained_process_inventory": "MCP -32603 Internal error",
+    "terminal_state_established": false
+  },
+  "remote_execution_observed": null,
+  "schema": "ndu.ctrl.native-macro-dispatch-status.v1",
+  "scope": {
+    "active_future_sources": 0,
+    "active_original_fit_sources": 1,
+    "planned_native_episodes": 6,
+    "planned_pairs": 3,
+    "reserved_future_sources_excluded": 37
+  },
+  "source_identity": {
+    "collector_change": "ControlPlan parsing of omitted memory_mode with its default reset",
+    "macro_contract_unchanged": true,
+    "official_fix_commit": "1c7c9598cfb1d623afce2d026332502e9c9dd066",
+    "original_source_files_planned_unchanged": 60,
+    "pairs_canonical_sha256": "7623ba3bdd02ffbf309ce0323741af277f2ae4d654a7b3fac3b74af5dcadac4e",
+    "planned_source_files": 62,
+    "profile_and_model_pins_preserved": true
+  },
+  "staging": {
+    "complete_content_readback_matches_local_bytes": true,
+    "directory_job_exit_code": 0,
+    "directory_job_id": "1a1c5a98538-2e65-1fe",
+    "directory_job_terminal_state": "succeeded",
+    "directory_modes": "0700",
+    "directory_terminal_publication_confirmed": true,
+    "file_modes": "0600",
+    "files": [
+      {
+        "bytes": 22549,
+        "exact_readback_matches": true,
+        "mode": "0600",
+        "name": "PLAN-v4.json",
+        "sha256": "ae855d8fcb03f0009d0eb02943374c1caf8fb2ae1cce589606145c67f7bf6729"
+      },
+      {
+        "bytes": 24067,
+        "exact_readback_matches": true,
+        "mode": "0600",
+        "name": "MANIFEST-v4.json",
+        "sha256": "028dc3d4db96afb6b1f92f7312b5772afa21a48bca0a4d810337126e130d3e6c"
+      },
+      {
+        "bytes": 14237,
+        "exact_readback_matches": true,
+        "mode": "0600",
+        "name": "BOOTSTRAP-v4.py",
+        "sha256": "f6175bc363edb6b5617bb8d7372384d5aed75507b42906d4b743ed712e39ad6e"
+      },
+      {
+        "bytes": 1298,
+        "exact_readback_matches": true,
+        "mode": "0600",
+        "name": "RUN-v4.py",
+        "sha256": "6f7af239f92e9ce313270fe10ea8f40b370be8878dd26599ad9d86b52bc2b001"
+      },
+      {
+        "bytes": 7304,
+        "exact_readback_matches": true,
+        "mode": "0600",
+        "name": "payload/metacontrol_macro_contract.py",
+        "sha256": "addf2b7889c692b6151180d394f29f3a744b1e8175ec184609c772fe49db727a"
+      },
+      {
+        "bytes": 10870,
+        "exact_readback_matches": true,
+        "mode": "0600",
+        "name": "payload/metacontrol_native_pairs.py",
+        "sha256": "9c15056dae685332f5d14cac9aa79ee84eef93d5b41a4abe8ceff8124ed934e7"
+      }
+    ],
+    "independent_file_info_checks": 6,
+    "state": "VERIFIED"
+  },
+  "state": "UNKNOWN"
+}

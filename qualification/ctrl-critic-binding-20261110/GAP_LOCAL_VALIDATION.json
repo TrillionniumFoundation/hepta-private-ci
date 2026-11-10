@@ -1,0 +1,83 @@
+{
+  "argv": [
+    "python",
+    "-m",
+    "unittest",
+    "-v",
+    "ndu_real_runtime.test_candidate_gap_diagnostic"
+  ],
+  "exit_code": 0,
+  "final_format": {
+    "command": "just fmt",
+    "exit_code": 0,
+    "local_tests_repeated_after_format": false,
+    "new_python_asts_unchanged": true,
+    "previous_16_published_sources_byte_identical": true,
+    "raw_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "independent_real_tasks": 0,
+  "minimum_tests": 8,
+  "observed_tests": 8,
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+  "production_admission": false,
+  "published_source_pins": {
+    "scripts/ndu_real_runtime/candidate_coverage.py": {
+      "ast_sha256": "419e39a4cc919cab9506a4940dc1db461a0451773f5f7571650c0b122a94dccf",
+      "bytes": 14398,
+      "sha256": "3d44b74354a3a56b69467e1c019606de7f360666d7fa09a8cee4fe2f71c5872b"
+    },
+    "scripts/ndu_real_runtime/candidate_coverage_legacy.py": {
+      "ast_sha256": "8edf876317fb49e791b27160f304af10ad217832638e398ff08ce8d2973b59d3",
+      "bytes": 16027,
+      "sha256": "daba119e74d2f306731c063c30da9a6fb1a8717636ab4061d20e71e138632799"
+    },
+    "scripts/ndu_real_runtime/candidate_gap_diagnostic.py": {
+      "ast_sha256": "60726f24959e6cf6a042d9cdf4dbf37d1896340e3733b25abbbeed22506eb3c5",
+      "bytes": 16971,
+      "sha256": "1da02aea4aabb7e21486110fc0ec545fe9d683e5e0383311df568e33f649753e"
+    },
+    "scripts/ndu_real_runtime/test_candidate_coverage_legacy.py": {
+      "ast_sha256": "cb8b09ee50feda4fc005f75ef59784c00357cb4614a77afd90ebd98e6f5c9e6a",
+      "bytes": 7842,
+      "sha256": "63b3a863be8c79c424f04bd3f26f83fea39e90fdb408827d69cfb7547d53becc"
+    },
+    "scripts/ndu_real_runtime/test_candidate_gap_diagnostic.py": {
+      "ast_sha256": "16263c8bceeffc706a473addc84274a1bbea15bf554fff064a895cc3d0b18004",
+      "bytes": 12257,
+      "sha256": "e0f45a5485c749f34087a02f15c20a307e22c50d6a2d469cb374352921565af8"
+    }
+  },
+  "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "raw_log_sha256": "efdbbf101dd9b54f1c6e7d4cac12817ef56b2521eb815376270e530624d0ecf8",
+  "scope": "synthetic_retained_text_diagnostic_contract_tests",
+  "source_pins_sha256": "b10901d665eb80468b3936c22b2de9cf2cb9626494bf2941760345f0d7b30bac",
+  "source_unchanged": true,
+  "tested_source_pins": {
+    "scripts/ndu_real_runtime/candidate_coverage.py": {
+      "ast_sha256": "419e39a4cc919cab9506a4940dc1db461a0451773f5f7571650c0b122a94dccf",
+      "bytes": 14398,
+      "sha256": "3d44b74354a3a56b69467e1c019606de7f360666d7fa09a8cee4fe2f71c5872b"
+    },
+    "scripts/ndu_real_runtime/candidate_coverage_legacy.py": {
+      "ast_sha256": "8edf876317fb49e791b27160f304af10ad217832638e398ff08ce8d2973b59d3",
+      "bytes": 16027,
+      "sha256": "daba119e74d2f306731c063c30da9a6fb1a8717636ab4061d20e71e138632799"
+    },
+    "scripts/ndu_real_runtime/candidate_gap_diagnostic.py": {
+      "ast_sha256": "60726f24959e6cf6a042d9cdf4dbf37d1896340e3733b25abbbeed22506eb3c5",
+      "bytes": 15421,
+      "sha256": "8fdf6390f9f66c72511b86762afb11f3663cc002cfb8bf0ff07f799dc7a4d785"
+    },
+    "scripts/ndu_real_runtime/test_candidate_coverage_legacy.py": {
+      "ast_sha256": "cb8b09ee50feda4fc005f75ef59784c00357cb4614a77afd90ebd98e6f5c9e6a",
+      "bytes": 7842,
+      "sha256": "63b3a863be8c79c424f04bd3f26f83fea39e90fdb408827d69cfb7547d53becc"
+    },
+    "scripts/ndu_real_runtime/test_candidate_gap_diagnostic.py": {
+      "ast_sha256": "16263c8bceeffc706a473addc84274a1bbea15bf554fff064a895cc3d0b18004",
+      "bytes": 11292,
+      "sha256": "0676e2fc0abb92f8d1d1cf8210c2c343903538303584d52f802544da6f59202f"
+    }
+  },
+  "wall_seconds": 0.44057926000004954
+}
