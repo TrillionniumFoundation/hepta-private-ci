@@ -35,6 +35,7 @@ final joint total, and do not count imported treatment code as a new field trial
 | [SOURCE.json](SOURCE.json) | Executed and published source byte/AST hashes, published Git blob identities and original upstream tree |
 | [FORMAT.json](FORMAT.json) | Formatter/lint commands, hashes, exit codes and the explicit source-identity boundary |
 | [REVIEW.md](REVIEW.md) | Resolved integrity, inference, authentication and SQLite commit-order defects |
+| [PORTABILITY.md](PORTABILITY.md) / [PORTABILITY.json](PORTABILITY.json) / [PORTABILITY.zip](PORTABILITY.zip) | The actual first Windows failure, explicit test-connection closure repair, retained-handle diagnostics and follow-up source/format records |
 | [MATCHED_REGRESSIONS.json](MATCHED_REGRESSIONS.json) | Before/after unsupported-design, mixed-allocation and zero-net-benefit counterexamples |
 | [RISK_REGRESSIONS.json](RISK_REGRESSIONS.json) | Before/after stale risk identity and missing-label denominator counterexamples |
 | [HOST_OBSERVATION.json](HOST_OBSERVATION.json) | Bounded host inventory, incomplete search coverage and unresolved operation status |
@@ -70,6 +71,13 @@ only function-docstring indentation; executable ASTs and cleaned docstrings are
 identical. Local tests were not rerun after formatting, as required by AGENTS.md.
 `scheduler_identity()` includes raw source bytes, so local dispatch identities
 must not be attributed to the formatted published head.
+
+The first native Windows run subsequently found six test-cleanup errors caused
+by test SQLite handles not being explicitly closed. [PORTABILITY.md](PORTABILITY.md)
+retains that failure and the narrow fixture repair. The paragraph above describes
+the initial formatting stage; the two test files have a separately recorded
+functional resource-lifetime follow-up in `SOURCE.json` and `PORTABILITY.json`.
+The original local result and archive are preserved without rewriting history.
 
 The existing `hepta-verify1.yml` workflow explicitly checks out and asserts the
 PR head SHA on Linux, macOS and Windows before running package tests, SQLite

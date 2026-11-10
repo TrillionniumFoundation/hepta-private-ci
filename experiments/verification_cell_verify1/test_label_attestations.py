@@ -1,5 +1,6 @@
 """Fixture authentication proves binding/recovery, never independent custody."""
 
+from contextlib import closing
 from dataclasses import asdict, replace
 import hashlib
 import hmac
@@ -85,7 +86,7 @@ class LabelAttestationTests(unittest.TestCase):
 
     def rewrite_chain(self, change):
         # An owner can recompute every unkeyed SQLite digest; authentication must still fail.
-        with sqlite3.connect(self.path) as connection:
+        with closing(sqlite3.connect(self.path)) as connection, connection:
             root = connection.execute("SELECT sha FROM frozen").fetchone()[0]
             for seq, body in connection.execute(
                 "SELECT seq, body FROM events ORDER BY seq"

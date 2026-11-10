@@ -1,4 +1,16 @@
 {
+  "followups": [
+    {
+      "changed_paths": [
+        "experiments/verification_cell_verify1/test_label_attestations.py",
+        "experiments/verification_cell_verify1/test_repair_lineage.py"
+      ],
+      "evidence": "PORTABILITY.json",
+      "initial_archive_and_formatting_evidence_unchanged": true,
+      "kind": "native_windows_test_handle_lifetimes",
+      "production_source_changed": false
+    }
+  ],
   "python_files": {
     "experiments/verification_cell_verify1/__init__.py": {
       "executed_ast_sha256": "c380a22c4e8ea93b30d1320044bacacde9172c1ecf40194a7d8167343b560b70",
@@ -262,9 +274,15 @@
     "experiments/verification_cell_verify1/test_label_attestations.py": {
       "executed_ast_sha256": "43622661edace3c3c1d3a36ba0e778de99a6ccbe145bde9a9f10d5330d2dfab9",
       "executed_sha256": "c8617fe84fd6d2ac46c17d4fd364643f734b9225287ddaa0a4e0d50ba7451c1e",
-      "published_ast_sha256": "43622661edace3c3c1d3a36ba0e778de99a6ccbe145bde9a9f10d5330d2dfab9",
-      "published_git_blob": "917f099950ac9c9115bb1468db37ab066964bc07",
-      "published_sha256": "5907f3ad12ccdcc816e9eec411f318b0a04f43d72d39762768a2400f015256e3"
+      "prior_published_before_portability": {
+        "published_ast_sha256": "43622661edace3c3c1d3a36ba0e778de99a6ccbe145bde9a9f10d5330d2dfab9",
+        "published_git_blob": "917f099950ac9c9115bb1468db37ab066964bc07",
+        "published_sha256": "5907f3ad12ccdcc816e9eec411f318b0a04f43d72d39762768a2400f015256e3"
+      },
+      "published_ast_sha256": "7e859aa69bd41b3988be904542ca8bd8b42b56205d556f6579b484fbfd9d5b5c",
+      "published_followup": "PORTABILITY.json: explicitly close test SQLite handles after observed native Windows failures",
+      "published_git_blob": "c558470cac67afbde727940ca5834ad290dcef58",
+      "published_sha256": "2372a1a73de6ca042f52db57512f7b553fa0eb40d13510270c3a12202671200b"
     },
     "experiments/verification_cell_verify1/test_matched_qualification.py": {
       "executed_ast_sha256": "605470040a38e3d95cc0b0beb1df0b81235b2af3e0b1a4a1b57716ab6685cb69",
@@ -339,9 +357,15 @@
     "experiments/verification_cell_verify1/test_repair_lineage.py": {
       "executed_ast_sha256": "62367471787e98d46638f58f6026958a9d2259e8866a5b59f409bc4dc54b71fd",
       "executed_sha256": "66e9ec4945b170f75b8f079bf44e1470edab53cfdb2f96d36d3ea9ba674de57c",
-      "published_ast_sha256": "62367471787e98d46638f58f6026958a9d2259e8866a5b59f409bc4dc54b71fd",
-      "published_git_blob": "d569f61969af9b5fb8cc6097aa971dfb252b10be",
-      "published_sha256": "7c890068a029562c509b6a9b72a6a4fdc6e746a5f90ff323c2278851aec319b8"
+      "prior_published_before_portability": {
+        "published_ast_sha256": "62367471787e98d46638f58f6026958a9d2259e8866a5b59f409bc4dc54b71fd",
+        "published_git_blob": "d569f61969af9b5fb8cc6097aa971dfb252b10be",
+        "published_sha256": "7c890068a029562c509b6a9b72a6a4fdc6e746a5f90ff323c2278851aec319b8"
+      },
+      "published_ast_sha256": "784191f68154601f0bba0c7321ba63f14547dc86a3424e332f114747d10abc35",
+      "published_followup": "PORTABILITY.json: explicitly close test SQLite handles after observed native Windows failures",
+      "published_git_blob": "105e408711bf5cbf3074670a2f471bac3707cb65",
+      "published_sha256": "e0e970159b37f817e06964c56ca868d423c96435461fb48bfc056996df127312"
     },
     "experiments/verification_cell_verify1/test_runtime.py": {
       "executed_ast_sha256": "ccf8c9f6dc4c909056ee0eff7794aa83b406e3cc5abc7b07e179e690aed28712",

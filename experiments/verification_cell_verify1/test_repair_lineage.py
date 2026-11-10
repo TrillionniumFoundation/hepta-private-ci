@@ -1,7 +1,7 @@
 """Synthetic custody fixtures only; no real repair or independent task result."""
 
 from dataclasses import asdict
-from contextlib import contextmanager
+from contextlib import closing, contextmanager
 import json
 import os
 from pathlib import Path
@@ -194,7 +194,7 @@ class RepairLineageTests(unittest.TestCase):
         self.record(
             self.repair.completion("repair", "failed", digest("failed-readback"))
         )
-        with sqlite3.connect(self.parent.path) as db:
+        with closing(sqlite3.connect(self.parent.path)) as db, db:
             seq, body = db.execute(
                 "SELECT seq,body FROM repair_events ORDER BY seq DESC LIMIT 1"
             ).fetchone()
@@ -220,7 +220,7 @@ class RepairLineageTests(unittest.TestCase):
                 expected_manifest_sha256=before["manifest_sha256"],
                 expected_ledger_sha256=before["ledger_sha256"],
             )
-        with sqlite3.connect(self.child.path) as db:
+        with closing(sqlite3.connect(self.child.path)) as db, db:
             manifest = json.loads(db.execute("SELECT body FROM frozen").fetchone()[0])
             manifest["roster"][0]["subject_sha256"] = digest(
                 "substituted repaired artifact"
@@ -260,7 +260,7 @@ class RepairLineageTests(unittest.TestCase):
         self.assertEqual(self.repair.report()["disposition_counts"]["unrecorded"], 5)
 
     def test_rehashed_recovery_manifest_cannot_make_owner_its_evaluator(self):
-        with sqlite3.connect(self.parent.path) as db:
+        with closing(sqlite3.connect(self.parent.path)) as db, db:
             manifest = json.loads(
                 db.execute("SELECT body FROM repair_frozen").fetchone()[0]
             )
@@ -350,13 +350,12 @@ class RepairLineageTests(unittest.TestCase):
         marks = []
 
         def child_is_locked():
-            probe = sqlite3.connect(self.child.path, timeout=0)
-            try:
-                with self.assertRaisesRegex(sqlite3.OperationalError, "locked"):
-                    probe.execute("BEGIN IMMEDIATE")
-            finally:
-                probe.rollback()
-                probe.close()
+            with closing(sqlite3.connect(self.child.path, timeout=0)) as probe:
+                try:
+                    with self.assertRaisesRegex(sqlite3.OperationalError, "locked"):
+                        probe.execute("BEGIN IMMEDIATE")
+                finally:
+                    probe.rollback()
 
         class GuardedCommit(sqlite3.Connection):
             def commit(connection):
@@ -395,7 +394,7 @@ class RepairLineageTests(unittest.TestCase):
             patch.object(self.repair, "_read", read),
         ):
             self.repair.record(claim, attestation=proof, authenticate=owner_verify)
-        with sqlite3.connect(self.parent.path) as db:
+        with closing(sqlite3.connect(self.parent.path)) as db, db:
             db.execute("DROP TABLE repair_events")
             db.execute("DROP TABLE repair_frozen")
         with patch.object(self.parent, "_transaction", parent_transaction):
