@@ -127,6 +127,13 @@ async fn ordinary_source_publishes_original_circuit_result_and_reopens_exact_inp
     let mut driver = CircuitTaskDriverV1 { store: store.clone(), fence: fence.clone(), inputs: owner.clone(),
         cells: AgentdCircuitCellOwnerV1::new(registry()?, cell_owner(root.path(), &sources)?, model, cell::Encoder) };
     let receipt = driver.execute(&request, CircuitTaskModeV1::Drive, || Ok(time())).await?;
+    let mut changed = receipt.clone();
+    let execution = changed.executions.values_mut().next().expect("one original Cell");
+    let raw_decision_digest = Sha256Digest::for_bytes(&crate::circuit_cell_output::encode_receipt(&execution.decision)?);
+    assert_ne!(execution.completion.receipt_digest, raw_decision_digest);
+    execution.completion.receipt_digest = raw_decision_digest;
+    assert!(owner.publish_result(&identity, &record("A"), &changed).is_err());
+    assert!(owner.read_publication(&identity, &record("A")).is_err());
     owner.publish_result(&identity, &record("A"), &receipt)?;
     let published = owner.read_publication(&identity, &record("A"))?;
     assert_eq!(published.original_record(), &record("A"));

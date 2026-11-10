@@ -166,11 +166,17 @@ pub(super) fn result(definition: &BoundedCircuitDefinitionV2, request: &CircuitT
     let execution = receipt.executions().get(&dispatches[0].activation_id).ok_or(Error::InvalidBinding)?;
     let decision = &execution.decision;
     let decision_bytes = crate::circuit_cell_output::encode_receipt(decision)?;
+    // The Circuit completion authenticates the invocation and semantic output
+    // together with the decision, exactly as circuit_cell::finish publishes it.
+    let mut completion_bytes = b"hepta.circuit.cell-completion.v1\0".to_vec();
+    completion_bytes.extend_from_slice(dispatches[0].invocation_digest.as_str().as_bytes());
+    completion_bytes.extend_from_slice(execution.completion.output_digest.as_str().as_bytes());
+    completion_bytes.extend_from_slice(&decision_bytes);
     if decision.scope != input.scope || decision.operation_id != input.operation_id
         || decision.source_frontier != input.source_frontier
         || trace.completions().get(&dispatches[0].activation_id) != Some(&execution.completion)
         || execution.completion.output_digest != Sha256Digest::for_bytes(&execution.output)
-        || execution.completion.receipt_digest != Sha256Digest::for_bytes(&decision_bytes)
+        || execution.completion.receipt_digest != Sha256Digest::for_bytes(&completion_bytes)
     { return Err(Error::InvalidBinding); }
     decision.representation.validate().map_err(crate::CircuitCellErrorV1::from)?;
     let mut bytes = b"HCSTRES1".to_vec();
