@@ -1,0 +1,3087 @@
+{
+  "schema": "hepta.mem6.archive-transfer-checkpoint.v1",
+  "created_at": "2026-11-10T13:53:12.576581+00:00",
+  "status": "PAUSED_SERVICE_UNAVAILABLE",
+  "download_complete": false,
+  "whole_archive_sha256_verified": false,
+  "archive_restore_status": "PENDING",
+  "restore_receipt_created": false,
+  "archive_descriptor": {
+    "host": "ai395",
+    "remote_path": "/home/qq/mem6-attribution-20261110-484c/archive-v1/mem6-cas-001.tar.xz",
+    "expected_version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+    "expected_bytes": 61412948,
+    "expected_sha256": "f77acd9feb27fda3f8000b0d089dbdbe258a4adfb7acedcb2e0cd590cc4f361e",
+    "expected_manifest_sha256": "3c7799846836a18b6a5470e03cda92919ede2fcf76c8ee9ede20ae0e945ce336",
+    "chunk_size": 65536,
+    "expected_chunk_count": 938
+  },
+  "verified_chunk_count": 371,
+  "verified_bytes": 24313856,
+  "contiguous_prefix": {
+    "path": "/workspace/scratch/484c2ed46043/mem6-results/mem6-cas-001.prefix",
+    "bytes": 24117248,
+    "sha256": "bd1c67ea996843e72256f204648013fca1148d8926da88f2f371dfe5d63ed5ed",
+    "chunks": 368,
+    "first_offset": 0,
+    "end_offset_exclusive": 24117248,
+    "format": "raw byte prefix only; not a complete tar.xz archive"
+  },
+  "supplemental_chunks": {
+    "path": "/workspace/scratch/484c2ed46043/mem6-results/mem6-cas-001.extra-chunks.bin",
+    "bytes": 196608,
+    "sha256": "240e41d16f3ddfed8401e34ce5ddadc1fceee99cbfcc3659ab9fa38cab06e4bb",
+    "concatenation_offsets": [
+      24182784,
+      24248320,
+      24313856
+    ],
+    "format": "three complete raw chunks in listed offset order; first missing chunk is not included",
+    "individual_chunks": [
+      {
+        "bytes": 65536,
+        "offset": 24182784,
+        "sha256": "0e8a19e6848467b20416bfce8bebdf83c03a2e2b5f98a27ee0cafd184eda4120",
+        "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+        "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000024182784.part",
+        "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000024182784.json"
+      },
+      {
+        "bytes": 65536,
+        "offset": 24248320,
+        "sha256": "a9d3ac521f7f8e4b4f6cc314a8362257d78cf23618b0afc636ad6a958f4efa04",
+        "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+        "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000024248320.part",
+        "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000024248320.json"
+      },
+      {
+        "bytes": 65536,
+        "offset": 24313856,
+        "sha256": "dd5fac7cd586b0edec01aa1ed05fa70f2def66ccc804d0425e9266402c500bcd",
+        "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+        "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000024313856.part",
+        "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000024313856.json"
+      }
+    ]
+  },
+  "all_saved_chunks": [
+    {
+      "bytes": 65536,
+      "offset": 0,
+      "sha256": "0e221da65ea0c846fe6a9b73f618f50e1b7dc262451f6d222bc9788965dedf79",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000000000000.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000000000000.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 65536,
+      "sha256": "e4d742554577208e8c3f614b0db8fb74b0dc2a7c8f85dab6cd6690b9e2127ddd",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000000065536.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000000065536.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 131072,
+      "sha256": "a2639694f39658ef8d84a2b17b28d4df23479b2db0ea5cc80c625c1c5e699140",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000000131072.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000000131072.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 196608,
+      "sha256": "7ab93056aed2ec684ec28e1a981711a512ecf64b4e0fd7398a4493b467204e7a",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000000196608.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000000196608.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 262144,
+      "sha256": "367dfcc98ef43af7d479543a0ea0716672e8948e0e3a0176be69223689028579",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000000262144.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000000262144.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 327680,
+      "sha256": "c9fd35a9cac74222132ac6fbbeb179305f29958f40345c6897f17bd16646fb28",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000000327680.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000000327680.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 393216,
+      "sha256": "b076a6240f3541086c396ec2c6a8839e7708d20779101df1ca2df1ec98fcf0cd",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000000393216.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000000393216.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 458752,
+      "sha256": "c329b5281065c33f424616999527e4bff1fd827164d51cb6af657b8c2484cfd7",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000000458752.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000000458752.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 524288,
+      "sha256": "b1bba7cdc979aba99369e3e86f0f7ca6076ec44e96169b0ff6750e3c16034120",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000000524288.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000000524288.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 589824,
+      "sha256": "e1796e1e17bc4bda8c90aa1792d327835bc835bb24891bee8fdfbd6adb6f1cb9",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000000589824.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000000589824.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 655360,
+      "sha256": "086947b1fc589788e21f5573ced8c3596174a3ef21233813590593292128bb32",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000000655360.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000000655360.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 720896,
+      "sha256": "7fb914442c21fc2c5628184261426f3f08d49fb6184ecd6ce7b4df08a8423759",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000000720896.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000000720896.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 786432,
+      "sha256": "ebbd34052006b5c39a8c707fddb11cec3fc3b0f3108fd0af00c2560eff004b48",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000000786432.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000000786432.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 851968,
+      "sha256": "3005505e58afb849ff1871a2df528c64a3a642679758af6b6287fac802e38480",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000000851968.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000000851968.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 917504,
+      "sha256": "56e90afb25a181cbed4ec873a8c4a43fd13665ab9a3ce0acc6fcaa860c7c89d1",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000000917504.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000000917504.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 983040,
+      "sha256": "30e6d5d029a689bb4dce0b997107e9acc834132b6692841508d5be072b910825",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000000983040.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000000983040.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 1048576,
+      "sha256": "0355bdd2bf5449ef721b4b812d475a53efdf170d1bd62055978a544f0e775ecc",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000001048576.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000001048576.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 1114112,
+      "sha256": "d0ef6b9329eadf66b0cfa0f70fad79f723743e6ab30961bbdfa1cfb0563ff8ba",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000001114112.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000001114112.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 1179648,
+      "sha256": "1eca2cab10ff067fb833e63d73fcc38d9bc520cdd85d97376b8696f7cf96797b",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000001179648.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000001179648.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 1245184,
+      "sha256": "64cb6ae92c6e17361f49a54c07c0f32ab748e9d94e6fd4a03683659d61347754",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000001245184.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000001245184.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 1310720,
+      "sha256": "6b5737306af1523479c8ecf071a1bd9ab1f1695d07aa8063e1209d32fdc7112b",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000001310720.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000001310720.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 1376256,
+      "sha256": "1a4e1539f17d12b52545ce0e5591f6b9f04085772ab175f6b3f9b118ef24bb71",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000001376256.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000001376256.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 1441792,
+      "sha256": "4b059984cb8070be16ec4b70efd5d839d7de160234ffc2e5c9f49bdaf1551245",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000001441792.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000001441792.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 1507328,
+      "sha256": "db02eb15c9912dfc94d7895f60fb5cdba50bebbe038b94910cbe979013318351",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000001507328.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000001507328.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 1572864,
+      "sha256": "5fc10b9a78dc4e9a2d3660f80954fc7687ed1c5efe975e8b4be68e43677a4bbf",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000001572864.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000001572864.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 1638400,
+      "sha256": "ef542cf811e0a37157b2b98475845d3851ab04fdb6a56c6cd6a04b9b35dd25fe",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000001638400.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000001638400.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 1703936,
+      "sha256": "41b1735e8b3225c8a7428dbc296c967b28ba3d83ab5b10c3667c0d7e71dca3f0",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000001703936.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000001703936.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 1769472,
+      "sha256": "e92920ff4dab7fc676ea81596fa6a962c2d5cdfd727362625a58a8ec4867e93e",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000001769472.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000001769472.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 1835008,
+      "sha256": "18a02dd42dbdf036d1f2a1200eb13342ef67fdec9cce0dd61110345ad7accd9d",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000001835008.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000001835008.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 1900544,
+      "sha256": "487dc1f0c0370b014c4ec00cccfad05e224fb82599ae1f2983dc08cf8b491f8f",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000001900544.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000001900544.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 1966080,
+      "sha256": "117c12fb8e10fe0421c42a2b93860a7a0a1f5936aaa1e2611ac9d856a26c4736",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000001966080.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000001966080.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 2031616,
+      "sha256": "643bc4acfc5a1c5dd47d397e97f00c72952e80f820137f6efa5ad58ce7fa55e2",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000002031616.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000002031616.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 2097152,
+      "sha256": "a30cfb03040ac1426aba1f7cef6ce78f2aafc073b1feb4c818bd76ed75b1ef88",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000002097152.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000002097152.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 2162688,
+      "sha256": "2b33bb693513da785a86b912c391e22afef5300c6e597084212c4b93bcecfb8e",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000002162688.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000002162688.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 2228224,
+      "sha256": "f69729b3c76167efb7965b6a31aee0d4e4affba5133f04c38e2fe9d4fb59ac2f",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000002228224.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000002228224.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 2293760,
+      "sha256": "c8e7396a1ef649a3521669d704778dd18ad8986ecf12c4f5fe5fe868c0ac8fd8",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000002293760.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000002293760.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 2359296,
+      "sha256": "9112155a25f712defc1ba6de1779292e5446530e034309baec1582807aee8ce6",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000002359296.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000002359296.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 2424832,
+      "sha256": "6bf87f43742f772e854ad720514079b97cd268587c9c24fe0d9ccdcd05ff1a86",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000002424832.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000002424832.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 2490368,
+      "sha256": "6e6f656b61d82596aa5872ad10082960de278d973a538e4fd47e0f81837b92db",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000002490368.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000002490368.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 2555904,
+      "sha256": "c4eb2278e6d8617f865f37a7635e3b83a60b80147702974201fd1f6d333f1b08",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000002555904.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000002555904.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 2621440,
+      "sha256": "e254c487b43e08d7777bdb3e8872875452324ed60300f029f9364c6ed1c6e716",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000002621440.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000002621440.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 2686976,
+      "sha256": "524c71f18c65d29db0dae453256726b039cf70df2514d895070bc36d6fae749e",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000002686976.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000002686976.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 2752512,
+      "sha256": "e4e71b72a342b6d57cdf4e3009d779dcbfdb0e8060b311a450a33fdfc80d9b66",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000002752512.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000002752512.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 2818048,
+      "sha256": "05af35e5fcd24f058444230fa8ad37a76449f642b24acbff042d6e4c26ef2654",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000002818048.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000002818048.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 2883584,
+      "sha256": "902da5b8d7d20e88f792b8c5b7da9d3c4727735c39dac11748a45f7acc5ec52c",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000002883584.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000002883584.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 2949120,
+      "sha256": "d78e4a5f8c278aa2230dd3eaeb74c1e149df9f26a2f16dd3b372e5e1b206df0a",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000002949120.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000002949120.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 3014656,
+      "sha256": "2a03535713bce1a4f021d195c171ad6c5eb3407ae1f850ad82a246d36c6b90c0",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000003014656.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000003014656.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 3080192,
+      "sha256": "7a4ca5391690a5bc944ed48933cc7f73e24982e9e519f07651940f6a266baa45",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000003080192.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000003080192.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 3145728,
+      "sha256": "dbf981023ba0290a45c3b95f6fb13ac9d7d8a22bc0be0c0bb3074a8750994b2f",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000003145728.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000003145728.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 3211264,
+      "sha256": "d4905ae6d14205ad10ffbfe8a9e0c7ae484aaf3245513fdb1c01c0f3ba95dd40",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000003211264.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000003211264.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 3276800,
+      "sha256": "f55e5cdab61bcbd3171db2f7a9865184eacb101cecac5ede9fcb425fbf2d61cb",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000003276800.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000003276800.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 3342336,
+      "sha256": "b672397f1b2a5ed71c2154d16fd94a5a00880500905c928cea5a6fc81200f207",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000003342336.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000003342336.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 3407872,
+      "sha256": "54a79268e2155b12242f07996ec2cf2ce4297e15de63029a144500dac37991dc",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000003407872.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000003407872.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 3473408,
+      "sha256": "2a7b90bde2070042cab6ab62e72b1ef4534c61eff01b00edd90fa30555d46be8",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000003473408.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000003473408.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 3538944,
+      "sha256": "64663620210819d27311a115887b780722e424d8037bc75a923b24b094a49b62",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000003538944.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000003538944.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 3604480,
+      "sha256": "c2b4ae4ccfe9189a6598316b66f22975a73e6783bc64a206e47c391d47515137",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000003604480.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000003604480.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 3670016,
+      "sha256": "5827919529d9addf15a402b43be1f2b42ae93a251df06bd4004e6daba6bbb746",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000003670016.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000003670016.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 3735552,
+      "sha256": "d57338e98b8b37e98965ffc5f453797422a1f949d736876ce81d1561ba386d5a",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000003735552.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000003735552.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 3801088,
+      "sha256": "5b7b343c05a8abb4c4a88039bdeccf9165d219bac528cfb50328ecca3bf14832",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000003801088.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000003801088.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 3866624,
+      "sha256": "4087efb5e882ae47de1cb3245bd1efb1247bd90d5097c70b9a86e5f0750256c0",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000003866624.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000003866624.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 3932160,
+      "sha256": "a8c5c57cee2c8cc2310a055ee24e73261cbbc216e223d2abf33eac786e6015b1",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000003932160.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000003932160.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 3997696,
+      "sha256": "feab76486e1568f43d90b804ce05896a2c7c32c4a0aac932849b0f13a2edde61",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000003997696.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000003997696.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 4063232,
+      "sha256": "1f77bc5a2050711b4fa963f5ef23c00f8adc337bcc12dc77b3dc219b399ed458",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000004063232.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000004063232.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 4128768,
+      "sha256": "be1a8532e5939fdd4abb9760be45c9876e4811cef5a030fa3b94dedaa829556d",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000004128768.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000004128768.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 4194304,
+      "sha256": "fa5bed8e806ca6e9bab04e476e8ffd9d2e0ed562a6a378e594b0c4b1278150a0",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000004194304.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000004194304.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 4259840,
+      "sha256": "1ff5993cdc8869560f03858f8b48ca11922d48e6a296e48ab6d3dabaefdc4ee6",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000004259840.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000004259840.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 4325376,
+      "sha256": "e29b3b6b8ca735c510ff8a3a97c876b1ef3f4065d469072886b577ce4276cdab",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000004325376.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000004325376.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 4390912,
+      "sha256": "69a7caaa54d3091c790979686878e6c86f29a64e82e428c787cb49dca2c01542",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000004390912.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000004390912.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 4456448,
+      "sha256": "eaa2e824b31d3224252374bf720bcef7abe3ba0eb3ec049ef994117a86fb140c",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000004456448.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000004456448.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 4521984,
+      "sha256": "cfa2006c1183c98d7081ff768468ad1af7f3f17fa3a0f0920c906bb432d926e9",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000004521984.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000004521984.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 4587520,
+      "sha256": "36b88eab356ab37856619e6e3ecd834cebe1b76a14e5cf2ccaf905ffdd70b625",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000004587520.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000004587520.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 4653056,
+      "sha256": "3be25d3cadf833f90e6ac4ca3763164b8ede398ac604f4e623f0a97772d79e33",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000004653056.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000004653056.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 4718592,
+      "sha256": "38610f299407451d071caa199b9257d286e99acc2c676502e7e10c5646e4e86c",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000004718592.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000004718592.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 4784128,
+      "sha256": "733d810c9dd37a238c818855ef0f7c435b80393a6bcfcae421e2c72676c0959e",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000004784128.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000004784128.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 4849664,
+      "sha256": "cd93d518401008d72d18451ed12d36a957ca4cd4bb956be38e9c6edfe3fb9eef",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000004849664.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000004849664.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 4915200,
+      "sha256": "d7ca78272e9142bfd21c52e68f1b6f3d1e1c68308901c14a777d0ddb064ba823",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000004915200.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000004915200.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 4980736,
+      "sha256": "4c13d5cf62fe3d2464a9966798e06b0016bb602eea1eb5665cae551cf6a91140",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000004980736.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000004980736.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 5046272,
+      "sha256": "2a37f54c8fef734bb6aaeb0aea60f8c03c6a4f0433aede1d1b20a1e4e9617c0f",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000005046272.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000005046272.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 5111808,
+      "sha256": "72fb219de748bd71306573488b6013dd0143d481211ddcac825239f724bc6980",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000005111808.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000005111808.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 5177344,
+      "sha256": "712b5995f26a658bfbdb22b0e3fa737535450e1cb3694ecadedb22f8718382c0",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000005177344.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000005177344.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 5242880,
+      "sha256": "ac74c4b0b05c8db74cf6d952bd7522a077de4d2cceb9aca12119fd830e36a3d5",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000005242880.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000005242880.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 5308416,
+      "sha256": "c7a60e66b665e4122cae812401fcfbcb63d9649a70a06e075cd3de57ec58e36d",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000005308416.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000005308416.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 5373952,
+      "sha256": "e7d4d294fa3a0d5517589c572beb1005655e51926453bbb2d15c5562922becca",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000005373952.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000005373952.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 5439488,
+      "sha256": "1a789c76987ed9251590654f4c4a2bdfd9da486fde881b031e0684a15ffbe07b",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000005439488.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000005439488.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 5505024,
+      "sha256": "df2e4e2fa23ce8ef1a987c41114a419ad379c06372b11188fa165779ac819c16",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000005505024.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000005505024.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 5570560,
+      "sha256": "68379fb3b11eafa4de32b0e82324d66b3bbc957ab7054529d41f8541aa4c25d4",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000005570560.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000005570560.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 5636096,
+      "sha256": "797e9baf1d6ad0fff0055dd8d8763a509992e981116c37d098292d1d2c7bb0ec",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000005636096.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000005636096.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 5701632,
+      "sha256": "7d6ec7c7176870cbf9c243d5f2c3fd69aafc063d572a06e933f181719c9ba2d5",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000005701632.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000005701632.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 5767168,
+      "sha256": "53c1575c41a0e0a3a61694ee5b4d9da30146cce1f088e1a88c05f83d8eba0ad9",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000005767168.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000005767168.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 5832704,
+      "sha256": "87a48715b4927034d47e27aa1437e78a3167ac871a9f5293c20a992531a4ca36",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000005832704.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000005832704.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 5898240,
+      "sha256": "002e7c619870ec8c7caaa21e2e5b40437bbb8c77fa17d31761d74c4fec9c379e",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000005898240.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000005898240.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 5963776,
+      "sha256": "d9e3ef06fc7dd423a30ffd548fa903a34f03903ecc6955891357515fee304701",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000005963776.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000005963776.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 6029312,
+      "sha256": "d6c355f2e30569e71065551f1f3c725ca41cfa2dd0b0fba95817a44d67735703",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000006029312.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000006029312.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 6094848,
+      "sha256": "ba654328a7b9181846d154a950c3012beb1199e233cf757836ce160d20012c2b",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000006094848.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000006094848.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 6160384,
+      "sha256": "3829a0492ec01a1d22e1f4da93e200ac2d0ece9ff63311fabd9a6c33e9e13329",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000006160384.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000006160384.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 6225920,
+      "sha256": "f16f3b652bbbfa4c4ec5ab8bf7baa40c0b075c2bede5337a8a2ca9c81984bd89",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000006225920.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000006225920.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 6291456,
+      "sha256": "8e2cfdac2903d256a9b3cdb7d11298310d1ec7ef8a444c3b349c1cbd479ef6a7",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000006291456.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000006291456.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 6356992,
+      "sha256": "c098d80463a51ad85448f78501540dd13a9141ccd82618b8a11934a7a7645a2d",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000006356992.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000006356992.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 6422528,
+      "sha256": "a8d9b143260c6a23a4fd71b3f8d888d236740177e80a253a30d9f2b9ff66a13e",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000006422528.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000006422528.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 6488064,
+      "sha256": "9caeb2469d1fbdab53c2a4c93e5e1343710dd781c2185afbe5cedf585ac85ed3",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000006488064.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000006488064.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 6553600,
+      "sha256": "862c118e4435a8e1f8034ea753d75b801fecf644a925dde6f4df87de2f13ef94",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000006553600.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000006553600.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 6619136,
+      "sha256": "887cdf9d6fd70c1c3172b9dd89c6d4a858381dd211703ea146fe331a244f6111",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000006619136.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000006619136.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 6684672,
+      "sha256": "487dc1c40e25b76b6654b53ef18aef113707976ec0708b81f42a5c66d8b31889",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000006684672.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000006684672.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 6750208,
+      "sha256": "83eda7b4e29a404ead574de18d2ea1c1c88726dd28948c6319198d1a8fa2e75b",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000006750208.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000006750208.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 6815744,
+      "sha256": "a48486fa05a510f0c3f535283018e27f30714fbf60235eb36a2f62b43a3e5c84",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000006815744.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000006815744.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 6881280,
+      "sha256": "b91598f0e50bd3980a5267bea4044624a4389a2dda097b4d8fac07d27dc40a09",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000006881280.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000006881280.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 6946816,
+      "sha256": "bff8624d4dc2d9709a0a59a5e5894b06dce2633b9e6d05636102d716c25ed6c4",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000006946816.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000006946816.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 7012352,
+      "sha256": "759115d32b0e0e2cb32ca632326463482108e32d93d2de16ad70923a01ab2068",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000007012352.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000007012352.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 7077888,
+      "sha256": "97aa3ddc8bb9009a089fc8e1354b301a849d8001359cdaa131a82a1c92bd83b2",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000007077888.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000007077888.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 7143424,
+      "sha256": "209ec409caa271286128556821679d91a17e7148a02692af0f679b553dba318a",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000007143424.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000007143424.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 7208960,
+      "sha256": "74aa32902e06571822da978d5af59e555a67c273713d1238e18b98a29851c291",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000007208960.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000007208960.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 7274496,
+      "sha256": "7b4728598b1ef34fe8d655c054158c32cc477bee4014b7bad839aa2811ac8edc",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000007274496.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000007274496.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 7340032,
+      "sha256": "8f701a05d622fdef494e6aaa12cce77b35fb84d3c0abcaa02b35620f7d4a8d2a",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000007340032.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000007340032.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 7405568,
+      "sha256": "08a1924bd7eef1a79a0c173ea66a721b78ca8934e3868f313083edf4d80f2996",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000007405568.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000007405568.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 7471104,
+      "sha256": "7dc13aed9e64fb59a3ad6d7bfc2d140b5069b7668f89ad444c117cff934ba1f3",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000007471104.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000007471104.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 7536640,
+      "sha256": "ed461c34bebc09cb45bdedf17c9b57e6f9deef8525929eeb1059366538a122fa",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000007536640.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000007536640.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 7602176,
+      "sha256": "1abef54ec814e347fb6fcc8a327406a280912f07799df30631c8d5ec8b216415",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000007602176.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000007602176.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 7667712,
+      "sha256": "ab0c6abaff9d3f48e00132069dc39dad112321dc0cfaabda6d418d955d92663f",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000007667712.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000007667712.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 7733248,
+      "sha256": "95e92a8a61f3f118f2ef64ae8a911dba3308882bfd9e27676d07cf63586b04ff",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000007733248.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000007733248.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 7798784,
+      "sha256": "0ba184925d7530d00de756af0ef72665a2bd573c75918b63d11feb45d4a1ed4d",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000007798784.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000007798784.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 7864320,
+      "sha256": "ca76ecfa1afbece9b610af159555d3802379a811121ee60fd669eb02a8327ff6",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000007864320.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000007864320.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 7929856,
+      "sha256": "7bd72892574e843b6aeac1be124e5915edd629f863a09cfcda6c01760682cd3c",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000007929856.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000007929856.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 7995392,
+      "sha256": "13a1bcd1b9b8a7665c1d61c466943935e4304b9a81d96e0dae0ad13891140d9a",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000007995392.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000007995392.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 8060928,
+      "sha256": "5f322614c2325c17cbeb826e4825f3777e9df8de7edb3d6455d28b47b03404fb",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000008060928.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000008060928.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 8126464,
+      "sha256": "f3d42ae0a1cfb117ba3f582026318f2d0e8a146a0c5b8296652c1ad78bb7a3f2",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000008126464.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000008126464.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 8192000,
+      "sha256": "cac06c04e2e9324908aadd04c2bf8ee05f8977dd240b71d3b117e49b1a869ccd",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000008192000.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000008192000.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 8257536,
+      "sha256": "ecd341e7a3b6da2c177af5ca10b2cb009b68abc1b52b459a29513f0de1d9ffa4",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000008257536.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000008257536.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 8323072,
+      "sha256": "e7fb9dea24eae0b830a71432c32d3059e614f4e3ca93de9fda5a7912d240f0ac",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000008323072.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000008323072.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 8388608,
+      "sha256": "3df2b818a5a5ac0f16a0f18cbf324368e6770cd5c3c81f2560ece0c8c6570b69",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000008388608.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000008388608.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 8454144,
+      "sha256": "e592f5d535ed932e59ab0fd1fca86195354aa8e7549b11c9df881981dea8e92f",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000008454144.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000008454144.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 8519680,
+      "sha256": "c1ae293b8015563950be0a34efd07a0ae33d13a236118c1fcf5c8aa3a096aba5",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000008519680.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000008519680.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 8585216,
+      "sha256": "e10815e9cbd3c980929a6f03a5c98d41c592b21a446a2044ee13468d151f6096",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000008585216.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000008585216.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 8650752,
+      "sha256": "89eb2afe50528a4f1523fe88205d51d1caaf8e4a97b45bcfe497ef8f7624440a",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000008650752.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000008650752.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 8716288,
+      "sha256": "e4e2c0a3cdfeae41f029849448820f5ebe455e6b8f75273523cd01e0eba7e07f",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000008716288.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000008716288.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 8781824,
+      "sha256": "be169826bbeffc92832870de0cb82617a0f8080e1e76a0a0b54467effec1317b",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000008781824.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000008781824.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 8847360,
+      "sha256": "7f9e62406d54c68a5da0973d8c06d07a39917a82562198a56b79c314f471f5ad",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000008847360.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000008847360.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 8912896,
+      "sha256": "f94038ac5ca2c65d65598b3b3434149012d4b4eb2007fa83ab18fba39bd9c1d6",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000008912896.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000008912896.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 8978432,
+      "sha256": "2fa9da030573fef7e1be16480721c49825990f1772de76eafa1adbbcc64c31d1",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000008978432.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000008978432.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 9043968,
+      "sha256": "9524558efbbd52fda590d01c7fdc5022fc27e533025662a2711a6c48c5d07a34",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000009043968.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000009043968.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 9109504,
+      "sha256": "2665325ed6aa8646df5f46ea8f011705016ea35baab99e297f123bb7a9ed89c3",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000009109504.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000009109504.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 9175040,
+      "sha256": "d8c7bd262ab124a64cf22e0fb7a3143e5d9a14498149e89f6f7f307fae16ab01",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000009175040.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000009175040.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 9240576,
+      "sha256": "aa7fab62eba5d0a989a69438e398ea0309ed01d53ba49f0485cfbf76f6ef8332",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000009240576.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000009240576.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 9306112,
+      "sha256": "980b8759950d3002c9a927a273e2d384467f56b1fd50824387251b0cfffb9f7f",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000009306112.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000009306112.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 9371648,
+      "sha256": "2137588e86574c9a50a50f7853e55245a4c34fd41b1420c74b40973ae9514bec",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000009371648.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000009371648.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 9437184,
+      "sha256": "6ebe0a378c0bdd4007d92eaec88fea7762787716894bac6dda80e8ea139f28bf",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000009437184.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000009437184.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 9502720,
+      "sha256": "57b38629fd7c690f18b93b5c65532d3e6163438c832bb3f570457f0a0aa35ed3",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000009502720.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000009502720.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 9568256,
+      "sha256": "15ae3fe7fcf69c71f9ffbef54448aa7e925a4000632b38b273e32815caead222",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000009568256.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000009568256.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 9633792,
+      "sha256": "0da76a1a02edb779d346f3f7bdd5dadc5e235058e7fdd89b433292a1ac42d169",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000009633792.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000009633792.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 9699328,
+      "sha256": "04baaad46a06a87e3df02d68a6b79929d08ed9a53d8d6c43bcd4a153d06b3a07",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000009699328.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000009699328.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 9764864,
+      "sha256": "889f73ead7196732890242787f7e5861e338febb5b3c27d9385b5a934583111b",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000009764864.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000009764864.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 9830400,
+      "sha256": "3d18631660095b79707e8ca5fc36f07a00c7ac8160091439f3db61fe8ab2aaab",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000009830400.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000009830400.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 9895936,
+      "sha256": "4ecb925be974607f2e2c06803b508ac3a7de388dd3f500fcb50091daddebf36c",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000009895936.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000009895936.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 9961472,
+      "sha256": "adfac707bd7d48ef2e1e0eb68f8cb640a3fdbac66b660c420e0658b177771672",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000009961472.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000009961472.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 10027008,
+      "sha256": "889d617053da764b05ee3720cc7e562c2e5ff5b6d59ff3adf54a9c0064e7c528",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000010027008.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000010027008.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 10092544,
+      "sha256": "b71cb99fbcb4f157ff2ce5339715e1b568aab0bf7ada4887de3345c2f2842445",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000010092544.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000010092544.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 10158080,
+      "sha256": "7e39daf722472caa55c1b99aaeb35914c0fadb4f167e81915d3b5906448307f4",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000010158080.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000010158080.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 10223616,
+      "sha256": "db7084572d507ba519f068ec66158b6d7c10726ed6a841fa345a6c3dfd4c1f0a",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000010223616.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000010223616.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 10289152,
+      "sha256": "ea8b0f31997c936498e5170f5c2c6d0454c4cbb881bdb4c8f36132ef4383ccf2",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000010289152.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000010289152.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 10354688,
+      "sha256": "5b0c166ad9b68e38429a3dbf3ca444c98b7b97d458be6adcab7e41240f8214cf",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000010354688.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000010354688.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 10420224,
+      "sha256": "c33647dd25299b3874dd690151f61f996026ba15918b5214376a225e731a8dd7",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000010420224.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000010420224.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 10485760,
+      "sha256": "14444b3267fc43d6ff6295ca92fbbc918c1c3a408d731d2f97ac76f911b0137c",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000010485760.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000010485760.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 10551296,
+      "sha256": "adcadb6bae1be5ca7e5be2e379bec6748233cb77188fc44fec3dd1c1db320f19",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000010551296.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000010551296.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 10616832,
+      "sha256": "ac8a93843b9064702d424e0b854a54ce749d9859f6749fc5bb63205d3eaabd2d",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000010616832.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000010616832.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 10682368,
+      "sha256": "d748f93b028cc3a68df74c63176314e003d9b3e133dd4748cbde96453e4b1488",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000010682368.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000010682368.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 10747904,
+      "sha256": "e604f9a741092bd432fb00a92cbe4683cd770e2d3979aaa406d8bc300a3de8f0",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000010747904.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000010747904.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 10813440,
+      "sha256": "a4b45ffc4fe9f3eed7c27f5d086be8efe14d4d204e603bd6f48cb4e347ca6021",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000010813440.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000010813440.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 10878976,
+      "sha256": "499c93f799f4bd122659ae748a751c6db5c4b71fefa1290481e57c67c3de56d3",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000010878976.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000010878976.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 10944512,
+      "sha256": "68f55d3401091c74f8958e006ce1b1d3e3c7943e9fe28d62ff5b12b11ac2bdc6",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000010944512.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000010944512.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 11010048,
+      "sha256": "3f32f9b547f17913c573228a7989ee459dc8b12fb002a41403024b7d5c18de6f",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000011010048.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000011010048.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 11075584,
+      "sha256": "7f4bee4d50b57ed0793aa53df66f35942fc49d3a64e877d9d352a35044b6d76f",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000011075584.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000011075584.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 11141120,
+      "sha256": "dc873f89e3420b860753665955ed4ca4a535433103da3c5e98087643dcf7bf13",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000011141120.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000011141120.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 11206656,
+      "sha256": "5f61b15cbcf28783a7dd3aadea9bac7a21590472018d0f20c9f8bfdf35913f0b",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000011206656.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000011206656.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 11272192,
+      "sha256": "74dd31b63258b0254f9dc8df4ed946b1f1a78079ffb49f3cfce0a691c4197d53",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000011272192.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000011272192.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 11337728,
+      "sha256": "f1743705c11d5baff80a41eace4cdbf1f93f56c5e35d560ad4c7d3255b4a0858",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000011337728.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000011337728.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 11403264,
+      "sha256": "34a1d24ae67aa0de82fd36adef6fb306ec1850cf0623b197f7d8038e830b9523",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000011403264.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000011403264.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 11468800,
+      "sha256": "430c17c72d2333fd7797b4da53579e77a80b263125cc586c2af9bf6aaf47ceff",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000011468800.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000011468800.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 11534336,
+      "sha256": "c819975518044f87c889180bda06d5f1ae81d36ebdc207940fa078da28ec4941",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000011534336.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000011534336.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 11599872,
+      "sha256": "f46b8383ebd2d520e3c2ac32e8c59d2fc33fbe4eb515b235169aadaafba68d65",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000011599872.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000011599872.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 11665408,
+      "sha256": "e6dba2165a90ab7da42301897f1f14657f8e4011f36d3a66e1d1737ea43ea0bb",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000011665408.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000011665408.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 11730944,
+      "sha256": "e82cb2cccf26b204ba02e488ada4b3485abde67bc6a55d2bde0c056584307a6b",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000011730944.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000011730944.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 11796480,
+      "sha256": "9715a0ecbced7b59fba2a3b62f0a5665c25ae215907c4f05894540b5ea792adb",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000011796480.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000011796480.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 11862016,
+      "sha256": "6f1f08c5456c38847f50c3f9c254202b1d5e37605ebf3dc9ebdc8fdd5b21c471",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000011862016.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000011862016.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 11927552,
+      "sha256": "00ee197c5ecfe1b3ad3aec8d1a075a0ba5091086577644e4522d33204cb2e83a",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000011927552.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000011927552.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 11993088,
+      "sha256": "34b6eb8022e3f747a2c8c4b2d05cdb6cc9a9b6db5778ce74700100e8ecaaf749",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000011993088.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000011993088.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 12058624,
+      "sha256": "955303caa4c80bae3c41293ff081991af439f4c41fa0117bd076ed2b6f10ac85",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000012058624.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000012058624.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 12124160,
+      "sha256": "bd2b06ee987545a5fb5ec26d16579ec74d1421c54a3c6190c54e3592459a081b",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000012124160.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000012124160.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 12189696,
+      "sha256": "34807194f91bfe783276c4be1a794487204e9ea1cfe3881554c74e6370cf6284",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000012189696.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000012189696.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 12255232,
+      "sha256": "3f593e362d934d45c270af1935482abf9dbf20994b8e5bc56b4847c12979e885",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000012255232.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000012255232.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 12320768,
+      "sha256": "44807ec57127d2914bfb4f6b6988edcdefc4f09009192bc14a87aa1a6dcb30b1",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000012320768.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000012320768.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 12386304,
+      "sha256": "d2eca39afafd146f606eb7d12afca153d0e530a43060ea7cc4b4d6e87b702205",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000012386304.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000012386304.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 12451840,
+      "sha256": "a86560891af3caf4c14735cb2afdd8ccfa77214e2158fb37c9d66aa57cd15ad1",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000012451840.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000012451840.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 12517376,
+      "sha256": "00f6b9e2924ae458f16e5283e069d083390433a9e90b2113391aa3259e2b0418",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000012517376.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000012517376.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 12582912,
+      "sha256": "7b3b0a28e73eb04c364d37e18c732e2d90fc44150380600568d9326b349d05e9",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000012582912.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000012582912.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 12648448,
+      "sha256": "a095675ae00d645daddc37569a5f69156914474252ca67de9ac41d0c4e298fde",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000012648448.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000012648448.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 12713984,
+      "sha256": "024398b6d3bdf7b9b8342beacd89970b5f9b96c5b47c22ae78b999d23e225a56",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000012713984.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000012713984.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 12779520,
+      "sha256": "1fa74ab8cc27c2a37d39b4e200277239c678e24c9b4b424a021845999dcca8b7",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000012779520.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000012779520.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 12845056,
+      "sha256": "8b3deabf24400643e4f18e694ecc7ac31bdd1158a2837b8166c3fc1e0631aeac",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000012845056.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000012845056.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 12910592,
+      "sha256": "23f25438488668412015488d40f00180cbc647c72a4fd4932df071c643affc59",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000012910592.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000012910592.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 12976128,
+      "sha256": "295a5f291c7f62f252253c8fcd381e23b0c5075223a618cbcc0c843b7663009f",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000012976128.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000012976128.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 13041664,
+      "sha256": "6b862072f76b3d4d4dc0e04e00015fff0c206a8a77b8e63f3623415b95ba8925",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000013041664.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000013041664.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 13107200,
+      "sha256": "2e4fb3bd2a183926e0a074977480bff39b6ddd89070180d3701c99cbe3ef4930",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000013107200.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000013107200.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 13172736,
+      "sha256": "4f80b65a8ac0f8c0a9cd4c9ff2324099aa360786da6a49186835727589da6cd7",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000013172736.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000013172736.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 13238272,
+      "sha256": "241a563cd110e4cb97007c9907a4518d4c346ae47a058e01b56795eebd694d9e",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000013238272.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000013238272.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 13303808,
+      "sha256": "4f9dec03fe001b4ed76382abbd7612095d092ed7b87e7ce3b6e6767237c12403",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000013303808.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000013303808.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 13369344,
+      "sha256": "a98f04abe2028a21385fc98ac4984a174ed6eaca1d9e2c8555f61d9a9e114827",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000013369344.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000013369344.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 13434880,
+      "sha256": "bcc706d893752309c52c0081f92f5ae8a4e4d14c9c7f1e5be301ae14c753bf52",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000013434880.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000013434880.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 13500416,
+      "sha256": "d97e3ae69ba30c20feff919763fd45c54a8b475f8f0838c7f4178b39facb0c05",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000013500416.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000013500416.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 13565952,
+      "sha256": "3b7a4986babc574aaea6cbcea1aeedfa74cc06510b6d90eabd9fb640c2fee6dc",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000013565952.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000013565952.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 13631488,
+      "sha256": "1b18840967a1167bf09308a3b99116dd8ffc4e643dd217f1e2340900f91e896b",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000013631488.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000013631488.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 13697024,
+      "sha256": "6381cfb827f9f8460d5f54f15661cb052fe2ced05467eb5e4b81db66a66f9e63",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000013697024.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000013697024.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 13762560,
+      "sha256": "9ac345e74eb421d40d4ce9d2da736c96e7910e27a40c5b0e6bdc7f616017641d",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000013762560.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000013762560.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 13828096,
+      "sha256": "e4d5a3abc9c8e783fbb32cb18454252f9faee9c8aa185de5e50413ced370643a",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000013828096.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000013828096.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 13893632,
+      "sha256": "33b38ea368992f1b236cea1208d774c824cb418605a396b8037918b35dbf31b9",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000013893632.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000013893632.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 13959168,
+      "sha256": "e45d3d9b8a2b953ef82faac07d1c259153592952dc8b49f2da33b118040fd20e",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000013959168.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000013959168.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 14024704,
+      "sha256": "cdbb77dc2e3a073b07f8c7f6c9667c9f932f7bf474b41ff8814d6948b167182e",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000014024704.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000014024704.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 14090240,
+      "sha256": "3d1b227c2933b34542634b049f0c785881347c19a2814a99b602dd5110372498",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000014090240.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000014090240.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 14155776,
+      "sha256": "8b3dbfa02680056b58b5a52c9e5f7c4d654ffa8d29c03ab75151feb8ba618022",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000014155776.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000014155776.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 14221312,
+      "sha256": "01879fc65a0d43acce9b19f0767de933fe283499bcc1501a86a68ce2a4a839de",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000014221312.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000014221312.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 14286848,
+      "sha256": "f4b07bd0617ed5e3b3f9ae7deafe45b4cd71618384af2c609e881dc513e8883e",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000014286848.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000014286848.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 14352384,
+      "sha256": "fa23d527fae02d99de51f04b5d948845e3bda7b0d2ee9e209460d89b20ccf35c",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000014352384.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000014352384.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 14417920,
+      "sha256": "3842777980445c6fdd41214e3f0943b145e3480d8d0069b2312541008eccdb1f",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000014417920.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000014417920.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 14483456,
+      "sha256": "7882199fd1f5e8d9a3479222e8be7cfc8f70d02a9895282a3c8567f35fc97d29",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000014483456.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000014483456.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 14548992,
+      "sha256": "e956ec10496718385a2d363140317a5081c452d499fbb0269eeac82780aa020b",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000014548992.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000014548992.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 14614528,
+      "sha256": "48fb3e48c5de6a1926759181f5948b3d7098ed99ed22d2708495453da2e530cc",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000014614528.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000014614528.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 14680064,
+      "sha256": "49967ed036e39d670c1c55140714f4351a53bc8d0240084e92dc00a73d47d14e",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000014680064.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000014680064.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 14745600,
+      "sha256": "1f479f6a74155a132e4775f34667ea9fee41b48d0d5a1403857f3a3d6a0df8e3",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000014745600.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000014745600.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 14811136,
+      "sha256": "fbd6e97258a87d67d4e22c3b86e5d3a794e36c2620d9d8d1dbff2375641baac2",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000014811136.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000014811136.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 14876672,
+      "sha256": "622c3fed58dcf88d4a538243dd7d1557a273688bcea1eb992ba048438db4c263",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000014876672.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000014876672.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 14942208,
+      "sha256": "4d53f6e93771d1fba4123f7c4cf21523fceb03bd4c4633ed3479c7dd0d402c55",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000014942208.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000014942208.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 15007744,
+      "sha256": "ae2013fb0f9d6ec90165dd5785a1a498c45a1fa6aabfc6947267dc6a5491a99b",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000015007744.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000015007744.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 15073280,
+      "sha256": "80a4106789d56a77e16f4cf1a7071d528076d2f7b3b4322f10fe35063e1da738",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000015073280.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000015073280.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 15138816,
+      "sha256": "ec24f937de79510b2c611056486f5fdedb5ed78e988873c4a6165974972110ea",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000015138816.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000015138816.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 15204352,
+      "sha256": "179d7a200509d1021175b4ce3cfc150e6871113822f8802f00267704d1a4ed53",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000015204352.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000015204352.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 15269888,
+      "sha256": "0b1ba3778bb3c5c11ad874df0ff3d8964ea7891fe37c1a6f92c56458a55cf67b",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000015269888.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000015269888.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 15335424,
+      "sha256": "0908351b9cfc276a16080d27c0ee38f9c4a88c360ffb64da157fda38b06449f9",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000015335424.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000015335424.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 15400960,
+      "sha256": "b6ea58b10edbd80866cb1fdbcb595237516b4d78806cbbb5a4b07f1b70b15760",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000015400960.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000015400960.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 15466496,
+      "sha256": "2bbe46325791d63e842110bbdf2462964319263bdc25aaefb700448dc0d1564a",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000015466496.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000015466496.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 15532032,
+      "sha256": "09e382ba7428020a6a2f8b229a7a9e7121f99a09bafb3e38856d4e6274a2e5ed",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000015532032.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000015532032.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 15597568,
+      "sha256": "38046d1b596654e8c93c847e9182dcceceff3769ccd70b2b43c91191cf7999bd",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000015597568.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000015597568.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 15663104,
+      "sha256": "63cb84d11a4badb21e1bb4d920f4ac4f9a54110cf57f040a629dc7e58db84cff",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000015663104.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000015663104.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 15728640,
+      "sha256": "3f08ac5ec365d59366f30aca548afc528c8a7c46ec7a5029ba20d1ec66a43566",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000015728640.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000015728640.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 15794176,
+      "sha256": "87881a3a311c0272f1be7ac9d3573eb338dd1d9b99e5d55ef736a55f7ecbc00e",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000015794176.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000015794176.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 15859712,
+      "sha256": "fdad4e7b3921a9d86bfdfcf4e06e0f3d03331d0a851f56ca9dcca4e65f748eae",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000015859712.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000015859712.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 15925248,
+      "sha256": "e9d39ee3c0087d6017bea7ab07828dfb565b97e6c8ef348016bbba279712e5f6",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000015925248.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000015925248.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 15990784,
+      "sha256": "ca2c4f355741cf3f927c1d1ea9d92c9bfff9a1582069dce0b92b69a9a77b1faf",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000015990784.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000015990784.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 16056320,
+      "sha256": "25f2471a741e5e8ee7b7ddaac1e42d1035b4d9aca882b93e746399413c30df07",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000016056320.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000016056320.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 16121856,
+      "sha256": "333e4d5b2695d1f8256a9f43f10f316b63bbfe08ed89458430766701d2710fb8",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000016121856.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000016121856.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 16187392,
+      "sha256": "f6ca1820a6c9a23dc63ae834d592c9f4d6caf788908d3e63066d81c5008ca5c6",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000016187392.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000016187392.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 16252928,
+      "sha256": "b31c90fa84e69880ba8873ee70086fa6295a93a908c3a35b3dd6f0af5a806cdc",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000016252928.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000016252928.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 16318464,
+      "sha256": "697457254f1ff7afdbe8a1fb9adde8847173944e1668b30a17d1364b92953fa4",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000016318464.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000016318464.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 16384000,
+      "sha256": "20fff140c046b15bc67842c6ec70cc404b48e40af8a30dd7b7dcc8ca438a2ba7",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000016384000.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000016384000.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 16449536,
+      "sha256": "a704709257a7c1f15c5d4f4514a80c8c46529850dde1e96465334fb1d5e09fd7",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000016449536.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000016449536.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 16515072,
+      "sha256": "681a1f4b8abe82699e7ab082b85c3bb1d70b6dcc1d72229882c1d20b9f87ba05",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000016515072.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000016515072.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 16580608,
+      "sha256": "74719f710494d94854d429e4dcc3417a1da22ff153bab20c5dc7a2af551f139c",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000016580608.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000016580608.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 16646144,
+      "sha256": "5976740f758d4c0c434663bba9e4bcb31fe616453de07e6dcbe5ba31ee9f5aa6",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000016646144.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000016646144.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 16711680,
+      "sha256": "cace744b8c06b0de27d6026726b51b79929f44c7070feb35c258968baea12cac",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000016711680.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000016711680.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 16777216,
+      "sha256": "4fe0dc2395c3cacf0041c63e7360c8591b26fbfd147fcf172c78032eeb496111",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000016777216.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000016777216.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 16842752,
+      "sha256": "e3bccc87bf6371bf93db8698d0a64d4b3a5e2ce3dadb259b9fe61592901d2219",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000016842752.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000016842752.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 16908288,
+      "sha256": "63e2270b91bbf1aa0b2c388a1e147a4d26b64e7e75c8ac64cc7f225233c749e1",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000016908288.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000016908288.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 16973824,
+      "sha256": "43440e4f9eba31b5ef365a2f1721eea77955641a132525dc33a7cc4cc31d4f03",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000016973824.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000016973824.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 17039360,
+      "sha256": "977a22d2fbeaa8215c2baa0b76f83f974dc926650089bb737fe850d546da49d6",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000017039360.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000017039360.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 17104896,
+      "sha256": "2347c9cfc45fefa893058933408ebcd2b3810de47ed915bde83843391043ca72",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000017104896.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000017104896.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 17170432,
+      "sha256": "c38161ea1a69cfd11bbf0057ab2470ae565af095fcfa6e3bb8bb4056e12a0d2a",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000017170432.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000017170432.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 17235968,
+      "sha256": "c4af33465a2b54990b894ab8a888e9adc14c9053902b55fe416fd353d0be681d",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000017235968.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000017235968.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 17301504,
+      "sha256": "81cb38d601538edf6fe064fb04d2d5a0aed5b52bcec1caead4ac9da77694517e",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000017301504.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000017301504.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 17367040,
+      "sha256": "cd0e1167249bc8f3033963ba2b3a15eb74289ca7a5c9df0693cc097a049aa385",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000017367040.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000017367040.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 17432576,
+      "sha256": "a8db3debc2119ef3830f37caa4c6511a4c6453c9363cacf9f0c059cdfc3465b3",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000017432576.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000017432576.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 17498112,
+      "sha256": "cd48cb3461bfa77687229c69be55ce67dbedbc010fd29a356641fff9cec63636",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000017498112.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000017498112.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 17563648,
+      "sha256": "55b21898604800e6ba9470fc356eca199dc134e59a1f335c123a76395ca59630",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000017563648.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000017563648.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 17629184,
+      "sha256": "33c61c8111d4dd6ec9d1b9481c274fde13d5e46dbb7f276bfd6fd84201a1badf",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000017629184.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000017629184.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 17694720,
+      "sha256": "ea9ab8690c3cbc3bb8c6237f9180cb00681bf36121808ebad2b883eecd9d876f",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000017694720.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000017694720.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 17760256,
+      "sha256": "71b1bba1df578cb5007ac9788f95c1fb347f675530d7b4a993932fee33986186",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000017760256.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000017760256.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 17825792,
+      "sha256": "bc286be8a85eeb3fc9a6f0e693d7896531c3e170eaa94a89a9154d064d19b534",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000017825792.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000017825792.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 17891328,
+      "sha256": "eff1de7f0fd6adcc5d3696c44620f1088dd2ae2fa155f1e648ded06dd6be1be7",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000017891328.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000017891328.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 17956864,
+      "sha256": "7f5f22010f8d773f7a61aace24473767b5a863b7622d156a7688653de8908243",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000017956864.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000017956864.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 18022400,
+      "sha256": "39fbc8fdcb3be8b1b0345f8493e10efff51a27d55ae455bb3c9e681b437fb16b",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000018022400.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000018022400.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 18087936,
+      "sha256": "9aa4453d150c1bef709be5d5dc2d493ecf7a533ce6131e9c17f7ef8b3e85a788",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000018087936.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000018087936.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 18153472,
+      "sha256": "8673e6b88c7ecc61cbbc40b0c1c8e05112f177bc263d6e29cd2b28be42aeded8",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000018153472.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000018153472.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 18219008,
+      "sha256": "4c0b5cef3cfa542a044cb70ffd3c87d17e196cdd629840ed6d407f8a75bdf9c6",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000018219008.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000018219008.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 18284544,
+      "sha256": "581e7864d215a2a56e20ba7402d480c4d5827b58e7bfa54ed82cb2c05ba6018e",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000018284544.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000018284544.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 18350080,
+      "sha256": "24bc82cf353d247ef4c1bb9b672aa9af6a46242f01bdba3dc4f483d6d2123d68",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000018350080.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000018350080.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 18415616,
+      "sha256": "fb8026da423dd397c20d401b2f8674d920d2a2938dedef0aa58df4ccbcf79352",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000018415616.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000018415616.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 18481152,
+      "sha256": "5c8ccddbff10ff1022901148627ff27d25256af382880e201fb08a86aff29a9f",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000018481152.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000018481152.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 18546688,
+      "sha256": "2826cb3eec27267bc9a7ef2f917e0b97854137e0a537a7d9e3eee0d2c6f33c76",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000018546688.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000018546688.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 18612224,
+      "sha256": "ee70aadab41a3294ab7de4074e015660021dc4b8e89ec5cbc50de1d5d135302e",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000018612224.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000018612224.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 18677760,
+      "sha256": "3878a7a7f00f078ce07fa42e28b62d68516f5bb432247c81b1003e63766acd52",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000018677760.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000018677760.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 18743296,
+      "sha256": "e9d571799c0f04ea7e8a3613a0b995651ffc58ee62245d0b8b009a0e870c6bae",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000018743296.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000018743296.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 18808832,
+      "sha256": "1aa104306f4a569035920e8130fd8853f2fc62868f5f399cd9bcc70fe2bb2b0f",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000018808832.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000018808832.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 18874368,
+      "sha256": "1a476b30f1f6b9651bbe76eaf3d5ee7d58e174c648ded2d797da07dbbd672d0e",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000018874368.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000018874368.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 18939904,
+      "sha256": "ea014b5931a245f97634828030f7222d2354ea1ed84ab7d0f608f953c4af7659",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000018939904.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000018939904.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 19005440,
+      "sha256": "5678ffe9178ce27940253584efc501969de089447da92bae63a8c14ca919d300",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000019005440.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000019005440.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 19070976,
+      "sha256": "9ab855f63ab52f4343e1657184507844fe7cc89ba0b359af112da8ffbce05725",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000019070976.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000019070976.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 19136512,
+      "sha256": "43997486c7f71479b3a50f34e362bf59dc4ffdfbf9d6aed1007d2c4f1b84b1ad",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000019136512.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000019136512.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 19202048,
+      "sha256": "02fe0ebda51e8da2b8bfeb5114791824262477ec2268d4d40526843c149c8709",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000019202048.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000019202048.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 19267584,
+      "sha256": "8824549ef9c04365b277cc22fa4e2269272a90b24d93f331f846e0ad03b0561c",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000019267584.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000019267584.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 19333120,
+      "sha256": "e54b621bfadac2c64388d1eb419b6bb7d63d4fba2043b33cd3a1b788843ce68e",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000019333120.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000019333120.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 19398656,
+      "sha256": "6c346705916d52c9f9b2a79be29234cce516384c53cdb2bd12e540a4745067b3",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000019398656.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000019398656.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 19464192,
+      "sha256": "ffa9328fd77d897024e40e49b015c37c21f45a34c3ca75603754820021c59d0a",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000019464192.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000019464192.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 19529728,
+      "sha256": "68c1e216c7693dd65bc1465083f3e74a725f206889b6268dc00cda0ffdc33f3b",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000019529728.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000019529728.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 19595264,
+      "sha256": "02a5c7f39223f9085d38b7cced22234c114dec3fc91d73dccea87b2fd55a576d",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000019595264.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000019595264.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 19660800,
+      "sha256": "623befd49bf6291426f81f719c1fb520a986ec34ca5ba287e342e04acd66c6d3",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000019660800.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000019660800.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 19726336,
+      "sha256": "f98d13d975bff9e6cda04be710ea2b4cbcd6ed7c8f27e9df90859694795757ea",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000019726336.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000019726336.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 19791872,
+      "sha256": "40c50feeee65eb2dc733a0031ce3fa62b140fe4d9fd6e0fdcd7db1f198e12388",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000019791872.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000019791872.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 19857408,
+      "sha256": "67a6b3ed8d6c636185aac2aa0be30ff8c7ea96794e14a40af0edae700017e087",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000019857408.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000019857408.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 19922944,
+      "sha256": "ef3568b04c1b6eec5d84ae818a62ab38b24d3d13ece628f58f52e360790e8957",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000019922944.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000019922944.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 19988480,
+      "sha256": "5639d670e704d4464daa84ad2787a06226ed2d0ec6495b7df9a7c0b4e836c5ad",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000019988480.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000019988480.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 20054016,
+      "sha256": "195dcbcf1cc4e9f945374cc8af34bda64fdd079b9094546a521678f0163aa649",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000020054016.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000020054016.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 20119552,
+      "sha256": "54a581d7aab6cc01dfb5c303986f668a477dc00cbd5cba1783cac0cb2c5057f5",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000020119552.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000020119552.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 20185088,
+      "sha256": "1726ad2a8ed0b37de4677cd30bd5c08ba31ae704bedb21249faa39b100a62640",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000020185088.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000020185088.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 20250624,
+      "sha256": "86d700b4bbfcbb5748b1b110badf3c028e07e24cd452309c4a1bf28a71892b3e",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000020250624.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000020250624.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 20316160,
+      "sha256": "6784295fbcfdf009583fbdad62216dade29cdfbaf2d6b1ecda3ca3bbb2e88773",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000020316160.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000020316160.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 20381696,
+      "sha256": "1f2ab288c218471c5604b5e6b092e19fc887cbe04de0343b0f185338e557659d",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000020381696.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000020381696.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 20447232,
+      "sha256": "dc877c439fd407075b8ebd1be9c7cdcf8d0bec01e08b514e689d689ac51401db",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000020447232.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000020447232.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 20512768,
+      "sha256": "08e0b5b91be4132fdda30dbe987a3cad0658e3f0d92addfa779e411ba4db4a45",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000020512768.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000020512768.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 20578304,
+      "sha256": "62f7026c40bfd3565212f67c5aeccdba491bb541c8b7c954aa9b45088e58d815",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000020578304.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000020578304.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 20643840,
+      "sha256": "068a560fdf8cda25a8a4fc0b4be3fb619a3760726b3c7c267961e43c9ec7fa54",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000020643840.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000020643840.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 20709376,
+      "sha256": "a65741036e440726f711150c39546b9107568e204ee6274edae787a8b5efaf54",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000020709376.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000020709376.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 20774912,
+      "sha256": "215b1e7e1cfc3ee610872dce43b3d0d2f2bd3d34d116cce9d445559ae635d19d",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000020774912.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000020774912.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 20840448,
+      "sha256": "400a6f4d6a6bc2bbfc2389c40aa42aae524612da326481ca6528d85212194294",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000020840448.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000020840448.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 20905984,
+      "sha256": "25221bfca6f78808e695f5cb3d91cbc072a1fc80309a25c628f0759ffe5ca705",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000020905984.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000020905984.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 20971520,
+      "sha256": "2f65f80b09a697de58501fe3dc44359329e26dc6bbb7c7fa6e24444e2476efa2",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000020971520.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000020971520.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 21037056,
+      "sha256": "f0686f3dee75dadb735c45a1c0b7610f302d74a5aef3473049117f4ec398d13f",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000021037056.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000021037056.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 21102592,
+      "sha256": "3e12e86bc68d46f1b7adb4ac883181980a7d3bebde1232d83d25c8445f09767f",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000021102592.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000021102592.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 21168128,
+      "sha256": "23db8c174dcc20f1312425037f69cd5eaae85934edea54bc84df00c4dc0feeb2",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000021168128.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000021168128.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 21233664,
+      "sha256": "d0b94a0b694bb63658012d4002dd5d16855c5de276f6730013aedd1339cbf1a4",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000021233664.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000021233664.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 21299200,
+      "sha256": "401fea80f9b3a297d692ff12e0844def33300c305664d2d0aecd0bf354f7acdf",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000021299200.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000021299200.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 21364736,
+      "sha256": "704ad937df0d7d22fb126f7b56c18bae27828f9d72153ce8713d8e7286b6ab17",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000021364736.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000021364736.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 21430272,
+      "sha256": "99992eb3384f361e1196a48598c14d4cc61a2aaf94f730beb0d4c381b16041f9",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000021430272.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000021430272.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 21495808,
+      "sha256": "960f0080c129a036b7054e1e5ffd0a8294eef4955d4b6e0b2bdc0d1dbd6eb576",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000021495808.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000021495808.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 21561344,
+      "sha256": "6dca92cf024debb957c8e6b980e19219f05d1113d548922784e3dd22d4110c35",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000021561344.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000021561344.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 21626880,
+      "sha256": "370794db774f11c3be42fe295da70506048a51db3844a4264e3883cdf9167872",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000021626880.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000021626880.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 21692416,
+      "sha256": "af7e810bb175d6654cad374300729fc644f75826e8c5a08ff15347e402dc48af",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000021692416.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000021692416.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 21757952,
+      "sha256": "bc5ff274ef0dc3da9f4dc7d1f18520773d01ba05f840f3df0695e5d7b1c57f7c",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000021757952.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000021757952.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 21823488,
+      "sha256": "37bd73991b81a055d4dda40e14540cd6df52cea97b7b1123d6840aa10461416f",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000021823488.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000021823488.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 21889024,
+      "sha256": "4455969d0704739cf2a336c6cd96a9b7980aa6e9fe8d4e229f891c94db408690",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000021889024.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000021889024.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 21954560,
+      "sha256": "59208773b747b45661a2db515517f074feef16e542784bdbe1f677ccd80743f0",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000021954560.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000021954560.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 22020096,
+      "sha256": "a1c985ebfc6b050084979ae6a4988abe33838e6da68c56b81df53b9bfeb83811",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000022020096.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000022020096.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 22085632,
+      "sha256": "65a58970f0b59db0526bd57fb1d9e304aa668f169c9055b979b18d9e4a92ecdd",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000022085632.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000022085632.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 22151168,
+      "sha256": "6cab291306ff27c9603e1f150a6db319fbfd28805717eee1eedeb98bb1cd8477",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000022151168.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000022151168.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 22216704,
+      "sha256": "2e7c5e9a76a20784539be597911923a0b7f51d541132d362a2745b9736fa8a78",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000022216704.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000022216704.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 22282240,
+      "sha256": "72bc715407d83744e442f73514d0b673841ceea791680b7b213b63fe7b67cf6d",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000022282240.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000022282240.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 22347776,
+      "sha256": "b8f7526706386e18c85ad7fe81d695dd10755c902f0b73f5bec1f4c47c578459",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000022347776.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000022347776.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 22413312,
+      "sha256": "7f56979a38acc74cb422eee3ac3a15606c661a1b4c7961333bd10877f5389240",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000022413312.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000022413312.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 22478848,
+      "sha256": "b1b0786b0662d87a89adc14b18cceaa9b7870a965578cb7d5ad73e31fcbf3ed8",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000022478848.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000022478848.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 22544384,
+      "sha256": "30db7b8fd7aceb21fbf00e72d85c0c37a6cffc28cc66652269773323f565f928",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000022544384.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000022544384.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 22609920,
+      "sha256": "a5e6974c9ff2b1aa974b0657e3165b8b275740d31901685f6ee941db1b0d38cd",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000022609920.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000022609920.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 22675456,
+      "sha256": "33ca81c3121efcc5c0f143b74dfb61988a4935ac2a19c392a3aa6c227b501d01",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000022675456.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000022675456.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 22740992,
+      "sha256": "b84634cbaa289458bbded957a362115ce3e3abd4ae4035578267ecc7de106220",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000022740992.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000022740992.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 22806528,
+      "sha256": "69c853a7ee8cfb525bcc93904e23ab4c6090d207572dc3b333aefe2e70ad2cc9",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000022806528.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000022806528.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 22872064,
+      "sha256": "461ca3ea356bf441cd4dc86dd9228b09b11e396d6e55a07e796af376d2b6ceb6",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000022872064.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000022872064.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 22937600,
+      "sha256": "19dc338ed50e5155a8af47423d0d24813fb49f611ef25889b86199cef93dc6ec",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000022937600.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000022937600.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 23003136,
+      "sha256": "00faae37d3dae08f434b795dd329a55f79610d0385a0fc691ee6ff8314afa0d4",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000023003136.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000023003136.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 23068672,
+      "sha256": "d37c9b4feaf3410bc95a57815ad945aa1b9babf3394d780d9ba75497c0a84bde",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000023068672.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000023068672.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 23134208,
+      "sha256": "08461f978adc2d48f59f6cfea4af78631cd59b461210335fef5fed3b30bdd594",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000023134208.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000023134208.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 23199744,
+      "sha256": "01c651be3910dfedaf60754097c2f3eb2a8897ef7436a03b9c2553aa546122a6",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000023199744.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000023199744.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 23265280,
+      "sha256": "46a20df77752228a56ba9879ff744316d5b7a6b3fbe1857e74beada6fba62181",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000023265280.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000023265280.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 23330816,
+      "sha256": "9ca32612c607bfc89472ec9a8485d2d6cde454663957c30b0cbaad7d52f0910f",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000023330816.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000023330816.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 23396352,
+      "sha256": "5b87ad314190ee23aba8d25bd77cdcf5b77f167b3dc24770851c9bfae86fed29",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000023396352.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000023396352.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 23461888,
+      "sha256": "77d2f45164a5b5597b5c3d9701078579b74194308a708cbccaf6049c30df9a2d",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000023461888.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000023461888.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 23527424,
+      "sha256": "48ba03e05a9ad7e82eca2ad5e6af735208e7f65bbcbb7f8fc1616cd9ce90f5fe",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000023527424.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000023527424.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 23592960,
+      "sha256": "efddd8460f8046b3ecbaad4d0b08d931460d6cfe07a298924da5fc88276000aa",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000023592960.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000023592960.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 23658496,
+      "sha256": "f13a6f14d0f4bb1410ee9e6298ca47c80bc25290e5a4b2858aea7b2f30c87162",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000023658496.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000023658496.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 23724032,
+      "sha256": "6247d30375533adad2c56102399c1e70e9f2de7dd58e64b34886271076a6972f",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000023724032.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000023724032.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 23789568,
+      "sha256": "9c79d7a7ecb96406107bbe6dd5e19c3d0d4a272e78ac57325c5fdd708a8b95e7",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000023789568.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000023789568.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 23855104,
+      "sha256": "d69279adfdd8cef689f657cad27237da6ebd596e12667f51080c47290d0c0ca2",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000023855104.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000023855104.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 23920640,
+      "sha256": "bdd378aa5861f52922f37701e8572af6db4cf391ef2b1024b9b01e32758a771a",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000023920640.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000023920640.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 23986176,
+      "sha256": "e85618081ebc318daf8221827695fb05cae4ac58606e24309dc2073dee63969a",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000023986176.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000023986176.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 24051712,
+      "sha256": "100cde6c2d50922e4e3eb3956cca863606b8820d62f98df2045b7d19d61a59de",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000024051712.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000024051712.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 24182784,
+      "sha256": "0e8a19e6848467b20416bfce8bebdf83c03a2e2b5f98a27ee0cafd184eda4120",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000024182784.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000024182784.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 24248320,
+      "sha256": "a9d3ac521f7f8e4b4f6cc314a8362257d78cf23618b0afc636ad6a958f4efa04",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000024248320.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000024248320.json"
+    },
+    {
+      "bytes": 65536,
+      "offset": 24313856,
+      "sha256": "dd5fac7cd586b0edec01aa1ed05fa70f2def66ccc804d0425e9266402c500bcd",
+      "version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+      "checkpoint_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000024313856.part",
+      "metadata_file_path": "/workspace/scratch/484c2ed46043/mem6-results/cas-download-checkpoint/chunk-000024313856.json"
+    }
+  ],
+  "next_required_offset": 24117248,
+  "missing_chunk_count": 567,
+  "missing_byte_ranges": [
+    {
+      "start": 24117248,
+      "end_exclusive": 24182784
+    },
+    {
+      "start": 24379392,
+      "end_exclusive": 61412948
+    }
+  ],
+  "pause_error": {
+    "code": -32603,
+    "message": "Internal error",
+    "scope": "h service calls; root also reported a non-file effective_config probe failed",
+    "earliest_failed_offset": 24117248,
+    "retry_policy": "Initial concurrency reduced from 8 to 4; three bounded retries then stop; one probe after about 60 seconds also failed. No permission or version changes attempted."
+  },
+  "final_probe": {
+    "status": "FAILED_SERVICE_INTERNAL_ERROR",
+    "observed_at": "2026-11-10 13:48:59 UTC",
+    "tool": "h.binary_read",
+    "offset": 24117248,
+    "limit": 65536,
+    "expected_version": "66306:102004015:61412948:1794317318863616657:1794317318863616657",
+    "error": "Mcp error: -32603: Internal error",
+    "further_remote_requests_stopped": true,
+    "note": "Parent instructed use this existing failed single probe as final probe; no further wait or retry."
+  },
+  "resume_instructions": [
+    "Read only missing offsets using h.binary_read with the exact expected_version and remote path above; reject version, size, or path changes.",
+    "Validate each returned base64 payload, byte length, chunk SHA256, next_offset, and EOF before saving. Existing complete chunks must match exactly, never be overwritten with differing data.",
+    "Reassemble all 938 chunks in offset order only after all missing chunks are available; verify expected archive bytes and full SHA256 before naming the final mem6-cas-001.tar.xz.",
+    "Run restore_archive.py only on the fully verified archive, with a new absent destination and absent receipt. Partial prefix inspection is not full archive or owner recovery."
+  ],
+  "raw_audit": {
+    "completed_pair_ids": [
+      "mem6-retention-484c-v1-686fc2e67e7000826e40"
+    ],
+    "pending_pair_ids": [
+      "mem6-retention-484c-v1-bd1daa4059274fa7d85d",
+      "mem6-selector-484c-v1-f63a25fb9bbcebb0c93c",
+      "mem6-selector-484c-v1-716b97bac5758ef3f2a5"
+    ],
+    "audit_path": "/workspace/scratch/484c2ed46043/mem6-results/independent-results-audit.json"
+  },
+  "full_owner_cold_recovery": false,
+  "independent_trust_domain": false,
+  "scientific_acceptance": "HOLD"
+}

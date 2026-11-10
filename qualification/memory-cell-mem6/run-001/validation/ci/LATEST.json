@@ -1,0 +1,64 @@
+{
+  "schema": "hepta.mem6.ci-readback-summary.v1",
+  "source_commit": "8cf848babdd897e9f38642d5faf3ba0f72a1303c",
+  "jobs_readback_utc": "2026-11-10 13:56:30 UTC",
+  "mem_job": {
+    "run_id": 42822523591,
+    "job_id": 129851376338,
+    "status": "queued",
+    "conclusion": null,
+    "complete_log_available": false
+  },
+  "architecture_status": "queued",
+  "blocking": {
+    "scope": "queued",
+    "blob_size": "queued",
+    "codespell": "success"
+  },
+  "v8": {
+    "run_id": 42822523639,
+    "status": "completed",
+    "conclusion": "success",
+    "metadata": "success",
+    "builds": "skipped",
+    "canary_required": false,
+    "canary_reason": "no relevant changes",
+    "checkout_merge_commit": "e0332a9bf5004dc1364e37e511bedd99a35f9a2a",
+    "last_verified_at_utc": "2026-11-10 13:30:23 UTC",
+    "refreshed_in_final_snapshot": false
+  },
+  "observed_new_failed_jobs": [],
+  "complete_job_logs": [
+    {
+      "job_id": 129851378864,
+      "path": "job-129851378864.log",
+      "bytes": 27433,
+      "sha256": "477a5c5a3e6ea3c8514fc7c054500480d67f069d2c520d722687781f6bcf132c",
+      "stored_path": "job-129851378864.log",
+      "encoding": "identity",
+      "stored_bytes": 27433,
+      "stored_sha256": "477a5c5a3e6ea3c8514fc7c054500480d67f069d2c520d722687781f6bcf132c"
+    },
+    {
+      "job_id": 129851376075,
+      "path": "job-129851376075.log",
+      "bytes": 1559478,
+      "sha256": "7701537a7390c66b1c4f220b0ddf958ad0877a714ee9f448ffc17623c308a1ab",
+      "stored_path": "job-129851376075.log.gz",
+      "encoding": "gzip",
+      "stored_bytes": 171452,
+      "stored_sha256": "4ccfbaed1fe135f0b8be715531dd1e7d95bdeffeb5c7b2bde2ccf61a0380b3c0"
+    }
+  ],
+  "minimal_fix_recommendation": null,
+  "all_required_ci_completed": false,
+  "source_or_actions_mutated": false,
+  "final_single_snapshot": true,
+  "readback_scope": [
+    "MEM",
+    "architecture",
+    "blocking"
+  ],
+  "snapshot_file": "poll-5.json",
+  "new_terminal_jobs_since_previous_snapshot": []
+}
