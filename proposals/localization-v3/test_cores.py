@@ -5,7 +5,12 @@ import math
 import unittest
 
 import torch
-from cores import CoreStudyModel, event_lif_step, explicit_hcsn_grid
+from cores import (
+    CoreStudyModel,
+    event_lif_step,
+    explicit_hcsn_grid,
+    explicit_plif_configuration,
+)
 
 TEST_GRID = {
     "active_cells": 8,
@@ -19,6 +24,126 @@ TEST_GRID = {
 
 
 class CommonCoreTests(unittest.TestCase):
+    def test_campaign_roster_dispatches_six_hcsn_fits_without_losing_baselines(self):
+        import importlib.util
+        from pathlib import Path
+        from cores import ARMS
+
+        spec = importlib.util.spec_from_file_location(
+            "hcsn_study_campaign_for_test", Path(__file__).with_name("campaign.py")
+        )
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        plan = {
+            "arms": list(ARMS),
+            "seeds": [101, 211, 307],
+            "learning_rates": [0.001, 0.003],
+            "dispatch_hcsn_first": True,
+        }
+        tasks = module.campaign_roster(plan)
+        self.assertEqual(len(tasks), 42)
+        self.assertEqual(len(set(tasks)), 42)
+        self.assertTrue(all(arm == "hcsn" for arm, _, _ in tasks[:6]))
+        self.assertTrue(all(arm != "hcsn" for arm, _, _ in tasks[6:]))
+        with self.assertRaises(ValueError):
+            module.campaign_roster({**plan, "seeds": [101, 101]})
+
+    def test_plif_configuration_checkpoint_rebuild_preserves_threshold_and_causality(
+        self,
+    ):
+        import io
+
+        configuration = {
+            "init_tau": 3.0,
+            "threshold": 0.7,
+            "input_weight_gain": 1.5,
+            "readout": "spike_trace",
+            "trace_decay": 0.75,
+        }
+        model = CoreStudyModel(
+            "snn_plif",
+            width=4,
+            seed=101,
+            learn_core_adapter=True,
+            plif_configuration=configuration,
+        )
+        x = torch.randn(
+            2, 6, 25, generator=torch.Generator().manual_seed(9), dtype=torch.float64
+        )
+        dt = torch.full((2, 6), 0.02, dtype=torch.float64)
+        optimizer = torch.optim.AdamW(
+            [p for p in model.parameters() if p.requires_grad], lr=0.01
+        )
+        model(x, dt).square().sum().backward()
+        optimizer.step()
+        payload = io.BytesIO()
+        torch.save(
+            {
+                "model": model.state_dict(),
+                "model_configuration": model.construction_configuration,
+            },
+            payload,
+        )
+        payload.seek(0)
+        saved = torch.load(payload, weights_only=False)
+        restored = CoreStudyModel(**saved["model_configuration"])
+        restored.load_state_dict(saved["model"])
+        self.assertEqual(restored.core.node.v_threshold, 0.7)
+        self.assertEqual(restored.core.configuration, configuration)
+        original = model(x, dt)
+        torch.testing.assert_close(original, restored(x, dt), rtol=0, atol=0)
+        changed = x.clone()
+        changed[:, 3:] += 7
+        torch.testing.assert_close(
+            original[:, :3], restored(changed, dt)[:, :3], rtol=0, atol=0
+        )
+        self.assertEqual(
+            model.initial_frontend_sha256, restored.initial_frontend_sha256
+        )
+        self.assertEqual(model.initial_head_sha256, restored.initial_head_sha256)
+        for invalid in (
+            {},
+            {**configuration, "threshold": 0},
+            {**configuration, "trace_decay": 1},
+            {**configuration, "readout": "unknown"},
+        ):
+            with self.assertRaises(ValueError):
+                explicit_plif_configuration(invalid)
+
+    def test_epoch_weighted_ce_uses_target_weights_across_unequal_batches(self):
+        import importlib.util
+        from pathlib import Path
+
+        # The official S4 tree also has train.py; bind this exact source file.
+        spec = importlib.util.spec_from_file_location(
+            "hcsn_study_train_for_test", Path(__file__).with_name("train.py")
+        )
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        logits = torch.tensor(
+            [[3.0, -1.0], [-2.0, 1.0], [1.0, 2.0]], dtype=torch.float64
+        )
+        labels = torch.tensor([0, 0, 1])
+        weights = torch.tensor([0.1, 5.0], dtype=torch.float64)
+        receipts = []
+        for selected in (slice(0, 2), slice(2, 3)):
+            denominator = weights[labels[selected]].sum()
+            numerator = torch.nn.functional.cross_entropy(
+                logits[selected], labels[selected], weight=weights, reduction="sum"
+            )
+            receipts.append(
+                {
+                    "target_weight_sum": float(denominator),
+                    "weighted_loss_numerator": float(numerator),
+                }
+            )
+        expected = torch.nn.functional.cross_entropy(logits, labels, weight=weights)
+        self.assertAlmostEqual(
+            module.aggregate_training_objectives(receipts), float(expected), places=14
+        )
+        with self.assertRaises(ValueError):
+            module.aggregate_training_objectives([])
+
     def test_same_frontend_and_head_across_different_constructor_rng(self):
         models = [
             CoreStudyModel(

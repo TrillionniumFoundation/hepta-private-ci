@@ -13,7 +13,13 @@ import time
 import traceback
 
 import torch
-from cores import ARMS, CoreStudyModel, tensor_digest, explicit_hcsn_grid
+from cores import (
+    ARMS,
+    CoreStudyModel,
+    tensor_digest,
+    explicit_hcsn_grid,
+    explicit_plif_configuration,
+)
 from capacity import adamw, parameter_audit
 from data import save, sha
 from episodes import read_episodes
@@ -22,6 +28,14 @@ from hcsn_study_support import sources, batches, backward_effective_batch
 
 # The campaign supplies dispatch time, including process spawn and all imports.
 PROCESS_STARTED = float(os.environ.get("HCSN_PROCESS_STARTED", time.monotonic()))
+
+
+def aggregate_training_objectives(receipts):
+    """Aggregate weighted CE by its target-weight denominator, not event count."""
+    denominator = sum(row["target_weight_sum"] for row in receipts)
+    if denominator <= 0:
+        raise ValueError("no positive objective weight")
+    return sum(row["weighted_loss_numerator"] for row in receipts) / denominator
 
 
 def fit(args):
@@ -51,6 +65,7 @@ def fit(args):
         "training_adequacy_established": False,
         "time_to_quality_seconds": None,
         "quality_threshold_macro_f1": args.quality_threshold,
+        "time_to_quality_scope": "first observed development evaluation crossing; crossing between evaluations is not localized",
         "source_before": sources(),
     }
     plan = vars(args).copy()
@@ -127,6 +142,10 @@ def fit(args):
             micro_batch_size=args.micro_batch_size,
             before_forward=before_forward,
         )
+        receipt["target_weight_sum"] = float(weights[y[y >= 0]].sum())
+        receipt["weighted_loss_numerator"] = (
+            receipt["loss"] * receipt["target_weight_sum"]
+        )
         active = [p for p in model.parameters() if p.requires_grad]
         if any(
             p.grad is None or not bool(torch.isfinite(p.grad).all()) for p in active
@@ -145,13 +164,14 @@ def fit(args):
             gradient_norm=float(norm),
             **receipt,
         )
-        return receipt["loss"], receipt["events"]
+        return receipt
 
     def checkpoint(path):
         temporary = Path(str(path) + ".tmp")
         torch.save(
             {
                 "model": model.state_dict(),
+                "model_configuration": model.construction_configuration,
                 "optimizer": optimizer.state_dict() if optimizer else None,
                 "torch_rng": torch.get_rng_state(),
                 "order_rng": order_rng.getstate(),
@@ -194,6 +214,7 @@ def fit(args):
             freeze_shared=not args.train_shared,
             cache_frozen_tables=args.cache_frozen_tables,
             learn_core_adapter=args.learn_core_adapter,
+            plif_configuration=args.plif_config_json,
         )
         report.update(
             model=parameter_audit(model),
@@ -228,6 +249,7 @@ def fit(args):
             state_window_events=256,
             dtype="float64",
             device="cpu",
+            model_configuration=model.construction_configuration,
         )
         if args.arm == "hcsn":
             report.update(
@@ -236,23 +258,63 @@ def fit(args):
                 numerical_admission="development_candidate_not_whole_training_qualified",
             )
         initial = {k: v.detach().clone() for k, v in model.state_dict().items()}
-        torch.save(initial, out / "initial.pt")
+        torch.save(
+            {"model": initial, "model_configuration": model.construction_configuration},
+            out / "initial.pt",
+        )
         report["initialization_sha256"] = sha((out / "initial.pt").read_bytes())
         optimizer, report["optimizer_groups"] = adamw(model, args.learning_rate, 0.0)
         if args.memorization_updates:
             chosen = next(row for row in data["train"] if len(set(row["y"])) > 1)
             batch = next(batches([chosen], [0], 1))
             before = evaluate([chosen])
-            for _ in range(args.memorization_updates):
+            curve = [
+                {
+                    "update": 0,
+                    "metrics": before,
+                    "process_wall_seconds": time.monotonic() - PROCESS_STARTED,
+                    "diagnostics": getattr(model.core, "diagnostics", {}),
+                }
+            ]
+            after, first_pass = before, None
+            for step in range(1, args.memorization_updates + 1):
                 update(batch, "diagnostic")
-            after = evaluate([chosen])
+                if (
+                    step % args.memorization_check_every == 0
+                    or step == args.memorization_updates
+                ):
+                    after = evaluate([chosen])
+                    passed = (
+                        after["accuracy"] >= 0.95
+                        and after["macro_f1_present_classes"] >= 0.9
+                    )
+                    row = {
+                        "update": step,
+                        "metrics": after,
+                        "passed": passed,
+                        "process_wall_seconds": time.monotonic() - PROCESS_STARTED,
+                        "diagnostics": getattr(model.core, "diagnostics", {}),
+                    }
+                    curve.append(row)
+                    event("memorization_evaluated", **row)
+                    if passed:
+                        first_pass = step
+                        break
             report["memorization"] = {
                 "episode_id": chosen["id"],
                 "before": before,
                 "after": after,
                 "passed": after["accuracy"] >= 0.95
                 and after["macro_f1_present_classes"] >= 0.9,
+                "maximum_updates": args.memorization_updates,
+                "check_every": args.memorization_check_every,
+                "first_observed_passing_update": first_pass,
+                "curve": curve,
+                "scope": "training-only diagnostic; exact initial weights and optimizer restored for main fit",
             }
+            report["memorization_checkpoint_sha256"] = checkpoint(
+                out / "memorization.pt"
+            )
             model.load_state_dict(initial)
             if any(
                 not torch.equal(v, initial[k]) for k, v in model.state_dict().items()
@@ -275,6 +337,9 @@ def fit(args):
         if args.arm == "hcsn" and recorder:
             model.core.recorder = None
         report["development_before"] = evaluate(data["dev"])
+        report["development_before_process_wall_seconds"] = (
+            time.monotonic() - PROCESS_STARTED
+        )
         if args.arm == "hcsn" and recorder:
             model.core.recorder = recorder
         best, plateau_anchor, stale = -1.0, -1.0, 0
@@ -299,11 +364,18 @@ def fit(args):
             row = {
                 "epoch": epoch,
                 "complete": True,
-                "events": sum(n for _, n in losses),
-                "training_weighted_loss": sum(v * n for v, n in losses)
-                / sum(n for _, n in losses),
+                "events": sum(row["events"] for row in losses),
+                "training_weighted_loss": aggregate_training_objectives(losses),
+                "training_target_weight_sum": sum(
+                    row["target_weight_sum"] for row in losses
+                ),
+                "training_weighted_loss_numerator": sum(
+                    row["weighted_loss_numerator"] for row in losses
+                ),
                 "development": development,
                 "wall_seconds": time.perf_counter() - started,
+                "process_wall_seconds": time.monotonic() - PROCESS_STARTED,
+                "process_cpu_seconds": time.process_time(),
             }
             report["epochs"].append(row)
             if not args.train_shared and (
@@ -424,11 +496,17 @@ def main():
     parser.add_argument("--patience", type=int, default=10)
     parser.add_argument("--plateau-delta", type=float, default=0.002)
     parser.add_argument("--memorization-updates", type=int, default=256)
+    parser.add_argument("--memorization-check-every", type=int, default=64)
     parser.add_argument("--wall-seconds", type=float, required=True)
     parser.add_argument("--rss-bytes", type=int, default=4294967296)
     parser.add_argument("--threads", type=int, default=1)
     parser.add_argument("--quality-threshold", type=float, default=0.3)
     parser.add_argument("--s4-repo")
+    parser.add_argument(
+        "--plif-config-json",
+        type=json.loads,
+        help="PLIF only: full initialization and spike/membrane/trace readout configuration",
+    )
     parser.add_argument(
         "--hcsn-grid-json",
         type=json.loads,
@@ -456,6 +534,8 @@ def main():
         not 1 <= args.min_epochs <= args.max_epochs <= 100
         or args.batch_size < 1
         or args.threads < 1
+        or args.memorization_updates < 0
+        or args.memorization_check_every < 1
     ):
         parser.error("invalid training envelope")
     if (
@@ -464,6 +544,10 @@ def main():
     ):
         parser.error("micro batch must be between 1 and effective batch size")
     try:
+        if args.plif_config_json is not None:
+            if args.arm != "snn_plif":
+                raise ValueError("PLIF configuration is only valid for PLIF")
+            explicit_plif_configuration(args.plif_config_json)
         if args.arm == "hcsn":
             explicit_hcsn_grid(args.hcsn_grid_json)
         elif args.hcsn_grid_json is not None or args.cache_frozen_tables:

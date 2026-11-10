@@ -17,6 +17,20 @@ def digest(path):
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
 
+def campaign_roster(plan):
+    tasks = [
+        (arm, seed, lr)
+        for seed in plan["seeds"]
+        for lr in plan["learning_rates"]
+        for arm in plan["arms"]
+    ]
+    if len(tasks) != len(set(tasks)):
+        raise ValueError("duplicate declared fit identity")
+    if plan.get("dispatch_hcsn_first", False):
+        tasks.sort(key=lambda item: item[0] != "hcsn")
+    return tasks
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--plan", type=Path, required=True)
@@ -91,6 +105,14 @@ def main():
             str(plan["patience"]),
             "--memorization-updates",
             str(plan["memorization_updates"]),
+            "--memorization-check-every",
+            str(plan["memorization_check_every"]),
+            "--plateau-delta",
+            str(plan["plateau_delta"]),
+            "--quality-threshold",
+            str(plan["quality_threshold"]),
+            "--threads",
+            str(plan["threads"]),
             "--wall-seconds",
             str(max(1, seconds - 30)),
             "--rss-bytes",
@@ -109,6 +131,11 @@ def main():
             ]
             if plan["cache_frozen_tables"]:
                 argv += ["--cache-frozen-tables"]
+        if arm == "snn_plif":
+            argv += [
+                "--plif-config-json",
+                json.dumps(plan["plif_configuration"], sort_keys=True),
+            ]
         if plan.get("learn_core_adapter", False):
             argv += ["--learn-core-adapter"]
         micro_batch = plan.get("micro_batch_sizes", {}).get(arm)
@@ -208,12 +235,7 @@ def main():
 
     # Same opportunity roster and resource ceilings for every arm. No retry,
     # resumed checkpoint, deleted failure or confirmation label is used.
-    tasks = [
-        (arm, seed, lr)
-        for seed in plan["seeds"]
-        for lr in plan["learning_rates"]
-        for arm in plan["arms"]
-    ]
+    tasks = campaign_roster(plan)
     with ThreadPoolExecutor(max_workers=plan["workers"]) as pool:
         futures = [pool.submit(run, *item) for item in tasks]
         for future in as_completed(futures):
