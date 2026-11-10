@@ -70,6 +70,11 @@ async fn authenticate_iteration_receipt_at_clock_v1(
     let current = verify_receipt(ports, verifier, snapshot, receipt, clock).await?;
     let independent_stages: &[LearningIterationStageV1] = match receipt.observation.stage() {
         LearningIterationStageV1::Evaluation => &[LearningIterationStageV1::Training],
+        LearningIterationStageV1::Selection if snapshot.training_no_update_v2().is_some() => {
+            // An unchanged native training result has no evaluator result.
+            // The original trainer must still be independent of selection.
+            &[LearningIterationStageV1::Training]
+        }
         LearningIterationStageV1::Selection => &[
             LearningIterationStageV1::Training,
             LearningIterationStageV1::Evaluation,

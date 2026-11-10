@@ -38,7 +38,7 @@ impl AgentdConfig {
         Ok(())
     }
 
-    fn require_circuit_task_execution_profile(&self) -> Result<(), AgentdError> {
+    pub(super) fn require_circuit_task_execution_profile(&self) -> Result<(), AgentdError> {
         #[cfg(target_os = "linux")]
         if self.notes_ui.is_some()
             || self.notes_thread_tools.is_some()

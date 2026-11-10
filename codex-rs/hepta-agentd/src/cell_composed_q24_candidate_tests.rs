@@ -8,7 +8,7 @@ use crate::CellQ24PrivateHeadV1;
 
 const ORIGINAL_HEADS: [i64; 8] = [Q, 0, 0, Q, -Q, 0, 0, -Q];
 
-fn reopen(root: &Path) -> anyhow::Result<LoadedCellQ24ModelV1> {
+pub(super) fn reopen(root: &Path) -> anyhow::Result<LoadedCellQ24ModelV1> {
     let file = |name| File::open(root.join(name));
     Ok(LoadedCellQ24ModelV1::open_files(CellQ24ModelFilesV1 {
         base: file("base")?,

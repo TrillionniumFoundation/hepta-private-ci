@@ -5,6 +5,7 @@ use codex_hepta_intelligence_eval::FinalHoldoutCasStoreV1;
 use codex_hepta_intelligence_eval::ProductQualificationContextV1;
 use codex_hepta_intelligence_eval::ProductTimingEvidenceV1;
 use codex_hepta_intelligence_eval::SignedEvaluationEvidenceV1;
+use codex_hepta_learning_artifacts::LearningIterationCoordinatorV1;
 use codex_hepta_learning_artifacts::LearningIterationReceiptV1;
 use codex_hepta_learning_artifacts::LearningIterationSnapshotV1;
 use codex_hepta_learning_artifacts::LearningIterationStageV1;
@@ -70,11 +71,36 @@ pub enum CellLearningEvaluationReadbackErrorV1 {
 /// connections. Only receipt digests cross the wire; this never asks an owner
 /// to sign arbitrary data. Missing, expired or uncertain evidence is an error,
 /// including when the independently evaluated disposition is NoUpdate.
+/// A recovered history is checked in full before reconstructing its original
+/// Training cut. Its retained Evaluation must match exactly; later Selection
+/// and NextUse receipts never authorize another experiment or a new timestamp.
 pub async fn read_cell_learning_evaluation_v1(
     request: CellLearningEvaluationReadbackRequestV1<'_, impl FinalHoldoutCasStoreV1>,
     trainer: &LearningIterationEvidenceClientV1,
     evaluator: &LearningIterationEvidenceClientV1,
 ) -> Result<AuthenticatedCellLearningEvaluationV1, CellLearningEvaluationReadbackErrorV1> {
+    let restored = LearningIterationCoordinatorV1::from_snapshot(request.snapshot.clone())
+        .map_err(LearningIterationRuntimeErrorV1::from)?;
+    let retained =
+        request.snapshot.receipts.iter().position(|receipt| {
+            receipt.observation.stage() == LearningIterationStageV1::Evaluation
+        });
+    let predecessor = match retained {
+        Some(index) => {
+            let mut prefix = LearningIterationCoordinatorV1::new(
+                request.snapshot.request.clone(),
+                request.snapshot.owners.clone(),
+            )
+            .map_err(LearningIterationRuntimeErrorV1::from)?;
+            for receipt in request.snapshot.receipts.iter().take(index) {
+                prefix
+                    .record(receipt.clone(), receipt.observed_unix_seconds)
+                    .map_err(LearningIterationRuntimeErrorV1::from)?;
+            }
+            prefix
+        }
+        None => restored,
+    };
     let prepare = |now| {
         let timing = match &request.timing {
             ProductTimingEvidenceV1::Qualification => ProductTimingEvidenceV1::Qualification,
@@ -88,7 +114,7 @@ pub async fn read_cell_learning_evaluation_v1(
         };
         prepare_cell_learning_evaluation_v1(
             request.runner,
-            request.snapshot,
+            predecessor.snapshot(),
             request.evaluation,
             request.qualification,
             &CellEvaluationQualificationRequestV1 {
@@ -101,8 +127,11 @@ pub async fn read_cell_learning_evaluation_v1(
         )
     };
     let receipt = prepare(now_unix_seconds()?)?;
-    let training = request
-        .snapshot
+    if retained.is_some_and(|index| request.snapshot.receipts[index] != receipt) {
+        return Err(LearningIterationRuntimeErrorV1::WrongScope.into());
+    }
+    let training = predecessor
+        .snapshot()
         .receipts
         .last()
         .filter(|receipt| receipt.observation.stage() == LearningIterationStageV1::Training)

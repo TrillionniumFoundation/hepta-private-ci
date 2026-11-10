@@ -19,6 +19,10 @@ mod desktop;
 #[path = "config_circuit_task.rs"]
 mod circuit_task;
 
+#[path = "config_q24_circuit_task.rs"]
+#[cfg(target_os = "linux")]
+mod q24_circuit_task;
+
 #[path = "config_sockets.rs"]
 mod sockets;
 pub(crate) use sockets::AgentdSocketInputs;

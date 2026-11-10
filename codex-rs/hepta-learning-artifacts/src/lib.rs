@@ -111,6 +111,8 @@ pub use learning_iteration_types::LearningIterationRequestV1;
 pub use learning_iteration_types::LearningIterationSnapshotV1;
 pub use learning_iteration_types::LearningIterationStageV1;
 pub use learning_iteration_types::LearningProposalDispositionV1;
+pub use learning_iteration_types::LearningTrainingNoUpdateReasonV2;
+pub use learning_iteration_types::LearningTrainingNoUpdateV2;
 pub use lifecycle_journal::ArtifactLifecycleJournalError;
 pub use lifecycle_journal::ArtifactLifecycleJournalReceiptV2;
 pub use lifecycle_journal::ArtifactLifecycleJournalRecordV2;

@@ -10,6 +10,9 @@ use super::*;
 #[path = "learning_iteration_delivery_runtime_tests.rs"]
 mod delivery_runtime_tests;
 
+#[path = "learning_iteration_training_no_update_auth_tests.rs"]
+mod training_no_update_auth_tests;
+
 #[derive(Clone, Copy)]
 enum Decision {
     EvaluatedNoUpdate,
@@ -21,6 +24,7 @@ enum Decision {
 enum Trust {
     Independent,
     SharedController,
+    SharedSelectorController,
     RevokedEvaluator,
 }
 
@@ -49,7 +53,9 @@ fn recovery_ports(decision: Decision, trust: Trust) -> IterationPorts {
                 principal: principal.clone(),
                 controller_id: id(&format!(
                     "recovery-controller-{}",
-                    if matches!(trust, Trust::SharedController) && index == 2 {
+                    if (matches!(trust, Trust::SharedController) && index == 2)
+                        || (matches!(trust, Trust::SharedSelectorController) && index == 1)
+                    {
                         0
                     } else {
                         index
@@ -516,7 +522,7 @@ async fn readback_missing_or_partial_checkpoint_never_creates_or_resumes_work() 
 }
 
 #[tokio::test]
-async fn actual_delivery_preserves_pending_without_backend_and_claimed_with_closed_owner() {
+async fn actual_delivery_preserves_fresh_pending_and_never_resubmits_an_original_claim() {
     use codex_hepta_automation::AutomationStore;
     use codex_hepta_automation::CircuitCommandV2;
     use codex_hepta_automation::CircuitEventV2;
@@ -606,9 +612,9 @@ async fn actual_delivery_preserves_pending_without_backend_and_claimed_with_clos
             .await,
         Err(LearningIterationRuntimeErrorV1::Unavailable)
     ));
-    let claimed = ok(store.pending_circuit_learning(/*limit*/ 1).await);
-    assert!(claimed[0].request_digest.is_some());
-    assert_eq!(claimed[0].acknowledged_head, None);
+    let pending = ok(store.pending_circuit_learning(/*limit*/ 1).await);
+    assert_eq!(pending[0].request_digest, None);
+    assert_eq!(pending[0].acknowledged_head, None);
     assert!(matches!(
         crate::deliver_circuit_learning_v1(&store, Some(&handle), request.clone(), ports.owners())
             .await,
@@ -626,13 +632,27 @@ async fn actual_delivery_preserves_pending_without_backend_and_claimed_with_clos
     ));
     assert_eq!(
         ok(store.pending_circuit_learning(/*limit*/ 1).await),
-        claimed
+        pending
     );
     assert!(ok(ports.executed.lock()).is_empty());
     assert!(ok(ports.checkpoint_calls.lock()).is_empty());
 
-    // A replacement worker receives only readback for the original durable
-    // claim. Neither absent state nor an initial checkpoint permits another fit.
+    // Model an original durable claim whose acknowledgement was lost. Queue
+    // closure above cannot create this claim; only its original store can.
+    let partial = ok(LearningIterationCoordinatorV1::new(
+        request.clone(),
+        ports.owners(),
+    ))
+    .snapshot()
+    .clone();
+    let request_digest = ok(Sha256Digest::parse(partial.head_digest.to_string()));
+    assert!(ok(store
+        .claim_circuit_learning(&intent, &request_digest)
+        .await));
+    let claimed = ok(store.pending_circuit_learning(/*limit*/ 1).await);
+
+    // A replacement worker receives only readback for that durable claim.
+    // Neither absent state nor an initial checkpoint permits another fit.
     let (live_handle, live_owner) = ok(learning_iteration_channel_v1(
         daemon.identity.agent_id.clone(),
         /*spawn_generation*/ 1,
@@ -654,12 +674,6 @@ async fn actual_delivery_preserves_pending_without_backend_and_claimed_with_clos
         Err(LearningIterationRuntimeErrorV1::CommitUncertain)
     ));
     assert!(ok(ports.checkpoint.lock()).is_none());
-    let partial = ok(LearningIterationCoordinatorV1::new(
-        request.clone(),
-        ports.owners(),
-    ))
-    .snapshot()
-    .clone();
     install_checkpoint(&ports, &partial);
     assert!(matches!(
         crate::reconcile_circuit_learning_v1(&store, Some(&live_handle), request, ports.owners(),)

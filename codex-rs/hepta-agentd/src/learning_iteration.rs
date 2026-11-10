@@ -30,9 +30,14 @@ use crate::PlasticityRuntimeCallErrorV1;
 
 #[path = "learning_iteration_delivery_runtime.rs"]
 mod delivery;
+#[path = "circuit_learning_delivery_registry.rs"]
+mod registry;
+pub use registry::CircuitLearningDeliveryRegistryV1;
+pub(crate) use registry::MAX_REGISTERED_CIRCUIT_LEARNING;
 
 const MAX_LEARNING_QUEUE: usize = 64;
 const MAX_ITERATION_SECONDS: u64 = 86_400;
+const MAX_READBACK_SECONDS: u64 = 30;
 
 #[derive(Debug)]
 pub enum LearningIterationRuntimeErrorV1 {
@@ -77,6 +82,11 @@ pub struct LearningIterationHandleV1 {
     sender: mpsc::Sender<LearningIterationCommandV1>,
 }
 
+/// One bounded actor slot held before a durable delivery claim is recorded.
+pub(crate) struct LearningIterationReservationV1<'a> {
+    permit: mpsc::Permit<'a, LearningIterationCommandV1>,
+}
+
 impl LearningIterationHandleV1 {
     pub async fn submit(
         &self,
@@ -99,19 +109,46 @@ impl LearningIterationHandleV1 {
         request: LearningIterationRequestV1,
         mode: LearningIterationModeV1,
     ) -> Result<LearningIterationSnapshotV1, LearningIterationRuntimeErrorV1> {
+        self.reserve()?.call(request, mode).await
+    }
+
+    pub(crate) fn reserve(
+        &self,
+    ) -> Result<LearningIterationReservationV1<'_>, LearningIterationRuntimeErrorV1> {
+        let permit = self.sender.try_reserve().map_err(|error| match error {
+            mpsc::error::TrySendError::Full(_) => LearningIterationRuntimeErrorV1::QueueFull,
+            mpsc::error::TrySendError::Closed(_) => LearningIterationRuntimeErrorV1::Unavailable,
+        })?;
+        Ok(LearningIterationReservationV1 { permit })
+    }
+}
+
+impl LearningIterationReservationV1<'_> {
+    pub(crate) async fn submit(
+        self,
+        request: LearningIterationRequestV1,
+    ) -> Result<LearningIterationSnapshotV1, LearningIterationRuntimeErrorV1> {
+        self.call(request, LearningIterationModeV1::Submit).await
+    }
+
+    pub(crate) async fn readback(
+        self,
+        request: LearningIterationRequestV1,
+    ) -> Result<LearningIterationSnapshotV1, LearningIterationRuntimeErrorV1> {
+        self.call(request, LearningIterationModeV1::Readback).await
+    }
+
+    async fn call(
+        self,
+        request: LearningIterationRequestV1,
+        mode: LearningIterationModeV1,
+    ) -> Result<LearningIterationSnapshotV1, LearningIterationRuntimeErrorV1> {
         let (response, receive) = oneshot::channel();
-        self.sender
-            .try_send(LearningIterationCommandV1 {
-                mode,
-                request: Box::new(request),
-                response,
-            })
-            .map_err(|error| match error {
-                mpsc::error::TrySendError::Full(_) => LearningIterationRuntimeErrorV1::QueueFull,
-                mpsc::error::TrySendError::Closed(_) => {
-                    LearningIterationRuntimeErrorV1::Unavailable
-                }
-            })?;
+        self.permit.send(LearningIterationCommandV1 {
+            mode,
+            request: Box::new(request),
+            response,
+        });
         // Missing acknowledgement does not prove absence of a durable commit.
         receive
             .await
@@ -130,7 +167,7 @@ pub struct LearningIterationRuntimeBootstrapV1 {
     scope: Option<FrozenLearningScopeV2>,
     receiver: mpsc::Receiver<LearningIterationCommandV1>,
     sender: mpsc::Sender<LearningIterationCommandV1>,
-    circuit_delivery_request: Option<LearningIterationRequestV1>,
+    circuit_delivery_registry: Option<CircuitLearningDeliveryRegistryV1>,
     circuit_delivery_source: delivery::CircuitLearningSourceV1,
     enforce_circuit_admission: bool,
 }
@@ -226,7 +263,7 @@ fn learning_iteration_channel(
             scope,
             receiver,
             sender,
-            circuit_delivery_request: None,
+            circuit_delivery_registry: None,
             circuit_delivery_source: delivery::CircuitLearningSourceV1::HostStageOwners,
             enforce_circuit_admission: false,
         },
@@ -279,16 +316,24 @@ impl LearningIterationRuntimeBootstrapV1 {
         request: LearningIterationRequestV1,
         mode: LearningIterationModeV1,
     ) -> Result<LearningIterationSnapshotV1, LearningIterationRuntimeErrorV1> {
-        let remaining = request
-            .envelope
-            .expiry_unix_seconds
-            .saturating_sub(now_unix_seconds()?);
-        if remaining > MAX_ITERATION_SECONDS {
-            return Err(LearningIterationRuntimeErrorV1::DeadlineExceeded);
-        }
-        // Expired operations may reconcile a completed receipt. New stages and
-        // create-if-absent checkpoints are still rejected inside process.
-        tokio::time::timeout(Duration::from_secs(remaining.max(1)), async {
+        // Readback can only restore the original operation and reauthenticate
+        // its historical owner receipts. It must not inherit a one-second work
+        // timeout after expiry or a far-future new-work admission ceiling.
+        // Neither expiry nor this bounded read-only window grants new stages.
+        let timeout_seconds = match &mode {
+            LearningIterationModeV1::Readback => MAX_READBACK_SECONDS,
+            LearningIterationModeV1::Submit => {
+                let remaining = request
+                    .envelope
+                    .expiry_unix_seconds
+                    .saturating_sub(now_unix_seconds()?);
+                if remaining > MAX_ITERATION_SECONDS {
+                    return Err(LearningIterationRuntimeErrorV1::DeadlineExceeded);
+                }
+                remaining.max(1)
+            }
+        };
+        tokio::time::timeout(Duration::from_secs(timeout_seconds), async {
             match mode {
                 LearningIterationModeV1::Readback => {
                     self.process_readback(state, request, now_unix_seconds)
@@ -329,6 +374,8 @@ impl LearningIterationRuntimeBootstrapV1 {
         let restored = LearningIterationCoordinatorV1::from_snapshot(snapshot)?;
         if let Some(scope) = &self.scope {
             scope.validate_snapshot(restored.snapshot())?;
+        } else if restored.snapshot().training_no_update_v2().is_some() {
+            return Err(LearningIterationRuntimeErrorV1::WrongScope);
         }
         crate::learning_iteration_auth::authenticate_restored_iteration_v1(
             state,
@@ -365,6 +412,8 @@ impl LearningIterationRuntimeBootstrapV1 {
                 let restored = LearningIterationCoordinatorV1::from_snapshot(snapshot)?;
                 if let Some(scope) = &self.scope {
                     scope.validate_snapshot(restored.snapshot())?;
+                } else if restored.snapshot().training_no_update_v2().is_some() {
+                    return Err(LearningIterationRuntimeErrorV1::WrongScope);
                 }
                 require_ready(state)?;
                 if restored.next_stage().is_some()
@@ -423,6 +472,12 @@ impl LearningIterationRuntimeBootstrapV1 {
                 } else {
                     call.await?
                 };
+                if self.scope.is_none()
+                    && matches!(receipt.observation,
+                        codex_hepta_learning_artifacts::LearningIterationObservationV1::TrainingNoUpdateV2(_))
+                {
+                    return Err(LearningIterationRuntimeErrorV1::WrongScope);
+                }
                 crate::learning_iteration_auth::authenticate_iteration_receipt_v1(
                     state,
                     self.ports.as_ref(),

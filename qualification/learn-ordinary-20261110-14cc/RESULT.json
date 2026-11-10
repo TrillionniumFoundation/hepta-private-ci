@@ -1,0 +1,132 @@
+{
+  "schema": "hepta.learn.ordinary-qualification.v1",
+  "status": "HOLD_ORDINARY_CHAIN_NOT_ESTABLISHED",
+  "tested_source": "1b49f8746ec48a333c34f8a00a693c18248709fb",
+  "tested_tree": "8489fdedce2b9e7dd4df9a3854b6056fbb6ee619",
+  "tested_source_clean_before_and_after": true,
+  "engineering_validation": {
+    "native_root_component_slice": {
+      "status": "PASS",
+      "tests": 6,
+      "failures": 0,
+      "scope_skipped": 888,
+      "effective_uid": 0,
+      "archive": "native-final-1b49.tar.gz",
+      "record": "learn-final-1b49-root-v2/root.json",
+      "junit": "learn-final-1b49-root-v2/root.xml",
+      "junit_sha256": "0773b81fd7a70504d957eea756a5057c141a669a51871a88a4c99c0052d8b6de",
+      "prior_attempt": "5 passed, one timeout; original private TMPDIR unreachable by UID 60001; CI-equivalent retry omitted TMPDIR"
+    },
+    "source_mutation_tests": {
+      "status": "PASS",
+      "tests": 50,
+      "learning": 41,
+      "q24": 6,
+      "trainer_no_update": 3,
+      "archive": "source-checks.tar.gz"
+    },
+    "whole_repository_caller_proof": {
+      "status": "PASS_HEPTA_CALLER_CLOSED_SET",
+      "boundaries": 201,
+      "protected_checks": 193,
+      "unique_protected_files": 150,
+      "rust_files_scanned": 6193,
+      "authority_granted": false,
+      "record": "source-checks/full-caller-proof-1b49-run1.json",
+      "archive": "source-checks.tar.gz"
+    },
+    "local_fallback_previous_source": {
+      "source": "a2b52088639a6fbbc3a1f996968b3122934972cd",
+      "status": "PASS",
+      "tests": 19,
+      "scope_skipped": 237,
+      "archive": "earlier-native-attempts.tar.gz",
+      "used_as_final_source_pass": false
+    },
+    "native_learning_slice": {
+      "status": "PASS",
+      "tests": 161,
+      "failures": 0,
+      "scope_skipped": 1067,
+      "by_crate": {
+        "codex-hepta-agentd": 138,
+        "codex-hepta-automation": 4,
+        "codex-hepta-learning-artifacts": 18,
+        "codex-hepta-intelligence-eval": 1
+      },
+      "archive": "native-final-1b49.tar.gz",
+      "record": "learn-final-1b49-v1/ordinary.json",
+      "junit": "learn-final-1b49-v1/ordinary.xml",
+      "junit_sha256": "91f1c69c27ed05e795ed0983d62a796a83a7be97cb855a42af7b099e92ae4f9e"
+    }
+  },
+  "mechanism_results": {
+    "actual_q24_native_optimizer": "PASS_NATIVE_COMPONENT_TESTS",
+    "candidate_and_unchanged_weight_training_outcomes": "PASS_NATIVE_COMPONENT_TESTS",
+    "original_anchored_training_result_to_unsigned_learning_observation": "PASS_NATIVE_COMPONENT_TESTS",
+    "trainer_no_update_without_candidate_evaluation_or_proposal": "PASS_NATIVE_PROTOCOL_TESTS",
+    "independent_current_roles_selection_and_retained_use": "PASS_NATIVE_TESTS_WITH_FIXTURE_CUSTODY",
+    "same_model_current_lost_ack_distinct_input_c_and_cold_file_readback": "PASS_NATIVE_COMPONENT_TEST_WITH_FIXTURE_CUSTODY",
+    "preclaim_queue_reservation_and_original_source_reauthentication": "PASS_NATIVE_AND_SOURCE_GUARDS",
+    "exact_ack_retirement_preserves_historical_identity": "PASS_NATIVE_TESTS",
+    "expired_original_evaluation_history_readback": "PASS_NATIVE_TESTS",
+    "root_capability_registration_transport_and_original_external_uid": "PASS_SIX_NATIVE_COMPONENT_FIXTURES"
+  },
+  "ordinary_acceptance": {
+    "ordinary_a_completed_with_genuine_experience": "NOT_ESTABLISHED",
+    "ordinary_original_training_owner_called_from_a": "NOT_ESTABLISHED",
+    "independent_b_and_old_capability_retention_panel": "NOT_ESTABLISHED",
+    "ordinary_original_selector_and_version_owner_adoption": "NOT_ESTABLISHED",
+    "ordinary_fresh_session_distinct_input_c_consumed_selection": "NOT_ESTABLISHED",
+    "full_daemon_and_root_os_cold_restart": "NOT_ESTABLISHED",
+    "complete_chains": 0,
+    "positive_adoptions": 0,
+    "no_update_or_rollback_chains": 0,
+    "multiple_time_window_benefit_research_started": false
+  },
+  "responsibility_boundaries": {
+    "training": "actual bounded generation, no evaluation or adoption authority",
+    "evaluator": "original signed experiment and qualification, not synthesized by trainer",
+    "selector": "original current signed decision, independent from trainer",
+    "observer": "actual committed selected-version use and original readback",
+    "version_owner": "original CURRENT, FinalUse and immutable artifact publication"
+  },
+  "limits": [
+    "Task/source/signing metadata in native tests remain fixtures.",
+    "Object/file reopen and six Root fixture parents do not establish full ordinary daemon/Root OS restart.",
+    "A candidate is not an adoption; unchanged weights are distinct from evaluator rejection.",
+    "The explicit 64-request registry does not provision 64 independent Root scoped checkpoints.",
+    "Retired outbox history remains cumulative; only active admission slots are bounded.",
+    "No old SmolLM evaluation panel or historical branch result is counted as new acceptance."
+  ],
+  "maintenance": {
+    "status": "PASS_MAINTENANCE_COMPILE_ONLY_AND_STATIC_MARKERS",
+    "mechanical_maintenance_commit": "4afbcf04cf329cbcf984793c9d8d51941f072f48",
+    "guard_alignment_commit": "afd8053f915f481c9273695b1853a78e4131c3c7",
+    "postimage_files": 20,
+    "test_only_redundant_clone_removals": 3,
+    "production_rust_semantic_change_found": false,
+    "fix_exit_code": 0,
+    "fmt_exit_code": 0,
+    "compile_only_exit_code": 0,
+    "post_maintenance_static_protected_checks": 193,
+    "post_maintenance_unique_protected_files": 150,
+    "behavior_tests_repeated_after_fix_fmt": false,
+    "python_mutation_tests_repeated_after_fix_fmt": false,
+    "whole_repository_caller_scan_repeated_after_fix_fmt": false,
+    "record": "MAINTENANCE.json",
+    "static_record": "post-maintenance-static.json"
+  },
+  "failed_attempts_retained": [
+    "c422 native relocated CMake cache failure",
+    "c422 native ambiguous assertion macro compile failure",
+    "f865 92/93 native pass with obsolete closed-queue claim assertion",
+    "c422 caller-proof SQL literal marker failure",
+    "a2b source mutation test old codec markers",
+    "1b49 initial Root 5/6 with private TMPDIR traversal timeout"
+  ],
+  "artifacts_manifest": "ARTIFACTS.json",
+  "assembly_report": "ASSEMBLY_GAPS.md",
+  "maintained_source": "4afbcf04cf329cbcf984793c9d8d51941f072f48",
+  "guard_aligned_source": "afd8053f915f481c9273695b1853a78e4131c3c7"
+}

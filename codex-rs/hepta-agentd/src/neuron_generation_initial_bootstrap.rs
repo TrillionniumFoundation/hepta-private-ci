@@ -22,6 +22,8 @@ use crate::neuron_generation_update_live::LiveGenerationCurrent;
 pub struct ReadyAgentdGenerationInitialV1<W: AnchorWitnessStore> {
     journal: CellGenerationJournalV2<W>,
     publication: PublishedNeuronGenerationInitialV1,
+    #[cfg(target_os = "linux")]
+    feature_current: Arc<LiveGenerationCurrent>,
 }
 
 impl<W: AnchorWitnessStore> ReadyAgentdGenerationInitialV1<W> {
@@ -35,6 +37,8 @@ impl<W: AnchorWitnessStore> ReadyAgentdGenerationInitialV1<W> {
                 "initial publication differs from its actual journal".into(),
             ));
         }
+        #[cfg(target_os = "linux")]
+        let feature_current = Arc::clone(&guard);
         let guard: Arc<dyn CellGenerationCurrentV1> = guard;
         let journal = journal
             .rebind_current(guard)
@@ -42,6 +46,8 @@ impl<W: AnchorWitnessStore> ReadyAgentdGenerationInitialV1<W> {
         Ok(Self {
             journal,
             publication,
+            #[cfg(target_os = "linux")]
+            feature_current,
         })
     }
 
@@ -70,6 +76,21 @@ pub struct AgentdGenerationInitialRuntimeV1 {
 }
 
 impl<W: AnchorWitnessStore + Send + 'static> ReadyAgentdGenerationInitialV1<W> {
+    #[cfg(target_os = "linux")]
+    pub fn into_circuit_feature_task(
+        self,
+        definition: codex_hepta_neuron::CellDefinitionV1,
+        source: crate::CircuitTaskSourceInputV1,
+    ) -> Result<crate::PublishedCircuitFeatureTaskV1, AgentdError> {
+        crate::PublishedCircuitFeatureTaskV1::from_initial(
+            self.journal,
+            self.publication,
+            self.feature_current,
+            definition,
+            source,
+        )
+    }
+
     pub fn into_runtime<P, C>(
         self,
         config: AgentdConfig,

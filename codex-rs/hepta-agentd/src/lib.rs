@@ -285,7 +285,11 @@ mod circuit_cell_output;
 mod circuit_cell_ports;
 mod circuit_cell_representation_encoder;
 mod circuit_credit;
+#[cfg(target_os = "linux")]
+mod circuit_feature_current;
 mod circuit_learning_delivery;
+#[cfg(target_os = "linux")]
+mod circuit_q24_task_profile;
 mod circuit_task;
 #[cfg(target_os = "linux")]
 mod cpu_policy;
@@ -354,12 +358,45 @@ mod learning_iteration_auth;
 mod learning_iteration_checkpoint;
 mod learning_iteration_ports;
 mod learning_iteration_proposal;
+mod learning_owner_evidence;
+mod learning_owner_journal;
 mod neuron_cell_evaluation;
+mod neuron_cell_evaluation_owner;
 mod neuron_cell_learning_evaluation;
+pub use cell_composed_q24::CellQ24FeatureEncoderV1;
+pub use cell_composed_q24::CellQ24FeatureWorkerV1;
 pub use cell_composed_q24::CellQ24GenerationWorkerV1;
 pub use cell_composed_q24::CellQ24ModelFilesV1;
 pub use cell_composed_q24::CellQ24PrivateHeadV1;
+pub use cell_composed_q24::CellQ24SgdRuleV1;
+pub use cell_composed_q24::CellQ24SingleHeadTrainingPlanV1;
+pub use cell_composed_q24::CellQ24TrainedCandidateV1;
+pub use cell_composed_q24::CellQ24TrainingBatchV1;
+pub use cell_composed_q24::CellQ24TrainingErrorV1;
+pub use cell_composed_q24::CellQ24TrainingMetricsV1;
+pub use cell_composed_q24::CellQ24TrainingObservationV2;
+pub use cell_composed_q24::CellQ24TrainingOutcomeV1;
+pub use cell_composed_q24::CellQ24TrainingOwnerErrorV1;
+pub use cell_composed_q24::CellQ24TrainingOwnerV1;
+pub use cell_composed_q24::CellQ24TrainingPlanErrorV1;
+pub use cell_composed_q24::CellQ24TrainingSampleV1;
 pub use cell_composed_q24::LoadedCellQ24ModelV1;
+pub use cell_composed_q24::cell_q24_single_head_update_rule_v1;
+#[cfg(target_os = "linux")]
+pub use circuit_q24_task_profile::AgentdQ24CircuitTaskRuntimeV1;
+#[cfg(target_os = "linux")]
+pub use circuit_q24_task_profile::CircuitQ24TaskFilesV1;
+#[cfg(target_os = "linux")]
+pub use circuit_q24_task_profile::CircuitQ24TaskOpenModeV1;
+#[cfg(target_os = "linux")]
+pub use circuit_q24_task_profile::CircuitQ24TaskProfileV1;
+#[cfg(target_os = "linux")]
+pub use circuit_q24_task_profile::CircuitQ24TaskRuntimeV1;
+#[cfg(target_os = "linux")]
+pub use circuit_q24_task_profile::circuit_q24_task_channel_v1;
+pub use learning_owner_journal::LearningOriginalOwnerErrorV1;
+pub use neuron_cell_evaluation_owner::OriginalCellEvaluationExecutionOwnerV1;
+pub use neuron_cell_evaluation_owner::OriginalCellEvaluationSigningConfigV1;
 mod neuron_generation;
 #[cfg(unix)]
 mod neuron_generation_current;
@@ -524,6 +561,18 @@ pub use circuit_credit::CircuitCreditErrorV1;
 pub use circuit_credit::CircuitCreditSupportV1;
 pub use circuit_credit::CircuitCreditTargetV1;
 pub use circuit_credit::circuit_learning_run_id_v1;
+#[cfg(target_os = "linux")]
+pub use circuit_feature_current::CircuitFeaturePredecessorFilesV1;
+#[cfg(target_os = "linux")]
+pub use circuit_feature_current::PublishedCircuitCellOwnerV1;
+#[cfg(target_os = "linux")]
+pub use circuit_feature_current::PublishedCircuitFeatureCompletionV1;
+#[cfg(target_os = "linux")]
+pub use circuit_feature_current::PublishedCircuitFeatureControlV1;
+#[cfg(target_os = "linux")]
+pub use circuit_feature_current::PublishedCircuitFeatureTaskV1;
+#[cfg(target_os = "linux")]
+pub use circuit_feature_current::circuit_feature_task_digest_v1;
 pub use circuit_learning_delivery::deliver_circuit_learning_v1;
 pub use circuit_learning_delivery::reconcile_circuit_learning_v1;
 pub use circuit_task::CircuitTaskErrorV1;
@@ -533,6 +582,10 @@ pub use circuit_task::CircuitTaskInputProviderV1;
 pub use circuit_task::CircuitTaskReceiptV1;
 pub use circuit_task::CircuitTaskRequestV1;
 pub use circuit_task::CircuitTaskRuntimeBootstrapV1;
+pub use circuit_task::CircuitTaskSourceInputV1;
+pub use circuit_task::CircuitTaskSourcePublicationV1;
+pub use circuit_task::CircuitTaskSourceReadbackV1;
+pub use circuit_task::DurableCircuitTaskSourceV1;
 pub use circuit_task::circuit_task_channel_v1;
 pub use client::AgentdClient;
 pub use codex_hepta_agent_protocol::AGENTD_CAPABILITY_AUTOMATION_CALENDAR_V2;
@@ -717,6 +770,7 @@ pub use lane_b_runtime::RunReceipt;
 pub use lane_b_runtime::RunRecovery;
 pub use lane_b_runtime::RunSnapshot;
 pub use lane_b_runtime::RuntimeComposition;
+pub use learning_iteration::CircuitLearningDeliveryRegistryV1;
 pub use learning_iteration::LearningIterationHandleV1;
 pub use learning_iteration::LearningIterationRuntimeBootstrapV1;
 pub use learning_iteration::LearningIterationRuntimeErrorV1;

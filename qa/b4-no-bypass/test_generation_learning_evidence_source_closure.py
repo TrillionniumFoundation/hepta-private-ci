@@ -151,7 +151,7 @@ class GenerationLearningEvidenceSourceClosureTests(unittest.TestCase):
                 self.rejects(READER, "fn read_observation(", marker, "unchecked()")
 
     def test_delivery_scope_check_precedes_enrollment_and_cannot_be_deferred(self):
-        guard = "self.require_frozen_scope(&request)"
+        guard = "self.require_frozen_scope(request)"
         for replacement in (
             "unchecked()",
             "if false { " + guard + "; } unchecked()",
@@ -159,7 +159,7 @@ class GenerationLearningEvidenceSourceClosureTests(unittest.TestCase):
         ):
             with self.subTest(replacement=replacement):
                 self.rejects(
-                    DELIVERY, "fn with_circuit_learning_delivery(", guard, replacement
+                    DELIVERY, "fn with_circuit_learning_registry(", guard, replacement
                 )
 
 
