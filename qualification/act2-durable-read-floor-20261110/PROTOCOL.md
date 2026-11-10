@@ -1,6 +1,6 @@
 # ACT-2 original-owner read floor and real App fence qualification
 
-Parent: Hepta #5641 `5b21f1405513dd0d59f7dd990258cfd36737fc52`; companion desktop #301 `0e884b4cf6831d7cb614b87786c40137a575672d`.
+Parent: Hepta #5641 `5b21f1405513dd0d59f7dd990258cfd36737fc52`; companion desktop #301 maintained `cc33ab6c44f3c945d83cb96be71d861e5613f99e` (original candidate `0e884b4cf6831d7cb614b87786c40137a575672d`).
 
 Fresh literal preparation, thread status/read and UI refresh check the original writer's committed Notes receipts. Every candidate request/receipt is validated in 64-row pages; Rust uses exact u64 revisions and detects same-revision content conflicts. More than 1024 candidates returns unavailable. Original source authority/current-owner checks remain. Deadlines limit the caller's wait, not a promise that SQLite computation stops instantly.
 

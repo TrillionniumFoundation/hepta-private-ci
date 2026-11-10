@@ -177,7 +177,7 @@ pub(crate) fn cancellation_payload(original: &crate::ProductionRetainedOperation
     if exact != original.operation { return Err("cancellation original operation mismatch".into()); }
     let raw = serde_json::to_string(&NotesFence { schema_version: 1, action: FenceAction::FenceNoteOperation,
         operation_id: cancel_id.to_owned(), destination_id: target.destination_id(), target: target.clone(),
-        original_operation_id: parsed.operation_id, original_payload_sha256: Sha256Digest::for_bytes(original.payload_json.as_bytes()).to_string(), expected_revision: parsed.expected_revision,
+        original_operation_id: parsed.operation_id, original_payload_sha256: Sha256Digest::for_bytes(original.payload_json.as_bytes()).as_str().to_owned(), expected_revision: parsed.expected_revision,
     }).map_err(|e| e.to_string())?;
     let (_, intent) = fence_intent(&target, &raw, original.operation.subject_id().clone(), original.operation.policy_generation())?;
     Ok((raw, intent))

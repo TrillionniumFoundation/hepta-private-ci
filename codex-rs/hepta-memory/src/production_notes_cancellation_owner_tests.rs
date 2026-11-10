@@ -1,4 +1,5 @@
 use super::*;
+use pretty_assertions::assert_eq;
 
 #[tokio::test]
 async fn notes_cancellation_is_distinct_and_recovered_through_original_typed_owner() -> TestResult {
@@ -11,7 +12,7 @@ async fn notes_cancellation_is_distinct_and_recovered_through_original_typed_own
     let store = CognitiveStore::open(&layout).await?;
     let authority = source(&owner, 1)?;
     let writer = ProductionDurableWriter::open_with_live_verifier(
-        store.clone(), authority, Arc::new(Verifier), LEASE,
+        store.clone(), authority, Arc::new(Verifier), LEASE, /*generation*/ 1,
     ).await?;
     let (payload, identity, _) = fixture()?;
     let original = prepare(&writer, payload.clone(), &identity).await?;

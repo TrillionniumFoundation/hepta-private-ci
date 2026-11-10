@@ -3,6 +3,7 @@
 
 use super::*;
 use crate::NotesDocumentState;
+use pretty_assertions::assert_eq;
 
 #[tokio::test]
 async fn notes_document_floor_survives_original_owner_reopen() -> TestResult {
