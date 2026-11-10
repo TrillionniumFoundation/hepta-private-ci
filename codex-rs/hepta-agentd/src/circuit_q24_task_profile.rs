@@ -106,6 +106,7 @@ where
     CW: AnchorWitnessStore + Send + 'static,
 {
     if profile.fence.owner_agent_id != identity.agent_id
+        || identity.spawn_generation == 0
         || identity.spawn_generation.checked_add(1) != Some(profile.fence.generation)
         || profile.worker_generation == 0
         || !(1..=64).contains(&profile.queue_capacity)
