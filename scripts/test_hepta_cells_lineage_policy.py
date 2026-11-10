@@ -117,6 +117,7 @@ class LineagePolicyTests(unittest.TestCase):
         candidate = replace(
             next(c for c in base if c.lineage == "PERC"),
             trainable_scope="heads", max_training_steps=8,
+            dataset_digest=pin(201),
             evaluation_profile=pin(220), update_rule=pin(221),
         )
         mixed = tuple(candidate if c.lineage == "PERC" else c for c in base)
@@ -124,6 +125,7 @@ class LineagePolicyTests(unittest.TestCase):
         extra = replace(
             next(c for c in base if c.lineage == "MEM"),
             trainable_scope="heads", max_training_steps=8,
+            dataset_digest=pin(201),
             evaluation_profile=pin(220), update_rule=pin(221),
         )
         with self.assertRaisesRegex(LineagePolicyError, "trainable"):
