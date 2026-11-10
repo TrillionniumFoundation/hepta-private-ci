@@ -1,0 +1,50 @@
+# Frozen joint-candidate Syn edge qualification
+
+This continues the disposable qualification in #5696 at
+`2c5dbaf66729c1c9464166349343bfa9185e48c2`; it does not adopt the candidate.
+Original run `42787638375`, job `129732774017`, failed its consumer and format
+stages. Its preparation, resolution, Bazel, policy and cargo-deny stages passed.
+The retained artifact `13760711675` has SHA256
+`456766f917c21d795c83a91df14075ef48dedfe298efbcc9879d164538e2c206`.
+The empty final format log does not establish that stage's root cause or success.
+All original results and the complete artifact remain unchanged.
+
+The consumer log reports incompatible Syn types: bindgen 0.73.2 resolved Syn
+3.0.9 while prettyplease 0.2.37 uses Syn 2.0.119. The upstream
+[bindgen v0.73.2 workspace manifest](https://github.com/rust-lang/rust-bindgen/blob/v0.73.2/Cargo.toml)
+allows Syn `>=2, <4`. This continuation reuses the single lock edge already
+present in #5755 source `5019fc36f636850902d940ad2152cde1c73cb085`, Cargo.lock
+Git blob `025813e20504f31d12dae2092a0807a1a4066419`. No other #5755 source is
+imported.
+
+The bounded helper accepts only the original generated Cargo.lock SHA256
+`c3d1fec8c1291a9689d91c6fda6b7f593e95d1416730b00decf43e9dd31166a0`.
+It changes only bindgen 0.73.2's dependency from Syn 3.0.9 to Syn 2.0.119,
+checks the parsed lock has no other changes, and requires the exact reviewed
+output SHA256
+`98b3767c6e74bf6eeb5894db760259dbc400cbfd0685af8ad915c92d25408d69`.
+Package versions, checksums and other edges, including users of Syn 3, remain
+unchanged. A different regenerated graph fails closed and needs separate review.
+
+After this selection, the existing workflow must obtain fresh locked
+all-features metadata and assert bindgen and prettyplease resolve the same
+Syn 2.0.119 package while Syn 3.0.9 remains available for other macros. It then
+retains the original mandatory Bazel regeneration/check, seven consumer
+packages, no-suppression policy, cargo-deny action, formatting and preserved
+vendor implementation checks. The original read-only permissions, exact-head
+checkout, action pins, timeouts and always-retained failure artifact remain.
+No production manifest, lockfile, security policy or test requirement changes.
+
+Local replay uses the actual retained failed lock and the exact #5755 lock;
+changed-input and repeated-application attempts must reject without mutation.
+This validates the bounded selection, not native compilation or qualification.
+The replay and rejection checks passed, as did shell/YAML/embedded Python syntax,
+unchanged-gate comparison and Ruff 0.15.13 lint. Ruff formatting preserved the
+complete AST including type comments. Local `just fmt` returned nonzero because
+this partial scratch checkout has no justfile; full repository formatting is not
+claimed. The graph-guard check rejected the original metadata and accepted a
+one-edge structural fixture; that fixture is not a new native Cargo resolution.
+Fresh native CI, both lockfiles, consumer results and final formatting are still
+required. Dependency security closure, full VERIFY acceptance, registry image
+admission and independent scientific benefit remain OPEN/HOLD; missing physical
+costs and independent real labels remain null.
