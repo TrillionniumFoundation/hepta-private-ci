@@ -5,8 +5,10 @@ from dataclasses import asdict
 import hashlib
 import json
 import math
+import os
 from pathlib import Path
 import re
+import stat
 
 from .candidate_memory import CandidateScope
 from .candidate_runtime import (
@@ -53,6 +55,30 @@ def _raw(value):
         )
         + "\n"
     ).encode()
+
+
+def _read_direct(path):
+    """Read one original regular inode; Linux admission forbids following links."""
+    before = path.lstat()
+    if not stat.S_ISREG(before.st_mode):
+        raise ValueError("selector audit must be a regular direct child")
+    flags = os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_NONBLOCK", 0)
+    try:
+        descriptor = os.open(path, flags)
+    except OSError as error:
+        raise ValueError("selector audit descriptor admission failed") from error
+    try:
+        opened = os.fstat(descriptor)
+        if not stat.S_ISREG(opened.st_mode) or (opened.st_dev, opened.st_ino) != (
+            before.st_dev,
+            before.st_ino,
+        ):
+            raise ValueError("selector audit inode changed during admission")
+        with os.fdopen(descriptor, "rb", closefd=False) as stream:
+            raw = stream.read(MAX_AUDIT_BYTES + 1)
+        return raw
+    finally:
+        os.close(descriptor)
 
 
 def _memory_matches(value, memory):
@@ -220,10 +246,7 @@ def read_selector_audit(directory, binding, expected, memory_audit):
     ):
         raise ValueError("bounded direct-child selector audit binding required")
     path = Path(directory) / binding["path"]
-    if path.is_symlink() or not path.is_file():
-        raise ValueError("selector audit must be a regular direct child")
-    with path.open("rb") as stream:
-        raw = stream.read(MAX_AUDIT_BYTES + 1)
+    raw = _read_direct(path)
     if (
         len(raw) != binding["bytes"]
         or hashlib.sha256(raw).hexdigest() != binding["sha256"]

@@ -4,9 +4,11 @@ import copy
 from dataclasses import asdict
 import hashlib
 import json
+import os
 from pathlib import Path
 import tempfile
 import unittest
+from unittest.mock import patch
 
 from .candidate_memory import CandidateScope
 from .candidate_runtime import CandidateRuntime
@@ -121,6 +123,21 @@ class SelectorRuntimeTests(unittest.TestCase):
                 wrong[key] = replacement
                 with self.subTest(key=key), self.assertRaises(ValueError):
                     read_selector_audit(root, sb, wrong, ma)
+            path = root / sb["path"]
+            replacement = root / "replacement.json"
+            replacement.write_bytes(path.read_bytes())
+            original_open = os.open
+
+            def changed_inode(name, flags, *args, **kwargs):
+                if Path(name) == path:
+                    os.replace(replacement, path)
+                return original_open(name, flags, *args, **kwargs)
+
+            with (
+                patch("os.open", side_effect=changed_inode),
+                self.assertRaisesRegex(ValueError, "inode"),
+            ):
+                read_selector_audit(root, sb, expected(selector, state, action, mb), ma)
 
     def test_unprocessed_stop_is_unknown_and_preserves_original_chain(self):
         memory, selector, state, _, _ = setup()

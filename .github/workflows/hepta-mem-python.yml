@@ -74,6 +74,12 @@ jobs:
             --output "$RUNNER_TEMP/mem-records/candidate-tests.json" \
             -- python -B -m unittest -v ndu_real_runtime.test_candidate_memory \
             ndu_real_runtime.test_candidate_runtime ndu_real_runtime.test_candidate_retention_report
+      - name: Check identical-support selectors and bound action receipts
+        run: |
+          python scripts/hepta_ci_exec.py --timeout-seconds 120 --minimum-tests 10 \
+            --output "$RUNNER_TEMP/mem-records/selector-tests.json" \
+            -- python -B -m unittest -v ndu_real_runtime.test_candidate_selector \
+            ndu_real_runtime.test_selector_runtime
       - name: Check replay matching and incomplete-run accounting
         run: |
           python scripts/hepta_ci_exec.py --timeout-seconds 120 --minimum-tests 6 \
@@ -115,4 +121,3 @@ jobs:
           path: ${{ runner.temp }}/mem-records
           if-no-files-found: error
           retention-days: 14
-

@@ -20,6 +20,8 @@ import torch
 from .action_effects import observation_key, public_actions
 from .candidate_memory import CandidateMemoryError, CandidateScope
 from .candidate_runtime import CandidateRuntime, validate_activation, validate_profile
+from .candidate_selector import validate_profile as validate_selector_profile
+from .selector_runtime import SelectorRuntime
 from .controllers import ControlPlan, Controller, PublicState
 from .metering import Meter, atomic_json, file_sha, transport_receipt, canonical_sha
 from .neural import FittedPredictor, ReceiptPortfolioModel
@@ -136,16 +138,26 @@ def checkpoint_result(args, binding, memory, state, action, ocr_pins, meter):
         }
 
 
-def candidate_result(runtime, state, action, meter, selected_index=None):
+def candidate_result(
+    runtime, state, action, meter, selected_index=None, *, selector=None
+):
     if runtime is None:
         return {}
     with meter.stage("sync", "persist candidate selection audit"):
-        return {
+        result = {
             "candidate_memory_profile_sha256": runtime.profile_sha256,
             "candidate_audit": runtime.record(
                 Path.cwd(), state, action, selected_index
             ),
         }
+        if selector is not None:
+            result.update(
+                candidate_selector_profile_sha256=selector.profile_sha256,
+                selector_audit=selector.record(
+                    Path.cwd(), state, action, result["candidate_audit"]
+                ),
+            )
+        return result
 
 
 def run():
@@ -174,6 +186,7 @@ def run():
     parser.add_argument("--expected-checkpoint-sha256")
     parser.add_argument("--expected-continuation-sha256")
     parser.add_argument("--candidate-memory-profile")
+    parser.add_argument("--candidate-selector-profile")
     parser.add_argument("--source-image-sha256")
     args = parser.parse_args()
     resume = (
@@ -200,6 +213,18 @@ def run():
             start_step=args.start_step,
             checkpoint_requested=args.checkpoint_dir is not None or any(resume),
             training_exploration=args.training_exploration,
+        )
+    selector_profile = None
+    if args.candidate_selector_profile is not None:
+        if (
+            candidate_profile is None
+            or len(args.candidate_selector_profile.encode()) > 4096
+        ):
+            raise ValueError(
+                "Selector comparison requires bounded candidate memory and profile"
+            )
+        selector_profile = validate_selector_profile(
+            json.loads(args.candidate_selector_profile)
         )
     torch.set_num_threads(1)
     if torch.get_num_interop_threads() != 1:
@@ -307,6 +332,11 @@ def run():
                 "public_case_sha256": file_sha(root / "case.json"),
             },
         )
+    selector_runtime = (
+        SelectorRuntime(selector_profile, candidate_runtime)
+        if selector_profile is not None
+        else None
+    )
     cache, ocr_cache, memory = {}, {}, None
     binding, pending, ocr_pins = None, None, {}
     if args.checkpoint_dir is not None or args.resume_checkpoint is not None:
@@ -345,6 +375,9 @@ def run():
                 "memory_mode": plan.memory_mode,
                 "control_profile_sha256": control_digest,
                 "parameters_sha256": baseline_parameters,
+                "candidate_selector_profile_sha256": selector_runtime.profile_sha256
+                if selector_runtime is not None
+                else None,
                 **(
                     {
                         "candidate_memory_profile_sha256": candidate_runtime.profile_sha256
@@ -425,6 +458,7 @@ def run():
                                 "arguments": {},
                             },
                             meter,
+                            selector=selector_runtime,
                         ),
                         **checkpoint_result(
                             args,
@@ -515,6 +549,15 @@ def run():
                 meter=meter,
             )
             selected_index = int(logits.argmax().item())
+        if selector_runtime is not None:
+            with meter.stage("planning", "fixed support paired candidate selection"):
+                selected_index = selector_runtime.select(
+                    sequence,
+                    requested_field(packet["prompt"]),
+                    candidates,
+                    features.tolist(),
+                    logits.tolist(),
+                )
         legal = public_actions(packet, state)
         public_state = PublicState(
             tuple(float(v) for v in public.tolist()),
@@ -568,7 +611,12 @@ def run():
             "weights_sha256": args.expected_weights_sha256,
             "parameters_unchanged": parameter_sha(model) == baseline_parameters,
             **candidate_result(
-                candidate_runtime, public_input, output, meter, selected_index
+                candidate_runtime,
+                public_input,
+                output,
+                meter,
+                selected_index,
+                selector=selector_runtime,
             ),
             **checkpoint_result(
                 args, binding, memory, public_input, output, ocr_pins, meter
