@@ -230,8 +230,13 @@ class RootLearningBootstrapSourceClosureTests(unittest.TestCase):
 
     def test_original_source_scope_requires_registered_membership(self):
         function = "fn require_circuit_learning_source("
-        membership = "!self.circuit_learning_sources().contains(&request.source_run_id)"
+        membership = (
+            "!self\n"
+            "                .circuit_learning_sources()\n"
+            "                .contains(&request.source_run_id)"
+        )
         self.rejects(SOURCE, function, "|| " + membership)
+        self.rejects(SOURCE, function, membership, replacement=membership[1:])
         self.rejects(
             SOURCE,
             function,
