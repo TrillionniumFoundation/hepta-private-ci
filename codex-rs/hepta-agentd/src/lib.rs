@@ -278,6 +278,8 @@ mod calculator_recovery_process;
 #[cfg(target_os = "linux")]
 mod calculator_recovery_selection;
 mod cell_composed_q24;
+#[cfg(target_os = "linux")]
+mod circuit_q24_task_profile;
 mod circuit_cell;
 mod circuit_cell_binding;
 mod circuit_cell_dispatch;
@@ -365,6 +367,18 @@ pub use learning_owner_journal::LearningOriginalOwnerErrorV1;
 pub use neuron_cell_evaluation_owner::OriginalCellEvaluationExecutionOwnerV1;
 pub use neuron_cell_evaluation_owner::OriginalCellEvaluationSigningConfigV1;
 pub use cell_composed_q24::CellQ24GenerationWorkerV1;
+#[cfg(target_os = "linux")]
+pub use circuit_q24_task_profile::CircuitQ24TaskFilesV1;
+#[cfg(target_os = "linux")]
+pub use circuit_q24_task_profile::AgentdQ24CircuitTaskRuntimeV1;
+#[cfg(target_os = "linux")]
+pub use circuit_q24_task_profile::CircuitQ24TaskOpenModeV1;
+#[cfg(target_os = "linux")]
+pub use circuit_q24_task_profile::CircuitQ24TaskProfileV1;
+#[cfg(target_os = "linux")]
+pub use circuit_q24_task_profile::CircuitQ24TaskRuntimeV1;
+#[cfg(target_os = "linux")]
+pub use circuit_q24_task_profile::circuit_q24_task_channel_v1;
 pub use cell_composed_q24::CellQ24FeatureEncoderV1;
 pub use cell_composed_q24::CellQ24FeatureWorkerV1;
 pub use cell_composed_q24::CellQ24ModelFilesV1;
