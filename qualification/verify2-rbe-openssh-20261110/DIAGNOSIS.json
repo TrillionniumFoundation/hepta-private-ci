@@ -1,0 +1,113 @@
+{
+  "schema": "hepta.verify.rbe-openssh-diagnosis.v1",
+  "status": "OPEN",
+  "scientific_admission": "HOLD",
+  "production_authority": "NONE",
+  "observed_source_commit": "38069398cef4372c8e189545970f9fe2e6c24ae2",
+  "parent_pr": 5620,
+  "source_files": [
+    {
+      "path": ".github/workflows/Dockerfile.bazel",
+      "git_blob_sha": "86aec25ca45c527cf4d424e8aadecba3b45ce749",
+      "source_commit": "38069398cef4372c8e189545970f9fe2e6c24ae2",
+      "excerpt": [
+        "RUN apt-get update && \\",
+        "    apt-get install -y --no-install-recommends \\",
+        "    curl git python3 ca-certificates openssh-client && \\",
+        "    rm -rf /var/lib/apt/lists/*"
+      ]
+    },
+    {
+      "path": "rbe.bzl",
+      "git_blob_sha": "57e301ac776d9c7196e9c854bc6e27ce2718d886",
+      "source_commit": "38069398cef4372c8e189545970f9fe2e6c24ae2"
+    },
+    {
+      "path": "codex-rs/hepta-operator-acceptance/BUILD.bazel",
+      "git_blob_sha": "db1a2cf30cc194ebdf74b4f92c2150328a9f6eb4",
+      "source_commit": "38069398cef4372c8e189545970f9fe2e6c24ae2",
+      "declared_external_keygen_runfiles": false
+    },
+    {
+      "path": "codex-rs/hepta-operator-acceptance/src/test_support.rs",
+      "git_blob_sha": "dbe54aaf0af4b0ff3b940671c730174089553018",
+      "source_commit": "38069398cef4372c8e189545970f9fe2e6c24ae2"
+    }
+  ],
+  "dockerfile_openssh_addition": {
+    "commit": "7fe78dfde0e8aa87890dbd532f1b46ae62bcdcf1",
+    "committed_at_utc": "2026-11-05T07:24:59Z",
+    "message": "fix(ci): supply native fixture, PulseAudio and OpenSSH inputs"
+  },
+  "current_rbe_pins": {
+    "image_repository": "docker.io/mbolin491/codex-bazel",
+    "linux_amd64_sha256": "0a8e56bfaa3b2e5279db0d3bb2d62b44ba5e5d63a37d97eb8790f49da570af70",
+    "linux_arm64_sha256": "136487cc4b7cf6f1021816ca18ed00896daed98404ea91dc4d6dd9e9d1cf9564"
+  },
+  "observations": [
+    {
+      "job_id": 129677998682,
+      "run_id": 42770804390,
+      "job_name": "Bazel / Bazel test on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+      "conclusion": "failure",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42770804390/job/129677998682",
+      "operator_test_target": "//codex-rs/hepta-operator-acceptance:hepta-operator-acceptance-tests",
+      "operator_test_result": {
+        "passed": 14,
+        "failed": 11,
+        "ignored": 0
+      },
+      "bounded_log_excerpts": [
+        "2026-11-10T06:48:00.1755337Z Using generic BuildBuddy configuration: buildbuddy-generic-rbe.",
+        "2026-11-10T06:49:34.0389541Z signing fixtures require OpenSSH ssh-keygen; not found in platform directory or absolute PATH",
+        "2026-11-10T06:49:34.4554466Z test result: FAILED. 14 passed; 11 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+      ],
+      "complete_original_log_republished": false
+    },
+    {
+      "job_id": 129677998654,
+      "run_id": 42770804390,
+      "job_name": "Bazel / Bazel test on ubuntu-24.04 for x86_64-unknown-linux-musl",
+      "conclusion": "failure",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42770804390/job/129677998654",
+      "operator_test_target": "//codex-rs/hepta-operator-acceptance:hepta-operator-acceptance-tests",
+      "operator_test_result": {
+        "passed": 14,
+        "failed": 11,
+        "ignored": 0
+      },
+      "bounded_log_excerpts": [
+        "2026-11-10T06:47:28.6277684Z Using generic BuildBuddy configuration: buildbuddy-generic-rbe.",
+        "2026-11-10T06:49:06.9687827Z signing fixtures require OpenSSH ssh-keygen; not found in platform directory or absolute PATH",
+        "2026-11-10T06:49:07.0537130Z test result: FAILED. 14 passed; 11 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+      ],
+      "complete_original_log_republished": false
+    }
+  ],
+  "findings": [
+    "Both observed Linux jobs use the generic BuildBuddy remote execution configuration and fail before fixture key generation because ssh-keygen cannot be resolved.",
+    "The checked-in Dockerfile already installs openssh-client. The active rbe.bzl pins have no November update in their source history; editing this Dockerfile alone is not a deployed-image receipt.",
+    "The pinned remote image filesystem has not been independently inspected. Source history and these failures diagnose a recipe/executor qualification gap; they do not alone prove the complete image contents or a unique missing-package cause.",
+    "The Linux production trust verifier still executes /usr/bin/ssh-keygen (trust.rs:30,180; g5_trust.rs:855). Supplying a fixture-only runfile would not satisfy that existing runtime contract.",
+    "Installing a package only on the GitHub runner cannot establish that the remote executor has it. No test is removed, ignored, relaxed, rescheduled or made unsandboxed in this evidence-only increment."
+  ],
+  "next_gate": [
+    "Build the exact current Dockerfile in an authorized builder and registry for each required architecture. Retain the Dockerfile identity, resolved base-image digest, package/build output, platform, original operation and immutable image identity.",
+    "Inspect the resulting image itself: require a usable real /usr/bin/ssh-keygen, retain its identity/version and dynamic dependency checks, and perform original OpenSSH Ed25519 key generation plus SSHSIG sign/verify with private test-only state.",
+    "Publish only through an authorized registry and retain the observed per-platform OCI SHA256 digests. A proposed tag or invented digest is not a receipt.",
+    "Update rbe.bzl only to those observed verified image digests. No image digest is proposed or activated by this diagnosis.",
+    "Run the complete original operator acceptance target on the new exact source/executor for the existing GNU and musl CI lanes, with all 25 tests retained and no ignored tests or weakened trust checks. Retain exact source/image and original logs; other failing targets remain separate blockers."
+  ],
+  "runtime_image_contents_verified": false,
+  "rebuilt_image_observed": false,
+  "new_image_digest": null,
+  "operator_acceptance_blocker_closed": false,
+  "mutations": {
+    "dockerfile": false,
+    "production_source": false,
+    "toolchain": false,
+    "image_pin": false,
+    "container_published": false
+  },
+  "evidence_scope": "Bounded verbatim job excerpts and source Git identities only; no complete log archive or new execution claim."
+}
