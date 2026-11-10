@@ -423,7 +423,10 @@ class NativeSession:
                 raise TimeoutError("Terminal publication exhausted the original owner budget")
 
         with self._operation("submit", finalization=True):
-            return commit_delivery(
+            result = commit_delivery(
                 self._terminal_output, self._terminal_result, self._terminal_assets,
                 before_commit=before_commit,
             )
+            if time.monotonic() > self.deadline:
+                raise TimeoutError("Terminal result exceeded the original deadline")
+            return result

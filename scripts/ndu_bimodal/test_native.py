@@ -243,6 +243,25 @@ class NativeIntegrationTests(unittest.TestCase):
                 delivery.read_delivery(output, expected_identity=result["delivery"]["identity"]), result
             )
 
+    def test_late_publication_without_ledger_is_not_an_in_budget_success(self):
+        session = self.session()
+
+        def commit_then_expire(*args, **kwargs):
+            result = delivery.commit_delivery(*args, **kwargs)
+            session.deadline = time.monotonic() - 1
+            return result
+
+        with tempfile.TemporaryDirectory() as temporary:
+            output = Path(temporary) / "delivery"
+            with patch("scripts.ndu_bimodal.native.commit_delivery", side_effect=commit_then_expire):
+                with self.assertRaises(TimeoutError):
+                    session.finish(submit=True, output=output)
+            spent = len(session.calls)
+            with patch.object(session, "_invoke", side_effect=AssertionError("no replay")):
+                recovered = session.finish(submit=True, output=output)
+            self.assertEqual(len(session.calls), spent)
+            self.assertEqual(recovered["production_update"], "no-update")
+
     def test_public_tensors_are_snapshotted_before_native_state_binding(self):
         public = self.public()
         session = NativeSession(self.candidate, self.binary, public)
