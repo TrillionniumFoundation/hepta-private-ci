@@ -556,14 +556,14 @@ async fn original_root_delivery_refuses_missing_objective_before_claim_or_stage_
     ));
     let (state, cognitive) = admitted_state(&daemon).await;
     ok(state.attach_circuit_learning_source(request.source_run_id.clone()));
-    let strict = ok(runtime(&daemon, &ports)
-        .with_original_circuit_learning_delivery(request.clone()));
+    let strict =
+        ok(runtime(&daemon, &ports).with_original_circuit_learning_delivery(request.clone()));
     assert!(matches!(
         strict.with_circuit_learning_delivery(request.clone()),
         Err(crate::AgentdError::Invalid(_))
     ));
-    let mut bootstrap = ok(runtime(&daemon, &ports)
-        .with_original_circuit_learning_delivery(request.clone()));
+    let mut bootstrap =
+        ok(runtime(&daemon, &ports).with_original_circuit_learning_delivery(request.clone()));
     let delivery = bootstrap.take_circuit_delivery().expect("Root delivery");
     let result = tokio::time::timeout(
         Duration::from_secs(5),
@@ -576,8 +576,10 @@ async fn original_root_delivery_refuses_missing_objective_before_claim_or_stage_
         Err(crate::AgentdError::Invalid(message))
             if message.contains("original learning Objective owner is unavailable")
     ));
-    let row = ok(store.circuit_learning_delivery(request.source_run_id.as_str()).await)
-        .expect("original completion");
+    let row = ok(store
+        .circuit_learning_delivery(request.source_run_id.as_str())
+        .await)
+    .expect("original completion");
     assert_eq!(row.request_digest, None);
     assert_eq!(row.acknowledged_head, None);
     assert!(ok(ports.executed.lock()).is_empty());

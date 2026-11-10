@@ -26,8 +26,12 @@ use crate::NeuronGenerationRuntimeHandleV2;
 #[derive(Clone, Copy)]
 pub enum GenerationLearningStageReadV1<'a> {
     RetainedSelection,
-    RetainedNextUse { intent: &'a CellGenerationIntentV2 },
-    UpdatedSelection { previous_manifest: &'a CellBackendManifestV2 },
+    RetainedNextUse {
+        intent: &'a CellGenerationIntentV2,
+    },
+    UpdatedSelection {
+        previous_manifest: &'a CellBackendManifestV2,
+    },
     UpdatedNextUse {
         previous_manifest: &'a CellBackendManifestV2,
         intent: &'a CellGenerationIntentV2,
@@ -56,9 +60,15 @@ pub struct AuthenticatedGenerationLearningStageV1 {
 }
 
 impl AuthenticatedGenerationLearningStageV1 {
-    pub fn receipt(&self) -> &LearningIterationReceiptV1 { &self.receipt }
-    pub fn attestation(&self) -> &SignedLearningEvidenceV1 { &self.attestation }
-    pub fn verified_at_unix_seconds(&self) -> u64 { self.verified_at_unix_seconds }
+    pub fn receipt(&self) -> &LearningIterationReceiptV1 {
+        &self.receipt
+    }
+    pub fn attestation(&self) -> &SignedLearningEvidenceV1 {
+        &self.attestation
+    }
+    pub fn verified_at_unix_seconds(&self) -> u64 {
+        self.verified_at_unix_seconds
+    }
 }
 
 #[derive(Debug, thiserror::Error)]
@@ -78,7 +88,9 @@ pub async fn read_generation_learning_stage_v1(
 ) -> Result<AuthenticatedGenerationLearningStageV1, GenerationLearningStageReadbackErrorV1> {
     let role = match request.read {
         GenerationLearningStageReadV1::RetainedSelection
-        | GenerationLearningStageReadV1::UpdatedSelection { .. } => LearningEvidenceRoleV1::Selector,
+        | GenerationLearningStageReadV1::UpdatedSelection { .. } => {
+            LearningEvidenceRoleV1::Selector
+        }
         GenerationLearningStageReadV1::RetainedNextUse { .. }
         | GenerationLearningStageReadV1::UpdatedNextUse { .. } => LearningEvidenceRoleV1::Observer,
     };
@@ -98,14 +110,22 @@ pub async fn read_generation_learning_stage_v1(
     }
     let now = SystemTime::now()
         .duration_since(UNIX_EPOCH)
-        .map_err(|_| LearningIterationRuntimeErrorV1::OwnerUnavailable("generation evidence clock"))?
+        .map_err(|_| {
+            LearningIterationRuntimeErrorV1::OwnerUnavailable("generation evidence clock")
+        })?
         .as_secs();
     let payload = learning_iteration_receipt_signing_bytes_v1(request.receipt)
         .map_err(LearningIterationRuntimeErrorV1::from)?;
-    let verified = request.verifier.verify(role, &attestation, &payload, now)
+    let verified = request
+        .verifier
+        .verify(role, &attestation, &payload, now)
         .map_err(LearningIterationRuntimeErrorV1::Evidence)?;
     if verified.principal().principal_id != request.receipt.actor_id
-        || &request.receipt.actor_id != request.snapshot.owners.owner(request.receipt.observation.stage())
+        || &request.receipt.actor_id
+            != request
+                .snapshot
+                .owners
+                .owner(request.receipt.observation.stage())
         || verified.trust_digest() != request.snapshot.owners.evidence_trust_digest
         || verified.objective_digest() != request.snapshot.request.envelope.objective_digest
         || request.receipt.observed_unix_seconds > now
@@ -113,7 +133,9 @@ pub async fn read_generation_learning_stage_v1(
         return Err(LearningIterationRuntimeErrorV1::WrongScope.into());
     }
     Ok(AuthenticatedGenerationLearningStageV1 {
-        receipt: request.receipt.clone(), attestation, verified_at_unix_seconds: now,
+        receipt: request.receipt.clone(),
+        attestation,
+        verified_at_unix_seconds: now,
     })
 }
 
@@ -124,10 +146,15 @@ fn receipt_predecessor(
     receipt: &LearningIterationReceiptV1,
 ) -> Result<LearningIterationCoordinatorV1, LearningIterationRuntimeErrorV1> {
     let restored = LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())?;
-    let prefix = match snapshot.receipts.iter().position(|original| original == receipt) {
+    let prefix = match snapshot
+        .receipts
+        .iter()
+        .position(|original| original == receipt)
+    {
         Some(index) => {
             let mut prefix = LearningIterationCoordinatorV1::new(
-                snapshot.request.clone(), snapshot.owners.clone(),
+                snapshot.request.clone(),
+                snapshot.owners.clone(),
             )?;
             for original in snapshot.receipts.iter().take(index) {
                 prefix.record(original.clone(), original.observed_unix_seconds)?;
@@ -136,7 +163,10 @@ fn receipt_predecessor(
         }
         None => restored,
     };
-    if !matches!(receipt.observation.stage(), LearningIterationStageV1::Selection | LearningIterationStageV1::NextUse) {
+    if !matches!(
+        receipt.observation.stage(),
+        LearningIterationStageV1::Selection | LearningIterationStageV1::NextUse
+    ) {
         return Err(LearningIterationRuntimeErrorV1::WrongScope);
     }
     let mut checked = prefix.clone();
@@ -153,13 +183,25 @@ async fn read_observation(
             request.runtime.read_learning_selection(prefix).await?
         }
         GenerationLearningStageReadV1::RetainedNextUse { intent } => {
-            request.runtime.read_learning_next_use(prefix, intent).await?
+            request
+                .runtime
+                .read_learning_next_use(prefix, intent)
+                .await?
         }
         GenerationLearningStageReadV1::UpdatedSelection { previous_manifest } => {
-            request.runtime.read_learning_updated_selection(prefix, previous_manifest).await?
+            request
+                .runtime
+                .read_learning_updated_selection(prefix, previous_manifest)
+                .await?
         }
-        GenerationLearningStageReadV1::UpdatedNextUse { previous_manifest, intent } => {
-            request.runtime.read_learning_updated_next_use(prefix, previous_manifest, intent).await?
+        GenerationLearningStageReadV1::UpdatedNextUse {
+            previous_manifest,
+            intent,
+        } => {
+            request
+                .runtime
+                .read_learning_updated_next_use(prefix, previous_manifest, intent)
+                .await?
         }
     })
 }

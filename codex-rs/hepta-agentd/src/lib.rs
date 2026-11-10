@@ -327,16 +327,6 @@ mod learning_iteration_evidence_client;
 #[cfg(target_os = "linux")]
 mod learning_iteration_generation_evidence;
 #[cfg(target_os = "linux")]
-pub use learning_iteration_generation_evidence::AuthenticatedGenerationLearningStageV1;
-#[cfg(target_os = "linux")]
-pub use learning_iteration_generation_evidence::GenerationLearningStageReadV1;
-#[cfg(target_os = "linux")]
-pub use learning_iteration_generation_evidence::GenerationLearningStageReadbackErrorV1;
-#[cfg(target_os = "linux")]
-pub use learning_iteration_generation_evidence::GenerationLearningStageReadbackRequestV1;
-#[cfg(target_os = "linux")]
-pub use learning_iteration_generation_evidence::read_generation_learning_stage_v1;
-#[cfg(target_os = "linux")]
 pub use learning_iteration_evidence_client::AuthenticatedCellLearningEvaluationV1;
 #[cfg(target_os = "linux")]
 pub use learning_iteration_evidence_client::CellLearningEvaluationReadbackErrorV1;
@@ -348,6 +338,16 @@ pub use learning_iteration_evidence_client::LearningIterationEvidenceClientV1;
 pub use learning_iteration_evidence_client::LearningIterationEvidencePeerV1;
 #[cfg(target_os = "linux")]
 pub use learning_iteration_evidence_client::read_cell_learning_evaluation_v1;
+#[cfg(target_os = "linux")]
+pub use learning_iteration_generation_evidence::AuthenticatedGenerationLearningStageV1;
+#[cfg(target_os = "linux")]
+pub use learning_iteration_generation_evidence::GenerationLearningStageReadV1;
+#[cfg(target_os = "linux")]
+pub use learning_iteration_generation_evidence::GenerationLearningStageReadbackErrorV1;
+#[cfg(target_os = "linux")]
+pub use learning_iteration_generation_evidence::GenerationLearningStageReadbackRequestV1;
+#[cfg(target_os = "linux")]
+pub use learning_iteration_generation_evidence::read_generation_learning_stage_v1;
 
 mod learning_iteration_auth;
 #[cfg(unix)]
