@@ -125,9 +125,10 @@ def inspect(manifest: Path) -> dict:
         if not isinstance(aid, str) or not aid:
             fail(f'attempt_id:{n}')
         got.append(aid)
-        if attempt.get('state') not in ATTEMPT_STATES:
+        state = attempt.get('state')
+        if not isinstance(state, str) or state not in ATTEMPT_STATES:
             fail(f'attempt_state:{n}')
-        if attempt.get('state') in ('pending', 'unknown'):
+        if state in ('pending', 'unknown'):
             fail('unresolved_attempts')
         if not isinstance(attempt.get('cost_usd'), str):
             fail(f'attempt_cost:{n}')
