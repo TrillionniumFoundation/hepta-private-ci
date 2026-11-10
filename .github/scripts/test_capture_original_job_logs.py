@@ -67,6 +67,39 @@ class CaptureTests(unittest.TestCase):
                 self.assertNotIn("ephemeral-secret", value)
                 self.assertNotIn("sig=private", value)
 
+    def test_short_body_and_empty_original_log_cannot_be_complete(self):
+        response = io.BytesIO(b"123")
+        response.headers = {"Content-Length": "4"}
+        with tempfile.TemporaryDirectory() as temporary:
+            path = Path(temporary) / "short"
+            with self.assertRaises(EOFError):
+                capture.retain(response, path, 10, time.monotonic() + 10)
+            self.assertEqual(path.read_bytes(), b"123")
+            with (
+                patch.object(capture, "open_request", return_value=io.BytesIO(b"")),
+                self.assertRaises(ValueError),
+            ):
+                capture.download_log(
+                    "secret", Path(temporary) / "empty", time.monotonic() + 10
+                )
+
+    def test_deadline_is_checked_after_final_read(self):
+        with (
+            tempfile.TemporaryDirectory() as temporary,
+            patch.object(capture.time, "monotonic", side_effect=[0, 11]),
+            self.assertRaises(TimeoutError),
+        ):
+            capture.retain(io.BytesIO(b""), Path(temporary) / "expired", 4, 10)
+
+    def test_sensitive_assignments_redact_without_hiding_tokenizers_error(self):
+        value = capture.excerpt(
+            b"error tokenizers is unmaintained\nerror token=secret\n"
+            b"error Authorization: Bearer abc\nerror https://logs.example/?sig=private\n"
+        )
+        self.assertIn("error tokenizers is unmaintained", value)
+        for secret in ("secret", "abc", "sig=private"):
+            self.assertNotIn(secret, value)
+
 
 if __name__ == "__main__":
     unittest.main()

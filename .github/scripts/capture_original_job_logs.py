@@ -44,13 +44,19 @@ def api_request(suffix, token):
 
 def retain(response, path, limit, deadline):
     total = 0
+    length = getattr(response, "headers", {}).get("Content-Length")
+    expected = int(length) if length is not None else None
     with response, path.open("xb") as stream:
         while True:
             if time.monotonic() >= deadline:
                 raise TimeoutError("capture deadline")
             chunk = response.read(min(65536, limit - total + 1))
             if not chunk:
-                return
+                if time.monotonic() >= deadline:
+                    raise TimeoutError("capture deadline")
+                if expected is not None and total != expected:
+                    raise EOFError("incomplete response body")
+                return total
             stream.write(chunk[: limit - total])
             total += len(chunk)
             if total > limit:
@@ -79,7 +85,8 @@ def download_log(token, path, deadline):
             raise ValueError("invalid HTTPS log redirect") from None
         # A fresh opener and Request carry no Authorization, cookie, or API headers.
         response = open_request(Request(location), deadline)
-    retain(response, path, MAX_LOG, deadline)
+    if retain(response, path, MAX_LOG, deadline) == 0:
+        raise ValueError("empty original log")
 
 
 def excerpt(raw):
@@ -90,9 +97,19 @@ def excerpt(raw):
         if re.search(
             r"error|advisory|RUSTSEC|vulnerab|failed|unmaintained|license", line, re.I
         )
-        and not re.search(r"authorization|bearer|token", line, re.I)
     ]
-    value = re.sub(r"https://\S+\?\S+", "[URL query omitted]", "\n".join(lines))
+    value = re.sub(
+        r"(?i)\bauthorization\s*[:=][^\r\n]*",
+        "[authorization omitted]",
+        "\n".join(lines),
+    )
+    value = re.sub(
+        r"(?i)\b(?:GITHUB_TOKEN|GH_TOKEN|access_token|token)\s*[:=]\s*\S+",
+        "[credential omitted]",
+        value,
+    )
+    value = re.sub(r"(?i)\bbearer\s+\S+", "[bearer omitted]", value)
+    value = re.sub(r"https://\S+\?\S+", "[URL query omitted]", value)
     return value.encode("utf-8")[:12288].decode("utf-8", errors="ignore")
 
 

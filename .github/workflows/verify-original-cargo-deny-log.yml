@@ -1,34 +1,37 @@
 name: Capture original VERIFY cargo-deny log
-
 on:
   pull_request:
     paths:
       - .github/scripts/capture_original_job_logs.py
       - .github/scripts/test_capture_original_job_logs.py
       - .github/workflows/verify-original-cargo-deny-log.yml
+  push:
+    branches: [research/verify2-original-cargo-log-20261110]
+    paths:
+      - .github/scripts/capture_original_job_logs.py
+      - .github/scripts/test_capture_original_job_logs.py
+      - .github/workflows/verify-original-cargo-deny-log.yml
   workflow_dispatch:
-
 permissions:
   contents: read
   actions: read
-
 concurrency:
   group: original-cargo-log-${{ github.ref }}
   cancel-in-progress: false
-
 jobs:
   original-log:
     runs-on: windows-2025
     timeout-minutes: 8
     env:
       REVIEWED_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-      CAPTURE_OUTPUT: ${{ runner.temp }}/verify-original-cargo-deny
     steps:
       - name: Prepare failure artifact directory
         shell: pwsh
         run: |
-          New-Item -ItemType Directory -Path $env:CAPTURE_OUTPUT -Force | Out-Null
-          '{"status":"capture_not_started"}' | Set-Content "$env:CAPTURE_OUTPUT/STARTED.json"
+          $capture = Join-Path $env:RUNNER_TEMP 'verify-original-cargo-deny'
+          "CAPTURE_OUTPUT=$capture" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          New-Item -ItemType Directory -Path $capture -Force | Out-Null
+          '{"status":"capture_not_started"}' | Set-Content "$capture/STARTED.json"
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           persist-credentials: false
