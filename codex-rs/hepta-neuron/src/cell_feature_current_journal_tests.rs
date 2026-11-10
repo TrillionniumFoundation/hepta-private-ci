@@ -10,6 +10,9 @@ use crate::JournalAnchor;
 use crate::WitnessStoreError;
 use crate::commit_cell_step;
 
+#[path = "cell_feature_current_readback_tests.rs"]
+mod readback;
+
 fn profile() -> (Vec<CellJournalPartitionV1>, CellGenerationOwnerBindingV1) {
     let spec = CellJournalPartitionV1 { scope: cell::scope("feature"), definition: cell::definition(),
         source_frontier: cell::d("frontier"), writer_epoch: 1 };

@@ -33,6 +33,13 @@ const MAGIC: &[u8; 8] = b"HPTACJ03";
 const HEADER_BYTES: usize = 40;
 const MAX_JOURNAL_BYTES: u64 = 64 * 1024 * 1024;
 
+#[path = "cell_journal_readback.rs"]
+mod readback;
+pub use readback::CellOwnerJournalReadbackV1;
+
+#[derive(Clone, Copy, Eq, PartialEq)]
+enum OpenMode { RepairOriginal, ReadOnlyAcknowledged }
+
 /// Frozen admission table: recovery requires the same definitions, source
 /// frontiers and initial writer epochs. Changing this table requires host-owned
 /// lifecycle transfer and journal replacement; this type does not migrate it.
@@ -55,6 +62,7 @@ pub struct CellOwnerJournalV1<W: AnchorWitnessStore> {
     length: u64,
     healthy: bool,
     current: Option<(Arc<dyn CellGenerationCurrentV1>, CellGenerationOwnerBindingV1)>,
+    mode: OpenMode,
 }
 
 impl<W: AnchorWitnessStore> CellOwnerJournalV1<W> {
@@ -64,7 +72,7 @@ impl<W: AnchorWitnessStore> CellOwnerJournalV1<W> {
         specs: Vec<CellJournalPartitionV1>,
         max_records: usize,
     ) -> Result<Self, CellExecutionError> {
-        Self::open_inner(file, witness, specs, max_records, /*current*/ None)
+        Self::open_inner(file, witness, specs, max_records, /*current*/ None, OpenMode::RepairOriginal)
     }
 
     /// An original published task guards every read/admission/commit. The
@@ -77,6 +85,12 @@ impl<W: AnchorWitnessStore> CellOwnerJournalV1<W> {
         binding: CellGenerationOwnerBindingV1,
         current: Arc<dyn CellGenerationCurrentV1>,
     ) -> Result<Self, CellExecutionError> {
+        Self::open_guarded_inner(file, witness, specs, max_records, binding, current, OpenMode::RepairOriginal)
+    }
+
+    fn open_guarded_inner(file: File, witness: W, specs: Vec<CellJournalPartitionV1>, max_records: usize,
+        binding: CellGenerationOwnerBindingV1, current: Arc<dyn CellGenerationCurrentV1>, mode: OpenMode)
+        -> Result<Self, CellExecutionError> {
         let scope = binding.scope();
         if specs.len() != 1 || specs.iter().any(|spec|
             spec.scope.agent_id.as_str() != scope.agent_id
@@ -88,7 +102,7 @@ impl<W: AnchorWitnessStore> CellOwnerJournalV1<W> {
             return Err(CellExecutionError::ScopeMismatch);
         }
         current.check_current(&binding).map_err(|_| CellExecutionError::OwnerUnavailable)?;
-        Self::open_inner(file, witness, specs, max_records, Some((current, binding)))
+        Self::open_inner(file, witness, specs, max_records, Some((current, binding)), mode)
     }
 
     fn open_inner(
@@ -97,6 +111,7 @@ impl<W: AnchorWitnessStore> CellOwnerJournalV1<W> {
         specs: Vec<CellJournalPartitionV1>,
         max_records: usize,
         current: Option<(Arc<dyn CellGenerationCurrentV1>, CellGenerationOwnerBindingV1)>,
+        mode: OpenMode,
     ) -> Result<Self, CellExecutionError> {
         if specs.is_empty() || specs.len() > 1024 || !(1..=65_536).contains(&max_records) {
             return Err(CellExecutionError::CapacityExceeded);
@@ -118,6 +133,7 @@ impl<W: AnchorWitnessStore> CellOwnerJournalV1<W> {
             .len()
             == 0
         {
+            if mode == OpenMode::ReadOnlyAcknowledged { return Err(CellExecutionError::AcknowledgedHistoryMissing); }
             if witness
                 .current()
                 .map_err(|_| CellExecutionError::OwnerUnavailable)?
@@ -143,6 +159,7 @@ impl<W: AnchorWitnessStore> CellOwnerJournalV1<W> {
             length: 0,
             healthy: false,
             current,
+            mode,
         };
         journal.recover()?;
         Ok(journal)
@@ -221,20 +238,20 @@ impl<W: AnchorWitnessStore> CellOwnerJournalV1<W> {
         }
         // Validate the independent anchor before any file repair.
         self.require_current()?;
-        if offset < bytes.len() {
-            self.file
-                .set_len(offset as u64)
-                .map_err(|_| CellExecutionError::CommitUncertain)?;
-        }
-        self.file
-            .sync_all()
-            .map_err(|_| CellExecutionError::CommitUncertain)?;
-        if let Some(next) = head
-            && expected != Some(next)
-        {
-            self.witness
-                .compare_and_swap(expected, next)
-                .map_err(|_| CellExecutionError::CommitUncertain)?;
+        if self.mode == OpenMode::ReadOnlyAcknowledged {
+            // Historical proof cannot acknowledge a tail, repair bytes or
+            // replace a missing original witness. Only the complete ACK cut.
+            if head.is_none() || head != expected || offset != bytes.len() {
+                return Err(CellExecutionError::AcknowledgedHistoryMissing);
+            }
+        } else {
+            if offset < bytes.len() {
+                self.file.set_len(offset as u64).map_err(|_| CellExecutionError::CommitUncertain)?;
+            }
+            self.file.sync_all().map_err(|_| CellExecutionError::CommitUncertain)?;
+            if let Some(next) = head && expected != Some(next) {
+                self.witness.compare_and_swap(expected, next).map_err(|_| CellExecutionError::CommitUncertain)?;
+            }
         }
         self.owner = owner;
         self.head = head;
@@ -313,6 +330,7 @@ impl<W: AnchorWitnessStore> CellOwnerJournalV1<W> {
 
     fn persist(&mut self, payload: Vec<u8>) -> Result<(), CellExecutionError> {
         self.require_healthy()?;
+        if self.mode == OpenMode::ReadOnlyAcknowledged { return Err(CellExecutionError::OwnerUnavailable); }
         let next = next_anchor(&self.header, self.head, &payload)?;
         if next.sequence > self.max_records as u64
             || payload.len() > MAX_FRAME_BYTES

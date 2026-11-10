@@ -138,6 +138,7 @@ pub use cell_joint_protocol::JointGenerationModalityV1;
 pub use cell_joint_protocol::JointGenerationSamplerV1;
 pub use cell_journal::CellJournalPartitionV1;
 pub use cell_journal::CellOwnerJournalV1;
+pub use cell_journal::CellOwnerJournalReadbackV1;
 pub use cell_owner::CellPartitionOwnerV1;
 pub use cell_task_cost::CellCostAccountingV2;
 pub use cell_task_cost::CellCostEntryV2;
