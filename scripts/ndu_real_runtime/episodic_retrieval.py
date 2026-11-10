@@ -59,6 +59,28 @@ def bm25(records, query, limit):
     return [record for _, record in scored[:limit]]
 
 
+def authorized_source_closure(records, source_ids):
+    """Filter dependency ancestry, not just the record's own source_id.
+
+    An allowed-source summary can depend transitively on an unapproved source.
+    Such a derived record must never enter retrieval, ranking or delivery.
+    This assumes the store's dependency declarations are complete; it does not
+    authenticate writers or detect undeclared copying between sources.
+    """
+    allowed = set(source_ids)
+    eligible = {record["record_id"]: record for record in records
+                if record["source_id"] in allowed}
+    original_count = len(eligible)
+    while True:
+        retained = {record_id: record for record_id, record in eligible.items()
+                    if set(record["dependencies"]) <= eligible.keys()}
+        if len(retained) == len(eligible):
+            break
+        eligible = retained
+    return ([record for record in records if record["record_id"] in eligible],
+            original_count - len(eligible))
+
+
 def assemble_context(records, max_context_bytes):
     """Admit whole JSON records under a UTF-8 budget; never truncate a fact."""
     integer(max_context_bytes, "context byte bound", 0, 65536)
@@ -119,7 +141,8 @@ def read_memory(store, *, session_id, source_ids, query="", key=None, mode="on",
         "query_sha256": digest({"query": query, "key": key}), "limit": limit,
         "max_context_bytes": max_context_bytes, "replay_seed": seed,
         "store_read": False, "retrieval_executed": False, "view_receipt": None,
-        "eligible_count": 0, "retrieved_ids": [], "selected_ids": [],
+        "eligible_count": 0, "source_dependency_rejections": 0,
+        "retrieved_ids": [], "selected_ids": [],
         "delivered_ids": [], "byte_dropped_ids": [], "context_bytes": 0,
         "association_status": ("disabled" if mode == "association_off" else
                                "not_run" if association is not None else "unavailable"),
@@ -131,8 +154,11 @@ def read_memory(store, *, session_id, source_ids, query="", key=None, mode="on",
     if mode != "off":
         view = store.view(snapshot_path=snapshot_path)
         receipt.update(store_read=True, view_receipt=view["receipt"])
-        records = [r for r in view["records"] if r["source_id"] in set(source_ids)]
+        records, dependency_rejections = authorized_source_closure(
+            view["records"], source_ids
+        )
         receipt["eligible_count"] = len(records)
+        receipt["source_dependency_rejections"] = dependency_rejections
         if mode != "retrieval_off":
             receipt["retrieval_executed"] = True
             if strategy == "exact_kv":
