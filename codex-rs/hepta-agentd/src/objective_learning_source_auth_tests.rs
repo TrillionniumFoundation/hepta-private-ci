@@ -10,8 +10,36 @@ use super::*;
 #[test]
 fn historical_source_expiry_does_not_renew_actions_or_override_current_revocation()
 -> anyhow::Result<()> {
-    let (_directory, identity, _coordinator) =
-        crate::learning_iteration_checkpoint::learning_test_support::fixture()?;
+    // This authentication cut is platform-neutral. Its identity must not
+    // depend on the Linux-only Root learning checkpoint test support: the
+    // same historical signature/revocation cases run on Windows as well.
+    let directory = tempfile::tempdir()?;
+    let root = directory.path().canonicalize()?;
+    let fleet_root = codex_hepta_paths::HeptaFleetRoot::parse(root.join("fleet"))?;
+    let registry = codex_hepta_fleet::FleetRegistry::initialize(fleet_root.clone())?;
+    let workspace = root.join("workspace");
+    std::fs::create_dir(&workspace)?;
+    let agent_id = codex_hepta_contracts::AgentId::parse(
+        "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12",
+    )?;
+    let manifest = codex_hepta_fleet::AgentManifest::new(
+        agent_id.clone(),
+        codex_hepta_fleet::WorkspaceBinding::new(&workspace, &fleet_root)?,
+        codex_hepta_fleet::ResourceBudget::local_default(),
+    )?;
+    let registered = registry.register(manifest)?;
+    let identity = AgentdIdentity {
+        agent_id,
+        layout: registered.layout.clone(),
+        spawn_generation: 1,
+        fleet_root: fleet_root.as_path().to_path_buf(),
+        workspace,
+        resources: registered.manifest.resources,
+        home_root: registered.layout.home_root().to_path().to_path_buf(),
+        run_root: registered.layout.run_root().to_path_buf(),
+        control_socket: registered.layout.agentd_control_socket().to_path_buf(),
+        app_server_socket: registered.layout.app_server_socket().to_path_buf(),
+    };
     let mut record = crate::objective_runtime::tests::record(
         "historical.learning.source",
         /*sequence*/ 1,
