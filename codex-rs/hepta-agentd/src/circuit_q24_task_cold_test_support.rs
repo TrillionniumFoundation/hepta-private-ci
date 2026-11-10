@@ -73,7 +73,7 @@ impl Reopened {
 }
 impl Drop for Reopened { fn drop(&mut self) { self.cancellation.cancel(); } }
 
-pub(super) async fn reopen(identity: AgentdIdentity, directory: tempfile::TempDir, request: AuthBusObjectiveIngress,
+pub(super) async fn reopen(identity: AgentdIdentity, directory: tempfile::TempDir, request: AuthBusObjectiveIngress, config: AgentdConfig,
     published_task: PublishedCircuitFeatureTaskV1, model: Arc<LoadedCellQ24ModelV1>, bundle: CellCompatibilityBundleV1)
     -> anyhow::Result<Reopened> {
     let registry = FleetRegistry::open_existing(HeptaFleetRoot::parse(identity.fleet_root.clone())?)?;
@@ -107,12 +107,10 @@ pub(super) async fn reopen(identity: AgentdIdentity, directory: tempfile::TempDi
             circuit_millis: crate::authbus_ingress::now_ms().expect("wall clock"), cell_micros: cell_deadline + 1,
         }),
     };
-    let mut installed = AgentdConfig::load(identity.fleet_root.clone(), identity.agent_id.clone(), identity.spawn_generation,
-        identity.home_root.clone(), identity.run_root.clone(), identity.home_root.clone(), identity.workspace.clone())?
-        .with_authbus_trust_file(identity.home_root.join("circuit-trust.json"))
-        .with_authbus_checkpoint_file(identity.run_root.join("circuit-checkpoint.json"))
-        .with_objective_profile_file(identity.home_root.join("circuit-profile.json"))
-        .with_q24_circuit_task_profile(profile)?;
+    // The original validated configuration contains no handed-off bootstrap or
+    // owner. This same-generation mechanism test must not reload Starting-only
+    // config on an already Running Fleet or invent a lifecycle transition.
+    let mut installed = config.with_q24_circuit_task_profile(profile)?;
     let (bootstrap, invocation) = installed.config.take_circuit_task_bootstrap()?.expect("recovered ordinary profile");
     runtime.state.attach_automation_store(AutomationStore::open(&identity.layout).await?)?;
     assert!(runtime.state.circuit_task.set(bootstrap.handle()).is_ok());

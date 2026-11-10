@@ -54,6 +54,7 @@ async fn q24_ordinary_cold_recovery_rebuilds_completed_predecessor_without_retai
     let snapshot_c = c.cell.snapshot(&source_c.scope)?;
     let identity_c = c.runtime.identity.clone();
     let request_c = c.request.clone();
+    let configuration_c = c.take_configuration();
     let directory_c = std::mem::replace(&mut c.runtime._temp, tempfile::tempdir()?);
     c.stop().await?;
     drop(c); // No A/C task guard, native owner, Cell/source handle or completion token remains.
@@ -73,7 +74,7 @@ async fn q24_ordinary_cold_recovery_rebuilds_completed_predecessor_without_retai
         reopen::predecessor(&identity_a, &definition, &source_a, &config_a.manifest)?,
         &original_source.readback(), &identity_a)?;
     drop(original_source);
-    let mut recovered = reopen::reopen(identity_c.clone(), directory_c, request_c,
+    let mut recovered = reopen::reopen(identity_c.clone(), directory_c, request_c, configuration_c,
         recovered, Arc::clone(&model), bundle).await?;
     let response = recovered.runtime.state.response(9, 1, AgentdMethod::ObjectiveStart {
         request: recovered.request.clone(),

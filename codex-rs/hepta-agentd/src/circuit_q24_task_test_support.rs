@@ -41,7 +41,7 @@ pub(super) struct Admission {
 
 pub(super) struct Session {
     pub runtime: RuntimeFixture,
-    _config: AgentdConfig,
+    config: Option<AgentdConfig>,
     pub request: AuthBusObjectiveIngress,
     pub source: Arc<Source>,
     pub cell: Cell,
@@ -51,6 +51,10 @@ pub(super) struct Session {
 }
 
 impl Session {
+    pub(super) fn take_configuration(&mut self) -> AgentdConfig {
+        self.config.take().expect("original configuration after bootstrap handoff")
+    }
+
     pub async fn stop(&mut self) -> anyhow::Result<()> {
         self.cancellation.cancel();
         if let Some(worker) = self.worker.take() {
@@ -269,6 +273,6 @@ pub(super) async fn start(
     assert!(runtime.state.circuit_task_invocation.set(invocation).is_ok());
     let cancellation = CancellationToken::new();
     let worker = tokio::spawn(bootstrap.run(Arc::clone(&runtime.state), cancellation.clone()));
-    Ok(Session { runtime, _config: installed.config, request, source: installed.source, cell: installed.cell, retirement,
+    Ok(Session { runtime, config: Some(installed.config), request, source: installed.source, cell: installed.cell, retirement,
         cancellation, worker: Some(worker) })
 }
