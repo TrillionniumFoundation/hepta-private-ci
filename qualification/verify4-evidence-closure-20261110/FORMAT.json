@@ -1,0 +1,282 @@
+{
+  "records": [
+    {
+      "name": "just-fmt",
+      "argv": [
+        "/workspace/scratch/3a9f1e34ac14/verify4-just/bin/just",
+        "fmt"
+      ],
+      "cwd": "/workspace/scratch/3a9f1e34ac14/hepta-verify4/codex-rs",
+      "exit_code": 0,
+      "elapsed_wall_seconds": 0.10099983999998585,
+      "log_sha256": "b6a6d5ad920f48c9b49a3ca8c2308227b7849b9e0a498dc452f3a7bd2f7fb752"
+    },
+    {
+      "name": "ruff-lint",
+      "argv": [
+        "/workspace/scratch/3a9f1e34ac14/verify4-tools/bin/ruff",
+        "check",
+        "--select",
+        "F,E9",
+        "experiments/verification_cell_verify1/checker_effects.py",
+        "experiments/verification_cell_verify1/matched_qualification.py",
+        "experiments/verification_cell_verify1/prospective.py",
+        "experiments/verification_cell_verify1/repair_lineage.py",
+        "experiments/verification_cell_verify1/shadow_risk.py",
+        "experiments/verification_cell_verify1/shadow_schedule.py",
+        "experiments/verification_cell_verify1/test_checker_dispatch.py",
+        "experiments/verification_cell_verify1/test_checker_effects.py",
+        "experiments/verification_cell_verify1/test_label_attestations.py",
+        "experiments/verification_cell_verify1/test_matched_qualification.py",
+        "experiments/verification_cell_verify1/test_repair_lineage.py",
+        "experiments/verification_cell_verify1/test_shadow_risk.py",
+        "experiments/verification_cell_verify1/test_shadow_schedule.py",
+        "experiments/verification_cell_verify1/test_treatment.py",
+        "experiments/verification_cell_verify1/treatment.py",
+        "qualification/verify4-evidence-closure-20261110/reproduce.py"
+      ],
+      "cwd": "/workspace/scratch/3a9f1e34ac14/hepta-verify4",
+      "exit_code": 0,
+      "elapsed_wall_seconds": 0.031237912000051438,
+      "log_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    {
+      "name": "ruff-format",
+      "argv": [
+        "/workspace/scratch/3a9f1e34ac14/verify4-tools/bin/ruff",
+        "format",
+        "experiments/verification_cell_verify1/checker_effects.py",
+        "experiments/verification_cell_verify1/matched_qualification.py",
+        "experiments/verification_cell_verify1/prospective.py",
+        "experiments/verification_cell_verify1/repair_lineage.py",
+        "experiments/verification_cell_verify1/shadow_risk.py",
+        "experiments/verification_cell_verify1/shadow_schedule.py",
+        "experiments/verification_cell_verify1/test_checker_dispatch.py",
+        "experiments/verification_cell_verify1/test_checker_effects.py",
+        "experiments/verification_cell_verify1/test_label_attestations.py",
+        "experiments/verification_cell_verify1/test_matched_qualification.py",
+        "experiments/verification_cell_verify1/test_repair_lineage.py",
+        "experiments/verification_cell_verify1/test_shadow_risk.py",
+        "experiments/verification_cell_verify1/test_shadow_schedule.py",
+        "experiments/verification_cell_verify1/test_treatment.py",
+        "experiments/verification_cell_verify1/treatment.py",
+        "qualification/verify4-evidence-closure-20261110/reproduce.py"
+      ],
+      "cwd": "/workspace/scratch/3a9f1e34ac14/hepta-verify4",
+      "exit_code": 0,
+      "elapsed_wall_seconds": 0.017851070999768126,
+      "log_sha256": "2c5143b0c04dd2f10546553b549502ddb3e339a7d9b2bdce2b36a1dad0f4a008"
+    },
+    {
+      "name": "ruff-format-check",
+      "argv": [
+        "/workspace/scratch/3a9f1e34ac14/verify4-tools/bin/ruff",
+        "format",
+        "--check",
+        "experiments/verification_cell_verify1/checker_effects.py",
+        "experiments/verification_cell_verify1/matched_qualification.py",
+        "experiments/verification_cell_verify1/prospective.py",
+        "experiments/verification_cell_verify1/repair_lineage.py",
+        "experiments/verification_cell_verify1/shadow_risk.py",
+        "experiments/verification_cell_verify1/shadow_schedule.py",
+        "experiments/verification_cell_verify1/test_checker_dispatch.py",
+        "experiments/verification_cell_verify1/test_checker_effects.py",
+        "experiments/verification_cell_verify1/test_label_attestations.py",
+        "experiments/verification_cell_verify1/test_matched_qualification.py",
+        "experiments/verification_cell_verify1/test_repair_lineage.py",
+        "experiments/verification_cell_verify1/test_shadow_risk.py",
+        "experiments/verification_cell_verify1/test_shadow_schedule.py",
+        "experiments/verification_cell_verify1/test_treatment.py",
+        "experiments/verification_cell_verify1/treatment.py",
+        "qualification/verify4-evidence-closure-20261110/reproduce.py"
+      ],
+      "cwd": "/workspace/scratch/3a9f1e34ac14/hepta-verify4",
+      "exit_code": 0,
+      "elapsed_wall_seconds": 0.01183195599969622,
+      "log_sha256": "7ff2df5e4a19c344d6ea2dfc25c25d2370159894cbac570f392753b22180e09c"
+    },
+    {
+      "name": "ruff-lint-final",
+      "argv": [
+        "/workspace/scratch/3a9f1e34ac14/verify4-tools/bin/ruff",
+        "check",
+        "--select",
+        "F,E9",
+        "experiments/verification_cell_verify1/checker_effects.py",
+        "experiments/verification_cell_verify1/matched_qualification.py",
+        "experiments/verification_cell_verify1/prospective.py",
+        "experiments/verification_cell_verify1/repair_lineage.py",
+        "experiments/verification_cell_verify1/shadow_risk.py",
+        "experiments/verification_cell_verify1/shadow_schedule.py",
+        "experiments/verification_cell_verify1/test_checker_dispatch.py",
+        "experiments/verification_cell_verify1/test_checker_effects.py",
+        "experiments/verification_cell_verify1/test_label_attestations.py",
+        "experiments/verification_cell_verify1/test_matched_qualification.py",
+        "experiments/verification_cell_verify1/test_repair_lineage.py",
+        "experiments/verification_cell_verify1/test_shadow_risk.py",
+        "experiments/verification_cell_verify1/test_shadow_schedule.py",
+        "experiments/verification_cell_verify1/test_treatment.py",
+        "experiments/verification_cell_verify1/treatment.py",
+        "qualification/verify4-evidence-closure-20261110/reproduce.py"
+      ],
+      "cwd": "/workspace/scratch/3a9f1e34ac14/hepta-verify4",
+      "exit_code": 0,
+      "elapsed_wall_seconds": 0.01791555599993444,
+      "log_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    {
+      "name": "diff-check",
+      "argv": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "cwd": "/workspace/scratch/3a9f1e34ac14/hepta-verify4",
+      "exit_code": 0,
+      "elapsed_wall_seconds": 0.007657738000034442,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "before": {
+    "experiments/verification_cell_verify1/checker_effects.py": {
+      "sha256": "d83f7c6255dcba38cea84a1174005da7d7d5a2a887144c80b03d7b258387451f",
+      "ast_sha256": "daf0edeb0ca1fbb24815b15e9ba8ad48fbe6f3fc6630ad05e903348255d65738"
+    },
+    "experiments/verification_cell_verify1/matched_qualification.py": {
+      "sha256": "4d4cdb8731ba8299e04e68b8f2d587c9562480e3349d7fc0fb9463a951bc9d1c",
+      "ast_sha256": "550ec6100f667ed3bfecfe2ec32617e7d5f3d5555c92bd92f6e100229f79dc78"
+    },
+    "experiments/verification_cell_verify1/prospective.py": {
+      "sha256": "47a250ebbb454ef29becdb6d2b9c4d15c93af126b2382d4eceba06bf96261707",
+      "ast_sha256": "b538c4b0e5569b88a1a0aa8f85686152b39459977834978a25669cb5c32edde8"
+    },
+    "experiments/verification_cell_verify1/repair_lineage.py": {
+      "sha256": "df0115ded2cb6839f7f1f4901068d3f93410a37b69c887bfd76ace45e8b3f8e6",
+      "ast_sha256": "cf01e562b57f8c175736b7bac014db698d1b725d99be1a9e4aa085386fcf4ae0"
+    },
+    "experiments/verification_cell_verify1/shadow_risk.py": {
+      "sha256": "6f065a3c41732c9bf2b165440cbb54744cedd1683752e3a878e10613be6a3619",
+      "ast_sha256": "797a2667fb8ab14edba3d9593d27ed62ab0ed2b27aa2f6d10055c2d4bd0ed233"
+    },
+    "experiments/verification_cell_verify1/shadow_schedule.py": {
+      "sha256": "bec3a4d3c23678aedc1108af593eac5bb01ee918a2e393b207211d1337807744",
+      "ast_sha256": "fd098d48d0725f4e760ef090c79da6813f3450f294da3e4853571613180f358d"
+    },
+    "experiments/verification_cell_verify1/test_checker_dispatch.py": {
+      "sha256": "418cbca0d77cc096b4b236ab5db8ea4dc2f0672cf2966b8b447338f23c7fecdc",
+      "ast_sha256": "30c9dbf97d1bf944672fb80e7627bbed63faa42e3169dcd392f8595915de094c"
+    },
+    "experiments/verification_cell_verify1/test_checker_effects.py": {
+      "sha256": "29b53f6bacab9724f4aae81aee4e9ea2edd13dba54fdbabbb03ddedc60122470",
+      "ast_sha256": "9a38cd7a5fc7fb9e6f91ba63a18bbb9f98ba168da30c91f8c42a4ba894ebc70c"
+    },
+    "experiments/verification_cell_verify1/test_label_attestations.py": {
+      "sha256": "c8617fe84fd6d2ac46c17d4fd364643f734b9225287ddaa0a4e0d50ba7451c1e",
+      "ast_sha256": "43622661edace3c3c1d3a36ba0e778de99a6ccbe145bde9a9f10d5330d2dfab9"
+    },
+    "experiments/verification_cell_verify1/test_matched_qualification.py": {
+      "sha256": "2d4e80e1a72431ea7787435961a7fe1ffc43ce194f65f64c204e317870f03498",
+      "ast_sha256": "605470040a38e3d95cc0b0beb1df0b81235b2af3e0b1a4a1b57716ab6685cb69"
+    },
+    "experiments/verification_cell_verify1/test_repair_lineage.py": {
+      "sha256": "66e9ec4945b170f75b8f079bf44e1470edab53cfdb2f96d36d3ea9ba674de57c",
+      "ast_sha256": "62367471787e98d46638f58f6026958a9d2259e8866a5b59f409bc4dc54b71fd"
+    },
+    "experiments/verification_cell_verify1/test_shadow_risk.py": {
+      "sha256": "7605a2263a0030339b29946a41571f7945b9a338c9d3d161acd116f7fdd3011e",
+      "ast_sha256": "77f90de27fdf455529a2e46a48a993c7b0bf9fedb71e2b044e1c8cd35213b96a"
+    },
+    "experiments/verification_cell_verify1/test_shadow_schedule.py": {
+      "sha256": "79c48de52202663781cc74682c3d6b71b036f0bdc9a07b75ed913c2cb03c6085",
+      "ast_sha256": "aae066e228c7e787a244b489e16ea2fe5ab641e19063697ff8eca218439cb2c4"
+    },
+    "experiments/verification_cell_verify1/test_treatment.py": {
+      "sha256": "619786b600840b3a4bbc513e979056e83d19d88c6269f32cdc37fc51246757d7",
+      "ast_sha256": "7eec01d7ccddb677e28a72ff6a8d8a2dd4c24a28ca65889ac42cb7e33bcb9d0c"
+    },
+    "experiments/verification_cell_verify1/treatment.py": {
+      "sha256": "d5e1fa14fe4a652da9fc7e9722dc09dd8ea7e1220934e197a0df07cc651ed97a",
+      "ast_sha256": "20761c4d6216aa3000d73ae94868d5741864f22cffd8bae61823382827bb527a"
+    },
+    "qualification/verify4-evidence-closure-20261110/reproduce.py": {
+      "sha256": "dc6df30be9e570179adf1a9dd3e835998cac5e267c3b17a1667e6ef59d692b7d",
+      "ast_sha256": "929b0c15945513845276ad8f203ee890fbee5a9e59d1a82d2045d6d4b2397cee"
+    }
+  },
+  "after": {
+    "experiments/verification_cell_verify1/checker_effects.py": {
+      "sha256": "4972dd6b6fb7bff39117efd719f155ce35a602656ce303399aa0248bb131d952",
+      "ast_sha256": "daf0edeb0ca1fbb24815b15e9ba8ad48fbe6f3fc6630ad05e903348255d65738"
+    },
+    "experiments/verification_cell_verify1/matched_qualification.py": {
+      "sha256": "177d695a7686f0b589c25eeb6bb76c68c5015754500c4fcd1a760bea7c9c10b0",
+      "ast_sha256": "550ec6100f667ed3bfecfe2ec32617e7d5f3d5555c92bd92f6e100229f79dc78"
+    },
+    "experiments/verification_cell_verify1/prospective.py": {
+      "sha256": "bd0a52eb9ec3ca847ed6768eff9c3af70d7b83b6888c1c2eee89c95a25ec8ef6",
+      "ast_sha256": "b538c4b0e5569b88a1a0aa8f85686152b39459977834978a25669cb5c32edde8"
+    },
+    "experiments/verification_cell_verify1/repair_lineage.py": {
+      "sha256": "1848b9b9157039cdb141782109a717f4a4e917993a5933b5661d1bc9df02cbb3",
+      "ast_sha256": "cf01e562b57f8c175736b7bac014db698d1b725d99be1a9e4aa085386fcf4ae0"
+    },
+    "experiments/verification_cell_verify1/shadow_risk.py": {
+      "sha256": "6612e5dd3df06453ce78e854663276280a158f6273c01b9b3d8924b6c982e6d7",
+      "ast_sha256": "0c94dbd011a98593e1e2c70da91b94df99e455226e126c9dddaea8f72ce26d52"
+    },
+    "experiments/verification_cell_verify1/shadow_schedule.py": {
+      "sha256": "606183879bcf9553250936f01f72a65cab4227d17c71dc5836a4da5a6d98adf2",
+      "ast_sha256": "90e91aa0bd07531bb2666e2619ea3d81e9c54f8e60a916e3d9c8a69a496f0485"
+    },
+    "experiments/verification_cell_verify1/test_checker_dispatch.py": {
+      "sha256": "bbcb2a0b68b54914cb7be168111023f8ddbe5488f16e97fd34dedd9b9100c8f1",
+      "ast_sha256": "30c9dbf97d1bf944672fb80e7627bbed63faa42e3169dcd392f8595915de094c"
+    },
+    "experiments/verification_cell_verify1/test_checker_effects.py": {
+      "sha256": "b5003a5efb23450d0f81c6d48016d081cfe0cc3577e77d855b55933b316b89bd",
+      "ast_sha256": "9a38cd7a5fc7fb9e6f91ba63a18bbb9f98ba168da30c91f8c42a4ba894ebc70c"
+    },
+    "experiments/verification_cell_verify1/test_label_attestations.py": {
+      "sha256": "5907f3ad12ccdcc816e9eec411f318b0a04f43d72d39762768a2400f015256e3",
+      "ast_sha256": "43622661edace3c3c1d3a36ba0e778de99a6ccbe145bde9a9f10d5330d2dfab9"
+    },
+    "experiments/verification_cell_verify1/test_matched_qualification.py": {
+      "sha256": "81efda3f19497d6d58911a9a4a5d94170c9b3c5708e4b93309b6cb0c8ca7bef1",
+      "ast_sha256": "605470040a38e3d95cc0b0beb1df0b81235b2af3e0b1a4a1b57716ab6685cb69"
+    },
+    "experiments/verification_cell_verify1/test_repair_lineage.py": {
+      "sha256": "7c890068a029562c509b6a9b72a6a4fdc6e746a5f90ff323c2278851aec319b8",
+      "ast_sha256": "62367471787e98d46638f58f6026958a9d2259e8866a5b59f409bc4dc54b71fd"
+    },
+    "experiments/verification_cell_verify1/test_shadow_risk.py": {
+      "sha256": "b6aeece19e2519568a2ac446f0cd147a607c5953a58b044a607e086c227ede96",
+      "ast_sha256": "77f90de27fdf455529a2e46a48a993c7b0bf9fedb71e2b044e1c8cd35213b96a"
+    },
+    "experiments/verification_cell_verify1/test_shadow_schedule.py": {
+      "sha256": "733fed7cdcf2471873541fad9ff028dfdafe6df9d5bee6ceb57bfec1e1f9b2f6",
+      "ast_sha256": "aae066e228c7e787a244b489e16ea2fe5ab641e19063697ff8eca218439cb2c4"
+    },
+    "experiments/verification_cell_verify1/test_treatment.py": {
+      "sha256": "99dec3e432af6217919681d4f7d17e1915d35a06548216ca8c6fcfdbdc1dd876",
+      "ast_sha256": "7eec01d7ccddb677e28a72ff6a8d8a2dd4c24a28ca65889ac42cb7e33bcb9d0c"
+    },
+    "experiments/verification_cell_verify1/treatment.py": {
+      "sha256": "be94372ec3cce2b2f537c2b462d98bb3d82aeda53335484c75de4db84615a6da",
+      "ast_sha256": "20761c4d6216aa3000d73ae94868d5741864f22cffd8bae61823382827bb527a"
+    },
+    "qualification/verify4-evidence-closure-20261110/reproduce.py": {
+      "sha256": "a9f5082ac53455e73f6d1752740d8359e9a9a00d922121bfca39109249d6a92c",
+      "ast_sha256": "929b0c15945513845276ad8f203ee890fbee5a9e59d1a82d2045d6d4b2397cee"
+    }
+  },
+  "python_ast_unchanged": false,
+  "tests_rerun_after_formatting": false,
+  "just_fmt_scope_note": "Repository formatter does not register experiments or qualification; direct pinned Ruff covers all changed Python files.",
+  "executable_ast_and_cleandoc_unchanged": true,
+  "docstring_indentation_only_changes": [
+    "experiments/verification_cell_verify1/shadow_risk.py",
+    "experiments/verification_cell_verify1/shadow_schedule.py"
+  ],
+  "formatting_gate_passed": true,
+  "final_published_source_requires_exact_head_ci": true
+}

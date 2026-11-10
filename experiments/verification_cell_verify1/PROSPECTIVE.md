@@ -10,11 +10,14 @@ The host uses this order for each attempt:
 
 1. `record(Prediction(...))` at each available frozen frontier.
 2. `finish(trajectory_id, disposition)` with the original host disposition.
-3. `label(TerminalLabel(...), evaluator_id=..., authenticate=...)` through
+3. `label(TerminalLabel(...), evaluator_id=..., authenticate=..., attestation=...)` through
    a separate authenticated evaluator. The callback receives issuer ID, exact
-   label, pinned evaluator version and manifest SHA256; only literal `True`
-   admits the supplied label. Install a real evidence verifier in the host.
-4. `report()` after every planned attempt has both completion and label records.
+   label, pinned evaluator version, manifest SHA256 and the opaque attestation;
+   only literal `True` admits the supplied label. The exact attestation is retained
+   in the same event as the label. Install a real evidence verifier in the host.
+4. `report(authenticate=current_host_verifier)` after every planned attempt has
+   both completion and label records. This revalidates all retained attestations,
+   including explicit missing-label reports, under current trust and revocation.
 
 Keep explicit missing truth with its reason. Finishing without a forecast is
 valid; omitting an attempt from reporting is refused. UNKNOWN dispositions can
@@ -32,19 +35,25 @@ Retain `manifest_sha256` outside the database. On recovery use
 `ShadowJournal(path, expected_manifest_sha256=retained_digest)`. The live object
 pins the same digest. Retain report `ledger_sha256` externally as an audit root.
 The chain checks internal consistency; it does not authenticate wall time,
-prevent database-owner rewrites or prove evaluator independence. Authentication
-callback signatures/attestations are not retained or reverified on reopening.
+prevent database-owner rewrites or prove evaluator independence. Opaque label
+attestations are bounded to 16 KiB and bind issuer, version, label and manifest.
+The host callback must validate original evidence, current trust/revocation and
+freshness. The code supplies no accepting default and creates no trust keys.
+
+Legacy `label(..., authenticate=...)` calls without an attestation remain readable
+through descriptive `report()`, but strict authenticated reports refuse them.
+They cannot be upgraded by an accepting callback without the original evidence.
+`label_authentication` distinguishes retained, legacy and currently reverified
+records. Changing a label during authentication, or changing the ledger while
+authenticating a report, refuses publication. Authentication alone does not prove
+independent custody or semantic correctness.
 
 Reports retain Brier/log loss, both error denominators, acceptance coverage,
 per-disposition label acquisition and each planned frontier's missing forecasts.
 Missing-label bounds describe this finite dataset, not future confidence bounds.
 Zero acceptance retains an undefined conditional error rate.
 
-Validation: 58 scoped Linux tests passed, including 10 new journal tests.
-Pinned Ruff 0.15.13 format and F/E9 checks passed; formatted Python ASTs match
-the tested beforeimages. Full workspace formatting/native/CI checks were not
-completed in the sparse local environment; see the qualification RESULT.
-
-This increment adds no real-task trials. Checker dispatch, scheduler treatment
-records, complete physical cost and a frozen independent prospective comparison
-remain outstanding. Scientific admission stays HOLD and authority stays NONE.
+The current engineering qualification and remaining field requirements are in
+[VERIFY4.md](VERIFY4.md). Treatment records are integrated in [TREATMENT.md](TREATMENT.md).
+Complete physical cost and an independently authenticated prospective comparison
+remain external requirements. Scientific admission stays HOLD and authority NONE.

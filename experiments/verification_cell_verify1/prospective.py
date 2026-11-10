@@ -24,6 +24,7 @@ from .shadow_risk import (
 MAX_ATTEMPTS = 1000
 MAX_EVENTS = 10000
 MAX_BODY = 65536
+MAX_ATTESTATION = 16384
 
 
 @dataclass(frozen=True)
@@ -222,6 +223,26 @@ class ShadowJournal:
                 set(value) == {"snapshot", "probability", "model_sha256"},
                 "invalid prediction fields",
             )
+        elif kind == "label_attested":
+            _require(
+                set(value)
+                == {
+                    "label",
+                    "evaluator_id",
+                    "evaluator_version_sha256",
+                    "manifest_sha256",
+                    "attestation",
+                }
+                and value["evaluator_id"] == manifest["evaluator_id"]
+                and value["evaluator_version_sha256"]
+                == manifest["evaluator_version_sha256"]
+                and value["manifest_sha256"] == digest(manifest)
+                and type(value["attestation"]) is str
+                and 0 < len(value["attestation"].encode("utf-8")) <= MAX_ATTESTATION,
+                "invalid retained label attestation",
+            )
+            label = value["label"]
+            row = TerminalLabel(**{**label, "target": Target(**label["target"])})
         elif kind == "label":
             row = TerminalLabel(**{**value, "target": Target(**value["target"])})
         elif kind == "finish":
@@ -305,13 +326,16 @@ class ShadowJournal:
             "finish", dict(trajectory_id=trajectory_id, disposition=disposition)
         )
 
-    def label(self, label, *, evaluator_id, authenticate):
+    def label(self, label, *, evaluator_id, authenticate, attestation=None):
         """Authenticate exact label, issuer version and manifest via the host.
 
         The callback must validate original evidence. It is called outside the
         writer transaction; its literal True is a host trust decision, not proof
         of evaluator independence. A changed manifest refuses publication.
-        Callback attestations/signatures are not retained or reverified on reopen.
+        With an opaque attestation, the callback also receives it as a fifth
+        argument and it is retained atomically with the label. Reauthenticate
+        with report(authenticate=...) after recovery or trust-policy changes.
+        Legacy callback-only labels remain readable but cannot pass that check.
         """
         _require(type(label) is TerminalLabel, "exact terminal label required")
         with self._transaction() as connection:
@@ -320,17 +344,102 @@ class ShadowJournal:
             evaluator_id == manifest["evaluator_id"], "unregistered label evaluator"
         )
         root = digest(manifest)
-        _require(
-            callable(authenticate)
-            and authenticate(
-                evaluator_id, label, manifest["evaluator_version_sha256"], root
+        label_body = asdict(label)
+        arguments = (evaluator_id, label, manifest["evaluator_version_sha256"], root)
+        if attestation is not None:
+            _require(
+                type(attestation) is str
+                and 0 < len(attestation.encode("utf-8")) <= MAX_ATTESTATION,
+                "bounded nonempty label attestation required",
             )
-            is True,
+            arguments += (attestation,)
+        _require(
+            callable(authenticate) and authenticate(*arguments) is True,
             "label authentication failed",
         )
-        self._append("label", asdict(label), expected_manifest=root)
+        _require(
+            canonical_json(asdict(label)) == canonical_json(label_body),
+            "label changed during authentication",
+        )
+        if attestation is None:
+            self._append("label", label_body, expected_manifest=root)
+        else:
+            self._append(
+                "label_attested",
+                dict(
+                    label=label_body,
+                    evaluator_id=evaluator_id,
+                    evaluator_version_sha256=manifest["evaluator_version_sha256"],
+                    manifest_sha256=root,
+                    attestation=attestation,
+                ),
+                expected_manifest=root,
+            )
 
-    def report(self):
+    def authentication_report(self, *, authenticate=None, expected_ledger_sha256=None):
+        """Recheck retained attestations under the caller's current trust policy.
+
+        The host verifier must check original signed evidence, registered issuer,
+        key revocation, freshness, label, version and manifest binding. There is
+        deliberately no default accepting verifier or self-issued trust key.
+        Authentication establishes origin under that policy, not independence.
+        """
+        _require(
+            authenticate is None or callable(authenticate), "invalid authenticator"
+        )
+        with self._transaction() as connection:
+            manifest, _, _, labels, root, _ = self._read(connection)
+            _require(
+                expected_ledger_sha256 is None or root == expected_ledger_sha256,
+                "label ledger changed before authentication",
+            )
+            envelopes = {}
+            for (body,) in connection.execute("SELECT body FROM events ORDER BY seq"):
+                event = json.loads(body, object_pairs_hook=_pairs)
+                if event["kind"] == "label_attested":
+                    value = event["value"]
+                    envelopes[value["label"]["trajectory_id"]] = value
+        reverified = 0
+        if authenticate is not None:
+            _require(
+                set(envelopes) == set(labels),
+                "legacy labels lack retained attestations; recollect original evidence",
+            )
+            for identity, label in labels.items():
+                value = envelopes[identity]
+                label_body = asdict(label)
+                _require(
+                    authenticate(
+                        value["evaluator_id"],
+                        label,
+                        value["evaluator_version_sha256"],
+                        value["manifest_sha256"],
+                        value["attestation"],
+                    )
+                    is True,
+                    "retained label authentication failed",
+                )
+                _require(
+                    canonical_json(asdict(label)) == canonical_json(label_body),
+                    "label changed during authentication",
+                )
+                reverified += 1
+            with self._transaction() as connection:
+                _require(
+                    self._read(connection)[4] == root,
+                    "label ledger changed during authentication",
+                )
+        return dict(
+            retained_attestations=len(envelopes),
+            legacy_labels_without_attestations=len(labels) - len(envelopes),
+            reverified_labels=reverified,
+            all_roster_labels_reverified=(
+                authenticate is not None and reverified == len(manifest["roster"])
+            ),
+            independent_custody_established=False,
+        )
+
+    def report(self, *, authenticate=None):
         with self._transaction() as connection:
             manifest, predictions, finishes, labels, root, count = self._read(
                 connection
@@ -356,5 +465,8 @@ class ShadowJournal:
             independent_evaluation_established=False,
             full_physical_cost_complete=False,
             scientific_admission="HOLD",
+            label_authentication=self.authentication_report(
+                authenticate=authenticate, expected_ledger_sha256=root
+            ),
         )
         return result

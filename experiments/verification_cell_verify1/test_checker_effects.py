@@ -1,6 +1,6 @@
 """Paired evidence and downstream VOI tests for learned checker channels."""
 
-from dataclasses import FrozenInstanceError, replace
+from dataclasses import FrozenInstanceError, asdict, replace
 import unittest
 
 from .checker_effects import CheckerSpec, EffectScope, PairedPanel, fit_checker_effects
@@ -10,10 +10,17 @@ from .contracts import digest
 
 class CheckerEffectsTests(unittest.TestCase):
     def setUp(self):
-        self.scope = EffectScope(domain="documents", event="terminal_error", horizon_start=0,
-                                 horizon_end=3, continuation_policy_sha256=digest("fixed-policy"),
-                                 context_sha256=digest({"tick": 0, "ack": []}))
-        self.checkers = tuple(CheckerSpec(name, digest(name), 0.05) for name in ("a", "b"))
+        self.scope = EffectScope(
+            domain="documents",
+            event="terminal_error",
+            horizon_start=0,
+            horizon_end=3,
+            continuation_policy_sha256=digest("fixed-policy"),
+            context_sha256=digest({"tick": 0, "ack": []}),
+        )
+        self.checkers = tuple(
+            CheckerSpec(name, digest(name), 0.05) for name in ("a", "b")
+        )
         self.panels = []
         for label, pass_count in ((False, 6), (True, 2)):
             for index in range(8):
@@ -22,31 +29,56 @@ class CheckerEffectsTests(unittest.TestCase):
 
     def add(self, label, outcomes):
         panel_id = f"panel-{len(self.panels):03}"
-        self.panels.append(PairedPanel(
-            panel_id=panel_id, source_group="train", snapshot_sha256=digest([panel_id, "snapshot"]),
-            scope=self.scope, checker_ids=tuple(c.checker_id for c in self.checkers),
-            checker_versions=tuple(c.version_sha256 for c in self.checkers), outcomes=outcomes,
-            error=label, label_evidence_sha256=digest([panel_id, "label"]) if label is not None else None,
-            checker_evidence_sha256=tuple(digest([panel_id, c.checker_id, "evidence"]) for c in self.checkers),
-            missing_label_reason="evaluator_unavailable" if label is None else None))
+        self.panels.append(
+            PairedPanel(
+                panel_id=panel_id,
+                source_group="train",
+                snapshot_sha256=digest([panel_id, "snapshot"]),
+                scope=self.scope,
+                checker_ids=tuple(c.checker_id for c in self.checkers),
+                checker_versions=tuple(c.version_sha256 for c in self.checkers),
+                outcomes=outcomes,
+                error=label,
+                label_evidence_sha256=digest([panel_id, "label"])
+                if label is not None
+                else None,
+                checker_evidence_sha256=tuple(
+                    digest([panel_id, c.checker_id, "evidence"]) for c in self.checkers
+                ),
+                missing_label_reason="evaluator_unavailable" if label is None else None,
+            )
+        )
 
     def fit(self, panels=None, **kwargs):
         return fit_checker_effects(
-            self.panels if panels is None else panels, scope=self.scope,
-            checkers=self.checkers, training_groups=("train",),
-            heldout_groups=("confirmation",), **kwargs)
+            self.panels if panels is None else panels,
+            scope=self.scope,
+            checkers=self.checkers,
+            training_groups=("train",),
+            heldout_groups=("confirmation",),
+            **kwargs,
+        )
 
     def test_correlated_repeat_has_no_incremental_value(self):
         model = self.fit()
         initial = model.condition(0.5, scope=self.scope)
-        self.assertEqual(initial.channels[0].likelihoods, ((0.75, 0.25, 0), (0.25, 0.75, 0)))
+        self.assertEqual(
+            initial.channels[0].likelihoods, ((0.75, 0.25, 0), (0.25, 0.75, 0))
+        )
         conditioned = model.condition(0.5, {"a": "pass"}, scope=self.scope)
-        self.assertEqual((conditioned.status, conditioned.posterior_error,
-                          conditioned.class_counts, conditioned.history_counts),
-                         ("supported", 0.25, (8, 8), (6, 2)))
+        self.assertEqual(
+            (
+                conditioned.status,
+                conditioned.posterior_error,
+                conditioned.class_counts,
+                conditioned.history_counts,
+            ),
+            ("supported", 0.25, (8, 8), (6, 2)),
+        )
         self.assertEqual(conditioned.channels[1].likelihoods, ((1, 0, 0), (1, 0, 0)))
-        problem = DecisionProblem(("correct", "error"), (0.75, 0.25),
-                                  ("accept", "reject"), ((0, 4), (1, 1)))
+        problem = DecisionProblem(
+            ("correct", "error"), (0.75, 0.25), ("accept", "reject"), ((0, 4), (1, 1))
+        )
         result = evaluate_check(problem, conditioned.channels[1])
         self.assertEqual((result.gross_value, result.net_value), (0, -0.05))
 
@@ -62,47 +94,82 @@ class CheckerEffectsTests(unittest.TestCase):
         self.assertEqual(result.channels[1].likelihoods, ((0, 0, 1), (0, 0, 1)))
         report = model.diagnostics()
         self.assertEqual(report["missing_labels_excluded"], 1)
-        self.assertEqual(report["observed_group_counts"], {"train": {"known_labels": 20, "missing_labels": 1}})
-        self.assertEqual(report["checkers"][0]["sensitivity"],
-                         {"numerator": 6, "denominator": 10, "value": 0.6})
+        self.assertEqual(
+            report["observed_group_counts"],
+            {"train": {"known_labels": 20, "missing_labels": 1}},
+        )
+        self.assertEqual(
+            report["checkers"][0]["sensitivity"],
+            {"numerator": 6, "denominator": 10, "value": 0.6},
+        )
         self.assertEqual(report["checkers"][0]["false_positive_rate"]["numerator"], 2)
-        self.assertEqual(report["paired_errors"][0]["common_miss_including_unknown"]["numerator"], 4)
-        self.assertEqual(report["paired_errors"][0]["common_false_pass"]["numerator"], 2)
+        self.assertEqual(
+            report["paired_errors"][0]["common_miss_including_unknown"]["numerator"], 4
+        )
+        self.assertEqual(
+            report["paired_errors"][0]["common_false_pass"]["numerator"], 2
+        )
         self.assertFalse(report["full_physical_cost_complete"])
 
     def test_unseen_history_and_small_samples_refuse(self):
         result = self.fit().condition(0.5, {"a": "pass", "b": "fail"}, scope=self.scope)
-        self.assertEqual((result.status, result.reason, result.channels, result.posterior_error),
-                         ("unsupported", "insufficient_history_support", (), None))
+        self.assertEqual(
+            (result.status, result.reason, result.channels, result.posterior_error),
+            ("unsupported", "insufficient_history_support", (), None),
+        )
         result = self.fit(self.panels[:8]).condition(0.5, scope=self.scope)
-        self.assertEqual((result.reason, result.history_counts), ("insufficient_class_support", (8, 0)))
-        result = self.fit(min_class_count=3).condition(0.5, {"a": "pass"}, scope=self.scope)
+        self.assertEqual(
+            (result.reason, result.history_counts),
+            ("insufficient_class_support", (8, 0)),
+        )
+        result = self.fit(min_class_count=3).condition(
+            0.5, {"a": "pass"}, scope=self.scope
+        )
         self.assertEqual(result.reason, "insufficient_history_support")
 
     def test_scope_drift_refuses_even_with_supported_counts(self):
         model = self.fit()
-        for change in ({"domain": "images"}, {"event": "prefix_error"},
-                       {"horizon_end": 4}, {"continuation_policy_sha256": digest("new")},
-                       {"context_sha256": digest("other public context")}):
+        for change in (
+            {"domain": "images"},
+            {"event": "prefix_error"},
+            {"horizon_end": 4},
+            {"continuation_policy_sha256": digest("new")},
+            {"context_sha256": digest("other public context")},
+        ):
             result = model.condition(0.5, scope=replace(self.scope, **change))
             self.assertEqual((result.reason, result.channels), ("scope_mismatch", ()))
 
     def test_split_roster_and_physical_panel_identity_are_bound(self):
         first = self.panels[0]
-        bad = (replace(first, source_group="confirmation"),
-               replace(first, checker_ids=("b", "a")),
-               replace(first, checker_versions=(digest("changed"), self.checkers[1].version_sha256)))
+        bad = (
+            replace(first, source_group="confirmation"),
+            replace(first, checker_ids=("b", "a")),
+            replace(
+                first,
+                checker_versions=(digest("changed"), self.checkers[1].version_sha256),
+            ),
+        )
         for panel in bad:
             with self.assertRaises(ValueError):
                 self.fit([panel, *self.panels[1:]])
         with self.assertRaisesRegex(ValueError, "duplicate candidate snapshot"):
             self.fit(self.panels + [replace(first, panel_id="new-id")])
         with self.assertRaises(ValueError):
-            fit_checker_effects(self.panels, scope=self.scope, checkers=self.checkers,
-                                training_groups=("train",), heldout_groups=("train",))
+            fit_checker_effects(
+                self.panels,
+                scope=self.scope,
+                checkers=self.checkers,
+                training_groups=("train",),
+                heldout_groups=("train",),
+            )
         with self.assertRaisesRegex(ValueError, "match observed groups"):
-            fit_checker_effects(self.panels, scope=self.scope, checkers=self.checkers,
-                                training_groups=("train", "unobserved"), heldout_groups=("confirmation",))
+            fit_checker_effects(
+                self.panels,
+                scope=self.scope,
+                checkers=self.checkers,
+                training_groups=("train", "unobserved"),
+                heldout_groups=("confirmation",),
+            )
 
     def test_digests_are_permutation_invariant_and_bind_cost_and_evidence(self):
         model = self.fit()
@@ -118,8 +185,12 @@ class CheckerEffectsTests(unittest.TestCase):
             model.missing_labels = 100
 
     def test_invalid_labels_channels_and_history_rejected(self):
-        for change in ({"error": 1}, {"outcomes": ("pass", "not_run")},
-                       {"label_evidence_sha256": None}, {"checker_evidence_sha256": ("invalid", digest("b"))}):
+        for change in (
+            {"error": 1},
+            {"outcomes": ("pass", "not_run")},
+            {"label_evidence_sha256": None},
+            {"checker_evidence_sha256": ("invalid", digest("b"))},
+        ):
             with self.assertRaises(ValueError):
                 replace(self.panels[0], **change)
         for prior in (True, float("nan"), -0.1, 10**1000):
@@ -128,6 +199,71 @@ class CheckerEffectsTests(unittest.TestCase):
         for history in ({"unknown-checker": "pass"}, {"a": "not_run"}, [("a", "pass")]):
             with self.assertRaises(ValueError):
                 self.fit().condition(0.5, history, scope=self.scope)
+
+    def test_replaced_model_content_cannot_keep_original_identity(self):
+        model = self.fit()
+        changes = (
+            {"table": ((False, ("pass", "pass"), 8), (True, ("pass", "pass"), 8))},
+            {"checkers": (replace(model.checkers[0], cost=0.0), model.checkers[1])},
+            {
+                "checkers": (
+                    replace(model.checkers[0], version_sha256=digest("new")),
+                    model.checkers[1],
+                )
+            },
+            {"checkers": tuple(reversed(model.checkers))},
+            {"scope": replace(model.scope, context_sha256=digest("other"))},
+            {
+                "training_groups": ("other",),
+                "observed_group_counts": (("other", 16, 0),),
+            },
+            {"heldout_groups": ("other",)},
+            {"min_class_count": 3},
+            {"data_sha256": digest("different original panels")},
+        )
+        for change in changes:
+            with (
+                self.subTest(fields=tuple(change)),
+                self.assertRaisesRegex(ValueError, "model content"),
+            ):
+                replace(model, **change)
+
+    def test_rehashed_malformed_models_are_not_admitted(self):
+        model = self.fit()
+        changes = (
+            {"table": ((0, ("pass", "pass"), 16),)},
+            {"table": ((False, ("pass", "pass"), True),)},
+            {"table": ((False, ("pass",), 16),)},
+            {"table": ((False, ("pass", "invalid"), 16),)},
+            {"table": ((False, ("pass", "pass"), -1),)},
+            {"table": (model.table[0], model.table[0], *model.table[1:])},
+            {"table": tuple(reversed(model.table))},
+            {"table": list(model.table)},
+            {"table": ((False, ["pass", "pass"], 16),)},
+            {"observed_group_counts": (("train", 15, 0),)},
+            {"observed_group_counts": (("wrong-group", 16, 0),)},
+            {"missing_labels": 1},
+            {"heldout_groups": ("train",)},
+            {"min_class_count": True},
+        )
+        for change in changes:
+            body = {
+                "schema": "hepta.verify.checker-effects.v1",
+                **asdict(model),
+                **change,
+            }
+            body.pop("model_sha256")
+            with self.subTest(fields=change), self.assertRaises(ValueError):
+                replace(model, **change, model_sha256=digest(body))
+
+    def test_changed_live_body_refuses_conditioning_and_diagnostics(self):
+        model = self.fit()
+        object.__setattr__(
+            model, "table", ((False, ("pass", "pass"), 8), (True, ("pass", "pass"), 8))
+        )
+        for call in (lambda: model.condition(0.5, scope=self.scope), model.diagnostics):
+            with self.assertRaisesRegex(ValueError, "model content"):
+                call()
 
 
 if __name__ == "__main__":

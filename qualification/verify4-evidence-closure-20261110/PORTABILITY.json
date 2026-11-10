@@ -1,0 +1,233 @@
+{
+  "changed_files": [
+    "experiments/verification_cell_verify1/test_label_attestations.py",
+    "experiments/verification_cell_verify1/test_repair_lineage.py"
+  ],
+  "combined_before": {
+    "connections_created_and_retained": 487,
+    "connections_still_open_after_tests": 6,
+    "forced_gc": false,
+    "open_connection_paths": [
+      "/tmp/tmpuxy7y4_q/parent.sqlite",
+      "/tmp/tmpqht_qzqr/parent.sqlite",
+      "/tmp/tmp4bzpds7b/parent.sqlite",
+      "/tmp/tmpb5x0seaj/child.sqlite",
+      "/tmp/tmp5qjpo6ea/labels.sqlite",
+      "/tmp/tmpezu5ye_x/labels.sqlite"
+    ],
+    "schema": "hepta.verify.test-sqlite-lifetimes.v1",
+    "scope": "Local Linux lifetime audit; does not establish a native Windows CI pass",
+    "test_source_snapshot": "before",
+    "tests_run": 21,
+    "tests_successful": true,
+    "unexpected_errors": []
+  },
+  "combined_before_run": {
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+      "-B",
+      "/workspace/scratch/3a9f1e34ac14/verify4-portability-evidence/combined_sqlite_lifetimes.py",
+      "before",
+      "/workspace/scratch/3a9f1e34ac14/verify4-portability-evidence/combined-before-lifetimes.json"
+    ],
+    "elapsed_wall_seconds": 0.4039154349998171,
+    "exit_code": 1,
+    "harness_sha256": "42f61141de1cd825b7611b33ecb4a6f027f610f0105f5184572267f87da6e0a1",
+    "log_sha256": "da31349b92a30279bf620c3b3e5a415fee4546950c2c69752773232685313d9e",
+    "sources": {
+      "label": {
+        "ast_sha256": "43622661edace3c3c1d3a36ba0e778de99a6ccbe145bde9a9f10d5330d2dfab9",
+        "sha256": "5907f3ad12ccdcc816e9eec411f318b0a04f43d72d39762768a2400f015256e3",
+        "snapshot": "/workspace/scratch/3a9f1e34ac14/verify4-portability-evidence/label-before.py"
+      },
+      "repair": {
+        "ast_sha256": "62367471787e98d46638f58f6026958a9d2259e8866a5b59f409bc4dc54b71fd",
+        "sha256": "7c890068a029562c509b6a9b72a6a4fdc6e746a5f90ff323c2278851aec319b8",
+        "snapshot": "/workspace/scratch/3a9f1e34ac14/verify4-portability-evidence/repair-before.py"
+      }
+    },
+    "started_at_utc": "2026-11-10T13:46:02.162360+00:00"
+  },
+  "combined_current": {
+    "connections_created_and_retained": 487,
+    "connections_still_open_after_tests": 0,
+    "forced_gc": false,
+    "open_connection_paths": [],
+    "schema": "hepta.verify.test-sqlite-lifetimes.v1",
+    "scope": "Local Linux lifetime audit; does not establish a native Windows CI pass",
+    "test_source_snapshot": "current",
+    "tests_run": 21,
+    "tests_successful": true,
+    "unexpected_errors": []
+  },
+  "combined_current_run": {
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+      "-B",
+      "/workspace/scratch/3a9f1e34ac14/verify4-portability-evidence/combined_sqlite_lifetimes.py",
+      "current",
+      "/workspace/scratch/3a9f1e34ac14/verify4-portability-evidence/combined-current-lifetimes.json"
+    ],
+    "elapsed_wall_seconds": 0.4548890619998929,
+    "exit_code": 0,
+    "harness_sha256": "42f61141de1cd825b7611b33ecb4a6f027f610f0105f5184572267f87da6e0a1",
+    "log_sha256": "2d473d6ce71fa94a005742ed77757cfccf991e55106b8e6dade0dc25c50d4040",
+    "sources": {
+      "label": {
+        "ast_sha256": "7e859aa69bd41b3988be904542ca8bd8b42b56205d556f6579b484fbfd9d5b5c",
+        "sha256": "2372a1a73de6ca042f52db57512f7b553fa0eb40d13510270c3a12202671200b",
+        "snapshot": "/workspace/scratch/3a9f1e34ac14/verify4-portability-evidence/label-combined-current.py"
+      },
+      "repair": {
+        "ast_sha256": "784191f68154601f0bba0c7321ba63f14547dc86a3424e332f114747d10abc35",
+        "sha256": "e0e970159b37f817e06964c56ca868d423c96435461fb48bfc056996df127312",
+        "snapshot": "/workspace/scratch/3a9f1e34ac14/verify4-portability-evidence/repair-combined-current.py"
+      }
+    },
+    "started_at_utc": "2026-11-10T13:46:02.566652+00:00"
+  },
+  "format": {
+    "after": {
+      "experiments/verification_cell_verify1/test_label_attestations.py": {
+        "ast_sha256": "7e859aa69bd41b3988be904542ca8bd8b42b56205d556f6579b484fbfd9d5b5c",
+        "sha256": "2372a1a73de6ca042f52db57512f7b553fa0eb40d13510270c3a12202671200b"
+      },
+      "experiments/verification_cell_verify1/test_repair_lineage.py": {
+        "ast_sha256": "784191f68154601f0bba0c7321ba63f14547dc86a3424e332f114747d10abc35",
+        "sha256": "e0e970159b37f817e06964c56ca868d423c96435461fb48bfc056996df127312"
+      }
+    },
+    "before": {
+      "experiments/verification_cell_verify1/test_label_attestations.py": {
+        "ast_sha256": "7e859aa69bd41b3988be904542ca8bd8b42b56205d556f6579b484fbfd9d5b5c",
+        "sha256": "2372a1a73de6ca042f52db57512f7b553fa0eb40d13510270c3a12202671200b"
+      },
+      "experiments/verification_cell_verify1/test_repair_lineage.py": {
+        "ast_sha256": "784191f68154601f0bba0c7321ba63f14547dc86a3424e332f114747d10abc35",
+        "sha256": "e0e970159b37f817e06964c56ca868d423c96435461fb48bfc056996df127312"
+      }
+    },
+    "native_windows_success_claimed": false,
+    "raw_ast_unchanged": true,
+    "records": [
+      {
+        "argv": [
+          "/workspace/scratch/3a9f1e34ac14/verify4-just/bin/just",
+          "fmt"
+        ],
+        "cwd": "/workspace/scratch/3a9f1e34ac14/hepta-verify4/codex-rs",
+        "elapsed_wall_seconds": 0.15551329900017663,
+        "exit_code": 0,
+        "log_sha256": "b6a6d5ad920f48c9b49a3ca8c2308227b7849b9e0a498dc452f3a7bd2f7fb752",
+        "name": "just-fmt",
+        "started_at_utc": "2026-11-10T13:46:51.308171+00:00"
+      },
+      {
+        "argv": [
+          "/workspace/scratch/3a9f1e34ac14/verify4-tools/bin/ruff",
+          "format",
+          "experiments/verification_cell_verify1/test_label_attestations.py",
+          "experiments/verification_cell_verify1/test_repair_lineage.py"
+        ],
+        "cwd": "/workspace/scratch/3a9f1e34ac14/hepta-verify4",
+        "elapsed_wall_seconds": 0.06259156400028587,
+        "exit_code": 0,
+        "log_sha256": "43affe539ba0ae8b202b306a3294d04f3b7fc062316c1c825399076d966c8f2d",
+        "name": "ruff-format",
+        "started_at_utc": "2026-11-10T13:46:51.463819+00:00"
+      },
+      {
+        "argv": [
+          "/workspace/scratch/3a9f1e34ac14/verify4-tools/bin/ruff",
+          "format",
+          "--check",
+          "experiments/verification_cell_verify1/test_label_attestations.py",
+          "experiments/verification_cell_verify1/test_repair_lineage.py"
+        ],
+        "cwd": "/workspace/scratch/3a9f1e34ac14/hepta-verify4",
+        "elapsed_wall_seconds": 0.009818998999890027,
+        "exit_code": 0,
+        "log_sha256": "3bc53bf3e981a98a34a852e175bf9b77af841edea74fca595d9aedcbaf9a4938",
+        "name": "ruff-format-check",
+        "started_at_utc": "2026-11-10T13:46:51.526551+00:00"
+      },
+      {
+        "argv": [
+          "/workspace/scratch/3a9f1e34ac14/verify4-tools/bin/ruff",
+          "check",
+          "--select",
+          "F,E9",
+          "experiments/verification_cell_verify1/test_label_attestations.py",
+          "experiments/verification_cell_verify1/test_repair_lineage.py"
+        ],
+        "cwd": "/workspace/scratch/3a9f1e34ac14/hepta-verify4",
+        "elapsed_wall_seconds": 0.015399879999677069,
+        "exit_code": 0,
+        "log_sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+        "name": "ruff-lint",
+        "started_at_utc": "2026-11-10T13:46:51.536474+00:00"
+      },
+      {
+        "argv": [
+          "git",
+          "diff",
+          "--check"
+        ],
+        "cwd": "/workspace/scratch/3a9f1e34ac14/hepta-verify4",
+        "elapsed_wall_seconds": 0.008647615999962,
+        "exit_code": 0,
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "name": "diff-check",
+        "started_at_utc": "2026-11-10T13:46:51.552003+00:00"
+      }
+    ],
+    "schema": "hepta.verify4.portability-format.v1",
+    "tests_rerun_after_formatting": false
+  },
+  "initial_native_run": {
+    "conclusion": "failure",
+    "decoded_job_log_sha256": "e6e61aad60823a40e553b9c9c8c14af5d2285b557d8d394611435f1d9736d741",
+    "dispatch_step": "skipped",
+    "errors": 6,
+    "failure": "WinError 32 during TemporaryDirectory cleanup of test-only SQLite handles",
+    "failure_artifact": {
+      "bytes": 7763,
+      "id": 13768932510,
+      "sha256": "fb78a78452ea8f714f75d4142f756a8ef0d386f970d5cfb40084c657f73138fa",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42825965141/artifacts/13768932510"
+    },
+    "head_sha": "0006e834178ff3cbc78bb6059e97ca7be52dc282",
+    "job_id": 129863214055,
+    "numpy": "2.4.2",
+    "platform": "windows-2025",
+    "python": "3.12.10",
+    "run_id": 42825965141,
+    "sqlite_effects_step": "skipped",
+    "tests_run": 226
+  },
+  "label_focused": {
+    "before_final_formatting": true,
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+      "-B",
+      "-m",
+      "unittest",
+      "experiments.verification_cell_verify1.test_label_attestations",
+      "-v"
+    ],
+    "elapsed_wall_seconds": 0.1704330249999657,
+    "exit_code": 0,
+    "log_sha256": "69605b00bf01cc9655286b8c3e2096088316536b10c921670fa71ba5bec52d88",
+    "started_at_utc": "2026-11-10T13:42:50.027909+00:00",
+    "tested_source_sha256": "2372a1a73de6ca042f52db57512f7b553fa0eb40d13510270c3a12202671200b",
+    "tests_run": 11
+  },
+  "native_fixed_candidate_result": "not_yet_observed_at_evidence_freeze",
+  "new_independent_real_tasks": 0,
+  "production_authority": "NONE",
+  "production_source_changed": false,
+  "recorded_at_utc": "2026-11-10T13:47:35.182253+00:00",
+  "same_python_sources_present_at": "71322d9528e135c1df0a22e6324197db51d0399f",
+  "schema": "hepta.verify4.windows-portability.v1",
+  "scientific_admission": "HOLD"
+}

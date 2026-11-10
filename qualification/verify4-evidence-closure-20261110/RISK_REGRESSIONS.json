@@ -1,0 +1,58 @@
+{
+  "schema": "hepta.verify4.risk-binding.regressions.v1",
+  "started_at_utc": "2026-11-10T13:04:42.197744+00:00",
+  "baseline_remote_commit": "a2cd828aad47c56ac8c01dc2e423454eca7eafae",
+  "baseline_source_sha256": "157e1e1f4e4940bfa4c3fd8525dc1cf6e9ab48f1dbfc0a1df3d72ed64170798b",
+  "current_source_sha256": "6f065a3c41732c9bf2b165440cbb54744cedd1683752e3a878e10613be6a3619",
+  "cases": [
+    {
+      "name": "stale_cells",
+      "baseline": {
+        "accepted": true,
+        "model_identity_unchanged": true,
+        "probability": 0.25,
+        "missing_training_labels": 0
+      },
+      "current": {
+        "accepted": false,
+        "reason": "risk model content does not match frozen v2 digest"
+      }
+    },
+    {
+      "name": "stale_missing_denominator",
+      "baseline": {
+        "accepted": true,
+        "model_identity_unchanged": true,
+        "probability": 0.5,
+        "missing_training_labels": 1
+      },
+      "current": {
+        "accepted": false,
+        "reason": "risk model content does not match frozen v2 digest"
+      }
+    },
+    {
+      "name": "post_construction_tamper",
+      "baseline": {
+        "accepted": true,
+        "model_identity_unchanged": true,
+        "probability": 0.25,
+        "missing_training_labels": 0
+      },
+      "current": {
+        "accepted": false,
+        "reason": "risk model content does not match frozen v2 digest"
+      }
+    }
+  ],
+  "independent_real_tasks": 0,
+  "scientific_admission": "HOLD",
+  "production_authority": "NONE",
+  "unchanged_prediction": {
+    "baseline_model_sha256": "31b6f5496a305f12d85489056671fcc974c427686953674cd9f4dc855e13cae3",
+    "v2_model_sha256": "0d609da9a8c11b4d97079358281515818d2e11b957703c2ca1ccb9436480f0bf",
+    "probability": 0.5
+  },
+  "legacy_v1_refused": "risk model content does not match frozen v2 digest",
+  "exit_code": 0
+}
