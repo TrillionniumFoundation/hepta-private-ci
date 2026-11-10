@@ -58,9 +58,11 @@ def strict_json(raw: bytes):
 
 
 def git(root: Path, *args: str) -> str:
-    return subprocess.check_output(
-        ["git", "-C", str(root), *args], stderr=subprocess.PIPE
-    ).decode("utf-8").strip()
+    return (
+        subprocess.check_output(["git", "-C", str(root), *args], stderr=subprocess.PIPE)
+        .decode("utf-8")
+        .strip()
+    )
 
 
 def source_identity(root: Path) -> dict:
@@ -110,7 +112,8 @@ def source_identity(root: Path) -> dict:
                         raise ValueError("tracked source grew during verification")
                     digest.update(chunk)
                 if (
-                    actual_mode != mode or digest.hexdigest().encode() != oid
+                    actual_mode != mode
+                    or digest.hexdigest().encode() != oid
                     or file_fingerprint(before)
                     != file_fingerprint(os.fstat(stream.fileno()))
                 ):
@@ -129,7 +132,8 @@ def source_identity(root: Path) -> dict:
 @contextmanager
 def directory_root(root: Path):
     if (
-        os.open not in os.supports_dir_fd or not hasattr(os, "O_NOFOLLOW")
+        os.open not in os.supports_dir_fd
+        or not hasattr(os, "O_NOFOLLOW")
         or not hasattr(os, "O_DIRECTORY")
     ):
         raise ValueError(
@@ -233,9 +237,8 @@ def check_ci(document: dict, source: dict, workflows: list[str]) -> list[dict]:
     ):
         raise ValueError("CI evidence must be the complete workflow-runs payload")
     runs = document["workflow_runs"]
-    if (
-        type(document.get("total_count")) is not int
-        or document["total_count"] != len(runs)
+    if type(document.get("total_count")) is not int or document["total_count"] != len(
+        runs
     ):
         raise ValueError("CI pagination is incomplete")
     if not runs or len(runs) > 100:
@@ -274,7 +277,11 @@ def verify(config: dict, source_root: Path, artifact_root: Path) -> dict:
     if not isinstance(config, dict) or config.get("schema") != SCHEMA:
         raise ValueError("unknown joint configuration schema")
     if set(config) != {
-        "schema", "source", "artifacts", "required_workflows", "ci_evidence"
+        "schema",
+        "source",
+        "artifacts",
+        "required_workflows",
+        "ci_evidence",
     }:
         raise ValueError("joint configuration has unknown or missing fields")
     source = config.get("source")
@@ -365,9 +372,14 @@ def main() -> int:
         with output.open("x", encoding="utf-8") as stream:
             json.dump(result, stream, ensure_ascii=False, indent=2, sort_keys=True)
             stream.write("\n")
-        print(json.dumps({
-            "configuration_integrity": "verified", "production_qualification": False
-        }))
+        print(
+            json.dumps(
+                {
+                    "configuration_integrity": "verified",
+                    "production_qualification": False,
+                }
+            )
+        )
         return 0
     except (OSError, ValueError, TypeError, subprocess.SubprocessError) as error:
         print(json.dumps({"configuration_integrity": "rejected", "error": str(error)}))
