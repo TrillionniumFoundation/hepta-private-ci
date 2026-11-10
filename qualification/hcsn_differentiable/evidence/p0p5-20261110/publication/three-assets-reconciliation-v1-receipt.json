@@ -1,0 +1,579 @@
+{
+  "anonymous_release_probe": {
+    "authorization_header_sent": false,
+    "http_status": "404",
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/releases/440410488"
+  },
+  "assets": [
+    {
+      "anonymous_probes": [
+        {
+          "authorization_header_sent": false,
+          "http_status": "404",
+          "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/releases/assets/731802015"
+        },
+        {
+          "authorization_header_sent": false,
+          "http_status": "404",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/releases/download/untagged-0807e6b5e132bde20abf/cloud-p2-diagnostics-20261110-v1.zip"
+        }
+      ],
+      "asset_id": 731802015,
+      "authenticated_readback": {
+        "bytes": 17670639,
+        "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/draft-three-assets-reconcile-v1/asset-0-authenticated-readback.zip",
+        "sha256": "f54585285973bd29c80cbb6fc258bb48513f79e7629296bac3ca2c384a4e76a2",
+        "zip_crc_passed": true,
+        "zip_members": 157
+      },
+      "disposition": "preexisting_reconciled",
+      "expected": {
+        "asset_id": 731802015,
+        "bytes": 17670639,
+        "name": "cloud-p2-diagnostics-20261110-v1.zip",
+        "sha256": "f54585285973bd29c80cbb6fc258bb48513f79e7629296bac3ca2c384a4e76a2",
+        "upload_if_missing": false
+      },
+      "server_digest": "sha256:f54585285973bd29c80cbb6fc258bb48513f79e7629296bac3ca2c384a4e76a2",
+      "status": "full_bytes_crc_and_anonymous_isolation_verified",
+      "upload_attempted": false
+    },
+    {
+      "anonymous_probes": [
+        {
+          "authorization_header_sent": false,
+          "http_status": "404",
+          "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/releases/assets/731824485"
+        },
+        {
+          "authorization_header_sent": false,
+          "http_status": "404",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/releases/download/untagged-0807e6b5e132bde20abf/hcsn-width16-v6-audit-20261110.zip"
+        }
+      ],
+      "asset_id": 731824485,
+      "authenticated_readback": {
+        "bytes": 4460517,
+        "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/draft-three-assets-reconcile-v1/asset-1-authenticated-readback.zip",
+        "sha256": "b7beeba44a945baf32c4d27efaa214fe35fc1a704a94927b77f583e9e02b5be0",
+        "zip_crc_passed": true,
+        "zip_members": 109
+      },
+      "disposition": "preexisting_reconciled",
+      "expected": {
+        "asset_id": 731824485,
+        "bytes": 4460517,
+        "name": "hcsn-width16-v6-audit-20261110.zip",
+        "sha256": "b7beeba44a945baf32c4d27efaa214fe35fc1a704a94927b77f583e9e02b5be0",
+        "upload_if_missing": false
+      },
+      "server_digest": "sha256:b7beeba44a945baf32c4d27efaa214fe35fc1a704a94927b77f583e9e02b5be0",
+      "status": "full_bytes_crc_and_anonymous_isolation_verified",
+      "upload_attempted": false
+    },
+    {
+      "error": "Traceback (most recent call last):\n  File \"/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/reconcile_remaining_draft_assets_v1.py\", line 220, in main\n    run(prefix + '-official-source-download',\n  File \"/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/reconcile_remaining_draft_assets_v1.py\", line 136, in run\n    need(process.returncode == 0, label + ' failed; no blind retry')\n  File \"/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/reconcile_remaining_draft_assets_v1.py\", line 62, in need\n    raise RuntimeError(message)\nRuntimeError: asset-2-official-source-download failed; no blind retry\n",
+      "expected": {
+        "asset_id": null,
+        "bytes": 6290730,
+        "name": "official-localization-cloud.zip",
+        "sha256": "6660124b4d1fd98963c56a6804bbb0ca0c5ee12edc9b772c8a867148af20d0da",
+        "upload_if_missing": true
+      },
+      "status": "failed_or_unknown_no_retry",
+      "upload_attempted": false
+    }
+  ],
+  "commands": [
+    {
+      "argv": [
+        "/usr/bin/gh",
+        "api",
+        "repos/TrillionniumFoundation/hepta-private-ci/releases/440410488"
+      ],
+      "child_cpu_seconds": 0.162721,
+      "completed_utc": "2026-11-10T16:49:36.774016+00:00",
+      "label": "release-before",
+      "pid": 1723768,
+      "raw_stderr_bytes": 0,
+      "raw_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "retained_stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "retained_stdout": {
+        "bytes": 26973,
+        "sha256": "b3fdcf0c7fbe48921e8779fec40ec9ea50e6d1a14cd7368902de4e13fa86cc85"
+      },
+      "returncode": 0,
+      "started_utc": "2026-11-10T16:49:29.943354+00:00",
+      "status": "completed",
+      "stderr_redacted": false,
+      "stdout_file": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/draft-three-assets-reconcile-v1/release-before.stdout",
+      "timeout_seconds": 120,
+      "whole_subprocess_wall_seconds": 6.830670763971284
+    },
+    {
+      "argv": [
+        "/usr/bin/gh",
+        "api",
+        "repos/TrillionniumFoundation/hepta-private-ci/releases/440410488"
+      ],
+      "child_cpu_seconds": 0.15219,
+      "completed_utc": "2026-11-10T16:49:38.274136+00:00",
+      "label": "asset-0-fresh-release",
+      "pid": 1724216,
+      "raw_stderr_bytes": 0,
+      "raw_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "retained_stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "retained_stdout": {
+        "bytes": 26973,
+        "sha256": "b3fdcf0c7fbe48921e8779fec40ec9ea50e6d1a14cd7368902de4e13fa86cc85"
+      },
+      "returncode": 0,
+      "started_utc": "2026-11-10T16:49:36.789084+00:00",
+      "status": "completed",
+      "stderr_redacted": false,
+      "stdout_file": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/draft-three-assets-reconcile-v1/asset-0-fresh-release.stdout",
+      "timeout_seconds": 120,
+      "whole_subprocess_wall_seconds": 1.4850717610679567
+    },
+    {
+      "argv": [
+        "/usr/bin/gh",
+        "api",
+        "-H",
+        "Accept: application/octet-stream",
+        "repos/TrillionniumFoundation/hepta-private-ci/releases/assets/731802015"
+      ],
+      "child_cpu_seconds": 0.391556,
+      "completed_utc": "2026-11-10T16:50:08.660479+00:00",
+      "label": "asset-0-authenticated-readback",
+      "pid": 1724247,
+      "raw_stderr_bytes": 0,
+      "raw_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "retained_stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "retained_stdout": {
+        "bytes": 17670639,
+        "sha256": "f54585285973bd29c80cbb6fc258bb48513f79e7629296bac3ca2c384a4e76a2"
+      },
+      "returncode": 0,
+      "started_utc": "2026-11-10T16:49:38.276019+00:00",
+      "status": "completed",
+      "stderr_redacted": false,
+      "stdout_file": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/draft-three-assets-reconcile-v1/asset-0-authenticated-readback.zip",
+      "timeout_seconds": 600,
+      "whole_subprocess_wall_seconds": 30.384456142084673
+    },
+    {
+      "argv": [
+        "/usr/bin/curl",
+        "--disable",
+        "--silent",
+        "--show-error",
+        "--location",
+        "--connect-timeout",
+        "20",
+        "--max-time",
+        "60",
+        "--output",
+        "/dev/null",
+        "--write-out",
+        "%{http_code}",
+        "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/releases/assets/731802015"
+      ],
+      "child_cpu_seconds": 0.093059,
+      "completed_utc": "2026-11-10T16:50:10.393769+00:00",
+      "label": "asset-0-anonymous-api",
+      "pid": 1726003,
+      "raw_stderr_bytes": 0,
+      "raw_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "retained_stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "retained_stdout": {
+        "bytes": 3,
+        "sha256": "6b3c238ebcf1f3c07cf0e556faa82c6b8fe96840ff4b6b7e9962a2d855843a0b"
+      },
+      "returncode": 0,
+      "started_utc": "2026-11-10T16:50:09.005436+00:00",
+      "status": "completed",
+      "stderr_redacted": false,
+      "stdout_file": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/draft-three-assets-reconcile-v1/asset-0-anonymous-api.stdout",
+      "timeout_seconds": 70,
+      "whole_subprocess_wall_seconds": 1.38835892919451
+    },
+    {
+      "argv": [
+        "/usr/bin/curl",
+        "--disable",
+        "--silent",
+        "--show-error",
+        "--location",
+        "--connect-timeout",
+        "20",
+        "--max-time",
+        "60",
+        "--output",
+        "/dev/null",
+        "--write-out",
+        "%{http_code}",
+        "https://github.com/TrillionniumFoundation/hepta-private-ci/releases/download/untagged-0807e6b5e132bde20abf/cloud-p2-diagnostics-20261110-v1.zip"
+      ],
+      "child_cpu_seconds": 0.09260000000000004,
+      "completed_utc": "2026-11-10T16:50:12.796379+00:00",
+      "label": "asset-0-anonymous-browser",
+      "pid": 1726024,
+      "raw_stderr_bytes": 0,
+      "raw_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "retained_stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "retained_stdout": {
+        "bytes": 3,
+        "sha256": "6b3c238ebcf1f3c07cf0e556faa82c6b8fe96840ff4b6b7e9962a2d855843a0b"
+      },
+      "returncode": 0,
+      "started_utc": "2026-11-10T16:50:10.394658+00:00",
+      "status": "completed",
+      "stderr_redacted": false,
+      "stdout_file": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/draft-three-assets-reconcile-v1/asset-0-anonymous-browser.stdout",
+      "timeout_seconds": 70,
+      "whole_subprocess_wall_seconds": 2.4017252170015126
+    },
+    {
+      "argv": [
+        "/usr/bin/gh",
+        "api",
+        "repos/TrillionniumFoundation/hepta-private-ci/releases/440410488"
+      ],
+      "child_cpu_seconds": 0.15363600000000013,
+      "completed_utc": "2026-11-10T16:50:14.573076+00:00",
+      "label": "asset-1-fresh-release",
+      "pid": 1726071,
+      "raw_stderr_bytes": 0,
+      "raw_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "retained_stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "retained_stdout": {
+        "bytes": 26973,
+        "sha256": "b3fdcf0c7fbe48921e8779fec40ec9ea50e6d1a14cd7368902de4e13fa86cc85"
+      },
+      "returncode": 0,
+      "started_utc": "2026-11-10T16:50:12.797481+00:00",
+      "status": "completed",
+      "stderr_redacted": false,
+      "stdout_file": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/draft-three-assets-reconcile-v1/asset-1-fresh-release.stdout",
+      "timeout_seconds": 120,
+      "whole_subprocess_wall_seconds": 1.775599410990253
+    },
+    {
+      "argv": [
+        "/usr/bin/gh",
+        "api",
+        "-H",
+        "Accept: application/octet-stream",
+        "repos/TrillionniumFoundation/hepta-private-ci/releases/assets/731824485"
+      ],
+      "child_cpu_seconds": 0.21788999999999997,
+      "completed_utc": "2026-11-10T16:50:24.599801+00:00",
+      "label": "asset-1-authenticated-readback",
+      "pid": 1726131,
+      "raw_stderr_bytes": 0,
+      "raw_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "retained_stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "retained_stdout": {
+        "bytes": 4460517,
+        "sha256": "b7beeba44a945baf32c4d27efaa214fe35fc1a704a94927b77f583e9e02b5be0"
+      },
+      "returncode": 0,
+      "started_utc": "2026-11-10T16:50:14.574584+00:00",
+      "status": "completed",
+      "stderr_redacted": false,
+      "stdout_file": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/draft-three-assets-reconcile-v1/asset-1-authenticated-readback.zip",
+      "timeout_seconds": 600,
+      "whole_subprocess_wall_seconds": 10.025211660889909
+    },
+    {
+      "argv": [
+        "/usr/bin/curl",
+        "--disable",
+        "--silent",
+        "--show-error",
+        "--location",
+        "--connect-timeout",
+        "20",
+        "--max-time",
+        "60",
+        "--output",
+        "/dev/null",
+        "--write-out",
+        "%{http_code}",
+        "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/releases/assets/731824485"
+      ],
+      "child_cpu_seconds": 0.090364,
+      "completed_utc": "2026-11-10T16:50:31.437769+00:00",
+      "label": "asset-1-anonymous-api",
+      "pid": 1726361,
+      "raw_stderr_bytes": 0,
+      "raw_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "retained_stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "retained_stdout": {
+        "bytes": 3,
+        "sha256": "6b3c238ebcf1f3c07cf0e556faa82c6b8fe96840ff4b6b7e9962a2d855843a0b"
+      },
+      "returncode": 0,
+      "started_utc": "2026-11-10T16:50:24.726796+00:00",
+      "status": "completed",
+      "stderr_redacted": false,
+      "stdout_file": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/draft-three-assets-reconcile-v1/asset-1-anonymous-api.stdout",
+      "timeout_seconds": 70,
+      "whole_subprocess_wall_seconds": 6.710989666171372
+    },
+    {
+      "argv": [
+        "/usr/bin/curl",
+        "--disable",
+        "--silent",
+        "--show-error",
+        "--location",
+        "--connect-timeout",
+        "20",
+        "--max-time",
+        "60",
+        "--output",
+        "/dev/null",
+        "--write-out",
+        "%{http_code}",
+        "https://github.com/TrillionniumFoundation/hepta-private-ci/releases/download/untagged-0807e6b5e132bde20abf/hcsn-width16-v6-audit-20261110.zip"
+      ],
+      "child_cpu_seconds": 0.08482800000000007,
+      "completed_utc": "2026-11-10T16:50:33.400169+00:00",
+      "label": "asset-1-anonymous-browser",
+      "pid": 1726778,
+      "raw_stderr_bytes": 0,
+      "raw_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "retained_stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "retained_stdout": {
+        "bytes": 3,
+        "sha256": "6b3c238ebcf1f3c07cf0e556faa82c6b8fe96840ff4b6b7e9962a2d855843a0b"
+      },
+      "returncode": 0,
+      "started_utc": "2026-11-10T16:50:31.438635+00:00",
+      "status": "completed",
+      "stderr_redacted": false,
+      "stdout_file": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/draft-three-assets-reconcile-v1/asset-1-anonymous-browser.stdout",
+      "timeout_seconds": 70,
+      "whole_subprocess_wall_seconds": 1.9615376819856465
+    },
+    {
+      "argv": [
+        "/usr/bin/gh",
+        "api",
+        "repos/TrillionniumFoundation/hepta-private-ci/releases/440410488"
+      ],
+      "child_cpu_seconds": 0.15356400000000003,
+      "completed_utc": "2026-11-10T16:50:35.410069+00:00",
+      "label": "asset-2-fresh-release",
+      "pid": 1727286,
+      "raw_stderr_bytes": 0,
+      "raw_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "retained_stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "retained_stdout": {
+        "bytes": 26973,
+        "sha256": "b3fdcf0c7fbe48921e8779fec40ec9ea50e6d1a14cd7368902de4e13fa86cc85"
+      },
+      "returncode": 0,
+      "started_utc": "2026-11-10T16:50:33.401204+00:00",
+      "status": "completed",
+      "stderr_redacted": false,
+      "stdout_file": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/draft-three-assets-reconcile-v1/asset-2-fresh-release.stdout",
+      "timeout_seconds": 120,
+      "whole_subprocess_wall_seconds": 2.0088742200750858
+    },
+    {
+      "argv": [
+        "/usr/bin/gh",
+        "api",
+        "repos/TrillionniumFoundation/hepta-private-ci/releases/440410488/assets?per_page=100"
+      ],
+      "child_cpu_seconds": 0.1532719999999999,
+      "completed_utc": "2026-11-10T16:50:43.066599+00:00",
+      "label": "asset-2-fresh-assets",
+      "pid": 1727391,
+      "raw_stderr_bytes": 0,
+      "raw_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "retained_stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "retained_stdout": {
+        "bytes": 24942,
+        "sha256": "b68ab72d59ba70c89a9b4f3e8d225701bf54cef2bee68ffa1337d2e0132d700d"
+      },
+      "returncode": 0,
+      "started_utc": "2026-11-10T16:50:35.411907+00:00",
+      "status": "completed",
+      "stderr_redacted": false,
+      "stdout_file": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/draft-three-assets-reconcile-v1/asset-2-fresh-assets.stdout",
+      "timeout_seconds": 120,
+      "whole_subprocess_wall_seconds": 7.654706242028624
+    },
+    {
+      "argv": [
+        "/usr/bin/curl",
+        "--disable",
+        "--fail",
+        "--silent",
+        "--show-error",
+        "--location",
+        "--connect-timeout",
+        "30",
+        "--max-time",
+        "300",
+        "https://archive.ics.uci.edu/static/public/196/localization%2Bdata%2Bfor%2Bperson%2Bactivity.zip"
+      ],
+      "child_cpu_seconds": 0.09060400000000007,
+      "completed_utc": "2026-11-10T16:51:08.253356+00:00",
+      "error": "asset-2-official-source-download failed; no blind retry",
+      "label": "asset-2-official-source-download",
+      "pid": 1728942,
+      "raw_stderr_bytes": 47,
+      "raw_stderr_sha256": "cfbd51c1d0edb7ebe84208d6b384d0773c0ecf3748f723d031eca82dc2034258",
+      "retained_stderr": {
+        "bytes": 47,
+        "sha256": "cfbd51c1d0edb7ebe84208d6b384d0773c0ecf3748f723d031eca82dc2034258"
+      },
+      "retained_stdout": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "returncode": 35,
+      "started_utc": "2026-11-10T16:50:43.082564+00:00",
+      "status": "failed",
+      "stderr_redacted": false,
+      "stdout_file": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/draft-three-assets-reconcile-v1/official-localization-cloud.zip",
+      "timeout_seconds": 310,
+      "whole_subprocess_wall_seconds": 25.170785555848852
+    },
+    {
+      "argv": [
+        "/usr/bin/gh",
+        "api",
+        "repos/TrillionniumFoundation/hepta-private-ci/releases/440410488"
+      ],
+      "child_cpu_seconds": 0.1840330000000004,
+      "completed_utc": "2026-11-10T16:51:15.274887+00:00",
+      "label": "release-final",
+      "pid": 1729969,
+      "raw_stderr_bytes": 0,
+      "raw_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "retained_stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "retained_stdout": {
+        "bytes": 26973,
+        "sha256": "b3fdcf0c7fbe48921e8779fec40ec9ea50e6d1a14cd7368902de4e13fa86cc85"
+      },
+      "returncode": 0,
+      "started_utc": "2026-11-10T16:51:08.265837+00:00",
+      "status": "completed",
+      "stderr_redacted": false,
+      "stdout_file": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/draft-three-assets-reconcile-v1/release-final.stdout",
+      "timeout_seconds": 120,
+      "whole_subprocess_wall_seconds": 7.009060545824468
+    },
+    {
+      "argv": [
+        "/usr/bin/curl",
+        "--disable",
+        "--silent",
+        "--show-error",
+        "--location",
+        "--connect-timeout",
+        "20",
+        "--max-time",
+        "60",
+        "--output",
+        "/dev/null",
+        "--write-out",
+        "%{http_code}",
+        "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/releases/440410488"
+      ],
+      "child_cpu_seconds": 0.0931069999999996,
+      "completed_utc": "2026-11-10T16:51:21.934829+00:00",
+      "label": "anonymous-release",
+      "pid": 1730133,
+      "raw_stderr_bytes": 0,
+      "raw_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "retained_stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "retained_stdout": {
+        "bytes": 3,
+        "sha256": "6b3c238ebcf1f3c07cf0e556faa82c6b8fe96840ff4b6b7e9962a2d855843a0b"
+      },
+      "returncode": 0,
+      "started_utc": "2026-11-10T16:51:15.276485+00:00",
+      "status": "completed",
+      "stderr_redacted": false,
+      "stdout_file": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/draft-three-assets-reconcile-v1/anonymous-release.stdout",
+      "timeout_seconds": 70,
+      "whole_subprocess_wall_seconds": 6.65835288609378
+    }
+  ],
+  "completed_utc": "2026-11-10T16:51:21.936051+00:00",
+  "cost_scope": "Separate reconciliation attempt; no addition of overlapping command wall to driver wall; prior failed attempts excluded and retained separately.",
+  "currency_cost": null,
+  "draft_after": true,
+  "driver_process_cpu_seconds_since_process_start": 0.592835367,
+  "driver_wall_seconds_after_imports": 111.99561342597008,
+  "energy_joules": null,
+  "idempotency_key": "hcsn-draft-three-assets-reconcile-c385-v1",
+  "overwrite_requested": false,
+  "prior_main_partial_readback": "Preserved by owner; never accessed or overwritten here.",
+  "prior_width16_receipt": {
+    "bytes": 1178,
+    "original_path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/width16-draft-upload-v1/receipt.json",
+    "sha256": "f337813ab9262631b5790089aba8d19b103f1c21cde4df055b81ff221a17866a",
+    "status": "uploaded_readback_and_draft_isolation_verified"
+  },
+  "publish_requested": false,
+  "release_id": 440410488,
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "schema": "hcsn-three-draft-assets-reconciliation-v1",
+  "scientific_credit": false,
+  "script": {
+    "bytes": 15950,
+    "sha256": "d39717f4f8992a445069cd7b14ee3852116c3afdbee4ebe14ae8a28a85b22f5b"
+  },
+  "script_unchanged": true,
+  "started_utc": "2026-11-10T16:49:29.940445+00:00",
+  "status": "completed_with_failed_or_unknown_assets",
+  "tag": "hcsn-research-20261110-c385",
+  "waited_children_cpu_seconds": 2.1134239999999997
+}

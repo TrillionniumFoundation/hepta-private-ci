@@ -1,0 +1,20 @@
+{
+  "batch_size": 32,
+  "cache_frozen_tables": true,
+  "hcsn_grid_json": {
+    "active_cells": 256,
+    "endpoint": 4.8,
+    "initial_log_std": 0.08,
+    "phase_cells": 16,
+    "quadrature_order": 32,
+    "refractory": 0.2,
+    "tail_rate": 1.0
+  },
+  "learn_core_adapter": true,
+  "manifest_sha256": "0eb233da8d0b766c35356ba450d0572f1e6a87a47f1d8a17cd32c2ae6f25a1cb",
+  "micro_batch_size": 8,
+  "output": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/hcsn-effective32-cost-v6/micro8",
+  "positions": 256,
+  "prepared": "/home/qian-qi/hepta-hcsn-discriminative-20261109-7e8f70f19cba/execution/data",
+  "updates": 2
+}
