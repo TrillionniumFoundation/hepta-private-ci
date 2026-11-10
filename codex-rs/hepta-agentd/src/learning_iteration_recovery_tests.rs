@@ -10,6 +10,9 @@ use super::*;
 #[path = "learning_iteration_delivery_runtime_tests.rs"]
 mod delivery_runtime_tests;
 
+#[path = "learning_iteration_recovery_current_tests.rs"]
+mod current_tests;
+
 #[path = "learning_iteration_scoped_recovery_tests.rs"]
 mod scoped_recovery_tests;
 

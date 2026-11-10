@@ -17,9 +17,11 @@ use crate::LearningIterationRuntimeErrorV1;
 use crate::learning_iteration::require_ready;
 
 /// Protected checkpoint data does not restore its separate current signatures.
-/// Rebuild each original predecessor context without executing or checkpointing
-/// a stage. Proposal has no learning-signature role: the host's restore contract
-/// still authenticates its original durable proposal and independent anchor.
+/// Replay each original predecessor locally, but read evidence against the
+/// complete restored CURRENT. Passing a historical prefix to the owner would
+/// replace the checkpoint head it must reconcile. Proposal has no learning-
+/// signature role: the host still authenticates its original durable proposal
+/// and independent anchor. This neither executes nor checkpoints a stage.
 pub(super) async fn authenticate_restored_iteration_v1(
     state: &AgentdState,
     ports: &dyn LearningIterationOwnerPortsV1,
@@ -32,7 +34,7 @@ pub(super) async fn authenticate_restored_iteration_v1(
         LearningIterationCoordinatorV1::new(snapshot.request.clone(), snapshot.owners.clone())?;
     for receipt in &snapshot.receipts {
         if receipt.observation.stage() != LearningIterationStageV1::Proposal {
-            authenticate_iteration_receipt_v1(state, ports, verifier, &predecessor, receipt, clock)
+            authenticate_iteration_receipt_v1(state, ports, verifier, coordinator, receipt, clock)
                 .await?;
         }
         // Structural replay uses the original observation time. A completed
