@@ -1,0 +1,156 @@
+name: Hepta CTRL content and control contracts
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/hepta-ctrl-contracts.yml
+      - scripts/ndu_real_runtime/**
+      - scripts/ndu_real_materials/**
+      - scripts/hepta_ci_exec.py
+      - scripts/pyproject.toml
+      - scripts/uv.lock
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/hepta-ctrl-contracts.yml
+      - scripts/ndu_real_runtime/**
+      - scripts/ndu_real_materials/**
+      - scripts/hepta_ci_exec.py
+      - scripts/pyproject.toml
+      - scripts/uv.lock
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-ctrl-${{ github.event.pull_request.head.ref || github.ref_name }}
+  cancel-in-progress: true
+
+env:
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  TESTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before || '' }}
+  HEPTA_CI_LANE: source-head
+  PYTHONPATH: scripts:.
+  PYTHONDONTWRITEBYTECODE: "1"
+  UV_PYTHON_DOWNLOADS: never
+
+jobs:
+  contracts:
+    name: CTRL identity and paid continuation regressions
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Bind source and keep execution outputs outside the checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          mkdir -p "$RUNNER_TEMP/ctrl-ci"
+          echo "UV_PROJECT_ENVIRONMENT=$RUNNER_TEMP/ctrl-uv-env" >> "$GITHUB_ENV"
+          echo "UV_CACHE_DIR=$RUNNER_TEMP/ctrl-uv-cache" >> "$GITHUB_ENV"
+
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12.14"
+
+      - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
+        with:
+          version: "0.11.3"
+          enable-cache: false
+
+      - name: Verify the protocol runtime
+        id: runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          uv --version
+          uv run --frozen --project scripts --python 3.12.14 --with numpy==2.3.5 --with pillow==11.3.0 \
+            python - <<'PY' > "$RUNNER_TEMP/ctrl-ci/runtime.json"
+          import json
+          import os
+          import platform
+          import numpy
+          import PIL
+          assert platform.python_version() == "3.12.14"
+          assert numpy.__version__ == "2.3.5"
+          assert PIL.__version__ == "11.3.0"
+          print(json.dumps({"source_sha": os.environ["SOURCE_SHA"],
+                            "python": platform.python_version(),
+                            "numpy": numpy.__version__,
+                            "pillow": PIL.__version__,
+                            "scope": "protocol_regressions_only",
+                            "scientific_efficacy_qualified": False,
+                            "production_adoption_qualified": False}, sort_keys=True))
+          PY
+          cat "$RUNNER_TEMP/ctrl-ci/runtime.json"
+
+      - name: Run all five suites with separate non-skipped test minima
+        shell: bash
+        run: |
+          set -euo pipefail
+          status=0
+          while read -r minimum module; do
+            python scripts/hepta_ci_exec.py --timeout-seconds 120 \
+              --minimum-tests "$minimum" \
+              --output "$RUNNER_TEMP/ctrl-ci/${module##*.}.json" \
+              -- uv run --frozen --project scripts --python 3.12.14 --with numpy==2.3.5 --with pillow==11.3.0 \
+              python -m unittest -v "$module" || status=1
+          done <<'CASES'
+          6 ndu_real_runtime.test_content_identity
+          6 ndu_real_runtime.test_content_identity_integration
+          8 ndu_real_runtime.test_audit_content_trace
+          4 ndu_real_runtime.test_control_observations
+          5 ndu_real_runtime.test_control_investment
+          CASES
+          exit "$status"
+
+      - name: Check formatting and fatal Python errors using the repository lock
+        if: always() && steps.runtime.outcome == 'success'
+        shell: bash
+        run: |
+          set -euo pipefail
+          files=(
+            scripts/ndu_real_runtime/actor.py
+            scripts/ndu_real_runtime/episode.py
+            scripts/ndu_real_runtime/content_identity.py
+            scripts/ndu_real_runtime/audit_content_trace.py
+            scripts/ndu_real_runtime/control_observations.py
+            scripts/ndu_real_runtime/control_investment.py
+            scripts/ndu_real_runtime/control_test_fixtures.py
+            scripts/ndu_real_runtime/test_content_identity.py
+            scripts/ndu_real_runtime/test_content_identity_integration.py
+            scripts/ndu_real_runtime/test_audit_content_trace.py
+            scripts/ndu_real_runtime/test_control_observations.py
+            scripts/ndu_real_runtime/test_control_investment.py
+          )
+          uv run --frozen --project scripts --python 3.12.14 \
+            ruff format --check "${files[@]}"
+          uv run --frozen --project scripts --python 3.12.14 \
+            ruff check --select E9,F63,F7,F82 "${files[@]}"
+          git diff --exit-code
+          git diff --cached --exit-code
+          test -z "$(git status --porcelain)"
+
+      - name: Check inherited method spelling annotations
+        shell: bash
+        run: |
+          uv run --frozen --project scripts --python 3.12.14 --with codespell==2.4.1 \
+            codespell --quiet-level 2 qualification/ndu-conditional-stop-20261109/METHOD.zh-CN.md
+
+      - name: Retain exact-source execution records and original logs
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ctrl-ci-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/ctrl-ci/*
+          if-no-files-found: error
+          retention-days: 30
