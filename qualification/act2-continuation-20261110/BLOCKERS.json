@@ -271,7 +271,17 @@
           "source": "e82fce5f8e57d60472409d5738ba6729eda0876c",
           "tree": "a87e115dd03b52523ead78ef129f31f18456b504",
           "act2_run": 42849794415,
-          "act2_run_status": "QUEUED",
+          "act2_run_status": "IN_PROGRESS_AUTOMATION_PACKAGE",
+          "format_job": {
+            "id": 129946993520,
+            "status": "SUCCESS"
+          },
+          "native_job": {
+            "id": 129946994156,
+            "status": "IN_PROGRESS",
+            "current_step": "Run the affected automation package through its original runner",
+            "later_steps": "memory, exact 1025 capacity, Notes owner/readback, pinned Session/App, real goal, actual-App fence and lint are pending; no result inferred"
+          },
           "exact_head_checkout": true,
           "preserves": "Hepta source/tree, both locks, pinned desktop source, Session/App binary hashes, native/real-App outputs and always-uploaded raw records",
           "result": "PENDING_NEW_EXACT_HEAD_NOT_A_PASS",
