@@ -559,6 +559,13 @@ def _verify_boundary(
 
 
 def _verify_required_order(row: dict[str, Any], code: str, relative: str) -> None:
+    # Keep identifiers and compound punctuators intact while tolerating rustfmt
+    # line breaks. Comments/literals were already removed by the Rust scanner.
+    token_pattern = re.compile(
+        r"\w+|<<=|>>=|\.\.\.|\.\.=|::|->|=>|==|!=|<=|>=|&&|\|\||<<|>>|"
+        r"\+=|-=|\*=|/=|%=|\^=|&=|\|=|\.\.|[^\w\s]"
+    )
+    code_tokens = tuple(token_pattern.findall(code))
     sequences = row.get("required_order", [])
     if not isinstance(sequences, list) or any(
         not isinstance(sequence, list)
@@ -572,12 +579,26 @@ def _verify_required_order(row: dict[str, Any], code: str, relative: str) -> Non
     for sequence in sequences:
         offset = 0
         for marker in sequence:
-            found = code.find(marker, offset)
-            if found < 0:
+            marker_tokens = tuple(token_pattern.findall(marker))
+            if not marker_tokens:
+                raise VerificationFailure(
+                    f"{relative}: required_order requires nonempty code markers"
+                )
+            found = next(
+                (
+                    index
+                    for index in range(
+                        offset, len(code_tokens) - len(marker_tokens) + 1
+                    )
+                    if code_tokens[index : index + len(marker_tokens)] == marker_tokens
+                ),
+                None,
+            )
+            if found is None:
                 raise VerificationFailure(
                     f"{relative}: required code order missing: {sequence!r}"
                 )
-            offset = found + len(marker)
+            offset = found + len(marker_tokens)
 
 
 def _verify_function_order(row: dict[str, Any], code: str, relative: str) -> None:

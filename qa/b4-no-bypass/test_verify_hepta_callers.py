@@ -281,6 +281,53 @@ class RequiredCodeOrderTests(unittest.TestCase):
                 "fn rotate() { leases.put_lease(next); predecessor.validate_successor(successor)?; }"
             )
 
+    def test_formatted_receiver_and_arguments_keep_the_same_code_order(self):
+        self.assertEqual(
+            self.check(
+                "fn rotate() { predecessor\n .validate_successor(\n successor\n )?; "
+                "leases\n .put_lease(\n next\n ); }"
+            ),
+            ["rotation.rs"],
+        )
+
+    def test_whitespace_matching_cannot_merge_identifiers_or_masked_literals(self):
+        for receiver in (
+            "otherpredecessor",
+            "pre decessor",
+            "pre/* ignored */decessor",
+            'pre"decessor"',
+            "'p'redecessor",
+        ):
+            with (
+                self.subTest(receiver=receiver),
+                self.assertRaises(MODULE.VerificationFailure),
+            ):
+                self.check(
+                    f"fn rotate() {{ {receiver}.validate_successor(successor)?; leases.put_lease(next); }}"
+                )
+
+    def test_compound_punctuators_cannot_be_split_or_substituted(self):
+        order = [["guard != wrong", "finish()"]]
+        self.assertEqual(
+            self.check("fn rotate() { guard!=wrong; finish(); }", order),
+            ["rotation.rs"],
+        )
+        for operator in ("! =", "!/* ignored */=", "==", "<="):
+            with (
+                self.subTest(operator=operator),
+                self.assertRaises(MODULE.VerificationFailure),
+            ):
+                self.check(
+                    f"fn rotate() {{ guard {operator} wrong; finish(); }}", order
+                )
+
+    def test_tuple_or_call_trailing_comma_is_not_silently_erased(self):
+        with self.assertRaises(MODULE.VerificationFailure):
+            self.check(
+                "fn rotate() { guard((value,)); finish(); }",
+                [["guard((value))", "finish()"]],
+            )
+
     def test_comment_or_string_cannot_supply_pre_cas_validation(self):
         for fake in (
             "// predecessor.validate_successor(successor)?\n",
@@ -928,6 +975,98 @@ class OriginalNotesSourceGuardTests(unittest.TestCase):
                     "crate::app_runtime::AppServerModelToolProfile::Standard",
                 ),
             )
+
+
+TRANSPORT = "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport.rs"
+
+
+class ScopedRestoreGuardTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text())
+        row = next(
+            row for row in manifest["protected_file"] if row["path"] == TRANSPORT
+        )
+        restore = next(
+            item
+            for item in row["required_function_order"]
+            if item["function"] == "fn restore("
+        )
+        cls.protected = {
+            "protected_file": [
+                {
+                    "path": "transport.rs",
+                    "required": [],
+                    "forbidden": [],
+                    "required_function_order": [restore],
+                }
+            ]
+        }
+        cls.source = (ROOT / TRANSPORT).read_text()
+
+    def check(self, source):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "transport.rs").write_text(source)
+            return MODULE._verify_protected_files(root, self.protected)
+
+    def test_actual_formatted_restore_preserves_its_guard(self):
+        self.assertEqual(self.check(self.source), ["transport.rs"])
+
+    def test_restore_cannot_omit_original_request_or_owner_binding(self):
+        for guard in (
+            "request != &self.initial.request",
+            "snapshot.request != self.initial.request",
+            "snapshot.owners != self.initial.owners",
+            "if let Some(scope) = &self.scope",
+        ):
+            with (
+                self.subTest(guard=guard),
+                self.assertRaises(MODULE.VerificationFailure),
+            ):
+                self.check(self.source.replace(guard, "false", 1))
+
+    def test_restore_requires_actual_snapshot_validation_and_error_propagation(self):
+        other_receiver = self.source.replace(
+            "scope\n                            .validate_snapshot",
+            "other_scope\n                            .validate_snapshot",
+            1,
+        )
+        self.assertNotEqual(other_receiver, self.source)
+        with self.assertRaises(MODULE.VerificationFailure):
+            self.check(other_receiver)
+        for replacement in (
+            ".validate_request(&snapshot)",
+            "/* .validate_snapshot(&snapshot) */ .other(&snapshot)",
+            '.other(".validate_snapshot(&snapshot)")',
+        ):
+            with self.subTest(replacement=replacement):
+                with self.assertRaises(MODULE.VerificationFailure):
+                    self.check(
+                        self.source.replace(
+                            ".validate_snapshot(&snapshot)", replacement, 1
+                        )
+                    )
+        with self.assertRaises(MODULE.VerificationFailure):
+            self.check(
+                self.source.replace(
+                    ".map_err(Error::Snapshot)?;\n                    }",
+                    ";\n                    }",
+                    1,
+                )
+            )
+
+    def test_restore_cannot_return_before_scope_validation(self):
+        source = self.source.replace(
+            "if let Some(scope) = &self.scope {",
+            "Ok(snapshot);\n                    if let Some(scope) = &self.scope {",
+            1,
+        )
+        source = source.replace(
+            "                    Ok(snapshot)\n", "                    ()\n", 1
+        )
+        with self.assertRaises(MODULE.VerificationFailure):
+            self.check(source)
 
 
 if __name__ == "__main__":
