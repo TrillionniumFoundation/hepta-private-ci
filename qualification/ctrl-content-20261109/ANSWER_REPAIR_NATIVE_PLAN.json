@@ -1,0 +1,37 @@
+{
+  "controller_host": "ai395",
+  "exact_private_plan_sha256": "e602e8cc91fc26168b70a482c42ec63843872e97d1eee346b65d7e9c5231e15a",
+  "excluded_tuning_and_diagnostic_sources": 20,
+  "future_labels_opened": false,
+  "inner_train_sources": 32,
+  "inner_tune_sources": 8,
+  "native_runner_sha256": "bc3127fda76e20b3a11d503e4027c7dedaebf1c0a9a2d8de9b9354908def21c2",
+  "operation_key": "ctrl-answer-repair-fit40-20261110-e323-v1",
+  "original_fit_sources": 40,
+  "outer_timeout_seconds": 300,
+  "production_update": "no-update",
+  "repair_core_sha256": "4f2b7e852fe94b1e15aa084e97ea87db7b0926ac85ab735b462c992873ac3955",
+  "request_sha256": "3ea9d00f6dc1be41427272a1f79169d3b2bd4b56d8b1b97ec7693be9c9b4824e",
+  "schema": "ndu.ctrl.answer-repair-native-plan-summary.v1",
+  "state": "ready_not_dispatched",
+  "steps": 1000,
+  "trials": [
+    {
+      "l2": 0.0,
+      "learning_rate": 0.03
+    },
+    {
+      "l2": 0.1,
+      "learning_rate": 0.03
+    },
+    {
+      "l2": 0.0,
+      "learning_rate": 0.1
+    },
+    {
+      "l2": 0.1,
+      "learning_rate": 0.1
+    }
+  ],
+  "unused_future_sources": 37
+}
