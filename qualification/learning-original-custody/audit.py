@@ -40,6 +40,52 @@ def _reject_nonfinite_json(_token):
     raise ValueError('non-finite JSON constant')
 
 
+
+def _receipt_sha256(root: Path, relative: str) -> str:
+    """Hash a receipt under a pinned directory, never traversing symlinks.
+
+    Opening a leaf with O_NOFOLLOW is insufficient when an intermediate
+    directory is a symlink or is replaced between path-based checks and open.
+    Require POSIX descriptor-relative no-follow traversal; fail closed on
+    platforms without these primitives rather than falling back to a path.
+    """
+    nofollow = getattr(os, 'O_NOFOLLOW', None)
+    directory = getattr(os, 'O_DIRECTORY', None)
+    if nofollow is None or directory is None or os.open not in os.supports_dir_fd:
+        raise ValueError('descriptor-relative no-follow not supported')
+    parts = Path(relative).parts
+    if not parts or any(part in ('', '.', '..') for part in parts):
+        raise ValueError('unsafe receipt components')
+    directory_flags = os.O_RDONLY | directory | nofollow | getattr(os, 'O_NONBLOCK', 0)
+    receipt_flags = os.O_RDONLY | nofollow | getattr(os, 'O_NONBLOCK', 0)
+    parent_fd = os.open(root, directory_flags)
+    try:
+        for part in parts[:-1]:
+            next_fd = os.open(part, directory_flags, dir_fd=parent_fd)
+            os.close(parent_fd)
+            parent_fd = next_fd
+        receipt_fd = os.open(parts[-1], receipt_flags, dir_fd=parent_fd)
+        try:
+            opened = os.fstat(receipt_fd)
+            if not stat.S_ISREG(opened.st_mode) or opened.st_size > MAX_RECEIPT_BYTES:
+                raise ValueError('receipt not regular or exceeds maximum bytes')
+            digest = hashlib.sha256()
+            consumed = 0
+            while True:
+                chunk = os.read(receipt_fd, min(1024 * 1024, MAX_RECEIPT_BYTES - consumed + 1))
+                if not chunk:
+                    break
+                consumed += len(chunk)
+                if consumed > MAX_RECEIPT_BYTES:
+                    raise ValueError('receipt grew beyond maximum bytes')
+                digest.update(chunk)
+            return digest.hexdigest()
+        finally:
+            os.close(receipt_fd)
+    finally:
+        os.close(parent_fd)
+
+
 def inspect(manifest: Path) -> dict:
     issues = []
     total = Decimal('0')
@@ -137,30 +183,7 @@ def inspect(manifest: Path) -> dict:
         seen_paths.add(path)
         seen_digests.add(sha)
         try:
-            p = root / path
-            if p.is_symlink() or not p.is_file() or not p.resolve().is_relative_to(root):
-                raise ValueError('unsafe file')
-            # Pin the opened descriptor: a file may be replaced or grow after
-            # path checks. Never stream unlimited bytes from an untrusted owner.
-            flags = os.O_RDONLY | getattr(os, 'O_NOFOLLOW', 0) | getattr(os, 'O_NONBLOCK', 0)
-            fd = os.open(p, flags)
-            try:
-                opened = os.fstat(fd)
-                if not stat.S_ISREG(opened.st_mode) or opened.st_size > MAX_RECEIPT_BYTES:
-                    raise ValueError('receipt not regular or exceeds maximum bytes')
-                digest = hashlib.sha256()
-                consumed = 0
-                while True:
-                    chunk = os.read(fd, min(1024 * 1024, MAX_RECEIPT_BYTES - consumed + 1))
-                    if not chunk:
-                        break
-                    consumed += len(chunk)
-                    if consumed > MAX_RECEIPT_BYTES:
-                        raise ValueError('receipt grew beyond maximum bytes')
-                    digest.update(chunk)
-                digest = digest.hexdigest()
-            finally:
-                os.close(fd)
+            digest = _receipt_sha256(root, path)
             if digest != sha:
                 fail(f'receipt_bytes_mismatch:{stage}')
             else:
