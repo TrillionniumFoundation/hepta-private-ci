@@ -8,6 +8,8 @@ on:
       - scripts/ndu_real_runtime/actor.py
       - scripts/ndu_real_runtime/episode.py
       - scripts/ndu_real_runtime/test_content_identity_native.py
+      - scripts/ndu_real_runtime/metacontrol_value_gate.py
+      - scripts/ndu_real_runtime/test_metacontrol_value_gate.py
   workflow_dispatch:
 
 permissions:
@@ -171,5 +173,97 @@ jobs:
         with:
           name: ctrl-content-identity-native-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/ctrl-content-identity-native/
+          if-no-files-found: error
+          retention-days: 14
+
+  finite-value-contracts:
+    name: Finite-cohort value arithmetic contracts
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    defaults:
+      run:
+        shell: bash
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      PYTHONPATH: scripts:.
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - name: Check out exact source without retained credentials
+        id: checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Set up pinned Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: "3.12.14"
+
+      - name: Bind source and runtime outside the checkout
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          import platform
+          import subprocess
+          out = Path(os.environ["RUNNER_TEMP"]) / "ctrl-finite-value-contracts"
+          out.mkdir()
+          tested = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
+          assert tested == os.environ["SOURCE_SHA"], "checkout differs from source head"
+          assert platform.python_version() == "3.12.14"
+          files = ["scripts/ndu_real_runtime/metacontrol_value_gate.py",
+                   "scripts/ndu_real_runtime/test_metacontrol_value_gate.py"]
+          record = {"schema": "ctrl.finite-value.identity.v1", "source_sha": tested,
+                    "python": platform.python_version(),
+                    "files_sha256": {p: hashlib.sha256(Path(p).read_bytes()).hexdigest() for p in files},
+                    "scope": "finite-cohort arithmetic contracts only",
+                    "real_paired_experiment_performed": False, "adoption_authorized": False}
+          (out / "identity.json").write_text(json.dumps(record, indent=2))
+          PY
+
+      - name: Require at least four non-skipped value-contract tests
+        run: |
+          set -euo pipefail
+          python - <<'PY' 2>&1 | tee "$RUNNER_TEMP/ctrl-finite-value-contracts/tests.log"
+          import json
+          import os
+          from pathlib import Path
+          import unittest
+          suite = unittest.defaultTestLoader.loadTestsFromName("ndu_real_runtime.test_metacontrol_value_gate")
+          result = unittest.TextTestRunner(verbosity=2).run(suite)
+          passed = (result.wasSuccessful() and result.testsRun >= 4
+                    and not result.skipped and not result.expectedFailures)
+          record = {"schema": "ctrl.finite-value.tests.v1",
+                    "status": "PASSED_CONTRACTS" if passed else "HOLD",
+                    "executed_tests": result.testsRun, "errors": len(result.errors),
+                    "failures": len(result.failures), "skipped": len(result.skipped),
+                    "expected_failures": len(result.expectedFailures),
+                    "real_paired_experiment_performed": False,
+                    "policy_improvement_established": False, "adoption_authorized": False}
+          out = Path(os.environ["RUNNER_TEMP"]) / "ctrl-finite-value-contracts"
+          (out / "tests.json").write_text(json.dumps(record, indent=2))
+          print(json.dumps(record, sort_keys=True))
+          raise SystemExit(0 if passed else 1)
+          PY
+
+      - name: Require unchanged source and index
+        if: always() && steps.checkout.outcome == 'success'
+        run: |
+          set -euo pipefail
+          git diff --exit-code
+          git diff --cached --exit-code
+          test -z "$(git status --porcelain --untracked-files=normal)"
+
+      - name: Retain finite-value contract records on every outcome
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: ctrl-finite-value-contracts-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/ctrl-finite-value-contracts/
           if-no-files-found: error
           retention-days: 14
