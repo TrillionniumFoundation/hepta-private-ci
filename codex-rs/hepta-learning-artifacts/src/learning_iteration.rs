@@ -149,7 +149,8 @@ impl LearningIterationCoordinatorV1 {
         if self.snapshot.receipts.iter().any(|receipt| {
             matches!(
                 receipt.observation,
-                LearningIterationObservationV1::Evaluation {
+                LearningIterationObservationV1::TrainingNoUpdateV2(_)
+                | LearningIterationObservationV1::Evaluation {
                     disposition: LearningEvaluationDispositionV1::NoUpdate,
                     ..
                 } | LearningIterationObservationV1::Proposal {
@@ -192,6 +193,7 @@ impl LearningIterationCoordinatorV1 {
                 disposition: LearningEvaluationDispositionV1::NoUpdate,
                 ..
             })
+            | Some(LearningIterationObservationV1::TrainingNoUpdateV2(_))
             | Some(LearningIterationObservationV1::Proposal { .. }) => {
                 Some(LearningIterationStageV1::Selection)
             }
@@ -205,7 +207,7 @@ impl LearningIterationCoordinatorV1 {
         }
     }
 
-    /// The evaluated decision's bundle, not an adoption grant. NoUpdate keeps
+    /// The authenticated decision's bundle, not an adoption grant. NoUpdate keeps
     /// the exact deployed bundle; an update requires the anchored proposal.
     pub fn next_task_bundle(&self) -> Option<&CellCompatibilityBundleV1> {
         self.snapshot
@@ -213,7 +215,8 @@ impl LearningIterationCoordinatorV1 {
             .iter()
             .rev()
             .find_map(|receipt| match &receipt.observation {
-                LearningIterationObservationV1::Evaluation {
+                LearningIterationObservationV1::TrainingNoUpdateV2(_)
+                | LearningIterationObservationV1::Evaluation {
                     disposition: LearningEvaluationDispositionV1::NoUpdate,
                     ..
                 }
@@ -377,6 +380,18 @@ impl LearningIterationCoordinatorV1 {
                         .and_then(|candidate| candidate.training_lineage.as_ref())
                         .is_some_and(|lineage| lineage.evaluation_profile == *evaluation_profile)
             }
+            LearningIterationObservationV1::TrainingNoUpdateV2(outcome) => {
+                // This authority-free core checks the original Dataset and
+                // baseline. The registered scope owner must additionally verify
+                // update_rule; a nonzero digest is not authorization.
+                outcome.retained_bundle == request.selected_bundle.digest()?
+                    && !outcome.update_rule.is_zero()
+                    && matches!(self.snapshot.receipts.get(1).map(|receipt| &receipt.observation),
+                        Some(LearningIterationObservationV1::Dataset { snapshot_digest, .. })
+                            if outcome.dataset == *snapshot_digest)
+                    && (1..=b.maximum_training_steps).contains(&outcome.steps)
+                    && (1..=b.maximum_training_milliseconds).contains(&outcome.milliseconds)
+            }
             LearningIterationObservationV1::Proposal {
                 candidate_bundle,
                 proposal_id,
@@ -450,3 +465,7 @@ mod retained_tests;
 #[cfg(test)]
 #[path = "learning_iteration_profile_tests.rs"]
 mod profile_tests;
+
+#[cfg(test)]
+#[path = "learning_iteration_training_no_update_tests.rs"]
+mod training_no_update_tests;

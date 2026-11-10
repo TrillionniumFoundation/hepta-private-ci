@@ -105,6 +105,8 @@ pub use learning_iteration_types::LearningEvaluationDispositionV1;
 pub use learning_iteration_types::LearningIterationBudgetV1;
 pub use learning_iteration_types::LearningIterationDispositionV1;
 pub use learning_iteration_types::LearningIterationObservationV1;
+pub use learning_iteration_types::LearningTrainingNoUpdateReasonV2;
+pub use learning_iteration_types::LearningTrainingNoUpdateV2;
 pub use learning_iteration_types::LearningIterationOwnersV1;
 pub use learning_iteration_types::LearningIterationReceiptV1;
 pub use learning_iteration_types::LearningIterationRequestV1;

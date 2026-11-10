@@ -10,6 +10,9 @@ use super::*;
 #[path = "learning_iteration_delivery_runtime_tests.rs"]
 mod delivery_runtime_tests;
 
+#[path = "learning_iteration_training_no_update_auth_tests.rs"]
+mod training_no_update_auth_tests;
+
 #[derive(Clone, Copy)]
 enum Decision {
     EvaluatedNoUpdate,
@@ -21,6 +24,7 @@ enum Decision {
 enum Trust {
     Independent,
     SharedController,
+    SharedSelectorController,
     RevokedEvaluator,
 }
 
@@ -49,7 +53,8 @@ fn recovery_ports(decision: Decision, trust: Trust) -> IterationPorts {
                 principal: principal.clone(),
                 controller_id: id(&format!(
                     "recovery-controller-{}",
-                    if matches!(trust, Trust::SharedController) && index == 2 {
+                    if (matches!(trust, Trust::SharedController) && index == 2)
+                        || (matches!(trust, Trust::SharedSelectorController) && index == 1) {
                         0
                     } else {
                         index

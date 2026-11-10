@@ -374,6 +374,8 @@ impl LearningIterationRuntimeBootstrapV1 {
         let restored = LearningIterationCoordinatorV1::from_snapshot(snapshot)?;
         if let Some(scope) = &self.scope {
             scope.validate_snapshot(restored.snapshot())?;
+        } else if restored.snapshot().training_no_update_v2().is_some() {
+            return Err(LearningIterationRuntimeErrorV1::WrongScope);
         }
         crate::learning_iteration_auth::authenticate_restored_iteration_v1(
             state,
@@ -410,6 +412,8 @@ impl LearningIterationRuntimeBootstrapV1 {
                 let restored = LearningIterationCoordinatorV1::from_snapshot(snapshot)?;
                 if let Some(scope) = &self.scope {
                     scope.validate_snapshot(restored.snapshot())?;
+                } else if restored.snapshot().training_no_update_v2().is_some() {
+                    return Err(LearningIterationRuntimeErrorV1::WrongScope);
                 }
                 require_ready(state)?;
                 if restored.next_stage().is_some()
@@ -468,6 +472,12 @@ impl LearningIterationRuntimeBootstrapV1 {
                 } else {
                     call.await?
                 };
+                if self.scope.is_none()
+                    && matches!(receipt.observation,
+                        codex_hepta_learning_artifacts::LearningIterationObservationV1::TrainingNoUpdateV2(_))
+                {
+                    return Err(LearningIterationRuntimeErrorV1::WrongScope);
+                }
                 crate::learning_iteration_auth::authenticate_iteration_receipt_v1(
                     state,
                     self.ports.as_ref(),

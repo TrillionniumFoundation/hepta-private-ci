@@ -13,6 +13,9 @@ mod scope_tests;
 
 #[path = "learning_iteration_checkpoint_profile_tests.rs"]
 mod profile_tests;
+
+#[path = "learning_iteration_checkpoint_training_no_update_tests.rs"]
+mod training_no_update_tests;
 use support::Decision;
 use support::FileCas;
 use support::OWNER;

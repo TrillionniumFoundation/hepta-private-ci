@@ -11,6 +11,9 @@ pub(super) const MAX_BYTES: usize = 8192;
 // The snapshot codec version is independent of the outer scope schema (1/2).
 // HEPLCP01 omitted the frozen evaluation profile and is never inferred or upgraded.
 const MAGIC: &[u8; 8] = b"HEPLCP02";
+// Only the explicit trainer-NoUpdate path uses this format. Historical
+// snapshots retain their exact HEPLCP02 encoding and signed observation bytes.
+const TRAINER_NO_UPDATE_MAGIC: &[u8; 8] = b"HEPLCP03";
 pub(super) const MAX_RECEIPTS: usize = 7;
 const MAX_ID_BYTES: usize = 128;
 
@@ -19,7 +22,11 @@ pub(super) fn encode(snapshot: &LearningIterationSnapshotV1) -> Result<Vec<u8>, 
         return Err(Error::Capacity);
     }
     let mut w = Writer(Vec::with_capacity(MAX_BYTES));
-    w.put(MAGIC)?;
+    w.put(if snapshot.training_no_update_v2().is_some() {
+        TRAINER_NO_UPDATE_MAGIC
+    } else {
+        MAGIC
+    })?;
     let request = &snapshot.request;
     for id in [
         &request.operation_id,
@@ -190,6 +197,17 @@ pub(super) fn encode(snapshot: &LearningIterationSnapshotV1) -> Result<Vec<u8>, 
                     w.digest(*digest)?;
                 }
             }
+            LearningIterationObservationV1::TrainingNoUpdateV2(outcome) => {
+                w.u8(/*value*/ 8)?;
+                w.u8(match outcome.reason {
+                    LearningTrainingNoUpdateReasonV2::QuantizedWeightsUnchanged => 0,
+                })?;
+                for digest in [outcome.retained_bundle, outcome.dataset, outcome.update_rule] {
+                    w.digest(digest)?;
+                }
+                w.u64(outcome.steps)?;
+                w.u64(outcome.milliseconds)?;
+            }
         }
     }
     w.digest(snapshot.head_digest)?;
@@ -201,7 +219,9 @@ pub(super) fn decode(bytes: &[u8]) -> Result<LearningIterationSnapshotV1, Error>
         return Err(Error::Capacity);
     }
     let mut r = Reader { bytes, offset: 0 };
-    if &r.take::<8>()? != MAGIC {
+    let magic = r.take::<8>()?;
+    let trainer_no_update = &magic == TRAINER_NO_UPDATE_MAGIC;
+    if &magic != MAGIC && !trainer_no_update {
         return Err(Error::InvalidRecord);
     }
     let request = LearningIterationRequestV1 {
@@ -313,6 +333,16 @@ pub(super) fn decode(bytes: &[u8]) -> Result<LearningIterationSnapshotV1, Error>
                     committed_step_receipt: r.digest()?,
                     task_owner_publication: r.digest()?,
                 },
+                8 if trainer_no_update => {
+                    let reason = match r.u8()? {
+                        0 => LearningTrainingNoUpdateReasonV2::QuantizedWeightsUnchanged,
+                        _ => return Err(Error::InvalidRecord),
+                    };
+                    LearningIterationObservationV1::TrainingNoUpdateV2(LearningTrainingNoUpdateV2 {
+                        retained_bundle: r.digest()?, dataset: r.digest()?, update_rule: r.digest()?,
+                        steps: r.u64()?, milliseconds: r.u64()?, reason,
+                    })
+                }
                 _ => return Err(Error::InvalidRecord),
             },
         });
@@ -323,7 +353,7 @@ pub(super) fn decode(bytes: &[u8]) -> Result<LearningIterationSnapshotV1, Error>
         receipts,
         head_digest: r.digest()?,
     };
-    if r.offset != bytes.len() {
+    if r.offset != bytes.len() || snapshot.training_no_update_v2().is_some() != trainer_no_update {
         return Err(Error::InvalidRecord);
     }
     LearningIterationCoordinatorV1::from_snapshot(snapshot.clone()).map_err(Error::Snapshot)?;

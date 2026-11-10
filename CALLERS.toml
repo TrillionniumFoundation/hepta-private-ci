@@ -2789,11 +2789,11 @@ forbidden = []
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_codec.rs"
-required = ["const MAGIC: &[u8; 8] = b\"HEPLCP02\"", "w.digest(request.evaluation_profile)?", "evaluation_profile: r.digest()?"]
+required = ["const MAGIC: &[u8; 8] = b\"HEPLCP02\"", "const TRAINER_NO_UPDATE_MAGIC: &[u8; 8] = b\"HEPLCP03\"", "w.digest(request.evaluation_profile)?", "evaluation_profile: r.digest()?", "8 if trainer_no_update =>", "snapshot.training_no_update_v2().is_some() != trainer_no_update"]
 forbidden = []
 required_function_order = [
-  { function = "fn encode(", sequence = ["w.put(MAGIC)?", "w.digest(request.selected_artifact_digest)?", "w.digest(request.evaluation_profile)?", "w.bundle(&request.selected_bundle)?"] },
-  { function = "fn decode(", sequence = ["&r.take::<8>()? != MAGIC", "selected_artifact_digest: r.digest()?", "evaluation_profile: r.digest()?", "selected_bundle: r.bundle()?"] },
+  { function = "fn encode(", sequence = ["w.put(if snapshot.training_no_update_v2().is_some()", "TRAINER_NO_UPDATE_MAGIC", "MAGIC", "w.digest(request.selected_artifact_digest)?", "w.digest(request.evaluation_profile)?", "w.bundle(&request.selected_bundle)?"] },
+  { function = "fn decode(", sequence = ["let magic = r.take::<8>()?", "let trainer_no_update = &magic == TRAINER_NO_UPDATE_MAGIC", "if &magic != MAGIC && !trainer_no_update", "selected_artifact_digest: r.digest()?", "evaluation_profile: r.digest()?", "selected_bundle: r.bundle()?"] },
 ]
 
 [[boundary]]
@@ -2999,3 +2999,33 @@ required_function_order = [
     { function = "fn recover(", sequence = ["job_key(&plan, &batch, rule)?", "witness.current()?", "minimum.sequence.checked_sub(1)", "LockedFileProductEvaluationExecutionStoreV1::recover(", "key.binding_digest", "checkpoint_digest", "witness.compare_and_swap(Some(minimum), current)", "Ok(Self"] },
     { function = "fn job_key(", sequence = ["plan.validate_fit_input(batch, rule)?", "plan.prefix.request.operation_id.clone()", "plan.prefix.head_digest.as_array()", "plan.scope.binding().as_array()", "plan.baseline.effective_weights_digest().as_array()", "batch.digest().as_array()", "optimizer.as_array()"] },
 ]
+
+# Original trainer NoUpdate is admitted only against the separately frozen scope.
+# It never gains evaluator, selector or observation authority from a codec tag.
+[[protected_file]]
+path = "codex-rs/hepta-learning-artifacts/src/learning_iteration_scope.rs"
+required = ["LearningIterationObservationV1::TrainingNoUpdateV2(outcome)", "outcome.update_rule != self.update_rule"]
+forbidden = []
+required_function_order = [{ function = "fn validate_observation(", sequence = ["LearningIterationObservationV1::TrainingNoUpdateV2(outcome)", "outcome.update_rule != self.update_rule", "return Err(LearningIterationError::UpdateScopeMismatch)", "let LearningIterationObservationV1::Training"] }]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/learning_iteration_auth.rs"
+required = ["LearningIterationStageV1::Selection if snapshot.training_no_update_v2().is_some()", "LearningIterationStageV1::Training => LearningEvidenceRoleV1::Generator", "LearningIterationStageV1::Selection => LearningEvidenceRoleV1::Selector", "verify_signed_actor_separation(&prior, &current, clock()?)"]
+forbidden = ["SigningKey", "AllowVerifier", "permit_all"]
+required_function_order = [{ function = "fn authenticate_iteration_receipt_at_clock_v1(", sequence = ["verify_receipt(ports, verifier, snapshot, receipt, clock).await?", "LearningIterationStageV1::Selection if snapshot.training_no_update_v2().is_some()", "&[LearningIterationStageV1::Training]", "LearningIterationStageV1::Selection =>", "LearningIterationStageV1::Evaluation", "LearningIterationStageV1::NextUse =>", "LearningIterationStageV1::Training", "LearningIterationStageV1::Selection", "verify_signed_actor_separation(&prior, &current, clock()?)"] }]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/learning_iteration.rs"
+required = ["else if restored.snapshot().training_no_update_v2().is_some()", "self.scope.is_none()", "LearningIterationObservationV1::TrainingNoUpdateV2(_)"]
+forbidden = []
+required_function_order = [{ function = "fn process_readback(", sequence = ["scope.validate_snapshot(restored.snapshot())?", "else if restored.snapshot().training_no_update_v2().is_some()", "return Err(LearningIterationRuntimeErrorV1::WrongScope)", "authenticate_restored_iteration_v1("] }]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/learning_iteration_checkpoint.rs"
+required = ["else if next.training_no_update_v2().is_some()", "else if snapshot.training_no_update_v2().is_some()"]
+forbidden = []
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport.rs"
+required = ["else if snapshot.training_no_update_v2().is_some()"]
+forbidden = []
