@@ -11,7 +11,7 @@ pub(super) const Q: i64 = 1 << 24;
 const H: i64 = 8 * Q;
 const MAX_ASSET: u64 = 32_780;
 
-#[derive(Eq, PartialEq)]
+#[derive(Clone, Eq, PartialEq)]
 pub(super) struct Matrix {
     pub(super) rows: usize,
     pub(super) cols: usize,
@@ -35,23 +35,33 @@ impl Matrix {
     pub(super) fn apply(&self, input: &[i64]) -> Vec<i64> {
         self.values
             .chunks_exact(self.cols)
-            .map(|row| {
-                // Width <= 64 and each operand <= 8*2^24: |sum| <= 2^60,
-                // well within i128. Private matrices cannot bypass the decoder.
-                let sum: i128 = row
-                    .iter()
-                    .zip(input)
-                    .map(|(a, b)| i128::from(*a) * i128::from(*b))
-                    .sum();
-                // Every layer truncates toward zero once after the integer dot;
-                // no float conversion or implementation-dependent accumulation.
-                (sum / i128::from(Q)).clamp(-i128::from(H), i128::from(H)) as i64
-            })
+            .map(|row| row_output(row, input))
             .collect()
+    }
+
+    pub(super) fn encode(&self) -> Vec<u8> {
+        let mut bytes = b"HQ24M001".to_vec();
+        bytes.extend_from_slice(&(self.rows as u16).to_le_bytes());
+        bytes.extend_from_slice(&(self.cols as u16).to_le_bytes());
+        for value in &self.values {
+            bytes.extend_from_slice(&value.to_le_bytes());
+        }
+        bytes
     }
 }
 
-#[derive(Eq, PartialEq)]
+pub(super) fn row_output(row: &[i64], input: &[i64]) -> i64 {
+    // Width <= 64 and each operand <= 8*2^24: |sum| <= 2^60.
+    // Training and serving share this exact truncation and clipping operation.
+    let sum: i128 = row
+        .iter()
+        .zip(input)
+        .map(|(a, b)| i128::from(*a) * i128::from(*b))
+        .sum();
+    (sum / i128::from(Q)).clamp(-i128::from(H), i128::from(H)) as i64
+}
+
+#[derive(Clone, Eq, PartialEq)]
 pub(super) struct Adapter {
     pub(super) down: Matrix,
     pub(super) up: Matrix,

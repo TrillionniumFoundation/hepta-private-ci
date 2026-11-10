@@ -617,3 +617,6 @@ mod private_head;
 
 #[path = "cell_composed_q24_training_plan_tests.rs"]
 mod training_plan;
+
+#[path = "cell_composed_q24_training_tests.rs"]
+mod training;

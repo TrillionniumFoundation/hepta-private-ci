@@ -2924,8 +2924,8 @@ id = "cell_q24_single_head_training_plan"
 symbol = "CellQ24SingleHeadTrainingPlanV1::from_dataset_cut"
 definition_path = "codex-rs/hepta-agentd/src/cell_composed_q24_training_plan.rs"
 definition_markers = ["pub fn from_dataset_cut(", "FrozenLearningScopeV2::freeze("]
-product_callers = []
-caller_markers = []
+product_callers = ["codex-rs/hepta-agentd/src/cell_composed_q24_training.rs"]
+caller_markers = ["CellQ24SingleHeadTrainingPlanV1::from_dataset_cut("]
 
 [[boundary]]
 id = "cell_q24_single_head_candidate_validation"

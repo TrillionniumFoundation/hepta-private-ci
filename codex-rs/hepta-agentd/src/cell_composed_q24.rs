@@ -40,7 +40,14 @@ use codec::Matrix;
 #[path = "cell_composed_q24_training_plan.rs"]
 mod training_plan;
 pub use training_plan::CellQ24SingleHeadTrainingPlanV1;
+pub use training_plan::CellQ24SgdRuleV1;
+pub use training_plan::CellQ24TrainedCandidateV1;
+pub use training_plan::CellQ24TrainingBatchV1;
+pub use training_plan::CellQ24TrainingErrorV1;
+pub use training_plan::CellQ24TrainingMetricsV1;
+pub use training_plan::CellQ24TrainingOutcomeV1;
 pub use training_plan::CellQ24TrainingPlanErrorV1;
+pub use training_plan::CellQ24TrainingSampleV1;
 pub use training_plan::cell_q24_single_head_update_rule_v1;
 
 pub struct CellQ24ModelFilesV1 {
@@ -176,6 +183,21 @@ impl LoadedCellQ24ModelV1 {
     }
     pub fn output_width(&self) -> usize {
         self.heads.rows / 2
+    }
+
+    fn hidden(&self, input: &[i64]) -> Vec<i64> {
+        let encoded = self.encoder.apply(input);
+        let mut hidden = self.base.apply(&encoded);
+        let apply = |adapter: &Option<Adapter>| {
+            adapter.as_ref().map_or_else(
+                || vec![0; hidden.len()],
+                |adapter| adapter.up.apply(&adapter.down.apply(&encoded)),
+            )
+        };
+        let organ = apply(&self.organ);
+        let cell = apply(&self.cell);
+        codec::combine(&mut hidden, &organ, &cell);
+        hidden
     }
 
     /// Identity of the actual executable factor graph. Q24 rounding makes it
@@ -314,17 +336,7 @@ impl CellGenerationWorkerV2 for CellQ24GenerationWorkerV1 {
         } else if initial >= request.deadline_micros {
             CellGenerationDispositionV2::DeadlineExceeded
         } else if let Ok(input) = codec::input(&request.input, self.model.encoder.cols) {
-            let encoded = self.model.encoder.apply(&input);
-            let mut hidden = self.model.base.apply(&encoded);
-            let apply = |adapter: &Option<Adapter>| {
-                adapter.as_ref().map_or_else(
-                    || vec![0; hidden.len()],
-                    |adapter| adapter.up.apply(&adapter.down.apply(&encoded)),
-                )
-            };
-            let organ = apply(&self.model.organ);
-            let cell = apply(&self.model.cell);
-            codec::combine(&mut hidden, &organ, &cell);
+            let hidden = self.model.hidden(&input);
             let heads = self.model.heads.apply(&hidden);
             output.extend_from_slice(b"HQ24O001");
             output.extend_from_slice(&((heads.len() / 2) as u16).to_le_bytes());

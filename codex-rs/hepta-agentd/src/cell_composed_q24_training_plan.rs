@@ -18,6 +18,16 @@ use codex_hepta_types::Digest32;
 use super::CellQ24PrivateHeadV1;
 use super::LoadedCellQ24ModelV1;
 
+#[path = "cell_composed_q24_training.rs"]
+mod training;
+pub use training::CellQ24SgdRuleV1;
+pub use training::CellQ24TrainedCandidateV1;
+pub use training::CellQ24TrainingBatchV1;
+pub use training::CellQ24TrainingErrorV1;
+pub use training::CellQ24TrainingMetricsV1;
+pub use training::CellQ24TrainingOutcomeV1;
+pub use training::CellQ24TrainingSampleV1;
+
 #[derive(Debug, thiserror::Error)]
 pub enum CellQ24TrainingPlanErrorV1 {
     #[error("Q24 training plan binding: {0}")]
