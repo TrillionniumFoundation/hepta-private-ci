@@ -228,6 +228,9 @@ class MemoryRecord:
     observed_sequence: int
     tombstoned: bool = False
     rights_revoked: bool = False
+    # Same owner-declared logical object across corrections/tombstones. A bare
+    # event_id means an independent object, never an inferred same-key erase.
+    logical_id: str | None = None
 
 
 def select_replay(records: Iterable[MemoryRecord], *, policy: str, query_key: str,
@@ -242,12 +245,32 @@ def select_replay(records: Iterable[MemoryRecord], *, policy: str, query_key: st
     if len(entries) > 65_536 or len({e.event_id for e in entries}) != len(entries):
         raise ContractError("duplicate memory identities or oversized records")
     for e in entries:
-        if (not e.event_id or not e.key or not _valid_hash(e.source_digest)
+        if (not isinstance(e.event_id, str) or not e.event_id
+                or not isinstance(e.key, str) or not e.key
+                or not _valid_hash(e.source_digest)
                 or e.kind not in MEMORY_KINDS or type(e.observed_sequence) is not int
-                or e.observed_sequence < 0):
+                or e.observed_sequence < 0 or type(e.tombstoned) is not bool
+                or type(e.rights_revoked) is not bool
+                or (e.logical_id is not None and
+                    (not isinstance(e.logical_id, str) or not e.logical_id))):
             raise ContractError("invalid memory event")
-    eligible = [e for e in entries if not e.tombstoned and not e.rights_revoked
-                and e.observed_sequence <= now_sequence]
+    # Visible revisions must be evaluated together. Filtering each tombstone
+    # individually can resurrect an older revision from the same logical object.
+    # A shared query key alone is NOT an identity: unrelated sources may share it.
+    by_logical_id: dict[str, list[MemoryRecord]] = {}
+    for e in entries:
+        if e.observed_sequence <= now_sequence:
+            by_logical_id.setdefault(e.logical_id or e.event_id, []).append(e)
+    eligible = []
+    for versions in by_logical_id.values():
+        if (len({e.observed_sequence for e in versions}) != len(versions)
+                or len({(e.key, e.kind) for e in versions}) != 1):
+            raise ContractError("ambiguous logical revision or identity drift")
+        # Revocation / deletion is sticky within this declared logical object.
+        # No unsigned later 'active' revision may grant restoration authority.
+        if any(e.tombstoned or e.rights_revoked for e in versions):
+            continue
+        eligible.append(max(versions, key=lambda e: e.observed_sequence))
     if policy == "exact":
         ordered = sorted((e for e in eligible if e.key == query_key),
                          key=lambda e: (-e.observed_sequence, e.event_id))
