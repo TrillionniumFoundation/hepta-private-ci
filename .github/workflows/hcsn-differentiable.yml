@@ -4,10 +4,14 @@ on:
   pull_request:
     paths:
       - qualification/hcsn_differentiable/**
+      - qualification/hcsn_qvi/**
+      - qualification/hcsn_memory_controls/**
       - .github/workflows/hcsn-differentiable.yml
   push:
     paths:
       - qualification/hcsn_differentiable/**
+      - qualification/hcsn_qvi/**
+      - qualification/hcsn_memory_controls/**
       - .github/workflows/hcsn-differentiable.yml
   workflow_dispatch:
 
@@ -79,6 +83,7 @@ jobs:
         id: runtime
         run: |
           python -m pip install --disable-pip-version-check "torch==2.8.0+cpu" --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install --disable-pip-version-check "numpy==2.5.4" "mpmath==1.3.0"
           python -m pip freeze --all > "$RUNNER_TEMP/hcsn-differentiable/pip-freeze.txt"
           python - <<'PY'
           import json
@@ -86,10 +91,14 @@ jobs:
           from pathlib import Path
           import sys
           import torch
-          runtime = {"python": sys.version, "torch": torch.__version__, "cuda_build": torch.version.cuda}
+          import numpy
+          import mpmath
+          runtime = {"python": sys.version, "torch": torch.__version__, "cuda_build": torch.version.cuda,
+                     "numpy": numpy.__version__, "mpmath": mpmath.__version__}
           (Path(os.environ["RUNNER_TEMP"]) / "hcsn-differentiable/runtime.json").write_text(json.dumps(runtime, indent=2))
           assert sys.version_info[:3] == (3, 12, 3)
           assert torch.__version__ == "2.8.0+cpu" and torch.version.cuda is None
+          assert numpy.__version__ == "2.5.4" and mpmath.__version__ == "1.3.0"
           PY
 
       - name: Discover and run every qualification test
@@ -108,6 +117,32 @@ jobs:
           python -m qualification.hcsn_differentiable.error_budget \
             --output "$RUNNER_TEMP/hcsn-differentiable/error-budget.json" 2>&1 \
             | tee "$RUNNER_TEMP/hcsn-differentiable/error-budget.log"
+
+      - name: Verify historical evidence integrity and current links
+        id: evidence
+        if: ${{ !cancelled() && steps.runtime.outcome == 'success' }}
+        run: |
+          python -m qualification.hcsn_differentiable.evidence_chain \
+            --manifest qualification/hcsn_differentiable/evidence/localization-v2-20261108/MANIFEST.json \
+            --manifest qualification/hcsn_differentiable/evidence/math-closure-20261108/MANIFEST.json \
+            --markdown qualification/hcsn_differentiable/CURRENT.md \
+            --output "$RUNNER_TEMP/hcsn-differentiable/evidence-integrity.json"
+
+      - name: Check the independent finite DP and QVI oracle
+        id: qvi
+        if: ${{ !cancelled() && steps.runtime.outcome == 'success' }}
+        run: |
+          python -m unittest discover -s qualification/hcsn_qvi/tests -v 2>&1 \
+            | tee "$RUNNER_TEMP/hcsn-differentiable/qvi-tests.log"
+          python -m qualification.hcsn_qvi.run_oracle \
+            --output "$RUNNER_TEMP/hcsn-differentiable/qvi-oracle.json"
+
+      - name: Check non-diffusion memory control semantics
+        id: controls
+        if: ${{ !cancelled() && steps.runtime.outcome == 'success' }}
+        run: |
+          python -m unittest qualification.hcsn_memory_controls.test_controls -v 2>&1 \
+            | tee "$RUNNER_TEMP/hcsn-differentiable/memory-controls-tests.log"
 
       - name: Require an unchanged source and index
         id: clean
@@ -130,7 +165,7 @@ jobs:
           out = Path(os.environ["RUNNER_TEMP"]) / "hcsn-differentiable"
           out.mkdir(exist_ok=True)
           steps = json.loads(os.environ["HCSN_STEPS"])
-          required = ("checkout", "identity", "python", "runtime", "qualification", "budget", "clean")
+          required = ("checkout", "identity", "python", "runtime", "qualification", "budget", "evidence", "qvi", "controls", "clean")
           outcomes = {name: steps.get(name, {}).get("outcome", "missing") for name in required}
           passed = all(value == "success" for value in outcomes.values())
           codes = {name: int((out / (name + ".exit-code")).read_text())
@@ -154,4 +189,3 @@ jobs:
           path: ${{ runner.temp }}/hcsn-differentiable/
           if-no-files-found: error
           retention-days: 14
-
