@@ -2,9 +2,11 @@
 
 import hashlib
 import json
+import os
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from unittest import TestCase
+from unittest import TestCase, skipIf
+from unittest.mock import patch
 
 from perc1_source_reuse import audit, read_manifest
 
@@ -91,3 +93,51 @@ class SourceReuseTests(TestCase):
         save(self.new, manifest([h("4")], [h("5")], [h("6")]))
         with self.assertRaisesRegex(ValueError, "duplicate prior"):
             audit(self.new, [(self.old, self.pin), (self.old, self.pin)])
+
+    def test_output_atomic_exclusive_create_and_no_clobber(self):
+        save(self.new, manifest([h("4")], [h("5")], [h("6")]))
+        output = self.new.with_name("receipt.json")
+        from perc1_source_reuse import main
+
+        args = [
+            "perc1_source_reuse.py",
+            "--candidate",
+            str(self.new),
+            "--prior",
+            str(self.old),
+            self.pin,
+            "--output",
+            str(output),
+        ]
+        with patch("sys.argv", args):
+            self.assertEqual(main(), 0)
+            first = output.read_bytes()
+            with self.assertRaisesRegex(ValueError, "refuse to overwrite"):
+                main()
+        self.assertEqual(output.read_bytes(), first)
+        self.assertEqual(json.loads(first)["status"], "PASS_GROUP_REUSE_CHECK_ONLY")
+        if os.name == "posix":
+            self.assertEqual(output.stat().st_mode & 0o077, 0)
+
+    @skipIf(os.name == "nt", "symlink creation requires Windows privileges")
+    def test_dangling_output_symlink_fails_closed(self):
+        save(self.new, manifest([h("4")], [h("5")], [h("6")]))
+        output = self.new.with_name("receipt-link.json")
+        target = self.new.with_name("unexpected-created.json")
+        output.symlink_to(target)
+        from perc1_source_reuse import main
+
+        args = [
+            "perc1_source_reuse.py",
+            "--candidate",
+            str(self.new),
+            "--prior",
+            str(self.old),
+            self.pin,
+            "--output",
+            str(output),
+        ]
+        with patch("sys.argv", args):
+            with self.assertRaisesRegex(ValueError, "refuse to overwrite"):
+                main()
+        self.assertFalse(target.exists())
