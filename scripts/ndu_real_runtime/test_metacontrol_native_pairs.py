@@ -6,10 +6,35 @@ import tempfile
 import time
 import unittest
 from .metacontrol_native_pairs import bind_public_intervention, collect
+from .metacontrol_macro_contract import sha
 from .test_macro_pair_fixtures import FixtureHost, plan
 
 
 class NativePairTests(unittest.TestCase):
+    def test_effective_control_plan_uses_actual_default_and_rejects_nonreset(self):
+        for fields, allowed in (
+            ({}, True),
+            ({"memory_mode": "reset"}, True),
+            ({"memory_mode": "persistent"}, False),
+            ({"memory_mode": False}, False),
+            ({"memory_mode": True}, False),
+            ({"memory_mode": None}, False),
+        ):
+            with self.subTest(fields=fields), tempfile.TemporaryDirectory() as tmp:
+                root = Path(tmp)
+                frozen = plan(root)
+                path = Path(frozen["profile"]["control_plan"])
+                raw = json.dumps({"control": fields}).encode()
+                path.write_bytes(raw)
+                frozen["profile"]["control_plan_sha256"] = sha(raw)
+                if allowed:
+                    result = collect(frozen, root / "out", host_class=FixtureHost)
+                    self.assertEqual(result["completed_pairs"], 1)
+                else:
+                    with self.assertRaises(ValueError):
+                        collect(frozen, root / "out", host_class=FixtureHost)
+                    self.assertFalse((root / "out").exists())
+
     def test_fixed_suffix_both_branches_and_fixture_scope(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
