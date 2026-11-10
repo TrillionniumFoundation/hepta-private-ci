@@ -125,6 +125,26 @@ impl ActionCheckPlanV1 {
         {
             return Err(ActionSkillError::Invocation);
         }
+        // Unknown availability must not bypass the bounds on supplied evidence.
+        // Validate each present clock before serializing it into the receipt.
+        let source_clock = match &self.timing {
+            ActionCheckTimeV1::Unknown => None,
+            ActionCheckTimeV1::Known { clock_id, occurred_at_ms, available_at_ms, .. } => {
+                if occurred_at_ms > available_at_ms {
+                    return Err(ActionSkillError::Observation);
+                }
+                Some(clock_id)
+            }
+        };
+        let current_clock = match current {
+            ActionCheckClockV1::Unknown => None,
+            ActionCheckClockV1::Known { clock_id, .. } => Some(clock_id),
+        };
+        if source_clock.into_iter().chain(current_clock).any(|id| {
+            id.is_empty() || id.len() > 128 || id.chars().any(char::is_whitespace)
+        }) {
+            return Err(ActionSkillError::Observation);
+        }
         let fresh = match (&self.timing, current) {
             (ActionCheckTimeV1::Unknown, _) | (_, ActionCheckClockV1::Unknown) => false,
             (
@@ -136,12 +156,6 @@ impl ActionCheckPlanV1 {
                 },
                 ActionCheckClockV1::Known { clock_id: current_clock, at_ms },
             ) => {
-                if [clock_id, current_clock].into_iter().any(|id| {
-                    id.is_empty() || id.len() > 128 || id.chars().any(char::is_whitespace)
-                }) || occurred_at_ms > available_at_ms
-                {
-                    return Err(ActionSkillError::Observation);
-                }
                 if clock_id != current_clock {
                     false
                 } else if available_at_ms > at_ms {

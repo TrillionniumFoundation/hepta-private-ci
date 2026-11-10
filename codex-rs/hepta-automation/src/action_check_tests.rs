@@ -130,3 +130,19 @@ fn plan_identity_changes_with_pins_and_original_attempt_is_required() {
     plan.estimate.error_ppm = 1_000_001;
     assert_eq!(plan.assess(&plan.binding, &now()), Err(ActionSkillError::Invocation));
 }
+
+#[test]
+fn unknown_clock_does_not_bypass_present_evidence_bounds() {
+    let mut plan = plan();
+    plan.timing = ActionCheckTimeV1::Unknown;
+    let oversized = ActionCheckClockV1::Known { clock_id: "x".repeat(129), at_ms: 30 };
+    assert_eq!(plan.assess(&plan.binding, &oversized), Err(ActionSkillError::Observation));
+    plan.timing = ActionCheckTimeV1::Known {
+        clock_id: "x".repeat(129), occurred_at_ms: 10, available_at_ms: 20, max_age_ms: 20,
+    };
+    assert_eq!(plan.assess(&plan.binding, &ActionCheckClockV1::Unknown), Err(ActionSkillError::Observation));
+    plan.timing = ActionCheckTimeV1::Known {
+        clock_id: "same-host-clock".to_string(), occurred_at_ms: 21, available_at_ms: 20, max_age_ms: 20,
+    };
+    assert_eq!(plan.assess(&plan.binding, &ActionCheckClockV1::Unknown), Err(ActionSkillError::Observation));
+}
