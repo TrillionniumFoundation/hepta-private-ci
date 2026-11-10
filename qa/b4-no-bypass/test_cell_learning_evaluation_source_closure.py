@@ -133,10 +133,16 @@ class CellLearningEvaluationSourceClosureTests(unittest.TestCase):
     def test_checkpoint_codec_preserves_request_profile_without_legacy_inference(self):
         for item, marker in (
             (None, 'const MAGIC: &[u8; 8] = b"HEPLCP02"'),
-            ("fn encode(", "w.put(MAGIC)?"),
+            (None, 'const TRAINER_NO_UPDATE_MAGIC: &[u8; 8] = b"HEPLCP03"'),
+            ("fn encode(", "w.put(if snapshot.training_no_update_v2().is_some()"),
+            ("fn encode(", "TRAINER_NO_UPDATE_MAGIC"),
             ("fn encode(", "w.digest(request.evaluation_profile)?"),
-            ("fn decode(", "&r.take::<8>()? != MAGIC"),
+            ("fn decode(", "let magic = r.take::<8>()?"),
+            ("fn decode(", "let trainer_no_update = &magic == TRAINER_NO_UPDATE_MAGIC"),
+            ("fn decode(", "if &magic != MAGIC && !trainer_no_update"),
             ("fn decode(", "evaluation_profile: r.digest()?"),
+            ("fn decode(", "8 if trainer_no_update =>"),
+            ("fn decode(", "snapshot.training_no_update_v2().is_some() != trainer_no_update"),
         ):
             with self.subTest(marker=marker):
                 self.rejects(CODEC, item, marker)
