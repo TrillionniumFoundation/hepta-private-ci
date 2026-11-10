@@ -67,24 +67,32 @@ def review_native_bundle_claims(
         )
         state_digest = hashlib.sha256(state_bytes).hexdigest()
         source_digest, candidate_digest = source.digest(), candidate.digest()
-        # Reuse the already-existing native-mirror component/update check rather
-        # than defining a second policy or producer-side adoption path.
-        validated_candidate = validate_local_update(
-            cell.kernel, source, candidate, cell.trainable_scope
-        )
     except (TypeError, ValueError, OverflowError) as error:
         raise LineagePolicyError("invalid original native bundle or partition claim") from error
 
+    # Bind the untrusted Bundle wire identities before validating succession.
+    # Otherwise a changed artifact ID gets masked by an unrelated predecessor
+    # failure instead of the frozen enrollment identity mismatch.
     if (
         source_digest != cell.bundle_digest
         or source_digest != evidence.source_bundle
         or candidate_digest != evidence.candidate_bundle
-        or validated_candidate != candidate_digest
         or source.generation != cell.generation
         or candidate.generation != evidence.candidate_generation
         or source.components != asdict(cell.components)
         or candidate.components != asdict(evidence.candidate_components)
     ):
+        raise LineagePolicyError("native Bundle bytes disagree with frozen lineage declarations")
+
+    # The original native-mirror predecessor and component-scope validator is
+    # still mandatory: matching claimed digests alone is not admissibility.
+    try:
+        validated_candidate = validate_local_update(
+            cell.kernel, source, candidate, cell.trainable_scope
+        )
+    except (TypeError, ValueError, OverflowError) as error:
+        raise LineagePolicyError("invalid original native bundle or partition claim") from error
+    if validated_candidate != candidate_digest:
         raise LineagePolicyError("native Bundle bytes disagree with frozen lineage declarations")
 
     # The original bundle wire *includes* these fields. Requiring their equality
