@@ -67,6 +67,18 @@ def inspect(manifest: Path) -> dict:
         fail('next_operation_not_distinct')
     if ids[2] == ids[3]:
         fail('next_task_not_distinct')
+    # The coordinator requires a different run within the same
+    # principal/agent/cell, not merely a renamed ordinary task or operation.
+    partition_names = ('principal_id', 'agent_id', 'cell_id', 'source_run_id', 'next_run_id')
+    partition_ids = [record.get(name) for name in partition_names]
+    if any(not isinstance(x, str) or not x or len(x) > 160 for x in partition_ids):
+        fail('run_partition_identity')
+    if partition_ids[3] == partition_ids[4]:
+        fail('next_run_not_distinct')
+    expected_next_partition = dict(zip(
+        ('principal_id', 'agent_id', 'cell_id', 'run_id'),
+        (partition_ids[0], partition_ids[1], partition_ids[2], partition_ids[4])
+    ))
     baseline, chosen = record.get('baseline_bundle'), record.get('selected_bundle')
     if any(not isinstance(x, str) or not HEX64.fullmatch(x) for x in (baseline, chosen)):
         fail('version_digest')
@@ -156,6 +168,10 @@ def inspect(manifest: Path) -> dict:
                 fail('learning_next_use_unbound_to_consumer_operation')
             if entry.get('next_task_id') != ids[3]:
                 fail('learning_next_use_unbound_to_consumer_task')
+        if stage in ('next_use', 'learning_next_use') and (
+            entry.get('state_partition') != expected_next_partition
+        ):
+            fail(f'next_use_partition_mismatch:{stage}')
         expected_task = ids[3] if stage == 'next_use' else ids[2]
         if entry.get('task_id') != expected_task:
             fail(f'foreign_task:{stage}')
