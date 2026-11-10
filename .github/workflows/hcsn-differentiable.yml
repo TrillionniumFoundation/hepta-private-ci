@@ -69,6 +69,12 @@ jobs:
           assert tested == os.environ["GITHUB_SHA"], "checkout differs from the event commit"
           PY
 
+      - name: Verify P0 evidence-chain declarations (HOLDs are not passes)
+        id: provenance
+        run: |
+          python3 -m qualification.hcsn_differentiable.audit_evidence_chain \
+            --output "$RUNNER_TEMP/hcsn-differentiable/provenance.json"
+
       - name: Set up pinned Python
         id: python
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
@@ -130,7 +136,7 @@ jobs:
           out = Path(os.environ["RUNNER_TEMP"]) / "hcsn-differentiable"
           out.mkdir(exist_ok=True)
           steps = json.loads(os.environ["HCSN_STEPS"])
-          required = ("checkout", "identity", "python", "runtime", "qualification", "budget", "clean")
+          required = ("checkout", "identity", "provenance", "python", "runtime", "qualification", "budget", "clean")
           outcomes = {name: steps.get(name, {}).get("outcome", "missing") for name in required}
           passed = all(value == "success" for value in outcomes.values())
           codes = {name: int((out / (name + ".exit-code")).read_text())

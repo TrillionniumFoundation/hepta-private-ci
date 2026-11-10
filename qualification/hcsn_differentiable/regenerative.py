@@ -165,3 +165,70 @@ def basis_perpetual_value(grid, params, *, active_reward=0.4, hit_reward=1.0,
     values = torch.cat((active, phase))
     _finite("basis continuum values", values)
     return values
+
+
+@dataclass(frozen=True)
+class FirstHitRegime:
+    """Undiscounted asymptotic facts, not a differentiable training readout.
+
+    An unconditional first-hit mean is infinite if any positive probability
+    of non-hit remains. At zero drift it is infinite despite almost-sure hit.
+    The asymptotic renewal rate refers to repeated fixed reset/delay cycles,
+    not to a short-time J(t), and vanishes in both nonnegative-drift regimes.
+    """
+
+    drift_regime: str
+    log_eventual_hit_probability: float
+    eventual_hit_probability: float
+    mean_first_hit_time: float
+    reset_eventual_hit_probability: float
+    long_run_event_rate: float
+
+
+def first_hit_regime(distance, params, *, refractory):
+    """Return exact *undiscounted* Brownian hitting/renewal diagnostics.
+
+    For x>0 and mu>0, P(tau<inf)=exp(-2*mu*x/sigma**2).
+    For mu<=0 the eventual-hit probability is one. E[tau] is x/(-mu)
+    only when mu<0; at mu=0 it is infinite, and at mu>0 the non-hit
+    event makes the unconditional mean infinite. The fixed-reset
+    long-run event rate is 1/(d+x_r/(-mu)) only for mu<0; it is zero
+    for mu>=0, even though the mu=0 process hits almost surely.
+
+    The log probability is retained when the probability underflows FP64.
+    These Python-float results intentionally detach inputs and have no AD
+    contract. Do not use the drift-regime switch inside a learning graph.
+    For trainable finite-window probabilities use the existing F/G operator.
+    """
+    xr = _check_parameters(params)
+    _policy(refractory, 0.0, 0.0, True)
+    x = _tensor(distance, params.mu)
+    _finite("distance", x)
+    if x.ndim != 0 or bool(x < 0):
+        raise ValueError("asymptotic first-hit distance must be one nonnegative scalar")
+    mu = float(params.mu.detach())
+    sigma2 = float(params.sigma.detach()) ** 2
+    distance_float = float(x.detach())
+    reset_distance = float(xr.detach())
+    log_hit = -2.0 * max(0.0, mu) * distance_float / sigma2
+    log_reset_hit = -2.0 * max(0.0, mu) * reset_distance / sigma2
+    if mu < 0.0:
+        regime = "negative"
+        mean_hit = distance_float / -mu
+        rate = 1.0 / (refractory + reset_distance / -mu)
+    elif mu == 0.0:
+        regime = "zero"
+        mean_hit = 0.0 if distance_float == 0.0 else math.inf
+        rate = 0.0
+    else:
+        regime = "positive"
+        mean_hit = 0.0 if distance_float == 0.0 else math.inf
+        rate = 0.0
+    return FirstHitRegime(
+        drift_regime=regime,
+        log_eventual_hit_probability=log_hit,
+        eventual_hit_probability=math.exp(log_hit),
+        mean_first_hit_time=mean_hit,
+        reset_eventual_hit_probability=math.exp(log_reset_hit),
+        long_run_event_rate=rate,
+    )

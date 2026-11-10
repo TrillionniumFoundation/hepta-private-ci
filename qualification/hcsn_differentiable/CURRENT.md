@@ -1,5 +1,17 @@
 # HCSN research: current qualified scope
 
+> **P0 provenance review (2026-11-10, baseline 81da60b):** This page contains
+> historical reported results; the originally linked localization-v2 receipt
+> directory is not present in the reviewed Git tree. The reported 75 tests,
+> 18 interface fits, 72 updates, 90 checkpoints, and 528 audit checks must
+> **not** be reclassified as independently source-bound on this candidate
+> until their original source, logs and identity chain are restored and audited.
+> The independently readable [trainer archive](../hcsn-localization-trainer-20261108/MANIFEST.json)
+> documents a *different* five-arm, seed-101 development attempt (140
+> updates, no formal fits), not evidence for the 18-run summary. See the
+> [P0 evidence ledger](EVIDENCE_CHAIN.json) for separately checked artifacts,
+> unverified claims and the machine-readable HOLD boundary.
+
 This page supersedes the *status claims* in the immutable first math-closure
 snapshot; it does not alter that snapshot's source or execution records. The
 current source includes the stable interval-probability repair. Its native
@@ -10,9 +22,11 @@ Six real model interfaces each completed three independently initialized runs:
 **zero**. There is no model-superiority, full-domain, energy-efficiency, or
 repository-wide CI-pass claim.
 
-The source-bound receipts and failures are indexed in
-[the new evidence record](evidence/localization-v2-20261108/README.md).
-The historical [math-closure snapshot](evidence/math-closure-20261108/README.md)
+The currently accessible source-bound receipts are the separate
+[trainer-development archive](../hcsn-localization-trainer-20261108/README.md)
+and [P0 evidence ledger](EVIDENCE_CHAIN.json). The missing localization-v2
+receipt cannot be cited as a checked source. The historical
+[math-closure snapshot](evidence/math-closure-20261108/README.md)
 retains its original 71-test result and blocked data attempt; those numbers are
 historical and are not substituted for the new execution.
 
@@ -104,10 +118,10 @@ declared event-indexed dynamics plus the common elapsed-time feature. S4D is
 the SSM arm; it is not named Mamba. Attention was causal. HCSN physics stayed
 frozen and matched the new numerical receipt.
 
-An independent audit checked all 90 checkpoints, the 18 logits/result records,
+The historical localization-v2 summary reports that an independent audit checked 90 checkpoints, the 18 logits/result records,
 the actual changed tensors at 72 optimizer updates, independent initialization
 identities, source rows, frontend features, loaded dependency hashes, and frozen
-HCSN physics. All **528 checks passed**. A separate final read verified all
+HCSN physics. It reports **528 checks passed**, but those original receipts were not present at the baseline reference inspected for this P0 review, so that count is not independently revalidated here. A reported separate final read verified all
 36 live source files against the source archive. Metrics were recomputed from
 saved logits without further training or model forwards.
 
@@ -170,3 +184,7 @@ No old S81 or 170-run campaign receives completion credit. FP32, mixed precision
 GPU kernel work, long-gap strategies and HCSN-plus-attention pretraining remain
 gated on a fair real-task benefit; this interface exercise supplies no such
 benefit claim.
+
+## P0/P1 independent gate boundary (2026-11-10)
+
+Run `python -m qualification.hcsn_differentiable.audit_evidence_chain --output /new/path.json` to validate in-tree links and the available byte-pinned trainer artifacts. Its result intentionally remains `HOLD` while the localization-v2 receipts are missing. This integrity audit is neither a rerun of the reported 75 tests nor scientific admission. `first_hit_regime` in `regenerative.py` adds a **non-differentiable diagnostic** of eventual hit probability, mean first-hit time and asymptotic event rate across negative, zero and positive drift. It is not a newly qualified neural training domain. Posterior-conditioned numerical accuracy, trainable physics, full fair comparison, QVI, and hardware gates remain open.
