@@ -1,7 +1,7 @@
 """Actor-only document acquisition with measured local time and byte costs.
 
 No evaluator is accepted. Global/dense fixed/active use the existing trace
-contract; OCR-only, direct ROI and random retain explicit comparator records.
+contract; OCR-only, direct ROI, random and public-only active use comparator records.
 """
 
 import re
@@ -67,7 +67,15 @@ def terminal(dataset, episode, observations):
 
 
 def public_features(
-    dataset, episode, acquired, candidate_id, prefix, budget, representation
+    dataset,
+    episode,
+    acquired,
+    candidate_id,
+    prefix,
+    budget,
+    representation,
+    *,
+    channel="neural",
 ):
     """Only public geometry and already acquired OCR/latent evidence enter here."""
     require(
@@ -75,6 +83,7 @@ def public_features(
         "initial observation required",
     )
     require(candidate_id in episode["source_ids"], "candidate outside episode")
+    require(channel in ("neural", "public"), "unknown acquisition feature channel")
     target, candidate = _target(dataset, episode), dataset.sources[candidate_id]
     loc = candidate["locator"]
     covered = [
@@ -83,11 +92,23 @@ def public_features(
         if overlap(dataset.sources[item["source_id"]], target) == 1.0
     ]
     confidence = covered[-1]["ocr"]["confidence"] if covered else 0.0
-    initial = acquired[0]["observation"]
-    require(
-        acquired[0]["encoded"] and acquired[0]["representation"] == representation,
-        "acquisition features require matching executed initial encoder",
-    )
+    if channel == "public":
+        require(
+            all(
+                item["encoded"] is False and item["cost"]["encoding"] == 0
+                for item in acquired
+            ),
+            "public control requires fresh OCR-only observations",
+        )
+        latent = []
+    else:
+        require(
+            acquired[0]["encoded"] and acquired[0]["representation"] == representation,
+            "acquisition features require matching executed initial encoder",
+        )
+        latent = [
+            v for token in acquired[0]["observation"]["tokens"] for v in token["values"]
+        ]
     value = {
         "schema": "perc1.acquisition-features.v1",
         "prefix_sha256": prefix if type(prefix) is str else sha(prefix),
@@ -109,7 +130,7 @@ def public_features(
         ),
         "remaining_budget": budget,
         "uncertainty": 1.0 - confidence / 100.0,
-        "acquired_latent": [v for token in initial["tokens"] for v in token["values"]],
+        "acquired_latent": latent,
         "acquired_receipt_sha256s": [item["receipt_sha256"] for item in acquired],
     }
     acquisition.features(value)
@@ -119,14 +140,22 @@ def public_features(
 def execute(collector, episode, representation, mode, manifest, head, random_seed=0):
     """Acquire the common initial view and at most one quoted continuation."""
     require(
-        mode in ("active", "fixed", "random", "direct_roi", "ocr_only"),
+        mode
+        in ("active", "fixed", "random", "direct_roi", "ocr_only", "public_active"),
         "unknown actor mode",
     )
     require(
         manifest["budget"]["cap"] == CAP and len(episode["initial_ids"]) == 1,
         "document protocol requires one initial view and the frozen cap",
     )
-    neural, formal = mode not in ("direct_roi", "ocr_only"), mode in ("active", "fixed")
+    neural = mode not in ("direct_roi", "ocr_only", "public_active")
+    formal = mode in ("active", "fixed")
+    if mode == "public_active":
+        acquisition._validate_head(head)
+        require(
+            representation == "global" and head["layout"] == [5, 0],
+            "public control requires global transport and an OCR-only feature head",
+        )
     dataset, tariff = collector.dataset, manifest["budget"]["tariff"]
     steps, acquired, decisions = [], [], []
     spent, answer_value = 0, None
@@ -170,11 +199,17 @@ def execute(collector, episode, representation, mode, manifest, head, random_see
                         prefix,
                         CAP - spent,
                         representation,
+                        channel="public" if mode == "public_active" else "neural",
                     ),
                 }
                 for item in remaining
             ]
-            selected = acquisition.choose(head, candidates, mode=mode, seed=random_seed)
+            selected = acquisition.choose(
+                head,
+                candidates,
+                mode="active" if mode == "public_active" else mode,
+                seed=random_seed,
+            )
         planning_ns = time.perf_counter_ns() - plan_start
         costs = dict.fromkeys(PHASES, 0)
         costs["planning"] = _micros(planning_ns) * tariff["planning"]
@@ -204,6 +239,11 @@ def execute(collector, episode, representation, mode, manifest, head, random_see
             status = "budget_denied"
         elif source_id:
             item = collector.observe(source_id, representation, encode=neural)
+            if mode == "public_active":
+                require(
+                    item["encoded"] is False and item["cost"]["encoding"] == 0,
+                    "public control requires fresh OCR-only observations",
+                )
             acquired.append(item)
             observation = item["observation"]
             for phase, amount in collector.accounted_cost(item).items():

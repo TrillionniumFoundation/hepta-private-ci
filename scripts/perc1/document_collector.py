@@ -52,6 +52,10 @@ class Collector:
     def __init__(self, dataset, worker, projection, output):
         started = time.perf_counter_ns()
         self.dataset, self.worker, self.projection = dataset, worker, projection
+        require(
+            (worker is None) == (projection is None),
+            "worker and projection must both be configured or both absent",
+        )
         self.output = Path(output)
         require(
             not self.output.exists() or not any(self.output.iterdir()),
@@ -59,11 +63,15 @@ class Collector:
         )
         (self.output / "records").mkdir(parents=True, exist_ok=True)
         self.dataset_sha256 = sha(dataset.value)
-        self.encoder_sha256 = sha(
-            {
-                "backbone_sha256": worker.weights_sha256,
-                "projection_sha256": sha(projection),
-            }
+        self.encoder_sha256 = (
+            None
+            if worker is None
+            else sha(
+                {
+                    "backbone_sha256": worker.weights_sha256,
+                    "projection_sha256": sha(projection),
+                }
+            )
         )
         ocr_init = time.perf_counter_ns()
         self.tesseract = shutil.which("tesseract")
@@ -116,7 +124,7 @@ class Collector:
             "records": self.records,
             "ocr_init_ns": time.perf_counter_ns() - ocr_init,
             "startup_ns": time.perf_counter_ns() - started,
-            "worker_cold_load_ns": worker.cold_load_ns,
+            "worker_cold_load_ns": worker.cold_load_ns if worker is not None else 0,
             "provider_billing": None,
             "energy_joules": None,
             "index_write_ns": [],
@@ -132,6 +140,7 @@ class Collector:
             representation in ("global", "dense") and type(encode) is bool,
             "invalid document observation mode",
         )
+        require(not encode or self.worker is not None, "encoder not configured")
         source = self.dataset.sources[source_id]
         sequence = len(self.records) + 1
         stem = f"records/{sequence:06d}"
