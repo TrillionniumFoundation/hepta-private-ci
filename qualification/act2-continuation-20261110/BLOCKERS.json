@@ -60,7 +60,7 @@
     {
       "id": "SOURCE_FLOOR_AND_REAL_APP_FENCE",
       "pr": 5645,
-      "status": "NATIVE_AND_ACTUAL_APP_QUALIFICATION_PENDING",
+      "status": "SUCCESSOR_EXACT_NATIVE_AND_ACTUAL_APP_SCOPED_PASS",
       "source": "ebe5db6790fd17966ea8033fa518e901dad40b7c",
       "limits": [
         "not physical source/App checkpoint rewind",
@@ -70,11 +70,18 @@
       ],
       "candidate": "4dc5f724c023aedeefddfa2e67de8083ce968126",
       "exact_observer_run": 42794177546,
-      "exact_observer_run_status": "PENDING_NO_JOBS"
+      "exact_observer_run_status": "PENDING_NO_JOBS",
+      "qualified_successor": {
+        "source": "378c06a898728a7fa60498ef051843e38d592e67",
+        "tree": "1c8af7b5c875f449d2fb04dc4b08d97a6c45c8d1",
+        "run": 42893302150,
+        "status": "SUCCESS",
+        "result": "complete Memory/typed-fence owner, bounded read floor, Notes owner/readback, locked pinned Session/App build, real Notes goal, two actual-App fence races and final clean fix all passed at this exact successor"
+      }
     },
     {
       "id": "ORIGINAL_CANCELLATION_RESPONSIBILITY",
-      "status": "IMPLEMENTED_WITH_COMPILE_FIX_AWAITING_EXACT_HOSTED_QUALIFICATION",
+      "status": "IMPLEMENTED_AND_EXACT_SUCCESSOR_HOSTED_SCOPED_PASS",
       "pr": 5693,
       "source": "c0d5d0ededb6627103c390e86b8714135977025c",
       "tree": "76472eac11a1292700c0d8deeff03059bc18bd27",
@@ -272,25 +279,94 @@
             ]
           }
         ],
-        "hosted_status": "PENDING_NEW_HEAD_NO_PASS_TRANSFER",
+        "hosted_status": "EXACT_SUCCESSOR_ACT2_AND_ARCHITECTURE_PASS_OTHER_GATES_PENDING",
         "qualification_driver": {
           "pr": 5715,
           "source": "378c06a898728a7fa60498ef051843e38d592e67",
           "tree": "1c8af7b5c875f449d2fb04dc4b08d97a6c45c8d1",
           "act2_run": 42893302150,
-          "act2_run_status": "IN_PROGRESS",
+          "act2_run_status": "SUCCESS",
           "format_job": {
             "id": 130112323362,
             "status": "SUCCESS"
           },
           "native_job": {
             "id": 130112323090,
-            "status": "IN_PROGRESS_MEMORY_AND_TYPED_FENCE_OWNER",
-            "later_steps": "all exact-source hosted stages require their own terminal records; no predecessor result is relabelled as this source"
+            "status": "SUCCESS"
           },
           "exact_head_checkout": true,
           "preserves": "Hepta source/tree, both locks, pinned desktop source, Session/App binary hashes, native/real-App outputs and always-uploaded raw records",
-          "result": "PENDING_NEW_EXACT_HEAD_NOT_A_PASS",
+          "result": "EXACT_HEAD_SCOPED_PASS",
+          "exact_results": {
+            "automation": "172 passed, 0 failed; 275.140 seconds; log sha256 7254f33a5a535b22fcfa487c3b336c79aafdcfc468dcfac0592d955d1649b9cd",
+            "memory": "417 passed, 0 failed; 128.617 seconds; log sha256 b224001b4a8ee90b490c36c1d43a78b4d3786c359e85827b68f1e95720feaecb",
+            "capacity": "1 passed, 0 failed; 20.689 seconds; log sha256 0a02c2058f9b83047570cde818c59dc833b3b293f88a8c81a520e1e60417fc95",
+            "notes_owner_and_readback": "12 passed, 0 failed; 475.430 seconds; log sha256 67d297d71121ae97a4b51a2eace3282ed8e82f24fe71f0fe367335e3c10c964c",
+            "real_notes_goal": "1 passed, 0 failed; 8.594 seconds; log sha256 7722135d44fbaae7b510967fbda0e7aead29c821a4ed7c578d8d265187ef3676",
+            "actual_app_fence": "1 passed, 0 failed; 4.729 seconds; log sha256 d5f038d231db99b0038f510408fda2ebadd47a01b19e6d024a0fdc1788926dc6",
+            "final_fix": "exit 0; 313.601 seconds; before/after exact commit and tree clean; empty final source patch; log sha256 c484c56466155da18444a5860f2b637ef097ada28234c313bfc306fd5bd48f74"
+          },
+          "locks_sha256": {
+            "codex-rs/Cargo.lock": "e47a4418a1e62ea67fa14085fa1c479e90187fed2af9e245893fbd1b5577e425",
+            "desktop/ui/Cargo.lock": "a8b00de25b9b5d47cba0d3458ab24f1c20871a6a2420f91e9c7bf0c1d792c35f"
+          },
+          "pinned_desktop": {
+            "source": "cc33ab6c44f3c945d83cb96be71d861e5613f99e",
+            "tree": "66f1b4f08d3b501139c09df08441595910f93987"
+          },
+          "binary_sha256": {
+            "trill-session": "8695c15a09563888dab46e2f8bab5ef080c0d5eb47013e28b0edca573ab2759d",
+            "trill-app-window": "42e65dc89a6b73347a5f3291cc93c3b8e0148a99003eab791f82b7fd6a2f5d8a"
+          },
+          "artifacts": [
+            {
+              "id": 13802572777,
+              "name": "act2-native-378c06a898728a7fa60498ef051843e38d592e67-1",
+              "size_bytes": 127745,
+              "sha256": "aa68162702dcbed5a0a42ac11070888671e7e42cdf5b13a56476c4d887f44a87",
+              "retained_zip": "qualification/act2-continuation-20261110/act2-native-42893302150.zip"
+            },
+            {
+              "id": 13800917089,
+              "name": "act2-format-378c06a898728a7fa60498ef051843e38d592e67-1",
+              "size_bytes": 188107,
+              "sha256": "71f221b27f4aa8c17d09f1f289c121670e7031bc4872a8d9be5e6eaea8c4266f",
+              "retained_zip": "qualification/act2-continuation-20261110/act2-format-42893302150.zip"
+            }
+          ],
+          "scope_limits": {
+            "complete_model_facing_handler_exercised": false,
+            "production_authority": false,
+            "post_close_current_readback": "UNKNOWN",
+            "cold_recovery_qualified": false,
+            "physical_fifo_reordering_qualified": false,
+            "native_kernel_qualified": false,
+            "pixels_qualified": false,
+            "durable_tombstone_qualified": false,
+            "late_original_result": "destination NotApplied revision_conflict after a committed exact-bound fence; not a forged original-App receipt"
+          },
+          "architecture": {
+            "run": 42893302196,
+            "status": "SUCCESS_SOURCE_HEAD_BASE_MERGE_AND_REQUIRED",
+            "source_head_tests": "31 command records passed with 662 observed tests and 0 failures; exact source/tree clean",
+            "candidate_transport": "UNKNOWN; activation_authorized=false; credential separation, admin denial and PR write denial not proven",
+            "artifacts": [
+              {
+                "id": 13800829881,
+                "scope": "source-head",
+                "size_bytes": 88709,
+                "sha256": "89cafe808b617f3d718a375517276be7b5bffedfc2be23e06f0fcc19b6c4c759",
+                "retained_zip": "qualification/act2-continuation-20261110/architecture-source-42893302196.zip"
+              },
+              {
+                "id": 13800265680,
+                "scope": "base-merge",
+                "size_bytes": 12299,
+                "sha256": "337c9415ae0ce45810a28c6d6c2d2e5d215d7e15d924302ca348e4d3fb451b24",
+                "retained_zip": "qualification/act2-continuation-20261110/architecture-base-42893302196.zip"
+              }
+            ]
+          },
           "predecessor_macro_fix_head": {
             "source": "35b912b0a9b3c424c266e59c45a2878c878f32e7",
             "tree": "553bb5ff6d6212a8165e2da375db4270ecd08647",
@@ -594,7 +670,7 @@
             "local_result": "formatter and diff checks passed; targeted local tests are NOT_RUN because the environment failed before tests while building rama-dns with missing system stddef.h",
             "hosted": {
               "act2_run": 42893302150,
-              "act2_status": "IN_PROGRESS_FORMAT_SUCCESS_MEMORY_AND_TYPED_FENCE_OWNER_RUNNING",
+              "act2_status": "SUCCESS_EXACT_SOURCE_WITH_FINAL_CLEAN_FIX",
               "blocking_run": 42893302790,
               "blocking_status": "QUEUED_WITH_INDEPENDENT_EXTERNAL_FENCE_FAILURE",
               "blocking_external_failure": {
@@ -605,7 +681,18 @@
                 "classification": "hosted Fence/runner setup failure; not a source, blob-size, CALLERS or semantic test result"
               },
               "architecture_run": 42893302196,
-              "architecture_status": "IN_PROGRESS",
+              "architecture_status": "SUCCESS_SOURCE_HEAD_BASE_MERGE_AND_REQUIRED",
+              "architecture_result": {
+                "source_head_job": 130099988300,
+                "base_merge_job": 130099987770,
+                "required_job": 130120801671,
+                "observed_source_head_tests": "662 passed, 0 failed across 31 command records",
+                "transport_authority": "UNKNOWN_FALSE; shared production predicates do not establish DynamicToolCall authorization",
+                "source_artifact_id": 13800829881,
+                "source_artifact_sha256": "89cafe808b617f3d718a375517276be7b5bffedfc2be23e06f0fcc19b6c4c759",
+                "base_artifact_id": 13800265680,
+                "base_artifact_sha256": "337c9415ae0ce45810a28c6d6c2d2e5d215d7e15d924302ca348e4d3fb451b24"
+              },
               "windows_private_run": 42893302159,
               "windows_private_status": "SUCCESS_DECLARED_SCOPE",
               "windows_private_result": {
