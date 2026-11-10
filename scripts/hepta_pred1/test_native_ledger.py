@@ -6,18 +6,28 @@ db8e533b282e37472af9bd3a414c16f8093ff991 and
 790ccc918f4d66409511adf9cc8808e5f0703fc4.
 """
 
+from dataclasses import replace
+import json
 from pathlib import Path
 import sqlite3
+import subprocess
+import sys
 import tempfile
 import unittest
 from unittest.mock import patch
 
+import numpy as np
 
+from .action_history import ActionEvent, encode
+from .contracts import Evidence, allowed_mask
 from .native_ledger import (
+    Artifact,
     ATTEMPT_FIELDS,
     IDENTITY_FIELDS,
     OBSERVATION_FIELDS,
     collect_native,
+    freeze_snapshot,
+    join_readback,
 )
 
 MIGRATION_11 = """-- Durable provider-contact boundary for final-use-authorized TaskFlow effects.
@@ -226,6 +236,18 @@ class NativeLedgerTests(unittest.TestCase):
                 self.db, identity=self.identity, clock_id="fixture-boot", cursor=cursor
             )
 
+    def freeze(self, collection):
+        c = collection.payload
+        snap = encode(
+            [],
+            actions=("fixture-action",),
+            decision_at=c["available_at"],
+            through_sequence=c["cursor"],
+            remaining_budget=12,
+            deadline_at=20,
+        )
+        return freeze_snapshot(self.snapshot_path, snap, collection)
+
     def test_wal_readonly_collection_retains_raw_clocks_and_missing_rows(self):
         absent = self.collect()
         self.assertEqual(
@@ -313,6 +335,205 @@ class NativeLedgerTests(unittest.TestCase):
                 self.collect()
         self.assertEqual(len(captured), 1)
         self.assertIsNone(captured[0]["grant_id"])
+
+    def test_missing_then_indeterminate_then_reconciliation_never_labels_business(self):
+        original = self.freeze(self.collect())
+        original_bytes = self.snapshot_path.read_bytes()
+        attempt = self.insert_attempt()
+        unknown = self.insert_observation("indeterminate")
+        second = self.collect(cursor=2)
+        missing = join_readback(self.root / "unknown.json", self.snapshot_path, second)
+        self.assertEqual(missing.payload["raw_owner_settlement"], unknown)
+        terminal = self.insert_observation(
+            "succeeded", "reconciliations", native_time=1
+        )
+        third = self.collect(cursor=3)
+        result = join_readback(self.root / "later.json", self.snapshot_path, third)
+        self.assertEqual(
+            result.payload["collection"]["rows"],
+            {
+                "attempts": [attempt],
+                "observations": [unknown],
+                "reconciliations": [terminal],
+            },
+        )
+        self.assertEqual(result.payload["raw_owner_settlement"], terminal)
+        self.assertEqual(result.payload["target_domain"], "OWNER_SETTLEMENT")
+        for name in ("business_outcome", "effect_duration", "physical_cost"):
+            self.assertIsNone(result.payload[name])
+        self.assertFalse(result.payload["training_outcome_available"])
+        evidence = Evidence(**result.payload["effect_evidence"])
+        self.assertIsNone(evidence.outcome)
+        self.assertIsNone(evidence.time_lower)
+        self.assertIsNone(evidence.final_cost)
+        np.testing.assert_array_equal(allowed_mask(evidence), np.ones(32, dtype=bool))
+        self.assertEqual(self.snapshot_path.read_bytes(), original_bytes)
+        self.assertEqual(Artifact.read(self.snapshot_path), original)
+        self.assertEqual(result.payload["snapshot_digest"], original.digest)
+
+    def test_full_identity_and_initial_fact_changes_are_rejected(self):
+        self.insert_attempt()
+        self.insert_observation("indeterminate")
+        first = self.collect()
+        self.freeze(first)
+        later = self.collect(cursor=2).payload
+        for field in IDENTITY_FIELDS:
+            changed = json.loads(json.dumps(later))
+            new_value = (
+                2
+                if field == "attempt"
+                else ("9" * 64 if field.endswith("_digest") else "other")
+            )
+            changed["identity"][field] = new_value
+            for rows in changed["rows"].values():
+                for row in rows:
+                    if field in row:
+                        row[field] = new_value
+            with (
+                self.subTest(field=field),
+                self.assertRaisesRegex(ValueError, "identity"),
+            ):
+                join_readback(
+                    self.root / "rejected.json",
+                    self.snapshot_path,
+                    Artifact.make(changed),
+                )
+        for table, column, value in (
+            ("attempts", "grant_id", "changed-grant"),
+            ("attempts", "authority_epoch", 2),
+            ("observations", "evidence_digest", "8" * 64),
+        ):
+            changed = json.loads(json.dumps(later))
+            changed["rows"][table][0][column] = value
+            with (
+                self.subTest(column=column),
+                self.assertRaisesRegex(ValueError, "immutable"),
+            ):
+                join_readback(
+                    self.root / "rejected.json",
+                    self.snapshot_path,
+                    Artifact.make(changed),
+                )
+        changed = json.loads(json.dumps(later))
+        changed["rows"]["observations"] = []
+        with self.assertRaisesRegex(ValueError, "immutable"):
+            join_readback(
+                self.root / "rejected.json", self.snapshot_path, Artifact.make(changed)
+            )
+        self.assertFalse((self.root / "rejected.json").exists())
+
+    def test_cursor_clock_and_future_collection_boundaries(self):
+        first = self.collect()
+        self.freeze(first)
+        later = self.collect(cursor=2).payload
+        for field, value in (
+            ("cursor", 1),
+            ("available_at", 9),
+            ("clock_id", "next-boot"),
+        ):
+            changed = {**later, field: value}
+            with self.subTest(field=field), self.assertRaises(ValueError):
+                join_readback(
+                    self.root / "rejected.json",
+                    self.snapshot_path,
+                    Artifact.make(changed),
+                )
+        result = join_readback(
+            self.root / "same-tick.json", self.snapshot_path, Artifact.make(later)
+        )
+        self.assertEqual(result.payload["available_at"], 10)
+        snap = encode(
+            [],
+            actions=("read",),
+            decision_at=9,
+            through_sequence=1,
+            remaining_budget=12,
+            deadline_at=20,
+        )
+        with self.assertRaisesRegex(ValueError, "not yet available"):
+            freeze_snapshot(self.root / "bad.json", snap, first)
+        with self.assertRaisesRegex(ValueError, "cursor"):
+            freeze_snapshot(
+                self.root / "bad.json",
+                replace(snap, decision_at=10, through_sequence=2),
+                first,
+            )
+
+    def test_snapshot_arrays_freeze_reopen_corruption_and_overwrite_refusal(self):
+        first = self.collect()
+        event = ActionEvent(
+            0,
+            "fixture-action-id",
+            "fixture-candidate",
+            "read",
+            "request",
+            1,
+            "fixture-request",
+            event_at=1,
+        )
+        snap = encode(
+            [event],
+            actions=("read",),
+            decision_at=10,
+            through_sequence=1,
+            remaining_budget=12,
+            deadline_at=20,
+        )
+        frozen = freeze_snapshot(self.snapshot_path, snap, first)
+        np.testing.assert_array_equal(frozen.payload["features"], snap.features)
+        payload = frozen.payload
+        payload["features"][0][0] = 99
+        self.assertEqual(Artifact.read(self.snapshot_path), frozen)
+        # This fresh interpreter recovers only the reader artifact, never
+        # execution/recovery authority of the native owner.
+        reopened = subprocess.run(
+            [
+                sys.executable,
+                "-c",
+                "import json,sys; from hepta_pred1.native_ledger import Artifact; "
+                "a=Artifact.read(sys.argv[1]); "
+                "print(json.dumps({'digest':a.digest,'features':a.payload['features']}))",
+                str(self.snapshot_path),
+            ],
+            cwd=Path(__file__).resolve().parents[1],
+            check=True,
+            capture_output=True,
+            text=True,
+            timeout=20,
+        )
+        self.assertEqual(
+            json.loads(reopened.stdout),
+            {"digest": frozen.digest, "features": snap.features.tolist()},
+        )
+        with self.assertRaises(FileExistsError):
+            freeze_snapshot(self.snapshot_path, snap, first)
+        newer = self.collect(cursor=2)
+        path = self.root / "readback.json"
+        join_readback(path, self.snapshot_path, newer)
+        with self.assertRaises(FileExistsError):
+            join_readback(path, self.snapshot_path, newer)
+        raw = self.snapshot_path.read_bytes()
+        self.snapshot_path.write_bytes(
+            raw.replace(b'"decision_at":10', b'"decision_at":11')
+        )
+        with self.assertRaisesRegex(ValueError, "hash|canonical"):
+            Artifact.read(self.snapshot_path)
+        with self.assertRaises(ValueError):
+            freeze_snapshot(
+                self.root / "nan.json",
+                replace(snap, features=np.array([[np.nan]])),
+                first,
+            )
+        with self.assertRaises(ValueError):
+            Artifact(bytearray(first.encoded))
+        with self.assertRaises(ValueError):
+            Artifact(first.encoded.replace(b'"cursor":1', b'"cursor":2'))
+        missing = self.root / "missing.sqlite3"
+        with self.assertRaises(FileNotFoundError):
+            collect_native(
+                missing, identity=self.identity, clock_id="fixture-boot", cursor=1
+            )
+        self.assertFalse(missing.exists())
 
 
 if __name__ == "__main__":

@@ -1,4 +1,4 @@
-"""Read-only TaskFlow facts in immutable bounded collection artifacts.
+"""Read-only TaskFlow facts and immutable PRED snapshot/readback joins.
 
 Database provenance, identity and clock ID are trusted host inputs, not
 authenticated here. Native timestamps remain raw metadata; availability is
@@ -8,7 +8,7 @@ and owner settlements never become execution, goal, duration or cost labels.
 """
 
 from contextlib import closing
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 from hashlib import sha256
 import json
 import math
@@ -18,6 +18,10 @@ import re
 import sqlite3
 from time import monotonic
 
+import numpy as np
+
+from .action_history import EncodedHistory
+from .contracts import Evidence, ObservationStatus
 
 MAX_BYTES = 1_048_576
 IDENTITY_FIELDS = (
@@ -260,4 +264,127 @@ def collect_native(database, *, identity, clock_id, cursor):
         }
     )
     _collection(artifact)
+    return artifact
+
+
+def freeze_snapshot(path, snapshot, collection):
+    """Persist existing causal encoder output without inventing native phases."""
+    c = _collection(collection)
+    _require(isinstance(snapshot, EncodedHistory), "expected encoded causal history")
+    _require(snapshot.through_sequence == c["cursor"], "snapshot cursor differs")
+    _time(snapshot.decision_at)
+    _require(
+        snapshot.decision_at >= c["available_at"], "collection was not yet available"
+    )
+    x = snapshot.features
+    _require(
+        isinstance(x, np.ndarray)
+        and x.ndim == 2
+        and 1 <= x.shape[0] <= 256
+        and 1 <= x.shape[1] <= 256
+        and np.isfinite(x).all()
+        and ((x >= 0) & (x <= 1)).all(),
+        "invalid numerical snapshot",
+    )
+    names = snapshot.feature_names
+    _require(
+        len(names) == x.shape[1] and len(set(names)) == len(names),
+        "feature names differ",
+    )
+    for name in names:
+        _text(name)
+    references = []
+    for e in snapshot.events:
+        _require(
+            e.sequence <= c["cursor"] and e.observed_at <= snapshot.decision_at,
+            "future event in encoded snapshot",
+        )
+        references.append(
+            {
+                "sequence": e.sequence,
+                "observed_at": e.observed_at,
+                "record_ref": e.record_ref,
+                "action_id": e.action_id,
+                "candidate_id": e.candidate_id,
+            }
+        )
+    artifact = Artifact.make(
+        {
+            "schema": "pred1-native-snapshot-v1",
+            "identity": c["identity"],
+            "clock_id": c["clock_id"],
+            "cursor": c["cursor"],
+            "decision_at": snapshot.decision_at,
+            "features": x.tolist(),
+            "feature_names": list(names),
+            "event_references": references,
+            "collection": c,
+            "collection_digest": collection.digest,
+            "scope": "frozen numerical inputs; ledger supplies no accepted/executed phase",
+        }
+    )
+    artifact.save(path)
+    return artifact
+
+
+def join_readback(path, snapshot_path, later):
+    """Retain later owner settlement separately; outcome/time/cost stay unknown.
+
+    A later cursor at the same clock tick is valid. Earlier snapshots are never
+    rewritten. Native succeeded/failed settles only the owner contract and
+    does not establish independent business-effect supervision.
+    """
+    frozen = Artifact.read(snapshot_path)
+    p, new = frozen.payload, _collection(later)
+    _require(p.get("schema") == "pred1-native-snapshot-v1", "wrong snapshot schema")
+    previous = Artifact.make(p["collection"])
+    old = _collection(previous)
+    _require(previous.digest == p["collection_digest"], "snapshot collection differs")
+    _require(
+        p["identity"] == old["identity"] == new["identity"], "readback identity differs"
+    )
+    _require(
+        p["clock_id"] == old["clock_id"] == new["clock_id"], "collector clock differs"
+    )
+    _require(
+        p["cursor"] == old["cursor"] and new["cursor"] > p["cursor"],
+        "readback cursor is not later",
+    )
+    _time(p["decision_at"])
+    _require(
+        old["available_at"] <= p["decision_at"] <= new["available_at"],
+        "readback availability is not later",
+    )
+    for name in TABLE_FIELDS:
+        _require(
+            not old["rows"][name] or old["rows"][name] == new["rows"][name],
+            "previous immutable native facts changed",
+        )
+    settlement = new["rows"]["reconciliations"] or new["rows"]["observations"]
+    artifact = Artifact.make(
+        {
+            "schema": "pred1-native-readback-v1",
+            "identity": new["identity"],
+            "snapshot_digest": frozen.digest,
+            "collection_digest": later.digest,
+            "collection": new,
+            "clock_id": new["clock_id"],
+            "cursor": new["cursor"],
+            "available_at": new["available_at"],
+            "target_domain": "OWNER_SETTLEMENT",
+            "raw_owner_settlement": settlement[0] if settlement else None,
+            "effect_evidence": asdict(
+                Evidence(
+                    observation_status=ObservationStatus.RECEIPT_MISSING,
+                    observed_at=new["available_at"],
+                )
+            ),
+            "business_outcome": None,
+            "effect_duration": None,
+            "physical_cost": None,
+            "training_outcome_available": False,
+            "scope": "owner settlement only; missing effect readback supplies no outcome label",
+        }
+    )
+    artifact.save(path)
     return artifact
