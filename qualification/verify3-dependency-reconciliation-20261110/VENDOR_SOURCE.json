@@ -1,0 +1,47 @@
+{
+  "schema": "hepta.verify.dependency-vendor-reconciliation.v1",
+  "status": "preparatory_source_only_unresolved_joint_locks_and_native_qualification",
+  "parent_common_commit": "a2cd828aad47c56ac8c01dc2e423454eca7eafae",
+  "immutable_source_commit": "d5a4f5b0f7794bbb93f3539032473ec3a7f2bb4c",
+  "immutable_source_tree": "344bc7bd41747f12b1994ada89b36039f583e4e9",
+  "reused_subtrees": [
+    {
+      "path": "codex-rs/third_party/matrix-sdk-sqlite-0.19.1",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "f99e895cff62be8979e8853b0b488f1451246b98",
+      "files": 76
+    },
+    {
+      "path": "codex-rs/third_party/rama-crypto-0.3.0-time-backport",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "039e34e25c56639fd48a584aac89094a4b1717de",
+      "files": 28
+    },
+    {
+      "path": "codex-rs/third_party/starlark-0.14.2-blake3-backport",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "b00600aa0c60b6c71d41a8ff64adc158d9e0bc3d",
+      "files": 690
+    }
+  ],
+  "verification": {
+    "kind": "Git object identity reuse; no implementation or provenance edits",
+    "verify_source_manifest": "qualification/verify3-common-candidate-20261110/SOURCE.json",
+    "verify_python_files": 50,
+    "experiments_tree_preserved": "92114fb03561af4f695389db6180774c05697704"
+  },
+  "inherited_locks": {
+    "cargo": "b7e710988d6a3377a7e0a1dc68aef49c68dda36e",
+    "bazel": "b91bee756020f2b6b0e92b1a5c4477e6a180149e",
+    "updated": false
+  },
+  "active_workspace_wiring_changed": false,
+  "rustsec_remediation_qualified": false,
+  "native_tests_executed": false,
+  "scientific_gate_qualified": false,
+  "production_adoption": false,
+  "followup": "Reviewable Matrix wiring and existing migration tests, then source-pinned joint lock generation and same-source consumer qualification. Pin-utils released-package route remains a separate proposal."
+}
