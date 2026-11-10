@@ -346,5 +346,6 @@ class EpisodicMemoryTests(unittest.TestCase):
                 self.store.view(alias)
         self.assertEqual(len(self.store.view(regular)["records"]), 1)
 
+
 if __name__ == "__main__":
     unittest.main()
