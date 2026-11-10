@@ -103,21 +103,25 @@ fn signed_execution_and_original_holdout_survive_an_abrupt_process_exit() {
         let before = (runner.holdout_anchor(), executions.anchor());
         let mut fixture = Harness::new();
         let clock = || Ok(50);
-        let result = runner
-            .evaluate_or_readback_temporal_comparison(
-                &ProductEvaluationExecutionRequestV1 {
-                    plan: &fixture.frozen,
-                    candidate_plan: &fixture.fixture.candidate_plan,
-                    baseline_plan: &fixture.fixture.baseline_plan,
-                    evaluator: &fixture.context.evaluator,
-                    verifier: &fixture.verifier,
-                    clock: &clock,
-                },
+        let request = ProductEvaluationExecutionRequestV1 {
+            plan: &fixture.frozen,
+            candidate_plan: &fixture.fixture.candidate_plan,
+            baseline_plan: &fixture.fixture.baseline_plan,
+            evaluator: &fixture.context.evaluator,
+            verifier: &fixture.verifier,
+            clock: &clock,
+        };
+        let result = if mode == "write" {
+            runner.evaluate_or_readback_temporal_comparison(
+                &request,
                 &mut fixture.fixture.provider,
                 &mut executions,
                 &mut fixture.attestor,
             )
-            .expect("authenticated execution or original readback");
+        } else {
+            runner.readback_temporal_comparison(&request, &mut executions)
+        }
+        .expect("authenticated execution or original readback");
         if mode == "write" {
             assert_eq!(
                 (

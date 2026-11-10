@@ -199,6 +199,26 @@ impl Harness {
             self.attestor.calls,
         )
     }
+
+    fn readback(&mut self) -> Result<CellEvaluationReceiptV1, CellEvaluationErrorV1> {
+        let fixture = &mut self.fixture;
+        fixture.runner.readback_completed(
+            &self.plan,
+            CellEvaluationJournalsV1 {
+                candidate: &fixture.candidate,
+                fixed_expert: &fixture.fixed,
+            },
+            &ProductEvaluationExecutionRequestV1 {
+                plan: &self.product,
+                candidate_plan: &fixture.candidate_temporal,
+                baseline_plan: &fixture.baseline_temporal,
+                evaluator: &self.authority.evaluator,
+                verifier: &self.authority.verifier,
+                clock: &|| Ok(self.authority.now),
+            },
+            &mut self.executions,
+        )
+    }
 }
 
 #[test]
@@ -232,7 +252,7 @@ fn completed_cell_execution_reopens_with_original_evaluator() {
         claims: 0,
     };
     let before = test.fixture.holdout_bytes();
-    let restored = checked(test.run());
+    let restored = checked(test.readback());
     assert_eq!(restored, original);
     assert_eq!(
         restored.plan().record().learning_evaluation_profile,
@@ -243,7 +263,7 @@ fn completed_cell_execution_reopens_with_original_evaluator() {
     let _qualification = signed(&test.fixture.runner, &restored);
     test.authority.now = 91;
     assert!(matches!(
-        test.run(),
+        test.readback(),
         Err(CellEvaluationErrorV1::Execution(
             ProductEvaluationExecutionErrorV1::Evaluation(ProductEvaluationError::Signed(_))
         ))
@@ -251,14 +271,59 @@ fn completed_cell_execution_reopens_with_original_evaluator() {
     test.authority.now = 50;
     test.authority.evaluator.credential_chain_digest = digest("replacement-evaluator");
     assert!(matches!(
-        test.run(),
+        test.readback(),
         Err(CellEvaluationErrorV1::Execution(
             ProductEvaluationExecutionErrorV1::Store(
                 ProductEvaluationExecutionStoreErrorV1::Conflict
             )
         ))
     ));
-    assert_eq!(test.calls(), (3, 1, 1, 1));
+    assert_eq!(test.calls(), (0, 1, 1, 1));
+    assert_eq!(test.fixture.holdout_bytes(), before);
+}
+
+#[test]
+fn missing_cell_execution_readback_never_claims_or_releases() {
+    let mut test = Harness::new();
+    let before = test.fixture.holdout_bytes();
+    let minimum = test.executions.inner.anchor();
+    assert!(matches!(
+        test.readback(),
+        Err(CellEvaluationErrorV1::Execution(
+            ProductEvaluationExecutionErrorV1::Store(
+                ProductEvaluationExecutionStoreErrorV1::Missing
+            )
+        ))
+    ));
+    assert_eq!(test.calls(), (0, 0, 0, 0));
+    assert_eq!(test.executions.inner.anchor(), minimum);
+    assert_eq!(test.fixture.holdout_bytes(), before);
+}
+
+#[test]
+fn pending_cell_execution_readback_never_reissues_work() {
+    let mut test = Harness::new();
+    test.authority.now = 91;
+    // The original work consumed its holdout but could not authenticate its
+    // expired signature, so the original durable claim is still pending.
+    assert!(matches!(
+        test.run(),
+        Err(CellEvaluationErrorV1::Execution(
+            ProductEvaluationExecutionErrorV1::Evaluation(ProductEvaluationError::Signed(_))
+        ))
+    ));
+    test.authority.now = 50;
+    let before = test.fixture.holdout_bytes();
+    let minimum = test.executions.inner.anchor();
+    let calls = test.calls();
+    assert!(matches!(
+        test.readback(),
+        Err(CellEvaluationErrorV1::Execution(
+            ProductEvaluationExecutionErrorV1::Pending
+        ))
+    ));
+    assert_eq!(test.calls(), calls);
+    assert_eq!(test.executions.inner.anchor(), minimum);
     assert_eq!(test.fixture.holdout_bytes(), before);
 }
 
@@ -289,6 +354,7 @@ fn changed_cell_journals_and_foreign_product_plan_never_claim_execution() {
             _ => unreachable!(),
         }
         assert!(test.run().is_err());
+        assert!(test.readback().is_err());
         assert_eq!(test.calls(), (0, 0, 0, 0));
         assert_eq!(test.fixture.holdout_bytes(), before);
     }
@@ -302,6 +368,7 @@ fn changed_cell_journals_and_foreign_product_plan_never_claim_execution() {
             "Cell execution product plan"
         ))
     ));
+    assert!(test.readback().is_err());
     assert_eq!(test.calls(), (0, 0, 0, 0));
     assert_eq!(test.fixture.holdout_bytes(), before);
 }
@@ -392,7 +459,7 @@ fn stale_cell_owner_cannot_read_completed_signed_execution() {
     let authority = &test.authority;
     let claims = test.executions.claims;
     assert!(matches!(
-        runner.evaluate_or_readback(
+        runner.readback_completed(
             &test.plan,
             CellEvaluationJournalsV1 {
                 candidate: &test.fixture.candidate,
@@ -406,9 +473,7 @@ fn stale_cell_owner_cannot_read_completed_signed_execution() {
                 verifier: &authority.verifier,
                 clock: &|| Ok(authority.now),
             },
-            &mut test.fixture.provider,
             &mut test.executions,
-            &mut test.attestor,
         ),
         Err(CellEvaluationErrorV1::Execution(
             ProductEvaluationExecutionErrorV1::Evaluation(ProductEvaluationError::Holdout(

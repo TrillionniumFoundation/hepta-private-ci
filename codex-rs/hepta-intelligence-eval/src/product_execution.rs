@@ -12,6 +12,7 @@ use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
 use codex_hepta_types::Digest32;
 
 use super::FinalHoldoutCasStoreV1;
+use super::FinalHoldoutJournalReceiptV1;
 use super::ProductEvaluationError;
 use super::ProductEvaluationRunnerV1;
 use super::ProductFrozenEvaluationPlanV1;
@@ -119,39 +120,7 @@ impl<S: FinalHoldoutCasStoreV1> ProductEvaluationRunnerV1<S> {
         executions: &mut E,
         attestor: &mut A,
     ) -> Result<ProductTemporalEvaluationReceiptV1, ProductEvaluationExecutionErrorV1> {
-        request.plan.validate_integrity()?;
-        for (actual, expected) in [
-            (
-                request.candidate_plan,
-                request.plan.candidate_temporal_plan_digest,
-            ),
-            (
-                request.baseline_plan,
-                request.plan.baseline_temporal_plan_digest,
-            ),
-        ] {
-            if actual.plan_digest != expected
-                || actual.plan_digest
-                    != actual
-                        .canonical_digest()
-                        .map_err(ProductEvaluationError::from)?
-                || actual.objective_digest != request.plan.frozen_plan.objective_digest
-            {
-                return Err(ProductEvaluationError::Binding("temporal execution plan").into());
-            }
-        }
-        let (namespace, previous) = self
-            .holdout
-            .read_consumption(&request.plan.frozen_plan)
-            .map_err(ProductEvaluationError::from)?;
-        let mut binding = b"hepta.intelligence-eval.execution-key.v1".to_vec();
-        binding.extend_from_slice(namespace.as_array());
-        binding.extend_from_slice(request.plan.receipt_seal.as_array());
-        super::push_principal(&mut binding, request.evaluator);
-        let key = ProductEvaluationExecutionKeyV1 {
-            plan_id: request.plan.frozen_plan.plan_id.clone(),
-            binding_digest: Digest32::of_bytes(&binding),
-        };
+        let (key, previous) = self.execution_context(request)?;
         let bytes = match executions.claim(&key)? {
             ProductEvaluationExecutionClaimV1::Existing(
                 ProductEvaluationExecutionStateV1::Pending,
@@ -196,7 +165,78 @@ impl<S: FinalHoldoutCasStoreV1> ProductEvaluationRunnerV1<S> {
                 }
             }
         };
-        let (signed, body) = execution_codec::decode_envelope(&bytes)?;
+        self.authenticate_completed_execution(request, key, &bytes)
+    }
+
+    /// Authenticate only an existing completion through the original owners.
+    /// Missing or pending work stays unresolved. This recovery entry receives
+    /// neither a holdout provider nor a signer, and cannot claim or complete an
+    /// execution. Current fences, original signatures and plans remain required.
+    pub fn readback_temporal_comparison(
+        &mut self,
+        request: &ProductEvaluationExecutionRequestV1<'_>,
+        executions: &mut impl ProductEvaluationExecutionStoreV1,
+    ) -> Result<ProductTemporalEvaluationReceiptV1, ProductEvaluationExecutionErrorV1> {
+        let (key, _) = self.execution_context(request)?;
+        let bytes = match executions.readback(&key)? {
+            ProductEvaluationExecutionStateV1::Pending => {
+                return Err(ProductEvaluationExecutionErrorV1::Pending);
+            }
+            ProductEvaluationExecutionStateV1::Completed(bytes) => bytes,
+        };
+        self.authenticate_completed_execution(request, key, &bytes)
+    }
+
+    fn execution_context(
+        &mut self,
+        request: &ProductEvaluationExecutionRequestV1<'_>,
+    ) -> Result<
+        (ProductEvaluationExecutionKeyV1, Option<FinalHoldoutJournalReceiptV1>),
+        ProductEvaluationExecutionErrorV1,
+    > {
+        request.plan.validate_integrity()?;
+        for (actual, expected) in [
+            (
+                request.candidate_plan,
+                request.plan.candidate_temporal_plan_digest,
+            ),
+            (
+                request.baseline_plan,
+                request.plan.baseline_temporal_plan_digest,
+            ),
+        ] {
+            if actual.plan_digest != expected
+                || actual.plan_digest
+                    != actual
+                        .canonical_digest()
+                        .map_err(ProductEvaluationError::from)?
+                || actual.objective_digest != request.plan.frozen_plan.objective_digest
+            {
+                return Err(ProductEvaluationError::Binding("temporal execution plan").into());
+            }
+        }
+        let (namespace, previous) = self
+            .holdout
+            .read_consumption(&request.plan.frozen_plan)
+            .map_err(ProductEvaluationError::from)?;
+        let mut binding = b"hepta.intelligence-eval.execution-key.v1".to_vec();
+        binding.extend_from_slice(namespace.as_array());
+        binding.extend_from_slice(request.plan.receipt_seal.as_array());
+        super::push_principal(&mut binding, request.evaluator);
+        let key = ProductEvaluationExecutionKeyV1 {
+            plan_id: request.plan.frozen_plan.plan_id.clone(),
+            binding_digest: Digest32::of_bytes(&binding),
+        };
+        Ok((key, previous))
+    }
+
+    fn authenticate_completed_execution(
+        &mut self,
+        request: &ProductEvaluationExecutionRequestV1<'_>,
+        key: ProductEvaluationExecutionKeyV1,
+        bytes: &[u8],
+    ) -> Result<ProductTemporalEvaluationReceiptV1, ProductEvaluationExecutionErrorV1> {
+        let (signed, body) = execution_codec::decode_envelope(bytes)?;
         // Authenticate exact raw bytes before constructing any sealed estimator.
         authenticate(request, &signed, &signing_payload(&key, body))?;
         let (_, consumed) = self
