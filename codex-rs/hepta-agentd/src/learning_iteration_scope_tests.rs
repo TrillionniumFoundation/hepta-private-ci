@@ -6,6 +6,46 @@ use codex_hepta_learning_artifacts::LearningUpdateScopeV2;
 use pretty_assertions::assert_eq;
 
 #[tokio::test]
+async fn scoped_circuit_enrollment_rejects_rebound_request_before_owner_work() {
+    for rebound in [false, true] {
+        let daemon = AgentdFixture::new();
+        let mut request = iteration_request(&daemon);
+        let mut ports = IterationPorts::new(None, LearningEvaluationDispositionV1::NoUpdate);
+        let scope = ok(FrozenLearningScopeV2::freeze(
+            &request,
+            &ports.owners(),
+            LearningUpdateScopeV2::Cell,
+            digest("test-rule"),
+        ));
+        ports.scope_binding = Some(scope.binding());
+        let ports = Arc::new(ports);
+        let (_, owner) = ok(learning_iteration_channel_scoped_v2(
+            daemon.identity.agent_id.clone(),
+            /*spawn_generation*/ 1,
+            ports.owners(),
+            ports.clone(),
+            ports.verifier.clone(),
+            /*capacity*/ 2,
+            scope,
+        ));
+        if rebound {
+            request.budget.maximum_training_steps += 1;
+        }
+        let enrolled = owner.with_circuit_learning_delivery(request.clone());
+        if rebound {
+            assert!(enrolled.is_err());
+        } else {
+            let mut enrolled = ok(enrolled);
+            assert_eq!(ok(enrolled.take_circuit_delivery().ok_or("delivery")).request, request);
+        }
+        assert!(ok(ports.executed.lock()).is_empty());
+        assert!(ok(ports.attested.lock()).is_empty());
+        assert!(ok(ports.checkpoint_calls.lock()).is_empty());
+        assert!(ok(ports.checkpoint.lock()).is_none());
+    }
+}
+
+#[tokio::test]
 async fn scoped_native_runtime_stops_cross_cadence_training_before_evaluation_or_checkpoint() {
     let changes: [fn(&mut CellCompatibilityBundleV1); 3] = [
         |c| c.components.base = digest("other-base"),
