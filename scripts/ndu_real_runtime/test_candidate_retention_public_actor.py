@@ -159,14 +159,34 @@ class PublicRetentionActorProcessTests(unittest.TestCase):
                         all(row["parameters_unchanged"] for row in host.steps)
                     )
                     self.assertGreater(host.steps[0]["ocr"]["recognized_lines"], 0)
-                    audit = read_audit(host.actor_output, host.steps[2]["candidate_audit"], {"step": 2})
-                    selector = json.loads((host.actor_output / host.steps[2]["selector_audit"]["path"]).read_text())
+                    audit = read_audit(
+                        host.actor_output, host.steps[2]["candidate_audit"], {"step": 2}
+                    )
+                    selector = json.loads(
+                        (
+                            host.actor_output / host.steps[2]["selector_audit"]["path"]
+                        ).read_text()
+                    )
                     self.assertEqual(selector["profile"]["mode"], "public_rule")
-                    self.assertEqual(selector["profile"]["profile_sha256"], canonical_sha(SELECTOR_PROFILE))
-                    self.assertEqual(selector["candidates"], audit["offered_candidates"])
-                    self.assertEqual(audit["selected_index"], selector["receipt"]["public_rule_index"])
-                    self.assertEqual(host.delivery["text"], audit["offered_candidates"][audit["selected_index"]]["text"])
-                    self.assertEqual(host.selector_audit_tail, host.steps[-1]["selector_audit"]["sha256"])
+                    self.assertEqual(
+                        selector["profile"]["profile_sha256"],
+                        canonical_sha(SELECTOR_PROFILE),
+                    )
+                    self.assertEqual(
+                        selector["candidates"], audit["offered_candidates"]
+                    )
+                    self.assertEqual(
+                        audit["selected_index"],
+                        selector["receipt"]["public_rule_index"],
+                    )
+                    self.assertEqual(
+                        host.delivery["text"],
+                        audit["offered_candidates"][audit["selected_index"]]["text"],
+                    )
+                    self.assertEqual(
+                        host.selector_audit_tail,
+                        host.steps[-1]["selector_audit"]["sha256"],
+                    )
                     outcomes[mode] = audit
                 finally:
                     if process.poll() is None:

@@ -161,14 +161,18 @@ def summarize(planned, rows):
             row.get("fixed_selector_audit_verified") is True
             and row["evidence_status"] == "VERIFIED"
         )
-        qualified.append({
-            **row,
-            "observed_terminal_success": row.get(
-                "observed_terminal_success", row["unconditional_success"]
-            ),
-            "intervention_verified": verified,
-            "unconditional_success": row["unconditional_success"] if verified else None,
-        })
+        qualified.append(
+            {
+                **row,
+                "observed_terminal_success": row.get(
+                    "observed_terminal_success", row["unconditional_success"]
+                ),
+                "intervention_verified": verified,
+                "unconditional_success": row["unconditional_success"]
+                if verified
+                else None,
+            }
+        )
     report = build_report(planned, qualified)
     all_rows = report["episodes"]
     original = {row["original_operation_id"]: row for row in planned}
@@ -178,20 +182,20 @@ def summarize(planned, rows):
     attempt_statuses = {}
     for mode in MODES:
         arm = [r for r in all_rows if r["mode"] == mode]
-        attempt_statuses[mode] = dict(Counter(
-            r.get("attempt_terminal_status", "Unknown") for r in arm
-        ))
+        attempt_statuses[mode] = dict(
+            Counter(r.get("attempt_terminal_status", "Unknown") for r in arm)
+        )
         for row in arm:
             row.setdefault("observed_terminal_success", None)
         terminal_facts[mode] = probability(arm, "observed_terminal_success")
         costs[mode] = {}
         for key in (
-            "attempt_wall_seconds", "attempt_cpu_seconds", "deployment_wall_seconds"
+            "attempt_wall_seconds",
+            "attempt_cpu_seconds",
+            "deployment_wall_seconds",
         ):
             observed = [
-                r["costs"][key]
-                for r in arm
-                if r.get("costs", {}).get(key) is not None
+                r["costs"][key] for r in arm if r.get("costs", {}).get(key) is not None
             ]
             costs[mode][key] = {
                 "observed_episodes": len(observed),
@@ -236,7 +240,8 @@ def episode_costs(root, item, expected, result):
         ("attempt_wall_seconds", "attempt_cpu_seconds", "deployment_wall_seconds")
     )
     attempt = (
-        None if item.get("attempt") is None
+        None
+        if item.get("attempt") is None
         else strict_json(read_bound(root, item["attempt"]))
     )
     if attempt is not None:
@@ -244,7 +249,9 @@ def episode_costs(root, item, expected, result):
             attempt.get("original_operation_id") != expected["original_operation_id"]
             or attempt.get("selector_mode") != "public_rule"
         ):
-            raise ValueError("attempt cost was reassigned to another operation or selector")
+            raise ValueError(
+                "attempt cost was reassigned to another operation or selector"
+            )
         costs.update(
             attempt_wall_seconds=attempt.get("wall_seconds"),
             attempt_cpu_seconds=attempt.get("cpu_seconds"),
@@ -255,9 +262,7 @@ def episode_costs(root, item, expected, result):
         )
     if any(
         value is not None
-        and (
-            type(value) not in (int, float) or not math.isfinite(value) or value < 0
-        )
+        and (type(value) not in (int, float) or not math.isfinite(value) or value < 0)
         for value in costs.values()
     ):
         raise ValueError("observed costs must be finite, nonnegative or unknown")
@@ -424,7 +429,14 @@ def generate(root, material_root, expected_plan_sha256, expected_manifest_sha256
                 row["fixed_selector_audit_verified"] = True
         except FileNotFoundError as error:
             row = unknown_episode(expected, str(error))
-        except (OSError, KeyError, ValueError, TypeError, IndexError, AttributeError) as error:
+        except (
+            OSError,
+            KeyError,
+            ValueError,
+            TypeError,
+            IndexError,
+            AttributeError,
+        ) as error:
             row = unknown_episode(expected, str(error), rejected=True)
         row["observed_terminal_success"] = observed_terminal
         try:
@@ -435,7 +447,13 @@ def generate(root, material_root, expected_plan_sha256, expected_manifest_sha256
             if item.get("attempt") is not None:
                 attempt = strict_json(read_bound(root, item["attempt"]))
                 status = attempt.get("status", "Unknown")
-                if status not in {"Completed", "Failed", "BudgetStop", "Timeout", "Unknown"}:
+                if status not in {
+                    "Completed",
+                    "Failed",
+                    "BudgetStop",
+                    "Timeout",
+                    "Unknown",
+                }:
                     raise ValueError("invalid original attempt terminal status")
                 row["attempt_terminal_status"] = status
         except (OSError, KeyError, ValueError, TypeError, AttributeError) as error:
@@ -449,4 +467,3 @@ def generate(root, material_root, expected_plan_sha256, expected_manifest_sha256
         "evidence_sha256": expected_manifest_sha256,
         "verified_source_sha256": verified,
     }
-

@@ -10,8 +10,12 @@ from .episodic_memory import EpisodicStore, WorkingState, digest
 
 
 def provenance(version="1", episode="learn-1"):
-    return {"source_uri": "fixture://source-a", "source_sha256": "a" * 64,
-            "source_version": version, "episode_id": episode}
+    return {
+        "source_uri": "fixture://source-a",
+        "source_sha256": "a" * 64,
+        "source_version": version,
+        "episode_id": episode,
+    }
 
 
 class EpisodicMemoryTests(unittest.TestCase):
@@ -22,8 +26,9 @@ class EpisodicMemoryTests(unittest.TestCase):
         self.store = EpisodicStore(self.root / "authority.sqlite", namespace="team-a")
 
     def put(self, key, text, dependencies=()):
-        return self.store.put("source-a", key, text, provenance=provenance(),
-                              dependencies=dependencies)
+        return self.store.put(
+            "source-a", key, text, provenance=provenance(), dependencies=dependencies
+        )
 
     def test_update_revokes_transitive_dependencies_and_filters_old_snapshot(self):
         fact = self.put("gate", "Gate is A")
@@ -32,8 +37,9 @@ class EpisodicMemoryTests(unittest.TestCase):
         unrelated = self.put("contact", "Contact remains valid")
         snapshot = self.root / "before.json"
         self.store.export_snapshot(snapshot)
-        updated = self.store.put("source-a", "gate", "Gate is B",
-                                 provenance=provenance("2", "update-2"))
+        updated = self.store.put(
+            "source-a", "gate", "Gate is B", provenance=provenance("2", "update-2")
+        )
         self.assertEqual(updated["version"], 2)
         self.assertEqual(self.store.view()["records"], [unrelated, updated])
         recovered = self.store.view(snapshot)
@@ -49,17 +55,26 @@ class EpisodicMemoryTests(unittest.TestCase):
         snapshot = self.root / "old.json"
         self.store.export_snapshot(snapshot)
         receipt = self.store.revoke("source-a", "secret")
-        self.assertEqual(set(receipt["affected_ids"]), {fact["record_id"], dependent["record_id"]})
+        self.assertEqual(
+            set(receipt["affected_ids"]), {fact["record_id"], dependent["record_id"]}
+        )
         with sqlite3.connect(self.store.path) as db:
-            rows = db.execute("SELECT key,payload,status FROM records ORDER BY key").fetchall()
-        self.assertEqual(rows, [("secret", None, "revoked"), ("summary", None, "dependency_revoked")])
+            rows = db.execute(
+                "SELECT key,payload,status FROM records ORDER BY key"
+            ).fetchall()
+        self.assertEqual(
+            rows, [("secret", None, "revoked"), ("summary", None, "dependency_revoked")]
+        )
         reopened = EpisodicStore(self.store.path, namespace="team-a", create=False)
         self.assertEqual(reopened.view(snapshot)["records"], [])
         self.assertEqual(reopened.view()["records"], [])
-        self.assertEqual(reopened.revoke("source-a", "secret"),
-                         {"status": "already_revoked", "affected_ids": []})
-        replacement = reopened.put("source-a", "secret", "Explicit new evidence",
-                                   provenance=provenance("3"))
+        self.assertEqual(
+            reopened.revoke("source-a", "secret"),
+            {"status": "already_revoked", "affected_ids": []},
+        )
+        replacement = reopened.put(
+            "source-a", "secret", "Explicit new evidence", provenance=provenance("3")
+        )
         self.assertEqual(replacement["version"], 3)
         self.assertEqual(reopened.view(snapshot)["records"], [])
 
@@ -71,9 +86,7 @@ class EpisodicMemoryTests(unittest.TestCase):
                 store = EpisodicStore(
                     self.root / f"reverse-{action}.sqlite", namespace="team-a"
                 )
-                root = store.put(
-                    "source-a", "root", "Root", provenance=provenance()
-                )
+                root = store.put("source-a", "root", "Root", provenance=provenance())
                 chain = [root]
                 for index in range(96):
                     child = store.put(
@@ -118,25 +131,35 @@ class EpisodicMemoryTests(unittest.TestCase):
         self.assertEqual(self.store.view()["records"], [first])
         self.assertEqual(other.view()["records"], [second])
         with self.assertRaises(ValueError):
-            other.put("source-a", "bad", "Foreign dependency", provenance=provenance(),
-                      dependencies=[first["record_id"]])
+            other.put(
+                "source-a",
+                "bad",
+                "Foreign dependency",
+                provenance=provenance(),
+                dependencies=[first["record_id"]],
+            )
         self.store.revoke("source-a", "fact")
         self.assertEqual(other.view()["records"], [second])
 
     def test_bounded_tombstones_prevent_replay_and_admission_rolls_back(self):
-        store = EpisodicStore(self.root / "bounded.sqlite", namespace="n", max_records=1)
+        store = EpisodicStore(
+            self.root / "bounded.sqlite", namespace="n", max_records=1
+        )
         store.put("s", "k", "Value", provenance=provenance())
         store.revoke("s", "k")
         before = store.view()
         with self.assertRaises(ValueError):
-            store.put("s", "other", "Exceeds tombstone capacity", provenance=provenance())
+            store.put(
+                "s", "other", "Exceeds tombstone capacity", provenance=provenance()
+            )
         self.assertEqual(store.view(), before)
         resumed = store.put("s", "k", "Explicit replacement", provenance=provenance())
         self.assertEqual(resumed["version"], 3)
 
     def test_byte_admission_failure_preserves_existing_data_and_generation(self):
-        store = EpisodicStore(self.root / "bytes.sqlite", namespace="n",
-                              max_serialized_bytes=2500)
+        store = EpisodicStore(
+            self.root / "bytes.sqlite", namespace="n", max_serialized_bytes=2500
+        )
         store.put("s", "k", "Kept", provenance=provenance())
         before = store.view()
         with self.assertRaises(ValueError):
@@ -187,7 +210,9 @@ class EpisodicMemoryTests(unittest.TestCase):
         record["text"] = "Changed by caller"
         self.assertEqual(self.store.view()["records"], [original])
         with self.assertRaises(ValueError):
-            self.store.put("source-a", "invalid", "Value", provenance={**source, "gold": True})
+            self.store.put(
+                "source-a", "invalid", "Value", provenance={**source, "gold": True}
+            )
 
     def test_working_state_is_copied_bounded_and_cleared_on_new_session(self):
         state = WorkingState("episode-1", max_serialized_bytes=40)

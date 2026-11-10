@@ -52,11 +52,16 @@ def verify_cohort(plan, materials):
     manifest = strict_json(legacy.read_pin(plan["exclusion_manifest"], materials))
     request = {
         **plan,
-        "excluded_source_groups": sorted({
-            group for role in ("training", "tuning")
-            for group in manifest["groups"][role]
-        }),
-        "prior_episode_plan_pins": [item["pin"] for item in plan["prior_episode_plans"]],
+        "excluded_source_groups": sorted(
+            {
+                group
+                for role in ("training", "tuning")
+                for group in manifest["groups"][role]
+            }
+        ),
+        "prior_episode_plan_pins": [
+            item["pin"] for item in plan["prior_episode_plans"]
+        ],
         "config": {"reference_index_sha256": plan["reference_index_sha256"]},
     }
     excluded, _ = legacy.exclusions(request, catalog, materials)
@@ -73,24 +78,44 @@ def verify_cohort(plan, materials):
         catalog, excluded, plan["groups_per_role"], plan["selection_salt"]
     )
     fields = (
-        "original_operation_id", "pair_id", "case_id", "source_group_id",
-        "episode_group", "split", "task_family", "public_case_sha256",
+        "original_operation_id",
+        "pair_id",
+        "case_id",
+        "source_group_id",
+        "episode_group",
+        "split",
+        "task_family",
+        "public_case_sha256",
         "retention_mode",
     )
     expected, run_order = [], []
     for case in selected:
-        pair_id = plan["experiment_id"] + "-" + canonical_sha(
-            [case["id"], plan["selection_salt"]]
-        )[:20]
-        modes = MODES if int(canonical_sha([pair_id, "order"])[0], 16) % 2 == 0 else tuple(reversed(MODES))
+        pair_id = (
+            plan["experiment_id"]
+            + "-"
+            + canonical_sha([case["id"], plan["selection_salt"]])[:20]
+        )
+        modes = (
+            MODES
+            if int(canonical_sha([pair_id, "order"])[0], 16) % 2 == 0
+            else tuple(reversed(MODES))
+        )
         operations = []
         for mode in modes:
             operation = pair_id + "-" + mode
-            expected.append((
-                operation, pair_id, case["id"], case["source_id"],
-                case["episode_group"], case["role"], case["task_family"],
-                case["packet"]["sha256"], mode,
-            ))
+            expected.append(
+                (
+                    operation,
+                    pair_id,
+                    case["id"],
+                    case["source_id"],
+                    case["episode_group"],
+                    case["role"],
+                    case["task_family"],
+                    case["packet"]["sha256"],
+                    mode,
+                )
+            )
             operations.append(operation)
         run_order.append(operations)
     require(
@@ -131,9 +156,8 @@ def freeze(request, output):
         "Source allocation must be bound before reading source metadata",
     )
     require(
-        REQUIRED_PRIOR_PLANS <= {
-            pin.get("sha256") for pin in request["prior_episode_plan_pins"]
-        },
+        REQUIRED_PRIOR_PLANS
+        <= {pin.get("sha256") for pin in request["prior_episode_plan_pins"]},
         "Both original retention and MEM5 plans must be excluded",
     )
     legacy.verify_sources(request)
@@ -296,4 +320,3 @@ def freeze(request, output):
     )
     write_json(output / "PLAN.json", plan)
     return plan, jobs
-

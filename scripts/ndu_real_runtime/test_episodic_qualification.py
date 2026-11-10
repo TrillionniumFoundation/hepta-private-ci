@@ -11,18 +11,29 @@ class FreshProcessQualificationTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary) / "run"
             report = run(root)
-            self.assertEqual((report["status"], report["passed_scenarios"]), ("PASS", 18))
+            self.assertEqual(
+                (report["status"], report["passed_scenarios"]), ("PASS", 18)
+            )
             self.assertEqual(len(report["producer_receipts"]), 3)
-            self.assertTrue(all(r["writer_exited_before_successor"]
-                                for r in report["producer_receipts"]))
+            self.assertTrue(
+                all(
+                    r["writer_exited_before_successor"]
+                    for r in report["producer_receipts"]
+                )
+            )
             self.assertEqual(report["scientific_acceptance"], "HOLD")
             self.assertFalse(report["unseen_task_benefit_evaluated"])
             rows = {r["scenario"]: r for r in report["rows"]}
             self.assertFalse(rows["persistence_off"]["receipt"]["store_read"])
             self.assertEqual(rows["delivery_off"]["receipt"]["delivered_ids"], [])
             self.assertTrue(rows["delivery_off"]["receipt"]["retrieved_ids"])
-            for name in ("stale_snapshot", "revoked_fact", "revoked_snapshot",
-                         "dependent_fact_invalidated", "other_namespace"):
+            for name in (
+                "stale_snapshot",
+                "revoked_fact",
+                "revoked_snapshot",
+                "dependent_fact_invalidated",
+                "other_namespace",
+            ):
                 delivery = json.loads((root / name / "delivery.json").read_bytes())
                 self.assertEqual(delivery["texts"], [])
             # Consumer requests expose no expected result or previous chat.

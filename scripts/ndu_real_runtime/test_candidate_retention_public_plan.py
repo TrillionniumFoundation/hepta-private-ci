@@ -36,7 +36,9 @@ def fixture_plan(root):
     ]
     # Prior-file verification is covered by test_candidate_selection_plan; this
     # fixture isolates the new sampling and fixed-selector materialization.
-    with patch.object(planning, "prior_source_groups", return_value=({"old"}, receipts)):
+    with patch.object(
+        planning, "prior_source_groups", return_value=({"old"}, receipts)
+    ):
         plan, jobs = planning.freeze(value, root / "run")
     return value, plan, jobs
 
@@ -48,10 +50,20 @@ class PublicRetentionPlanTests(unittest.TestCase):
             self.assertEqual((len(jobs), len(plan["episodes"])), (6, 12))
             for pair in jobs:
                 expected = [j["expected"] for j in pair]
-                self.assertEqual({e["retention_mode"] for e in expected}, set(planning.MODES))
-                self.assertEqual({e["selector_mode"] for e in expected}, {"public_rule"})
-                self.assertEqual(expected[0]["candidate_selector_profile"], expected[1]["candidate_selector_profile"])
-                self.assertEqual(expected[0]["control_plan_sha256"], expected[1]["control_plan_sha256"])
+                self.assertEqual(
+                    {e["retention_mode"] for e in expected}, set(planning.MODES)
+                )
+                self.assertEqual(
+                    {e["selector_mode"] for e in expected}, {"public_rule"}
+                )
+                self.assertEqual(
+                    expected[0]["candidate_selector_profile"],
+                    expected[1]["candidate_selector_profile"],
+                )
+                self.assertEqual(
+                    expected[0]["control_plan_sha256"],
+                    expected[1]["control_plan_sha256"],
+                )
             self.assertFalse(plan["cross_session_memory_evaluated"])
 
     def test_allocation_or_selector_changes_fail_before_material_read(self):
@@ -63,7 +75,10 @@ class PublicRetentionPlanTests(unittest.TestCase):
                 {"prior_episode_plan_pins": value["prior_episode_plan_pins"][:1]},
                 {"groups_per_role": {"development": True, "retention_validation": 1}},
             ):
-                with self.subTest(change=change), patch.object(planning, "prior_source_groups") as old:
+                with (
+                    self.subTest(change=change),
+                    patch.object(planning, "prior_source_groups") as old,
+                ):
                     with self.assertRaises(ValueError):
                         planning.freeze({**value, **change}, Path(temporary) / "unused")
                     old.assert_not_called()
@@ -71,17 +86,26 @@ class PublicRetentionPlanTests(unittest.TestCase):
     def test_exhaustion_never_relaxes_old_source_exclusions(self):
         with tempfile.TemporaryDirectory() as temporary:
             value = request(Path(temporary))
-            with patch.object(planning, "prior_source_groups", return_value=({"development"}, [])):
-                with self.assertRaisesRegex(ValueError, "Insufficient complete unexcluded"):
+            with patch.object(
+                planning, "prior_source_groups", return_value=({"development"}, [])
+            ):
+                with self.assertRaisesRegex(
+                    ValueError, "Insufficient complete unexcluded"
+                ):
                     planning.freeze(value, Path(temporary) / "unused")
             self.assertFalse((Path(temporary) / "unused/PLAN.json").exists())
 
     def test_independent_cohort_rebuild_rejects_omitted_family_or_changed_episode(self):
         with tempfile.TemporaryDirectory() as temporary:
             value, plan, _ = fixture_plan(Path(temporary))
-            with patch.object(planning, "prior_source_groups", return_value=(
-                set(plan["prior_episode_source_groups"]), plan["prior_episode_plans"]
-            )):
+            with patch.object(
+                planning,
+                "prior_source_groups",
+                return_value=(
+                    set(plan["prior_episode_source_groups"]),
+                    plan["prior_episode_plans"],
+                ),
+            ):
                 planning.verify_cohort(plan, value["config"]["material_root"])
                 omitted = copy.deepcopy(plan)
                 omitted["episodes"] = omitted["episodes"][2:]
@@ -92,7 +116,6 @@ class PublicRetentionPlanTests(unittest.TestCase):
                 for bad in (omitted, changed):
                     with self.assertRaisesRegex(ValueError, "Full frozen.*roster"):
                         planning.verify_cohort(bad, value["config"]["material_root"])
-
 
 
 if __name__ == "__main__":
