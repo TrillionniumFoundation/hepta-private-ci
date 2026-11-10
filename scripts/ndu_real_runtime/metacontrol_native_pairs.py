@@ -11,6 +11,7 @@ import random
 import time
 
 from . import metacontrol_macro_contract
+from .controllers import ControlPlan
 from .metacontrol_macro_contract import (
     SEQUENCES,
     digest,
@@ -90,7 +91,7 @@ def collect(plan, output, *, host_class=None):
             }
         )
     )
-    if control["control"].get("memory_mode") != "reset":
+    if ControlPlan(**control["control"]).memory_mode != "reset":
         raise ValueError("Actual frozen control plan must reset memory")
     native = host_class is None
     if native:
