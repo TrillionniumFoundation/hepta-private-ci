@@ -109,6 +109,16 @@ jobs:
             --output "$RUNNER_TEMP/mem-records/composition-tests.json" \
             -- python -B -m unittest discover -s scripts/memory_cell_mem3 \
             -p test_mechanism.py -v
+      - name: Check fixed-public retention attribution and fresh-session memory
+        run: |
+          python scripts/hepta_ci_exec.py --timeout-seconds 240 --minimum-tests 35 \
+            --output "$RUNNER_TEMP/mem-records/mem6-tests.json" \
+            -- python -B -m unittest -v ndu_real_runtime.test_candidate_retention_public_plan \
+            ndu_real_runtime.test_candidate_retention_public \
+            ndu_real_runtime.test_candidate_retention_public_actor \
+            ndu_real_runtime.test_candidate_retention_inference \
+            ndu_real_runtime.test_episodic_memory ndu_real_runtime.test_episodic_retrieval \
+            ndu_real_runtime.test_episodic_qualification
       - name: Retain final source state
         if: always()
         shell: bash

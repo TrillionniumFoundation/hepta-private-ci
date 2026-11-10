@@ -1,0 +1,187 @@
+{
+  "schema": "hepta.mem6.acceptance-requirements.v1",
+  "document_kind": "pre_execution_requirements_not_results",
+  "scientific_acceptance": "HOLD",
+  "production_adoption": false,
+  "adoption_action": "NoUpdate",
+  "automatic_adoption_supported": false,
+  "three_layers": [
+    "within_task_working_state",
+    "cross_session_episodic_source_memory",
+    "separately_versioned_semantic_or_skill_candidate"
+  ],
+  "historical_result": {
+    "execution_source": "5fa0d0e462cd1393f4f9e95565ff5993e9bad29a",
+    "mem5_actor_episodes": 108,
+    "mem5_paired_cases": 54,
+    "mem5_source_groups": 14,
+    "public_selector_successes": 20,
+    "frozen_neural_successes": 11,
+    "initial_no_op_successes_per_arm": 10,
+    "earlier_retention_successes_per_arm": 11,
+    "selector_gain_is_memory_gain": false,
+    "case_count_is_independent_source_count": false
+  },
+  "working_state_experiment": {
+    "request_schema": "ndu.real.candidate-retention-public-request.v1",
+    "entrypoint": "ndu_real_runtime.run_candidate_retention_public",
+    "arms": ["current_only", "bounded"],
+    "current_only_still_receives_current_observation": true,
+    "fixed_selector_mode": "public_rule",
+    "selector_profile_sha256": "c9b56f198abd1737a9883326fd0c66f411e46218b126aec1e4b6f4f48e66870e",
+    "selection_salt": "mem6-fixed-public-retention-20261110-v1",
+    "max_entries_per_arm": 128,
+    "max_serialized_bytes_per_arm": 524288,
+    "episode_wall_seconds": 60,
+    "max_workers": 2,
+    "training_allowed": false,
+    "cross_session_benefit_claim_allowed": false,
+    "required_prior_plan_sha256": [
+      "488639ca2bd2b25d5c90c77b3adaf58bd8133932bb2cb1bf70fc547447d187d5",
+      "e33050d4b01484f8b820730117ed57659476e9e1e922ffdd43673dee7a081f9d"
+    ],
+    "source_allocation": "Freeze exact groups_per_role and sampling_profile_sha256 in REQUEST before reference access; no outcome-dependent reductions",
+    "released_roles": ["development", "retention_validation"],
+    "sealed_roles_allowed": false,
+    "same_across_arms": [
+      "source_and_public_packet",
+      "model_weights_and_parameters",
+      "encoder_and_original_features",
+      "ocr_inventory",
+      "control_plan_and_schedule",
+      "action_space",
+      "candidate_admission_caps",
+      "objective_and_budget",
+      "scoring_rubric_and_evaluator"
+    ]
+  },
+  "prospective_benefit_gate": {
+    "status": "NOT_EVALUATED",
+    "threshold_kind": "prespecified_engineering_target_not_power_calculation",
+    "primary_contrast": "bounded_minus_current_only",
+    "independent_unit": "source_group_with_justified_independence",
+    "minimum_source_groups": 20,
+    "minimum_groups_each_role": 4,
+    "source_weights": "equal; average planned paired case differences within source first",
+    "minimum_source_mean_difference": 0.05,
+    "source_bootstrap": {
+      "resamples": 20000,
+      "seed": 20261110,
+      "stratify_by": "frozen_role",
+      "within_each_resample": "sample source groups with replacement preserving each role count; retain every case in selected groups",
+      "lower_quantile": 0.05,
+      "quantile_definition": "nearest rank: sorted_values[ceil(p * resamples) - 1]",
+      "required_lower_bound": "> 0",
+      "validity_requires_justified_source_independence": true,
+      "currently_computed_by_actor_runner": true,
+      "analysis_module": "ndu_real_runtime.candidate_retention_inference",
+      "numeric_threshold_met_implies_scientific_acceptance": false
+    },
+    "missing_outcome_rule_for_gate": "memory_on_unknown=0; memory_off_unknown=1; keep original UNKNOWN labels and publish two-sided missing-label bounds separately",
+    "smaller_pilot_can_pass_gate": false,
+    "historical_and_new_runs_may_be_pooled_as_independent": false,
+    "analysis_source_must_be_frozen_before_outcome_access": true
+  },
+  "episodic_mechanism_gate": {
+    "status": "NOT_EVALUATED",
+    "requires_new_reader_process": true,
+    "requires_previous_writer_exit": true,
+    "allows_prior_chat_or_working_state_passthrough": false,
+    "required_ablations": ["off", "retrieval_off", "association_off", "delivery_off"],
+    "required_interventions": [
+      "authoritative_fact_update",
+      "fact_revocation",
+      "transitive_dependency_invalidation",
+      "old_snapshot_with_current_authority",
+      "wrong_source_and_namespace",
+      "distractors_and_similar_query_different_workflow",
+      "cross_document_association",
+      "unanswerable_abstention"
+    ],
+    "absent_association_head_status": "unavailable",
+    "unimplemented_expiry_or_consolidation_may_pass": false,
+    "allowed_wrong_source_disclosures": 0,
+    "allowed_revoked_or_deleted_content_deliveries": 0,
+    "zero_observed_failures_is_absolute_safety_proof": false,
+    "process_test_proves_real_actor_success": false
+  },
+  "real_successor_task_gate": {
+    "status": "NOT_EVALUATED",
+    "separate_pre_execution_protocol_required": true,
+    "actual_agent_or_tool_entry_required": true,
+    "new_sources_and_new_sessions_required": true,
+    "baselines": ["exact_kv", "bm25_rag", "ordinary_icl", "uniform_replay"],
+    "same_authorized_history_and_context_budget_required": true,
+    "store_uniform_replay_is_optimizer_replay": false,
+    "cold_start_score_is_matched_off_baseline": false,
+    "primary_baseline_contrasts": 4,
+    "family_alpha": 0.05,
+    "per_contrast_one_sided_alpha": 0.0125,
+    "required_source_lower_bound_each_primary_contrast": "> 0",
+    "content_remove_replace_and_delivery_counterfactuals_required": true,
+    "retrieval_receipt_alone_proves_causal_use": false
+  },
+  "reporting_gate": {
+    "status": "NOT_EVALUATED",
+    "retain_all_planned_cases": true,
+    "retain_original_failed_attempts": true,
+    "unknown_is_zero": false,
+    "primary_contrast_requires_complete_memory_and_selector_chains": true,
+    "observed_outcome_is_separate_from_intervention_verified_outcome": true,
+    "missing_label_bounds_are_confidence_intervals": false,
+    "required_panels": [
+      "all_planned_terminal_outcomes",
+      "source_groups",
+      "task_families_and_roles",
+      "initial_incorrect",
+      "initial_correct_no_op",
+      "initial_state_unknown",
+      "image_only_bypass",
+      "failures_timeouts_unknown_rejected",
+      "candidate_availability_selection_delivery"
+    ],
+    "candidate_anchor": "last_WRITE_TEXT_otherwise_final_actor_decision",
+    "unprocessed_stop_candidate_status": "UNKNOWN",
+    "shadow_choice_is_counterfactual_delivery": false
+  },
+  "cost_gate": {
+    "status": "NOT_EVALUATED",
+    "required_observations": [
+      "campaign_wall_and_cpu",
+      "episode_wall_and_cpu",
+      "model_and_ocr_work",
+      "indexing_and_retrieval",
+      "delivered_context_bytes_and_tokens",
+      "storage_and_io",
+      "training_if_any",
+      "failed_attempts_and_recovery",
+      "energy_and_provider_charges"
+    ],
+    "overlapping_envelopes_may_be_added": false,
+    "unknown_energy_or_provider_charges_are_zero": false,
+    "missing_physical_cost_keeps_full_cost_gate_open": true
+  },
+  "recovery_and_adoption_gate": {
+    "status": "NOT_EVALUATED",
+    "required": [
+      "authenticated_current_authority",
+      "owner_state_permissions_and_credentials_continuity",
+      "effects_idempotency_and_fencing",
+      "independent_cold_recovery_and_next_task_behavior",
+      "independent_real_successor_task_confirmation",
+      "complete_applicable_costs",
+      "exact_source_required_ci"
+    ],
+    "file_reconstruction_is_owner_recovery": false,
+    "two_operator_hosts_are_independent_trust_domains": false,
+    "namespace_labels_or_hashes_are_authentication": false,
+    "same_owner_authority_rollback_resistance_established": false,
+    "forensic_erasure_of_archives_logs_backups_or_weights_established": false,
+    "deterministic_mechanism_pass_enables_production": false
+  },
+  "research_sources": [
+    "https://arxiv.org/abs/2606.05661v1",
+    "https://arxiv.org/abs/2608.04003v1",
+    "https://github.com/Gen-Verse/PAST-Bench"
+  ]
+}
