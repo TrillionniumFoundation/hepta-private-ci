@@ -1,0 +1,112 @@
+{
+  "created_utc": "2026-11-10T16:02:35.403230+00:00",
+  "executions": [
+    {
+      "argv": [
+        "/workspace/scratch/c385a7439f8e/hcsn-env/bin/python",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "/workspace/scratch/c385a7439f8e/fresh42-review-prep-v2",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "children_cpu_seconds": 0.127881,
+      "expected_returncode": 0,
+      "name": "unit-tests",
+      "passed": true,
+      "returncode": 0,
+      "stderr": {
+        "bytes": 3885,
+        "sha256": "d876302be331e8ebee6db2004f0682bfdbb73c3fa96ae2173eee677a87532dcf"
+      },
+      "stdout": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "whole_process_wall_seconds": 0.16527683200001775
+    },
+    {
+      "argv": [
+        "/workspace/scratch/c385a7439f8e/hcsn-env/bin/python",
+        "-B",
+        "/workspace/scratch/c385a7439f8e/fresh42-review-prep-v2/review_campaign_fresh42.py",
+        "--help"
+      ],
+      "children_cpu_seconds": 1.9470949999999998,
+      "expected_returncode": 0,
+      "name": "entrypoint-help",
+      "passed": true,
+      "returncode": 0,
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 423,
+        "sha256": "27e8475c809240b2627ed72579c935096453ac55ef94bf0d38222667488a288f"
+      },
+      "whole_process_wall_seconds": 2.0709451809998427
+    },
+    {
+      "argv": [
+        "/workspace/scratch/c385a7439f8e/hcsn-env/bin/python",
+        "-B",
+        "-O",
+        "/workspace/scratch/c385a7439f8e/fresh42-review-prep-v2/review_campaign_fresh42.py",
+        "--help"
+      ],
+      "children_cpu_seconds": 0.16919700000000004,
+      "expected_returncode": 1,
+      "name": "reject-disabled-assertions",
+      "passed": true,
+      "returncode": 1,
+      "stderr": {
+        "bytes": 310,
+        "sha256": "78961a0bb66ec1efd68ca263ca470ed53c3ca1629c1565e40177ab3b1d5245fc"
+      },
+      "stdout": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "whole_process_wall_seconds": 0.21467488199959917
+    }
+  ],
+  "native_preflight_status": "unconfirmed",
+  "original_fresh42_roster_audited": false,
+  "passed": true,
+  "production_continuation_audited": false,
+  "schema": "fresh42-independent-reviewer-preparation-validation-v2",
+  "scientific_admission": "HOLD",
+  "scope": "Reviewer behavior and entrypoint preparation only. C1 logical checks do not replace production source/model/data/checkpoint auditing.",
+  "source_after": {
+    "audit_fresh42_integrity.py": "d56099aaa1725747e119febe819fc7010be66784b30b5d32c699dad2736441d5",
+    "audit_fresh42_trace.py": "682bbe58db89c0049e9604738afcce0658d6298a57e5b7d9304b56c24b8b0bfe",
+    "audit_phase_chain.py": "7678e5a9a98467eac733b2bf71ecccb06060e1b41072c9bd392ffaa9e7f610e6",
+    "resource_curves.py": "e93af2038ef5889803993167ff3cb5a9ea9bf78a7188d0225beafc7da778321e",
+    "review_campaign_fresh42.py": "bac761cdbb5807238e6cf4a3410c5d7857509c0e9b649a7e15e3a29b0ecb1872",
+    "test_fresh42_integrity.py": "b4ffa8b57fc1215950b1a658d03f1cfbee84d9854845d5708a2e8dc7a16a2c1d",
+    "test_phase_chain.py": "5fcd5f21ec7b27c1d880d0233e5a5e0d9d353ff9a2d0ae755384adcd698fea73",
+    "test_resource_curves.py": "24ac277e491405fbec59423d72ad4719a52cfe3df86254729d0d8d2a3afc53ca",
+    "validate_fresh42_reviewer_v2.py": "d84d965c7592f910d01e9e173c541d8fa671d4eb2f3971788e2e407363012699"
+  },
+  "source_before": {
+    "audit_fresh42_integrity.py": "d56099aaa1725747e119febe819fc7010be66784b30b5d32c699dad2736441d5",
+    "audit_fresh42_trace.py": "682bbe58db89c0049e9604738afcce0658d6298a57e5b7d9304b56c24b8b0bfe",
+    "audit_phase_chain.py": "7678e5a9a98467eac733b2bf71ecccb06060e1b41072c9bd392ffaa9e7f610e6",
+    "resource_curves.py": "e93af2038ef5889803993167ff3cb5a9ea9bf78a7188d0225beafc7da778321e",
+    "review_campaign_fresh42.py": "bac761cdbb5807238e6cf4a3410c5d7857509c0e9b649a7e15e3a29b0ecb1872",
+    "test_fresh42_integrity.py": "b4ffa8b57fc1215950b1a658d03f1cfbee84d9854845d5708a2e8dc7a16a2c1d",
+    "test_phase_chain.py": "5fcd5f21ec7b27c1d880d0233e5a5e0d9d353ff9a2d0ae755384adcd698fea73",
+    "test_resource_curves.py": "24ac277e491405fbec59423d72ad4719a52cfe3df86254729d0d8d2a3afc53ca",
+    "validate_fresh42_reviewer_v2.py": "d84d965c7592f910d01e9e173c541d8fa671d4eb2f3971788e2e407363012699"
+  },
+  "source_unchanged": true,
+  "tests": 23,
+  "training_performed": false,
+  "unit_test_reported_seconds": 0.006,
+  "validation_driver_sha256": "d84d965c7592f910d01e9e173c541d8fa671d4eb2f3971788e2e407363012699"
+}

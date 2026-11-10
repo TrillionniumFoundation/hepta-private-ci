@@ -1,0 +1,445 @@
+{
+  "recorded_at_utc": "2026-11-10 16:07:35 UTC",
+  "run": {
+    "id": 42827955616,
+    "name": "HCSN differentiable qualification",
+    "node_id": "WFR_kwLOTrgxoM8AAAAJ-L69oA",
+    "head_branch": "codex/hcsn-p1-finite-20261110-c385",
+    "head_sha": "bad0eb639737c5b15a6e2df34cbd682c831e9b9e",
+    "path": ".github/workflows/hcsn-differentiable.yml",
+    "display_title": "HCSN P1: audit real finite-gap renewal value counts and mass",
+    "run_number": 30,
+    "event": "pull_request",
+    "status": "completed",
+    "conclusion": "success",
+    "workflow_id": 411141452,
+    "check_suite_id": 115986459044,
+    "check_suite_node_id": "CS_kwDOTrgxoM8AAAAbAVTppA",
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42827955616",
+    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42827955616",
+    "pull_requests": [
+      {
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/pulls/5765",
+        "id": 5242402486,
+        "number": 5765,
+        "head": {
+          "ref": "codex/hcsn-p1-finite-20261110-c385",
+          "sha": "bad0eb639737c5b15a6e2df34cbd682c831e9b9e",
+          "repo": {
+            "id": 1320694176,
+            "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci",
+            "name": "hepta-private-ci"
+          }
+        },
+        "base": {
+          "ref": "codex/hcsn-p1-audit-20261110-c385",
+          "sha": "77b15d500a9b870f7617e214f74b4a0819d783f9",
+          "repo": {
+            "id": 1320694176,
+            "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci",
+            "name": "hepta-private-ci"
+          }
+        }
+      }
+    ],
+    "created_at": "2026-11-10T13:48:47Z",
+    "updated_at": "2026-11-10T15:43:19Z",
+    "actor": {
+      "login": "ProfHepta",
+      "id": 102159240,
+      "node_id": "U_kgDOBhbTiA",
+      "avatar_url": "https://avatars.githubusercontent.com/u/102159240?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/ProfHepta",
+      "html_url": "https://github.com/ProfHepta",
+      "followers_url": "https://api.github.com/users/ProfHepta/followers",
+      "following_url": "https://api.github.com/users/ProfHepta/following{/other_user}",
+      "gists_url": "https://api.github.com/users/ProfHepta/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/ProfHepta/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/ProfHepta/subscriptions",
+      "organizations_url": "https://api.github.com/users/ProfHepta/orgs",
+      "repos_url": "https://api.github.com/users/ProfHepta/repos",
+      "events_url": "https://api.github.com/users/ProfHepta/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/ProfHepta/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "run_attempt": 1,
+    "referenced_workflows": [],
+    "run_started_at": "2026-11-10T13:48:47Z",
+    "triggering_actor": {
+      "login": "ProfHepta",
+      "id": 102159240,
+      "node_id": "U_kgDOBhbTiA",
+      "avatar_url": "https://avatars.githubusercontent.com/u/102159240?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/ProfHepta",
+      "html_url": "https://github.com/ProfHepta",
+      "followers_url": "https://api.github.com/users/ProfHepta/followers",
+      "following_url": "https://api.github.com/users/ProfHepta/following{/other_user}",
+      "gists_url": "https://api.github.com/users/ProfHepta/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/ProfHepta/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/ProfHepta/subscriptions",
+      "organizations_url": "https://api.github.com/users/ProfHepta/orgs",
+      "repos_url": "https://api.github.com/users/ProfHepta/repos",
+      "events_url": "https://api.github.com/users/ProfHepta/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/ProfHepta/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "jobs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42827955616/jobs",
+    "logs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42827955616/logs",
+    "check_suite_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-suites/115986459044",
+    "artifacts_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42827955616/artifacts",
+    "cancel_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42827955616/cancel",
+    "rerun_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42827955616/rerun",
+    "previous_attempt_url": null,
+    "workflow_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/workflows/411141452",
+    "head_commit": {
+      "id": "bad0eb639737c5b15a6e2df34cbd682c831e9b9e",
+      "tree_id": "0fd8f2f35e190442025005ca17a4662af522a491",
+      "message": "Check finite real-gap regeneration value counts and probability from retained laws",
+      "timestamp": "2026-11-10T13:38:22Z",
+      "author": {
+        "name": "Codex",
+        "email": "codex@openai.com"
+      },
+      "committer": {
+        "name": "Codex",
+        "email": "codex@openai.com"
+      }
+    },
+    "repository": {
+      "id": 1320694176,
+      "node_id": "R_kgDOTrgxoA",
+      "name": "hepta-private-ci",
+      "full_name": "TrillionniumFoundation/hepta-private-ci",
+      "private": false,
+      "owner": {
+        "login": "TrillionniumFoundation",
+        "id": 262513357,
+        "node_id": "O_kgDOD6WizQ",
+        "avatar_url": "https://avatars.githubusercontent.com/u/262513357?v=4",
+        "gravatar_id": "",
+        "url": "https://api.github.com/users/TrillionniumFoundation",
+        "html_url": "https://github.com/TrillionniumFoundation",
+        "followers_url": "https://api.github.com/users/TrillionniumFoundation/followers",
+        "following_url": "https://api.github.com/users/TrillionniumFoundation/following{/other_user}",
+        "gists_url": "https://api.github.com/users/TrillionniumFoundation/gists{/gist_id}",
+        "starred_url": "https://api.github.com/users/TrillionniumFoundation/starred{/owner}{/repo}",
+        "subscriptions_url": "https://api.github.com/users/TrillionniumFoundation/subscriptions",
+        "organizations_url": "https://api.github.com/users/TrillionniumFoundation/orgs",
+        "repos_url": "https://api.github.com/users/TrillionniumFoundation/repos",
+        "events_url": "https://api.github.com/users/TrillionniumFoundation/events{/privacy}",
+        "received_events_url": "https://api.github.com/users/TrillionniumFoundation/received_events",
+        "type": "Organization",
+        "user_view_type": "public",
+        "site_admin": false
+      },
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci",
+      "description": "Private verification-only mirror for Hepta hosted CI",
+      "fork": false,
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci",
+      "forks_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/forks",
+      "keys_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/keys{/key_id}",
+      "collaborators_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/collaborators{/collaborator}",
+      "teams_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/teams",
+      "hooks_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/hooks",
+      "issue_events_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/issues/events{/number}",
+      "events_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/events",
+      "assignees_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/assignees{/user}",
+      "branches_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/branches{/branch}",
+      "tags_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/tags",
+      "blobs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs{/sha}",
+      "git_tags_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/tags{/sha}",
+      "git_refs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/refs{/sha}",
+      "trees_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees{/sha}",
+      "statuses_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/statuses/{sha}",
+      "languages_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/languages",
+      "stargazers_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/stargazers",
+      "contributors_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/contributors",
+      "subscribers_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/subscribers",
+      "subscription_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/subscription",
+      "commits_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits{/sha}",
+      "git_commits_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits{/sha}",
+      "comments_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/comments{/number}",
+      "issue_comment_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/issues/comments{/number}",
+      "contents_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/contents/{+path}",
+      "compare_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/compare/{base}...{head}",
+      "merges_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/merges",
+      "archive_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/{archive_format}{/ref}",
+      "downloads_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/downloads",
+      "issues_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/issues{/number}",
+      "pulls_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/pulls{/number}",
+      "milestones_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/milestones{/number}",
+      "notifications_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/notifications{?since,all,participating}",
+      "labels_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/labels{/name}",
+      "releases_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/releases{/id}",
+      "deployments_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/deployments"
+    },
+    "head_repository": {
+      "id": 1320694176,
+      "node_id": "R_kgDOTrgxoA",
+      "name": "hepta-private-ci",
+      "full_name": "TrillionniumFoundation/hepta-private-ci",
+      "private": false,
+      "owner": {
+        "login": "TrillionniumFoundation",
+        "id": 262513357,
+        "node_id": "O_kgDOD6WizQ",
+        "avatar_url": "https://avatars.githubusercontent.com/u/262513357?v=4",
+        "gravatar_id": "",
+        "url": "https://api.github.com/users/TrillionniumFoundation",
+        "html_url": "https://github.com/TrillionniumFoundation",
+        "followers_url": "https://api.github.com/users/TrillionniumFoundation/followers",
+        "following_url": "https://api.github.com/users/TrillionniumFoundation/following{/other_user}",
+        "gists_url": "https://api.github.com/users/TrillionniumFoundation/gists{/gist_id}",
+        "starred_url": "https://api.github.com/users/TrillionniumFoundation/starred{/owner}{/repo}",
+        "subscriptions_url": "https://api.github.com/users/TrillionniumFoundation/subscriptions",
+        "organizations_url": "https://api.github.com/users/TrillionniumFoundation/orgs",
+        "repos_url": "https://api.github.com/users/TrillionniumFoundation/repos",
+        "events_url": "https://api.github.com/users/TrillionniumFoundation/events{/privacy}",
+        "received_events_url": "https://api.github.com/users/TrillionniumFoundation/received_events",
+        "type": "Organization",
+        "user_view_type": "public",
+        "site_admin": false
+      },
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci",
+      "description": "Private verification-only mirror for Hepta hosted CI",
+      "fork": false,
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci",
+      "forks_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/forks",
+      "keys_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/keys{/key_id}",
+      "collaborators_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/collaborators{/collaborator}",
+      "teams_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/teams",
+      "hooks_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/hooks",
+      "issue_events_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/issues/events{/number}",
+      "events_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/events",
+      "assignees_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/assignees{/user}",
+      "branches_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/branches{/branch}",
+      "tags_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/tags",
+      "blobs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs{/sha}",
+      "git_tags_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/tags{/sha}",
+      "git_refs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/refs{/sha}",
+      "trees_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees{/sha}",
+      "statuses_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/statuses/{sha}",
+      "languages_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/languages",
+      "stargazers_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/stargazers",
+      "contributors_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/contributors",
+      "subscribers_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/subscribers",
+      "subscription_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/subscription",
+      "commits_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits{/sha}",
+      "git_commits_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits{/sha}",
+      "comments_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/comments{/number}",
+      "issue_comment_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/issues/comments{/number}",
+      "contents_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/contents/{+path}",
+      "compare_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/compare/{base}...{head}",
+      "merges_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/merges",
+      "archive_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/{archive_format}{/ref}",
+      "downloads_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/downloads",
+      "issues_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/issues{/number}",
+      "pulls_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/pulls{/number}",
+      "milestones_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/milestones{/number}",
+      "notifications_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/notifications{?since,all,participating}",
+      "labels_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/labels{/name}",
+      "releases_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/releases{/id}",
+      "deployments_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/deployments"
+    }
+  },
+  "jobs": {
+    "total_count": 1,
+    "jobs": [
+      {
+        "id": 129870114423,
+        "run_id": 42827955616,
+        "workflow_name": "HCSN differentiable qualification",
+        "head_branch": "codex/hcsn-p1-finite-20261110-c385",
+        "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42827955616",
+        "run_attempt": 1,
+        "node_id": "CR_kwDOTrgxoM8AAAAePNyudw",
+        "head_sha": "bad0eb639737c5b15a6e2df34cbd682c831e9b9e",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/129870114423",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42827955616/job/129870114423",
+        "status": "completed",
+        "conclusion": "success",
+        "created_at": "2026-11-10T13:48:48Z",
+        "started_at": "2026-11-10T15:41:53Z",
+        "completed_at": "2026-11-10T15:43:18Z",
+        "name": "HCSN CPU science gate",
+        "steps": [
+          {
+            "name": "Set up job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 1,
+            "started_at": "2026-11-10T15:41:54Z",
+            "completed_at": "2026-11-10T15:41:55Z"
+          },
+          {
+            "name": "Check out the event commit",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 2,
+            "started_at": "2026-11-10T15:41:55Z",
+            "completed_at": "2026-11-10T15:42:02Z"
+          },
+          {
+            "name": "Record source head and tested tree identities",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 3,
+            "started_at": "2026-11-10T15:42:02Z",
+            "completed_at": "2026-11-10T15:42:02Z"
+          },
+          {
+            "name": "Set up pinned Python",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 4,
+            "started_at": "2026-11-10T15:42:02Z",
+            "completed_at": "2026-11-10T15:42:13Z"
+          },
+          {
+            "name": "Install and verify pinned CPU Torch",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 5,
+            "started_at": "2026-11-10T15:42:13Z",
+            "completed_at": "2026-11-10T15:42:43Z"
+          },
+          {
+            "name": "Discover and run every qualification test",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 6,
+            "started_at": "2026-11-10T15:42:43Z",
+            "completed_at": "2026-11-10T15:43:00Z"
+          },
+          {
+            "name": "Enforce the predeclared numerical error budget",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 7,
+            "started_at": "2026-11-10T15:43:00Z",
+            "completed_at": "2026-11-10T15:43:12Z"
+          },
+          {
+            "name": "Verify historical evidence integrity and current links",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 8,
+            "started_at": "2026-11-10T15:43:12Z",
+            "completed_at": "2026-11-10T15:43:12Z"
+          },
+          {
+            "name": "Check the independent finite DP and QVI oracle",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 9,
+            "started_at": "2026-11-10T15:43:12Z",
+            "completed_at": "2026-11-10T15:43:13Z"
+          },
+          {
+            "name": "Check non-diffusion memory control semantics",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 10,
+            "started_at": "2026-11-10T15:43:13Z",
+            "completed_at": "2026-11-10T15:43:14Z"
+          },
+          {
+            "name": "Require an unchanged source and index",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 11,
+            "started_at": "2026-11-10T15:43:14Z",
+            "completed_at": "2026-11-10T15:43:14Z"
+          },
+          {
+            "name": "Record terminal outcomes without granting failure exemptions",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 12,
+            "started_at": "2026-11-10T15:43:14Z",
+            "completed_at": "2026-11-10T15:43:14Z"
+          },
+          {
+            "name": "Retain receipts on every outcome",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 13,
+            "started_at": "2026-11-10T15:43:14Z",
+            "completed_at": "2026-11-10T15:43:15Z"
+          },
+          {
+            "name": "Post Set up pinned Python",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 25,
+            "started_at": "2026-11-10T15:43:15Z",
+            "completed_at": "2026-11-10T15:43:15Z"
+          },
+          {
+            "name": "Post Check out the event commit",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 26,
+            "started_at": "2026-11-10T15:43:15Z",
+            "completed_at": "2026-11-10T15:43:16Z"
+          },
+          {
+            "name": "Complete job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 27,
+            "started_at": "2026-11-10T15:43:16Z",
+            "completed_at": "2026-11-10T15:43:16Z"
+          }
+        ],
+        "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/129870114423",
+        "labels": [
+          "ubuntu-24.04"
+        ],
+        "runner_id": 1000087649,
+        "runner_name": "GitHub Actions 1000087649",
+        "runner_group_id": 0,
+        "runner_group_name": "GitHub Actions"
+      }
+    ]
+  },
+  "artifacts": {
+    "total_count": 1,
+    "artifacts": [
+      {
+        "id": 13778537333,
+        "node_id": "MDg6QXJ0aWZhY3QxMzc3ODUzNzMzMw==",
+        "name": "hcsn-differentiable-42827955616-1",
+        "size_in_bytes": 44610,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/13778537333",
+        "archive_download_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/13778537333/zip",
+        "expired": false,
+        "digest": "sha256:54d359c2087e2f7a5d3308267b16a3d6da22ac037efa3a621042e36066c2fab4",
+        "created_at": "2026-11-10T15:43:15Z",
+        "updated_at": "2026-11-10T15:43:15Z",
+        "expires_at": "2026-11-24T15:43:15Z",
+        "workflow_run": {
+          "id": 42827955616,
+          "repository_id": 1320694176,
+          "head_repository_id": 1320694176,
+          "head_branch": "codex/hcsn-p1-finite-20261110-c385",
+          "head_sha": "bad0eb639737c5b15a6e2df34cbd682c831e9b9e"
+        }
+      }
+    ]
+  },
+  "authenticated_download": {
+    "artifact_id": 13778537333,
+    "bytes": 44610,
+    "sha256": "54d359c2087e2f7a5d3308267b16a3d6da22ac037efa3a621042e36066c2fab4",
+    "crc_verified": true
+  },
+  "scope": "Source-bound declared CPU fixtures; no real-task, complete numerical-domain or repository-wide CI claim."
+}
+

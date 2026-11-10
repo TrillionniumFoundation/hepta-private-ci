@@ -1,0 +1,63 @@
+{
+  "archive": "hosted-science-42827955616-1.zip",
+  "archive_sha256": "54d359c2087e2f7a5d3308267b16a3d6da22ac037efa3a621042e36066c2fab4",
+  "artifact_id": 13778537333,
+  "error_budget": {
+    "certified_bound": false,
+    "claim": "Declared common-prior, perpetual fixed-policy CPU fixtures only.",
+    "source_unchanged": true,
+    "status": "passed",
+    "wall_seconds": 11.617740803000004
+  },
+  "identity": {
+    "event": "pull_request",
+    "event_sha": "ae2e403e7411d10a4d29368a62a51454b858c8d7",
+    "evidence_scope": "tested_commit_tree_only",
+    "recorded_utc": "2026-11-10T15:42:02.754144+00:00",
+    "run_attempt": "1",
+    "run_id": "42827955616",
+    "schema": "hcsn-ci-identity-v1",
+    "source_head": "bad0eb639737c5b15a6e2df34cbd682c831e9b9e",
+    "source_tree": "0fd8f2f35e190442025005ca17a4662af522a491",
+    "tested_commit": "ae2e403e7411d10a4d29368a62a51454b858c8d7",
+    "tested_tree": "0fd8f2f35e190442025005ca17a4662af522a491",
+    "trees_equal": true
+  },
+  "outcome": {
+    "claim": "CPU fixture qualification only; no real-task or repository-wide pass.",
+    "finished_utc": "2026-11-10T15:43:14.819270+00:00",
+    "rerun_of_old_evidence": false,
+    "schema": "hcsn-ci-outcome-v1",
+    "science_status": "PASSED_DECLARED_FIXTURES",
+    "step_exit_codes": {
+      "error-budget": 0,
+      "qualification": 0
+    },
+    "steps": {
+      "budget": "success",
+      "checkout": "success",
+      "clean": "success",
+      "controls": "success",
+      "evidence": "success",
+      "identity": "success",
+      "python": "success",
+      "qualification": "success",
+      "qvi": "success",
+      "runtime": "success"
+    }
+  },
+  "qualification_scope": "Hosted declared CPU fixtures; current new evidence assembly and v3 training/continuation tests not credited to this earlier run.",
+  "regression": {
+    "errors": 0,
+    "failures": 0,
+    "process_cpu_seconds": 16.058433635,
+    "python": "3.12.3 (main, Sep 26 2024, 18:18:55) [GCC 13.2.0]",
+    "skipped": 0,
+    "source_unchanged": true,
+    "tests_run": 92,
+    "torch": "2.8.0+cpu",
+    "wall_seconds": 16.071043321000005
+  },
+  "run_id": 42827955616,
+  "schema": "hcsn-hosted-science-receipt-summary-v1"
+}

@@ -1,0 +1,16 @@
+{
+  "argv": [
+    "/usr/bin/git",
+    "-C",
+    "/Users/qianqi/hepta-hcsn-p0p5-20261110-c385/stage-publish.git",
+    "-c",
+    "credential.helper=",
+    "-c",
+    "credential.helper=!/opt/homebrew/bin/gh auth git-credential",
+    "bundle",
+    "verify",
+    "/Users/qianqi/hepta-hcsn-p0p5-20261110-c385/recovery/hcsn-p2-adequate-runner.bundle"
+  ],
+  "returncode": 0,
+  "wall_seconds": 0.019450834000000004
+}

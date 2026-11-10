@@ -1,0 +1,465 @@
+[
+  {
+    "local_commit": "6d18f16050dabab063a324087a7b4e00618bd1bb",
+    "local_tree": "98ba4df23edc43180cd55a255d460e869fa62329",
+    "branch": "codex/hcsn-p2-adequate-runner-api-20261110-c385",
+    "files": [
+      {
+        "path": "proposals/localization-v3/campaign.py",
+        "sha": "faf80b29b50275341b9dfe8f2c9e5935b51a8646",
+        "bytes": 10254
+      },
+      {
+        "path": "proposals/localization-v3/cores.py",
+        "sha": "6f6fab04f5bab875e5494103654e3c2174deea3e",
+        "bytes": 16361
+      },
+      {
+        "path": "proposals/localization-v3/test_cores.py",
+        "sha": "5a5af4d414a4722307128dd94589650321d4aaa6",
+        "bytes": 18889
+      },
+      {
+        "path": "proposals/localization-v3/train.py",
+        "sha": "feb7b8e8f1073f65a4844d0b8b9f18c63bd8bb51",
+        "bytes": 23297
+      }
+    ],
+    "tree": "98ba4df23edc43180cd55a255d460e869fa62329",
+    "remote_commit": "18ce50e1a26d6c639c735442e2cca20443bab848",
+    "branch_created": true,
+    "remote_head_verified": true,
+    "remote_tree_verified": true,
+    "readback": {
+      "branch_ref": {
+        "ref": "refs/heads/codex/hcsn-p2-adequate-runner-api-20261110-c385",
+        "node_id": "REF_kwDOTrgxoNoAOnJlZnMvaGVhZHMvY29kZXgvaGNzbi1wMi1hZGVxdWF0ZS1ydW5uZXItYXBpLTIwMjYxMTEwLWMzODU",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/refs/heads/codex/hcsn-p2-adequate-runner-api-20261110-c385",
+        "object": {
+          "sha": "18ce50e1a26d6c639c735442e2cca20443bab848",
+          "type": "commit",
+          "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/18ce50e1a26d6c639c735442e2cca20443bab848"
+        }
+      },
+      "commit": {
+        "sha": "18ce50e1a26d6c639c735442e2cca20443bab848",
+        "node_id": "C_kwDOTrgxoNoAKDE4Y2U1MGUxYTI2ZDZjNjM5YzczNTQ0MmUyY2NhMjA0NDNiYWI4NDg",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/18ce50e1a26d6c639c735442e2cca20443bab848",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/18ce50e1a26d6c639c735442e2cca20443bab848",
+        "author": {
+          "name": "Qian QI",
+          "email": "102159240+ProfHepta@users.noreply.github.com",
+          "date": "2026-11-10T15:54:40Z"
+        },
+        "committer": {
+          "name": "Qian QI",
+          "email": "102159240+ProfHepta@users.noreply.github.com",
+          "date": "2026-11-10T15:54:40Z"
+        },
+        "tree": {
+          "sha": "98ba4df23edc43180cd55a255d460e869fa62329",
+          "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/98ba4df23edc43180cd55a255d460e869fa62329"
+        },
+        "message": "feat(hcsn): freeze adequate-training diagnostics and auditable core configurations\n\nAPI publication during native control outage. Source tree is identical to local commit 6d18f16050dabab063a324087a7b4e00618bd1bb.",
+        "parents": [
+          {
+            "sha": "3e49eda398778220fc45604908aaedb9bca9f1a0",
+            "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/3e49eda398778220fc45604908aaedb9bca9f1a0",
+            "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/3e49eda398778220fc45604908aaedb9bca9f1a0"
+          }
+        ],
+        "verification": {
+          "verified": false,
+          "reason": "unsigned",
+          "signature": null,
+          "payload": null,
+          "verified_at": null
+        }
+      }
+    },
+    "pull_request_result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "Action completed."
+        }
+      ],
+      "structuredContent": {
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5800",
+        "number": 5800,
+        "state": "open",
+        "merged": false,
+        "mergeable": false,
+        "draft": true,
+        "body": "The previous development runner could lose non-tensor PLIF dynamics when rebuilding a checkpoint, selected checkpoints only after a plateau-sized improvement, and averaged batch-normalized training losses by event count.\n\nThis stage serializes the complete PLIF configuration and selected spike-trace readout, saves every strict development improvement, separates the plateau anchor, aggregates weighted CE by target weight, records complete-epoch optimizer/RNG state, and supports an explicit ordered fit roster with process cost curves.\n\nValidation: all 13 core tests passed on the frozen v8 source and the canonical formatting-equivalent source. The actual 42-fit source archive is SHA256 288283cae2b2cf4e7b68432e040e643a5e1b00a7de961fc848dd5cf20eb46102. Results are development-only; final training adequacy, numerical scope and scientific benefit remain unconfirmed. The original 15,000-second global deadline can shorten later fits' actual nominal four-hour limits and must remain visible in costs.\n\nPublished through the connected API while the native control channel is unavailable. The entire tree equals local commit 6d18f16050dabab063a324087a7b4e00618bd1bb. The uncertain native publisher is left intact; this separate branch does not overwrite it or main.",
+        "title": "HCSN: bind PLIF dynamics and record strict-best development training",
+        "base": "codex/hcsn-p2-tests-20261110-c385",
+        "base_sha": "3e49eda398778220fc45604908aaedb9bca9f1a0",
+        "head": "codex/hcsn-p2-adequate-runner-api-20261110-c385",
+        "head_sha": "18ce50e1a26d6c639c735442e2cca20443bab848",
+        "head_repo_id": 1320694176,
+        "head_repo_full_name": "TrillionniumFoundation/hepta-private-ci",
+        "merge_commit_sha": null,
+        "user": {
+          "login": "ProfHepta",
+          "name": "ProfHepta",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/102159240?v=4",
+          "id": 102159240
+        },
+        "requested_reviewers": null,
+        "requested_team_reviewers": null,
+        "diff": null,
+        "comments": null,
+        "created_at": "2026-11-10T15:56:17Z",
+        "updated_at": "2026-11-10T15:56:17Z",
+        "closed_at": null,
+        "merged_at": null,
+        "commits": 1,
+        "changed_files": 4,
+        "additions": 331,
+        "deletions": 23,
+        "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5800",
+        "display_title": "HCSN: bind PLIF dynamics and record strict-best development training"
+      },
+      "isError": false
+    }
+  },
+  {
+    "local_commit": "372ecd8a8996abbae738850941c9789a7d3070aa",
+    "local_tree": "5eadae04be7a46b4590ffe4a7126028de5920d95",
+    "branch": "codex/hcsn-p2-continuation-state-api-20261110-c385",
+    "files": [
+      {
+        "path": "proposals/localization-v3/continuation_state.py",
+        "sha": "3b4ba2dd0d494f8bfd28475c99d7e32b3953efc9",
+        "bytes": 6509
+      }
+    ],
+    "parent_remote_commit": "18ce50e1a26d6c639c735442e2cca20443bab848",
+    "tree": "5eadae04be7a46b4590ffe4a7126028de5920d95",
+    "remote_commit": "3f5cff818923d2388a690043ce29f77b59f8209d",
+    "branch_created": true,
+    "remote_head_verified": true,
+    "remote_tree_verified": true,
+    "readback": {
+      "branch_ref": {
+        "ref": "refs/heads/codex/hcsn-p2-continuation-state-api-20261110-c385",
+        "node_id": "REF_kwDOTrgxoNoAPXJlZnMvaGVhZHMvY29kZXgvaGNzbi1wMi1jb250aW51YXRpb24tc3RhdGUtYXBpLTIwMjYxMTEwLWMzODU",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/refs/heads/codex/hcsn-p2-continuation-state-api-20261110-c385",
+        "object": {
+          "sha": "3f5cff818923d2388a690043ce29f77b59f8209d",
+          "type": "commit",
+          "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/3f5cff818923d2388a690043ce29f77b59f8209d"
+        }
+      },
+      "commit": {
+        "sha": "3f5cff818923d2388a690043ce29f77b59f8209d",
+        "node_id": "C_kwDOTrgxoNoAKDNmNWNmZjgxODkyM2QyMzg4YTY5MDA0M2NlMjlmNzdiNTlmODIwOWQ",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/3f5cff818923d2388a690043ce29f77b59f8209d",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/3f5cff818923d2388a690043ce29f77b59f8209d",
+        "author": {
+          "name": "Qian QI",
+          "email": "102159240+ProfHepta@users.noreply.github.com",
+          "date": "2026-11-10T15:55:05Z"
+        },
+        "committer": {
+          "name": "Qian QI",
+          "email": "102159240+ProfHepta@users.noreply.github.com",
+          "date": "2026-11-10T15:55:05Z"
+        },
+        "tree": {
+          "sha": "5eadae04be7a46b4590ffe4a7126028de5920d95",
+          "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/5eadae04be7a46b4590ffe4a7126028de5920d95"
+        },
+        "message": "Bind continuation to original complete epoch-cap evidence\n\nAPI publication during native control outage. Source tree is identical to local commit 372ecd8a8996abbae738850941c9789a7d3070aa.",
+        "parents": [
+          {
+            "sha": "18ce50e1a26d6c639c735442e2cca20443bab848",
+            "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/18ce50e1a26d6c639c735442e2cca20443bab848",
+            "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/18ce50e1a26d6c639c735442e2cca20443bab848"
+          }
+        ],
+        "verification": {
+          "verified": false,
+          "reason": "unsigned",
+          "signature": null,
+          "payload": null,
+          "verified_at": null
+        }
+      }
+    },
+    "pull_request_result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "Action completed."
+        }
+      ],
+      "structuredContent": {
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5801",
+        "number": 5801,
+        "state": "open",
+        "merged": false,
+        "mergeable": false,
+        "draft": true,
+        "body": "A capped fit must not be resumed from a partial or changed checkpoint, and a tensor-only state dictionary does not bind all model dynamics.\n\nThis stage adds fail-closed verification of the original completed epoch-cap result, outer process receipt, plan, initial/best/last checkpoints, event log, source and data identity. It independently reconstructs the complete model configuration from the original plan and recovers strict-best and plateau-anchor state.\n\nValidated as part of the frozen C1 delivery capsule: 24 tests passed (the existing 13 core tests plus 11 continuation tests), with the complete source unchanged. Capsule SHA256 f4b473aa4f373c1622bbdac90d61e33c64f0e9642b6c0506e7fec5b8885a3946. The continuation fixtures are synthetic; this does not establish scientific training or numerical-domain admission.\n\nThis is the first continuation stage and is stacked on the adequate-runner draft. Full tree identity equals local commit 372ecd8a8996abbae738850941c9789a7d3070aa.",
+        "title": "HCSN: verify original evidence before epoch-cap continuation",
+        "base": "codex/hcsn-p2-adequate-runner-api-20261110-c385",
+        "base_sha": "18ce50e1a26d6c639c735442e2cca20443bab848",
+        "head": "codex/hcsn-p2-continuation-state-api-20261110-c385",
+        "head_sha": "3f5cff818923d2388a690043ce29f77b59f8209d",
+        "head_repo_id": 1320694176,
+        "head_repo_full_name": "TrillionniumFoundation/hepta-private-ci",
+        "merge_commit_sha": null,
+        "user": {
+          "login": "ProfHepta",
+          "name": "ProfHepta",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/102159240?v=4",
+          "id": 102159240
+        },
+        "requested_reviewers": null,
+        "requested_team_reviewers": null,
+        "diff": null,
+        "comments": null,
+        "created_at": "2026-11-10T15:56:19Z",
+        "updated_at": "2026-11-10T15:56:19Z",
+        "closed_at": null,
+        "merged_at": null,
+        "commits": 1,
+        "changed_files": 1,
+        "additions": 156,
+        "deletions": 0,
+        "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5801",
+        "display_title": "HCSN: verify original evidence before epoch-cap continuation"
+      },
+      "isError": false
+    }
+  },
+  {
+    "local_commit": "b6f05399f31fc73b42b79042d7a3aafbfd059192",
+    "local_tree": "aaf9d3dcd545adc0a9b9eb0361bf3c22b9746ab5",
+    "branch": "codex/hcsn-p2-continuation-runner-api-20261110-c385",
+    "files": [
+      {
+        "path": "proposals/localization-v3/continuation.py",
+        "sha": "345e1d4d31de5a262e87dae999eb0d435a349214",
+        "bytes": 15776
+      }
+    ],
+    "parent_remote_commit": "3f5cff818923d2388a690043ce29f77b59f8209d",
+    "tree": "aaf9d3dcd545adc0a9b9eb0361bf3c22b9746ab5",
+    "remote_commit": "d520d7e1c2fc2be17df1fb8a2e75951b9c9c3eb4",
+    "branch_created": true,
+    "remote_head_verified": true,
+    "remote_tree_verified": true,
+    "readback": {
+      "branch_ref": {
+        "ref": "refs/heads/codex/hcsn-p2-continuation-runner-api-20261110-c385",
+        "node_id": "REF_kwDOTrgxoNoAPnJlZnMvaGVhZHMvY29kZXgvaGNzbi1wMi1jb250aW51YXRpb24tcnVubmVyLWFwaS0yMDI2MTExMC1jMzg1",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/refs/heads/codex/hcsn-p2-continuation-runner-api-20261110-c385",
+        "object": {
+          "sha": "d520d7e1c2fc2be17df1fb8a2e75951b9c9c3eb4",
+          "type": "commit",
+          "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/d520d7e1c2fc2be17df1fb8a2e75951b9c9c3eb4"
+        }
+      },
+      "commit": {
+        "sha": "d520d7e1c2fc2be17df1fb8a2e75951b9c9c3eb4",
+        "node_id": "C_kwDOTrgxoNoAKGQ1MjBkN2UxYzJmYzJiZTE3ZGYxZmI4YTJlNzU5NTFiOWM5YzNlYjQ",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/d520d7e1c2fc2be17df1fb8a2e75951b9c9c3eb4",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/d520d7e1c2fc2be17df1fb8a2e75951b9c9c3eb4",
+        "author": {
+          "name": "Qian QI",
+          "email": "102159240+ProfHepta@users.noreply.github.com",
+          "date": "2026-11-10T15:55:10Z"
+        },
+        "committer": {
+          "name": "Qian QI",
+          "email": "102159240+ProfHepta@users.noreply.github.com",
+          "date": "2026-11-10T15:55:10Z"
+        },
+        "tree": {
+          "sha": "aaf9d3dcd545adc0a9b9eb0361bf3c22b9746ab5",
+          "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/aaf9d3dcd545adc0a9b9eb0361bf3c22b9746ab5"
+        },
+        "message": "Continue capped development fits within original remaining budgets\n\nAPI publication during native control outage. Source tree is identical to local commit b6f05399f31fc73b42b79042d7a3aafbfd059192.",
+        "parents": [
+          {
+            "sha": "3f5cff818923d2388a690043ce29f77b59f8209d",
+            "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/3f5cff818923d2388a690043ce29f77b59f8209d",
+            "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/3f5cff818923d2388a690043ce29f77b59f8209d"
+          }
+        ],
+        "verification": {
+          "verified": false,
+          "reason": "unsigned",
+          "signature": null,
+          "payload": null,
+          "verified_at": null
+        }
+      }
+    },
+    "pull_request_result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "Action completed."
+        }
+      ],
+      "structuredContent": {
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5802",
+        "number": 5802,
+        "state": "open",
+        "merged": false,
+        "mergeable": false,
+        "draft": true,
+        "body": "Some development fits reached the original epoch cap while still improving. The cap cannot be used as evidence of convergence.\n\nThis separately recorded phase restores the last complete epoch, complete model configuration, optimizer, Torch RNG, sample-order RNG, update count and plateau state. It preserves the prior best checkpoint until a strict improvement, retains the original diagnostic, and charges startup and all new work against the parent's original actual wall ceiling. It cannot resume a partial batch or silently add a learning rate, seed or fresh diagnostic.\n\nC1 is an extension introduced after capped runs were observed. Its added optimization steps and controller/preflight costs remain visible. The native controller must pass each original outer hard_wall_seconds value, which can be less than the nominal four hours because of the original global deadline. Native C1 has not been dispatched.\n\nValidation: the frozen C1 capsule passed all 24 combined core/continuation tests with source unchanged. Five cores matched split and uninterrupted complete state exactly on synthetic fixtures. Numerical and scientific admission remain HOLD. Full tree equals local commit b6f05399f31fc73b42b79042d7a3aafbfd059192.",
+        "title": "HCSN: continue capped fits within their original actual budgets",
+        "base": "codex/hcsn-p2-continuation-state-api-20261110-c385",
+        "base_sha": "3f5cff818923d2388a690043ce29f77b59f8209d",
+        "head": "codex/hcsn-p2-continuation-runner-api-20261110-c385",
+        "head_sha": "d520d7e1c2fc2be17df1fb8a2e75951b9c9c3eb4",
+        "head_repo_id": 1320694176,
+        "head_repo_full_name": "TrillionniumFoundation/hepta-private-ci",
+        "merge_commit_sha": null,
+        "user": {
+          "login": "ProfHepta",
+          "name": "ProfHepta",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/102159240?v=4",
+          "id": 102159240
+        },
+        "requested_reviewers": null,
+        "requested_team_reviewers": null,
+        "diff": null,
+        "comments": null,
+        "created_at": "2026-11-10T15:56:22Z",
+        "updated_at": "2026-11-10T15:56:22Z",
+        "closed_at": null,
+        "merged_at": null,
+        "commits": 1,
+        "changed_files": 1,
+        "additions": 375,
+        "deletions": 0,
+        "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5802",
+        "display_title": "HCSN: continue capped fits within their original actual budgets"
+      },
+      "isError": false
+    }
+  },
+  {
+    "local_commit": "7477956ee733e1a601270c5d0ecaee17782d4719",
+    "local_tree": "da62efef8b9835ef69643af3925e6820c2d113c0",
+    "branch": "codex/hcsn-p2-continuation-tests-api-20261110-c385",
+    "files": [
+      {
+        "path": "proposals/localization-v3/test_continuation.py",
+        "sha": "da7d48a2ffa738c126779e22058a4b2ca580bdef",
+        "bytes": 18633
+      }
+    ],
+    "parent_remote_commit": "d520d7e1c2fc2be17df1fb8a2e75951b9c9c3eb4",
+    "tree": "da62efef8b9835ef69643af3925e6820c2d113c0",
+    "remote_commit": "56de11a29bbbb8a9aba93e67731cdee4909b4e15",
+    "branch_created": true,
+    "remote_head_verified": true,
+    "remote_tree_verified": true,
+    "readback": {
+      "branch_ref": {
+        "ref": "refs/heads/codex/hcsn-p2-continuation-tests-api-20261110-c385",
+        "node_id": "REF_kwDOTrgxoNoAPXJlZnMvaGVhZHMvY29kZXgvaGNzbi1wMi1jb250aW51YXRpb24tdGVzdHMtYXBpLTIwMjYxMTEwLWMzODU",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/refs/heads/codex/hcsn-p2-continuation-tests-api-20261110-c385",
+        "object": {
+          "sha": "56de11a29bbbb8a9aba93e67731cdee4909b4e15",
+          "type": "commit",
+          "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/56de11a29bbbb8a9aba93e67731cdee4909b4e15"
+        }
+      },
+      "commit": {
+        "sha": "56de11a29bbbb8a9aba93e67731cdee4909b4e15",
+        "node_id": "C_kwDOTrgxoNoAKDU2ZGUxMWEyOWJiYmI4YTlhYmE5M2U2NzczMWNkZWU0OTA5YjRlMTU",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/56de11a29bbbb8a9aba93e67731cdee4909b4e15",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/56de11a29bbbb8a9aba93e67731cdee4909b4e15",
+        "author": {
+          "name": "Qian QI",
+          "email": "102159240+ProfHepta@users.noreply.github.com",
+          "date": "2026-11-10T15:55:13Z"
+        },
+        "committer": {
+          "name": "Qian QI",
+          "email": "102159240+ProfHepta@users.noreply.github.com",
+          "date": "2026-11-10T15:55:13Z"
+        },
+        "tree": {
+          "sha": "da62efef8b9835ef69643af3925e6820c2d113c0",
+          "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/da62efef8b9835ef69643af3925e6820c2d113c0"
+        },
+        "message": "Verify exact continuation and reject incomplete or changed parents\n\nAPI publication during native control outage. Source tree is identical to local commit 7477956ee733e1a601270c5d0ecaee17782d4719.",
+        "parents": [
+          {
+            "sha": "d520d7e1c2fc2be17df1fb8a2e75951b9c9c3eb4",
+            "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/d520d7e1c2fc2be17df1fb8a2e75951b9c9c3eb4",
+            "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/d520d7e1c2fc2be17df1fb8a2e75951b9c9c3eb4"
+          }
+        ],
+        "verification": {
+          "verified": false,
+          "reason": "unsigned",
+          "signature": null,
+          "payload": null,
+          "verified_at": null
+        }
+      }
+    },
+    "pull_request_result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "Action completed."
+        }
+      ],
+      "structuredContent": {
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5803",
+        "number": 5803,
+        "state": "open",
+        "merged": false,
+        "mergeable": false,
+        "draft": true,
+        "body": "Continuation must reproduce uninterrupted optimization and preserve the complete evidence and cost boundary.\n\nThe tests compare GRU, PLIF spike trace, cached small-grid HCSN, official S4D and Attention across split and uninterrupted training. They compare complete model/configuration, optimizer, Torch RNG, sample-order RNG and epoch/update counters. Additional cases check inherited best/plateau behavior and reject changed checkpoints, non-tensor dynamics, source/data identity, missing or incomplete parents and exhausted budgets.\n\nAll 11 continuation tests passed independently. The exact frozen delivery capsule then passed all 24 tests (13 existing core plus these 11), in 5.979410 seconds whole-process wall and 5.507726 seconds CPU; source hashes before/after agree. These are implementation tests on synthetic 11-class fixtures and do not add scientific-fit or whole-domain numerical credit.\n\nThe earlier single Attention test passed, while its evidence wrapper initially misparsed singular 'test'; its failed wrapper receipt and the separate read-only reconciliation are retained. Full tree equals local commit 7477956ee733e1a601270c5d0ecaee17782d4719.",
+        "title": "HCSN: test exact continuation and reject changed or incomplete parents",
+        "base": "codex/hcsn-p2-continuation-runner-api-20261110-c385",
+        "base_sha": "d520d7e1c2fc2be17df1fb8a2e75951b9c9c3eb4",
+        "head": "codex/hcsn-p2-continuation-tests-api-20261110-c385",
+        "head_sha": "56de11a29bbbb8a9aba93e67731cdee4909b4e15",
+        "head_repo_id": 1320694176,
+        "head_repo_full_name": "TrillionniumFoundation/hepta-private-ci",
+        "merge_commit_sha": null,
+        "user": {
+          "login": "ProfHepta",
+          "name": "ProfHepta",
+          "email": null,
+          "avatar_url": "https://avatars.githubusercontent.com/u/102159240?v=4",
+          "id": 102159240
+        },
+        "requested_reviewers": null,
+        "requested_team_reviewers": null,
+        "diff": null,
+        "comments": null,
+        "created_at": "2026-11-10T15:56:24Z",
+        "updated_at": "2026-11-10T15:56:24Z",
+        "closed_at": null,
+        "merged_at": null,
+        "commits": 1,
+        "changed_files": 1,
+        "additions": 447,
+        "deletions": 0,
+        "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5803",
+        "display_title": "HCSN: test exact continuation and reject changed or incomplete parents"
+      },
+      "isError": false
+    }
+  }
+]
+

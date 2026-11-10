@@ -1,0 +1,335 @@
+{
+  "schema": "hcsn-recovery-checkpoint/v1",
+  "recorded_at_utc": "2026-11-10 15:37:45 UTC",
+  "purpose": "Operational recovery checkpoint; not a substitute for original experiment logs or a new scientific result.",
+  "observations": {
+    "cloud_environment_status": "unavailable",
+    "native_control_status": "unavailable: tunnel_client_not_seen, 300 seconds",
+    "native_control_error_observed_at_utc": "2026-11-10 15:34 UTC",
+    "native_training_current_process_status": "UNKNOWN; persistent jobs were launched before the control outage; no restart attempted",
+    "v8_remote_branch": "codex/hcsn-p2-adequate-runner-20261110-c385",
+    "v8_remote_branch_get_result": "HTTP 404 at 2026-11-10 15:34 UTC; publication not confirmed",
+    "native_v8_publisher_final_receipt": "unreadable; no duplicate mutation attempted",
+    "release": {
+      "id": 440410488,
+      "tag": "hcsn-research-20261110-c385",
+      "draft": true,
+      "prerelease": true,
+      "published_at": null,
+      "updated_at": "2026-11-10T15:00:28Z",
+      "api_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/releases/440410488",
+      "asset_count": 16
+    },
+    "server_asset_identity_checks": [
+      {
+        "id": 731802015,
+        "name": "cloud-p2-diagnostics-20261110-v1.zip",
+        "bytes": 17670639,
+        "sha256": "f54585285973bd29c80cbb6fc258bb48513f79e7629296bac3ca2c384a4e76a2",
+        "server_identity_match": true,
+        "independent_new_byte_download_performed": false
+      },
+      {
+        "id": 731824485,
+        "name": "hcsn-width16-v6-audit-20261110.zip",
+        "bytes": 4460517,
+        "sha256": "b7beeba44a945baf32c4d27efaa214fe35fc1a704a94927b77f583e9e02b5be0",
+        "server_identity_match": true,
+        "independent_new_byte_download_performed": false
+      },
+      {
+        "id": 731658116,
+        "name": "hcsn-p1-evidence-20261110-v2.zip",
+        "bytes": 2199349,
+        "sha256": "a1a32db092bce32db2d5e75804cbca316d4bab02080cc57ace5f6490390c0b79",
+        "server_identity_match": true,
+        "independent_new_byte_download_performed": false
+      },
+      {
+        "id": 731658886,
+        "name": "hcsn-study-runtime-20261110-evidence.zip",
+        "bytes": 209485,
+        "sha256": "b2fa90124835a0c8a1d5275284b6d4a4dff9e3894aa91f97d98d621e15f55625",
+        "server_identity_match": true,
+        "independent_new_byte_download_performed": false
+      }
+    ],
+    "assets": [
+      {
+        "id": 731803964,
+        "name": "ARCHIVE-MANIFEST.json",
+        "bytes": 2906,
+        "digest": "sha256:a1320870a1a849b33382a6b7c7af6169c776bf3cd648d09f094abaf770e41638",
+        "state": "uploaded"
+      },
+      {
+        "id": 731802015,
+        "name": "cloud-p2-diagnostics-20261110-v1.zip",
+        "bytes": 17670639,
+        "digest": "sha256:f54585285973bd29c80cbb6fc258bb48513f79e7629296bac3ca2c384a4e76a2",
+        "state": "uploaded"
+      },
+      {
+        "id": 731807735,
+        "name": "first-fit-independent-review.zip",
+        "bytes": 2707859,
+        "digest": "sha256:123b01a393bd3d80bb25efe59cd7c451d9732ecb8d120c71060813be01ce6b96",
+        "state": "uploaded"
+      },
+      {
+        "id": 731658116,
+        "name": "hcsn-p1-evidence-20261110-v2.zip",
+        "bytes": 2199349,
+        "digest": "sha256:a1a32db092bce32db2d5e75804cbca316d4bab02080cc57ace5f6490390c0b79",
+        "state": "uploaded"
+      },
+      {
+        "id": 731658886,
+        "name": "hcsn-study-runtime-20261110-evidence.zip",
+        "bytes": 209485,
+        "digest": "sha256:b2fa90124835a0c8a1d5275284b6d4a4dff9e3894aa91f97d98d621e15f55625",
+        "state": "uploaded"
+      },
+      {
+        "id": 731824485,
+        "name": "hcsn-width16-v6-audit-20261110.zip",
+        "bytes": 4460517,
+        "digest": "sha256:b7beeba44a945baf32c4d27efaa214fe35fc1a704a94927b77f583e9e02b5be0",
+        "state": "uploaded"
+      },
+      {
+        "id": 731809992,
+        "name": "hepta-hcsn-independent-campaign-review-20261110-c385-v1.zip",
+        "bytes": 13665345,
+        "digest": "sha256:557dbb6c92d0847ee284d7454692d61198ae0254904771a98c1a25598f37c536",
+        "state": "uploaded"
+      },
+      {
+        "id": 731806082,
+        "name": "p0-semantics-nine-tests.zip",
+        "bytes": 175916,
+        "digest": "sha256:a453435d1c2b1b7829d286bec0a30a19be65e4a7585126c71babd0176406d2e7",
+        "state": "uploaded"
+      },
+      {
+        "id": 731577229,
+        "name": "PRELIMINARY-MANIFEST-v1.json",
+        "bytes": 871,
+        "digest": "sha256:2ab339d94c24b97623131762f26d470a6b18f11743780696f9e6ba51f2de29ea",
+        "state": "uploaded"
+      },
+      {
+        "id": 731772183,
+        "name": "raw-core-v1-attention.zip",
+        "bytes": 18113576,
+        "digest": "sha256:10d40e5eab380a1bacad94f0ce68b701a2876ed2189932d1993c089368ae1d5e",
+        "state": "uploaded"
+      },
+      {
+        "id": 731695438,
+        "name": "raw-core-v1-cfc.zip",
+        "bytes": 18925236,
+        "digest": "sha256:02bda1df9731ab5921497479da561b9ac6ff82e02d687b632ebc9ccaebd0fea8",
+        "state": "uploaded"
+      },
+      {
+        "id": 731775347,
+        "name": "raw-core-v1-context-costs-sources.zip",
+        "bytes": 18118346,
+        "digest": "sha256:b40b214bbee098e4fe4d74986faf410068011d967ac50c8e6b60d3c4da5eb56c",
+        "state": "uploaded"
+      },
+      {
+        "id": 731699730,
+        "name": "raw-core-v1-event_time_lif.zip",
+        "bytes": 17094026,
+        "digest": "sha256:274ac82ec0d84d002d7fd09f61f9a3b9ac6ccaab5b2f184bb63297ba1bb483e7",
+        "state": "uploaded"
+      },
+      {
+        "id": 731686539,
+        "name": "raw-core-v1-gru.zip",
+        "bytes": 17434849,
+        "digest": "sha256:31b6edc37303408f8420f0eda63eb151af47a9b8a8362d65005aed289caf5651",
+        "state": "uploaded"
+      },
+      {
+        "id": 731697911,
+        "name": "raw-core-v1-snn_plif.zip",
+        "bytes": 1594512,
+        "digest": "sha256:2857659ffd2204ab872cd3f0fb5f2e78a62c6c0dd9cdac2f5d086932d9dc012c",
+        "state": "uploaded"
+      },
+      {
+        "id": 731702416,
+        "name": "raw-core-v1-ssm_s4d.zip",
+        "bytes": 17405763,
+        "digest": "sha256:47ac0da4140241d01f1afd41eec024a4448d01513d7bd5b5477d78026cf2816f",
+        "state": "uploaded"
+      }
+    ],
+    "p1_pr_workflow_runs": [
+      {
+        "id": 42827955790,
+        "name": "blocking-ci",
+        "status": "in_progress",
+        "conclusion": null,
+        "run_number": 34870,
+        "jobs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42827955790/jobs",
+        "logs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42827955790/logs",
+        "workflow_id": 336746106
+      },
+      {
+        "id": 42827955616,
+        "name": "HCSN differentiable qualification",
+        "status": "queued",
+        "conclusion": null,
+        "run_number": 30,
+        "jobs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42827955616/jobs",
+        "logs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42827955616/logs",
+        "workflow_id": 411141452
+      },
+      {
+        "id": 42827955434,
+        "name": "Hepta architecture convergence",
+        "status": "queued",
+        "conclusion": null,
+        "run_number": 21684,
+        "jobs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42827955434/jobs",
+        "logs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42827955434/logs",
+        "workflow_id": 344551465
+      },
+      {
+        "id": 42827955505,
+        "name": "v8-canary",
+        "status": "completed",
+        "conclusion": "success",
+        "run_number": 34689,
+        "jobs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42827955505/jobs",
+        "logs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42827955505/logs",
+        "workflow_id": 336746138
+      }
+    ],
+    "p2_pr_workflow_runs": [
+      {
+        "id": 42832804343,
+        "name": "Hepta architecture convergence",
+        "status": "queued",
+        "conclusion": null,
+        "run_number": 21708,
+        "jobs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42832804343/jobs",
+        "logs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42832804343/logs",
+        "workflow_id": 344551465
+      },
+      {
+        "id": 42832804387,
+        "name": "blocking-ci",
+        "status": "queued",
+        "conclusion": null,
+        "run_number": 34894,
+        "jobs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42832804387/jobs",
+        "logs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42832804387/logs",
+        "workflow_id": 336746106
+      },
+      {
+        "id": 42832803987,
+        "name": "v8-canary",
+        "status": "completed",
+        "conclusion": "success",
+        "run_number": 34713,
+        "jobs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42832803987/jobs",
+        "logs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42832803987/logs",
+        "workflow_id": 336746138
+      }
+    ],
+    "ci_scope": "Connector returns first page of pull-request-triggered workflow runs; not an exhaustive all-CI assertion."
+  },
+  "carried_forward_records": {
+    "note": "These records were measured earlier in this same execution. They were not re-run during this outage.",
+    "verified_remote_stack_tip": "3e49eda398778220fc45604908aaedb9bca9f1a0",
+    "local_v8_commit": "6d18f16050dabab063a324087a7b4e00618bd1bb",
+    "native_fresh42": {
+      "dispatched_at_unix": 1794322155.8013794,
+      "source_archive": "training-source-v8.zip",
+      "source_bytes": 121388,
+      "source_sha256": "288283cae2b2cf4e7b68432e040e643a5e1b00a7de961fc848dd5cf20eb46102",
+      "plan_sha256": "e13f97aafdaf66548f016f2dcc3a38dd7e641a2ea83d52b8bea89f4c7e0cf114",
+      "launcher_sha256": "6b8a35e4d3ccbfe49e7de8484f8a22b3ded5ac50650e7117b6e485a13be8ff67",
+      "arms": [
+        "gru",
+        "cfc",
+        "snn_plif",
+        "event_time_lif",
+        "ssm_s4d",
+        "attention",
+        "hcsn"
+      ],
+      "seeds": [
+        101,
+        211,
+        307
+      ],
+      "learning_rates": [
+        0.001,
+        0.003
+      ],
+      "fit_count": 42,
+      "workers": 9,
+      "cpu_threads_per_fit": 1,
+      "wall_limit_seconds_per_fit": 14400,
+      "address_space_limit_bytes": 8589934592,
+      "soft_rss_limit_bytes": 6442450944,
+      "min_epochs": 30,
+      "max_epochs": 100,
+      "patience": 10,
+      "plateau_delta": 0.002,
+      "diagnostic_max_updates": 1024,
+      "diagnostic_check_every": 64,
+      "diagnostic_accuracy_threshold": 0.95,
+      "diagnostic_present_class_macro_f1_threshold": 0.9,
+      "development_quality_target_macro_f1": 0.3,
+      "effective_batch_size": 32,
+      "hcsn_microbatch_size": 8,
+      "current_progress": "UNKNOWN after the native control outage",
+      "last_observation_utc": "2026-11-10 14:59:52 UTC",
+      "last_observation_summary": "Seven baseline fits complete. HCSN learning-rate .003: all three diagnostic passes at 128; .001 seeds 101/211 passed at 256; seed 307 observed at diagnostic update 320. Later outcomes unobserved."
+    },
+    "continuation_validation": {
+      "artifact": "hcsn-continuation-validation-20261110.zip",
+      "bytes": 305937,
+      "sha256": "0cd5d6c99e7c5ccf7d86b8a80f091ed87a435d7408dca9f13bca2b2c115a94d9",
+      "original_files": 92,
+      "tests_passed": 11,
+      "actual_test_execution": "10-test frozen source snapshot plus a separate 1-test Attention snapshot",
+      "source_sha256": {
+        "continuation.py": "a9dd9399a2368779557a725a3cbfbfd7d74dda3deff3d486a73acfc89d4750ec",
+        "continuation_state.py": "adea3ecb49da20915ab9fef17dcd5a3d195f08e5be644eb3ca29c8927dd1bd45",
+        "test_continuation.py": "c086645c7eea320f26ad4a89fd3491617fed039cc060f4eaecc54b3e0fc64348"
+      },
+      "wall_seconds": 8.952846,
+      "cpu_seconds": 8.096846,
+      "peak_rss_bytes": 295669760,
+      "scope": "Synthetic 11-class data; exact resumed/uninterrupted state comparisons; no scientific or numerical-domain admission.",
+      "wrapper_issue": "Single Attention test returned exit 0 and OK. Its outer parser expected plural tests, retained the failed wrapper receipt, and issued a separate read-only reconciliation. No training rerun or overwritten original evidence.",
+      "native_continuation_dispatched": false,
+      "current_archive_access": "Scratch file unavailable with the cloud environment; no verified remote archive copy yet."
+    },
+    "fresh42_independent_reviewer": {
+      "artifact": "fresh42-independent-reviewer-program-v1.zip",
+      "bytes": 29872,
+      "sha256": "efda735f48ba9aea1e6fad9576807da944d311596ef861d74d4c8202bb384bb5",
+      "native_readonly_preflight": "Unconfirmed; reconcile original idempotency key before another launch.",
+      "completed_scientific_review": false
+    }
+  },
+  "gates": {
+    "overall_ci": "PENDING",
+    "complete_training_domain_numeric_admission": "HOLD",
+    "sufficient_training_fair_comparison": "PENDING",
+    "independent_final_checkpoint_audit": "PENDING",
+    "scientific_benefit": "HOLD",
+    "continuum_optimal_free_boundary_benefit": "HOLD",
+    "scale_hardware_and_production_adoption": "HOLD"
+  }
+}
+
