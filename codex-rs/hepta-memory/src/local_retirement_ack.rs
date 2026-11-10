@@ -17,7 +17,7 @@ fn checked_terminal_destination(
         .get("target")
         .ok_or_else(|| corrupt("retirement payload has no target"))?;
     let (outcome, destination) = match topic {
-        crate::NOTES_REPLACE_TOPIC_V1 => {
+        crate::NOTES_REPLACE_TOPIC_V1 | crate::NOTES_FENCE_TOPIC_V1 => {
             let checked =
                 crate::production_notes::NotesTerminalReceipt::from_json(payload, terminal)
                     .map_err(LocalLeaseOutboxError::Invalid)?;
@@ -313,3 +313,4 @@ impl LocalLeaseOutbox {
         Ok(())
     }
 }
+

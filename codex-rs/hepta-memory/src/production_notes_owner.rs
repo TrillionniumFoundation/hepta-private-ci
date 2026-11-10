@@ -62,7 +62,7 @@ impl ProductionDurableWriter {
             .ok_or_else(|| {
                 ProductionWriterError::Invalid("Notes observation has no original operation".into())
             })?;
-        if retained.topic != crate::NOTES_REPLACE_TOPIC_V1 {
+        if !crate::production_notes::is_notes_topic(&retained.topic) {
             return Err(ProductionWriterError::Invalid(
                 "not a Notes operation".into(),
             ));
@@ -115,7 +115,7 @@ impl ProductionDurableWriter {
         expected: LocalReconcileOutcome,
     ) -> Result<ProductionOutcomeReceipt, ProductionWriterError> {
         self.verify_authority().await?;
-        if request.topic != crate::NOTES_REPLACE_TOPIC_V1 {
+        if !crate::production_notes::is_notes_topic(&request.topic) {
             return Err(ProductionWriterError::Invalid(
                 "Notes evidence targets another topic".to_string(),
             ));
@@ -147,7 +147,7 @@ impl ProductionDurableWriter {
         let request = self
             .reconciliation_request(operation_id, target.destination_id())
             .await?;
-        if request.topic != crate::NOTES_REPLACE_TOPIC_V1 {
+        if !crate::production_notes::is_notes_topic(&request.topic) {
             return Err(ProductionWriterError::Invalid(
                 "Notes retirement targets another topic".to_string(),
             ));
@@ -191,7 +191,7 @@ impl ProductionDurableWriter {
             .retained_application_retirement_ack_transaction(
                 &mut transaction,
                 operation_id,
-                crate::NOTES_REPLACE_TOPIC_V1,
+                &request.topic,
             )
             .await?
             .is_some();
@@ -228,10 +228,10 @@ impl ProductionDurableWriter {
             "SELECT e.occurrence_key FROM cognitive_local_events e
              JOIN cognitive_operation_ledger o ON o.lease_id = e.lease_id AND o.operation_id = e.occurrence_key
              JOIN cognitive_local_outbox b ON b.lease_id = e.lease_id AND b.occurrence_key = e.occurrence_key
-             WHERE e.lease_id = ? AND o.destination_id = ? AND b.topic = ?
+             WHERE e.lease_id = ? AND o.destination_id = ? AND b.topic IN (?, ?)
                AND e.event_kind = 'reconcile_committed'
              ORDER BY e.event_sequence DESC LIMIT 1",
-        ).bind(self.lease_id()).bind(target.destination_id()).bind(crate::NOTES_REPLACE_TOPIC_V1)
+        ).bind(self.lease_id()).bind(target.destination_id()).bind(crate::NOTES_REPLACE_TOPIC_V1).bind(crate::NOTES_FENCE_TOPIC_V1)
             .fetch_optional(self.store.observation_pool()).await
             .map_err(|error| ProductionWriterError::Durability(error.to_string()))?;
         if let Some(operation_id) = latest {
@@ -244,3 +244,4 @@ impl ProductionDurableWriter {
 #[cfg(test)]
 #[path = "production_notes_owner_tests.rs"]
 mod tests;
+

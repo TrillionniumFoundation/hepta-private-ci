@@ -581,3 +581,7 @@ async fn notes_queued_cancellation_remains_available_before_effect_boundary() ->
     store.close().await;
     Ok(())
 }
+
+
+#[path = "production_notes_cancellation_owner_tests.rs"]
+mod cancellation_tests;

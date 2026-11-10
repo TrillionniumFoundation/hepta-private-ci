@@ -103,6 +103,7 @@ pub use production_hos2::Hos2InstallOutcome;
 pub use production_hos2::Hos2ProtocolConflict;
 pub use production_hos2::ProductionHos2Target;
 pub use production_notes::NOTES_REPLACE_TOPIC_V1;
+pub use production_notes::NOTES_FENCE_TOPIC_V1;
 pub use production_notes::NOTES_REQUEST_MAX_BYTES;
 pub use production_notes::NOTES_RESPONSE_MAX_BYTES;
 pub use production_notes::NotesDocumentState;
@@ -619,3 +620,4 @@ mod lane_c_snapshot_tests;
 #[cfg(test)]
 #[path = "cognitive_retirement_migration_tests.rs"]
 mod retirement_migration_tests;
+

@@ -31,6 +31,11 @@ pub use read::ProductionNotesObserver;
 mod previous;
 pub use previous::ProductionNotesRecoveryTarget;
 
+#[path = "production_notes_fence.rs"]
+mod fence;
+pub use fence::NOTES_FENCE_TOPIC_V1;
+pub(crate) use fence::{cancellation_payload, is_notes_topic};
+
 pub const NOTES_REPLACE_TOPIC_V1: &str = "trill.notes.replace.v1";
 pub const NOTES_REQUEST_MAX_BYTES: usize = 8192;
 pub const NOTES_RESPONSE_MAX_BYTES: usize = 2048;
@@ -321,6 +326,13 @@ pub(crate) struct NotesTerminalReceipt {
 
 impl NotesTerminalReceipt {
     pub(crate) fn from_json(payload: &str, evidence: &str) -> Result<Self, String> {
+        if payload.is_empty() || payload.len() > NOTES_REQUEST_MAX_BYTES {
+            return Err("Notes terminal original payload bound".into());
+        }
+        let value: serde_json::Value = serde_json::from_str(payload).map_err(|_| "invalid Notes payload")?;
+        if value["action"] == "fence_note_operation" {
+            return fence::terminal_receipt(payload, evidence);
+        }
         let parsed: NotesReplace =
             serde_json::from_str(payload).map_err(|_| "invalid Notes payload")?;
         let parsed = parse_replace(&parsed.target, payload)?;
@@ -386,6 +398,10 @@ impl ProductionOutboxTarget for ProductionNotesTarget {
     fn dispatch<'a>(&'a self, request: ProductionDispatchRequest) -> ProductionDispatchFuture<'a> {
         // This entire exchange happens in the original synchronous FinalUse
         // consumer entry. Constructing an unpolled future cannot defer effect.
+        if request.topic == NOTES_FENCE_TOPIC_V1 {
+            let outcome = self.dispatch_fence(request);
+            return Box::pin(async move { outcome });
+        }
         let outcome = match self.decode(&request) {
             Err(reason) => ProductionTargetOutcome::Rejected { reason },
             Ok(parsed) => match self
@@ -432,7 +448,11 @@ impl FinalUseProductionOutboxTarget for ProductionNotesTarget {
         permit: &crate::NotesRetirementPermit,
     ) -> Result<crate::ProductionRetirementAck, String> {
         let request = permit.request();
-        self.decode(request)?;
+        if request.topic == NOTES_FENCE_TOPIC_V1 {
+            self.decode_fence(request)?;
+        } else {
+            self.decode(request)?;
+        }
         let receipt = NotesTerminalReceipt::from_json(&request.payload_json, permit.receipt())?;
         if receipt.outcome() != crate::LocalReconcileOutcome::Committed {
             return Err("only an applied Notes receipt occupies retirement capacity".to_string());
@@ -483,6 +503,10 @@ impl FinalUseProductionOutboxTarget for ProductionNotesTarget {
         &'a self,
         request: &'a ProductionDispatchRequest,
     ) -> ProductionTerminalObservationFuture<'a> {
+        if request.topic == NOTES_FENCE_TOPIC_V1 {
+            let observation = self.observe_fence(request);
+            return Box::pin(async move { observation });
+        }
         let observation = match self.decode(request) {
             Err(reason) => ProductionTerminalObservation::Unavailable { reason },
             Ok(parsed) => {
@@ -531,3 +555,4 @@ mod tests;
 #[cfg(test)]
 #[path = "production_notes_model_tests.rs"]
 mod model_tests;
+
