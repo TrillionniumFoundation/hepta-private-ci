@@ -205,7 +205,17 @@
             "status": "QUEUED"
           }
         ],
-        "hosted_status": "PENDING_NO_PASS_TRANSFER"
+        "hosted_status": "PENDING_NO_PASS_TRANSFER",
+        "qualification_driver": {
+          "pr": 5715,
+          "source": "71bf0cd62da76797115e8efb0b29fb498696e196",
+          "tree": "c14973570f1b7e747ccbc33918a5ece610a31516",
+          "act2_run": 42818479867,
+          "act2_run_status": "QUEUED",
+          "exact_head_checkout": true,
+          "preserves": "Hepta source/tree, both locks, pinned desktop source, Session/App binary hashes, native/real-App outputs and always-uploaded raw records",
+          "result": "PENDING_NOT_A_PASS"
+        }
       },
       "build_limit": "local Bazel lock refresh NOT_RUN because bazel binary unavailable; hosted Bazel/CI must decide each exact source"
     },
