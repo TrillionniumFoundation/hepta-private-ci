@@ -1,0 +1,87 @@
+name: ACT-2 canonical fixture red-green qualification
+
+on:
+  push:
+    branches: [qualification/act2-fixture-redgreen-20261110]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: act2-fixture-redgreen-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  macos-real-path-contrast:
+    runs-on: macos-15-intel
+    timeout-minutes: 90
+    env:
+      GH_TOKEN: ${{ github.token }}
+      CARGO_BUILD_JOBS: "2"
+      CARGO_INCREMENTAL: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      NEXTEST_TEST_THREADS: "2"
+      CARGO_NET_GIT_FETCH_WITH_CLI: "true"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489
+        with:
+          components: rustfmt,clippy
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Resolve the two exact source identities
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test -z "$(git status --porcelain)"
+          git config --global credential.helper '!gh auth git-credential'
+          git fetch --no-tags --depth=2 origin 8bebf0a3c207a49bfd0a99367fd6e06f52a6cb98
+          git cat-file -e 8b1c1789916514471c6cacdf0f6c45467255fef9^{commit}
+          rustc --version --verbose
+          cargo --version
+          just --version
+          cargo nextest --version
+          python3 - <<'PY'
+          import os
+          from pathlib import Path
+          work = Path(os.environ["RUNNER_TEMP"]).resolve(strict=True) / "act2-fixture-redgreen"
+          work.mkdir()
+          with Path(os.environ["GITHUB_ENV"]).open("a") as stream:
+              stream.write(f"ACT2_FIXTURE_WORK={work}\n")
+          PY
+      - name: Run baseline canonical, baseline alias and repaired alias cases
+        run: |
+          python3 scripts/hepta_act2_fixture_redgreen.py \
+            --repository "$GITHUB_WORKSPACE" --work-root "$ACT2_FIXTURE_WORK"
+      - name: Run scoped fix and final official formatting after the contrast
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$ACT2_FIXTURE_WORK/candidate"
+          export CARGO_TARGET_DIR="$ACT2_FIXTURE_WORK/target"
+          export SOURCE_SHA=8bebf0a3c207a49bfd0a99367fd6e06f52a6cb98
+          export TESTED_SHA="$SOURCE_SHA"
+          export HEPTA_CI_LANE=source-head
+          python3 scripts/hepta_ci_exec.py --timeout-seconds 2400 \
+            --output "$ACT2_FIXTURE_WORK/records/fix.json" \
+            -- just fix --locked -p codex-hepta-automation
+          just fmt --base 8b1c1789916514471c6cacdf0f6c45467255fef9 \
+            > "$ACT2_FIXTURE_WORK/records/formatter.log" 2>&1
+          git status --porcelain > "$ACT2_FIXTURE_WORK/records/source-after-status.txt"
+          git diff --binary > "$ACT2_FIXTURE_WORK/records/source-after.patch"
+          test ! -s "$ACT2_FIXTURE_WORK/records/source-after-status.txt"
+          test ! -s "$ACT2_FIXTURE_WORK/records/source-after.patch"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: act2-fixture-redgreen-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ env.ACT2_FIXTURE_WORK }}/records
+          if-no-files-found: error
+          retention-days: 14
