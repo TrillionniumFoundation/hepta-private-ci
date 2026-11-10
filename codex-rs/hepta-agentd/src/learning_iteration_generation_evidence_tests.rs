@@ -71,6 +71,7 @@ struct Fixture {
     coordinator: LearningIterationCoordinatorV1,
     runtime: AgentdGenerationUpdateRuntimeV1,
     verifier: LearningEvidenceVerifierV1,
+    credential_expires_at: u64,
     profile: Profile,
     control: Control,
 }
@@ -103,7 +104,7 @@ impl Fixture {
         }
         let publication = Publication::new_with_target(host.config.clone(), next)?;
         let prior = learning_test_decision(&publication, baseline, "none")?;
-        let verifier = verifier(prior.snapshot())?;
+        let (verifier, credential_expires_at) = verifier(prior.snapshot())?;
         let mut owners = prior.snapshot().owners.clone();
         owners.evidence_trust_digest = verifier.trust_digest();
         let mut coordinator = LearningIterationCoordinatorV1::new(
@@ -169,7 +170,7 @@ impl Fixture {
         let control = Control::default();
         let runtime = ready.into_runtime(config, control.clone(), host.clock(),
             AgentdGenerationUpdateRuntimeOptionsV1::default())?;
-        Ok(Self { host, publication, coordinator, runtime, verifier, profile, control })
+        Ok(Self { host, publication, coordinator, runtime, verifier, credential_expires_at, profile, control })
     }
 
     fn start(&mut self) -> anyhow::Result<RuntimeTasks> {
@@ -203,10 +204,11 @@ impl Fixture {
 
 fn d(label: &str) -> Digest32 { Digest32::of_bytes(label.as_bytes()) }
 
-fn verifier(snapshot: &LearningIterationSnapshotV1) -> anyhow::Result<LearningEvidenceVerifierV1> {
+fn verifier(snapshot: &LearningIterationSnapshotV1) -> anyhow::Result<(LearningEvidenceVerifierV1, u64)> {
     let now = SystemTime::now().duration_since(UNIX_EPOCH)?.as_secs();
+    let credential_expires_at = now + 600;
     let scope = d("generation evidence fixture");
-    Ok(LearningEvidenceVerifierV1::new(LearningEvidenceTrustV1 {
+    let verifier = LearningEvidenceVerifierV1::new(LearningEvidenceTrustV1 {
         scope_digest: scope, objective_digest: snapshot.request.envelope.objective_digest,
         authority_epoch: 1,
         signers: [
@@ -218,13 +220,14 @@ fn verifier(snapshot: &LearningIterationSnapshotV1) -> anyhow::Result<LearningEv
                 principal: AuthenticatedPrincipalV1 {
                     principal_id: actor, credential_chain_digest: d("fixture credential"),
                     signing_key_digest: Digest32::of_bytes(&key), scope_digest: scope,
-                    authority_epoch: 1, authenticated_at: now - 60, expires_at: now + 600,
+                    authority_epoch: 1, authenticated_at: now - 60, expires_at: credential_expires_at,
                 },
                 controller_id: StableId::new(format!("fixture-controller-{byte}")).unwrap(),
                 verifying_key: key, roles: vec![role], revoked_at: None,
             }
         }).collect(),
-    })?)
+    })?;
+    Ok((verifier, credential_expires_at))
 }
 
 fn evidence_fixture(
@@ -239,7 +242,7 @@ fn evidence_fixture(
         evidence_id: StableId::new("original-fixture-result")?,
         principal_id: receipt.actor_id.clone(), role, trust_digest: f.verifier.trust_digest(),
         scope_digest: d("generation evidence fixture"), objective_digest: f.verifier.objective_digest(),
-        authority_epoch: 1, issued_at: now, expires_at: now + 600,
+        authority_epoch: 1, issued_at: now, expires_at: f.credential_expires_at,
         payload_digest: Digest32::of_bytes(&learning_iteration_receipt_signing_bytes_v1(&receipt)?),
         signature: [0; 64],
     };
