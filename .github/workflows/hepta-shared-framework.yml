@@ -1,0 +1,89 @@
+name: Hepta shared Cell framework
+
+on:
+  push:
+    branches: [codex/shared-cell-framework-20261109]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: shared-cell-framework-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  CARGO_INCREMENTAL: "0"
+  CARGO_BUILD_JOBS: "2"
+  CARGO_PROFILE_TEST_DEBUG: "0"
+  CARGO_PROFILE_DEV_DEBUG: "0"
+  NEXTEST_TEST_THREADS: "2"
+
+jobs:
+  owners:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Record original source and toolchain
+        run: |
+          mkdir -p "$RUNNER_TEMP/shared-framework"
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/shared-framework/source.txt"
+          test -z "$(git status --porcelain)"
+          cd codex-rs
+          rustc --version --verbose > "$RUNNER_TEMP/shared-framework/rustc.txt"
+      - name: Install native prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential clang cmake protobuf-compiler libssl-dev libcap-dev pkg-config bubblewrap
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
+      - name: Resolve repository-pinned V8
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+          PYTHONPATH: scripts
+        run: python3 scripts/hepta_ci_v8.py
+      - name: Build the original same-source inference helper
+        run: |
+          python3 scripts/hepta_cell_test_helpers.py \
+            --package codex-hepta-infer-worker-host \
+            --output-dir "$RUNNER_TEMP/shared-framework/helpers" \
+            --github-env "$GITHUB_ENV"
+      - name: Run original scoped owner libraries
+        run: |
+          python3 scripts/hepta_ci_exec.py --timeout-seconds 5400 --minimum-tests 1 \
+            --output "$RUNNER_TEMP/shared-framework/tests.json" \
+            -- just test --locked -p codex-hepta-automation \
+            -p codex-hepta-neuron -p codex-hepta-agentd --lib
+      - name: Verify helper custody and fresh JUnit
+        if: always()
+        run: |
+          python3 scripts/hepta_cell_test_helpers.py --verify-only \
+            --package codex-hepta-infer-worker-host \
+            --output-dir "$RUNNER_TEMP/shared-framework/helpers" \
+            > "$RUNNER_TEMP/shared-framework/helpers-after.json"
+          python3 scripts/hepta_ci_junit.py \
+            --execution "$RUNNER_TEMP/shared-framework/tests.json" \
+            --junit codex-rs/target/nextest/local/junit.xml \
+            --output "$RUNNER_TEMP/shared-framework/junit.xml"
+      - name: Check source remained unchanged
+        if: always()
+        run: |
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/shared-framework/source-after.txt"
+          cmp "$RUNNER_TEMP/shared-framework/source.txt" "$RUNNER_TEMP/shared-framework/source-after.txt"
+          test -z "$(git status --porcelain)"
+      - name: Retain original results, including failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: shared-framework-${{ github.sha }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/shared-framework
+            !${{ runner.temp }}/shared-framework/helpers/bin/**
+          if-no-files-found: error
+          retention-days: 14
