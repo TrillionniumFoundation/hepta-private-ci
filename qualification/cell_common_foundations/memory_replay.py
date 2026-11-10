@@ -349,7 +349,6 @@ def verify_priority_selection_audit(receipt):
     return True
 
 
-
 def verify_priority_selection_against_checkpoint(selection):
     """Check a priority receipt against its separate *pre-selection* pool state.
 
@@ -363,11 +362,8 @@ def verify_priority_selection_against_checkpoint(selection):
     receipt = selection.get("selection_audit")
     verify_priority_selection_audit(receipt)
     snapshot = selection.get("preselection_checkpoint")
-    if not isinstance(snapshot, dict) or not isinstance(
-        snapshot.get("payload"), dict
-    ):
+    if not isinstance(snapshot, dict) or not isinstance(snapshot.get("payload"), dict):
         raise ValueError("missing historical pre-selection checkpoint")
-    payload = snapshot["payload"]
     pool = ReplayPool.restore(snapshot, receipt["scope"], receipt["versions"])
     if receipt["selection_index"] != pool.calls + 1:
         raise ValueError("priority selection index does not follow checkpoint")
@@ -584,11 +580,9 @@ def run_replay_attempt(spec):
         if position >= 16:
             # Save a separately checkable complete pool state BEFORE selection.
             # This is not a signed source-admission or true-loss certificate.
-            preselection_checkpoint = (
-                pool.checkpoint()
-                if spec["method"] == "error_prioritized"
-                else None
-            )
+            preselection_checkpoint = None
+            if spec["method"] == "error_prioritized":
+                preselection_checkpoint = pool.checkpoint()
             chosen, selection_audit = pool.select(
                 spec["method"], spec["entry_budget"], spec["timestep_budget"],
                 audit=True,
