@@ -23,9 +23,9 @@ This patch introduces a **pure Python, fail-closed, read-only enrollment/update 
 
 This is a **configuration example**, not a universal kernel assignment: actual Cell enrollment accepts other lineage/kernel pairings with explicit valid update scopes, except that initial LEARN remains a deterministic orchestrator. At most three *instances* may be simultaneously trainable; the others remain frozen. Seven means functional responsibilities, not neural architectures or an upper bound on instances.
 
-`CellRoster` requires all seven responsibilities, distinct principal/agent/cell/run state partitions and exact base/organ/encoder/tokenizer/normalizer/composition/numeric-profile alignment for any shared semantic feature group. Such a group also requires one matching state owner and data-use scope: it never grants cross-principal/agent/data residency or temporal state sharing by implication.
+`CellRoster` requires all seven responsibilities, distinct principal/agent/cell/run state partitions and exact base/organ/encoder/tokenizer/normalizer/composition/numeric-profile alignment for any shared semantic feature group. Such a group also requires one matching state owner and data-use scope: it never grants cross-principal/agent/data residency or temporal state sharing by implication. A group now additionally requires a nonzero SHA-256 `feature_abi` declaration for the frozen feature dimension, layout and interpretation, with exact equality across participating cells; a digest declaration is **not** a native ABI attestation. Nonparticipants must leave it absent.
 
-`review_update` binds original bundle digest/generation, Dataset-to-Training source, frozen update rule, frozen evaluation profile, permitted component changes, optimizer step ceiling, and a non-omittable cost-axis inventory. Unknown cost or absent original evaluation receipt keeps HOLD. Even with all declared fields present, its only positive status is `REVIEW_ONLY`: a digest is not authentic execution evidence, real model loading, independent data, held-out outcomes or acceptance.
+`review_update` binds original bundle digest/generation, Dataset-to-Training source, frozen update rule, frozen evaluation profile, permitted component changes, optimizer step ceiling (strict integer zero for frozen cells and unsigned-64-bit next-generation bounds), and a non-omittable cost-axis inventory. Unknown cost or absent original evaluation receipt keeps HOLD. Even with all declared fields present, its only positive status is `REVIEW_ONLY`: a digest is not authentic execution evidence, real model loading, independent data, held-out outcomes or acceptance.
 
 ## Non-authority and open blockers
 
@@ -52,3 +52,9 @@ The isolated Python 3.13.5 reference run covered 15 methods and passed 15/15 aft
 5. Run the unchanged head's relevant Python, native, platform, formatting, and required CI checks. Record rather than erase failures.
 
 **Local interface conformance may be PASS while scientific and production acceptance remain HOLD.**
+
+## Follow-up: exact-head CI and fail-closed bounds (2026-11-10)
+
+On original #5724 HEAD `176140c8c4f17204e704a8e9e4ae758f3567fa59`, the hosted Codespell job [129849880971](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42822082209/job/129849880971) failed while scanning two **binary** `raw-all-model.tar.gz.part*` fragments from inherited qualification evidence. The follow-up restricts the spelling skip to these named compressed shards; it neither deletes immutable evidence nor excludes Python/Rust/docs, changes a required check, or claims a passing CI run.
+
+The follow-up also adds three independent reference test methods (18 total), rejecting missing/mismatched claimed feature ABI, false/float/None training step budgets on frozen cells and generation overflow. The native Bundle owner must still verify that the claimed feature ABI matches real dimensions, encoding and numerical semantics. Retest the actual PR source with the named Python commands and read new Actions results. CI and production/science status remain HOLD until verified.

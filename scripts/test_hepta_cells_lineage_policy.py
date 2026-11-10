@@ -46,6 +46,7 @@ def enrollment(lineage, *, scope=None, kernel=None, name=None, **overrides):
         state_owner="original-cell-owner", bundle_digest=pin(120),
         generation=7, components=components(), data_scope="data-allowed",
         feature_share_group="shared-perception" if lineage in {"PERC", "MEM"} else None,
+        feature_abi=pin(230) if lineage in {"PERC", "MEM"} else None,
         trainable_scope=scope,
         max_training_steps=12 if scope else 0,
         evaluation_profile=pin(220) if scope else None,
@@ -102,7 +103,10 @@ class LineagePolicyTests(unittest.TestCase):
 
     def test_same_lineage_multiple_isolated_instances_allowed(self):
         all_cells = roster().cells
-        extension = replace(all_cells[1], cell_id="different-mem-instance", feature_share_group=None)
+        extension = replace(
+            all_cells[1], cell_id="different-mem-instance",
+            feature_share_group=None, feature_abi=None,
+        )
         out = CellRoster(all_cells + (extension,))
         self.assertEqual(len(out.cells), 8)
         self.assertNotEqual(out.cells[1].partition, extension.partition)
@@ -144,6 +148,42 @@ class LineagePolicyTests(unittest.TestCase):
         changed = replace(mem, state_owner="different-owner")
         with self.assertRaisesRegex(LineagePolicyError, "feature group"):
             CellRoster(tuple(changed if c is mem else c for c in base))
+        changed = replace(mem, feature_abi=pin(231))
+        with self.assertRaisesRegex(LineagePolicyError, "feature group"):
+            CellRoster(tuple(changed if c is mem else c for c in base))
+
+    def test_shared_feature_abi_is_explicit_and_not_self_authorizing(self):
+        with self.assertRaisesRegex(LineagePolicyError, "feature_abi"):
+            enrollment("PERC", feature_abi=None)
+        with self.assertRaisesRegex(LineagePolicyError, "feature_abi"):
+            enrollment("MEM", feature_abi="0" * 64)
+        with self.assertRaisesRegex(LineagePolicyError, "unshared"):
+            enrollment("PERC", feature_share_group=None)
+        with self.assertRaisesRegex(LineagePolicyError, "unshared"):
+            enrollment("CTRL", feature_abi=pin(123))
+
+    def test_frozen_training_budget_type_cannot_be_weakened(self):
+        for bad in (False, 0.0, None, "", (), -0.0):
+            with self.subTest(value=repr(bad)):
+                with self.assertRaisesRegex(LineagePolicyError, "frozen cell"):
+                    enrollment("MEM", max_training_steps=bad)
+        with self.assertRaisesRegex(LineagePolicyError, "frozen cell"):
+            enrollment("MEM", evaluation_profile="")
+        with self.assertRaisesRegex(LineagePolicyError, "frozen cell"):
+            enrollment("MEM", update_rule="")
+
+    def test_next_generation_must_fit_native_unsigned_u64(self):
+        old = roster()
+        target = next(c for c in old.cells if c.lineage == "PRED")
+        exhausted = replace(target, generation=2**64 - 1)
+        r = CellRoster(tuple(exhausted if c is target else c for c in old.cells))
+        with self.assertRaisesRegex(LineagePolicyError, "candidate violates"):
+            review_update(r, evidence(exhausted, candidate_generation=2**64))
+        with self.assertRaisesRegex(LineagePolicyError, "candidate violates"):
+            review_update(r, evidence(exhausted, candidate_generation=True))
+        self.assertEqual(
+            review_update(old, evidence(target)).status, "REVIEW_ONLY"
+        )
 
     def test_temporal_cannot_share_live_feature_pool(self):
         with self.assertRaisesRegex(LineagePolicyError, "semantic features"):

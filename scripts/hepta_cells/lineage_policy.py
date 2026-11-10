@@ -106,6 +106,7 @@ class CellEnrollment:
     components: ComponentPins
     data_scope: str
     feature_share_group: str | None = None
+    feature_abi: str | None = None
     trainable_scope: str | None = None
     max_training_steps: int = 0
     evaluation_profile: str | None = None
@@ -125,6 +126,11 @@ class CellEnrollment:
             _token(self.feature_share_group, "feature_share_group")
             if self.kernel != "shared_semantic":
                 raise LineagePolicyError("only semantic features may share this frozen pool")
+            # A shared runtime feature pool needs an explicit frozen interface
+            # identity in addition to matching model/encoder/numeric pins.
+            _digest(self.feature_abi, "feature_abi")
+        elif self.feature_abi is not None:
+            raise LineagePolicyError("unshared Cell cannot claim a pooled feature ABI")
         if self.trainable_scope not in SCOPES[self.kernel] and self.trainable_scope is not None:
             raise LineagePolicyError("kernel cannot train the requested fields")
         if self.lineage == "LEARN" and (
@@ -132,7 +138,12 @@ class CellEnrollment:
         ):
             raise LineagePolicyError("LEARN orchestrates original owners; not another optimizer")
         if self.trainable_scope is None:
-            if any((self.max_training_steps, self.evaluation_profile, self.update_rule)):
+            if (
+                type(self.max_training_steps) is not int
+                or self.max_training_steps != 0
+                or self.evaluation_profile is not None
+                or self.update_rule is not None
+            ):
                 raise LineagePolicyError("frozen cell cannot carry a trainable policy")
         else:
             if (
@@ -176,7 +187,7 @@ class CellRoster:
                 # Shared model residency is not cross-principal/agent authorization.
                 identity = (
                     cell.principal_id, cell.agent_id, cell.state_owner, cell.data_scope,
-                    cell.components.shared_feature_identity,
+                    cell.components.shared_feature_identity, cell.feature_abi,
                 )
                 old = groups.setdefault(cell.feature_share_group, identity)
                 if old != identity:
@@ -238,6 +249,7 @@ def review_update(roster: CellRoster, evidence: UpdateEvidence) -> UpdateReview:
         or evidence.update_rule != cell.update_rule
         or evidence.evaluation_profile != cell.evaluation_profile
         or type(evidence.candidate_generation) is not int
+        or not 1 <= evidence.candidate_generation < 2**64
         or evidence.candidate_generation != cell.generation + 1
     ):
         raise LineagePolicyError("candidate violates frozen lineage or evaluation binding")
