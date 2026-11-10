@@ -1,0 +1,186 @@
+{
+  "schema": "hepta.common-candidate-followthrough.v1",
+  "source": {
+    "integration_base": "bb3115e225771c945d7551bbb44e44b3614f09fd",
+    "maintenance": "94c08f5428fedd1b44ba30c54811a2fe286e2616",
+    "caller_guards": "8b6487d77f57782cf7779fb54446eae5e23eaac2",
+    "comparison_candidate": "a50b1cf9def6be169cba9372a14452fbf197d328",
+    "comparison_tree": "6d266f3999489baf954b0b3f370f8b7c554cf4df",
+    "maintenance_donor_pr": 5602,
+    "guard_donor_pr": 5593,
+    "comparison_donor_pr": 5595
+  },
+  "validation": {
+    "caller_regressions": {
+      "passed": 60,
+      "failed": 0,
+      "log": "caller/tests-exact.log",
+      "scope": "exact input blob projection"
+    },
+    "protected_files": {
+      "passed": 182,
+      "full_repository_caller_inventory": false,
+      "record": "caller/protected-exact-result.json"
+    },
+    "prospective_comparisons": {
+      "passed": 6,
+      "failed": 0,
+      "raw_log_in_archive": false,
+      "evidence_location": "current conversation tool output; exact donor blobs retained"
+    },
+    "existing_research_gate": {
+      "passed": 19,
+      "log": "research/gate.log"
+    },
+    "existing_joint_configuration": {
+      "passed": 23,
+      "log": "research/joint.log"
+    },
+    "existing_successor": {
+      "passed": 8,
+      "log": "research/successor.log"
+    },
+    "python_formatting": {
+      "changed_files": 4,
+      "all_ast_equal": true,
+      "behavior_tests_rerun": false,
+      "record": "maintenance/RESULT.json"
+    },
+    "canonical_formatting": {
+      "caller_projection_exit_code": 0,
+      "caller_postimages_unchanged": 3,
+      "research_projection_exit_code": 0,
+      "maintenance_record": "maintenance/canonical-just-fmt.json",
+      "scope": "selected exact-file projections; not a full repository format check"
+    }
+  },
+  "original_native_request": {
+    "host": "ai395",
+    "idempotency_key": "cell-common-9957-native-b687ae3d-v1",
+    "expected_source": "b687ae3d5c50871c2aaefd500c1770e960750775",
+    "original_job_id": null,
+    "state": "UNKNOWN",
+    "start_replayed": false,
+    "current_registry_inventory_complete": true,
+    "inventory_entries_observed": 5161,
+    "qualified_test_result": null,
+    "note": "The lost start response was not recovered. Inventory timestamps and pending entries do not identify the request or prove it did not execute."
+  },
+  "qualification": {
+    "full_P0": "NOT_ESTABLISHED",
+    "P1": "HOLD",
+    "P2": "HOLD",
+    "P3": "HOLD",
+    "P4": "HOLD",
+    "new_model_fits": 0,
+    "new_independent_confirmation_samples": 0,
+    "production_activation": false,
+    "all_blockers_closed": false
+  },
+  "remaining": [
+    "actual original Ledger/Memory and withdrawal-frontier material join",
+    "real trainer durable job execution and original recovery adapter",
+    "independent evaluator/holdout custody",
+    "production StageOwnerPorts composition",
+    "Published CURRENT, FinalUse and distinct-task NextUse assembly",
+    "full daemon process restart acceptance",
+    "required CI including Windows failures and cargo-deny",
+    "independent practical learning benefit and complete cost"
+  ],
+  "pred_confirmation_unchanged": {
+    "training_seeds": 16,
+    "fits": 114,
+    "mean_net_utility_increment": 0.01093896,
+    "one_sided_sign_flip_p": 0.08126831,
+    "minimum_increment": 0.02,
+    "maximum_p": 0.05,
+    "status": "HOLD"
+  },
+  "archive_members": [
+    {
+      "path": "caller/tests-exact.log",
+      "bytes": 98,
+      "sha256": "4cf667a3b2990ff8731008207af866e899b7a8e5d655d9afbe9a8c5867078981"
+    },
+    {
+      "path": "caller/baseline-red.log",
+      "bytes": 1676,
+      "sha256": "cefdaf2fb2891759b42c73e4ef2c14d308747b2a592d6c660deacc857e10ab54"
+    },
+    {
+      "path": "caller/protected-exact-result.json",
+      "bytes": 256,
+      "sha256": "b3d1a3b178f77e8da241fd3f97b748e719e83ab14deca51a3f650e727f44636a"
+    },
+    {
+      "path": "caller/source-projection.json",
+      "bytes": 45762,
+      "sha256": "1bbb5f7d7b88360f32378dfbf5a354cc38d9caf90eb6f7583afbeae092fdc13f"
+    },
+    {
+      "path": "caller/caller-format-check.log",
+      "bytes": 26,
+      "sha256": "3bc53bf3e981a98a34a852e175bf9b77af841edea74fca595d9aedcbaf9a4938"
+    },
+    {
+      "path": "caller/formatter-attempt.log",
+      "bytes": 43,
+      "sha256": "f2e62a501e082435d445a9367d6263bea9839fb70bc2f7164c0a6a810e8489fa"
+    },
+    {
+      "path": "maintenance/RESULT.json",
+      "bytes": 5466,
+      "sha256": "b9b228cfb079a12f91139bf682080640a2cbd11d6cb0fd768625f63b26b27d8c"
+    },
+    {
+      "path": "maintenance/BASE-PINS.json",
+      "bytes": 1706,
+      "sha256": "84b34ccb782548e45808c49c511d3344430c024d6903aa7437365fc1dd8362eb"
+    },
+    {
+      "path": "maintenance/canonical-just-fmt.json",
+      "bytes": 314,
+      "sha256": "e913d0a3247d3514e7ea55741ac8083acd1cf633d92a760607c8280cb748a424"
+    },
+    {
+      "path": "maintenance/canonical-just-fmt.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "maintenance/python-format-before.log",
+      "bytes": 245,
+      "sha256": "f2bd630cf49794bee3ffce9e1ab004af2bd19d2b7bbabacaf045839cc527b91c"
+    },
+    {
+      "path": "maintenance/python-format-after.log",
+      "bytes": 26,
+      "sha256": "177f260a5645724013185e4b140c7045cc39e56c0c97b120f5cb23599f85f0de"
+    },
+    {
+      "path": "maintenance/python-format.log",
+      "bytes": 20,
+      "sha256": "779cd08be038ac289c50927416d74769a286b3d89191260af669534feb28cf68"
+    },
+    {
+      "path": "maintenance/ruff-version.log",
+      "bytes": 13,
+      "sha256": "0e5c455ef40e6fb922d42f5ea8cd386e3c19cca81ca91d7697a6c81d2583846c"
+    },
+    {
+      "path": "research/gate.log",
+      "bytes": 3422,
+      "sha256": "c394ade7bef6e8a4381b1b634651bf035464db8f51326c59911610bd79e7034f"
+    },
+    {
+      "path": "research/joint.log",
+      "bytes": 4113,
+      "sha256": "08859c2d936a03a389088b42a3c2db2fac632feef87ae249002c893d7745650e"
+    },
+    {
+      "path": "research/successor.log",
+      "bytes": 1670,
+      "sha256": "141204ce8cdd2284fb6d4c44a9e5d82366314cbe9094c6716e63d2297db64267"
+    }
+  ]
+}
