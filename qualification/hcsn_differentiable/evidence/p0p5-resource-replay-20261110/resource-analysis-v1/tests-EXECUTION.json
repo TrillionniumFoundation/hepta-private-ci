@@ -1,0 +1,25 @@
+{
+  "argv": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-B",
+    "-m",
+    "unittest",
+    "-v",
+    "test_analysis"
+  ],
+  "returncode": 0,
+  "whole_child_wall_seconds": 0.10764032299994142,
+  "waited_child_CPU_seconds": 0.106025,
+  "source_before": {
+    "PLAN.json": "a893ceda6bff869455adf37e9d7ad61a7a8999379a9d1639fdc9dc5951a1472e",
+    "analyze_resources.py": "dc398a012bd25d611c0bbbfc09f64a3c76c7d1d367c84c5178864140c769ee95",
+    "test_analysis.py": "73b19bac0dc8281df37b8300928d399fa924c5af6c061cd4e2bdfa073ece2172"
+  },
+  "source_after": {
+    "PLAN.json": "a893ceda6bff869455adf37e9d7ad61a7a8999379a9d1639fdc9dc5951a1472e",
+    "analyze_resources.py": "dc398a012bd25d611c0bbbfc09f64a3c76c7d1d367c84c5178864140c769ee95",
+    "test_analysis.py": "73b19bac0dc8281df37b8300928d399fa924c5af6c061cd4e2bdfa073ece2172"
+  },
+  "stderr": "test_absent_class_denominator_is_preserved (test_analysis.ResourceSemanticsTests.test_absent_class_denominator_is_preserved) ... ok\ntest_cutoff_keeps_missing_and_does_not_interpolate (test_analysis.ResourceSemanticsTests.test_cutoff_keeps_missing_and_does_not_interpolate) ... ok\ntest_incomplete_three_seed_mean_cannot_win_and_tie_uses_low_lr (test_analysis.ResourceSemanticsTests.test_incomplete_three_seed_mean_cannot_win_and_tie_uses_low_lr) ... ok\ntest_initial_evaluation_can_score_budget_but_cannot_cross_target (test_analysis.ResourceSemanticsTests.test_initial_evaluation_can_score_budget_but_cannot_cross_target) ... ok\ntest_strict_best_retains_first_tie_and_crossing_is_first_observation (test_analysis.ResourceSemanticsTests.test_strict_best_retains_first_tie_and_crossing_is_first_observation) ... ok\n\n----------------------------------------------------------------------\nRan 5 tests in 0.000s\n\nOK\n",
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

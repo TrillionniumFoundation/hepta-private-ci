@@ -1,0 +1,58 @@
+{
+  "E_access": false,
+  "actual_trained_checkpoint_read": false,
+  "argv": [
+    "/workspace/scratch/c385a7439f8e/hcsn-env/bin/python",
+    "-B",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "/workspace/scratch/c385a7439f8e/hcsn-best-full-d-replay-v1/program",
+    "-p",
+    "test_*.py",
+    "-v"
+  ],
+  "backward_calls": 0,
+  "child_peak_rss_bytes": 215515136,
+  "cost_scope": "Exact test subprocess import-to-exit. No real trained model, training, or numerical oracle.",
+  "observed_utc": "2026-11-10T19:45:58.673801+00:00",
+  "optimizer_steps": 0,
+  "own_driver_cpu_seconds": 0.078358496,
+  "passed": true,
+  "returncode": 0,
+  "schema": "synthetic-six-best-replay-validation-v1",
+  "source_after": {
+    "PLAN.json": "b8fd38b25ba63f2dd837b0ef73383463f8fc24c39c55854643aa5bed070b3c2a",
+    "README.md": "08047671c2020aa54d7eb387ccf874a25d749e0ef6eee6f2ed3997a42b2da15d",
+    "audit_io.py": "170d057d4b33d9e13a15c1f3c8e7db6ce06087c7bd1edb32412fb753f79e3714",
+    "independent_metrics.py": "7687fbba275dad706b1a4d8d6f7e76f360429b49ddbb3d83515e6308b3665f1a",
+    "launch.py": "416a5aef493cabcd84ce426e389febf07f763a40b310b8638fe2ae12967f6f50",
+    "replay_fit.py": "b07c77e7c5c0b8d5c9c3d035a09a340d09bf462098594958d29dc96ae6ac123f",
+    "run_controller.py": "37634e8668ebda4ab2b4a019daedd95f90aa6a4dd7bcb835e82364b0756ea356",
+    "terminal-snapshot.json": "17df82cc70fce7d42ad1389c5770ba42a8039522ab07f36f6b6403b1d0156c49",
+    "test_replay.py": "9c6bcdedcd07e8b53e270cfdf25672fd7f17a14cc991e7a48e1a52510780c11e"
+  },
+  "source_before": {
+    "PLAN.json": "b8fd38b25ba63f2dd837b0ef73383463f8fc24c39c55854643aa5bed070b3c2a",
+    "README.md": "08047671c2020aa54d7eb387ccf874a25d749e0ef6eee6f2ed3997a42b2da15d",
+    "audit_io.py": "170d057d4b33d9e13a15c1f3c8e7db6ce06087c7bd1edb32412fb753f79e3714",
+    "independent_metrics.py": "7687fbba275dad706b1a4d8d6f7e76f360429b49ddbb3d83515e6308b3665f1a",
+    "launch.py": "416a5aef493cabcd84ce426e389febf07f763a40b310b8638fe2ae12967f6f50",
+    "replay_fit.py": "b07c77e7c5c0b8d5c9c3d035a09a340d09bf462098594958d29dc96ae6ac123f",
+    "run_controller.py": "37634e8668ebda4ab2b4a019daedd95f90aa6a4dd7bcb835e82364b0756ea356",
+    "terminal-snapshot.json": "17df82cc70fce7d42ad1389c5770ba42a8039522ab07f36f6b6403b1d0156c49",
+    "test_replay.py": "9c6bcdedcd07e8b53e270cfdf25672fd7f17a14cc991e7a48e1a52510780c11e"
+  },
+  "source_unchanged": true,
+  "stderr": {
+    "bytes": 1973,
+    "sha256": "05e54c64d73f68b10e13939c29041599559287560fce2c6632240deebd8398cd"
+  },
+  "stdout": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "waited_child_CPU_seconds": 1.6853509999999998,
+  "whole_child_wall_seconds": 1.8205574470011925
+}
