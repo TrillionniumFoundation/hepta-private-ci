@@ -340,7 +340,7 @@
             {
               "run": 42856152006,
               "scope": "v8 metadata",
-              "status": "QUEUED"
+              "status": "SUCCESS_METADATA_ONLY"
             },
             {
               "run": 42856152495,
@@ -350,12 +350,29 @@
             {
               "run": 42856152534,
               "scope": "architecture",
-              "status": "QUEUED"
+              "status": "IN_PROGRESS_SOURCE_HEAD_BASE_MERGE_SUCCESS",
+              "source_head_job": 129969597529,
+              "base_merge_job": 129969598287,
+              "result": "source-head still running; base-merge succeeded; no source-head pass inferred"
             },
             {
               "run": 42856152117,
               "scope": "Windows private-state",
-              "status": "QUEUED"
+              "status": "SUCCESS",
+              "job": 129969596551,
+              "exact_result": "33 declared scoped tests passed: codex-utils-path 15, Prompt Registry 2, signed store 3, authority lease 2 and Agentd Prompt Runtime 11; positive anti-reparse lane passed; both separately weakened negative lanes failed as expected; tracked worktree clean",
+              "artifact_id": 13783498528,
+              "artifact_name": "windows-private-state-acquisition-cc3241d07e3781ca4f240e6536eeb2ffbe6a2453-42856152117-1",
+              "artifact_size_bytes": 13533,
+              "artifact_sha256": "58dd3be8e7234466cbc872a49d0292429fe29a5a86eb41a04110e308fa59e6c0",
+              "production_path_sha256": "21600c6d3b738afbd53db9fffd088944fb7fe1fbc947efde9520fc49e439e1ac",
+              "positive_log_sha256": "a6073f55bf8be05d20b460db9ba15c5afd5020a6a4e4bb6a7ba5ffcebf224877",
+              "unchecked_create_patch_sha256": "f55d66d0a5b10e98b6ba1ebb60a56081e6027eff85068e01107c3a1e7ea4f74c",
+              "unchecked_create_log_sha256": "f8e591d5c0b6d7301698220c2672bf0b64f4a29472355840ceebced420072e94",
+              "path_check_open_patch_sha256": "102a2659d4e6d6b3bc0316ce2d2966f5045b4c8578ed3cbb257c502afebbc4d3",
+              "path_check_open_log_sha256": "a1759c6e548b5e7b115f83d5cdc85b10e3a22e42d8edb353c08aa3151d2bd950",
+              "retained_zip": "qualification/act2-continuation-20261110/windows-private-state-42856152117.zip",
+              "limit": "Windows private-state declared scope; does not exercise Linux pidfd/pipe waiting, typed NotesFenceProof, DynamicToolCall authorization or actual App"
             }
           ],
           "limits": "no native wait, production, dependency, lock, CALLERS, operation, permission, FinalUse, readback, tombstone, receipt or promotion change; no earlier result transfers"
