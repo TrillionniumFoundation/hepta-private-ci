@@ -5,6 +5,7 @@ on:
     paths:
       - "codex-rs/hepta-agentd/**"
       - "codex-rs/hepta-learning-artifacts/**"
+      - "codex-rs/hepta-intelligence-eval/**"
       - ".github/workflows/hepta-daemon-learning-native.yml"
   workflow_dispatch:
 
@@ -69,7 +70,8 @@ jobs:
               "authority_host_learning_service_root_tests::root_learning_public_registration_serves_retained_writer_and_recovers_history",
               "learning_iteration_evidence_client::tests::root::original_external_uid_returns_a_verified_receipt_through_held_pidfd",
           ]
-          packages = ["-p", "codex-hepta-agentd", "-p", "codex-hepta-learning-artifacts"]
+          packages = ["-p", "codex-hepta-agentd", "-p", "codex-hepta-learning-artifacts",
+                      "-p", "codex-hepta-intelligence-eval"]
           helpers = ["python3", "scripts/hepta_cell_test_helpers.py", "--package",
                      "codex-hepta-infer-worker-host", "--output-dir", str(records / "helpers")]
           root_dir = Path("/run") / ("hepta-daemon-learning-" + os.environ["GITHUB_RUN_ID"]
@@ -172,7 +174,8 @@ jobs:
                       continue
                   path = os.fsdecode(raw)
                   if not path.endswith(".rs") or not path.startswith(
-                      ("codex-rs/hepta-agentd/", "codex-rs/hepta-learning-artifacts/")):
+                      ("codex-rs/hepta-agentd/", "codex-rs/hepta-learning-artifacts/",
+                           "codex-rs/hepta-intelligence-eval/")):
                       raise RuntimeError("maintenance changed a path outside its Rust owners: " + path)
                   source = repo / path
                   if source.is_symlink() or not source.is_file():
@@ -308,3 +311,4 @@ jobs:
             !${{ runner.temp }}/daemon-learning-records/helpers/bin/**
           if-no-files-found: error
           retention-days: 14
+

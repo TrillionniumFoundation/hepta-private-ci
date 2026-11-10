@@ -1,5 +1,8 @@
 use super::*;
 
+#[path = "product_execution_tests.rs"]
+mod execution_tests;
+
 use std::sync::Arc;
 use std::sync::Mutex;
 

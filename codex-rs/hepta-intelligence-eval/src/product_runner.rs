@@ -241,6 +241,8 @@ pub struct ProductTemporalEvaluationReceiptV1 {
     pub execution_digest: Digest32,
     pub authority: AuthorityPosture,
     receipt_seal: Digest32,
+    // Only authenticated execution recovery sets this provenance pin.
+    execution_evaluator: Option<AuthenticatedPrincipalV1>,
 }
 
 impl ProductTemporalEvaluationReceiptV1 {
@@ -453,6 +455,7 @@ impl<S: FinalHoldoutCasStoreV1> ProductEvaluationRunnerV1<S> {
             execution_digest,
             authority: AuthorityPosture::DENY_ALL,
             receipt_seal: Digest32::ZERO,
+            execution_evaluator: None,
         };
         receipt.receipt_seal = product_evaluation_seal(&receipt)?;
         Ok(receipt)
@@ -463,6 +466,13 @@ impl<S: FinalHoldoutCasStoreV1> ProductEvaluationRunnerV1<S> {
         temporal: &ProductTemporalEvaluationReceiptV1,
         context: &ProductQualificationContextV1,
     ) -> Result<IndependentEvaluationBundleV1, ProductEvaluationError> {
+        if temporal
+            .execution_evaluator
+            .as_ref()
+            .is_some_and(|evaluator| evaluator != &context.evaluator)
+        {
+            return Err(ProductEvaluationError::Binding("execution evaluator"));
+        }
         temporal.validate_integrity()?;
         let frozen = &temporal.product_plan.frozen_plan;
         Ok(IndependentEvaluationBundleV1 {
@@ -939,7 +949,7 @@ fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
     bytes.extend_from_slice(value.as_str().as_bytes());
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub enum ProductEvaluationError {
     Binding(&'static str),
     Integrity(&'static str),
@@ -992,3 +1002,8 @@ impl From<ProductEvidenceSinkErrorV1> for ProductEvaluationError {
 #[cfg(test)]
 #[path = "product_runner_tests.rs"]
 mod tests;
+
+#[path = "product_execution.rs"]
+pub(crate) mod execution;
+#[path = "product_execution_codec.rs"]
+mod execution_codec;

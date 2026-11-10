@@ -257,11 +257,11 @@ fn evidence_fixture(
 }
 
 async fn authenticate(
-    f: &Fixture, receipt: &LearningIterationReceiptV1, read: GenerationLearningStageReadV1<'_>,
+    f: &Fixture, original: &EvidenceFixture, read: GenerationLearningStageReadV1<'_>,
 ) -> anyhow::Result<AuthenticatedGenerationLearningStageV1> {
-    let fixture = evidence_fixture(f, receipt.clone())?;
-    let (client, mut server) = fixture.client()?;
-    let evidence = fixture.evidence();
+    let receipt = &original.receipt;
+    let (client, mut server) = original.client()?;
+    let evidence = original.evidence();
     let owner = std::thread::spawn(move || -> anyhow::Result<()> {
         let request = read_request(&mut server)?;
         reply(&mut server, &response(request, evidence))
@@ -271,12 +271,12 @@ async fn authenticate(
         verifier: &f.verifier,
     }, &client).await?;
     owner.join().expect("synthetic evidence owner")?;
-    assert_eq!(result.attestation(), &fixture.signature);
+    assert_eq!(result.attestation(), &original.signature);
     Ok(result)
 }
 
 #[tokio::test]
-async fn original_actor_retained_and_updated_receipts_authenticate_and_recover_read_only()
+async fn retained_and_updated_original_evidence_survives_actor_and_runtime_reopen()
 -> anyhow::Result<()> {
     for profile in [Profile::Retained, Profile::Updated] {
         let mut f = Fixture::new(profile).await?;
@@ -288,11 +288,12 @@ async fn original_actor_retained_and_updated_receipts_authenticate_and_recover_r
             ).await?,
         };
         let receipt = learning_test_receipt(&f.coordinator, selection);
+        let selection_evidence = evidence_fixture(&f, receipt.clone())?;
         let before = f.retained_bytes()?;
-        assert_eq!(authenticate(&f, &receipt, f.read(None)).await?.receipt(), &receipt);
+        assert_eq!(authenticate(&f, &selection_evidence, f.read(None)).await?.receipt(), &receipt);
         assert_eq!(f.retained_bytes()?, before);
         f.coordinator.record(receipt.clone(), 20)?;
-        assert_eq!(authenticate(&f, &receipt, f.read(None)).await?.receipt(), &receipt);
+        assert_eq!(authenticate(&f, &selection_evidence, f.read(None)).await?.receipt(), &receipt);
         let request = CellGenerationRequestV2 {
             operation_id: "next-use".into(), task_digest: f.publication.target_config.task_digest,
             source_frontier: f.publication.target_config.source_frontier,
@@ -300,7 +301,7 @@ async fn original_actor_retained_and_updated_receipts_authenticate_and_recover_r
             admitted_at_micros: 10, deadline_micros: 10_000,
         };
         let intent = request.intent()?;
-        f.runtime.handle.step(request).await?;
+        let committed = f.runtime.handle.step(request.clone()).await?;
         let observation = match profile {
             Profile::Retained => f.runtime.handle.read_learning_next_use(&f.coordinator, &intent).await?,
             Profile::Updated => f.runtime.handle.read_learning_updated_next_use(
@@ -308,14 +309,98 @@ async fn original_actor_retained_and_updated_receipts_authenticate_and_recover_r
             ).await?,
         };
         let use_receipt = learning_test_receipt(&f.coordinator, observation);
+        let use_evidence = evidence_fixture(&f, use_receipt.clone())?;
         let before = f.retained_bytes()?;
-        assert_eq!(authenticate(&f, &use_receipt, f.read(Some(&intent))).await?.receipt(), &use_receipt);
+        assert_eq!(authenticate(&f, &use_evidence, f.read(Some(&intent))).await?.receipt(), &use_receipt);
         f.coordinator.record(use_receipt.clone(), 20)?;
         assert_eq!(f.coordinator.next_stage(), None);
-        assert_eq!(authenticate(&f, &use_receipt, f.read(Some(&intent))).await?.receipt(), &use_receipt);
+        assert_eq!(authenticate(&f, &use_evidence, f.read(Some(&intent))).await?.receipt(), &use_receipt);
         assert_eq!(f.retained_bytes()?, before);
         assert_eq!(f.control.calls.load(Ordering::SeqCst), 1);
         assert_eq!(f.control.reads.load(Ordering::SeqCst), 0);
+        assert_eq!(f.publication.authority.capacity()?.used_nonces, 1);
+        let completed = f.coordinator.snapshot().clone();
+        let publication = f.runtime.publication.clone();
+        let operation = match profile {
+            Profile::Retained => learning_retained_task_operation_id_v1(&f.coordinator)?,
+            Profile::Updated => learning_updated_task_operation_id_v1(&f.coordinator)?,
+        };
+        let old_handle = f.runtime.handle.clone();
+        let observed = f.runtime.handle.observe_generation().await?;
+        let cost = f.runtime.handle.task_cost().await?;
+        tasks.shutdown().await;
+        drop(f.runtime);
+        drop(tasks);
+        assert!(old_handle.snapshot().await.is_err());
+        drop(old_handle);
+
+        // Neither a different operation nor a different intent may borrow the
+        // published owner, and a refusal cannot create a replacement journal.
+        for (operation_id, intent_digest) in [
+            (format!("{operation}-substituted"), publication.intent_digest()),
+            (operation.to_string(), d("substituted generation intent")),
+        ] {
+            assert!(recover_agentd_generation_update_v1(
+                f.publication.reopen_current()?, f.publication.authorities()?,
+                f.publication.selection()?, f.publication.target_reopen()?,
+                AgentdGenerationUpdateRecoveryV1 { operation_id, intent_digest },
+            ).is_err());
+        }
+        let ready = recover_agentd_generation_update_v1(
+            f.publication.reopen_current()?, f.publication.authorities()?,
+            f.publication.selection()?, f.publication.target_reopen()?,
+            AgentdGenerationUpdateRecoveryV1 {
+                operation_id: operation.to_string(), intent_digest: publication.intent_digest(),
+            },
+        )?;
+        // Reopen the Fleet state with a fresh process generation, preserving
+        // the same task publication rather than signing or resetting it again.
+        for (generation, lifecycle) in [
+            (6, AgentLifecycle::Draining), (7, AgentLifecycle::Stopped),
+            (8, AgentLifecycle::Starting),
+        ] {
+            f.host.registry.compare_and_transition(&f.host.identity.agent_id, generation, lifecycle)?;
+            if generation == 6 {
+                f.host.state().refresh_generation()?;
+                f.host.state().mark_draining()?;
+            }
+        }
+        f.host.identity.spawn_generation = 9;
+        let i = &f.host.identity;
+        let config = AgentdConfig::load(
+            i.fleet_root.clone(), i.agent_id.clone(), i.spawn_generation,
+            i.home_root.clone(), i.run_root.clone(), i.home_root.clone(), i.workspace.clone(),
+        )?;
+        f.host.reopen_state().await;
+        f.host.registry.compare_and_transition(&f.host.identity.agent_id, 9, AgentLifecycle::Running)?;
+        f.host.state().refresh_generation()?;
+        f.runtime = ready.into_runtime(config, f.control.clone(), f.host.clock(),
+            AgentdGenerationUpdateRuntimeOptionsV1::default())?;
+        f.coordinator = LearningIterationCoordinatorV1::from_snapshot(completed.clone())?;
+        let mut tasks = f.start()?;
+        assert_eq!(f.runtime.publication, publication);
+        assert_eq!(f.runtime.handle.observe_generation().await?, observed);
+        assert_eq!(f.runtime.handle.task_cost().await?, cost);
+
+        // Both stages use exactly the signatures retained before shutdown.
+        // Completed-history prefix reconstruction must not issue new evidence.
+        assert_eq!(authenticate(&f, &selection_evidence, f.read(None)).await?.receipt(), &receipt);
+        assert_eq!(authenticate(&f, &use_evidence, f.read(Some(&intent))).await?.receipt(), &use_receipt);
+        assert_eq!(f.coordinator.snapshot(), &completed);
+        assert_eq!(f.runtime.handle.step(request).await?, committed);
+
+        let (client, mut server) = use_evidence.client()?;
+        let mut wrong_intent = intent.clone();
+        wrong_intent.task_digest = d("different next task").into_array();
+        assert!(matches!(read_generation_learning_stage_v1(GenerationLearningStageReadbackRequestV1 {
+            runtime: &f.runtime.handle, snapshot: f.coordinator.snapshot(), receipt: &use_receipt,
+            read: f.read(Some(&wrong_intent)), verifier: &f.verifier,
+        }, &client).await, Err(GenerationLearningStageReadbackErrorV1::Generation(_))));
+        server.set_nonblocking(true)?;
+        assert_eq!(std::io::Read::read(&mut server, &mut [0]).unwrap_err().kind(),
+            std::io::ErrorKind::WouldBlock);
+        assert_eq!(f.retained_bytes()?, before);
+        assert_eq!((f.control.calls.load(Ordering::SeqCst), f.control.reads.load(Ordering::SeqCst)), (1, 0));
         assert_eq!(f.publication.authority.capacity()?.used_nonces, 1);
         tasks.shutdown().await;
     }
