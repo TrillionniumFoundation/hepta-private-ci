@@ -319,10 +319,14 @@ async fn cancellation_and_rejection_do_not_erase_observed_effects() {
             },
         };
         assert_eq!(
-            driver.observe_check_plan(&pending, &wire, &plan, &ActionCheckClockV1::Unknown).await,
+            driver
+                .observe_check_plan(&pending, &wire, &plan, &ActionCheckClockV1::Unknown)
+                .await,
             Ok(ActionCheckReadbackV1 {
                 observation: feedback,
-                assessment: plan.assess(&plan.binding, &ActionCheckClockV1::Unknown).expect("assessment"),
+                assessment: plan
+                    .assess(&plan.binding, &ActionCheckClockV1::Unknown)
+                    .expect("assessment"),
             })
         );
         // Readback never dispatches, even when its estimate favors checking.

@@ -80,9 +80,8 @@ impl CircuitLearningDeliveryRuntimeV1 {
     ) -> Result<(), AgentdError> {
         if self.requests.iter().any(|request| {
             store.owner_agent_id().as_str() != request.agent_id.as_str()
-            || state.identity().agent_id.as_str() != request.agent_id.as_str()
-        })
-            || state.identity().spawn_generation != self.spawn_generation
+                || state.identity().agent_id.as_str() != request.agent_id.as_str()
+        }) || state.identity().spawn_generation != self.spawn_generation
         {
             return Err(AgentdError::GenerationFenced(
                 "Circuit learning delivery owner differs".into(),
@@ -102,83 +101,88 @@ impl CircuitLearningDeliveryRuntimeV1 {
                 continue;
             }
             for (index, request) in self.requests.iter().enumerate() {
-            if completed[index] {
-                continue;
-            }
-            let row = tokio::select! {
-                _ = cancellation.cancelled() => return Ok(()),
-                row = store.circuit_learning_delivery(request.source_run_id.as_str()) => row,
-            }
-            .map_err(|error| {
-                AgentdError::Protocol(format!("Circuit learning outbox: {error:?}"))
-            })?;
-            let Some(row) = row else {
-                continue;
-            };
-            // A crash between the original ACK and retirement must not require
-            // renewed stage signatures merely to release this local slot.
-            // Exact historical ACK cleanup publishes no learning snapshot.
-            if row.acknowledged_head.is_some() {
-                let retirement = crate::circuit_learning_delivery::retire_acknowledged_delivery(
-                    &store, request, &self.owners, &row,
-                );
+                if completed[index] {
+                    continue;
+                }
+                let row = tokio::select! {
+                    _ = cancellation.cancelled() => return Ok(()),
+                    row = store.circuit_learning_delivery(request.source_run_id.as_str()) => row,
+                }
+                .map_err(|error| {
+                    AgentdError::Protocol(format!("Circuit learning outbox: {error:?}"))
+                })?;
+                let Some(row) = row else {
+                    continue;
+                };
+                // A crash between the original ACK and retirement must not require
+                // renewed stage signatures merely to release this local slot.
+                // Exact historical ACK cleanup publishes no learning snapshot.
+                if row.acknowledged_head.is_some() {
+                    let retirement = crate::circuit_learning_delivery::retire_acknowledged_delivery(
+                        &store,
+                        request,
+                        &self.owners,
+                        &row,
+                    );
+                    let result = tokio::select! {
+                        _ = cancellation.cancelled() => return Ok(()),
+                        result = retirement => result,
+                    };
+                    match result {
+                        Ok(()) => completed[index] = true,
+                        Err(LearningIterationRuntimeErrorV1::CommitUncertain) => {}
+                        Err(error) => {
+                            return Err(AgentdError::Protocol(format!(
+                                "Circuit learning ACK retirement refused: {error}"
+                            )));
+                        }
+                    }
+                    continue;
+                }
+                let claimed = row.request_digest.is_some();
+                if !claimed && !state.automation_admission_ready()? {
+                    continue;
+                }
+                let delivery = async {
+                    if claimed {
+                        crate::reconcile_circuit_learning_v1(
+                            &store,
+                            Some(&self.handle),
+                            request.clone(),
+                            self.owners.clone(),
+                        )
+                        .await
+                    } else {
+                        crate::deliver_circuit_learning_v1(
+                            &store,
+                            Some(&self.handle),
+                            request.clone(),
+                            self.owners.clone(),
+                        )
+                        .await
+                    }
+                };
                 let result = tokio::select! {
                     _ = cancellation.cancelled() => return Ok(()),
-                    result = retirement => result,
+                    result = delivery => result,
                 };
                 match result {
-                    Ok(()) => completed[index] = true,
-                    Err(LearningIterationRuntimeErrorV1::CommitUncertain) => {}
-                    Err(error) => return Err(AgentdError::Protocol(format!(
-                        "Circuit learning ACK retirement refused: {error}"
-                    ))),
+                    Ok(_) => {
+                        completed[index] = true;
+                    }
+                    Err(
+                        LearningIterationRuntimeErrorV1::CommitUncertain
+                        | LearningIterationRuntimeErrorV1::Unavailable
+                        | LearningIterationRuntimeErrorV1::QueueFull,
+                    ) => {}
+                    Err(error) => {
+                        // Missing mandatory owners, invalid evidence or expired
+                        // new work is a refused configured service, not a retry.
+                        return Err(AgentdError::Protocol(format!(
+                            "Circuit learning delivery refused: {error}"
+                        )));
+                    }
                 }
-                continue;
-            }
-            let claimed = row.request_digest.is_some();
-            if !claimed && !state.automation_admission_ready()? {
-                continue;
-            }
-            let delivery = async {
-                if claimed {
-                    crate::reconcile_circuit_learning_v1(
-                        &store,
-                        Some(&self.handle),
-                        request.clone(),
-                        self.owners.clone(),
-                    )
-                    .await
-                } else {
-                    crate::deliver_circuit_learning_v1(
-                        &store,
-                        Some(&self.handle),
-                        request.clone(),
-                        self.owners.clone(),
-                    )
-                    .await
-                }
-            };
-            let result = tokio::select! {
-                _ = cancellation.cancelled() => return Ok(()),
-                result = delivery => result,
-            };
-            match result {
-                Ok(_) => {
-                    completed[index] = true;
-                }
-                Err(
-                    LearningIterationRuntimeErrorV1::CommitUncertain
-                    | LearningIterationRuntimeErrorV1::Unavailable
-                    | LearningIterationRuntimeErrorV1::QueueFull,
-                ) => {}
-                Err(error) => {
-                    // Missing mandatory owners, invalid evidence or expired
-                    // new work is a refused configured service, not a retry.
-                    return Err(AgentdError::Protocol(format!(
-                        "Circuit learning delivery refused: {error}"
-                    )));
-                }
-            }
             }
             if completed.iter().all(|completed| *completed) {
                 cancellation.cancelled().await;

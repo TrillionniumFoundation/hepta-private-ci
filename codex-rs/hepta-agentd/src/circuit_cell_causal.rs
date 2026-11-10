@@ -78,24 +78,38 @@ where
         let mut records = Vec::with_capacity(dispatches.len());
         for dispatch in dispatches {
             let activation = &run.activations()[&dispatch.activation_id];
-            let input = inputs.get(&dispatch.activation_id)
+            let input = inputs
+                .get(&dispatch.activation_id)
                 .ok_or(CircuitCreditErrorV1::Binding("missing causal input"))?;
             let binding = self.registry().bind_input(&dispatch, input)?;
             let request_digest = canonical_cell_step_request_digest_v1(&binding.cell, input)?;
             if input.scope.agent_id.as_str() != circuit.owner_agent_id().as_str()
-                || activation.execution_request_digest()
+                || activation
+                    .execution_request_digest()
                     .is_none_or(|digest| digest.as_str() != request_digest.to_string())
             {
-                return Err(CircuitCreditErrorV1::Binding("original causal computation claim"));
+                return Err(CircuitCreditErrorV1::Binding(
+                    "original causal computation claim",
+                ));
             }
-            let decision = self.state_owner().lookup(&input.scope, &input.operation_id, request_digest)?
-                .ok_or(CircuitCreditErrorV1::Binding("missing committed causal decision"))?;
+            let decision = self
+                .state_owner()
+                .lookup(&input.scope, &input.operation_id, request_digest)?
+                .ok_or(CircuitCreditErrorV1::Binding(
+                    "missing committed causal decision",
+                ))?;
             let execution = finish(binding, &dispatch, input, decision)?;
             if trace.completions().get(&dispatch.activation_id) != Some(&execution.completion) {
-                return Err(CircuitCreditErrorV1::Binding("causal Cell/Circuit completion mismatch"));
+                return Err(CircuitCreditErrorV1::Binding(
+                    "causal Cell/Circuit completion mismatch",
+                ));
             }
-            let circuit_times = *trace.computation_times().get(&dispatch.activation_id)
-                .ok_or(CircuitCreditErrorV1::Binding("missing original causal clock samples"))?;
+            let circuit_times = *trace
+                .computation_times()
+                .get(&dispatch.activation_id)
+                .ok_or(CircuitCreditErrorV1::Binding(
+                    "missing original causal clock samples",
+                ))?;
             let decision = execution.decision;
             records.push(CircuitCellCausalRecordV1 {
                 circuit_run_id: run.run_id().to_string(),

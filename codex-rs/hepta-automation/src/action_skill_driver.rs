@@ -157,9 +157,7 @@ impl<A: ProviderEffectAdapter, O: ActionSkillObserver> GoalCheckedActionSkillDri
     ) -> Result<crate::ActionCheckReadbackV1, ActionSkillError> {
         let binding = self.bind_pending(pending, original_wire_payload)?;
         let assessment = plan.assess(&binding, current)?;
-        let observation = self
-            .observe_pending(pending, original_wire_payload)
-            .await?;
+        let observation = self.observe_pending(pending, original_wire_payload).await?;
         Ok(crate::ActionCheckReadbackV1 {
             observation,
             assessment,

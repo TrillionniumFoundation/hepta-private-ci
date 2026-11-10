@@ -202,10 +202,7 @@ fn temporal_q24_owner_restores_and_continues_recurrence_then_stop_preserves_stat
     let proposal = worker.execute(&config.manifest, &second, &AtomicBool::new(false))?;
     assert_eq!(proposal.output_delta, output(3 * codec::Q / 2));
     let receipt = owner.commit(proposal, /*now_micros*/ 11)?;
-    assert_eq!(
-        owner.admit(second, /*now_micros*/ 11)?,
-        Some(receipt)
-    );
+    assert_eq!(owner.admit(second, /*now_micros*/ 11)?, Some(receipt));
     let chunk = owner.pending_output()?.unwrap().clone();
     owner.acknowledge(
         chunk,

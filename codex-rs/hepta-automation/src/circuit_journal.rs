@@ -276,7 +276,10 @@ pub(crate) async fn load(
                 ..
             } = &payload
             {
-                computation_times.entry(*activation_id).or_default().claimed_at_ms = Some(*now_ms);
+                computation_times
+                    .entry(*activation_id)
+                    .or_default()
+                    .claimed_at_ms = Some(*now_ms);
             }
             if let CircuitLedgerEventV2::Applied {
                 event:
@@ -284,10 +287,15 @@ pub(crate) async fn load(
                 now_ms,
                 ..
             }
-            | CircuitLedgerEventV2::RecoverySettled { completion, now_ms, .. } = &payload
+            | CircuitLedgerEventV2::RecoverySettled {
+                completion, now_ms, ..
+            } = &payload
             {
                 completions.insert(completion.activation_id, completion.clone());
-                computation_times.entry(completion.activation_id).or_default().completed_at_ms = Some(*now_ms);
+                computation_times
+                    .entry(completion.activation_id)
+                    .or_default()
+                    .completed_at_ms = Some(*now_ms);
             }
             if expected_seq > u64::from(definition.limits.max_events)
                 && matches!(&payload, CircuitLedgerEventV2::Claimed { .. })

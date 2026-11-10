@@ -49,11 +49,13 @@ pub fn load_cell_q24_backend_v1(
             {
                 return Err(CellGenerationErrorV2::InvalidBinding);
             }
-            Ok(Arc::new(LoadedCellQ24ModelV1::open_files(files)?.into_worker(
-                bundle,
-                config.manifest.clone(),
-                clock,
-            )?))
+            Ok(Arc::new(
+                LoadedCellQ24ModelV1::open_files(files)?.into_worker(
+                    bundle,
+                    config.manifest.clone(),
+                    clock,
+                )?,
+            ))
         }
         CellQ24BackendFilesV1::Temporal(files) => {
             if config.manifest.profile != CellTemporalQ24GenerationWorkerV1::PROFILE {
@@ -63,7 +65,11 @@ pub fn load_cell_q24_backend_v1(
             if config.initial.state != model.initial_state() {
                 return Err(CellGenerationErrorV2::InvalidBinding);
             }
-            Ok(Arc::new(model.into_worker(bundle, config.manifest.clone(), clock)?))
+            Ok(Arc::new(model.into_worker(
+                bundle,
+                config.manifest.clone(),
+                clock,
+            )?))
         }
     }
 }

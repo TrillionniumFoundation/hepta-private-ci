@@ -15,29 +15,47 @@ struct UnavailableLearningPorts {
 impl UnavailableLearningPorts {
     fn unavailable<T>(&self) -> LearningIterationOwnerFutureV1<'_, T> {
         self.calls.fetch_add(1, Ordering::SeqCst);
-        Box::pin(async { Err(LearningIterationRuntimeErrorV1::OwnerUnavailable("offline fixture")) })
+        Box::pin(async {
+            Err(LearningIterationRuntimeErrorV1::OwnerUnavailable(
+                "offline fixture",
+            ))
+        })
     }
 }
 
 impl LearningIterationOwnerPortsV1 for UnavailableLearningPorts {
-    fn restore<'a>(&'a self, _request: &'a LearningIterationRequestV1)
-        -> LearningIterationOwnerFutureV1<'a, Option<LearningIterationSnapshotV1>> {
+    fn restore<'a>(
+        &'a self,
+        _request: &'a LearningIterationRequestV1,
+    ) -> LearningIterationOwnerFutureV1<'a, Option<LearningIterationSnapshotV1>> {
         self.unavailable()
     }
-    fn checkpoint<'a>(&'a self, _expected: Digest32, _snapshot: &'a LearningIterationSnapshotV1)
-        -> LearningIterationOwnerFutureV1<'a, Digest32> {
+    fn checkpoint<'a>(
+        &'a self,
+        _expected: Digest32,
+        _snapshot: &'a LearningIterationSnapshotV1,
+    ) -> LearningIterationOwnerFutureV1<'a, Digest32> {
         self.unavailable()
     }
-    fn execute_stage<'a>(&'a self, _snapshot: &'a LearningIterationSnapshotV1, _stage: LearningIterationStageV1)
-        -> LearningIterationOwnerFutureV1<'a, LearningIterationReceiptV1> {
+    fn execute_stage<'a>(
+        &'a self,
+        _snapshot: &'a LearningIterationSnapshotV1,
+        _stage: LearningIterationStageV1,
+    ) -> LearningIterationOwnerFutureV1<'a, LearningIterationReceiptV1> {
         self.unavailable()
     }
-    fn prepare_proposal<'a>(&'a self, _snapshot: &'a LearningIterationSnapshotV1)
-        -> LearningIterationOwnerFutureV1<'a, PreparedLearningIterationProposalV1> {
+    fn prepare_proposal<'a>(
+        &'a self,
+        _snapshot: &'a LearningIterationSnapshotV1,
+    ) -> LearningIterationOwnerFutureV1<'a, PreparedLearningIterationProposalV1> {
         self.unavailable()
     }
-    fn receipt_attestation<'a>(&'a self, _snapshot: &'a LearningIterationSnapshotV1, _receipt: &'a LearningIterationReceiptV1, _now: u64)
-        -> LearningIterationOwnerFutureV1<'a, SignedLearningEvidenceV1> {
+    fn receipt_attestation<'a>(
+        &'a self,
+        _snapshot: &'a LearningIterationSnapshotV1,
+        _receipt: &'a LearningIterationReceiptV1,
+        _now: u64,
+    ) -> LearningIterationOwnerFutureV1<'a, SignedLearningEvidenceV1> {
         self.unavailable()
     }
 }
@@ -45,34 +63,76 @@ impl LearningIterationOwnerPortsV1 for UnavailableLearningPorts {
 async fn acknowledged_before_retirement(
     daemon: &AgentdFixture,
     original: &CurrentEvidencePorts,
-) -> (AutomationStore, LearningIterationRequestV1, CircuitLearningDeliveryV1) {
+) -> (
+    AutomationStore,
+    LearningIterationRequestV1,
+    CircuitLearningDeliveryV1,
+) {
     let (store, request) = completed_circuit_named(daemon, "ack-crash-window").await;
-    let snapshot = completed_snapshot(request.clone(), &original.inner, Decision::EvaluatedNoUpdate).await;
-    let initial = ok(LearningIterationCoordinatorV1::new(request.clone(), original.inner.owners()));
-    let request_digest = ok(Sha256Digest::parse(initial.snapshot().head_digest.to_string()));
-    let intent = ok(store.circuit_learning_delivery(request.source_run_id.as_str()).await).unwrap().intent;
-    assert!(ok(store.claim_circuit_learning(&intent, &request_digest).await));
-    ok(store.acknowledge_circuit_learning(
-        &intent, &request_digest, &ok(Sha256Digest::parse(snapshot.head_digest.to_string())),
-    ).await);
-    let acknowledged = ok(store.circuit_learning_delivery(request.source_run_id.as_str()).await).unwrap();
+    let snapshot = completed_snapshot(
+        request.clone(),
+        &original.inner,
+        Decision::EvaluatedNoUpdate,
+    )
+    .await;
+    let initial = ok(LearningIterationCoordinatorV1::new(
+        request.clone(),
+        original.inner.owners(),
+    ));
+    let request_digest = ok(Sha256Digest::parse(
+        initial.snapshot().head_digest.to_string(),
+    ));
+    let intent = ok(store
+        .circuit_learning_delivery(request.source_run_id.as_str())
+        .await)
+    .unwrap()
+    .intent;
+    assert!(ok(store
+        .claim_circuit_learning(&intent, &request_digest)
+        .await));
+    ok(store
+        .acknowledge_circuit_learning(
+            &intent,
+            &request_digest,
+            &ok(Sha256Digest::parse(snapshot.head_digest.to_string())),
+        )
+        .await);
+    let acknowledged = ok(store
+        .circuit_learning_delivery(request.source_run_id.as_str())
+        .await)
+    .unwrap();
     // Drop the only database owner before reopening the crash-boundary bytes.
     store.close().await;
     drop(store);
     let reopened = ok(AutomationStore::open(&daemon.identity.layout).await);
-    assert_eq!(ok(reopened.circuit_learning_delivery(request.source_run_id.as_str()).await), Some(acknowledged.clone()));
+    assert_eq!(
+        ok(reopened
+            .circuit_learning_delivery(request.source_run_id.as_str())
+            .await),
+        Some(acknowledged.clone())
+    );
     (reopened, request, acknowledged)
 }
 
 async fn inspect(store: &AutomationStore) -> SqlitePool {
-    ok(SqlitePoolOptions::new().max_connections(1).connect_with(
-        SqliteConnectOptions::new().filename(store.path()).read_only(true),
-    ).await)
+    ok(SqlitePoolOptions::new()
+        .max_connections(1)
+        .connect_with(
+            SqliteConnectOptions::new()
+                .filename(store.path())
+                .read_only(true),
+        )
+        .await)
 }
 
 async fn retired(pool: &SqlitePool, request: &LearningIterationRequestV1) -> i64 {
-    ok(sqlx::query_scalar("SELECT retired FROM circuit_learning_outbox_v1 WHERE owner_agent_id = ? AND run_id = ?")
-        .bind(request.agent_id.as_str()).bind(request.source_run_id.as_str()).fetch_one(pool).await)
+    ok(sqlx::query_scalar(
+        "SELECT retired FROM circuit_learning_outbox_v1 WHERE owner_agent_id = ? AND run_id = ?",
+    )
+    .bind(request.agent_id.as_str())
+    .bind(request.source_run_id.as_str())
+    .fetch_one(pool)
+    .await)
 }
 
 #[tokio::test]
@@ -82,11 +142,17 @@ async fn cold_ack_cleanup_releases_slot_without_contacting_unavailable_learning_
     let (store, request, acknowledged) = acknowledged_before_retirement(&daemon, &original).await;
     let inspection = inspect(&store).await;
     assert_eq!(retired(&inspection, &request).await, 0);
-    let ports = Arc::new(UnavailableLearningPorts { calls: AtomicUsize::new(0) });
+    let ports = Arc::new(UnavailableLearningPorts {
+        calls: AtomicUsize::new(0),
+    });
     let (state, cognitive) = admitted_state(&daemon).await;
     let (handle, bootstrap) = ok(learning_iteration_channel_v1(
-        daemon.identity.agent_id.clone(), /*spawn_generation*/ 1,
-        original.inner.owners(), ports.clone(), original.inner.verifier.clone(), /*capacity*/ 1,
+        daemon.identity.agent_id.clone(),
+        /*spawn_generation*/ 1,
+        original.inner.owners(),
+        ports.clone(),
+        original.inner.verifier.clone(),
+        /*capacity*/ 1,
     ));
     let mut bootstrap = ok(bootstrap.with_circuit_learning_delivery(request.clone()));
     let delivery = bootstrap.take_circuit_delivery().unwrap();
@@ -98,13 +164,24 @@ async fn cold_ack_cleanup_releases_slot_without_contacting_unavailable_learning_
         while retired(&inspection, &request).await == 0 {
             tokio::task::yield_now().await;
         }
-    }).await.expect("exact historical ACK retired without an owner call");
-    assert_eq!(ok(store.circuit_learning_delivery(request.source_run_id.as_str()).await), Some(acknowledged));
+    })
+    .await
+    .expect("exact historical ACK retired without an owner call");
+    assert_eq!(
+        ok(store
+            .circuit_learning_delivery(request.source_run_id.as_str())
+            .await),
+        Some(acknowledged)
+    );
     assert_eq!(ports.calls.load(Ordering::SeqCst), 0);
     assert!(!delivery.is_finished());
     cancellation.cancel();
-    ok(ok(tokio::time::timeout(Duration::from_secs(5), delivery).await.unwrap()));
-    ok(ok(tokio::time::timeout(Duration::from_secs(5), actor).await.unwrap()));
+    ok(ok(tokio::time::timeout(Duration::from_secs(5), delivery)
+        .await
+        .unwrap()));
+    ok(ok(tokio::time::timeout(Duration::from_secs(5), actor)
+        .await
+        .unwrap()));
     inspection.close().await;
     cognitive.close().await;
     store.close().await;
@@ -124,22 +201,45 @@ async fn ack_cleanup_refuses_changed_request_owners_and_stale_ack_without_mutati
     changed[3].envelope.objective_digest = digest("other-objective");
     changed[4].budget.maximum_training_steps += 1;
     for changed in changed {
-        assert!(matches!(crate::circuit_learning_delivery::retire_acknowledged_delivery(
-            &store, &changed, &owners, &acknowledged,
-        ).await, Err(LearningIterationRuntimeErrorV1::WrongScope)));
+        assert!(matches!(
+            crate::circuit_learning_delivery::retire_acknowledged_delivery(
+                &store,
+                &changed,
+                &owners,
+                &acknowledged,
+            )
+            .await,
+            Err(LearningIterationRuntimeErrorV1::WrongScope)
+        ));
     }
     let mut changed_owners = owners.clone();
     changed_owners.trainer = id("other-trainer");
-    assert!(matches!(crate::circuit_learning_delivery::retire_acknowledged_delivery(
-        &store, &request, &changed_owners, &acknowledged,
-    ).await, Err(LearningIterationRuntimeErrorV1::WrongScope)));
+    assert!(matches!(
+        crate::circuit_learning_delivery::retire_acknowledged_delivery(
+            &store,
+            &request,
+            &changed_owners,
+            &acknowledged,
+        )
+        .await,
+        Err(LearningIterationRuntimeErrorV1::WrongScope)
+    ));
     let mut stale = acknowledged.clone();
     stale.acknowledged_head = Some(ok(Sha256Digest::parse(digest("other-head").to_string())));
-    assert!(matches!(crate::circuit_learning_delivery::retire_acknowledged_delivery(
-        &store, &request, &owners, &stale,
-    ).await, Err(LearningIterationRuntimeErrorV1::CommitUncertain)));
+    assert!(matches!(
+        crate::circuit_learning_delivery::retire_acknowledged_delivery(
+            &store, &request, &owners, &stale,
+        )
+        .await,
+        Err(LearningIterationRuntimeErrorV1::CommitUncertain)
+    ));
     assert_eq!(retired(&inspection, &request).await, 0);
-    assert_eq!(ok(store.circuit_learning_delivery(request.source_run_id.as_str()).await), Some(acknowledged));
+    assert_eq!(
+        ok(store
+            .circuit_learning_delivery(request.source_run_id.as_str())
+            .await),
+        Some(acknowledged)
+    );
     inspection.close().await;
     store.close().await;
 }

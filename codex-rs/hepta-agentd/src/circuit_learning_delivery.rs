@@ -52,7 +52,10 @@ pub(crate) async fn retire_acknowledged_delivery(
     if row.request_digest.as_ref() != Some(&request_digest) {
         return Err(Error::WrongScope);
     }
-    let head = row.acknowledged_head.as_ref().ok_or(Error::CommitUncertain)?;
+    let head = row
+        .acknowledged_head
+        .as_ref()
+        .ok_or(Error::CommitUncertain)?;
     // The original owner re-reads and compares intent, request and ACK inside
     // its transaction. A stale caller observation never authorizes cleanup.
     store
