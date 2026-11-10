@@ -25,7 +25,11 @@ def colour_card(seed):
     return ("red", "green", "blue")[colour], b"P6\n16 16\n255\n" + pixels
 
 
-def train(seed=41, steps=12):
+def train(seed=41, steps=12, scope="all-content-v1"):
+    if scope not in {"all-content-v1", "private-text-image-adapters-v1"}:
+        raise ValueError("Unsupported/future training scope")
+    private_scope = scope == "private-text-image-adapters-v1"
+    private_prefixes = ("adapters.text.", "adapters.image.")
     if type(steps) is not int or not 1 <= steps <= 128:
         raise ValueError("Content-training step bound")
     started = time.perf_counter()
@@ -37,8 +41,18 @@ def train(seed=41, steps=12):
         )
     baseline = model.export_weights()
     frozen = ("critic.", "delivery_critic.", "actor.")
+    trainable_names = []
     for name, parameter in model.named_parameters():
-        parameter.requires_grad_(not name.startswith(frozen))
+        trainable = (
+            name.startswith(private_prefixes)
+            if private_scope
+            else not name.startswith(frozen)
+        )
+        parameter.requires_grad_(trainable)
+        if trainable:
+            trainable_names.append(name)
+    if not trainable_names:
+        raise AssertionError("No trainable private parameters")
     optimizer = torch.optim.Adam(
         [p for p in model.parameters() if p.requires_grad], lr=0.002
     )
@@ -76,6 +90,8 @@ def train(seed=41, steps=12):
     changed = [key for key in before if not torch.equal(before[key], after[key])]
     if not changed or any(key.startswith(frozen) for key in changed):
         raise AssertionError("Content-training/frozen terminal head contract failed")
+    if private_scope and any(not key.startswith(private_prefixes) for key in changed):
+        raise AssertionError("Frozen backbone or non-private parameter changed")
     report = {
         "schema": "hepta.bimodal.content-training.v1",
         "seed": seed,
@@ -84,6 +100,11 @@ def train(seed=41, steps=12):
         "candidate_sha256": sha(candidate),
         "training_sources": source_ids,
         "changed_parameter_groups": sorted({k.split(".")[0] for k in changed}),
+        "training_scope": scope,
+        "private_adapter_trainable_names": (
+            trainable_names if private_scope else []
+        ),
+        "frozen_shared_backbone_verified": private_scope,
         "terminal_heads_trained": False,
         "old_actor_trained": False,
         "losses": losses,
