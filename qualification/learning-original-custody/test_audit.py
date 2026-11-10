@@ -70,6 +70,7 @@ class AuditTests(unittest.TestCase):
         self.record['operator_custody'].pop('evaluator')
         self.record['operator_custody'].pop('holdout')
         self.record['original_receipts'].pop('evaluation')
+        self.record['original_receipts'].pop('proposal')
         for entry in self.record['original_receipts'].values():
             entry['bundle_sha256'] = self.record['selected_bundle']
 
@@ -101,8 +102,47 @@ class AuditTests(unittest.TestCase):
         self.record['decision'] = 'no_update'
         self.record['no_update_origin'] = 'evaluation'
         self.record['selected_bundle'] = self.record['baseline_bundle']
+        self.record['original_receipts'].pop('proposal')
         self.record['original_receipts'].pop('evaluation')
         self.assertIn('receipt_coverage', self.check()['issues'])
+
+
+    def test_adoption_requires_original_proposal(self):
+        self.record['original_receipts'].pop('proposal')
+        issues = self.check()['issues']
+        self.assertIn('receipt_coverage', issues)
+        self.assertIn('missing_receipt:proposal', issues)
+
+    def test_evaluator_no_update_skips_unexecuted_proposal(self):
+        self.record['decision'] = 'no_update'
+        self.record['no_update_origin'] = 'evaluation'
+        self.record['selected_bundle'] = self.record['baseline_bundle']
+        self.record['original_receipts'].pop('proposal')
+        for entry in self.record['original_receipts'].values():
+            entry['bundle_sha256'] = self.record['selected_bundle']
+        result = self.check()
+        self.assertEqual(result['integrity'], 'PASS')
+        self.assertEqual(result['receipt_bytes_required'], 8)
+        self.assertEqual(result['status'], 'HOLD')
+        self.record['original_receipts']['proposal'] = {
+            'file': 'proposal.receipt',
+            'sha256': hashlib.sha256(b'proposal').hexdigest(),
+            'operation_id': 'op-1', 'task_id': 'task-A'
+        }
+        self.assertIn('receipt_coverage', self.check()['issues'])
+
+    def test_proposal_no_update_requires_original_proposal(self):
+        self.record['decision'] = 'no_update'
+        self.record['no_update_origin'] = 'proposal'
+        self.record['selected_bundle'] = self.record['baseline_bundle']
+        for entry in self.record['original_receipts'].values():
+            entry['bundle_sha256'] = self.record['selected_bundle']
+        result = self.check()
+        self.assertEqual(result['integrity'], 'PASS')
+        self.assertEqual(result['receipt_bytes_required'], 9)
+        self.assertEqual(result['status'], 'HOLD')
+        self.record['original_receipts'].pop('proposal')
+        self.assertIn('missing_receipt:proposal', self.check()['issues'])
 
     def test_no_update_origin_must_be_explicit(self):
         self.record['decision'] = 'no_update'
