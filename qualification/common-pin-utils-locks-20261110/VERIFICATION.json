@@ -1,0 +1,87 @@
+{
+  "artifact_id": 13749607412,
+  "zip_sha256": "b25d912f46be8cfaed928147c115f6d6ad9f66dc8ef4a949fc8c9e9cdbebde79",
+  "zip_bytes": 1940982,
+  "files_verified": 67,
+  "commands": 26,
+  "source": {
+    "head": "559809452a3b4524a8edeeb4ec38af665231f4dd",
+    "tree": "e89a9296aaca705dffa953add946f269733c2a74",
+    "base": "a2cd828aad47c56ac8c01dc2e423454eca7eafae",
+    "reused_commit": "54d73e897e088369b37db1575af146d228b5db25",
+    "platform": "Windows-2025Server-10.0.26100-SP0",
+    "python": "3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]",
+    "python_executable": "C:\\hostedtoolcache\\windows\\Python\\3.12.10\\x64\\python.exe",
+    "run_id": "42785602290",
+    "run_attempt": "1",
+    "old_blobs": {
+      "codex-rs/Cargo.lock": "b7e710988d6a3377a7e0a1dc68aef49c68dda36e",
+      "MODULE.bazel.lock": "b91bee756020f2b6b0e92b1a5c4477e6a180149e"
+    },
+    "new_blobs": {
+      "codex-rs/Cargo.lock": "e2ccaea9223bfbbbd86deb97618c01a9b45e2ec6",
+      "MODULE.bazel.lock": "99920e713b6434ba20ec753838b06b5697ce1366"
+    }
+  },
+  "status": {
+    "scoped_windows_lock_qualification": "PASS",
+    "failures": [],
+    "other_five_unsuppressed_advisories": "OPEN",
+    "full_same_source_gate": "OPEN",
+    "source_base": "a2cd828aad47c56ac8c01dc2e423454eca7eafae",
+    "source_head": "559809452a3b4524a8edeeb4ec38af665231f4dd",
+    "reused_dependency_commit": "54d73e897e088369b37db1575af146d228b5db25",
+    "candidate_aws_config_entry": {
+      "name": "aws-config",
+      "version": "1.12.0",
+      "dependencies": [
+        "aws-credential-types",
+        "aws-runtime",
+        "aws-sdk-signin",
+        "aws-sdk-sso",
+        "aws-sdk-ssooidc",
+        "aws-sdk-sts",
+        "aws-smithy-async",
+        "aws-smithy-http",
+        "aws-smithy-json",
+        "aws-smithy-runtime",
+        "aws-smithy-runtime-api",
+        "aws-smithy-schema 0.2.1",
+        "aws-smithy-types",
+        "aws-types",
+        "base64-simd",
+        "bytes",
+        "fastrand",
+        "hex",
+        "http 1.5.0",
+        "p256",
+        "rand 0.10.3",
+        "sha1 0.10.7",
+        "sha2 0.10.9",
+        "time",
+        "tokio",
+        "tracing",
+        "url",
+        "uuid",
+        "zeroize"
+      ]
+    },
+    "frozen_input_guard": "PASS",
+    "job_status_before_finalization": "success"
+  },
+  "graph": {
+    "pin_utils_absent": true,
+    "packages": 1512,
+    "resolve_nodes": 1512,
+    "cargo_lock_sha256": "068a61498744648a8e2a755770ba69fe2b7afc3b83106f74fed46b5fe91a8c5b",
+    "aws_config_manifest": "D:\\a\\hepta-private-ci\\hepta-private-ci\\codex-rs\\third_party\\aws-config-1.12.0\\Cargo.toml"
+  },
+  "versions": {
+    "rustc.EXE": "rustc 1.96.0 (ac68faa20 2026-05-25)\nbinary: rustc\ncommit-hash: ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96\ncommit-date: 2026-05-25\nhost: x86_64-pc-windows-msvc\nrelease: 1.96.0\nLLVM version: 22.1.2",
+    "cargo.EXE": "cargo 1.96.0 (30a34c682 2026-05-25)",
+    "just.EXE": "just 1.51.0",
+    "bazel.EXE": "Bazelisk v1.28.1\nbazel 9.3.0"
+  },
+  "both_before_after_identical": true,
+  "worktree_diff_empty": true
+}
