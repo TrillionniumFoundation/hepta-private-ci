@@ -191,9 +191,11 @@ initial-correct no-op successes, these account for all twenty C/S unknowns.
 status: all 108 evidence rows are VERIFIED.[^report]
 
 The one delivery failure per arm selected and wrote the correct text candidate,
-but the complete independent final rubric failed. This report does not assign
-that failure to a particular image or preservation subcriterion without its
-underlying scoring receipt.
+but the complete independent final rubric failed. A later
+[bound receipt and geometry readback](delivery-readback/README.md) identifies the
+same image-crop coverage failure in both arms: 88.8022%, below the frozen 95%
+requirement. Text, preservation, original-pixel verification and the 0.5 IoU
+threshold passed. This post-hoc attribution changes no original score or result.
 
 ## Observed costs and remaining scope
 
@@ -264,3 +266,4 @@ The original terminal evidence remains under
 [^run]: `run-002/RUN_RECEIPT.json`, exact SHA-256 in the evidence table. Its attempt roster has the same 108 operation IDs as the report. Original preflight costs are retained in [preflight-attempt-001.json](observations/preflight-attempt-001.json).
 [^bootstrap]: `BOOTSTRAP_RECEIPT-v2.json`, exact SHA-256 in the evidence table. It records the original preflight receipt SHA, absent PLAN, empty journal, correction relationship and zero new fits/repeats.
 [^request]: The executed `request-v2.json` has SHA-256 `2ad28975785858d77780e8b7c333154282916ff330c09b2f3d4aa211a8812f98`, as bound by the correction bootstrap. It preserves the original selection salt, model/data configuration and source-group design.
+
