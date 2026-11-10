@@ -5,11 +5,18 @@ from .candidate_retention_inference import source_inference
 
 
 def pair(source, index, on, off, role="development"):
-    return [{"original_operation_id": f"{source}-{index}-{mode}",
-             "pair_id": f"{source}-{index}", "case_id": f"{source}-{index}",
-             "source_group_id": source, "split": role, "mode": mode,
-             "unconditional_success": value}
-            for mode, value in (("bounded", on), ("current_only", off))]
+    return [
+        {
+            "original_operation_id": f"{source}-{index}-{mode}",
+            "pair_id": f"{source}-{index}",
+            "case_id": f"{source}-{index}",
+            "source_group_id": source,
+            "split": role,
+            "mode": mode,
+            "unconditional_success": value,
+        }
+        for mode, value in (("bounded", on), ("current_only", off))
+    ]
 
 
 class SourceInferenceTests(unittest.TestCase):
@@ -32,9 +39,17 @@ class SourceInferenceTests(unittest.TestCase):
         self.assertEqual(result["worst_case_unknown_one_sided_95pct_lower"], 0.0)
 
     def test_numeric_threshold_does_not_grant_scientific_adoption(self):
-        rows = [r for i in range(20) for r in pair(
-            f"source-{i}", 0, True, False,
-            "development" if i < 16 else "retention_validation")]
+        rows = [
+            r
+            for i in range(20)
+            for r in pair(
+                f"source-{i}",
+                0,
+                True,
+                False,
+                "development" if i < 16 else "retention_validation",
+            )
+        ]
         result = source_inference(rows)
         self.assertTrue(result["numerical_benefit_threshold_met"])
         self.assertEqual(result["worst_case_unknown_one_sided_95pct_lower"], 1.0)
