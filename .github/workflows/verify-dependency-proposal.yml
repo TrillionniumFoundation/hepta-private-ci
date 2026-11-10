@@ -62,16 +62,43 @@ jobs:
         run: |
           set -euo pipefail
           cargo update -p libsqlite3-sys --precise 0.39.1 2>&1 | tee "$CANDIDATE_LOGS/cargo-update.log"
-          cargo metadata --locked --no-deps --format-version 1 > "$CANDIDATE_LOGS/metadata.json"
+          cargo metadata --locked --all-features --format-version 1 \
+            > "$CANDIDATE_LOGS/metadata-all-features.json" \
+            2> "$CANDIDATE_LOGS/metadata-all-features.stderr.log"
           python3 - <<'PY'
-          import os, pathlib, tomllib, json
-          packages = tomllib.loads(pathlib.Path('Cargo.lock').read_text())['package']
+          import hashlib, os, pathlib, tomllib, json
+          evidence = pathlib.Path(os.environ['CANDIDATE_LOGS'])
+          metadata_path = evidence / 'metadata-all-features.json'
+          metadata = json.loads(metadata_path.read_text())
+          packages = metadata['packages']
+          locked = tomllib.loads(pathlib.Path('Cargo.lock').read_text())['package']
+          nodes = metadata['resolve']['nodes']
+          package_ids = {p['id'] for p in packages}
+          node_ids = {node['id'] for node in nodes}
+          assert len(package_ids) == len(packages)
+          assert len(node_ids) == len(nodes)
+          assert package_ids == node_ids
+          assert all(edge['pkg'] in package_ids for node in nodes for edge in node['deps'])
           expected = {'rmcp': '3.9.0', 'libsqlite3-sys': '0.39.1', 'rusqlite': '0.41.1', 'vodozemac': '0.11.2'}
           for name, version in expected.items():
               assert [p['version'] for p in packages if p['name'] == name] == [version]
-          assert [p for p in packages if p['name'] == 'sqlx-sqlite'][0].get('source') is None
+              assert [p['version'] for p in locked if p['name'] == name] == [version]
           assert not any(p['name'] == 'pin-utils' for p in packages)
-          pathlib.Path(os.environ['CANDIDATE_LOGS'], 'resolved-targets.json').write_text(json.dumps(expected, indent=2))
+          assert not any(p['name'] == 'pin-utils' for p in locked)
+          sqlite = [p for p in packages if p['name'] == 'libsqlite3-sys']
+          assert len(sqlite) == 1
+          assert [p['id'] for p in packages if p.get('links') == 'sqlite3'] == [sqlite[0]['id']]
+          sqlite_features = next(node['features'] for node in nodes if node['id'] == sqlite[0]['id'])
+          assert not any(feature.startswith('bundled-sqlcipher') for feature in sqlite_features)
+          for name, vendor in [('aws-config', 'aws-config-1.12.0'), ('sqlx-sqlite', 'sqlx-sqlite-0.9.0')]:
+              matches = [p for p in packages if p['name'] == name]
+              assert len(matches) == 1 and matches[0]['source'] is None
+              assert pathlib.Path(matches[0]['manifest_path']).resolve() == pathlib.Path('third_party', vendor, 'Cargo.toml').resolve()
+          report = {'targets': expected, 'package_count': len(packages), 'resolve_node_count': len(nodes),
+                    'full_locked_all_features_metadata_sha256': hashlib.sha256(metadata_path.read_bytes()).hexdigest(),
+                    'pin_utils_present': False, 'single_sqlite_sys': True, 'sqlite_features': sqlite_features,
+                    'aws_config_manifest': next(p['manifest_path'] for p in packages if p['name'] == 'aws-config')}
+          (evidence / 'resolved-targets.json').write_text(json.dumps(report, indent=2))
           PY
 
       - name: Regenerate the mandatory Bazel lock
@@ -116,6 +143,27 @@ jobs:
           rust-version: 1.96.0
           manifest-path: ./codex-rs/Cargo.toml
 
+      - name: Format the mutated candidate after all test stages
+        if: always() && steps.resolve.outcome == 'success'
+        id: format
+        run: |
+          set -euo pipefail
+          just fmt 2>&1 | tee "$CANDIDATE_LOGS/final-just-fmt.log"
+          git diff --exit-code dd42001783d87d2f5a591fe700544bda61f9c028 -- codex-rs/deny.toml codex-rs/.cargo/audit.toml scripts/check_hepta_rustsec_advisories.py scripts/tests/test_hepta_rustsec_guard.py .github/workflows/cargo-deny.yml
+          python3 - <<'PY'
+          import hashlib, json, os, pathlib
+          evidence = pathlib.Path(os.environ['CANDIDATE_LOGS'])
+          original = json.loads((evidence / 'preparation.json').read_text())['vendor_original_files']
+          preserved = {}
+          for name, expected in original.items():
+              if name in {'Cargo.toml', 'Cargo.toml.orig'}:
+                  continue
+              actual = hashlib.sha256((pathlib.Path('codex-rs/third_party/sqlx-sqlite-0.9.0') / name).read_bytes()).hexdigest()
+              assert actual == expected, ('Formatter changed preserved SQLx implementation', name)
+              preserved[name] = actual
+          (evidence / 'post-format-preserved-source.json').write_text(json.dumps(preserved, indent=2))
+          PY
+
       - name: Retain candidate source, both lockfiles and failed stages
         if: always()
         env:
@@ -125,6 +173,7 @@ jobs:
           BAZEL: ${{ steps.bazel.outcome }}
           CONSUMERS: ${{ steps.consumers.outcome }}
           DENY: ${{ steps.deny.outcome }}
+          FORMAT: ${{ steps.format.outcome }}
         run: |
           set -euo pipefail
           export CANDIDATE_LOGS="${CANDIDATE_LOGS:-$RUNNER_TEMP/verify-dependency-proposal}"
@@ -135,10 +184,12 @@ jobs:
           python3 - <<'PY'
           import hashlib, json, os, pathlib, subprocess
           root = pathlib.Path(os.environ['CANDIDATE_LOGS'])
-          stages = {key: os.environ[key] for key in ('PREPARE', 'RESOLVE', 'BAZEL', 'CONSUMERS', 'POLICY', 'DENY')}
+          stages = {key: os.environ[key] for key in ('PREPARE', 'RESOLVE', 'BAZEL', 'CONSUMERS', 'POLICY', 'DENY', 'FORMAT')}
           report = {'source': subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip(),
                     'stages': stages, 'scoped_stages_all_passed': all(v == 'success' for v in stages.values()),
                     'production_adoption': False, 'custom_http_boundaries_qualified': False,
+                    'old_store_migration_qualified': False, 'old_store_external_phases': 'OPEN_NOT_EXECUTED',
+                    'dependency_security_closure_claimed': False,
                     'files': {p.name: hashlib.sha256(p.read_bytes()).hexdigest() for p in root.iterdir() if p.is_file()}}
           (root / 'result.json').write_text(json.dumps(report, indent=2))
           PY
