@@ -119,6 +119,38 @@ class ControlCriticContextTests(unittest.TestCase):
         self.assertIsNotNone(result["value"]["conditional_residual"][1])
         self.assertFalse(result["production_admitted"])
 
+    def test_uncalibrated_and_too_small_calibration_abstain(self):
+        sample = row("training")
+        fitted = fit_heads([sample], context=CRITIC_CONTEXT)
+        missing = predict(fitted, sample["state"], context=CRITIC_CONTEXT)
+        self.assertTrue(missing["recalibration_required"])
+        self.assertIsNone(missing["implementation"]["point"])
+        self.assertIsNone(missing["value"]["point"])
+        sparse = calibrate_heads(
+            fitted,
+            [row("cal-one", split="calibration")],
+            context=CRITIC_CONTEXT,
+        )
+        result = predict(sparse, sample["state"], context=CRITIC_CONTEXT)
+        self.assertTrue(result["recalibration_required"])
+        self.assertIsNone(result["value"]["point"])
+
+    def test_partial_calibration_labels_cannot_publish_joint_points(self):
+        sample = row("training")
+        calibration = [row(f"cal-{i}", split="calibration") for i in range(12)]
+        for observed in calibration:
+            observed.pop("branches")
+        heads = calibrate_heads(
+            fit_heads([sample], context=CRITIC_CONTEXT),
+            calibration,
+            context=CRITIC_CONTEXT,
+        )
+        self.assertFalse(any(name == "value" for name, *_ in heads.residuals))
+        result = predict(heads, sample["state"], context=CRITIC_CONTEXT)
+        self.assertTrue(result["recalibration_required"])
+        self.assertIsNone(result["implementation"]["point"])
+        self.assertIsNone(result["value"]["point"])
+
     def test_wire_round_trip_and_invalid_manifest_rejection(self):
         wire = CRITIC_CONTEXT.to_wire()
         self.assertEqual(CriticContext.from_wire(wire), CRITIC_CONTEXT)
