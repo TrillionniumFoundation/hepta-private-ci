@@ -26,7 +26,11 @@ jobs:
           persist-credentials: false
       - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
         with:
-          tool: just@1.51.0,uv@0.9.26
+          tool: just@1.51.0
+      - name: Install the original owning formatter dependency
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
+        with:
+          version: "0.11.3"
       - name: Bind source and install the bounded CPU dependency
         run: |
           set -euo pipefail
@@ -53,6 +57,7 @@ jobs:
           mkdir -p "$RUNNER_TEMP/act2-learning-records"
           git config --global credential.helper '!gh auth git-credential'
           git fetch --no-tags --depth=1 origin 631e99f78898543e8dc1e8671632baf73945940e
+          uv --version > "$RUNNER_TEMP/act2-learning-records/uv-version.txt"
           just fmt --base 631e99f78898543e8dc1e8671632baf73945940e > "$RUNNER_TEMP/act2-learning-records/formatter.log" 2>&1
           git diff --binary > "$RUNNER_TEMP/act2-learning-records/format.patch"
           python3 - <<'PY'
