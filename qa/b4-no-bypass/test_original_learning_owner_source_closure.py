@@ -80,5 +80,58 @@ class OriginalLearningOwnerClosureTests(unittest.TestCase):
         for marker in ("owner.require_active(&request.start.run_id)?", "codec::require_request(&retained, request)?", "if !completed.is_empty()", "dispatch.input_digest != request.start.input_digest", "circuit_cell_operation_id_v1(dispatch)?"):
             with self.subTest(marker=marker): self.rejects(path, "fn resolve(", marker)
 
+    def test_observer_views_cannot_gain_original_writer_capabilities(self):
+        forbidden = {
+            AGENT + "circuit_task_source_readback.rs": ("pub original:", "Deref", "AgentdCircuitTaskInvocationProviderV1 for", "CircuitTaskInputProviderV1 for", ".withdraw(", ".publish_result("),
+            AGENT + "circuit_feature_current_owner.rs": ("CellStateOwnerV1 for PublishedCircuitCellOwnerV1", "pub original:", "pub task:", "into_inner"),
+            "codex-rs/hepta-neuron/src/cell_journal_readback.rs": ("CellStateOwnerV1 for", "Deref", "into_inner", ".write_all(", ".compare_and_swap(", ".admit_inference("),
+        }
+        for path, mutations in forbidden.items():
+            rows = [row for row in self.manifest["protected_file"] if row["path"] == path]
+            source = (ROOT / path).read_text()
+            with tempfile.TemporaryDirectory() as temporary:
+                root = Path(temporary)
+                target = root / path
+                target.parent.mkdir(parents=True)
+                target.write_text(source)
+                PROOF._verify_protected_files(root, {"protected_file": rows})
+                for marker in mutations:
+                    with self.subTest(path=path, marker=marker):
+                        target.write_text(source + "\n" + marker + "\n")
+                        with self.assertRaises(PROOF.VerificationFailure):
+                            PROOF._verify_protected_files(root, {"protected_file": rows})
+
+    def test_published_task_keeps_original_profile_and_distinct_successor(self):
+        path = AGENT + "circuit_feature_current.rs"
+        for marker in ("original.previous() != &previous.binding", "previous.receipt.checkpoint_after != previous.source.checkpoint_digest()", "old.scope.run_id == source.scope.run_id || old.observation == source.observation"):
+            with self.subTest(marker=marker): self.rejects(path, "fn from_update<", marker)
+        for marker in ("journal.owner_binding() != Some(target)", "target.task_digest() != circuit_feature_task_digest_v1(", "manifest.profile != crate::CellQ24GenerationWorkerV1::PROFILE", "current.check_current(target)", "original: Mutex::new(Box::new(journal))", "result.require_current()?"):
+            with self.subTest(marker=marker): self.rejects(path, "fn from_parts<", marker)
+
+    def test_retirement_and_next_use_recheck_source_and_actual_cell(self):
+        path = AGENT + "circuit_feature_current_retirement.rs"
+        for marker in ("Arc::ptr_eq(&self.0, &cell.task.0)", "cell.committed(&before)?", "original.require_current()?", "original.drain()?", "original.is_drained()?", "self.require_current()?"):
+            with self.subTest(marker=marker): self.rejects(path, "fn drain_completed_task<", marker)
+        path = AGENT + "circuit_feature_current_learning.rs"
+        for marker in ("coordinator.next_stage() != Some(LearningIterationStageV1::NextUse)", "prefix.head_digest = selection.predecessor", "self.read_learning_selection(&prefix)?", "actual_selection != selection.observation", "source.read_run_publication(", "self.committed(&before)?", "receipt.bundle_digest != candidate_bundle", "self.task.require_current()?"):
+            with self.subTest(marker=marker): self.rejects(path, "fn read_learning_next_use<", marker)
+
+    def test_historical_read_never_reactivates_or_repairs_previous_owner(self):
+        path = AGENT + "circuit_feature_current_recovery.rs"
+        for marker in ("binding != self.publication.previous()", "self.successor.check_current(self.publication.target())"):
+            with self.subTest(marker=marker): self.rejects(path, "fn check_current(", marker)
+        for marker in ("current.check_current(publication.target())", "NeuronGenerationPredecessorCompletionV1::OwnerDrained", "previous.task_digest() != circuit_feature_task_digest_v1(", "CellOwnerJournalReadbackV1::open_guarded(", "reader.pending_inference(", "before.require_decision(&receipt)", "snapshot.revision != 1", "receipt.checkpoint_after != before.checkpoint_digest()", "source.read_run_publication("):
+            with self.subTest(marker=marker): self.rejects(path, "fn recover_predecessor<", marker)
+        path = "codex-rs/hepta-neuron/src/cell_journal.rs"
+        for marker in ("self.mode == OpenMode::ReadOnlyAcknowledged", "head.is_none() || head != expected || offset != bytes.len()", "self.require_current()?"):
+            with self.subTest(marker=marker): self.rejects(path, "fn recover(", marker)
+        for marker in ("self.mode == OpenMode::ReadOnlyAcknowledged", ".sync_all()", ".compare_and_swap(self.head, next)", "self.require_current().map_err(|_| CellExecutionError::CommitUncertain)?"):
+            with self.subTest(marker=marker): self.rejects(path, "fn persist(", marker)
+
+    def test_ordinary_assembly_uses_original_current_native_worker_and_normal_channel(self):
+        path = AGENT + "circuit_q24_task_profile.rs"
+        for marker in ("identity.spawn_generation == 0", "profile.published_task.require_bundle(&profile.bundle)?", "CellQ24FeatureWorkerV1::new(", "DurableCircuitTaskSourceV1::recover(", "profile.published_task.open_cell(", "profile.published_task.control(", "cell.writer()", "circuit_task_channel_v1(", "source.readback()"):
+            with self.subTest(marker=marker): self.rejects(path, "fn circuit_q24_task_channel_v1<", marker)
+
 if __name__ == "__main__":
     unittest.main()

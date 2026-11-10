@@ -3165,3 +3165,170 @@ required_order = [[".read_consumption(&request.plan.frozen_plan)", "product_eval
 required_function_order = [
   { function = "fn product_evaluation_execution_key_v1(", sequence = ["plan.validate_integrity()?", "if namespace.is_zero()", "evaluator.validate(evaluator.authenticated_at)", "namespace.as_array()", "plan.receipt_seal.as_array()", "super::push_principal(&mut binding, evaluator)", "Ok(ProductEvaluationExecutionKeyV1"] },
 ]
+
+[[boundary]]
+id = "circuit_feature_original_initial_publication"
+symbol = "PublishedCircuitFeatureTaskV1::from_initial"
+receiver_type = "PublishedCircuitFeatureTaskV1"
+definition_path = "codex-rs/hepta-agentd/src/circuit_feature_current.rs"
+definition_markers = ["pub(crate) fn from_initial<", "Self::from_parts(journal, Publication::Initial(original)"]
+product_callers = ["codex-rs/hepta-agentd/src/neuron_generation_initial_bootstrap.rs"]
+caller_markers = ["PublishedCircuitFeatureTaskV1::from_initial(self.journal, self.publication,", "self.feature_current, definition, source"]
+
+[[boundary]]
+id = "circuit_feature_original_update_publication"
+symbol = "PublishedCircuitFeatureTaskV1::from_update"
+receiver_type = "PublishedCircuitFeatureTaskV1"
+definition_path = "codex-rs/hepta-agentd/src/circuit_feature_current.rs"
+definition_markers = ["pub(crate) fn from_update<", "original.previous() != &previous.binding", "old.scope.run_id == source.scope.run_id || old.observation == source.observation"]
+product_callers = ["codex-rs/hepta-agentd/src/neuron_generation_update_bootstrap.rs"]
+caller_markers = ["PublishedCircuitFeatureTaskV1::from_update(self.journal, self.publication,", "self.feature_current, definition, source, previous"]
+
+[[boundary]]
+id = "circuit_feature_guarded_private_cell"
+symbol = "CellOwnerJournalV1::open_guarded"
+receiver_type = "CellOwnerJournalV1"
+definition_path = "codex-rs/hepta-neuron/src/cell_journal.rs"
+definition_markers = ["pub fn open_guarded(", "OpenMode::RepairOriginal", "current.check_current(&binding)"]
+product_callers = ["codex-rs/hepta-agentd/src/circuit_feature_current.rs"]
+caller_markers = ["CellOwnerJournalV1::open_guarded(file, witness", "max_records, target.clone(), current", "self.require_current()?"]
+
+[[boundary]]
+id = "circuit_feature_private_cell_writer"
+symbol = "PublishedCircuitCellOwnerV1::writer"
+receiver_type = "PublishedCircuitCellOwnerV1"
+definition_path = "codex-rs/hepta-agentd/src/circuit_feature_current_owner.rs"
+definition_markers = ["pub(crate) struct PublishedCircuitCellWriterV1", "pub(crate) fn writer(&self)"]
+product_callers = ["codex-rs/hepta-agentd/src/circuit_q24_task_profile.rs"]
+caller_markers = ["AgentdCircuitCellOwnerV1::new(registry, cell.writer(), control, encoder)"]
+
+[[boundary]]
+id = "circuit_feature_original_task_control"
+symbol = "PublishedCircuitFeatureTaskV1::control"
+receiver_type = "PublishedCircuitFeatureTaskV1"
+definition_path = "codex-rs/hepta-agentd/src/circuit_feature_current_control.rs"
+definition_markers = ["pub fn control<", "if task.require_active().is_err()", "ControlledNeuronFeaturePortV1::new("]
+product_callers = ["codex-rs/hepta-agentd/src/circuit_q24_task_profile.rs"]
+caller_markers = ["profile.published_task.control(", "profile.files.inference_control, profile.worker_generation, worker"]
+
+[[boundary]]
+id = "circuit_q24_ordinary_profile_assembly"
+symbol = "circuit_q24_task_channel_v1"
+definition_path = "codex-rs/hepta-agentd/src/circuit_q24_task_profile.rs"
+definition_markers = ["pub fn circuit_q24_task_channel_v1<", "profile.published_task.require_bundle(&profile.bundle)?", "circuit_task_channel_v1("]
+product_callers = ["codex-rs/hepta-agentd/src/config_q24_circuit_task.rs"]
+caller_markers = ["self.require_no_circuit_task_profile()?", "self.require_circuit_task_execution_profile()?", "circuit_q24_task_channel_v1(self.identity(), profile)?", "runtime.install(self)?"]
+
+[[boundary]]
+id = "circuit_feature_original_predecessor_recovery"
+symbol = "recover_predecessor"
+definition_path = "codex-rs/hepta-agentd/src/circuit_feature_current_recovery.rs"
+definition_markers = ["pub(crate) fn recover_predecessor<", "CellOwnerJournalReadbackV1::open_guarded("]
+product_callers = ["codex-rs/hepta-agentd/src/neuron_generation_update_bootstrap.rs"]
+caller_markers = ["recover_predecessor(&self.publication, &self.feature_current,", "predecessor, original_source, identity)?", "self.into_circuit_feature_task(definition, source, previous)"]
+
+[[boundary]]
+id = "circuit_feature_acknowledged_readonly_history"
+symbol = "CellOwnerJournalReadbackV1::open_guarded"
+receiver_type = "CellOwnerJournalReadbackV1"
+definition_path = "codex-rs/hepta-neuron/src/cell_journal_readback.rs"
+definition_markers = ["pub struct CellOwnerJournalReadbackV1", "OpenMode::ReadOnlyAcknowledged"]
+product_callers = ["codex-rs/hepta-agentd/src/circuit_feature_current_recovery.rs"]
+caller_markers = ["CellOwnerJournalReadbackV1::open_guarded(", "previous.clone(), guard", "reader.pending_inference(", "before.require_decision(&receipt)"]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/circuit_feature_current.rs"
+required = ["struct PublishedTask", "original: Mutex<Box<dyn OriginalVersion>>", "pub struct PublishedCircuitFeatureTaskV1(Arc<PublishedTask>)", "binding: CellGenerationOwnerBindingV1", "source: CircuitTaskSourcePublicationV1", "observed.snapshot().revision != 0", "observed.pending_request_digest().is_some()", "!observed.snapshot().prefix.is_empty()"]
+forbidden = ["SigningKey", ".sign(", "File::open", "UnixStream::connect", "pub original:", "pub publication:", "pub current:", "pub binding:", "unwrap_or", "permit_all"]
+required_order = [
+  ["fn from_update<", "original.previous() != &previous.binding", "previous.manifest.digest()", "previous.receipt.checkpoint_after != previous.source.checkpoint_digest()", "old.scope.run_id == source.scope.run_id || old.observation == source.observation", "Self::from_parts(journal, Publication::Update"],
+  ["fn from_parts<", "journal.owner_binding() != Some(target)", "target.task_digest() != circuit_feature_task_digest_v1(", "target.source_frontier() != source.source_frontier.into_array()", "manifest.profile != crate::CellQ24GenerationWorkerV1::PROFILE", "manifest.bundle_digest != definition.bundle_digest.into_array()", "current.check_current(target)", "original: Mutex::new(Box::new(journal))", "result.require_current()?"],
+  ["fn open_cell<", "self.require_current()?", "!(3..=16).contains(&max_records)", "CellOwnerJournalV1::open_guarded(", "max_records, target.clone(), current", "self.require_current()?", "PublishedCircuitCellOwnerV1::new(journal, self.clone())"],
+]
+required_function_order = [
+  { function = "fn require_bundle(", sequence = ["self.require_current()?", "validate_manifest(bundle, &self.0.manifest)", "bundle.digest()", "self.require_current()"] },
+  { function = "fn require_active(", sequence = ["self.require_current()?", "is_drained()?", "return Err", "self.require_current()"] },
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/circuit_feature_current_owner.rs"
+required = ["pub(crate) struct PublishedCircuitCellWriterV1", "CellStateOwnerV1 for PublishedCircuitCellWriterV1", "pub(super) original:", "pub(super) task:"]
+forbidden = ["CellStateOwnerV1 for PublishedCircuitCellOwnerV1", "pub original:", "pub task:", "Deref", "into_inner", "SigningKey", "File::open", "unwrap_or", "permit_all"]
+required_function_order = [
+  { function = "fn committed(", sequence = ["self.task.require_current()?", "input != &source_input(self.task.source()", "canonical_cell_step_request_digest_v1(", "owner.pending_inference(", "owner.lookup(", "source.require_decision(&decision)", "owner.snapshot(", "snapshot.revision != 1", "decision.checkpoint_after != source.checkpoint_digest()", "self.task.require_current()?", "Ok(decision)"] },
+  { function = "fn admit_inference(", sequence = ["self.0.scope(", "self.0.task.require_active()", ".admit_inference(admission)?", "self.0.task.require_active()", "CellExecutionError::CommitUncertain"] },
+  { function = "fn commit(", sequence = ["self.0.scope(", "self.0.task.require_active()", ".commit(proposal, now_micros)?", "self.0.task.require_active()", "CellExecutionError::CommitUncertain", "Ok(result)"] },
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/circuit_feature_current_retirement.rs"
+required = ["impl PublishedCircuitFeatureTaskV1"]
+forbidden = ["SigningKey", ".sign(", "File::open", "UnixStream::connect", "unwrap_or", "permit_all"]
+required_order = [["fn drain_completed_task<", "Arc::ptr_eq(&self.0, &cell.task.0)", "source.read_run_publication(", "cell.committed(&before)?", "source.read_run_publication(", "original.require_current()?", "original.drain()?", "original.is_drained()?", "drop(original)", "source.read_run_publication(", "self.require_current()?", "Ok(PublishedCircuitFeatureCompletionV1"]]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/circuit_feature_current_control.rs"
+required = ["original: P", "task: PublishedCircuitFeatureTaskV1", "if task.require_active().is_err()", "return u64::MAX", "admission.snapshot.revision != 0 || admission.snapshot.checkpoint.is_some()", "admission.semantic_request_digest != canonical_cell_step_request_digest_v1(", "admission.deadline_micros != input.deadline_micros"]
+forbidden = ["pub original:", "pub task:", "SigningKey", ".sign(", "File::open", "UnixStream::connect", "unwrap_or", "permit_all"]
+required_order = [["fn control<", "self.require_current()", "if task.require_active().is_err()", "clock()", "ControlledNeuronFeaturePortV1::new(", "self.require_current()", "Ok(PublishedCircuitFeatureControlV1"]]
+required_function_order = [
+  { function = "fn bind_cell_inference(", sequence = ["self.task.require_active()", "self.task.require_admission(admission)?", "self.original.bind_cell_inference(admission)?", "self.task.require_active()"] },
+  { function = "fn execute_feature(", sequence = ["self.task.require_active()", "self.original.execute_feature(request)?", "self.task.require_current()", "Ok(result)"] },
+  { function = "fn bind_cell_readback(", sequence = ["self.task.require_admission(admission)?", "self.original.bind_cell_readback(admission)?", "self.task.require_current()"] },
+  { function = "fn read_feature(", sequence = ["self.task.require_current()", "self.original.read_feature(request)?", "self.task.require_current()", "Ok(result)"] },
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/circuit_feature_current_learning.rs"
+required = ["previous.receipt.checkpoint_after.as_array()", "receipt.checkpoint_before.as_array()", "previous.source.publication_digest().as_array()"]
+forbidden = ["SigningKey", ".sign(", "File::open", "UnixStream::connect", ".drain(", "unwrap_or", "permit_all"]
+required_order = [["fn read_learning_next_use<", "LearningIterationCoordinatorV1::from_snapshot(coordinator.snapshot().clone())", "coordinator.next_stage() != Some(LearningIterationStageV1::NextUse)", "prefix.receipts.pop()", "prefix.head_digest = selection.predecessor", "self.read_learning_selection(&prefix)?", "actual_selection != selection.observation", "source.read_run_publication(", "self.committed(&before)?", "receipt.bundle_digest != candidate_bundle", "previous.source.input().scope.run_id != coordinator.snapshot().request.source_run_id", "source.read_run_publication(", "self.task.require_current()?", "Ok(result)"]]
+required_function_order = [{ function = "fn read_learning_selection(", sequence = ["LearningIterationCoordinatorV1::from_snapshot(", "self.task.require_current()?", "Publication::Update", ".selection(original, coordinator, &previous.manifest)?", "self.task.require_current()?", "Ok(result)"] }]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/circuit_feature_current_recovery.rs"
+required = ["struct HistoricalRead", "successor: Arc<LiveGenerationCurrent>", "publication: PublishedNeuronGenerationUpdateV1", "CellOwnerJournalReadbackV1::open_guarded("]
+forbidden = ["CellOwnerJournalV1::", "CellStateOwnerV1", "SigningKey", ".sign(", "File::open", "UnixStream::connect", "compare_and_swap", ".drain(", "unwrap_or", "permit_all"]
+required_function_order = [{ function = "fn check_current(", sequence = ["binding != self.publication.previous()", "return Err(CellGenerationErrorV2::InvalidBinding)", "self.successor.check_current(self.publication.target())"] }]
+required_order = [["fn recover_predecessor<", "current.check_current(publication.target())", "let previous = publication.previous()", "NeuronGenerationPredecessorCompletionV1::OwnerDrained\n            | crate::NeuronGenerationPredecessorCompletionV1::OwnerDrainedSameModel", "previous.task_digest() != circuit_feature_task_digest_v1(", "files.manifest.digest()", "previous.source_frontier() != files.source.source_frontier.into_array()", "source.read_run_publication(", "input != &source_input(", "canonical_cell_step_request_digest_v1(", "HistoricalRead { successor: Arc::clone(current), publication: publication.clone() }", "CellOwnerJournalReadbackV1::open_guarded(", "reader.pending_inference(", "reader.lookup(", "before.require_decision(&receipt)", "reader.snapshot(", "snapshot.revision != 1", "receipt.checkpoint_after != before.checkpoint_digest()", "source.read_run_publication(", "current.check_current(publication.target())", "Ok(PublishedCircuitFeatureCompletionV1"]]
+
+[[protected_file]]
+path = "codex-rs/hepta-neuron/src/cell_journal_readback.rs"
+required = ["pub struct CellOwnerJournalReadbackV1<W: AnchorWitnessStore>(CellOwnerJournalV1<W>)", "OpenMode::ReadOnlyAcknowledged"]
+forbidden = ["CellStateOwnerV1 for", "Deref", "into_inner", ".sync_all(", ".set_len(", ".write_all(", ".compare_and_swap(", ".admit_inference(", ".commit("]
+required_function_order = [
+  { function = "fn open_guarded(", sequence = ["CellOwnerJournalV1::open_guarded_inner(", "OpenMode::ReadOnlyAcknowledged).map(Self)"] },
+  { function = "fn snapshot(", sequence = ["self.0.snapshot(scope)?", "self.0.require_current()?", "Ok(result)"] },
+  { function = "fn lookup(", sequence = ["self.0.lookup(scope, operation_id, semantic_request_digest)?", "self.0.require_current()?", "Ok(result)"] },
+  { function = "fn pending_inference(", sequence = ["self.0.pending_inference(scope)?", "self.0.require_current()?", "Ok(result)"] },
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-neuron/src/cell_journal.rs"
+required = ["header = b\"HPTACJ04\".to_vec()", "if mode == OpenMode::ReadOnlyAcknowledged", "if head.is_none() || head != expected || offset != bytes.len()"]
+forbidden = []
+required_function_order = [
+  { function = "fn open_guarded_inner(", sequence = ["specs.len() != 1", "spec.writer_epoch != binding.writer_epoch()", "current.check_current(&binding)", "Self::open_inner(", "Some((current, binding))"] },
+  { function = "fn recover(", sequence = ["self.healthy = false", "self.require_current()?", "let expected =", "if !witnessed", "self.require_current()?", "self.mode == OpenMode::ReadOnlyAcknowledged", "head.is_none() || head != expected || offset != bytes.len()", "self.owner = owner", "self.require_current()?", "self.healthy = true"] },
+  { function = "fn reset_at_frontier(", sequence = ["self.require_healthy()?", "if self.current.is_some()", "return Err(CellExecutionError::ScopeMismatch)", "self.persist(payload)?"] },
+  { function = "fn require_healthy(", sequence = ["self.require_current()?", "if self.healthy", "Err(CellExecutionError::CommitUncertain)"] },
+  { function = "fn persist(", sequence = ["self.require_healthy()?", "self.mode == OpenMode::ReadOnlyAcknowledged", "self.healthy = false", ".write_all(&frame)", ".sync_all()", ".compare_and_swap(self.head, next)", "self.require_current().map_err(|_| CellExecutionError::CommitUncertain)?", "self.healthy = true"] },
+]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/circuit_task_source_readback.rs"
+required = ["original: DurableCircuitTaskSourceV1<W>", "self.original.read_publication(identity, record)", "self.original.read_run_publication(identity, run_id)"]
+forbidden = ["pub original:", "Deref", "into_inner", "AgentdCircuitTaskInvocationProviderV1 for", "CircuitTaskInputProviderV1 for", ".withdraw(", ".publish_result(", ".build(", ".resolve(", "SigningKey", "File::open"]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/circuit_q24_task_profile.rs"
+required = ["pub published_task: PublishedCircuitFeatureTaskV1", "invocation: Arc<DurableCircuitTaskSourceV1<SW>>", "source: Arc<CircuitTaskSourceReadbackV1<SW>>", "pub source: Arc<CircuitTaskSourceReadbackV1<SW>>"]
+forbidden = ["SigningKey", ".sign(", "File::open", "UnixStream::connect", "CellStateOwnerV1", "pub invocation:", "pub bootstrap:", "unwrap_or", "permit_all"]
+required_order = [["fn circuit_q24_task_channel_v1<", "profile.fence.owner_agent_id != identity.agent_id", "identity.spawn_generation == 0", "identity.spawn_generation.checked_add(1) != Some(profile.fence.generation)", "!(1..=64).contains(&profile.queue_capacity)", "profile.published_task.require_bundle(&profile.bundle)?", "CircuitCellRegistryV1::new(", "CellQ24FeatureWorkerV1::new(", "let source = match profile.source_mode", "DurableCircuitTaskSourceV1::create(", "DurableCircuitTaskSourceV1::recover(", "profile.published_task.open_cell(", "profile.published_task.control(", "AgentdCircuitCellOwnerV1::new(registry, cell.writer(), control, encoder)", "circuit_task_channel_v1(", "source.readback()", "Ok(CircuitQ24TaskRuntimeV1"]]
+required_function_order = [{ function = "fn install(", sequence = ["config.with_circuit_task_bootstrap(", "self.bootstrap, self.invocation)"] }]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/config_q24_circuit_task.rs"
+required = []
+forbidden = ["SigningKey", ".sign(", "File::open", "UnixStream::connect", "unwrap_or", "permit_all"]
+required_order = [["fn with_q24_circuit_task_profile<", "self.require_no_circuit_task_profile()?", "self.require_circuit_task_execution_profile()?", "circuit_q24_task_channel_v1(self.identity(), profile)?", "runtime.source()", "runtime.cell()", "runtime.install(self)?", "Ok(AgentdQ24CircuitTaskRuntimeV1"]]
