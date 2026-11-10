@@ -20,6 +20,7 @@ import subprocess
 import hepta_cell_joint_config as joint
 import hepta_cell_research_foundation as foundation_adapter
 import hepta_cell_research_units as units_adapter
+import hepta_cell_component_controls as controls_adapter
 
 
 STAGES = {
@@ -278,10 +279,17 @@ def experiment_review(
         configuration_pin,
         protocol_pin,
     )
+    design_schema = design.get("schema") if isinstance(design, dict) else None
+    if design_schema not in {
+        "hepta.cell-research-design.v1",
+        "hepta.cell-research-design.v2",
+    }:
+        raise ValueError("unsupported research design schema")
     bound(
         design,
-        "hepta.cell-research-design.v1",
-        "fit_artifacts common_start_artifacts improver_lineage",
+        design_schema,
+        "fit_artifacts common_start_artifacts improver_lineage"
+        + (" controls" if design_schema.endswith(".v2") else ""),
         experiment,
         configuration_pin,
         protocol_pin,
@@ -399,6 +407,16 @@ def experiment_review(
                 digest(row[key])
     if seen != registered:
         raise ValueError("attempt inventory and raw rows have different denominators")
+    control_review = (
+        controls_adapter.review(
+            design["controls"],
+            evidence,
+            arms or {row["arm"] for row in rows},
+            experiment,
+        )
+        if design_schema.endswith(".v2")
+        else None
+    )
     unit_document, unit_review = None, None
     if grouped:
         unit_document = evidence.read(document["units"])
@@ -520,7 +538,7 @@ def experiment_review(
         "mechanical_ready": configuration_sha is not None
         and protocol_sha is not None
         and spec is not None,
-        "numerical_screen_ready": threshold,
+        "numerical_screen_ready": threshold and grouped and control_review is not None,
         "descriptive_threshold_met": threshold,
         "substantive_evidence_ready": False,
         "trusted_review_required": True,
@@ -528,6 +546,8 @@ def experiment_review(
         "complete_budget_verified": False,
         "evidence_kind_verified": False,
         "matched_budget_verified": False,
+        "component_controls": control_review,
+        "control_design_integrity_verified": control_review is not None,
         "complete_attempt_inventory_verified": False,
         "protocol_scope": "grouped_units_v2" if grouped else "legacy_v1_descriptive",
         "new_milestone_eligible": False,
@@ -543,6 +563,7 @@ def experiment_review(
         "comparisons": comparisons,
         "blockers": sorted(
             blockers
+            | ({"CONTROL_DESIGN_UNVERIFIED"} if control_review is None else set())
             | {"STATISTICAL_ADAPTER_UNSUPPORTED", "EVALUATOR_AUTHENTICITY_UNVERIFIED"}
         ),
     }

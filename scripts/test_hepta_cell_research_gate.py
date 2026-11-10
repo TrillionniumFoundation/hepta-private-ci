@@ -409,7 +409,7 @@ class ResearchGateTests(unittest.TestCase):
     def test_descriptive_success_never_authenticates_science_or_owner(self):
         result = self.screen(self.experiment())
         self.assertTrue(result["mechanical_ready"])
-        self.assertTrue(result["numerical_screen_ready"])
+        self.assertFalse(result["numerical_screen_ready"])
         self.assertTrue(result["descriptive_threshold_met"])
         self.assertFalse(result["substantive_evidence_ready"])
         self.assertFalse(result["independent_training_verified"])
@@ -546,7 +546,7 @@ class ResearchGateTests(unittest.TestCase):
             row["improver_sha256"] = (
                 current if row["arm"] == "candidate" else previous
             )["sha256"]
-        self.assertTrue(self.screen(record)["numerical_screen_ready"])
+        self.assertTrue(self.screen(record)["descriptive_threshold_met"])
         changed_start = self.bind("changed-start.bin", b"different initial state")
         record["design"]["common_start_artifacts"][changed_start["sha256"]] = (
             changed_start
