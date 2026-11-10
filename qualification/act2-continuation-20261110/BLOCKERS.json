@@ -188,8 +188,8 @@
     },
     {
       "id": "NATIVE_PROCESS_WAIT_ADAPTER",
-      "status": "READ_ONLY_SUCCESSOR_IMPLEMENTED_AWAITING_HOSTED_QUALIFICATION",
-      "required": "hosted Linux/Bazel qualification and integration with an original-authorized process/input capability; input delivery, goal completion, network wait, cross-platform and full handler remain separate",
+      "status": "READ_ONLY_NATIVE_HOSTED_SCOPED_PASS_PRODUCT_INTEGRATION_OPEN",
+      "required": "integration with an original-authorized product process/input capability; input delivery, goal completion, network wait, broader cross-platform behavior and full handler remain separate",
       "prior_candidate": {
         "pr": 5709,
         "source": "ef757ba61552c4b9d83289b466924270aee08da9",
@@ -298,7 +298,17 @@
           "preserves": "Hepta source/tree, both locks, pinned desktop source, Session/App binary hashes, native/real-App outputs and always-uploaded raw records",
           "result": "EXACT_HEAD_SCOPED_PASS",
           "exact_results": {
-            "automation": "172 passed, 0 failed; 275.140 seconds; log sha256 7254f33a5a535b22fcfa487c3b336c79aafdcfc468dcfac0592d955d1649b9cd",
+          "automation": "172 passed, 0 failed; 275.140 seconds; log sha256 7254f33a5a535b22fcfa487c3b336c79aafdcfc468dcfac0592d955d1649b9cd",
+          "native_wait_adapter": {
+            "status": "3/3 PASS in the hosted Linux original Automation runner at this exact source",
+            "tests": [
+              "native_process_wait::tests::actual_pidfd_and_pipe_identify_only_the_original_blocked_reader",
+              "native_process_wait::tests::compute_and_network_sleep_never_become_input_wait",
+              "native_process_wait::tests::wrong_reader_descriptor_is_refused_before_observation"
+            ],
+            "semantics": "the observer borrows the original owner's pidfd and reader/writer identity; observer drop cannot close the retained writer or manufacture EOF; only stable read(2) on the exact inherited reader becomes waiting-input",
+            "limits": "test-owned process capability rather than product-authorized ingress; no input delivery, retry, cancel, settlement, goal-success, network wait or FinalUse"
+          },
             "memory": "417 passed, 0 failed; 128.617 seconds; log sha256 b224001b4a8ee90b490c36c1d43a78b4d3786c359e85827b68f1e95720feaecb",
             "capacity": "1 passed, 0 failed; 20.689 seconds; log sha256 0a02c2058f9b83047570cde818c59dc833b3b293f88a8c81a520e1e60417fc95",
             "notes_owner_and_readback": "12 passed, 0 failed; 475.430 seconds; log sha256 67d297d71121ae97a4b51a2eace3282ed8e82f24fe71f0fe367335e3c10c964c",
