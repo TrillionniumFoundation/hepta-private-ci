@@ -1,0 +1,120 @@
+{
+  "schema": "hepta.mem7.exact-blob.macos-invocations.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "branch_parent_pr": 5822,
+  "branch_parent_sha": "fde68c0eae141b6f8b1ce9f23ec33ba4cae88b65",
+  "source_commit": "bc03ff36aae43fb14f711e9f0b74ee42db033079",
+  "tested_files": {
+    "scripts/ndu_real_runtime/episodic_memory.py": "05eeda6a778eea69c513ba1fa761979efc0ef2a0",
+    "scripts/ndu_real_runtime/test_episodic_memory.py": "68663098e31ccb1c56bdaf49a99274f6aca61497"
+  },
+  "method": "Two actual macOS invocations using exact GitHub source commit. Independently validate Git blob SHA-1 bytes for two files, materialize each into a fresh temporary Python package, run python3 -B -m unittest -v scripts.ndu_real_runtime.test_episodic_memory. Preserve complete stdout and durable process state.",
+  "physical_host_count_established": 1,
+  "ssh_target_for_both_aliases": "hepta-mac-local",
+  "alias_independence_note": "mac and main aliases identify the same configured SSH target; two independent job invocations on ONE macOS host, not two physical hosts.",
+  "unique_tests": 11,
+  "executed_test_instances": 22,
+  "passing_test_instances": 22,
+  "failed": 0,
+  "skipped": 0,
+  "source_modified": false,
+  "repeated_mem5_actor": false,
+  "original_archive_key_changed": false,
+  "scientific_acceptance": "HOLD",
+  "candidate_adoption": "NoUpdate",
+  "scope_limitations": [
+    "Only the exact two Python files tested; this is not a full repository source closure or native performance measurement.",
+    "Not owner authentication, full owner cold recovery, external effect fence, independent provider, required CI, or sealed evaluation.",
+    "No MEM5 actors rerun and no original archive operations."
+  ],
+  "receipts": [
+    {
+      "host_alias": "mac",
+      "job_id": "1a1c6c3d363-5074-22c",
+      "idempotency_key": "mem7-linear-dependency-bc03ff36aae4-mac-20261110-v1",
+      "terminal": {
+        "at_unix_ms": 1794336085427,
+        "audit_recorded": true,
+        "automatic_retry": false,
+        "cancelled": false,
+        "exit_code": 0,
+        "job_id": "1a1c6c3d363-5074-22c",
+        "launch_nonce": "a3dff7adde8f206f68a84bdd3fb77bfe",
+        "log_bytes": {
+          "stderr": {
+            "seen": 0,
+            "stored": 0
+          },
+          "stdout": {
+            "seen": 2016,
+            "stored": 2016
+          }
+        },
+        "log_errors": {
+          "stderr": null,
+          "stdout": null
+        },
+        "log_synced": {
+          "stderr": true,
+          "stdout": true
+        },
+        "log_truncated": {
+          "stderr": false,
+          "stdout": false
+        },
+        "output_complete": true,
+        "output_durable": true,
+        "state": "succeeded",
+        "terminal_publication_confirmed": true,
+        "terminal_publication_protocol": 1,
+        "timed_out": false
+      },
+      "stdout_exact": "{\"blobs\": {\"scripts/ndu_real_runtime/episodic_memory.py\": \"05eeda6a778eea69c513ba1fa761979efc0ef2a0\", \"scripts/ndu_real_runtime/test_episodic_memory.py\": \"68663098e31ccb1c56bdaf49a99274f6aca61497\"}, \"python\": \"3.9.6 (default, Oct 19 2026, 19:18:13) \\n[Clang 21.0.0 (clang-2100.4.1.1)]\", \"source_commit\": \"bc03ff36aae43fb14f711e9f0b74ee42db033079\"}\n=== STDOUT ===\n\n=== STDERR ===\ntest_bounded_tombstones_prevent_replay_and_admission_rolls_back (scripts.ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests) ... ok\ntest_byte_admission_failure_preserves_existing_data_and_generation (scripts.ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests) ... ok\ntest_caller_cannot_mutate_stored_provenance_or_returned_record (scripts.ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests) ... ok\ntest_current_authority_is_required_and_snapshot_has_its_identity (scripts.ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests) ... ok\ntest_namespace_isolation_and_foreign_dependency_rejection (scripts.ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests) ... ok\ntest_reverse_key_order_chain_revokes_entire_dependency_closure (scripts.ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests) ... ok\ntest_revoke_removes_payload_and_old_snapshot_never_reactivates_it (scripts.ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests) ... ok\ntest_snapshot_corruption_and_forged_record_are_rejected (scripts.ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests) ... ok\ntest_update_cannot_create_an_indirect_dependency_cycle (scripts.ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests) ... ok\ntest_update_revokes_transitive_dependencies_and_filters_old_snapshot (scripts.ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests) ... ok\ntest_working_state_is_copied_bounded_and_cleared_on_new_session (scripts.ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests) ... ok\n\n----------------------------------------------------------------------\nRan 11 tests in 0.294s\n\nOK\n\n=== RETURN CODE === 0\n",
+      "stderr_exact": ""
+    },
+    {
+      "host_alias": "main",
+      "job_id": "1a1c6c4526c-5074-22d",
+      "idempotency_key": "mem7-linear-dependency-bc03ff36aae4-main-20261110-v1",
+      "terminal": {
+        "at_unix_ms": 1794336117965,
+        "audit_recorded": true,
+        "automatic_retry": false,
+        "cancelled": false,
+        "exit_code": 0,
+        "job_id": "1a1c6c4526c-5074-22d",
+        "launch_nonce": "1d4126423ed1bd35fec7f0b98701fa7b",
+        "log_bytes": {
+          "stderr": {
+            "seen": 0,
+            "stored": 0
+          },
+          "stdout": {
+            "seen": 2016,
+            "stored": 2016
+          }
+        },
+        "log_errors": {
+          "stderr": null,
+          "stdout": null
+        },
+        "log_synced": {
+          "stderr": true,
+          "stdout": true
+        },
+        "log_truncated": {
+          "stderr": false,
+          "stdout": false
+        },
+        "output_complete": true,
+        "output_durable": true,
+        "state": "succeeded",
+        "terminal_publication_confirmed": true,
+        "terminal_publication_protocol": 1,
+        "timed_out": false
+      },
+      "stdout_exact": "{\"blobs\": {\"scripts/ndu_real_runtime/episodic_memory.py\": \"05eeda6a778eea69c513ba1fa761979efc0ef2a0\", \"scripts/ndu_real_runtime/test_episodic_memory.py\": \"68663098e31ccb1c56bdaf49a99274f6aca61497\"}, \"python\": \"3.9.6 (default, Oct 19 2026, 19:18:13) \\n[Clang 21.0.0 (clang-2100.4.1.1)]\", \"source_commit\": \"bc03ff36aae43fb14f711e9f0b74ee42db033079\"}\n=== STDOUT ===\n\n=== STDERR ===\ntest_bounded_tombstones_prevent_replay_and_admission_rolls_back (scripts.ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests) ... ok\ntest_byte_admission_failure_preserves_existing_data_and_generation (scripts.ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests) ... ok\ntest_caller_cannot_mutate_stored_provenance_or_returned_record (scripts.ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests) ... ok\ntest_current_authority_is_required_and_snapshot_has_its_identity (scripts.ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests) ... ok\ntest_namespace_isolation_and_foreign_dependency_rejection (scripts.ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests) ... ok\ntest_reverse_key_order_chain_revokes_entire_dependency_closure (scripts.ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests) ... ok\ntest_revoke_removes_payload_and_old_snapshot_never_reactivates_it (scripts.ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests) ... ok\ntest_snapshot_corruption_and_forged_record_are_rejected (scripts.ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests) ... ok\ntest_update_cannot_create_an_indirect_dependency_cycle (scripts.ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests) ... ok\ntest_update_revokes_transitive_dependencies_and_filters_old_snapshot (scripts.ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests) ... ok\ntest_working_state_is_copied_bounded_and_cleared_on_new_session (scripts.ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests) ... ok\n\n----------------------------------------------------------------------\nRan 11 tests in 0.299s\n\nOK\n\n=== RETURN CODE === 0\n",
+      "stderr_exact": ""
+    }
+  ]
+}
