@@ -288,6 +288,8 @@ mod circuit_credit;
 mod circuit_learning_delivery;
 mod circuit_task;
 #[cfg(target_os = "linux")]
+mod circuit_feature_current;
+#[cfg(target_os = "linux")]
 mod cpu_policy;
 #[cfg(target_os = "linux")]
 mod cpu_policy_consumer;
@@ -559,6 +561,16 @@ pub use circuit_task::CircuitTaskSourcePublicationV1;
 pub use circuit_task::CircuitTaskSourceReadbackV1;
 pub use circuit_task::DurableCircuitTaskSourceV1;
 pub use circuit_task::circuit_task_channel_v1;
+#[cfg(target_os = "linux")]
+pub use circuit_feature_current::PublishedCircuitCellOwnerV1;
+#[cfg(target_os = "linux")]
+pub use circuit_feature_current::PublishedCircuitFeatureCompletionV1;
+#[cfg(target_os = "linux")]
+pub use circuit_feature_current::PublishedCircuitFeatureControlV1;
+#[cfg(target_os = "linux")]
+pub use circuit_feature_current::PublishedCircuitFeatureTaskV1;
+#[cfg(target_os = "linux")]
+pub use circuit_feature_current::circuit_feature_task_digest_v1;
 pub use client::AgentdClient;
 pub use codex_hepta_agent_protocol::AGENTD_CAPABILITY_AUTOMATION_CALENDAR_V2;
 pub use codex_hepta_agent_protocol::AGENTD_CAPABILITY_AUTOMATION_EXTERNAL_EFFECT;
