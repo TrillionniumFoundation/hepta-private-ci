@@ -1,0 +1,56 @@
+name: Capture original VERIFY cargo-deny log
+
+on:
+  pull_request:
+    paths:
+      - .github/scripts/capture_original_job_logs.py
+      - .github/scripts/test_capture_original_job_logs.py
+      - .github/workflows/verify-original-cargo-deny-log.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: original-cargo-log-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  original-log:
+    runs-on: windows-2025
+    timeout-minutes: 8
+    env:
+      REVIEWED_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      CAPTURE_OUTPUT: ${{ runner.temp }}/verify-original-cargo-deny
+    steps:
+      - name: Prepare failure artifact directory
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Path $env:CAPTURE_OUTPUT -Force | Out-Null
+          '{"status":"capture_not_started"}' | Set-Content "$env:CAPTURE_OUTPUT/STARTED.json"
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12"
+      - name: Check capture protocol
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$REVIEWED_HEAD_SHA"
+          python -B -m unittest discover -s .github/scripts -p test_capture_original_job_logs.py -v
+      - name: Retain original immutable job and log
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python -B .github/scripts/capture_original_job_logs.py "$CAPTURE_OUTPUT"
+      - name: Preserve capture including failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: original-cargo-deny-${{ github.event.pull_request.head.sha || github.sha }}
+          path: ${{ runner.temp }}/verify-original-cargo-deny
+          if-no-files-found: error
