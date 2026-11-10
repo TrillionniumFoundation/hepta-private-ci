@@ -1,5 +1,6 @@
 """Frozen-roster collection, label authentication and recovery contracts."""
 
+from contextlib import closing
 from dataclasses import replace
 from pathlib import Path
 import sqlite3
@@ -236,7 +237,7 @@ class ProspectiveTests(unittest.TestCase):
 
         journal = self.create()
         root = journal.manifest_sha256
-        with sqlite3.connect(self.path) as connection:
+        with closing(sqlite3.connect(self.path)) as connection, connection:
             manifest = json.loads(
                 connection.execute("SELECT body FROM frozen").fetchone()[0]
             )
@@ -252,7 +253,7 @@ class ProspectiveTests(unittest.TestCase):
 
     def test_malformed_manifest_refuses_recovery(self):
         self.create()
-        with sqlite3.connect(self.path) as connection:
+        with closing(sqlite3.connect(self.path)) as connection, connection:
             connection.execute("UPDATE frozen SET body='[]'")
         with self.assertRaises(ValueError):
             ShadowJournal(self.path)
@@ -260,7 +261,7 @@ class ProspectiveTests(unittest.TestCase):
     def test_changed_event_digest_refuses_reopen(self):
         journal = self.create()
         journal.record(self.prediction())
-        with sqlite3.connect(self.path) as connection:
+        with closing(sqlite3.connect(self.path)) as connection, connection:
             connection.execute(
                 "UPDATE events SET sha = ? WHERE seq = (SELECT MAX(seq) FROM events)",
                 ("f" * 64,),
