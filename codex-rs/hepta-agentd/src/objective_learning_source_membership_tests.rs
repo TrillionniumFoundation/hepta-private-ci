@@ -27,10 +27,7 @@ async fn original_source_scope_rejects_missing_unregistered_and_foreign_agent() 
         refused_scope,
     );
     let later = id("run:registered-later");
-    ok(state.attach_circuit_learning_sources(vec![
-        request.source_run_id.clone(),
-        later.clone(),
-    ]));
+    ok(state.attach_circuit_learning_sources(vec![request.source_run_id.clone(), later.clone()]));
     let mut unregistered = request.clone();
     unregistered.source_run_id = id("run:unregistered");
     let mut foreign_agent = request;

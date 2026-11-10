@@ -14,7 +14,9 @@ impl AgentdState {
         request: &LearningIterationRequestV1,
     ) -> Result<(), AgentdError> {
         if request.agent_id.as_str() != self.identity().agent_id.as_str()
-            || !self.circuit_learning_sources().contains(&request.source_run_id)
+            || !self
+                .circuit_learning_sources()
+                .contains(&request.source_run_id)
         {
             return Err(invalid(
                 "learning source differs from the original daemon scope",
