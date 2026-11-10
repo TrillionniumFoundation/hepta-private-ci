@@ -180,6 +180,59 @@ class ReplayTests(unittest.TestCase):
         self.assertIn("episode-old", ids)
         self.assertIn("skill-new", ids)
 
+    def test_corrected_logical_revision_never_replays_prior_version(self):
+        records = [
+            MemoryRecord("a1", "fact", "K", digest("a1"), 1, logical_id="a"),
+            MemoryRecord("a2", "fact", "K", digest("a2"), 2, logical_id="a"),
+            MemoryRecord("b1", "episode", "K", digest("b1"), 1, logical_id="b"),
+        ]
+        for policy in ("exact", "uniform", "stratified"):
+            with self.subTest(policy=policy):
+                got = select_replay(records, policy=policy, query_key="K",
+                                    now_sequence=3, max_items=10, seed="fixed")
+                self.assertEqual(set(got), {"a2", "b1"})
+
+    def test_tombstone_blocks_old_and_later_versions_without_owner_regrant(self):
+        records = [
+            MemoryRecord("a1", "fact", "K", digest("a1"), 1, logical_id="a"),
+            MemoryRecord("a-deleted", "fact", "K", digest("delete"), 3,
+                         tombstoned=True, logical_id="a"),
+            MemoryRecord("a-forged", "fact", "K", digest("forged"), 4,
+                         logical_id="a"),
+            MemoryRecord("b1", "episode", "K", digest("b1"), 2,
+                         logical_id="b"),
+        ]
+        for policy in ("exact", "uniform", "stratified"):
+            with self.subTest(policy=policy):
+                before = select_replay(records, policy=policy, query_key="K",
+                                       now_sequence=2, max_items=10, seed="fixed")
+                after = select_replay(records, policy=policy, query_key="K",
+                                      now_sequence=5, max_items=10, seed="fixed")
+                self.assertEqual(set(before), {"a1", "b1"})
+                self.assertEqual(after, ("b1",))
+
+    def test_revocation_is_sticky_and_ambiguous_revision_is_rejected(self):
+        a = MemoryRecord("a1", "fact", "K", digest("a1"), 1, logical_id="a")
+        revoked = MemoryRecord("a2", "fact", "K", digest("a2"), 2,
+                               rights_revoked=True, logical_id="a")
+        later = MemoryRecord("a3", "fact", "K", digest("a3"), 3,
+                             logical_id="a")
+        self.assertEqual(
+            select_replay([a, revoked, later], policy="exact", query_key="K",
+                          now_sequence=3, max_items=3, seed="s"), ())
+        invalid = [
+            replace(later, key="moved"),
+            replace(later, kind="skill"),
+            replace(later, observed_sequence=2),
+            replace(later, logical_id=""),
+            replace(later, tombstoned="false"),
+            replace(later, rights_revoked=1),
+        ]
+        for variant in invalid:
+            with self.subTest(variant=variant), self.assertRaises(ContractError):
+                select_replay([a, revoked, variant], policy="exact", query_key="K",
+                              now_sequence=5, max_items=3, seed="s")
+
 
 class PairedEvidenceTests(unittest.TestCase):
     def rows(self, count=3):
