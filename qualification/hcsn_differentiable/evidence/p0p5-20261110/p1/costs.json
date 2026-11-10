@@ -1,0 +1,121 @@
+{
+  "schema": "hcsn-p1-computation-cost-ledger-v1",
+  "total_cost_complete": false,
+  "energy_joules": null,
+  "currency_cost": null,
+  "interpretation": "Measured blocks are retained without imputing missing whole-process time, tooling delays, exploratory runs or energy. Interrupted work and its continuation are distinct attempts.",
+  "attempts": [
+    {
+      "id": "remote-numerics-v1-tests",
+      "status": "19 tests passed",
+      "unittest_runner_seconds": 4.542,
+      "whole_process_wall_seconds": null,
+      "artifact": "numerics-remote-originals/numerics-v1/tests.stderr",
+      "source_scope": "five uploaded source files bound; historical tests, not final integrated-source qualification"
+    },
+    {
+      "id": "remote-pressure135-original",
+      "status": "completed; 0/135 pass",
+      "measured_algorithm_wall_seconds": 28.01711985003203,
+      "whole_process_wall_seconds": null,
+      "artifact": "numerics-refinement-v1-report.json",
+      "transport": "launch acknowledgement timed out; one completed retained execution, not a second numerical attempt"
+    },
+    {
+      "id": "tail-endpoint-exploration",
+      "status": "27 exploratory grid-gap checks retained",
+      "whole_process_wall_seconds": null,
+      "artifact": "tail-refinement.stdout",
+      "source_scope": "exploratory stdout lacks full source receipt; not standalone admission evidence"
+    },
+    {
+      "id": "local-new-and-old20-tests",
+      "status": "20 tests passed",
+      "unittest_runner_seconds": 5.336,
+      "whole_process_wall_seconds": null,
+      "artifact": "numerics-v2.stderr"
+    },
+    {
+      "id": "finite-oracle-tests",
+      "status": "3 tests passed",
+      "unittest_runner_seconds": 1.972,
+      "whole_process_wall_seconds": null,
+      "artifact": "numerics-finite-tests.stderr"
+    },
+    {
+      "id": "finite-input-binding-tests",
+      "status": "3 tests passed",
+      "unittest_runner_seconds": 0.47,
+      "whole_process_wall_seconds": null,
+      "artifact": "numerics-finite-inputs-tests.stderr"
+    },
+    {
+      "id": "active128-real-posterior",
+      "status": "completed_development_qualification",
+      "measured_algorithm_wall_seconds": 312.32592234899994,
+      "artifact": "numerics-real-posterior-v1/report.json"
+    },
+    {
+      "id": "active256-original-interrupted",
+      "status": "incomplete",
+      "exit_code": 137,
+      "stop_cause": "unknown",
+      "whole_process_wall_seconds": null,
+      "completed_measured_blocks": [
+        {
+          "block": "optimizer-update-0",
+          "wall_seconds": 11.91466906100004
+        },
+        {
+          "block": "optimizer-update-1",
+          "wall_seconds": 14.645160474000022
+        },
+        {
+          "block": "finite-31-32.json",
+          "wall_seconds": 62.3764438219996
+        },
+        {
+          "block": "finite-127-32.json",
+          "wall_seconds": 85.49041849599962
+        }
+      ],
+      "minimum_recorded_block_seconds": 174.42669185299928,
+      "artifact": "numerics-real-posterior-v2/interruption.json"
+    },
+    {
+      "id": "active256-independent128gap",
+      "status": "passed_fixture",
+      "measured_algorithm_wall_seconds": 324.53735635700014,
+      "artifact": "numerics-longsequence-v1/report.json"
+    },
+    {
+      "id": "active256-independent-resume",
+      "status": "completed_retained_checks",
+      "measured_algorithm_wall_seconds": 205.17139835199987,
+      "peak_rss_kib_linux": 460588,
+      "artifact": "numerics-real-posterior-v2-resume/report.json"
+    },
+    {
+      "id": "actual-learnable-physics",
+      "status": "completed_visited_gradient_diagnostic",
+      "measured_algorithm_wall_seconds": 8.777296616000058,
+      "peak_rss_kib_linux": 404492,
+      "artifact": "numerics-learnable-physics-v1/report.json"
+    },
+    {
+      "id": "pressure135-bound-source-reproduction",
+      "status": "completed_pressure_reproduction",
+      "measured_algorithm_wall_seconds": 20.491333813999972,
+      "peak_rss_kib_linux": 384680,
+      "artifact": "numerics-refinement-reproduction-v1/report.json"
+    }
+  ],
+  "unmeasured_overhead": [
+    "Dependency recovery and tool transport latency.",
+    "Original tail exploration duration.",
+    "Unrecorded part of exit137 job, including its repeated-gap posterior audit and interrupted fixture.",
+    "A failed remote PTY start was never established as a valid numerical execution.",
+    "Canonical integration tests and baseline/HCSN training campaigns have separate ledgers."
+  ],
+  "sum_measured_algorithm_seconds_excluding_partial_and_test_runner_blocks": 899.320427338032
+}

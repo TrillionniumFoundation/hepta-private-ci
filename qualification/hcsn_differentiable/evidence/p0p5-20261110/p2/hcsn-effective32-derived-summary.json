@@ -1,0 +1,708 @@
+{
+  "schema": "hcsn-native-effective32-cost-view-v1",
+  "scope": "Derived from native raw JSON views; original per-probe SHA256 retained in each row. Raw files remain on native host and will be archived.",
+  "native_directory": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/hcsn-effective32-cost-v6",
+  "outer": {
+    "attempts": [
+      {
+        "name": "micro4",
+        "argv": [
+          "/home/qian-qi/hepta-hcsn-trainer-20261108-s3-v1/dependency-recovery-v2/venv/bin/python",
+          "-B",
+          "-c",
+          "import resource,runpy,sys;resource.setrlimit(resource.RLIMIT_AS,(8589934592,8589934592));script=sys.argv[1];sys.argv=sys.argv[1:];sys.path.insert(0,str(__import__('pathlib').Path(script).parent));runpy.run_path(script,run_name='__main__')",
+          "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v6/proposals/localization-v3/profile_hcsn.py",
+          "--prepared",
+          "/home/qian-qi/hepta-hcsn-discriminative-20261109-7e8f70f19cba/execution/data",
+          "--manifest-sha256",
+          "0eb233da8d0b766c35356ba450d0572f1e6a87a47f1d8a17cd32c2ae6f25a1cb",
+          "--output",
+          "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/hcsn-effective32-cost-v6/micro4",
+          "--hcsn-grid-json",
+          "{\"active_cells\": 256, \"endpoint\": 4.8, \"initial_log_std\": 0.08, \"phase_cells\": 16, \"quadrature_order\": 32, \"refractory\": 0.2, \"tail_rate\": 1.0}",
+          "--batch-size",
+          "32",
+          "--micro-batch-size",
+          "4",
+          "--updates",
+          "2",
+          "--positions",
+          "256",
+          "--cache-frozen-tables",
+          "--learn-core-adapter"
+        ],
+        "hard_wall_seconds": 300,
+        "address_space_bytes": 8589934592,
+        "status": "completed",
+        "returncode": 0,
+        "whole_process_wall_seconds": 98.3996832871344,
+        "stdout_sha256": "5954d1469d1a530b66b2e012b22b9eb7f49eb953c8479786c2061f1b584f907d",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "micro8",
+        "argv": [
+          "/home/qian-qi/hepta-hcsn-trainer-20261108-s3-v1/dependency-recovery-v2/venv/bin/python",
+          "-B",
+          "-c",
+          "import resource,runpy,sys;resource.setrlimit(resource.RLIMIT_AS,(8589934592,8589934592));script=sys.argv[1];sys.argv=sys.argv[1:];sys.path.insert(0,str(__import__('pathlib').Path(script).parent));runpy.run_path(script,run_name='__main__')",
+          "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v6/proposals/localization-v3/profile_hcsn.py",
+          "--prepared",
+          "/home/qian-qi/hepta-hcsn-discriminative-20261109-7e8f70f19cba/execution/data",
+          "--manifest-sha256",
+          "0eb233da8d0b766c35356ba450d0572f1e6a87a47f1d8a17cd32c2ae6f25a1cb",
+          "--output",
+          "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/hcsn-effective32-cost-v6/micro8",
+          "--hcsn-grid-json",
+          "{\"active_cells\": 256, \"endpoint\": 4.8, \"initial_log_std\": 0.08, \"phase_cells\": 16, \"quadrature_order\": 32, \"refractory\": 0.2, \"tail_rate\": 1.0}",
+          "--batch-size",
+          "32",
+          "--micro-batch-size",
+          "8",
+          "--updates",
+          "2",
+          "--positions",
+          "256",
+          "--cache-frozen-tables",
+          "--learn-core-adapter"
+        ],
+        "hard_wall_seconds": 300,
+        "address_space_bytes": 8589934592,
+        "status": "completed",
+        "returncode": 0,
+        "whole_process_wall_seconds": 94.68875463190489,
+        "stdout_sha256": "7f9ae7d64cb2dda7e0b3ae5228a3ba5825cb9463d52bc05e898afe32471ed63f",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ],
+    "whole_wall_seconds": 193.09141479898244,
+    "children_cpu_seconds": 198.385327,
+    "source_unchanged": true,
+    "scientific_admission": "HOLD",
+    "scope": "effective32 full real padded windows, fixed two updates, candidate memory/cost profiling",
+    "energy_joules": null
+  },
+  "profile": {
+    "micro4": {
+      "common_weights_unchanged": true,
+      "complete_training_epochs": 0,
+      "confirmation_access": false,
+      "cost_geometry": {
+        "cache_frozen_tables": true,
+        "content_coefficients_per_sample": 4368,
+        "grid": {
+          "active_cells": 256,
+          "endpoint": 4.8,
+          "initial_log_std": 0.08,
+          "phase_cells": 16,
+          "quadrature_order": 32,
+          "refractory": 0.2,
+          "tail_rate": 1
+        },
+        "layer_count": 1,
+        "physics_trainable": false,
+        "probability_coefficients_per_sample": 273,
+        "state_payload_fp64_bytes_per_sample": 37128,
+        "state_payload_scope": "probability and content only; excludes clocks, snapshots, autograd and temporary work",
+        "transition_matrix_coefficients_per_distinct_gap": 74529
+      },
+      "cpu_seconds": 95.464678391,
+      "data_manifest_sha256": "0eb233da8d0b766c35356ba450d0572f1e6a87a47f1d8a17cd32c2ae6f25a1cb",
+      "energy_joules": null,
+      "episode_ids": [
+        "A01-0",
+        "A01-256",
+        "A01-512",
+        "A01-768",
+        "A01-1024",
+        "A01-1280",
+        "A01-1536",
+        "A01-1792",
+        "A01-2048",
+        "A01-2304",
+        "A01-2560",
+        "A01-2816",
+        "A01-3072",
+        "A01-3328",
+        "A01-3584",
+        "A01-3840",
+        "A01-4096",
+        "A01-4352",
+        "A01-4608",
+        "A01-4864",
+        "A01-5120",
+        "A01-5376",
+        "A01-5632",
+        "A02-0",
+        "A02-256",
+        "A02-512",
+        "A02-768",
+        "A02-1024",
+        "A02-1280",
+        "A02-1536",
+        "A02-1792",
+        "A02-2048"
+      ],
+      "events": 8134,
+      "formal_fits_started": 0,
+      "frozen_table_cache": [
+        {
+          "build_seconds": 40.023175853304565,
+          "bytes_scope": "unique table tensor storages; excludes Python keys and allocator overhead",
+          "checkpoint_load_clears_cache": true,
+          "clears": 0,
+          "cold_start_per_fit": true,
+          "entries": 64,
+          "evictions": 0,
+          "hits": 14774,
+          "max_entries": 512,
+          "misses": 64,
+          "mode": "exact_frozen_table_memoization",
+          "peak_table_tensor_bytes": 38997504,
+          "physical_operator_qualification_extended": false,
+          "resident_table_tensor_bytes": 38997504
+        }
+      ],
+      "grid": {
+        "active_cells": 256,
+        "endpoint": 4.8,
+        "initial_log_std": 0.08,
+        "phase_cells": 16,
+        "quadrature_order": 32,
+        "refractory": 0.2,
+        "tail_rate": 1
+      },
+      "model": {
+        "disconnected_parameters": null,
+        "frozen_real_scalars": 607,
+        "parameters": [
+          {
+            "name": "frontend.0.weight",
+            "real_scalars": 400,
+            "shape": [
+              16,
+              25
+            ],
+            "trainable": false
+          },
+          {
+            "name": "frontend.0.bias",
+            "real_scalars": 16,
+            "shape": [
+              16
+            ],
+            "trainable": false
+          },
+          {
+            "name": "head.weight",
+            "real_scalars": 176,
+            "shape": [
+              11,
+              16
+            ],
+            "trainable": false
+          },
+          {
+            "name": "head.bias",
+            "real_scalars": 11,
+            "shape": [
+              11
+            ],
+            "trainable": false
+          },
+          {
+            "name": "core.network.layers.0.state_embedding",
+            "real_scalars": 4368,
+            "shape": [
+              273,
+              16
+            ],
+            "trainable": true
+          },
+          {
+            "name": "core.network.layers.0.physics.raw_mu",
+            "real_scalars": 1,
+            "shape": [],
+            "trainable": false
+          },
+          {
+            "name": "core.network.layers.0.physics.raw_sigma",
+            "real_scalars": 1,
+            "shape": [],
+            "trainable": false
+          },
+          {
+            "name": "core.network.layers.0.physics.raw_log_boundary",
+            "real_scalars": 1,
+            "shape": [],
+            "trainable": false
+          },
+          {
+            "name": "core.network.layers.0.physics.raw_absolute_reset",
+            "real_scalars": 1,
+            "shape": [],
+            "trainable": false
+          },
+          {
+            "name": "core.network.layers.0.likelihood.weight",
+            "real_scalars": 5733,
+            "shape": [
+              273,
+              21
+            ],
+            "trainable": true
+          },
+          {
+            "name": "core.network.layers.0.likelihood.bias",
+            "real_scalars": 273,
+            "shape": [
+              273
+            ],
+            "trainable": true
+          },
+          {
+            "name": "core.network.layers.0.write_gate.weight",
+            "real_scalars": 5733,
+            "shape": [
+              273,
+              21
+            ],
+            "trainable": true
+          },
+          {
+            "name": "core.network.layers.0.write_gate.bias",
+            "real_scalars": 273,
+            "shape": [
+              273
+            ],
+            "trainable": true
+          },
+          {
+            "name": "core.network.layers.0.content_proposal.weight",
+            "real_scalars": 336,
+            "shape": [
+              16,
+              21
+            ],
+            "trainable": true
+          },
+          {
+            "name": "core.network.layers.0.content_proposal.bias",
+            "real_scalars": 16,
+            "shape": [
+              16
+            ],
+            "trainable": true
+          },
+          {
+            "name": "core.network.readout.weight",
+            "real_scalars": 336,
+            "shape": [
+              16,
+              21
+            ],
+            "trainable": true
+          },
+          {
+            "name": "core.network.readout.bias",
+            "real_scalars": 16,
+            "shape": [
+              16
+            ],
+            "trainable": true
+          },
+          {
+            "name": "temporal_adapter.weight",
+            "real_scalars": 256,
+            "shape": [
+              16,
+              16
+            ],
+            "trainable": true
+          },
+          {
+            "name": "temporal_adapter.bias",
+            "real_scalars": 16,
+            "shape": [
+              16
+            ],
+            "trainable": true
+          }
+        ],
+        "scalar_identifiability_qualified": false,
+        "scope": "unique registered parameters; complex entries count as two real scalars",
+        "trainable_real_scalars": 17356
+      },
+      "numerical_admission": "HOLD",
+      "peak_rss_bytes": 2306850816,
+      "plan_sha256": "a44639fe9d742ac87daa59c1c9ae2c8b7c27d6f328fcee6b8e213a73a844cbc6",
+      "result_sha256": "517a982ca7edfc402f9488d1f3623109c36beababa97baac4cd7773b990cf97b",
+      "schema": "hcsn-real-window-cost-probe-v1",
+      "scientific_admission": "HOLD",
+      "scope": "first ABC windows repeated for bounded cost and trained-posterior observation",
+      "source_unchanged": true,
+      "status": "completed_cost_probe",
+      "steps": [
+        {
+          "backward_seconds": 9.609816859010607,
+          "events": 8134,
+          "forward_seconds": 57.93146813753992,
+          "gradient_norm": 0.23801322590844523,
+          "last_microbatch_diagnostics": {
+            "advance_calls": 256,
+            "bptt": "full",
+            "event_semantics": "conditional expected interval counts, not sampled spikes",
+            "layer_count": 1,
+            "maximum_mass_residual": 4.440892098500626e-16,
+            "maximum_negative_probability": 0,
+            "minimum_observation_evidence": 0.9897285265916103,
+            "numerical_admission": "development_only_unqualified",
+            "sequence_position": 256,
+            "truncate_every": null,
+            "truncation_unit": "global shared input positions, including padding"
+          },
+          "loss": 2.392561748103127,
+          "micro_forward_calls": 8,
+          "step": 0,
+          "step_seconds": 67.69824328110553
+        },
+        {
+          "backward_seconds": 9.514560556970537,
+          "events": 8134,
+          "forward_seconds": 15.539891458349302,
+          "gradient_norm": 0.22750669929340578,
+          "last_microbatch_diagnostics": {
+            "advance_calls": 256,
+            "bptt": "full",
+            "event_semantics": "conditional expected interval counts, not sampled spikes",
+            "layer_count": 1,
+            "maximum_mass_residual": 4.440892098500626e-16,
+            "maximum_negative_probability": 0,
+            "minimum_observation_evidence": 0.9865716508713692,
+            "numerical_admission": "development_only_unqualified",
+            "sequence_position": 256,
+            "truncate_every": null,
+            "truncation_unit": "global shared input positions, including padding"
+          },
+          "loss": 2.3779197510717376,
+          "micro_forward_calls": 8,
+          "step": 1,
+          "step_seconds": 25.227311251917854
+        }
+      ],
+      "training_adequacy_established": false,
+      "wall_seconds": 95.4864314198494
+    },
+    "micro8": {
+      "common_weights_unchanged": true,
+      "complete_training_epochs": 0,
+      "confirmation_access": false,
+      "cost_geometry": {
+        "cache_frozen_tables": true,
+        "content_coefficients_per_sample": 4368,
+        "grid": {
+          "active_cells": 256,
+          "endpoint": 4.8,
+          "initial_log_std": 0.08,
+          "phase_cells": 16,
+          "quadrature_order": 32,
+          "refractory": 0.2,
+          "tail_rate": 1
+        },
+        "layer_count": 1,
+        "physics_trainable": false,
+        "probability_coefficients_per_sample": 273,
+        "state_payload_fp64_bytes_per_sample": 37128,
+        "state_payload_scope": "probability and content only; excludes clocks, snapshots, autograd and temporary work",
+        "transition_matrix_coefficients_per_distinct_gap": 74529
+      },
+      "cpu_seconds": 91.459124846,
+      "data_manifest_sha256": "0eb233da8d0b766c35356ba450d0572f1e6a87a47f1d8a17cd32c2ae6f25a1cb",
+      "energy_joules": null,
+      "episode_ids": [
+        "A01-0",
+        "A01-256",
+        "A01-512",
+        "A01-768",
+        "A01-1024",
+        "A01-1280",
+        "A01-1536",
+        "A01-1792",
+        "A01-2048",
+        "A01-2304",
+        "A01-2560",
+        "A01-2816",
+        "A01-3072",
+        "A01-3328",
+        "A01-3584",
+        "A01-3840",
+        "A01-4096",
+        "A01-4352",
+        "A01-4608",
+        "A01-4864",
+        "A01-5120",
+        "A01-5376",
+        "A01-5632",
+        "A02-0",
+        "A02-256",
+        "A02-512",
+        "A02-768",
+        "A02-1024",
+        "A02-1280",
+        "A02-1536",
+        "A02-1792",
+        "A02-2048"
+      ],
+      "events": 8134,
+      "formal_fits_started": 0,
+      "frozen_table_cache": [
+        {
+          "build_seconds": 42.62277649017051,
+          "bytes_scope": "unique table tensor storages; excludes Python keys and allocator overhead",
+          "checkpoint_load_clears_cache": true,
+          "clears": 0,
+          "cold_start_per_fit": true,
+          "entries": 64,
+          "evictions": 0,
+          "hits": 12972,
+          "max_entries": 512,
+          "misses": 64,
+          "mode": "exact_frozen_table_memoization",
+          "peak_table_tensor_bytes": 38997504,
+          "physical_operator_qualification_extended": false,
+          "resident_table_tensor_bytes": 38997504
+        }
+      ],
+      "grid": {
+        "active_cells": 256,
+        "endpoint": 4.8,
+        "initial_log_std": 0.08,
+        "phase_cells": 16,
+        "quadrature_order": 32,
+        "refractory": 0.2,
+        "tail_rate": 1
+      },
+      "model": {
+        "disconnected_parameters": null,
+        "frozen_real_scalars": 607,
+        "parameters": [
+          {
+            "name": "frontend.0.weight",
+            "real_scalars": 400,
+            "shape": [
+              16,
+              25
+            ],
+            "trainable": false
+          },
+          {
+            "name": "frontend.0.bias",
+            "real_scalars": 16,
+            "shape": [
+              16
+            ],
+            "trainable": false
+          },
+          {
+            "name": "head.weight",
+            "real_scalars": 176,
+            "shape": [
+              11,
+              16
+            ],
+            "trainable": false
+          },
+          {
+            "name": "head.bias",
+            "real_scalars": 11,
+            "shape": [
+              11
+            ],
+            "trainable": false
+          },
+          {
+            "name": "core.network.layers.0.state_embedding",
+            "real_scalars": 4368,
+            "shape": [
+              273,
+              16
+            ],
+            "trainable": true
+          },
+          {
+            "name": "core.network.layers.0.physics.raw_mu",
+            "real_scalars": 1,
+            "shape": [],
+            "trainable": false
+          },
+          {
+            "name": "core.network.layers.0.physics.raw_sigma",
+            "real_scalars": 1,
+            "shape": [],
+            "trainable": false
+          },
+          {
+            "name": "core.network.layers.0.physics.raw_log_boundary",
+            "real_scalars": 1,
+            "shape": [],
+            "trainable": false
+          },
+          {
+            "name": "core.network.layers.0.physics.raw_absolute_reset",
+            "real_scalars": 1,
+            "shape": [],
+            "trainable": false
+          },
+          {
+            "name": "core.network.layers.0.likelihood.weight",
+            "real_scalars": 5733,
+            "shape": [
+              273,
+              21
+            ],
+            "trainable": true
+          },
+          {
+            "name": "core.network.layers.0.likelihood.bias",
+            "real_scalars": 273,
+            "shape": [
+              273
+            ],
+            "trainable": true
+          },
+          {
+            "name": "core.network.layers.0.write_gate.weight",
+            "real_scalars": 5733,
+            "shape": [
+              273,
+              21
+            ],
+            "trainable": true
+          },
+          {
+            "name": "core.network.layers.0.write_gate.bias",
+            "real_scalars": 273,
+            "shape": [
+              273
+            ],
+            "trainable": true
+          },
+          {
+            "name": "core.network.layers.0.content_proposal.weight",
+            "real_scalars": 336,
+            "shape": [
+              16,
+              21
+            ],
+            "trainable": true
+          },
+          {
+            "name": "core.network.layers.0.content_proposal.bias",
+            "real_scalars": 16,
+            "shape": [
+              16
+            ],
+            "trainable": true
+          },
+          {
+            "name": "core.network.readout.weight",
+            "real_scalars": 336,
+            "shape": [
+              16,
+              21
+            ],
+            "trainable": true
+          },
+          {
+            "name": "core.network.readout.bias",
+            "real_scalars": 16,
+            "shape": [
+              16
+            ],
+            "trainable": true
+          },
+          {
+            "name": "temporal_adapter.weight",
+            "real_scalars": 256,
+            "shape": [
+              16,
+              16
+            ],
+            "trainable": true
+          },
+          {
+            "name": "temporal_adapter.bias",
+            "real_scalars": 16,
+            "shape": [
+              16
+            ],
+            "trainable": true
+          }
+        ],
+        "scalar_identifiability_qualified": false,
+        "scope": "unique registered parameters; complex entries count as two real scalars",
+        "trainable_real_scalars": 17356
+      },
+      "numerical_admission": "HOLD",
+      "peak_rss_bytes": 3671478272,
+      "plan_sha256": "ea88d238d88823806708b9f31aad6d4478f78e6a48742f85ee5beb21e3f3c5ee",
+      "result_sha256": "d3579deb61e857a2f2acfee068aafc1db12e0473bf14e631f91577d5d1932850",
+      "schema": "hcsn-real-window-cost-probe-v1",
+      "scientific_admission": "HOLD",
+      "scope": "first ABC windows repeated for bounded cost and trained-posterior observation",
+      "source_unchanged": true,
+      "status": "completed_cost_probe",
+      "steps": [
+        {
+          "backward_seconds": 8.033196517964825,
+          "events": 8134,
+          "forward_seconds": 58.9864388667047,
+          "gradient_norm": 0.2380132259084452,
+          "last_microbatch_diagnostics": {
+            "advance_calls": 256,
+            "bptt": "full",
+            "event_semantics": "conditional expected interval counts, not sampled spikes",
+            "layer_count": 1,
+            "maximum_mass_residual": 4.440892098500626e-16,
+            "maximum_negative_probability": 0,
+            "minimum_observation_evidence": 0.9853388271108973,
+            "numerical_admission": "development_only_unqualified",
+            "sequence_position": 256,
+            "truncate_every": null,
+            "truncation_unit": "global shared input positions, including padding"
+          },
+          "loss": 2.3925617481031267,
+          "micro_forward_calls": 4,
+          "step": 0,
+          "step_seconds": 67.1742097151
+        },
+        {
+          "backward_seconds": 8.22506756754592,
+          "events": 8134,
+          "forward_seconds": 13.280796399805695,
+          "gradient_norm": 0.22750669929340578,
+          "last_microbatch_diagnostics": {
+            "advance_calls": 256,
+            "bptt": "full",
+            "event_semantics": "conditional expected interval counts, not sampled spikes",
+            "layer_count": 1,
+            "maximum_mass_residual": 4.440892098500626e-16,
+            "maximum_negative_probability": 0,
+            "minimum_observation_evidence": 0.9810907574384287,
+            "numerical_admission": "development_only_unqualified",
+            "sequence_position": 256,
+            "truncate_every": null,
+            "truncation_unit": "global shared input positions, including padding"
+          },
+          "loss": 2.3779197510717376,
+          "micro_forward_calls": 4,
+          "step": 1,
+          "step_seconds": 21.676073367940262
+        }
+      ],
+      "training_adequacy_established": false,
+      "wall_seconds": 91.47719976189546
+    }
+  }
+}
+

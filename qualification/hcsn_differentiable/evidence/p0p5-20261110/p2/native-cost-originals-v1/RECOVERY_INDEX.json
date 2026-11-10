@@ -1,0 +1,433 @@
+{
+  "schema": "native-cost-original-recovery-v1",
+  "kind": "new_recovery_index_not_an_original_execution_summary",
+  "native_host": "desktop",
+  "native_root": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training",
+  "original_files": 46,
+  "original_bytes": 1215737,
+  "metadata_original_files": 39,
+  "small_checkpoint_files": 5,
+  "source_archives": 2,
+  "checkpoint_transfer_note": "Four checkpoints directly read with chunk receipts; uncached after.pt materialized from verified identical cached bytes and both original RESULT hashes. See separate receipt. No pickle/model execution.",
+  "source_verification": [
+    {
+      "version": "v3",
+      "archive": {
+        "path": "source-identities/training-source-v3.zip",
+        "bytes": 113767,
+        "sha256": "7c62a8d21dc1fe30da7441050af49b298ca1705f157397110dbc7d119eda8c05"
+      },
+      "manifest_members_verified": 34,
+      "zip_crc_verified": true,
+      "source_manifest_sha256": "731e32cfd85c5b95da1404d8135a206df779630ef2d11fe3e8f10169d5e64fe6"
+    },
+    {
+      "version": "v6",
+      "archive": {
+        "path": "source-identities/training-source-v6.zip",
+        "bytes": 117216,
+        "sha256": "3c9562e560208f6a291846d79431f5d4e0718d1c695dd98c88c4cbf5dedc9fb5"
+      },
+      "manifest_members_verified": 35,
+      "zip_crc_verified": true,
+      "source_manifest_sha256": "e9f94c62dc0a2ec6ff5e6b9ace784d16d5b17e6e69bada97a3369bbb232b845e"
+    }
+  ],
+  "checks": [
+    {
+      "kind": "existing_derived_view_binding",
+      "path": "/workspace/scratch/c385a7439f8e/hcsn-repo/qualification/hcsn_differentiable/evidence/p0p5-20261110/p2/hcsn-effective32-derived-summary.json",
+      "sha256": "a7fb1b7814a31cd68b24439b4c90fc2068f80f0fb233444beea799ea1c112f01",
+      "controller_exact_match": true,
+      "both_original_result_hashes_match": true,
+      "derived_file_unchanged": true
+    }
+  ],
+  "cases": [
+    {
+      "group": "hcsn-cost-v1",
+      "case": "g128-uncached-b1",
+      "source_version": "v3",
+      "result": {
+        "path": "hcsn-cost-v1/g128-uncached-b1/RESULT.json",
+        "bytes": 20644,
+        "sha256": "a02dd08a154b643c7afd2278341489363c17460ae96bd3d1ebfedc6ba3aa6625"
+      },
+      "process_receipt": {
+        "path": "hcsn-cost-v1/g128-uncached-b1-receipt.json",
+        "bytes": 1502,
+        "sha256": "642a97590af19c3576d964b32dfee0a191fe1dc16353bcd6a265b9342be62576"
+      },
+      "plan": {
+        "path": "hcsn-cost-v1/g128-uncached-b1/plan.json",
+        "bytes": 574,
+        "sha256": "65f75b4a21fe8160f6696d867c5646cb258445e33c3d83b684f6d3fbe8e62446"
+      },
+      "status": "completed_cost_probe",
+      "returncode": 0,
+      "updates_completed": 2,
+      "complete_training_epochs": 0,
+      "inner_profile_wall_seconds": 89.41993946000002,
+      "inner_profile_cpu_seconds": 89.411701507,
+      "whole_process_wall_seconds": 92.33251055213623,
+      "peak_rss_bytes": 1034493952,
+      "data_manifest_sha256": "0eb233da8d0b766c35356ba450d0572f1e6a87a47f1d8a17cd32c2ae6f25a1cb",
+      "source_archive_sha256": "7c62a8d21dc1fe30da7441050af49b298ca1705f157397110dbc7d119eda8c05",
+      "bound_project_source_files_verified": 33,
+      "external_source_hashes_recorded_not_copied": {
+        "/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/torch/nn/modules/activation.py": "79dfe46d31be2e8e8ce68908838f42eb83ecc2ffb364e065149d112c8afc8e02",
+        "/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/torch/nn/modules/container.py": "f1397f5d49ab49c17679ef5fbc0403288ad2680dff2b61d5df04d068a6bfc29f",
+        "/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/torch/nn/modules/linear.py": "fa22acbb48e41bff3be26779c2f242b15663b8157e54f0d55987721add97d16f"
+      },
+      "artifacts_recovered": {
+        "after.pt": {
+          "path": "hcsn-cost-v1/g128-uncached-b1/after.pt",
+          "bytes": 245479,
+          "sha256": "065f744ef6ea1da0f1798017470bc4e8be0cac494d55fa2d34f85d33c33c5c1f"
+        },
+        "events.jsonl": {
+          "path": "hcsn-cost-v1/g128-uncached-b1/events.jsonl",
+          "bytes": 1405,
+          "sha256": "879ceb460a030c49117f10a526dcc35f362f0e5101e3d6b85fff6abe2311efcb"
+        },
+        "initial.pt": {
+          "path": "hcsn-cost-v1/g128-uncached-b1/initial.pt",
+          "bytes": 88932,
+          "sha256": "fec185822a920296ed6571c290d3a78e9587d4b9ea2cd15e9ccd2b19ff08428d"
+        },
+        "plan.json": {
+          "path": "hcsn-cost-v1/g128-uncached-b1/plan.json",
+          "bytes": 574,
+          "sha256": "65f75b4a21fe8160f6696d867c5646cb258445e33c3d83b684f6d3fbe8e62446"
+        }
+      },
+      "energy_joules": null,
+      "currency_cost": null,
+      "scientific_admission": "HOLD",
+      "numerical_admission": "HOLD"
+    },
+    {
+      "group": "hcsn-cost-v1",
+      "case": "g128-cached-b1",
+      "source_version": "v3",
+      "result": {
+        "path": "hcsn-cost-v1/g128-cached-b1/RESULT.json",
+        "bytes": 21222,
+        "sha256": "4ddcfc9ddf9e78c37a904933115abbc0e11b6f0d84fb4f130e77f9b3b37b531c"
+      },
+      "process_receipt": {
+        "path": "hcsn-cost-v1/g128-cached-b1-receipt.json",
+        "bytes": 1528,
+        "sha256": "e00f1f829ab1e10a66629e5a9ccb3c76af6fc2207800fee4c4099438b03a281d"
+      },
+      "plan": {
+        "path": "hcsn-cost-v1/g128-cached-b1/plan.json",
+        "bytes": 571,
+        "sha256": "2c8e8184da84234cd6c5d20f3106219a9896b9e1b571250bf96cfe98fffe7499"
+      },
+      "status": "completed_cost_probe",
+      "returncode": 0,
+      "updates_completed": 2,
+      "complete_training_epochs": 0,
+      "inner_profile_wall_seconds": 10.81250053201802,
+      "inner_profile_cpu_seconds": 10.810966771,
+      "whole_process_wall_seconds": 13.904190845089033,
+      "peak_rss_bytes": 931340288,
+      "data_manifest_sha256": "0eb233da8d0b766c35356ba450d0572f1e6a87a47f1d8a17cd32c2ae6f25a1cb",
+      "source_archive_sha256": "7c62a8d21dc1fe30da7441050af49b298ca1705f157397110dbc7d119eda8c05",
+      "bound_project_source_files_verified": 33,
+      "external_source_hashes_recorded_not_copied": {
+        "/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/torch/nn/modules/activation.py": "79dfe46d31be2e8e8ce68908838f42eb83ecc2ffb364e065149d112c8afc8e02",
+        "/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/torch/nn/modules/container.py": "f1397f5d49ab49c17679ef5fbc0403288ad2680dff2b61d5df04d068a6bfc29f",
+        "/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/torch/nn/modules/linear.py": "fa22acbb48e41bff3be26779c2f242b15663b8157e54f0d55987721add97d16f"
+      },
+      "artifacts_recovered": {
+        "after.pt": {
+          "path": "hcsn-cost-v1/g128-cached-b1/after.pt",
+          "bytes": 245479,
+          "sha256": "065f744ef6ea1da0f1798017470bc4e8be0cac494d55fa2d34f85d33c33c5c1f"
+        },
+        "events.jsonl": {
+          "path": "hcsn-cost-v1/g128-cached-b1/events.jsonl",
+          "bytes": 1406,
+          "sha256": "32c871195a8779666e4e5f6650304a2a0255b6cd91a381badab392e5f220d6f1"
+        },
+        "initial.pt": {
+          "path": "hcsn-cost-v1/g128-cached-b1/initial.pt",
+          "bytes": 88932,
+          "sha256": "fec185822a920296ed6571c290d3a78e9587d4b9ea2cd15e9ccd2b19ff08428d"
+        },
+        "plan.json": {
+          "path": "hcsn-cost-v1/g128-cached-b1/plan.json",
+          "bytes": 571,
+          "sha256": "2c8e8184da84234cd6c5d20f3106219a9896b9e1b571250bf96cfe98fffe7499"
+        }
+      },
+      "energy_joules": null,
+      "currency_cost": null,
+      "scientific_admission": "HOLD",
+      "numerical_admission": "HOLD"
+    },
+    {
+      "group": "hcsn-cost-v1",
+      "case": "g256-cached-b32",
+      "source_version": "v3",
+      "result": {
+        "path": "hcsn-cost-v1/g256-cached-b32/RESULT.json",
+        "bytes": 25465,
+        "sha256": "14cc18e100f393c8709bd033a7d8037ebf55e8f45abd8d1df6ed98b8f26632be"
+      },
+      "process_receipt": {
+        "path": "hcsn-cost-v1/g256-cached-b32-receipt.json",
+        "bytes": 1527,
+        "sha256": "0ac5330128e310400d95557bb42f1249aa9e5a46a9e9386c77537e6c3199a374"
+      },
+      "plan": {
+        "path": "hcsn-cost-v1/g256-cached-b32/plan.json",
+        "bytes": 573,
+        "sha256": "31fe0563a5338f27d3a02b077d5b3c4aae9f53497fc03d69d3d7f21c2169f643"
+      },
+      "status": "failed",
+      "returncode": 2,
+      "updates_completed": 0,
+      "complete_training_epochs": 0,
+      "inner_profile_wall_seconds": 48.838508114917204,
+      "inner_profile_cpu_seconds": 48.797799212,
+      "whole_process_wall_seconds": 52.01704302197322,
+      "peak_rss_bytes": 4383834112,
+      "data_manifest_sha256": "0eb233da8d0b766c35356ba450d0572f1e6a87a47f1d8a17cd32c2ae6f25a1cb",
+      "source_archive_sha256": "7c62a8d21dc1fe30da7441050af49b298ca1705f157397110dbc7d119eda8c05",
+      "bound_project_source_files_verified": 33,
+      "external_source_hashes_recorded_not_copied": {
+        "/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/torch/nn/modules/activation.py": "79dfe46d31be2e8e8ce68908838f42eb83ecc2ffb364e065149d112c8afc8e02",
+        "/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/torch/nn/modules/container.py": "f1397f5d49ab49c17679ef5fbc0403288ad2680dff2b61d5df04d068a6bfc29f",
+        "/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/torch/nn/modules/linear.py": "fa22acbb48e41bff3be26779c2f242b15663b8157e54f0d55987721add97d16f"
+      },
+      "artifacts_recovered": {
+        "events.jsonl": {
+          "path": "hcsn-cost-v1/g256-cached-b32/events.jsonl",
+          "bytes": 67,
+          "sha256": "07ee399f8686115a21a33b4228c921a8f7a79466526801b79fc725e38ce40fa0"
+        },
+        "initial.pt": {
+          "path": "hcsn-cost-v1/g256-cached-b32/initial.pt",
+          "bytes": 151396,
+          "sha256": "2a0a88e7835943cf75c34000a19d579b991ea012b327d8b8b05337ab7b740b9e"
+        },
+        "plan.json": {
+          "path": "hcsn-cost-v1/g256-cached-b32/plan.json",
+          "bytes": 573,
+          "sha256": "31fe0563a5338f27d3a02b077d5b3c4aae9f53497fc03d69d3d7f21c2169f643"
+        },
+        "training-domain.jsonl": {
+          "path": "hcsn-cost-v1/g256-cached-b32/training-domain.jsonl",
+          "bytes": 1987,
+          "sha256": "fc47d07f683ceffae75f3286d85806887c1af86bcf427c24bc3fc830dc6450a5"
+        }
+      },
+      "energy_joules": null,
+      "currency_cost": null,
+      "scientific_admission": "HOLD",
+      "numerical_admission": "HOLD",
+      "failure": {
+        "kind": "handled_CPU_allocator_failure",
+        "requested_allocation_bytes": 16842752,
+        "address_space_limit_bytes": 8589934592,
+        "OS_OOM_kill_claimed": false,
+        "error_original": "hcsn-cost-v1/g256-cached-b32/RESULT.json:error"
+      }
+    },
+    {
+      "group": "hcsn-effective32-cost-v6",
+      "case": "micro4",
+      "source_version": "v6",
+      "result": {
+        "path": "hcsn-effective32-cost-v6/micro4/RESULT.json",
+        "bytes": 22667,
+        "sha256": "517a982ca7edfc402f9488d1f3623109c36beababa97baac4cd7773b990cf97b"
+      },
+      "process_receipt": {
+        "path": "hcsn-effective32-cost-v6/micro4-receipt.json",
+        "bytes": 1534,
+        "sha256": "3fa7948505f311bfebeaeaa44d9ed10ed1e51cbaab5bc379dd6be26e22311791"
+      },
+      "plan": {
+        "path": "hcsn-effective32-cost-v6/micro4/plan.json",
+        "bytes": 631,
+        "sha256": "a44639fe9d742ac87daa59c1c9ae2c8b7c27d6f328fcee6b8e213a73a844cbc6"
+      },
+      "status": "completed_cost_probe",
+      "returncode": 0,
+      "updates_completed": 2,
+      "complete_training_epochs": 0,
+      "inner_profile_wall_seconds": 95.4864314198494,
+      "inner_profile_cpu_seconds": 95.464678391,
+      "whole_process_wall_seconds": 98.3996832871344,
+      "peak_rss_bytes": 2306850816,
+      "data_manifest_sha256": "0eb233da8d0b766c35356ba450d0572f1e6a87a47f1d8a17cd32c2ae6f25a1cb",
+      "source_archive_sha256": "3c9562e560208f6a291846d79431f5d4e0718d1c695dd98c88c4cbf5dedc9fb5",
+      "bound_project_source_files_verified": 34,
+      "external_source_hashes_recorded_not_copied": {
+        "/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/torch/nn/modules/activation.py": "79dfe46d31be2e8e8ce68908838f42eb83ecc2ffb364e065149d112c8afc8e02",
+        "/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/torch/nn/modules/container.py": "f1397f5d49ab49c17679ef5fbc0403288ad2680dff2b61d5df04d068a6bfc29f",
+        "/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/torch/nn/modules/linear.py": "fa22acbb48e41bff3be26779c2f242b15663b8157e54f0d55987721add97d16f"
+      },
+      "artifacts_recovered": {
+        "events.jsonl": {
+          "path": "hcsn-effective32-cost-v6/micro4/events.jsonl",
+          "bytes": 1602,
+          "sha256": "29768e160bff49ecc4a3eeb73cd3d423ef3a0deddfee51c5e20bbdd4bb5b8ce5"
+        },
+        "plan.json": {
+          "path": "hcsn-effective32-cost-v6/micro4/plan.json",
+          "bytes": 631,
+          "sha256": "a44639fe9d742ac87daa59c1c9ae2c8b7c27d6f328fcee6b8e213a73a844cbc6"
+        }
+      },
+      "energy_joules": null,
+      "currency_cost": null,
+      "scientific_admission": "HOLD",
+      "numerical_admission": "HOLD"
+    },
+    {
+      "group": "hcsn-effective32-cost-v6",
+      "case": "micro8",
+      "source_version": "v6",
+      "result": {
+        "path": "hcsn-effective32-cost-v6/micro8/RESULT.json",
+        "bytes": 22661,
+        "sha256": "d3579deb61e857a2f2acfee068aafc1db12e0473bf14e631f91577d5d1932850"
+      },
+      "process_receipt": {
+        "path": "hcsn-effective32-cost-v6/micro8-receipt.json",
+        "bytes": 1535,
+        "sha256": "b064797fd4377caad29809e80ed7bbe71117f9138e54246a26da452797685d82"
+      },
+      "plan": {
+        "path": "hcsn-effective32-cost-v6/micro8/plan.json",
+        "bytes": 631,
+        "sha256": "ea88d238d88823806708b9f31aad6d4478f78e6a48742f85ee5beb21e3f3c5ee"
+      },
+      "status": "completed_cost_probe",
+      "returncode": 0,
+      "updates_completed": 2,
+      "complete_training_epochs": 0,
+      "inner_profile_wall_seconds": 91.47719976189546,
+      "inner_profile_cpu_seconds": 91.459124846,
+      "whole_process_wall_seconds": 94.68875463190489,
+      "peak_rss_bytes": 3671478272,
+      "data_manifest_sha256": "0eb233da8d0b766c35356ba450d0572f1e6a87a47f1d8a17cd32c2ae6f25a1cb",
+      "source_archive_sha256": "3c9562e560208f6a291846d79431f5d4e0718d1c695dd98c88c4cbf5dedc9fb5",
+      "bound_project_source_files_verified": 34,
+      "external_source_hashes_recorded_not_copied": {
+        "/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/torch/nn/modules/activation.py": "79dfe46d31be2e8e8ce68908838f42eb83ecc2ffb364e065149d112c8afc8e02",
+        "/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/torch/nn/modules/container.py": "f1397f5d49ab49c17679ef5fbc0403288ad2680dff2b61d5df04d068a6bfc29f",
+        "/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/torch/nn/modules/linear.py": "fa22acbb48e41bff3be26779c2f242b15663b8157e54f0d55987721add97d16f"
+      },
+      "artifacts_recovered": {
+        "events.jsonl": {
+          "path": "hcsn-effective32-cost-v6/micro8/events.jsonl",
+          "bytes": 1595,
+          "sha256": "9466f4abc155e841700235f1c870e2a9108cd8e7d36c8b9001c44a471c2c884b"
+        },
+        "plan.json": {
+          "path": "hcsn-effective32-cost-v6/micro8/plan.json",
+          "bytes": 631,
+          "sha256": "ea88d238d88823806708b9f31aad6d4478f78e6a48742f85ee5beb21e3f3c5ee"
+        }
+      },
+      "energy_joules": null,
+      "currency_cost": null,
+      "scientific_admission": "HOLD",
+      "numerical_admission": "HOLD"
+    }
+  ],
+  "controllers": [
+    {
+      "group": "hcsn-cost-v1",
+      "original": {
+        "path": "hcsn-cost-v1/RESULT.json",
+        "bytes": 5250,
+        "sha256": "70a987486b907c3303d34b1b7f7c909ac45d6003cc0f9a87b2fcfdfd992d746a"
+      },
+      "whole_controller_wall_seconds": 158.25832080608234,
+      "controller_children_cpu_seconds": 158.082416,
+      "sum_child_process_wall_seconds": 158.25374441919848,
+      "sum_inner_profile_wall_seconds": 149.07094810693525,
+      "sum_inner_profile_cpu_seconds": 149.02046749000002,
+      "timing_relationship": "Nested scopes; do not add the controller, process, and inner values."
+    },
+    {
+      "group": "hcsn-effective32-cost-v6",
+      "original": {
+        "path": "hcsn-effective32-cost-v6/RESULT.json",
+        "bytes": 3646,
+        "sha256": "f22c61a0c56f158a268772dc2cfdefff3408e3d3f244fccf1afc52503a99b2ea"
+      },
+      "whole_controller_wall_seconds": 193.09141479898244,
+      "controller_children_cpu_seconds": 198.385327,
+      "sum_child_process_wall_seconds": 193.08843791903928,
+      "sum_inner_profile_wall_seconds": 186.96363118174486,
+      "sum_inner_profile_cpu_seconds": 186.92380323700002,
+      "timing_relationship": "Nested scopes; do not add the controller, process, and inner values."
+    }
+  ],
+  "not_copied_here": [
+    {
+      "path": "hcsn-cost-v1/g128-uncached-b1/training-domain.jsonl",
+      "expected_sha256_from_original_result": "61c7617bd99ea3813730d7c115bc7b67ee7f9931b6b90d6925c21311edc742ac",
+      "local_copy_recovered": false
+    },
+    {
+      "path": "hcsn-cost-v1/g128-cached-b1/training-domain.jsonl",
+      "expected_sha256_from_original_result": "ef49b3575016231200cbc20899bd43f096d6aab255d90fcce14c6521550860be",
+      "local_copy_recovered": false
+    },
+    {
+      "path": "hcsn-effective32-cost-v6/micro4/after.pt",
+      "expected_sha256_from_original_result": "aae0135296036a1004da0080359b81c243668fc5e4ef83121a83e59085a6a689",
+      "local_copy_recovered": false
+    },
+    {
+      "path": "hcsn-effective32-cost-v6/micro4/initial.pt",
+      "expected_sha256_from_original_result": "db57e4c71d712c9a7cb89a782da8cc2dd4f635f4851dedd5d63c702a8ca0a9d8",
+      "local_copy_recovered": false
+    },
+    {
+      "path": "hcsn-effective32-cost-v6/micro4/training-domain.jsonl",
+      "expected_sha256_from_original_result": "b8d12fd12720886b6642fa47f5cde48fbbc23432243128b4a8c802694c6ea090",
+      "local_copy_recovered": false
+    },
+    {
+      "path": "hcsn-effective32-cost-v6/micro8/after.pt",
+      "expected_sha256_from_original_result": "013d7d249827b85836da76b49871a1b0b8fe1e62e751c7b876b594db32cca830",
+      "local_copy_recovered": false
+    },
+    {
+      "path": "hcsn-effective32-cost-v6/micro8/initial.pt",
+      "expected_sha256_from_original_result": "db57e4c71d712c9a7cb89a782da8cc2dd4f635f4851dedd5d63c702a8ca0a9d8",
+      "local_copy_recovered": false
+    },
+    {
+      "path": "hcsn-effective32-cost-v6/micro8/training-domain.jsonl",
+      "expected_sha256_from_original_result": "eeb96b21be5e32f506c582c9010c2d78d5790d2cfaad01f774f8178caf3f75ec",
+      "local_copy_recovered": false
+    }
+  ],
+  "old_cost_v1_complete_context_archive": {
+    "asset_id": 731775347,
+    "bytes": 18118346,
+    "sha256": "b40b214bbee098e4fe4d74986faf410068011d967ac50c8e6b60d3c4da5eb56c",
+    "authenticated_readback_verified_in_prior_publication_receipt": true,
+    "archive_members_not_reopened_in_this_recovery": true
+  },
+  "cost_accounting": {
+    "add_v3_attempts_if_previously_missing": true,
+    "micro4_micro8_existing_costs_replace_evidence_reference_not_add_duplicate_cost": true,
+    "profile_timer_scope": "Starts after imports, argument parsing, output directory and thread setup; ends in finally before source-after/artifact-hash work and RESULT serialization.",
+    "profile_cpu_scope": "time.process_time delta over the profile timer interval",
+    "outer_process_scope": "Original process receipt whole_process_wall_seconds",
+    "controller_scope": "Original group RESULT whole_wall_seconds and children_cpu_seconds; overlaps the child intervals",
+    "new_training_or_numerical_computation": false
+  }
+}

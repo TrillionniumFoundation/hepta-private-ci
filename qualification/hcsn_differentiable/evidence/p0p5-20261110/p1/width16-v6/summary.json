@@ -1,0 +1,302 @@
+{
+  "schema": "hcsn-width16-independent-audit-summary-v1",
+  "execution_status": "completed_all_declared_stages",
+  "scientific_admission": "HOLD",
+  "whole_training_domain_admission": "HOLD",
+  "training_adequacy_established": false,
+  "plan_sha256": "ad6ffd5a1ba89ae6f28adc4516107531e7b75b43b36abc0e579bca34c8228436",
+  "checkpoint_sha256": "587ca235eb1b961b9484e6ac9a3ff7e29fe5ad5e8deea41f6549426f3390cc76",
+  "training_trace_sha256": "97c94251b63da7ede09cda7208c40d87acaa1c46556b587ae9b29747a3af9857",
+  "data_manifest_sha256": "0eb233da8d0b766c35356ba450d0572f1e6a87a47f1d8a17cd32c2ae6f25a1cb",
+  "source_unchanged_all_stages": true,
+  "actual_training_updates": 2,
+  "optimizer": "AdamW, learning rate .003, weight decay 0, gradient clip norm 1",
+  "model": {
+    "arm": "hcsn",
+    "width": 16,
+    "seed": 101,
+    "cache_frozen_tables": true,
+    "learn_core_adapter": true,
+    "freeze_shared": true
+  },
+  "grid": {
+    "active_cells": 256,
+    "endpoint": 4.8,
+    "initial_log_std": 0.08,
+    "phase_cells": 16,
+    "quadrature_order": 32,
+    "refractory": 0.2,
+    "tail_rate": 1.0
+  },
+  "audit_records": [
+    {
+      "stage": "training-audit",
+      "artifact": "training-audit.json",
+      "sha256": "d6dcbb400b05c431574976ef23cdb46c553e6ef291d86b5497090f6c1a5ff792",
+      "numerical_status": "passed_recorded_states",
+      "records": 512,
+      "passed_records": 512,
+      "failed_records": 0,
+      "source_matches_trace": true,
+      "complete_retained_coverage": true,
+      "maximum_scaled_value_error": 0.0022973057914127053,
+      "maximum_basis_gradient_absolute_error": 1.4210854715202004e-14,
+      "maximum_mass_error": 4.440892098500626e-16
+    },
+    {
+      "stage": "eval-A01-0",
+      "artifact": "eval-A01-0.json",
+      "sha256": "b0b10909f9da63351d9b77ea4ce4fd31d4a6c3f0c7bf3ba6875c0b3d251a7cda",
+      "numerical_status": "passed_recorded_states",
+      "records": 256,
+      "passed_records": 256,
+      "failed_records": 0,
+      "source_matches_trace": true,
+      "complete_retained_coverage": true,
+      "maximum_scaled_value_error": 0.002296663627124424,
+      "maximum_basis_gradient_absolute_error": 1.4210854715202004e-14,
+      "maximum_mass_error": 4.440892098500626e-16
+    },
+    {
+      "stage": "eval-A01-256",
+      "artifact": "eval-A01-256.json",
+      "sha256": "3fb3ea782bb862a29e5593125600c8a19da7089d2fb289ab5f576d2007f9d625",
+      "numerical_status": "passed_recorded_states",
+      "records": 256,
+      "passed_records": 256,
+      "failed_records": 0,
+      "source_matches_trace": true,
+      "complete_retained_coverage": true,
+      "maximum_scaled_value_error": 0.0023069384911477927,
+      "maximum_basis_gradient_absolute_error": 1.4210854715202004e-14,
+      "maximum_mass_error": 4.440892098500626e-16
+    },
+    {
+      "stage": "eval-A04-3072",
+      "artifact": "eval-A04-3072.json",
+      "sha256": "75e1dd7db620c4a040d8938a3d3f0fae35ce1ff69a2936e27d392ed66b6226cc",
+      "numerical_status": "HOLD",
+      "records": 256,
+      "passed_records": 254,
+      "failed_records": 2,
+      "source_matches_trace": true,
+      "complete_retained_coverage": true,
+      "maximum_scaled_value_error": 2.615274183000418,
+      "maximum_basis_gradient_absolute_error": 1.4210854715202004e-14,
+      "maximum_mass_error": 3.3306690738754696e-16
+    }
+  ],
+  "pressure_failures": [
+    {
+      "stage": "eval-A04-3072",
+      "index": 48,
+      "dt": [
+        8e-07
+      ],
+      "scaled_value_error": 1.4724548717926949
+    },
+    {
+      "stage": "eval-A04-3072",
+      "index": 49,
+      "dt": [
+        1e-07
+      ],
+      "scaled_value_error": 2.615274183000418
+    }
+  ],
+  "finite_fixtures": [
+    {
+      "stage": "finite-0",
+      "fixture": {
+        "episode": "A01-0",
+        "position": 31,
+        "intervals": 32
+      },
+      "artifact": "finite-0.json",
+      "sha256": "1f9a48b3cf3ab7f952359de807c06a7dc2ac710fb7825f24e2d04a0bd844e77c",
+      "numerical_status": "passed_fixture",
+      "projected": [
+        0.9340854867970125,
+        0.4747839285762732,
+        0.44173246663754195,
+        0.9098154060050962
+      ],
+      "reference": [
+        0.9306957627304276,
+        0.4707938708158007,
+        0.4379840380767544,
+        0.9103298352828684
+      ],
+      "scaled_errors": [
+        0.003389724066584887,
+        0.00399005776047251,
+        0.0037484285607875534,
+        0.0005144292777721216
+      ],
+      "horizon": 1.0000868,
+      "mass_residual": 1.1102230246251565e-15,
+      "reference_refinement_delta": 1.1102230246251565e-16
+    },
+    {
+      "stage": "finite-1",
+      "fixture": {
+        "episode": "A01-0",
+        "position": 31,
+        "intervals": 128
+      },
+      "artifact": "finite-1.json",
+      "sha256": "59dee589d4b7220c2808951d32b64884cae94609e22b29446f5b08c7f0e57557",
+      "numerical_status": "passed_fixture",
+      "projected": [
+        2.6045761992942937,
+        1.8166977520006817,
+        1.3609758874026514,
+        0.9214081890534012
+      ],
+      "reference": [
+        2.597498724962111,
+        1.8071078859014558,
+        1.3533025594828363,
+        0.9215889379358346
+      ],
+      "scaled_errors": [
+        0.002724726778176139,
+        0.005306747966761356,
+        0.005670075672322291,
+        0.00018074888243346798
+      ],
+      "horizon": 4.2436074999999995,
+      "mass_residual": 5.88418203051333e-15,
+      "reference_refinement_delta": 1.6407609914658368e-16
+    },
+    {
+      "stage": "finite-2",
+      "fixture": {
+        "episode": "A01-256",
+        "position": 127,
+        "intervals": 32
+      },
+      "artifact": "finite-2.json",
+      "sha256": "046d8d65083c67a69a072327515d873a3a34559ed7e8e4ff5d2db12dace3ef1f",
+      "numerical_status": "passed_fixture",
+      "projected": [
+        0.9688725211064508,
+        0.5166303239001556,
+        0.4810367718957471,
+        0.9042356048419053
+      ],
+      "reference": [
+        0.9653530190852031,
+        0.5125009569455287,
+        0.4771432729851243,
+        0.9047045969616864
+      ],
+      "scaled_errors": [
+        0.0035195020212477335,
+        0.004129366954626956,
+        0.0038934989106227946,
+        0.00046899211978101984
+      ],
+      "horizon": 1.0000908,
+      "mass_residual": 1.1102230246251565e-15,
+      "reference_refinement_delta": 1.1102230246251565e-16
+    },
+    {
+      "stage": "finite-3",
+      "fixture": {
+        "episode": "A04-3072",
+        "position": 47,
+        "intervals": 8
+      },
+      "artifact": "finite-3.json",
+      "sha256": "9e829e503c44856556f8bc86520c5eded6febbadd268d47c9f2ae83818e9ac42",
+      "numerical_status": "passed_fixture",
+      "projected": [
+        0.3389701275653081,
+        0.09988539720825876,
+        0.09849857487307469,
+        0.8937411787945067
+      ],
+      "reference": [
+        0.33808144686724606,
+        0.09883578001787315,
+        0.09746388424738711,
+        0.8943032309654103
+      ],
+      "scaled_errors": [
+        0.0008886806980620277,
+        0.0010496171903856127,
+        0.001034690625687576,
+        0.0005620521709036597
+      ],
+      "horizon": 0.1892062,
+      "mass_residual": 2.220446049250313e-16,
+      "reference_refinement_delta": 5.551115123125783e-17
+    },
+    {
+      "stage": "finite-4",
+      "fixture": {
+        "episode": "A04-3072",
+        "position": 47,
+        "intervals": 32
+      },
+      "artifact": "finite-4.json",
+      "sha256": "6f3dcb64874f8fe5a987302336c2db6fe673e69e84200d18473b8f807b561937",
+      "numerical_status": "passed_fixture",
+      "projected": [
+        0.9108879337405895,
+        0.4669159033162052,
+        0.43609759262798853,
+        0.9065758901221269
+      ],
+      "reference": [
+        0.9075957166643497,
+        0.46305017965475453,
+        0.4324473958157753,
+        0.9070698581783823
+      ],
+      "scaled_errors": [
+        0.003292217076239834,
+        0.0038657236614506596,
+        0.0036501968122132356,
+        0.000493968056255345
+      ],
+      "horizon": 0.9460297,
+      "mass_residual": 1.1102230246251565e-15,
+      "reference_refinement_delta": 1.1102230246251565e-16
+    }
+  ],
+  "finite_fixture_all_passed": true,
+  "perpetual_pressure_all_passed": false,
+  "visitation_summary_sha256": "f8ff1ddacfd235de0aaccc56cfe2f0eb1535b5a2609efc5c00787c6ada4bae53",
+  "independent_input_binding_review": {
+    "passed": true,
+    "checks": 5,
+    "artifact": "independent-review/width16-law-binding-v1.json",
+    "sha256": "67cf50b6ecdcf3c0b023419474032a9f7acaa8ef8f6dfbf7c9f5e93d8867aa7a",
+    "scope": "Source, checkpoint, actual trace and finite-law input linkage only.",
+    "slow_oracles_recomputed": false
+  },
+  "error_scale": "abs(candidate-reference)/max(1,abs(reference)); subunit quantities are tested in absolute error, not relative tail error.",
+  "reference": "Independent 80-digit renewal formulas; 8/16 Gaussian quadrature sensitivity, not a certified error bound.",
+  "scope": "512 actual training visits at zero/one update and 768 supplementary evaluations after two updates. Finite shadow fixtures disable future observations. This is not an adequately trained or complete-task qualification.",
+  "cost": {
+    "stage_wall_seconds": {
+      "export": 16.734664259000056,
+      "training-audit": 248.67332771400015,
+      "eval-A01-0": 134.42050791099973,
+      "eval-A01-256": 125.79902036800013,
+      "eval-A04-3072": 121.46835642000042,
+      "finite-0": 69.82157150100011,
+      "finite-1": 271.9935609180002,
+      "finite-2": 82.88868268100032,
+      "finite-3": 14.462303177999274,
+      "finite-4": 74.94088541699966
+    },
+    "sum_stage_wall_seconds": 1161.202880367,
+    "maximum_stage_rss_kib_linux": 529052,
+    "energy_joules": null,
+    "currency_cost": null,
+    "concurrency": "Audit stages ran serially, one torch CPU thread each; possible overlap with fixed-update PLIF diagnostic is disclosed in UTC launch records. Not a fair-training timing comparison."
+  }
+}

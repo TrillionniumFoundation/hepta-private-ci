@@ -1,0 +1,31 @@
+{
+  "address_space_limit_bytes": 8589934592,
+  "argv": [
+    "/home/qian-qi/hepta-hcsn-trainer-20261108-s3-v1/dependency-recovery-v2/venv/bin/python",
+    "-B",
+    "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-program-20261110-c385-v1/run_subset_review.py",
+    "--base",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training",
+    "--output",
+    "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-20261110-c385-v1"
+  ],
+  "energy_joules": null,
+  "host_load_before": [
+    12.1484375,
+    11.53125,
+    11.21044921875
+  ],
+  "idempotency_key": "hcsn-baseline36-c1-independent-review-c385-v1",
+  "launcher_sha256": "56b64f43b110635f1d4330767556465fada7e22bae2406224ddb0c4379ebaae9",
+  "nice_adjustment": 10,
+  "output": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-20261110-c385-v1",
+  "program": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-program-20261110-c385-v1",
+  "program_archive_sha256": "2f68f48b5cf4f758ab503ac1621cf4b17039ef9169a4c57cfd4dd7f6d8c25034",
+  "schema": "native-baseline36-C1-independent-review-launch-v1",
+  "scope": "Completed36 baseline subset plus7 C1; no HCSN candidate directory read, no training replay or optimizer step. May overlap original HCSN jobs.",
+  "source_copy_and_hash_seconds": 0.02492013294249773,
+  "started_utc": "2026-11-10T17:25:59.579367+00:00",
+  "status": "started",
+  "timeout_seconds": 1800,
+  "torch_threads": 1
+}

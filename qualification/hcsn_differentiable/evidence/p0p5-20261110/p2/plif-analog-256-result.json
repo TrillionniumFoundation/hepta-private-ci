@@ -1,0 +1,49 @@
+{
+  "children_cpu_seconds": 33.401925,
+  "energy_joules": null,
+  "trials": [
+    {
+      "argv": [
+        "/workspace/scratch/c385a7439f8e/hcsn-study-env/bin/python",
+        "-B",
+        "/workspace/scratch/c385a7439f8e/plif_analog_trial.py",
+        "--output",
+        "/workspace/scratch/c385a7439f8e/cloud-plif-analog-v1/membrane",
+        "--tau",
+        "2.0",
+        "--threshold",
+        "1.0",
+        "--gain",
+        "1.0",
+        "--readout",
+        "membrane"
+      ],
+      "readout": "membrane",
+      "returncode": 0,
+      "status": "completed",
+      "whole_process_wall_seconds": 17.062826650000716
+    },
+    {
+      "argv": [
+        "/workspace/scratch/c385a7439f8e/hcsn-study-env/bin/python",
+        "-B",
+        "/workspace/scratch/c385a7439f8e/plif_analog_trial.py",
+        "--output",
+        "/workspace/scratch/c385a7439f8e/cloud-plif-analog-v1/spike_trace",
+        "--tau",
+        "2.0",
+        "--threshold",
+        "1.0",
+        "--gain",
+        "1.0",
+        "--readout",
+        "spike_trace"
+      ],
+      "readout": "spike_trace",
+      "returncode": 0,
+      "status": "completed",
+      "whole_process_wall_seconds": 16.802247597999667
+    }
+  ],
+  "whole_wall_seconds": 33.86635217999992
+}

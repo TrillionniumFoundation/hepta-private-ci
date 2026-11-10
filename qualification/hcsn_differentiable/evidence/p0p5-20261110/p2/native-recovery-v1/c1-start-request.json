@@ -1,0 +1,33 @@
+{
+  "args": [
+    "-B",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/native_continuation_controller_v3.py",
+    "--parent-campaign",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2",
+    "--parent-plan",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2-plan.json",
+    "--parent-plan-sha256",
+    "e13f97aafdaf66548f016f2dcc3a38dd7e641a2ea83d52b8bea89f4c7e0cf114",
+    "--source-archive",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/training-source-c1.zip",
+    "--source-sha256",
+    "f4b473aa4f373c1622bbdac90d61e33c64f0e9642b6c0506e7fec5b8885a3946",
+    "--source-dir",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-c1-v1",
+    "--output",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2-continuation-c1",
+    "--maximum-wait-seconds",
+    "14400"
+  ],
+  "cwd": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training",
+  "env": {
+    "CUDA_VISIBLE_DEVICES": "",
+    "MKL_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "executable": "/home/qian-qi/hepta-hcsn-trainer-20261108-s3-v1/dependency-recovery-v2/venv/bin/python",
+  "host": "desktop",
+  "idempotency_key": "native-fresh42-c1-controller-v3-c385-once"
+}

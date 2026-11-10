@@ -1,0 +1,20 @@
+test_near_zero_drift_is_not_silently_classified_as_zero (qualification.hcsn_differentiable.tests.test_semantics.DriftRegimeTests.test_near_zero_drift_is_not_silently_classified_as_zero) ... ok
+test_nonzero_drift_hit_probability_and_mean_against_density (qualification.hcsn_differentiable.tests.test_semantics.DriftRegimeTests.test_nonzero_drift_hit_probability_and_mean_against_density) ... ok
+test_three_regimes_agree_with_long_finite_horizon_event_counts (qualification.hcsn_differentiable.tests.test_semantics.DriftRegimeTests.test_three_regimes_agree_with_long_finite_horizon_event_counts) ... ok
+test_reading_twice_does_not_mutate_but_replaying_observation_updates (qualification.hcsn_differentiable.tests.test_readout_semantics.ReadoutSemanticsTests.test_reading_twice_does_not_mutate_but_replaying_observation_updates) ... /workspace/scratch/c385a7439f8e/hcsn-repo/qualification/hcsn_differentiable/tests/test_readout_semantics.py:44: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:835.)
+  self.assertGreater(float(flow1.interval_value), 0)
+ok
+test_broken_relative_link_and_ambiguous_manifest_are_rejected (qualification.hcsn_differentiable.tests.test_evidence_chain.EvidenceChainTests.test_broken_relative_link_and_ambiguous_manifest_are_rejected) ... ok
+test_tamper_and_missing_evidence_do_not_inherit_a_prior_pass (qualification.hcsn_differentiable.tests.test_evidence_chain.EvidenceChainTests.test_tamper_and_missing_evidence_do_not_inherit_a_prior_pass) ... ok
+test_zip_crc_duplicate_and_traversal_are_checked_after_outer_hash (qualification.hcsn_differentiable.tests.test_evidence_chain.EvidenceChainTests.test_zip_crc_duplicate_and_traversal_are_checked_after_outer_hash) ... ok
+test_perpetual_continuation_and_terminal_independence (qualification.hcsn_differentiable.tests.test_value.ValueTests.test_perpetual_continuation_and_terminal_independence) ... ok
+test_projected_value_physical_gradient (qualification.hcsn_differentiable.tests.test_value.ValueTests.test_projected_value_physical_gradient) ... ok
+test_terminal_is_paid_once_even_with_zero_duration_padding (qualification.hcsn_differentiable.tests.test_value.ValueTests.test_terminal_is_paid_once_even_with_zero_duration_padding) ... ok
+test_variable_schedule_matches_independent_forward_accounting (qualification.hcsn_differentiable.tests.test_value.ValueTests.test_variable_schedule_matches_independent_forward_accounting) ... ok
+test_zero_duration_cannot_define_perpetual_chain (qualification.hcsn_differentiable.tests.test_value.ValueTests.test_zero_duration_cannot_define_perpetual_chain) ... ok
+
+----------------------------------------------------------------------
+Ran 12 tests in 2.551s
+
+OK

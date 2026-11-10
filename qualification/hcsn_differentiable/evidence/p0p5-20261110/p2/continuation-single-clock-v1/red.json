@@ -1,0 +1,18 @@
+{
+  "schema": "hcsn-clock-regression-red-v1",
+  "command": [
+    "/workspace/scratch/c385a7439f8e/hcsn-study-env/bin/python",
+    "proposals/localization-v3/test_continuation.py",
+    "ContinuationTests.test_epoch_cost_fields_share_one_clock_sample",
+    "-v"
+  ],
+  "cwd": "/workspace/scratch/c385a7439f8e/hcsn-clock-fix",
+  "returncode": 1,
+  "whole_process_wall_seconds": 3.117538352002157,
+  "child_cpu_seconds": 3.603505,
+  "peak_rss_kib": 277568,
+  "source": {
+    "proposals/localization-v3/continuation.py": "a9dd9399a2368779557a725a3cbfbfd7d74dda3deff3d486a73acfc89d4750ec",
+    "proposals/localization-v3/test_continuation.py": "e2dfe9155fc5f1b166a2119672c59004666fc05a7a4ce4a763dded7013c871dc"
+  }
+}
