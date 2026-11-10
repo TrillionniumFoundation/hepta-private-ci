@@ -5,7 +5,7 @@ head is supplied: a caller may supply a version-bound permutation callback.
 """
 
 import argparse
-from collections import Counter
+from collections import Counter, defaultdict, deque
 import hashlib
 import json
 import math
@@ -71,12 +71,22 @@ def authorized_source_closure(records, source_ids):
     eligible = {record["record_id"]: record for record in records
                 if record["source_id"] in allowed}
     original_count = len(eligible)
-    while True:
-        retained = {record_id: record for record_id, record in eligible.items()
-                    if set(record["dependencies"]) <= eligible.keys()}
-        if len(retained) == len(eligible):
-            break
-        eligible = retained
+    dependents = defaultdict(list)
+    pending = deque()
+    for record_id, record in eligible.items():
+        if any(dependency not in eligible for dependency in record["dependencies"]):
+            pending.append(record_id)
+        for dependency in record["dependencies"]:
+            if dependency in eligible:
+                dependents[dependency].append(record_id)
+    # Each allowed record/dependency edge is visited at most once; a long
+    # adversarial chain must not turn source filtering into quadratic work.
+    while pending:
+        record_id = pending.popleft()
+        if record_id not in eligible:
+            continue
+        del eligible[record_id]
+        pending.extend(dependents[record_id])
     return ([record for record in records if record["record_id"] in eligible],
             original_count - len(eligible))
 
