@@ -1,0 +1,152 @@
+name: VERIFY fixed-source joint dependency proposal
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/verify-dependency-proposal.yml
+      - scripts/prepare_verify_dependency_candidate.py
+      - scripts/tests/test_prepare_verify_dependency_candidate.py
+      - qualification/verify3-dependency-reconciliation-20261110/DEPENDENCY_PROPOSAL.md
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: verify-dependency-proposal-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+
+env:
+  PYTHONDONTWRITEBYTECODE: "1"
+
+jobs:
+  candidate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 16
+          persist-credentials: false
+
+      - name: Bind external evidence directory on the actual runner
+        run: echo "CANDIDATE_LOGS=$RUNNER_TEMP/verify-dependency-proposal" >> "$GITHUB_ENV"
+
+      - uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489
+
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+
+      - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
+        with:
+          version: "0.11.3"
+
+      - uses: bazel-contrib/setup-bazel@c5acdfb288317d0b5c0bbd7a396a3dc868bb0f86
+        with:
+          bazelisk-version: 1.28.1
+
+      - name: Validate preparation code before any candidate mutation
+        id: prepare
+        run: |
+          set -euo pipefail
+          python3 -m unittest -v scripts.tests.test_prepare_verify_dependency_candidate
+          just fmt --check --base b26eb014e502709f9652955758690fdb5601b872
+          test -z "$(git status --porcelain)"
+          python3 scripts/prepare_verify_dependency_candidate.py --root . --output "$CANDIDATE_LOGS"
+
+      - name: Resolve the explicit patched graph
+        id: resolve
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          cargo update -p libsqlite3-sys --precise 0.39.1 2>&1 | tee "$CANDIDATE_LOGS/cargo-update.log"
+          cargo metadata --locked --no-deps --format-version 1 > "$CANDIDATE_LOGS/metadata.json"
+          python3 - <<'PY'
+          import os, pathlib, tomllib, json
+          packages = tomllib.loads(pathlib.Path('Cargo.lock').read_text())['package']
+          expected = {'rmcp': '3.9.0', 'libsqlite3-sys': '0.39.1', 'rusqlite': '0.41.1', 'vodozemac': '0.11.2'}
+          for name, version in expected.items():
+              assert [p['version'] for p in packages if p['name'] == name] == [version]
+          assert [p for p in packages if p['name'] == 'sqlx-sqlite'][0].get('source') is None
+          assert not any(p['name'] == 'pin-utils' for p in packages)
+          pathlib.Path(os.environ['CANDIDATE_LOGS'], 'resolved-targets.json').write_text(json.dumps(expected, indent=2))
+          PY
+
+      - name: Regenerate the mandatory Bazel lock
+        if: always() && steps.resolve.outcome == 'success'
+        id: bazel
+        run: |
+          set -euo pipefail
+          just bazel-lock-update 2>&1 | tee "$CANDIDATE_LOGS/bazel-lock-update.log"
+          just bazel-lock-check 2>&1 | tee "$CANDIDATE_LOGS/bazel-lock-check.log"
+
+      - name: Run scoped API and persistent-storage consumers
+        if: always() && steps.resolve.outcome == 'success'
+        id: consumers
+        run: |
+          set -euo pipefail
+          just test -p codex-rmcp-client -p codex-state -p codex-hepta-matrix-sdk -p codex-hepta-matrix-store \
+            -p codex-network-proxy -p codex-execpolicy -p codex-aws-auth \
+            2>&1 | tee "$CANDIDATE_LOGS/consumer-tests.log"
+
+      - name: Preserve the original no-suppression policy
+        id: policy
+        if: always() && steps.resolve.outcome == 'success'
+        run: |
+          set -euo pipefail
+          python3 -m unittest -v scripts.tests.test_hepta_rustsec_guard
+          python3 scripts/check_hepta_rustsec_advisories.py --repo-root .
+          git diff --exit-code dd42001783d87d2f5a591fe700544bda61f9c028 -- codex-rs/deny.toml codex-rs/.cargo/audit.toml scripts/check_hepta_rustsec_advisories.py scripts/tests/test_hepta_rustsec_guard.py .github/workflows/cargo-deny.yml
+          python3 - <<'PY'
+          import pathlib, tomllib
+          current = {'RUSTSEC-2026-0459', 'RUSTSEC-2026-0441', 'RUSTSEC-2026-0457', 'RUSTSEC-2026-0461', 'RUSTSEC-2026-0462', 'RUSTSEC-2026-0451'}
+          for name in ('codex-rs/deny.toml', 'codex-rs/.cargo/audit.toml'):
+              ignored = tomllib.loads(pathlib.Path(name).read_text()).get('advisories', {}).get('ignore', [])
+              ids = {item if isinstance(item, str) else item['id'] for item in ignored}
+              assert current.isdisjoint(ids), (name, current & ids)
+          PY
+
+      - name: Run the original cargo-deny action on the candidate
+        if: always() && steps.resolve.outcome == 'success'
+        id: deny
+        uses: EmbarkStudios/cargo-deny-action@82eb9f621fbc699dd0918f3ea06864c14cc84246
+        with:
+          rust-version: 1.96.0
+          manifest-path: ./codex-rs/Cargo.toml
+
+      - name: Retain candidate source, both lockfiles and failed stages
+        if: always()
+        env:
+          PREPARE: ${{ steps.prepare.outcome }}
+          POLICY: ${{ steps.policy.outcome }}
+          RESOLVE: ${{ steps.resolve.outcome }}
+          BAZEL: ${{ steps.bazel.outcome }}
+          CONSUMERS: ${{ steps.consumers.outcome }}
+          DENY: ${{ steps.deny.outcome }}
+        run: |
+          set -euo pipefail
+          export CANDIDATE_LOGS="${CANDIDATE_LOGS:-$RUNNER_TEMP/verify-dependency-proposal}"
+          mkdir -p "$CANDIDATE_LOGS"
+          git add -N codex-rs/third_party/sqlx-sqlite-0.9.0 || true
+          git diff --binary --full-index HEAD > "$CANDIDATE_LOGS/candidate.patch"
+          cp codex-rs/Cargo.lock MODULE.bazel.lock "$CANDIDATE_LOGS/"
+          python3 - <<'PY'
+          import hashlib, json, os, pathlib, subprocess
+          root = pathlib.Path(os.environ['CANDIDATE_LOGS'])
+          stages = {key: os.environ[key] for key in ('PREPARE', 'RESOLVE', 'BAZEL', 'CONSUMERS', 'POLICY', 'DENY')}
+          report = {'source': subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip(),
+                    'stages': stages, 'scoped_stages_all_passed': all(v == 'success' for v in stages.values()),
+                    'production_adoption': False, 'custom_http_boundaries_qualified': False,
+                    'files': {p.name: hashlib.sha256(p.read_bytes()).hexdigest() for p in root.iterdir() if p.is_file()}}
+          (root / 'result.json').write_text(json.dumps(report, indent=2))
+          PY
+
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: verify-dependency-proposal-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/verify-dependency-proposal/*
+          if-no-files-found: error
+          retention-days: 30
