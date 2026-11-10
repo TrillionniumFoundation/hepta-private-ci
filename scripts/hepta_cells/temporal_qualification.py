@@ -26,13 +26,18 @@ def check_temporal_gradients(
     coordinate audit a numerical diagnostic rather than an unbounded trainer.
     """
     if not isinstance(kernel, TemporalKernel) or kernel.parameter_count > 2048:
-        raise ValueError("gradient audit requires a temporal kernel with <=2048 scalars")
+        raise ValueError(
+            "gradient audit requires a temporal kernel with <=2048 scalars"
+        )
     if any(
         isinstance(value, bool) or not np.isfinite(value) or value <= 0
         for value in (epsilon, atol, rtol)
     ):
         raise ValueError("gradient audit tolerances must be finite and positive")
-    x, action = np.asarray(episodes, dtype=np.float64), np.asarray(actions, dtype=np.float64)
+    x, action = (
+        np.asarray(episodes, dtype=np.float64),
+        np.asarray(actions, dtype=np.float64),
+    )
     allowed = np.asarray(allowed_mask)
     if (
         x.ndim != 3
@@ -67,7 +72,9 @@ def check_temporal_gradients(
                     losses.append(
                         np.mean(
                             np.logaddexp.reduce(logits, axis=1)
-                            - np.logaddexp.reduce(np.where(allowed, logits, -np.inf), axis=1)
+                            - np.logaddexp.reduce(
+                                np.where(allowed, logits, -np.inf), axis=1
+                            )
                         )
                     )
                 numerical[index] = (losses[0] - losses[1]) / (2 * epsilon)
@@ -82,7 +89,9 @@ def check_temporal_gradients(
                 "analytic_nonzero_scalars": int(np.count_nonzero(analytic)),
                 "maximum_absolute_error": float(error.max()),
                 "maximum_tolerance_ratio": float((error / tolerance).max()),
-                "passed": bool(np.isfinite(numerical).all() and (error <= tolerance).all()),
+                "passed": bool(
+                    np.isfinite(numerical).all() and (error <= tolerance).all()
+                ),
             }
         )
     return {
@@ -159,13 +168,20 @@ def run_temporal_reference_probe(output_directory, *, seeds=(41, 67), updates=4)
                 state = candidate.initial_state(f"reference:{index}")
                 for cursor, observation in enumerate(episode):
                     state = candidate.observe(
-                        state, observation, episode_id=f"reference:{index}", cursor=cursor
+                        state,
+                        observation,
+                        episode_id=f"reference:{index}",
+                        cursor=cursor,
                     )
                 streamed.append(
-                    candidate.predict(state, actions[index], episode_id=f"reference:{index}")
+                    candidate.predict(
+                        state, actions[index], episode_id=f"reference:{index}"
+                    )
                 )
             stream_error = float(
-                np.abs(np.stack(streamed) - candidate._model.forward(episodes, actions)).max()
+                np.abs(
+                    np.stack(streamed) - candidate._model.forward(episodes, actions)
+                ).max()
             )
             state = candidate.initial_state("checkpoint:episode")
             for cursor, observation in enumerate(episodes[0, :2]):
@@ -183,7 +199,10 @@ def run_temporal_reference_probe(output_directory, *, seeds=(41, 67), updates=4)
             state_equal = state == recovered_state
             for cursor in range(2, episodes.shape[1]):
                 state = candidate.observe(
-                    state, episodes[0, cursor], episode_id="checkpoint:episode", cursor=cursor
+                    state,
+                    episodes[0, cursor],
+                    episode_id="checkpoint:episode",
+                    cursor=cursor,
                 )
                 recovered_state = restored.observe(
                     recovered_state,
@@ -204,7 +223,8 @@ def run_temporal_reference_probe(output_directory, *, seeds=(41, 67), updates=4)
                 receipt_b["losses"],
             )
             parent_unchanged = parent_identity == (
-                parent.weights_sha256, parent.optimizer_sha256
+                parent.weights_sha256,
+                parent.optimizer_sha256,
             )
             attempts.append(
                 {
@@ -222,8 +242,14 @@ def run_temporal_reference_probe(output_directory, *, seeds=(41, 67), updates=4)
                     "resume_receipts": [receipt_a, receipt_b],
                     "parent_unchanged": parent_unchanged,
                     "passed": all(
-                        (audit["passed"], stream_error <= 1e-12, state_equal,
-                         continuation_equal, resume_equal, parent_unchanged)
+                        (
+                            audit["passed"],
+                            stream_error <= 1e-12,
+                            state_equal,
+                            continuation_equal,
+                            resume_equal,
+                            parent_unchanged,
+                        )
                     ),
                 }
             )

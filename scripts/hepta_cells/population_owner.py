@@ -28,18 +28,32 @@ class PopulationPolicy:
         saved = db.execute("SELECT * FROM population_plan WHERE singleton=1").fetchone()
         if saved:
             retained = PopulationPlan.from_record(json.loads(saved["record"]))
-            if retained.digest != saved["digest"] or (plan is not None and plan != retained):
+            if retained.digest != saved["digest"] or (
+                plan is not None and plan != retained
+            ):
                 raise CellError("population differs from the retained owner policy")
             self.plan = retained
         else:
-            if any(db.execute(f"SELECT count(*) FROM {table}").fetchone()[0] for table in
-                   ("population_current", "population_partitions", "population_consumed")):
-                raise CellError("retained population rows have lost their original policy")
+            if any(
+                db.execute(f"SELECT count(*) FROM {table}").fetchone()[0]
+                for table in (
+                    "population_current",
+                    "population_partitions",
+                    "population_consumed",
+                )
+            ):
+                raise CellError(
+                    "retained population rows have lost their original policy"
+                )
             if plan is not None:
                 if db.execute("SELECT count(*) FROM cells").fetchone()[0]:
-                    raise CellError("existing unplanned cells require an explicit migration")
-                db.execute("INSERT INTO population_plan VALUES(1,?,?)",
-                           (plan.digest, _bounded_json(plan.record())))
+                    raise CellError(
+                        "existing unplanned cells require an explicit migration"
+                    )
+                db.execute(
+                    "INSERT INTO population_plan VALUES(1,?,?)",
+                    (plan.digest, _bounded_json(plan.record())),
+                )
             self.plan = plan
         if self.plan is not None:
             missing = db.execute(
@@ -53,7 +67,12 @@ class PopulationPolicy:
 
     def describe(self, partition, component):
         # Lazy imports avoid the existing component -> lifecycle import cycle.
-        from .deterministic import ExactRetriever, NumericAlgorithm, RuleVerifier, ToolCell
+        from .deterministic import (
+            ExactRetriever,
+            NumericAlgorithm,
+            RuleVerifier,
+            ToolCell,
+        )
         from .semantic_component import SemanticComponent
         from .temporal_component import TemporalComponent
 
@@ -66,14 +85,23 @@ class PopulationPolicy:
             bundle = component.bundle
         elif type(component) is TemporalComponent:
             family, kernel = "stateful_temporal", component.kernel.config.kind
-            if component.kernel.cell_id != spec.cell_id or component.episode_id != partition.run_id:
+            if (
+                component.kernel.cell_id != spec.cell_id
+                or component.episode_id != partition.run_id
+            ):
                 raise CellError("temporal component belongs to another cell or run")
             bundle = component.bundle
         else:
-            kinds = {ExactRetriever: "retrieval", NumericAlgorithm: "numerical",
-                     RuleVerifier: "rule_verifier", ToolCell: "tool_wrapper"}
+            kinds = {
+                ExactRetriever: "retrieval",
+                NumericAlgorithm: "numerical",
+                RuleVerifier: "rule_verifier",
+                ToolCell: "tool_wrapper",
+            }
             if type(component) not in kinds:
-                raise CellError("component class is not admitted by the population registry")
+                raise CellError(
+                    "component class is not admitted by the population registry"
+                )
             family, kernel = "deterministic", kinds[type(component)]
         if (family, kernel) != (spec.family, spec.kernel):
             raise CellError("actual component differs from the frozen family or kernel")
@@ -88,15 +116,31 @@ class PopulationPolicy:
         spec, identity, bundle = self.describe(partition, component)
         if budget != spec.budget or total_work_units != spec.total_work_units:
             raise CellError("creation budget differs from the frozen population plan")
-        current = self.db.execute("SELECT * FROM population_current WHERE cell_id=?", (spec.cell_id,)).fetchone()
-        expected = ComponentIdentity(**json.loads(current["identity"])).digest if current else spec.initial_identity
+        current = self.db.execute(
+            "SELECT * FROM population_current WHERE cell_id=?", (spec.cell_id,)
+        ).fetchone()
+        expected = (
+            ComponentIdentity(**json.loads(current["identity"])).digest
+            if current
+            else spec.initial_identity
+        )
         if identity.digest != expected:
-            raise CellError("new run must load the currently admitted logical-cell version")
+            raise CellError(
+                "new run must load the currently admitted logical-cell version"
+            )
         if current is None:
-            self.db.execute("INSERT INTO population_current VALUES(?,?,?,0)",
-                            (spec.cell_id, _bounded_json(asdict(identity)),
-                             _bounded_json(bundle.record()) if bundle is not None else None))
-        self.db.execute("INSERT INTO population_partitions VALUES(?,?,?)", (partition.digest, spec.cell_id, current["epoch"] if current else 0))
+            self.db.execute(
+                "INSERT INTO population_current VALUES(?,?,?,0)",
+                (
+                    spec.cell_id,
+                    _bounded_json(asdict(identity)),
+                    _bounded_json(bundle.record()) if bundle is not None else None,
+                ),
+            )
+        self.db.execute(
+            "INSERT INTO population_partitions VALUES(?,?,?)",
+            (partition.digest, spec.cell_id, current["epoch"] if current else 0),
+        )
 
     def observations(self, cell_id, identity, epoch):
         rows = self.db.execute(
@@ -109,10 +153,15 @@ class PopulationPolicy:
         observed = []
         for row in rows:
             receipt, payload = json.loads(row["receipt"]), json.loads(row["payload"])
-            if (receipt["status"] == "committed" and receipt["state_applied"] is True
-                    and receipt.get("population", {}).get("logical_epoch") == epoch
-                    and isinstance(payload, dict)
-                    and (payload.get("operation") == "observe" or set(payload) == {"inputs"})):
+            if (
+                receipt["status"] == "committed"
+                and receipt["state_applied"] is True
+                and receipt.get("population", {}).get("logical_epoch") == epoch
+                and isinstance(payload, dict)
+                and (
+                    payload.get("operation") == "observe" or set(payload) == {"inputs"}
+                )
+            ):
                 observed.append((row["partition"], row["request"]))
         return observed
 
@@ -122,10 +171,19 @@ class PopulationPolicy:
         spec, identity, bundle = self.describe(partition, component)
         if mode not in ("adopt", "rollback"):
             return
-        latest = self.db.execute("SELECT * FROM population_current WHERE cell_id=?", (spec.cell_id,)).fetchone()
-        active = self.db.execute("SELECT epoch FROM population_partitions WHERE partition=?", (partition.digest,)).fetchone()
-        if (latest is None or active is None or active["epoch"] != latest["epoch"]
-                or ComponentIdentity(**json.loads(latest["identity"])) != current):
+        latest = self.db.execute(
+            "SELECT * FROM population_current WHERE cell_id=?", (spec.cell_id,)
+        ).fetchone()
+        active = self.db.execute(
+            "SELECT epoch FROM population_partitions WHERE partition=?",
+            (partition.digest,),
+        ).fetchone()
+        if (
+            latest is None
+            or active is None
+            or active["epoch"] != latest["epoch"]
+            or ComponentIdentity(**json.loads(latest["identity"])) != current
+        ):
             raise CellError("another run has already changed the logical-cell version")
         if latest["epoch"] >= 2**63 - 1:
             raise CellError("logical-cell epoch exhausted")
@@ -134,27 +192,50 @@ class PopulationPolicy:
                 raise CellError("this logical cell is frozen")
             source = Bundle(**json.loads(latest["bundle"]))
             if source.digest() != current.bundle_digest:
-                raise CellError("retained source bundle differs from the active identity")
+                raise CellError(
+                    "retained source bundle differs from the active identity"
+                )
             validate_local_update(spec.family, source, bundle, spec.trainable)
-            if (bundle.training_lineage["update_rule"] != spec.update_rule
-                    or bundle.training_lineage["evaluation_profile"] != spec.evaluation_profile):
-                raise CellError("candidate changed the frozen update or evaluation rule")
+            if (
+                bundle.training_lineage["update_rule"] != spec.update_rule
+                or bundle.training_lineage["evaluation_profile"]
+                != spec.evaluation_profile
+            ):
+                raise CellError(
+                    "candidate changed the frozen update or evaluation rule"
+                )
             observed = self.observations(spec.cell_id, current, latest["epoch"])
             if len(observed) < spec.min_observations:
-                raise CellError("not enough unused committed observations for an update")
+                raise CellError(
+                    "not enough unused committed observations for an update"
+                )
             self.db.executemany("INSERT INTO population_consumed VALUES(?,?)", observed)
-        self.db.execute("UPDATE population_current SET identity=?,bundle=?,epoch=epoch+1 WHERE cell_id=?",
-                        (_bounded_json(asdict(identity)),
-                         _bounded_json(bundle.record()) if bundle is not None else None, spec.cell_id))
-        self.db.execute("UPDATE population_partitions SET epoch=? WHERE partition=?", (latest["epoch"] + 1, partition.digest))
+        self.db.execute(
+            "UPDATE population_current SET identity=?,bundle=?,epoch=epoch+1 WHERE cell_id=?",
+            (
+                _bounded_json(asdict(identity)),
+                _bounded_json(bundle.record()) if bundle is not None else None,
+                spec.cell_id,
+            ),
+        )
+        self.db.execute(
+            "UPDATE population_partitions SET epoch=? WHERE partition=?",
+            (latest["epoch"] + 1, partition.digest),
+        )
 
     def annotate(self, partition, record):
         if self.plan is not None:
             spec = self.plan.spec(partition)
-            row = self.db.execute("SELECT epoch FROM population_partitions WHERE partition=?", (partition.digest,)).fetchone()
+            row = self.db.execute(
+                "SELECT epoch FROM population_partitions WHERE partition=?",
+                (partition.digest,),
+            ).fetchone()
             if row is None:
                 raise CellError("partition has lost its population admission")
-            record["population"] = dict(plan_digest=self.plan.digest, lineage=spec.lineage,
-                                        cell_id=spec.cell_id, trainable=spec.trainable,
-                                        logical_epoch=row["epoch"])
-
+            record["population"] = dict(
+                plan_digest=self.plan.digest,
+                lineage=spec.lineage,
+                cell_id=spec.cell_id,
+                trainable=spec.trainable,
+                logical_epoch=row["epoch"],
+            )

@@ -105,9 +105,7 @@ class CellSpec:
         if type(record) is not dict or set(record) != {f.name for f in fields(cls)}:
             raise CellError("Cell specification fields differ from the frozen schema")
         budget = record["budget"]
-        if type(budget) is not dict or set(budget) != {
-            f.name for f in fields(Budget)
-        }:
+        if type(budget) is not dict or set(budget) != {f.name for f in fields(Budget)}:
             raise CellError("instance budget fields differ from the frozen schema")
         return cls(**dict(record, budget=Budget(**budget)))
 
@@ -139,7 +137,9 @@ class PopulationPlan:
             or not 7 <= len(self.cells) <= 128
             or any(type(cell) is not CellSpec for cell in self.cells)
         ):
-            raise CellError("population requires an immutable tuple of 7..128 instances")
+            raise CellError(
+                "population requires an immutable tuple of 7..128 instances"
+            )
         if len({cell.cell_id for cell in self.cells}) != len(self.cells):
             raise CellError("logical Cell identifiers must be unique")
         if {cell.lineage for cell in self.cells} != set(LINEAGES):

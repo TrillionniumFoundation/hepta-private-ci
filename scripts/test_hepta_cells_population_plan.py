@@ -19,15 +19,23 @@ def population_cells():
                 family=(
                     "shared_semantic"
                     if semantic
-                    else "stateful_temporal" if temporal else "deterministic"
+                    else "stateful_temporal"
+                    if temporal
+                    else "deterministic"
                 ),
-                kernel="shared_head" if semantic else "gru" if temporal else "tool_wrapper",
+                kernel="shared_head"
+                if semantic
+                else "gru"
+                if temporal
+                else "tool_wrapper",
                 initial_identity=digest(["initial", lineage]),
                 objective="local-objective:" + lineage.lower(),
                 trainable=(
                     "heads"
                     if lineage == "MEM"
-                    else "kernel_and_heads" if lineage == "PRED" else "frozen"
+                    else "kernel_and_heads"
+                    if lineage == "PRED"
+                    else "frozen"
                 ),
                 update_rule=digest(["rule", lineage])
                 if lineage in ("MEM", "PRED")
@@ -72,21 +80,28 @@ class PopulationPlanTests(unittest.TestCase):
                 self.plan.spec(partition)
 
     def test_extra_plastic_instances_consume_cap_even_with_same_lineage(self):
-        memory = self.plan.spec(Partition("principal:one", "agent:one", "mem", "run:one"))
+        memory = self.plan.spec(
+            Partition("principal:one", "agent:one", "mem", "run:one")
+        )
         extra = replace(memory, cell_id="mem:second")
         with self.assertRaises(CellError):
             replace(self.plan, cells=self.cells + (extra,))
         admitted = replace(self.plan, cells=self.cells + (extra,), max_plastic_cells=3)
         self.assertEqual(admitted.lineage_counts["MEM"], 2)
         with self.assertRaises(CellError):
-            replace(admitted, cells=admitted.cells + (replace(extra, cell_id="mem:third"),))
+            replace(
+                admitted, cells=admitted.cells + (replace(extra, cell_id="mem:third"),)
+            )
         with self.assertRaises(CellError):
             replace(self.plan, cells=self.cells + (memory,))
 
     def test_frozen_instances_can_scale_without_enabling_updates(self):
         frozen = replace(
-            self.plan.cells[0], cell_id="extra:act", trainable="frozen",
-            update_rule=None, evaluation_profile=None,
+            self.plan.cells[0],
+            cell_id="extra:act",
+            trainable="frozen",
+            update_rule=None,
+            evaluation_profile=None,
         )
         expanded = replace(self.plan, cells=self.cells + (frozen,))
         self.assertEqual(sum(cell.plastic for cell in expanded.cells), 2)
@@ -95,15 +110,28 @@ class PopulationPlanTests(unittest.TestCase):
             for cell in self.cells
         )
         self.assertEqual(
-            sum(cell.plastic for cell in replace(self.plan, cells=all_frozen, max_plastic_cells=0).cells),
+            sum(
+                cell.plastic
+                for cell in replace(
+                    self.plan, cells=all_frozen, max_plastic_cells=0
+                ).cells
+            ),
             0,
         )
 
     def test_lineage_coverage_and_population_bounds(self):
         cases = (
             {"cells": self.cells[:-1]},
-            {"cells": self.cells[:-1] + (replace(self.cells[0], cell_id="perc:second"),)},
-            {"cells": self.cells + tuple(replace(self.cells[0], cell_id=f"extra:{i}") for i in range(122))},
+            {
+                "cells": self.cells[:-1]
+                + (replace(self.cells[0], cell_id="perc:second"),)
+            },
+            {
+                "cells": self.cells
+                + tuple(
+                    replace(self.cells[0], cell_id=f"extra:{i}") for i in range(122)
+                )
+            },
             {"max_plastic_cells": -1},
             {"max_plastic_cells": 4},
             {"max_plastic_cells": True},
