@@ -129,7 +129,7 @@ class LearningCheckpointSourceClosureTests(unittest.TestCase):
             ("fn from_root_stream_scoped_v2(", ".validate_request(&initial.request, &initial.owners)"),
             ("fn from_root_stream_scoped_v2(", "client.scope = Some(scope)"),
             ("fn frozen_scope_binding(", "self.scope.as_ref().map(FrozenLearningScopeV2::binding)"),
-            ("fn restore(", "scope.validate_snapshot(&snapshot)"),
+            ("fn restore(", "scope\n                            .validate_snapshot(&snapshot)"),
             ("fn checkpoint(", "scope.validate_snapshot(snapshot)"),
             ("fn exchange<T>(", "Some(binding) => (2, SCOPED_OPERATION, binding.to_string())"),
             ("fn exchange_learning_checkpoint(", "Some(_) => SCOPED_OPERATION"),
