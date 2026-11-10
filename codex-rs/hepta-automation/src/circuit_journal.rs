@@ -28,6 +28,7 @@ pub(crate) struct CircuitHistoryV2 {
     pub run: CircuitRunV2,
     pub commands: BTreeMap<String, Sha256Digest>,
     pub completions: BTreeMap<u64, CircuitCompletionV2>,
+    pub computation_times: BTreeMap<u64, crate::CircuitComputationTimesV2>,
     pub last_digest: Sha256Digest,
     // Derived from verified history, never a new serialized Run field.
     recovery_lease_claims: u64,
@@ -207,6 +208,7 @@ pub(crate) async fn load(
     let mut run = None;
     let mut commands = BTreeMap::new();
     let mut completions = BTreeMap::new();
+    let mut computation_times = BTreeMap::<u64, crate::CircuitComputationTimesV2>::new();
     let mut previous = Sha256Digest::for_bytes(b"hepta.circuit.genesis.v2");
     let mut expected_seq = 0_u64;
     let mut recovery_lease_claims = 0_u64;
@@ -268,14 +270,24 @@ pub(crate) async fn load(
             if stored_event != digest.as_str() || stored_state != next.state_digest()?.as_str() {
                 return Err(corrupt("circuit event or state digest mismatch"));
             }
+            if let CircuitLedgerEventV2::ComputationClaimed {
+                activation_id,
+                now_ms,
+                ..
+            } = &payload
+            {
+                computation_times.entry(*activation_id).or_default().claimed_at_ms = Some(*now_ms);
+            }
             if let CircuitLedgerEventV2::Applied {
                 event:
                     CircuitEventV2::Complete { completion } | CircuitEventV2::Reconcile { completion },
+                now_ms,
                 ..
             }
-            | CircuitLedgerEventV2::RecoverySettled { completion, .. } = &payload
+            | CircuitLedgerEventV2::RecoverySettled { completion, now_ms, .. } = &payload
             {
                 completions.insert(completion.activation_id, completion.clone());
+                computation_times.entry(completion.activation_id).or_default().completed_at_ms = Some(*now_ms);
             }
             if expected_seq > u64::from(definition.limits.max_events)
                 && matches!(&payload, CircuitLedgerEventV2::Claimed { .. })
@@ -307,6 +319,7 @@ pub(crate) async fn load(
         run,
         commands,
         completions,
+        computation_times,
         last_digest: previous,
         recovery_lease_claims,
     }))
