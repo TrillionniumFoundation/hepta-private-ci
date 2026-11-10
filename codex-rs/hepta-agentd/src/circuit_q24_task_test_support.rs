@@ -45,6 +45,7 @@ pub(super) struct Session {
     pub request: AuthBusObjectiveIngress,
     pub source: Arc<Source>,
     pub cell: Cell,
+    pub retirement: PublishedCircuitFeatureTaskV1,
     cancellation: CancellationToken,
     worker: Option<tokio::task::JoinHandle<Result<(), crate::AgentdError>>>,
 }
@@ -219,6 +220,7 @@ pub(super) async fn start(
     let Admission { runtime, config, mut request } = admission;
     let definition = published_task.definition().clone();
     let source = published_task.source().clone();
+    let retirement = published_task.clone();
     // The explicit fixture issuer signs the actual complete Cell/runtime and
     // bundle identities before the normal ingress authenticates the request.
     request.body.runtime_body_digest = definition.runtime.runtime_digest.to_string();
@@ -267,6 +269,6 @@ pub(super) async fn start(
     assert!(runtime.state.circuit_task_invocation.set(invocation).is_ok());
     let cancellation = CancellationToken::new();
     let worker = tokio::spawn(bootstrap.run(Arc::clone(&runtime.state), cancellation.clone()));
-    Ok(Session { runtime, _config: installed.config, request, source: installed.source, cell: installed.cell,
+    Ok(Session { runtime, _config: installed.config, request, source: installed.source, cell: installed.cell, retirement,
         cancellation, worker: Some(worker) })
 }

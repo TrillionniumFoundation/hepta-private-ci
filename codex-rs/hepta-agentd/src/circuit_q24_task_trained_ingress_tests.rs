@@ -123,7 +123,7 @@ async fn q24_ordinary_fresh_task_consumes_original_trainer_changed_head_after_ve
     assert_eq!((&reopened.bundle, &reopened.heads, &reopened.metrics), (&trained.bundle, &trained.heads, &trained.metrics));
     assert_eq!(trainer.read_learning_observation(&prefix)?, observed);
     assert_eq!((fs::read(root.path().join("training.journal"))?, fs::read(root.path().join("training.witness"))?), training_bytes);
-    let completion_a = a.cell.drain_completed_task(a.source.as_ref(), &a.runtime.identity)?;
+    let completion_a = a.retirement.drain_completed_task(&a.cell, a.source.as_ref(), &a.runtime.identity)?;
     a.stop().await?;
     drop(a);
 
@@ -157,7 +157,7 @@ async fn q24_ordinary_fresh_task_consumes_original_trainer_changed_head_after_ve
     assert_eq!(candidate.rollback_predecessor, Some(bundle.digest()?));
     assert_eq!(fs::read(root.path().join("heads"))?, parent_heads);
     assert_eq!(execute(&c, /*request_id*/ 2).await?, publication_c);
-    let _completion_c = c.cell.drain_completed_task(c.source.as_ref(), &c.runtime.identity)?;
+    let _completion_c = c.retirement.drain_completed_task(&c.cell, c.source.as_ref(), &c.runtime.identity)?;
     c.stop().await?;
     Ok(())
 }

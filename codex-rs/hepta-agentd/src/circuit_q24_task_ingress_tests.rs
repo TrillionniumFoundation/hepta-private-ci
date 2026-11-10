@@ -78,7 +78,7 @@ async fn q24_ordinary_signed_tasks_consume_real_current_model_and_fresh_input_af
     alias.body.runtime_body_digest = cell::d("changed signed body").to_string();
     assert!(a.runtime.state.response(3, 1, AgentdMethod::ObjectiveStart { request: alias }).await.is_err());
     assert_eq!(owner_bytes(&a)?, durable_a);
-    let completion_a = a.cell.drain_completed_task(a.source.as_ref(), &a.runtime.identity)?;
+    let completion_a = a.retirement.drain_completed_task(&a.cell, a.source.as_ref(), &a.runtime.identity)?;
     a.stop().await?;
     drop(a); // Release actual source, Cell, control and original GenV2 locks.
     let old_owner = (version.bytes("target-journal")?, version.bytes("target-witness")?);
@@ -120,7 +120,7 @@ async fn q24_ordinary_signed_tasks_consume_real_current_model_and_fresh_input_af
     assert_eq!(execute(&c, /*request_id*/ 2).await?, publication_c);
     assert_eq!((version.bytes("target-journal")?, version.bytes("target-witness")?), old_owner);
     assert_eq!(fs::read(model_root.path().join("heads"))?, parent_heads);
-    let _completion_c = c.cell.drain_completed_task(c.source.as_ref(), &c.runtime.identity)?;
+    let _completion_c = c.retirement.drain_completed_task(&c.cell, c.source.as_ref(), &c.runtime.identity)?;
     c.stop().await?;
     Ok(())
 }
