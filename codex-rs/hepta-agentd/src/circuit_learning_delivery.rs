@@ -63,6 +63,9 @@ async fn delivery(
     let initial = LearningIterationCoordinatorV1::new(request.clone(), owners.clone())?;
     let request_digest = Sha256Digest::parse(initial.snapshot().head_digest.to_string())
         .map_err(|_| Error::WrongScope)?;
+    // Refuse known queue/owner unavailability before recording a durable claim.
+    // Loss after the claim remains uncertain and permits only original readback.
+    let reservation = backend.reserve()?;
     let submit = if matches!(mode, DeliveryMode::Readback) {
         if row.request_digest.as_ref() != Some(&request_digest) {
             return Err(Error::CommitUncertain);
@@ -75,9 +78,9 @@ async fn delivery(
             .map_err(|_| Error::CommitUncertain)?
     };
     let snapshot = if submit {
-        backend.submit(request.clone()).await?
+        reservation.submit(request.clone()).await?
     } else {
-        backend.readback(request.clone()).await?
+        reservation.readback(request.clone()).await?
     };
     if snapshot.request != request || snapshot.owners != owners {
         return Err(Error::WrongScope);
@@ -91,6 +94,10 @@ async fn delivery(
         .map_err(|_| Error::WrongScope)?;
     store
         .acknowledge_circuit_learning(intent, &request_digest, &head)
+        .await
+        .map_err(|_| Error::CommitUncertain)?;
+    store
+        .retire_acknowledged_circuit_learning(intent, &request_digest, &head)
         .await
         .map_err(|_| Error::CommitUncertain)?;
     Ok(completed.snapshot().clone())
