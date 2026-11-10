@@ -1,0 +1,159 @@
+"""Engineering state and recovery fixtures; no real-task benefit is measured."""
+
+import json
+from pathlib import Path
+import sqlite3
+import tempfile
+import unittest
+
+from .episodic_memory import EpisodicStore, WorkingState, digest
+
+
+def provenance(version="1", episode="learn-1"):
+    return {"source_uri": "fixture://source-a", "source_sha256": "a" * 64,
+            "source_version": version, "episode_id": episode}
+
+
+class EpisodicMemoryTests(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        self.root = Path(self.tmp.name)
+        self.store = EpisodicStore(self.root / "authority.sqlite", namespace="team-a")
+
+    def put(self, key, text, dependencies=()):
+        return self.store.put("source-a", key, text, provenance=provenance(),
+                              dependencies=dependencies)
+
+    def test_update_revokes_transitive_dependencies_and_filters_old_snapshot(self):
+        fact = self.put("gate", "Gate is A")
+        derived = self.put("route", "Take route A", [fact["record_id"]])
+        final = self.put("memo", "Route A memo", [derived["record_id"]])
+        unrelated = self.put("contact", "Contact remains valid")
+        snapshot = self.root / "before.json"
+        self.store.export_snapshot(snapshot)
+        updated = self.store.put("source-a", "gate", "Gate is B",
+                                 provenance=provenance("2", "update-2"))
+        self.assertEqual(updated["version"], 2)
+        self.assertEqual(self.store.view()["records"], [unrelated, updated])
+        recovered = self.store.view(snapshot)
+        self.assertEqual(recovered["records"], [unrelated])
+        self.assertEqual(recovered["receipt"]["snapshot_rejections"], 3)
+        # Exact dependency identities remain invalid after a new value is written.
+        with self.assertRaises(ValueError):
+            self.put("reused", "Wrong old derivation", [final["record_id"]])
+
+    def test_revoke_removes_payload_and_old_snapshot_never_reactivates_it(self):
+        fact = self.put("secret", "Fixture retention value")
+        dependent = self.put("summary", "Derived fixture value", [fact["record_id"]])
+        snapshot = self.root / "old.json"
+        self.store.export_snapshot(snapshot)
+        receipt = self.store.revoke("source-a", "secret")
+        self.assertEqual(set(receipt["affected_ids"]), {fact["record_id"], dependent["record_id"]})
+        with sqlite3.connect(self.store.path) as db:
+            rows = db.execute("SELECT key,payload,status FROM records ORDER BY key").fetchall()
+        self.assertEqual(rows, [("secret", None, "revoked"), ("summary", None, "dependency_revoked")])
+        reopened = EpisodicStore(self.store.path, namespace="team-a", create=False)
+        self.assertEqual(reopened.view(snapshot)["records"], [])
+        self.assertEqual(reopened.view()["records"], [])
+        self.assertEqual(reopened.revoke("source-a", "secret"),
+                         {"status": "already_revoked", "affected_ids": []})
+        replacement = reopened.put("source-a", "secret", "Explicit new evidence",
+                                   provenance=provenance("3"))
+        self.assertEqual(replacement["version"], 3)
+        self.assertEqual(reopened.view(snapshot)["records"], [])
+
+    def test_namespace_isolation_and_foreign_dependency_rejection(self):
+        first = self.put("fact", "Team A value")
+        other = EpisodicStore(self.store.path, namespace="team-b", create=False)
+        second = other.put("source-a", "fact", "Team B value", provenance=provenance())
+        self.assertEqual(self.store.view()["records"], [first])
+        self.assertEqual(other.view()["records"], [second])
+        with self.assertRaises(ValueError):
+            other.put("source-a", "bad", "Foreign dependency", provenance=provenance(),
+                      dependencies=[first["record_id"]])
+        self.store.revoke("source-a", "fact")
+        self.assertEqual(other.view()["records"], [second])
+
+    def test_bounded_tombstones_prevent_replay_and_admission_rolls_back(self):
+        store = EpisodicStore(self.root / "bounded.sqlite", namespace="n", max_records=1)
+        store.put("s", "k", "Value", provenance=provenance())
+        store.revoke("s", "k")
+        before = store.view()
+        with self.assertRaises(ValueError):
+            store.put("s", "other", "Exceeds tombstone capacity", provenance=provenance())
+        self.assertEqual(store.view(), before)
+        resumed = store.put("s", "k", "Explicit replacement", provenance=provenance())
+        self.assertEqual(resumed["version"], 3)
+
+    def test_byte_admission_failure_preserves_existing_data_and_generation(self):
+        store = EpisodicStore(self.root / "bytes.sqlite", namespace="n",
+                              max_serialized_bytes=2500)
+        store.put("s", "k", "Kept", provenance=provenance())
+        before = store.view()
+        with self.assertRaises(ValueError):
+            store.put("s", "k", "x" * 4096, provenance=provenance())
+        self.assertEqual(store.view(), before)
+
+    def test_current_authority_is_required_and_snapshot_has_its_identity(self):
+        self.put("fact", "Known")
+        snapshot = self.root / "snapshot.json"
+        self.store.export_snapshot(snapshot)
+        new_owner = EpisodicStore(self.root / "other.sqlite", namespace="team-a")
+        with self.assertRaises(ValueError):
+            new_owner.view(snapshot)
+        missing = self.root / "missing.sqlite"
+        with self.assertRaises(ValueError):
+            EpisodicStore(missing, namespace="team-a", create=False)
+        self.assertFalse(missing.exists())
+        with self.assertRaises(ValueError):
+            self.store.export_snapshot(self.store.path)
+
+    def test_snapshot_corruption_and_forged_record_are_rejected(self):
+        self.put("fact", "Known")
+        snapshot = self.root / "snapshot.json"
+        self.store.export_snapshot(snapshot)
+        envelope = json.loads(snapshot.read_text())
+        envelope["body"]["records"][0]["text"] = "Corrupted"
+        snapshot.write_text(json.dumps(envelope))
+        with self.assertRaises(ValueError):
+            self.store.view(snapshot)
+        envelope["sha256"] = digest(envelope["body"])
+        snapshot.write_text(json.dumps(envelope))
+        with self.assertRaises(ValueError):
+            self.store.view(snapshot)
+
+    def test_update_cannot_create_an_indirect_dependency_cycle(self):
+        fact = self.put("a", "A")
+        dependent = self.put("b", "B", [fact["record_id"]])
+        before = self.store.view()
+        with self.assertRaises(ValueError):
+            self.put("a", "New A from stale B", [dependent["record_id"]])
+        self.assertEqual(self.store.view(), before)
+
+    def test_caller_cannot_mutate_stored_provenance_or_returned_record(self):
+        source = provenance()
+        record = self.store.put("source-a", "fact", "Known", provenance=source)
+        original = json.loads(json.dumps(record))
+        source["source_version"] = "999"
+        record["text"] = "Changed by caller"
+        self.assertEqual(self.store.view()["records"], [original])
+        with self.assertRaises(ValueError):
+            self.store.put("source-a", "invalid", "Value", provenance={**source, "gold": True})
+
+    def test_working_state_is_copied_bounded_and_cleared_on_new_session(self):
+        state = WorkingState("episode-1", max_serialized_bytes=40)
+        value = ["working"]
+        state.put("k", value)
+        value.append("external")
+        self.assertEqual(state.get("k"), ["working"])
+        with self.assertRaises(ValueError):
+            state.put("oversize", "x" * 100)
+        self.assertEqual(state.get("k"), ["working"])
+        state.begin_session("episode-2")
+        self.assertIsNone(state.get("k"))
+        self.assertIsNone(WorkingState("episode-1").get("k"))
+
+
+if __name__ == "__main__":
+    unittest.main()
