@@ -1,0 +1,94 @@
+{
+  "schema": "hepta.verify.dependency-wiring-reconciliation.v1",
+  "status": "preparatory_source_only_unresolved_joint_locks_and_native_qualification",
+  "parent_common_commit": "a2cd828aad47c56ac8c01dc2e423454eca7eafae",
+  "vendor_stage_commit": "b26eb014e502709f9652955758690fdb5601b872",
+  "immutable_matrix_source_commit": "d5a4f5b0f7794bbb93f3539032473ec3a7f2bb4c",
+  "reused_matrix_sdk_tree": "1f7e886817d1b4de133e134ce09a32e921fc2d69",
+  "changed_files": [
+    {
+      "path": "codex-rs/Cargo.toml",
+      "before": "7e2ec509988e11cdf92130e385ffdf409bbcc15d",
+      "after": "d9f1bb1db407de3c2f1650edc4da5009ba3adaf1",
+      "derivation": "Exact d5 root manifest with five inherited Smithy source-backport lines omitted; matches existing reviewed CTRL root blob."
+    },
+    {
+      "path": "codex-rs/hepta-matrix-sdk/Cargo.toml",
+      "before": "1a8864fd643349c4db345b0e2dfbcb4a4d53719a",
+      "after": "e76be92c4fcedd547472196e17727abc375b446b"
+    },
+    {
+      "path": "codex-rs/hepta-matrix-sdk/src/config.rs",
+      "before": "8469e53a1e15b960a94d53def731ba028e21a543",
+      "after": "2a6a2733e76963021e78a4841af26365f832d259"
+    },
+    {
+      "path": "codex-rs/hepta-matrix-sdk/src/gap_fill_tests.rs",
+      "before": "d85e7b4c22ecf666e37013f4f25faa75be26addb",
+      "after": "52026bdca06db8a787b6307055123531dc606289"
+    },
+    {
+      "path": "codex-rs/hepta-matrix-sdk/src/sdk.rs",
+      "before": "9a9ceda53d884ae337bd8bfb1349d7a3f4efedaa",
+      "after": "3bd27de9e13f5c1998e49aa9710f8b19852ced05"
+    },
+    {
+      "path": "codex-rs/hepta-matrix-sdk/tests/store_version_migration.rs",
+      "before": null,
+      "after": "6f53acc073af77ba496273f2acd98dccff6d4990"
+    },
+    {
+      "path": "codex-rs/hepta-matrix-sdk/tests/support/crypto_migration.rs",
+      "before": null,
+      "after": "bfb69673ded99b3289c6e1f64c26ca5f78bf2357"
+    }
+  ],
+  "omitted_inherited_smithy_source_backports": true,
+  "released_package_pin_utils_route": "separate two-lockfile proposal",
+  "preserved": {
+    "verify_python_files": 50,
+    "experiments_tree": "92114fb03561af4f695389db6180774c05697704",
+    "store_directory": "matrix-sdk-0.18",
+    "production_startup_limit_seconds": 5,
+    "passphrase_handling": "unchanged"
+  },
+  "existing_migration_test_bounds": {
+    "crypto_schema": [
+      17,
+      19
+    ],
+    "state_schema": [
+      15,
+      16
+    ],
+    "event_cache_schema": [
+      14,
+      18
+    ],
+    "media_schema": [
+      2,
+      2
+    ],
+    "event_cache_may_be_cleared": true,
+    "reverse_migration_qualified": false,
+    "old_binary_reopening_qualified": false,
+    "rollback": "consistent independent pre-upgrade backup required"
+  },
+  "inherited_locks": {
+    "cargo": "b7e710988d6a3377a7e0a1dc68aef49c68dda36e",
+    "bazel": "b91bee756020f2b6b0e92b1a5c4477e6a180149e",
+    "updated": false
+  },
+  "current_remediation_open": [
+    "joint Cargo/Bazel graph regeneration",
+    "libsqlite3-sys/rusqlite/SQLx bounds",
+    "rmcp 3.9.0 proposal",
+    "same-source native consumer/platform qualification",
+    "custom OAuth address policy and buffered-response limits"
+  ],
+  "native_tests_executed": false,
+  "inherited_test_receipts_transferred": false,
+  "rustsec_remediation_qualified": false,
+  "scientific_gate_qualified": false,
+  "production_adoption": false
+}
