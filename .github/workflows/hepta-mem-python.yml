@@ -34,6 +34,40 @@ env:
   OPENBLAS_NUM_THREADS: "1"
 
 jobs:
+  episodic-integrity:
+    name: Source-memory receipts and post-update revocation
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - name: Check out the exact source commit
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12.16"
+      - name: Check standard-library integrity and fresh readers
+        run: |
+          python scripts/hepta_ci_exec.py --timeout-seconds 180 --minimum-tests 24 \
+            --output "$RUNNER_TEMP/mem7-records/tests.json" \
+            -- python -B -m unittest -v ndu_real_runtime.test_episodic_memory \
+            ndu_real_runtime.test_episodic_retrieval \
+            ndu_real_runtime.test_episodic_qualification \
+            ndu_real_runtime.test_revocation_qualification
+      - name: Record the isolated revocation campaign
+        run: |
+          python -B -m ndu_real_runtime.run_revocation_qualification \
+            --source-commit "$SOURCE_SHA" --output "$RUNNER_TEMP/mem7-records/campaign"
+      - name: Retain integrity evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: mem7-integrity-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/mem7-records
+          if-no-files-found: error
+          retention-days: 14
   python:
     name: Frozen candidate and coverage contracts
     runs-on: ubuntu-24.04
