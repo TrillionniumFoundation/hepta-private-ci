@@ -275,6 +275,30 @@
           "exact_head_checkout": true,
           "preserves": "Hepta source/tree, both locks, pinned desktop source, Session/App binary hashes, native/real-App outputs and always-uploaded raw records",
           "result": "PENDING_NEW_EXACT_HEAD_NOT_A_PASS",
+          "architecture_run": {
+            "run": 42849794219,
+            "status": "SOURCE_HEAD_FAILURE_BASE_MERGE_SUCCESS_REQUIRED_GATE_QUEUED",
+            "source_head_job": 129967951738,
+            "base_merge_job": 129967951229,
+            "exact_result": "source-head passed the preceding scoped architecture stages, then browser-servo compilation exited 101 before tests with 16 E0659 ambiguous assert_eq errors in production_notes_fence_gui_tests.rs; observed passed tests 0 and failed tests 0; exact source/tree remained clean",
+            "classification": "inherited nested actual-App test macro ambiguity already fixed independently by #5808; not a capacity or ACT-2 observer result; no pass transferred",
+            "source_head_log_chars": 422131,
+            "retained_log": "qualification/act2-continuation-20261110/architecture-source-head-42849794219.log",
+            "artifacts": [
+              {
+                "id": 13788142865,
+                "scope": "source-head",
+                "size_bytes": 95039425,
+                "sha256": "663591506d65b37128013432611e7264c85c0d85caaea03b7115efcb80819f5f"
+              },
+              {
+                "id": 13785713731,
+                "scope": "base-merge",
+                "size_bytes": 12210,
+                "sha256": "34f96a518609d1d0dc8b17ff05d7aa3547b67af06d36f9ec87c6cd692d0dd2d2"
+              }
+            ]
+          },
           "previous_exact_head": {
             "source": "71bf0cd62da76797115e8efb0b29fb498696e196",
             "tree": "c14973570f1b7e747ccbc33918a5ece610a31516",
