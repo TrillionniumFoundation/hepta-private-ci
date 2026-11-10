@@ -177,6 +177,7 @@ def observe(output, expected_source):
                 [
                     "docker",
                     "run",
+                    "--interactive",
                     "--name",
                     container,
                     "--network",
