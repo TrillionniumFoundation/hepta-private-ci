@@ -1,0 +1,237 @@
+﻿2026-11-10T08:09:07.4233746Z Current runner version: '2.338.2'
+2026-11-10T08:09:07.4259011Z ##[group]Runner Image Provisioner
+2026-11-10T08:09:07.4259812Z Hosted Compute Agent
+2026-11-10T08:09:07.4260399Z Version: 20261028.624
+2026-11-10T08:09:07.4261060Z Commit: 54898b74c23fde5556c9b3c3a2290865feef0dfe
+2026-11-10T08:09:07.4261775Z Build Date: 2026-10-28T21:51:42Z
+2026-11-10T08:09:07.4262467Z Worker ID: {3fd036b2-2db0-40a7-8eb1-4ad55836c7bc}
+2026-11-10T08:09:07.4263131Z Region: westus3
+2026-11-10T08:09:07.4263647Z Cloud: Azure
+2026-11-10T08:09:07.4264149Z ##[endgroup]
+2026-11-10T08:09:07.4265848Z ##[group]Operating System
+2026-11-10T08:09:07.4266512Z Ubuntu
+2026-11-10T08:09:07.4267003Z 24.04.5
+2026-11-10T08:09:07.4267460Z LTS
+2026-11-10T08:09:07.4267974Z ##[endgroup]
+2026-11-10T08:09:07.4268539Z ##[group]Runner Image
+2026-11-10T08:09:07.4269100Z Image: ubuntu-24.04
+2026-11-10T08:09:07.4269614Z Version: 20261101.360.1
+2026-11-10T08:09:07.4270789Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261101.360/images/ubuntu/Ubuntu2404-Readme.md
+2026-11-10T08:09:07.4272209Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261101.360
+2026-11-10T08:09:07.4273094Z ##[endgroup]
+2026-11-10T08:09:07.4274087Z ##[group]GITHUB_TOKEN Permissions
+2026-11-10T08:09:07.4276422Z Contents: read
+2026-11-10T08:09:07.4277010Z Metadata: read
+2026-11-10T08:09:07.4277509Z ##[endgroup]
+2026-11-10T08:09:07.4279555Z Secret source: Actions
+2026-11-10T08:09:07.4280452Z Cache mode: write
+2026-11-10T08:09:07.4281176Z Prepare workflow directory
+2026-11-10T08:09:07.4779830Z Prepare all required actions
+2026-11-10T08:09:07.4828507Z Getting action download info
+2026-11-10T08:09:07.7999322Z Download action repository 'actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd' (SHA:de0fac2e4500dabe0009e67214ff5f5447ce83dd)
+2026-11-10T08:09:07.9364978Z Download action repository 'actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+2026-11-10T08:09:08.1413480Z Complete job name: native-amd64
+2026-11-10T08:09:08.2299729Z ##[group]Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+2026-11-10T08:09:08.2300693Z with:
+2026-11-10T08:09:08.2301112Z   persist-credentials: false
+2026-11-10T08:09:08.2301624Z   ref: 6a0a818932504b66da0d391e5cc0d16baf6b00cc
+2026-11-10T08:09:08.2302247Z   repository: TrillionniumFoundation/hepta-private-ci
+2026-11-10T08:09:08.2306345Z   token: ***
+2026-11-10T08:09:08.2306736Z   ssh-strict: true
+2026-11-10T08:09:08.2307131Z   ssh-user: git
+2026-11-10T08:09:08.2307515Z   clean: true
+2026-11-10T08:09:08.2307927Z   sparse-checkout-cone-mode: true
+2026-11-10T08:09:08.2308397Z   fetch-depth: 1
+2026-11-10T08:09:08.2308789Z   fetch-tags: false
+2026-11-10T08:09:08.2309187Z   show-progress: true
+2026-11-10T08:09:08.2309588Z   lfs: false
+2026-11-10T08:09:08.2309962Z   submodules: false
+2026-11-10T08:09:08.2310375Z   set-safe-directory: true
+2026-11-10T08:09:08.2311029Z env:
+2026-11-10T08:09:08.2311479Z   REVIEWED_SHA: 6a0a818932504b66da0d391e5cc0d16baf6b00cc
+2026-11-10T08:09:08.2312101Z ##[endgroup]
+2026-11-10T08:09:08.4842409Z Syncing repository: TrillionniumFoundation/hepta-private-ci
+2026-11-10T08:09:08.4845113Z ##[group]Getting Git version info
+2026-11-10T08:09:08.4846650Z Working directory is '/home/runner/work/hepta-private-ci/hepta-private-ci'
+2026-11-10T08:09:08.4848494Z [command]/usr/bin/git version
+2026-11-10T08:09:08.4951442Z git version 2.56.0
+2026-11-10T08:09:08.4970427Z ##[endgroup]
+2026-11-10T08:09:08.4995400Z Temporarily overriding HOME='/home/runner/work/_temp/3ff38049-2057-4b04-91e5-0a52b0738fe3' before making global git config changes
+2026-11-10T08:09:08.5001741Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-10T08:09:08.5003922Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-10T08:09:08.5065990Z Deleting the contents of '/home/runner/work/hepta-private-ci/hepta-private-ci'
+2026-11-10T08:09:08.5090577Z ##[group]Initializing the repository
+2026-11-10T08:09:08.5095494Z [command]/usr/bin/git init /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-10T08:09:08.5205113Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-11-10T08:09:08.5209068Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-11-10T08:09:08.5210468Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-11-10T08:09:08.5211857Z hint: call:
+2026-11-10T08:09:08.5212674Z hint:
+2026-11-10T08:09:08.5213672Z hint: 	git config --global init.defaultBranch <name>
+2026-11-10T08:09:08.5214944Z hint:
+2026-11-10T08:09:08.5216217Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-11-10T08:09:08.5217916Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-11-10T08:09:08.5219428Z hint:
+2026-11-10T08:09:08.5220205Z hint: 	git branch -m <name>
+2026-11-10T08:09:08.5221120Z hint:
+2026-11-10T08:09:08.5222351Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-11-10T08:09:08.5226848Z Initialized empty Git repository in /home/runner/work/hepta-private-ci/hepta-private-ci/.git/
+2026-11-10T08:09:08.5235155Z [command]/usr/bin/git remote add origin https://github.com/TrillionniumFoundation/hepta-private-ci
+2026-11-10T08:09:08.5278724Z ##[endgroup]
+2026-11-10T08:09:08.5280160Z ##[group]Disabling automatic garbage collection
+2026-11-10T08:09:08.5283409Z [command]/usr/bin/git config --local gc.auto 0
+2026-11-10T08:09:08.5318435Z ##[endgroup]
+2026-11-10T08:09:08.5319808Z ##[group]Setting up auth
+2026-11-10T08:09:08.5320835Z Removing SSH command configuration
+2026-11-10T08:09:08.5325529Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-10T08:09:08.5360486Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-10T08:09:08.5670671Z Removing HTTP extra header
+2026-11-10T08:09:08.5680057Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-10T08:09:08.5712637Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-10T08:09:08.5916845Z Removing includeIf entries pointing to credentials config files
+2026-11-10T08:09:08.5917865Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-10T08:09:08.5953624Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-10T08:09:08.6145795Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-b9484e42-6538-4200-9af0-ab31a5251ee5.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-11-10T08:09:08.6185023Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path /home/runner/work/_temp/git-credentials-b9484e42-6538-4200-9af0-ab31a5251ee5.config
+2026-11-10T08:09:08.6216397Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-b9484e42-6538-4200-9af0-ab31a5251ee5.config
+2026-11-10T08:09:08.6249563Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-b9484e42-6538-4200-9af0-ab31a5251ee5.config
+2026-11-10T08:09:08.6278332Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-b9484e42-6538-4200-9af0-ab31a5251ee5.config
+2026-11-10T08:09:08.6303685Z ##[endgroup]
+2026-11-10T08:09:08.6304397Z ##[group]Fetching the repository
+2026-11-10T08:09:08.6311780Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin 6a0a818932504b66da0d391e5cc0d16baf6b00cc
+2026-11-10T08:09:14.2156958Z From https://github.com/TrillionniumFoundation/hepta-private-ci
+2026-11-10T08:09:14.2159815Z  * branch            6a0a818932504b66da0d391e5cc0d16baf6b00cc -> FETCH_HEAD
+2026-11-10T08:09:14.2169301Z [command]/usr/bin/git rev-parse --verify --quiet 6a0a818932504b66da0d391e5cc0d16baf6b00cc^{object}
+2026-11-10T08:09:14.2194237Z 6a0a818932504b66da0d391e5cc0d16baf6b00cc
+2026-11-10T08:09:14.2199948Z ##[endgroup]
+2026-11-10T08:09:14.2201559Z ##[group]Determining the checkout info
+2026-11-10T08:09:14.2203287Z ##[endgroup]
+2026-11-10T08:09:14.2204515Z [command]/usr/bin/git sparse-checkout disable
+2026-11-10T08:09:14.2255520Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-11-10T08:09:14.2286750Z ##[group]Checking out the ref
+2026-11-10T08:09:14.2290804Z [command]/usr/bin/git checkout --progress --force 6a0a818932504b66da0d391e5cc0d16baf6b00cc
+2026-11-10T08:09:14.8699655Z Note: switching to '6a0a818932504b66da0d391e5cc0d16baf6b00cc'.
+2026-11-10T08:09:14.8700322Z 
+2026-11-10T08:09:14.8700732Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-11-10T08:09:14.8701705Z changes and commit them, and you can discard any commits you make in this
+2026-11-10T08:09:14.8702614Z state without impacting any branches by switching back to a branch.
+2026-11-10T08:09:14.8703188Z 
+2026-11-10T08:09:14.8703571Z If you want to create a new branch to retain commits you create, you may
+2026-11-10T08:09:14.8704376Z do so (now or later) by using -c with the switch command. Example:
+2026-11-10T08:09:14.8704862Z 
+2026-11-10T08:09:14.8705090Z   git switch -c <new-branch-name>
+2026-11-10T08:09:14.8705654Z 
+2026-11-10T08:09:14.8705912Z Or undo this operation with:
+2026-11-10T08:09:14.8706241Z 
+2026-11-10T08:09:14.8706452Z   git switch -
+2026-11-10T08:09:14.8706717Z 
+2026-11-10T08:09:14.8707144Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-11-10T08:09:14.8707702Z 
+2026-11-10T08:09:14.8708483Z HEAD is now at 6a0a818 ci(verify): measure a bounded local RBE image without publishing
+2026-11-10T08:09:14.8724686Z ##[endgroup]
+2026-11-10T08:09:14.8767419Z [command]/usr/bin/git log -1 --format=%H
+2026-11-10T08:09:14.8791253Z 6a0a818932504b66da0d391e5cc0d16baf6b00cc
+2026-11-10T08:09:14.8800182Z ##[group]Removing auth
+2026-11-10T08:09:14.8801229Z Removing SSH command configuration
+2026-11-10T08:09:14.8805402Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-10T08:09:14.8836635Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-10T08:09:14.9035074Z Removing HTTP extra header
+2026-11-10T08:09:14.9039733Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-10T08:09:14.9072260Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-10T08:09:14.9269417Z Removing includeIf entries pointing to credentials config files
+2026-11-10T08:09:14.9274304Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-10T08:09:14.9301949Z includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path
+2026-11-10T08:09:14.9302736Z includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path
+2026-11-10T08:09:14.9303304Z includeif.gitdir:/github/workspace/.git.path
+2026-11-10T08:09:14.9303740Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-10T08:09:14.9319675Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path
+2026-11-10T08:09:14.9340656Z /home/runner/work/_temp/git-credentials-b9484e42-6538-4200-9af0-ab31a5251ee5.config
+2026-11-10T08:09:14.9351096Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path /home/runner/work/_temp/git-credentials-b9484e42-6538-4200-9af0-ab31a5251ee5.config
+2026-11-10T08:09:14.9385625Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path
+2026-11-10T08:09:14.9407457Z /home/runner/work/_temp/git-credentials-b9484e42-6538-4200-9af0-ab31a5251ee5.config
+2026-11-10T08:09:14.9418232Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-b9484e42-6538-4200-9af0-ab31a5251ee5.config
+2026-11-10T08:09:14.9459065Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git.path
+2026-11-10T08:09:14.9486039Z /github/runner_temp/git-credentials-b9484e42-6538-4200-9af0-ab31a5251ee5.config
+2026-11-10T08:09:14.9497124Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-b9484e42-6538-4200-9af0-ab31a5251ee5.config
+2026-11-10T08:09:14.9529412Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-10T08:09:14.9552114Z /github/runner_temp/git-credentials-b9484e42-6538-4200-9af0-ab31a5251ee5.config
+2026-11-10T08:09:14.9560365Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-b9484e42-6538-4200-9af0-ab31a5251ee5.config
+2026-11-10T08:09:14.9589799Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-10T08:09:14.9778480Z Removing credentials config '/home/runner/work/_temp/git-credentials-b9484e42-6538-4200-9af0-ab31a5251ee5.config'
+2026-11-10T08:09:14.9787612Z ##[endgroup]
+2026-11-10T08:09:14.9978928Z ##[group]Run set -euo pipefail
+2026-11-10T08:09:14.9979425Z [36;1mset -euo pipefail[0m
+2026-11-10T08:09:14.9979804Z [36;1mmkdir -p "$RUNNER_TEMP/rbe-openssh-validation"[0m
+2026-11-10T08:09:14.9980497Z [36;1mpython3 -B -m unittest discover -s scripts -p test_qualify_rbe_openssh.py -v 2>&1 | tee "$RUNNER_TEMP/rbe-openssh-validation/tests.log"[0m
+2026-11-10T08:09:14.9997509Z shell: /usr/bin/bash -e {0}
+2026-11-10T08:09:14.9997865Z env:
+2026-11-10T08:09:14.9998174Z   REVIEWED_SHA: 6a0a818932504b66da0d391e5cc0d16baf6b00cc
+2026-11-10T08:09:14.9998537Z ##[endgroup]
+2026-11-10T08:09:15.1894111Z test_image_substitution_refuses_even_when_build_is_successful (test_qualify_rbe_openssh.BuildBindingTests.test_image_substitution_refuses_even_when_build_is_successful) ... ok
+2026-11-10T08:09:15.1897847Z test_missing_or_wrong_platform_material_cannot_establish_base (test_qualify_rbe_openssh.BuildBindingTests.test_missing_or_wrong_platform_material_cannot_establish_base) ... ok
+2026-11-10T08:09:15.1900642Z test_observed_base_and_tested_local_image_stay_distinct_from_registry_digest (test_qualify_rbe_openssh.BuildBindingTests.test_observed_base_and_tested_local_image_stay_distinct_from_registry_digest) ... ok
+2026-11-10T08:09:15.1902219Z 
+2026-11-10T08:09:15.1902740Z ----------------------------------------------------------------------
+2026-11-10T08:09:15.1903463Z Ran 3 tests in 0.001s
+2026-11-10T08:09:15.1903749Z 
+2026-11-10T08:09:15.1904055Z OK
+2026-11-10T08:09:15.2021667Z ##[group]Run python3 -B scripts/qualify_rbe_openssh.py --output "$RUNNER_TEMP/rbe-openssh-image" --expected-source "$REVIEWED_SHA"
+2026-11-10T08:09:15.2022592Z [36;1mpython3 -B scripts/qualify_rbe_openssh.py --output "$RUNNER_TEMP/rbe-openssh-image" --expected-source "$REVIEWED_SHA"[0m
+2026-11-10T08:09:15.2035894Z shell: /usr/bin/bash -e {0}
+2026-11-10T08:09:15.2036228Z env:
+2026-11-10T08:09:15.2036550Z   REVIEWED_SHA: 6a0a818932504b66da0d391e5cc0d16baf6b00cc
+2026-11-10T08:09:15.2036907Z ##[endgroup]
+2026-11-10T08:09:49.2317385Z Traceback (most recent call last):
+2026-11-10T08:09:49.2319876Z   File "/home/runner/work/hepta-private-ci/hepta-private-ci/scripts/qualify_rbe_openssh.py", line 321, in <module>
+2026-11-10T08:09:49.2321514Z     qualify(arguments.output, arguments.expected_source)
+2026-11-10T08:09:49.2322655Z   File "/home/runner/work/hepta-private-ci/hepta-private-ci/scripts/qualify_rbe_openssh.py", line 260, in qualify
+2026-11-10T08:09:49.2323650Z     raise RuntimeError("probe completion marker missing")
+2026-11-10T08:09:49.2324234Z RuntimeError: probe completion marker missing
+2026-11-10T08:09:49.2476710Z ##[error]Process completed with exit code 1.
+2026-11-10T08:09:49.2589626Z ##[group]Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+2026-11-10T08:09:49.2590051Z with:
+2026-11-10T08:09:49.2590353Z   name: rbe-openssh-amd64-6a0a818932504b66da0d391e5cc0d16baf6b00cc
+2026-11-10T08:09:49.2590913Z   path: /home/runner/work/_temp/rbe-openssh-image
+/home/runner/work/_temp/rbe-openssh-validation
+
+2026-11-10T08:09:49.2591390Z   if-no-files-found: error
+2026-11-10T08:09:49.2591654Z   retention-days: 7
+2026-11-10T08:09:49.2591867Z   compression-level: 6
+2026-11-10T08:09:49.2592098Z   overwrite: false
+2026-11-10T08:09:49.2592326Z   include-hidden-files: false
+2026-11-10T08:09:49.2592565Z env:
+2026-11-10T08:09:49.2592805Z   REVIEWED_SHA: 6a0a818932504b66da0d391e5cc0d16baf6b00cc
+2026-11-10T08:09:49.2593108Z ##[endgroup]
+2026-11-10T08:09:49.4233377Z (node:5113) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-10T08:09:49.4234212Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-10T08:09:49.4362668Z Multiple search paths detected. Calculating the least common ancestor of all paths
+2026-11-10T08:09:49.4364475Z The least common ancestor is /home/runner/work/_temp. This will be the root directory of the artifact
+2026-11-10T08:09:49.4365564Z With the provided path, there will be 35 files uploaded
+2026-11-10T08:09:49.4366439Z Artifact name is valid!
+2026-11-10T08:09:49.4367162Z Root directory input is valid!
+2026-11-10T08:09:49.8576188Z Beginning upload of artifact content to blob storage
+2026-11-10T08:09:49.9188428Z (node:5113) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+2026-11-10T08:09:50.1682564Z Uploaded bytes 28291
+2026-11-10T08:09:50.2268868Z Finished uploading artifact content to blob storage!
+2026-11-10T08:09:50.2270424Z SHA256 digest of uploaded artifact zip is c08ca81e4957c885ce55f2d1fae1fcded9d544c92f13a93218c61d94d4693905
+2026-11-10T08:09:50.2272158Z Finalizing artifact upload
+2026-11-10T08:09:50.5991433Z Artifact rbe-openssh-amd64-6a0a818932504b66da0d391e5cc0d16baf6b00cc.zip successfully finalized. Artifact ID 13745128453
+2026-11-10T08:09:50.5992649Z Artifact rbe-openssh-amd64-6a0a818932504b66da0d391e5cc0d16baf6b00cc has been successfully uploaded! Final size is 28291 bytes. Artifact ID is 13745128453
+2026-11-10T08:09:50.5999202Z Artifact download URL: https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42775482152/artifacts/13745128453
+2026-11-10T08:09:50.6222851Z Post job cleanup.
+2026-11-10T08:09:50.7075973Z [command]/usr/bin/git version
+2026-11-10T08:09:50.7124207Z git version 2.56.0
+2026-11-10T08:09:50.7173336Z Temporarily overriding HOME='/home/runner/work/_temp/37682596-95e3-4e49-b173-856655d2b657' before making global git config changes
+2026-11-10T08:09:50.7174600Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-10T08:09:50.7180369Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-10T08:09:50.7215405Z Removing SSH command configuration
+2026-11-10T08:09:50.7223251Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-10T08:09:50.7257119Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-10T08:09:50.7472600Z Removing HTTP extra header
+2026-11-10T08:09:50.7479018Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-10T08:09:50.7512879Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-10T08:09:50.7744017Z Removing includeIf entries pointing to credentials config files
+2026-11-10T08:09:50.7751928Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-10T08:09:50.7808847Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-10T08:09:50.8168488Z Cleaning up orphan processes
+2026-11-10T08:09:50.8642989Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
