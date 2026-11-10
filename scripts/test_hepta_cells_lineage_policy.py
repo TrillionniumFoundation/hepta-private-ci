@@ -152,6 +152,24 @@ class LineagePolicyTests(unittest.TestCase):
         with self.assertRaisesRegex(LineagePolicyError, "feature group"):
             CellRoster(tuple(changed if c is mem else c for c in base))
 
+    def test_shared_feature_pool_is_run_partition_bound(self):
+        original = roster()
+        mem = next(c for c in original.cells if c.lineage == "MEM")
+        cross_run = replace(mem, run_id="run-b")
+        with self.assertRaisesRegex(LineagePolicyError, "feature group"):
+            CellRoster(tuple(cross_run if c is mem else c for c in original.cells))
+
+        # A separate run may enroll its own separately named pool. The
+        # original owner and its native partition remain unchanged.
+        isolated = replace(cross_run, feature_share_group="perception-run-b")
+        bounded = CellRoster(
+            tuple(isolated if c is mem else c for c in original.cells)
+        )
+        self.assertEqual(bounded.cell(isolated.partition), isolated)
+        self.assertEqual(
+            sum(c.trainable_scope is not None for c in bounded.cells), 2
+        )
+
     def test_shared_feature_abi_is_explicit_and_not_self_authorizing(self):
         with self.assertRaisesRegex(LineagePolicyError, "feature_abi"):
             enrollment("PERC", feature_abi=None)
