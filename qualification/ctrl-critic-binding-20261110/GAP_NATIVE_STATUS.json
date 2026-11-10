@@ -1,0 +1,51 @@
+{
+  "actual_gap_categories": null,
+  "blocker": {
+    "last_host_inventory_observed_at_utc": "2026-11-10T13:52:38Z",
+    "local_exact_training_copy_found": false,
+    "local_fallback_executed": false,
+    "native_health_not_established": true,
+    "observed_error": "MCP -32603 Internal error",
+    "other_dataset_substituted": false,
+    "raw_error_sha256": "1d9ce63057d17b071322824f98648d9b5710de5f2bb2a6ee85b8f91084fab42d",
+    "read_only_host_inventory_failed": true
+  },
+  "business_job_id": null,
+  "business_submission_count": 0,
+  "decision": "HOLD_NO_GO",
+  "implementation_commit": "13de10b55b0f16cf1548dab193fbb8ac11d3b4cd",
+  "native_dispatch_attempted": false,
+  "native_upload_attempted": false,
+  "next_step": "Once native read access works, verify exact source/input pins and run this frozen diagnostic once; no category counts are inferred before an actual result.",
+  "original_records": {
+    "bytes": 9496351,
+    "sha256": "43f1c63fe378a783cc57d475ad1841c4235b7d1eaa335c2e0fdd2126f73d1a85"
+  },
+  "physical_full_cost_observed": false,
+  "policy_benefit_qualified": false,
+  "production_update": "no-update",
+  "request_sha256": "3ea9d00f6dc1be41427272a1f79169d3b2bd4b56d8b1b97ec7693be9c9b4824e",
+  "schema": "ctrl.fit40.retained-gap-native-status.v1",
+  "scope": {
+    "future_collection_allowed": false,
+    "historical_rows": 200,
+    "historical_states": 160,
+    "new_independent_tasks": 0,
+    "original_fit_sources": 40
+  },
+  "source_pins": {
+    "candidate_coverage.py": {
+      "bytes": 14398,
+      "sha256": "3d44b74354a3a56b69467e1c019606de7f360666d7fa09a8cee4fe2f71c5872b"
+    },
+    "candidate_coverage_legacy.py": {
+      "bytes": 16027,
+      "sha256": "daba119e74d2f306731c063c30da9a6fb1a8717636ab4061d20e71e138632799"
+    },
+    "candidate_gap_diagnostic.py": {
+      "bytes": 16971,
+      "sha256": "1da02aea4aabb7e21486110fc0ec545fe9d683e5e0383311df568e33f649753e"
+    }
+  },
+  "state": "NOT_SUBMITTED"
+}
