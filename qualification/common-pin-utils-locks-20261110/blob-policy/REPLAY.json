@@ -1,0 +1,54 @@
+{
+  "schema": "hepta.common.pin-utils.asset-policy-replay.v1",
+  "base": "559809452a3b4524a8edeeb4ec38af665231f4dd",
+  "checked_head": "c429605e699a3e36c0b9ae36d016bc9889eed6ae",
+  "checked_tree": "a57da4ad1380d18f88fa05187e6be87409621fda",
+  "checker_git_blob": "18bc6175c274abaeabe3ef0c32d82627d498bbe7",
+  "checker_sha256": "eb7a9eab936b7c7948ed13fbd6d6aca09aa38997c20685a8ee12d72e388d52c3",
+  "threshold_bytes": 512000,
+  "original_allowlist_blob": "a110a7e5da320e266a86d4f581b0c0cefffed59a",
+  "after_allowlist_blob": "a62d1bcf575ea3517f96e500239263693ebb8767",
+  "added_sha256_path_entries": 1,
+  "before_after_use_identical_checked_head": true,
+  "commands": [
+    {
+      "phase": "before",
+      "argv": [
+        "python",
+        "/workspace/scratch/40a1a085876c/pin-native-evidence-publication/policy-replay/check_blob_size.py",
+        "--base",
+        "559809452a3b4524a8edeeb4ec38af665231f4dd",
+        "--head",
+        "c429605e699a3e36c0b9ae36d016bc9889eed6ae",
+        "--max-bytes",
+        "512000",
+        "--allowlist",
+        "/workspace/scratch/40a1a085876c/pin-native-evidence-publication/policy-replay/allowlist.before.txt"
+      ],
+      "cwd_kind": "partial local Git object database containing exact unchanged source and evidence trees/commits",
+      "exit_code": 1,
+      "expected_exit_code": 1
+    },
+    {
+      "phase": "after",
+      "argv": [
+        "python",
+        "/workspace/scratch/40a1a085876c/pin-native-evidence-publication/policy-replay/check_blob_size.py",
+        "--base",
+        "559809452a3b4524a8edeeb4ec38af665231f4dd",
+        "--head",
+        "c429605e699a3e36c0b9ae36d016bc9889eed6ae",
+        "--max-bytes",
+        "512000",
+        "--allowlist",
+        "/workspace/scratch/40a1a085876c/pin-native-evidence-publication/policy-replay/allowlist.after.txt"
+      ],
+      "cwd_kind": "partial local Git object database containing exact unchanged source and evidence trees/commits",
+      "exit_code": 0,
+      "expected_exit_code": 0
+    }
+  ],
+  "new_native_execution": false,
+  "other_five_advisories": "OPEN",
+  "full_same_source_gate": "OPEN"
+}

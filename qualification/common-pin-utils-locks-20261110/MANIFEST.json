@@ -6,9 +6,9 @@
   "scope": "original native Windows lock qualification; five other advisories and full gate OPEN",
   "files": {
     "README.md": {
-      "bytes": 2571,
-      "sha256": "9dca9528c3be1a385cba471bc9ce18ebee9b980bd42ba821adfe1dd480f5c347",
-      "git_blob": "72aef4b4843fb57c32c1c181a7ca6170c5244ddc"
+      "bytes": 3009,
+      "sha256": "8e74d5c34a4d4961d31751dfdbebc7d521f6538775ee44853e1bb9d0e81f2ff7",
+      "git_blob": "5843e8caa9ad3c49a7addc83d207634e90923dc7"
     },
     "VERIFICATION.json": {
       "bytes": 3087,
@@ -20,10 +20,36 @@
       "sha256": "b25d912f46be8cfaed928147c115f6d6ad9f66dc8ef4a949fc8c9e9cdbebde79",
       "git_blob": "155d7c5435744656e06680264ccc82f6e8abcac1"
     },
+    "blob-policy/REPLAY.json": {
+      "bytes": 2114,
+      "sha256": "3f32d5a0727133bb3f6fb56bd680506b1f33851c8ca2531f16f2ed95fa7965be",
+      "git_blob": "3009f59ce04ac9bf6c65b455fde3e2f3cc2d1231"
+    },
+    "blob-policy/after.stderr.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "blob-policy/after.stdout.log": {
+      "bytes": 675,
+      "sha256": "f752f536a47d4522093cae4b6a5376810818f76ef9ea03f523642d0e12b8f908",
+      "git_blob": "cd1c8aabb607397a21bf5ad6a5b15cdb515ca159"
+    },
+    "blob-policy/before.stderr.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "blob-policy/before.stdout.log": {
+      "bytes": 980,
+      "sha256": "70a2d8efddecd5d66277558ba29cfb2a9b47ee236bf53f18c0ba903f405e46bb",
+      "git_blob": "acaca77b1d5d75c901be3923ddb72e8b627f8b11"
+    },
     "native-job-129725902195.log": {
       "bytes": 279031,
       "sha256": "aa4d45335d38cc0f3ee6a26c8867c49af8ccc26fc479b3d93f0ef031a2a4949b",
       "git_blob": "1884c19d61d8c5a2d016636bb7bf19d9ea6c31b8"
     }
-  }
+  },
+  "policy_replay_checked_head": "c429605e699a3e36c0b9ae36d016bc9889eed6ae"
 }

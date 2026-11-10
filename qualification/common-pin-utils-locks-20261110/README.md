@@ -39,3 +39,5 @@ unsuppressed fatal advisories and the complete same-source consumer, platform
 and security gates remain OPEN / HOLD. Evidence-head CI is separate and pending.
 No new native commands, automatic dependency updates, commits, merges or
 deployment were performed by the qualification workflow.
+
+The unchanged checker replay inspects exact evidence commit c429605e699a3e36c0b9ae36d016bc9889eed6ae on the original passed source. Its two invocations use the same Git objects and 512,000-byte limit, with the original and single-entry allowlists respectively. The first exits 1 and blocks only the ZIP; the second exits 0 and registers only its exact bytes. The final evidence head adds these replay records and has separate CI status.
