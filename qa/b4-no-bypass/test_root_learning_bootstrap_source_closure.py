@@ -228,6 +228,23 @@ class RootLearningBootstrapSourceClosureTests(unittest.TestCase):
         self.rejects(AGENT + "runtime.rs", "fn run_with_shutdown(", "config.require_root_learning_assembled()?")
         self.rejects(CONFIG, "fn with_root_learning_stage_owners(", "inputs.into_learning_runtime(stages, verifier, capacity)?")
 
+    def test_original_source_scope_requires_registered_membership(self):
+        function = "fn require_circuit_learning_source("
+        membership = "!self.circuit_learning_sources().contains(&request.source_run_id)"
+        self.rejects(SOURCE, function, "|| " + membership)
+        self.rejects(
+            SOURCE,
+            function,
+            membership,
+            replacement="self.circuit_learning_sources().first() != Some(&request.source_run_id)",
+        )
+        self.rejects(
+            SOURCE,
+            function,
+            "request.agent_id.as_str() != self.identity().agent_id.as_str()",
+            replacement="false",
+        )
+
     def test_original_root_source_join_cannot_be_dropped_or_downgraded(self):
         self.rejects(INPUTS, "fn into_learning_runtime(", "bootstrap.with_original_circuit_learning_delivery(self.initial.request)?")
         self.rejects(DELIVERY, "fn with_original_circuit_learning_delivery(", "bootstrap.circuit_delivery_source = CircuitLearningSourceV1::OriginalObjective")
