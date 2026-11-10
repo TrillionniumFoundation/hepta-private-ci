@@ -1,0 +1,31 @@
+{
+  "address_space_limit_bytes": 8589934592,
+  "argv": [
+    "/home/qian-qi/hepta-hcsn-trainer-20261108-s3-v1/dependency-recovery-v2/venv/bin/python",
+    "-B",
+    "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-program-20261110-c385-v2/run_c1_clock_supplement.py",
+    "--base",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training",
+    "--output",
+    "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-20261110-c385-v2"
+  ],
+  "energy_joules": null,
+  "host_load_before": [
+    10.42919921875,
+    10.1025390625,
+    10.23388671875
+  ],
+  "idempotency_key": "hcsn-baseline36-c1-independent-review-c385-v2",
+  "launcher_sha256": "94be43962ba77b72cc99ae12ea057dc8af6318e17908c496718828819ae6d6f4",
+  "nice_adjustment": 10,
+  "output": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-20261110-c385-v2",
+  "program": "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-program-20261110-c385-v2",
+  "program_archive_sha256": "6ede11014d33e219f6ebc109911ad50a8550bb585388b16b5c604a2d4cb54c51",
+  "schema": "native-baseline36-C1-independent-review-launch-v2",
+  "scope": "Seven C1 chains only; original36 results and all bytes reverified and reused from failed-v1. No HCSN directory read, training replay or optimizer step. May overlap original HCSN jobs. Failed-v1 costs remain additional.",
+  "source_copy_and_hash_seconds": 0.02536861109547317,
+  "started_utc": "2026-11-10T17:57:04.032101+00:00",
+  "status": "started",
+  "timeout_seconds": 1800,
+  "torch_threads": 1
+}

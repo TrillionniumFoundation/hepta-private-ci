@@ -1,0 +1,318 @@
+{
+  "actual_original_outer_wall_ceiling_seconds": 13028.109362605028,
+  "all_common_tensors_frozen": true,
+  "all_main_epoch_orders_and_final_rng_checked": 59,
+  "arm": "cfc",
+  "audit_status": "passed_completed_original_baseline",
+  "best_epoch": 49,
+  "diagnostic_updates": 320,
+  "epochs": 59,
+  "fresh_forward": {
+    "performed": false,
+    "scope": "one predeclared representative per original core"
+  },
+  "independent_ABC_class_weight_denominators_checked": 1028,
+  "independent_adequacy": {
+    "first_plateau_epoch": 59,
+    "independently_recomputed": true,
+    "quality_target_is_separate_from_adequacy": true,
+    "strict_best_epoch": 49
+  },
+  "independent_selected_development": {
+    "accuracy": 0.6740423134702053,
+    "balanced_accuracy_present_classes": 0.30489859333992847,
+    "brier_half_sum": 0.26229573236756515,
+    "brier_mean_classes": 0.047690133157739116,
+    "confusion_matrix": [
+      [
+        5338,
+        0,
+        0,
+        56,
+        0,
+        952,
+        37,
+        6,
+        220,
+        0,
+        0
+      ],
+      [
+        115,
+        0,
+        0,
+        118,
+        0,
+        278,
+        44,
+        28,
+        48,
+        0,
+        0
+      ],
+      [
+        257,
+        0,
+        0,
+        140,
+        0,
+        429,
+        17,
+        247,
+        50,
+        0,
+        0
+      ],
+      [
+        5,
+        0,
+        0,
+        10686,
+        0,
+        101,
+        86,
+        607,
+        15,
+        0,
+        0
+      ],
+      [
+        145,
+        0,
+        0,
+        4,
+        0,
+        142,
+        2,
+        4,
+        0,
+        0,
+        0
+      ],
+      [
+        387,
+        0,
+        0,
+        40,
+        0,
+        4296,
+        161,
+        0,
+        107,
+        0,
+        0
+      ],
+      [
+        253,
+        0,
+        0,
+        1739,
+        0,
+        271,
+        313,
+        147,
+        531,
+        0,
+        0
+      ],
+      [
+        18,
+        0,
+        0,
+        341,
+        0,
+        37,
+        179,
+        424,
+        27,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        600,
+        0,
+        5,
+        848,
+        12,
+        480,
+        0,
+        0
+      ],
+      [
+        94,
+        0,
+        0,
+        2,
+        0,
+        98,
+        4,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        44,
+        0,
+        0,
+        83,
+        0,
+        20,
+        73,
+        0,
+        141,
+        0,
+        0
+      ]
+    ],
+    "ece_15_equal_width_bins": 0.2106000036958134,
+    "events": 31952,
+    "macro_f1_11_classes": 0.28380525068579854,
+    "macro_f1_present_classes": 0.28380525068579854,
+    "nll": 1.2253568674574975
+  },
+  "initial_seeded_constructor_exact": true,
+  "journal": {
+    "completed_epochs": 59,
+    "diagnostic_updates": 320,
+    "every_completed_epoch_complete_ABC": true,
+    "main_updates": 708,
+    "micro_forward_calls": {
+      "diagnostic": 320,
+      "main": 708
+    },
+    "partial_epoch_retained": false,
+    "partial_update_retained": false
+  },
+  "learning_rate": 0.001,
+  "main_updates": 708,
+  "memorization_passed": true,
+  "metric_absolute_differences": {
+    "accuracy": 0.0,
+    "balanced_accuracy_present_classes": 0.0,
+    "brier_half_sum": 0.0,
+    "brier_mean_classes": 0.0,
+    "ece_15_equal_width_bins": 0.0,
+    "events": 0,
+    "macro_f1_11_classes": 5.551115123125783e-17,
+    "macro_f1_present_classes": 5.551115123125783e-17,
+    "nll": 2.220446049250313e-16
+  },
+  "model_configuration": {
+    "arm": "cfc",
+    "cache_frozen_tables": false,
+    "freeze_shared": true,
+    "hcsn_grid": null,
+    "learn_core_adapter": true,
+    "plif_configuration": null,
+    "s4_repo": "/home/qian-qi/hepta-hcsn-trainer-20261108-s3-v1/dependency-recovery-v3/s4",
+    "seed": 307,
+    "width": 16
+  },
+  "name": "cfc-s307-lr0.001",
+  "optimizer_checks": {
+    "best.pt": {
+      "AdamW_constructor_default_fields_checked": [
+        "amsgrad",
+        "betas",
+        "capturable",
+        "differentiable",
+        "eps",
+        "foreach",
+        "fused",
+        "maximize"
+      ],
+      "optimizer_group_names_and_hints_verified": true,
+      "optimizer_parameters": 12,
+      "optimizer_steps": 588,
+      "second_moments_nonnegative": true,
+      "torch_rng_bytes_sha256": "862c41f9d562f5500a355ce3dbd0b72c1b21bb31b55e0efc5381313c42e6d779",
+      "torch_rng_format_valid": true
+    },
+    "last.pt": {
+      "AdamW_constructor_default_fields_checked": [
+        "amsgrad",
+        "betas",
+        "capturable",
+        "differentiable",
+        "eps",
+        "foreach",
+        "fused",
+        "maximize"
+      ],
+      "optimizer_group_names_and_hints_verified": true,
+      "optimizer_parameters": 12,
+      "optimizer_steps": 708,
+      "second_moments_nonnegative": true,
+      "torch_rng_bytes_sha256": "862c41f9d562f5500a355ce3dbd0b72c1b21bb31b55e0efc5381313c42e6d779",
+      "torch_rng_format_valid": true
+    },
+    "memorization.pt": {
+      "AdamW_constructor_default_fields_checked": [
+        "amsgrad",
+        "betas",
+        "capturable",
+        "differentiable",
+        "eps",
+        "foreach",
+        "fused",
+        "maximize"
+      ],
+      "optimizer_group_names_and_hints_verified": true,
+      "optimizer_parameters": 12,
+      "optimizer_steps": 320,
+      "second_moments_nonnegative": true,
+      "torch_rng_bytes_sha256": "862c41f9d562f5500a355ce3dbd0b72c1b21bb31b55e0efc5381313c42e6d779",
+      "torch_rng_format_valid": true
+    }
+  },
+  "original_fit_cpu_seconds": 289.849342336,
+  "original_full_process_cpu_exact": null,
+  "original_full_process_cpu_lower_bound": 291.480195652,
+  "original_stop_reason": "development_plateau",
+  "peak_rss_bytes": 825090048,
+  "report_sha256": "81bb71ef249b94ba8f024395eafaa3d9e577d11330a59db8c36d37d9b3a92764",
+  "required_artifacts": {
+    "declared_files_checked": [
+      "best.pt",
+      "events.jsonl",
+      "initial.pt",
+      "last.pt",
+      "memorization.pt",
+      "plan.json"
+    ],
+    "logit_binding": "observed file hash plus independent selected/strict-best metrics; representative fresh forward remains separate",
+    "required_files_checked": [
+      "best.pt",
+      "development_logits.pt",
+      "events.jsonl",
+      "initial.pt",
+      "last.pt",
+      "memorization.pt",
+      "plan.json"
+    ]
+  },
+  "saved_logits_sha256": "8e44c2719d54c2359a2e47ed55aab042b789c076ed87a967682337927205a2f2",
+  "scientific_admission": "HOLD",
+  "seed": 307,
+  "shared_initial_tensor_hashes": {
+    "frontend": "5613c209ce3748768b30e10447cd90cba586cc96b2d68942c55cab47278712b2",
+    "head": "2cccb4850e949090ba1a3facf4640a1f2551431f5c687f7fd34bdaedec6ce62a",
+    "temporal_adapter": "40db64f6bdd8cf7bf3c99e627e8dfdecabcc4a92150eef2e1b6410efc041a462"
+  },
+  "strict_best_metric_absolute_differences": {
+    "accuracy": 0.0,
+    "balanced_accuracy_present_classes": 0.0,
+    "brier_half_sum": 0.0,
+    "brier_mean_classes": 0.0,
+    "ece_15_equal_width_bins": 0.0,
+    "events": 0,
+    "macro_f1_11_classes": 5.551115123125783e-17,
+    "macro_f1_present_classes": 5.551115123125783e-17,
+    "nll": 2.220446049250313e-16
+  },
+  "whole_original_process_wall_seconds": 293.3147163668182
+}

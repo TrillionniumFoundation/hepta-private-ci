@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/workspace/scratch/c385a7439f8e/baseline36-c1-reviewer-v2/run_c1_clock_supplement.py", line 21, in <module>
+    from subset_context import Context, HERE, frozen, require, save, sha
+  File "/workspace/scratch/c385a7439f8e/baseline36-c1-reviewer-v2/subset_context.py", line 17, in <module>
+    import review_campaign_fresh42 as frozen
+  File "/workspace/scratch/c385a7439f8e/baseline36-c1-reviewer-v2/frozen-v2/review_campaign_fresh42.py", line 16, in <module>
+    raise RuntimeError('Independent reviewer must run with Python assertions enabled')
+RuntimeError: Independent reviewer must run with Python assertions enabled
