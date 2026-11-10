@@ -1,0 +1,80 @@
+{
+  "schema": "perc1.partial-source-snapshot.v1",
+  "complete": false,
+  "claim": "Exact final source bytes recovered from verified read buffers; incomplete preservation snapshot, not a standalone implementation or runtime installation.",
+  "baseline_commit": "72569fba94a38f7bb0628409cbb05b62fa6c9627",
+  "candidate_files": [
+    {
+      "path": "scripts/perc1/owner.py",
+      "sha256": "d5113523792068436224d842f09982dcb41b30ce004f966d3884a7de0b83658b",
+      "bytes": 15316,
+      "git_blob": "ee52054f4a2673de6e3ed65293e6e5d3ec5b3ad8",
+      "snapshot_path": "retained-source/scripts/perc1/owner.py"
+    },
+    {
+      "path": "scripts/perc1/capture_entry.py",
+      "sha256": "1a54e2bad39d1c3ecb0f4eca770b4ee50335762ee508d6939911edcde47087d9",
+      "bytes": 11216,
+      "git_blob": "1e1734c265c87931e4191f4b878a45daa00085ec",
+      "snapshot_path": "retained-source/scripts/perc1/capture_entry.py"
+    },
+    {
+      "path": "scripts/perc1/semantic_data.py",
+      "sha256": "f984e55268993b1a3e1abd9186959e42a0211a0e585415da42f38f6128fed1dd",
+      "bytes": 9419,
+      "git_blob": "6d6057b49eea893f08806c09d7aa6586c1131596",
+      "snapshot_path": "retained-source/scripts/perc1/semantic_data.py"
+    },
+    {
+      "path": "scripts/perc1/semantic_benchmark.py",
+      "sha256": "3cf204d233912275cc15b852e750a3ab83ed64f18ff8ad488d7ceb5821c4fd57",
+      "bytes": 21315,
+      "git_blob": "a9f075396c786ef9ab5cc60ba24cd69bdd5ad02e",
+      "snapshot_path": "retained-source/scripts/perc1/semantic_benchmark.py"
+    },
+    {
+      "path": "scripts/perc1/owned_qualification.py",
+      "sha256": "03121ece8be551dd51dc179c0158ea9d8d532518106982ee481abe15e502abc8",
+      "bytes": 14804,
+      "git_blob": "ca75ed571c44a0692a73150ec8e61f36fbd9da10",
+      "snapshot_path": "retained-source/scripts/perc1/owned_qualification.py"
+    }
+  ],
+  "generated_native_driver": {
+    "snapshot_path": "retained-source/generated-native-probe/main.rs",
+    "original_build_relative_path": "src/main.rs",
+    "sha256": "2e09f010561429b05cd4b6ed0eb04af43feb3277d32b007e26fd2f37e446c916",
+    "bytes": 7623,
+    "git_blob": "f548ee44b6472041e608f8c4202d848a89fe00ef",
+    "provenance": "Exact embedded Rust literal, independently verified identical to compiled source after final Python formatting; native consume acknowledgement pending."
+  },
+  "pending_candidate_files": [
+    "scripts/perc1/__main__.py",
+    "scripts/perc1/semantic_contract.py",
+    "scripts/test_perc1_semantic_contract.py",
+    "scripts/test_perc1_owner.py",
+    "scripts/perc1/entry.py",
+    "scripts/test_perc1_entry.py",
+    "scripts/perc1/semantic_policy.py",
+    "scripts/test_perc1_semantic_benchmark.py",
+    "scripts/perc1_native_cell_probe.py"
+  ],
+  "archive_and_remaining_source": "Retained in isolated desktop checkout/evidence directory; unavailable while execution connector fails.",
+  "raw_reports": [
+    {
+      "path": "REPORT_BENCHMARK_V1.json",
+      "sha256": "067787c65280aee4f7c9d93ea7ffbca7f328f8f50899dbc97ecfb93285b70f5a",
+      "original": "full-v1/REPORT.json"
+    },
+    {
+      "path": "REPORT_BENCHMARK_V2.json",
+      "sha256": "b6be7681e6813bf61a9e83904ee49bbcc055caf69f70f2697357dca818a18daa",
+      "original": "full-v2/REPORT.json"
+    },
+    {
+      "path": "PROCESS_BENCHMARK_V2.txt",
+      "sha256": "8b573e8b2907ca4666c955f509546036b38fa413bc35cab0817de6c66aecd78c",
+      "original": "full-v2.time.txt"
+    }
+  ]
+}

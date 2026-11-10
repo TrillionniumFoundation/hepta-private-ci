@@ -2,7 +2,7 @@
 
 **Scientific result: HOLD / NoUpdate.** The final controlled semantic experiment executed real frozen MobileNet inference, but neither neural policy improved terminal quality or resource use over the strong rule policy.
 
-**Publication status:** this commit preserves the exact final benchmark report and a handoff checkpoint. The tested implementation and complete raw evidence still reside in the isolated local checkout. Source publication and the last native-consumer acknowledgement are pending recovery of the execution connector. This is a draft checkpoint, not an adoption or merge recommendation. CI on a report-only commit does not validate the unpublished implementation.
+**Publication status:** this checkpoint preserves both complete benchmark reports, the final process envelope, a handoff record, and exact verified source snapshots for five final Python modules plus the compiled Rust probe driver. The complete tested implementation and full raw evidence still reside in the isolated local checkout. Full source publication and the last native-consumer acknowledgement are pending recovery of the execution connector. This is a draft checkpoint, not an adoption or merge recommendation. The runtime source tree is unchanged; CI on this evidence/snapshot commit does not validate the unpublished implementation.
 
 Baseline: `72569fba94a38f7bb0628409cbb05b62fa6c9627`, the head of the existing PERC canonical-test-roots stage (#5683). No production Rust source, native authority grant, daemon integration, or default policy was changed.
 
@@ -80,6 +80,14 @@ The final local PERC regression discovered 127 tests: **126 passed, one skipped,
 A standalone probe successfully built the unchanged real `hepta-types`, `hepta-infer-core`, and `hepta-neuron` libraries. It exercises the actual `PerceptionCellEncoderV1`, not a substitute implementation. The subsequent consumption command for the owned original wire was submitted just as all local execution/read tools began returning `MCP -32603 Internal error`. **Its execution outcome remains unconfirmed.** Do not claim the positive consume or five negative controls passed until their output is read back.
 
 This is an execution-connector failure, not a permission rejection. Ambiguous mutations were not resubmitted.
+
+## Verified partial source preservation
+
+[SOURCE_SNAPSHOT.json](SOURCE_SNAPSHOT.json) binds exact bytes and original paths for five complete final Python files under `retained-source/`: owner, capture adapter, semantic generator, semantic benchmark, and the real CLI qualification driver. It also binds the unchanged compiled Rust probe driver.
+
+These bytes came from complete read buffers and match the final execution identities. Historical pre-format drafts with different hashes were excluded. This snapshot is incomplete: the CLI entry, shared semantic contract, policy, native Python builder, and tests still need readback from the original checkout. It is deliberately outside the runtime source tree and is not runnable as a complete candidate.
+
+The prior `REPORT_BENCHMARK_V1.json` and exact `PROCESS_BENCHMARK_V2.txt` are also retained without rewriting their original contents.
 
 ## Resume without repeating compute
 
