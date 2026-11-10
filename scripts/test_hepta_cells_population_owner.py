@@ -3,10 +3,14 @@
 The numerical LEARN component is an evaluation-summary fixture, not a trainer.
 """
 
-from dataclasses import replace
+from dataclasses import asdict, replace
 import hashlib
+import json
+import os
 from pathlib import Path
 import sqlite3
+import subprocess
+import sys
 import tempfile
 import unittest
 from unittest.mock import patch
@@ -342,6 +346,75 @@ class PopulationOwnerTests(unittest.TestCase):
                     self.assertEqual(retained.execute("SELECT count(*) FROM cells").fetchone()[0], 7)
                     if name == "policy":
                         self.assertEqual(retained.execute("SELECT count(*) FROM population_plan").fetchone()[0], 0)
+
+    def test_fresh_process_loads_adopted_parameters_but_resets_new_run_hidden_state(self):
+        candidate = self.temporal_candidate()
+        self.observe("one", 0)
+        self.observe("two", 1)
+        self.adopt_prediction(candidate)
+        self.owner.step(self.partition(), candidate, "adopted-observation",
+                        {"operation": "observe", "observation": [1.0, 0.2, -0.1], "cursor": 0})
+        previous_state = self.owner.checkpoint(self.partition())["state"]
+        checkpoint = Path(self.temporary.name) / "adopted-kernel.npz"
+        checkpoint_sha = candidate.kernel.checkpoint(checkpoint, previous_state)
+        metadata = Path(self.temporary.name) / "adopted-candidate.json"
+        metadata.write_text(json.dumps({"config": asdict(candidate.kernel.config),
+                                        "bundle": candidate.bundle.record(),
+                                        "checkpoint": str(checkpoint),
+                                        "checkpoint_sha256": checkpoint_sha}), encoding="utf-8")
+        program = """
+import json
+import os
+from pathlib import Path
+import sys
+from hepta_cells.bundle import Bundle
+from hepta_cells.lifecycle import CellOwner, Partition
+from hepta_cells.temporal import TemporalConfig, TemporalKernel
+from hepta_cells.temporal_component import TemporalComponent
+
+saved = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
+kernel, previous = TemporalKernel.restore_checkpoint(
+    saved["checkpoint"], expected_sha256=saved["checkpoint_sha256"],
+    cell_id="pred", config=TemporalConfig(**saved["config"]))
+component = TemporalComponent(kernel, Bundle(**saved["bundle"]), "cold-run")
+partition = Partition("principal", "agent", "pred", "cold-run")
+owner = CellOwner(sys.argv[2])
+try:
+    spec = owner.population_plan.spec(partition)
+    created = owner.create(partition, component, budget=spec.budget,
+                           total_work_units=spec.total_work_units)
+    receipt = owner.step(partition, component, "cold-observation",
+                         {"operation": "observe", "observation": [0.0, 0.5, -0.25], "cursor": 0})
+    final = owner.checkpoint(partition)
+    print(json.dumps({"pid": os.getpid(), "identity": component.identity.digest,
+                      "plan_digest": owner.population_plan.digest,
+                      "logical_epoch": receipt["population"]["logical_epoch"],
+                      "cursor": receipt["output"]["cursor"],
+                      "loaded_previous_state": previous,
+                      "created_state": created["state"], "final_state": final["state"]}))
+finally:
+    owner.close()
+"""
+        self.owner.close()
+        try:
+            process = subprocess.run([sys.executable, "-c", program, str(metadata), str(self.database)],
+                                     env={**os.environ, "PYTHONPATH": str(Path(__file__).resolve().parent)},
+                                     capture_output=True, text=True, timeout=30, check=False)
+        finally:
+            self.owner = CellOwner(self.database)
+        self.assertEqual(process.returncode, 0, process.stderr)
+        observed = json.loads(process.stdout)
+        self.assertNotEqual(observed["pid"], os.getpid())
+        self.assertEqual((observed["identity"], observed["plan_digest"], observed["logical_epoch"], observed["cursor"]),
+                         (candidate.identity.digest, self.plan.digest, 1, 1))
+        self.assertEqual(observed["loaded_previous_state"], previous_state)
+        self.assertEqual(previous_state["cursor"], 1)
+        fresh = candidate.kernel.initial_state("cold-run")
+        self.assertEqual(observed["created_state"], fresh)
+        self.assertNotEqual(observed["created_state"]["hidden"], previous_state["hidden"])
+        expected = candidate.kernel.observe(fresh, [0.0, 0.5, -0.25], episode_id="cold-run", cursor=0)
+        self.assertEqual(observed["final_state"], expected)
+        self.assertEqual(self.owner.checkpoint(self.partition(run="cold-run"))["state"], expected)
 
 
 if __name__ == "__main__":

@@ -108,6 +108,9 @@ Local adoption still requires the existing host qualification callback. Within
 the owner's transaction it also checks the current source identity, immediate
 bundle successor, allowed parameter changes, frozen update/evaluation digests and
 unused observation interval. A candidate cannot declare a wider trainable scope.
+The cap governs adoption of local parameter updates. It does not intercept raw
+trainer calls or prove that a host actually ran the optimizer named by a digest;
+training execution and its complete cost still require the original receipts.
 Only successful unique committed observation intents with applied state count:
 semantic input calls and temporal `observe` calls. Exact replays, `predict` calls,
 failed or over-budget outcomes, resets, restores and rollbacks do not manufacture
@@ -128,8 +131,8 @@ current-version or partition-admission records instead of reinstalling an initia
 version. This does not promise
 state migration between parameter generations or activation in the native daemon.
 
-Receipts and checkpoints carry the population digest, lineage, Cell ID and local
-scope. These commitments establish consistency. They do not authenticate the
+Receipts and checkpoints carry the population digest, lineage, Cell ID, local
+scope and logical epoch. These commitments establish consistency. They do not authenticate the
 host, prove truthful evaluation, authorize external effects, or grant native
 production execution. The existing source/effect owners retain those duties.
 
