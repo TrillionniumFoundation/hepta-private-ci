@@ -1,0 +1,136 @@
+{
+  "schema": "perc1.source-publication-stages.v1",
+  "index": "/home/qian-qi/perc-publication-git-index-20261110-d338-v2",
+  "source_gate": "ALL_PERC_TESTS_V2.json",
+  "sources": {
+    "scripts/perc1/semantic_contract.py": {
+      "sha256": "3ba3fcfb0e3088704d9428761c4c05abfcdef0ea9d03c45392b32b612d0be4ec",
+      "bytes": 12749
+    },
+    "scripts/test_perc1_semantic_contract.py": {
+      "sha256": "98ecfb29215142ea9c9a17326f343e4526e2d9f6f5ccadea682f42ab3972ed0d",
+      "bytes": 9812
+    },
+    "scripts/perc1/owner.py": {
+      "sha256": "d5113523792068436224d842f09982dcb41b30ce004f966d3884a7de0b83658b",
+      "bytes": 15316
+    },
+    "scripts/test_perc1_owner.py": {
+      "sha256": "77ac2cbb21b8a606ebc58f7d7a572fcc3d8d6ba18ae541201e568eb8867a57b5",
+      "bytes": 10440
+    },
+    "scripts/perc1/capture_entry.py": {
+      "sha256": "1a54e2bad39d1c3ecb0f4eca770b4ee50335762ee508d6939911edcde47087d9",
+      "bytes": 11216
+    },
+    "scripts/perc1/entry.py": {
+      "sha256": "6009af2f9ba03a84150886493d1915e71000ea89fab9f6c37a4825db9a445e15",
+      "bytes": 9311
+    },
+    "scripts/perc1/__main__.py": {
+      "sha256": "ed00b4a62eea9d00bb6d001b3dfddde1316cd40ba3abfab057619ba7b7f1d98f",
+      "bytes": 2376
+    },
+    "scripts/test_perc1_entry.py": {
+      "sha256": "670cd4dffd8587e037acf93e7b2c1d8afdb4eb53b11d8355b12f9b083db063eb",
+      "bytes": 18108
+    },
+    "scripts/perc1/semantic_data.py": {
+      "sha256": "f984e55268993b1a3e1abd9186959e42a0211a0e585415da42f38f6128fed1dd",
+      "bytes": 9419
+    },
+    "scripts/perc1/semantic_policy.py": {
+      "sha256": "c826504a54a8ee36cfd66d68e7fa551c0643063a24fea026852d63f261af73e7",
+      "bytes": 12414
+    },
+    "scripts/perc1/semantic_benchmark.py": {
+      "sha256": "3cf204d233912275cc15b852e750a3ab83ed64f18ff8ad488d7ceb5821c4fd57",
+      "bytes": 21315
+    },
+    "scripts/test_perc1_semantic_benchmark.py": {
+      "sha256": "890eefa8fe525d0540657d197afd577ca547fde3bfde848b72a226f084b758ea",
+      "bytes": 9892
+    },
+    "scripts/perc1_native_cell_probe.py": {
+      "sha256": "e98e6f94d82973a78422961fdfdb96c6bfb84787c39655690217a0e7c43e2e7a",
+      "bytes": 13290
+    },
+    "scripts/perc1/owned_qualification.py": {
+      "sha256": "03121ece8be551dd51dc179c0158ea9d8d532518106982ee481abe15e502abc8",
+      "bytes": 14804
+    }
+  },
+  "commits": [
+    {
+      "message": "PERC: define public semantic packets and exact evidence spans",
+      "parent": "f657866c310e930ea4ba9ab4f158777071d96d7d",
+      "commit": "8ee85f23ccf9cdabffebe117628de80b96a94baf",
+      "tree": "de41bd385ea1c1373d0685a65bde1b167e9c60ae",
+      "blobs": {
+        "scripts/perc1/semantic_contract.py": "278315435684ded10ca05214b49d812c3528deb9",
+        "scripts/test_perc1_semantic_contract.py": "4381d30dd5d2ec69909e0e2a34c52b9dce566e11"
+      }
+    },
+    {
+      "message": "PERC: add durable bounded local encoder owner",
+      "parent": "8ee85f23ccf9cdabffebe117628de80b96a94baf",
+      "commit": "bb2e2649d7f631657d2cf3b70f473359c643b7ab",
+      "tree": "94658d1a45c56cb1a82e2748da09d8ce9e42abfb",
+      "blobs": {
+        "scripts/perc1/owner.py": "ee52054f4a2673de6e3ed65293e6e5d3ec5b3ad8",
+        "scripts/test_perc1_owner.py": "82f296c90fe0b7230ad5e832c768b2c176049f9c"
+      }
+    },
+    {
+      "message": "PERC: bind captured evidence and retain original native wire",
+      "parent": "bb2e2649d7f631657d2cf3b70f473359c643b7ab",
+      "commit": "fb7e1fcb4736aa0d227dff760ecf27119001f0ec",
+      "tree": "1e653e79196cfc373fd812cb9334f0180628900b",
+      "blobs": {
+        "scripts/perc1/capture_entry.py": "1e1734c265c87931e4191f4b878a45daa00085ec"
+      }
+    },
+    {
+      "message": "PERC: expose pinned-file capture and cold readback entry",
+      "parent": "fb7e1fcb4736aa0d227dff760ecf27119001f0ec",
+      "commit": "e67fbd21fecd8f695b236f6259b92e57baaa76c7",
+      "tree": "7d2256c08a866ccec2e8d9067457f71fd4d4c5df",
+      "blobs": {
+        "scripts/perc1/entry.py": "99fe2b9c076bfacae1817a5318a93a0607e6f5f3",
+        "scripts/perc1/__main__.py": "fcfc759571bf36fa4e6b5f07800cd6ea156d8969",
+        "scripts/test_perc1_entry.py": "af191cfa5189bd695fa8c909447775caf3a07f15"
+      }
+    },
+    {
+      "message": "PERC: add neutral semantic tasks and rule-neural policies",
+      "parent": "e67fbd21fecd8f695b236f6259b92e57baaa76c7",
+      "commit": "8d2f0f4b0616f54053e784555c215c59d4544460",
+      "tree": "0f8186465d5dd52225a14ab168fef19d9266c30c",
+      "blobs": {
+        "scripts/perc1/semantic_data.py": "6d6057b49eea893f08806c09d7aa6586c1131596",
+        "scripts/perc1/semantic_policy.py": "ea06b81f11d9720dcb9339f746f9a06dd0d16c5e"
+      }
+    },
+    {
+      "message": "PERC: run real online semantic qualification with fixed heads",
+      "parent": "8d2f0f4b0616f54053e784555c215c59d4544460",
+      "commit": "58d96081d484125668b31d0130def4e6045196ba",
+      "tree": "745a7d3badb0c0f57c168d7e2ab133e47fd339c2",
+      "blobs": {
+        "scripts/perc1/semantic_benchmark.py": "a9f075396c786ef9ab5cc60ba24cd69bdd5ad02e",
+        "scripts/test_perc1_semantic_benchmark.py": "59c01067e27553d388b877088212317a957e4dae"
+      }
+    },
+    {
+      "message": "PERC: add actual Cell and owned CLI qualification drivers",
+      "parent": "58d96081d484125668b31d0130def4e6045196ba",
+      "commit": "72ea7a144babd7e0df6138a3d7688768115d6088",
+      "tree": "271f7e5e041fbd83efa3b02d036ddd53b1b31cae",
+      "blobs": {
+        "scripts/perc1_native_cell_probe.py": "95434f586aaad2b609579934e0e13d42cd16dad0",
+        "scripts/perc1/owned_qualification.py": "ca75ed571c44a0692a73150ec8e61f36fbd9da10"
+      }
+    }
+  ],
+  "source_head": "72ea7a144babd7e0df6138a3d7688768115d6088"
+}
