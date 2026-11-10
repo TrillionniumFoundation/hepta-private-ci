@@ -8,8 +8,10 @@ import argparse
 from decimal import Decimal, InvalidOperation
 import hashlib
 import json
+import os
 from pathlib import Path
 import re
+import stat
 
 STAGES = ('experience', 'dataset', 'training', 'evaluation', 'proposal',
           'selection', 'published_current', 'final_use', 'next_use',
@@ -20,6 +22,7 @@ HEX64 = re.compile(r'^[0-9a-f]{64}$')
 HEX40 = re.compile(r'^[0-9a-f]{40}$')
 ATTEMPT_STATES = frozenset(('completed', 'failed', 'cancelled', 'pending', 'unknown'))
 MAX_MANIFEST_BYTES = 2 * 1024 * 1024
+MAX_RECEIPT_BYTES = 64 * 1024 * 1024
 
 
 def _unique_json_object(pairs):
@@ -46,7 +49,9 @@ def inspect(manifest: Path) -> dict:
 
     try:
         root = manifest.resolve(strict=True).parent
-        raw_manifest = manifest.read_bytes()
+        # Limit the read itself, not merely the size of an already loaded blob.
+        with manifest.open('rb') as stream:
+            raw_manifest = stream.read(MAX_MANIFEST_BYTES + 1)
         if len(raw_manifest) > MAX_MANIFEST_BYTES:
             raise ValueError('manifest exceeds maximum bytes')
         record = json.loads(raw_manifest.decode('utf-8'),
@@ -130,13 +135,27 @@ def inspect(manifest: Path) -> dict:
             p = root / path
             if p.is_symlink() or not p.is_file() or not p.resolve().is_relative_to(root):
                 raise ValueError('unsafe file')
-            if p.stat().st_size > 64 * 1024 * 1024:
-                raise ValueError('receipt too large')
-            with p.open('rb') as stream:
+            # Pin the opened descriptor: a file may be replaced or grow after
+            # path checks. Never stream unlimited bytes from an untrusted owner.
+            flags = os.O_RDONLY | getattr(os, 'O_NOFOLLOW', 0) | getattr(os, 'O_NONBLOCK', 0)
+            fd = os.open(p, flags)
+            try:
+                opened = os.fstat(fd)
+                if not stat.S_ISREG(opened.st_mode) or opened.st_size > MAX_RECEIPT_BYTES:
+                    raise ValueError('receipt not regular or exceeds maximum bytes')
                 digest = hashlib.sha256()
-                for chunk in iter(lambda: stream.read(1024 * 1024), b''):
+                consumed = 0
+                while True:
+                    chunk = os.read(fd, min(1024 * 1024, MAX_RECEIPT_BYTES - consumed + 1))
+                    if not chunk:
+                        break
+                    consumed += len(chunk)
+                    if consumed > MAX_RECEIPT_BYTES:
+                        raise ValueError('receipt grew beyond maximum bytes')
                     digest.update(chunk)
                 digest = digest.hexdigest()
+            finally:
+                os.close(fd)
             if digest != sha:
                 fail(f'receipt_bytes_mismatch:{stage}')
             else:
