@@ -106,7 +106,12 @@ async fn original_learning_source_revalidates_current_issuer_after_prior_success
     let mut trust: Value = serde_json::from_slice(&fs::read(&path)?)?;
     trust["revoked"] = json!(true);
     fs::write(&path, serde_json::to_vec(&trust)?)?;
-    assert!(state.require_circuit_learning_source(&request).await.is_err());
+    assert!(
+        state
+            .require_circuit_learning_source(&request)
+            .await
+            .is_err()
+    );
     let pending = f.store.pending_circuit_learning(/*limit*/ 1).await.unwrap();
     assert_eq!(pending[0].request_digest, None);
     assert_eq!(pending[0].acknowledged_head, None);
@@ -137,11 +142,13 @@ async fn original_learning_source_survives_new_consumer_generation_without_readm
     // exclusive lock. Retain the immutable source owners, but release the
     // predecessor state before trying to reopen the same durable roots.
     // The independent placeholder is never used to serve this agent.
-    let original_issuer = Arc::clone(
-        f.runtime.state.authbus.get().context("original issuer")?,
-    );
+    let original_issuer = Arc::clone(f.runtime.state.authbus.get().context("original issuer")?);
     let original_journal = Arc::clone(
-        f.runtime.state.objective_runtime.get().context("original journal")?,
+        f.runtime
+            .state
+            .objective_runtime
+            .get()
+            .context("original journal")?,
     );
     let mut inactive_placeholder = runtime_fixture();
     std::mem::swap(&mut f.runtime.state, &mut inactive_placeholder.state);
@@ -154,7 +161,8 @@ async fn original_learning_source_survives_new_consumer_generation_without_readm
         f.runtime.registry.clone(),
         /*event_capacity*/ 16,
     )?);
-    let cognitive = codex_hepta_cognitive_store::DurableCognitiveStore::open(&identity.layout).await?;
+    let cognitive =
+        codex_hepta_cognitive_store::DurableCognitiveStore::open(&identity.layout).await?;
     state.attach_cognitive_store(Arc::new(cognitive.clone()))?;
     state.mark_runtime_prerequisites_ready()?;
     f.runtime.registry.compare_and_transition(

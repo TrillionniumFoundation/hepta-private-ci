@@ -19,9 +19,7 @@ fn historical_source_expiry_does_not_renew_actions_or_override_current_revocatio
     let registry = codex_hepta_fleet::FleetRegistry::initialize(fleet_root.clone())?;
     let workspace = root.join("workspace");
     std::fs::create_dir(&workspace)?;
-    let agent_id = codex_hepta_contracts::AgentId::parse(
-        "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12",
-    )?;
+    let agent_id = codex_hepta_contracts::AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12")?;
     let manifest = codex_hepta_fleet::AgentManifest::new(
         agent_id.clone(),
         codex_hepta_fleet::WorkspaceBinding::new(&workspace, &fleet_root)?,
@@ -73,18 +71,26 @@ fn historical_source_expiry_does_not_renew_actions_or_override_current_revocatio
     });
     let trust: TextTrust = serde_json::from_value(value.clone())?;
     // Original admitted time is 1000 ms; the current cut is past expiry.
-    assert!(!authentication_is_current(&record, &trust, &identity, /*now_ms*/ 2_000)?);
+    assert!(!authentication_is_current(
+        &record, &trust, &identity, /*now_ms*/ 2_000
+    )?);
     authenticate_learning_source_at(&record, &trust, &identity, /*now_ms*/ 2_000)?;
     assert!(authenticate_learning_source_at(&record, &trust, &identity, /*now_ms*/ 999).is_err());
     let mut corrupted = record.clone();
     corrupted.authentication.signature[0] ^= 1;
-    assert!(authenticate_learning_source_at(&corrupted, &trust, &identity, /*now_ms*/ 2_000).is_err());
+    assert!(
+        authenticate_learning_source_at(&corrupted, &trust, &identity, /*now_ms*/ 2_000).is_err()
+    );
     value["revoked"] = json!(true);
     let revoked: TextTrust = serde_json::from_value(value.clone())?;
-    assert!(authenticate_learning_source_at(&record, &revoked, &identity, /*now_ms*/ 2_000).is_err());
+    assert!(
+        authenticate_learning_source_at(&record, &revoked, &identity, /*now_ms*/ 2_000).is_err()
+    );
     value["revoked"] = json!(false);
     value["key_epoch"] = json!(2);
     let rotated: TextTrust = serde_json::from_value(value)?;
-    assert!(authenticate_learning_source_at(&record, &rotated, &identity, /*now_ms*/ 2_000).is_err());
+    assert!(
+        authenticate_learning_source_at(&record, &rotated, &identity, /*now_ms*/ 2_000).is_err()
+    );
     Ok(())
 }

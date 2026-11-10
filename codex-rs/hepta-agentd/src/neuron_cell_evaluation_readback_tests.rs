@@ -324,7 +324,9 @@ fn changed_learning_profile_is_refused_before_claim_or_holdout_contact() {
     test.plan = foreign;
     assert!(matches!(
         test.run(),
-        Err(CellEvaluationErrorV1::Binding("Cell execution product plan"))
+        Err(CellEvaluationErrorV1::Binding(
+            "Cell execution product plan"
+        ))
     ));
     assert_eq!(test.calls(), calls);
     assert_eq!(test.fixture.holdout_bytes(), before);

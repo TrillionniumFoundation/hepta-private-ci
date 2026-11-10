@@ -16,7 +16,9 @@ impl AgentdState {
         if request.agent_id.as_str() != self.identity().agent_id.as_str()
             || self.circuit_learning_source() != Some(&request.source_run_id)
         {
-            return Err(invalid("learning source differs from the original daemon scope"));
+            return Err(invalid(
+                "learning source differs from the original daemon scope",
+            ));
         }
         let host = self
             .objective_runtime
@@ -36,7 +38,9 @@ impl AgentdState {
             || intent.completed_task_receipt.as_str() != request.completed_task_receipt.to_string()
             || intent.objective_digest.as_str() != request.envelope.objective_digest.to_string()
         {
-            return Err(invalid("learning source request differs from original completion"));
+            return Err(invalid(
+                "learning source request differs from original completion",
+            ));
         }
         let trace = store
             .bounded_circuit_committed_trace(request.source_run_id.as_str())
@@ -58,7 +62,9 @@ impl AgentdState {
             .map_err(|error| invalid(&format!("learning source outbox recheck: {error:?}")))?
             .ok_or_else(|| invalid("original learning completion disappeared"))?;
         if current.intent != delivery.intent || host.learning_source_record(request)? != original {
-            return Err(invalid("original learning source changed during resolution"));
+            return Err(invalid(
+                "original learning source changed during resolution",
+            ));
         }
         // Today's daemon admission, original issuer/key and revocation remain
         // required. This historical signature check never admits the old task.
@@ -86,7 +92,9 @@ fn authenticate_learning_source_at(
     // the new learning request. Expiry prevents new effects, not provenance.
     let admitted_ms = record.admission.observed_at_unix_micros / 1_000;
     if admitted_ms > now_ms || !authentication_is_current(record, trust, identity, admitted_ms)? {
-        return Err(invalid("original learning Objective authentication is unavailable"));
+        return Err(invalid(
+            "original learning Objective authentication is unavailable",
+        ));
     }
     Ok(())
 }
@@ -109,13 +117,17 @@ impl ObjectiveRuntimeHost {
             .journal
             .publication(&request.source_run_id)
             .map_err(store_error)?
-            .ok_or_else(|| invalid("original learning Objective publication metadata is unavailable"))?;
+            .ok_or_else(|| {
+                invalid("original learning Objective publication metadata is unavailable")
+            })?;
         if record.disposition != RunStartObjectiveDispositionV1::Compiled
             || record.admission.profile_digest != self.profile_digest
             || record.snapshot.run_id != request.source_run_id
             || record.snapshot.objective_digest != request.envelope.objective_digest
         {
-            return Err(invalid("learning source differs from the original Objective"));
+            return Err(invalid(
+                "learning source differs from the original Objective",
+            ));
         }
         Ok((record.clone(), publication))
     }

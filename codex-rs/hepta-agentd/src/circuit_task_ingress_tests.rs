@@ -40,10 +40,10 @@ const ISSUER: &str = "circuit-objective-test-issuer";
 
 #[path = "circuit_task_drain_ingress_tests.rs"]
 mod drain_tests;
-#[path = "circuit_task_runtime_tests.rs"]
-mod runtime_tests;
 #[path = "circuit_learning_source_tests.rs"]
 mod learning_source_tests;
+#[path = "circuit_task_runtime_tests.rs"]
+mod runtime_tests;
 
 struct Invocation {
     records: Mutex<Vec<RunStartRecordV1>>,
