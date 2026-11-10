@@ -22,7 +22,7 @@ from .preparation import evaluate_development_preparations
 
 def write(path, value):
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(canonical(value))
+    path.write_bytes(canonical(value).encode("utf-8"))
 
 
 class CachedReplayTests(unittest.TestCase):
@@ -44,7 +44,9 @@ class CachedReplayTests(unittest.TestCase):
         for index, factor in enumerate(("data", "init", "order")):
             cfg[factor + "_seeds"] = [9915100 + index * 100 + n for n in (1, 2, 3)]
         sources = R.source_hashes()
-        original = {name: sha256(value).hexdigest() for name, value in R._source().items()}
+        original = {
+            name: sha256(value).hexdigest() for name, value in R._source().items()
+        }
         shared = {
             "config_sha256": sha256(canonical(cfg).encode()).hexdigest(),
             "confirmation_data_read": False,
@@ -71,7 +73,13 @@ class CachedReplayTests(unittest.TestCase):
             "source_sha256": original,
             "registration_commit": "a" * 40,
             "execution_source_commit": "b" * 40,
-            "argv": ["python", "--config", str(args.registered_config), "--output", str(args.campaign)],
+            "argv": [
+                "python",
+                "--config",
+                str(args.registered_config),
+                "--output",
+                str(args.campaign),
+            ],
         }
         started = {**common, "started_at_utc": "2000-01-01T00:00:01+00:00"}
         write(args.campaign.parent / "EXECUTION_STARTED.json", started)
@@ -130,7 +138,9 @@ class CachedReplayTests(unittest.TestCase):
         for d, i, o in R.design_cells(cfg):
             for variant in cfg["variants"]:
                 for suffix in (".json", ".started.json", ".npz"):
-                    (args.campaign / "fits" / f"{variant}-d{d}-i{i}-o{o}{suffix}").touch()
+                    (
+                        args.campaign / "fits" / f"{variant}-d{d}-i{i}-o{o}{suffix}"
+                    ).touch()
         return args, cfg, receipt, result, freeze
 
     def test_no_fit_reads_before_two_terminal_gates_and_identity_checks(self):
@@ -143,7 +153,11 @@ class CachedReplayTests(unittest.TestCase):
 
         with (
             patch.object(R, "read", side_effect=guarded),
-            patch.object(R.Model, "load", side_effect=AssertionError("checkpoint opened during gate")),
+            patch.object(
+                R.Model,
+                "load",
+                side_effect=AssertionError("checkpoint opened during gate"),
+            ),
         ):
             self.assertEqual(len(R.gate(args)[3]), 189)
             for status, code, result_status in (
@@ -152,8 +166,13 @@ class CachedReplayTests(unittest.TestCase):
                 ("EXITED", False, "COMPLETE"),
                 ("EXITED", 0, "INCOMPLETE"),
             ):
-                write(args.execution_receipt, {**receipt, "status": status, "exit_code": code})
-                write(args.campaign / "RESULT.json", {**result, "status": result_status})
+                write(
+                    args.execution_receipt,
+                    {**receipt, "status": status, "exit_code": code},
+                )
+                write(
+                    args.campaign / "RESULT.json", {**result, "status": result_status}
+                )
                 with self.assertRaises(R.Incomplete):
                     R.run(args)
                 self.assertFalse(args.output.exists())
@@ -174,20 +193,40 @@ class CachedReplayTests(unittest.TestCase):
 
     def checkpoint_fixture(self):
         cfg = registered_config()
-        cfg.update(train_episodes=8, dev_episodes=4, history_length=4, epochs=1, batch_size=8, target_parameters=128)
-        identity = dict(variant="gru", data_seed=9915401, init_seed=9915501, order_seed=9915601)
+        cfg.update(
+            train_episodes=8,
+            dev_episodes=4,
+            history_length=4,
+            epochs=1,
+            batch_size=8,
+            target_parameters=128,
+        )
+        identity = dict(
+            variant="gru", data_seed=9915401, init_seed=9915501, order_seed=9915601
+        )
         name = "gru-d9915401-i9915501-o9915601"
         directory = self.root / "tiny" / "fits"
         directory.mkdir(parents=True)
-        hidden = {"gru": R.matched_hidden_dim("gru", R.INPUT_DIM, R.ACTION_DIM, 32, cfg["target_parameters"])}
-        model = R.Model("gru", R.INPUT_DIM, R.ACTION_DIM, 32, hidden["gru"], identity["init_seed"])
+        hidden = {
+            "gru": R.matched_hidden_dim(
+                "gru", R.INPUT_DIM, R.ACTION_DIM, 32, cfg["target_parameters"]
+            )
+        }
+        model = R.Model(
+            "gru", R.INPUT_DIM, R.ACTION_DIM, 32, hidden["gru"], identity["init_seed"]
+        )
         dev = R.generate_dataset(4, identity["data_seed"], "dev", 4)
-        expanded = replace(dev, remaining_budget=np.full(4, 16.0), deadline=np.full(4, 20.0))
+        expanded = replace(
+            dev, remaining_budget=np.full(4, 16.0), deadline=np.full(4, 20.0)
+        )
         panels = {
             name: evaluate_development_preparations(
                 model, data, fixed1_tariff=R.PreparationTariff(**cfg["cost_profile"])
             )
-            for name, data in (("original_resources", dev), ("expanded_resources", expanded))
+            for name, data in (
+                ("original_resources", dev),
+                ("expanded_resources", expanded),
+            )
         }
         record = {
             **identity,
@@ -211,25 +250,35 @@ class CachedReplayTests(unittest.TestCase):
         return directory.parent, name, identity, cfg, dev, hidden, record
 
     def test_real_checkpoint_bridge_preserves_every_formal_oldcheap_episode(self):
-        with patch.object(R.Model, "fit_step", side_effect=AssertionError("replay must not train")):
-            campaign, name, identity, cfg, dev, hidden, original = self.checkpoint_fixture()
+        with patch.object(
+            R.Model, "fit_step", side_effect=AssertionError("replay must not train")
+        ):
+            campaign, name, identity, cfg, dev, hidden, original = (
+                self.checkpoint_fixture()
+            )
             record = R.replay_checkpoint(campaign, name, identity, cfg, dev, hidden)
             for resource, panel in record["resource_panels"].items():
                 self.assertTrue(panel["formal_oldcheap_parity"])
                 self.assertTrue(panel["old_cheap_bridge"]["parity"])
                 self.assertEqual(
                     panel["arms"]["matched_cached_fixed1"]["per_episode"],
-                    original["resource_panels"][resource]["arms"]["fixed_1_cheap"]["per_episode"],
+                    original["resource_panels"][resource]["arms"]["fixed_1_cheap"][
+                        "per_episode"
+                    ],
                 )
                 for arm, horizons in R.PANELS.items():
                     meter = panel["policy_meters"][arm]
-                    expected = int(dev.legal_actions.sum()) * len(horizons) if resource == "expanded_resources" else 0
+                    expected = (
+                        int(dev.legal_actions.sum()) * len(horizons)
+                        if resource == "expanded_resources"
+                        else 0
+                    )
                     self.assertEqual(meter["prediction_rows"], expected)
                     self.assertEqual(meter["planning_candidate_rows"], expected)
             bad = deepcopy(original)
-            bad["resource_panels"]["expanded_resources"]["arms"]["fixed_1_cheap"]["per_episode"]["status"][0] = (
-                "tampered"
-            )
+            bad["resource_panels"]["expanded_resources"]["arms"]["fixed_1_cheap"][
+                "per_episode"
+            ]["status"][0] = "tampered"
             write(campaign / "fits" / (name + ".json"), bad)
             with self.assertRaisesRegex(ValueError, "episode/aggregate parity"):
                 R.replay_checkpoint(campaign, name, identity, cfg, dev, hidden)
@@ -242,8 +291,14 @@ class CachedReplayTests(unittest.TestCase):
     def test_failed_replay_retains_incomplete_receipt_and_refuses_overwrite(self):
         args, _, _, _, _ = self.terminal_fixture()
         with (
-            patch.object(R, "generate_dataset", side_effect=RuntimeError("fixture data failure")),
-            patch.object(R.Model, "load", side_effect=AssertionError("checkpoint must remain unopened")),
+            patch.object(
+                R, "generate_dataset", side_effect=RuntimeError("fixture data failure")
+            ),
+            patch.object(
+                R.Model,
+                "load",
+                side_effect=AssertionError("checkpoint must remain unopened"),
+            ),
         ):
             result = R.run(args)
             self.assertEqual(result["status"], "INCOMPLETE")
@@ -285,21 +340,22 @@ class CachedReplayTests(unittest.TestCase):
                     init_seed=i,
                     order_seed=o,
                     resource_panels={
-                        resource: {"arms": arms} for resource in ("original_resources", "expanded_resources")
+                        resource: {"arms": arms}
+                        for resource in ("original_resources", "expanded_resources")
                     },
                 )
             )
         summary = R.summarize(cfg, records[::-1])["gru"]["expanded_resources"]
         self.assertEqual(
-            summary["paired_factor_cell_differences"]["cached_short13_minus_matched_cached_fixed1"][
-                "expected_net_utility"
-            ]["grand_mean"],
+            summary["paired_factor_cell_differences"][
+                "cached_short13_minus_matched_cached_fixed1"
+            ]["expected_net_utility"]["grand_mean"],
             0.25,
         )
         self.assertEqual(
-            summary["paired_factor_cell_differences"]["cached_adaptive136_minus_matched_cached_fixed1"][
-                "expected_net_utility"
-            ]["finite_grid_variance"],
+            summary["paired_factor_cell_differences"][
+                "cached_adaptive136_minus_matched_cached_fixed1"
+            ]["expected_net_utility"]["finite_grid_variance"],
             0,
         )
         with self.assertRaisesRegex(ValueError, "incomplete or repeated"):
