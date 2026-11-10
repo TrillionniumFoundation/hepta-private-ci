@@ -4,13 +4,20 @@ on:
   push:
     branches:
       - research/verify1-risk-cell-20261108-771b
+      - research/verify2-*
     paths:
       - experiments/verification_cell_verify1/**
-      - .github/workflows/hepta-verify1.yml
+      - .github/workflows/**
+      - .github/actions/**
+      - scripts/**
+      - qualification/verify2-*/**
   pull_request:
     paths:
       - experiments/verification_cell_verify1/**
-      - .github/workflows/hepta-verify1.yml
+      - .github/workflows/**
+      - .github/actions/**
+      - scripts/**
+      - qualification/verify2-*/**
   workflow_dispatch:
 
 permissions:
@@ -31,6 +38,7 @@ jobs:
         os: [ubuntu-24.04, macos-15, windows-2025]
     env:
       PYTHONDONTWRITEBYTECODE: "1"
+      VERIFY_REVIEWED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
     defaults:
       run:
         shell: bash
@@ -39,6 +47,7 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - name: Set up Python
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
         with:
@@ -56,7 +65,7 @@ jobs:
           mkdir -p "$VERIFY1_RECORDS"
           git rev-parse HEAD > "$VERIFY1_RECORDS/source-commit.txt"
           git rev-parse 'HEAD^{tree}' > "$VERIFY1_RECORDS/source-tree.txt"
-          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git rev-parse HEAD)" = "$VERIFY_REVIEWED_SHA"
           git diff --check
           python -B -m unittest discover -s experiments/verification_cell_verify1 -t . -v 2>&1 | tee "$VERIFY1_RECORDS/tests.log"
       - name: Run bounded real SQLite effects
@@ -73,7 +82,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: verify1-${{ matrix.os }}-${{ github.sha }}
+          name: verify1-${{ matrix.os }}-${{ github.event.pull_request.head.sha || github.sha }}
           path: |
             ${{ runner.temp }}/verify1-records
             ${{ runner.temp }}/verify1-experiment
