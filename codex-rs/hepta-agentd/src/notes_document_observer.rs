@@ -52,7 +52,8 @@ impl AgentdNotesDocumentObserver {
                     && observed.text_sha256 != previous.text_sha256)
         }) {
             return Err(AgentdError::Protocol(
-                "Notes document observation regressed or changed content at the same revision".into(),
+                "Notes document observation regressed or changed content at the same revision"
+                    .into(),
             ));
         }
         // Receipt retirement changes independently of document content. It does
