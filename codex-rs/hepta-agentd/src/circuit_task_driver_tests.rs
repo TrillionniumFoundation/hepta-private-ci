@@ -69,8 +69,9 @@ async fn fixture(
     Arc<AtomicUsize>,
 ) {
     let directory = tempfile::tempdir().expect("private original owners");
+    let canonical_directory = checked(directory.path().canonicalize());
     let agent = checked(AgentId::parse(scope("run-1").agent_id.as_str()));
-    let layout = checked(HeptaFleetRoot::parse(directory.path().join("fleet")))
+    let layout = checked(HeptaFleetRoot::parse(canonical_directory.join("fleet")))
         .layout()
         .agent(&agent);
     let store = checked(AutomationStore::open(&layout).await);
