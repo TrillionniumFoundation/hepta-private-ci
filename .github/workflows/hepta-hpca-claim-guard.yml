@@ -1,0 +1,32 @@
+name: Hepta HPCA historical claim guard
+
+on:
+  pull_request:
+    paths:
+      - "qualification/hpca-claim-gate-20261110/**"
+      - ".github/workflows/hepta-hpca-claim-guard.yml"
+  push:
+    branches: [main]
+    paths:
+      - "qualification/hpca-claim-gate-20261110/**"
+      - ".github/workflows/hepta-hpca-claim-guard.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  no-training-claim-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          sparse-checkout: |
+            qualification/hpca-claim-gate-20261110
+          sparse-checkout-cone-mode: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run read-only report-schema, negative-control and fail-closed tests
+        run: python3 -m unittest discover -v -s qualification/hpca-claim-gate-20261110 -p 'test_*.py'
