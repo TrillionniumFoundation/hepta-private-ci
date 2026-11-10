@@ -1,0 +1,106 @@
+{
+  "schema_version": 1,
+  "reviewer": "/root/goal_success_review",
+  "review_kind": "independent_static_code_review",
+  "base_source": "8b1c1789916514471c6cacdf0f6c45467255fef9",
+  "candidate_directory": "goal-response-work/changed",
+  "result": "NO_UNRESOLVED_P0_OR_P1_STATIC_FINDINGS",
+  "native_compilation_performed": false,
+  "full_handler_integration_executed": false,
+  "findings": [
+    {
+      "severity": "P1",
+      "path": "codex-rs/hepta-agentd/src/notes_thread_runtime.rs",
+      "area": "protected_source_guard",
+      "cause": "Replacing the original success predicate removes the literal `&& value[\"status\"] != \"unknown\"` required by CALLERS.toml's protected_file entry for this source file.",
+      "implication": "The source architecture guard will reject this candidate even though the equivalent condition is present inside the helper.",
+      "minimal_fix": "Retain the explicit runtime status guard after the helper call, or preserve the original runtime navigation guards and AND with the new current-goal predicate. Keep the inventory requirement intact.",
+      "status": "RESOLVED_IN_FINAL_FOUR_FILE_CANDIDATE",
+      "resolution": "The entire original runtime success predicate, including literal unknown-status navigation guard and Committed/receipt condition, remains in place and is ANDed with original_notes_tool_succeeded. CALLERS.toml is unchanged."
+    }
+  ],
+  "checks": [
+    {
+      "area": "goal_semantics",
+      "result": "For REPLACE/STATUS the helper requires original Committed state, retained receipt, current Satisfied goal and typed Terminal/Succeeded serialization. Drift, missing readback, rollback, missing receipt/projection and source Indeterminate remain false."
+    },
+    {
+      "area": "tool_visibility",
+      "result": "READ_TOOL, REPLACE_TOOL and STATUS_TOOL are pub(crate) &str constants. notes_action_observer and notes_thread_tool are both cfg(target_os = linux), so the new references have compatible visibility and build gating."
+    },
+    {
+      "area": "serialization",
+      "result": "json! serializes the same ActionGoalStateV1 and ActionRuntimeStateV1 types used by original_notes_status, avoiding independently handwritten state/tag strings. Terminal/Succeeded shape agrees with retained original GUI data."
+    },
+    {
+      "area": "rust_ownership",
+      "result": "No obvious ownership or type inference issue in the helper or two tests. &String coerces to &str at the runtime call. Fixture revision 8 supports both +/-1 probes without underflow. Mutating original.state only affects negative source-state cases; succeeded is independently retained JSON."
+    },
+    {
+      "area": "existing_semantics",
+      "result": "READ's existing successful-read convention is preserved after original navigation refusal checks. Later replace refusal and status unknown remain false. Unknown tool names are now explicitly false; this does not expand the admitted catalog."
+    },
+    {
+      "area": "build",
+      "result": "Only existing source/test files change. No new module, dependency, include_str/include_bytes or compile_data input is added, so no BUILD or lock edit is needed."
+    },
+    {
+      "area": "test_scope",
+      "result": "Tests call the actual shared status assembly and production success predicate. They do not execute the complete model-facing DynamicToolCall/Root authorization/response transport loop."
+    },
+    {
+      "area": "final_runtime_guard_resolution",
+      "result": "Final runtime retains original write-admission, unknown-status, READ and Committed/receipt predicate literally; new helper is an additional conjunct. Protected marker is present and no guard is moved out of its required source."
+    },
+    {
+      "area": "real_gui_same_predicate_assertions",
+      "result": "The existing real Session/App lifecycle calls the same production helper for REPLACE and STATUS. It asserts [true,true] for initial, recovered and repeated exact current goals; [false,false] after document drift and actual App readback loss. Outputs are saved under act2_model_tool_success_projection with complete_model_facing_handler_exercised=false. These are code assertions pending native execution, not executed results from static review."
+    },
+    {
+      "area": "gui_ownership_and_effect_counts",
+      "result": "The zero-capture local closure returns Copy [bool;2] arrays; repeated results are kept in a Vec and serialized at existing final artifact assembly. Existing effect/grant assertions are retained. The change adds no dispatch, grant or App lifecycle operation."
+    },
+    {
+      "area": "protected_literal_recheck",
+      "result": "All 34 required literal markers across the three exact-base CALLERS protected_file entries for notes_thread_runtime.rs are present in the final source. This bounded literal check does not replace full caller scanner or required-function-order validation."
+    }
+  ],
+  "scope_limits": [
+    "This static review is not compilation, native test execution, or a completed full caller scanner.",
+    "Persistent rollback protection and complete ACT-2/learned hierarchy promotion are not established.",
+    "Final real GUI helper assertions have been statically reviewed but not executed by this reviewer; the complete model-facing handler is still not exercised."
+  ],
+  "source_refs": {
+    "notes_thread_tool_blob": "0c4b2e86ba31fe6ecbcfd604a689e03284599c29",
+    "lib_blob": "9d7e67376ac8ddf9aeb7082a750d231399ffde3f"
+  },
+  "reviewed_candidate_tree": "eedf15cce91f62cde4c85c6a2a9f124029ef6b5e",
+  "integration_base_source": "8bebf0a3c207a49bfd0a99367fd6e06f52a6cb98",
+  "original_base_source": "8b1c1789916514471c6cacdf0f6c45467255fef9",
+  "reviewed_files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/notes_action_observer.rs",
+      "bytes": 10711,
+      "sha256": "940914746a25767a05127e43b2fb0d545ceba316763c47ce0de5f37bfeef7df7",
+      "git_blob_sha": "970e9da724a84937d76f1465365c32ee20389e80"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/notes_action_observer_tests.rs",
+      "bytes": 13123,
+      "sha256": "2cafd6d366797735f0d2bf39cfb0ebc7cfca2f5d4e6fcd1e2a4b48acbf750eb9",
+      "git_blob_sha": "033a8739af3ddf5e8010d4a461fa4d079909a8df"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/notes_thread_runtime.rs",
+      "bytes": 27300,
+      "sha256": "7bd477ca87e257bf56173fe87e517de03fd9fc8d640ac9587889581c62ff2c4f",
+      "git_blob_sha": "4d35d4372a44659de24c536e8c3f5ef5f74bb585"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_notes_gui_tests.rs",
+      "bytes": 33422,
+      "sha256": "ca337d86e567bad12045a1b05415a19d10106c2310432a971362b29754ae8efe",
+      "git_blob_sha": "b8022560f02481b8cf99902a19cc709fa151829c"
+    }
+  ]
+}

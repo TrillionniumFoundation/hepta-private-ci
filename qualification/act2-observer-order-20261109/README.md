@@ -129,3 +129,15 @@ both official formatter patches are empty. [The separate original artifacts and
 verification](maintained-run/README.md) establish this fresh pass, rather than
 transferring counts from `111d5773`. This run does not include the later model-tool
 success projection change in #5619, whose result remains separately scoped.
+
+## Separate model-tool goal-success qualification
+
+[The goal-success successor's evidence](../act2-model-goal-success-20261110/README.md)
+qualifies a different code candidate, `ae8a08059df73ccb875f4f541f76ad01080ba74b`,
+in original run 42770759653: 169 automation, 12 selected Notes and 1 real App
+test passed (2/778/789 skipped). Actual shared-predicate success flags remain true
+for confirmed goals and false after document drift or readback loss. Complete
+model-facing handler qualification remains false. The exact formatter successor
+`631e99f78898543e8dc1e8671632baf73945940e` has a separate pending native run;
+no original pass is inherited by that source. These results are not part of the
+fence-only runs above.
