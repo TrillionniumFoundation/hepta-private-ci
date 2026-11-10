@@ -1,0 +1,34 @@
+{
+  "actual_parent_commit": "591031e2e90282dfe5aab84aa7973eb4e259edae",
+  "after": {
+    ".github/workflows/hepta-cell-research-stages.yml": "5096873357ac8372222131e5acac9607467d81adf7d84b835b1251bd49a7971e",
+    "scripts/hepta_cell_research_gate.py": "5fdeb37089b3dcef50f90f02df7513f92478a8ff48a41ca531547f18960e850d",
+    "scripts/hepta_cell_research_units.py": "4e916be68fc2997e0bf939e745f6e34f260db0ebda732ff8932ebc0c3d800b27",
+    "scripts/test_hepta_cell_research_units.py": "80e2cfb37c4f0c440f202f9c0d995897275e2380993b3daadf5c2d59da7a4937"
+  },
+  "attempts": [
+    {
+      "exit_code": 0,
+      "finished_unix": 1794296815.403265,
+      "mode": "offline",
+      "started_unix": 1794296815.13431,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "before": {
+    ".github/workflows/hepta-cell-research-stages.yml": "5096873357ac8372222131e5acac9607467d81adf7d84b835b1251bd49a7971e",
+    "scripts/hepta_cell_research_gate.py": "5fdeb37089b3dcef50f90f02df7513f92478a8ff48a41ca531547f18960e850d",
+    "scripts/hepta_cell_research_units.py": "4e916be68fc2997e0bf939e745f6e34f260db0ebda732ff8932ebc0c3d800b27",
+    "scripts/test_hepta_cell_research_units.py": "80e2cfb37c4f0c440f202f9c0d995897275e2380993b3daadf5c2d59da7a4937"
+  },
+  "behavior_tests_after_maintenance": false,
+  "phase": "B",
+  "prior_donor_format_aliases": [],
+  "production_adoption": false,
+  "python_ast_preserved": true,
+  "schema": "hepta.common-maintenance.v1",
+  "scientific_acceptance": "HOLD",
+  "scope": "Exact-file local Python regression projection; not full repository, native daemon, or hosted workflow qualification",
+  "tested_source_projection_base": "bc045ef97fb1b820f74257e7b3a89285673b0d2c"
+}

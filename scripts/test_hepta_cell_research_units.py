@@ -83,6 +83,133 @@ class ResearchUnitsTests(unittest.TestCase):
         self.manifest["experiments"][name] = self.bind(name + ".json", document)
         return self.assess()["experiments"][name]
 
+    def task_bound_experiment(self):
+        record = self.experiment()
+        record["units"]["schema"] = "hepta.cell-research-units.v2"
+        for index, case in enumerate(record["units"]["cases"]):
+            case["task_artifact"] = self.bind(
+                f"task-{index}.json", {"terminal_goal": f"fixture-goal-{index}"}
+            )
+        return record
+
+    def test_task_bound_units_read_original_bytes_without_admitting_science(self):
+        result = self.screen(self.task_bound_experiment())
+        units = result["statistical_units"]
+        self.assertEqual(
+            {
+                key: units[key]
+                for key in (
+                    "task_artifact_bytes_verified",
+                    "distinct_task_artifacts",
+                    "task_semantics_verified",
+                    "natural_source_groups",
+                    "sample_count_is_product",
+                    "independence_verified",
+                )
+            },
+            {
+                "task_artifact_bytes_verified": True,
+                "distinct_task_artifacts": 2,
+                "task_semantics_verified": False,
+                "natural_source_groups": 2,
+                "sample_count_is_product": False,
+                "independence_verified": False,
+            },
+        )
+        self.assertTrue(result["descriptive_threshold_met"])
+        reviewed = self.assess()
+        self.assertFalse(reviewed["research_advancement"])
+        self.assertFalse(reviewed["authority_granted"])
+        self.assertFalse(result["new_milestone_eligible"])
+
+    def test_identical_task_bytes_cannot_alias_sources_families_or_splits(self):
+        for changed in ("source", "family", "split"):
+            with self.subTest(changed=changed):
+                record = self.task_bound_experiment()
+                first, second = record["units"]["cases"]
+                second["task_artifact"] = self.bind(
+                    "task-alias.json",
+                    (self.artifacts / first["task_artifact"]["path"]).read_bytes(),
+                )
+                if changed == "family":
+                    second.update(
+                        source_group_id=first["source_group_id"], task_family="image"
+                    )
+                elif changed == "split":
+                    second["split"] = "confirmation"
+                with self.assertRaisesRegex(
+                    ValueError, "conflicting statistical units"
+                ):
+                    self.screen(record)
+
+    def test_same_unit_task_repetition_preserves_group_counts_and_weights(self):
+        record = self.task_bound_experiment()
+        before = self.screen(record)
+        record["units"]["cases"].append(
+            {**record["units"]["cases"][0], "case_id": "repeat-case"}
+        )
+        for row in copy.deepcopy(record["attempts"]["rows"]):
+            if row["case_id"] != "case-1":
+                continue
+            original = row["attempt_id"]
+            row.update(case_id="repeat-case", attempt_id=original + "/repeat")
+            record["attempts"]["rows"].append(row)
+            record["units"]["planned_attempts"].append(
+                {key: row[key] for key in ("attempt_id", "arm", "fit_id", "case_id")}
+            )
+            record["units"]["cost_coverage"][row["attempt_id"]] = copy.deepcopy(
+                record["units"]["cost_coverage"][original]
+            )
+        after = self.screen(record)
+        self.assertEqual(after["comparisons"], before["comparisons"])
+        for key in (
+            "natural_source_groups",
+            "task_families",
+            "model_initializations",
+            "distinct_task_artifacts",
+        ):
+            self.assertEqual(
+                after["statistical_units"][key], before["statistical_units"][key]
+            )
+        self.assertGreater(after["attempt_denominator"], before["attempt_denominator"])
+
+    def test_task_byte_replacement_and_wrong_hash_are_rejected(self):
+        record = self.task_bound_experiment()
+        binding = record["units"]["cases"][0]["task_artifact"]
+        task_path = self.artifacts / binding["path"]
+        original = task_path.read_bytes()
+        task_path.write_bytes(original.replace(b"fixture-goal-0", b"fixture-goal-X"))
+        self.assertEqual(task_path.stat().st_size, binding["bytes"])
+        with self.assertRaisesRegex(ValueError, "artifact bytes or identity changed"):
+            self.screen(record)
+        task_path.write_bytes(original)
+        binding["sha256"] = "f" * 64
+        with self.assertRaisesRegex(ValueError, "artifact bytes or identity changed"):
+            self.screen(record)
+
+    def test_units_version_and_case_fields_are_strict_and_legacy_is_unchanged(self):
+        legacy = self.screen(self.experiment())
+        self.assertNotIn("task_artifact_bytes_verified", legacy["statistical_units"])
+        self.assertNotIn("distinct_task_artifacts", legacy["statistical_units"])
+        for change in ("missing-binding", "legacy-extra-binding", "unknown-schema"):
+            with self.subTest(change=change):
+                record = self.task_bound_experiment()
+                if change == "missing-binding":
+                    del record["units"]["cases"][0]["task_artifact"]
+                elif change == "legacy-extra-binding":
+                    record["units"]["schema"] = "hepta.cell-research-units.v1"
+                else:
+                    record["units"]["schema"] = "hepta.cell-research-units.v3"
+                with self.assertRaises(ValueError):
+                    self.screen(record)
+        for key in ("experiment_id", "protocol_sha256", "joint_configuration_sha256"):
+            record = self.task_bound_experiment()
+            record["units"][key] = (
+                "other-experiment" if key == "experiment_id" else "f" * 64
+            )
+            with self.subTest(binding=key), self.assertRaises(ValueError):
+                self.screen(record)
+
     def test_repeat_cases_do_not_reweight_sources_or_multiply_units(self):
         record = self.experiment()
         for row in record["attempts"]["rows"]:

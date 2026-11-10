@@ -2,6 +2,9 @@
 
 These declarations prevent repeated observations from changing the registered
 denominator. They do not authenticate source independence, exposure or meters.
+Units V2 additionally reads each declared complete task artifact and refuses
+identical bytes assigned to different source, family or split declarations.
+Byte integrity does not establish task semantic completeness or source custody.
 """
 
 from collections import Counter, defaultdict
@@ -12,6 +15,7 @@ import hepta_cell_joint_config as joint
 
 
 FIELDS = "cases initializations fits planned_attempts cost_coverage"
+SCHEMAS = {"hepta.cell-research-units.v1", "hepta.cell-research-units.v2"}
 SPLITS = {"development", "confirmation", "retention_validation", "retention_test"}
 
 
@@ -59,9 +63,17 @@ def review(document, rows, evidence, sampling_spec, cost_categories):
     recovery; a partial measurement must remain unknown. This is a declaration,
     not independent meter authentication or a release of sealed material.
     """
-    cases, source_splits = {}, {}
+    schema = document.get("schema") if isinstance(document, dict) else None
+    if schema not in SCHEMAS:
+        raise ValueError("unsupported research units schema")
+    task_bound = schema == "hepta.cell-research-units.v2"
+    cases, source_splits, task_units = {}, {}, {}
     for case in records(document["cases"]):
-        shape(case, "case_id source_group_id task_family split")
+        shape(
+            case,
+            "case_id source_group_id task_family split"
+            + (" task_artifact" if task_bound else ""),
+        )
         case_id, source, _ = [
             identity(case[k]) for k in ("case_id", "source_group_id", "task_family")
         ]
@@ -69,6 +81,13 @@ def review(document, rows, evidence, sampling_spec, cost_categories):
             raise ValueError("duplicate case or unknown registered split")
         if source_splits.setdefault(source, case["split"]) != case["split"]:
             raise ValueError("one natural source crosses registered splits")
+        if task_bound:
+            task_sha = evidence.read(case["task_artifact"], document=False)["sha256"]
+            unit = (source, case["task_family"], case["split"])
+            if task_units.setdefault(task_sha, unit) != unit:
+                raise ValueError(
+                    "identical task bytes have conflicting statistical units"
+                )
         cases[case_id] = case
     initializations = document["initializations"]
     if not isinstance(initializations, dict) or not 1 <= len(initializations) <= 4096:
@@ -159,7 +178,7 @@ def review(document, rows, evidence, sampling_spec, cost_categories):
         ):
             if count < sampling_spec[key]:
                 blockers.add("INSUFFICIENT_" + key.removeprefix("minimum_").upper())
-    return {
+    result = {
         "planned_attempts": len(planned),
         "observed_attempts": len(observed),
         "attempt_counts": dict(counts),
@@ -176,6 +195,13 @@ def review(document, rows, evidence, sampling_spec, cost_categories):
         "cost_authenticity_verified": False,
         "blockers": sorted(blockers),
     }
+    if task_bound:
+        result.update(
+            task_artifact_bytes_verified=True,
+            distinct_task_artifacts=len(task_units),
+            task_semantics_verified=False,
+        )
+    return result
 
 
 def balanced_fit_means(units, cases, baseline):
