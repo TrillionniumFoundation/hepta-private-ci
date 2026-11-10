@@ -267,3 +267,46 @@ fn first_adopted_input_is_rebuilt_without_promoting_failed_or_cancelled_initiali
         adopted.first_advance_input_digest()
     );
 }
+
+#[test]
+fn temporal_control_stop_preserves_state_and_never_claims_numerical_use_after_reopen() {
+    let fixture = Fixture::new();
+    let mut configuration = config();
+    configuration.manifest.profile = "cell-diagonal-q24-temporal-v1".to_string();
+    configuration.initial.manifest_digest = checked(configuration.manifest.digest());
+    let mut owner = fixture.open_with(configuration.clone(), /*max_records*/ 128);
+    let mut req = request(&owner, "control-stop");
+    req.input = b"HQ24STOP".to_vec();
+    checked(owner.admit(req.clone(), /*now_micros*/ 11));
+    let mut stop = proposal(&req);
+    stop.disposition = CellGenerationDispositionV2::Stopped;
+    stop.successor_state = req.predecessor.state.clone();
+    stop.output_delta.clear();
+    for malformed in [
+        CellGenerationProposalV2 {
+            disposition: CellGenerationDispositionV2::Advanced,
+            ..stop.clone()
+        },
+        CellGenerationProposalV2 {
+            successor_state: b"injected state".to_vec(),
+            ..stop.clone()
+        },
+        CellGenerationProposalV2 {
+            output_delta: b"injected output".to_vec(),
+            ..stop.clone()
+        },
+    ] {
+        assert_eq!(
+            owner.commit(malformed, /*now_micros*/ 12),
+            Err(CellGenerationErrorV2::InvalidBinding)
+        );
+    }
+    checked(owner.commit(stop, /*now_micros*/ 12));
+    let observed = checked(owner.observe_generation());
+    assert_eq!(observed.first_advance_input_digest(), None);
+    assert_eq!(observed.snapshot().state, req.predecessor.state);
+    assert!(observed.snapshot().stopped);
+    drop(owner);
+    let reopened = fixture.open_with(configuration, /*max_records*/ 128);
+    assert_eq!(reopened.observe_generation(), Ok(observed));
+}

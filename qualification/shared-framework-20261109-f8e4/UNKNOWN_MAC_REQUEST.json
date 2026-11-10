@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "tool": "mcp__codex_apps__h_pty_start",
+  "controller_namespace": "mcp__codex_apps__h",
+  "request": {
+    "host": "mac",
+    "executable": "/opt/homebrew/bin/python3.14",
+    "args": [
+      "-c",
+      "import os,sys,json,subprocess,signal,time\nfrom pathlib import Path\nroot=Path('/Users/qianqi/hepta-shared-framework-f8e4-mac-20261110');out={'route':{},'connect':None,'cancel':None}\ntry:\n r=subprocess.run(['/usr/bin/ssh','-G','ai395'],capture_output=True,text=True,timeout=10)\n for line in r.stdout.splitlines():\n  parts=line.split(None,1)\n  if len(parts)==2 and parts[0] in ['hostname','user','port','identityfile','identitiesonly','proxyjump']:out['route'].setdefault(parts[0],[]).append(parts[1])\n out['route_exit']=r.returncode\nexcept Exception as e:out['route_error']=str(e)\ntry:\n r=subprocess.run(['/usr/bin/ssh','-o','BatchMode=yes','-o','ConnectTimeout=10','-o','ConnectionAttempts=1','ai395','/usr/bin/true'],capture_output=True,text=True,timeout=15);out['connect']={'exit':r.returncode,'stderr':r.stderr.strip()[-2000:]}\nexcept Exception as e:out['connect']={'error':str(e)}\ntry:\n raw=subprocess.check_output(['/bin/ps','-axo','pid=,ppid=,uid=,command='],text=True);rows={}\n for line in raw.splitlines():\n  p=line.strip().split(None,3)\n  if len(p)==4:rows[int(p[0])]={'ppid':int(p[1]),'uid':int(p[2]),'cmd':p[3]}\n runner=40319;owner=rows.get(runner)\n if not owner or str(root) not in owner['cmd'] or '03e60a334498446b79148285905592ffb938c59a' not in owner['cmd']:\n  out['cancel']={'state':'NO_MATCHING_ORIGINAL_RUNNER','runner':runner}\n else:\n  descendants={runner};changed=True\n  while changed:\n   changed=False\n   for p,row in rows.items():\n    if row['ppid'] in descendants and p not in descendants:descendants.add(p);changed=True\n  actual=[{'pid':p,**rows[p]} for p in descendants if p!=runner]\n  out['descendants']=actual\n  native=any(any(x in r['cmd'] for x in ['rustc','cargo','nextest','hepta_ci_v8']) for r in actual)\n  exact=[r for r in actual if 'git -c http.version=HTTP/1.1 checkout --detach 03e60a334498446b79148285905592ffb938c59a' in r['cmd'] and r['uid']==os.getuid()]\n  if not native and len(exact)==1:\n   p=exact[0]['pid'];intent={'pid':p,'signal':'SIGINT','reason':'source-only Git checkout stalled; original runner identity and no Rust descendant verified','command':exact[0]['cmd']};(root/'records-r2/cancel-intent.json').write_text(json.dumps(intent,indent=2)+'\\n');os.kill(p,signal.SIGINT);out['cancel']={'state':'SIGINT_SENT_TO_EXACT_OWNED_GIT','pid':p}\n  else:out['cancel']={'state':'NO_CANCEL','native_present':native,'matching_git_count':len(exact)}\nexcept Exception as e:out['cancel_error']=str(e)\n(root/'source-route-observation.json').write_text(json.dumps(out,indent=2)+'\\n');print(json.dumps(out,indent=2))"
+    ],
+    "idempotency_key": "framework-f8e4-macos-route-owned-git-interrupt-20261110-v1",
+    "cols": 180,
+    "rows": 50
+  },
+  "observed_state": "UNKNOWN",
+  "observations": [
+    "Initial launch reply did not provide usable session identity; observer parser failed.",
+    "Exact original request was repeated under the same idempotency_key for reconciliation only; MCP returned request timeout.",
+    "No new key or alternate host was used to repeat the guarded action."
+  ],
+  "safety_scope": "Script tests original runner identity, UID, exact Git checkout command, and absence of Rust/Cargo/V8 descendants before SIGINT; no global network configuration or credentials are modified."
+}

@@ -519,7 +519,7 @@ async fn readback_missing_or_partial_checkpoint_never_creates_or_resumes_work() 
 }
 
 #[tokio::test]
-async fn actual_delivery_preserves_pending_without_backend_and_claimed_with_closed_owner() {
+async fn actual_delivery_backpressure_precedes_claim_and_prior_claim_stays_readback_only() {
     use codex_hepta_automation::AutomationStore;
     use codex_hepta_automation::CircuitCommandV2;
     use codex_hepta_automation::CircuitEventV2;
@@ -603,12 +603,38 @@ async fn actual_delivery_preserves_pending_without_backend_and_claimed_with_clos
         ports.verifier.clone(),
         /*capacity*/ 1,
     ));
+    let reserved = ok(handle.reserve());
+    assert!(matches!(
+        crate::deliver_circuit_learning_v1(&store, Some(&handle), request.clone(), ports.owners())
+            .await,
+        Err(LearningIterationRuntimeErrorV1::QueueFull)
+    ));
+    assert_eq!(
+        ok(store.pending_circuit_learning(/*limit*/ 1).await)[0].request_digest,
+        None
+    );
+    drop(reserved);
     drop(owner);
     assert!(matches!(
         crate::deliver_circuit_learning_v1(&store, Some(&handle), request.clone(), ports.owners())
             .await,
         Err(LearningIterationRuntimeErrorV1::Unavailable)
     ));
+    assert_eq!(
+        ok(store.pending_circuit_learning(/*limit*/ 1).await)[0].request_digest,
+        None
+    );
+    // A durable claim made before a later owner loss is still readback-only.
+    let initial = ok(LearningIterationCoordinatorV1::new(
+        request.clone(),
+        ports.owners(),
+    ));
+    let request_digest = ok(Sha256Digest::parse(
+        initial.snapshot().head_digest.to_string(),
+    ));
+    assert!(ok(store
+        .claim_circuit_learning(&intent, &request_digest)
+        .await));
     let claimed = ok(store.pending_circuit_learning(/*limit*/ 1).await);
     assert!(claimed[0].request_digest.is_some());
     assert_eq!(claimed[0].acknowledged_head, None);
