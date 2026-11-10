@@ -322,6 +322,11 @@ def review_update(roster: CellRoster, evidence: UpdateEvidence) -> UpdateReview:
             or value < 0
             or value >= 2**64
             or (type(value) is float and not math.isfinite(value))
+            or (
+                axis == "transport_bytes"
+                and type(value) is float
+                and not value.is_integer()
+            )
         ):
             # A Python int has arbitrary precision; math.isfinite(int) first
             # converts it to float and can raise OverflowError. Bound numeric

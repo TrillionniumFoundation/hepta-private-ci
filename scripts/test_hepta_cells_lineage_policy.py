@@ -360,6 +360,24 @@ class LineagePolicyTests(unittest.TestCase):
                 with self.assertRaises(LineagePolicyError):
                     review_update(r, evidence(c, costs=costs))
 
+    def test_transport_bytes_rejects_fractional_counts(self):
+        r = roster()
+        c = next(cell for cell in r.cells if cell.lineage == "PRED")
+        for bad in (0.5, 1.25):
+            with self.subTest(value=bad):
+                costs = dict(evidence(c).costs, transport_bytes=bad)
+                with self.assertRaisesRegex(
+                    LineagePolicyError, "invalid measured cost"
+                ):
+                    review_update(r, evidence(c, costs=costs))
+        for good in (0, 1, 0.0, 1.0):
+            with self.subTest(value=good):
+                costs = dict(evidence(c).costs, transport_bytes=good)
+                self.assertEqual(
+                    review_update(r, evidence(c, costs=costs)).status,
+                    "REVIEW_ONLY",
+                )
+
     def test_extreme_measured_costs_fail_closed_without_float_overflow(self):
         r = roster()
         c = next(cell for cell in r.cells if cell.lineage == "PRED")
