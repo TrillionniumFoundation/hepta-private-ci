@@ -349,6 +349,67 @@ def verify_priority_selection_audit(receipt):
     return True
 
 
+
+def verify_priority_selection_against_checkpoint(selection):
+    """Check a priority receipt against its separate *pre-selection* pool state.
+
+    This closes omission/reordering within an honestly captured local pool
+    snapshot, even after records are evicted. Both records are still generated
+    by the same research process: neither proves admission completeness,
+    independent owner identity, nor truthful priority measurement.
+    """
+    if not isinstance(selection, dict):
+        raise ValueError("priority selection record must be a mapping")
+    receipt = selection.get("selection_audit")
+    verify_priority_selection_audit(receipt)
+    snapshot = selection.get("preselection_checkpoint")
+    if not isinstance(snapshot, dict) or not isinstance(
+        snapshot.get("payload"), dict
+    ):
+        raise ValueError("missing historical pre-selection checkpoint")
+    payload = snapshot["payload"]
+    pool = ReplayPool.restore(snapshot, receipt["scope"], receipt["versions"])
+    if receipt["selection_index"] != pool.calls + 1:
+        raise ValueError("priority selection index does not follow checkpoint")
+    before = canonical_digest(pool.rng.bit_generator.state)
+    if (
+        receipt["rng_before_digest"] != before
+        or receipt["rng_after_digest"] != before
+    ):
+        raise ValueError("priority selection changed checkpoint RNG")
+    eligible = sorted(
+        (item for item in pool.items if item.kind == "error"),
+        key=lambda item: (-item.priority, item.item_id),
+    )
+    expected = [
+        {
+            "item_id": item.item_id,
+            "scope": item.scope,
+            "source": item.source,
+            "version": item.version,
+            "split": item.split,
+            "kind": item.kind,
+            "priority": float(item.priority),
+            "timesteps": len(item.episode[0]),
+            "payload_digest": canonical_digest(item.payload()),
+        }
+        for item in eligible
+    ]
+    if receipt["ordered_candidates"] != expected:
+        raise ValueError("priority candidate inventory differs from checkpoint")
+    selected = {item.item_id: item for item in eligible}
+    chosen = [selected[item_id] for item_id in receipt["selected_ids"]]
+    if (
+        selection.get("ids") != receipt["selected_ids"]
+        or selection.get("entry_presentations") != len(chosen)
+        or selection.get("timesteps") != receipt["decision_timesteps"]
+        or selection.get("numeric_payload_bytes")
+        != sum(a.nbytes for item in chosen for a in item.arrays())
+    ):
+        raise ValueError("priority selection presentation or byte accounting changed")
+    return True
+
+
 def replay_specs(seeds=(11, 29, 47)):
     specs = []
     for seed in seeds:
@@ -521,6 +582,13 @@ def run_replay_attempt(spec):
         receipts.append(receipt)
         pool.add(ReplayItem(**{**item.payload(), "priority": result["loss"]}))
         if position >= 16:
+            # Save a separately checkable complete pool state BEFORE selection.
+            # This is not a signed source-admission or true-loss certificate.
+            preselection_checkpoint = (
+                pool.checkpoint()
+                if spec["method"] == "error_prioritized"
+                else None
+            )
             chosen, selection_audit = pool.select(
                 spec["method"], spec["entry_budget"], spec["timestep_budget"],
                 audit=True,
@@ -530,6 +598,11 @@ def run_replay_attempt(spec):
                     "position": position,
                     "ids": [e.item_id for e in chosen],
                     "selection_audit": selection_audit,
+                    **(
+                        {"preselection_checkpoint": preselection_checkpoint}
+                        if preselection_checkpoint is not None
+                        else {}
+                    ),
                     "entry_presentations": len(chosen),
                     "timesteps": sum(len(e.episode[0]) for e in chosen),
                     "numeric_payload_bytes": sum(
