@@ -252,13 +252,32 @@ def replay_specs(seeds=(11, 29, 47)):
 
 def make_item(seed, index, phase=0, split="train"):
     """Four distinct fixed-length mechanisms; changed workflow has a new version."""
+    if (
+        type(seed) is not int
+        or not 0 <= seed < 2**32
+        or type(index) is not int
+        or not 0 <= index < 4096
+        or type(phase) is not int
+        or phase not in (0, 1)
+        or split not in ("train", "holdout")
+    ):
+        raise ValueError(
+            "bounded seed/index, phase 0/1 and train/holdout split required"
+        )
     kind = KINDS[index % 4]
     x, y, f, m = copy_episode(
-        np.random.default_rng(seed + 31 * index + 1000 * phase), 8
+        np.random.default_rng(
+            np.random.SeedSequence(
+                [seed, 712903, index, phase, int(split == "holdout")]
+            )
+        ),
+        8,
     )
     cue = float(y[0, 0])
     if kind == "fact":
-        x[:, 0] = cue
+        # Preserve each example's nuisance variation instead of collapsing every
+        # fact sequence to one of the two cue-sign payloads.
+        x[1:, 0] += cue
     elif kind == "procedure":
         x[1::2, 0] = -cue * 0.2
     elif kind == "error":
@@ -279,6 +298,62 @@ def make_item(seed, index, phase=0, split="train"):
     )
 
 
+def raw_fingerprints(item):
+    """Hash numerical arrays only; identity/split labels never establish separation."""
+    x, y, feedback, messages = item.arrays()
+    return {
+        "input_message_sha256": canonical_digest(
+            {"inputs": x.tolist(), "messages": messages.tolist()}
+        ),
+        "supervised_payload_sha256": canonical_digest(
+            [a.tolist() for a in (x, y, feedback, messages)]
+        ),
+    }
+
+
+def audit_replay_splits(train, probes):
+    """Reject shared raw observations even when their labels or IDs differ."""
+    if (
+        not train
+        or not probes
+        or any(e.split != "train" for e in train)
+        or any(e.split != "holdout" for e in probes)
+    ):
+        raise ValueError("nonempty training and holdout sequences required")
+    rows = {
+        name: [
+            {"item_id": e.item_id, "kind": e.kind, **raw_fingerprints(e)}
+            for e in entries
+        ]
+        for name, entries in (("train", train), ("probe", probes))
+    }
+    overlaps = {
+        key: sorted({e[key] for e in rows["train"]} & {e[key] for e in rows["probe"]})
+        for key in ("input_message_sha256", "supervised_payload_sha256")
+    }
+    if any(overlaps.values()):
+        raise ValueError(
+            "cross-split raw-array overlap: "
+            + str({key: len(value) for key, value in overlaps.items()})
+        )
+    return {
+        "schema": "hepta.replay-raw-split-audit.v1",
+        "fingerprint_scope": "numerical_arrays_only_excludes_identity_scope_version_kind_and_split",
+        "fingerprints": rows,
+        "cross_split_overlaps": overlaps,
+        "unique_input_payloads_by_kind": {
+            name: {
+                kind: len(
+                    {e["input_message_sha256"] for e in values if e["kind"] == kind}
+                )
+                for kind in KINDS
+            }
+            for name, values in rows.items()
+        },
+        "passed": True,
+    }
+
+
 def run_replay_attempt(spec):
     if spec not in replay_specs((spec["seed"],)):
         raise ValueError("replay specification mismatch")
@@ -293,6 +368,7 @@ def run_replay_attempt(spec):
         [make_item(spec["seed"] + 1800, i, phase, "holdout") for i in range(16)]
         for phase in (0, 1)
     ]
+    data_audit = audit_replay_splits(stream, [e for group in probes for e in group])
     receipts, selections, probe_losses = [], [], []
 
     def evaluate():
@@ -361,7 +437,14 @@ def run_replay_attempt(spec):
         "initial_model_digest": initial,
         "final_model_digest": model.digest,
         "data_digest": canonical_digest([e.payload() for e in stream]),
+        "data_split_audit": data_audit,
+        "data_split_audit_digest": canonical_digest(data_audit),
         "probe_ids": [[e.item_id for e in group] for group in probes],
+        "probe_kinds": [[e.kind for e in group] for group in probes],
+        "probe_obsolete_workflow": [
+            [phase == 0 and e.kind in ("procedure", "error") for e in group]
+            for phase, group in enumerate(probes)
+        ],
         "probe_losses_initial_mid_final": probe_losses,
         "replay_selections": selections,
         "update_receipts": receipts,
