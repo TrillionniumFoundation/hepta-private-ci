@@ -1,0 +1,434 @@
+{
+  "schema": "mem4-independent-artifact-audit-v1",
+  "source_revision": "ae04c09921a600b5ccb82fe72a631e32146856bc",
+  "native_sha256": "fa3426e85164765a920aaa69db74c5ebc4bab712b0358734d08beb5be4355f4b",
+  "artifact_id": 13729549400,
+  "zip_sha256": "2bbe72b935a2c23cf76d4064d659f9085c9369e79ec5c538c230d47664aad076",
+  "planned_runs": 30,
+  "completed_runs": 30,
+  "matched_trajectories": 20,
+  "matched_pairs": 10,
+  "readback_windows": 40,
+  "candidate_checkpoint_hashes_checked": 40,
+  "event_counts": {
+    "update": 9880,
+    "prequential": 7200,
+    "recovery": 90,
+    "probe": 1800,
+    "owner_change": 15,
+    "matched_replay": 40,
+    "owner_stationary": 15
+  },
+  "source_inputs_compared": [
+    "audit_evidence.py",
+    "coverage_control.py",
+    "environment.py",
+    "native.py",
+    "run.py",
+    "run_coverage.py",
+    "run_trajectory_coverage.py",
+    "test_coverage_control.py",
+    "test_environment.py",
+    "test_trajectory_coverage.py",
+    "test_verify_results.py",
+    "verify_results.py"
+  ],
+  "scores": {
+    "dynamic": {
+      "priority_reference": [
+        {
+          "seed": 0,
+          "stable_after_B": 0.125,
+          "b_prequential": 0.8229166666666666
+        },
+        {
+          "seed": 1,
+          "stable_after_B": 0.25,
+          "b_prequential": 0.84375
+        },
+        {
+          "seed": 2,
+          "stable_after_B": 0.0,
+          "b_prequential": 0.78125
+        },
+        {
+          "seed": 3,
+          "stable_after_B": 0.375,
+          "b_prequential": 0.875
+        },
+        {
+          "seed": 4,
+          "stable_after_B": 0.125,
+          "b_prequential": 0.8645833333333334
+        }
+      ],
+      "coverage_uniform": [
+        {
+          "seed": 0,
+          "stable_after_B": 0.875,
+          "b_prequential": 0.8229166666666666
+        },
+        {
+          "seed": 1,
+          "stable_after_B": 1.0,
+          "b_prequential": 0.84375
+        },
+        {
+          "seed": 2,
+          "stable_after_B": 0.75,
+          "b_prequential": 0.78125
+        },
+        {
+          "seed": 3,
+          "stable_after_B": 0.875,
+          "b_prequential": 0.875
+        },
+        {
+          "seed": 4,
+          "stable_after_B": 0.75,
+          "b_prequential": 0.8645833333333334
+        }
+      ],
+      "coverage_structured": [
+        {
+          "seed": 0,
+          "stable_after_B": 0.75,
+          "b_prequential": 0.8229166666666666
+        },
+        {
+          "seed": 1,
+          "stable_after_B": 1.0,
+          "b_prequential": 0.84375
+        },
+        {
+          "seed": 2,
+          "stable_after_B": 0.875,
+          "b_prequential": 0.78125
+        },
+        {
+          "seed": 3,
+          "stable_after_B": 1.0,
+          "b_prequential": 0.875
+        },
+        {
+          "seed": 4,
+          "stable_after_B": 0.75,
+          "b_prequential": 0.8645833333333334
+        }
+      ]
+    },
+    "stationary": {
+      "priority_reference": [
+        {
+          "seed": 0,
+          "stable_after_B": 0.125,
+          "b_prequential": 0.78125
+        },
+        {
+          "seed": 1,
+          "stable_after_B": 0.25,
+          "b_prequential": 0.7916666666666666
+        },
+        {
+          "seed": 2,
+          "stable_after_B": 0.125,
+          "b_prequential": 0.7916666666666666
+        },
+        {
+          "seed": 3,
+          "stable_after_B": 0.5,
+          "b_prequential": 0.875
+        },
+        {
+          "seed": 4,
+          "stable_after_B": 0.25,
+          "b_prequential": 0.84375
+        }
+      ],
+      "coverage_uniform": [
+        {
+          "seed": 0,
+          "stable_after_B": 0.75,
+          "b_prequential": 0.7708333333333334
+        },
+        {
+          "seed": 1,
+          "stable_after_B": 0.875,
+          "b_prequential": 0.7916666666666666
+        },
+        {
+          "seed": 2,
+          "stable_after_B": 0.875,
+          "b_prequential": 0.7916666666666666
+        },
+        {
+          "seed": 3,
+          "stable_after_B": 1.0,
+          "b_prequential": 0.875
+        },
+        {
+          "seed": 4,
+          "stable_after_B": 1.0,
+          "b_prequential": 0.8333333333333334
+        }
+      ],
+      "coverage_structured": [
+        {
+          "seed": 0,
+          "stable_after_B": 0.875,
+          "b_prequential": 0.7708333333333334
+        },
+        {
+          "seed": 1,
+          "stable_after_B": 0.75,
+          "b_prequential": 0.7916666666666666
+        },
+        {
+          "seed": 2,
+          "stable_after_B": 0.75,
+          "b_prequential": 0.7916666666666666
+        },
+        {
+          "seed": 3,
+          "stable_after_B": 0.5,
+          "b_prequential": 0.875
+        },
+        {
+          "seed": 4,
+          "stable_after_B": 0.875,
+          "b_prequential": 0.8229166666666666
+        }
+      ]
+    }
+  },
+  "descriptive_means": {
+    "dynamic": {
+      "priority_reference": {
+        "stable_A_after_B": 0.175,
+        "B_prequential": 0.8375
+      },
+      "coverage_uniform": {
+        "stable_A_after_B": 0.85,
+        "B_prequential": 0.8375
+      },
+      "coverage_structured": {
+        "stable_A_after_B": 0.875,
+        "B_prequential": 0.8375
+      }
+    },
+    "stationary": {
+      "priority_reference": {
+        "stable_A_after_B": 0.25,
+        "B_prequential": 0.8166666666666667
+      },
+      "coverage_uniform": {
+        "stable_A_after_B": 0.9,
+        "B_prequential": 0.8125
+      },
+      "coverage_structured": {
+        "stable_A_after_B": 0.75,
+        "B_prequential": 0.8104166666666667
+      }
+    }
+  },
+  "scientific_qualification": "HOLD",
+  "production_adoption": "NoUpdate",
+  "limitations": [
+    "five synthetic stream seeds, no real-task confirmation",
+    "independent retained-data reconstruction, not executor authentication",
+    "teacher charged in full to both arms; physical costs not equalized",
+    "native-worker restart only; not full owner cold recovery"
+  ],
+  "cost_aggregates": {
+    "dynamic/priority_reference": {
+      "online_updates": 1200,
+      "rebuild_updates": 40,
+      "sleep_updates": 0,
+      "recovery_checkpoint_operations": 15,
+      "kernel_multiplications": 880640,
+      "owner_checks": 5990,
+      "wall_ns": 1875482908,
+      "python_cpu_ns": 1119418817,
+      "native_child_cpu_ns": 766746001,
+      "native_calls": 4170,
+      "native_ipc_wall_ns": 953019945
+    },
+    "dynamic/coverage_uniform": {
+      "online_updates": 1200,
+      "rebuild_updates": 40,
+      "sleep_updates": 640,
+      "recovery_checkpoint_operations": 15,
+      "kernel_multiplications": 1146880,
+      "owner_checks": 6630,
+      "wall_ns": 2306135772,
+      "python_cpu_ns": 1399409994,
+      "native_child_cpu_ns": 923528001,
+      "native_calls": 4820,
+      "native_ipc_wall_ns": 1148302744
+    },
+    "dynamic/coverage_structured": {
+      "online_updates": 1200,
+      "rebuild_updates": 40,
+      "sleep_updates": 640,
+      "recovery_checkpoint_operations": 15,
+      "kernel_multiplications": 1146880,
+      "owner_checks": 6630,
+      "wall_ns": 2263236011,
+      "python_cpu_ns": 1367809818,
+      "native_child_cpu_ns": 908592999,
+      "native_calls": 4820,
+      "native_ipc_wall_ns": 1122809047
+    },
+    "stationary/priority_reference": {
+      "online_updates": 1200,
+      "rebuild_updates": 0,
+      "sleep_updates": 0,
+      "recovery_checkpoint_operations": 15,
+      "kernel_multiplications": 864000,
+      "owner_checks": 5820,
+      "wall_ns": 1889584014,
+      "python_cpu_ns": 1156065991,
+      "native_child_cpu_ns": 739140999,
+      "native_calls": 4115,
+      "native_ipc_wall_ns": 927620478
+    },
+    "stationary/coverage_uniform": {
+      "online_updates": 1200,
+      "rebuild_updates": 0,
+      "sleep_updates": 640,
+      "recovery_checkpoint_operations": 15,
+      "kernel_multiplications": 1130240,
+      "owner_checks": 6460,
+      "wall_ns": 2308208383,
+      "python_cpu_ns": 1416453506,
+      "native_child_cpu_ns": 904759000,
+      "native_calls": 4765,
+      "native_ipc_wall_ns": 1118969024
+    },
+    "stationary/coverage_structured": {
+      "online_updates": 1200,
+      "rebuild_updates": 0,
+      "sleep_updates": 640,
+      "recovery_checkpoint_operations": 15,
+      "kernel_multiplications": 1130240,
+      "owner_checks": 6460,
+      "wall_ns": 2309785103,
+      "python_cpu_ns": 1423700462,
+      "native_child_cpu_ns": 901238001,
+      "native_calls": 4765,
+      "native_ipc_wall_ns": 1115837627
+    }
+  },
+  "state_comparisons": [
+    {
+      "condition": "dynamic",
+      "seed": 0,
+      "A1_pre_equal": true,
+      "B_pre_equal": false
+    },
+    {
+      "condition": "dynamic",
+      "seed": 1,
+      "A1_pre_equal": true,
+      "B_pre_equal": false
+    },
+    {
+      "condition": "dynamic",
+      "seed": 2,
+      "A1_pre_equal": true,
+      "B_pre_equal": false
+    },
+    {
+      "condition": "dynamic",
+      "seed": 3,
+      "A1_pre_equal": true,
+      "B_pre_equal": false
+    },
+    {
+      "condition": "dynamic",
+      "seed": 4,
+      "A1_pre_equal": true,
+      "B_pre_equal": false
+    },
+    {
+      "condition": "stationary",
+      "seed": 0,
+      "A1_pre_equal": true,
+      "B_pre_equal": false
+    },
+    {
+      "condition": "stationary",
+      "seed": 1,
+      "A1_pre_equal": true,
+      "B_pre_equal": false
+    },
+    {
+      "condition": "stationary",
+      "seed": 2,
+      "A1_pre_equal": true,
+      "B_pre_equal": false
+    },
+    {
+      "condition": "stationary",
+      "seed": 3,
+      "A1_pre_equal": true,
+      "B_pre_equal": false
+    },
+    {
+      "condition": "stationary",
+      "seed": 4,
+      "A1_pre_equal": true,
+      "B_pre_equal": false
+    }
+  ],
+  "update_counts": {
+    "online_updates": 7200,
+    "rebuild_updates": 120,
+    "sleep_updates": 2560,
+    "recovery_checkpoint_operations": 90
+  },
+  "source_identity_before_after_identical": true,
+  "source_tree": "233bdc60b6483f19e2e826488973c521875b178a",
+  "teacher_cost_equal_pairs": 10,
+  "published_python_hashes_checked": 12,
+  "native_source_compilation_closure_hashes_checked": 47,
+  "recorded_native_source_inventory_entries": 66,
+  "state_identity_caveat": "B pre-state digests differ in all ten pairs; digest differences may include provenance/lineage and do not alone establish numeric-weight differences, especially after the dynamic reset.",
+  "conservative_arm_plus_full_reference_costs": {
+    "dynamic/coverage_uniform": {
+      "kernel_multiplications": 2027520,
+      "wall_ns": 4181618680,
+      "python_cpu_ns": 2518828811,
+      "native_child_cpu_ns": 1690274002,
+      "native_calls": 8990,
+      "native_ipc_wall_ns": 2101322689
+    },
+    "dynamic/coverage_structured": {
+      "kernel_multiplications": 2027520,
+      "wall_ns": 4138718919,
+      "python_cpu_ns": 2487228635,
+      "native_child_cpu_ns": 1675339000,
+      "native_calls": 8990,
+      "native_ipc_wall_ns": 2075828992
+    },
+    "stationary/coverage_uniform": {
+      "kernel_multiplications": 1994240,
+      "wall_ns": 4197792397,
+      "python_cpu_ns": 2572519497,
+      "native_child_cpu_ns": 1643899999,
+      "native_calls": 8880,
+      "native_ipc_wall_ns": 2046589502
+    },
+    "stationary/coverage_structured": {
+      "kernel_multiplications": 1994240,
+      "wall_ns": 4199369117,
+      "python_cpu_ns": 2579766453,
+      "native_child_cpu_ns": 1640379000,
+      "native_calls": 8880,
+      "native_ipc_wall_ns": 2043458105
+    }
+  },
+  "actual_all_30_native_kernel_multiplications": 6298880,
+  "teacher_accounting_note": "Reference executed once per condition/seed. Actual execution totals count it once; each arm is conservatively charged its full cost, which intentionally duplicates reference cost across the two arm accounts.",
+  "worker_restart_checkpoint_hashes_checked": 90
+}

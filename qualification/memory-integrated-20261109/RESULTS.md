@@ -222,3 +222,17 @@ platform checks also failed. Cargo-deny failed, but log retrieval did not return
 a decoded log and its cause remains UNKNOWN. No baseline reproduction was
 performed. These failures remain gates; dedicated MEM success does not imply
 repository success, scientific promotion, or production adoption.
+
+## Later MEM-4 native continuation
+
+The [complete trajectory experiment](../memory-cell-mem4-trajectory/RESULTS.md)
+subsequently completed 30/30 native runs and 10/10 matched pairs on exact
+source `ae04c09921a600b5ccb82fe72a631e32146856bc`. Independent readback
+reconstructed 40 replay windows, 2,560 replay updates, 1,800 probe outcomes and
+90 worker-recovery checkpoints. All 543 original artifact members are preserved.
+
+B stable-A retention is uniform 85% / structured 87.5% under dynamic owner
+changes, and uniform 90% / structured 75% under stationary ownership. Reference
+work is charged to each arm and separately counted once in actual execution
+totals. These same synthetic seeds do not establish independent real-task
+benefit. Uniform and strong retrieval remain defaults; HOLD / NoUpdate remains.
