@@ -20,9 +20,9 @@
     },
     {
       "id": "MEM-RAW-REPRODUCIBILITY",
-      "status": "ARCHIVE_START_RECOVERY_OPEN",
-      "evidence": "Original 4000 files/77913835 bytes retained on ai395; core and arithmetic audit published in#5676. Original archival start and one identical-key reconciliation timed out; registry reads timed out and identity remains UNRESOLVED/outcome UNKNOWN. Stop extra starts; recover original identity/INDEX read-only.",
-      "limit": "Do not claim all actor sidecars or pixels independently replayed before their corresponding checks"
+      "status": "HOST_ARCHIVE_RECONSTRUCTION_VERIFIED_EXTERNAL_CUSTODY_OPEN",
+      "evidence": "Original archive INDEX now exists (SHA256 470cb221...), strict-v2 from frozen Git blob 274198e... verified 4000 logical files / 77913835 bytes, 2825 objects, 2859 chunks and 84 assets, successful ai395 verification job 1a1c4b6bd99-cf39-3f8, exit 0 with empty stderr; see run-001/ORIGINAL_ARCHIVE_VERIFICATION.json. No new archive-start or actor execution.",
+      "limit": "Original archive-start job identity remains UNRESOLVED; verified local reconstruction is not owner authentication, atomic snapshot, independently durable external custody, or all actor/pixel scientific replay."
     },
     {
       "id": "MEM-REPLAY-COVERAGE-CONTROL",
