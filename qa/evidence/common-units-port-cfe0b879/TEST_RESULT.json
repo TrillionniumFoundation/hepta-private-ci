@@ -1,0 +1,166 @@
+{
+  "actual_tests_reported": 67,
+  "argv": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "-B",
+    "-m",
+    "unittest",
+    "test_hepta_cell_research_gate",
+    "test_hepta_cell_research_units",
+    "test_hepta_cell_joint_config",
+    "test_hepta_cell_research_successor",
+    "test_hepta_prospective_comparison",
+    "-v"
+  ],
+  "authority_granted": false,
+  "base_commit": "bc045ef97fb1b820f74257e7b3a89285673b0d2c",
+  "cwd": "/workspace/scratch/cfe0b879a8b4/integration_stage/stage_a",
+  "elapsed_wall_seconds": 7.541318655014038,
+  "exit_code": 0,
+  "finished_utc": "2026-11-10T07:37:42.271005+00:00",
+  "log_concat_order": "stdout_then_stderr",
+  "log_files": {
+    "tests.full.log": {
+      "bytes": 12187,
+      "git_blob_sha1": "2068eead977c515ea1891e9b585d810cf0629226",
+      "sha256": "853abc4660a9cbb12302cee6170a4ea02e9bc0ce412fffd41ec66bec4d758e35"
+    },
+    "tests.stderr.log": {
+      "bytes": 12187,
+      "git_blob_sha1": "2068eead977c515ea1891e9b585d810cf0629226",
+      "sha256": "853abc4660a9cbb12302cee6170a4ea02e9bc0ce412fffd41ec66bec4d758e35"
+    },
+    "tests.stdout.log": {
+      "bytes": 0,
+      "git_blob_sha1": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "maintenance_after_this_run": "NOT_RUN; root will run canonical just fmt and record any postimages separately",
+  "new_independent_confirmation_samples": 0,
+  "new_model_fits": 0,
+  "new_real_task_runs": 0,
+  "production_adoption": false,
+  "python_version": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "schema": "hepta.common-units-port-stage-a-validation.v1",
+  "scientific_acceptance": "HOLD",
+  "source_after": {
+    ".github/workflows/hepta-cell-research-stages.yml": {
+      "bytes": 4316,
+      "git_blob_sha1": "304e3fb83e8646f77010052b5b03a73aaedb697f",
+      "sha256": "9d0636521c97ae24c17ce37cd73ff4e0b0a55fe848ae31d22663e588fad0cb53"
+    },
+    "scripts/hepta_cell_joint_config.py": {
+      "bytes": 23331,
+      "git_blob_sha1": "0a5d4f44a8f4a31b6a2b4b351949037ecbad0073",
+      "sha256": "6ee9ea0ca1536522e22453f0b763ff79238eb45ad615efdcc372260845ffb52c"
+    },
+    "scripts/hepta_cell_research_foundation.py": {
+      "bytes": 5023,
+      "git_blob_sha1": "09a44b06c0450c8f6ebf70de018bacab183edb3d",
+      "sha256": "6dde6ed39d50118a7aa77bee8865e459c67cb70090e7bd42a1fb781edcd2838d"
+    },
+    "scripts/hepta_cell_research_gate.py": {
+      "bytes": 29403,
+      "git_blob_sha1": "2a9a32b3cd5e19945a0e8d829f3816918ee7b95a",
+      "sha256": "9d37026a14b65672f66411ce3ec56c6799890da0d42443da7530be30605bbb6a"
+    },
+    "scripts/hepta_cell_research_units.py": {
+      "bytes": 8800,
+      "git_blob_sha1": "d468ef1a396a009227fe20d1a27684cb1d3af4d9",
+      "sha256": "8139672d1d197b7925abee50023214d5e245c65d4c508015d1353fbc16558ff2"
+    },
+    "scripts/hepta_prospective_comparison.py": {
+      "bytes": 5139,
+      "git_blob_sha1": "a0283e1158c053d9ef4a7c7791ab47daa70a72cd",
+      "sha256": "5d8632f663762463bcdc64c54b1f024776cacbe306aaaa780ab2152c6cf86ff9"
+    },
+    "scripts/test_hepta_cell_joint_config.py": {
+      "bytes": 27249,
+      "git_blob_sha1": "d3aee0d2ba0a51183659eac78e42ad93895c6f4c",
+      "sha256": "88b7fdcfca0e6e820f4a82bdc0c6ef91b826cf86833c1864b9d99fe2047f918a"
+    },
+    "scripts/test_hepta_cell_research_gate.py": {
+      "bytes": 24936,
+      "git_blob_sha1": "4b551e49e56f01b8b9926e1a0e4a65922f0b95d0",
+      "sha256": "e013794ea4e56205dc5b0c56cd1b850051bdfe91cd17049f716c7eb1999c5807"
+    },
+    "scripts/test_hepta_cell_research_successor.py": {
+      "bytes": 13831,
+      "git_blob_sha1": "242ee87ada22e26563f13e19ee2dae0651278db7",
+      "sha256": "5a40f818114d763970333734f0463ee71ff8599aa06ec8957fc678cfb584db25"
+    },
+    "scripts/test_hepta_cell_research_units.py": {
+      "bytes": 15600,
+      "git_blob_sha1": "0b69e818a83f94521ba5e474896c2cd1a6733460",
+      "sha256": "f73cac3a190d5d02e36ab25d0231c49a67c0b417d0eada138f0a9307e3949380"
+    },
+    "scripts/test_hepta_prospective_comparison.py": {
+      "bytes": 6478,
+      "git_blob_sha1": "2e8ab729e639099e7db84ca151818b637731fad8",
+      "sha256": "9e2baa8a02e730eddbd74e4a2adf8ad10bb209b9d1c18a2d681942bd0ce4a365"
+    }
+  },
+  "source_before": {
+    ".github/workflows/hepta-cell-research-stages.yml": {
+      "bytes": 4316,
+      "git_blob_sha1": "304e3fb83e8646f77010052b5b03a73aaedb697f",
+      "sha256": "9d0636521c97ae24c17ce37cd73ff4e0b0a55fe848ae31d22663e588fad0cb53"
+    },
+    "scripts/hepta_cell_joint_config.py": {
+      "bytes": 23331,
+      "git_blob_sha1": "0a5d4f44a8f4a31b6a2b4b351949037ecbad0073",
+      "sha256": "6ee9ea0ca1536522e22453f0b763ff79238eb45ad615efdcc372260845ffb52c"
+    },
+    "scripts/hepta_cell_research_foundation.py": {
+      "bytes": 5023,
+      "git_blob_sha1": "09a44b06c0450c8f6ebf70de018bacab183edb3d",
+      "sha256": "6dde6ed39d50118a7aa77bee8865e459c67cb70090e7bd42a1fb781edcd2838d"
+    },
+    "scripts/hepta_cell_research_gate.py": {
+      "bytes": 29403,
+      "git_blob_sha1": "2a9a32b3cd5e19945a0e8d829f3816918ee7b95a",
+      "sha256": "9d37026a14b65672f66411ce3ec56c6799890da0d42443da7530be30605bbb6a"
+    },
+    "scripts/hepta_cell_research_units.py": {
+      "bytes": 8800,
+      "git_blob_sha1": "d468ef1a396a009227fe20d1a27684cb1d3af4d9",
+      "sha256": "8139672d1d197b7925abee50023214d5e245c65d4c508015d1353fbc16558ff2"
+    },
+    "scripts/hepta_prospective_comparison.py": {
+      "bytes": 5139,
+      "git_blob_sha1": "a0283e1158c053d9ef4a7c7791ab47daa70a72cd",
+      "sha256": "5d8632f663762463bcdc64c54b1f024776cacbe306aaaa780ab2152c6cf86ff9"
+    },
+    "scripts/test_hepta_cell_joint_config.py": {
+      "bytes": 27249,
+      "git_blob_sha1": "d3aee0d2ba0a51183659eac78e42ad93895c6f4c",
+      "sha256": "88b7fdcfca0e6e820f4a82bdc0c6ef91b826cf86833c1864b9d99fe2047f918a"
+    },
+    "scripts/test_hepta_cell_research_gate.py": {
+      "bytes": 24936,
+      "git_blob_sha1": "4b551e49e56f01b8b9926e1a0e4a65922f0b95d0",
+      "sha256": "e013794ea4e56205dc5b0c56cd1b850051bdfe91cd17049f716c7eb1999c5807"
+    },
+    "scripts/test_hepta_cell_research_successor.py": {
+      "bytes": 13831,
+      "git_blob_sha1": "242ee87ada22e26563f13e19ee2dae0651278db7",
+      "sha256": "5a40f818114d763970333734f0463ee71ff8599aa06ec8957fc678cfb584db25"
+    },
+    "scripts/test_hepta_cell_research_units.py": {
+      "bytes": 15600,
+      "git_blob_sha1": "0b69e818a83f94521ba5e474896c2cd1a6733460",
+      "sha256": "f73cac3a190d5d02e36ab25d0231c49a67c0b417d0eada138f0a9307e3949380"
+    },
+    "scripts/test_hepta_prospective_comparison.py": {
+      "bytes": 6478,
+      "git_blob_sha1": "2e8ab729e639099e7db84ca151818b637731fad8",
+      "sha256": "9e2baa8a02e730eddbd74e4a2adf8ad10bb209b9d1c18a2d681942bd0ce4a365"
+    }
+  },
+  "source_unchanged": true,
+  "stage": "A",
+  "started_utc": "2026-11-10T07:37:34.729686+00:00",
+  "test_scope": "Stage A exact-file Python regression projection, before root maintenance; not full repository, native daemon or hosted workflow qualification",
+  "unittest_reported_seconds": 7.388
+}
