@@ -6,7 +6,11 @@
   "new_python_files": 12,
   "new_risk_and_integration_tests": 41,
   "local_tests_passed": 159,
-  "pred_ci_tests_passed_per_platform": {"ubuntu": 159, "windows": 159, "macos": 159},
+  "pred_ci_tests_passed_per_platform": {
+    "ubuntu": 159,
+    "windows": 159,
+    "macos": 159
+  },
   "published_python_blobs_verified": 47,
   "historical_frozen_training_sources_unchanged": 9,
   "fixture_train_samples": 12,
@@ -25,10 +29,24 @@
   "rollout_horizon_extended": false,
   "original_historical_189_fit_artifacts": "ORIGINAL_ARTIFACTS_NOT_LOCATED",
   "owner_blocker": "Actual TaskFlow owner database/action history and independent effect observer not located in the checked scope; successful PTY checks found no default fleet root on three hosts; other service overrides remain unknown",
-  "pty_read_only_probe_hosts_completed": ["ai395", "pocket4", "x230"],
+  "pty_read_only_probe_hosts_completed": [
+    "ai395",
+    "pocket4",
+    "x230"
+  ],
   "durable_job_receipt_channel": "Scoped calls timed out without job IDs; directory observations were non-authoritative and validation-pending",
   "scientific_qualification": "HOLD",
   "adoption_decision": "NoUpdate",
   "production_activation": false,
-  "merged_to_main": false
+  "merged_to_main": false,
+  "service_override_probe": {
+    "host": "pocket4",
+    "scope": "Two previously observed same-UID Hepta processes and explicit configuration paths only",
+    "completed": false,
+    "session_id": null,
+    "underlying_terminal_state": "UNKNOWN",
+    "error_code": -32603,
+    "evidence": "SERVICE_SOURCE_ATTEMPT.json",
+    "added_owner_records": 0
+  }
 }

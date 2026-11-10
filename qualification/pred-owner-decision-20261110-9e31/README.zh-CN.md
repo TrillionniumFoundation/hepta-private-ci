@@ -103,6 +103,12 @@ PYTHONPATH=source python -m hepta_pred1.observed_run \
 
 精简、去除私有home路径的观察记录在 [OWNER_SOURCE_PROBE.json](OWNER_SOURCE_PROBE.json)。因此最终阻塞是尚未定位真实owner来源及独立效果observer，不能说全部执行通道不可用。早先durable-job查询的底层结局仍未知；没有以新key重放业务动作，也没有写入owner数据库。成功PTY探测均已读回退出，没有新增业务后台任务。
 
+### 已识别服务覆盖路径的追加检查
+
+在原证据提交后，另向 pocket4 提交一次25秒有界的只读探测，仅限先前已识别的两个同UID Hepta进程，提取明确的 `HEPTA_FLEET_ROOT`、对应unit配置和 `automation_1.sqlite3` 文件描述符路径。此次 `h_pty_start` 返回 `-32603: Internal error`，没有session ID或输出读回，底层终态为 `UNKNOWN`。这次请求不算完成的来源检查，不增加owner记录，也不能推断配置覆盖路径不存在；没有重试或业务动作重放。
+
+[追加失败回执](SERVICE_SOURCE_ATTEMPT.json)保留原始错误、准确范围和调用观测窗口；[原样探测源码](SERVICE_SOURCE_PROBE.py.txt)的SHA256为 `b7d55a1998a5126a203c193ffc0c40b6def280c8f7d1cb0275e7c1eea8593022`。它是未取得执行读回的探测请求源码，不是已验证的生产采集器；PRED受测源码与采用结论均未改变。
+
 ## 下一次真实运行的准入顺序
 
 1. 在已存在的owner服务配置/运行身份中定位真实数据库、时钟域和序列游标，验证独立效果observer；用新采集入口保存原始记录。PTY可用于后续只读核对，durable-job回执通道另行修复。
