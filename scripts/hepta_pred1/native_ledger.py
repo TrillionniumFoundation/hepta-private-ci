@@ -20,7 +20,13 @@ from time import monotonic
 
 import numpy as np
 
-from .action_history import EncodedHistory
+from .action_history import (
+    ActionEvent,
+    EncodedHistory,
+    OTHER_VALUES,
+    Stage,
+    TIME_VALUES,
+)
 from .contracts import Evidence, ObservationStatus
 
 MAX_BYTES = 1_048_576
@@ -267,10 +273,118 @@ def collect_native(database, *, identity, clock_id, cursor):
     return artifact
 
 
+def _snapshot(artifact):
+    """Validate stored structure, not encoder provenance or native action mapping."""
+    _require(isinstance(artifact, Artifact), "expected immutable snapshot")
+    p = artifact.payload
+    fields = {
+        "schema",
+        "identity",
+        "clock_id",
+        "cursor",
+        "decision_at",
+        "features",
+        "feature_names",
+        "event_references",
+        "collection",
+        "collection_digest",
+        "scope",
+    }
+    _require(type(p) is dict and set(p) == fields, "snapshot fields differ")
+    _require(p["schema"] == "pred1-native-snapshot-v1", "wrong snapshot schema")
+    _identity(p["identity"])
+    _text(p["clock_id"])
+    _integer(p["cursor"])
+    _time(p["decision_at"])
+    _text(p["scope"])
+    _require(type(p["collection"]) is dict, "invalid snapshot collection")
+    collection = Artifact.make(p["collection"])
+    c = _collection(collection)
+    _require(collection.digest == p["collection_digest"], "snapshot collection differs")
+    _require(p["identity"] == c["identity"], "snapshot identity differs")
+    _require(p["clock_id"] == c["clock_id"], "snapshot clock differs")
+    _require(p["cursor"] == c["cursor"], "snapshot cursor differs")
+    _require(p["decision_at"] >= c["available_at"], "collection was not yet available")
+    names = p["feature_names"]
+    _require(type(names) is list and 1 <= len(names) <= 256, "invalid feature names")
+    for name in names:
+        _text(name)
+    actions = [name for name in names if name.startswith("action:")]
+    _require(1 <= len(actions) <= 64, "invalid action feature count")
+    for name in actions:
+        _text(name.removeprefix("action:"))
+    expected = actions + ["action_slot"]
+    expected += ["stage:" + stage.value for stage in Stage] + ["stage:decision"]
+    expected += ["source:real", "source:simulator"]
+    expected += ["status:" + status.value for status in ObservationStatus]
+    expected += [
+        "time_kind:" + kind
+        for kind in ("exact", "interval", "right_censored", "unobserved")
+    ]
+    expected += [
+        name + suffix
+        for name in TIME_VALUES + OTHER_VALUES
+        for suffix in ("", "_known")
+    ]
+    _require(
+        names == expected and len(set(names)) == len(names), "feature schema differs"
+    )
+    references = p["event_references"]
+    _require(
+        type(references) is list and len(references) <= 255, "invalid event references"
+    )
+    prior_sequence, prior_arrival = -1, 0
+    for reference in references:
+        _require(
+            type(reference) is dict
+            and set(reference)
+            == {
+                "sequence",
+                "observed_at",
+                "record_ref",
+                "action_id",
+                "candidate_id",
+            },
+            "event reference fields differ",
+        )
+        _integer(reference["sequence"])
+        _time(reference["observed_at"])
+        _require(
+            prior_sequence < reference["sequence"] <= p["cursor"]
+            and prior_arrival <= reference["observed_at"] <= p["decision_at"],
+            "invalid snapshot event order or visibility",
+        )
+        for name in ("record_ref", "action_id", "candidate_id"):
+            _text(reference[name])
+        prior_sequence, prior_arrival = reference["sequence"], reference["observed_at"]
+    rows = p["features"]
+    _require(
+        type(rows) is list and len(rows) == len(references) + 1,
+        "snapshot row count differs",
+    )
+    for row in rows:
+        _require(
+            type(row) is list
+            and len(row) == len(names)
+            and all(
+                type(v) in (int, float) and math.isfinite(v) and 0 <= v <= 1
+                for v in row
+            ),
+            "invalid numerical snapshot",
+        )
+    decision = names.index("stage:decision")
+    _require(
+        rows[-1][decision] == 1 and all(row[decision] == 0 for row in rows[:-1]),
+        "snapshot decision row differs",
+    )
+    return p
+
+
 def freeze_snapshot(path, snapshot, collection):
     """Persist existing causal encoder output without inventing native phases."""
     c = _collection(collection)
     _require(isinstance(snapshot, EncodedHistory), "expected encoded causal history")
+    _integer(snapshot.through_sequence)
     _require(snapshot.through_sequence == c["cursor"], "snapshot cursor differs")
     _time(snapshot.decision_at)
     _require(
@@ -282,6 +396,7 @@ def freeze_snapshot(path, snapshot, collection):
         and x.ndim == 2
         and 1 <= x.shape[0] <= 256
         and 1 <= x.shape[1] <= 256
+        and x.dtype.kind in "fiu"
         and np.isfinite(x).all()
         and ((x >= 0) & (x <= 1)).all(),
         "invalid numerical snapshot",
@@ -293,6 +408,12 @@ def freeze_snapshot(path, snapshot, collection):
     )
     for name in names:
         _text(name)
+    _require(
+        type(snapshot.events) is tuple
+        and len(snapshot.events) <= 255
+        and all(isinstance(event, ActionEvent) for event in snapshot.events),
+        "invalid encoded events",
+    )
     references = []
     for e in snapshot.events:
         _require(
@@ -323,6 +444,7 @@ def freeze_snapshot(path, snapshot, collection):
             "scope": "frozen numerical inputs; ledger supplies no accepted/executed phase",
         }
     )
+    _snapshot(artifact)
     artifact.save(path)
     return artifact
 
@@ -335,11 +457,8 @@ def join_readback(path, snapshot_path, later):
     does not establish independent business-effect supervision.
     """
     frozen = Artifact.read(snapshot_path)
-    p, new = frozen.payload, _collection(later)
-    _require(p.get("schema") == "pred1-native-snapshot-v1", "wrong snapshot schema")
-    previous = Artifact.make(p["collection"])
-    old = _collection(previous)
-    _require(previous.digest == p["collection_digest"], "snapshot collection differs")
+    p, new = _snapshot(frozen), _collection(later)
+    old = p["collection"]
     _require(
         p["identity"] == old["identity"] == new["identity"], "readback identity differs"
     )

@@ -535,6 +535,115 @@ class NativeLedgerTests(unittest.TestCase):
             )
         self.assertFalse(missing.exists())
 
+    def test_rehashed_malformed_snapshot_cannot_be_joined(self):
+        first = self.collect()
+        event = ActionEvent(
+            0, "action", "candidate", "read", "request", 1, "request-record", event_at=1
+        )
+        snap = encode(
+            [event],
+            actions=("read",),
+            decision_at=10,
+            through_sequence=1,
+            remaining_budget=12,
+            deadline_at=20,
+        )
+        valid = freeze_snapshot(self.snapshot_path, snap, first)
+        later = self.collect(cursor=2)
+        original_bytes = self.snapshot_path.read_bytes()
+        variants = []
+        for key in ("features", "event_references", "feature_names", "identity"):
+            value = valid.payload
+            del value[key]
+            variants.append(value)
+        for key, value in (
+            ("features", valid.payload["features"][:-1]),
+            ("event_references", []),
+            ("feature_names", ["arbitrary-column"]),
+            ("clock_id", "other-clock"),
+            ("cursor", True),
+            ("collection_digest", "0" * 64),
+            ("decision_at", 9),
+        ):
+            variants.append({**valid.payload, key: value})
+        for column, value in (
+            (0, -0.1),
+            (0, True),
+            (snap.feature_names.index("stage:decision"), 1),
+        ):
+            changed = valid.payload
+            changed["features"][0][column] = value
+            variants.append(changed)
+        for field, value in (
+            ("sequence", 2),
+            ("sequence", True),
+            ("observed_at", 11),
+            ("record_ref", ""),
+        ):
+            changed = valid.payload
+            changed["event_references"][0][field] = value
+            variants.append(changed)
+        changed = valid.payload
+        changed["event_references"] *= 2
+        changed["features"].insert(0, changed["features"][0])
+        variants.append(changed)
+        for i, value in enumerate(variants):
+            invalid = self.root / f"invalid-{i}.json"
+            output = self.root / f"joined-{i}.json"
+            # A valid envelope checksum cannot substitute for snapshot structure.
+            Artifact.make(value).save(invalid)
+            with self.subTest(case=i), self.assertRaises(ValueError):
+                join_readback(output, invalid, later)
+            self.assertFalse(output.exists())
+        self.assertEqual(self.snapshot_path.read_bytes(), original_bytes)
+
+    def test_freeze_rejects_invalid_encoder_structure_and_preserves_empty_prefix(self):
+        first = self.collect()
+        event = ActionEvent(
+            0, "action", "candidate", "read", "request", 1, "request-record", event_at=1
+        )
+        snap = encode(
+            [event],
+            actions=("read", "wait"),
+            decision_at=10,
+            through_sequence=1,
+            remaining_budget=12,
+            deadline_at=20,
+        )
+        decision = snap.feature_names.index("stage:decision")
+        no_decision = snap.features.copy()
+        no_decision[-1, decision] = 0
+        invalid = (
+            replace(snap, features=snap.features[:1]),
+            replace(snap, feature_names=tuple(reversed(snap.feature_names))),
+            replace(snap, features=no_decision),
+            replace(snap, events=()),
+            replace(snap, events=(replace(event, observed_at=11),)),
+            replace(snap, through_sequence=True),
+        )
+        for i, value in enumerate(invalid):
+            path = self.root / f"bad-freeze-{i}.json"
+            with self.subTest(case=i), self.assertRaises(ValueError):
+                freeze_snapshot(path, value, first)
+            self.assertFalse(path.exists())
+        empty = encode(
+            [],
+            actions=("read", "wait"),
+            decision_at=10,
+            through_sequence=1,
+            remaining_budget=12,
+            deadline_at=20,
+        )
+        result = freeze_snapshot(self.snapshot_path, empty, first)
+        self.assertEqual(len(result.payload["features"]), 1)
+        self.assertEqual(result.payload["event_references"], [])
+        joined = join_readback(
+            self.root / "empty-readback.json",
+            self.snapshot_path,
+            self.collect(cursor=2),
+        )
+        self.assertEqual(joined.payload["snapshot_digest"], result.digest)
+
 
 if __name__ == "__main__":
     unittest.main()
