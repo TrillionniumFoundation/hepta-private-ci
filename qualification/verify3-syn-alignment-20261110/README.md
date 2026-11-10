@@ -92,3 +92,30 @@ scratch checkout lacks the Rust workspace/justfile; `just fmt` fails for that
 reason. Fresh qualification is required and no five-test improvement is claimed
 before those original tests actually run. No dependency, suppression, permission,
 production admission, scientific or cost acceptance changes.
+
+## Typed compatibility correction after the original failed run
+
+The #5825 run 42872910595/job 130028537143 completed FAILURE on exact
+95b9153068222b63ccc90b7e002b15b43a61406e. All 13 result file hashes were
+verified in artifact 13794592813 (1134716 bytes, SHA256
+582f1647ce75111762fa928cee83cd9c9568cdd6c5af0dac382f6abc1ffbcefd).
+It still ran 810 tests with 797 passed, 13 failed and 9 skipped. The five target
+auth-status tests did not improve; FORMAT also failed. Preserve that negative
+result and the complete original artifact.
+
+The earlier display-only diagnosis was incorrect: the existing five assertions
+require downcast to AuthError::MetadataError and then inspect its reason. They
+are not merely checking the public error string. Attach a typed MetadataError
+context for source-bearing discovery failures while retaining the original error
+underneath. Return HttpError and UrlError unchanged, and leave source-free errors
+unchanged. NoAuthorizationSupport retains its original separate handling. In the
+frozen RMCP 3.9 error enum, the remaining source-bearing case is
+DiscoveryRequestFailed; this also avoids referencing a new variant unavailable
+to the original SDK. Public metadata classification is restored without dropping
+the new source chain or changing rejection/network policy.
+
+All original assertions and all seven consumer packages remain. Do not claim
+this correction fixes the other eight failures or the vendor format conflict.
+Local pinned rustfmt syntax/format check and the five preparation tests passed;
+full native tests are NOT_RUN locally and just fmt still fails without the
+partial checkout's missing justfile. Fresh exact-source native CI is required.
