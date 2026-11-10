@@ -41,28 +41,36 @@ class JointConfigurationTests(unittest.TestCase):
         }
         self.ci = {
             "total_count": 1,
-            "workflow_runs": [{
-                "id": 7,
-                "head_sha": self.document["source"]["commit"],
-                "repository": {"full_name": "example/cell"},
-                "path": ".github/workflows/cell.yml",
-                "status": "completed",
-                "conclusion": "success",
-                "run_attempt": 1,
-                "html_url": "https://example.invalid/run/7",
-            }],
+            "workflow_runs": [
+                {
+                    "id": 7,
+                    "head_sha": self.document["source"]["commit"],
+                    "repository": {"full_name": "example/cell"},
+                    "path": ".github/workflows/cell.yml",
+                    "status": "completed",
+                    "conclusion": "success",
+                    "run_attempt": 1,
+                    "html_url": "https://example.invalid/run/7",
+                }
+            ],
         }
         self.bind_ci()
 
     def git(self, *args):
-        return subprocess.check_output(
-            ["git", "-C", str(self.source), *args], stderr=subprocess.PIPE
-        ).decode().strip()
+        return (
+            subprocess.check_output(
+                ["git", "-C", str(self.source), *args], stderr=subprocess.PIPE
+            )
+            .decode()
+            .strip()
+        )
 
     def bind(self, name, data):
         (self.artifacts / name).write_bytes(data)
         return {
-            "path": name, "sha256": hashlib.sha256(data).hexdigest(), "bytes": len(data)
+            "path": name,
+            "sha256": hashlib.sha256(data).hexdigest(),
+            "bytes": len(data),
         }
 
     def bind_ci(self):
@@ -247,13 +255,15 @@ class JointConfigurationTests(unittest.TestCase):
 
     def test_ci_other_source_or_repository_is_rejected(self):
         for change in (
-            {"head_sha": "1" * 40}, {"repository": {"full_name": "other/cell"}}
+            {"head_sha": "1" * 40},
+            {"repository": {"full_name": "other/cell"}},
         ):
             original = self.ci["workflow_runs"][0].copy()
             self.ci["workflow_runs"][0].update(change)
             self.bind_ci()
-            with self.subTest(change=change), self.assertRaisesRegex(
-                ValueError, "another source"
+            with (
+                self.subTest(change=change),
+                self.assertRaisesRegex(ValueError, "another source"),
             ):
                 self.verify()
             self.ci["workflow_runs"][0] = original
@@ -274,19 +284,24 @@ class JointConfigurationTests(unittest.TestCase):
 
     def test_required_failure_running_or_skipped_is_not_success(self):
         for status, conclusion in (
-            ("in_progress", None), ("completed", "failure"), ("completed", "skipped")
+            ("in_progress", None),
+            ("completed", "failure"),
+            ("completed", "skipped"),
         ):
             self.ci["workflow_runs"][0].update(status=status, conclusion=conclusion)
             self.bind_ci()
-            with self.subTest(conclusion=conclusion), self.assertRaisesRegex(
-                ValueError, "not succeeded"
+            with (
+                self.subTest(conclusion=conclusion),
+                self.assertRaisesRegex(ValueError, "not succeeded"),
             ):
                 self.verify()
 
     def test_invalid_json_cannot_override_evidence(self):
         for raw in (
-            b'{"head":1,"head":2}', b'{"cost":NaN}',
-            b'{"cost":Infinity}', b'{"cost":1e999}',
+            b'{"head":1,"head":2}',
+            b'{"cost":NaN}',
+            b'{"cost":Infinity}',
+            b'{"cost":1e999}',
         ):
             with self.subTest(raw=raw), self.assertRaises(ValueError):
                 config.strict_json(raw)
