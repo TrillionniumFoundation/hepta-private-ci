@@ -9,12 +9,15 @@ use std::io::Read;
 use std::io::Seek;
 use std::io::SeekFrom;
 use std::io::Write;
+use std::sync::Arc;
 
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
 use crate::AnchorWitnessStore;
 use crate::JournalAnchor;
+use crate::CellGenerationCurrentV1;
+use crate::CellGenerationOwnerBindingV1;
 use crate::cell_journal_codec::MAX_FRAME_BYTES;
 use crate::cell_journal_codec::apply_record;
 use crate::cell_journal_codec::encode_admission;
@@ -51,6 +54,7 @@ pub struct CellOwnerJournalV1<W: AnchorWitnessStore> {
     max_records: usize,
     length: u64,
     healthy: bool,
+    current: Option<(Arc<dyn CellGenerationCurrentV1>, CellGenerationOwnerBindingV1)>,
 }
 
 impl<W: AnchorWitnessStore> CellOwnerJournalV1<W> {
@@ -60,11 +64,52 @@ impl<W: AnchorWitnessStore> CellOwnerJournalV1<W> {
         specs: Vec<CellJournalPartitionV1>,
         max_records: usize,
     ) -> Result<Self, CellExecutionError> {
+        Self::open_inner(file, witness, specs, max_records, /*current*/ None)
+    }
+
+    /// An original published task guards every read/admission/commit. The
+    /// distinct header binds that exact owner; ordinary open cannot bypass it.
+    pub fn open_guarded(
+        file: File,
+        witness: W,
+        specs: Vec<CellJournalPartitionV1>,
+        max_records: usize,
+        binding: CellGenerationOwnerBindingV1,
+        current: Arc<dyn CellGenerationCurrentV1>,
+    ) -> Result<Self, CellExecutionError> {
+        let scope = binding.scope();
+        if specs.len() != 1 || specs.iter().any(|spec|
+            spec.scope.agent_id.as_str() != scope.agent_id
+                || spec.scope.cell_id.as_str() != scope.cell_id
+                || spec.scope.run_id.as_str() != scope.run_id
+                || spec.scope.principal_digest.into_array() != scope.principal_digest
+                || spec.source_frontier.into_array() != binding.source_frontier()
+                || spec.writer_epoch != binding.writer_epoch()) {
+            return Err(CellExecutionError::ScopeMismatch);
+        }
+        current.check_current(&binding).map_err(|_| CellExecutionError::OwnerUnavailable)?;
+        Self::open_inner(file, witness, specs, max_records, Some((current, binding)))
+    }
+
+    fn open_inner(
+        file: File,
+        witness: W,
+        specs: Vec<CellJournalPartitionV1>,
+        max_records: usize,
+        current: Option<(Arc<dyn CellGenerationCurrentV1>, CellGenerationOwnerBindingV1)>,
+    ) -> Result<Self, CellExecutionError> {
         if specs.is_empty() || specs.len() > 1024 || !(1..=65_536).contains(&max_records) {
             return Err(CellExecutionError::CapacityExceeded);
         }
         let owner = initial_owner(&specs)?;
-        let header = header(&specs)?;
+        let mut header = header(&specs)?;
+        if let Some((guard, binding)) = &current {
+            guard.check_current(binding).map_err(|_| CellExecutionError::OwnerUnavailable)?;
+            let digest = Digest32::of_parts(&[b"hepta.cell.published-feature-journal.v1\0", &header,
+                &binding.digest().map_err(|_| CellExecutionError::ScopeMismatch)?, &(max_records as u64).to_be_bytes()]);
+            header = b"HPTACJ04".to_vec();
+            header.extend_from_slice(digest.as_array());
+        }
         let mut file =
             LockedFile::acquire(file).map_err(|_| CellExecutionError::OwnerUnavailable)?;
         if file
@@ -97,6 +142,7 @@ impl<W: AnchorWitnessStore> CellOwnerJournalV1<W> {
             max_records,
             length: 0,
             healthy: false,
+            current,
         };
         journal.recover()?;
         Ok(journal)
@@ -108,6 +154,7 @@ impl<W: AnchorWitnessStore> CellOwnerJournalV1<W> {
     /// its exact receipt. No encoding or inference is repeated.
     pub fn recover(&mut self) -> Result<(), CellExecutionError> {
         self.healthy = false;
+        self.require_current()?;
         let expected = self
             .witness
             .current()
@@ -173,6 +220,7 @@ impl<W: AnchorWitnessStore> CellOwnerJournalV1<W> {
             return Err(CellExecutionError::AcknowledgedHistoryMissing);
         }
         // Validate the independent anchor before any file repair.
+        self.require_current()?;
         if offset < bytes.len() {
             self.file
                 .set_len(offset as u64)
@@ -191,6 +239,7 @@ impl<W: AnchorWitnessStore> CellOwnerJournalV1<W> {
         self.owner = owner;
         self.head = head;
         self.length = offset as u64;
+        self.require_current()?;
         self.healthy = true;
         Ok(())
     }
@@ -204,6 +253,9 @@ impl<W: AnchorWitnessStore> CellOwnerJournalV1<W> {
         writer_epoch: u64,
     ) -> Result<(), CellExecutionError> {
         self.require_healthy()?;
+        // A published task fixes its original frontier and writer epoch. A
+        // successor reset needs its own original CURRENT publication/journal.
+        if self.current.is_some() { return Err(CellExecutionError::ScopeMismatch); }
         let index = self.partition_index(scope)?;
         self.owner
             .check_reset(scope, source_frontier, writer_epoch)?;
@@ -228,11 +280,19 @@ impl<W: AnchorWitnessStore> CellOwnerJournalV1<W> {
     }
 
     fn require_healthy(&self) -> Result<(), CellExecutionError> {
+        self.require_current()?;
         if self.healthy {
             Ok(())
         } else {
             Err(CellExecutionError::CommitUncertain)
         }
+    }
+
+    fn require_current(&self) -> Result<(), CellExecutionError> {
+        if let Some((current, binding)) = &self.current {
+            current.check_current(binding).map_err(|_| CellExecutionError::OwnerUnavailable)?;
+        }
+        Ok(())
     }
 
     fn check_reserved_capacity(
@@ -288,6 +348,9 @@ impl<W: AnchorWitnessStore> CellOwnerJournalV1<W> {
             .map_err(|_| CellExecutionError::CommitUncertain)?;
         self.head = Some(next);
         self.length += frame.len() as u64;
+        // Keep the owner fenced if CURRENT/withdrawal changed across fsync.
+        // The complete frame remains available to original guarded recovery.
+        self.require_current().map_err(|_| CellExecutionError::CommitUncertain)?;
         self.healthy = true;
         Ok(())
     }
