@@ -578,6 +578,8 @@ pub use circuit_task::circuit_task_channel_v1;
 #[cfg(target_os = "linux")]
 pub use circuit_feature_current::PublishedCircuitCellOwnerV1;
 #[cfg(target_os = "linux")]
+pub use circuit_feature_current::CircuitFeaturePredecessorFilesV1;
+#[cfg(target_os = "linux")]
 pub use circuit_feature_current::PublishedCircuitFeatureCompletionV1;
 #[cfg(target_os = "linux")]
 pub use circuit_feature_current::PublishedCircuitFeatureControlV1;

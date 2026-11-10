@@ -41,6 +41,10 @@ mod owner;
 mod learning;
 #[path = "circuit_feature_current_retirement.rs"]
 mod retirement;
+#[path = "circuit_feature_current_recovery.rs"]
+mod recovery;
+pub use recovery::CircuitFeaturePredecessorFilesV1;
+pub(crate) use recovery::recover_predecessor;
 pub use control::PublishedCircuitFeatureControlV1;
 pub use owner::PublishedCircuitCellOwnerV1;
 

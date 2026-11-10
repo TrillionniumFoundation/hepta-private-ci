@@ -120,6 +120,19 @@ impl<W: AnchorWitnessStore + Send + 'static> ReadyAgentdGenerationUpdateV1<W> {
             self.feature_current, definition, source, previous)
     }
 
+    /// After actual Root/CURRENT recovery, reconstruct the predecessor from its
+    /// original fully acknowledged Cell and source history. No retained in-memory
+    /// completion token, new signature, witness repair or inference is needed.
+    #[cfg(target_os = "linux")]
+    pub fn recover_circuit_feature_task<CW: AnchorWitnessStore, SW: AnchorWitnessStore>(self,
+        definition: codex_hepta_neuron::CellDefinitionV1, source: crate::CircuitTaskSourceInputV1,
+        predecessor: crate::CircuitFeaturePredecessorFilesV1<CW>, original_source: &crate::CircuitTaskSourceReadbackV1<SW>,
+        identity: &crate::AgentdIdentity) -> Result<crate::PublishedCircuitFeatureTaskV1, AgentdError> {
+        let previous = crate::circuit_feature_current::recover_predecessor(&self.publication, &self.feature_current,
+            predecessor, original_source, identity)?;
+        self.into_circuit_feature_task(definition, source, previous)
+    }
+
     pub fn into_runtime<P, C>(
         self,
         config: AgentdConfig,
