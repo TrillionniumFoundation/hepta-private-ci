@@ -47,6 +47,9 @@ use crate::circuit_cell_scope_digest_v1;
 mod codec;
 #[path = "circuit_task_source_journal.rs"]
 mod journal;
+#[path = "circuit_task_source_readback.rs"]
+mod readback;
+pub use readback::CircuitTaskSourceReadbackV1;
 
 /// Explicit source bytes and original Cell-clock values, fixed before task
 /// ingress. Only the operation ID is derived later from the original Circuit

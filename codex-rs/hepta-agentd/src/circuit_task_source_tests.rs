@@ -137,6 +137,11 @@ async fn ordinary_source_publishes_original_circuit_result_and_reopens_exact_inp
     owner.publish_result(&identity, &record("A"), &receipt)?;
     let published = owner.read_publication(&identity, &record("A"))?;
     assert_eq!(owner.read_run_publication(&identity, &cell::id("A"))?, published);
+    {
+        let observer = owner.readback();
+        assert_eq!(observer.read_publication(&identity, &record("A"))?, published);
+        assert_eq!(observer.clone().read_run_publication(&identity, &cell::id("A"))?, published);
+    }
     assert!(owner.read_run_publication(&identity, &cell::id("C")).is_err());
     assert_eq!(published.original_record(), &record("A"));
     assert_eq!(published.input().observation, sources[0].observation);
@@ -169,6 +174,13 @@ async fn ordinary_source_publishes_original_circuit_result_and_reopens_exact_inp
     assert_eq!(next_publication.input().observation, sources[1].observation);
     assert_ne!(next_publication.publication_digest(), published.publication_digest());
     assert_eq!(recovered_calls.load(Ordering::SeqCst), 1);
+    {
+        let observer = reopened.readback();
+        assert_eq!(observer.read_run_publication(&identity, &cell::id("C"))?, next_publication);
+        reopened.withdraw_source(&cell::id("C"))?;
+        assert!(observer.read_run_publication(&identity, &cell::id("C")).is_err());
+        assert!(observer.read_publication(&identity, &record("C")).is_err());
+    }
     drop(driver);
     drop(reopened);
     store.close().await;

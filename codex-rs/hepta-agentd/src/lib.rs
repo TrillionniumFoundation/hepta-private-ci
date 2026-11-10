@@ -556,6 +556,7 @@ pub use circuit_task::CircuitTaskRequestV1;
 pub use circuit_task::CircuitTaskRuntimeBootstrapV1;
 pub use circuit_task::CircuitTaskSourceInputV1;
 pub use circuit_task::CircuitTaskSourcePublicationV1;
+pub use circuit_task::CircuitTaskSourceReadbackV1;
 pub use circuit_task::DurableCircuitTaskSourceV1;
 pub use circuit_task::circuit_task_channel_v1;
 pub use client::AgentdClient;
