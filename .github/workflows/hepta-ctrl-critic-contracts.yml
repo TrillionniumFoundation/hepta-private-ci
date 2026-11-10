@@ -1,0 +1,137 @@
+name: Hepta CTRL critic and candidate contracts
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/hepta-ctrl-critic-contracts.yml
+      - scripts/ndu_real_runtime/critic_context.py
+      - scripts/ndu_real_runtime/test_critic_context.py
+      - scripts/ndu_real_runtime/metacontrol*.py
+      - scripts/ndu_real_runtime/test_metacontrol*.py
+      - scripts/ndu_real_runtime/candidate_*.py
+      - scripts/ndu_real_runtime/test_candidate_*.py
+      - scripts/ndu_real_runtime/controllers.py
+      - scripts/ndu_real_runtime/objective.py
+      - scripts/ndu_real_runtime/ocr.py
+      - scripts/hepta_ci_exec.py
+      - scripts/pyproject.toml
+      - scripts/uv.lock
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ctrl-critic-contracts-${{ github.event.pull_request.head.ref || github.ref_name }}
+  cancel-in-progress: false
+
+env:
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  TESTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
+  HEPTA_CI_LANE: source-head
+  PYTHONPATH: scripts:.
+  PYTHONDONTWRITEBYTECODE: "1"
+  UV_PYTHON_DOWNLOADS: never
+  OPENBLAS_NUM_THREADS: "1"
+  OMP_NUM_THREADS: "1"
+
+jobs:
+  contracts:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out the exact candidate without retained credentials
+        id: checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12.14"
+
+      - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
+        with:
+          version: "0.11.3"
+          enable-cache: false
+
+      - name: Bind the source and keep outputs outside the checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          mkdir -p "$RUNNER_TEMP/ctrl-critic-ci"
+          echo "UV_PROJECT_ENVIRONMENT=$RUNNER_TEMP/ctrl-critic-env" >> "$GITHUB_ENV"
+          echo "UV_CACHE_DIR=$RUNNER_TEMP/ctrl-critic-cache" >> "$GITHUB_ENV"
+
+      - name: Verify the actual CPU runtime
+        id: runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          uv run --frozen --project scripts --python 3.12.14 --with numpy==2.3.5 --with pillow==11.3.0 \
+            python - <<'PY' > "$RUNNER_TEMP/ctrl-critic-ci/runtime.json"
+          import json
+          import os
+          import platform
+          import numpy
+          import PIL
+          assert platform.python_version() == "3.12.14"
+          assert numpy.__version__ == "2.3.5"
+          assert PIL.__version__ == "11.3.0"
+          print(json.dumps({"source_sha": os.environ["SOURCE_SHA"],
+                            "python": platform.python_version(),
+                            "numpy": numpy.__version__,
+                            "pillow": PIL.__version__,
+                            "scope": "manufactured_contract_regressions",
+                            "independent_real_tasks": 0,
+                            "policy_benefit_qualified": False,
+                            "production_update": "no-update"}, sort_keys=True))
+          PY
+
+      - name: Require separate non-skipped suite minima
+        shell: bash
+        run: |
+          set -euo pipefail
+          status=0
+          while read -r minimum module; do
+            python scripts/hepta_ci_exec.py --timeout-seconds 120 \
+              --minimum-tests "$minimum" \
+              --output "$RUNNER_TEMP/ctrl-critic-ci/${module##*.}.json" \
+              -- uv run --frozen --project scripts --python 3.12.14 --with numpy==2.3.5 --with pillow==11.3.0 \
+              python -m unittest -v "$module" || status=1
+          done <<'CASES'
+          1 ndu_real_runtime.test_critic_context
+          14 ndu_real_runtime.test_metacontrol
+          7 ndu_real_runtime.test_metacontrol_study
+          5 ndu_real_runtime.test_metacontrol_context
+          4 ndu_real_runtime.test_metacontrol_value_gate
+          12 ndu_real_runtime.test_candidate_coverage
+          7 ndu_real_runtime.test_candidate_expansion
+          5 ndu_real_runtime.test_candidate_coverage_legacy
+          CASES
+          exit "$status"
+
+      - name: Verify formatting and unchanged tested source
+        if: always() && steps.runtime.outcome == 'success'
+        shell: bash
+        run: |
+          set -euo pipefail
+          files=(scripts/ndu_real_runtime/{critic_context,test_critic_context,metacontrol,metacontrol_checkpoint,metacontrol_study,test_metacontrol,test_metacontrol_study,test_metacontrol_context,metacontrol_value_gate,test_metacontrol_value_gate,candidate_coverage,test_candidate_coverage,candidate_expansion,test_candidate_expansion,candidate_coverage_legacy,test_candidate_coverage_legacy}.py)
+          uv run --frozen --project scripts --python 3.12.14 ruff format --check "${files[@]}"
+          uv run --frozen --project scripts --python 3.12.14 ruff check --select E9,F63,F7,F82 "${files[@]}"
+          git diff --exit-code
+          git diff --cached --exit-code
+          test -z "$(git status --porcelain)"
+
+      - name: Retain original logs and source receipts
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ctrl-critic-contracts-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/ctrl-critic-ci/*
+          if-no-files-found: error
+          retention-days: 30
