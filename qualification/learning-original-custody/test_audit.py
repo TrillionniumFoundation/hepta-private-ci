@@ -23,7 +23,9 @@ class AuditTests(unittest.TestCase):
             'baseline_bundle': 'a' * 64,
             'selected_bundle': 'b' * 64,
             'decision': 'adopt',
-            'operator_custody': {'trainer': 'organization-1', 'evaluator': 'organization-2', 'holdout': 'organization-3'},
+            'operator_custody': {'trainer': 'organization-1', 'evaluator': 'organization-2',
+                                 'holdout': 'organization-3', 'selector': 'organization-4',
+                                 'observer': 'organization-5'},
             'admitted_attempt_ids': ['train', 'eval', 'delivery'],
             'attempts': [
                 {'id': 'train', 'state': 'completed', 'cost_usd': '1.2'},
@@ -60,6 +62,56 @@ class AuditTests(unittest.TestCase):
     def test_different_keys_do_not_erase_same_operator(self):
         self.record['operator_custody']['evaluator'] = 'organization-1'
         self.assertIn('same_operator_multiple_roles', self.check()['issues'])
+
+    def trainer_no_update(self):
+        self.record['decision'] = 'no_update'
+        self.record['no_update_origin'] = 'trainer'
+        self.record['selected_bundle'] = self.record['baseline_bundle']
+        self.record['operator_custody'].pop('evaluator')
+        self.record['operator_custody'].pop('holdout')
+        self.record['original_receipts'].pop('evaluation')
+        for entry in self.record['original_receipts'].values():
+            entry['bundle_sha256'] = self.record['selected_bundle']
+
+    def test_original_trainer_no_update_never_synthesizes_evaluation(self):
+        self.trainer_no_update()
+        result = self.check()
+        self.assertEqual(result['integrity'], 'PASS')
+        self.assertEqual(result['status'], 'HOLD')
+        self.assertEqual(result['receipt_bytes_required'], 7)
+        self.assertFalse(result['owner_authenticated'])
+
+    def test_trainer_no_update_rejects_forged_evaluation_stage(self):
+        self.trainer_no_update()
+        self.record['original_receipts']['evaluation'] = {
+            'file': 'evaluation.receipt', 'sha256': hashlib.sha256(b'evaluation').hexdigest(),
+            'operation_id': 'op-1', 'task_id': 'task-A'
+        }
+        self.assertIn('receipt_coverage', self.check()['issues'])
+
+    def test_trainer_no_update_requires_selector_and_observer(self):
+        self.trainer_no_update()
+        self.record['operator_custody']['selector'] = 'organization-1'
+        self.assertIn('same_operator_multiple_roles', self.check()['issues'])
+        self.record['operator_custody']['selector'] = 'organization-4'
+        self.record['operator_custody'].pop('observer')
+        self.assertIn('operator_custody_missing', self.check()['issues'])
+
+    def test_evaluator_no_update_requires_original_evaluation(self):
+        self.record['decision'] = 'no_update'
+        self.record['no_update_origin'] = 'evaluation'
+        self.record['selected_bundle'] = self.record['baseline_bundle']
+        self.record['original_receipts'].pop('evaluation')
+        self.assertIn('receipt_coverage', self.check()['issues'])
+
+    def test_no_update_origin_must_be_explicit(self):
+        self.record['decision'] = 'no_update'
+        self.record['selected_bundle'] = self.record['baseline_bundle']
+        self.assertIn('no_update_origin', self.check()['issues'])
+
+    def test_adoption_rejects_no_update_origin(self):
+        self.record['no_update_origin'] = 'trainer'
+        self.assertIn('no_update_origin_not_applicable', self.check()['issues'])
 
     def test_different_task_and_version_bound(self):
         self.record['next_task_id'] = 'task-A'
