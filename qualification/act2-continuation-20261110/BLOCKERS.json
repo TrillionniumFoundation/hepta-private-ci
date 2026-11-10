@@ -268,23 +268,50 @@
         "hosted_status": "PENDING_NEW_HEAD_NO_PASS_TRANSFER",
         "qualification_driver": {
           "pr": 5715,
-          "source": "35b912b0a9b3c424c266e59c45a2878c878f32e7",
-          "tree": "553bb5ff6d6212a8165e2da375db4270ecd08647",
-          "act2_run": 42888691385,
-          "act2_run_status": "IN_PROGRESS",
+          "source": "dbf0e8e7fc334177617b8bc956e416fddd501d77",
+          "tree": "0b51835eb4949fe8bfba274bb48b122eeebcc5f6",
+          "act2_run": 42891433945,
+          "act2_run_status": "PENDING",
           "format_job": {
-            "id": 130083736674,
-            "status": "SUCCESS"
+            "status": "NO_JOB_OBSERVED"
           },
           "native_job": {
-            "id": 130083735960,
-            "status": "IN_PROGRESS",
-            "current_step": "complete Automation package through original runner",
-            "later_steps": "all exact-source hosted stages require their own terminal records; no local or #5808 result is relabelled as this source"
+            "status": "NO_JOB_OBSERVED",
+            "later_steps": "all exact-source hosted stages require their own terminal records; no predecessor result is relabelled as this source"
           },
           "exact_head_checkout": true,
           "preserves": "Hepta source/tree, both locks, pinned desktop source, Session/App binary hashes, native/real-App outputs and always-uploaded raw records",
           "result": "PENDING_NEW_EXACT_HEAD_NOT_A_PASS",
+          "predecessor_macro_fix_head": {
+            "source": "35b912b0a9b3c424c266e59c45a2878c878f32e7",
+            "tree": "553bb5ff6d6212a8165e2da375db4270ecd08647",
+            "act2_run": 42888691385,
+            "act2_status": "IN_PROGRESS_BUILDING_PINNED_SESSION_APP",
+            "format_job": {
+              "id": 130083736674,
+              "status": "SUCCESS"
+            },
+            "native_job": {
+              "id": 130083735960,
+              "status": "IN_PROGRESS",
+              "completed_stages": [
+                "Automation original runner",
+                "complete Memory and typed-fence owner tests",
+                "exact 1025-operation capacity boundary",
+                "Notes projection, private readback and original-owner tests"
+              ],
+              "current_step": "build pinned real Session and App",
+              "later_steps": "real Notes goal, actual-App fence and final lint remain pending"
+            },
+            "blocking_run": {
+              "run": 42888691521,
+              "job": 130083957927,
+              "status": "FAIL_HEPTA_CALLER_PROOF",
+              "exact_result": "CALLERS.toml still required retained.topic != NOTES_REPLACE_TOPIC_V1 although typed cancellation owner deliberately uses the closed replace-or-fence helper; no runtime test failed",
+              "other_open_failure": "cargo-deny job failed but raw log was not yet readable; no cause inferred"
+            },
+            "classification": "ACT-2 execution remains independent and in progress; blocking policy failure is repaired only in the new successor and no result transfers"
+          },
           "terminal_capacity_success_macro_failure_head": {
             "source": "b453724b33e3db689aaed2287444feb8b5a44452",
             "tree": "30146c1d55d28ae17596ee5ff994e251bf7902c9",
@@ -481,8 +508,21 @@
             "change": "one explicit pretty_assertions::assert_eq import in inherited nested actual-App fence tests",
             "local_result": "format passed and compilation crossed the former 16-error seam; final link/test execution was interrupted, therefore NOT_RUN rather than PASS",
             "hosted_run": 42888691385,
-            "hosted_status": "IN_PROGRESS_NO_RESULT_TRANSFER",
+            "hosted_status": "IN_PROGRESS_AFTER_AUTOMATION_MEMORY_CAPACITY_AND_NOTES_OWNER_SUCCESS",
             "does_not_change": "production code, dependency or lock, CALLERS, original operation, permission, FinalUse, readback, tombstone, receipt or promotion semantics"
+          },
+          "callers_typed_topic_policy_successor": {
+            "source": "dbf0e8e7fc334177617b8bc956e416fddd501d77",
+            "tree": "0b51835eb4949fe8bfba274bb48b122eeebcc5f6",
+            "parent": "35b912b0a9b3c424c266e59c45a2878c878f32e7",
+            "changed_file": "CALLERS.toml",
+            "change": "protect the original owner is_notes_topic call and protect the helper definition as the exact closed pair NOTES_REPLACE_TOPIC_V1 | NOTES_FENCE_TOPIC_V1",
+            "local_results": "PASS_HEPTA_CALLER_PROOF_SELF_TEST and PASS_HEPTA_CALLER_CLOSED_SET over 6149 Rust files with authorityGranted=false",
+            "hosted": {
+              "act2_run": 42891433945,
+              "status": "PENDING_NO_RESULT_TRANSFER"
+            },
+            "does_not_change": "production code, dependency or lock, caller set, operation, permission, FinalUse, readback, tombstone, receipt or promotion semantics"
           }
         },
         "compile_fix": {
