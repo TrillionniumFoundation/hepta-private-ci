@@ -1,0 +1,44 @@
+{
+  "records": [
+    {
+      "command": [
+        "/workspace/scratch/40a1a085876c/verify-tools/bin/just",
+        "fmt"
+      ],
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "error: Recipe `fmt` could not be run because just could not find the shell: No such file or directory (os error 2)\n"
+    },
+    {
+      "command": [
+        "/workspace/scratch/40a1a085876c/verify-tools/bin/ruff",
+        "format",
+        "--check",
+        "experiments/verification_cell_verify1/matched_qualification.py",
+        "experiments/verification_cell_verify1/test_matched_qualification.py",
+        "experiments/verification_cell_verify1/prospective.py",
+        "experiments/verification_cell_verify1/test_prospective.py"
+      ],
+      "exit_code": 0,
+      "stdout": "4 files already formatted\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/workspace/scratch/40a1a085876c/verify-tools/bin/ruff",
+        "check",
+        "--select",
+        "F,E9",
+        "experiments/verification_cell_verify1/matched_qualification.py",
+        "experiments/verification_cell_verify1/test_matched_qualification.py",
+        "experiments/verification_cell_verify1/prospective.py",
+        "experiments/verification_cell_verify1/test_prospective.py"
+      ],
+      "exit_code": 0,
+      "stdout": "All checks passed!\n",
+      "stderr": ""
+    }
+  ],
+  "source_changed_during_composition": false,
+  "full_repository_format_qualified": false
+}
