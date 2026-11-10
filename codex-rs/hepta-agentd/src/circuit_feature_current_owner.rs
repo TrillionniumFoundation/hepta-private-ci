@@ -83,27 +83,6 @@ impl<W: AnchorWitnessStore> PublishedCircuitCellOwnerV1<W> {
         Ok(decision)
     }
 
-    /// Explicit task retirement only after actual source and private Cell
-    /// completion. This is durable drain, never a manufactured model STOP.
-    pub fn drain_completed_task<SW: AnchorWitnessStore>(&self, source: &CircuitTaskSourceReadbackV1<SW>, identity: &AgentdIdentity)
-        -> Result<PublishedCircuitFeatureCompletionV1, AgentdError> {
-        let before = source.read_run_publication(identity, &self.task.source().scope.run_id).map_err(invalid)?;
-        let receipt = self.committed(&before)?;
-        if source.read_run_publication(identity, &self.task.source().scope.run_id).map_err(invalid)? != before {
-            return Err(invalid("original Feature source changed before drain"));
-        }
-        let mut original = self.task.0.original.lock().map_err(invalid)?;
-        original.require_current()?;
-        original.drain()?;
-        if !original.is_drained()? { return Err(invalid("original task drain is uncertain")); }
-        drop(original);
-        if source.read_run_publication(identity, &self.task.source().scope.run_id).map_err(invalid)? != before {
-            return Err(invalid("original Feature source changed across drain"));
-        }
-        self.task.require_current()?;
-        Ok(PublishedCircuitFeatureCompletionV1 { binding: self.task.0.publication.target().clone(),
-            manifest: self.task.0.manifest.clone(), source: before, receipt })
-    }
 }
 
 impl<W: AnchorWitnessStore> CellStateOwnerV1 for PublishedCircuitCellWriterV1<W> {

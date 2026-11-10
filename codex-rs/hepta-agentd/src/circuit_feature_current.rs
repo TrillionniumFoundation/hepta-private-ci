@@ -39,6 +39,8 @@ mod control;
 mod owner;
 #[path = "circuit_feature_current_learning.rs"]
 mod learning;
+#[path = "circuit_feature_current_retirement.rs"]
+mod retirement;
 pub use control::PublishedCircuitFeatureControlV1;
 pub use owner::PublishedCircuitCellOwnerV1;
 
