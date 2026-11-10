@@ -314,7 +314,6 @@ impl Services {
     }
 }
 
-
 #[tokio::test]
 async fn expired_completed_learning_readback_can_finish_after_one_second_without_new_work() {
     // Protocol-only synthetic owners. This exercises the real supervised
