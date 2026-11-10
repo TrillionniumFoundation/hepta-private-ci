@@ -7,6 +7,12 @@ mechanism fixture, not a previously qualified architecture. A separate 64 / 1 /
 16 fixture exercises 81-state construction and physical-parameter gradients;
 that also earns no old S81 pass credit.
 
+Its research identity is a **regenerative probability flow and content memory
+network constrained by a shared generator**. The versioned
+[object/API contract](semantic_contract.json) maps the symbols below to their
+actual implementations; `semantics.semantic_contract()` reads it without
+constructing a network or granting a numerical qualification.
+
 ## 1. Continuum process being approximated
 
 Let `B = log_boundary = log(b)` be constant throughout an episode. The physical
@@ -160,6 +166,36 @@ The numerical chain can have a biased stationary rate even while preserving
 probability. One successful conservation test cannot establish delay or
 renewal accuracy.
 
+### Drift sign changes the continuum renewal regime
+
+With the lower boundary at zero and fixed positive reset distance `x_r`,
+the eventual hit probability follows by taking `q` down to zero in `psi_q`:
+
+\[
+p_\infty(x)=\begin{cases}1,&\mu\le0,\\
+e^{-2\mu x/\sigma^2},&\mu>0.\end{cases}
+\]
+
+| Log drift | Continuum consequence | Long-run event rate |
+| --- | --- | --- |
+| `mu<0` | Every cycle hits; mean active cycle time is `x_r/(-mu)` | `1/(d+x_r/(-mu))` |
+| `mu=0` | Every cycle hits almost surely, but its mean duration is infinite | Zero; this is not a finite-mean stationary renewal law |
+| `mu>0` | A cycle can escape forever; the total number of future events is finite almost surely | Zero; this is a defective renewal law |
+
+For positive drift and an initially active point `x`,
+`E[N_infinity] = p_infinity(x)/(1-p_infinity(x_r))`. The unconditional first-hit
+mean is infinite because non-hitting paths have infinite hitting time; a mean
+conditioned on eventually hitting is a different quantity. At zero drift,
+infinitely many events occur over an infinite lifetime despite zero asymptotic
+rate. `semantics.long_run_regime()` reports these distinctions, retains log
+probabilities, and uses no epsilon to change the sign of a drift. It is an
+interpretation aid, not a numerical-domain or filtered-network certificate.
+
+`TrainablePhysics` permits crossing zero. Neither its constructor box nor a
+finite, discounted value calculation establishes a finite mean renewal cycle.
+Any trial using a stationary firing-rate objective must declare how it treats
+these three regimes and qualify the parameters/posteriors actually visited.
+
 ## 5. Static learnable boundary, initialization, and episode identity
 
 The initial physical prior is explicitly
@@ -202,7 +238,7 @@ timestamps; a rate is in Hz only when those units are seconds.
 
 | Symbol | Definition and semantics | Units | Status in this candidate |
 | --- | --- | --- | --- |
-| `E(V;V_b)` | Original He--Xiong equity value under the financial model's cash flows, debt rollover, and endogenous default boundary. Equity value matching and smooth pasting belong to that model's optimal boundary. | Currency, or a consistently normalized financial value | **Not implemented**; `call` is not this equity function. |
+| `E(V;V_b)` | Original He--Xiong equity value under the financial model's cash flows, debt rollover, and endogenous default boundary. Equity value matching and smooth pasting belong to that model's optimal boundary. | Currency, or a consistently normalized financial value | Implemented in the separate `qualification/hcsn/reference.py` as `hx_equity_closed` and `hx_equity`; **not consumed by this differentiable network**. `call` is not this equity function. |
 | `C_T(x)` | Killed single-cycle value: active running reward until first hit, plus terminal reward only on survival; the displayed definition below has zero payoff on absorption. | Reward units | Its constant-flow/terminal components are evaluated for one interval; risk and hit payoff are separate terms. |
 | `U_T(x)` or `U(x)` | Total regenerative finite-horizon or perpetual value, including repeated events, delays, reset continuations, and terminal payoff paid once. | Reward units | Fixed-policy continuum `U` and `U_T` are implemented in `regenerative.py` and `finite_renewal.py`; `value.py` separately evaluates the projected chain. Summing `call` does not give U. |
 | `F(T,x)` | `P_x(tau_0<=T)`, the first-hit CDF of one active killed cycle. | Dimensionless probability in `[0,1]` | Analytic primitive. The API's `risk` is the corresponding *one-interval* event probability integrated over its current active/refractory basis. |
@@ -210,6 +246,18 @@ timestamps; a rate is in Hz only when those units are seconds.
 | `J(t)` | `dM(t)/dt`, the regenerative event-rate density; after resets it differs from the first-hit density `f(t,x)=dF/dt`. | Expected events per time unit | `finite_renewal.py` gives the fixed-policy analytic reference. `expected_events/dt` remains an **interval-average** conditional rate, not instantaneous J. |
 | `G_q(T,x)` | `E_x[exp(-q*tau_0) 1_{tau_0<=T}]`, a discounted first-hit mass. | Dimensionless discounted count | Analytic primitive; `1-G_q` is not survival. |
 | `call` | Declared finite-interval running/hit/terminal reward readout below. | Reward units, with `c_a` in reward/time, `c_h` in reward/event, and `c_T` in reward | Implemented engineering feature, not E or a global U. |
+
+The three code families have distinct responsibilities. `qualification/hcsn`
+retains the financial HX kernel, including debt, equity and its financial
+boundary. `qualification/hcsn_regenerative` supplies scalar/tensor killed and
+renewal references and earlier fixed-grid research candidates. This directory
+adds a trainable projected probability/content network and separately named
+continuum versus projected values. Reusing a generator or a first-hit identity
+does not make their rewards, state laws, reset policies or qualification
+receipts interchangeable. In particular, the legacy scalar
+`process.finite_horizon_value` docstring calls its `ValueReceipt.single_cycle`
+field “E”; that constant-reward killed-cycle value is `C_T^(a,h)` here, not
+financial equity. Existing field names remain compatible.
 
 For an initially active point, the continuum renewal equation makes the
 first-hit / repeated-event distinction explicit:
@@ -278,6 +326,20 @@ but the terminal payoff is still `c_T` on active states. A padding caller
 must mask its readout if that interval is not an observation. **Adding these
 call values over steps would repeatedly pay terminal rewards and would not
 compute a total episode value.**
+
+Repeated **querying** of an operator table or receipt does not accumulate
+rewards or mutate state. By contrast, `network.forward` consumes new input
+positions: even at `dt=0`, `observed=True` conditions probability and writes
+content again. Replaying an observation from the returned state is therefore
+not an idempotent readout. `dt=0, observed=False, valid=False` preserves physical
+state and masks the prediction, while advancing the global sequence position
+used by the explicit truncation policy. Recovery callers must retain that
+position and must not treat duplicate observations as harmless queries.
+
+Within the supported `dt<=d` intervals, `risk` and `expected_events` are
+identical. The current five-channel network includes both for compatibility;
+their names do not supply independent mechanisms or evidence. A later
+deduplicated architecture requires its own frozen candidate and comparison.
 
 A full regenerative value `U` includes repeated events and continuation
 through resets. For example, a perpetual zero-refractory-flow value would
