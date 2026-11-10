@@ -14,7 +14,7 @@ use crate::circuit_journal;
 use crate::circuit_journal::unavailable;
 use crate::circuit_profile::hash;
 
-/// Retain acknowledged identities too: capacity never silently evicts a retry.
+/// Bound active delivery slots. Retirement retains the complete ACK identity.
 const MAX_RECORDS: i64 = 256;
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -84,7 +84,7 @@ impl AutomationStore {
             }
         } else {
             let count: i64 = sqlx::query_scalar(
-                "SELECT count(*) FROM circuit_learning_outbox_v1 WHERE owner_agent_id = ?",
+                "SELECT count(*) FROM circuit_learning_outbox_v1 WHERE owner_agent_id = ? AND retired = 0",
             )
             .bind(self.owner_agent_id().as_str())
             .fetch_one(&mut *tx)
@@ -93,7 +93,7 @@ impl AutomationStore {
             if count >= MAX_RECORDS {
                 return Err(Error::Capacity);
             }
-            sqlx::query("INSERT INTO circuit_learning_outbox_v1 VALUES (?, ?, ?, NULL, NULL)")
+            sqlx::query("INSERT INTO circuit_learning_outbox_v1 (owner_agent_id, run_id, intent_json, request_digest, acknowledged_head) VALUES (?, ?, ?, NULL, NULL)")
                 .bind(self.owner_agent_id().as_str())
                 .bind(&intent.source_run_id)
                 .bind(circuit_journal::encode(&intent)?)
@@ -194,6 +194,37 @@ impl AutomationStore {
         }
         sqlx::query("UPDATE circuit_learning_outbox_v1 SET acknowledged_head = ? WHERE owner_agent_id = ? AND run_id = ?")
             .bind(head.as_str()).bind(self.owner_agent_id().as_str()).bind(&intent.source_run_id)
+            .execute(&mut *tx).await.map_err(unavailable)?;
+        tx.commit().await.map_err(|_| Error::CommitUncertain)?;
+        Ok(())
+    }
+
+    /// Release one active slot only after the exact original ACK. The complete
+    /// row and verified Circuit history remain available for deduplication and
+    /// readback; this does not delete history or authorize another submission.
+    /// Historical storage remains cumulative and requires host disk budgeting.
+    pub async fn retire_acknowledged_circuit_learning(
+        &self,
+        intent: &CircuitLearningIntentV1,
+        request: &Sha256Digest,
+        head: &Sha256Digest,
+    ) -> Result<(), Error> {
+        let mut tx = self
+            .taskflow_pool()
+            .begin_with("BEGIN IMMEDIATE")
+            .await
+            .map_err(unavailable)?;
+        let row = read(self, &mut tx, &intent.source_run_id)
+            .await?
+            .ok_or(Error::Conflict)?;
+        if &row.intent != intent
+            || row.request_digest.as_ref() != Some(request)
+            || row.acknowledged_head.as_ref() != Some(head)
+        {
+            return Err(Error::Conflict);
+        }
+        sqlx::query("UPDATE circuit_learning_outbox_v1 SET retired = 1 WHERE owner_agent_id = ? AND run_id = ?")
+            .bind(self.owner_agent_id().as_str()).bind(&intent.source_run_id)
             .execute(&mut *tx).await.map_err(unavailable)?;
         tx.commit().await.map_err(|_| Error::CommitUncertain)?;
         Ok(())

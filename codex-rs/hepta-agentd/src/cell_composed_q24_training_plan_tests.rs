@@ -60,11 +60,14 @@ fn trained_material(
         cell_adapter: Some(file("cell")?),
     })?;
     let mut candidate = bundle(&model, Some(&prefix.request.selected_bundle))?;
-    let dataset = match &prefix.receipts.last().unwrap().observation {
+    let original_dataset = prefix.receipts.last()
+        .ok_or_else(|| anyhow::anyhow!("fixture requires the Dataset receipt"))?;
+    let dataset = match &original_dataset.observation {
         LearningIterationObservationV1::Dataset { snapshot_digest, .. } => *snapshot_digest,
         _ => anyhow::bail!("fixture Dataset prefix"),
     };
-    let lineage = candidate.training_lineage.as_mut().unwrap();
+    let lineage = candidate.training_lineage.as_mut()
+        .ok_or_else(|| anyhow::anyhow!("fixture requires candidate lineage"))?;
     lineage.dataset = dataset;
     lineage.update_rule = rule;
     let mut coordinator = LearningIterationCoordinatorV1::from_snapshot(prefix.clone())?;
