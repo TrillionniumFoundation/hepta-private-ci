@@ -24,6 +24,7 @@ mod training;
 mod owner;
 pub use owner::CellQ24TrainingOwnerErrorV1;
 pub use owner::CellQ24TrainingOwnerV1;
+pub use owner::CellQ24TrainingObservationV2;
 pub use training::CellQ24SgdRuleV1;
 pub use training::CellQ24TrainedCandidateV1;
 pub use training::CellQ24TrainingBatchV1;

@@ -11,6 +11,9 @@ use pretty_assertions::assert_eq;
 
 use super::*;
 
+#[path = "cell_composed_q24_training_observation_tests.rs"]
+mod observation;
+
 fn opened(root: &Path, name: &str) -> anyhow::Result<File> {
     Ok(OpenOptions::new().read(true).write(true).create(true).truncate(false).open(root.join(name))?)
 }
@@ -114,6 +117,7 @@ fn q24_training_owner_cancelled_admission_never_retrains_after_reopen() -> anyho
     )?;
     assert!(matches!(recovered.fit_or_readback(&AtomicBool::new(false)), Err(OwnerError::Pending)));
     assert!(matches!(recovered.readback(), Err(OwnerError::Pending)));
+    assert!(matches!(recovered.read_learning_observation(&prefix), Err(OwnerError::Pending)));
     assert_eq!(fs::read(root.path().join("job"))?, admitted);
     Ok(())
 }
@@ -160,6 +164,7 @@ fn q24_training_owner_recovers_lost_admission_and_completion_witness_acks() -> a
                 FaultWitness { inner: witness(root.path())?, sequence, fault }, plan, data.clone(), rule)?;
             assert!(matches!(owner.fit_or_readback(&AtomicBool::new(false)), Err(OwnerError::CommitUncertain)));
             assert!(matches!(owner.readback(), Err(OwnerError::CommitUncertain)));
+            assert!(matches!(owner.read_learning_observation(&prefix), Err(OwnerError::CommitUncertain)));
             let saved = fs::read(root.path().join("job"))?;
             drop(owner);
             let plan = original_plan(baseline, &prefix, &data, rule)?;

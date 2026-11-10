@@ -47,6 +47,10 @@ pub enum CellQ24TrainingOwnerErrorV1 {
 
 type Error = CellQ24TrainingOwnerErrorV1;
 
+#[path = "cell_composed_q24_training_observation.rs"]
+mod observation;
+pub use observation::CellQ24TrainingObservationV2;
+
 /// Owns one exact frozen Dataset cut and its bounded native optimizer. Transfer
 /// exclusive file ownership; writable duplicate descriptors are not supported.
 /// The witness must retain its original independent rollback domain on reopen.
