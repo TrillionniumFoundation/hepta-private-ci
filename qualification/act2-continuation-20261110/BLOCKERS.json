@@ -1,0 +1,105 @@
+{
+  "schema_version": 1,
+  "all_blockers_closed": false,
+  "scope": "ACT continuation; each status is evidence-specific",
+  "qualified": [
+    {
+      "id": "MACOS_AUTOMATION_ALIAS_CONTRACT",
+      "status": "SCOPED_PASS",
+      "run": 42772207776,
+      "driver": "4a5c8832d8e3417e6fd2a30a8bec540f4bbfaa65",
+      "baseline": "8b1c1789916514471c6cacdf0f6c45467255fef9",
+      "candidate": "8bebf0a3c207a49bfd0a99367fd6e06f52a6cb98",
+      "observed": "12 canonical passes, 12 exactly named Invalid alias failures, 12 repaired alias passes",
+      "does_not_establish": "all historical macOS/Windows causes or the two Agentd roots"
+    },
+    {
+      "id": "CONTROLLED_LEARNING_DECISION",
+      "status": "BOUNDED_NEGATIVE_FIXED_LIBRARY_RETAINED",
+      "pr": 5669,
+      "episodes_per_execution": 3200,
+      "independent_training_initializations": 8,
+      "fits": 16,
+      "optimizer_steps_per_fit": 220,
+      "head_complete": [
+        512,
+        640
+      ],
+      "gru_complete": [
+        464,
+        640
+      ],
+      "review_checks": 220,
+      "does_not_establish": "five independent product controllers, independent field confirmation, full paid operational costs or destination-family generalization"
+    }
+  ],
+  "open": [
+    {
+      "id": "DESTINATION_FENCE_NATIVE",
+      "prs": [
+        "desktop#301",
+        "hepta#5641"
+      ],
+      "status": "AWAITING_MAINTAINED_NATIVE",
+      "original_companion": "0e884b4cf6831d7cb614b87786c40137a575672d",
+      "original_result": "RUST_2021_COMPILE_FAILURE",
+      "maintained_companion": "0e31d10234c8b94b0a411d2b3a0098ba3b056b2e",
+      "note": "the equivalent Rust 2021 correction already existed; it was retained instead of overwriting it"
+    },
+    {
+      "id": "SOURCE_FLOOR_AND_REAL_APP_FENCE",
+      "pr": 5645,
+      "status": "NATIVE_AND_ACTUAL_APP_QUALIFICATION_PENDING",
+      "source": "ebe5db6790fd17966ea8033fa518e901dad40b7c",
+      "limits": [
+        "not physical source/App checkpoint rewind",
+        "not hidden history-membership corruption oracle",
+        "not jointly rolled-back independent custody",
+        "not later asynchronous report freshness"
+      ]
+    },
+    {
+      "id": "ORIGINAL_CANCELLATION_RESPONSIBILITY",
+      "status": "NOT_IMPLEMENTED",
+      "required": "typed nonserializable proof from exact original/cancel durable journal causal binding; validate transactionally and on replay; no forged original App receipt"
+    },
+    {
+      "id": "FULL_DYNAMIC_TOOL_AUTHORITY",
+      "status": "DEPLOYMENT_INPUTS_MISSING",
+      "details": "HANDLER_GATES.json",
+      "required": "actual Core sealed thread, retained AuthBus human ACK, Root lookup and actual queued call through existing ingress"
+    },
+    {
+      "id": "NATIVE_PROCESS_WAIT_ADAPTER",
+      "status": "UNQUALIFIED",
+      "required": "original-authorized owned process/input capability and actual kernel/process evidence; long computation/network wait cannot become input wait"
+    },
+    {
+      "id": "BROAD_CI",
+      "status": "OPEN",
+      "required": "classify remaining Bazel/permission/file-lock/sandbox/cargo-deny failures by exact run; do not infer advisory from a passing negative fixture"
+    },
+    {
+      "id": "PRODUCT_LEARNING_AND_FIELD",
+      "status": "OPEN",
+      "required": "original provider/authority, independent grouped confirmation, complete costs and demonstrated quality-cost benefit"
+    }
+  ],
+  "retained_failures": [
+    {
+      "source": "299cbf7842415c20324c2801b05df8c1e6bce010",
+      "run": 42773508076,
+      "reason": "unsupported uv install before any contrast; unset evidence root caused secondary failures"
+    },
+    {
+      "source": "0e884b4cf6831d7cb614b87786c40137a575672d",
+      "run": 42774237360,
+      "reason": "Rust 2024 let-chain used in Rust 2021 crate; no tests executed"
+    }
+  ],
+  "continuation": {
+    "automation_id": "Automation_8e4cdb1c54948191973ff06d6fbdba1b",
+    "enabled": true,
+    "cadence": "hourly existing task, minute 25; latest PRs and these limits added to its prompt"
+  }
+}
