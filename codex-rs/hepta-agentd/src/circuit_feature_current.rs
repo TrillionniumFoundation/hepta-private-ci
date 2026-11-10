@@ -35,45 +35,71 @@ use crate::neuron_generation_update_live::LiveGenerationCurrent;
 
 #[path = "circuit_feature_current_control.rs"]
 mod control;
-#[path = "circuit_feature_current_owner.rs"]
-mod owner;
 #[path = "circuit_feature_current_learning.rs"]
 mod learning;
-#[path = "circuit_feature_current_retirement.rs"]
-mod retirement;
+#[path = "circuit_feature_current_owner.rs"]
+mod owner;
 #[path = "circuit_feature_current_recovery.rs"]
 mod recovery;
-pub use recovery::CircuitFeaturePredecessorFilesV1;
-pub(crate) use recovery::recover_predecessor;
+#[path = "circuit_feature_current_retirement.rs"]
+mod retirement;
 pub use control::PublishedCircuitFeatureControlV1;
 pub use owner::PublishedCircuitCellOwnerV1;
+pub use recovery::CircuitFeaturePredecessorFilesV1;
+pub(crate) use recovery::recover_predecessor;
 
 /// Pin this exact profile in the original target.task_digest BEFORE independent
 /// selection/FinalUse publication. Existing arbitrary task grants do not match.
-pub fn circuit_feature_task_digest_v1(definition: &CellDefinitionV1, source: &CircuitTaskSourceInputV1) -> Result<Digest32, AgentdError> {
-    if source.scope.cell_id != definition.cell_id || source.scope.principal_digest.is_zero()
-        || source.source_frontier.is_zero() || source.objective_digest.is_zero() || source.ndu_snapshot_digest.is_zero()
-        || source.monotonic_micros == 0 || source.deadline_micros <= source.monotonic_micros
+pub fn circuit_feature_task_digest_v1(
+    definition: &CellDefinitionV1,
+    source: &CircuitTaskSourceInputV1,
+) -> Result<Digest32, AgentdError> {
+    if source.scope.cell_id != definition.cell_id
+        || source.scope.principal_digest.is_zero()
+        || source.source_frontier.is_zero()
+        || source.objective_digest.is_zero()
+        || source.ndu_snapshot_digest.is_zero()
+        || source.monotonic_micros == 0
+        || source.deadline_micros <= source.monotonic_micros
         || !(1..=3_600_000).contains(&source.lease_duration_ms)
         || source.deadline_micros - source.monotonic_micros > source.lease_duration_ms * 1_000
-        || source.observation.is_empty() || source.observation.len() > 32 * 1_024
+        || source.observation.is_empty()
+        || source.observation.len() > 32 * 1_024
         || source.candidates.len() != definition.candidates.len()
-        || source.candidates.iter().zip(&definition.candidates).any(|(mask, candidate)| mask.candidate_id != candidate.candidate_id)
-    { return Err(invalid("ordinary Feature task material differs")); }
-    let input = source_input(source, StableId::new("published-feature-task").map_err(invalid)?);
+        || source
+            .candidates
+            .iter()
+            .zip(&definition.candidates)
+            .any(|(mask, candidate)| mask.candidate_id != candidate.candidate_id)
+    {
+        return Err(invalid("ordinary Feature task material differs"));
+    }
+    let input = source_input(
+        source,
+        StableId::new("published-feature-task").map_err(invalid)?,
+    );
     let semantic = canonical_cell_step_request_digest_v1(definition, &input).map_err(invalid)?;
-    Ok(Digest32::of_parts(&[b"hepta.agentd.published-circuit-feature-task.v1\0",
-        semantic.as_array(), &source.lease_duration_ms.to_be_bytes()]))
+    Ok(Digest32::of_parts(&[
+        b"hepta.agentd.published-circuit-feature-task.v1\0",
+        semantic.as_array(),
+        &source.lease_duration_ms.to_be_bytes(),
+    ]))
 }
 
 enum Publication {
     Initial(PublishedNeuronGenerationInitialV1),
-    Update { original: PublishedNeuronGenerationUpdateV1, previous: PublishedCircuitFeatureCompletionV1 },
+    Update {
+        original: PublishedNeuronGenerationUpdateV1,
+        previous: PublishedCircuitFeatureCompletionV1,
+    },
 }
 
 impl Publication {
     fn target(&self) -> &CellGenerationOwnerBindingV1 {
-        match self { Self::Initial(p) => p.target(), Self::Update { original, .. } => original.target() }
+        match self {
+            Self::Initial(p) => p.target(),
+            Self::Update { original, .. } => original.target(),
+        }
     }
 }
 
@@ -83,28 +109,48 @@ trait OriginalVersion: Send {
     fn require_current(&self) -> Result<(), AgentdError>;
     fn is_drained(&self) -> Result<bool, AgentdError>;
     fn drain(&mut self) -> Result<(), AgentdError>;
-    fn selection(&self, original: &PublishedNeuronGenerationUpdateV1, coordinator: &LearningIterationCoordinatorV1,
-        previous_manifest: &CellBackendManifestV2) -> Result<LearningIterationObservationV1, AgentdError>;
+    fn selection(
+        &self,
+        original: &PublishedNeuronGenerationUpdateV1,
+        coordinator: &LearningIterationCoordinatorV1,
+        previous_manifest: &CellBackendManifestV2,
+    ) -> Result<LearningIterationObservationV1, AgentdError>;
 }
 
 impl<W: AnchorWitnessStore + Send> OriginalVersion for CellGenerationJournalV2<W> {
     fn require_current(&self) -> Result<(), AgentdError> {
         let observed = self.observe_generation().map_err(invalid)?;
-        if observed.snapshot().revision != 0 || observed.pending_request_digest().is_some()
-            || observed.pending_output().is_some() || !observed.snapshot().prefix.is_empty()
-            || observed.snapshot().stopped {
+        if observed.snapshot().revision != 0
+            || observed.pending_request_digest().is_some()
+            || observed.pending_output().is_some()
+            || !observed.snapshot().prefix.is_empty()
+            || observed.snapshot().stopped
+        {
             return Err(invalid("published task already contains GenerationV2 work"));
         }
         self.require_current().map_err(invalid)
     }
-    fn is_drained(&self) -> Result<bool, AgentdError> { self.is_drained().map_err(invalid) }
-    fn drain(&mut self) -> Result<(), AgentdError> { self.drain().map_err(invalid) }
-    fn selection(&self, original: &PublishedNeuronGenerationUpdateV1, coordinator: &LearningIterationCoordinatorV1,
-        previous_manifest: &CellBackendManifestV2) -> Result<LearningIterationObservationV1, AgentdError> {
-        let view = GenerationLearningReadbackV1 { journal: self, publication: original };
+    fn is_drained(&self) -> Result<bool, AgentdError> {
+        self.is_drained().map_err(invalid)
+    }
+    fn drain(&mut self) -> Result<(), AgentdError> {
+        self.drain().map_err(invalid)
+    }
+    fn selection(
+        &self,
+        original: &PublishedNeuronGenerationUpdateV1,
+        coordinator: &LearningIterationCoordinatorV1,
+        previous_manifest: &CellBackendManifestV2,
+    ) -> Result<LearningIterationObservationV1, AgentdError> {
+        let view = GenerationLearningReadbackV1 {
+            journal: self,
+            publication: original,
+        };
         if coordinator.next_task_bundle() == Some(&coordinator.snapshot().request.selected_bundle) {
             view.read_selection(coordinator)
-        } else { view.read_updated_selection(coordinator, previous_manifest) }
+        } else {
+            view.read_updated_selection(coordinator, previous_manifest)
+        }
     }
 }
 
@@ -134,55 +180,102 @@ pub struct PublishedCircuitFeatureCompletionV1 {
 }
 
 impl PublishedCircuitFeatureCompletionV1 {
-    pub fn source_publication(&self) -> &CircuitTaskSourcePublicationV1 { &self.source }
+    pub fn source_publication(&self) -> &CircuitTaskSourcePublicationV1 {
+        &self.source
+    }
 }
 
 impl PublishedCircuitFeatureTaskV1 {
-    pub(crate) fn from_initial<W: AnchorWitnessStore + Send + 'static>(journal: CellGenerationJournalV2<W>,
-        original: PublishedNeuronGenerationInitialV1, current: Arc<LiveGenerationCurrent>,
-        definition: CellDefinitionV1, source: CircuitTaskSourceInputV1) -> Result<Self, AgentdError> {
-        Self::from_parts(journal, Publication::Initial(original), current, definition, source)
+    pub(crate) fn from_initial<W: AnchorWitnessStore + Send + 'static>(
+        journal: CellGenerationJournalV2<W>,
+        original: PublishedNeuronGenerationInitialV1,
+        current: Arc<LiveGenerationCurrent>,
+        definition: CellDefinitionV1,
+        source: CircuitTaskSourceInputV1,
+    ) -> Result<Self, AgentdError> {
+        Self::from_parts(
+            journal,
+            Publication::Initial(original),
+            current,
+            definition,
+            source,
+        )
     }
 
-    pub(crate) fn from_update<W: AnchorWitnessStore + Send + 'static>(journal: CellGenerationJournalV2<W>,
-        original: PublishedNeuronGenerationUpdateV1, current: Arc<LiveGenerationCurrent>,
-        definition: CellDefinitionV1, source: CircuitTaskSourceInputV1,
-        previous: PublishedCircuitFeatureCompletionV1) -> Result<Self, AgentdError> {
+    pub(crate) fn from_update<W: AnchorWitnessStore + Send + 'static>(
+        journal: CellGenerationJournalV2<W>,
+        original: PublishedNeuronGenerationUpdateV1,
+        current: Arc<LiveGenerationCurrent>,
+        definition: CellDefinitionV1,
+        source: CircuitTaskSourceInputV1,
+        previous: PublishedCircuitFeatureCompletionV1,
+    ) -> Result<Self, AgentdError> {
         let old = previous.source.input();
         if original.previous() != &previous.binding
             || previous.manifest.digest().map_err(invalid)? != previous.binding.manifest_digest()
             || previous.manifest.bundle_digest != previous.source.bundle_digest().into_array()
             || previous.receipt.checkpoint_after != previous.source.checkpoint_digest()
-            || old.scope.run_id == source.scope.run_id || old.observation == source.observation
-        { return Err(invalid("original completed Feature predecessor differs")); }
-        Self::from_parts(journal, Publication::Update { original, previous }, current, definition, source)
+            || old.scope.run_id == source.scope.run_id
+            || old.observation == source.observation
+        {
+            return Err(invalid("original completed Feature predecessor differs"));
+        }
+        Self::from_parts(
+            journal,
+            Publication::Update { original, previous },
+            current,
+            definition,
+            source,
+        )
     }
 
-    fn from_parts<W: AnchorWitnessStore + Send + 'static>(journal: CellGenerationJournalV2<W>, publication: Publication,
-        current: Arc<LiveGenerationCurrent>, definition: CellDefinitionV1, source: CircuitTaskSourceInputV1) -> Result<Self, AgentdError> {
+    fn from_parts<W: AnchorWitnessStore + Send + 'static>(
+        journal: CellGenerationJournalV2<W>,
+        publication: Publication,
+        current: Arc<LiveGenerationCurrent>,
+        definition: CellDefinitionV1,
+        source: CircuitTaskSourceInputV1,
+    ) -> Result<Self, AgentdError> {
         let target = publication.target();
         let scope = target.scope();
         let manifest = journal.manifest().clone();
         if journal.owner_binding() != Some(target)
-            || target.task_digest() != circuit_feature_task_digest_v1(&definition, &source)?.into_array()
+            || target.task_digest()
+                != circuit_feature_task_digest_v1(&definition, &source)?.into_array()
             || target.source_frontier() != source.source_frontier.into_array()
-            || scope.agent_id != source.scope.agent_id.as_str() || scope.cell_id != source.scope.cell_id.as_str()
-            || scope.run_id != source.scope.run_id.as_str() || scope.principal_digest != source.scope.principal_digest.into_array()
+            || scope.agent_id != source.scope.agent_id.as_str()
+            || scope.cell_id != source.scope.cell_id.as_str()
+            || scope.run_id != source.scope.run_id.as_str()
+            || scope.principal_digest != source.scope.principal_digest.into_array()
             || manifest.profile != crate::CellQ24GenerationWorkerV1::PROFILE
             || manifest.bundle_digest != definition.bundle_digest.into_array()
             || manifest.state_schema != definition.state_schema_digest.into_array()
             || manifest.encoder != Some(definition.runtime.encoder_digest.into_array())
             || manifest.head != Some(definition.runtime.head_digest.into_array())
-        { return Err(invalid("ordinary Feature profile differs from original publication")); }
+        {
+            return Err(invalid(
+                "ordinary Feature profile differs from original publication",
+            ));
+        }
         current.check_current(target).map_err(invalid)?;
-        let result = Self(Arc::new(PublishedTask { original: Mutex::new(Box::new(journal)), current,
-            publication, manifest, definition, source }));
+        let result = Self(Arc::new(PublishedTask {
+            original: Mutex::new(Box::new(journal)),
+            current,
+            publication,
+            manifest,
+            definition,
+            source,
+        }));
         result.require_current()?;
         Ok(result)
     }
 
-    pub fn definition(&self) -> &CellDefinitionV1 { &self.0.definition }
-    pub fn source(&self) -> &CircuitTaskSourceInputV1 { &self.0.source }
+    pub fn definition(&self) -> &CellDefinitionV1 {
+        &self.0.definition
+    }
+    pub fn source(&self) -> &CircuitTaskSourceInputV1 {
+        &self.0.source
+    }
 
     pub fn require_bundle(&self, bundle: &CellCompatibilityBundleV1) -> Result<(), AgentdError> {
         self.require_current()?;
@@ -193,23 +286,46 @@ impl PublishedCircuitFeatureTaskV1 {
         self.require_current()
     }
 
-    pub fn open_cell<W: AnchorWitnessStore>(&self, file: File, witness: W, max_records: usize) -> Result<PublishedCircuitCellOwnerV1<W>, AgentdError> {
+    pub fn open_cell<W: AnchorWitnessStore>(
+        &self,
+        file: File,
+        witness: W,
+        max_records: usize,
+    ) -> Result<PublishedCircuitCellOwnerV1<W>, AgentdError> {
         self.require_current()?;
-        if !(3..=16).contains(&max_records) { return Err(invalid("single Feature task record bound")); }
+        if !(3..=16).contains(&max_records) {
+            return Err(invalid("single Feature task record bound"));
+        }
         let target = self.0.publication.target();
         let current: Arc<dyn CellGenerationCurrentV1> = self.0.current.clone();
-        let journal = CellOwnerJournalV1::open_guarded(file, witness, vec![CellJournalPartitionV1 {
-            scope: self.source().scope.clone(), definition: self.definition().clone(),
-            source_frontier: self.source().source_frontier, writer_epoch: target.writer_epoch(),
-        }], max_records, target.clone(), current).map_err(invalid)?;
+        let journal = CellOwnerJournalV1::open_guarded(
+            file,
+            witness,
+            vec![CellJournalPartitionV1 {
+                scope: self.source().scope.clone(),
+                definition: self.definition().clone(),
+                source_frontier: self.source().source_frontier,
+                writer_epoch: target.writer_epoch(),
+            }],
+            max_records,
+            target.clone(),
+            current,
+        )
+        .map_err(invalid)?;
         self.require_current()?;
         Ok(PublishedCircuitCellOwnerV1::new(journal, self.clone()))
     }
 
     fn require_current(&self) -> Result<(), AgentdError> {
-        self.0.current.check_current(self.0.publication.target()).map_err(invalid)?;
+        self.0
+            .current
+            .check_current(self.0.publication.target())
+            .map_err(invalid)?;
         self.0.original.lock().map_err(invalid)?.require_current()?;
-        self.0.current.check_current(self.0.publication.target()).map_err(invalid)
+        self.0
+            .current
+            .check_current(self.0.publication.target())
+            .map_err(invalid)
     }
 
     fn require_active(&self) -> Result<(), AgentdError> {
@@ -222,10 +338,19 @@ impl PublishedCircuitFeatureTaskV1 {
 }
 
 fn source_input(source: &CircuitTaskSourceInputV1, operation_id: StableId) -> CellStepInputV1 {
-    CellStepInputV1 { operation_id, scope: source.scope.clone(), source_frontier: source.source_frontier,
-        objective_digest: source.objective_digest, ndu_snapshot_digest: source.ndu_snapshot_digest,
-        monotonic_micros: source.monotonic_micros, deadline_micros: source.deadline_micros,
-        observation: source.observation.clone(), candidates: source.candidates.clone() }
+    CellStepInputV1 {
+        operation_id,
+        scope: source.scope.clone(),
+        source_frontier: source.source_frontier,
+        objective_digest: source.objective_digest,
+        ndu_snapshot_digest: source.ndu_snapshot_digest,
+        monotonic_micros: source.monotonic_micros,
+        deadline_micros: source.deadline_micros,
+        observation: source.observation.clone(),
+        candidates: source.candidates.clone(),
+    }
 }
 
-fn invalid(error: impl std::fmt::Display) -> AgentdError { AgentdError::Invalid(error.to_string()) }
+fn invalid(error: impl std::fmt::Display) -> AgentdError {
+    AgentdError::Invalid(error.to_string())
+}

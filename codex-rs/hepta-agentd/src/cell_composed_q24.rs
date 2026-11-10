@@ -212,8 +212,12 @@ impl LoadedCellQ24ModelV1 {
         let (organ, organ_down) = apply(&self.organ);
         let (cell, cell_down) = apply(&self.cell);
         codec::combine(&mut hidden, &organ, &cell);
-        let allocated = encoded.capacity() + hidden.capacity() + organ.capacity()
-            + cell.capacity() + organ_down + cell_down;
+        let allocated = encoded.capacity()
+            + hidden.capacity()
+            + organ.capacity()
+            + cell.capacity()
+            + organ_down
+            + cell_down;
         (hidden, allocated)
     }
 

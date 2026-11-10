@@ -52,8 +52,12 @@ impl CellQ24FeatureWorkerV1 {
         bundle: &CellCompatibilityBundleV1,
         definition: &CellDefinitionV1,
     ) -> Result<Self, CellGenerationErrorV2> {
-        definition.semantic_digest().map_err(|_| CellGenerationErrorV2::InvalidBinding)?;
-        let digest = bundle.digest().map_err(|_| CellGenerationErrorV2::InvalidBinding)?;
+        definition
+            .semantic_digest()
+            .map_err(|_| CellGenerationErrorV2::InvalidBinding)?;
+        let digest = bundle
+            .digest()
+            .map_err(|_| CellGenerationErrorV2::InvalidBinding)?;
         let r = &definition.runtime;
         let c = model.components();
         if &bundle.components != c
@@ -85,17 +89,27 @@ impl CellQ24FeatureWorkerV1 {
             runtime_digest: r.runtime_digest,
             device_digest: r.device_digest,
         };
-        Ok(Self { model, runtime, generation: r.generation })
+        Ok(Self {
+            model,
+            runtime,
+            generation: r.generation,
+        })
     }
 
     pub fn input_encoder(&self) -> CellQ24FeatureEncoderV1 {
-        CellQ24FeatureEncoderV1 { model: Arc::clone(&self.model) }
+        CellQ24FeatureEncoderV1 {
+            model: Arc::clone(&self.model),
+        }
     }
 }
 
 impl CellInputEncoderV1 for CellQ24FeatureEncoderV1 {
-    fn encode(&self, request: &CellEncodingRequestV1<'_>) -> Result<CellEncodedInputV1, CellExecutionError> {
-        if request.encoder_digest != self.model.components().encoder || request.checkpoint.is_some() {
+    fn encode(
+        &self,
+        request: &CellEncodingRequestV1<'_>,
+    ) -> Result<CellEncodedInputV1, CellExecutionError> {
+        if request.encoder_digest != self.model.components().encoder || request.checkpoint.is_some()
+        {
             return Err(CellExecutionError::EncodingMismatch);
         }
         let feature_vector_q24 = codec::input(request.observation, self.model.input_width())
@@ -114,7 +128,10 @@ impl NeuronFeatureWorkerV1 for CellQ24FeatureWorkerV1 {
         &self.runtime
     }
 
-    fn execute(&self, request: &NeuronFeatureRequestV1) -> Result<NeuronFeatureObservationV1, NeuronModelError> {
+    fn execute(
+        &self,
+        request: &NeuronFeatureRequestV1,
+    ) -> Result<NeuronFeatureObservationV1, NeuronModelError> {
         let queued = Instant::now();
         let c = self.model.components();
         if request.model_id != self.runtime.model_id
@@ -125,19 +142,27 @@ impl NeuronFeatureWorkerV1 for CellQ24FeatureWorkerV1 {
             || request.input_digest.is_zero()
             || request.feature_vector_q24.len() != self.model.input_width()
             || request.expected_output_width != self.model.output_width()
-            || request.feature_vector_q24.iter().any(|value| !(-8 * codec::Q..=8 * codec::Q).contains(value))
+            || request
+                .feature_vector_q24
+                .iter()
+                .any(|value| !(-8 * codec::Q..=8 * codec::Q).contains(value))
         {
             return Err(NeuronModelError::Rejected);
         }
         let observed_memory_bytes = self.model.owned_allocation_bytes();
         let queue_age_micros = elapsed(queued)?;
         let started = Instant::now();
-        let (hidden, hidden_allocation) = self.model.hidden_with_allocations(&request.feature_vector_q24);
+        let (hidden, hidden_allocation) = self
+            .model
+            .hidden_with_allocations(&request.feature_vector_q24);
         let output = self.model.heads.apply(&hidden);
         let width = self.model.output_width();
         let drive_q24 = output[..width].to_vec();
         let prediction_q24 = output[width..].to_vec();
-        let allocated = hidden_allocation + output.capacity() + drive_q24.capacity() + prediction_q24.capacity();
+        let allocated = hidden_allocation
+            + output.capacity()
+            + drive_q24.capacity()
+            + prediction_q24.capacity();
         let latency_micros = elapsed(started)?;
         Ok(NeuronFeatureObservationV1 {
             encoder_digest: c.encoder,
@@ -155,7 +180,9 @@ impl NeuronFeatureWorkerV1 for CellQ24FeatureWorkerV1 {
 
 impl LoadedCellQ24ModelV1 {
     fn owned_allocation_bytes(&self) -> u64 {
-        let mut count = self.base.values.capacity() + self.encoder.values.capacity() + self.heads.values.capacity();
+        let mut count = self.base.values.capacity()
+            + self.encoder.values.capacity()
+            + self.heads.values.capacity();
         for adapter in [&self.organ, &self.cell].into_iter().flatten() {
             count += adapter.down.values.capacity() + adapter.up.values.capacity();
         }

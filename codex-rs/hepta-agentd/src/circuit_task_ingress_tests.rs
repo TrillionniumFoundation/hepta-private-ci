@@ -42,10 +42,10 @@ const ISSUER: &str = "circuit-objective-test-issuer";
 mod drain_tests;
 #[path = "circuit_learning_source_tests.rs"]
 mod learning_source_tests;
-#[path = "circuit_task_runtime_tests.rs"]
-mod runtime_tests;
 #[path = "circuit_q24_task_ingress_tests.rs"]
 mod q24_tests;
+#[path = "circuit_task_runtime_tests.rs"]
+mod runtime_tests;
 
 struct Invocation {
     records: Mutex<Vec<RunStartRecordV1>>,
@@ -298,7 +298,10 @@ async fn signed_ingress(state: &AgentdState) -> anyhow::Result<AuthBusObjectiveI
     signed_ingress_for_run(state, RUN).await
 }
 
-async fn signed_ingress_for_run(state: &AgentdState, run: &str) -> anyhow::Result<AuthBusObjectiveIngress> {
+async fn signed_ingress_for_run(
+    state: &AgentdState,
+    run: &str,
+) -> anyhow::Result<AuthBusObjectiveIngress> {
     let identity = state.identity();
     fs::set_permissions(&identity.home_root, fs::Permissions::from_mode(0o700))?;
     let key = SigningKey::from_bytes(&[91; 32]);

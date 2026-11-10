@@ -53,24 +53,39 @@ impl<W: AnchorWitnessStore> LearningOwnerJournalV1<W> {
         witness
             .compare_and_swap(None, anchor(journal.anchor())?)
             .map_err(|_| Error::CommitUncertain)?;
-        Ok(Self { journal, witness, fenced: false })
+        Ok(Self {
+            journal,
+            witness,
+            fenced: false,
+        })
     }
 
     pub(crate) fn recover(file: File, mut witness: W, binding: Digest32) -> Result<Self, Error> {
-        let minimum = witness.current()?.ok_or(Error::Binding("original independent witness"))?;
+        let minimum = witness
+            .current()?
+            .ok_or(Error::Binding("original independent witness"))?;
         let journal = LockedFileProductEvaluationExecutionStoreV1::recover(
             file,
             binding,
             ProductEvaluationExecutionAnchorV1 {
-                sequence: minimum.sequence.checked_sub(1).ok_or(Error::Binding("witness sequence"))?,
+                sequence: minimum
+                    .sequence
+                    .checked_sub(1)
+                    .ok_or(Error::Binding("witness sequence"))?,
                 history_digest: minimum.checkpoint_digest,
             },
         )?;
         let current = anchor(journal.anchor())?;
         if current != minimum {
-            witness.compare_and_swap(Some(minimum), current).map_err(|_| Error::CommitUncertain)?;
+            witness
+                .compare_and_swap(Some(minimum), current)
+                .map_err(|_| Error::CommitUncertain)?;
         }
-        Ok(Self { journal, witness, fenced: false })
+        Ok(Self {
+            journal,
+            witness,
+            fenced: false,
+        })
     }
 
     /// The closure is invoked only after a new claim and its witness are durable.
@@ -83,11 +98,15 @@ impl<W: AnchorWitnessStore> LearningOwnerJournalV1<W> {
         self.require_current()?;
         let before = anchor(self.journal.anchor())?;
         match self.journal.claim(key) {
-            Ok(ProductEvaluationExecutionClaimV1::Existing(ProductEvaluationExecutionStateV1::Completed(bytes))) => {
+            Ok(ProductEvaluationExecutionClaimV1::Existing(
+                ProductEvaluationExecutionStateV1::Completed(bytes),
+            )) => {
                 self.require_current()?;
                 return Ok(bytes);
             }
-            Ok(ProductEvaluationExecutionClaimV1::Existing(ProductEvaluationExecutionStateV1::Pending)) => {
+            Ok(ProductEvaluationExecutionClaimV1::Existing(
+                ProductEvaluationExecutionStateV1::Pending,
+            )) => {
                 return Err(Error::Pending);
             }
             Ok(ProductEvaluationExecutionClaimV1::Claimed) => self.anchor_append(before)?,
@@ -130,7 +149,11 @@ impl<W: AnchorWitnessStore> LearningOwnerJournalV1<W> {
     }
 
     fn anchor_append(&mut self, before: JournalAnchor) -> Result<(), Error> {
-        if self.witness.compare_and_swap(Some(before), anchor(self.journal.anchor())?).is_err() {
+        if self
+            .witness
+            .compare_and_swap(Some(before), anchor(self.journal.anchor())?)
+            .is_err()
+        {
             self.fenced = true;
             return Err(Error::CommitUncertain);
         }
@@ -140,7 +163,10 @@ impl<W: AnchorWitnessStore> LearningOwnerJournalV1<W> {
 
 fn anchor(value: ProductEvaluationExecutionAnchorV1) -> Result<JournalAnchor, Error> {
     Ok(JournalAnchor {
-        sequence: value.sequence.checked_add(1).ok_or(Error::Binding("owner sequence overflow"))?,
+        sequence: value
+            .sequence
+            .checked_add(1)
+            .ok_or(Error::Binding("owner sequence overflow"))?,
         checkpoint_digest: value.history_digest,
     })
 }

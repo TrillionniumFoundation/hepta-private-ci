@@ -56,7 +56,13 @@ impl<W: AnchorWitnessStore> OriginalCellEvaluationExecutionOwnerV1<W> {
     ) -> Result<Self, Error> {
         let (execution, saved) = validate_config(&config, &key)?;
         let journal = LearningOwnerJournalV1::create(file, witness, saved.binding_digest)?;
-        Ok(Self { journal, config, key, execution, saved })
+        Ok(Self {
+            journal,
+            config,
+            key,
+            execution,
+            saved,
+        })
     }
 
     /// Reopen the exact original signature owner. Pending never signs again;
@@ -69,7 +75,13 @@ impl<W: AnchorWitnessStore> OriginalCellEvaluationExecutionOwnerV1<W> {
     ) -> Result<Self, Error> {
         let (execution, saved) = validate_config(&config, &key)?;
         let journal = LearningOwnerJournalV1::recover(file, witness, saved.binding_digest)?;
-        Ok(Self { journal, config, key, execution, saved })
+        Ok(Self {
+            journal,
+            config,
+            key,
+            execution,
+            saved,
+        })
     }
 
     /// Read only the original signed payload, with current signature validation.
@@ -110,7 +122,12 @@ impl<W: AnchorWitnessStore> OriginalCellEvaluationExecutionOwnerV1<W> {
 
     fn decode(&self, bytes: &[u8]) -> Result<(Vec<u8>, SignedLearningEvidenceV1), Error> {
         let (payload, signed) = learning_owner_evidence::decode(bytes)?;
-        let verified = self.config.verifier.verify(LearningEvidenceRoleV1::Evaluator, &signed, &payload, now()?)?;
+        let verified = self.config.verifier.verify(
+            LearningEvidenceRoleV1::Evaluator,
+            &signed,
+            &payload,
+            now()?,
+        )?;
         if verified.principal() != &self.config.signer.principal
             || verified.controller_id() != &self.config.signer.controller_id
             || signed.evidence_id != evidence_id(self.saved.binding_digest)?
@@ -121,7 +138,9 @@ impl<W: AnchorWitnessStore> OriginalCellEvaluationExecutionOwnerV1<W> {
     }
 }
 
-impl<W: AnchorWitnessStore> ProductEvaluationExecutionAttestorV1 for OriginalCellEvaluationExecutionOwnerV1<W> {
+impl<W: AnchorWitnessStore> ProductEvaluationExecutionAttestorV1
+    for OriginalCellEvaluationExecutionOwnerV1<W>
+{
     fn attest_execution(
         &mut self,
         request: &ProductEvaluationExecutionAttestationRequestV1<'_>,
@@ -136,16 +155,29 @@ impl<W: AnchorWitnessStore> ProductEvaluationExecutionAttestorV1 for OriginalCel
 fn validate_config(
     config: &OriginalCellEvaluationSigningConfigV1,
     key: &SigningKey,
-) -> Result<(ProductEvaluationExecutionKeyV1, ProductEvaluationExecutionKeyV1), Error> {
+) -> Result<
+    (
+        ProductEvaluationExecutionKeyV1,
+        ProductEvaluationExecutionKeyV1,
+    ),
+    Error,
+> {
     if key.verifying_key().to_bytes() != config.signer.verifying_key
-        || !config.signer.roles.contains(&LearningEvidenceRoleV1::Evaluator)
+        || !config
+            .signer
+            .roles
+            .contains(&LearningEvidenceRoleV1::Evaluator)
         || !(1..=86_400).contains(&config.maximum_signature_lifetime_seconds)
         || config.plan.frozen_plan.objective_digest != config.verifier.objective_digest()
     {
         return Err(Error::Binding("original evaluator capability"));
     }
-    let execution = product_evaluation_execution_key_v1(&config.plan, config.execution_namespace, &config.signer.principal)
-        .map_err(|_| Error::Binding("original execution identity"))?;
+    let execution = product_evaluation_execution_key_v1(
+        &config.plan,
+        config.execution_namespace,
+        &config.signer.principal,
+    )
+    .map_err(|_| Error::Binding("original execution identity"))?;
     let binding = Digest32::of_parts(&[
         b"hepta.agentd.original-evaluation-signatures.v1\0",
         execution.binding_digest.as_array(),
@@ -153,12 +185,17 @@ fn validate_config(
         &config.maximum_signature_lifetime_seconds.to_be_bytes(),
     ]);
     config.verifier.require_signer_binding(
-        LearningEvidenceRoleV1::Evaluator, &config.signer, now()?,
+        LearningEvidenceRoleV1::Evaluator,
+        &config.signer,
+        now()?,
     )?;
-    Ok((execution, ProductEvaluationExecutionKeyV1 {
-        plan_id: config.plan.frozen_plan.plan_id.clone(),
-        binding_digest: binding,
-    }))
+    Ok((
+        execution,
+        ProductEvaluationExecutionKeyV1 {
+            plan_id: config.plan.frozen_plan.plan_id.clone(),
+            binding_digest: binding,
+        },
+    ))
 }
 
 fn sign_original(
@@ -168,7 +205,8 @@ fn sign_original(
     identity: Digest32,
     issued_at: u64,
 ) -> Result<SignedLearningEvidenceV1, Error> {
-    let expires_at = issued_at.checked_add(config.maximum_signature_lifetime_seconds)
+    let expires_at = issued_at
+        .checked_add(config.maximum_signature_lifetime_seconds)
         .ok_or(Error::Binding("signature deadline overflow"))?
         .min(config.signer.principal.expires_at);
     let mut signed = SignedLearningEvidenceV1 {
@@ -185,18 +223,28 @@ fn sign_original(
         signature: [0; 64],
     };
     signed.signature = key.sign(&signed.signing_bytes()).to_bytes();
-    let verified = config.verifier.verify(LearningEvidenceRoleV1::Evaluator, &signed, payload, issued_at)?;
-    if verified.principal() != &config.signer.principal || verified.controller_id() != &config.signer.controller_id {
+    let verified = config.verifier.verify(
+        LearningEvidenceRoleV1::Evaluator,
+        &signed,
+        payload,
+        issued_at,
+    )?;
+    if verified.principal() != &config.signer.principal
+        || verified.controller_id() != &config.signer.controller_id
+    {
         return Err(Error::Binding("original evaluator enrollment"));
     }
     Ok(signed)
 }
 
 fn evidence_id(identity: Digest32) -> Result<StableId, Error> {
-    StableId::new(format!("original-evaluation:{identity}")).map_err(|_| Error::Binding("evidence id"))
+    StableId::new(format!("original-evaluation:{identity}"))
+        .map_err(|_| Error::Binding("evidence id"))
 }
 
 fn now() -> Result<u64, Error> {
-    SystemTime::now().duration_since(UNIX_EPOCH).map(|duration| duration.as_secs())
+    SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map(|duration| duration.as_secs())
         .map_err(|_| Error::Binding("original owner clock"))
 }

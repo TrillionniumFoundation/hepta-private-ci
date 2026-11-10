@@ -77,10 +77,18 @@ pub struct AgentdGenerationInitialRuntimeV1 {
 
 impl<W: AnchorWitnessStore + Send + 'static> ReadyAgentdGenerationInitialV1<W> {
     #[cfg(target_os = "linux")]
-    pub fn into_circuit_feature_task(self, definition: codex_hepta_neuron::CellDefinitionV1,
-        source: crate::CircuitTaskSourceInputV1) -> Result<crate::PublishedCircuitFeatureTaskV1, AgentdError> {
-        crate::PublishedCircuitFeatureTaskV1::from_initial(self.journal, self.publication,
-            self.feature_current, definition, source)
+    pub fn into_circuit_feature_task(
+        self,
+        definition: codex_hepta_neuron::CellDefinitionV1,
+        source: crate::CircuitTaskSourceInputV1,
+    ) -> Result<crate::PublishedCircuitFeatureTaskV1, AgentdError> {
+        crate::PublishedCircuitFeatureTaskV1::from_initial(
+            self.journal,
+            self.publication,
+            self.feature_current,
+            definition,
+            source,
+        )
     }
 
     pub fn into_runtime<P, C>(

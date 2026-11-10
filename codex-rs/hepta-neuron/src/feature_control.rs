@@ -63,16 +63,28 @@ impl NeuronFeatureControlBindingV1 {
         let snapshot = &admission.snapshot;
         let r = &definition.runtime;
         let m = &admission.model_request;
-        let definition_digest = definition.semantic_digest().map_err(|_| NeuronModelError::Rejected)?;
-        if worker_generation == 0 || snapshot.definition_digest != definition_digest
-            || snapshot.scope.cell_id != definition.cell_id || snapshot.scope.principal_digest.is_zero()
-            || snapshot.source_frontier.is_zero() || snapshot.writer_epoch == 0
-            || admission.semantic_request_digest.is_zero() || admission.admitted_at_micros == 0
+        let definition_digest = definition
+            .semantic_digest()
+            .map_err(|_| NeuronModelError::Rejected)?;
+        if worker_generation == 0
+            || snapshot.definition_digest != definition_digest
+            || snapshot.scope.cell_id != definition.cell_id
+            || snapshot.scope.principal_digest.is_zero()
+            || snapshot.source_frontier.is_zero()
+            || snapshot.writer_epoch == 0
+            || admission.semantic_request_digest.is_zero()
+            || admission.admitted_at_micros == 0
             || admission.deadline_micros <= admission.admitted_at_micros
-            || m.request_id != inference_request_id(&snapshot.scope, &admission.operation_id).map_err(|_| NeuronModelError::Rejected)?
-            || m.config_id != r.config_id || m.generation != r.generation || m.model_id != r.model_id
-            || m.encoder_digest != r.encoder_digest || m.head_digest != r.head_digest
-            || m.weights_digest != r.weights_digest || m.feature_vector_q24.len() != r.input_feature_dimension
+            || m.request_id
+                != inference_request_id(&snapshot.scope, &admission.operation_id)
+                    .map_err(|_| NeuronModelError::Rejected)?
+            || m.config_id != r.config_id
+            || m.generation != r.generation
+            || m.model_id != r.model_id
+            || m.encoder_digest != r.encoder_digest
+            || m.head_digest != r.head_digest
+            || m.weights_digest != r.weights_digest
+            || m.feature_vector_q24.len() != r.input_feature_dimension
             || m.expected_output_width != r.state_width
         {
             return Err(NeuronModelError::Rejected);
@@ -84,11 +96,15 @@ impl NeuronFeatureControlBindingV1 {
             snapshot.source_frontier.as_array(),
             &snapshot.writer_epoch.to_le_bytes(),
             &snapshot.revision.to_le_bytes(),
-            snapshot.checkpoint.as_ref().map_or(Digest32::ZERO, SparseCheckpoint::digest).as_array(),
+            snapshot
+                .checkpoint
+                .as_ref()
+                .map_or(Digest32::ZERO, SparseCheckpoint::digest)
+                .as_array(),
         ]);
         let expected = feature_request(m);
-        let request_digest = neuron_feature_request_digest_v1(&expected)
-            .map_err(|_| NeuronModelError::Rejected)?;
+        let request_digest =
+            neuron_feature_request_digest_v1(&expected).map_err(|_| NeuronModelError::Rejected)?;
         let payload = codec::payload(
             &expected,
             admission.semantic_request_digest,
@@ -116,7 +132,8 @@ impl NeuronFeatureControlBindingV1 {
                 request_digest: request_digest.into_array(),
                 predecessor_digest: predecessor_digest.into_array(),
                 payload_digest: Digest32::of_bytes(&payload).into_array(),
-                payload_bytes: u32::try_from(payload.len()).map_err(|_| NeuronModelError::Rejected)?,
+                payload_bytes: u32::try_from(payload.len())
+                    .map_err(|_| NeuronModelError::Rejected)?,
                 result_limit_bytes: codec::MAX_RESULT_BYTES,
                 deadline_micros: admission.deadline_micros,
             },
@@ -149,26 +166,51 @@ impl<W: NeuronFeatureWorkerV1> ControlledNeuronFeaturePortV1<W> {
         clock: Arc<dyn Fn() -> u64 + Send + Sync>,
     ) -> Result<Self, NeuronModelError> {
         let r = &definition.runtime;
-        definition.semantic_digest().map_err(|_| NeuronModelError::Rejected)?;
-        if worker_generation == 0 || worker.runtime_tuple() != &(NeuronModelRuntimeTupleV1 {
-            model_id: r.model_id.clone(), model_manifest_digest: r.model_manifest_digest,
-            weights_digest: r.weights_digest, tokenizer_digest: r.tokenizer_digest,
-            preprocessor_digest: r.preprocessor_digest, quantization_digest: r.quantization_digest,
-            runtime_digest: r.runtime_digest, device_digest: r.device_digest,
-        }) {
+        definition
+            .semantic_digest()
+            .map_err(|_| NeuronModelError::Rejected)?;
+        if worker_generation == 0
+            || worker.runtime_tuple()
+                != &(NeuronModelRuntimeTupleV1 {
+                    model_id: r.model_id.clone(),
+                    model_manifest_digest: r.model_manifest_digest,
+                    weights_digest: r.weights_digest,
+                    tokenizer_digest: r.tokenizer_digest,
+                    preprocessor_digest: r.preprocessor_digest,
+                    quantization_digest: r.quantization_digest,
+                    runtime_digest: r.runtime_digest,
+                    device_digest: r.device_digest,
+                })
+        {
             return Err(NeuronModelError::Rejected);
         }
-        owner.generation_has_unresolved().map_err(codec::control_error)?;
-        Ok(Self { owner, definition, worker_generation, binding: None, worker, clock })
+        owner
+            .generation_has_unresolved()
+            .map_err(codec::control_error)?;
+        Ok(Self {
+            owner,
+            definition,
+            worker_generation,
+            binding: None,
+            worker,
+            clock,
+        })
     }
 
     fn bind(&mut self, admission: &CellInferenceAdmissionV1) -> Result<(), NeuronModelError> {
-        let binding = NeuronFeatureControlBindingV1::from_admission(&self.definition, admission, self.worker_generation)?;
+        let binding = NeuronFeatureControlBindingV1::from_admission(
+            &self.definition,
+            admission,
+            self.worker_generation,
+        )?;
         self.binding = Some(binding);
         Ok(())
     }
 
-    fn require_request(&self, request: &NeuronFeatureRequestV1) -> Result<&NeuronFeatureControlBindingV1, NeuronModelError> {
+    fn require_request(
+        &self,
+        request: &NeuronFeatureRequestV1,
+    ) -> Result<&NeuronFeatureControlBindingV1, NeuronModelError> {
         let binding = self.binding.as_ref().ok_or(NeuronModelError::Rejected)?;
         if request != &binding.expected {
             return Err(NeuronModelError::Rejected);
@@ -178,7 +220,8 @@ impl<W: NeuronFeatureWorkerV1> ControlledNeuronFeaturePortV1<W> {
 
     fn read_original(&self) -> Result<Option<NeuronFeatureReceiptV1>, NeuronModelError> {
         let binding = self.binding.as_ref().ok_or(NeuronModelError::Rejected)?;
-        self.owner.generation_record(&binding.journal)
+        self.owner
+            .generation_record(&binding.journal)
             .map_err(codec::control_error)?
             .and_then(|record| record.result.as_ref())
             .map(|result| codec::decode(&binding.expected, &binding.runtime, &result.bytes))
@@ -187,17 +230,32 @@ impl<W: NeuronFeatureWorkerV1> ControlledNeuronFeaturePortV1<W> {
 }
 
 impl<W: NeuronFeatureWorkerV1> NeuronInferenceControlPort for ControlledNeuronFeaturePortV1<W> {
-    fn bind_cell_inference(&mut self, admission: &CellInferenceAdmissionV1) -> Result<(), NeuronModelError> {
+    fn bind_cell_inference(
+        &mut self,
+        admission: &CellInferenceAdmissionV1,
+    ) -> Result<(), NeuronModelError> {
         self.bind(admission)
     }
 
-    fn execute_feature(&mut self, request: &NeuronFeatureRequestV1) -> Result<NeuronFeatureReceiptV1, NeuronModelError> {
+    fn execute_feature(
+        &mut self,
+        request: &NeuronFeatureRequestV1,
+    ) -> Result<NeuronFeatureReceiptV1, NeuronModelError> {
         let binding = self.require_request(request)?.clone();
         let started = Instant::now();
-        if self.owner.generation_record(&binding.journal).map_err(codec::control_error)?.is_some() {
+        if self
+            .owner
+            .generation_record(&binding.journal)
+            .map_err(codec::control_error)?
+            .is_some()
+        {
             return self.read_original()?.ok_or(NeuronModelError::Indeterminate);
         }
-        if self.owner.generation_has_unresolved().map_err(codec::control_error)? {
+        if self
+            .owner
+            .generation_has_unresolved()
+            .map_err(codec::control_error)?
+        {
             return Err(NeuronModelError::Indeterminate);
         }
         let admitted = (self.clock)();
@@ -205,7 +263,9 @@ impl<W: NeuronFeatureWorkerV1> NeuronInferenceControlPort for ControlledNeuronFe
         if admitted < binding.not_before_micros || admitted >= deadline {
             return Err(NeuronModelError::Rejected);
         }
-        let (_, mut token) = self.owner.admit_generation(admitted, binding.journal.clone(), &binding.payload)
+        let (_, mut token) = self
+            .owner
+            .admit_generation(admitted, binding.journal.clone(), &binding.payload)
             .map_err(codec::control_error)?;
         if token.is_none() {
             return self.read_original()?.ok_or(NeuronModelError::Indeterminate);
@@ -214,20 +274,26 @@ impl<W: NeuronFeatureWorkerV1> NeuronInferenceControlPort for ControlledNeuronFe
         if dispatch < admitted || dispatch >= deadline {
             return Err(NeuronModelError::Indeterminate);
         }
-        self.owner.dispatch_generation(dispatch, &mut token).map_err(codec::control_error)?;
+        self.owner
+            .dispatch_generation(dispatch, &mut token)
+            .map_err(codec::control_error)?;
         // Dispatch fsync can consume the remaining lease. Recheck at the actual
         // native entry, with no durable write between this check and execution.
         let entered = (self.clock)();
         if entered < dispatch || entered >= deadline {
             return Err(NeuronModelError::Indeterminate);
         }
-        let queue = u64::try_from(started.elapsed().as_micros()).map_err(|_| NeuronModelError::Indeterminate)?;
+        let queue = u64::try_from(started.elapsed().as_micros())
+            .map_err(|_| NeuronModelError::Indeterminate)?;
         let mut observation = self.worker.execute(request)?;
         let completed = (self.clock)();
-        if completed < entered || observation.status == NeuronFeatureTerminalStatusV1::Indeterminate {
+        if completed < entered || observation.status == NeuronFeatureTerminalStatusV1::Indeterminate
+        {
             return Err(NeuronModelError::Indeterminate);
         }
-        observation.queue_age_micros = observation.queue_age_micros.checked_add(queue)
+        observation.queue_age_micros = observation
+            .queue_age_micros
+            .checked_add(queue)
             .ok_or(NeuronModelError::Indeterminate)?;
         if completed >= deadline {
             observation.status = NeuronFeatureTerminalStatusV1::Cancelled;
@@ -237,17 +303,25 @@ impl<W: NeuronFeatureWorkerV1> NeuronInferenceControlPort for ControlledNeuronFe
         let receipt = build_neuron_feature_receipt_v1(request, binding.runtime, observation)
             .map_err(|_| NeuronModelError::Indeterminate)?;
         let bytes = codec::encode(&receipt)?;
-        self.owner.settle_generation(&binding.journal, bytes).map_err(codec::control_error)?;
+        self.owner
+            .settle_generation(&binding.journal, bytes)
+            .map_err(codec::control_error)?;
         Ok(receipt)
     }
 }
 
 impl<W: NeuronFeatureWorkerV1> CellInferenceReadbackPortV1 for ControlledNeuronFeaturePortV1<W> {
-    fn bind_cell_readback(&mut self, admission: &CellInferenceAdmissionV1) -> Result<(), NeuronModelError> {
+    fn bind_cell_readback(
+        &mut self,
+        admission: &CellInferenceAdmissionV1,
+    ) -> Result<(), NeuronModelError> {
         self.bind(admission)
     }
 
-    fn read_feature(&mut self, request: &NeuronFeatureRequestV1) -> Result<Option<NeuronFeatureReceiptV1>, NeuronModelError> {
+    fn read_feature(
+        &mut self,
+        request: &NeuronFeatureRequestV1,
+    ) -> Result<Option<NeuronFeatureReceiptV1>, NeuronModelError> {
         self.require_request(request)?;
         self.read_original()
     }

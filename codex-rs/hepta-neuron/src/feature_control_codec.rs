@@ -19,13 +19,22 @@ pub(super) fn payload(
 ) -> Result<Vec<u8>, NeuronModelError> {
     serde_json::to_vec(&(
         "hepta.neuron.feature-control-input.v1",
-        semantic_request.as_array(), scope.as_array(), predecessor.as_array(),
-        request.request_id.as_str(), request.generation.get(), request.model_id.as_str(),
-        request.encoder_digest.as_array(), request.head_digest.as_array(),
-        request.weights_digest.as_array(), request.input_digest.as_array(),
-        &request.feature_vector_q24, request.expected_output_width,
-        admitted_at_micros, deadline_micros,
-    )).map_err(|_| NeuronModelError::Rejected)
+        semantic_request.as_array(),
+        scope.as_array(),
+        predecessor.as_array(),
+        request.request_id.as_str(),
+        request.generation.get(),
+        request.model_id.as_str(),
+        request.encoder_digest.as_array(),
+        request.head_digest.as_array(),
+        request.weights_digest.as_array(),
+        request.input_digest.as_array(),
+        &request.feature_vector_q24,
+        request.expected_output_width,
+        admitted_at_micros,
+        deadline_micros,
+    ))
+    .map_err(|_| NeuronModelError::Rejected)
 }
 
 #[derive(Serialize, Deserialize)]
@@ -48,7 +57,9 @@ pub(super) fn encode(receipt: &NeuronFeatureReceiptV1) -> Result<Vec<u8>, Neuron
         NeuronFeatureTerminalStatusV1::Succeeded => 1,
         NeuronFeatureTerminalStatusV1::Failed => 2,
         NeuronFeatureTerminalStatusV1::Cancelled => 3,
-        NeuronFeatureTerminalStatusV1::Indeterminate => return Err(NeuronModelError::Indeterminate),
+        NeuronFeatureTerminalStatusV1::Indeterminate => {
+            return Err(NeuronModelError::Indeterminate);
+        }
     };
     let bytes = serde_json::to_vec(&Saved {
         schema_version: 1,
@@ -61,7 +72,8 @@ pub(super) fn encode(receipt: &NeuronFeatureReceiptV1) -> Result<Vec<u8>, Neuron
         queue_age_micros: receipt.queue_age_micros,
         latency_micros: receipt.latency_micros,
         status,
-    }).map_err(|_| NeuronModelError::Indeterminate)?;
+    })
+    .map_err(|_| NeuronModelError::Indeterminate)?;
     if bytes.len() > MAX_RESULT_BYTES as usize {
         return Err(NeuronModelError::Indeterminate);
     }
@@ -76,8 +88,10 @@ pub(super) fn decode(
     if bytes.len() > MAX_RESULT_BYTES as usize {
         return Err(NeuronModelError::Indeterminate);
     }
-    let saved: Saved = serde_json::from_slice(bytes).map_err(|_| NeuronModelError::Indeterminate)?;
-    let expected = neuron_feature_request_digest_v1(request).map_err(|_| NeuronModelError::Indeterminate)?;
+    let saved: Saved =
+        serde_json::from_slice(bytes).map_err(|_| NeuronModelError::Indeterminate)?;
+    let expected =
+        neuron_feature_request_digest_v1(request).map_err(|_| NeuronModelError::Indeterminate)?;
     if saved.schema_version != 1 || saved.request_digest != expected.into_array() {
         return Err(NeuronModelError::Indeterminate);
     }
@@ -87,17 +101,22 @@ pub(super) fn decode(
         3 => NeuronFeatureTerminalStatusV1::Cancelled,
         _ => return Err(NeuronModelError::Indeterminate),
     };
-    let receipt = build_neuron_feature_receipt_v1(request, runtime.clone(), NeuronFeatureObservationV1 {
-        encoder_digest: request.encoder_digest,
-        head_digest: request.head_digest,
-        drive_q24: saved.drive_q24,
-        prediction_q24: saved.prediction_q24,
-        observed_memory_bytes: saved.observed_memory_bytes,
-        transient_allocation_bytes: saved.transient_allocation_bytes,
-        queue_age_micros: saved.queue_age_micros,
-        latency_micros: saved.latency_micros,
-        status,
-    }).map_err(|_| NeuronModelError::Indeterminate)?;
+    let receipt = build_neuron_feature_receipt_v1(
+        request,
+        runtime.clone(),
+        NeuronFeatureObservationV1 {
+            encoder_digest: request.encoder_digest,
+            head_digest: request.head_digest,
+            drive_q24: saved.drive_q24,
+            prediction_q24: saved.prediction_q24,
+            observed_memory_bytes: saved.observed_memory_bytes,
+            transient_allocation_bytes: saved.transient_allocation_bytes,
+            queue_age_micros: saved.queue_age_micros,
+            latency_micros: saved.latency_micros,
+            status,
+        },
+    )
+    .map_err(|_| NeuronModelError::Indeterminate)?;
     if receipt.receipt_digest.into_array() != saved.receipt_digest || encode(&receipt)? != bytes {
         return Err(NeuronModelError::Indeterminate);
     }

@@ -25,8 +25,8 @@ use crate::CircuitTaskRuntimeBootstrapV1;
 use crate::CircuitTaskSourceReadbackV1;
 use crate::DurableCircuitTaskSourceV1;
 use crate::LoadedCellQ24ModelV1;
-use crate::PublishedCircuitFeatureTaskV1;
 use crate::PublishedCircuitCellOwnerV1;
+use crate::PublishedCircuitFeatureTaskV1;
 use crate::circuit_task_channel_v1;
 
 /// Source lifecycle is explicit. Recovery never replaces an acknowledged
@@ -78,7 +78,9 @@ pub struct AgentdQ24CircuitTaskRuntimeV1<SW: AnchorWitnessStore, CW: AnchorWitne
     pub cell: PublishedCircuitCellOwnerV1<CW>,
 }
 
-impl<SW: AnchorWitnessStore + Send + 'static, CW: AnchorWitnessStore + Send + 'static> CircuitQ24TaskRuntimeV1<SW, CW> {
+impl<SW: AnchorWitnessStore + Send + 'static, CW: AnchorWitnessStore + Send + 'static>
+    CircuitQ24TaskRuntimeV1<SW, CW>
+{
     /// Retain the original source owner for learning/readback. Publication still
     /// requires the original private CircuitTaskReceipt from the ordinary driver.
     pub fn source(&self) -> Arc<CircuitTaskSourceReadbackV1<SW>> {
@@ -112,18 +114,27 @@ where
         || !(1..=64).contains(&profile.queue_capacity)
         || !(3..=16).contains(&profile.maximum_cell_records)
     {
-        return Err(AgentdError::Invalid("Q24 task profile has an invalid original owner or capacity".into()));
+        return Err(AgentdError::Invalid(
+            "Q24 task profile has an invalid original owner or capacity".into(),
+        ));
     }
     let published: &PublishedCircuitFeatureTaskV1 = &profile.published_task;
     published.require_bundle(&profile.bundle)?;
     let definition = published.definition().clone();
     let source_input = published.source().clone();
-    let program = profile.circuit.programs.iter()
+    let program = profile
+        .circuit
+        .programs
+        .iter()
         .find(|program| program.program_id == profile.circuit.entry_program)
-        .ok_or_else(|| AgentdError::Invalid("Q24 task circuit has no original root program".into()))?;
+        .ok_or_else(|| {
+            AgentdError::Invalid("Q24 task circuit has no original root program".into())
+        })?;
     let binding = CircuitCellBindingV1 {
-        program_id: program.program_id.clone(), node_id: program.entry_node.clone(),
-        cell: definition.clone(), routes: profile.routes,
+        program_id: program.program_id.clone(),
+        node_id: program.entry_node.clone(),
+        cell: definition.clone(),
+        routes: profile.routes,
     };
     let registry = CircuitCellRegistryV1::new(profile.circuit, vec![binding])
         .map_err(|error| AgentdError::Invalid(error.to_string()))?;
@@ -132,26 +143,51 @@ where
     let encoder = worker.input_encoder();
     let source = match profile.source_mode {
         CircuitQ24TaskOpenModeV1::Create => DurableCircuitTaskSourceV1::create(
-            profile.files.source_journal, profile.files.source_witness, identity,
-            &profile.fence, &registry, vec![source_input],
+            profile.files.source_journal,
+            profile.files.source_witness,
+            identity,
+            &profile.fence,
+            &registry,
+            vec![source_input],
         ),
         CircuitQ24TaskOpenModeV1::Recover => DurableCircuitTaskSourceV1::recover(
-            profile.files.source_journal, profile.files.source_witness, identity,
-            &profile.fence, &registry, vec![source_input],
+            profile.files.source_journal,
+            profile.files.source_witness,
+            identity,
+            &profile.fence,
+            &registry,
+            vec![source_input],
         ),
-    }.map_err(|error| AgentdError::Invalid(error.to_string()))?;
+    }
+    .map_err(|error| AgentdError::Invalid(error.to_string()))?;
     let cell: PublishedCircuitCellOwnerV1<CW> = published.open_cell(
-        profile.files.cell_journal, profile.files.cell_witness, profile.maximum_cell_records,
+        profile.files.cell_journal,
+        profile.files.cell_witness,
+        profile.maximum_cell_records,
     )?;
     let inference_clock = Arc::clone(&profile.clock);
-    let control = published.control(
-        profile.files.inference_control, profile.worker_generation, worker,
-        Arc::new(move || inference_clock().cell_micros),
-    ).map_err(|error| AgentdError::GenerationFenced(error.to_string()))?;
+    let control = published
+        .control(
+            profile.files.inference_control,
+            profile.worker_generation,
+            worker,
+            Arc::new(move || inference_clock().cell_micros),
+        )
+        .map_err(|error| AgentdError::GenerationFenced(error.to_string()))?;
     let cells = AgentdCircuitCellOwnerV1::new(registry, cell.writer(), control, encoder);
     let (_, bootstrap) = circuit_task_channel_v1(
-        identity, profile.fence, cells, source.clone(), move || (profile.clock)(), profile.queue_capacity,
+        identity,
+        profile.fence,
+        cells,
+        source.clone(),
+        move || (profile.clock)(),
+        profile.queue_capacity,
     )?;
     let readback = Arc::new(source.readback());
-    Ok(CircuitQ24TaskRuntimeV1 { bootstrap, invocation: Arc::new(source), source: readback, cell })
+    Ok(CircuitQ24TaskRuntimeV1 {
+        bootstrap,
+        invocation: Arc::new(source),
+        source: readback,
+        cell,
+    })
 }

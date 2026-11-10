@@ -76,7 +76,10 @@ fn execute<W: AnchorWitnessStore>(
 ) -> Result<CellEvaluationReceiptV1, CellEvaluationErrorV1> {
     fixture.runner.evaluate_or_readback(
         plan,
-        CellEvaluationJournalsV1 { candidate: &fixture.candidate, fixed_expert: &fixture.fixed },
+        CellEvaluationJournalsV1 {
+            candidate: &fixture.candidate,
+            fixed_expert: &fixture.fixed,
+        },
         &ProductEvaluationExecutionRequestV1 {
             plan: plan.product_plan(),
             candidate_plan: &fixture.candidate_temporal,
@@ -98,16 +101,32 @@ fn original_evaluator_signs_actual_execution_once_and_reopens_exact_bytes() {
     let config = signing_config(&plan);
     let path = fixture.directory.path().to_path_buf();
     let mut signer = checked(OriginalCellEvaluationExecutionOwnerV1::create(
-        file(&path.join("original-evaluator")), witness(&path), config.clone(), SigningKey::from_bytes(&[78; 32]),
+        file(&path.join("original-evaluator")),
+        witness(&path),
+        config.clone(),
+        SigningKey::from_bytes(&[78; 32]),
     ));
     let empty = checked(std::fs::read(path.join("original-evaluator")));
     let mut executions = checked(LockedFileProductEvaluationExecutionStoreV1::create(
-        file(&path.join("executions")), digest("execution-file"),
+        file(&path.join("executions")),
+        digest("execution-file"),
     ));
-    let first = checked(execute(&mut fixture, &plan, &config, &mut executions, &mut signer));
+    let first = checked(execute(
+        &mut fixture,
+        &plan,
+        &config,
+        &mut executions,
+        &mut signer,
+    ));
     let original = checked(signer.readback());
     assert_eq!(
-        checked(config.verifier.verify(LearningEvidenceRoleV1::Evaluator, &original.1, &original.0, clock())).principal(),
+        checked(config.verifier.verify(
+            LearningEvidenceRoleV1::Evaluator,
+            &original.1,
+            &original.0,
+            clock()
+        ))
+        .principal(),
         &config.signer.principal,
     );
     let bytes = checked(std::fs::read(path.join("original-evaluator")));
@@ -117,31 +136,72 @@ fn original_evaluator_signs_actual_execution_once_and_reopens_exact_bytes() {
     drop(signer);
     drop(executions);
     let mut signer = checked(OriginalCellEvaluationExecutionOwnerV1::recover(
-        file(&path.join("original-evaluator")), witness(&path), config.clone(), SigningKey::from_bytes(&[78; 32]),
+        file(&path.join("original-evaluator")),
+        witness(&path),
+        config.clone(),
+        SigningKey::from_bytes(&[78; 32]),
     ));
     let mut executions = checked(LockedFileProductEvaluationExecutionStoreV1::recover(
-        file(&path.join("executions")), digest("execution-file"), execution_anchor,
+        file(&path.join("executions")),
+        digest("execution-file"),
+        execution_anchor,
     ));
     assert_eq!(checked(signer.readback()), original);
-    assert_eq!(checked(execute(&mut fixture, &plan, &config, &mut executions, &mut signer)), first);
-    assert_eq!((fixture.provider.calls, fixture.provider.releases), original_calls);
-    assert_eq!(checked(std::fs::read(path.join("original-evaluator"))), bytes);
+    assert_eq!(
+        checked(execute(
+            &mut fixture,
+            &plan,
+            &config,
+            &mut executions,
+            &mut signer
+        )),
+        first
+    );
+    assert_eq!(
+        (fixture.provider.calls, fixture.provider.releases),
+        original_calls
+    );
+    assert_eq!(
+        checked(std::fs::read(path.join("original-evaluator"))),
+        bytes
+    );
     drop(signer);
     checked(std::fs::write(path.join("original-evaluator"), empty));
-    assert!(OriginalCellEvaluationExecutionOwnerV1::recover(
-        file(&path.join("original-evaluator")), witness(&path), config, SigningKey::from_bytes(&[78; 32]),
-    ).is_err());
+    assert!(
+        OriginalCellEvaluationExecutionOwnerV1::recover(
+            file(&path.join("original-evaluator")),
+            witness(&path),
+            config,
+            SigningKey::from_bytes(&[78; 32]),
+        )
+        .is_err()
+    );
 }
 
 #[derive(Clone, Copy)]
-enum Fault { BeforeWrite, AfterWrite }
+enum Fault {
+    BeforeWrite,
+    AfterWrite,
+}
 
-struct LostAckWitness { inner: FileAnchorWitnessStore, sequence: u64, fault: Fault }
+struct LostAckWitness {
+    inner: FileAnchorWitnessStore,
+    sequence: u64,
+    fault: Fault,
+}
 impl AnchorWitnessStore for LostAckWitness {
-    fn current(&self) -> Result<Option<JournalAnchor>, WitnessStoreError> { self.inner.current() }
-    fn compare_and_swap(&mut self, expected: Option<JournalAnchor>, next: JournalAnchor) -> Result<(), WitnessStoreError> {
+    fn current(&self) -> Result<Option<JournalAnchor>, WitnessStoreError> {
+        self.inner.current()
+    }
+    fn compare_and_swap(
+        &mut self,
+        expected: Option<JournalAnchor>,
+        next: JournalAnchor,
+    ) -> Result<(), WitnessStoreError> {
         if next.sequence == self.sequence {
-            if matches!(self.fault, Fault::AfterWrite) { self.inner.compare_and_swap(expected, next)?; }
+            if matches!(self.fault, Fault::AfterWrite) {
+                self.inner.compare_and_swap(expected, next)?;
+            }
             return Err(WitnessStoreError::Indeterminate);
         }
         self.inner.compare_and_swap(expected, next)
@@ -158,20 +218,35 @@ fn original_evaluator_uncertain_claim_never_resigns_and_complete_ack_reads_origi
             let path = fixture.directory.path().to_path_buf();
             let mut signer = checked(OriginalCellEvaluationExecutionOwnerV1::create(
                 file(&path.join("original-evaluator")),
-                LostAckWitness { inner: witness(&path), sequence, fault },
-                config.clone(), SigningKey::from_bytes(&[78; 32]),
+                LostAckWitness {
+                    inner: witness(&path),
+                    sequence,
+                    fault,
+                },
+                config.clone(),
+                SigningKey::from_bytes(&[78; 32]),
             ));
             let mut executions = checked(LockedFileProductEvaluationExecutionStoreV1::create(
-                file(&path.join("executions")), digest("execution-file"),
+                file(&path.join("executions")),
+                digest("execution-file"),
             ));
             assert!(execute(&mut fixture, &plan, &config, &mut executions, &mut signer).is_err());
-            assert!(matches!(signer.readback(), Err(LearningOriginalOwnerErrorV1::CommitUncertain)));
+            assert!(matches!(
+                signer.readback(),
+                Err(LearningOriginalOwnerErrorV1::CommitUncertain)
+            ));
             drop(signer);
             let mut reopened = checked(OriginalCellEvaluationExecutionOwnerV1::recover(
-                file(&path.join("original-evaluator")), witness(&path), config.clone(), SigningKey::from_bytes(&[78; 32]),
+                file(&path.join("original-evaluator")),
+                witness(&path),
+                config.clone(),
+                SigningKey::from_bytes(&[78; 32]),
             ));
             if sequence == 2 {
-                assert!(matches!(reopened.readback(), Err(LearningOriginalOwnerErrorV1::Pending)));
+                assert!(matches!(
+                    reopened.readback(),
+                    Err(LearningOriginalOwnerErrorV1::Pending)
+                ));
             } else {
                 let original = checked(reopened.readback());
                 assert_eq!(checked(reopened.readback()), original);
@@ -180,9 +255,14 @@ fn original_evaluator_uncertain_claim_never_resigns_and_complete_ack_reads_origi
             let calls = (fixture.provider.calls, fixture.provider.releases);
             assert!(matches!(
                 execute(&mut fixture, &plan, &config, &mut executions, &mut reopened),
-                Err(CellEvaluationErrorV1::Execution(ProductEvaluationExecutionErrorV1::Pending)),
+                Err(CellEvaluationErrorV1::Execution(
+                    ProductEvaluationExecutionErrorV1::Pending
+                )),
             ));
-            assert_eq!(checked(std::fs::read(path.join("original-evaluator"))), before);
+            assert_eq!(
+                checked(std::fs::read(path.join("original-evaluator"))),
+                before
+            );
             assert_eq!((fixture.provider.calls, fixture.provider.releases), calls);
         }
     }
@@ -198,22 +278,46 @@ fn original_evaluator_rejects_substituted_key_controller_plan_and_namespace() {
         let mut changed = config.clone();
         let key = match changed_field {
             0 => SigningKey::from_bytes(&[79; 32]),
-            1 => { changed.signer.controller_id = id("different-controller"); SigningKey::from_bytes(&[78; 32]) },
-            2 => { changed.plan.frozen_plan.objective_digest = digest("different-objective"); SigningKey::from_bytes(&[78; 32]) },
+            1 => {
+                changed.signer.controller_id = id("different-controller");
+                SigningKey::from_bytes(&[78; 32])
+            }
+            2 => {
+                changed.plan.frozen_plan.objective_digest = digest("different-objective");
+                SigningKey::from_bytes(&[78; 32])
+            }
             _ => unreachable!(),
         };
-        assert!(OriginalCellEvaluationExecutionOwnerV1::create(
-            file(&path.join("original-evaluator")), witness(path), changed, key,
-        ).is_err());
-        assert_eq!(checked(file(&path.join("original-evaluator")).metadata()).len(), 0);
+        assert!(
+            OriginalCellEvaluationExecutionOwnerV1::create(
+                file(&path.join("original-evaluator")),
+                witness(path),
+                changed,
+                key,
+            )
+            .is_err()
+        );
+        assert_eq!(
+            checked(file(&path.join("original-evaluator")).metadata()).len(),
+            0
+        );
     }
     let owner = checked(OriginalCellEvaluationExecutionOwnerV1::create(
-        file(&path.join("original-evaluator")), witness(path), config.clone(), SigningKey::from_bytes(&[78; 32]),
+        file(&path.join("original-evaluator")),
+        witness(path),
+        config.clone(),
+        SigningKey::from_bytes(&[78; 32]),
     ));
     drop(owner);
     let mut changed = config;
     changed.execution_namespace = digest("different-original-namespace");
-    assert!(OriginalCellEvaluationExecutionOwnerV1::recover(
-        file(&path.join("original-evaluator")), witness(path), changed, SigningKey::from_bytes(&[78; 32]),
-    ).is_err());
+    assert!(
+        OriginalCellEvaluationExecutionOwnerV1::recover(
+            file(&path.join("original-evaluator")),
+            witness(path),
+            changed,
+            SigningKey::from_bytes(&[78; 32]),
+        )
+        .is_err()
+    );
 }

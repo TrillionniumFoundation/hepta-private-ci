@@ -1,11 +1,11 @@
 //! Final live clock check after durable Cell admission and before model contact.
 //! Refusal leaves the original pending record intact; it never permits redispatch.
 
+use codex_hepta_neuron::CellInferenceAdmissionV1;
 use codex_hepta_neuron::NeuronFeatureReceiptV1;
 use codex_hepta_neuron::NeuronFeatureRequestV1;
 use codex_hepta_neuron::NeuronInferenceControlPort;
 use codex_hepta_neuron::NeuronModelError;
-use codex_hepta_neuron::CellInferenceAdmissionV1;
 
 use crate::CircuitCellTimeV1;
 
@@ -46,7 +46,10 @@ where
     P: NeuronInferenceControlPort,
     C: FnMut() -> CircuitCellTimeV1,
 {
-    fn bind_cell_inference(&mut self, admission: &CellInferenceAdmissionV1) -> Result<(), NeuronModelError> {
+    fn bind_cell_inference(
+        &mut self,
+        admission: &CellInferenceAdmissionV1,
+    ) -> Result<(), NeuronModelError> {
         self.control.bind_cell_inference(admission)
     }
 

@@ -85,9 +85,12 @@ pub fn product_evaluation_execution_key_v1(
 ) -> Result<ProductEvaluationExecutionKeyV1, ProductEvaluationError> {
     plan.validate_integrity()?;
     if namespace.is_zero() {
-        return Err(ProductEvaluationError::Binding("original execution namespace"));
+        return Err(ProductEvaluationError::Binding(
+            "original execution namespace",
+        ));
     }
-    evaluator.validate(evaluator.authenticated_at)
+    evaluator
+        .validate(evaluator.authenticated_at)
         .map_err(|_| ProductEvaluationError::Binding("original execution evaluator"))?;
     let mut binding = b"hepta.intelligence-eval.execution-key.v1".to_vec();
     binding.extend_from_slice(namespace.as_array());

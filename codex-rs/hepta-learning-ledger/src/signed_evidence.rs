@@ -251,7 +251,9 @@ impl LearningEvidenceVerifierV1 {
         supplied: &TrustedLearningSignerV1,
         now: u64,
     ) -> Result<(), SignedEvidenceError> {
-        let enrolled = self.signers.get(&supplied.principal.principal_id)
+        let enrolled = self
+            .signers
+            .get(&supplied.principal.principal_id)
             .ok_or(SignedEvidenceError::UnknownSigner)?;
         let mut canonical = supplied.clone();
         canonical.roles.sort();

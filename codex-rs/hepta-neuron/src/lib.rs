@@ -15,9 +15,9 @@ use codex_hepta_types::FixedQ32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
+pub use codex_hepta_infer_core::NeuronFeatureObservationV1;
 pub use codex_hepta_infer_core::NeuronFeatureReceiptV1;
 pub use codex_hepta_infer_core::NeuronFeatureRequestV1;
-pub use codex_hepta_infer_core::NeuronFeatureObservationV1;
 pub use codex_hepta_infer_core::NeuronFeatureTerminalStatusV1;
 pub use codex_hepta_infer_core::NeuronModelRuntimeTupleV1;
 pub use codex_hepta_infer_core::durable_control::DurableInferenceControl;
@@ -77,8 +77,6 @@ mod sparse;
 mod witness;
 
 pub use cell::commit_cell_step;
-pub use feature_control::ControlledNeuronFeaturePortV1;
-pub use feature_control::NeuronFeatureWorkerV1;
 pub use cell::decide_cell;
 pub use cell::enter_cell_step;
 pub use cell::prepare_cell_step;
@@ -137,8 +135,8 @@ pub use cell_joint_protocol::JointGenerationModalityV1;
 #[cfg(target_os = "linux")]
 pub use cell_joint_protocol::JointGenerationSamplerV1;
 pub use cell_journal::CellJournalPartitionV1;
-pub use cell_journal::CellOwnerJournalV1;
 pub use cell_journal::CellOwnerJournalReadbackV1;
+pub use cell_journal::CellOwnerJournalV1;
 pub use cell_owner::CellPartitionOwnerV1;
 pub use cell_task_cost::CellCostAccountingV2;
 pub use cell_task_cost::CellCostEntryV2;
@@ -194,6 +192,8 @@ pub use deletion::DeletionRebuildError;
 pub use deletion::NeuronDeletionRebuildPlanV1;
 pub use deletion::NeuronDeletionRebuildReceiptV1;
 pub use deletion::validate_deletion_rebuild;
+pub use feature_control::ControlledNeuronFeaturePortV1;
+pub use feature_control::NeuronFeatureWorkerV1;
 pub use inference_control::InferenceControlModelPort;
 pub use inference_control::NeuronInferenceControlPort;
 pub use journal::JournalAnchor;

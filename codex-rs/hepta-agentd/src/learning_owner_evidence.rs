@@ -26,8 +26,14 @@ struct SavedEvidence {
     signature: Vec<u8>,
 }
 
-pub(crate) fn encode(payload: &[u8], evidence: &SignedLearningEvidenceV1) -> Result<Vec<u8>, Error> {
-    if payload.len() > 16_384 || evidence.evidence_id.as_str().len() > 128 || evidence.principal_id.as_str().len() > 128 {
+pub(crate) fn encode(
+    payload: &[u8],
+    evidence: &SignedLearningEvidenceV1,
+) -> Result<Vec<u8>, Error> {
+    if payload.len() > 16_384
+        || evidence.evidence_id.as_str().len() > 128
+        || evidence.principal_id.as_str().len() > 128
+    {
         return Err(Error::Binding("bounded original attestation"));
     }
     let saved = SavedEvidence {

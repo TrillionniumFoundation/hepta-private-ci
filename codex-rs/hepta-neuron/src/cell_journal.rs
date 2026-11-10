@@ -15,9 +15,9 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
 use crate::AnchorWitnessStore;
-use crate::JournalAnchor;
 use crate::CellGenerationCurrentV1;
 use crate::CellGenerationOwnerBindingV1;
+use crate::JournalAnchor;
 use crate::cell_journal_codec::MAX_FRAME_BYTES;
 use crate::cell_journal_codec::apply_record;
 use crate::cell_journal_codec::encode_admission;
@@ -38,7 +38,10 @@ mod readback;
 pub use readback::CellOwnerJournalReadbackV1;
 
 #[derive(Clone, Copy, Eq, PartialEq)]
-enum OpenMode { RepairOriginal, ReadOnlyAcknowledged }
+enum OpenMode {
+    RepairOriginal,
+    ReadOnlyAcknowledged,
+}
 
 /// Frozen admission table: recovery requires the same definitions, source
 /// frontiers and initial writer epochs. Changing this table requires host-owned
@@ -61,7 +64,10 @@ pub struct CellOwnerJournalV1<W: AnchorWitnessStore> {
     max_records: usize,
     length: u64,
     healthy: bool,
-    current: Option<(Arc<dyn CellGenerationCurrentV1>, CellGenerationOwnerBindingV1)>,
+    current: Option<(
+        Arc<dyn CellGenerationCurrentV1>,
+        CellGenerationOwnerBindingV1,
+    )>,
     mode: OpenMode,
 }
 
@@ -72,7 +78,14 @@ impl<W: AnchorWitnessStore> CellOwnerJournalV1<W> {
         specs: Vec<CellJournalPartitionV1>,
         max_records: usize,
     ) -> Result<Self, CellExecutionError> {
-        Self::open_inner(file, witness, specs, max_records, /*current*/ None, OpenMode::RepairOriginal)
+        Self::open_inner(
+            file,
+            witness,
+            specs,
+            max_records,
+            /*current*/ None,
+            OpenMode::RepairOriginal,
+        )
     }
 
     /// An original published task guards every read/admission/commit. The
@@ -85,24 +98,50 @@ impl<W: AnchorWitnessStore> CellOwnerJournalV1<W> {
         binding: CellGenerationOwnerBindingV1,
         current: Arc<dyn CellGenerationCurrentV1>,
     ) -> Result<Self, CellExecutionError> {
-        Self::open_guarded_inner(file, witness, specs, max_records, binding, current, OpenMode::RepairOriginal)
+        Self::open_guarded_inner(
+            file,
+            witness,
+            specs,
+            max_records,
+            binding,
+            current,
+            OpenMode::RepairOriginal,
+        )
     }
 
-    fn open_guarded_inner(file: File, witness: W, specs: Vec<CellJournalPartitionV1>, max_records: usize,
-        binding: CellGenerationOwnerBindingV1, current: Arc<dyn CellGenerationCurrentV1>, mode: OpenMode)
-        -> Result<Self, CellExecutionError> {
+    fn open_guarded_inner(
+        file: File,
+        witness: W,
+        specs: Vec<CellJournalPartitionV1>,
+        max_records: usize,
+        binding: CellGenerationOwnerBindingV1,
+        current: Arc<dyn CellGenerationCurrentV1>,
+        mode: OpenMode,
+    ) -> Result<Self, CellExecutionError> {
         let scope = binding.scope();
-        if specs.len() != 1 || specs.iter().any(|spec|
-            spec.scope.agent_id.as_str() != scope.agent_id
-                || spec.scope.cell_id.as_str() != scope.cell_id
-                || spec.scope.run_id.as_str() != scope.run_id
-                || spec.scope.principal_digest.into_array() != scope.principal_digest
-                || spec.source_frontier.into_array() != binding.source_frontier()
-                || spec.writer_epoch != binding.writer_epoch()) {
+        if specs.len() != 1
+            || specs.iter().any(|spec| {
+                spec.scope.agent_id.as_str() != scope.agent_id
+                    || spec.scope.cell_id.as_str() != scope.cell_id
+                    || spec.scope.run_id.as_str() != scope.run_id
+                    || spec.scope.principal_digest.into_array() != scope.principal_digest
+                    || spec.source_frontier.into_array() != binding.source_frontier()
+                    || spec.writer_epoch != binding.writer_epoch()
+            })
+        {
             return Err(CellExecutionError::ScopeMismatch);
         }
-        current.check_current(&binding).map_err(|_| CellExecutionError::OwnerUnavailable)?;
-        Self::open_inner(file, witness, specs, max_records, Some((current, binding)), mode)
+        current
+            .check_current(&binding)
+            .map_err(|_| CellExecutionError::OwnerUnavailable)?;
+        Self::open_inner(
+            file,
+            witness,
+            specs,
+            max_records,
+            Some((current, binding)),
+            mode,
+        )
     }
 
     fn open_inner(
@@ -110,7 +149,10 @@ impl<W: AnchorWitnessStore> CellOwnerJournalV1<W> {
         witness: W,
         specs: Vec<CellJournalPartitionV1>,
         max_records: usize,
-        current: Option<(Arc<dyn CellGenerationCurrentV1>, CellGenerationOwnerBindingV1)>,
+        current: Option<(
+            Arc<dyn CellGenerationCurrentV1>,
+            CellGenerationOwnerBindingV1,
+        )>,
         mode: OpenMode,
     ) -> Result<Self, CellExecutionError> {
         if specs.is_empty() || specs.len() > 1024 || !(1..=65_536).contains(&max_records) {
@@ -119,9 +161,17 @@ impl<W: AnchorWitnessStore> CellOwnerJournalV1<W> {
         let owner = initial_owner(&specs)?;
         let mut header = header(&specs)?;
         if let Some((guard, binding)) = &current {
-            guard.check_current(binding).map_err(|_| CellExecutionError::OwnerUnavailable)?;
-            let digest = Digest32::of_parts(&[b"hepta.cell.published-feature-journal.v1\0", &header,
-                &binding.digest().map_err(|_| CellExecutionError::ScopeMismatch)?, &(max_records as u64).to_be_bytes()]);
+            guard
+                .check_current(binding)
+                .map_err(|_| CellExecutionError::OwnerUnavailable)?;
+            let digest = Digest32::of_parts(&[
+                b"hepta.cell.published-feature-journal.v1\0",
+                &header,
+                &binding
+                    .digest()
+                    .map_err(|_| CellExecutionError::ScopeMismatch)?,
+                &(max_records as u64).to_be_bytes(),
+            ]);
             header = b"HPTACJ04".to_vec();
             header.extend_from_slice(digest.as_array());
         }
@@ -133,7 +183,9 @@ impl<W: AnchorWitnessStore> CellOwnerJournalV1<W> {
             .len()
             == 0
         {
-            if mode == OpenMode::ReadOnlyAcknowledged { return Err(CellExecutionError::AcknowledgedHistoryMissing); }
+            if mode == OpenMode::ReadOnlyAcknowledged {
+                return Err(CellExecutionError::AcknowledgedHistoryMissing);
+            }
             if witness
                 .current()
                 .map_err(|_| CellExecutionError::OwnerUnavailable)?
@@ -246,11 +298,19 @@ impl<W: AnchorWitnessStore> CellOwnerJournalV1<W> {
             }
         } else {
             if offset < bytes.len() {
-                self.file.set_len(offset as u64).map_err(|_| CellExecutionError::CommitUncertain)?;
+                self.file
+                    .set_len(offset as u64)
+                    .map_err(|_| CellExecutionError::CommitUncertain)?;
             }
-            self.file.sync_all().map_err(|_| CellExecutionError::CommitUncertain)?;
-            if let Some(next) = head && expected != Some(next) {
-                self.witness.compare_and_swap(expected, next).map_err(|_| CellExecutionError::CommitUncertain)?;
+            self.file
+                .sync_all()
+                .map_err(|_| CellExecutionError::CommitUncertain)?;
+            if let Some(next) = head
+                && expected != Some(next)
+            {
+                self.witness
+                    .compare_and_swap(expected, next)
+                    .map_err(|_| CellExecutionError::CommitUncertain)?;
             }
         }
         self.owner = owner;
@@ -272,7 +332,9 @@ impl<W: AnchorWitnessStore> CellOwnerJournalV1<W> {
         self.require_healthy()?;
         // A published task fixes its original frontier and writer epoch. A
         // successor reset needs its own original CURRENT publication/journal.
-        if self.current.is_some() { return Err(CellExecutionError::ScopeMismatch); }
+        if self.current.is_some() {
+            return Err(CellExecutionError::ScopeMismatch);
+        }
         let index = self.partition_index(scope)?;
         self.owner
             .check_reset(scope, source_frontier, writer_epoch)?;
@@ -307,7 +369,9 @@ impl<W: AnchorWitnessStore> CellOwnerJournalV1<W> {
 
     fn require_current(&self) -> Result<(), CellExecutionError> {
         if let Some((current, binding)) = &self.current {
-            current.check_current(binding).map_err(|_| CellExecutionError::OwnerUnavailable)?;
+            current
+                .check_current(binding)
+                .map_err(|_| CellExecutionError::OwnerUnavailable)?;
         }
         Ok(())
     }
@@ -330,7 +394,9 @@ impl<W: AnchorWitnessStore> CellOwnerJournalV1<W> {
 
     fn persist(&mut self, payload: Vec<u8>) -> Result<(), CellExecutionError> {
         self.require_healthy()?;
-        if self.mode == OpenMode::ReadOnlyAcknowledged { return Err(CellExecutionError::OwnerUnavailable); }
+        if self.mode == OpenMode::ReadOnlyAcknowledged {
+            return Err(CellExecutionError::OwnerUnavailable);
+        }
         let next = next_anchor(&self.header, self.head, &payload)?;
         if next.sequence > self.max_records as u64
             || payload.len() > MAX_FRAME_BYTES
@@ -368,7 +434,8 @@ impl<W: AnchorWitnessStore> CellOwnerJournalV1<W> {
         self.length += frame.len() as u64;
         // Keep the owner fenced if CURRENT/withdrawal changed across fsync.
         // The complete frame remains available to original guarded recovery.
-        self.require_current().map_err(|_| CellExecutionError::CommitUncertain)?;
+        self.require_current()
+            .map_err(|_| CellExecutionError::CommitUncertain)?;
         self.healthy = true;
         Ok(())
     }

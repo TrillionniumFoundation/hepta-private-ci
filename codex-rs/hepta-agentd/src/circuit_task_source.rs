@@ -99,16 +99,35 @@ pub struct CircuitTaskSourcePublicationV1 {
 }
 
 impl CircuitTaskSourcePublicationV1 {
-    pub fn original_record(&self) -> &RunStartRecordV1 { &self.record }
-    pub fn input(&self) -> &CellStepInputV1 { &self.input }
-    pub fn output(&self) -> &[u8] { &self.output }
-    pub fn history_digest(&self) -> &Sha256Digest { &self.history_digest }
-    pub fn publication_digest(&self) -> Digest32 { self.publication_digest }
-    pub fn result_bytes(&self) -> &[u8] { &self.result_bytes }
-    pub fn bundle_digest(&self) -> Digest32 { self.bundle_digest }
-    pub fn checkpoint_digest(&self) -> Digest32 { self.checkpoint_digest }
+    pub fn original_record(&self) -> &RunStartRecordV1 {
+        &self.record
+    }
+    pub fn input(&self) -> &CellStepInputV1 {
+        &self.input
+    }
+    pub fn output(&self) -> &[u8] {
+        &self.output
+    }
+    pub fn history_digest(&self) -> &Sha256Digest {
+        &self.history_digest
+    }
+    pub fn publication_digest(&self) -> Digest32 {
+        self.publication_digest
+    }
+    pub fn result_bytes(&self) -> &[u8] {
+        &self.result_bytes
+    }
+    pub fn bundle_digest(&self) -> Digest32 {
+        self.bundle_digest
+    }
+    pub fn checkpoint_digest(&self) -> Digest32 {
+        self.checkpoint_digest
+    }
 
-    pub(crate) fn require_decision(&self, decision: &codex_hepta_neuron::CellDecisionReceiptV1) -> Result<(), Error> {
+    pub(crate) fn require_decision(
+        &self,
+        decision: &codex_hepta_neuron::CellDecisionReceiptV1,
+    ) -> Result<(), Error> {
         codec::require_decision(&self.result_bytes, decision)
     }
 }
@@ -131,7 +150,9 @@ struct SourceOwner<W> {
 pub struct DurableCircuitTaskSourceV1<W: AnchorWitnessStore>(Arc<Mutex<SourceOwner<W>>>);
 
 impl<W: AnchorWitnessStore> Clone for DurableCircuitTaskSourceV1<W> {
-    fn clone(&self) -> Self { Self(Arc::clone(&self.0)) }
+    fn clone(&self) -> Self {
+        Self(Arc::clone(&self.0))
+    }
 }
 
 impl<W: AnchorWitnessStore> DurableCircuitTaskSourceV1<W> {
@@ -144,16 +165,27 @@ impl<W: AnchorWitnessStore> DurableCircuitTaskSourceV1<W> {
         sources: Vec<CircuitTaskSourceInputV1>,
     ) -> Result<Self, Error> {
         let (sources, binding) = codec::configuration(identity, fence, registry, sources)?;
-        if witness.current().map_err(|_| Error::CommitUncertain)?.is_some() {
+        if witness
+            .current()
+            .map_err(|_| Error::CommitUncertain)?
+            .is_some()
+        {
             return Err(Error::InvalidBinding);
         }
         let journal = LockedFileProductEvaluationExecutionStoreV1::create(file, binding)
             .map_err(|_| Error::Unavailable)?;
-        witness.compare_and_swap(None, anchor(journal.anchor()))
+        witness
+            .compare_and_swap(None, anchor(journal.anchor()))
             .map_err(|_| Error::CommitUncertain)?;
         Ok(Self(Arc::new(Mutex::new(SourceOwner {
-            journal, witness, identity: identity.clone(), fence: fence.clone(),
-            definition: registry.definition().clone(), sources, binding, fenced: false,
+            journal,
+            witness,
+            identity: identity.clone(),
+            fence: fence.clone(),
+            definition: registry.definition().clone(),
+            sources,
+            binding,
+            fenced: false,
         }))))
     }
 
@@ -169,20 +201,41 @@ impl<W: AnchorWitnessStore> DurableCircuitTaskSourceV1<W> {
         sources: Vec<CircuitTaskSourceInputV1>,
     ) -> Result<Self, Error> {
         let (sources, binding) = codec::configuration(identity, fence, registry, sources)?;
-        let minimum = witness.current().map_err(|_| Error::CommitUncertain)?
+        let minimum = witness
+            .current()
+            .map_err(|_| Error::CommitUncertain)?
             .ok_or(Error::ReconciliationRequired)?;
-        let sequence = minimum.sequence.checked_sub(1).ok_or(Error::InvalidBinding)?;
-        let journal = LockedFileProductEvaluationExecutionStoreV1::recover(file, binding,
-            ProductEvaluationExecutionAnchorV1 { sequence, history_digest: minimum.checkpoint_digest })
-            .map_err(|_| Error::ReconciliationRequired)?;
+        let sequence = minimum
+            .sequence
+            .checked_sub(1)
+            .ok_or(Error::InvalidBinding)?;
+        let journal = LockedFileProductEvaluationExecutionStoreV1::recover(
+            file,
+            binding,
+            ProductEvaluationExecutionAnchorV1 {
+                sequence,
+                history_digest: minimum.checkpoint_digest,
+            },
+        )
+        .map_err(|_| Error::ReconciliationRequired)?;
         let current = anchor(journal.anchor());
         if current != minimum {
-            if current.sequence != minimum.sequence.saturating_add(1) { return Err(Error::ReconciliationRequired); }
-            witness.compare_and_swap(Some(minimum), current).map_err(|_| Error::CommitUncertain)?;
+            if current.sequence != minimum.sequence.saturating_add(1) {
+                return Err(Error::ReconciliationRequired);
+            }
+            witness
+                .compare_and_swap(Some(minimum), current)
+                .map_err(|_| Error::CommitUncertain)?;
         }
         Ok(Self(Arc::new(Mutex::new(SourceOwner {
-            journal, witness, identity: identity.clone(), fence: fence.clone(),
-            definition: registry.definition().clone(), sources, binding, fenced: false,
+            journal,
+            witness,
+            identity: identity.clone(),
+            fence: fence.clone(),
+            definition: registry.definition().clone(),
+            sources,
+            binding,
+            fenced: false,
         }))))
     }
 
@@ -199,18 +252,32 @@ impl<W: AnchorWitnessStore> DurableCircuitTaskSourceV1<W> {
         owner.require_bytes("request", &request.start.run_id, &request_bytes)?;
         let saved_input = owner.read("input", &request.start.run_id)?;
         let input = codec::decode_input(&saved_input)?;
-        let source = owner.sources.get(&request.start.run_id).ok_or(Error::InvalidBinding)?;
-        if input != source.input(input.operation_id.clone()) { return Err(Error::InvalidBinding); }
+        let source = owner
+            .sources
+            .get(&request.start.run_id)
+            .ok_or(Error::InvalidBinding)?;
+        if input != source.input(input.operation_id.clone()) {
+            return Err(Error::InvalidBinding);
+        }
         let result_bytes = owner.read("result", &request.start.run_id)?;
         let (history_digest, output) = codec::publication(&result_bytes, &saved_input)?;
         let (bundle_digest, checkpoint_digest) = codec::decision_metadata(&result_bytes)?;
         owner.require_current()?;
         Ok(CircuitTaskSourcePublicationV1 {
-            record: record.clone(), input, output, history_digest, bundle_digest, checkpoint_digest,
+            record: record.clone(),
+            input,
+            output,
+            history_digest,
+            bundle_digest,
+            checkpoint_digest,
             publication_digest: Digest32::of_parts(&[
-                b"hepta.circuit.original-source-publication.v1\0", owner.binding.as_array(),
-                &request_bytes, &saved_input, &result_bytes,
-            ]), result_bytes,
+                b"hepta.circuit.original-source-publication.v1\0",
+                owner.binding.as_array(),
+                &request_bytes,
+                &saved_input,
+                &result_bytes,
+            ]),
+            result_bytes,
         })
     }
 
@@ -218,63 +285,119 @@ impl<W: AnchorWitnessStore> DurableCircuitTaskSourceV1<W> {
     /// blocks later Prepare and publication reads; this cannot grant authority.
     pub fn withdraw_source(&self, run_id: &StableId) -> Result<(), Error> {
         let mut owner = self.0.lock().map_err(|_| Error::Unavailable)?;
-        owner.retain("withdraw", run_id.as_str(), b"HCSTWDR1", CircuitTaskInputModeV1::Prepare)
+        owner.retain(
+            "withdraw",
+            run_id.as_str(),
+            b"HCSTWDR1",
+            CircuitTaskInputModeV1::Prepare,
+        )
     }
 
     /// Read the complete original RunStart from this owner's durable request,
     /// then revalidate its exact publication. This cannot build/admit a task or
     /// fill a missing/Pending stage. Current withdrawal and witness checks run
     /// again after acquiring the publication read lock.
-    pub fn read_run_publication(&self, identity: &AgentdIdentity, run_id: &StableId)
-        -> Result<CircuitTaskSourcePublicationV1, Error> {
+    pub fn read_run_publication(
+        &self,
+        identity: &AgentdIdentity,
+        run_id: &StableId,
+    ) -> Result<CircuitTaskSourcePublicationV1, Error> {
         let record = {
             let mut owner = self.0.lock().map_err(|_| Error::Unavailable)?;
-            if identity != &owner.identity { return Err(Error::InvalidBinding); }
+            if identity != &owner.identity {
+                return Err(Error::InvalidBinding);
+            }
             owner.require_active(run_id.as_str())?;
             codec::original_record(&owner.read("request", run_id.as_str())?)?
         };
-        if &record.snapshot.run_id != run_id { return Err(Error::InvalidBinding); }
+        if &record.snapshot.run_id != run_id {
+            return Err(Error::InvalidBinding);
+        }
         self.read_publication(identity, &record)
     }
 }
 
-impl<W: AnchorWitnessStore + Send> AgentdCircuitTaskInvocationProviderV1 for DurableCircuitTaskSourceV1<W> {
-    fn build(&self, identity: &AgentdIdentity, record: &RunStartRecordV1) -> Result<CircuitTaskRequestV1, AgentdError> {
+impl<W: AnchorWitnessStore + Send> AgentdCircuitTaskInvocationProviderV1
+    for DurableCircuitTaskSourceV1<W>
+{
+    fn build(
+        &self,
+        identity: &AgentdIdentity,
+        record: &RunStartRecordV1,
+    ) -> Result<CircuitTaskRequestV1, AgentdError> {
         let mut owner = self.0.lock().map_err(|_| agent_error(Error::Unavailable))?;
         let request = owner.request(identity, record).map_err(agent_error)?;
         let payload = codec::request(&request, record).map_err(agent_error)?;
-        owner.retain("request", &request.start.run_id, &payload, CircuitTaskInputModeV1::Prepare)
+        owner
+            .retain(
+                "request",
+                &request.start.run_id,
+                &payload,
+                CircuitTaskInputModeV1::Prepare,
+            )
             .map_err(agent_error)?;
         Ok(request)
     }
 
-    fn publish_result(&self, identity: &AgentdIdentity, record: &RunStartRecordV1, receipt: &CircuitTaskReceiptV1) -> Result<(), AgentdError> {
+    fn publish_result(
+        &self,
+        identity: &AgentdIdentity,
+        record: &RunStartRecordV1,
+        receipt: &CircuitTaskReceiptV1,
+    ) -> Result<(), AgentdError> {
         let mut owner = self.0.lock().map_err(|_| agent_error(Error::Unavailable))?;
         let request = owner.request(identity, record).map_err(agent_error)?;
-        owner.require_bytes("request", &request.start.run_id, &codec::request(&request, record).map_err(agent_error)?)
+        owner
+            .require_bytes(
+                "request",
+                &request.start.run_id,
+                &codec::request(&request, record).map_err(agent_error)?,
+            )
             .map_err(agent_error)?;
-        let saved_input = owner.read("input", &request.start.run_id).map_err(agent_error)?;
+        let saved_input = owner
+            .read("input", &request.start.run_id)
+            .map_err(agent_error)?;
         let input = codec::decode_input(&saved_input).map_err(agent_error)?;
-        let payload = codec::result(&owner.definition, &request, &saved_input, &input, receipt).map_err(agent_error)?;
-        owner.retain("result", &request.start.run_id, &payload, CircuitTaskInputModeV1::Prepare)
+        let payload = codec::result(&owner.definition, &request, &saved_input, &input, receipt)
+            .map_err(agent_error)?;
+        owner
+            .retain(
+                "result",
+                &request.start.run_id,
+                &payload,
+                CircuitTaskInputModeV1::Prepare,
+            )
             .map_err(agent_error)
     }
 }
 
 impl<W: AnchorWitnessStore + Send> CircuitTaskInputProviderV1 for DurableCircuitTaskSourceV1<W> {
-    fn resolve(&mut self, request: &CircuitTaskRequestV1, dispatch: &CircuitDispatchV2,
-        completed: &BTreeMap<u64, CircuitCellExecutionV1>, mode: CircuitTaskInputModeV1) -> Result<CellStepInputV1, Error> {
+    fn resolve(
+        &mut self,
+        request: &CircuitTaskRequestV1,
+        dispatch: &CircuitDispatchV2,
+        completed: &BTreeMap<u64, CircuitCellExecutionV1>,
+        mode: CircuitTaskInputModeV1,
+    ) -> Result<CellStepInputV1, Error> {
         let mut owner = self.0.lock().map_err(|_| Error::Unavailable)?;
         owner.require_active(&request.start.run_id)?;
         let retained = owner.read("request", &request.start.run_id)?;
         codec::require_request(&retained, request)?;
-        let source = owner.sources.get(&request.start.run_id).ok_or(Error::InvalidBinding)?;
+        let source = owner
+            .sources
+            .get(&request.start.run_id)
+            .ok_or(Error::InvalidBinding)?;
         let program = &owner.definition.programs[0];
-        if !completed.is_empty() || dispatch.run_id != request.start.run_id
-            || dispatch.program_id != program.program_id || dispatch.node_id != program.entry_node
-            || dispatch.round != 0 || dispatch.scope_digest != request.start.scope_digest
+        if !completed.is_empty()
+            || dispatch.run_id != request.start.run_id
+            || dispatch.program_id != program.program_id
+            || dispatch.node_id != program.entry_node
+            || dispatch.round != 0
+            || dispatch.scope_digest != request.start.scope_digest
             || dispatch.input_digest != request.start.input_digest
-        { return Err(Error::InvalidBinding); }
+        {
+            return Err(Error::InvalidBinding);
+        }
         let input = source.input(circuit_cell_operation_id_v1(dispatch)?);
         let payload = codec::dispatch_input(dispatch, &input)?;
         owner.retain("input", &request.start.run_id, &payload, mode)?;
@@ -282,9 +405,11 @@ impl<W: AnchorWitnessStore + Send> CircuitTaskInputProviderV1 for DurableCircuit
     }
 }
 
-
 fn anchor(value: ProductEvaluationExecutionAnchorV1) -> JournalAnchor {
-    JournalAnchor { sequence: value.sequence + 1, checkpoint_digest: value.history_digest }
+    JournalAnchor {
+        sequence: value.sequence + 1,
+        checkpoint_digest: value.history_digest,
+    }
 }
 
 fn agent_error(error: Error) -> AgentdError {

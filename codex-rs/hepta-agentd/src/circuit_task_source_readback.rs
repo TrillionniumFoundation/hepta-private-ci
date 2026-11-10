@@ -19,14 +19,18 @@ pub struct CircuitTaskSourceReadbackV1<W: AnchorWitnessStore> {
 
 impl<W: AnchorWitnessStore> Clone for CircuitTaskSourceReadbackV1<W> {
     fn clone(&self) -> Self {
-        Self { original: self.original.clone() }
+        Self {
+            original: self.original.clone(),
+        }
     }
 }
 
 impl<W: AnchorWitnessStore> DurableCircuitTaskSourceV1<W> {
     /// Give an observer read access without either task-source writer trait.
     pub fn readback(&self) -> CircuitTaskSourceReadbackV1<W> {
-        CircuitTaskSourceReadbackV1 { original: self.clone() }
+        CircuitTaskSourceReadbackV1 {
+            original: self.clone(),
+        }
     }
 }
 

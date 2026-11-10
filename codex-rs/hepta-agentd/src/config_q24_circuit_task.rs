@@ -23,6 +23,10 @@ impl AgentdConfig {
         let source = runtime.source();
         let cell = runtime.cell();
         let config = runtime.install(self)?;
-        Ok(AgentdQ24CircuitTaskRuntimeV1 { config, source, cell })
+        Ok(AgentdQ24CircuitTaskRuntimeV1 {
+            config,
+            source,
+            cell,
+        })
     }
 }
