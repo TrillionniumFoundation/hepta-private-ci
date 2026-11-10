@@ -20,9 +20,9 @@
     },
     {
       "id": "MEM-RAW-REPRODUCIBILITY",
-      "status": "TWO_HOST_ARCHIVE_RECONSTRUCTION_VERIFIED_OWNER_AND_EXTERNAL_CUSTODY_OPEN",
-      "evidence": "Original archive INDEX now exists (SHA256 470cb221...), strict-v2 from frozen Git blob 274198e... verified 4000 logical files / 77913835 bytes, 2825 objects, 2859 chunks and 84 assets, successful ai395 verification job 1a1c4b6bd99-cf39-3f8, exit 0 with empty stderr; see run-001/ORIGINAL_ARCHIVE_VERIFICATION.json. No new archive-start or actor execution. A separate desktop host now holds byte-identical 85 archive files (INDEX+84 assets) via fixed-key read-only rsync from ai395 job1a1c4e178ba-cf39-4ae; directly on desktop, job1a1c4e2ae61-cf39-4bc exited 0/stderr empty with strict-v2 verifier SHA3e8466d... and independent 4000 files /77913835 bytes reconstructed; INDEX SHA470cb221..., manifest SHAc98d559...; source actor and archive untouched. See archive-instrument/TWO_HOST_ARCHIVE_RECONSTRUCTION_20261110.json.",
-      "limit": "Original archive-start job identity UNRESOLVED, owner authentication false, no atomic original snapshot, no third-party independent custody, no sealed scientific replay/confirmation; secondary operator-host copy is not an external owner or separate trust domain. HOLD/NoUpdate."
+      "status": "TWO_HOST_ARCHIVE_AND_FULL_PAYLOAD_RECONSTRUCTION_VERIFIED_OWNER_AND_EXTERNAL_CUSTODY_OPEN",
+      "evidence": "Original archive INDEX now exists (SHA256 470cb221...), strict-v2 from frozen Git blob 274198e... verified 4000 logical files / 77913835 bytes, 2825 objects, 2859 chunks and 84 assets, successful ai395 verification job 1a1c4b6bd99-cf39-3f8, exit 0 with empty stderr; see run-001/ORIGINAL_ARCHIVE_VERIFICATION.json. No new archive-start or actor execution. A separate desktop host now holds byte-identical 85 archive files (INDEX+84 assets) via fixed-key read-only rsync from ai395 job1a1c4e178ba-cf39-4ae; directly on desktop, job1a1c4e2ae61-cf39-4bc exited 0/stderr empty with strict-v2 verifier SHA3e8466d... and independent 4000 files /77913835 bytes reconstructed; INDEX SHA470cb221..., manifest SHAc98d559...; source actor and archive untouched. See archive-instrument/TWO_HOST_ARCHIVE_RECONSTRUCTION_20261110.json. Desktop isolated offline payload restore job1a1c52cac15-cf39-63e succeeded exit0/stderr0; all 4000 files /77913835B written to fresh path and re-read from disk against manifest hashes. Original first attempt job1a1c52bcf93-cf39-63a failed on new Python manifest access bug and is retained. See archive-instrument/OFFLINE_PAYLOAD_RESTORE_20261110.json and exact tested tool SHA88185922...",
+      "limit": "Original archive-start job identity UNRESOLVED, owner authentication false, no atomic original snapshot, no third-party independent custody, no sealed scientific replay/confirmation; secondary operator-host copy is not an external owner or separate trust domain. HOLD/NoUpdate. File-level cold restore is not full owner process/state/credentials/effects cold recovery."
     },
     {
       "id": "MEM-REPLAY-COVERAGE-CONTROL",
@@ -57,8 +57,8 @@
     {
       "id": "MEM-FULL-COST-AND-COLD-RECOVERY",
       "status": "OPEN",
-      "evidence": "Run CPU/wall includes overlapping actor/host/checking envelopes; energy and provider charges remain null",
-      "required": "Full physical/lifecycle cost instrumentation and independent full-owner cold recovery"
+      "evidence": "Run CPU/wall includes overlapping actor/host/checking envelopes; energy and provider charges remain null File-only offline payload recovery on desktop succeeded 4000/4000 with second full byte readback (job1a1c52cac15-cf39-63e), but no full owner state or physical costs.",
+      "required": "Full physical/lifecycle cost instrumentation and independent full-owner cold recovery File-only payload recovery is qualified separately; still require owner-authenticated restore and effects/state continuity."
     },
     {
       "id": "MEM-FINAL-SOURCE-CI",
