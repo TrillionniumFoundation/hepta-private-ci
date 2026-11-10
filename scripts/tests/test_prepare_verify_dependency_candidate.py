@@ -114,6 +114,39 @@ class PreparationTests(unittest.TestCase):
                 subprocess.run(["git", *args], cwd=root, check=True)
             base = proposal.git(root, "rev-parse", "HEAD")
             pins = {name: proposal.git(root, "hash-object", name) for name in inputs}
+            for name in (
+                "scripts/align_verify_bindgen_syn.py",
+                "qualification/verify3-syn-alignment-20261110/README.md",
+            ):
+                path = root / name
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text("reviewed qualification addition\n")
+            subprocess.run(["git", "add", "."], cwd=root, check=True)
+            commit = [
+                "git",
+                "-c",
+                "user.name=Test",
+                "-c",
+                "user.email=test@localhost",
+                "-c",
+                "commit.gpgsign=false",
+                "commit",
+                "-qm",
+                "Qualification paths",
+            ]
+            subprocess.run(commit, cwd=root, check=True)
+            (root / "unreviewed.txt").write_text("not a proposal input\n")
+            subprocess.run(["git", "add", "."], cwd=root, check=True)
+            subprocess.run(commit, cwd=root, check=True)
+            with patch.object(proposal, "BASE", base):
+                with self.assertRaisesRegex(
+                    ValueError, "outside the reviewed proposal"
+                ):
+                    proposal.prepare(root, output)
+            self.assertFalse(output.exists())
+            self.assertFalse((root / proposal.VENDOR).exists())
+            subprocess.run(["git", "rm", "-q", "unreviewed.txt"], cwd=root, check=True)
+            subprocess.run(commit, cwd=root, check=True)
             stream = io.BytesIO()
             with tarfile.open(fileobj=stream, mode="w:gz") as archive:
                 for name, raw in {

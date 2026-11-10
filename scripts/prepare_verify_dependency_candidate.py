@@ -28,6 +28,8 @@ PINNED = {
     MATRIX + "/Cargo.toml.orig": "ed8456d7a2013e879d52c2a119738d0ea3df2fe7",
 }
 PROPOSAL_FILES = {
+    "scripts/align_verify_bindgen_syn.py",
+    "qualification/verify3-syn-alignment-20261110/README.md",
     "scripts/prepare_verify_dependency_candidate.py",
     "scripts/tests/test_prepare_verify_dependency_candidate.py",
     ".github/workflows/verify-dependency-proposal.yml",
