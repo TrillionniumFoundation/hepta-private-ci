@@ -1,3 +1,4 @@
+use pretty_assertions::assert_eq;
 use super::*;
 use crate::CellOwnerJournalReadbackV1;
 use std::io::Write;

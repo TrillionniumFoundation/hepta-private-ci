@@ -1,4 +1,5 @@
 //! Journal mechanism tests use an explicit CURRENT double, not Root custody.
+use pretty_assertions::assert_eq;
 use super::*;
 use crate::cell_test_support as cell;
 use crate::AnchorWitnessStore;
