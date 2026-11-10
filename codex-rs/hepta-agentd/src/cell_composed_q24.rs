@@ -37,6 +37,12 @@ mod codec;
 use codec::Adapter;
 use codec::Matrix;
 
+#[path = "cell_composed_q24_training_plan.rs"]
+mod training_plan;
+pub use training_plan::CellQ24SingleHeadTrainingPlanV1;
+pub use training_plan::CellQ24TrainingPlanErrorV1;
+pub use training_plan::cell_q24_single_head_update_rule_v1;
+
 pub struct CellQ24ModelFilesV1 {
     pub base: File,
     pub organ_adapter: Option<File>,
