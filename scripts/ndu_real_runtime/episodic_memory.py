@@ -207,21 +207,32 @@ class EpisodicStore:
             raise ValueError("serialized authority bound exceeded; mutation rolled back")
         db.execute("UPDATE meta SET value=? WHERE id=1", (canonical_bytes(meta).decode(),))
 
+    def _dependency_descendants(self, rows, roots):
+        """Active dependent IDs in O(records + declared edges), regardless of key order."""
+        roots = set(roots)
+        reverse = {}
+        for row in rows:
+            if row["namespace"] != self.namespace or row["status"] != "active":
+                continue
+            for dependency in json.loads(row["payload"])["dependencies"]:
+                reverse.setdefault(dependency, []).append(row["record_id"])
+        descendants, pending = set(), list(roots)
+        while pending:
+            for record_id in reverse.get(pending.pop(), ()):
+                if record_id not in roots and record_id not in descendants:
+                    descendants.add(record_id)
+                    pending.append(record_id)
+        return descendants
+
     def _invalidate(self, db, roots):
-        invalid = set(roots)
-        pending = [r for r in self._rows(db)
-                   if r["namespace"] == self.namespace and r["status"] == "active"]
-        changed = True
-        while changed:
-            changed = False
-            for row in pending[:]:
-                if invalid.intersection(json.loads(row["payload"])["dependencies"]):
-                    db.execute("UPDATE records SET version=version+1, status='dependency_revoked', payload=NULL WHERE namespace=? AND source_id=? AND key=?",
-                               (self.namespace, row["source_id"], row["key"]))
-                    invalid.add(row["record_id"])
-                    pending.remove(row)
-                    changed = True
-        return sorted(invalid - set(roots))
+        rows = self._rows(db)
+        affected = self._dependency_descendants(rows, roots)
+        for row in rows:
+            if (row["namespace"] == self.namespace and row["status"] == "active"
+                    and row["record_id"] in affected):
+                db.execute("UPDATE records SET version=version+1, status='dependency_revoked', payload=NULL WHERE namespace=? AND source_id=? AND key=?",
+                           (self.namespace, row["source_id"], row["key"]))
+        return sorted(affected)
 
     def put(self, source_id, key, text, *, provenance, dependencies=()):
         """Admit copied source evidence, never evaluator answers or learned weights."""
@@ -245,14 +256,9 @@ class EpisodicStore:
             if not set(dependencies) <= active or (old and old["record_id"] in dependencies):
                 raise ValueError("dependencies must reference other current in-namespace facts")
             if old:
-                invalid = {old["record_id"]}
-                while True:
-                    expanded = invalid | {r["record_id"] for r in rows
-                        if r["namespace"] == self.namespace and r["status"] == "active"
-                        and invalid.intersection(json.loads(r["payload"])["dependencies"])}
-                    if expanded == invalid:
-                        break
-                    invalid = expanded
+                invalid = {old["record_id"]} | self._dependency_descendants(
+                    rows, [old["record_id"]]
+                )
                 if invalid.intersection(dependencies):
                     raise ValueError("update cannot depend on facts it would invalidate")
             db.execute("INSERT INTO records VALUES (?, ?, ?, ?, ?, 'active', ?) ON CONFLICT(namespace,source_id,key) DO UPDATE SET version=excluded.version,record_id=excluded.record_id,status='active',payload=excluded.payload",
