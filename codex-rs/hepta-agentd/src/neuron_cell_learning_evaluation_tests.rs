@@ -29,6 +29,28 @@ use pretty_assertions::assert_eq;
 use super::*;
 use crate::neuron_cell_learning_evaluation::*;
 
+struct LearningExecutionAttestor<'a> {
+    evaluator: &'a AuthenticatedPrincipalV1,
+    verifier: &'a LearningEvidenceVerifierV1,
+    now: u64,
+}
+
+impl ProductEvaluationExecutionAttestorV1 for LearningExecutionAttestor<'_> {
+    fn attest_execution(
+        &mut self,
+        request: &ProductEvaluationExecutionAttestationRequestV1<'_>,
+    ) -> Result<SignedLearningEvidenceV1, ProductProviderErrorV1> {
+        Ok(sign(
+            self.verifier,
+            self.evaluator,
+            &SigningKey::from_bytes(&[42; 32]),
+            LearningEvidenceRoleV1::Evaluator,
+            request.signing_payload(),
+            self.now,
+        ))
+    }
+}
+
 pub(crate) struct LearningFixture {
     pub(crate) snapshot: LearningIterationSnapshotV1,
     pub(crate) receipt: CellEvaluationReceiptV1,
@@ -255,7 +277,36 @@ impl LearningFixture {
             ),
             None => fixture.freeze(),
         });
-        let receipt = checked(fixture.run(&plan));
+        // Only the original signed execution path can supply an Evaluation
+        // observation to an ordinary learning iteration. This remains a
+        // synthetic cohort and synthetic stage-owner fixture, not production.
+        let mut executions = checked(LockedFileProductEvaluationExecutionStoreV1::create(
+            file(&fixture.directory.path().join("learning-executions")),
+            digest("learning-execution-owner"),
+        ));
+        let mut attestor = LearningExecutionAttestor {
+            evaluator: &context.evaluator,
+            verifier: &verifier,
+            now,
+        };
+        let receipt = checked(fixture.runner.evaluate_or_readback(
+            &plan,
+            CellEvaluationJournalsV1 {
+                candidate: &fixture.candidate,
+                fixed_expert: &fixture.fixed,
+            },
+            &ProductEvaluationExecutionRequestV1 {
+                plan: plan.product_plan(),
+                candidate_plan: &fixture.candidate_temporal,
+                baseline_plan: &fixture.baseline_temporal,
+                evaluator: &context.evaluator,
+                verifier: &verifier,
+                clock: &|| Ok(now),
+            },
+            &mut fixture.provider,
+            &mut executions,
+            &mut attestor,
+        ));
         let bundle = checked(fixture.runner.qualification_bundle(&receipt, &context));
         let evidence = SignedEvaluationEvidenceV1 {
             generator_plan: sign(
@@ -609,5 +660,37 @@ fn unsigned_profile_cannot_be_added_to_a_non_learning_plan() {
     assert_ne!(
         first.product_plan().frozen_plan.plan_digest,
         plan.product_plan().frozen_plan.plan_digest
+    );
+}
+
+#[test]
+fn direct_or_wrong_evaluator_execution_cannot_enter_learning_evaluation() {
+    let fixture = LearningFixture::new_at(
+        IndependentEvaluationDispositionV1::EligibleForIndependentSelection,
+        /*now*/ 50,
+    );
+    assert_eq!(
+        fixture.receipt.original_execution_evaluator.as_ref(),
+        Some(&fixture.context.evaluator)
+    );
+    for actual in [None, Some(fixture.context.generator.clone())] {
+        let mut untrusted = fixture.receipt.clone();
+        untrusted.original_execution_evaluator = actual;
+        assert!(matches!(
+            prepare_cell_learning_evaluation_v1(
+                fixture.runner(),
+                &fixture.snapshot,
+                &untrusted,
+                &fixture.qualification,
+                &fixture.request(/*now*/ 50),
+            ),
+            Err(CellLearningEvaluationErrorV1::Cell(
+                CellEvaluationErrorV1::Binding("original execution evaluator")
+            ))
+        ));
+    }
+    assert_eq!(
+        (fixture.fixture.provider.calls, fixture.fixture.provider.releases),
+        (1, 1)
     );
 }
