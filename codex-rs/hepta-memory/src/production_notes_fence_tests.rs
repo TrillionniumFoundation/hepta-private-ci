@@ -29,7 +29,7 @@ fn notes_fence_terminal_receipt_requires_exact_original_binding() {
     assert_eq!(checked.outcome(), crate::LocalReconcileOutcome::Committed);
     assert_eq!(
         checked.document_state().unwrap(),
-        (target(), 8, Sha256Digest::parse(&"d".repeat(64)).unwrap())
+        (target(), 8, Sha256Digest::parse("d".repeat(64)).unwrap())
     );
     for (key, value) in [
         ("original_operation_id", serde_json::json!("another")),

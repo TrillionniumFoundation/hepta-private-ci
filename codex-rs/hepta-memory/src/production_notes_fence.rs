@@ -368,11 +368,7 @@ impl NotesTerminalReceipt {
                     revision,
                     text_sha256,
                     ..
-                } => Ok((
-                    value.target,
-                    revision,
-                    Sha256Digest::parse(&text_sha256).map_err(|e| e.to_string())?,
-                )),
+                } => Ok((value.target, revision, Sha256Digest::parse(&text_sha256)?)),
                 NotesResult::NotApplied { .. } | NotesResult::Unknown { .. } => {
                     Err("receipt has no committed document state".into())
                 }
@@ -385,11 +381,7 @@ impl NotesTerminalReceipt {
                 revision,
                 text_sha256,
                 ..
-            } => Ok((
-                value.target,
-                revision,
-                Sha256Digest::parse(&text_sha256).map_err(|e| e.to_string())?,
-            )),
+            } => Ok((value.target, revision, Sha256Digest::parse(&text_sha256)?)),
             FenceResult::NotFenced { .. } | FenceResult::Unknown { .. } => {
                 Err("fence has no committed document state".into())
             }
