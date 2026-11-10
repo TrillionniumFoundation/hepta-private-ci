@@ -114,9 +114,10 @@ where
     {
         return Err(AgentdError::Invalid("Q24 task profile has an invalid original owner or capacity".into()));
     }
-    profile.published_task.require_bundle(&profile.bundle)?;
-    let definition = profile.published_task.definition().clone();
-    let source_input = profile.published_task.source().clone();
+    let published: &PublishedCircuitFeatureTaskV1 = &profile.published_task;
+    published.require_bundle(&profile.bundle)?;
+    let definition = published.definition().clone();
+    let source_input = published.source().clone();
     let program = profile.circuit.programs.iter()
         .find(|program| program.program_id == profile.circuit.entry_program)
         .ok_or_else(|| AgentdError::Invalid("Q24 task circuit has no original root program".into()))?;
@@ -139,11 +140,11 @@ where
             &profile.fence, &registry, vec![source_input],
         ),
     }.map_err(|error| AgentdError::Invalid(error.to_string()))?;
-    let cell = profile.published_task.open_cell(
+    let cell: PublishedCircuitCellOwnerV1<CW> = published.open_cell(
         profile.files.cell_journal, profile.files.cell_witness, profile.maximum_cell_records,
     )?;
     let inference_clock = Arc::clone(&profile.clock);
-    let control = profile.published_task.control(
+    let control = published.control(
         profile.files.inference_control, profile.worker_generation, worker,
         Arc::new(move || inference_clock().cell_micros),
     ).map_err(|error| AgentdError::GenerationFenced(error.to_string()))?;

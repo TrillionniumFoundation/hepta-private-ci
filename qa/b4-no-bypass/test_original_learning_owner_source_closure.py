@@ -130,7 +130,7 @@ class OriginalLearningOwnerClosureTests(unittest.TestCase):
 
     def test_ordinary_assembly_uses_original_current_native_worker_and_normal_channel(self):
         path = AGENT + "circuit_q24_task_profile.rs"
-        for marker in ("identity.spawn_generation == 0", "profile.published_task.require_bundle(&profile.bundle)?", "CellQ24FeatureWorkerV1::new(", "DurableCircuitTaskSourceV1::recover(", "profile.published_task.open_cell(", "profile.published_task.control(", "cell.writer()", "circuit_task_channel_v1(", "source.readback()"):
+        for marker in ("identity.spawn_generation == 0", "published.require_bundle(&profile.bundle)?", "CellQ24FeatureWorkerV1::new(", "DurableCircuitTaskSourceV1::recover(", "published.open_cell(", "published.control(", "cell.writer()", "circuit_task_channel_v1(", "source.readback()"):
             with self.subTest(marker=marker): self.rejects(path, "fn circuit_q24_task_channel_v1<", marker)
 
 if __name__ == "__main__":

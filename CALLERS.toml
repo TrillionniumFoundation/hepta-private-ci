@@ -3209,13 +3209,13 @@ receiver_type = "PublishedCircuitFeatureTaskV1"
 definition_path = "codex-rs/hepta-agentd/src/circuit_feature_current_control.rs"
 definition_markers = ["pub fn control<", "if task.require_active().is_err()", "ControlledNeuronFeaturePortV1::new("]
 product_callers = ["codex-rs/hepta-agentd/src/circuit_q24_task_profile.rs"]
-caller_markers = ["profile.published_task.control(", "profile.files.inference_control, profile.worker_generation, worker"]
+caller_markers = ["published.control(", "profile.files.inference_control, profile.worker_generation, worker"]
 
 [[boundary]]
 id = "circuit_q24_ordinary_profile_assembly"
 symbol = "circuit_q24_task_channel_v1"
 definition_path = "codex-rs/hepta-agentd/src/circuit_q24_task_profile.rs"
-definition_markers = ["pub fn circuit_q24_task_channel_v1<", "profile.published_task.require_bundle(&profile.bundle)?", "circuit_task_channel_v1("]
+definition_markers = ["pub fn circuit_q24_task_channel_v1<", "published.require_bundle(&profile.bundle)?", "circuit_task_channel_v1("]
 product_callers = ["codex-rs/hepta-agentd/src/config_q24_circuit_task.rs"]
 caller_markers = ["self.require_no_circuit_task_profile()?", "self.require_circuit_task_execution_profile()?", "circuit_q24_task_channel_v1(self.identity(), profile)?", "runtime.install(self)?"]
 
@@ -3324,7 +3324,7 @@ forbidden = ["pub original:", "Deref", "into_inner", "AgentdCircuitTaskInvocatio
 path = "codex-rs/hepta-agentd/src/circuit_q24_task_profile.rs"
 required = ["pub published_task: PublishedCircuitFeatureTaskV1", "invocation: Arc<DurableCircuitTaskSourceV1<SW>>", "source: Arc<CircuitTaskSourceReadbackV1<SW>>", "pub source: Arc<CircuitTaskSourceReadbackV1<SW>>"]
 forbidden = ["SigningKey", ".sign(", "File::open", "UnixStream::connect", "CellStateOwnerV1", "pub invocation:", "pub bootstrap:", "unwrap_or", "permit_all"]
-required_order = [["fn circuit_q24_task_channel_v1<", "profile.fence.owner_agent_id != identity.agent_id", "identity.spawn_generation == 0", "identity.spawn_generation.checked_add(1) != Some(profile.fence.generation)", "!(1..=64).contains(&profile.queue_capacity)", "profile.published_task.require_bundle(&profile.bundle)?", "CircuitCellRegistryV1::new(", "CellQ24FeatureWorkerV1::new(", "let source = match profile.source_mode", "DurableCircuitTaskSourceV1::create(", "DurableCircuitTaskSourceV1::recover(", "profile.published_task.open_cell(", "profile.published_task.control(", "AgentdCircuitCellOwnerV1::new(registry, cell.writer(), control, encoder)", "circuit_task_channel_v1(", "source.readback()", "Ok(CircuitQ24TaskRuntimeV1"]]
+required_order = [["fn circuit_q24_task_channel_v1<", "profile.fence.owner_agent_id != identity.agent_id", "identity.spawn_generation == 0", "identity.spawn_generation.checked_add(1) != Some(profile.fence.generation)", "!(1..=64).contains(&profile.queue_capacity)", "published.require_bundle(&profile.bundle)?", "CircuitCellRegistryV1::new(", "CellQ24FeatureWorkerV1::new(", "let source = match profile.source_mode", "DurableCircuitTaskSourceV1::create(", "DurableCircuitTaskSourceV1::recover(", "published.open_cell(", "published.control(", "AgentdCircuitCellOwnerV1::new(registry, cell.writer(), control, encoder)", "circuit_task_channel_v1(", "source.readback()", "Ok(CircuitQ24TaskRuntimeV1"]]
 required_function_order = [{ function = "fn install(", sequence = ["config.with_circuit_task_bootstrap(", "self.bootstrap, self.invocation)"] }]
 
 [[protected_file]]
