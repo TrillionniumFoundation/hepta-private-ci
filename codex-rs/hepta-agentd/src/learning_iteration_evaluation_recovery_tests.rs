@@ -5,6 +5,7 @@ use codex_hepta_learning_artifacts::CellStatePartitionV1;
 use codex_hepta_learning_artifacts::LearningEvaluationDispositionV1;
 use codex_hepta_learning_artifacts::LearningIterationObservationV1;
 use codex_hepta_learning_artifacts::LearningProposalDispositionV1;
+use pretty_assertions::assert_eq;
 
 use super::*;
 

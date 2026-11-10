@@ -5,6 +5,8 @@ use std::future::Future;
 use std::future::poll_fn;
 use std::task::Poll;
 
+use pretty_assertions::assert_eq;
+
 use super::*;
 
 #[tokio::test]
