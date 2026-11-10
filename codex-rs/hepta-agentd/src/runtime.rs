@@ -156,7 +156,13 @@ pub async fn run_with_shutdown(
         EVENT_CAPACITY,
     )?);
     if let Some(delivery) = &circuit_learning_delivery {
-        state.attach_circuit_learning_sources(delivery.requests.iter().map(|request| request.source_run_id.clone()).collect())?;
+        state.attach_circuit_learning_sources(
+            delivery
+                .requests
+                .iter()
+                .map(|request| request.source_run_id.clone())
+                .collect(),
+        )?;
     }
     let circuit_task = if let Some((bootstrap, invocation)) = circuit_task {
         state

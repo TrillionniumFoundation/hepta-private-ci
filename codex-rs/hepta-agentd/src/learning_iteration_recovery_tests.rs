@@ -625,9 +625,16 @@ async fn actual_delivery_backpressure_precedes_claim_and_prior_claim_stays_readb
         None
     );
     // A durable claim made before a later owner loss is still readback-only.
-    let initial = ok(LearningIterationCoordinatorV1::new(request.clone(), ports.owners()));
-    let request_digest = ok(Sha256Digest::parse(initial.snapshot().head_digest.to_string()));
-    assert!(ok(store.claim_circuit_learning(&intent, &request_digest).await));
+    let initial = ok(LearningIterationCoordinatorV1::new(
+        request.clone(),
+        ports.owners(),
+    ));
+    let request_digest = ok(Sha256Digest::parse(
+        initial.snapshot().head_digest.to_string(),
+    ));
+    assert!(ok(store
+        .claim_circuit_learning(&intent, &request_digest)
+        .await));
     let claimed = ok(store.pending_circuit_learning(/*limit*/ 1).await);
     assert!(claimed[0].request_digest.is_some());
     assert_eq!(claimed[0].acknowledged_head, None);

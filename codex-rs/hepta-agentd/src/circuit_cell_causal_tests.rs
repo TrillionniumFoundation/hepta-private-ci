@@ -1,6 +1,6 @@
-use std::collections::BTreeMap;
 use codex_hepta_types::Digest32;
 use pretty_assertions::assert_eq;
+use std::collections::BTreeMap;
 
 use super::*;
 use crate::CircuitCellCausalRecordV1;
@@ -17,14 +17,27 @@ async fn causal_readback_joins_original_clocks_and_survives_circuit_reopen_witho
     let reads = model.reads.clone();
     let mut runtime = AgentdCircuitCellOwnerV1::new(
         checked(CircuitCellRegistryV1::new(definition, bindings.clone())),
-        native_owner(&bindings), model, Encoder,
+        native_owner(&bindings),
+        model,
+        Encoder,
     );
     let executed = checked(runtime.execute(admission, request.clone(), time));
     // A Cell commit alone is not a consumed Circuit completion.
-    assert!(runtime.committed_causal_records(&store, "run-1", &inputs).await.is_err());
-    apply(&store, "complete", /*now_ms*/ 400, CircuitEventV2::Complete {
-        completion: executed.completion.clone(),
-    }).await;
+    assert!(
+        runtime
+            .committed_causal_records(&store, "run-1", &inputs)
+            .await
+            .is_err()
+    );
+    apply(
+        &store,
+        "complete",
+        /*now_ms*/ 400,
+        CircuitEventV2::Complete {
+            completion: executed.completion.clone(),
+        },
+    )
+    .await;
     let trace = checked(store.bounded_circuit_committed_trace("run-1").await).expect("trace");
     let activation = &trace.run().activations()[&dispatch.activation_id];
     let expected = vec![CircuitCellCausalRecordV1 {
@@ -35,7 +48,8 @@ async fn causal_readback_joins_original_clocks_and_survives_circuit_reopen_witho
         circuit_input_digest: activation.input_digest.clone(),
         circuit_ready_at_ms: activation.ready_at_ms,
         circuit_times: CircuitComputationTimesV2 {
-            claimed_at_ms: Some(13), completed_at_ms: Some(400),
+            claimed_at_ms: Some(13),
+            completed_at_ms: Some(400),
         },
         scope: request.scope.clone(),
         generation: bindings[0].cell.runtime.generation.get(),
@@ -52,14 +66,35 @@ async fn causal_readback_joins_original_clocks_and_survives_circuit_reopen_witho
         computation_outcome: executed.completion.outcome,
     }];
     let before = checked(runtime.state_owner().snapshot(&request.scope));
-    assert_eq!(checked(runtime.committed_causal_records(&store, "run-1", &inputs).await), expected);
+    assert_eq!(
+        checked(
+            runtime
+                .committed_causal_records(&store, "run-1", &inputs)
+                .await
+        ),
+        expected
+    );
     store.close().await;
     let layout = checked(HeptaFleetRoot::parse(directory.path().join("fleet")))
-        .layout().agent(&fence().owner_agent_id);
+        .layout()
+        .agent(&fence().owner_agent_id);
     let reopened = checked(AutomationStore::open(&layout).await);
-    assert_eq!(checked(runtime.committed_causal_records(&reopened, "run-1", &inputs).await), expected);
-    assert_eq!(checked(runtime.state_owner().snapshot(&request.scope)), before);
-    assert_eq!((calls.load(Ordering::SeqCst), reads.load(Ordering::SeqCst)), (1, 0));
+    assert_eq!(
+        checked(
+            runtime
+                .committed_causal_records(&reopened, "run-1", &inputs)
+                .await
+        ),
+        expected
+    );
+    assert_eq!(
+        checked(runtime.state_owner().snapshot(&request.scope)),
+        before
+    );
+    assert_eq!(
+        (calls.load(Ordering::SeqCst), reads.load(Ordering::SeqCst)),
+        (1, 0)
+    );
     reopened.close().await;
 }
 
@@ -71,16 +106,42 @@ async fn causal_readback_refuses_substituted_inputs_and_absent_cell_owner_histor
     let inputs = BTreeMap::from([(dispatch.activation_id, request.clone())]);
     let admission = claim(&store, &dispatch, &bindings[0].cell, &request, 13).await;
     let mut runtime = AgentdCircuitCellOwnerV1::new(
-        checked(CircuitCellRegistryV1::new(definition.clone(), bindings.clone())),
-        native_owner(&bindings), Model::new(/*latency*/ 20, /*lose_response*/ false), Encoder,
+        checked(CircuitCellRegistryV1::new(
+            definition.clone(),
+            bindings.clone(),
+        )),
+        native_owner(&bindings),
+        Model::new(/*latency*/ 20, /*lose_response*/ false),
+        Encoder,
     );
     let executed = checked(runtime.execute(admission, request, time));
-    apply(&store, "complete", /*now_ms*/ 22, CircuitEventV2::Complete {
-        completion: executed.completion,
-    }).await;
-    assert!(runtime.committed_causal_records(&store, "run-1", &BTreeMap::new()).await.is_err());
-    enum Substitution { Observation, Candidates, Source, Clock }
-    for change in [Substitution::Observation, Substitution::Candidates, Substitution::Source, Substitution::Clock] {
+    apply(
+        &store,
+        "complete",
+        /*now_ms*/ 22,
+        CircuitEventV2::Complete {
+            completion: executed.completion,
+        },
+    )
+    .await;
+    assert!(
+        runtime
+            .committed_causal_records(&store, "run-1", &BTreeMap::new())
+            .await
+            .is_err()
+    );
+    enum Substitution {
+        Observation,
+        Candidates,
+        Source,
+        Clock,
+    }
+    for change in [
+        Substitution::Observation,
+        Substitution::Candidates,
+        Substitution::Source,
+        Substitution::Clock,
+    ] {
         let mut substituted = inputs.clone();
         let input = substituted.get_mut(&dispatch.activation_id).expect("input");
         match change {
@@ -89,12 +150,24 @@ async fn causal_readback_refuses_substituted_inputs_and_absent_cell_owner_histor
             Substitution::Source => input.source_frontier = d("different-source"),
             Substitution::Clock => input.monotonic_micros += 1,
         }
-        assert!(runtime.committed_causal_records(&store, "run-1", &substituted).await.is_err());
+        assert!(
+            runtime
+                .committed_causal_records(&store, "run-1", &substituted)
+                .await
+                .is_err()
+        );
     }
     let empty = AgentdCircuitCellOwnerV1::new(
         checked(CircuitCellRegistryV1::new(definition, bindings.clone())),
-        native_owner(&bindings), Model::new(/*latency*/ 20, /*lose_response*/ false), Encoder,
+        native_owner(&bindings),
+        Model::new(/*latency*/ 20, /*lose_response*/ false),
+        Encoder,
     );
-    assert!(empty.committed_causal_records(&store, "run-1", &inputs).await.is_err());
+    assert!(
+        empty
+            .committed_causal_records(&store, "run-1", &inputs)
+            .await
+            .is_err()
+    );
     store.close().await;
 }

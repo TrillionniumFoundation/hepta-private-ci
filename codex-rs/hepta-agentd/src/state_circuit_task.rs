@@ -63,9 +63,14 @@ impl AgentdState {
     ) -> Result<(), AgentdError> {
         if sources.is_empty()
             || sources.len() > crate::learning_iteration::MAX_REGISTERED_CIRCUIT_LEARNING
-            || sources.iter().enumerate().any(|(index, source)| sources[..index].contains(source))
+            || sources
+                .iter()
+                .enumerate()
+                .any(|(index, source)| sources[..index].contains(source))
         {
-            return Err(AgentdError::Invalid("Circuit learning source registry differs".into()));
+            return Err(AgentdError::Invalid(
+                "Circuit learning source registry differs".into(),
+            ));
         }
         self.circuit_learning_source
             .set(sources)
@@ -78,7 +83,10 @@ impl AgentdState {
     }
 
     pub(crate) fn circuit_learning_sources(&self) -> &[StableId] {
-        self.circuit_learning_source.get().map(Vec::as_slice).unwrap_or_default()
+        self.circuit_learning_source
+            .get()
+            .map(Vec::as_slice)
+            .unwrap_or_default()
     }
 
     pub(crate) fn circuit_task_enabled(&self) -> bool {

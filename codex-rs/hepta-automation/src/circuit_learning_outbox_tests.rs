@@ -175,26 +175,57 @@ async fn full_queue_preserves_existing_operation_and_corrupt_history_is_rejected
     let request = digest("retained-request");
     let head = digest("retained-head");
     assert!(matches!(
-        store.retire_acknowledged_circuit_learning(&intent, &request, &head).await,
+        store
+            .retire_acknowledged_circuit_learning(&intent, &request, &head)
+            .await,
         Err(Error::Conflict)
     ));
-    assert!(store.claim_circuit_learning(&intent, &request).await.unwrap());
+    assert!(
+        store
+            .claim_circuit_learning(&intent, &request)
+            .await
+            .unwrap()
+    );
     assert!(matches!(
-        store.retire_acknowledged_circuit_learning(&intent, &request, &head).await,
+        store
+            .retire_acknowledged_circuit_learning(&intent, &request, &head)
+            .await,
         Err(Error::Conflict)
     ));
-    store.acknowledge_circuit_learning(&intent, &request, &head).await.unwrap();
-    assert!(matches!(
-        store.enqueue_circuit_learning(&overflow, digest("objective")).await,
-        Err(Error::Capacity)
-    ), "ACK alone must not retire an identity");
-    store.retire_acknowledged_circuit_learning(&intent, &request, &head).await.unwrap();
-    store.enqueue_circuit_learning(&overflow, digest("objective")).await.unwrap();
+    store
+        .acknowledge_circuit_learning(&intent, &request, &head)
+        .await
+        .unwrap();
+    assert!(
+        matches!(
+            store
+                .enqueue_circuit_learning(&overflow, digest("objective"))
+                .await,
+            Err(Error::Capacity)
+        ),
+        "ACK alone must not retire an identity"
+    );
+    store
+        .retire_acknowledged_circuit_learning(&intent, &request, &head)
+        .await
+        .unwrap();
+    store
+        .enqueue_circuit_learning(&overflow, digest("objective"))
+        .await
+        .unwrap();
     assert_eq!(
-        store.enqueue_circuit_learning(&original, digest("objective")).await.unwrap(),
+        store
+            .enqueue_circuit_learning(&original, digest("objective"))
+            .await
+            .unwrap(),
         intent
     );
-    assert!(!store.claim_circuit_learning(&intent, &request).await.unwrap());
+    assert!(
+        !store
+            .claim_circuit_learning(&intent, &request)
+            .await
+            .unwrap()
+    );
     assert_eq!(
         store
             .pending_circuit_learning(/*limit*/ 64)
@@ -216,33 +247,91 @@ async fn full_queue_preserves_existing_operation_and_corrupt_history_is_rejected
 async fn retired_ack_remains_exact_and_readable_after_reopen() {
     let (_root, store) = store().await;
     let trace = terminal(&store, "retired-run").await;
-    let intent = store.enqueue_circuit_learning(&trace, digest("objective")).await.unwrap();
+    let intent = store
+        .enqueue_circuit_learning(&trace, digest("objective"))
+        .await
+        .unwrap();
     let request = digest("request");
     let head = digest("head");
-    assert!(store.claim_circuit_learning(&intent, &request).await.unwrap());
-    store.acknowledge_circuit_learning(&intent, &request, &head).await.unwrap();
-    let original = store.circuit_learning_delivery("retired-run").await.unwrap().unwrap();
-    store.retire_acknowledged_circuit_learning(&intent, &request, &head).await.unwrap();
+    assert!(
+        store
+            .claim_circuit_learning(&intent, &request)
+            .await
+            .unwrap()
+    );
+    store
+        .acknowledge_circuit_learning(&intent, &request, &head)
+        .await
+        .unwrap();
+    let original = store
+        .circuit_learning_delivery("retired-run")
+        .await
+        .unwrap()
+        .unwrap();
+    store
+        .retire_acknowledged_circuit_learning(&intent, &request, &head)
+        .await
+        .unwrap();
     let path = store.path().parent().unwrap().to_path_buf();
     let owner = store.owner_agent_id().clone();
     store.close().await;
     drop(store);
     let reopened = AutomationStore::open_root(path, owner).await.unwrap();
-    assert_eq!(reopened.circuit_learning_delivery("retired-run").await.unwrap(), Some(original));
-    assert_eq!(reopened.enqueue_circuit_learning(&trace, digest("objective")).await.unwrap(), intent);
-    assert!(!reopened.claim_circuit_learning(&intent, &request).await.unwrap());
-    reopened.retire_acknowledged_circuit_learning(&intent, &request, &head).await.unwrap();
+    assert_eq!(
+        reopened
+            .circuit_learning_delivery("retired-run")
+            .await
+            .unwrap(),
+        Some(original)
+    );
+    assert_eq!(
+        reopened
+            .enqueue_circuit_learning(&trace, digest("objective"))
+            .await
+            .unwrap(),
+        intent
+    );
+    assert!(
+        !reopened
+            .claim_circuit_learning(&intent, &request)
+            .await
+            .unwrap()
+    );
+    reopened
+        .retire_acknowledged_circuit_learning(&intent, &request, &head)
+        .await
+        .unwrap();
     assert!(matches!(
-        reopened.retire_acknowledged_circuit_learning(&intent, &digest("other-request"), &head).await,
+        reopened
+            .retire_acknowledged_circuit_learning(&intent, &digest("other-request"), &head)
+            .await,
         Err(Error::Conflict)
     ));
     assert!(matches!(
-        reopened.retire_acknowledged_circuit_learning(&intent, &request, &digest("other-head")).await,
+        reopened
+            .retire_acknowledged_circuit_learning(&intent, &request, &digest("other-head"))
+            .await,
         Err(Error::Conflict)
     ));
-    assert!(reopened.acknowledge_circuit_learning(&intent, &request, &digest("other-head")).await.is_err());
-    assert!(reopened.claim_circuit_learning(&intent, &digest("other-request")).await.is_err());
-    assert!(reopened.pending_circuit_learning(/*limit*/ 64).await.unwrap().is_empty());
+    assert!(
+        reopened
+            .acknowledge_circuit_learning(&intent, &request, &digest("other-head"))
+            .await
+            .is_err()
+    );
+    assert!(
+        reopened
+            .claim_circuit_learning(&intent, &digest("other-request"))
+            .await
+            .is_err()
+    );
+    assert!(
+        reopened
+            .pending_circuit_learning(/*limit*/ 64)
+            .await
+            .unwrap()
+            .is_empty()
+    );
     reopened.close().await;
 }
 

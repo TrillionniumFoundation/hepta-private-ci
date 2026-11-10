@@ -301,8 +301,8 @@ impl GenerationState {
         // This profile has an explicit control-only STOP. It cannot create a
         // numerical-use receipt or smuggle state/output into the stop event.
         // Other profiles retain their original final-forward semantics.
-        let temporal_stop = manifest.profile == "cell-diagonal-q24-temporal-v1"
-            && request.input == b"HQ24STOP";
+        let temporal_stop =
+            manifest.profile == "cell-diagonal-q24-temporal-v1" && request.input == b"HQ24STOP";
         if temporal_stop
             && (proposal.disposition == CellGenerationDispositionV2::Advanced
                 || proposal.successor_state != self.snapshot.state
