@@ -1,6 +1,7 @@
 """Engineering state and recovery fixtures; no real-task benefit is measured."""
 
 import json
+import os
 from pathlib import Path
 import sqlite3
 import tempfile
@@ -321,6 +322,29 @@ class EpisodicMemoryTests(unittest.TestCase):
         self.assertIsNone(state.get("k"))
         self.assertIsNone(WorkingState("episode-1").get("k"))
 
+
+    def test_snapshot_rejects_fifo_directory_and_symlink_before_read(self):
+        self.put("fact", "Still readable")
+        regular = self.root / "safe-snapshot.json"
+        self.store.export_snapshot(regular)
+        self.assertEqual(len(self.store.view(regular)["records"]), 1)
+        with self.assertRaisesRegex(ValueError, "regular file"):
+            self.store.view(self.root)
+        if hasattr(os, "mkfifo"):
+            fifo = self.root / "untrusted.fifo"
+            os.mkfifo(fifo)
+            # No writer is attached: opening this FIFO must not hang.
+            with self.assertRaisesRegex(ValueError, "regular file"):
+                self.store.view(fifo)
+        alias = self.root / "snapshot-alias.json"
+        try:
+            alias.symlink_to(regular)
+        except (OSError, NotImplementedError):
+            pass  # Windows may lack symlink creation privileges.
+        else:
+            with self.assertRaisesRegex(ValueError, "symlink"):
+                self.store.view(alias)
+        self.assertEqual(len(self.store.view(regular)["records"]), 1)
 
 if __name__ == "__main__":
     unittest.main()
