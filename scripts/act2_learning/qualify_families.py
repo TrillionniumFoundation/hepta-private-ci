@@ -118,6 +118,12 @@ def episode(task, arm, model, path, browser=None):
 
 
 def qualify(archive, output, families, executable):
+    require(
+        bool(families)
+        and len(set(families)) == len(families)
+        and set(families) <= {"filesystem", "browser", "composition"},
+        "invalid family panel",
+    )
     require(not output.exists(), "output already exists")
     output.mkdir(parents=True)
     _, _, inputs = read_archive(archive)
@@ -172,7 +178,30 @@ def qualify(archive, output, families, executable):
                 offset = (index + seed) % len(arms)
                 for arm in arms[offset:] + arms[:offset]:
                     path = work / str(seed) / str(index) / arm
-                    row = episode(task, arm, models.get(arm), path, browser)
+                    try:
+                        row = episode(task, arm, models.get(arm), path, browser)
+                    except Exception as error:
+                        compressed_jsonl(output / "episodes.partial.jsonl.gz", rows)
+                        with tarfile.open(
+                            output / "destination-bytes.partial.tar.xz", "w:xz"
+                        ) as failed_archive:
+                            failed_archive.add(work, arcname="destinations")
+                        (output / "FAILURE.json").write_text(
+                            json.dumps(
+                                {
+                                    "status": "ENGINEERING_FAIL",
+                                    "task_id": task["id"],
+                                    "seed": seed,
+                                    "arm": arm,
+                                    "recorded_episodes": len(rows),
+                                    "error": str(error),
+                                    "production_adoption": False,
+                                },
+                                indent=2,
+                            )
+                            + "\n"
+                        )
+                        raise
                     row.update(
                         seed=seed, destination_member=str(path.relative_to(work))
                     )
@@ -224,8 +253,26 @@ def qualify(archive, output, families, executable):
                     "regressing_seeds": sum(d < 0 for d in delta),
                 }
             )
+    expected = {
+        (seed, arm, task["id"])
+        for seed in frozen["seeds"]
+        for arm in arms
+        for task in cohort
+    }
+    observed = [(row["seed"], row["arm"], row["task_id"]) for row in rows]
+    require(
+        len(observed) == len(expected) and set(observed) == expected,
+        "incomplete or duplicate family panel",
+    )
+    unsafe = any(
+        r["duplicate_effects"] or (r["claimed_success"] and not r["complete"])
+        for r in rows
+    )
     result = {
-        "status": "CONTROLLED_FAMILY_PROBES_COMPLETED",
+        "status": "ENGINEERING_FAIL"
+        if unsafe
+        else "CONTROLLED_FAMILY_PROBES_COMPLETED",
+        "unsafe_effect_observed": unsafe,
         "controlled_probe_tasks": len(cohort),
         "episodes": len(rows),
         "new_independent_real_tasks": 0,
@@ -249,10 +296,6 @@ def qualify(archive, output, families, executable):
         ],
     }
     (output / "RESULT.json").write_text(json.dumps(result, indent=2) + "\n")
-    unsafe = any(
-        r["duplicate_effects"] or (r["claimed_success"] and not r["complete"])
-        for r in rows
-    )
     require(
         not unsafe,
         "false success or duplicate effect observed; raw failed results retained",
