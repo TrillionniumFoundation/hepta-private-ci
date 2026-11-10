@@ -3,6 +3,7 @@
 //! The sole delayed frame below is withheld before touching the actual App FD.
 
 use super::*;
+use pretty_assertions::assert_eq;
 
 #[derive(Default)]
 struct FenceDelayProbe {
