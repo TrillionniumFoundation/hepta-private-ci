@@ -1,0 +1,69 @@
+{
+  "added_entry": "sha256:f34aa002b006c36131417fc5baf5d0bdd4355ca56b605bb9520a22650dfba956 qualification/verify2-original-cargo-log-20261110/original-cargo-deny-129677997786.zip",
+  "after": {
+    "command": [
+      "python",
+      "scripts/check_blob_size.py",
+      "--base",
+      "a2cc5ec82e3fb5d03963910af0961d6aac000b48",
+      "--head",
+      "fb28eae03103b0b31f017e3aeface86da56352b7",
+      "--max-bytes",
+      "512000",
+      "--allowlist",
+      ".github/blob-size-allowlist.txt"
+    ],
+    "exit_code": 0,
+    "stderr": "",
+    "stdout": "Checked 6 changed file(s) against the 512000-byte limit.\n- .github/blob-size-allowlist.txt: 8312 bytes (8.1 KiB) [non-binary, ok]\n- qualification/verify2-original-cargo-log-20261110/MANIFEST.json: 1367 bytes (1.3 KiB) [non-binary, ok]\n- qualification/verify2-original-cargo-log-20261110/README.md: 1746 bytes (1.7 KiB) [non-binary, ok]\n- qualification/verify2-original-cargo-log-20261110/capture-result.json: 1095 bytes (1.1 KiB) [non-binary, ok]\n- qualification/verify2-original-cargo-log-20261110/error-index.json: 13458 bytes (13.1 KiB) [non-binary, ok]\n- qualification/verify2-original-cargo-log-20261110/original-cargo-deny-129677997786.zip: 1738610 bytes (1697.9 KiB) [binary, allowlisted]\n"
+  },
+  "before": {
+    "command": [
+      "python",
+      "scripts/check_blob_size.py",
+      "--base",
+      "a2cc5ec82e3fb5d03963910af0961d6aac000b48",
+      "--head",
+      "d8bee400c26021ab46b8ab5e8e5fe3022adfb0ff",
+      "--max-bytes",
+      "512000",
+      "--allowlist",
+      ".github/blob-size-allowlist.txt"
+    ],
+    "exit_code": 1,
+    "stderr": "",
+    "stdout": "Checked 5 changed file(s) against the 512000-byte limit.\n- qualification/verify2-original-cargo-log-20261110/MANIFEST.json: 1367 bytes (1.3 KiB) [non-binary, ok]\n- qualification/verify2-original-cargo-log-20261110/README.md: 1746 bytes (1.7 KiB) [non-binary, ok]\n- qualification/verify2-original-cargo-log-20261110/capture-result.json: 1095 bytes (1.1 KiB) [non-binary, ok]\n- qualification/verify2-original-cargo-log-20261110/error-index.json: 13458 bytes (13.1 KiB) [non-binary, ok]\n- qualification/verify2-original-cargo-log-20261110/original-cargo-deny-129677997786.zip: 1738610 bytes (1697.9 KiB) [binary, blocked]\n\nFile(s) exceed the configured limit:\n- qualification/verify2-original-cargo-log-20261110/original-cargo-deny-129677997786.zip: 1738610 bytes > 512000 bytes\n\nIf one of these is a real checked-in asset we want to keep, add its repo-relative path to .github/blob-size-allowlist.txt. Otherwise, shrink it or keep it out of git.\n"
+  },
+  "changed_blob_identities": {
+    "MANIFEST.json": "0b95973ee1c123351e261350bec27e4f64a944e5",
+    "README.md": "104589cb5c86ba7a34fe3388baae41b04519a8fd",
+    "capture-result.json": "7b428c070c41d32316145e3f35fdbf68d7d4f190",
+    "error-index.json": "cebb0697977436ca5dd9245138284ee89a39c1df",
+    "original-cargo-deny-129677997786.zip": "5af4630b3b8542a6ccecc3c925464c68918a6369"
+  },
+  "checker_git_blob": "18bc6175c274abaeabe3ef0c32d82627d498bbe7",
+  "max_bytes": 512000,
+  "original_CI": {
+    "observed_at_utc": "2026-11-10T08:45:17.318093+00:00",
+    "policy_job": {
+      "conclusion": null,
+      "id": 129713678977,
+      "name": "Blob size policy / Blob size policy",
+      "status": "queued"
+    },
+    "qualification": "Actual current job status only; the before/after policy result is the labeled local exact-blob replay.",
+    "run_id": 42781900953
+  },
+  "original_allowlist_git_blob": "a110a7e5da320e266a86d4f581b0c0cefffed59a",
+  "production_authority": "NONE",
+  "same_source_cargo_deny_gate": "OPEN",
+  "schema": "hepta.original-cargo-blob-policy-scope.v1",
+  "scientific_admission": "HOLD",
+  "scope_kind": "local_synthetic_git_replay_of_exact_published_changed_blobs_not_full_repository_CI",
+  "source_evidence_base": "139e27d2fbff70a0f5bb808aa506c09e9924f611",
+  "source_evidence_commit": "b8d4a12ee2f47226dc7b079e854cb8f1baa367a9",
+  "synthetic_after": "fb28eae03103b0b31f017e3aeface86da56352b7",
+  "synthetic_base": "a2cc5ec82e3fb5d03963910af0961d6aac000b48",
+  "synthetic_before": "d8bee400c26021ab46b8ab5e8e5fe3022adfb0ff",
+  "workflow_git_blob": "d870b6f9c1e025aff458c32f0461c752fcd2f0b3"
+}
