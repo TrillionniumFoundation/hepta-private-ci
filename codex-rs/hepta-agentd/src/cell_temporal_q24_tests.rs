@@ -177,3 +177,31 @@ fn temporal_q24_late_cancelled_and_rejected_work_preserve_state() -> anyhow::Res
         (CellGenerationDispositionV2::Rejected, config.initial.state, Vec::new()));
     Ok(())
 }
+
+#[test]
+fn q24_factory_selects_temporal_and_rejects_profile_and_genesis_mismatch() -> anyhow::Result<()> {
+    let root = tempfile::tempdir()?;
+    let model = load(root.path(), codec::Q / 2)?;
+    let (bundle, config) = configured(&model)?;
+    let files = || -> anyhow::Result<crate::CellQ24BackendFilesV1> {
+        Ok(crate::CellQ24BackendFilesV1::Temporal(CellTemporalQ24ModelFilesV1 {
+            encoder: File::open(root.path().join("encoder"))?, base: File::open(root.path().join("base"))?,
+            diagonal: File::open(root.path().join("diagonal"))?, heads: File::open(root.path().join("heads"))?,
+        }))
+    };
+    let worker = crate::load_cell_q24_backend_v1(files()?, &bundle, &config, Arc::new(|| 11))?;
+    assert_eq!(worker.execute(&config.manifest, &request(&config, &config.initial, "factory"), &AtomicBool::new(false))?.output_delta, output(codec::Q));
+    let mut mismatch = config.clone();
+    mismatch.manifest.profile = crate::CellQ24GenerationWorkerV1::PROFILE.into();
+    mismatch.initial.manifest_digest = mismatch.manifest.digest()?;
+    assert!(matches!(crate::load_cell_q24_backend_v1(files()?, &bundle, &mismatch, Arc::new(|| 11)), Err(CellGenerationErrorV2::InvalidBinding)));
+    let mut mismatch = config.clone();
+    mismatch.initial.state[50] = 1;
+    assert!(matches!(crate::load_cell_q24_backend_v1(files()?, &bundle, &mismatch, Arc::new(|| 11)), Err(CellGenerationErrorV2::InvalidBinding)));
+    let wrong_files = crate::CellQ24BackendFilesV1::Composed(crate::CellQ24ModelFilesV1 {
+        encoder: File::open(root.path().join("encoder"))?, base: File::open(root.path().join("base"))?,
+        heads: File::open(root.path().join("heads"))?, organ_adapter: None, cell_adapter: None,
+    });
+    assert!(matches!(crate::load_cell_q24_backend_v1(wrong_files, &bundle, &config, Arc::new(|| 11)), Err(CellGenerationErrorV2::InvalidBinding)));
+    Ok(())
+}
