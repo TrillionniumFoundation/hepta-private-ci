@@ -118,6 +118,10 @@ production_update = no-update
 
 原因是尚缺真实 native 状态到有限控制状态的已验证映射、语义校准及真实 future 净收益证据。`SUBMIT` 只在新的本地目录写出文本、PPM 和交付收据，不代表上线或向外部服务提交。
 
+本地交付以 `delivery.json` 的独占原子链接为完成标记；目录或 `delivery.intent.json` 存在都不能视为成功。这是原子完成标记，并非原子目录改名。先写入并同步原始 intent 和各模态字节，再发布完成标记。中途失败可用同一内存会话保留的 terminal bytes、同一目标和同一预算继续提交；不得重跑生成或延长截止时间。提交确认丢失后，只按原来独立保存的 `delivery.identity` 读取并核对全部字节。损坏、陌生文件、不同身份和软链接均拒绝。
+
+`python -m scripts.ndu_bimodal.cli read-delivery --output <原目录> --identity <原identity>` 可在新 Python 进程冷读已提交结果，不加载 Torch 或执行原生模型。该读回返回历史生成收据；额外恢复读取的成本由调用方单独记录，不能当成历史生成费用为零。CLI 的完整执行/成本记录在同级 `<目录名>.execution.json`，不修改已经绑定的交付目录。这里只验证本地交付与读取机制，尚未建立真实 `StageOwnerPorts`、CURRENT/NextUse、daemon/Root 冷恢复或完整机器断电持久性。
+
 ## 6. 成本账本与 no-update
 
 有限 tariff 按 observation、residency、recompute、reuse、coordination、generate、control 七类扣费，包含终止自身费用。真实账本独立记录观测、生成、控制、驻留 byte-seconds、重算、复用、协调和提交；失败、超时及拒绝也保留收据。CLI 从读取权重/图片起计观测成本，跟踪已命名输入、公开张量、候选状态及 checkpoint 载荷的驻留；READ 重放不能免费。

@@ -1,6 +1,7 @@
 """Bounded actual v4 text/image calls; finite-study gains are a separate profile."""
 
 from contextlib import nullcontext
+from copy import deepcopy
 from dataclasses import replace
 import hashlib
 import io
@@ -24,6 +25,7 @@ from scripts.joint_generation_v4_io import (
     request_bytes,
 )
 from scripts.joint_generation_v4_model import ACTIONS, JointGeneratorV4, public_packet
+from scripts.ndu_bimodal.delivery import commit_delivery, prepare_delivery, read_delivery
 
 
 def sha(raw):
@@ -68,12 +70,13 @@ def load_generator(raw):
         raise ValueError("Unknown generator profile")
     if (metadata.get("width"), metadata.get("depth")) != ("32", "1"):
         raise ValueError("Native candidate requires width32/depth1")
-    if metadata.get("mode") != "dual" or metadata.get("boundary") != "direct":
+    if metadata.get("mode") not in {"dual", "ordinary"} or metadata.get("boundary") != "direct":
         raise ValueError("Unsupported native core")
     with torch.random.fork_rng():
         generator = JointGeneratorV4(
             width=32,
             depth=1,
+            mode=metadata["mode"],
             core_state_profile=metadata["core_state_profile"],
             allow_initial_stop=metadata["allow_initial_stop"] == "true",
             suppress_redundant_verify=metadata["suppress_redundant_verify"] == "true",
@@ -152,6 +155,7 @@ class NativeSession:
         )
         self.native_state, self.prefix, self.history, self.calls = b"", b"", [], []
         self.closed, self.state_error = False, 0.0
+        self._terminal_result, self._terminal_assets, self._terminal_output = None, None, None
         self._initialize("observation")
 
     def _operation(self, kind, *, calls=0, finalization=False):
@@ -338,7 +342,19 @@ class NativeSession:
     def finish(self, *, submit=False, output=None):
         if submit and output is None:
             raise ValueError("Local SUBMIT requires a delivery directory")
-        if submit and Path(output).exists():
+        destination = Path(output).absolute() if submit else None
+        if self.closed:
+            if self._terminal_result is None:
+                raise RuntimeError(
+                    "Terminal validation/accounting failed; closed generation cannot be redispatched"
+                )
+            if (
+                submit != (self._terminal_result["action"] == "SUBMIT")
+                or destination != self._terminal_output
+            ):
+                raise ValueError("Terminal recovery must retain its original delivery intent")
+            return self._publish_terminal() if submit else deepcopy(self._terminal_result)
+        if submit and (destination.exists() or destination.is_symlink()):
             raise ValueError("Delivery directory already exists")
         response = self._invoke(bytes([1, 6]), "submit", terminal=True)
         with self._operation("control", finalization=True):
@@ -374,18 +390,40 @@ class NativeSession:
                     name: self.history.count(name) for name in ("text", "image", "both")
                 },
             }
+            assets = {
+                name: media[index]
+                for index, name in ((0, "generated.ppm"), (3, "generated.txt"))
+                if media[index]
+            }
+            if submit:
+                result = prepare_delivery(result, assets)
+        self._terminal_result, self._terminal_assets, self._terminal_output = (
+            deepcopy(result), assets, destination
+        )
         if submit:
-            import json
-
-            with self._operation("submit", finalization=True):
-                output = Path(output)
-                output.mkdir(parents=True, exist_ok=False)
-                for index, name in ((0, "generated.ppm"), (3, "generated.txt")):
-                    if media[index]:
-                        (output / name).write_bytes(media[index])
-                (output / "delivery.json").write_text(
-                    json.dumps(result, indent=2, allow_nan=False) + "\n"
-                )
+            return self._publish_terminal()
         if time.monotonic() > self.deadline:
+            self._terminal_result = None
             raise TimeoutError("Terminal result exceeded the owner deadline")
-        return result
+        return deepcopy(result)
+
+    def _publish_terminal(self):
+        # A completed receipt is historical readback, even after expiry. It
+        # does not renew generation budget or append to original call evidence.
+        if (self._terminal_output / "delivery.json").exists():
+            return read_delivery(
+                self._terminal_output,
+                expected_identity=self._terminal_result["delivery"]["identity"],
+            )
+
+        def before_commit():
+            if time.monotonic() > self.deadline:
+                raise TimeoutError("Terminal publication exceeded the original deadline")
+            if self.ledger is not None and self.ledger.remaining_seconds(finalization=True) <= 0:
+                raise TimeoutError("Terminal publication exhausted the original owner budget")
+
+        with self._operation("submit", finalization=True):
+            return commit_delivery(
+                self._terminal_output, self._terminal_result, self._terminal_assets,
+                before_commit=before_commit,
+            )
