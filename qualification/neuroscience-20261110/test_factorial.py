@@ -143,6 +143,64 @@ class FactorialPreflightTests(unittest.TestCase):
         self.assertEqual(_holm_p(values), {"a": .04, "b": .06, "c": .06, "d": .8})
         self.assertTrue(all(v is None for v in _holm_p({"a": .01, "b": None}).values()))
 
+    def test_adverse_family_visible_despite_positive_pooled_value(self):
+        rows = panel(4, ("dense_ACT", "sparse_CTRL"))
+        rows = [replace(row, gross_value=0.5)
+                if row.family == "dense_ACT" and row.arm == "D" else row
+                for row in rows]
+        got = factorial_evidence(rows)
+        self.assertGreater(got["contrasts"]["D_minus_B"]["mean_net_delta"], 0)
+        self.assertLess(got["family_contrasts"]["dense_ACT"]["D_minus_B"]["mean_net_delta"], 0)
+        self.assertGreater(got["family_contrasts"]["sparse_CTRL"]["D_minus_B"]["mean_net_delta"], 0)
+        self.assertEqual(got["negative_net_families_by_contrast"]["D_minus_B"], ["dense_ACT"])
+        self.assertEqual(got["qualification"], "HOLD_NO_GO")
+
+    def test_missing_any_future_outcome_masks_all_family_diagnostics(self):
+        rows = panel(2, ("dense_ACT", "sparse_CTRL"))
+        rows[0] = replace(rows[0], full_cost=None)
+        got = factorial_evidence(rows)
+        self.assertIsNone(got["negative_net_families_by_contrast"]["D_minus_B"])
+        for family in ("dense_ACT", "sparse_CTRL"):
+            for contrast in got["family_contrasts"][family].values():
+                self.assertIsNone(contrast["mean_net_delta"])
+
+    def test_family_roster_omission_is_not_a_matched_panel(self):
+        rows = panel(2, ("dense_ACT", "sparse_CTRL"))
+        rows = [row for row in rows
+                if not (row.seed == 1 and row.family == "dense_ACT")]
+        with self.assertRaisesRegex(FactorialContractError, "unequal family"):
+            factorial_evidence(rows)
+
+    def test_extra_episode_for_one_seed_is_not_balanced(self):
+        rows = panel(2, ("dense_ACT",))
+        copies = [replace(row, episode_id="future-extra",
+                          outcome_receipt_digest=h(f"extra/{row.arm}"))
+                  for row in rows if row.seed == 0]
+        with self.assertRaisesRegex(FactorialContractError, "unequal family"):
+            factorial_evidence(rows + copies)
+
+    def test_model_identity_swap_between_families_refused(self):
+        rows = panel(2, ("dense_ACT", "sparse_CTRL"))
+        rows = [replace(row, core_model_digest=h("swapped-hepta-core"))
+                if row.family == "sparse_CTRL" and row.arm in ("C", "D")
+                else row for row in rows]
+        with self.assertRaisesRegex(FactorialContractError, "cohort identity drift"):
+            factorial_evidence(rows)
+
+    def test_evaluator_identity_swap_between_families_refused(self):
+        rows = panel(2, ("dense_ACT", "sparse_CTRL"))
+        rows = [replace(row, evaluator_digest=h("second-evaluator"))
+                if row.family == "sparse_CTRL" else row for row in rows]
+        with self.assertRaisesRegex(FactorialContractError, "cohort identity drift"):
+            factorial_evidence(rows)
+
+    def test_train_eval_identical_digest_is_refused(self):
+        rows = panel(1)
+        rows = [replace(row, train_data_digest=row.workload_digest)
+                for row in rows]
+        with self.assertRaisesRegex(FactorialContractError, "disjointness violated"):
+            factorial_evidence(rows)
+
 
 if __name__ == "__main__":
     unittest.main()

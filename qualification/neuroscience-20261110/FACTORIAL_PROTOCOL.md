@@ -23,3 +23,20 @@ This independent research-only protocol **does not run a model or external task*
 ## Gate interpretation
 
 A passing test certifies **only input-contract mechanics**. Even if every input flag reads true and every p-value appears small, `credential_verification=NOT_PERFORMED`, `owner_attestation=NOT_PERFORMED`, `realized_cost_audit=NOT_PERFORMED`, `qualification=HOLD_NO_GO` and `authority=DENY_ALL` are unchanged. Never auto-deploy or equate this shadow preflight with independent scientific effect.
+
+## Frozen prospective cohort and family diagnostics
+
+Every seed must contribute an identical predeclared family/episode-count roster.
+Within a seed and arm, the declared training data, evaluator, capacity, core
+and controller identities must remain frozen across future task families.
+Task-specific workload/feedback contracts may differ. Identical training and
+future-task digests are rejected, but distinct hashes **do not prove dataset
+disjointness, independence, or an actual cutoff**. Original owners must
+separately authenticate these claims.
+
+Each registered family now has descriptive net-value, cost and retention
+contrasts and an explicit negative-delta list, so a positive aggregate cannot
+hide PERC/ACT/other family regression. A missing outcome anywhere masks all
+family net-value diagnostics. These diagnostics are **not** new significance
+tests or real execution evidence. No model adoption, owner authentication,
+outside-dataset qualification, or deployment occurs. HOLD_NO_GO / DENY_ALL.
