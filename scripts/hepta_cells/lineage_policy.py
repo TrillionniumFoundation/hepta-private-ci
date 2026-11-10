@@ -184,9 +184,11 @@ class CellRoster:
         groups = {}
         for cell in self.cells:
             if cell.feature_share_group is not None:
-                # Shared model residency is not cross-principal/agent authorization.
+                # Live shared features cannot cross an original state run partition.
+                # No separate owner or implicit cross-run reuse is introduced here.
                 identity = (
-                    cell.principal_id, cell.agent_id, cell.state_owner, cell.data_scope,
+                    cell.principal_id, cell.agent_id, cell.run_id,
+                    cell.state_owner, cell.data_scope,
                     cell.components.shared_feature_identity, cell.feature_abi,
                 )
                 old = groups.setdefault(cell.feature_share_group, identity)
