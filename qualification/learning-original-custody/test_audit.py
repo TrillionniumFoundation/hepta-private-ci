@@ -46,6 +46,7 @@ class AuditTests(unittest.TestCase):
                 'next_task_id': 'task-B' if stage == 'learning_next_use' else None,
                 'task_id': 'task-B' if stage == 'next_use' else 'task-A',
                 'bundle_sha256': 'b' * 64,
+                'selection_digest': 'c' * 64 if stage in ('selection', 'learning_next_use') else None,
             }
 
     def check(self):
@@ -225,6 +226,24 @@ class AuditTests(unittest.TestCase):
         result = self.check()
         self.assertEqual(result['integrity'], 'FAIL')
         self.assertIn('attempt_cost:1', result['issues'])
+
+    def test_selection_must_bind_adopted_and_retained_versions(self):
+        self.record['original_receipts']['selection']['bundle_sha256'] = 'a' * 64
+        self.assertIn('wrong_consumed_version:selection', self.check()['issues'])
+        self.trainer_no_update()
+        self.record['original_receipts']['selection']['bundle_sha256'] = 'b' * 64
+        self.assertIn('wrong_consumed_version:selection', self.check()['issues'])
+
+    def test_terminal_next_use_must_reference_original_selection_digest(self):
+        self.record['original_receipts']['learning_next_use']['selection_digest'] = 'd' * 64
+        self.assertIn('terminal_selection_unbound', self.check()['issues'])
+
+    def test_selection_digest_is_mandatory_and_well_formed(self):
+        self.record['original_receipts']['selection'].pop('selection_digest')
+        self.assertIn('invalid_selection_digest:selection', self.check()['issues'])
+        self.record['original_receipts']['selection']['selection_digest'] = 'c' * 64
+        self.record['original_receipts']['learning_next_use']['selection_digest'] = 'bad'
+        self.assertIn('invalid_selection_digest:learning_next_use', self.check()['issues'])
 
     def test_unknown_is_not_success(self):
         self.record['attempts'][2]['state'] = 'unknown'
