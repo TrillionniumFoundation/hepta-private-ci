@@ -290,6 +290,22 @@ impl SqliteConfig {
             .await
     }
 
+    /// Open an existing SQLite database for read-only inspection.
+    ///
+    /// This single-connection pool cannot create, migrate, or write the source.
+    /// Read-only qualification must not silently become an evidence writer.
+    pub async fn open_read_only_pool(&self, path: &Path) -> Result<SqlitePool, Error> {
+        let options = SqliteConnectOptions::new()
+            .filename(path)
+            .read_only(true)
+            .create_if_missing(false)
+            .log_statements(LevelFilter::Off);
+        SqlitePoolOptions::new()
+            .max_connections(1)
+            .connect_with(options)
+            .await
+    }
+
     /// Open a writable Codex SQLite database, creating it if necessary.
     pub async fn open_read_write_pool(&self, path: &Path) -> Result<SqlitePool, Error> {
         let options = SqliteConnectOptions::new()
