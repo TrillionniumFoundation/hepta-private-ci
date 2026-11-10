@@ -1,0 +1,229 @@
+name: Common pin-utils lock qualification
+
+on:
+  pull_request:
+    branches: [research/verify2-common-candidate-20261110]
+    paths:
+      - .github/workflows/common-pin-utils-qualification.yml
+      - codex-rs/Cargo.lock
+      - MODULE.bazel.lock
+
+permissions:
+  contents: read
+
+jobs:
+  native-windows-locks:
+    runs-on: windows-2025
+    timeout-minutes: 60
+    env:
+      EXPECTED_SOURCE: ${{ github.event.pull_request.head.sha }}
+      SOURCE_BASE: a2cd828aad47c56ac8c01dc2e423454eca7eafae
+      REUSED_COMMIT: 54d73e897e088369b37db1575af146d228b5db25
+      CARGO_INCREMENTAL: "0"
+    steps:
+      - name: Check out immutable proposal without saved credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+          fetch-depth: 16
+
+      - name: Freeze source and the exact reused dependency proposal
+        shell: pwsh
+        run: |
+          $env:EVIDENCE_DIR = Join-Path $env:RUNNER_TEMP 'common-pin-utils'
+          "EVIDENCE_DIR=$env:EVIDENCE_DIR" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          New-Item -ItemType Directory -Force $env:EVIDENCE_DIR | Out-Null
+          $harness = @'
+          import hashlib, json, os, pathlib, platform, shutil, subprocess, sys, tomllib, traceback
+          ROOT = pathlib.Path(os.environ["GITHUB_WORKSPACE"]).resolve()
+          OUT = pathlib.Path(os.environ["EVIDENCE_DIR"]).resolve()
+          BASE, HEAD = os.environ["SOURCE_BASE"], os.environ["EXPECTED_SOURCE"]
+          WORKFLOW = ".github/workflows/common-pin-utils-qualification.yml"
+          OLD = {"codex-rs/Cargo.lock": "b7e710988d6a3377a7e0a1dc68aef49c68dda36e",
+                 "MODULE.bazel.lock": "b91bee756020f2b6b0e92b1a5c4477e6a180149e"}
+          NEW = {"codex-rs/Cargo.lock": "e2ccaea9223bfbbbd86deb97618c01a9b45e2ec6",
+                 "MODULE.bazel.lock": "99920e713b6434ba20ec753838b06b5697ce1366"}
+          STATE = OUT / "status.json"
+          state = json.loads(STATE.read_text()) if STATE.exists() else {
+              "scoped_windows_lock_qualification": "OPEN", "failures": [],
+              "other_five_unsuppressed_advisories": "OPEN", "full_same_source_gate": "OPEN",
+              "source_base": BASE, "source_head": HEAD,
+              "reused_dependency_commit": os.environ["REUSED_COMMIT"]}
+          def save():
+              STATE.write_text(json.dumps(state, indent=2) + "\n", encoding="utf-8")
+          def require(ok, message):
+              if not ok:
+                  raise RuntimeError(message)
+          def run(argv, cwd=ROOT, check=True):
+              executable = shutil.which(argv[0])
+              require(executable is not None, "executable unavailable: " + argv[0])
+              journal = OUT / "commands.jsonl"
+              number = len(journal.read_text().splitlines()) + 1 if journal.exists() else 1
+              stem = f"{number:02d}-{sys.argv[1]}"
+              stdout, stderr = OUT / (stem + ".stdout"), OUT / (stem + ".stderr")
+              command = [executable, *argv[1:]]
+              with stdout.open("wb") as out, stderr.open("wb") as err:
+                  result = subprocess.run(command, cwd=cwd, stdout=out, stderr=err)
+              record = {"argv": command, "cwd": str(cwd), "exit_code": result.returncode,
+                        "stdout": stdout.name, "stderr": stderr.name}
+              with journal.open("a", encoding="utf-8") as log:
+                  log.write(json.dumps(record) + "\n")
+              require(not check or result.returncode == 0, "command failed: " + json.dumps(record))
+              return stdout.read_text(encoding="utf-8", errors="replace")
+          def snapshot(label):
+              target = OUT / label
+              target.mkdir(exist_ok=True)
+              for path in NEW:
+                  if (ROOT / path).is_file():
+                      shutil.copyfile(ROOT / path, target / pathlib.Path(path).name)
+          def package(lock, name):
+              found = [p for p in lock["package"] if p["name"] == name]
+              require(len(found) == 1, "expected one locked package: " + name)
+              return found[0]
+          def semantic_aws(lock):
+              entry = dict(package(lock, "aws-config"))
+              deps = entry.get("dependencies", [])
+              if "aws-smithy-schema" in deps:
+                  schemas = [p["version"] for p in lock["package"] if p["name"] == "aws-smithy-schema"]
+                  require(schemas == ["0.2.1"], "ambiguous original schema dependency")
+                  deps = ["aws-smithy-schema 0.2.1" if d == "aws-smithy-schema" else d for d in deps]
+              entry["dependencies"] = deps
+              return entry
+          def guard():
+              snapshot("before")
+              actual = run(["git", "rev-parse", "HEAD"]).strip()
+              source = {"head": actual, "tree": run(["git", "rev-parse", "HEAD^{tree}"]).strip(),
+                        "base": BASE, "reused_commit": os.environ["REUSED_COMMIT"],
+                        "platform": platform.platform(), "python": sys.version, "python_executable": sys.executable,
+                        "run_id": os.environ.get("GITHUB_RUN_ID"), "run_attempt": os.environ.get("GITHUB_RUN_ATTEMPT"),
+                        "old_blobs": OLD, "new_blobs": NEW}
+              (OUT / "source.json").write_text(json.dumps(source, indent=2) + "\n", encoding="utf-8")
+              require(actual == HEAD, "checkout differs from immutable PR head")
+              require(not run(["git", "status", "--porcelain=v1", "--untracked-files=all"]).strip(), "initial worktree is dirty")
+              run(["git", "merge-base", "--is-ancestor", BASE, "HEAD"])
+              changed = run(["git", "diff", "--name-only", BASE, "HEAD"]).splitlines()
+              require(set(changed) == {*NEW, WORKFLOW}, "proposal must change exactly two locks and this workflow")
+              protected = run(["git", "diff", "--binary", BASE, "HEAD", "--", ".",
+                               ":!codex-rs/Cargo.lock", ":!MODULE.bazel.lock", ":!" + WORKFLOW])
+              (OUT / "dependency-inputs.diff").write_text(protected, encoding="utf-8")
+              require(not protected, "a member manifest, vendor source, module, toolchain or policy changed")
+              (OUT / "proposal.diff").write_text(run(["git", "diff", "--binary", BASE, "HEAD"]), encoding="utf-8")
+              baseline = OUT / "baseline"
+              baseline.mkdir(exist_ok=True)
+              for path in NEW:
+                  require(run(["git", "rev-parse", BASE + ":" + path]).strip() == OLD[path], "unexpected original lock blob: " + path)
+                  require(run(["git", "rev-parse", "HEAD:" + path]).strip() == NEW[path], "reviewed lock blob changed: " + path)
+                  (baseline / pathlib.Path(path).name).write_text(run(["git", "show", BASE + ":" + path]), encoding="utf-8", newline="")
+              for ref in [BASE, "HEAD"]:
+                  require(run(["git", "rev-parse", ref + ":codex-rs/Cargo.toml"]).strip() == "7e2ec509988e11cdf92130e385ffdf409bbcc15d", "workspace manifest changed")
+              old = tomllib.loads((baseline / "Cargo.lock").read_text(encoding="utf-8"))
+              new = tomllib.loads((ROOT / "codex-rs/Cargo.lock").read_text(encoding="utf-8"))
+              require(semantic_aws(old) == semantic_aws(new), "patched aws-config identity or semantic dependencies changed")
+              aws = package(new, "aws-config")
+              require(aws["version"] == "1.12.0" and "source" not in aws, "patched aws-config identity lost")
+              require(not any(p["name"] == "pin-utils" for p in new["package"]), "pin-utils remains locked")
+              state["candidate_aws_config_entry"] = aws
+              state["frozen_input_guard"] = "PASS"
+          def qualify():
+              require(state.get("frozen_input_guard") == "PASS", "frozen input guard did not pass")
+              require(platform.system() == "Windows", "native Windows is required")
+              crate_root = ROOT / "codex-rs"
+              rust = run(["rustc", "--version", "--verbose"], cwd=crate_root)
+              require("rustc 1.96.0 " in rust and "host: x86_64-pc-windows-msvc" in rust, "unexpected Rust compiler or host")
+              require(run(["cargo", "--version"], cwd=crate_root).startswith("cargo 1.96.0 "), "unexpected Cargo compiler")
+              run(["just", "--version"])
+              require("bazel 9.3.0" in run(["bazel", "version", "--gnu_format"]), "unexpected Bazel version")
+              lock = crate_root / "Cargo.lock"
+              frozen = hashlib.sha256(lock.read_bytes()).hexdigest()
+              metadata = json.loads(run(["cargo", "metadata", "--locked", "--all-features", "--format-version", "1"], cwd=crate_root))
+              packages = {p["id"]: p for p in metadata["packages"]}
+              nodes = metadata["resolve"]["nodes"]
+              require(not any(p["name"] == "pin-utils" for p in packages.values()), "metadata contains pin-utils")
+              require(nodes and all(n["id"] in packages for n in nodes), "incomplete resolved graph")
+              require(all(d in packages for n in nodes for d in n["dependencies"]), "unmapped resolved dependency")
+              require(all(packages[n["id"]]["name"] != "pin-utils" for n in nodes), "resolved pin-utils node")
+              require(hashlib.sha256(lock.read_bytes()).hexdigest() == frozen, "locked metadata changed Cargo.lock")
+              manifest = tomllib.loads((crate_root / "Cargo.toml").read_text(encoding="utf-8"))
+              patch = manifest["patch"]["crates-io"]["aws-config"]["path"]
+              aws = [p for p in packages.values() if p["name"] == "aws-config"]
+              require(len(aws) == 1 and aws[0]["version"] == "1.12.0" and aws[0]["source"] is None, "metadata lost patched aws-config")
+              require(pathlib.Path(aws[0]["manifest_path"]).resolve() == (crate_root / patch / "Cargo.toml").resolve(), "another aws-config source path selected")
+              (OUT / "graph-verification.json").write_text(json.dumps({"pin_utils_absent": True,
+                  "packages": len(packages), "resolve_nodes": len(nodes), "cargo_lock_sha256": frozen,
+                  "aws_config_manifest": aws[0]["manifest_path"]}, indent=2) + "\n", encoding="utf-8")
+              run(["just", "bazel-lock-update"])
+              run(["just", "fmt"], cwd=crate_root)
+              current = tomllib.loads(lock.read_text(encoding="utf-8"))
+              require(package(current, "aws-config") == state["candidate_aws_config_entry"], "candidate aws-config entry changed during qualification")
+              run(["git", "diff", "--exit-code"])
+              require(not run(["git", "status", "--porcelain=v1", "--untracked-files=all"]).strip(), "qualification mutated source")
+              state["scoped_windows_lock_qualification"] = "PASS"
+          def finalize():
+              snapshot("after")
+              for name, argv in {"worktree.diff": ["git", "diff", "--binary"],
+                                 "worktree-status.txt": ["git", "status", "--porcelain=v1", "--untracked-files=all"]}.items():
+                  (OUT / name).write_text(run(argv, check=False), encoding="utf-8")
+              state["job_status_before_finalization"] = os.environ.get("JOB_STATUS")
+              if state["scoped_windows_lock_qualification"] != "PASS":
+                  state["scoped_windows_lock_qualification"] = "FAIL"
+              save()
+              files = {}
+              for path in sorted(OUT.rglob("*")):
+                  if path.is_file() and path.name != "hash-manifest.json":
+                      data = path.read_bytes()
+                      files[path.relative_to(OUT).as_posix()] = {"bytes": len(data), "sha256": hashlib.sha256(data).hexdigest()}
+              (OUT / "hash-manifest.json").write_text(json.dumps(files, indent=2) + "\n", encoding="utf-8")
+          try:
+              {"guard": guard, "qualify": qualify, "finalize": finalize}[sys.argv[1]]()
+              if sys.argv[1] != "finalize":
+                  save()
+          except Exception:
+              state["failures"].append({"phase": sys.argv[1], "traceback": traceback.format_exc()})
+              state["scoped_windows_lock_qualification"] = "FAIL"
+              save()
+              raise
+          '@
+          [IO.File]::WriteAllText((Join-Path $env:EVIDENCE_DIR 'qualify.py'), $harness, [Text.UTF8Encoding]::new($false))
+          python "$env:EVIDENCE_DIR/qualify.py" guard
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Prepare existing native Bazel environment
+        uses: ./.github/actions/setup-bazel-ci
+        with:
+          target: x86_64-pc-windows-msvc
+
+      - name: Install pinned native Rust compiler
+        uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489
+        with:
+          toolchain: 1.96.0
+          components: clippy,rustfmt,rust-src
+
+      - name: Verify locked graph, regenerate Bazel lock and format
+        shell: pwsh
+        run: |
+          python "$env:EVIDENCE_DIR/qualify.py" qualify
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Retain partial results and remaining open gates
+        if: always()
+        env:
+          JOB_STATUS: ${{ job.status }}
+        shell: pwsh
+        run: |
+          python "$env:EVIDENCE_DIR/qualify.py" finalize
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          @'
+          This job qualifies only the two reused dependency locks on native Windows.
+          The other five unsuppressed advisories and full same-source gate remain OPEN.
+          Generated files are a review proposal; this workflow never commits or pushes.
+          '@ | Add-Content $env:GITHUB_STEP_SUMMARY
+
+      - name: Upload source, lock preimages, raw logs, diffs, status and hashes
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: common-pin-utils-${{ github.event.pull_request.head.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/common-pin-utils
+          if-no-files-found: error
+          retention-days: 14
