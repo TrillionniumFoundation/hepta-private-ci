@@ -63,6 +63,54 @@ class EpisodicMemoryTests(unittest.TestCase):
         self.assertEqual(replacement["version"], 3)
         self.assertEqual(reopened.view(snapshot)["records"], [])
 
+    def test_reverse_key_order_chain_revokes_entire_dependency_closure(self):
+        # Descendants sort before their parents in the SQLite key order; a
+        # full repeated scan grows quadratically on this legal input.
+        for action in ("update", "revoke"):
+            with self.subTest(action=action):
+                store = EpisodicStore(
+                    self.root / f"reverse-{action}.sqlite", namespace="team-a"
+                )
+                root = store.put(
+                    "source-a", "root", "Root", provenance=provenance()
+                )
+                chain = [root]
+                for index in range(96):
+                    child = store.put(
+                        "source-a",
+                        f"{96 - index:04d}",
+                        f"Derived {index}",
+                        provenance=provenance(),
+                        dependencies=[chain[-1]["record_id"]],
+                    )
+                    chain.append(child)
+                before = store.view()["receipt"]["authority_generation"]
+                snapshot = self.root / f"reverse-{action}.json"
+                store.export_snapshot(snapshot)
+                if action == "update":
+                    replacement = store.put(
+                        "source-a",
+                        "root",
+                        "New root",
+                        provenance=provenance("2", "update"),
+                    )
+                    self.assertEqual(store.view()["records"], [replacement])
+                else:
+                    receipt = store.revoke("source-a", "root")
+                    self.assertEqual(
+                        set(receipt["affected_ids"]),
+                        {record["record_id"] for record in chain},
+                    )
+                    self.assertEqual(store.view()["records"], [])
+                recovered = store.view(snapshot)
+                self.assertEqual(recovered["records"], [])
+                self.assertEqual(
+                    recovered["receipt"]["snapshot_rejections"], len(chain)
+                )
+                self.assertEqual(
+                    recovered["receipt"]["authority_generation"], before + 1
+                )
+
     def test_namespace_isolation_and_foreign_dependency_rejection(self):
         first = self.put("fact", "Team A value")
         other = EpisodicStore(self.store.path, namespace="team-b", create=False)
