@@ -17,7 +17,7 @@ concurrency:
 jobs:
   diagnostic:
     runs-on: windows-2025
-    timeout-minutes: 5
+    timeout-minutes: 8
     env:
       REVIEWED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
     steps:
