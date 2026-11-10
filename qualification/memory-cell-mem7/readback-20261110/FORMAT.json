@@ -1,0 +1,45 @@
+{
+  "actor_source_changed": false,
+  "after": {
+    "qualification/memory-cell-mem7/readback-20261110/audit_hosted.py": {
+      "normalized_ast_sha256": "721280f2af5f5c45558513250413e488db512128020517d830bcef64ccfb3278",
+      "sha256": "fcb92d09c82ecbc1955bd67092236147f12e5440d16d5f112fa7b39d36ca1a21"
+    },
+    "qualification/memory-cell-mem7/readback-20261110/audit_retained.py": {
+      "normalized_ast_sha256": "be9e51038392b14b2e3cd1ba6661c9b3a9d6b48683a2478872439caa004b097f",
+      "sha256": "b1b655b780b27c124a4b15de82ab1f5e95603d4e937aa6fce3f7f68cb5ed708d"
+    }
+  },
+  "before": {
+    "qualification/memory-cell-mem7/readback-20261110/audit_hosted.py": {
+      "normalized_ast_sha256": "721280f2af5f5c45558513250413e488db512128020517d830bcef64ccfb3278",
+      "sha256": "b1d24f971a2c57f83d6038d107a631012a81c4e4848e06f7287d3c6967dc0252"
+    },
+    "qualification/memory-cell-mem7/readback-20261110/audit_retained.py": {
+      "normalized_ast_sha256": "be9e51038392b14b2e3cd1ba6661c9b3a9d6b48683a2478872439caa004b097f",
+      "sha256": "5ac5dbb1e4ebbb8588512ee0e24136f6008a4e6c3ca14b37e0ec1feb3a9a431f"
+    }
+  },
+  "formatter_commands": [
+    [
+      "/workspace/scratch/475c3546ece4/tooling/bin/ruff",
+      "format",
+      "--config",
+      "scripts/pyproject.toml",
+      "qualification/memory-cell-mem7/readback-20261110/audit_retained.py",
+      "qualification/memory-cell-mem7/readback-20261110/audit_hosted.py"
+    ],
+    [
+      "/workspace/scratch/3a9f1e34ac14/verify4-just/bin/just",
+      "fmt"
+    ]
+  ],
+  "formatter_exit_codes": [
+    0,
+    0
+  ],
+  "historical_evidence_files_reformatted": false,
+  "normalized_asts_equal": true,
+  "schema": "hepta.mem7.evidence-format.v1",
+  "tests_reexecuted_after_format": false
+}

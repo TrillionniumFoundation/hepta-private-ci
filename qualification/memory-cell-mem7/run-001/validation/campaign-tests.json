@@ -1,0 +1,37 @@
+{
+  "base_sha": "32a19ec3b1894c3afc41eb978edaefb213d9eeed",
+  "before": {
+    "commit": "9385535e683b97058fedeee490c6ff921652f793",
+    "dirty": true,
+    "parents": [
+      "32a19ec3b1894c3afc41eb978edaefb213d9eeed"
+    ],
+    "tree": "7450903545bb0c20b3ef44dfe93a0c85d2fdb709"
+  },
+  "command": [
+    "python",
+    "-B",
+    "-m",
+    "unittest",
+    "-v",
+    "ndu_real_runtime.test_episodic_memory",
+    "ndu_real_runtime.test_episodic_retrieval",
+    "ndu_real_runtime.test_episodic_qualification",
+    "ndu_real_runtime.test_revocation_qualification"
+  ],
+  "command_exit_code": null,
+  "elapsed_seconds": 0.0764544850007951,
+  "error": "checkout does not match the clean tested identity",
+  "exit_code": 2,
+  "finished_at": "2026-11-10T14:36:13.447057+00:00",
+  "job": null,
+  "lane": "source-head",
+  "run_attempt": null,
+  "run_id": null,
+  "schema_version": 1,
+  "source_sha": "9385535e683b97058fedeee490c6ff921652f793",
+  "started_at": "2026-11-10T14:36:13.369680+00:00",
+  "status": "rejected",
+  "tested_sha": "9385535e683b97058fedeee490c6ff921652f793",
+  "working_directory": "/workspace/scratch/73df58fb9a78/hepta-mem"
+}
