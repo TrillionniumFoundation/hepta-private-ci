@@ -136,6 +136,8 @@ async fn ordinary_source_publishes_original_circuit_result_and_reopens_exact_inp
     assert!(owner.read_publication(&identity, &record("A")).is_err());
     owner.publish_result(&identity, &record("A"), &receipt)?;
     let published = owner.read_publication(&identity, &record("A"))?;
+    assert_eq!(owner.read_run_publication(&identity, &cell::id("A"))?, published);
+    assert!(owner.read_run_publication(&identity, &cell::id("C")).is_err());
     assert_eq!(published.original_record(), &record("A"));
     assert_eq!(published.input().observation, sources[0].observation);
     assert_eq!(published.output(), receipt.executions().values().next().expect("one Cell").output);
@@ -148,6 +150,7 @@ async fn ordinary_source_publishes_original_circuit_result_and_reopens_exact_inp
     let reopened = Source::recover(opened(root.path(), "source-journal")?, witness(root.path(), "source-witness")?,
         &identity, &fence, &registry()?, sources.clone())?;
     assert_eq!(reopened.read_publication(&identity, &record("A"))?, published);
+    assert_eq!(reopened.read_run_publication(&identity, &cell::id("A"))?, published);
     assert_eq!(reopened.build(&identity, &record("A"))?, request);
     let model = cell::Model::new(/*latency*/ 20, /*lose_response*/ false);
     let recovered_calls = Arc::clone(&model.calls);
@@ -272,6 +275,7 @@ fn ordinary_source_withdrawal_and_uncertain_withdrawal_survive_reopen() -> anyho
             &identity, &fence, &registry()?, sources)?;
         assert!(reopened.build(&identity, &record("A")).is_err());
         assert!(reopened.read_publication(&identity, &record("A")).is_err());
+        assert!(reopened.read_run_publication(&identity, &cell::id("A")).is_err());
         assert_eq!(fs::read(root.path().join("source-journal"))?, bytes);
     }
     Ok(())

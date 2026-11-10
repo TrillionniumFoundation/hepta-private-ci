@@ -90,6 +90,8 @@ pub struct CircuitTaskSourcePublicationV1 {
     output: Vec<u8>,
     history_digest: Sha256Digest,
     publication_digest: Digest32,
+    bundle_digest: Digest32,
+    checkpoint_digest: Digest32,
     result_bytes: Vec<u8>,
 }
 
@@ -100,6 +102,12 @@ impl CircuitTaskSourcePublicationV1 {
     pub fn history_digest(&self) -> &Sha256Digest { &self.history_digest }
     pub fn publication_digest(&self) -> Digest32 { self.publication_digest }
     pub fn result_bytes(&self) -> &[u8] { &self.result_bytes }
+    pub fn bundle_digest(&self) -> Digest32 { self.bundle_digest }
+    pub fn checkpoint_digest(&self) -> Digest32 { self.checkpoint_digest }
+
+    pub(crate) fn require_decision(&self, decision: &codex_hepta_neuron::CellDecisionReceiptV1) -> Result<(), Error> {
+        codec::require_decision(&self.result_bytes, decision)
+    }
 }
 
 struct SourceOwner<W> {
@@ -192,9 +200,10 @@ impl<W: AnchorWitnessStore> DurableCircuitTaskSourceV1<W> {
         if input != source.input(input.operation_id.clone()) { return Err(Error::InvalidBinding); }
         let result_bytes = owner.read("result", &request.start.run_id)?;
         let (history_digest, output) = codec::publication(&result_bytes, &saved_input)?;
+        let (bundle_digest, checkpoint_digest) = codec::decision_metadata(&result_bytes)?;
         owner.require_current()?;
         Ok(CircuitTaskSourcePublicationV1 {
-            record: record.clone(), input, output, history_digest,
+            record: record.clone(), input, output, history_digest, bundle_digest, checkpoint_digest,
             publication_digest: Digest32::of_parts(&[
                 b"hepta.circuit.original-source-publication.v1\0", owner.binding.as_array(),
                 &request_bytes, &saved_input, &result_bytes,
@@ -207,6 +216,22 @@ impl<W: AnchorWitnessStore> DurableCircuitTaskSourceV1<W> {
     pub fn withdraw_source(&self, run_id: &StableId) -> Result<(), Error> {
         let mut owner = self.0.lock().map_err(|_| Error::Unavailable)?;
         owner.retain("withdraw", run_id.as_str(), b"HCSTWDR1", CircuitTaskInputModeV1::Prepare)
+    }
+
+    /// Read the complete original RunStart from this owner's durable request,
+    /// then revalidate its exact publication. This cannot build/admit a task or
+    /// fill a missing/Pending stage. Current withdrawal and witness checks run
+    /// again after acquiring the publication read lock.
+    pub fn read_run_publication(&self, identity: &AgentdIdentity, run_id: &StableId)
+        -> Result<CircuitTaskSourcePublicationV1, Error> {
+        let record = {
+            let mut owner = self.0.lock().map_err(|_| Error::Unavailable)?;
+            if identity != &owner.identity { return Err(Error::InvalidBinding); }
+            owner.require_active(run_id.as_str())?;
+            codec::original_record(&owner.read("request", run_id.as_str())?)?
+        };
+        if &record.snapshot.run_id != run_id { return Err(Error::InvalidBinding); }
+        self.read_publication(identity, &record)
     }
 }
 

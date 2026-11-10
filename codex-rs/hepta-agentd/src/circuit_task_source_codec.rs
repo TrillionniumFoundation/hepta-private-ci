@@ -91,6 +91,61 @@ pub(super) fn require_request(bytes: &[u8], request: &CircuitTaskRequestV1) -> R
     Ok(())
 }
 
+/// Recover the original complete record from our anchored request frame. The
+/// caller must still recompute the request and compare all canonical bytes.
+pub(super) fn original_record(bytes: &[u8]) -> Result<RunStartRecordV1, Error> {
+    use codex_hepta_learning_ledger::RunStartAdmissionBindingV1;
+    use codex_hepta_learning_ledger::RunStartAuthenticationV1;
+    use codex_hepta_learning_ledger::RunStartObjectiveDispositionV1;
+    use codex_hepta_learning_ledger::RunStartSnapshotV1;
+    let mut r = Reader::new(bytes, b"HCSTREQ1")?;
+    r.blob()?; // Derived request, revalidated by read_publication.
+    let issuer_id = r.id()?;
+    let message_id = r.id()?;
+    let profile_id = r.id()?;
+    let run_id = r.id()?;
+    let key_epoch = u64::from_be_bytes(r.take()?);
+    let sequence = u64::from_be_bytes(r.take()?);
+    let expires_at_ms = u64::from_be_bytes(r.take()?);
+    let profile_revision = u64::from_be_bytes(r.take()?);
+    let observed_at_unix_micros = u64::from_be_bytes(r.take()?);
+    let deadline_unix_micros = u64::from_be_bytes(r.take()?);
+    let authority_epoch = u64::from_be_bytes(r.take()?);
+    let generation = u64::from_be_bytes(r.take()?);
+    let scope_digest = r.digest()?;
+    let signed_body_digest = r.digest()?;
+    let profile_digest = r.digest()?;
+    let supplied_source_digest = r.digest()?;
+    let intent_digest = r.digest()?;
+    let admitted_source_digest = r.digest()?;
+    let objective_digest = r.digest()?;
+    let hard_constraint_digest = r.digest()?;
+    let preference_state_digest = r.digest()?;
+    let model_tuple_digest = r.digest()?;
+    let prompt_registry_digest = r.digest()?;
+    let artifact_set_digest = r.digest()?;
+    let fence_digest = r.digest()?;
+    let runtime_body_digest = r.digest()?;
+    let objective_function_v1_digest = r.digest()?;
+    let signature = r.take()?;
+    if r.take::<2>()? != [0, 0] { return Err(Error::InvalidBinding); }
+    let objective_semantic_bytes = r.blob()?.to_vec();
+    let objective_function_v1_bytes = r.blob()?.to_vec();
+    r.end()?;
+    Ok(RunStartRecordV1 {
+        authentication: RunStartAuthenticationV1 { issuer_id, key_epoch, message_id, sequence,
+            expires_at_ms, scope_digest, signed_body_digest, signature },
+        admission: RunStartAdmissionBindingV1 { profile_id, profile_revision, profile_digest,
+            supplied_source_digest, intent_digest, admitted_source_digest, observed_at_unix_micros,
+            deadline_unix_micros, authority: codex_hepta_types::AuthorityPosture::DENY_ALL },
+        disposition: RunStartObjectiveDispositionV1::Compiled,
+        snapshot: RunStartSnapshotV1 { run_id, objective_digest, hard_constraint_digest,
+            preference_state_digest, model_tuple_digest, prompt_registry_digest, artifact_set_digest,
+            authority_epoch, generation, fence_digest },
+        runtime_body_digest, objective_semantic_bytes, objective_function_v1_digest, objective_function_v1_bytes,
+    })
+}
+
 pub(super) fn dispatch_input(dispatch: &CircuitDispatchV2, input: &CellStepInputV1) -> Result<Vec<u8>, Error> {
     let mut bytes = b"HCSTINP1".to_vec();
     blob(&mut bytes, &json(dispatch)?);
@@ -200,6 +255,31 @@ pub(super) fn publication(bytes: &[u8], input: &[u8]) -> Result<(Sha256Digest, V
     r.end()?;
     if output.is_empty() { return Err(Error::InvalidBinding); }
     Ok((history, output))
+}
+
+pub(super) fn require_decision(bytes: &[u8], decision: &codex_hepta_neuron::CellDecisionReceiptV1) -> Result<(), Error> {
+    let mut r = Reader::new(bytes, b"HCSTRES1")?;
+    for _ in 0..4 { r.blob()?; }
+    if r.blob()? != crate::circuit_cell_output::encode_receipt(decision)?
+        || r.blob()? != json(&(&decision.representation.drive_q24, &decision.representation.prediction_q24))? {
+        return Err(Error::InvalidBinding);
+    }
+    r.end()
+}
+
+pub(super) fn decision_metadata(bytes: &[u8]) -> Result<(Digest32, Digest32), Error> {
+    let mut r = Reader::new(bytes, b"HCSTRES1")?;
+    for _ in 0..4 { r.blob()?; }
+    let decision = r.blob()?;
+    let mut d = Reader(decision.strip_prefix(b"hepta.circuit.committed-cell-decision.v1\0").ok_or(Error::InvalidBinding)?);
+    for _ in 0..5 { d.id()?; }
+    for _ in 0..3 { d.digest()?; }
+    let bundle = d.digest()?;
+    d.digest()?; // Original source frontier.
+    d.digest()?; // Original checkpoint before this committed step.
+    let checkpoint = d.digest()?;
+    if bundle.is_zero() || checkpoint.is_zero() { return Err(Error::InvalidBinding); }
+    Ok((bundle, checkpoint))
 }
 
 pub(super) fn bounded(bytes: &[u8]) -> Result<(), Error> {
