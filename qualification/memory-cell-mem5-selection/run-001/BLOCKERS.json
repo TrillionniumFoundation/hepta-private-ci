@@ -21,7 +21,7 @@
     {
       "id": "MEM-RAW-REPRODUCIBILITY",
       "status": "ARCHIVE_START_RECOVERY_OPEN",
-      "evidence": "Original 4000 files/77913835 bytes retained on ai395; core and 3235-check arithmetic audit preserved. Full archive start key mem5-raw-archive-5fa0d0e-20261110-v1 returned MCP timeout; exact original operation identity is being reconciled without another actor run",
+      "evidence": "Original 4000 files/77913835 bytes retained on ai395; core and arithmetic audit published in#5676. Original archival start and one identical-key reconciliation timed out; registry reads timed out and identity remains UNRESOLVED/outcome UNKNOWN. Stop extra starts; recover original identity/INDEX read-only.",
       "limit": "Do not claim all actor sidecars or pixels independently replayed before their corresponding checks"
     },
     {
@@ -62,17 +62,22 @@
     },
     {
       "id": "MEM-FINAL-SOURCE-CI",
-      "status": "QUEUED",
+      "status": "CLOSED_FOR_FROZEN_SOURCE_5FA0D0E",
       "run_id": 42775149032,
       "job_id": 129691794781,
       "expected_tests": 67,
-      "observed_tests": null,
-      "limit": "Prior #5631 52 passes do not transfer to this source; read final tree/clean receipts separately"
+      "observed_tests": 67,
+      "limit": "Dedicated MEM job passed on its own exact source; does not qualify the new utility head or the whole repository",
+      "all_before_after_clean": true,
+      "failed_tests": 0,
+      "skipped_tests": 0,
+      "source_sha": "5fa0d0e462cd1393f4f9e95565ff5993e9bad29a",
+      "tree": "7b3431e21f604ea5381592c2509db4f26ea91f7d"
     },
     {
       "id": "MEM-REQUIRED-REPO-CI",
-      "status": "NOT_ESTABLISHED",
-      "evidence": "Final required workflows queued at latest readback; dependency owner#5469 diverged/draft/unmerged with its own other failed gates",
+      "status": "OPEN_CARGO_DENY_FAILURE_AND_PENDING_JOBS",
+      "evidence": "Frozen source repo-checks/build-test129705041733 passed including formatting; cargo-deny129705041583 failed, but two original-log reads returned Transport closed so source-specific cause remains UNKNOWN. Other required jobs and Architecture source-head remain in progress at retained observation.",
       "required": "Source-specific required jobs pass; preserve unsuppressed dependency advisories and all original failed records"
     }
   ]
