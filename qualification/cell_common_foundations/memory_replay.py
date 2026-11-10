@@ -211,9 +211,9 @@ class ReplayPool:
             "ordered_candidates": candidates_at_selection,
             "selected_ids": [e.item_id for e in selected],
             "eligible_candidate_reads": len(candidates),
-            "priority_value_reads": len(candidates)
-            if policy == "error_prioritized"
-            else 0,
+            "priority_value_reads": (
+                len(candidates) if policy == "error_prioritized" else 0
+            ),
             "candidate_payload_digests_computed": len(candidates),
             "decision_timesteps": steps,
             "authority": "SYNTHETIC_CONSISTENCY_ONLY",
@@ -335,10 +335,16 @@ def verify_priority_selection_audit(receipt):
     selected, steps = [], 0
     for entry in candidates:
         n = entry["timesteps"]
-        if len(selected) < receipt["entry_budget"] and steps + n <= receipt["timestep_budget"]:
+        if (
+            len(selected) < receipt["entry_budget"]
+            and steps + n <= receipt["timestep_budget"]
+        ):
             selected.append(entry["item_id"])
             steps += n
-    if receipt.get("selected_ids") != selected or receipt.get("decision_timesteps") != steps:
+    if (
+        receipt.get("selected_ids") != selected
+        or receipt.get("decision_timesteps") != steps
+    ):
         raise ValueError("historical priority decision mismatched candidate ordering")
     return True
 
