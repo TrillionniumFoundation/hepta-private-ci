@@ -47,6 +47,115 @@ fn fixture() -> (ProductionRetainedOperation, String, NotesDocumentState) {
     )
 }
 
+fn status_value(
+    original: &ProductionRetainedOperation,
+    receipt: Option<&str>,
+    current: Option<&NotesDocumentState>,
+) -> Value {
+    original_notes_status(
+        original,
+        receipt,
+        current,
+        /*request_sha256*/ None,
+        json!({"kind":"original_core_dynamic_tool"}),
+        /*sender_observation_retained*/ None,
+    )
+    .unwrap()
+}
+
+#[test]
+fn notes_act2_tool_success_requires_current_goal_after_readback_loss_or_drift() {
+    let (original, receipt, current) = fixture();
+    let succeeded = status_value(&original, Some(&receipt), Some(&current));
+    for tool in [
+        crate::notes_thread_tool::REPLACE_TOOL,
+        crate::notes_thread_tool::STATUS_TOOL,
+    ] {
+        assert!(original_notes_tool_succeeded(tool, &succeeded));
+        let mut later_revision = current.clone();
+        later_revision.revision += 1;
+        let mut changed_text = current.clone();
+        changed_text.text_sha256 = Sha256Digest::for_bytes(b"later text");
+        let mut older_revision = current.clone();
+        older_revision.revision -= 1;
+        for document in [
+            None,
+            Some(later_revision),
+            Some(changed_text),
+            Some(older_revision),
+        ] {
+            let unresolved = status_value(&original, Some(&receipt), document.as_ref());
+            // These historical fields are deliberately identical to the
+            // positive control. They used to set the tool success bit alone.
+            assert_eq!(
+                (
+                    &unresolved["state"],
+                    &unresolved["receipt_utf8"],
+                    &unresolved["action_observation"]["historical_effect"]
+                ),
+                (
+                    &succeeded["state"],
+                    &succeeded["receipt_utf8"],
+                    &succeeded["action_observation"]["historical_effect"]
+                )
+            );
+            assert!(!original_notes_tool_succeeded(tool, &unresolved));
+        }
+        let no_receipt = status_value(&original, /*receipt*/ None, Some(&current));
+        assert!(!original_notes_tool_succeeded(tool, &no_receipt));
+        let mut pending_receipt = current.clone();
+        pending_receipt.receipt_pending = true;
+        assert!(original_notes_tool_succeeded(
+            tool,
+            &status_value(&original, Some(&receipt), Some(&pending_receipt))
+        ));
+    }
+}
+
+#[test]
+fn notes_act2_tool_success_keeps_read_and_original_navigation_semantics() {
+    let (mut original, receipt, current) = fixture();
+    let succeeded = status_value(&original, Some(&receipt), Some(&current));
+    for tool in [
+        crate::notes_thread_tool::REPLACE_TOOL,
+        crate::notes_thread_tool::STATUS_TOOL,
+    ] {
+        for (field, flag) in [
+            ("write_admission", "refused_later_replace_in_original_turn"),
+            ("status", "unknown"),
+        ] {
+            let mut refused = succeeded.clone();
+            refused[field] = json!(flag);
+            assert!(!original_notes_tool_succeeded(tool, &refused));
+        }
+        let mut missing_goal = succeeded.clone();
+        missing_goal
+            .as_object_mut()
+            .unwrap()
+            .remove("action_observation");
+        assert!(!original_notes_tool_succeeded(tool, &missing_goal));
+        original.state = LocalOutcomeState::Indeterminate;
+        assert!(!original_notes_tool_succeeded(
+            tool,
+            &status_value(&original, Some(&receipt), Some(&current))
+        ));
+    }
+    let mut read = json!({"document":NotesActionDocumentV1::from(&current)});
+    assert!(original_notes_tool_succeeded(
+        crate::notes_thread_tool::READ_TOOL,
+        &read
+    ));
+    read["status"] = json!("unknown");
+    assert!(!original_notes_tool_succeeded(
+        crate::notes_thread_tool::READ_TOOL,
+        &read
+    ));
+    assert!(!original_notes_tool_succeeded(
+        "unregistered_tool",
+        &succeeded
+    ));
+}
+
 #[test]
 fn notes_act2_success_requires_original_receipt_and_exact_current_goal() {
     let (original, receipt, current) = fixture();

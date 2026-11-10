@@ -2,6 +2,9 @@
 
 use super::*;
 use crate::AgentdNotesChannel;
+use crate::notes_action_observer::original_notes_tool_succeeded;
+use crate::notes_thread_tool::REPLACE_TOOL;
+use crate::notes_thread_tool::STATUS_TOOL;
 use codex_hepta_memory::NotesPrivateChannel;
 use pretty_assertions::assert_eq;
 use std::io::BufRead;
@@ -429,6 +432,16 @@ async fn notes_actual_ui_original_owner_roundtrip() -> Result<(), Box<dyn Error>
         first_observation["action_observation"]["runtime_state"],
         serde_json::json!({"state":"terminal","outcome":"succeeded"})
     );
+    // Reuse the production predicate over the actual App readback. This does
+    // not exercise the complete model-facing callback/transport handler.
+    let tool_success = |value: &serde_json::Value| {
+        [
+            original_notes_tool_succeeded(REPLACE_TOOL, value),
+            original_notes_tool_succeeded(STATUS_TOOL, value),
+        ]
+    };
+    let first_tool_success = tool_success(&first_observation);
+    assert_eq!(first_tool_success, [true, true]);
     // A second actual edit proves the original writer's durable receipt ACK
     // released the first pending slot. No app-side receipt is overwritten.
     let second_text = "Hepta durable receipt retired -> second live Notes revision / 中文";
@@ -615,6 +628,8 @@ async fn notes_actual_ui_original_owner_roundtrip() -> Result<(), Box<dyn Error>
         act2["action_observation"]["runtime_state"],
         serde_json::json!({"state":"terminal","outcome":"succeeded"})
     );
+    let recovered_tool_success = tool_success(&act2);
+    assert_eq!(recovered_tool_success, [true, true]);
     // Later edits changed the actual document. A historical receipt must not
     // make the first operation's old goal appear current again.
     let drift_current = observer.observe_document()?;
@@ -641,7 +656,10 @@ async fn notes_actual_ui_original_owner_roundtrip() -> Result<(), Box<dyn Error>
             "receipt":first_terminal,
         })
     );
+    let drifted_tool_success = tool_success(&first_after_edits);
+    assert_eq!(drifted_tool_success, [false, false]);
     let mut repeated_observations = Vec::new();
+    let mut repeated_tool_success = Vec::new();
     for _ in 0..3 {
         let retained = host
             .writer()
@@ -662,6 +680,8 @@ async fn notes_actual_ui_original_owner_roundtrip() -> Result<(), Box<dyn Error>
             /*sender_observation_retained*/ None,
         )?;
         assert_eq!(repeated, act2);
+        let current_tool_success = tool_success(&repeated);
+        assert_eq!(current_tool_success, [true, true]);
         assert_eq!(
             (
                 reply_loss.effect_attempts.load(Ordering::SeqCst),
@@ -669,6 +689,7 @@ async fn notes_actual_ui_original_owner_roundtrip() -> Result<(), Box<dyn Error>
             ),
             (3, grants_before_reconciliation)
         );
+        repeated_tool_success.push(current_tool_success);
         repeated_observations.push(repeated);
     }
     // Close only this test's App, then attempt a real independent read. This
@@ -712,6 +733,8 @@ async fn notes_actual_ui_original_owner_roundtrip() -> Result<(), Box<dyn Error>
             "readback_available":false,"current_document":null,"receipt":terminal,
         })
     );
+    let unavailable_tool_success = tool_success(&unavailable);
+    assert_eq!(unavailable_tool_success, [false, false]);
     assert_eq!(
         (
             reply_loss.effect_attempts.load(Ordering::SeqCst),
@@ -731,6 +754,15 @@ async fn notes_actual_ui_original_owner_roundtrip() -> Result<(), Box<dyn Error>
         "act2_repeated_current_observations":repeated_observations,
         "act2_after_actual_app_close":unavailable,
         "act2_actual_readback_error":readback_error.to_string(),
+        "act2_model_tool_success_projection":{
+            "tools":[REPLACE_TOOL,STATUS_TOOL],
+            "complete_model_facing_handler_exercised":false,
+            "first_current_goal":first_tool_success,
+            "recovered_current_goal":recovered_tool_success,
+            "historical_goal_after_edits":drifted_tool_success,
+            "repeated_current_goal":repeated_tool_success,
+            "current_readback_unavailable":unavailable_tool_success,
+        },
         "notes_durable_tombstone_qualified":false,
         "second_application_receipt":second_application,"receipt_capacity_reused_after_durable_ack":true,
         "bootstrap_schema_version":2,"recovery_transport":"private_unix_datagram",

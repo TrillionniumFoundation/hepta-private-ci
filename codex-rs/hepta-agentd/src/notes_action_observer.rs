@@ -123,6 +123,31 @@ pub(crate) fn original_notes_status(
     }))
 }
 
+/// Project the original model-facing tool success bit from this call's trusted
+/// result assembly. Reading a document is separate from confirming a write's
+/// current goal; a historical committed receipt alone cannot confirm that goal.
+pub(crate) fn original_notes_tool_succeeded(tool: &str, value: &Value) -> bool {
+    if value["write_admission"] == "refused_later_replace_in_original_turn"
+        || value["status"] == "unknown"
+    {
+        return false;
+    }
+    match tool {
+        crate::notes_thread_tool::READ_TOOL => true,
+        crate::notes_thread_tool::REPLACE_TOOL | crate::notes_thread_tool::STATUS_TOOL => {
+            value["state"] == "Committed"
+                && value["receipt_utf8"].is_string()
+                && value["action_observation"]["current_goal"]
+                    == json!(ActionGoalStateV1::Satisfied)
+                && value["action_observation"]["runtime_state"]
+                    == json!(ActionRuntimeStateV1::Terminal {
+                        outcome: ActionTerminalOutcomeV1::Succeeded
+                    })
+        }
+        _ => false,
+    }
+}
+
 /// `current` is queried on the existing nonce-correlated application lane in
 /// the same status call, never restored from a checkpoint. A retained receipt
 /// proves a historical effect; only matching current target/revision/content
