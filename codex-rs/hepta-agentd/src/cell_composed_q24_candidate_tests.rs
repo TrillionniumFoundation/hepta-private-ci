@@ -20,8 +20,7 @@ fn reopen(root: &Path) -> anyhow::Result<LoadedCellQ24ModelV1> {
 }
 
 #[test]
-fn q24_single_private_head_preserves_other_actual_outputs_after_loading()
--> anyhow::Result<()> {
+fn q24_single_private_head_preserves_other_actual_outputs_after_loading() -> anyhow::Result<()> {
     let root = tempfile::tempdir()?;
     let baseline = Arc::new(load(root.path(), /*factor*/ 1)?);
     let prior = bundle(&baseline, /*prior*/ None)?;
@@ -49,7 +48,11 @@ fn q24_single_private_head_preserves_other_actual_outputs_after_loading()
         let next = bundle(&candidate, Some(&prior))?;
         let config = configured(&candidate, &next)?;
         // The same loaded bytes cannot reuse the original selected bundle.
-        assert!(baseline.shared_worker(&next, config.manifest.clone(), Arc::new(|| 11)).is_err());
+        assert!(
+            baseline
+                .shared_worker(&next, config.manifest.clone(), Arc::new(|| 11))
+                .is_err()
+        );
         let worker = candidate.into_worker(&next, config.manifest.clone(), Arc::new(|| 11))?;
         // Later source-path replacement cannot alter the checked allocation.
         fs::write(root.path().join("heads"), b"changed-after-load")?;
@@ -69,7 +72,11 @@ fn q24_single_private_head_preserves_other_actual_outputs_after_loading()
             bytes.extend_from_slice(&value.to_le_bytes());
         }
         assert_eq!(
-            (result.disposition, result.output_delta, result.successor_state),
+            (
+                result.disposition,
+                result.output_delta,
+                result.successor_state
+            ),
             (CellGenerationDispositionV2::Stopped, bytes, Vec::new())
         );
     }
@@ -77,8 +84,7 @@ fn q24_single_private_head_preserves_other_actual_outputs_after_loading()
 }
 
 #[test]
-fn q24_single_private_head_rejects_frozen_changes_extra_rows_and_no_change()
--> anyhow::Result<()> {
+fn q24_single_private_head_rejects_frozen_changes_extra_rows_and_no_change() -> anyhow::Result<()> {
     let original = tempfile::tempdir()?;
     let baseline = load(original.path(), /*factor*/ 1)?;
     for mutation in 0..9 {
@@ -104,7 +110,10 @@ fn q24_single_private_head_rejects_frozen_changes_extra_rows_and_no_change()
             3 => fs::write(root.path().join("cell"), adapter(&[0, Q], &[0, 2 * Q]))?,
             4 => {
                 values[7] = -Q / 2;
-                fs::write(root.path().join("heads"), matrix(/*rows*/ 4, /*cols*/ 2, &values))?;
+                fs::write(
+                    root.path().join("heads"),
+                    matrix(/*rows*/ 4, /*cols*/ 2, &values),
+                )?;
             }
             5 => fs::write(
                 root.path().join("heads"),
