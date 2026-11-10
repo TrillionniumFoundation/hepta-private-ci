@@ -11,6 +11,8 @@ on:
       - scripts/test_hepta_cell_research_successor.py
       - scripts/hepta_cell_joint_config.py
       - scripts/test_hepta_cell_joint_config.py
+      - scripts/hepta_prospective_comparison.py
+      - scripts/test_hepta_prospective_comparison.py
       - qualification/cell-research-stages-20261108/**
       - .github/workflows/hepta-cell-research-stages.yml
   workflow_dispatch:
@@ -36,6 +38,16 @@ jobs:
         with:
           ref: ${{ env.SOURCE_SHA }}
           persist-credentials: false
+      - name: Check prospective comparison declarations
+        shell: bash
+        run: |
+          set -euo pipefail
+          records="$RUNNER_TEMP/cell-research-stages"
+          mkdir -p "$records"
+          python3 scripts/hepta_ci_exec.py --timeout-seconds 120 --minimum-tests 6 \
+            --output "$records/prospective-comparison.json" \
+            -- python3 -B -m unittest discover -s scripts \
+            -p test_hepta_prospective_comparison.py -v
       - name: Verify the actual source and evidence gate
         shell: bash
         run: |
