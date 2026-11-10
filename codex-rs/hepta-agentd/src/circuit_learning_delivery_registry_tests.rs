@@ -2,6 +2,7 @@
 //! data, not production ownership or learned successor-benefit evidence.
 
 use std::collections::BTreeMap;
+use pretty_assertions::assert_eq;
 
 use super::*;
 
