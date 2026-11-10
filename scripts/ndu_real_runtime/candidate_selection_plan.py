@@ -161,6 +161,11 @@ def freeze(request, output):
         request.get("selector_profile_sha256") == canonical_sha(PROFILE),
         "Public selector policy differs from its frozen profile",
     )
+    require(
+        request.get("groups_per_role") == {"development": 10, "retention_validation": 4}
+        and all(type(n) is int for n in request["groups_per_role"].values()),
+        "Frozen 10+4 source-group allocation differs",
+    )
     legacy.verify_sources(request)
     config, materials = request["config"], Path(request["config"]["material_root"])
     catalog = strict_json(legacy.read_pin(request["catalog"], materials))

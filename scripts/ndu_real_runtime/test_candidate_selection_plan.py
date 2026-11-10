@@ -12,6 +12,39 @@ from . import candidate_selection_plan as planning
 
 
 class PriorPlanTests(unittest.TestCase):
+    def test_changed_sample_allocation_is_rejected_before_source_reads(self):
+        from types import SimpleNamespace
+        from unittest.mock import Mock
+        from .candidate_selector import PROFILE
+        from .objective import canonical_sha
+
+        fake = SimpleNamespace(
+            verify_sources=Mock(
+                side_effect=AssertionError("source read before allocation check")
+            )
+        )
+        request = {
+            "schema": planning.SCHEMA,
+            "source_commit": "a" * 40,
+            "experiment_id": "mem5-test",
+            "selection_salt": planning.SELECTION_SALT,
+            "max_workers": 2,
+            "selector_profile_sha256": canonical_sha(PROFILE),
+        }
+        for allocation in (
+            {"development": 1, "retention_validation": 4},
+            {"development": 10, "retention_validation": 4.0},
+            {"confirmation": 10, "retention_validation": 4},
+        ):
+            with patch.dict(
+                "sys.modules", {"ndu_real_runtime.run_candidate_retention": fake}
+            ):
+                with self.assertRaisesRegex(ValueError, r"10\+4"):
+                    planning.freeze(
+                        {**request, "groups_per_role": allocation}, Path("unused")
+                    )
+        fake.verify_sources.assert_not_called()
+
     def fixture(self, root, *, count=1):
         catalog = {
             "cases": [
