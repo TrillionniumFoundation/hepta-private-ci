@@ -262,3 +262,7 @@ fn anchor(value: ProductEvaluationExecutionAnchorV1) -> JournalAnchor {
 fn agent_error(error: Error) -> AgentdError {
     AgentdError::Protocol(format!("original Circuit source: {error}"))
 }
+
+#[cfg(test)]
+#[path = "circuit_task_source_tests.rs"]
+mod tests;
