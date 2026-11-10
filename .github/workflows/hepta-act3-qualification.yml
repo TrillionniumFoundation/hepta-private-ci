@@ -5,6 +5,7 @@ on:
     branches:
       - research/act3-stop-diagnosis-20261110
       - research/act3-cold-state-20261110
+      - research/act3-cold-qualification-20261110
       - research/act3-tool-families-20261110
 
 permissions:
@@ -57,6 +58,16 @@ jobs:
           just fmt --base 0584b3344f70ed51d9e09224e105bfa4d1a4635f --check > "$RUNNER_TEMP/act3-records/formatter.log" 2>&1
           test -z "$(git status --porcelain)"
           git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/act3-records/source-after.txt"
+      - name: Test recurrent state and owner binding rejections
+        if: github.ref_name != 'research/act3-stop-diagnosis-20261110'
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/act3-venv/bin/python" scripts/act2_learning/test_continuation.py --model qualification/act2-learning-20261110/run2/B4_gru-seed-700.npz -v > "$RUNNER_TEMP/act3-records/continuation-tests.log" 2>&1
+      - name: Qualify original recurrent state across actual process death
+        if: github.ref_name != 'research/act3-stop-diagnosis-20261110' && github.ref_name != 'research/act3-cold-state-20261110'
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/act3-venv/bin/python" scripts/act2_learning/qualify_continuation.py --models qualification/act2-learning-20261110/run2 --include-long-task --output "$RUNNER_TEMP/act3-records/continuation" > "$RUNNER_TEMP/act3-records/continuation.log" 2>&1
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
