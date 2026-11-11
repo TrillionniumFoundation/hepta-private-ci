@@ -32,6 +32,10 @@ use crate::OriginalCellQ24DatasetV1;
 use crate::OriginalCellQ24TrainingSourceConfigV1;
 use crate::root_observation_stream::RootObservationStream;
 
+#[path = "cell_q24_material_source_connection.rs"]
+mod connection;
+pub use connection::OriginalCellQ24MaterialSourceConnectionV1;
+
 #[path = "cell_q24_material_source_service.rs"]
 mod serving;
 #[path = "cell_q24_material_source_wire.rs"]
@@ -290,3 +294,8 @@ fn now() -> Result<u64, Error> {
 #[cfg(test)]
 #[path = "cell_q24_material_source_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+pub(crate) use connection::retained_connection_fixture;
+#[cfg(test)]
+pub(crate) use tests::original_material_response_for_bootstrap;

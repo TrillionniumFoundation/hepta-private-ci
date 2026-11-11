@@ -656,3 +656,15 @@ async fn material_source_peer_consumes_wrong_purpose_or_failed_frames() -> anyho
     }
     Ok(())
 }
+
+pub(crate) fn original_material_response_for_bootstrap<
+    EW: codex_hepta_neuron::AnchorWitnessStore,
+    DW: codex_hepta_neuron::AnchorWitnessStore,
+    SW: codex_hepta_neuron::AnchorWitnessStore,
+>(
+    original: &crate::OriginalCellQ24MaterialEvidenceOwnerV1<EW, DW, SW>,
+    next: &mut u64,
+    request: &[u8],
+) -> Result<Vec<u8>, Error> {
+    original.respond_material(next, request)
+}

@@ -39,13 +39,7 @@ EXPECTED = {
     "learning_original_circuit_selection_remote_readback": ("codex-rs/hepta-agentd/src/circuit_selection_command_service.rs", "codex-rs/hepta-agentd/src/circuit_selection_command_evidence.rs"),
     "learning_original_circuit_next_use_remote_attest": (),
     "learning_original_circuit_next_use_remote_readback": (),
-    "learning_original_owner_physical_current": (
-        AGENT + "learning_owner_journal.rs",
-        AGENT + "cell_composed_q24_training_owner.rs",
-        AGENT + "cell_q24_model_proposal.rs",
-        AGENT + "circuit_model_selection_receipt_sources.rs",
-        JOURNAL,
-    ),
+    "learning_original_owner_physical_current": ("codex-rs/hepta-agentd/src/learning_owner_journal.rs", "codex-rs/hepta-agentd/src/cell_composed_q24_training_owner.rs", "codex-rs/hepta-agentd/src/cell_q24_model_proposal.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_execution_store.rs", "codex-rs/hepta-agentd/src/circuit_task_source_journal.rs",),
 }
 
 

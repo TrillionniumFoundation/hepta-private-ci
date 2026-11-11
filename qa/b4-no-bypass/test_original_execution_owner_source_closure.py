@@ -90,12 +90,7 @@ class OriginalExecutionOwnerSourceClosureTests(unittest.TestCase):
             "learning_original_execution_store_create": (AGENT + "neuron_cell_evaluation_qualification_owner.rs",),
             "learning_original_execution_store_recover": (AGENT + "neuron_cell_evaluation_qualification_owner.rs",),
             "learning_original_execution_store_readback_only": (SOURCES, AGENT + "neuron_cell_evaluation_qualification_sources.rs"),
-            "learning_original_owner_physical_current": (
-                AGENT + "learning_owner_journal.rs",
-                AGENT + "cell_composed_q24_training_owner.rs",
-                AGENT + "cell_q24_model_proposal.rs",
-                OWNER,
-            ),
+            "learning_original_owner_physical_current": ("codex-rs/hepta-agentd/src/learning_owner_journal.rs", "codex-rs/hepta-agentd/src/cell_composed_q24_training_owner.rs", "codex-rs/hepta-agentd/src/cell_q24_model_proposal.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_execution_store.rs", "codex-rs/hepta-agentd/src/circuit_task_source_journal.rs",),
         }
         paths = {path for identifier in expected for path in (
             self.boundaries[identifier].definition_path,
