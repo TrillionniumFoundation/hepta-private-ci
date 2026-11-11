@@ -8,8 +8,9 @@
 //! Transfer exclusive ownership of the open file description: do not retain or
 //! rewrap writable duplicates (including `File::try_clone`) or modify it outside
 //! this store. A shared open description can make the OS lock reentrant.
-//! Live readback uses the fsynced cache and detects length changes; full history
-//! validation occurs on recovery, not on every read.
+//! Trait readback uses the fsynced cache and detects length changes. Owners
+//! requiring a physical CURRENT use read_current_anchor inside their own
+//! independent witness fence; recovery also validates complete history.
 //! All writers must honor the held lock. Cross-host use requires filesystem
 //! locking and fsync semantics that are linearizable across those hosts.
 
@@ -76,6 +77,7 @@ type State = ProductEvaluationExecutionStateV1;
 
 pub struct LockedFileProductEvaluationExecutionStoreV1 {
     file: HeldFile,
+    binding: Digest32,
     records: BTreeMap<StableId, (Digest32, State)>,
     anchor: ProductEvaluationExecutionAnchorV1,
     length: u64,
@@ -120,6 +122,7 @@ impl LockedFileProductEvaluationExecutionStoreV1 {
             .map_err(|_| FileError::Indeterminate)?;
         Ok(Self {
             file,
+            binding,
             records: BTreeMap::new(),
             anchor: ProductEvaluationExecutionAnchorV1 {
                 sequence: 0,
@@ -162,6 +165,7 @@ impl LockedFileProductEvaluationExecutionStoreV1 {
         }
         let mut store = Self {
             file,
+            binding,
             records: BTreeMap::new(),
             anchor: ProductEvaluationExecutionAnchorV1 {
                 sequence: 0,
@@ -425,6 +429,9 @@ fn acquire(file: File, binding: Digest32) -> Result<HeldFile, FileError> {
 fn io_error(error: io::Error) -> FileError {
     FileError::Io(error.kind())
 }
+
+#[path = "product_execution_current.rs"]
+mod current;
 
 #[cfg(test)]
 #[path = "product_execution_file_tests.rs"]

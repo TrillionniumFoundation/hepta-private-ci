@@ -150,11 +150,23 @@ impl<W: AnchorWitnessStore> LearningOwnerJournalV1<W> {
         }
     }
 
-    fn require_current(&self) -> Result<(), Error> {
-        if self.fenced || self.witness.current()? != Some(anchor(self.journal.anchor())?) {
+    fn require_current(&mut self) -> Result<(), Error> {
+        if self.fenced {
             return Err(Error::CommitUncertain);
         }
-        Ok(())
+        let result = (|| {
+            let before = self.witness.current()?;
+            let current = anchor(self.journal.read_current_anchor()?)?;
+            let after = self.witness.current()?;
+            if before != Some(current) || after != before {
+                return Err(Error::CommitUncertain);
+            }
+            Ok(())
+        })();
+        if result.is_err() {
+            self.fenced = true;
+        }
+        result
     }
 
     fn anchor_append(&mut self, before: JournalAnchor) -> Result<(), Error> {
