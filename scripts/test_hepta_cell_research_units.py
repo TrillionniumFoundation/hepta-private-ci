@@ -252,7 +252,9 @@ class ResearchUnitsTests(unittest.TestCase):
         for case in record["units"]["cases"]:
             del case["task_artifact"]
         legacy = self.screen(record)
-        self.assertAlmostEqual(legacy["comparisons"]["rag"]["minimum_fit_mean_gain"], 0.4)
+        self.assertAlmostEqual(
+            legacy["comparisons"]["rag"]["minimum_fit_mean_gain"], 0.4
+        )
         self.assertFalse(legacy["new_milestone_eligible"])
 
     def test_repeated_task_failures_keep_outcomes_costs_and_unknown_coverage(self):
@@ -262,7 +264,9 @@ class ResearchUnitsTests(unittest.TestCase):
             if row["case_id"] == "failed-repeat" and row["arm"] == "candidate":
                 row.update(status="failed", net_utility=-0.3)
         result = self.screen(record)
-        self.assertAlmostEqual(result["comparisons"]["rag"]["minimum_fit_mean_gain"], -0.25)
+        self.assertAlmostEqual(
+            result["comparisons"]["rag"]["minimum_fit_mean_gain"], -0.25
+        )
         self.assertEqual(result["attempt_counts"], {"completed": 30, "failed": 2})
         self.assertEqual(result["statistical_units"]["planned_attempts"], 32)
         self.assertEqual(result["observed_campaign_total"], 896)
@@ -272,7 +276,9 @@ class ResearchUnitsTests(unittest.TestCase):
         for row in record["attempts"]["rows"]:
             if row["status"] == "failed":
                 row["costs"]["recovery"] = None
-                record["units"]["cost_coverage"][row["attempt_id"]]["recovery"] = "unknown"
+                record["units"]["cost_coverage"][row["attempt_id"]]["recovery"] = (
+                    "unknown"
+                )
         incomplete = self.screen(record)
         self.assertEqual(incomplete["attempt_counts"], result["attempt_counts"])
         self.assertEqual(incomplete["attempt_denominator"], 32)
@@ -417,7 +423,21 @@ class ResearchUnitsTests(unittest.TestCase):
         row = record["attempts"]["rows"][0]
         scope = record["units"]["cost_coverage"][row["attempt_id"]]
         scope["recovery"] = "unknown"
-        self.assertFalse(self.screen(record)["full_cost_records_complete"])
+        incomplete = self.screen(record)
+        self.assertFalse(incomplete["full_cost_records_complete"])
+        self.assertEqual(
+            incomplete["observed_cost_totals"],
+            {
+                "candidate": None,
+                "rag": 128,
+                "rag_uniform_replay": 128,
+                "recurrent": 128,
+            },
+        )
+        self.assertIsNone(incomplete["observed_campaign_total"])
+        self.assertEqual(incomplete["recorded_cost_subtotals"]["candidate"], 64)
+        self.assertEqual(incomplete["recorded_campaign_subtotal"], 448)
+        self.assertEqual(incomplete["comparisons"], {})
         scope["recovery"] = "not_applicable"
         for value in (None, 1):
             row["costs"]["recovery"] = value
@@ -428,6 +448,51 @@ class ResearchUnitsTests(unittest.TestCase):
             self.screen(record)
         row["costs"]["recovery"] = 0
         self.assertTrue(self.screen(record)["full_cost_records_complete"])
+
+    def test_missing_opportunities_leave_arm_and_campaign_totals_unknown(self):
+        original = self.experiment()
+        for missing in ("one", "entire-arm"):
+            with self.subTest(missing=missing):
+                record = copy.deepcopy(original)
+                rows = record["attempts"]["rows"]
+                omitted = [row for row in rows if row["arm"] == "rag"]
+                if missing == "one":
+                    omitted = omitted[:1]
+                record["attempts"]["rows"] = [row for row in rows if row not in omitted]
+                result = self.screen(record)
+                self.assertEqual(
+                    result["observed_cost_totals"],
+                    {
+                        "candidate": 64,
+                        "rag": None,
+                        "rag_uniform_replay": 128,
+                        "recurrent": 128,
+                    },
+                )
+                self.assertIsNone(result["observed_campaign_total"])
+                self.assertEqual(
+                    result["recorded_cost_subtotals"]["rag"], 128 - 32 * len(omitted)
+                )
+                self.assertEqual(
+                    result["recorded_campaign_subtotal"], 448 - 32 * len(omitted)
+                )
+                self.assertEqual(result["statistical_units"]["planned_attempts"], 16)
+                self.assertEqual(
+                    result["statistical_units"]["observed_attempts"], 16 - len(omitted)
+                )
+                self.assertEqual(result["comparisons"], {})
+
+    def test_partial_numeric_measurements_are_retained_without_zero_imputation(self):
+        record = self.experiment()
+        row = record["attempts"]["rows"][0]
+        row["costs"]["recovery"] = None
+        result = self.screen(record)
+        self.assertIsNone(result["observed_cost_totals"]["candidate"])
+        self.assertIsNone(result["observed_campaign_total"])
+        self.assertEqual(result["recorded_cost_subtotals"]["candidate"], 63)
+        self.assertEqual(result["recorded_campaign_subtotal"], 447)
+        self.assertFalse(result["full_cost_records_complete"])
+        self.assertEqual(result["attempt_denominator"], 16)
 
     def test_source_split_and_observed_unit_drift_refuse(self):
         record = self.experiment()
@@ -483,6 +548,19 @@ class ResearchUnitsTests(unittest.TestCase):
         self.assertFalse(result["numerical_screen_ready"])
         self.assertFalse(result["new_milestone_eligible"])
         self.assertEqual(result["comparisons"], {})
+        self.assertEqual(
+            result["observed_cost_totals"],
+            {
+                arm: None
+                for arm in ("candidate", "rag", "rag_uniform_replay", "recurrent")
+            },
+        )
+        self.assertIsNone(result["observed_campaign_total"])
+        self.assertEqual(
+            result["recorded_cost_subtotals"],
+            {arm: 0 for arm in result["observed_cost_totals"]},
+        )
+        self.assertEqual(result["recorded_campaign_subtotal"], 0)
         record["units"]["planned_attempts"] = []
         with self.assertRaisesRegex(ValueError, "statistical-unit inventory is empty"):
             self.screen(record)
