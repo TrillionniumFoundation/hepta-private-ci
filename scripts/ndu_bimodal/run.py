@@ -57,59 +57,46 @@ def _inventory(root, paths):
 
 
 def _source_identity(expected):
-    head = subprocess.check_output(
-        ["git", "rev-parse", "HEAD"], cwd=REPO, text=True
-    ).strip()
-    if head != expected:
-        raise RuntimeError("HEAD does not equal --source-commit")
-    dirty = subprocess.check_output(
-        ["git", "status", "--porcelain", "--untracked-files=no"],
-        cwd=REPO,
-        text=True,
-    )
-    if dirty:
-        raise RuntimeError(
-            "Tracked source changes must be committed before qualification"
-        )
-    untracked = (
-        subprocess.check_output(
-            ["git", "ls-files", "--others", "--exclude-standard", "-z"],
-            cwd=REPO,
-        )
-        .decode()
-        .split("\0")
-    )
-    sources = [REPO / p for p in untracked if p and Path(p).suffix in {".py", ".rs"}]
-    sources += [p for p in PACKAGE.rglob("*") if p.suffix in {".py", ".rs"}]
-    sources += list((REPO / "scripts").glob("joint_generation_v4*.py")) + [RUST_SOURCE]
-    inventory = _inventory(REPO, sources)
-    return {
-        "commit": head,
-        "tracked_clean": True,
-        "python_rust_sha256_inventory": inventory,
-        "inventory_sha256": _sha(json.dumps(inventory, sort_keys=True).encode()),
-        "scope": "all package and untracked Python/Rust plus v4 adapters/entry; other tracked files pinned by commit",
-    }
+    from ndu_bimodal.candidate import source_identity
+
+    return source_identity(REPO, expected)
 
 
 def _command(arguments, prefix, timeout=180):
     started = time.perf_counter()
-    with prefix.with_suffix(".stdout.log").open("wb") as stdout:
-        with prefix.with_suffix(".stderr.log").open("wb") as stderr:
-            process = subprocess.run(
-                [str(a) for a in arguments],
-                cwd=REPO,
-                stdout=stdout,
-                stderr=stderr,
-                timeout=timeout,
-                check=False,
-            )
     receipt = {
         "argv": [str(a) for a in arguments],
-        "exit_code": process.returncode,
-        "wall_seconds": time.perf_counter() - started,
+        "exit_code": None,
+        "timeout_seconds": timeout,
+        "status": "running",
     }
-    _json(prefix.with_suffix(".command.json"), receipt)
+    try:
+        with prefix.with_suffix(".stdout.log").open("wb") as stdout:
+            with prefix.with_suffix(".stderr.log").open("wb") as stderr:
+                process = subprocess.run(
+                    receipt["argv"],
+                    cwd=REPO,
+                    stdout=stdout,
+                    stderr=stderr,
+                    timeout=timeout,
+                    check=False,
+                )
+        receipt.update(
+            exit_code=process.returncode,
+            status="passed" if process.returncode == 0 else "failed",
+        )
+    except BaseException as error:
+        receipt.update(
+            status="timeout"
+            if isinstance(error, subprocess.TimeoutExpired)
+            else "execution_error",
+            error_type=type(error).__name__,
+            error=str(error),
+        )
+        raise
+    finally:
+        receipt["wall_seconds"] = time.perf_counter() - started
+        _json(prefix.with_suffix(".command.json"), receipt)
     if process.returncode:
         raise RuntimeError("Command failed; see " + str(prefix))
     return receipt
@@ -123,10 +110,10 @@ def _test_ids(suite):
             yield test.id()
 
 
-def _python_tests(output):
+def _python_tests(output, modules=None):
     suite = unittest.TestSuite()
     counts = {}
-    for name in TEST_MODULES:
+    for name in TEST_MODULES if modules is None else modules:
         part = unittest.defaultTestLoader.loadTestsFromName(name)
         counts[name] = part.countTestCases()
         if not counts[name]:
@@ -199,7 +186,9 @@ def _checkpoint_check(output, baseline, candidate, training):
     }
 
 
-def _native_demo(output, binary, candidate, training):
+def _native_demo(
+    output, binary, candidate, training, *, prompt="Describe the colour in the image."
+):
     from ndu_bimodal.generator_training import colour_card
     from ndu_bimodal.lifecycle import CostLedger, Limits, Packet, PacketInbox
     from ndu_bimodal.native import NativeSession, encode_input
@@ -215,7 +204,6 @@ def _native_demo(output, binary, candidate, training):
         with ledger.operation("observation"):
             # Sources are created only after content training returns frozen bytes.
             _, initial = colour_card(9_100_001)
-            prompt = "Describe the colour in the image."
             public = encode_input(prompt, initial)
             ledger.retain("initial-input", len(initial) + len(prompt.encode()))
             ledger.retain(

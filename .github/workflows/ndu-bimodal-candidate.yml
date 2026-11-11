@@ -1,0 +1,90 @@
+name: NDU fixed graph candidate
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ["research/ndu-fixed-graph-*"]
+  pull_request:
+    paths:
+      - "scripts/ndu_bimodal/**"
+      - "scripts/ndu_real_runtime/stopped_*.py"
+      - "scripts/ndu_real_runtime/conditional_particles.py"
+      - "scripts/test_ndu_bimodal_*.py"
+      - ".github/workflows/ndu-bimodal-candidate.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ndu-fixed-graph-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  qualification:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+      OMP_NUM_THREADS: "1"
+      OPENBLAS_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+      PYTHONHASHSEED: "0"
+    steps:
+      - name: Check out the exact event source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12.14"
+
+      - name: Prepare the pinned numerical runtime
+        run: |
+          mkdir "$RUNNER_TEMP/ndu-candidate"
+          python -m pip install --disable-pip-version-check "torch==2.8.0+cpu" --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install --disable-pip-version-check "numpy==2.3.5" "Pillow==13.0.0"
+          python -m pip freeze --all > "$RUNNER_TEMP/ndu-candidate/runtime-packages.txt"
+          rustup toolchain install 1.96.0 --profile minimal
+          rustup run 1.96.0 rustc --version --verbose > "$RUNNER_TEMP/ndu-candidate/rustc.txt"
+
+      - name: Execute one source and its registered capability gate
+        run: |
+          set -o pipefail
+          python -m scripts.ndu_bimodal.milestone \
+            --source-commit "$GITHUB_SHA" \
+            --rustc "$(rustup which --toolchain 1.96.0 rustc)" \
+            --output "$RUNNER_TEMP/ndu-candidate/results" \
+            --seed 101 --base-steps 1800 --adapter-steps 100 \
+            --future-sources 24 --max-training-seconds 600 \
+            2>&1 | tee "$RUNNER_TEMP/ndu-candidate/qualification.log"
+
+      - name: Verify source and retain NoUpdate
+        if: success()
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          from scripts.ndu_bimodal.candidate import source_identity, verify_bundle
+          root = Path(os.environ["RUNNER_TEMP"]) / "ndu-candidate/results"
+          result = json.loads((root / "milestone.json").read_text())
+          current = source_identity(Path.cwd(), os.environ["GITHUB_SHA"])
+          assert current == result["source_before"] == result["source_after"]
+          manifest = json.loads((root / "candidate.json").read_text())
+          verify_bundle(root, manifest, result["candidate_identity"])
+          assert result["bounded_content_passed"]
+          assert result["production_update"] == "no-update"
+          assert result["scientific_acceptance"] == "HOLD_NO_GO"
+          PY
+
+      - name: Retain original results on success or failure
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ndu-fixed-graph-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/ndu-candidate/
+          if-no-files-found: error
+          retention-days: 30

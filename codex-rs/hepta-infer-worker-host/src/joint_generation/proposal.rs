@@ -41,8 +41,9 @@ pub(crate) fn propose(bytes: &[u8]) -> Result<Response> {
     let request = parse(bytes)?;
     let weights = canonical_packet(request.weights)?;
     let model = Model::new(weights)?;
-    if model.width != 32 || model.depth != 1 || model.mode != "dual" || model.boundary != "direct" {
-        return Err("bridge requires selected width32/depth1/dual/direct profile".into());
+    let selected_kernel = model.mode == "dual" || (model.is_observed() && model.mode == "ordinary");
+    if model.width != 32 || model.depth != 1 || !selected_kernel || model.boundary != "direct" {
+        return Err("bridge requires width32/depth1/direct with dual or v4 ordinary kernel".into());
     }
     if model.is_observed() != request.owner.is_some() {
         return Err("model/request observation profile mismatch".into());
