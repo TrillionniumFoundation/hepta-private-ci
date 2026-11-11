@@ -1,0 +1,29 @@
+{
+  "tree": "9821f01f3e0c25da98acc1016c3e78ed269f0786",
+  "status": "HOLD_SOURCE_GUARD_FAILURE",
+  "source_unittest_exit": 1,
+  "actual_test_count": 133,
+  "result_line": "FAILED (failures=1, errors=14)",
+  "source_frozen_unchanged": true,
+  "findings": [
+    {
+      "id": "generic_function_marker_rejected",
+      "kind": "manifest_verifier_integration_error",
+      "case_errors": 14,
+      "path": "CALLERS.toml",
+      "detail": "The product_execution.rs added required_function_order marker is fn evaluate_or_readback_temporal_comparison<, while scripts/verify_hepta_callers.py:605-608 accepts only a function marker ending in (. Every affected mutation test first rejects the unchanged source before reaching the intended mutation.",
+      "safe_direction": "Support exact generic function markers in verifier and preserve positive and adversarial function-order coverage; do not remove the new execute-before-claim guard."
+    },
+    {
+      "id": "registry_scope_dead_block_accepted",
+      "kind": "source_guard_false_negative",
+      "case_failures": 1,
+      "path": "CALLERS.toml",
+      "detail": "with_circuit_learning_registry runs frozen scope validation at loop-body depth 2, but the manifest only constrains the loop to function depth 1. The original existing counterexample replacing the guard with if false { guard; } unchecked() is accepted. Actual frozen Rust source correctly performs agent-ID -> frozen-scope -> coordinator checks.",
+      "safe_direction": "Require the scope call directly in the verified request loop body, retaining the existing counterexample and all ordering/owner checks. A global function-depth-1 constraint would incorrectly reject the real loop."
+    }
+  ],
+  "callers_positive_scan": "RUNNING",
+  "raw_unittest_log": "/workspace/scratch/c2fccbdb195e/source-guard-evidence/source-unittest.stderr.log",
+  "no_native_claim": true
+}
