@@ -19,7 +19,11 @@ impl<W: AnchorWitnessStore> PublishedCircuitCellOwnerV1<W> {
             return Err(invalid("initial Feature task is not a learning selection"));
         };
         if previous.source.history_digest().as_str()
-            != coordinator.snapshot().request.completed_task_receipt.to_string()
+            != coordinator
+                .snapshot()
+                .request
+                .completed_task_receipt
+                .to_string()
         {
             return Err(invalid(
                 "learning selection differs from original completed source",

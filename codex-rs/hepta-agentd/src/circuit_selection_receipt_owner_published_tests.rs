@@ -519,8 +519,7 @@ async fn q24_original_selector_rejects_another_real_completion_with_same_run_and
     let config_a = support::configuration(&model, &bundle, &definition, &other_source, 1)?;
     assert_eq!(config_a.manifest, f.original.version.target_config.manifest);
     let version = VersionFixture::new_initial(config_a.clone(), "ordinary-q24-initial")?;
-    let published_a =
-        support::publish_initial(&version, definition.clone(), other_source.clone())?;
+    let published_a = support::publish_initial(&version, definition.clone(), other_source.clone())?;
     let mut other_a =
         support::start(other_a, published_a, Arc::clone(&model), bundle.clone()).await?;
     let other_completed = execute(&other_a, 1).await?;
@@ -573,11 +572,9 @@ async fn q24_original_selector_rejects_another_real_completion_with_same_run_and
         },
     )?;
     let final_use = version.sign(prepared.final_use_binding())?;
-    let published_c = prepared.publish(&final_use)?.into_circuit_feature_task(
-        definition,
-        source_c,
-        completion,
-    )?;
+    let published_c = prepared
+        .publish(&final_use)?
+        .into_circuit_feature_task(definition, source_c, completion)?;
     let mut c = support::start(c, published_c, model, bundle).await?;
     let source_before = owner_bytes(&c)?;
     let (trainer, peer) = f.peer(f.config.training_evidence.clone(), 0)?;
