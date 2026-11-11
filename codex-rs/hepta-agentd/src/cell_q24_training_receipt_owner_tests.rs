@@ -21,6 +21,9 @@ use crate::OriginalCellQ24TrainingSigningConfigV1;
 #[path = "cell_q24_training_stage_tests.rs"]
 mod stage;
 
+#[path = "cell_q24_training_snapshot_readback_tests.rs"]
+mod snapshot_readback;
+
 fn clock() -> anyhow::Result<u64> {
     Ok(std::time::SystemTime::now()
         .duration_since(std::time::UNIX_EPOCH)?
