@@ -10,6 +10,7 @@ Byte integrity does not establish task semantic completeness or source custody.
 from collections import Counter, defaultdict
 from statistics import fmean
 import re
+import unicodedata
 
 import hepta_cell_joint_config as joint
 
@@ -68,6 +69,7 @@ def review(document, rows, evidence, sampling_spec, cost_categories):
         raise ValueError("unsupported research units schema")
     task_bound = schema == "hepta.cell-research-units.v2"
     cases, source_splits, task_units = {}, {}, {}
+    source_aliases = {}
     for case in records(document["cases"]):
         shape(
             case,
@@ -79,6 +81,12 @@ def review(document, rows, evidence, sampling_spec, cost_categories):
         ]
         if case_id in cases or case["split"] not in SPLITS:
             raise ValueError("duplicate case or unknown registered split")
+        # A case-folded or compatibility-normalized alias cannot create an
+        # apparent second natural source group in a descriptive sample count.
+        # This is an identity-consistency check, not source authentication.
+        normalized_source = unicodedata.normalize("NFKC", source).casefold()
+        if source_aliases.setdefault(normalized_source, source) != source:
+            raise ValueError("aliased natural source-group identity")
         if source_splits.setdefault(source, case["split"]) != case["split"]:
             raise ValueError("one natural source crosses registered splits")
         if task_bound:
@@ -135,7 +143,7 @@ def review(document, rows, evidence, sampling_spec, cost_categories):
     coverage = document["cost_coverage"]
     if not isinstance(coverage, dict) or set(coverage) - set(planned):
         raise ValueError("cost coverage contains unregistered attempts")
-    observed, counts, full_cost = set(), Counter(), True
+    observed, counts, incomplete_cost_arms = set(), Counter(), set()
     for row in rows:
         attempt_id = row["attempt_id"]
         if attempt_id in observed or attempt_id not in planned:
@@ -157,13 +165,13 @@ def review(document, rows, evidence, sampling_spec, cost_categories):
             if status == "not_applicable" and value != 0:
                 raise ValueError("inapplicable cost must be explicitly zero")
             if status == "unknown" or value is None:
-                full_cost = False
+                incomplete_cost_arms.add(row["arm"])
     missing = sorted(set(planned) - observed)
     counts["not_observed"] = len(missing)
     if missing:
         blockers.add("MISSING_PLANNED_ATTEMPTS")
-        full_cost = False
-    if not full_cost:
+        incomplete_cost_arms.update(planned[attempt]["arm"] for attempt in missing)
+    if incomplete_cost_arms:
         blockers.add("INCOMPLETE_COST_COVERAGE")
     used_initializations = {fit["initialization_sha256"] for fit in fits.values()}
     groups = len(source_splits)
@@ -191,7 +199,8 @@ def review(document, rows, evidence, sampling_spec, cost_categories):
         "sample_count_is_product": False,
         "independence_verified": False,
         "source_exposure_verified": False,
-        "full_cost_recorded": full_cost,
+        "full_cost_recorded": not incomplete_cost_arms,
+        "incomplete_cost_arms": sorted(incomplete_cost_arms),
         "cost_authenticity_verified": False,
         "blockers": sorted(blockers),
     }

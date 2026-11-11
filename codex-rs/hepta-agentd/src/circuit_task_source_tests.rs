@@ -56,6 +56,7 @@ fn witness(root: &Path, name: &str) -> anyhow::Result<FileAnchorWitnessStore> {
 }
 
 fn identity(root: &Path) -> anyhow::Result<AgentdIdentity> {
+    let root = root.canonicalize()?;
     let agent_id = AgentId::parse(cell::scope("A").agent_id.as_str())?;
     let fleet = HeptaFleetRoot::parse(root.join("fleet"))?;
     let layout = fleet.layout().agent(&agent_id);

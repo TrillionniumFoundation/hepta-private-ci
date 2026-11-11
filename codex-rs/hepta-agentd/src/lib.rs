@@ -356,6 +356,7 @@ pub use learning_iteration_generation_evidence::GenerationLearningStageReadbackR
 #[cfg(target_os = "linux")]
 pub use learning_iteration_generation_evidence::read_generation_learning_stage_v1;
 
+mod cell_q24_model_proposal;
 mod cell_q24_training_receipt_owner;
 mod cell_q24_training_snapshot_readback;
 mod learning_iteration_auth;
@@ -371,6 +372,8 @@ mod learning_owner_evidence;
 mod learning_owner_journal;
 mod neuron_cell_evaluation;
 mod neuron_cell_evaluation_owner;
+#[cfg(target_os = "linux")]
+mod neuron_cell_evaluation_receipt_owner;
 mod neuron_cell_learning_evaluation;
 pub use cell_composed_q24::CellQ24FeatureEncoderV1;
 pub use cell_composed_q24::CellQ24FeatureWorkerV1;
@@ -393,6 +396,10 @@ pub use cell_composed_q24::LoadedCellQ24ModelV1;
 pub use cell_composed_q24::cell_q24_single_head_update_rule_v1;
 pub use cell_q24_backend::CellQ24BackendFilesV1;
 pub use cell_q24_backend::load_cell_q24_backend_v1;
+pub use cell_q24_model_proposal::CellQ24ModelProposalErrorV1;
+pub use cell_q24_model_proposal::CellQ24ModelProposalInputsV1;
+pub use cell_q24_model_proposal::CellQ24ModelProposalOwnerV1;
+pub use cell_q24_model_proposal::CellQ24ModelProposalReceiptV1;
 pub use cell_q24_training_receipt_owner::OriginalCellQ24TrainingCompletionV1;
 pub use cell_q24_training_receipt_owner::OriginalCellQ24TrainingReceiptErrorV1;
 pub use cell_q24_training_receipt_owner::OriginalCellQ24TrainingReceiptOwnerV1;
@@ -419,6 +426,14 @@ pub use circuit_q24_task_profile::circuit_q24_task_channel_v1;
 pub use learning_owner_journal::LearningOriginalOwnerErrorV1;
 pub use neuron_cell_evaluation_owner::OriginalCellEvaluationExecutionOwnerV1;
 pub use neuron_cell_evaluation_owner::OriginalCellEvaluationSigningConfigV1;
+#[cfg(target_os = "linux")]
+pub use neuron_cell_evaluation_receipt_owner::OriginalCellEvaluationReceiptConfigV1;
+#[cfg(target_os = "linux")]
+pub use neuron_cell_evaluation_receipt_owner::OriginalCellEvaluationReceiptErrorV1;
+#[cfg(target_os = "linux")]
+pub use neuron_cell_evaluation_receipt_owner::OriginalCellEvaluationReceiptOwnerV1;
+#[cfg(target_os = "linux")]
+pub use neuron_cell_evaluation_receipt_owner::OriginalCellEvaluationReceiptSourcesV1;
 mod neuron_generation;
 #[cfg(unix)]
 mod neuron_generation_current;
