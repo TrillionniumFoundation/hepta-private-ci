@@ -23,15 +23,20 @@ jobs:
       MEM_SOURCE_COMMIT: c842e995b047eb2ee7d81c073f14fb2fcaa6bff2
       MEM_SOURCE_TREE: e9ba2746237562d68b1c732bee0f86df9e352cde
       MEM_SOURCE_BASE: 2ae5215beaf8d7b7df111a090b82134beae2683d
-      MEM_GATE_OUTPUT: ${{ runner.temp }}/mem8-source-gates-v5
-      MEM_LAUNCH_OUTPUT: ${{ runner.temp }}/mem8-source-gates-v5-launcher
       CODEX_REPO_ROOT: ${{ github.workspace }}/source
-      CARGO_TARGET_DIR: ${{ runner.temp }}/mem8-source-gates-v5-cargo-target
     steps:
       - name: Retain this source-only invocation identity
         shell: bash
+        env:
+          MEM_GATE_OUTPUT: ${{ runner.temp }}/mem8-source-gates-v5
+          MEM_LAUNCH_OUTPUT: ${{ runner.temp }}/mem8-source-gates-v5-launcher
+          CARGO_TARGET_DIR: ${{ runner.temp }}/mem8-source-gates-v5-cargo-target
         run: |
           set -euo pipefail
+          printf '%s\n' \
+            "MEM_GATE_OUTPUT=$MEM_GATE_OUTPUT" \
+            "MEM_LAUNCH_OUTPUT=$MEM_LAUNCH_OUTPUT" \
+            "CARGO_TARGET_DIR=$CARGO_TARGET_DIR" >> "$GITHUB_ENV"
           mkdir -p "$MEM_LAUNCH_OUTPUT"
           python3 - <<'PY'
           import json
