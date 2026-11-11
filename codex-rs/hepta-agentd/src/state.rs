@@ -38,6 +38,9 @@ pub use desktop_objective::AgentdDesktopObjectiveConfig;
 #[path = "state_control.rs"]
 mod control;
 
+#[path = "state_episodic.rs"]
+mod episodic;
+
 #[path = "state_circuit_task.rs"]
 mod circuit_task;
 pub use circuit_task::AgentdCircuitTaskInvocationProviderV1;
@@ -62,6 +65,8 @@ pub(crate) struct AgentdState {
         std::sync::OnceLock<Arc<dyn AgentdCircuitTaskInvocationProviderV1>>,
     circuit_task_admissions: Arc<std::sync::atomic::AtomicUsize>,
     pub(crate) cognitive_ranker: std::sync::OnceLock<Arc<crate::PinnedCognitiveRanker>>,
+    pub(crate) episodic_snapshot_import:
+        std::sync::OnceLock<Arc<crate::episodic_import::EpisodicImportIngress>>,
     pub(crate) cognitive_retrieval_context:
         std::sync::OnceLock<Arc<dyn crate::CurrentMemoryRetrievalContext>>,
     pub(crate) cognitive_retrieval_learning:
@@ -172,6 +177,7 @@ impl AgentdState {
             automation_effect: std::sync::OnceLock::new(),
             objective_runtime: std::sync::OnceLock::new(),
             cognitive_ranker: std::sync::OnceLock::new(),
+            episodic_snapshot_import: std::sync::OnceLock::new(),
             production_operations: std::sync::OnceLock::new(),
             cognitive_retrieval_context: std::sync::OnceLock::new(),
             cognitive_retrieval_learning: std::sync::OnceLock::new(),

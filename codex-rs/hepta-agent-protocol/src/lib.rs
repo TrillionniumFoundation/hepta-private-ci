@@ -5,6 +5,10 @@
 mod authbus;
 mod capabilities;
 mod evidence;
+mod episodic;
+pub use episodic::EPISODIC_SNAPSHOT_IMPORT_CAPABILITY;
+pub use episodic::EpisodicSnapshotImportResult;
+pub use episodic::MAX_EPISODIC_SNAPSHOT_IMPORT_BYTES;
 mod generation;
 mod objective_history;
 pub use authbus::AuthBusObjectiveBody;
@@ -625,6 +629,9 @@ pub enum AgentdMethod {
     KernelEvidenceVerify {
         request: KernelEvidenceVerifyV1,
     },
+    EpisodicSnapshotImport {
+        snapshot_json: String,
+    },
     CognitiveContext {
         query: String,
         limit: u16,
@@ -779,6 +786,7 @@ pub enum AgentdPayload {
         run_id: String,
         conflict_digest: String,
     },
+    EpisodicSnapshotImported(EpisodicSnapshotImportResult),
     CognitiveContext(CognitiveContextSnapshot),
     CognitiveContextRevalidated(CognitiveContextRevalidation),
     AuthBusTextStatus(AuthBusTextStatus),

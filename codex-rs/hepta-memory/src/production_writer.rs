@@ -57,6 +57,14 @@ use crate::local_lease_outbox::legacy_dispatch_operation_digest;
 use crate::operation_claims;
 use crate::operation_claims::DurableDispatchClaim;
 
+#[path = "production_episodic.rs"]
+mod episodic;
+pub use episodic::EpisodicImportReceipt;
+pub use episodic::EpisodicMemoryBinding;
+pub use episodic::EpisodicRecordAdmission;
+pub use episodic::EpisodicSnapshotAdmission;
+pub use episodic::EpisodicSnapshotVerifier;
+
 #[path = "production_retained_operation.rs"]
 mod retained_operation;
 pub use retained_operation::ProductionRetainedOperation;
