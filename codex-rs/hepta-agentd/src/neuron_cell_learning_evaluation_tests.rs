@@ -59,6 +59,7 @@ pub(crate) struct LearningFixture {
     pub(crate) evidence: SignedEvaluationEvidenceV1,
     pub(crate) verifier: LearningEvidenceVerifierV1,
     fixture: Fixture,
+    executions: LockedFileProductEvaluationExecutionStoreV1,
     now: u64,
 }
 
@@ -435,12 +436,42 @@ impl LearningFixture {
             evidence,
             verifier,
             fixture,
+            executions,
             now,
         }
     }
 
     pub(crate) fn runner(&self) -> &CellEvaluationRunnerV1<LockedFileFinalHoldoutCasStoreV1> {
         &self.fixture.runner
+    }
+
+    #[cfg(target_os = "linux")]
+    pub(crate) fn receipt_owner_sources<'a>(
+        &'a mut self,
+        trainer: &'a crate::LearningIterationEvidenceClientV1,
+    ) -> crate::OriginalCellEvaluationReceiptSourcesV1<
+        'a,
+        LockedFileFinalHoldoutCasStoreV1,
+        FileAnchorWitnessStore,
+        FileAnchorWitnessStore,
+        LockedFileProductEvaluationExecutionStoreV1,
+    > {
+        crate::OriginalCellEvaluationReceiptSourcesV1 {
+            snapshot: &self.snapshot,
+            runner: &mut self.fixture.runner,
+            journals: CellEvaluationJournalsV1 {
+                candidate: &self.fixture.candidate,
+                fixed_expert: &self.fixture.fixed,
+            },
+            candidate_plan: &self.fixture.candidate_temporal,
+            baseline_plan: &self.fixture.baseline_temporal,
+            executions: &mut self.executions,
+            qualification: &self.qualification,
+            context: &self.context,
+            evidence: &self.evidence,
+            timing: ProductTimingEvidenceV1::Qualification,
+            trainer,
+        }
     }
 
     pub(crate) fn request(&self, now: u64) -> CellEvaluationQualificationRequestV1<'_> {
