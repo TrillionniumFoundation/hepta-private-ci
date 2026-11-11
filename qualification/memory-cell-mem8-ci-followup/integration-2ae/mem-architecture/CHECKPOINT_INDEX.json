@@ -1,0 +1,81 @@
+{
+  "schema": "mem8-integrated-mem-architecture-ci-complete-v1",
+  "assembled_at": "2026-11-11T07:34:24.574250+00:00",
+  "source_sha": "2ae5215beaf8d7b7df111a090b82134beae2683d",
+  "source_tree": "12159640adcf073b51f3837e75575e11f5c20233",
+  "base_sha": "96038ccf0660154fac143ba6cbe4be81e00813e8",
+  "runs": [
+    {
+      "run_id": 42971470585,
+      "attempt": 1,
+      "status": "completed",
+      "conclusion": "success",
+      "artifact_ids": [
+        13835257869,
+        13835387383,
+        13836304845
+      ],
+      "python": {
+        "executions": 154,
+        "distinct_case_ids": 120,
+        "duplicate_executions": 34
+      },
+      "native": {
+        "memory": 11,
+        "agentd": 6,
+        "protocol": 16,
+        "total_executions": 33,
+        "failed": 0,
+        "memory_filtered": 420,
+        "agentd_filtered": 782,
+        "protocol_filtered": 0,
+        "drain_markers": [
+          "commit",
+          "revoke",
+          "panic"
+        ],
+        "source_changed_files_verified": 112,
+        "receipts_verified": 9,
+        "fmt_and_three_fixes_changed_source": false
+      }
+    },
+    {
+      "run_id": 42971470237,
+      "attempt": 1,
+      "status": "completed",
+      "conclusion": "success",
+      "artifact_ids": [
+        13834898715,
+        13836618179
+      ],
+      "source_head": {
+        "native_executions": 526,
+        "python_executions": 138,
+        "receipts_verified": 31,
+        "clean_before_after_each_receipt": true
+      },
+      "base_merge": {
+        "python_executions": 136,
+        "native_executions": 0,
+        "identical_tree_reuse": true,
+        "requires_source_head_success": true
+      },
+      "required_aggregate": {
+        "job_id": 130386747659,
+        "conclusion": "success",
+        "completed_at": "2026-11-11T07:29:23Z"
+      }
+    }
+  ],
+  "bounds": [
+    "Original ZIP bytes and every extracted member are retained, with official size/digest and ZIP CRC verified.",
+    "These counts describe actual test executions and are not combined into a claim of globally distinct capabilities.",
+    "All source-head receipts bind 2ae / tree 1215964; the merge lane binds its separately recorded synthetic merge commit with the identical tree.",
+    "The native CLI binding was measured on this run; no previous head binary or PASS was transferred.",
+    "Other required CI failures remain independent; this package does not claim the whole integration gate passed.",
+    "No ignored Agentd provider test was selected. This does not resolve original provider settlement, original production owner recovery, or unseen successor benefit.",
+    "Audit scripts retain their original workspace reference paths. Exact reference sources are bundled for review or explicit restoration; archived code was not executed to fetch/read these artifacts."
+  ],
+  "signed_download_urls_retained": false,
+  "automatic_actions_performed_by_reader": "none: no rerun, dispatch, cancel, native build, model request or ref change"
+}
