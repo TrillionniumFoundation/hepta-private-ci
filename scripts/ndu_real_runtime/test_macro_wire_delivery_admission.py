@@ -14,8 +14,12 @@ def case(root, actions):
     p["profile"]["original_operation_id"] = "fixture-run"
     directory = root / "observed"
     host = FixtureHost(
-        p["config"], p["pairs"][0]["case"], p["profile"], directory,
-        training=True, exploration=actions,
+        p["config"],
+        p["pairs"][0]["case"],
+        p["profile"],
+        directory,
+        training=True,
+        exploration=actions,
     )
     result = host.run()
     return p["config"], directory, result
