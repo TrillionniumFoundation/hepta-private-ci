@@ -1,285 +1,312 @@
 #!/usr/bin/env python3
-"""Strict, shadow-only 2x2 Core x NDU paired research-evidence preflight.
+"""Fail-closed, untrusted-data preflight for a factorial Core x NDU study.
 
-This code performs *no* tasks, training, effect verification, owner attestation,
-model selection, or adoption. Digest strings and independence flags are
-self-declared; an analysis result cannot confer deployment authority.
+Input rows, values, time indices and hashes are caller assertions, not owner
+attestations. Never use this to authorize a Q24 update, adopt or external effect.
 """
 from __future__ import annotations
 
 import argparse
+from collections import defaultdict
 from dataclasses import asdict, dataclass
-from hashlib import sha256
-from itertools import product
 import json
-import math
 from pathlib import Path
-from typing import Iterable
 
+from study import ContractError, _digest, _exact_one_sided_signflip_p, _finite, _valid_hash
+
+SCHEMA = "hepta.neuroscience.core-ndu-preflight.v1"
 ARMS = ("A", "B", "C", "D")
-# Fixed a priori contrasts in the order required by the research protocol.
-CONTRASTS = {
-    "B_minus_A": {"B": 1, "A": -1},
-    "D_minus_C": {"D": 1, "C": -1},
-    "D_minus_B": {"D": 1, "B": -1},
-    "interaction": {"D": 1, "C": -1, "B": -1, "A": 1},
-}
-SCHEMA = "hepta.neuroscience.factorial-shadow.v1"
-
-
-class FactorialContractError(ValueError):
-    """A missing or inconsistent research contract, not a failed model."""
-
-
-def _hash_ok(value: object) -> bool:
-    return type(value) is str and len(value) == 64 and all(
-        letter in "0123456789abcdef" for letter in value
-    )
-
-
-def _finite(value: object) -> bool:
-    if type(value) not in (float, int):
-        return False
-    try:
-        return math.isfinite(value)
-    except (OverflowError, ValueError):
-        return False
-
-
-def _digest(value: object) -> str:
-    return sha256(json.dumps(value, sort_keys=True, separators=(",", ":"),
-                             allow_nan=False).encode("utf-8")).hexdigest()
+DENSITIES = ("sparse", "dense")
+# Four exact requested contrasts; not four independently established mechanisms.
+CONTRASTS = ("B_minus_A", "D_minus_C", "D_minus_B", "interaction")
+MAX_ROWS = 100_000
 
 
 @dataclass(frozen=True)
-class FactorialRow:
+class FactorialTrialRow:
     episode_id: str
     seed: int
     family: str
-    arm: str                 # A ordinary, B ordinary+NDU, C Hepta, D Hepta+NDU
-    workload_digest: str    # exact future task, not a training task
-    train_data_digest: str  # locked training A and its separation from future B
-    evaluator_digest: str   # frozen independent prospective evaluator declaration
-    capacity_contract_digest: str  # explicit capacity and baseline opportunity contract
-    core_model_digest: str
-    controller_digest: str
-    feedback_contract_digest: str  # dense/sparse schedule and information budget
-    outcome_receipt_digest: str
+    feedback_density: str
+    arm: str                         # A ordinary; B ordinary+NDU; C Hepta; D Hepta+NDU
+    split: str                       # must be future_B
+    source_task_digest: str          # actual training task A (declared only)
+    workload_digest: str             # future evaluation B, distinct from A
+    shared_base_digest: str
+    capacity_envelope_digest: str    # matched opportunity, not proven equivalence
+    evaluator_digest: str
+    training_seed_digest: str
+    evaluation_seed_digest: str
+    feedback_budget_bits: int
     query_budget: int
     training_budget: int
     compute_budget_us: int
-    feedback_budget_bits: int
-    gross_value: float | None       # never impute missing outcomes as zero
-    full_cost: float | None         # same declared utility units as gross_value
-    retention_value: float | None  # old-task score, never impute null
-    wall_time_us: int | None
-    cpu_time_us: int | None
-    gpu_time_us: int | None
-    failed_actions: int | None
-    evaluator_independent: bool     # declaration, NOT independently validated
+    actual_cpu_us: int               # declared measurement, includes retries
+    actual_wall_us: int
+    peak_rss_bytes: int
+    failed_attempts: int
+    gross_value: float
+    full_cost: float
+    old_task_score: float | None
+    ood_score: float | None
+    evaluator_independent: bool      # self-declared, does not establish independence
+    outcome_receipt_digest: str     # self-declared, not a signature
 
 
-def _valid_row(r: FactorialRow) -> None:
-    if (type(r.episode_id) is not str or not r.episode_id
-            or type(r.family) is not str or not r.family or r.arm not in ARMS
-            or type(r.seed) is not int or r.seed < 0
-            or type(r.evaluator_independent) is not bool
-            or not all(_hash_ok(v) for v in (
-                r.workload_digest, r.train_data_digest, r.evaluator_digest,
-                r.capacity_contract_digest, r.core_model_digest,
-                r.controller_digest, r.feedback_contract_digest,
-                r.outcome_receipt_digest))
-            or any(type(v) is not int or v < 0 for v in (
-                r.query_budget, r.training_budget, r.compute_budget_us,
-                r.feedback_budget_bits))):
-        raise FactorialContractError("invalid identity, digest or opportunity budget")
-    for metric in (r.gross_value, r.full_cost, r.retention_value):
-        if metric is not None and not _finite(metric):
-            raise FactorialContractError("invalid non-finite outcome or cost")
-    if r.full_cost is not None and r.full_cost < 0:
-        raise FactorialContractError("negative realized full cost")
-    for measured in (r.wall_time_us, r.cpu_time_us, r.gpu_time_us, r.failed_actions):
-        if measured is not None and (type(measured) is not int or measured < 0):
-            raise FactorialContractError("invalid actual resource observation")
+def _validate(row: FactorialTrialRow) -> None:
+    if (not isinstance(row.episode_id, str) or not row.episode_id
+            or not isinstance(row.family, str) or not row.family
+            or row.arm not in ARMS or row.feedback_density not in DENSITIES
+            or row.split != "future_B"
+            or type(row.seed) is not int or row.seed < 0
+            or type(row.evaluator_independent) is not bool):
+        raise ContractError("invalid arm, split, family, seed or independence field")
+    hashes = (row.source_task_digest, row.workload_digest, row.shared_base_digest,
+              row.capacity_envelope_digest, row.evaluator_digest,
+              row.training_seed_digest, row.evaluation_seed_digest,
+              row.outcome_receipt_digest)
+    if not all(_valid_hash(value) for value in hashes):
+        raise ContractError("noncanonical or absent declared digest")
+    if (row.source_task_digest == row.workload_digest
+            or row.training_seed_digest == row.evaluation_seed_digest):
+        raise ContractError("training A and future B must have distinct task and seed labels")
+    for value in (row.feedback_budget_bits, row.query_budget, row.training_budget,
+                  row.compute_budget_us, row.actual_cpu_us, row.actual_wall_us,
+                  row.peak_rss_bytes, row.failed_attempts):
+        if type(value) is not int or value < 0:
+            raise ContractError("invalid integer resource record")
+    if (row.feedback_budget_bits == 0 or row.query_budget == 0
+            or row.training_budget == 0 or row.compute_budget_us == 0
+            or row.actual_cpu_us == 0 or row.actual_wall_us == 0
+            or row.peak_rss_bytes == 0
+            or row.actual_cpu_us > row.compute_budget_us):
+        raise ContractError("resource evidence incomplete or out of declared budget")
+    for value in (row.gross_value, row.full_cost, row.old_task_score, row.ood_score):
+        if value is not None and not _finite(value):
+            raise ContractError("nonfinite or nonnumeric value")
+    if row.full_cost < 0:
+        raise ContractError("negative purported complete cost")
 
 
-def _contrast(values: dict[str, float], weights: dict[str, int]) -> float:
-    return sum(values[arm] * weight for arm, weight in weights.items())
+def _differences(values: dict[str, float]) -> dict[str, float]:
+    return {
+        "B_minus_A": values["B"] - values["A"],
+        "D_minus_C": values["D"] - values["C"],
+        "D_minus_B": values["D"] - values["B"],
+        "interaction": (values["D"] - values["C"]) - (values["B"] - values["A"]),
+    }
 
 
-def _signflip_p(values: list[float]) -> float | None:
-    """One-sided exploratory exact sign flip; cluster is the training seed."""
-    if not values or len(values) > 16:
-        return None
-    observed = sum(values)
-    count = sum(1 for signs in product((-1, 1), repeat=len(values))
-                if sum(x * sign for x, sign in zip(values, signs)) >= observed - 1e-12)
-    return count / (1 << len(values))
-
-
-def _holm_p(values: dict[str, float | None]) -> dict[str, float | None]:
-    """Holm adjusted p under arbitrary test dependence, conditional on valid raw p."""
-    if any(v is None for v in values.values()):
-        return {key: None for key in values}
-    ordered = sorted(values, key=lambda key: (values[key], key))
+def _holm(pvalues: dict[str, float | None]) -> dict[str, float | None]:
+    if any(value is None for value in pvalues.values()):
+        return dict.fromkeys(pvalues, None)
+    ranked = sorted(pvalues, key=lambda name: (pvalues[name], name))
+    result = {}
     previous = 0.0
-    adjusted = {}
-    for pos, key in enumerate(ordered):
-        previous = max(previous, (len(ordered) - pos) * values[key])
-        adjusted[key] = min(1.0, previous)
-    return {key: adjusted[key] for key in values}
+    for rank, name in enumerate(ranked):
+        adjusted = min(1.0, (len(ranked) - rank) * pvalues[name])
+        previous = max(previous, adjusted)
+        result[name] = previous
+    return {name: result[name] for name in pvalues}
 
 
-def factorial_evidence(rows: Iterable[FactorialRow]) -> dict:
-    """Audit a complete factorial panel; no scientific/production pass is possible.
+def evaluate_core_ndu(rows: list[FactorialTrialRow], *,
+                      required_cells: list[tuple[str, str]]) -> dict:
+    """Exact arm/cell/seed coverage and clustered *exploratory* contrasts.
 
-    Resource *budgets* and identity strings are checked for consistency, not
-    actual equality of compute or real ownership. Missing realized outcomes
-    withhold all inferential statistics instead of dropping unfavorable arms.
-    A seed occurring in many tasks/families remains one randomization unit.
+    All metrics are caller-supplied; even favorable statistics remain HOLD.
+    Equal weighting: per episode matched block -> cell -> seed -> grand mean.
+    This avoids a dense task family's extra episodes silently dominating a seed.
     """
-    data = list(rows)
-    if not data or len(data) > 400_000:
-        raise FactorialContractError("empty or oversized factorial panel")
-    blocks: dict[tuple[str, int, str], dict[str, FactorialRow]] = {}
-    seen_receipts: set[str] = set()
-    for row in data:
-        if not isinstance(row, FactorialRow):
-            raise FactorialContractError("expected typed FactorialRow")
-        _valid_row(row)
-        if row.outcome_receipt_digest in seen_receipts:
-            raise FactorialContractError("reused outcome receipt")
-        seen_receipts.add(row.outcome_receipt_digest)
-        block = blocks.setdefault((row.episode_id, row.seed, row.family), {})
-        if row.arm in block:
-            raise FactorialContractError("duplicate arm in paired block")
-        block[row.arm] = row
-    seed_contrasts: dict[str, dict[int, list[float]]] = {
-        name: {} for name in CONTRASTS
-    }
-    seed_costs: dict[str, dict[int, list[float]]] = {
-        name: {} for name in CONTRASTS
-    }
-    seed_retention: dict[str, dict[int, list[float]]] = {
-        name: {} for name in CONTRASTS
-    }
-    actual_by_arm: dict[str, dict[str, list[int]]] = {
-        arm: {name: [] for name in (
-            "wall_time_us", "cpu_time_us", "gpu_time_us", "failed_actions")}
-        for arm in ARMS
-    }
-    missing_outcome_blocks = 0
-    missing_retention_blocks = 0
-    missing_resource_blocks = 0
-    all_independence_declared = True
-    for (episode, seed, family), block in blocks.items():
-        if set(block) != set(ARMS):
-            raise FactorialContractError("missing Core x NDU arm")
-        a, b, c, d = (block[arm] for arm in ARMS)
-        fixed = (
-            "workload_digest", "train_data_digest", "evaluator_digest",
-            "capacity_contract_digest", "feedback_contract_digest",
-            "query_budget", "training_budget", "compute_budget_us",
-            "feedback_budget_bits",
-        )
-        if any(getattr(row, field) != getattr(a, field)
-               for row in block.values() for field in fixed):
-            raise FactorialContractError("unequal future task, evaluator, data or opportunity")
-        if not (a.core_model_digest == b.core_model_digest
-                and c.core_model_digest == d.core_model_digest
-                and a.core_model_digest != c.core_model_digest):
-            raise FactorialContractError("core model identity not locked within controller arms")
-        if not (a.controller_digest == c.controller_digest
-                and b.controller_digest == d.controller_digest
-                and a.controller_digest != b.controller_digest):
-            raise FactorialContractError("controller identity not locked across cores")
-        all_independence_declared &= all(row.evaluator_independent for row in block.values())
-        resource_names = ("wall_time_us", "cpu_time_us", "gpu_time_us", "failed_actions")
-        for arm, row in block.items():
-            for name in resource_names:
-                if getattr(row, name) is not None:
-                    actual_by_arm[arm][name].append(getattr(row, name))
-        if any(getattr(row, name) is None for row in block.values()
-               for name in resource_names):
-            missing_resource_blocks += 1
-        if any(row.gross_value is None or row.full_cost is None for row in block.values()):
-            missing_outcome_blocks += 1
-        else:
-            net = {arm: row.gross_value - row.full_cost for arm, row in block.items()}
-            costs = {arm: row.full_cost for arm, row in block.items()}
-            for name, weights in CONTRASTS.items():
-                seed_contrasts[name].setdefault(seed, []).append(_contrast(net, weights))
-                seed_costs[name].setdefault(seed, []).append(_contrast(costs, weights))
-        if any(row.retention_value is None for row in block.values()):
-            missing_retention_blocks += 1
-        else:
-            retention = {arm: row.retention_value for arm, row in block.items()}
-            for name, weights in CONTRASTS.items():
-                seed_retention[name].setdefault(seed, []).append(_contrast(retention, weights))
+    if not isinstance(rows, list) or not 1 <= len(rows) <= MAX_ROWS:
+        raise ContractError("empty or oversized row set")
+    if (not isinstance(required_cells, list) or not required_cells
+            or len(required_cells) > 64):
+        raise ContractError("preregister a bounded nonempty family/density matrix")
+    registered: set[tuple[str, str]] = set()
+    for cell in required_cells:
+        if (not isinstance(cell, tuple) or len(cell) != 2
+                or not isinstance(cell[0], str) or not cell[0]
+                or cell[1] not in DENSITIES or cell in registered):
+            raise ContractError("invalid, repeated or missing registered task cell")
+        registered.add(cell)
 
-    # Conservative complete-case gate: no conditioning on observed outcomes.
-    outcomes_complete = missing_outcome_blocks == 0
-    retention_complete = missing_retention_blocks == 0
-    resource_complete = missing_resource_blocks == 0
-    contrasts = {}
-    raw_p = {}
-    for name in CONTRASTS:
-        differences = ([sum(sample) / len(sample) for _, sample in
-                        sorted(seed_contrasts[name].items())] if outcomes_complete else [])
-        costs = ([sum(sample) / len(sample) for _, sample in
-                  sorted(seed_costs[name].items())] if outcomes_complete else [])
-        retentions = ([sum(sample) / len(sample) for _, sample in
-                       sorted(seed_retention[name].items())] if retention_complete else [])
-        raw_p[name] = _signflip_p(differences) if outcomes_complete else None
-        contrasts[name] = {
-            "mean_net_delta": sum(differences) / len(differences) if differences else None,
-            "mean_cost_delta": sum(costs) / len(costs) if costs else None,
-            "mean_retention_delta": (sum(retentions) / len(retentions)
-                                      if retentions else None),
-            "one_sided_exact_signflip_p": raw_p[name],
-            "holm_four_contrasts_p": None,
+    blocks: dict[tuple[int, str, str, str], dict[str, FactorialTrialRow]] = {}
+    receipts: set[str] = set()
+    for row in rows:
+        _validate(row)
+        if (row.family, row.feedback_density) not in registered:
+            raise ContractError("unregistered task family or feedback density")
+        if row.outcome_receipt_digest in receipts:
+            raise ContractError("reused outcome receipt between arms or episodes")
+        receipts.add(row.outcome_receipt_digest)
+        key = (row.seed, row.family, row.feedback_density, row.episode_id)
+        arm_rows = blocks.setdefault(key, {})
+        if row.arm in arm_rows:
+            raise ContractError("duplicate arm within matched episode")
+        arm_rows[row.arm] = row
+
+    fields = (
+        "source_task_digest", "workload_digest", "shared_base_digest",
+        "capacity_envelope_digest", "evaluator_digest", "training_seed_digest",
+        "evaluation_seed_digest", "feedback_budget_bits", "query_budget",
+        "training_budget", "compute_budget_us",
+    )
+    per_seed_cell: dict[tuple[int, str, str], list[dict[str, float]]] = defaultdict(list)
+    incomplete_retention = False
+    incomplete_ood = False
+    claimed_independent = True
+    resources = {arm: {"cpu_us": [], "wall_us": [], "peak_rss_bytes": [],
+                       "failed_attempts": [], "full_cost": []} for arm in ARMS}
+    for (seed, family, density, _episode), block in sorted(blocks.items()):
+        if set(block) != set(ARMS):
+            raise ContractError("missing required Core x NDU factorial arm")
+        ref = block["A"]
+        for row in block.values():
+            if any(getattr(ref, field) != getattr(row, field) for field in fields):
+                raise ContractError("unmatched task, evaluator, seeds or resource opportunity")
+            claimed_independent &= row.evaluator_independent
+            series = resources[row.arm]
+            for name in series:
+                series[name].append(getattr(row, {"cpu_us": "actual_cpu_us", "wall_us": "actual_wall_us"}.get(name, name)))
+        values = {arm: block[arm].gross_value - block[arm].full_cost for arm in ARMS}
+        contrasts = _differences(values)
+        if any(row.old_task_score is None for row in block.values()):
+            incomplete_retention = True
+        else:
+            contrasts.update({"retention:" + name: value for name, value in
+                              _differences({arm: block[arm].old_task_score for arm in ARMS}).items()})
+        if any(row.ood_score is None for row in block.values()):
+            incomplete_ood = True
+        else:
+            contrasts.update({"ood:" + name: value for name, value in
+                              _differences({arm: block[arm].ood_score for arm in ARMS}).items()})
+        per_seed_cell[(seed, family, density)].append(contrasts)
+
+    seeds = {key[0] for key in per_seed_cell}
+    for seed in seeds:
+        cells = {(family, density) for s, family, density in per_seed_cell if s == seed}
+        if cells != registered:
+            raise ContractError("seed missing registered sparse/dense or family cell")
+
+    # Equal weight to registered cells per independent training seed.
+    by_seed: dict[int, dict[str, list[float]]] = {}
+    by_cell = {}
+    for cell in sorted(registered):
+        cell_seed_diffs = {}
+        for seed in sorted(seeds):
+            examples = per_seed_cell[(seed, *cell)]
+            cell_seed_diffs[seed] = {
+                name: sum(e[name] for e in examples) / len(examples)
+                for name in CONTRASTS
+            }
+        by_cell["/".join(cell)] = {
+            "seed_clusters": len(cell_seed_diffs),
+            "blocks": sum(len(per_seed_cell[(seed, *cell)]) for seed in seeds),
+            "mean_net": {name: sum(x[name] for x in cell_seed_diffs.values()) / len(seeds)
+                         for name in CONTRASTS},
         }
-    for name, p in _holm_p(raw_p).items():
-        contrasts[name]["holm_four_contrasts_p"] = p
+        for seed, contrasts in cell_seed_diffs.items():
+            s = by_seed.setdefault(seed, {name: [] for name in CONTRASTS})
+            for name in CONTRASTS:
+                s[name].append(contrasts[name])
+
+    seed_contrasts = {name: [sum(by_seed[seed][name]) / len(registered)
+                              for seed in sorted(seeds)] for name in CONTRASTS}
+    pvalues = {name: (_exact_one_sided_signflip_p(values)
+                      if len(values) <= 16 else None)
+               for name, values in seed_contrasts.items()}
+    adjusted = _holm(pvalues)
+
+    def secondary(prefix: str, missing: bool):
+        if missing:
+            return None
+        return {
+            name: sum(
+                sum(
+                    sum(example[prefix + name] for example in per_seed_cell[(seed, *cell)])
+                    / len(per_seed_cell[(seed, *cell)])
+                    for cell in registered
+                ) / len(registered)
+                for seed in seeds
+            ) / len(seeds) for name in CONTRASTS
+        }
+
     return {
         "schema": SCHEMA,
-        "factorial_cells": {"A": "Ordinary+ordinary", "B": "Ordinary+NDU",
-                            "C": "Hepta+ordinary", "D": "Hepta+NDU"},
-        "blocks": len(blocks),
-        "seed_clusters": len({seed for (_, seed, _) in blocks}),
-        "families": sorted({family for (_, _, family) in blocks}),
-        "missing_outcome_blocks": missing_outcome_blocks,
-        "missing_retention_blocks": missing_retention_blocks,
-        "missing_resource_blocks": missing_resource_blocks,
-        "all_evaluator_independence_declared": all_independence_declared,
-        "actual_resource_mean_by_arm": {
-            arm: {name: (sum(values) / len(values) if resource_complete else None)
-                  for name, values in measurements.items()}
-            for arm, measurements in actual_by_arm.items()
-        },
-        "contrasts": contrasts,
-        "inference_note": ("Exploratory, conditional on seed sign-exchangeability and fixed "
-                           "outcomes; four one-sided Holm corrections do not establish "
-                           "external evaluator independence or causal attribution."),
-        "credential_verification": "NOT_PERFORMED",
-        "owner_attestation": "NOT_PERFORMED",
-        "realized_cost_audit": "NOT_PERFORMED",
-        "qualification": "HOLD_NO_GO",
+        "research_posture": "HOLD_NO_GO",
         "authority": "DENY_ALL",
-        "input_digest": _digest([asdict(row) for row in sorted(data, key=lambda r:
-                               (r.episode_id, r.seed, r.family, r.arm))]),
+        "owner_attestation": "NOT_VERIFIED",
+        "evaluator_independence": "SELF_DECLARED" if claimed_independent else "MISSING",
+        "coverage": {
+            "complete_for_declared_matrix": True,
+            "registered_cells": [list(c) for c in sorted(registered)],
+            "seed_clusters": len(seeds), "matched_blocks": len(blocks),
+        },
+        "net_contrasts": {
+            name: {
+                "mean": sum(values) / len(values),
+                "one_sided_signflip_p_unadjusted": pvalues[name],
+                "holm_p_four_contrasts": adjusted[name],
+            } for name, values in seed_contrasts.items()
+        },
+        "by_cell": by_cell,
+        "retention_contrasts": secondary("retention:", incomplete_retention),
+        "ood_contrasts": secondary("ood:", incomplete_ood),
+        "reported_resource_means_by_arm": {
+            arm: {name: sum(values) / len(values) for name, values in series.items()}
+            for arm, series in resources.items()
+        },
+        "report_digest": _digest([asdict(row) for row in sorted(
+            rows, key=lambda x: (x.seed, x.family, x.feedback_density,
+                                x.episode_id, x.arm))]),
+        "limitations": [
+            "Input receipts and evaluator independence were not authenticated",
+            "Complete cost and train/eval partition are self-declared",
+            "Seed exchangeability, preregistration and family-wise research gate not proven",
+            "No owner selection, NoUpdate/Adopt, task C or cold recovery executed",
+        ],
     }
+
+
+def _reject_duplicate_pairs(pairs: list[tuple[str, object]]) -> dict:
+    result = {}
+    for key, value in pairs:
+        if key in result:
+            raise ContractError("duplicate JSON field")
+        result[key] = value
+    return result
+
+
+def _strict_json(line: str) -> object:
+    return json.loads(line, object_pairs_hook=_reject_duplicate_pairs,
+                      parse_constant=lambda value: (_ for _ in ()).throw(
+                          ContractError("nonfinite JSON constant")))
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--trials", required=True, type=Path,
-                        help="frozen factorial FactorialRow JSONL; never live tasks")
+    parser.add_argument("--trials", type=Path, required=True)
+    parser.add_argument("--required-cells", type=Path, required=True,
+                        help="JSON array of [family, sparse|dense] pairs frozen before evaluation")
     args = parser.parse_args()
+    if args.trials.stat().st_size > 50_000_000:
+        raise ContractError("oversized trial file")
     with args.trials.open(encoding="utf-8") as stream:
-        rows = [FactorialRow(**json.loads(line)) for line in stream if line.strip()]
-    print(json.dumps(factorial_evidence(rows), sort_keys=True, indent=2))
+        lines = [line for line in stream if line.strip()]
+    if len(lines) > MAX_ROWS:
+        raise ContractError("oversized trial file")
+    try:
+        rows = [FactorialTrialRow(**_strict_json(line)) for line in lines]
+    except TypeError as error:
+        raise ContractError("invalid trial row shape") from error
+    cells = _strict_json(args.required_cells.read_text(encoding="utf-8"))
+    if not isinstance(cells, list):
+        raise ContractError("invalid required-cell manifest")
+    print(json.dumps(evaluate_core_ndu(rows, required_cells=[tuple(c) for c in cells]),
+                     sort_keys=True, indent=2, allow_nan=False))
 
 
 if __name__ == "__main__":
     main()
+
