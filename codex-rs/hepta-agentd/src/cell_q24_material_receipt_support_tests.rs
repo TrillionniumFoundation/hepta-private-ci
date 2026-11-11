@@ -516,3 +516,9 @@ fn initial(
 #[cfg(target_os = "linux")]
 #[path = "cell_q24_training_source_tests.rs"]
 mod training_source;
+
+#[cfg(target_os = "linux")]
+#[path = "cell_q24_material_evidence_support_tests.rs"]
+mod evidence_service;
+#[cfg(target_os = "linux")]
+pub(crate) use evidence_service::ReadbackServiceFixture;
