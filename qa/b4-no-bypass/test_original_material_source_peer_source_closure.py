@@ -88,6 +88,33 @@ class OriginalMaterialSourcePeerClosureTests(unittest.TestCase):
                     PROOF._verify_boundary(ROOT, row, extra, ())
         self.assertTrue(all(value is False for value in self.manifest["authority"].values()))
 
+    def test_explicit_uid_stream_has_only_both_actual_production_callers(self):
+        row = self.boundaries["original_pinned_stream_explicit_uid"]
+        expected = (AGENT + "learning_iteration_evidence_client.rs", CLIENT)
+        self.assertEqual(row.product_callers, expected)
+        self.assertIn(
+            row.identifier,
+            self.manifest["privileged_inventory"]["required_boundary_ids"],
+        )
+        paths = (row.definition_path, *expected)
+        sources = {
+            path: PROOF._strip_cfg_test_items(PROOF._strip_rust_non_code(
+                (ROOT / path).read_text()
+            ))
+            for path in paths
+        }
+        PROOF._verify_boundary(ROOT, row, sources, ())
+        missing = dict(sources)
+        del missing[CLIENT]
+        with self.assertRaisesRegex(PROOF.VerificationFailure, "missing"):
+            PROOF._verify_boundary(ROOT, row, missing, ())
+        unexpected = dict(sources)
+        unexpected[AGENT + "unregistered_explicit_uid_peer.rs"] = (
+            "fn unexpected() { RootObservationStream::from_stream_for_uid(); }"
+        )
+        with self.assertRaisesRegex(PROOF.VerificationFailure, "unexpected"):
+            PROOF._verify_boundary(ROOT, row, unexpected, ())
+
     def test_decoder_cannot_detach_signatures_provenance_batch_or_frozen_scope(self):
         checks = (
             ("fn from_original_material_peer(", "require_original_material_signatures(config, experience, dataset, started_at)?"),

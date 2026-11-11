@@ -2726,7 +2726,7 @@ symbol = "RootObservationStream::from_stream_for_uid"
 receiver_type = "RootObservationStream"
 definition_path = "codex-rs/hepta-agentd/src/root_observation_stream.rs"
 definition_markers = ["pub(super) fn from_stream_for_uid(", "actual.uid() != uid", "check_lifetime(root.get_ref())?"]
-product_callers = ["codex-rs/hepta-agentd/src/learning_iteration_evidence_client.rs"]
+product_callers = ["codex-rs/hepta-agentd/src/learning_iteration_evidence_client.rs","codex-rs/hepta-agentd/src/cell_q24_material_source.rs"]
 caller_markers = []
 
 [[protected_file]]
