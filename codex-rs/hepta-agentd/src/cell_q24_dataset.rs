@@ -325,6 +325,12 @@ impl<'a, W: AnchorWitnessStore> CellQ24DatasetReaderV1<'a, W> {
             head: rule.head,
             receipt,
             batch,
+            #[cfg(target_os = "linux")]
+            ledger_binding: self.ledger.binding_digest(),
+            #[cfg(target_os = "linux")]
+            trust_distribution: self.ledger.trust_distribution_digest(),
+            #[cfg(target_os = "linux")]
+            source_publication: source.publication_digest(),
         })
     }
 }
@@ -343,6 +349,12 @@ pub struct OriginalCellQ24DatasetV1 {
     head: CellQ24PrivateHeadV1,
     receipt: DatasetSnapshotReceiptV3,
     batch: CellQ24TrainingBatchV1,
+    #[cfg(target_os = "linux")]
+    ledger_binding: Digest32,
+    #[cfg(target_os = "linux")]
+    trust_distribution: Digest32,
+    #[cfg(target_os = "linux")]
+    source_publication: Digest32,
 }
 
 impl OriginalCellQ24DatasetV1 {
@@ -505,3 +517,9 @@ fn terminal_target(
 #[cfg(test)]
 #[path = "cell_q24_dataset_tests.rs"]
 mod tests;
+
+#[cfg(target_os = "linux")]
+#[path = "cell_q24_dataset_remote.rs"]
+mod remote;
+#[cfg(target_os = "linux")]
+pub(crate) use remote::OriginalCellQ24MaterialWireV1;

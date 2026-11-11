@@ -89,6 +89,18 @@ MATERIAL_SERVICE_CASES = tuple(
         "failed_frame_permanently_consumes_channel",
     )
 )
+REMOTE_MATERIAL_PREFIX = "learning_iteration_evidence_client::material::source::tests::"
+REMOTE_MATERIAL_CASES = tuple(
+    REMOTE_MATERIAL_PREFIX + name
+    for name in (
+        "material_source_peer_reconstructs_exact_sealed_material_and_cold_rereads",
+        "material_source_peer_rejects_raw_batch_provenance_and_frozen_optimizer_rebinding",
+        "material_source_peer_pins_complete_material_and_freeze_signatures",
+        "material_source_service_refuses_withdrawn_missing_or_busy_originals",
+        "material_source_service_refuses_request_payload_rebinding_and_public_custody_bypass",
+        "material_source_peer_consumes_wrong_purpose_or_failed_frames",
+    )
+)
 TRANSPORT_CASES = (
     "learning_iteration_evidence_client::tests::"
     "original_receipt_fixture_retains_peer_during_owner_work_between_frames",
@@ -111,6 +123,7 @@ OWNER_GROUPS = (
     ("training_model_lane", PACKAGE, TRAINING_LANE_CASES),
     ("original_training_source", PACKAGE, SOURCE_CASES),
     ("original_material_service", PACKAGE, MATERIAL_SERVICE_CASES),
+    ("original_remote_material_source", PACKAGE, REMOTE_MATERIAL_CASES),
     ("original_peer_lifetime", PACKAGE, TRANSPORT_CASES),
     ("original_execution_evidence", EXECUTION_PACKAGE, EXECUTION_CASES),
 )

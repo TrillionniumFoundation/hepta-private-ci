@@ -25,6 +25,7 @@ pub(crate) struct ReadbackServiceFixture {
     source: source::Source,
     identity: AgentdIdentity,
     baseline: Arc<LoadedCellQ24ModelV1>,
+    optimizer: CellQ24SgdRuleV1,
     root: PathBuf,
     _directory: tempfile::TempDir,
 }
@@ -67,9 +68,32 @@ impl ReadbackServiceFixture {
             source: f.source,
             identity: f.identity,
             baseline: f.baseline,
+            optimizer: f.optimizer,
             root: f.root,
             _directory: f._directory,
         })
+    }
+
+    pub(crate) fn source_config(
+        &self,
+    ) -> anyhow::Result<crate::OriginalCellQ24TrainingSourceConfigV1> {
+        anyhow::ensure!(self.dataset.receipts.len() == 2, "original Dataset is completed");
+        Ok(crate::OriginalCellQ24TrainingSourceConfigV1 {
+            dataset: self.dataset.clone(),
+            scope: self.config.scope.clone(),
+            rule: self.config.rule,
+            optimizer: self.optimizer,
+            freeze_plan: self.config.freeze_plan.clone(),
+            freeze_evidence: self.config.freeze_evidence.clone(),
+            experience_evidence: self.experience_attestation.clone(),
+            dataset_evidence: self.dataset_attestation.clone()
+                .ok_or_else(|| anyhow::anyhow!("original Dataset signature is completed"))?,
+            verifier: self.config.verifier.clone(),
+        })
+    }
+
+    pub(crate) fn baseline(&self) -> Arc<LoadedCellQ24ModelV1> {
+        Arc::clone(&self.baseline)
     }
 
     pub(crate) fn bytes(&self) -> anyhow::Result<Vec<Vec<u8>>> {

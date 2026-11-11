@@ -34,6 +34,11 @@ use crate::OriginalCellQ24MaterialReceiptErrorV1;
 use crate::OriginalCellQ24MaterialReceiptOwnersV1;
 use crate::OriginalCellQ24MaterialReceiptSourcesV1;
 
+#[path = "cell_q24_material_source.rs"]
+mod source;
+pub use source::OriginalCellQ24MaterialSourceErrorV1;
+pub use source::OriginalCellQ24RemoteMaterialClientV1;
+
 #[derive(Debug, thiserror::Error)]
 pub enum OriginalCellQ24MaterialEvidenceErrorV1 {
     #[error("original material readback request differs from its fixed scope")]

@@ -28,13 +28,13 @@ STAGE = AGENT + "cell_q24_training_stage.rs"
 MODEL = AGENT + "cell_q24_training_model_lane.rs"
 EXPECTED = {
     "learning_original_training_source_capture": (),
+    "learning_original_remote_training_source_capture": (),
     "learning_source_bound_training_owner_create": (),
     "learning_source_bound_training_owner_recover": (),
     **{"learning_source_bound_training_stage_" + name: () for name in (
         "constructor", "execute", "readback", "attestation",
-        "model_create", "model_recover", "model_commit",
+        "model_create", "model_recover", "model_commit", "model_readback",
     )},
-    "learning_source_bound_training_stage_model_readback": (AGENT + "circuit_model_selection_receipt_sources.rs",),
     "learning_original_training_source_current": (OWNER,),
     "learning_original_training_source_inputs": (OWNER,),
     "learning_original_training_source_identity": (OWNER,),
@@ -93,13 +93,16 @@ class OriginalTrainingSourceCaptureClosureTests(unittest.TestCase):
     def test_live_material_and_full_original_signatures_cannot_be_detached(self):
         checks = (
             ("fn current_material(", "self.read_original_evidence(config).await?"),
-            ("fn current_material(", "let before = self.original.read(config)?"),
-            ("fn current_material(", "let after = self.original.read(config)?"),
+            ("fn current_material(", "let before = self"),
+            ("fn current_material(", "let after = self"),
             ("fn current_material(", "verify_original_evidence(config, fresh_now)?"),
             ("fn require_observations(", "config.dataset.receipts[0].evidence_digest != material.provenance_digest()"),
             ("fn require_observations(", "config.dataset.receipts[1].evidence_digest != material.provenance_digest()"),
             ("fn capture_binding(", "experience.extend_from_slice(&config.experience_evidence.signature)"),
             ("fn capture_binding(", "dataset.extend_from_slice(&config.dataset_evidence.signature)"),
+            ("fn capture_original_remote_cell_q24_training_source_v1(", "OriginalCellQ24RemoteMaterialClientV1::require_source_binding("),
+            ("fn read_current_material(", "OriginalCellQ24RemoteMaterialClientV1::read_current(original)"),
+            ("fn capture_live_original_source(", "material.training_plan("),
         )
         for function, marker in checks:
             with self.subTest(function=function, marker=marker):

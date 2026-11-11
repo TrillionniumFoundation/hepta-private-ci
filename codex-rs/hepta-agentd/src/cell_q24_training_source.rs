@@ -1,7 +1,8 @@
 //! Live original Dataset custody retained by the original Trainer host.
 //! The batch and optimizer digests stay exactly as frozen by Root. This separate
 //! capture binds the original data owners and both complete Observer signatures.
-//! It is not a lease, a signing grant, or a cross-process Source handoff.
+//! It is not a lease or signing grant. A remote profile retains one original
+//! Material connection; it transfers no Source object, writer, path or key.
 
 use std::sync::Arc;
 use std::sync::Mutex;
@@ -35,6 +36,7 @@ use crate::CircuitTaskSourceReadbackV1;
 use crate::LearningIterationEvidenceClientV1;
 use crate::LoadedCellQ24ModelV1;
 use crate::OriginalCellQ24DatasetV1;
+use crate::OriginalCellQ24RemoteMaterialClientV1;
 
 #[derive(Debug, thiserror::Error)]
 pub enum OriginalCellQ24TrainingSourceErrorV1 {
@@ -84,6 +86,16 @@ pub struct OriginalCellQ24TrainingSourceOwnersV1<SW: AnchorWitnessStore> {
     pub dataset: LearningIterationEvidenceClientV1,
 }
 
+/// Transfer an already pinned original Material channel, the exact local
+/// baseline, and both original receipt-owner channels. No received DTO or
+/// caller-selected batch can be converted into a Source capability.
+pub struct OriginalCellQ24RemoteTrainingSourceOwnersV1 {
+    pub material: OriginalCellQ24RemoteMaterialClientV1,
+    pub baseline: Arc<LoadedCellQ24ModelV1>,
+    pub experience: LearningIterationEvidenceClientV1,
+    pub dataset: LearningIterationEvidenceClientV1,
+}
+
 trait OriginalMaterialReadback: Send + Sync {
     fn read(
         &self,
@@ -128,8 +140,34 @@ fn read_original_material(
     )?)
 }
 
+enum OriginalMaterialSource {
+    Local(Box<dyn OriginalMaterialReadback>),
+    Remote(OriginalCellQ24RemoteMaterialClientV1),
+}
+
+impl OriginalMaterialSource {
+    async fn read_current_material(
+        &self,
+        config: &OriginalCellQ24TrainingSourceConfigV1,
+        baseline: &Arc<LoadedCellQ24ModelV1>,
+    ) -> Result<OriginalCellQ24DatasetV1, Error> {
+        match self {
+            Self::Local(original) => original.read(config),
+            Self::Remote(original) => {
+                OriginalCellQ24RemoteMaterialClientV1::require_source_binding(
+                    original, config, baseline,
+                )
+                .map_err(|_| Error::Binding("same original remote Material capture"))?;
+                OriginalCellQ24RemoteMaterialClientV1::read_current(original)
+                    .await
+                    .map_err(|_| Error::OwnerUnavailable)
+            }
+        }
+    }
+}
+
 struct LiveOwners {
-    original: Box<dyn OriginalMaterialReadback>,
+    original: OriginalMaterialSource,
     experience: LearningIterationEvidenceClientV1,
     dataset: LearningIterationEvidenceClientV1,
     baseline: Arc<LoadedCellQ24ModelV1>,
@@ -153,18 +191,47 @@ pub async fn capture_original_cell_q24_training_source_v1(
     owners: OriginalCellQ24TrainingSourceOwnersV1<impl AnchorWitnessStore + Send + 'static>,
     config: OriginalCellQ24TrainingSourceConfigV1,
 ) -> Result<OriginalCellQ24TrainingSourceV1, Error> {
-    let runtime = Handle::current();
     let live = LiveOwners {
         baseline: Arc::clone(&owners.baseline),
-        original: Box::new(SourceOwners {
+        original: OriginalMaterialSource::Local(Box::new(SourceOwners {
             source: owners.source,
             identity: owners.identity,
             ledger: owners.ledger,
             baseline: owners.baseline,
-        }),
+        })),
         experience: owners.experience,
         dataset: owners.dataset,
     };
+    capture_live_original_source(live, config).await
+}
+
+/// Capture through the same original remote Material owner. Its private
+/// decoder verifies the complete Dataset provenance and already frozen rule.
+/// The receipt-owner channels are still read before and after both fresh reads.
+pub async fn capture_original_remote_cell_q24_training_source_v1(
+    owners: OriginalCellQ24RemoteTrainingSourceOwnersV1,
+    config: OriginalCellQ24TrainingSourceConfigV1,
+) -> Result<OriginalCellQ24TrainingSourceV1, Error> {
+    OriginalCellQ24RemoteMaterialClientV1::require_source_binding(
+        &owners.material,
+        &config,
+        &owners.baseline,
+    )
+    .map_err(|_| Error::Binding("same original remote Material capture"))?;
+    let live = LiveOwners {
+        original: OriginalMaterialSource::Remote(owners.material),
+        baseline: owners.baseline,
+        experience: owners.experience,
+        dataset: owners.dataset,
+    };
+    capture_live_original_source(live, config).await
+}
+
+async fn capture_live_original_source(
+    live: LiveOwners,
+    config: OriginalCellQ24TrainingSourceConfigV1,
+) -> Result<OriginalCellQ24TrainingSourceV1, Error> {
+    let runtime = Handle::current();
     tokio::task::spawn_blocking(move || {
         let material = runtime.block_on(live.current_material(&config))?;
         // Validate the existing Root-frozen rule; never derive a new scope
@@ -235,10 +302,10 @@ impl LiveOwners {
         let started_at = now()?;
         verify_original_evidence(config, started_at)?;
         self.read_original_evidence(config).await?;
-        let before = self.original.read(config)?;
+        let before = self.original.read_current_material(config, &self.baseline).await?;
         require_observations(config, &before)?;
         self.read_original_evidence(config).await?;
-        let after = self.original.read(config)?;
+        let after = self.original.read_current_material(config, &self.baseline).await?;
         require_same_material(&before, &after)?;
         let fresh_now = now()?;
         if fresh_now < started_at {

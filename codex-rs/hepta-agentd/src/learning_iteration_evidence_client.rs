@@ -33,6 +33,8 @@ mod material;
 pub use material::OriginalCellQ24MaterialEvidenceErrorV1;
 pub use material::OriginalCellQ24MaterialEvidenceOwnerV1;
 pub use material::OriginalCellQ24MaterialEvidenceRoleV1;
+pub use material::OriginalCellQ24MaterialSourceErrorV1;
+pub use material::OriginalCellQ24RemoteMaterialClientV1;
 
 #[path = "learning_iteration_evaluation_evidence.rs"]
 mod evaluation;

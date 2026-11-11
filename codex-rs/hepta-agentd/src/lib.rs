@@ -351,6 +351,10 @@ pub use learning_iteration_evidence_client::OriginalCellQ24MaterialEvidenceOwner
 #[cfg(target_os = "linux")]
 pub use learning_iteration_evidence_client::OriginalCellQ24MaterialEvidenceRoleV1;
 #[cfg(target_os = "linux")]
+pub use learning_iteration_evidence_client::OriginalCellQ24MaterialSourceErrorV1;
+#[cfg(target_os = "linux")]
+pub use learning_iteration_evidence_client::OriginalCellQ24RemoteMaterialClientV1;
+#[cfg(target_os = "linux")]
 pub use learning_iteration_evidence_client::read_cell_learning_evaluation_v1;
 #[cfg(target_os = "linux")]
 pub use learning_iteration_generation_evidence::AuthenticatedGenerationLearningStageV1;
@@ -443,9 +447,13 @@ pub use cell_q24_training_source::OriginalCellQ24TrainingSourceErrorV1;
 #[cfg(target_os = "linux")]
 pub use cell_q24_training_source::OriginalCellQ24TrainingSourceOwnersV1;
 #[cfg(target_os = "linux")]
+pub use cell_q24_training_source::OriginalCellQ24RemoteTrainingSourceOwnersV1;
+#[cfg(target_os = "linux")]
 pub use cell_q24_training_source::OriginalCellQ24TrainingSourceV1;
 #[cfg(target_os = "linux")]
 pub use cell_q24_training_source::capture_original_cell_q24_training_source_v1;
+#[cfg(target_os = "linux")]
+pub use cell_q24_training_source::capture_original_remote_cell_q24_training_source_v1;
 pub use cell_temporal_q24::CellTemporalQ24GenerationWorkerV1;
 pub use cell_temporal_q24::CellTemporalQ24ModelFilesV1;
 pub use cell_temporal_q24::LoadedCellTemporalQ24ModelV1;
