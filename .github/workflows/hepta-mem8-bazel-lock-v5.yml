@@ -24,7 +24,7 @@ jobs:
       MEM_SOURCE_COMMIT: 9bd2f589debdba4a93baa363817c3669cb103721
       MEM_SOURCE_TREE: c77785ecb368c44ea699769001a47402c9f50591
       MEM_SOURCE_BASE: 2ae5215beaf8d7b7df111a090b82134beae2683d
-      MEM_DRIVER_SHA256: 9369195f863fd1e1df02215b1db4d08f30c89c5386fc7a81d4a50b7ed57411d3
+      MEM_DRIVER_SHA256: 08da7b6f91f57932359f2c6937abc24f6f5f21bfc14a321c4053d7af200ed323
       CODEX_REPO_ROOT: ${{ github.workspace }}/source
     steps:
       - name: Retain this independent lock-check invocation

@@ -1,5 +1,6 @@
 """One exact-source Bazel module-lock check; no native project test or model call."""
 import argparse
+from contextlib import nullcontext
 from datetime import datetime, timezone
 import hashlib
 import io
@@ -97,12 +98,15 @@ def main():
         save(label + ".json", rows)
         return rows
 
-    def bounded_read(label, argv):
+    def bounded_read(label, argv, *, separate_stderr=False):
         raw = records / (label + ".raw.log")
+        stderr_raw = records / (label + ".stderr.raw.log")
         begin, timed_out, cleanup = now(), False, None
-        with raw.open("xb") as stream:
+        stderr_context = stderr_raw.open("xb") if separate_stderr else nullcontext(None)
+        with raw.open("xb") as stream, stderr_context as error_stream:
             child = subprocess.Popen(argv, cwd=source, env=environment, stdout=stream,
-                                     stderr=subprocess.STDOUT, start_new_session=True)
+                                     stderr=error_stream if error_stream is not None else subprocess.STDOUT,
+                                     start_new_session=True)
             try:
                 code = child.wait(timeout=30)
             except subprocess.TimeoutExpired:
@@ -115,9 +119,15 @@ def main():
                 cleanup = {"owned_pgid": child.pid, "signal": "SIGKILL", "reaped_exit": code}
             stream.flush()
             os.fsync(stream.fileno())
+            if error_stream is not None:
+                error_stream.flush()
+                os.fsync(error_stream.fileno())
         data = raw.read_bytes()
-        save(label + ".json", {"argv": argv, "started_at": begin, "finished_at": now(),
-             "exit_code": code, "timed_out": timed_out, "cleanup": cleanup, **info(data)})
+        receipt = {"argv": argv, "started_at": begin, "finished_at": now(),
+                   "exit_code": code, "timed_out": timed_out, "cleanup": cleanup, **info(data)}
+        if separate_stderr:
+            receipt["stderr"] = {"file": stderr_raw.name, **info(stderr_raw.read_bytes())}
+        save(label + ".json", receipt)
         if timed_out or code:
             raise RuntimeError("bounded tool observation failed: " + label)
         return data
@@ -163,7 +173,7 @@ def main():
                 raise RuntimeError("Rust toolchain version differs: " + name)
         bounded_read("python-version", [tool_pins["python3"]["physical_path"], "--version"])
         real_bazel = tool_pins["bazel"]["physical_path"]
-        if bounded_read("bazel-version", [real_bazel, "--version"]).strip() != b"bazel 9.3.0":
+        if bounded_read("bazel-version", [real_bazel, "--version"], separate_stderr=True).strip() != b"bazel 9.3.0":
             raise RuntimeError("Bazel version differs")
         downloaded = []
         for path in sorted((cache / "bazelisk").rglob("bazel")):
