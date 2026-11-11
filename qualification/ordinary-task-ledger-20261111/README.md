@@ -1,7 +1,7 @@
 # Ordinary task ledger producer: candidate scope
 
 Status: implementation candidate; native formatting, compilation, caller verification
-and tests have not been run for this delta. The eleven new test methods are
+and tests have not been run for this delta. The twelve new test methods are
 component fixtures. Ordinary complete loops, positive adoption, ordinary
 NoUpdate/rollback and independent-C qualification remain **0**.
 
@@ -113,6 +113,17 @@ batch then determines SGD(batch), the frozen scope and the existing Prepared
 input to scoped Root startup. No placeholder optimizer digest, scope rewrite,
 legacy HQ24T001 downgrade, or replacement owner is used.
 
+Its `Recover` mode is explicitly for the same current cut. Historical recovery
+uses `recover_learning` with the retained original `CellQ24FrozenDatasetV1`,
+empty initial checkpoint and frozen scope, plus the current original source,
+Ledger, Evaluator journal/witness and signing configuration. It restores the
+retained prefix, calls the original freeze owner's readback only, compares the
+saved signature exactly, and invokes `CellQ24PreparedLearningV1::recover`.
+It never authorizes a new freeze or renews its window. Unrelated later appends
+can preserve the old cut; changed receipts, initial/scope, authorization or
+current withdrawal still refuse. Current original Evaluator authorization
+checks remain required by that existing owner.
+
 A later actual Feature C task can be installed with the same explicit learning
 profile. The existing `original_dataset_task` feedback capability can also
 supply compatible retained history. Its next independent business Outcome and
@@ -121,12 +132,14 @@ independent original consumer.
 
 ## Component test intent
 
-The eleven new methods cover successful task/Pending learning separation and real
+The twelve new methods cover successful task/Pending learning separation and real
 startup reconcile; wrong labels, units, support, roles, keys and source withdrawal;
 full-authentication Ready binding and missing-installed-producer refusal; delayed witnessed signatures; retained Outcome
 ACK loss; expired unappended evidence; original Pending reopen; a real readonly
 witness write failure followed by exact replay; expired unwitnessed Outcome; and
-canonical Outcome truncation/trailing/unknown-tag rejection. The witness failure
+canonical Outcome truncation/trailing/unknown-tag rejection; and exact retained
+Dataset recovery after an explicitly synthetic unrelated Ledger append, with
+changed receipt, initial, signature, Create-mode and source-withdrawal negatives. The witness failure
 uses an actual original file descriptor and original recovery APIs, with no
 production fault-injection or permission-bypass hook.
 

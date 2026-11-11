@@ -262,6 +262,16 @@ impl AgentdProductionStartup {
 }
 
 impl AgentdProductionLaunch {
+    /// Retain this single original connection capability before `run` consumes
+    /// the launch. A later actual B/Selection can then connect its separate
+    /// purpose handoff while the original runtime still owns the Root session.
+    pub fn take_generation_publication_connection(
+        &mut self,
+    ) -> Result<crate::RootGenerationPublicationConnectionV1, AgentdError> {
+        let inputs: &mut AgentdRootProductionInputs = &mut self.root;
+        inputs.take_generation_publication_connection()
+    }
+
     /// Assemble the real learning owners after receiving their original Root
     /// capabilities and before starting ordinary Agentd. Returned owners accept
     /// only the later concrete B/C handoffs for this same operation.

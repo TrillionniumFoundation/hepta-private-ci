@@ -199,6 +199,8 @@ mod root_production_q24_model_inputs;
 #[cfg(target_os = "linux")]
 pub use root_production_inputs::AgentdRootProductionInputs;
 #[cfg(target_os = "linux")]
+pub use root_production_inputs::RootGenerationPublicationConnectionV1;
+#[cfg(target_os = "linux")]
 pub use root_production_inputs::receive_root_production_inputs;
 #[cfg(target_os = "linux")]
 pub use root_production_learning_inputs::AgentdRootLearningInputsV1;

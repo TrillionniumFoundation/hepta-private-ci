@@ -300,6 +300,8 @@ async fn escaped_original_root_session_and_live_verifier_retain_same_registered_
             notes,
             grants,
             bootstrap,
+            // This custody-only fixture creates no publication capability.
+            publication_connection: Default::default(),
         },
         target.clone(),
         None,

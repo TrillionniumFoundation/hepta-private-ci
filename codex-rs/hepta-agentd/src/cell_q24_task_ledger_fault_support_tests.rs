@@ -101,3 +101,26 @@ fn original_outcome_codec_rejects_truncation_trailing_and_unknown_tags() -> Resu
     assert!(outcome_codec::decode(&unknown).is_err());
     Ok(())
 }
+
+/// An explicitly synthetic, authenticated unrelated Ledger event advances the
+/// fixture cut. It creates no original task, Dataset row or Ready capability.
+pub(crate) fn append_unrelated_decision(
+    producer: &OriginalCellQ24TaskLedgerProducerV1,
+) -> Result<(), Error> {
+    use ed25519_dalek::Signer;
+
+    let mut state = producer.state.lock().map_err(|_| Error::Binding("test owner lock"))?;
+    let captured = producer.capture(&mut state)?;
+    let mut decision = captured.decision.clone();
+    decision.record_id = StableId::new("fixture-unrelated-decision").map_err(|_| Error::Binding("test id"))?;
+    decision.episode_id = StableId::new("fixture-unrelated-episode").map_err(|_| Error::Binding("test id"))?;
+    decision.completeness.set_id = StableId::new("fixture-unrelated-set").map_err(|_| Error::Binding("test id"))?;
+    let mut ledger = producer.ledger.lock().map_err(|_| Error::Binding("test ledger lock"))?;
+    let predecessor = witnessed_snapshot(&ledger)?.head_digest;
+    let payload = decision_signing_payload_v2(&decision)?;
+    let mut signed = binding::sign(producer, &ledger, &state.key, &payload)?;
+    signed.evidence_id = StableId::new("fixture-unrelated-evidence").map_err(|_| Error::Binding("test id"))?;
+    signed.signature = state.key.sign(&signed.signing_bytes()).to_bytes();
+    ledger.append_decision(predecessor, decision, &signed, now()?)?;
+    Ok(())
+}

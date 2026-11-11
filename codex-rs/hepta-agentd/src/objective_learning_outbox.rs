@@ -33,6 +33,7 @@ impl ObjectiveRuntimeHost {
                     record.disposition == RunStartObjectiveDispositionV1::Compiled
                         && record.snapshot.run_id.as_str() == source_run_id.as_str()
                 })
+                .cloned()
                 .collect::<Vec<_>>()
         };
         // The journal bounds the scan to MAX_RUN_START_RECORDS; only the

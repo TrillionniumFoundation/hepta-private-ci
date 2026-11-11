@@ -62,7 +62,7 @@ const TIMEOUT: Duration = Duration::from_millis(500);
 const LIFETIME: Duration = Duration::from_secs(10);
 
 #[derive(Clone, Copy, Debug)]
-enum Phase { Publish, Recover, Revoked }
+enum Phase { Publish, Recover, RetiredSession, Revoked }
 
 fn now_ms() -> anyhow::Result<u64> {
     Ok(std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH)?.as_millis().try_into()?)
@@ -153,6 +153,11 @@ fn root_broker_late_enrolls_publishes_and_recovers_original_current() -> anyhow:
     let claimed = std::fs::read(&claims_path)?;
     anyhow::ensure!(!claimed.is_empty(), "real original nonce append required");
     fixture.run_phase(Phase::Recover)?;
+    assert_eq!(fixture.current.original_broker_head()?, published);
+    assert_eq!(support::protected_files(&fixture.current_path)?, protected);
+    assert_eq!(std::fs::read(&claims_path)?, claimed);
+
+    fixture.run_phase(Phase::RetiredSession)?;
     assert_eq!(fixture.current.original_broker_head()?, published);
     assert_eq!(support::protected_files(&fixture.current_path)?, protected);
     assert_eq!(std::fs::read(&claims_path)?, claimed);

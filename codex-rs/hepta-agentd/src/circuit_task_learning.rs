@@ -75,10 +75,9 @@ impl AgentdState {
         match readiness {
             CircuitTaskLearningReadinessV1::NonLearning => {
                 if matches!(origin, Some(CircuitLearningSourceV1::OriginalQ24)) {
-                    tracing::warn!(
-                        run_id = %record.snapshot.run_id,
-                        task_committed = true,
-                        "Q24 learning is pending: original producer unavailable"
+                    eprintln!(
+                        "Q24 learning is pending: original producer unavailable (run_id={}, task_committed=true)",
+                        record.snapshot.run_id
                     );
                     return Ok(());
                 }
@@ -89,11 +88,9 @@ impl AgentdState {
                 // It is not a Q24 Ready capability or an inferred role grant.
             }
             CircuitTaskLearningReadinessV1::Pending(reason) => {
-                tracing::warn!(
-                    run_id = %record.snapshot.run_id,
-                    task_committed = true,
-                    learning_pending = ?reason,
-                    "committed task awaits its original learning owner"
+                eprintln!(
+                    "committed task awaits its original learning owner (run_id={}, task_committed=true, learning_pending={reason:?})",
+                    record.snapshot.run_id
                 );
                 return Ok(());
             }

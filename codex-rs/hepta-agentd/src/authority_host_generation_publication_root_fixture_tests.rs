@@ -277,7 +277,7 @@ impl Fixture {
         let (capability, publication) = prepared.enable_generation_publication()?;
         let inputs = RootGenerationPublicationEnrollmentV1 {
             mode: match phase { Phase::Publish => RootGenerationPublicationModeV1::Reserve,
-                Phase::Recover | Phase::Revoked => RootGenerationPublicationModeV1::Recover },
+                Phase::Recover | Phase::RetiredSession | Phase::Revoked => RootGenerationPublicationModeV1::Recover },
             current_directory: self.current_directory.clone(),
             previous: RootGenerationJournalInputsV1 {
                 journal: File::open(&self.previous_journal)?, witness: File::open(&self.previous_witness)?,

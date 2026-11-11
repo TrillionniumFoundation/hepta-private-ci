@@ -237,11 +237,9 @@ impl AgentdState {
             .enqueue_original_circuit_learning(record, receipt.trace(), readiness)
             .await
         {
-            tracing::warn!(
-                run_id = %record.snapshot.run_id,
-                task_committed = true,
-                learning_error = %error,
-                "committed task learning publication remains pending"
+            eprintln!(
+                "committed task learning publication remains pending (run_id={}, task_committed=true, learning_error={error})",
+                record.snapshot.run_id
             );
         }
         self.require_current_run_start(record)?;

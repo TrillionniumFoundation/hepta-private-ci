@@ -64,6 +64,7 @@ pub(crate) async fn attach_root_desktop_operation_host_with_startup_before(
         notes,
         grants,
         bootstrap,
+        ..
     } = inputs;
     bootstrap.writer.validate()?;
     if bootstrap.writer.registered_agent_id != config.identity().agent_id

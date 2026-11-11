@@ -26,7 +26,7 @@ fn original_publication_dedicated_uid_child() -> anyhow::Result<()> {
         .enable_all().build()?.block_on(async {
         let mut original_head: Option<types::CurrentHead> = None;
         let mut published_head: Option<types::CurrentHead> = None;
-        for phase in [Phase::Publish, Phase::Recover, Phase::Revoked] {
+        for phase in [Phase::Publish, Phase::Recover, Phase::RetiredSession, Phase::Revoked] {
             let (mut sealed, root_pin) = crate::receive_root_production_handoff(socket.try_clone()?, LIFETIME)?;
             let mut raw = Vec::new();
             sealed.rewind()?;
@@ -37,10 +37,16 @@ fn original_publication_dedicated_uid_child() -> anyhow::Result<()> {
             sealed.rewind()?;
             let mut learning = crate::receive_root_learning_handoff(socket.try_clone()?, LIFETIME)?;
             let publication = crate::receive_root_generation_publication_handoff(socket.try_clone()?, LIFETIME)?;
-            let production = crate::receive_root_production_inputs(
+            let mut production = crate::receive_root_production_inputs(
                 sealed, root_pin, &identity, TIMEOUT, LIFETIME,
             ).await?;
             assert_eq!(production.session.revocations()?, original.revocations);
+            let connection = production.take_generation_publication_connection()?;
+            assert!(matches!(production.take_generation_publication_connection().err(),
+                Some(crate::AgentdError::GenerationFenced(message)) if message.contains("already taken")));
+            // Public bootstrap metadata cannot replace the sealed original
+            // captured by this one connection capability.
+            production.bootstrap.root.pid = std::process::id();
             raw.clear();
             learning.bootstrap.rewind()?;
             learning.bootstrap.read_to_end(&mut raw)?;
@@ -81,14 +87,14 @@ fn original_publication_dedicated_uid_child() -> anyhow::Result<()> {
                 let before = std::fs::read(&claims)?;
                 assert_eq!(socket.send(b"STABLE")?, 6);
                 control(&socket, b"CHECKED")?;
-                assert!(publication.connect(&production, &identity, TIMEOUT, LIFETIME).await.is_err(),
+                assert!(publication.connect(connection, TIMEOUT, LIFETIME).await.is_err(),
                     "revoked original publication must not reconstruct a usable CURRENT client");
                 assert_eq!(std::fs::read(&claims)?, before);
                 assert_eq!(socket.send(b"DONE")?, 4);
                 drop((checkpoint, production));
                 continue;
             }
-            let current = publication.connect(&production, &identity, TIMEOUT, LIFETIME).await?;
+            let current = publication.connect(connection, TIMEOUT, LIFETIME).await?;
             assert!(!current.store.is_original_host(), "non-Root holds the real Root lane, never a writable directory");
             current.require_original_root_selection(decision.snapshot(), &operation,
                 Digest32::from_array(intent.selection))?;
@@ -153,6 +159,18 @@ fn original_publication_dedicated_uid_child() -> anyhow::Result<()> {
                 assert_eq!(std::fs::read(&claims)?, nonce);
                 assert_eq!(socket.send(b"STABLE")?, 6);
                 control(&socket, b"CHECKED")?;
+                if matches!(phase, Phase::RetiredSession) {
+                    // The connection's Arc cannot prolong the original session.
+                    // Its actual Drop fences the same verifier before any new
+                    // CURRENT exchange, even though this client still exists.
+                    drop(production);
+                    require_uncertain(current.store.load().unwrap_err());
+                    require_uncertain(current.store.load().unwrap_err());
+                    assert_eq!(std::fs::read(&claims)?, nonce);
+                    drop((current, checkpoint));
+                    assert_eq!(socket.send(b"DONE")?, 4);
+                    continue;
+                }
                 let old = original_head.as_ref().ok_or_else(|| anyhow::anyhow!("original old generation"))?;
                 let mut old_prepared = old.clone();
                 old_prepared.prepared = Some(intent.clone());
@@ -166,7 +184,7 @@ fn original_publication_dedicated_uid_child() -> anyhow::Result<()> {
         }
         Ok::<(), anyhow::Error>(())
     })?;
-    println!("ROOT_PUBLICATION_ORIGINAL lifecycle=passed actual_consumer_uid=60001 actual_consumer_pid={} original_root_pid={root} vacant_learning_before_late_enrollment=true actual_current_cas=true actual_claims=1 explicit_same_process_root_reopen=true ordinary_complete=0 independent_consumer=0 physical_cold_restart=0", std::process::id());
+    println!("ROOT_PUBLICATION_ORIGINAL lifecycle=passed actual_consumer_uid=60001 actual_consumer_pid={} original_root_pid={root} vacant_learning_before_late_enrollment=true actual_current_cas=true actual_claims=1 original_connection_taken_once=true original_session_drop_fences_current=true explicit_same_process_root_reopen=true ordinary_complete=0 independent_consumer=0 physical_cold_restart=0", std::process::id());
     let mut released = [0];
     std::io::stdin().read_exact(&mut released)?;
     assert_eq!(released, [1]);

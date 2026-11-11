@@ -88,6 +88,7 @@ pub async fn attach_root_production_operation_host_with_startup(
         notes,
         grants,
         bootstrap,
+        ..
     } = inputs;
     bootstrap.writer.validate()?;
     if bootstrap.writer.registered_agent_id != config.identity().agent_id
@@ -206,6 +207,7 @@ pub async fn attach_root_notes_operation_host_with_startup(
         notes,
         grants,
         bootstrap,
+        ..
     } = inputs;
     // The retained live Root session already holds clones of both original
     // FinalUse owners. The unused Device owner acquires no target or effect.

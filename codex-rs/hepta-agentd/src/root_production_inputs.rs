@@ -35,6 +35,11 @@ use crate::HostAuthorityPublicBootstrapV1;
 use crate::HostAuthorityPublicConsumerV1;
 use crate::authority_host_config::HostAuthorityRegistration;
 
+#[path = "root_generation_publication_connection.rs"]
+mod publication_connection;
+pub use publication_connection::RootGenerationPublicationConnectionV1;
+pub(crate) use publication_connection::RootGenerationPublicationSlot;
+
 /// Retain `session` until the original runtime and recovered writer stop.
 /// Device and Notes are the actual two journal owners installed in that same
 /// live verifier; their clones share those owners, never a replacement ledger.
@@ -45,6 +50,17 @@ pub struct AgentdRootProductionInputs {
     pub notes: FinalUseAuthority,
     pub grants: Arc<AgentdUnixFinalUseGrantProvider>,
     pub bootstrap: HostAuthorityPublicBootstrapV1,
+    pub(crate) publication_connection: RootGenerationPublicationSlot,
+}
+
+impl AgentdRootProductionInputs {
+    /// Take the sole original publication connection before this owner moves
+    /// into the runtime. Failed validation consumes it; there is no renewal.
+    pub fn take_generation_publication_connection(
+        &mut self,
+    ) -> Result<RootGenerationPublicationConnectionV1, AgentdError> {
+        self.publication_connection.take_original_connection()
+    }
 }
 
 /// Bootstrap only from the trusted launcher's original sealed descriptor and
@@ -159,6 +175,9 @@ pub async fn receive_root_production_inputs(
         )
         .map_err(AgentdError::GenerationFenced)?;
     remaining(end)?;
+    let publication_connection = RootGenerationPublicationSlot::capture_after_original_receive(
+        &session, &bundle, expected,
+    )?;
     Ok(AgentdRootProductionInputs {
         session,
         checkpoint,
@@ -166,6 +185,7 @@ pub async fn receive_root_production_inputs(
         notes,
         grants,
         bootstrap: bundle,
+        publication_connection,
     })
 }
 

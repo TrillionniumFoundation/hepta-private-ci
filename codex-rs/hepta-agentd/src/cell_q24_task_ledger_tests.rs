@@ -2,6 +2,8 @@
 //! CURRENT, issuers, role custody and stage profiles are explicit fixtures;
 //! these methods are component checks, not ordinary-loop qualification.
 
+use std::fs;
+
 use codex_hepta_learning_ledger::*;
 use codex_hepta_neuron::FileAnchorWitnessStore;
 use codex_hepta_neuron::JournalScope;
@@ -223,4 +225,78 @@ async fn ordinary_q24_missing_installed_producer_never_falls_back_to_trace_only_
     f.no_outbox().await?;
     f.require_task_unchanged(&task_bytes)?;
     f.session.stop().await
+}
+
+#[tokio::test]
+async fn original_task_preparation_recovers_retained_cut_without_new_freeze()
+-> anyhow::Result<()> {
+    let mut f = Fixture::new(
+        "ordinary-ledger-retained-preparation", /*lifetime*/ 600, /*automatic*/ true,
+    ).await?;
+    let outcome = f.outcome();
+    let signed = f.sign_outcome(&outcome, /*lifetime*/ 300);
+    f.producer.submit_original_terminal_outcome(outcome, &signed)?;
+    let config = f.preparation()?;
+    let prepared = f.producer.prepare_learning(
+        config.clone(), Vec::new(), f.freeze_inputs()?,
+    )?;
+    let frozen = prepared.frozen_dataset().clone();
+    let initial = prepared.initial().clone();
+    let scope = prepared.scope().clone();
+    let facts = prepared.read_validated_facts()?;
+    let freeze_bytes = ["freeze", "freeze.witness"].map(|name| fs::read(f.root.path().join(name)))
+        .into_iter().collect::<Result<Vec<_>, _>>()?;
+    let task_bytes = f.task_bytes()?;
+    test_faults::append_unrelated_decision(&f.producer)?;
+    assert!(f.ledger.lock().unwrap().snapshot()?.records().len() > frozen.snapshot.records().len());
+    let ledger_bytes = f.learning_bytes()?;
+    // Same-cut Recover cannot silently recapture and rewrite this old scope.
+    assert!(f.producer.prepare_learning(
+        config.clone(), Vec::new(), recover_freeze_inputs(&f)?,
+    ).is_err());
+    let recovered = f.producer.recover_learning(
+        config.clone(), Vec::new(), frozen.clone(), &initial, &scope, recover_freeze_inputs(&f)?,
+    )?;
+    assert_eq!(recovered.frozen_dataset().snapshot, frozen.snapshot);
+    assert_eq!(recovered.frozen_dataset().receipt, frozen.receipt);
+    assert_eq!(recovered.frozen_dataset().authorization, frozen.authorization);
+    assert_eq!(recovered.initial(), &initial);
+    assert_eq!(recovered.scope(), &scope);
+    assert_eq!(recovered.read_validated_facts()?, facts);
+    let mut changed_authorization = frozen.clone();
+    changed_authorization.authorization.signature[0] ^= 1;
+    assert!(matches!(f.producer.recover_learning(
+        config.clone(), Vec::new(), changed_authorization, &initial, &scope, recover_freeze_inputs(&f)?,
+    ), Err(Error::Binding("original retained Dataset authorization"))));
+    let mut changed_receipt = frozen.clone();
+    changed_receipt.receipt.snapshot.dataset_digest = cell::d("not-the-original-dataset");
+    assert!(f.producer.recover_learning(
+        config.clone(), Vec::new(), changed_receipt, &initial, &scope, recover_freeze_inputs(&f)?,
+    ).is_err());
+    let mut changed_initial = initial.clone();
+    changed_initial.head_digest = cell::d("not-the-original-empty-initial");
+    assert!(f.producer.recover_learning(
+        config.clone(), Vec::new(), frozen.clone(), &changed_initial, &scope, recover_freeze_inputs(&f)?,
+    ).is_err());
+    assert!(matches!(f.producer.recover_learning(
+        config.clone(), Vec::new(), frozen.clone(), &initial, &scope, f.freeze_inputs()?,
+    ), Err(Error::Binding("retained Dataset requires explicit Recover"))));
+    assert_eq!(f.learning_bytes()?, ledger_bytes);
+    assert_eq!(["freeze", "freeze.witness"].map(|name| fs::read(f.root.path().join(name)))
+        .into_iter().collect::<Result<Vec<_>, _>>()?, freeze_bytes);
+    f.require_task_unchanged(&task_bytes)?;
+    f.session.source.withdraw_for_dataset_test(&f.publication.original_record().snapshot.run_id)?;
+    assert!(f.producer.recover_learning(
+        config, Vec::new(), frozen, &initial, &scope, recover_freeze_inputs(&f)?,
+    ).is_err());
+    assert_eq!(f.learning_bytes()?, ledger_bytes);
+    assert_eq!(["freeze", "freeze.witness"].map(|name| fs::read(f.root.path().join(name)))
+        .into_iter().collect::<Result<Vec<_>, _>>()?, freeze_bytes);
+    f.session.stop().await
+}
+
+fn recover_freeze_inputs(f: &Fixture) -> anyhow::Result<crate::OriginalCellQ24TaskDatasetFreezeInputsV1> {
+    let mut inputs = f.freeze_inputs()?;
+    inputs.open_mode = crate::CircuitQ24TaskOpenModeV1::Recover;
+    Ok(inputs)
 }

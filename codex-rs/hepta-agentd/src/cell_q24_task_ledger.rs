@@ -266,6 +266,8 @@ impl OriginalCellQ24TaskLedgerProducerV1 {
     /// The original Evaluator journal and HQ24T002 materializer feed Prepared
     /// and the existing scoped Root startup. That startup's registered original
     /// Objective/Circuit recovery enqueues history without dispatching A again.
+    /// Recover here requires the same current cut. A retained older cut uses
+    /// recover_learning and its original frozen descriptor, initial and scope.
     pub fn prepare_learning(
         &self,
         config: CellQ24LearningPreparationConfigV1,
@@ -282,6 +284,55 @@ impl OriginalCellQ24TaskLedgerProducerV1 {
             )?,
         };
         let prepared = preparation.authorize_and_materialize(&mut owner)?;
+        if !matches!(self.readback()?, OriginalCellQ24TaskLedgerStatusV1::Complete { .. }) {
+            return Err(Error::PendingOutcome);
+        }
+        prepared.revalidate_source()?;
+        Ok(prepared)
+    }
+
+    /// Restore an already authorized Dataset at its exact retained cut with
+    /// current original owners. No capture, claim, new freeze or signing is
+    /// permitted; the saved Evaluator journal must return the same signature.
+    pub fn recover_learning(
+        &self,
+        config: CellQ24LearningPreparationConfigV1,
+        mut original_history: Vec<CellQ24DatasetTaskV1>,
+        frozen: crate::CellQ24FrozenDatasetV1,
+        initial: &codex_hepta_learning_artifacts::LearningIterationSnapshotV1,
+        scope: &codex_hepta_learning_artifacts::FrozenLearningScopeV2,
+        freeze: OriginalCellQ24TaskDatasetFreezeInputsV1,
+    ) -> Result<crate::CellQ24PreparedLearningV1, Error> {
+        if !matches!(freeze.open_mode, CircuitQ24TaskOpenModeV1::Recover) {
+            return Err(Error::Binding("retained Dataset requires explicit Recover"));
+        }
+        let mut state = self.state.lock().map_err(|_| Error::Binding("producer lock"))?;
+        let captured = self.capture(&mut state)?;
+        {
+            let ledger = self.ledger.lock().map_err(|_| Error::Binding("ledger lock"))?;
+            if !matches!(self.status(&mut state, &ledger, &captured)?, OriginalCellQ24TaskLedgerStatusV1::Complete { .. }) {
+                return Err(Error::PendingOutcome);
+            }
+        }
+        if config.projection.unit_profile_digest != self.config.unit_profile_digest {
+            return Err(Error::Binding("original outcome unit projection"));
+        }
+        original_history.push(captured.task.clone());
+        drop(state);
+        let preparation = CellQ24DatasetFreezePreparationV1::recover(
+            config.clone(), Arc::clone(&self.ledger), original_history.clone(), frozen.snapshot.clone(),
+        )?;
+        let mut owner: OriginalCellQ24DatasetFreezeOwnerV1<FileAnchorWitnessStore> = OriginalCellQ24DatasetFreezeOwnerV1::recover(
+            freeze.journal, freeze.witness, &preparation, freeze.signing, freeze.evaluator_key,
+        )?;
+        let authorization = owner.readback(&preparation)?;
+        if authorization != frozen.authorization {
+            return Err(Error::Binding("original retained Dataset authorization"));
+        }
+        let prepared = crate::CellQ24PreparedLearningV1::recover(
+            config, Arc::clone(&self.ledger), original_history, frozen, initial, scope,
+        )?;
+        self.require_source(&captured)?;
         if !matches!(self.readback()?, OriginalCellQ24TaskLedgerStatusV1::Complete { .. }) {
             return Err(Error::PendingOutcome);
         }
