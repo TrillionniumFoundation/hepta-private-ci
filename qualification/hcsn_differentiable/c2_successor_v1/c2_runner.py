@@ -13,7 +13,7 @@ import traceback
 
 import torch
 
-from c2_boundary import require, plateau_state
+from c2_boundary import Ineligible, require, plateau_state
 from c2_io import (atomic_alias, bind_parent, exclusive_json, identity, immutable_checkpoint,
                    semantic_digest, sha, state_equal, verify_files)
 from c2_io import append_receipt
@@ -69,27 +69,73 @@ def verify_frozen(model, initial):
             'frozen common, physical or buffer state changed')
 
 
+def _exact_manifest_pairs(pairs):
+    # A byte digest is not a unique semantic interpretation if JSON keys repeat.
+    value = {}
+    for key, item in pairs:
+        require(key not in value, 'duplicate C2 program manifest JSON key')
+        value[key] = item
+    return value
+
+
+def _no_manifest_constant(value):
+    raise Ineligible('nonfinite C2 program manifest JSON constant: ' + value)
+
+
+def _valid_source_identity(item):
+    require(type(item) is dict and set(item) == {'bytes', 'sha256'}
+            and type(item['bytes']) is int and item['bytes'] >= 0
+            and type(item['sha256']) is str and len(item['sha256']) == 64
+            and all(c in '0123456789abcdef' for c in item['sha256']),
+            'invalid C2 program source identity')
+
+
 def bind_program(manifest_path):
-    root = Path(manifest_path).resolve().parent
-    value = json.loads(Path(manifest_path).read_bytes())
+    # Validate the actual source descriptor *before* resolving it. resolve()
+    # erases a symlink and can otherwise make an aliased path appear regular.
+    path = Path(manifest_path)
+    require(path.is_file() and not path.is_symlink()
+            and not path.parent.is_symlink()
+            and 0 < path.stat().st_size <= 65536,
+            'unsafe, missing or oversized C2 program manifest')
+    root = path.parent.resolve()
+    try:
+        value = json.loads(path.read_bytes(), object_pairs_hook=_exact_manifest_pairs,
+                           parse_constant=_no_manifest_constant)
+    except (ValueError, UnicodeError, RecursionError) as error:
+        raise Ineligible('malformed C2 program manifest JSON') from error
+    require(type(value) is dict and set(value) == {
+            'schema', 'scientific_admission', 'execution_authorized',
+            'files', 'dependencies'},
+            'C2 program manifest has unreviewed or missing metadata')
+    require(value['schema'] == 'hcsn-c2-successor-source-manifest-v1'
+            and value['scientific_admission'] == 'HOLD_NO_GO'
+            and value['execution_authorized'] is False,
+            'C2 source freeze may not silently authorize scientific execution')
+    required = {'c2_runner.py', 'c2_io.py', 'c2_recording.py', 'c2_boundary.py',
+                'c2_controller.py', 'POSTERIOR-POLICY.json',
+                'OPTIMIZATION-POSTERIOR-POLICY-v2.json', 'CONTRACT.json'}
     expected = value['files']
-    required = {'c2_runner.py', 'c2_io.py', 'c2_recording.py', 'c2_boundary.py', 'c2_controller.py',
-                'POSTERIOR-POLICY.json', 'OPTIMIZATION-POSTERIOR-POLICY-v2.json', 'CONTRACT.json'}
-    require(required <= expected.keys(), 'candidate program manifest lacks execution inputs')
+    require(type(expected) is dict and set(expected) == required,
+            'candidate program manifest has missing or unreviewed execution inputs')
     inputs = {}
     for name, item in expected.items():
-        path = (root / name).resolve()
-        require(path.is_relative_to(root) and path.is_file() and not path.is_symlink(), 'unsafe candidate manifest path')
-        require(identity(path) == item, 'candidate program source differs: ' + name)
-        inputs[str(path)] = item
-    # The durable receipt/publisher module is imported from the sibling
-    # recovery_v1 directory, not from this manifest's ordinary files map.
-    # A source-only hash of c2_runner/c2_io omits the real publication code.
-    # Require its byte identity in every prospective execution manifest.
+        _valid_source_identity(item)
+        source = root / name
+        require(source.is_file() and not source.is_symlink()
+                and not source.parent.is_symlink(),
+                'unsafe or missing C2 source file: ' + name)
+        resolved = source.resolve()
+        require(resolved.is_relative_to(root),
+                'C2 source escaped the frozen candidate root')
+        require(identity(resolved) == item,
+                'candidate program source differs: ' + name)
+        inputs[str(resolved)] = item
     dependency_key = 'recovery_v1/c2_durable.py'
-    dependencies = value.get('dependencies')
+    dependencies = value['dependencies']
     require(type(dependencies) is dict and set(dependencies) == {dependency_key},
             'C2 program manifest lacks exact durable implementation dependency')
+    _valid_source_identity(dependencies[dependency_key])
     dependency = Path(__file__).resolve().parent.parent / 'recovery_v1' / 'c2_durable.py'
     require(dependency.is_file() and not dependency.is_symlink()
             and not dependency.parent.is_symlink(),
@@ -100,7 +146,7 @@ def bind_program(manifest_path):
     require(Path(c2_durable.__file__).resolve() == dependency.resolve(),
             'loaded durable publisher is not the pinned recovery module')
     inputs[str(dependency.resolve())] = dependencies[dependency_key]
-    inputs[str(Path(manifest_path).resolve())] = identity(manifest_path)
+    inputs[str(path.resolve())] = identity(path)
     require(str(Path(__file__).resolve()) in inputs, 'running unbound C2 entry point')
     return inputs
 

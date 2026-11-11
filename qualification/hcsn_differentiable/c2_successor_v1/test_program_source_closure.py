@@ -37,7 +37,12 @@ class ProgramDependencyClosureTests(unittest.TestCase):
         self.manifest = self.successor / 'PROGRAM-MANIFEST.json'
 
     def write_manifest(self, *, include_dependency):
-        info = {'files': {name: identity(self.successor / name) for name in REQUIRED}}
+        info = {
+            'schema': 'hcsn-c2-successor-source-manifest-v1',
+            'scientific_admission': 'HOLD_NO_GO',
+            'execution_authorized': False,
+            'files': {name: identity(self.successor / name) for name in REQUIRED},
+        }
         if include_dependency:
             info['dependencies'] = {'recovery_v1/c2_durable.py': identity(self.durable)}
         self.manifest.write_text(json.dumps(info))
