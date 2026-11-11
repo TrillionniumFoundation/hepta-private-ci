@@ -1,0 +1,22 @@
+test_frozen_credit_view (unittest.loader._FailedTest.test_frozen_credit_view) ... ERROR
+
+======================================================================
+ERROR: test_frozen_credit_view (unittest.loader._FailedTest.test_frozen_credit_view)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_frozen_credit_view
+Traceback (most recent call last):
+  File "/usr/lib/python3.14/unittest/loader.py", line 137, in loadTestsFromName
+    module = __import__(module_name)
+  File "/home/qq/work/neuro4-causal-view-t7-20261111/qualification/neuroscience-20261110/test_frozen_credit_view.py", line 5, in <module>
+    from study import (
+        ContractError, Eligibility, Feedback, frozen_credit_view, time_aligned_credit,
+    )
+ImportError: cannot import name 'frozen_credit_view' from 'study' (/home/qq/work/neuro4-causal-view-t7-20261111/qualification/neuroscience-20261110/study.py)
+
+
+----------------------------------------------------------------------
+Ran 1 test in 0.000s
+
+FAILED (errors=1)
+Command exited with non-zero status 1
+RED_wall=0.04 user=0.04 sys=0.00 maxrss_kib=23424 exit=1
