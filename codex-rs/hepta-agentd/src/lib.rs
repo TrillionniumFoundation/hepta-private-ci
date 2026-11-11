@@ -1287,3 +1287,41 @@ mod authority_host_learning_service_root_tests;
 #[cfg(all(test, target_os = "linux"))]
 #[path = "authority_host_q24_model_service_root_tests.rs"]
 mod authority_host_q24_model_service_root_tests;
+
+#[cfg(target_os = "linux")]
+mod root_generation_current_client;
+#[cfg(target_os = "linux")]
+mod root_generation_publication_inputs;
+#[cfg(target_os = "linux")]
+pub use authority_host_runtime::RootGenerationPublicationEnrollmentCapabilityV1;
+#[cfg(target_os = "linux")]
+pub use authority_host_runtime::RootGenerationPublicationRegistrationV1;
+#[cfg(target_os = "linux")]
+pub use authority_host_service::RootArtifactPublicationInputsV1;
+#[cfg(target_os = "linux")]
+pub use authority_host_service::RootGenerationJournalInputsV1;
+#[cfg(target_os = "linux")]
+pub use authority_host_service::RootGenerationPublicationEnrollmentV1;
+#[cfg(target_os = "linux")]
+pub use authority_host_service::RootGenerationPublicationModeV1;
+#[cfg(target_os = "linux")]
+pub use authority_host_service::RootGenerationPublicationOfferV1;
+#[cfg(target_os = "linux")]
+pub use authority_host_service::RootPublicationFinalUseConsumerV1;
+#[cfg(target_os = "linux")]
+pub use root_production_handoff::RootGenerationPublicationHandoffV1;
+#[cfg(target_os = "linux")]
+pub use root_production_handoff::receive_root_generation_publication_handoff;
+#[cfg(target_os = "linux")]
+pub use root_production_handoff::send_root_generation_publication_handoff;
+#[cfg(target_os = "linux")]
+pub use cell_q24_publication_driver::OriginalCellQ24ArtifactPublicationDriverV1;
+#[cfg(target_os = "linux")]
+pub use cell_q24_publication_driver::OriginalCellQ24PublishedArtifactForRootV1;
+#[cfg(target_os = "linux")]
+pub use cell_q24_publication_driver::OriginalCellQ24SelectedArtifactForRootV1;
+#[cfg(target_os = "linux")]
+pub use cell_q24_publication_driver::OriginalCellQ24RootPublicationDriverV1;
+
+#[cfg(target_os = "linux")]
+pub use cell_q24_publication_driver::OriginalCellQ24RetainedArtifactForRootV1;

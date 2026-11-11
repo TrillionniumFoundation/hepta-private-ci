@@ -143,7 +143,7 @@ impl AgentdControlServer {
             let state = Arc::clone(&self.state);
             tokio::spawn(async move {
                 let _permit = permit;
-                let _ = serve_connection::<P>(stream, state).await;
+                let _ = ControlConnection::<P>::serve_connection(stream, state).await;
             });
         }
     }
@@ -165,58 +165,62 @@ impl Drop for AgentdControlServer {
     }
 }
 
-async fn serve_connection<P: ControlProfile>(
-    stream: UnixStream,
-    state: Arc<AgentdState>,
-) -> Result<(), AgentdError> {
-    let (reader, mut writer) = tokio::io::split(stream);
-    let frame = frames::read_frame(reader).await?;
-    let request: AgentdRequest = serde_json::from_slice(&frame)?;
-    let response = if request.schema_version != AGENTD_CONTROL_SCHEMA_VERSION {
-        error_response(
-            &state,
-            request.request_id,
-            request.spawn_generation,
-            "unsupported_schema",
-            "unsupported agentd control schema",
-        )
-    } else {
-        let request_id = request.request_id;
-        let spawn_generation = request.spawn_generation;
-        // An original Circuit admission keeps its connection permit until its
-        // supervised owner and result publication finish. Losing a transport
-        // ACK must not cancel the continuation after durable computation.
-        // The installed task owner still authenticates RunStart and enforces
-        // its admission, AuthBus expiry, Circuit budget and lifecycle bounds.
-        let circuit_admission = state.circuit_task_enabled()
-            && matches!(&request.method, crate::AgentdMethod::ObjectiveStart { .. });
-        let outcome = if circuit_admission {
-            P::response(&state, request).await
-        } else {
-            timeout(IO_TIMEOUT, P::response(&state, request))
-                .await
-                .map_err(|_| AgentdError::Protocol("agentd control response timed out".into()))?
-        };
-        match outcome {
-            Ok(response) => response,
-            Err(error) => error_response(
+struct ControlConnection<P>(std::marker::PhantomData<P>);
+
+impl<P: ControlProfile> ControlConnection<P> {
+    async fn serve_connection(
+        stream: UnixStream,
+        state: Arc<AgentdState>,
+    ) -> Result<(), AgentdError> {
+        let (reader, mut writer) = tokio::io::split(stream);
+        let frame = frames::read_frame(reader).await?;
+        let request: AgentdRequest = serde_json::from_slice(&frame)?;
+        let response = if request.schema_version != AGENTD_CONTROL_SCHEMA_VERSION {
+            error_response(
                 &state,
-                request_id,
-                spawn_generation,
-                "request_rejected",
-                &error.to_string(),
-            ),
+                request.request_id,
+                request.spawn_generation,
+                "unsupported_schema",
+                "unsupported agentd control schema",
+            )
+        } else {
+            let request_id = request.request_id;
+            let spawn_generation = request.spawn_generation;
+            // An original Circuit admission keeps its connection permit until its
+            // supervised owner and result publication finish. Losing a transport
+            // ACK must not cancel the continuation after durable computation.
+            // The installed task owner still authenticates RunStart and enforces
+            // its admission, AuthBus expiry, Circuit budget and lifecycle bounds.
+            let circuit_admission = state.circuit_task_enabled()
+                && matches!(&request.method, crate::AgentdMethod::ObjectiveStart { .. });
+            let outcome = if circuit_admission {
+                P::response(&state, request).await
+            } else {
+                timeout(IO_TIMEOUT, P::response(&state, request))
+                    .await
+                    .map_err(|_| AgentdError::Protocol("agentd control response timed out".into()))?
+            };
+            match outcome {
+                Ok(response) => response,
+                Err(error) => error_response(
+                    &state,
+                    request_id,
+                    spawn_generation,
+                    "request_rejected",
+                    &error.to_string(),
+                ),
+            }
+        };
+        let mut bytes = serde_json::to_vec(&response)?;
+        bytes.push(b'\n');
+        if bytes.len() as u64 > MAX_CONTROL_FRAME_BYTES {
+            return Err(AgentdError::Protocol(
+                "agentd control response exceeded frame bound".to_string(),
+            ));
         }
-    };
-    let mut bytes = serde_json::to_vec(&response)?;
-    bytes.push(b'\n');
-    if bytes.len() as u64 > MAX_CONTROL_FRAME_BYTES {
-        return Err(AgentdError::Protocol(
-            "agentd control response exceeded frame bound".to_string(),
-        ));
+        frames::write_frame(&mut writer, &bytes).await?;
+        Ok(())
     }
-    frames::write_frame(&mut writer, &bytes).await?;
-    Ok(())
 }
 
 fn error_response(

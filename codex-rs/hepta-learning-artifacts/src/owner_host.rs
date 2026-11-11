@@ -53,6 +53,16 @@ use crate::write_candidate_payload_beneath;
 use crate::write_registry_head_witness_beneath;
 use crate::write_registry_snapshot_beneath;
 
+#[path = "owner_read_view.rs"]
+mod read_view;
+#[cfg(target_os = "linux")]
+#[path = "owner_original_reader.rs"]
+mod original_reader;
+#[cfg(target_os = "linux")]
+pub use original_reader::LearningArtifactReadViewV1;
+#[path = "owner_withdrawal_frontier.rs"]
+mod withdrawal_frontier;
+
 const MAX_TRUSTED_SIGNERS: usize = 32;
 const MAX_HEAD_RECORDS: usize = 4_096;
 const MAX_SMALL_RECORD_BYTES: usize = 16 * 1024;
@@ -372,6 +382,13 @@ impl Drop for LearningArtifactOwnerHost {
 }
 
 impl LearningArtifactOwnerHost {
+    fn read_view(&self) -> read_view::ArtifactOwnerReadView<'_> {
+        read_view::ArtifactOwnerReadView {
+            root: &self.root, verifier: &self.verifier,
+            required_current_head: self.required_current_head.as_ref(),
+        }
+    }
+
     pub fn open(
         root: impl AsRef<Path>,
         trust: ArtifactOwnerTrustV1,
@@ -800,53 +817,11 @@ impl LearningArtifactOwnerHost {
         &self,
         current: &VerifiedCurrentArtifactHeadV1,
     ) -> Result<RegistrySnapshotReceipt, ArtifactOwnerHostError> {
-        let mut matched: Option<RegistrySnapshotReceipt> = None;
-        for entry in fs::read_dir(self.root.join("transactions"))? {
-            let entry = entry?;
-            let metadata = fs::symlink_metadata(entry.path())?;
-            if metadata.file_type().is_symlink() || !metadata.is_file() {
-                return Err(ArtifactOwnerHostError::CheckpointMismatch);
-            }
-            if entry.path().extension().and_then(|value| value.to_str()) != Some("checkpoint") {
-                continue;
-            }
-            let checkpoint =
-                decode_checkpoint(&read_small_record(&entry.path(), MAX_SMALL_RECORD_BYTES)?)?;
-            if phase_code(checkpoint.phase)
-                < phase_code(ArtifactPublicationPhaseV1::RegistryDurable)
-            {
-                continue;
-            }
-            let Some(registry_receipt) = checkpoint.registry_receipt else {
-                return Err(ArtifactOwnerHostError::CheckpointMismatch);
-            };
-            if registry_receipt.head_digest != current.signed.witness.head_digest
-                || registry_receipt.binding != current.signed.binding
-            {
-                continue;
-            }
-            if let Some(witness_receipt) = checkpoint.witness_receipt
-                && (witness_receipt.witness_digest != current.witness_digest
-                    || witness_receipt.binding != current.signed.binding)
-            {
-                return Err(ArtifactOwnerHostError::CurrentHeadConflict);
-            }
-            match matched {
-                Some(existing) if existing != registry_receipt => {
-                    return Err(ArtifactOwnerHostError::IdentityConflict);
-                }
-                Some(_) => {}
-                None => matched = Some(registry_receipt),
-            }
-        }
-        matched.ok_or(ArtifactOwnerHostError::CheckpointMissing)
+        self.read_view().current_registry_receipt(current)
     }
 
     fn registry_snapshot_path(&self, receipt: RegistrySnapshotReceipt) -> PathBuf {
-        self.root.join("registries").join(format!(
-            "{}-{}.snapshot",
-            receipt.head_digest, receipt.file_digest
-        ))
+        self.read_view().registry_snapshot_path(receipt)
     }
 
     /// Return the authenticated exact registry view backing the newest signed
@@ -856,21 +831,7 @@ impl LearningArtifactOwnerHost {
         &self,
         now: u64,
     ) -> Result<VerifiedCurrentRegistryViewV1, ArtifactOwnerHostError> {
-        let current = self
-            .discover_current_head(now)?
-            .ok_or(ArtifactOwnerHostError::CurrentHeadContext)?;
-        let receipt = self.current_registry_receipt(&current)?;
-        let registry =
-            read_registry_snapshot(File::open(self.registry_snapshot_path(receipt))?, receipt)?;
-        if registry.snapshot().head_digest != current.signed.witness.head_digest {
-            return Err(ArtifactOwnerHostError::CurrentHeadConflict);
-        }
-        Ok(VerifiedCurrentRegistryViewV1::new(
-            receipt,
-            registry,
-            current.witness_digest,
-            current.trust_digest,
-        ))
+        self.read_view().current_registry_view(now)
     }
 
     pub fn recover_current_registry(
@@ -895,29 +856,7 @@ impl LearningArtifactOwnerHost {
     pub fn recovery_required_operations(
         &self,
     ) -> Result<Vec<ArtifactOwnerPublicationCheckpointV1>, ArtifactOwnerHostError> {
-        let mut latest: BTreeMap<StableId, ArtifactOwnerPublicationCheckpointV1> = BTreeMap::new();
-        for entry in fs::read_dir(self.root.join("transactions"))? {
-            let entry = entry?;
-            let metadata = fs::symlink_metadata(entry.path())?;
-            if metadata.file_type().is_symlink() || !metadata.is_file() {
-                return Err(ArtifactOwnerHostError::CheckpointMismatch);
-            }
-            if entry.path().extension().and_then(|value| value.to_str()) != Some("checkpoint") {
-                continue;
-            }
-            let checkpoint =
-                decode_checkpoint(&read_small_record(&entry.path(), MAX_SMALL_RECORD_BYTES)?)?;
-            match latest.get(&checkpoint.operation_id) {
-                Some(existing) if phase_code(existing.phase) >= phase_code(checkpoint.phase) => {}
-                Some(_) | None => {
-                    latest.insert(checkpoint.operation_id.clone(), checkpoint);
-                }
-            }
-        }
-        Ok(latest
-            .into_values()
-            .filter(|checkpoint| checkpoint.phase != ArtifactPublicationPhaseV1::Acknowledged)
-            .collect())
+        self.read_view().recovery_required_operations()
     }
 
     pub fn recover_publication(
@@ -983,105 +922,10 @@ impl LearningArtifactOwnerHost {
         &self,
         now: u64,
     ) -> Result<Option<VerifiedCurrentArtifactHeadV1>, ArtifactOwnerHostError> {
-        let latest = self.discover_current_head_unanchored(now)?;
-        if let Some(anchor) = &self.required_current_head {
-            self.enforce_required_current_head(anchor, latest.as_ref())?;
-        }
-        Ok(latest)
+        self.read_view().discover_current_head(now)
     }
 
-    fn discover_current_head_unanchored(
-        &self,
-        now: u64,
-    ) -> Result<Option<VerifiedCurrentArtifactHeadV1>, ArtifactOwnerHostError> {
-        let mut records = Vec::new();
-        for entry in fs::read_dir(self.root.join("heads"))? {
-            if records.len() >= MAX_HEAD_RECORDS {
-                return Err(ArtifactOwnerHostError::Capacity);
-            }
-            let entry = entry?;
-            let metadata = fs::symlink_metadata(entry.path())?;
-            if metadata.file_type().is_symlink() || !metadata.is_file() {
-                return Err(ArtifactOwnerHostError::CurrentHeadContext);
-            }
-            if entry.path().extension().and_then(|value| value.to_str()) != Some("head") {
-                continue;
-            }
-            records.push(decode_signed_head(&read_small_record(
-                &entry.path(),
-                MAX_SMALL_RECORD_BYTES,
-            )?)?);
-        }
-        if records.is_empty() {
-            return Ok(None);
-        }
 
-        let mut by_predecessor: BTreeMap<Digest32, Vec<SignedCurrentArtifactHeadV1>> =
-            BTreeMap::new();
-        for record in records {
-            by_predecessor
-                .entry(record.witness.predecessor_head_digest)
-                .or_default()
-                .push(record);
-        }
-        let mut predecessor = self.verifier.trust.genesis_predecessor_head_digest;
-        let mut minimum_generation = self.verifier.trust.minimum_registry_generation;
-        let mut minimum_epoch = self.verifier.trust.minimum_authority_epoch;
-        let mut consumed = 0usize;
-        let mut latest = None;
-        while let Some(candidates) = by_predecessor.remove(&predecessor) {
-            if candidates.len() != 1 {
-                return Err(ArtifactOwnerHostError::CurrentHeadFork);
-            }
-            let candidate = candidates
-                .into_iter()
-                .next()
-                .ok_or(ArtifactOwnerHostError::InternalInvariant)?;
-            let historical_requirement = RegistryHeadRequirementV1 {
-                registry_id: self.verifier.trust.registry_id.clone(),
-                minimum_generation,
-                expected_predecessor_head_digest: predecessor,
-                minimum_authority_epoch: minimum_epoch,
-                now: candidate.witness.issued_at,
-            };
-            let verified =
-                self.verifier
-                    .verify_signed_head(&candidate, &historical_requirement, false)?;
-            predecessor = candidate.witness.head_digest;
-            minimum_generation = candidate
-                .witness
-                .generation
-                .next()
-                .map_err(|_| ArtifactOwnerHostError::CurrentHeadContext)?;
-            minimum_epoch = candidate.witness.authority_epoch;
-            consumed += 1;
-            latest = Some(verified);
-        }
-        if by_predecessor.values().any(|values| !values.is_empty()) {
-            return Err(ArtifactOwnerHostError::CurrentHeadFork);
-        }
-        if consumed == 0 {
-            return Err(ArtifactOwnerHostError::CurrentHeadContext);
-        }
-        let latest = latest.ok_or(ArtifactOwnerHostError::InternalInvariant)?;
-        let signer = self
-            .verifier
-            .head_signers
-            .get(&latest.signed.witness.signer_id)
-            .ok_or(ArtifactOwnerHostError::UnknownSigner)?;
-        verify_signer_context(
-            signer,
-            latest.signed.witness.signing_key_digest,
-            latest.signed.witness.authority_epoch,
-            latest.signed.witness.issued_at,
-            now,
-            true,
-        )?;
-        if now > latest.signed.witness.expires_at {
-            return Err(ArtifactOwnerHostError::CurrentHeadExpired);
-        }
-        Ok(Some(latest))
-    }
 
     fn persist_checkpoint(
         &self,
@@ -1120,42 +964,10 @@ impl LearningArtifactOwnerHost {
     }
 
     fn signed_head_record_path(&self, signed: &SignedCurrentArtifactHeadV1) -> PathBuf {
-        self.root.join("heads").join(format!(
-            "{}-{}.head",
-            signed.witness.generation.get(),
-            Digest32::of_bytes(&signed.signing_bytes())
-        ))
+        self.read_view().signed_head_record_path(signed)
     }
 
-    fn enforce_required_current_head(
-        &self,
-        anchor: &SignedCurrentArtifactHeadV1,
-        latest: Option<&VerifiedCurrentArtifactHeadV1>,
-    ) -> Result<(), ArtifactOwnerHostError> {
-        let requirement = RegistryHeadRequirementV1 {
-            registry_id: self.verifier.trust.registry_id.clone(),
-            minimum_generation: anchor.witness.generation,
-            expected_predecessor_head_digest: anchor.witness.predecessor_head_digest,
-            minimum_authority_epoch: self.verifier.trust.minimum_authority_epoch,
-            now: anchor.witness.issued_at,
-        };
-        self.verifier
-            .verify_signed_head(anchor, &requirement, false)?;
-        let path = self.signed_head_record_path(anchor);
-        if !path.is_file()
-            || read_small_record(&path, MAX_SMALL_RECORD_BYTES)? != encode_signed_head(anchor)
-        {
-            return Err(ArtifactOwnerHostError::CurrentHeadRollback);
-        }
-        let latest = latest.ok_or(ArtifactOwnerHostError::CurrentHeadRollback)?;
-        if latest.signed.witness.generation < anchor.witness.generation
-            || (latest.signed.witness.generation == anchor.witness.generation
-                && latest.signed.witness.head_digest != anchor.witness.head_digest)
-        {
-            return Err(ArtifactOwnerHostError::CurrentHeadRollback);
-        }
-        Ok(())
-    }
+
 }
 
 fn checkpoint_from_snapshot(

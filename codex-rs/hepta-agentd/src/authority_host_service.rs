@@ -37,6 +37,14 @@ mod consumers;
 mod learning_checkpoint;
 #[path = "authority_host_q24_model.rs"]
 pub(crate) mod q24_model;
+#[path = "authority_host_generation_publication.rs"]
+pub(crate) mod generation_publication;
+pub use generation_publication::RootArtifactPublicationInputsV1;
+pub use generation_publication::RootGenerationJournalInputsV1;
+pub use generation_publication::RootGenerationPublicationEnrollmentV1;
+pub use generation_publication::RootGenerationPublicationModeV1;
+pub use generation_publication::RootGenerationPublicationOfferV1;
+pub use generation_publication::RootPublicationFinalUseConsumerV1;
 use consumers::RegisteredConsumers;
 pub use q24_model::HostAuthorityQ24ModelFactoryProfileV1;
 pub use q24_model::HostAuthorityQ24ModelFactoryReservationV1;

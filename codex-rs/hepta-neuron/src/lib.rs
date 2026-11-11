@@ -92,6 +92,12 @@ pub use cell_generation_current::CellGenerationOpenModeV1;
 pub use cell_generation_current::CellGenerationOwnerBindingV1;
 pub use cell_generation_current::CellGenerationPreparedCheckpointV1;
 pub use cell_generation_journal::CellGenerationExpectedContextV1;
+#[cfg(target_os = "linux")]
+pub use cell_generation_journal::CellGenerationJournalObservedV1;
+#[cfg(target_os = "linux")]
+pub use cell_generation_journal::CellGenerationJournalObserverV1;
+#[cfg(target_os = "linux")]
+pub use cell_generation_journal::CellGenerationObserverConfigV1;
 pub use cell_generation_journal::CellGenerationJournalV2;
 pub use cell_generation_observation::CellGenerationObservationV1;
 pub use cell_generation_state::CellGenerationConfigV2;

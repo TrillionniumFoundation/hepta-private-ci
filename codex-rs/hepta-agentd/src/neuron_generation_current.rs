@@ -32,7 +32,10 @@ mod prepare;
 #[path = "neuron_generation_current_store.rs"]
 mod store;
 #[path = "neuron_generation_current_types.rs"]
-mod types;
+pub(crate) mod types;
+#[cfg(target_os = "linux")]
+#[path = "neuron_generation_current_root.rs"]
+mod root;
 
 use initial_types::InitialState;
 pub use initial_types::NeuronGenerationInitialReadbackV1;
@@ -353,7 +356,7 @@ impl CellGenerationCurrentV1 for NeuronGenerationCurrentOwnerV1 {
     }
 }
 
-fn signed_grant_digest(
+pub(crate) fn signed_grant_digest(
     signed: &SignedFinalUseGrant,
 ) -> Result<codex_hepta_types::Digest32, AgentdError> {
     let bytes = serde_json::to_vec(signed).map_err(invalid)?;

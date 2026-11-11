@@ -21,6 +21,12 @@ use std::path::Path;
 #[cfg(unix)]
 use std::sync::Mutex;
 
+#[cfg(target_os = "linux")]
+#[path = "final_use_root_observer.rs"]
+mod root_observer;
+#[cfg(target_os = "linux")]
+pub use root_observer::RootFinalUseObserverV1;
+
 #[cfg(windows)]
 #[path = "final_use_store_windows.rs"]
 mod windows;
@@ -408,28 +414,7 @@ impl Store {
         };
         #[cfg(not(unix))]
         let bytes = read_bounded(&self.root, "authority.claims", maximum)?;
-        if bytes.len() % CLAIM_FRAME_BYTES != 0 {
-            return Err(FinalUseError::InvalidTrust);
-        }
-        let mut claims = BTreeSet::new();
-        for frame in bytes.chunks_exact(CLAIM_FRAME_BYTES) {
-            let mut epoch_bytes = [0u8; 8];
-            epoch_bytes.copy_from_slice(&frame[..8]);
-            let epoch = u64::from_be_bytes(epoch_bytes);
-            if epoch == 0 || epoch > authority_epoch {
-                return Err(FinalUseError::InvalidTrust);
-            }
-            if epoch == authority_epoch {
-                let mut nonce = [0u8; 32];
-                nonce.copy_from_slice(&frame[8..]);
-                if nonce == [0; 32] || !claims.insert(nonce) {
-                    return Err(FinalUseError::InvalidTrust);
-                }
-            }
-        }
-        if claims.len() > MAX_CLAIMS {
-            return Err(FinalUseError::InvalidTrust);
-        }
+        let claims = decode_claims(&bytes, authority_epoch)?;
         #[cfg(unix)]
         {
             let journal = ClaimJournal {
@@ -482,6 +467,35 @@ impl Store {
         }
         Ok(())
     }
+}
+
+fn decode_claims(
+    bytes: &[u8],
+    authority_epoch: u64,
+) -> Result<BTreeSet<[u8; 32]>, FinalUseError> {
+    if bytes.len() % CLAIM_FRAME_BYTES != 0 {
+        return Err(FinalUseError::InvalidTrust);
+    }
+    let mut claims = BTreeSet::new();
+    for frame in bytes.chunks_exact(CLAIM_FRAME_BYTES) {
+        let mut epoch_bytes = [0u8; 8];
+        epoch_bytes.copy_from_slice(&frame[..8]);
+        let epoch = u64::from_be_bytes(epoch_bytes);
+        if epoch == 0 || epoch > authority_epoch {
+            return Err(FinalUseError::InvalidTrust);
+        }
+        if epoch == authority_epoch {
+            let mut nonce = [0u8; 32];
+            nonce.copy_from_slice(&frame[8..]);
+            if nonce == [0; 32] || !claims.insert(nonce) {
+                return Err(FinalUseError::InvalidTrust);
+            }
+        }
+    }
+    if claims.len() > MAX_CLAIMS {
+        return Err(FinalUseError::InvalidTrust);
+    }
+    Ok(claims)
 }
 
 fn read_bounded(directory: &File, name: &str, maximum: usize) -> Result<Vec<u8>, FinalUseError> {

@@ -148,6 +148,8 @@ pub use owner_host::ArtifactOwnerPublicationCheckpointV1;
 pub use owner_host::ArtifactOwnerRecoveryV1;
 pub use owner_host::ArtifactOwnerTrustV1;
 pub use owner_host::ArtifactOwnerVerifierV1;
+#[cfg(target_os = "linux")]
+pub use owner_host::LearningArtifactReadViewV1;
 pub use owner_host::LearningArtifactOwnerHost;
 pub use owner_host::SignedArtifactWriterLeaseV1;
 pub use owner_host::SignedCurrentArtifactHeadV1;

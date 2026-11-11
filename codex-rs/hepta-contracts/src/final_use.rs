@@ -28,6 +28,8 @@ mod live_owner;
 mod retained;
 #[path = "final_use_store.rs"]
 mod store;
+#[cfg(target_os = "linux")]
+pub use store::RootFinalUseObserverV1;
 
 const MAX_CLAIMS: usize = 1_048_576;
 const MAX_REVOKED_GRANTS: usize = 16_384;

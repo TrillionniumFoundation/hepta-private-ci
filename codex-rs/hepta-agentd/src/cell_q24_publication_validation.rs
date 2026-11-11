@@ -20,15 +20,15 @@ use crate::CellQ24FeatureWorkerV1;
 
 use super::*;
 
-pub(super) struct Decision {
-    pub(super) snapshot: LearningIterationSnapshotV1,
-    pub(super) bundle: CellCompatibilityBundleV1,
-    pub(super) operation: StableId,
-    pub(super) artifact_operation: StableId,
+pub(crate) struct Decision {
+    pub(crate) snapshot: LearningIterationSnapshotV1,
+    pub(crate) bundle: CellCompatibilityBundleV1,
+    pub(crate) operation: StableId,
+    pub(crate) artifact_operation: StableId,
 }
 
 impl Decision {
-    pub(super) fn new(snapshot: LearningIterationSnapshotV1) -> Result<Self, Error> {
+    pub(crate) fn new(snapshot: LearningIterationSnapshotV1) -> Result<Self, Error> {
         let coordinator = LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())
             .map_err(|_| Error::Binding("original decision history"))?;
         if coordinator.next_stage() != Some(LearningIterationStageV1::Selection)
@@ -73,8 +73,26 @@ impl Decision {
         })
     }
 
-    pub(super) fn adopts(&self) -> bool {
+    pub(crate) fn adopts(&self) -> bool {
         self.bundle != self.snapshot.request.selected_bundle
+    }
+
+    /// Only an authenticated completed result may enroll a successor. The
+    /// original RetainParent and DeferCandidate remain distinct signed results;
+    /// missing owners, unsigned deferral and incomplete evaluation never enter.
+    pub(crate) fn require_root_publication(&self) -> Result<(), Error> {
+        use codex_hepta_learning_artifacts::LearningLocalDispositionV2;
+        match self.snapshot.receipts.last().map(|receipt| &receipt.observation) {
+            Some(LearningIterationObservationV1::LocalDecisionV2(local))
+                if matches!(local.disposition, LearningLocalDispositionV2::AdoptCandidate
+                    | LearningLocalDispositionV2::RetainParent
+                    | LearningLocalDispositionV2::DeferCandidate) => Ok(()),
+            Some(LearningIterationObservationV1::TrainingNoUpdateV2(_))
+            | Some(LearningIterationObservationV1::Evaluation {
+                disposition: LearningEvaluationDispositionV1::NoUpdate, ..
+            }) if !self.adopts() => Ok(()),
+            _ => Err(Error::Binding("only completed original protocol decision enrolls CURRENT")),
+        }
     }
 
     pub(super) fn require_new_work(&self) -> Result<(), Error> {

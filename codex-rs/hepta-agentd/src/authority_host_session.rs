@@ -21,6 +21,11 @@ mod learning;
 #[path = "authority_host_q24_model_session.rs"]
 mod q24_model;
 
+#[path = "authority_host_generation_publication_session.rs"]
+mod generation_publication;
+pub use generation_publication::RootGenerationPublicationEnrollmentCapabilityV1;
+pub use generation_publication::RootGenerationPublicationRegistrationV1;
+
 /// One Root session's immutable registration, retained actual process handle
 /// and original service. This wrapper is not Clone and creates no additional
 /// issuer, clock, checkpoint or consumer owner during bootstrap capture.
@@ -32,6 +37,7 @@ pub struct PreparedHostAuthoritySession {
     fresh_filesystem: bool,
     root_admin: Option<crate::authority_host_admin::RootAdminRuntime>,
     learning: Option<crate::authority_host_service::RegisteredHostLearningCheckpointV1>,
+    publication: Option<generation_publication::PublicationRuntime>,
 }
 
 impl PreparedHostAuthoritySession {
@@ -83,6 +89,7 @@ impl PreparedHostAuthoritySession {
             fresh_filesystem: true,
             root_admin: None,
             learning: None,
+            publication: None,
         })
     }
 
@@ -108,6 +115,7 @@ impl PreparedHostAuthoritySession {
             fresh_filesystem: true,
             root_admin: None,
             learning: None,
+            publication: None,
         })
     }
 
@@ -129,6 +137,7 @@ impl PreparedHostAuthoritySession {
             fresh_filesystem: false,
             root_admin: None,
             learning: None,
+            publication: None,
         })
     }
 
@@ -321,12 +330,13 @@ impl PreparedHostAuthoritySession {
             service,
             root_admin,
             learning,
+            publication,
             ..
         } = self;
         // Bind the dedicated optional lane before either five-lane ready
         // callback can release the child. Its accept loop runs independently.
         let learning = learning
-            .map(|owner| learning::BoundLearning::bind(owner, &config))
+            .map(|owner| learning::BoundLearning::bind(owner, &config, publication))
             .transpose()?;
         if text_ui.is_some()
             && config.issuer_record_profile

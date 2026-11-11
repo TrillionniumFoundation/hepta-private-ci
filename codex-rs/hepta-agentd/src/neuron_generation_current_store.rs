@@ -18,6 +18,8 @@ pub(super) struct CurrentStore {
 }
 
 enum Store {
+    #[cfg(target_os = "linux")]
+    Root(crate::root_generation_current_client::RootGenerationCurrentClient),
     Host(HostAuthorityFrontierStore<CurrentHead>),
     #[cfg(test)]
     Test(Arc<dyn AuthorityFrontierStore<CurrentHead>>),
@@ -49,13 +51,35 @@ impl CurrentStore {
         })
     }
 
+    #[cfg(target_os = "linux")]
+    pub(super) fn from_original_root(
+        original: crate::root_generation_current_client::RootGenerationCurrentClient,
+    ) -> Result<Self, AgentdError> {
+        Ok(Self { owner_id: owner_id(original.scope())?, store: Store::Root(original) })
+    }
+
+    #[cfg(target_os = "linux")]
+    pub(super) fn is_original_host(&self) -> bool { matches!(&self.store, Store::Host(_)) }
+
+    #[cfg(target_os = "linux")]
+    pub(super) fn require_original_root_selection(
+        &self, decision: &codex_hepta_learning_artifacts::LearningIterationSnapshotV1,
+        operation: &codex_hepta_types::StableId, selection: codex_hepta_types::Digest32,
+    ) -> Result<(), AgentdError> {
+        match &self.store {
+            Store::Root(original) => original.require_selection(decision, operation, selection),
+            _ => Err(invalid("original Root publication client required")),
+        }
+    }
+
     pub(super) fn load(&self) -> Result<CurrentHead, AgentdError> {
         let head = match &self.store {
-            Store::Host(store) => store.load(&self.owner_id),
+            Store::Host(store) => store.load(&self.owner_id).map_err(invalid)?,
+            #[cfg(target_os = "linux")]
+            Store::Root(original) => original.observe()?,
             #[cfg(test)]
-            Store::Test(store) => store.load(&self.owner_id),
-        }
-        .map_err(invalid)?;
+            Store::Test(store) => store.load(&self.owner_id).map_err(invalid)?,
+        };
         if head.schema_version != 1 || owner_id(head.current.scope())? != self.owner_id {
             return Err(invalid("generation current scope or schema differs"));
         }
@@ -70,11 +94,12 @@ impl CurrentStore {
         next: &CurrentHead,
     ) -> Result<(), AgentdError> {
         match &self.store {
-            Store::Host(store) => store.compare_and_set(&self.owner_id, expected, next),
+            Store::Host(store) => store.compare_and_set(&self.owner_id, expected, next).map_err(invalid),
+            #[cfg(target_os = "linux")]
+            Store::Root(original) => original.replace(expected, next),
             #[cfg(test)]
-            Store::Test(store) => store.compare_and_set(&self.owner_id, expected, next),
+            Store::Test(store) => store.compare_and_set(&self.owner_id, expected, next).map_err(invalid),
         }
-        .map_err(invalid)
     }
 
     #[cfg(test)]

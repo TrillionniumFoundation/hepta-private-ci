@@ -49,6 +49,7 @@ impl PreparedHostAuthoritySession {
 pub(super) struct BoundLearning {
     learning: RegisteredHostLearningCheckpointV1,
     model: Option<super::q24_model::BoundFactory>,
+    publication: Option<super::generation_publication::BoundPublication>,
     listener: UnixListener,
     device: u64,
     inode: u64,
@@ -58,6 +59,7 @@ impl BoundLearning {
     pub(super) fn bind(
         mut learning: RegisteredHostLearningCheckpointV1,
         config: &HostAuthorityServiceConfig,
+        publication: Option<super::generation_publication::PublicationRuntime>,
     ) -> io::Result<Self> {
         let mut paths: Vec<_> = validate_runtime_lanes(config)?
             .into_iter()
@@ -72,11 +74,17 @@ impl BoundLearning {
                 super::q24_model::BoundFactory::bind(factory, config, &learning.socket_path)
             })
             .transpose()?;
+        let publication = publication.map(|runtime| {
+            super::generation_publication::BoundPublication::bind(
+                runtime, config, &learning.socket_path, model.as_ref().map(|factory| factory.path()),
+            )
+        }).transpose()?;
         let listener = UnixListener::bind(&learning.socket_path)?;
         let metadata = std::fs::symlink_metadata(&learning.socket_path)?;
         let bound = Self {
             learning,
             model,
+            publication,
             listener,
             device: metadata.dev(),
             inode: metadata.ino(),
@@ -93,7 +101,8 @@ impl BoundLearning {
     }
 
     pub(super) fn contains_path(&self, path: &Path) -> bool {
-        self.learning.socket_path == path
+        self.publication.as_ref().is_some_and(|lane| lane.path() == path)
+            || self.learning.socket_path == path
             || self
                 .model
                 .as_ref()
@@ -176,13 +185,16 @@ pub(super) fn serve_optional(
                 result
             }
         });
-        let result = super::q24_model::serve_optional(
+        let result = super::generation_publication::serve_optional(
+            learning.publication.as_ref(), &learning.learning, service, config, registration, owner,
+            || super::q24_model::serve_optional(
             learning.model.as_ref(),
             service,
             config,
             registration,
             owner,
             original,
+            ),
         );
         stopping.store(true, Ordering::Release);
         if let Some(stream) = active

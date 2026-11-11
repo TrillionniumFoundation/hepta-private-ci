@@ -26,29 +26,7 @@ impl OriginalCellQ24PublicationDriverV1 {
         owners
             .with_original_publication(snapshot, manifest, move || {
                 let selected = self.load_selection(selection, /*publication*/ None)?;
-                if let Some(manifest) = &self.original.manifest
-                    && selected.manifest() != manifest
-                {
-                    return Err(Error::Binding("recovery differs from original B manifest"));
-                }
-                let ready = crate::recover_agentd_generation_update_v1(
-                    self.current,
-                    self.authorities,
-                    selected,
-                    recovery.target,
-                    AgentdGenerationUpdateRecoveryV1 {
-                        operation_id: self.original.decision.operation.to_string(),
-                        intent_digest: recovery.intent_digest,
-                    },
-                )?;
-                let task = ready.recover_circuit_feature_task(
-                    recovery.definition,
-                    recovery.source,
-                    recovery.predecessor,
-                    recovery.original_source.as_ref(),
-                    &recovery.original_identity,
-                )?;
-                Ok(task)
+                recover_selected(self, selected, recovery)
             })
             .await
     }
@@ -87,43 +65,7 @@ impl OriginalCellQ24SelectionDriverV1 {
                 let selected = self
                     .driver
                     .load_selection(selection, self.publication.as_ref())?;
-                if let Some(manifest) = &self.driver.original.manifest
-                    && selected.manifest() != manifest
-                {
-                    return Err(Error::Binding("selection differs from original B manifest"));
-                }
-                let target_manifest = target.target.config.manifest.clone();
-                let request = AgentdGenerationUpdateRequestV1 {
-                    operation_id: self.driver.original.decision.operation.to_string(),
-                };
-                let prepared = if self.driver.original.decision.adopts() {
-                    crate::prepare_agentd_generation_cold_drained_update_v1(
-                        self.driver.current,
-                        self.driver.authorities,
-                        predecessor,
-                        selected,
-                        target.target,
-                        request,
-                    )?
-                } else {
-                    crate::prepare_agentd_generation_cold_same_model_task_v1(
-                        self.driver.current,
-                        self.driver.authorities,
-                        predecessor,
-                        selected,
-                        target.target,
-                        request,
-                    )?
-                };
-                Ok::<_, Error>(OriginalCellQ24PreparedPublicationV1 {
-                    original: self.driver.original,
-                    prepared,
-                    definition: target.definition,
-                    source: target.source,
-                    model: target.model,
-                    target_manifest,
-                    previous: target.previous,
-                })
+                prepare_selected(self.driver, selected, predecessor, target)
             })
             .await
     }
@@ -169,4 +111,80 @@ impl OriginalCellQ24PreparedPublicationV1 {
             })
             .await
     }
+}
+
+// Both product paths call these only inside the original aggregate lane.
+pub(super) fn prepare_selected(
+    driver: OriginalCellQ24PublicationDriverV1,
+    selected: AgentdSelectedGenerationV1,
+    predecessor: AgentdGenerationUpdatePredecessorFilesV1<FileAnchorWitnessStore>,
+    target: OriginalCellQ24FeatureTargetV1,
+) -> Result<OriginalCellQ24PreparedPublicationV1, Error> {
+                if let Some(manifest) = &driver.original.manifest
+                    && selected.manifest() != manifest
+                {
+                    return Err(Error::Binding("selection differs from original B manifest"));
+                }
+                let target_manifest = target.target.config.manifest.clone();
+                let request = AgentdGenerationUpdateRequestV1 {
+                    operation_id: driver.original.decision.operation.to_string(),
+                };
+                let prepared = if driver.original.decision.adopts() {
+                    crate::prepare_agentd_generation_cold_drained_update_v1(
+                        driver.current,
+                        driver.authorities,
+                        predecessor,
+                        selected,
+                        target.target,
+                        request,
+                    )?
+                } else {
+                    crate::prepare_agentd_generation_cold_same_model_task_v1(
+                        driver.current,
+                        driver.authorities,
+                        predecessor,
+                        selected,
+                        target.target,
+                        request,
+                    )?
+                };
+                Ok::<_, Error>(OriginalCellQ24PreparedPublicationV1 {
+                    original: driver.original,
+                    prepared,
+                    definition: target.definition,
+                    source: target.source,
+                    model: target.model,
+                    target_manifest,
+                    previous: target.previous,
+                })
+}
+
+pub(super) fn recover_selected(
+    driver: OriginalCellQ24PublicationDriverV1,
+    selected: AgentdSelectedGenerationV1,
+    recovery: OriginalCellQ24FeatureRecoveryV1,
+) -> Result<PublishedCircuitFeatureTaskV1, Error> {
+                if let Some(manifest) = &driver.original.manifest
+                    && selected.manifest() != manifest
+                {
+                    return Err(Error::Binding("recovery differs from original B manifest"));
+                }
+                let ready = crate::recover_agentd_generation_update_v1(
+                    driver.current,
+                    driver.authorities,
+                    selected,
+                    recovery.target,
+                    AgentdGenerationUpdateRecoveryV1 {
+                        operation_id: driver.original.decision.operation.to_string(),
+                        intent_digest: recovery.intent_digest,
+                    },
+                )?;
+                let task = ready.recover_circuit_feature_task(
+                    recovery.definition,
+                    recovery.source,
+                    recovery.predecessor,
+                    recovery.original_source.as_ref(),
+                    &recovery.original_identity,
+                )?;
+                Ok(task)
 }

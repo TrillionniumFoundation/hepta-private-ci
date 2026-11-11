@@ -16,6 +16,12 @@ use std::time::Duration;
 use crate::AgentdError;
 use crate::HOST_AUTHORITY_BOOTSTRAP_BOUND;
 
+#[path = "root_generation_publication_handoff.rs"]
+mod generation_publication;
+pub use generation_publication::RootGenerationPublicationHandoffV1;
+pub use generation_publication::receive_root_generation_publication_handoff;
+pub use generation_publication::send_root_generation_publication_handoff;
+
 const FRAME: &[u8] = b"HEPTA_ROOT_PRODUCTION_INPUTS_V1";
 
 #[path = "root_production_writer_handoff.rs"]

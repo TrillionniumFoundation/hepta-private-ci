@@ -323,3 +323,6 @@ fn artifact_material_is_exact_actual_b_manifest_and_full_learning_lineage() -> a
 
 #[path = "cell_q24_publication_feature_tests.rs"]
 mod feature;
+
+#[path = "cell_q24_publication_root_policy_tests.rs"]
+mod root_policy;

@@ -1,6 +1,7 @@
 //! Execute a learning decision with the existing artifact, CURRENT and FinalUse
 //! owners. This embedded-host entry neither acquires those capabilities nor
-//! installs a cross-process Root publication lane. All signatures remain inputs
+//! constructs a Root publication lane. The separately purpose-bound original
+//! Root handoff can supply CURRENT; all signatures remain inputs
 //! from their original, separately authorized issuers.
 //! Retention is not rollback. A later rollback requires a new original operation
 //! and generation with its own selected artifact and exact FinalUse grant.
@@ -43,8 +44,15 @@ use crate::PublishedCircuitFeatureTaskV1;
 #[path = "cell_q24_publication_current.rs"]
 mod current;
 #[path = "cell_q24_publication_validation.rs"]
-mod validation;
+pub(crate) mod validation;
 use validation::Decision;
+#[path = "cell_q24_publication_root_stage.rs"]
+mod root_stage;
+pub use root_stage::OriginalCellQ24ArtifactPublicationDriverV1;
+pub use root_stage::OriginalCellQ24PublishedArtifactForRootV1;
+pub use root_stage::OriginalCellQ24SelectedArtifactForRootV1;
+pub use root_stage::OriginalCellQ24RetainedArtifactForRootV1;
+pub use root_stage::OriginalCellQ24RootPublicationDriverV1;
 
 #[derive(Debug, thiserror::Error)]
 pub enum OriginalCellQ24PublicationErrorV1 {
@@ -99,6 +107,32 @@ struct OriginalDecision {
 }
 
 impl OriginalDecision {
+    fn load_selected(
+        &self,
+        authorities: &AgentdGenerationUpdateAuthoritiesV1,
+        input: OriginalCellQ24SelectionInputsV1,
+        publication: Option<&ArtifactPublicationReceiptV1>,
+    ) -> Result<AgentdSelectedGenerationV1, Error> {
+        validation::signed_selection(&self.decision, &input.signed, publication)?;
+        let artifacts = authorities
+            .artifacts
+            .lock()
+            .map_err(|_| Error::CommitUncertain)?;
+        let selected = AgentdSelectedGenerationV1::load(
+            &artifacts,
+            input.verifier,
+            input.signed,
+            input.files,
+            authorities.now()?,
+        )?;
+        crate::cell_composed_q24::validate_manifest(
+            &self.original.decision.bundle,
+            selected.manifest(),
+        )
+        .map_err(|_| Error::Binding("selected complete Q24 manifest"))?;
+        Ok(selected)
+    }
+
     async fn require_current(&self) -> Result<(), Error> {
         self.owners
             .validate_recovery(&self.decision.snapshot)
@@ -264,25 +298,7 @@ impl OriginalCellQ24PublicationDriverV1 {
         input: OriginalCellQ24SelectionInputsV1,
         publication: Option<&ArtifactPublicationReceiptV1>,
     ) -> Result<AgentdSelectedGenerationV1, Error> {
-        validation::signed_selection(&self.original.decision, &input.signed, publication)?;
-        let artifacts = self
-            .authorities
-            .artifacts
-            .lock()
-            .map_err(|_| Error::CommitUncertain)?;
-        let selected = AgentdSelectedGenerationV1::load(
-            &artifacts,
-            input.verifier,
-            input.signed,
-            input.files,
-            self.authorities.now()?,
-        )?;
-        crate::cell_composed_q24::validate_manifest(
-            &self.original.decision.bundle,
-            selected.manifest(),
-        )
-        .map_err(|_| Error::Binding("selected complete Q24 manifest"))?;
-        Ok(selected)
+        self.original.load_selected(&self.authorities, input, publication)
     }
 }
 

@@ -21,6 +21,12 @@ use crate::JournalAnchor;
 use crate::JournalScope;
 use crate::WitnessStoreError;
 
+#[cfg(target_os = "linux")]
+#[path = "witness_observer.rs"]
+mod observer;
+#[cfg(target_os = "linux")]
+pub(crate) use observer::read_original_file;
+
 const MAGIC: &[u8; 8] = b"HPTNWA01";
 const HEADER: usize = 112;
 const RECORD: usize = 112;

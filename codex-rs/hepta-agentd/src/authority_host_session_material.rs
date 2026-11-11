@@ -127,6 +127,7 @@ impl PreparedHostAuthoritySession {
             fresh_filesystem: false,
             root_admin: None,
             learning: None,
+            publication: None,
         })
     }
 
@@ -158,6 +159,7 @@ impl PreparedHostAuthoritySession {
             fresh_filesystem: true,
             root_admin: None,
             learning: None,
+            publication: None,
         })
     }
 
@@ -185,6 +187,7 @@ impl PreparedHostAuthoritySession {
             fresh_filesystem: false,
             root_admin: None,
             learning: None,
+            publication: None,
         })
     }
 }

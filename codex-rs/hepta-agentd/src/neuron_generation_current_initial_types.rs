@@ -20,7 +20,7 @@ use crate::AgentdError;
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
-pub(super) struct InitialIntent {
+pub(crate) struct InitialIntent {
     pub(super) operation_id: String,
     pub(super) supersedes: Option<[u8; 32]>,
     pub(super) target: CellGenerationOwnerBindingV1,
@@ -63,7 +63,7 @@ impl InitialIntent {
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
-pub(super) struct InitialPublished {
+pub(crate) struct InitialPublished {
     pub(super) intent: InitialIntent,
     pub(super) witness: VerifiedUseTokenWitnessV1,
     pub(super) signed: SignedFinalUseGrant,
@@ -90,7 +90,7 @@ impl InitialPublished {
     rename_all = "snake_case",
     deny_unknown_fields
 )]
-pub(super) enum InitialState {
+pub(crate) enum InitialState {
     Prepared(Box<InitialIntent>),
     Published(Box<InitialPublished>),
 }
