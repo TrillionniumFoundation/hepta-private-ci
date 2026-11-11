@@ -82,7 +82,7 @@ class Q24DatasetSourceClosureTests(unittest.TestCase):
         self.rejects(before + after)
         # The public new-material path always enforces its work deadline; the
         # separate closed receipt path can only re-read original completed work.
-        self.rejects(self.source.replace("            true,\n            clock,", "            false,\n            clock,", 1))
+        self.rejects(self.source.replace("true, clock)", "false, clock)", 1))
         guard = "if fresh_now < started_at"
         self.rejects(self.source.replace(guard, "if false && fresh_now < started_at", 1))
 

@@ -154,12 +154,20 @@ impl<'a, W: AnchorWitnessStore> CellQ24DatasetReaderV1<'a, W> {
         plan: DatasetFreezePlanV2,
         freeze_evidence: &SignedLearningEvidenceV1,
     ) -> Result<OriginalCellQ24DatasetV1, CellQ24DatasetErrorV1> {
-        self.read_current_at_clock(initial, baseline, rule, plan, freeze_evidence, false, || {
-            SystemTime::now()
-                .duration_since(UNIX_EPOCH)
-                .map(|elapsed| elapsed.as_secs())
-                .map_err(|_| CellQ24DatasetErrorV1::Binding("system clock before Unix epoch"))
-        })
+        self.read_current_at_clock(
+            initial,
+            baseline,
+            rule,
+            plan,
+            freeze_evidence,
+            false,
+            || {
+                SystemTime::now()
+                    .duration_since(UNIX_EPOCH)
+                    .map(|elapsed| elapsed.as_secs())
+                    .map_err(|_| CellQ24DatasetErrorV1::Binding("system clock before Unix epoch"))
+            },
+        )
     }
 
     // Only read_current supplies this clock in product builds. The private
@@ -174,15 +182,7 @@ impl<'a, W: AnchorWitnessStore> CellQ24DatasetReaderV1<'a, W> {
         freeze_evidence: &SignedLearningEvidenceV1,
         clock: impl FnMut() -> Result<u64, CellQ24DatasetErrorV1>,
     ) -> Result<OriginalCellQ24DatasetV1, CellQ24DatasetErrorV1> {
-        self.read_current_at_clock(
-            initial,
-            baseline,
-            rule,
-            plan,
-            freeze_evidence,
-            true,
-            clock,
-        )
+        self.read_current_at_clock(initial, baseline, rule, plan, freeze_evidence, true, clock)
     }
 
     fn read_current_at_clock(

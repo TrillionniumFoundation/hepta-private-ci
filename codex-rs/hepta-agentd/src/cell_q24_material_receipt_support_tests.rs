@@ -29,7 +29,8 @@ use crate::circuit_credit::circuit_learning_run_id_v1;
 use crate::circuit_task::cell_q24_dataset_source_test_support as source;
 use crate::circuit_task::source_test_support::identity;
 
-pub(super) type Owners = OriginalCellQ24MaterialReceiptOwnersV1<FileAnchorWitnessStore, FileAnchorWitnessStore>;
+pub(super) type Owners =
+    OriginalCellQ24MaterialReceiptOwnersV1<FileAnchorWitnessStore, FileAnchorWitnessStore>;
 
 pub(super) fn d(label: &str) -> Digest32 {
     Digest32::of_bytes(label.as_bytes())
@@ -66,7 +67,10 @@ pub(super) fn sign(
     at: u64,
 ) -> SignedLearningEvidenceV1 {
     let mut signed = SignedLearningEvidenceV1 {
-        evidence_id: id(&format!("explicit-evidence:{}", Digest32::of_bytes(payload))),
+        evidence_id: id(&format!(
+            "explicit-evidence:{}",
+            Digest32::of_bytes(payload)
+        )),
         principal_id: signer.principal.principal_id.clone(),
         role: signer.roles[0],
         trust_digest: verifier.trust_digest(),
@@ -78,7 +82,9 @@ pub(super) fn sign(
         payload_digest: Digest32::of_bytes(payload),
         signature: [0; 64],
     };
-    signed.signature = SigningKey::from_bytes(&[seed; 32]).sign(&signed.signing_bytes()).to_bytes();
+    signed.signature = SigningKey::from_bytes(&[seed; 32])
+        .sign(&signed.signing_bytes())
+        .to_bytes();
     signed
 }
 
@@ -120,8 +126,11 @@ impl Fixture {
                     objective_digest: d("objective"),
                     authority_epoch: 1,
                     signers: vec![
-                        generator.clone(), observer.clone(), evaluator.clone(),
-                        experience_signer.clone(), dataset_signer.clone(),
+                        generator.clone(),
+                        observer.clone(),
+                        evaluator.clone(),
+                        experience_signer.clone(),
+                        dataset_signer.clone(),
                     ],
                 },
             },
@@ -141,20 +150,35 @@ impl Fixture {
                 expires_at: at + 3_600,
                 revoked_at: None,
             },
-            distribution, None, at,
+            distribution,
+            None,
+            at,
         )?;
-        let ledger = DurableLedger::create(opened(&root, "ledger", true)?, d("original-material-ledger"), 32)?;
-        let witness = LedgerWitnessStore::create(opened(&root, "ledger-witness", true)?, d("original-material-ledger"))?;
+        let ledger = DurableLedger::create(
+            opened(&root, "ledger", true)?,
+            d("original-material-ledger"),
+            32,
+        )?;
+        let witness = LedgerWitnessStore::create(
+            opened(&root, "ledger-witness", true)?,
+            d("original-material-ledger"),
+        )?;
         let mut directory_options = OpenOptions::new();
         directory_options.read(true);
         #[cfg(windows)]
         {
             use std::os::windows::fs::OpenOptionsExt;
-            directory_options.write(true).custom_flags(0x0200_0000 | 0x0020_0000);
+            directory_options
+                .write(true)
+                .custom_flags(0x0200_0000 | 0x0020_0000);
         }
         let directory_handle = directory_options.open(&root)?;
         let mut writer = LedgerWriter::from_durable(
-            ledger, witness, trust, &directory_handle, &directory_handle,
+            ledger,
+            witness,
+            trust,
+            &directory_handle,
+            &directory_handle,
         )?;
         let identity = identity(&root)?;
         let run = circuit_learning_run_id_v1(&writer, &identity.agent_id, &id("episode"))?;
@@ -184,13 +208,23 @@ impl Fixture {
             },
             support_digest: d("explicit-decision-support"),
         };
-        let signed_decision = sign(writer.verifier(), &generator, 1, &decision_signing_payload_v2(&decision)?, at);
+        let signed_decision = sign(
+            writer.verifier(),
+            &generator,
+            1,
+            &decision_signing_payload_v2(&decision)?,
+            at,
+        );
         writer.append_decision(Digest32::ZERO, decision, &signed_decision, at)?;
         // This actual run identity is chosen and its Decision committed before
         // execution. The independent zero label below is explicit fixture data.
         let (identity, source) = source::completed(
-            &root, &bundle, &run, &source::observation([0, crate::cell_composed_q24::codec::Q / 4]),
-        ).await?;
+            &root,
+            &bundle,
+            &run,
+            &source::observation([0, crate::cell_composed_q24::codec::Q / 4]),
+        )
+        .await?;
         let publication = source.read_run_publication(&identity, &run)?;
         let outcome = AuthenticatedOutcomeV1 {
             record_id: id("outcome-record"),
@@ -211,12 +245,19 @@ impl Fixture {
             },
         };
         let signed_outcome = sign(
-            writer.verifier(), &signer("outcome-observer", LearningEvidenceRoleV1::Observer, 2, at),
-            2, &outcome_signing_payload_v2(&outcome), at,
+            writer.verifier(),
+            &signer("outcome-observer", LearningEvidenceRoleV1::Observer, 2, at),
+            2,
+            &outcome_signing_payload_v2(&outcome),
+            at,
         );
         writer.append_outcome(writer.snapshot()?.head_digest, outcome, &signed_outcome, at)?;
-        let initial = initial(&publication, &bundle, writer.verifier().trust_digest(),
-            if expired_work { at - 1 } else { at + 900 })?;
+        let initial = initial(
+            &publication,
+            &bundle,
+            writer.verifier().trust_digest(),
+            if expired_work { at - 1 } else { at + 900 },
+        )?;
         let rule = CellQ24DatasetRuleV1 {
             head: CellQ24PrivateHeadV1::Prediction { index: 0 },
             unit_profile_digest: d("explicit-material-unit"),
@@ -227,8 +268,11 @@ impl Fixture {
             inclusion_policy_digest: rule.inclusion_policy_digest(&initial)?,
         };
         let freeze_evidence = sign(
-            writer.verifier(), &evaluator, 3,
-            &dataset_freeze_signing_payload_v2(&writer.snapshot()?, &freeze_plan)?, at,
+            writer.verifier(),
+            &evaluator,
+            3,
+            &dataset_freeze_signing_payload_v2(&writer.snapshot()?, &freeze_plan)?,
+            at,
         );
         let readback = source.readback();
         let mut reader = CellQ24DatasetReaderV1::new(&readback, &identity, &mut writer);
@@ -236,26 +280,60 @@ impl Fixture {
             // Test-only setup of a historical completion. Public new-work
             // methods below must still refuse this expired request.
             reader.read_current_for_original_receipt(
-                &initial, &baseline, rule, freeze_plan.clone(), &freeze_evidence,
+                &initial,
+                &baseline,
+                rule,
+                freeze_plan.clone(),
+                &freeze_evidence,
             )?
         } else {
-            reader.read_current(&initial, &baseline, rule, freeze_plan.clone(), &freeze_evidence)?
+            reader.read_current(
+                &initial,
+                &baseline,
+                rule,
+                freeze_plan.clone(),
+                &freeze_evidence,
+            )?
         };
-        let optimizer = CellQ24SgdRuleV1 { epochs: 1, learning_rate_q24: 1 };
+        let optimizer = CellQ24SgdRuleV1 {
+            epochs: 1,
+            learning_rate_q24: 1,
+        };
         let update_rule = crate::cell_q24_single_head_update_rule_v1(
-            &bundle, rule.head, optimizer.digest(material.batch())?,
+            &bundle,
+            rule.head,
+            optimizer.digest(material.batch())?,
         )?;
         let scope = FrozenLearningScopeV2::freeze(
-            &initial.request, &initial.owners, LearningUpdateScopeV2::Cell, update_rule,
+            &initial.request,
+            &initial.owners,
+            LearningUpdateScopeV2::Cell,
+            update_rule,
         )?;
         let config = OriginalCellQ24MaterialReceiptConfigV1 {
-            initial, scope, rule, freeze_plan, freeze_evidence,
-            experience_signer, dataset_signer, verifier: writer.verifier().clone(),
+            initial,
+            scope,
+            rule,
+            freeze_plan,
+            freeze_evidence,
+            experience_signer,
+            dataset_signer,
+            verifier: writer.verifier().clone(),
             maximum_signature_lifetime_seconds: 300,
         };
         Ok(Self {
-            _directory: directory, root, at, baseline, identity, source, readback,
-            writer, config, optimizer, generator, evaluator,
+            _directory: directory,
+            root,
+            at,
+            baseline,
+            identity,
+            source,
+            readback,
+            writer,
+            config,
+            optimizer,
+            generator,
+            evaluator,
         })
     }
 
@@ -264,8 +342,11 @@ impl Fixture {
         snapshot: &'a LearningIterationSnapshotV1,
     ) -> OriginalCellQ24MaterialReceiptSourcesV1<'a, FileAnchorWitnessStore> {
         OriginalCellQ24MaterialReceiptSourcesV1 {
-            snapshot, source: &self.readback, identity: &self.identity,
-            ledger: &mut self.writer, baseline: &self.baseline,
+            snapshot,
+            source: &self.readback,
+            identity: &self.identity,
+            ledger: &mut self.writer,
+            baseline: &self.baseline,
         }
     }
 
@@ -277,18 +358,28 @@ impl Fixture {
         Ok(File::open(self.root.join(name))?)
     }
 
-    pub(super) fn witness(&self, name: &str, create: bool) -> anyhow::Result<FileAnchorWitnessStore> {
+    pub(super) fn witness(
+        &self,
+        name: &str,
+        create: bool,
+    ) -> anyhow::Result<FileAnchorWitnessStore> {
         Ok(FileAnchorWitnessStore::open(
             self.file(name, create)?,
             JournalScope {
                 scope_digest: self.config.scope.binding(),
                 objective_digest: self.config.initial.request.envelope.objective_digest,
             },
-            Generation::new(1)?, 64,
+            Generation::new(1)?,
+            64,
         )?)
     }
 
-    fn files(&self, create: bool) -> anyhow::Result<OriginalCellQ24MaterialReceiptFilesV1<FileAnchorWitnessStore, FileAnchorWitnessStore>> {
+    fn files(
+        &self,
+        create: bool,
+    ) -> anyhow::Result<
+        OriginalCellQ24MaterialReceiptFilesV1<FileAnchorWitnessStore, FileAnchorWitnessStore>,
+    > {
         Ok(OriginalCellQ24MaterialReceiptFilesV1 {
             experience: self.file("experience-journal", create)?,
             experience_witness: self.witness("experience-witness", create)?,
@@ -298,31 +389,55 @@ impl Fixture {
     }
 
     pub(super) fn create(&self) -> anyhow::Result<Owners> {
-        Ok(Owners::create(self.files(true)?, self.config.clone(),
-            SigningKey::from_bytes(&[4; 32]), SigningKey::from_bytes(&[5; 32]))?)
+        Ok(Owners::create(
+            self.files(true)?,
+            self.config.clone(),
+            SigningKey::from_bytes(&[4; 32]),
+            SigningKey::from_bytes(&[5; 32]),
+        )?)
     }
 
-    pub(super) fn recover(&self, config: OriginalCellQ24MaterialReceiptConfigV1) -> anyhow::Result<Owners> {
-        Ok(Owners::recover(self.files(false)?, config,
-            SigningKey::from_bytes(&[4; 32]), SigningKey::from_bytes(&[5; 32]))?)
+    pub(super) fn recover(
+        &self,
+        config: OriginalCellQ24MaterialReceiptConfigV1,
+    ) -> anyhow::Result<Owners> {
+        Ok(Owners::recover(
+            self.files(false)?,
+            config,
+            SigningKey::from_bytes(&[4; 32]),
+            SigningKey::from_bytes(&[5; 32]),
+        )?)
     }
 
     pub(super) fn disk_bytes_after_drop(&self) -> anyhow::Result<Vec<Vec<u8>>> {
-        ["experience-journal", "experience-witness", "dataset-journal", "dataset-witness"]
-            .into_iter().map(|name| Ok(fs::read(self.root.join(name))?)).collect()
+        [
+            "experience-journal",
+            "experience-witness",
+            "dataset-journal",
+            "dataset-witness",
+        ]
+        .into_iter()
+        .map(|name| Ok(fs::read(self.root.join(name))?))
+        .collect()
     }
 
     pub(super) fn renewed_freeze(&self) -> SignedLearningEvidenceV1 {
         let mut renewed = self.config.freeze_evidence.clone();
         renewed.issued_at += 1;
         renewed.expires_at += 1;
-        renewed.signature = SigningKey::from_bytes(&[3; 32]).sign(&renewed.signing_bytes()).to_bytes();
+        renewed.signature = SigningKey::from_bytes(&[3; 32])
+            .sign(&renewed.signing_bytes())
+            .to_bytes();
         renewed
     }
 
-    pub(super) fn assert_renewed_freeze_is_valid(&self, renewed: &SignedLearningEvidenceV1) -> anyhow::Result<()> {
+    pub(super) fn assert_renewed_freeze_is_valid(
+        &self,
+        renewed: &SignedLearningEvidenceV1,
+    ) -> anyhow::Result<()> {
         self.config.verifier.verify(
-            LearningEvidenceRoleV1::Evaluator, renewed,
+            LearningEvidenceRoleV1::Evaluator,
+            renewed,
             &dataset_freeze_signing_payload_v2(&self.writer.snapshot()?, &self.config.freeze_plan)?,
             binding::now()?,
         )?;
@@ -339,7 +454,9 @@ fn opened(root: &std::path::Path, name: &str, create: bool) -> anyhow::Result<Fi
         use std::os::unix::fs::OpenOptionsExt;
         options.mode(0o600);
     }
-    if create { options.create_new(true); }
+    if create {
+        options.create_new(true);
+    }
     Ok(options.open(root.join(name))?)
 }
 
@@ -391,5 +508,7 @@ fn initial(
             selector: id("selector"),
             next_use_observer: id("next-use-observer"),
         },
-    )?.snapshot().clone())
+    )?
+    .snapshot()
+    .clone())
 }

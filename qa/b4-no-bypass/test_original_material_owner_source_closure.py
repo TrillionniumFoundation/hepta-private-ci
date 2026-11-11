@@ -134,7 +134,7 @@ class OriginalMaterialOwnerClosureTests(unittest.TestCase):
         for marker in ("self.read_current_at_clock(", "false,", "SystemTime::now()"):
             with self.subTest(marker=marker):
                 self.rejects(READER, "fn read_current_for_original_receipt(", marker)
-        for marker in ("self.read_current_at_clock(", "true,", "clock,"):
+        for marker in ("self.read_current_at_clock(", "true, clock)"):
             with self.subTest(marker=marker):
                 self.rejects(READER, "fn read_current_with_clock(", marker)
         for marker in ("if fresh < started_at",):

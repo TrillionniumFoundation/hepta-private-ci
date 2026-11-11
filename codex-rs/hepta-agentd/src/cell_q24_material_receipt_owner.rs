@@ -122,14 +122,20 @@ impl<EW: AnchorWitnessStore, DW: AnchorWitnessStore>
         let (experience_saved, dataset_binding) =
             binding::validate_config(&config, &experience_key, &dataset_key)?;
         let experience = LearningOwnerJournalV1::create(
-            files.experience, files.experience_witness, experience_saved.binding_digest,
+            files.experience,
+            files.experience_witness,
+            experience_saved.binding_digest,
         )?;
-        let dataset = LearningOwnerJournalV1::create(
-            files.dataset, files.dataset_witness, dataset_binding,
-        )?;
+        let dataset =
+            LearningOwnerJournalV1::create(files.dataset, files.dataset_witness, dataset_binding)?;
         Ok(Self {
-            experience, dataset, config, experience_key, dataset_key,
-            experience_saved, dataset_binding,
+            experience,
+            dataset,
+            config,
+            experience_key,
+            dataset_key,
+            experience_saved,
+            dataset_binding,
         })
     }
 
@@ -146,14 +152,20 @@ impl<EW: AnchorWitnessStore, DW: AnchorWitnessStore>
         let (experience_saved, dataset_binding) =
             binding::validate_config(&config, &experience_key, &dataset_key)?;
         let experience = LearningOwnerJournalV1::recover(
-            files.experience, files.experience_witness, experience_saved.binding_digest,
+            files.experience,
+            files.experience_witness,
+            experience_saved.binding_digest,
         )?;
-        let dataset = LearningOwnerJournalV1::recover(
-            files.dataset, files.dataset_witness, dataset_binding,
-        )?;
+        let dataset =
+            LearningOwnerJournalV1::recover(files.dataset, files.dataset_witness, dataset_binding)?;
         Ok(Self {
-            experience, dataset, config, experience_key, dataset_key,
-            experience_saved, dataset_binding,
+            experience,
+            dataset,
+            config,
+            experience_key,
+            dataset_key,
+            experience_saved,
+            dataset_binding,
         })
     }
 
@@ -187,7 +199,13 @@ impl<EW: AnchorWitnessStore, DW: AnchorWitnessStore>
                 .map_err(|_| binding::owner_invalid("original freeze at Experience claim"))?;
             let receipt = binding::receipt(config, None, &material, issued_at)
                 .map_err(|_| binding::owner_invalid("original Experience receipt"))?;
-            binding::signed_bytes(config, &config.experience_signer, key, &receipt, saved.binding_digest)
+            binding::signed_bytes(
+                config,
+                &config.experience_signer,
+                key,
+                &receipt,
+                saved.binding_digest,
+            )
         })?;
         let completed = self.authenticate_experience(&mut sources, &bytes, started_at)?;
         binding::require_same_material(&material, &completed.material)?;
@@ -215,7 +233,15 @@ impl<EW: AnchorWitnessStore, DW: AnchorWitnessStore>
         let experience = self.read_experience(&mut sources, started_at)?;
         let saved = binding::dataset_saved(&self.config, self.dataset_binding, &experience)?;
         match self.dataset.read(&saved) {
-            Ok(bytes) => return self.authenticate_dataset(&mut sources, &experience, &saved, &bytes, started_at),
+            Ok(bytes) => {
+                return self.authenticate_dataset(
+                    &mut sources,
+                    &experience,
+                    &saved,
+                    &bytes,
+                    started_at,
+                );
+            }
             Err(LearningOriginalOwnerErrorV1::Store(
                 ProductEvaluationExecutionStoreErrorV1::Missing,
             )) => {}
@@ -233,17 +259,31 @@ impl<EW: AnchorWitnessStore, DW: AnchorWitnessStore>
             binding::verify_freeze(config, sources.ledger, &experience.material, issued_at)
                 .map_err(|_| binding::owner_invalid("original freeze at Dataset claim"))?;
             binding::verify_original(
-                config, &config.experience_signer, &experience.receipt,
-                &experience.attestation, experience_binding, issued_at,
-            ).map_err(|_| binding::owner_invalid("original Experience at Dataset claim"))?;
+                config,
+                &config.experience_signer,
+                &experience.receipt,
+                &experience.attestation,
+                experience_binding,
+                issued_at,
+            )
+            .map_err(|_| binding::owner_invalid("original Experience at Dataset claim"))?;
             let receipt = binding::receipt(
-                config, Some(&experience.receipt), &experience.material, issued_at,
-            ).map_err(|_| binding::owner_invalid("original Dataset receipt"))?;
-            binding::signed_bytes(config, &config.dataset_signer, key, &receipt, saved.binding_digest)
+                config,
+                Some(&experience.receipt),
+                &experience.material,
+                issued_at,
+            )
+            .map_err(|_| binding::owner_invalid("original Dataset receipt"))?;
+            binding::signed_bytes(
+                config,
+                &config.dataset_signer,
+                key,
+                &receipt,
+                saved.binding_digest,
+            )
         })?;
-        let completed = self.authenticate_dataset(
-            &mut sources, &experience, &saved, &bytes, started_at,
-        )?;
+        let completed =
+            self.authenticate_dataset(&mut sources, &experience, &saved, &bytes, started_at)?;
         binding::require_new_work(&self.config, started_at)?;
         Ok(completed)
     }
@@ -293,10 +333,18 @@ impl<EW: AnchorWitnessStore, DW: AnchorWitnessStore>
         let fresh_now = binding::fresh_time(started_at)?;
         binding::verify_freeze(&self.config, sources.ledger, &material, fresh_now)?;
         binding::verify_original(
-            &self.config, &self.config.experience_signer, &receipt,
-            &attestation, self.experience_saved.binding_digest, fresh_now,
+            &self.config,
+            &self.config.experience_signer,
+            &receipt,
+            &attestation,
+            self.experience_saved.binding_digest,
+            fresh_now,
         )?;
-        Ok(OriginalCellQ24MaterialCompletionV1 { receipt, attestation, material })
+        Ok(OriginalCellQ24MaterialCompletionV1 {
+            receipt,
+            attestation,
+            material,
+        })
     }
 
     fn authenticate_dataset(
@@ -317,7 +365,10 @@ impl<EW: AnchorWitnessStore, DW: AnchorWitnessStore>
         }
         binding::require_same_material(&experience.material, &original_experience.material)?;
         let receipt = binding::receipt(
-            &self.config, Some(&experience.receipt), &experience.material, attestation.issued_at,
+            &self.config,
+            Some(&experience.receipt),
+            &experience.material,
+            attestation.issued_at,
         )?;
         if payload != learning_iteration_receipt_signing_bytes_v1(&receipt)? {
             return Err(binding::invalid("original Dataset payload"));
@@ -333,17 +384,32 @@ impl<EW: AnchorWitnessStore, DW: AnchorWitnessStore>
             return Err(LearningOriginalOwnerErrorV1::CommitUncertain.into());
         }
         let fresh_now = binding::fresh_time(started_at)?;
-        binding::verify_freeze(&self.config, sources.ledger, &experience.material, fresh_now)?;
-        binding::verify_original(
-            &self.config, &self.config.experience_signer, &experience.receipt,
-            &experience.attestation, self.experience_saved.binding_digest, fresh_now,
+        binding::verify_freeze(
+            &self.config,
+            sources.ledger,
+            &experience.material,
+            fresh_now,
         )?;
         binding::verify_original(
-            &self.config, &self.config.dataset_signer, &receipt,
-            &attestation, saved.binding_digest, fresh_now,
+            &self.config,
+            &self.config.experience_signer,
+            &experience.receipt,
+            &experience.attestation,
+            self.experience_saved.binding_digest,
+            fresh_now,
+        )?;
+        binding::verify_original(
+            &self.config,
+            &self.config.dataset_signer,
+            &receipt,
+            &attestation,
+            saved.binding_digest,
+            fresh_now,
         )?;
         Ok(OriginalCellQ24MaterialCompletionV1 {
-            receipt, attestation, material: experience.material,
+            receipt,
+            attestation,
+            material: experience.material,
         })
     }
 }

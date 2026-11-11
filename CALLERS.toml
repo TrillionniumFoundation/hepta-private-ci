@@ -3606,7 +3606,7 @@ sequence = ["match records", "LedgerEvent::AuthenticatedDecisionV2(decision)", "
 
 [[protected_file.required_function_order]]
 function = "fn read_current_with_clock("
-sequence = ["self.read_current_at_clock(", "true,", "clock,"]
+sequence = ["self.read_current_at_clock(", "true, clock)"]
 top_level = ["self.read_current_at_clock("]
 
 [[protected_file.required_function_order]]
@@ -3835,7 +3835,7 @@ sequence = ["CellQ24DatasetReaderV1::new(","if completed_receipt_readback","read
 
 [[protected_file.required_function_order]]
 function = "fn verify_freeze("
-sequence = ["ledger.freeze_dataset(","config.freeze_plan.clone()","&config.freeze_evidence","if &receipt != material.receipt()","ledger.read_dataset_records(&receipt, at)","Ok(())"]
+sequence = ["ledger\n        .freeze_dataset(","config.freeze_plan.clone()","&config.freeze_evidence","if &receipt != material.receipt()","ledger\n        .read_dataset_records(&receipt, at)","Ok(())"]
 
 [[protected_file.required_function_order]]
 function = "fn require_same_material("
@@ -3851,7 +3851,7 @@ sequence = ["learning_iteration_receipt_signing_bytes_v1(&experience.receipt)?",
 
 [[protected_file.required_function_order]]
 function = "fn expires_at("
-sequence = ["issued_at.checked_add(","config.maximum_signature_lifetime_seconds",".min(signer.principal.expires_at)",".min(config.freeze_evidence.expires_at)"]
+sequence = ["issued_at\n        .checked_add(","config.maximum_signature_lifetime_seconds",".min(signer.principal.expires_at)",".min(config.freeze_evidence.expires_at)"]
 
 [[protected_file.required_function_order]]
 function = "fn signed_bytes("
@@ -3859,4 +3859,4 @@ sequence = ["receipt.observed_unix_seconds","require_freeze_window(config, issue
 
 [[protected_file.required_function_order]]
 function = "fn verify_original("
-sequence = ["require_freeze_window(config, at)?","learning_iteration_receipt_signing_bytes_v1(receipt)?","config.verifier.verify(","verified.principal() != &signer.principal","verified.controller_id() != &signer.controller_id","signed.evidence_id != evidence_id(binding)?","signed.issued_at != receipt.observed_unix_seconds","signed.expires_at != expires_at(config, signer, signed.issued_at)?","signed.principal_id != receipt.actor_id","return Err(","Ok(())"]
+sequence = ["require_freeze_window(config, at)?","learning_iteration_receipt_signing_bytes_v1(receipt)?","config\n            .verifier\n            .verify(","verified.principal() != &signer.principal","verified.controller_id() != &signer.controller_id","signed.evidence_id != evidence_id(binding)?","signed.issued_at != receipt.observed_unix_seconds","signed.expires_at != expires_at(config, signer, signed.issued_at)?","signed.principal_id != receipt.actor_id","return Err(","Ok(())"]

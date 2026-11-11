@@ -90,7 +90,9 @@ pub(super) fn validate_config(
     let at = now()?;
     require_freeze_window(config, at)?;
     for signer in [&config.experience_signer, &config.dataset_signer] {
-        config.verifier.require_signer_binding(LearningEvidenceRoleV1::Observer, signer, at)?;
+        config
+            .verifier
+            .require_signer_binding(LearningEvidenceRoleV1::Observer, signer, at)?;
     }
     // Both complete signer bindings are committed by the trust digest. Preserve
     // the original freeze bytes as well; an otherwise valid re-signature is a
@@ -107,8 +109,18 @@ pub(super) fn validate_config(
         config.freeze_plan.inclusion_policy_digest.as_array(),
         Digest32::of_bytes(&freeze).as_array(),
         config.verifier.trust_digest().as_array(),
-        config.experience_signer.principal.principal_id.as_str().as_bytes(),
-        config.dataset_signer.principal.principal_id.as_str().as_bytes(),
+        config
+            .experience_signer
+            .principal
+            .principal_id
+            .as_str()
+            .as_bytes(),
+        config
+            .dataset_signer
+            .principal
+            .principal_id
+            .as_str()
+            .as_bytes(),
         &config.experience_signer.verifying_key,
         &config.dataset_signer.verifying_key,
         &config.maximum_signature_lifetime_seconds.to_be_bytes(),
@@ -117,11 +129,13 @@ pub(super) fn validate_config(
         ProductEvaluationExecutionKeyV1 {
             plan_id: config.initial.request.operation_id.clone(),
             binding_digest: Digest32::of_parts(&[
-                b"hepta.agentd.original-q24-experience-journal.v1\0", common.as_array(),
+                b"hepta.agentd.original-q24-experience-journal.v1\0",
+                common.as_array(),
             ]),
         },
         Digest32::of_parts(&[
-            b"hepta.agentd.original-q24-dataset-journal.v1\0", common.as_array(),
+            b"hepta.agentd.original-q24-dataset-journal.v1\0",
+            common.as_array(),
         ]),
     ))
 }
@@ -159,13 +173,19 @@ pub(super) fn read_material(
     let mut reader = CellQ24DatasetReaderV1::new(sources.source, sources.identity, sources.ledger);
     let material = if completed_receipt_readback {
         reader.read_current_for_original_receipt(
-            &config.initial, sources.baseline, config.rule,
-            config.freeze_plan.clone(), &config.freeze_evidence,
+            &config.initial,
+            sources.baseline,
+            config.rule,
+            config.freeze_plan.clone(),
+            &config.freeze_evidence,
         )?
     } else {
         reader.read_current(
-            &config.initial, sources.baseline, config.rule,
-            config.freeze_plan.clone(), &config.freeze_evidence,
+            &config.initial,
+            sources.baseline,
+            config.rule,
+            config.freeze_plan.clone(),
+            &config.freeze_evidence,
         )?
     };
     Ok(material)
@@ -180,13 +200,15 @@ pub(super) fn verify_freeze(
     // Logical reauthentication after the preceding physical CURRENT/journal
     // reads keeps the original Evaluator credential window current as well.
     // This derives the same receipt; it appends/reserves/signs nothing.
-    let receipt = ledger.freeze_dataset(
-        config.freeze_plan.clone(), &config.freeze_evidence, at,
-    ).map_err(CellQ24DatasetErrorV1::from)?;
+    let receipt = ledger
+        .freeze_dataset(config.freeze_plan.clone(), &config.freeze_evidence, at)
+        .map_err(CellQ24DatasetErrorV1::from)?;
     if &receipt != material.receipt() {
         return Err(invalid("original freeze changed during receipt readback"));
     }
-    let _ = ledger.read_dataset_records(&receipt, at).map_err(CellQ24DatasetErrorV1::from)?;
+    let _ = ledger
+        .read_dataset_records(&receipt, at)
+        .map_err(CellQ24DatasetErrorV1::from)?;
     Ok(())
 }
 
@@ -226,7 +248,9 @@ pub(super) fn receipt(
 ) -> Result<LearningIterationReceiptV1, Error> {
     let (prefix, observation, actor) = match experience {
         None => (
-            config.initial.clone(), material.experience_observation(), &config.initial.owners.experience,
+            config.initial.clone(),
+            material.experience_observation(),
+            &config.initial.owners.experience,
         ),
         Some(experience) => {
             if experience.observation != material.experience_observation()
@@ -235,7 +259,9 @@ pub(super) fn receipt(
                 return Err(invalid("same original Experience and Dataset material"));
             }
             (
-                experience_prefix(config, experience)?, material.dataset_observation(), &config.initial.owners.dataset,
+                experience_prefix(config, experience)?,
+                material.dataset_observation(),
+                &config.initial.owners.dataset,
             )
         }
     };
@@ -265,7 +291,8 @@ pub(super) fn dataset_saved(
         plan_id: config.initial.request.operation_id.clone(),
         binding_digest: Digest32::of_parts(&[
             b"hepta.agentd.original-q24-dataset-receipt.v1\0",
-            binding.as_array(), Digest32::of_bytes(&payload).as_array(),
+            binding.as_array(),
+            Digest32::of_bytes(&payload).as_array(),
             Digest32::of_bytes(&signature).as_array(),
         ]),
     })
@@ -281,7 +308,8 @@ fn expires_at(
     signer: &TrustedLearningSignerV1,
     issued_at: u64,
 ) -> Result<u64, LearningOriginalOwnerErrorV1> {
-    Ok(issued_at.checked_add(config.maximum_signature_lifetime_seconds)
+    Ok(issued_at
+        .checked_add(config.maximum_signature_lifetime_seconds)
         .ok_or_else(|| owner_invalid("original material signature deadline overflow"))?
         .min(signer.principal.expires_at)
         .min(config.freeze_evidence.expires_at))
@@ -296,7 +324,9 @@ pub(super) fn signed_bytes(
 ) -> Result<Vec<u8>, LearningOriginalOwnerErrorV1> {
     let issued_at = receipt.observed_unix_seconds;
     require_freeze_window(config, issued_at)?;
-    config.verifier.require_signer_binding(LearningEvidenceRoleV1::Observer, signer, issued_at)?;
+    config
+        .verifier
+        .require_signer_binding(LearningEvidenceRoleV1::Observer, signer, issued_at)?;
     let payload = learning_iteration_receipt_signing_bytes_v1(receipt)
         .map_err(|_| owner_invalid("original material receipt bytes"))?;
     let mut signed = SignedLearningEvidenceV1 {
@@ -313,7 +343,12 @@ pub(super) fn signed_bytes(
         signature: [0; 64],
     };
     signed.signature = key.sign(&signed.signing_bytes()).to_bytes();
-    config.verifier.verify(LearningEvidenceRoleV1::Observer, &signed, &payload, issued_at)?;
+    config.verifier.verify(
+        LearningEvidenceRoleV1::Observer,
+        &signed,
+        &payload,
+        issued_at,
+    )?;
     learning_owner_evidence::encode(&payload, &signed)
 }
 
@@ -327,7 +362,10 @@ pub(super) fn verify_original(
 ) -> Result<(), Error> {
     require_freeze_window(config, at)?;
     let payload = learning_iteration_receipt_signing_bytes_v1(receipt)?;
-    let verified = config.verifier.verify(LearningEvidenceRoleV1::Observer, signed, &payload, at)?;
+    let verified =
+        config
+            .verifier
+            .verify(LearningEvidenceRoleV1::Observer, signed, &payload, at)?;
     if verified.principal() != &signer.principal
         || verified.controller_id() != &signer.controller_id
         || signed.evidence_id != evidence_id(binding)?
