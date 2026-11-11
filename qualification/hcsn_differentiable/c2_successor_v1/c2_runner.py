@@ -6,6 +6,7 @@ PROCESS_STARTED = float(os.environ.get('HCSN_PROCESS_STARTED', time.monotonic())
 
 import argparse
 import copy
+import hashlib
 import json
 from pathlib import Path
 import random
@@ -152,14 +153,36 @@ def bind_program(manifest_path):
 
 
 def require_decision(decision_path, decision_sha, contract_path, program_manifest):
-    require(decision_path is not None and decision_sha is not None, 'real C2 execution has no later bound decision')
-    require(sha(decision_path) == decision_sha, 'execution decision identity differs')
-    decision = json.loads(Path(decision_path).read_bytes())
-    require(decision.get('execution_authorized') is True
-            and decision.get('contract_sha256') == sha(contract_path)
-            and decision.get('program_manifest_sha256') == sha(program_manifest)
-            and decision.get('scope') == 'six-original-hcsn-c2-only'
-            and decision.get('confirmation_E_access') is False,
+    # This is a separate prospective authorization boundary: a byte digest
+    # cannot make ambiguous JSON or an aliased decision file acceptable.
+    require(decision_path is not None and type(decision_sha) is str
+            and len(decision_sha) == 64
+            and all(c in '0123456789abcdef' for c in decision_sha),
+            'real C2 execution has no exact later bound decision identity')
+    path = Path(decision_path)
+    require(path.is_file() and not path.is_symlink()
+            and not path.parent.is_symlink()
+            and 0 < path.stat().st_size <= 16384,
+            'unsafe, absent, or oversized C2 execution decision')
+    raw = path.read_bytes()
+    require(0 < len(raw) <= 16384
+            and hashlib.sha256(raw).hexdigest() == decision_sha,
+            'execution decision identity differs')
+    try:
+        decision = json.loads(raw, object_pairs_hook=_exact_manifest_pairs,
+                              parse_constant=_no_manifest_constant)
+    except (ValueError, UnicodeError, RecursionError) as error:
+        raise Ineligible('malformed C2 execution decision JSON') from error
+    require(type(decision) is dict and set(decision) == {
+            'schema', 'execution_authorized', 'scope', 'confirmation_E_access',
+            'contract_sha256', 'program_manifest_sha256'},
+            'C2 execution decision has unreviewed or missing metadata')
+    require(decision['schema'] == 'hcsn-c2-execution-decision-v1'
+            and decision['execution_authorized'] is True
+            and decision['contract_sha256'] == sha(contract_path)
+            and decision['program_manifest_sha256'] == sha(program_manifest)
+            and decision['scope'] == 'six-original-hcsn-c2-only'
+            and decision['confirmation_E_access'] is False,
             'execution decision is not bound to this exact C2 candidate')
     return decision
 

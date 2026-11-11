@@ -1,0 +1,63 @@
+{
+  "controller_RESULT_present": false,
+  "date_utc": "2026-11-11T19:10:58.916489+00:00",
+  "files": [
+    {
+      "bytes": 844446,
+      "identity_matches_frozen": true,
+      "path": "fits/hcsn-s101-lr0.001/result.json",
+      "sha256": "829efa71d908cabf94e7f73f541871b1726a94673275af7783f8bad8558c0eb0"
+    },
+    {
+      "bytes": 578890,
+      "identity_matches_frozen": true,
+      "path": "fits/hcsn-s101-lr0.003/result.json",
+      "sha256": "6bb4fd3fce8022816a605b0043925fa4a04c331f998582adefa11754d4792794"
+    },
+    {
+      "bytes": 360283,
+      "identity_matches_frozen": true,
+      "path": "fits/hcsn-s211-lr0.003/result.json",
+      "sha256": "c5c3f1f75a305fff6d97fdfd263ca8aac0c765698ba94c1debc17b01978b889d"
+    },
+    {
+      "bytes": 436682,
+      "identity_matches_frozen": true,
+      "path": "fits/hcsn-s307-lr0.003/result.json",
+      "sha256": "720e09baa3bb77458c17af00025b53cfd93ee336ce6a4f6e23d7d776251bcd7a"
+    },
+    {
+      "bytes": 0,
+      "identity_matches_frozen": true,
+      "path": "fits/hcsn-s211-lr0.001/interrupted.pt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "identity_matches_frozen": true,
+      "path": "fits/hcsn-s307-lr0.001/interrupted.pt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 28672,
+      "identity_matches_frozen": true,
+      "path": "commands.jsonl",
+      "sha256": "1405bced8c59a294276616cd7054f2b4068e10d858ab61d78bb578b93992239f"
+    }
+  ],
+  "independent_full_training_replays": 0,
+  "journal_full_json_rows": 16,
+  "journal_torn_row_present": true,
+  "method": "independent read-only path stat+stream SHA256+JSONL structure; no weights deserialized, no job restarted",
+  "missing_result_json": [
+    "fits/hcsn-s211-lr0.001/result.json",
+    "fits/hcsn-s307-lr0.001/result.json"
+  ],
+  "original_job_id": "1a1c74f3308-be2a-75",
+  "planned": 6,
+  "producer_result_count": 4,
+  "schema": "hcsn-c2-original-readonly-rehash-20261111-r11",
+  "scientific_admission": "HOLD_NO_GO",
+  "status": "finalizing/outcome_unknown/no_authoritative_terminal",
+  "valid_interrupted_checkpoints_for_missing_result_candidates": 0
+}
