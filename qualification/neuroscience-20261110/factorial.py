@@ -178,6 +178,7 @@ def evaluate_core_ndu(rows: list[FactorialTrialRow], *,
     )
     frozen_cell_contracts: dict[tuple[str, str], tuple[object, ...]] = {}
     per_seed_cell: dict[tuple[int, str, str], list[dict[str, float]]] = defaultdict(list)
+    declared_episode_rosters: dict[tuple[int, str, str], set[str]] = defaultdict(set)
     incomplete_retention = False
     incomplete_ood = False
     claimed_independent = True
@@ -212,6 +213,7 @@ def evaluate_core_ndu(rows: list[FactorialTrialRow], *,
             contrasts.update({"ood:" + name: value for name, value in
                               _differences({arm: block[arm].ood_score for arm in ARMS}).items()})
         per_seed_cell[(seed, family, density)].append(contrasts)
+        declared_episode_rosters[(seed, family, density)].add(_episode)
 
     seeds = {key[0] for key in per_seed_cell}
     for seed in seeds:
@@ -225,6 +227,13 @@ def evaluate_core_ndu(rows: list[FactorialTrialRow], *,
         counts = {len(per_seed_cell[(seed, *cell)]) for seed in seeds}
         if len(counts) != 1:
             raise ContractError("unequal seed episode opportunity within cell")
+        # Equal counts alone can conceal selective task substitution.
+        # Bind self-declared episode labels across training seed clusters,
+        # scoped to the cell; distinct cells may use different rosters.
+        rosters = {frozenset(declared_episode_rosters[(seed, *cell)])
+                   for seed in seeds}
+        if len(rosters) != 1:
+            raise ContractError("unequal seed episode roster within cell")
 
     # Equal weight to registered cells per independent training seed.
     by_seed: dict[int, dict[str, list[float]]] = {}
@@ -280,6 +289,7 @@ def evaluate_core_ndu(rows: list[FactorialTrialRow], *,
             "registered_cells": [list(c) for c in sorted(registered)],
             "seed_clusters": len(seeds), "matched_blocks": len(blocks),
             "equal_episode_opportunities_per_seed": True,
+            "declared_episode_roster_alignment": "SELF_DECLARED_ONLY",
             "frozen_cell_contract": "SELF_DECLARED_ONLY",
             "declared_seed_identity_alias_guard": "SELF_DECLARED_ONLY",
         },
