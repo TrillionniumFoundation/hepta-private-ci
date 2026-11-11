@@ -232,6 +232,46 @@ def time_aligned_credit(
                          _digest(causal_input))
 
 
+def frozen_credit_from_prefix(
+    actions: Iterable[Eligibility],
+    feedback: Iterable[Feedback],
+    *,
+    arm: str,
+    cutoff_sequence: int,
+    decay: float,
+    max_lag: int,
+    per_group_limit: float = 0.5,
+    global_l1_limit: float = 1.0,
+) -> FrozenCreditView:
+    """Compute a shadow candidate view from a frozen feedback prefix.
+
+    The forensic `time_aligned_credit` validates *all* supplied receipts,
+    including future ones. Redacting its output cannot undo a rejection caused
+    by invalid post-cutoff feedback. Filter only by the declared availability
+    timestamp before invoking the ordinary validator, so an unrelated future
+    suffix cannot control frozen candidate admissibility. In-prefix errors
+    still fail closed.
+
+    This is not an owner-attested time source. Callers must obtain independently
+    attested availability for a production decision; no authority is granted.
+    """
+    if type(cutoff_sequence) is not int or cutoff_sequence < 0:
+        raise ContractError("invalid training cutoff")
+    observed: list[Feedback] = []
+    for item in feedback:
+        if type(item) is not Feedback or type(item.available_sequence) is not int:
+            raise ContractError("invalid feedback availability")
+        if item.available_sequence < 0:
+            raise ContractError("invalid feedback availability")
+        if item.available_sequence <= cutoff_sequence:
+            observed.append(item)
+    return frozen_credit_view(time_aligned_credit(
+        actions, observed, arm=arm, cutoff_sequence=cutoff_sequence,
+        decay=decay, max_lag=max_lag, per_group_limit=per_group_limit,
+        global_l1_limit=global_l1_limit,
+    ))
+
+
 @dataclass(frozen=True)
 class UpdateOpportunity:
     lineage: str
