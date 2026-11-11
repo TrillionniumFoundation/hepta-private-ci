@@ -49,21 +49,19 @@ stream_max_retries = 0
     )?;
     fleet.start(&agent)?;
     let (control, _) = fleet.wait_ready(&agent, /*generation*/ 1).await?;
-    let output = Command::new(codex_utils_cargo_bin::cargo_bin(
-        "hepta-notes-thread-seed",
-    )?)
-    .arg("--control-socket")
-    .arg(agent.layout.agentd_control_socket())
-    .arg("--agent-id")
-    .arg(agent.agent_id.to_string())
-    .arg("--spawn-generation")
-    .arg("1")
-    .arg("--codex-home")
-    .arg(agent.layout.home_root())
-    .arg("--cwd")
-    .arg(&agent.workspace)
-    .output()
-    .context("run original Notes thread seed launcher")?;
+    let output = Command::new(codex_utils_cargo_bin::cargo_bin("hepta-notes-thread-seed")?)
+        .arg("--control-socket")
+        .arg(agent.layout.agentd_control_socket())
+        .arg("--agent-id")
+        .arg(agent.agent_id.to_string())
+        .arg("--spawn-generation")
+        .arg("1")
+        .arg("--codex-home")
+        .arg(agent.layout.home_root())
+        .arg("--cwd")
+        .arg(&agent.workspace)
+        .output()
+        .context("run original Notes thread seed launcher")?;
     ensure!(
         output.status.success(),
         "seed launcher failed: {}",
@@ -74,9 +72,7 @@ stream_max_retries = 0
     let interaction = value
         .get("interaction")
         .context("launcher omitted interaction")?;
-    ensure!(
-        interaction.get("kind").and_then(Value::as_str) == Some("original_thread_tool_v1")
-    );
+    ensure!(interaction.get("kind").and_then(Value::as_str) == Some("original_thread_tool_v1"));
     let route: AgentdTextSessionConfig = serde_json::from_value(
         interaction
             .get("route")
