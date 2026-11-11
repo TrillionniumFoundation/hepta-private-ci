@@ -56,7 +56,9 @@ use `python audit_delivery_chain.py receipt.json --observed` with the
   IDs and integer evidence cutoff (ns). Each stage carries SHA256 of canonical
   JSON identity and an ordered, non-future observation timestamp.
 - An isolated, completed actor launch with **integer** exit code zero,
-  enforcement before execution, bound run/episode, and original actor wire SHA.
+  enforcement before execution, bound **run/task/episode** identities, and
+  original actor wire SHA. Any reported callback/protocol error or execution
+  limit invalidates the completed-launch claim, even with exit code zero.
 - A bounded candidate inventory and **historically recorded** selected index.
   The indexed ID and bytes must match the selected-stage claim.
 - The original v1 selected→serialized→delivered→evaluated byte and receipt
