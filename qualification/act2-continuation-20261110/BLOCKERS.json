@@ -1025,13 +1025,34 @@
             "v8": 42933099445,
             "v8_status": "SUCCESS_METADATA_ONLY",
             "windows_private": 42933099348,
-            "windows_private_status": "IN_PROGRESS",
+            "windows_private_status": "FAILURE_BEFORE_TESTS",
+            "windows_private_job": 130236434605,
             "architecture": 42933099340,
-            "architecture_status": "QUEUED",
+            "architecture_status": "FAILURE_SOURCE_HEAD_BASE_MERGE_SUCCESS",
             "blocking": 42933099432,
-            "blocking_status": "QUEUED"
+            "blocking_status": "FAILURE_BEFORE_TESTS",
+            "blocking_job": 130238994409,
+            "exact_cause": "E0425: LedgerSnapshot and LedgerWitnessFrontier types were used without imports in neuron_generation_episode_test_support.rs:344",
+            "observed_semantic_tests": 0
           },
-          "required": "read the exact Windows/Bazel/native terminal results; no source inference or predecessor result transfer"
+          "required": "old source remains failure; qualify only the exact successor from its own terminal Windows/architecture/native results",
+          "successor": {
+            "source": "b727c49bdd13d7774b7a041f7de148c8b15d79fe",
+            "tree": "9ca6c011d44067f5effec2d7eaba32cd5ccffafd",
+            "change": "two test-only typed ledger imports; no production or authority change",
+            "local_result": "git diff --check passed; native Rust execution NOT_RUN locally",
+            "fresh_runs": {
+              "windows_private": 42941333490,
+              "windows_private_status": "QUEUED",
+              "architecture": 42941333761,
+              "architecture_status": "QUEUED",
+              "blocking": 42941333585,
+              "blocking_status": "QUEUED",
+              "v8": 42941333582,
+              "v8_status": "QUEUED"
+            },
+            "required": "read each exact-source terminal job and original logs; no predecessor transfer"
+          }
         }
       ]
     },
@@ -1061,19 +1082,48 @@
           "local_result": "git diff --check passed; native build/tests NOT_RUN locally because no Rust toolchain is present",
           "hosted_runs": {
             "daemon_learning": 42933830839,
-            "daemon_learning_status": "QUEUED",
+            "daemon_learning_status": "FAILURE_LATER_ORDINARY_SUITE",
+            "daemon_focused_helper_build": "PASS",
             "shared_framework": 42933830734,
-            "shared_framework_status": "QUEUED",
+            "shared_framework_status": "FAILURE_BEFORE_TESTS",
             "windows_private": 42933830774,
-            "windows_private_status": "QUEUED",
+            "windows_private_status": "FAILURE_BEFORE_TESTS",
             "architecture": 42933830817,
-            "architecture_status": "QUEUED",
+            "architecture_status": "FAILURE_SOURCE_HEAD_BASE_MERGE_SUCCESS",
             "blocking": 42933830956,
-            "blocking_status": "QUEUED",
+            "blocking_status": "FAILURE_BEFORE_TESTS",
+            "blocking_job": 130241665729,
             "v8": 42933830818,
-            "v8_status": "QUEUED"
+            "v8_status": "SUCCESS_METADATA_ONLY",
+            "exact_later_cause": "E0425: undefined pending at learning_iteration_recovery_tests.rs:667; the retained value is named claimed",
+            "observed_affected_semantic_tests": 0
           },
-          "limits": "does not establish StageOwner assembly, independent B/retention/new-C custody, complete Adopt/NoUpdate A-to-B-to-C-to-cold-recovery, DynamicToolCall, product FinalUse or benefit"
+          "limits": "does not establish StageOwner assembly, independent B/retention/new-C custody, complete Adopt/NoUpdate A-to-B-to-C-to-cold-recovery, DynamicToolCall, product FinalUse or benefit",
+          "classification": "the focused helper crossed #5865's missing TrainingNoUpdateV2 seam, but this source remains overall failure because all semantic suites were stopped by the independent parent test typo; no pass transfer"
+        },
+        "recovery_test_fix": {
+          "pr": 5900,
+          "base_source": "ce0d19985a6fe64fde34a2f3e2085f82ef74cdda",
+          "source": "a93f0ecee81dd431f909fe6cbe891ac2a49d5e97",
+          "tree": "09ecb3ca78e0eb08abf658f5d9eeb4a14e2f220d",
+          "diff": "one test-only comparison: pending -> claimed",
+          "invalid_intermediate_excluded": "1f140de5a1b2337d076166b7728ec6c19336dfbf",
+          "local_result": "git diff --check passed; PR aggregate diff verified as one addition and one deletion; native Rust execution NOT_RUN locally",
+          "fresh_runs": {
+            "blocking": 42941516830,
+            "blocking_status": "QUEUED",
+            "shared_framework": 42941516948,
+            "shared_framework_status": "QUEUED",
+            "windows_private": 42941516670,
+            "windows_private_status": "QUEUED",
+            "v8": 42941516714,
+            "v8_status": "QUEUED",
+            "daemon_learning": 42941516723,
+            "daemon_learning_status": "QUEUED",
+            "architecture": 42941516717,
+            "architecture_status": "QUEUED"
+          },
+          "required": "read each exact-source terminal job; even success would only close this compile/test seam, not full handler inputs, FinalUse, field benefit or skill promotion"
         }
       }
     }
