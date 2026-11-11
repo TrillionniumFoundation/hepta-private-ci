@@ -109,6 +109,13 @@ jobs:
             --output "$RUNNER_TEMP/hcsn-differentiable/qualification.json" 2>&1 \
             | tee "$RUNNER_TEMP/hcsn-differentiable/qualification.log"
 
+      - name: Verify crash-safe successor C2 receipts (no admission)
+        id: c2-recovery
+        if: ${{ !cancelled() && steps.runtime.outcome == 'success' }}
+        run: |
+          python -m unittest discover -s qualification/hcsn_differentiable/recovery_v1 -p 'test_*.py' -v 2>&1 \
+            | tee "$RUNNER_TEMP/hcsn-differentiable/c2-recovery-tests.log"
+
       - name: Enforce the predeclared numerical error budget
         id: budget
         if: ${{ !cancelled() && steps.identity.outcome == 'success' && steps.runtime.outcome == 'success' }}
@@ -203,7 +210,7 @@ jobs:
           out = Path(os.environ["RUNNER_TEMP"]) / "hcsn-differentiable"
           out.mkdir(exist_ok=True)
           steps = json.loads(os.environ["HCSN_STEPS"])
-          required = ("checkout", "identity", "python", "runtime", "qualification", "budget", "evidence", "qvi", "controls", "clean")
+          required = ("checkout", "identity", "python", "runtime", "qualification", "c2-recovery", "budget", "evidence", "qvi", "controls", "clean")
           outcomes = {name: steps.get(name, {}).get("outcome", "missing") for name in required}
           passed = all(value == "success" for value in outcomes.values())
           codes = {name: int((out / (name + ".exit-code")).read_text())
