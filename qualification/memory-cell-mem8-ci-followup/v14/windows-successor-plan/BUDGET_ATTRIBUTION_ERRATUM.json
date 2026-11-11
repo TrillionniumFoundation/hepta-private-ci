@@ -1,0 +1,44 @@
+{
+  "schema": "hepta.windows-successor-plan-budget-attribution-erratum.v1",
+  "scope": "Narrow correction of cancellation-cause attribution only; no raw evidence, case identities, counts, commands, source pins or proposed partition changes.",
+  "original": {
+    "archiveGitBlob": "11a0ce75307c9d3088370a0de5fdc1be8610f4ee",
+    "archiveSha256": "ae0ff064a232591ad330a9d5b8debd12e696c7ec4191542ba7ab70112e5efc79",
+    "reportGitBlob": "8ec88664ba4c9230aa63d42de644d679f9d9143c",
+    "reportSha256": "33f71bb463117d8b62fd27f45aafc4eda81d633bf286c05ee9d9f038956eba47",
+    "planGitBlob": "6b79186445d3f7afcdf91c0fa76724104363830d",
+    "planSha256": "0d38d901e8e9e579f149212f4cc7188e775d6557783678ad572bab7e8f1357a5",
+    "preserved": true
+  },
+  "correction": {
+    "reportSection": 2,
+    "overstrongSentence": "该中断是作业窗口边界，不能称为这些 case 已失败或已通过。",
+    "observed": "Original API conclusion cancelled; original log KeyboardInterrupt. The configured workflow job timeout is 65 minutes.",
+    "inference": "Observed timing is consistent with a budget boundary, but scheduler cancellation reason was not independently observed.",
+    "prohibitedConclusion": "Do not present the 65-minute configured budget as the directly established cause of the original cancellation.",
+    "planChange": "Added explicit interruptionEvidence to distinguish observations, configured budget and unknown cancellation cause; no original plan numeric field changed."
+  },
+  "replacements": {
+    "report": {
+      "path": "REPORT_V2.md",
+      "bytes": 12275,
+      "gitBlob": "98ab7760791682702bbd03d66f5c9f15700e29de",
+      "sha256": "59bc4324667572c72aafce7557798d127203fd02bd8510bfad2730093176f62e"
+    },
+    "plan": {
+      "path": "PLAN_V2.json",
+      "bytes": 27533,
+      "gitBlob": "27e96138073db39636b521cdef246dcef3b36fdc",
+      "sha256": "b0ee6ada05a667dbe268a9bd9be286b1dfadb223f598610708d04c520f0df7df"
+    }
+  },
+  "reexecution": {
+    "offlineVerifierRerun": false,
+    "nativeTestsExecuted": 0,
+    "hostRequests": 0,
+    "modelRequests": 0,
+    "ciTriggers": 0,
+    "refsChanged": false
+  },
+  "originalDataAuditRemainsHistorical": "The prior offline packet audit applies to original v1 bytes. This erratum does not re-label it as a newly executed v2 validator."
+}

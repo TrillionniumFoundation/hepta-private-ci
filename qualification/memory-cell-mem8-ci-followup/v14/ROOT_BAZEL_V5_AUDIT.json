@@ -1,0 +1,50 @@
+{
+  "schema": "hepta.mem8.bazel-v5.root-original-audit.v1",
+  "verified_at_utc": "2026-11-11T12:35:50.278339+00:00",
+  "run_id": 43020939762,
+  "job_id": 130523679401,
+  "attempt": 1,
+  "workflow_head": "d03aa4c87d4f9fe9c1f99fbe319f829d9eef6158",
+  "source_head": "9bd2f589debdba4a93baa363817c3669cb103721",
+  "source_tree": "c77785ecb368c44ea699769001a47402c9f50591",
+  "source_before_after_clean_and_equal": true,
+  "all_source_tree_entries_equal_prior_root_verified_formatter_tree": true,
+  "zip_bytes": 2278345,
+  "zip_sha256": "8bbc8c00b0c9a25aeac964d8486a065c6557e9aab9d819cbb21f1ddd213fbb95",
+  "all_zip_members_verified": 52,
+  "records_archive_bytes": 659176,
+  "records_archive_sha256": "d8b5413e20d2a316d2038a4a178e8fc79e4285b4059954eddd7159144b19a883",
+  "all_archive_members_verified": 44,
+  "actual_lock_command_phases": 1,
+  "original_budget_seconds": 1200,
+  "command_elapsed_seconds": 26.462319020000002,
+  "command_started_at": "2026-11-11T12:31:12.445078+00:00",
+  "command_finished_at": "2026-11-11T12:31:38.908320+00:00",
+  "actual_invocation": "06adadd2-2e89-495f-b534-007c92f53108",
+  "raw_command_log_sha256": "dbb76ccdc397772c18d75bb2d744ebf51d1787d386be4f71127248c5a3d50504",
+  "both_lock_files_byte_identical_before_after": [
+    {
+      "bytes": 421005,
+      "git_blob": "025813e20504f31d12dae2092a0807a1a4066419",
+      "path": "codex-rs/Cargo.lock",
+      "sha256": "98b3767c6e74bf6eeb5894db760259dbc400cbfd0685af8ad915c92d25408d69"
+    },
+    {
+      "bytes": 1788299,
+      "git_blob": "1565448430312c7fb7537a48f97e9cd2da945df3",
+      "path": "MODULE.bazel.lock",
+      "sha256": "783b3ad329fa53bd4a0e48be6907d38259fa2880d61bd1994b863d7f78bbca57"
+    }
+  ],
+  "tool_before_after_recorded_identities_equal": true,
+  "actual_bazel_binary_recorded_sha256": "d302d22ed77ee5658b87857249baa579db84300ecebe0a1e9a357b5b20f80eb8",
+  "version_stdout_and_download_stderr_retained_separately": true,
+  "warnings_retained": "Original module direct-dependency and crate-annotation warnings are preserved; no check_direct_dependencies or annotation change was made.",
+  "native_project_tests": 0,
+  "model_requests": 0,
+  "status": "PASS_EXACT_SOURCE_BAZEL_MODULE_LOCK",
+  "limits": [
+    "Module resolution and lock consistency do not compile Rust or qualify native runtime behavior.",
+    "The first run's version-probe failure with zero lock-command phases remains an original failure."
+  ]
+}

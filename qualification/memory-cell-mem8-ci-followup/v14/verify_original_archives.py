@@ -14,6 +14,12 @@ import zipfile
 
 ROOT = Path(__file__).resolve().parent
 READ = ROOT / "root-readback"
+ARCHIVE_NAMES = [
+    "mem8-fence189-pinned-review-v1",
+    "mem8-fourcell189-diagnostic-candidate-v1",
+    "mem8-integrated189-terminal-addendum-v1",
+    "mem8-windows-current189-original-v2",
+]
 PINS = [
     ("011065e84a2b2445091a737586ddee2f96a4a288", 117756, "b03d7a0f09260996d531dc30f434db0d1a24e5e95abfd31aa50878462c72cbd7", "a97b205237fd96f11a95cafbda2ce27d65f7712d"),
     ("71aa28f1d53f93cf51659fc8d85eaf89b6b30dbc", 46460, "7d534c36b9adf1769860e77cace991c61183b78249cb361f4c21976b3e61a7ab", "a98b1357e8d0fc4bddbdb0324a62d826c47ba7b9"),
@@ -38,15 +44,22 @@ def safe_name(name):
     return bool(name) and not p.is_absolute() and ".." not in p.parts and "\\" not in name
 
 def read_archive(i):
-    a = json.loads((READ / f"original-archive-{i}.json").read_text())["structuredContent"]
-    m = json.loads((READ / f"original-manifest-{i}.json").read_text())["structuredContent"]
-    assert a["encoding"] == "base64" and m["encoding"] == "utf-8"
-    raw = base64.b64decode("".join(a["content"].splitlines()), validate=True)
-    manifest_bytes = m["content"].encode()
     expected_blob, expected_size, expected_sha, expected_manifest = PINS[i]
-    assert a["sha"] == git_blob(raw) == expected_blob
+    wrapper_path = READ / f"original-archive-{i}.json"
+    if wrapper_path.exists():
+        a = json.loads(wrapper_path.read_text())["structuredContent"]
+        m = json.loads((READ / f"original-manifest-{i}.json").read_text())["structuredContent"]
+        assert a["encoding"] == "base64" and m["encoding"] == "utf-8"
+        raw = base64.b64decode("".join(a["content"].splitlines()), validate=True)
+        manifest_bytes = m["content"].encode()
+        assert a["sha"] == expected_blob and m["sha"] == expected_manifest
+    else:
+        # The committed, immutable files make the verifier usable from a checkout.
+        raw = (ROOT / "original-ci" / (ARCHIVE_NAMES[i] + ".tar.xz")).read_bytes()
+        manifest_bytes = (ROOT / "original-ci" / (ARCHIVE_NAMES[i] + ".MANIFEST.json")).read_bytes()
+    assert git_blob(raw) == expected_blob
     assert len(raw) == expected_size and sha(raw) == expected_sha
-    assert m["sha"] == git_blob(manifest_bytes) == expected_manifest
+    assert git_blob(manifest_bytes) == expected_manifest
     manifest = json.loads(manifest_bytes)
     assert manifest["source_head"] == "189711e3563ea13a5328d52e99a286f082045b98"
     assert manifest["source_tree"] == "e253b99e0a5c3b3a680569da0d224fabff0781ba"

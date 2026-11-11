@@ -1,0 +1,149 @@
+{
+  "schema": "hepta.mem8-new-source-initial-originals.v1",
+  "source_head": "9bd2f589debdba4a93baa363817c3669cb103721",
+  "source_tree": "c77785ecb368c44ea699769001a47402c9f50591",
+  "scope": "Initial original run/job API responses, merge commit and full before-checkout Fence failure only. This is not a terminal aggregate or native pass archive.",
+  "files": [
+    {
+      "path": "INITIAL_RUNS.json",
+      "bytes": 196258,
+      "sha256": "ed3a6f4e21f9e14e5187d4cacaac706e5b060d628893862ce1c7d0a37bfc646d",
+      "gitBlob": "e14300ff50b8dc8047dfcec0c0f03408ce35f686"
+    },
+    {
+      "path": "JOBS-43021840778-INITIAL.json",
+      "bytes": 101654,
+      "sha256": "4c55e19c9b5ff87bd9cff93a28db1fad48da6ddcee1f033b5f8f7888b607bdbf",
+      "gitBlob": "a6c1f47f4db037350e1f2fc5928c9c897c4032b5"
+    },
+    {
+      "path": "WORKFLOW_MERGE_COMMIT.json",
+      "bytes": 3001,
+      "sha256": "b47c3ba5f687cfa8675e2fce02d51336cdd9344050224f3fc9e22d366d8de8dc",
+      "gitBlob": "a11d34d4058ff65df69a40fac0c74da0320fa179"
+    },
+    {
+      "path": "job-130526677869-decoded.log",
+      "bytes": 3859,
+      "sha256": "f50cdc9fa4044764eaa7a79468bec7e0dae90b2aa103ec231bfced4d19267f00",
+      "gitBlob": "941f4e9ace35ca12ec69e99d8488160b78ca86d1"
+    }
+  ],
+  "archive": {
+    "bytes": 9832,
+    "sha256": "4f00c8a2d59819fd2469cfadf539a6bc05718deba89f7d0b96346d2762799fb3",
+    "gitBlob": "969282966c1b042b163c91cdd33c3750b54b5f70"
+  },
+  "run_index": [
+    {
+      "id": 43021840240,
+      "name": "App-server schema refresh",
+      "head_sha": "9bd2f589debdba4a93baa363817c3669cb103721",
+      "run_attempt": 1,
+      "created_at": "2026-11-11T12:36:45Z",
+      "status": "completed",
+      "conclusion": "skipped",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43021840240"
+    },
+    {
+      "id": 43021840539,
+      "name": "Production HOS2 owner proposal",
+      "head_sha": "9bd2f589debdba4a93baa363817c3669cb103721",
+      "run_attempt": 1,
+      "created_at": "2026-11-11T12:36:45Z",
+      "status": "completed",
+      "conclusion": "skipped",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43021840539"
+    },
+    {
+      "id": 43021840388,
+      "name": "Hepta architecture convergence",
+      "head_sha": "9bd2f589debdba4a93baa363817c3669cb103721",
+      "run_attempt": 1,
+      "created_at": "2026-11-11T12:36:45Z",
+      "status": "in_progress",
+      "conclusion": null,
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43021840388"
+    },
+    {
+      "id": 43021840418,
+      "name": "Rust UI product foundation",
+      "head_sha": "9bd2f589debdba4a93baa363817c3669cb103721",
+      "run_attempt": 1,
+      "created_at": "2026-11-11T12:36:45Z",
+      "status": "in_progress",
+      "conclusion": null,
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43021840418"
+    },
+    {
+      "id": 43021840352,
+      "name": "Bazel stable lock proposal",
+      "head_sha": "9bd2f589debdba4a93baa363817c3669cb103721",
+      "run_attempt": 1,
+      "created_at": "2026-11-11T12:36:45Z",
+      "status": "in_progress",
+      "conclusion": null,
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43021840352"
+    },
+    {
+      "id": 43021840389,
+      "name": "Keyring synchronous backend lock proposal",
+      "head_sha": "9bd2f589debdba4a93baa363817c3669cb103721",
+      "run_attempt": 1,
+      "created_at": "2026-11-11T12:36:45Z",
+      "status": "in_progress",
+      "conclusion": null,
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43021840389"
+    },
+    {
+      "id": 43021840252,
+      "name": "Hepta Windows private-state native (security qualification only)",
+      "head_sha": "9bd2f589debdba4a93baa363817c3669cb103721",
+      "run_attempt": 1,
+      "created_at": "2026-11-11T12:36:45Z",
+      "status": "in_progress",
+      "conclusion": null,
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43021840252"
+    },
+    {
+      "id": 43021840350,
+      "name": "v8-canary",
+      "head_sha": "9bd2f589debdba4a93baa363817c3669cb103721",
+      "run_attempt": 1,
+      "created_at": "2026-11-11T12:36:45Z",
+      "status": "in_progress",
+      "conclusion": null,
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43021840350"
+    },
+    {
+      "id": 43021840437,
+      "name": "Hepta MEM candidate and replay controls",
+      "head_sha": "9bd2f589debdba4a93baa363817c3669cb103721",
+      "run_attempt": 1,
+      "created_at": "2026-11-11T12:36:45Z",
+      "status": "in_progress",
+      "conclusion": null,
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43021840437"
+    },
+    {
+      "id": 43021840561,
+      "name": "Windows original CI regressions (declared scope only)",
+      "head_sha": "9bd2f589debdba4a93baa363817c3669cb103721",
+      "run_attempt": 1,
+      "created_at": "2026-11-11T12:36:45Z",
+      "status": "in_progress",
+      "conclusion": null,
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43021840561"
+    },
+    {
+      "id": 43021840778,
+      "name": "blocking-ci",
+      "head_sha": "9bd2f589debdba4a93baa363817c3669cb103721",
+      "run_attempt": 1,
+      "created_at": "2026-11-11T12:36:45Z",
+      "status": "queued",
+      "conclusion": null,
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43021840778"
+    }
+  ]
+}

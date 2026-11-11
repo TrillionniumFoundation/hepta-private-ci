@@ -7,11 +7,14 @@ import io
 import json
 import lzma
 from pathlib import Path, PurePosixPath
+import sys
 import tarfile
 import zipfile
 
 ROOT = Path(__file__).resolve().parent
-P = ROOT.parent / "mem8-source-ci-v5-original-run"
+# Pass the restored original-run directory when replaying from an evidence checkout.
+P = Path(sys.argv[1]).resolve() if len(sys.argv) == 2 else ROOT.parent / "mem8-source-ci-v5-original-run"
+assert len(sys.argv) <= 2, "usage: verify_source_ci_original.py [original-run-directory]"
 
 def sha(raw):
     return hashlib.sha256(raw).hexdigest()
