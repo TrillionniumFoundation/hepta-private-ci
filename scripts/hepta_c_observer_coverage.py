@@ -130,6 +130,14 @@ EXECUTION_OWNER_CASES = tuple(
         "original_execution_owner_readback_port_rejects_writes_keys_and_unwitnessed_tail",
     )
 )
+HOLDOUT_CURRENT_CASES = (
+    "fenced_holdout_file::tests::physical_current::holdout_current_same_length_mutation_fences_after_restore",
+    "fenced_holdout_file::tests::physical_current::holdout_current_rehashed_history_cannot_preserve_cached_frontier",
+    "fenced_holdout_file::tests::physical_current::holdout_current_preserves_cursor_lock_and_fences_read_errors",
+    "fenced_holdout_file::tests::physical_current::holdout_current_cold_recovery_and_non_target_calls_preserve_original_bytes",
+    "product_runner::tests::execution_tests::holdout_current::holdout_current_lost_cas_ack_preserves_pending_without_provider_replay",
+    "product_runner::tests::execution_tests::holdout_current::holdout_current_completed_execution_readback_requires_physical_original",
+)
 OWNER_GROUPS = (
     ("next_use_observer", PACKAGE, NEXT_USE_CASES),
     ("material_observers", PACKAGE, MATERIAL_CASES),
@@ -141,6 +149,7 @@ OWNER_GROUPS = (
     ("original_material_service", PACKAGE, MATERIAL_SERVICE_CASES),
     ("original_peer_lifetime", PACKAGE, TRANSPORT_CASES),
     ("original_execution_evidence", EXECUTION_PACKAGE, EXECUTION_CASES),
+    ("original_holdout_current", EXECUTION_PACKAGE, HOLDOUT_CURRENT_CASES),
 )
 EXPECTED_CASES = tuple(
     (package, name) for _, package, names in OWNER_GROUPS for name in names
