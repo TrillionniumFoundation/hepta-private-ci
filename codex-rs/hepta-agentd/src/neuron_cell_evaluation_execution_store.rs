@@ -83,13 +83,13 @@ impl<W: AnchorWitnessStore> OriginalCellEvaluationExecutionStoreV1<W> {
     /// Borrow one exact execution through a port that cannot claim or complete.
     /// Each read still checks the original physical file and independent
     /// witness on both sides. Missing/Pending are never substituted with work.
-    pub fn readback_only<'a>(
-        &'a mut self,
-        key: &'a ProductEvaluationExecutionKeyV1,
-    ) -> impl ProductEvaluationExecutionStoreV1 + 'a {
+    pub fn readback_only(
+        &mut self,
+        key: &ProductEvaluationExecutionKeyV1,
+    ) -> impl ProductEvaluationExecutionStoreV1 + '_ {
         readback::Readback {
             original: self,
-            key,
+            key: key.clone(),
         }
     }
 

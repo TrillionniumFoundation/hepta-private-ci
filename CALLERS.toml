@@ -4530,7 +4530,7 @@ id = "learning_original_execution_store_readback_only"
 symbol = "OriginalCellEvaluationExecutionStoreV1::readback_only"
 receiver_type = "OriginalCellEvaluationExecutionStoreV1"
 definition_path = "codex-rs/hepta-agentd/src/neuron_cell_evaluation_execution_store.rs"
-definition_markers = ["pub fn readback_only<"]
+definition_markers = ["pub fn readback_only("]
 product_callers = ["codex-rs/hepta-agentd/src/circuit_model_selection_receipt_sources.rs"]
 caller_markers = ["OriginalCellEvaluationExecutionStoreV1::readback_only("]
 
@@ -4540,7 +4540,7 @@ required = ["journal: LockedFileProductEvaluationExecutionStoreV1","witness: W",
 forbidden = ["SigningKey","LearningEvidenceVerifierV1::new","LearningEvidenceTrustV1","File::open","OpenOptions","UnixStream::connect","try_clone(","into_inner(","get_mut(","DerefMut","AsMut","unwrap_or","permit_all","if false","pub journal:","pub witness:","pub fn recover(",".anchor()"]
 required_function_order = [
   { function = "fn create(", sequence = ["witness.current()?.is_some()","return Err(Error::Binding(","LockedFileProductEvaluationExecutionStoreV1::create(file, binding)?","witnessed(journal.read_current_anchor()?)?","if initial.sequence != 1","witness.compare_and_swap(None, initial)?","if owner.require_current()? != initial","return Err(Error::CommitUncertain)","Ok(owner)"], top_level = ["if witness.current()?.is_some()","witness.compare_and_swap(None, initial)?","if owner.require_current()? != initial"] },
-  { function = "fn readback_only<", sequence = ["key: &'a ProductEvaluationExecutionKeyV1","impl ProductEvaluationExecutionStoreV1 + 'a","readback::Readback","original: self","key,"] },
+  { function = "fn readback_only(", sequence = ["key: &ProductEvaluationExecutionKeyV1","impl ProductEvaluationExecutionStoreV1 + '_","readback::Readback","original: self","key: key.clone()"] },
   { function = "fn require_current(", sequence = ["if self.fenced","return Err(Error::CommitUncertain)","let result = (|| {","let before = self.witness.current()?","let physical = self.journal.read_current_anchor()?","let current = witnessed(physical)?","let after = self.witness.current()?","if before != Some(current) || after != Some(current)","return Err(Error::CommitUncertain)","Ok(current)","if result.is_err()","self.fenced = true","result"], top_level = ["if self.fenced","let result = (|| {","if result.is_err()"] },
   { function = "fn unchanged(", sequence = ["let after = self","require_current()","if before != after","self.fenced = true","return Err(StoreError::Indeterminate)","Ok(())"], top_level = ["if before != after"] },
   { function = "fn failed_operation(", sequence = ["if self.unchanged(before).is_err()","return StoreError::Indeterminate","match error","StoreError::Missing | StoreError::Conflict | StoreError::Rejected => error","StoreError::Unavailable | StoreError::Indeterminate | StoreError::Corrupt","self.fenced = true","StoreError::Indeterminate"], top_level = ["if self.unchanged(before).is_err()","match error"] },
@@ -4561,10 +4561,10 @@ required_function_order = [
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/neuron_cell_evaluation_execution_readback.rs"
-required = ["pub(super) original: &'a mut OriginalCellEvaluationExecutionStoreV1<W>","pub(super) key: &'a ProductEvaluationExecutionKeyV1"]
+required = ["pub(super) original: &'a mut OriginalCellEvaluationExecutionStoreV1<W>","pub(super) key: ProductEvaluationExecutionKeyV1"]
 forbidden = ["SigningKey","LearningEvidenceVerifierV1::new","LearningEvidenceTrustV1","File::open","OpenOptions","UnixStream::connect","try_clone(","into_inner(","get_mut(","DerefMut","AsMut","unwrap_or","permit_all","if false","pub journal:","pub witness:","compare_and_swap(","::claim(","::complete(","::create(","::recover(","read_current_anchor(",".journal",".witness"]
 required_function_order = [
   { function = "fn claim(", sequence = ["fn claim(","Err(StoreError::Rejected)"], top_level = ["Err(StoreError::Rejected)"] },
   { function = "fn complete(", sequence = ["fn complete(","Err(StoreError::Rejected)"], top_level = ["Err(StoreError::Rejected)"] },
-  { function = "fn readback(", sequence = ["if key != self.key","return Err(StoreError::Conflict)","ProductEvaluationExecutionStoreV1::readback(self.original, key)"], top_level = ["if key != self.key","ProductEvaluationExecutionStoreV1::readback(self.original, key)"] },
+  { function = "fn readback(", sequence = ["if key != &self.key","return Err(StoreError::Conflict)","ProductEvaluationExecutionStoreV1::readback(self.original, key)"], top_level = ["if key != &self.key","ProductEvaluationExecutionStoreV1::readback(self.original, key)"] },
 ]

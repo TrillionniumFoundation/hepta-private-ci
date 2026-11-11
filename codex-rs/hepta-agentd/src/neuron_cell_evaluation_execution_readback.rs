@@ -4,7 +4,7 @@ use super::*;
 
 pub(super) struct Readback<'a, W: AnchorWitnessStore> {
     pub(super) original: &'a mut OriginalCellEvaluationExecutionStoreV1<W>,
-    pub(super) key: &'a ProductEvaluationExecutionKeyV1,
+    pub(super) key: ProductEvaluationExecutionKeyV1,
 }
 
 impl<W: AnchorWitnessStore> ProductEvaluationExecutionStoreV1 for Readback<'_, W> {
@@ -24,7 +24,7 @@ impl<W: AnchorWitnessStore> ProductEvaluationExecutionStoreV1 for Readback<'_, W
     }
 
     fn readback(&mut self, key: &ProductEvaluationExecutionKeyV1) -> Result<State, StoreError> {
-        if key != self.key {
+        if key != &self.key {
             return Err(StoreError::Conflict);
         }
         ProductEvaluationExecutionStoreV1::readback(self.original, key)

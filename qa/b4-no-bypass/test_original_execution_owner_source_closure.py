@@ -24,7 +24,7 @@ READBACK = AGENT + "neuron_cell_evaluation_execution_readback.rs"
 SOURCES = AGENT + "circuit_model_selection_receipt_sources.rs"
 FUNCTIONS = {
     OWNER: {
-        "fn create(", "fn readback_only<", "fn require_current(", "fn unchanged(",
+        "fn create(", "fn readback_only(", "fn require_current(", "fn unchanged(",
         "fn failed_operation(", "fn witness_effect(", "fn claim(", "fn complete(",
         "fn readback(", "fn witnessed(",
     },
