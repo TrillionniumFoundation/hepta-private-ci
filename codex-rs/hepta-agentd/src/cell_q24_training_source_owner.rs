@@ -10,7 +10,8 @@ impl<W: AnchorWitnessStore> CellQ24TrainingOwnerV1<W> {
     /// Bind a new original native job to actual source custody. Construction is
     /// synchronous owner I/O; the host must use a bounded blocking lane. The
     /// resulting owner must enter SourceBoundCellQ24TrainingStageV1 before it
-    /// serves ordinary Training commands. No role key or enrollment is created.
+    /// serves ordinary Training commands. Success only binds the journal to
+    /// the capture identity; Stage admission performs a new actual CURRENT. No role key or enrollment is created.
     pub fn create_from_original_source(
         file: File,
         mut witness: W,

@@ -4280,3 +4280,34 @@ forbidden = []
 function = "fn require_observations("
 sequence = ["config.dataset.receipts[0].observation != material.experience_observation()", "config.dataset.receipts[1].observation != material.dataset_observation()", "config.dataset.receipts[0].evidence_digest != material.provenance_digest()", "config.dataset.receipts[1].evidence_digest != material.provenance_digest()", "return Err(Error::Binding(", "Ok(())"]
 top_level = ["if config.dataset.receipts[0].observation != material.experience_observation()"]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/cell_composed_q24_training_owner.rs"
+required = []
+forbidden = []
+[[protected_file.required_function_order]]
+function = "fn fit_or_readback("
+sequence = ["if self.source.is_some()", "self.require_live_source_if_captured()?", "match self.journal.readback(&self.key)", "Ok(state) => return self.decode_state(state)", "Err(ProductEvaluationExecutionStoreErrorV1::Missing)", "self.require_captured_work_deadline()?", "Err(error) => return Err(error.into())", "match self.journal.claim(&self.key)?"]
+top_level = ["if self.source.is_some()"]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/cell_q24_training_source.rs"
+required = []
+forbidden = []
+
+[[protected_file.required_function_order]]
+function = "fn verify_original_evidence("
+sequence = ["LearningIterationCoordinatorV1::from_snapshot(config.dataset.clone())?","config.scope.validate_snapshot(&config.dataset)?","coordinator.next_stage() != Some(LearningIterationStageV1::Training)","config.dataset.receipts.len() != 2","config.dataset.owners.evidence_trust_digest != config.verifier.trust_digest()","config.dataset.request.envelope.objective_digest != config.verifier.objective_digest()","learning_iteration_receipt_signing_bytes_v1(receipt)?","config.verifier.verify(","LearningEvidenceRoleV1::Observer","verified.principal().principal_id != receipt.actor_id","receipt.observed_unix_seconds != evidence.issued_at","receipt.observed_unix_seconds > at"]
+top_level = []
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs"
+required = []
+forbidden = []
+required_order = [["async fn in_lane<T:","training.require_live_source_if_captured()?","let result = work(&mut owners)","require_live_source_if_captured()",".map_err(|_| Error::CommitUncertain)?","result"]]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs"
+required = []
+forbidden = []
+required_order = [["fn in_model_lane<T>","training.require_live_source_if_captured()?","let original = owners.read_original_completion()?","let result = work(&mut owners.training, &original)","let current = owners","require_live_source_if_captured()",".map_err(|_| Error::CommitUncertain)?","current.receipt != original.receipt || current.attestation != original.attestation","result"]]

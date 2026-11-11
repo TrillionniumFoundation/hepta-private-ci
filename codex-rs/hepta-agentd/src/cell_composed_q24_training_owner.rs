@@ -172,9 +172,16 @@ impl<W: AnchorWitnessStore> CellQ24TrainingOwnerV1<W> {
     ) -> Result<CellQ24TrainingOutcomeV1, Error> {
         self.require_current()?;
         #[cfg(target_os = "linux")]
-        self.require_live_source_if_captured()?;
-        #[cfg(target_os = "linux")]
-        self.require_captured_work_deadline()?;
+        if self.source.is_some() {
+            self.require_live_source_if_captured()?;
+            match self.journal.readback(&self.key) {
+                Ok(state) => return self.decode_state(state),
+                Err(ProductEvaluationExecutionStoreErrorV1::Missing) => {
+                    self.require_captured_work_deadline()?;
+                }
+                Err(error) => return Err(error.into()),
+            }
+        }
         let before = anchor(self.journal.anchor());
         match self.journal.claim(&self.key)? {
             ProductEvaluationExecutionClaimV1::Existing(state) => return self.decode_state(state),

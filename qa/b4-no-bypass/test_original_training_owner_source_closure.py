@@ -18,6 +18,7 @@ OWNER = "codex-rs/hepta-agentd/src/cell_q24_training_receipt_owner.rs"
 STAGE = "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs"
 MODEL_LANE = "codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs"
 SNAPSHOT = "codex-rs/hepta-agentd/src/cell_q24_training_snapshot_readback.rs"
+BOUND = "codex-rs/hepta-agentd/src/cell_q24_source_bound_stage.rs"
 
 
 class OriginalTrainingOwnerSourceClosureTests(unittest.TestCase):
@@ -64,7 +65,7 @@ class OriginalTrainingOwnerSourceClosureTests(unittest.TestCase):
     def test_pair_and_model_lane_keep_exact_native_callers(self):
         native = "codex-rs/hepta-agentd/src/cell_composed_q24_training_owner.rs"
         rows = {row.identifier: row for row in PROOF._boundary_rows(self.manifest)}
-        sources = {path: PROOF._strip_rust_non_code((ROOT / path).read_text()) for path in (OWNER, STAGE, MODEL_LANE, native, SNAPSHOT)}
+        sources = {path: PROOF._strip_rust_non_code((ROOT / path).read_text()) for path in (OWNER, STAGE, MODEL_LANE, native, SNAPSHOT, BOUND)}
         for name in ("cell_q24_original_training_execute", "cell_q24_original_training_pair_binding"):
             row = rows[name]
             self.assertIn(name, self.manifest["privileged_inventory"]["required_boundary_ids"])
@@ -78,7 +79,8 @@ class OriginalTrainingOwnerSourceClosureTests(unittest.TestCase):
                 PROOF._verify_boundary(ROOT, row, changed, ())
         for suffix in ("constructor", "execute", "readback", "attestation"):
             row = rows["learning_original_training_stage_" + suffix]
-            self.assertEqual(row.product_callers, (SNAPSHOT,) if suffix == "readback" else ())
+            expected = (SNAPSHOT, BOUND) if suffix == "readback" else ((BOUND,) if suffix in ("execute", "attestation") else ())
+            self.assertEqual(row.product_callers, expected)
             PROOF._verify_boundary(ROOT, row, sources, ())
 
     def test_pair_requires_exact_missing_enrollment_and_retained_blocking_lane(self):

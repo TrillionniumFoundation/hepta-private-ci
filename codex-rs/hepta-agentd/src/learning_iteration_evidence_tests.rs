@@ -205,3 +205,37 @@ pub(crate) fn fixture_original_receipt_client(
     });
     Ok((client, peer))
 }
+
+/// An explicit same-UID test transport that returns original retained signatures
+/// until its client is dropped. No production constructor or signer is exposed.
+pub(crate) fn fixture_original_receipt_client_until_close(
+    initial: LearningIterationSnapshotV1,
+    receipt: LearningIterationReceiptV1,
+    verifier: LearningEvidenceVerifierV1,
+    signature: SignedLearningEvidenceV1,
+) -> anyhow::Result<(
+    LearningIterationEvidenceClientV1,
+    std::thread::JoinHandle<anyhow::Result<usize>>,
+)> {
+    let fixture = Fixture { initial, receipt, verifier, signature };
+    let (client, mut server) = fixture.client()?;
+    let expected = fixture.signature.payload_digest.to_string();
+    let peer = std::thread::spawn(move || -> anyhow::Result<usize> {
+        for index in 0..128 {
+            let request = match read_request(&mut server) {
+                Ok(request) => request,
+                Err(error) if error.downcast_ref::<std::io::Error>()
+                    .is_some_and(|io| io.kind() == std::io::ErrorKind::UnexpectedEof) => {
+                    return Ok(index);
+                }
+                Err(error) => return Err(error),
+            };
+            assert_eq!(request.request_id, index as u64 + 1);
+            assert_eq!(request.operation, wire::OPERATION);
+            assert_eq!(request.receipt_digest, expected);
+            reply(&mut server, &response(request, fixture.evidence()))?;
+        }
+        anyhow::bail!("bounded original evidence fixture exceeded its request budget")
+    });
+    Ok((client, peer))
+}
