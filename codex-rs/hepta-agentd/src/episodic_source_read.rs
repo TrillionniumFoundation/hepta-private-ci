@@ -104,9 +104,9 @@ impl EpisodicSourceRead {
             .current
             .lock()
             .map_err(|_| unavailable("observation lock poisoned"))?;
-        if !current
+        if current
             .as_ref()
-            .is_some_and(|current| Arc::ptr_eq(current, &self.observation))
+            .is_none_or(|current| !Arc::ptr_eq(current, &self.observation))
         {
             return Err(unavailable(
                 "committed observation changed during context read",
