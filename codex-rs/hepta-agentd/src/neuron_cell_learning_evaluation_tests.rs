@@ -195,7 +195,6 @@ impl LearningFixture {
             update_rule: digest("rule"),
             evaluation_profile: profile,
         });
-        let candidate_digest = checked(candidate.digest());
         for observation in [
             LearningIterationObservationV1::Experience {
                 episode_digest: digest("episode"),
@@ -227,6 +226,52 @@ impl LearningFixture {
             checked(coordinator.record(receipt, now));
         }
         let snapshot = coordinator.snapshot().clone();
+        Self::from_original_training(
+            snapshot,
+            context,
+            verifier,
+            disposition,
+            now,
+            learning_profile,
+            /*manifests*/ None,
+        )
+    }
+
+    pub(crate) fn with_training(
+        self,
+        snapshot: LearningIterationSnapshotV1,
+        manifests: [CellBackendManifestV2; 2],
+        disposition: IndependentEvaluationDispositionV1,
+    ) -> Self {
+        let profile = snapshot.request.evaluation_profile;
+        Self::from_original_training(
+            snapshot,
+            self.context,
+            self.verifier,
+            disposition,
+            self.now,
+            Some(profile),
+            Some(manifests),
+        )
+    }
+
+    fn from_original_training(
+        snapshot: LearningIterationSnapshotV1,
+        context: ProductQualificationContextV1,
+        verifier: LearningEvidenceVerifierV1,
+        disposition: IndependentEvaluationDispositionV1,
+        now: u64,
+        learning_profile: Option<Digest32>,
+        manifests: Option<[CellBackendManifestV2; 2]>,
+    ) -> Self {
+        let generator_key = SigningKey::from_bytes(&[41; 32]);
+        let evaluator_key = SigningKey::from_bytes(&[42; 32]);
+        let coordinator = checked(LearningIterationCoordinatorV1::from_snapshot(
+            snapshot.clone(),
+        ));
+        let candidate = coordinator.candidate().expect("candidate");
+        let candidate_digest = checked(candidate.digest());
+        let baseline_digest = checked(snapshot.request.selected_bundle.digest());
         let training = snapshot.receipts.last().expect("training receipt");
         // The original 128-cluster fixture authenticates a comparison but its
         // conservative DR intervals overlap. Keep the same alpha, weight bound
@@ -249,6 +294,39 @@ impl LearningFixture {
             [17; 32],
             baseline_digest.into_array(),
         );
+        if let Some([candidate_manifest, fixed_manifest]) = manifests {
+            fixture.registration.comparison.candidate.structure_before =
+                fixed_manifest.evolution.structure;
+            fixture.registration.comparison.candidate.structure_after =
+                candidate_manifest.evolution.structure;
+            fixture
+                .registration
+                .comparison
+                .fixed_expert
+                .structure_before = fixed_manifest.evolution.structure;
+            fixture.registration.comparison.fixed_expert.structure_after =
+                fixed_manifest.evolution.structure;
+            fixture.candidate = journal_with_manifest(
+                fixture.directory.path(),
+                "q24-candidate",
+                Costs::Complete,
+                [17; 32],
+                candidate_manifest,
+            );
+            fixture.fixed = journal_with_manifest(
+                fixture.directory.path(),
+                "q24-fixed",
+                Costs::Complete,
+                [17; 32],
+                fixed_manifest,
+            );
+        }
+        fixture.registration.product.candidate_id = candidate.artifact_id.clone();
+        fixture.registration.product.baseline_id =
+            snapshot.request.selected_bundle.artifact_id.clone();
+        fixture.registration.comparison.candidate.participant_id = candidate.artifact_id.clone();
+        fixture.registration.comparison.fixed_expert.participant_id =
+            snapshot.request.selected_bundle.artifact_id.clone();
         fixture
             .registration
             .comparison

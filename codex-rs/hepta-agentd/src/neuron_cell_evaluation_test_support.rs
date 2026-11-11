@@ -90,6 +90,17 @@ pub(super) fn journal(
         max_step_cost_entries: 16,
         max_ack_cost_entries: 4,
     };
+    journal_with_manifest(path, name, costs, task_digest, manifest)
+}
+
+pub(super) fn journal_with_manifest(
+    path: &Path,
+    name: &str,
+    costs: Costs,
+    task_digest: [u8; 32],
+    manifest: CellBackendManifestV2,
+) -> Journal {
+    let source = manifest.source_digest;
     let initial = CellRuntimeSnapshotV2 {
         scope: CellGenerationScopeV2 {
             principal_digest: [15; 32],

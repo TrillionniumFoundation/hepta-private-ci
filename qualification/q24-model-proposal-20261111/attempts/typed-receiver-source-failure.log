@@ -1,0 +1,30 @@
+test_no_update_keeps_frozen_rule_and_generator_selector_separation (__main__.TrainingNoUpdateSourceClosureTests.test_no_update_keeps_frozen_rule_and_generator_selector_separation) ... ok
+test_readback_boundary_allows_only_the_original_material_adapter (__main__.TrainingNoUpdateSourceClosureTests.test_readback_boundary_allows_only_the_original_material_adapter) ... ERROR
+test_readback_requires_original_completed_bytes_scope_and_current_witness (__main__.TrainingNoUpdateSourceClosureTests.test_readback_requires_original_completed_bytes_scope_and_current_witness) ... ok
+
+======================================================================
+ERROR: test_readback_boundary_allows_only_the_original_material_adapter (__main__.TrainingNoUpdateSourceClosureTests.test_readback_boundary_allows_only_the_original_material_adapter)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-final/scripts/verify_hepta_callers.py", line 520, in _verify_boundary
+    matched = any(
+              ^^^^
+  File "/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-final/scripts/verify_hepta_callers.py", line 521, in <genexpr>
+    has_authority_call(code, boundary.receiver_type, method, fields)
+  File "/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-final/scripts/hepta_typed_callers.py", line 212, in has_authority_call
+    raise UnresolvedTypedReceiver(
+hepta_typed_callers.UnresolvedTypedReceiver: unresolved possible CellQ24TrainingOwnerV1::read_learning_observation receiver
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-final/qa/b4-no-bypass/test_training_no_update_source_closure.py", line 53, in test_readback_boundary_allows_only_the_original_material_adapter
+    PROOF._verify_boundary(ROOT, row, sources, ())
+  File "/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-final/scripts/verify_hepta_callers.py", line 525, in _verify_boundary
+    raise VerificationFailure(
+training_no_update_caller_proof.VerificationFailure: cell_q24_original_training_observation: codex-rs/hepta-agentd/src/cell_q24_model_proposal_admission.rs: unresolved possible CellQ24TrainingOwnerV1::read_learning_observation receiver
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.947s
+
+FAILED (errors=1)
