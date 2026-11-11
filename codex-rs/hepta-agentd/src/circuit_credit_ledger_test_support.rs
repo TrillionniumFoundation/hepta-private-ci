@@ -76,7 +76,7 @@ fn sign(
 
 pub(super) struct LedgerFixture {
     pub(super) writer: LedgerWriter,
-    directory: tempfile::TempDir,
+    _directory: tempfile::TempDir,
 }
 
 impl LedgerFixture {
@@ -139,6 +139,7 @@ impl LedgerFixture {
         #[cfg(windows)]
         {
             use std::os::windows::fs::OpenOptionsExt;
+            options.write(true);
             options.custom_flags(0x0200_0000 | 0x0020_0000);
         }
         let directory_handle: File = checked(options.open(directory.path()));
@@ -149,14 +150,15 @@ impl LedgerFixture {
             &directory_handle,
             &directory_handle,
         ));
-        Self { writer, directory }
+        Self {
+            writer,
+            _directory: directory,
+        }
     }
 
-    pub(super) fn bytes(&self) -> [Vec<u8>; 2] {
-        [
-            checked(std::fs::read(self.directory.path().join("ledger"))),
-            checked(std::fs::read(self.directory.path().join("witness"))),
-        ]
+    pub(super) fn bytes(&mut self) -> [Vec<u8>; 2] {
+        const MAXIMUM_FILE_BYTES: u64 = 8 * 1024 * 1024;
+        checked(self.writer.qualification_file_bytes(MAXIMUM_FILE_BYTES))
     }
 }
 
