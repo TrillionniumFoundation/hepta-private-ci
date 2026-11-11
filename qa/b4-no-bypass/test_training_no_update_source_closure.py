@@ -18,6 +18,7 @@ sys.modules[SPEC.name] = PROOF
 SPEC.loader.exec_module(PROOF)
 AGENT = "codex-rs/hepta-agentd/src/"
 READBACK = AGENT + "cell_composed_q24_training_observation.rs"
+RECEIPTS = AGENT + "cell_q24_training_receipt_owner.rs"
 
 
 class TrainingNoUpdateSourceClosureTests(unittest.TestCase):
@@ -40,12 +41,15 @@ class TrainingNoUpdateSourceClosureTests(unittest.TestCase):
             with self.assertRaises(PROOF.VerificationFailure):
                 PROOF._verify_protected_files(root, {"protected_file": rows})
 
-    def test_readback_boundary_does_not_grant_a_product_caller(self):
+    def test_readback_boundary_only_admits_original_generator_receipt_owner(self):
         rows = {row.identifier: row for row in PROOF._boundary_rows(self.manifest)}
         row = rows["cell_q24_original_training_observation"]
         self.assertIn(row.identifier, self.manifest["privileged_inventory"]["required_boundary_ids"])
-        self.assertEqual(row.product_callers, ())
-        sources = {READBACK: PROOF._strip_rust_non_code((ROOT / READBACK).read_text())}
+        self.assertEqual(row.product_callers, (RECEIPTS,))
+        sources = {
+            path: PROOF._strip_rust_non_code((ROOT / path).read_text())
+            for path in (READBACK, RECEIPTS)
+        }
         PROOF._verify_boundary(ROOT, row, sources, ())
         sources[AGENT + "unregistered_training_result.rs"] = (
             "fn unexpected(owner: &CellQ24TrainingOwnerV1) { owner.read_learning_observation(); }"

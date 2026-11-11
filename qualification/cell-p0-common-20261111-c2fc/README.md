@@ -3,8 +3,8 @@
 ## Candidate inputs
 
 This increment is based on the published common candidate in PR #5875,
-`1e49bd2c95c98eb736595ffed6d5d36cb6d7ae89` (tree
-`1f5986c2c27c970a01d49dc4e2547c55861006f8`). Its ancestry already contains the
+`b5019ee98bc7b7b99eb689378f41e66691c2d257` (tree
+`5164d68c23ffa071a80d4aa9a7f033f068a82dfd`). The review baseline is pinned to this commit. Its ancestry already contains the
 ordinary Q24 branch `f97f3c90ac1ac3d5171fd9f25b3e34431f44a367`, original recovery
 branch `0c99a30dbe9307d48aa50ffc63404235ade8ae9c`, and maintained native source
 `c7633658aef42077f51fa71a1b727b4653ddb76b`.
@@ -15,6 +15,20 @@ compile repair `a15acbf4db6178523a9297033c86e3be0b2725a3`: the new
 generation use. It cannot become NextUse or FinalUse merely because training
 returned no candidate. The existing rejection semantics and owner boundaries
 remain in force.
+
+The later published base includes the original Q24 training receipt owner. It
+materializes signed Training and TrainingNoUpdate observations from the original
+training owner. Its create/recover/attest/readback product entry boundaries and
+the original stage-assembly boundary remain closed. The original training
+observation reader admits only this receipt-owner module as an internal caller;
+that edge does not constitute ordinary product or Root enrollment.
+
+The recovery-test collision preserves the base's original `initial.snapshot()`
+and the explicit duplicate-claim `false` assertion against the original digest.
+The first claim remains `true`, and the original complete claimed vector is
+compared before and after recovery without rebuilding or shadowing its state.
+The earlier S E0425 compile failure and T's separate checks remain historical
+results; they do not qualify the final merged source.
 
 Two published changes are merged with their histories:
 
@@ -88,7 +102,10 @@ proposal protocols cannot be relabelled to admit that artifact. A versioned
 Model protocol needs its original durable owner, anchor acknowledgement,
 readback/recovery, current-source/withdrawal checks and original Root enrollment.
 Existing test-only research proposals and uncommitted material-owner drafts do
-not grant that authority. Stage-owner product caller lists remain closed.
+not grant that authority. The four receipt materialization product boundaries
+and original stage-assembly entry remain closed. The training-observation
+reader's single receipt-owner caller is an internal edge, not ordinary product
+enrollment.
 
 Actual original model, data, configuration, Circuit and evaluator identities,
 precommitted independent evaluation, matched training/baseline histories and
