@@ -101,7 +101,7 @@ class OriginalTrainingCommandClosureTests(unittest.TestCase):
 
     def test_client_consumes_once_and_pins_complete_original_response(self):
         for marker in ("slot.take().ok_or(Error::Unavailable)?", "channel.execution_requested = true",
-                       "request_id.checked_add(1)", "channel.peer.request(&encoded)",
+                       "request_id.checked_add(1)", ".request(&encoded)",
                        "response.require_request(&request)?", "if fresh_now < started_at",
                        "original != &completed", "channel.peer.check_peer_lifetime()?"):
             with self.subTest(marker=marker):

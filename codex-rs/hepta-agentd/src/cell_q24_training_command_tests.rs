@@ -96,10 +96,9 @@ async fn original_training_command_executes_and_produces_actual_evidence_readbac
     let after = fixture.bytes()?;
     // A second typed host handler retains the very same facade, with no
     // trainer/key getter or writer reopen. It reads the original completion.
-    let shared = SourceBoundCellQ24TrainingStageV1::readback(
-        stage.as_ref(),
-        &fixture.config.dataset,
-    ).await?;
+    let shared =
+        SourceBoundCellQ24TrainingStageV1::readback(stage.as_ref(), &fixture.config.dataset)
+            .await?;
     assert_eq!(shared.receipt, *completed.receipt());
     assert_eq!(shared.attestation, *completed.attestation());
     assert_ne!(

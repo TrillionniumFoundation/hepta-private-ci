@@ -4659,7 +4659,7 @@ top_level = []
 
 [[protected_file.required_function_order]]
 function = "fn recover_from_original_stream("
-sequence = ["wire::authenticate_receipt(&context, receipt, attestation, now()?)",".transpose()?","Self::bind_original_stream(","true, retained"]
+sequence = ["wire::authenticate_receipt(&context, receipt, attestation, now()?)",".transpose()?","Self::bind_original_stream(","true,\n            retained,"]
 top_level = []
 
 [[protected_file.required_function_order]]
@@ -4674,7 +4674,7 @@ top_level = []
 
 [[protected_file.required_function_order]]
 function = "fn exchange("
-sequence = ["let started_at = now()?","self.channel.try_lock()","channel.execution_requested","return Err(Error::ReadbackRequired)","slot.take().ok_or(Error::Unavailable)?","channel.execution_requested = true","request_id.checked_add(1)","wire::Request::new(","tokio::task::spawn_blocking(move ||","channel.peer.request(&encoded)",".map_err(|_| Error::CommitUncertain)?","response.require_request(&request)?","let fresh_now = now()?","if fresh_now < started_at","wire::decode_completed(","original != &completed","*retained = Some(completed.clone())","wire::CommandResult::Uncertain => return Err(Error::CommitUncertain)","channel.peer.check_peer_lifetime()?","Some(channel)","result"]
+sequence = ["let started_at = now()?","self.channel.try_lock()","channel.execution_requested","return Err(Error::ReadbackRequired)","slot.take().ok_or(Error::Unavailable)?","channel.execution_requested = true","request_id.checked_add(1)","wire::Request::new(","tokio::task::spawn_blocking(move ||","let bytes = channel\n                .peer\n                .request(&encoded)",".map_err(|_| Error::CommitUncertain)?","response.require_request(&request)?","let fresh_now = now()?","if fresh_now < started_at","wire::decode_completed(","original != &completed","*retained = Some(completed.clone())","wire::CommandResult::Uncertain => return Err(Error::CommitUncertain)","channel.peer.check_peer_lifetime()?","Some(channel)","result"]
 top_level = ["let started_at = now()?","let fresh_now = now()?","if fresh_now < started_at"]
 
 [[protected_file.required_function_order]]
@@ -4704,7 +4704,7 @@ top_level = []
 
 [[protected_file.required_function_order]]
 function = "fn bind_original_stage("
-sequence = ["context.validate()?","context.binding()?","SourceBoundCellQ24TrainingStageV1::require_original_command_context(","&stage, &context.dataset, &context.scope",").await?","execution_requested: AtomicBool::new(matches!(admission, Admission::ReadbackOnly))","runtime: Handle::current()","Semaphore::new(4)"]
+sequence = ["context.validate()?","context.binding()?","SourceBoundCellQ24TrainingStageV1::require_original_command_context(","&stage,\n            &context.dataset,\n            &context.scope,",")\n        .await?","execution_requested: AtomicBool::new(matches!(admission, Admission::ReadbackOnly))","runtime: Handle::current()","Semaphore::new(4)"]
 top_level = []
 
 [[protected_file.required_function_order]]
@@ -4719,12 +4719,12 @@ top_level = []
 
 [[protected_file.required_function_order]]
 function = "fn serve_command_channel("
-sequence = ["let mut next_request_id = 1_u64","for count in 0..128_u64","channel.exchange(|bytes|","self.command_response(bytes, next_request_id)","if !exchanged","next_request_id.checked_add(1)","Err(Error::Unavailable)"]
+sequence = ["let mut next_request_id = 1_u64","for count in 0..128_u64","channel.exchange(|bytes|","self.command_response(bytes, next_request_id)","if !exchanged","next_request_id = next_request_id\n                .checked_add(1)","Err(Error::Unavailable)"]
 top_level = []
 
 [[protected_file.required_function_order]]
 function = "fn command_response("
-sequence = ["serde_json::from_slice(bytes)?","request.require_context(&self.context, self.binding, next_request_id)?","self.execution_requested.swap(true, Ordering::AcqRel)","wire::CommandResult::ReadbackRequired","now()? >= self.context.dataset.request.envelope.expiry_unix_seconds","self.cancellation.store(true, Ordering::Release)","self.runtime.block_on(","SourceBoundCellQ24TrainingStageV1::execute_training(","self.completed_response(completed)?","wire::Action::Readback","SourceBoundCellQ24TrainingStageV1::readback(","self.completed_response(completed)?","wire::Response::from_request(&request, result)"]
+sequence = ["serde_json::from_slice(bytes)?","request.require_context(&self.context, self.binding, next_request_id)?","self.execution_requested.swap(true, Ordering::AcqRel)","wire::CommandResult::ReadbackRequired","now()? >= self.context.dataset.request.envelope.expiry_unix_seconds","self.cancellation.store(true, Ordering::Release)","self.runtime",".block_on(SourceBoundCellQ24TrainingStageV1::execute_training(","self.completed_response(completed)?","wire::Action::Readback","SourceBoundCellQ24TrainingStageV1::readback(","self.completed_response(completed)?","wire::Response::from_request(\n            &request, result,\n        )"]
 top_level = []
 
 [[protected_file.required_function_order]]
@@ -4754,7 +4754,7 @@ top_level = []
 
 [[protected_file.required_function_order]]
 function = "fn decode_completed("
-sequence = ["snapshot.len() > 10_924","STANDARD_NO_PAD",".decode(&snapshot)","STANDARD_NO_PAD.encode(&bytes) != snapshot","decode_original_owner_snapshot_v1(&bytes)?","require_exact_extension(context, &completed)?","evidence.decode()","authenticate_receipt(context, receipt.clone(), attestation, at)"]
+sequence = ["snapshot.len() > 10_924","STANDARD_NO_PAD",".decode(&snapshot)","STANDARD_NO_PAD.encode(&bytes) != snapshot","decode_original_owner_snapshot_v1(&bytes)?","require_exact_extension(context, &completed)?","let attestation = evidence\n        .decode()","authenticate_receipt(context, receipt.clone(), attestation, at)"]
 top_level = []
 
 [[protected_file.required_function_order]]
@@ -4764,7 +4764,7 @@ top_level = []
 
 [[protected_file.required_function_order]]
 function = "fn authenticate_receipt("
-sequence = ["context.validate()?","receipt.observation.stage() != LearningIterationStageV1::Training","receipt.actor_id != context.dataset.owners.trainer","receipt.predecessor != context.dataset.head_digest","receipt.observed_unix_seconds != attestation.issued_at","receipt.observed_unix_seconds > at","return Err(Error::Binding(","coordinator.record(receipt.clone(), receipt.observed_unix_seconds)?","context.scope.validate_snapshot(coordinator.snapshot())?","learning_iteration_receipt_signing_bytes_v1(&receipt)?","context.verifier.verify(","LearningEvidenceRoleV1::Generator","&attestation","&payload","at","verified.principal().principal_id != context.dataset.owners.trainer","Ok(OriginalCellQ24TrainingCommandReceiptV1 { receipt, attestation })"]
+sequence = ["context.validate()?","receipt.observation.stage() != LearningIterationStageV1::Training","receipt.actor_id != context.dataset.owners.trainer","receipt.predecessor != context.dataset.head_digest","receipt.observed_unix_seconds != attestation.issued_at","receipt.observed_unix_seconds > at","return Err(Error::Binding(","coordinator.record(receipt.clone(), receipt.observed_unix_seconds)?","context.scope.validate_snapshot(coordinator.snapshot())?","learning_iteration_receipt_signing_bytes_v1(&receipt)?","context.verifier.verify(","LearningEvidenceRoleV1::Generator","&attestation","&payload","at","verified.principal().principal_id != context.dataset.owners.trainer","Ok(OriginalCellQ24TrainingCommandReceiptV1 {\n        receipt,\n        attestation,\n    })"]
 top_level = []
 
 [[protected_file]]
