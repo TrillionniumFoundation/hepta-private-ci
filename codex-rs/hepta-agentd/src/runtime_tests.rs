@@ -643,7 +643,7 @@ async fn qualification_prepare_quarantines_expired_registry_attempt_with_h7_evid
     .expect("logical request");
     let fixture_started = std::time::Instant::now();
     let minted_at = SystemTime::now().duration_since(UNIX_EPOCH).expect("clock");
-    let expires_at = minted_at.as_secs() + 1;
+    let expires_at = minted_at.as_secs() + 2;
     let expiry_stage = |stage: &str| {
         let observed_at = SystemTime::now()
             .duration_since(UNIX_EPOCH)
