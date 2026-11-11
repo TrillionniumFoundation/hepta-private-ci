@@ -109,13 +109,13 @@ class OriginalTrainingSourceCaptureClosureTests(unittest.TestCase):
             ("fn create_from_original_source(", "source.native_inputs()?"),
             ("fn recover_from_original_source(", "source.native_inputs()?"),
             ("fn captured_job_key(", "let original = job_key(plan, batch, rule)?"),
-            ("fn captured_job_key(", "source.binding().as_array()"),
+            ("fn captured_job_key(", "source.source_capture_binding().as_array()"),
             ("fn require_original_source_capture(", "ordinary Training requires original source capture"),
             ("fn require_original_source_capture(", "self.fenced = true"),
         ):
             with self.subTest(function=function, marker=marker):
                 self.rejects(OWNER, function, marker)
-        self.rejects(BOUND, "fn from_original_stage(", "owners.training.require_original_source_capture()?")
+        self.rejects(BOUND, "fn from_original_stage(", "CellQ24TrainingOwnerV1::require_original_source_capture(&mut owners.training)?")
         self.rejects(NATIVE, "fn fit_or_readback(", "Ok(state) => return self.decode_state(state)")
         self.rejects(NATIVE, "fn fit_or_readback(", "Err(ProductEvaluationExecutionStoreErrorV1::Missing)")
 
@@ -124,7 +124,7 @@ class OriginalTrainingSourceCaptureClosureTests(unittest.TestCase):
         self.rejects(STAGE, "fn execute_training(", "training.require_live_source_if_captured()?")
         self.rejects(STAGE, "fn execute_training(", "fresh_now >= dataset.request.envelope.expiry_unix_seconds")
         for path, function in ((STAGE, "fn in_lane<"), (MODEL, "fn in_model_lane<")):
-            for marker in ("training.require_live_source_if_captured()?", ".map_err(|_| Error::CommitUncertain)?"):
+            for marker in ("training.require_live_source_if_captured()?", "CellQ24TrainingOwnerV1::require_live_source_if_captured(&mut owners.training)"):
                 with self.subTest(path=path, marker=marker):
                     self.rejects(path, function, marker)
 

@@ -104,9 +104,7 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
             .read_original_completion()
             .map_err(|_| Error::CommitUncertain)?;
         #[cfg(target_os = "linux")]
-        owners
-            .training
-            .require_live_source_if_captured()
+        CellQ24TrainingOwnerV1::require_live_source_if_captured(&mut owners.training)
             .map_err(|_| Error::CommitUncertain)?;
         if current.receipt != original.receipt || current.attestation != original.attestation {
             return Err(Error::CommitUncertain);

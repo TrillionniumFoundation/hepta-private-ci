@@ -18,6 +18,7 @@ use super::OriginalCellQ24TrainingStageV1;
 use crate::CellQ24ModelProposalInputsV1;
 use crate::CellQ24ModelProposalOwnerV1;
 use crate::CellQ24ModelProposalReceiptV1;
+use crate::CellQ24TrainingOwnerV1;
 
 pub struct SourceBoundCellQ24TrainingStageV1<TW: AnchorWitnessStore, RW: AnchorWitnessStore> {
     original: OriginalCellQ24TrainingStageV1<TW, RW>,
@@ -34,7 +35,7 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
     ) -> Result<Self, Error> {
         original
             .in_lane(|owners| {
-                owners.training.require_original_source_capture()?;
+                CellQ24TrainingOwnerV1::require_original_source_capture(&mut owners.training)?;
                 Ok(())
             })
             .await?;
@@ -46,14 +47,14 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
         dataset: &LearningIterationSnapshotV1,
         cancellation: Arc<AtomicBool>,
     ) -> Result<OriginalCellQ24TrainingCompletionV1, Error> {
-        self.original.execute_training(dataset, cancellation).await
+        OriginalCellQ24TrainingStageV1::execute_training(&self.original, dataset, cancellation).await
     }
 
     pub async fn readback(
         &self,
         dataset: &LearningIterationSnapshotV1,
     ) -> Result<OriginalCellQ24TrainingCompletionV1, Error> {
-        self.original.readback(dataset).await
+        OriginalCellQ24TrainingStageV1::readback(&self.original, dataset).await
     }
 
     pub async fn receipt_attestation(
@@ -61,7 +62,7 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
         dataset: &LearningIterationSnapshotV1,
         expected: &LearningIterationReceiptV1,
     ) -> Result<SignedLearningEvidenceV1, Error> {
-        self.original.receipt_attestation(dataset, expected).await
+        OriginalCellQ24TrainingStageV1::receipt_attestation(&self.original, dataset, expected).await
     }
 
     /// Synchronous original-lane I/O; call from the host's bounded blocking
@@ -71,7 +72,7 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
         file: File,
         witness: MW,
     ) -> Result<CellQ24ModelProposalOwnerV1<MW>, Error> {
-        self.original.create_model_owner(file, witness)
+        OriginalCellQ24TrainingStageV1::create_model_owner(&self.original, file, witness)
     }
 
     pub fn recover_model_owner<MW: AnchorWitnessStore>(
@@ -79,7 +80,7 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
         file: File,
         witness: MW,
     ) -> Result<CellQ24ModelProposalOwnerV1<MW>, Error> {
-        self.original.recover_model_owner(file, witness)
+        OriginalCellQ24TrainingStageV1::recover_model_owner(&self.original, file, witness)
     }
 
     pub fn commit_model_or_readback(
@@ -87,7 +88,7 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
         model: &mut CellQ24ModelProposalOwnerV1<impl AnchorWitnessStore>,
         inputs: &CellQ24ModelProposalInputsV1<'_, impl FinalHoldoutCasStoreV1>,
     ) -> Result<CellQ24ModelProposalReceiptV1, Error> {
-        self.original.commit_model_or_readback(model, inputs)
+        OriginalCellQ24TrainingStageV1::commit_model_or_readback(&self.original, model, inputs)
     }
 
     /// Same original trainer, signature owner and Model journal. Both live
@@ -97,6 +98,6 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
         model: &mut CellQ24ModelProposalOwnerV1<impl AnchorWitnessStore>,
         inputs: &CellQ24ModelProposalInputsV1<'_, impl FinalHoldoutCasStoreV1>,
     ) -> Result<CellQ24ModelProposalReceiptV1, Error> {
-        self.original.read_model_proposal(model, inputs)
+        OriginalCellQ24TrainingStageV1::read_model_proposal(&self.original, model, inputs)
     }
 }

@@ -208,7 +208,7 @@ impl OriginalCellQ24TrainingSourceV1 {
         Ok((plan, self.material.batch().clone(), self.config.optimizer))
     }
 
-    pub(crate) fn binding(&self) -> Digest32 {
+    pub(crate) fn source_capture_binding(&self) -> Digest32 {
         self.binding
     }
 
@@ -254,23 +254,21 @@ impl LiveOwners {
     ) -> Result<(), Error> {
         let experience = &config.dataset.receipts[0];
         let dataset = &config.dataset.receipts[1];
-        if self
-            .experience
-            .readback(&config.dataset, experience)
-            .await
-            .map_err(|_| Error::OwnerUnavailable)?
-            != config.experience_evidence
-            || self
-                .dataset
-                .readback(&config.dataset, dataset)
-                .await
-                .map_err(|_| Error::OwnerUnavailable)?
-                != config.dataset_evidence
-        {
+        let original_experience = LearningIterationEvidenceClientV1::readback(
+            &self.experience, &config.dataset, experience,
+        ).await.map_err(|_| Error::OwnerUnavailable)?;
+        if original_experience != config.experience_evidence {
+            return Err(Error::Binding("complete original Material signatures"));
+        }
+        let original_dataset = LearningIterationEvidenceClientV1::readback(
+            &self.dataset, &config.dataset, dataset,
+        ).await.map_err(|_| Error::OwnerUnavailable)?;
+        if original_dataset != config.dataset_evidence {
             return Err(Error::Binding("complete original Material signatures"));
         }
         Ok(())
     }
+
 }
 
 fn verify_original_evidence(

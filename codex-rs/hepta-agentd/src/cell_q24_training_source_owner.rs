@@ -96,7 +96,9 @@ impl<W: AnchorWitnessStore> CellQ24TrainingOwnerV1<W> {
             .ok_or(Error::Binding(
                 "ordinary Training requires original source capture",
             ))
-            .and_then(|source| source.require_current_in_lane().map_err(Error::from));
+            .and_then(|source| {
+                OriginalCellQ24TrainingSourceV1::require_current_in_lane(source).map_err(Error::from)
+            });
         if result.is_err() {
             self.fenced = true;
         }
@@ -136,7 +138,7 @@ fn captured_job_key(
         binding_digest: Digest32::of_parts(&[
             b"hepta.cell.q24.original-source-training-job.v1\0",
             original.binding_digest.as_array(),
-            source.binding().as_array(),
+            source.source_capture_binding().as_array(),
         ]),
     })
 }

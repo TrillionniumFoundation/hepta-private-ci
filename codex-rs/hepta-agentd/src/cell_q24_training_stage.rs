@@ -201,7 +201,7 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
         dataset: &LearningIterationSnapshotV1,
         expected: &LearningIterationReceiptV1,
     ) -> Result<SignedLearningEvidenceV1, Error> {
-        let completed = self.readback(dataset).await?;
+        let completed = OriginalCellQ24TrainingStageV1::readback(self, dataset).await?;
         if &completed.receipt != expected {
             return Err(Error::Binding("exact original Training receipt"));
         }
@@ -236,9 +236,7 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
             // Work or its acknowledgement may already have happened. A failed
             // tail read cannot return a candidate, NoUpdate, or fresh signature.
             #[cfg(target_os = "linux")]
-            owners
-                .training
-                .require_live_source_if_captured()
+            CellQ24TrainingOwnerV1::require_live_source_if_captured(&mut owners.training)
                 .map_err(|_| Error::CommitUncertain)?;
             result
         })
