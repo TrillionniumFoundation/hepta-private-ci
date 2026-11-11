@@ -1,0 +1,63 @@
+test_sigma_curvature_and_mu_sigma_cross_across_drift_regimes (qualification.hcsn_differentiable.tests.test_logrisk_hessian.SecondOrderLogRiskTests.test_sigma_curvature_and_mu_sigma_cross_across_drift_regimes) ... 
+  test_sigma_curvature_and_mu_sigma_cross_across_drift_regimes (qualification.hcsn_differentiable.tests.test_logrisk_hessian.SecondOrderLogRiskTests.test_sigma_curvature_and_mu_sigma_cross_across_drift_regimes) (data=(0.15, 0.1, -0.12, 0.35, None)) ... ERROR
+  test_sigma_curvature_and_mu_sigma_cross_across_drift_regimes (qualification.hcsn_differentiable.tests.test_logrisk_hessian.SecondOrderLogRiskTests.test_sigma_curvature_and_mu_sigma_cross_across_drift_regimes) (data=(0.15, 0.1, 0.0, 0.35, None)) ... ERROR
+  test_sigma_curvature_and_mu_sigma_cross_across_drift_regimes (qualification.hcsn_differentiable.tests.test_logrisk_hessian.SecondOrderLogRiskTests.test_sigma_curvature_and_mu_sigma_cross_across_drift_regimes) (data=(1.0, 0.0001, 0.2, 0.1, None)) ... ERROR
+
+======================================================================
+ERROR: test_sigma_curvature_and_mu_sigma_cross_across_drift_regimes (qualification.hcsn_differentiable.tests.test_logrisk_hessian.SecondOrderLogRiskTests.test_sigma_curvature_and_mu_sigma_cross_across_drift_regimes) (data=(0.15, 0.1, -0.12, 0.35, None))
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hcsn-p0p5-doubleback-r10-20261111/qualification/hcsn_differentiable/tests/test_logrisk_hessian.py", line 41, in test_sigma_curvature_and_mu_sigma_cross_across_drift_regimes
+    true_sigma = mp.diff(
+                 ^^^^^^^^
+  File "/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/mpmath/calculus/differentiation.py", line 188, in diff
+    values, norm, workprec = hsteps(ctx, f, x, n, prec, **options)
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/mpmath/calculus/differentiation.py", line 61, in hsteps
+    values = [f(x+k*h) for k in steps]
+              ^^^^^^^^
+  File "/home/qian-qi/hcsn-p0p5-doubleback-r10-20261111/qualification/hcsn_differentiable/tests/test_logrisk_hessian.py", line 42, in <lambda>
+    lambda s: reference(*reference_data[:3], s, reference_data[4]),
+                                                ~~~~~~~~~~~~~~^^^
+IndexError: tuple index out of range
+
+======================================================================
+ERROR: test_sigma_curvature_and_mu_sigma_cross_across_drift_regimes (qualification.hcsn_differentiable.tests.test_logrisk_hessian.SecondOrderLogRiskTests.test_sigma_curvature_and_mu_sigma_cross_across_drift_regimes) (data=(0.15, 0.1, 0.0, 0.35, None))
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hcsn-p0p5-doubleback-r10-20261111/qualification/hcsn_differentiable/tests/test_logrisk_hessian.py", line 41, in test_sigma_curvature_and_mu_sigma_cross_across_drift_regimes
+    true_sigma = mp.diff(
+                 ^^^^^^^^
+  File "/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/mpmath/calculus/differentiation.py", line 188, in diff
+    values, norm, workprec = hsteps(ctx, f, x, n, prec, **options)
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/mpmath/calculus/differentiation.py", line 61, in hsteps
+    values = [f(x+k*h) for k in steps]
+              ^^^^^^^^
+  File "/home/qian-qi/hcsn-p0p5-doubleback-r10-20261111/qualification/hcsn_differentiable/tests/test_logrisk_hessian.py", line 42, in <lambda>
+    lambda s: reference(*reference_data[:3], s, reference_data[4]),
+                                                ~~~~~~~~~~~~~~^^^
+IndexError: tuple index out of range
+
+======================================================================
+ERROR: test_sigma_curvature_and_mu_sigma_cross_across_drift_regimes (qualification.hcsn_differentiable.tests.test_logrisk_hessian.SecondOrderLogRiskTests.test_sigma_curvature_and_mu_sigma_cross_across_drift_regimes) (data=(1.0, 0.0001, 0.2, 0.1, None))
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hcsn-p0p5-doubleback-r10-20261111/qualification/hcsn_differentiable/tests/test_logrisk_hessian.py", line 41, in test_sigma_curvature_and_mu_sigma_cross_across_drift_regimes
+    true_sigma = mp.diff(
+                 ^^^^^^^^
+  File "/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/mpmath/calculus/differentiation.py", line 188, in diff
+    values, norm, workprec = hsteps(ctx, f, x, n, prec, **options)
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/mpmath/calculus/differentiation.py", line 61, in hsteps
+    values = [f(x+k*h) for k in steps]
+              ^^^^^^^^
+  File "/home/qian-qi/hcsn-p0p5-doubleback-r10-20261111/qualification/hcsn_differentiable/tests/test_logrisk_hessian.py", line 42, in <lambda>
+    lambda s: reference(*reference_data[:3], s, reference_data[4]),
+                                                ~~~~~~~~~~~~~~^^^
+IndexError: tuple index out of range
+
+----------------------------------------------------------------------
+Ran 1 test in 0.285s
+
+FAILED (errors=3)
