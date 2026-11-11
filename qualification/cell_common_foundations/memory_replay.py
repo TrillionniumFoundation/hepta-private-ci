@@ -265,10 +265,29 @@ class ReplayPool:
             if type(p[key]) is not int or not 0 <= p[key] <= cap:
                 raise ValueError("invalid checkpoint accounting")
             setattr(pool, key, p[key])
-        if len(p["distinct"]) > p["presentations"] or len(set(p["distinct"])) != len(
-            p["distinct"]
+        # A selection returns at most 32 whole episodes of 1..32 steps. Each
+        # step has 11 FP64 values across the four validated episode arrays.
+        # Independent counter bounds alone admit impossible, rehashed costs.
+        if (
+            pool.presentations > 32 * pool.calls
+            or not pool.presentations <= pool.timesteps <= 32 * pool.presentations
+            or pool.numeric_payload_bytes != 88 * pool.timesteps
+        ):
+            raise ValueError("inconsistent checkpoint replay accounting")
+        if (
+            not isinstance(p["distinct"], list)
+            or len(p["distinct"]) > pool.presentations
+            or bool(p["distinct"]) != bool(pool.presentations)
+            or any(
+                not isinstance(value, str) or not 1 <= len(value) <= 160
+                for value in p["distinct"]
+            )
+            or len(set(p["distinct"])) != len(p["distinct"])
         ):
             raise ValueError("invalid distinct replay accounting")
+        # These are historical IDs: valid entries may already have been
+        # evicted by capacity or source revision, so current membership is
+        # deliberately not required. This does not authenticate past admission.
         pool.distinct = set(p["distinct"])
         pool.rng.bit_generator.state = p["rng"]
         return pool
@@ -368,10 +387,7 @@ def verify_priority_selection_against_checkpoint(selection):
     if receipt["selection_index"] != pool.calls + 1:
         raise ValueError("priority selection index does not follow checkpoint")
     before = canonical_digest(pool.rng.bit_generator.state)
-    if (
-        receipt["rng_before_digest"] != before
-        or receipt["rng_after_digest"] != before
-    ):
+    if receipt["rng_before_digest"] != before or receipt["rng_after_digest"] != before:
         raise ValueError("priority selection changed checkpoint RNG")
     eligible = sorted(
         (item for item in pool.items if item.kind == "error"),
@@ -584,7 +600,9 @@ def run_replay_attempt(spec):
             if spec["method"] == "error_prioritized":
                 preselection_checkpoint = pool.checkpoint()
             chosen, selection_audit = pool.select(
-                spec["method"], spec["entry_budget"], spec["timestep_budget"],
+                spec["method"],
+                spec["entry_budget"],
+                spec["timestep_budget"],
                 audit=True,
             )
             selections.append(

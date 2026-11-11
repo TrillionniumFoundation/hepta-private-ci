@@ -157,6 +157,31 @@ class LearningClock:
                 type(v) is not int or not 0 <= v <= p["tick"] for v in p[k]
             ):
                 raise ValueError("invalid checkpoint counts")
+        # The declared schedule fixes these counters even when every input
+        # gradient was zero. A matching checksum does not make them consistent.
+        expected_cursor = 0
+        if clock.mode == "uniform_all":
+            expected_counts = [0] * 7
+            expected_updates = [p["tick"]] * 7
+        elif clock.mode == "lineage":
+            expected_counts = [p["tick"] % period for period in clock.periods]
+            expected_updates = [p["tick"] // period for period in clock.periods]
+        else:
+            expected_counts = [p["tick"]] * 7
+            expected_updates = [0] * 7
+            for sequence in range(1, p["tick"] + 1):
+                slots = sum(sequence % period == 0 for period in clock.periods)
+                for offset in range(slots):
+                    group = (expected_cursor + offset) % 7
+                    expected_counts[group] = p["tick"] - sequence
+                    expected_updates[group] += 1
+                expected_cursor = (expected_cursor + slots) % 7
+        if (
+            p["counts"] != expected_counts
+            or p["group_updates"] != expected_updates
+            or p["cursor"] != expected_cursor
+        ):
+            raise ValueError("checkpoint schedule disagrees with tick, mode or periods")
         if len(p["first_source"]) != 7 or set(p["pending"]) != set(LAYERS):
             raise ValueError("invalid checkpoint buffer")
         for k, expected in clock.pending.items():
