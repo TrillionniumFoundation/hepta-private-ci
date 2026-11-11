@@ -22,6 +22,8 @@ mod driver;
 mod runtime;
 #[path = "circuit_task_source.rs"]
 mod source;
+#[cfg(test)]
+pub(crate) use source::tests as source_test_support;
 
 pub use runtime::CircuitTaskHandleV1;
 pub use runtime::CircuitTaskRuntimeBootstrapV1;
