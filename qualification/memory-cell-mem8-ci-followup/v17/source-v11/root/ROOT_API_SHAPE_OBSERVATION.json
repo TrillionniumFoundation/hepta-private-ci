@@ -1,0 +1,7 @@
+{
+  "failed_execution_chunk": "2c16fd",
+  "exit_code": 1,
+  "reason": "Compared generic full GitHub API object with purpose-tool normalized jobs/step projection as full object; both original observation success and all 15 steps agree",
+  "correction": "Require equal job and step cardinality; compare every normalized key recursively to full API, preserve full API supplemental fields",
+  "original_CI_or_evidence_mutated": false
+}

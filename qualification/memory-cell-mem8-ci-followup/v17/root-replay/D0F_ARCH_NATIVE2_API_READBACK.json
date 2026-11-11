@@ -1,0 +1,169 @@
+{
+  "commit": {
+    "sha": "8e0b0f9524a7fb037c59a590f871fdeae03d7552",
+    "node_id": "C_kwDOTrgxoNoAKDhlMGIwZjk1MjRhN2ZiMDM3YzU5YTU5MGY4NzFmZGVhZTAzZDc1NTI",
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/8e0b0f9524a7fb037c59a590f871fdeae03d7552",
+    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/8e0b0f9524a7fb037c59a590f871fdeae03d7552",
+    "author": {
+      "name": "Qian QI",
+      "email": "102159240+ProfHepta@users.noreply.github.com",
+      "date": "2026-11-11T17:48:44Z"
+    },
+    "committer": {
+      "name": "Qian QI",
+      "email": "102159240+ProfHepta@users.noreply.github.com",
+      "date": "2026-11-11T17:48:44Z"
+    },
+    "tree": {
+      "sha": "7bd5cebfeb454f0ed772db72da65d22147d35e83",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/7bd5cebfeb454f0ed772db72da65d22147d35e83"
+    },
+    "message": "Retain complete original d0f Architecture and two-case native qualification with MEM root replay",
+    "parents": [
+      {
+        "sha": "1eee8836f06b53e185c7dbb1f135ea64001144ba",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/1eee8836f06b53e185c7dbb1f135ea64001144ba",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/1eee8836f06b53e185c7dbb1f135ea64001144ba"
+      }
+    ],
+    "verification": {
+      "verified": false,
+      "reason": "unsigned",
+      "signature": null,
+      "payload": null,
+      "verified_at": null
+    }
+  },
+  "files": [
+    {
+      "path": "qualification/memory-cell-mem8-ci-followup/v17/architecture-d0f/ARCH_D0F_ORIGINAL.part-001.xz.part",
+      "expected_git_blob": "e146598558e3713c6f023cc1d03f926c925453ab",
+      "actual_api_git_blob": "e146598558e3713c6f023cc1d03f926c925453ab"
+    },
+    {
+      "path": "qualification/memory-cell-mem8-ci-followup/v17/architecture-d0f/ARCH_D0F_ORIGINAL.part-002.xz.part",
+      "expected_git_blob": "393bd0ff7dd493df132d7f7fbb2bbe3fd64ad437",
+      "actual_api_git_blob": "393bd0ff7dd493df132d7f7fbb2bbe3fd64ad437"
+    },
+    {
+      "path": "qualification/memory-cell-mem8-ci-followup/v17/architecture-d0f/ARCHIVE_INDEX.json",
+      "expected_git_blob": "5b050d9d5ae33f25550b8143567270bed7a3a560",
+      "actual_api_git_blob": "5b050d9d5ae33f25550b8143567270bed7a3a560"
+    },
+    {
+      "path": "qualification/memory-cell-mem8-ci-followup/v17/architecture-d0f/PACKAGE_MANIFEST.json",
+      "expected_git_blob": "6b7fb53d873c3a140c551c3925bf7344f11b95bf",
+      "actual_api_git_blob": "6b7fb53d873c3a140c551c3925bf7344f11b95bf"
+    },
+    {
+      "path": "qualification/memory-cell-mem8-ci-followup/v17/architecture-d0f/OFFLINE_PACKAGE_REPLAY.json",
+      "expected_git_blob": "f6327487f7524efcdd7644194129b05bfce2fee8",
+      "actual_api_git_blob": "f6327487f7524efcdd7644194129b05bfce2fee8"
+    },
+    {
+      "path": "qualification/memory-cell-mem8-ci-followup/v17/architecture-d0f/ARCH_COMPLETE_ORIGINAL_AUDIT.json",
+      "expected_git_blob": "c4f313a35f19aa4e99b57070da79c5e9b50bf062",
+      "actual_api_git_blob": "c4f313a35f19aa4e99b57070da79c5e9b50bf062"
+    },
+    {
+      "path": "qualification/memory-cell-mem8-ci-followup/v17/architecture-d0f/verify_arch_package.py",
+      "expected_git_blob": "a7937e4769df6604fcfa583e6c56102194ce31bb",
+      "actual_api_git_blob": "a7937e4769df6604fcfa583e6c56102194ce31bb"
+    },
+    {
+      "path": "qualification/memory-cell-mem8-ci-followup/v17/architecture-d0f/audit_arch_complete_original.py",
+      "expected_git_blob": "d3ada25e73c02a9e7ae5663635ef100d8c4a8561",
+      "actual_api_git_blob": "d3ada25e73c02a9e7ae5663635ef100d8c4a8561"
+    },
+    {
+      "path": "qualification/memory-cell-mem8-ci-followup/v17/architecture-d0f/README.md",
+      "expected_git_blob": "ee1b0c61a4419f357fb1870c25f90d7ee4003a79",
+      "actual_api_git_blob": "ee1b0c61a4419f357fb1870c25f90d7ee4003a79"
+    },
+    {
+      "path": "qualification/memory-cell-mem8-ci-followup/v17/architecture-d0f/ACTUAL_PUBLICATION.json",
+      "expected_git_blob": "395c024906e7b8dba042f7259e458f99dbee458d",
+      "actual_api_git_blob": "395c024906e7b8dba042f7259e458f99dbee458d"
+    },
+    {
+      "path": "qualification/memory-cell-mem8-ci-followup/v17/architecture-d0f/ROOT_ORIGINAL_API.json",
+      "expected_git_blob": "ec593346714f3e5d6937d942e5cd71f4f9321a53",
+      "actual_api_git_blob": "ec593346714f3e5d6937d942e5cd71f4f9321a53"
+    },
+    {
+      "path": "qualification/memory-cell-mem8-ci-followup/v17/native-two-d0f/TWO_NATIVE_ORIGINAL_COMPLETE.tar.xz",
+      "expected_git_blob": "9a07921c19fbc63f9bc3b7a0f184fdb2f997b0f3",
+      "actual_api_git_blob": "9a07921c19fbc63f9bc3b7a0f184fdb2f997b0f3"
+    },
+    {
+      "path": "qualification/memory-cell-mem8-ci-followup/v17/native-two-d0f/DELIVERY_PUBLICATION.json",
+      "expected_git_blob": "106790411f2a1cb3e2a2c5121c3a0f6fa55e737c",
+      "actual_api_git_blob": "106790411f2a1cb3e2a2c5121c3a0f6fa55e737c"
+    },
+    {
+      "path": "qualification/memory-cell-mem8-ci-followup/v17/native-two-d0f/MEMBER_MANIFEST.json",
+      "expected_git_blob": "e480eaa2506dab7927c23f0d0a1425c985b429ce",
+      "actual_api_git_blob": "e480eaa2506dab7927c23f0d0a1425c985b429ce"
+    },
+    {
+      "path": "qualification/memory-cell-mem8-ci-followup/v17/native-two-d0f/ARCHIVE_INDEX.json",
+      "expected_git_blob": "8cc4f6356d33f42ff18dc3e9d8437e6bd16d841a",
+      "actual_api_git_blob": "8cc4f6356d33f42ff18dc3e9d8437e6bd16d841a"
+    },
+    {
+      "path": "qualification/memory-cell-mem8-ci-followup/v17/native-two-d0f/audit_original.py",
+      "expected_git_blob": "642f2f049fced0ee933002ae8474a13a9d668b44",
+      "actual_api_git_blob": "642f2f049fced0ee933002ae8474a13a9d668b44"
+    },
+    {
+      "path": "qualification/memory-cell-mem8-ci-followup/v17/native-two-d0f/audit_snapshot_proofs_v2.py",
+      "expected_git_blob": "f8cbf27f0bd205a2af5686c8640c82804ea410c1",
+      "actual_api_git_blob": "f8cbf27f0bd205a2af5686c8640c82804ea410c1"
+    },
+    {
+      "path": "qualification/memory-cell-mem8-ci-followup/v17/native-two-d0f/SOURCE_SNAPSHOT_READER_CORRECTION.json",
+      "expected_git_blob": "7a5ef3ad41354ba3f2ffe74aad6cc5fc0072f1ab",
+      "actual_api_git_blob": "7a5ef3ad41354ba3f2ffe74aad6cc5fc0072f1ab"
+    },
+    {
+      "path": "qualification/memory-cell-mem8-ci-followup/v17/native-two-d0f/SOURCE_SNAPSHOT_AUDIT_V2.json",
+      "expected_git_blob": "49fc3d051b894cd7bd39ac1f5678478c9cec63a5",
+      "actual_api_git_blob": "49fc3d051b894cd7bd39ac1f5678478c9cec63a5"
+    },
+    {
+      "path": "qualification/memory-cell-mem8-ci-followup/v17/native-two-d0f/INDEPENDENT_AUDIT.json",
+      "expected_git_blob": "609e5c3571f56b45b680bcde0b40e1b9ed1ef6ce",
+      "actual_api_git_blob": "609e5c3571f56b45b680bcde0b40e1b9ed1ef6ce"
+    },
+    {
+      "path": "qualification/memory-cell-mem8-ci-followup/v17/native-two-d0f/ROOT_ORIGINAL_API.json",
+      "expected_git_blob": "b8c663f21202a3e89a5213db559d0d3c2b5ae32a",
+      "actual_api_git_blob": "b8c663f21202a3e89a5213db559d0d3c2b5ae32a"
+    },
+    {
+      "path": "qualification/memory-cell-mem8-ci-followup/v17/root-replay/ROOT_D0F_MEM_REMOTE_REPLAY.json",
+      "expected_git_blob": "94696cc0ae74886f0c5df23fac17d013e0f9c308",
+      "actual_api_git_blob": "94696cc0ae74886f0c5df23fac17d013e0f9c308"
+    },
+    {
+      "path": "qualification/memory-cell-mem8-ci-followup/v17/root-replay/verify_d0f_mem_remote.py",
+      "expected_git_blob": "ee9ed1802905b3c183e3df7eb66359b6ef412eaa",
+      "actual_api_git_blob": "ee9ed1802905b3c183e3df7eb66359b6ef412eaa"
+    },
+    {
+      "path": "qualification/memory-cell-mem8-ci-followup/v17/root-replay/REPRODUCIBLE_SCRATCH_CLEANUP.json",
+      "expected_git_blob": "93af9c2c93bd95841838e23e85d34e7343cf891a",
+      "actual_api_git_blob": "93af9c2c93bd95841838e23e85d34e7343cf891a"
+    },
+    {
+      "path": "qualification/memory-cell-mem8-ci-followup/v17/mem-d0f/ROOT_REMOTE_OFFLINE_REPLAY.json",
+      "expected_git_blob": "ea6c6e2df0848f42c57614f73dc350e0dfd7e1dd",
+      "actual_api_git_blob": "ea6c6e2df0848f42c57614f73dc350e0dfd7e1dd"
+    },
+    {
+      "path": "qualification/memory-cell-mem8-ci-followup/v17/mem-d0f/ROOT_JUNIT_OFFLINE_REPLAY.json",
+      "expected_git_blob": "5cbf254df624d2e0661be3cbda260345d9001e6c",
+      "actual_api_git_blob": "5cbf254df624d2e0661be3cbda260345d9001e6c"
+    }
+  ]
+}
