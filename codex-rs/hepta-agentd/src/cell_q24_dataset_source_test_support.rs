@@ -35,7 +35,7 @@ use crate::circuit_task::source_test_support::source;
 use crate::circuit_task::source_test_support::time;
 use crate::circuit_task::source_test_support::witness;
 
-pub(super) type Source = DurableCircuitTaskSourceV1<FileAnchorWitnessStore>;
+pub(crate) type Source = DurableCircuitTaskSourceV1<FileAnchorWitnessStore>;
 
 fn definition(bundle: Digest32) -> codex_hepta_neuron::CellDefinitionV1 {
     let mut definition = cell::definition();
@@ -73,10 +73,10 @@ fn cell_owner(
     )?)
 }
 
-pub(super) fn model(
+pub(crate) fn model(
     root: &Path,
 ) -> anyhow::Result<(LoadedCellQ24ModelV1, CellCompatibilityBundleV1)> {
-    let q = super::super::codec::Q;
+    let q = crate::cell_composed_q24::codec::Q;
     let matrix = |rows: u16, values: &[i64]| {
         let mut bytes = b"HQ24M001".to_vec();
         bytes.extend_from_slice(&rows.to_le_bytes());
@@ -108,7 +108,7 @@ pub(super) fn model(
     Ok((model, bundle))
 }
 
-pub(super) fn observation(values: [i64; 2]) -> Vec<u8> {
+pub(crate) fn observation(values: [i64; 2]) -> Vec<u8> {
     let mut bytes = b"HQ24I001".to_vec();
     bytes.extend_from_slice(&2_u16.to_le_bytes());
     for value in values {
@@ -117,7 +117,7 @@ pub(super) fn observation(values: [i64; 2]) -> Vec<u8> {
     bytes
 }
 
-pub(super) async fn completed(
+pub(crate) async fn completed(
     root: &Path,
     bundle: &CellCompatibilityBundleV1,
     run: &StableId,

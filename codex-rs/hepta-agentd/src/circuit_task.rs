@@ -16,6 +16,9 @@ use codex_hepta_types::Digest32;
 use crate::CircuitCellErrorV1;
 use crate::CircuitCellExecutionV1;
 
+#[cfg(test)]
+#[path = "cell_q24_dataset_source_test_support.rs"]
+pub(crate) mod cell_q24_dataset_source_test_support;
 #[path = "circuit_task_driver.rs"]
 mod driver;
 #[path = "circuit_task_runtime.rs"]

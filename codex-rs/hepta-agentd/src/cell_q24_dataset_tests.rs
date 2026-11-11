@@ -7,6 +7,7 @@ use crate::circuit_cell::tests::support::checked;
 use crate::circuit_cell::tests::support::d;
 use crate::circuit_cell::tests::support::id;
 use crate::circuit_credit::circuit_learning_run_id_v1;
+use crate::circuit_task::cell_q24_dataset_source_test_support as source;
 use crate::circuit_task::source_test_support::identity;
 use codex_hepta_learning_artifacts::CellCompatibilityBundleV1;
 use codex_hepta_learning_artifacts::IterationEnvelopeV1;
@@ -23,8 +24,6 @@ use pretty_assertions::assert_eq;
 
 #[path = "circuit_credit_ledger_test_support.rs"]
 mod ledger;
-#[path = "cell_q24_dataset_source_test_support.rs"]
-mod source;
 
 fn initial(
     publication: &CircuitTaskSourcePublicationV1,
