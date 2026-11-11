@@ -1,0 +1,158 @@
+{
+  "schema": "hepta.cell-p0-converged-research-status.v1",
+  "observed_at_utc": "2026-11-11T00:34:31Z",
+  "description": "Readback of distinct published experiments plus the newly recovered frozen CTRL diagnostic. These experiments are not pooled into the common candidate's acceptance evidence.",
+  "independence_and_adoption": {
+    "new_independent_confirmation_tasks_this_round": 0,
+    "full_ordinary_abc_cold_recovery_runs_this_round": 0,
+    "production_activation": false,
+    "scientific_adoption": "HOLD / NoUpdate",
+    "full_lifetime_cost_measured": false
+  },
+  "cells": {
+    "MEM": {
+      "source_commit": "39d895547fa7a50c45d580d3e30236c87f99d322",
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/39d895547fa7a50c45d580d3e30236c87f99d322/qualification/memory-cell-mem6/run-001/RESULTS.md",
+      "latest_scope": "MEM6, separately declared disjoint source groups; historical exposure and sealed independent confirmation not authenticated",
+      "actor_episodes": 276,
+      "paired_cases": 138,
+      "declared_source_groups": 34,
+      "retention": {
+        "pairs": 84,
+        "source_groups": 20,
+        "public_selector_successes": 30,
+        "baseline_successes": 28,
+        "wins": 2,
+        "ties": 82,
+        "losses": 0,
+        "source_weighted_gain": 0.1,
+        "one_sided_95pct_bootstrap_lower_bound": 0,
+        "strict_positive_gate": false
+      },
+      "selector": {
+        "pairs": 54,
+        "source_groups": 14,
+        "candidate_successes": 21,
+        "baseline_successes": 13,
+        "wins": 9,
+        "ties": 44,
+        "losses": 1
+      },
+      "next_required": "Independent new-source confirmation and production original memory-writer bridge; keep retention effect separate from selector effect.",
+      "adoption": "NoUpdate"
+    },
+    "CTRL": {
+      "source_commit": "13de10b55b0f16cf1548dab193fbb8ac11d3b4cd",
+      "evidence_parent_commit": "602cd5695092a82f876fd122243b971b5b88eee8",
+      "evidence": "ctrl-gap/RESULTS.md",
+      "raw_rows": 200,
+      "unique_states": 160,
+      "registered_training_source_groups": 40,
+      "states_per_source": 4,
+      "original_covered_states": 86,
+      "covered_after_frozen_current_text_probes": 87,
+      "uncovered_categories": {
+        "A": 0,
+        "B": 1,
+        "C": 73,
+        "D": 0
+      },
+      "diagnostic_budget_censored_states": 13,
+      "historical_generator_censoring_unknown_states": 160,
+      "new_independent_tasks": 0,
+      "new_model_calls": 0,
+      "new_ocr_calls": 0,
+      "new_training_calls": 0,
+      "native_file_receipt_child_exit_code": 0,
+      "durable_process_terminal_observed": false,
+      "next_required": "Original owner-bound information-acquisition action and reachable successor-state evidence; C is historical availability, not a causal READ effect.",
+      "adoption": "NoUpdate"
+    },
+    "PERC": {
+      "source_commit": "2ec44e234a7164807f41af3a79e795dd71efa179",
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/2ec44e234a7164807f41af3a79e795dd71efa179/qualification/perc-semantic-owner-20261110/SUMMARY.json",
+      "distinct_synthetic_tasks": 30,
+      "training_seeds": 3,
+      "executions_per_arm": 90,
+      "correct": {
+        "rules": 90,
+        "global": 49,
+        "dense": 63
+      },
+      "online_encoder_batches": {
+        "rules": 0,
+        "global": 108,
+        "dense": 108
+      },
+      "online_wall_seconds": {
+        "rules": 0.196993453,
+        "global": 6.704176951,
+        "dense": 6.735790162
+      },
+      "owned_file_cli_replay_and_cold_readback": true,
+      "production_daemon_integrated": false,
+      "independent_real_source_confirmation": false,
+      "next_required": "Independent real-source tasks and production acquisition/Cell ownership integration; rules remain the stronger observed baseline.",
+      "adoption": "NoUpdate"
+    },
+    "ACT": {
+      "source_commit": "154a90afbabeeff9eafa48f58d598a87fbef0bef",
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/154a90afbabeeff9eafa48f58d598a87fbef0bef/qualification/act3-procedural-replay-20261110/README.md",
+      "reused_train_traces": 80,
+      "distinct_normalized_sequences": 9,
+      "actual_fits": 16,
+      "optimizer_calls": 3520,
+      "filesystem_episodes": 640,
+      "exposed_controlled_probe_definitions": 16,
+      "training_seeds": 8,
+      "arms": 5,
+      "successes_per_arm": 96,
+      "episodes_per_arm": 128,
+      "primitive_calls_per_arm": 1600,
+      "new_independent_tasks": 0,
+      "next_required": "Production CellStateOwner/FinalUse integration and independent selection/recovery/repair task benefit; repeated seeds and controlled probes do not increase task n.",
+      "adoption": "NoUpdate"
+    },
+    "VERIFY": {
+      "source_commit": "88deb8a490565fd9b55851ba4581c9516fd1029f",
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/88deb8a490565fd9b55851ba4581c9516fd1029f/qualification/verify4-evidence-closure-20261110/RESULT.json",
+      "evidence_class": "controlled_engineering_fixtures",
+      "local_tests": 226,
+      "controlled_confirmation_rows": 72,
+      "sqlite_total_rows": 96,
+      "dispatch_scenarios": 9,
+      "actual_dispatch_subprocesses": 17,
+      "new_independent_real_tasks": 0,
+      "next_required": "Independent real-task roster, authenticated allocation, original terminal labels and complete repair/cost lineage.",
+      "adoption": "NoUpdate"
+    },
+    "PRED": {
+      "source_commit": "aeb34582ac8a6bbb6c1e79b0722daead1aadb377",
+      "executed_runtime_commit": "74d3fddbc6e6cf28184848558422a81711460dc8",
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/aeb34582ac8a6bbb6c1e79b0722daead1aadb377/qualification/pred-owner-decision-20261110-9e31/CURRENT.json",
+      "local_tests": 159,
+      "synthetic_train_samples": 12,
+      "synthetic_dev_samples": 6,
+      "synthetic_mlp_optimizer_calls": 16,
+      "live_owner_records": 0,
+      "new_policy_real_task_comparisons": 0,
+      "new_independent_confirmation_units": 0,
+      "historical_189_fits": "Development execution count; original artifacts not located in the cited follow-up.",
+      "next_required": "Locate original task/action owner and independent effect observer; prove one-step prediction changes real decisions before extending rollout horizon.",
+      "adoption": "NoUpdate"
+    }
+  },
+  "stages": {
+    "P0": "OPEN: one integrated implementation exists; the complete original StageOwner assembly and ordinary Adopt/NoUpdate A-learning-independent-B-C-cold-recovery runs are not established.",
+    "P1": "OPEN: fixed-topology component evidence remains below the independent net-benefit adoption gate.",
+    "P2": "HOLD: compare credit, clocks, replay and kernels only after task benefit and complete cost accounting.",
+    "P3": "HOLD: topology changes require explicit interaction hypotheses, state migration, recovery, cost and old-task retention.",
+    "P4": "HOLD: frozen/current/generated learner controls and unchanged-experience reference require independent task families, windows, initial conditions and full learner-generation cost."
+  },
+  "statistical_policy": [
+    "Keep source groups, actual tasks, repeats, training seeds, optimizer fits and engineering tests separate.",
+    "Choose sample size from the real independent unit, target effect and a prespecified power design; do not infer power from raw episode counts.",
+    "Record training, search, failed work, validation, recovery and communication costs; unmeasured categories remain unknown.",
+    "Do not use a signature, checksum, native component pass or archive restoration as proof of independent task custody or whole-run adoption."
+  ]
+}

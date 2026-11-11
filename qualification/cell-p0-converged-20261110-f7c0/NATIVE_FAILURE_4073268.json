@@ -1,0 +1,63 @@
+{
+  "schema": "hepta.native-original-failure-retention.v1",
+  "source_sha": "4073268ead64aa1f8303973d37c5c6d73c951061",
+  "source_tree": "baf7b8d3f189212cc3ed445daf502f8bd5bd645d",
+  "run_id": 42930978517,
+  "job_id": 130229348331,
+  "artifact_id": 13816283336,
+  "original_zip_bytes": 1205983,
+  "original_zip_sha256": "aec3bd0fc04dafb5281ceb30d4c4276e1e51ddac719e4eb81318dec308a74b0d",
+  "failure": "E0004: missing explicit TrainingNoUpdateV2 match arm in neuron_generation_learning_readback.rs",
+  "native_tests_executed": 0,
+  "ordinary_suite": "SKIPPED",
+  "root_suite": "SKIPPED",
+  "checkout_before_and_after_clean": true,
+  "helper_build_wall_seconds": 513.1423979389999,
+  "full_physical_cost": null,
+  "retention_scope": "Complete helper command stdout JSONL, stderr, manifests, checkout identity, command execution record and toolchain/fetch log. The original whole-checkout file inventory is indexed but omitted from this compressed excerpt.",
+  "retained_members": {
+    "helper-build.json": {
+      "bytes": 1659,
+      "sha256": "73476406e07c3feb282edf37d3c069647baef78f49d5253e38e99d714f9f0c14"
+    },
+    "checkout.json": {
+      "bytes": 237,
+      "sha256": "797b21b9efad1404c08ea54d6cc5464cd9c83ce15a7cd0c1d5602be9018b8564"
+    },
+    "helper-build.json.b531d9fc5c8b44e1b2b85f23e0cf61a0.log": {
+      "bytes": 174,
+      "sha256": "1d9c6d0a22d9618f62704ed84b2e5b91cbc4b015ce4f487d18f46464d155e952"
+    },
+    "helpers/codex-hepta-infer-worker-host.jsonl": {
+      "bytes": 1046904,
+      "sha256": "b2c015cb78b24932ef2a08741ee4851f6a718b4e2d3613c5bde7938beb089834"
+    },
+    "helpers/env.json": {
+      "bytes": 3,
+      "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356"
+    },
+    "helpers/codex-hepta-infer-worker-host.stderr.log": {
+      "bytes": 63228,
+      "sha256": "65c597d5ff7ccfd15fbfb8a3fd65aa0a45ade56b1d57abbcc73845cf872d6ca6"
+    },
+    "helpers/manifest.json": {
+      "bytes": 1149,
+      "sha256": "8e56544ebcf0fb0cd00df09d99f3fd572adc7e9e4ce831a3deb2b6f69197b92a"
+    },
+    "toolchain-and-fetch.log": {
+      "bytes": 39434,
+      "sha256": "eee9dc58cbbc5b331f1116e37af9aa73db463072c0cd3a129b8ab147be061fab"
+    }
+  },
+  "omitted_members": {
+    "checkout.files.json.gz": {
+      "bytes": 1108628,
+      "sha256": "5b80779affbc422ec746a646a57236b37c8df018bb564b8fed48f653a70f4668"
+    }
+  },
+  "retained_archive": {
+    "path": "daemon-4073268-failure.tar.gz",
+    "bytes": 94207,
+    "sha256": "4c00a41c5ce556d7427b1d9c9f742236f975f6022023c1733fc1f452e1c44f2f"
+  }
+}

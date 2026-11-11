@@ -1,0 +1,228 @@
+{
+  "schema": "hepta.cell-p0-converged-implementation-and-evidence.v1",
+  "observed_at_utc": "2026-11-11T01:16:11.827708+00:00",
+  "candidate": {
+    "source_sha": "6ecfa504d2132f3682ffb01f8c9d65346b26cf5b",
+    "source_tree": "9184583f3842d90a560436f279c753f15792e3ab",
+    "pull_request": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5865",
+    "branch": "codex/cell-p0-converged-20261110-f7c0",
+    "status": "DRAFT_P0_NOT_CLOSED",
+    "source_is_fixed": true,
+    "one_admissible_runtime_model_data_configuration_circuit_evaluator_tuple_established": false,
+    "complete_ordinary_adopt_abc_cold_recovery_runs": 0,
+    "complete_ordinary_no_update_abc_cold_recovery_runs": 0,
+    "production_activation": false
+  },
+  "provenance": {
+    "original_common_recovery": "0c99a30dbe9307d48aa50ffc63404235ade8ae9c",
+    "ordinary_q24_learning": "f97f3c90ac1ac3d5171fd9f25b3e34431f44a367",
+    "native_maintenance": "c7633658aef42077f51fa71a1b727b4653ddb76b",
+    "inherited_source_binding_fix": "dbb3bce393685469bd5587bb591d01099f1df697",
+    "integrated_ordinary_merge": "0b13cc85f2b602b6c27afa731b2c4a0e1d11075b",
+    "output_retention_and_failure_diagnostics": "4073268ead64aa1f8303973d37c5c6d73c951061",
+    "original_training_receipt_port": "b55a73ad3024fc2ac501dcfcda096628272cde6d",
+    "source_fix_and_additional_recovery_tests": "72251601928807febae580dbd7754edac20bda10",
+    "single_claim_recovery_fixture_repair": "6ecfa504d2132f3682ffb01f8c9d65346b26cf5b"
+  },
+  "implemented": [
+    "Preserve source_sha/tested_sha binding and original full CURRENT authentication, independent witness, bounded readback, post-claim reauthentication and exact ACK retirement.",
+    "Merge ordinary Q24 training plans, native Candidate/TrainingNoUpdateV2 results, feature CURRENT and ordinary task entry with original recovery.",
+    "Use one canonical product evaluation execution key in execution and read-only recovery, with context authentication before the execution claim.",
+    "Persist original Generator receipts only from typed original anchored native training completion; bind frozen Dataset/scope and existing enrolled signing authority.",
+    "Keep a committed original training receipt, signature and validity window unchanged on replay/readback; reject Pending and ambiguous owner state.",
+    "Retain bounded command history at the actual output producer before lossy live broadcast, preserving polling and exact omission accounting.",
+    "Restore RMCP 3.9 source-bearing OAuth discovery classification and a narrowly identified redirect-limit diagnostic while preserving rejection and the typed error cause.",
+    "Preserve underlying auth-refresh/Matrix errors in failing test diagnostics without extending timeouts or weakening assertions.",
+    "Repair the actual E0004 by explicitly rejecting TrainingNoUpdateV2 at committed generation-use readback, with an ordinary-actor wrong-stage regression.",
+    "Repair the actual E0425 and duplicate-claim merge residue by restoring the original claimed snapshot and reusing the original coordinator snapshot; preserve all backpressure and no-retraining assertions."
+  ],
+  "checks": [
+    {
+      "name": "historical maintenance-only integrated native qualification",
+      "status": "PASS_EXACT_HISTORICAL_SOURCE",
+      "source_sha": "8c9c51eca0befdaab6cfc12551c14ad9587a5131",
+      "source_tree": "f14dfd771c86ef23125e60c388e8367cc8781ab3",
+      "daemon_ordinary": {
+        "passed": 1104,
+        "failed": 0,
+        "nextest_skipped": 72
+      },
+      "daemon_root": {
+        "passed": 7,
+        "failed": 0,
+        "nextest_skipped": 908
+      },
+      "shared": {
+        "passed": 1134,
+        "failed": 0,
+        "nextest_skipped": 71
+      },
+      "daemon_fmt_fix_bins_return_codes": [
+        0,
+        0,
+        0
+      ],
+      "source_cuts_unchanged": 6,
+      "counts_must_not_be_summed": true,
+      "subsequent_heads_qualified": false,
+      "evidence": "ci-readback/RESULTS.md"
+    },
+    {
+      "name": "ordinary merge source/caller mutation tests",
+      "status": "PASS_COMPONENT",
+      "tests": 131,
+      "scope": "Ordinary semantic merge before final formatting; not the final common source-head native qualification."
+    },
+    {
+      "name": "ordinary merge full caller scan",
+      "status": "PASS_COMPONENT",
+      "source_sha": "bad9b6490469106b8c98162878fa62feb616c20f",
+      "source_tree": "7d3c38bace915f27ab334d1a1f08647a30c97e90",
+      "rust_files": 6298,
+      "boundaries": 213,
+      "protected_rows": 215,
+      "authority_granted": false,
+      "evidence": "engineering/ordinary-merge-callers.json"
+    },
+    {
+      "name": "training receipt source/caller mutation tests",
+      "status": "PASS_COMPONENT_PRE_FORMAT",
+      "tests": 138,
+      "overlaps_prior_131": true,
+      "evidence": "engineering/training-owner-source-tests.log"
+    },
+    {
+      "name": "training receipt final protected inventory",
+      "status": "PASS_COMPONENT",
+      "source_sha": "18aaf83508c6b82d48aeabf0cd592a66af57de03",
+      "boundaries": 217,
+      "protected_rows": 216,
+      "full_caller_scan": false,
+      "evidence": "engineering/training-owner-protected.json"
+    },
+    {
+      "name": "independent code review of original training receipt owner",
+      "status": "NO_BLOCKER_FOUND",
+      "scope": "Code review, not independent scientific custody or execution.",
+      "limitations": [
+        "Receipt readback requires currently valid principal and signature window; expiry does not renew authority.",
+        "Genesis witness BeforeWrite lost ACK remains blocked with the original nonempty journal and absent witness.",
+        "Tests reopen file objects in one process; they do not establish complete daemon/Root process cold restoration.",
+        "All four new public receipt-owner product caller sets remain empty; complete StageOwner assembly remains open."
+      ]
+    },
+    {
+      "name": "training NoUpdate source closure after E0004 repair",
+      "status": "PASS_COMPONENT",
+      "source_sha": "054c1861d5793d5c4ff44694245a4a69745cf7c7",
+      "tests": 3
+    },
+    {
+      "name": "required scoped native formatter and whitespace check",
+      "status": "PASS",
+      "scope": "Executed after integration changes; repository source tree matches the published candidate tree."
+    },
+    {
+      "name": "original lossy helper counterexample",
+      "status": "REPRODUCED",
+      "original_helper_source_sha": "0c99a30dbe9307d48aa50ffc63404235ade8ae9c",
+      "sent_chunks": 513,
+      "bytes_per_chunk": 4096,
+      "received_chunks": 257,
+      "lagged_chunks": 256,
+      "received_bytes": 1052672,
+      "evidence": "engineering/legacy-output-probe.tar.gz",
+      "scope": "Unmodified helper in a standalone native probe with its own retained Cargo.lock; not a full consumer or common-repository pass."
+    },
+    {
+      "name": "exact-source daemon qualification on prior candidate",
+      "status": "FAILED_BUILD",
+      "source_sha": "4073268ead64aa1f8303973d37c5c6d73c951061",
+      "run_id": 42930978517,
+      "job_id": 130229348331,
+      "native_tests_executed": 0,
+      "reason": "E0004: missing explicit TrainingNoUpdateV2 branch in neuron_generation_learning_readback.rs",
+      "repair_source_sha": "72251601928807febae580dbd7754edac20bda10",
+      "evidence": "NATIVE_FAILURE_4073268.json"
+    },
+    {
+      "name": "local focused RMCP native attempt 3",
+      "status": "FAILED_BUILD",
+      "native_tests_executed": 0,
+      "reason": "codex-protocol rustc terminated by signal 9; root cause not established by kernel evidence",
+      "exit_code": 101,
+      "source_scope": "Component workspace based on 0c99; not the final common candidate source head."
+    },
+    {
+      "name": "current candidate native and whole repository qualification",
+      "status": "PENDING_FRESH_SOURCE_HEAD_CI",
+      "source_sha": "6ecfa504d2132f3682ffb01f8c9d65346b26cf5b",
+      "previous_head_results_transferred": false,
+      "daemon_run_id": 42937198717,
+      "shared_run_id": 42937198345,
+      "windows_run_id": 42937198409,
+      "blocking_run_id": 42937198454
+    },
+    {
+      "name": "exact-source Windows prior-candidate failure",
+      "status": "FAILED_AGENTD_TEST_BINARY_BUILD",
+      "source_sha": "4073268ead64aa1f8303973d37c5c6d73c951061",
+      "run_id": 42930978522,
+      "job_id": 130229409114,
+      "reason": "E0425: pending undefined in learning_iteration_recovery_tests.rs:667; after correcting the name, a duplicate claim would also fail the original store contract",
+      "agentd_native_tests_executed": 0,
+      "prior_windows_component_suites_executed": true,
+      "repair_source_sha": "6ecfa504d2132f3682ffb01f8c9d65346b26cf5b",
+      "repair_original_patch": "fefd37ff17b3daa7a494c5040b6e84adb8956a29",
+      "evidence": "ci-readback/CI_EVIDENCE.json"
+    },
+    {
+      "name": "required scoped Clippy fix on changed final component sources",
+      "status": "NOT_YET_VERIFIED_ON_FINAL_SOURCE",
+      "scope": "Current Agentd CI contains maintenance after native tests; local core just fix has not run. Historical 8c9 maintenance cannot satisfy this source."
+    },
+    {
+      "name": "local focused core native output-retention attempt",
+      "status": "FAILED_BUILD",
+      "source_sha": "5d7f18b06a1830b68ae1adf8155587e7cfd69aa0",
+      "source_tree": "57e744aac7572e7b962c53afc0da11c0389969ea",
+      "native_tests_executed": 0,
+      "reason": "vendored starlark rustc terminated by signal 9; no compiler type/syntax error; root cause unknown",
+      "exit_code": 101,
+      "final_common_source_qualified": false,
+      "evidence": "p0-core-terminal-20261111-v1.zip"
+    }
+  ],
+  "remaining_p0": [
+    "Production implementation and original host assembly of LearningIterationStageOwnerPortsV1; keep require_root_learning_assembled fail-closed.",
+    "Original Dataset/experience custody and one actual frozen model/data/configuration/Circuit/evaluator tuple.",
+    "Production governed Model proposal path for the Q24 trained Model; current ordinary proposal payload exposes Parameter/Topology and test-only research external material is not a production substitute.",
+    "Independent B/retention/new-C task custody, original evaluator and selector receipts, and committed distinct-task use.",
+    "Full original owner/daemon/Root process cold restoration in an independent rollback domain, with both Adopt and correct NoUpdate branches.",
+    "Fresh same-source native and full CI gates; the Matrix restart and git-attribution auth-refresh failures still require actual diagnosis/results.",
+    "Complete training, search, failure, validation, recovery and communication cost accounting."
+  ],
+  "costs": {
+    "known_prior_failed_helper_build_wall_seconds": 513.1423979389999,
+    "new_ctrl_diagnostic": "See ctrl-gap/RESULTS.md; its diagnostic and wrapper clocks have different scopes and are not additive.",
+    "training": null,
+    "search": null,
+    "failed_work": null,
+    "validation": null,
+    "recovery": null,
+    "communication": null,
+    "energy": null,
+    "provider_billing": null,
+    "unknown_is_not_zero": true,
+    "full_cost_coverage": false
+  },
+  "research_status": "RESEARCH_STATUS.json",
+  "new_frozen_diagnostic": "ctrl-gap/RESULTS.md",
+  "evidence_storage_rule": "This evidence is committed separately from the fixed implementation branch so later readbacks do not change the source being qualified.",
+  "local_native_terminal_evidence": {
+    "path": "p0-native-terminal-20261111-v1.zip",
+    "bytes": 19061,
+    "sha256": "fc81c386d45811dee2897292caaad829e4000b7aacf16f7cde8f8f7787fecf1f",
+    "scope": "RMCP attempts and the original output-helper counterexample only; no 722516 whole-candidate native pass."
+  }
+}
