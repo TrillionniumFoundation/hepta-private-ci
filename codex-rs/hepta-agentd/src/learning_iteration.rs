@@ -30,6 +30,7 @@ use crate::PlasticityRuntimeCallErrorV1;
 
 #[path = "learning_iteration_delivery_runtime.rs"]
 mod delivery;
+pub(crate) use delivery::CircuitLearningSourceV1;
 #[path = "circuit_learning_delivery_registry.rs"]
 mod registry;
 pub use registry::CircuitLearningDeliveryRegistryV1;
@@ -285,12 +286,14 @@ impl LearningIterationRuntimeBootstrapV1 {
             || self.owners != prepared.initial().owners
             || self.scope.as_ref() != Some(prepared.scope())
             || !self.enforce_circuit_admission
+            || !matches!(self.circuit_delivery_source, CircuitLearningSourceV1::OriginalObjective)
         {
             return Err(AgentdError::Invalid(
                 "original Root Q24 learning profile differs".into(),
             ));
         }
         self.original_q24 = Some(owners);
+        self.circuit_delivery_source = CircuitLearningSourceV1::OriginalQ24;
         Ok(self)
     }
 

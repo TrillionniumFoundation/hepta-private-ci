@@ -11,22 +11,36 @@ fn root_publication_preserves_completed_protocol_results_and_refuses_missing_dec
     let no_update = Decision::new(original.snapshot().clone())?;
     no_update.require_root_publication()?;
     assert!(!no_update.adopts());
-    let retained = qualified(&original, Some(LearningLocalDispositionV2::RetainParent), "policy")?;
+    let retained = qualified(
+        &original,
+        Some(LearningLocalDispositionV2::RetainParent),
+        "policy",
+    )?;
     let retained = Decision::new(retained.snapshot().clone())?;
     retained.require_root_publication()?;
     assert!(!retained.adopts());
     assert_eq!(retained.bundle, original.snapshot().request.selected_bundle);
-    let deferred = qualified(&original, Some(LearningLocalDispositionV2::DeferCandidate), "policy")?;
+    let deferred = qualified(
+        &original,
+        Some(LearningLocalDispositionV2::DeferCandidate),
+        "policy",
+    )?;
     let deferred = Decision::new(deferred.snapshot().clone())?;
     deferred.require_root_publication()?;
     assert!(!deferred.adopts());
     assert_eq!(deferred.bundle, original.snapshot().request.selected_bundle);
-    assert!(matches!(deferred.snapshot.receipts.last().map(|receipt| &receipt.observation),
+    assert!(
+        matches!(deferred.snapshot.receipts.last().map(|receipt| &receipt.observation),
         Some(LearningIterationObservationV1::LocalDecisionV2(local))
-            if local.disposition == LearningLocalDispositionV2::DeferCandidate));
+            if local.disposition == LearningLocalDispositionV2::DeferCandidate)
+    );
     let incomplete = qualified(&original, /*disposition*/ None, "policy")?;
     assert!(Decision::new(incomplete.snapshot().clone()).is_err());
-    let adopted = qualified(&original, Some(LearningLocalDispositionV2::AdoptCandidate), "policy")?;
+    let adopted = qualified(
+        &original,
+        Some(LearningLocalDispositionV2::AdoptCandidate),
+        "policy",
+    )?;
     let adopted = Decision::new(adopted.snapshot().clone())?;
     adopted.require_root_publication()?;
     assert!(adopted.adopts());

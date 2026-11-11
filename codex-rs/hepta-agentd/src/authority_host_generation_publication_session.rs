@@ -10,8 +10,8 @@ use std::sync::mpsc;
 use std::time::Duration;
 
 use super::*;
-use crate::authority_host_service::generation_publication::PublicationBootstrap;
 use crate::authority_host_service::generation_publication::PURPOSE;
+use crate::authority_host_service::generation_publication::PublicationBootstrap;
 use crate::authority_host_service::generation_publication::SOCKET;
 
 #[path = "authority_host_generation_publication_runtime.rs"]
@@ -42,7 +42,9 @@ pub struct RootGenerationPublicationRegistrationV1 {
 }
 
 impl RootGenerationPublicationRegistrationV1 {
-    pub fn binding(&self) -> &str { &self.binding }
+    pub fn binding(&self) -> &str {
+        &self.binding
+    }
 }
 
 /// Held only by the original trusted Root host. It is not Clone/Serialize and
@@ -69,18 +71,30 @@ impl RootGenerationPublicationEnrollmentCapabilityV1 {
         if std::process::id() != self.root_pid
             || std::fs::read_to_string("/proc/sys/kernel/random/boot_id")?.trim() != self.boot_id
             || root_start()? != self.process_start_ticks
-            || self.phase.compare_exchange(ACTIVE, CONSUMED, Ordering::AcqRel, Ordering::Acquire).is_err()
+            || self
+                .phase
+                .compare_exchange(ACTIVE, CONSUMED, Ordering::AcqRel, Ordering::Acquire)
+                .is_err()
         {
-            return Err(io::Error::other("original live one-shot Root enrollment required"));
+            return Err(io::Error::other(
+                "original live one-shot Root enrollment required",
+            ));
         }
         let (acknowledgement, receiver) = mpsc::sync_channel(1);
-        self.sender.try_send(Submission { inputs, acknowledgement })
+        self.sender
+            .try_send(Submission {
+                inputs,
+                acknowledgement,
+            })
             .map_err(|_| io::Error::other("original publication enrollment channel unavailable"))?;
-        let binding = receiver.recv_timeout(self.lifetime)
+        let binding = receiver
+            .recv_timeout(self.lifetime)
             .map_err(|_| io::Error::other("publication enrollment acknowledgement uncertain"))?
             .map_err(io::Error::other)?;
         if self.phase.load(Ordering::Acquire) != CONSUMED {
-            return Err(io::Error::other("original publication session ended during enrollment"));
+            return Err(io::Error::other(
+                "original publication session ended during enrollment",
+            ));
         }
         Ok(RootGenerationPublicationRegistrationV1 { binding })
     }
@@ -98,45 +112,77 @@ impl PreparedHostAuthoritySession {
     )> {
         crate::authority_host_service::generation_publication::original_root()?;
         if self.publication.is_some() {
-            return Err(io::Error::other("original publication route already enabled"));
+            return Err(io::Error::other(
+                "original publication route already enabled",
+            ));
         }
-        let learning = self.learning.as_ref()
+        let learning = self
+            .learning
+            .as_ref()
             .ok_or_else(|| io::Error::other("original scoped learning owner required"))?;
         let (bundle, bootstrap) = self.service.with_learning_profile(
-            &self.config, &self.registration, &self.owner_pidfd, &learning.profile,
+            &self.config,
+            &self.registration,
+            &self.owner_pidfd,
+            &learning.profile,
             |initial, proof| {
                 let scope = learning.profile.require_cell_scope(&initial)?;
                 if learning.backend.frozen_scope_binding() != Some(scope.binding()) {
-                    return Err(io::Error::other("actual learning scope differs from publication route"));
+                    return Err(io::Error::other(
+                        "actual learning scope differs from publication route",
+                    ));
                 }
                 // A registered vacant checkpoint is legitimate before the
                 // original learning client starts. Capture only its route;
                 // late enrollment still requires the actual completed decision.
-                let before = learning.backend.restore(&initial.request).map_err(io::Error::other)?;
+                let before = learning
+                    .backend
+                    .restore(&initial.request)
+                    .map_err(io::Error::other)?;
                 if let Some(snapshot) = &before {
-                    scope.validate_snapshot(snapshot).map_err(io::Error::other)?;
+                    scope
+                        .validate_snapshot(snapshot)
+                        .map_err(io::Error::other)?;
                 }
                 let bundle = PublicationBootstrap {
-                    purpose: PURPOSE.into(), learning_operation: initial.request.operation_id.to_string(),
+                    purpose: PURPOSE.into(),
+                    learning_operation: initial.request.operation_id.to_string(),
                     root: codex_hepta_memory::CognitiveCheckpointPeerLifetime {
-                        uid: 0, pid: std::process::id(), boot_id: self.registration.boot_id.clone(),
+                        uid: 0,
+                        pid: std::process::id(),
+                        boot_id: self.registration.boot_id.clone(),
                         process_start_ticks: root_start()?,
                     },
                     consumer: codex_hepta_memory::CognitiveCheckpointPeerLifetime {
-                        uid: self.config.peer_uid, pid: self.registration.peer_pid,
+                        uid: self.config.peer_uid,
+                        pid: self.registration.peer_pid,
                         boot_id: self.registration.boot_id.clone(),
                         process_start_ticks: self.registration.process_start_ticks,
                     },
                     identity: self.registration.registered_identity.clone(),
-                    initial: initial.head_digest.to_string(), scope: scope.binding().to_string(), writer: proof,
-                    socket: self.config.sockets.observation.parent()
-                        .ok_or_else(|| io::Error::other("original Root listener parent missing"))?.join(SOCKET),
+                    initial: initial.head_digest.to_string(),
+                    scope: scope.binding().to_string(),
+                    writer: proof,
+                    socket: self
+                        .config
+                        .sockets
+                        .observation
+                        .parent()
+                        .ok_or_else(|| io::Error::other("original Root listener parent missing"))?
+                        .join(SOCKET),
                 };
                 let bootstrap = crate::authority_host_bootstrap_seal::seal_bytes(
                     &serde_json::to_vec(&bundle).map_err(io::Error::other)?,
                 )?;
-                if learning.backend.restore(&initial.request).map_err(io::Error::other)? != before {
-                    return Err(io::Error::other("original learning changed during publication capture"));
+                if learning
+                    .backend
+                    .restore(&initial.request)
+                    .map_err(io::Error::other)?
+                    != before
+                {
+                    return Err(io::Error::other(
+                        "original learning changed during publication capture",
+                    ));
                 }
                 Ok((bundle, bootstrap))
             },
@@ -144,19 +190,29 @@ impl PreparedHostAuthoritySession {
         let (sender, receiver) = mpsc::sync_channel(1);
         let phase = Arc::new(AtomicU8::new(PREPARED));
         self.publication = Some(PublicationRuntime {
-            receiver: Mutex::new(receiver), phase: Arc::clone(&phase), socket: bundle.socket,
+            receiver: Mutex::new(receiver),
+            phase: Arc::clone(&phase),
+            socket: bundle.socket,
         });
-        Ok((RootGenerationPublicationEnrollmentCapabilityV1 {
-            sender, phase, root_pid: bundle.root.pid, boot_id: bundle.root.boot_id,
-            process_start_ticks: bundle.root.process_start_ticks,
-            lifetime: Duration::from_millis(self.config.lifetime_ms),
-        }, crate::RootGenerationPublicationOfferV1 { bootstrap }))
+        Ok((
+            RootGenerationPublicationEnrollmentCapabilityV1 {
+                sender,
+                phase,
+                root_pid: bundle.root.pid,
+                boot_id: bundle.root.boot_id,
+                process_start_ticks: bundle.root.process_start_ticks,
+                lifetime: Duration::from_millis(self.config.lifetime_ms),
+            },
+            crate::RootGenerationPublicationOfferV1 { bootstrap },
+        ))
     }
 }
 
 fn root_start() -> io::Result<u64> {
-    std::fs::read_to_string("/proc/self/stat")?.rsplit_once(") ")
+    std::fs::read_to_string("/proc/self/stat")?
+        .rsplit_once(") ")
         .and_then(|(_, fields)| fields.split_whitespace().nth(19))
-        .and_then(|value| value.parse::<u64>().ok()).filter(|value| *value != 0)
+        .and_then(|value| value.parse::<u64>().ok())
+        .filter(|value| *value != 0)
         .ok_or_else(|| io::Error::other("actual Root incarnation missing"))
 }

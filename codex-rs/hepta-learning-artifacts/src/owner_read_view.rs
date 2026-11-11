@@ -260,5 +260,4 @@ impl ArtifactOwnerReadView<'_> {
         }
         Ok(())
     }
-
 }

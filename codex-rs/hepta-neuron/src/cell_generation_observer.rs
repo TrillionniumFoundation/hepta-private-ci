@@ -36,17 +36,23 @@ impl FilePin {
             return Err(CellGenerationErrorV2::InvalidBinding);
         }
         Ok(Self {
-            device: metadata.dev(), inode: metadata.ino(), uid: metadata.uid(),
-            gid: metadata.gid(), mode: metadata.mode(),
+            device: metadata.dev(),
+            inode: metadata.ino(),
+            uid: metadata.uid(),
+            gid: metadata.gid(),
+            mode: metadata.mode(),
         })
     }
 
     fn bytes(&self) -> Vec<u8> {
         [
-            self.device.to_be_bytes().as_slice(), self.inode.to_be_bytes().as_slice(),
-            self.uid.to_be_bytes().as_slice(), self.gid.to_be_bytes().as_slice(),
+            self.device.to_be_bytes().as_slice(),
+            self.inode.to_be_bytes().as_slice(),
+            self.uid.to_be_bytes().as_slice(),
+            self.gid.to_be_bytes().as_slice(),
             self.mode.to_be_bytes().as_slice(),
-        ].concat()
+        ]
+        .concat()
     }
 }
 
@@ -71,10 +77,18 @@ pub struct CellGenerationJournalObservedV1 {
 }
 
 impl CellGenerationJournalObservedV1 {
-    pub fn owner_binding(&self) -> &CellGenerationOwnerBindingV1 { &self.binding }
-    pub fn observation(&self) -> &CellGenerationObservationV1 { &self.observation }
-    pub fn is_drained(&self) -> bool { self.drained }
-    pub fn is_genesis(&self) -> bool { self.genesis }
+    pub fn owner_binding(&self) -> &CellGenerationOwnerBindingV1 {
+        &self.binding
+    }
+    pub fn observation(&self) -> &CellGenerationObservationV1 {
+        &self.observation
+    }
+    pub fn is_drained(&self) -> bool {
+        self.drained
+    }
+    pub fn is_genesis(&self) -> bool {
+        self.genesis
+    }
 }
 
 impl CellGenerationJournalObserverV1 {
@@ -85,7 +99,8 @@ impl CellGenerationJournalObserverV1 {
         witness: File,
         config: CellGenerationObserverConfigV1,
     ) -> Result<Self, CellGenerationErrorV2> {
-        let binding = CellGenerationOwnerBindingV1::new(&config.generation, config.journal_records)?;
+        let binding =
+            CellGenerationOwnerBindingV1::new(&config.generation, config.journal_records)?;
         if !(1..=4096).contains(&config.witness_records)
             || config.witness_scope.scope_digest.is_zero()
             || config.witness_scope.objective_digest.is_zero()
@@ -97,15 +112,25 @@ impl CellGenerationJournalObserverV1 {
         if (journal_pin.device, journal_pin.inode) == (witness_pin.device, witness_pin.inode) {
             return Err(CellGenerationErrorV2::InvalidBinding);
         }
-        Ok(Self { journal, witness, journal_pin, witness_pin, config, binding })
+        Ok(Self {
+            journal,
+            witness,
+            journal_pin,
+            witness_pin,
+            config,
+            binding,
+        })
     }
 
-    pub fn owner_binding(&self) -> &CellGenerationOwnerBindingV1 { &self.binding }
+    pub fn owner_binding(&self) -> &CellGenerationOwnerBindingV1 {
+        &self.binding
+    }
 
     pub fn files_binding(&self) -> Digest32 {
         Digest32::of_parts(&[
             b"hepta.cell.generation-original-observer.v1\0",
-            &self.journal_pin.bytes(), &self.witness_pin.bytes(),
+            &self.journal_pin.bytes(),
+            &self.witness_pin.bytes(),
         ])
     }
 
@@ -134,7 +159,9 @@ impl CellGenerationJournalObserverV1 {
         }
         let expected = self.witness_head()?;
         let mut bytes = vec![0; length as usize];
-        self.journal.read_exact_at(&mut bytes, 0).map_err(unavailable)?;
+        self.journal
+            .read_exact_at(&mut bytes, 0)
+            .map_err(unavailable)?;
         let header = self.binding.header();
         if bytes[..HEADER_BYTES] != header {
             return Err(CellGenerationErrorV2::InvalidBinding);
@@ -146,12 +173,17 @@ impl CellGenerationJournalObserverV1 {
             if bytes.len() - offset < 4 {
                 return Err(CellGenerationErrorV2::Pending);
             }
-            let size = u32::from_be_bytes(bytes[offset..offset + 4].try_into()
-                .map_err(|_| CellGenerationErrorV2::Corrupt)?) as usize;
+            let size = u32::from_be_bytes(
+                bytes[offset..offset + 4]
+                    .try_into()
+                    .map_err(|_| CellGenerationErrorV2::Corrupt)?,
+            ) as usize;
             if size == 0 || size > MAX_FRAME {
                 return Err(CellGenerationErrorV2::Corrupt);
             }
-            let end = offset.checked_add(size + 36).ok_or(CellGenerationErrorV2::Capacity)?;
+            let end = offset
+                .checked_add(size + 36)
+                .ok_or(CellGenerationErrorV2::Capacity)?;
             if end > bytes.len() {
                 return Err(CellGenerationErrorV2::Pending);
             }
@@ -162,8 +194,8 @@ impl CellGenerationJournalObserverV1 {
             {
                 return Err(CellGenerationErrorV2::Corrupt);
             }
-            let event: GenerationEvent = serde_json::from_slice(payload)
-                .map_err(|_| CellGenerationErrorV2::Corrupt)?;
+            let event: GenerationEvent =
+                serde_json::from_slice(payload).map_err(|_| CellGenerationErrorV2::Corrupt)?;
             if serde_json::to_vec(&event).map_err(|_| CellGenerationErrorV2::Corrupt)? != payload {
                 return Err(CellGenerationErrorV2::Corrupt);
             }
@@ -175,13 +207,16 @@ impl CellGenerationJournalObserverV1 {
             return Err(CellGenerationErrorV2::AcknowledgedHistoryMissing);
         }
         let observation = CellGenerationObservationV1::capture(
-            &self.config.generation, &state, continuity_checkpoint(&header, head, length),
+            &self.config.generation,
+            &state,
+            continuity_checkpoint(&header, head, length),
         )?;
         if self.witness_head()? != expected || self.stamps()? != before {
             return Err(CellGenerationErrorV2::Pending);
         }
         Ok(CellGenerationJournalObservedV1 {
-            binding: self.binding.clone(), observation,
+            binding: self.binding.clone(),
+            observation,
             drained: state.draining && state.pending.is_none() && state.outbox.is_none(),
             genesis: head.is_none() && length == HEADER_BYTES as u64,
         })
@@ -189,9 +224,12 @@ impl CellGenerationJournalObserverV1 {
 
     fn witness_head(&self) -> Result<Option<JournalAnchor>, CellGenerationErrorV2> {
         crate::witness::read_original_file(
-            &self.witness, self.config.witness_scope, self.config.witness_generation,
+            &self.witness,
+            self.config.witness_scope,
+            self.config.witness_generation,
             self.config.witness_records,
-        ).map_err(|_| CellGenerationErrorV2::Unavailable)
+        )
+        .map_err(|_| CellGenerationErrorV2::Unavailable)
     }
 
     fn stamps(&self) -> Result<(Stamp, Stamp), CellGenerationErrorV2> {
@@ -208,16 +246,25 @@ type Stamp = (u64, i64, i64, i64, i64);
 
 fn stamp(file: &File) -> Result<Stamp, CellGenerationErrorV2> {
     let metadata = file.metadata().map_err(unavailable)?;
-    Ok((metadata.len(), metadata.mtime(), metadata.mtime_nsec(), metadata.ctime(), metadata.ctime_nsec()))
+    Ok((
+        metadata.len(),
+        metadata.mtime(),
+        metadata.mtime_nsec(),
+        metadata.ctime(),
+        metadata.ctime_nsec(),
+    ))
 }
 
 fn readonly(original: File) -> Result<(File, FilePin), CellGenerationErrorV2> {
     let pin = FilePin::read(&original)?;
-    let file = File::open(format!("/proc/self/fd/{}", original.as_raw_fd())).map_err(unavailable)?;
+    let file =
+        File::open(format!("/proc/self/fd/{}", original.as_raw_fd())).map_err(unavailable)?;
     if FilePin::read(&file)? != pin || FilePin::read(&original)? != pin {
         return Err(CellGenerationErrorV2::InvalidBinding);
     }
     Ok((file, pin))
 }
 
-fn unavailable(_: std::io::Error) -> CellGenerationErrorV2 { CellGenerationErrorV2::Unavailable }
+fn unavailable(_: std::io::Error) -> CellGenerationErrorV2 {
+    CellGenerationErrorV2::Unavailable
+}

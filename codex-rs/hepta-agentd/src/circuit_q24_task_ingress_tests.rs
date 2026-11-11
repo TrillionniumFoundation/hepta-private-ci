@@ -20,6 +20,9 @@ mod feature_learning;
 mod support;
 #[path = "circuit_q24_task_trained_ingress_tests.rs"]
 mod trained;
+#[cfg(target_os = "linux")]
+#[path = "cell_q24_task_ledger_tests.rs"]
+mod task_ledger;
 
 use support::Q;
 

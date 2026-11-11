@@ -44,22 +44,32 @@ impl LearningArtifactReadViewV1 {
             return Err(ArtifactOwnerHostError::PathBoundary);
         }
         let directories = ["", "heads", "transactions", "registries"]
-            .into_iter().map(|relative| directory(&root, relative, consumer_uid))
+            .into_iter()
+            .map(|relative| directory(&root, relative, consumer_uid))
             .collect::<Result<Vec<_>, _>>()?;
         let reader = Self {
-            root, consumer_uid, directories,
+            root,
+            consumer_uid,
+            directories,
             verifier: ArtifactOwnerVerifierV1::new(trust)?,
             state: Mutex::new(ReadState {
-                floor: retained_floor, withdrawal: None, observed_at: now, fenced: false,
+                floor: retained_floor,
+                withdrawal: None,
+                observed_at: now,
+                fenced: false,
             }),
         };
         reader.read_original_registry(now)?;
         Ok(reader)
     }
 
-    pub fn consumer_uid(&self) -> u32 { self.consumer_uid }
+    pub fn consumer_uid(&self) -> u32 {
+        self.consumer_uid
+    }
 
-    pub fn trust_digest(&self) -> Digest32 { self.verifier.trust_digest() }
+    pub fn trust_digest(&self) -> Digest32 {
+        self.verifier.trust_digest()
+    }
 
     /// Supply an independently retained floor, then read the actual durable
     /// frontier published by the same original writer. Missing is an error.
@@ -68,11 +78,16 @@ impl LearningArtifactReadViewV1 {
         binding: Digest32,
         floor: DatasetWithdrawalRegistry,
     ) -> Result<Self, ArtifactOwnerHostError> {
-        if binding.is_zero() || floor.scope_digest() != Some(self.verifier.trust.withdrawal_scope_digest) {
+        if binding.is_zero()
+            || floor.scope_digest() != Some(self.verifier.trust.withdrawal_scope_digest)
+        {
             return Err(ArtifactOwnerHostError::CurrentHeadContext);
         }
         {
-            let mut state = self.state.try_lock().map_err(|_| ArtifactOwnerHostError::Indeterminate)?;
+            let mut state = self
+                .state
+                .try_lock()
+                .map_err(|_| ArtifactOwnerHostError::Indeterminate)?;
             if state.fenced || state.withdrawal.is_some() {
                 return Err(ArtifactOwnerHostError::Indeterminate);
             }
@@ -86,22 +101,29 @@ impl LearningArtifactReadViewV1 {
         &self,
         now: u64,
     ) -> Result<VerifiedCurrentRegistryViewV1, ArtifactOwnerHostError> {
-        let mut state = self.state.try_lock().map_err(|_| ArtifactOwnerHostError::Indeterminate)?;
+        let mut state = self
+            .state
+            .try_lock()
+            .map_err(|_| ArtifactOwnerHostError::Indeterminate)?;
         if state.fenced || now < state.observed_at {
             return Err(ArtifactOwnerHostError::Indeterminate);
         }
         state.fenced = true;
         self.require_directories()?;
         let view = read_view::ArtifactOwnerReadView {
-            root: &self.root, verifier: &self.verifier, required_current_head: Some(&state.floor),
+            root: &self.root,
+            verifier: &self.verifier,
+            required_current_head: Some(&state.floor),
         };
         if !view.recovery_required_operations()?.is_empty() {
             return Err(ArtifactOwnerHostError::Indeterminate);
         }
-        let before = view.discover_current_head(now)?
+        let before = view
+            .discover_current_head(now)?
             .ok_or(ArtifactOwnerHostError::CurrentHeadContext)?;
         let registry = view.registry_at_current(&before)?;
-        let after = view.discover_current_head(now)?
+        let after = view
+            .discover_current_head(now)?
             .ok_or(ArtifactOwnerHostError::CurrentHeadContext)?;
         if before.signed != after.signed || !view.recovery_required_operations()?.is_empty() {
             return Err(ArtifactOwnerHostError::Indeterminate);
@@ -113,14 +135,22 @@ impl LearningArtifactReadViewV1 {
         Ok(registry)
     }
 
-    pub fn read_original_withdrawals(&self) -> Result<DatasetWithdrawalRegistry, ArtifactOwnerHostError> {
-        let mut state = self.state.try_lock().map_err(|_| ArtifactOwnerHostError::Indeterminate)?;
+    pub fn read_original_withdrawals(
+        &self,
+    ) -> Result<DatasetWithdrawalRegistry, ArtifactOwnerHostError> {
+        let mut state = self
+            .state
+            .try_lock()
+            .map_err(|_| ArtifactOwnerHostError::Indeterminate)?;
         if state.fenced {
             return Err(ArtifactOwnerHostError::Indeterminate);
         }
         state.fenced = true;
         self.require_directories()?;
-        let (binding, floor) = state.withdrawal.as_ref().ok_or(ArtifactOwnerHostError::CurrentHeadContext)?;
+        let (binding, floor) = state
+            .withdrawal
+            .as_ref()
+            .ok_or(ArtifactOwnerHostError::CurrentHeadContext)?;
         let current = withdrawal_frontier::read_original(&self.root, *binding)?;
         withdrawal_frontier::require_extension(floor, &current)?;
         self.require_directories()?;
@@ -145,13 +175,18 @@ fn directory(
     consumer_uid: u32,
 ) -> Result<DirectoryPin, ArtifactOwnerHostError> {
     let metadata = fs::symlink_metadata(root.join(relative))?;
-    if !metadata.is_dir() || metadata.file_type().is_symlink()
-        || metadata.uid() != consumer_uid || metadata.mode() & 0o022 != 0
+    if !metadata.is_dir()
+        || metadata.file_type().is_symlink()
+        || metadata.uid() != consumer_uid
+        || metadata.mode() & 0o022 != 0
     {
         return Err(ArtifactOwnerHostError::PathBoundary);
     }
     Ok(DirectoryPin {
-        relative, device: metadata.dev(), inode: metadata.ino(),
-        uid: metadata.uid(), mode: metadata.mode(),
+        relative,
+        device: metadata.dev(),
+        inode: metadata.ino(),
+        uid: metadata.uid(),
+        mode: metadata.mode(),
     })
 }

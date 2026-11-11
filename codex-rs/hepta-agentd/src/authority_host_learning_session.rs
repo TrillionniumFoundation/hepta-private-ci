@@ -74,11 +74,16 @@ impl BoundLearning {
                 super::q24_model::BoundFactory::bind(factory, config, &learning.socket_path)
             })
             .transpose()?;
-        let publication = publication.map(|runtime| {
-            super::generation_publication::BoundPublication::bind(
-                runtime, config, &learning.socket_path, model.as_ref().map(|factory| factory.path()),
-            )
-        }).transpose()?;
+        let publication = publication
+            .map(|runtime| {
+                super::generation_publication::BoundPublication::bind(
+                    runtime,
+                    config,
+                    &learning.socket_path,
+                    model.as_ref().map(|factory| factory.path()),
+                )
+            })
+            .transpose()?;
         let listener = UnixListener::bind(&learning.socket_path)?;
         let metadata = std::fs::symlink_metadata(&learning.socket_path)?;
         let bound = Self {
@@ -101,7 +106,9 @@ impl BoundLearning {
     }
 
     pub(super) fn contains_path(&self, path: &Path) -> bool {
-        self.publication.as_ref().is_some_and(|lane| lane.path() == path)
+        self.publication
+            .as_ref()
+            .is_some_and(|lane| lane.path() == path)
             || self.learning.socket_path == path
             || self
                 .model
@@ -186,15 +193,22 @@ pub(super) fn serve_optional(
             }
         });
         let result = super::generation_publication::serve_optional(
-            learning.publication.as_ref(), &learning.learning, service, config, registration, owner,
-            || super::q24_model::serve_optional(
-            learning.model.as_ref(),
+            learning.publication.as_ref(),
+            &learning.learning,
             service,
             config,
             registration,
             owner,
-            original,
-            ),
+            || {
+                super::q24_model::serve_optional(
+                    learning.model.as_ref(),
+                    service,
+                    config,
+                    registration,
+                    owner,
+                    original,
+                )
+            },
         );
         stopping.store(true, Ordering::Release);
         if let Some(stream) = active

@@ -469,10 +469,7 @@ impl Store {
     }
 }
 
-fn decode_claims(
-    bytes: &[u8],
-    authority_epoch: u64,
-) -> Result<BTreeSet<[u8; 32]>, FinalUseError> {
+fn decode_claims(bytes: &[u8], authority_epoch: u64) -> Result<BTreeSet<[u8; 32]>, FinalUseError> {
     if bytes.len() % CLAIM_FRAME_BYTES != 0 {
         return Err(FinalUseError::InvalidTrust);
     }

@@ -74,7 +74,8 @@ impl PublicationProfile {
         Ok(Digest32::of_parts(&[
             b"hepta.root.generation-publication.profile.v1\0",
             &serde_json::to_vec(&value).map_err(io::Error::other)?,
-        ]).to_string())
+        ])
+        .to_string())
     }
 }
 
@@ -132,7 +133,14 @@ pub(crate) struct RegisteredGenerationPublication {
 
 impl RegisteredGenerationPublication {
     fn require_profile(&self) -> io::Result<()> {
-        if self.profile_store.load(&self.profile_owner).map_err(io::Error::other)? != (PublicationRecord { profile: self.profile.clone(), fenced: false })
+        if self
+            .profile_store
+            .load(&self.profile_owner)
+            .map_err(io::Error::other)?
+            != (PublicationRecord {
+                profile: self.profile.clone(),
+                fenced: false,
+            })
             || self.profile.digest()? != self.profile.binding
             || self.previous.files_binding().to_string() != self.profile.previous_files
             || self.target.files_binding().to_string() != self.profile.target_files
@@ -142,23 +150,37 @@ impl RegisteredGenerationPublication {
         Ok(())
     }
 
-    fn require_history(&self, learning: &RegisteredHostLearningCheckpointV1, scope: &codex_hepta_learning_artifacts::FrozenLearningScopeV2) -> io::Result<()> {
-        let actual = learning.backend.restore(&self.decision.request).map_err(io::Error::other)?
+    fn require_history(
+        &self,
+        learning: &RegisteredHostLearningCheckpointV1,
+        scope: &codex_hepta_learning_artifacts::FrozenLearningScopeV2,
+    ) -> io::Result<()> {
+        let actual = learning
+            .backend
+            .restore(&self.decision.request)
+            .map_err(io::Error::other)?
             .ok_or_else(|| io::Error::other("original Root learning checkpoint missing"))?;
         scope.validate_snapshot(&actual).map_err(io::Error::other)?;
-        if actual.request != self.decision.request || actual.owners != self.decision.owners
+        if actual.request != self.decision.request
+            || actual.owners != self.decision.owners
             || !actual.receipts.starts_with(&self.decision.receipts)
         {
-            return Err(io::Error::other("original Root decision checkpoint differs"));
+            return Err(io::Error::other(
+                "original Root decision checkpoint differs",
+            ));
         }
         Ok(())
     }
 
     fn require_selection(&self, now: u64) -> io::Result<()> {
         let result = (|| {
-            let mut selected: std::sync::MutexGuard<'_, AgentdSelectedGenerationV1> = self.selected
-                .try_lock().map_err(|_| io::Error::other("original selection busy"))?;
-            selected.revalidate_original_artifacts(&self.artifacts, now).map_err(io::Error::other)?;
+            let mut selected: std::sync::MutexGuard<'_, AgentdSelectedGenerationV1> = self
+                .selected
+                .try_lock()
+                .map_err(|_| io::Error::other("original selection busy"))?;
+            selected
+                .revalidate_original_artifacts(&self.artifacts, now)
+                .map_err(io::Error::other)?;
             if selected.observation().digest().into_array() != self.profile.intent.selection {
                 return Err(io::Error::other("original selection cut changed"));
             }
@@ -175,9 +197,11 @@ impl RegisteredGenerationPublication {
     fn require_previous(&self) -> io::Result<()> {
         let observed = self.previous.observe().map_err(io::Error::other)?;
         let intent = &self.profile.intent;
-        if !observed.is_drained() || observed.owner_binding() != &intent.previous
+        if !observed.is_drained()
+            || observed.owner_binding() != &intent.previous
             || observed.observation().owner_checkpoint().into_array() != intent.previous_checkpoint
-            || observed.observation().digest().map_err(io::Error::other)? != intent.previous_observation
+            || observed.observation().digest().map_err(io::Error::other)?
+                != intent.previous_observation
         {
             return Err(io::Error::other("original drained predecessor changed"));
         }
@@ -186,8 +210,10 @@ impl RegisteredGenerationPublication {
 
     fn require_genesis(&self) -> io::Result<()> {
         let observed = self.target.observe().map_err(io::Error::other)?;
-        if !observed.is_genesis() || observed.owner_binding() != &self.profile.intent.target
-            || observed.observation().owner_checkpoint().into_array() != self.profile.intent.genesis_checkpoint
+        if !observed.is_genesis()
+            || observed.owner_binding() != &self.profile.intent.target
+            || observed.observation().owner_checkpoint().into_array()
+                != self.profile.intent.genesis_checkpoint
         {
             return Err(io::Error::other("actual original target genesis required"));
         }
@@ -199,9 +225,13 @@ impl RegisteredGenerationPublication {
         signed: &SignedFinalUseGrant,
         witness: &VerifiedUseTokenWitnessV1,
     ) -> io::Result<codex_hepta_contracts::FinalUseRevocations> {
-        self.consumer.verify_original_retained_use(
-            signed, &self.profile.intent.binding().map_err(io::Error::other)?, witness,
-        ).map_err(io::Error::other)
+        self.consumer
+            .verify_original_retained_use(
+                signed,
+                &self.profile.intent.binding().map_err(io::Error::other)?,
+                witness,
+            )
+            .map_err(io::Error::other)
     }
 }
 
@@ -209,7 +239,8 @@ pub(crate) fn head_digest(head: &CurrentHead) -> io::Result<String> {
     Ok(Digest32::of_parts(&[
         b"hepta.root.generation-publication.current.v1\0",
         &serde_json::to_vec(head).map_err(io::Error::other)?,
-    ]).to_string())
+    ])
+    .to_string())
 }
 
 pub(crate) fn original_root() -> io::Result<()> {
@@ -228,10 +259,14 @@ fn fence_record(
     if !before.fenced {
         let mut next = before.clone();
         next.fenced = true;
-        store.compare_and_set(owner, &before, &next).map_err(io::Error::other)?;
+        store
+            .compare_and_set(owner, &before, &next)
+            .map_err(io::Error::other)?;
     }
     if !store.load(owner).map_err(io::Error::other)?.fenced {
-        return Err(io::Error::other("original publication fencing is uncertain"));
+        return Err(io::Error::other(
+            "original publication fencing is uncertain",
+        ));
     }
     Ok(())
 }

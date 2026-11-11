@@ -50,9 +50,9 @@ use validation::Decision;
 mod root_stage;
 pub use root_stage::OriginalCellQ24ArtifactPublicationDriverV1;
 pub use root_stage::OriginalCellQ24PublishedArtifactForRootV1;
-pub use root_stage::OriginalCellQ24SelectedArtifactForRootV1;
 pub use root_stage::OriginalCellQ24RetainedArtifactForRootV1;
 pub use root_stage::OriginalCellQ24RootPublicationDriverV1;
+pub use root_stage::OriginalCellQ24SelectedArtifactForRootV1;
 
 #[derive(Debug, thiserror::Error)]
 pub enum OriginalCellQ24PublicationErrorV1 {
@@ -126,7 +126,7 @@ impl OriginalDecision {
             authorities.now()?,
         )?;
         crate::cell_composed_q24::validate_manifest(
-            &self.original.decision.bundle,
+            &self.decision.bundle,
             selected.manifest(),
         )
         .map_err(|_| Error::Binding("selected complete Q24 manifest"))?;
@@ -298,7 +298,8 @@ impl OriginalCellQ24PublicationDriverV1 {
         input: OriginalCellQ24SelectionInputsV1,
         publication: Option<&ArtifactPublicationReceiptV1>,
     ) -> Result<AgentdSelectedGenerationV1, Error> {
-        self.original.load_selected(&self.authorities, input, publication)
+        self.original
+            .load_selected(&self.authorities, input, publication)
     }
 }
 

@@ -198,7 +198,9 @@ impl<P: ControlProfile> ControlConnection<P> {
             } else {
                 timeout(IO_TIMEOUT, P::response(&state, request))
                     .await
-                    .map_err(|_| AgentdError::Protocol("agentd control response timed out".into()))?
+                    .map_err(|_| {
+                        AgentdError::Protocol("agentd control response timed out".into())
+                    })?
             };
             match outcome {
                 Ok(response) => response,

@@ -7,9 +7,19 @@ use codex_hepta_automation::AutomationStore;
 use super::*;
 
 #[derive(Clone, Copy)]
-pub(super) enum CircuitLearningSourceV1 {
+pub(crate) enum CircuitLearningSourceV1 {
     HostStageOwners,
     OriginalObjective,
+    OriginalQ24,
+}
+
+impl CircuitLearningSourceV1 {
+    fn requires_original_objective(self) -> bool {
+        match self {
+            Self::HostStageOwners => false,
+            Self::OriginalObjective | Self::OriginalQ24 => true,
+        }
+    }
 }
 
 pub(crate) struct CircuitLearningDeliveryRuntimeV1 {
@@ -92,6 +102,13 @@ impl LearningIterationRuntimeBootstrapV1 {
 }
 
 impl CircuitLearningDeliveryRuntimeV1 {
+    pub(crate) fn attach_sources(&self, state: &AgentdState) -> Result<(), AgentdError> {
+        state.attach_circuit_learning_delivery(
+            self.requests.iter().map(|request| request.source_run_id.clone()).collect(),
+            self.source,
+        )
+    }
+
     pub(crate) async fn run(
         self,
         store: AutomationStore,
@@ -163,7 +180,7 @@ impl CircuitLearningDeliveryRuntimeV1 {
                 if !claimed && !state.automation_admission_ready()? {
                     continue;
                 }
-                if !claimed && matches!(self.source, CircuitLearningSourceV1::OriginalObjective) {
+                if !claimed && self.source.requires_original_objective() {
                     tokio::select! {
                         _ = cancellation.cancelled() => return Ok(()),
                         result = state.require_circuit_learning_source(request) => result?,
@@ -178,7 +195,7 @@ impl CircuitLearningDeliveryRuntimeV1 {
                             self.owners.clone(),
                         )
                         .await
-                    } else if matches!(self.source, CircuitLearningSourceV1::OriginalObjective) {
+                    } else if self.source.requires_original_objective() {
                         // Reauthenticate the same original owners after the durable
                         // claim, before any stage dispatch. The registered list
                         // grants no replacement Objective or Circuit authority.

@@ -98,7 +98,8 @@ impl LearningArtifactOwnerService {
             )?,
         };
         let withdrawal_registry = host.recover_original_withdrawal_frontier(
-            &config.withdrawal_registry, config.storage_binding,
+            &config.withdrawal_registry,
+            config.storage_binding,
         )?;
         let registry = host.recover_current_registry(config.now)?;
         let recovery = host.recovery_required_operations()?;
@@ -162,7 +163,9 @@ impl LearningArtifactOwnerService {
         }
         self.withdrawal_pending = true;
         self.host.install_original_withdrawal_frontier(
-            &self.withdrawal_registry, &next, self.storage_binding,
+            &self.withdrawal_registry,
+            &next,
+            self.storage_binding,
         )?;
         self.withdrawal_registry = next;
         self.withdrawal_pending = false;
@@ -211,7 +214,9 @@ impl LearningArtifactOwnerService {
         operation: &StableId,
     ) -> Result<ArtifactPublicationReceiptV1, LearningArtifactOwnerServiceError> {
         self.require_original_withdrawal()?;
-        let retained = self.host.recover_publication(operation)?
+        let retained = self
+            .host
+            .recover_publication(operation)?
             .ok_or(ArtifactOwnerHostError::CheckpointMissing)?;
         if retained.checkpoint.phase != ArtifactPublicationPhaseV1::Acknowledged {
             return Err(ArtifactOwnerHostError::Indeterminate.into());
@@ -223,7 +228,10 @@ impl LearningArtifactOwnerService {
         if self.withdrawal_pending {
             return Err(ArtifactOwnerHostError::Indeterminate.into());
         }
-        self.host.require_original_withdrawal_frontier(&self.withdrawal_registry, self.storage_binding)?;
+        self.host.require_original_withdrawal_frontier(
+            &self.withdrawal_registry,
+            self.storage_binding,
+        )?;
         Ok(())
     }
 
@@ -461,7 +469,9 @@ impl From<ArtifactPublicationError> for LearningArtifactOwnerServiceError {
 #[cfg(test)]
 mod tests {
     #[cfg(target_os = "linux")]
-    mod original_read_view { include!("owner_read_view_tests.rs"); }
+    mod original_read_view {
+        include!("owner_read_view_tests.rs");
+    }
     use super::*;
 
     use std::fs;

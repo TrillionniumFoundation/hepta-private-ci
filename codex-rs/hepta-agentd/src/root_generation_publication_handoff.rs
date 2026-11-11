@@ -30,8 +30,12 @@ pub fn send_root_generation_publication_handoff(
     }
     validate_bootstrap(&offer.bootstrap)?;
     require_root_pin(root_pidfd, std::process::id())?;
-    send_packet(&socket, PUBLICATION_FRAME,
-        &[offer.bootstrap.as_raw_fd(), root_pidfd.as_raw_fd()], timeout)
+    send_packet(
+        &socket,
+        PUBLICATION_FRAME,
+        &[offer.bootstrap.as_raw_fd(), root_pidfd.as_raw_fd()],
+        timeout,
+    )
 }
 
 /// Receive exactly one original purpose packet, closing every right on error.
@@ -44,7 +48,10 @@ pub fn receive_root_generation_publication_handoff(
     socket.set_read_timeout(Some(timeout))?;
     let mut bytes = [0_u8; PUBLICATION_FRAME.len() + 1];
     let mut control = [0_usize; 32];
-    let mut vector = libc::iovec { iov_base: bytes.as_mut_ptr().cast(), iov_len: bytes.len() };
+    let mut vector = libc::iovec {
+        iov_base: bytes.as_mut_ptr().cast(),
+        iov_len: bytes.len(),
+    };
     // SAFETY: initialized below with aligned bounded buffers retained here.
     let mut message: libc::msghdr = unsafe { mem::zeroed() };
     message.msg_iov = &mut vector;
@@ -53,18 +60,37 @@ pub fn receive_root_generation_publication_handoff(
     message.msg_controllen = mem::size_of_val(&control);
     // SAFETY: every receive buffer is live and bounded. CLOEXEC is atomic.
     let size = unsafe { libc::recvmsg(socket.as_raw_fd(), &mut message, libc::MSG_CMSG_CLOEXEC) };
-    if size < 0 { return Err(io::Error::last_os_error().into()); }
+    if size < 0 {
+        return Err(io::Error::last_os_error().into());
+    }
     // SAFETY: the existing parser owns each returned descriptor immediately.
-    let (mut descriptors, valid) = unsafe { crate::notes_bootstrap::received_descriptors(&message) };
-    if !valid || message.msg_flags & (libc::MSG_TRUNC | libc::MSG_CTRUNC) != 0
-        || descriptors.len() != 2 || size as usize != PUBLICATION_FRAME.len()
+    let (mut descriptors, valid) =
+        unsafe { crate::notes_bootstrap::received_descriptors(&message) };
+    if !valid
+        || message.msg_flags & (libc::MSG_TRUNC | libc::MSG_CTRUNC) != 0
+        || descriptors.len() != 2
+        || size as usize != PUBLICATION_FRAME.len()
         || &bytes[..PUBLICATION_FRAME.len()] != PUBLICATION_FRAME
-    { return Err(refused("exact publication purpose and two original rights required")); }
-    let root_pidfd = descriptors.pop().ok_or_else(|| refused("publication Root pin missing"))?;
-    let bootstrap = File::from(descriptors.pop().ok_or_else(|| refused("publication route missing"))?);
+    {
+        return Err(refused(
+            "exact publication purpose and two original rights required",
+        ));
+    }
+    let root_pidfd = descriptors
+        .pop()
+        .ok_or_else(|| refused("publication Root pin missing"))?;
+    let bootstrap = File::from(
+        descriptors
+            .pop()
+            .ok_or_else(|| refused("publication route missing"))?,
+    );
     validate_bootstrap(&bootstrap)?;
     require_root_pin(&root_pidfd, peer.pid as u32)?;
-    Ok(RootGenerationPublicationHandoffV1 { bootstrap, root_pidfd, root_pid: peer.pid as u32 })
+    Ok(RootGenerationPublicationHandoffV1 {
+        bootstrap,
+        root_pidfd,
+        root_pid: peer.pid as u32,
+    })
 }
 
 #[cfg(test)]

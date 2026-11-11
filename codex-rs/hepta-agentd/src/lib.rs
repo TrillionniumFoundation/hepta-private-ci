@@ -315,6 +315,9 @@ mod circuit_feature_learning_handoff;
 mod circuit_learning_delivery;
 #[cfg(target_os = "linux")]
 mod circuit_q24_task_profile;
+mod circuit_task_learning;
+#[cfg(target_os = "linux")]
+mod cell_q24_task_ledger;
 mod circuit_task;
 #[cfg(target_os = "linux")]
 mod cpu_policy;
@@ -549,6 +552,24 @@ pub use cell_temporal_q24::CellTemporalQ24ModelFilesV1;
 pub use cell_temporal_q24::LoadedCellTemporalQ24ModelV1;
 #[cfg(target_os = "linux")]
 pub use circuit_q24_task_profile::AgentdQ24CircuitTaskRuntimeV1;
+#[cfg(target_os = "linux")]
+pub use circuit_q24_task_profile::AgentdQ24LearningTaskRuntimeV1;
+pub use circuit_task_learning::CircuitTaskLearningPendingV1;
+pub use circuit_task_learning::CircuitTaskLearningReadinessV1;
+#[cfg(target_os = "linux")]
+pub use cell_q24_task_ledger::OriginalCellQ24TaskLedgerConfigV1;
+#[cfg(target_os = "linux")]
+pub use cell_q24_task_ledger::OriginalCellQ24TaskLedgerInputsV1;
+#[cfg(target_os = "linux")]
+pub use cell_q24_task_ledger::OriginalCellQ24TaskDatasetFreezeInputsV1;
+#[cfg(target_os = "linux")]
+pub use cell_q24_task_ledger::OriginalCellQ24TaskLedgerStatusV1;
+#[cfg(target_os = "linux")]
+pub use cell_q24_task_ledger::OriginalCellQ24TaskLedgerErrorV1;
+#[cfg(target_os = "linux")]
+pub use cell_q24_task_ledger::OriginalCellQ24TaskLedgerProducerV1;
+#[cfg(target_os = "linux")]
+pub use cell_q24_task_ledger::OriginalCellQ24TaskLearningReadyV1;
 #[cfg(target_os = "linux")]
 pub use circuit_q24_task_profile::CircuitQ24TaskFilesV1;
 #[cfg(target_os = "linux")]
@@ -1309,19 +1330,19 @@ pub use authority_host_service::RootGenerationPublicationOfferV1;
 #[cfg(target_os = "linux")]
 pub use authority_host_service::RootPublicationFinalUseConsumerV1;
 #[cfg(target_os = "linux")]
+pub use cell_q24_publication_driver::OriginalCellQ24ArtifactPublicationDriverV1;
+#[cfg(target_os = "linux")]
+pub use cell_q24_publication_driver::OriginalCellQ24PublishedArtifactForRootV1;
+#[cfg(target_os = "linux")]
+pub use cell_q24_publication_driver::OriginalCellQ24RootPublicationDriverV1;
+#[cfg(target_os = "linux")]
+pub use cell_q24_publication_driver::OriginalCellQ24SelectedArtifactForRootV1;
+#[cfg(target_os = "linux")]
 pub use root_production_handoff::RootGenerationPublicationHandoffV1;
 #[cfg(target_os = "linux")]
 pub use root_production_handoff::receive_root_generation_publication_handoff;
 #[cfg(target_os = "linux")]
 pub use root_production_handoff::send_root_generation_publication_handoff;
-#[cfg(target_os = "linux")]
-pub use cell_q24_publication_driver::OriginalCellQ24ArtifactPublicationDriverV1;
-#[cfg(target_os = "linux")]
-pub use cell_q24_publication_driver::OriginalCellQ24PublishedArtifactForRootV1;
-#[cfg(target_os = "linux")]
-pub use cell_q24_publication_driver::OriginalCellQ24SelectedArtifactForRootV1;
-#[cfg(target_os = "linux")]
-pub use cell_q24_publication_driver::OriginalCellQ24RootPublicationDriverV1;
 
 #[cfg(target_os = "linux")]
 pub use cell_q24_publication_driver::OriginalCellQ24RetainedArtifactForRootV1;

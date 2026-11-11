@@ -29,6 +29,12 @@ use crate::PublishedCircuitCellOwnerV1;
 use crate::PublishedCircuitFeatureTaskV1;
 use crate::circuit_task_channel_v1;
 
+#[cfg(target_os = "linux")]
+#[path = "circuit_q24_task_ledger_install.rs"]
+mod learning;
+#[cfg(target_os = "linux")]
+pub use learning::AgentdQ24LearningTaskRuntimeV1;
+
 /// Source lifecycle is explicit. Recovery never replaces an acknowledged
 /// history with a fresh source or recreates an unresolved request.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]

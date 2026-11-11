@@ -29,13 +29,13 @@ mod initial;
 mod initial_types;
 #[path = "neuron_generation_current_prepare.rs"]
 mod prepare;
+#[cfg(target_os = "linux")]
+#[path = "neuron_generation_current_root.rs"]
+mod root;
 #[path = "neuron_generation_current_store.rs"]
 mod store;
 #[path = "neuron_generation_current_types.rs"]
 pub(crate) mod types;
-#[cfg(target_os = "linux")]
-#[path = "neuron_generation_current_root.rs"]
-mod root;
 
 use initial_types::InitialState;
 pub use initial_types::NeuronGenerationInitialReadbackV1;
@@ -373,3 +373,7 @@ mod tests;
 #[cfg(test)]
 #[path = "neuron_generation_update_test_support.rs"]
 pub(crate) mod test_support;
+
+#[cfg(all(test, target_os = "linux"))]
+#[path = "authority_host_generation_publication_root_tests.rs"]
+mod publication_root_tests;

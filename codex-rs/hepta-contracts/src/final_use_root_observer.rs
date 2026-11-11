@@ -142,10 +142,13 @@ impl RootFinalUseObserverV1 {
                 return Err(FinalUseError::UnsafeStateDirectory);
             }
             self.require_original_files()?;
-            let before = self.frontier.load(&self.signer_id).map_err(map_trust_error)?;
+            let before = self
+                .frontier
+                .load(&self.signer_id)
+                .map_err(map_trust_error)?;
             let snapshot = self.read_file("authority.json", 8 * 1024 * 1024)?;
-            let stored: StoredV3 = serde_json::from_slice(&snapshot.bytes)
-                .map_err(|_| FinalUseError::InvalidTrust)?;
+            let stored: StoredV3 =
+                serde_json::from_slice(&snapshot.bytes).map_err(|_| FinalUseError::InvalidTrust)?;
             if stored.schema != STATE_SCHEMA_V3
                 || stored.signer_id != self.signer_id
                 || stored.trust != StoreTrust::IssuerKeyRing(self.issuer_trust_sha256)
@@ -153,7 +156,8 @@ impl RootFinalUseObserverV1 {
             {
                 return Err(FinalUseError::InvalidTrust);
             }
-            let claims = self.read_file("authority.claims", (MAX_CLAIMS + 1) * CLAIM_FRAME_BYTES)?;
+            let claims =
+                self.read_file("authority.claims", (MAX_CLAIMS + 1) * CLAIM_FRAME_BYTES)?;
             if !claims.stamp.same_inode(&FileStamp::read(&self.claims)?) {
                 return Err(FinalUseError::Unavailable);
             }
@@ -163,7 +167,11 @@ impl RootFinalUseObserverV1 {
                 failed: false,
             };
             if frontier_for_state(&state) != before
-                || self.frontier.load(&self.signer_id).map_err(map_trust_error)? != before
+                || self
+                    .frontier
+                    .load(&self.signer_id)
+                    .map_err(map_trust_error)?
+                    != before
             {
                 return Err(FinalUseError::AntiRollbackViolation);
             }

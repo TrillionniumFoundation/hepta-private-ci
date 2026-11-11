@@ -105,10 +105,19 @@ fn original_non_root_consumer_process() {
         revision: 1,
         revoked_grant_ids: BTreeSet::new(),
     };
-    let frontier = Arc::new(Frontier::new(FinalUseFrontier::for_initial_head(&head).unwrap()));
-    assert!(matches!(RootFinalUseObserverV1::open_original(
-        &directory, CONSUMER_UID, SIGNER.into(), issuer_keys(), frontier.clone(),
-    ), Err(FinalUseError::UnsafeStateDirectory)));
+    let frontier = Arc::new(Frontier::new(
+        FinalUseFrontier::for_initial_head(&head).unwrap(),
+    ));
+    assert!(matches!(
+        RootFinalUseObserverV1::open_original(
+            &directory,
+            CONSUMER_UID,
+            SIGNER.into(),
+            issuer_keys(),
+            frontier.clone(),
+        ),
+        Err(FinalUseError::UnsafeStateDirectory)
+    ));
     assert_eq!(std::fs::read_dir(&directory).unwrap().count(), 0);
     let authority = FinalUseAuthority::open_state_dir_with_issuer_keys(
         &directory,
@@ -117,7 +126,8 @@ fn original_non_root_consumer_process() {
         head.clone(),
         Arc::new(Clock),
         frontier,
-    ).unwrap();
+    )
+    .unwrap();
     let grant = FinalUseGrant {
         schema_version: 1,
         signer_id: SIGNER.into(),
@@ -135,13 +145,15 @@ fn original_non_root_consumer_process() {
         expires_at_unix_ms: 3_000,
     };
     let signed = SignedFinalUseGrant {
-        signature: SigningKey::from_bytes(&[81; 32]).sign(&grant.signing_bytes().unwrap()).to_bytes().to_vec(),
+        signature: SigningKey::from_bytes(&[81; 32])
+            .sign(&grant.signing_bytes().unwrap())
+            .to_bytes()
+            .to_vec(),
         grant,
     };
     let token = claim_final_use(&authority, &signed, &signed.grant.binding).unwrap();
-    let ((), witness) = dispatch_final_use_with_witness(
-        &authority, token, &signed.grant.binding, |_| (),
-    ).unwrap();
+    let ((), witness) =
+        dispatch_final_use_with_witness(&authority, token, &signed.grant.binding, |_| ()).unwrap();
     loop {
         let record = OriginalRecord {
             signed: signed.clone(),
@@ -149,7 +161,10 @@ fn original_non_root_consumer_process() {
             head: head.clone(),
             frontier: authority.current_external_frontier().unwrap(),
         };
-        println!("ROOT_OBSERVER_FIXTURE {}", serde_json::to_string(&record).unwrap());
+        println!(
+            "ROOT_OBSERVER_FIXTURE {}",
+            serde_json::to_string(&record).unwrap()
+        );
         std::io::stdout().flush().unwrap();
         let mut command = String::new();
         std::io::stdin().read_line(&mut command).unwrap();
@@ -177,7 +192,11 @@ struct Consumer {
 
 impl Consumer {
     fn start() -> Self {
-        assert_eq!(rustix::process::geteuid().as_raw(), 0, "requires actual uid 0");
+        assert_eq!(
+            rustix::process::geteuid().as_raw(),
+            0,
+            "requires actual uid 0"
+        );
         let root = tempfile::tempdir().unwrap();
         std::fs::set_permissions(root.path(), std::fs::Permissions::from_mode(0o711)).unwrap();
         let binary = root.path().join("consumer-test");
@@ -194,29 +213,50 @@ impl Consumer {
             .gid(CONSUMER_UID)
             .stdin(Stdio::piped())
             .stdout(Stdio::piped())
-            .spawn().unwrap();
+            .spawn()
+            .unwrap();
         let input = child.stdin.take().unwrap();
         let mut output = BufReader::new(child.stdout.take().unwrap());
         let original = read_record(&mut output);
         let frontier = Arc::new(Frontier::new(original.frontier));
-        Self { _root: root, directory, child, input, output, original, frontier }
+        Self {
+            _root: root,
+            directory,
+            child,
+            input,
+            output,
+            original,
+            frontier,
+        }
     }
 
     fn observer(&self) -> RootFinalUseObserverV1 {
         RootFinalUseObserverV1::open_original(
-            &self.directory, CONSUMER_UID, SIGNER.into(), issuer_keys(), self.frontier.clone(),
-        ).unwrap()
+            &self.directory,
+            CONSUMER_UID,
+            SIGNER.into(),
+            issuer_keys(),
+            self.frontier.clone(),
+        )
+        .unwrap()
     }
 
-    fn verify(&self, observer: &RootFinalUseObserverV1) -> Result<FinalUseRevocations, FinalUseError> {
+    fn verify(
+        &self,
+        observer: &RootFinalUseObserverV1,
+    ) -> Result<FinalUseRevocations, FinalUseError> {
         observer.verify_original_retained_use(
-            &self.original.signed, &self.original.signed.grant.binding, &self.original.witness,
+            &self.original.signed,
+            &self.original.signed.grant.binding,
+            &self.original.witness,
         )
     }
 
     fn bytes(&self) -> Vec<Vec<u8>> {
-        ["authority.lock", "authority.json", "authority.claims"].iter()
-            .map(|name| std::fs::read(self.directory.join(name)).unwrap()).collect()
+        ["authority.lock", "authority.json", "authority.claims"]
+            .iter()
+            .map(|name| std::fs::read(self.directory.join(name)).unwrap())
+            .collect()
     }
 }
 
@@ -231,8 +271,16 @@ impl Drop for Consumer {
 fn read_record(output: &mut BufReader<ChildStdout>) -> OriginalRecord {
     loop {
         let mut line = String::new();
-        assert_ne!(output.read_line(&mut line).unwrap(), 0, "consumer exited before original readback");
-        if let Some(record) = line.trim().split_once("ROOT_OBSERVER_FIXTURE ").map(|(_, record)| record) {
+        assert_ne!(
+            output.read_line(&mut line).unwrap(),
+            0,
+            "consumer exited before original readback"
+        );
+        if let Some(record) = line
+            .trim()
+            .split_once("ROOT_OBSERVER_FIXTURE ")
+            .map(|(_, record)| record)
+        {
             return serde_json::from_str(record).unwrap();
         }
     }
@@ -241,9 +289,17 @@ fn read_record(output: &mut BufReader<ChildStdout>) -> OriginalRecord {
 #[test]
 fn root_observer_rejects_root_consumer_without_creating_state() {
     let directory = tempfile::tempdir().unwrap();
-    let frontier = FinalUseFrontier { authority_epoch: 1, revocation_revision: 1, state_sha256: [1; 32] };
+    let frontier = FinalUseFrontier {
+        authority_epoch: 1,
+        revocation_revision: 1,
+        state_sha256: [1; 32],
+    };
     let result = RootFinalUseObserverV1::open_original(
-        directory.path(), /*consumer_uid*/ 0, SIGNER.into(), issuer_keys(), Arc::new(Frontier::new(frontier)),
+        directory.path(),
+        /*consumer_uid*/ 0,
+        SIGNER.into(),
+        issuer_keys(),
+        Arc::new(Frontier::new(frontier)),
     );
     assert!(matches!(result, Err(FinalUseError::UnsafeStateDirectory)));
     assert_eq!(std::fs::read_dir(directory.path()).unwrap().count(), 0);
@@ -258,31 +314,80 @@ fn root_observer_reads_live_original_and_rejects_revocation_without_claiming() {
     std::fs::create_dir(&empty).unwrap();
     std::fs::set_permissions(&empty, std::fs::Permissions::from_mode(0o700)).unwrap();
     std::os::unix::fs::chown(&empty, Some(CONSUMER_UID), Some(CONSUMER_UID)).unwrap();
-    assert!(matches!(RootFinalUseObserverV1::open_original(
-        &empty, CONSUMER_UID, SIGNER.into(), issuer_keys(), consumer.frontier.clone(),
-    ), Err(FinalUseError::Unavailable)));
+    assert!(matches!(
+        RootFinalUseObserverV1::open_original(
+            &empty,
+            CONSUMER_UID,
+            SIGNER.into(),
+            issuer_keys(),
+            consumer.frontier.clone(),
+        ),
+        Err(FinalUseError::Unavailable)
+    ));
     assert_eq!(std::fs::read_dir(&empty).unwrap().count(), 0);
     let mut different_trust = issuer_keys();
     different_trust[0].key_id = "different-enrollment".into();
-    assert!(matches!(RootFinalUseObserverV1::open_original(
-        &consumer.directory, CONSUMER_UID, SIGNER.into(), different_trust, consumer.frontier.clone(),
-    ), Err(FinalUseError::InvalidTrust)));
+    assert!(matches!(
+        RootFinalUseObserverV1::open_original(
+            &consumer.directory,
+            CONSUMER_UID,
+            SIGNER.into(),
+            different_trust,
+            consumer.frontier.clone(),
+        ),
+        Err(FinalUseError::InvalidTrust)
+    ));
     let observer = consumer.observer();
-    assert_eq!((observer.consumer_uid(), observer.signer_id()), (CONSUMER_UID, SIGNER));
+    assert_eq!(
+        (observer.consumer_uid(), observer.signer_id()),
+        (CONSUMER_UID, SIGNER)
+    );
     let original_state: StoredV3 = serde_json::from_slice(&before[1]).unwrap();
-    assert_eq!(original_state.trust, StoreTrust::IssuerKeyRing(observer.issuer_trust_digest()));
-    assert_eq!(consumer.verify(&observer), Ok(consumer.original.head.clone()));
+    assert_eq!(
+        original_state.trust,
+        StoreTrust::IssuerKeyRing(observer.issuer_trust_digest())
+    );
+    assert_eq!(
+        consumer.verify(&observer),
+        Ok(consumer.original.head.clone())
+    );
     let mut unconsumed = consumer.original.signed.clone();
     unconsumed.grant.nonce = [91; 32];
     unconsumed.signature = SigningKey::from_bytes(&[81; 32])
-        .sign(&unconsumed.grant.signing_bytes().unwrap()).to_bytes().to_vec();
-    assert_eq!(observer.verify_original_retained_use(&unconsumed, &unconsumed.grant.binding, &consumer.original.witness), Err(FinalUseError::InvalidGrant));
+        .sign(&unconsumed.grant.signing_bytes().unwrap())
+        .to_bytes()
+        .to_vec();
+    assert_eq!(
+        observer.verify_original_retained_use(
+            &unconsumed,
+            &unconsumed.grant.binding,
+            &consumer.original.witness
+        ),
+        Err(FinalUseError::InvalidGrant)
+    );
     unconsumed.signature[0] ^= 1;
-    assert_eq!(observer.verify_original_retained_use(&unconsumed, &unconsumed.grant.binding, &consumer.original.witness), Err(FinalUseError::InvalidSignature));
+    assert_eq!(
+        observer.verify_original_retained_use(
+            &unconsumed,
+            &unconsumed.grant.binding,
+            &consumer.original.witness
+        ),
+        Err(FinalUseError::InvalidSignature)
+    );
     let mut wrong_entry = consumer.original.witness.clone();
     wrong_entry.verified_at_unix_ms = consumer.original.signed.grant.expires_at_unix_ms;
-    assert_eq!(observer.verify_original_retained_use(&consumer.original.signed, &consumer.original.signed.grant.binding, &wrong_entry), Err(FinalUseError::BindingMismatch));
-    assert_eq!(consumer.verify(&observer), Ok(consumer.original.head.clone()));
+    assert_eq!(
+        observer.verify_original_retained_use(
+            &consumer.original.signed,
+            &consumer.original.signed.grant.binding,
+            &wrong_entry
+        ),
+        Err(FinalUseError::BindingMismatch)
+    );
+    assert_eq!(
+        consumer.verify(&observer),
+        Ok(consumer.original.head.clone())
+    );
     assert_eq!(consumer.bytes(), before);
     consumer.input.write_all(b"revoke\n").unwrap();
     consumer.input.flush().unwrap();
@@ -290,7 +395,10 @@ fn root_observer_reads_live_original_and_rejects_revocation_without_claiming() {
     *consumer.frontier.value.lock().unwrap() = consumer.original.frontier;
     assert_eq!(consumer.verify(&observer), Err(FinalUseError::Unavailable));
     let after = consumer.bytes();
-    assert_eq!(consumer.verify(&consumer.observer()), Err(FinalUseError::Revoked));
+    assert_eq!(
+        consumer.verify(&consumer.observer()),
+        Err(FinalUseError::Revoked)
+    );
     assert_eq!(consumer.bytes(), after);
 }
 
@@ -300,8 +408,20 @@ fn root_observer_fences_partial_rollback_schema_and_replaced_original_files() {
     let consumer = Consumer::start();
     let original = consumer.bytes();
     #[derive(Debug, Copy, Clone)]
-    enum Mutation { Partial, Rollback, Schema, Replace, Frontier }
-    for mutation in [Mutation::Partial, Mutation::Rollback, Mutation::Schema, Mutation::Replace, Mutation::Frontier] {
+    enum Mutation {
+        Partial,
+        Rollback,
+        Schema,
+        Replace,
+        Frontier,
+    }
+    for mutation in [
+        Mutation::Partial,
+        Mutation::Rollback,
+        Mutation::Schema,
+        Mutation::Replace,
+        Mutation::Frontier,
+    ] {
         let observer = consumer.observer();
         let claims = consumer.directory.join("authority.claims");
         let snapshot = consumer.directory.join("authority.json");
@@ -325,7 +445,8 @@ fn root_observer_fences_partial_rollback_schema_and_replaced_original_files() {
                 std::os::unix::fs::chown(&claims, Some(CONSUMER_UID), Some(CONSUMER_UID)).unwrap();
             }
             Mutation::Frontier => consumer.frontier.change_at.store(
-                consumer.frontier.reads.load(Ordering::SeqCst) + 2, Ordering::SeqCst,
+                consumer.frontier.reads.load(Ordering::SeqCst) + 2,
+                Ordering::SeqCst,
             ),
         }
         let changed = consumer.bytes();
@@ -334,7 +455,11 @@ fn root_observer_fences_partial_rollback_schema_and_replaced_original_files() {
             Mutation::Rollback | Mutation::Frontier => FinalUseError::AntiRollbackViolation,
             Mutation::Replace => FinalUseError::Unavailable,
         };
-        assert_eq!(consumer.verify(&observer), Err(expected), "accepted {mutation:?}");
+        assert_eq!(
+            consumer.verify(&observer),
+            Err(expected),
+            "accepted {mutation:?}"
+        );
         assert_eq!(consumer.bytes(), changed, "observer repaired {mutation:?}");
         if matches!(mutation, Mutation::Replace) {
             std::fs::remove_file(&claims).unwrap();
@@ -345,6 +470,9 @@ fn root_observer_fences_partial_rollback_schema_and_replaced_original_files() {
         std::fs::write(&snapshot, &original[1]).unwrap();
         *consumer.frontier.value.lock().unwrap() = consumer.original.frontier;
         assert_eq!(consumer.verify(&observer), Err(FinalUseError::Unavailable));
-        assert_eq!(consumer.verify(&consumer.observer()), Ok(consumer.original.head.clone()));
+        assert_eq!(
+            consumer.verify(&consumer.observer()),
+            Ok(consumer.original.head.clone())
+        );
     }
 }

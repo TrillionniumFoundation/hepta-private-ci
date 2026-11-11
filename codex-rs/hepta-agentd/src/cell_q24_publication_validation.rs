@@ -82,16 +82,30 @@ impl Decision {
     /// missing owners, unsigned deferral and incomplete evaluation never enter.
     pub(crate) fn require_root_publication(&self) -> Result<(), Error> {
         use codex_hepta_learning_artifacts::LearningLocalDispositionV2;
-        match self.snapshot.receipts.last().map(|receipt| &receipt.observation) {
+        match self
+            .snapshot
+            .receipts
+            .last()
+            .map(|receipt| &receipt.observation)
+        {
             Some(LearningIterationObservationV1::LocalDecisionV2(local))
-                if matches!(local.disposition, LearningLocalDispositionV2::AdoptCandidate
-                    | LearningLocalDispositionV2::RetainParent
-                    | LearningLocalDispositionV2::DeferCandidate) => Ok(()),
+                if matches!(
+                    local.disposition,
+                    LearningLocalDispositionV2::AdoptCandidate
+                        | LearningLocalDispositionV2::RetainParent
+                        | LearningLocalDispositionV2::DeferCandidate
+                ) =>
+            {
+                Ok(())
+            }
             Some(LearningIterationObservationV1::TrainingNoUpdateV2(_))
             | Some(LearningIterationObservationV1::Evaluation {
-                disposition: LearningEvaluationDispositionV1::NoUpdate, ..
+                disposition: LearningEvaluationDispositionV1::NoUpdate,
+                ..
             }) if !self.adopts() => Ok(()),
-            _ => Err(Error::Binding("only completed original protocol decision enrolls CURRENT")),
+            _ => Err(Error::Binding(
+                "only completed original protocol decision enrolls CURRENT",
+            )),
         }
     }
 

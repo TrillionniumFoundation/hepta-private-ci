@@ -339,6 +339,15 @@ impl<W: AnchorWitnessStore + Send> AgentdCircuitTaskInvocationProviderV1
         Ok(request)
     }
 
+    fn observe_learning(
+        &self,
+        _identity: &AgentdIdentity,
+        _record: &RunStartRecordV1,
+        _trace: &codex_hepta_automation::CircuitCommittedTraceV2,
+    ) -> crate::CircuitTaskLearningReadinessV1 {
+        crate::CircuitTaskLearningReadinessV1::NonLearning
+    }
+
     fn publish_result(
         &self,
         identity: &AgentdIdentity,

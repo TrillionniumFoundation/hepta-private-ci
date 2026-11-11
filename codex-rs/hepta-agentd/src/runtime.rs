@@ -157,13 +157,7 @@ pub async fn run_with_shutdown(
         EVENT_CAPACITY,
     )?);
     if let Some(delivery) = &circuit_learning_delivery {
-        state.attach_circuit_learning_sources(
-            delivery
-                .requests
-                .iter()
-                .map(|request| request.source_run_id.clone())
-                .collect(),
-        )?;
+        delivery.attach_sources(&state)?;
     }
     let circuit_task = if let Some((bootstrap, invocation)) = circuit_task {
         state
@@ -347,7 +341,7 @@ pub async fn run_with_shutdown(
         state.attach_automation_store(store.clone())?;
         if let Some(host) = state.objective_runtime.get() {
             for source in state.circuit_learning_sources() {
-                host.reconcile_learning_outbox(store, Some(source)).await?;
+                host.reconcile_learning_outbox(store, Some(source), &state).await?;
             }
         }
     }

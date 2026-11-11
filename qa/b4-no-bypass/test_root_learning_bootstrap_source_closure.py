@@ -22,6 +22,7 @@ PROFILE = AGENT + "authority_host_learning_profile.rs"
 REGISTRATION = AGENT + "authority_host_learning_registration.rs"
 SESSION = AGENT + "authority_host_learning_session.rs"
 MODEL_REGISTRATION = AGENT + "authority_host_q24_model_registration.rs"
+PUBLICATION_SESSION = AGENT + "authority_host_generation_publication_session.rs"
 HANDOFF = AGENT + "root_production_learning_handoff.rs"
 INPUTS = AGENT + "root_production_learning_inputs.rs"
 CONFIG = AGENT + "config_root_learning.rs"
@@ -54,7 +55,9 @@ CALLERS = {
     "root_learning_original_delivery_source": (INPUTS,),
     "root_learning_completed_circuit_source": (DELIVERY,),
     "root_original_registered_ready_serve": (CLI,),
-    "root_original_private_sealed_bytes": (REGISTRATION, MODEL_REGISTRATION),
+    "root_original_private_sealed_bytes": (
+        REGISTRATION, MODEL_REGISTRATION, PUBLICATION_SESSION,
+    ),
 }
 
 

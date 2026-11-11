@@ -53,11 +53,11 @@ use crate::write_candidate_payload_beneath;
 use crate::write_registry_head_witness_beneath;
 use crate::write_registry_snapshot_beneath;
 
-#[path = "owner_read_view.rs"]
-mod read_view;
 #[cfg(target_os = "linux")]
 #[path = "owner_original_reader.rs"]
 mod original_reader;
+#[path = "owner_read_view.rs"]
+mod read_view;
 #[cfg(target_os = "linux")]
 pub use original_reader::LearningArtifactReadViewV1;
 #[path = "owner_withdrawal_frontier.rs"]
@@ -384,7 +384,8 @@ impl Drop for LearningArtifactOwnerHost {
 impl LearningArtifactOwnerHost {
     fn read_view(&self) -> read_view::ArtifactOwnerReadView<'_> {
         read_view::ArtifactOwnerReadView {
-            root: &self.root, verifier: &self.verifier,
+            root: &self.root,
+            verifier: &self.verifier,
             required_current_head: self.required_current_head.as_ref(),
         }
     }
@@ -925,8 +926,6 @@ impl LearningArtifactOwnerHost {
         self.read_view().discover_current_head(now)
     }
 
-
-
     fn persist_checkpoint(
         &self,
         transaction: &ArtifactPublicationTransactionV1,
@@ -966,8 +965,6 @@ impl LearningArtifactOwnerHost {
     fn signed_head_record_path(&self, signed: &SignedCurrentArtifactHeadV1) -> PathBuf {
         self.read_view().signed_head_record_path(signed)
     }
-
-
 }
 
 fn checkpoint_from_snapshot(

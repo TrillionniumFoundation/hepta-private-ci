@@ -46,6 +46,8 @@ pub(super) struct Session {
     pub source: Arc<Source>,
     pub cell: Cell,
     pub retirement: PublishedCircuitFeatureTaskV1,
+    #[cfg(target_os = "linux")]
+    pub ledger: Option<Arc<crate::OriginalCellQ24TaskLedgerProducerV1>>,
     cancellation: CancellationToken,
     worker: Option<tokio::task::JoinHandle<Result<(), crate::AgentdError>>>,
 }
@@ -302,6 +304,33 @@ pub(super) async fn start(
     model: Arc<LoadedCellQ24ModelV1>,
     bundle: CellCompatibilityBundleV1,
 ) -> anyhow::Result<Session> {
+    start_profile(admission, published_task, model, bundle, LearningProfile::None).await
+}
+
+enum LearningProfile {
+    None,
+    #[cfg(target_os = "linux")]
+    Original(crate::OriginalCellQ24TaskLedgerInputsV1),
+}
+
+#[cfg(target_os = "linux")]
+pub(super) async fn start_learning(
+    admission: Admission,
+    published_task: PublishedCircuitFeatureTaskV1,
+    model: Arc<LoadedCellQ24ModelV1>,
+    bundle: CellCompatibilityBundleV1,
+    inputs: crate::OriginalCellQ24TaskLedgerInputsV1,
+) -> anyhow::Result<Session> {
+    start_profile(admission, published_task, model, bundle, LearningProfile::Original(inputs)).await
+}
+
+async fn start_profile(
+    admission: Admission,
+    published_task: PublishedCircuitFeatureTaskV1,
+    model: Arc<LoadedCellQ24ModelV1>,
+    bundle: CellCompatibilityBundleV1,
+    learning: LearningProfile,
+) -> anyhow::Result<Session> {
     let Admission {
         runtime,
         config,
@@ -383,11 +412,21 @@ pub(super) async fn start(
             cell_micros: 10 + u64::try_from(epoch.elapsed().as_micros()).expect("live Cell clock"),
         }),
     };
-    let mut installed = config
+    let config = config
         .with_authbus_trust_file(runtime.identity.home_root.join("circuit-trust.json"))
         .with_authbus_checkpoint_file(runtime.identity.run_root.join("circuit-checkpoint.json"))
-        .with_objective_profile_file(runtime.identity.home_root.join("circuit-profile.json"))
-        .with_q24_circuit_task_profile(profile)?;
+        .with_objective_profile_file(runtime.identity.home_root.join("circuit-profile.json"));
+    #[cfg(target_os = "linux")]
+    let mut ledger = None;
+    let mut installed = match learning {
+        LearningProfile::None => config.with_q24_circuit_task_profile(profile)?,
+        #[cfg(target_os = "linux")]
+        LearningProfile::Original(inputs) => {
+            let installed = config.with_q24_learning_task_profile(profile, inputs)?;
+            ledger = Some(installed.ledger);
+            installed.task
+        }
+    };
     let (bootstrap, invocation) = installed
         .config
         .take_circuit_task_bootstrap()?
@@ -412,6 +451,8 @@ pub(super) async fn start(
         source: installed.source,
         cell: installed.cell,
         retirement,
+        #[cfg(target_os = "linux")]
+        ledger,
         cancellation,
         worker: Some(worker),
     })

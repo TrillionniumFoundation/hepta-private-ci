@@ -55,16 +55,23 @@ impl CurrentStore {
     pub(super) fn from_original_root(
         original: crate::root_generation_current_client::RootGenerationCurrentClient,
     ) -> Result<Self, AgentdError> {
-        Ok(Self { owner_id: owner_id(original.scope())?, store: Store::Root(original) })
+        Ok(Self {
+            owner_id: owner_id(original.scope())?,
+            store: Store::Root(original),
+        })
     }
 
     #[cfg(target_os = "linux")]
-    pub(super) fn is_original_host(&self) -> bool { matches!(&self.store, Store::Host(_)) }
+    pub(super) fn is_original_host(&self) -> bool {
+        matches!(&self.store, Store::Host(_))
+    }
 
     #[cfg(target_os = "linux")]
     pub(super) fn require_original_root_selection(
-        &self, decision: &codex_hepta_learning_artifacts::LearningIterationSnapshotV1,
-        operation: &codex_hepta_types::StableId, selection: codex_hepta_types::Digest32,
+        &self,
+        decision: &codex_hepta_learning_artifacts::LearningIterationSnapshotV1,
+        operation: &codex_hepta_types::StableId,
+        selection: codex_hepta_types::Digest32,
     ) -> Result<(), AgentdError> {
         match &self.store {
             Store::Root(original) => original.require_selection(decision, operation, selection),
@@ -94,11 +101,15 @@ impl CurrentStore {
         next: &CurrentHead,
     ) -> Result<(), AgentdError> {
         match &self.store {
-            Store::Host(store) => store.compare_and_set(&self.owner_id, expected, next).map_err(invalid),
+            Store::Host(store) => store
+                .compare_and_set(&self.owner_id, expected, next)
+                .map_err(invalid),
             #[cfg(target_os = "linux")]
             Store::Root(original) => original.replace(expected, next),
             #[cfg(test)]
-            Store::Test(store) => store.compare_and_set(&self.owner_id, expected, next).map_err(invalid),
+            Store::Test(store) => store
+                .compare_and_set(&self.owner_id, expected, next)
+                .map_err(invalid),
         }
     }
 
