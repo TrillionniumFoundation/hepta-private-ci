@@ -15,3 +15,15 @@ The copied original contract/manifest has not been newly frozen or rebound,
 so this code is NOT a runnable or adopted six-fit experiment. Separate new
 freeze, manifest, input checks, native resource accounting, fault injection
 and independent checkpoint replay are still required. Every P0-P5 gate HOLD.
+
+## Explicit unadopted program manifest preflight (P0/P2)
+
+`c2_program_freeze.py` is a **separate prospective** source/config byte
+snapshot helper. By default it is strictly read-only, reports `HOLD_NO_GO`,
+and exits nonzero if any of eight exact inputs or the sibling durable publisher
+is absent. With the explicit `--write` flag it publishes a candidate
+`PROGRAM-MANIFEST.json` once using checked, fsynced, no-replace bytes. It
+never creates missing inputs, chooses a model/data/configuration, authorizes
+an owner, resumes the old C2 job or executes a training step. The generated
+manifest still requires an independent full source/model/data/config/owner
+decision before any six-fit launch. The historical C2 objects are immutable.
