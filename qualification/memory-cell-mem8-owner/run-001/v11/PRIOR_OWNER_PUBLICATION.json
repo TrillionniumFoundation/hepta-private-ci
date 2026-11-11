@@ -1,0 +1,55 @@
+{
+  "schema": "mem8.owner-v10.actual-publication.v1",
+  "observed_utc": "2026-11-11 15:58:15 UTC",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "pr": 5897,
+  "branch": "codex/mem8-owner-evidence-20261111-ed353817",
+  "expected_previous_head": "fb533298874d85b6d6ec3d0d1352cd847e54ac4f",
+  "ref_update_result": {
+    "success": true
+  },
+  "after": {
+    "ref": "refs/heads/codex/mem8-owner-evidence-20261111-ed353817",
+    "head": "f86dfb058edd6e489671e99baf7643a58e7eed35",
+    "pr_head": "f86dfb058edd6e489671e99baf7643a58e7eed35",
+    "base": "943196eb18a1a04e7248307cf8708bed38b82b8b",
+    "tree": "259c24c65d05db477cfe2cba12a20414744bdb17",
+    "draft": true,
+    "state": "open",
+    "full_body": "## V10 owner and adoption checkpoint\n\nThe source and CI evidence advanced, while all ten adoption gates remain open. This update preserves the original scientific results, acceptance thresholds, owner/provider custody requirements and unresolved request identities.\n\n### What changed\n\n- Bind the actual V6, V7 and V8 source-only qualifications and the published pure c895 source in draft #5935.\n- Record actually published V16 evidence in #5889 at 3a30ff5e95a74ee870799756b384ea9ac8c03b2e, including its actual expected-head update and full PR/ref readback.\n- Retain all b054 terminal scopes, the failed strict scoped-fix result, original Windows LEAK/outside-delete failure and unfinished cases, and the separate c895 original five-case admission.\n- Correct Architecture accounting to 144 Python cases per lane: 136 qualification-receipted plus 8 additional raw-only preflight cases; 288 executions and 144 distinct IDs. Old raw logs and receipt-scope audits remain unchanged.\n- Update only the hosted-CI status/finding and its current intake instructions. Add three explicitly source-only completed work items; these do not close adoption gates.\n\n### Verification and remaining limits\n\nThe nine non-CI gate objects and their intake objects are unchanged. The hosted-CI closure requirement, all previous closed entries and every other prior top-level field outside the explicit update set remain unchanged. The full 134,567-byte ledger and all three supporting files were independently read back at the candidate commit.\n\nOriginal provider terminal/physical request count and H V3/V4 settlement remain UNKNOWN. Ignored Provider G was not run. No new real model request, merge, production adoption or deployment is claimed. Current c895 required CI must be judged from its own original results; source checks, synthetic reads and recovered archives do not establish successor-task benefit or original-owner/effect cold recovery.\n\n[Review the V10 ledger](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f86dfb058edd6e489671e99baf7643a58e7eed35/qualification/memory-cell-mem8-owner/run-001/BLOCKERS.json)\n\nDraft owner evidence PR. The concrete missing custodian inputs and unchanged closure evidence for all ten gates remain in the ledger.\n"
+  },
+  "full_raw_ref_and_PR_read": true,
+  "full_PR_body_equal_to_submitted": true,
+  "full_file_readbacks": [
+    {
+      "path": "qualification/memory-cell-mem8-owner/run-001/BLOCKERS.json",
+      "sha": "2d5f0256776089b386f8e5ebd9d9eefcbfaac5f2",
+      "bytes": 134567,
+      "full_content_equal": true
+    },
+    {
+      "path": "qualification/memory-cell-mem8-owner/run-001/v10/prepare_owner_v10_final.py",
+      "sha": "6374f9d93b462df925e8f02c2357cf4e5115bc1a",
+      "bytes": 14355,
+      "full_content_equal": true
+    },
+    {
+      "path": "qualification/memory-cell-mem8-owner/run-001/v10/ROOT_FINAL_INVARIANT_AUDIT.json",
+      "sha": "356ccb80ef306fac48fa2f977d4e77bad5074e71",
+      "bytes": 978,
+      "full_content_equal": true
+    },
+    {
+      "path": "qualification/memory-cell-mem8-owner/run-001/v10/V16_ACTUAL_PUBLICATION.json",
+      "sha": "643213ab4fd1cb35dd167928a163f5dcf6d66b26",
+      "bytes": 4380,
+      "full_content_equal": true
+    }
+  ],
+  "open_adoption_gates": 10,
+  "nine_non_CI_gates_and_HOSTED_CI_closure_unchanged": true,
+  "original_provider_and_H_UNKNOWN_unchanged": true,
+  "new_real_model_requests": 0,
+  "merged": false,
+  "deployed": false
+}
