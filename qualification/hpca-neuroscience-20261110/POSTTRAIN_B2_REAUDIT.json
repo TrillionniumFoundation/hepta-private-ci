@@ -1,0 +1,54 @@
+{
+  "authority": "DENY_ALL",
+  "full_nine_run_process_cpu_seconds_sum": 92.954481356,
+  "full_nine_run_wall_seconds_sum": 24.313295296393335,
+  "independent_evaluator": false,
+  "nine_model_runs": 9,
+  "observed_forwards": 540,
+  "peak_per_run_rss_kib_max": 1242076,
+  "per_run_accuracy": [
+    0.5,
+    0.5,
+    0.5,
+    0.5,
+    0.5,
+    0.5,
+    0.5,
+    0.5,
+    0.5
+  ],
+  "prediction_counts": {
+    "no": 540
+  },
+  "production_effect": false,
+  "qualification": "HOLD_NO_GO",
+  "scope": "original retained real CPU forward probabilities; operator-generated arithmetic B2 only",
+  "seed_paired_bursty_minus_interleaved": [
+    {
+      "accuracy": 0.0,
+      "mean_brier": 0.0002509423999999538,
+      "mean_log_loss": 0.0007776889166667411,
+      "seed": 11
+    },
+    {
+      "accuracy": 0.0,
+      "mean_brier": 0.00017260896666670966,
+      "mean_log_loss": 0.0005438572999998392,
+      "seed": 17
+    },
+    {
+      "accuracy": 0.0,
+      "mean_brier": -0.0002130400500000018,
+      "mean_log_loss": -0.0006340239166666706,
+      "seed": 23
+    },
+    {
+      "accuracy": 0.0,
+      "mean_brier": -4.218834999997201e-05,
+      "mean_log_loss": -0.00012157104999999113,
+      "seed": 29
+    }
+  ],
+  "statistical_claim": "none: operator-generated B2 and 4 paired seeds",
+  "unique_tasks": 60
+}
