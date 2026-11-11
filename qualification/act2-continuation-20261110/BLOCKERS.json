@@ -1,0 +1,1604 @@
+{
+  "schema_version": 1,
+  "all_blockers_closed": false,
+  "scope": "ACT continuation; each status is evidence-specific",
+  "qualified": [
+    {
+      "id": "MACOS_AUTOMATION_ALIAS_CONTRACT",
+      "status": "SCOPED_PASS",
+      "run": 42772207776,
+      "driver": "4a5c8832d8e3417e6fd2a30a8bec540f4bbfaa65",
+      "baseline": "8b1c1789916514471c6cacdf0f6c45467255fef9",
+      "candidate": "8bebf0a3c207a49bfd0a99367fd6e06f52a6cb98",
+      "observed": "12 canonical passes, 12 exactly named Invalid alias failures, 12 repaired alias passes",
+      "does_not_establish": "all historical macOS/Windows causes or the two Agentd roots"
+    },
+    {
+      "id": "CONTROLLED_LEARNING_DECISION",
+      "status": "BOUNDED_NEGATIVE_FIXED_LIBRARY_RETAINED",
+      "pr": 5669,
+      "episodes_per_execution": 3200,
+      "independent_training_initializations": 8,
+      "fits": 16,
+      "optimizer_steps_per_fit": 220,
+      "head_complete": [
+        512,
+        640
+      ],
+      "gru_complete": [
+        464,
+        640
+      ],
+      "review_checks": 220,
+      "does_not_establish": "five independent product controllers, independent field confirmation, full paid operational costs or destination-family generalization"
+    },
+    {
+      "id": "ORIGINAL_CANCELLATION_RESPONSIBILITY",
+      "status": "EXACT_SUCCESSOR_NATIVE_AND_ACTUAL_APP_SCOPED_PASS",
+      "pr": 5693,
+      "source": "c0d5d0ededb6627103c390e86b8714135977025c",
+      "tree": "76472eac11a1292700c0d8deeff03059bc18bd27",
+      "implemented": "private non-serializable NotesFenceProof binds exact original and committed cancel event; one transaction verifies causal cross-operation journal/outbox/ledger membership and writes typed notes_fence_excluded settlement; reopen/replay and tamper cases reject forged App receipt",
+      "local_result": "codex-hepta-memory 417 passed, 14 pre-existing skipped; scoped format clean",
+      "hosted": [
+        {
+          "run": 42794187139,
+          "scope": "Windows private-state declared scope",
+          "status": "SUCCESS",
+          "artifact_id": 13753905924,
+          "artifact_sha256": "36a838d29e584b3f630d72fd6ae48d28ec09d00b1cfdbbec30f91f9087f01618"
+        },
+        {
+          "run": 42794187291,
+          "scope": "v8 metadata/clean-worktree only",
+          "status": "SUCCESS",
+          "does_not_exercise": "typed fence"
+        },
+        {
+          "run": 42794187070,
+          "scope": "Windows original regressions",
+          "status": "FAILURE_PREEXISTING_WINDOWS_HOST_SANDBOX",
+          "job": 129755068226,
+          "artifact_id": 13755863780,
+          "artifact_sha256": "0d84b1844dc2162a62d0c67adc2af1b0a8505ddf9a9603b415215a09e8fcb3fb",
+          "exact_result": "original-protected-owner 14/14 and operator-native 33/33 passed; original sandbox 1 leaky pass plus 6 failures and native delete routes 0/2",
+          "reason": "hosted Windows parent ACL exposes ambient FILE_DELETE_CHILD; guard fails closed",
+          "comparison": "parent 4dc5f724 run 42784395131 failed the same two groups for the same reason; not a typed fence regression, not a pass"
+        },
+        {
+          "run": 42794177546,
+          "scope": "ACT-2 observer native/real-App",
+          "status": "PENDING_NO_JOBS"
+        },
+        {
+          "run": 42794187515,
+          "scope": "blocking-ci",
+          "status": "PENDING"
+        },
+        {
+          "run": 42794187545,
+          "scope": "architecture convergence",
+          "status": "SOURCE_HEAD_FAILURE_BASE_MERGE_SUCCESS",
+          "source_head_job": 129794493172,
+          "exact_result": "source-head exit 101 before tests; 16 E0659 ambiguous assert_eq errors in nested actual-App fence tests; source/tree remained clean; base-merge job passed",
+          "classification": "test-module macro import ambiguity; no typed fence transaction or replay assertion executed"
+        }
+      ],
+      "compile_fix": {
+        "pr": 5783,
+        "source": "eb6a0eb06eba09dcb6006f82f3e94c77adc23503",
+        "tree": "d5e59a826f3e95021321704c6871e815e265bce7",
+        "parent": "c0d5d0ededb6627103c390e86b8714135977025c",
+        "change": "one explicit pretty_assertions::assert_eq import in the nested actual-App fence test module",
+        "local_status": "PENDING_SHARED_CARGO_TARGET_LOCK_NO_PASS_CLAIMED",
+        "hosted": [
+          {
+            "run": 42834018167,
+            "scope": "architecture convergence",
+            "status": "QUEUED"
+          },
+          {
+            "run": 42834018357,
+            "scope": "blocking-ci",
+            "status": "QUEUED"
+          },
+          {
+            "run": 42834018212,
+            "scope": "Windows private-state",
+            "status": "SUCCESS",
+            "job": 129891272774,
+            "exact_result": "33 declared Windows private-state/Prompt Registry/signed-owner/Agentd integration tests passed; scoped formatter clean; anti-reparse qualification positive lane passed and both weakened negative lanes failed as expected",
+            "artifact_id": 13774441154,
+            "artifact_sha256": "81b7734f4d280393b7013ae5af9175a7dfa5340ba590f955c401f354b6bc49b1",
+            "limit": "Windows private-state declared scope; does not exercise typed NotesFenceProof or actual App"
+          },
+          {
+            "run": 42834018023,
+            "scope": "v8 metadata",
+            "status": "SUCCESS_METADATA_ONLY"
+          }
+        ],
+        "limits": "no production code, dependency, lock, CALLERS, operation, permission, FinalUse, readback, tombstone, receipt or promotion change; no earlier result transfers",
+        "cargo_lock_sha256": "48b55c7ff5c23516fd0aeedca7c10a6e7902aeb5dc49fa4cef80971e1ae57d3f",
+        "changed_file_sha256": "166e441ef6522555dbdafbce0fe1bd0094bc913362d390a0166c974b483ccdc3",
+        "changed_files": 1
+      },
+      "qualified_successor": {
+        "source": "378c06a898728a7fa60498ef051843e38d592e67",
+        "tree": "1c8af7b5c875f449d2fb04dc4b08d97a6c45c8d1",
+        "run": 42893302150,
+        "run_attempt": 1,
+        "status": "SUCCESS",
+        "format_job": 130112323362,
+        "native_and_real_notes_job": 130112323090,
+        "observed": "Automation 172/172, complete Memory and typed NotesFenceProof owner 417/417, exact 1025-operation capacity 1/1, Notes owner/readback 12/12, locked Session/App build, real Notes goal 1/1, actual-App fence 1/1, final clean fix",
+        "artifacts": [
+          {
+            "id": 13802572777,
+            "bytes": 127745,
+            "sha256": "aa68162702dcbed5a0a42ac11070888671e7e42cdf5b13a56476c4d887f44a87"
+          },
+          {
+            "id": 13800917089,
+            "bytes": 188107,
+            "sha256": "71f221b27f4aa8c17d09f1f289c121670e7031bc4872a8d9be5e6eaea8c4266f"
+          }
+        ],
+        "no_predecessor_result_transfer": true
+      },
+      "scope_limits": [
+        "fixture authority; no production authority",
+        "complete DynamicToolCall Core/AuthBus/Root/queued-turn handler not exercised",
+        "post-close current readback remains UNKNOWN",
+        "common rollback and independently retained external checkpoint cut not qualified",
+        "Windows hosted parent FILE_DELETE_CHILD sandbox failures remain separate",
+        "cancel JSON is not an original App NotApplied receipt"
+      ],
+      "satisfied": "The source responsibility proof, transaction/replay/tamper behavior and actual-App fence path ran at the exact 378c successor; c0d/83cd partial or failing results remain predecessor records only."
+    }
+  ],
+  "open": [
+    {
+      "id": "DESTINATION_FENCE_NATIVE",
+      "prs": [
+        "desktop#301",
+        "hepta#5641"
+      ],
+      "status": "MAINTAINED_NATIVE_SCOPED_PASS",
+      "original_companion": "0e884b4cf6831d7cb614b87786c40137a575672d",
+      "original_result": "RUST_2021_COMPILE_FAILURE",
+      "maintained_companion": "cc33ab6c44f3c945d83cb96be71d861e5613f99e",
+      "note": "Bounded destination fence/checkpoint candidate qualified at exact maintained Linux-native source. Does not settle source responsibility, full DynamicToolCall authority, common rollback, or production.",
+      "maintained_run": 42784159083,
+      "maintained_run_status": "SUCCESS",
+      "maintained_tree": "66f1b4f08d3b501139c09df08441595910f93987",
+      "cargo_lock_sha256": "a8b00de25b9b5d47cba0d3458ab24f1c20871a6a2420f91e9c7bf0c1d792c35f",
+      "artifact_id": 13756318832,
+      "artifact_sha256": "0eb7a8dbf15027dba76ba1f20cbfed88ce89e0a22455d15be8423e0cb859fbe9",
+      "test_result": "68 core/integration passed; original App 60 passed and 1 ignored; locked Session/App build, scoped Clippy and exact formatter clean",
+      "binary_sha256": {
+        "trill-session": "dcd8636abef49d14238fbbbaf7766039fd51a0dbf204974769b8027567e82358",
+        "trill-app-window": "d8426ebd6d8f29e867b6f92202eb76c32facfd83ec49c4be0fe7185fd68cc012"
+      }
+    },
+    {
+      "id": "SOURCE_FLOOR_AND_REAL_APP_FENCE",
+      "pr": 5645,
+      "status": "SUCCESSOR_EXACT_NATIVE_AND_ACTUAL_APP_SCOPED_PASS",
+      "source": "ebe5db6790fd17966ea8033fa518e901dad40b7c",
+      "limits": [
+        "not physical source/App checkpoint rewind",
+        "not hidden history-membership corruption oracle",
+        "not jointly rolled-back independent custody",
+        "not later asynchronous report freshness"
+      ],
+      "candidate": "4dc5f724c023aedeefddfa2e67de8083ce968126",
+      "exact_observer_run": 42794177546,
+      "exact_observer_run_status": "PENDING_NO_JOBS",
+      "qualified_successor": {
+        "source": "378c06a898728a7fa60498ef051843e38d592e67",
+        "tree": "1c8af7b5c875f449d2fb04dc4b08d97a6c45c8d1",
+        "run": 42893302150,
+        "status": "SUCCESS",
+        "result": "complete Memory/typed-fence owner, bounded read floor, Notes owner/readback, locked pinned Session/App build, real Notes goal, two actual-App fence races and final clean fix all passed at this exact successor"
+      }
+    },
+    {
+      "id": "FULL_DYNAMIC_TOOL_AUTHORITY",
+      "status": "DEPLOYMENT_INPUTS_MISSING",
+      "details": "HANDLER_GATES.json",
+      "required": "actual Core sealed thread, retained AuthBus human ACK, Root lookup and actual queued call through existing ingress; no fixture in the reviewed repository supplies all of them",
+      "source_review": "c0d5d0ededb6627103c390e86b8714135977025c",
+      "observed_entry_chain": [
+        "hepta-authority-host serve-fresh-session consumes pre-held Root/session descriptors and sealed deployment",
+        "NotesLaunchMode::OriginalThreadToolV1 binds exact route plus NotesThreadSeedReceipt",
+        "AgentdNotesThreadToolRuntime connects through Agentd session_ingress and verifies the same physical AppServer/seed",
+        "verify_human_turn requires retained AuthBus delivery, Root human lookup and Core ReconcileOnly persisted queue",
+        "DynamicToolCallResponse resolves only the original request handle"
+      ]
+    },
+    {
+      "id": "NATIVE_PROCESS_WAIT_ADAPTER",
+      "status": "READ_ONLY_NATIVE_HOSTED_SCOPED_PASS_PRODUCT_INTEGRATION_OPEN",
+      "required": "integration with an original-authorized product process/input capability; input delivery, goal completion, network wait, broader cross-platform behavior and full handler remain separate",
+      "prior_candidate": {
+        "pr": 5709,
+        "source": "ef757ba61552c4b9d83289b466924270aee08da9",
+        "tree": "ccda7682c0ce8f3f74e415b5ab4b70c4dcc3272f",
+        "parent": "c0d5d0ededb6627103c390e86b8714135977025c",
+        "retained_result": "3/3 actual pidfd/pipe/process tests and complete package 172/172 passed locally with 2 existing skips at this exact source",
+        "issue": "observer owned the potentially final input-pipe writer; dropping the observer could close it and create an EOF effect in the observed child",
+        "hosted": [
+          {
+            "run": 42806939223,
+            "scope": "Windows original CI regressions",
+            "status": "CANCELLED_NO_RESULT_NO_TRANSFER"
+          },
+          {
+            "run": 42806939350,
+            "scope": "Windows private-state declared scope",
+            "status": "SUCCESS_DOES_NOT_EXERCISE_LINUX_ADAPTER"
+          },
+          {
+            "run": 42806939678,
+            "scope": "v8 metadata",
+            "status": "SUCCESS_DOES_NOT_EXERCISE_LINUX_ADAPTER"
+          },
+          {
+            "run": 42806939580,
+            "scope": "Bazel stable lock proposal",
+            "status": "QUEUED"
+          },
+          {
+            "run": 42806939981,
+            "scope": "blocking-ci",
+            "status": "QUEUED"
+          },
+          {
+            "run": 42806939106,
+            "scope": "architecture",
+            "status": "QUEUED"
+          }
+        ]
+      },
+      "successor": {
+        "pr": 5713,
+        "source": "8539cca0d28a3b7eeea2ff7a941de549a1e418d9",
+        "tree": "33ebeca489bb42682e9c48a1edb12ecc798f3bb7",
+        "parent": "ef757ba61552c4b9d83289b466924270aee08da9",
+        "implemented": "observer borrows the original owner's pidfd and input writer; dropping it cannot close the owner capability or create EOF; it still has no write, retry, cancel, settlement, goal-success or FinalUse path",
+        "local_result": "3/3 actual pidfd/pipe/process tests, including observer-drop no-effect; complete codex-hepta-automation 172/172 passed with 2 existing skips; scoped fix, repository format and diff check clean",
+        "hosted": [
+          {
+            "run": 42817568090,
+            "scope": "v8 metadata",
+            "status": "SUCCESS_DOES_NOT_EXERCISE_ADAPTER"
+          },
+          {
+            "run": 42817568264,
+            "scope": "blocking-ci",
+            "status": "FAILURE_INHERITED_MACRO_COMPILE_THEN_RUNNER_DISK_EXHAUSTION",
+            "job": 129888035992,
+            "exact_result": "affected-owner reverse-consumer command reached codex-hepta-agentd and failed with the same 16 inherited E0659 assert_eq ambiguities; while other compilation continued the hosted runner fell to 92 MB free and then failed writing codex-core query cache with No space left on device",
+            "classification": "no borrowed wait-adapter semantic assertion failed; macro seam is independently fixed only in later sources and disk exhaustion is a hosted resource failure; this run is not a pass",
+            "artifact_id": 13782662700,
+            "artifact_size_bytes": 24516,
+            "artifact_sha256": "f9b943573ed570d07713982952053ecfca7138b494820a98c09acd0d4e33c347",
+            "retained_zip": "qualification/act2-continuation-20261110/hepta-cargo-impact-42817568264.zip"
+          },
+          {
+            "run": 42817568241,
+            "scope": "architecture",
+            "status": "SOURCE_HEAD_FAILURE_BASE_MERGE_SUCCESS",
+            "source_head_job": 129834446953,
+            "base_merge_job": 129834447473,
+            "exact_result": "source-head passed scope/runner/repository controls, operations 53, retirement 4, lifecycle and FinalUse checks, then browser-servo compile exited 101 before tests with inherited 16 E0659 assert_eq ambiguity errors",
+            "classification": "inherited nested actual-App test macro ambiguity; no native process-wait semantic assertion failed",
+            "artifacts": [
+              {
+                "id": 13773217484,
+                "scope": "source-head",
+                "size_bytes": 95025899,
+                "sha256": "87deed2eebd0128ca27f1960cee277475908fb891cd4c2ebad247005ed4f076b"
+              },
+              {
+                "id": 13772700803,
+                "scope": "base-merge",
+                "size_bytes": 11188,
+                "sha256": "efc00cd5a8428775507200f20770221947168c46f5083a75521ed9130611a034"
+              }
+            ]
+          }
+        ],
+        "hosted_status": "EXACT_SUCCESSOR_ACT2_AND_ARCHITECTURE_PASS_OTHER_GATES_PENDING",
+        "qualification_driver": {
+          "pr": 5715,
+          "source": "378c06a898728a7fa60498ef051843e38d592e67",
+          "tree": "1c8af7b5c875f449d2fb04dc4b08d97a6c45c8d1",
+          "act2_run": 42893302150,
+          "act2_run_status": "SUCCESS",
+          "format_job": {
+            "id": 130112323362,
+            "status": "SUCCESS"
+          },
+          "native_job": {
+            "id": 130112323090,
+            "status": "SUCCESS"
+          },
+          "exact_head_checkout": true,
+          "preserves": "Hepta source/tree, both locks, pinned desktop source, Session/App binary hashes, native/real-App outputs and always-uploaded raw records",
+          "result": "EXACT_HEAD_SCOPED_PASS",
+          "exact_results": {
+            "automation": "172 passed, 0 failed; 275.140 seconds; log sha256 7254f33a5a535b22fcfa487c3b336c79aafdcfc468dcfac0592d955d1649b9cd",
+            "native_wait_adapter": {
+              "status": "3/3 PASS in the hosted Linux original Automation runner at this exact source",
+              "tests": [
+                "native_process_wait::tests::actual_pidfd_and_pipe_identify_only_the_original_blocked_reader",
+                "native_process_wait::tests::compute_and_network_sleep_never_become_input_wait",
+                "native_process_wait::tests::wrong_reader_descriptor_is_refused_before_observation"
+              ],
+              "semantics": "the observer borrows the original owner's pidfd and reader/writer identity; observer drop cannot close the retained writer or manufacture EOF; only stable read(2) on the exact inherited reader becomes waiting-input",
+              "limits": "test-owned process capability rather than product-authorized ingress; no input delivery, retry, cancel, settlement, goal-success, network wait or FinalUse"
+            },
+            "memory": "417 passed, 0 failed; 128.617 seconds; log sha256 b224001b4a8ee90b490c36c1d43a78b4d3786c359e85827b68f1e95720feaecb",
+            "capacity": "1 passed, 0 failed; 20.689 seconds; log sha256 0a02c2058f9b83047570cde818c59dc833b3b293f88a8c81a520e1e60417fc95",
+            "notes_owner_and_readback": "12 passed, 0 failed; 475.430 seconds; log sha256 67d297d71121ae97a4b51a2eace3282ed8e82f24fe71f0fe367335e3c10c964c",
+            "real_notes_goal": "1 passed, 0 failed; 8.594 seconds; log sha256 7722135d44fbaae7b510967fbda0e7aead29c821a4ed7c578d8d265187ef3676",
+            "actual_app_fence": "1 passed, 0 failed; 4.729 seconds; log sha256 d5f038d231db99b0038f510408fda2ebadd47a01b19e6d024a0fdc1788926dc6",
+            "final_fix": "exit 0; 313.601 seconds; before/after exact commit and tree clean; empty final source patch; log sha256 c484c56466155da18444a5860f2b637ef097ada28234c313bfc306fd5bd48f74"
+          },
+          "locks_sha256": {
+            "codex-rs/Cargo.lock": "e47a4418a1e62ea67fa14085fa1c479e90187fed2af9e245893fbd1b5577e425",
+            "desktop/ui/Cargo.lock": "a8b00de25b9b5d47cba0d3458ab24f1c20871a6a2420f91e9c7bf0c1d792c35f"
+          },
+          "pinned_desktop": {
+            "source": "cc33ab6c44f3c945d83cb96be71d861e5613f99e",
+            "tree": "66f1b4f08d3b501139c09df08441595910f93987"
+          },
+          "binary_sha256": {
+            "trill-session": "8695c15a09563888dab46e2f8bab5ef080c0d5eb47013e28b0edca573ab2759d",
+            "trill-app-window": "42e65dc89a6b73347a5f3291cc93c3b8e0148a99003eab791f82b7fd6a2f5d8a"
+          },
+          "artifacts": [
+            {
+              "id": 13802572777,
+              "name": "act2-native-378c06a898728a7fa60498ef051843e38d592e67-1",
+              "size_bytes": 127745,
+              "sha256": "aa68162702dcbed5a0a42ac11070888671e7e42cdf5b13a56476c4d887f44a87",
+              "retained_zip": "qualification/act2-continuation-20261110/act2-native-42893302150.zip"
+            },
+            {
+              "id": 13800917089,
+              "name": "act2-format-378c06a898728a7fa60498ef051843e38d592e67-1",
+              "size_bytes": 188107,
+              "sha256": "71f221b27f4aa8c17d09f1f289c121670e7031bc4872a8d9be5e6eaea8c4266f",
+              "retained_zip": "qualification/act2-continuation-20261110/act2-format-42893302150.zip"
+            }
+          ],
+          "scope_limits": {
+            "complete_model_facing_handler_exercised": false,
+            "production_authority": false,
+            "post_close_current_readback": "UNKNOWN",
+            "cold_recovery_qualified": false,
+            "physical_fifo_reordering_qualified": false,
+            "native_kernel_qualified": false,
+            "pixels_qualified": false,
+            "durable_tombstone_qualified": false,
+            "late_original_result": "destination NotApplied revision_conflict after a committed exact-bound fence; not a forged original-App receipt"
+          },
+          "architecture": {
+            "run": 42893302196,
+            "status": "SUCCESS_SOURCE_HEAD_BASE_MERGE_AND_REQUIRED",
+            "source_head_tests": "31 command records passed with 662 observed tests and 0 failures; exact source/tree clean",
+            "candidate_transport": "UNKNOWN; activation_authorized=false; credential separation, admin denial and PR write denial not proven",
+            "artifacts": [
+              {
+                "id": 13800829881,
+                "scope": "source-head",
+                "size_bytes": 88709,
+                "sha256": "89cafe808b617f3d718a375517276be7b5bffedfc2be23e06f0fcc19b6c4c759",
+                "retained_zip": "qualification/act2-continuation-20261110/architecture-source-42893302196.zip"
+              },
+              {
+                "id": 13800265680,
+                "scope": "base-merge",
+                "size_bytes": 12299,
+                "sha256": "337c9415ae0ce45810a28c6d6c2d2e5d215d7e15d924302ca348e4d3fb451b24",
+                "retained_zip": "qualification/act2-continuation-20261110/architecture-base-42893302196.zip"
+              }
+            ]
+          },
+          "predecessor_macro_fix_head": {
+            "source": "35b912b0a9b3c424c266e59c45a2878c878f32e7",
+            "tree": "553bb5ff6d6212a8165e2da375db4270ecd08647",
+            "act2_run": 42888691385,
+            "act2_status": "TERMINAL_FAILURE_ONLY_AT_FINAL_CLIPPY_DIRTY_SOURCE_CHECK",
+            "format_job": {
+              "id": 130083736674,
+              "status": "SUCCESS"
+            },
+            "native_job": {
+              "id": 130083735960,
+              "status": "FAILURE",
+              "completed_stages": [
+                "Automation original runner: 172/172",
+                "complete Memory and typed-fence owner tests: 417/417",
+                "exact 1025-operation capacity boundary: 1/1",
+                "Notes projection, private readback and original-owner tests: 12/12",
+                "locked pinned Session/App build",
+                "real Notes goal: 1/1",
+                "actual-App fence: 1/1"
+              ],
+              "terminal_step": "just fix --locked -p codex-hepta-automation -p codex-hepta-agentd -p codex-hepta-memory",
+              "terminal_result": "command exited successfully but changed three source files; exact-head cleanliness guard failed",
+              "classification": "all substantive ACT stages passed at this exact source, but the workflow remains FAILURE and is not a whole-run PASS"
+            },
+            "exact_results": {
+              "automation": "172 passed, 0 failed; 281.071 seconds; log sha256 6ecbe643378517935e59f532d8d0f7970e1831e43e7a9e315677fa37a0dc318c",
+              "memory": "417 passed, 0 failed; 121.655 seconds; log sha256 3d0b8eeb2205f284b4b7f404f22d4bd369a8f45f49d1ac6b4124eb60b417075d",
+              "capacity": "1 passed, 0 failed; 19.123 seconds; log sha256 bb6d2b080d93fdba74ea74e997ced85c70beab41511dc5a9880057f0fe2e5ea8",
+              "notes_owner_and_readback": "12 passed, 0 failed; 497.932 seconds; log sha256 aaf6413182d725004d7e4f29052736f158963625b5f97a78244949aa12890c5b",
+              "real_notes_goal": "1 passed, 0 failed; 7.549 seconds; log sha256 fb26d013ea745aed88f47c05d57947093eb80be95f2478f85aa05fa8c94517cc",
+              "actual_app_fence": "1 passed, 0 failed; 4.821 seconds; log sha256 f2be40d64c905ea7bf22444dbfe16fd748008ff265d0db93dfa06a32e067166d"
+            },
+            "locks_sha256": {
+              "codex-rs/Cargo.lock": "e47a4418a1e62ea67fa14085fa1c479e90187fed2af9e245893fbd1b5577e425",
+              "desktop/ui/Cargo.lock": "a8b00de25b9b5d47cba0d3458ab24f1c20871a6a2420f91e9c7bf0c1d792c35f"
+            },
+            "pinned_desktop": {
+              "source": "cc33ab6c44f3c945d83cb96be71d861e5613f99e",
+              "tree": "66f1b4f08d3b501139c09df08441595910f93987"
+            },
+            "binary_sha256": {
+              "trill-session": "8695c15a09563888dab46e2f8bab5ef080c0d5eb47013e28b0edca573ab2759d",
+              "trill-app-window": "42e65dc89a6b73347a5f3291cc93c3b8e0148a99003eab791f82b7fd6a2f5d8a"
+            },
+            "artifacts": [
+              {
+                "id": 13799147097,
+                "name": "act2-native-35b912b0a9b3c424c266e59c45a2878c878f32e7-1",
+                "size_bytes": 128987,
+                "sha256": "a175ea8b31c1df520b663c0704c1fc8a87b28221607d5af19cefebc2c38d5f2d",
+                "retained_zip": "qualification/act2-continuation-20261110/act2-native-42888691385.zip"
+              },
+              {
+                "id": 13796419158,
+                "name": "act2-format-35b912b0a9b3c424c266e59c45a2878c878f32e7-1",
+                "size_bytes": 188125,
+                "sha256": "590b442e03558c69525faa2612641ca6eb27e9bd09050bcd34689693fec5ea97",
+                "retained_zip": "qualification/act2-continuation-20261110/act2-format-42888691385.zip"
+              }
+            ],
+            "scope_limits": {
+              "complete_model_facing_handler_exercised": false,
+              "production_authority": false,
+              "post_close_current_readback": "UNKNOWN",
+              "cold_recovery_qualified": false,
+              "physical_fifo_reordering_qualified": false,
+              "full_model_handler_qualified": false,
+              "native_kernel_qualified": false,
+              "fence_profile": "fixture-authority-actual-app-precontact-delay-fence"
+            },
+            "blocking_run": {
+              "run": 42888691521,
+              "job": 130083957927,
+              "status": "FAIL_HEPTA_CALLER_PROOF",
+              "exact_result": "CALLERS.toml still required retained.topic != NOTES_REPLACE_TOPIC_V1 although typed cancellation owner deliberately uses the closed replace-or-fence helper; no runtime test failed",
+              "other_open_failure": "cargo-deny job failed but raw log was not yet readable; no cause inferred"
+            },
+            "classification": "substantive ACT stages are independently observed at this exact source; the terminal workflow is still FAILURE, CALLERS repair and clippy cleanup belong to later exact sources, and no result transfers"
+          },
+          "terminal_capacity_success_macro_failure_head": {
+            "source": "b453724b33e3db689aaed2287444feb8b5a44452",
+            "tree": "30146c1d55d28ae17596ee5ff994e251bf7902c9",
+            "run": 42878607106,
+            "status": "FAILURE_AFTER_CAPACITY_PASS_BEFORE_NOT_RUN_REAL_APP",
+            "format_job": {
+              "status": "SUCCESS"
+            },
+            "native_job": {
+              "status": "FAILURE"
+            },
+            "exact_results": {
+              "automation": "172 passed, 0 failed; 205.435 seconds",
+              "memory": "417 passed, 0 failed; 100.893 seconds",
+              "capacity": "1 passed, 0 failed; exact ignored 1025-operation test completed in 13.790 seconds",
+              "notes_owner_and_readback": "COMPILE_FAILURE_BEFORE_TEST_EXECUTION; 16 E0659 ambiguous assert_eq errors; 0 tests executed",
+              "ui_build": "NOT_RUN",
+              "real_notes_goal": "NOT_RUN",
+              "actual_app_fence": "NOT_RUN",
+              "lint_and_final_format": "NOT_RUN"
+            },
+            "source_clean_before_and_after": true,
+            "locks_sha256": {
+              "codex-rs/Cargo.lock": "e47a4418a1e62ea67fa14085fa1c479e90187fed2af9e245893fbd1b5577e425",
+              "desktop/ui/Cargo.lock": "a8b00de25b9b5d47cba0d3458ab24f1c20871a6a2420f91e9c7bf0c1d792c35f"
+            },
+            "pinned_desktop": {
+              "source": "cc33ab6c44f3c945d83cb96be71d861e5613f99e",
+              "tree": "66f1b4f08d3b501139c09df08441595910f93987"
+            },
+            "artifacts": [
+              {
+                "id": 13795641329,
+                "name": "act2-native-b453724b33e3db689aaed2287444feb8b5a44452-1",
+                "size_bytes": 56727,
+                "sha256": "27d3ba2830183f4e8e587b9efe61fdf106f1cf76ad79f87f52df46ed2b57de9a",
+                "retained_zip": "qualification/act2-continuation-20261110/act2-native-42878607106.zip"
+              },
+              {
+                "id": 13793249953,
+                "name": "act2-format-b453724b33e3db689aaed2287444feb8b5a44452-1",
+                "size_bytes": 188124,
+                "sha256": "1a56fff12e11f8cc55c63d52e9743882ab7d510842c4b76accaed4ff82b00bfc",
+                "retained_zip": "qualification/act2-continuation-20261110/act2-format-42878607106.zip"
+              }
+            ],
+            "classification": "capacity harness is now independently qualified at this exact source, but original-owner Notes tests did not execute and every later real-App stage remains NOT_RUN"
+          },
+          "architecture_run": {
+            "run": 42849794219,
+            "status": "SOURCE_HEAD_FAILURE_BASE_MERGE_SUCCESS_REQUIRED_GATE_QUEUED",
+            "source_head_job": 129967951738,
+            "base_merge_job": 129967951229,
+            "exact_result": "source-head passed the preceding scoped architecture stages, then browser-servo compilation exited 101 before tests with 16 E0659 ambiguous assert_eq errors in production_notes_fence_gui_tests.rs; observed passed tests 0 and failed tests 0; exact source/tree remained clean",
+            "classification": "inherited nested actual-App test macro ambiguity already fixed independently by #5808; not a capacity or ACT-2 observer result; no pass transferred",
+            "source_head_log_chars": 422131,
+            "retained_log": "qualification/act2-continuation-20261110/architecture-source-head-42849794219.log",
+            "artifacts": [
+              {
+                "id": 13788142865,
+                "scope": "source-head",
+                "size_bytes": 95039425,
+                "sha256": "663591506d65b37128013432611e7264c85c0d85caaea03b7115efcb80819f5f"
+              },
+              {
+                "id": 13785713731,
+                "scope": "base-merge",
+                "size_bytes": 12210,
+                "sha256": "34f96a518609d1d0dc8b17ff05d7aa3547b67af06d36f9ec87c6cd692d0dd2d2"
+              }
+            ]
+          },
+          "terminal_watchdog_head": {
+            "source": "e82fce5f8e57d60472409d5738ba6729eda0876c",
+            "tree": "a87e115dd03b52523ead78ef129f31f18456b504",
+            "run": 42849794415,
+            "status": "FAILURE_CAPACITY_WATCHDOG_BEFORE_NOT_RUN_REAL_APP",
+            "format_job": {
+              "id": 129946993520,
+              "status": "SUCCESS"
+            },
+            "native_job": {
+              "id": 129946994156,
+              "status": "FAILURE"
+            },
+            "exact_results": {
+              "automation": "172 passed, 0 failed; 259.214 seconds",
+              "memory": "417 passed, 0 failed; 131.524 seconds",
+              "capacity": "0 passed; exact ignored 1025-operation test hit the dedicated 360.017-second watchdog before assertions completed",
+              "notes_owner_and_readback": "NOT_RUN",
+              "ui_build": "NOT_RUN",
+              "real_notes_goal": "NOT_RUN",
+              "actual_app_fence": "NOT_RUN",
+              "lint_and_final_format": "NOT_RUN"
+            },
+            "source_clean_before_and_after": true,
+            "locks_sha256": {
+              "codex-rs/Cargo.lock": "e47a4418a1e62ea67fa14085fa1c479e90187fed2af9e245893fbd1b5577e425",
+              "desktop/ui/Cargo.lock": "a8b00de25b9b5d47cba0d3458ab24f1c20871a6a2420f91e9c7bf0c1d792c35f"
+            },
+            "pinned_desktop": {
+              "source": "cc33ab6c44f3c945d83cb96be71d861e5613f99e",
+              "tree": "66f1b4f08d3b501139c09df08441595910f93987"
+            },
+            "artifacts": [
+              {
+                "id": 13788972910,
+                "name": "act2-native-e82fce5f8e57d60472409d5738ba6729eda0876c-1",
+                "size_bytes": 45828,
+                "sha256": "1c5507bf0e29001cc62f6f73d7615e72a4c237cf90fd4380310c2905ea9b6ea5",
+                "retained_zip": "qualification/act2-continuation-20261110/act2-native-42849794415.zip"
+              },
+              {
+                "id": 13787064077,
+                "name": "act2-format-e82fce5f8e57d60472409d5738ba6729eda0876c-1",
+                "size_bytes": 187316,
+                "sha256": "174d1a89465387ba62aff3a36c22c8270d117c5d1f3868a81aedbcd616ceedfa",
+                "retained_zip": "qualification/act2-continuation-20261110/act2-format-42849794415.zip"
+              }
+            ],
+            "classification": "capacity qualification harness timeout caused by limit-one repeated discovery over a growing journal; no semantic assertion completed and no later actual-App stage executed"
+          },
+          "previous_exact_head": {
+            "source": "71bf0cd62da76797115e8efb0b29fb498696e196",
+            "tree": "c14973570f1b7e747ccbc33918a5ece610a31516",
+            "run": 42818479867,
+            "status": "FAILURE_CAPACITY_WATCHDOG_BEFORE_NOT_RUN_REAL_APP",
+            "format_job": {
+              "id": 129837577017,
+              "status": "SUCCESS"
+            },
+            "native_job": {
+              "id": 129837577442,
+              "status": "FAILURE"
+            },
+            "exact_results": {
+              "automation": "172 passed, 2 existing skipped",
+              "memory": "417 passed, 14 existing skipped",
+              "capacity": "0 passed; exact ignored 1025-transaction test killed twice by inherited 60-second nextest watchdog",
+              "notes_owner": "NOT_RUN",
+              "ui_build": "NOT_RUN",
+              "real_notes_goal": "NOT_RUN",
+              "actual_app_fence": "NOT_RUN",
+              "lint_and_final_format": "NOT_RUN"
+            },
+            "source_clean": true,
+            "locks_sha256": {
+              "codex-rs/Cargo.lock": "e47a4418a1e62ea67fa14085fa1c479e90187fed2af9e245893fbd1b5577e425",
+              "desktop/ui/Cargo.lock": "a8b00de25b9b5d47cba0d3458ab24f1c20871a6a2420f91e9c7bf0c1d792c35f"
+            },
+            "pinned_desktop": {
+              "source": "cc33ab6c44f3c945d83cb96be71d861e5613f99e",
+              "tree": "66f1b4f08d3b501139c09df08441595910f93987"
+            },
+            "artifacts": [
+              {
+                "id": 13774871081,
+                "name": "act2-native-71bf0cd62da76797115e8efb0b29fb498696e196-1",
+                "sha256": "dfdf6e87eabb55f5b10045742eaf6ae3cfa0dd4cba61044e084ec1921352af87"
+              },
+              {
+                "id": 13771643754,
+                "name": "act2-format-71bf0cd62da76797115e8efb0b29fb498696e196-1",
+                "sha256": "42e4f0064dddf8215120d8c7365635cceaca5f6c9b4a7fc177b74973f6bf50ca"
+              }
+            ],
+            "classification": "capacity qualification harness timeout; no semantic assertion completed, no real App stage executed, no pass transferred"
+          },
+          "watchdog_fix": {
+            "changed_file": "codex-rs/.config/nextest.toml",
+            "change": "exact 1025-transaction capacity test gets serialized 360-second bounded watchdog and retries=0",
+            "does_not_change": "test body, 1025 transactions, assertions, production code, locks, CALLERS, operation, permission, FinalUse, readback, tombstone, receipt or promotion"
+          },
+          "capacity_batch_fix": {
+            "source": "b453724b33e3db689aaed2287444feb8b5a44452",
+            "tree": "30146c1d55d28ae17596ee5ff994e251bf7902c9",
+            "parent": "e82fce5f8e57d60472409d5738ba6729eda0876c",
+            "changed_file": "codex-rs/hepta-memory/src/production_notes_read_fence_tests.rs",
+            "change": "retain 1025 exact original operations and per-request destination receipts, but reconcile in five existing production-bounded pages of at most 256 instead of a limit-one full-ledger rescan after every insertion",
+            "local_exact_results": "ignored capacity test passed twice in 16.535 and 15.968 seconds; complete non-ignored codex-hepta-memory package passed 417/417 with 10 existing skips",
+            "preserves": "1024 readable boundary, 1025 overflow rejection, unchanged recovery anchor, exact operation/receipt binding and no dispatch fallback",
+            "does_not_change": "production code, dependency or lock, CALLERS, original operation, permission, FinalUse, readback, tombstone, receipt or promotion semantics",
+            "hosted": {
+              "act2_run": 42878607106,
+              "status": "CAPACITY_PASS_THEN_INHERITED_MACRO_COMPILE_FAILURE",
+              "capacity_result": "1 passed in 13.790 seconds",
+              "later_result": "16 E0659 errors before original-owner Notes tests; all real-App stages NOT_RUN"
+            }
+          },
+          "macro_fix_successor": {
+            "source": "35b912b0a9b3c424c266e59c45a2878c878f32e7",
+            "tree": "553bb5ff6d6212a8165e2da375db4270ecd08647",
+            "parent": "b453724b33e3db689aaed2287444feb8b5a44452",
+            "change": "one explicit pretty_assertions::assert_eq import in inherited nested actual-App fence tests",
+            "local_result": "format passed and compilation crossed the former 16-error seam; final link/test execution was interrupted, therefore NOT_RUN rather than PASS",
+            "hosted_run": 42888691385,
+            "hosted_status": "TERMINAL_FAILURE_ONLY_AT_FINAL_CLIPPY_DIRTY_SOURCE_CHECK_AFTER_ALL_SUBSTANTIVE_ACT_STAGES_PASSED",
+            "does_not_change": "production code, dependency or lock, CALLERS, original operation, permission, FinalUse, readback, tombstone, receipt or promotion semantics"
+          },
+          "callers_typed_topic_policy_successor": {
+            "source": "dbf0e8e7fc334177617b8bc956e416fddd501d77",
+            "tree": "0b51835eb4949fe8bfba274bb48b122eeebcc5f6",
+            "parent": "35b912b0a9b3c424c266e59c45a2878c878f32e7",
+            "changed_file": "CALLERS.toml",
+            "change": "protect the original owner is_notes_topic call and protect the helper definition as the exact closed pair NOTES_REPLACE_TOPIC_V1 | NOTES_FENCE_TOPIC_V1",
+            "local_results": "PASS_HEPTA_CALLER_PROOF_SELF_TEST and PASS_HEPTA_CALLER_CLOSED_SET over 6149 Rust files with authorityGranted=false",
+            "hosted": {
+              "act2_run": 42891433945,
+              "status": "IN_PROGRESS_SUPERSEDED_HEAD_NO_RESULT_TRANSFER",
+              "blocking_run": 42891434290,
+              "blocking_status": "QUEUED",
+              "other_workflows": "later cancelled after a newer exact head; cancellation is not a pass"
+            },
+            "does_not_change": "production code, dependency or lock, caller set, operation, permission, FinalUse, readback, tombstone, receipt or promotion semantics"
+          },
+          "clippy_cleanup_successor": {
+            "source": "378c06a898728a7fa60498ef051843e38d592e67",
+            "tree": "1c8af7b5c875f449d2fb04dc4b08d97a6c45c8d1",
+            "parent": "dbf0e8e7fc334177617b8bc956e416fddd501d77",
+            "change": "apply the exact final just-fix output: remove two redundant Sha256Digest parse map_err closures, remove one needless repeat-string borrow, and replace one redundant error closure; then format",
+            "local_result": "formatter and diff checks passed; targeted local tests are NOT_RUN because the environment failed before tests while building rama-dns with missing system stddef.h",
+            "hosted": {
+              "act2_run": 42893302150,
+              "act2_status": "SUCCESS_EXACT_SOURCE_WITH_FINAL_CLEAN_FIX",
+              "blocking_run": 42893302790,
+              "blocking_status": "TERMINAL_FAILURE_MIXED_EXTERNAL_AND_UNRESOLVED_BAZEL_RESULTS",
+              "blocking_external_failure": {
+                "job": 130101597293,
+                "name": "Blob size policy / Blob size policy",
+                "status": "FAILURE_BEFORE_CHECKOUT",
+                "exact_result": "openai/fence resident service exited before readiness with unsupported_resolver_layout; checkout and blob-size checks were skipped; the subsequent local-action path was absent because checkout never ran",
+                "classification": "hosted Fence/runner setup failure; not a source, blob-size, CALLERS or semantic test result"
+              },
+              "blocking_terminal_classification": {
+                "cargo_deny": {
+                  "job": 130102573547,
+                  "status": "FAILURE_GITHUB_INTERNAL_SERVER_ERROR",
+                  "correlation_id": "f28b1d82-925e-4b84-be20-dd1ae0294b94",
+                  "classification": "the original job annotation is an internal server error, so this run supplies no dependency, license or advisory verdict"
+                },
+                "macos_intel_bazel": {
+                  "job": 130102574610,
+                  "status": "FAILURE_REMOTE_BUILDBUDDY_UNAVAILABLE",
+                  "exit_code": 34,
+                  "exact_result": "three Rust compile actions and the Build Event Protocol upload reported UNAVAILABLE/io exception; all four retries to remote.buildbuddy.io failed",
+                  "classification": "remote execution/service availability failure; not a demonstrated Rust compile diagnostic or test assertion failure"
+                },
+                "windows_bazel_shards": [
+                  {
+                    "shard": "1/4",
+                    "job": 130102574984,
+                    "status": "FAILURE_FAIL_CLOSED_WINDOWS_SANDBOX",
+                    "failed_target": "//codex-rs/exec-server:exec-server-exec_process-test",
+                    "exact_result": "remote_windows_sandbox_process_accepts_process_write failed; 2 passed, 1 failed, 21 ignored; exec-server rejected the request because legacy Windows sandbox isolation is unavailable under ambient parent FILE_DELETE_CHILD",
+                    "classification": "the original job log preserves the fail-closed sandbox cause; no product execution pass"
+                  },
+                  {
+                    "shard": "2/4",
+                    "job": 130102574642,
+                    "status": "FAILURE_FAIL_CLOSED_WINDOWS_SANDBOX",
+                    "failed_targets": [
+                      "//codex-rs/cli:cli-sandbox_cloud_config-test",
+                      "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests",
+                      "//codex-rs/app-server:app-server-all-test"
+                    ],
+                    "exact_result": "CLI managed-profile launch, legacy sandbox unit cases, app-server apply_patch approval and attached-image reads failed on disabled or unavailable legacy Windows sandbox; the retained reason is ambient parent FILE_DELETE_CHILD with no qualified replacement preserving the read policy"
+                  },
+                  {
+                    "shard": "3/4",
+                    "job": 130102574589,
+                    "status": "FAILURE_MULTIPLE_EXACT_ROOTS",
+                    "failed_targets": [
+                      "//codex-rs/hepta-neuron:hepta-neuron-unit-tests",
+                      "//codex-rs/hepta-agentd:hepta-agentd-unit-tests",
+                      "//codex-rs/tui:tui-unit-tests"
+                    ],
+                    "exact_result": "Hepta Neuron retained one CommitUncertain-versus-Conflict race and one Windows CRLF byte-fixture mismatch; Agentd retained a distinct Durable PermissionDenied plus Windows OS error 33 locked-file fixture failures; TUI retained a standard-canonicalize \\?\\ prefix mismatch",
+                    "fixture_successor": "draft #5863 fixes only the LF fixture identity and the TUI dunce-canonical path comparison; every other root remains open"
+                  },
+                  {
+                    "shard": "4/4",
+                    "job": 130102574505,
+                    "status": "FAILURE_FAIL_CLOSED_WINDOWS_SANDBOX",
+                    "failed_targets": [
+                      "//codex-rs/exec-server:exec-server-file_system_windows-test",
+                      "//codex-rs/core:core-all-test"
+                    ],
+                    "exact_result": "17 exec-server filesystem cases and repeated Core apply_patch/workspace-root/subagent cases failed because the legacy Windows sandbox is unavailable under ambient parent FILE_DELETE_CHILD; removing or reclassifying those cases would weaken the original contract"
+                  }
+                ],
+                "shared_annotation": "all four Windows shards and cargo-deny also expose GitHub internal server correlation f28b1d82-925e-4b84-be20-dd1ae0294b94; the separately decoded original job logs now determine each Windows classification and the correlation does not erase those failures",
+                "passing_scope": "Bazel tests on Linux gnu and musl, Linux and Windows clippy, and Linux and Windows release builds passed at this exact source; no whole-run pass is inferred"
+              },
+              "architecture_run": 42893302196,
+              "architecture_status": "SUCCESS_SOURCE_HEAD_BASE_MERGE_AND_REQUIRED",
+              "architecture_result": {
+                "source_head_job": 130099988300,
+                "base_merge_job": 130099987770,
+                "required_job": 130120801671,
+                "observed_source_head_tests": "662 passed, 0 failed across 31 command records",
+                "transport_authority": "UNKNOWN_FALSE; shared production predicates do not establish DynamicToolCall authorization",
+                "source_artifact_id": 13800829881,
+                "source_artifact_sha256": "89cafe808b617f3d718a375517276be7b5bffedfc2be23e06f0fcc19b6c4c759",
+                "base_artifact_id": 13800265680,
+                "base_artifact_sha256": "337c9415ae0ce45810a28c6d6c2d2e5d215d7e15d924302ca348e4d3fb451b24"
+              },
+              "windows_private_run": 42893302159,
+              "windows_private_status": "SUCCESS_DECLARED_SCOPE",
+              "windows_private_result": {
+                "job": 130099803103,
+                "tests": "33 passed across five exact selections (15+2+3+2+11); scoped formatter and clean-worktree checks passed",
+                "artifact_id": 13801405796,
+                "artifact_size_bytes": 13527,
+                "artifact_sha256": "3d4916f3a103e4edd26e3370b44459ecc73d33dbb249dfac57aa76531e024f38",
+                "retained_zip": "qualification/act2-continuation-20261110/windows-private-state-42893302159.zip",
+                "positive_lane": "both retained-open ancestor substitution and pre-create junction tests PASS; swapped=true denied=true redirected=false, creation denied=true created=false",
+                "negative_lanes": "unchecked-create and path-check-open each exited 1 with the intended distinct weakened assertion failing",
+                "production_file_sha256": "21600c6d3b738afbd53db9fffd088944fb7fe1fbc947efde9520fc49e439e1ac",
+                "limit": "Windows private-state/Prompt Registry/authority/prompt-runtime declared scope only; does not qualify ACT actual-App, Linux wait adapter, complete DynamicToolCall or production authority"
+              },
+              "windows_original_run": 42893302139,
+              "windows_original_status": "CANCELLED_PARTIAL_NO_PASS",
+              "windows_original_result": {
+                "job": 130099818859,
+                "completed_groups": 15,
+                "passed_groups": 13,
+                "failed_groups": 2,
+                "clean_passed_tests": 130,
+                "nonpassing_tests": 9,
+                "hard_failures": 8,
+                "leaky_tests": 1,
+                "failed_group_result": "the same hosted ambient parent FILE_DELETE_CHILD fail-closed condition: sandbox original 1 leaky pass plus 6 failures; native delete routes 0/2",
+                "not_run_groups": [
+                  "exec-server-observation-wire (12)",
+                  "exec-server-protocol-observation-wire (3)",
+                  "direct-pty-native-observation (3)",
+                  "legacy-isolation-admission (10)"
+                ],
+                "final_receipt": "NOT_WRITTEN_AFTER_CANCELLATION",
+                "source_after": "NOT_WRITTEN_AFTER_CANCELLATION",
+                "artifact_id": 13804236630,
+                "artifact_size_bytes": 101622,
+                "artifact_sha256": "802d2a717354e8e62c1e43d4f628919506137c2661d857f94bc16b7016b606a8",
+                "retained_zip": "qualification/act2-continuation-20261110/windows-original-42893302139.zip",
+                "classification": "partial original evidence retained; cancellation is not a pass and the four missing groups are NOT_RUN; no result is transferred from private-state or predecessor runs"
+              },
+              "windows_timeout_successor": {
+                "pr": 5854,
+                "source": "92f888fc8dedaa96ca8cd7f3840e370b4a1ab4e3",
+                "tree": "b8936b3f1db486b606a983d80d98455f5bb995be",
+                "parent": "378c06a898728a7fa60498ef051843e38d592e67",
+                "changed_file": ".github/workflows/hepta-windows-current-ci.yml",
+                "change": "raise only the bounded job watchdog from 65 to 120 minutes after helper preparation plus 15 groups consumed 3799.843 seconds",
+                "preserves": "all 19 groups, exact selectors and required tests, retries=0, one test thread, source identity, native helper custody, failure semantics, permissions, artifact retention and false production/final-product flags",
+                "run": 42904689024,
+                "job": 130139489513,
+                "status": "FAILURE_ALL_GROUPS_COMPLETED",
+                "receipt_status": "FAIL_DECLARED_WINDOWS_SCOPE",
+                "source_unchanged": true,
+                "cargo_lock_sha256": "0961bfa4ed7512851b13f9eafe092f40fb52afc31a24ebb0a3b063d11128bd8b",
+                "platform": "Windows-2025Server-10.0.26100-SP0",
+                "machine": "AMD64",
+                "test_retries": 0,
+                "completed_groups": 19,
+                "passed_groups": 17,
+                "failed_groups": 2,
+                "selected_tests": 167,
+                "clean_passed_tests": 158,
+                "nonpassing_tests": 9,
+                "hard_failures": 8,
+                "leaky_tests": 1,
+                "group_duration_seconds": 3482.577,
+                "failed_group_result": "sandbox-original-failures: one elevated LEAK plus six legacy/ACL hard failures; sandbox-native-delete-routes: two legacy hard failures; all preserve the hosted ambient parent FILE_DELETE_CHILD fail-closed condition",
+                "formerly_not_run_now_passed": [
+                  "exec-server-observation-wire 12/12",
+                  "exec-server-protocol-observation-wire 3/3",
+                  "direct-pty-native-observation 3/3",
+                  "legacy-isolation-admission 10/10"
+                ],
+                "semantic_conflict": "the 10-test current admission contract requires legacy refusal before side effects, while eight old positive/ACL-specific tests require the legacy backend to execute; removing or reclassifying the old tests would weaken the original regression scope",
+                "required_replacement": "a qualified Windows backend or parent-boundary construction that preserves the original read policy and closes ambient FILE_DELETE_CHILD without widening authority",
+                "sandbox_helper_preparation": {
+                  "passed": true,
+                  "duration_seconds": 770.141,
+                  "binaries": [
+                    {
+                      "name": "codex-windows-sandbox-setup",
+                      "bytes": 35409920,
+                      "sha256": "e7ea6e93da9274eb8415a0b2322f3262409cb3adbc70d1df29893bbd20b774e9"
+                    },
+                    {
+                      "name": "codex-command-runner",
+                      "bytes": 24148992,
+                      "sha256": "c0038a9d4fafccb4d63882cd02cebcc968c7d7ee07a1f1aede2dd5117939e77d"
+                    }
+                  ]
+                },
+                "artifact_id": 13808469182,
+                "artifact_size_bytes": 115614,
+                "artifact_sha256": "bdb0a3537ba1022077e74576b73dd8dcbd56d3bd9d26e6dd7303269559cc1161",
+                "retained_zip": "qualification/act2-continuation-20261110/windows-original-42904689024.zip",
+                "production_authority_granted": false,
+                "final_product_qualification": false,
+                "classification": "the watchdog gap is closed and no group is NOT_RUN; the original Windows scope remains FAIL because the qualified legacy replacement is absent; no prior count transfers"
+              }
+            },
+            "does_not_change": "dependencies, locks, caller set, operation, permission, FinalUse, readback, tombstone, receipt or promotion semantics; predecessor results do not transfer"
+          }
+        },
+        "compile_fix": {
+          "pr": 5808,
+          "source": "cc3241d07e3781ca4f240e6536eeb2ffbe6a2453",
+          "tree": "b198f5e2a92c3cad316c85fc626f5a32a7d328cd",
+          "parent": "8539cca0d28a3b7eeea2ff7a941de549a1e418d9",
+          "change": "one explicit pretty_assertions::assert_eq import in inherited nested actual-App fence tests",
+          "changed_file_sha256": "166e441ef6522555dbdafbce0fe1bd0094bc913362d390a0166c974b483ccdc3",
+          "cargo_lock_sha256": "e47a4418a1e62ea67fa14085fa1c479e90187fed2af9e245893fbd1b5577e425",
+          "changed_files": 1,
+          "hosted": [
+            {
+              "run": 42856152006,
+              "scope": "v8 metadata",
+              "status": "SUCCESS_METADATA_ONLY"
+            },
+            {
+              "run": 42856152495,
+              "scope": "blocking-ci",
+              "status": "FAILURE_HOSTED_LINKER_BUS_ERROR",
+              "job": 130027376195,
+              "exact_result": "dependency selection and prerequisites succeeded; linking codex-hepta-agentd and codex-core failed when ld terminated with signal 7 / Bus error; observed tests 0 passed and 0 failed; required aggregate failed",
+              "classification": "hosted linker failure after the former macro compile seam; not a semantic test pass or assertion failure"
+            },
+            {
+              "run": 42856152534,
+              "scope": "architecture",
+              "status": "SUCCESS_INCLUDING_REQUIRED_GATE",
+              "source_head_job": 129969597529,
+              "base_merge_job": 129969598287,
+              "required_gate_job": 130022314346,
+              "exact_result": "source-head, base-merge and aggregate Architecture required jobs completed success; source-head executed every selected architecture stage and retained 63 command/log records",
+              "selected_results": "operations 53 plus inference 41/53/1; retirement 4; module/lifecycle/objective/prompt/final-use scopes passed; browser scope 11 passed with 780 filtered; optional real process restart scope 3 passed; tracked source remained clean",
+              "authority_limit": "candidate transport observation returned HTTP 403 but observation_status unknown, write_transport_denied null and activation/admin/PR-write/credential-separation authority all false; this is not independent write-denial proof",
+              "source_head_log_chars": 576884,
+              "artifact_id": 13790245736,
+              "artifact_size_bytes": 86958,
+              "artifact_sha256": "0dbef32c244fb9d37c9ba4628ceb092931bf4aa0064f6de9585b517f27b7f5bb",
+              "retained_zip": "qualification/act2-continuation-20261110/architecture-source-head-42856152534.zip",
+              "limit": "architecture workflow success only; blocking-ci failed independently at hosted linking, and this does not qualify actual DynamicToolCall transport or ACT-2 real App"
+            },
+            {
+              "run": 42856152117,
+              "scope": "Windows private-state",
+              "status": "SUCCESS",
+              "job": 129969596551,
+              "exact_result": "33 declared scoped tests passed: codex-utils-path 15, Prompt Registry 2, signed store 3, authority lease 2 and Agentd Prompt Runtime 11; positive anti-reparse lane passed; both separately weakened negative lanes failed as expected; tracked worktree clean",
+              "artifact_id": 13783498528,
+              "artifact_name": "windows-private-state-acquisition-cc3241d07e3781ca4f240e6536eeb2ffbe6a2453-42856152117-1",
+              "artifact_size_bytes": 13533,
+              "artifact_sha256": "58dd3be8e7234466cbc872a49d0292429fe29a5a86eb41a04110e308fa59e6c0",
+              "production_path_sha256": "21600c6d3b738afbd53db9fffd088944fb7fe1fbc947efde9520fc49e439e1ac",
+              "positive_log_sha256": "a6073f55bf8be05d20b460db9ba15c5afd5020a6a4e4bb6a7ba5ffcebf224877",
+              "unchecked_create_patch_sha256": "f55d66d0a5b10e98b6ba1ebb60a56081e6027eff85068e01107c3a1e7ea4f74c",
+              "unchecked_create_log_sha256": "f8e591d5c0b6d7301698220c2672bf0b64f4a29472355840ceebced420072e94",
+              "path_check_open_patch_sha256": "102a2659d4e6d6b3bc0316ce2d2966f5045b4c8578ed3cbb257c502afebbc4d3",
+              "path_check_open_log_sha256": "a1759c6e548b5e7b115f83d5cdc85b10e3a22e42d8edb353c08aa3151d2bd950",
+              "retained_zip": "qualification/act2-continuation-20261110/windows-private-state-42856152117.zip",
+              "limit": "Windows private-state declared scope; does not exercise Linux pidfd/pipe waiting, typed NotesFenceProof, DynamicToolCall authorization or actual App"
+            }
+          ],
+          "limits": "no native wait, production, dependency, lock, CALLERS, operation, permission, FinalUse, readback, tombstone, receipt or promotion change; no earlier result transfers"
+        }
+      },
+      "build_limit": "local Bazel lock refresh NOT_RUN because bazel binary unavailable; hosted Bazel/CI must decide each exact source"
+    },
+    {
+      "id": "BROAD_CI",
+      "status": "PARTIAL_EXACT_RESULTS_RETAINED",
+      "required": "classify remaining Bazel/permission/file-lock/sandbox/cargo-deny failures by exact run; do not infer advisory from a passing negative fixture",
+      "prior_exact_source": "c0d5d0ededb6627103c390e86b8714135977025c",
+      "latest_exact_source": "378c06a898728a7fa60498ef051843e38d592e67",
+      "latest_exact_tree": "1c8af7b5c875f449d2fb04dc4b08d97a6c45c8d1",
+      "observed": [
+        {
+          "run": 42794187139,
+          "scope": "Windows private-state declared scope",
+          "status": "SUCCESS"
+        },
+        {
+          "run": 42794187291,
+          "scope": "v8 metadata/clean-worktree only",
+          "status": "SUCCESS"
+        },
+        {
+          "run": 42794187070,
+          "scope": "Windows original regressions",
+          "status": "FAILURE_PREEXISTING_WINDOWS_HOST_SANDBOX",
+          "artifact_id": 13755863780,
+          "reason": "ambient parent FILE_DELETE_CHILD; exact parent run 42784395131 has the same failure"
+        },
+        {
+          "run": 42794187515,
+          "scope": "blocking-ci",
+          "status": "PENDING"
+        },
+        {
+          "run": 42794187545,
+          "scope": "architecture",
+          "status": "PENDING"
+        },
+        {
+          "run": 42794187545,
+          "scope": "architecture source-head",
+          "status": "FAILURE_TEST_MACRO_AMBIGUITY",
+          "job": 129794493172,
+          "reason": "16 E0659 ambiguous assert_eq errors in production_notes_fence_gui_tests.rs before any test executed",
+          "fix_pr": 5783
+        },
+        {
+          "run": 42893302790,
+          "scope": "blocking-ci exact current ACT source",
+          "status": "TERMINAL_FAILURE_MIXED_CLASSIFICATION",
+          "source": "378c06a898728a7fa60498ef051843e38d592e67",
+          "tree": "1c8af7b5c875f449d2fb04dc4b08d97a6c45c8d1",
+          "external_failures": "blob policy failed before checkout on unsupported_resolver_layout; cargo-deny exposed GitHub internal server correlation f28b1d82-925e-4b84-be20-dd1ae0294b94 without a dependency verdict; macOS Intel Bazel exit 34 followed remote.buildbuddy.io UNAVAILABLE after four retries",
+          "windows_failures": "shards 1, 2 and 4 retain the same fail-closed legacy Windows sandbox boundary under ambient parent FILE_DELETE_CHILD; shard 3 contains separate Hepta race, CRLF fixture, PermissionDenied/file-lock fixtures and Windows canonical-path-prefix roots",
+          "passing_scope": "Linux gnu/musl Bazel tests, Linux and Windows clippy, and Linux and Windows release builds passed",
+          "classification": "not a whole-run pass; no failed Windows target is repaired or relabelled, and the shared GitHub internal error annotation is not used to erase target-level failures"
+        }
+      ],
+      "successor_candidates": [
+        {
+          "pr": 5863,
+          "source": "80419fb63f00d1ce6c4a9796b399b6d9d2fec519",
+          "tree": "027b91e170f99de6fb426a0c74b1d75ade94ec4e",
+          "parent": "378c06a898728a7fa60498ef051843e38d592e67",
+          "change": "pin the exact perception interoperability JSON to LF and compare the TUI corrupt-database path through dunce canonicalization on Windows",
+          "local_result": "git diff --check passed; Rust/just/Bazel native execution NOT_RUN because this environment has no toolchain",
+          "hosted_runs": {
+            "architecture": 42921479928,
+            "v8": 42921480095,
+            "blocking": 42921480204,
+            "status": "ARCHITECTURE_AND_V8_SUCCESS_BLOCKING_TERMINAL_FAILURE",
+            "blocking_result": {
+              "source": "80419fb63f00d1ce6c4a9796b399b6d9d2fec519",
+              "perception_fixture_target": "//codex-rs/hepta-neuron:hepta-neuron-unit-tests",
+              "perception_fixture_target_status": "PASSED",
+              "perception_fixture_target_duration_seconds": 104.3,
+              "tui_target": "//codex-rs/tui:tui-unit-tests",
+              "tui_target_status": "PASSED",
+              "tui_target_duration_seconds": 46.4,
+              "remaining_windows_shard_3": "codex-hepta-agentd failed: one Durable(Io(PermissionDenied)) credit fixture and sixteen OS error 33 locked-file evaluation/generation fixtures; neither repaired target failed",
+              "other_failures": "cargo-deny transport closed while retrieving its original log; macOS ARM hepta-memory lease test failed; macOS Intel and Windows shards 1/2/4 retain separately classified roots",
+              "classification": "the two exact fixture/path repairs are independently green at this source, but blocking-ci remains failure; no whole-run pass and no predecessor count transfer"
+            }
+          },
+          "scope_limit": "does not repair or relabel the Hepta journal lock/PermissionDenied failures, the generation-control race, or any fail-closed Windows sandbox result; no result transfers"
+        },
+        {
+          "pr": 5880,
+          "source": "073b91e166c98340a505f747577a90ed080beb1b",
+          "tree": "03ec3fc9e6998a2094f2626dff10180fce792806",
+          "parent": "80419fb63f00d1ce6c4a9796b399b6d9d2fec519",
+          "change": "nine test-only Windows fixtures observe durable state through the original lock owner or after the owner is deliberately dropped; no production lock, CALLERS, operation, authority, FinalUse, readback, receipt, tombstone or promotion change",
+          "local_result": "git diff --check passed; Rust/just/Bazel native execution NOT_RUN because this environment has no toolchain",
+          "hosted_runs": {
+            "v8": 42933099445,
+            "v8_status": "SUCCESS_METADATA_ONLY",
+            "windows_private": 42933099348,
+            "windows_private_status": "FAILURE_BEFORE_TESTS",
+            "windows_private_job": 130236434605,
+            "architecture": 42933099340,
+            "architecture_status": "FAILURE_SOURCE_HEAD_BASE_MERGE_SUCCESS",
+            "blocking": 42933099432,
+            "blocking_status": "FAILURE_BEFORE_TESTS",
+            "blocking_job": 130238994409,
+            "exact_cause": "E0425: LedgerSnapshot and LedgerWitnessFrontier types were used without imports in neuron_generation_episode_test_support.rs:344",
+            "observed_semantic_tests": 0
+          },
+          "required": "old source remains failure; qualify only the exact successor from its own terminal Windows/architecture/native results",
+          "successor": {
+            "source": "b727c49bdd13d7774b7a041f7de148c8b15d79fe",
+            "tree": "9ca6c011d44067f5effec2d7eaba32cd5ccffafd",
+            "change": "two test-only typed ledger imports; no production or authority change",
+            "local_result": "git diff --check passed; native Rust execution NOT_RUN locally",
+            "fresh_runs": {
+              "windows_private": 42941333490,
+              "windows_private_status": "SUCCESS_COMPILE_AND_PROMPT_RUNTIME_SCOPED",
+              "architecture": 42941333761,
+              "architecture_status": "SUCCESS_SOURCE_HEAD_BASE_MERGE_AGGREGATE",
+              "blocking": 42941333585,
+              "blocking_status": "TERMINAL_FAILURE_LOG_BLOB_NOT_FOUND",
+              "v8": 42941333582,
+              "v8_status": "SUCCESS_METADATA_ONLY",
+              "windows_private_job": 130263598488,
+              "windows_private_declared_tests": "33 passed total across path/prompt-registry/final-use/authority-lease/prompt-runtime; agentd prompt_runtime 11 passed",
+              "windows_private_artifact_id": 13820584991,
+              "windows_private_artifact_size_bytes": 13513,
+              "windows_private_artifact_sha256": "6da2a3de128830e560e5fc289a0966b8fd77581060101e1bcc1921cf16b31a72",
+              "architecture_source_head_job": 130263599235,
+              "architecture_observed_passed_tests": 662,
+              "architecture_observed_failed_tests": 0,
+              "architecture_artifact_id": 13823957332,
+              "architecture_artifact_size_bytes": 87743,
+              "architecture_artifact_sha256": "d0bf19d2af6385fe7948769610dbc3b3e9b527b3c68c2140768fb696cfa53e7c",
+              "architecture_base_merge_artifact_id": 13822114175,
+              "architecture_base_merge_artifact_size_bytes": 11256,
+              "architecture_base_merge_artifact_sha256": "cea1b3a001622185da1764d1e4954555fe30aa3ffae744a378846bb708a873ec",
+              "blocking_job": 130277316066,
+              "blocking_log_result": "GitHub Actions job log endpoint returned BlobNotFound/404 after terminal failure; run artifacts list is empty",
+              "blocking_root": "UNKNOWN",
+              "blocking_observed_semantic_tests": "UNKNOWN"
+            },
+            "required": "read each exact-source terminal job and original logs; no predecessor transfer",
+            "windows_scope_limit": "the Windows workflow compiled the changed agentd crate and ran prompt_runtime::tests only; it did not execute the 17 generation/evaluation/credit fixtures changed by #5880, so architecture/blocking native remain required",
+            "architecture_scope_limit": "Architecture source-head recorded 31 successful command records and 662 observed tests, but its selected commands do not directly execute the 17 generation/evaluation/credit fixtures changed by #5880; blocking native remains required.",
+            "blocking_scope_limit": "No blocking semantic verdict is inferred because the original terminal job log and artifacts are unavailable; Architecture/Windows selected counts do not transfer."
+          }
+        }
+      ]
+    },
+    {
+      "id": "PRODUCT_LEARNING_AND_FIELD",
+      "status": "OPEN",
+      "required": "original provider/authority, independent grouped confirmation, complete costs and demonstrated quality-cost benefit",
+      "ordinary_handler_candidate": {
+        "parent_pr": 5865,
+        "parent_source": "4073268ead64aa1f8303973d37c5c6d73c951061",
+        "parent_tree": "baf7b8d3f189212cc3ed445daf502f8bd5bd645d",
+        "original_failure": {
+          "run": 42930978517,
+          "status": "FAILURE_BEFORE_TESTS",
+          "artifact_id": 13816283336,
+          "artifact_size_bytes": 1205983,
+          "artifact_sha256": "aec3bd0fc04dafb5281ceb30d4c4276e1e51ddac719e4eb81318dec308a74b0d",
+          "retained_helper_stderr_bytes": 63228,
+          "exact_cause": "E0004: LearningIterationObservationV1::TrainingNoUpdateV2(_) not covered in neuron_generation_learning_readback.rs",
+          "observed_tests": 0
+        },
+        "compile_fix": {
+          "pr": 5884,
+          "source": "ce0d19985a6fe64fde34a2f3e2085f82ef74cdda",
+          "tree": "87cd9d22c9f327d0ecd61fbae4d6ec30e9cf61ac",
+          "change": "classify the versioned trainer no-update observation with the existing nonterminal fail-closed group; it cannot be exported as committed learning use",
+          "local_result": "git diff --check passed; native build/tests NOT_RUN locally because no Rust toolchain is present",
+          "hosted_runs": {
+            "daemon_learning": 42933830839,
+            "daemon_learning_status": "FAILURE_LATER_ORDINARY_SUITE",
+            "daemon_focused_helper_build": "PASS",
+            "shared_framework": 42933830734,
+            "shared_framework_status": "FAILURE_BEFORE_TESTS",
+            "windows_private": 42933830774,
+            "windows_private_status": "FAILURE_BEFORE_TESTS",
+            "architecture": 42933830817,
+            "architecture_status": "FAILURE_SOURCE_HEAD_BASE_MERGE_SUCCESS",
+            "blocking": 42933830956,
+            "blocking_status": "FAILURE_BEFORE_TESTS",
+            "blocking_job": 130241665729,
+            "v8": 42933830818,
+            "v8_status": "SUCCESS_METADATA_ONLY",
+            "exact_later_cause": "E0425: undefined pending at learning_iteration_recovery_tests.rs:667; the retained value is named claimed",
+            "observed_affected_semantic_tests": 0
+          },
+          "limits": "does not establish StageOwner assembly, independent B/retention/new-C custody, complete Adopt/NoUpdate A-to-B-to-C-to-cold-recovery, DynamicToolCall, product FinalUse or benefit",
+          "classification": "the focused helper crossed #5865's missing TrainingNoUpdateV2 seam, but this source remains overall failure because all semantic suites were stopped by the independent parent test typo; no pass transfer"
+        },
+        "recovery_test_fix": {
+          "pr": 5900,
+          "base_source": "ce0d19985a6fe64fde34a2f3e2085f82ef74cdda",
+          "source": "a93f0ecee81dd431f909fe6cbe891ac2a49d5e97",
+          "tree": "09ecb3ca78e0eb08abf658f5d9eeb4a14e2f220d",
+          "diff": "one test-only comparison: pending -> claimed",
+          "invalid_intermediate_excluded": "1f140de5a1b2337d076166b7728ec6c19336dfbf",
+          "local_result": "git diff --check passed; PR aggregate diff verified as one addition and one deletion; native Rust execution NOT_RUN locally",
+          "fresh_runs": {
+            "blocking": 42941516830,
+            "blocking_status": "TERMINAL_FAILURE_3_TESTS",
+            "shared_framework": 42941516948,
+            "shared_framework_status": "FAILURE_ONE_TEST",
+            "windows_private": 42941516670,
+            "windows_private_status": "SUCCESS_COMPILE_AND_PROMPT_RUNTIME_SCOPED",
+            "v8": 42941516714,
+            "v8_status": "SUCCESS_METADATA_ONLY",
+            "daemon_learning": 42941516723,
+            "daemon_learning_status": "FAILURE_ONE_TEST",
+            "architecture": 42941516717,
+            "architecture_status": "SUCCESS_SOURCE_HEAD_BASE_MERGE_AGGREGATE",
+            "windows_private_job": 130264197770,
+            "windows_private_declared_tests": "34 passed total across path/prompt-registry/final-use/authority-lease/prompt-runtime; agentd prompt_runtime 12 passed",
+            "windows_private_artifact_id": 13821707818,
+            "windows_private_artifact_size_bytes": 13522,
+            "windows_private_artifact_sha256": "5a0a2a67bc9820d6d713e24f9b1c66ca4edabc88e35be286b880abdbd0f8f372",
+            "blocking_job": 130280042578,
+            "blocking_observed_passed": 18510,
+            "blocking_observed_failed": 3,
+            "blocking_skipped": 126,
+            "blocking_artifact_id": 13827811538,
+            "blocking_artifact_size_bytes": 671168,
+            "blocking_artifact_sha256": "8a1cfe32ad478c1e892fc201269a099910c8f1270dbeab18affee27053f4bb84"
+          },
+          "required": "read each exact-source terminal job; even success would only close this compile/test seam, not full handler inputs, FinalUse, field benefit or skill promotion",
+          "windows_scope_limit": "the Windows workflow compiled learning_iteration_recovery_tests.rs but selected prompt_runtime::tests only; it did not execute the repaired claimed-state recovery assertion, so daemon/shared/blocking/architecture remain required",
+          "exact_terminal_failure": {
+            "test": "plasticity_runtime::lifetime_tests::learning_iteration_tests::recovery_tests::actual_delivery_backpressure_precedes_claim_and_prior_claim_stays_readback_only",
+            "assertion": "ok(store.claim_circuit_learning(&intent, &request_digest).await)",
+            "location": "hepta-agentd/src/learning_iteration_recovery_tests.rs:681",
+            "daemon_run": 42941516723,
+            "daemon_job": 130264198485,
+            "daemon_observed_passed": 1138,
+            "daemon_observed_failed": 1,
+            "daemon_log_sha256": "f03858f67094ecf1e23acb04a386a64aa68b863e2440d7bac2572cc4d9dbf18c",
+            "daemon_artifact_id": 13823504020,
+            "daemon_artifact_size_bytes": 3556222,
+            "daemon_artifact_sha256": "3140672012e9f5d7cce3a18567352c5d97b3a58595d9a3225dcfed746e611efe",
+            "shared_run": 42941516948,
+            "shared_job": 130264198610,
+            "shared_observed_passed": 1176,
+            "shared_observed_failed": 1,
+            "shared_skipped": 71,
+            "shared_flaky_nonterminal": "learning_iteration_evidence_client::tests::generation::revocation_during_attestation_read_is_rechecked_by_original_actor passed on retry and is not the terminal failure",
+            "shared_log_sha256": "30315d9e6b6ebb1a5e2abac8729dd5a9ab716355075929b6cdfe8618f30a44d3",
+            "shared_artifact_id": 13824121017,
+            "shared_artifact_size_bytes": 176552,
+            "shared_artifact_sha256": "c446a14dc7dc3062059ea126a9fcbfe48617d3820ed04b87a5cc9e51387e68db"
+          },
+          "classification": "The one-line pending->claimed successor compiles and runs the suite, but the repaired assertion is semantically false at this point; both daemon and shared fail the same exact test. It is retained as failure and is not a pass source for #5865.",
+          "blocking_terminal_failure": {
+            "run": 42941516830,
+            "summary": "18,513 tests run: 18,510 passed, 3 failed, 126 skipped",
+            "recovery_test": "actual_delivery_backpressure_precedes_claim_and_prior_claim_stays_readback_only failed both attempts at learning_iteration_recovery_tests.rs:681 because claim_circuit_learning returned non-ok",
+            "other_failures": [
+              "ext/git-attribution policy_resolution_retries_after_auth_refresh",
+              "hepta-matrix-sdk encrypted_state_identity_session_and_queues_survive_restart"
+            ],
+            "classification": "Confirms the same semantic recovery failure under the affected-owner/reverse-consumer selection; the other two failures remain independent. Not a component PASS."
+          }
+        },
+        "current_common_candidate": {
+          "pr": 5865,
+          "source": "30a697c50e10abd56e61b6b84f28ac9ae9f32f5d",
+          "tree": "b2a21d98380340b1c091006f4130aafdbeabca50",
+          "base_source": "cb0598a9099a0d828ce73aedb51e397e600e49d1",
+          "integrated": "Preserves the prior converged ordinary Q24/trainer/original Generator bounded Training stage and adds explicit pretty_assertions imports, a lexical watcher scope, retained Matrix stage/source diagnostics, RestoreFallback dual failures, formatter output, and matching Bazel opt-level=3 for matrix-sdk-store-encryption 0.19.1.",
+          "fresh_runs": {
+            "windows_private": 42951157630,
+            "windows_private_status": "SUCCESS_COMPILE_AND_PROMPT_RUNTIME_SCOPED",
+            "windows_private_job": 130295511276,
+            "windows_private_declared_tests": "12 agentd prompt_runtime tests plus six workflow self-tests; the six new Training-stage behavior cases were not selected",
+            "windows_private_artifact_id": 13825437726,
+            "windows_private_artifact_size_bytes": 13521,
+            "windows_private_artifact_sha256": "fd6dfa58478d3afad8b65608827c6f04c86cd10b4017e63cb6b4b6a5ec03b7f9",
+            "daemon_learning": 42951157619,
+            "daemon_learning_status": "SUCCESS_ATTEMPT_2_1152_PLUS_7_ROOT",
+            "shared_framework": 42951157663,
+            "shared_framework_status": "SUCCESS_1190_NATIVE",
+            "cell_research": 42951157633,
+            "cell_research_status": "SUCCESS_EVIDENCE_CONTRACT_ONLY_74_TESTS",
+            "local_update_contracts": 42951157664,
+            "local_update_contracts_status": "SUCCESS_NATIVE_ARTIFACT_CONTRACT_119_TESTS",
+            "bazel_stable_lock": 42951157657,
+            "bazel_stable_lock_status": "SUCCESS_METADATA_SCOPE",
+            "architecture": 42951157615,
+            "architecture_status": "SUCCESS_SOURCE_HEAD_BASE_MERGE_AGGREGATE",
+            "blocking": 42951157880,
+            "blocking_status": "TERMINAL_FAILURE_MIXED_PLATFORM",
+            "hcsn": 42951157687,
+            "hcsn_status": "SUCCESS_SCOPE_SEPARATE",
+            "v8": 42951157710,
+            "v8_status": "SUCCESS_METADATA_ONLY",
+            "hos2": 42951157616,
+            "hos2_status": "SKIPPED",
+            "cell_research_job": 130295511262,
+            "cell_research_observed_passed": 74,
+            "cell_research_observed_failed": 0,
+            "cell_research_artifact_id": 13825657222,
+            "cell_research_artifact_size_bytes": 10675,
+            "cell_research_artifact_sha256": "88e545650f0ee2e98516a23dc1e2c5294eced84c3c6170aa87c3a3802efc99ea",
+            "local_update_contracts_job": 130295511753,
+            "local_update_observed_passed": 119,
+            "local_update_observed_failed": 0,
+            "local_update_skipped": 1,
+            "local_update_artifact_id": 13825452497,
+            "local_update_artifact_size_bytes": 4041,
+            "local_update_artifact_sha256": "cc1c566cb71a3f2b06e57ed586a5a5cc4a928349109a0b0e90e4529099ca5443",
+            "daemon_attempt_1_job": 130295510605,
+            "daemon_attempt_1_result": "cargo fetch failed before native cases: curl 55 / OpenSSL 3.5.4 unexpected EOF while retrieving thiserror-impl",
+            "daemon_attempt_1_observed_tests": 0,
+            "daemon_attempt_1_artifact_id": 13825853320,
+            "daemon_attempt_1_artifact_size_bytes": 1110544,
+            "daemon_attempt_1_artifact_sha256": "56147b7627cf2377a4be4fbc3866678e647211b97fccb4bb6d7901b0db576a5e",
+            "daemon_attempt_2_job": 130304826142,
+            "daemon_attempt_2_status": "SUCCESS",
+            "shared_framework_job": 130295511508,
+            "shared_framework_observed_passed": 1190,
+            "shared_framework_observed_failed": 0,
+            "shared_framework_skipped_not_run": 71,
+            "shared_framework_training_stage_cases": 6,
+            "shared_framework_artifact_id": 13826946544,
+            "shared_framework_artifact_size_bytes": 174816,
+            "shared_framework_artifact_sha256": "3b9d567cfa6b0ea4f1f92d5e6868ef37174f83be8cb669fd9dcef8858cac4a84",
+            "daemon_attempt_2_observed_passed": 1152,
+            "daemon_attempt_2_observed_failed": 0,
+            "daemon_attempt_2_skipped": 72,
+            "daemon_attempt_2_root_observed_passed": 7,
+            "daemon_attempt_2_root_observed_failed": 0,
+            "daemon_attempt_2_root_skipped": 954,
+            "daemon_attempt_2_training_stage_cases": 6,
+            "daemon_attempt_2_artifact_id": 13827994750,
+            "daemon_attempt_2_artifact_size_bytes": 6954663,
+            "daemon_attempt_2_artifact_sha256": "2a0832ea17ff989d44148a3e1f45afabbd43337aa0b313c786ed5d6e622cd365",
+            "daemon_attempt_2_inventory_snapshots": 6,
+            "daemon_attempt_2_inventory_files_each": 14401,
+            "daemon_attempt_2_inventory_sha256": "d151501d5916dc30c30e419627132c30bb67d64b864db30c8ed2fa1f645cdbae",
+            "architecture_source_head_job": 130305174594,
+            "architecture_source_head_command_records": 31,
+            "architecture_source_head_observed_passed": 663,
+            "architecture_source_head_observed_failed": 0,
+            "architecture_source_head_artifact_id": 13829096904,
+            "architecture_source_head_artifact_size_bytes": 106711,
+            "architecture_source_head_artifact_sha256": "c8a246dee1627dde7c514177550d3eb80476b38d7ec46ed09d5c6999d1e8693d",
+            "architecture_base_merge_job": 130305174839,
+            "architecture_base_merge_artifact_id": 13826854059,
+            "architecture_base_merge_artifact_size_bytes": 13471,
+            "architecture_base_merge_artifact_sha256": "e609c0f0132d99a355ab2737090116acdc94c8d9563369c0979f93c5e90597b2",
+            "architecture_required_job": 130326050196,
+            "architecture_required_status": "SUCCESS",
+            "architecture_required_completed_at": "2026-11-11T05:49:20Z",
+            "architecture_required_log_result": "Require both exact-candidate lanes succeeded; identical-tree reuse includes source-head success"
+          },
+          "windows_scope_limit": "Windows compiled the candidate but selected only prompt_runtime::tests; it did not execute the six new Training-stage cases or complete the ordinary learning chain.",
+          "required": "Read every exact-source terminal native/original artifact. No cb0598, #5884 or #5900 test count transfers.",
+          "open": "Production StageOwner assembly, public host entry points, receipt-owner create/recover, real frozen model/data/config/Circuit/evaluator tuple, original authority/custody, independent B/retention/new-C, cold recovery, field full-cost benefit, and learned-skill promotion remain unestablished; complete Adopt and correct NoUpdate chains remain zero.",
+          "scoped_completed_limit": "Cell-research 74/0 and local-update 119/0 close only their evidence/contract selections. They do not execute the six new Agentd Training-stage cases or production StageOwner/ordinary A-to-B-to-C recovery.",
+          "shared_scope_limit": "Exact 30a source ran 1,190 unique native cases and each of the six original Training-stage cases exactly once. This is package behavior evidence, not production StageOwner/public-host/Root assembly or a complete Adopt/NoUpdate product chain.",
+          "blocking_result": {
+            "run": 42951157880,
+            "status": "TERMINAL_FAILURE",
+            "classification": "mixed independent broad-CI failures; not a whole-run pass and not an ACT semantic verdict",
+            "windows_shard_1": "exec-server remote Windows sandbox positive fails because production deliberately refuses legacy isolation under ambient parent FILE_DELETE_CHILD",
+            "windows_shard_2": "windows-sandbox/CLI/app-server and Matrix reopen failures include the same fail-closed sandbox boundary, timeouts and permission/cache conditions",
+            "windows_shard_3": "multiple real fixture failures remain: durable file locks/os error 33, PermissionDenied/Invalid fixtures, queue/TUI/neuron/Agentd failures",
+            "windows_shard_4": "exec-server filesystem and Core tests retain legacy sandbox boundary and file/path failures",
+            "macos_arm": "core/app-server/Agentd failures include timeouts, missing files, malformed fixture input and invalid automation fixtures",
+            "macos_intel": "code-mode host endpoint/timeouts, exec-forward timeout, rolling-upgrade socket error 57, queue recovery mismatch, Agentd fixture failures and Matrix login_or_restore.build.timeout",
+            "linux": "gnu and musl Bazel tests passed; Linux clippy and release passed",
+            "artifacts": "original per-platform Bazel execution-log artifacts retained by GitHub and source-bound to 30a697"
+          },
+          "daemon_scope_limit": "Exact 30a attempt 2 ran 1,152 ordinary native cases, seven ignored Root fixture cases, and each of the six original Training-stage cases. This is package/fixture evidence only; attempt 1 remains a separate pre-test transport failure.",
+          "architecture_scope_limit": "Exact 30a architecture run is terminal SUCCESS across source-head, base-merge and required aggregate. Source-head recorded 31 passed command records and 663 observed tests with zero failures. This is repository architecture qualification only and does not instantiate the production StageOwner/product learning chain."
+        },
+        "previous_common_candidate": {
+          "source": "cb0598a9099a0d828ce73aedb51e397e600e49d1",
+          "tree": "59a019b79a6b879bbc27f6a614e1222fe87581ca",
+          "base_source": "0c99a30dbe9307d48aa50ffc63404235ade8ae9c",
+          "integrated": "joins full-CURRENT recovery, ordinary Q24 learning, native maintenance, original Generator training-receipt owner, and a bounded non-queuing Training stage; preserves permit until the real blocking worker exits and revalidates exact Dataset/scope/CURRENT",
+          "incorporated_repairs": "includes TrainingNoUpdateV2 fail-closed rejection and restores the original single durable claim in the recovery fixture; #5884/#5900 remain separate component evidence and do not transfer qualification",
+          "terminal_results": {
+            "windows_private": 42942991263,
+            "windows_private_status": "SUCCESS_COMPILE_AND_PROMPT_RUNTIME_SCOPED",
+            "daemon_learning": 42942991526,
+            "daemon_learning_status": "FAILURE_BEFORE_TESTS_22_E0659",
+            "daemon_job": 130268988425,
+            "daemon_exact_cause": "22 E0659 ambiguous assert_eq diagnostics in hepta-agentd/src/cell_q24_training_stage_tests.rs; observed tests 0",
+            "daemon_log_sha256": "e27b205801a3b425f0718d3fbb7a14aa706073b1602575d6182ef4daec267e2b",
+            "daemon_artifact_id": 13824681106,
+            "daemon_artifact_size_bytes": 3433780,
+            "daemon_artifact_sha256": "1e6c87f9dcece280afc19f7577fdc0def5508c1cb9d2182b97bcffe1aece725c",
+            "shared_framework": 42942991327,
+            "shared_framework_status": "FAILURE_BEFORE_TESTS_22_E0659",
+            "shared_job": 130268988024,
+            "shared_log_sha256": "b79beee3ff67b2fd76edeaf541c0bd4bfd5665c28bbc23c954e3ce3b3e9b7e9e",
+            "shared_artifact_id": 13823319099,
+            "shared_artifact_size_bytes": 99915,
+            "shared_artifact_sha256": "42806e3791070372d115ef796ac210f2180c05a7c879d0fc4e8fa2da9c22eeee",
+            "architecture": 42942991572,
+            "architecture_status": "CANCELLED_AFTER_SUCCESSOR_PUSH_NO_PASS",
+            "cell_research": 42942991296,
+            "cell_research_status": "SUCCESS_EVIDENCE_GATE_ONLY",
+            "local_update_contracts": 42942991273,
+            "local_update_contracts_status": "SUCCESS_CONTRACT_GATE_ONLY"
+          },
+          "boundary": "All results remain bound to cb0598.../59a019... and do not transfer to 30a697...."
+        },
+        "training_snapshot_recovery_component": {
+          "pr": 5914,
+          "source": "be8adcbb5e9925f72e05330b8fb30509cba4544b",
+          "tree": "eaa8b27f16a5f9fed87e9d6882cd23dfaecfd125",
+          "parent": "30a697c50e10abd56e61b6b84f28ac9ae9f32f5d",
+          "change": "read-only original Training receipt recovery from Coordinator-validated full iteration snapshots; compares retained, expected and actual original-owner completion field-for-field and delegates once",
+          "current_runs": {
+            "shared": 42955998124,
+            "shared_status": "SUCCESS_1195_NATIVE",
+            "daemon": 42955998126,
+            "daemon_status": "SUCCESS_1157_PLUS_7_ROOT",
+            "architecture": 42955998198,
+            "architecture_status": "SUCCESS_SOURCE_HEAD_BASE_MERGE_AGGREGATE",
+            "windows_private": 42955998131,
+            "windows_private_status": "SUCCESS_COMPILE_AND_PROMPT_RUNTIME_SCOPED",
+            "blocking": 42955998139,
+            "blocking_status": "TERMINAL_CANCELLED_MIXED_FAILURES",
+            "v8": 42955998051,
+            "v8_status": "SUCCESS_METADATA_ONLY",
+            "windows_private_job": 130311123817,
+            "windows_private_declared_tests": "34 passed across path/prompt-registry/final-use/authority-lease/prompt-runtime; agentd prompt_runtime 12 passed",
+            "windows_private_artifact_id": 13828641594,
+            "windows_private_artifact_size_bytes": 13537,
+            "windows_private_artifact_sha256": "5c72572bcb9b1b82911ec16593809c274df9ae101b561d3bdba222d0e536ba5c",
+            "shared_job": 130311123893,
+            "shared_observed_passed": 1195,
+            "shared_observed_failed": 0,
+            "shared_skipped": 71,
+            "shared_snapshot_recovery_cases": 5,
+            "shared_training_stage_cases": 6,
+            "shared_artifact_id": 13829413319,
+            "shared_artifact_size_bytes": 174903,
+            "shared_artifact_sha256": "0d8f3a07fd7d028a09ad15dd2c134df8fe92b0b7b801d940c0addf8d291f8c82",
+            "daemon_job": 130311123517,
+            "daemon_observed_passed": 1157,
+            "daemon_observed_failed": 0,
+            "daemon_skipped": 72,
+            "daemon_root_observed_passed": 7,
+            "daemon_root_observed_failed": 0,
+            "daemon_root_skipped": 959,
+            "daemon_snapshot_recovery_cases": 5,
+            "daemon_training_stage_cases": 6,
+            "daemon_inventory_snapshots": 6,
+            "daemon_inventory_files_each": 14404,
+            "daemon_inventory_sha256": "2c3f7bd31b38c20e84a48a35bc9fbe8a6954a1bb4cfa859cdcd993ea8f414bb5",
+            "daemon_artifact_id": 13829872236,
+            "daemon_artifact_size_bytes": 6956757,
+            "daemon_artifact_sha256": "86ef4dddd56efe66b45f2e0293537d3f0642d9556accdd4c86390f2e40f67bc5",
+            "architecture_source_head_job": 130311124361,
+            "architecture_source_head_command_records": 31,
+            "architecture_source_head_observed_passed": 663,
+            "architecture_source_head_observed_failed": 0,
+            "architecture_source_head_artifact_id": 13829523732,
+            "architecture_source_head_artifact_size_bytes": 104888,
+            "architecture_source_head_artifact_sha256": "993a3bbb7c6a90088fd303e28d07141c68777f3c75dff7e08c3d48a84021430b",
+            "architecture_base_merge_job": 130311124745,
+            "architecture_base_merge_artifact_id": 13828318369,
+            "architecture_base_merge_artifact_size_bytes": 12291,
+            "architecture_base_merge_artifact_sha256": "cccfb1abe5d5847635561b2e66f6849b460dae0b3899a6b9e888b5534d0996fd",
+            "architecture_required_job": 130336015724,
+            "architecture_required_status": "SUCCESS",
+            "architecture_required_completed_at": "2026-11-11T06:12:38Z",
+            "architecture_required_log_result": "All applicable exact-candidate lanes succeeded; identical-tree reuse includes source-head success",
+            "blocking_conclusion": "cancelled",
+            "blocking_completed_at": "2026-11-11T07:16:58Z",
+            "blocking_final_ci_job": 130381027096,
+            "blocking_final_ci_status": "FAILURE_BAZEL_AND_REPO_CHECKS",
+            "blocking_final_ci_log_result": "CI dependencies did not succeed: bazel: failure, repo-checks: cancelled",
+            "blocking_repo_checks_job": 130323909720,
+            "blocking_repo_checks_status": "CANCELLED_DURING_PRIVILEGED_CALLER_SCAN",
+            "blocking_repo_checks_observed_before_cancel": "manifest boundary checks passed; HEPTA caller proof self-test emitted PASS; operation cancelled about ten minutes into the privileged caller closed-set step",
+            "blocking_repo_checks_full_result": "UNKNOWN",
+            "blocking_windows_native_aggregate_job": 130331367751,
+            "blocking_windows_native_aggregate_status": "FAILURE_DUE_TO_SHARD_RESULT",
+            "blocking_failed_bazel_jobs": [
+              {
+                "job": 130323910199,
+                "platform": "macos-15 aarch64",
+                "status": "failure"
+              },
+              {
+                "job": 130323910246,
+                "platform": "macos-15-intel x86_64",
+                "status": "failure"
+              },
+              {
+                "job": 130323910314,
+                "platform": "windows shard 1",
+                "status": "failure"
+              },
+              {
+                "job": 130323910247,
+                "platform": "windows shard 2",
+                "status": "failure"
+              },
+              {
+                "job": 130323910297,
+                "platform": "windows shard 3",
+                "status": "failure"
+              },
+              {
+                "job": 130323910411,
+                "platform": "windows shard 4",
+                "status": "failure"
+              }
+            ],
+            "blocking_root_summary": "Windows shards preserve FILE_DELETE_CHILD fail-closed refusal plus independent lock/os33, PermissionDenied/Invalid fixture, path and timeout failures; macOS preserves endpoint/timeout, capability-denial and invalid-fixture/application failures. The native Windows aggregate only propagates shard failure.",
+            "blocking_artifact_count": 14,
+            "blocking_artifacts": [
+              {
+                "id": 13832006927,
+                "name": "bazel-execution-logs-test-x86_64-unknown-linux-gnu",
+                "size_in_bytes": 16127110,
+                "sha256": "7c5dd610675251fefba3530ec7049462f04b26dc3196fe637fb7d2eab8f87507"
+              },
+              {
+                "id": 13831419221,
+                "name": "bazel-execution-logs-clippy-x86_64-unknown-linux-gnu",
+                "size_in_bytes": 15562534,
+                "sha256": "89f4a33c760025d7139af3d4ff9f7d7257e3d5c81809f0cb6b736068ca89c294"
+              },
+              {
+                "id": 13830709495,
+                "name": "bazel-execution-logs-test-x86_64-unknown-linux-musl",
+                "size_in_bytes": 16167004,
+                "sha256": "bbabe6553958b34ed9b825415d3c3fa0a69795e3f3a3753ce6e4cfc653020c00"
+              },
+              {
+                "id": 13830499947,
+                "name": "bazel-execution-logs-verify-release-build-x86_64-unknown-linux-gnu",
+                "size_in_bytes": 15118197,
+                "sha256": "74c00fbbd3e9016e56d2813b3f602187803db87261eecc9f6d0cca93cdb1664e"
+              },
+              {
+                "id": 13829910735,
+                "name": "bazel-execution-logs-verify-release-build-x86_64-pc-windows-msvc",
+                "size_in_bytes": 5251899,
+                "sha256": "7df9e1297da400e24b370cf4a0577d332b7a8b74aa90bfde1af8c8cb7f5d962f"
+              },
+              {
+                "id": 13829895738,
+                "name": "bazel-execution-logs-clippy-x86_64-pc-windows-msvc",
+                "size_in_bytes": 5498839,
+                "sha256": "26a40e3790bc135cce3d2e6da7c01369161f3b6d05e0b66de0b11397f380bd91"
+              },
+              {
+                "id": 13829550768,
+                "name": "bazel-execution-logs-verify-release-build-aarch64-apple-darwin",
+                "size_in_bytes": 10359801,
+                "sha256": "0e23333fdd235210eb0750f68d2e95b778cb673411ddbb50d224a13fe212584b"
+              },
+              {
+                "id": 13829457300,
+                "name": "bazel-execution-logs-test-x86_64-apple-darwin",
+                "size_in_bytes": 10555621,
+                "sha256": "ec491c9e092d99d93565bc13c60bdce769e03742e0bf3f91768a0a40a2f6c9c5"
+              },
+              {
+                "id": 13829311376,
+                "name": "bazel-execution-logs-clippy-aarch64-apple-darwin",
+                "size_in_bytes": 10521582,
+                "sha256": "e6e86a127f9288200649731fd23b6e0797a0b0246a78002c6c7d6b344d83306a"
+              },
+              {
+                "id": 13829301855,
+                "name": "bazel-execution-logs-test-x86_64-pc-windows-msvc-shard-2",
+                "size_in_bytes": 5180187,
+                "sha256": "5e574e42d9d3f0c13eb0aa8e2756a6d3928f6cd559039517bb449a20c1972972"
+              },
+              {
+                "id": 13829189205,
+                "name": "bazel-execution-logs-test-x86_64-pc-windows-msvc-shard-4",
+                "size_in_bytes": 5133537,
+                "sha256": "35ff10837e0afd67ec9e9ca9d889e0499a8951a69f976c0167fb5b5b547da94b"
+              },
+              {
+                "id": 13828974370,
+                "name": "bazel-execution-logs-test-aarch64-apple-darwin",
+                "size_in_bytes": 10650080,
+                "sha256": "7eaa2f3424c717f9f2068ef255e7312d34d0810f86787e5c946e7d621343ea4f"
+              },
+              {
+                "id": 13828913219,
+                "name": "bazel-execution-logs-test-x86_64-pc-windows-msvc-shard-1",
+                "size_in_bytes": 5176874,
+                "sha256": "f990a09ff81c573567e806d27da41213d86a5b4a494cc07d58725e4d32370b10"
+              },
+              {
+                "id": 13828819766,
+                "name": "bazel-execution-logs-test-x86_64-pc-windows-msvc-shard-3",
+                "size_in_bytes": 5122605,
+                "sha256": "fe6e7fe8a89c9cda7bd83a904844b13003540870d7978735b3d4d1ec3263da5a"
+              }
+            ]
+          },
+          "qualification": "SCOPED_NATIVE_AND_ARCHITECTURE_PASS_BLOCKING_CANCELLED",
+          "limits": "Training only; no ordinary product caller, complete LearningIterationStageOwnerPortsV1, Root startup, file/key/trust custody, Dataset extraction semantics, governed native model proposal, independent B/retention/new-C or cold recovery. Historical 30a results do not transfer.",
+          "windows_scope_limit": "The Windows workflow compiled the source but selected only prompt_runtime::tests in Agentd; it did not execute the five new snapshot-recovery cases or the six Training-stage cases.",
+          "native_scope_limit": "At exact be8 source, daemon and shared execute the five unique snapshot-recovery cases plus six retained Training-stage cases; architecture now passes source-head/base-merge/required. Blocking is terminal cancelled with actual Bazel failures and an independently cancelled repo-checks scan, so it is not a whole-CI PASS. None of these instantiate production StageOwner, product caller, authority/custody, governed model proposal, independent B/retention/new-C, FinalUse, or cold recovery."
+        }
+      }
+    }
+  ],
+  "retained_failures": [
+    {
+      "source": "299cbf7842415c20324c2801b05df8c1e6bce010",
+      "run": 42773508076,
+      "reason": "unsupported uv install before any contrast; unset evidence root caused secondary failures"
+    },
+    {
+      "source": "0e884b4cf6831d7cb614b87786c40137a575672d",
+      "run": 42774237360,
+      "reason": "Rust 2024 let-chain used in Rust 2021 crate; no tests executed"
+    },
+    {
+      "source": "c0d5d0ededb6627103c390e86b8714135977025c",
+      "run": 42794187070,
+      "reason": "Windows original CI fails closed on hosted parent FILE_DELETE_CHILD; same two sandbox groups already failed at parent 4dc5f724 in run 42784395131; no guard weakened"
+    },
+    {
+      "source": "e82fce5f8e57d60472409d5738ba6729eda0876c",
+      "run": 42849794415,
+      "reason": "exact 1025-operation qualification hit its dedicated 360.017-second watchdog after Automation 172/172 and Memory 417/417; no capacity assertion or later actual-App stage completed"
+    }
+  ],
+  "continuation": {
+    "automation_id": "Automation_8e4cdb1c54948191973ff06d6fbdba1b",
+    "enabled": true,
+    "cadence": "hourly existing task, minute 25; latest PRs and these limits added to its prompt",
+    "last_updated_at": "2026-11-11T07:44:06Z"
+  }
+}
