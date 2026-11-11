@@ -1,0 +1,71 @@
+{
+  "schema": "mem.native-five.final-rendered-independent-peer.v1",
+  "reviewer": "mem_ci_integration",
+  "reviewed_at": "2026-11-11T15:22:58.779394+00:00",
+  "verdict": "NO_STATIC_MUST_FIX",
+  "source_head": "c89540598693697577cda8cba31cb07f6ce65317",
+  "source_tree": "5a7c897a33e4eef48ea8f4bf52eaf48ea7c866ae",
+  "branch_to_review": "codex/mem8-native-five-v8-20261111-ed353817",
+  "four_frozen_files": {
+    ".github/fixtures/mem-native-five-plan.json": {
+      "bytes": 9187,
+      "git_blob": "6d611f3f805d87c233bb89700b1dc1b18e750365",
+      "sha256": "83d9a2067770ea4ffa428f9cee66d112e386d5622195c2311083fbaef7767cd7"
+    },
+    ".github/scripts/mem_native_five.py": {
+      "bytes": 23327,
+      "git_blob": "a524828dbc9de8bf65284fb96e1aab47ce2fd738",
+      "sha256": "13e5fa02446d716d04503bd79a305b67a5ef6525ad5d97f53d8557b300261db0"
+    },
+    ".github/scripts/mem_native_five_support.py": {
+      "bytes": 6574,
+      "git_blob": "85b6407d0b8a8fa6bd6859f86ccbbdbae3635595",
+      "sha256": "b5c8c1728724e01e90422f80003c1a644418478c62ea3a2228d40255a7f3f136"
+    },
+    ".github/workflows/hepta-mem-native-five.yml": {
+      "bytes": 4460,
+      "git_blob": "602a12f6765d9013021d4e8dc131b276aa1c71a9",
+      "sha256": "5c69ae1116fe9922fe6f75ba34958c34fe5a3465d3cbc94d6c802d75e34e1b99"
+    }
+  },
+  "prior_full_template_peer": {
+    "bytes": 6269,
+    "sha256": "576827d03c368931d84ed6ef5fcccc7bb43e3ada2eeb433db843b98c78e5ce88",
+    "git_blob": "44fd352be2c918c1255bf1a4f53e47c14733fd76"
+  },
+  "independent_final_checks": {
+    "four_output_full_bytes_and_hashes": true,
+    "driver_and_support_identical_to_reviewed_frozen_templates": true,
+    "workflow_exactly_three_placeholder_substitutions_only": true,
+    "actual_commit_readback_sha_tree_and_full_file_digest": true,
+    "complete_original_tree_inventory_digest": true,
+    "independently_rebuilt_merkle": "5a7c897a33e4eef48ea8f4bf52eaf48ea7c866ae",
+    "full_tree_leaf_count": 14053,
+    "all_26_source_postimages_full_bytes_mode_git_blob_sha256_checked": true,
+    "plan_exactly_five_reviewed_cases_and_equality_filters": true,
+    "job_budget_minutes": 65,
+    "retry_count": 0,
+    "test_threads": 1,
+    "capture_profile_leak_and_case_budgets_unchanged": true,
+    "source_checkout_pinned_to_actual_final_formatted_commit": true,
+    "harness_event_checkout_separate_and_credential_persistence_false": true,
+    "python_ast_and_workflow_yaml_parsed": true
+  },
+  "acceptance_boundary": "This approves the static rendered four-file candidate for root review only. No harness commit/ref, workflow dispatch, native command or model request was performed by this peer. All five actual case results and three clean scoped fixes remain to be established by the original future run.",
+  "outcome_counting_boundary": "A failed native_case_count counts only accepted native_passed_cases; actual attempts and failures/LEAK must be counted from original per-group raw/JUnit, never inferred as zero execution.",
+  "execution": {
+    "native_commands": 0,
+    "model_requests": 0,
+    "host_operations": 0,
+    "ref_mutations": 0,
+    "workflow_runs_started": 0
+  },
+  "remaining_runtime_limits": [
+    "This is static review. The author reports seven successful pure parser controls in STATIC_VALIDATION.json; this peer did not rerun them.",
+    "The 65-minute cold-build envelope, availability of native python3, five actual Windows outcomes and three clean scoped-fix results remain unobserved.",
+    "native_case_count in a failed result is the length of accepted native_passed_cases, not a count of every attempted testcase; original per-group raw/JUnit are authoritative for attempted outcomes.",
+    "The ignored setup child is an internal process of its one active case, not an additional active Nextest selection.",
+    "This narrow validation does not settle independent elevated-delete failures or replace the full required repository CI."
+  ],
+  "prior_final_source_requirement": "Resolved by this rendered peer: actual c895405 readback, complete 5a7c897 tree and all 26 exact postimages independently verified."
+}
