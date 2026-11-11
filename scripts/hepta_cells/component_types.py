@@ -56,13 +56,15 @@ def digest(value: Any) -> str:
 
 
 def _token(value: str):
-    if not isinstance(value, str) or not re.fullmatch(r"[A-Za-z0-9._:-]{1,128}", value):
+    """Only canonical Python strings may name a stable owner, Cell or run."""
+    if type(value) is not str or not re.fullmatch(r"[A-Za-z0-9._:-]{1,128}", value):
         raise CellError("invalid bounded stable identifier")
 
 
 def _hex(value: str):
+    """Reject identity subclasses before equality can spoof a zero digest."""
     if (
-        not isinstance(value, str)
+        type(value) is not str
         or not re.fullmatch(r"[0-9a-f]{64}", value)
         or value == "0" * 64
     ):
