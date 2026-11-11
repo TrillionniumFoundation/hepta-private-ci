@@ -410,7 +410,7 @@ async fn original_material_pair_partial_creation_never_finishes_missing_dataset_
         partial[2].is_empty(),
         "the read-only second journal was never initialized"
     );
-    let mut dataset_witness = fixture.witness("dataset-witness", false)?;
+    let dataset_witness = fixture.witness("dataset-witness", false)?;
     assert_eq!(dataset_witness.current()?, None);
     drop(dataset_witness);
 

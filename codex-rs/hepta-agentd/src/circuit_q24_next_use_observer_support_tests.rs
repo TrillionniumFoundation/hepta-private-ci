@@ -17,6 +17,7 @@ use codex_hepta_learning_ledger::TrustedLearningSignerV1;
 use codex_hepta_types::Digest32;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
+use pretty_assertions::assert_eq;
 
 use super::super::*;
 use crate::LearningIterationEvidenceClientV1;
