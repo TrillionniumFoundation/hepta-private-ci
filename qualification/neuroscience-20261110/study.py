@@ -70,6 +70,9 @@ class CreditReceipt:
     expired: int
     future_withheld: int
     transcript_digest: str
+    # Frozen candidate identity excludes feedback unavailable at the cutoff.
+    # This is a self-declared digest, not an owner-attested witness.
+    causal_training_digest: str
     authority: str = "DENY_ALL"
     qualification: str = "SHADOW_ONLY"
 
@@ -173,8 +176,20 @@ def time_aligned_credit(
         "per_group_limit": per_group_limit,
         "global_l1_limit": global_l1_limit,
     }
+    # A complete-input audit contains future feedback. It MUST NOT be used
+    # as a model-selection, training, or evaluator feature at this cutoff.
+    # The separate frozen-prefix identity depends only on feedback whose
+    # availability sequence is no later than the cutoff, independent of how
+    # many subsequent labels are appended or how their content changes.
+    causal_input = {
+        **canonical_input,
+        "feedback": [asdict(f) for f in sorted(
+            (f for f in feedback_list if f.available_sequence <= cutoff_sequence),
+            key=lambda f: f.receipt_digest)],
+    }
     return CreditReceipt(arm, tuple(projected), matched, expired,
-                         future_withheld, _digest(canonical_input))
+                         future_withheld, _digest(canonical_input),
+                         _digest(causal_input))
 
 
 @dataclass(frozen=True)
