@@ -64,8 +64,19 @@ fn qualified_local_retention_reaches_actual_parent_use_and_cold_recovery() -> an
             "local_retain_cold",
         ),
     ] {
-        let (f, original) = setup()?;
+        let (parent_fixture, original) = setup()?;
         let mut c = qualified_local(&original, disposition, "original-node-policy")?;
+        let mut previous = parent_fixture.old_config.clone();
+        let mut target = parent_fixture.target_config;
+        let bundle = &c.snapshot().request.selected_bundle;
+        for config in [&mut previous, &mut target] {
+            config.manifest.bundle_digest = bundle.digest()?.into_array();
+            config.manifest.encoder = Some(bundle.components.encoder.into_array());
+            config.manifest.state_schema = bundle.components.state_schema.into_array();
+            config.manifest.output_schema = bundle.components.output_schema.into_array();
+            config.initial.manifest_digest = config.manifest.digest()?;
+        }
+        let f = Fixture::new_with_target(previous, target)?;
         let operation = learning_retained_task_operation_id_v1(&c)?;
         let mut ready = recover_after_lost_ack(&f, &c)?;
         let other = qualified_local(&original, disposition, "substituted-node-policy")?;
@@ -217,7 +228,25 @@ fn qualified_local_adoption_reaches_actual_candidate_and_keeps_decision_operatio
         actual,
         LearningIterationObservationV1::NextUse { .. }
     ));
+    let readback = GenerationLearningReadbackV1 {
+        journal: &ready.journal,
+        publication: &ready.publication,
+    }
+    .export_next_use(&c, Some(&f.old_config.manifest), &intent)?;
+    let receipt = ready
+        .journal
+        .receipt_for_intent(&intent)?
+        .ok_or_else(|| anyhow::anyhow!("missing original local-adoption use"))?;
+    verify_learning_use_readback_test_bytes(
+        &readback,
+        &c,
+        ready.journal.manifest(),
+        &receipt,
+        &ready.journal.observe_generation()?,
+        "local_adopt",
+    )?;
     c.record(observed(&c, actual), 20)?;
+    verify_completed_learning_readback_test_bytes(&readback, &c, "local_adopt")?;
     assert_eq!(
         c.disposition(),
         LearningIterationDispositionV1::UsedByNextTask

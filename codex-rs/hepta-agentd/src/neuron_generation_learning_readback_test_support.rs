@@ -60,9 +60,29 @@ pub(crate) fn verify_original_bytes(
     assert_eq!(checkpoint_codec::decode(&checkpoint)?, *snapshot);
     let initial =
         LearningIterationCoordinatorV1::new(snapshot.request.clone(), snapshot.owners.clone())?;
+    let initial_checkpoint = checkpoint_codec::encode(initial.snapshot())?;
+    assert_eq!(
+        checkpoint_codec::decode(&initial_checkpoint)?,
+        *initial.snapshot()
+    );
     // The marker identifies original serialized fixture bytes, never a real
     // model/independent-evaluation claim. The collector must not rebuild JSON.
     if std::env::var_os("HEPTA_GENERATION_LEARNING_READBACK_STDOUT").is_some() {
+        // Original native serialization of the fixture freeze. This exports
+        // no Root registration, witness, scope custody or production authority.
+        println!(
+            "HEPTA_LEARNING_INITIAL_V1 {phase} {}",
+            serde_json::json!({
+                "schema": "hepta.learning.initial-checkpoint.fixture.v1",
+                "initial_head": initial.snapshot().head_digest.to_string(),
+                "checkpoint_sha256": Digest32::of_bytes(&initial_checkpoint).to_string(),
+                "checkpoint_base64": STANDARD_NO_PAD.encode(&initial_checkpoint),
+                "authority": "DENY_ALL",
+                "current_permission": "NOT_EXPORTED",
+                "production_qualification": "HOLD_NO_GO",
+                "pins_are_fixture_derived": true,
+            })
+        );
         println!(
             "HEPTA_LEARNING_READBACK_V1 {phase} {}",
             serde_json::to_string(readback)?
