@@ -69,6 +69,9 @@ class CreditReceipt:
     matched: int
     expired: int
     future_withheld: int
+    # Full-audit only. Receipts supplied after cutoff are known to this audit,
+    # not to a frozen selection caller. Do not export this count as a feature.
+    unobserved_action_count: int
     transcript_digest: str
     # Frozen candidate identity excludes feedback unavailable at the cutoff.
     # This is a self-declared digest, not an owner-attested witness.
@@ -95,8 +98,10 @@ def time_aligned_credit(
     Routed and shuffled are information-matched routing controls.
     """
     action_list, feedback_list = list(actions), list(feedback)
-    if arm not in ARMS or not action_list or not feedback_list:
-        raise ContractError("unknown arm or empty trace")
+    if arm not in ARMS or not action_list:
+        raise ContractError("unknown arm or empty action trace")
+    # An empty feedback trace is a legitimate sparse/delayed observation:
+    # zero measured outcomes is not a successful zero-valued outcome.
     if type(cutoff_sequence) is not int or cutoff_sequence < 0:
         raise ContractError("invalid training cutoff")
     if not _finite(decay) or not 0 <= decay <= 1:
@@ -188,7 +193,8 @@ def time_aligned_credit(
             key=lambda f: f.receipt_digest)],
     }
     return CreditReceipt(arm, tuple(projected), matched, expired,
-                         future_withheld, _digest(canonical_input),
+                         future_withheld, len(action_by_id) - len(target_ids),
+                         _digest(canonical_input),
                          _digest(causal_input))
 
 
