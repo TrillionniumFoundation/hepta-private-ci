@@ -14,6 +14,9 @@ use super::*;
 #[path = "cell_composed_q24_training_observation_tests.rs"]
 mod observation;
 
+#[path = "cell_q24_model_proposal_tests.rs"]
+mod model_proposal;
+
 #[path = "cell_q24_training_receipt_owner_tests.rs"]
 mod receipts;
 

@@ -356,6 +356,7 @@ pub use learning_iteration_generation_evidence::GenerationLearningStageReadbackR
 #[cfg(target_os = "linux")]
 pub use learning_iteration_generation_evidence::read_generation_learning_stage_v1;
 
+mod cell_q24_model_proposal;
 mod cell_q24_training_receipt_owner;
 mod learning_iteration_auth;
 #[cfg(unix)]
@@ -392,6 +393,10 @@ pub use cell_composed_q24::LoadedCellQ24ModelV1;
 pub use cell_composed_q24::cell_q24_single_head_update_rule_v1;
 pub use cell_q24_backend::CellQ24BackendFilesV1;
 pub use cell_q24_backend::load_cell_q24_backend_v1;
+pub use cell_q24_model_proposal::CellQ24ModelProposalErrorV1;
+pub use cell_q24_model_proposal::CellQ24ModelProposalInputsV1;
+pub use cell_q24_model_proposal::CellQ24ModelProposalOwnerV1;
+pub use cell_q24_model_proposal::CellQ24ModelProposalReceiptV1;
 pub use cell_q24_training_receipt_owner::OriginalCellQ24TrainingReceiptErrorV1;
 pub use cell_q24_training_receipt_owner::OriginalCellQ24TrainingReceiptOwnerV1;
 pub use cell_q24_training_receipt_owner::OriginalCellQ24TrainingSigningConfigV1;
