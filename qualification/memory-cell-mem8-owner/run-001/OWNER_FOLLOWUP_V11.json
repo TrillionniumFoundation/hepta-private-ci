@@ -1,0 +1,615 @@
+{
+  "schema": "mem8.owner-v11.current-companion.v1",
+  "checkpoint": {
+    "revision": 11,
+    "form": "UNCHANGED_COMPLETE_BASELINE_PLUS_EXPLICIT_CURRENT_COMPANION",
+    "observation_utc": "2026-11-11 19:11:58 UTC",
+    "state_at_construction": "PREPARED_CONTENT_BOUND_TO_ACTUAL_SOURCE_AND_EVIDENCE_RECEIPTS; OWNER_REF_UPDATE_AND_FULL_READBACK_RECORDED_SEPARATELY"
+  },
+  "baseline": {
+    "owner_head": "f86dfb058edd6e489671e99baf7643a58e7eed35",
+    "owner_tree": "259c24c65d05db477cfe2cba12a20414744bdb17",
+    "path": "qualification/memory-cell-mem8-owner/run-001/BLOCKERS.json",
+    "bytes": 134567,
+    "sha256": "bac85ca6969f7fe47b75245cb688bbcf995871204e5ad921c327df736aa85b36",
+    "git_blob": "2d5f0256776089b386f8e5ebd9d9eefcbfaac5f2",
+    "entire_file_unchanged": true,
+    "gate_count": 10,
+    "historical_closed_entry_count": 18,
+    "previous_publication_receipt_blob": "02229924b5a89726517e5c45f2017d59b35f26f2"
+  },
+  "composition_rules": {
+    "current_labels": "This companion's actual source/evidence publication identities and observation time are the current labels.",
+    "history": "Every original result remains attached to its own source/run/attempt. The baseline retains the original thresholds, intake and scientific status.",
+    "consumer_boundary": "Reading only BLOCKERS.json returns the historical V10 execution context. Both files together form this explicit V11 checkpoint.",
+    "no_generic_override": true,
+    "frozen_Python_generator_executed": false,
+    "substitute_generator_equivalence_claimed": false
+  },
+  "actual_publications": {
+    "source": {
+      "pr": 5935,
+      "branch": "codex/mem8-integrated-source-20261111-ed353817",
+      "head": "ceadcb3b11dbd94a9d07afb7e6301555e4ff3f80",
+      "tree": "27651abb15e269c427c75f28f92a3bd1cd9d191f",
+      "base": "96038ccf0660154fac143ba6cbe4be81e00813e8",
+      "draft": true,
+      "state": "open",
+      "observed_utc": "2026-11-11 18:54:39 UTC",
+      "expected_previous_head": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+      "actual_ref_update_success": true,
+      "full_ref_PR_and_body_readback": true,
+      "receipt": {
+        "path": "v11/ACTUAL_SOURCE_PUBLICATION.json",
+        "bytes": 7453,
+        "sha256": "8a57e5872f84a8e20a49deefcd339d95c3f120ac99c84357489dc06b1b013da6",
+        "git_blob": "f68ea685a44a17879c16f79f128de54f855543c0"
+      }
+    },
+    "evidence": {
+      "pr": 5889,
+      "branch": "codex/mem8-ci-evidence-20261111-ed353817",
+      "head": "21df04700aa885aef72b70962f270b966a112de6",
+      "tree": "d089c6c2fdfdd6b3dbc24db091cc102e41238f37",
+      "base": "96038ccf0660154fac143ba6cbe4be81e00813e8",
+      "draft": true,
+      "state": "open",
+      "observed_utc": "2026-11-11 19:09:36 UTC",
+      "expected_previous_head": "3a30ff5e95a74ee870799756b384ea9ac8c03b2e",
+      "actual_ref_update_success": true,
+      "full_ref_PR_and_body_readback": true,
+      "receipt": {
+        "path": "v11/ACTUAL_EVIDENCE_PUBLICATION.json",
+        "bytes": 5918,
+        "sha256": "113324e110a8556f8e7163e3e244a43db98ff126246f99f9fc1108d64399e8ea",
+        "git_blob": "3d044bfc7548945d8241916bff65a10b6f4d901b"
+      }
+    },
+    "previous_owner": {
+      "pr": 5897,
+      "branch": "codex/mem8-owner-evidence-20261111-ed353817",
+      "head": "f86dfb058edd6e489671e99baf7643a58e7eed35",
+      "tree": "259c24c65d05db477cfe2cba12a20414744bdb17",
+      "base": "943196eb18a1a04e7248307cf8708bed38b82b8b",
+      "draft": true,
+      "state": "open",
+      "observed_utc": "2026-11-11 15:58:15 UTC",
+      "expected_previous_head": "fb533298874d85b6d6ec3d0d1352cd847e54ac4f",
+      "actual_ref_update_success": true,
+      "full_ref_PR_and_body_readback": true,
+      "receipt": {
+        "path": "v11/PRIOR_OWNER_PUBLICATION.json",
+        "bytes": 4187,
+        "sha256": "25cac64c14d53c7e7869c265fe39df70811e64541443c6589ecd44ae2a0082a2",
+        "git_blob": "02229924b5a89726517e5c45f2017d59b35f26f2"
+      }
+    },
+    "evidence_checkpoint_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/21df04700aa885aef72b70962f270b966a112de6/qualification/memory-cell-mem8-ci-followup/CHECKPOINT_REPAIR_V17.md",
+    "support_path_scope": "All receipt paths in this section are newly added with this owner companion; they are not claimed to exist in the previous owner or source tree."
+  },
+  "verified_original_facts": {
+    "report": "v11/VERIFIED_RECOVERED_REPORT_FACTS.json",
+    "bytes": 53336,
+    "sha256": "1fa3cebbec7e4a253f69998980c7d10d40bc4218a2ee2eb9bf2fded8913ba48f",
+    "git_blob": "bb0cd9fc1e5a6481e502d839e2bb808e204c761d",
+    "verified_report_count": 12,
+    "unavailable_prior_report_count": 6,
+    "each_result_transferred_to_new_source": false
+  },
+  "additional_observations": {
+    "exact_current_source_qualification": {
+      "head": "ceadcb3b11dbd94a9d07afb7e6301555e4ff3f80",
+      "tree": "27651abb15e269c427c75f28f92a3bd1cd9d191f",
+      "source_gate_run": 43069105073,
+      "source_gate_job": 130691870162,
+      "source_gate_attempt": 1,
+      "source_gate_outcome": "PASS",
+      "source_gate_seconds": 285.119599,
+      "source_gate_original_budget_seconds": 600,
+      "source_gate_python_passes": 18,
+      "windows_lint_run": 43072390230,
+      "windows_lint_job": 130703409994,
+      "windows_lint_attempt": 1,
+      "windows_lint_outcome": "PASS_CLEAN",
+      "helper_build_seconds": 723.468,
+      "scoped_fix_seconds": 403.797,
+      "source_rewrite_paths": [],
+      "native_testcase_executions_in_these_two_scopes": 0,
+      "model_commands_in_these_two_scopes": 0,
+      "full_report_bindings": "v11/VERIFIED_RECOVERED_REPORT_FACTS.json",
+      "all_required_current_CI_accepted": false
+    },
+    "original_d0f_blocking": {
+      "source": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+      "tree": "658fa040046285116b1fd81b94ff8c96444072ad",
+      "checkout": "a49776ffdea3547ed407a710bb19e93377b29535",
+      "run": 43062473474,
+      "attempt": 1,
+      "status": "completed",
+      "conclusion": "failure",
+      "terminal_jobs": 37,
+      "counts": {
+        "success": 24,
+        "failure": 4,
+        "cancelled": 5,
+        "skipped": 4
+      },
+      "active_jobs": 0,
+      "required_job": 130736222112,
+      "required_conclusion": "failure",
+      "musl_job": 130668671390,
+      "musl_conclusion": "cancelled",
+      "musl_native_and_operator_commands_executed": 0,
+      "musl_scheduler_reason": "UNKNOWN",
+      "full_raw_files": 28,
+      "parts": 64,
+      "full_raw_bytes": 13751922,
+      "terminal_manifest": {
+        "path": "qualification/memory-cell-mem8-ci-followup/v17/blocking-d0f-recovered/TERMINAL_MANIFEST.json",
+        "bytes": 76246,
+        "sha256": "63d71f124cc28417b4f322c2daba571191041836344e0f11f272d29b8ed03ad9",
+        "git_blob": "e75e0fdbd7fb6078959156ea03973ff2916b6e0d"
+      },
+      "root_crosscheck": {
+        "path": "qualification/memory-cell-mem8-ci-followup/v17/root-replay/ROOT_D0F_FINAL_TERMINAL_CROSSCHECK.json",
+        "bytes": 9834,
+        "sha256": "251fea1a8173b40a14a822f1d472a7e594e426e09d1e6c2a1088c1351d22062c",
+        "git_blob": "4106c482ee262d4eca170c2ffc3ab7e128b532b1"
+      },
+      "source_passes_transferred_to_cead": false
+    },
+    "independent_raw_review": {
+      "scope": "Six complete original logs: Mac Intel, GNU and Windows shards 1-4; 1,753 original target-table records. Root independently replayed the new narrow parser from inspected text.",
+      "peer": {
+        "path": "qualification/memory-cell-mem8-ci-followup/v17/blocking-d0f-recovered/RAW_INDEPENDENT_PEER.json",
+        "bytes": 32475,
+        "sha256": "88d5417df7d29d5f423d7adf56dd1068f891dddbdbd32196aed96251eaf90969",
+        "git_blob": "976f4fc65a8c11764f80de588f68efa1080afae3"
+      },
+      "old_detailed_parser_recovered": false,
+      "mac_profile_zip_copied_into_Git": false,
+      "cargo_deny_full_log_recovered": false,
+      "original_target_and_case_units_distinguished": true
+    },
+    "H_original_identity_readonly": {
+      "audit": {
+        "path": "qualification/memory-cell-mem8-ci-followup/v17/h-original-readonly/READONLY_SETTLEMENT_AUDIT.json",
+        "git_blob": "6d0c197e46399d7bd7c4d2e5d9a1b1fa1d38e14a",
+        "bytes": 4997
+      },
+      "identity_bound_read_calls": 2,
+      "original_V4_destination_observation": "FileNotFound; no settlement or late-write exclusion",
+      "original_registry_cursor_observation": "Expired/unavailable/invalidated",
+      "registry_coverage": 128,
+      "registry_total_entries": 7647,
+      "new_registry_rows": 0,
+      "original_V3_job_id_recovered": false,
+      "original_V4_async_operation_id_recovered": false,
+      "original_V3_admission_terminal": "UNKNOWN",
+      "original_V4_upload_effects": "UNKNOWN",
+      "new_H_mutations": 0,
+      "new_user_permission_required_for_already_authorized_readonly": false
+    },
+    "memory_assertion_diagnostic": {
+      "state": "PREPARED_ONLY",
+      "preimage_source": "ceadcb3b11dbd94a9d07afb7e6301555e4ff3f80",
+      "path": "codex-rs/hepta-memory/src/cognitive_runtime_tests.rs",
+      "preimage_blob": "7f397fe3e35205bae51ef95c4475315559c2b0ea",
+      "candidate_blob": "9e40f57c40be855653f1cc7a716740a89bf60cf5",
+      "patch_blob": "06fb66322c85706289fb5602948f1ad499450ebe",
+      "unchanged_expectation": "coverage.completed_peers == 16",
+      "added_typed_Debug_failure_message_only": true,
+      "exact_inverse_restores_preimage": true,
+      "V12_source_commit": null,
+      "V12_source_gate": null,
+      "V12_native_run": null,
+      "root_cause_closed": false,
+      "prepared_status": {
+        "path": "qualification/memory-cell-mem8-ci-followup/v17/memory-coverage-diagnostic-preparation/PREPARED_STATUS.json",
+        "git_blob": "bd5764bdd98402cc793a9fe1dd8836d954b52584",
+        "bytes": 2233
+      }
+    },
+    "current_cead_CI": {
+      "observation_path": "v11/CURRENT_SOURCE_CI_OBSERVATION.json",
+      "observed_utc": "2026-11-11 19:02:55 UTC",
+      "all_required_CI_accepted": false,
+      "original_workflows": [
+        {
+          "scope": "MEM",
+          "run": 43082162285,
+          "attempt": 1,
+          "head": "ceadcb3b11dbd94a9d07afb7e6301555e4ff3f80",
+          "status": "in_progress",
+          "conclusion": null
+        },
+        {
+          "scope": "Architecture",
+          "run": 43082162230,
+          "attempt": 1,
+          "head": "ceadcb3b11dbd94a9d07afb7e6301555e4ff3f80",
+          "status": "in_progress",
+          "conclusion": null
+        },
+        {
+          "scope": "Private",
+          "run": 43082162225,
+          "attempt": 1,
+          "head": "ceadcb3b11dbd94a9d07afb7e6301555e4ff3f80",
+          "status": "in_progress",
+          "conclusion": null
+        },
+        {
+          "scope": "Windows-current",
+          "run": 43082162284,
+          "attempt": 1,
+          "head": "ceadcb3b11dbd94a9d07afb7e6301555e4ff3f80",
+          "status": "in_progress",
+          "conclusion": null
+        },
+        {
+          "scope": "Blocking",
+          "run": 43082162592,
+          "attempt": 1,
+          "head": "ceadcb3b11dbd94a9d07afb7e6301555e4ff3f80",
+          "status": "queued",
+          "conclusion": null
+        }
+      ],
+      "old_results_transferred": false,
+      "observation_kind": "HISTORICAL_19_02_FULL_FIVE_RUN_CUTOFF"
+    },
+    "current_cead_blocking_root_latest": {
+      "observation_path": "v11/current-ci/root-191049/OBSERVATION.json",
+      "observation_pin": {
+        "bytes": 2913,
+        "sha256": "97594aad3198c0d3ed0fe150b38381f31598d5814ea8488bb814a1c12939c6d1",
+        "git_blob": "bf301e3f8e029df3e40aee6c818d807d7337629f"
+      },
+      "observed_at_utc": "2026-11-11 19:10:49 UTC",
+      "run": 43082162592,
+      "attempt": 1,
+      "head": "ceadcb3b11dbd94a9d07afb7e6301555e4ff3f80",
+      "run_status": "in_progress",
+      "run_conclusion": null,
+      "listed_jobs": 35,
+      "job_state_counts": {
+        "success": 18,
+        "cancelled": 4,
+        "in_progress": 6,
+        "failure": 3,
+        "skipped": 4
+      },
+      "terminal_failed_jobs": [
+        {
+          "id": 130737440408,
+          "name": "Bazel / Bazel test on macos-15-intel for x86_64-apple-darwin",
+          "conclusion": "failure"
+        },
+        {
+          "id": 130737440461,
+          "name": "Bazel / Bazel test on ubuntu-24.04 for x86_64-unknown-linux-musl",
+          "conclusion": "failure"
+        },
+        {
+          "id": 130737440544,
+          "name": "Bazel / Bazel test on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+          "conclusion": "failure"
+        }
+      ],
+      "original_d0f_musl_cancellation_reused": false,
+      "full_run_terminal_not_predicted": true,
+      "all_required_CI_accepted": false
+    },
+    "immutable_evidence_head": "21df04700aa885aef72b70962f270b966a112de6",
+    "current_hosted_ci_navigation": {
+      "baseline_historical_gate_pointer": "BLOCKERS.json#/open/9",
+      "baseline_historical_intake_pointer": "BLOCKERS.json#/actionable_remaining_inputs/gates/9",
+      "original_gate_and_closure_requirements_unchanged": true,
+      "historical_c895_d0f_instructions_remain_original_history": true,
+      "current_source": "ceadcb3b11dbd94a9d07afb7e6301555e4ff3f80",
+      "current_tree": "27651abb15e269c427c75f28f92a3bd1cd9d191f",
+      "current_observation_paths": [
+        "v11/CURRENT_SOURCE_CI_OBSERVATION.json",
+        "v11/current-ci/root-191049/OBSERVATION.json"
+      ],
+      "next_step": "Adjudicate the original current-head required CI and dependent scopes. Resolve observed native failures on a separately qualified exact source, preserving assertions, deadlines, retry limits and security contracts. Keep every historical result attached to its own source and original identity.",
+      "closure_accepted": false,
+      "unrelated_unknown_provider_or_H_replay_authorized": false
+    },
+    "current_cead_CI_bounded_original_1908": {
+      "source": "ceadcb3b11dbd94a9d07afb7e6301555e4ff3f80",
+      "api_observation_window_utc": {
+        "start": "2026-11-11 19:08:08 UTC",
+        "end": "2026-11-11 19:08:10 UTC"
+      },
+      "GNU_log_read_completed_utc": "2026-11-11 19:08:27 UTC",
+      "manifest": {
+        "path": "v11/current-ci/bounded-1908/SELF_CONTAINED_MANIFEST.json",
+        "bytes": 19548,
+        "sha256": "358b2439d0df020cafa91b185e03c3ada0f34b5231b6126cda50c41e158b9a23",
+        "git_blob": "3d4b65c6f1a45e5be26346fb544bee681bb52bd8"
+      },
+      "root_full_recovery": {
+        "path": "v11/current-ci/bounded-1908/ROOT_FULL_RECOVERY.json",
+        "bytes": 8534,
+        "sha256": "81e718f165ff2ffc61a0355e906a69ac156914d1a414cc4835789a52d33d9e0d",
+        "git_blob": "80c1dad9f204e3fec49e58fbc0dc63cd07ae1326"
+      },
+      "payload_objects": 19,
+      "payload_total_bytes": 1528311,
+      "total_original_package_objects_including_manifest": 20,
+      "complete_original_API_response_bodies": 10,
+      "original_GNU_log": {
+        "path": "v11/current-ci/bounded-1908/raw/job-130737440544.log",
+        "bytes": 1303056,
+        "sha256": "1d383ab292cd42706afd9c6752810b3d7fe0bf8b5b14a70aa824fdb2a5a4a251",
+        "git_blob": "471328718e457c84356fbbeac2778a5cc5a4542e",
+        "storage": "FIVE_EXACT_UTF8_PARTS; WHOLE_FILE_PATH_IS_LOGICAL_REASSEMBLY_NOT_A_SINGLE_STORED_FILE",
+        "parts": 5
+      },
+      "original_workflow_observations": [
+        {
+          "scope": "MEM",
+          "run_id": 43082162285,
+          "attempt": 1,
+          "head_sha": "ceadcb3b11dbd94a9d07afb7e6301555e4ff3f80",
+          "branch": "codex/mem8-integrated-source-20261111-ed353817",
+          "run_api_status": "in_progress",
+          "run_api_conclusion": null,
+          "returned_job_count": 3,
+          "total_job_count": 3,
+          "job_status_counts": {
+            "success": 2,
+            "in_progress": 1
+          },
+          "source_and_attempt_all_match": true
+        },
+        {
+          "scope": "Architecture",
+          "run_id": 43082162230,
+          "attempt": 1,
+          "head_sha": "ceadcb3b11dbd94a9d07afb7e6301555e4ff3f80",
+          "branch": "codex/mem8-integrated-source-20261111-ed353817",
+          "run_api_status": "in_progress",
+          "run_api_conclusion": null,
+          "returned_job_count": 2,
+          "total_job_count": 2,
+          "job_status_counts": {
+            "in_progress": 1,
+            "success": 1
+          },
+          "source_and_attempt_all_match": true
+        },
+        {
+          "scope": "Private",
+          "run_id": 43082162225,
+          "attempt": 1,
+          "head_sha": "ceadcb3b11dbd94a9d07afb7e6301555e4ff3f80",
+          "branch": "codex/mem8-integrated-source-20261111-ed353817",
+          "run_api_status": "in_progress",
+          "run_api_conclusion": null,
+          "returned_job_count": 1,
+          "total_job_count": 1,
+          "job_status_counts": {
+            "in_progress": 1
+          },
+          "source_and_attempt_all_match": true
+        },
+        {
+          "scope": "Windows-current",
+          "run_id": 43082162284,
+          "attempt": 1,
+          "head_sha": "ceadcb3b11dbd94a9d07afb7e6301555e4ff3f80",
+          "branch": "codex/mem8-integrated-source-20261111-ed353817",
+          "run_api_status": "in_progress",
+          "run_api_conclusion": null,
+          "returned_job_count": 1,
+          "total_job_count": 1,
+          "job_status_counts": {
+            "in_progress": 1
+          },
+          "source_and_attempt_all_match": true
+        },
+        {
+          "scope": "Blocking",
+          "run_id": 43082162592,
+          "attempt": 1,
+          "head_sha": "ceadcb3b11dbd94a9d07afb7e6301555e4ff3f80",
+          "branch": "codex/mem8-integrated-source-20261111-ed353817",
+          "run_api_status": "queued",
+          "run_api_conclusion": null,
+          "returned_job_count": 35,
+          "total_job_count": 35,
+          "job_status_counts": {
+            "success": 18,
+            "queued": 4,
+            "in_progress": 7,
+            "failure": 2,
+            "skipped": 4
+          },
+          "source_and_attempt_all_match": true
+        }
+      ],
+      "original_run_jobs_state_discrepancy": {
+        "scope": "Blocking",
+        "run_api_status": "queued",
+        "jobs_api_already_active_and_terminal": true,
+        "not_normalized_or_explained_by_inference": true
+      },
+      "definite_terminal_failures": [
+        {
+          "job_id": 130737440461,
+          "label": "Bazel test on ubuntu-24.04 for x86_64-unknown-linux-musl",
+          "conclusion": "failure",
+          "failed_step": "bazel test //...",
+          "job_completed_at": "2026-11-11T19:02:30Z",
+          "OpenSSH_install_step": "success",
+          "bazel_test_step": "failure",
+          "operator_acceptance_step": "success",
+          "clean_worktree_step": "success",
+          "evidence_scope": "Original job/step API only; its full log and concrete case identities were not read in this bounded check.",
+          "native_case_count": "NOT_INFERRED"
+        },
+        {
+          "job_id": 130737440544,
+          "label": "Bazel test on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+          "conclusion": "failure",
+          "failed_step": "bazel test //...",
+          "full_log_included": true,
+          "failed_target": "//codex-rs/core:core-all-wine-exec-test",
+          "original_target_summary": "FAILED in 3 out of 18 in 27.3s",
+          "displayed_Rust_result_block": {
+            "passed": 77,
+            "failed": 3,
+            "ignored": 0,
+            "measured": 0,
+            "filtered_out": 1346,
+            "elapsed_seconds": 15.48
+          },
+          "displayed_failure_names": [
+            "suite::approvals::approval_matrix_covers_group::test_case_3_workspace_write",
+            "suite::extension_sandbox::extension_tool_uses_granted_turn_permissions_without_host_local_persistence",
+            "suite::pending_input::any_new_input_interrupts_sleep"
+          ],
+          "concrete_observations": [
+            "extension_sandbox.rs:313 expected an input_image object but observed Null.",
+            "pending_input failed with timeout waiting for event: Elapsed(()) at core/tests/common/lib.rs:356.",
+            "The approval case is present in the final failure-name list; its specific assertion cause is not established by the displayed tail."
+          ],
+          "flaky_target": {
+            "label": "//codex-rs/app-server:app-server-all-wine-exec-test",
+            "original_summary": "FLAKY, failed in 1 out of 17 in 29.4s",
+            "displayed_failure_case": "suite::v2::plugin_list::plugin_list_fetches_workspace_directory_kind_when_remote_plugin_disabled",
+            "displayed_terminal_error": "No such file or directory (os error 2)",
+            "counted_as_strict_pass": false
+          },
+          "aggregate_attempt_and_Rust_case_totals_not_inferred": true
+        }
+      ],
+      "current_musl_entered_tests": true,
+      "current_musl_operator_and_clean_step_API_conclusions": "success",
+      "current_musl_case_results_not_inferred": true,
+      "all_required_current_CI_accepted": false,
+      "root_191049_observation_separate": true,
+      "Clippy_change_causation_claimed": false,
+      "all_ten_adoption_gates_remain_open": true,
+      "new_native_or_model_or_H_execution_for_this_archive": 0
+    }
+  },
+  "adoption_gates": [
+    {
+      "id": "WORKING-STATE-SCIENTIFIC-GATE",
+      "state": "OPEN",
+      "entire_original_gate_pointer": "BLOCKERS.json#/open/0",
+      "original_status": "NOT_MET",
+      "original_intake_pointer": "BLOCKERS.json#/actionable_remaining_inputs/gates/0",
+      "original_gate_and_intake_unchanged": true
+    },
+    {
+      "id": "ORDINARY-OWNER-BRIDGE",
+      "state": "OPEN",
+      "entire_original_gate_pointer": "BLOCKERS.json#/open/1",
+      "original_status": "NATIVE_FIXTURE_BRIDGE_PASSED_ORIGINAL_DEPLOYED_BINDING_OPEN",
+      "original_intake_pointer": "BLOCKERS.json#/actionable_remaining_inputs/gates/1",
+      "original_gate_and_intake_unchanged": true
+    },
+    {
+      "id": "PROVIDER-RUNTIME-BINDING",
+      "state": "OPEN",
+      "entire_original_gate_pointer": "BLOCKERS.json#/open/2",
+      "original_status": "ORIGINAL_TURN_ADMITTED_COMPLETION_TIMEOUT_TERMINAL_UNKNOWN",
+      "original_intake_pointer": "BLOCKERS.json#/actionable_remaining_inputs/gates/2",
+      "original_gate_and_intake_unchanged": true
+    },
+    {
+      "id": "UNSEEN-EPISODIC-BENEFIT",
+      "state": "OPEN",
+      "entire_original_gate_pointer": "BLOCKERS.json#/open/3",
+      "original_status": "NOT_EVALUATED",
+      "original_intake_pointer": "BLOCKERS.json#/actionable_remaining_inputs/gates/3",
+      "original_gate_and_intake_unchanged": true
+    },
+    {
+      "id": "STRONG-BASELINES-AND-ASSOCIATION",
+      "state": "OPEN",
+      "entire_original_gate_pointer": "BLOCKERS.json#/open/4",
+      "original_status": "PARTIAL",
+      "original_intake_pointer": "BLOCKERS.json#/actionable_remaining_inputs/gates/4",
+      "original_gate_and_intake_unchanged": true
+    },
+    {
+      "id": "SOURCE-OWNERSHIP-EXPOSURE-AND-TRUST",
+      "state": "OPEN",
+      "entire_original_gate_pointer": "BLOCKERS.json#/open/5",
+      "original_status": "HOLD",
+      "original_intake_pointer": "BLOCKERS.json#/actionable_remaining_inputs/gates/5",
+      "original_gate_and_intake_unchanged": true
+    },
+    {
+      "id": "DELETION-AND-EXTERNAL-EFFECT",
+      "state": "OPEN",
+      "entire_original_gate_pointer": "BLOCKERS.json#/open/6",
+      "original_status": "PARTIAL",
+      "original_intake_pointer": "BLOCKERS.json#/actionable_remaining_inputs/gates/6",
+      "original_gate_and_intake_unchanged": true
+    },
+    {
+      "id": "FULL-OWNER-EFFECT-COLD-RECOVERY",
+      "state": "OPEN",
+      "entire_original_gate_pointer": "BLOCKERS.json#/open/7",
+      "original_status": "HOLD",
+      "original_intake_pointer": "BLOCKERS.json#/actionable_remaining_inputs/gates/7",
+      "original_gate_and_intake_unchanged": true
+    },
+    {
+      "id": "FULL-COST-AND-SLOW-CONSOLIDATION",
+      "state": "OPEN",
+      "entire_original_gate_pointer": "BLOCKERS.json#/open/8",
+      "original_status": "NOT_QUALIFIED",
+      "original_intake_pointer": "BLOCKERS.json#/actionable_remaining_inputs/gates/8",
+      "original_gate_and_intake_unchanged": true
+    },
+    {
+      "id": "HOSTED-CI",
+      "state": "OPEN",
+      "entire_original_gate_pointer": "BLOCKERS.json#/open/9",
+      "original_status": "EXACT_C895_SOURCE_GATES_PASSED_ORIGINAL_NATIVE_FAILURES_RETAINED_CURRENT_CI_NOT_ACCEPTED",
+      "original_intake_pointer": "BLOCKERS.json#/actionable_remaining_inputs/gates/9",
+      "original_gate_and_intake_unchanged": true
+    }
+  ],
+  "protected_outcomes": {
+    "scientific_acceptance": "HOLD",
+    "adoption_action": "NoUpdate",
+    "production_adoption": false,
+    "new_real_actor_episodes": 0,
+    "new_scored_memory_actor_episodes": 0,
+    "new_real_model_requests": 0,
+    "original_logical_provider_turns_admitted": 1,
+    "original_physical_provider_requests": null,
+    "original_provider_terminal": "UNKNOWN",
+    "original_H_V3_admission_and_terminal": "UNKNOWN",
+    "original_H_V4_upload_effects": "UNKNOWN",
+    "provider_G_executions": 0,
+    "new_H_mutations": 0,
+    "unknown_request_replay_under_new_key": false,
+    "merge_or_deployment": false
+  },
+  "environment_and_validation_boundary": {
+    "managed_local_environment": "UNAVAILABLE",
+    "actual_validation": "Git immutable full-file reads; UTF-8/base64 SHA-256 and Git-blob checks; exact original-report JSON pointer comparisons; static independent reviews.",
+    "V11_lint_package_reader_replay": "Completed by its auditor before outage; root later verified the entire remote compressed bytes without claiming a new XZ extraction.",
+    "original_d0f_logs": "28 complete original raw files totaling 13,751,922 bytes in 64 exact parts reconstructed and full-file hash-checked by root; independent content audit covers six original logs with a separately identified narrow parser.",
+    "unrecovered_local_records": "Six selected historical proof files and the lost original full parser remain unavailable; their pins and historical selections are retained without reconstructing old report bytes. Mac profile ZIP remains a separate original GitHub artifact.",
+    "frozen_owner_Python_generator_run": false
+  },
+  "publication_boundary": {
+    "owner_pr": 5897,
+    "expected_previous_head": "f86dfb058edd6e489671e99baf7643a58e7eed35",
+    "draft": true,
+    "owner_base": "943196eb18a1a04e7248307cf8708bed38b82b8b",
+    "actual_new_owner_head": "Recorded separately after actual expected-head publication; no self-hash.",
+    "baseline_must_remain_exact_blob": "2d5f0256776089b386f8e5ebd9d9eefcbfaac5f2"
+  }
+}
