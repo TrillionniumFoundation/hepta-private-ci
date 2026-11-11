@@ -160,7 +160,7 @@ stream_max_retries = 0
     codex_utils_home_dir::set_process_codex_home_override(AbsolutePathBuf::from_absolute_path(
         &identity.home_root,
     )?)?;
-    let app = tokio::spawn(crate::app_runtime::run_app_server(
+    let mut app = tokio::spawn(crate::app_runtime::run_app_server(
         identity.clone(),
         Arg0DispatchPaths::default(),
         host.cognitive_runtime(),
@@ -171,7 +171,11 @@ stream_max_retries = 0
     ));
     tokio::time::timeout(WAIT, async {
         while !identity.app_server_socket.exists() {
-            assert!(!app.is_finished(), "App Server exited before readiness");
+            assert!(
+                !app.is_finished(),
+                "App Server exited before readiness: {:?}",
+                (&mut app).await
+            );
             tokio::time::sleep(Duration::from_millis(10)).await;
         }
     })
