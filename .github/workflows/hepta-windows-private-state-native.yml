@@ -95,6 +95,119 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python .github/scripts/check_windows_private_state_acquisition.py "$env:RUNNER_TEMP/private-state-acquisition"
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Exercise the original signed-credit case on the exact Windows source
+        shell: pwsh
+        env:
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.sha }}
+          PYTHONDONTWRITEBYTECODE: "1"
+        run: |
+          Set-Location codex-rs
+          @'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          import re
+          import subprocess
+          import sys
+          import time
+          from datetime import datetime, timezone
+
+          sys.path.insert(0, str(Path.cwd().parent / "scripts"))
+          from hepta_ci_exec import identity, observed_test_counts
+
+          records = Path(os.environ["RUNNER_TEMP"]) / "mem8-windows-credit-fixture"
+          records.mkdir(parents=True, exist_ok=False)
+          receipt = records / "credit-fixture.json"
+          log = records / "credit-fixture.log"
+          case = (
+              "circuit_cell::tests::credit_tests::signed_tests::"
+              "signed_credit_rejects_cross_owner_ledger_episode_before_any_append"
+          )
+          command = [
+              "just", "test", "--locked", "-p", "codex-hepta-agentd", "--lib",
+              "-E", f"test(={case})", "--test-threads", "1",
+              "--no-tests", "fail", "--retries", "0",
+          ]
+          record = {
+              "schema": "mem8.windows-credit-fixture.v1",
+              "source_sha": os.environ["SOURCE_SHA"],
+              "tested_sha": os.environ["SOURCE_SHA"],
+              "base_sha": os.environ["BASE_SHA"],
+              "lane": "source-head",
+              "run_id": os.environ["GITHUB_RUN_ID"],
+              "run_attempt": os.environ["GITHUB_RUN_ATTEMPT"],
+              "job": os.environ["GITHUB_JOB"],
+              "case": case,
+              "command": command,
+              "working_directory": str(Path.cwd().resolve()),
+              "minimum_tests": 1,
+              "status": "running",
+              "command_exit_code": None,
+              "started_at": datetime.now(timezone.utc).isoformat(),
+              "supervision": "Existing Windows Actions job timeout; no POSIX process-group claim.",
+          }
+          with receipt.open("x", encoding="utf-8") as stream:
+              json.dump(record, stream, sort_keys=True)
+              stream.flush()
+              os.fsync(stream.fileno())
+          started = time.monotonic()
+          exit_code = 1
+          try:
+              before = identity()
+              record["before"] = before
+              if not re.fullmatch(r"[0-9a-f]{40}", record["tested_sha"]):
+                  raise ValueError("invalid tested SHA")
+              if before["dirty"] or before["commit"] != record["tested_sha"]:
+                  raise ValueError("checkout differs from the clean exact source")
+              with log.open("xb") as stream:
+                  completed = subprocess.run(command, stdout=stream, stderr=subprocess.STDOUT)
+                  stream.flush()
+                  os.fsync(stream.fileno())
+              record["command_exit_code"] = completed.returncode
+              data = log.read_bytes()
+              record["log_file"] = log.name
+              record["log_bytes"] = len(data)
+              record["log_sha256"] = hashlib.sha256(data).hexdigest()
+              text = re.sub(r"\x1b\[[0-9;]*m", "", data.decode("utf-8", errors="replace"))
+              passed, failed = observed_test_counts(text)
+              record["observed_passed_tests"] = passed
+              record["observed_failed_tests"] = failed
+              record["named_pass_rows"] = len(re.findall(
+                  r"^\s*PASS\s+\[[^\]]+\]\s+\S+\s+" + re.escape(case) + r"\s*$",
+                  text, re.MULTILINE,
+              ))
+              after = identity()
+              record["after"] = after
+              sys.stdout.buffer.write(data)
+              sys.stdout.buffer.flush()
+              if completed.returncode:
+                  raise ValueError(f"native test command exited {completed.returncode}")
+              if passed != 1 or failed or record["named_pass_rows"] != 1:
+                  raise ValueError("exact named case was not observed passing once")
+              if after != before:
+                  raise ValueError("source identity or bytes changed during the native test")
+              record["status"] = "passed"
+              exit_code = 0
+          except (OSError, ValueError, subprocess.SubprocessError) as error:
+              record["status"] = "failed"
+              record["error"] = str(error)
+          finally:
+              record["finished_at"] = datetime.now(timezone.utc).isoformat()
+              record["elapsed_seconds"] = time.monotonic() - started
+              record["exit_code"] = exit_code
+              pending = receipt.with_suffix(".pending")
+              with pending.open("x", encoding="utf-8") as stream:
+                  json.dump(record, stream, indent=2, sort_keys=True)
+                  stream.write("\n")
+                  stream.flush()
+                  os.fsync(stream.fileno())
+              pending.replace(receipt)
+              print(json.dumps(record, sort_keys=True), flush=True)
+          sys.exit(exit_code)
+          '@ | python -
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Confirm no generated or modified tracked source
         if: always()
         shell: pwsh
@@ -112,5 +225,13 @@ jobs:
         with:
           name: windows-private-state-acquisition-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/private-state-acquisition
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Retain the exact signed-credit execution receipt and raw output
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: mem8-windows-credit-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/mem8-windows-credit-fixture
           if-no-files-found: warn
           retention-days: 14
