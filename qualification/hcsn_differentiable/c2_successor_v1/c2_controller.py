@@ -133,10 +133,40 @@ def terminal_result_gate(row, path, parent, contract):
     output = dict(row)
     try:
         path = Path(path)
-        require(path.is_file() and not path.is_symlink(), 'terminal result file missing/nonregular')
-        output['result'] = identity(path)
-        result = json.loads(path.read_bytes())
-        require(isinstance(result, dict), 'terminal result JSON is not an object')
+        # A terminal report is externally produced evidence, not a trusted JSON
+        # object. Hash the *same bytes* we parse and reject ambiguous semantics.
+        # Preserve measured process costs if this admission fails.
+        cap = 16 * 1024 * 1024
+        require(path.is_file() and not path.is_symlink()
+                and not path.parent.is_symlink()
+                and 0 < path.stat().st_size <= cap,
+                'terminal result file missing/nonregular/oversized')
+        observed = identity(path)
+        raw = path.read_bytes()
+        require(0 < len(raw) <= cap and len(raw) == observed['bytes']
+                and hashlib.sha256(raw).hexdigest() == observed['sha256'],
+                'terminal JSON bytes changed between identity and parse')
+        output['result'] = observed
+
+        def unique_pairs(pairs):
+            result_pairs = {}
+            for key, value in pairs:
+                require(key not in result_pairs, 'duplicate terminal result JSON key')
+                result_pairs[key] = value
+            return result_pairs
+
+        def finite_float(token):
+            value = float(token)
+            require(math.isfinite(value), 'nonfinite terminal result JSON float')
+            return value
+
+        def no_nonfinite_constant(token):
+            raise ValueError('nonfinite terminal result JSON constant: ' + token)
+
+        result = json.loads(raw, object_pairs_hook=unique_pairs,
+                            parse_constant=no_nonfinite_constant,
+                            parse_float=finite_float)
+        require(type(result) is dict, 'terminal result JSON is not an object')
         parent_dir = Path(contract['parent_campaign']) / parent['name']
         parent_result = parent_dir / 'result.json'
         parent_identity = identity(parent_result)

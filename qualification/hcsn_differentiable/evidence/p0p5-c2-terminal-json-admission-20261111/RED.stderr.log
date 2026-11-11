@@ -1,0 +1,43 @@
+test_invalid_utf8_is_rejected (test_terminal_result_json_admission.TerminalJSONAdmissionTests.test_invalid_utf8_is_rejected) ... ok
+test_matching_hash_duplicate_status_is_rejected (test_terminal_result_json_admission.TerminalJSONAdmissionTests.test_matching_hash_duplicate_status_is_rejected) ... FAIL
+test_matching_hash_nan_field_is_rejected (test_terminal_result_json_admission.TerminalJSONAdmissionTests.test_matching_hash_nan_field_is_rejected) ... FAIL
+test_matching_hash_overflowed_float_is_rejected (test_terminal_result_json_admission.TerminalJSONAdmissionTests.test_matching_hash_overflowed_float_is_rejected) ... FAIL
+test_matching_hash_oversized_result_is_rejected (test_terminal_result_json_admission.TerminalJSONAdmissionTests.test_matching_hash_oversized_result_is_rejected) ... FAIL
+test_valid_nonzero_terminal_evidence_stays_structurally_complete (test_terminal_result_json_admission.TerminalJSONAdmissionTests.test_valid_nonzero_terminal_evidence_stays_structurally_complete) ... ok
+
+======================================================================
+FAIL: test_matching_hash_duplicate_status_is_rejected (test_terminal_result_json_admission.TerminalJSONAdmissionTests.test_matching_hash_duplicate_status_is_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hcsn-r11-terminal-result-gate-20261111/qualification/hcsn_differentiable/c2_successor_v1/test_terminal_result_json_admission.py", line 92, in test_matching_hash_duplicate_status_is_rejected
+    self.assertFalse(row["terminal_evidence_complete"])
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_matching_hash_nan_field_is_rejected (test_terminal_result_json_admission.TerminalJSONAdmissionTests.test_matching_hash_nan_field_is_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hcsn-r11-terminal-result-gate-20261111/qualification/hcsn_differentiable/c2_successor_v1/test_terminal_result_json_admission.py", line 96, in test_matching_hash_nan_field_is_rejected
+    self.assertFalse(row["terminal_evidence_complete"])
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_matching_hash_overflowed_float_is_rejected (test_terminal_result_json_admission.TerminalJSONAdmissionTests.test_matching_hash_overflowed_float_is_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hcsn-r11-terminal-result-gate-20261111/qualification/hcsn_differentiable/c2_successor_v1/test_terminal_result_json_admission.py", line 100, in test_matching_hash_overflowed_float_is_rejected
+    self.assertFalse(row["terminal_evidence_complete"])
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_matching_hash_oversized_result_is_rejected (test_terminal_result_json_admission.TerminalJSONAdmissionTests.test_matching_hash_oversized_result_is_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hcsn-r11-terminal-result-gate-20261111/qualification/hcsn_differentiable/c2_successor_v1/test_terminal_result_json_admission.py", line 105, in test_matching_hash_oversized_result_is_rejected
+    self.assertFalse(row["terminal_evidence_complete"])
+AssertionError: True is not false
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.337s
+
+FAILED (failures=4)

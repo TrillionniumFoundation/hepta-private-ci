@@ -1,0 +1,76 @@
+{
+  "admission": "HOLD_NO_GO",
+  "exact_parent_head": "1038b6c2f1246035385549bbd648ca2a5fa02121",
+  "green": {
+    "errors": 0,
+    "failures": 0,
+    "job_id": "1a1cc89d9c8-2564-f9e",
+    "process_exit_code": 0,
+    "tests": 6
+  },
+  "logs": {
+    "GREEN.exit": {
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    "GREEN.stderr.log": {
+      "bytes": 1090,
+      "sha256": "6437cbba8050baa47aba1a2d1c0743fcc2d45c8b028fcd44f019cd29893b23b4"
+    },
+    "GREEN.stdout.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "RED.exit": {
+      "bytes": 2,
+      "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865"
+    },
+    "RED.stderr.log": {
+      "bytes": 3684,
+      "sha256": "1d2eb29ba8ded95beffeabaf7bd996f1843347639f92c992b2d3d2b318e9fea9"
+    },
+    "RED.stdout.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "next": "new C2 source/model/data/contract freeze, six terminal native job+independent replay, P1 full train-visited numerics, fair baseline science",
+  "original_c2": {
+    "expected_attempts": 6,
+    "files_rehashed": "ORIGINAL-READONLY-REHASH.json",
+    "independent_full_replays": 0,
+    "job_id": "1a1c74f3308-be2a-75",
+    "malformed_journal_rows": 1,
+    "present_producer_reports": 4,
+    "status": "finalizing/outcome_unknown/no_authoritative_terminal",
+    "zero_byte_interrupted_files": 2
+  },
+  "parent_tree": "0b599a38a3ffac22289f257fd189c711417de416",
+  "recorded_utc": "2026-11-11T21:38:52.861940+00:00",
+  "red": {
+    "errors": 0,
+    "failures": 4,
+    "job_id": "1a1cc88ebb1-2564-f9a",
+    "process_exit_code": 1,
+    "tests": 6
+  },
+  "schema": "hcsn-c2-terminal-result-json-gate-evidence-v1",
+  "scope": "source-extracted exact c2_controller.py terminal_result_gate; Python 3.12.3 stdlib synthetic inputs only; no Torch model, optimizer, native C2 fit or independent scientific replay",
+  "source_identity": {
+    ".github/workflows/hcsn-differentiable.yml": {
+      "bytes": 14900,
+      "git_blob_sha": "3569420b1f5c06d5a2ada84737172e288cf0972e",
+      "sha256": "c7bd147a054cc5de83d16b4e349a63c715488036c394a6d20fbffd1a5c39026d"
+    },
+    "qualification/hcsn_differentiable/c2_successor_v1/c2_controller.py": {
+      "bytes": 27758,
+      "git_blob_sha": "703bfb75a431ea3d57a586b3698c2c70776ae5a3",
+      "sha256": "2d34c4a8c3340d971b2f013864e83bc1d8e0344995793fbd3aea210f35b5823b"
+    },
+    "qualification/hcsn_differentiable/c2_successor_v1/test_terminal_result_json_admission.py": {
+      "bytes": 4360,
+      "git_blob_sha": "6563ab3b489bb9e44a922ce6d4c35d416978a9a2",
+      "sha256": "541d62cd1eab58f884c1aa7453e9ba6b9fceb65dbdfccb8bef82ea08a44f259a"
+    }
+  }
+}
