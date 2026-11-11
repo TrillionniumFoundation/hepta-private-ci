@@ -47,7 +47,10 @@ codex_rust_crate(
     # Keep the complete existing test graph without changing product binaries.
     integration_test_use_unit_test_dependencies = True,
     unit_test_dependency_replacements = _UNIT_TEST_DEPENDENCIES,
-    unit_test_extra_binaries = ["//codex-rs/hepta-infer-worker-host:hepta-joint-propose"],
+    unit_test_extra_binaries = [
+        "//codex-rs/cli:codex",
+        "//codex-rs/hepta-infer-worker-host:hepta-joint-propose",
+    ],
     unit_test_extra_srcs = ["tests/support/terminal_cell_owner.rs"],
 )
 

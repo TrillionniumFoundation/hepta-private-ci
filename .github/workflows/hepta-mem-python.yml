@@ -134,14 +134,16 @@ jobs:
           git diff --binary "$BASE_SHA" "$SOURCE_SHA" > "$records/source.patch"
           git diff --name-only --diff-filter=ACMRT -z "$BASE_SHA" "$SOURCE_SHA" > "$records/source-paths.zlist"
           tar --null -T "$records/source-paths.zlist" -czf "$records/changed-source-before.tar.gz"
-          memory=false; control=false; protocol=false
+          memory=false; control=false; protocol=false; drain=false
           [[ ! -f codex-rs/hepta-memory/src/episodic_source.rs ]] || memory=true
           [[ ! -f codex-rs/hepta-agentd/src/production_episodic_control_tests.rs ]] || control=true
           [[ ! -f codex-rs/hepta-agent-protocol/src/episodic.rs ]] || protocol=true
-          printf 'memory=%s\ncontrol=%s\nprotocol=%s\n' "$memory" "$control" "$protocol" | tee "$records/stages.txt" >> "$GITHUB_OUTPUT"
+          [[ ! -f codex-rs/hepta-agentd/src/production_episodic_drain_tests.rs ]] || drain=true
+          printf 'memory=%s\ncontrol=%s\nprotocol=%s\ndrain=%s\n' "$memory" "$control" "$protocol" "$drain" | tee "$records/stages.txt" >> "$GITHUB_OUTPUT"
           printf 'Absent stages have no native test result; infrastructure success is not owner qualification.\n' >> "$records/stages.txt"
           cat "$records/stages.txt" >> "$GITHUB_STEP_SUMMARY"
           [[ "$control" == false || ( "$memory" == true && "$protocol" == true ) ]]
+          [[ "$drain" == false || "$control" == true ]]
       - uses: ./.github/actions/setup-ci
       - uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489
         with:
@@ -182,12 +184,57 @@ jobs:
           python3 scripts/hepta_ci_exec.py --timeout-seconds 6600 --minimum-tests 1 \
             --output "$RUNNER_TEMP/mem-native-records/memory-tests.json" \
             -- just test --locked -p codex-hepta-memory --lib episodic
+      - name: Build and bind the exact Codex executable for real App Server drain
+        if: steps.stage.outputs.drain == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --timeout-seconds 6600 \
+            --output "$RUNNER_TEMP/mem-native-records/codex-build.json" \
+            -- cargo build --locked --manifest-path codex-rs/Cargo.toml -p codex-cli --bin codex
+          python3 - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          import stat
+          import subprocess
+
+          metadata = json.loads(subprocess.check_output([
+              "cargo", "metadata", "--locked", "--no-deps", "--format-version", "1",
+              "--manifest-path", "codex-rs/Cargo.toml",
+          ]))
+          binary = Path(metadata["target_directory"]) / "debug" / "codex"
+          before = binary.lstat()
+          if not stat.S_ISREG(before.st_mode) or not os.access(binary, os.X_OK):
+              raise SystemExit("exact-source Codex binary is not an executable regular file")
+          digest = hashlib.sha256()
+          with binary.open("rb") as handle:
+              for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+                  digest.update(chunk)
+          after = binary.lstat()
+          if (before.st_dev, before.st_ino, before.st_size, before.st_mtime_ns) != (
+              after.st_dev, after.st_ino, after.st_size, after.st_mtime_ns
+          ):
+              raise SystemExit("Codex binary changed while recording its identity")
+          record = {
+              "source_sha": os.environ["SOURCE_SHA"],
+              "source_tree": subprocess.check_output(["git", "rev-parse", "HEAD^{tree}"], text=True).strip(),
+              "path": str(binary),
+              "bytes": after.st_size,
+              "sha256": digest.hexdigest(),
+          }
+          records = Path(os.environ["RUNNER_TEMP"]) / "mem-native-records"
+          (records / "codex-binary.json").write_text(json.dumps(record, indent=2) + "\n")
+          with Path(os.environ["GITHUB_ENV"]).open("a") as handle:
+              handle.write(f"CARGO_BIN_EXE_codex={binary}\n")
+          PY
       - name: Test staged Agentd control contracts on unchanged source
         if: steps.stage.outputs.control == 'true'
         run: |
           python3 scripts/hepta_ci_exec.py --timeout-seconds 6600 --minimum-tests 1 \
             --output "$RUNNER_TEMP/mem-native-records/agentd-tests.json" \
-            -- just test --locked -p codex-hepta-agentd --lib episodic
+            -- just test --locked -p codex-hepta-agentd --lib episodic --no-capture --retries 0
       - name: Test protocol package after the control stage is present
         if: steps.stage.outputs.control == 'true'
         run: |
@@ -228,6 +275,26 @@ jobs:
           if [[ -f "${CARGO_TARGET_DIR:-$RUNNER_TEMP/absent-target}/nextest/local/junit.xml" ]]; then
             cp "$CARGO_TARGET_DIR/nextest/local/junit.xml" "$records/last-nextest.junit.xml"
           fi
+          python3 - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+
+          records = Path(os.environ["RUNNER_TEMP"]) / "mem-native-records"
+          identity = records / "codex-binary.json"
+          if identity.exists():
+              before = json.loads(identity.read_text())
+              binary = Path(before["path"])
+              digest = hashlib.sha256()
+              with binary.open("rb") as handle:
+                  for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+                      digest.update(chunk)
+              after = dict(before, bytes=binary.stat().st_size, sha256=digest.hexdigest())
+              (records / "codex-binary-after.json").write_text(json.dumps(after, indent=2) + "\n")
+              if before != after or binary.is_symlink():
+                  raise SystemExit("the bound Codex executable changed during native validation")
+          PY
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
           cmp "$records/source-before.txt" "$records/source-after.txt"
           test ! -s "$records/worktree-after.txt"

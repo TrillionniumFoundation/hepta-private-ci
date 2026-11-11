@@ -93,11 +93,13 @@ async fn episodic_import_cancellation_cannot_overtake_owner_settlement()
                     String::from_utf8_lossy(&output.stdout),
                     String::from_utf8_lossy(&output.stderr)
                 );
-                assert!(
-                    String::from_utf8_lossy(&output.stdout)
-                        .contains(&format!("episodic-drain-case-complete:{case}")),
-                    "child did not execute the expected case"
-                );
+                let expected_marker = format!("episodic-drain-case-complete:{case}");
+                let stdout = String::from_utf8_lossy(&output.stdout);
+                let observed_marker = stdout
+                    .lines()
+                    .find(|line| *line == expected_marker.as_str())
+                    .expect("child did not execute the expected case");
+                println!("{observed_marker}");
             }
             return Ok(());
         }
@@ -162,7 +164,10 @@ stream_max_retries = 0
     )?)?;
     let mut app = tokio::spawn(crate::app_runtime::run_app_server(
         identity.clone(),
-        Arg0DispatchPaths::default(),
+        Arg0DispatchPaths {
+            codex_self_exe: Some(codex_utils_cargo_bin::cargo_bin("codex")?),
+            ..Arg0DispatchPaths::default()
+        },
         host.cognitive_runtime(),
         Arc::clone(&state),
         Some(Arc::clone(&host)),
