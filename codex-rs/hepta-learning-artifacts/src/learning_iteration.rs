@@ -116,7 +116,9 @@ impl LearningIterationCoordinatorV1 {
     pub fn from_snapshot(
         snapshot: LearningIterationSnapshotV1,
     ) -> Result<Self, LearningIterationError> {
-        if snapshot.receipts.len() > STAGES.len() + usize::from(snapshot.local_decision_v2().is_some()) {
+        if snapshot.receipts.len()
+            > STAGES.len() + usize::from(snapshot.local_decision_v2().is_some())
+        {
             return Err(LearningIterationError::CapacityExceeded);
         }
         let mut coordinator = Self::new(snapshot.request.clone(), snapshot.owners.clone())?;
@@ -232,7 +234,9 @@ impl LearningIterationCoordinatorV1 {
                     match decision.disposition {
                         LearningLocalDispositionV2::AdoptCandidate => self.candidate(),
                         LearningLocalDispositionV2::DeferCandidate
-                        | LearningLocalDispositionV2::RetainParent => Some(&self.snapshot.request.selected_bundle),
+                        | LearningLocalDispositionV2::RetainParent => {
+                            Some(&self.snapshot.request.selected_bundle)
+                        }
                     }
                 }
                 LearningIterationObservationV1::TrainingNoUpdateV2(_)
@@ -433,10 +437,16 @@ impl LearningIterationCoordinatorV1 {
                     && candidate_digest == Some(decision.candidate_bundle)
                     && !decision.policy_digest.is_zero()
                     && !decision.reason_digest.is_zero()
-                    && matches!(self.snapshot.receipts.last().map(|receipt| &receipt.observation),
+                    && matches!(
+                        self.snapshot
+                            .receipts
+                            .last()
+                            .map(|receipt| &receipt.observation),
                         Some(LearningIterationObservationV1::Proposal {
-                            disposition: LearningProposalDispositionV1::UpdateCandidates, ..
-                        }))
+                            disposition: LearningProposalDispositionV1::UpdateCandidates,
+                            ..
+                        })
+                    )
                     && match decision.disposition {
                         LearningLocalDispositionV2::AdoptCandidate => {
                             candidate_digest == Some(decision.selected_bundle)

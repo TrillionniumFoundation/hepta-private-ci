@@ -128,7 +128,7 @@ fn qualified_local_adoption_reaches_actual_candidate_and_keeps_decision_operatio
         "original-node-adoption-policy",
     )?;
     let mut previous = parent_fixture.old_config.clone();
-    let mut target = parent_fixture.target_config.clone();
+    let mut target = parent_fixture.target_config;
     // Match the existing consumer's complete shared manifest contract. The
     // generic CURRENT fixture intentionally uses unrelated placeholder pins.
     for (config, bundle) in [
