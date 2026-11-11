@@ -159,10 +159,11 @@ pub fn accumulate_plasticity(
     let eligibility = aggregate_eligibility(signal_history)?;
     validate_modulator(independent_modulator)?;
     validate_trust_region(trust_region)?;
-    let mut groups = parameter_groups.to_vec();
-    if !(1..=MAX_GROUPS).contains(&groups.len()) {
+    if !(1..=MAX_GROUPS).contains(&parameter_groups.len()) {
         return Err(PlasticityError::GroupCountOutOfRange);
     }
+    // Sort bounded references; caller-owned projection payloads are not cloned.
+    let mut groups = parameter_groups.iter().collect::<Vec<_>>();
     groups.sort_by(|left, right| left.group_id.cmp(&right.group_id));
     let mut seen = BTreeSet::new();
     for group in &groups {
@@ -391,7 +392,7 @@ fn modulator_digest(modulator: &IndependentModulatorV1) -> Digest32 {
     Digest32::of_bytes(&bytes)
 }
 
-fn group_map_digest(groups: &[ParameterGroupMapV1]) -> Digest32 {
+fn group_map_digest(groups: &[&ParameterGroupMapV1]) -> Digest32 {
     let mut bytes = b"hepta.neuron.parameter-group-map.v1".to_vec();
     for group in groups {
         push_id(&mut bytes, &group.group_id);

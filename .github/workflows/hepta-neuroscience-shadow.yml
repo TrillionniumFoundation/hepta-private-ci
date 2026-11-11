@@ -7,6 +7,7 @@ on:
       - "codex-rs/hepta-neuron/src/lib.rs"
       - "codex-rs/hepta-neuron/src/plasticity.rs"
       - "codex-rs/hepta-neuron/src/plasticity/**"
+      - "codex-rs/hepta-neuron/tests/plasticity_allocation_probe.rs"
       - ".github/workflows/hepta-neuroscience-shadow.yml"
   push:
     branches: [main]
@@ -15,6 +16,7 @@ on:
       - "codex-rs/hepta-neuron/src/lib.rs"
       - "codex-rs/hepta-neuron/src/plasticity.rs"
       - "codex-rs/hepta-neuron/src/plasticity/**"
+      - "codex-rs/hepta-neuron/tests/plasticity_allocation_probe.rs"
       - ".github/workflows/hepta-neuroscience-shadow.yml"
 
 permissions:
@@ -26,17 +28,106 @@ jobs:
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
       - name: Validate research-only mechanism gates
-        run: python3 -m unittest discover -v -s qualification/neuroscience-20261110 -p 'test_*.py'
+        env:
+          EXPECTED_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SOURCE_SHA"
+          mkdir -p "$RUNNER_TEMP/neuroscience-shadow"
+          python3 -m unittest discover -v -s qualification/neuroscience-20261110 -p 'test_*.py' 2>&1 | tee "$RUNNER_TEMP/neuroscience-shadow/tests.log"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: neuroscience-shadow-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/neuroscience-shadow/
+          if-no-files-found: warn
 
   q24-temporal-reference:
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
-      - name: Check Q24 read-only temporal credit against native tests
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Bind native evidence to the source checkout
+        env:
+          EXPECTED_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SOURCE_SHA"
+          git diff --check
+          test -z "$(git status --porcelain --untracked-files=no)"
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          import subprocess
+          output = Path(os.environ["RUNNER_TEMP"]) / "neuroscience-q24"
+          output.mkdir()
+          record = {
+              "source_sha": subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip(),
+              "source_tree": subprocess.check_output(["git", "rev-parse", "HEAD^{tree}"], text=True).strip(),
+              "expected_source_sha": os.environ["EXPECTED_SOURCE_SHA"],
+              "run_id": os.environ["GITHUB_RUN_ID"],
+              "run_attempt": os.environ["GITHUB_RUN_ATTEMPT"],
+          }
+          (output / "SOURCE_IDENTITY.json").write_text(json.dumps(record, indent=2) + "\n")
+          PY
+      - name: Check native library and bounded allocation refusals
         working-directory: codex-rs
-        run: cargo test --locked -p codex-hepta-neuron --lib
+        run: |
+          set -euo pipefail
+          cargo test --locked -p codex-hepta-neuron --lib --test plasticity_allocation_probe -- --nocapture 2>&1 | tee "$RUNNER_TEMP/neuroscience-q24/native-tests.log"
+      - name: Retain complete allocation observations
+        if: always()
+        run: |
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          output = Path(os.environ["RUNNER_TEMP"]) / "neuroscience-q24"
+          output.mkdir(exist_ok=True)
+          log = output / "native-tests.log"
+          rows = []
+          errors = []
+          for line in log.read_text(errors="replace").splitlines() if log.exists() else []:
+              if "HEPTA_ALLOCATION_PROBE " in line:
+                  try:
+                      rows.append(json.loads(line.split("HEPTA_ALLOCATION_PROBE ", 1)[1]))
+                  except ValueError:
+                      errors.append("malformed allocation observation")
+          expected = {
+              (case, size)
+              for case in ("eligibility_projection", "modulator_projection", "feedback")
+              for size in (32768, 65536)
+          }
+          keys = [(row.get("case"), row.get("payload_bytes")) for row in rows]
+          complete = (
+              not errors and len(rows) == len(expected) and set(keys) == expected
+              and all(
+                  row.get("schema") == "hepta.plasticity.allocation-probe.v1"
+                  and row.get("refusal_matches") is True
+                  and row.get("within_budget") is True
+                  and row.get("limit_bytes") == 16384
+                  and type(row.get("requested_bytes")) is int
+                  and 0 <= row["requested_bytes"] < 16384
+                  for row in rows
+              )
+          )
+          report = {"complete": complete, "observations": rows, "errors": errors}
+          (output / "allocation-report.json").write_text(json.dumps(report, indent=2) + "\n")
+          if not complete:
+              raise SystemExit("allocation probe evidence is incomplete or over budget")
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: neuroscience-q24-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/neuroscience-q24/
+          if-no-files-found: warn
