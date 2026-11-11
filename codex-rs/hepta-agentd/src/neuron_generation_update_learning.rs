@@ -52,7 +52,12 @@ pub fn learning_retained_task_operation_id_v1(
             snapshot
                 .receipts
                 .iter()
-                .find(|receipt| matches!(receipt.observation, LearningIterationObservationV1::Selection { .. }))
+                .find(|receipt| {
+                    matches!(
+                        receipt.observation,
+                        LearningIterationObservationV1::Selection { .. }
+                    )
+                })
                 .ok_or_else(|| invalid("completed retained task selection is missing"))?
                 .predecessor
         }
