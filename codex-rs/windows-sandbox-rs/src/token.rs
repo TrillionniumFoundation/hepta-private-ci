@@ -551,3 +551,8 @@ mod tests;
 #[cfg(test)]
 #[path = "token_delete_diagnostics_tests.rs"]
 pub(crate) mod delete_diagnostics;
+
+// Raw restricted tokens below are available only to owned-object mechanism tests.
+#[cfg(test)]
+#[path = "token_mechanism_fixture.rs"]
+pub(crate) mod mechanism_fixture;

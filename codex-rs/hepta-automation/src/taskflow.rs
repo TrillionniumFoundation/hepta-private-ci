@@ -33,6 +33,11 @@ use sqlx::Transaction;
 
 use crate::AutomationStore;
 
+#[path = "taskflow_diagnostics.rs"]
+pub(crate) mod diagnostics;
+
+use self::diagnostics::storage_unavailable;
+
 pub const TASKFLOW_SCHEMA_VERSION: u32 = 1;
 // Retained for on-disk compatibility with the original ledger namespace. The
 // namespace string is not an authority or activation claim.
@@ -949,13 +954,13 @@ impl AutomationStore {
             .taskflow_pool()
             .begin()
             .await
-            .map_err(|_| TaskFlowError::Unavailable)?;
+            .map_err(|error| storage_unavailable("run.read.begin", error))?;
         let run =
             load_taskflow_run_tx(&mut transaction, self.taskflow_owner_agent_id(), run_id).await?;
         transaction
             .commit()
             .await
-            .map_err(|_| TaskFlowError::Unavailable)?;
+            .map_err(|error| storage_unavailable("run.read.commit", error))?;
         Ok(run)
     }
 
@@ -1178,14 +1183,14 @@ impl AutomationStore {
             .taskflow_pool()
             .begin()
             .await
-            .map_err(|_| TaskFlowError::Unavailable)?;
+            .map_err(|error| storage_unavailable("run.command.begin", error))?;
         let row =
             sqlx::query("SELECT * FROM taskflow_runs WHERE owner_agent_id = ? AND run_id = ?")
                 .bind(self.taskflow_owner_agent_id().as_str())
                 .bind(&command.run_id)
                 .fetch_optional(&mut *tx)
                 .await
-                .map_err(|_| TaskFlowError::Unavailable)?
+                .map_err(|error| storage_unavailable("run.command.read", error))?
                 .ok_or_else(|| {
                     TaskFlowError::Conflict("TaskFlow run does not exist".to_string())
                 })?;
@@ -1216,7 +1221,7 @@ impl AutomationStore {
         .bind(&command.command_id)
         .fetch_optional(&mut *tx)
         .await
-        .map_err(|_| TaskFlowError::Unavailable)?
+        .map_err(|error| storage_unavailable("run.command.previous_event", error))?
         {
             let digest: String = previous
                 .try_get("command_digest")
@@ -1236,7 +1241,9 @@ impl AutomationStore {
                     .try_get("event_seq")
                     .map_err(|_| TaskFlowError::Corrupt("event sequence column".to_string()))?,
             )?;
-            tx.commit().await.map_err(|_| TaskFlowError::Unavailable)?;
+            tx.commit()
+                .await
+                .map_err(|error| storage_unavailable("run.command.duplicate.commit", error))?;
             return Ok(TaskFlowCommandResult {
                 status: TaskFlowCommandStatus::AlreadyApplied,
                 revision,
@@ -1303,7 +1310,9 @@ impl AutomationStore {
             &previous,
         )
         .await?;
-        tx.commit().await.map_err(|_| TaskFlowError::Unavailable)?;
+        tx.commit()
+            .await
+            .map_err(|error| storage_unavailable("run.command.commit", error))?;
         Ok(TaskFlowCommandResult {
             status: TaskFlowCommandStatus::Applied,
             revision: run.revision,
@@ -1662,7 +1671,7 @@ async fn update_taskflow_run(
         .bind(&fence.fencing_token)
         .execute(&mut **tx)
         .await
-        .map_err(|_| TaskFlowError::Unavailable)?
+        .map_err(|error| storage_unavailable("run.update.fenced", error))?
     } else {
         sqlx::query(
             "UPDATE taskflow_runs SET state = ?, revision = ?, current_node = ?, state_digest = ?,
@@ -1688,7 +1697,7 @@ async fn update_taskflow_run(
         .bind(&run.run_id)
         .execute(&mut **tx)
         .await
-        .map_err(|_| TaskFlowError::Unavailable)?
+        .map_err(|error| storage_unavailable("run.update.unfenced", error))?
     };
     if result.rows_affected() != 1 {
         return Err(TaskFlowError::StaleFence);
@@ -1708,7 +1717,7 @@ async fn previous_event_digest(
     .bind(&run.run_id)
     .fetch_optional(&mut **tx)
     .await
-    .map_err(|_| TaskFlowError::Unavailable)
+    .map_err(|error| storage_unavailable("run.event.previous_digest", error))
     .map(|value| value.unwrap_or_else(|| ZERO_DIGEST.to_string()))
 }
 
@@ -1728,7 +1737,7 @@ async fn append_taskflow_event(
     .bind(&run.run_id)
     .fetch_one(&mut **tx)
     .await
-    .map_err(|_| TaskFlowError::Unavailable)?;
+    .map_err(|error| storage_unavailable("run.event.previous_sequence", error))?;
     let event_seq = to_u64(previous_seq.unwrap_or(0))?
         .checked_add(1)
         .ok_or_else(|| corrupt("event sequence overflow"))?;
@@ -1772,7 +1781,7 @@ async fn append_taskflow_event(
         if is_constraint(&error) {
             TaskFlowError::Conflict("duplicate TaskFlow event".to_string())
         } else {
-            TaskFlowError::Unavailable
+            storage_unavailable("run.event.insert", error)
         }
     })?;
     Ok(event_seq)
@@ -1925,7 +1934,7 @@ pub(crate) async fn verify_taskflow_event_chain_tx(
         .bind(&run.run_id)
         .fetch_all(&mut **tx)
         .await
-        .map_err(|_| TaskFlowError::Unavailable)?;
+        .map_err(|error| storage_unavailable("run.events.read", error))?;
     verify_taskflow_event_rows(run, &rows)
 }
 
@@ -1954,7 +1963,7 @@ pub(crate) async fn load_taskflow_definition_tx(
     .bind(i64::from(version))
     .fetch_optional(&mut **tx)
     .await
-    .map_err(|_| TaskFlowError::Unavailable)?;
+    .map_err(|error| storage_unavailable("run.definition.read", error))?;
     let Some(row) = row else { return Ok(None) };
     let json: String = row
         .try_get("definition_json")
@@ -1983,7 +1992,7 @@ pub(crate) async fn load_taskflow_run_tx(
         .bind(run_id)
         .fetch_optional(&mut **tx)
         .await
-        .map_err(|_| TaskFlowError::Unavailable)?;
+        .map_err(|error| storage_unavailable("run.history.read", error))?;
     let Some(row) = row else { return Ok(None) };
     let run = taskflow_run_from_row(&row, owner)?;
     verify_taskflow_event_chain_tx(tx, &run).await?;

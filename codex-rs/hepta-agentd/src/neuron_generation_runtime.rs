@@ -75,6 +75,11 @@ pub(crate) enum GenerationCommand {
     },
     Snapshot(Response<CellRuntimeSnapshotV2>),
     ObserveGeneration(Response<CellGenerationObservationV1>),
+    #[cfg(test)]
+    QualificationFileBytes {
+        max_bytes: usize,
+        response: Response<[Vec<u8>; 2]>,
+    },
     #[cfg(unix)]
     LearningRead {
         request: Box<GenerationLearningReadV1>,
@@ -107,7 +112,61 @@ pub struct NeuronGenerationRuntimeHandleV2 {
     max_ack_cost_entries: usize,
 }
 
+/// Test observation never retains the sender that owns the service lifetime.
+#[cfg(test)]
+pub(crate) struct GenerationFileObserver {
+    sender: mpsc::WeakSender<GenerationCommand>,
+}
+
+#[cfg(test)]
+impl GenerationFileObserver {
+    pub(crate) async fn qualification_file_bytes(
+        &self,
+        max_bytes: usize,
+    ) -> Result<[Vec<u8>; 2], CellGenerationErrorV2> {
+        if !(1..=1024 * 1024).contains(&max_bytes) {
+            return Err(CellGenerationErrorV2::Capacity);
+        }
+        let (response, receive) = oneshot::channel();
+        let sender = self
+            .sender
+            .upgrade()
+            .ok_or(CellGenerationErrorV2::Unavailable)?;
+        sender
+            .try_send(GenerationCommand::QualificationFileBytes {
+                max_bytes,
+                response,
+            })
+            .map_err(|error| match error {
+                mpsc::error::TrySendError::Full(_) => CellGenerationErrorV2::Capacity,
+                mpsc::error::TrySendError::Closed(_) => CellGenerationErrorV2::Unavailable,
+            })?;
+        // Only the already-queued command survives while awaiting its reply.
+        drop(sender);
+        receive
+            .await
+            .map_err(|_| CellGenerationErrorV2::CommitUncertain)?
+    }
+}
+
 impl NeuronGenerationRuntimeHandleV2 {
+    #[cfg(test)]
+    pub(crate) fn qualification_file_observer(&self) -> GenerationFileObserver {
+        GenerationFileObserver {
+            sender: self.sender.downgrade(),
+        }
+    }
+
+    #[cfg(test)]
+    pub(crate) async fn qualification_file_bytes(
+        &self,
+        max_bytes: usize,
+    ) -> Result<[Vec<u8>; 2], CellGenerationErrorV2> {
+        self.qualification_file_observer()
+            .qualification_file_bytes(max_bytes)
+            .await
+    }
+
     pub async fn step(
         &self,
         request: CellGenerationRequestV2,

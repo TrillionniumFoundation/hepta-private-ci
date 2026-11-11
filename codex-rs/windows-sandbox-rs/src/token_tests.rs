@@ -3,6 +3,8 @@ use crate::acl::add_deny_write_ace;
 use crate::acl::ensure_allow_mask_aces;
 use crate::acl::ensure_allow_write_aces;
 use crate::acl::fetch_dacl_handle;
+use crate::legacy_admission_tests::assert_unavailable;
+use crate::legacy_admission_tests::snapshot;
 use pretty_assertions::assert_eq;
 use windows_sys::Win32::Security::Authorization::DENY_ACCESS;
 use windows_sys::Win32::Security::Authorization::SE_FILE_OBJECT;
@@ -192,15 +194,6 @@ fn observe_fixture_dacl(label: &str, path: &std::path::Path) {
     ));
 }
 
-fn observe_fixture_metadata(label: &str, path: &std::path::Path) {
-    let state = std::fs::metadata(path)
-        .map(|metadata| (metadata.is_file(), metadata.is_dir(), metadata.len()))
-        .map_err(|error| (error.kind(), error.raw_os_error()));
-    record_windows_boundary_diagnostic(format_args!(
-        "metadata={label} path={path:?} state={state:?}"
-    ));
-}
-
 #[test]
 fn elevated_token_includes_network_proxy_restricting_sid() -> Result<()> {
     let capability_sid = LocalSid::from_string("S-1-5-21-10-20-30-40")?;
@@ -226,7 +219,7 @@ fn elevated_token_includes_network_proxy_restricting_sid() -> Result<()> {
 }
 
 #[test]
-fn partial_delete_deny_is_repaired_before_native_workspace_writes() -> Result<()> {
+fn legacy_refuses_before_partial_delete_deny_repair_mechanism_fixture() -> Result<()> {
     let fixture = tempfile::tempdir()?;
     let capability = LocalSid::from_string("S-1-5-21-171-272-373-474")?;
     let everyone = LocalSid::from_string("S-1-1-0")?;
@@ -283,10 +276,19 @@ fn partial_delete_deny_is_repaired_before_native_workspace_writes() -> Result<()
     anyhow::ensure!(code == ERROR_SUCCESS, "seed partial delete deny: {code}");
     // SAFETY: the base token stays owned until restricted-token creation completes.
     let base = OwnedToken(unsafe { get_current_token_for_restriction()? });
-    // SAFETY: the owned base token and validated capability SID are live; the
-    // resulting token is immediately owned and closed after both impersonations.
+    let before = crate::legacy_admission_tests::snapshot(fixture.path())?;
+    crate::legacy_admission_tests::assert_unavailable(unsafe {
+        create_workspace_write_token_with_caps_from(base.0, &[capability.as_ptr()]).map(OwnedToken)
+    });
+    assert_eq!(
+        crate::legacy_admission_tests::snapshot(fixture.path())?,
+        before
+    );
+    // SAFETY: this cfg(test) token is used only for the owned fixture below.
+    // It preserves the native ACL-repair assertions without admitting a legacy
+    // sandbox or launching any process under the token.
     let token = OwnedToken(unsafe {
-        create_workspace_write_token_with_caps_from(base.0, &[capability.as_ptr()])?
+        mechanism_fixture::workspace_token_for_owned_objects(base.0, &[capability.as_ptr()])?
     });
     {
         // SAFETY: token remains owned throughout this impersonation scope.
@@ -345,7 +347,7 @@ fn partial_delete_deny_is_repaired_before_native_workspace_writes() -> Result<()
 }
 
 #[test]
-fn workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces() -> Result<()> {
+fn legacy_workspace_capabilities_refuse_broad_identity_delete_routes() -> Result<()> {
     let fixture = tempfile::tempdir()?;
     let base = OwnedToken(unsafe { get_current_token_for_restriction()? });
     let cap_a = LocalSid::from_string("S-1-5-21-101-202-303-404")?;
@@ -382,100 +384,42 @@ fn workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces() ->
     }
     std::fs::write(outside.join("keep.txt"), "outside")?;
     std::fs::create_dir(outside.join("keep-dir"))?;
-    let token = OwnedToken(unsafe {
-        create_workspace_write_token_with_caps_from(base.0, &[cap_a.as_ptr(), cap_b.as_ptr()])?
-    });
-    let workspace_file = allowed[0].join("delete.txt");
-    let temp_file = allowed[1].join("delete.txt");
-    let outside_file = outside.join("keep.txt");
-    let diagnostics = super::delete_diagnostics::observe(
-        base.0,
-        token.0,
-        &[
-            ("workspace-dir", allowed[0].as_path()),
-            ("workspace-file", workspace_file.as_path()),
-            ("temp-dir", allowed[1].as_path()),
-            ("temp-file", temp_file.as_path()),
-            ("outside-dir", outside.as_path()),
-            ("outside-file", outside_file.as_path()),
-        ],
-        &[&cap_a, &cap_b, &other_cap],
-    );
-    eprintln!(
-        "delete-native token-observation-complete={}",
-        diagnostics.is_ok()
-    );
-    for (label, sid) in [
-        ("allowed_cap_a", cap_a.as_ptr()),
-        ("allowed_cap_b", cap_b.as_ptr()),
-        ("unrelated_cap", other_cap.as_ptr()),
-        ("logon_identity", logon.as_mut_ptr().cast()),
-        ("everyone_identity", everyone.as_mut_ptr().cast()),
-    ] {
-        // SAFETY: the owned token and each fixture/identity SID remain live.
-        let member = unsafe { token_has_restricting_sid(token.0, sid) };
-        record_windows_boundary_diagnostic(format_args!(
-            "restricted_sid={label} member={member:?}"
-        ));
-    }
-    observe_fixture_dacl("broad_parent", fixture.path());
-    observe_fixture_dacl("outside_parent_before", &outside);
-    observe_fixture_dacl("outside_file_before", &outside.join("keep.txt"));
-    observe_fixture_dacl("outside_directory_before", &outside.join("keep-dir"));
-    let (outside_read, refused, native_errors) = {
-        let _impersonation = unsafe { Impersonation::enter(token.0)? };
-        for path in &allowed {
-            std::fs::write(path.join("created.txt"), "allowed")?;
-            std::fs::remove_file(path.join("delete.txt"))?;
-            std::fs::remove_dir(path.join("delete-dir"))?;
-        }
-        let outside_read = std::fs::read_to_string(outside.join("keep.txt"))?;
-        let results = [
-            std::fs::write(outside.join("keep.txt"), "overwritten"),
-            std::fs::write(outside.join("created.txt"), "outside"),
-            std::fs::remove_file(outside.join("keep.txt")),
-            std::fs::remove_dir(outside.join("keep-dir")),
-        ];
-        let native_errors = results.each_ref().map(|result| {
-            result
-                .as_ref()
-                .err()
-                .map(|error| (error.kind(), error.raw_os_error()))
-        });
-        let refused = results.map(|result| result.err().map(|error| error.kind()));
-        (outside_read, refused, native_errors)
-    };
-    // Impersonation has ended before any diagnostic output or metadata query.
-    record_windows_boundary_diagnostic(format_args!(
-        "outside_operations=[overwrite,create,remove_file,remove_dir] native_errors={native_errors:?}"
-    ));
-    observe_fixture_metadata("outside_file_after", &outside.join("keep.txt"));
-    observe_fixture_metadata("outside_directory_after", &outside.join("keep-dir"));
-    assert_eq!(refused, [Some(std::io::ErrorKind::PermissionDenied); 4]);
-    assert_eq!(outside_read, "outside");
+    // The ordinary caller really has the dangerous ambient rights. Keep this
+    // positive control separate from the subsequent unchanged-fixture check.
+    std::fs::write(outside.join("keep.txt"), "host-overwrite")?;
     assert_eq!(
-        (
-            std::fs::read_to_string(outside.join("keep.txt"))?,
-            outside.join("created.txt").exists(),
-            outside.join("keep-dir").is_dir()
-        ),
-        ("outside".to_owned(), false, true)
+        std::fs::read_to_string(outside.join("keep.txt"))?,
+        "host-overwrite"
     );
+    std::fs::write(outside.join("keep.txt"), "outside")?;
+    let host_file = outside.join("host-delete-control.txt");
+    let host_directory = outside.join("host-delete-control");
+    std::fs::write(&host_file, "host")?;
+    std::fs::create_dir(&host_directory)?;
+    std::fs::remove_file(&host_file)?;
+    std::fs::remove_dir(&host_directory)?;
+    let before = snapshot(fixture.path())?;
+    // This remains the real same-user constructor. A dedicated-account test
+    // must never be simulated by passing the current user's SID to its API.
+    assert_unavailable(unsafe {
+        create_workspace_write_token_with_caps_from(base.0, &[cap_a.as_ptr(), cap_b.as_ptr()])
+            .map(OwnedToken)
+    });
+    assert_eq!(snapshot(fixture.path())?, before);
+    assert_eq!(
+        std::fs::read_to_string(outside.join("keep.txt"))?,
+        "outside"
+    );
+    assert!(outside.join("keep-dir").is_dir());
     for path in &allowed {
-        assert_eq!(
-            (
-                std::fs::read_to_string(path.join("created.txt"))?,
-                path.join("delete.txt").exists(),
-                path.join("delete-dir").exists()
-            ),
-            ("allowed".to_owned(), false, false)
-        );
+        assert_eq!(std::fs::read_to_string(path.join("delete.txt"))?, "inside");
+        assert!(path.join("delete-dir").is_dir());
     }
     Ok(())
 }
 
 #[test]
-fn workspace_capability_delete_routes_require_the_capability_in_all_four_cells() -> Result<()> {
+fn legacy_workspace_capability_refuses_all_four_native_delete_routes() -> Result<()> {
     use crate::delete_permission_matrix::DeleteMatrix;
     use crate::delete_permission_matrix::DeleteOutcome;
     use crate::delete_permission_matrix::DeleteRoute;
@@ -528,65 +472,19 @@ fn workspace_capability_delete_routes_require_the_capability_in_all_four_cells()
     unsafe { ensure_allow_write_aces(&allowed, &[capability.as_ptr()])? };
     std::fs::write(allowed.join("file"), "allowed")?;
     std::fs::create_dir(allowed.join("directory"))?;
-    // This is the unchanged product constructor and flags, not a diagnostic token variant.
-    let token = OwnedToken(unsafe {
+    let before = snapshot(fixture.path())?;
+    assert_unavailable(unsafe {
         create_workspace_write_token_with_caps_from(
             base.0,
             &[capability.as_ptr(), second_capability.as_ptr()],
-        )?
+        )
+        .map(OwnedToken)
     });
-    let mut logon = unsafe { get_logon_sid_bytes(base.0)? };
-    let mut everyone = unsafe { world_sid()? };
-    let membership: Vec<_> = [
-        capability.as_ptr(),
-        second_capability.as_ptr(),
-        logon.as_mut_ptr().cast(),
-        everyone.as_mut_ptr().cast(),
-    ]
-    .into_iter()
-    .map(|sid| unsafe { token_has_restricting_sid(token.0, sid) })
-    .collect::<Result<_>>()?;
-    assert_eq!(membership, [true, true, false, false]);
-    eprintln!(
-        "delete_matrix restricting_membership=[cap_a,cap_b,logon,everyone] values={membership:?}"
-    );
-    let mut reads = Vec::new();
-    let mut errors = Vec::new();
-    {
-        let _impersonation = unsafe { Impersonation::enter(token.0)? };
-        std::fs::remove_file(allowed.join("file"))?;
-        std::fs::remove_dir(allowed.join("directory"))?;
-        for (file, directory) in restricted.paths() {
-            reads.push(std::fs::read_to_string(file)?);
-            errors.push(
-                [std::fs::remove_file(file), std::fs::remove_dir(directory)].map(|result| {
-                    result
-                        .err()
-                        .map(|error| (error.kind(), error.raw_os_error()))
-                }),
-            );
-        }
-    }
-    // All four observations are taken before asserting, after RevertToSelf.
-    eprintln!("delete_matrix restricted_native_errors={errors:?}");
-    let outcomes = restricted.finish("after-revert")?;
-    assert_eq!(reads, vec!["matrix-original"; 4]);
-    assert_eq!(
-        std::fs::symlink_metadata(allowed.join("file"))
-            .unwrap_err()
-            .kind(),
-        std::io::ErrorKind::NotFound
-    );
-    assert_eq!(
-        std::fs::symlink_metadata(allowed.join("directory"))
-            .unwrap_err()
-            .kind(),
-        std::io::ErrorKind::NotFound
-    );
-    assert_eq!(
-        errors,
-        vec![[Some((std::io::ErrorKind::PermissionDenied, Some(5))); 2]; 4]
-    );
+    assert_eq!(snapshot(fixture.path())?, before);
+    // finish checks original object identity and exact four-cell native DACLs.
+    let outcomes = restricted.finish("legacy-refused-before-impersonation")?;
+    assert_eq!(std::fs::read_to_string(allowed.join("file"))?, "allowed");
+    assert!(allowed.join("directory").is_dir());
     assert_eq!(
         outcomes,
         [

@@ -181,6 +181,8 @@ impl TestAppServer {
             codex_home: None,
             environment: TestAppServerEnvironment::Auto,
             program: None,
+            #[cfg(windows)]
+            elevated_windows_sandbox: false,
             env_overrides: Vec::new(),
             args: vec![DISABLE_PLUGIN_STARTUP_TASKS_ARG.to_string()],
             exec_server_delay: None,
@@ -1841,6 +1843,8 @@ pub struct TestAppServerBuilder {
     codex_home: Option<PathBuf>,
     environment: TestAppServerEnvironment,
     program: Option<PathBuf>,
+    #[cfg(windows)]
+    elevated_windows_sandbox: bool,
     env_overrides: Vec<(String, Option<String>)>,
     args: Vec<String>,
     exec_server_delay: Option<Duration>,
@@ -1867,6 +1871,16 @@ impl TestAppServerBuilder {
     /// Uses this app-server binary instead of the standard test binary.
     pub fn with_program(mut self, program: &Path) -> Self {
         self.program = Some(program.to_path_buf());
+        self
+    }
+
+    /// Selects the dedicated-account backend for this Windows test and stages
+    /// its real helpers beside the actual app-server executable.
+    #[cfg(windows)]
+    pub fn with_elevated_windows_sandbox(mut self) -> Self {
+        self.elevated_windows_sandbox = true;
+        self.args
+            .extend(["-c".to_owned(), "windows.sandbox=\"elevated\"".to_owned()]);
         self
     }
 
@@ -1943,6 +1957,8 @@ impl TestAppServerBuilder {
             codex_home,
             environment,
             program,
+            #[cfg(windows)]
+            elevated_windows_sandbox,
             mut env_overrides,
             args,
             exec_server_delay,
@@ -2095,6 +2111,37 @@ impl TestAppServerBuilder {
                 std::fs::hard_link(source, destination)
                     .or_else(|_| std::fs::copy(source, destination).map(|_| ()))
                     .with_context(|| format!("stage executable {}", source.display()))?;
+            }
+            program = staged_program;
+            owned_install_dir = Some(install_dir);
+        }
+        #[cfg(windows)]
+        if elevated_windows_sandbox {
+            // The sandbox resolves helpers from current_exe(), not a stored
+            // runtime path. Launch the staged program itself and retain its
+            // directory until this same server is shut down.
+            let install_dir = match owned_install_dir.take() {
+                Some(directory) => directory,
+                None => match std::env::var_os("TEST_TMPDIR") {
+                    Some(test_tmpdir) => TempDir::new_in(test_tmpdir)?,
+                    None => TempDir::new()?,
+                },
+            };
+            let staged_program = install_dir.path().join(
+                program
+                    .file_name()
+                    .context("app-server executable should have a filename")?,
+            );
+            if program != staged_program {
+                std::fs::hard_link(&program, &staged_program)
+                    .or_else(|_| std::fs::copy(&program, &staged_program).map(|_| ()))?;
+            }
+            for helper in ["codex-command-runner", "codex-windows-sandbox-setup"] {
+                let source = codex_utils_cargo_bin::cargo_bin(helper)?;
+                let destination = install_dir.path().join(format!("{helper}.exe"));
+                std::fs::hard_link(&source, &destination)
+                    .or_else(|_| std::fs::copy(&source, &destination).map(|_| ()))
+                    .with_context(|| format!("stage Windows sandbox helper {helper}"))?;
             }
             program = staged_program;
             owned_install_dir = Some(install_dir);

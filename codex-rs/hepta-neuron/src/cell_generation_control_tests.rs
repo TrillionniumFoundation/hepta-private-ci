@@ -222,6 +222,32 @@ fn terminal(
     checked(result.ok_or("terminal proposal"))
 }
 
+#[cfg(feature = "qualification-owned-file-read")]
+#[test]
+fn qualification_reader_keeps_the_lock_and_cannot_extend_the_control_owner_lifetime() {
+    let fixture = Fixture::new();
+    let worker = FixtureWorker::new(WorkerMode::Unknown);
+    let mut port = fixture.port(Arc::clone(&worker), Arc::new(|| 20));
+    let read_bytes = checked(port.qualification_file_reader(/*max_bytes*/ 1024 * 1024));
+    let original = checked(read_bytes());
+    assert!(matches!(
+        DurableInferenceControl::open(fixture.path(), /*capacity*/ 32),
+        Err(ControlError::WriterUnavailable)
+    ));
+    checked(port.shutdown());
+    assert!(port.is_closed());
+    assert_eq!(read_bytes(), Err(CellGenerationErrorV2::Unavailable));
+    let mut reopened = checked(DurableInferenceControl::open(
+        fixture.path(),
+        /*capacity*/ 32,
+    ));
+    assert_eq!(
+        checked(reopened.qualification_file_bytes(/*max_bytes*/ 1024 * 1024)),
+        original
+    );
+    assert_eq!(worker.calls.load(Ordering::Acquire), 0);
+}
+
 #[test]
 fn independent_worker_does_not_block_durable_cancellation_or_exact_readback() {
     let fixture = Fixture::new();

@@ -176,6 +176,21 @@ pub struct FencedFinalHoldoutOwnerV1<S> {
     poisoned: bool,
 }
 
+#[cfg(feature = "qualification-owned-file-read")]
+impl FencedFinalHoldoutOwnerV1<crate::LockedFileFinalHoldoutCasStoreV1> {
+    /// Observe physical holdout bytes without releasing the retained writer.
+    pub fn qualification_file_bytes(
+        &mut self,
+        max_bytes: usize,
+    ) -> Result<Vec<u8>, crate::LockedFileCasErrorV1> {
+        let observed = self.store.qualification_file_bytes(max_bytes);
+        if observed.is_err() {
+            self.poisoned = true;
+        }
+        observed
+    }
+}
+
 impl<S: FinalHoldoutCasStoreV1> FencedFinalHoldoutOwnerV1<S> {
     /// Initialize a previously absent authoritative record.
     pub fn initialize(

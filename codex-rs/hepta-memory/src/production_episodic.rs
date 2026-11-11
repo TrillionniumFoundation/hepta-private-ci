@@ -49,10 +49,15 @@ impl ProductionCognitiveMutationCapability {
         let admission_sha256 = verified.admission_sha256.clone();
         let scope_binding = digest(&json!([store.owner_agent_id(), scope, body.namespace]))?;
         let topic = format!("cognitive.episodic.snapshot:{scope_binding}");
-        // This lock outlives both the native transaction and its outcome guard.
+        // This permit outlives both the native transaction and its outcome guard.
         // An admitted import waiting here must recheck the original writer
         // after its predecessor either settles or permanently fences the pool.
-        let _import = self.writer.episodic_imports.lock().await;
+        let _import = self
+            .writer
+            .episodic_imports
+            .acquire()
+            .await
+            .map_err(unavailable)?;
         self.writer.verify_current_authority().await?;
         let begin_attempt = store.commit_gate.transition_attempt();
         let mut transaction = store.begin_write_transaction().await.map_err(|source| {
@@ -62,7 +67,7 @@ impl ProductionCognitiveMutationCapability {
             }
         })?;
         // Move after transaction acquisition: panic drops this guard before
-        // Transaction queues rollback, and before the import lock is released.
+        // Transaction queues rollback, and before the import permit is released.
         let settlement = begin_attempt;
         let outcome = async {
         let previous: Option<String> = sqlx::query_scalar(

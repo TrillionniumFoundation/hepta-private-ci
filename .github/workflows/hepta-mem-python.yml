@@ -235,6 +235,58 @@ jobs:
           python3 scripts/hepta_ci_exec.py --timeout-seconds 6600 --minimum-tests 1 \
             --output "$RUNNER_TEMP/mem-native-records/agentd-tests.json" \
             -- just test --locked -p codex-hepta-agentd --lib episodic --no-capture --retries 0
+      - name: Test the qualification feature preserves explicit memory isolation
+        if: steps.stage.outputs.control == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          records="$RUNNER_TEMP/mem-native-records"
+          junit="$CARGO_TARGET_DIR/nextest/local/junit.xml"
+          test -f "$junit"
+          test ! -L "$junit"
+          test ! -e "$records/agentd-nextest.junit.xml"
+          mv "$junit" "$records/agentd-nextest.junit.xml"
+          profile_exit=0
+          python3 scripts/hepta_ci_exec.py --timeout-seconds 1200 --minimum-tests 1 \
+            --output "$records/agentd-qualification-profile-tests.json" \
+            -- just test --locked -p codex-hepta-agentd --features qualification-cognitive-write \
+            --lib app_runtime::tests::episodic_embedding_keeps_the_store_but_removes_implicit_memory_paths \
+            --no-capture --retries 0 || profile_exit=$?
+          if [[ -f "$junit" && ! -L "$junit" ]]; then
+            cp "$junit" "$records/agentd-qualification-profile.junit.xml"
+          fi
+          if [[ "$profile_exit" -ne 0 ]]; then
+            exit "$profile_exit"
+          fi
+          python3 - <<'PY'
+          from datetime import datetime
+          import json
+          import os
+          from pathlib import Path
+          import uuid
+          import xml.etree.ElementTree as ET
+
+          records = Path(os.environ["RUNNER_TEMP"]) / "mem-native-records"
+          previous = ET.parse(records / "agentd-nextest.junit.xml").getroot()
+          current = ET.parse(records / "agentd-qualification-profile.junit.xml").getroot()
+          receipt = json.loads((records / "agentd-qualification-profile-tests.json").read_text())
+          cases = current.findall(".//testcase")
+          expected = "app_runtime::tests::episodic_embedding_keeps_the_store_but_removes_implicit_memory_paths"
+          if (len(cases) != 1 or cases[0].get("name") != expected
+                  or current.get("tests") != "1" or current.get("failures") != "0"
+                  or current.get("errors") != "0"
+                  or any(cases[0].find(tag) is not None for tag in ("failure", "error", "skipped"))
+                  or receipt["status"] != "passed" or receipt["observed_passed_tests"] != 1
+                  or receipt["observed_failed_tests"] != 0):
+              raise SystemExit("qualification profile did not pass exactly its original case")
+          run_uuid = str(uuid.UUID(current.attrib["uuid"]))
+          if run_uuid == previous.get("uuid"):
+              raise SystemExit("qualification profile reused a previous nextest report")
+          case_time = datetime.fromisoformat(cases[0].attrib["timestamp"])
+          if not (datetime.fromisoformat(receipt["started_at"]) <= case_time
+                  <= datetime.fromisoformat(receipt["finished_at"])):
+              raise SystemExit("qualification profile case is outside its execution interval")
+          PY
       - name: Test protocol package after the control stage is present
         if: steps.stage.outputs.control == 'true'
         run: |

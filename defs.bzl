@@ -60,6 +60,7 @@ def _workspace_root_test_impl(ctx):
         substitutions = {
             "__RUNFILE_ENV_EXPORTS__": runfile_env_exports,
             "__TEST_BIN__": test_bin.short_path,
+            "__WINDOWS_SANDBOX_BUNDLE_SETUP__": _windows_sandbox_bundle_setup(ctx) if is_windows else "",
             "__WORKSPACE_ROOT_SETUP__": workspace_root_setup,
             "__WORKSPACE_ROOT_MARKER__": workspace_root_marker.short_path,
         },
@@ -114,6 +115,17 @@ def _windows_runfile_env_exports(ctx):
         lines.append("if errorlevel 1 exit /b 1")
         lines.append('set "{}=!resolve_runfile_result!"'.format(env_var))
     return "\n".join(lines)
+
+def _windows_sandbox_bundle_setup(ctx):
+    # Native sandbox sessions locate their helpers beside the actual process
+    # executable. Only tests declaring both real helpers need this layout.
+    helpers = [
+        "CARGO_BIN_EXE_codex-command-runner",
+        "CARGO_BIN_EXE_codex-windows-sandbox-setup",
+    ]
+    if not all([helper in ctx.attr.runfile_env.values() for helper in helpers]):
+        return ""
+    return "call :stage_windows_sandbox_helpers\nif errorlevel 1 exit /b 1"
 
 def _runfile_env_file(target):
     executable = target[DefaultInfo].files_to_run.executable

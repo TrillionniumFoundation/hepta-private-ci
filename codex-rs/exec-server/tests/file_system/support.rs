@@ -121,8 +121,8 @@ pub(crate) fn workspace_write_sandbox(
     writable_root: std::path::PathBuf,
 ) -> FileSystemSandboxContext {
     let writable_root = absolute_path(writable_root);
-    // Keep the runtime policy aligned with the legacy workspace-write projection used by the
-    // unelevated restricted-token preflight.
+    // Keep the existing workspace-write policy while selecting the dedicated-account backend.
+    // Same-user legacy admission is intentionally unavailable.
     let policy = FileSystemSandboxPolicy::restricted(vec![
         FileSystemSandboxEntry::new(
             FileSystemPath::Special {
@@ -141,14 +141,14 @@ pub(crate) fn workspace_write_sandbox(
         PermissionProfile::from_runtime_permissions(&policy, NetworkSandboxPolicy::Restricted),
         PathUri::from_abs_path(&writable_root),
     );
-    sandbox.windows_sandbox_level = WindowsSandboxLevel::RestrictedToken;
+    sandbox.windows_sandbox_level = WindowsSandboxLevel::Elevated;
     sandbox
 }
 
 fn sandbox_context(mut entries: Vec<FileSystemSandboxEntry>) -> FileSystemSandboxContext {
     if cfg!(windows) {
-        // Restricted-token sandboxing cannot enforce read restrictions, so leave the root
-        // readable while exercising the requested write restrictions.
+        // Preserve this fixture's existing readable-root policy while exercising the requested
+        // restrictions through the explicitly selected dedicated-account backend.
         entries.push(FileSystemSandboxEntry::new(
             FileSystemPath::Special {
                 value: FileSystemSpecialPath::Root,
@@ -163,7 +163,7 @@ fn sandbox_context(mut entries: Vec<FileSystemSandboxEntry>) -> FileSystemSandbo
         ),
     );
     if cfg!(windows) {
-        sandbox.windows_sandbox_level = WindowsSandboxLevel::RestrictedToken;
+        sandbox.windows_sandbox_level = WindowsSandboxLevel::Elevated;
     }
     sandbox
 }

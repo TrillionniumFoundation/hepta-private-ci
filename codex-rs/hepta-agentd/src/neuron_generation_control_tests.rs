@@ -1,7 +1,6 @@
 //! Real private socket, Fleet fence, service queue, journal and witness tests.
 //! The file control fixture isolates transport/recovery from model quality.
 
-use std::fs;
 use std::sync::Arc;
 use std::sync::atomic::Ordering;
 
@@ -22,12 +21,14 @@ use crate::AgentdClient;
 use crate::RuntimeTasks;
 use crate::control::AgentdControlServer;
 use crate::neuron_generation_channel_v2;
+use crate::neuron_generation_runtime::GenerationFileObserver;
 use crate::neuron_generation_service::spawn_neuron_generation_service;
 
 type TestResult<T = ()> = Result<T, Box<dyn std::error::Error>>;
 
 struct Serving {
     client: AgentdClient,
+    observer: GenerationFileObserver,
     tasks: RuntimeTasks,
     cancellation: CancellationToken,
     server: tokio::task::JoinHandle<Result<(), crate::AgentdError>>,
@@ -43,6 +44,7 @@ impl Serving {
             /*capacity*/ 4,
         )?;
         let bootstrap = bootstrap.with_control_endpoint()?;
+        let observer = handle.qualification_file_observer();
         drop(handle); // The process caller need not retain a second owner handle.
         let (mut tasks, lifetime) = host();
         spawn_neuron_generation_service(
@@ -67,6 +69,7 @@ impl Serving {
         )?;
         Ok(Self {
             client,
+            observer,
             tasks,
             cancellation,
             server,
@@ -175,13 +178,21 @@ async fn private_socket_pages_acknowledges_and_reopens_exact_original_operation(
         serving.client.generation(acknowledgement.clone()).await?,
         Response::Acknowledged {}
     );
-    let journal_path = fixture.directory.path().join("generation-journal");
-    let durable = fs::read(&journal_path)?;
+    let durable = serving
+        .observer
+        .qualification_file_bytes(/*max_bytes*/ 1024 * 1024)
+        .await?;
     assert_eq!(
         serving.client.generation(acknowledgement.clone()).await?,
         Response::Acknowledged {}
     );
-    assert_eq!(fs::read(&journal_path)?, durable);
+    assert_eq!(
+        serving
+            .observer
+            .qualification_file_bytes(/*max_bytes*/ 1024 * 1024)
+            .await?,
+        durable
+    );
     assert!(status(&serving.client).await?.drained);
 
     fixture.ticks.store(20_000, Ordering::SeqCst);
@@ -195,7 +206,13 @@ async fn private_socket_pages_acknowledges_and_reopens_exact_original_operation(
         reopened.client.generation(acknowledgement).await?,
         Response::Acknowledged {}
     );
-    assert_eq!(fs::read(&journal_path)?, durable);
+    assert_eq!(
+        reopened
+            .observer
+            .qualification_file_bytes(/*max_bytes*/ 1024 * 1024)
+            .await?,
+        durable
+    );
     let Response::Cost(cost) = reopened.client.generation(Request::Cost {}).await? else {
         return Err(std::io::Error::other("expected task cost").into());
     };
@@ -216,15 +233,23 @@ async fn stale_generation_changed_content_and_oversized_input_do_not_mutate_owne
     let fixture = Fixture::new().await;
     let serving = Serving::start(&fixture).await?;
     let initial = status(&serving.client).await?;
-    let journal_path = fixture.directory.path().join("generation-journal");
-    let pristine = fs::read(&journal_path)?;
+    let pristine = serving
+        .observer
+        .qualification_file_bytes(/*max_bytes*/ 1024 * 1024)
+        .await?;
     let mut oversized = step(&fixture, &initial, "oversized");
     let Request::Step { request } = &mut oversized else {
         unreachable!()
     };
     request.input = vec![1; MAX_GENERATION_CONTROL_INPUT_BYTES + 1];
     assert!(serving.client.generation(oversized).await.is_err());
-    assert_eq!(fs::read(&journal_path)?, pristine);
+    assert_eq!(
+        serving
+            .observer
+            .qualification_file_bytes(/*max_bytes*/ 1024 * 1024)
+            .await?,
+        pristine
+    );
     let stale_client = AgentdClient::new(
         fixture.directory.path().join("generation.ctl"),
         fixture.identity.agent_id.clone(),
@@ -236,10 +261,19 @@ async fn stale_generation_changed_content_and_oversized_input_do_not_mutate_owne
             .await
             .is_err()
     );
-    assert_eq!(fs::read(&journal_path)?, pristine);
+    assert_eq!(
+        serving
+            .observer
+            .qualification_file_bytes(/*max_bytes*/ 1024 * 1024)
+            .await?,
+        pristine
+    );
     let original = step(&fixture, &initial, "same-client-key");
     serving.client.generation(original.clone()).await?;
-    let committed = fs::read(&journal_path)?;
+    let committed = serving
+        .observer
+        .qualification_file_bytes(/*max_bytes*/ 1024 * 1024)
+        .await?;
     let mut changed = original;
     let Request::Step { request } = &mut changed else {
         unreachable!()
@@ -260,7 +294,13 @@ async fn stale_generation_changed_content_and_oversized_input_do_not_mutate_owne
     ] {
         assert!(serving.client.generation(request).await.is_err());
     }
-    assert_eq!(fs::read(&journal_path)?, committed);
+    assert_eq!(
+        serving
+            .observer
+            .qualification_file_bytes(/*max_bytes*/ 1024 * 1024)
+            .await?,
+        committed
+    );
     assert_eq!(fixture.control.signals.calls.load(Ordering::SeqCst), 1);
     serving.finish().await
 }
@@ -382,6 +422,14 @@ async fn typed_generation_bootstrap_does_not_implicitly_expose_control() -> Test
             .is_err()
     );
     assert_eq!(handle.snapshot().await?.revision, 0);
+    let observer = handle.qualification_file_observer();
+    drop(handle);
+    assert_eq!(
+        observer
+            .qualification_file_bytes(/*max_bytes*/ 1024 * 1024)
+            .await,
+        Err(codex_hepta_neuron::CellGenerationErrorV2::Unavailable)
+    );
     tasks.shutdown().await;
     Ok(())
 }
@@ -417,8 +465,10 @@ async fn typed_operation_with_same_derived_id_cannot_impersonate_control_intent(
         deadline_micros: compact.deadline_micros,
     };
     owner.step(typed, fixture.clock())?;
+    let before = owner
+        .journal_mut()
+        .qualification_file_bytes(/*max_bytes*/ 1024 * 1024)?;
     drop(owner);
-    let before = fs::read(fixture.directory.path().join("generation-journal"))?;
     let serving = Serving::start(&fixture).await?;
     assert!(
         serving
@@ -430,7 +480,10 @@ async fn typed_operation_with_same_derived_id_cannot_impersonate_control_intent(
             .is_err()
     );
     assert_eq!(
-        fs::read(fixture.directory.path().join("generation-journal"))?,
+        serving
+            .observer
+            .qualification_file_bytes(/*max_bytes*/ 1024 * 1024)
+            .await?,
         before
     );
     assert_eq!(fixture.control.signals.calls.load(Ordering::SeqCst), 1);
@@ -483,6 +536,9 @@ async fn pending_typed_operation_with_same_derived_id_rejects_control_intent_wit
         owner.step(typed, fixture.clock()),
         Err(codex_hepta_neuron::CellGenerationErrorV2::Unavailable)
     ));
+    let before = owner
+        .journal_mut()
+        .qualification_file_bytes(/*max_bytes*/ 1024 * 1024)?;
     drop(owner);
 
     // The original result is available: the conflicting compact intent must
@@ -492,8 +548,6 @@ async fn pending_typed_operation_with_same_derived_id_rejects_control_intent_wit
         .signals
         .readable
         .store(true, Ordering::SeqCst);
-    let journal_path = fixture.directory.path().join("generation-journal");
-    let before = fs::read(&journal_path)?;
     let serving = Serving::start(&fixture).await?;
     assert_eq!(
         status(&serving.client).await?.pending,
@@ -508,7 +562,13 @@ async fn pending_typed_operation_with_same_derived_id_rejects_control_intent_wit
             .await
             .is_err()
     );
-    assert_eq!(fs::read(&journal_path)?, before);
+    assert_eq!(
+        serving
+            .observer
+            .qualification_file_bytes(/*max_bytes*/ 1024 * 1024)
+            .await?,
+        before
+    );
     assert_eq!(
         status(&serving.client).await?.pending,
         Some(pending.clone())

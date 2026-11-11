@@ -8,7 +8,11 @@ codex_rust_crate(
         "tests/support/joint_synthetic.rs",
     ],
     crate_name = "codex_hepta_neuron",
+    unit_test_dependency_replacements = {
+        "//codex-rs/hepta-infer-core": "//codex-rs/hepta-infer-core:hepta-infer-core-test-lib",
+    },
     unit_test_extra_binaries = ["//codex-rs/hepta-infer-worker-host:hepta-joint-propose"],
+    unit_test_features = ["qualification-owned-file-read"],
 )
 
 exports_files(

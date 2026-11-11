@@ -240,6 +240,44 @@ impl<W: AnchorWitnessStore> CellGenerationJournalV2<W> {
         Ok(&self.state.snapshot)
     }
 
+    /// Qualification-only bytes from the original locked journal and witness,
+    /// in that order. Each file is bounded by `max_bytes` (at most 1 MiB).
+    /// The exclusive borrow serializes these reads with owner writes; neither
+    /// handle is reopened, cloned, unlocked or synced. Errors close the owner
+    /// instead of returning a partial read or cached logical state.
+    #[cfg(any(test, feature = "qualification-owned-file-read"))]
+    pub fn qualification_file_bytes(
+        &mut self,
+        max_bytes: usize,
+    ) -> Result<[Vec<u8>; 2], CellGenerationErrorV2> {
+        self.require_healthy()?;
+        let bytes = (|| {
+            let journal = crate::journal_lock::qualification_file_bytes(&mut self.file, max_bytes)
+                .map_err(|error| match error {
+                    crate::journal_lock::QualificationFileReadError::InvalidLimit
+                    | crate::journal_lock::QualificationFileReadError::Capacity => {
+                        CellGenerationErrorV2::Capacity
+                    }
+                    crate::journal_lock::QualificationFileReadError::Io(_) => {
+                        CellGenerationErrorV2::Unavailable
+                    }
+                })?;
+            let witness =
+                self.witness
+                    .qualification_file_bytes(max_bytes)
+                    .map_err(|error| match error {
+                        crate::WitnessStoreError::InvalidLimit
+                        | crate::WitnessStoreError::Capacity => CellGenerationErrorV2::Capacity,
+                        _ => CellGenerationErrorV2::Unavailable,
+                    })?;
+            Ok([journal, witness])
+        })();
+        if bytes.is_err() {
+            self.healthy = false;
+        }
+        bytes
+    }
+
     /// Capture state, cost, unresolved work and delivery at one healthy owner
     /// cut. This read adds no events and cannot dispatch or settle work.
     pub fn observe_generation(&self) -> Result<CellGenerationObservationV1, CellGenerationErrorV2> {

@@ -1,5 +1,6 @@
 use std::time::Duration;
 
+use anyhow::Context;
 use anyhow::Error;
 use anyhow::Result;
 use app_test_support::ChatGptAuthFixture;
@@ -16,6 +17,7 @@ use codex_app_server_protocol::ModelUpgradeInfo;
 use codex_app_server_protocol::ReasoningEffortOption;
 use codex_app_server_protocol::RequestId;
 use codex_config::types::AuthCredentialsStoreMode;
+use codex_models_manager::cache::ModelsCacheEntry;
 use codex_protocol::openai_models::MODEL_SPECIALTY_CYBER;
 use codex_protocol::openai_models::ModelInfo;
 use codex_protocol::openai_models::ModelPreset;
@@ -24,7 +26,9 @@ use core_test_support::responses::mount_models_once;
 use pretty_assertions::assert_eq;
 use serde_json::json;
 use tempfile::TempDir;
+use tokio::time::Instant;
 use tokio::time::timeout;
+use tokio::time::timeout_at;
 use wiremock::MockServer;
 
 const DEFAULT_TIMEOUT: Duration = Duration::from_secs(10);
@@ -223,22 +227,50 @@ openai_base_url = "{server_uri}/v1"
         AuthCredentialsStoreMode::File,
     )?;
 
+    let models_refresh_started_at = chrono::Utc::now();
     let mut mcp = TestAppServer::builder()
         .with_codex_home(codex_home.path())
         .without_auto_env()
         .with_env_overrides(&[("OPENAI_API_KEY", None)])
         .build_initialized()
         .await?;
-    let request_id = mcp
-        .send_list_models_request(ModelListParams {
-            limit: Some(100),
-            cursor: None,
-            include_hidden: None,
-        })
-        .await?;
-    let response = mcp
-        .read_stream_until_response_message(RequestId::Integer(request_id))
-        .await?;
+    // Startup also refreshes this manager. Observe its completed real cache write
+    // before the foreground lookup, so the one-response mock has one fetch owner.
+    // The barrier and original RPC share the same absolute ten-second deadline.
+    let deadline = Instant::now() + DEFAULT_TIMEOUT;
+    let cache_path = codex_home.path().join("models_cache.json");
+    let client_version = codex_models_manager::client_version_to_whole();
+    let response = timeout_at(deadline, async {
+        loop {
+            match tokio::fs::read(&cache_path).await {
+                Ok(contents) => {
+                    // The writer uses fs::write; presence alone can expose partial JSON.
+                    if let Ok(cache) = serde_json::from_slice::<ModelsCacheEntry>(&contents)
+                        && cache.client_version.as_deref() == Some(client_version.as_str())
+                        && cache.models == remote_models
+                        && cache.fetched_at >= models_refresh_started_at
+                        && cache.fetched_at <= chrono::Utc::now()
+                    {
+                        break;
+                    }
+                }
+                Err(error) if error.kind() == std::io::ErrorKind::NotFound => {}
+                Err(error) => return Err(error.into()),
+            }
+            tokio::time::sleep(Duration::from_millis(10)).await;
+        }
+        let request_id = mcp
+            .send_list_models_request(ModelListParams {
+                limit: Some(100),
+                cursor: None,
+                include_hidden: None,
+            })
+            .await?;
+        mcp.read_stream_until_response_message(RequestId::Integer(request_id))
+            .await
+    })
+    .await
+    .context("startup model cache and foreground model/list exceeded the shared deadline")??;
     assert_eq!(
         response.result["data"][0]["upgradeInfo"]["retirementAt"],
         json!(1_893_456_000)

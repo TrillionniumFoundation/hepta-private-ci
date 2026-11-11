@@ -145,6 +145,14 @@ where
             GenerationCommand::ObserveGeneration(response) => {
                 respond(state, response, self.owner.journal().observe_generation())
             }
+            #[cfg(test)]
+            GenerationCommand::QualificationFileBytes {
+                max_bytes,
+                response,
+            } => {
+                let result = self.owner.journal_mut().qualification_file_bytes(max_bytes);
+                respond(state, response, result)
+            }
             #[cfg(unix)]
             GenerationCommand::LearningRead { request, response } => {
                 let result = self

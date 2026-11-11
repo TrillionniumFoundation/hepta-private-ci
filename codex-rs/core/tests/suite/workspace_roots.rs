@@ -46,6 +46,9 @@ async fn workspace_roots_test(server: &MockServer) -> Result<TestCodex> {
                 .abs();
         }
         config.workspace_roots = vec![config.cwd.clone()];
+        #[cfg(windows)]
+        config.set_windows_elevated_sandbox_enabled(/*value*/ true);
+        #[cfg(not(windows))]
         config.set_windows_sandbox_enabled(/*value*/ true);
     });
     builder.build_with_auto_env(server).await
@@ -221,6 +224,9 @@ async fn workspace_roots_allow_apply_patch_in_secondary_root() -> Result<()> {
                     SECONDARY_ROOT_NAME,
                 ));
             config.workspace_roots = vec![config.cwd.clone(), secondary_root];
+            #[cfg(windows)]
+            config.set_windows_elevated_sandbox_enabled(/*value*/ true);
+            #[cfg(not(windows))]
             config.set_windows_sandbox_enabled(/*value*/ true);
         })
         .with_workspace_setup(|cwd, fs| async move {

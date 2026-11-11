@@ -27,7 +27,7 @@ fn matrix_script(matrix: &DeleteMatrix) -> (String, HashMap<String, String>) {
 }
 
 #[test]
-fn legacy_delete_routes_require_workspace_capability_in_all_four_cells() {
+fn legacy_refuses_before_elevated_four_cell_delete_boundary() {
     let _guard = legacy_process_test_guard();
     current_thread_runtime().block_on(async {
         let fixture = TempDir::new_in(sandbox_cwd()).expect("create delete matrix fixture");
@@ -89,19 +89,34 @@ fn legacy_delete_routes_require_workspace_capability_in_all_four_cells() {
             ("ALLOWED_DIRECTORY".to_owned(), allowed_directory.to_string_lossy().into_owned()),
         ]);
         let permission_profile = PermissionProfile::workspace_write();
-        let spawned = spawn_windows_sandbox_session_legacy(
+        let before = snapshot(fixture.path()).expect("snapshot four-cell fixture");
+        let home_before = snapshot(codex_home.path()).expect("snapshot legacy home");
+        let refused = spawn_windows_sandbox_session_legacy(
             &permission_profile, workspace_roots_for(&workspace).as_slice(), codex_home.path(),
             vec!["C:\\Windows\\System32\\cmd.exe".to_owned(), "/d".to_owned(),
                 "/c".to_owned(), script_path.display().to_string()],
-            &workspace, env, /*timeout_ms*/ Some(5_000), &[], &[],
+            &workspace, env.clone(), /*timeout_ms*/ Some(5_000), &[], &[],
             /*tty*/ false, /*stdin_open*/ false, /*use_private_desktop*/ true,
-        ).await.expect("spawn original legacy path");
-        let (stdout, exit_code) = collect_stdout_and_exit(
+        ).await;
+        assert_unavailable(refused);
+        assert_eq!(snapshot(fixture.path()).expect("read back four-cell fixture"), before);
+        assert_eq!(snapshot(codex_home.path()).expect("read back legacy home"), home_before);
+        let spawned = spawn_windows_sandbox_session_elevated_for_permission_profile(
+            &permission_profile, workspace_roots_for(&workspace).as_slice(), codex_home.path(),
+            vec!["C:\\Windows\\System32\\cmd.exe".to_owned(), "/d".to_owned(), "/c".to_owned(), script_path.display().to_string()],
+            &workspace, env,
+            /*proxy_enforced*/ false, /*network_proxy_restricting_sid*/ None,
+            /*timeout_ms*/ Some(5_000),
+            /*read_roots_override*/ None, /*read_roots_include_platform_defaults*/ true,
+            /*write_roots_override*/ None, &[], &[],
+            /*tty*/ false, /*stdin_open*/ false, /*use_private_desktop*/ true,
+        ).await.expect("spawn explicit elevated four-cell path");
+        let (stdout, exit_code) = collect_elevated_stdout_and_exit(
             spawned, codex_home.path(), Duration::from_secs(/*secs*/ 10),
         ).await;
         let stdout = String::from_utf8_lossy(&stdout);
-        let outcomes = restricted.finish("legacy-child-done").expect("restricted physical readback");
-        eprintln!("delete_matrix legacy_exit={exit_code} stdout={stdout:?}");
+        let outcomes = restricted.finish("elevated-child-done").expect("restricted physical readback");
+        eprintln!("delete_matrix elevated_exit={exit_code} stdout={stdout:?}");
         assert_eq!(exit_code, 0);
         assert_eq!(stdout.lines().filter(|line| line.starts_with("MATRIX_")).collect::<Vec<_>>(),
             ["MATRIX_ATTEMPT_0", "MATRIX_ATTEMPT_1", "MATRIX_ATTEMPT_2", "MATRIX_ATTEMPT_3", "MATRIX_DONE"]);

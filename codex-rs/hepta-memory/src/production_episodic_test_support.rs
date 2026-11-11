@@ -26,6 +26,7 @@ pub(super) struct Fixture {
     pub(super) access: CognitiveAccess,
 }
 
+#[cfg(test)]
 pub(super) async fn fixture() -> Result<Fixture, Box<dyn std::error::Error>> {
     let directory = TempDir::new()?;
     let owner = cognitive_test_support::agent_id(/*suffix*/ 80);

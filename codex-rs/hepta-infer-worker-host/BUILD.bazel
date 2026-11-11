@@ -7,6 +7,7 @@ codex_rust_crate(
     unit_test_dependency_replacements = {
         "//codex-rs/app-server-client": "//codex-rs/app-server-client:app-server-client-test-lib",
         "//codex-rs/hepta-codex-adapter": "//codex-rs/hepta-codex-adapter:hepta-codex-adapter-test-lib",
+        "//codex-rs/hepta-infer-core": "//codex-rs/hepta-infer-core:hepta-infer-core-test-lib",
     },
 )
 

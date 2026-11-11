@@ -37,6 +37,10 @@ const MAX_RECORDS: usize = 1_000_000;
 const EVENT_FENCE: u8 = 0;
 const EVENT_PLAN: u8 = 1;
 
+#[cfg(feature = "qualification-owned-file-read")]
+#[path = "fenced_holdout_file_observation.rs"]
+mod observation;
+
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum LockedFileCasErrorV1 {
     Binding,

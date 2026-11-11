@@ -349,6 +349,10 @@ pub struct ProductEvaluationRunnerV1<S> {
     holdout: FencedFinalHoldoutOwnerV1<S>,
 }
 
+#[cfg(feature = "qualification-owned-file-read")]
+#[path = "product_runner_file_observation.rs"]
+mod file_observation;
+
 impl<S: FinalHoldoutCasStoreV1> ProductEvaluationRunnerV1<S> {
     #[must_use]
     pub fn new(holdout: FencedFinalHoldoutOwnerV1<S>) -> Self {

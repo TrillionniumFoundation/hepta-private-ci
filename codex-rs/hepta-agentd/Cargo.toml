@@ -121,9 +121,11 @@ codex-utils-path = { workspace = true }
 libc = { workspace = true }
 
 [dev-dependencies]
+codex-hepta-neuron = { path = "../hepta-neuron", features = ["qualification-owned-file-read"] }
+codex-hepta-intelligence-eval = { path = "../hepta-intelligence-eval", features = ["qualification-owned-file-read"] }
 codex-hepta-learning-ledger = { path = "../hepta-learning-ledger", features = ["qualification-legacy-write"] }
 codex-hepta-cognitive-types = { path = "../hepta-cognitive-types" }
-codex-hepta-infer-core = { path = "../hepta-infer-core" }
+codex-hepta-infer-core = { path = "../hepta-infer-core", features = ["qualification-owned-file-read"] }
 app_test_support = { workspace = true }
 codex-hepta-infer-worker-host = { path = "../hepta-infer-worker-host" }
 codex-hepta-context-compiler = { path = "../hepta-context-compiler" }

@@ -14,6 +14,8 @@ use crate::WindowsSandboxCancellationToken;
 use crate::ipc_framed::Message;
 use crate::ipc_framed::decode_bytes;
 use crate::ipc_framed::read_frame;
+use crate::legacy_admission_tests::assert_unavailable;
+use crate::legacy_admission_tests::snapshot;
 use crate::run_windows_sandbox_capture;
 use base64::Engine;
 use base64::engine::general_purpose::STANDARD as BASE64;
@@ -230,19 +232,86 @@ async fn collect_stdout_and_exit(
     (stdout, exit_code)
 }
 
+async fn collect_elevated_stdout_and_exit(
+    spawned: codex_utils_pty::SpawnedProcess,
+    codex_home: &Path,
+    timeout_duration: Duration,
+) -> (Vec<u8>, i32) {
+    let deadline = tokio::time::Instant::now() + timeout_duration;
+    let codex_utils_pty::SpawnedProcess {
+        session,
+        mut stdout_rx,
+        mut stderr_rx,
+        exit_rx,
+    } = spawned;
+    let result = tokio::time::timeout_at(deadline, async {
+        let stdout = async {
+            let mut bytes = Vec::new();
+            while let Some(chunk) = stdout_rx.recv().await {
+                bytes.extend(chunk);
+            }
+            bytes
+        };
+        let stderr = async {
+            let mut bytes = Vec::new();
+            while let Some(chunk) = stderr_rx.recv().await {
+                bytes.extend(chunk);
+            }
+            bytes
+        };
+        tokio::join!(stdout, stderr, exit_rx)
+    })
+    .await;
+    let cleanup = session.observe_cleanup();
+    eprintln!(
+        "elevated_terminal_observation cleanup={cleanup:?} output_drained={}",
+        result.is_ok()
+    );
+    let (stdout, stderr, exit) = result.unwrap_or_else(|_| {
+        panic!(
+            "timed out waiting for original elevated session and output\n{}",
+            sandbox_log(codex_home)
+        )
+    });
+    let exit_code = exit.expect("original elevated exit observation");
+    assert_eq!(
+        cleanup.expect("observe original retained runner HANDLE"),
+        Some(
+            codex_utils_pty::ProcessCleanupObservation::OwnerTerminated {
+                owner_exit_code: Some(exit_code),
+            }
+        ),
+    );
+    eprintln!(
+        "elevated_terminal_observation exit={exit_code} stdout_bytes={} stderr_bytes={}",
+        stdout.len(),
+        stderr.len()
+    );
+    (stdout, exit_code)
+}
+
 #[test]
-fn restricted_token_rejects_managed_network_before_spawn() {
+fn legacy_refuses_before_managed_network_setup() {
     current_thread_runtime().block_on(async {
-        let cwd = sandbox_cwd();
-        let codex_home = sandbox_home("restricted-token-managed-network");
+        let fixture = TempDir::new().expect("owned managed-network fixture");
+        let cwd = fixture.path().join("workspace");
+        fs::create_dir(&cwd).expect("owned workspace");
+        fs::write(cwd.join("kept.txt"), "unchanged").expect("fixture content");
+        let codex_home = fixture.path().join("home-must-not-be-created");
+        let marker = cwd.join("process-started.txt");
+        let before = snapshot(fixture.path()).expect("snapshot fixture");
         let permission_profile = PermissionProfile::workspace_write();
-        let error = spawn_windows_sandbox_session_for_level(WindowsSandboxSessionRequest {
+        let result = spawn_windows_sandbox_session_for_level(WindowsSandboxSessionRequest {
             permission_profile: &permission_profile,
             workspace_roots: &[],
-            codex_home: codex_home.path(),
-            command: Vec::new(),
-            cwd: cwd.as_path(),
-            env_map: HashMap::new(),
+            codex_home: &codex_home,
+            command: vec![
+                "C:\\Windows\\System32\\cmd.exe".to_owned(),
+                "/c".to_owned(),
+                "echo started>\"%SPAWN_MARKER%\"".to_owned(),
+            ],
+            cwd: &cwd,
+            env_map: HashMap::from([("SPAWN_MARKER".to_owned(), marker.display().to_string())]),
             windows_sandbox_level: WindowsSandboxLevel::RestrictedToken,
             proxy_enforced: true,
             network_proxy_restricting_sid: None,
@@ -257,18 +326,17 @@ fn restricted_token_rejects_managed_network_before_spawn() {
             stdin_open: false,
             use_private_desktop: false,
         })
-        .await
-        .expect_err("managed networking must fail before spawning an unelevated sandbox");
+        .await;
 
-        assert_eq!(
-            error.to_string(),
-            "managed networking requires the elevated Windows sandbox backend"
-        );
+        assert_unavailable(result);
+        assert_eq!(snapshot(fixture.path()).expect("read back fixture"), before);
+        assert!(!codex_home.exists());
+        assert!(!marker.exists());
     });
 }
 
 #[test]
-fn legacy_non_tty_cmd_emits_output() {
+fn legacy_non_tty_refuses_before_elevated_cmd_emits_output() {
     let _guard = legacy_process_test_guard();
     let runtime = current_thread_runtime();
     runtime.block_on(async move {
@@ -276,17 +344,25 @@ fn legacy_non_tty_cmd_emits_output() {
         let codex_home = sandbox_home("legacy-non-tty-cmd");
         println!("cmd codex_home={}", codex_home.path().display());
         let permission_profile = PermissionProfile::workspace_write();
-        let spawned = spawn_windows_sandbox_session_legacy(
+        let before = snapshot(codex_home.path()).expect("snapshot legacy home");
+        let refused = spawn_windows_sandbox_session_legacy(
             &permission_profile,
             workspace_roots_for(cwd.as_path()).as_slice(),
             codex_home.path(),
             vec![
                 "C:\\Windows\\System32\\cmd.exe".to_string(),
                 "/c".to_string(),
-                "echo LEGACY-NONTTY-CMD".to_string(),
+                "echo LEGACY-NONTTY-CMD & echo started>\"%SPAWN_MARKER%\"".to_string(),
             ],
             cwd.as_path(),
-            HashMap::new(),
+            HashMap::from([(
+                "SPAWN_MARKER".to_owned(),
+                codex_home
+                    .path()
+                    .join("legacy-process-started.txt")
+                    .display()
+                    .to_string(),
+            )]),
             Some(5_000),
             &[],
             &[],
@@ -294,11 +370,41 @@ fn legacy_non_tty_cmd_emits_output() {
             /*stdin_open*/ false,
             /*use_private_desktop*/ true,
         )
+        .await;
+        assert_unavailable(refused);
+        assert_eq!(
+            snapshot(codex_home.path()).expect("read back legacy home"),
+            before
+        );
+        let spawned = spawn_windows_sandbox_session_elevated_for_permission_profile(
+            &permission_profile,
+            workspace_roots_for(cwd.as_path()).as_slice(),
+            codex_home.path(),
+            vec![
+                "C:\\Windows\\System32\\cmd.exe".to_owned(),
+                "/c".to_owned(),
+                "echo LEGACY-NONTTY-CMD".to_owned(),
+            ],
+            cwd.as_path(),
+            HashMap::new(),
+            /*proxy_enforced*/ false,
+            /*network_proxy_restricting_sid*/ None,
+            Some(5_000),
+            /*read_roots_override*/ None,
+            /*read_roots_include_platform_defaults*/ true,
+            /*write_roots_override*/ None,
+            &[],
+            &[],
+            /*tty*/ false,
+            /*stdin_open*/ false,
+            /*use_private_desktop*/ true,
+        )
         .await
-        .expect("spawn legacy non-tty cmd session");
+        .expect("spawn explicit elevated non-tty cmd session");
         println!("cmd spawn returned");
         let (stdout, exit_code) =
-            collect_stdout_and_exit(spawned, codex_home.path(), Duration::from_secs(10)).await;
+            collect_elevated_stdout_and_exit(spawned, codex_home.path(), Duration::from_secs(10))
+                .await;
         println!("cmd collect returned exit_code={exit_code}");
         let stdout = String::from_utf8_lossy(&stdout);
         assert_eq!(exit_code, 0, "stdout={stdout:?}");
@@ -345,7 +451,8 @@ fn elevated_non_tty_cmd_forwards_env_output_and_exit() {
         .await
         .expect("spawn elevated non-tty cmd session");
         let (stdout, exit_code) =
-            collect_stdout_and_exit(spawned, codex_home.path(), Duration::from_secs(10)).await;
+            collect_elevated_stdout_and_exit(spawned, codex_home.path(), Duration::from_secs(10))
+                .await;
         let stdout = String::from_utf8_lossy(&stdout);
         assert_eq!(exit_code, 23, "stdout={stdout:?}");
         assert!(stdout.contains("ELEVATED-ENV-OK"), "stdout={stdout:?}");
@@ -353,15 +460,19 @@ fn elevated_non_tty_cmd_forwards_env_output_and_exit() {
 }
 
 #[test]
-fn legacy_non_tty_cmd_rejects_deny_read_overrides() {
+fn legacy_non_tty_refuses_before_deny_read_setup() {
     let _guard = legacy_process_test_guard();
     let runtime = current_thread_runtime();
     runtime.block_on(async move {
-        let cwd = sandbox_cwd();
+        let fixture = TempDir::new_in(sandbox_cwd()).expect("create deny-read fixture");
+        let cwd = fixture.path().to_path_buf();
         let codex_home = sandbox_home("legacy-non-tty-deny-read");
         let secret_path =
             AbsolutePathBuf::from_absolute_path(cwd.join("legacy-non-tty-deny-read-secret.env"))
                 .expect("absolute deny-read fixture path");
+        fs::write(secret_path.as_path(), "unread-secret").expect("seed deny-read source");
+        let before = snapshot(fixture.path()).expect("snapshot deny-read fixture");
+        let home_before = snapshot(codex_home.path()).expect("snapshot legacy home");
         let permission_profile = PermissionProfile::workspace_write();
         let err = spawn_windows_sandbox_session_legacy(
             &permission_profile,
@@ -370,10 +481,17 @@ fn legacy_non_tty_cmd_rejects_deny_read_overrides() {
             vec![
                 "C:\\Windows\\System32\\cmd.exe".to_string(),
                 "/c".to_string(),
-                "echo deny-read".to_string(),
+                "echo deny-read & echo started>\"%SPAWN_MARKER%\"".to_string(),
             ],
             cwd.as_path(),
-            HashMap::new(),
+            HashMap::from([(
+                "SPAWN_MARKER".to_owned(),
+                fixture
+                    .path()
+                    .join("legacy-process-started.txt")
+                    .display()
+                    .to_string(),
+            )]),
             Some(5_000),
             std::slice::from_ref(&secret_path),
             &[],
@@ -382,11 +500,15 @@ fn legacy_non_tty_cmd_rejects_deny_read_overrides() {
             /*use_private_desktop*/ true,
         )
         .await
-        .expect_err("legacy deny-read should require the elevated backend");
-        assert!(
-            err.to_string()
-                .contains("deny-read overrides require the elevated Windows sandbox backend"),
-            "unexpected error: {err:#}"
+        .expect_err("legacy admission must refuse before deny-read setup");
+        assert_unavailable::<()>(Err(err));
+        assert_eq!(
+            snapshot(fixture.path()).expect("read back deny-read fixture"),
+            before
+        );
+        assert_eq!(
+            snapshot(codex_home.path()).expect("read back legacy home"),
+            home_before
         );
     });
 }
@@ -682,7 +804,7 @@ fn legacy_capture_emits_output_and_preserves_descendant_after_normal_exit() {
 }
 
 #[test]
-fn legacy_workspace_write_delete_is_limited_to_writable_roots() {
+fn legacy_refuses_before_elevated_delete_is_limited_to_writable_roots() {
     let _guard = legacy_process_test_guard();
     let runtime = current_thread_runtime();
     runtime.block_on(async move {
@@ -754,7 +876,9 @@ fn legacy_workspace_write_delete_is_limited_to_writable_roots() {
         ]);
 
         let permission_profile = PermissionProfile::workspace_write();
-        let spawned = spawn_windows_sandbox_session_legacy(
+        let before = snapshot(test_root.path()).expect("snapshot delete fixture");
+        let home_before = snapshot(codex_home.path()).expect("snapshot legacy home");
+        let refused = spawn_windows_sandbox_session_legacy(
             &permission_profile,
             workspace_roots_for(workspace.as_path()).as_slice(),
             codex_home.path(),
@@ -765,7 +889,7 @@ fn legacy_workspace_write_delete_is_limited_to_writable_roots() {
                 script.display().to_string(),
             ],
             workspace.as_path(),
-            env_map,
+            env_map.clone(),
             /*timeout_ms*/ Some(5_000),
             &[],
             &[],
@@ -773,33 +897,49 @@ fn legacy_workspace_write_delete_is_limited_to_writable_roots() {
             /*stdin_open*/ false,
             /*use_private_desktop*/ true,
         )
-        .await
-        .expect("spawn legacy delete session");
-        let (stdout, exit_code) =
-            collect_stdout_and_exit(spawned, codex_home.path(), Duration::from_secs(/*secs*/ 10))
-                .await;
-        let stdout = String::from_utf8_lossy(&stdout);
-        let diagnostics = crate::token::delete_diagnostics::observe_legacy(
+        .await;
+        assert_unavailable(refused);
+        assert_eq!(
+            snapshot(test_root.path()).expect("read back delete fixture"),
+            before
+        );
+        assert_eq!(
+            snapshot(codex_home.path()).expect("read back legacy home"),
+            home_before
+        );
+        let spawned = spawn_windows_sandbox_session_elevated_for_permission_profile(
+            &permission_profile,
+            workspace_roots_for(workspace.as_path()).as_slice(),
             codex_home.path(),
-            &workspace,
-            &[&workspace, &temp_root, &tmp_root],
-            &[
-                ("workspace-dir", workspace.as_path()),
-                ("workspace-file", workspace_file.as_path()),
-                ("temp-dir", temp_root.as_path()),
-                ("temp-file", temp_file.as_path()),
-                ("tmp-dir", tmp_root.as_path()),
-                ("tmp-file", tmp_file.as_path()),
-                ("outside-dir", outside_root.as_path()),
-                ("outside-file", outside_file.as_path()),
-                ("protected-dir", protected_git_dir.as_path()),
+            vec![
+                "C:\\Windows\\System32\\cmd.exe".to_owned(),
+                "/d".to_owned(),
+                "/c".to_owned(),
+                script.display().to_string(),
             ],
-        );
-        eprintln!(
-            "delete-native legacy-observation-complete={}",
-            diagnostics.is_ok()
-        );
-
+            workspace.as_path(),
+            env_map,
+            /*proxy_enforced*/ false,
+            /*network_proxy_restricting_sid*/ None,
+            /*timeout_ms*/ Some(5_000),
+            /*read_roots_override*/ None,
+            /*read_roots_include_platform_defaults*/ true,
+            /*write_roots_override*/ None,
+            &[],
+            &[],
+            /*tty*/ false,
+            /*stdin_open*/ false,
+            /*use_private_desktop*/ true,
+        )
+        .await
+        .expect("spawn explicit elevated delete session");
+        let (stdout, exit_code) = collect_elevated_stdout_and_exit(
+            spawned,
+            codex_home.path(),
+            Duration::from_secs(/*secs*/ 10),
+        )
+        .await;
+        let stdout = String::from_utf8_lossy(&stdout);
         // Observe only these owned fixture objects after the original child has
         // completed. Preserve the original postcondition tuple and error checks.
         {
@@ -814,7 +954,7 @@ fn legacy_workspace_write_delete_is_limited_to_writable_roots() {
                     .map_err(|error| (error.kind(), error.raw_os_error()));
                 let _ = writeln!(
                     std::io::stderr().lock(),
-                    "windows_boundary_diag legacy_metadata={label} path={path:?} state={state:?}"
+                    "windows_boundary_diag elevated_metadata={label} path={path:?} state={state:?}"
                 );
             }
             let readback = fs::read_to_string(&outside_file)
@@ -822,7 +962,7 @@ fn legacy_workspace_write_delete_is_limited_to_writable_roots() {
                 .map_err(|error| (error.kind(), error.raw_os_error()));
             let _ = writeln!(
                 std::io::stderr().lock(),
-                "windows_boundary_diag legacy_outside_readback={readback:?}"
+                "windows_boundary_diag elevated_outside_readback={readback:?}"
             );
         }
 
