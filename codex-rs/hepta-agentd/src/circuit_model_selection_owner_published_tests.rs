@@ -279,3 +279,6 @@ async fn q24_source_bound_model_selector_fences_changed_execution_bytes() -> any
     assert_eq!(peers.finish()?, [0, 0]);
     f.finish().await
 }
+
+#[path = "circuit_model_qualification_owner_tests.rs"]
+mod qualification_owner;

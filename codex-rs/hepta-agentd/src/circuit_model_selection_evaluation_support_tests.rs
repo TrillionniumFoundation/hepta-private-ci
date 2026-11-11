@@ -20,6 +20,9 @@ use pretty_assertions::assert_eq;
 use super::*;
 use crate::OriginalCellEvaluationExecutionOwnerV1;
 use crate::OriginalCellEvaluationExecutionStoreV1;
+use crate::OriginalCellEvaluationQualificationConfigV1;
+use crate::OriginalCellEvaluationQualificationOwnerV1;
+use crate::OriginalCellEvaluationQualificationSourcesV1;
 use crate::OriginalCellEvaluationReceiptConfigV1;
 use crate::OriginalCellEvaluationReceiptOwnerV1;
 use crate::OriginalCellEvaluationReceiptSourcesV1;
@@ -40,6 +43,9 @@ pub(crate) struct EvaluationFixture {
     executions: OriginalCellEvaluationExecutionStoreV1<FileAnchorWitnessStore>,
     execution_signer: OriginalCellEvaluationExecutionOwnerV1<FileAnchorWitnessStore>,
     _receipt_owner: OriginalCellEvaluationReceiptOwnerV1<FileAnchorWitnessStore>,
+    qualification_owner: Option<OriginalCellEvaluationQualificationOwnerV1<FileAnchorWitnessStore>>,
+    qualification_config: OriginalCellEvaluationQualificationConfigV1,
+    initial: LearningIterationSnapshotV1,
     fixture: Fixture,
 }
 
@@ -253,26 +259,6 @@ impl EvaluationFixture {
                 issued_at,
             ),
         };
-        let mut sink = FileSink {
-            file: file(&root.join("positive-qualification")),
-            publications: 0,
-        };
-        let qualification = fixture.runner.qualify_and_persist(
-            &receipt,
-            CellEvaluationQualificationRequestV1 {
-                context: &context,
-                evidence: &evidence,
-                timing: ProductTimingEvidenceV1::Qualification,
-                verifier: &verifier,
-                now: now()?,
-            },
-            &mut sink,
-        )?;
-        assert_eq!(
-            qualification.product().decision.decision.disposition,
-            IndependentEvaluationDispositionV1::EligibleForIndependentSelection
-        );
-        assert_eq!(sink.publications, 1);
         let (_, execution_evidence) = fixture.runner.readback_completed_evidence(
             &plan,
             CellEvaluationJournalsV1 {
@@ -297,6 +283,58 @@ impl EvaluationFixture {
         assert_eq!(
             execution_evidence.attestation().payload_digest,
             Digest32::of_bytes(&original_execution_signature.0)
+        );
+
+        let qualification_config = OriginalCellEvaluationQualificationConfigV1 {
+            training: training.clone(),
+            scope: scope.clone(),
+            plan: plan.clone(),
+            execution_namespace: signing.execution_namespace,
+            qualification_namespace: digest("positive-original-qualification"),
+            context: context.clone(),
+            training_evidence: training_evidence.clone(),
+            product_evidence: evidence.clone(),
+            execution_evidence: execution_evidence.clone(),
+            verifier: verifier.clone(),
+        };
+        let mut qualification_owner = OriginalCellEvaluationQualificationOwnerV1::create(
+            file(&root.join("positive-qualification")),
+            witness(
+                &root,
+                "positive-qualification-witness",
+                scope,
+                verifier.objective_digest(),
+            )?,
+            qualification_config.clone(),
+        )?;
+        let (qualification_trainer, qualification_thread) =
+            fixture_original_receipt_client_until_close(
+                initial.clone(),
+                original_training.clone(),
+                verifier.clone(),
+                training_evidence.clone(),
+            )?;
+        let qualification = qualification_owner
+            .qualify_or_readback(OriginalCellEvaluationQualificationSourcesV1 {
+                runner: &mut fixture.runner,
+                journals: CellEvaluationJournalsV1 {
+                    candidate: &fixture.candidate,
+                    fixed_expert: &fixture.fixed,
+                },
+                candidate_plan: &fixture.candidate_temporal,
+                baseline_plan: &fixture.baseline_temporal,
+                executions: &mut executions,
+                trainer: &qualification_trainer,
+            })
+            .await?;
+        drop(qualification_trainer);
+        assert_eq!(
+            qualification_thread.join().expect("original Qualification Trainer transport")?,
+            2
+        );
+        assert_eq!(
+            qualification.product().decision.decision.disposition,
+            IndependentEvaluationDispositionV1::EligibleForIndependentSelection
         );
 
         let mut receipt_owner = OriginalCellEvaluationReceiptOwnerV1::create(
@@ -359,6 +397,9 @@ impl EvaluationFixture {
             executions,
             execution_signer,
             _receipt_owner: receipt_owner,
+            qualification_owner: Some(qualification_owner),
+            qualification_config,
+            initial: initial.clone(),
             fixture,
         })
     }
@@ -414,6 +455,7 @@ impl EvaluationFixture {
             "positive-evaluation-receipt",
             "positive-evaluation-receipt-witness",
             "positive-qualification",
+            "positive-qualification-witness",
         ]
         .into_iter()
         .map(|name| Ok(std::fs::read(self.fixture.directory.path().join(name))?))
@@ -444,3 +486,6 @@ impl EvaluationFixture {
         Ok(())
     }
 }
+
+#[path = "circuit_model_qualification_test_support.rs"]
+mod qualification_support;

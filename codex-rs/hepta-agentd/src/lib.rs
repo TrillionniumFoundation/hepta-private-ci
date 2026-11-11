@@ -414,6 +414,8 @@ mod neuron_cell_evaluation;
 mod neuron_cell_evaluation_execution_store;
 mod neuron_cell_evaluation_owner;
 #[cfg(target_os = "linux")]
+mod neuron_cell_evaluation_qualification_owner;
+#[cfg(target_os = "linux")]
 mod neuron_cell_evaluation_receipt_owner;
 mod neuron_cell_learning_evaluation;
 pub use cell_composed_q24::CellQ24FeatureEncoderV1;
@@ -519,6 +521,14 @@ pub use circuit_selection_receipt_owner::OriginalCircuitSelectionReceiptSourcesV
 pub use learning_owner_journal::LearningOriginalOwnerErrorV1;
 pub use neuron_cell_evaluation_execution_store::OriginalCellEvaluationExecutionStoreErrorV1;
 pub use neuron_cell_evaluation_execution_store::OriginalCellEvaluationExecutionStoreV1;
+#[cfg(target_os = "linux")]
+pub use neuron_cell_evaluation_qualification_owner::OriginalCellEvaluationQualificationConfigV1;
+#[cfg(target_os = "linux")]
+pub use neuron_cell_evaluation_qualification_owner::OriginalCellEvaluationQualificationErrorV1;
+#[cfg(target_os = "linux")]
+pub use neuron_cell_evaluation_qualification_owner::OriginalCellEvaluationQualificationOwnerV1;
+#[cfg(target_os = "linux")]
+pub use neuron_cell_evaluation_qualification_owner::OriginalCellEvaluationQualificationSourcesV1;
 pub use neuron_cell_evaluation_owner::OriginalCellEvaluationExecutionOwnerV1;
 pub use neuron_cell_evaluation_owner::OriginalCellEvaluationSigningConfigV1;
 #[cfg(target_os = "linux")]

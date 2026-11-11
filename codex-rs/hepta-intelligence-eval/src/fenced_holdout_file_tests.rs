@@ -355,3 +355,6 @@ fn longer_divergent_history_cannot_skip_the_retained_minimum_prefix() {
         Some(LockedFileCasErrorV1::Rollback)
     );
 }
+
+#[path = "fenced_holdout_current_tests.rs"]
+mod physical_current;
