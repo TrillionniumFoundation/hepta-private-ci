@@ -1,0 +1,46 @@
+{
+  "schema": "hepta.mem8.final-source-composition.root-tree-audit.v1",
+  "complete_original_tree_objects_checked": 73,
+  "branch_reconstructions": [
+    {
+      "branch": "G",
+      "head": "9d9bdfbaeeec3c618f3fc80e2f663a29c13f4b27",
+      "tree": "07192603a5164f4b5d4da24e37595be2a0a04777",
+      "paths": 38
+    },
+    {
+      "branch": "dependency",
+      "head": "f1fd544b3e12ed6aca83872cdeda8114a1e058c0",
+      "tree": "fff40d06312d4f6a185772cd8a62a618d55f31cf",
+      "paths": 65
+    },
+    {
+      "branch": "provider",
+      "head": "55951ed9094ae894f0256a3461fd9504ef060473",
+      "tree": "2ca6930d8abd148fe26fbe7d2857c760daa9316b",
+      "paths": 9
+    },
+    {
+      "branch": "windows",
+      "head": "cb0b276ffdb9852323cdd13ba9b4399b30ae0c37",
+      "tree": "61f266ce7f02e0c3b94c22871ebedcc72f28e456",
+      "paths": 7
+    }
+  ],
+  "changed_files": 112,
+  "pairwise_path_conflicts": 0,
+  "base_commit": "96038ccf0660154fac143ba6cbe4be81e00813e8",
+  "base_tree": "1277666f3285cdf006d36478e6f74ddec38e1fe0",
+  "reconstructed_final_tree": "12159640adcf073b51f3837e75575e11f5c20233",
+  "proposed_parents": [
+    "9d9bdfbaeeec3c618f3fc80e2f663a29c13f4b27",
+    "55951ed9094ae894f0256a3461fd9504ef060473",
+    "f1fd544b3e12ed6aca83872cdeda8114a1e058c0"
+  ],
+  "windows_seven_postimages_preserved_in_provider": true,
+  "new_source_logic": false,
+  "native_execution": false,
+  "model_execution": false,
+  "source_composition_only": true,
+  "passed": true
+}
