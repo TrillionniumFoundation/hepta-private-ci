@@ -35,6 +35,9 @@ use crate::OriginalCircuitSelectionReceiptErrorV1;
 use crate::learning_iteration_checkpoint::encode_original_owner_snapshot_v1;
 use crate::learning_owner_command_channel::original_owner_command_channel_v1;
 
+#[path = "circuit_selection_command_stage_binding.rs"]
+mod stage_binding;
+
 #[path = "circuit_selection_command_service.rs"]
 mod serving;
 #[path = "circuit_selection_command_wire.rs"]

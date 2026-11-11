@@ -26,6 +26,10 @@ use crate::CircuitTaskErrorV1;
 use crate::LearningIterationCheckpointErrorV1;
 use crate::learning_owner_command_channel::original_owner_command_channel_v1;
 
+#[path = "circuit_learning_completion_readiness.rs"]
+mod readiness;
+pub(crate) use readiness::OriginalCircuitCompletionReadinessClientV1;
+
 #[path = "circuit_learning_read_service.rs"]
 mod serving;
 #[path = "circuit_learning_read_wire.rs"]

@@ -46,6 +46,7 @@ mod recovery;
 #[path = "circuit_feature_current_retirement.rs"]
 mod retirement;
 pub use control::PublishedCircuitFeatureControlV1;
+pub(crate) use learning_read::OriginalCircuitCompletionReadinessClientV1;
 pub use learning_read::OriginalCircuitLearningReadClientV1;
 pub use learning_read::OriginalCircuitLearningReadContextV1;
 pub use learning_read::OriginalCircuitLearningReadErrorV1;

@@ -28,6 +28,13 @@ use crate::root_observation_stream::RootObservationStream;
 #[path = "learning_iteration_evidence_wire.rs"]
 mod wire;
 
+#[path = "cell_q24_no_update_stage_owners.rs"]
+mod ordinary_stage_owners;
+pub use ordinary_stage_owners::OriginalCellQ24NoUpdateStageOwnersV1;
+pub use ordinary_stage_owners::OriginalCellQ24NoUpdateStageStreamsV1;
+pub use ordinary_stage_owners::OriginalCellQ24NoUpdatePeerStreamV1;
+pub use ordinary_stage_owners::OriginalCellQ24NoUpdateTaskStreamV1;
+
 #[path = "cell_q24_training_command.rs"]
 mod training_command;
 pub use training_command::OriginalCellQ24TrainingBootstrapConfigV1;
