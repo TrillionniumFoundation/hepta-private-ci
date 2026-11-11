@@ -109,3 +109,9 @@ impl OriginalCellQ24MaterialSourceConnectionV1 {
         })
     }
 }
+
+#[cfg(test)]
+#[path = "cell_q24_material_source_connection_tests.rs"]
+mod tests;
+#[cfg(test)]
+pub(crate) use tests::retained_connection_fixture;

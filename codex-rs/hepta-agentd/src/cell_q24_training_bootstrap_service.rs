@@ -21,6 +21,7 @@ use super::now;
 use super::super::wire;
 use crate::AgentdRootAuthorityPeer;
 use crate::OriginalCellQ24MaterialCommandErrorV1;
+use crate::OriginalCellQ24DatasetCommandReadbackV1;
 use crate::learning_owner_command_channel::original_owner_command_channel_v1;
 
 impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 'static>
@@ -63,7 +64,7 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
         ).await?)
     }
 
-    fn ready(&self) -> Result<Option<Arc<OriginalCellQ24TrainingCommandOwnerV1<TW, RW>>>, Error> {
+    pub(super) fn ready(&self) -> Result<Option<Arc<OriginalCellQ24TrainingCommandOwnerV1<TW, RW>>>, Error> {
         let state = self.state.try_lock().map_err(|_| Error::Busy)?;
         match &*state {
             State::Awaiting(_) => Ok(None),
@@ -73,7 +74,7 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
         }
     }
 
-    fn serve_command_channel(&self, channel: &mut HostAuthorityPeerChannel) -> Result<u64, Error> {
+    pub(super) fn serve_command_channel(&self, channel: &mut HostAuthorityPeerChannel) -> Result<u64, Error> {
         for request_id in 1..=128_u64 {
             let exchanged = channel.exchange(|bytes| {
                 self.command_response(bytes, request_id).map_err(|_| HostIssuerTransportError::InvalidRequest)
@@ -83,7 +84,7 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
         Err(Error::Uncertain)
     }
 
-    fn command_response(&self, bytes: &[u8], request_id: u64) -> Result<Vec<u8>, Error> {
+    pub(super) fn command_response(&self, bytes: &[u8], request_id: u64) -> Result<Vec<u8>, Error> {
         let request: wire::Request = serde_json::from_slice(bytes)
             .map_err(OriginalCellQ24TrainingCommandErrorV1::from)?;
         self.require_initial_request(&request, request_id)?;
@@ -93,20 +94,20 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
         let result = if matches!(self.origin, Origin::Recovered) && request.action == wire::Action::Execute {
             wire::CommandResult::ReadbackRequired
         } else if matches!(self.origin, Origin::Fresh) && request.action == wire::Action::Readback {
-            wire::CommandResult::Missing
+            wire::CommandResult::ReadbackRequired
         } else {
             let _permit = self.bootstrap_lane.try_acquire().map_err(|_| Error::Busy)?;
             if let Some(original) = self.ready()? {
                 return Ok(original.command_response(bytes, request_id)?);
             }
             let started_at = now()?;
-            let cut = match self.runtime.block_on(self.dataset.readback()) {
+            let cut = match self.runtime.block_on(OriginalCellQ24DatasetCommandReadbackV1::readback(&self.dataset)) {
                 Ok(cut) => cut,
                 Err(OriginalCellQ24MaterialCommandErrorV1::Missing) => {
-                    return self.response(&request, wire::CommandResult::Missing);
+                    return self.response(&request, wire::CommandResult::Unavailable);
                 }
                 Err(OriginalCellQ24MaterialCommandErrorV1::Pending) => {
-                    return self.response(&request, wire::CommandResult::Pending);
+                    return self.response(&request, wire::CommandResult::Unavailable);
                 }
                 Err(error) => return Err(error.into()),
             };

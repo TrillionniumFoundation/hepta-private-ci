@@ -456,3 +456,6 @@ async fn material_command_pins_original_signatures_and_consumes_invalid_replies(
     assert_eq!(f.bytes()?, before);
     Ok(())
 }
+
+#[path = "cell_q24_training_bootstrap_material_ports_tests.rs"]
+pub(crate) mod bootstrap_ports;

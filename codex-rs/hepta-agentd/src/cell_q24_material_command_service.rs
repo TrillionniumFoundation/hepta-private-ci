@@ -357,4 +357,4 @@ fn original_state(error: Error) -> wire::CommandResult {
 
 #[cfg(test)]
 #[path = "cell_q24_material_command_tests.rs"]
-mod tests;
+pub(crate) mod tests;

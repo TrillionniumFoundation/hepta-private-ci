@@ -106,6 +106,8 @@ pub struct OriginalCellQ24TrainingBootstrapOwnerV1<TW: AnchorWitnessStore, RW: A
     runtime: Handle,
     bootstrap_lane: Semaphore,
     connections: Arc<Semaphore>,
+    #[cfg(test)]
+    writer_gate: Mutex<Option<tests::support::WriterGate>>,
 }
 
 impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 'static>
@@ -161,6 +163,12 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
             cancellation, runtime: Handle::current(),
             bootstrap_lane: Semaphore::new(1),
             connections: Arc::new(Semaphore::new(4)),
+            #[cfg(test)]
+            writer_gate: Mutex::new(None),
         })
     }
 }
+
+#[cfg(test)]
+#[path = "cell_q24_training_bootstrap_tests.rs"]
+mod tests;

@@ -19,6 +19,8 @@ pub(crate) struct MaterialCommandFixture {
     source: source::Source,
     identity: AgentdIdentity,
     baseline: Arc<LoadedCellQ24ModelV1>,
+    optimizer: CellQ24SgdRuleV1,
+    generator: TrustedLearningSignerV1,
     root: PathBuf,
     _directory: tempfile::TempDir,
 }
@@ -41,6 +43,8 @@ impl MaterialCommandFixture {
             source: f.source,
             identity: f.identity,
             baseline: f.baseline,
+            optimizer: f.optimizer,
+            generator: f.generator,
             root: f.root,
             _directory: f._directory,
         })
@@ -141,3 +145,6 @@ pub(crate) fn assert_dataset_pending(
     assert_eq!(saved.plan_id, config.initial.request.operation_id);
     Ok(())
 }
+
+#[path = "cell_q24_training_bootstrap_fixture_tests.rs"]
+mod training_bootstrap;

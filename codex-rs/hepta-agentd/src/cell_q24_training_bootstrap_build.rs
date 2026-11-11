@@ -24,6 +24,7 @@ use crate::OriginalCellQ24RemoteTrainingSourceOwnersV1;
 use crate::OriginalCellQ24TrainingReceiptOwnerV1;
 use crate::OriginalCellQ24TrainingSigningConfigV1;
 use crate::OriginalCellQ24TrainingSourceConfigV1;
+use crate::OriginalCellQ24TrainingSourceV1;
 use crate::OriginalCellQ24TrainingStageV1;
 use crate::SourceBoundCellQ24TrainingStageV1;
 use crate::capture_original_remote_cell_q24_training_source_v1;
@@ -104,6 +105,8 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
             source_config,
         ).await?;
         self.require_fresh_cut(&cut, started_at)?;
+        #[cfg(test)]
+        self.wait_before_writer_for_test().await;
         let signing = OriginalCellQ24TrainingSigningConfigV1 {
             dataset: context.dataset.clone(), scope: context.scope.clone(),
             signer: self.config.generator.clone(), verifier: context.verifier.clone(),
@@ -114,8 +117,10 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
         let material_config = self.config.material.clone();
         let original_cut = cut.clone();
         let (native, receipts) = tokio::task::spawn_blocking(move || {
-            // Queueing the blocking lane may take time. Check the exact retained
-            // signatures and registered Generator again before writer creation.
+            // Queueing may outlive the captured Source observation. Re-read
+            // the original Source and Material peers before creating either
+            // writer, then check the exact signatures and internal clock.
+            OriginalCellQ24TrainingSourceV1::require_current_in_lane(&source)?;
             let at = OriginalCellQ24DatasetCommandReadbackV1::verify_original_cut(
                 &original_dataset, &original_cut,
             )?;

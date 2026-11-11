@@ -294,3 +294,8 @@ fn now() -> Result<u64, Error> {
 #[cfg(test)]
 #[path = "cell_q24_material_source_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+pub(crate) use connection::retained_connection_fixture;
+#[cfg(test)]
+pub(crate) use tests::original_material_response_for_bootstrap;

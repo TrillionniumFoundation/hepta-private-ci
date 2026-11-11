@@ -330,3 +330,6 @@ fn now() -> Result<u64, Error> {
 #[cfg(test)]
 #[path = "cell_q24_material_evidence_service_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+pub(crate) use command::bootstrap_ports;

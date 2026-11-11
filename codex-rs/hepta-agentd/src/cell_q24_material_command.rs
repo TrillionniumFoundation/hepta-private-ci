@@ -369,3 +369,6 @@ fn now() -> Result<u64, Error> {
         .map(|elapsed| elapsed.as_secs())
         .map_err(|_| Error::Binding("Material command clock before Unix epoch"))
 }
+
+#[cfg(test)]
+pub(crate) use serving::tests::bootstrap_ports;
