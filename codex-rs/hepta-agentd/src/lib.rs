@@ -364,6 +364,17 @@ pub use learning_iteration_evidence_client::OriginalCellQ24TrainingCommandErrorV
 pub use learning_iteration_evidence_client::OriginalCellQ24TrainingCommandOwnerV1;
 #[cfg(target_os = "linux")]
 pub use learning_iteration_evidence_client::OriginalCellQ24TrainingCommandReceiptV1;
+
+#[cfg(target_os = "linux")]
+pub use learning_iteration_evidence_client::OriginalCircuitSelectionCommandClientV1;
+#[cfg(target_os = "linux")]
+pub use learning_iteration_evidence_client::OriginalCircuitSelectionCommandContextV1;
+#[cfg(target_os = "linux")]
+pub use learning_iteration_evidence_client::OriginalCircuitSelectionCommandErrorV1;
+#[cfg(target_os = "linux")]
+pub use learning_iteration_evidence_client::OriginalCircuitSelectionCommandOwnerV1;
+#[cfg(target_os = "linux")]
+pub use learning_iteration_evidence_client::OriginalCircuitSelectionCommandReceiptV1;
 #[cfg(target_os = "linux")]
 pub use learning_iteration_evidence_client::read_cell_learning_evaluation_v1;
 #[cfg(target_os = "linux")]

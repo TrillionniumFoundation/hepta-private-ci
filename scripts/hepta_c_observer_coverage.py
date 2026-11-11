@@ -163,6 +163,18 @@ SOURCE_CURRENT_CASES = tuple(
         "original_source_input_read_is_readonly_and_requires_live_original_configuration",
     )
 )
+SELECTOR_COMMAND_PREFIX = PUBLISHED_READ_PREFIX + "command_owner::"
+SELECTOR_COMMAND_CASES = tuple(
+    SELECTOR_COMMAND_PREFIX + name
+    for name in (
+        "q24_selector_command_binds_opaque_training_result_and_shared_dispatch",
+        "q24_selector_command_lost_ack_recovers_original_signature_readonly",
+        "q24_selector_command_recovered_missing_never_dispatches",
+        "q24_selector_command_rejects_wrong_context_and_valid_renewal_before_dispatch",
+        "q24_selector_command_evidence_readback_detects_live_withdrawal",
+        "q24_selector_command_keeps_original_expiry_and_external_custody",
+    )
+)
 OWNER_GROUPS = (
     ("next_use_observer", PACKAGE, NEXT_USE_CASES),
     ("material_observers", PACKAGE, MATERIAL_CASES),
@@ -177,6 +189,7 @@ OWNER_GROUPS = (
     ("original_execution_evidence", EXECUTION_PACKAGE, EXECUTION_CASES),
     ("original_published_circuit_read", PACKAGE, PUBLISHED_READ_CASES),
     ("original_task_source_current", PACKAGE, SOURCE_CURRENT_CASES),
+    ("original_selector_command", PACKAGE, SELECTOR_COMMAND_CASES),
 )
 EXPECTED_CASES = tuple(
     (package, name) for _, package, names in OWNER_GROUPS for name in names

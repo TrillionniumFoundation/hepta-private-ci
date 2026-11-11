@@ -31,12 +31,12 @@ OBSERVER = AGENT + "circuit_next_use_receipt_owner.rs"
 EXPECTED = {
     "learning_original_published_read_client_create": (),
     "learning_original_published_read_client_current": (SELECTOR, OBSERVER),
-    "learning_original_published_read_client_context": (SELECTOR, OBSERVER),
+    "learning_original_published_read_client_context": ("codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs", "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs", "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs"),
     "learning_original_published_read_owner_create": (),
     "learning_original_published_read_owner_serve": (),
     "learning_original_source_input_current": (SERVICE,),
-    "learning_original_circuit_selection_remote_attest": (),
-    "learning_original_circuit_selection_remote_readback": (),
+    "learning_original_circuit_selection_remote_attest": ("codex-rs/hepta-agentd/src/circuit_selection_command_service.rs",),
+    "learning_original_circuit_selection_remote_readback": ("codex-rs/hepta-agentd/src/circuit_selection_command_service.rs", "codex-rs/hepta-agentd/src/circuit_selection_command_evidence.rs"),
     "learning_original_circuit_next_use_remote_attest": (),
     "learning_original_circuit_next_use_remote_readback": (),
     "learning_original_owner_physical_current": (

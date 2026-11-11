@@ -163,7 +163,13 @@ async fn read_remote_selection(
     Ok(original.observation().clone())
 }
 
+enum CommandOrigin {
+    FreshCreate,
+    Recovered,
+}
+
 pub struct OriginalCircuitSelectionReceiptOwnerV1<W: AnchorWitnessStore> {
+    command_origin: CommandOrigin,
     journal: LearningOwnerJournalV1<W>,
     config: OriginalCircuitSelectionReceiptConfigV1,
     key: SigningKey,
@@ -171,6 +177,14 @@ pub struct OriginalCircuitSelectionReceiptOwnerV1<W: AnchorWitnessStore> {
 }
 
 impl<W: AnchorWitnessStore> OriginalCircuitSelectionReceiptOwnerV1<W> {
+    /// Read only this object's private origin and fixed configuration for its
+    /// consuming command adapter. No caller-provided tag or key is returned.
+    pub(crate) fn original_command_profile(
+        &self,
+    ) -> (&OriginalCircuitSelectionReceiptConfigV1, bool) {
+        (&self.config, matches!(self.command_origin, CommandOrigin::Recovered))
+    }
+
     pub fn create(
         file: File,
         witness: W,
@@ -180,6 +194,7 @@ impl<W: AnchorWitnessStore> OriginalCircuitSelectionReceiptOwnerV1<W> {
         let saved = validate_config(&config, &key)?;
         let journal = LearningOwnerJournalV1::create(file, witness, saved.binding_digest)?;
         Ok(Self {
+            command_origin: CommandOrigin::FreshCreate,
             journal,
             config,
             key,
@@ -198,6 +213,7 @@ impl<W: AnchorWitnessStore> OriginalCircuitSelectionReceiptOwnerV1<W> {
         let saved = validate_config(&config, &key)?;
         let journal = LearningOwnerJournalV1::recover(file, witness, saved.binding_digest)?;
         Ok(Self {
+            command_origin: CommandOrigin::Recovered,
             journal,
             config,
             key,
@@ -380,6 +396,26 @@ impl<W: AnchorWitnessStore> OriginalCircuitSelectionReceiptOwnerV1<W> {
         }
         verify_signed_actor_separation(&training, &verified, current)?;
         Ok((receipt, signed))
+    }
+}
+
+
+impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitSelectionReceiptOwnerV1<W> {
+    /// Move this exact original owner into its purpose-fixed role service.
+    /// Recovered owners remain readback-only. The actual task and Trainer
+    /// clients are consumed here; neither a cached observation nor key leaves.
+    /// Construct within the original host runtime; serving uses blocking lanes.
+    pub fn into_command_owner(
+        self,
+        live: OriginalCircuitLearningReadClientV1,
+        trainer: LearningIterationEvidenceClientV1,
+    ) -> Result<
+        crate::OriginalCircuitSelectionCommandOwnerV1<W>,
+        crate::OriginalCircuitSelectionCommandErrorV1,
+    > {
+        crate::OriginalCircuitSelectionCommandOwnerV1::from_original_receipt_owner(
+            self, live, trainer,
+        )
     }
 }
 

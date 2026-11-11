@@ -420,3 +420,6 @@ async fn q24_remote_read_refuses_expired_original_window_and_same_process_bootst
     f.original.session.stop().await?;
     Ok(())
 }
+
+#[path = "circuit_selection_command_owner_tests.rs"]
+mod command_owner;
