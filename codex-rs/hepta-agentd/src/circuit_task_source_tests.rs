@@ -64,7 +64,7 @@ pub(crate) fn identity(root: &Path) -> anyhow::Result<AgentdIdentity> {
         agent_id,
         spawn_generation: 1,
         fleet_root: fleet.as_path().to_path_buf(),
-        workspace: root.to_path_buf(),
+        workspace: root,
         resources: codex_hepta_fleet::ResourceBudget::local_default(),
         home_root: layout.home_root().to_path_buf(),
         run_root: layout.run_root().to_path_buf(),
