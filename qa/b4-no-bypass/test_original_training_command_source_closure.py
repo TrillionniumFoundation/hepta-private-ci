@@ -148,6 +148,30 @@ class OriginalTrainingCommandClosureTests(unittest.TestCase):
             with self.subTest(marker=marker):
                 self.rejects(SERVICE, "fn evidence_response(", marker)
 
+    def test_peer_liveness_io_precedes_final_signature_clock(self):
+        source = (ROOT / MAIN).read_text()
+        start = source.index("async fn exchange(")
+        end = PROOF._rust_item_end(PROOF._strip_rust_non_code(source), start)
+        self.assertIsNotNone(end)
+        body = source[start:end + 1]
+        peer = "        channel.peer.check_peer_lifetime()?;\n"
+        clock = "        let fresh_now = now()?;\n"
+        self.assertEqual(body.count(peer), 1)
+        self.assertEqual(body.count(clock), 1)
+        rows = [row for row in self.manifest["protected_file"] if row["path"] == MAIN]
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            target = root / MAIN
+            target.parent.mkdir(parents=True)
+            target.write_text(source)
+            data = {"protected_file": rows}
+            PROOF._verify_protected_files(root, data)
+            # Keeping both checks but moving pidfd I/O after the clock must fail.
+            late = body.replace(peer, "", 1).replace(clock, clock + peer, 1)
+            target.write_text(source[:start] + late + source[end + 1:])
+            with self.assertRaises(PROOF.VerificationFailure):
+                PROOF._verify_protected_files(root, data)
+
 
 if __name__ == "__main__":
     unittest.main()

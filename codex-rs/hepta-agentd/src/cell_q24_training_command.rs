@@ -312,6 +312,8 @@ impl OriginalCellQ24TrainingCommandClientV1 {
         .map_err(|_| Error::CommitUncertain)??;
         let response: wire::Response = serde_json::from_slice(&bytes)?;
         response.require_request(&request)?;
+        // Peer liveness can perform I/O; verify original signatures afterward.
+        channel.peer.check_peer_lifetime()?;
         let fresh_now = now()?;
         if fresh_now < started_at {
             return Err(Error::Binding("Trainer command clock moved backwards"));
@@ -340,7 +342,6 @@ impl OriginalCellQ24TrainingCommandClientV1 {
             wire::CommandResult::Uncertain => return Err(Error::CommitUncertain),
             wire::CommandResult::Unavailable => return Err(Error::Unavailable),
         };
-        channel.peer.check_peer_lifetime()?;
         *self.channel.try_lock().map_err(|_| Error::Unavailable)? = Some(channel);
         result
     }

@@ -4662,8 +4662,8 @@ top_level = []
 
 [[protected_file.required_function_order]]
 function = "fn exchange("
-sequence = ["let started_at = now()?","self.channel.try_lock()","channel.execution_requested","return Err(Error::ReadbackRequired)","slot.take().ok_or(Error::Unavailable)?","channel.execution_requested = true","request_id.checked_add(1)","wire::Request::new(","tokio::task::spawn_blocking(move ||","let bytes = channel\n                .peer\n                .request(&encoded)",".map_err(|_| Error::CommitUncertain)?","response.require_request(&request)?","let fresh_now = now()?","if fresh_now < started_at","wire::decode_completed(","original != &completed","*retained = Some(completed.clone())","wire::CommandResult::Uncertain => return Err(Error::CommitUncertain)","channel.peer.check_peer_lifetime()?","Some(channel)","result"]
-top_level = ["let started_at = now()?","let fresh_now = now()?","if fresh_now < started_at"]
+sequence = ["let started_at = now()?","self.channel.try_lock()","channel.execution_requested","return Err(Error::ReadbackRequired)","slot.take().ok_or(Error::Unavailable)?","channel.execution_requested = true","request_id.checked_add(1)","wire::Request::new(","tokio::task::spawn_blocking(move ||","let bytes = channel\n                .peer\n                .request(&encoded)",".map_err(|_| Error::CommitUncertain)?","response.require_request(&request)?","channel.peer.check_peer_lifetime()?","let fresh_now = now()?","if fresh_now < started_at","wire::decode_completed(","original != &completed","*retained = Some(completed.clone())","wire::CommandResult::Uncertain => return Err(Error::CommitUncertain)","Some(channel)","result"]
+top_level = ["let started_at = now()?","channel.peer.check_peer_lifetime()?","let fresh_now = now()?","if fresh_now < started_at"]
 
 [[protected_file.required_function_order]]
 function = "fn receipt_attestation("
@@ -5155,8 +5155,8 @@ top_level = ["let original =","Ok(original.attestation().clone())"]
 
 [[protected_file.required_function_order]]
 function = "fn exchange("
-sequence = ["let started_at = now()?","wire::context_binding(&self.config, started_at)?","self.channel.try_lock()","channel.execution_requested","slot.take().ok_or(Error::Unavailable)?","channel.execution_requested = true","wire::Request::new(","checked_add(1)","tokio::task::spawn_blocking(",".request(&encoded)","serde_json::from_slice(&bytes)?","response.require_request(&request)?","let fresh_now = now()?","fresh_now < started_at","wire::context_binding(&self.config, fresh_now)? != self.binding","wire::decode_completed(","original != &completed","*retained = Some(completed.clone())","CommandResult::Uncertain => return Err(Error::CommitUncertain)","channel.peer.check_peer_lifetime()?","Some(channel)","result"]
-top_level = ["let started_at = now()?","let mut channel = {","let request =","let response:","let fresh_now = now()?","channel.peer.check_peer_lifetime()?","\n        result\n"]
+sequence = ["let started_at = now()?","wire::context_binding(&self.config, started_at)?","self.channel.try_lock()","channel.execution_requested","slot.take().ok_or(Error::Unavailable)?","channel.execution_requested = true","wire::Request::new(","checked_add(1)","tokio::task::spawn_blocking(",".request(&encoded)","serde_json::from_slice(&bytes)?","response.require_request(&request)?","channel.peer.check_peer_lifetime()?","let fresh_now = now()?","fresh_now < started_at","wire::context_binding(&self.config, fresh_now)? != self.binding","wire::decode_completed(","original != &completed","*retained = Some(completed.clone())","CommandResult::Uncertain => return Err(Error::CommitUncertain)","Some(channel)","result"]
+top_level = ["let started_at = now()?","let mut channel = {","let request =","let response:","channel.peer.check_peer_lifetime()?","let fresh_now = now()?","\n        result\n"]
 
 [[protected_file.required_function_order]]
 function = "fn now("

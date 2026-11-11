@@ -326,6 +326,8 @@ impl OriginalCellQ24MaterialCommandClientV1 {
         .map_err(|_| Error::CommitUncertain)??;
         let response: wire::Response = serde_json::from_slice(&bytes)?;
         response.require_request(&request)?;
+        // Peer liveness can perform I/O; verify original signatures afterward.
+        channel.peer.check_peer_lifetime()?;
         let fresh_now = now()?;
         if fresh_now < started_at || wire::context_binding(&self.config, fresh_now)? != self.binding
         {
@@ -352,7 +354,6 @@ impl OriginalCellQ24MaterialCommandClientV1 {
             wire::CommandResult::ReadbackRequired => Err(Error::ReadbackRequired),
             wire::CommandResult::Uncertain => return Err(Error::CommitUncertain),
         };
-        channel.peer.check_peer_lifetime()?;
         *self.channel.try_lock().map_err(|_| Error::Unavailable)? = Some(channel);
         result
     }
