@@ -142,6 +142,34 @@ impl<'a, W: AnchorWitnessStore> CellQ24DatasetReaderV1<'a, W> {
         })
     }
 
+    /// Only the concrete original receipt owner calls this after physically
+    /// reading an already completed signature journal. The original freeze,
+    /// trust and both CURRENTs are still checked at fresh system time. This
+    /// creates no claim, receipt or extended signature/deadline.
+    pub(crate) fn read_current_for_original_receipt(
+        &mut self,
+        initial: &LearningIterationSnapshotV1,
+        baseline: &LoadedCellQ24ModelV1,
+        rule: CellQ24DatasetRuleV1,
+        plan: DatasetFreezePlanV2,
+        freeze_evidence: &SignedLearningEvidenceV1,
+    ) -> Result<OriginalCellQ24DatasetV1, CellQ24DatasetErrorV1> {
+        self.read_current_at_clock(
+            initial,
+            baseline,
+            rule,
+            plan,
+            freeze_evidence,
+            false,
+            || {
+                SystemTime::now()
+                    .duration_since(UNIX_EPOCH)
+                    .map(|elapsed| elapsed.as_secs())
+                    .map_err(|_| CellQ24DatasetErrorV1::Binding("system clock before Unix epoch"))
+            },
+        )
+    }
+
     // Only read_current supplies this clock in product builds. The private
     // seam lets tests model time spent in real owner reads without exposing
     // a caller-controlled time or a public test clock.
@@ -152,6 +180,19 @@ impl<'a, W: AnchorWitnessStore> CellQ24DatasetReaderV1<'a, W> {
         rule: CellQ24DatasetRuleV1,
         plan: DatasetFreezePlanV2,
         freeze_evidence: &SignedLearningEvidenceV1,
+        clock: impl FnMut() -> Result<u64, CellQ24DatasetErrorV1>,
+    ) -> Result<OriginalCellQ24DatasetV1, CellQ24DatasetErrorV1> {
+        self.read_current_at_clock(initial, baseline, rule, plan, freeze_evidence, true, clock)
+    }
+
+    fn read_current_at_clock(
+        &mut self,
+        initial: &LearningIterationSnapshotV1,
+        baseline: &LoadedCellQ24ModelV1,
+        rule: CellQ24DatasetRuleV1,
+        plan: DatasetFreezePlanV2,
+        freeze_evidence: &SignedLearningEvidenceV1,
+        require_work_deadline: bool,
         mut clock: impl FnMut() -> Result<u64, CellQ24DatasetErrorV1>,
     ) -> Result<OriginalCellQ24DatasetV1, CellQ24DatasetErrorV1> {
         let started_at = clock()?;
@@ -172,7 +213,7 @@ impl<'a, W: AnchorWitnessStore> CellQ24DatasetReaderV1<'a, W> {
                 "frozen request, rule, trust or baseline",
             ));
         }
-        if started_at >= request.envelope.expiry_unix_seconds {
+        if require_work_deadline && started_at >= request.envelope.expiry_unix_seconds {
             return Err(CellQ24DatasetErrorV1::Binding("learning request expired"));
         }
         let source = self
@@ -258,7 +299,7 @@ impl<'a, W: AnchorWitnessStore> CellQ24DatasetReaderV1<'a, W> {
                 "system clock moved backwards",
             ));
         }
-        if fresh_now >= request.envelope.expiry_unix_seconds {
+        if require_work_deadline && fresh_now >= request.envelope.expiry_unix_seconds {
             return Err(CellQ24DatasetErrorV1::Binding(
                 "learning request expired during materialization",
             ));
