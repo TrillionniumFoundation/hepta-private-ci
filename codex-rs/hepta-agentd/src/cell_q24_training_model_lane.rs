@@ -79,6 +79,29 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
         })
     }
 
+    /// Material only: no fit, signature, journal claim, or publication.
+    /// Only the SourceBound facade calls this same original occupied lane.
+    #[cfg(target_os = "linux")]
+    pub(crate) fn read_candidate_material(
+        &self,
+    ) -> Result<crate::OriginalCellQ24CandidateMaterialV1, Error> {
+        self.in_model_lane(|training, completed| {
+            CellQ24TrainingOwnerV1::require_original_source_capture(training)?;
+            let candidate = match CellQ24TrainingOwnerV1::readback(training)? {
+                crate::CellQ24TrainingOutcomeV1::Candidate(candidate) => *candidate,
+                crate::CellQ24TrainingOutcomeV1::NoUpdate { .. } => {
+                    return Err(crate::OriginalCellQ24CandidateMaterialErrorV1::NoCandidate.into());
+                }
+            };
+            Ok(crate::OriginalCellQ24CandidateMaterialV1::from_original_candidate(
+                &self.dataset,
+                candidate,
+                completed.receipt.clone(),
+                completed.attestation.clone(),
+            )?)
+        })
+    }
+
     fn in_model_lane<T>(
         &self,
         work: impl FnOnce(

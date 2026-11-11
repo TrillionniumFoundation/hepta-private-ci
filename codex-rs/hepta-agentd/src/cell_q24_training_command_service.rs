@@ -29,6 +29,9 @@ use crate::SourceBoundCellQ24TrainingStageV1;
 use crate::learning_owner_command_channel::original_owner_command_channel_v1;
 use crate::learning_owner_journal::LearningOriginalOwnerErrorV1;
 
+#[path = "cell_q24_training_candidate_service.rs"]
+mod candidate;
+
 enum Admission {
     OriginalExecution,
     ReadbackOnly,

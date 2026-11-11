@@ -30,6 +30,8 @@ mod wire;
 
 #[path = "cell_q24_training_command.rs"]
 mod training_command;
+pub use training_command::OriginalCellQ24CandidateReadbackClientV1;
+pub use training_command::OriginalCellQ24CandidateReadbackErrorV1;
 pub use training_command::OriginalCellQ24TrainingBootstrapConfigV1;
 pub use training_command::OriginalCellQ24TrainingBootstrapCustodyV1;
 pub use training_command::OriginalCellQ24TrainingBootstrapErrorV1;

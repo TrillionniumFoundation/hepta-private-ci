@@ -47,6 +47,9 @@ pub enum OriginalCellQ24TrainingStageErrorV1 {
     Receipt(#[from] OriginalCellQ24TrainingReceiptErrorV1),
     #[error("original model material: {0}")]
     ModelProposal(#[from] CellQ24ModelProposalErrorV1),
+    #[cfg(target_os = "linux")]
+    #[error("original Candidate material: {0}")]
+    CandidateMaterial(#[from] crate::OriginalCellQ24CandidateMaterialErrorV1),
 }
 
 type Error = OriginalCellQ24TrainingStageErrorV1;

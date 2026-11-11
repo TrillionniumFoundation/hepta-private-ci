@@ -58,6 +58,14 @@ pub use training_plan::CellQ24TrainingPlanErrorV1;
 pub use training_plan::CellQ24TrainingSampleV1;
 pub use training_plan::cell_q24_single_head_update_rule_v1;
 
+#[cfg(target_os = "linux")]
+#[path = "cell_q24_candidate_material.rs"]
+mod candidate_material;
+#[cfg(target_os = "linux")]
+pub use candidate_material::OriginalCellQ24CandidateMaterialErrorV1;
+#[cfg(target_os = "linux")]
+pub use candidate_material::OriginalCellQ24CandidateMaterialV1;
+
 pub struct CellQ24ModelFilesV1 {
     pub base: File,
     pub organ_adapter: Option<File>,
