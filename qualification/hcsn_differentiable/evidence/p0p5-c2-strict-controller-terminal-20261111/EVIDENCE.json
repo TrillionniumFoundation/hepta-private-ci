@@ -1,0 +1,61 @@
+{
+  "combined_green": {
+    "errors": 0,
+    "exit": 0,
+    "failures": 0,
+    "tests": 39
+  },
+  "environment_preflight": {
+    "errors": 1,
+    "exit": 1,
+    "status": "failed_missing_system_torch",
+    "tests": 1
+  },
+  "full_repository_ci_qualification": false,
+  "log_identity": {
+    "ENVIRONMENT.initial-failure.log": {
+      "bytes": 1372,
+      "sha256": "7d43d6086e6e1a71a31fffa2c4ef04818b04e3c883a2e7e05293c9665b712266"
+    },
+    "GREEN.regression.native.log": {
+      "bytes": 6280,
+      "sha256": "51750831b7c314d92abd33566efc14414d2a5d072e36339e206bc478b6e62843"
+    },
+    "GREEN.targeted.native.log": {
+      "bytes": 1219,
+      "sha256": "e437412dc9d59a2977f70b7e32a64f5f555fae8c5cf3de633ade8e6865d041a8"
+    },
+    "RED.native.log": {
+      "bytes": 4526,
+      "sha256": "3755632305f862aa2eee40ebcace492c0a631488a2ee4d669ab00d17449b2b38"
+    }
+  },
+  "new_six_fit_terminals": 0,
+  "original_c2_job": "1a1c74f3308-be2a-75",
+  "original_c2_touched": false,
+  "red": {
+    "errors": 0,
+    "exit": 1,
+    "failures": 5,
+    "tests": 7
+  },
+  "regression_test_blob": "a5aba062596e0feac21f5b43ed19adf103457110",
+  "schema": "hcsn-c2-strict-controller-json-evidence-v1",
+  "scientific_status": "HOLD_NO_GO",
+  "source_blob_after_patch": "014c8c1ada429189289c1e720bff4bbe20132849",
+  "source_blob_before_patch": "dd58a15143888165fcf8f25347cb9c7b26454ba1",
+  "source_head_before_patch": "3cad9347f5729ce19937202347467095fda36357",
+  "targeted_green": {
+    "errors": 0,
+    "exit": 0,
+    "failures": 0,
+    "tests": 7
+  },
+  "test_environment": {
+    "execution": "native CPU local, not GitHub CI",
+    "host": "desktop",
+    "python": "3.12.14",
+    "torch": "2.8.0+cpu"
+  },
+  "training_replay_performed": false
+}
