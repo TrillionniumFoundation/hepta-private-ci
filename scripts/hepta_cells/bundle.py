@@ -27,7 +27,7 @@ LINEAGE = ("source_bundle", "dataset", "update_rule", "evaluation_profile")
 
 
 def digest_bytes(value):
-    if not isinstance(value, str) or not re.fullmatch(r"[0-9a-f]{64}", value):
+    if type(value) is not str or not re.fullmatch(r"[0-9a-f]{64}", value):
         raise ValueError("digest must be 32 lowercase hex bytes")
     raw = bytes.fromhex(value)
     if not any(raw):
