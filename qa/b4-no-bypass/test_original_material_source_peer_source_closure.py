@@ -164,6 +164,43 @@ class OriginalMaterialSourcePeerClosureTests(unittest.TestCase):
             with self.subTest(function=function, marker=marker):
                 self.rejects(CLIENT, function, marker)
 
+    def test_final_material_authentication_follows_original_peer_io(self):
+        source = (ROOT / CLIENT).read_text()
+        code = PROOF._strip_rust_non_code(source)
+        start = code.index("fn read_current(")
+        end = PROOF._rust_item_end(code, start)
+        self.assertIsNotNone(end)
+        body = source[start:end + 1]
+        peer = (
+            "        crate::root_observation_stream::check_lifetime("
+            "channel.transport.root_lifetime().get_ref())\n"
+            "            .map_err(|_| Error::Unavailable)?;\n"
+        )
+        clock = "        let fresh_now = now()?;\n"
+        authenticate = "        verify_context(&self.config, fresh_now)?;\n"
+        self.assertEqual(body.count(peer), 1)
+        self.assertEqual(body.count(clock), 1)
+        self.assertEqual(body.count(authenticate), 1)
+        without_peer = body.replace(peer, "", 1)
+        mutations = (
+            ("clock-before-peer", without_peer.replace(clock, clock + peer, 1)),
+            ("authentication-before-peer", without_peer.replace(
+                authenticate, authenticate + peer, 1
+            )),
+        )
+        rows = [row for row in self.manifest["protected_file"] if row["path"] == CLIENT]
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            target = root / CLIENT
+            target.parent.mkdir(parents=True)
+            target.write_text(source)
+            PROOF._verify_protected_files(root, {"protected_file": rows})
+            for name, changed in mutations:
+                with self.subTest(mutation=name):
+                    target.write_text(source[:start] + changed + source[end + 1:])
+                    with self.assertRaises(PROOF.VerificationFailure):
+                        PROOF._verify_protected_files(root, {"protected_file": rows})
+
     def test_source_purpose_only_reads_original_completed_pair(self):
         checks = (
             ("fn serve_material_source(", "policy.timeout > Duration::from_millis(500)"),
