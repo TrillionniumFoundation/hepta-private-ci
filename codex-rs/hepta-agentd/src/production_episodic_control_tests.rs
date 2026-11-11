@@ -354,3 +354,6 @@ mod drain;
 
 #[path = "production_episodic_provider_tests.rs"]
 mod provider;
+
+#[path = "production_episodic_native_head_tests.rs"]
+mod native_heads;
