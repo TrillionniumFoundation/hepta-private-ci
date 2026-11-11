@@ -22,7 +22,7 @@
       "tree": "6bbbe3ff1d50ba513f520a6b99eb671c3329c19e",
       "job_id": "1a1cc7949e6-2564-f4a",
       "request_digest": "8be70b1718d773075a1faff2086a0f9c2a1fd9de85d4c613b6311f4651ac3da1",
-      "outer_terminal": "not yet observed; original running observation retained",
+      "outer_terminal": "failed",
       "source_checks": {
         "executed": 195,
         "passed": 195,
@@ -43,8 +43,40 @@
         }
       ],
       "junit_collection_exit_code": 1,
-      "full_caller_proof": "still running at retained observation; no pass claim",
-      "compile_fix_source": "a3a73c740fb0cb83b2afad0fadf958161f2394ad"
+      "full_caller_proof": {
+        "state": "failed",
+        "exit_code": 1,
+        "seconds": 1491.8085601557977,
+        "log_bytes": 219,
+        "log_sha256": "8158b80614ddd5894b795f715fced65c8dc4383e674a853873a4c2f40d5be47f",
+        "log_path": "qualification/learn-ordinary-ce434/integrated-failures/1bcbcb7d4327-compile-failure/caller-proof-full.log",
+        "failure": "FAIL_HEPTA_CALLER_PROOF: learning_original_evaluation_receipt_readback: codex-rs/hepta-agentd/src/circuit_model_qualification_test_support.rs: unresolved possible OriginalCellEvaluationReceiptOwnerV1::readback receiver"
+      },
+      "compile_fix_source": "a3a73c740fb0cb83b2afad0fadf958161f2394ad",
+      "exit_code": 1,
+      "output_complete": true,
+      "output_durable": true,
+      "terminal_publication_confirmed": true,
+      "timed_out": false,
+      "cancelled": false,
+      "automatic_retry": false,
+      "native_wrapper_exit_code": 1,
+      "final_preparation_result": "qualification/learn-ordinary-ce434/integrated-failures/1bcbcb7d4327-compile-failure/final-preparation-result.json",
+      "terminal_observation": "qualification/learn-ordinary-ce434/integrated-failures/1bcbcb7d4327-compile-failure/terminal-observation.json",
+      "retained_interim_observations": [
+        {
+          "path": "qualification/learn-ordinary-ce434/integrated-failures/1bcbcb7d4327-compile-failure/preparation/result.json",
+          "state": "native-and-full-callers-starting",
+          "meaning": "Original intermediate preparation result retained byte-for-byte; not the final native or full-proof result."
+        },
+        {
+          "path": "qualification/learn-ordinary-ce434/integrated-failures/1bcbcb7d4327-compile-failure/outer-process-observation-during-proof.json",
+          "state": "running",
+          "meaning": "Normalized running observation retained byte-for-byte; later terminal observation is a separate file."
+        }
+      ],
+      "source_after": "1bcbcb7d43273cc6166ca6865200ddabf1fd07d9",
+      "source_status_after": ""
     }
   ],
   "full_chain_acceptance": {
@@ -136,6 +168,32 @@
       "bytes": 1893,
       "sha256": "117ae343322ce09b9347937acb1b8e990463d34d3cd1ad786d9d2ad3d256603f",
       "original_version": "2050:55116872:1893:1794431870346659749:1794431870346659749"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/1bcbcb7d4327-compile-failure/final-preparation-result.json",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/integrated-owners-v6-preparation-v1/result.json",
+      "bytes": 3037,
+      "sha256": "634b8f7a576498ab582d79f6c476b4737e86e01f4f61021e2bd510d9a4838be5",
+      "original_version": "2050:55116900:3037:1794433450869954158:1794433450869954158"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/1bcbcb7d4327-compile-failure/caller-proof-full.log",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/integrated-owners-v6-preparation-v1/caller-proof-full.log",
+      "bytes": 219,
+      "sha256": "8158b80614ddd5894b795f715fced65c8dc4383e674a853873a4c2f40d5be47f",
+      "original_version": "2050:55116881:219:1794433450765957441:1794433450765957441"
+    }
+  ],
+  "normalized_observations": [
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/1bcbcb7d4327-compile-failure/terminal-observation.json",
+      "bytes": 1210,
+      "sha256": "f2700a041541df95cf90bdaa32a57e56de107ca47205d54ee79152e10b371080",
+      "source_tool": "h_process_status",
+      "host": "desktop",
+      "job_id": "1a1cc7949e6-2564-f4a",
+      "representation": "normalized_process_status_observation",
+      "normalization": "Parsed the original h_process_status JSON and serialized it with two-space indentation. This is not a raw host file or the original MCP response envelope."
     }
   ]
 }
