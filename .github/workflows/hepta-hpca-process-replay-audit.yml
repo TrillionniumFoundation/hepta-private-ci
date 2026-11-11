@@ -1,0 +1,20 @@
+name: Hepta HPCA recorded CPU replay audit
+on:
+  pull_request:
+    paths:
+      - 'qualification/hpca-neuroscience-20261110/HPCA_V2_PROCESS_REPLAY_*'
+      - 'qualification/hpca-neuroscience-20261110/verify_hpca_process_replay.py'
+      - 'qualification/hpca-neuroscience-20261110/test_hpca_process_replay.py'
+      - '.github/workflows/hepta-hpca-process-replay-audit.yml'
+  workflow_dispatch:
+jobs:
+  recorded-replay-consistency:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify archived pair without inference claim
+        run: |
+          cd qualification/hpca-neuroscience-20261110
+          python3 -m unittest -v test_hpca_process_replay
+          python3 verify_hpca_process_replay.py
