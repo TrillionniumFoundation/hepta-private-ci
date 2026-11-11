@@ -9,7 +9,6 @@ use std::alloc::Layout;
 use std::alloc::System;
 use std::cell::Cell;
 use std::mem::size_of;
-use std::mem::size_of;
 
 use codex_hepta_neuron::ParameterGroupMapV1;
 use codex_hepta_neuron::PlasticityError;
