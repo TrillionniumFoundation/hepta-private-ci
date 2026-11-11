@@ -134,7 +134,10 @@ async fn deferred_training_connection_preserves_expiry_and_readonly_cold_origina
             "original Training actor and time"
         )))
     ));
-    assert_eq!(invalid_server.join().expect("invalid retained Training")?, 0);
+    assert_eq!(
+        invalid_server.join().expect("invalid retained Training")?,
+        0
+    );
     assert_eq!(fixture.training_bytes()?, held);
     let client = cold.bind_original_dataset(reread.clone())?;
     assert!(matches!(

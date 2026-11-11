@@ -177,12 +177,7 @@ impl OriginalCellQ24TrainingCommandConnectionV1 {
                 true,
                 expected
                     .map(|(receipt, attestation)| {
-                        wire::authenticate_receipt(
-                            &context,
-                            receipt,
-                            attestation,
-                            verified_at,
-                        )
+                        wire::authenticate_receipt(&context, receipt, attestation, verified_at)
                     })
                     .transpose()?,
             ),
