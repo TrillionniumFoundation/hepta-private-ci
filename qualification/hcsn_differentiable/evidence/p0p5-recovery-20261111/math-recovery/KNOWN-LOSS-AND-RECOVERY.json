@@ -1,0 +1,109 @@
+{
+  "schema": "math-contract-known-loss-and-exact-source-recovery-v1",
+  "created_after_environment_reset": true,
+  "not_an_original_experiment_receipt": true,
+  "scope": "Retained tool-observed outcome summaries and original identities only. Missing original proc/case JSON and old archive bytes were not recreated or rerun.",
+  "historical_observation_summary": {
+    "schema": "math-contract-preparation-environment-loss-v1",
+    "observed_at_context_date": "2026-11-11",
+    "old_root": "/workspace/scratch/c385a7439f8e",
+    "state": "old_scratch_root_absent_environment_rebuilt",
+    "no_reexecution_to_recreate_original_results": true,
+    "renderer_v1": {
+      "zip_bytes": 26101,
+      "zip_sha256": "435e18899d0241e307d4130d0a1bc0ca4c13539e7b985629dcb0d0f4833205d5",
+      "manifest_sha256": "645701da18952d483d36989fbe3834dee85bee09c5e46932a8ce67b67c3e6b78",
+      "copy_list_sha256": "ffce1d0007c9894c2fcfe04656f472fc364d4b028f32c3fc415d7115a8163bc0",
+      "main_sha256": "95155071a2ed6dbfb2c19ac5b506a6fbf906a01b9bf682697caf738cd7e795ef",
+      "guard_sha256": "4e8d0db3a0cb80735e40aa2cd2afabb4d637cbc9653ec3f56204c3aad1ffb921",
+      "compile_receipt_sha256": "02e1c1470477509bde344f35f1d617a11139b0247a748680e817f25616c19e46",
+      "actual_execution": false,
+      "renderer_v2_not_started": true,
+      "original_bytes_unconfirmed_after_loss": true
+    },
+    "supervisor_review": {
+      "original_source": {
+        "entry": "c2e61947914d0d47f3467cde9f3974fd43be76a42eeebe74ce403a3077dfd4f1",
+        "process": "bdef59d6abc4b450d264d711853b53f17f5715c1886d46cd2a3c6553d9db38c4"
+      },
+      "os01_os02_red": {
+        "sha256": "76df18a66a51f8e183925fe928349343c613b2d543b9359ec9327669e4870149",
+        "bytes": 10958,
+        "whole_child_wall_seconds": 0.15245829199557193,
+        "wait4_child_CPU_seconds": 0.126932,
+        "peak_RSS_bytes": 20594688
+      },
+      "first_closure": {
+        "sha256": "d50bb36fa4f970526386db2e4d507f665e844e0d799dfce3df6afff10f767580",
+        "bytes": 21549,
+        "whole_child_wall_seconds": 0.2132209170013084,
+        "wait4_child_CPU_seconds": 0.19258899999999998,
+        "peak_RSS_bytes": 20901888
+      },
+      "v1_runtime": {
+        "entry": "98673730cb4d30696e9d70e877cccac33bfb776e41705d4cceb6f327246a8e24",
+        "process": "6454f57dde49f02b3d5f5a67d969bccd09d54539f0c5d904fdf0c5b05e27efc7"
+      },
+      "os03_red": {
+        "sha256": "dddb51b39a85bb5ec276da1f9eff8d1c6cff239afb7d46923d67a3a53eb96b7e",
+        "bytes": 6291,
+        "whole_child_wall_seconds": 0.13170321399957174,
+        "wait4_child_CPU_seconds": 0.12648099999999998,
+        "peak_RSS_bytes": 20385792,
+        "scope": "one actual stdlib child plus explicit mock intermediate adoption metadata; no actual orphan or frozen core"
+      },
+      "v2_closure": {
+        "sha256": "a0d87dc08c9f5fc13f9d23dd65407fe26814244b24d599c640b4d638f508d0af",
+        "bytes": 6317,
+        "whole_child_wall_seconds": 0.17320124799880432,
+        "wait4_child_CPU_seconds": 0.154475,
+        "peak_RSS_bytes": 20336640
+      },
+      "v2_runtime": {
+        "entry": "7f2762c444031bc3d84131ec4cb6dd74790cbebd4b6a9229c6027886885ec0f9",
+        "process": "f58ca60428d3abafea377ca64e1d71040df98c4f149adce88436951187c990d6"
+      },
+      "original_raw_proc_and_case_JSON_bytes_unconfirmed_after_loss": true,
+      "production_C2_or_core_or_model_execution": false
+    },
+    "rare_tail_review": {
+      "read_and_reasoned": true,
+      "standalone_receipt_not_saved_before_loss": true,
+      "conclusion": "Main t^k versus exp(-a²/(2sigma²t)) asymptotics and constant/linear boundary coefficients correct; proposed explicit finite positive p(0+), nonnegative finite c with c=0 yielding o(t), positive finite likelihood normalizer, and ratio→infinity not monotonicity.",
+      "numeric_execution": false
+    }
+  },
+  "current_exact_source_recoveries": {
+    "renderer_guard_v1": {
+      "path": "math-contract-recovery-20261111-v1/input_contract.v1.py",
+      "bytes": 13178,
+      "sha256": "4e8d0db3a0cb80735e40aa2cd2afabb4d637cbc9653ec3f56204c3aad1ffb921"
+    },
+    "renderer_main_v1": {
+      "path": "math-contract-recovery-20261111-v1/render_c2_resources.v1.py",
+      "bytes": 14032,
+      "sha256": "95155071a2ed6dbfb2c19ac5b506a6fbf906a01b9bf682697caf738cd7e795ef"
+    },
+    "build_report_v1": {
+      "path": "math-contract-recovery-20261111-v1/build_report.exact.py",
+      "bytes": 12923,
+      "sha256": "927150306eeb547c430a22ba1409d93cf3b1dfad294a7abbc61cb5d169fa76df",
+      "git_blob": "f6df7bfcc6052aff366fda3ba47b23c1f4b342a2",
+      "exact_authenticated_readback": true
+    }
+  },
+  "current_renderer_v2": {
+    "archive_bytes": 24370,
+    "archive_sha256": "ef6854b69e5e639d1159711bc014b327d00a95c983c8fab832b19d09fb17c466",
+    "armored_archive_blob": "65e312c87746007b6483047aed2d024af96faf9f",
+    "exact_authenticated_armored_readback": true,
+    "new_compile_receipt_sha256": "33b9cf4332e373ecaef6829b0bf6293fc4024ecb0c92ec63d716c72ea332b2ce",
+    "still_pins_old_analysis_manifest": "3ac51d32012f274f8a5a6afc4967569d0b9707b993cab0f5f9550c4e6495dbc1",
+    "actual_use_ready_for_new_resource_core": false,
+    "production_adoption": false,
+    "execution_authorized": false
+  },
+  "bootstrap_original_source_or_14_test_receipts_recovered": false,
+  "actual_C2_or_model_or_E_access": false,
+  "scientific_admission": "HOLD"
+}

@@ -1,0 +1,29 @@
+{
+  "command": [
+    "python",
+    "-B",
+    "summarize_recovered_c2_v8.py",
+    "training-store-recovery-20261111-v1/hcsn-c2-observation-v8-exact-store-recovery-20261111.zip",
+    "training-store-recovery-20261111-v1/V8-METADATA-INDEX.json"
+  ],
+  "complete_child_wait4_CPU_seconds": 0.137246,
+  "complete_child_wall_seconds": 0.3514803020000272,
+  "output_files": {
+    "stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stdout": {
+      "bytes": 194,
+      "sha256": "914aed3f48564c100d9be9141ca6b7fd8d9d404aece54d2ff84b272dbea682ed"
+    }
+  },
+  "pid": 3,
+  "returncode": 0,
+  "schema": "hcsn-local-complete-child-receipt-v1",
+  "scope": "Local Linux child pre-spawn through wait4 reap. The wrapper's final hashing, receipt write and exit are outside this measurement. No grand total or scientific pass inferred.",
+  "source": "summarize_recovered_c2_v8.py",
+  "source_sha256": "6fa349422c9593fda31a61e304b46b74fd236d6debc63018a5f4f5c92e231e21",
+  "source_unchanged": true,
+  "wait4_peak_RSS_KiB": 12268
+}

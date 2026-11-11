@@ -1,0 +1,268 @@
+{
+  "E_reads": 0,
+  "actual_v8_source_capsule": {
+    "bytes": 121388,
+    "path": "/workspace/scratch/c385a7439f8e/training-source-v8.zip",
+    "sha256": "288283cae2b2cf4e7b68432e040e643a5e1b00a7de961fc848dd5cf20eb46102"
+  },
+  "canonical_v8_aliases": [
+    {
+      "bytes": 25180,
+      "canonical": "/workspace/scratch/c385a7439f8e/hcsn-repo/qualification/hcsn_differentiable/operator.py",
+      "equal": true,
+      "sha256": "cb3eed1bcfbd3b10cc331a193a5d4b6a3d4309db899e0d8f821477f97b7dbdc1",
+      "v8_local": "/workspace/scratch/c385a7439f8e/v8-local-validation/source/qualification/hcsn_differentiable/operator.py"
+    },
+    {
+      "bytes": 5122,
+      "canonical": "/workspace/scratch/c385a7439f8e/hcsn-repo/qualification/hcsn_differentiable/contract.py",
+      "equal": true,
+      "sha256": "79e1127dc126fb8ac97ce7542bac2c9d70c71e0fd2d24416f146d4ec82be099e",
+      "v8_local": "/workspace/scratch/c385a7439f8e/v8-local-validation/source/qualification/hcsn_differentiable/contract.py"
+    }
+  ],
+  "capsule_member_checks": [
+    {
+      "bytes": 25180,
+      "equals_local_v8_source": true,
+      "member": "qualification/hcsn_differentiable/operator.py",
+      "sha256": "cb3eed1bcfbd3b10cc331a193a5d4b6a3d4309db899e0d8f821477f97b7dbdc1"
+    },
+    {
+      "bytes": 5122,
+      "equals_local_v8_source": true,
+      "member": "qualification/hcsn_differentiable/contract.py",
+      "sha256": "79e1127dc126fb8ac97ce7542bac2c9d70c71e0fd2d24416f146d4ec82be099e"
+    },
+    {
+      "bytes": 27553,
+      "equals_local_v8_source": true,
+      "member": "qualification/hcsn_differentiable/network.py",
+      "sha256": "04726551b6d4a53de2eb0daa1d8f5f30d96c7852bcf3ee769220ff584e56a687"
+    },
+    {
+      "bytes": 16079,
+      "equals_local_v8_source": true,
+      "member": "proposals/localization-v3/cores.py",
+      "sha256": "95fcf93747520414a062183affd546f599bc415b2a9daa47e59db20f67412302"
+    },
+    {
+      "bytes": 5383,
+      "equals_local_v8_source": true,
+      "member": "proposals/localization-v3/frozen_tables.py",
+      "sha256": "40465279ffc1fac04d005f331de1d8e9110dfe70be3069087c160f354686859f"
+    }
+  ],
+  "created_utc": "2026-11-10T22:16:21.857144+00:00",
+  "derivations": {
+    "D1": {
+      "assumptions": [
+        "fixed positive cell width",
+        "sigma>0",
+        "finite fixed drift",
+        "interior equal cells away from absorbing/tail boundaries",
+        "exact uniform source integration"
+      ],
+      "claim": "adjacent probability has sqrt(h) leading order; the fixed-mesh matrix generator has no finite entrywise limit",
+      "kind": "analytic derivation in NOTE.md, no operator experiment"
+    },
+    "D2": {
+      "assumptions": [
+        "fixed finite strictly interior nodes",
+        "positive finite quadrature weights",
+        "fixed positive nearest-edge distance",
+        "ideal real arithmetic",
+        "undiscounted active interior probability rows"
+      ],
+      "claim": "adjacent mass/h tends to zero; scaled asymptotics differ from exact integration; unscaled matrices can both tend to identity",
+      "kind": "analytic Gaussian-tail asymptotic, not a measured failure attribution"
+    },
+    "D3": {
+      "assumptions": [
+        "fixed phase width omega",
+        "0<h<omega",
+        "release absorbing for this isolated calculation",
+        "one-based phase index j"
+      ],
+      "claim": "geometric dwell times converge to j exponential dwell times; original uniform remaining-time law is different; no full coupled-network limit claimed",
+      "kind": "isolated phase-overlap/Markov-chain derivation"
+    },
+    "D4": {
+      "assumptions": [
+        "same total tail coefficient",
+        "two positive tail laws differing by translation",
+        "continuum discounted first-hit moment exp(-kappa*x), kappa>0"
+      ],
+      "claim": "Q cannot retain the difference in future return moments; fixed exponential R changes shape independently of mass conservation",
+      "kind": "information-loss counterexample at fixed tail mass"
+    }
+  },
+  "entries": [
+    {
+      "bytes": 26963,
+      "id": "S1",
+      "original_path": "/workspace/scratch/c385a7439f8e/hcsn-repo/qualification/hcsn_differentiable/MODEL.md",
+      "sha256": "8919ff5f44af1e8929f2a6838d765f8e0333c807190834f6a957db8a142b611b",
+      "snapshot": "source-context/MODEL.md",
+      "supports": "Sections 2, 4, perpetual continuum/QPR distinction; existing limitations"
+    },
+    {
+      "bytes": 4903,
+      "id": "S2",
+      "original_path": "/workspace/scratch/c385a7439f8e/hcsn-repo/qualification/hcsn_differentiable/TRAINING_DOMAIN.md",
+      "sha256": "5db87e87f2859cc731e06aad7447c008cc99c40b07d060bee714d0ea6041fb44",
+      "snapshot": "source-context/TRAINING_DOMAIN.md",
+      "supports": "Repeated constant-gap pressure versus finite real-gap continuation"
+    },
+    {
+      "bytes": 28682,
+      "id": "S3",
+      "original_path": "/workspace/scratch/c385a7439f8e/hcsn-repo/qualification/hcsn_differentiable/tests/test_operator.py",
+      "sha256": "6887878f132ee6a86423f400aaeeac35ff2a96032ac199534e4932fcf3976779",
+      "snapshot": "source-context/test_operator.py",
+      "supports": "Declared aligned transport, early-release/refinement, returning-tail and non-semigroup fixtures; tests not rerun"
+    },
+    {
+      "bytes": 25180,
+      "id": "S4",
+      "original_path": "/workspace/scratch/c385a7439f8e/v8-local-validation/source/qualification/hcsn_differentiable/operator.py",
+      "sha256": "cb3eed1bcfbd3b10cc331a193a5d4b6a3d4309db899e0d8f821477f97b7dbdc1",
+      "snapshot": "source-context/operator.py",
+      "supports": "_gauss_legendre_unit, _point_row, _construct, forward duration==0; exact source-node and phase-overlap definitions"
+    },
+    {
+      "bytes": 5122,
+      "id": "S5",
+      "original_path": "/workspace/scratch/c385a7439f8e/v8-local-validation/source/qualification/hcsn_differentiable/contract.py",
+      "sha256": "79e1127dc126fb8ac97ce7542bac2c9d70c71e0fd2d24416f146d4ec82be099e",
+      "snapshot": "source-context/contract.py",
+      "supports": "GridSpec uniform geometry and allowed fixed quadrature orders"
+    },
+    {
+      "bytes": 5383,
+      "id": "S6",
+      "original_path": "/workspace/scratch/c385a7439f8e/v8-local-validation/source/proposals/localization-v3/frozen_tables.py",
+      "sha256": "40465279ffc1fac04d005f331de1d8e9110dfe70be3069087c160f354686859f",
+      "snapshot": "source-context/frozen_tables.py",
+      "supports": "FrozenTableOperator invokes unchanged super().forward; exact-identity memoization"
+    },
+    {
+      "bytes": 16079,
+      "id": "S6",
+      "original_path": "/workspace/scratch/c385a7439f8e/v8-local-validation/source/proposals/localization-v3/cores.py",
+      "sha256": "95fcf93747520414a062183affd546f599bc415b2a9daa47e59db20f67412302",
+      "snapshot": "source-context/cores.py",
+      "supports": "HCSNCore uses the operator/cache and freezes physical parameters"
+    },
+    {
+      "bytes": 27553,
+      "id": "S6",
+      "original_path": "/workspace/scratch/c385a7439f8e/v8-local-validation/source/qualification/hcsn_differentiable/network.py",
+      "sha256": "04726551b6d4a53de2eb0daa1d8f5f30d96c7852bcf3ee769220ff584e56a687",
+      "snapshot": "source-context/network.py",
+      "supports": "BoundedPhysics defaults mu=-.12, sigma=.35; source values, not checkpoint tensor reads"
+    },
+    {
+      "bytes": 3861,
+      "id": "S7",
+      "original_path": "/workspace/scratch/c385a7439f8e/hcsn-repo/qualification/hcsn_differentiable/evidence/p0p5-20261110/p2/campaign-v2-plan.json",
+      "sha256": "e13f97aafdaf66548f016f2dcc3a38dd7e641a2ea83d52b8bea89f4c7e0cf114",
+      "snapshot": "source-context/campaign-v2-plan.json",
+      "supports": "Frozen active256/endpoint4.8/phase16/q32/refractory.2 geometry"
+    },
+    {
+      "bytes": 19845,
+      "id": "S8",
+      "original_path": "/workspace/scratch/c385a7439f8e/terminal-six-model-pressure-summary-v1/RESULT.json",
+      "sha256": "77e9d38fa8abc0c30c26222b9d3da54e616a0a3298dc991e48172d1afa8282f7",
+      "snapshot": "source-context/pressure-summary-RESULT.json",
+      "supports": "Previously archived observer-derived scalar summary: 18 pressure checks,12 failed; no new reads of complete domain reports"
+    },
+    {
+      "bytes": 3715,
+      "id": "S9",
+      "original_path": "/workspace/scratch/c385a7439f8e/p1-fixed-grid-short-time-diagnosis-v1/scalar_geometry_check.py",
+      "sha256": "17e07d67ca3f41a1c95faebd8fdcc01317645ecfe0233a2d88fd91f4f7095f14",
+      "snapshot": "source-context/scalar_geometry_check.py",
+      "supports": "Single standard-library q32 node-geometry computation; no probability propagation"
+    },
+    {
+      "bytes": 2028,
+      "id": "S9",
+      "original_path": "/workspace/scratch/c385a7439f8e/p1-fixed-grid-short-time-diagnosis-v1/SCALAR-GEOMETRY.json",
+      "sha256": "62a855680d90a90fa294f38db5ef1fdf391bcc99525a308638250041a8630c89",
+      "snapshot": "source-context/SCALAR-GEOMETRY.json",
+      "supports": "Actual scalar geometry output; nominal-parameter scope and unknown outer/manual cost explicit"
+    }
+  ],
+  "implementation_changes": 0,
+  "not_established": [
+    "quantitative error shares/signs for the12 pressure failures",
+    "quadrature accuracy at1e-7 or8e-7",
+    "true posterior correctness",
+    "long-run event-rate or escape qualification of the finite chain",
+    "whole training-state numerical qualification",
+    "scientific benefit",
+    "P5 optimization admission"
+  ],
+  "numerical_qualification": "HOLD",
+  "pressure_scope": {
+    "finite_burst_distinction": "Finite burst fixtures begin at posterior position47 and use the actual future gap string. Tiny-gap pressure sentinels begin at posteriors48/49 and artificially repeat their specified gap forever; the conditions and horizons differ.",
+    "groups": [
+      {
+        "case_count": 6,
+        "dt": 0.0540586,
+        "failed_count": 0,
+        "passed_count": 6,
+        "reference_value_range": [
+          4.188453770318659,
+          5.333689979845594
+        ],
+        "scaled_error_range": [
+          0.0010352022830326178,
+          0.001158372701635439
+        ]
+      },
+      {
+        "case_count": 6,
+        "dt": 8e-07,
+        "failed_count": 6,
+        "passed_count": 0,
+        "reference_value_range": [
+          3.959016538158239,
+          5.412605044607725
+        ],
+        "scaled_error_range": [
+          1.389356182990574,
+          1.9098363947712493
+        ]
+      },
+      {
+        "case_count": 6,
+        "dt": 1e-07,
+        "failed_count": 6,
+        "passed_count": 0,
+        "reference_value_range": [
+          3.946100003898899,
+          5.43044560110762
+        ],
+        "scaled_error_range": [
+          2.4541355245492187,
+          3.4922460043933605
+        ]
+      }
+    ],
+    "original_observer_result_sha256": "15a18874be1496c84234dcf1c61f9ddd0ec4bb4adf83d4e575487d88066e348b",
+    "pressure_case_count": 18,
+    "pressure_error_definition": "abs(projected-reference)/max(1,abs(reference)); original pass threshold .01. All18 stored reference magnitudes exceed1, so these particular scaled errors equal relative value errors.",
+    "pressure_failed_count": 12,
+    "pressure_passed_count": 6,
+    "pressure_quantity": "Infinite-repeat discounted value, not finite-horizon event count or probability.",
+    "scope": "Read-only arithmetic on original copied scalar fields in the full observer report. No model, probability flow, reference function, derivative, oracle or training rerun. No new reading of the12 complete domain reports is claimed here."
+  },
+  "schema": "hcsn-fixed-grid-short-time-source-index-v1",
+  "scientific_admission": "HOLD",
+  "scope": "Source text plus an already frozen observer-derived scalar pressure summary; no live audit outputs, production model/probability arrays or E access.",
+  "source_snapshot_markdown_links": "Unchanged historical document bytes retain their original repository link context.",
+  "training_or_model_oracle_runs": 0
+}
