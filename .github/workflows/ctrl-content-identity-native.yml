@@ -8,6 +8,9 @@ on:
       - scripts/ndu_real_runtime/actor.py
       - scripts/ndu_real_runtime/episode.py
       - scripts/ndu_real_runtime/test_content_identity_native.py
+      - scripts/ndu_real_runtime/test_content_identity.py
+      - scripts/ndu_real_runtime/test_content_audit.py
+      - scripts/ndu_real_runtime/content_audit.py
   workflow_dispatch:
 
 permissions:
@@ -155,6 +158,53 @@ jobs:
               json.dump(record, stream, indent=2)
           print(json.dumps(record, sort_keys=True))
           raise SystemExit(0 if passed else 1)
+          PY
+
+
+      - name: Run identity and historical audit unit suites with strict non-skip minima
+        run: |
+          set -euo pipefail
+          python - <<'PY' 2>&1 | tee "$RUNNER_TEMP/ctrl-content-identity-native/contracts.log"
+          import json
+          import os
+          from pathlib import Path
+          import unittest
+          modules = (
+              ("ndu_real_runtime.test_content_identity", 4),
+              ("ndu_real_runtime.test_content_audit", 7),
+          )
+          counts = {}
+          success = True
+          for module, required in modules:
+              suite = unittest.defaultTestLoader.loadTestsFromName(module)
+              result = unittest.TextTestRunner(verbosity=2).run(suite)
+              passed = (
+                  result.wasSuccessful()
+                  and result.testsRun >= required
+                  and not result.skipped
+                  and not result.expectedFailures
+              )
+              counts[module] = {
+                  "executed": result.testsRun,
+                  "minimum": required,
+                  "errors": len(result.errors),
+                  "failures": len(result.failures),
+                  "skipped": len(result.skipped),
+                  "passed": passed,
+              }
+              success = success and passed
+          record = {
+              "schema": "ctrl.identity-report.contracts.v1",
+              "source_sha": os.environ["SOURCE_SHA"],
+              "tested_sha": os.environ["TESTED_SHA"],
+              "status": "PASS" if success else "HOLD",
+              "suites": counts,
+              "real_policy_benefit_established": False,
+          }
+          with (Path(os.environ["RUNNER_TEMP"]) / "ctrl-content-identity-native/contracts.json").open("x") as stream:
+              json.dump(record, stream, indent=2)
+          print(json.dumps(record, sort_keys=True))
+          raise SystemExit(0 if success else 1)
           PY
 
       - name: Require unchanged source and index
