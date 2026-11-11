@@ -37,6 +37,9 @@ use crate::CircuitTaskSourceReadbackV1;
 use crate::cell_composed_q24::codec;
 use crate::circuit_learning_run_id_v1;
 
+#[path = "cell_q24_dataset_recovery.rs"]
+pub(crate) mod recovery;
+
 #[derive(Debug, thiserror::Error)]
 pub enum OriginalCellQ24DatasetErrorV1 {
     #[error("original Q24 Dataset binding: {0}")]
