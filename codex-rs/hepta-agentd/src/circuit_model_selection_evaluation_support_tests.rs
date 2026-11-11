@@ -1,6 +1,6 @@
 //! Real independent evaluator execution, original signing owners and holdout
 //! files over explicit synthetic comparison cohorts. This proves mechanisms;
-//! the cohorts, role custody and raw-execution host wrapper are test fixtures.
+//! the cohorts, product declarations and role custody remain test fixtures.
 use std::io::Write as _;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
@@ -19,16 +19,13 @@ use pretty_assertions::assert_eq;
 
 use super::*;
 use crate::OriginalCellEvaluationExecutionOwnerV1;
+use crate::OriginalCellEvaluationExecutionStoreV1;
 use crate::OriginalCellEvaluationReceiptConfigV1;
 use crate::OriginalCellEvaluationReceiptOwnerV1;
 use crate::OriginalCellEvaluationReceiptSourcesV1;
 use crate::OriginalCellEvaluationSigningConfigV1;
 use crate::OriginalCircuitModelSelectionEvaluationSourcesV1;
 use crate::learning_iteration_evidence_client::fixture_original_receipt_client_until_close;
-
-#[path = "circuit_model_selection_execution_support_tests.rs"]
-mod execution;
-use execution::WitnessedExecutions;
 
 pub(crate) struct EvaluationFixture {
     pub(crate) training: LearningIterationSnapshotV1,
@@ -40,7 +37,7 @@ pub(crate) struct EvaluationFixture {
     pub(crate) stage_receipt: codex_hepta_learning_artifacts::LearningIterationReceiptV1,
     pub(crate) stage_evidence: SignedLearningEvidenceV1,
     pub(crate) execution_evidence: OriginalProductEvaluationExecutionEvidenceV1,
-    executions: WitnessedExecutions,
+    executions: OriginalCellEvaluationExecutionStoreV1<FileAnchorWitnessStore>,
     execution_signer: OriginalCellEvaluationExecutionOwnerV1<FileAnchorWitnessStore>,
     _receipt_owner: OriginalCellEvaluationReceiptOwnerV1<FileAnchorWitnessStore>,
     fixture: Fixture,
@@ -199,17 +196,15 @@ impl EvaluationFixture {
             SigningKey::from_bytes(&[42; 32]),
         )?;
         // Retained before execution; never synthesized by Selector readback.
-        let mut executions = WitnessedExecutions::initialize(
-            LockedFileProductEvaluationExecutionStoreV1::create(
-                file(&root.join("positive-executions")),
-                digest("positive-raw-execution-file"),
-            )?,
+        let mut executions = OriginalCellEvaluationExecutionStoreV1::create(
+            file(&root.join("positive-executions")),
             witness(
                 &root,
                 "positive-execution-witness",
                 scope,
                 verifier.objective_digest(),
             )?,
+            digest("positive-raw-execution-file"),
         )?;
         let clock = || now().map_err(|_| ProductProviderErrorV1::Unavailable);
         let receipt = fixture.runner.evaluate_or_readback(
@@ -234,14 +229,6 @@ impl EvaluationFixture {
         assert_eq!(
             receipt.authority(),
             codex_hepta_types::AuthorityPosture::DENY_ALL
-        );
-        assert_eq!(
-            executions
-                .witness
-                .current()?
-                .expect("retained execution witness")
-                .sequence,
-            3
         );
 
         let bundle = fixture.runner.qualification_bundle(&receipt, &context)?;
@@ -407,8 +394,7 @@ impl EvaluationFixture {
             },
             candidate_plan: &self.fixture.candidate_temporal,
             baseline_plan: &self.fixture.baseline_temporal,
-            executions: &mut self.executions.store,
-            execution_witness: &mut self.executions.witness,
+            executions: &mut self.executions,
             context: &self.context,
             timing: ProductTimingEvidenceV1::Qualification,
         }

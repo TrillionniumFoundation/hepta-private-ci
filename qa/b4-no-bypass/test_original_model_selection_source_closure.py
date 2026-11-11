@@ -26,8 +26,7 @@ FUNCTIONS = {
         "fn read_original(", "fn authenticate_completed(",
     },
     SOURCES: {
-        "fn prepare(", "fn predecessors(", "fn read_original(", "fn require_current(",
-        "fn claim(", "fn complete(", "fn readback(",
+        "fn prepare(", "fn predecessors(", "fn read_original(",
     },
     BINDING: {
         "fn validate_config(", "fn authenticate_roles(", "fn authenticate(",
@@ -95,7 +94,7 @@ class OriginalModelSelectionClosureTests(unittest.TestCase):
                 AGENT + "learning_owner_journal.rs",
                 AGENT + "cell_composed_q24_training_owner.rs",
                 AGENT + "cell_q24_model_proposal.rs",
-                SOURCES,
+                AGENT + "neuron_cell_evaluation_execution_store.rs",
             ),
         }
         paths = {path for identifier in expected for path in (
@@ -149,9 +148,10 @@ class OriginalModelSelectionClosureTests(unittest.TestCase):
             PROOF._verify_protected_files(root, {"protected_file": rows})
             for old, new in (
                 ("SourceBoundCellQ24TrainingStageV1", "OriginalCellQ24TrainingStageV1"),
-                ("pub execution_witness: &'a mut W", "pub execution_witness: Digest32"),
-                ("pub executions: &'a mut LockedFileProductEvaluationExecutionStoreV1",
+                ("pub executions: &'a mut OriginalCellEvaluationExecutionStoreV1<W>",
                  "pub executions: Vec<u8>"),
+                ("OriginalCellEvaluationExecutionStoreV1::readback_only(",
+                 "OriginalCellEvaluationExecutionStoreV1::create("),
             ):
                 with self.subTest(old=old):
                     target.write_text(source.replace(old, new))

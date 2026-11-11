@@ -142,11 +142,24 @@ EXECUTION_CASES = tuple(
         "original_execution_evidence_missing_and_pending_never_claim",
     )
 )
+EXECUTION_OWNER_PREFIX = "neuron_cell_evaluation_execution_store::tests::"
+EXECUTION_OWNER_CASES = tuple(
+    EXECUTION_OWNER_PREFIX + name
+    for name in (
+        "original_execution_owner_preserves_missing_pending_and_completed_after_recovery",
+        "original_execution_owner_creation_and_recovery_never_repair_partial_anchors",
+        "original_execution_owner_lost_claim_ack_preserves_pending_or_uncertainty",
+        "original_execution_owner_lost_completion_ack_preserves_completed_or_uncertainty",
+        "original_execution_owner_physical_corruption_fences_even_after_restore",
+        "original_execution_owner_readback_port_rejects_writes_keys_and_unwitnessed_tail",
+    )
+)
 OWNER_GROUPS = (
     ("next_use_observer", PACKAGE, NEXT_USE_CASES),
     ("material_observers", PACKAGE, MATERIAL_CASES),
     ("original_selector", PACKAGE, SELECTION_CASES),
     ("original_model_selector", PACKAGE, MODEL_SELECTION_CASES),
+    ("original_execution_owner", PACKAGE, EXECUTION_OWNER_CASES),
     ("training_model_lane", PACKAGE, TRAINING_LANE_CASES),
     ("original_training_source", PACKAGE, SOURCE_CASES),
     ("original_training_command", PACKAGE, TRAINING_COMMAND_CASES),

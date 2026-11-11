@@ -403,6 +403,7 @@ mod learning_owner_command_channel;
 mod learning_owner_evidence;
 mod learning_owner_journal;
 mod neuron_cell_evaluation;
+mod neuron_cell_evaluation_execution_store;
 mod neuron_cell_evaluation_owner;
 #[cfg(target_os = "linux")]
 mod neuron_cell_evaluation_receipt_owner;
@@ -508,6 +509,8 @@ pub use circuit_selection_receipt_owner::OriginalCircuitSelectionReceiptOwnerV1;
 #[cfg(target_os = "linux")]
 pub use circuit_selection_receipt_owner::OriginalCircuitSelectionReceiptSourcesV1;
 pub use learning_owner_journal::LearningOriginalOwnerErrorV1;
+pub use neuron_cell_evaluation_execution_store::OriginalCellEvaluationExecutionStoreErrorV1;
+pub use neuron_cell_evaluation_execution_store::OriginalCellEvaluationExecutionStoreV1;
 pub use neuron_cell_evaluation_owner::OriginalCellEvaluationExecutionOwnerV1;
 pub use neuron_cell_evaluation_owner::OriginalCellEvaluationSigningConfigV1;
 #[cfg(target_os = "linux")]
