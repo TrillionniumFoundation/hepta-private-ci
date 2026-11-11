@@ -6,6 +6,7 @@ use std::sync::atomic::Ordering;
 use std::time::Duration;
 
 use codex_hepta_intelligence_eval::ProductEvaluationExecutionStoreErrorV1;
+use pretty_assertions::assert_eq;
 
 use super::*;
 use crate::OriginalCellQ24TrainingStageErrorV1 as StageError;
