@@ -114,18 +114,17 @@ impl<EW: AnchorWitnessStore, DW: AnchorWitnessStore, SW: AnchorWitnessStore>
             .try_lock()
             .map_err(|_| Error::Owner(OriginalCellQ24MaterialEvidenceErrorV1::Unavailable))?;
         let original: &mut OriginalCellQ24MaterialReceiptOwnersV1<EW, DW> = &mut owners;
-        let (experience, dataset) =
-            OriginalCellQ24MaterialReceiptOwnersV1::readback_material_pair(
-                original,
-                OriginalCellQ24MaterialReceiptSourcesV1 {
-                    snapshot: &self.config.initial,
-                    source: &self.source,
-                    identity: &self.identity,
-                    ledger: &mut ledger,
-                    baseline: &self.baseline,
-                },
-            )
-            .map_err(OriginalCellQ24MaterialEvidenceErrorV1::Material)?;
+        let (experience, dataset) = OriginalCellQ24MaterialReceiptOwnersV1::readback_material_pair(
+            original,
+            OriginalCellQ24MaterialReceiptSourcesV1 {
+                snapshot: &self.config.initial,
+                source: &self.source,
+                identity: &self.identity,
+                ledger: &mut ledger,
+                baseline: &self.baseline,
+            },
+        )
+        .map_err(OriginalCellQ24MaterialEvidenceErrorV1::Material)?;
         // No wire encoding or socket I/O occurs under either original lock.
         drop(ledger);
         drop(owners);

@@ -17,7 +17,10 @@ impl<EW: AnchorWitnessStore, DW: AnchorWitnessStore>
         &mut self,
         mut sources: OriginalCellQ24MaterialReceiptSourcesV1<'_, impl AnchorWitnessStore>,
     ) -> Result<
-        (OriginalCellQ24MaterialCompletionV1, OriginalCellQ24MaterialCompletionV1),
+        (
+            OriginalCellQ24MaterialCompletionV1,
+            OriginalCellQ24MaterialCompletionV1,
+        ),
         Error,
     > {
         let started_at = binding::now()?;
