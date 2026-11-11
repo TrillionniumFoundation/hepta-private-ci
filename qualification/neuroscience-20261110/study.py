@@ -192,6 +192,9 @@ def cadence_gate(events: Iterable[UpdateOpportunity], gaps: dict[str, int]
     if set(gaps) != LINEAGES or any(type(x) is not int or x < 1 for x in gaps.values()):
         raise ContractError("all seven lineage clocks must be explicit positive integers")
     last: dict[str, int] = {}
+    # Track observed candidate generations separately from admitted clock slots.
+    # A denied opportunity must not permit a stale generation to reappear.
+    last_generation: dict[str, int] = {}
     outputs = []
     for ev in events:
         if (ev.lineage not in LINEAGES or type(ev.sequence) is not int
@@ -202,6 +205,11 @@ def cadence_gate(events: Iterable[UpdateOpportunity], gaps: dict[str, int]
             raise ContractError("invalid update opportunity")
         if ev.lineage in last and ev.sequence < last[ev.lineage]:
             raise ContractError("clock regression")
+        prior_generation = last_generation.get(ev.lineage)
+        if (prior_generation is not None
+                and ev.candidate_generation < prior_generation):
+            raise ContractError("candidate generation regression")
+        last_generation[ev.lineage] = ev.candidate_generation
         previous = last.get(ev.lineage)
         allowed = previous is None or ev.sequence - previous >= gaps[ev.lineage]
         if allowed:
