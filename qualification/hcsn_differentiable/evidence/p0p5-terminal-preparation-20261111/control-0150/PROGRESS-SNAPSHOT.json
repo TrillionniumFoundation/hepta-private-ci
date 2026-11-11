@@ -1,0 +1,600 @@
+{
+  "first_crossing_recomputed": false,
+  "fits": [
+    {
+      "checkpoint_identity_reported": {
+        "bytes": 450552,
+        "sha256": "e963e9ce1d00829f5e62db0c019ecb0d08c96562f4903d99f9026cf84bd9dd85"
+      },
+      "commit_identity": {
+        "bytes": 3903,
+        "sha256": "f0d0d515191194eb2d56c0fc760d235ed8b2ae791f5a17880763f5887f620b8f"
+      },
+      "commit_source_path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/fits/hcsn-s101-lr0.001/commits/epoch-0105.json",
+      "development": {
+        "accuracy": 0.6505383074611918,
+        "balanced_accuracy_present_classes": 0.3406022984611423,
+        "brier_half_sum": 0.2700961947957488,
+        "brier_mean_classes": 0.04910839905377251,
+        "confusion_matrix": [
+          [
+            5737,
+            0,
+            99,
+            0,
+            0,
+            712,
+            40,
+            2,
+            13,
+            6,
+            0
+          ],
+          [
+            111,
+            0,
+            0,
+            37,
+            0,
+            269,
+            6,
+            20,
+            188,
+            0,
+            0
+          ],
+          [
+            671,
+            2,
+            244,
+            5,
+            0,
+            77,
+            30,
+            56,
+            32,
+            23,
+            0
+          ],
+          [
+            2,
+            0,
+            195,
+            9171,
+            0,
+            0,
+            962,
+            1010,
+            160,
+            0,
+            0
+          ],
+          [
+            182,
+            0,
+            17,
+            0,
+            0,
+            86,
+            3,
+            0,
+            0,
+            9,
+            0
+          ],
+          [
+            1040,
+            0,
+            91,
+            0,
+            0,
+            3720,
+            26,
+            0,
+            39,
+            75,
+            0
+          ],
+          [
+            177,
+            0,
+            161,
+            1383,
+            0,
+            242,
+            723,
+            67,
+            501,
+            0,
+            0
+          ],
+          [
+            4,
+            2,
+            55,
+            278,
+            0,
+            4,
+            92,
+            466,
+            117,
+            8,
+            0
+          ],
+          [
+            0,
+            0,
+            2,
+            1016,
+            0,
+            16,
+            82,
+            120,
+            709,
+            0,
+            0
+          ],
+          [
+            100,
+            0,
+            2,
+            0,
+            0,
+            70,
+            7,
+            0,
+            3,
+            16,
+            0
+          ],
+          [
+            13,
+            0,
+            0,
+            107,
+            0,
+            37,
+            35,
+            2,
+            167,
+            0,
+            0
+          ]
+        ],
+        "ece_15_equal_width_bins": 0.18046591418612556,
+        "events": 31952,
+        "macro_f1_11_classes": 0.32800390761993775,
+        "macro_f1_present_classes": 0.32800390761993775,
+        "nll": 1.1753964014156306
+      },
+      "independent_model_replay_performed": false,
+      "latest_epoch_cumulative_process_wall_seconds": 31162.668936423725,
+      "latest_epoch_phase_process_CPU_seconds": 16777.241765518,
+      "latest_epoch_phase_process_wall_seconds": 16786.31735015288,
+      "latest_visible_complete_epoch": 105,
+      "learning_rate": 0.001,
+      "logical_main_updates": 1260,
+      "name": "hcsn-s101-lr0.001",
+      "numeric_admission": "HOLD",
+      "raw_response_identity": {
+        "bytes": 6142,
+        "sha256": "88e36edf77dd134913ea63fe7101d5a5968dc1219595b941f6e32d0721b0ff65"
+      },
+      "read_span": {
+        "control_wall_seconds": 8.181,
+        "finished": "2026-11-11T01:55:17.790Z",
+        "started": "2026-11-11T01:55:09.609Z"
+      },
+      "seed": 101,
+      "selected_best_checkpoint_identity_reported": {
+        "bytes": 450552,
+        "sha256": "30d56642b69e6c0596fcaafb6d02281707ee3044ce8343c4cbd3c11e1860836d"
+      },
+      "stopping": {
+        "best": 0.33807429871203515,
+        "best_epoch": 104,
+        "plateau_anchor": 0.33807429871203515,
+        "stale_epochs": 1
+      },
+      "whole_training_domain": "HOLD"
+    },
+    {
+      "checkpoint_identity_reported": {
+        "bytes": 450488,
+        "sha256": "e202b0f25027f4f86d7c0e8b60c5a781e9f2ff3c79eee27633049287b820d8a8"
+      },
+      "commit_identity": {
+        "bytes": 3900,
+        "sha256": "4091ecd36d7189031c645ae9d5d1f9bfaebab2d61fa4f3c363d127f4448abcbd"
+      },
+      "commit_source_path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/fits/hcsn-s211-lr0.001/commits/epoch-0104.json",
+      "development": {
+        "accuracy": 0.6863733099649474,
+        "balanced_accuracy_present_classes": 0.33335599996542187,
+        "brier_half_sum": 0.23421852388554948,
+        "brier_mean_classes": 0.042585186161008995,
+        "confusion_matrix": [
+          [
+            5829,
+            0,
+            18,
+            6,
+            0,
+            580,
+            165,
+            7,
+            4,
+            0,
+            0
+          ],
+          [
+            49,
+            16,
+            0,
+            50,
+            0,
+            376,
+            29,
+            0,
+            108,
+            0,
+            3
+          ],
+          [
+            555,
+            0,
+            352,
+            30,
+            4,
+            94,
+            56,
+            11,
+            36,
+            2,
+            0
+          ],
+          [
+            28,
+            64,
+            243,
+            10056,
+            0,
+            18,
+            623,
+            112,
+            356,
+            0,
+            0
+          ],
+          [
+            156,
+            0,
+            2,
+            0,
+            0,
+            135,
+            3,
+            0,
+            1,
+            0,
+            0
+          ],
+          [
+            957,
+            0,
+            6,
+            1,
+            45,
+            3747,
+            211,
+            0,
+            11,
+            13,
+            0
+          ],
+          [
+            258,
+            0,
+            72,
+            1609,
+            0,
+            16,
+            1267,
+            23,
+            7,
+            0,
+            2
+          ],
+          [
+            4,
+            6,
+            11,
+            387,
+            24,
+            69,
+            175,
+            206,
+            144,
+            0,
+            0
+          ],
+          [
+            1,
+            2,
+            0,
+            1240,
+            0,
+            51,
+            181,
+            0,
+            458,
+            0,
+            12
+          ],
+          [
+            109,
+            0,
+            0,
+            1,
+            0,
+            79,
+            9,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            17,
+            0,
+            0,
+            214,
+            0,
+            13,
+            89,
+            0,
+            28,
+            0,
+            0
+          ]
+        ],
+        "ece_15_equal_width_bins": 0.1273364031225262,
+        "events": 31952,
+        "macro_f1_11_classes": 0.3432623604823944,
+        "macro_f1_present_classes": 0.3432623604823944,
+        "nll": 1.0447914021093796
+      },
+      "independent_model_replay_performed": false,
+      "latest_epoch_cumulative_process_wall_seconds": 30971.151812249096,
+      "latest_epoch_phase_process_CPU_seconds": 16583.41672657,
+      "latest_epoch_phase_process_wall_seconds": 16593.87888417393,
+      "latest_visible_complete_epoch": 104,
+      "learning_rate": 0.001,
+      "logical_main_updates": 1248,
+      "name": "hcsn-s211-lr0.001",
+      "numeric_admission": "HOLD",
+      "raw_response_identity": {
+        "bytes": 6138,
+        "sha256": "3c236f4f750645917c966757961d75203fa0f392281391cf9295142eb0cbbe3b"
+      },
+      "read_span": {
+        "control_wall_seconds": 8.061,
+        "finished": "2026-11-11T01:55:17.670Z",
+        "started": "2026-11-11T01:55:09.609Z"
+      },
+      "seed": 211,
+      "selected_best_checkpoint_identity_reported": {
+        "bytes": 450488,
+        "sha256": "e202b0f25027f4f86d7c0e8b60c5a781e9f2ff3c79eee27633049287b820d8a8"
+      },
+      "stopping": {
+        "best": 0.3432623604823944,
+        "best_epoch": 104,
+        "plateau_anchor": 0.3432623604823944,
+        "stale_epochs": 0
+      },
+      "whole_training_domain": "HOLD"
+    },
+    {
+      "checkpoint_identity_reported": {
+        "bytes": 450552,
+        "sha256": "a2c5cb4c42fb64854338c3d5a688e3fdd88da447bd48b80cd59fc12975c9a1f8"
+      },
+      "commit_identity": {
+        "bytes": 3898,
+        "sha256": "6769137dabce6c95a3009c2859faa36a40e125db1ce14f76b8babcfe24d46e6c"
+      },
+      "commit_source_path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/fits/hcsn-s307-lr0.001/commits/epoch-0105.json",
+      "development": {
+        "accuracy": 0.6567663995993991,
+        "balanced_accuracy_present_classes": 0.3242495108135829,
+        "brier_half_sum": 0.25067980070375073,
+        "brier_mean_classes": 0.04557814558250013,
+        "confusion_matrix": [
+          [
+            5770,
+            4,
+            52,
+            1,
+            0,
+            490,
+            32,
+            0,
+            118,
+            0,
+            142
+          ],
+          [
+            110,
+            1,
+            0,
+            29,
+            0,
+            278,
+            24,
+            0,
+            183,
+            0,
+            6
+          ],
+          [
+            363,
+            0,
+            533,
+            39,
+            0,
+            168,
+            6,
+            0,
+            3,
+            0,
+            28
+          ],
+          [
+            1,
+            2,
+            351,
+            9952,
+            0,
+            98,
+            679,
+            237,
+            116,
+            0,
+            64
+          ],
+          [
+            201,
+            0,
+            0,
+            0,
+            0,
+            93,
+            2,
+            0,
+            1,
+            0,
+            0
+          ],
+          [
+            1302,
+            0,
+            10,
+            1,
+            0,
+            3663,
+            14,
+            1,
+            0,
+            0,
+            0
+          ],
+          [
+            160,
+            0,
+            446,
+            1274,
+            0,
+            155,
+            742,
+            21,
+            0,
+            0,
+            456
+          ],
+          [
+            3,
+            11,
+            134,
+            201,
+            0,
+            63,
+            357,
+            251,
+            6,
+            0,
+            0
+          ],
+          [
+            2,
+            2,
+            0,
+            470,
+            0,
+            229,
+            1039,
+            0,
+            22,
+            0,
+            181
+          ],
+          [
+            95,
+            0,
+            0,
+            0,
+            0,
+            102,
+            1,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            38,
+            0,
+            0,
+            6,
+            0,
+            16,
+            250,
+            0,
+            0,
+            0,
+            51
+          ]
+        ],
+        "ece_15_equal_width_bins": 0.1302032503421667,
+        "events": 31952,
+        "macro_f1_11_classes": 0.30933467969249456,
+        "macro_f1_present_classes": 0.30933467969249456,
+        "nll": 1.2209923973311712
+      },
+      "independent_model_replay_performed": false,
+      "latest_epoch_cumulative_process_wall_seconds": 31073.909521705238,
+      "latest_epoch_phase_process_CPU_seconds": 16689.753103094,
+      "latest_epoch_phase_process_wall_seconds": 16698.36501536914,
+      "latest_visible_complete_epoch": 105,
+      "learning_rate": 0.001,
+      "logical_main_updates": 1260,
+      "name": "hcsn-s307-lr0.001",
+      "numeric_admission": "HOLD",
+      "raw_response_identity": {
+        "bytes": 6138,
+        "sha256": "3c49d289f54e9534669080b2ad6d71b42ec41b3d7551acdcc0f53b7be02d92a9"
+      },
+      "read_span": {
+        "control_wall_seconds": 6.719,
+        "finished": "2026-11-11T01:55:16.328Z",
+        "started": "2026-11-11T01:55:09.609Z"
+      },
+      "seed": 307,
+      "selected_best_checkpoint_identity_reported": {
+        "bytes": 450616,
+        "sha256": "6d7ce8ee073c51a11a49d043ea15d9e82291a0bca949cd716aafad15e35c1cc2"
+      },
+      "stopping": {
+        "best": 0.319200972102104,
+        "best_epoch": 103,
+        "plateau_anchor": 0.319200972102104,
+        "stale_epochs": 2
+      },
+      "whole_training_domain": "HOLD"
+    }
+  ],
+  "interpretation": "The prefix clocks belong to the latest visible epoch, not to the best checkpoint or a first threshold crossing. No missing epochs were inferred or replayed.",
+  "probability_arrays_read": false,
+  "schema": "source-bound-latest-visible-complete-epoch-metadata-v1",
+  "selected_model_bytes_read": false
+}

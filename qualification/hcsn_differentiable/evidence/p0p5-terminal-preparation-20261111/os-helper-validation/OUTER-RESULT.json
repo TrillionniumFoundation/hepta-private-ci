@@ -1,0 +1,88 @@
+{
+  "aggregate_RSS_limit_bytes": 268435456,
+  "argv": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-I",
+    "-B",
+    "/workspace/scratch/c385a7439f8e/os-helper-validation-v3/attempt-01/source/worker.py",
+    "/workspace/scratch/c385a7439f8e/os-helper-validation-v3/attempt-01/source",
+    "/workspace/scratch/c385a7439f8e/os-helper-validation-v3/attempt-01/output/worker"
+  ],
+  "automatic_retry": false,
+  "cost_scope": "Outer wait4 includes worker and children reaped by worker; separately adopted outer wait4 rows are disjoint. Do not add nested observe or case CPU again. Guard prefix excludes its own final JSON/OS exit.",
+  "errors": [],
+  "external_timeout_seconds": 60,
+  "final_remaining_original_identities": {},
+  "full_wait4": [
+    {
+      "CPU_seconds": 0.6504179999999999,
+      "observed_monotonic": 4616.021052668,
+      "peak_RSS_bytes": 26345472,
+      "pid": 6,
+      "returncode": 0
+    }
+  ],
+  "guard_self_CPU_prefix_seconds": 0.143361465,
+  "internal_kill_deadline_seconds": 50,
+  "known_disjoint_wait4_CPU_seconds": 0.6504179999999999,
+  "memory_enforcement": "independent sampled aggregate RSS guard plus inherited per-process 128MiB AS limit",
+  "model_operations": 0,
+  "native_operator_calls": 0,
+  "observed_aggregate_peak_RSS_bytes": 56221696,
+  "old_lost_test_credit_inherited": false,
+  "popen_started_monotonic": 4614.383893144,
+  "rss_exceeded": false,
+  "schema": "independent-os-validation-guard-v3",
+  "source_after": {
+    "/workspace/scratch/c385a7439f8e/os-helper-validation-v3/attempt-01/source/complete_os_envelope.py": {
+      "bytes": 16554,
+      "sha256": "7f2762c444031bc3d84131ec4cb6dd74790cbebd4b6a9229c6027886885ec0f9"
+    },
+    "/workspace/scratch/c385a7439f8e/os-helper-validation-v3/attempt-01/source/guard.py": {
+      "bytes": 5976,
+      "sha256": "bf5f8847c1a7fa256d9ef7e37bdcbc03cce9b385f6510cfc46b035118c32e0df"
+    },
+    "/workspace/scratch/c385a7439f8e/os-helper-validation-v3/attempt-01/source/os_processes.py": {
+      "bytes": 15037,
+      "sha256": "f58ca60428d3abafea377ca64e1d71040df98c4f149adce88436951187c990d6"
+    },
+    "/workspace/scratch/c385a7439f8e/os-helper-validation-v3/attempt-01/source/worker.py": {
+      "bytes": 9139,
+      "sha256": "d516fd4fc748a044cbe703062490f4cc568b9f20d399764fe0e617c989ee1dee"
+    }
+  },
+  "source_before": {
+    "/workspace/scratch/c385a7439f8e/os-helper-validation-v3/attempt-01/source/complete_os_envelope.py": {
+      "bytes": 16554,
+      "sha256": "7f2762c444031bc3d84131ec4cb6dd74790cbebd4b6a9229c6027886885ec0f9"
+    },
+    "/workspace/scratch/c385a7439f8e/os-helper-validation-v3/attempt-01/source/guard.py": {
+      "bytes": 5976,
+      "sha256": "bf5f8847c1a7fa256d9ef7e37bdcbc03cce9b385f6510cfc46b035118c32e0df"
+    },
+    "/workspace/scratch/c385a7439f8e/os-helper-validation-v3/attempt-01/source/os_processes.py": {
+      "bytes": 15037,
+      "sha256": "f58ca60428d3abafea377ca64e1d71040df98c4f149adce88436951187c990d6"
+    },
+    "/workspace/scratch/c385a7439f8e/os-helper-validation-v3/attempt-01/source/worker.py": {
+      "bytes": 9139,
+      "sha256": "d516fd4fc748a044cbe703062490f4cc568b9f20d399764fe0e617c989ee1dee"
+    }
+  },
+  "source_unchanged": true,
+  "status": "completed_all_new_tests_passed",
+  "suite_result": {
+    "bytes": 4482,
+    "sha256": "f7f96f5386534a0090b5087c98973ba8d35389505f7d66a098462a96353720ee"
+  },
+  "timed_out": false,
+  "whole_guard_wall_prefix_seconds": 1.7424241409999013,
+  "worker_pid": 6,
+  "worker_terminal": {
+    "CPU_seconds": 0.6504179999999999,
+    "observed_monotonic": 4616.021052668,
+    "peak_RSS_bytes": 26345472,
+    "pid": 6,
+    "returncode": 0
+  }
+}

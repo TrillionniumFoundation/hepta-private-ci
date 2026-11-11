@@ -1,0 +1,23 @@
+{
+  "archive": {
+    "bytes": 581500,
+    "path": "/workspace/scratch/c385a7439f8e/c2-native-preflight-recovered-v1/hcsn-c2-native-preflight-20261110-v1.zip",
+    "sha256": "6bfe207f36b47472964d7992b5881f4775775333f6b8cb0d09366321ccf4699c"
+  },
+  "parts": [
+    {
+      "bytes": 500000,
+      "offset": 0,
+      "path": "/workspace/scratch/c385a7439f8e/c2-native-preflight-recovered-v1/hcsn-c2-native-preflight-20261110-v1.zip.part-01",
+      "sha256": "22dc8fdfe3a3e8b06c163a97f759befa6ebd7ac9d63f15d7eeb1c6912923d3e2"
+    },
+    {
+      "bytes": 81500,
+      "offset": 500000,
+      "path": "/workspace/scratch/c385a7439f8e/c2-native-preflight-recovered-v1/hcsn-c2-native-preflight-20261110-v1.zip.part-02",
+      "sha256": "f5fe06b120d0db5dea5015e09ae60531a012d1a12a34b320c20848979d5ff744"
+    }
+  ],
+  "reconstruction": "Concatenate part bytes in increasing offset; exact original ZIP, no recompression.",
+  "schema": "original-zip-split-identity-v1"
+}

@@ -1,0 +1,55 @@
+--- renderer-v2/input_contract.py
++++ renderer-v3/input_contract.py
+@@ -9,12 +9,13 @@
+ 
+ ARMS = ('gru', 'cfc', 'snn_plif', 'event_time_lif', 'ssm_s4d', 'attention', 'hcsn')
+ SEEDS, LRS = (101, 211, 307), (.001, .003)
+-PROGRAM = '3ac51d32012f274f8a5a6afc4967569d0b9707b993cab0f5f9550c4e6495dbc1'
++PROGRAM = 'f2d1ce683591a9b8575aab2d0981bf67b9e465bf9686a8da2e87a2246a0ea70e'
+ PLAN = '4ccfa7cc21ec37312e48d095e8f4b7373c765dd6d33fa9314ce724d161e8b06b'
+ OLD = {'RESULT.json': {'bytes': 402835, 'sha256': '9a5ca0f21e3a881862eafd9e67e35793a9eaeb5a1d4dbcaebcaf6d3720e01367'},
+        'POINTS.json': {'bytes': 257663, 'sha256': '90e9f27b5ce07243621cf6b234c9ef0a406ff328ee42ed106e127f8193a1cf8f'}}
+ RSS, WALL, MAX_BYTES = 512 * 2**20, 120, 64 * 2**20
+-RUNTIME = ('input_contract.py', 'render_c2_resources.py', 'ANALYSIS-PLAN.json')
++RUNTIME = ('input_contract.py', 'render_c2_resources.py', 'native_analysis_envelope.py',
++           'native_observation_parsers.py', 'ANALYSIS-PLAN.json', 'ANALYSIS-PROGRAM-MANIFEST.json')
+ 
+ 
+ def require(condition, message):
+@@ -54,7 +55,9 @@
+     require(path.stat().st_size <= MAX_BYTES, 'input exceeds metadata size limit')
+     raw = path.read_bytes()
+     require(identity(raw) == spec['identity'], 'input identity mismatch: ' + str(path))
+-    tracked[str(path.resolve())] = spec['identity']
++    resolved = str(path.resolve())
++    require(resolved not in tracked or tracked[resolved] == spec['identity'], 'cross-record input identity changed')
++    tracked[resolved] = spec['identity']
+     return raw
+ 
+ 
+@@ -69,7 +72,7 @@
+     raw = Path(path).read_bytes()
+     require(len(raw) <= 2**20 and identity(raw)['sha256'] == expected_sha, 'root decision SHA mismatch')
+     auth = strict_json(raw)
+-    require(auth['schema'] == 'c2-resource-render-authorization-v1' and auth['execution_authorized'] is True
++    require(auth['schema'] == 'c2-resource-render-authorization-v3' and auth['execution_authorized'] is True
+             and auth['scope'] == 'render_only_after_complete_resource_analysis'
+             and auth['confirmation_E_access'] is False and auth['automatic_retry'] is False,
+             'future exact render authorization required')
+@@ -171,7 +174,7 @@
+ 
+ 
+ def load(auth, tracked):
+-    require(set(auth['inputs']) == {'os_receipt', 'core_receipt', 'RESULT', 'ZIP'}, 'input roster differs')
++    require(set(auth['inputs']) == {'os_receipt', 'core_receipt', 'RESULT', 'ZIP', 'native_envelope'}, 'input roster differs')
+     raw = {k: read_exact(v, tracked) for k, v in auth['inputs'].items()}
+     ids = {k: identity(v) for k, v in raw.items()}
+     import io
+@@ -203,5 +206,7 @@
+     number(result['metadata_worker_wall_seconds'], WALL)
+     number(result['worker_self_peak_RSS_bytes'], RSS)
+     envelopes(outer, core, result, auth, ids, members)
++    from native_analysis_envelope import verify_native
++    verify_native(raw['native_envelope'], auth, tracked, outer, core, result, ids)
+     table_contract(result)
+     return result, strict_json(contents['frozen-original-budget/RESULT.json']), raw, contents

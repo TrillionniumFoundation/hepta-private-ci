@@ -1,0 +1,54 @@
+{
+  "schema": "c2-terminal-auditor-execution-authorization-template-v3",
+  "execution_authorized": false,
+  "assembly_authorized": false,
+  "scope": "independent-c2-terminal-audit-only",
+  "confirmation_E_access": false,
+  "bootstrap_sources": {
+    "bootstrap.py": {
+      "bytes": 18282,
+      "sha256": "fedff1dde25bdff874b99ad2a13a0b39a12a4452bd5e38bb262c0f96db77697e"
+    },
+    "os_processes.py": {
+      "bytes": 15037,
+      "sha256": "f58ca60428d3abafea377ca64e1d71040df98c4f149adce88436951187c990d6"
+    }
+  },
+  "core_zip": {
+    "path": "/NOT-BOUND/auditor-core.zip",
+    "bytes": 73473,
+    "sha256": "87bedabde7f37ec8d70a80305691f1116e80493174a5cd33bf7058f635230b3a"
+  },
+  "output_directory": "/NOT-BOUND/new-exclusive-audit-output",
+  "assembly_receipt": {
+    "path": "/NOT-BOUND/assembled-RECEIPT.json",
+    "bytes": null,
+    "sha256": null
+  },
+  "binding": {
+    "path": "/NOT-BOUND/BINDING.json",
+    "bytes": null,
+    "sha256": null
+  },
+  "binding_sha256": null,
+  "program_manifest_sha256": "4cc126ad4cf11e12c80408a868f8c673be70bccdce95a02228fda9d1543ef8d2",
+  "plan_sha256": "1fc0d941bc9d96544c8caa5740aaba130685fed74b620f6e62dc22bec4a715ad",
+  "resources": {
+    "whole_hard_wall_seconds": 1800,
+    "metadata_soft_wall_seconds": 360,
+    "per_full_D_hard_wall_seconds": 210,
+    "final_reserve_seconds": 60,
+    "RSS_bytes": 2147483648,
+    "address_space_bytes": 8589934592,
+    "workers": 1,
+    "threads": 1
+  },
+  "native_outer_required": {
+    "whole_wall_seconds": 1950,
+    "RSS_bytes": 2147483648,
+    "workers": 1,
+    "threads": 1,
+    "automatic_retry": false,
+    "complete_OS_exit_receipt_required": true
+  }
+}

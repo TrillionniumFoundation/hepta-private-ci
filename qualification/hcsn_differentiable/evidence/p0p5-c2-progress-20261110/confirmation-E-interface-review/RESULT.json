@@ -1,0 +1,47 @@
+{
+  "findings": [
+    "Current v3 42-fit plan and C1/C2 remain smaller development studies; the candidate correctly preserves the separate original twelve-config/three-tuning/five-fresh-seed recipe.",
+    "The common-LR mean-over-three rule, both-LR retention, strict-best checkpoint, immutable frozen frontend and unchanged 256-event reset/first-gap semantics agree with the actual v8 interface and resource analysis.",
+    "Prediction-only dummy labels must mark every real event valid and padding invalid; they must never recreate label-dependent selection. This is stated by the feature/label isolation proposal, and implementation remains future work.",
+    "The stricter all-selected-seeds adequacy gate and no weaker-LR fallback are prospective candidate rules; they do not retroactively qualify existing runs.",
+    "No blocking contradiction found in the text. The 240-second per-model budget is an unverified E runtime allowance; failures must remain failures, and the existing no-extension rule is appropriate.",
+    "No evidence about C2 terminal quality, numerical admission or E outcomes was inferred from this protocol review."
+  ],
+  "preparation_prefix_CPU_seconds": 0.0015041660000000012,
+  "preparation_prefix_wall_seconds": 0.0018795799987856299,
+  "reviewed_sources": [
+    {
+      "bytes": 12866,
+      "path": "/workspace/scratch/c385a7439f8e/prospective-confirmation-E-candidate-v1/PROPOSAL.md",
+      "sha256": "eb8c7b10a674b797014ef461e32c7b4d24e852a65d54b3d59747b4781a6c6f2f"
+    },
+    {
+      "bytes": 19917,
+      "path": "/workspace/scratch/c385a7439f8e/prospective-confirmation-E-candidate-v1/PLAN.json",
+      "sha256": "be778e57d203779e7765ff2e2bc84e977d61a992894d747dd1b89b091a486ddf"
+    },
+    {
+      "bytes": 3861,
+      "path": "/workspace/scratch/c385a7439f8e/prospective-confirmation-E-candidate-v1/source-context/campaign-v2-plan.json",
+      "sha256": "e13f97aafdaf66548f016f2dcc3a38dd7e641a2ea83d52b8bea89f4c7e0cf114"
+    },
+    {
+      "bytes": 5721,
+      "path": "/workspace/scratch/c385a7439f8e/prospective-confirmation-E-candidate-v1/source-context/formal_protocol.json",
+      "sha256": "c9a7e3c4f98a131e9fb639832b413e18c00e25ba6f608a0d97c83d728c0a0465"
+    },
+    {
+      "bytes": 16537,
+      "path": "/workspace/scratch/c385a7439f8e/hcsn-repo/proposals/localization-v3/README.md",
+      "sha256": "1d329eb632407fc7dd2161cc2b202ffe7efadd3a74adb0f31d353fa5fc04024f"
+    },
+    {
+      "bytes": 10223,
+      "path": "/workspace/scratch/c385a7439f8e/hcsn-repo/proposals/localization-v2/PROTOCOL.md",
+      "sha256": "7f785054f4d54a5c51d9229a70f6319eb9c773b70d2daaf25dc5f77182cb8ffa"
+    }
+  ],
+  "schema": "hcsn-E-candidate-training-interface-static-review-v1",
+  "scope": "Static protocol consistency only; no E data, checkpoints, training, forward/backward, optimizer or native job access. Not execution authorization.",
+  "status": "no_static_protocol_conflict_found; implementation_and_separate_parent_decision_pending"
+}

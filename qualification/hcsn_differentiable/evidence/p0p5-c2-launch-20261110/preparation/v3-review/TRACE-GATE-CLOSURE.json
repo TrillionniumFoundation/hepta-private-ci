@@ -1,0 +1,81 @@
+{
+  "backward_calls": 0,
+  "cases": [
+    {
+      "accepted": true,
+      "case": "valid_control",
+      "error": null,
+      "result": {
+        "excluded_padded_sample_states": 1,
+        "retained_time_rows": 2,
+        "retained_valid_sample_states": 3
+      }
+    },
+    {
+      "accepted": false,
+      "case": "duplicate_position",
+      "error": "optimization time positions differ",
+      "result": null
+    },
+    {
+      "accepted": false,
+      "case": "wrong_valid_batch_indices",
+      "error": "optimization valid sample indices or actual intervals differ",
+      "result": null
+    },
+    {
+      "accepted": false,
+      "case": "wrong_actual_dt",
+      "error": "optimization valid sample indices or actual intervals differ",
+      "result": null
+    },
+    {
+      "accepted": false,
+      "case": "wrong_network_digest",
+      "error": "optimization network/update/episode identity differs",
+      "result": null
+    },
+    {
+      "accepted": false,
+      "case": "wrong_source_footer",
+      "error": "optimization trace footer/sample coverage differs",
+      "result": null
+    },
+    {
+      "accepted": false,
+      "case": "wrong_padding_count",
+      "error": "optimization trace footer/sample coverage differs",
+      "result": null
+    },
+    {
+      "accepted": false,
+      "case": "wrong_probability_width",
+      "error": "optimization probability rows do not cover each valid sample and state",
+      "result": null
+    },
+    {
+      "accepted": false,
+      "case": "wrong_update",
+      "error": "optimization network/update/episode identity differs",
+      "result": null
+    },
+    {
+      "accepted": false,
+      "case": "wrong_capture",
+      "error": "optimization record/capture/layer identity differs",
+      "result": null
+    }
+  ],
+  "exact_source": {
+    "bytes": 22228,
+    "path": "/workspace/scratch/c385a7439f8e/c2-execution-candidate-v3/c2_recording.py",
+    "sha256": "467e25570d0d7adf4f42b025d9a5a93334371e7416237336ceaa116cf1b4bbe0"
+  },
+  "forward_calls": 0,
+  "model_reads": 0,
+  "optimizer_operations": 0,
+  "passed_cases": 10,
+  "schema": "C2-independent-model-free-trace-gate-closure-v1",
+  "scope": "Exact AST-extracted frozen validation function; positive control plus nine isolated corrupted metadata cases. No numerical or production-training admission.",
+  "torch_imported": false
+}

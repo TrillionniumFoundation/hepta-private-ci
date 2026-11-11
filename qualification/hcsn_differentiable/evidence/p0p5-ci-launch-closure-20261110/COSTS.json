@@ -1,0 +1,108 @@
+{
+  "accounting_complete": false,
+  "additive_grand_total": null,
+  "billed_currency": null,
+  "curation_cost": "COPY-RECEIPT.json",
+  "energy_joules": null,
+  "rows": [
+    {
+      "artifact": "earlier-tree/worktree-integrity/EXECUTION.json",
+      "id": "six-manifest-worktree-proof",
+      "identity": {
+        "bytes": 7900,
+        "sha256": "dc450b962dbc8fd591f721bda22dacc1d583f223448cd39ab23c04ddc493c30b"
+      },
+      "scope": "Whole child: six manifests and original Markdown inputs; not this later appendix.",
+      "waited_child_CPU_seconds": 0.5978429999999999,
+      "whole_child_wall_seconds": 0.6052475120013696
+    },
+    {
+      "artifact": "earlier-tree/committed-blobs/EXECUTION.json",
+      "id": "1068-committed-blob-proof",
+      "identity": {
+        "bytes": 128581,
+        "sha256": "52c23e334652b0fd954ecbb42ae55603772062789c8317197c95293695a8e3b3"
+      },
+      "scope": "Whole child: exact a33490 local commit/tree, matching remote652263 tree; not this later appendix.",
+      "waited_child_CPU_seconds": 2.110619,
+      "whole_child_wall_seconds": 2.244179431003431
+    },
+    {
+      "artifact": "c2-launch-checks/packaging/EXECUTION.json",
+      "id": "c2-launch-package",
+      "identity": {
+        "bytes": 1065,
+        "sha256": "4185c438645cf94bba7bc52194b63e68ce987c09bdb59347a0c1e170bc4fae8e"
+      },
+      "scope": "Whole child: exact original-byte packaging, not training.",
+      "waited_child_CPU_seconds": 0.266443,
+      "whole_child_wall_seconds": 0.2868869800004177
+    },
+    {
+      "artifact": "c2-launch-checks/integrity/EXECUTION.json",
+      "id": "c2-launch-integrity",
+      "identity": {
+        "bytes": 1673,
+        "sha256": "23b45d9fe1199090ea836bad459f68d4d5b46456d0bfb8e56be1688d092bc236"
+      },
+      "scope": "Whole child: 145 members,11 ZIPs,35 links; split archive reassembly is separately bound by the package builder.",
+      "waited_child_CPU_seconds": 0.254118,
+      "whole_child_wall_seconds": 0.2680816110005253
+    },
+    {
+      "artifact": "c2-launch-checks/codespell/EXECUTION.json",
+      "id": "c2-launch-codespell",
+      "identity": {
+        "bytes": 973,
+        "sha256": "f836ebf216abcf2bc010df0c54968472ac203df365d9313e06784ae4894306bf"
+      },
+      "scope": "Whole child: codespell2.4.3 on new immutable archive text.",
+      "waited_child_CPU_seconds": 0.285217,
+      "whole_child_wall_seconds": 0.28908414100078517
+    },
+    {
+      "artifact": "c2-launch-checks/formatter/RESULT.json",
+      "id": "c2-launch-formatter",
+      "identity": {
+        "bytes": 295,
+        "sha256": "634bba9adf0685f94944b01fca9ff9aa37989698cc5eb99b76ffd9497e3660a1"
+      },
+      "scope": "Whole child: formatter; all146 frozen files unchanged.",
+      "waited_child_CPU_seconds": 0.19703199999999998,
+      "whole_child_wall_seconds": 0.20950230099697364
+    },
+    {
+      "artifacts": [
+        "codespell-fix/RESULT.json",
+        "codespell-fix/offline-resolution-failure.json",
+        "codespell-fix/online-tool-setup.json",
+        "codespell-fix/FORMATTER.json"
+      ],
+      "id": "codespell-red-green-and-install",
+      "scope": "Retained failed offline tool resolution, isolated tool setup and exact red/green checks. No model-runtime change. Unknown failed-wrapper cost remains unknown."
+    },
+    {
+      "artifact": "science-original/COST-ADDENDUM.json",
+      "id": "single-native-science-artifact-download",
+      "scope": "One native GET plus cloud recovery. Native script CPU and wall are pre-final-serialization samples; waited gh CPU is nested. Hosted inner fixture times are separate, not complete job CPU or billing."
+    },
+    {
+      "artifact": "c2-launch-checks/publication-screen/RESULT.json",
+      "id": "public-archive-pattern-screen",
+      "scope": "Local main-entry interval and CPU prefix only; no complete process total or broad security certification."
+    },
+    {
+      "artifacts": [
+        "ci/observations-original.zip.json",
+        "ci/observation-save-failure.json",
+        "publication/current-resources-api-progress.json"
+      ],
+      "complete_CPU_seconds": null,
+      "complete_wall_seconds": null,
+      "id": "API-observations-and-publication",
+      "scope": "Read-only CI observations and prior draft-branch publication. One local serialization request failed before process creation; original API bytes were retained and saved without another API read."
+    }
+  ],
+  "rule": "Keep failed attempts; do not add nested fixture, child, controller, download or job scopes. Unknown is not zero.",
+  "schema": "ci-launch-closure-cost-index-v1"
+}

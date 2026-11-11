@@ -1,0 +1,39 @@
+--- v2/bootstrap.py
++++ v3/bootstrap.py
+@@ -84,8 +84,7 @@
+             for n in names: save(target/n, z.read(n))
+     return plan
+ def probe(pid):
+-    try:
+-        return read_stat(pid)
++    try: return read_stat(pid)
+     except (FileNotFoundError, ProcessLookupError): return None
+ def quiescent(pids, needles):
+     require(len(pids) == 7 and len(set(pids)) == 7 and all(type(p) is int and p > 1 for p in pids), 'seven distinct original PIDs required')
+@@ -161,7 +160,7 @@
+         'native_terminal': {'path': native['path'], 'identity': {k:native[k] for k in ('bytes','sha256')}}}, pids, observation
+ def main(args):
+     start, output, owned = time.monotonic(), Path(args.output).resolve(), False
+-    row = dict(schema='c2-auditor-bootstrap-recovery-v2', mode=args.mode, status='failed_or_incomplete',
++    row = dict(schema='c2-auditor-bootstrap-recovery-v3', mode=args.mode, status='failed_or_incomplete',
+                automatic_retry=False, scientific_admission='HOLD', confirmation_E_access=False)
+     reader, audit_end = Reader(start+120), None
+     try:
+@@ -200,13 +199,14 @@
+             row['preflight'] = save(output/'PREFLIGHT-OS.json', preflight)
+             require(preflight['process_gate_passed'] and b'Ran 28 tests' in (output/'preflight/stderr').read_bytes(), 'native software preflight failed')
+             reader.verify(); require(bound.verify_program(output/'core') == MANIFEST, 'auditor source changed'); require(time.monotonic() <= reader.deadline, 'setup exceeded 120 seconds')
+-            (output/'audit-os').mkdir(); row['setup_wall_seconds'] = time.monotonic()-start
++            (output/'audit-os').mkdir()
+             argv = [sys.executable,'-B','launch.py','--authorization',args.authorization,'--authorization-sha',args.authorization_sha,
+                     '--binding',auth['binding']['path'],'--binding-sha',auth['binding_sha256'],'--output',str(output/'audit'),'--launch-directory',str(output/'audit-launch')]
+-            actual, _ = observe(argv, output/'audit-os', env, 1800, 2147483648)
++            actual, _ = observe(argv, output/'audit-os', env, 1800, 2147483648, launch_deadline=reader.deadline)
+             audit_end = actual.get('wait4_completed_monotonic') or time.monotonic(); reader.deadline = audit_end+30
+             row['audit_complete_OS'] = save(output/'AUDIT-OS.json', actual)
+-            require(actual['process_gate_passed'], 'actual audit envelope not admitted')
++            row['setup_wall_seconds'] = actual['popen_started_monotonic']-start if actual.get('popen_started_monotonic') is not None else None
++            require(actual['process_gate_passed'] and row['setup_wall_seconds'] is not None and 0 <= row['setup_wall_seconds'] <= 120, 'actual audit/startup envelope not admitted')
+             inner = json.loads((output/'audit-launch/RECEIPT.json').read_bytes())
+             require(inner['status'] == 'completed' and inner.get('archive_finalized') is True and inner.get('CPU_is_lower_bound') is False, 'core terminal evidence incomplete')
+             row['archive'] = importlib.import_module('launch').verify_archive(output/'audit.zip', MANIFEST,

@@ -1,0 +1,80 @@
+{
+  "E_reads": 0,
+  "actual_C2_output_reads": 0,
+  "assembly_own_CPU_prefix_seconds": 0.006004248,
+  "assembly_wall_prefix_seconds": 0.007677484005398583,
+  "checks": {
+    "access_budget": "Metadata only after all terminal or reviewed postmortem; separate 120-second/512MiB/single-worker/thread, no retry, E/model/oracle access forbidden.",
+    "chronology": "Explicitly written after C2 launch/three-epoch observations/one reported terminal; not retrospective experiment preregistration.",
+    "costs": "All original and C1/C2 opportunities, discarded partial work and failures charged; final nonoverlapping outer scopes, parallel calendar and uncertainty in original final CPU remain distinct.",
+    "crossing": "Original .30 target and first complete-epoch crossing retained; no before-training/epoch mixing, interpolation or successful-seed-only group median.",
+    "memory": "Per-attempt observed RSS and max across chain only; not summed peaks, GPU VRAM or memory exactly at a quality crossing.",
+    "original_views": "Copy/hash-check prior original42 and separate C1 views; missing remains missing; no C2-selected LR or later score retrofitted into 300/900/1800.",
+    "terminal_selection": "All six HCSN qualities independently verified before one all-three-seed mean/common LR; exact ties .001; no selected-seed or failed-fit deletion.",
+    "training_scientific_separation": "Producer and independent adequacy shown separately; all selected seeds needed for an adequately trained comparison; numerical/scientific/P5 gates unchanged."
+  },
+  "cost_scope": "Assembly prefix after interpreter imports; excludes manual reading, final serialization/archive and outer tool time. Complete manual-review/outer CPU and wall were not measured and remain unknown; no rerun was made to manufacture timing.",
+  "execution_authorized_by_review": false,
+  "findings": [
+    {
+      "evidence": "c2_runner.epoch_clocks samples child elapsed once and returns cumulative_process_wall_seconds = parent_wall + elapsed. c2_controller finally records attempt_wrapper_wall_seconds and cumulative_parent_and_c2_active_wall_seconds separately.",
+      "id": "CLOCK-SCOPE-01",
+      "implication": "Epoch quality coordinates are parent complete outer plus child process-prefix time; final training cost is parent complete outer plus whole attempt-wrapper time. They are not identical clock scopes.",
+      "required_reporting": "Label quality_clock_scope and terminal_cost_scope. Keep the original epoch timestamp; do not distribute or add the final wrapper difference to earlier target crossings. If exact wrapper-inclusive readiness is needed, state the unsupported offset/interval explicitly.",
+      "requires_frozen_plan_change": false,
+      "requires_model_or_curve_rerun": false,
+      "severity": "implementation_precision_note_not_plan_blocker"
+    }
+  ],
+  "input_bytes_unchanged": true,
+  "inputs": {
+    "/workspace/scratch/c385a7439f8e/c2-execution-candidate-v4/c2_controller.py": {
+      "bytes": 24685,
+      "sha256": "5958053887fa3f29ee4a13aff9d06a151793e76d6369c68f554e77eb229104f6"
+    },
+    "/workspace/scratch/c385a7439f8e/c2-execution-candidate-v4/c2_runner.py": {
+      "bytes": 27503,
+      "sha256": "161d803d878b2aa368f60f1f481de773d6577a91068a4c8dbff0b839074cde11"
+    },
+    "/workspace/scratch/c385a7439f8e/c2-resource-analysis-plan-v1/PLAN.json": {
+      "bytes": 8456,
+      "sha256": "4ccfa7cc21ec37312e48d095e8f4b7373c765dd6d33fa9314ce724d161e8b06b"
+    },
+    "/workspace/scratch/c385a7439f8e/c2-terminal-independent-auditor-program-v1.zip": {
+      "bytes": 73473,
+      "sha256": "87bedabde7f37ec8d70a80305691f1116e80493174a5cd33bf7058f635230b3a"
+    },
+    "/workspace/scratch/c385a7439f8e/c2-terminal-independent-auditor-v1/MANIFEST.json": {
+      "bytes": 3081,
+      "sha256": "4cc126ad4cf11e12c80408a868f8c673be70bccdce95a02228fda9d1543ef8d2"
+    },
+    "/workspace/scratch/c385a7439f8e/hcsn-repo/qualification/hcsn_differentiable/evidence/p0p5-c2-launch-20261110/decision/DECISION.json": {
+      "bytes": 7524,
+      "sha256": "bee192193f0f12599f783f348b6dea8c10b2a18df359487c3cc0c0c44d071370"
+    },
+    "/workspace/scratch/c385a7439f8e/hcsn-repo/qualification/hcsn_differentiable/evidence/p0p5-resource-replay-20261110/resource-analysis-v1/PLAN.json": {
+      "bytes": 3097,
+      "sha256": "a893ceda6bff869455adf37e9d7ad61a7a8999379a9d1639fdc9dc5951a1472e"
+    },
+    "/workspace/scratch/c385a7439f8e/hcsn-repo/qualification/hcsn_differentiable/evidence/p0p5-resource-replay-20261110/resource-analysis-v1/analyze_resources.py": {
+      "bytes": 19222,
+      "sha256": "dc398a012bd25d611c0bbbfc09f64a3c76c7d1d367c84c5178864140c769ee95"
+    },
+    "/workspace/scratch/c385a7439f8e/hcsn-repo/qualification/hcsn_differentiable/evidence/p0p5-resource-replay-20261110/resource-analysis-v1/output-v1/POINTS.json": {
+      "bytes": 257663,
+      "sha256": "90e9f27b5ce07243621cf6b234c9ef0a406ff328ee42ed106e127f8193a1cf8f"
+    },
+    "/workspace/scratch/c385a7439f8e/hcsn-repo/qualification/hcsn_differentiable/evidence/p0p5-resource-replay-20261110/resource-analysis-v1/output-v1/RESULT.json": {
+      "bytes": 402835,
+      "sha256": "9a5ca0f21e3a881862eafd9e67e35793a9eaeb5a1d4dbcaebcaf6d3720e01367"
+    }
+  },
+  "model_or_logits_reads": 0,
+  "model_oracle_curve_executions": 0,
+  "producer_mutations": 0,
+  "review_scope": "Independent prose/rule review plus exact byte identities. No implementation or numerical/cost-curve result is approved by this preparation review.",
+  "schema": "hcsn-C2-resource-plan-independent-static-review-v1",
+  "scientific_admission": "HOLD",
+  "status": "no_blocking_plan_inconsistency_found",
+  "whole_training_numerical_admission": "HOLD"
+}

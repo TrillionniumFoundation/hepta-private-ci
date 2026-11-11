@@ -1,0 +1,29 @@
+{
+  "schema": "independent-logrisk-stored-JSON-review-v1",
+  "scope": "One complete original 30-query/135-derivative report and five exact complete-query fragments. No new model, log-risk function, oracle, or finite differences executed.",
+  "derivative_count": 135,
+  "ordinary_FP64_FD_dispositions_recomputed": {
+    "passed_at_declared_resolution": 38,
+    "roundoff_limited_not_a_FD_pass": 96,
+    "disagrees_above_resolution": 1
+  },
+  "max_recomputed_scaled_errors": {
+    "AD": 4.371503159461554e-15,
+    "reference_FD": 1.8190540868527574e-12
+  },
+  "all_recorded_AD_and_high_precision_FD_meet_original_gate": true,
+  "original_primary_passed_preserved": false,
+  "same_failure_query_verified_in_five_fragments": [
+    "hcsn-s101-lr0.003",
+    "hcsn-s211-lr0.001",
+    "hcsn-s211-lr0.003",
+    "hcsn-s307-lr0.001",
+    "hcsn-s307-lr0.003"
+  ],
+  "failure_AD_absolute_error": 5.204170427930421e-17,
+  "failure_ordinary_FD_absolute_error": 5.99673686575708e-10,
+  "center_log_error_ULPs": 5.0,
+  "interpretation": "The ordinary-FP64 finite-difference confirmation gate failed at the saved query. The ULP-based resolution estimate is not a total function-evaluation/truncation error bound. Center-point ULP error does not bound either finite-difference endpoint. AD and the saved 80-digit derivative references agree at this point; this result does not establish a wrong training gradient.",
+  "five_full_original_reports_independently_read": false,
+  "new_qualification_credit": false
+}

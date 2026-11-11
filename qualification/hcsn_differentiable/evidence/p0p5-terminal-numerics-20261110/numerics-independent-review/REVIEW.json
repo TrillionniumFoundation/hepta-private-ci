@@ -1,0 +1,2586 @@
+{
+  "archive_binding": {
+    "new_download_by_this_review": false,
+    "original": {
+      "CRC_and_original_members_verified": true,
+      "bytes": 34050599,
+      "original_files_unchanged": true,
+      "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/numerics-terminal-postmortem-v1.zip",
+      "sha256": "e96030a4c1a29031e56c406d7cc72cee9d141a0edb4701e3a83d60b5d5e32c52"
+    },
+    "publisher_assets": [
+      {
+        "CRC_and_members_verified": true,
+        "anonymous_asset_API": {
+          "HTTP_status": "404",
+          "authorization_header_sent": false,
+          "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/releases/assets/733215514"
+        },
+        "anonymous_asset_browser": {
+          "HTTP_status": "404",
+          "authorization_header_sent": false,
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/releases/download/untagged-0807e6b5e132bde20abf/numerics-terminal-postmortem-v1.zip"
+        },
+        "asset_id": 733215514,
+        "authenticated_full_readback_verified": true,
+        "authenticated_readback_sha256": "e96030a4c1a29031e56c406d7cc72cee9d141a0edb4701e3a83d60b5d5e32c52",
+        "bytes": 34050599,
+        "disposition": "uploaded_once",
+        "name": "numerics-terminal-postmortem-v1.zip",
+        "sha256": "e96030a4c1a29031e56c406d7cc72cee9d141a0edb4701e3a83d60b5d5e32c52"
+      },
+      {
+        "CRC_and_members_verified": true,
+        "anonymous_asset_API": {
+          "HTTP_status": "404",
+          "authorization_header_sent": false,
+          "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/releases/assets/733217675"
+        },
+        "anonymous_asset_browser": {
+          "HTTP_status": "404",
+          "authorization_header_sent": false,
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/releases/download/untagged-0807e6b5e132bde20abf/hcsn-terminal-numerics-collector-receipts-20261110-v1.zip"
+        },
+        "asset_id": 733217675,
+        "authenticated_full_readback_verified": true,
+        "authenticated_readback_sha256": "e6c01713ed4b962272b937976be2b989208254b1f02c22b8316dfd0ee2887d46",
+        "bytes": 254590,
+        "disposition": "uploaded_once",
+        "name": "hcsn-terminal-numerics-collector-receipts-20261110-v1.zip",
+        "sha256": "e6c01713ed4b962272b937976be2b989208254b1f02c22b8316dfd0ee2887d46"
+      }
+    ]
+  },
+  "artifact_records_bound_to_original_manifest": 342,
+  "best_checkpoint_hashes_independently_bound_to_prior_full_D_replay": {
+    "hcsn-s101-lr0.001": "e05eb04842d5b9df1f9934559951783f9cc8ffb4e9e580e90b24346780d54a48",
+    "hcsn-s101-lr0.003": "19768d4d2133872c7f52bec2a70c230ce751263eb765a5fee0008248816ea919",
+    "hcsn-s211-lr0.001": "cceba181cccb58e0d6e4e6e0a57211b57f5bcb5ecf2c1590ed56c713ac98dcbf",
+    "hcsn-s211-lr0.003": "e04f89af1ee3e0e0d015217eb3737c8db980b96f3f93535f67134044622f191c",
+    "hcsn-s307-lr0.001": "44d199fee55bdbd8dcac89c4c7556765a6379b04835e8dc247b7db9e6b06b5f6",
+    "hcsn-s307-lr0.003": "e37bdb1dbcd9d650fee46fe6bf96391d55162a8b029a32e54123a92b964fdb50"
+  },
+  "copied_input_items_verified": 52,
+  "costs": {
+    "collector_complete_child_CPU_seconds": 11.4558,
+    "collector_complete_child_wall_seconds": 11.501382886897773,
+    "complete_attempt_CPU_known": false,
+    "energy_or_billing_known": false,
+    "hard_cap_enforcement_tail_seconds": 0.006360915023833513,
+    "nested_completed_stage_CPU_seconds": 10229.718832,
+    "nested_completed_stage_wall_seconds": 10237.81142629357,
+    "nested_views_not_added": true,
+    "original_bootstrap_waited_CPU_lower_bound_seconds": 10299.398115,
+    "original_bootstrap_wall_seconds": 10808.759284527972,
+    "original_launcher_waited_CPU_lower_bound_seconds": 10278.141465,
+    "original_launcher_wall_seconds": 10800.006360915024,
+    "separate_publication_GNU": {
+      "publication-inventory/GNU-TIME.txt": {
+        "peak_RSS_bytes": 18415616,
+        "rounded_CPU_seconds": 0.21,
+        "rounded_whole_wall_seconds": 0.22
+      },
+      "publication/UPLOAD-GNU-TIME.txt": {
+        "peak_RSS_bytes": 35143680,
+        "rounded_CPU_seconds": 8.11,
+        "rounded_whole_wall_seconds": 62.92
+      }
+    }
+  },
+  "data_manifest_sha256": "0eb233da8d0b766c35356ba450d0572f1e6a87a47f1d8a17cd32c2ae6f25a1cb",
+  "domain_records": 10752,
+  "errors": [
+    "original data manifest identity"
+  ],
+  "finite_count": 49,
+  "finite_rows": [
+    {
+      "fixture": {
+        "episode_id": "A01-0",
+        "intervals": 32,
+        "posterior_after_position": 31
+      },
+      "name": "hcsn-s101-lr0.001",
+      "projected": [
+        1.0794795591102748,
+        0.6486393357192403,
+        0.607041166659345,
+        0.8934028661156896
+      ],
+      "quantities": [
+        "value",
+        "event_count",
+        "discounted_event_count",
+        "active_probability"
+      ],
+      "reference": [
+        1.0757305345637782,
+        0.6442671530091515,
+        0.6029003353964014,
+        0.8938522957930193
+      ],
+      "relative_errors": [
+        0.0034850963378267315,
+        0.0067862884048454095,
+        0.0068681853696781646,
+        0.0005028008312390217
+      ],
+      "result_identity": {
+        "bytes": 19064,
+        "path": "/home/qian-qi/hepta-hcsn-final-numerics-20261110-c385-v1/hcsn-s101-lr0.001/finite-best-0.json",
+        "sha256": "c197562ab5a1dd520c5bb629200a8050c0593d79b1cef81d7160e940b77591dd"
+      },
+      "scaled_errors": [
+        0.0034850963378267315,
+        0.004372182710088768,
+        0.004140831262943623,
+        0.000449429677329638
+      ],
+      "stage": "finite-best-0"
+    },
+    {
+      "fixture": {
+        "episode_id": "A01-0",
+        "intervals": 32,
+        "posterior_after_position": 31
+      },
+      "name": "hcsn-s101-lr0.003",
+      "projected": [
+        1.0954187613846895,
+        0.6671647299712875,
+        0.6253529639875308,
+        0.8933366992804926
+      ],
+      "quantities": [
+        "value",
+        "event_count",
+        "discounted_event_count",
+        "active_probability"
+      ],
+      "reference": [
+        1.0917093762879242,
+        0.6628369495900082,
+        0.621252858239872,
+        0.8937799582661845
+      ],
+      "relative_errors": [
+        0.0033977770799937007,
+        0.0065291779282314515,
+        0.0065997374390763,
+        0.0004959374861702286
+      ],
+      "result_identity": {
+        "bytes": 19055,
+        "path": "/home/qian-qi/hepta-hcsn-final-numerics-20261110-c385-v1/hcsn-s101-lr0.003/finite-best-0.json",
+        "sha256": "244fea0975f5a44f09144b8d835b2b8e2a909e2e8e60e398290e246d298eb66d"
+      },
+      "scaled_errors": [
+        0.0033977770799937007,
+        0.004327780381279345,
+        0.004100105747658844,
+        0.0004432589856918634
+      ],
+      "stage": "finite-best-0"
+    },
+    {
+      "fixture": {
+        "episode_id": "A01-0",
+        "intervals": 32,
+        "posterior_after_position": 31
+      },
+      "name": "hcsn-s211-lr0.001",
+      "projected": [
+        0.6605432664656066,
+        0.14279871274700356,
+        0.13288814205332802,
+        0.9694833616837557
+      ],
+      "quantities": [
+        "value",
+        "event_count",
+        "discounted_event_count",
+        "active_probability"
+      ],
+      "reference": [
+        0.6592837307072912,
+        0.14125370249395247,
+        0.13146382142965438,
+        0.9698852008329587
+      ],
+      "relative_errors": [
+        0.0019104608526652655,
+        0.010937838978891477,
+        0.01083431630226719,
+        0.0004143161983066552
+      ],
+      "result_identity": {
+        "bytes": 19051,
+        "path": "/home/qian-qi/hepta-hcsn-final-numerics-20261110-c385-v1/hcsn-s211-lr0.001/finite-best-0.json",
+        "sha256": "e2eac3d82d3cf74c398d8ff1688b37d003905d98a668b112c6342dedefe87c32"
+      },
+      "scaled_errors": [
+        0.0012595357583153888,
+        0.0015450102530510934,
+        0.0014243206236736472,
+        0.00040183914920299824
+      ],
+      "stage": "finite-best-0"
+    },
+    {
+      "fixture": {
+        "episode_id": "A01-0",
+        "intervals": 32,
+        "posterior_after_position": 31
+      },
+      "name": "hcsn-s211-lr0.003",
+      "projected": [
+        0.8806220669744476,
+        0.41097071549030834,
+        0.38171651837107284,
+        0.9176976558012258
+      ],
+      "quantities": [
+        "value",
+        "event_count",
+        "discounted_event_count",
+        "active_probability"
+      ],
+      "reference": [
+        0.8774572820859364,
+        0.40722084214659315,
+        0.3782082132091018,
+        0.9182476602189379
+      ],
+      "relative_errors": [
+        0.003606768047998463,
+        0.009208451423921191,
+        0.009276121034503773,
+        0.000598971760604321
+      ],
+      "result_identity": {
+        "bytes": 19068,
+        "path": "/home/qian-qi/hepta-hcsn-final-numerics-20261110-c385-v1/hcsn-s211-lr0.003/finite-best-0.json",
+        "sha256": "f63864a6457943259cefcb771c5df9cf20575dd7d79ea6552ad44d7de192753a"
+      },
+      "scaled_errors": [
+        0.0031647848885111296,
+        0.003749873343715182,
+        0.003508305161971037,
+        0.0005500044177121355
+      ],
+      "stage": "finite-best-0"
+    },
+    {
+      "fixture": {
+        "episode_id": "A01-0",
+        "intervals": 32,
+        "posterior_after_position": 31
+      },
+      "name": "hcsn-s307-lr0.001",
+      "projected": [
+        0.6388235406726439,
+        0.1161922584548342,
+        0.10836385574288829,
+        0.9778394679160444
+      ],
+      "quantities": [
+        "value",
+        "event_count",
+        "discounted_event_count",
+        "active_probability"
+      ],
+      "reference": [
+        0.6379642137966726,
+        0.11515307093917729,
+        0.10739699989253826,
+        0.9780659293414892
+      ],
+      "relative_errors": [
+        0.0013469828830324066,
+        0.009024401235515511,
+        0.009002633698496864,
+        0.0002315400410658137
+      ],
+      "result_identity": {
+        "bytes": 19060,
+        "path": "/home/qian-qi/hepta-hcsn-final-numerics-20261110-c385-v1/hcsn-s307-lr0.001/finite-best-0.json",
+        "sha256": "521075fcc132152ed7cf7b90de41cc3df2cb6d6d487665caa4213d5e5d80257d"
+      },
+      "scaled_errors": [
+        0.0008593268759713446,
+        0.001039187515656917,
+        0.0009668558503500291,
+        0.00022646142544480163
+      ],
+      "stage": "finite-best-0"
+    },
+    {
+      "fixture": {
+        "episode_id": "A01-0",
+        "intervals": 32,
+        "posterior_after_position": 31
+      },
+      "name": "hcsn-s307-lr0.003",
+      "projected": [
+        0.8013441799151755,
+        0.31012839222607064,
+        0.29126786662724935,
+        0.9512486034547005
+      ],
+      "quantities": [
+        "value",
+        "event_count",
+        "discounted_event_count",
+        "active_probability"
+      ],
+      "reference": [
+        0.7996158954352617,
+        0.3080994862419657,
+        0.28935234402613835,
+        0.9515136378625221
+      ],
+      "relative_errors": [
+        0.0021613933512077423,
+        0.006585230014020647,
+        0.006620034849062637,
+        0.0002785397888956424
+      ],
+      "result_identity": {
+        "bytes": 19038,
+        "path": "/home/qian-qi/hepta-hcsn-final-numerics-20261110-c385-v1/hcsn-s307-lr0.003/finite-best-0.json",
+        "sha256": "a77633bdcf5586aae5de3daaf1bf086f2ecb2d13201a7c24b677cdf454ed26d2"
+      },
+      "scaled_errors": [
+        0.0017282844799137997,
+        0.002028905984104934,
+        0.0019155226011109971,
+        0.00026503440782155163
+      ],
+      "stage": "finite-best-0"
+    },
+    {
+      "fixture": {
+        "episode_id": "A01-0",
+        "intervals": 128,
+        "posterior_after_position": 31
+      },
+      "name": "hcsn-s101-lr0.001",
+      "projected": [
+        2.811115337814299,
+        2.0774617200501306,
+        1.5903605551169007,
+        0.9194454225548402
+      ],
+      "quantities": [
+        "value",
+        "event_count",
+        "discounted_event_count",
+        "active_probability"
+      ],
+      "reference": [
+        2.804002394314097,
+        2.067956066133388,
+        1.5826373040668555,
+        0.9196153776609127
+      ],
+      "relative_errors": [
+        0.0025367109224390264,
+        0.004596642101065659,
+        0.004879987998639306,
+        0.00018481107450032892
+      ],
+      "result_identity": {
+        "bytes": 22700,
+        "path": "/home/qian-qi/hepta-hcsn-final-numerics-20261110-c385-v1/hcsn-s101-lr0.001/finite-best-1.json",
+        "sha256": "114929bf372a4c2d607df53533b5835dfeec0f4e6d24967d4bbd6cb22a2f0290"
+      },
+      "scaled_errors": [
+        0.0025367109224390264,
+        0.004596642101065659,
+        0.004879987998639306,
+        0.00016995510607253905
+      ],
+      "stage": "finite-best-1"
+    },
+    {
+      "fixture": {
+        "episode_id": "A01-0",
+        "intervals": 128,
+        "posterior_after_position": 31
+      },
+      "name": "hcsn-s101-lr0.003",
+      "projected": [
+        2.823332885345284,
+        2.0898198094326803,
+        1.6045836692656053,
+        0.9198531110737358
+      ],
+      "quantities": [
+        "value",
+        "event_count",
+        "discounted_event_count",
+        "active_probability"
+      ],
+      "reference": [
+        2.816277325947538,
+        2.0803804517598476,
+        1.5969191786650805,
+        0.9200246519880029
+      ],
+      "relative_errors": [
+        0.0025052786288977656,
+        0.004537322807877599,
+        0.004799548219423212,
+        0.00018645251939326666
+      ],
+      "result_identity": {
+        "bytes": 22695,
+        "path": "/home/qian-qi/hepta-hcsn-final-numerics-20261110-c385-v1/hcsn-s101-lr0.003/finite-best-1.json",
+        "sha256": "e4a68e88322ccdb1c2cbd097354485018f6f9d6faa22c7a8304e26498389ba4b"
+      },
+      "scaled_errors": [
+        0.0025052786288977656,
+        0.004537322807877599,
+        0.004799548219423212,
+        0.00017154091426707652
+      ],
+      "stage": "finite-best-1"
+    },
+    {
+      "fixture": {
+        "episode_id": "A01-0",
+        "intervals": 128,
+        "posterior_after_position": 31
+      },
+      "name": "hcsn-s211-lr0.001",
+      "projected": [
+        1.9889345549340853,
+        0.9762964295895201,
+        0.6881651228116699,
+        0.9384626969622947
+      ],
+      "quantities": [
+        "value",
+        "event_count",
+        "discounted_event_count",
+        "active_probability"
+      ],
+      "reference": [
+        1.983156537788226,
+        0.967724625636853,
+        0.6818840075287281,
+        0.9387483293208274
+      ],
+      "relative_errors": [
+        0.002913545671136653,
+        0.008857689187175593,
+        0.009211413104855818,
+        0.00030426936550650437
+      ],
+      "result_identity": {
+        "bytes": 22671,
+        "path": "/home/qian-qi/hepta-hcsn-final-numerics-20261110-c385-v1/hcsn-s211-lr0.001/finite-best-1.json",
+        "sha256": "0bc26c2e650b16e7755127ba52c7eeb1ba0ded4859706308c577f1ad7424058d"
+      },
+      "scaled_errors": [
+        0.002913545671136653,
+        0.0085718039526671,
+        0.006281115282941729,
+        0.00028563235853273916
+      ],
+      "stage": "finite-best-1"
+    },
+    {
+      "fixture": {
+        "episode_id": "A01-0",
+        "intervals": 128,
+        "posterior_after_position": 31
+      },
+      "name": "hcsn-s211-lr0.003",
+      "projected": [
+        2.5223997506032525,
+        1.7122581619552628,
+        1.2709021592021366,
+        0.9222703571599862
+      ],
+      "quantities": [
+        "value",
+        "event_count",
+        "discounted_event_count",
+        "active_probability"
+      ],
+      "reference": [
+        2.5153585292867904,
+        1.702637707796236,
+        1.263269103647962,
+        0.92245653341564
+      ],
+      "relative_errors": [
+        0.002799291327450883,
+        0.0056503236801202835,
+        0.006042303680294642,
+        0.0002018265890149884
+      ],
+      "result_identity": {
+        "bytes": 22697,
+        "path": "/home/qian-qi/hepta-hcsn-final-numerics-20261110-c385-v1/hcsn-s211-lr0.003/finite-best-1.json",
+        "sha256": "292980d3ea4feac7471a469bcb5972c9288db924845ff2d1625a52c21fcbd8cf"
+      },
+      "scaled_errors": [
+        0.002799291327450883,
+        0.0056503236801202835,
+        0.006042303680294642,
+        0.0001861762556538693
+      ],
+      "stage": "finite-best-1"
+    },
+    {
+      "fixture": {
+        "episode_id": "A01-0",
+        "intervals": 128,
+        "posterior_after_position": 31
+      },
+      "name": "hcsn-s307-lr0.001",
+      "projected": [
+        1.850491634441381,
+        0.766315893143452,
+        0.537351361929711,
+        0.9473629785381177
+      ],
+      "quantities": [
+        "value",
+        "event_count",
+        "discounted_event_count",
+        "active_probability"
+      ],
+      "reference": [
+        1.8454890748189852,
+        0.7586559643405963,
+        0.5319016963389154,
+        0.9476951417940992
+      ],
+      "relative_errors": [
+        0.0027106958749601954,
+        0.010096709395165061,
+        0.010245625513710013,
+        0.00035049589401997544
+      ],
+      "result_identity": {
+        "bytes": 22683,
+        "path": "/home/qian-qi/hepta-hcsn-final-numerics-20261110-c385-v1/hcsn-s307-lr0.001/finite-best-1.json",
+        "sha256": "a5364145555beb495170f140cee20ddeb58f258ad16377eb9ee7f20d897ecce8"
+      },
+      "scaled_errors": [
+        0.0027106958749601954,
+        0.007659928802855709,
+        0.005449665590795627,
+        0.0003321632559815102
+      ],
+      "stage": "finite-best-1"
+    },
+    {
+      "fixture": {
+        "episode_id": "A01-0",
+        "intervals": 128,
+        "posterior_after_position": 31
+      },
+      "name": "hcsn-s307-lr0.003",
+      "projected": [
+        2.158115648448568,
+        1.174703840525501,
+        0.8743965581919727,
+        0.9405836367271915
+      ],
+      "quantities": [
+        "value",
+        "event_count",
+        "discounted_event_count",
+        "active_probability"
+      ],
+      "reference": [
+        2.1526399667630316,
+        1.1667232734231376,
+        0.8684390748545295,
+        0.9408711942806152
+      ],
+      "relative_errors": [
+        0.0025437052967898183,
+        0.0068401542029316005,
+        0.006859989963534398,
+        0.0003056290331468321
+      ],
+      "result_identity": {
+        "bytes": 22666,
+        "path": "/home/qian-qi/hepta-hcsn-final-numerics-20261110-c385-v1/hcsn-s307-lr0.003/finite-best-1.json",
+        "sha256": "ad09d693048b07f9a509418463441a98ca1e64c8a25b6e353dda43976db0c111"
+      },
+      "scaled_errors": [
+        0.0025437052967898183,
+        0.0068401542029316005,
+        0.00595748333744317,
+        0.0002875575534236896
+      ],
+      "stage": "finite-best-1"
+    },
+    {
+      "fixture": {
+        "episode_id": "A01-256",
+        "intervals": 32,
+        "posterior_after_position": 127
+      },
+      "name": "hcsn-s101-lr0.001",
+      "projected": [
+        0.5589693377741851,
+        0.018592947546583617,
+        0.017408526117780647,
+        0.9969253477653316
+      ],
+      "quantities": [
+        "value",
+        "event_count",
+        "discounted_event_count",
+        "active_probability"
+      ],
+      "reference": [
+        0.5588605977956593,
+        0.01846495317450689,
+        0.017287558443176622,
+        0.9969417009004564
+      ],
+      "relative_errors": [
+        0.000194574423308233,
+        0.006931746366594537,
+        0.006997383407358534,
+        1.6403301326501106e-05
+      ],
+      "result_identity": {
+        "bytes": 19063,
+        "path": "/home/qian-qi/hepta-hcsn-final-numerics-20261110-c385-v1/hcsn-s101-lr0.001/finite-best-2.json",
+        "sha256": "468666a32eb15ae5bbe152f7fcd57fe6b6db1bce9f22ecb8948088d43348d54f"
+      },
+      "scaled_errors": [
+        0.00010873997852578476,
+        0.0001279943720767264,
+        0.00012096767460402502,
+        1.6353135124824725e-05
+      ],
+      "stage": "finite-best-2"
+    },
+    {
+      "fixture": {
+        "episode_id": "A01-256",
+        "intervals": 32,
+        "posterior_after_position": 127
+      },
+      "name": "hcsn-s101-lr0.003",
+      "projected": [
+        0.5440094826615425,
+        0.0005218912566480812,
+        0.0004684618053990198,
+        0.9997308964761501
+      ],
+      "quantities": [
+        "value",
+        "event_count",
+        "discounted_event_count",
+        "active_probability"
+      ],
+      "reference": [
+        0.5439940646569165,
+        0.0005011394182881747,
+        0.00045001314019793917,
+        0.9997426876778529
+      ],
+      "relative_errors": [
+        2.8342229497917067e-05,
+        0.04140931166578758,
+        0.04099583668371542,
+        1.1794236505187446e-05
+      ],
+      "result_identity": {
+        "bytes": 19040,
+        "path": "/home/qian-qi/hepta-hcsn-final-numerics-20261110-c385-v1/hcsn-s101-lr0.003/finite-best-2.json",
+        "sha256": "4fd9974d31a98dcab3af1e31933378cd26279d17dc63918a5e253179694f6088"
+      },
+      "scaled_errors": [
+        1.541800462601106e-05,
+        2.0751838359906512e-05,
+        1.8448665201080644e-05,
+        1.1791201702804344e-05
+      ],
+      "stage": "finite-best-2"
+    },
+    {
+      "fixture": {
+        "episode_id": "A01-256",
+        "intervals": 32,
+        "posterior_after_position": 127
+      },
+      "name": "hcsn-s211-lr0.001",
+      "projected": [
+        0.5640217503244405,
+        0.02693201985997851,
+        0.024114860187049964,
+        0.986845453258687
+      ],
+      "quantities": [
+        "value",
+        "event_count",
+        "discounted_event_count",
+        "active_probability"
+      ],
+      "reference": [
+        0.5633505664990818,
+        0.026058776970677596,
+        0.02333208464173596,
+        0.9872155036563678
+      ],
+      "relative_errors": [
+        0.0011914141305115452,
+        0.03351050934905819,
+        0.0335493187742767,
+        0.0003748425711612364
+      ],
+      "result_identity": {
+        "bytes": 19103,
+        "path": "/home/qian-qi/hepta-hcsn-final-numerics-20261110-c385-v1/hcsn-s211-lr0.001/finite-best-2.json",
+        "sha256": "46dd84cc9c5cdb0d4c5b7b34b279e49a9a4c829ba94df383f7967c1925d65bf3"
+      },
+      "scaled_errors": [
+        0.0006711838253586899,
+        0.0008732428893009139,
+        0.0007827755453140052,
+        0.00037005039768078785
+      ],
+      "stage": "finite-best-2"
+    },
+    {
+      "fixture": {
+        "episode_id": "A01-256",
+        "intervals": 32,
+        "posterior_after_position": 127
+      },
+      "name": "hcsn-s211-lr0.003",
+      "projected": [
+        1.0490520017772327,
+        0.613692271602181,
+        0.5727713632110515,
+        0.8930915831875543
+      ],
+      "quantities": [
+        "value",
+        "event_count",
+        "discounted_event_count",
+        "active_probability"
+      ],
+      "reference": [
+        1.045236783317641,
+        0.6092398884925925,
+        0.5685567781586143,
+        0.8935367004285383
+      ],
+      "relative_errors": [
+        0.003650099690791527,
+        0.0073080952079562405,
+        0.007412777781116245,
+        0.000498152164058256
+      ],
+      "result_identity": {
+        "bytes": 19083,
+        "path": "/home/qian-qi/hepta-hcsn-final-numerics-20261110-c385-v1/hcsn-s211-lr0.003/finite-best-2.json",
+        "sha256": "72769385c7969c9b925e0b98a9bbb10cca81586d537692c87e141f8a088bf4d4"
+      },
+      "scaled_errors": [
+        0.003650099690791527,
+        0.004452383109588509,
+        0.004214585052437214,
+        0.0004451172409839499
+      ],
+      "stage": "finite-best-2"
+    },
+    {
+      "fixture": {
+        "episode_id": "A01-256",
+        "intervals": 32,
+        "posterior_after_position": 127
+      },
+      "name": "hcsn-s307-lr0.001",
+      "projected": [
+        0.5476528755254739,
+        0.005507138539551816,
+        0.004878857361131137,
+        0.9965966169118426
+      ],
+      "quantities": [
+        "value",
+        "event_count",
+        "discounted_event_count",
+        "active_probability"
+      ],
+      "reference": [
+        0.5474562123331843,
+        0.005241870391926023,
+        0.00464343151046368,
+        0.9967473337449817
+      ],
+      "relative_errors": [
+        0.0003592309080784061,
+        0.05060562886758554,
+        0.05070083410015618,
+        0.00015120866445940642
+      ],
+      "result_identity": {
+        "bytes": 19104,
+        "path": "/home/qian-qi/hepta-hcsn-final-numerics-20261110-c385-v1/hcsn-s307-lr0.001/finite-best-2.json",
+        "sha256": "2c36a8c244b622c78da4cb798cd31ecb6cd3c89a717d4ed77280ac58228286ef"
+      },
+      "scaled_errors": [
+        0.00019666319228961449,
+        0.00026526814762579346,
+        0.00023542585066745666,
+        0.00015071683313905293
+      ],
+      "stage": "finite-best-2"
+    },
+    {
+      "fixture": {
+        "episode_id": "A01-256",
+        "intervals": 32,
+        "posterior_after_position": 127
+      },
+      "name": "hcsn-s307-lr0.003",
+      "projected": [
+        0.5474324939935574,
+        0.005197427985244786,
+        0.004605799308716206,
+        0.9968277235369032
+      ],
+      "quantities": [
+        "value",
+        "event_count",
+        "discounted_event_count",
+        "active_probability"
+      ],
+      "reference": [
+        0.5472500751581238,
+        0.0049518201382453345,
+        0.0043877148268975765,
+        0.9969656496570377
+      ],
+      "relative_errors": [
+        0.00033333725058121665,
+        0.049599508896234296,
+        0.04970343115321164,
+        0.00013834591009426585
+      ],
+      "result_identity": {
+        "bytes": 19082,
+        "path": "/home/qian-qi/hepta-hcsn-final-numerics-20261110-c385-v1/hcsn-s307-lr0.003/finite-best-2.json",
+        "sha256": "7edf67f600faefefca57d73b6708ee6904440802fea9fec732638b596a532f7d"
+      },
+      "scaled_errors": [
+        0.00018241883543357318,
+        0.0002456078469994516,
+        0.0002180844818186296,
+        0.00013792612013452388
+      ],
+      "stage": "finite-best-2"
+    },
+    {
+      "fixture": {
+        "episode_id": "A04-3072",
+        "intervals": 8,
+        "posterior_after_position": 47
+      },
+      "name": "hcsn-s101-lr0.001",
+      "projected": [
+        0.38307880505761427,
+        0.16486712745571444,
+        0.16268580793721854,
+        0.8247777203069873
+      ],
+      "quantities": [
+        "value",
+        "event_count",
+        "discounted_event_count",
+        "active_probability"
+      ],
+      "reference": [
+        0.38175629554819646,
+        0.16334333934210232,
+        0.1611822055748798,
+        0.825388961434443
+      ],
+      "relative_errors": [
+        0.003464276882503558,
+        0.00932874349054866,
+        0.00932858783620635,
+        0.0007405491907638571
+      ],
+      "result_identity": {
+        "bytes": 18192,
+        "path": "/home/qian-qi/hepta-hcsn-final-numerics-20261110-c385-v1/hcsn-s101-lr0.001/finite-best-3.json",
+        "sha256": "9d06b082a1ce3dd8a66313683c9b4616319c7e5e54fdd718b905b21285c74a7f"
+      },
+      "scaled_errors": [
+        0.001322509509417813,
+        0.0015237881136121179,
+        0.0015036023623387351,
+        0.0006112411274556973
+      ],
+      "stage": "finite-best-3"
+    },
+    {
+      "fixture": {
+        "episode_id": "A04-3072",
+        "intervals": 8,
+        "posterior_after_position": 47
+      },
+      "name": "hcsn-s101-lr0.003",
+      "projected": [
+        0.38175821778794583,
+        0.16342326677994348,
+        0.16131103437582178,
+        0.8264923585720703
+      ],
+      "quantities": [
+        "value",
+        "event_count",
+        "discounted_event_count",
+        "active_probability"
+      ],
+      "reference": [
+        0.3804294009789607,
+        0.16198773363372707,
+        0.15989403176500475,
+        0.8266290407552994
+      ],
+      "relative_errors": [
+        0.0034929393090167614,
+        0.008861986732046776,
+        0.008862135723111893,
+        0.0001653488765701544
+      ],
+      "result_identity": {
+        "bytes": 18181,
+        "path": "/home/qian-qi/hepta-hcsn-final-numerics-20261110-c385-v1/hcsn-s101-lr0.003/finite-best-3.json",
+        "sha256": "6cc869354ff76da3297d9f030ab70f9aaddc4504b463c4dd1afa1e5d7545e1f0"
+      },
+      "scaled_errors": [
+        0.0013288168089851116,
+        0.0014355331462164167,
+        0.0014170026108170364,
+        0.00013668218322915315
+      ],
+      "stage": "finite-best-3"
+    },
+    {
+      "fixture": {
+        "episode_id": "A04-3072",
+        "intervals": 8,
+        "posterior_after_position": 47
+      },
+      "name": "hcsn-s211-lr0.001",
+      "projected": [
+        0.2833109840607527,
+        0.020548850419671368,
+        0.020278196653450518,
+        0.9784762600564827
+      ],
+      "quantities": [
+        "value",
+        "event_count",
+        "discounted_event_count",
+        "active_probability"
+      ],
+      "reference": [
+        0.2831634347259463,
+        0.020363401993267596,
+        0.02009515554330336,
+        0.9786176324238883
+      ],
+      "relative_errors": [
+        0.0005210748165603793,
+        0.0091069471822578,
+        0.009108718255637237,
+        0.00014446129184845808
+      ],
+      "result_identity": {
+        "bytes": 18116,
+        "path": "/home/qian-qi/hepta-hcsn-final-numerics-20261110-c385-v1/hcsn-s211-lr0.001/finite-best-3.json",
+        "sha256": "802a8b3fc584e503899fd85d759f46387d8daa18cdff3b7eaef174e9e25da59c"
+      },
+      "scaled_errors": [
+        0.0001475493348064294,
+        0.00018544842640377118,
+        0.00018304111014715713,
+        0.00014137236740563441
+      ],
+      "stage": "finite-best-3"
+    },
+    {
+      "fixture": {
+        "episode_id": "A04-3072",
+        "intervals": 8,
+        "posterior_after_position": 47
+      },
+      "name": "hcsn-s211-lr0.003",
+      "projected": [
+        0.3212534527736771,
+        0.07511017014260472,
+        0.07407120600787623,
+        0.9201281162569837
+      ],
+      "quantities": [
+        "value",
+        "event_count",
+        "discounted_event_count",
+        "active_probability"
+      ],
+      "reference": [
+        0.3206629301058244,
+        0.07434018606443234,
+        0.07331196997254436,
+        0.9208508369798223
+      ],
+      "relative_errors": [
+        0.0018415682400763223,
+        0.010357575342964892,
+        0.010356235627227177,
+        0.0007848401650032584
+      ],
+      "result_identity": {
+        "bytes": 18140,
+        "path": "/home/qian-qi/hepta-hcsn-final-numerics-20261110-c385-v1/hcsn-s211-lr0.003/finite-best-3.json",
+        "sha256": "3dab115d97266b41354cb594f92dd5b4598091e2890ea214250b50e4561134a7"
+      },
+      "scaled_errors": [
+        0.0005905226678526998,
+        0.0007699840781723866,
+        0.0007592360353318728,
+        0.0007227207228386323
+      ],
+      "stage": "finite-best-3"
+    },
+    {
+      "fixture": {
+        "episode_id": "A04-3072",
+        "intervals": 8,
+        "posterior_after_position": 47
+      },
+      "name": "hcsn-s307-lr0.001",
+      "projected": [
+        0.2733866762270091,
+        0.006339385910957387,
+        0.006254802019472022,
+        0.9932466868903564
+      ],
+      "quantities": [
+        "value",
+        "event_count",
+        "discounted_event_count",
+        "active_probability"
+      ],
+      "reference": [
+        0.27333771050223077,
+        0.006279034221816995,
+        0.006195267323526108,
+        0.9932881460354419
+      ],
+      "relative_errors": [
+        0.00017914002677616353,
+        0.00961161971863377,
+        0.00960970573777109,
+        4.17392931255074e-05
+      ],
+      "result_identity": {
+        "bytes": 18141,
+        "path": "/home/qian-qi/hepta-hcsn-final-numerics-20261110-c385-v1/hcsn-s307-lr0.001/finite-best-3.json",
+        "sha256": "ed35afca9cf181942e3554add75a96179accf196f2a14e3e9dc6f3aafadcbd94"
+      },
+      "scaled_errors": [
+        4.896572477830485e-05,
+        6.0351689140392475e-05,
+        5.953469594591459e-05,
+        4.145914508546511e-05
+      ],
+      "stage": "finite-best-3"
+    },
+    {
+      "fixture": {
+        "episode_id": "A04-3072",
+        "intervals": 8,
+        "posterior_after_position": 47
+      },
+      "name": "hcsn-s307-lr0.003",
+      "projected": [
+        0.2722437845234978,
+        0.0046630775745224754,
+        0.004602966418186919,
+        0.9950536509590441
+      ],
+      "quantities": [
+        "value",
+        "event_count",
+        "discounted_event_count",
+        "active_probability"
+      ],
+      "reference": [
+        0.2722097127658193,
+        0.004621503116803419,
+        0.004561938506651719,
+        0.9950805710909191
+      ],
+      "relative_errors": [
+        0.00012516731064556713,
+        0.008995873565008482,
+        0.008993525773172549,
+        2.7053218258983674e-05
+      ],
+      "result_identity": {
+        "bytes": 18163,
+        "path": "/home/qian-qi/hepta-hcsn-final-numerics-20261110-c385-v1/hcsn-s307-lr0.003/finite-best-3.json",
+        "sha256": "9c676d1ad6807b444a9596dc1999d047a3a6b3af02fc14b2d74fc8fda0425335"
+      },
+      "scaled_errors": [
+        3.40717576784999e-05,
+        4.1574457719056185e-05,
+        4.102791153520052e-05,
+        2.6920131874996756e-05
+      ],
+      "stage": "finite-best-3"
+    },
+    {
+      "fixture": {
+        "episode_id": "A04-3072",
+        "intervals": 32,
+        "posterior_after_position": 47
+      },
+      "name": "hcsn-s101-lr0.001",
+      "projected": [
+        1.0568419714999524,
+        0.6415355962914593,
+        0.6019187610636962,
+        0.8863267558072491
+      ],
+      "quantities": [
+        "value",
+        "event_count",
+        "discounted_event_count",
+        "active_probability"
+      ],
+      "reference": [
+        1.0530577719577203,
+        0.6371313242487872,
+        0.5977305808431447,
+        0.8867679863102926
+      ],
+      "relative_errors": [
+        0.0035935346027568317,
+        0.006912659721863478,
+        0.007006802654540135,
+        0.0004975715292558759
+      ],
+      "result_identity": {
+        "bytes": 19104,
+        "path": "/home/qian-qi/hepta-hcsn-final-numerics-20261110-c385-v1/hcsn-s101-lr0.001/finite-best-4.json",
+        "sha256": "e7d18996b26c4fd84bf05cb6917c78861a1bd8cf579e13ae9b084ce9207902a8"
+      },
+      "scaled_errors": [
+        0.0035935346027568317,
+        0.0044042720426721305,
+        0.004188180220551563,
+        0.0004412305030435659
+      ],
+      "stage": "finite-best-4"
+    },
+    {
+      "fixture": {
+        "episode_id": "A04-3072",
+        "intervals": 32,
+        "posterior_after_position": 47
+      },
+      "name": "hcsn-s101-lr0.003",
+      "projected": [
+        1.034222694776935,
+        0.614137965007347,
+        0.5766298891376443,
+        0.892641899813796
+      ],
+      "quantities": [
+        "value",
+        "event_count",
+        "discounted_event_count",
+        "active_probability"
+      ],
+      "reference": [
+        1.0306729248108197,
+        0.6100038377536169,
+        0.5726980116750796,
+        0.8930552696762313
+      ],
+      "relative_errors": [
+        0.003444128472441338,
+        0.006777215154832962,
+        0.006865533636242985,
+        0.0004628715337910658
+      ],
+      "result_identity": {
+        "bytes": 19058,
+        "path": "/home/qian-qi/hepta-hcsn-final-numerics-20261110-c385-v1/hcsn-s101-lr0.003/finite-best-4.json",
+        "sha256": "fb77691947068a9cf6981dd14187fcfb63454109fd46c59492a1d734168cf3c1"
+      },
+      "scaled_errors": [
+        0.003444128472441338,
+        0.00413412725373008,
+        0.003931877462564737,
+        0.0004133698624352311
+      ],
+      "stage": "finite-best-4"
+    },
+    {
+      "fixture": {
+        "episode_id": "A04-3072",
+        "intervals": 32,
+        "posterior_after_position": 47
+      },
+      "name": "hcsn-s211-lr0.001",
+      "projected": [
+        0.6044831521757772,
+        0.09605951403766748,
+        0.08941444440653934,
+        0.9767429622656538
+      ],
+      "quantities": [
+        "value",
+        "event_count",
+        "discounted_event_count",
+        "active_probability"
+      ],
+      "reference": [
+        0.603561213712934,
+        0.09492546453866796,
+        0.08836543267293827,
+        0.9770595457916783
+      ],
+      "relative_errors": [
+        0.0015274978608576667,
+        0.01194673636321858,
+        0.011871290637864199,
+        0.000324016614328215
+      ],
+      "result_identity": {
+        "bytes": 19022,
+        "path": "/home/qian-qi/hepta-hcsn-final-numerics-20261110-c385-v1/hcsn-s211-lr0.001/finite-best-4.json",
+        "sha256": "0782550bf63b64af207f13203ea0a09a37850138234dd3a8d25a227b25305acf"
+      },
+      "scaled_errors": [
+        0.0009219384628431637,
+        0.0011340494989995203,
+        0.0010490117336010713,
+        0.00031658352602448314
+      ],
+      "stage": "finite-best-4"
+    },
+    {
+      "fixture": {
+        "episode_id": "A04-3072",
+        "intervals": 32,
+        "posterior_after_position": 47
+      },
+      "name": "hcsn-s211-lr0.003",
+      "projected": [
+        0.817887242893112,
+        0.3552142615672345,
+        0.3314730536043127,
+        0.9259709728047558
+      ],
+      "quantities": [
+        "value",
+        "event_count",
+        "discounted_event_count",
+        "active_probability"
+      ],
+      "reference": [
+        0.8152220610745653,
+        0.35205602424522653,
+        0.3285039830183618,
+        0.9264625493537583
+      ],
+      "relative_errors": [
+        0.0032692709702110442,
+        0.008970837322778197,
+        0.009038157037459435,
+        0.0005305951647428608
+      ],
+      "result_identity": {
+        "bytes": 19048,
+        "path": "/home/qian-qi/hepta-hcsn-final-numerics-20261110-c385-v1/hcsn-s211-lr0.003/finite-best-4.json",
+        "sha256": "5dc0ba64a7c923f720aea7596368a6c327634a7fb85a81ca5216d251706a595b"
+      },
+      "scaled_errors": [
+        0.0026651818185466913,
+        0.003158237322007984,
+        0.0029690705859508615,
+        0.0004915765490024482
+      ],
+      "stage": "finite-best-4"
+    },
+    {
+      "fixture": {
+        "episode_id": "A04-3072",
+        "intervals": 32,
+        "posterior_after_position": 47
+      },
+      "name": "hcsn-s307-lr0.001",
+      "projected": [
+        0.5533610677411334,
+        0.03350551920274484,
+        0.031072858180284314,
+        0.9908392577176368
+      ],
+      "quantities": [
+        "value",
+        "event_count",
+        "discounted_event_count",
+        "active_probability"
+      ],
+      "reference": [
+        0.5529696736123643,
+        0.03301240260810896,
+        0.030620764444036032,
+        0.991020044428283
+      ],
+      "relative_errors": [
+        0.000707803967281334,
+        0.014937313121061686,
+        0.014764286406844929,
+        0.00018242487794526576
+      ],
+      "result_identity": {
+        "bytes": 19056,
+        "path": "/home/qian-qi/hepta-hcsn-final-numerics-20261110-c385-v1/hcsn-s307-lr0.001/finite-best-4.json",
+        "sha256": "9b86dad520a2ab2d46261766135635772d2d6121e8e57ff2471cfc1cd1966e96"
+      },
+      "scaled_errors": [
+        0.00039139412876909585,
+        0.000493116594635877,
+        0.0004520937362482817,
+        0.00018078671064614138
+      ],
+      "stage": "finite-best-4"
+    },
+    {
+      "fixture": {
+        "episode_id": "A04-3072",
+        "intervals": 32,
+        "posterior_after_position": 47
+      },
+      "name": "hcsn-s307-lr0.003",
+      "projected": [
+        0.5462504599807168,
+        0.02478194654128637,
+        0.022951304382827987,
+        0.9928047338854831
+      ],
+      "quantities": [
+        "value",
+        "event_count",
+        "discounted_event_count",
+        "active_probability"
+      ],
+      "reference": [
+        0.5459331505717525,
+        0.024378496262012675,
+        0.022582839940387338,
+        0.9929652692588152
+      ],
+      "relative_errors": [
+        0.0005812239257350886,
+        0.016549432538312987,
+        0.016316125138082574,
+        0.00016167269722534153
+      ],
+      "result_identity": {
+        "bytes": 19055,
+        "path": "/home/qian-qi/hepta-hcsn-final-numerics-20261110-c385-v1/hcsn-s307-lr0.003/finite-best-4.json",
+        "sha256": "25d44adbdf43d5f7a93fac0484d90b601531cda976594b4e66ca7f6155982ac6"
+      },
+      "scaled_errors": [
+        0.0003173094089642392,
+        0.0004034502792736941,
+        0.000368464442440649,
+        0.00016053537333216017
+      ],
+      "stage": "finite-best-4"
+    },
+    {
+      "fixture": {
+        "episode_id": "B01-0",
+        "intervals": 32,
+        "posterior_after_position": 31
+      },
+      "name": "hcsn-s101-lr0.001",
+      "projected": [
+        1.1353506291582556,
+        0.7159206774967163,
+        0.6705618387221114,
+        0.8846559318585206
+      ],
+      "quantities": [
+        "value",
+        "event_count",
+        "discounted_event_count",
+        "active_probability"
+      ],
+      "reference": [
+        1.1313611828802406,
+        0.7112723365241238,
+        0.6661522920047048,
+        0.885073351465562
+      ],
+      "relative_errors": [
+        0.003526235775438751,
+        0.006535247800172002,
+        0.006619427374687201,
+        0.0004716214835190163
+      ],
+      "result_identity": {
+        "bytes": 19093,
+        "path": "/home/qian-qi/hepta-hcsn-final-numerics-20261110-c385-v1/hcsn-s101-lr0.001/finite-best-5.json",
+        "sha256": "f15ce77afeec2ab862ca7e2338fdd61bf2bbd08ecb40a03fc55c327f9bf914a3"
+      },
+      "scaled_errors": [
+        0.003526235775438751,
+        0.00464834097259248,
+        0.004409546717406565,
+        0.00041741960704133607
+      ],
+      "stage": "finite-best-5"
+    },
+    {
+      "fixture": {
+        "episode_id": "B01-0",
+        "intervals": 32,
+        "posterior_after_position": 31
+      },
+      "name": "hcsn-s101-lr0.003",
+      "projected": [
+        1.149645721572205,
+        0.7331650084359477,
+        0.6874013733215005,
+        0.883878578819556
+      ],
+      "quantities": [
+        "value",
+        "event_count",
+        "discounted_event_count",
+        "active_probability"
+      ],
+      "reference": [
+        1.1456636624700478,
+        0.7285211135891713,
+        0.6829957910140335,
+        0.8842952289330596
+      ],
+      "relative_errors": [
+        0.0034757662589837137,
+        0.0063744135346984615,
+        0.006450379878514498,
+        0.00047116630269086117
+      ],
+      "result_identity": {
+        "bytes": 19078,
+        "path": "/home/qian-qi/hepta-hcsn-final-numerics-20261110-c385-v1/hcsn-s101-lr0.003/finite-best-5.json",
+        "sha256": "4f384f158ad9364c754c6336083ea615711de85c6fcf380a55498c11fad33d9e"
+      },
+      "scaled_errors": [
+        0.0034757662589837137,
+        0.0046438948467764085,
+        0.004405582307467015,
+        0.0004166501135035583
+      ],
+      "stage": "finite-best-5"
+    },
+    {
+      "fixture": {
+        "episode_id": "B01-0",
+        "intervals": 32,
+        "posterior_after_position": 31
+      },
+      "name": "hcsn-s211-lr0.001",
+      "projected": [
+        0.5983757317862235,
+        0.06811792910215557,
+        0.06282317206467997,
+        0.9804559399585158
+      ],
+      "quantities": [
+        "value",
+        "event_count",
+        "discounted_event_count",
+        "active_probability"
+      ],
+      "reference": [
+        0.5974766928242061,
+        0.06697718376903378,
+        0.06178805025775935,
+        0.9808608760087826
+      ],
+      "relative_errors": [
+        0.001504726414963094,
+        0.017031849787168936,
+        0.016752783145000158,
+        0.00041283739638442603
+      ],
+      "result_identity": {
+        "bytes": 19085,
+        "path": "/home/qian-qi/hepta-hcsn-final-numerics-20261110-c385-v1/hcsn-s211-lr0.001/finite-best-5.json",
+        "sha256": "f28b5530aeaa3772d02ef70618f6a84ccf27801c276a590c2386e966b45ec9f5"
+      },
+      "scaled_errors": [
+        0.0008990389620173733,
+        0.0011407453331217926,
+        0.0010351218069206136,
+        0.0004049360502668131
+      ],
+      "stage": "finite-best-5"
+    },
+    {
+      "fixture": {
+        "episode_id": "B01-0",
+        "intervals": 32,
+        "posterior_after_position": 31
+      },
+      "name": "hcsn-s211-lr0.003",
+      "projected": [
+        1.0514796133541093,
+        0.6155405721678217,
+        0.5744791975358354,
+        0.8925526065227507
+      ],
+      "quantities": [
+        "value",
+        "event_count",
+        "discounted_event_count",
+        "active_probability"
+      ],
+      "reference": [
+        1.0476133076679475,
+        0.6110280533763294,
+        0.5702130212819598,
+        0.8930014299969422
+      ],
+      "relative_errors": [
+        0.0036905847394860815,
+        0.007385125390819073,
+        0.007481723662297869,
+        0.0005026010699591414
+      ],
+      "result_identity": {
+        "bytes": 19083,
+        "path": "/home/qian-qi/hepta-hcsn-final-numerics-20261110-c385-v1/hcsn-s211-lr0.003/finite-best-5.json",
+        "sha256": "b5eddcff4553c8c8b0c04cdd122960b2ec8fd2cc5341a4bcd00eb921cdb99534"
+      },
+      "scaled_errors": [
+        0.0036905847394860815,
+        0.0045125187914922815,
+        0.004266176253875598,
+        0.0004488234741915065
+      ],
+      "stage": "finite-best-5"
+    },
+    {
+      "fixture": {
+        "episode_id": "B01-0",
+        "intervals": 32,
+        "posterior_after_position": 31
+      },
+      "name": "hcsn-s307-lr0.001",
+      "projected": [
+        0.6822050169605703,
+        0.16873802123564347,
+        0.15757505701944358,
+        0.9691967901349672
+      ],
+      "quantities": [
+        "value",
+        "event_count",
+        "discounted_event_count",
+        "active_probability"
+      ],
+      "reference": [
+        0.6810490256581603,
+        0.16735303478167562,
+        0.15628017175049455,
+        0.9694449087926827
+      ],
+      "relative_errors": [
+        0.0016973687045406514,
+        0.008275837099546221,
+        0.00828566576581669,
+        0.00025593889396414234
+      ],
+      "result_identity": {
+        "bytes": 19061,
+        "path": "/home/qian-qi/hepta-hcsn-final-numerics-20261110-c385-v1/hcsn-s307-lr0.001/finite-best-5.json",
+        "sha256": "cd330ebf41c6882fe93f3997a922b3168446e55c3022bbf686a8cf7facdc8abb"
+      },
+      "scaled_errors": [
+        0.0011559913024100643,
+        0.0013849864539678403,
+        0.0012948852689490253,
+        0.00024811865771556807
+      ],
+      "stage": "finite-best-5"
+    },
+    {
+      "fixture": {
+        "episode_id": "B01-0",
+        "intervals": 32,
+        "posterior_after_position": 31
+      },
+      "name": "hcsn-s307-lr0.003",
+      "projected": [
+        1.111631530924785,
+        0.6818166752605986,
+        0.6411473342660052,
+        0.8966878044755694
+      ],
+      "quantities": [
+        "value",
+        "event_count",
+        "discounted_event_count",
+        "active_probability"
+      ],
+      "reference": [
+        1.1080684271936436,
+        0.6776658950235711,
+        0.6372123321821209,
+        0.8970887149622127
+      ],
+      "relative_errors": [
+        0.003215599004265065,
+        0.006125113079334107,
+        0.006175338870810885,
+        0.0004469017165823394
+      ],
+      "result_identity": {
+        "bytes": 19044,
+        "path": "/home/qian-qi/hepta-hcsn-final-numerics-20261110-c385-v1/hcsn-s307-lr0.003/finite-best-5.json",
+        "sha256": "5897b91bef6d4b3a7d8f25c10a6c09b34b89a92bd23843769c2636f916becf19"
+      },
+      "scaled_errors": [
+        0.003215599004265065,
+        0.004150780237027529,
+        0.003935002083884309,
+        0.0004009104866432578
+      ],
+      "stage": "finite-best-5"
+    },
+    {
+      "fixture": {
+        "episode_id": "C01-0",
+        "intervals": 32,
+        "posterior_after_position": 31
+      },
+      "name": "hcsn-s101-lr0.001",
+      "projected": [
+        1.2976608258769649,
+        0.8261780228087362,
+        0.7615508953901119,
+        0.8928941557038639
+      ],
+      "quantities": [
+        "value",
+        "event_count",
+        "discounted_event_count",
+        "active_probability"
+      ],
+      "reference": [
+        1.2941347476065235,
+        0.822088707721418,
+        0.7576843224929104,
+        0.8930767993715895
+      ],
+      "relative_errors": [
+        0.002724660841510354,
+        0.004974299061536309,
+        0.005103144914599538,
+        0.00020451059511801897
+      ],
+      "result_identity": {
+        "bytes": 19095,
+        "path": "/home/qian-qi/hepta-hcsn-final-numerics-20261110-c385-v1/hcsn-s101-lr0.001/finite-best-6.json",
+        "sha256": "438c475d7d5d81e7f2b9e35c37aea64de678162ae82b875983a4e43f503cb7e1"
+      },
+      "scaled_errors": [
+        0.002724660841510354,
+        0.004089315087318246,
+        0.0038665728972014923,
+        0.00018264366772557938
+      ],
+      "stage": "finite-best-6"
+    },
+    {
+      "fixture": {
+        "episode_id": "C01-0",
+        "intervals": 32,
+        "posterior_after_position": 31
+      },
+      "name": "hcsn-s101-lr0.003",
+      "projected": [
+        1.3086506485750369,
+        0.839008832137819,
+        0.7742437896967707,
+        0.892775529324584
+      ],
+      "quantities": [
+        "value",
+        "event_count",
+        "discounted_event_count",
+        "active_probability"
+      ],
+      "reference": [
+        1.305140271743855,
+        0.8349360152248734,
+        0.7703931818931863,
+        0.8929584859332017
+      ],
+      "relative_errors": [
+        0.0026896548265203483,
+        0.004877998839047152,
+        0.004998237126296701,
+        0.00020488814597743163
+      ],
+      "result_identity": {
+        "bytes": 19110,
+        "path": "/home/qian-qi/hepta-hcsn-final-numerics-20261110-c385-v1/hcsn-s101-lr0.003/finite-best-6.json",
+        "sha256": "6bdbbc5b82e2859bbe6e620bcd15811de21a33db401d5045904c3cc731627e80"
+      },
+      "scaled_errors": [
+        0.0026896548265203483,
+        0.004072816912945587,
+        0.0038506078035843716,
+        0.00018295660861766816
+      ],
+      "stage": "finite-best-6"
+    },
+    {
+      "fixture": {
+        "episode_id": "C01-0",
+        "intervals": 32,
+        "posterior_after_position": 31
+      },
+      "name": "hcsn-s211-lr0.001",
+      "projected": [
+        0.7052365561273858,
+        0.10781137765857048,
+        0.09718566622562883,
+        0.9736098009176566
+      ],
+      "quantities": [
+        "value",
+        "event_count",
+        "discounted_event_count",
+        "active_probability"
+      ],
+      "reference": [
+        0.7041124076120273,
+        0.10638610211389868,
+        0.09591652758619088,
+        0.9739591081563664
+      ],
+      "relative_errors": [
+        0.0015965469479098944,
+        0.013397196779950396,
+        0.01323169918028463,
+        0.0003586467191328635
+      ],
+      "result_identity": {
+        "bytes": 19089,
+        "path": "/home/qian-qi/hepta-hcsn-final-numerics-20261110-c385-v1/hcsn-s211-lr0.001/finite-best-6.json",
+        "sha256": "7553abfb13e3f9ca4a1ec28932cb5fbd9f2f03fccaaa621b5baf5ce10b4600b5"
+      },
+      "scaled_errors": [
+        0.0011241485153584696,
+        0.0014252755446717974,
+        0.00126913863943795,
+        0.0003493072387098506
+      ],
+      "stage": "finite-best-6"
+    },
+    {
+      "fixture": {
+        "episode_id": "C01-0",
+        "intervals": 32,
+        "posterior_after_position": 31
+      },
+      "name": "hcsn-s211-lr0.003",
+      "projected": [
+        1.2356648947361557,
+        0.7526005408783205,
+        0.6914692748298478,
+        0.8966674885632894
+      ],
+      "quantities": [
+        "value",
+        "event_count",
+        "discounted_event_count",
+        "active_probability"
+      ],
+      "reference": [
+        1.2321673474592212,
+        0.7485401724386819,
+        0.687642031205653,
+        0.8968682074396525
+      ],
+      "relative_errors": [
+        0.0028385326750839522,
+        0.005424382804212492,
+        0.005565749984020564,
+        0.00022379974526701862
+      ],
+      "result_identity": {
+        "bytes": 19089,
+        "path": "/home/qian-qi/hepta-hcsn-final-numerics-20261110-c385-v1/hcsn-s211-lr0.003/finite-best-6.json",
+        "sha256": "af80580b1169713ee8ded364c11dfb2233dc847749f67e9bc7e826e99d8a2ef4"
+      },
+      "scaled_errors": [
+        0.0028385326750839522,
+        0.00406036843963864,
+        0.0038272436241947316,
+        0.00020071887636308183
+      ],
+      "stage": "finite-best-6"
+    },
+    {
+      "fixture": {
+        "episode_id": "C01-0",
+        "intervals": 32,
+        "posterior_after_position": 31
+      },
+      "name": "hcsn-s307-lr0.001",
+      "projected": [
+        0.8338251448481102,
+        0.263304366590165,
+        0.24136514967444292,
+        0.9594377536737267
+      ],
+      "quantities": [
+        "value",
+        "event_count",
+        "discounted_event_count",
+        "active_probability"
+      ],
+      "reference": [
+        0.8323640106829107,
+        0.2615491590842628,
+        0.23974365697454592,
+        0.9596618288045654
+      ],
+      "relative_errors": [
+        0.0017554028603432386,
+        0.006710813034335615,
+        0.0067634435895384745,
+        0.00023349384555368854
+      ],
+      "result_identity": {
+        "bytes": 19051,
+        "path": "/home/qian-qi/hepta-hcsn-final-numerics-20261110-c385-v1/hcsn-s307-lr0.001/finite-best-6.json",
+        "sha256": "eb6547dd8f48cd9c0e038770ba6cf9af6cca0821f07350738eea5bf5ed6d1c6a"
+      },
+      "scaled_errors": [
+        0.0014611341651995513,
+        0.0017552075059021899,
+        0.0016214926998970036,
+        0.00022407513083866348
+      ],
+      "stage": "finite-best-6"
+    },
+    {
+      "fixture": {
+        "episode_id": "C01-0",
+        "intervals": 32,
+        "posterior_after_position": 31
+      },
+      "name": "hcsn-s307-lr0.003",
+      "projected": [
+        1.2395498306370092,
+        0.7507701688490692,
+        0.6937161891931025,
+        0.9044442254963418
+      ],
+      "quantities": [
+        "value",
+        "event_count",
+        "discounted_event_count",
+        "active_probability"
+      ],
+      "reference": [
+        1.2363567867136807,
+        0.7470628977838722,
+        0.6902203924786755,
+        0.9046492585897804
+      ],
+      "relative_errors": [
+        0.002582623363774996,
+        0.004962461763520073,
+        0.005064754319809547,
+        0.0002266437423031477
+      ],
+      "result_identity": {
+        "bytes": 19071,
+        "path": "/home/qian-qi/hepta-hcsn-final-numerics-20261110-c385-v1/hcsn-s307-lr0.003/finite-best-6.json",
+        "sha256": "e57705f1fc7244bed75484ef54f8b642221ea6fdaae029eb2e7cb89805ee0442"
+      },
+      "scaled_errors": [
+        0.002582623363774996,
+        0.003707271065196971,
+        0.003495796714427013,
+        0.0002050330934385558
+      ],
+      "stage": "finite-best-6"
+    },
+    {
+      "fixture": {
+        "episode_id": "D01-0",
+        "intervals": 32,
+        "posterior_after_position": 31
+      },
+      "name": "hcsn-s101-lr0.001",
+      "projected": [
+        1.171330108973779,
+        0.7398033521150101,
+        0.6903323564449447,
+        0.8864716343940615
+      ],
+      "quantities": [
+        "value",
+        "event_count",
+        "discounted_event_count",
+        "active_probability"
+      ],
+      "reference": [
+        1.1673674820601416,
+        0.7351429630445013,
+        0.6859546009712835,
+        0.8869416115283655
+      ],
+      "relative_errors": [
+        0.003394498283132164,
+        0.0063394323346419555,
+        0.006381990101768453,
+        0.0005298850884830052
+      ],
+      "result_identity": {
+        "bytes": 19087,
+        "path": "/home/qian-qi/hepta-hcsn-final-numerics-20261110-c385-v1/hcsn-s101-lr0.001/finite-best-7.json",
+        "sha256": "d5eb9ea1a68ca3767bac56588258f9e2da1cff48cdae67c242950da74d2ccdaf"
+      },
+      "scaled_errors": [
+        0.003394498283132164,
+        0.004660389070508808,
+        0.00437775547366126,
+        0.00046997713430396715
+      ],
+      "stage": "finite-best-7"
+    },
+    {
+      "fixture": {
+        "episode_id": "D01-0",
+        "intervals": 32,
+        "posterior_after_position": 31
+      },
+      "name": "hcsn-s101-lr0.003",
+      "projected": [
+        1.1883821980124052,
+        0.7596940895117963,
+        0.7099736817874507,
+        0.8861090528333168
+      ],
+      "quantities": [
+        "value",
+        "event_count",
+        "discounted_event_count",
+        "active_probability"
+      ],
+      "reference": [
+        1.1844353188866883,
+        0.7550489760806819,
+        0.7056110603741336,
+        0.8865800394339355
+      ],
+      "relative_errors": [
+        0.003332287599652778,
+        0.0061520690422312944,
+        0.00618275656138941,
+        0.0005312397975025966
+      ],
+      "result_identity": {
+        "bytes": 19075,
+        "path": "/home/qian-qi/hepta-hcsn-final-numerics-20261110-c385-v1/hcsn-s101-lr0.003/finite-best-7.json",
+        "sha256": "fe9f5f822b92212375af39e725bfbfe8a1c96c20c2f6955a6c2d149fdcba2e4a"
+      },
+      "scaled_errors": [
+        0.003332287599652778,
+        0.0046451134311144004,
+        0.004362621413317114,
+        0.000470986600618728
+      ],
+      "stage": "finite-best-7"
+    },
+    {
+      "fixture": {
+        "episode_id": "D01-0",
+        "intervals": 32,
+        "posterior_after_position": 31
+      },
+      "name": "hcsn-s211-lr0.001",
+      "projected": [
+        0.6146394611920161,
+        0.06750839401883892,
+        0.061795931929243285,
+        0.980134780300437
+      ],
+      "quantities": [
+        "value",
+        "event_count",
+        "discounted_event_count",
+        "active_probability"
+      ],
+      "reference": [
+        0.6137214452626384,
+        0.0663340728732833,
+        0.060740776385698254,
+        0.9805503810743712
+      ],
+      "relative_errors": [
+        0.0014958185614400697,
+        0.01770313648309969,
+        0.017371453022676092,
+        0.0004238443857202363
+      ],
+      "result_identity": {
+        "bytes": 19103,
+        "path": "/home/qian-qi/hepta-hcsn-final-numerics-20261110-c385-v1/hcsn-s211-lr0.001/finite-best-7.json",
+        "sha256": "204523d44a93262aed33aaece3db7acd00b9a1d3b2884a0ff8552e1e79349d6c"
+      },
+      "scaled_errors": [
+        0.0009180159293776802,
+        0.0011743211455556152,
+        0.0010551555435450305,
+        0.00041560077393421047
+      ],
+      "stage": "finite-best-7"
+    },
+    {
+      "fixture": {
+        "episode_id": "D01-0",
+        "intervals": 32,
+        "posterior_after_position": 31
+      },
+      "name": "hcsn-s211-lr0.003",
+      "projected": [
+        1.1024905401692058,
+        0.6579375175480524,
+        0.6120090890312639,
+        0.892340893929388
+      ],
+      "quantities": [
+        "value",
+        "event_count",
+        "discounted_event_count",
+        "active_probability"
+      ],
+      "reference": [
+        1.0986312559850504,
+        0.653395686062411,
+        0.6077517532991582,
+        0.8928280942741054
+      ],
+      "relative_errors": [
+        0.0035128112031503054,
+        0.006951119486282513,
+        0.007005057096083963,
+        0.0005456821395315684
+      ],
+      "result_identity": {
+        "bytes": 19082,
+        "path": "/home/qian-qi/hepta-hcsn-final-numerics-20261110-c385-v1/hcsn-s211-lr0.003/finite-best-7.json",
+        "sha256": "94d3cc2ce36660dca9e1fad7bf44f77f7bce679e3cd68fbd51c2eaf65d78d29b"
+      },
+      "scaled_errors": [
+        0.0035128112031503054,
+        0.004541831485641357,
+        0.004257335732105738,
+        0.0004872003447173867
+      ],
+      "stage": "finite-best-7"
+    },
+    {
+      "fixture": {
+        "episode_id": "D01-0",
+        "intervals": 32,
+        "posterior_after_position": 31
+      },
+      "name": "hcsn-s307-lr0.001",
+      "projected": [
+        0.680877904550709,
+        0.14697246391500227,
+        0.13644611346943183,
+        0.972909871470124
+      ],
+      "quantities": [
+        "value",
+        "event_count",
+        "discounted_event_count",
+        "active_probability"
+      ],
+      "reference": [
+        0.6798307661888057,
+        0.14569703468576028,
+        0.1352692246928536,
+        0.9731765761459293
+      ],
+      "relative_errors": [
+        0.0015402926933913905,
+        0.008753982069661404,
+        0.008700343919694317,
+        0.0002740557904317765
+      ],
+      "result_identity": {
+        "bytes": 19045,
+        "path": "/home/qian-qi/hepta-hcsn-final-numerics-20261110-c385-v1/hcsn-s307-lr0.001/finite-best-7.json",
+        "sha256": "3c0c23035d46dbda3f7422416c48909ebae2e73ad21b1eb1a655950e6e1a4076"
+      },
+      "scaled_errors": [
+        0.0010471383619032881,
+        0.001275429229241981,
+        0.0011768887765782332,
+        0.0002667046758053626
+      ],
+      "stage": "finite-best-7"
+    },
+    {
+      "fixture": {
+        "episode_id": "D01-0",
+        "intervals": 32,
+        "posterior_after_position": 31
+      },
+      "name": "hcsn-s307-lr0.003",
+      "projected": [
+        1.1699805281629512,
+        0.7322141652065056,
+        0.6857462268389474,
+        0.8937262216456561
+      ],
+      "quantities": [
+        "value",
+        "event_count",
+        "discounted_event_count",
+        "active_probability"
+      ],
+      "reference": [
+        1.1662836285089484,
+        0.7278665917467152,
+        0.6816645743193611,
+        0.8941847848836145
+      ],
+      "relative_errors": [
+        0.0031698118396201146,
+        0.00597303614300696,
+        0.005987772686679171,
+        0.0005128282718634487
+      ],
+      "result_identity": {
+        "bytes": 19059,
+        "path": "/home/qian-qi/hepta-hcsn-final-numerics-20261110-c385-v1/hcsn-s307-lr0.003/finite-best-7.json",
+        "sha256": "e1d98e0c286b81567a5130b625fd7ceb63f5dc9fbf5cf7fd579825d8276b024d"
+      },
+      "scaled_errors": [
+        0.0031698118396201146,
+        0.004347573459790421,
+        0.004081652519586254,
+        0.00045856323795845366
+      ],
+      "stage": "finite-best-7"
+    },
+    {
+      "fixture": {
+        "episode_id": "A01-0",
+        "intervals": 255,
+        "posterior_after_position": 0
+      },
+      "name": "hcsn-s101-lr0.001",
+      "projected": [
+        3.5103938677474624,
+        3.0531732829129625,
+        1.678352295874005,
+        0.9261817291075669
+      ],
+      "quantities": [
+        "value",
+        "event_count",
+        "discounted_event_count",
+        "active_probability"
+      ],
+      "reference": [
+        3.5019394249340734,
+        3.0395444371285,
+        1.6692171690341873,
+        0.9262288748862093
+      ],
+      "relative_errors": [
+        0.0024142173200349375,
+        0.004483844887406227,
+        0.005472701221437387,
+        5.090078696606282e-05
+      ],
+      "result_identity": {
+        "bytes": 26156,
+        "path": "/home/qian-qi/hepta-hcsn-final-numerics-20261110-c385-v1/hcsn-s101-lr0.001/finite-best-8.json",
+        "sha256": "60b46cd1a81c81db964935e591cb8c9cef25727314e0cbe15dd6d44f6a20929c"
+      },
+      "scaled_errors": [
+        0.0024142173200349375,
+        0.004483844887406227,
+        0.005472701221437387,
+        4.7145778642398994e-05
+      ],
+      "stage": "finite-best-8"
+    }
+  ],
+  "input_identities": {
+    "/workspace/scratch/c385a7439f8e/hcsn-repo/qualification/hcsn_differentiable/evidence/p0p5-resource-replay-20261110/full-d-replay/SUMMARY.json": {
+      "bytes": 23573,
+      "sha256": "04cc502f1bb2b7714982dd1e458c278cd78c48dbd0e8be9a34d513c848f82d16"
+    },
+    "/workspace/scratch/c385a7439f8e/terminal-numerics-final-evidence-v1/COPY_LIST.json": {
+      "bytes": 17728,
+      "sha256": "80dc925dc37b12277154171bcc18e363ec41880e8d3db8cc4eee6d5069bb6660"
+    },
+    "/workspace/scratch/c385a7439f8e/terminal-numerics-final-evidence-v1/COST-RECORDS.json": {
+      "bytes": 3289,
+      "sha256": "bd2ab08374ad2e2b9d702ca0dc4be9bbef08a6f50211799c3ecc46f538532253"
+    },
+    "/workspace/scratch/c385a7439f8e/terminal-numerics-final-evidence-v1/INDEX.json": {
+      "bytes": 6853,
+      "sha256": "c3acdd984b9b098297baf18c57e71f2a81435926134f99dcebb7e42b1fbb9d6a"
+    },
+    "/workspace/scratch/c385a7439f8e/terminal-numerics-final-evidence-v1/MEMBER-MANIFEST.json": {
+      "bytes": 3525,
+      "sha256": "2d24757b61189ca10de371ee7a6f7bc49c2f576fc4786e1b963dea2fce402d96"
+    },
+    "/workspace/scratch/c385a7439f8e/terminal-numerics-final-evidence-v1/PROVENANCE.json": {
+      "bytes": 12294,
+      "sha256": "f91529a2b2a6b23b653924b69596e6336063ef78705c813fa17df30c4d075bcb"
+    },
+    "/workspace/scratch/c385a7439f8e/terminal-numerics-final-evidence-v1/README.md": {
+      "bytes": 3470,
+      "sha256": "3512217e19314e86a6a671b60cb0816b8d724532d41c38d65241198cdfda901e"
+    },
+    "/workspace/scratch/c385a7439f8e/terminal-numerics-final-evidence-v1/STAGE-ROSTER.json": {
+      "bytes": 237886,
+      "sha256": "30bab5de65420f1b7f04227301101addf3912462f8d7a5d3d9d2129cfcf7ae28"
+    },
+    "/workspace/scratch/c385a7439f8e/terminal-numerics-final-evidence-v1/assembly/EXECUTION.json": {
+      "bytes": 410,
+      "sha256": "2a11a086f3ea4ce2a3fae5ba67e5ccc5b4db03024b6735f1bfb63a0259b1f8bf"
+    },
+    "/workspace/scratch/c385a7439f8e/terminal-numerics-final-evidence-v1/assembly/assemble_terminal_numerics_small_v1.py": {
+      "bytes": 18256,
+      "sha256": "1547abc4c75debde5e5ee3c75d7afc620ab30339edc90781137e875b90f0790f"
+    },
+    "/workspace/scratch/c385a7439f8e/terminal-numerics-final-evidence-v1/assembly/freeze_terminal_numerics_small_v1.py": {
+      "bytes": 2249,
+      "sha256": "ea58ecf295687a88e618a2795a47e03cddb84a719abf9e536ec7c45769ea34cb"
+    },
+    "/workspace/scratch/c385a7439f8e/terminal-numerics-final-evidence-v1/assembly/stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/workspace/scratch/c385a7439f8e/terminal-numerics-final-evidence-v1/assembly/stdout": {
+      "bytes": 299,
+      "sha256": "6fbaa16c6dec510580658cdc3d07f01452b8aa04133a8ea693c06a6db1180072"
+    },
+    "/workspace/scratch/c385a7439f8e/terminal-numerics-final-evidence-v1/collector-launch/collector-start.json": {
+      "bytes": 1661,
+      "sha256": "f222473bd2efaa7d620486c42b001558fa15446ca95143078cabb7f696295296"
+    },
+    "/workspace/scratch/c385a7439f8e/terminal-numerics-final-evidence-v1/collector-launch/download-receipt.json": {
+      "bytes": 1273,
+      "sha256": "936e9ee2f123a1fec4b67e985eca621c4dfdcdafcc36a00c9145ae20cb70e5d1"
+    },
+    "/workspace/scratch/c385a7439f8e/terminal-numerics-final-evidence-v1/collector-launch/git-response.json": {
+      "bytes": 49258,
+      "sha256": "7aa48d5cc91d125540591b852b64ec4255e8a4002b5c890d18d515bb9a6c4121"
+    },
+    "/workspace/scratch/c385a7439f8e/terminal-numerics-final-evidence-v1/collector-launch/git.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/workspace/scratch/c385a7439f8e/terminal-numerics-final-evidence-v1/collector-launch/launch.json": {
+      "bytes": 686,
+      "sha256": "ccf754c85760df5988e3dc2771af675a98264fd2e3a41c8156dc64b1fea9b9eb"
+    },
+    "/workspace/scratch/c385a7439f8e/terminal-numerics-final-evidence-v1/collector-launch/program.zip": {
+      "bytes": 35529,
+      "sha256": "442196e551dffe877fedcef3ac25c5dd0de19010273692ffdee851fef61a6846"
+    },
+    "/workspace/scratch/c385a7439f8e/terminal-numerics-final-evidence-v1/collector-launch/receipt.json": {
+      "bytes": 2939,
+      "sha256": "43d0581a893ac2ec1e478082f7897ac73c53e62673ad01ded885001694ef02d9"
+    },
+    "/workspace/scratch/c385a7439f8e/terminal-numerics-final-evidence-v1/collector-launch/source.py": {
+      "bytes": 8401,
+      "sha256": "57dad8edb6c09aa65925f5ea80279990d6ee0e099a5629eb3fdc183a904eaf82"
+    },
+    "/workspace/scratch/c385a7439f8e/terminal-numerics-final-evidence-v1/collector-launch/stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "/workspace/scratch/c385a7439f8e/terminal-numerics-final-evidence-v1/collector-launch/stdout": {
+      "bytes": 441,
+      "sha256": "7d83df37606a195b9219d11e24ac9882ac83325cb7ee470b52bb8f103206d156"
+    },
+    "/workspace/scratch/c385a7439f8e/terminal-numerics-final-evidence-v1/collector-source/collect_terminal.py": {
+      "bytes": 14377,
+      "sha256": "d86e43126a2445db5467e2b0de2d8ec5f3e7481a646561d1a0c8173bde5953ad"
+    },
+    "/workspace/scratch/c385a7439f8e/terminal-numerics-final-evidence-v1/collector-source/metadata_summary.py": {
+      "bytes": 9254,
+      "sha256": "3fd9d3c3b55840a343eace682d31e74e2b95bd66dbc34853176e6105da86409b"
+    },
+    "/workspace/scratch/c385a7439f8e/terminal-numerics-final-evidence-v1/collector-source/test_metadata_guards.py": {
+      "bytes": 8414,
+      "sha256": "abd77ecb88b51471242e79df63c421cb700e46d20e1269940c916e6450174700"
+    },
+    "/workspace/scratch/c385a7439f8e/terminal-numerics-final-evidence-v1/collector-source/validate_and_freeze.py": {
+      "bytes": 3327,
+      "sha256": "ecccfc1e1383be00e4ef4bf9493f630ac04a25000ef6f9e397f5b6b45f968d3b"
+    },
+    "/workspace/scratch/c385a7439f8e/terminal-numerics-final-evidence-v1/numerical-source/PLAN.json": {
+      "bytes": 29310,
+      "sha256": "6ae8bb984d994f0d3fa6963e37d0f4180366a3a7bafd316d887e74f2ef1c7d26"
+    },
+    "/workspace/scratch/c385a7439f8e/terminal-numerics-final-evidence-v1/numerical-source/PROGRAM.zip": {
+      "bytes": 51013,
+      "sha256": "51c7c54ed96f40f39c8ebb5b0d04ee0c42f6f462012faf356efe6c3a9446419f"
+    },
+    "/workspace/scratch/c385a7439f8e/terminal-numerics-final-evidence-v1/original-terminal/bootstrap-receipt.json": {
+      "bytes": 3716,
+      "sha256": "e8a77c564985459913b3dfd5654d91b51cc533c4090a78af9474d7ebc84ac61a"
+    },
+    "/workspace/scratch/c385a7439f8e/terminal-numerics-final-evidence-v1/original-terminal/launch-receipt.json": {
+      "bytes": 1497,
+      "sha256": "bc3293db5a6f39cdbce7b7a956a6e59cfabdbc95268c9cfcf7a5add4653ee367"
+    },
+    "/workspace/scratch/c385a7439f8e/terminal-numerics-final-evidence-v1/postmortem/COLLECTION-RECEIPT.json": {
+      "bytes": 8567,
+      "sha256": "8461128602a2ca104d71401e4d42f59510aac37a96d79942a6c8e2344a409804"
+    },
+    "/workspace/scratch/c385a7439f8e/terminal-numerics-final-evidence-v1/postmortem/FULL-RESULT.zip": {
+      "bytes": 102135,
+      "sha256": "f881b1eed74641eda4693e315707b919bf07f8d67db9af51082f1a3f8a908fdd"
+    },
+    "/workspace/scratch/c385a7439f8e/terminal-numerics-final-evidence-v1/postmortem/ORIGINAL-MANIFEST.json": {
+      "bytes": 136056,
+      "sha256": "05721bd57e5731f3da988b62611b720b0a22ceb49bb866a7098267d1dc9452a7"
+    },
+    "/workspace/scratch/c385a7439f8e/terminal-numerics-final-evidence-v1/postmortem/SUMMARY.json": {
+      "bytes": 194004,
+      "sha256": "c50b137cb66f9dc29217f919098cb592285a5395cbf60f6381681b264d531812"
+    },
+    "/workspace/scratch/c385a7439f8e/terminal-numerics-final-evidence-v1/publication-inventory/GNU-TIME.txt": {
+      "bytes": 1207,
+      "sha256": "d6975c65a56ef70b5fdcfaa9e24bb4a9c8f7e1160bc407768bafc87dbc05cba1"
+    },
+    "/workspace/scratch/c385a7439f8e/terminal-numerics-final-evidence-v1/publication-inventory/RESULT.json": {
+      "bytes": 7806,
+      "sha256": "107b7b2cf9111329c36753a814f72982d583e2573bb2f44cbb83432a73fe36cd"
+    },
+    "/workspace/scratch/c385a7439f8e/terminal-numerics-final-evidence-v1/publication-inventory/source.py": {
+      "bytes": 4782,
+      "sha256": "e8adaeaa25a2fa1eb2b02ca18bf9393923ef830199e7aa4955cea3800c35d52c"
+    },
+    "/workspace/scratch/c385a7439f8e/terminal-numerics-final-evidence-v1/publication-plan/INDEPENDENT-STATIC-REVIEW.json": {
+      "bytes": 1557,
+      "sha256": "fed9467fd410d19b0d0ca1c42a7b1d2d7732864abe940b10a41e55880c4de63b"
+    },
+    "/workspace/scratch/c385a7439f8e/terminal-numerics-final-evidence-v1/publication-plan/RESOURCE-CONTRACT.json": {
+      "bytes": 1246,
+      "sha256": "f8a12d4b815b4e9e0cfc326c82c769f04ac91da3e7936bd4b64fb78350a24fef"
+    },
+    "/workspace/scratch/c385a7439f8e/terminal-numerics-final-evidence-v1/publication-plan/ROOT-STATIC-REVIEW.json": {
+      "bytes": 2001,
+      "sha256": "d2f0e710fe7ce4f416de8d000ec5cd276bf5c572f94a1dbf7913675e5be99ab4"
+    },
+    "/workspace/scratch/c385a7439f8e/terminal-numerics-final-evidence-v1/publication-plan/UPLOAD-INTENT.json": {
+      "bytes": 1060,
+      "sha256": "5daddc3f4c693f4f567adfc5a90c7d577e98d54eef783aa4016b146e03c688fb"
+    },
+    "/workspace/scratch/c385a7439f8e/terminal-numerics-final-evidence-v1/publication/UPLOAD-GNU-TIME.txt": {
+      "bytes": 1973,
+      "sha256": "e984a003f149d3a69cfdd252584a103150cd74a2e099da4fbac15c8c0a99d2ec"
+    },
+    "/workspace/scratch/c385a7439f8e/terminal-numerics-final-evidence-v1/publication/UPLOAD-RESULT.json": {
+      "bytes": 15937,
+      "sha256": "7a76efd2467e897c19c15bfabc044242c786a0719a364b86dce7a64fab0ad07d"
+    },
+    "/workspace/scratch/c385a7439f8e/terminal-numerics-final-evidence-v1/transport/COLLECTOR-EXACT-REQUEST.json": {
+      "bytes": 8891,
+      "sha256": "cd5f006e3cbb8a5bc19456b4d43d04daaed844b39caffd3f48718e5c7c86d297"
+    },
+    "/workspace/scratch/c385a7439f8e/terminal-numerics-final-evidence-v1/transport/COLLECTOR-START-ACK.json": {
+      "bytes": 586,
+      "sha256": "635fbfbcef224d13c612dbadb5dfa8f9a13b8a5b7fc3a9e03d67e60e1afca1cd"
+    },
+    "/workspace/scratch/c385a7439f8e/terminal-numerics-final-evidence-v1/transport/COLLECTOR-TERMINAL-PTY.json": {
+      "bytes": 2305,
+      "sha256": "2fc23609587722fa05925e0bc91e3af7662f56a7d3b1f9730cbc96f42f0f7929"
+    },
+    "/workspace/scratch/c385a7439f8e/terminal-numerics-final-evidence-v1/transport/ORIGINAL-RECEIPTS.zip": {
+      "bytes": 254590,
+      "sha256": "e6c01713ed4b962272b937976be2b989208254b1f02c22b8316dfd0ee2887d46"
+    },
+    "/workspace/scratch/c385a7439f8e/terminal-numerics-final-evidence-v1/transport/ORIGINAL-TERMINAL-READBACK.json": {
+      "bytes": 22640,
+      "sha256": "9fb497d75ba2a4fb1b81ed1317c8e196ab3fa20a41eefbe18f6b5e6349e3b2da"
+    },
+    "/workspace/scratch/c385a7439f8e/terminal-numerics-final-evidence-v1/transport/RECEIPTS-ZIP-DOWNLOAD.json": {
+      "bytes": 7516,
+      "sha256": "a0e43dad630066b24068025e2d2db1f553cdd9d30cec562669da291d809b2dec"
+    },
+    "/workspace/scratch/c385a7439f8e/terminal-numerics-final-evidence-v1/upload/PLAN.json": {
+      "bytes": 8854,
+      "sha256": "6dee938a4031a320137da5ccbf82835f2ad6a17a5cbc604df5f7b63ceb64fbbb"
+    },
+    "/workspace/scratch/c385a7439f8e/terminal-numerics-final-evidence-v1/upload/uploader.py": {
+      "bytes": 13296,
+      "sha256": "8409832f5c6561075634fc86cae060fc9c3212c4098679fb00b9d38dbc181cc3"
+    },
+    "/workspace/scratch/c385a7439f8e/terminal-numerics-final-evidence-v1/upstream-trained-artifacts/ORIGINAL-UPLOAD-RESULT.json": {
+      "bytes": 50429,
+      "sha256": "f3cc9da730874d2af7e45866b9d2b90acc03fff24b62fef4ccdcfb1cf49c6a03"
+    },
+    "/workspace/scratch/c385a7439f8e/terminal-numerics-final-evidence-v1/upstream-trained-artifacts/REFERENCES.json": {
+      "bytes": 4015,
+      "sha256": "518fff0a4fd1424068ae30e25e6ac869c3090a31edc291984625eef5be91c123"
+    }
+  },
+  "limitations": [
+    "Review recomputes saved scalar arithmetic and roster/cost sums, not the numerical solver.",
+    "Full stage payloads are bound by original member hashes; the 34MB archive was not downloaded again by this review. Original uploader authenticated full-byte/CRC/member readback receipts are preserved.",
+    "Stage self-RSS/source flags are the original collector result; this review independently checks saved outer budgets/streams and recorded source identities, not a second native file scan.",
+    "The 80-digit order8/16 refinement comparison is not a certified error bound.",
+    "49/60 finite qualification uses max(1,abs(reference)) scaling, not universal 1% relative accuracy.",
+    "Supplemental final-checkpoint laws do not complete byte-capped training trace; original prefix audit is only16 retained records per fit.",
+    "No model, probability array, oracle, training or E access. Original training sufficiency and whole-domain/scientific admission remain HOLD."
+  ],
+  "logrisk_primary_false": 6,
+  "maximum_relative_error": {
+    "name": "hcsn-s307-lr0.001",
+    "original_result": {
+      "bytes": 19104,
+      "path": "/home/qian-qi/hepta-hcsn-final-numerics-20261110-c385-v1/hcsn-s307-lr0.001/finite-best-2.json",
+      "sha256": "2c36a8c244b622c78da4cb798cd31ecb6cd3c89a717d4ed77280ac58228286ef"
+    },
+    "quantity": "discounted_event_count",
+    "stage": "finite-best-2",
+    "value": 0.05070083410015618
+  },
+  "maximum_scaled_error": {
+    "name": "hcsn-s211-lr0.001",
+    "original_result": {
+      "bytes": 22671,
+      "path": "/home/qian-qi/hepta-hcsn-final-numerics-20261110-c385-v1/hcsn-s211-lr0.001/finite-best-1.json",
+      "sha256": "0bc26c2e650b16e7755127ba52c7eeb1ba0ded4859706308c577f1ad7424058d"
+    },
+    "quantity": "event_count",
+    "stage": "finite-best-1",
+    "value": 0.0085718039526671
+  },
+  "numeric_or_model_executions": 0,
+  "ordinary_FD_inconclusive": 576,
+  "ordinary_FD_resolved_disagreement": 6,
+  "original_manifest_member_count": 487,
+  "original_prefix_audited_records_per_fit": [
+    16,
+    16,
+    16,
+    16,
+    16,
+    16
+  ],
+  "pressure_failures": 12,
+  "pressure_sentinels": 18,
+  "recorded_original_source_input_checks": 118,
+  "schema": "independent-terminal-numerics-saved-json-review-v1",
+  "scientific_admission": "HOLD",
+  "source_capsule_sha256": "288283cae2b2cf4e7b68432e040e643a5e1b00a7de961fc848dd5cf20eb46102",
+  "stage_counts": {
+    "attempt_artifacts_without_outer_completion": 1,
+    "completed_artifact_chain": 85,
+    "not_observed_to_have_started": 10
+  },
+  "status": "HOLD_review_discrepancies",
+  "uncompleted": [
+    {
+      "name": "hcsn-s101-lr0.003",
+      "stage": "finite-best-8",
+      "status": "attempt_artifacts_without_outer_completion"
+    },
+    {
+      "name": "hcsn-s211-lr0.001",
+      "stage": "finite-best-8",
+      "status": "not_observed_to_have_started"
+    },
+    {
+      "name": "hcsn-s211-lr0.003",
+      "stage": "finite-best-8",
+      "status": "not_observed_to_have_started"
+    },
+    {
+      "name": "hcsn-s307-lr0.001",
+      "stage": "finite-best-8",
+      "status": "not_observed_to_have_started"
+    },
+    {
+      "name": "hcsn-s307-lr0.003",
+      "stage": "finite-best-8",
+      "status": "not_observed_to_have_started"
+    },
+    {
+      "name": "hcsn-s101-lr0.001",
+      "stage": "finite-last-0",
+      "status": "not_observed_to_have_started"
+    },
+    {
+      "name": "hcsn-s101-lr0.003",
+      "stage": "finite-last-0",
+      "status": "not_observed_to_have_started"
+    },
+    {
+      "name": "hcsn-s211-lr0.001",
+      "stage": "finite-last-0",
+      "status": "not_observed_to_have_started"
+    },
+    {
+      "name": "hcsn-s211-lr0.003",
+      "stage": "finite-last-0",
+      "status": "not_observed_to_have_started"
+    },
+    {
+      "name": "hcsn-s307-lr0.001",
+      "stage": "finite-last-0",
+      "status": "not_observed_to_have_started"
+    },
+    {
+      "name": "hcsn-s307-lr0.003",
+      "stage": "finite-last-0",
+      "status": "not_observed_to_have_started"
+    }
+  ],
+  "whole_training_domain_admission": "HOLD"
+}

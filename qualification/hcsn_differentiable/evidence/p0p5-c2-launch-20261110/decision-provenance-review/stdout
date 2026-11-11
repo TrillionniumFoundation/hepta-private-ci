@@ -1,0 +1,22 @@
+{
+  "schema": "independent-first14-decision-provenance-closure-v1",
+  "archive_sha256": "43c1529d054a89b9ad353cc429c326624bae8e707ff8e66bb1e12052d9797b0b",
+  "archive_members": 18,
+  "addendum_RESULT_sha256": "0253f0c6e9a9f1cdad20948b57cefab758ab0a6d9fedf2a9eb5eb2cff1e1a037",
+  "verified_unique_original_passed_fixture_count": 14,
+  "scope_counts": {
+    "first9_retained_original_observer_fields": 9,
+    "later5_complete_original_result_outer": 5
+  },
+  "scope": "Rechecked exact stored fields, per-case identities and scalar gate; no model/function/oracle/FD execution and no new full-original reads for the first nine cases.",
+  "original_status_field": "result.status",
+  "primary_scaled_pass_is_derived_alias": true,
+  "nested_original_stage_cost_not_new_audit_cost": {
+    "wall_seconds": 4227.775166584412,
+    "waited_CPU_seconds": 4225.459782999999
+  },
+  "decision_count_provenance_open_item_closed": true,
+  "decision_and_original_review_unchanged": true,
+  "scientific_admission": "HOLD",
+  "whole_training_domain_admission": "HOLD"
+}

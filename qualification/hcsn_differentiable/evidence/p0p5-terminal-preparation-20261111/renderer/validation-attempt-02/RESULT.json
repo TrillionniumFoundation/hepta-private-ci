@@ -1,0 +1,104 @@
+{
+  "schema": "renderer-native155-software-validation-v1",
+  "argv": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-B",
+    "-m",
+    "unittest",
+    "test_native155",
+    "-v"
+  ],
+  "returncode": 0,
+  "timed_out": false,
+  "complete_child_wall_seconds": 0.48457767099989724,
+  "complete_wait4_child_CPU_seconds": 0.414062,
+  "complete_wait4_peak_RSS_bytes": 15507456,
+  "source_before": {
+    "ANALYSIS-PLAN.json": {
+      "bytes": 8456,
+      "sha256": "4ccfa7cc21ec37312e48d095e8f4b7373c765dd6d33fa9314ce724d161e8b06b"
+    },
+    "ANALYSIS-PROGRAM-MANIFEST.json": {
+      "bytes": 3861,
+      "sha256": "f2d1ce683591a9b8575aab2d0981bf67b9e465bf9686a8da2e87a2246a0ea70e"
+    },
+    "input_contract.py": {
+      "bytes": 13770,
+      "sha256": "87249f37695d40a96d87b058be6760d151d22c4c11d86edbcce457f20c8dba4a"
+    },
+    "native_analysis_envelope.py": {
+      "bytes": 12616,
+      "sha256": "ca662d285e7f88113c8055bbb4fcbe4af013feb5dbc5fc5b4ae9244f11f5f7db"
+    },
+    "native_observation_parsers.py": {
+      "bytes": 5516,
+      "sha256": "7e5233efabba65c9bb3dc555cec84f3b66722219e161623f9f0fcddc31e18e86"
+    },
+    "render_c2_resources.py": {
+      "bytes": 14032,
+      "sha256": "95155071a2ed6dbfb2c19ac5b506a6fbf906a01b9bf682697caf738cd7e795ef"
+    },
+    "supervisor-source/complete_os_envelope.py": {
+      "bytes": 16554,
+      "sha256": "6e6be1db16c1a05f49806b63f8024111ed25c02bda61510dcde4a9e4e3a39be0"
+    },
+    "supervisor-source/os_processes.py": {
+      "bytes": 15037,
+      "sha256": "f58ca60428d3abafea377ca64e1d71040df98c4f149adce88436951187c990d6"
+    },
+    "test_native155.py": {
+      "bytes": 11905,
+      "sha256": "a1b925156920b8ddcd98e7dd80e8ec5d75e70133b803d4fa8ec57db45ede80c7"
+    }
+  },
+  "source_after": {
+    "ANALYSIS-PLAN.json": {
+      "bytes": 8456,
+      "sha256": "4ccfa7cc21ec37312e48d095e8f4b7373c765dd6d33fa9314ce724d161e8b06b"
+    },
+    "ANALYSIS-PROGRAM-MANIFEST.json": {
+      "bytes": 3861,
+      "sha256": "f2d1ce683591a9b8575aab2d0981bf67b9e465bf9686a8da2e87a2246a0ea70e"
+    },
+    "input_contract.py": {
+      "bytes": 13770,
+      "sha256": "87249f37695d40a96d87b058be6760d151d22c4c11d86edbcce457f20c8dba4a"
+    },
+    "native_analysis_envelope.py": {
+      "bytes": 12616,
+      "sha256": "ca662d285e7f88113c8055bbb4fcbe4af013feb5dbc5fc5b4ae9244f11f5f7db"
+    },
+    "native_observation_parsers.py": {
+      "bytes": 5516,
+      "sha256": "7e5233efabba65c9bb3dc555cec84f3b66722219e161623f9f0fcddc31e18e86"
+    },
+    "render_c2_resources.py": {
+      "bytes": 14032,
+      "sha256": "95155071a2ed6dbfb2c19ac5b506a6fbf906a01b9bf682697caf738cd7e795ef"
+    },
+    "supervisor-source/complete_os_envelope.py": {
+      "bytes": 16554,
+      "sha256": "6e6be1db16c1a05f49806b63f8024111ed25c02bda61510dcde4a9e4e3a39be0"
+    },
+    "supervisor-source/os_processes.py": {
+      "bytes": 15037,
+      "sha256": "f58ca60428d3abafea377ca64e1d71040df98c4f149adce88436951187c990d6"
+    },
+    "test_native155.py": {
+      "bytes": 11905,
+      "sha256": "a1b925156920b8ddcd98e7dd80e8ec5d75e70133b803d4fa8ec57db45ede80c7"
+    }
+  },
+  "source_unchanged": true,
+  "limits": {
+    "whole_child_wall_seconds": 30.0,
+    "address_space_bytes": 268435456,
+    "worker": 1,
+    "retry": false
+  },
+  "compile_only_preflight": true,
+  "renderer_imported": false,
+  "actual_model_or_C2_or_E_access": false,
+  "gate_test_scope": "Eight native-only synthetic JSON tests with twelve rejection variants and two positive cases; full renderer/archive pipeline not exercised.",
+  "supervisor_setup_compile_packaging_and_exit_cost": "Not included in complete child account; not separately metered."
+}

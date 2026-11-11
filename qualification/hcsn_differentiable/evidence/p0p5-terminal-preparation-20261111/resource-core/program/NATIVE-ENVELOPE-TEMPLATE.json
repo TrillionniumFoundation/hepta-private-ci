@@ -1,0 +1,55 @@
+{
+  "schema": "hcsn-c2-auditor-native-envelope-inputs-v1",
+  "preparation_only": true,
+  "native_job_id": null,
+  "idempotency_key": null,
+  "native_request_digest": null,
+  "expected_output_directory": null,
+  "whole_native_limit_seconds": 1950,
+  "launch_request": {
+    "path": null,
+    "identity": null
+  },
+  "launch_ack": {
+    "path": null,
+    "identity": null
+  },
+  "terminal_status": {
+    "path": null,
+    "identity": null
+  },
+  "gnu_time": {
+    "path": null,
+    "identity": null
+  },
+  "read_pages": [],
+  "bootstrap_authorization": {
+    "path": null,
+    "identity": null
+  },
+  "bootstrap_receipt": {
+    "path": null,
+    "identity": null
+  },
+  "audit_complete_OS": {
+    "path": null,
+    "identity": null
+  },
+  "bootstrap_sources": {
+    "bootstrap.py": {
+      "path": null,
+      "identity": null
+    },
+    "os_processes.py": {
+      "path": null,
+      "identity": null
+    }
+  },
+  "dispatch_records": [],
+  "notes": [
+    "This is only a disabled input-shape template. Actual source/authorization/status/logs must be the original raw files.",
+    "When ACK.reused is true, dispatch_records must preserve original response/error and the actual reconciled ACK. Every record is {request:{path,identity},response:{path,identity}}.",
+    "Optional source_path denotes the original native path when a byte-exact copy is relocated; its identity is still read and bound.",
+    "Neither a request file SHA nor a JavaScript-rounded request_fingerprint substitutes for the daemon request_digest string."
+  ]
+}

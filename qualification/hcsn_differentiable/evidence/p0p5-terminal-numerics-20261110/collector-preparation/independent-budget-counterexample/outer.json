@@ -1,0 +1,41 @@
+{
+  "RSS_limit_bytes": 2147483648,
+  "address_limit_bytes": 8589934592,
+  "argv": [
+    "/home/qian-qi/hepta-hcsn-trainer-20261108-s3-v1/dependency-recovery-v2/venv/bin/python",
+    "-B",
+    "/home/qian-qi/hepta-hcsn-final-numerics-program-20261110-c385-v1/stage.py",
+    "--receipt",
+    "/home/qian-qi/hepta-hcsn-final-numerics-20261110-c385-v1/hcsn-s101-lr0.001/input-receipt.json",
+    "--receipt-sha256",
+    "95ffb0ccef58a7786b7baf6df4038e6e0f3d8cf85b3b239bce34803a9cb183da",
+    "--plan",
+    "/home/qian-qi/hepta-hcsn-final-numerics-program-20261110-c385-v1/PLAN.json",
+    "--output",
+    "/home/qian-qi/hepta-hcsn-final-numerics-20261110-c385-v1/hcsn-s101-lr0.001",
+    "--stage",
+    "finite-best-1"
+  ],
+  "execution_status": "completed",
+  "finished_utc": "2026-11-10T20:05:15.624282+00:00",
+  "inner_execution_status": "completed",
+  "pid": 2025532,
+  "process_started": true,
+  "reported_child_peak_RSS_sample_bytes": 768778240,
+  "result_sha256": "114929bf372a4c2d607df53533b5835dfeec0f4e6d24967d4bbd6cb22a2f0290",
+  "returncode": 0,
+  "sampled_peak_RSS_bytes": 770166784,
+  "started_utc": "2026-11-10T19:56:33.916508+00:00",
+  "stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "stdout": {
+    "bytes": 60,
+    "sha256": "015a230362719a69b9c95a9f9f00bb1f899416cc5e545ec7d52d8d4175dffca3"
+  },
+  "stop_cause": null,
+  "waited_child_CPU_seconds": 521.5288860000003,
+  "whole_process_wall_seconds": 521.7077636418398,
+  "whole_stage_wall_ceiling_seconds": 900
+}

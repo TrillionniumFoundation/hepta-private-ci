@@ -1,0 +1,28 @@
+{
+  "adaptive_read_recovery": "Only same-version missing byte ranges read sequentially at32KiB; no native job or model rerun.",
+  "archive": {
+    "bytes": 358912,
+    "sha256": "b720c89cc6b69b16c2f22e6fd8e247fce4f744e97be4ce7becb311a8f830d221"
+  },
+  "failed_original_reads_retained": [
+    {
+      "receipt": "archive-00065536-RAW.json",
+      "wall_seconds": 120.067
+    },
+    {
+      "receipt": "archive-00131072-RAW.json",
+      "wall_seconds": 120.07
+    },
+    {
+      "receipt": "archive-00262144-RAW.json",
+      "wall_seconds": 120.093
+    }
+  ],
+  "full_SHA_CRC_member_and_parent_chain_verified": true,
+  "local_recovery_prefix_CPU_seconds": 0.04476047699999999,
+  "local_recovery_prefix_wall_seconds": 0.04674861000239616,
+  "members": 36,
+  "native_version": "2050:54326549:358912:1794350740759534864:1794350740759534864",
+  "schema": "hcsn-c2-delta-observation-recovery-v4",
+  "successful_segments": 9
+}

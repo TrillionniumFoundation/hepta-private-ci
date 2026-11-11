@@ -1,0 +1,30 @@
+{
+  "schema": "renderer-v2-blob-persistence-v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "raw_zip_blob": {
+    "sha": "239c321c98e756d53bff72977f5b0e5b801f1791",
+    "create_completed": true,
+    "authenticated_raw_readback_completed": false,
+    "readback_error": "Connector UnicodeDecodeError on binary ZIP; original create was not repeated."
+  },
+  "armored_zip_blob": {
+    "sha": "65e312c87746007b6483047aed2d024af96faf9f",
+    "encoding": "UTF-8 text containing Base64 of exact ZIP plus one newline",
+    "bytes": 32497,
+    "exact_authenticated_text_readback": true
+  },
+  "decoded_zip": {
+    "bytes": 24370,
+    "sha256": "ef6854b69e5e639d1159711bc014b327d00a95c983c8fab832b19d09fb17c466"
+  },
+  "git_ref_mutations": 0,
+  "archive_render_or_model_execution": false,
+  "tool_wall_ms_prefixes": {
+    "raw_create": 768,
+    "raw_readback_failure": 458,
+    "armor_create": 716,
+    "armor_readback": 429
+  },
+  "CPU_and_billing": null,
+  "cost_scope": "Client-observed per-tool wall intervals; not OS process CPU, complete total preparation cost, or artifact rendering cost."
+}

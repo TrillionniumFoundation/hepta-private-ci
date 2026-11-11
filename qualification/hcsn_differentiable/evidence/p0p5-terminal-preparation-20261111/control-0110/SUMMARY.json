@@ -1,0 +1,37 @@
+{
+  "schema": "read-only-sparse-control-observation-result-v2",
+  "status": "shared_h_control_path_errors_no_new_native_state",
+  "observed_start_utc": "2026-11-11T01:10:32.967Z",
+  "observed_end_utc": "2026-11-11T01:10:42.909Z",
+  "requested_endpoints": [
+    "h_process_status",
+    "h_binary_read",
+    "h_host_health"
+  ],
+  "outcome": "all three returned MCP -32603 Internal error",
+  "inference": "The same error also affects an independent host-health endpoint, so the observation is broader than this job's output read. It does not establish native process failure, SSH challenge execution, or exact root cause.",
+  "last_authoritative_original_job_state": {
+    "observed_utc": "2026-11-11T00:25:25Z",
+    "state": "running",
+    "current_state": "unknown"
+  },
+  "last_complete_commands_snapshot": {
+    "observed_utc": "2026-11-11T00:33:29.153Z",
+    "terminal_rows": 3,
+    "total_original_fits": 6,
+    "current_liveness_of_remaining_fits": "unknown"
+  },
+  "v9_launch_ack": "unknown",
+  "new_durable_process_start_calls": 0,
+  "requested_training_operations": 0,
+  "service_mutations": 0,
+  "credential_or_routing_changes": 0,
+  "health_scope": "One pre-exposed allowlisted fixed read-only host challenge; returned only an MCP error, no structured reachability evidence.",
+  "per_call_control_wall_seconds": [
+    3.263,
+    3.336,
+    2.202
+  ],
+  "observed_sequence_span_seconds": 9.942,
+  "cost_scope": "The first two calls overlap. The sequence span is control-plane elapsed wall, not model CPU or training time; no additive billing claim."
+}

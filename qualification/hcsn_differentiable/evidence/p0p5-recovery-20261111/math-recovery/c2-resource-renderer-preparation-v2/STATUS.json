@@ -1,0 +1,28 @@
+{
+  "schema": "renderer-v2-preparation-status-v1",
+  "status": "source_prepared_new_compile_passed_not_executed",
+  "execution_authorized": false,
+  "production_version_adopted": false,
+  "actual_render_completed": false,
+  "visual_review_completed": false,
+  "line_counts": {
+    "compile_only.py": 38,
+    "input_contract.py": 207,
+    "render_c2_resources.py": 187
+  },
+  "original_v1_source_exact_recovered": true,
+  "original_v1_archive_or_receipt_recovered": false,
+  "new_compile_receipt": {
+    "bytes": 1618,
+    "sha256": "33b9cf4332e373ecaef6829b0bf6293fc4024ecb0c92ec63d716c72ea332b2ce"
+  },
+  "scientific_admission": "HOLD",
+  "whole_training_numerical_admission": "HOLD",
+  "cost": {
+    "whole_compile_child_wall_seconds": 0.07874344300000757,
+    "wait4_compile_child_CPU_seconds": 0.047039,
+    "wait4_peak_RSS_bytes": 10354688,
+    "cost_scope": "Complete new compile child Popen-to-wait4; outer script hashing/receipt/exit excluded."
+  },
+  "preparation_total_accounting_complete": false
+}

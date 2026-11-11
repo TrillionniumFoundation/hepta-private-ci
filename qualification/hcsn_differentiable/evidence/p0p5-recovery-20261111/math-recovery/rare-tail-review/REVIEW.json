@@ -1,0 +1,32 @@
+{
+  "schema": "finite-generator-rare-tail-math-review-v1",
+  "review_type": "Pure textual and analytic reasoning; no code evaluation of mathematical quantities.",
+  "input_note": {
+    "path": "/workspace/scratch/c385a7439f8e/p1-finite-generator-rare-tail-recovery-v1/NOTE.md",
+    "bytes": 8780,
+    "sha256": "87e8275337bae8a62a9cfee0c70bec6bd2e7167dd5c8a91b62845f3d9375541e"
+  },
+  "conclusion": "No mathematical blocker under the stated assumptions.",
+  "checked_claims": [
+    "Finite fixed CTMC shortest positive-rate path yields positive t^k first-hit onset; zero lower powers and no diagonal cancellation.",
+    "For fixed sigma>0 and finite mu, positive starting distance gives t log F -> -x^2/(2 sigma^2); essential-inf initial law follows by the stated monotonicity squeeze.",
+    "Positive finite boundary density gives p(0+) sigma sqrt(2t/pi); linearly vanishing density gives c sigma^2 t/2 + o(t), including c=0.",
+    "Fixed rho>=0 gives exp(-rho*t) F <= G <= F; it preserves the log rate and an existing leading power.",
+    "A fixed finite-rate phase chain cannot have exact deterministic positive-delay onset; the Erlang mean/variance and refinement qualifier are correct.",
+    "Bounded regular likelihood and positive finite normalization preserve the killed density zero boundary value."
+  ],
+  "qualifications_retained": [
+    "All mathematical limits hold for fixed law/generator/physical parameters as stated, not a jointly refined mesh or time-dependent initial law.",
+    "No allocation of the twelve prior perpetual-value failures, no posterior qualification, no replacement implementation test, and no change to HOLD.",
+    "This is the new post-reset note. Missing prior draft/review bytes are not claimed recovered."
+  ],
+  "source_identity_only_actions": true,
+  "model_calls": 0,
+  "numerical_oracle_calls": 0,
+  "scalar_sweeps": 0,
+  "tests_executed": 0,
+  "E_access": false,
+  "execution_authorized": false,
+  "scientific_admission": "HOLD",
+  "review_total_wall_CPU_unknown": true
+}

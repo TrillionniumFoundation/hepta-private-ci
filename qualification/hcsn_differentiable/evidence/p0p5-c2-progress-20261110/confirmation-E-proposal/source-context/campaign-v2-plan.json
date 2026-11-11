@@ -1,0 +1,96 @@
+{
+  "PLIF_tuning_scope": "ABC-only A01-0; retain binary256/1024,8 initialization configs,analog256/1024 attempts and one timeout; selected trace first observed pass768 versus membrane1024; no prior D/E used for PLIF configuration choice",
+  "address_space_bytes": 8589934592,
+  "adequacy_rule": "diagnostic accuracy>=.95 and present-class-F1>=.9, plus >=30 full epochs and .002 meaningful-improvement plateau for10 epochs; max100 or wall cap alone is not convergence",
+  "arms": [
+    "gru",
+    "cfc",
+    "snn_plif",
+    "event_time_lif",
+    "ssm_s4d",
+    "attention",
+    "hcsn"
+  ],
+  "batch_size": 32,
+  "cache_frozen_tables": true,
+  "confirmation_access": false,
+  "cost_scope": "single native host, up to9 concurrent CPU1 fits; six HCSN dispatched first; imports, cold-cache setup, diagnostic reset rebuild, validation and failed attempts measured; energy unmeasured",
+  "dispatch_hcsn_first": true,
+  "equal_resource_process_cpu_seconds": [
+    300,
+    900,
+    1800
+  ],
+  "equal_resource_process_elapsed_seconds": [
+    300,
+    900,
+    1800
+  ],
+  "formal_fits_started": 0,
+  "freeze_shared": true,
+  "hcsn_grid": {
+    "active_cells": 256,
+    "endpoint": 4.8,
+    "initial_log_std": 0.08,
+    "phase_cells": 16,
+    "quadrature_order": 32,
+    "refractory": 0.2,
+    "tail_rate": 1.0
+  },
+  "initialization": "all fits fresh; exact shared frontend/head and identity adapter initialization for matched seed; common tensors frozen",
+  "learn_core_adapter": true,
+  "learning_rates": [
+    0.001,
+    0.003
+  ],
+  "manifest_sha256": "0eb233da8d0b766c35356ba450d0572f1e6a87a47f1d8a17cd32c2ae6f25a1cb",
+  "max_epochs": 100,
+  "memorization_check_every": 64,
+  "memorization_updates": 1024,
+  "micro_batch_sizes": {
+    "hcsn": 8
+  },
+  "min_epochs": 30,
+  "numerical_admission": "HOLD: N256 is a bounded-development candidate, two-step width16 evidence is not full-training qualification; tiny-gap infinite-repeat negative controls retained",
+  "patience": 10,
+  "peak_rss_bytes": 6442450944,
+  "per_fit_wall_seconds": 14400,
+  "plateau_delta": 0.002,
+  "plif_configuration": {
+    "init_tau": 2.0,
+    "input_weight_gain": 1.0,
+    "readout": "spike_trace",
+    "threshold": 1.0,
+    "trace_decay": 0.75
+  },
+  "prepared": "/home/qian-qi/hepta-hcsn-discriminative-20261109-7e8f70f19cba/execution/data",
+  "protocol_limitations": [
+    "two learning rates and three seeds, not prior5seed12config protocol",
+    "CPU FP64 attention is not hardware-optimized GPU Transformer",
+    "analytic fixed-active-set LIF is not EventProp",
+    "complete-system energy unavailable",
+    "arbitrary full physics learning not qualified"
+  ],
+  "python": "/home/qian-qi/hepta-hcsn-trainer-20261108-s3-v1/dependency-recovery-v2/venv/bin/python",
+  "quality_threshold": 0.3,
+  "resource_cut_selection": "best observed D among complete evaluations at or before each cumulative process wall/CPU budget; no interpolation; if no evaluation eligible report missing",
+  "s4_repo": "/home/qian-qi/hepta-hcsn-trainer-20261108-s3-v1/dependency-recovery-v3/s4",
+  "schema": "hcsn-fresh-adapter-campaign-plan-v2",
+  "scientific_admission": "HOLD",
+  "seeds": [
+    101,
+    211,
+    307
+  ],
+  "selection_rule": "strict maximum D macro-F1 checkpoint per fit; LR selection by mean D across all three seeds with every outcome retained; E sealed",
+  "source_capsule_sha256": "288283cae2b2cf4e7b68432e040e643a5e1b00a7de961fc848dd5cf20eb46102",
+  "threads": 1,
+  "time_to_quality_scope": "first observed D macro-F1 >=.3; crossings between evaluations are not localized",
+  "trace_bytes": 33554432,
+  "trace_records": 4096,
+  "training_trace_scope": "bounded prefix max4096 records and32MiB; truncation keeps whole-training-domain HOLD; post-training checkpoint traces are supplemental",
+  "tuning_cost_charged": true,
+  "whole_wall_seconds": 15000,
+  "width": 16,
+  "workers": 9
+}

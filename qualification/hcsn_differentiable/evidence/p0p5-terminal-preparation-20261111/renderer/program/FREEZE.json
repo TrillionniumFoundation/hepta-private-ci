@@ -1,0 +1,36 @@
+{
+  "schema": "c2-resource-renderer-preparation-freeze-v3",
+  "execution_authorized": false,
+  "actual_analysis_or_render": false,
+  "program_manifest": {
+    "bytes": 2876,
+    "sha256": "eb88492821fed51acd1f3280e5b895bb7c54510d1900591dee3049f1a4396071"
+  },
+  "drawing_main_byte_exact_v2": true,
+  "source_exact_owner_validation": {
+    "bytes": 3670,
+    "sha256": "d4b4f9f5b621babd58979ebefba1d7fd649dcc74cbfdd5d9228487fe9226ee80"
+  },
+  "owner_validation_scope": "Eight native-only pure-JSON tests; no whole-renderer positive fixture, Matplotlib import, actual model/data or rendering. Earlier six-test snapshot preserved separately.",
+  "independent_review_scope": "Five pure metadata cases reportedly expected; independent raw after-roster omitted two nested fixture source files, original source_unchanged=false preserved and separate read-only coverage closure pending/external. Not used to replace owner complete before/after.",
+  "new_runtime_sources": {
+    "input_contract.py": {
+      "bytes": 13770,
+      "sha256": "87249f37695d40a96d87b058be6760d151d22c4c11d86edbcce457f20c8dba4a"
+    },
+    "native_analysis_envelope.py": {
+      "bytes": 12616,
+      "sha256": "ca662d285e7f88113c8055bbb4fcbe4af013feb5dbc5fc5b4ae9244f11f5f7db"
+    },
+    "native_observation_parsers.py": {
+      "bytes": 5516,
+      "sha256": "7e5233efabba65c9bb3dc555cec84f3b66722219e161623f9f0fcddc31e18e86"
+    },
+    "render_c2_resources.py": {
+      "bytes": 14032,
+      "sha256": "95155071a2ed6dbfb2c19ac5b506a6fbf906a01b9bf682697caf738cd7e795ef"
+    }
+  },
+  "future_execution_needs_new_root_decision_and_actual_originals": true,
+  "scientific_admission": "HOLD"
+}

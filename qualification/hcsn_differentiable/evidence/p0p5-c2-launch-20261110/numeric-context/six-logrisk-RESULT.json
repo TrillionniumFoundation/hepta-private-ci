@@ -1,0 +1,364 @@
+{
+  "CPU_sample_seconds": 0.046637892,
+  "created_utc": "2026-11-10T20:47:56.627841+00:00",
+  "failure": {
+    "AD": -0.006726718098708995,
+    "AD_absolute_error": 5.204170427930421e-17,
+    "AD_scaled_error": 5.204170427930421e-17,
+    "FP64_FD": -0.006726717499035361,
+    "FP64_FD_absolute_error": 5.99673686575708e-10,
+    "FP64_FD_disposition": "disagrees_above_resolution",
+    "FP64_FD_roundoff_resolution_estimate": 1.9402553638575388e-10,
+    "FP64_FD_scaled_error": 5.99673686575708e-10,
+    "coordinate": "discount",
+    "fixed_nominal_h": 1.430511474609375e-07,
+    "function": "log G",
+    "inputs": [
+      0.009375,
+      0.1081168,
+      -0.11999999999999998,
+      0.35,
+      0.15
+    ],
+    "parameter_index": 4,
+    "primary_derivative_passed": false,
+    "query_index_in_complete_first_original": 5,
+    "reference_FD": -0.0067267180987090475,
+    "reference_FD_absolute_error": 0.0,
+    "reference_FD_scaled_error": 0.0,
+    "reference_derivative": -0.0067267180987090475,
+    "representable_high": 0.15000014305114745,
+    "representable_low": 0.14999985694885254,
+    "scaled_error_limit": 3e-10
+  },
+  "fits": [
+    {
+      "full_original_bytes": 117473,
+      "full_original_sha256": "34816d336410dc7b1c85a87737fcb68d304da7102fc676df237e23cc40525c63",
+      "name": "hcsn-s101-lr0.001",
+      "original_summary_fields": {
+        "direct_FD_all_resolved_pass": false,
+        "direct_FD_inconclusive_count": 96,
+        "direct_FD_resolved_disagreement_count": 1,
+        "distances": [
+          0.009375,
+          0.32000000000000006,
+          4.7906249999999995,
+          4.8,
+          5.8
+        ],
+        "primary_passed": false,
+        "query_gaps": [
+          1e-07,
+          0.0270296,
+          0.1081168
+        ]
+      },
+      "outer_sha256": "6d865420933db9128ca4a6aa2e5d186d5680e07094c85ebd2b7c8ba423c36db6",
+      "query_index": 5,
+      "query_matches_first_original": true,
+      "read_scope": "complete_original"
+    },
+    {
+      "fragment_byte_range": [
+        16384,
+        32768
+      ],
+      "fragment_sha256": "1e597f8b1b109381e1900139b0a69d18256cbb7e78ef849035d79322ba817823",
+      "full_original_bytes": 117474,
+      "full_original_sha256": "ecb07ec7f930c341f366071eaeb65c525a4ff29e7b0891ddda1b780c992e1f32",
+      "name": "hcsn-s101-lr0.003",
+      "native_original_path": "/home/qian-qi/hepta-hcsn-final-numerics-20261110-c385-v1/hcsn-s101-lr0.003/logrisk.json",
+      "original_summary_fields": {
+        "direct_FD_all_resolved_pass": false,
+        "direct_FD_inconclusive_count": 96,
+        "direct_FD_resolved_disagreement_count": 1,
+        "distances": [
+          0.009375,
+          0.32000000000000006,
+          4.7906249999999995,
+          4.8,
+          5.8
+        ],
+        "primary_passed": false,
+        "query_gaps": [
+          1e-07,
+          0.0270296,
+          0.1081168
+        ]
+      },
+      "outer_sha256": "0486e24e4b39f24cc2627107536b0da6c21587252c3ad63c666e82ae8d68d7a6",
+      "query_matches_first_original": true,
+      "query_matches_first_original_index": 5,
+      "query_original_byte_range": [
+        23256,
+        27445
+      ],
+      "query_raw_sha256": "84b657541bf80b1040fcc941caf6af643094aab52cb1c9d0204c83b4881572cf",
+      "read_scope": "complete_query_in_pinned_version_binary_fragment",
+      "version": "2050:51176599:117474:1794339788673669878:1794339788673669878"
+    },
+    {
+      "fragment_byte_range": [
+        16384,
+        32768
+      ],
+      "fragment_sha256": "1e597f8b1b109381e1900139b0a69d18256cbb7e78ef849035d79322ba817823",
+      "full_original_bytes": 117474,
+      "full_original_sha256": "68f8eb956dc03013ecae0b977d970e18830d207c48ecbc3f0bbe2f67979f102f",
+      "name": "hcsn-s211-lr0.001",
+      "native_original_path": "/home/qian-qi/hepta-hcsn-final-numerics-20261110-c385-v1/hcsn-s211-lr0.001/logrisk.json",
+      "original_summary_fields": {
+        "direct_FD_all_resolved_pass": false,
+        "direct_FD_inconclusive_count": 96,
+        "direct_FD_resolved_disagreement_count": 1,
+        "distances": [
+          0.009375,
+          0.32000000000000006,
+          4.7906249999999995,
+          4.8,
+          5.8
+        ],
+        "primary_passed": false,
+        "query_gaps": [
+          1e-07,
+          0.0270296,
+          0.1081168
+        ]
+      },
+      "outer_sha256": "7ae5d23759016c1e650947096c7f4fd020d46aedee4fe063e2f08dea0b3b745b",
+      "query_matches_first_original": true,
+      "query_matches_first_original_index": 5,
+      "query_original_byte_range": [
+        23256,
+        27445
+      ],
+      "query_raw_sha256": "84b657541bf80b1040fcc941caf6af643094aab52cb1c9d0204c83b4881572cf",
+      "read_scope": "complete_query_in_pinned_version_binary_fragment",
+      "version": "2050:51176603:117474:1794339792471554186:1794339792471554186"
+    },
+    {
+      "fragment_byte_range": [
+        16384,
+        32768
+      ],
+      "fragment_sha256": "1e597f8b1b109381e1900139b0a69d18256cbb7e78ef849035d79322ba817823",
+      "full_original_bytes": 117474,
+      "full_original_sha256": "e187eb38310d05791c7a7630dfef9bed6f5a555047f2157d4cd7351ca53c2134",
+      "name": "hcsn-s211-lr0.003",
+      "native_original_path": "/home/qian-qi/hepta-hcsn-final-numerics-20261110-c385-v1/hcsn-s211-lr0.003/logrisk.json",
+      "original_summary_fields": {
+        "direct_FD_all_resolved_pass": false,
+        "direct_FD_inconclusive_count": 96,
+        "direct_FD_resolved_disagreement_count": 1,
+        "distances": [
+          0.009375,
+          0.32000000000000006,
+          4.7906249999999995,
+          4.8,
+          5.8
+        ],
+        "primary_passed": false,
+        "query_gaps": [
+          1e-07,
+          0.0270296,
+          0.1081168
+        ]
+      },
+      "outer_sha256": "5d268dde0a61b88bd8ccf9c64eb74ad740f8e1790749a87303425d2a61953072",
+      "query_matches_first_original": true,
+      "query_matches_first_original_index": 5,
+      "query_original_byte_range": [
+        23256,
+        27445
+      ],
+      "query_raw_sha256": "84b657541bf80b1040fcc941caf6af643094aab52cb1c9d0204c83b4881572cf",
+      "read_scope": "complete_query_in_pinned_version_binary_fragment",
+      "version": "2050:51176607:117474:1794339796314437121:1794339796314437121"
+    },
+    {
+      "fragment_byte_range": [
+        16384,
+        32768
+      ],
+      "fragment_sha256": "1e597f8b1b109381e1900139b0a69d18256cbb7e78ef849035d79322ba817823",
+      "full_original_bytes": 117474,
+      "full_original_sha256": "38a2f841824172efc449caa945c36b5223f353a2ea6966f2ddc7d22bffe4ce32",
+      "name": "hcsn-s307-lr0.001",
+      "native_original_path": "/home/qian-qi/hepta-hcsn-final-numerics-20261110-c385-v1/hcsn-s307-lr0.001/logrisk.json",
+      "original_summary_fields": {
+        "direct_FD_all_resolved_pass": false,
+        "direct_FD_inconclusive_count": 96,
+        "direct_FD_resolved_disagreement_count": 1,
+        "distances": [
+          0.009375,
+          0.32000000000000006,
+          4.7906249999999995,
+          4.8,
+          5.8
+        ],
+        "primary_passed": false,
+        "query_gaps": [
+          1e-07,
+          0.0270296,
+          0.1081168
+        ]
+      },
+      "outer_sha256": "cdbf6185fa113de1af174705c68cb21001c3457cc7385ba3bda9c4a7b2bf6086",
+      "query_matches_first_original": true,
+      "query_matches_first_original_index": 5,
+      "query_original_byte_range": [
+        23256,
+        27445
+      ],
+      "query_raw_sha256": "84b657541bf80b1040fcc941caf6af643094aab52cb1c9d0204c83b4881572cf",
+      "read_scope": "complete_query_in_pinned_version_binary_fragment",
+      "version": "2050:51176591:117474:1794339800180319353:1794339800180319353"
+    },
+    {
+      "fragment_byte_range": [
+        16384,
+        32768
+      ],
+      "fragment_sha256": "1e597f8b1b109381e1900139b0a69d18256cbb7e78ef849035d79322ba817823",
+      "full_original_bytes": 117472,
+      "full_original_sha256": "1b0af9ed04f402511e65e69da00343930819475f2a78a60fab4209154e84b76e",
+      "name": "hcsn-s307-lr0.003",
+      "native_original_path": "/home/qian-qi/hepta-hcsn-final-numerics-20261110-c385-v1/hcsn-s307-lr0.003/logrisk.json",
+      "original_summary_fields": {
+        "direct_FD_all_resolved_pass": false,
+        "direct_FD_inconclusive_count": 96,
+        "direct_FD_resolved_disagreement_count": 1,
+        "distances": [
+          0.009375,
+          0.32000000000000006,
+          4.7906249999999995,
+          4.8,
+          5.8
+        ],
+        "primary_passed": false,
+        "query_gaps": [
+          1e-07,
+          0.0270296,
+          0.1081168
+        ]
+      },
+      "outer_sha256": "2a5b45fffca9ecdc426e5f2fcb8e6c5deb113c62061ab5e2d7568fbc47e38cfa",
+      "query_matches_first_original": true,
+      "query_matches_first_original_index": 5,
+      "query_original_byte_range": [
+        23256,
+        27445
+      ],
+      "query_raw_sha256": "84b657541bf80b1040fcc941caf6af643094aab52cb1c9d0204c83b4881572cf",
+      "read_scope": "complete_query_in_pinned_version_binary_fragment",
+      "version": "2050:51176617:117472:1794339803865207097:1794339803865207097"
+    }
+  ],
+  "interpretation": "The ordinary FP64 finite-difference confirmation gate did not pass. At this recorded point, AD and both 80-digit derivative checks agree within the frozen gate. This is not evidence of an erroneous training gradient. The rounding-resolution estimate is not a complete bound on function-evaluation or finite-difference truncation error.",
+  "new_scientific_or_whole_domain_admission": false,
+  "original_observer_summary_sha256": "15791776e7a93c1a4ed42f06865da5cbeb8eaa0decc8b3002d467d52a2b272e2",
+  "partial_download_metadata_sha256": "105034d824cab36948a54a0fa9cc1b5e43aea92b61ca2f0315ee156d959c3d31",
+  "peak_RSS_sample_bytes": 10616832,
+  "query": {
+    "derivatives": [
+      {
+        "AD": -6.555154516225537,
+        "AD_scaled_error": 1.3549313254198304e-16,
+        "FP64_FD": -6.555154516305587,
+        "FP64_FD_disposition": "roundoff_limited_not_a_FD_pass",
+        "FP64_FD_roundoff_resolution_estimate": 4.735828231795188e-10,
+        "FP64_FD_scaled_error": 1.2211860542876389e-11,
+        "parameter_index": 0,
+        "primary_derivative_passed": true,
+        "reference_FD": -6.555154516225538,
+        "reference_FD_scaled_error": 2.709862650839661e-16,
+        "reference_derivative": -6.555154516225536,
+        "representable_high": 0.009375008940696716,
+        "representable_low": 0.009374991059303284
+      },
+      {
+        "AD": 0.3136862127481029,
+        "AD_scaled_error": 2.220446049250313e-16,
+        "FP64_FD": 0.3136862126170836,
+        "FP64_FD_disposition": "passed_at_declared_resolution",
+        "FP64_FD_roundoff_resolution_estimate": 2.691887889595888e-10,
+        "FP64_FD_scaled_error": 1.3101902895940043e-10,
+        "parameter_index": 1,
+        "primary_derivative_passed": true,
+        "reference_FD": 0.3136862127482909,
+        "reference_FD_scaled_error": 1.882383138251953e-13,
+        "reference_derivative": 0.31368621274810266,
+        "representable_high": 0.10811690310821533,
+        "representable_low": 0.10811669689178467
+      },
+      {
+        "AD": -0.06994117410738711,
+        "AD_scaled_error": 4.163336342344337e-17,
+        "FP64_FD": -0.06994117429984195,
+        "FP64_FD_disposition": "passed_at_declared_resolution",
+        "FP64_FD_roundoff_resolution_estimate": 2.4253192048219233e-10,
+        "FP64_FD_scaled_error": 1.924548853615704e-10,
+        "parameter_index": 2,
+        "primary_derivative_passed": true,
+        "reference_FD": -0.06994117410738708,
+        "reference_FD_scaled_error": 1.3877787807814457e-17,
+        "reference_derivative": -0.06994117410738707,
+        "representable_high": -0.11999988555908202,
+        "representable_low": -0.12000011444091795
+      },
+      {
+        "AD": 0.1516046648477942,
+        "AD_scaled_error": 2.7755575615628914e-17,
+        "FP64_FD": 0.15160466462184838,
+        "FP64_FD_disposition": "passed_at_declared_resolution",
+        "FP64_FD_roundoff_resolution_estimate": 8.315380131048508e-11,
+        "FP64_FD_scaled_error": 2.2594578985568603e-10,
+        "parameter_index": 3,
+        "primary_derivative_passed": true,
+        "reference_FD": 0.1516046648479023,
+        "reference_FD_scaled_error": 1.0813572259849025e-13,
+        "reference_derivative": 0.15160466484779417,
+        "representable_high": 0.3500003337860107,
+        "representable_low": 0.34999966621398926
+      },
+      {
+        "AD": -0.006726718098708995,
+        "AD_scaled_error": 5.204170427930421e-17,
+        "FP64_FD": -0.006726717499035361,
+        "FP64_FD_disposition": "disagrees_above_resolution",
+        "FP64_FD_roundoff_resolution_estimate": 1.9402553638575388e-10,
+        "FP64_FD_scaled_error": 5.99673686575708e-10,
+        "parameter_index": 4,
+        "primary_derivative_passed": false,
+        "reference_FD": -0.0067267180987090475,
+        "reference_FD_scaled_error": 0.0,
+        "reference_derivative": -0.0067267180987090475,
+        "representable_high": 0.15000014305114745,
+        "representable_low": 0.14999985694885254
+      }
+    ],
+    "inputs": [
+      0.009375,
+      0.1081168,
+      -0.11999999999999998,
+      0.35,
+      0.15
+    ],
+    "log_absolute_error": 3.469446951953614e-17,
+    "log_probability": -0.059354787865658065,
+    "primary_passed": false,
+    "probability": 0.9423723675588515,
+    "probability_absolute_error": 5.156947916826781e-17,
+    "probability_relative_error": 5.47230383058184e-17,
+    "probability_underflow": false,
+    "reference_log_probability": -0.05935478786565803
+  },
+  "same_complete_query_confirmed_for_all_six": true,
+  "sampling_scope": "Local metadata/JSON/scalar extraction sampled before serialization; no native audit CPU included.",
+  "schema": "six-native-logrisk-original-query-confirmation-v1",
+  "scope": "Original stored query and scalar arithmetic only; no model or oracle rerun. Five source-bound fragments confirm this query, not a new full-report read.",
+  "six_original_primary_passed_fields_remain_false": true,
+  "source_sha256": "5d11c89875fda83cbca628297143cb0d49cd15f584679d1356c2a40f652e29eb",
+  "wall_sample_seconds": 0.016133235003508162
+}

@@ -1,0 +1,37 @@
+{
+  "argv": [
+    "/home/qian-qi/hepta-hcsn-trainer-20261108-s3-v1/dependency-recovery-v2/venv/bin/python",
+    "-B",
+    "/home/qian-qi/hepta-hcsn-final-numerics-program-20261110-c385-v1/run_audit.py",
+    "--base",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training",
+    "--output",
+    "/home/qian-qi/hepta-hcsn-final-numerics-20261110-c385-v1",
+    "--terminal-snapshot",
+    "/home/qian-qi/hepta-hcsn-final-numerics-program-20261110-c385-v1/terminal-snapshot.json",
+    "--terminal-snapshot-sha256",
+    "17df82cc70fce7d42ad1389c5770ba42a8039522ab07f36f6b6403b1d0156c49"
+  ],
+  "child_peak_rss_bytes": 945053696,
+  "energy_joules": null,
+  "finished_utc": "2026-11-10T22:21:57.551046+00:00",
+  "hard_whole_wall_seconds": 10800,
+  "pid": 1969758,
+  "process_started": true,
+  "returncode": -9,
+  "schema": "terminal-HCSN-hard-deadline-launch-v1",
+  "scope": "Complete controller process and its inherited stage process group; child timers are nested, not additional.",
+  "started_utc": "2026-11-10T19:21:57.544788+00:00",
+  "status": "whole_budget_exhausted",
+  "stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "stdout": {
+    "bytes": 6643,
+    "sha256": "a9659f5a22a532bf8b282c3dc11df7e692f89ffd0b7de6ae42192825120956e7"
+  },
+  "stop_cause": "predeclared_hard10800_whole_process_group_limit",
+  "waited_controller_and_descendant_CPU_seconds": 10278.141465,
+  "whole_process_wall_seconds": 10800.006360915024
+}

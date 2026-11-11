@@ -1,0 +1,30 @@
+{
+  "requested_utc": "2026-11-10T21:13:17.451Z",
+  "launch_request_sha256": "72f319c01eccafb3b50b48d4e0aecebbd1e7b372d87869267392db9f7838eb53",
+  "idempotency_key": "hcsn-c2-native-execution-c385-v1",
+  "source_commit": {
+    "started_utc": "2026-11-10T21:12:48.455Z",
+    "tool_wall_seconds": 2.83,
+    "reconciles": "source-commit.json",
+    "request": {
+      "action": "commit",
+      "host": "desktop",
+      "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-execution-candidate-v4-20261110-c385.zip",
+      "upload_id": "hcsn-c2-execution-capsule-v4-c385-v1",
+      "expected_version": "absent",
+      "size": 209455,
+      "sha256": "95d53c9a8fd7b6d0d60388b29d58519160c1d04357069bd805e5f4bfa2c91079"
+    },
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\"committed\":true,\"mode\":384,\"reused\":false,\"sha256\":\"95d53c9a8fd7b6d0d60388b29d58519160c1d04357069bd805e5f4bfa2c91079\",\"size\":209455,\"version\":\"2050:53670957:209455:1794344962398932330:1794345170791076429\"}"
+        }
+      ],
+      "structuredContent": null,
+      "isError": false
+    }
+  },
+  "status": "request_about_to_be_sent_once"
+}
