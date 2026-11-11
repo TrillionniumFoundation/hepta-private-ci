@@ -1,0 +1,15 @@
+{
+  "correction": "Rename that local reference variable to member_name; preserve initial archive and reader byte-for-byte, produce distinct V2 reader/archive/index/parts",
+  "failure": "AttributeError: str object has no attribute read_bytes, at final archive digest after local path variable was shadowed in reference iteration",
+  "observed_exit": 1,
+  "original_archive": {
+    "bytes": 814556,
+    "git_blob": "a4237b3f97a3022093db06a45d827f83587e920e",
+    "path": "NATIVE_FIVE_PREPARATION.tar.xz",
+    "sha256": "df88785ef1fd48ff8f25cf53f4b82b31955a9d2e4e98db762927b8a0ca3e8b91"
+  },
+  "original_archive_published": false,
+  "original_native_run_restarted": false,
+  "original_reader_sha256": "43e589faa018b74fd103beb13197104bed0e7dbb3fa944a960e10d08aac683f5",
+  "status": "INITIAL_PACKAGING_READER_FAILED_NO_NATIVE_EXECUTION"
+}

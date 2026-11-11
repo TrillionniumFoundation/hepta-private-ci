@@ -1,0 +1,130 @@
+{
+  "schema": "mem-c895-private-publication-v1",
+  "source_head": "c89540598693697577cda8cba31cb07f6ce65317",
+  "run_id": 43048568252,
+  "job_id": 130619111545,
+  "created": [
+    {
+      "label": "archive",
+      "expected_git_blob": "32f0255ddb0cacb43b8433b2d030aa407b194e30",
+      "bytes": 79144,
+      "sha256": "46ddc9886334f4fa19cbe72f1e58bc6ff9a9720ca705d7ae62c2cddacca1cbed",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "32f0255ddb0cacb43b8433b2d030aa407b194e30"
+        },
+        "isError": false
+      }
+    },
+    {
+      "label": "manifest",
+      "expected_git_blob": "9127d29e5503ed473e7c89642324339e92250507",
+      "bytes": 6021,
+      "sha256": "ca953f629172b2e1f65d5c0564c1914ce12d95ac41b4dba4b2ce0cb3adcd0d00",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "9127d29e5503ed473e7c89642324339e92250507"
+        },
+        "isError": false
+      }
+    },
+    {
+      "label": "audit",
+      "expected_git_blob": "f2b3d74ade4775c75993f2c4e3cd0235ec9543bd",
+      "bytes": 9126,
+      "sha256": "6900531b63535591b3fcf92911266e84c3b20489772c412d4ef2d1ad92e41b47",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "f2b3d74ade4775c75993f2c4e3cd0235ec9543bd"
+        },
+        "isError": false
+      }
+    },
+    {
+      "label": "verifier",
+      "expected_git_blob": "f7593986d14c862069385a9c413a8989d409dd47",
+      "bytes": 9554,
+      "sha256": "7b344590c5b027040b6356d94fb23f556d725fc0027c8b17492505120a89aa5e",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "f7593986d14c862069385a9c413a8989d409dd47"
+        },
+        "isError": false
+      }
+    },
+    {
+      "label": "readme",
+      "expected_git_blob": "7a65330b1a5c65077eb4ab7933ff74cb22cef81e",
+      "bytes": 1587,
+      "sha256": "c13664b2989e7cc1f6508ae455b8ace590ad6b75bbb2bfd68414ad6ea143bdbd",
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "7a65330b1a5c65077eb4ab7933ff74cb22cef81e"
+        },
+        "isError": false
+      }
+    }
+  ],
+  "text_readbacks": [
+    {
+      "label": "manifest",
+      "git_blob": "9127d29e5503ed473e7c89642324339e92250507",
+      "bytes": 6021,
+      "sha256": "ca953f629172b2e1f65d5c0564c1914ce12d95ac41b4dba4b2ce0cb3adcd0d00",
+      "complete_text_equal": true
+    },
+    {
+      "label": "audit",
+      "git_blob": "f2b3d74ade4775c75993f2c4e3cd0235ec9543bd",
+      "bytes": 9126,
+      "sha256": "6900531b63535591b3fcf92911266e84c3b20489772c412d4ef2d1ad92e41b47",
+      "complete_text_equal": true
+    },
+    {
+      "label": "verifier",
+      "git_blob": "f7593986d14c862069385a9c413a8989d409dd47",
+      "bytes": 9554,
+      "sha256": "7b344590c5b027040b6356d94fb23f556d725fc0027c8b17492505120a89aa5e",
+      "complete_text_equal": true
+    },
+    {
+      "label": "readme",
+      "git_blob": "7a65330b1a5c65077eb4ab7933ff74cb22cef81e",
+      "bytes": 1587,
+      "sha256": "c13664b2989e7cc1f6508ae455b8ace590ad6b75bbb2bfd68414ad6ea143bdbd",
+      "complete_text_equal": true
+    }
+  ],
+  "binary_remote_readback": "NOT_YET_ATTACHED_TO_IMMUTABLE_TREE_ROOT_WILL_READ_FULL_BASE64",
+  "refs_changed": false
+}

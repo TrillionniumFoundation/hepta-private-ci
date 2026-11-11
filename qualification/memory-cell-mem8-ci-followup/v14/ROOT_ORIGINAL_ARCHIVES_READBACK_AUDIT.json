@@ -1,0 +1,88 @@
+{
+  "schema": "hepta.mem8.v14.root-original-archive-readback-audit.v1",
+  "verified_at_utc": "2026-11-11T12:09:52.982297+00:00",
+  "root_reviewer": "root",
+  "source_of_bytes": "full original Git connector readbacks retained in functions store across local environment reset",
+  "staged_evidence_commit": "7690b8bb148e0923cf808d2e0148f62ec91b054b",
+  "archive_supplied_code_executed": false,
+  "new_native_or_model_executions": 0,
+  "archives": [
+    {
+      "git_blob": "011065e84a2b2445091a737586ddee2f96a4a288",
+      "bytes": 117756,
+      "sha256": "b03d7a0f09260996d531dc30f434db0d1a24e5e95abfd31aa50878462c72cbd7",
+      "manifest_git_blob": "a97b205237fd96f11a95cafbda2ce27d65f7712d",
+      "members_verified": 21,
+      "full_primary_files_verified": 13,
+      "raw_logs_verified": 2,
+      "runtime_qualification": false,
+      "binary_independent_attestation": false
+    },
+    {
+      "git_blob": "71aa28f1d53f93cf51659fc8d85eaf89b6b30dbc",
+      "bytes": 46460,
+      "sha256": "7d534c36b9adf1769860e77cace991c61183b78249cb361f4c21976b3e61a7ab",
+      "manifest_git_blob": "a98b1357e8d0fc4bddbdb0324a62d826c47ba7b9",
+      "members_verified": 18,
+      "exact_pre_post_and_capsule_paths": 3,
+      "status": "diagnostic_only_unqualified_candidate"
+    },
+    {
+      "git_blob": "376d21c2cc451042c74b9a3dad2c634e9810373a",
+      "bytes": 393468,
+      "sha256": "0dd01818941749570916d787488428aa3fc8bb8400674b2f388577638c1f5390",
+      "manifest_git_blob": "7836ab21bcaa1df614e2e0baca89b0df9d45efef",
+      "members_verified": 24,
+      "raw_logs_verified": 7,
+      "attempt1_jobs": {
+        "success": 23,
+        "failure": 10,
+        "skipped": 4
+      },
+      "second_attempt_actual_new_execution_job_ids": [
+        130483156553,
+        130483324196
+      ],
+      "mac_final_target_counts": [
+        {
+          "job": 130461514723,
+          "final_targets": 120,
+          "nonpassing_targets": 10
+        },
+        {
+          "job": 130461514761,
+          "final_targets": 114,
+          "nonpassing_targets": 4
+        }
+      ]
+    },
+    {
+      "git_blob": "3b8b74cc2ee0fd2810718d2005b7a12f66bc72fd",
+      "bytes": 235016,
+      "sha256": "266fd121e2aca469e4ba9343a7db5594d58afffaae6f0c20af54f35ec6781c1d",
+      "manifest_git_blob": "f281fb48116cbd976e19035f8aed5a804a7729d5",
+      "members_verified": 43,
+      "original_zip_members_verified": 22,
+      "full_exact_sources_verified": 3,
+      "completed_groups": 15,
+      "strict_passed_groups": 13,
+      "fresh_run_uuids": 15,
+      "distinct_package_case_terminals": 139,
+      "case_statuses_rederived_from_pre_summary_raw": {
+        "PASS": 137,
+        "LEAK": 1,
+        "FAIL": 1
+      },
+      "terminal": "cancelled",
+      "source_after": "ABSENT",
+      "failure_classification": "ordinary host four-cell passed; elevated outside deletion and separate output LEAK remain failures"
+    }
+  ],
+  "result": "ALL_FOUR_IMMUTABLE_ARCHIVES_AND_SCOPED_ORIGINAL_COUNTS_VERIFIED",
+  "limits": [
+    "Byte and count verification does not convert original failures, cancellations, missing terminal records, or candidate source changes into passes.",
+    "Fence unavailable observation remains an external runtime dependency; no specific missing input or successful runtime qualification was inferred.",
+    "Diagnostic candidate has no native qualification here.",
+    "Windows current has no source-after or final aggregate; no all-167-case pass is claimed."
+  ]
+}

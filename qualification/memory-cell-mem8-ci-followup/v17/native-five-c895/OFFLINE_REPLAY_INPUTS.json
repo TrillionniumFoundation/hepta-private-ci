@@ -1,0 +1,22 @@
+{
+  "schema": "mem-native-five-offline-replay-prerequisites-v1",
+  "original_run_archive": {
+    "git_blob": "ed0a8eebc9618499853fc510ee8bbf9234379ed6",
+    "bytes": 149980,
+    "sha256": "321a4afdb0ce1c8508cc948067ba92ff313c72104bdecaada04b7ad8198a2a8e"
+  },
+  "prior_source_and_harness_package": {
+    "publication_blob": "d38a9956efba9c124e33950c052e9e7b30921ba3",
+    "bytes": 815008,
+    "sha256": "41e4fd36bd7d1af83d5e9cc3a4dea389bb37dd5871c8b3f6bf9290017e4c5d58",
+    "parts": [
+      "7fb231b13137050e83012cfa1f196502468afe1c",
+      "cb802e6911f2b5aed91fff220b8d0e1266ea5ded"
+    ],
+    "member_manifest_blob": "8c2612d01ff761ecf0d9ec2cda3f08d1b61638c8",
+    "root_published_evidence_commit": "3a30ff5e95a74ee870799756b384ea9ac8c03b2e"
+  },
+  "reader_layout": "audit_original.py resolves the prior four frozen rendered files in the sibling directory mem-five-native-harness-preparation/rendered-c895405. Restore those exact four files from the prior preparation package before replaying. FROZEN_PLAN.json, complete original ZIP and reader are in the run package.",
+  "original_archive_unchanged": true,
+  "boundary": "This is an explicit reference to already archived full source/harness bytes, not a claim that the original Actions artifact included executable bytes or source copies."
+}

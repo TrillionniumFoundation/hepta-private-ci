@@ -1,0 +1,58 @@
+{
+  "all_9_frozen_file_identities_independently_matched": true,
+  "baseline_full_bytes_independently_matched": {
+    "bytes": 134567,
+    "git_blob": "2d5f0256776089b386f8e5ebd9d9eefcbfaac5f2",
+    "sha256": "bac85ca6969f7fe47b75245cb688bbcf995871204e5ad921c327df736aa85b36"
+  },
+  "boundaries": [
+    "This is static review, not a generated final ledger or a repeat of the eight reported offline controls.",
+    "Frozen 17:58:08 facts are explicitly nonterminal; final newer observations require a separate frozen and reviewed facts identity.",
+    "The generator checks supplied root receipt assertions and selected report bytes; it does not independently authenticate remote publication or repeat binary/member readback.",
+    "An interrupted local filesystem write may leave a partial new directory; no success record is printed and create-only semantics prevent silent overwrite. That remains a failed local render, not a published checkpoint."
+  ],
+  "final_bindings_or_ledger_reviewed": false,
+  "findings": [
+    {
+      "finding": "Baseline/facts/bindings/report bytes and explicit publication selectors are checked before a new output directory is created. The generator contains no subprocess, Git, network, host, test-runner or model operation. create_only refuses existing output files; mkdir refuses an existing output directory.",
+      "location": "main; prepare; frozen_json; verify_publication"
+    },
+    {
+      "finding": "Only explicit value spans are replaced. Nine non-CI gates and intakes, the full original 18-entry closed array, HOSTED closure and protected intake values, and all other original top-level values require both semantic equality and original UTF-8 value-byte equality. Duplicate keys and nonfinite numbers are rejected.",
+      "location": "render_values; json_spans; invariant_audit"
+    },
+    {
+      "finding": "Additive original report facts retain their own source and execution scope. New completed-work labels are outside the historical closed array and force adoption_gate_closed=false and result_transferred_to_new_source=false. Ten open gates, NoUpdate/HOLD, production adoption false, zero new actors/models and original provider/H unknowns remain enforced.",
+      "location": "prepare; facts_from_reports"
+    },
+    {
+      "finding": "Final source/evidence/owner bindings are explicit hash-pinned inputs, not predicted heads or implicit latest-file lookups. Output remains an unpublished proposal requiring a later root expected-head CAS. Supporting publication receipt paths are labeled as paths in that proposal.",
+      "location": "main; BINDINGS_INTERFACE.md"
+    }
+  ],
+  "generator_or_controls_executed_by_this_peer": false,
+  "native_or_model_execution": 0,
+  "preparation_manifest": {
+    "bytes": 2813,
+    "git_blob": "3fadfa45f8edfe3b9197f41eb081d4f374aa605d",
+    "sha256": "9f6544b6ea71d0cf1f851fd7389d8e3469c83030dd040a28b519c2a86516f68f"
+  },
+  "ref_mutation": false,
+  "reviewed_bindings_interface": {
+    "bytes": 3624,
+    "git_blob": "4149d2e47a1190ab1fd1c886002e79803828e8bd",
+    "sha256": "59a31cf2e855edef3ee3a234b0b18f670d3aba772f959edfe19e840a5f230f87"
+  },
+  "reviewed_design": {
+    "bytes": 5530,
+    "git_blob": "3ceda62eafa598d6f142f4de9ddc2da7714cecfd",
+    "sha256": "42a564dc0cf6c753b21b51741984e7910271fc5e596e8dd73b04aab0129e2e12"
+  },
+  "reviewed_generator": {
+    "bytes": 22129,
+    "git_blob": "a305575e93303b53f01842768f9fc06403893c16",
+    "sha256": "6392145a2cce0187f4d6dc4eddfd381bca6892a32a0bf97c9a64636cc05af30b"
+  },
+  "schema": "mem8.owner-v11.remote-generator-static-peer.v1",
+  "status": "NO_STATIC_MUST_FIX_IN_REQUESTED_SAVE_AND_UPDATE_BOUNDARY"
+}

@@ -1,0 +1,99 @@
+{
+  "archive_members": 158,
+  "archived_commands_executed_by_auditor": 0,
+  "artifact": {
+    "bytes": 104338,
+    "git_blob": "385919687fb93272391279cebc483712c00042c1",
+    "id": 13882391484,
+    "sha256": "a40a03f485304e86f7f23f04614148d001d75fd6a36d5831629e055d168bc4cb"
+  },
+  "attempt": 1,
+  "cause_of_cancellation": null,
+  "collection_status": "qualified_results_retained",
+  "driver_status": "passed_one_clean_windows_sandbox_fix",
+  "full_job_raw": {
+    "bytes": 85760,
+    "git_blob": "eb4514fa4fb4a25fc228a6205837001a4f0b26f0",
+    "sha256": "ae85ed79c4b928e7443684ca6119fa80c7907267404279bdf440b5d3e32fcf1e"
+  },
+  "harness_head": "fe824cce50037071ff559e1aabdf36f9d5954908",
+  "harness_tree": "ac382f3fc9989017ad77ed64e07b02e1e42cb5cc",
+  "helpers_boundary": "Original compiler-artifact outputs and driver-observed byte hashes are bound; helper PE binaries are not included in this artifact.",
+  "historical_passes_transferred": false,
+  "job_completed_at": "2026-11-11T18:12:56Z",
+  "job_conclusion": "success",
+  "job_id": 130703409994,
+  "job_started_at": "2026-11-11T17:52:58Z",
+  "manifest_complete": true,
+  "model_commands": 0,
+  "native_test_commands": 0,
+  "observed_job_start_plus_65_min": "2026-11-11T18:57:58+00:00",
+  "phases": [
+    {
+      "command": [
+        "cargo",
+        "build",
+        "--locked",
+        "-p",
+        "codex-windows-sandbox",
+        "--profile",
+        "dev-small",
+        "--message-format=json",
+        "--bin",
+        "codex-windows-sandbox-setup",
+        "--bin",
+        "codex-command-runner"
+      ],
+      "command_exit_code": 0,
+      "elapsed_seconds": 723.4680000000001,
+      "error": null,
+      "finished_at": "2026-11-11T18:06:00.448234+00:00",
+      "helpers_unchanged": true,
+      "id": "phase-1-build-sandbox-helpers",
+      "integrity_error": null,
+      "kind": "helpers",
+      "raw": {
+        "bytes": 648093,
+        "git_blob": "63bd7995b63811b793c30f57fadfe0121ff64236",
+        "sha256": "d8e433a717049631c7874ec68d60f8adde51a3065c2a0216fecfdaae9c34bb56"
+      },
+      "source_before_after_clean": true,
+      "started_at": "2026-11-11T17:53:56.579573+00:00",
+      "state": "passed_clean",
+      "tools_unchanged": true
+    },
+    {
+      "command": [
+        "just",
+        "fix",
+        "--locked",
+        "-p",
+        "codex-windows-sandbox"
+      ],
+      "command_exit_code": 0,
+      "elapsed_seconds": 403.797,
+      "error": null,
+      "finished_at": "2026-11-11T18:12:45.231017+00:00",
+      "helpers_unchanged": true,
+      "id": "phase-2-fix-codex-windows-sandbox",
+      "integrity_error": null,
+      "kind": "fix",
+      "raw": {
+        "bytes": 24036,
+        "git_blob": "a37b134b0f7c380cd5200d0c33f792ebe9da957e",
+        "sha256": "a6638afbc684014ab6ccd10ee5d070dbf64d90937a5ffd93caee4eb87f7af2d5"
+      },
+      "source_before_after_clean": true,
+      "started_at": "2026-11-11T18:06:01.425400+00:00",
+      "state": "passed_clean",
+      "tools_unchanged": true
+    }
+  ],
+  "physical_network_requests": null,
+  "qualification_passed": true,
+  "run_id": 43072390230,
+  "schema": "mem8.windows-sandbox-fix-cead.original-evidence-audit.v1",
+  "source_head": "ceadcb3b11dbd94a9d07afb7e6301555e4ff3f80",
+  "source_rewrite_paths": [],
+  "source_tree": "27651abb15e269c427c75f28f92a3bd1cd9d191f"
+}

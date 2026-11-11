@@ -1,0 +1,82 @@
+{
+  "schema": "mem8.mac-arm.request-file-observation.erratum.v1",
+  "historical_report": {
+    "md_blob": "7d0f9a01fd68478557d644695b09de031816701b",
+    "json_blob": "8b80754090fd794070e50a260cff7f8f019d0b1f",
+    "historical_bytes_preserved": true
+  },
+  "correction": {
+    "overstrong_claim": "wrapper received bare touch / observed candidate was bare",
+    "direct_observation": "server-resolved program is physical cwd/touch and argv[0] is touch",
+    "original_request_file_spelling": "UNKNOWN",
+    "equivalent_possible_inputs": [
+      "touch",
+      "./touch",
+      "absolute cwd/touch",
+      "other paths that normalize to the same result"
+    ],
+    "no_dynamic_trace_splicing": true
+  },
+  "original_job_raw": {
+    "bytes": 4254584,
+    "sha256": "f681fbd66c8e4d4145a7bd84a8f1f527c3a44c42ea0f45c7f8cbb68b96a293df",
+    "job_id": 130374692344
+  },
+  "original_raw_lines": [
+    {
+      "line": 9465,
+      "bytes": 487,
+      "sha256": "11638b074518a26dfd810d43b1dc965c81af5fbf8106889f626e959f8a97e4a1",
+      "text": "2026-11-11T07:35:05.7218760Z 2026-11-11T07:21:14.011767Z DEBUG codex_core::tools::runtimes::zsh_fork::unix_escalation: Determining escalation action for command AbsolutePathBuf(\"/private/var/folders/2s/vty41l455yv698g4xkgfv7z00000gn/T/.tmpujNaen/touch\") with args [\"touch\", \"/Users/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/.tmpgWt9fo/unified-exec-zsh-fork-explicit-prompt-rule.txt\"] in AbsolutePathBuf(\"/private/var/folders/2s/vty41l455yv698g4xkgfv7z00000gn/T/.tmpujNaen\")\n"
+    },
+    {
+      "line": 9468,
+      "bytes": 302,
+      "sha256": "6cc49b2dfb269da0d4a7c7beeae14d106032223993a637e98722c276457db2d7",
+      "text": "2026-11-11T07:35:05.7225290Z 2026-11-11T07:21:14.013605Z DEBUG codex_core::tools::runtimes::zsh_fork::unix_escalation: Policy decision for command AbsolutePathBuf(\"/private/var/folders/2s/vty41l455yv698g4xkgfv7z00000gn/T/.tmpujNaen/touch\") is Prompt, leading to escalation action Escalate(Unsandboxed)\n"
+    },
+    {
+      "line": 9471,
+      "bytes": 174,
+      "sha256": "a0428547f9dea902bd77a4b5c820c79663535f9c9be5c07398c05f6ff9b3aa69",
+      "text": "2026-11-11T07:35:05.7229330Z 2026-11-11T07:21:14.017000Z ERROR codex_shell_escalation::unix::escalate_server: escalate session failed: No such file or directory (os error 2)\n"
+    },
+    {
+      "line": 10556,
+      "bytes": 412,
+      "sha256": "2e738b3e586937f15d2a0b717a318f42dcc2fabf2349d211a24d79d23ba29012",
+      "text": "2026-11-11T07:35:50.9979360Z 2026-11-11T07:18:23.179052Z DEBUG codex_core::tools::runtimes::zsh_fork::unix_escalation: Determining escalation action for command AbsolutePathBuf(\"/private/var/folders/2s/vty41l455yv698g4xkgfv7z00000gn/T/.tmpwLCD8K/touch\") with args [\"touch\", \"/tmp/codex-zsh-fork-workspace-write-deny.txt\"] in AbsolutePathBuf(\"/private/var/folders/2s/vty41l455yv698g4xkgfv7z00000gn/T/.tmpwLCD8K\")\n"
+    },
+    {
+      "line": 10557,
+      "bytes": 283,
+      "sha256": "765a7d09c4e64b2f3ace6588803f7483922340829ee7297d63573d1d02440c15",
+      "text": "2026-11-11T07:35:50.9981830Z 2026-11-11T07:18:23.179672Z DEBUG codex_core::tools::runtimes::zsh_fork::unix_escalation: Policy decision for command AbsolutePathBuf(\"/private/var/folders/2s/vty41l455yv698g4xkgfv7z00000gn/T/.tmpwLCD8K/touch\") is Allow, leading to escalation action Run\n"
+    },
+    {
+      "line": 10564,
+      "bytes": 75,
+      "sha256": "2bc0064257ddbb07c7a113eeb2f17a10f99848647a39b234bab88b32100ae577",
+      "text": "2026-11-11T07:35:50.9994460Z Error: No such file or directory (os error 2)\n"
+    }
+  ],
+  "additional_original_bazel_evidence": {
+    "artifact_id": 13838015751,
+    "invocation": "d2fec41d-b448-48ad-b477-637d62508154",
+    "main_test_actions": 29,
+    "auxiliary_xml_actions": 29,
+    "main_test_exit_counts": {
+      "0": 10,
+      "101": 19
+    },
+    "action_PATH_values": [
+      "/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+    ],
+    "audit_path": "original-execution-log/CORE_TEST_PATH_OBSERVATION_V3.json",
+    "audit_bytes": 43627,
+    "audit_sha256": "1e24b9a69c6653b9270f0ad140b55ea92dc2ff1d01328197f08219591f821185",
+    "actual_later_zsh_child_PATH": "UNKNOWN"
+  },
+  "new_native_executions": 0,
+  "new_model_requests": 0
+}

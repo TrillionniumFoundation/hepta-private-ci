@@ -1,0 +1,47 @@
+{
+  "actual_distinct_terminal_case_count": 124,
+  "actual_terminal_counts": {
+    "FAIL": 1,
+    "PASS": 123
+  },
+  "all_local_members_full_byte_readback": true,
+  "archive": {
+    "bytes": 161572,
+    "git_blob": "569637188eb87f6d2d0eedb05b84edee311fdba7",
+    "sha256": "75b568f54657b656ed2311018ee5d6f7d94598d5f07743ac9b10cccdc7b15536"
+  },
+  "attempt": 1,
+  "completed_group_receipts": 13,
+  "declared_cases": 167,
+  "declared_groups": 19,
+  "helper_pe_binary_bytes_archived": false,
+  "job_completed_at": "2026-11-11T17:57:02Z",
+  "job_conclusion": "cancelled",
+  "job_started_at": "2026-11-11T16:51:51Z",
+  "members": 41,
+  "native_model_or_host_requests_started_by_auditor": 0,
+  "original_full_raw": {
+    "bytes": 152252,
+    "git_blob": "5400b9041a38f117f419ebd240aaa0b6effa438e",
+    "sha256": "3fa56362ec014c456443d7a743d9d8d7e50d66dd5ca53492a7df6686402bf984"
+  },
+  "original_job": 130668436858,
+  "original_run": 43062473110,
+  "original_zip": {
+    "bytes": 108425,
+    "git_blob": "14a05019138f1bd6b4eb765de115245f289a7a92",
+    "sha256": "fe6535a78b73e0755191c7ce9d8a2c755f82c31f8d55d4e3bbb93cc4d34bff10"
+  },
+  "original_zip_members": 20,
+  "physical_network_requests": null,
+  "publication_state": "NOT_YET_UPLOADED",
+  "qualification_boundary": "NOT_QUALIFIED_ORIGINAL_CANCELLED_ONE_FAILED_CASE_AND_43_UNOBSERVED_TERMINALS",
+  "replay": "python3 records/verify_original.py records",
+  "schema": "mem-d0f-windows-current-complete-original-index-v1",
+  "source_after": "UNOBSERVED_NO_FINAL_RECEIPT",
+  "source_head": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+  "source_refs_changed": false,
+  "source_tree": "658fa040046285116b1fd81b94ff8c96444072ad",
+  "strict_passing_groups": 12,
+  "unobserved_terminal_case_count": 43
+}

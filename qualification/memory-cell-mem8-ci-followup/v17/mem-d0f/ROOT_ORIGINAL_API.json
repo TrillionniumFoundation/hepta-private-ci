@@ -1,0 +1,558 @@
+{
+  "jobs": {
+    "total_count": 3,
+    "jobs": [
+      {
+        "id": 130668436426,
+        "run_id": 43062473099,
+        "workflow_name": "Hepta MEM candidate and replay controls",
+        "head_branch": "codex/mem8-integrated-source-20261111-ed353817",
+        "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/43062473099",
+        "run_attempt": 1,
+        "node_id": "CR_kwDOTrgxoM8AAAAebHIbyg",
+        "head_sha": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/130668436426",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43062473099/job/130668436426",
+        "status": "completed",
+        "conclusion": "success",
+        "created_at": "2026-11-11T16:51:47Z",
+        "started_at": "2026-11-11T16:51:51Z",
+        "completed_at": "2026-11-11T16:52:13Z",
+        "name": "Source-memory receipts and post-update revocation",
+        "steps": [
+          {
+            "name": "Set up job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 1,
+            "started_at": "2026-11-11T16:51:52Z",
+            "completed_at": "2026-11-11T16:51:53Z"
+          },
+          {
+            "name": "Check out the exact source commit",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 2,
+            "started_at": "2026-11-11T16:51:53Z",
+            "completed_at": "2026-11-11T16:52:00Z"
+          },
+          {
+            "name": "Bind source-head identity before integrity tests",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 3,
+            "started_at": "2026-11-11T16:52:00Z",
+            "completed_at": "2026-11-11T16:52:01Z"
+          },
+          {
+            "name": "Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 4,
+            "started_at": "2026-11-11T16:52:01Z",
+            "completed_at": "2026-11-11T16:52:01Z"
+          },
+          {
+            "name": "Check standard-library integrity and fresh readers",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 5,
+            "started_at": "2026-11-11T16:52:01Z",
+            "completed_at": "2026-11-11T16:52:07Z"
+          },
+          {
+            "name": "Record the isolated revocation campaign",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 6,
+            "started_at": "2026-11-11T16:52:07Z",
+            "completed_at": "2026-11-11T16:52:08Z"
+          },
+          {
+            "name": "Bind source-head identity after integrity tests",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 7,
+            "started_at": "2026-11-11T16:52:08Z",
+            "completed_at": "2026-11-11T16:52:08Z"
+          },
+          {
+            "name": "Retain integrity evidence",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 8,
+            "started_at": "2026-11-11T16:52:08Z",
+            "completed_at": "2026-11-11T16:52:10Z"
+          },
+          {
+            "name": "Post Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 15,
+            "started_at": "2026-11-11T16:52:10Z",
+            "completed_at": "2026-11-11T16:52:10Z"
+          },
+          {
+            "name": "Post Check out the exact source commit",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 16,
+            "started_at": "2026-11-11T16:52:10Z",
+            "completed_at": "2026-11-11T16:52:10Z"
+          },
+          {
+            "name": "Complete job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 17,
+            "started_at": "2026-11-11T16:52:10Z",
+            "completed_at": "2026-11-11T16:52:10Z"
+          }
+        ],
+        "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/130668436426",
+        "labels": [
+          "ubuntu-24.04"
+        ],
+        "runner_id": 1000111105,
+        "runner_name": "GitHub Actions 1000111105",
+        "runner_group_id": 0,
+        "runner_group_name": "GitHub Actions"
+      },
+      {
+        "id": 130668436811,
+        "run_id": 43062473099,
+        "workflow_name": "Hepta MEM candidate and replay controls",
+        "head_branch": "codex/mem8-integrated-source-20261111-ed353817",
+        "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/43062473099",
+        "run_attempt": 1,
+        "node_id": "CR_kwDOTrgxoM8AAAAebHIdSw",
+        "head_sha": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/130668436811",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43062473099/job/130668436811",
+        "status": "completed",
+        "conclusion": "success",
+        "created_at": "2026-11-11T16:51:47Z",
+        "started_at": "2026-11-11T16:51:51Z",
+        "completed_at": "2026-11-11T16:55:01Z",
+        "name": "Frozen candidate and coverage contracts",
+        "steps": [
+          {
+            "name": "Set up job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 1,
+            "started_at": "2026-11-11T16:51:52Z",
+            "completed_at": "2026-11-11T16:51:53Z"
+          },
+          {
+            "name": "Check out the exact source commit",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 2,
+            "started_at": "2026-11-11T16:51:53Z",
+            "completed_at": "2026-11-11T16:52:01Z"
+          },
+          {
+            "name": "Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 3,
+            "started_at": "2026-11-11T16:52:01Z",
+            "completed_at": "2026-11-11T16:52:01Z"
+          },
+          {
+            "name": "Retain source and install real CPU actor dependencies",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 4,
+            "started_at": "2026-11-11T16:52:01Z",
+            "completed_at": "2026-11-11T16:54:26Z"
+          },
+          {
+            "name": "Check real actor and independent candidate evidence",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 5,
+            "started_at": "2026-11-11T16:54:26Z",
+            "completed_at": "2026-11-11T16:54:38Z"
+          },
+          {
+            "name": "Check identical-support selectors and bound action receipts",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 6,
+            "started_at": "2026-11-11T16:54:38Z",
+            "completed_at": "2026-11-11T16:54:39Z"
+          },
+          {
+            "name": "Check replay matching and incomplete-run accounting",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 7,
+            "started_at": "2026-11-11T16:54:39Z",
+            "completed_at": "2026-11-11T16:54:39Z"
+          },
+          {
+            "name": "Check full-trajectory replay matching and failure accounting",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 8,
+            "started_at": "2026-11-11T16:54:39Z",
+            "completed_at": "2026-11-11T16:54:44Z"
+          },
+          {
+            "name": "Check prospective selector plans, failures and independent scoring",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 9,
+            "started_at": "2026-11-11T16:54:44Z",
+            "completed_at": "2026-11-11T16:54:44Z"
+          },
+          {
+            "name": "Check frozen cohort and failed-attempt accounting",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 10,
+            "started_at": "2026-11-11T16:54:44Z",
+            "completed_at": "2026-11-11T16:54:47Z"
+          },
+          {
+            "name": "Check composition paths and partial native failure costs",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 11,
+            "started_at": "2026-11-11T16:54:47Z",
+            "completed_at": "2026-11-11T16:54:47Z"
+          },
+          {
+            "name": "Check fixed-public retention attribution and fresh-session memory",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 12,
+            "started_at": "2026-11-11T16:54:47Z",
+            "completed_at": "2026-11-11T16:54:57Z"
+          },
+          {
+            "name": "Retain final source state",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 13,
+            "started_at": "2026-11-11T16:54:57Z",
+            "completed_at": "2026-11-11T16:54:57Z"
+          },
+          {
+            "name": "Retain test and dependency evidence",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 14,
+            "started_at": "2026-11-11T16:54:57Z",
+            "completed_at": "2026-11-11T16:54:58Z"
+          },
+          {
+            "name": "Post Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 27,
+            "started_at": "2026-11-11T16:54:58Z",
+            "completed_at": "2026-11-11T16:54:58Z"
+          },
+          {
+            "name": "Post Check out the exact source commit",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 28,
+            "started_at": "2026-11-11T16:54:58Z",
+            "completed_at": "2026-11-11T16:54:58Z"
+          },
+          {
+            "name": "Complete job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 29,
+            "started_at": "2026-11-11T16:54:58Z",
+            "completed_at": "2026-11-11T16:54:58Z"
+          }
+        ],
+        "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/130668436811",
+        "labels": [
+          "ubuntu-24.04"
+        ],
+        "runner_id": 1000111109,
+        "runner_name": "GitHub Actions 1000111109",
+        "runner_group_id": 0,
+        "runner_group_name": "GitHub Actions"
+      },
+      {
+        "id": 130668437204,
+        "run_id": 43062473099,
+        "workflow_name": "Hepta MEM candidate and replay controls",
+        "head_branch": "codex/mem8-integrated-source-20261111-ed353817",
+        "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/43062473099",
+        "run_attempt": 1,
+        "node_id": "CR_kwDOTrgxoM8AAAAebHIe1A",
+        "head_sha": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/130668437204",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43062473099/job/130668437204",
+        "status": "completed",
+        "conclusion": "success",
+        "created_at": "2026-11-11T16:51:47Z",
+        "started_at": "2026-11-11T16:51:51Z",
+        "completed_at": "2026-11-11T17:21:10Z",
+        "name": "Staged native episodic owner contracts",
+        "steps": [
+          {
+            "name": "Set up job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 1,
+            "started_at": "2026-11-11T16:51:52Z",
+            "completed_at": "2026-11-11T16:51:54Z"
+          },
+          {
+            "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 2,
+            "started_at": "2026-11-11T16:51:54Z",
+            "completed_at": "2026-11-11T16:52:01Z"
+          },
+          {
+            "name": "Bind exact comparison and staged source presence",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 3,
+            "started_at": "2026-11-11T16:52:01Z",
+            "completed_at": "2026-11-11T16:52:04Z"
+          },
+          {
+            "name": "Run ./.github/actions/setup-ci",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 4,
+            "started_at": "2026-11-11T16:52:04Z",
+            "completed_at": "2026-11-11T16:52:07Z"
+          },
+          {
+            "name": "Run dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 5,
+            "started_at": "2026-11-11T16:52:07Z",
+            "completed_at": "2026-11-11T16:52:17Z"
+          },
+          {
+            "name": "Run astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 6,
+            "started_at": "2026-11-11T16:52:17Z",
+            "completed_at": "2026-11-11T16:52:20Z"
+          },
+          {
+            "name": "Run taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 7,
+            "started_at": "2026-11-11T16:52:20Z",
+            "completed_at": "2026-11-11T16:52:20Z"
+          },
+          {
+            "name": "Retain native tool versions",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 8,
+            "started_at": "2026-11-11T16:52:20Z",
+            "completed_at": "2026-11-11T16:52:21Z"
+          },
+          {
+            "name": "Format exact PR changes and reject any source rewrite",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 9,
+            "started_at": "2026-11-11T16:52:21Z",
+            "completed_at": "2026-11-11T16:52:28Z"
+          },
+          {
+            "name": "Install existing native build prerequisites",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 10,
+            "started_at": "2026-11-11T16:52:28Z",
+            "completed_at": "2026-11-11T16:55:32Z"
+          },
+          {
+            "name": "Resolve repository-verified V8 inputs for the control stage",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 11,
+            "started_at": "2026-11-11T16:55:32Z",
+            "completed_at": "2026-11-11T16:55:33Z"
+          },
+          {
+            "name": "Test staged memory owner contracts on unchanged source",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 12,
+            "started_at": "2026-11-11T16:55:33Z",
+            "completed_at": "2026-11-11T17:00:11Z"
+          },
+          {
+            "name": "Build and bind the exact Codex executable for real App Server drain",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 13,
+            "started_at": "2026-11-11T17:00:11Z",
+            "completed_at": "2026-11-11T17:07:19Z"
+          },
+          {
+            "name": "Test staged Agentd control contracts on unchanged source",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 14,
+            "started_at": "2026-11-11T17:07:19Z",
+            "completed_at": "2026-11-11T17:13:31Z"
+          },
+          {
+            "name": "Test the qualification feature preserves explicit memory isolation",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 15,
+            "started_at": "2026-11-11T17:13:31Z",
+            "completed_at": "2026-11-11T17:14:43Z"
+          },
+          {
+            "name": "Test protocol package after the control stage is present",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 16,
+            "started_at": "2026-11-11T17:14:43Z",
+            "completed_at": "2026-11-11T17:14:54Z"
+          },
+          {
+            "name": "Run scoped fixes after tests and reject any source rewrite",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 17,
+            "started_at": "2026-11-11T17:14:54Z",
+            "completed_at": "2026-11-11T17:21:03Z"
+          },
+          {
+            "name": "Retain final source, full rewrite patch and changed files",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 18,
+            "started_at": "2026-11-11T17:21:03Z",
+            "completed_at": "2026-11-11T17:21:04Z"
+          },
+          {
+            "name": "Retain native logs and exact-source evidence",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 19,
+            "started_at": "2026-11-11T17:21:04Z",
+            "completed_at": "2026-11-11T17:21:06Z"
+          },
+          {
+            "name": "Post Run astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 37,
+            "started_at": "2026-11-11T17:21:06Z",
+            "completed_at": "2026-11-11T17:21:07Z"
+          },
+          {
+            "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 38,
+            "started_at": "2026-11-11T17:21:07Z",
+            "completed_at": "2026-11-11T17:21:07Z"
+          },
+          {
+            "name": "Complete job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 39,
+            "started_at": "2026-11-11T17:21:07Z",
+            "completed_at": "2026-11-11T17:21:07Z"
+          }
+        ],
+        "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/130668437204",
+        "labels": [
+          "ubuntu-24.04"
+        ],
+        "runner_id": 1000111110,
+        "runner_name": "GitHub Actions 1000111110",
+        "runner_group_id": 0,
+        "runner_group_name": "GitHub Actions"
+      }
+    ]
+  },
+  "artifacts": {
+    "total_count": 3,
+    "artifacts": [
+      {
+        "id": 13874919829,
+        "node_id": "MDg6QXJ0aWZhY3QxMzg3NDkxOTgyOQ==",
+        "name": "mem-native-d0f6507e08f7f5c5855f5164d07c049a34d1a6d9-1",
+        "size_in_bytes": 1413095,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/13874919829",
+        "archive_download_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/13874919829/zip",
+        "expired": false,
+        "digest": "sha256:b1787753805af121986af7e99be7c09e99aea1ef613ddb8c965de2bdd9a355ff",
+        "created_at": "2026-11-11T17:21:06Z",
+        "updated_at": "2026-11-11T17:21:06Z",
+        "expires_at": "2026-11-25T17:21:04Z",
+        "workflow_run": {
+          "id": 43062473099,
+          "repository_id": 1320694176,
+          "head_repository_id": 1320694176,
+          "head_branch": "codex/mem8-integrated-source-20261111-ed353817",
+          "head_sha": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9"
+        }
+      },
+      {
+        "id": 13874211716,
+        "node_id": "MDg6QXJ0aWZhY3QxMzg3NDIxMTcxNg==",
+        "name": "mem7-integrity-a49776ffdea3547ed407a710bb19e93377b29535-1",
+        "size_in_bytes": 51518,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/13874211716",
+        "archive_download_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/13874211716/zip",
+        "expired": false,
+        "digest": "sha256:efd2ffdee707bc95b5a952b9ef5caad0a06255303951f8a844716e97dbb6391d",
+        "created_at": "2026-11-11T16:52:10Z",
+        "updated_at": "2026-11-11T16:52:10Z",
+        "expires_at": "2026-11-25T16:52:08Z",
+        "workflow_run": {
+          "id": 43062473099,
+          "repository_id": 1320694176,
+          "head_repository_id": 1320694176,
+          "head_branch": "codex/mem8-integrated-source-20261111-ed353817",
+          "head_sha": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9"
+        }
+      },
+      {
+        "id": 13873374531,
+        "node_id": "MDg6QXJ0aWZhY3QxMzg3MzM3NDUzMQ==",
+        "name": "mem-python-a49776ffdea3547ed407a710bb19e93377b29535-1",
+        "size_in_bytes": 64561,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/13873374531",
+        "archive_download_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/13873374531/zip",
+        "expired": false,
+        "digest": "sha256:9f1701a6ae7e130df20af4ffa55dd8e367d813667c4aab755667cfedf8a14754",
+        "created_at": "2026-11-11T16:54:58Z",
+        "updated_at": "2026-11-11T16:54:58Z",
+        "expires_at": "2026-11-25T16:54:57Z",
+        "workflow_run": {
+          "id": 43062473099,
+          "repository_id": 1320694176,
+          "head_repository_id": 1320694176,
+          "head_branch": "codex/mem8-integrated-source-20261111-ed353817",
+          "head_sha": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9"
+        }
+      }
+    ]
+  },
+  "source": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+  "read_only": true
+}

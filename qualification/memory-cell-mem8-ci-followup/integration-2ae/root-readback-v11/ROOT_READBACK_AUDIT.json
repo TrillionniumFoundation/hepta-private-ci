@@ -1,0 +1,65 @@
+{
+  "schema": "hepta.mem8.ci-v11.root-complete-readback.v1",
+  "immutable_commit": "ce99fa1c550338462fc47519381ea39b29db9e03",
+  "archives": [
+    {
+      "label": "A",
+      "bytes": 414648,
+      "sha256": "4cd8bbc40cbd4570f187c56338352e60ebc24efe20f46bf80853448537d4915f",
+      "git_blob": "edfda1dced0bb37ce277336ef93a6a2634b9a0e9",
+      "members": 23,
+      "full_readback_verified": true
+    },
+    {
+      "label": "B",
+      "bytes": 447348,
+      "sha256": "5148e9b09b0a1ea8c9d394b35b3077b833f86924004e2e6a5eaf295eaa5d4c71",
+      "git_blob": "91b59d73400aa95cbe3e56fba3e8b1ef59d0ae28",
+      "members": 43,
+      "full_readback_verified": true
+    },
+    {
+      "label": "W",
+      "bytes": 187144,
+      "sha256": "0ff3cd2090f7ce7504c83aacbcf67e9785ce56320235a4ad885ce869649a59c5",
+      "git_blob": "be3cac4b00b36eb56c891d342f3429001cf415ce",
+      "members": 28,
+      "full_readback_verified": true
+    }
+  ],
+  "one_line_dirty_candidate": {
+    "original_caller_exit": 1,
+    "candidate_caller_exit": 0,
+    "rust_files_scanned": 6190,
+    "native_tests_executed": 0
+  },
+  "four_path_candidate": {
+    "formatter_exit": 0,
+    "driver_failures": 2,
+    "full_caller_executions": 0,
+    "native_tests_executed": 0,
+    "eight_reference_count_failure_preserved": true
+  },
+  "original_windows_current": {
+    "archive_members": 28,
+    "zip_members": 20,
+    "completed_groups": 13,
+    "actual_unique_cases": 124,
+    "counts": {
+      "PASS": 115,
+      "FAIL": 8,
+      "LEAK": 1
+    },
+    "unique_nextest_runs": 13,
+    "next_group_actual_tests": 0,
+    "terminal_job": "cancelled",
+    "source_after": "absent",
+    "scope": "original partial run; not full Windows qualification"
+  },
+  "offline_verifier_replays": 1,
+  "archived_drivers_executed": 0,
+  "new_native_tests_executed": 0,
+  "new_model_requests": 0,
+  "qualification_transferred_to_repair_head": false,
+  "passed": true
+}

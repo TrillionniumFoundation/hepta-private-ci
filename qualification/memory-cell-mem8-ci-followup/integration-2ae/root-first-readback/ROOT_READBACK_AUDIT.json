@@ -1,0 +1,80 @@
+{
+  "schema": "mem8.ci-followup-v10.root-readback.v1",
+  "passed": true,
+  "immutable_commit": "eae8aefe6faaa8fd827471d285d68ff7e4238fb1",
+  "archives": [
+    {
+      "name": "cleanup",
+      "archive_bytes": 49376,
+      "archive_sha256": "d5e7a513113c59345b62dd25077b5b24d5275743560a9efd80723d3ce2eb94da",
+      "archive_git_blob": "812871aeb4579ab95c1c3b470564e612cffbaf83",
+      "members": 389,
+      "full_remote_bytes_match_original": true,
+      "all_member_hashes_recomputed": true
+    },
+    {
+      "name": "cleanup-readback",
+      "archive_bytes": 10564,
+      "archive_sha256": "c02310164e6c507174981b86794d2f8f813060377c8a19414de28174ac71b643",
+      "archive_git_blob": "4ea4b7c876236e56d95d448384cb60c584b01443",
+      "members": 20,
+      "full_remote_bytes_match_original": true,
+      "all_member_hashes_recomputed": true
+    },
+    {
+      "name": "windows-private",
+      "archive_bytes": 74908,
+      "archive_sha256": "6dd43230e88c82febabf1183c39ed1b3316941b719da8bf791574a0349e05a79",
+      "archive_git_blob": "17caca8664c1702ee8eadb331f8199be59c5334e",
+      "members": 13,
+      "full_remote_bytes_match_original": true,
+      "all_member_hashes_recomputed": true
+    }
+  ],
+  "offline_replays": {
+    "cleanup": {
+      "schema": "mem8.superseded-ci-cleanup.independent-audit.v1",
+      "status": "passed",
+      "integration_head": "2ae5215beaf8d7b7df111a090b82134beae2683d",
+      "integration_tree": "12159640adcf073b51f3837e75575e11f5c20233",
+      "archive_bytes": 49376,
+      "archive_sha256": "d5e7a513113c59345b62dd25077b5b24d5275743560a9efd80723d3ce2eb94da",
+      "archive_git_blob": "812871aeb4579ab95c1c3b470564e612cffbaf83",
+      "regular_members_read": 389,
+      "manifest_entries_verified": 388,
+      "standard_cancel_http_202": 11,
+      "force_cancel_http_202": 5,
+      "post_retries": 0,
+      "independent_final_runs_cancelled": 11,
+      "integration_run_ids_cancelled": [],
+      "cancelled_is_pass": false,
+      "native_tests_launched_by_cleanup": 0,
+      "model_requests_launched_by_cleanup": 0,
+      "original_before_job_records_preserved": true
+    },
+    "windows_private": {
+      "status": "passed",
+      "head": "2ae5215beaf8d7b7df111a090b82134beae2683d",
+      "tree": "12159640adcf073b51f3837e75575e11f5c20233",
+      "regular_native_unique_cases": 34,
+      "signed_credit": {
+        "passed": 1,
+        "failed": 0,
+        "filtered": 270,
+        "retries": 0,
+        "case": "circuit_cell::tests::credit_tests::signed_tests::signed_credit_rejects_cross_owner_ledger_episode_before_any_append",
+        "nextest_run_id": "afb0df92-58ed-4996-ae5d-2d27b08aab7a",
+        "log_bytes": 43815,
+        "log_sha256": "a1185d07dd03242a9170d64fb600998e99a2ae508666ae333d44cb7b8c8c96b1"
+      },
+      "acquisition_control_lanes": 3,
+      "python_unittests": 6,
+      "zip_members_verified": 11
+    }
+  },
+  "new_native_or_model_executions": 0,
+  "integration_required_ci_pass_claimed": false,
+  "original_2ae_caller_and_clippy_failures_still_open": true,
+  "cancelled_old_runs_counted_as_pass": false,
+  "source_result_transfer_to_a_repair_head": false
+}

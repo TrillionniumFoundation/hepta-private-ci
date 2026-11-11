@@ -1,0 +1,142 @@
+{
+  "schema": "mem.windows-sandbox-lint.v11.original-publication-with-environment-outage.v2",
+  "archive": {
+    "path": "WINDOWS_SANDBOX_FIX_CEAD_ORIGINAL.tar.xz",
+    "bytes": 111528,
+    "sha256": "c45b67d48ff66f5dc0f03999d6d83410551df6bc0c89c74c76f83f3944b20207",
+    "git_blob": "7f2edf1941e1249d487cb3127da9cee23590f492",
+    "members": 34,
+    "actual_created_blob": "7f2edf1941e1249d487cb3127da9cee23590f492",
+    "remote_binary_full_readback": "PENDING_ROOT_CARRIER"
+  },
+  "source_head": "ceadcb3b11dbd94a9d07afb7e6301555e4ff3f80",
+  "source_tree": "27651abb15e269c427c75f28f92a3bd1cd9d191f",
+  "harness_head": "fe824cce50037071ff559e1aabdf36f9d5954908",
+  "run": 43072390230,
+  "job": 130703409994,
+  "attempt": 1,
+  "original_API_conclusion": "success",
+  "original_job_started_at": "2026-11-11T17:52:58Z",
+  "original_job_completed_at": "2026-11-11T18:12:56Z",
+  "original_artifact": {
+    "id": 13882391484,
+    "bytes": 104338,
+    "sha256": "a40a03f485304e86f7f23f04614148d001d75fd6a36d5831629e055d168bc4cb",
+    "members": 158
+  },
+  "previously_completed_local_audit": {
+    "reader": {
+      "bytes": 13359,
+      "sha256": "731ae6dbf1d1e37627c83d754a72a54f2573f69259ef7b158181871e33207c92",
+      "git_blob": "0c15908226cba12ef14c29b1dd3a3e3b04ff2ab8"
+    },
+    "exit_code": 0,
+    "output": {
+      "bytes": 3312,
+      "sha256": "6aae65dfa1d6c97e135f86adcd443fe7498c08e7e03e37c73d1e1fa1b721d144",
+      "git_blob": "962e0681b1ff010b0c8c51ebea1c3644214cee41"
+    },
+    "whole_34_member_archive_and_original_158_member_ZIP_replayed_locally_before_outage": true,
+    "full_original_audit_bytes_equal_on_package_replay": true
+  },
+  "recovered_texts": [
+    {
+      "path": "RUN_TERMINAL.json",
+      "actual_git_blob": "216a4b33f1a9ddf117f52436b742c872f5ffa47e",
+      "full_utf8_readback_equal": true,
+      "provenance": "Original cached tool result; same JSON serialization used for the archived file.",
+      "bytes": 31084,
+      "sha256": "a4bbff0a13a56fd2b2fcf62817699a700be5702382d6172675175ffab4e704a2",
+      "git_blob": "216a4b33f1a9ddf117f52436b742c872f5ffa47e"
+    },
+    {
+      "path": "TERMINAL_JOBS.json",
+      "actual_git_blob": "237b71b036f79d6c5de81a05afe3fcc3fe428b2f",
+      "full_utf8_readback_equal": true,
+      "provenance": "Original cached tool result; same JSON serialization used for the archived file.",
+      "bytes": 8094,
+      "sha256": "68db3a772db04ee1d506a87e5e6401867dab389efd97094994e70a0a6448e888",
+      "git_blob": "237b71b036f79d6c5de81a05afe3fcc3fe428b2f"
+    },
+    {
+      "path": "ARTIFACTS_TERMINAL.json",
+      "actual_git_blob": "036d641dbd60c6a8ac0a39f77270cc11e7344c6f",
+      "full_utf8_readback_equal": true,
+      "provenance": "Original cached tool result; same JSON serialization used for the archived file.",
+      "bytes": 2583,
+      "sha256": "ae79e453ebe9add331b53ceddab5129c0b37558e5d385d693d0c78348cea69f2",
+      "git_blob": "036d641dbd60c6a8ac0a39f77270cc11e7344c6f"
+    },
+    {
+      "path": "JOB_LOG_TOOL_RESPONSE.json",
+      "actual_git_blob": "c6c76a04b6bd875db333843952ebd5b9063f0b58",
+      "full_utf8_readback_equal": true,
+      "provenance": "Original cached tool result; same JSON serialization used for the archived file.",
+      "bytes": 90150,
+      "sha256": "d188fb1984a70357b33fd9b2b7439e15151d49ac7030d4dc99ad9b30c4db1433",
+      "git_blob": "c6c76a04b6bd875db333843952ebd5b9063f0b58"
+    },
+    {
+      "path": "ARTIFACT_METADATA.json",
+      "actual_git_blob": "636b923c611c82abd01d05a343898c6ff91c9884",
+      "full_utf8_readback_equal": true,
+      "provenance": "Original cached artifact metadata; same JSON serialization used for the archived file.",
+      "bytes": 915,
+      "sha256": "22f5cd388cd46b47a63de93849010426853d2449ff2b7e95ce0cc4925dfe66ed",
+      "git_blob": "636b923c611c82abd01d05a343898c6ff91c9884"
+    },
+    {
+      "path": "original-job.log",
+      "actual_git_blob": "eb4514fa4fb4a25fc228a6205837001a4f0b26f0",
+      "full_utf8_readback_equal": true,
+      "provenance": "Exact original cached log string, UTF-8 bytes; matches original locally recorded Git identity.",
+      "bytes": 85760,
+      "sha256": "ae85ed79c4b928e7443684ca6119fa80c7907267404279bdf440b5d3e32fcf1e",
+      "git_blob": "eb4514fa4fb4a25fc228a6205837001a4f0b26f0"
+    },
+    {
+      "path": "audit_original.py",
+      "actual_git_blob": "0c15908226cba12ef14c29b1dd3a3e3b04ff2ab8",
+      "full_utf8_readback_equal": true,
+      "provenance": "Exact prior full-text Git readback; reader was pinned before original job terminal.",
+      "bytes": 13359,
+      "sha256": "731ae6dbf1d1e37627c83d754a72a54f2573f69259ef7b158181871e33207c92",
+      "git_blob": "0c15908226cba12ef14c29b1dd3a3e3b04ff2ab8"
+    }
+  ],
+  "interruption": {
+    "phase": "Read nine local texts for separate immutable publication after successful whole binary blob creation",
+    "error": "exec-server transport disconnected; managed environment subsequently explicitly unavailable",
+    "nine_text_buffer_completed": false,
+    "pending_readonly_exec_cell": "g4:331",
+    "pending_readonly_cell_terminated": true,
+    "workflow_or_native_cancelled": false,
+    "new_exec_after_explicit_unavailable": false
+  },
+  "retained_original_texts_not_separately_salvaged": "The 34 archived members remain byte-for-byte in the actual archive, including PACKAGE_MANIFEST.json, README.md, verify_package.py, OFFLINE_AUDIT.json, reader peer and dependency-replay index. This statement excludes separate publication-side metadata generated outside that archive.",
+  "new_publication_scope": "This newly generated index truthfully records prior completed local validation plus cached original text salvage. It is not a new XZ extraction or new native/lint run.",
+  "byte_verifier": {
+    "bytes": 4385,
+    "sha256": "2f653d6975bb58d7895738673f85f1e02a81e8347a272b5182d847514a482dbc",
+    "git_blob": "378f4a781b9392bb1f57aa2cc8eb70b14e9a1b2e"
+  },
+  "source_rewrite_paths": [],
+  "original_V10_lint_result": "FAIL_DIRTY_SOURCE_UNCHANGED",
+  "native_test_commands": 0,
+  "model_commands": 0,
+  "PE_boundary": "Compiler-artifact records and observed helper hashes only; PE binaries not archived.",
+  "ref_mutation": false,
+  "publication_side_metadata_not_in_archive": {
+    "paths": [
+      "publication/ARCHIVE_INDEX.json",
+      "publication/OFFLINE_PACKAGE_REPLAY.json"
+    ],
+    "local_generation_and_success_observed_before_outage": true,
+    "complete_text_not_present_in_this_agent_current_functions_store": true,
+    "scope": "The original tool-output summary is retained in conversation; no reconstructed text is labeled an exact-byte recovery without an independent original pin."
+  },
+  "erratum": {
+    "superseded_index_blob": "66cec226d36e01d5f91c9f42b1cbd459008314fd",
+    "change": "Narrow the phrase all original texts to the 34 actual archived members; distinguish external archive-index and outer-replay metadata, whose complete file texts are not cached here. No original artifact, raw log, source, result, or archive byte changes."
+  }
+}

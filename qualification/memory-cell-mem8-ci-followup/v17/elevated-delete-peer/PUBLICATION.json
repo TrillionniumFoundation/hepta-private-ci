@@ -1,0 +1,70 @@
+{
+  "schema": "mem.elevated-delete-peer-supplement-publication.v1",
+  "published_at_utc": "2026-11-11T17:11:46Z",
+  "archive": {
+    "path": "ELEVATED_DELETE_PEER_SUPPLEMENT.tar.xz",
+    "bytes": 21140,
+    "sha256": "b6b670663b6f0795cad934110468d590b6541a753e852aa34e5790ff941c6855",
+    "git_blob": "caffa5329095b22702bc3dec10bedc934f81e6d2",
+    "actual_created": true,
+    "full_binary_remote_readback": "PENDING_ROOT_CARRIER"
+  },
+  "members": 18,
+  "manifest_rows": 17,
+  "metadata": [
+    {
+      "key": "index",
+      "git_blob": "c1f228f9a3509d90a243760293b9229d12f83c28",
+      "actual_created": true,
+      "full_utf8_readback_equal": true
+    },
+    {
+      "key": "reader",
+      "git_blob": "3d9d12fa034811326d19547cd5faf902a3ced3c0",
+      "actual_created": true,
+      "full_utf8_readback_equal": true
+    },
+    {
+      "key": "manifest",
+      "git_blob": "993d202526905df2678f4cdb50978fc80ea28070",
+      "actual_created": true,
+      "full_utf8_readback_equal": true
+    },
+    {
+      "key": "audit",
+      "git_blob": "e61147856c3033edb72587372ccd381f7bc88d5c",
+      "actual_created": true,
+      "full_utf8_readback_equal": true
+    },
+    {
+      "key": "recovery_inputs",
+      "git_blob": "8c83b01fe41c96f240f04e72e72732869caf61f1",
+      "actual_created": true,
+      "full_utf8_readback_equal": true
+    }
+  ],
+  "required_original_archives": {
+    "review": {
+      "git_blob": "14faadee966c4db19f2c4a60cc70535d20aadae4",
+      "bytes": 83004,
+      "sha256": "3c26804288fe01143b6c156cc3308deca64adb68846435f129bad5c3bdb4dfcc",
+      "contains_full_exact_source_files": 23
+    },
+    "v10": {
+      "publication_git_blob": "9919d5370aa669c43713cc85348f2831d05e6318",
+      "raw_parts": 13,
+      "bytes": 5696952,
+      "sha256": "570d4511d38483585c0af6331f8321a5f151feb6e8902be22158365b837338a2"
+    },
+    "five_native": {
+      "git_blob": "ed0a8eebc9618499853fc510ee8bbf9234379ed6",
+      "bytes": 149980,
+      "sha256": "321a4afdb0ce1c8508cc948067ba92ff313c72104bdecaada04b7ad8198a2a8e"
+    }
+  },
+  "actual_offline_verifier_exit_code": 0,
+  "scope": "23 exact source bytes, original12ACL decode/outcomes, current fulltree and two production deltas, historical lifecycle JUnit binding; not a new permission repair or native execution.",
+  "new_source_candidate": false,
+  "native_or_model_runs": 0,
+  "ref_changes": 0
+}

@@ -1,0 +1,45 @@
+{
+  "actual_four_blob_full_readback_pass": true,
+  "all_20_full_dependency_sources_inside": true,
+  "archive": {
+    "bytes": 717176,
+    "git_blob": "c655a283cddd5908c79cea2be0e1f4149977b76f",
+    "members": 67,
+    "path": "WINDOWS_SANDBOX_FIX_V11_PREPARATION.tar.xz",
+    "sha256": "930a0b2e2598f00e7fb113b4bb89d3d863b1db7cc7fcfd7fb0d45643c3edad48"
+  },
+  "expected_harness_tree": "ac382f3fc9989017ad77ed64e07b02e1e42cb5cc",
+  "local_archive_all_members_streamed_verified": true,
+  "new_run_results_included": false,
+  "original_source_gate_ZIP_not_inside": true,
+  "package_manifest": {
+    "bytes": 16314,
+    "git_blob": "4e3cf03c5f2c53485e3a7bfd953354a6fb47c097",
+    "sha256": "1a50afb0e8f3fe9299d343a8e21bfd99ed711582e259b49c569e085a3557eb94"
+  },
+  "parts": [
+    {
+      "bytes": 460800,
+      "git_blob": "138008ff7d07bbabcdbd82557d3e450cc8911b00",
+      "offset": 0,
+      "path": "WINDOWS_SANDBOX_FIX_V11_PREPARATION.part-001.bin",
+      "sha256": "1bdd00f84673d2cf70163f5f63e165f07d056be8273896d72e947707287b58a9"
+    },
+    {
+      "bytes": 256376,
+      "git_blob": "8a6f00b33d69d2b0bb23630261f8d240540b1271",
+      "offset": 460800,
+      "path": "WINDOWS_SANDBOX_FIX_V11_PREPARATION.part-002.bin",
+      "sha256": "14f4d51498012b6bd0f19105f46e896e01531ba7baa876ef38eed53bdb15fe0d"
+    }
+  ],
+  "pending_history_9_members_preserved": true,
+  "preparation_performed_no_ref_mutation": true,
+  "remote_binary_full_readback": "PENDING_ROOT_CARRIER",
+  "schema": "mem.windows-sandbox-lint.v11.preparation-archive.v1",
+  "source_head": "ceadcb3b11dbd94a9d07afb7e6301555e4ff3f80",
+  "source_only_audit_inside": true,
+  "source_tree": "27651abb15e269c427c75f28f92a3bd1cd9d191f",
+  "subsequent_root_single_admission_record_included": true,
+  "whole_blob_status": "COMPUTED_ONLY; publish the two listed immutable parts"
+}

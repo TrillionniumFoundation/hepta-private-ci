@@ -1,0 +1,77 @@
+{
+  "schema": "hepta.mem8.ci-repair-checkpoint.v12",
+  "checkpoint_utc": "2026-11-11 10:06:48 UTC",
+  "source_pr": 5935,
+  "published_source_head": "2ae5215beaf8d7b7df111a090b82134beae2683d",
+  "published_source_tree": "12159640adcf073b51f3837e75575e11f5c20233",
+  "candidate": {
+    "paths": 69,
+    "tree": "e253b99e0a5c3b3a680569da0d224fabff0781ba",
+    "source_gate": "PASS",
+    "native_qualification": "NOT_RUN",
+    "source_ref_updated": false
+  },
+  "original_full_ci": {
+    "run_id": 42971470498,
+    "conclusion": "failure",
+    "jobs": 37,
+    "success": 20,
+    "failure": 12,
+    "skipped": 4,
+    "cancelled": 1,
+    "scope": "Original head only; no conclusion transferred to new candidate"
+  },
+  "original_bazel_preparation": {
+    "job_id": "1a1c9e74b6d-2564-358",
+    "key": "mem8-integrated-bazel-lock-via-ai395-ed353817-v1",
+    "status": "FAILED_BEFORE_OVERLAY_OR_LOCK_COMMAND",
+    "missing_tracked_files": 9,
+    "lock_commands_executed": 0
+  },
+  "new_bazel_preparation": {
+    "job_id": "1a1ca0831b0-2564-40e",
+    "key": "mem8-integrated-bazel-lock-via-ai395-ed353817-v2",
+    "execution_host": "desktop",
+    "original_pid": 4044830,
+    "started_at": "2026-11-11T09:54:59.359279+00:00",
+    "status": "LAUNCHED_TERMINAL_PENDING",
+    "candidate_tree": "e253b99e0a5c3b3a680569da0d224fabff0781ba",
+    "result_path": "/home/qian-qi/mem8-integrated-bazel-lock-ed353817-v2/records/RESULT.json"
+  },
+  "mac_control_v1": {
+    "job_id": "1a1c9f5686c-2564-3ad",
+    "status": "FAILED_FIXED_30_SECOND_ARTIFACT_FETCH",
+    "controls_executed": 0,
+    "root_cause_of_original_ci": "UNKNOWN"
+  },
+  "mac_artifact_preparation_v2": {
+    "job_id": "1a1ca0b560a-2564-42b",
+    "key": "mem8-zsh-mac-artifact-preparation-ed353817-v2",
+    "budget_seconds": 360,
+    "fetch_budget_seconds": 300,
+    "controls_executed_by_preparation": 0,
+    "status": "ADMITTED_TERMINAL_PENDING",
+    "immutable_input_checkpoint": "a764b3bbdfdb9999aad290ca5a84cd509177395e",
+    "original_v1_unchanged": true
+  },
+  "shared_environment": {
+    "status": "unavailable",
+    "observed_after_source_v2_root_verification": true,
+    "remote_jobs_not_replayed": true
+  },
+  "scientific": {
+    "new_scored_actor_episodes": 0,
+    "adoption_blockers_open": 10,
+    "adoption_blockers_closed": 0,
+    "provider_original_terminal": "UNKNOWN",
+    "provider_original_admitted_turn_replayed": false,
+    "new_provider_requests": 0,
+    "source_exposure_admissions": 0
+  },
+  "remaining": [
+    "Exact final source native tests and full CI",
+    "Mac zsh original failure mechanism and effective binary path",
+    "Unresolved storage and startup failures; diagnostics do not establish repairs",
+    "Original owner, provider terminal, independent trust, source exposure and real paired-effect qualification"
+  ]
+}

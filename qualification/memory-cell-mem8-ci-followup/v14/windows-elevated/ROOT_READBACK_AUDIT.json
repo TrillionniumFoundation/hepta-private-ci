@@ -1,0 +1,72 @@
+{
+  "schema": "hepta.mem8.elevated-delete.root-full-readback-audit.v1",
+  "verified_at_utc": "2026-11-11T12:22:17.937437+00:00",
+  "staged_commit": "d9b5987a67bb110d2c013a5e1a379fb976c2db22",
+  "archive_git_blob": "8f83ef014873388d99d2e6adfb2018410efc8d2c",
+  "archive_bytes": 79280,
+  "archive_sha256": "0d1649c76b76fa3899cfdd3dda4c91862b1be9949a2878fd13a35c6abe09973a",
+  "safe_regular_members_verified": 30,
+  "complete_exact_189_sources_verified": 22,
+  "original_acl_objects_independently_decoded": 12,
+  "all_ace_sids": [
+    "S-1-1-0"
+  ],
+  "original_outcomes_verified": [
+    {
+      "label": "ordinary-host-cmd-done",
+      "actual": [
+        [
+          "Neither",
+          "false",
+          "false"
+        ],
+        [
+          "TargetOnly",
+          "true",
+          "true"
+        ],
+        [
+          "ParentOnly",
+          "true",
+          "true"
+        ],
+        [
+          "Both",
+          "true",
+          "true"
+        ]
+      ]
+    },
+    {
+      "label": "elevated-child-done",
+      "actual": [
+        [
+          "Neither",
+          "false",
+          "false"
+        ],
+        [
+          "TargetOnly",
+          "true",
+          "true"
+        ],
+        [
+          "ParentOnly",
+          "true",
+          "true"
+        ],
+        [
+          "Both",
+          "true",
+          "true"
+        ]
+      ]
+    }
+  ],
+  "source_report_read_in_full": true,
+  "production_fix": false,
+  "actual_child_token_query": "NOT_PRESENT_IN_ORIGINAL_EVIDENCE",
+  "native_or_model_executions": 0,
+  "qualification": "READ_ONLY_SOURCE_AND_ORIGINAL_ACL_REVIEW_ONLY",
+  "remote_binary_readback": "Full path-based base64 readback now verified; the earlier fetch_blob UnicodeDecodeError remains recorded in the original publication receipt."
+}

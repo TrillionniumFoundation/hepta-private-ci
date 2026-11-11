@@ -1,0 +1,395 @@
+{
+  "schema": "mem.elevated-capability-closure-followup.v1",
+  "source": {
+    "head": "9bd2f589debdba4a93baa363817c3669cb103721",
+    "tree": "c77785ecb368c44ea699769001a47402c9f50591",
+    "pinned_files": 23
+  },
+  "scope": "Bounded read-only product feasibility; no token/source/host mutation or native execution.",
+  "result": "BROAD-SID REMOVAL IS A LOCAL PARTIAL TIGHTENING; NO COMPLETE PERMISSION REPAIR PROVEN",
+  "native_evidence": [
+    {
+      "head": "189711e3563ea13a5328d52e99a286f082045b98",
+      "run_id": 43002359812,
+      "job_id": 130461336393,
+      "raw_bytes": 27138,
+      "raw_sha256": "b002b5f84f101847e3de893c7de810c024bb309fd7ca7397776f93400e514c5c"
+    },
+    {
+      "head": "9bd2f589debdba4a93baa363817c3669cb103721",
+      "run_id": 43021840561,
+      "job_id": 130526720080,
+      "raw_bytes": 27138,
+      "raw_sha256": "0f4357942bd12783593f3d0a817d97db7ac3d26395a0bee30f5951ac5672976a"
+    }
+  ],
+  "observed_failure": "Both original elevated child executions preserved Neither but deleted both file and directory for TargetOnly, ParentOnly and Both outside cells. Current 12 object ACLs were independently decoded; all ACE SIDs are Everyone. Actual child token fields remain unobserved.",
+  "unchanged_production_chain": "The current token/capability/roots-grant/runner/desktop/WFP code pins match the previously reviewed 189 source. The later ordinary-control candidate is test-only and does not change this elevated product policy.",
+  "questions_answered": [
+    {
+      "question": "Can broad restricting IDs be removed while keeping existing reads?",
+      "answer": "Yes as a source-local tightening, if WRITE_RESTRICTED is retained: preserve the base token's normal User/Groups and remove only User/Logon/Everyone from the restricting set. No new generic read capability follows from that change itself. Do not call the legacy public constructor, which deliberately refuses before token creation; an explicit dedicated-account production path would be needed.",
+      "certainty": "Static feasibility only; no new token or native case was run."
+    },
+    {
+      "question": "Does that alone close the outside-delete failure?",
+      "answer": "No closure is established. It removes the broad-ACE alternative identified in token.rs, but legacy_admission.rs preserves the independent native parent FILE_DELETE_CHILD counterexample with WRITE_RESTRICTED. The current originals do not dump the child token, so they do not uniquely prove which access-check path authorized each delete. Actual target and parent routes must be verified without weakening any four-cell assertion.",
+      "certainty": "Observed repeated product failure + source-supported mechanism; no claim that the proposed cap-only token has already passed or necessarily fails every route."
+    },
+    {
+      "question": "Can existing read_roots/caps.readonly support removing WRITE_RESTRICTED unchanged?",
+      "answer": "No. The current filesystem read-grant path addresses sandbox-users/builtin normal identities, not a current request's restricting read capabilities. caps.readonly is one persisted SID; the reviewed read-root path does not grant it read/execute ACEs. An unchanged helper can skip existing builtin reads and can defer/skip a concurrent read-helper invocation. That is not a completed read-capability authorization set.",
+      "certainty": "Direct static interface/ordering mismatch."
+    }
+  ],
+  "necessary_source_closure": [
+    {
+      "id": "ACTIVE_WRITE_CAPS",
+      "existing": "cap.rs:15-32,88-125; spawn_prep.rs:438-452; setup_main/win.rs:851-951; acl.rs:343-347,494-501",
+      "reusable": "Active canonical write-root SIDs are already selected per request. Root writes are granted to the sandbox-users group and that root's capability; write ACE refresh removes FILE_DELETE_CHILD and uses inherited target DELETE instead.",
+      "remaining": "Keep this selection and carveout enforcement. Do not add sandbox-users, User, Logon or Everyone back as an alternative restricting principal; stale group grants would then again carry authority."
+    },
+    {
+      "id": "READ_CAPABILITY_SET_IF_FULLY_RESTRICTED",
+      "existing": "setup.rs:556-611; setup_main/win.rs:189-259,811-841; cap.rs:15-32; elevated/ipc_framed.rs:59-76",
+      "necessary": "Derive a distinct current read-capability set from the trusted typed PermissionProfile/workspace/read-root inputs; grant only read/execute rights and verify completion before admitting that exact request. Do not treat a SID string, a builtin-readable root or the global caps.readonly value as proof of that grant.",
+      "remaining": "Choose an active-root identity/withdrawal design that does not retain earlier read scopes. Existing SpawnRequest has one cap_sids vector, so role-separated construction/validation is missing; adding new fields would require the existing protocol compatibility/version path to be reviewed."
+    },
+    {
+      "id": "READ_COMPLETION",
+      "existing": "setup_main/win.rs:811-841,1012-1033",
+      "necessary": "A full-restriction path must await and validate the read grants required by the current request; helper presence, a global mutex that skips a spawn, and write-refresh error handling do not provide that acknowledgement.",
+      "remaining": "Retain existing request deduplication and failure propagation; no unrestricted fallback or cached success after a grant failure."
+    },
+    {
+      "id": "AMBIENT_READ_CONTRACT",
+      "existing": "legacy_admission.rs:3-6; setup.rs:556-584,2311-2331",
+      "necessary": "Removing WRITE_RESTRICTED changes which reads require a second access check. The currently gathered ACL-refresh roots are not a proof that every previously normal-ACL-readable object is covered: the function explicitly filters an ancestor filesystem root and preserves ambient read behavior through the old token flag.",
+      "remaining": "A complete replacement needs an explicit authorized read scope, including existing platform/helper/current-workspace behavior and any promised ambient reads. Adding read-cap ACEs to platform/drive roots changes persistent host ACL work and must be handled by the original privileged setup path with real success evidence. Do not silently shrink the contract to the currently enumerated roots."
+    },
+    {
+      "id": "OBJECT_AND_DESKTOP_ROLE_SEPARATION",
+      "existing": "token.rs:57-75,531-538; desktop.rs:70-91,146-198,201-252",
+      "necessary": "Do not append read SIDs to the current undifferentiated capability vector: set_default_dacl gives every supplied SID GENERIC_ALL. Likewise, without Logon in the restricting list, current desktop code grants the full list DESKTOP_ALL_ACCESS, including a network route identity.",
+      "remaining": "Explicitly select object/desktop capabilities independently of filesystem read SIDs and network markers. Keep private=false refusal; verify a real private desktop/WinSta0 startup and two capabilities sharing one route identity."
+    },
+    {
+      "id": "IPC_AND_DEVICE_COMPATIBILITY",
+      "existing": "elevated/runner_pipe.rs; process.rs; conpty/mod.rs; bin/command_runner/win.rs:269-320; acl.rs:800-844",
+      "reusable": "The original runner opens its authenticated IPC before deriving the child token, and child stdio uses retained/inherited handles. This separation can remain.",
+      "remaining": "Real non-TTY, ConPTY, child-created objects and null-device access still need qualification under the final token. Do not alter runner authentication or grant a network marker object authority to fix startup."
+    },
+    {
+      "id": "WFP_MATCHING",
+      "existing": "wfp.rs:169-211,315-322; token_tests.rs:198-217",
+      "necessary": "Preserve intended offline/proxy account and route matching with the final real token. The existing test checks only network SID presence; it does not prove ALE_USER_ID access-descriptor matching after the restricting identity set changes.",
+      "remaining": "No actual WFP bypass was observed in these delete logs. This is a compatibility/security condition requiring measurement, not a proven current network failure."
+    }
+  ],
+  "minimum_practical_next_stage": {
+    "status": "proposal only; no source changes or execution requested by this report",
+    "source_local_stage": "A dedicated-account cap-only/WRITE_RESTRICTED tightening could be reviewed independently, with explicit desktop identity selection and preserved WFP policy. It must be labeled partial until the actual outside target/parent matrix and launch/network contracts pass.",
+    "complete_repair_stage": "If the parent route cannot be enforced with the read-preserving flag, the smallest identified coherent alternative in this codebase is a full restricted-token path plus typed, acknowledged read/write/object capability grants through the existing privileged setup and runner. This is a multi-interface change, not a one-line flags patch.",
+    "not_accepted_as_repair": [
+      "Change denial expectations to success",
+      "Disable elevated execution and call that restored capability",
+      "Use the test-only mechanism token or fixture grants as production authorization",
+      "Silently turn private=false into true",
+      "Expand shared groups or route IDs into object/filesystem capabilities",
+      "Change retry counts, timeouts or original four-cell expectations"
+    ]
+  },
+  "existing_test_points": [
+    {
+      "path": "src/unified_exec/delete_permission_tests.rs",
+      "case": "unified_exec::tests::delete_permission_tests::legacy_refuses_before_elevated_four_cell_delete_boundary",
+      "role": "Actual elevated route and original four-cell refusal oracle; retain unchanged assertions/budget."
+    },
+    {
+      "path": "src/unified_exec/tests.rs",
+      "case": "unified_exec::tests::elevated_non_tty_cmd_forwards_env_output_and_exit",
+      "role": "Real command/env/exit/private-desktop contract; currently LEAK in both original Windows-current attempts, independently unresolved."
+    },
+    {
+      "path": "src/token_tests.rs",
+      "case": "token::tests::elevated_token_includes_network_proxy_restricting_sid",
+      "role": "Existing marker-presence contract only; it does not validate WFP matching."
+    },
+    {
+      "path": "src/desktop_tests.rs",
+      "case": "desktop::tests::legacy_refuses_before_workspace_desktop_mechanism_fixture",
+      "role": "Current owned-object mechanism checks two distinct caps and private=false refusal. It does not spawn a real child or include a shared route SID."
+    },
+    {
+      "path": "src/desktop_tests.rs",
+      "case": "desktop::tests::legacy_refuses_before_readonly_desktop_mechanism_fixture",
+      "role": "Current fixture-only desktop/default selector check; no real child launch."
+    },
+    {
+      "path": "src/spawn_prep.rs",
+      "case": "spawn_prep::tests::root_capability_sids_only_include_active_roots",
+      "role": "Keep active-root selection and stale-root exclusion."
+    },
+    {
+      "path": "src/setup.rs",
+      "case": "setup::tests::workspace_write_roots_remain_readable",
+      "role": "Keep write roots readable."
+    },
+    {
+      "path": "src/setup.rs",
+      "case": "setup::tests::gather_read_roots_includes_helper_bin_dir",
+      "role": "Keep runtime helper reads."
+    },
+    {
+      "path": "src/setup.rs",
+      "case": "setup::tests::full_read_roots_preserve_legacy_platform_defaults",
+      "role": "Keep the pinned platform defaults; this test alone does not cover every ambient read."
+    },
+    {
+      "path": "src/setup.rs",
+      "case": "setup::tests::setup_refresh_preserves_workspace_scoped_deny_read_paths",
+      "role": "Keep deny-read propagation."
+    },
+    {
+      "path": "src/bin/setup_main/win.rs",
+      "function": "write_root_refresh_replaces_stale_delete_child_grant",
+      "role": "Keep target-delete grants rather than parent-delete-child grants."
+    },
+    {
+      "path": "src/bin/setup_main/win.rs",
+      "function": "write_root_refresh_checks_each_sid",
+      "role": "Keep per-SID grant checking."
+    }
+  ],
+  "additional_evidence_needed": [
+    "A bounded actual child token classification (enabled SIDs, restricting SIDs, relevant privileges and flags), tied to the same real elevated request and helper binaries; original child token remains unknown.",
+    "For a cap-only proposal: original target DELETE and parent FILE_DELETE_CHILD refusals plus legitimate inside-root writes/deletes and existing normal reads under that exact token.",
+    "For full restriction: current-request read-grant acknowledgement, active/stale read scopes, denial propagation, private-desktop/WinSta0 and original process/IPC/WFP behavior under the final token. These are new-source qualifications, not results provided by this review."
+  ],
+  "primary_docs": [
+    {
+      "url": "https://learn.microsoft.com/en-us/windows/win32/api/securitybaseapi/nf-securitybaseapi-createrestrictedtoken",
+      "point": "WRITE_RESTRICTED considers restricting SIDs only for write access; general restricted tokens require both enabled-SID and restricting-SID access checks."
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/windows/win32/secauthz/restricted-tokens",
+      "point": "The dual access-check model applies to securable objects; private desktop is recommended."
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/windows/win32/fwp/filtering-condition-identifiers-",
+      "point": "WFP defines ALE_USER_ID as a security-descriptor condition; no claim here that mere marker presence proves actual filter matching."
+    }
+  ],
+  "source_index": [
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/token.rs",
+      "ref": "9bd2f589debdba4a93baa363817c3669cb103721",
+      "git_blob": "dbf1460422b93823d1e2fe7ad763be448a97bcbc",
+      "sha256": "74683686b59bd8949d98f5d7fd0ce0c69164df0fb8007365dd6a8ee8757286f7",
+      "bytes": 18866,
+      "prior_189_git_blob": "dbf1460422b93823d1e2fe7ad763be448a97bcbc",
+      "unchanged_since_189": true
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/legacy_admission.rs",
+      "ref": "9bd2f589debdba4a93baa363817c3669cb103721",
+      "git_blob": "f1fc37fc9ef53244773504746482a0a77027daaf",
+      "sha256": "eb1048cf27a5a7896d44ae7e32af60a4b25d7f561c4c1b2bf49093ad078189a4",
+      "bytes": 1417,
+      "prior_189_git_blob": "f1fc37fc9ef53244773504746482a0a77027daaf",
+      "unchanged_since_189": true
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/cap.rs",
+      "ref": "9bd2f589debdba4a93baa363817c3669cb103721",
+      "git_blob": "41b33b63fda6f9bbc648fef98e5c9065f8f17b5e",
+      "sha256": "8e566bf403711781568ba6aec41d13d565caeef48c396d05a7cc8ea323d32354",
+      "bytes": 7394,
+      "prior_189_git_blob": "41b33b63fda6f9bbc648fef98e5c9065f8f17b5e",
+      "unchanged_since_189": true
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/spawn_prep.rs",
+      "ref": "9bd2f589debdba4a93baa363817c3669cb103721",
+      "git_blob": "dff24c7c51d46b7f64d00b49dc2d0271a3ebb723",
+      "sha256": "6183cb67c92ea1afa2a6451f6d40373d815614e8721273377f7967c6b0270003",
+      "bytes": 27802,
+      "prior_189_git_blob": "dff24c7c51d46b7f64d00b49dc2d0271a3ebb723",
+      "unchanged_since_189": true
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/setup.rs",
+      "ref": "9bd2f589debdba4a93baa363817c3669cb103721",
+      "git_blob": "890755d01ca24f5ede1960582eacb9714633a0db",
+      "sha256": "1fa3bfafe7eb75d3ff009bc7ed741689ee9cf25595f7a5433538c325b1254b09",
+      "bytes": 83794,
+      "prior_189_git_blob": "890755d01ca24f5ede1960582eacb9714633a0db",
+      "unchanged_since_189": true
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/bin/setup_main/win.rs",
+      "ref": "9bd2f589debdba4a93baa363817c3669cb103721",
+      "git_blob": "1d9340c6db26d6d10c1b3edecb1c9fecc908ef1d",
+      "sha256": "ba3bf6444e72c443575281e192e7b343c7c61180a1a699f4ffb4f87cba7e0ac3",
+      "bytes": 47955,
+      "prior_189_git_blob": "1d9340c6db26d6d10c1b3edecb1c9fecc908ef1d",
+      "unchanged_since_189": true
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/bin/command_runner/win.rs",
+      "ref": "9bd2f589debdba4a93baa363817c3669cb103721",
+      "git_blob": "146d5290e35bfb3b926a1e7a53c7345c5598b0b9",
+      "sha256": "ae8428e9ecfc484995e0e0e7d65228d092f621bef723d6bdd64e23c39a6adf15",
+      "bytes": 25993,
+      "prior_189_git_blob": "146d5290e35bfb3b926a1e7a53c7345c5598b0b9",
+      "unchanged_since_189": true
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/resolved_permissions.rs",
+      "ref": "9bd2f589debdba4a93baa363817c3669cb103721",
+      "git_blob": "0e28b9d3dc169a61e8c00c9ae63cecef7afd3e06",
+      "sha256": "4127b471c288dae936a50ce0dd4d98df8efc64a1dd8027ecac08c2a21b7faf0d",
+      "bytes": 18747,
+      "prior_189_git_blob": "0e28b9d3dc169a61e8c00c9ae63cecef7afd3e06",
+      "unchanged_since_189": true
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/desktop.rs",
+      "ref": "9bd2f589debdba4a93baa363817c3669cb103721",
+      "git_blob": "0b01f011119bef623bc9e46e710caa371520380d",
+      "sha256": "4e26ba072fada10f6185d16682274022108ef843f8292d1e7f9ed237f7e1a56f",
+      "bytes": 9710,
+      "prior_189_git_blob": "0b01f011119bef623bc9e46e710caa371520380d",
+      "unchanged_since_189": true
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/wfp.rs",
+      "ref": "9bd2f589debdba4a93baa363817c3669cb103721",
+      "git_blob": "9291b6eb994d640828a16493e5b558339ed73156",
+      "sha256": "2bef44b9abde719f02853818b1309f70228367d51142193fba6676a9ebb80d70",
+      "bytes": 15710,
+      "prior_189_git_blob": "9291b6eb994d640828a16493e5b558339ed73156",
+      "unchanged_since_189": true
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/token_tests.rs",
+      "ref": "9bd2f589debdba4a93baa363817c3669cb103721",
+      "git_blob": "1f16623dbea1b021a6b67d5e52ff9f90973d5d26",
+      "sha256": "e095e94297d14ccdd82db3cd6e358b8951aab42798e2c588d3b017ae351d123d",
+      "bytes": 19580,
+      "prior_189_git_blob": "867fcfad7244b8951155720dcae0e21bb634eafb",
+      "unchanged_since_189": false
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/desktop_tests.rs",
+      "ref": "9bd2f589debdba4a93baa363817c3669cb103721",
+      "git_blob": "4bfb9de1c6a1012ce9b86534a3f7352eb2018197",
+      "sha256": "8495e1c12a6b5bce1bb316abb33b6e814bcf43acff497e73cf08b6e29aedb335",
+      "bytes": 5570,
+      "prior_189_git_blob": "4bfb9de1c6a1012ce9b86534a3f7352eb2018197",
+      "unchanged_since_189": true
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/unified_exec/tests.rs",
+      "ref": "9bd2f589debdba4a93baa363817c3669cb103721",
+      "git_blob": "913096ca90dced2efa4aa4e3366193e3a6761b50",
+      "sha256": "a0d63210b29e534b7f1ca822a5f254e7bdc2dd5cd9f4b12c1cecd6ed4683ae11",
+      "bytes": 49498,
+      "prior_189_git_blob": "913096ca90dced2efa4aa4e3366193e3a6761b50",
+      "unchanged_since_189": true
+    },
+    {
+      "path": "codex-rs/core/src/windows_sandbox.rs",
+      "ref": "9bd2f589debdba4a93baa363817c3669cb103721",
+      "git_blob": "be380a8b2c9fd2501564bcf162e4e417fc4f5c3a",
+      "sha256": "713b0612e159c6e01a9a076ab1aeda07b0cb04f0e66ff5989ab9d0c57b11e777",
+      "bytes": 13609,
+      "prior_189_git_blob": "be380a8b2c9fd2501564bcf162e4e417fc4f5c3a",
+      "unchanged_since_189": true
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/acl.rs",
+      "ref": "9bd2f589debdba4a93baa363817c3669cb103721",
+      "git_blob": "71cdde8fff5622ad77888f6ebe865c2169fe8a89",
+      "sha256": "7dd4054f8764fc677ddc116e4f828d465d9734cf5a0b85cd985cdd582b1f2bd8",
+      "bytes": 29783,
+      "prior_189_git_blob": null,
+      "unchanged_since_189": null
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/elevated/ipc_framed.rs",
+      "ref": "9bd2f589debdba4a93baa363817c3669cb103721",
+      "git_blob": "fca07f73c3501cc034e969f71d870ff1b31aff90",
+      "sha256": "4c46f88d167b10022832908ceec572ae5f20c25d2f98b244eb65c3dbab2b4759",
+      "bytes": 9933,
+      "prior_189_git_blob": null,
+      "unchanged_since_189": null
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/process.rs",
+      "ref": "9bd2f589debdba4a93baa363817c3669cb103721",
+      "git_blob": "4d4f1d9435aad3cf9cd27a82d51b2be5b7659a4c",
+      "sha256": "7c7ea19f6fcfa88990cf5582273eede6139a52ccda8212468087276bb50eaca7",
+      "bytes": 11792,
+      "prior_189_git_blob": "4d4f1d9435aad3cf9cd27a82d51b2be5b7659a4c",
+      "unchanged_since_189": true
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/elevated/runner_pipe.rs",
+      "ref": "9bd2f589debdba4a93baa363817c3669cb103721",
+      "git_blob": "c8ae092c4a00fc3e029be48cb77cc78db4580d87",
+      "sha256": "fa1fd3c5822c10303421a895cbe76ab3dd368c645c831ffc1c003bba626925db",
+      "bytes": 5321,
+      "prior_189_git_blob": "c8ae092c4a00fc3e029be48cb77cc78db4580d87",
+      "unchanged_since_189": true
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/conpty/mod.rs",
+      "ref": "9bd2f589debdba4a93baa363817c3669cb103721",
+      "git_blob": "c09e8fe656f0322d82bd47248a24583518b9c6bb",
+      "sha256": "a16c9b5a46e0e04a1942a30df824f08d9275d93177f06cc6afaa554cd718ea78",
+      "bytes": 6442,
+      "prior_189_git_blob": "c09e8fe656f0322d82bd47248a24583518b9c6bb",
+      "unchanged_since_189": true
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/elevated_impl.rs",
+      "ref": "9bd2f589debdba4a93baa363817c3669cb103721",
+      "git_blob": "a8cc511dfd6f876e94da04f7413f0a26d42d4e18",
+      "sha256": "be25bc4eff5f02d5243cec71b865c548fc531e3114ed7fa498e9201ac32c8b30",
+      "bytes": 11083,
+      "prior_189_git_blob": "a8cc511dfd6f876e94da04f7413f0a26d42d4e18",
+      "unchanged_since_189": true
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/unified_exec/backends/elevated.rs",
+      "ref": "9bd2f589debdba4a93baa363817c3669cb103721",
+      "git_blob": "bc1ab54debdfce028751e869fea6d047604873cd",
+      "sha256": "536ea30b6f0decbe39bd7e84c5e92b1adbe9053d8d00697d7a62ed708badb3be",
+      "bytes": 8676,
+      "prior_189_git_blob": "bc1ab54debdfce028751e869fea6d047604873cd",
+      "unchanged_since_189": true
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/elevated/runner_client.rs",
+      "ref": "9bd2f589debdba4a93baa363817c3669cb103721",
+      "git_blob": "ec52ca708354d9d1aa3abfdc1755c90033cde8c7",
+      "sha256": "b0e9be0e44beb1ca53d9a2f38f882aaa46e7ea9deb2a0a3df62e6a237de10fbe",
+      "bytes": 20359,
+      "prior_189_git_blob": "ec52ca708354d9d1aa3abfdc1755c90033cde8c7",
+      "unchanged_since_189": true
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/unified_exec/delete_permission_tests.rs",
+      "ref": "9bd2f589debdba4a93baa363817c3669cb103721",
+      "git_blob": "5e33c4fbea42cf69fcd5e8da2bbbef0943fdd31f",
+      "sha256": "3f1ae85e68c6001bbc3032b817bd6b6deb913a6b4c77e1def98c401d2603c211",
+      "bytes": 8102,
+      "prior_189_git_blob": "fe9017be8f0252983a44677ba900e7b17d2007a6",
+      "unchanged_since_189": false
+    }
+  ],
+  "new_runs": 0,
+  "source_changes": 0,
+  "policy_changes": 0
+}

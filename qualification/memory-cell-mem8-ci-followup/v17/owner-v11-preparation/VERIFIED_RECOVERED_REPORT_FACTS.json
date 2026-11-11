@@ -1,0 +1,1242 @@
+{
+  "schema": "mem8.v17.owner-facts-from-actually-recovered-reports.v1",
+  "source_preparation": {
+    "git_blob": "584778fe1b5a9b1c8126d649285b4b674fa26ab3",
+    "records": 18,
+    "used_as_historical_selection_only": true
+  },
+  "verification": "Full immutable commit/path bytes, SHA256/Git blob and each selected/expected original JSON pointer; no Python generator execution.",
+  "fully_verified_original_report_count": 12,
+  "original_reports": [
+    {
+      "id": "source_v9",
+      "original_report": {
+        "path": "qualification/memory-cell-mem8-ci-followup/v17/source-v9/root/ROOT_SOURCE_GATE_AUDIT.json",
+        "bytes": 1160,
+        "sha256": "bfbfaf82ab765638349f1c47390484e6645dd86f0f9bf16ffac2aa28892f71a2",
+        "git_blob": "de2ede197c810f23a6f9af832d89a332a6cb5257",
+        "full_remote_readback_at": "a0b66d70fdb886168d975e5204901fa8cc23e72b"
+      },
+      "selected_original_facts": {
+        "status": "PASS_FULL_ORIGINAL_ZIP_CANONICAL_TAR_AND_UNCHANGED_VERIFIER",
+        "run": 43054829731,
+        "job": 130641359569,
+        "attempt": 1,
+        "source": "408226fc670bfa8c1736e2b264750b549237b7c4",
+        "tree": "112fe78dedd76b258b17976cff14693c52897c8d",
+        "formatter_changed_paths": [],
+        "source_after_clean": true,
+        "cumulative_overlay_paths": 117,
+        "rust_inventory": 6204,
+        "python_pass": 18,
+        "old_name_hits": 0,
+        "full_golden_equal_except_derived_count": true,
+        "both_lock_bytes_unchanged": true,
+        "elapsed_seconds": 211.376484,
+        "original_deadline_seconds": 600,
+        "native_tests_executed": 0,
+        "real_model_requests": 0
+      },
+      "boundary": "Original source-only qualification on its own head; no native pass or adoption benefit.",
+      "adoption_gate_closed": false,
+      "result_transferred_to_another_source": false
+    },
+    {
+      "id": "source_v10",
+      "original_report": {
+        "path": "qualification/memory-cell-mem8-ci-followup/v17/source-v10/root/ROOT_SOURCE_GATE_AUDIT.json",
+        "bytes": 1162,
+        "sha256": "e0949b39fe15edfb012d11eee05de9c34215a30ccde10d06087421faf7302ac1",
+        "git_blob": "7ec42e5b814661be43e815788b3a16cfdd0cf6c7",
+        "full_remote_readback_at": "a0b66d70fdb886168d975e5204901fa8cc23e72b"
+      },
+      "selected_original_facts": {
+        "status": "PASS_FULL_ORIGINAL_ZIP_CANONICAL_TAR_AND_UNCHANGED_VERIFIER",
+        "run": 43060276203,
+        "job": 130660630288,
+        "attempt": 1,
+        "source": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+        "tree": "658fa040046285116b1fd81b94ff8c96444072ad",
+        "formatter_changed_paths": [],
+        "source_after_clean": true,
+        "cumulative_overlay_paths": 118,
+        "rust_inventory": 6204,
+        "python_pass": 18,
+        "old_name_hits": 0,
+        "full_golden_equal_except_derived_count": true,
+        "both_lock_bytes_unchanged": true,
+        "elapsed_seconds": 235.941709,
+        "original_deadline_seconds": 600,
+        "native_tests_executed": 0,
+        "real_model_requests": 0
+      },
+      "boundary": "Original source-only qualification on its own head; no native pass or adoption benefit.",
+      "adoption_gate_closed": false,
+      "result_transferred_to_another_source": false
+    },
+    {
+      "id": "source_v11",
+      "original_report": {
+        "path": "qualification/memory-cell-mem8-ci-followup/v17/source-v11/root/ROOT_SOURCE_GATE_AUDIT.json",
+        "bytes": 1513,
+        "sha256": "cd82e07467d57c30e6174aea67d394e2935ab657e6111570400a12f730d58e82",
+        "git_blob": "f6eca22113eb2612e5a88ff47b5d18124b64a11a",
+        "full_remote_readback_at": "a0b66d70fdb886168d975e5204901fa8cc23e72b"
+      },
+      "selected_original_facts": {
+        "status": "PASS_FULL_ORIGINAL_ZIP_CANONICAL_TAR_AND_UNCHANGED_VERIFIER",
+        "run": 43069105073,
+        "job": 130691870162,
+        "attempt": 1,
+        "source": "ceadcb3b11dbd94a9d07afb7e6301555e4ff3f80",
+        "tree": "27651abb15e269c427c75f28f92a3bd1cd9d191f",
+        "formatter_changed_paths": [],
+        "source_after_clean": true,
+        "cumulative_overlay_paths": 118,
+        "rust_inventory": 6204,
+        "python_pass": 18,
+        "old_name_hits": 0,
+        "full_golden_equal_except_derived_count": true,
+        "both_lock_bytes_unchanged": true,
+        "elapsed_seconds": 285.119599,
+        "original_deadline_seconds": 600,
+        "native_tests_executed": 0,
+        "real_model_requests": 0
+      },
+      "boundary": "Original source-only qualification on its own head; no native pass or adoption benefit.",
+      "adoption_gate_closed": false,
+      "result_transferred_to_another_source": false
+    },
+    {
+      "id": "mem_d0f",
+      "original_report": {
+        "path": "qualification/memory-cell-mem8-ci-followup/v17/mem-d0f/MEM_COMPLETE_ORIGINAL_AUDIT.json",
+        "bytes": 10936,
+        "sha256": "5d2ead0506e8cc00cdb2afe558ea9a2c6b287ef4e8d9f1e56c003bfed0cac794",
+        "git_blob": "d46e88fd6fec0e3592d1d55e7e0c195d7405b542",
+        "full_remote_readback_at": "a0b66d70fdb886168d975e5204901fa8cc23e72b"
+      },
+      "selected_original_facts": {
+        "run_id": 43062473099,
+        "attempt": 1,
+        "head": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+        "tree": "658fa040046285116b1fd81b94ff8c96444072ad",
+        "status": "PASS_ORIGINAL_MEM_WORKFLOW_SOFTWARE_SCOPE",
+        "api_status": "completed",
+        "api_conclusion": "success",
+        "CPU_executions": 119,
+        "integrity_executions": 35,
+        "python_totals": {
+          "distinct_case_names": 120,
+          "executions": 154,
+          "overlap_between_integrity_and_CPU": 34
+        },
+        "native_totals": {
+          "distinct_case_names": 33,
+          "drain_child_markers": 3,
+          "executions": 34,
+          "failed": 0,
+          "feature_profile_reexecution": 1,
+          "nested_drain_markers_are_not_additional_selected_tests": true
+        },
+        "all_test_totals": {
+          "distinct_language_qualified_case_names": 153,
+          "executions": 188,
+          "failed": 0
+        },
+        "native_evidence": {
+          "artifact": {
+            "archive": {
+              "bytes": 1413095,
+              "git_blob": "796c09643d1f4d1ab0fb70664f67baa5a3c6621b",
+              "sha256": "b1787753805af121986af7e99be7c09e99aea1ef613ddb8c965de2bdd9a355ff"
+            },
+            "artifact_id": 13874919829,
+            "members": 42
+          },
+          "cli_boundary": "Original build receipt and observed binary byte/hash bindings are retained; the 560 MB executable itself is not in the evidence archive.",
+          "command_receipts": 10,
+          "format_and_three_scoped_fixes": "passed_without_rewrite",
+          "fulljob": {
+            "bytes": 819097,
+            "git_blob": "d401ae45b764df3d2eeb84119aa6ea4de9f890a8",
+            "sha256": "90f130bc1b4f8b3f09ba4a0444c834b306a6ab20b3fa990ce1e590698fa957bc"
+          },
+          "source_files_checked": 224
+        },
+        "synthetic_campaign": {
+          "deletion_scope": "logical read exclusion; snapshot bytes remain",
+          "full_owner_cold_recovery": false,
+          "independent_trust_domain": false,
+          "model_calls": 0,
+          "reader_processes": 14,
+          "real_task_benefit": false,
+          "request_response_context_hashes_checked": true,
+          "scenario_ids": [
+            "live_updated_fact",
+            "snapshot_current_fact",
+            "snapshot_active_chain",
+            "restricted_dependency_closure",
+            "snapshot_off",
+            "snapshot_retrieval_off",
+            "snapshot_delivery_off",
+            "revoked_live_fact",
+            "revoked_snapshot_fact",
+            "revoked_snapshot_bm25",
+            "revoked_snapshot_uniform",
+            "revoked_snapshot_icl",
+            "unrelated_snapshot_fact",
+            "unrelated_live_fact"
+          ],
+          "writer_processes": 3
+        },
+        "original_jobs": [
+          {
+            "completed_at": "2026-11-11T16:52:13Z",
+            "conclusion": "success",
+            "job_id": 130668436426,
+            "name": "Source-memory receipts and post-update revocation",
+            "started_at": "2026-11-11T16:51:51Z"
+          },
+          {
+            "completed_at": "2026-11-11T16:55:01Z",
+            "conclusion": "success",
+            "job_id": 130668436811,
+            "name": "Frozen candidate and coverage contracts",
+            "started_at": "2026-11-11T16:51:51Z"
+          },
+          {
+            "completed_at": "2026-11-11T17:21:10Z",
+            "conclusion": "success",
+            "job_id": 130668437204,
+            "name": "Staged native episodic owner contracts",
+            "started_at": "2026-11-11T16:51:51Z"
+          }
+        ],
+        "ignored_real_provider_test_executions": 0,
+        "not_established": [
+          "real successor-task memory benefit",
+          "original owner cold recovery",
+          "independent trust domain",
+          "effect-owner fencing",
+          "all repository required CI"
+        ]
+      },
+      "boundary": "154 Python executions/120 distinct plus34 native executions/33 distinct; three drain child markers are not three more selected cases. Fourteen synthetic readers do not prove successor-task benefit.",
+      "adoption_gate_closed": false,
+      "result_transferred_to_another_source": false
+    },
+    {
+      "id": "architecture_d0f",
+      "original_report": {
+        "path": "qualification/memory-cell-mem8-ci-followup/v17/architecture-d0f/ARCH_COMPLETE_ORIGINAL_AUDIT.json",
+        "bytes": 426132,
+        "sha256": "ad4d5b9d647a5915e97d481732df2ab11035cb6661d6908ad3139bd377ebe347",
+        "git_blob": "c4f313a35f19aa4e99b57070da79c5e9b50bf062",
+        "full_remote_readback_at": "a0b66d70fdb886168d975e5204901fa8cc23e72b"
+      },
+      "selected_original_facts": {
+        "run_id": 43062473103,
+        "attempt": 1,
+        "source_head": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+        "source_tree": "658fa040046285116b1fd81b94ff8c96444072ad",
+        "status": "PASS_ORIGINAL_ARCHITECTURE_WORKFLOW",
+        "API_terminal": {
+          "conclusion": "success",
+          "status": "completed",
+          "updated_at": "2026-11-11T17:33:24Z"
+        },
+        "Architecture_required": "passed original aggregate after both applicable lanes",
+        "python_totals": {
+          "base": {
+            "raw_only": 8,
+            "receipted": 136,
+            "total": 144
+          },
+          "distinct_case_names": 146,
+          "executions": 290,
+          "source": {
+            "raw_only": 8,
+            "receipted": 138,
+            "total": 146
+          }
+        },
+        "native_totals": {
+          "base_identical_tree_reuse_condition_source_head_success_met": true,
+          "base_native_execution": 0,
+          "binary_normalization": "Cargo crate underscores and nextest package names map to package::lib; integration targets retain their own target name.",
+          "command_groups": 26,
+          "cross_group_duplicate_ids": [
+            {
+              "binary": "codex-hepta-intelligence-eval::lib",
+              "case": "self_evolution_selection::tests::selector_and_rollback_are_opaque_independent_admissions",
+              "executions": 2
+            },
+            {
+              "binary": "codex-hepta-supervisor::lib",
+              "case": "module_runtime::tests::stateful_promotion_consumes_terminal_writer_handoff",
+              "executions": 2
+            },
+            {
+              "binary": "codex-hepta-types::lib",
+              "case": "topology::tests::related_module_bounds_are_checked_before_digest_allocation",
+              "executions": 2
+            },
+            {
+              "binary": "codex-hepta-types::lib",
+              "case": "topology::tests::selected_digest_cannot_hide_substituted_delta_content",
+              "executions": 2
+            },
+            {
+              "binary": "codex-hepta-types::lib",
+              "case": "topology::tests::split_requires_individually_bound_add_participants",
+              "executions": 2
+            }
+          ],
+          "distinct_package_target_case_ids": 521,
+          "executions": 526,
+          "failed": 0,
+          "one_explicit_ignored_scale_case_executed": true
+        },
+        "combined_test_executions": 816,
+        "language_qualified_distinct_case_ids": 667,
+        "base_lane_candidate": {
+          "base_sha": "96038ccf0660154fac143ba6cbe4be81e00813e8",
+          "lane": "base-merge",
+          "native_execution_required": false,
+          "requires_source_head_success": true,
+          "schema_version": 1,
+          "source_sha": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+          "source_tree": "658fa040046285116b1fd81b94ff8c96444072ad",
+          "tested_sha": "c5b214bcca48b49c81024e2b22732e50b2409384",
+          "tested_tree": "658fa040046285116b1fd81b94ff8c96444072ad"
+        },
+        "source_lane_candidate": {
+          "base_sha": "96038ccf0660154fac143ba6cbe4be81e00813e8",
+          "lane": "source-head",
+          "native_execution_required": true,
+          "requires_source_head_success": false,
+          "schema_version": 1,
+          "source_sha": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+          "source_tree": "658fa040046285116b1fd81b94ff8c96444072ad",
+          "tested_sha": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+          "tested_tree": "658fa040046285116b1fd81b94ff8c96444072ad"
+        },
+        "original_jobs": [
+          {
+            "completed_at": "2026-11-11T16:52:25Z",
+            "conclusion": "success",
+            "job_id": 130668436789,
+            "name": "Architecture convergence (base-merge)",
+            "started_at": "2026-11-11T16:51:53Z"
+          },
+          {
+            "completed_at": "2026-11-11T17:33:16Z",
+            "conclusion": "success",
+            "job_id": 130668437162,
+            "name": "Architecture convergence (source-head)",
+            "started_at": "2026-11-11T16:51:53Z"
+          },
+          {
+            "completed_at": "2026-11-11T17:33:23Z",
+            "conclusion": "success",
+            "job_id": 130692482183,
+            "name": "Architecture required",
+            "started_at": "2026-11-11T17:33:19Z"
+          }
+        ],
+        "all_receipts_known_exit_zero_and_source_before_after_clean": true,
+        "boundary": "Software architecture/runtime fixture scope. This is not all repository CI, original owner recovery, source-benefit evidence, or a real-provider smoke.",
+        "candidate_transport_boundary": "Both observations remain advisory UNKNOWN/HTTP403; no activation, admin denial, credential separation or write-denial proof is inferred."
+      },
+      "boundary": "Base lane144 Python/source lane146 Python; source526 native executions/521 distinct. Same-tree base reuse required the actual source lane success. Not whole hostedCI or independent trust.",
+      "adoption_gate_closed": false,
+      "result_transferred_to_another_source": false
+    },
+    {
+      "id": "private_d0f",
+      "original_report": {
+        "path": "qualification/memory-cell-mem8-ci-followup/v17/private-d0f/AUDIT.json",
+        "bytes": 9126,
+        "sha256": "06198cca9fd5bd3d47ead64d1cb2dc2748a65940a88815af4ecd1ed8fd6818df",
+        "git_blob": "13b3fec8bcf761bf8215efa8f20509a4a52a3c08",
+        "full_remote_readback_at": "a0b66d70fdb886168d975e5204901fa8cc23e72b"
+      },
+      "selected_original_facts": {
+        "run_id": 43062473076,
+        "job_id": 130668436521,
+        "run_attempt": 1,
+        "source_head": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+        "source_tree": "658fa040046285116b1fd81b94ff8c96444072ad",
+        "job_conclusion": "success",
+        "original_unmutated_named_passes": 34,
+        "original_unmutated_unique_case_ids": 34,
+        "phase_test_counts": [
+          {
+            "executed": 15,
+            "filtered_skips": 5,
+            "passed": 15
+          },
+          {
+            "executed": 2,
+            "filtered_skips": 26,
+            "passed": 2
+          },
+          {
+            "executed": 3,
+            "filtered_skips": 147,
+            "passed": 3
+          },
+          {
+            "executed": 2,
+            "filtered_skips": 148,
+            "passed": 2
+          },
+          {
+            "executed": 11,
+            "filtered_skips": 260,
+            "passed": 11
+          },
+          {
+            "executed": 1,
+            "filtered_skips": 270,
+            "passed": 1
+          }
+        ],
+        "additional_unmutated_control_executions": 2,
+        "counterfactual_mutated_executions": 4,
+        "expected_mutation_failures": 2,
+        "controls_not_added_to_unique_34": true,
+        "signed_credit": {
+          "case": "circuit_cell::tests::credit_tests::signed_tests::signed_credit_rejects_cross_owner_ledger_episode_before_any_append",
+          "failed": 0,
+          "filtered_skips": 270,
+          "passed": 1,
+          "raw_log": {
+            "bytes": 43815,
+            "git_blob": "09cb0ed98df3bfb01372484ec0f0ffb8bdfb579b",
+            "sha256": "5d6a3707815baafd23ecc95d479085bd937d7d2e605727dfe8925f7c23624ecf"
+          },
+          "raw_log_entirely_present_in_job": true,
+          "retries": 0,
+          "source_before_after_clean": true
+        },
+        "scope": "Original exact-head Windows private-state, prompt-runtime and signed-credit qualification only; no whole-Windows, ordinary/elevated sandbox, scientific-memory-benefit or production-owner claim."
+      },
+      "boundary": "Thirty-four distinct primary passes; repeated positives and mutation controls remain separate. No broad Windows sandbox claim.",
+      "adoption_gate_closed": false,
+      "result_transferred_to_another_source": false
+    },
+    {
+      "id": "native_two_d0f",
+      "original_report": {
+        "path": "qualification/memory-cell-mem8-ci-followup/v17/native-two-d0f/INDEPENDENT_AUDIT.json",
+        "bytes": 9767,
+        "sha256": "2b67d1301259d740490948ed894e864249aba4606e2b5aae03b15f80c6f685b3",
+        "git_blob": "609e5c3571f56b45b680bcde0b40e1b9ed1ef6ce",
+        "full_remote_readback_at": "a0b66d70fdb886168d975e5204901fa8cc23e72b"
+      },
+      "selected_original_facts": {
+        "run_id": 43061843610,
+        "job_id": 130666210831,
+        "attempt": 1,
+        "source_head": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+        "source_tree": "658fa040046285116b1fd81b94ff8c96444072ad",
+        "harness_head": "ca9ab8c0d07d1a236ef3c4b76a22f0a131d409ae",
+        "qualification": "PASS_TWO_NATIVE_AND_ONE_CLEAN_FIX",
+        "observed_status_counts": {
+          "PASS": 2
+        },
+        "observed_terminal_execution_count": 2,
+        "observed_unique_terminal_case_count": 2,
+        "independently_qualified_native_cases": [
+          "suite::subagent_notifications::spawned_multi_agent_v2_child_inherits_parent_developer_context",
+          "suite::subagent_notifications::skills_toggle_skips_instructions_for_parent_and_spawned_child"
+        ],
+        "clean_scoped_fix_packages": [
+          "codex-core"
+        ],
+        "phases": [
+          {
+            "driver_status": "passed_clean",
+            "elapsed_seconds": 722.1719999999999,
+            "error": null,
+            "exact_source_and_locks_before_after": true,
+            "exit_code": 0,
+            "helper_bindings_unchanged": true,
+            "id": "phase-1-build-sandbox-helpers",
+            "integrity_error": null,
+            "kind": "helpers",
+            "tools_unchanged": true
+          },
+          {
+            "driver_status": "passed_clean",
+            "elapsed_seconds": 1134.203,
+            "error": null,
+            "exact_source_and_locks_before_after": true,
+            "exit_code": 0,
+            "helper_bindings_unchanged": true,
+            "id": "phase-2-v2-subagent-request-routing",
+            "independent_junit_all_pass": true,
+            "independent_raw_all_pass": true,
+            "integrity_error": null,
+            "kind": "native",
+            "observed_terminal_status_counts": {
+              "PASS": 2
+            },
+            "original_junit": {
+              "attributes": {
+                "errors": "0",
+                "failures": "0",
+                "name": "nextest-run",
+                "tests": "2",
+                "time": "0.919",
+                "timestamp": "2026-11-11T17:20:03.881+00:00",
+                "uuid": "07dcdede-3eb9-4b48-9f6e-f7f87644ca11"
+              },
+              "bytes": 766,
+              "case_names": [
+                "suite::subagent_notifications::skills_toggle_skips_instructions_for_parent_and_spawned_child",
+                "suite::subagent_notifications::spawned_multi_agent_v2_child_inherits_parent_developer_context"
+              ],
+              "path": "phase-2-v2-subagent-request-routing.junit.xml",
+              "sha256": "0b015ca8b1278a10337e858621fa45227a97b0aba4a28f5422b37d0481b55e7a",
+              "testcase_status_elements": {
+                "suite::subagent_notifications::skills_toggle_skips_instructions_for_parent_and_spawned_child": [],
+                "suite::subagent_notifications::spawned_multi_agent_v2_child_inherits_parent_developer_context": []
+              },
+              "uuid": "07dcdede-3eb9-4b48-9f6e-f7f87644ca11"
+            },
+            "original_terminal_lines": [
+              {
+                "binary_id": "codex-core::all",
+                "case": "suite::subagent_notifications::skills_toggle_skips_instructions_for_parent_and_spawned_child",
+                "status": "PASS"
+              },
+              {
+                "binary_id": "codex-core::all",
+                "case": "suite::subagent_notifications::spawned_multi_agent_v2_child_inherits_parent_developer_context",
+                "status": "PASS"
+              }
+            ],
+            "selected_counts": [
+              2
+            ],
+            "tools_unchanged": true
+          },
+          {
+            "driver_status": "passed_clean",
+            "elapsed_seconds": 909.078,
+            "error": null,
+            "exact_source_and_locks_before_after": true,
+            "exit_code": 0,
+            "helper_bindings_unchanged": true,
+            "id": "phase-3-fix-codex-core",
+            "integrity_error": null,
+            "kind": "fix",
+            "tools_unchanged": true
+          }
+        ],
+        "binary_boundary": "Helper/tool full SHA values were computed by the original frozen runner and independently checked for receipt/source/artifact consistency; the executable bytes themselves are not included in this artifact."
+      },
+      "boundary": "Two exact V2 routing cases and one clean codex-core fix on d0f. No adjacent logging-case or cross-head pass transfer.",
+      "adoption_gate_closed": false,
+      "result_transferred_to_another_source": false
+    },
+    {
+      "id": "fence013_isolated",
+      "original_report": {
+        "path": "qualification/memory-cell-mem8-ci-followup/v17/fence013-original/AUDIT.json",
+        "bytes": 6423,
+        "sha256": "851994529f9502095c80c4c83e87bba99ba6227e55169205105f83cda648cd8e",
+        "git_blob": "d65e88b8633cf19f9beff56abb083eccdcbe91ef",
+        "full_remote_readback_at": "a0b66d70fdb886168d975e5204901fa8cc23e72b"
+      },
+      "selected_original_facts": {
+        "run_id": 43055103354,
+        "job_id": 130642329146,
+        "attempt": 1,
+        "action_commit": "c7675fea986c29f1d655753a7a61fd6b4141be8f",
+        "reviewed_action_source": "64acdc94f531728494efbdf2d8f05faa26e90f7a",
+        "source_anchor": {
+          "head": "c89540598693697577cda8cba31cb07f6ce65317",
+          "leaf_entries": 14053,
+          "tree": "5a7c897a33e4eef48ea8f4bf52eaf48ea7c866ae"
+        },
+        "harness": {
+          "head": "0e92c37a012733882ce4c120afc38b6757edb7cb",
+          "leaf_entries": 14054,
+          "tree": "60f86e9520355850e289769a83dc2bcca2f26811"
+        },
+        "bundle_manifest": {
+          "artifact_name": "fence_v0.13.0_linux-amd64",
+          "artifact_sha256": "1a1ac7ad60216e7803403645c202e8c8a4e738326350ce340f8138df1c9a5e04",
+          "bundle_path": "action/bin/fence",
+          "release_channel": "stable",
+          "release_tag": "v0.13.0",
+          "release_url": "https://github.com/openai/fence/releases/tag/v0.13.0",
+          "repository": "openai/fence",
+          "schema_version": 4,
+          "signer_digest": "64acdc94f531728494efbdf2d8f05faa26e90f7a",
+          "signer_workflow": "openai/fence/.github/workflows/release.yml",
+          "source_commit": "64acdc94f531728494efbdf2d8f05faa26e90f7a",
+          "source_ref": "refs/heads/main"
+        },
+        "final_qualification": "PASS_FOR_THIS_AUDIT_MODE_ACTION_AND_ORIGINAL_POLICY_JOB",
+        "post_mode": "audit",
+        "post_result": "healthy",
+        "post_controls": {
+          "containers": "preserved_verified",
+          "network": "verified",
+          "protection_available": false,
+          "readiness": "ready_observation_only",
+          "resident_health": "healthy",
+          "sudo": "preserved_verified"
+        },
+        "actual_python_tests": 7,
+        "changed_files_checked": 1,
+        "original_blob_threshold_bytes": 512000,
+        "source_before_after": {
+          "clean_after_original_checks": true,
+          "clean_before": true,
+          "five_original_policy_files_equal": true,
+          "full_tree_bytes_equal": true,
+          "recaptured_after_action_post": false,
+          "whole_identity_equal": true
+        },
+        "limitations": [
+          "Audit mode observes traffic; protection_available=false is retained. No block-mode protection claim.",
+          "The original changed-file range is the isolated one-workflow child of c895, not the full PR5935 diff.",
+          "Original capture remains NOT_FINAL; the terminal API and complete original raw provide the later post outcome.",
+          "Source snapshots bracket the original checks and precede action post hooks; no post-hook source snapshot was taken.",
+          "This fresh original qualification does not establish the historical v0.10 unavailable subreason.",
+          "No complete hosted CI, product owner custody, memory benefit or adoption gate is inferred."
+        ]
+      },
+      "boundary": "Independent c895-parent one-workflow qualification, complete captured action/binary identity. Audit readiness does not assert enforcing protection or explain old v0.10.",
+      "adoption_gate_closed": false,
+      "result_transferred_to_another_source": false
+    },
+    {
+      "id": "native_five_c895",
+      "original_report": {
+        "path": "qualification/memory-cell-mem8-ci-followup/v17/native-five-c895/INDEPENDENT_AUDIT.json",
+        "bytes": 17351,
+        "sha256": "4cd3e1b00a25a3c0ef06e32806f4331de168b971893d9e01cb020d826863fcb4",
+        "git_blob": "ae2b120e1bd83af73ae73578489a7187d3904fd6",
+        "full_remote_readback_at": "a0b66d70fdb886168d975e5204901fa8cc23e72b"
+      },
+      "selected_original_facts": {
+        "run_id": 43047914262,
+        "job_id": 130616746852,
+        "attempt": 1,
+        "source_head": "c89540598693697577cda8cba31cb07f6ce65317",
+        "source_tree": "5a7c897a33e4eef48ea8f4bf52eaf48ea7c866ae",
+        "qualification": "NOT_QUALIFIED_RETAIN_ORIGINAL_FAILURE_OR_UNKNOWN",
+        "original_driver_status": "failed_or_interrupted",
+        "original_collection_status": "partial_or_failed",
+        "observed_status_counts": {
+          "PASS": 5
+        },
+        "observed_terminal_execution_count": 5,
+        "independently_qualified_native_cases": [
+          "responses::matcher_tests::matched_response_helpers_record_only_accepted_requests",
+          "suite::subagent_notifications::subagent_start_replaces_session_start_and_injects_context",
+          "suite::subagent_notifications::subagent_stop_replaces_stop_and_skips_internal_subagents",
+          "setup::isolated_process::tests::non_elevated_setup_excludes_ambient_pipe_handles",
+          "unified_exec::tests::elevated_non_tty_cmd_forwards_env_output_and_exit"
+        ],
+        "clean_scoped_fix_packages": [
+          "core_test_support"
+        ],
+        "phases": [
+          {
+            "driver_status": "passed_clean",
+            "elapsed_seconds": 815.656,
+            "error": null,
+            "exact_source_and_locks_before_after": true,
+            "exit_code": 0,
+            "helper_bindings_unchanged": true,
+            "id": "phase-1-build-sandbox-helpers",
+            "integrity_error": null,
+            "kind": "helpers",
+            "tools_unchanged": true
+          },
+          {
+            "driver_status": "passed_clean",
+            "elapsed_seconds": 1176.328,
+            "error": null,
+            "exact_source_and_locks_before_after": true,
+            "exit_code": 0,
+            "helper_bindings_unchanged": true,
+            "id": "phase-2-matched-responses-loopback",
+            "independent_junit_all_pass": true,
+            "independent_raw_all_pass": true,
+            "integrity_error": null,
+            "kind": "native",
+            "observed_terminal_status_counts": {
+              "PASS": 1
+            },
+            "original_junit": {
+              "attributes": {
+                "errors": "0",
+                "failures": "0",
+                "name": "nextest-run",
+                "tests": "1",
+                "time": "0.046",
+                "timestamp": "2026-11-11T15:57:58.442+00:00",
+                "uuid": "efe56379-8822-4d3d-9d1f-d19882279e8a"
+              },
+              "bytes": 535,
+              "case_names": [
+                "responses::matcher_tests::matched_response_helpers_record_only_accepted_requests"
+              ],
+              "path": "phase-2-matched-responses-loopback.junit.xml",
+              "sha256": "e11da3cdfe3a66c7b052f16c59526ede226fedefff36c34a4bd553bb5663dbc6",
+              "testcase_status_elements": {
+                "responses::matcher_tests::matched_response_helpers_record_only_accepted_requests": []
+              },
+              "uuid": "efe56379-8822-4d3d-9d1f-d19882279e8a"
+            },
+            "original_terminal_lines": [
+              {
+                "binary_id": "core_test_support",
+                "case": "responses::matcher_tests::matched_response_helpers_record_only_accepted_requests",
+                "status": "PASS"
+              }
+            ],
+            "selected_counts": [
+              1
+            ],
+            "tools_unchanged": true
+          },
+          {
+            "driver_status": "passed_clean",
+            "elapsed_seconds": 838.6410000000001,
+            "error": null,
+            "exact_source_and_locks_before_after": true,
+            "exit_code": 0,
+            "helper_bindings_unchanged": true,
+            "id": "phase-3-original-subagent-hooks",
+            "independent_junit_all_pass": true,
+            "independent_raw_all_pass": true,
+            "integrity_error": null,
+            "kind": "native",
+            "observed_terminal_status_counts": {
+              "PASS": 2
+            },
+            "original_junit": {
+              "attributes": {
+                "errors": "0",
+                "failures": "0",
+                "name": "nextest-run",
+                "tests": "2",
+                "time": "4.615",
+                "timestamp": "2026-11-11T16:11:53.810+00:00",
+                "uuid": "c87b76c9-aaf3-427a-b426-35ba48bdd998"
+              },
+              "bytes": 756,
+              "case_names": [
+                "suite::subagent_notifications::subagent_start_replaces_session_start_and_injects_context",
+                "suite::subagent_notifications::subagent_stop_replaces_stop_and_skips_internal_subagents"
+              ],
+              "path": "phase-3-original-subagent-hooks.junit.xml",
+              "sha256": "bc280b5258756a3396ba054ce95ef750646b2446939c3a6344550c0aa11efd98",
+              "testcase_status_elements": {
+                "suite::subagent_notifications::subagent_start_replaces_session_start_and_injects_context": [],
+                "suite::subagent_notifications::subagent_stop_replaces_stop_and_skips_internal_subagents": []
+              },
+              "uuid": "c87b76c9-aaf3-427a-b426-35ba48bdd998"
+            },
+            "original_terminal_lines": [
+              {
+                "binary_id": "codex-core::all",
+                "case": "suite::subagent_notifications::subagent_start_replaces_session_start_and_injects_context",
+                "status": "PASS"
+              },
+              {
+                "binary_id": "codex-core::all",
+                "case": "suite::subagent_notifications::subagent_stop_replaces_stop_and_skips_internal_subagents",
+                "status": "PASS"
+              }
+            ],
+            "selected_counts": [
+              2
+            ],
+            "tools_unchanged": true
+          },
+          {
+            "driver_status": "passed_clean",
+            "elapsed_seconds": 21.21900000000005,
+            "error": null,
+            "exact_source_and_locks_before_after": true,
+            "exit_code": 0,
+            "helper_bindings_unchanged": true,
+            "id": "phase-4-setup-pipe-and-original-leak",
+            "independent_junit_all_pass": true,
+            "independent_raw_all_pass": true,
+            "integrity_error": null,
+            "kind": "native",
+            "observed_terminal_status_counts": {
+              "PASS": 2
+            },
+            "original_junit": {
+              "attributes": {
+                "errors": "0",
+                "failures": "0",
+                "name": "nextest-run",
+                "tests": "2",
+                "time": "2.321",
+                "timestamp": "2026-11-11T16:12:18.517+00:00",
+                "uuid": "4d953afd-50a0-4325-9674-076c5e6b918e"
+              },
+              "bytes": 749,
+              "case_names": [
+                "setup::isolated_process::tests::non_elevated_setup_excludes_ambient_pipe_handles",
+                "unified_exec::tests::elevated_non_tty_cmd_forwards_env_output_and_exit"
+              ],
+              "path": "phase-4-setup-pipe-and-original-leak.junit.xml",
+              "sha256": "b7363941f7685064cd8ccb53fa12cfeeb3a365c6fd15a7a4d4128191e858af15",
+              "testcase_status_elements": {
+                "setup::isolated_process::tests::non_elevated_setup_excludes_ambient_pipe_handles": [],
+                "unified_exec::tests::elevated_non_tty_cmd_forwards_env_output_and_exit": []
+              },
+              "uuid": "4d953afd-50a0-4325-9674-076c5e6b918e"
+            },
+            "original_terminal_lines": [
+              {
+                "binary_id": "codex-windows-sandbox",
+                "case": "setup::isolated_process::tests::non_elevated_setup_excludes_ambient_pipe_handles",
+                "status": "PASS"
+              },
+              {
+                "binary_id": "codex-windows-sandbox",
+                "case": "unified_exec::tests::elevated_non_tty_cmd_forwards_env_output_and_exit",
+                "status": "PASS"
+              }
+            ],
+            "selected_counts": [
+              2
+            ],
+            "tools_unchanged": true
+          },
+          {
+            "driver_status": "passed_clean",
+            "elapsed_seconds": 909.1560000000004,
+            "error": null,
+            "exact_source_and_locks_before_after": true,
+            "exit_code": 0,
+            "helper_bindings_unchanged": true,
+            "id": "phase-5-fix-core_test_support",
+            "integrity_error": null,
+            "kind": "fix",
+            "tools_unchanged": true
+          },
+          {
+            "driver_status": "failed_or_interrupted",
+            "elapsed_seconds": 69.40599999999995,
+            "error": "KeyboardInterrupt: ",
+            "exact_source_and_locks_before_after": false,
+            "exit_code": null,
+            "helper_bindings_unchanged": false,
+            "id": "phase-6-fix-codex-core",
+            "integrity_error": null,
+            "kind": "fix",
+            "tools_unchanged": false
+          },
+          {
+            "id": "phase-7-fix-codex-windows-sandbox",
+            "intent": null,
+            "kind": "fix",
+            "not_run": null,
+            "state": "NO_PHASE_EVIDENCE"
+          }
+        ],
+        "binary_boundary": "Helper/tool full SHA values were computed by the original frozen runner and independently checked for receipt/source/artifact consistency; the executable bytes themselves are not included in this artifact."
+      },
+      "boundary": "All five original named native cases passed, including captured leak scope, but later core lint was interrupted and Windows lint had no phase evidence. Overall run is not promoted toPASS; results stay on c895.",
+      "adoption_gate_closed": false,
+      "result_transferred_to_another_source": false
+    },
+    {
+      "id": "windows_lint_d0f",
+      "original_report": {
+        "path": "qualification/memory-cell-mem8-ci-followup/v17/windows-fix-d0f-original/OFFLINE_AUDIT.json",
+        "bytes": 3398,
+        "sha256": "845d695fb4042ec2bbbfa9ef9c422533d7fe85011a18e7267a06b064bd6537ae",
+        "git_blob": "a92ea5b2fa5f43dac2f91ba29f61b065ba4d7486",
+        "full_remote_readback_at": "a0b66d70fdb886168d975e5204901fa8cc23e72b"
+      },
+      "selected_original_facts": {
+        "run_id": 43062162500,
+        "job_id": 130667533098,
+        "attempt": 1,
+        "source_head": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+        "source_tree": "658fa040046285116b1fd81b94ff8c96444072ad",
+        "job_conclusion": "failure",
+        "driver_status": "failed_or_interrupted",
+        "collection_status": "partial_or_failed",
+        "phases": [
+          {
+            "command": [
+              "cargo",
+              "build",
+              "--locked",
+              "-p",
+              "codex-windows-sandbox",
+              "--profile",
+              "dev-small",
+              "--message-format=json",
+              "--bin",
+              "codex-windows-sandbox-setup",
+              "--bin",
+              "codex-command-runner"
+            ],
+            "command_exit_code": 0,
+            "elapsed_seconds": 877.422,
+            "error": null,
+            "finished_at": "2026-11-11T17:06:02.003447+00:00",
+            "helpers_unchanged": true,
+            "id": "phase-1-build-sandbox-helpers",
+            "integrity_error": null,
+            "kind": "helpers",
+            "raw": {
+              "bytes": 648093,
+              "git_blob": "9aec9535b9f28584af1288bec070b8b04c36f5e0",
+              "sha256": "998977066f5a21cea3dd14f60c79d6d5e3101e889faabcdee63ba22f5c2cde99"
+            },
+            "source_before_after_clean": true,
+            "started_at": "2026-11-11T16:51:24.577112+00:00",
+            "state": "passed_clean",
+            "tools_unchanged": true
+          },
+          {
+            "command": [
+              "just",
+              "fix",
+              "--locked",
+              "-p",
+              "codex-windows-sandbox"
+            ],
+            "command_exit_code": 0,
+            "elapsed_seconds": 545.797,
+            "error": null,
+            "finished_at": "2026-11-11T17:15:09.035978+00:00",
+            "helpers_unchanged": true,
+            "id": "phase-2-fix-codex-windows-sandbox",
+            "integrity_error": "ValueError: source is not the frozen clean commit/tree",
+            "kind": "fix",
+            "raw": {
+              "bytes": 24097,
+              "git_blob": "f60bea3ca635ac7857fe0887540920465d52abba",
+              "sha256": "d4a038eb183497c8e872821bbbf91f4f469a7194a64d8b6e49fbcdae595317fd"
+            },
+            "source_before_after_clean": false,
+            "started_at": "2026-11-11T17:06:03.235549+00:00",
+            "state": "failed_or_interrupted",
+            "tools_unchanged": true
+          }
+        ],
+        "source_rewrite_paths": [
+          "codex-rs/windows-sandbox-rs/src/setup_process.rs"
+        ],
+        "qualification_passed": false,
+        "native_test_commands": 0,
+        "model_commands": 0
+      },
+      "boundary": "Original helper build and lint commands exited0, but the one actual source rewrite failed exact-clean qualification. V11 source-only acceptance of that postimage does not convert this original failure or imply fresh Windows lintPASS.",
+      "adoption_gate_closed": false,
+      "result_transferred_to_another_source": false
+    },
+    {
+      "id": "windows_current_d0f_completed_original",
+      "original_report": {
+        "path": "qualification/memory-cell-mem8-ci-followup/v17/windows-current-d0f/AUDIT.json",
+        "bytes": 48687,
+        "sha256": "1feff6e424c630d6fcc9e248f06b63724c9a54a7eb119df4265b12d68b855552",
+        "git_blob": "89eb7269f3c3e5e8b3efcb90502b4f6946374f86",
+        "full_remote_readback_at": "a0b66d70fdb886168d975e5204901fa8cc23e72b"
+      },
+      "selected_original_facts": {
+        "run_id": 43062473110,
+        "job_id": 130668436858,
+        "attempt": 1,
+        "head": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+        "tree": "658fa040046285116b1fd81b94ff8c96444072ad",
+        "job_conclusion": "cancelled",
+        "job_started_at": "2026-11-11T16:51:51Z",
+        "job_completed_at": "2026-11-11T17:57:02Z",
+        "original_scope_groups": 19,
+        "original_scope_cases": 167,
+        "completed_group_receipts": 13,
+        "strict_passing_groups": 12,
+        "terminal_counts": {
+          "FAIL": 1,
+          "PASS": 123
+        },
+        "terminal_distinct_original_case_ids": 124,
+        "no_observed_terminal_case_count": 43,
+        "source_after_observation": "UNOBSERVED_NO_FINAL_RECEIPT",
+        "original_final_receipt": null,
+        "cancellation_scheduler_cause": "UNKNOWN_UNLESS_ADDITIONAL_ORIGINAL_METADATA_IDENTIFIES_REASON",
+        "helper_boundary": "original source-pinned driver retained compiler-artifact and PE/hash receipt; actual helper executables are not inside this artifact",
+        "three_new_hardlink_helpers_in_167_scope": false,
+        "delete_failure_observations": {
+          "elevated_child_token_inventory": "UNOBSERVED",
+          "elevated_outside_routes": [
+            [
+              "Neither",
+              "false",
+              "false"
+            ],
+            [
+              "TargetOnly",
+              "true",
+              "true"
+            ],
+            [
+              "ParentOnly",
+              "true",
+              "true"
+            ],
+            [
+              "Both",
+              "true",
+              "true"
+            ]
+          ],
+          "exact_lines": [
+            {
+              "bytes": {
+                "bytes": 137,
+                "git_blob": "21a6e3fb4b545f48b77b26e2beb6a7cd528de515",
+                "sha256": "a8e04053534722bbf52d714722f85d38586b97cd163819cdd75ecaa366ccad71"
+              },
+              "line": 204,
+              "text": "    delete_control verified_before_resume distinct_token=true backup_present=false restore_present=false other_privileges_unchanged=true"
+            },
+            {
+              "bytes": {
+                "bytes": 377,
+                "git_blob": "7ca11e4eb1d31b9ad56cdf320b247cd9ac319b3e",
+                "sha256": "20e7a1c052e883ce436a67171b91902a27bbaab5ccb68b3eaefc7c46adb8bec5"
+              },
+              "line": 217,
+              "text": "    delete_matrix ordinary-host-cmd-done after_release=[DeleteOutcome { route: Neither, file_deleted: false, directory_deleted: false }, DeleteOutcome { route: TargetOnly, file_deleted: true, directory_deleted: true }, DeleteOutcome { route: ParentOnly, file_deleted: true, directory_deleted: true }, DeleteOutcome { route: Both, file_deleted: true, directory_deleted: true }]"
+            },
+            {
+              "bytes": {
+                "bytes": 374,
+                "git_blob": "207f85884dbb6c2920f9d45994e2dec521950492",
+                "sha256": "cc283d9cc0c5c5d23a0e75ccda278cc150c99c8349d73798586fa649f7343b66"
+              },
+              "line": 233,
+              "text": "    delete_matrix elevated-child-done after_release=[DeleteOutcome { route: Neither, file_deleted: false, directory_deleted: false }, DeleteOutcome { route: TargetOnly, file_deleted: true, directory_deleted: true }, DeleteOutcome { route: ParentOnly, file_deleted: true, directory_deleted: true }, DeleteOutcome { route: Both, file_deleted: true, directory_deleted: true }]"
+            },
+            {
+              "bytes": {
+                "bytes": 117,
+                "git_blob": "6cef8d441059a69b705d0acaaa048c903dcbd828",
+                "sha256": "3a6cc11f1eec8eacd42daed479746f0063af186e43119d4be6421ea15c9eec1e"
+              },
+              "line": 219,
+              "text": "    elevated_terminal_observation cleanup=Ok(Some(OwnerTerminated { owner_exit_code: Some(0) })) output_drained=true"
+            }
+          ],
+          "ordinary_child_privilege_check_is_not_elevated_child_token_inventory": true,
+          "ordinary_control_routes": [
+            [
+              "Neither",
+              "false",
+              "false"
+            ],
+            [
+              "TargetOnly",
+              "true",
+              "true"
+            ],
+            [
+              "ParentOnly",
+              "true",
+              "true"
+            ],
+            [
+              "Both",
+              "true",
+              "true"
+            ]
+          ],
+          "original_group_raw": {
+            "bytes": 27273,
+            "git_blob": "30bb832b65731ceffe72ad178d5dae2a999abb82",
+            "sha256": "984b5d5891de0a1e80a212d38f3dd22f8872844b706aa47c33e46abbc9daab36"
+          },
+          "production_authority_or_global_isolation_claim": false
+        },
+        "memory_benefit_or_original_owner_recovery_established": false
+      },
+      "boundary": "Original d0f Windows-current run ended cancelled: 123 PASS, one FAIL, zero observed LEAK among 124 terminal IDs; 43 original cases have no terminal observation. The elevated outside-delete failure remains. No source-after receipt, scheduler reason, complete 167-case pass, new three-helper coverage, production isolation or memory benefit is inferred.",
+      "adoption_gate_closed": false,
+      "result_transferred_to_another_source": false
+    },
+    {
+      "id": "windows_lint_v11_clean_original",
+      "original_report": {
+        "path": "qualification/memory-cell-mem8-ci-followup/v17/windows-fix-v11-original/OFFLINE_AUDIT.json",
+        "bytes": 3312,
+        "sha256": "6aae65dfa1d6c97e135f86adcd443fe7498c08e7e03e37c73d1e1fa1b721d144",
+        "git_blob": "962e0681b1ff010b0c8c51ebea1c3644214cee41",
+        "full_remote_readback_at": "a0b66d70fdb886168d975e5204901fa8cc23e72b"
+      },
+      "selected_original_facts": {
+        "run_id": 43072390230,
+        "job_id": 130703409994,
+        "attempt": 1,
+        "source_head": "ceadcb3b11dbd94a9d07afb7e6301555e4ff3f80",
+        "source_tree": "27651abb15e269c427c75f28f92a3bd1cd9d191f",
+        "harness_head": "fe824cce50037071ff559e1aabdf36f9d5954908",
+        "harness_tree": "ac382f3fc9989017ad77ed64e07b02e1e42cb5cc",
+        "job_conclusion": "success",
+        "job_started_at": "2026-11-11T17:52:58Z",
+        "job_completed_at": "2026-11-11T18:12:56Z",
+        "observed_job_start_plus_65_min": "2026-11-11T18:57:58+00:00",
+        "driver_status": "passed_one_clean_windows_sandbox_fix",
+        "collection_status": "qualified_results_retained",
+        "phases": [
+          {
+            "command": [
+              "cargo",
+              "build",
+              "--locked",
+              "-p",
+              "codex-windows-sandbox",
+              "--profile",
+              "dev-small",
+              "--message-format=json",
+              "--bin",
+              "codex-windows-sandbox-setup",
+              "--bin",
+              "codex-command-runner"
+            ],
+            "command_exit_code": 0,
+            "elapsed_seconds": 723.4680000000001,
+            "error": null,
+            "finished_at": "2026-11-11T18:06:00.448234+00:00",
+            "helpers_unchanged": true,
+            "id": "phase-1-build-sandbox-helpers",
+            "integrity_error": null,
+            "kind": "helpers",
+            "raw": {
+              "bytes": 648093,
+              "git_blob": "63bd7995b63811b793c30f57fadfe0121ff64236",
+              "sha256": "d8e433a717049631c7874ec68d60f8adde51a3065c2a0216fecfdaae9c34bb56"
+            },
+            "source_before_after_clean": true,
+            "started_at": "2026-11-11T17:53:56.579573+00:00",
+            "state": "passed_clean",
+            "tools_unchanged": true
+          },
+          {
+            "command": [
+              "just",
+              "fix",
+              "--locked",
+              "-p",
+              "codex-windows-sandbox"
+            ],
+            "command_exit_code": 0,
+            "elapsed_seconds": 403.797,
+            "error": null,
+            "finished_at": "2026-11-11T18:12:45.231017+00:00",
+            "helpers_unchanged": true,
+            "id": "phase-2-fix-codex-windows-sandbox",
+            "integrity_error": null,
+            "kind": "fix",
+            "raw": {
+              "bytes": 24036,
+              "git_blob": "a37b134b0f7c380cd5200d0c33f792ebe9da957e",
+              "sha256": "a6638afbc684014ab6ccd10ee5d070dbf64d90937a5ffd93caee4eb87f7af2d5"
+            },
+            "source_before_after_clean": true,
+            "started_at": "2026-11-11T18:06:01.425400+00:00",
+            "state": "passed_clean",
+            "tools_unchanged": true
+          }
+        ],
+        "source_rewrite_paths": [],
+        "qualification_passed": true,
+        "native_test_commands": 0,
+        "model_commands": 0,
+        "physical_network_requests": null,
+        "historical_passes_transferred": false,
+        "helpers_boundary": "Original compiler-artifact outputs and driver-observed byte hashes are bound; helper PE binaries are not included in this artifact."
+      },
+      "boundary": "One original Windows-sandbox-only scoped lint and its prerequisite helper build passed exact-clean checks on cead. This is zero native-test/model-command evidence; the original d0f rewrite FAIL is retained, and no result is transferred to d0f or an unpublished V12 candidate.",
+      "adoption_gate_closed": false,
+      "result_transferred_to_another_source": false
+    }
+  ],
+  "unavailable_original_proofs": [
+    {
+      "id": "fence013_d0f",
+      "proof": {
+        "local_path": "mem-ci-d0f-original/FENCE_SCOPE_AUDIT.json",
+        "bytes": 14394,
+        "sha256": "2432bd9f6525a0dfb5f39aa85b82762bd22cd7593c0a30a84245c5c792947719",
+        "git_blob": "f57637f75260322d2ac46b8c91d08a3abed88d1a"
+      },
+      "reason": "Original full report not recovered from disconnected workspace; the frozen selection remains preparation, not a newly evaluated projection."
+    },
+    {
+      "id": "blocking_original_d0f",
+      "proof": {
+        "local_path": "mem-ci-d0f-original/snapshot-016/OBSERVATION.json",
+        "bytes": 3777,
+        "sha256": "99bfa00818fa049f8abba3b2db5ab7ccb9dde06c24f2d7b019cb03e3aa3a545f",
+        "git_blob": "1183fbf0998e1ef38e199d4fddd5f5fad62d07b4"
+      },
+      "reason": "Original full report not recovered from disconnected workspace; the frozen selection remains preparation, not a newly evaluated projection."
+    },
+    {
+      "id": "windows_shard2_d0f",
+      "proof": {
+        "local_path": "mem-ci-d0f-original/WINDOWS_SHARD2_FAILURE_AUDIT.json",
+        "bytes": 2964,
+        "sha256": "11263f3f07f20085a82848c3445a6ec344eb6a3a6eb8bdf4be554842c26a7153",
+        "git_blob": "57440b0f876e28e16b15d3e8e3dc7a2889b6749d"
+      },
+      "reason": "Original full report not recovered from disconnected workspace; the frozen selection remains preparation, not a newly evaluated projection."
+    },
+    {
+      "id": "mac_d0f",
+      "proof": {
+        "local_path": "mem-ci-d0f-original/MAC_INTEL_TARGET_RECORDS.json",
+        "bytes": 236038,
+        "sha256": "79a3b13104cbabd68a86ec27b086c538dae685a582b82d8f6b275b8ead942065",
+        "git_blob": "de4358ddaa6a61c839d6765409f8d66b64771697"
+      },
+      "reason": "Original full report not recovered from disconnected workspace; the frozen selection remains preparation, not a newly evaluated projection."
+    },
+    {
+      "id": "windows_shard1_d0f",
+      "proof": {
+        "local_path": "mem-ci-d0f-original/WINDOWS_SHARD1_PARTIAL_SEGMENT_ADDENDUM.json",
+        "bytes": 40531,
+        "sha256": "78ea70524e714c88dabbc3159e6c1845bce7263427930bef5c80d2a50e13063b",
+        "git_blob": "e716e11d1c0d87db3612a7343107fc45f129f9ea"
+      },
+      "reason": "Original full report not recovered from disconnected workspace; the frozen selection remains preparation, not a newly evaluated projection."
+    },
+    {
+      "id": "windows_shard4_d0f",
+      "proof": {
+        "local_path": "mem-ci-d0f-original/WINDOWS_SHARD4_TARGET_RECORDS.v2.json",
+        "bytes": 27434,
+        "sha256": "d9829dabd81fbc2db38d5a6cc93dbdc5aba95e5974234a3856d58b081c310d94",
+        "git_blob": "e70b10dc567ac269fc61bab34010c5d9478f35b1"
+      },
+      "reason": "Original full report not recovered from disconnected workspace; the frozen selection remains preparation, not a newly evaluated projection."
+    }
+  ],
+  "all_adoption_gates_open": true
+}

@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "status": "ORIGINAL_AUDITOR_ASSUMPTION_CORRECTED_NOT_A_NATIVE_FAILURE",
+  "v1_reader": {
+    "bytes": 8210,
+    "sha256": "504651abde53fcd36c597fac1071886034b64117a636f50a497057aa1e4b3807",
+    "git_blob": "c470c427f45bc3e5472a930667fac75d37460fc9"
+  },
+  "v1_report": {
+    "bytes": 29139,
+    "sha256": "9bc91a73068d1749e685c5f28646d4ed1ddf03c10cfa3307d26b47a63596540f",
+    "git_blob": "9a269b18f29bc81e29f7352c95dc61950d5cb719"
+  },
+  "v1_actual_exit_code": 1,
+  "v1_failed_checks": [
+    "phase-1-build-sandbox-helpers-observed-source:exact_source_locks",
+    "phase-1-build-sandbox-helpers-source-after:exact_source_locks",
+    "phase-1-build-sandbox-helpers-source-before:exact_source_locks",
+    "phase-2-v2-subagent-request-routing-observed-source:exact_source_locks",
+    "phase-2-v2-subagent-request-routing-source-after:exact_source_locks",
+    "phase-2-v2-subagent-request-routing-source-before:exact_source_locks",
+    "phase-3-fix-codex-core-observed-source:exact_source_locks",
+    "phase-3-fix-codex-core-source-after:exact_source_locks",
+    "phase-3-fix-codex-core-source-before:exact_source_locks",
+    "source-after:exact_source_locks",
+    "source-at-collection:exact_source_locks",
+    "source-before:exact_source_locks"
+  ],
+  "v2_reader": {
+    "bytes": 8499,
+    "sha256": "ded591966e4e5d23cb825b6fa2fdf70a2517d79c9de46156ff9d07e792363554",
+    "git_blob": "f8cbf27f0bd205a2af5686c8640c82804ea410c1"
+  },
+  "patch": {
+    "bytes": 1544,
+    "sha256": "c55dd92eae41c61f65dd8720f8a32bf6e6c85a8194fe880b38ae46d7adce5e11",
+    "git_blob": "c2c628750e70eabbfca9660b7f3496622adeecd9"
+  },
+  "frozen_workflow": {
+    "bytes": 4512,
+    "sha256": "f0d506bc794f3f01b8aff0c3adf79720d440f15dd7b2ef55af11f565c330f791",
+    "git_blob": "60294a456f7f99f134b5603db9f9671144d3b146"
+  },
+  "source_checkout_step": {
+    "name": "Checkout the independently frozen formatted source",
+    "id": "source",
+    "uses": "actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+    "with": {
+      "ref": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+      "path": "source",
+      "fetch-depth": "1",
+      "persist-credentials": "false"
+    }
+  },
+  "correction": "The first supplemental reader incorrectly required the actual full commit parent in git show %P output from a depth1 checkout. The frozen original workflow fetched depth1; all twelve original snapshots record the same empty shallow parent view. Exact immutable HEAD/tree/locks and raw source status/patch/postimage checks are unchanged. The actual full commit parent remains separately bound in source metadata.",
+  "native_or_model_rerun": false,
+  "original_files_changed": false
+}

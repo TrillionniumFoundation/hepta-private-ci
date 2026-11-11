@@ -1,0 +1,50 @@
+{
+  "schema": "mem8.windows-scoped-fix.independent-static-peer.v1",
+  "reviewed_at": "2026-11-11 14:24:55 UTC",
+  "reviewer": "/root/mem_ci_integration",
+  "result": "no_static_must_fix",
+  "source": {
+    "head": "b0547d2f874c0aeb54dabd3491caa2bee49fcb0b",
+    "tree": "3f89ddeff13d0af85f4abe2690699107357f1038"
+  },
+  "files": [
+    {
+      "path": ".github/scripts/mem_windows_scoped_fix.py",
+      "bytes": 14469,
+      "sha256": "b6431c3fc5736f2420d42a4b1c29c5d80163a69778ecf5baad66a7f8b8d3f0b8",
+      "computed_git_blob": "2d6726c3cdc3de43b77a7ff764935e3598b2169c"
+    },
+    {
+      "path": ".github/workflows/hepta-mem-windows-scoped-fix.yml",
+      "bytes": 3549,
+      "sha256": "0e306f2764b5cf2e4e22a9d335ae27f88ad006867e218141a311f560d2377f8c",
+      "computed_git_blob": "eb8a22b09fb5988dcc05299115212f5b32ae10f8"
+    }
+  ],
+  "scope": "Full read of both frozen files, exact byte hashes, Python AST, YAML structure, exact branch/budget/permissions checks; no execution of the harness, compiler, tests, model, host service or Git reference mutation.",
+  "findings": [
+    "The sole trigger is push to codex/mem8-windows-scoped-fix-b054-20261111-ed353817 and the job independently checks that exact ref; there is no workflow_dispatch.",
+    "Harness and frozen source are separate checkouts with credentials disabled. Harness HEAD must equal GITHUB_SHA, tracked/untracked status must be clean, and its actual tree plus driver/workflow digests are recorded.",
+    "JOB_ANCHOR binds run ID, attempt, harness SHA and 65-minute original job envelope. The Actions job owns the actual global deadline; no phase resets it and no POSIX supervisor or PID-based process cancellation is introduced.",
+    "Windows-native subprocess.run executes exactly the three specified just fix --locked commands, including the qualification-owned-file-read neuron feature. There is no native test or model command and no five-case PASS prerequisite.",
+    "The exact source HEAD/tree, complete worktree status including ignored untracked files, both lock hashes, source policy/recipe files and actual pinned compiler/linter/recipe-runner binaries are checked.",
+    "Each completed command preserves original raw output, exit status, before/after source and tools, full binary diffs and changed-file postimages. Any nonzero exit or rewrite stops subsequent fixes.",
+    "An interrupted run without an observed exit/after receipt remains failed/interrupted or partial. Collection records only an observed snapshot and cannot invent a missing command-exit acknowledgement.",
+    "always() artifact retention includes hidden paths; failed setup or collection cannot be represented as three clean scoped fixes."
+  ],
+  "static_checks": {
+    "python_ast": true,
+    "yaml_base_loader": true,
+    "exact_push_branch": true,
+    "job_timeout_minutes": 65,
+    "permissions": {
+      "contents": "read"
+    }
+  },
+  "boundaries": [
+    "This is static review only; no Windows execution, dependency availability or compiler acceptance is established.",
+    "These commands are scoped lint/build checks. Final native acceptance still requires the separately specified five actual cases; no results are inherited from prior source heads.",
+    "The first-step timestamp is a budget observation later than actual job start. The Actions timeout remains the authoritative upper bound.",
+    "No Git blob publication or workflow admission is performed by this review."
+  ]
+}

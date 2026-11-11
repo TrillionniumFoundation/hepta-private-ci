@@ -1,0 +1,47 @@
+{
+  "schema": "mem.fence013.identity-review.v1",
+  "source_commit": "64acdc94f531728494efbdf2d8f05faa26e90f7a",
+  "source_tree_merkle": "228ce4925c73cf194b76094cbaf70494f2ff4ad9",
+  "source_leaf_count": 1935,
+  "complete_action_commit": "c7675fea986c29f1d655753a7a61fd6b4141be8f",
+  "complete_action_tree_merkle": "e19987188c430cdbf901557955ca537a644bbbbd",
+  "complete_action_leaf_count": 1937,
+  "one_parent_source_verified": true,
+  "only_action_leaf_changes": [
+    {
+      "path": "action/bin/fence",
+      "source": null,
+      "action": [
+        "100644",
+        "77eb796b522a7ae83eb83c42d579f85a41945b3d"
+      ]
+    },
+    {
+      "path": "action/bundle-manifest.json",
+      "source": null,
+      "action": [
+        "100644",
+        "3f0b00d990f9eca9b630feae63f5b6803379bb03"
+      ]
+    }
+  ],
+  "bundle_manifest_git_blob": "3f0b00d990f9eca9b630feae63f5b6803379bb03",
+  "bundle_declared_binary_sha256": "1a1ac7ad60216e7803403645c202e8c8a4e738326350ce340f8138df1c9a5e04",
+  "release_asset_digest_equals_manifest": true,
+  "actual_binary_bytes_independently_read": false,
+  "binary_transport_boundary": "fetch_file(base64) returned empty content for >1MiB file; raw Git blob read rejected non-UTF8. No independent binary checksum or reproducible build claimed.",
+  "workflow_pre": {
+    "git_blob": "d870b6f9c1e025aff458c32f0461c752fcd2f0b3",
+    "bytes": 1809,
+    "sha256": "8740d3752737705d7257c3711d5e4b3df3cd2eadacf050f8dabb1c9e6f17cb0c"
+  },
+  "workflow_candidate_post": {
+    "git_blob": "7e01fc010f7c5dd48a2d5f688283e8795436fdcf",
+    "bytes": 1809,
+    "sha256": "4a0f656d386d3a9ddc1478c111e09105486cd8cff7e71cb0911c8bd4068ceafd"
+  },
+  "only_single_pin_line_changed": true,
+  "source_ref_changed": false,
+  "new_run_or_host_execution": false,
+  "original_unknown_subreason_preserved": true
+}

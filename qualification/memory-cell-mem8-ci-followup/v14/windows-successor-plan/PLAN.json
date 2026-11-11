@@ -1,0 +1,612 @@
+{
+  "schema": "hepta.windows-native-successor-review-plan.v1",
+  "status": "REVIEW_ONLY_NOT_IMPLEMENTED_NOT_ADMITTED",
+  "source": {
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "head": "9bd2f589debdba4a93baa363817c3669cb103721",
+    "tree": "c77785ecb368c44ea699769001a47402c9f50591",
+    "parent": "c842e995b047eb2ee7d81c073f14fb2fcaa6bff2"
+  },
+  "currentSchedulingDecision": {
+    "first": "Observe the single already-admitted exact 9bd2 native evaluation after root-verified V5 lock PASS and the source PR fast-forward. Do not start a second overlapping partitioned campaign.",
+    "partitionProposal": "Conditional only, to be reconsidered from actual terminal results; no new matrix/harness is implemented or admitted.",
+    "newSourceRule": "Any later source or lock change requires new exact head/tree pins and revalidation before native admission. This plan does not follow a moving branch.",
+    "rootReportedSourcePrFastForwardAt": "2026-11-11T12:36:36Z",
+    "rootReportedWindowsCurrentRun": 43021840561,
+    "rootReportedRunAttempt": 1,
+    "rootReportedRunCreatedAt": "2026-11-11T12:36:45Z",
+    "metadataIndependentlyPolledAtPlanFreeze": false,
+    "currentUnchangedWorkflowExpectedCases": 167,
+    "currentUnchangedWorkflowAutomaticallySelectsNewThreeHelpers": false
+  },
+  "execution": {
+    "newWindowsProcesses": 0,
+    "newHostProbes": 0,
+    "newNativeTests": 0,
+    "newModelRequests": 0,
+    "newCITriggers": 0,
+    "sourceRefsChanged": false,
+    "sourceModified": false,
+    "oldCampaignResumed": false
+  },
+  "sourcePins": [
+    {
+      "path": ".github/fixtures/windows-current-ci-scope.json",
+      "gitBlob": "72f75127e9f92236def02a67a099fd90bb2a9b09",
+      "bytes": 31515,
+      "sha256": "0f07308d07f630fe29faa27fbc3a95abc67a9a315bbeab58033fc3aad711adab"
+    },
+    {
+      "path": ".github/workflows/hepta-windows-current-ci.yml",
+      "gitBlob": "d9dc4986a86a6d29e51203e34b7cc3e4f08c536b",
+      "bytes": 2749,
+      "sha256": "cd649ec9a1786c20531c6757ad07743f5a16ecc698d25ad59be8cf2dfd15a794"
+    },
+    {
+      "path": ".github/scripts/windows_current_ci.py",
+      "gitBlob": "161ed1149c8ffb5f2bb2a8272f555f8b91d729fe",
+      "bytes": 11926,
+      "sha256": "cefa811a6cd39bb2dc6a3dfa23225832a55e5ff4a7c21bc6b05bb7effcc0a3fd"
+    },
+    {
+      "path": ".github/scripts/test_windows_current_ci.py",
+      "gitBlob": "37b431d0fa3aa41b8cd12fe99fe8dccf3db5f171",
+      "bytes": 7774,
+      "sha256": "900ee6ddc4aa9832d8a8b53d0a42285c7b19010568a27e1d3e25b0aa605fbd1b"
+    },
+    {
+      "path": "AGENTS.md",
+      "gitBlob": "faa57cc0db48123e1011f1eb47692cd3bbbcfc3a",
+      "bytes": 22519,
+      "sha256": "c3f80e8386eb170b00af1e21de40d770c4941e464915687e728e2d14a7e79480"
+    },
+    {
+      "path": "justfile",
+      "gitBlob": "a215a76cf407ace9715bca39c20497014e7dd4dc",
+      "bytes": 7838,
+      "sha256": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124"
+    },
+    {
+      "path": "scripts/run-nextest.py",
+      "gitBlob": "1ed63abe84267b320cbfb0123a70aac5507f4595",
+      "bytes": 10206,
+      "sha256": "45c4e35d1ff24840d9e1e05331af0b89475bfe1aec3231afc56fecb8cea66127"
+    },
+    {
+      "path": "codex-rs/.config/nextest.toml",
+      "gitBlob": "0904c42a41594d3ae4dc6f196e64f35f0b85bd2c",
+      "bytes": 6617,
+      "sha256": "79f1b9777595512b715398a5691a5ea9968b750987acefda43ac7c8393faa158"
+    },
+    {
+      "path": "codex-rs/exec-server/src/windows_restricted_write_tests.rs",
+      "gitBlob": "9671a5f0256cb8d76f99bc0b0067fbf46cb6978c",
+      "bytes": 4462,
+      "sha256": "ec38dd793ce82fe8031b4093c05fe1291b734b9f3c6b74cba28b6abca0cdd6c0"
+    },
+    {
+      "path": "codex-rs/exec-server/src/windows_restricted_write.rs",
+      "gitBlob": "e4a40a658ef214f459c000fd5c4a9f676c359878",
+      "bytes": 3115,
+      "sha256": "c1ec6c60b9746f26b1ade0ac7d803dd053809795a7334eee3ccd91dc2374f5d8"
+    },
+    {
+      "path": "codex-rs/exec-server/src/lib.rs",
+      "gitBlob": "23ead7e90b47512188cdce0f6ef4c58de8e2e957",
+      "bytes": 8945,
+      "sha256": "fb1b0cb4c80dbff669ea4eb4c3c52c8e7980f4b2e2bf4deddd3fc0ce583a10bb"
+    }
+  ],
+  "historicalOriginal": {
+    "sourceHead": "189711e3563ea13a5328d52e99a286f082045b98",
+    "sourceTree": "e253b99e0a5c3b3a680569da0d224fabff0781ba",
+    "runId": 43002359812,
+    "jobId": 130461336393,
+    "archiveGitBlob": "3b8b74cc2ee0fd2810718d2005b7a12f66bc72fd",
+    "archiveBytes": 235016,
+    "archiveSha256": "266fd121e2aca469e4ba9343a7db5594d58afffaae6f0c20af54f35ec6781c1d",
+    "jobTimeoutMinutes": 65,
+    "completedGroups": 15,
+    "declaredGroups": 19,
+    "completedDistinctCaseCount": 139,
+    "passCaseCount": 137,
+    "leakCaseCount": 1,
+    "failCaseCount": 1,
+    "strictPassingGroups": 13,
+    "unfinishedOriginalCaseCount": 28,
+    "originalInterruptedGroup": "exec-server-observation-wire",
+    "followingGroupsNotStarted": [
+      "exec-server-protocol-observation-wire",
+      "direct-pty-native-observation",
+      "legacy-isolation-admission"
+    ],
+    "knownNonPassing": [
+      {
+        "package": "codex-windows-sandbox",
+        "test": "unified_exec::tests::elevated_non_tty_cmd_forwards_env_output_and_exit",
+        "terminal": "LEAK",
+        "group": "sandbox-original-failures",
+        "groupExitCode": 0,
+        "strictDriverPassed": false,
+        "rawPath": "artifact/sandbox-original-failures.log",
+        "rawBytes": 15803,
+        "rawSha256": "60f2f75ce135c046aa5620b490723e263a316b0b2252c2be016ee91d90e4e3a5"
+      },
+      {
+        "package": "codex-windows-sandbox",
+        "test": "unified_exec::tests::delete_permission_tests::legacy_refuses_before_elevated_four_cell_delete_boundary",
+        "terminal": "FAIL",
+        "group": "sandbox-native-delete-routes",
+        "groupExitCode": 1,
+        "strictDriverPassed": false,
+        "rawPath": "artifact/sandbox-native-delete-routes.log",
+        "rawBytes": 27138,
+        "rawSha256": "b002b5f84f101847e3de893c7de810c024bb309fd7ca7397776f93400e514c5c",
+        "reprintedFailureIsNotSecondExecution": true
+      }
+    ],
+    "durationMetadata": {
+      "path": "original/ORIGINAL_DURATIONS.json",
+      "bytes": 3562,
+      "sha256": "ac0b8692cdb643802c07b5833efa6f5c0c1a72b3db70f478f811b1fd41a311fb",
+      "helperBuildSeconds": 818.656,
+      "coreGroupSeconds": 1081.531,
+      "interpretation": "Includes compilation and execution on the original progressively warmed shared target; not independent cold-job estimates."
+    }
+  },
+  "frozenOriginalScope": {
+    "packetPath": "source/.github/fixtures/windows-current-ci-scope.json",
+    "gitBlob": "72f75127e9f92236def02a67a099fd90bb2a9b09",
+    "metadata": {
+      "schema": "hepta.windows-current-ci-scope.v1",
+      "originalHead": "a6b3506da75fb9b37c1078b5490178cc8c2f137d",
+      "originalJobs": [
+        121311957080,
+        121311957042,
+        121311957053,
+        121311956989
+      ],
+      "scopeBase": "641641c2b6b8d7ce23fbdfc61f76b6cced4949bc",
+      "policy": {
+        "testRetries": 0,
+        "testThreads": 1,
+        "emptySelection": "fail",
+        "allSelectedFailuresFatal": true,
+        "productionAuthorityGranted": false,
+        "finalProductQualification": false
+      }
+    },
+    "groups": [
+      {
+        "ordinal": 1,
+        "id": "retained-windows-identity",
+        "package": "codex-state",
+        "expectedTestCount": 8,
+        "fullOriginalRowInPinnedScope": true
+      },
+      {
+        "ordinal": 2,
+        "id": "git-process-cleanup",
+        "package": "codex-git-utils",
+        "expectedTestCount": 2,
+        "fullOriginalRowInPinnedScope": true
+      },
+      {
+        "ordinal": 3,
+        "id": "retained-mcp",
+        "package": "codex-mcp",
+        "expectedTestCount": 3,
+        "fullOriginalRowInPinnedScope": true
+      },
+      {
+        "ordinal": 4,
+        "id": "original-protected-owner",
+        "package": "codex-hepta-memory",
+        "expectedTestCount": 14,
+        "fullOriginalRowInPinnedScope": true
+      },
+      {
+        "ordinal": 5,
+        "id": "operator-native",
+        "package": "codex-hepta-operator-acceptance",
+        "expectedTestCount": 33,
+        "fullOriginalRowInPinnedScope": true
+      },
+      {
+        "ordinal": 6,
+        "id": "shadow-native",
+        "package": "codex-hepta-shadow-qualification",
+        "expectedTestCount": 35,
+        "fullOriginalRowInPinnedScope": true
+      },
+      {
+        "ordinal": 7,
+        "id": "sandbox-original-failures",
+        "package": "codex-windows-sandbox",
+        "expectedTestCount": 7,
+        "fullOriginalRowInPinnedScope": true
+      },
+      {
+        "ordinal": 8,
+        "id": "sandbox-native-delete-routes",
+        "package": "codex-windows-sandbox",
+        "expectedTestCount": 2,
+        "fullOriginalRowInPinnedScope": true
+      },
+      {
+        "ordinal": 9,
+        "id": "retained-windows-materialization",
+        "package": "codex-state",
+        "expectedTestCount": 1,
+        "fullOriginalRowInPinnedScope": true
+      },
+      {
+        "ordinal": 10,
+        "id": "canonical-windows-memory-recovery",
+        "package": "codex-hepta-memory",
+        "expectedTestCount": 2,
+        "fullOriginalRowInPinnedScope": true
+      },
+      {
+        "ordinal": 11,
+        "id": "runner-native-terminal",
+        "package": "codex-windows-sandbox",
+        "expectedTestCount": 4,
+        "fullOriginalRowInPinnedScope": true
+      },
+      {
+        "ordinal": 12,
+        "id": "runner-native-abort",
+        "package": "codex-windows-sandbox",
+        "expectedTestCount": 12,
+        "fullOriginalRowInPinnedScope": true
+      },
+      {
+        "ordinal": 13,
+        "id": "driver-exit-unknown",
+        "package": "codex-utils-pty",
+        "expectedTestCount": 1,
+        "fullOriginalRowInPinnedScope": true
+      },
+      {
+        "ordinal": 14,
+        "id": "core-exit-observation",
+        "package": "codex-core",
+        "expectedTestCount": 9,
+        "fullOriginalRowInPinnedScope": true
+      },
+      {
+        "ordinal": 15,
+        "id": "runner-native-custody",
+        "package": "codex-windows-sandbox",
+        "expectedTestCount": 6,
+        "fullOriginalRowInPinnedScope": true
+      },
+      {
+        "ordinal": 16,
+        "id": "exec-server-observation-wire",
+        "package": "codex-exec-server",
+        "expectedTestCount": 12,
+        "fullOriginalRowInPinnedScope": true
+      },
+      {
+        "ordinal": 17,
+        "id": "exec-server-protocol-observation-wire",
+        "package": "codex-exec-server-protocol",
+        "expectedTestCount": 3,
+        "fullOriginalRowInPinnedScope": true
+      },
+      {
+        "ordinal": 18,
+        "id": "direct-pty-native-observation",
+        "package": "codex-utils-pty",
+        "expectedTestCount": 3,
+        "fullOriginalRowInPinnedScope": true
+      },
+      {
+        "ordinal": 19,
+        "id": "legacy-isolation-admission",
+        "package": "codex-windows-sandbox",
+        "expectedTestCount": 10,
+        "fullOriginalRowInPinnedScope": true
+      }
+    ]
+  },
+  "supplementalGroup": {
+    "id": "restricted-write-preexisting-hardlinks",
+    "package": "codex-exec-server",
+    "expectedTestCount": 3,
+    "requiredTests": [
+      "windows_restricted_write::tests::restricted_helper_rejects_existing_hard_links_without_modification",
+      "windows_restricted_write::tests::restricted_helper_creates_and_rewrites_single_link_files",
+      "windows_restricted_write::tests::unrestricted_filesystem_keeps_existing_hard_link_behavior"
+    ],
+    "filter": "test(=windows_restricted_write::tests::restricted_helper_rejects_existing_hard_links_without_modification) | test(=windows_restricted_write::tests::restricted_helper_creates_and_rewrites_single_link_files) | test(=windows_restricted_write::tests::unrestricted_filesystem_keeps_existing_hard_link_behavior)"
+  },
+  "combinedCases": {
+    "originalGroups": 19,
+    "newGroups": 1,
+    "totalGroups": 20,
+    "originalCases": 167,
+    "newCases": 3,
+    "totalDistinctPackageCaseIdentities": 170,
+    "originalRowsAndFiltersUnchanged": true,
+    "sourceScopeFileMutated": false,
+    "expectedCaseArtifact": "EXPECTED_CASES.json"
+  },
+  "proposedPartitions": [
+    {
+      "id": "storage-owner",
+      "originalOrdinals": [
+        1,
+        4,
+        5,
+        6,
+        9,
+        10
+      ],
+      "originalGroups": [
+        "retained-windows-identity",
+        "original-protected-owner",
+        "operator-native",
+        "shadow-native",
+        "retained-windows-materialization",
+        "canonical-windows-memory-recovery"
+      ],
+      "originalRequired": 93,
+      "newRequired": 0,
+      "total": 93,
+      "groupIds": [
+        "retained-windows-identity",
+        "original-protected-owner",
+        "operator-native",
+        "shadow-native",
+        "retained-windows-materialization",
+        "canonical-windows-memory-recovery"
+      ],
+      "proposedJobTimeoutMinutes": 65,
+      "testThreads": 1,
+      "testRetries": 0,
+      "isolatedRunnerAndTargetRequired": true,
+      "originalOrderRetainedWithinPartition": true
+    },
+    {
+      "id": "core-session",
+      "originalOrdinals": [
+        2,
+        3,
+        14
+      ],
+      "originalGroups": [
+        "git-process-cleanup",
+        "retained-mcp",
+        "core-exit-observation"
+      ],
+      "originalRequired": 14,
+      "newRequired": 0,
+      "total": 14,
+      "groupIds": [
+        "git-process-cleanup",
+        "retained-mcp",
+        "core-exit-observation"
+      ],
+      "proposedJobTimeoutMinutes": 65,
+      "testThreads": 1,
+      "testRetries": 0,
+      "isolatedRunnerAndTargetRequired": true,
+      "originalOrderRetainedWithinPartition": true
+    },
+    {
+      "id": "sandbox-runner",
+      "originalOrdinals": [
+        7,
+        8,
+        11,
+        12,
+        15,
+        19
+      ],
+      "originalGroups": [
+        "sandbox-original-failures",
+        "sandbox-native-delete-routes",
+        "runner-native-terminal",
+        "runner-native-abort",
+        "runner-native-custody",
+        "legacy-isolation-admission"
+      ],
+      "originalRequired": 41,
+      "newRequired": 0,
+      "total": 41,
+      "groupIds": [
+        "sandbox-original-failures",
+        "sandbox-native-delete-routes",
+        "runner-native-terminal",
+        "runner-native-abort",
+        "runner-native-custody",
+        "legacy-isolation-admission"
+      ],
+      "proposedJobTimeoutMinutes": 65,
+      "testThreads": 1,
+      "testRetries": 0,
+      "isolatedRunnerAndTargetRequired": true,
+      "originalOrderRetainedWithinPartition": true
+    },
+    {
+      "id": "exec-wire",
+      "originalOrdinals": [
+        13,
+        16,
+        17,
+        18
+      ],
+      "originalGroups": [
+        "driver-exit-unknown",
+        "exec-server-observation-wire",
+        "exec-server-protocol-observation-wire",
+        "direct-pty-native-observation"
+      ],
+      "originalRequired": 19,
+      "newRequired": 3,
+      "total": 22,
+      "groupIds": [
+        "driver-exit-unknown",
+        "exec-server-observation-wire",
+        "exec-server-protocol-observation-wire",
+        "direct-pty-native-observation",
+        "restricted-write-preexisting-hardlinks"
+      ],
+      "proposedJobTimeoutMinutes": 65,
+      "testThreads": 1,
+      "testRetries": 0,
+      "isolatedRunnerAndTargetRequired": true,
+      "originalOrderRetainedWithinPartition": true
+    }
+  ],
+  "independentHarnessFeasibility": {
+    "currentCliSupportsGroupSelection": false,
+    "currentMainRootRule": {
+      "path": ".github/scripts/windows_current_ci.py",
+      "line": 244,
+      "expression": "Path(__file__).resolve().parents[2]"
+    },
+    "existingReusableFunctions": [
+      {
+        "name": "source",
+        "line": 59,
+        "explicitRoot": true
+      },
+      {
+        "name": "valid_source",
+        "line": 69,
+        "explicitExpectedAndBeforeAfter": true
+      },
+      {
+        "name": "prepare_sandbox_helpers",
+        "line": 194,
+        "explicitRoot": true
+      },
+      {
+        "name": "execute_groups",
+        "line": 75,
+        "explicitRoot": true,
+        "explicitOriginalGroupList": true,
+        "invokeMustRemainNullForNative": true
+      },
+      {
+        "name": "assess",
+        "line": 20,
+        "unchanged": true
+      }
+    ],
+    "viableApproach": "A separately reviewed harness may import the exact, hash-verified original driver module under a non-__main__ name, then call its existing functions with the immutable 9bd2 checkout and fixed original group objects. No source edits, no monkeypatch, no replacement invoke callback, and no temporary scope rewrite are needed.",
+    "moduleLoading": "Use a fixed original file path, verify its bytes against gitBlob 161ed1149c8ffb5f2bb2a8272f555f8b91d729fe before import; retain PYTHONDONTWRITEBYTECODE=1. Do not invoke main(), whose source root is derived from its own location.",
+    "fullScopeBinding": "First verify the complete original scope bytes (72f75127e9f92236def02a67a099fd90bb2a9b09), schema, policy and all 19 rows. Select only fixed partition group IDs from that original loaded manifest in original order. The three extra cases are a distinct supplemental group, never an edit to the original scope.",
+    "outerMainObligations": [
+      "Actual win32; expected full head and exact tree; unchanged tracked source and lock before/after; output and target outside source; no moving refs.",
+      "Original Rust 1.96.0 compiler requirement, just 1.51.0, nextest 0.9.103, original environment and canonical TEMP/TMP setup.",
+      "Call original prepare_sandbox_helpers before selected groups, retain its actual compiler-artifact checks and PE/byte publication beside the native nextest binaries; helper failure remains fatal.",
+      "Call execute_groups with invoke=None. It continues later selected groups after prior failure and retains each raw result; do not replace LEAK/FAIL/TIMEOUT/EXECFAIL with success.",
+      "Preserve groups.json progress and original before/after receipts, adding distinct campaign/partition/source/harness identity fields. The new aggregate receipt cannot masquerade as original main's full-scope receipt.",
+      "Run the original driver unit-test suite against the original module; add only meaningful wrapper/partition/fan-in tests if this proposal is later implemented. No such tests or wrapper implementation were executed here."
+    ],
+    "implementationState": "No new harness/workflow/driver code has been written. Reusing these existing functions is statically feasible, but the new outer harness and its guards still require review and validation.",
+    "fallback": "If direct function reuse is not accepted, propose a separately reviewed driver extraction of the existing main orchestration into an explicit-root function plus a strictly pinned partition selector. Do not edit the source scope transiently or omit original guards. No such source change is proposed for admission now."
+  },
+  "invariantExecution": {
+    "runner": "windows-latest, same existing runner selection; each partition must use an independent runner and target, not concurrent Cargo against one target.",
+    "jobBudget": "Keep 65 minutes per independent job if this later proposal is admitted. Four jobs would have up to 260 job-minutes aggregate, a changed scheduling topology, not an extension or continuation of the interrupted original job. Completion and queue time are not predicted.",
+    "strategy": "fail-fast:false if a matrix is later used; one failing partition must not cancel its siblings. A fixed campaign must not silently rerun failed/unknown work.",
+    "tools": {
+      "rust": "1.96.0",
+      "just": "1.51.0",
+      "nextest": "0.9.103"
+    },
+    "environment": {
+      "RUSTUP_TOOLCHAIN": "1.96.0",
+      "CARGO_BUILD_JOBS": "1",
+      "CARGO_INCREMENTAL": "0",
+      "CARGO_PROFILE_DEV_DEBUG": "0",
+      "CARGO_PROFILE_TEST_DEBUG": "0",
+      "CARGO_TERM_COLOR": "never",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "PYTHONUTF8": "1",
+      "CARGO_TARGET_DIR": "<unique-runner-temp>/hepta-windows-current-target",
+      "TEMP": "<canonical-per-job-private-root>",
+      "TMP": "<same-canonical-per-job-private-root>"
+    },
+    "justContract": "The unchanged root justfile selects NEXTEST_PROFILE=local and RUST_MIN_STACK=8388608. scripts/run-nextest.py adds --no-fail-fast. Original nextest config and test-local budgets remain unchanged; --retries 0 and --test-threads 1 stay in every group argv.",
+    "helperBuildArgv": [
+      "cargo",
+      "build",
+      "--locked",
+      "-p",
+      "codex-windows-sandbox",
+      "--profile",
+      "dev-small",
+      "--message-format=json",
+      "--bin",
+      "codex-windows-sandbox-setup",
+      "--bin",
+      "codex-command-runner"
+    ],
+    "helperReuse": "Build and bind actual binaries from the same exact source in each partition; do not copy old 189 binaries or invent CLI/helper fixtures. Preserve the original prerequisite even for a partition whose selected tests do not directly invoke the helpers.",
+    "originalUnitTestArgv": [
+      "python",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      ".github/scripts",
+      "-p",
+      "test_windows_current_ci.py"
+    ],
+    "caseAssertions": "All original assertions, refusal conditions, native operation time budgets, retry policy, and test source remain unchanged. No expected-failure exemption for the known elevated delete defect or LEAK.",
+    "privacy": "Retain only source/tool/allowlisted runtime metadata, raw declared tests, and helper hashes. Do not capture credentials, arbitrary process environment, private owner state, or provider payloads."
+  },
+  "requiredFanIn": [
+    "Require a frozen campaign identity, exact source head/tree and harness/scope identities on every partition artifact.",
+    "Require each of the original 19 groups exactly once, plus the one supplemental hardlink group exactly once. Full original row equality is mandatory; duplicate, missing, unknown or substituted group is non-pass.",
+    "Require all 167 original package+case identities and the 3 new identities exactly once across completed group records. Retain the original per-group count, missing-case, package and terminal-status checks; independently compare the union to this plan's exact 170 identity set.",
+    "Require fresh same-campaign source-before/source-after, clean tracked source, Cargo.lock consistency, actual Rust/just/nextest versions and successful actual helper binding for every partition.",
+    "No old 189/F2/G/native result may supply a missing 9bd2 result. Interrupted/absent group remains NOT_EXECUTED or INCOMPLETE; terminal errors remain original errors.",
+    "Preserve raw logs and per-group assessment even if a process, job or final receipt fails. Upload with always semantics; a successful artifact upload is not a test pass.",
+    "The original driver does not preserve per-group JUnit files itself. If fresh JUnit collection is later added to the harness, copy each real report before the next group overwrites it and bind it to that command/source/new run UUID; never reuse prior JUnit. Do not invent a JUnit requirement as an already-executed original gate.",
+    "Use one final strict fan-in status only after every required partition/group has valid native results. Any FAIL, LEAK, TIMEOUT, EXECFAIL, unexpected SKIP, missing selected cases, source mismatch or incomplete partition makes the combined scope non-pass.",
+    "Even all 170 passing cases establish only this declared Windows scope; they do not replace CI required/Architecture required, original owner recovery, external source authority, memory-benefit evaluation, or remaining safety routes."
+  ],
+  "separateRequiredCoverage": {
+    "enabledCoreHardlink": {
+      "case": "suite::apply_patch_cli::apply_patch_cli_preserves_existing_hard_link_outside_workspace",
+      "package": "codex-core",
+      "kind": "original core integration/Bazel path",
+      "includedIn170": false,
+      "reason": "The existing group commands use --lib; this is a core integration test. The helper's three new unit cases do not establish that the actual enabled apply_patch path rejects the alias.",
+      "handling": "Retain it in the original blocking exact-source core/Bazel validation. Any later separate native campaign needs explicit original integration target and real Codex CLI/dependency identity, not a silent 171st lib case."
+    },
+    "elevatedOutsideDelete": {
+      "status": "OPEN_PRODUCT_MECHANISM",
+      "reportGitBlob": "3e1b57ac549a3606ca9cf3c8d59935158f94badb",
+      "archiveGitBlob": "8f83ef014873388d99d2e6adfb2018410efc8d2c",
+      "archiveCommit": "d9b5987a67bb110d2c013a5e1a379fb976c2db22",
+      "archivePath": "qualification/memory-cell-mem8-ci-followup/v14/windows-elevated/ORIGINAL_SOURCE_REVIEW.tar.xz",
+      "boundary": "No capability-only token product patch has been proposed or qualified. The unchanged original refusal assertion stays fatal. Splitting jobs does not repair this defect."
+    },
+    "hardlinkBoundary": "The new helper guard addresses existing multi-link targets in restricted typed filesystem writes only. Concurrent alias creation after the check, shell/exec/copy/other write routes, and full Windows sandbox recovery remain outside its proven guarantee."
+  },
+  "optionalSeparateDiagnostic": {
+    "admitted": false,
+    "sourceUnchanged170ContainsIt": false,
+    "question": "If a later original elevated test again fails, distinguish the runner's static token-construction path from the actual child token and access-check inputs.",
+    "proposalOnly": "A separately reviewed test-only diagnostic could record bounded allowlisted facts about the actual child token's enabled/restricted SID classes, privileges and native delete route under the existing owner. It must retain the original refusal assertions and use no new issuer/production authority.",
+    "gate": "Any extra diagnostic child/test or token-access instrumentation changes the source and scope. Freeze a new source identity and its own expected cases before admission; do not merge it into this 9bd2 170-case plan or label it a permissions repair."
+  },
+  "limitations": [
+    "This report is source and artifact review only; it does not assert that a new runner, helper or any of the 170 cases has executed.",
+    "No test runtime/resource independence was established dynamically. Group scheduling topology changes; preserve within-partition original order and use isolated runners.",
+    "Historical warm-target durations justify considering partitioning, not a cold-job completion estimate.",
+    "A complete source-preserving harness would still need review and meaningful fan-in/selection regressions before any new campaign.",
+    "Await the currently admitted source/native CI results before deciding whether any partitioned campaign is necessary."
+  ],
+  "exactCommandsArtifact": "EXACT_COMMANDS.json",
+  "staticVerificationArtifact": "STATIC_AUDIT.json"
+}

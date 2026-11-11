@@ -1,0 +1,47 @@
+The following are original d0f outcomes. They are not qualification receipts for the later cead candidate.
+
+| Original workflow | Result and executed scope |
+| --- | --- |
+| [MEM 43062473099](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43062473099) | All three original jobs succeeded. 154 Python executions / 120 distinct Python IDs; 34 native executions / 33 distinct native case names, zero failure. |
+| [Architecture 43062473103](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43062473103) | Source, separate base-merge lane and original required check succeeded. 290 Python executions / 146 distinct Python IDs; 526 native executions / 521 normalized package-target-case IDs, zero failure. |
+| [Private 43062473076](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43062473076) | 34 distinct selected native cases passed with exact clean source. Two repeated positive controls and four counterfactual executions remain separate; two mutant failures are expected controls. |
+| [Windows-current 43062473110](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43062473110) | Original job cancelled. 124 distinct completed native cases: 123 PASS, one FAIL, zero LEAK. 43 of 167 declared cases have no terminal evidence. Final source-after receipt is absent. |
+| [Blocking 43062473474](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43062473474) | {{D0F_BLOCKING_FINAL}} |
+
+### MEM and Architecture: full successful original receipts
+
+MEM's integrity job supplies 35 Python passes, fourteen fresh synthetic readers and three writers with seventeen unique PIDs and bound request/response/context hashes. The CPU lane supplies 119 unique Python passes. There are 34 overlapping Python IDs between these lanes, hence 154 executions and 120 distinct IDs rather than 154 distinct cases.
+
+The native lane contains eleven memory cases, six Agentd cases, one explicit qualification-profile reexecution and sixteen protocol cases. The repeated Agentd case accounts for the difference between 34 executions and 33 names. Three drain-child markers are nested observations within a selected case; they are not additional selected tests. The three retained JUnit files bind their original UUIDs, exact package/binary/classname, case sets and raw logs. The later Nextest invocations overwrote the earlier memory JUnit, so the eleven memory cases are established from their original raw terminals and command receipt, not an invented fourth retained JUnit.
+
+All ten original command receipts have known zero exits and exact clean before/after source. The formatter and the three scoped package fixes made no rewrite. The before archive contains 224 complete source files bound to the full 14,053-entry tree, while the after source archive is empty. The actual CLI build and stable hash receipt are retained; the 560,467,888-byte executable is not included. Provider G was not executed. These 188 software test executions are not new scored memory actor episodes.
+
+Architecture's base lane has 136 receipt-bound Python passes plus eight original raw-only candidate preflight cases. Its source lane actually continues through two additional objective-contract cases: 138 receipt-bound plus eight raw-only, for 146. The base lane performs no native execution; its identical-tree reuse condition is satisfied by this original source lane's actual success. The source's 26 native command groups contain 526 passes and five IDs executed twice, yielding 521 normalized package-target-case IDs. All 31 source command arrays and four base arrays match the exact retained workflow. Both advisory candidate-transport observations remain UNKNOWN/HTTP403 and authorize no activation or trust conclusion.
+
+The root reconstructed every remote byte of the complete MEM and Architecture packages, including all five original ZIPs and the complete original job logs. The unchanged readers regenerate their complete original reports byte-for-byte. MEM has 31 outer members and original ZIP member counts 78/25/42; Architecture has 28 outer members and original ZIP counts 20/65. The independent JUnit addendum preserves the original package unchanged.
+
+[MEM full original audit](v17/mem-d0f/MEM_COMPLETE_ORIGINAL_AUDIT.json) · [MEM full remote replay](v17/root-replay/ROOT_D0F_MEM_REMOTE_REPLAY.json) · [JUnit cross-binding](v17/mem-d0f/MEM_JUNIT_CROSSBINDING_ADDENDUM.json)
+
+[Architecture full original audit](v17/architecture-d0f/ARCH_COMPLETE_ORIGINAL_AUDIT.json) · [complete Architecture and two-case remote replay](v17/root-replay/ROOT_D0F_ARCH_NATIVE2_REMOTE_REPLAY.json)
+
+[Private original audit](v17/private-d0f/AUDIT.json) · [complete original Private and failed lint replay](v17/root-replay/ROOT_D0F_LINT_PRIVATE_REPLAY.json)
+
+### Blocking failures, flaky attempts and original Windows cancellation
+
+The ordinary d0f Fence job succeeded on the actual 224-file PR range with all seven policy controls and the unchanged 512,000-byte threshold. The final full raw post report is healthy observation mode, with `protection_available=false`. This ordinary job did not capture the isolated harness's seven action files or executable, and its evidence does not claim that capture.
+
+The original GNU main target table has 416 strict PASSED and 167 SKIP, with 412 cached and four actual executions. Its separate operator command has one PASS; these are target counts, not 417 Rust testcases. Windows shard 3 has 102 strict PASSED and 45 SKIP, including 58 cached and 44 actual target executions.
+
+Windows shard 2 failed. Its table has 106 strict PASSED, one FLAKY, two FAILED and 42 SKIP; the displayed 107 passing targets includes the FLAKY target. The two failed targets retain the elevated outside-delete boundary and the CLI doctor HEAD/GET timeout case. The plugin-cache flaky attempt records `atomic_write_stage=Persist`, OS error 5 / PermissionDenied, followed by the old cache ID through the deadline. This is retained failure evidence, not proof of a unique filesystem cause.
+
+Windows shard 4 is API-successful but contains one FLAKY target: 109 strict PASSED, one FLAKY, 33 SKIP. Its original core-all failed attempt is the neighboring `test_case_4_legacy_encrypted_leaf` case, not either V9-repaired fixture. Child agent-message/content/model/leaf-tool assertions already succeeded; the later five-second private trace-buffer conjunction failed. The function's executable source is unchanged from c895. An original "failed 1 out of 17" aggregate comprises sixteen shards and one subsequent attempt, not seventeen retries of one test. The private buffer itself was not printed, so no claim is made that both expected events were missing or that one subscriber caused the failure.
+
+Windows shard 1 is also API-successful but FLAKY: 92 strict PASSED, one FLAKY and 51 SKIP. Its raw output includes a complete 89-pass libtest segment followed by a separate 79-test segment with 78 displayed successes and one unfinished guardian case. The second segment has no final libtest terminal. The completed 89-case segment is not merged with the partial segment into a fabricated result.
+
+Mac Intel's 584-target table is 408 strict PASSED, one FLAKY, two FAILED, one TIMEOUT and 172 SKIP. The memory library's actual terminal is 419 PASS / one FAIL / nine ignored; this time its original assertion body explicitly reports completed peers zero versus sixteen. The code-mode terminal is 69 PASS / one FAIL, with the original backpressure wait elapsed. The supervisor paired-process target times out at 300.4 seconds with two actual cases running and neither testcase terminal observed. Core-all has six failed aggregate shard attempts out of twenty-two; the six failure bodies retain eleven failed-row occurrences across four distinct printed IDs. Those aggregate attempts are not twenty-two retries of one testcase.
+
+The Mac Bazel artifact's entire 10,555,309-byte ZIP and its one compressed profile member were retained and checked. The compressed profile was not semantically decoded. Other Bazel artifacts remain metadata-only unless explicitly identified otherwise in the original package. The four cancelled Mac ARM jobs have no runner or executed-step evidence; the cancellation cause remains UNKNOWN. The original cargo-deny full-log transport gap remains explicit even though its API conclusion is success.
+
+The original Windows-current workflow completes thirteen groups, twelve strictly passing. Its fourteenth group stops during compilation without a Nextest UUID/start/testcase terminal; the final five groups have no executed group log. The nine Python driver controls are not counted as native cases. The elevated captured-output case actually passes in 2.155 seconds with zero LEAK. The remaining delete-boundary case still deletes outside files and directories in TargetOnly, ParentOnly and Both, while the ordinary four-cell control behaves as expected. Elevated-child token inventory is still unobserved. The original raw says only that the operation was cancelled; approximate job-envelope timing is not a separate scheduler-cause proof. The before-only Cargo.lock checksum equals the CRLF rendering of the exact pinned Git blob `025813e20504f31d12dae2092a0807a1a4066419`; the original Windows lock bytes and final source-after receipt are not archived, so that checksum is not a before/after stability proof.
+
+{{D0F_TERMINAL_EVIDENCE_LINKS}}

@@ -1,0 +1,60 @@
+{
+  "schema": "hepta.mem8.v6.root-candidate-capsule-byte-audit.v1",
+  "source_head": "9bd2f589debdba4a93baa363817c3669cb103721",
+  "source_tree": "c77785ecb368c44ea699769001a47402c9f50591",
+  "status": "PASS_FULL_IMMUTABLE_CAPSULE_POSTIMAGES_AND_REFERENCE_PREIMAGES",
+  "caller_capsule_blob": "add8662522f28c22efea19a17c89021563e19d06",
+  "neuron_capsule_blob": "4f200f1d61040d395ae4aa211d9144b3ee85f5b7",
+  "caller_evidence_members_bound": 13,
+  "files": [
+    {
+      "path": "scripts/verify_hepta_callers.py",
+      "preimage_git_blob": "d7a6981ee7775c7254a9c596ac47bb1bb5e43171",
+      "postimage": {
+        "bytes": 30488,
+        "sha256": "b295188f217066cf5eb704d1c9c0e267c3d7a293c46bab703bf797146e4dd2c2",
+        "gitBlob": "e08795f541d877852c80f482614347e7554869b9"
+      }
+    },
+    {
+      "path": "scripts/hepta_typed_callers.py",
+      "preimage_git_blob": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f",
+      "postimage": {
+        "bytes": 7898,
+        "sha256": "0a2c9a2d40a749f6e3db38b82244a8684d5df5368d79ae2ec69e9834391066cb",
+        "gitBlob": "655d7a95d281e937e52b6b8d93c26d7897a4973f"
+      }
+    },
+    {
+      "path": "scripts/test_hepta_typed_callers.py",
+      "preimage_git_blob": "52989efbcc02a8b56c21f1857766685016352040",
+      "postimage": {
+        "bytes": 4881,
+        "sha256": "3f46c582bbd242c6f14836f22622f46c178b90ce2fb8f5921a8c539cfa114ac0",
+        "gitBlob": "3122da4d55304353716dbe837524531634a8abe0"
+      }
+    },
+    {
+      "path": "scripts/test_hepta_caller_cache.py",
+      "preimage_git_blob": null,
+      "postimage": {
+        "bytes": 2838,
+        "sha256": "9887e2f973dbf92eb8af78ab5caa3aeed1882da452ce2e1b3e666cf242cb33fa",
+        "gitBlob": "4c31e93cea1af2674474268ccf65b4c6c6f1ab22"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_generation_control_tests.rs",
+      "preimage_git_blob": "a9cd9b8f9c246f6f266b2ca8506da40eefa0bc44",
+      "postimage": {
+        "bytes": 23206,
+        "sha256": "2023d5249c534d8f55352f9e73ec6666329414499bf308843938f4d0a41f26ed",
+        "gitBlob": "d81a69390659f1fa9d8a67000565a00c54cb0ac0"
+      }
+    }
+  ],
+  "source_gate_executed": false,
+  "Rust_native_executed": false,
+  "model_requests": 0,
+  "review_scope": "Byte binding supplements full patch/source static review; it does not replace formatter/compiler/native gates."
+}

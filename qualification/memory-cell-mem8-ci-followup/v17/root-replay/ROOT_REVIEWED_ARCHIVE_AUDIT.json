@@ -1,0 +1,66 @@
+{
+  "schema": "mem8.v17.root-reviewed-archives.v1",
+  "status": "PASS_FULL_REMOTE_PACKETS_AND_OFFLINE_REPLAYS",
+  "immutable_commit": "cd88fee6594181821db0b5092562be4a7c37abfa",
+  "full_remote_objects": 43,
+  "private": {
+    "archive": {
+      "bytes": 79144,
+      "sha256": "46ddc9886334f4fa19cbe72f1e58bc6ff9a9720ca705d7ae62c2cddacca1cbed",
+      "git_blob": "32f0255ddb0cacb43b8433b2d030aa407b194e30"
+    },
+    "members_verified": 27,
+    "full_original_offline_result_equal": true,
+    "distinct_selected_pass": 34,
+    "additional_positive_control_executions": 2,
+    "mutant_executions": 4,
+    "expected_mutant_failures": 2,
+    "signed_original_case_pass": 1,
+    "source_before_after_clean": true
+  },
+  "fixture_candidate": {
+    "archive": {
+      "bytes": 50680,
+      "sha256": "cecfcaa12ea8dcd0b551ceb10856152a20f0e2c1a9bfc00d1d4e9f259072220f",
+      "git_blob": "22458dfeca364cc02be95b65df8a933ad5c77bf9"
+    },
+    "members_verified": 23,
+    "six_fixture_changes_plus_comment_reconstructed_from_full_bytes": true,
+    "complete_patch_recomputed_equal": true,
+    "postimage": {
+      "bytes": 106424,
+      "git_blob": "cd297f2835fa66832bbbef810ed724fcdfc2284f",
+      "sha256": "5f5b71e7231846fac3236c816774abe61a3a032f4bfe8290b3cb1ce763ca0d0c"
+    },
+    "native_acceptance_established": false
+  },
+  "fence_feasibility": {
+    "archive": {
+      "bytes": 571416,
+      "sha256": "334ebed3fc3ace4823ada6ca1547f4f246e74afb1c49f509099af27859e48b99",
+      "git_blob": "90228d3aadc9479e4ab3fdcee41fc84e13fea282"
+    },
+    "parts": 2,
+    "members_verified": 72,
+    "original_offline_reader_replayed": true,
+    "result": {
+      "action_leaves": 1937,
+      "all_11_limits_byte_equal": true,
+      "binary_bytes_independently_read": false,
+      "both_rejection_functions_byte_equal": true,
+      "candidate_single_pin_line_only": true,
+      "manifest_files": 70,
+      "native_or_host_executions": 0,
+      "offline_identity_and_candidate_verified": true,
+      "only_action_additions": [
+        "action/bin/fence",
+        "action/bundle-manifest.json"
+      ],
+      "original_subreason": "UNKNOWN",
+      "security_audit_of_entire_release": false,
+      "source_leaves": 1935
+    },
+    "qualification_result_in_this_packet": false
+  },
+  "new_native_tests_builds_models_or_network_requests_by_replay": 0
+}

@@ -1,0 +1,111 @@
+{
+  "artifact_scope": "All11 original Bazel execution-artifact metadata entries are retained with API size/SHA. Their ZIP payloads were not fetched for this package. Full original Mac job text was retrieved completely this time; no full-job gap is claimed for b054.",
+  "cancelled": {
+    "cause": "unknown",
+    "job_ids": [
+      130573615758,
+      130573616252,
+      130573616349,
+      130573616440
+    ],
+    "observed": "terminal cancelled with runner0 and no steps; zero execution observed"
+  },
+  "flaky_scope": "Original Windows shard1/4 and Mac core-all failed attempts are retained; final job/target success is not zero-failure qualification.",
+  "job_counts": {
+    "cancelled": 4,
+    "failure": 6,
+    "skipped": 4,
+    "success": 23
+  },
+  "jobs": 37,
+  "mac_target_outcomes": {
+    "cached_strict_passed": 404,
+    "failed": 2,
+    "flaky": 1,
+    "fresh_strict_passed": 3,
+    "original_summary_pass_including_flaky": 408,
+    "skipped": 172,
+    "strict_passed": 407,
+    "timeout": 2
+  },
+  "no_additional_execution": {
+    "dispatches": 0,
+    "host": 0,
+    "model": 0,
+    "native": 0,
+    "ref_changes": 0,
+    "reruns": 0
+  },
+  "original_failures": [
+    {
+      "actual": "local_control_inventory_unavailable; native source checkout and blob-size check did not execute",
+      "category": "Fence pre-checkout infrastructure",
+      "job_id": 130573423711
+    },
+    {
+      "actual": "apt100 after azure.archive.ubuntu.com DNS failure; SDK tests skipped",
+      "category": "SDK prerequisite",
+      "job_id": 130573615838
+    },
+    {
+      "actual": "one failed Bazel target: elevated outside-delete assertion plus two subsequent shared-lock poisoning failures",
+      "category": "Windows shard2 test",
+      "job_id": 130573616668
+    },
+    {
+      "actual": "two failed target assertions plus two300-second target timeouts; core-all is separately FLAKY with six failed attempts out of22",
+      "category": "Mac Intel test",
+      "job_id": 130573616302
+    },
+    {
+      "actual": "propagates original shard failure; no additional tests",
+      "category": "Windows fan-in",
+      "job_id": 130590123014
+    },
+    {
+      "actual": "rejects needs.bazel=abandoned; original NEEDS also reports repo-checks=abandoned despite its build-and-test job succeeding. The aggregate reason is not inferred from individual job status.",
+      "category": "CI required fan-in",
+      "job_id": 130593109280
+    }
+  ],
+  "original_full_blocking_job_logs": 16,
+  "parallel_prerequisite_job_logs": 3,
+  "run_attempt": 1,
+  "run_id": 43035589938,
+  "run_updated_at": "2026-11-11T14:47:55Z",
+  "schema": "mem8.b054.original-blocking-terminal-summary.v1",
+  "separate_private_evidence": {
+    "archive_bytes": 76948,
+    "archive_git_blob": "400f03f255820ce46af2ad2f581d5b63fe3db85f",
+    "archive_sha256": "3348859c1f2dd822ed1f610c7476f66ec7fe8656d4f480335815ae4c56bc1f55",
+    "scope": "34 unique original private-state PASS cases plus separately reported counterfactual mutation controls; not duplicated here"
+  },
+  "source_head": "b0547d2f874c0aeb54dabd3491caa2bee49fcb0b",
+  "terminal": "failure",
+  "tested_merge": "0789f10892ac1b4e8a3e05b4c908bdfff10b8c68",
+  "tested_tree": "3f89ddeff13d0af85f4abe2690699107357f1038",
+  "windows_shard2": {
+    "cached_strict_passed": 37,
+    "failed_targets": 1,
+    "fresh_strict_passed": 71,
+    "sandbox_original_phases": [
+      {
+        "failed": 0,
+        "ignored": 2,
+        "passed": 81
+      },
+      {
+        "failed": 3,
+        "ignored": 0,
+        "passed": 83
+      },
+      {
+        "failed": 0,
+        "ignored": 2,
+        "passed": 16
+      }
+    ],
+    "skipped_targets": 42,
+    "strict_passed_targets": 108
+  }
+}

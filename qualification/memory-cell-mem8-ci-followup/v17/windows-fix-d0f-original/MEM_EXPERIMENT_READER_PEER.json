@@ -1,0 +1,36 @@
+{
+  "schema": "mem.windows-lint-reader-independent-peer.v1",
+  "reviewed_at_utc": "2026-11-11T17:04:59.077792+00:00",
+  "reviewer": "/root/mem_experiment_review",
+  "scope": "Read-only static review of the prepared original-attempt evidence reader, not the runner and not an executed artifact audit.",
+  "reader": {
+    "path": "/workspace/scratch/ed3538174819/mem-windows-sandbox-fix-v10-original-run/audit_original.py",
+    "bytes": 13358,
+    "sha256": "3b13785c8c433d6342811b913d0dd683496f4a6e431163dd2cb9f27cb47c755b",
+    "git_blob": "8503d4cc01acaf37abf78b1147eaae02c5afa966"
+  },
+  "result": "NO_REMAINING_STATIC_MUST_FIX_IN_REVIEWED_FALSE_PASS_BOUNDARIES",
+  "closed_findings": [
+    {
+      "original": "Successful result could omit the harness identity map because its validation was conditional.",
+      "resolved": "Claimed success now requires exactly head/tree/driver/support/workflow/input; the existing full values and local frozen-file hashes are checked."
+    },
+    {
+      "original": "A passed_clean phase could lack both the immediate source snapshot and its receipt while retaining clean later snapshots.",
+      "resolved": "Phase pass now additionally requires immediate == baseline and source_ok(immediate); this lint-only path has no JUnit-move exception."
+    }
+  ],
+  "additional_reviewed_checks": [
+    "Only two declared commands and a prefix of their phase names are accepted.",
+    "Both phases require original known exit 0, clean source before/immediate/after, unchanged tool and original helper observations, and the original 65 minute deadline.",
+    "Whole pass additionally requires final source/collection equality, complete FILE_MANIFEST and actual job success.",
+    "Missing/interrupted phases remain explicit UNKNOWN or NOT_STARTED; no known cancellation cause is inferred.",
+    "Helper boundary explicitly says observed compiler-artifact paths and hashes are bound, while PE bytes are not contained in the artifact."
+  ],
+  "not_performed": [
+    "No archived runner execution",
+    "No native test or lint invocation",
+    "No original artifact audit: original job was still in progress",
+    "No mutation of source, refs, deadlines or assertions"
+  ]
+}

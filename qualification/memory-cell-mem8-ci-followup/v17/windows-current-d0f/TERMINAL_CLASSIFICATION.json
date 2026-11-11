@@ -1,0 +1,196 @@
+{
+  "actual_case_status_counts": {
+    "FAIL": 1,
+    "PASS": 123
+  },
+  "attempt": 1,
+  "cargo_lock_representation": {
+    "binding_reference": "The exact source Cargo.lock Git blob is 025813e20504f31d12dae2092a0807a1a4066419; complete source bytes also reside in the previously published two-native preparation package. Only the original checksum is observed here, not archived original Windows lock bytes.",
+    "derived_crlf": {
+      "bytes": 439848,
+      "git_blob": "3705e02f20a0cfeed0114531f336dfce09b6791b",
+      "sha256": "564bc3f207a9f15cd66b0a18a81e4146522deb43c7cf8e90fc2f3d4d6638fd9b"
+    },
+    "exact_observed_hash_equals_pinned_source_with_CRLF": true,
+    "original_observed_sha256": "564bc3f207a9f15cd66b0a18a81e4146522deb43c7cf8e90fc2f3d4d6638fd9b",
+    "pinned_source_lf": {
+      "bytes": 421005,
+      "git_blob": "025813e20504f31d12dae2092a0807a1a4066419",
+      "sha256": "98b3767c6e74bf6eeb5894db760259dbc400cbfd0685af8ad915c92d25408d69"
+    },
+    "scope": "No after-hash/whole-worktree stability claim follows from this before-only observation."
+  },
+  "completed_group_receipts": 13,
+  "declared_cases": 167,
+  "declared_groups": 19,
+  "failure_boundary": {
+    "elevated_child_token_inventory": "UNOBSERVED",
+    "elevated_outside_routes": [
+      [
+        "Neither",
+        "false",
+        "false"
+      ],
+      [
+        "TargetOnly",
+        "true",
+        "true"
+      ],
+      [
+        "ParentOnly",
+        "true",
+        "true"
+      ],
+      [
+        "Both",
+        "true",
+        "true"
+      ]
+    ],
+    "exact_lines": [
+      {
+        "bytes": {
+          "bytes": 137,
+          "git_blob": "21a6e3fb4b545f48b77b26e2beb6a7cd528de515",
+          "sha256": "a8e04053534722bbf52d714722f85d38586b97cd163819cdd75ecaa366ccad71"
+        },
+        "line": 204,
+        "text": "    delete_control verified_before_resume distinct_token=true backup_present=false restore_present=false other_privileges_unchanged=true"
+      },
+      {
+        "bytes": {
+          "bytes": 377,
+          "git_blob": "7ca11e4eb1d31b9ad56cdf320b247cd9ac319b3e",
+          "sha256": "20e7a1c052e883ce436a67171b91902a27bbaab5ccb68b3eaefc7c46adb8bec5"
+        },
+        "line": 217,
+        "text": "    delete_matrix ordinary-host-cmd-done after_release=[DeleteOutcome { route: Neither, file_deleted: false, directory_deleted: false }, DeleteOutcome { route: TargetOnly, file_deleted: true, directory_deleted: true }, DeleteOutcome { route: ParentOnly, file_deleted: true, directory_deleted: true }, DeleteOutcome { route: Both, file_deleted: true, directory_deleted: true }]"
+      },
+      {
+        "bytes": {
+          "bytes": 374,
+          "git_blob": "207f85884dbb6c2920f9d45994e2dec521950492",
+          "sha256": "cc283d9cc0c5c5d23a0e75ccda278cc150c99c8349d73798586fa649f7343b66"
+        },
+        "line": 233,
+        "text": "    delete_matrix elevated-child-done after_release=[DeleteOutcome { route: Neither, file_deleted: false, directory_deleted: false }, DeleteOutcome { route: TargetOnly, file_deleted: true, directory_deleted: true }, DeleteOutcome { route: ParentOnly, file_deleted: true, directory_deleted: true }, DeleteOutcome { route: Both, file_deleted: true, directory_deleted: true }]"
+      },
+      {
+        "bytes": {
+          "bytes": 117,
+          "git_blob": "6cef8d441059a69b705d0acaaa048c903dcbd828",
+          "sha256": "3a6cc11f1eec8eacd42daed479746f0063af186e43119d4be6421ea15c9eec1e"
+        },
+        "line": 219,
+        "text": "    elevated_terminal_observation cleanup=Ok(Some(OwnerTerminated { owner_exit_code: Some(0) })) output_drained=true"
+      }
+    ],
+    "ordinary_child_privilege_check_is_not_elevated_child_token_inventory": true,
+    "ordinary_control_routes": [
+      [
+        "Neither",
+        "false",
+        "false"
+      ],
+      [
+        "TargetOnly",
+        "true",
+        "true"
+      ],
+      [
+        "ParentOnly",
+        "true",
+        "true"
+      ],
+      [
+        "Both",
+        "true",
+        "true"
+      ]
+    ],
+    "original_group_raw": {
+      "bytes": 27273,
+      "git_blob": "30bb832b65731ceffe72ad178d5dae2a999abb82",
+      "sha256": "984b5d5891de0a1e80a212d38f3dd22f8872844b706aa47c33e46abbc9daab36"
+    },
+    "production_authority_or_global_isolation_claim": false
+  },
+  "groups_without_original_log": [
+    {
+      "declared_cases": 6,
+      "id": "runner-native-custody"
+    },
+    {
+      "declared_cases": 12,
+      "id": "exec-server-observation-wire"
+    },
+    {
+      "declared_cases": 3,
+      "id": "exec-server-protocol-observation-wire"
+    },
+    {
+      "declared_cases": 3,
+      "id": "direct-pty-native-observation"
+    },
+    {
+      "declared_cases": 10,
+      "id": "legacy-isolation-admission"
+    }
+  ],
+  "head": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+  "helper_pe_bytes_archived": false,
+  "job_id": 130668436858,
+  "legacy_leak_case": {
+    "actual_status": "PASS",
+    "line": "        PASS [   2.155s] codex-windows-sandbox unified_exec::tests::elevated_non_tty_cmd_forwards_env_output_and_exit",
+    "line_identity": {
+      "bytes": 118,
+      "git_blob": "dab5069053eb2e6ca330ae3231b0b0f2e1296ab9",
+      "sha256": "31d590a5df9659de82e131ddca47824dc0e6a794900e0d849da67efe75b44e7e"
+    },
+    "name": "unified_exec::tests::elevated_non_tty_cmd_forwards_env_output_and_exit",
+    "original_line": 193
+  },
+  "native_or_model_requests_started_by_auditor": 0,
+  "observed_distinct_native_terminals": 124,
+  "original_9_python_driver_controls_excluded_from_native_counts": true,
+  "original_error_lines": [
+    {
+      "line": 1108,
+      "line_identity": {
+        "bytes": 66,
+        "git_blob": "9a4ec9b69fab272316578a0bdc115675e431bb66",
+        "sha256": "92f3cea6fe4f324d0fa31be7c7981a745b65e95884f4daaae296252946563b8d"
+      },
+      "text": "2026-11-11T17:56:51.8490494Z ##[error]The operation was canceled."
+    }
+  ],
+  "partial_group": {
+    "command_exit": "UNKNOWN",
+    "declared_cases": 9,
+    "id": "core-exit-observation",
+    "nextest_start_or_case_terminal_observed": false,
+    "original_log": {
+      "bytes": 43072,
+      "git_blob": "d9249e40746fdc96f909debcc2c73b6be89cf86f",
+      "sha256": "f3c0d5da2b5d82beb714ec9d75f9dd81c9b3dc8f12272dd4c5c5f22abaa84797"
+    }
+  },
+  "physical_network_request_count": null,
+  "run_id": 43062473110,
+  "scheduler_cancellation_reason": "UNKNOWN; raw only states The operation was canceled. Timestamp proximity to 65 minutes is not a separate scheduler receipt.",
+  "schema": "mem-d0f-windows-current-terminal-classification-v1",
+  "source_after": "UNOBSERVED_NO_FINAL_RECEIPT",
+  "source_refs_changed": false,
+  "strict_passing_groups": 12,
+  "tracked_source_before": {
+    "cargoLockSha256": "564bc3f207a9f15cd66b0a18a81e4146522deb43c7cf8e90fc2f3d4d6638fd9b",
+    "head": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+    "trackedChanges": "",
+    "tree": "658fa040046285116b1fd81b94ff8c96444072ad"
+  },
+  "tree": "658fa040046285116b1fd81b94ff8c96444072ad",
+  "unique_failed_case": "unified_exec::tests::delete_permission_tests::legacy_refuses_before_elevated_four_cell_delete_boundary",
+  "unobserved_terminal_case_count": 43,
+  "whole_scope_qualification": "NOT_QUALIFIED_ORIGINAL_CANCELLED_ONE_FAILED_CASE_AND_43_UNOBSERVED_TERMINALS"
+}

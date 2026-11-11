@@ -1,0 +1,92 @@
+{
+  "archive": {
+    "bytes": 70060,
+    "git_blob": "c9a7f50111183e54068a89448fb3d3e5d6b9faf7",
+    "path": "MEM_C895_MEMORY_CODE_READONLY.tar.xz",
+    "regular_members": 28,
+    "sha256": "68271d0b570436348579b9c728dcfcef68309508d9637f2a2f3dc3228677d418"
+  },
+  "native_or_model_commands": 0,
+  "offline_full_originals": {
+    "code_mode_actual_summary": {
+      "failed": 1,
+      "passed": 69
+    },
+    "full_original_raw_rechecked": true,
+    "full_tree_inventory_rechecked": true,
+    "memory_visible_display_rows": {
+      "FAILED": 1,
+      "ignored": 9,
+      "ok": 364
+    },
+    "new_native_or_model_execution": 0,
+    "raw_slices": 3,
+    "regular_members": 28,
+    "root_cause_status": "CAUSE_NOT_UNIQUELY_DETERMINED_NO_SOURCE_PATCH_NO_NATIVE_RUN",
+    "source_files": 14,
+    "status": "PASS_READONLY_EVIDENCE_BYTES"
+  },
+  "offline_self_contained": {
+    "code_mode_actual_summary": {
+      "failed": 1,
+      "passed": 69
+    },
+    "full_original_raw_rechecked": false,
+    "full_tree_inventory_rechecked": false,
+    "memory_visible_display_rows": {
+      "FAILED": 1,
+      "ignored": 9,
+      "ok": 364
+    },
+    "new_native_or_model_execution": 0,
+    "raw_slices": 3,
+    "regular_members": 28,
+    "root_cause_status": "CAUSE_NOT_UNIQUELY_DETERMINED_NO_SOURCE_PATCH_NO_NATIVE_RUN",
+    "source_files": 14,
+    "status": "PASS_READONLY_EVIDENCE_BYTES"
+  },
+  "raw_slices": [
+    {
+      "byte_end_exclusive": 228180,
+      "byte_start": 217831,
+      "bytes": 10349,
+      "git_blob": "61cb5f88ab7db05bf46b4d2a01bbedb188bd46ef",
+      "line_end_inclusive": 2429,
+      "line_start_one_based": 2343,
+      "path": "raw-excerpts/code-mode-target.raw.log",
+      "sha256": "aad7603e7275e9f728fa4e72447083b4022254e9857ad96cdaec0195cefed349"
+    },
+    {
+      "byte_end_exclusive": 943766,
+      "byte_start": 889603,
+      "bytes": 54163,
+      "git_blob": "218846f15f1240648e7356bdd8590e5fbd8e8fff",
+      "line_end_inclusive": 9137,
+      "line_start_one_based": 8758,
+      "path": "raw-excerpts/memory-target-incomplete.raw.log",
+      "sha256": "cc000bbc982e9ea091f0eb67f742b92c7eb5324de66c6453f68a9e4566773d3c"
+    },
+    {
+      "byte_end_exclusive": 2204662,
+      "byte_start": 2202566,
+      "bytes": 2096,
+      "git_blob": "3c42a0b760d59413465b8ca95dacef072a0a1238",
+      "line_end_inclusive": 12996,
+      "line_start_one_based": 12984,
+      "path": "raw-excerpts/final-target-summary.raw.log",
+      "sha256": "38c7924cb897c309dca1a5a50673231730f45c41aedd7d99cf8c0c0b86345772"
+    }
+  ],
+  "refs_changed": false,
+  "schema": "mem-c895-memory-code-readonly-archive-v1",
+  "source_files": 14,
+  "text_members_to_publish": [
+    "READ_ONLY_REVIEW.json",
+    "SOURCE_INDEX.json",
+    "RAW_SLICE_INDEX.json",
+    "FULL_ORIGINAL_REFERENCES.json",
+    "FILE_MANIFEST.json",
+    "README.md",
+    "verify_packet.py"
+  ]
+}

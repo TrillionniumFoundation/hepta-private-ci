@@ -1,0 +1,143 @@
+{
+  "schema": "hepta.mem8.v6.post-validation-scoped-fix-plan.v1",
+  "prepared_at": "2026-11-11T13:51:57.407285+00:00",
+  "status": "PROPOSAL_NOT_LAUNCHED_NOT_NATIVE_QUALIFIED",
+  "read_source_head": "9bd2f589debdba4a93baa363817c3669cb103721",
+  "prepared_pure_v6_head": "421d15080b3cb942be8ac51bbe443e268d124a9e",
+  "final_formatted_v6_head": "PENDING_ACTUAL_SOURCE_GATE_AND_ROOT_PUBLICATION",
+  "reason": "AGENTS.md requires scoped just fix before finalizing a large Rust change. Current MEM native fixes only memory, Agentd and protocol. Bazel Clippy is a lint build, not an execution of just fix for these three packages.",
+  "recipe": {
+    "cwd": "codex-rs",
+    "command": "cargo clippy --fix --tests --allow-dirty {args}",
+    "behavior": "Compiles/lints test code and may rewrite source. It does not execute the tests. Independent clean-source guards must reject all rewrites, despite the inherited allow-dirty recipe."
+  },
+  "recommended_job": {
+    "shape": "One independent Windows hosted fix-only job, after audited actual five-case success on the final formatted V6 source. Preserve all original source/native jobs and deadlines.",
+    "runs_on": "windows-latest",
+    "timeout_minutes": 65,
+    "budget_origin": "Existing Windows native lane envelope, applied to a distinct new job. Do not append work to or extend any running 65/120-minute job.",
+    "resource_env": {
+      "CARGO_BUILD_JOBS": "1",
+      "CARGO_INCREMENTAL": "0",
+      "CARGO_PROFILE_DEV_DEBUG": "0",
+      "CARGO_PROFILE_TEST_DEBUG": "0",
+      "CARGO_TERM_COLOR": "never"
+    },
+    "commands": [
+      [
+        "just",
+        "fix",
+        "--locked",
+        "-p",
+        "codex-hepta-neuron",
+        "--features",
+        "qualification-owned-file-read"
+      ],
+      [
+        "just",
+        "fix",
+        "--locked",
+        "-p",
+        "codex-core"
+      ],
+      [
+        "just",
+        "fix",
+        "--locked",
+        "-p",
+        "codex-windows-sandbox"
+      ]
+    ],
+    "feature_scope": "Only the existing neuron qualification-owned-file-read feature; no all-features or workspace-wide fix.",
+    "deadline": "One remaining-time budget bounded by the original 65-minute job envelope, no reset for later commands, retries, automatic follow-up or broad process cancellation.",
+    "native_tests_in_this_job": 0,
+    "model_requests_in_this_job": 0,
+    "post_fix_tests": "Do not rerun tests after fix or fmt in this invocation."
+  },
+  "existing_components": {
+    "checkout": "actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd, frozen source SHA, persist-credentials false; keep source separate from harness.",
+    "rust": "dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489; use repository Rust 1.96.0 with clippy and record actual compiler/tool identities.",
+    "just": "taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532, just@1.51.0. A fix-only job does not need Nextest.",
+    "artifacts": "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02; always preserve full raw logs, before/after source proof, exact full patch and all changed postimages.",
+    "windows_execution_pattern": "The existing signed-credit step in hepta-windows-private-state-native.yml directly executes Windows subprocesses and reuses identity helpers. This is the applicable platform pattern.",
+    "posix_helper_limit": "scripts/hepta_ci_exec.py execute_logged rejects os.name != posix. Do not invoke its CLI as a Windows supervisor; reuse identity only, with a small Windows-native command/receipt wrapper."
+  },
+  "admission_before_any_fix": [
+    "Freeze the actual final formatted V6 commit/tree. Do not silently replace it with the current unformatted pure candidate.",
+    "Audit original raw/JUnit evidence for both neuron cases, the two ordinary Windows parent cases, and the core hardlink physical case. Require actual exact named PASS, with no LEAK, ignored or empty selection promoted to success.",
+    "Retain run/job/attempt, tested commit/tree and event source head separately. If Bazel used a merge commit, prove its complete tree equals the frozen source and preserve the actual merge-parent relation.",
+    "The private ordinary child is an execution inside each parent case, not another public passing test. Retain actual token-removal proof and all original four-cell outcomes.",
+    "Freeze this actual validation evidence as the input manifest before admission. Existing workflows expose no three-package fix-only dispatch mode; use a minimal independent branch-limited harness instead of rerunning an existing full Windows workflow."
+  ],
+  "phase_receipt_and_clean_contract": [
+    "Before each command: exact HEAD/tree, empty tracked/untracked source status, unchanged Cargo.lock and MODULE.bazel.lock bytes, and pinned actual tool identity.",
+    "Retain exact argv/cwd, UTC start/end, elapsed duration, exit/timeout state, complete stdout/stderr raw bytes and SHA. Compile output is not a count of tests executed.",
+    "After each command: require identical HEAD/tree, clean full source status and unchanged lock bytes. Any timeout, nonzero exit or rewrite fails and stops subsequent commands.",
+    "On every terminal path keep full git diff --binary HEAD, cached diff and all changed files. Never erase or automatically apply linter proposals to the qualified source branch.",
+    "Three clean successful fix receipts close only this scoped instruction requirement. Rewritten bytes require root review and a separate source decision; old native evidence does not qualify them automatically.",
+    "No ref mutation, original provider turn replay or new model call belongs to this job."
+  ],
+  "limitations": [
+    "This plan is not a hosted execution or qualification result. No workflow, test, fix, host process or model was launched by its author.",
+    "A Windows runner compiles the Windows-only token/helper code under its real cfg; a Linux package fix cannot establish that compilation coverage.",
+    "No runtime helper staging is required just to invoke clippy, since these commands do not run test children. Build scripts remain ordinary compiler prerequisites.",
+    "The plan covers the requested neuron/core/Windows delta, not all changed packages in the cumulative 109-path proposal.",
+    "A first local plan-generation attempt stopped before creating a report because a manually transcribed justfile digest was incorrect. This final generator binds every source pin to the complete actual c777 tree instead."
+  ],
+  "source_pins": [
+    {
+      "path": "AGENTS.md",
+      "bytes": 22519,
+      "sha256": "c3f80e8386eb170b00af1e21de40d770c4941e464915687e728e2d14a7e79480",
+      "git_blob": "faa57cc0db48123e1011f1eb47692cd3bbbcfc3a"
+    },
+    {
+      "path": "justfile",
+      "bytes": 7838,
+      "sha256": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124",
+      "git_blob": "a215a76cf407ace9715bca39c20497014e7dd4dc"
+    },
+    {
+      "path": "scripts/hepta_ci_exec.py",
+      "bytes": 12863,
+      "sha256": "9b2bfaa563fff018df4e4f10944f6fbc63d307fa4c4a7e167c392288edb5a5c1",
+      "git_blob": "c9434b3a4afb31f80e323d543936386a2fa738de"
+    },
+    {
+      "path": ".github/workflows/hepta-windows-current-ci.yml",
+      "bytes": 2749,
+      "sha256": "cd649ec9a1786c20531c6757ad07743f5a16ecc698d25ad59be8cf2dfd15a794",
+      "git_blob": "d9dc4986a86a6d29e51203e34b7cc3e4f08c536b"
+    },
+    {
+      "path": ".github/workflows/hepta-windows-private-state-native.yml",
+      "bytes": 11296,
+      "sha256": "f0b337396749986f1dcbc4284f65c7e3afab434e70989cc903f28596d3b9c245",
+      "git_blob": "db54c8ce847d135a0213bd2e4a0a8858a32b2a51"
+    },
+    {
+      "path": ".github/scripts/windows_current_ci.py",
+      "bytes": 11926,
+      "sha256": "cefa811a6cd39bb2dc6a3dfa23225832a55e5ff4a7c21bc6b05bb7effcc0a3fd",
+      "git_blob": "161ed1149c8ffb5f2bb2a8272f555f8b91d729fe"
+    },
+    {
+      "path": ".github/workflows/hepta-mem-python.yml",
+      "bytes": 23608,
+      "sha256": "e0e94ceaf14e373a7df7b7cf00ac1bab337e694eb90411ff6bab3e3aeb1c77ad",
+      "git_blob": "f6926400461f7fefa503df46299a91c2795e1999"
+    },
+    {
+      "path": ".github/workflows/bazel.yml",
+      "bytes": 21878,
+      "sha256": "11d5ced3d41620e82e3aa57e842d219dfbd7cc6ddb4027266472987aff99ad89",
+      "git_blob": "73e70ae2300bf6013d69914662d546d8e1b83569"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/Cargo.toml",
+      "bytes": 609,
+      "sha256": "8ce4f152f21226e7d5bccebb453f63505e394fa06ea86669526816f9c19f22aa",
+      "git_blob": "211fd7bc760949cab886f7346320fbe1c8468df2"
+    }
+  ]
+}

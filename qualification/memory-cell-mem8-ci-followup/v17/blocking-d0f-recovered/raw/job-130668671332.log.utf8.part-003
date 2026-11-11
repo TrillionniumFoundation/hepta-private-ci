@@ -1,0 +1,11 @@
+i/.git/worktrees/*.path
+2026-11-11T17:11:36.1027474Z [command]"C:\Program Files\Git\bin\git.exe" config --local --get-all includeif.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git.path
+2026-11-11T17:11:36.1366672Z D:\a\_temp\git-credentials-d799216b-3f0e-43dd-9e18-28f7cd20d4c6.config
+2026-11-11T17:11:36.1411648Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset includeif.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git.path D:\a\_temp\git-credentials-d799216b-3f0e-43dd-9e18-28f7cd20d4c6.config
+2026-11-11T17:11:36.1796879Z [command]"C:\Program Files\Git\bin\git.exe" config --local --get-all includeif.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path
+2026-11-11T17:11:36.2146115Z D:\a\_temp\git-credentials-d799216b-3f0e-43dd-9e18-28f7cd20d4c6.config
+2026-11-11T17:11:36.2193330Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset includeif.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path D:\a\_temp\git-credentials-d799216b-3f0e-43dd-9e18-28f7cd20d4c6.config
+2026-11-11T17:11:36.2584799Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+2026-11-11T17:11:36.7716440Z Removing credentials config 'D:\a\_temp\git-credentials-d799216b-3f0e-43dd-9e18-28f7cd20d4c6.config'
+2026-11-11T17:11:36.7938992Z Cleaning up orphan processes
+2026-11-11T17:11:36.8835619Z Terminate orphan process: pid (4440) (java)

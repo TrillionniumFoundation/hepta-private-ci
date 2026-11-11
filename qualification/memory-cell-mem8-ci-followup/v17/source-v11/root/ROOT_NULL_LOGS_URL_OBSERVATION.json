@@ -1,0 +1,7 @@
+{
+  "failed_execution_chunk": "c2201a",
+  "exit_code": 1,
+  "reason": "Normalized tool adds logs_url:null, which the raw GitHub jobs object does not expose",
+  "correction": "Explicitly assert and document this one null-only tool field; compare every remaining job and step field recursively, no nonnull or result field exclusions",
+  "original_CI_or_evidence_mutated": false
+}

@@ -1,0 +1,248 @@
+{
+  "schema": "mem8.ci-followup-v10.complete-root-readback.v1",
+  "passed": true,
+  "immutable_commit": "f94aec4112bf9f9aa76cb9a99c312a468b0cba06",
+  "source_sha": "2ae5215beaf8d7b7df111a090b82134beae2683d",
+  "source_tree": "12159640adcf073b51f3837e75575e11f5c20233",
+  "parts": [
+    {
+      "path": "part-000.bin",
+      "offset": 0,
+      "bytes": 480000,
+      "sha256": "bb3cd2979e936d46d3bdbc80198781f8439485b7286b26c4d6d3ae290c06df92",
+      "git_blob": "4e3759a1332b18627137adc53dc165049ddda7b8",
+      "full_remote_readback": true
+    },
+    {
+      "path": "part-001.bin",
+      "offset": 480000,
+      "bytes": 480000,
+      "sha256": "365043736f8e98030ef27b10cc3ec33d383619dd6bf1855838039de51f089753",
+      "git_blob": "de99379196368080a5a6f737d8ddff1a2d4524c2",
+      "full_remote_readback": true
+    },
+    {
+      "path": "part-002.bin",
+      "offset": 960000,
+      "bytes": 480000,
+      "sha256": "a5ab26dd0bedf7ed30e05f44935578a9647ee537e14bb0b8e936a1849bf895fe",
+      "git_blob": "5d2217fa4214a6606e364b86440516b06f3ee885",
+      "full_remote_readback": true
+    },
+    {
+      "path": "part-003.bin",
+      "offset": 1440000,
+      "bytes": 81116,
+      "sha256": "cd6cedb34527bdcc21af39879b67a3d150cdc4b8ff3825f57931b63f0f7bf1ad",
+      "git_blob": "2d8c9bfbd7436b6f229c69da491dc6d65788151a",
+      "full_remote_readback": true
+    }
+  ],
+  "assembled_archive_bytes": 1521116,
+  "assembled_archive_sha256": "95e0a3f8366123c95d5b5a01ecffeff5ea6cbd9df693b08a4d6adc0fade57311",
+  "archive_members": 261,
+  "manifest_entries_verified": 260,
+  "original_zip_archives": [
+    {
+      "file": "architecture-base-merge/artifact-13834898715.zip",
+      "bytes": 13141,
+      "sha256": "3aa5b9e6bc643db80b05b4f2fabbdf33e594350855f4739678921817115c18c5",
+      "original_members_verified": 20,
+      "crc": "passed"
+    },
+    {
+      "file": "architecture-source-head/artifact-13836618179.zip",
+      "bytes": 108113,
+      "sha256": "f2b1f91143324d540005372250c00206f43faf8b4137bbb5a9cbd2c1b0af0b5e",
+      "original_members_verified": 65,
+      "crc": "passed"
+    },
+    {
+      "file": "mem-episodic-integrity/artifact-13835387383.zip",
+      "bytes": 51540,
+      "sha256": "fceade5f65b2fa7491241fc579b5babd7b3f28ea97006248ebb0356ff041f873",
+      "original_members_verified": 78,
+      "crc": "passed"
+    },
+    {
+      "file": "mem-python-contracts/artifact-13835257869.zip",
+      "bytes": 65017,
+      "sha256": "717b8f519d4c2d95f1b93550ba3c908df508d1c98ce24734105764a8b299ebf7",
+      "original_members_verified": 25,
+      "crc": "passed"
+    },
+    {
+      "file": "native-owner/artifact-13836304845.zip",
+      "bytes": 870996,
+      "sha256": "eebc58ce114427aee4b0ffda2d8db5deb84b96f5ec7d8cd946222699d91277b1",
+      "original_members_verified": 37,
+      "crc": "passed"
+    }
+  ],
+  "offline_reader_replays": {
+    "audit_mem_python_artifacts.py": {
+      "report_sha256": "efe0663038e06d07e525784b41a483ebacda38e952012d7798cc1a3b7e7cd7c0",
+      "all_report_fields_match_except_explicit_local_path": true,
+      "path_only_difference": null,
+      "stdout": {
+        "status": "PASS",
+        "executions": 154,
+        "distinct_case_ids": 120,
+        "per_group": [
+          {
+            "directory": "mem-episodic-integrity",
+            "executions": 35
+          },
+          {
+            "directory": "mem-python-contracts",
+            "executions": 119
+          }
+        ],
+        "output": "/workspace/scratch/ed3538174819/mem8-ci-followup-v10/full-readback/offline-replay/evidence/MEM_PYTHON_ARTIFACT_AUDIT.json"
+      }
+    },
+    "native-owner/audit_native_artifact.py": {
+      "report_sha256": "5dfd899bcaf1a17f809e0d58af2ccf971271c91a49f64c7d1db0155d2822d958",
+      "all_report_fields_match_except_explicit_local_path": true,
+      "path_only_difference": {
+        "original": "/workspace/scratch/ed3538174819/mem-final-composition-readonly/GIT_TREE_PLAN.json",
+        "replayed": "/workspace/scratch/ed3538174819/mem8-ci-followup-v10/full-readback/offline-replay/mem-final-composition-readonly/GIT_TREE_PLAN.json"
+      },
+      "stdout": {
+        "status": "passed",
+        "receipts": 9,
+        "sources": 112,
+        "tests": [
+          {
+            "receipt": "memory-tests.json",
+            "passed": 11,
+            "failed": 0,
+            "skipped": 420
+          },
+          {
+            "receipt": "agentd-tests.json",
+            "passed": 6,
+            "failed": 0,
+            "skipped": 782
+          },
+          {
+            "receipt": "protocol-tests.json",
+            "passed": 16,
+            "failed": 0,
+            "skipped": 0
+          }
+        ]
+      }
+    },
+    "architecture-source-head/audit_architecture_artifact.py": {
+      "report_sha256": "694f139326580dfd25c2e7486d3cc883651cff60852c068dd851005ea8b62d5e",
+      "all_report_fields_match_except_explicit_local_path": true,
+      "path_only_difference": null,
+      "stdout": {
+        "status": "PASS_FOR_EXECUTED_SOURCE_HEAD_COMMANDS",
+        "receipts": 31,
+        "python_executions": 138,
+        "native_executions": 526,
+        "all_executions": 664
+      }
+    },
+    "architecture-base-merge/audit_base_merge_artifact.py": {
+      "report_sha256": "fb7b531912e483b1ba354bd477ee5b24077727a6faf6358b685fbc7eb96af6ba",
+      "all_report_fields_match_except_explicit_local_path": true,
+      "path_only_difference": null,
+      "stdout": {
+        "status": "PASS_FOR_MERGE_IDENTITY_AND_EXECUTED_PYTHON_CONTROLS",
+        "source_sha": "2ae5215beaf8d7b7df111a090b82134beae2683d",
+        "python_tests": 136,
+        "native_tests": 0,
+        "receipts": 4,
+        "output": "/workspace/scratch/ed3538174819/mem8-ci-followup-v10/full-readback/offline-replay/evidence/architecture-base-merge/ARTIFACT_AUDIT.json"
+      }
+    }
+  },
+  "execution_counts": [
+    {
+      "run_id": 42971470585,
+      "attempt": 1,
+      "status": "completed",
+      "conclusion": "success",
+      "artifact_ids": [
+        13835257869,
+        13835387383,
+        13836304845
+      ],
+      "python": {
+        "executions": 154,
+        "distinct_case_ids": 120,
+        "duplicate_executions": 34
+      },
+      "native": {
+        "memory": 11,
+        "agentd": 6,
+        "protocol": 16,
+        "total_executions": 33,
+        "failed": 0,
+        "memory_filtered": 420,
+        "agentd_filtered": 782,
+        "protocol_filtered": 0,
+        "drain_markers": [
+          "commit",
+          "revoke",
+          "panic"
+        ],
+        "source_changed_files_verified": 112,
+        "receipts_verified": 9,
+        "fmt_and_three_fixes_changed_source": false
+      }
+    },
+    {
+      "run_id": 42971470237,
+      "attempt": 1,
+      "status": "completed",
+      "conclusion": "success",
+      "artifact_ids": [
+        13834898715,
+        13836618179
+      ],
+      "source_head": {
+        "native_executions": 526,
+        "python_executions": 138,
+        "receipts_verified": 31,
+        "clean_before_after_each_receipt": true
+      },
+      "base_merge": {
+        "python_executions": 136,
+        "native_executions": 0,
+        "identical_tree_reuse": true,
+        "requires_source_head_success": true
+      },
+      "required_aggregate": {
+        "job_id": 130386747659,
+        "conclusion": "success",
+        "completed_at": "2026-11-11T07:29:23Z"
+      }
+    }
+  ],
+  "original_failure_archive_members": 25,
+  "original_failures": [
+    {
+      "job_id": 130374692127,
+      "bytes": 53886,
+      "sha256": "37446ca034b43875c312c301293e8b0ebe6e9efc7a2184a731ab1b9061bf80d5",
+      "original_failure_retained": true
+    },
+    {
+      "job_id": 130374692388,
+      "bytes": 859638,
+      "sha256": "ec88ee8f63246c95a53f82cc1ff43b314fb6f94436e361083788e4f1eb3a14b2",
+      "original_failure_retained": true
+    }
+  ],
+  "previous_root_readback": "eae8aefe6faaa8fd827471d285d68ff7e4238fb1",
+  "previous_root_readback_members": 422,
+  "native_or_model_executions_in_this_audit": 0,
+  "ignored_provider_tests_executed_by_this_audit": 0,
+  "whole_integrated_ci_pass_claimed": false,
+  "source_result_transfer_to_any_repair_head": false,
+  "prepublication_metadata_left_immutable": true
+}

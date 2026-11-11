@@ -1,0 +1,108 @@
+{
+  "schema": "mem8.qualification-clock.ownership-peer-review.v2",
+  "reviewer": "/root/mem_experiment_review",
+  "candidate": {
+    "base_tree": "e253b99e0a5c3b3a680569da0d224fabff0781ba",
+    "patch": {
+      "bytes": 34628,
+      "sha256": "8f95aab31d8124f22ae9ddd67ae78f05862ee707459637ce32285a79c4010898"
+    },
+    "manifest": {
+      "bytes": 8448,
+      "sha256": "58e47ce484afaba2b0336a8f3eb192956037afe85f943e8a16b5bcbf92878dd7"
+    },
+    "author_capsule": {
+      "bytes": 782274,
+      "sha256": "8b38b3030e109426e1d2e3fa3f18805fddb1ddfb71d4b8d87f94c7f65cf7071d",
+      "verification": "AUTHOR_REPORTED_CAPSULE_HASH; individual 23 local postimages independently verified"
+    },
+    "changed_paths": 23,
+    "additions": 451,
+    "deletions": 53,
+    "author_freeze_utc": "2026-11-11T10:25:24.369060Z",
+    "full_postimage_verification": "ALL_23_LOCAL_FILES_MATCH_FINAL_MANIFEST_BYTES_SHA256_AND_GIT_BLOB"
+  },
+  "conclusion": "NO_MUST_FIX_IDENTIFIED_IN_REQUESTED_STATIC_RUST_CLOCK_AND_OWNER_SCOPE",
+  "execution": {
+    "rustfmt_executed_by_this_review": false,
+    "native_tests_executed": 0,
+    "model_requests": 0,
+    "host_commands": 0,
+    "source_or_ref_mutations": false
+  },
+  "boundaries": [
+    "This is static source review; it does not claim compilation, test execution, Bazel dependency graph qualification, or production owner recovery.",
+    "The clock is an explicit qualification mechanism. Advancing a plus-one-second expiry does not prove real elapsed time performance.",
+    "Initial ownership review remains historical. This report binds the later checked-i64-equivalence correction and the final 23-path candidate."
+  ],
+  "checks": [
+    {
+      "id": "fresh_only_exclusive_fence",
+      "status": "STATIC_CONFIRMED",
+      "path": "codex-rs/hepta-memory/src/cognitive_lease_clock.rs",
+      "evidence": "The feature/test-only constructor creates the private cognitive root, acquires the existing exclusive store-open guard, and rejects every directory entry except the existing lock filename before open_guarded. Existing DB/recovery state and concurrent ordinary owners cannot be silently rebound.",
+      "limit": "Filesystem guard semantics were reviewed through existing implementations; no adversarial host race was executed."
+    },
+    {
+      "id": "clock_bound_before_escape",
+      "status": "STATIC_CONFIRMED",
+      "evidence": "The constructor initializes the real store under its retained guard, derives the initial wall value, checks i64 representability, creates one Arc<AtomicU64>, and binds it before returning any store/control. There is no setter on an existing owner."
+    },
+    {
+      "id": "weak_controller_custody",
+      "status": "STATIC_CONFIRMED",
+      "evidence": "QualificationLeaseClock stores Weak<AtomicU64>; it does not own a CognitiveStore, SQLite pool, or exclusive store guard. Each operation temporarily upgrades the clock; after all strong store/lease/executor clones are dropped, the control reports owner unavailable. advance_to rejects backwards time and values beyond i64::MAX."
+    },
+    {
+      "id": "shared_clone_lease_executor_clock",
+      "status": "STATIC_CONFIRMED",
+      "evidence": "Derived CognitiveStore clones share the same clock Arc and the original open-guard Arc. LocalLeaseOutbox retains a clone of that store. LocalCompactExecutor checks same local store, validates the current lease inside BEGIN IMMEDIATE, and retains both store.clone() and the verified lease clone. Expiry checks therefore use the bound owner's clock.",
+      "unchanged_reference": {
+        "path": "codex-rs/hepta-memory/src/local_compact_executor.rs",
+        "bytes": 47549,
+        "git_blob": "822a80b58a0b537b4e02daf41721b167c33db5b0",
+        "sha256": "11974ace98de68e444d1b6ca2019604c6f8c3fde4e5478aa0c5ffd16a03a73f4"
+      }
+    },
+    {
+      "id": "ordinary_recovery_readonly_real_time",
+      "status": "STATIC_CONFIRMED",
+      "evidence": "Ordinary open_guarded construction, read-only-pool construction, and recovered-store construction set LocalLeaseClock::Real. Only cfg(test) or feature qualification-lease-clock exposes the fresh controlled constructor. Independent owners allocate separate clock cells."
+    },
+    {
+      "id": "persisted_audit_time_unchanged",
+      "status": "STATIC_CONFIRMED",
+      "evidence": "Persisted lease/H7 audit timestamps continue to use the original wall-clock helpers. The LocalCompactExecutor SystemTime use is an audit event timestamp, not a competing expiry clock. Registry inspect observed_at follows the selected owner clock and is a returned qualification observation, not a rewritten persistent event timestamp."
+    },
+    {
+      "id": "checked_i64_correction",
+      "status": "STATIC_CONFIRMED",
+      "evidence": "The final private-to-crate local_lease_now_unix_i64 helper performs i64::try_from(local_lease_now_unix_seconds()) and preserves the original timestamp overflow error. All three lease and all three H7 expiry sites now use it; the previous i64-to-u64 checks and clock-before-Unix-epoch errors remain. Four registry sites retain their original u64-domain behavior.",
+      "original_helpers": [
+        "codex-rs/hepta-memory/src/local_lease_outbox.rs::now_unix_seconds",
+        "codex-rs/hepta-memory/src/h7_trajectory_store.rs::now_unix_seconds"
+      ],
+      "final_blobs": {
+        "codex-rs/hepta-memory/src/cognitive_lease_clock.rs": "f7f6375d98277fb6e26031f9a6a9b7c656896027",
+        "codex-rs/hepta-memory/src/local_lease_outbox.rs": "f45edad4844702285f9ab81390ba0e2bde9ee894",
+        "codex-rs/hepta-memory/src/h7_trajectory_store.rs": "0fb4061d741658a8a8d94dd0ea1f18197ecc8908",
+        "codex-rs/hepta-memory/src/logical_turn_registry.rs": "5e908894aba0a0c288f02195f0afea24d5817445"
+      }
+    },
+    {
+      "id": "positive_rejection_and_budgets",
+      "status": "STATIC_CONFIRMED",
+      "evidence": "The Agentd qualification case still uses plus-one expiry, original live H7 writes, original two-second sleep, and original quarantine assertions; explicit advance occurs after the positive evidence. Extension expiry coverage retains positive admission/write, wrong-store rejection, expiry and stale-admission rejection, the original 120 by 25ms polling bound, and next-generation behavior. The patch does not widen lease windows or discard those assertions."
+    },
+    {
+      "id": "candidate_unit_controls",
+      "status": "PRESENT_NOT_EXECUTED",
+      "evidence": "Candidate tests cover monotonicity, independent owners, shared clones/lease observations, weak control after owner drop, rejection of a concurrent owner, and rejection of a previously populated store."
+    }
+  ],
+  "excluded_from_this_peer_scope": [
+    "The separately assigned Bazel qualification feature dependency graph review and lock regeneration.",
+    "Actual platform/native behavior, including the new clock tests and existing two expiry cases.",
+    "Any inference that this candidate resolves original Mac failures before exact-source execution."
+  ]
+}

@@ -1,0 +1,63 @@
+{
+  "schema": "hepta.mem8.ci9bd2.partial-python-and-base-artifact-audit.v1",
+  "scope": "Only three completed original artifacts; no native or Architecture source-head result included.",
+  "source_head": "9bd2f589debdba4a93baa363817c3669cb103721",
+  "source_tree": "c77785ecb368c44ea699769001a47402c9f50591",
+  "MEM_run": 43021840437,
+  "Architecture_run": 43021840388,
+  "artifacts": 3,
+  "regular_members_full_sha_verified": 123,
+  "strict_receipts": 13,
+  "MEM_python": {
+    "groups": 8,
+    "passed": 119,
+    "failed": 0
+  },
+  "MEM_integrity_python": {
+    "groups": 1,
+    "passed": 35,
+    "failed": 0
+  },
+  "MEM_python_execution_observations": 154,
+  "MEM_python_distinct_case_ids": 120,
+  "MEM_python_repeated_observations": 34,
+  "Architecture_base_merge": {
+    "tested_sha": "6032d1f09f2b2e70c6be42336b6922fdade5f60c",
+    "tree": "c77785ecb368c44ea699769001a47402c9f50591",
+    "python_passed": 136,
+    "failed": 0,
+    "metadata_command_with_zero_cases": 1
+  },
+  "synthetic_revocation_campaign": {
+    "reader_processes": 14,
+    "exited_writers": 3,
+    "passed_scenarios": 14,
+    "actual_response_files_context_hashes_and_request_file_hashes_checked": true,
+    "scenario_ids": [
+      "live_updated_fact",
+      "snapshot_current_fact",
+      "snapshot_active_chain",
+      "restricted_dependency_closure",
+      "snapshot_off",
+      "snapshot_retrieval_off",
+      "snapshot_delivery_off",
+      "revoked_live_fact",
+      "revoked_snapshot_fact",
+      "revoked_snapshot_bm25",
+      "revoked_snapshot_uniform",
+      "revoked_snapshot_icl",
+      "unrelated_snapshot_fact",
+      "unrelated_live_fact"
+    ],
+    "model_calls": 0,
+    "real_successor_task_benefit": false,
+    "independent_trust_domain": false,
+    "deletion_scope": "logical read exclusion; snapshot bytes remain",
+    "full_owner_cold_recovery": false
+  },
+  "counts_not_inferred_from_artifact_name": true,
+  "artifact_name_8644_sha_scope": "GitHub event merge name only; source-head receipts explicitly bind 9bd2 and base-merge receipts bind 6032 with exact parents/tree.",
+  "old_189_or_2ae_counts_transferred": false,
+  "native_count_claimed": null,
+  "archived_code_executed_by_audit": false
+}
