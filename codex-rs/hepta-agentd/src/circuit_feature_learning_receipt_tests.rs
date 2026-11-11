@@ -35,8 +35,18 @@ struct FeatureFixture {
     server: tokio::task::JoinHandle<Result<(), crate::AgentdError>>,
 }
 
+#[derive(Clone, Copy)]
+enum ControlFixture {
+    Original,
+    DelayedOriginal,
+}
+
 impl FeatureFixture {
     async fn new(deadline_offset: u64) -> anyhow::Result<Self> {
+        Self::with_control(deadline_offset, ControlFixture::Original).await
+    }
+
+    async fn with_control(deadline_offset: u64, control: ControlFixture) -> anyhow::Result<Self> {
         let root = tempfile::tempdir()?;
         let (model, bundle, definition) = support::model(root.path())?;
         let a = support::admission("feature-learning-original-A").await?;
@@ -183,7 +193,12 @@ impl FeatureFixture {
             cancellation.clone(),
         )
         .await?;
-        let server = tokio::spawn(server.run());
+        let server = match control {
+            ControlFixture::Original => tokio::spawn(server.run()),
+            ControlFixture::DelayedOriginal => {
+                tokio::spawn(server.run_delayed_original_circuit_for_test())
+            }
+        };
         Ok(Self {
             session,
             ingress,
@@ -197,6 +212,21 @@ impl FeatureFixture {
             cancellation,
             server,
         })
+    }
+
+    async fn observe_original_completion(
+        &self,
+    ) -> anyhow::Result<OriginalCircuitFeatureLearningSourcesV1> {
+        timeout(Duration::from_secs(60), async {
+            loop {
+                if let Ok(source) = self.ingress.readback() {
+                    return source;
+                }
+                tokio::time::sleep(Duration::from_millis(10)).await;
+            }
+        })
+        .await
+        .map_err(Into::into)
     }
 
     fn file(&self, name: &str) -> anyhow::Result<std::fs::File> {
@@ -449,3 +479,6 @@ async fn feature_receipts_reject_wrong_key_role_and_expired_new_claim() -> anyho
     );
     f.finish().await
 }
+
+#[path = "circuit_feature_control_completion_tests.rs"]
+mod control_completion;
