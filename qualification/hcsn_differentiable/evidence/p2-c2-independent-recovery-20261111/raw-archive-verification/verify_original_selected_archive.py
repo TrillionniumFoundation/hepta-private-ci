@@ -6,7 +6,6 @@ The identity constants bind this verifier to the observed original archive.
 The result output is created exclusively; an existing result is never replaced.
 """
 
-from __future__ import annotations
 
 import argparse
 import datetime as dt

@@ -75,6 +75,28 @@ same adapted fixture. The suites do not double-count the historical terminal
 class. The final inherited result explicitly records the 11/8/4/5 class
 counts and exact module source identities.
 
+## First hosted-head spelling failure
+
+For source head `f7897539897eb01c332346654e4635e94ad1312f`, Codespell job
+`130342749006` in blocking run `42965840400` failed on two encoded payload
+fragments. Its checkout was merge `b8afcd2d65d0128446dd931558010a952d70452b`;
+the GitHub commit response confirms tree
+`2b7d1574ed78d2e4eaaa062dc505f09891c933df`, identical to the published source
+tree. The [failure and fix archive](ci-first-head/CODESPELL-FAILURE-AND-FIX.zip)
+preserves the original log response, run observation, merge identity and
+configuration validation, with an explicit size/SHA256 manifest inside a
+deterministic ZIP. The overall blocking run was still queued at the last
+recorded observation; the failed Codespell job is not a whole-run terminal.
+
+The follow-up configuration adds only the exact paths for
+[native-first/COMMAND.sh](native-first/COMMAND.sh) and
+[native-first/LAUNCH-RECEIPT.json](native-first/LAUNCH-RECEIPT.json) to the
+existing Codespell exclusions. Neither raw file nor the word allowlist changes;
+no directory is broadly excluded. Both raw identities remain checked by this
+appendix's manifest. The saved fix validation precedes this manifest's extension
+to bind the new ZIP and README. No hosted result for the corrected head had been
+observed when this section was recorded; the original failure remains intact.
+
 ## Cost and limits
 
 The [summary](SUMMARY.json) separates measured software overhead from unknown

@@ -109,13 +109,28 @@ files are unchanged after their inclusion in this appendix.
 A separate standard-library verifier checks the ten part sizes, offsets and
 hashes, assembled archive identity, ZIP CRCs, every original member's size and
 SHA-256, and byte identity of the embedded and external source manifests.
-Its [source](raw-archive-verification/verify_original_selected_archive.py) and
-[result](raw-archive-verification/RESULT.json) are retained unchanged. All 2,683
-checks pass; all 368 source members and 369 ZIP entries are accounted for, with
-no missing or unexpected member. This check uses Python 3.12.14, performs no
-checkpoint deserialization, and is separate from the original Torch runtime
-model replay. It reports 0.158159 seconds wall time and 0.158166 seconds CPU;
-this additional verification cost is not refunded from training costs.
+The first execution's [result](raw-archive-verification/RESULT.json) remains
+unchanged. Its exact source is preserved in the
+[original source capsule](raw-archive-verification/original-verifier-source-v1.zip),
+whose only member is `verify_original_selected_archive.py` with SHA-256
+`84bbd69df3104cdc594da3e0c8b431f67785d0f4e975c30a7044783fc8e4ee91`.
+
+The root `AGENTS.md` prohibits the `__future__` module. The
+[current verifier](raw-archive-verification/verify_original_selected_archive.py)
+therefore differs from the preserved first source only by removing the
+unnecessary `from __future__ import annotations` line. The
+[correction receipt](raw-archive-verification/SOURCE-CORRECTION.json) binds
+both sources and results. A single fresh execution of the corrected source
+produces [RESULT-v2.json](raw-archive-verification/RESULT-v2.json). Both executions
+pass all 2,683 checks and account for all 368 source members and 369 ZIP entries,
+with no missing or unexpected member. The thirteen archive inputs, ten frozen
+proposal Python sources, and first result remain byte-identical.
+
+Both checks use Python 3.12.14, perform no checkpoint deserialization, and are
+separate from the original Torch runtime model replay. The first execution
+reports 0.158159 seconds wall time and 0.158166 seconds CPU; the corrected-source
+execution adds 0.128007 seconds wall time and 0.127945 seconds CPU. This
+additional verification cost is not refunded from training costs.
 
 [SUMMARY.json](SUMMARY.json) records the current archive inclusion and
 verification status. The earlier failed audit, original unknown controller
