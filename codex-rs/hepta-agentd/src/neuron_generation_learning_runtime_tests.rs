@@ -6,6 +6,9 @@ use std::sync::atomic::Ordering;
 
 use codex_hepta_learning_artifacts::LearningIterationCoordinatorV1;
 use codex_hepta_learning_artifacts::LearningIterationObservationV1;
+use codex_hepta_learning_artifacts::LearningIterationStageV1;
+use codex_hepta_learning_artifacts::LearningTrainingNoUpdateReasonV2;
+use codex_hepta_learning_artifacts::LearningTrainingNoUpdateV2;
 use codex_hepta_neuron::CellGenerationErrorV2;
 use codex_hepta_neuron::CellTaskCostV2;
 use codex_hepta_types::Digest32;
@@ -289,6 +292,81 @@ async fn ordinary_actor_reads_actual_use_and_cold_recovery_without_reexecution()
             .await
             .is_err()
     );
+    tasks.shutdown().await;
+    Ok(())
+}
+
+#[tokio::test]
+async fn ordinary_actor_refuses_trainer_no_update_as_committed_next_use() -> anyhow::Result<()> {
+    let mut f = LearningRuntime::new().await?;
+    let (mut tasks, _lifetime) = support::start(&mut f.runtime, &f.host)?;
+    let request = support::request(
+        &f.publication.target_config,
+        f.runtime.handle.snapshot().await?,
+    );
+    let intent = request.intent()?;
+    f.runtime.handle.step(request).await?;
+    let retained = (
+        f.publication.bytes("current.json")?,
+        f.publication.bytes("target-journal")?,
+        f.publication.bytes("target-witness")?,
+        f.publication.bytes("final-use/authority.claims")?,
+    );
+    // A structurally valid Generator fixture has no Selector receipt. Even an
+    // actual committed use by this actor cannot turn it into a NextUse export.
+    let mut prefix = f.coordinator.snapshot().clone();
+    prefix.head_digest = prefix.receipts[2].predecessor;
+    prefix.receipts.truncate(2);
+    let LearningIterationObservationV1::Dataset {
+        snapshot_digest, ..
+    } = &prefix.receipts[1].observation
+    else {
+        anyhow::bail!("fixture original Dataset cut");
+    };
+    let snapshot_digest = *snapshot_digest;
+    let mut unfinished = LearningIterationCoordinatorV1::from_snapshot(prefix)?;
+    let unchanged =
+        LearningIterationObservationV1::TrainingNoUpdateV2(LearningTrainingNoUpdateV2 {
+            retained_bundle: unfinished.snapshot().request.selected_bundle.digest()?,
+            dataset: snapshot_digest,
+            update_rule: Digest32::of_bytes(b"fixture-unchanged-training-rule"),
+            steps: 1,
+            milliseconds: 1,
+            reason: LearningTrainingNoUpdateReasonV2::QuantizedWeightsUnchanged,
+        });
+    unfinished.record(learning_test_receipt(&unfinished, unchanged), 20)?;
+    assert_eq!(
+        unfinished.next_stage(),
+        Some(LearningIterationStageV1::Selection)
+    );
+    assert!(matches!(
+        f.runtime
+            .handle
+            .read_learning_next_use(&unfinished, &intent)
+            .await,
+        Err(NeuronGenerationLearningReadErrorV1::Observation(
+            AgentdError::Invalid(_)
+        ))
+    ));
+    assert!(matches!(
+        f.runtime
+            .handle
+            .read_learning_next_use_readback(&unfinished, &intent)
+            .await,
+        Err(NeuronGenerationLearningReadErrorV1::Observation(
+            AgentdError::Invalid(_)
+        ))
+    ));
+    assert_eq!(
+        (
+            f.publication.bytes("current.json")?,
+            f.publication.bytes("target-journal")?,
+            f.publication.bytes("target-witness")?,
+            f.publication.bytes("final-use/authority.claims")?,
+        ),
+        retained
+    );
+    assert_eq!(f.control.executions.load(Ordering::SeqCst), 1);
     tasks.shutdown().await;
     Ok(())
 }
