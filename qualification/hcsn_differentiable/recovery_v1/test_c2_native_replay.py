@@ -161,5 +161,46 @@ class NativeObservationTests(unittest.TestCase):
         self.assertIn(NAMES[0], out["rejected"])
 
 
+    def _rebound_result(self, raw: bytes):
+        # Producer and receipt agree on the attack bytes; digest equality alone
+        # cannot establish that the result is parseable, unambiguous JSON.
+        name = NAMES[0]
+        self.add(name)
+        path = self.root / "artifacts" / name / "result.json"
+        path.write_bytes(raw)
+        rebound = self.root / "result-rebound"
+        append_receipt(rebound, owner_start_id=OWNER, attempt_id=name,
+                       event_type="terminal", payload={
+                           "status": "completed", "native_job_id": "job-" + name,
+                           "result_sha256": digest(path),
+                           "resource_sha256": digest(path.parent / "resource.json")})
+        return inspect_exported_observations(
+            rebound, owner_start_id=OWNER, expected_attempts=NAMES,
+            native_observations=self.native,
+            artifacts_root=self.root / "artifacts")
+
+    def test_rebound_duplicate_result_keys_rejected(self):
+        report = self._rebound_result(b'{"schema":"a","schema":"b"}\n')
+        self.assertIn(NAMES[0], report["rejected"])
+
+    def test_rebound_nonfinite_result_field_rejected(self):
+        report = self._rebound_result(b'{"schema":"a","debug":NaN}\n')
+        self.assertIn(NAMES[0], report["rejected"])
+
+    def test_rebound_result_not_json_object_rejected(self):
+        report = self._rebound_result(b'[1,2,3]\n')
+        self.assertIn(NAMES[0], report["rejected"])
+
+    def test_numeric_zero_does_not_mean_untruncated_native_logs(self):
+        self.add(NAMES[0])
+        self.native["job-" + NAMES[0]]["log_truncated"] = 0
+        self.assertIn(NAMES[0], self.audit()["rejected"])
+
+    def test_numeric_zero_nested_native_logs_rejected(self):
+        self.add(NAMES[0])
+        self.native["job-" + NAMES[0]]["log_truncated"] = {
+            "stdout": 0, "stderr": 0}
+        self.assertIn(NAMES[0], self.audit()["rejected"])
+
 if __name__ == "__main__":
     unittest.main()

@@ -41,12 +41,21 @@ def _finite_json_float(token):
     return value
 
 
+def _strict_json_document(path, *, max_bytes, kind):
+    if path.stat().st_size > max_bytes:
+        raise EvidenceError(kind + " evidence exceeds byte cap")
+    value = json.loads(path.read_bytes(),
+                       object_pairs_hook=_unique_json_object,
+                       parse_constant=_reject_json_constant,
+                       parse_float=_finite_json_float)
+    if type(value) is not dict:
+        raise EvidenceError(kind + " evidence must be a JSON object")
+    return value
+
+
 def _strict_resource_bytes(path):
-    if path.stat().st_size > MAX_RESOURCE_BYTES:
-        raise EvidenceError("resource evidence exceeds byte cap")
-    return json.loads(path.read_bytes(), object_pairs_hook=_unique_json_object,
-                      parse_constant=_reject_json_constant,
-                      parse_float=_finite_json_float)
+    return _strict_json_document(path, max_bytes=MAX_RESOURCE_BYTES,
+                                 kind="resource")
 
 
 def _nonnegative_number(value):
@@ -83,7 +92,11 @@ def _native_status(status, expected_job_id, expected_success):
             or status.get("output_complete") is not True
             or status.get("output_durable") is not True):
         raise EvidenceError("native terminal or output not confirmed")
-    if status.get("log_truncated") not in (False, {"stderr": False, "stdout": False}):
+    logs = status.get("log_truncated")
+    if not (logs is False or (
+            type(logs) is dict and set(logs) == {"stderr", "stdout"}
+            and logs["stderr"] is False and logs["stdout"] is False)):
+        # False is distinct from integer 0, including nested fields.
         raise EvidenceError("native output truncated or unknown")
     if expected_success:
         if status.get("state") != SUCCESS_STATE or type(status.get("exit_code")) is not int or status["exit_code"] != 0:
@@ -143,6 +156,10 @@ def inspect_exported_observations(receipts_root: Path, *, owner_start_id: str,
                 raise EvidenceError("result bytes differ from receipt")
             if identity(resource)["sha256"] != receipt["resource_sha256"]:
                 raise EvidenceError("resource bytes differ from receipt")
+            # Hash agreement does not prove even syntactic JSON evidence.
+            # This is intentionally NOT a model/result science validator.
+            _strict_json_document(result, max_bytes=MAX_RESULT_BYTES,
+                                  kind="result")
             _resource(_strict_resource_bytes(resource), job_id)
             matched.append(attempt)
             if receipt["status"] == "completed":
