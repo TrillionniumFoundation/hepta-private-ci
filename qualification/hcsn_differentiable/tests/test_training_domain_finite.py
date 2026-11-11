@@ -137,6 +137,20 @@ class FiniteDomainTests(unittest.TestCase):
         self.assertEqual(relative[2], 0.0)
         self.assertAlmostEqual(float(absolute[0]), 0.00002, places=12)
 
+    def test_nonfinite_or_misaligned_diagnostics_fail_closed(self):
+        invalid = (
+            (np.array([0.0, np.nan, 0.0, 0.0]), np.zeros(4)),
+            (np.array([0.0, np.inf, 0.0, 0.0]), np.zeros(4)),
+            (np.zeros(4), np.array([0.0, np.nan, 0.0, 0.0])),
+            (np.zeros(3), np.zeros(4)),
+            (np.zeros((1, 4)), np.zeros((1, 4))),
+            (np.array([]), np.array([])),
+        )
+        for projected, reference in invalid:
+            with self.subTest(projected=projected, reference=reference):
+                with self.assertRaisesRegex(ValueError, "finite, nonempty, equally sized"):
+                    _error_diagnostics(projected, reference)
+
 
 if __name__ == "__main__":
     unittest.main()
