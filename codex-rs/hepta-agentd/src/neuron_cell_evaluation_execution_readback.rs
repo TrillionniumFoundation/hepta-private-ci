@@ -8,15 +8,18 @@ pub(super) struct Readback<'a, W: AnchorWitnessStore> {
 }
 
 impl<W: AnchorWitnessStore> ProductEvaluationExecutionStoreV1 for Readback<'_, W> {
-    fn claim(&mut self, _: &ProductEvaluationExecutionKeyV1)
-        -> Result<ProductEvaluationExecutionClaimV1, StoreError>
-    {
+    fn claim(
+        &mut self,
+        _: &ProductEvaluationExecutionKeyV1,
+    ) -> Result<ProductEvaluationExecutionClaimV1, StoreError> {
         Err(StoreError::Rejected)
     }
 
-    fn complete(&mut self, _: &ProductEvaluationExecutionKeyV1, _: &[u8])
-        -> Result<(), StoreError>
-    {
+    fn complete(
+        &mut self,
+        _: &ProductEvaluationExecutionKeyV1,
+        _: &[u8],
+    ) -> Result<(), StoreError> {
         Err(StoreError::Rejected)
     }
 

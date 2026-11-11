@@ -69,7 +69,11 @@ impl<W: AnchorWitnessStore> OriginalCellEvaluationExecutionStoreV1<W> {
             return Err(Error::Binding("new execution file is not empty"));
         }
         witness.compare_and_swap(None, initial)?;
-        let mut owner = Self { journal, witness, fenced: false };
+        let mut owner = Self {
+            journal,
+            witness,
+            fenced: false,
+        };
         if owner.require_current()? != initial {
             return Err(Error::CommitUncertain);
         }
@@ -83,7 +87,10 @@ impl<W: AnchorWitnessStore> OriginalCellEvaluationExecutionStoreV1<W> {
         &'a mut self,
         key: &'a ProductEvaluationExecutionKeyV1,
     ) -> impl ProductEvaluationExecutionStoreV1 + 'a {
-        readback::Readback { original: self, key }
+        readback::Readback {
+            original: self,
+            key,
+        }
     }
 
     fn require_current(&mut self) -> Result<JournalAnchor, Error> {
@@ -107,7 +114,9 @@ impl<W: AnchorWitnessStore> OriginalCellEvaluationExecutionStoreV1<W> {
     }
 
     fn unchanged(&mut self, before: JournalAnchor) -> Result<(), StoreError> {
-        let after = self.require_current().map_err(|_| StoreError::Indeterminate)?;
+        let after = self
+            .require_current()
+            .map_err(|_| StoreError::Indeterminate)?;
         if before != after {
             self.fenced = true;
             return Err(StoreError::Indeterminate);
@@ -136,7 +145,12 @@ impl<W: AnchorWitnessStore> OriginalCellEvaluationExecutionStoreV1<W> {
                     return Err(Error::CommitUncertain);
                 }
             } else {
-                if next.sequence != before.sequence.checked_add(1).ok_or(Error::CommitUncertain)? {
+                if next.sequence
+                    != before
+                        .sequence
+                        .checked_add(1)
+                        .ok_or(Error::CommitUncertain)?
+                {
                     return Err(Error::CommitUncertain);
                 }
                 self.witness.compare_and_swap(Some(before), next)?;
@@ -157,10 +171,13 @@ impl<W: AnchorWitnessStore> OriginalCellEvaluationExecutionStoreV1<W> {
 impl<W: AnchorWitnessStore> ProductEvaluationExecutionStoreV1
     for OriginalCellEvaluationExecutionStoreV1<W>
 {
-    fn claim(&mut self, key: &ProductEvaluationExecutionKeyV1)
-        -> Result<ProductEvaluationExecutionClaimV1, StoreError>
-    {
-        let before = self.require_current().map_err(|_| StoreError::Indeterminate)?;
+    fn claim(
+        &mut self,
+        key: &ProductEvaluationExecutionKeyV1,
+    ) -> Result<ProductEvaluationExecutionClaimV1, StoreError> {
+        let before = self
+            .require_current()
+            .map_err(|_| StoreError::Indeterminate)?;
         let result = ProductEvaluationExecutionStoreV1::claim(&mut self.journal, key);
         match result {
             Ok(ProductEvaluationExecutionClaimV1::Claimed) => {
@@ -175,10 +192,14 @@ impl<W: AnchorWitnessStore> ProductEvaluationExecutionStoreV1
         }
     }
 
-    fn complete(&mut self, key: &ProductEvaluationExecutionKeyV1, payload: &[u8])
-        -> Result<(), StoreError>
-    {
-        let before = self.require_current().map_err(|_| StoreError::Indeterminate)?;
+    fn complete(
+        &mut self,
+        key: &ProductEvaluationExecutionKeyV1,
+        payload: &[u8],
+    ) -> Result<(), StoreError> {
+        let before = self
+            .require_current()
+            .map_err(|_| StoreError::Indeterminate)?;
         match ProductEvaluationExecutionStoreV1::complete(&mut self.journal, key, payload) {
             Ok(()) => self.witness_effect(before, Effect::AtMostOneFrame),
             Err(error) => Err(self.failed_operation(before, error)),
@@ -186,7 +207,9 @@ impl<W: AnchorWitnessStore> ProductEvaluationExecutionStoreV1
     }
 
     fn readback(&mut self, key: &ProductEvaluationExecutionKeyV1) -> Result<State, StoreError> {
-        let before = self.require_current().map_err(|_| StoreError::Indeterminate)?;
+        let before = self
+            .require_current()
+            .map_err(|_| StoreError::Indeterminate)?;
         let state = ProductEvaluationExecutionStoreV1::readback(&mut self.journal, key);
         self.unchanged(before)?;
         match state {
@@ -201,7 +224,9 @@ fn witnessed(physical: ProductEvaluationExecutionAnchorV1) -> Result<JournalAnch
         return Err(Error::Binding("original execution history digest"));
     }
     Ok(JournalAnchor {
-        sequence: physical.sequence.checked_add(1)
+        sequence: physical
+            .sequence
+            .checked_add(1)
             .ok_or(Error::Binding("original execution witness sequence"))?,
         checkpoint_digest: physical.history_digest,
     })

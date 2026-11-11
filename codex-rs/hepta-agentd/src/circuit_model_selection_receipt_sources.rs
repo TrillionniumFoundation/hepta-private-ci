@@ -179,7 +179,8 @@ impl<S: FinalHoldoutCasStoreV1, C: AnchorWitnessStore, F: AnchorWitnessStore, W:
         let clock = || binding::now().map_err(|_| ProductProviderErrorV1::Unavailable);
         let runner: &mut CellEvaluationRunnerV1<S> = self.runner;
         let mut executions = OriginalCellEvaluationExecutionStoreV1::readback_only(
-            self.executions, config.execution_evidence.key(),
+            self.executions,
+            config.execution_evidence.key(),
         );
         let (evaluation, execution) = runner.readback_completed_evidence(
             config.evaluation.plan(),
@@ -203,4 +204,3 @@ impl<S: FinalHoldoutCasStoreV1, C: AnchorWitnessStore, F: AnchorWitnessStore, W:
         Ok(())
     }
 }
-
