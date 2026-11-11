@@ -141,7 +141,7 @@ class OriginalSelectorCommandClosureTests(unittest.TestCase):
         self.rejects(SERVICE, "fn original_response(",
                      "OriginalCircuitSelectionReceiptOwnerV1::attest_original_remote_selection(")
         self.rejects(SERVICE, "fn original_response(",
-                     "OriginalCircuitSelectionReceiptOwnerV1::readback_remote(original, source)")
+                     "OriginalCircuitSelectionReceiptOwnerV1::readback_remote(")
         self.rejects(SERVICE, "fn serve_commands(", "tokio::task::spawn_blocking(")
         self.rejects(SERVICE, "fn serve_evidence_readback(",
                      "timeout > Duration::from_millis(500)")
