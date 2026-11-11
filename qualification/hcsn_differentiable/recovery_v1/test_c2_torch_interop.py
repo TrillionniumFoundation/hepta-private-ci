@@ -23,8 +23,8 @@ def same(left, right):
     if torch.is_tensor(left):
         return (torch.is_tensor(right) and left.dtype == right.dtype
                 and left.shape == right.shape and torch.equal(left, right))
-    if type(left) is dict:
-        return type(right) is dict and left.keys() == right.keys() and all(
+    if isinstance(left, dict):
+        return type(right) is type(left) and left.keys() == right.keys() and all(
             same(left[key], right[key]) for key in left
         )
     if type(left) in (tuple, list):
