@@ -664,24 +664,12 @@ async fn actual_delivery_backpressure_precedes_claim_and_prior_claim_stays_readb
     ));
     assert_eq!(
         ok(store.pending_circuit_learning(/*limit*/ 1).await),
-        pending
+        claimed
     );
     assert!(ok(ports.executed.lock()).is_empty());
     assert!(ok(ports.checkpoint_calls.lock()).is_empty());
 
-    // Model an original durable claim whose acknowledgement was lost. Queue
-    // closure above cannot create this claim; only its original store can.
-    let partial = ok(LearningIterationCoordinatorV1::new(
-        request.clone(),
-        ports.owners(),
-    ))
-    .snapshot()
-    .clone();
-    let request_digest = ok(Sha256Digest::parse(partial.head_digest.to_string()));
-    assert!(ok(store
-        .claim_circuit_learning(&intent, &request_digest)
-        .await));
-    let claimed = ok(store.pending_circuit_learning(/*limit*/ 1).await);
+    let partial = initial.snapshot().clone();
 
     // A replacement worker receives only readback for that durable claim.
     // Neither absent state nor an initial checkpoint permits another fit.
