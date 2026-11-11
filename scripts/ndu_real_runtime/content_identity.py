@@ -247,6 +247,10 @@ def content_identity_report(
                 raise ValueError("Duplicate actor content step")
             wires[key] = (raw, exchange["event_sha256"])
             observed_order.append(key)
+        else:
+            raise ValueError("Actor readiness chronology contains an unexpected event")
+    if not ready_seen:
+        raise ValueError("Actor readiness chronology missing")
     # Snapshot indexing must agree with actor emission order; matching bytes
     # cannot repair swapped or extra actor steps (especially repeated writes).
     if len(observed_order) != len(steps):

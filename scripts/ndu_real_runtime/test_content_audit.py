@@ -43,11 +43,17 @@ class ContentAuditTests(unittest.TestCase):
         if selected:
             observation["content_selection"] = selection_receipt(candidates, 0, action)
         wire = json.dumps(observation, ensure_ascii=False)
+        ready = json.dumps(
+            {
+                "schema": "ndu.real.actor-ready.v1",
+                "content_identity_profile": "ndu.real.content-selection.v1",
+            }
+        )
         launch = put(
             "launch.json",
             {
                 "schema": "ndu.real.actor-isolation.v1",
-                "stdout": wire + "\n",
+                "stdout": ready + "\n" + wire + "\n",
                 "exit_code": {"exit": 1, "boolean": False}.get(launch_fault, 0),
                 "enforced_before_actor_exec": launch_fault != "isolation",
                 "callback_error": {"type": "synthetic_callback_error"}
@@ -60,11 +66,12 @@ class ContentAuditTests(unittest.TestCase):
                 if launch_fault == "limit"
                 else None,
                 "host_exchanges": [
+                    {"event_sha256": hashlib.sha256(ready.encode()).hexdigest()},
                     {
                         "event_sha256": hashlib.sha256(wire.encode()).hexdigest()
                         if fault != "wire"
                         else "0" * 64
-                    }
+                    },
                 ],
             },
         )
@@ -349,6 +356,60 @@ class ContentAuditTests(unittest.TestCase):
             raw = json.dumps(manifest).encode()
             with self.assertRaisesRegex(ValueError, "AUDIT_PIN_SHAPE"):
                 audit(root, raw, hashlib.sha256(raw).hexdigest())
+
+    def test_actor_stream_requires_one_initial_ready_and_only_observations(self):
+        for kind in ("missing", "late", "duplicate", "unexpected", "valid"):
+            with self.subTest(kind=kind), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                raw, _ = self.fixture(root, selected=True)
+                manifest = json.loads(raw)
+                launch = json.loads((root / "launch.json").read_bytes())
+                observation = next(
+                    line
+                    for line in launch["stdout"].splitlines()
+                    if json.loads(line).get("schema") == "ndu.real.actor-observation.v1"
+                )
+                ready = json.dumps(
+                    {
+                        "schema": "ndu.real.actor-ready.v1",
+                        "content_identity_profile": "ndu.real.content-selection.v1",
+                    }
+                )
+                unexpected = json.dumps({"schema": "ndu.real.unknown-event.v1"})
+                cases = {
+                    "missing": [observation],
+                    "late": [observation, ready],
+                    "duplicate": [ready, ready, observation],
+                    "unexpected": [ready, unexpected, observation],
+                    "valid": [ready, observation],
+                }
+                lines = cases[kind]
+                launch["stdout"] = "\n".join(lines) + "\n"
+                launch["host_exchanges"] = [
+                    {"event_sha256": hashlib.sha256(line.encode()).hexdigest()}
+                    for line in lines
+                ]
+                launch_raw = (json.dumps(launch, ensure_ascii=False) + "\n").encode()
+                (root / "launch.json").write_bytes(launch_raw)
+                manifest["episodes"][0]["launch"] = {
+                    "path": "launch.json",
+                    "bytes": len(launch_raw),
+                    "sha256": hashlib.sha256(launch_raw).hexdigest(),
+                }
+                manifest_raw = json.dumps(manifest, ensure_ascii=False).encode()
+                row = audit(
+                    root, manifest_raw, hashlib.sha256(manifest_raw).hexdigest()
+                )["episodes"][0]["rows"][0]
+                self.assertIs(row["checks"]["raw_actor_wire_receipt"], True)
+                self.assertIs(row["checks"]["candidate_selection"], True)
+                self.assertIs(row["checks"]["wire_to_trajectory"], kind == "valid")
+                self.assertIs(row["selected_used"], True if kind == "valid" else None)
+                if kind != "valid":
+                    self.assertIsNone(
+                        row["posthoc_reference_diagnostic"][
+                            "content_failure_present_at_actor_payload"
+                        ]
+                    )
 
 
 if __name__ == "__main__":

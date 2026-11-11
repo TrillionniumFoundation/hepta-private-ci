@@ -30,7 +30,6 @@ def _read(root, binding, total, limit=8 * 1024 * 1024):
         raise ValueError("AUDIT_PINNED_ARTIFACT_ADMISSION_FAILED") from None
 
 
-
 def _completed_isolated_launch(launch):
     """A zero exit alone is insufficient if actor callbacks or limits failed."""
     return (
@@ -69,9 +68,24 @@ def _episode(root, entry, manifest, total):
         for raw, value in zip(lines, events)
         if value.get("schema") == "ndu.real.actor-observation.v1"
     ]
-    ordered = len(observations) == len(steps) and all(
-        value.get("case_id") == case_id and value.get("step") == index
-        for index, (_, value) in enumerate(observations)
+    # A host-admitted stream has exactly one initial readiness event and then
+    # one observation per step. An observation subsequence alone is insufficient:
+    # missing, late or duplicated ready and unknown events must not certify use.
+    protocol_ordered = (
+        len(events) == len(steps) + 1
+        and events[0].get("schema") == "ndu.real.actor-ready.v1"
+        and all(
+            event.get("schema") == "ndu.real.actor-observation.v1"
+            for event in events[1:]
+        )
+    )
+    ordered = (
+        protocol_ordered
+        and len(observations) == len(steps)
+        and all(
+            value.get("case_id") == case_id and value.get("step") == index
+            for index, (_, value) in enumerate(observations)
+        )
     )
     snapshots = {}
     if not isinstance(entry["snapshots"], list) or len(entry["snapshots"]) > 9:
