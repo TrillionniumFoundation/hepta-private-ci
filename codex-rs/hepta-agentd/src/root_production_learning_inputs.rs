@@ -161,6 +161,50 @@ fn validate_binding(
 }
 
 impl AgentdRootLearningInputsV1 {
+    pub(crate) fn q24_model_scope(
+        &self,
+        identity: &AgentdIdentity,
+    ) -> Result<(LearningIterationSnapshotV1, FrozenLearningScopeV2), AgentdError> {
+        self.require_identity(identity)?;
+        let scope = self
+            .scope
+            .clone()
+            .ok_or_else(|| refused("Model factory requires an original scoped learning owner"))?;
+        Ok((self.initial.clone(), scope))
+    }
+
+    pub(crate) fn require_prepared_q24(
+        &self,
+        prepared: &crate::CellQ24PreparedLearningV1,
+    ) -> Result<(), AgentdError> {
+        let scope = self
+            .scope
+            .as_ref()
+            .ok_or_else(|| refused("Q24 assembly requires the original scoped Root profile"))?;
+        prepared
+            .require_initial(&self.initial, scope)
+            .map_err(|error| refused(format!("original Q24 prepared scope: {error}")))
+    }
+
+    pub(crate) fn into_q24_learning_runtime(
+        self,
+        stages: Arc<crate::OriginalCellQ24LearningStageOwnersV1>,
+        verifier: LearningEvidenceVerifierV1,
+        capacity: usize,
+    ) -> Result<
+        (
+            LearningIterationHandleV1,
+            LearningIterationRuntimeBootstrapV1,
+        ),
+        AgentdError,
+    > {
+        self.require_prepared_q24(stages.prepared())?;
+        let original = Arc::clone(&stages);
+        let (handle, bootstrap) = self.into_learning_runtime(stages, verifier, capacity)?;
+        let bootstrap: LearningIterationRuntimeBootstrapV1 = bootstrap;
+        Ok((handle, bootstrap.with_original_q24_stage_owners(original)?))
+    }
+
     pub(crate) fn require_identity(&self, identity: &AgentdIdentity) -> Result<(), AgentdError> {
         if &self.identity != identity {
             return Err(refused(

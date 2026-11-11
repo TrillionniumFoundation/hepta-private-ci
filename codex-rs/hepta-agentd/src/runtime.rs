@@ -76,10 +76,11 @@ pub async fn run_with_shutdown(
         .and_then(crate::LearningIterationRuntimeBootstrapV1::take_circuit_delivery);
     let terminal_learning = config.take_terminal_learning_bootstrap();
     let neuron_generation = config.take_neuron_generation_bootstrap();
-    if learning_iteration.is_some() && plasticity_bootstrap.is_none() {
-        return Err(AgentdError::Invalid(
-            "learning iteration requires the governed plasticity owner".into(),
-        ));
+    if let Some(learning) = &learning_iteration {
+        let learning: &crate::LearningIterationRuntimeBootstrapV1 = learning;
+        learning
+            .require_proposal_owner(plasticity_bootstrap.is_some())
+            .await?;
     }
     if circuit_learning_delivery.is_some() && circuit_task.is_none() {
         return Err(AgentdError::Invalid(

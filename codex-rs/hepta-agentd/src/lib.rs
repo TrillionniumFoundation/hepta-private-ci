@@ -173,15 +173,29 @@ pub use authority_host_service::HostAuthorityLane;
 #[cfg(target_os = "linux")]
 pub use authority_host_service::HostAuthorityLearningRegistrationV1;
 #[cfg(target_os = "linux")]
+pub use authority_host_service::HostAuthorityQ24ModelFactoryProfileV1;
+#[cfg(target_os = "linux")]
+pub use authority_host_service::HostAuthorityQ24ModelFactoryReservationV1;
+#[cfg(target_os = "linux")]
 pub use authority_host_service::HostAuthorityService;
 #[cfg(target_os = "linux")]
 pub use authority_host_service::HostAuthorityTextUiRegistration;
+#[cfg(target_os = "linux")]
+pub use authority_host_service::RootQ24ModelFactoryOfferV1;
+#[cfg(target_os = "linux")]
+pub use authority_host_service::register_host_q24_model_factory;
+#[cfg(target_os = "linux")]
+mod root_q24_model_factory;
+#[cfg(target_os = "linux")]
+pub use root_q24_model_factory::AgentdRootQ24ModelFactoryV1;
 #[cfg(target_os = "linux")]
 mod root_authority_session;
 #[cfg(target_os = "linux")]
 mod root_production_inputs;
 #[cfg(target_os = "linux")]
 mod root_production_learning_inputs;
+#[cfg(target_os = "linux")]
+mod root_production_q24_model_inputs;
 #[cfg(target_os = "linux")]
 pub use root_production_inputs::AgentdRootProductionInputs;
 #[cfg(target_os = "linux")]
@@ -199,17 +213,23 @@ pub use root_production_handoff::RootLearningHandoffV1;
 #[cfg(target_os = "linux")]
 pub use root_production_handoff::RootProductionWriterDescriptor;
 #[cfg(target_os = "linux")]
+pub use root_production_handoff::RootQ24ModelFactoryHandoffV1;
+#[cfg(target_os = "linux")]
 pub use root_production_handoff::receive_root_learning_handoff;
 #[cfg(target_os = "linux")]
 pub use root_production_handoff::receive_root_production_handoff;
 #[cfg(target_os = "linux")]
 pub use root_production_handoff::receive_root_production_writer_handoff;
 #[cfg(target_os = "linux")]
+pub use root_production_handoff::receive_root_q24_model_factory_handoff;
+#[cfg(target_os = "linux")]
 pub use root_production_handoff::send_root_learning_handoff;
 #[cfg(target_os = "linux")]
 pub use root_production_handoff::send_root_production_handoff;
 #[cfg(target_os = "linux")]
 pub use root_production_handoff::send_root_production_writer_handoff;
+#[cfg(target_os = "linux")]
+pub use root_production_handoff::send_root_q24_model_factory_handoff;
 #[cfg(target_os = "linux")]
 mod root_observation_cache;
 #[cfg(target_os = "linux")]
@@ -290,6 +310,8 @@ mod circuit_cell_representation_encoder;
 mod circuit_credit;
 #[cfg(target_os = "linux")]
 mod circuit_feature_current;
+#[cfg(target_os = "linux")]
+mod circuit_feature_learning_handoff;
 mod circuit_learning_delivery;
 #[cfg(target_os = "linux")]
 mod circuit_q24_task_profile;
@@ -356,7 +378,83 @@ pub use learning_iteration_generation_evidence::GenerationLearningStageReadbackR
 #[cfg(target_os = "linux")]
 pub use learning_iteration_generation_evidence::read_generation_learning_stage_v1;
 
+#[cfg(target_os = "linux")]
+mod cell_q24_evaluation_handoff;
+#[cfg(target_os = "linux")]
+mod cell_q24_evaluation_stage;
+#[cfg(target_os = "linux")]
+mod cell_q24_generation_handoff;
+#[cfg(target_os = "linux")]
+mod cell_q24_learning_owner_error;
+#[cfg(target_os = "linux")]
+mod cell_q24_learning_owner_inputs;
+#[cfg(target_os = "linux")]
+mod cell_q24_learning_stage_owners;
+#[cfg(target_os = "linux")]
+mod cell_q24_local_decision_owner;
 mod cell_q24_model_proposal;
+#[cfg(target_os = "linux")]
+mod cell_q24_publication_driver;
+#[cfg(target_os = "linux")]
+mod cell_q24_source_receipt_owner;
+#[cfg(target_os = "linux")]
+mod neuron_generation_receipt_owner;
+#[cfg(target_os = "linux")]
+pub use cell_q24_evaluation_handoff::OriginalCellQ24EvaluationInputsV1;
+#[cfg(target_os = "linux")]
+pub use cell_q24_evaluation_stage::OriginalCellQ24EvaluationStageV1;
+#[cfg(target_os = "linux")]
+pub use cell_q24_evaluation_stage::OriginalCellQ24EvaluationTimingV1;
+#[cfg(target_os = "linux")]
+pub use cell_q24_generation_handoff::OriginalCellQ24GenerationHandoffV1;
+#[cfg(target_os = "linux")]
+pub use cell_q24_generation_handoff::OriginalGenerationLearningSigningFilesV1;
+#[cfg(target_os = "linux")]
+pub use cell_q24_learning_owner_inputs::OriginalCellQ24LearningInputsV1;
+#[cfg(target_os = "linux")]
+pub use cell_q24_learning_owner_inputs::OriginalCellQ24LearningOpenV1;
+#[cfg(target_os = "linux")]
+pub use cell_q24_learning_owner_inputs::OriginalCellQ24LocalDecisionFilesV1;
+#[cfg(target_os = "linux")]
+pub use cell_q24_learning_owner_inputs::OriginalCellQ24SourceInputsV1;
+#[cfg(target_os = "linux")]
+pub use cell_q24_learning_owner_inputs::OriginalCellQ24TrainingFilesV1;
+#[cfg(target_os = "linux")]
+pub use cell_q24_learning_owner_inputs::OriginalCellQ24TrainingInputsV1;
+#[cfg(target_os = "linux")]
+pub use cell_q24_learning_stage_owners::OriginalCellQ24LearningStageOwnersV1;
+#[cfg(target_os = "linux")]
+pub use cell_q24_learning_stage_owners::OriginalCellQ24ModelDispatchV1;
+#[cfg(target_os = "linux")]
+pub use cell_q24_learning_stage_owners::OriginalCellQ24TrainingMaterialV1;
+#[cfg(target_os = "linux")]
+pub use cell_q24_local_decision_owner::CellQ24LocalPolicyV1;
+#[cfg(target_os = "linux")]
+pub use cell_q24_local_decision_owner::OriginalCellQ24LocalDecisionConfigV1;
+#[cfg(target_os = "linux")]
+pub use cell_q24_local_decision_owner::OriginalCellQ24LocalDecisionOwnerV1;
+#[cfg(target_os = "linux")]
+pub use cell_q24_publication_driver::OriginalCellQ24FeatureRecoveryV1;
+#[cfg(target_os = "linux")]
+pub use cell_q24_publication_driver::OriginalCellQ24FeatureTargetV1;
+#[cfg(target_os = "linux")]
+pub use cell_q24_publication_driver::OriginalCellQ24PreparedPublicationV1;
+#[cfg(target_os = "linux")]
+pub use cell_q24_publication_driver::OriginalCellQ24PublicationDriverV1;
+#[cfg(target_os = "linux")]
+pub use cell_q24_publication_driver::OriginalCellQ24PublicationErrorV1;
+#[cfg(target_os = "linux")]
+pub use cell_q24_publication_driver::OriginalCellQ24SelectionDriverV1;
+#[cfg(target_os = "linux")]
+pub use cell_q24_publication_driver::OriginalCellQ24SelectionInputsV1;
+#[cfg(target_os = "linux")]
+pub use neuron_generation_receipt_owner::OriginalGenerationLearningReceiptConfigV1;
+#[cfg(target_os = "linux")]
+pub use neuron_generation_receipt_owner::OriginalGenerationLearningReceiptOwnerV1;
+#[cfg(target_os = "linux")]
+pub use neuron_generation_receipt_owner::OriginalGenerationLearningReceiptSourcesV1;
+#[cfg(target_os = "linux")]
+pub use neuron_generation_receipt_owner::OriginalGenerationLearningRoleV1;
 mod cell_q24_training_receipt_owner;
 mod cell_q24_training_snapshot_readback;
 mod learning_iteration_auth;
@@ -376,12 +474,26 @@ mod neuron_cell_evaluation_owner;
 mod neuron_cell_evaluation_receipt_owner;
 mod neuron_cell_learning_evaluation;
 pub use cell_composed_q24::CellQ24DatasetErrorV1;
+#[cfg(target_os = "linux")]
+pub use cell_composed_q24::CellQ24DatasetFreezePreparationV1;
 pub use cell_composed_q24::CellQ24DatasetProjectionV1;
 pub use cell_composed_q24::CellQ24DatasetTaskV1;
 pub use cell_composed_q24::CellQ24FeatureEncoderV1;
 pub use cell_composed_q24::CellQ24FeatureWorkerV1;
+#[cfg(target_os = "linux")]
+pub use cell_composed_q24::CellQ24FrozenDatasetV1;
 pub use cell_composed_q24::CellQ24GenerationWorkerV1;
+#[cfg(target_os = "linux")]
+pub use cell_composed_q24::CellQ24LearningPreparationConfigV1;
+#[cfg(target_os = "linux")]
+pub use cell_composed_q24::CellQ24LearningPreparationErrorV1;
 pub use cell_composed_q24::CellQ24ModelFilesV1;
+#[cfg(target_os = "linux")]
+pub use cell_composed_q24::CellQ24PreparedLearningFactsV1;
+#[cfg(target_os = "linux")]
+pub use cell_composed_q24::CellQ24PreparedLearningV1;
+#[cfg(target_os = "linux")]
+pub use cell_composed_q24::CellQ24PreparedTrainingMaterialV1;
 pub use cell_composed_q24::CellQ24PrivateHeadV1;
 pub use cell_composed_q24::CellQ24SgdRuleV1;
 pub use cell_composed_q24::CellQ24SingleHeadTrainingPlanV1;
@@ -396,6 +508,12 @@ pub use cell_composed_q24::CellQ24TrainingOwnerV1;
 pub use cell_composed_q24::CellQ24TrainingPlanErrorV1;
 pub use cell_composed_q24::CellQ24TrainingSampleV1;
 pub use cell_composed_q24::LoadedCellQ24ModelV1;
+#[cfg(target_os = "linux")]
+pub use cell_composed_q24::OriginalCellQ24DatasetFreezeErrorV1;
+#[cfg(target_os = "linux")]
+pub use cell_composed_q24::OriginalCellQ24DatasetFreezeOwnerV1;
+#[cfg(target_os = "linux")]
+pub use cell_composed_q24::OriginalCellQ24DatasetFreezeSigningConfigV1;
 pub use cell_composed_q24::cell_q24_dataset_run_snapshot_digest_v1;
 pub use cell_composed_q24::cell_q24_single_head_update_rule_v1;
 pub use cell_q24_backend::CellQ24BackendFilesV1;
@@ -404,6 +522,20 @@ pub use cell_q24_model_proposal::CellQ24ModelProposalErrorV1;
 pub use cell_q24_model_proposal::CellQ24ModelProposalInputsV1;
 pub use cell_q24_model_proposal::CellQ24ModelProposalOwnerV1;
 pub use cell_q24_model_proposal::CellQ24ModelProposalReceiptV1;
+#[cfg(target_os = "linux")]
+pub use cell_q24_source_receipt_owner::OriginalCellQ24SourceCompletionV1;
+#[cfg(target_os = "linux")]
+pub use cell_q24_source_receipt_owner::OriginalCellQ24SourceFilesV1;
+#[cfg(target_os = "linux")]
+pub use cell_q24_source_receipt_owner::OriginalCellQ24SourceJournalV1;
+#[cfg(target_os = "linux")]
+pub use cell_q24_source_receipt_owner::OriginalCellQ24SourceReceiptErrorV1;
+#[cfg(target_os = "linux")]
+pub use cell_q24_source_receipt_owner::OriginalCellQ24SourceReceiptOwnerV1;
+#[cfg(target_os = "linux")]
+pub use cell_q24_source_receipt_owner::OriginalCellQ24SourceSigningConfigV1;
+#[cfg(target_os = "linux")]
+pub use cell_q24_source_receipt_owner::OriginalCellQ24SourceStageV1;
 pub use cell_q24_training_receipt_owner::OriginalCellQ24TrainingCompletionV1;
 pub use cell_q24_training_receipt_owner::OriginalCellQ24TrainingReceiptErrorV1;
 pub use cell_q24_training_receipt_owner::OriginalCellQ24TrainingReceiptOwnerV1;
@@ -606,6 +738,10 @@ pub use circuit_credit::circuit_learning_run_id_v1;
 #[cfg(target_os = "linux")]
 pub use circuit_feature_current::CircuitFeaturePredecessorFilesV1;
 #[cfg(target_os = "linux")]
+pub use circuit_feature_current::OriginalCircuitFeatureIngressV1;
+#[cfg(target_os = "linux")]
+pub use circuit_feature_current::OriginalCircuitFeatureLearningSourcesV1;
+#[cfg(target_os = "linux")]
 pub use circuit_feature_current::PublishedCircuitCellOwnerV1;
 #[cfg(target_os = "linux")]
 pub use circuit_feature_current::PublishedCircuitFeatureCompletionV1;
@@ -615,6 +751,8 @@ pub use circuit_feature_current::PublishedCircuitFeatureControlV1;
 pub use circuit_feature_current::PublishedCircuitFeatureTaskV1;
 #[cfg(target_os = "linux")]
 pub use circuit_feature_current::circuit_feature_task_digest_v1;
+#[cfg(target_os = "linux")]
+pub use circuit_feature_learning_handoff::OriginalCircuitFeatureLearningHandoffV1;
 pub use circuit_learning_delivery::deliver_circuit_learning_v1;
 pub use circuit_learning_delivery::reconcile_circuit_learning_v1;
 pub use circuit_task::CircuitTaskErrorV1;
@@ -1145,3 +1283,7 @@ pub use terminal_learning_types::TerminalLearningSourceLineageV1;
 #[cfg(all(test, target_os = "linux"))]
 #[path = "authority_host_learning_service_root_tests.rs"]
 mod authority_host_learning_service_root_tests;
+
+#[cfg(all(test, target_os = "linux"))]
+#[path = "authority_host_q24_model_service_root_tests.rs"]
+mod authority_host_q24_model_service_root_tests;
