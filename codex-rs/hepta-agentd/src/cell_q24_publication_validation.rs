@@ -252,6 +252,18 @@ pub(super) fn require_executable_feature(
     {
         return Err(Error::Binding("C runtime differs from selected manifest"));
     }
+    // A rehashed task digest is not a substitute for the exact candidate-mask
+    // structure. Reject truncation, injection and reordered candidate IDs
+    // before a successor is prepared or a FinalUse grant can be requested.
+    if source.candidates.len() != definition.candidates.len()
+        || source
+            .candidates
+            .iter()
+            .zip(&definition.candidates)
+            .any(|(mask, candidate)| mask.candidate_id != candidate.candidate_id)
+    {
+        return Err(Error::Binding("C candidate mask differs from definition"));
+    }
     let worker = CellQ24FeatureWorkerV1::new(Arc::clone(model), bundle, definition)
         .map_err(|_| Error::Binding("C loaded model or worker definition"))?;
     if source.observation.len() > definition.max_input_bytes

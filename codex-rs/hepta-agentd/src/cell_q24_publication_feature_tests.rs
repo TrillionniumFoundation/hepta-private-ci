@@ -223,6 +223,51 @@ fn prepublication_pins_worker_runtime_and_device_to_full_selected_manifest() -> 
 }
 
 #[test]
+fn prepublication_rejects_candidate_mask_truncation_injection_and_reordering() -> anyhow::Result<()>
+{
+    let mut p = Preflight::new()?;
+    p.validate()?;
+    let original = p.source.clone();
+    assert!(original.candidates.len() >= 2);
+    let bytes = p.bytes()?;
+    for field in ["missing", "extra", "reordered", "relabeled"] {
+        p.source = original.clone();
+        match field {
+            "missing" => {
+                p.source.candidates.pop();
+            }
+            "extra" => p.source.candidates.push(original.candidates[0].clone()),
+            "reordered" => p.source.candidates.swap(0, 1),
+            "relabeled" => {
+                p.source.candidates[0].candidate_id = StableId::new("unrecognized-q24-candidate")?;
+            }
+            _ => unreachable!(),
+        }
+        // Full task-ingress binding already rejects malformed masks. The
+        // late, directly callable worker preflight must reject independently.
+        assert!(
+            crate::circuit_feature_task_digest_v1(&p.definition, &p.source).is_err(),
+            "{field}"
+        );
+        assert!(
+            matches!(
+                validation::require_executable_feature(
+                    &p.decision.bundle,
+                    &p.target.config.manifest,
+                    &p.model,
+                    &p.definition,
+                    &p.source,
+                ),
+                Err(Error::Binding("C candidate mask differs from definition"))
+            ),
+            "{field}"
+        );
+        assert_eq!(p.bytes()?, bytes);
+    }
+    Ok(())
+}
+
+#[test]
 fn prepublication_decodes_exact_input_and_rejects_static_cell_input_failures() -> anyhow::Result<()>
 {
     let mut p = Preflight::new()?;
