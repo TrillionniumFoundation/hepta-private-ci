@@ -407,8 +407,14 @@ def select_replay(records: Iterable[MemoryRecord], *, policy: str, query_key: st
                             key=lambda e: _digest([seed, e.event_id]))
                 for kind in MEMORY_KINDS}
         ordered = []
+        # Under a budget smaller than the number of live memory kinds, a
+        # fixed fact-first round robin *never* samples episode/skill/recovery.
+        # Rotate the start using the declared, reproducible per-trial seed.
+        # Seed custody is NOT authenticated in this shadow selector.
+        start = int(_digest(["stratified-kind-start.v1", seed]), 16) % len(MEMORY_KINDS)
+        kind_order = MEMORY_KINDS[start:] + MEMORY_KINDS[:start]
         while any(bins.values()) and len(ordered) < max_items:
-            for kind in MEMORY_KINDS:
+            for kind in kind_order:
                 if bins[kind]:
                     ordered.append(bins[kind].pop(0))
     return tuple(e.event_id for e in ordered[:max_items])
