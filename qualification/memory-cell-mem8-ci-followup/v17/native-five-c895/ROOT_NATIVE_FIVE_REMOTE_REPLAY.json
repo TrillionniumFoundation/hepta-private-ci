@@ -1,0 +1,48 @@
+{
+  "schema": "mem8.v17.native-five-root-remote-replay.v1",
+  "ref": "6fdb3191bbba93b2211d3b4f2d2bc1b5b4719a44",
+  "full_remote_objects_equal": 11,
+  "outer_archive_members_verified": 17,
+  "original_zip_members_verified": 353,
+  "original_manifest_members": 352,
+  "unchanged_original_auditor_exit": 0,
+  "whole_result_equal_except_observer_time": true,
+  "observed_at_original": "2026-11-11T16:29:48.887070+00:00",
+  "observed_at_root": "2026-11-11T16:39:32.212270+00:00",
+  "prior_v16_full_remote_archive_reused": {
+    "bytes": 815008,
+    "sha256": "41e4fd36bd7d1af83d5e9cc3a4dea389bb37dd5871c8b3f6bf9290017e4c5d58",
+    "exact_four_bindings": [
+      {
+        "path": "mem-five-native-harness-preparation/rendered-c895405/.github/fixtures/mem-native-five-plan.json",
+        "bytes": 9187,
+        "sha256": "83d9a2067770ea4ffa428f9cee66d112e386d5622195c2311083fbaef7767cd7"
+      },
+      {
+        "path": "mem-five-native-harness-preparation/rendered-c895405/.github/scripts/mem_native_five.py",
+        "bytes": 23327,
+        "sha256": "13e5fa02446d716d04503bd79a305b67a5ef6525ad5d97f53d8557b300261db0"
+      },
+      {
+        "path": "mem-five-native-harness-preparation/rendered-c895405/.github/scripts/mem_native_five_support.py",
+        "bytes": 6574,
+        "sha256": "b5c8c1728724e01e90422f80003c1a644418478c62ea3a2228d40255a7f3f136"
+      },
+      {
+        "path": "mem-five-native-harness-preparation/rendered-c895405/.github/workflows/hepta-mem-native-five.yml",
+        "bytes": 4460,
+        "sha256": "5c69ae1116fe9922fe6f75ba34958c34fe5a3465d3cbc94d6c802d75e34e1b99"
+      }
+    ]
+  },
+  "named_native_cases_passed": 5,
+  "native_failures": 0,
+  "native_leaks": 0,
+  "clean_scoped_fix_packages": [
+    "core_test_support"
+  ],
+  "whole_qualification": "NOT_QUALIFIED_RETAIN_ORIGINAL_FAILURE_OR_UNKNOWN",
+  "unsettled_core_fix_exit": "UNKNOWN",
+  "windows_sandbox_fix": "NOT_RUN",
+  "new_native_or_model_executions": 0
+}
