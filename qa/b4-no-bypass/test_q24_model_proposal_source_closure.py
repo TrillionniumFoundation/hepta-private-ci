@@ -19,10 +19,16 @@ SPEC.loader.exec_module(PROOF)
 AGENT = "codex-rs/hepta-agentd/src/"
 OWNER = AGENT + "cell_q24_model_proposal.rs"
 ADMISSION = AGENT + "cell_q24_model_proposal_admission.rs"
-BOUNDARIES = tuple(
-    "cell_q24_model_material_owner_" + method
+LANE = AGENT + "cell_q24_training_model_lane.rs"
+TRAINER = AGENT + "cell_composed_q24_training_owner.rs"
+BOUNDARIES = {
+    "cell_q24_model_material_owner_" + method: (LANE,)
     for method in ("create", "recover", "commit", "readback")
-)
+}
+BOUNDARIES.update({
+    "learning_original_training_model_" + method: ()
+    for method in ("create", "recover", "commit", "readback")
+})
 
 
 class Q24ModelProposalSourceClosureTests(unittest.TestCase):
@@ -36,7 +42,7 @@ class Q24ModelProposalSourceClosureTests(unittest.TestCase):
             path: PROOF._strip_cfg_test_items(
                 PROOF._strip_rust_non_code((ROOT / path).read_text())
             )
-            for path in (OWNER, ADMISSION)
+            for path in (OWNER, ADMISSION, LANE, TRAINER)
         }
 
     def rejects(self, path, function, marker):
@@ -62,11 +68,11 @@ class Q24ModelProposalSourceClosureTests(unittest.TestCase):
             with self.assertRaises(PROOF.VerificationFailure):
                 PROOF._verify_protected_files(root, {"protected_file": rows})
 
-    def test_owner_entrypoints_have_no_production_callers(self):
-        for identifier in BOUNDARIES:
+    def test_model_borrows_original_lane_and_host_entrypoints_remain_closed(self):
+        for identifier, expected in BOUNDARIES.items():
             with self.subTest(boundary=identifier):
                 row = self.boundaries[identifier]
-                self.assertEqual(row.product_callers, ())
+                self.assertEqual(row.product_callers, expected)
                 PROOF._verify_boundary(ROOT, row, self.sources, ())
                 sources = dict(self.sources)
                 method = row.symbol.rsplit("::", 1)[-1]
@@ -137,6 +143,36 @@ class Q24ModelProposalSourceClosureTests(unittest.TestCase):
             with self.subTest(function=function):
                 self.rejects(OWNER, function, marker)
         self.rejects(ADMISSION, "fn validate<", "&request")
+
+    def test_shared_lane_cannot_skip_original_completion_or_exact_attestation(self):
+        for function, markers in (
+            ("fn in_model_lane<", (
+                ".try_acquire_owned()", "self.owners.try_lock()",
+                "training.require_original_dataset_scope(",
+                "let original = owners.read_original_completion()?",
+                "let result = work(&mut owners.training, &original)",
+                "let current = owners",
+                "if current.receipt != original.receipt || current.attestation != original.attestation",
+            )),
+            ("fn require_original_training(", (
+                "inputs.training_cut.receipts.last() != Some(&completed.receipt)",
+                "inputs.training_attestation != &completed.attestation",
+            )),
+        ):
+            for marker in markers:
+                with self.subTest(function=function, marker=marker):
+                    self.rejects(LANE, function, marker)
+
+    def test_current_cannot_skip_physical_bytes_second_witness_or_permanent_fence(self):
+        for path in (OWNER, TRAINER):
+            for marker in (
+                "let before = self.witness.current()?",
+                "self.journal.read_current_anchor()?",
+                "let after = self.witness.current()?",
+                "self.fenced = true",
+            ):
+                with self.subTest(path=path, marker=marker):
+                    self.rejects(path, "fn require_current(", marker)
 
 
 if __name__ == "__main__":

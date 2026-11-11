@@ -16,6 +16,9 @@ use crate::neuron_cell_evaluation::tests::learning::LearningFixture;
 
 use super::*;
 
+#[path = "cell_q24_training_model_lane_tests.rs"]
+mod training_lane;
+
 struct ProposalFixture {
     trainer: CellQ24TrainingOwnerV1<FileAnchorWitnessStore>,
     dataset: LearningIterationSnapshotV1,
@@ -413,13 +416,15 @@ fn q24_model_proposal_rechecks_original_witness_after_final_receipt_decode() -> 
     let now = fixture.now;
     fixture.commit(&mut owner, now)?;
     let saved = fs::read(directory.path().join("proposal"))?;
-    // Both admission checks succeed; the final freshness read must still fail.
-    refuse_at.store(reads.load(Ordering::SeqCst) + 3, Ordering::SeqCst);
+    // Both admission checks read witness/physical/witness successfully. The
+    // independent witness read after final receipt decoding must still fail.
+    refuse_at.store(reads.load(Ordering::SeqCst) + 6, Ordering::SeqCst);
     assert!(matches!(
         fixture.read(&mut owner, now + 1),
         Err(ProposalError::CommitUncertain)
     ));
-    refuse_at.store(reads.load(Ordering::SeqCst) + 3, Ordering::SeqCst);
+    // Restoring the witness cannot clear the owner's indeterminate fence.
+    refuse_at.store(u64::MAX, Ordering::SeqCst);
     assert!(matches!(
         fixture.commit(&mut owner, now + 1),
         Err(ProposalError::CommitUncertain)

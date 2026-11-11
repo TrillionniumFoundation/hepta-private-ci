@@ -16,10 +16,14 @@ use tokio::sync::Semaphore;
 
 use super::OriginalCellQ24TrainingReceiptErrorV1;
 use super::OriginalCellQ24TrainingReceiptOwnerV1;
+use crate::CellQ24ModelProposalErrorV1;
 use crate::CellQ24TrainingOutcomeV1;
 use crate::CellQ24TrainingOwnerErrorV1;
 use crate::CellQ24TrainingOwnerV1;
 use crate::learning_owner_journal::LearningOriginalOwnerErrorV1;
+
+#[path = "cell_q24_training_model_lane.rs"]
+mod model_lane;
 
 #[derive(Debug, thiserror::Error)]
 pub enum OriginalCellQ24TrainingStageErrorV1 {
@@ -35,6 +39,8 @@ pub enum OriginalCellQ24TrainingStageErrorV1 {
     Training(#[from] CellQ24TrainingOwnerErrorV1),
     #[error("original training receipt: {0}")]
     Receipt(#[from] OriginalCellQ24TrainingReceiptErrorV1),
+    #[error("original model material: {0}")]
+    ModelProposal(#[from] CellQ24ModelProposalErrorV1),
 }
 
 type Error = OriginalCellQ24TrainingStageErrorV1;
@@ -183,10 +189,11 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
         tokio::task::spawn_blocking(move || {
             let _permit = permit;
             let mut owners = owners.try_lock().map_err(|_| Error::CommitUncertain)?;
-            let training: &CellQ24TrainingOwnerV1<TW> = &owners.training;
+            let Owners { training, receipts } = &mut *owners;
+            let training: &mut CellQ24TrainingOwnerV1<TW> = training;
             training.require_original_dataset_scope(
-                &owners.receipts.config.dataset,
-                &owners.receipts.config.scope,
+                &receipts.config.dataset,
+                &receipts.config.scope,
             )?;
             work(&mut owners)
         })

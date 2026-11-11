@@ -226,7 +226,7 @@ impl<W: AnchorWitnessStore> CellQ24ModelProposalOwnerV1<W> {
     }
 
     fn admit<T: AnchorWitnessStore, S: FinalHoldoutCasStoreV1>(
-        &self,
+        &mut self,
         trainer: &mut CellQ24TrainingOwnerV1<T>,
         inputs: &CellQ24ModelProposalInputsV1<'_, S>,
         now: u64,
@@ -263,14 +263,26 @@ impl<W: AnchorWitnessStore> CellQ24ModelProposalOwnerV1<W> {
         self.test_clock = Some(Box::new(clock));
     }
 
-    fn require_current(&self) -> Result<(), Error> {
-        if self.fenced || self.witness.current()? != Some(anchor(self.journal.anchor())?) {
+    fn require_current(&mut self) -> Result<(), Error> {
+        if self.fenced {
             return Err(Error::CommitUncertain);
         }
-        Ok(())
+        let result = (|| {
+            let before = self.witness.current()?;
+            let physical = anchor(self.journal.read_current_anchor()?)?;
+            let after = self.witness.current()?;
+            if before != Some(physical) || after != Some(physical) {
+                return Err(Error::CommitUncertain);
+            }
+            Ok(())
+        })();
+        if result.is_err() {
+            self.fenced = true;
+        }
+        result
     }
     fn decode_current(
-        &self,
+        &mut self,
         admission: &Admission,
         state: ProductEvaluationExecutionStateV1,
     ) -> Result<CellQ24ModelProposalReceiptV1, Error> {

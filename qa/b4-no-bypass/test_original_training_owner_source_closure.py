@@ -16,6 +16,7 @@ sys.modules[SPEC.name] = PROOF
 SPEC.loader.exec_module(PROOF)
 OWNER = "codex-rs/hepta-agentd/src/cell_q24_training_receipt_owner.rs"
 STAGE = "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs"
+MODEL_LANE = "codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs"
 SNAPSHOT = "codex-rs/hepta-agentd/src/cell_q24_training_snapshot_readback.rs"
 
 
@@ -60,14 +61,15 @@ class OriginalTrainingOwnerSourceClosureTests(unittest.TestCase):
                 PROOF._verify_boundary(ROOT, row, changed, ())
         self.assertEqual(rows["root_learning_original_stage_assembly"].product_callers, ())
 
-    def test_pair_consumer_is_the_only_native_execute_and_scope_caller(self):
+    def test_pair_and_model_lane_keep_exact_native_callers(self):
         native = "codex-rs/hepta-agentd/src/cell_composed_q24_training_owner.rs"
         rows = {row.identifier: row for row in PROOF._boundary_rows(self.manifest)}
-        sources = {path: PROOF._strip_rust_non_code((ROOT / path).read_text()) for path in (OWNER, STAGE, native, SNAPSHOT)}
+        sources = {path: PROOF._strip_rust_non_code((ROOT / path).read_text()) for path in (OWNER, STAGE, MODEL_LANE, native, SNAPSHOT)}
         for name in ("cell_q24_original_training_execute", "cell_q24_original_training_pair_binding"):
             row = rows[name]
             self.assertIn(name, self.manifest["privileged_inventory"]["required_boundary_ids"])
-            self.assertEqual(row.product_callers, (STAGE,))
+            expected = (STAGE,) if name == "cell_q24_original_training_execute" else (STAGE, MODEL_LANE)
+            self.assertEqual(row.product_callers, expected)
             PROOF._verify_boundary(ROOT, row, sources, ())
             changed = dict(sources)
             method = row.symbol.rsplit("::", 1)[1]

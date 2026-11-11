@@ -69,7 +69,7 @@ pub struct CellQ24TrainingOwnerV1<W: AnchorWitnessStore> {
 impl<W: AnchorWitnessStore> CellQ24TrainingOwnerV1<W> {
     /// Read-only preflight for the original typed training/signature pair.
     pub(crate) fn require_original_dataset_scope(
-        &self,
+        &mut self,
         dataset: &LearningIterationSnapshotV1,
         scope: &FrozenLearningScopeV2,
     ) -> Result<(), Error> {
@@ -183,11 +183,23 @@ impl<W: AnchorWitnessStore> CellQ24TrainingOwnerV1<W> {
         self.decode_state(state)
     }
 
-    fn require_current(&self) -> Result<(), Error> {
-        if self.fenced || self.witness.current()? != Some(anchor(self.journal.anchor())) {
+    fn require_current(&mut self) -> Result<(), Error> {
+        if self.fenced {
             return Err(Error::CommitUncertain);
         }
-        Ok(())
+        let result = (|| {
+            let before = self.witness.current()?;
+            let physical = anchor(self.journal.read_current_anchor()?);
+            let after = self.witness.current()?;
+            if before != Some(physical) || after != Some(physical) {
+                return Err(Error::CommitUncertain);
+            }
+            Ok(())
+        })();
+        if result.is_err() {
+            self.fenced = true;
+        }
+        result
     }
 
     fn anchor_append(&mut self, before: JournalAnchor) -> Result<(), Error> {
