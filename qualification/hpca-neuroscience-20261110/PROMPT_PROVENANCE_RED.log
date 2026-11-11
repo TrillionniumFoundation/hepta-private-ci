@@ -1,0 +1,47 @@
+test_bad_cost_refused (test_ood_forward_audit.FrozenForwardAuditTests.test_bad_cost_refused) ... ok
+test_duplicate_json_key_refused (test_ood_forward_audit.FrozenForwardAuditTests.test_duplicate_json_key_refused) ... ok
+test_false_paired_metric_refused (test_ood_forward_audit.FrozenForwardAuditTests.test_false_paired_metric_refused) ... ok
+test_false_summary_refused (test_ood_forward_audit.FrozenForwardAuditTests.test_false_summary_refused) ... ok
+test_malformed_probability_refused (test_ood_forward_audit.FrozenForwardAuditTests.test_malformed_probability_refused) ... ok
+test_missing_row_refused (test_ood_forward_audit.FrozenForwardAuditTests.test_missing_row_refused) ... ok
+test_nonfinite_json_refused (test_ood_forward_audit.FrozenForwardAuditTests.test_nonfinite_json_refused) ... ok
+test_plan_changed_after_run_refused (test_ood_forward_audit.FrozenForwardAuditTests.test_plan_changed_after_run_refused) ... ok
+test_predicted_label_tamper_refused (test_ood_forward_audit.FrozenForwardAuditTests.test_predicted_label_tamper_refused) ... ok
+test_prompt_changed_between_arms_refused (test_ood_forward_audit.FrozenForwardAuditTests.test_prompt_changed_between_arms_refused) ... ok
+test_real_operator_forward_216_rows (test_ood_forward_audit.FrozenForwardAuditTests.test_real_operator_forward_216_rows) ... ok
+test_original_archive_remains_readable (test_frozen_prompt_condition.FrozenPromptConditionGate.test_original_archive_remains_readable) ... ok
+test_reject_claimed_training_source_swap (test_frozen_prompt_condition.FrozenPromptConditionGate.test_reject_claimed_training_source_swap) ... FAIL
+test_reject_run_seed_arm_alias (test_frozen_prompt_condition.FrozenPromptConditionGate.test_reject_run_seed_arm_alias) ... FAIL
+test_reject_shared_but_unregistered_prompt_digests (test_frozen_prompt_condition.FrozenPromptConditionGate.test_reject_shared_but_unregistered_prompt_digests) ... FAIL
+
+======================================================================
+FAIL: test_reject_claimed_training_source_swap (test_frozen_prompt_condition.FrozenPromptConditionGate.test_reject_claimed_training_source_swap)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qq/work/hpca-ood-frozen-prompt-integrity-20261111-t5/test_frozen_prompt_condition.py", line 28, in test_reject_claimed_training_source_swap
+    with self.assertRaisesRegex(AuditError,"training source"):
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: AuditError not raised
+
+======================================================================
+FAIL: test_reject_run_seed_arm_alias (test_frozen_prompt_condition.FrozenPromptConditionGate.test_reject_run_seed_arm_alias)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qq/work/hpca-ood-frozen-prompt-integrity-20261111-t5/test_frozen_prompt_condition.py", line 24, in test_reject_run_seed_arm_alias
+    with self.assertRaisesRegex(AuditError,"seed.arm metadata"):
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: AuditError not raised
+
+======================================================================
+FAIL: test_reject_shared_but_unregistered_prompt_digests (test_frozen_prompt_condition.FrozenPromptConditionGate.test_reject_shared_but_unregistered_prompt_digests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qq/work/hpca-ood-frozen-prompt-integrity-20261111-t5/test_frozen_prompt_condition.py", line 20, in test_reject_shared_but_unregistered_prompt_digests
+    with self.assertRaisesRegex(AuditError,"frozen plan prompt"):
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: AuditError not raised
+
+----------------------------------------------------------------------
+Ran 15 tests in 0.034s
+
+FAILED (failures=3)

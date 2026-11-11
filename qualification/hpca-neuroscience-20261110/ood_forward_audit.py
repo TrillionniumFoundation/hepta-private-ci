@@ -52,6 +52,10 @@ def audit(plan_bytes, report_bytes):
     demand(report.get("plan_sha256") == hashlib.sha256(plan_bytes).hexdigest(), "plan digest mismatch")
     demand(report.get("precommitted_plan_head") == "a54c1d72ee2d82d3bae5c5fdda94d5d3333046b2", "frozen plan commit mismatch")
     demand(report.get("source_plan_pr") == 5960, "source PR mismatch")
+    demand(report.get("original_training_pr") == 5905 and
+           report.get("original_training_result_sha256") ==
+           "9512849b90964c35951bb8bb2226b3f2f6d3ec0da1e9a3b98467c8970afbe39c",
+           "training source mismatch")
     tasks = plan.get("tasks")
     demand(isinstance(tasks, list) and len(tasks) == 24, "registered task count")
     task_by_id = {}
@@ -62,7 +66,16 @@ def audit(plan_bytes, report_bytes):
                and t.get("truth") in ("yes", "no"), "malformed registered task")
         demand(t["id"] not in task_by_id, "duplicate registered task")
         task_by_id[t["id"]] = t
+    # Match the original published forward's exact prompt-frame bytes. Merely
+    # comparing self-declared digests across arms cannot detect a common swap.
+    frozen_prompt_hash = {
+        tid: hashlib.sha256((task["question"].strip() + "\nAnswer:").encode("utf-8")).hexdigest()
+        for tid, task in task_by_id.items()
+    }
     expected_conditions = ["base"] + [f"seed{s} {arm}" for s in (11, 17, 23, 29) for arm in ("interleaved", "bursty")]
+    expected_seed_arm = {"base": (None, None)}
+    expected_seed_arm.update({f"seed{s} {arm}": (s, arm)
+                              for s in (11, 17, 23, 29) for arm in ("interleaved", "bursty")})
     demand(report.get("conditions") == expected_conditions, "unexpected registered conditions")
     runs = report.get("runs")
     demand(isinstance(runs, list) and len(runs) == 9, "nine actual forward conditions needed")
@@ -72,6 +85,10 @@ def audit(plan_bytes, report_bytes):
     detail = {}
     for r in runs:
         cond = r["condition"]
+        demand(cond in expected_seed_arm and
+               (type(r.get("seed")) is int if cond != "base" else r.get("seed") is None) and
+               (r.get("seed"), r.get("arm")) == expected_seed_arm[cond],
+               "seed/arm metadata mismatches condition")
         demand(cond not in by_condition, "duplicate condition")
         preds = r.get("predictions")
         demand(isinstance(preds, list) and len(preds) == 24, "prediction count")
@@ -90,6 +107,7 @@ def audit(plan_bytes, report_bytes):
                 demand(root_hash_by_id[p["id"]] == ph, "unmatched prompt between model conditions")
             else:
                 root_hash_by_id[p["id"]] = ph
+            demand(ph == frozen_prompt_hash[p["id"]], "frozen plan prompt hash mismatch")
             prob = p.get("p_yes")
             demand(type(prob) in (float, int) and math.isfinite(prob) and 0 < prob < 1, "invalid probability")
             label = 1.0 if task["truth"] == "yes" else 0.0
