@@ -285,9 +285,7 @@ class OriginalObserverCoverageTests(unittest.TestCase):
             case.set("classname", coverage.PACKAGE)
             daemon.append(case)
         self.assertFalse(
-            self.assess(
-                root, log.replace(coverage.EXECUTION_PACKAGE, coverage.PACKAGE)
-            )
+            self.assess(root, log.replace(coverage.EXECUTION_PACKAGE, coverage.PACKAGE))
         )
 
     def test_workflow_ordinary_executes_all_original_owner_packages(self):
@@ -335,7 +333,11 @@ class OriginalObserverCoverageTests(unittest.TestCase):
         self.assertEqual(len(ordinary), 1)
         self.assertEqual(
             ast.dump(ordinary[0].args[1]),
-            ast.dump(ast.parse('[*packages, "--lib", "--test-threads", "2"]', mode="eval").body),
+            ast.dump(
+                ast.parse(
+                    '[*packages, "--lib", "--test-threads", "2"]', mode="eval"
+                ).body
+            ),
         )
 
 

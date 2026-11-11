@@ -173,12 +173,8 @@ def assess_original_observer_coverage(log: str, xml: bytes) -> dict:
     )
     return {
         "expected_count": len(CASES),
-        "required_owner_groups": {
-            name: len(cases) for name, _, cases in OWNER_GROUPS
-        },
-        "required_group_packages": {
-            name: package for name, package, _ in OWNER_GROUPS
-        },
+        "required_owner_groups": {name: len(cases) for name, _, cases in OWNER_GROUPS},
+        "required_group_packages": {name: package for name, package, _ in OWNER_GROUPS},
         "expected": sorted(expected),
         "junit_observed": sorted(observed.elements(), key=repr),
         "terminal_rows": named,
