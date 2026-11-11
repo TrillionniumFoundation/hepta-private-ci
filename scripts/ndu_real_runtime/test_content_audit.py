@@ -411,7 +411,6 @@ class ContentAuditTests(unittest.TestCase):
                         ]
                     )
 
-
     def test_selection_witness_requires_matching_ready_profile(self):
         for kind in ("absent", "unknown", "advertised", "legacy"):
             with self.subTest(kind=kind), tempfile.TemporaryDirectory() as directory:
@@ -449,13 +448,12 @@ class ContentAuditTests(unittest.TestCase):
                     self.assertIsNone(row["checks"]["candidate_selection"])
                 else:
                     self.assertIs(row["checks"]["candidate_selection"], True)
-                    self.assertIs(
-                        row["checks"]["selection_profile_advertised"], False
-                    )
+                    self.assertIs(row["checks"]["selection_profile_advertised"], False)
                     self.assertIsNone(row["selected_used"])
                 steps = json.loads((root / "trajectory.json").read_bytes())["steps"]
                 evaluation = json.loads((root / "evaluation.json").read_bytes())
                 (root / "initial").mkdir()
+
                 def report():
                     return content_identity_report(
                         steps,
@@ -465,16 +463,16 @@ class ContentAuditTests(unittest.TestCase):
                         evaluator_sha256=manifest["evaluator_source_sha256"],
                         rubric_sha256=manifest["rubric_sha256"],
                     )
+
                 if kind in ("absent", "unknown"):
                     with self.assertRaisesRegex(
-                        ValueError, "readiness contract|readiness content identity profile"
+                        ValueError,
+                        "readiness contract|readiness content identity profile",
                     ):
                         report()
                 else:
                     receipt = report()["receipts"][0]
-                    self.assertIs(
-                        receipt["selected_used"], True if selected else None
-                    )
+                    self.assertIs(receipt["selected_used"], True if selected else None)
 
 
 if __name__ == "__main__":
