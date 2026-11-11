@@ -95,8 +95,10 @@ def time_aligned_credit(
     Routed and shuffled are information-matched routing controls.
     """
     action_list, feedback_list = list(actions), list(feedback)
-    if arm not in ARMS or not action_list or not feedback_list:
-        raise ContractError("unknown arm or empty trace")
+    # A real owner may expose no outcome receipts at the frozen cutoff.
+    # This is valid NoUpdate evidence; do not require inaccessible future labels.
+    if arm not in ARMS or not action_list:
+        raise ContractError("unknown arm or empty action trace")
     if type(cutoff_sequence) is not int or cutoff_sequence < 0:
         raise ContractError("invalid training cutoff")
     if not _finite(decay) or not 0 <= decay <= 1:
