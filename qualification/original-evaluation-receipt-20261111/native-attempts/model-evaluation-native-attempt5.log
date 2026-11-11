@@ -1,0 +1,387 @@
+{"source": "/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-build", "source_commit": "30692d721d67321df0414c5c3f990449d7b9fea8", "source_tree": "790bf1330fde0ee51d9f9ea40848f3dc5d2afcb4", "source_clean_before": true, "cargo_lock_sha256": "98b3767c6e74bf6eeb5894db760259dbc400cbfd0685af8ad915c92d25408d69", "tool_versions": {"rustc --version": "rustc 1.96.0 (ac68faa20 2026-05-25)", "cargo --version": "cargo 1.96.0 (30a34c682 2026-05-25)", "cargo nextest --version": "cargo-nextest 0.9.103 (d2e7b879f 2025-08-25)", "just --version": "just 1.51.0"}, "started_utc": "2026-11-11T02:05:37.289123+00:00", "command": ["just", "test", "-p", "codex-hepta-agentd", "--lib", "--locked", "-E", "test(q24_model_proposal) | test(original_evaluation_receipt) | test(original_training_receipt) | test(neuron_cell_evaluation::tests) | test(q24_training_owner)"], "environment_overrides": {"CARGO_TARGET_DIR": "/workspace/scratch/b4d6d3702e3a/hepta-rmcp-target", "CARGO_BUILD_JOBS": "1", "CARGO_PROFILE_DEV_DEBUG": "0", "CARGO_PROFILE_TEST_DEBUG": "0", "CARGO_INCREMENTAL": "0", "BINDGEN_EXTRA_CLANG_ARGS": "-resource-dir=/workspace/scratch/623459b0e1bc/toolchains/llvm20/unpacked/usr/lib/llvm-20/lib/clang/20"}, "cpu_affinity": [0, 1], "profile_basis": ".github/workflows/hepta-daemon-learning-native.yml DEBUG=0/INCREMENTAL=0; jobs=1 and two CPUs bound local resources"}
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+warning: hiding a lifetime that's elided elsewhere is confusing
+   --> third_party/i18n-config-0.4.8/src/lib.rs:144:9
+    |
+144 |         &self,
+    |         ^^^^^ the lifetime is elided here
+145 |     ) -> Result<Option<(&'_ Crate, &'_ I18nConfig)>, I18nConfigError> {
+    |                          ^^ ^^^^^   ^^ the same lifetime is elided here
+    |                          |  |
+    |                          |  the same lifetime is hidden here
+    |                          the same lifetime is elided here
+    |
+    = help: the same lifetime is referred to in inconsistent ways, making the signature confusing
+    = note: `#[warn(mismatched_lifetime_syntaxes)]` on by default
+help: use `'_` for type paths
+    |
+145 |     ) -> Result<Option<(&'_ Crate<'_>, &'_ I18nConfig)>, I18nConfigError> {
+    |                                  ++++
+
+warning: hiding a lifetime that's elided elsewhere is confusing
+   --> third_party/i18n-config-0.4.8/src/lib.rs:155:26
+    |
+155 |     pub fn active_config(&self) -> Result<Option<(&'_ Crate, &'_ I18nConfig)>, I18nConfigError> {
+    |                          ^^^^^                     ^^ ^^^^^   ^^ the same lifetime is elided here
+    |                          |                         |  |
+    |                          |                         |  the same lifetime is hidden here
+    |                          |                         the same lifetime is elided here
+    |                          the lifetime is elided here
+    |
+    = help: the same lifetime is referred to in inconsistent ways, making the signature confusing
+help: use `'_` for type paths
+    |
+155 |     pub fn active_config(&self) -> Result<Option<(&'_ Crate<'_>, &'_ I18nConfig)>, I18nConfigError> {
+    |                                                            ++++
+
+warning: `i18n-config` (lib) generated 2 warnings (run `cargo fix --lib -p i18n-config` to apply 2 suggestions)
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:204:55
+    |
+204 |     use time::format_description::BorrowedFormatItem::Literal;
+    |                                                       ^^^^^^^
+    |
+    = note: `#[warn(deprecated)]` on by default
+
+warning: use of deprecated tuple variant `time::format_description::Component::Year`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:208:52
+    |
+208 |     const YEAR: BorrowedFormatItem<'_> = Component(Year({
+    |                                                    ^^^^
+
+warning: use of deprecated struct `time::format_description::modifier::Year`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:209:35
+    |
+209 |         let mut value = modifier::Year::default();
+    |                                   ^^^^
+
+warning: use of deprecated unit variant `time::format_description::modifier::YearRepr::Full`: used only in the deprecated `Year` component
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:211:42
+    |
+211 |         value.repr = modifier::YearRepr::Full;
+    |                                          ^^^^
+
+warning: use of deprecated tuple variant `time::format_description::Component::Month`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:217:53
+    |
+217 |     const MONTH: BorrowedFormatItem<'_> = Component(Month({
+    |                                                     ^^^^^
+
+warning: use of deprecated struct `time::format_description::modifier::Month`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:218:35
+    |
+218 |         let mut value = modifier::Month::default();
+    |                                   ^^^^^
+
+warning: use of deprecated unit variant `time::format_description::modifier::MonthRepr::Numerical`: used only in the deprecated `Month` component
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:220:43
+    |
+220 |         value.repr = modifier::MonthRepr::Numerical;
+    |                                           ^^^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::Component::Hour`: use `Hour12` or `Hour24` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:231:52
+    |
+231 |     const HOUR: BorrowedFormatItem<'_> = Component(Hour({
+    |                                                    ^^^^
+
+warning: use of deprecated struct `time::format_description::modifier::Hour`: use `Hour12` or `Hour24` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:232:35
+    |
+232 |         let mut value = modifier::Hour::default();
+    |                                   ^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:272:13
+    |
+272 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:274:13
+    |
+274 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:276:23
+    |
+276 |             Optional(&Literal(b" ")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:277:23
+    |
+277 |             Optional(&Literal(b"T")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:279:13
+    |
+279 |             Literal(b":"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:281:23
+    |
+281 |             Optional(&Literal(b":")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:283:23
+    |
+283 |             Optional(&Literal(b".")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:286:23
+    |
+286 |             Optional(&Literal(b":")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:294:13
+    |
+294 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:296:13
+    |
+296 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:298:13
+    |
+298 |             Literal(b" "),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:300:13
+    |
+300 |             Literal(b":"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:302:23
+    |
+302 |             Optional(&Literal(b":")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:304:23
+    |
+304 |             Optional(&Literal(b".")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:306:23
+    |
+306 |             Optional(&Literal(b"Z")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:313:13
+    |
+313 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:315:13
+    |
+315 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:317:13
+    |
+317 |             Literal(b"T"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:319:13
+    |
+319 |             Literal(b":"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:321:23
+    |
+321 |             Optional(&Literal(b":")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:323:23
+    |
+323 |             Optional(&Literal(b".")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:325:23
+    |
+325 |             Optional(&Literal(b"Z")),
+    |                       ^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Year::padding`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:210:9
+    |
+210 |         value.padding = modifier::Padding::Zero;
+    |         ^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Year::repr`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:211:9
+    |
+211 |         value.repr = modifier::YearRepr::Full;
+    |         ^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Year::iso_week_based`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:212:9
+    |
+212 |         value.iso_week_based = false;
+    |         ^^^^^^^^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Year::sign_is_mandatory`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:213:9
+    |
+213 |         value.sign_is_mandatory = false;
+    |         ^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Month::padding`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:219:9
+    |
+219 |         value.padding = modifier::Padding::Zero;
+    |         ^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Month::repr`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:220:9
+    |
+220 |         value.repr = modifier::MonthRepr::Numerical;
+    |         ^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Month::case_sensitive`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:221:9
+    |
+221 |         value.case_sensitive = true;
+    |         ^^^^^^^^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Hour::padding`: use `Hour12` or `Hour24` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:233:9
+    |
+233 |         value.padding = modifier::Padding::Zero;
+    |         ^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Hour::is_12_hour_clock`: use `Hour12` or `Hour24` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:234:9
+    |
+234 |         value.is_12_hour_clock = false;
+    |         ^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `sqlx-sqlite` (lib) generated 40 warnings
+warning: `sqlx-sqlite` (lib) generated 40 warnings (40 duplicates)
+   Compiling sentry-contexts v0.46.2
+   Compiling multimap v0.10.1
+   Compiling rmcp v3.9.0
+   Compiling prost-build v0.14.4
+   Compiling ecdsa v0.17.0
+   Compiling primeorder v0.14.0
+   Compiling findshlibs v0.10.2
+   Compiling schemars v1.2.3
+   Compiling aws-smithy-query v0.62.1
+   Compiling sentry-backtrace v0.46.2
+   Compiling oauth2 v5.0.0
+   Compiling process-wrap v10.0.1
+   Compiling sentry v0.46.2
+   Compiling codex-utils-output-truncation v0.0.0 (/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-build/codex-rs/utils/output-truncation)
+   Compiling rmcp-macros v3.9.0
+   Compiling reqwest v0.13.5
+   Compiling sse-stream v0.2.6
+   Compiling tonic-build v0.14.6
+   Compiling semver v1.0.28
+   Compiling uname v0.1.1
+   Compiling hostname v0.4.2
+   Compiling protoc-bin-vendored-win32 v3.3.0
+   Compiling protoc-bin-vendored-linux-s390_64 v3.3.0
+   Compiling protoc-bin-vendored-linux-ppcle_64 v3.3.0
+   Compiling protoc-bin-vendored-linux-x86_32 v3.3.0
+   Compiling protoc-bin-vendored-linux-x86_64 v3.3.0
+   Compiling pastey v0.2.3
+   Compiling protoc-bin-vendored-macos-aarch_64 v3.3.0
+   Compiling protoc-bin-vendored-macos-x86_64 v3.3.0
+   Compiling protoc-bin-vendored-linux-aarch_64 v3.3.0
+   Compiling protoc-bin-vendored v3.3.0
+   Compiling codex-install-context v0.0.0 (/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-build/codex-rs/install-context)
+   Compiling tonic-prost-build v0.14.3
+   Compiling sentry-panic v0.46.2
+   Compiling aws-sdk-sts v1.119.0
+   Compiling sentry-debug-images v0.46.2
+   Compiling p256 v0.14.0
+   Compiling aws-sdk-sso v1.114.0
+   Compiling aws-sdk-signin v1.27.0
+   Compiling aws-sdk-ssooidc v1.116.0
+   Compiling codex-utils-plugins v0.0.0 (/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-build/codex-rs/utils/plugins)
+   Compiling codex-hepta-types v0.0.0 (/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-build/codex-rs/hepta-types)
+   Compiling codex-plugin v0.0.0 (/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-build/codex-rs/plugin)
+   Compiling aws-config v1.12.0 (/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-build/codex-rs/third_party/aws-config-1.12.0)
+   Compiling codex-code-mode-protocol v0.0.0 (/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-build/codex-rs/code-mode-protocol)
+   Compiling codex-collaboration-mode-templates v0.0.0 (/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-build/codex-rs/collaboration-mode-templates)
+   Compiling codex-models-manager v0.0.0 (/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-build/codex-rs/models-manager)
+   Compiling codex-feedback v0.0.0 (/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-build/codex-rs/feedback)
+   Compiling codex-aws-auth v0.0.0 (/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-build/codex-rs/aws-auth)
+   Compiling codex-response-debug-context v0.0.0 (/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-build/codex-rs/response-debug-context)
+   Compiling codex-model-provider v0.0.0 (/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-build/codex-rs/model-provider)
+   Compiling codex-code-mode v0.0.0 (/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-build/codex-rs/code-mode)
+   Compiling codex-connectors v0.0.0 (/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-build/codex-rs/connectors)
+   Compiling codex-rmcp-client v0.0.0 (/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-build/codex-rs/rmcp-client)
+warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+ --> rmcp-client/src/elicitation_client_service.rs:4:18
+  |
+4 | use rmcp::model::ClientInfo;
+  |                  ^^^^^^^^^^
+  |
+  = note: `#[warn(deprecated)]` on by default
+
+warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+  --> rmcp-client/src/elicitation_client_service.rs:55:22
+   |
+55 |         client_info: ClientInfo,
+   |                      ^^^^^^^^^^
+
+warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+   --> rmcp-client/src/elicitation_client_service.rs:191:27
+    |
+191 |     fn get_info(&self) -> ClientInfo {
+    |                           ^^^^^^^^^^
+
+warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+ --> rmcp-client/src/logging_client_handler.rs:6:18
+  |
+6 | use rmcp::model::ClientInfo;
+  |                  ^^^^^^^^^^
+
+warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+  --> rmcp-client/src/logging_client_handler.rs:27:18
+   |
+27 |     client_info: ClientInfo,
+   |                  ^^^^^^^^^^
+
+warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+  --> rmcp-client/src/logging_client_handler.rs:32:36
+   |
+32 |     pub(crate) fn new(client_info: ClientInfo, send_elicitation: SendElicitation) -> Self {
+   |                                    ^^^^^^^^^^
+
+warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+  --> rmcp-client/src/logging_client_handler.rs:94:27
+   |
+94 |     fn get_info(&self) -> ClientInfo {
+   |                           ^^^^^^^^^^
+
+warning: `codex-rmcp-client` (lib) generated 7 warnings
+error: could not compile `codex-rmcp-client` (lib); 7 warnings emitted
+
+Caused by:
+  process didn't exit successfully: `rustc --crate-name codex_rmcp_client --edition=2024 rmcp-client/src/lib.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --crate-type lib --emit=dep-info,metadata,link -C embed-bitcode=no '--deny=clippy::correctness' '--deny=clippy::unwrap_used' '--warn=clippy::unnecessary_to_owned' '--warn=clippy::unnecessary_sort_by' '--warn=clippy::unnecessary_lazy_evaluations' '--warn=clippy::unnecessary_filter_map' '--warn=clippy::uninlined_format_args' '--warn=clippy::trivially_copy_pass_by_ref' '--warn=clippy::redundant_static_lifetimes' '--warn=clippy::redundant_closure_for_method_calls' '--warn=clippy::redundant_closure' '--warn=clippy::redundant_clone' '--warn=clippy::needless_update' '--warn=clippy::needless_question_mark' '--warn=clippy::needless_option_as_deref' '--warn=clippy::needless_late_init' '--warn=clippy::needless_collect' '--warn=clippy::needless_borrowed_reference' '--warn=clippy::needless_borrow' '--warn=clippy::manual_unwrap_or' '--warn=clippy::manual_try_fold' '--warn=clippy::manual_strip' '--warn=clippy::manual_retain' '--warn=clippy::manual_range_contains' '--warn=clippy::manual_ok_or' '--warn=clippy::manual_non_exhaustive' '--warn=clippy::manual_memcpy' '--warn=clippy::manual_map' '--warn=clippy::manual_flatten' '--warn=clippy::manual_find' '--warn=clippy::manual_filter' '--warn=clippy::manual_clamp' '--warn=clippy::identity_op' '--deny=clippy::expect_used' '--deny=clippy::disallowed_methods' '--deny=clippy::await_holding_lock' '--deny=clippy::await_holding_invalid_type' --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values())' -C metadata=f4ad365880aca69c -C extra-filename=-7bce2dfd30ad4345 --out-dir /workspace/scratch/b4d6d3702e3a/hepta-rmcp-target/debug/deps -C strip=debuginfo -L dependency=/workspace/scratch/b4d6d3702e3a/hepta-rmcp-target/debug/deps --extern anyhow=/workspace/scratch/b4d6d3702e3a/hepta-rmcp-target/debug/deps/libanyhow-004f3738bead153a.rmeta --extern axum=/workspace/scratch/b4d6d3702e3a/hepta-rmcp-target/debug/deps/libaxum-3d43eaa34732fc6f.rmeta --extern base64=/workspace/scratch/b4d6d3702e3a/hepta-rmcp-target/debug/deps/libbase64-c470b359f705e99c.rmeta --extern bytes=/workspace/scratch/b4d6d3702e3a/hepta-rmcp-target/debug/deps/libbytes-76f13e071f930605.rmeta --extern codex_api=/workspace/scratch/b4d6d3702e3a/hepta-rmcp-target/debug/deps/libcodex_api-8038aa781d25a17a.rmeta --extern codex_config=/workspace/scratch/b4d6d3702e3a/hepta-rmcp-target/debug/deps/libcodex_config-063e404f08c03bff.rmeta --extern codex_exec_server=/workspace/scratch/b4d6d3702e3a/hepta-rmcp-target/debug/deps/libcodex_exec_server-6d205e425ab96cab.rmeta --extern codex_http_client=/workspace/scratch/b4d6d3702e3a/hepta-rmcp-target/debug/deps/libcodex_http_client-789f9d693f93789e.rmeta --extern codex_keyring_store=/workspace/scratch/b4d6d3702e3a/hepta-rmcp-target/debug/deps/libcodex_keyring_store-a699fb87703e3990.rmeta --extern codex_network_proxy=/workspace/scratch/b4d6d3702e3a/hepta-rmcp-target/debug/deps/libcodex_network_proxy-87ff21d10f40d76b.rmeta --extern codex_protocol=/workspace/scratch/b4d6d3702e3a/hepta-rmcp-target/debug/deps/libcodex_protocol-edb7f1189d46f6df.rmeta --extern codex_secrets=/workspace/scratch/b4d6d3702e3a/hepta-rmcp-target/debug/deps/libcodex_secrets-80bac3a8ac45837f.rmeta --extern codex_utils_home_dir=/workspace/scratch/b4d6d3702e3a/hepta-rmcp-target/debug/deps/libcodex_utils_home_dir-1b48c12efecf1f8f.rmeta --extern codex_utils_path_uri=/workspace/scratch/b4d6d3702e3a/hepta-rmcp-target/debug/deps/libcodex_utils_path_uri-3d756bf0ec2f6ba2.rmeta --extern codex_utils_pty=/workspace/scratch/b4d6d3702e3a/hepta-rmcp-target/debug/deps/libcodex_utils_pty-75ec34046bb40efb.rmeta --extern futures=/workspace/scratch/b4d6d3702e3a/hepta-rmcp-target/debug/deps/libfutures-0a6dbc5abbbbbdc5.rmeta --extern http=/workspace/scratch/b4d6d3702e3a/hepta-rmcp-target/debug/deps/libhttp-66e7f867687c0a66.rmeta --extern keyring_core=/workspace/scratch/b4d6d3702e3a/hepta-rmcp-target/debug/deps/libkeyring_core-a234a3e05bacb1be.rmeta --extern libc=/workspace/scratch/b4d6d3702e3a/hepta-rmcp-target/debug/deps/liblibc-6ea8a9cc5d71e6c1.rmeta --extern memchr=/workspace/scratch/b4d6d3702e3a/hepta-rmcp-target/debug/deps/libmemchr-2c5dea9e5923e7bb.rmeta --extern oauth2=/workspace/scratch/b4d6d3702e3a/hepta-rmcp-target/debug/deps/liboauth2-175cd95781a4a6b2.rmeta --extern rmcp=/workspace/scratch/b4d6d3702e3a/hepta-rmcp-target/debug/deps/librmcp-0da55434de9a2708.rmeta --extern serde=/workspace/scratch/b4d6d3702e3a/hepta-rmcp-target/debug/deps/libserde-816dcc213ebbfdbe.rmeta --extern serde_json=/workspace/scratch/b4d6d3702e3a/hepta-rmcp-target/debug/deps/libserde_json-cc861b076b7ec657.rmeta --extern sha2=/workspace/scratch/b4d6d3702e3a/hepta-rmcp-target/debug/deps/libsha2-97459050dbe6b28b.rmeta --extern sse_stream=/workspace/scratch/b4d6d3702e3a/hepta-rmcp-target/debug/deps/libsse_stream-db39cb54102b9cf8.rmeta --extern thiserror=/workspace/scratch/b4d6d3702e3a/hepta-rmcp-target/debug/deps/libthiserror-27ba48c7a72cd6e8.rmeta --extern tiny_http=/workspace/scratch/b4d6d3702e3a/hepta-rmcp-target/debug/deps/libtiny_http-196a9f5fd6357cb9.rmeta --extern tokio=/workspace/scratch/b4d6d3702e3a/hepta-rmcp-target/debug/deps/libtokio-18e3583c5af26740.rmeta --extern tokio_util=/workspace/scratch/b4d6d3702e3a/hepta-rmcp-target/debug/deps/libtokio_util-4a407549e649c6d8.rmeta --extern tracing=/workspace/scratch/b4d6d3702e3a/hepta-rmcp-target/debug/deps/libtracing-3a9fbbff573b5a43.rmeta --extern url=/workspace/scratch/b4d6d3702e3a/hepta-rmcp-target/debug/deps/liburl-03f75dd7bb92160f.rmeta --extern urlencoding=/workspace/scratch/b4d6d3702e3a/hepta-rmcp-target/debug/deps/liburlencoding-6aefdab9fc8153a3.rmeta --extern webbrowser=/workspace/scratch/b4d6d3702e3a/hepta-rmcp-target/debug/deps/libwebbrowser-e245efb1e103a0c3.rmeta --extern which=/workspace/scratch/b4d6d3702e3a/hepta-rmcp-target/debug/deps/libwhich-debc3e94506e4a94.rmeta -L native=/workspace/scratch/b4d6d3702e3a/hepta-rmcp-target/debug/build/aws-lc-sys-929b39f537d5c10e/out/build/artifacts -L native=/workspace/scratch/b4d6d3702e3a/hepta-rmcp-target/debug/build/ring-cc32d6c6f1c51a41/out -L native=/workspace/scratch/b4d6d3702e3a/hepta-rmcp-target/debug/build/zstd-sys-735b6f2f334491a9/out -L native=/workspace/scratch/b4d6d3702e3a/hepta-rmcp-target/debug/build/blake3-2c33413f62d64fe0/out -L native=/workspace/scratch/b4d6d3702e3a/hepta-rmcp-target/debug/build/blake3-2c33413f62d64fe0/out -L native=/workspace/scratch/b4d6d3702e3a/hepta-rmcp-target/debug/build/tree-sitter-5a0a99fcc6a5bf9b/out -L native=/workspace/scratch/b4d6d3702e3a/hepta-rmcp-target/debug/build/tree-sitter-bash-55fec62b004558f1/out -L native=/workspace/scratch/b4d6d3702e3a/hepta-rmcp-target/debug/build/tree-sitter-powershell-471cd53964ea5a5a/out -L native=/home/agent/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/windows_x86_64_gnu-0.52.6/lib` (signal: 9, SIGKILL: kill)
+error: command `/workspace/scratch/f7c0ded86bcc/toolchain/installed/bin/cargo test --no-run --message-format json-render-diagnostics --package codex-hepta-agentd --lib --locked` exited with code 101
+error: recipe `test` failed on line 89 with exit code 101
+{"exit_code": 101, "elapsed_seconds": 279.238, "finished_utc": "2026-11-11T02:10:16.317695+00:00", "source_status_after": ""}

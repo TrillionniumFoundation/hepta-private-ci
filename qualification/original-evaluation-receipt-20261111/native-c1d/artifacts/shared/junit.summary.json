@@ -1,0 +1,32 @@
+{
+  "command": [
+    "just",
+    "test",
+    "--locked",
+    "-p",
+    "codex-hepta-automation",
+    "-p",
+    "codex-hepta-neuron",
+    "-p",
+    "codex-hepta-agentd",
+    "--lib"
+  ],
+  "errors": 0,
+  "execution_file": "tests.json",
+  "execution_sha256": "683c4b9de5db53265e61170122ee5b0087e8970e6b11540ff3f39a4ced7626d2",
+  "failures": 0,
+  "job": "owners",
+  "junit_bytes": 283241,
+  "junit_mtime_ns": 1794367788487650096,
+  "junit_sha256": "5f8c3815573a5b2c1bcd86aa80c8999a5ed8034cd79bbaf2f729d5ae9457b8cc",
+  "kind": "native-junit-collection",
+  "native_path": "codex-rs/target/nextest/local/junit.xml",
+  "run_attempt": "1",
+  "run_id": "42946454356",
+  "schema_version": 1,
+  "skipped_in_xml": 0,
+  "source_sha": "c1d6537f7d979e1ad792eee796c6709d23a86697",
+  "source_tree": "e7762b742e6baff12e447a89f40ae1cfb68aa7e1",
+  "status": "passed",
+  "total_testcases": 1196
+}

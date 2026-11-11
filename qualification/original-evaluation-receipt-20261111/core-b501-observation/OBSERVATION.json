@@ -1,0 +1,88 @@
+{
+  "schema_version": 1,
+  "recorded_utc": "2026-11-11T03:13:00.114433+00:00",
+  "source_candidate": "b5019ee98bc7b7b99eb689378f41e66691c2d257",
+  "tested_commit": "a9a898bb091efd57b9aea27521c963874d8cba96",
+  "tested_tree": "5164d68c23ffa071a80d4aa9a7f033f068a82dfd",
+  "source_candidate_tree": "5164d68c23ffa071a80d4aa9a7f033f068a82dfd",
+  "tree_equality_verification": "GitHub commit API for both exact commit objects; logs identify refs/remotes/pull/5875/merge checkout as a9a898b.",
+  "actual_merge_parents": [
+    "6ecfa504d2132f3682ffb01f8c9d65346b26cf5b",
+    "b5019ee98bc7b7b99eb689378f41e66691c2d257"
+  ],
+  "source_commit_urls": [
+    "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/a9a898bb091efd57b9aea27521c963874d8cba96",
+    "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/b5019ee98bc7b7b99eb689378f41e66691c2d257"
+  ],
+  "run_id": 42940299149,
+  "core_runtime_observation": {
+    "job_id": 130289659029,
+    "job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42940299149/job/130289659029",
+    "target": "//codex-rs/core:core-unit-tests",
+    "status": "PASSED",
+    "elapsed_seconds": 117.2,
+    "runs": 8,
+    "test_result_cached": false,
+    "exact_raw_summary": "//codex-rs/core:core-unit-tests                                          PASSED in 117.2s",
+    "test_name_output_retained": false,
+    "two_new_test_names": [
+      "unified_exec::process::observation_tests::transcript_survives_late_subscriber_lag_and_repeated_poll_drains",
+      "unified_exec::process::remote_observation_tests::remote_transcript_records_recovered_sequences_once_after_poll_drain"
+    ],
+    "selection_source_review": "Both modules have only cfg(test); both test functions have ordinary tokio::test and no ignore/platform exclusion. Job test command has no case filter.",
+    "selection_not_individual_case_receipt": true,
+    "whole_job_status": "failure",
+    "whole_job_exit_code": 3,
+    "whole_job_failure": "remote_windows_sandbox_process_accepts_process_write: -32603 legacy Windows sandbox isolation unavailable because ambient parent FILE_DELETE_CHILD can bypass deletion boundaries."
+  },
+  "architecture_core_coverage": false,
+  "architecture_reason": "Exact workflow invokes named Hepta packages/subsets, not codex-core.",
+  "artifact_inspected": {
+    "artifact_id": 13824149090,
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42940299149/artifacts/13824149090",
+    "original_zip_bytes": 5141216,
+    "original_zip_sha256": "4a2a38027b62346fcdb9c6bdbbc38a2d434d84d1a351f5383665f890608a72e1",
+    "entries": [
+      "execution-log-test-test-windows-shard-3825.zst"
+    ],
+    "contains_junit_or_test_log": false,
+    "included_as_repository_blob": false
+  },
+  "new_successor_head": "50c382e3e71229b0bb127129abd3d52ca6ee0e0c",
+  "result_transferred_to_successor": false,
+  "evaluation_code_head_unchanged": "c1d6537f7d979e1ad792eee796c6709d23a86697",
+  "new_source_edits": false,
+  "native_rerun_by_collection": false,
+  "logs": [
+    {
+      "path": "core-b501-windows-shard1-130289659029.log.gz",
+      "job_id": 130289659029,
+      "purpose": "Windows shard1: Core unit target PASS; exec-server sandbox case fails",
+      "encoding": "gzip",
+      "original_bytes": 387419,
+      "original_sha256": "9a8273584d4b0262eecc8e9a4baaf6ce8041be4df072cf3bf4e4f5aa06872fee",
+      "stored_bytes": 49621,
+      "stored_sha256": "c26c1883f44e74eb1a058b54b2b113567e59c58cd51409e9ff04210d6d0605ce"
+    },
+    {
+      "path": "core-b501-job-130289659118.log.gz",
+      "job_id": 130289659118,
+      "purpose": "Windows shard3: 46 observed failed cases",
+      "encoding": "gzip",
+      "original_bytes": 839469,
+      "original_sha256": "e034fa4a836cd4c18754bd0a67f398121770effd60a4b9fbfafc2c75cc21b10f",
+      "stored_bytes": 138499,
+      "stored_sha256": "b41c6092ad9c30f28ed8a1f817e218a6fc1e9ae1c78d8e8c14ad281fbceb8cba"
+    },
+    {
+      "path": "core-b501-job-130289659211.log.gz",
+      "job_id": 130289659211,
+      "purpose": "Windows Clippy: same guard lexical-scope lint",
+      "encoding": "gzip",
+      "original_bytes": 518586,
+      "original_sha256": "94ba96645c081c91cd2b7b138a7ea6c0ee60e1c3b2b2e60c7d8a05790a106ccf",
+      "stored_bytes": 66225,
+      "stored_sha256": "4652ee70cfa5cb5336e1056614426419a7a939fba98dfa9a950df4e4d4f7bcce"
+    }
+  ]
+}
