@@ -196,6 +196,27 @@ class DurableTests(unittest.TestCase):
         with self.assertRaises(EvidenceError):
             self.receipt(ROSTER[0], status=Fake("completed"))
 
+    def test_hard_exit_after_atomic_link_never_implies_terminal(self):
+        code = (
+            "import os,sys,c2_durable\n"
+            "from pathlib import Path\n"
+            "c2_durable._directory_sync=lambda p: os._exit(27)\n"
+            "c2_durable.publish_checkpoint(Path(sys.argv[1]), "
+            "lambda f: f.write(b'complete-and-verified'), "
+            "lambda p: p.read_bytes()==b'complete-and-verified')\n"
+        )
+        dst = self.root / "post-link.pt"
+        result = subprocess.run(
+            [sys.executable, "-c", code, str(dst)],
+            cwd=Path(__file__).parent, check=False, capture_output=True,
+        )
+        self.assertEqual(result.returncode, 27, result.stderr)
+        self.assertEqual(dst.read_bytes(), b"complete-and-verified")
+        self.assertFalse(self.roster()["producer_complete"])
+        with self.assertRaises(FileExistsError):
+            publish_checkpoint(dst, lambda f: f.write(b"retry"),
+                               lambda p: True)
+
     def test_identity_spoof_and_roster_duplicates(self):
         class Fake(str):
             pass
