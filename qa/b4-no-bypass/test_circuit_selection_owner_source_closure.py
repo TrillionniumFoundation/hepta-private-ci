@@ -82,15 +82,15 @@ class OriginalCircuitSelectionOwnerSourceClosureTests(unittest.TestCase):
             row.identifier,
             self.manifest["privileged_inventory"]["required_boundary_ids"],
         )
-        self.assertEqual(row.product_callers, (OWNER, "codex-rs/hepta-agentd/src/circuit_model_selection_receipt_sources.rs"))
+        self.assertEqual(row.product_callers, (OWNER, "codex-rs/hepta-agentd/src/circuit_model_selection_receipt_sources.rs", "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs"))
         sources = {
             path: PROOF._strip_rust_non_code((ROOT / path).read_text())
-            for path in (OWNER, CELL, "codex-rs/hepta-agentd/src/circuit_model_selection_receipt_sources.rs")
+            for path in (OWNER, CELL, "codex-rs/hepta-agentd/src/circuit_model_selection_receipt_sources.rs", "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs")
         }
         PROOF._verify_boundary(ROOT, row, sources, ())
-        self.rejects("fn prepare(", "cell.read_learning_selection(&coordinator)?")
+        self.rejects("fn read_local_selection(", "cell.read_learning_selection(&coordinator)?")
         self.rejects(
-            "fn prepare(", "self.config.scope.validate_snapshot(source.snapshot)?"
+            "fn prepare(", "self.config.scope.validate_snapshot(source.snapshot())?"
         )
 
     def test_original_training_pin_and_physical_readbacks_cannot_be_skipped(self):
@@ -98,7 +98,7 @@ class OriginalCircuitSelectionOwnerSourceClosureTests(unittest.TestCase):
             ("fn authenticate_training(", "if evidence != &config.training_evidence"),
             ("fn validate_config(", "&config.training_evidence.signature"),
             ("fn training_evidence(", "training_receipt(&self.config)?"),
-            ("fn authenticate_completed(", "if self.prepare(source)? != *observed"),
+            ("fn authenticate_completed(", "if self.prepare(source).await? != *observed"),
             ("fn authenticate_completed(", "if self.journal.read(&self.saved)? != bytes"),
             ("fn authenticate_completed(", "signed.issued_at"),
         ):
@@ -106,11 +106,11 @@ class OriginalCircuitSelectionOwnerSourceClosureTests(unittest.TestCase):
 
     def test_missing_pending_deadline_and_role_separation_remain_distinct(self):
         for function, marker in (
-            ("fn attest_original_selection(", "let started_at = now()?;"),
-            ("fn attest_original_selection(", "require_new_attestation(&self.config, started_at, now()?)?"),
-            ("fn attest_original_selection(", "require_new_attestation(&self.config, started_at, claim_at)?"),
-            ("fn attest_original_selection(", "ProductEvaluationExecutionStoreErrorV1::Missing"),
-            ("fn attest_original_selection(", "require_new_attestation(config, started_at, issued_at)?"),
+            ("fn attest_source(", "let started_at = now()?;"),
+            ("fn attest_source(", "require_new_attestation(&self.config, started_at, now()?)?"),
+            ("fn attest_source(", "require_new_attestation(&self.config, started_at, claim_at)?"),
+            ("fn attest_source(", "ProductEvaluationExecutionStoreErrorV1::Missing"),
+            ("fn attest_source(", "require_new_attestation(config, started_at, issued_at)?"),
             ("fn require_new_attestation(", "current >= config.decision.request.envelope.expiry_unix_seconds"),
             ("fn authenticate_completed(", "if current < started_at"),
             ("fn authenticate_training(", "verify_independent_roles(verified.principal(), &config.signer.principal, current)"),

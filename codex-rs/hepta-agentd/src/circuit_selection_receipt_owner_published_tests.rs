@@ -602,3 +602,6 @@ async fn q24_original_selector_rejects_another_real_completion_with_same_run_and
     f.original.session.stop().await?;
     Ok(())
 }
+
+#[path = "circuit_learning_read_owner_tests.rs"]
+mod published_read;

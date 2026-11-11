@@ -37,6 +37,8 @@ use crate::neuron_generation_update_live::LiveGenerationCurrent;
 mod control;
 #[path = "circuit_feature_current_learning.rs"]
 mod learning;
+#[path = "circuit_learning_read_capability.rs"]
+mod learning_read;
 #[path = "circuit_feature_current_owner.rs"]
 mod owner;
 #[path = "circuit_feature_current_recovery.rs"]
@@ -44,6 +46,13 @@ mod recovery;
 #[path = "circuit_feature_current_retirement.rs"]
 mod retirement;
 pub use control::PublishedCircuitFeatureControlV1;
+pub use learning_read::OriginalCircuitLearningReadClientV1;
+pub use learning_read::OriginalCircuitLearningReadContextV1;
+pub use learning_read::OriginalCircuitLearningReadErrorV1;
+pub use learning_read::OriginalCircuitLearningReadOwnerV1;
+pub use learning_read::OriginalCircuitLearningReadbackV1;
+#[cfg(test)]
+pub(crate) use learning_read::fixture as original_learning_read_fixture;
 pub use owner::PublishedCircuitCellOwnerV1;
 pub use recovery::CircuitFeaturePredecessorFilesV1;
 pub(crate) use recovery::recover_predecessor;

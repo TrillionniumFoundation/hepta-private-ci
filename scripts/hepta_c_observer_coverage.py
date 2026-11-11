@@ -142,6 +142,27 @@ EXECUTION_CASES = tuple(
         "original_execution_evidence_missing_and_pending_never_claim",
     )
 )
+PUBLISHED_READ_PREFIX = SELECTION_PREFIX + "published_read::"
+PUBLISHED_READ_CASES = tuple(
+    PUBLISHED_READ_PREFIX + name
+    for name in (
+        "q24_remote_selection_reads_original_publication_before_c_and_recovers_signature",
+        "q24_remote_c_requires_actual_completion_and_original_selector_signature",
+        "q24_remote_current_refuses_withdrawal_after_a_successful_read",
+        "q24_remote_context_pins_full_signatures_and_refuses_uploaded_observations",
+        "q24_remote_read_consumes_late_and_wrong_nonce_responses_without_effects",
+        "q24_remote_read_refuses_expired_original_window_and_same_process_bootstrap",
+    )
+)
+SOURCE_CURRENT_PREFIX = "circuit_task::source::tests::physical_current::"
+SOURCE_CURRENT_CASES = tuple(
+    SOURCE_CURRENT_PREFIX + name
+    for name in (
+        "original_source_current_fences_same_length_mutation_after_restore",
+        "original_source_current_fences_truncation_and_extra_tail_without_repair",
+        "original_source_input_read_is_readonly_and_requires_live_original_configuration",
+    )
+)
 OWNER_GROUPS = (
     ("next_use_observer", PACKAGE, NEXT_USE_CASES),
     ("material_observers", PACKAGE, MATERIAL_CASES),
@@ -154,6 +175,8 @@ OWNER_GROUPS = (
     ("original_remote_material_source", PACKAGE, REMOTE_MATERIAL_CASES),
     ("original_peer_lifetime", PACKAGE, TRANSPORT_CASES),
     ("original_execution_evidence", EXECUTION_PACKAGE, EXECUTION_CASES),
+    ("original_published_circuit_read", PACKAGE, PUBLISHED_READ_CASES),
+    ("original_task_source_current", PACKAGE, SOURCE_CURRENT_CASES),
 )
 EXPECTED_CASES = tuple(
     (package, name) for _, package, names in OWNER_GROUPS for name in names

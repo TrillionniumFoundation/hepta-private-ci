@@ -32,9 +32,12 @@ READERS = (
 )
 FUNCTIONS = {
     "fn create(", "fn recover(", "fn validate_config(", "fn prepare(",
-    "fn attest_original_completion(", "fn readback(", "fn predecessors(",
+    "fn attest_source(", "fn readback_source(", "fn predecessors(",
     "fn authenticate_completed(", "fn authenticate_predecessors(",
     "fn receipt(", "fn require_new_attestation(", "fn sign_original(", "fn now(",
+    "fn attest_original_completion(", "fn attest_original_remote_completion(",
+    "fn readback(", "fn readback_remote(", "fn read_local_next_use(",
+    "fn read_remote_next_use(", "fn remote_predecessors(",
 }
 
 
@@ -83,7 +86,7 @@ class OriginalCircuitObserverSourceClosureTests(unittest.TestCase):
     def test_real_read_edges_are_registered_and_owner_constructors_remain_closed(self):
         expected = {
             "learning_evidence_original_owner_readback": READERS,
-            "circuit_feature_original_next_use_observation": (OWNER,),
+            "circuit_feature_original_next_use_observation": (OWNER, AGENT + "circuit_learning_read_service.rs"),
             **{"learning_original_circuit_next_use_receipt_" + suffix: ()
                for suffix in ("create", "recover", "attest", "readback")},
         }
@@ -123,7 +126,7 @@ class OriginalCircuitObserverSourceClosureTests(unittest.TestCase):
             statement = "let saved = validate_config(&config, &key)?;"
             self.mutate_function(function, statement, "if false { " + statement + " }")
         for function, marker in (
-            ("fn prepare(", "self.config.scope.validate_snapshot(source.snapshot)?;"),
+            ("fn prepare(", "self.config.scope.validate_snapshot(source.snapshot())?;"),
             ("fn authenticate_completed(", "let current = now()?;"),
         ):
             self.mutate_function(function, marker, "if false { " + marker + " }")
@@ -145,7 +148,7 @@ class OriginalCircuitObserverSourceClosureTests(unittest.TestCase):
 
     def test_new_attestation_deadline_and_readback_window_are_distinct(self):
         self.mutate_function(
-            "fn attest_original_completion(",
+            "fn attest_source(",
             "self.authenticate_completed(&source, &observed, &bytes, started_at, true)",
             "self.authenticate_completed(&source, &observed, &bytes, started_at, false)",
         )

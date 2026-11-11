@@ -488,6 +488,8 @@ pub use circuit_next_use_receipt_owner::OriginalCircuitNextUseReceiptOwnerV1;
 #[cfg(target_os = "linux")]
 pub use circuit_next_use_receipt_owner::OriginalCircuitNextUseReceiptSourcesV1;
 #[cfg(target_os = "linux")]
+pub use circuit_next_use_receipt_owner::OriginalCircuitNextUseRemoteSourcesV1;
+#[cfg(target_os = "linux")]
 pub use circuit_q24_task_profile::AgentdQ24CircuitTaskRuntimeV1;
 #[cfg(target_os = "linux")]
 pub use circuit_q24_task_profile::CircuitQ24TaskFilesV1;
@@ -507,6 +509,8 @@ pub use circuit_selection_receipt_owner::OriginalCircuitSelectionReceiptErrorV1;
 pub use circuit_selection_receipt_owner::OriginalCircuitSelectionReceiptOwnerV1;
 #[cfg(target_os = "linux")]
 pub use circuit_selection_receipt_owner::OriginalCircuitSelectionReceiptSourcesV1;
+#[cfg(target_os = "linux")]
+pub use circuit_selection_receipt_owner::OriginalCircuitSelectionRemoteSourcesV1;
 pub use learning_owner_journal::LearningOriginalOwnerErrorV1;
 pub use neuron_cell_evaluation_owner::OriginalCellEvaluationExecutionOwnerV1;
 pub use neuron_cell_evaluation_owner::OriginalCellEvaluationSigningConfigV1;
@@ -685,6 +689,16 @@ pub use circuit_credit::CircuitCreditTargetV1;
 pub use circuit_credit::circuit_learning_run_id_v1;
 #[cfg(target_os = "linux")]
 pub use circuit_feature_current::CircuitFeaturePredecessorFilesV1;
+#[cfg(target_os = "linux")]
+pub use circuit_feature_current::OriginalCircuitLearningReadClientV1;
+#[cfg(target_os = "linux")]
+pub use circuit_feature_current::OriginalCircuitLearningReadContextV1;
+#[cfg(target_os = "linux")]
+pub use circuit_feature_current::OriginalCircuitLearningReadErrorV1;
+#[cfg(target_os = "linux")]
+pub use circuit_feature_current::OriginalCircuitLearningReadOwnerV1;
+#[cfg(target_os = "linux")]
+pub use circuit_feature_current::OriginalCircuitLearningReadbackV1;
 #[cfg(target_os = "linux")]
 pub use circuit_feature_current::PublishedCircuitCellOwnerV1;
 #[cfg(target_os = "linux")]
