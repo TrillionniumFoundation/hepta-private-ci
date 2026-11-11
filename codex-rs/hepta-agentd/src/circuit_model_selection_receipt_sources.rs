@@ -31,7 +31,11 @@ use crate::SourceBoundCellQ24TrainingStageV1;
 /// and advance it with its original store. This reader never creates, repairs
 /// or advances a missing witness. Joint rollback remains outside this proof.
 pub struct OriginalCircuitModelSelectionEvaluationSourcesV1<
-    'a, S, C: AnchorWitnessStore, F: AnchorWitnessStore, W: AnchorWitnessStore,
+    'a,
+    S,
+    C: AnchorWitnessStore,
+    F: AnchorWitnessStore,
+    W: AnchorWitnessStore,
 > {
     pub runner: &'a mut CellEvaluationRunnerV1<S>,
     pub journals: CellEvaluationJournalsV1<'a, C, F>,
@@ -47,8 +51,14 @@ pub struct OriginalCircuitModelSelectionEvaluationSourcesV1<
 /// The learning Evaluator remains a separately admitted, purpose-bound peer.
 /// No original role key, writer descriptor or generic callback is extracted.
 pub struct OriginalCircuitModelSelectionReceiptSourcesV1<
-    'a, C: AnchorWitnessStore, TW: AnchorWitnessStore, RW: AnchorWitnessStore,
-    MW: AnchorWitnessStore, S, EC: AnchorWitnessStore, EF: AnchorWitnessStore,
+    'a,
+    C: AnchorWitnessStore,
+    TW: AnchorWitnessStore,
+    RW: AnchorWitnessStore,
+    MW: AnchorWitnessStore,
+    S,
+    EC: AnchorWitnessStore,
+    EF: AnchorWitnessStore,
     EW: AnchorWitnessStore,
 > {
     pub snapshot: &'a LearningIterationSnapshotV1,
@@ -61,11 +71,16 @@ pub struct OriginalCircuitModelSelectionReceiptSourcesV1<
 }
 
 impl<
-    C: AnchorWitnessStore, TW: AnchorWitnessStore + Send + 'static,
-    RW: AnchorWitnessStore + Send + 'static, MW: AnchorWitnessStore,
-    S: FinalHoldoutCasStoreV1, EC: AnchorWitnessStore, EF: AnchorWitnessStore,
+    C: AnchorWitnessStore,
+    TW: AnchorWitnessStore + Send + 'static,
+    RW: AnchorWitnessStore + Send + 'static,
+    MW: AnchorWitnessStore,
+    S: FinalHoldoutCasStoreV1,
+    EC: AnchorWitnessStore,
+    EF: AnchorWitnessStore,
     EW: AnchorWitnessStore,
-> OriginalCircuitModelSelectionReceiptSourcesV1<'_, C, TW, RW, MW, S, EC, EF, EW> {
+> OriginalCircuitModelSelectionReceiptSourcesV1<'_, C, TW, RW, MW, S, EC, EF, EW>
+{
     pub(super) fn prepare(
         &mut self,
         config: &OriginalCircuitModelSelectionReceiptConfigV1,
@@ -77,7 +92,10 @@ impl<
             config.scope.validate_snapshot(self.snapshot)?;
             if self.snapshot.request != config.decision.request
                 || self.snapshot.owners != config.decision.owners
-                || !self.snapshot.receipts.starts_with(&config.decision.receipts)
+                || !self
+                    .snapshot
+                    .receipts
+                    .starts_with(&config.decision.receipts)
             {
                 return Err(OwnerError::Binding("original Model decision prefix").into());
             }
@@ -98,7 +116,9 @@ impl<
                 request: &request,
             };
             let model = SourceBoundCellQ24TrainingStageV1::read_model_proposal(
-                self.training_stage, self.model, &inputs,
+                self.training_stage,
+                self.model,
+                &inputs,
             )?;
             if Some(model.learning_receipt()) != config.decision.receipts.last() {
                 return Err(OwnerError::Binding("exact original Model Proposal receipt").into());
@@ -109,9 +129,14 @@ impl<
             let observation = cell.read_learning_selection(&coordinator)?;
             config.scope.validate_observation(&observation)?;
             self.evaluation.read_original(config)?;
-            let bundle = self.evaluation.runner
+            let bundle = self
+                .evaluation
+                .runner
                 .qualification_bundle(&config.evaluation, self.evaluation.context)?;
-            Ok(Prepared { observation, bundle })
+            Ok(Prepared {
+                observation,
+                bundle,
+            })
         })();
         if result.is_err() {
             *fenced = true;
@@ -138,16 +163,19 @@ impl<
     }
 }
 
-impl<S: FinalHoldoutCasStoreV1, C: AnchorWitnessStore, F: AnchorWitnessStore,
-     W: AnchorWitnessStore> OriginalCircuitModelSelectionEvaluationSourcesV1<'_, S, C, F, W> {
+impl<S: FinalHoldoutCasStoreV1, C: AnchorWitnessStore, F: AnchorWitnessStore, W: AnchorWitnessStore>
+    OriginalCircuitModelSelectionEvaluationSourcesV1<'_, S, C, F, W>
+{
     pub(super) fn timing(&self) -> ProductTimingEvidenceV1<'_> {
         match &self.timing {
             ProductTimingEvidenceV1::Qualification => ProductTimingEvidenceV1::Qualification,
-            ProductTimingEvidenceV1::SystemLongitudinal { timing, minimum_window_micros } => {
-                ProductTimingEvidenceV1::SystemLongitudinal {
-                    timing, minimum_window_micros: *minimum_window_micros,
-                }
-            }
+            ProductTimingEvidenceV1::SystemLongitudinal {
+                timing,
+                minimum_window_micros,
+            } => ProductTimingEvidenceV1::SystemLongitudinal {
+                timing,
+                minimum_window_micros: *minimum_window_micros,
+            },
         }
     }
 
@@ -197,7 +225,9 @@ impl<W: AnchorWitnessStore> OriginalExecution<'_, W> {
         let before = self.witness.current()?;
         let physical = self.journal.read_current_anchor()?;
         let current = JournalAnchor {
-            sequence: physical.sequence.checked_add(1)
+            sequence: physical
+                .sequence
+                .checked_add(1)
                 .ok_or(OwnerError::Binding("original execution witness sequence"))?,
             checkpoint_digest: physical.history_digest,
         };
@@ -209,23 +239,32 @@ impl<W: AnchorWitnessStore> OriginalExecution<'_, W> {
     }
 }
 impl<W: AnchorWitnessStore> ProductEvaluationExecutionStoreV1 for OriginalExecution<'_, W> {
-    fn claim(&mut self, _: &ProductEvaluationExecutionKeyV1)
-        -> Result<ProductEvaluationExecutionClaimV1, ProductEvaluationExecutionStoreErrorV1> {
+    fn claim(
+        &mut self,
+        _: &ProductEvaluationExecutionKeyV1,
+    ) -> Result<ProductEvaluationExecutionClaimV1, ProductEvaluationExecutionStoreErrorV1> {
         Err(ProductEvaluationExecutionStoreErrorV1::Rejected)
     }
-    fn complete(&mut self, _: &ProductEvaluationExecutionKeyV1, _: &[u8])
-        -> Result<(), ProductEvaluationExecutionStoreErrorV1> {
+    fn complete(
+        &mut self,
+        _: &ProductEvaluationExecutionKeyV1,
+        _: &[u8],
+    ) -> Result<(), ProductEvaluationExecutionStoreErrorV1> {
         Err(ProductEvaluationExecutionStoreErrorV1::Rejected)
     }
-    fn readback(&mut self, key: &ProductEvaluationExecutionKeyV1)
-        -> Result<ProductEvaluationExecutionStateV1, ProductEvaluationExecutionStoreErrorV1> {
+    fn readback(
+        &mut self,
+        key: &ProductEvaluationExecutionKeyV1,
+    ) -> Result<ProductEvaluationExecutionStateV1, ProductEvaluationExecutionStoreErrorV1> {
         if key != self.key {
             return Err(ProductEvaluationExecutionStoreErrorV1::Conflict);
         }
-        let before = self.require_current()
+        let before = self
+            .require_current()
             .map_err(|_| ProductEvaluationExecutionStoreErrorV1::Indeterminate)?;
         let state = ProductEvaluationExecutionStoreV1::readback(self.journal, key);
-        let after = self.require_current()
+        let after = self
+            .require_current()
             .map_err(|_| ProductEvaluationExecutionStoreErrorV1::Indeterminate)?;
         if before != after {
             return Err(ProductEvaluationExecutionStoreErrorV1::Indeterminate);

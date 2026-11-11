@@ -85,8 +85,11 @@ fn equal_execution_with_validly_renewed_signature_has_different_original_evidenc
     let mut test = Harness::new();
     test.run().expect("actual original execution");
     let first = original(&mut test, &|| Ok(50)).expect("original evidence");
-    let (_, State::Completed(bytes)) =
-        test.executions.state.as_mut().expect("actual completed bytes")
+    let (_, State::Completed(bytes)) = test
+        .executions
+        .state
+        .as_mut()
+        .expect("actual completed bytes")
     else {
         panic!("completed original");
     };
@@ -101,7 +104,10 @@ fn equal_execution_with_validly_renewed_signature_has_different_original_evidenc
     assert_ne!(renewed.1, first.1);
     assert_ne!(renewed.1.record_digest(), first.1.record_digest());
     assert!(first.1.revalidate(&test.verifier, /*now*/ 95).is_err());
-    renewed.1.revalidate(&test.verifier, /*now*/ 95).expect("new fixture window");
+    renewed
+        .1
+        .revalidate(&test.verifier, /*now*/ 95)
+        .expect("new fixture window");
     assert_eq!(
         (test.fixture.provider.release_count, test.attestor.calls),
         (1, 1)

@@ -122,7 +122,15 @@ impl<W: AnchorWitnessStore> OriginalCircuitModelSelectionReceiptOwnerV1<W> {
         let runtime = Handle::try_current()
             .map_err(|_| OwnerError::Binding("original Model owner runtime"))?;
         let journal = LearningOwnerJournalV1::create(file, witness, saved.binding_digest)?;
-        Ok(Self { journal, config, key, saved, training, runtime, fenced: false })
+        Ok(Self {
+            journal,
+            config,
+            key,
+            saved,
+            training,
+            runtime,
+            fenced: false,
+        })
     }
 
     /// Recover only the exact original witness, evidence and key. Pending stays
@@ -137,17 +145,29 @@ impl<W: AnchorWitnessStore> OriginalCircuitModelSelectionReceiptOwnerV1<W> {
         let runtime = Handle::try_current()
             .map_err(|_| OwnerError::Binding("original Model owner runtime"))?;
         let journal = LearningOwnerJournalV1::recover(file, witness, saved.binding_digest)?;
-        Ok(Self { journal, config, key, saved, training, runtime, fenced: false })
+        Ok(Self {
+            journal,
+            config,
+            key,
+            saved,
+            training,
+            runtime,
+            fenced: false,
+        })
     }
 
     /// Observe and attest an already committed positive Model publication.
     /// Call only in the host's bounded blocking lane, never an async worker.
     /// A missing result may claim once. NoUpdate has a different concrete owner.
     pub fn attest_original_selection<
-        C: AnchorWitnessStore, TW: AnchorWitnessStore + Send + 'static,
-        RW: AnchorWitnessStore + Send + 'static, MW: AnchorWitnessStore,
+        C: AnchorWitnessStore,
+        TW: AnchorWitnessStore + Send + 'static,
+        RW: AnchorWitnessStore + Send + 'static,
+        MW: AnchorWitnessStore,
         S: codex_hepta_intelligence_eval::FinalHoldoutCasStoreV1,
-        EC: AnchorWitnessStore, EF: AnchorWitnessStore, EW: AnchorWitnessStore,
+        EC: AnchorWitnessStore,
+        EF: AnchorWitnessStore,
+        EW: AnchorWitnessStore,
     >(
         &mut self,
         mut source: OriginalCircuitModelSelectionReceiptSourcesV1<'_, C, TW, RW, MW, S, EC, EF, EW>,
@@ -173,7 +193,13 @@ impl<W: AnchorWitnessStore> OriginalCircuitModelSelectionReceiptOwnerV1<W> {
         }
         let claim_at = binding::now()?;
         binding::new_work_time(&self.config, started_at, claim_at)?;
-        binding::authenticate(&self.config, &prepared, source.evaluation.timing(), &evidence, claim_at)?;
+        binding::authenticate(
+            &self.config,
+            &prepared,
+            source.evaluation.timing(),
+            &evidence,
+            claim_at,
+        )?;
         let config = &self.config;
         let key = &self.key;
         let identity = self.saved.binding_digest;
@@ -181,31 +207,49 @@ impl<W: AnchorWitnessStore> OriginalCircuitModelSelectionReceiptOwnerV1<W> {
             let issued_at = binding::now()?;
             binding::new_work_time(config, started_at, issued_at)?;
             let (training, evaluation) = binding::authenticate(
-                config, &prepared, source.evaluation.timing(), &evidence, issued_at,
-            ).map_err(|_| OwnerError::Binding("current original Model predecessors"))?;
+                config,
+                &prepared,
+                source.evaluation.timing(),
+                &evidence,
+                issued_at,
+            )
+            .map_err(|_| OwnerError::Binding("current original Model predecessors"))?;
             let receipt = binding::receipt(config, &prepared.observation, issued_at)
                 .map_err(|_| OwnerError::Binding("original Model Selection receipt"))?;
             let payload = learning_iteration_receipt_signing_bytes_v1(&receipt)
                 .map_err(|_| OwnerError::Binding("original Model Selection bytes"))?;
             let signed = binding::sign_original(config, key, &payload, identity, issued_at)?;
             let verified = config.verifier.verify(
-                LearningEvidenceRoleV1::Selector, &signed, &payload, issued_at,
+                LearningEvidenceRoleV1::Selector,
+                &signed,
+                &payload,
+                issued_at,
             )?;
             verify_signed_actor_separation(&training, &verified, issued_at)?;
             verify_signed_actor_separation(&evaluation, &verified, issued_at)?;
             learning_owner_evidence::encode(&payload, &signed)
         })?;
-        self.authenticate_completed(&mut source, &prepared, &bytes, started_at, Use::NewAttestation)
+        self.authenticate_completed(
+            &mut source,
+            &prepared,
+            &bytes,
+            started_at,
+            Use::NewAttestation,
+        )
     }
 
     /// Read the original result after live Model, execution, evidence and
     /// publication checks. This cannot claim, sign, select, fit or publish.
     /// An expired work deadline allows only an already completed original result.
     pub fn readback<
-        C: AnchorWitnessStore, TW: AnchorWitnessStore + Send + 'static,
-        RW: AnchorWitnessStore + Send + 'static, MW: AnchorWitnessStore,
+        C: AnchorWitnessStore,
+        TW: AnchorWitnessStore + Send + 'static,
+        RW: AnchorWitnessStore + Send + 'static,
+        MW: AnchorWitnessStore,
         S: codex_hepta_intelligence_eval::FinalHoldoutCasStoreV1,
-        EC: AnchorWitnessStore, EF: AnchorWitnessStore, EW: AnchorWitnessStore,
+        EC: AnchorWitnessStore,
+        EF: AnchorWitnessStore,
+        EW: AnchorWitnessStore,
     >(
         &mut self,
         mut source: OriginalCircuitModelSelectionReceiptSourcesV1<'_, C, TW, RW, MW, S, EC, EF, EW>,
@@ -218,13 +262,27 @@ impl<W: AnchorWitnessStore> OriginalCircuitModelSelectionReceiptOwnerV1<W> {
     }
 
     fn read_original<
-        C: AnchorWitnessStore, TW: AnchorWitnessStore + Send + 'static,
-        RW: AnchorWitnessStore + Send + 'static, MW: AnchorWitnessStore,
+        C: AnchorWitnessStore,
+        TW: AnchorWitnessStore + Send + 'static,
+        RW: AnchorWitnessStore + Send + 'static,
+        MW: AnchorWitnessStore,
         S: codex_hepta_intelligence_eval::FinalHoldoutCasStoreV1,
-        EC: AnchorWitnessStore, EF: AnchorWitnessStore, EW: AnchorWitnessStore,
+        EC: AnchorWitnessStore,
+        EF: AnchorWitnessStore,
+        EW: AnchorWitnessStore,
     >(
         &mut self,
-        source: &mut OriginalCircuitModelSelectionReceiptSourcesV1<'_, C, TW, RW, MW, S, EC, EF, EW>,
+        source: &mut OriginalCircuitModelSelectionReceiptSourcesV1<
+            '_,
+            C,
+            TW,
+            RW,
+            MW,
+            S,
+            EC,
+            EF,
+            EW,
+        >,
         started_at: u64,
     ) -> Result<(LearningIterationReceiptV1, SignedLearningEvidenceV1), Error> {
         let bytes = self.journal.read(&self.saved)?;
@@ -233,13 +291,27 @@ impl<W: AnchorWitnessStore> OriginalCircuitModelSelectionReceiptOwnerV1<W> {
     }
 
     fn authenticate_completed<
-        C: AnchorWitnessStore, TW: AnchorWitnessStore + Send + 'static,
-        RW: AnchorWitnessStore + Send + 'static, MW: AnchorWitnessStore,
+        C: AnchorWitnessStore,
+        TW: AnchorWitnessStore + Send + 'static,
+        RW: AnchorWitnessStore + Send + 'static,
+        MW: AnchorWitnessStore,
         S: codex_hepta_intelligence_eval::FinalHoldoutCasStoreV1,
-        EC: AnchorWitnessStore, EF: AnchorWitnessStore, EW: AnchorWitnessStore,
+        EC: AnchorWitnessStore,
+        EF: AnchorWitnessStore,
+        EW: AnchorWitnessStore,
     >(
         &mut self,
-        source: &mut OriginalCircuitModelSelectionReceiptSourcesV1<'_, C, TW, RW, MW, S, EC, EF, EW>,
+        source: &mut OriginalCircuitModelSelectionReceiptSourcesV1<
+            '_,
+            C,
+            TW,
+            RW,
+            MW,
+            S,
+            EC,
+            EF,
+            EW,
+        >,
         prepared: &Prepared,
         bytes: &[u8],
         started_at: u64,
@@ -248,7 +320,10 @@ impl<W: AnchorWitnessStore> OriginalCircuitModelSelectionReceiptOwnerV1<W> {
         let (payload, signed) = learning_owner_evidence::decode(bytes)?;
         let receipt = binding::receipt(&self.config, &prepared.observation, signed.issued_at)?;
         if payload != learning_iteration_receipt_signing_bytes_v1(&receipt)?
-            || source.snapshot.receipts.get(self.config.decision.receipts.len())
+            || source
+                .snapshot
+                .receipts
+                .get(self.config.decision.receipts.len())
                 .is_some_and(|original| original != &receipt)
         {
             return Err(OwnerError::Binding("changed original Model Selection receipt").into());
@@ -262,7 +337,9 @@ impl<W: AnchorWitnessStore> OriginalCircuitModelSelectionReceiptOwnerV1<W> {
         }
         let current = binding::now()?;
         if current < started_at {
-            return Err(OwnerError::Binding("original Model Selector clock moved backwards").into());
+            return Err(
+                OwnerError::Binding("original Model Selector clock moved backwards").into(),
+            );
         }
         if matches!(use_kind, Use::NewAttestation) {
             binding::new_work_time(&self.config, started_at, current)?;
@@ -270,10 +347,17 @@ impl<W: AnchorWitnessStore> OriginalCircuitModelSelectionReceiptOwnerV1<W> {
         // No physical I/O follows this fresh verification of all original
         // stage, product and execution signatures, including their old windows.
         let (training, evaluation) = binding::authenticate(
-            &self.config, prepared, source.evaluation.timing(), &evidence, current,
+            &self.config,
+            prepared,
+            source.evaluation.timing(),
+            &evidence,
+            current,
         )?;
         let verified = self.config.verifier.verify(
-            LearningEvidenceRoleV1::Selector, &signed, &payload, current,
+            LearningEvidenceRoleV1::Selector,
+            &signed,
+            &payload,
+            current,
         )?;
         if verified.principal() != &self.config.signer.principal
             || verified.controller_id() != &self.config.signer.controller_id

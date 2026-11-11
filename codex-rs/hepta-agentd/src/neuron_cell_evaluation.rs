@@ -370,7 +370,6 @@ impl<S: FinalHoldoutCasStoreV1> CellEvaluationRunnerV1<S> {
         })
     }
 
-
     /// Read the exact original signed execution with its complete signature
     /// window, after validating the original Cell journals and holdout owner.
     /// The returned evidence grants no authority and never renews a signature.

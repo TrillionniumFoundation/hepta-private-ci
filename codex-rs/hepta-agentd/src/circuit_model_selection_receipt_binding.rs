@@ -31,28 +31,49 @@ pub(super) fn validate_config(
         || config.decision.owners.evidence_trust_digest != config.verifier.trust_digest()
         || config.decision.request.envelope.objective_digest != config.verifier.objective_digest()
         || !(1..=86_400).contains(&config.maximum_signature_lifetime_seconds)
-        || !matches!(&training_receipt(config)?.observation,
-            LearningIterationObservationV1::Training { .. })
-        || !matches!(&evaluation_receipt(config)?.observation,
+        || !matches!(
+            &training_receipt(config)?.observation,
+            LearningIterationObservationV1::Training { .. }
+        )
+        || !matches!(
+            &evaluation_receipt(config)?.observation,
             LearningIterationObservationV1::Evaluation {
-                disposition: LearningEvaluationDispositionV1::Qualified, ..
-            })
-        || !matches!(&config.decision.receipts[4].observation,
+                disposition: LearningEvaluationDispositionV1::Qualified,
+                ..
+            }
+        )
+        || !matches!(
+            &config.decision.receipts[4].observation,
             LearningIterationObservationV1::Proposal {
-                disposition: LearningProposalDispositionV1::UpdateCandidates, ..
-            })
+                disposition: LearningProposalDispositionV1::UpdateCandidates,
+                ..
+            }
+        )
     {
         return Err(OwnerError::Binding("original positive Model Selector capability").into());
     }
-    let candidate = coordinator.candidate()
+    let candidate = coordinator
+        .candidate()
         .ok_or(OwnerError::Binding("original trained Model candidate"))?
-        .digest().map_err(LearningIterationError::from)?;
-    if candidate == config.decision.request.selected_bundle.digest().map_err(LearningIterationError::from)? {
-        return Err(OwnerError::Binding("positive Model selection requires a changed candidate").into());
+        .digest()
+        .map_err(LearningIterationError::from)?;
+    if candidate
+        == config
+            .decision
+            .request
+            .selected_bundle
+            .digest()
+            .map_err(LearningIterationError::from)?
+    {
+        return Err(
+            OwnerError::Binding("positive Model selection requires a changed candidate").into(),
+        );
     }
     let product = config.qualification.product();
     product.validate_integrity()?;
-    config.evaluation.require_original_signed_execution(&product.evaluator)?;
+    config
+        .evaluation
+        .require_original_signed_execution(&product.evaluator)?;
     if config.qualification.comparison() != config.evaluation.plan().record()
         || product.temporal_execution_digest != config.evaluation.temporal().execution_digest
         || product.evidence_digest != evaluation_receipt(config)?.evidence_digest
@@ -65,17 +86,23 @@ pub(super) fn validate_config(
     {
         return Err(OwnerError::Binding("original Model evaluation material").into());
     }
-    let evidence = (config.training_evidence.clone(), config.evaluation_evidence.clone());
+    let evidence = (
+        config.training_evidence.clone(),
+        config.evaluation_evidence.clone(),
+    );
     let current = now()?;
     authenticate_roles(config, &evidence, current)?;
     let execution = OriginalProductEvaluationExecutionEvidenceV1::revalidate(
-        &config.execution_evidence, &config.verifier, current,
+        &config.execution_evidence,
+        &config.verifier,
+        current,
     )?;
     if execution.principal() != &product.evaluator {
         return Err(OwnerError::Binding("original execution Evaluator").into());
     }
     let mut training = LearningIterationCoordinatorV1::new(
-        config.decision.request.clone(), config.decision.owners.clone(),
+        config.decision.request.clone(),
+        config.decision.owners.clone(),
     )?;
     for receipt in config.decision.receipts.iter().take(3) {
         training.record(receipt.clone(), receipt.observed_unix_seconds)?;
@@ -93,35 +120,44 @@ pub(super) fn validate_config(
         signatures.extend_from_slice(&bytes);
         signatures.extend_from_slice(&original.signature);
     }
-    Ok((ProductEvaluationExecutionKeyV1 {
-        plan_id: config.decision.request.operation_id.clone(),
-        binding_digest: Digest32::of_parts(&[
-            b"hepta.agentd.original-circuit-model-selection-receipt.v1\0",
-            config.decision.head_digest.as_array(),
-            config.scope.binding().as_array(),
-            config.verifier.trust_digest().as_array(),
-            config.signer.principal.principal_id.as_str().as_bytes(),
-            &config.signer.verifying_key,
-            config.execution_evidence.key().binding_digest.as_array(),
-            config.execution_evidence.record_digest().as_array(),
-            product.evidence_digest.as_array(),
-            product.publication_digest.as_array(),
-            &signatures,
-            &config.maximum_signature_lifetime_seconds.to_be_bytes(),
-        ]),
-    }, training.snapshot().clone()))
+    Ok((
+        ProductEvaluationExecutionKeyV1 {
+            plan_id: config.decision.request.operation_id.clone(),
+            binding_digest: Digest32::of_parts(&[
+                b"hepta.agentd.original-circuit-model-selection-receipt.v1\0",
+                config.decision.head_digest.as_array(),
+                config.scope.binding().as_array(),
+                config.verifier.trust_digest().as_array(),
+                config.signer.principal.principal_id.as_str().as_bytes(),
+                &config.signer.verifying_key,
+                config.execution_evidence.key().binding_digest.as_array(),
+                config.execution_evidence.record_digest().as_array(),
+                product.evidence_digest.as_array(),
+                product.publication_digest.as_array(),
+                &signatures,
+                &config.maximum_signature_lifetime_seconds.to_be_bytes(),
+            ]),
+        },
+        training.snapshot().clone(),
+    ))
 }
 
 pub(super) fn training_receipt(
     config: &OriginalCircuitModelSelectionReceiptConfigV1,
 ) -> Result<&LearningIterationReceiptV1, Error> {
-    config.decision.receipts.get(2)
+    config
+        .decision
+        .receipts
+        .get(2)
         .ok_or_else(|| OwnerError::Binding("original Model Training receipt").into())
 }
 pub(super) fn evaluation_receipt(
     config: &OriginalCircuitModelSelectionReceiptConfigV1,
 ) -> Result<&LearningIterationReceiptV1, Error> {
-    config.decision.receipts.get(3)
+    config
+        .decision
+        .receipts
+        .get(3)
         .ok_or_else(|| OwnerError::Binding("original Model Evaluation receipt").into())
 }
 
@@ -134,15 +170,21 @@ fn authenticate_roles(
         return Err(OwnerError::Binding("changed original Model predecessor signatures").into());
     }
     config.verifier.require_signer_binding(
-        LearningEvidenceRoleV1::Selector, &config.signer, current,
+        LearningEvidenceRoleV1::Selector,
+        &config.signer,
+        current,
     )?;
     let training = config.verifier.verify(
-        LearningEvidenceRoleV1::Generator, &evidence.0,
-        &learning_iteration_receipt_signing_bytes_v1(training_receipt(config)?)?, current,
+        LearningEvidenceRoleV1::Generator,
+        &evidence.0,
+        &learning_iteration_receipt_signing_bytes_v1(training_receipt(config)?)?,
+        current,
     )?;
     let evaluation = config.verifier.verify(
-        LearningEvidenceRoleV1::Evaluator, &evidence.1,
-        &learning_iteration_receipt_signing_bytes_v1(evaluation_receipt(config)?)?, current,
+        LearningEvidenceRoleV1::Evaluator,
+        &evidence.1,
+        &learning_iteration_receipt_signing_bytes_v1(evaluation_receipt(config)?)?,
+        current,
     )?;
     if training.principal().principal_id != config.decision.owners.trainer
         || evaluation.principal().principal_id != config.decision.owners.evaluator
@@ -171,7 +213,9 @@ pub(super) fn authenticate(
 ) -> Result<(VerifiedLearningEvidenceV1, VerifiedLearningEvidenceV1), Error> {
     let (training, evaluation) = authenticate_roles(config, evidence, current)?;
     let original = OriginalProductEvaluationExecutionEvidenceV1::revalidate(
-        &config.execution_evidence, &config.verifier, current,
+        &config.execution_evidence,
+        &config.verifier,
+        current,
     )?;
     if original.principal() != evaluation.principal()
         || original.controller_id() != evaluation.controller_id()
@@ -181,9 +225,13 @@ pub(super) fn authenticate(
         return Err(OwnerError::Binding("original Model execution and product actors").into());
     }
     let decision = revalidate_product_qualification_v1(
-        config.qualification.product(), prepared.bundle.clone(),
+        config.qualification.product(),
+        prepared.bundle.clone(),
         config.evaluation.plan().product_plan().metric_roles.clone(),
-        &config.product_evidence, timing, &config.verifier, current,
+        &config.product_evidence,
+        timing,
+        &config.verifier,
+        current,
     )?;
     if decision.decision.disposition
         != IndependentEvaluationDispositionV1::EligibleForIndependentSelection
@@ -199,14 +247,18 @@ pub(super) fn receipt(
     observed_unix_seconds: u64,
 ) -> Result<LearningIterationReceiptV1, Error> {
     let LearningIterationObservationV1::Selection {
-        candidate_bundle, selection_digest,
-    } = observation else {
+        candidate_bundle,
+        selection_digest,
+    } = observation
+    else {
         return Err(OwnerError::Binding("actual original Model selection observation").into());
     };
     let mut coordinator = LearningIterationCoordinatorV1::from_snapshot(config.decision.clone())?;
-    let candidate = coordinator.candidate()
+    let candidate = coordinator
+        .candidate()
         .ok_or(OwnerError::Binding("original positive Model candidate"))?
-        .digest().map_err(LearningIterationError::from)?;
+        .digest()
+        .map_err(LearningIterationError::from)?;
     if *candidate_bundle != candidate || selection_digest.is_zero() {
         return Err(OwnerError::Binding("actual positive Model publication").into());
     }
@@ -258,8 +310,11 @@ pub(super) fn signature_expiry(
     config: &OriginalCircuitModelSelectionReceiptConfigV1,
     issued_at: u64,
 ) -> Result<u64, OwnerError> {
-    Ok(issued_at.checked_add(config.maximum_signature_lifetime_seconds)
-        .ok_or(OwnerError::Binding("Model Selector signature deadline overflow"))?
+    Ok(issued_at
+        .checked_add(config.maximum_signature_lifetime_seconds)
+        .ok_or(OwnerError::Binding(
+            "Model Selector signature deadline overflow",
+        ))?
         .min(config.signer.principal.expires_at)
         .min(config.training_evidence.expires_at)
         .min(config.evaluation_evidence.expires_at)
@@ -274,7 +329,9 @@ pub(super) fn new_work_time(
     current: u64,
 ) -> Result<(), OwnerError> {
     if current < started_at || current >= config.decision.request.envelope.expiry_unix_seconds {
-        return Err(OwnerError::Binding("new Model Selection outside original deadline"));
+        return Err(OwnerError::Binding(
+            "new Model Selection outside original deadline",
+        ));
     }
     Ok(())
 }
@@ -285,6 +342,8 @@ pub(super) fn evidence_id(identity: Digest32) -> Result<StableId, OwnerError> {
 }
 
 pub(super) fn now() -> Result<u64, OwnerError> {
-    SystemTime::now().duration_since(UNIX_EPOCH).map(|value| value.as_secs())
+    SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map(|value| value.as_secs())
         .map_err(|_| OwnerError::Binding("original Model Selector clock"))
 }
