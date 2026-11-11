@@ -370,6 +370,43 @@ impl<S: FinalHoldoutCasStoreV1> CellEvaluationRunnerV1<S> {
         })
     }
 
+
+    /// Read the exact original signed execution with its complete signature
+    /// window, after validating the original Cell journals and holdout owner.
+    /// The returned evidence grants no authority and never renews a signature.
+    pub fn readback_completed_evidence(
+        &mut self,
+        plan: &CellEvaluationPlanV1,
+        journals: CellEvaluationJournalsV1<'_, impl AnchorWitnessStore, impl AnchorWitnessStore>,
+        request: &ProductEvaluationExecutionRequestV1<'_>,
+        executions: &mut impl ProductEvaluationExecutionStoreV1,
+    ) -> Result<
+        (
+            CellEvaluationReceiptV1,
+            codex_hepta_intelligence_eval::OriginalProductEvaluationExecutionEvidenceV1,
+        ),
+        CellEvaluationErrorV1,
+    > {
+        plan.require_journals(journals)?;
+        if request.plan != &plan.product {
+            return Err(CellEvaluationErrorV1::Binding(
+                "Cell execution product plan",
+            ));
+        }
+        let (temporal, original) = self
+            .product
+            .readback_temporal_comparison_evidence(request, executions)
+            .map_err(CellEvaluationErrorV1::Execution)?;
+        Ok((
+            CellEvaluationReceiptV1 {
+                plan: plan.clone(),
+                temporal,
+                original_execution_evaluator: Some(request.evaluator.clone()),
+            },
+            original,
+        ))
+    }
+
     pub fn qualification_bundle(
         &self,
         receipt: &CellEvaluationReceiptV1,
