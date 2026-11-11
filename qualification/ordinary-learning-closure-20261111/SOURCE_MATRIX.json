@@ -1,0 +1,130 @@
+{
+  "schema": "hepta.unified-source-matrix.v1",
+  "tested_code": {
+    "commit": "54de04371be6d625e1ecda49931c7d3585d0a2d0",
+    "tree": "0003e1f9f859fda1ebbe1c756cce34d5ddc3a170",
+    "parents": [
+      "5dcec722472eab39064416d50bf4c4bb7b96b361"
+    ]
+  },
+  "integration_lineage": [
+    {
+      "commit": "fd22aaaf094a7dec4e7a207821fcab9c284972a1",
+      "local_metadata_twin": "31bc5f538124acfbd5aebacf3f4924fa57ff0874",
+      "tree": "30215e145a243951ab48dd7cd883286578252cb5",
+      "parents": [
+        "be8adcbb5e9925f72e05330b8fb30509cba4544b",
+        "c1d6537f7d979e1ad792eee796c6709d23a86697"
+      ],
+      "role": "original training-recovery and Evaluation/Model assembly"
+    },
+    {
+      "commit": "97a1fcadbf6c6699a86cf7c68210bea3fcdfda3e",
+      "local_metadata_twin": "293adf279520d3ad71ade4abe4255a505808b4ac",
+      "tree": "69aa60e46be91f8c10c1b0d809d72cb52b362430",
+      "parents": [
+        "fd22aaaf094a7dec4e7a207821fcab9c284972a1"
+      ],
+      "role": "initial Dataset materializer; failed native candidate"
+    },
+    {
+      "commit": "08f963973e02e0f74e499c962635518965f4f68a",
+      "local_metadata_twin": "3e905f189af5c516cdb6bb3cbd15e0a1f51856a7",
+      "tree": "2b700f32ebd90f88e022432e0a62584e4713a69b",
+      "parents": [
+        "97a1fcadbf6c6699a86cf7c68210bea3fcdfda3e"
+      ],
+      "role": "candidate-order/source-fixture/Linux import fix; one negative fixture still failed"
+    },
+    {
+      "commit": "6cd438083645389ad477e66373bb5fabc6eb82ee",
+      "local_metadata_twin": "bc8ac0dc25c621959b7be52280bcfed70b52bb07",
+      "tree": "f0f85fcccf7c51e4d6ae46a252bf785bcaa66f61",
+      "parents": [
+        "08f963973e02e0f74e499c962635518965f4f68a"
+      ],
+      "role": "correct separate missing-candidate and mandatory-abstain controls"
+    },
+    {
+      "commit": "952f2ae677d5110e369ae11f49af973891002b53",
+      "tree": "22fb6f8d0ecc7ee0f1670088227a8e89feac030d",
+      "parents": [
+        "6cd438083645389ad477e66373bb5fabc6eb82ee",
+        "afd2c91b3b9ef75ab9a174e3af772ad322118f7a"
+      ],
+      "role": "actual unified merge; stopped on formatter drift before native execution"
+    },
+    {
+      "commit": "5dcec722472eab39064416d50bf4c4bb7b96b361",
+      "tree": "f04d39f6b05051f050ef45e9a8d9f9b31a510a0a",
+      "parents": [
+        "952f2ae677d5110e369ae11f49af973891002b53"
+      ],
+      "role": "original formatter's exact output; stopped on E0004 before native tests"
+    },
+    {
+      "commit": "54de04371be6d625e1ecda49931c7d3585d0a2d0",
+      "tree": "0003e1f9f859fda1ebbe1c756cce34d5ddc3a170",
+      "parents": [
+        "5dcec722472eab39064416d50bf4c4bb7b96b361"
+      ],
+      "role": "qualified component candidate; explicit non-use rejection"
+    }
+  ],
+  "preparation_only": [
+    {
+      "commit": "a97954b25ab921e45238b45cb316bbf438174b20",
+      "tree": "80566558d1a7d95a50662d8eec693723dde0ee5e",
+      "parents": [
+        "08f963973e02e0f74e499c962635518965f4f68a",
+        "afd2c91b3b9ef75ab9a174e3af772ad322118f7a"
+      ],
+      "role": "separate assembly preparation, not the tested 54de ancestor or native candidate"
+    }
+  ],
+  "prospective_merge_objects": [
+    {
+      "commit": "4ac689164044b66916321964f116cb23ca362d20",
+      "equal_tree_head": "97a1fcadbf6c6699a86cf7c68210bea3fcdfda3e",
+      "tree": "69aa60e46be91f8c10c1b0d809d72cb52b362430"
+    },
+    {
+      "commit": "504c6374b06895fbf0e3a14198f8ef313b834092",
+      "equal_tree_head": "08f963973e02e0f74e499c962635518965f4f68a",
+      "tree": "2b700f32ebd90f88e022432e0a62584e4713a69b"
+    },
+    {
+      "commit": "0c82cb2464b64af49d2c614a855b3a2ad219e0a1",
+      "equal_tree_head": "54de04371be6d625e1ecda49931c7d3585d0a2d0",
+      "tree": "0003e1f9f859fda1ebbe1c756cce34d5ddc3a170"
+    },
+    {
+      "commit": "49ca46c5f706dc46d463e091e4c68a4a1f0da571",
+      "equal_tree_head": "130eaac29ef73259e10ae167744bda8320796216",
+      "tree": "56e2cd6fcec86e4fc059d9a25ce53440c7e3a144"
+    }
+  ],
+  "merge_method": {
+    "actual_common_base": "f97f3c90ac1ac3d5171fd9f25b3e34431f44a367",
+    "original_incoming_paths": 22,
+    "direct_incoming_paths": 11,
+    "native_git_merge_file_paths": 11,
+    "unrelated_histories_allowed": false,
+    "final_postimages_changed_from_08f": 25
+  },
+  "interpretation": [
+    "Metadata twins share the complete tree, not the commit ID.",
+    "Each execution retains its actual source/helper identity.",
+    "Preparation/failed-source observations are not attributed to the final candidate.",
+    "Evidence-only publication does not rewrite the tested source."
+  ],
+  "ci_only_child": {
+    "commit": "130eaac29ef73259e10ae167744bda8320796216",
+    "tree": "56e2cd6fcec86e4fc059d9a25ce53440c7e3a144",
+    "parent": "54de04371be6d625e1ecda49931c7d3585d0a2d0",
+    "path": ".github/workflows/repo-checks.yml",
+    "old_blob": "d58e39c0d951005a03f6e36899266739703103b7",
+    "new_blob": "48154e7d3f3fbf3f304490181d71facf623dcbd0",
+    "scope": "CI duration only; no executable Rust source, caller checker or guard change."
+  }
+}
