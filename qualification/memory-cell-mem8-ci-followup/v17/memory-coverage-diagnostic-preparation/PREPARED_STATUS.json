@@ -1,0 +1,55 @@
+{
+  "schema": "mem8.memory-coverage-v12.prepared-status.v1",
+  "observed_at_utc": "2026-11-11 18:26:52 UTC",
+  "state": "STATIC_DIAGNOSTIC_PREPARED_NOT_ADMITTED",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "base_commit": "ceadcb3b11dbd94a9d07afb7e6301555e4ff3f80",
+  "base_tree": "27651abb15e269c427c75f28f92a3bd1cd9d191f",
+  "path": "codex-rs/hepta-memory/src/cognitive_runtime_tests.rs",
+  "preimage": {
+    "bytes": 17808,
+    "sha256": "e9f92be64d7a4b4b5521a1b6c98ab678ca50291f2f32ae681b4634b606c1a810",
+    "git_blob": "7f397fe3e35205bae51ef95c4475315559c2b0ea"
+  },
+  "candidate": {
+    "bytes": 17873,
+    "sha256": "5ecb8bce0adb6d0151eb1ed23405489757354482f70b1b33d1232b35afc85d3c",
+    "git_blob": "9e40f57c40be855653f1cc7a716740a89bf60cf5",
+    "actual_git_create_and_full_readback": true
+  },
+  "reconstructed_patch": {
+    "bytes": 581,
+    "sha256": "1ccf096ac8bfeaa273dda303644b4a3de2026e2d5161de871181075c848aef34",
+    "git_blob": "06fb66322c85706289fb5602948f1ad499450ebe",
+    "actual_git_create_and_full_readback": true
+  },
+  "independent_peer": {
+    "bytes": 6480,
+    "sha256": "4ae7079a7d2112b383785d8c4cbca2683c44592224a413f9e4c711fa9ac154c6",
+    "git_blob": "5390d57f808ab2b192fa3d28f5ffd2c82a0a4d42",
+    "actual_git_create_and_full_readback": true,
+    "status": "NO_STATIC_MUST_FIX"
+  },
+  "unchanged_case": "cognitive_runtime_tests::product_v2_reports_peer_truncation_before_aggregation",
+  "change": "Only add typed coverage Debug text to the original completed_peers == 16 assertion failure message.",
+  "unchanged": {
+    "assertions": true,
+    "assertion_order": true,
+    "case_names": true,
+    "budgets": true,
+    "retries": true,
+    "production_code": true
+  },
+  "root_cause": "UNRESOLVED",
+  "diagnostic_is_repair_or_native_pass": false,
+  "assembler_executed": false,
+  "full_v12_input_materialized": false,
+  "overlay_119_full_byte_audit_performed": false,
+  "v12_source_commit_created": false,
+  "v12_branch_or_ref_created": false,
+  "CI_or_source_gate_admitted": false,
+  "native_tests": 0,
+  "model_requests": 0,
+  "local_workspace": "UNAVAILABLE; no retry of local execution or write after the explicit stop",
+  "immutable_git_objects_are_preparation_only": true
+}
