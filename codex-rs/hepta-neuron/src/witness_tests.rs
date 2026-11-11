@@ -178,3 +178,6 @@ fn witness_capacity_and_independent_writer_are_bounded() {
         Err(WitnessStoreError::Capacity)
     );
 }
+
+#[path = "witness_physical_current_tests.rs"]
+mod physical_current;

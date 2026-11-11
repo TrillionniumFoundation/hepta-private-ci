@@ -22,6 +22,7 @@ OWNER = AGENT + "neuron_cell_evaluation_execution_store.rs"
 RECOVERY = AGENT + "neuron_cell_evaluation_execution_recovery.rs"
 READBACK = AGENT + "neuron_cell_evaluation_execution_readback.rs"
 SOURCES = AGENT + "circuit_model_selection_receipt_sources.rs"
+WITNESS = "codex-rs/hepta-neuron/src/witness.rs"
 FUNCTIONS = {
     OWNER: {
         "fn create(", "fn readback_only(", "fn require_current(", "fn unchanged(",
@@ -45,6 +46,17 @@ def function_body(source, marker):
 def reject_effects(source, marker):
     if EFFECT.search(function_body(source, marker)):
         raise PROOF.VerificationFailure("readback or recovery contains an execution effect")
+
+
+def reject_witness_current_effects(source):
+    body = function_body(source, "fn current(")
+    effects = re.compile(
+        r"(?:\.|::)\s*(?:write|write_all|write_fmt|set_len|sync_all|sync_data|"
+        r"open|create|compare_and_swap|unlock|try_clone|get_mut|into_inner)\s*\("
+    )
+    clears_poison = re.compile(r"\bself\s*\.\s*poisoned\s*\.\s*store\s*\(\s*false\b")
+    if effects.search(body) or clears_poison.search(body) or "Ok(self.current)" in body:
+        raise PROOF.VerificationFailure("physical witness readback cannot write, clear its fence or use a cached result")
 
 
 class OriginalExecutionOwnerSourceClosureTests(unittest.TestCase):
@@ -173,6 +185,67 @@ class OriginalExecutionOwnerSourceClosureTests(unittest.TestCase):
         self.assertIn("cohorts, product declarations and role custody remain test fixtures", source)
         self.assertNotIn("WitnessedExecutions", source)
         self.assertFalse((ROOT / AGENT / "circuit_model_selection_execution_support_tests.rs").exists())
+
+
+    def reject_witness_guard_removals(self, functions):
+        source = (ROOT / WITNESS).read_text()
+        rows = self.rows(WITNESS)
+        self.assertEqual(len(rows), 1)
+        rules = rows[0]["required_function_order"]
+        self.assertEqual({rule["function"] for rule in rules}, {
+            "fn acquire(", "fn open(", "fn current(", "fn compare_and_swap(",
+        })
+        for rule in rules:
+            if rule["function"] not in functions:
+                continue
+            cursor = source.index(rule["function"])
+            end = PROOF._rust_item_end(PROOF._strip_rust_non_code(source), cursor)
+            self.assertIsNotNone(end)
+            for marker in rule["sequence"]:
+                with self.subTest(function=rule["function"], marker=marker):
+                    offset = source.index(marker, cursor, end + 1)
+                    self.verify_changed(
+                        WITNESS,
+                        lambda text, offset=offset, count=len(marker):
+                            text[:offset] + text[offset + count:],
+                    )
+                    cursor = offset + len(marker)
+
+    def test_file_witness_current_checks_full_history_cursor_and_sticky_poison(self):
+        self.reject_witness_guard_removals({"fn current("})
+
+    def test_file_witness_open_and_cas_preserve_bounds_lock_and_physical_effect_order(self):
+        self.reject_witness_guard_removals({"fn acquire(", "fn open(", "fn compare_and_swap("})
+        for marker in self.rows(WITNESS)[0]["required"]:
+            with self.subTest(marker=marker):
+                self.verify_changed(WITNESS, lambda text, marker=marker: text.replace(marker, "", 1))
+
+    def test_file_witness_readback_cannot_reopen_write_clear_poison_or_return_cache(self):
+        source = (ROOT / WITNESS).read_text()
+        reject_witness_current_effects(source)
+        start = source.index("fn current(")
+        body_start = source.index("{", start) + 1
+        for code in (
+            "file.write_all(bytes);", "file.set_len(0);", "file.sync_data();",
+            "file.sync_all();", "File::open(path);", "File::create(path);",
+            "file.unlock();", "file.try_clone();", "file.get_mut();",
+            "file.into_inner();", "self.compare_and_swap(old, next);",
+            "self.poisoned.store(false, Ordering::Release);", "return Ok(self.current);",
+        ):
+            with self.subTest(code=code):
+                changed = source[:body_start] + code + source[body_start:]
+                with self.assertRaises(PROOF.VerificationFailure):
+                    reject_witness_current_effects(changed)
+        for code in (
+            "SigningKey::from_bytes(bytes);", "LearningEvidenceVerifierV1::new(trust);",
+            "File::open(path);", "std::fs::read(path);", "file.try_clone();",
+            "pub file: Raw", "pub current: Anchor", "pub history_digest: Digest",
+        ):
+            with self.subTest(code=code):
+                self.verify_changed(
+                    WITNESS,
+                    lambda text, code=code: text + "\nfn bypass() { " + code + " }\n",
+                )
 
 
 if __name__ == "__main__":

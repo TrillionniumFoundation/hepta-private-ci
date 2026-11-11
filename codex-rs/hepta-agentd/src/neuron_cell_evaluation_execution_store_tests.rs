@@ -373,7 +373,11 @@ fn original_execution_owner_physical_corruption_fences_even_after_restore() -> a
         let mut corrupt = original[index].clone();
         corrupt[0] ^= 1;
         fixture.overwrite(name, &corrupt)?;
-        assert_eq!(owner.readback(&key()), Err(StoreError::Indeterminate));
+        assert_eq!(
+            owner.readback(&key()),
+            Err(StoreError::Indeterminate),
+            "physical {name} corruption must fence the original owner"
+        );
         fixture.overwrite(name, &original[index])?;
         assert_eq!(fixture.bytes()?, original);
         assert_eq!(owner.readback(&key()), Err(StoreError::Indeterminate));
