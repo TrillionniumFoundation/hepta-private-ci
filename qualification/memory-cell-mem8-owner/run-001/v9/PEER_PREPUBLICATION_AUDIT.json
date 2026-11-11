@@ -1,0 +1,104 @@
+{
+  "schema": "hepta.mem8.owner-v9.candidate-audit.v1",
+  "base": {
+    "bytes": 72718,
+    "sha256": "7c8e9c528cb80d7eb4fbfc3c22e440d5e9ad318baccbae9b55776cf41f5e5fcf",
+    "git_blob": "af43c75a36cb33c82fef4a8ab4edc892c5cf8e76"
+  },
+  "candidate": {
+    "bytes": 124699,
+    "sha256": "9e7598040fcedd533b14bcfdbcc28ad3cd44c465f699facd17814351d23d1800",
+    "git_blob": "6030c1c917dbb0dcc6a6ff2ed5259e35a243a925"
+  },
+  "patch": {
+    "bytes": 59423,
+    "sha256": "237e59c55b97cf1775c3fcd8e42cf57695904b938e7cd4d10cf561051fa81801",
+    "git_blob": "9209e90cc543a73d650dee807eeb22c08063c02e"
+  },
+  "changed_top_level_fields": [
+    "actionable_remaining_inputs",
+    "checkpoint_revision",
+    "checkpoint_utc",
+    "closed_this_followup",
+    "final_source_composition",
+    "hosted_ci_followup_189",
+    "implementation_progress",
+    "new_model_requests_this_revision",
+    "open",
+    "previous_checkpoint",
+    "publication",
+    "publication_state",
+    "runtime_transport",
+    "source_preparation_followup_v5",
+    "v9_update_provenance"
+  ],
+  "protected_original_fields_byte_equivalent_after_canonical_serialization": [
+    "archive",
+    "historical_results_unchanged",
+    "native_source_validation",
+    "owner_stages",
+    "implicit_memory_isolation",
+    "source_read_followup",
+    "scientific_acceptance",
+    "adoption_action",
+    "production_adoption",
+    "original_deployment_binding",
+    "g_native_context_followup",
+    "source_exclusion_inventory",
+    "provider_smoke_prepared",
+    "provider_readonly_observation",
+    "provider_readonly_followup",
+    "provider_original_failure_evidence",
+    "new_real_actor_episodes",
+    "new_scored_memory_actor_episodes",
+    "logical_provider_turns_admitted",
+    "physical_provider_requests"
+  ],
+  "open_gate_count": 10,
+  "nine_non_CI_gate_objects_identical": true,
+  "HOSTED_CI_closure_identical": true,
+  "all_prior_component_native_objects_unchanged": true,
+  "physical_provider_requests_remain_null": true,
+  "provider_final_unknown_no_replay": true,
+  "source69_residual16_not_certified_unseen": true,
+  "new_source_only_pass_not_native_qualification": true,
+  "actual_bazel_first_attempt_zero_lock_phases": true,
+  "original_v8_not_recreated": true,
+  "pending_finalization": [
+    "Root owner checkpoint review and expected-head CAS from cb54f618f0408c314b1c367a5256ea185165c354.",
+    "Later exact9bd2 native evidence is a separate update, not credited in this checkpoint."
+  ],
+  "new_host_native_model_requests": 0,
+  "refs_changed": false,
+  "final2_delta": {
+    "bytes": 5825,
+    "sha256": "4e8519deef76307ce6e3eea538eef988d752c01247e14a5cb804f60c75456013",
+    "git_blob": "4f0b0c604033d261b51300f7504185c0b5210f26"
+  },
+  "superseded_unpublished_candidate": {
+    "bytes": 122483,
+    "sha256": "150c62961fd06940f13b047e81a41fa90e210e2935e8cf19d7460b4c6fe74b31",
+    "git_blob": "cab6d5d0e7a0083ddd167bd7c0dca4cd5508a95d"
+  },
+  "published_source_gate_audit": {
+    "bytes": 3131,
+    "sha256": "d5cb21e504018b5838e91c7d2bec49c89579f33ce7a90330672be329c1ffbff2",
+    "git_blob": "75f47d1f0e8bb3cb8d38afc1751e6da4a09195c1"
+  },
+  "published_source_gate_audit_commit": "e9c8d26d159edfb72eb9c2b8f4580478b4b37a2d",
+  "published_audit_entire_document_and_historical_remaining_preserved": true,
+  "nine_non_CI_gate_objects_unchanged": true,
+  "HOSTED_closure_text_unchanged": true,
+  "ten_gates_remain_open": true,
+  "new_current_MEM_Architecture_case_counts_added": false,
+  "candidate_preparation_refs_changed": false,
+  "actual_ref_mutations_by_this_script": 0,
+  "publication_state_is_prepared_postimage_only_until_root_CAS": true,
+  "candidate_not_ref_published": true,
+  "verified_at_utc": "2026-11-11T12:56:05.829177+00:00",
+  "supersedes_unpublished_metadata_audit": {
+    "bytes": 3639,
+    "sha256": "6ee0d371d94de48a51dbd5970327b3cab9cf8473d769f558deb88febd15a7424",
+    "reason": "Correct inherited pending-finalization text and recompute the changed-field list; candidate source bytes are unchanged."
+  }
+}
