@@ -172,7 +172,7 @@ class OriginalTrainingConnectionClosureTests(unittest.TestCase):
             ".map(|(receipt, attestation)|",
             "receipt,",
             "attestation,",
-            "verified_at,",
+            "verified_at)",
             ".transpose()?",
             "retained: Mutex::new(retained)",
         ):
