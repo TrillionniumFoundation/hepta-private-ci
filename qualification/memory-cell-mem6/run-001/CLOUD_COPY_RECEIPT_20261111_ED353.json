@@ -1,0 +1,32 @@
+{
+  "schema": "hepta.mem6.complete-cloud-copy.v1",
+  "observed_at_utc": "2026-11-11 02:25:05 UTC",
+  "status": "COMPLETE_BYTES_INDEPENDENTLY_VERIFIED",
+  "source_repository": "TrillionniumFoundation/hepta-private-ci",
+  "source_commit": "e8fd9416a2fd012633c8e29b5090e6cc710145f5",
+  "source_tree": "640eae695f3ebc406b85528d08112da002c9713a",
+  "source_index_path": "qualification/memory-cell-mem6/run-001/ARCHIVE_COMPLETE_INDEX_20261111_ED353.json",
+  "source_index_git_blob": "1624f643857fb2b7e9d7a32c66d4703014cec830",
+  "complete_archive_published": true,
+  "cloud_complete_archive_downloaded": true,
+  "part_count": 128,
+  "archive_bytes": 61412948,
+  "archive_sha256": "f77acd9feb27fda3f8000b0d089dbdbe258a4adfb7acedcb2e0cd590cc4f361e",
+  "method": [
+    "Fetched all 128 repository files independently through the GitHub connector, pinned to the immutable source commit.",
+    "Checked the returned Git blob identity, strict base64 decoding, byte length, SHA-256 and recomputed Git blob SHA for every part.",
+    "Verified contiguous non-overlapping archive offsets, reconstructed the complete archive and checked its full SHA-256.",
+    "Retained the previous partial-download history; this is a new complete copy observation."
+  ],
+  "previous_partial_download": {
+    "verified_chunks": 371,
+    "total_chunks": 938,
+    "verified_bytes": 24313856
+  },
+  "actor_reexecuted": false,
+  "archived_runtime_executed": false,
+  "full_owner_cold_recovery": false,
+  "independent_trust_domain": false,
+  "scientific_acceptance": "HOLD",
+  "production_adoption": false
+}
