@@ -232,3 +232,6 @@ fn now() -> Result<u64, Error> {
 #[cfg(test)]
 #[path = "circuit_learning_read_support_tests.rs"]
 pub(crate) mod fixture;
+
+#[cfg(test)]
+pub(crate) use readiness::fixture as readiness_fixture;

@@ -160,3 +160,7 @@ impl OriginalCircuitCompletionReadinessClientV1 {
         Ok(current)
     }
 }
+
+#[cfg(test)]
+#[path = "circuit_completion_readiness_support_tests.rs"]
+pub(crate) mod fixture;

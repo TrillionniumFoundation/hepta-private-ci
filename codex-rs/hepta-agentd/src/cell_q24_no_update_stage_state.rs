@@ -300,3 +300,7 @@ impl Continuation {
         Ok(())
     }
 }
+
+#[cfg(test)]
+#[path = "cell_q24_no_update_stage_support_tests.rs"]
+pub(super) mod fixture;

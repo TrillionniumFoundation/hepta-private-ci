@@ -283,3 +283,8 @@ pub(crate) use selection_command::command_test_support as selection_command_test
 
 #[cfg(test)]
 pub(crate) use next_use_command::command_test_support as next_use_command_test_support;
+
+#[cfg(test)]
+pub(crate) use ordinary_stage_owners::fresh_material_only;
+#[cfg(test)]
+pub(crate) use ordinary_stage_owners::recovered_material_only;

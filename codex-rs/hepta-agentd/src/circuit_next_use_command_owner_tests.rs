@@ -514,3 +514,6 @@ async fn q24_next_use_command_preserves_original_expiry_and_external_custody() -
     f.finish(false).await?;
     Ok(())
 }
+
+#[path = "circuit_completion_readiness_owner_tests.rs"]
+mod readiness;

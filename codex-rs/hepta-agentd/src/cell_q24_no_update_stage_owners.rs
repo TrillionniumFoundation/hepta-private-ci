@@ -165,3 +165,8 @@ impl LearningIterationStageOwnerPortsV1 for OriginalCellQ24NoUpdateStageOwnersV1
         })
     }
 }
+
+#[cfg(test)]
+pub(crate) use state::fixture::fresh_material_only;
+#[cfg(test)]
+pub(crate) use state::fixture::recovered_material_only;

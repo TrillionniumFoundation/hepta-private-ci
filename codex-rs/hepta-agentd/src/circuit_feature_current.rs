@@ -364,3 +364,6 @@ fn source_input(source: &CircuitTaskSourceInputV1, operation_id: StableId) -> Ce
 fn invalid(error: impl std::fmt::Display) -> AgentdError {
     AgentdError::Invalid(error.to_string())
 }
+
+#[cfg(test)]
+pub(crate) use learning_read::readiness_fixture as original_readiness_fixture;
