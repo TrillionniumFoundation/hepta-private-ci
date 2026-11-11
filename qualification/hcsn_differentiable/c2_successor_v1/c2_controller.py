@@ -169,9 +169,25 @@ def terminal_result_gate(row, path, parent, contract):
         require(type(result) is dict, 'terminal result JSON is not an object')
         parent_dir = Path(contract['parent_campaign']) / parent['name']
         parent_result = parent_dir / 'result.json'
+        # The frozen parent is also an external report. A matching digest does
+        # not make duplicate keys, nonfinite floats, or a symlink safe to parse.
+        require(not parent_dir.is_symlink() and parent_result.is_file()
+                and not parent_result.is_symlink()
+                and 0 < parent_result.stat().st_size <= cap,
+                'original parent report missing/nonregular/oversized')
         parent_identity = identity(parent_result)
         require(parent_identity['sha256'] == parent['result_sha256'], 'original parent report changed')
-        prior = json.loads(parent_result.read_bytes())
+        parent_raw = parent_result.read_bytes()
+        require(0 < len(parent_raw) <= cap
+                and len(parent_raw) == parent_identity['bytes']
+                and hashlib.sha256(parent_raw).hexdigest() == parent_identity['sha256'],
+                'original parent report changed between identity and parse')
+        prior = json.loads(parent_raw, object_pairs_hook=unique_pairs,
+                           parse_constant=no_nonfinite_constant,
+                           parse_float=finite_float)
+        require(type(prior) is dict, 'original parent report JSON is not an object')
+        require(identity(parent_result) == parent_identity,
+                'original parent report changed during terminal admission')
         require(result.get('schema') == 'hcsn-c2-soft-wall-continuation-v1'
                 and result.get('production_execution') is True
                 and result.get('confirmation_access') is False

@@ -109,5 +109,53 @@ class TerminalJSONAdmissionTests(unittest.TestCase):
         self.assertFalse(row["terminal_evidence_complete"])
 
 
+    def with_digest_bound_parent(self, raw):
+        """Keep producer/parent digests coherent while varying signed parent JSON."""
+        self.parent_result.unlink(missing_ok=True)
+        self.parent_result.write_bytes(raw)
+        self.parent["result_sha256"] = sha(self.parent_result)
+        self.valid["parent_outer"] = dict(self.parent)
+        self.valid["parent_report"] = identity(self.parent_result)
+        return self.run_raw(json.dumps(self.valid).encode())
+
+    def test_digest_bound_parent_duplicate_keys_are_rejected(self):
+        row = self.with_digest_bound_parent(
+            b'{"model_configuration":{"width":1},"model_configuration":{"width":16},'
+            b'"source_before":{"status":"fixed"}}')
+        self.assertFalse(row["terminal_evidence_complete"])
+        self.assertEqual(row["child_cpu_seconds"], 0.5)
+
+    def test_digest_bound_parent_nan_is_rejected(self):
+        row = self.with_digest_bound_parent(
+            b'{"model_configuration":{"width":16},"source_before":{"status":"fixed"},'
+            b'"unrelated":NaN}')
+        self.assertFalse(row["terminal_evidence_complete"])
+
+    def test_digest_bound_parent_float_overflow_is_rejected(self):
+        row = self.with_digest_bound_parent(
+            b'{"model_configuration":{"width":16},"source_before":{"status":"fixed"},'
+            b'"unrelated":1e99999}')
+        self.assertFalse(row["terminal_evidence_complete"])
+
+    def test_parent_report_symlink_is_rejected_even_with_matching_digest(self):
+        target = self.root / "external-parent-result.json"
+        target.write_text(json.dumps({"model_configuration": {"width": 16},
+            "source_before": {"status": "fixed"}}), encoding="utf-8")
+        self.parent_result.unlink()
+        self.parent_result.symlink_to(target)
+        self.parent["result_sha256"] = sha(self.parent_result)
+        self.valid["parent_outer"] = dict(self.parent)
+        self.valid["parent_report"] = identity(self.parent_result)
+        row = self.run_raw(json.dumps(self.valid).encode())
+        self.assertFalse(row["terminal_evidence_complete"])
+
+    def test_digest_bound_parent_oversized_report_is_rejected(self):
+        raw = json.dumps({"model_configuration": {"width": 16},
+            "source_before": {"status": "fixed"},
+            "padding": "x" * (17 * 1024 * 1024)}).encode()
+        row = self.with_digest_bound_parent(raw)
+        self.assertFalse(row["terminal_evidence_complete"])
+
+
 if __name__ == "__main__":
     unittest.main()
