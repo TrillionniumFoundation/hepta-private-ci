@@ -871,6 +871,8 @@ pub use neuron_cell_evaluation::CellRequiredCostMetricV1;
 pub use neuron_cell_evaluation::CellSelectiveUpdateV1;
 pub use neuron_cell_evaluation::CellTrainingBudgetV1;
 pub use neuron_cell_evaluation::CellTrainingObservationV1;
+pub use neuron_cell_evaluation::OriginalCellQualificationErrorV1;
+pub use neuron_cell_evaluation::OriginalCellQualificationSourceV1;
 pub use neuron_cell_evaluation::freeze_cell_evaluation_plan_v1;
 pub use neuron_cell_evaluation::freeze_cell_learning_evaluation_plan_v1;
 pub use neuron_cell_learning_evaluation::CellLearningEvaluationErrorV1;
