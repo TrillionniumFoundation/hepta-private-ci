@@ -1,0 +1,110 @@
+name: CTRL observed receipt contracts
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/ctrl-observed-receipts.yml
+      - scripts/ndu_ctrl_audit/**
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ctrl-observed-${{ github.event.pull_request.head.ref || github.ref_name }}
+  cancel-in-progress: false
+
+env:
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  PYTHONPATH: scripts/ndu_ctrl_audit
+  PYTHONDONTWRITEBYTECODE: "1"
+
+jobs:
+  receipts:
+    name: Source-head CTRL receipt checks (no adoption)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - name: Check out exact candidate with no stored credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12.14"
+
+      - name: Pin source and write digest-only qualification scope
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          mkdir -p "$RUNNER_TEMP/ctrl-receipts"
+          python3 - <<'PY' > "$RUNNER_TEMP/ctrl-receipts/source.json"
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+
+          paths = [
+              Path("scripts/ndu_ctrl_audit/audit_delivery_chain.py"),
+              Path("scripts/ndu_ctrl_audit/test_audit_delivery_chain.py"),
+          ]
+          digests = {str(p): hashlib.sha256(p.read_bytes()).hexdigest() for p in paths}
+          print(json.dumps({
+              "source_head": os.environ["SOURCE_SHA"],
+              "file_sha256": digests,
+              "tests_are_synthetic": True,
+              "real_source_owner_attested": False,
+              "scientific_gain_qualified": False,
+              "production_admitted": False,
+          }, sort_keys=True))
+          PY
+
+      - name: Run at least 20 non-skipped declared-receipt regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY' 2>&1 | tee "$RUNNER_TEMP/ctrl-receipts/tests.log"
+          import sys
+          import unittest
+
+          suite = unittest.defaultTestLoader.discover(
+              start_dir="scripts/ndu_ctrl_audit",
+              pattern="test_audit_delivery_chain.py",
+          )
+          result = unittest.TextTestRunner(stream=sys.stdout, verbosity=2).run(suite)
+          if (
+              result.testsRun < 20 or result.failures or result.errors
+              or result.skipped or result.expectedFailures or result.unexpectedSuccesses
+          ):
+              raise SystemExit("CTRL receipt tests incomplete or failed")
+          print(f"CTRL_EXACT_SOURCE_PASS={result.testsRun}")
+          PY
+
+      - name: Validate Python syntax and preserve clean source tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import ast
+          from pathlib import Path
+
+          for name in ("audit_delivery_chain.py", "test_audit_delivery_chain.py"):
+              file = Path("scripts/ndu_ctrl_audit") / name
+              ast.parse(file.read_text(encoding="utf-8"), filename=str(file))
+          PY
+          git diff --exit-code
+          git diff --cached --exit-code
+          test -z "$(git status --porcelain)"
+
+      - name: Retain original source and test receipts
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ctrl-observed-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/ctrl-receipts/*
+          if-no-files-found: error
+          retention-days: 30
