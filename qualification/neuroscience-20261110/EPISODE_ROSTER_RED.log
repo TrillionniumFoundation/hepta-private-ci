@@ -1,0 +1,19 @@
+test_equal_counts_cannot_hide_seed_specific_episode_substitution (test_episode_roster.EpisodeRosterGateTests.test_equal_counts_cannot_hide_seed_specific_episode_substitution) ... FAIL
+test_independently_declared_cell_rosters_may_differ (test_episode_roster.EpisodeRosterGateTests.test_independently_declared_cell_rosters_may_differ) ... ok
+test_matching_episodes_per_seed_are_accepted_without_claiming_attestation (test_episode_roster.EpisodeRosterGateTests.test_matching_episodes_per_seed_are_accepted_without_claiming_attestation) ... ok
+
+======================================================================
+FAIL: test_equal_counts_cannot_hide_seed_specific_episode_substitution (test_episode_roster.EpisodeRosterGateTests.test_equal_counts_cannot_hide_seed_specific_episode_substitution)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/hpca-neuro4-episode-roster-20261111-t6/test_episode_roster.py", line 16, in test_equal_counts_cannot_hide_seed_specific_episode_substitution
+    with self.assertRaisesRegex(ContractError, "episode roster"):
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ContractError not raised
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.008s
+
+FAILED (failures=1)
+Command exited with non-zero status 1
+RESOURCE user=0.10 sys=0.01 wall=0.12 maxrss_kib=22884
