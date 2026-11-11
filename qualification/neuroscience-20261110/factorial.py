@@ -133,8 +133,22 @@ def evaluate_core_ndu(rows: list[FactorialTrialRow], *,
 
     blocks: dict[tuple[int, str, str, str], dict[str, FactorialTrialRow]] = {}
     receipts: set[str] = set()
+    # Declared labels may be reused to manufacture fictitious independent
+    # seed clusters. These are consistency checks, NOT actual seed custody.
+    seed_training: dict[int, str] = {}
+    training_owner: dict[str, int] = {}
+    evaluation_owner: dict[str, int] = {}
     for row in rows:
         _validate(row)
+        previous_training = seed_training.setdefault(row.seed, row.training_seed_digest)
+        if previous_training != row.training_seed_digest:
+            raise ContractError("training seed identity changed within one seed cluster")
+        training_seed_owner = training_owner.setdefault(row.training_seed_digest, row.seed)
+        if training_seed_owner != row.seed:
+            raise ContractError("training seed identity reused by different seed labels")
+        evaluation_seed_owner = evaluation_owner.setdefault(row.evaluation_seed_digest, row.seed)
+        if evaluation_seed_owner != row.seed:
+            raise ContractError("evaluation seed identity reused by different seed labels")
         if (row.family, row.feedback_density) not in registered:
             raise ContractError("unregistered task family or feedback density")
         if row.outcome_receipt_digest in receipts:
@@ -145,6 +159,8 @@ def evaluate_core_ndu(rows: list[FactorialTrialRow], *,
         if row.arm in arm_rows:
             raise ContractError("duplicate arm within matched episode")
         arm_rows[row.arm] = row
+    if training_owner.keys() & evaluation_owner.keys():
+        raise ContractError("training/evaluation seed identity reused across partitions")
 
     fields = (
         "source_task_digest", "workload_digest", "shared_base_digest",
@@ -265,6 +281,7 @@ def evaluate_core_ndu(rows: list[FactorialTrialRow], *,
             "seed_clusters": len(seeds), "matched_blocks": len(blocks),
             "equal_episode_opportunities_per_seed": True,
             "frozen_cell_contract": "SELF_DECLARED_ONLY",
+            "declared_seed_identity_alias_guard": "SELF_DECLARED_ONLY",
         },
         "net_contrasts": {
             name: {
