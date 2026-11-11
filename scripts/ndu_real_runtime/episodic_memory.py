@@ -12,6 +12,7 @@ import os
 from pathlib import Path
 import re
 import sqlite3
+import stat
 import tempfile
 from urllib.parse import quote
 import uuid
@@ -412,8 +413,31 @@ class EpisodicStore:
                 raise ValueError("active record has a stale dependency")
             records, rejected, snapshot_sha = list(current.values()), 0, None
             if snapshot_path is not None:
-                with Path(snapshot_path).open("rb") as stream:
-                    raw = stream.read(self.max_serialized_bytes + 4097)
+                snapshot = Path(snapshot_path)
+                if snapshot.is_symlink():
+                    raise ValueError("snapshot symlink is forbidden")
+                # Nonblocking open denies FIFOs before the byte bound or JSON
+                # parser; O_NOFOLLOW on supporting OSes closes the symlink race.
+                flags = (
+                    os.O_RDONLY
+                    | getattr(os, "O_NONBLOCK", 0)
+                    | getattr(os, "O_NOFOLLOW", 0)
+                )
+                try:
+                    descriptor = os.open(snapshot, flags)
+                except OSError as exc:
+                    raise ValueError(
+                        "snapshot must be an accessible regular file"
+                    ) from exc
+                try:
+                    if not stat.S_ISREG(os.fstat(descriptor).st_mode):
+                        raise ValueError("snapshot must be a regular file")
+                    with os.fdopen(descriptor, "rb") as stream:
+                        descriptor = -1
+                        raw = stream.read(self.max_serialized_bytes + 4097)
+                finally:
+                    if descriptor >= 0:
+                        os.close(descriptor)
                 if len(raw) > self.max_serialized_bytes + 4096:
                     raise ValueError("snapshot exceeds byte bound")
                 envelope = json.loads(raw)
