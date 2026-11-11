@@ -47,7 +47,7 @@ class AuditTests(unittest.TestCase):
                 'next_task_id': 'task-B' if stage == 'learning_next_use' else None,
                 'task_id': 'task-B' if stage == 'next_use' else 'task-A',
                 'bundle_sha256': 'b' * 64,
-                'selection_digest': 'c' * 64 if stage in ('selection', 'learning_next_use') else None,
+                'selection_digest': 'c' * 64 if stage in ('selection', 'final_use', 'next_use', 'learning_next_use') else None,
             }
 
     def check(self):
@@ -254,6 +254,25 @@ class AuditTests(unittest.TestCase):
         self.record['original_receipts']['selection']['selection_digest'] = 'c' * 64
         self.record['original_receipts']['learning_next_use']['selection_digest'] = 'bad'
         self.assertIn('invalid_selection_digest:learning_next_use', self.check()['issues'])
+
+    def test_final_use_must_bind_the_original_selection(self):
+        self.record['original_receipts']['final_use']['selection_digest'] = 'd' * 64
+        self.assertIn('final_use_selection_unbound', self.check()['issues'])
+
+    def test_ordinary_next_use_must_bind_the_original_selection(self):
+        self.record['original_receipts']['next_use']['selection_digest'] = 'd' * 64
+        self.assertIn('next_use_selection_unbound', self.check()['issues'])
+        self.record['original_receipts']['next_use'].pop('selection_digest')
+        self.assertIn('invalid_selection_digest:next_use', self.check()['issues'])
+
+    def test_trainer_no_update_retains_exact_selection_through_final_use(self):
+        self.trainer_no_update()
+        self.assertEqual(self.check()['integrity'], 'PASS')
+        self.record['original_receipts']['final_use'].pop('selection_digest')
+        self.assertIn('invalid_selection_digest:final_use', self.check()['issues'])
+        self.record['original_receipts']['final_use']['selection_digest'] = 'c' * 64
+        self.record['original_receipts']['next_use']['selection_digest'] = 'd' * 64
+        self.assertIn('next_use_selection_unbound', self.check()['issues'])
 
     def test_unknown_is_not_success(self):
         self.record['attempts'][2]['state'] = 'unknown'
