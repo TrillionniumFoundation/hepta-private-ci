@@ -22,6 +22,7 @@ pub(super) struct Fixture {
     pub(super) writer: Arc<ProductionDurableWriter>,
     pub(super) authority: ProductionAuthorityLease,
     pub(super) verifier: Arc<dyn ProductionAuthorityVerifier>,
+    pub(super) live: Arc<AtomicBool>,
     pub(super) access: CognitiveAccess,
 }
 
@@ -50,5 +51,5 @@ pub(super) async fn fixture() -> Result<Fixture, Box<dyn std::error::Error>> {
     let writer = Arc::new(ProductionDurableWriter::open_with_live_verifier(
         store.clone(), authority.clone(), Arc::clone(&verifier), "episodic-original-writer", /*generation*/ 1,
     ).await?);
-    Ok(Fixture { directory, store, writer, authority, verifier, access: CognitiveAccess::agent_private(owner) })
+    Ok(Fixture { directory, store, writer, authority, verifier, live, access: CognitiveAccess::agent_private(owner) })
 }

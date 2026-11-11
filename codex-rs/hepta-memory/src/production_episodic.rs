@@ -213,3 +213,7 @@ mod test_support;
 #[cfg(test)]
 #[path = "production_episodic_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "production_episodic_regression_tests.rs"]
+mod regression_tests;
