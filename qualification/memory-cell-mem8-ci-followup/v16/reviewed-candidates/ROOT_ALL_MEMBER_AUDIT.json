@@ -1,0 +1,27 @@
+{
+  "status": "PASS_FULL_REMOTE_ARCHIVE_AND_ALL_MEMBERS",
+  "immutable_commit": "3971a8a7d249fb0234ba7fe37125188b65c3b671",
+  "packages": [
+    {
+      "label": "leak_handle_isolation",
+      "all_members_sha_and_git_blob_checked": 55,
+      "manifest": {
+        "bytes": 15898,
+        "sha256": "42ce24cf85f9fd3f4557bca361901eb3a441fcd41e7900af7fbf1d5240bc2452",
+        "git_blob": "8b446a268fed11f8b11eab524bb8d405091c08c7"
+      },
+      "native_execution_claimed": false
+    },
+    {
+      "label": "matched_request_observation",
+      "all_members_sha_and_git_blob_checked": 34,
+      "manifest": {
+        "bytes": 10685,
+        "sha256": "dfa0c2507637f6d35bb1fe9012fac03a11bb7760bfd4226c6436bad55b2fa655",
+        "git_blob": "4be4e79a8a89d5e25858d53c4e7cb3952aed99e1"
+      },
+      "native_execution_claimed": false
+    }
+  ],
+  "audit_only_correction": "First local audit assumed MANIFEST.json; archive uses PACKAGE_MANIFEST.json. Original bytes and all evidence remained unchanged; corrected exact filename verified."
+}

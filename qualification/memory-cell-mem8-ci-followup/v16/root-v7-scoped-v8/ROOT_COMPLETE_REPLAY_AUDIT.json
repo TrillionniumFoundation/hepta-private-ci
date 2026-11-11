@@ -1,0 +1,49 @@
+{
+  "schema": "mem8.v16.root-full-remote-and-offline-replay.v1",
+  "status": "PASS_FULL_REMOTE_ARCHIVES_AND_ORIGINAL_OFFLINE_REPLAY",
+  "immutable_commit": "4aaa14c3ed75d95de38f8987a7f17fed0237942a",
+  "archives": [
+    {
+      "archive": "source-v7-original",
+      "verified_members": 31
+    },
+    {
+      "archive": "source-v8-preparation",
+      "verified_members": 22
+    },
+    {
+      "archive": "windows-scoped-fix-original/records",
+      "verified_members": 163
+    }
+  ],
+  "v7_original_zip": {
+    "bytes": 7028444,
+    "sha256": "91fd0f97c45766886b4082ab5f417338aa5d878681792079067b44c97dd44024",
+    "git_blob": "c86869a0911e563a739f67ab8616b9eecde98c89"
+  },
+  "v7_zip_members": 377,
+  "v7_inner_tar_members": 375,
+  "v7_exact_zip_hidden_omissions_retained_in_original_tar": [
+    "base/.github/fixtures/windows-current-ci-scope.json",
+    "base/.github/workflows/hepta-mem-python.yml",
+    "post-format/.github/fixtures/windows-current-ci-scope.json",
+    "post-format/.github/workflows/hepta-mem-python.yml",
+    "pre-format/.github/fixtures/windows-current-ci-scope.json",
+    "pre-format/.github/workflows/hepta-mem-python.yml"
+  ],
+  "v7_full_original_verifier_result_equal": true,
+  "v7_formatter_patch_byte_equal": true,
+  "v7_source_gate_run": 43042186271,
+  "v7_actual_python_pass": 18,
+  "v7_gate_elapsed_seconds": 156.902353,
+  "scoped_fix_original_run": 43038376307,
+  "scoped_fix_full_original_verifier_result_equal": true,
+  "scoped_fix_original_qualification": "FAIL: third command rewrote two source files",
+  "scoped_fix_command_exit_codes": [
+    0,
+    0,
+    0
+  ],
+  "v8_preparation_only_archive": true,
+  "native_or_model_execution": 0
+}
