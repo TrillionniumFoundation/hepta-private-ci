@@ -149,6 +149,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             .remove(std::ffi::OsStr::new("--q24-model-reservation"))
             .map(PathBuf::from);
         let model_handoff = options.remove(std::ffi::OsStr::new("--root-q24-model-handoff-fd"));
+        let publication_deployment = options
+            .remove(std::ffi::OsStr::new("--generation-publication-deployment"))
+            .map(PathBuf::from);
+        let publication_handoff = options.remove(std::ffi::OsStr::new("--root-generation-publication-handoff-fd"));
         let notes_profile = options
             .remove(std::ffi::OsStr::new("--notes-launch-profile"))
             .map(PathBuf::from);
@@ -177,6 +181,15 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             .as_deref()
             .map(|fd| inherited_descriptor(fd, &mut claimed))
             .transpose()?;
+        let publication_handoff = publication_handoff
+            .as_deref()
+            .map(|fd| inherited_descriptor(fd, &mut claimed))
+            .transpose()?;
+        if publication_deployment.is_some() != publication_handoff.is_some()
+            || publication_deployment.is_some() && (learning_profile.is_none() || root_fd.is_none())
+        {
+            return Err("publication serving requires its explicit Root deployment, separate purpose handoff, original learning and Root pidfd".into());
+        }
         if model_reservation.is_some() != model_handoff.is_some()
             || model_handoff.is_some() && (learning_profile.is_none() || root_fd.is_none())
         {
@@ -256,6 +269,18 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             Some(reservation) => prepared.with_registered_q24_model_factory(&reservation)?,
             None => prepared,
         };
+        let (deployment, publication_offer) = match (publication_deployment, publication_handoff) {
+            (Some(path), Some(handoff)) => {
+                let (capability, offer) = prepared.enable_generation_publication()?;
+                let capability: codex_hepta_agentd::RootGenerationPublicationEnrollmentCapabilityV1 = capability;
+                (Some(capability.with_original_deployment(&path)?), Some((handoff, offer)))
+            }
+            (None, None) => (None, None),
+            _ => return Err("publication deployment and inherited offer must be paired".into()),
+        };
+        let deployment_ready = deployment.as_ref()
+            .map(|deployment| serde_json::to_string(deployment.session()))
+            .transpose()?;
         let model_offer = model_handoff
             .as_ref()
             .map(|_| prepared.take_q24_model_factory_offer())
@@ -287,22 +312,57 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 )
                 .map_err(std::io::Error::other)?;
             }
+            if let (Some((handoff, offer)), Some(root)) = (publication_offer, root_fd.as_ref()) {
+                codex_hepta_agentd::send_root_generation_publication_handoff(
+                    std::os::unix::net::UnixDatagram::from(handoff), offer, root,
+                    std::time::Duration::from_secs(30),
+                ).map_err(std::io::Error::other)?;
+            }
+            if let Some(session) = deployment_ready {
+                println!("{{\"publication_deployment_session\":{session}}}");
+            }
             Ok(())
         };
-        match (native_profile, text) {
-            (Some(profile), None) => {
-                prepared.launch_native_with_ready(&config, &registration, &profile, ready)?
+        let stopping = std::sync::atomic::AtomicBool::new(/*val*/ false);
+        std::thread::scope(|scope| -> std::io::Result<()> {
+            // A failed ready callback or unwind also stops the read-only waiter
+            // before scope joins it. No second service/writer is opened.
+            let stop = PublicationDeploymentStop(&stopping);
+            let stop_ref = &stopping;
+            let worker = deployment.map(|deployment| scope.spawn(move || {
+                let deployment: codex_hepta_agentd::RootGenerationPublicationDeploymentV1 = deployment;
+                deployment.wait_and_register(stop_ref)
+            }));
+            let served = match (native_profile, text) {
+                (Some(profile), None) => prepared.launch_native_with_ready(&config, &registration, &profile, ready),
+                (None, Some((file, pidfd))) => prepared.serve_with_text_and_ready(file, pidfd, ready),
+                (None, None) => prepared.serve_with_ready(ready),
+                (Some(_), Some(_)) => Err(std::io::Error::other("exclusive native/text UI options")),
+            };
+            drop(stop);
+            let registered = match worker {
+                Some(worker) => Some(worker.join().map_err(|_| std::io::Error::other("Root deployment worker panicked"))?),
+                None => None,
+            };
+            served?;
+            if let Some(registered) = registered {
+                let registered = registered?;
+                println!("{{\"publication_registered_binding\":\"{}\"}}", registered.binding());
             }
-            (None, Some((file, pidfd))) => {
-                prepared.serve_with_text_and_ready(file, pidfd, ready)?
-            }
-            (None, None) => prepared.serve_with_ready(ready)?,
-            (Some(_), Some(_)) => return Err("exclusive native/text UI options".into()),
-        }
+            Ok(())
+        })?;
     } else {
         return Err("unknown authority command".into());
     }
     Ok(())
+}
+
+#[cfg(target_os = "linux")]
+struct PublicationDeploymentStop<'a>(&'a std::sync::atomic::AtomicBool);
+
+#[cfg(target_os = "linux")]
+impl Drop for PublicationDeploymentStop<'_> {
+    fn drop(&mut self) { self.0.store(/*val*/ true, std::sync::atomic::Ordering::Release); }
 }
 
 #[cfg(target_os = "linux")]

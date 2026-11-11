@@ -6,6 +6,9 @@ use std::sync::Mutex;
 
 use super::*;
 
+#[path = "owner_selection_files.rs"]
+mod selection_files;
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 struct DirectoryPin {
     relative: &'static str,

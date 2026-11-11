@@ -27,6 +27,7 @@ pub(super) struct Artifacts {
     retained_current: SignedCurrentArtifactHeadV1,
     selected: SignedArtifactSelectionV1,
     verifier: ArtifactSelectionVerifierV1,
+    pub(super) selector_trust: ArtifactSelectionTrustV1,
 }
 
 #[derive(Clone, Copy)]
@@ -97,8 +98,7 @@ impl Artifacts {
         })?;
         let (candidate, retained_current) = publish_candidate(&mut owner, manifest, &key, "selected-candidate", times)?;
         let current = owner.current_registry_view(times.observed)?;
-        let verifier = ArtifactSelectionVerifierV1::new(
-            ArtifactSelectionTrustV1 {
+        let selector_trust = ArtifactSelectionTrustV1 {
                 registry_id: trust.registry_id.clone(),
                 withdrawal_scope_digest: scope,
                 minimum_authority_epoch: 1,
@@ -111,9 +111,8 @@ impl Artifacts {
                     expires_at: times.expires,
                     revoked_at: None,
                 }],
-            },
-            &trust,
-        )?;
+            };
+        let verifier = ArtifactSelectionVerifierV1::new(selector_trust.clone(), &trust)?;
         let mut selected = SignedArtifactSelectionV1 {
             selection_id: id("test-generation-selection")?,
             artifact_id: candidate.artifact_id,
@@ -146,6 +145,7 @@ impl Artifacts {
             retained_current,
             selected,
             verifier,
+            selector_trust,
         })
     }
 

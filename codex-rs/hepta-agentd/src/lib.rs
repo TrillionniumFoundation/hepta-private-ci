@@ -1330,6 +1330,10 @@ mod root_generation_publication_inputs;
 #[cfg(target_os = "linux")]
 pub use authority_host_runtime::RootGenerationPublicationEnrollmentCapabilityV1;
 #[cfg(target_os = "linux")]
+pub use authority_host_runtime::RootGenerationPublicationDeploymentV1;
+#[cfg(target_os = "linux")]
+pub use authority_host_runtime::RootGenerationPublicationDeploymentSessionV1;
+#[cfg(target_os = "linux")]
 pub use authority_host_runtime::RootGenerationPublicationRegistrationV1;
 #[cfg(target_os = "linux")]
 pub use authority_host_service::RootArtifactPublicationInputsV1;

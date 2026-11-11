@@ -275,6 +275,7 @@ impl Fixture {
         // Publish starts with the genuinely vacant original checkpoint. This
         // must not require a late decision before the learning service serves.
         let (capability, publication) = prepared.enable_generation_publication()?;
+        assert!(prepared.enable_generation_publication().is_err());
         let inputs = RootGenerationPublicationEnrollmentV1 {
             mode: match phase { Phase::Publish => RootGenerationPublicationModeV1::Reserve,
                 Phase::Recover | Phase::RetiredSession | Phase::Revoked => RootGenerationPublicationModeV1::Recover },
@@ -290,12 +291,36 @@ impl Fixture {
             artifacts: self.artifacts.inputs(now_ms()?)?, consumer: RootPublicationFinalUseConsumerV1::Device,
             consumer_state_root: self.local.clone(), issuer_keys: vec![FinalUseIssuerTrustKey::from(bootstrap.issuer_key)],
         };
+        let deployment_directory = self._protected.path().join(format!("deployment-{phase:?}"));
+        let (deployment, late_material) = capability.component_original_deployment(
+            &deployment_directory,
+            &[self.current_path.clone(), self.previous_journal.clone(), self.previous_witness.clone(),
+                self.target_journal.clone(), self.target_witness.clone()],
+            &self.artifacts.selector_trust, inputs,
+        )?;
+        if !matches!(phase, Phase::Publish) {
+            let before = (
+                std::fs::read(&self.profile_file)?,
+                support::protected_files(&self.current_path)?,
+                std::fs::read(self.local.join("device/authority.claims"))?,
+            );
+            deployment.component_reject_previous_trigger(
+                &self._protected.path().join("deployment-Publish/trigger.json"),
+            )?;
+            assert_eq!((
+                std::fs::read(&self.profile_file)?,
+                support::protected_files(&self.current_path)?,
+                std::fs::read(self.local.join("device/authority.claims"))?,
+            ), before);
+        }
         let root_pin = support::pidfd(std::process::id())?;
         let send = self.offer.try_clone()?;
         let snapshot = std::thread::scope(|scope| {
             let registration = scope.spawn(|| -> anyhow::Result<_> {
                 control(&self.offer, b"LEARNING_AND_ORIGINAL_INPUTS_READY")?;
-                let registered = capability.register(inputs)?;
+                deployment.component_trigger_original(&late_material)?;
+                let stopping = std::sync::atomic::AtomicBool::new(/*val*/ false);
+                let registered = deployment.wait_and_register(&stopping)?;
                 anyhow::ensure!(!registered.binding().parse::<Digest32>()?.is_zero(), "actual Root acknowledgement");
                 send_data(&self.offer, &self.intent)?;
                 if matches!(phase, Phase::Publish) {
