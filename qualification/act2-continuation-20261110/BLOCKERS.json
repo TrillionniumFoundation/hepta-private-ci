@@ -1043,15 +1043,21 @@
             "local_result": "git diff --check passed; native Rust execution NOT_RUN locally",
             "fresh_runs": {
               "windows_private": 42941333490,
-              "windows_private_status": "QUEUED",
+              "windows_private_status": "SUCCESS_COMPILE_AND_PROMPT_RUNTIME_SCOPED",
               "architecture": 42941333761,
               "architecture_status": "QUEUED",
               "blocking": 42941333585,
               "blocking_status": "QUEUED",
               "v8": 42941333582,
-              "v8_status": "QUEUED"
+              "v8_status": "SUCCESS_METADATA_ONLY",
+              "windows_private_job": 130263598488,
+              "windows_private_declared_tests": "33 passed total across path/prompt-registry/final-use/authority-lease/prompt-runtime; agentd prompt_runtime 11 passed",
+              "windows_private_artifact_id": 13820584991,
+              "windows_private_artifact_size_bytes": 13513,
+              "windows_private_artifact_sha256": "6da2a3de128830e560e5fc289a0966b8fd77581060101e1bcc1921cf16b31a72"
             },
-            "required": "read each exact-source terminal job and original logs; no predecessor transfer"
+            "required": "read each exact-source terminal job and original logs; no predecessor transfer",
+            "windows_scope_limit": "the Windows workflow compiled the changed agentd crate and ran prompt_runtime::tests only; it did not execute the 17 generation/evaluation/credit fixtures changed by #5880, so architecture/blocking native remain required"
           }
         }
       ]
@@ -1115,15 +1121,21 @@
             "shared_framework": 42941516948,
             "shared_framework_status": "QUEUED",
             "windows_private": 42941516670,
-            "windows_private_status": "QUEUED",
+            "windows_private_status": "SUCCESS_COMPILE_AND_PROMPT_RUNTIME_SCOPED",
             "v8": 42941516714,
-            "v8_status": "QUEUED",
+            "v8_status": "SUCCESS_METADATA_ONLY",
             "daemon_learning": 42941516723,
             "daemon_learning_status": "QUEUED",
             "architecture": 42941516717,
-            "architecture_status": "QUEUED"
+            "architecture_status": "QUEUED",
+            "windows_private_job": 130264197770,
+            "windows_private_declared_tests": "34 passed total across path/prompt-registry/final-use/authority-lease/prompt-runtime; agentd prompt_runtime 12 passed",
+            "windows_private_artifact_id": 13821707818,
+            "windows_private_artifact_size_bytes": 13522,
+            "windows_private_artifact_sha256": "5a0a2a67bc9820d6d713e24f9b1c66ca4edabc88e35be286b880abdbd0f8f372"
           },
-          "required": "read each exact-source terminal job; even success would only close this compile/test seam, not full handler inputs, FinalUse, field benefit or skill promotion"
+          "required": "read each exact-source terminal job; even success would only close this compile/test seam, not full handler inputs, FinalUse, field benefit or skill promotion",
+          "windows_scope_limit": "the Windows workflow compiled learning_iteration_recovery_tests.rs but selected prompt_runtime::tests only; it did not execute the repaired claimed-state recovery assertion, so daemon/shared/blocking/architecture remain required"
         }
       }
     }
