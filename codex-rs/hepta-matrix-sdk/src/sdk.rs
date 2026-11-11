@@ -64,7 +64,7 @@ impl MatrixSdkClient {
             Self::build(layout, config, store_passphrase),
         )
         .await
-        .map_err(|_| MatrixSdkError::Initialization)??;
+        .map_err(|error| MatrixSdkError::initialization("restore.build.timeout", error))??;
         sidecar
             .client
             .restore_session(session.clone())
@@ -88,7 +88,7 @@ impl MatrixSdkClient {
             Self::build(layout, config, store_passphrase),
         )
         .await
-        .map_err(|_| MatrixSdkError::Initialization)??;
+        .map_err(|error| MatrixSdkError::initialization("login_password.build.timeout", error))??;
         let mut login = sidecar
             .client
             .matrix_auth()
@@ -131,21 +131,35 @@ impl MatrixSdkClient {
             Self::build(layout, config.clone(), store_passphrase),
         )
         .await
-        .map_err(|_| MatrixSdkError::Initialization)??;
+        .map_err(|error| {
+            MatrixSdkError::initialization("login_or_restore.build.timeout", error)
+        })??;
 
-        if let Some(session) = load_session(sidecar.paths.session())? {
+        let restore_failure = if let Some(session) = load_session(sidecar.paths.session())? {
             verify_session_identity(&sidecar.config, &session)?;
             let restore = tokio::time::timeout(
                 MATRIX_STARTUP_REQUEST_TIMEOUT,
                 sidecar.client.restore_session(session.clone()),
             )
             .await;
-            if matches!(restore, Ok(Ok(()))) {
-                sidecar.verify_authenticated_identity()?;
-                sidecar.enable_event_cache()?;
-                return Ok((sidecar, session));
+            match restore {
+                Ok(Ok(())) => {
+                    sidecar.verify_authenticated_identity()?;
+                    sidecar.enable_event_cache()?;
+                    return Ok((sidecar, session));
+                }
+                Ok(Err(error)) => Some(MatrixSdkError::initialization(
+                    "login_or_restore.restore_session",
+                    error,
+                )),
+                Err(error) => Some(MatrixSdkError::initialization(
+                    "login_or_restore.restore_session.timeout",
+                    error,
+                )),
             }
-        }
+        } else {
+            None
+        };
 
         drop(sidecar);
         Self::login_password(
@@ -156,6 +170,13 @@ impl MatrixSdkClient {
             device_display_name,
         )
         .await
+        .map_err(|fallback| match restore_failure {
+            Some(restore) => MatrixSdkError::RestoreFallback {
+                restore: Box::new(restore),
+                fallback: Box::new(fallback),
+            },
+            None => fallback,
+        })
     }
 
     async fn build(
@@ -170,7 +191,7 @@ impl MatrixSdkClient {
             .handle_refresh_tokens()
             .build()
             .await
-            .map_err(|_| MatrixSdkError::Initialization)?;
+            .map_err(|error| MatrixSdkError::initialization("build.client", error))?;
         // The SDK's own sync token is only an optimization for its normal
         // sync loop.  Hepta persists the authoritative cursor in its durable
         // inbox store and always supplies that cursor explicitly.  Clear a
@@ -181,7 +202,7 @@ impl MatrixSdkClient {
             .state_store()
             .remove_kv_data(StateStoreDataKey::SyncToken)
             .await
-            .map_err(|_| MatrixSdkError::Initialization)?;
+            .map_err(|error| MatrixSdkError::initialization("build.clear_sync_token", error))?;
         let save_session_path = paths.session().to_path_buf();
         let reload_session_path = paths.session().to_path_buf();
         client
@@ -207,7 +228,7 @@ impl MatrixSdkClient {
                     })
                 }),
             )
-            .map_err(|_| MatrixSdkError::Initialization)?;
+            .map_err(|error| MatrixSdkError::initialization("build.session_callbacks", error))?;
         verify_homeserver(&config, &client)?;
         Ok(Self {
             client,
@@ -319,7 +340,7 @@ impl MatrixSdkClient {
         self.client
             .event_cache()
             .subscribe()
-            .map_err(|_| MatrixSdkError::Initialization)
+            .map_err(|error| MatrixSdkError::initialization("event_cache.subscribe", error))
     }
 
     fn verify_authenticated_identity(&self) -> Result<(), MatrixSdkError> {
@@ -448,12 +469,22 @@ pub enum MatrixSyncExit {
     IngressFenced,
 }
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq, thiserror::Error)]
+#[derive(Debug, thiserror::Error)]
 pub enum MatrixSdkError {
     #[error("invalid Matrix sidecar configuration")]
     Configuration,
-    #[error("Matrix SDK persistent store initialization failed")]
-    Initialization,
+    #[error("Matrix SDK persistent store initialization failed at {stage}")]
+    Initialization {
+        stage: &'static str,
+        #[source]
+        source: Option<Box<dyn std::error::Error + Send + Sync>>,
+    },
+    #[error("Matrix session restore failed ({restore}); fresh login also failed ({fallback})")]
+    RestoreFallback {
+        restore: Box<MatrixSdkError>,
+        #[source]
+        fallback: Box<MatrixSdkError>,
+    },
     #[error("Matrix authentication failed")]
     Authentication,
     #[error("Matrix session identity differs from the exact binding")]
@@ -464,6 +495,25 @@ pub enum MatrixSdkError {
     Store,
     #[error("Matrix durable sync journal capacity is exhausted")]
     CapacityExhausted,
+}
+
+impl MatrixSdkError {
+    fn initialization(
+        stage: &'static str,
+        source: impl std::error::Error + Send + Sync + 'static,
+    ) -> Self {
+        Self::Initialization {
+            stage,
+            source: Some(Box::new(source)),
+        }
+    }
+
+    fn initialization_rejected(stage: &'static str) -> Self {
+        Self::Initialization {
+            stage,
+            source: None,
+        }
+    }
 }
 
 impl From<MatrixSidecarConfigError> for MatrixSdkError {
@@ -497,7 +547,7 @@ fn load_session(path: &std::path::Path) -> Result<Option<MatrixSession>, MatrixS
     let metadata = match std::fs::symlink_metadata(path) {
         Ok(metadata) => metadata,
         Err(error) if error.kind() == std::io::ErrorKind::NotFound => return Ok(None),
-        Err(_) => return Err(MatrixSdkError::Initialization),
+        Err(error) => return Err(MatrixSdkError::initialization("session.metadata", error)),
     };
     if !metadata.file_type().is_file()
         || !session_file_is_single_link(&metadata)
@@ -505,42 +555,58 @@ fn load_session(path: &std::path::Path) -> Result<Option<MatrixSession>, MatrixS
         || metadata.len() > MATRIX_SESSION_MAX_BYTES
         || !session_file_mode_is_private(&metadata)
     {
-        return Err(MatrixSdkError::Initialization);
+        return Err(MatrixSdkError::initialization_rejected(
+            "session.file_policy",
+        ));
     }
-    serde_json::from_slice(&std::fs::read(path).map_err(|_| MatrixSdkError::Initialization)?)
-        .map(Some)
-        .map_err(|_| MatrixSdkError::Initialization)
+    serde_json::from_slice(
+        &std::fs::read(path)
+            .map_err(|error| MatrixSdkError::initialization("session.read", error))?,
+    )
+    .map(Some)
+    .map_err(|error| MatrixSdkError::initialization("session.decode", error))
 }
 
 fn persist_session(path: &std::path::Path, session: &MatrixSession) -> Result<(), MatrixSdkError> {
-    let parent = path.parent().ok_or(MatrixSdkError::Initialization)?;
-    let parent_metadata =
-        std::fs::symlink_metadata(parent).map_err(|_| MatrixSdkError::Initialization)?;
+    let parent = path
+        .parent()
+        .ok_or_else(|| MatrixSdkError::initialization_rejected("session.parent"))?;
+    let parent_metadata = std::fs::symlink_metadata(parent)
+        .map_err(|error| MatrixSdkError::initialization("session.parent_metadata", error))?;
     if !parent_metadata.file_type().is_dir() {
-        return Err(MatrixSdkError::Initialization);
+        return Err(MatrixSdkError::initialization_rejected(
+            "session.parent_policy",
+        ));
     }
     if let Ok(metadata) = std::fs::symlink_metadata(path) {
         if !metadata.file_type().is_file()
             || !session_file_is_single_link(&metadata)
             || !session_file_mode_is_private(&metadata)
         {
-            return Err(MatrixSdkError::Initialization);
+            return Err(MatrixSdkError::initialization_rejected(
+                "session.existing_file_policy",
+            ));
         }
     } else if path.exists() {
-        return Err(MatrixSdkError::Initialization);
+        return Err(MatrixSdkError::initialization_rejected(
+            "session.existing_path_policy",
+        ));
     }
-    let bytes = serde_json::to_vec(session).map_err(|_| MatrixSdkError::Initialization)?;
+    let bytes = serde_json::to_vec(session)
+        .map_err(|error| MatrixSdkError::initialization("session.encode", error))?;
     if bytes.is_empty() || bytes.len() as u64 > MATRIX_SESSION_MAX_BYTES {
-        return Err(MatrixSdkError::Initialization);
+        return Err(MatrixSdkError::initialization_rejected(
+            "session.encoded_size",
+        ));
     }
     let file_name = path
         .file_name()
         .and_then(|name| name.to_str())
-        .ok_or(MatrixSdkError::Initialization)?;
+        .ok_or_else(|| MatrixSdkError::initialization_rejected("session.file_name"))?;
     let temporary = parent.join(format!(
         ".{file_name}.{}-{}.tmp",
         std::process::id(),
-        system_time_ms().map_err(|_| MatrixSdkError::Initialization)?
+        system_time_ms().map_err(|error| MatrixSdkError::initialization("session.clock", error))?
     ));
     let result = (|| -> Result<(), MatrixSdkError> {
         let mut options = OpenOptions::new();
@@ -552,18 +618,19 @@ fn persist_session(path: &std::path::Path, session: &MatrixSession) -> Result<()
         }
         let mut output = options
             .open(&temporary)
-            .map_err(|_| MatrixSdkError::Initialization)?;
+            .map_err(|error| MatrixSdkError::initialization("session.create_temporary", error))?;
         output
             .write_all(&bytes)
-            .map_err(|_| MatrixSdkError::Initialization)?;
+            .map_err(|error| MatrixSdkError::initialization("session.write", error))?;
         output
             .sync_all()
-            .map_err(|_| MatrixSdkError::Initialization)?;
+            .map_err(|error| MatrixSdkError::initialization("session.sync", error))?;
         drop(output);
-        std::fs::rename(&temporary, path).map_err(|_| MatrixSdkError::Initialization)?;
+        std::fs::rename(&temporary, path)
+            .map_err(|error| MatrixSdkError::initialization("session.rename", error))?;
         std::fs::File::open(parent)
             .and_then(|directory| directory.sync_all())
-            .map_err(|_| MatrixSdkError::Initialization)?;
+            .map_err(|error| MatrixSdkError::initialization("session.sync_directory", error))?;
         Ok(())
     })();
     if result.is_err() {

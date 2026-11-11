@@ -179,6 +179,22 @@ pub fn learning_iteration_receipt_signing_bytes_v1(
             bytes.extend_from_slice(committed_step_receipt.as_array());
             bytes.extend_from_slice(task_owner_publication.as_array());
         }
+        LearningIterationObservationV1::TrainingNoUpdateV2(outcome) => {
+            // All historical tags and signing payloads remain byte-identical.
+            bytes.push(8);
+            bytes.push(match outcome.reason {
+                LearningTrainingNoUpdateReasonV2::QuantizedWeightsUnchanged => 0,
+            });
+            for digest in [
+                outcome.retained_bundle,
+                outcome.dataset,
+                outcome.update_rule,
+            ] {
+                bytes.extend_from_slice(digest.as_array());
+            }
+            bytes.extend_from_slice(&outcome.steps.to_be_bytes());
+            bytes.extend_from_slice(&outcome.milliseconds.to_be_bytes());
+        }
     }
     Ok(bytes)
 }

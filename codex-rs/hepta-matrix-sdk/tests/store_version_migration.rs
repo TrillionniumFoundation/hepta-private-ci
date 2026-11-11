@@ -262,6 +262,7 @@ async fn reopen_fixture(root: &Path) -> TestResult {
     let expected: Value = serde_json::from_slice(&fs::read(root.join("expected.json"))?)?;
     let (layout, config) = fixture_config(root)?;
     let paths = MatrixSdkPaths::prepare(&layout, &config)?;
+    let reopen_started = std::time::Instant::now();
     let (client, session) = MatrixSdkClient::login_or_restore(
         &layout,
         config,
@@ -269,7 +270,13 @@ async fn reopen_fixture(root: &Path) -> TestResult {
         Some(PASSPHRASE),
         /*device_display_name*/ None,
     )
-    .await?;
+    .await
+    .inspect_err(|error| {
+        eprintln!(
+            "production reopen failed after {:?}: {error:?}",
+            reopen_started.elapsed()
+        );
+    })?;
     assert_eq!(serde_json::to_value(session)?, expected["session"]);
     let store = MatrixDurableStore::open(&layout, MatrixDurableConfig::default()).await?;
     assert_eq!(stored_values(client.client(), &store).await?, expected);

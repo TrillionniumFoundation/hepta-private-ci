@@ -45,10 +45,6 @@ impl LearningIterationRuntimeBootstrapV1 {
         self,
         request: LearningIterationRequestV1,
     ) -> Result<Self, AgentdError> {
-        LearningIterationCoordinatorV1::new(request.clone(), self.owners.clone())
-            .map_err(|error| AgentdError::Invalid(error.to_string()))?;
-        self.require_frozen_scope(&request)
-            .map_err(|error| AgentdError::Invalid(error.to_string()))?;
         self.with_circuit_learning_registry(CircuitLearningDeliveryRegistryV1::new(vec![request])?)
     }
 
@@ -65,13 +61,13 @@ impl LearningIterationRuntimeBootstrapV1 {
             ));
         }
         for request in &registry.requests {
+            self.require_frozen_scope(request)
+                .map_err(|error| AgentdError::Invalid(error.to_string()))?;
             if request.agent_id.as_str() != self.agent_id.as_str() {
                 return Err(AgentdError::GenerationFenced(
                     "Circuit learning request belongs to another agent".into(),
                 ));
             }
-            self.require_frozen_scope(request)
-                .map_err(|error| AgentdError::Invalid(error.to_string()))?;
             LearningIterationCoordinatorV1::new(request.clone(), self.owners.clone())
                 .map_err(|error| AgentdError::Invalid(error.to_string()))?;
         }

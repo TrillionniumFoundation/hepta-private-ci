@@ -311,7 +311,10 @@ fn read_only_pending_execution_never_reissues_work() {
     assert_eq!(test.run(), Err(Error::Store(StoreError::Indeterminate)));
     let before = (test.runner.holdout_anchor(), test.executions.state.clone());
     assert_eq!(test.readback(), Err(Error::Pending));
-    assert_eq!((test.runner.holdout_anchor(), test.executions.state), before);
+    assert_eq!(
+        (test.runner.holdout_anchor(), test.executions.state),
+        before
+    );
     assert_eq!(
         (test.fixture.provider.release_count, test.attestor.calls),
         (0, 0)

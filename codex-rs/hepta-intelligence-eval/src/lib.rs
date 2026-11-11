@@ -165,6 +165,7 @@ pub use product_runner::execution::ProductEvaluationExecutionAttestationRequestV
 pub use product_runner::execution::ProductEvaluationExecutionAttestorV1;
 pub use product_runner::execution::ProductEvaluationExecutionErrorV1;
 pub use product_runner::execution::ProductEvaluationExecutionRequestV1;
+pub use product_runner::execution::product_evaluation_execution_key_v1;
 pub use product_runner::freeze_product_evaluation_plan_v1;
 pub use self_evolution_selection::PreparedSelfEvolutionSelectionV1;
 pub use self_evolution_selection::SelfEvolutionSelectionError;

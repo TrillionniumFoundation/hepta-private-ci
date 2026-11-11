@@ -42,6 +42,8 @@ const ISSUER: &str = "circuit-objective-test-issuer";
 mod drain_tests;
 #[path = "circuit_learning_source_tests.rs"]
 mod learning_source_tests;
+#[path = "circuit_q24_task_ingress_tests.rs"]
+mod q24_tests;
 #[path = "circuit_task_runtime_tests.rs"]
 mod runtime_tests;
 
@@ -293,6 +295,13 @@ where
 }
 
 async fn signed_ingress(state: &AgentdState) -> anyhow::Result<AuthBusObjectiveIngress> {
+    signed_ingress_for_run(state, RUN).await
+}
+
+async fn signed_ingress_for_run(
+    state: &AgentdState,
+    run: &str,
+) -> anyhow::Result<AuthBusObjectiveIngress> {
     let identity = state.identity();
     fs::set_permissions(&identity.home_root, fs::Permissions::from_mode(0o700))?;
     let key = SigningKey::from_bytes(&[91; 32]);
@@ -343,7 +352,7 @@ async fn signed_ingress(state: &AgentdState) -> anyhow::Result<AuthBusObjectiveI
     assert!(state.objective_runtime.set(Arc::new(host)).is_ok());
     let now = crate::authbus_ingress::now_ms()?;
     let source = &mut document["source"];
-    source["requestId"] = json!(RUN);
+    source["requestId"] = json!(run);
     source["observedAt"] = json!(crate::notes_literal_prepare::utc_millis(now)?);
     source["deadline"] = json!(crate::notes_literal_prepare::utc_millis(now + 60_000)?);
     source["structuredIntent"]["resources"]["externalEffectCount"] = json!(0);
@@ -361,7 +370,7 @@ async fn signed_ingress(state: &AgentdState) -> anyhow::Result<AuthBusObjectiveI
         signature_hex: String::new(),
         body: AuthBusObjectiveBody {
             spawn_generation: identity.spawn_generation,
-            run_id: RUN.into(),
+            run_id: run.into(),
             objective_revision: 1,
             source_envelope_json: serde_json::to_string(source)?,
             runtime_body_digest: digest.clone(),

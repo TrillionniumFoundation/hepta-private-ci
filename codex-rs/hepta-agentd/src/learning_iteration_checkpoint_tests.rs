@@ -6,6 +6,9 @@ use pretty_assertions::assert_eq;
 use super::*;
 
 use crate::learning_iteration_checkpoint::test_support as support;
+
+#[path = "learning_iteration_checkpoint_training_no_update_tests.rs"]
+mod training_no_update_tests;
 use support::Decision;
 use support::FileCas;
 use support::OWNER;

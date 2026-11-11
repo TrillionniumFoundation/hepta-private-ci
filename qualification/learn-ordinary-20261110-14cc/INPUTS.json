@@ -1,0 +1,79 @@
+{
+  "schema": "hepta.learn.integration-inputs.v1",
+  "base_source": "abf75d8e2097785b2ad01897c15a7531eebe6e44",
+  "tested_source": "1b49f8746ec48a333c34f8a00a693c18248709fb",
+  "tested_tree": "8489fdedce2b9e7dd4df9a3854b6056fbb6ee619",
+  "pull_request": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5735",
+  "upstream_components": [
+    {
+      "pr": 5707,
+      "head": "abf75d8e2097785b2ad01897c15a7531eebe6e44",
+      "role": "original signed evaluation and Root reauthentication base"
+    },
+    {
+      "pr": 5654,
+      "head": "fd3c9fd55d1a3427f70828024cac7c1eff7c1c0c",
+      "role": "frozen single-private-head Q24 training plan"
+    },
+    {
+      "pr": 5569,
+      "head": "374af2c7b28c76e3ebf1e3a90593389c8f6f7bd0",
+      "role": "explicit bounded request registry"
+    },
+    {
+      "pr": 5626,
+      "head": "a8df34d5da7562a9e54905b95d7487816c991039",
+      "role": "exact acknowledged outbox retirement"
+    },
+    {
+      "pr": 5720,
+      "commit": "6c5e5fa199ef291c5dbbc0ab13fe3e565d750fec",
+      "role": "reconstruct original Training cut from fully validated recovered history"
+    },
+    {
+      "pr": 5717,
+      "head": "9174fb5202c691eae9f0fafbe5a25ebe5af0aca9",
+      "role": "bounded 30-second readback-only reconciliation budget"
+    }
+  ],
+  "historical_research_not_reexecuted": {
+    "pr": 5509,
+    "head": "71738345326b98d88b738250d2b84ecbcb466eb8",
+    "counted_as_this_run_acceptance": false
+  },
+  "training_profile": {
+    "implementation": "bounded native Q24 integer SGD with explicit straight-through quantization/clipping derivative",
+    "scope": "one frozen Drive or Prediction row",
+    "max_rows": 256,
+    "max_input_width": 64,
+    "candidate_is_adoption": false,
+    "source_role_metadata": "controlled test fixtures",
+    "actual_parameter_updates_and_unchanged_weights": "native tests only; no ordinary deployment asserted"
+  },
+  "protocol": {
+    "new_outcome": "TrainingNoUpdateV2",
+    "reason": "QuantizedWeightsUnchanged",
+    "signing_tag": 8,
+    "new_checkpoint_format": "HEPLCP03",
+    "historical_checkpoint_format": "HEPLCP02",
+    "historical_signed_bytes_preserved": true,
+    "requires_original_frozen_scope": true,
+    "requires_selection_and_retained_next_use": true,
+    "creates_evaluation_or_proposal_receipt": false
+  },
+  "independent_review_mapping": {
+    "6e734460abd": "a2b52088639a6fbbc3a1f996968b3122934972cd",
+    "15c687e928c": "1b49f8746ec48a333c34f8a00a693c18248709fb"
+  },
+  "rust_toolchain": "1.96.0",
+  "cargo_nextest": "0.9.103",
+  "just": "1.51.0",
+  "dataset_and_signer_custody": "test fixture unless an original-owner acceptance run is separately recorded",
+  "ordinary_entry_assembly": "NOT_ESTABLISHED",
+  "new_ordinary_positive_adoptions": 0,
+  "new_ordinary_no_update_chains": 0,
+  "full_daemon_and_root_cold_restart_chains": 0,
+  "maintenance_commit": "4afbcf04cf329cbcf984793c9d8d51941f072f48",
+  "guard_alignment_commit": "afd8053f915f481c9273695b1853a78e4131c3c7",
+  "production_rust_postimage_verified_against_remote_compile": true
+}

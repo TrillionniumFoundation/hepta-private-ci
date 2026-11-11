@@ -12,6 +12,8 @@ use support::*;
 
 #[path = "neuron_cell_learning_evaluation_tests.rs"]
 pub(crate) mod learning;
+#[path = "neuron_cell_evaluation_owner_tests.rs"]
+mod original_owner;
 #[path = "neuron_cell_evaluation_readback_tests.rs"]
 mod readback;
 

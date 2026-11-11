@@ -1,9 +1,12 @@
 //! The owner independently pins CURRENT while the ordinary worker recovers
 //! historical receipts. Signatures and model observations remain test fixtures.
 
+use codex_hepta_learning_artifacts::FrozenLearningScopeV2;
+use codex_hepta_learning_artifacts::LearningUpdateScopeV2;
 use pretty_assertions::assert_eq;
 
 use super::*;
+use crate::learning_iteration_channel_scoped_v2;
 
 struct CurrentHeadPorts {
     inner: Arc<IterationPorts>,
@@ -12,6 +15,10 @@ struct CurrentHeadPorts {
 }
 
 impl LearningIterationOwnerPortsV1 for CurrentHeadPorts {
+    fn frozen_scope_binding(&self) -> Option<Digest32> {
+        self.inner.frozen_scope_binding()
+    }
+
     fn restore<'a>(
         &'a self,
         request: &'a LearningIterationRequestV1,
@@ -108,6 +115,56 @@ async fn recovery_reads_each_historical_signature_against_original_current() {
             assert_no_work_or_checkpoint(&inner, &snapshot);
         }
     }
+}
+
+#[tokio::test]
+async fn trainer_no_update_recovery_keeps_frozen_scope_and_original_current() {
+    let daemon = AgentdFixture::new();
+    let mut inner = recovery_ports(Decision::EvaluatedNoUpdate, Trust::Independent);
+    let request = iteration_request(&daemon);
+    let scope = ok(FrozenLearningScopeV2::freeze(
+        &request,
+        &inner.owners(),
+        LearningUpdateScopeV2::Cell,
+        digest("test-rule"),
+    ));
+    inner.scope_binding = Some(scope.binding());
+    let inner = Arc::new(inner);
+    let snapshot =
+        super::training_no_update_auth_tests::trainer_no_update_snapshot(request, &inner).await;
+    install_checkpoint(&inner, &snapshot);
+    let ports = Arc::new(CurrentHeadPorts {
+        inner: Arc::clone(&inner),
+        current: snapshot.clone(),
+        observed: Mutex::default(),
+    });
+    let (_, runtime) = ok(learning_iteration_channel_scoped_v2(
+        daemon.identity.agent_id.clone(),
+        /*spawn_generation*/ 1,
+        inner.owners(),
+        ports.clone(),
+        inner.verifier.clone(),
+        /*capacity*/ 2,
+        scope,
+    ));
+    let recovered = ok(runtime
+        .process_readback(&daemon.state(), snapshot.request.clone(), || Ok(60))
+        .await);
+    assert_eq!(recovered, snapshot);
+    let observed = ok(ports.observed.lock());
+    assert!(!observed.is_empty());
+    assert_eq!(*observed, vec![snapshot.clone(); observed.len()]);
+    let attested = ok(inner.attested.lock());
+    for stage in [
+        LearningIterationStageV1::Training,
+        LearningIterationStageV1::Selection,
+        LearningIterationStageV1::NextUse,
+    ] {
+        assert!(attested.contains(&stage));
+    }
+    assert!(!attested.contains(&LearningIterationStageV1::Evaluation));
+    assert!(!attested.contains(&LearningIterationStageV1::Proposal));
+    assert_no_work_or_checkpoint(&inner, &snapshot);
 }
 
 #[tokio::test]
