@@ -5,7 +5,6 @@ use std::path::Path;
 use std::sync::Arc;
 use std::sync::atomic::AtomicUsize;
 
-use codex_hepta_automation::AutomationStore;
 use codex_hepta_learning_ledger::*;
 use codex_hepta_neuron::FileAnchorWitnessStore;
 use codex_hepta_types::FixedQ32;
@@ -14,13 +13,10 @@ use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
 
 use super::*;
-use crate::AgentdCircuitCellOwnerV1;
 use crate::AgentdCircuitTaskInvocationProviderV1;
 use crate::DurableCircuitTaskSourceV1;
 use crate::circuit_cell::tests::support as cell;
-use crate::circuit_task::CircuitTaskModeV1;
-use crate::circuit_task::driver::CircuitTaskDriverV1;
-use crate::circuit_task_source::tests as original;
+use crate::circuit_task::original_source_test_support as original;
 
 pub(crate) use cell::d;
 pub(crate) use cell::id;
@@ -161,18 +157,16 @@ impl Fixture {
             vec![source_input.clone()],
         )?;
         let request = source.build(&identity, &original::record(run.as_str()))?;
-        let model = cell::Model::new(/*latency*/ 20, /*lose_response*/ false);
-        let calls = Arc::clone(&model.calls);
         let cells = original::cell_owner(root, std::slice::from_ref(&source_input))?;
-        let mut driver = CircuitTaskDriverV1 {
-            store: AutomationStore::open(&identity.layout).await?,
+        let (receipt, calls) = original::drive_dataset_fixture(
+            &identity,
+            source.clone(),
+            &request,
             fence,
-            inputs: source.clone(),
-            cells: AgentdCircuitCellOwnerV1::new(registry, cells, model, cell::Encoder),
-        };
-        let receipt = driver
-            .execute(&request, CircuitTaskModeV1::Drive, || Ok(original::time()))
-            .await?;
+            registry,
+            cells,
+        )
+        .await?;
         source.publish_result(&identity, &original::record(run.as_str()), &receipt)?;
         let publication = source.read_run_publication(&identity, &run)?;
         let candidates: Vec<_> = source_input

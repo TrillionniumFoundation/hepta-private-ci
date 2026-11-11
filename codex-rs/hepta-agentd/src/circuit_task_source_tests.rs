@@ -174,6 +174,31 @@ pub(crate) fn time() -> crate::CircuitCellTimeV1 {
     }
 }
 
+/// Drive the same retained source through its original private Circuit driver.
+/// This fixture-only bridge does not expose the production driver or task mode.
+#[cfg(unix)]
+pub(crate) async fn drive_dataset_fixture(
+    identity: &AgentdIdentity,
+    source: Source,
+    request: &CircuitTaskRequestV1,
+    fence: TaskFlowFence,
+    registry: CircuitCellRegistryV1,
+    cells: CellOwnerJournalV1<FileAnchorWitnessStore>,
+) -> anyhow::Result<(CircuitTaskReceiptV1, Arc<std::sync::atomic::AtomicUsize>)> {
+    let model = cell::Model::new(/*latency*/ 20, /*lose_response*/ false);
+    let calls = Arc::clone(&model.calls);
+    let mut driver = CircuitTaskDriverV1 {
+        store: AutomationStore::open(&identity.layout).await?,
+        fence,
+        inputs: source,
+        cells: AgentdCircuitCellOwnerV1::new(registry, cells, model, cell::Encoder),
+    };
+    let receipt = driver
+        .execute(request, CircuitTaskModeV1::Drive, || Ok(time()))
+        .await?;
+    Ok((receipt, calls))
+}
+
 #[tokio::test]
 async fn ordinary_source_publishes_original_circuit_result_and_reopens_exact_inputs()
 -> anyhow::Result<()> {
