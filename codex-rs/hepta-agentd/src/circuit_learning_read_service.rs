@@ -52,12 +52,12 @@ impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOw
             binding,
             connections: Semaphore::new(4),
         };
-        owner.require_original_input()?;
+        owner.require_task_input_current()?;
         let coordinator = wire::decision(&owner.context)?;
         let cell: &PublishedCircuitCellOwnerV1<_> = &owner.cell;
         let observed = cell.read_learning_selection(&coordinator)?;
         owner.require_original_selection(&observed)?;
-        owner.require_original_input()?;
+        owner.require_task_input_current()?;
         let fresh = now()?;
         if fresh < started_at || wire::context_binding(&owner.context, fresh)? != binding {
             return Err(Error::Binding("original published bootstrap clock"));
@@ -135,7 +135,7 @@ impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOw
         Ok(bytes)
     }
 
-    fn require_original_input(&self) -> Result<(), Error> {
+    fn require_task_input_current(&self) -> Result<(), Error> {
         self.cell.task.require_current()?;
         let input = self.cell.task.source();
         let request = &self.context.prefix.request;
@@ -167,7 +167,7 @@ impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOw
     }
 
     fn read_original(&self) -> Result<Readback, Error> {
-        self.require_original_input()?;
+        self.require_task_input_current()?;
         let coordinator = wire::decision(&self.context)?;
         let cell: &PublishedCircuitCellOwnerV1<_> = &self.cell;
         let selection = cell.read_learning_selection(&coordinator)?;
@@ -198,11 +198,11 @@ impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOw
                 (observed, Some(before.publication_digest()))
             }
         };
-        self.require_original_input()?;
+        self.require_task_input_current()?;
         if cell.read_learning_selection(&coordinator)? != selection {
             return Err(Error::Binding("original selection changed during read"));
         }
-        self.require_original_input()?;
+        self.require_task_input_current()?;
         Ok(Readback {
             observation,
             publication,

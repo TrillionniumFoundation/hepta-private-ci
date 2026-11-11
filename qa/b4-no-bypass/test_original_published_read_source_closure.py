@@ -124,7 +124,7 @@ class OriginalPublishedReadClosureTests(unittest.TestCase):
         for marker in (
             "if self.fenced",
             "let before = self.witness.current()",
-            "self.journal.read_current_anchor()",
+            ".read_current_anchor()",
             "let after = self.witness.current()",
             "before != Some(current) || after != Some(current)",
             "if result.is_err()",
@@ -164,7 +164,7 @@ class OriginalPublishedReadClosureTests(unittest.TestCase):
 
     def test_no_historical_read_replaces_remote_io_or_fresh_window_validation(self):
         for marker in (
-            ".take().ok_or(Error::Unavailable)?",
+            ".take()",
             "channel.next_request_id > 128",
             "channel.peer.request(&bytes)?",
             "response.require_request(&request)?",
@@ -188,7 +188,7 @@ class OriginalPublishedReadClosureTests(unittest.TestCase):
             "input.scope.principal_digest.to_string() != request.principal_id.as_str()",
             "source.require_original_input(&self.identity, input)?",
         ):
-            self.rejects(SERVICE, "fn require_original_input(", marker)
+            self.rejects(SERVICE, "fn require_task_input_current(", marker)
         for marker in (
             "cell.read_learning_selection(&coordinator)?",
             "self.require_original_selection(&selection)?",

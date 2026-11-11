@@ -90,12 +90,14 @@ class OriginalModelSelectionClosureTests(unittest.TestCase):
             "product_original_execution_evidence_revalidate": (BINDING,),
             "circuit_feature_original_selection_observation": (
                 AGENT + "circuit_selection_receipt_owner.rs", SOURCES,
+                AGENT + "circuit_learning_read_service.rs",
             ),
             "learning_original_owner_physical_current": (
                 AGENT + "learning_owner_journal.rs",
                 AGENT + "cell_composed_q24_training_owner.rs",
                 AGENT + "cell_q24_model_proposal.rs",
                 SOURCES,
+                AGENT + "circuit_task_source_journal.rs",
             ),
         }
         paths = {path for identifier in expected for path in (
