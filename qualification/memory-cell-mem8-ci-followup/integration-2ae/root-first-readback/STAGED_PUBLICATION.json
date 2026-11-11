@@ -1,0 +1,102 @@
+{
+  "commit": "eae8aefe6faaa8fd827471d285d68ff7e4238fb1",
+  "tree": "e950f023337ac49bfe58e688013e573590d406ee",
+  "parent": "943196eb18a1a04e7248307cf8708bed38b82b8b",
+  "entries": [
+    {
+      "path": "qualification/memory-cell-mem8-ci-followup/integration-2ae/cleanup/mem8-superseded-component-ci-cleanup-v1-v2.tar.xz",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "812871aeb4579ab95c1c3b470564e612cffbaf83"
+    },
+    {
+      "path": "qualification/memory-cell-mem8-ci-followup/integration-2ae/cleanup/PACKAGE.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "2b25eff8d8ed2a7b3c71ff4876aab92239833e12"
+    },
+    {
+      "path": "qualification/memory-cell-mem8-ci-followup/integration-2ae/cleanup-readback/mem8-ci-cleanup-final-readback-v1.tar.xz",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4ea4b7c876236e56d95d448384cb60c584b01443"
+    },
+    {
+      "path": "qualification/memory-cell-mem8-ci-followup/integration-2ae/cleanup-readback/PACKAGE.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "56b4b2939b33b2b18220e7f8a26d95f7f6b961aa"
+    },
+    {
+      "path": "qualification/memory-cell-mem8-ci-followup/integration-2ae/windows-private/mem8-integrated-windows-private-2ae5215-v1.tar.xz",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "17caca8664c1702ee8eadb331f8199be59c5334e"
+    },
+    {
+      "path": "qualification/memory-cell-mem8-ci-followup/integration-2ae/windows-private/PACKAGE.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "395ecf8539db863a3c48b455d895a004380cc03f"
+    }
+  ],
+  "ref_moved": false,
+  "packages": [
+    {
+      "name": "cleanup",
+      "path": "qualification/memory-cell-mem8-ci-followup/integration-2ae/cleanup/mem8-superseded-component-ci-cleanup-v1-v2.tar.xz",
+      "schema": "hepta.mem8.superseded-ci-cleanup.package.v1",
+      "archive_name": "mem8-superseded-component-ci-cleanup-v1-v2.tar.xz",
+      "bytes": 49376,
+      "sha256": "d5e7a513113c59345b62dd25077b5b24d5275743560a9efd80723d3ce2eb94da",
+      "git_blob": "812871aeb4579ab95c1c3b470564e612cffbaf83",
+      "members": 389,
+      "integration_commit": "2ae5215beaf8d7b7df111a090b82134beae2683d",
+      "integration_tree": "12159640adcf073b51f3837e75575e11f5c20233",
+      "standard_cancel_authorized_runs": 11,
+      "force_followup_authorized_runs": 5,
+      "force_phase_all_original_runs_terminal": true,
+      "no_new_native_tests_or_model_requests": true,
+      "cancelled_is_pass": false,
+      "all_tar_member_bytes_read_back": true,
+      "manifest_git_blob": "ffcd67c4fd82d32844ba82bb467366b2a9c642dd",
+      "published_at": "2026-11-11T06:52:26.329874+00:00"
+    },
+    {
+      "name": "cleanup-readback",
+      "path": "qualification/memory-cell-mem8-ci-followup/integration-2ae/cleanup-readback/mem8-ci-cleanup-final-readback-v1.tar.xz",
+      "schema": "mem8.cleanup.final-readback.package.v1",
+      "archive_name": "mem8-ci-cleanup-final-readback-v1.tar.xz",
+      "bytes": 10564,
+      "sha256": "c02310164e6c507174981b86794d2f8f813060377c8a19414de28174ac71b643",
+      "git_blob": "4ea4b7c876236e56d95d448384cb60c584b01443",
+      "members": 20,
+      "original_phase_package": "812871aeb4579ab95c1c3b470564e612cffbaf83",
+      "independent_final_cancelled_runs": 11,
+      "force_original_terminal_exit": 0,
+      "force_original_output_complete": true,
+      "all_tar_bytes_read_back": true
+    },
+    {
+      "name": "windows-private",
+      "path": "qualification/memory-cell-mem8-ci-followup/integration-2ae/windows-private/mem8-integrated-windows-private-2ae5215-v1.tar.xz",
+      "schema": "mem8.integrated-windows-private.package.v1",
+      "archive_name": "mem8-integrated-windows-private-2ae5215-v1.tar.xz",
+      "bytes": 74908,
+      "sha256": "6dd43230e88c82febabf1183c39ed1b3316941b719da8bf791574a0349e05a79",
+      "git_blob": "17caca8664c1702ee8eadb331f8199be59c5334e",
+      "members": 13,
+      "source_head": "2ae5215beaf8d7b7df111a090b82134beae2683d",
+      "source_tree": "12159640adcf073b51f3837e75575e11f5c20233",
+      "run_id": 42971470466,
+      "attempt": 1,
+      "job_id": 130360697942,
+      "all_member_bytes_read_back": true,
+      "offline_audit": "passed",
+      "whole_hosted_ci": "not_claimed",
+      "created_archive_blob": "17caca8664c1702ee8eadb331f8199be59c5334e",
+      "created_manifest_blob": "f51232f15b6cc151d53d3a21cff3b1c7b11e6024",
+      "source_or_ci_ref_changed": false
+    }
+  ]
+}
