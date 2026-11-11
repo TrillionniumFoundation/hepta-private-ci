@@ -1218,7 +1218,7 @@
             "bazel_stable_lock": 42951157657,
             "bazel_stable_lock_status": "SUCCESS_METADATA_SCOPE",
             "architecture": 42951157615,
-            "architecture_status": "SOURCE_HEAD_AND_BASE_MERGE_SUCCESS_REQUIRED_QUEUED",
+            "architecture_status": "SUCCESS_SOURCE_HEAD_BASE_MERGE_AGGREGATE",
             "blocking": 42951157880,
             "blocking_status": "TERMINAL_FAILURE_MIXED_PLATFORM",
             "hcsn": 42951157687,
@@ -1281,7 +1281,9 @@
             "architecture_base_merge_artifact_size_bytes": 13471,
             "architecture_base_merge_artifact_sha256": "e609c0f0132d99a355ab2737090116acdc94c8d9563369c0979f93c5e90597b2",
             "architecture_required_job": 130326050196,
-            "architecture_required_status": "QUEUED"
+            "architecture_required_status": "SUCCESS",
+            "architecture_required_completed_at": "2026-11-11T05:49:20Z",
+            "architecture_required_log_result": "Require both exact-candidate lanes succeeded; identical-tree reuse includes source-head success"
           },
           "windows_scope_limit": "Windows compiled the candidate but selected only prompt_runtime::tests; it did not execute the six new Training-stage cases or complete the ordinary learning chain.",
           "required": "Read every exact-source terminal native/original artifact. No cb0598, #5884 or #5900 test count transfers.",
@@ -1302,7 +1304,7 @@
             "artifacts": "original per-platform Bazel execution-log artifacts retained by GitHub and source-bound to 30a697"
           },
           "daemon_scope_limit": "Exact 30a attempt 2 ran 1,152 ordinary native cases, seven ignored Root fixture cases, and each of the six original Training-stage cases. This is package/fixture evidence only; attempt 1 remains a separate pre-test transport failure.",
-          "architecture_scope_limit": "Exact 30a source-head recorded 31 passed command records and 663 observed tests with zero failures, and base-merge succeeded. The Architecture required aggregator remains queued, so no whole-run required PASS is recorded."
+          "architecture_scope_limit": "Exact 30a architecture run is terminal SUCCESS across source-head, base-merge and required aggregate. Source-head recorded 31 passed command records and 663 observed tests with zero failures. This is repository architecture qualification only and does not instantiate the production StageOwner/product learning chain."
         },
         "previous_common_candidate": {
           "source": "cb0598a9099a0d828ce73aedb51e397e600e49d1",
@@ -1433,6 +1435,6 @@
     "automation_id": "Automation_8e4cdb1c54948191973ff06d6fbdba1b",
     "enabled": true,
     "cadence": "hourly existing task, minute 25; latest PRs and these limits added to its prompt",
-    "last_updated_at": "2026-11-11T05:47:50Z"
+    "last_updated_at": "2026-11-11T05:59:38Z"
   }
 }
