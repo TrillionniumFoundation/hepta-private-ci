@@ -98,10 +98,14 @@ impl OriginalCircuitSelectionCommandContextV1 {
             return Err(Error::Binding("original Dataset before Trainer completion"));
         }
         coordinator.record(
-            original.receipt().clone(), original.receipt().observed_unix_seconds,
+            original.receipt().clone(),
+            original.receipt().observed_unix_seconds,
         )?;
         Self::from_checkpoint(
-            coordinator.snapshot().clone(), scope, verifier, original.attestation().clone(),
+            coordinator.snapshot().clone(),
+            scope,
+            verifier,
+            original.attestation().clone(),
         )
     }
 
@@ -111,7 +115,12 @@ impl OriginalCircuitSelectionCommandContextV1 {
         verifier: LearningEvidenceVerifierV1,
         training_evidence: SignedLearningEvidenceV1,
     ) -> Result<Self, Error> {
-        let context = Self { training, scope, verifier, training_evidence };
+        let context = Self {
+            training,
+            scope,
+            verifier,
+            training_evidence,
+        };
         context.authenticate(now()?)?;
         Ok(context)
     }
@@ -119,22 +128,32 @@ impl OriginalCircuitSelectionCommandContextV1 {
     fn authenticate(&self, current: u64) -> Result<VerifiedLearningEvidenceV1, Error> {
         let coordinator = LearningIterationCoordinatorV1::from_snapshot(self.training.clone())?;
         self.scope.validate_snapshot(&self.training)?;
-        let receipt = self.training.receipts.last()
+        let receipt = self
+            .training
+            .receipts
+            .last()
             .ok_or(Error::Binding("original TrainingNoUpdate predecessor"))?;
         if self.training.receipts.len() != 3
             || coordinator.next_stage() != Some(LearningIterationStageV1::Selection)
-            || !matches!(&receipt.observation, LearningIterationObservationV1::TrainingNoUpdateV2(_))
+            || !matches!(
+                &receipt.observation,
+                LearningIterationObservationV1::TrainingNoUpdateV2(_)
+            )
             || self.training.owners.evidence_trust_digest != self.verifier.trust_digest()
             || self.training.request.envelope.objective_digest != self.verifier.objective_digest()
             || receipt.actor_id != self.training.owners.trainer
             || receipt.observed_unix_seconds != self.training_evidence.issued_at
             || receipt.observed_unix_seconds > current
         {
-            return Err(Error::Binding("strict original TrainingNoUpdate command profile"));
+            return Err(Error::Binding(
+                "strict original TrainingNoUpdate command profile",
+            ));
         }
         let original = self.verifier.verify(
-            LearningEvidenceRoleV1::Generator, &self.training_evidence,
-            &learning_iteration_receipt_signing_bytes_v1(receipt)?, current,
+            LearningEvidenceRoleV1::Generator,
+            &self.training_evidence,
+            &learning_iteration_receipt_signing_bytes_v1(receipt)?,
+            current,
         )?;
         if original.principal().principal_id != self.training.owners.trainer {
             return Err(Error::Binding("original Trainer predecessor identity"));
@@ -144,8 +163,11 @@ impl OriginalCircuitSelectionCommandContextV1 {
 
     fn initial(&self) -> Result<LearningIterationSnapshotV1, Error> {
         Ok(LearningIterationCoordinatorV1::new(
-            self.training.request.clone(), self.training.owners.clone(),
-        )?.snapshot().clone())
+            self.training.request.clone(),
+            self.training.owners.clone(),
+        )?
+        .snapshot()
+        .clone())
     }
 
     fn binding(&self, current: u64) -> Result<Digest32, Error> {
@@ -173,10 +195,18 @@ pub struct OriginalCircuitSelectionCommandReceiptV1 {
     training_evidence: SignedLearningEvidenceV1,
 }
 impl OriginalCircuitSelectionCommandReceiptV1 {
-    pub fn snapshot(&self) -> &LearningIterationSnapshotV1 { &self.snapshot }
-    pub fn receipt(&self) -> &LearningIterationReceiptV1 { &self.receipt }
-    pub fn attestation(&self) -> &SignedLearningEvidenceV1 { &self.attestation }
-    pub fn training_attestation(&self) -> &SignedLearningEvidenceV1 { &self.training_evidence }
+    pub fn snapshot(&self) -> &LearningIterationSnapshotV1 {
+        &self.snapshot
+    }
+    pub fn receipt(&self) -> &LearningIterationReceiptV1 {
+        &self.receipt
+    }
+    pub fn attestation(&self) -> &SignedLearningEvidenceV1 {
+        &self.attestation
+    }
+    pub fn training_attestation(&self) -> &SignedLearningEvidenceV1 {
+        &self.training_evidence
+    }
 }
 
 struct Channel {
@@ -203,7 +233,14 @@ impl OriginalCircuitSelectionCommandClientV1 {
         lifetime: Duration,
     ) -> Result<Self, Error> {
         Self::bind_original_stream(
-            stream, peer, original_owner_pidfd, context, timeout, lifetime, false, None,
+            stream,
+            peer,
+            original_owner_pidfd,
+            context,
+            timeout,
+            lifetime,
+            false,
+            None,
         )
     }
 
@@ -223,13 +260,25 @@ impl OriginalCircuitSelectionCommandClientV1 {
         lifetime: Duration,
     ) -> Result<Self, Error> {
         let context = OriginalCircuitSelectionCommandContextV1::from_checkpoint(
-            training, scope, verifier, training_evidence,
+            training,
+            scope,
+            verifier,
+            training_evidence,
         )?;
-        let retained = expected.map(|(snapshot, signed)| {
-            wire::authenticate_completed(&context, snapshot, signed, now()?)
-        }).transpose()?;
+        let retained = expected
+            .map(|(snapshot, signed)| {
+                wire::authenticate_completed(&context, snapshot, signed, now()?)
+            })
+            .transpose()?;
         Self::bind_original_stream(
-            stream, peer, original_owner_pidfd, context, timeout, lifetime, true, retained,
+            stream,
+            peer,
+            original_owner_pidfd,
+            context,
+            timeout,
+            lifetime,
+            true,
+            retained,
         )
     }
 
@@ -249,29 +298,48 @@ impl OriginalCircuitSelectionCommandClientV1 {
             return Err(Error::Binding("original Selector process"));
         }
         let channel = original_owner_command_channel_v1(
-            stream, AgentdRootAuthorityPeer {
-                pid: peer.pid, boot_id: peer.boot_id, process_start_ticks: peer.process_start_ticks,
-            }, peer.uid, original_owner_pidfd, timeout, lifetime,
+            stream,
+            AgentdRootAuthorityPeer {
+                pid: peer.pid,
+                boot_id: peer.boot_id,
+                process_start_ticks: peer.process_start_ticks,
+            },
+            peer.uid,
+            original_owner_pidfd,
+            timeout,
+            lifetime,
         )?;
         let current = now()?;
         require_clock(started_at, current)?;
         context.authenticate(current)?;
         if let Some(expected) = &retained {
             if wire::authenticate_completed(
-                &context, expected.snapshot.clone(), expected.attestation.clone(), current,
-            )? != *expected {
+                &context,
+                expected.snapshot.clone(),
+                expected.attestation.clone(),
+                current,
+            )? != *expected
+            {
                 return Err(Error::Binding("exact cold original Selection"));
             }
         }
         Ok(Self {
-            channel: Mutex::new(Some(Channel { peer: channel, next_request_id: 1, execution_requested })),
-            context, binding, retained: Mutex::new(retained),
+            channel: Mutex::new(Some(Channel {
+                peer: channel,
+                next_request_id: 1,
+                execution_requested,
+            })),
+            context,
+            binding,
+            retained: Mutex::new(retained),
         })
     }
 
     /// One dispatch only. Timeout, cancellation of this future, Busy or an
     /// unknown ACK never causes automatic execution replay or a new operation.
-    pub async fn execute_selection(&self) -> Result<OriginalCircuitSelectionCommandReceiptV1, Error> {
+    pub async fn execute_selection(
+        &self,
+    ) -> Result<OriginalCircuitSelectionCommandReceiptV1, Error> {
         if now()? >= self.context.training.request.envelope.expiry_unix_seconds {
             return Err(Error::DeadlineExceeded);
         }
@@ -283,7 +351,8 @@ impl OriginalCircuitSelectionCommandClientV1 {
     }
 
     pub async fn receipt_attestation(
-        &self, expected: &LearningIterationReceiptV1,
+        &self,
+        expected: &LearningIterationReceiptV1,
     ) -> Result<SignedLearningEvidenceV1, Error> {
         let original = OriginalCircuitSelectionCommandClientV1::readback(self).await?;
         if &original.receipt != expected {
@@ -293,13 +362,16 @@ impl OriginalCircuitSelectionCommandClientV1 {
     }
 
     async fn exchange(
-        &self, action: wire::Action,
+        &self,
+        action: wire::Action,
     ) -> Result<OriginalCircuitSelectionCommandReceiptV1, Error> {
         let started_at = now()?;
         let mut channel = {
             let mut slot = self.channel.try_lock().map_err(|_| Error::Unavailable)?;
             if action == wire::Action::Execute
-                && slot.as_ref().is_some_and(|channel| channel.execution_requested)
+                && slot
+                    .as_ref()
+                    .is_some_and(|channel| channel.execution_requested)
             {
                 return Err(Error::ReadbackRequired);
             }
@@ -318,9 +390,14 @@ impl OriginalCircuitSelectionCommandClientV1 {
         let request = wire::Request::new(&self.context, self.binding, request_id, action);
         let encoded = serde_json::to_vec(&request)?;
         let (channel, bytes) = tokio::task::spawn_blocking(move || {
-            let bytes = channel.peer.request(&encoded).map_err(|_| Error::CommitUncertain)?;
+            let bytes = channel
+                .peer
+                .request(&encoded)
+                .map_err(|_| Error::CommitUncertain)?;
             Ok::<_, Error>((channel, bytes))
-        }).await.map_err(|_| Error::CommitUncertain)??;
+        })
+        .await
+        .map_err(|_| Error::CommitUncertain)??;
         let response: wire::Response = serde_json::from_slice(&bytes)?;
         response.require_request(&request)?;
         channel.peer.check_peer_lifetime()?;
@@ -331,7 +408,10 @@ impl OriginalCircuitSelectionCommandClientV1 {
             wire::CommandResult::Completed { snapshot, evidence } => {
                 let original = wire::decode_completed(&self.context, snapshot, evidence, current)?;
                 let mut retained = self.retained.try_lock().map_err(|_| Error::Unavailable)?;
-                if retained.as_ref().is_some_and(|previous| previous != &original) {
+                if retained
+                    .as_ref()
+                    .is_some_and(|previous| previous != &original)
+                {
                     return Err(Error::Binding("unchanged original Selection attestation"));
                 }
                 *retained = Some(original.clone());
@@ -352,12 +432,16 @@ impl OriginalCircuitSelectionCommandClientV1 {
 
 fn require_clock(started_at: u64, current: u64) -> Result<(), Error> {
     if current < started_at {
-        return Err(Error::Binding("original Selector command clock moved backwards"));
+        return Err(Error::Binding(
+            "original Selector command clock moved backwards",
+        ));
     }
     Ok(())
 }
 fn now() -> Result<u64, Error> {
-    SystemTime::now().duration_since(UNIX_EPOCH).map(|value| value.as_secs())
+    SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map(|value| value.as_secs())
         .map_err(|_| Error::Binding("original Selector system clock"))
 }
 

@@ -182,7 +182,10 @@ impl<W: AnchorWitnessStore> OriginalCircuitSelectionReceiptOwnerV1<W> {
     pub(crate) fn original_command_profile(
         &self,
     ) -> (&OriginalCircuitSelectionReceiptConfigV1, bool) {
-        (&self.config, matches!(self.command_origin, CommandOrigin::Recovered))
+        (
+            &self.config,
+            matches!(self.command_origin, CommandOrigin::Recovered),
+        )
     }
 
     pub fn create(
@@ -398,7 +401,6 @@ impl<W: AnchorWitnessStore> OriginalCircuitSelectionReceiptOwnerV1<W> {
         Ok((receipt, signed))
     }
 }
-
 
 impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitSelectionReceiptOwnerV1<W> {
     /// Move this exact original owner into its purpose-fixed role service.

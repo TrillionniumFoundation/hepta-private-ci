@@ -58,15 +58,23 @@ impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitSelectionCommandOwne
         let (config, readback_only) =
             OriginalCircuitSelectionReceiptOwnerV1::original_command_profile(&owner);
         let context = OriginalCircuitSelectionCommandContextV1::from_checkpoint(
-            config.decision.clone(), config.scope.clone(), config.verifier.clone(),
+            config.decision.clone(),
+            config.scope.clone(),
+            config.verifier.clone(),
             config.training_evidence.clone(),
         )?;
         OriginalCircuitLearningReadClientV1::require_original_context(
-            &live, &context.training, &context.scope, &context.verifier,
-            &context.training_evidence, None,
-        ).map_err(OriginalCircuitSelectionReceiptErrorV1::from)?;
+            &live,
+            &context.training,
+            &context.scope,
+            &context.verifier,
+            &context.training_evidence,
+            None,
+        )
+        .map_err(OriginalCircuitSelectionReceiptErrorV1::from)?;
         let initial = context.initial()?;
-        if trainer.initial != initial || trainer.actor_id != context.training.owners.trainer
+        if trainer.initial != initial
+            || trainer.actor_id != context.training.owners.trainer
             || trainer.verifier.trust_digest() != context.verifier.trust_digest()
             || trainer.verifier.scope_digest() != context.verifier.scope_digest()
             || trainer.verifier.objective_digest() != context.verifier.objective_digest()
@@ -76,10 +84,15 @@ impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitSelectionCommandOwne
         let binding = context.binding(now()?)?;
         let runtime = Handle::try_current().map_err(|_| Error::Unavailable)?;
         Ok(Self {
-            owner: Mutex::new(owner), live, trainer, context,
-            initial_head: initial.head_digest, binding,
+            owner: Mutex::new(owner),
+            live,
+            trainer,
+            context,
+            initial_head: initial.head_digest,
+            binding,
             execution_requested: AtomicBool::new(readback_only),
-            runtime, connections: Arc::new(Semaphore::new(4)),
+            runtime,
+            connections: Arc::new(Semaphore::new(4)),
         })
     }
 
@@ -87,38 +100,64 @@ impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitSelectionCommandOwne
     /// The existing framer keeps a complete command at <=30 seconds and the
     /// original connection at <=300 seconds; no deadline is renewed per frame.
     pub async fn serve_commands(
-        self: Arc<Self>, stream: UnixStream, consumer: AgentdRootAuthorityPeer,
-        consumer_uid: u32, original_consumer_pidfd: OwnedFd,
-        timeout: Duration, lifetime: Duration,
+        self: Arc<Self>,
+        stream: UnixStream,
+        consumer: AgentdRootAuthorityPeer,
+        consumer_uid: u32,
+        original_consumer_pidfd: OwnedFd,
+        timeout: Duration,
+        lifetime: Duration,
     ) -> Result<u64, Error> {
-        let permit = Arc::clone(&self.connections).try_acquire_owned().map_err(|_| Error::Busy)?;
+        let permit = Arc::clone(&self.connections)
+            .try_acquire_owned()
+            .map_err(|_| Error::Busy)?;
         tokio::task::spawn_blocking(move || {
             let _permit = permit;
             let mut channel = original_owner_command_channel_v1(
-                stream, consumer, consumer_uid, original_consumer_pidfd, timeout, lifetime,
+                stream,
+                consumer,
+                consumer_uid,
+                original_consumer_pidfd,
+                timeout,
+                lifetime,
             )?;
             self.serve_command_channel(&mut channel)
-        }).await.map_err(|_| Error::CommitUncertain)?
+        })
+        .await
+        .map_err(|_| Error::CommitUncertain)?
     }
 
     /// C uses the existing evidence purpose and unchanged 500 ms exchange bound.
     /// This endpoint always performs original readback_remote and cannot attest.
     pub async fn serve_evidence_readback(
-        self: Arc<Self>, stream: UnixStream, consumer: AgentdRootAuthorityPeer,
-        consumer_uid: u32, original_consumer_pidfd: OwnedFd,
-        timeout: Duration, lifetime: Duration,
+        self: Arc<Self>,
+        stream: UnixStream,
+        consumer: AgentdRootAuthorityPeer,
+        consumer_uid: u32,
+        original_consumer_pidfd: OwnedFd,
+        timeout: Duration,
+        lifetime: Duration,
     ) -> Result<u64, Error> {
         if timeout.is_zero() || timeout > Duration::from_millis(500) {
             return Err(Error::Binding("original Selector evidence exchange limit"));
         }
-        let permit = Arc::clone(&self.connections).try_acquire_owned().map_err(|_| Error::Busy)?;
+        let permit = Arc::clone(&self.connections)
+            .try_acquire_owned()
+            .map_err(|_| Error::Busy)?;
         tokio::task::spawn_blocking(move || {
             let _permit = permit;
             let mut channel = original_owner_command_channel_v1(
-                stream, consumer, consumer_uid, original_consumer_pidfd, timeout, lifetime,
+                stream,
+                consumer,
+                consumer_uid,
+                original_consumer_pidfd,
+                timeout,
+                lifetime,
             )?;
             self.serve_evidence_channel(&mut channel)
-        }).await.map_err(|_| Error::CommitUncertain)?
+        })
+        .await
+        .map_err(|_| Error::CommitUncertain)?
     }
 
     fn serve_command_channel(&self, channel: &mut HostAuthorityPeerChannel) -> Result<u64, Error> {
@@ -151,7 +190,9 @@ impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitSelectionCommandOwne
         };
         // Original owner guard has been released before encoding and writing.
         self.context.authenticate(now()?)?;
-        Ok(serde_json::to_vec(&wire::Response::from_request(&request, result))?)
+        Ok(serde_json::to_vec(&wire::Response::from_request(
+            &request, result,
+        ))?)
     }
 
     fn original_response(&self, execute: bool) -> Result<wire::CommandResult, Error> {
@@ -162,7 +203,9 @@ impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitSelectionCommandOwne
             };
             let original: &mut OriginalCircuitSelectionReceiptOwnerV1<W> = &mut owner;
             let source = OriginalCircuitSelectionRemoteSourcesV1 {
-                snapshot: &self.context.training, live: &self.live, trainer: &self.trainer,
+                snapshot: &self.context.training,
+                live: &self.live,
+                trainer: &self.trainer,
             };
             if execute {
                 self.runtime.block_on(
@@ -171,20 +214,17 @@ impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitSelectionCommandOwne
                     ),
                 )
             } else {
-                self.runtime.block_on(
-                    OriginalCircuitSelectionReceiptOwnerV1::readback_remote(original, source),
-                )
+                self.runtime
+                    .block_on(OriginalCircuitSelectionReceiptOwnerV1::readback_remote(
+                        original, source,
+                    ))
             }
         };
         match completed {
-            Ok((receipt, signed)) => {
-                wire::encode_completed(&self.context, receipt, signed, now()?)
-            }
+            Ok((receipt, signed)) => wire::encode_completed(&self.context, receipt, signed, now()?),
             Err(error) => Ok(original_state(error)),
         }
     }
-
-
 }
 
 fn original_state(error: OriginalCircuitSelectionReceiptErrorV1) -> wire::CommandResult {
