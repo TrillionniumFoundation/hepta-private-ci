@@ -319,6 +319,10 @@ mod circuit_learning_delivery;
 mod circuit_q24_task_profile;
 mod circuit_task_learning;
 #[cfg(target_os = "linux")]
+mod state_retained_learning_source;
+#[cfg(target_os = "linux")]
+mod production_q24_retained_learning;
+#[cfg(target_os = "linux")]
 mod cell_q24_task_ledger;
 mod circuit_task;
 #[cfg(target_os = "linux")]
@@ -576,6 +580,10 @@ pub use cell_q24_task_ledger::OriginalCellQ24TaskLedgerErrorV1;
 pub use cell_q24_task_ledger::OriginalCellQ24TaskLedgerProducerV1;
 #[cfg(target_os = "linux")]
 pub use cell_q24_task_ledger::OriginalCellQ24TaskLearningReadyV1;
+#[cfg(target_os = "linux")]
+pub use cell_q24_task_ledger::OriginalCellQ24RetainedLearningSourceV1;
+#[cfg(target_os = "linux")]
+pub use cell_q24_task_ledger::OriginalCellQ24RetainedLearningReadyV1;
 #[cfg(target_os = "linux")]
 pub use circuit_q24_task_profile::CircuitQ24TaskFilesV1;
 #[cfg(target_os = "linux")]

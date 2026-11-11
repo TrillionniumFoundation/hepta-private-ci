@@ -30,6 +30,9 @@ use crate::PlasticityRuntimeCallErrorV1;
 
 #[path = "learning_iteration_delivery_runtime.rs"]
 mod delivery;
+#[cfg(target_os = "linux")]
+#[path = "learning_iteration_retained_source.rs"]
+mod retained_source;
 pub(crate) use delivery::CircuitLearningSourceV1;
 #[path = "circuit_learning_delivery_registry.rs"]
 mod registry;
@@ -170,6 +173,8 @@ pub struct LearningIterationRuntimeBootstrapV1 {
     sender: mpsc::Sender<LearningIterationCommandV1>,
     circuit_delivery_registry: Option<CircuitLearningDeliveryRegistryV1>,
     circuit_delivery_source: delivery::CircuitLearningSourceV1,
+    #[cfg(target_os = "linux")]
+    retained_source: Option<Arc<crate::cell_q24_task_ledger::RegisteredCellQ24RetainedSourceV1>>,
     enforce_circuit_admission: bool,
     #[cfg(target_os = "linux")]
     original_q24: Option<Arc<crate::OriginalCellQ24LearningStageOwnersV1>>,
@@ -268,6 +273,8 @@ fn learning_iteration_channel(
             sender,
             circuit_delivery_registry: None,
             circuit_delivery_source: delivery::CircuitLearningSourceV1::HostStageOwners,
+            #[cfg(target_os = "linux")]
+            retained_source: None,
             enforce_circuit_admission: false,
             #[cfg(target_os = "linux")]
             original_q24: None,

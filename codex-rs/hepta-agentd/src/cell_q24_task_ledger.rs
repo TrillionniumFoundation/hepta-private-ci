@@ -42,6 +42,11 @@ mod outcome_codec;
 #[path = "cell_q24_task_learning_ready.rs"]
 mod readiness;
 pub use readiness::OriginalCellQ24TaskLearningReadyV1;
+#[path = "cell_q24_retained_learning_source.rs"]
+mod retained;
+pub use retained::OriginalCellQ24RetainedLearningReadyV1;
+pub use retained::OriginalCellQ24RetainedLearningSourceV1;
+pub(crate) use retained::RegisteredCellQ24RetainedSourceV1;
 #[cfg(test)]
 #[path = "cell_q24_task_ledger_fault_support_tests.rs"]
 pub(crate) mod test_faults;
@@ -129,14 +134,21 @@ struct State {
     captured: Option<Captured>,
 }
 
+enum OriginalTaskCustodyV1 {
+    Active {
+        cell: PublishedCircuitCellOwnerV1<FileAnchorWitnessStore>,
+        published: PublishedCircuitFeatureTaskV1,
+    },
+    Retained,
+}
+
 /// Installed only beside the original Q24 runtime. Reconciliation reads the
 /// original committed source and never submits work.
 pub struct OriginalCellQ24TaskLedgerProducerV1 {
-    state: Mutex<State>,
+    state: Arc<Mutex<State>>,
     ledger: Arc<Mutex<LedgerWriter>>,
     source: Arc<CircuitTaskSourceReadbackV1<FileAnchorWitnessStore>>,
-    cell: PublishedCircuitCellOwnerV1<FileAnchorWitnessStore>,
-    published: PublishedCircuitFeatureTaskV1,
+    task: OriginalTaskCustodyV1,
     identity: AgentdIdentity,
     config: OriginalCellQ24TaskLedgerConfigV1,
     decision_key: ProductEvaluationExecutionKeyV1,
@@ -167,8 +179,8 @@ impl OriginalCellQ24TaskLedgerProducerV1 {
             )?,
         };
         Ok(Self {
-            state: Mutex::new(State { journal, key: inputs.generator_key, captured: None }),
-            ledger: inputs.ledger, source, cell, published, identity, config: inputs.config,
+            state: Arc::new(Mutex::new(State { journal, key: inputs.generator_key, captured: None })),
+            ledger: inputs.ledger, source, task: OriginalTaskCustodyV1::Active { cell, published }, identity, config: inputs.config,
             decision_key: execution_key("decision", binding)?,
             outcome_key: execution_key("outcome", binding)?,
             ledger_binding, trust_digest,
@@ -345,17 +357,20 @@ impl OriginalCellQ24TaskLedgerProducerV1 {
             self.require_source(captured)?;
             return Ok(captured.clone());
         }
-        let run = self.published.source().scope.run_id.clone();
+        let OriginalTaskCustodyV1::Active { cell, published } = &self.task else {
+            return Err(Error::Binding("original task capture was not retained"));
+        };
+        let run = published.source().scope.run_id.clone();
         let publication = self.source.read_run_publication(&self.identity, &run)
             .map_err(|_| Error::Binding("original task is not committed or was withdrawn"))?;
-        let cell: &PublishedCircuitCellOwnerV1<FileAnchorWitnessStore> = &self.cell;
+        let cell: &PublishedCircuitCellOwnerV1<FileAnchorWitnessStore> = cell;
         let decision = cell.committed(&publication)
             .map_err(|_| Error::Binding("original committed Cell"))?;
         let task = CellQ24DatasetTaskV1::capture(
-            self.source.as_ref().clone(), &self.cell, self.identity.clone(), run,
+            self.source.as_ref().clone(), cell, self.identity.clone(), run,
         )?;
         let captured = Captured {
-            decision: binding::decision(&self.config, &self.published, &publication, &decision)?,
+            decision: binding::decision(&self.config, published, &publication, &decision)?,
             publication, task,
         };
         self.require_source(&captured)?;

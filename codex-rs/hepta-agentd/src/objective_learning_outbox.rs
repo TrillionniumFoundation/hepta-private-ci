@@ -16,6 +16,10 @@ impl ObjectiveRuntimeHost {
         let Some(source_run_id) = source_run_id else {
             return Ok(());
         };
+        #[cfg(target_os = "linux")]
+        if let Some(source) = original_state.retained_circuit_learning_source(source_run_id) {
+            return original_state.reconcile_retained_learning_source(source).await;
+        }
         if original_state.circuit_learning_origin(source_run_id).is_none() {
             return Err(invalid("original learning source profile is unavailable"));
         }

@@ -25,6 +25,11 @@ mod fixture;
 mod recovery;
 #[path = "cell_q24_task_ledger_fault_tests.rs"]
 mod faults;
+#[path = "cell_q24_retained_learning_source_tests.rs"]
+mod retained_source;
+
+#[path = "cell_q24_task_comparison_tests.rs"]
+mod comparison;
 
 use fixture::Fixture;
 

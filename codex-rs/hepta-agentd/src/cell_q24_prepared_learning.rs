@@ -124,6 +124,15 @@ impl CellQ24PreparedLearningV1 {
         &self.frozen
     }
 
+    pub(crate) fn require_original_task_ledger(
+        &self,
+        ledger: &Arc<Mutex<LedgerWriter>>,
+    ) -> Result<(), Error> {
+        let batch: &CellQ24TrainingBatchV1 = &self.batch;
+        batch.require_original_ledger_capability(ledger)?;
+        Ok(())
+    }
+
     pub fn revalidate_source(&self) -> Result<(), Error> {
         self.batch.require_original_dataset_provenance()?;
         Ok(())

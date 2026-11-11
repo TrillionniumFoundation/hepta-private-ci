@@ -28,6 +28,8 @@ pub(crate) struct CircuitLearningDeliveryRuntimeV1 {
     pub(crate) requests: Vec<LearningIterationRequestV1>,
     owners: LearningIterationOwnersV1,
     source: CircuitLearningSourceV1,
+    #[cfg(target_os = "linux")]
+    retained_source: Option<Arc<crate::cell_q24_task_ledger::RegisteredCellQ24RetainedSourceV1>>,
 }
 
 impl LearningIterationRuntimeBootstrapV1 {
@@ -97,12 +99,18 @@ impl LearningIterationRuntimeBootstrapV1 {
                 requests: registry.requests,
                 owners: self.owners.clone(),
                 source: self.circuit_delivery_source,
+                #[cfg(target_os = "linux")]
+                retained_source: self.retained_source.take(),
             })
     }
 }
 
 impl CircuitLearningDeliveryRuntimeV1 {
     pub(crate) fn attach_sources(&self, state: &AgentdState) -> Result<(), AgentdError> {
+        #[cfg(target_os = "linux")]
+        if let Some(source) = &self.retained_source {
+            return state.attach_original_retained_learning_source(Arc::clone(source));
+        }
         state.attach_circuit_learning_delivery(
             self.requests.iter().map(|request| request.source_run_id.clone()).collect(),
             self.source,
@@ -115,6 +123,15 @@ impl CircuitLearningDeliveryRuntimeV1 {
         state: Arc<AgentdState>,
         cancellation: CancellationToken,
     ) -> Result<(), AgentdError> {
+        #[cfg(target_os = "linux")]
+        let store = if let Some(source) = &self.retained_source {
+            let source: &Arc<crate::cell_q24_task_ledger::RegisteredCellQ24RetainedSourceV1> = source;
+            source.observe_retained_learning(state.identity()).await?;
+            if self.requests.as_slice() != std::slice::from_ref(source.request()) {
+                return Err(AgentdError::GenerationFenced("original retained delivery request differs".into()));
+            }
+            source.original_outbox(state.identity(), source.request())?
+        } else { store };
         if self.requests.iter().any(|request| {
             store.owner_agent_id().as_str() != request.agent_id.as_str()
                 || state.identity().agent_id.as_str() != request.agent_id.as_str()

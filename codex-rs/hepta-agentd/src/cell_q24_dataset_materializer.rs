@@ -193,6 +193,17 @@ pub(super) struct OriginalDataset {
 }
 
 impl CellQ24TrainingBatchV1 {
+    pub(crate) fn require_original_ledger_capability(
+        &self,
+        ledger: &Arc<Mutex<LedgerWriter>>,
+    ) -> Result<(), Error> {
+        let source = self.source.as_ref().ok_or(Error::Binding("original Dataset capability missing"))?;
+        if !Arc::ptr_eq(&source.ledger, ledger) {
+            return Err(Error::Binding("original Dataset and producer Ledger differ"));
+        }
+        source.require_batch(self)
+    }
+
     /// The host supplies original owners and their existing signed freeze.
     /// HQ24T002 retains their private read capability, including across Clone.
     /// The legacy new() constructor continues to emit only HQ24T001.
