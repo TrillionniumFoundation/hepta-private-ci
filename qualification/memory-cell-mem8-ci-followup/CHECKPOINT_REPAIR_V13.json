@@ -1,0 +1,165 @@
+{
+  "schema": "hepta.mem8.ci-repair-checkpoint.v13",
+  "checkpoint_utc": "2026-11-11 11:06:44 UTC",
+  "source": {
+    "pr": 5935,
+    "head": "189711e3563ea13a5328d52e99a286f082045b98",
+    "tree": "e253b99e0a5c3b3a680569da0d224fabff0781ba",
+    "parent": "2ae5215beaf8d7b7df111a090b82134beae2683d",
+    "cumulative_source_paths": 69,
+    "source_gate": "PASS",
+    "source_full_readback": "69/69",
+    "overall_native_qualification": "FAILED"
+  },
+  "bazel_lock": {
+    "status": "PASS",
+    "local_qualification_commit": "65ff5d15075f9193664ab0b5f74e2264cfe0c24c",
+    "tree": "e253b99e0a5c3b3a680569da0d224fabff0781ba",
+    "published_commit_distinct": true,
+    "native_results_transferred": false,
+    "command": "just bazel-lock-update",
+    "phases": 1,
+    "exit_code": 0,
+    "lock_drift": false,
+    "lock_sha256": "783b3ad329fa53bd4a0e48be6907d38259fa2880d61bd1994b863d7f78bbca57",
+    "archive_members_root_verified": 43,
+    "original_preparation_v1_failure_preserved": true
+  },
+  "original_blocking_ci": {
+    "run_id": 43002359918,
+    "attempt": 1,
+    "job_count": 37,
+    "success": 23,
+    "failure": 10,
+    "skipped": 4,
+    "cancelled": 0,
+    "aggregate_failure_jobs": 2,
+    "actual_tested_merge": "83b67d85bc8ba58ca1f4e758efdc32dbe5f11c58",
+    "shared_tree": "e253b99e0a5c3b3a680569da0d224fabff0781ba",
+    "merge_and_source_commit_identities_distinct": true,
+    "complete_jobs_api_verified": true
+  },
+  "original_189_archived_observations": {
+    "archive_blob": "b86f82acc52d076b697adf52e71b3e78d982c157",
+    "archive_members": 35,
+    "original_full_logs": 6,
+    "snapshot_utc": "2026-11-11 10:45:18 UTC",
+    "later_terminal_snapshot_separate": true,
+    "linux_duplicate_payloads_not_independent_executions": true
+  },
+  "windows_private": {
+    "run_id": 43002359628,
+    "job_id": 130461333221,
+    "status": "PASS",
+    "signed_case_passed": 1,
+    "failed": 0,
+    "filtered": 270,
+    "retries": 0,
+    "source_before_after_clean": true,
+    "receipt_source": "Complete original job log; standalone workflow artifact not downloaded by root"
+  },
+  "mem_current": {
+    "run_id": 43002359609,
+    "status": "FAILURE",
+    "native_job_id": 130461333141,
+    "memory_tests_passed": 11,
+    "agentd_tests_passed": 6,
+    "test_failures_in_those_two_receipts": 0,
+    "failure_phase": "qualification feature preserves explicit memory isolation",
+    "cause": "Pinned Nextest resolves store.dir relative to Rust workspace; workflow looked under CARGO_TARGET_DIR",
+    "qualification_feature_receipt": "NOT_PRODUCED",
+    "protocol_and_fix_steps": "SKIPPED",
+    "native_artifact_id": 13848385037,
+    "provenance": "Independent reviewer read exact artifact and original job; subsequent archive will retain full receipts."
+  },
+  "windows_current": {
+    "run_id": 43002359812,
+    "job_id": 130461336393,
+    "status": "IN_PROGRESS_LAST_OBSERVED",
+    "case_counts": "NOT_YET_AVAILABLE"
+  },
+  "mac_artifact_preparation": {
+    "job_id": "1a1ca0b560a-2564-42b",
+    "status": "FETCH_TIMEOUT_AFTER_300_SECONDS",
+    "outer_exit_code": 1,
+    "outer_timed_out": false,
+    "inner_exit_code": -9,
+    "inner_timed_out": true,
+    "zsh_controls_executed": 0,
+    "archive_blob": "dab676333d96a21104468d9543b21dba715cf9e6",
+    "outer_members": 18,
+    "nested_original_members": 18,
+    "root_nonce_exit_logs_verified": true,
+    "prior_v1_failure_preserved": true
+  },
+  "mac_head": {
+    "result": "CURRENT_HEAD_HTTP_200_ONLY",
+    "seconds": 10.353010892868042,
+    "logical_probes": 1,
+    "caller_retries": 0,
+    "https_redirects": 1,
+    "download_attempted": false,
+    "zsh_controls": 0,
+    "archive_blob": "753febed8e63e68fd5a0fbd9d5fe95e10c9bb37c",
+    "members": 5,
+    "supervisor_identity": "UNKNOWN_NOT_RECOVERED",
+    "supervisor_terminal_receipt": "NOT_RECOVERED",
+    "does_not_rewrite_previous_download_timeouts": true
+  },
+  "pending_source_gate_v3": {
+    "key": "mem8-integrated-repair-source-ai395-ed353817-v3",
+    "cumulative_paths": 92,
+    "incremental_paths_vs_189": 31,
+    "input_compressed_sha256": "39777a1141d4c74edfef38d67e7577cd659287d6e6a7045415278683faddd408",
+    "driver_sha256": "e7a5cb8878465394cbd047fedd2133205b19cabe273320e298b1728625a1e522",
+    "scope": "SOURCE_ONLY_FORMAT_CALLER_FULL_TREE",
+    "initial_request": "MCP_TIMEOUT_NO_JOB_ACK",
+    "same_key_reconciliation_request": "MCP_TIMEOUT_NO_JOB_ACK",
+    "job_identity": "UNKNOWN",
+    "execution_terminal": "UNKNOWN",
+    "input_file_read": "FileNotFound at observation, not proof that admission never happened",
+    "registry_read": "Original snapshot changed; stopped without creating a new snapshot",
+    "registry_evidence_blob": "43c54a86295193122d1df08c1826f776ac52c190",
+    "new_execution_key_for_replay_used": false,
+    "native_or_provider_calls_allowed": false
+  },
+  "repairs": {
+    "model_list": "Wire-format cache equality correction statically reviewed, native pending",
+    "physical_file_negative_control": "Fresh read/write test-owned descriptor, production append unchanged, native pending",
+    "remote_control_fixture": "Route model GET before WebSocket; preserve EOF, header and buffered-tail rejection; static reviewed, native pending",
+    "qualification_lease_clock": "Fresh-owner controlled expiry test clock with default-off isolated test graphs; static reviewed, native pending",
+    "startup_matrix_neuron": "Diagnostics only; not established fixes",
+    "windows_hardlink": "Enabled fixture exposes existing-hardlink write; bounded typed-write prevention under review; concurrent alias and other write paths remain open",
+    "windows_ordinary_host_negative_control": "Unexpected delete under deny ACL observed; token/volume cause unresolved",
+    "plugin_catalog": "Atomic cache write OS5 observed; failing atomic suboperation unresolved",
+    "image_edit": "Mock image edit not reached before original timeout; cause unresolved",
+    "mem_junit_path": "Exact workspace report path correction prepared, source gate pending"
+  },
+  "blob_job_retry": {
+    "original_job": 130461335389,
+    "original_failure": "Fence before checkout; blob policy never ran",
+    "prior_attempt_api": "403 containing run still running; no execution",
+    "after_terminal_api": "success true",
+    "new_attempt_result": "PENDING",
+    "native_jobs_retried": false
+  },
+  "scientific": {
+    "adoption_blockers_open": 10,
+    "adoption_blockers_closed_by_this_checkpoint": 0,
+    "new_scored_actor_episodes": 0,
+    "new_provider_generation_requests": 0,
+    "original_provider_terminal": "UNKNOWN",
+    "original_admitted_provider_turn_replayed": false,
+    "source_exposure_admissions": 0,
+    "retained_benefit_gate": "NOT_MET"
+  },
+  "remaining": [
+    "Exact final-source native qualification and full CI",
+    "Startup, storage, Windows write/read and Mac zsh causes remain partly unresolved",
+    "Original owner and real effect state cold recovery",
+    "Original provider completion/settlement evidence",
+    "Typed source ownership/exposure and independent trust",
+    "New-source paired native actor benefit, strong controls, deletion, interference, full costs and slow consolidation"
+  ]
+}
+

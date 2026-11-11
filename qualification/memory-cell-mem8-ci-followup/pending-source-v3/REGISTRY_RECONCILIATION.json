@@ -1,0 +1,60 @@
+{
+  "schema": 1,
+  "original": {
+    "host": "ai395",
+    "limit": 128,
+    "cursor": "8dc50cb5fcb790a285bbd03939678d52e9dc47c0320c25dbb1eaf143dd155f2e:1a1a44ae122-fc05-eae",
+    "expected_snapshot_sha256": "2d7425c93347553bf7da606d4b43ba408837e5478a817186964ade5250dda2e1",
+    "expected_total": 7226,
+    "already_observed": 128,
+    "threshold_created_unix_ms": 1794394080000,
+    "requested_key": "mem8-integrated-repair-source-ai395-ed353817-v3"
+  },
+  "continuation_calls": 2,
+  "page_summaries": [
+    {
+      "call": 1,
+      "request_cursor": "8dc50cb5fcb790a285bbd03939678d52e9dc47c0320c25dbb1eaf143dd155f2e:1a1a44ae122-fc05-eae",
+      "result_sha256": "2c3243e2b430a7152c46a9533f7c9b5b6caebbed805de8f6a344a93b5bff24c7",
+      "result": {
+        "has_more": true,
+        "inventory_complete": false,
+        "jobs": [],
+        "next_cursor": "pending:4cc56a0bfff3b5701ac287e7506e28ebbb70d015ab470f762e4c9c4366e90874:0",
+        "observation_atomic": false,
+        "observation_deadline_seconds": 30,
+        "observation_started_unix_ms": null,
+        "observer_mode": "continuous_background",
+        "snapshot_semantics": "registry_metadata_at_observation",
+        "snapshot_sha256": null,
+        "status_authoritative": false,
+        "total": null,
+        "validation_pending": true
+      }
+    },
+    {
+      "call": 2,
+      "request_cursor": "pending:4cc56a0bfff3b5701ac287e7506e28ebbb70d015ab470f762e4c9c4366e90874:0",
+      "result_sha256": "b68de83b34488115bf74fe9515d190375754592787538b635dde1a35723bd7d0",
+      "isError": true,
+      "error": "durable inventory membership changed; restart from the first page"
+    }
+  ],
+  "retained_recent_jobs": [],
+  "status": "STOP_ORIGINAL_SNAPSHOT_ERROR",
+  "finished_at_utc": "2026-11-11T11:04:39.165Z",
+  "result": "UNKNOWN_ORIGINAL_REQUEST_ADMISSION_AND_TERMINAL_STATE",
+  "stop_reason": "Original snapshot continuation refused: durable inventory membership changed; restart from the first page. Fresh inventory explicitly not requested.",
+  "original_request_path": "/workspace/scratch/ed3538174819/mem8-repair-source-v3/ORIGINAL_REQUEST.json",
+  "original_run_root": "/home/qq/mem8-integrated-repair-source-ed353817-v3",
+  "original_bootstrap_markers": {
+    "source_gate_version": 3,
+    "source_paths": 92
+  },
+  "new_processes_started": 0,
+  "fresh_snapshots_requested": 0,
+  "new_job_rows_observed": 0,
+  "unrelated_job_identities_retained": 0,
+  "inventory_complete": false,
+  "original_first_page_supplied_by_parent_not_independently_read": true
+}
