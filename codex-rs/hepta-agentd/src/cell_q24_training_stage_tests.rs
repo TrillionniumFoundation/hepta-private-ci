@@ -409,7 +409,10 @@ async fn original_training_model_lane_distinguishes_missing_pending_and_no_updat
             let completion = stage
                 .execute_training(&f.config.dataset, Arc::new(AtomicBool::new(/*v*/ false)))
                 .await?;
-            assert!(matches!(completion.outcome, CellQ24TrainingOutcomeV1::NoUpdate { .. }));
+            assert!(matches!(
+                completion.outcome,
+                CellQ24TrainingOutcomeV1::NoUpdate { .. }
+            ));
         }
         let model_root = tempfile::tempdir()?;
         let result = stage.create_model_owner(
@@ -419,19 +422,21 @@ async fn original_training_model_lane_distinguishes_missing_pending_and_no_updat
         match state {
             State::Missing => assert!(matches!(
                 result,
-                Err(StageError::Receipt(ReceiptError::Training(OwnerError::Store(
-                    ProductEvaluationExecutionStoreErrorV1::Missing
-                ))))
+                Err(StageError::Receipt(ReceiptError::Training(
+                    OwnerError::Store(ProductEvaluationExecutionStoreErrorV1::Missing)
+                )))
             )),
             State::Pending => assert!(matches!(
                 result,
-                Err(StageError::Receipt(ReceiptError::Training(OwnerError::Pending)))
+                Err(StageError::Receipt(ReceiptError::Training(
+                    OwnerError::Pending
+                )))
             )),
             State::NoUpdate => assert!(matches!(
                 result,
-                Err(StageError::ModelProposal(crate::CellQ24ModelProposalErrorV1::Binding(
-                    "NoUpdate has no model proposal"
-                )))
+                Err(StageError::ModelProposal(
+                    crate::CellQ24ModelProposalErrorV1::Binding("NoUpdate has no model proposal")
+                ))
             )),
         }
         assert_eq!(fs::metadata(model_root.path().join("proposal"))?.len(), 0);

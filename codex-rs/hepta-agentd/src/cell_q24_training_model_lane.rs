@@ -92,7 +92,8 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
         let mut owners = self.owners.try_lock().map_err(|_| Error::CommitUncertain)?;
         let Owners { training, receipts } = &mut *owners;
         let training: &mut CellQ24TrainingOwnerV1<TW> = training;
-        training.require_original_dataset_scope(&receipts.config.dataset, &receipts.config.scope)?;
+        training
+            .require_original_dataset_scope(&receipts.config.dataset, &receipts.config.scope)?;
         let original = owners.read_original_completion()?;
         let result = work(&mut owners.training, &original);
         // The Model operation can block. Re-read both original owners before
@@ -114,7 +115,9 @@ fn require_original_training(
     if inputs.training_cut.receipts.last() != Some(&completed.receipt)
         || inputs.training_attestation != &completed.attestation
     {
-        return Err(Error::Binding("exact retained Training receipt and attestation"));
+        return Err(Error::Binding(
+            "exact retained Training receipt and attestation",
+        ));
     }
     Ok(())
 }

@@ -97,7 +97,9 @@ impl LaneFixture {
         &self,
         owner: &mut CellQ24ModelProposalOwnerV1<W>,
     ) -> Result<CellQ24ModelProposalReceiptV1, StageError> {
-        let request = self.evaluation.request(self.completed.receipt.observed_unix_seconds);
+        let request = self
+            .evaluation
+            .request(self.completed.receipt.observed_unix_seconds);
         self.stage.commit_model_or_readback(
             owner,
             &CellQ24ModelProposalInputsV1 {
@@ -115,7 +117,9 @@ impl LaneFixture {
         &self,
         owner: &mut CellQ24ModelProposalOwnerV1<W>,
     ) -> Result<CellQ24ModelProposalReceiptV1, StageError> {
-        let request = self.evaluation.request(self.completed.receipt.observed_unix_seconds);
+        let request = self
+            .evaluation
+            .request(self.completed.receipt.observed_unix_seconds);
         self.stage.read_model_proposal(
             owner,
             &CellQ24ModelProposalInputsV1 {
@@ -161,7 +165,9 @@ async fn original_training_model_lane_retains_custody_and_exact_generator_eviden
     )?;
     assert!(matches!(
         f.commit(&mut model),
-        Err(StageError::Binding("exact retained Training receipt and attestation"))
+        Err(StageError::Binding(
+            "exact retained Training receipt and attestation"
+        ))
     ));
     f.completed.attestation = original;
     assert!(matches!(

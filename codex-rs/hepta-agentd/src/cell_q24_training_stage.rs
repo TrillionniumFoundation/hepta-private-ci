@@ -191,10 +191,8 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
             let mut owners = owners.try_lock().map_err(|_| Error::CommitUncertain)?;
             let Owners { training, receipts } = &mut *owners;
             let training: &mut CellQ24TrainingOwnerV1<TW> = training;
-            training.require_original_dataset_scope(
-                &receipts.config.dataset,
-                &receipts.config.scope,
-            )?;
+            training
+                .require_original_dataset_scope(&receipts.config.dataset, &receipts.config.scope)?;
             work(&mut owners)
         })
         .await

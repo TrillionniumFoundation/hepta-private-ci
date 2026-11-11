@@ -247,10 +247,9 @@ impl LearningFixture {
         let profile = snapshot.request.evaluation_profile;
         // An actual original receipt can be issued after fixture construction.
         // Preserve the original trust while keeping evaluation after Training.
-        let now = snapshot
-            .receipts
-            .last()
-            .map_or(self.now, |receipt| self.now.max(receipt.observed_unix_seconds));
+        let now = snapshot.receipts.last().map_or(self.now, |receipt| {
+            self.now.max(receipt.observed_unix_seconds)
+        });
         Self::from_original_training(
             snapshot,
             self.context,
