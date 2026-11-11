@@ -67,12 +67,12 @@ The payload contains the decision type, original learning operation/head/source
 pins, a projection of the typed native learning observation and the exact
 retained intent. It also retains these native serde preimages as UTF-8 strings:
 
-| Field | Original value |
-| --- | --- |
-| `manifest_json` | Complete selected `CellBackendManifestV2` |
-| `previous_manifest_json` | Original predecessor manifest for an update; null for retained use |
-| `publication_json` | Actual `Published` intent, witness, public signed grant and grant digest |
-| `step_receipt_json` | Actual `CellGenerationReceiptV2` returned for the retained intent |
+| Field                         | Original value                                                               |
+| ----------------------------- | ---------------------------------------------------------------------------- |
+| `manifest_json`               | Complete selected `CellBackendManifestV2`                                    |
+| `previous_manifest_json`      | Original predecessor manifest for an update; null for retained use           |
+| `publication_json`            | Actual `Published` intent, witness, public signed grant and grant digest     |
+| `step_receipt_json`           | Actual `CellGenerationReceiptV2` returned for the retained intent            |
 | `generation_observation_json` | Complete `CellGenerationObservationV1`, including pending delivery and costs |
 
 `observation.kind` is `retained_model_next_use` for `retained_model`, with the
