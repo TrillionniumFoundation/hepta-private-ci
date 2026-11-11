@@ -66,6 +66,7 @@ fn sign(
 #[derive(Clone, Copy)]
 enum CandidateMutation {
     Missing,
+    MissingAbstain,
     Extra,
     Duplicate,
 }
@@ -201,6 +202,17 @@ impl Dataset {
                 .collect();
             match mutation {
                 Some(CandidateMutation::Missing) => {
+                    let index = candidates
+                        .iter()
+                        .position(|id| {
+                            id != &receipt.selected_candidate && id != &cell::id("abstain")
+                        })
+                        .expect("fixture has an unselected non-abstain candidate");
+                    let removed = candidates.remove(index);
+                    assert_ne!(removed, receipt.selected_candidate);
+                    assert_ne!(removed, cell::id("abstain"));
+                }
+                Some(CandidateMutation::MissingAbstain) => {
                     assert_eq!(candidates.pop(), Some(cell::id("abstain")));
                 }
                 Some(CandidateMutation::Extra) => {
@@ -551,6 +563,22 @@ async fn q24_dataset_rejects_missing_censored_wrong_units_and_untrusted_freeze()
             ))
         ));
     }
+    let missing_abstain_root = tempfile::tempdir()?;
+    let missing_abstain = Dataset::with_candidate_mutation(
+        missing_abstain_root.path(),
+        &[(&a, &publication, Some(0))],
+        OutcomeTerminalityV1::Terminal,
+        cell::d("fixture-target-unit"),
+        Some(CandidateMutation::MissingAbstain),
+    )
+    .err()
+    .expect("the original ledger rejects missing abstain before freezing");
+    assert!(matches!(
+        missing_abstain.downcast_ref::<ProductionLedgerError>(),
+        Some(ProductionLedgerError::Durable(
+            DurableLedgerError::Semantic(LedgerError::MissingAbstainCandidate)
+        ))
+    ));
     let duplicate_root = tempfile::tempdir()?;
     let duplicate = Dataset::with_candidate_mutation(
         duplicate_root.path(),
