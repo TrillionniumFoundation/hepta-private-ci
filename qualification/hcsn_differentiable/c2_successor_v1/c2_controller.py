@@ -124,6 +124,45 @@ def cost_totals(attempts, names):
         'terminal_evidence_scope': 'missing model evidence does not erase separately measured exit CPU or wall'}
 
 
+
+def strict_c2_json_object(path, *, max_bytes=16 * 1024 * 1024):
+    """Bound and decode every nested JSON object without duplicate-key ambiguity.
+
+    Byte/SHA identity is checked separately by the caller. A valid digest alone
+    cannot make NaN, overflow, or duplicate keys safe to interpret.
+    """
+    path = Path(path)
+    require(path.is_file() and not path.is_symlink() and not path.parent.is_symlink(),
+            'C2 JSON source missing, nonregular or symlinked')
+    require(0 < path.stat().st_size <= max_bytes, 'C2 JSON source size outside bound')
+    raw = path.read_bytes()
+    require(0 < len(raw) <= max_bytes, 'C2 JSON source read outside bound')
+
+    def exact_pairs(pairs):
+        values = {}
+        for key, value in pairs:
+            if key in values:
+                raise ValueError('duplicate C2 JSON key')
+            values[key] = value
+        return values
+
+    def finite_float(value):
+        number = float(value)
+        if not math.isfinite(number):
+            raise ValueError('nonfinite C2 JSON float')
+        return number
+
+    def reject_constant(value):
+        raise ValueError('nonfinite C2 JSON constant: ' + value)
+
+    try:
+        decoded = json.loads(raw, object_pairs_hook=exact_pairs,
+                             parse_float=finite_float, parse_constant=reject_constant)
+    except (ValueError, UnicodeError, RecursionError, OverflowError) as exc:
+        require(False, 'C2 JSON source has ambiguous or malformed content')
+    require(type(decoded) is dict, 'C2 JSON root must be an object')
+    return decoded
+
 def terminal_result_gate(row, path, parent, contract):
     """An exit code cannot substitute for an identified, complete success artifact.
 
@@ -135,13 +174,13 @@ def terminal_result_gate(row, path, parent, contract):
         path = Path(path)
         require(path.is_file() and not path.is_symlink(), 'terminal result file missing/nonregular')
         output['result'] = identity(path)
-        result = json.loads(path.read_bytes())
+        result = strict_c2_json_object(path)
         require(isinstance(result, dict), 'terminal result JSON is not an object')
         parent_dir = Path(contract['parent_campaign']) / parent['name']
         parent_result = parent_dir / 'result.json'
         parent_identity = identity(parent_result)
         require(parent_identity['sha256'] == parent['result_sha256'], 'original parent report changed')
-        prior = json.loads(parent_result.read_bytes())
+        prior = strict_c2_json_object(parent_result)
         require(result.get('schema') == 'hcsn-c2-soft-wall-continuation-v1'
                 and result.get('production_execution') is True
                 and result.get('confirmation_access') is False
@@ -274,7 +313,7 @@ def run_controller(args):
     try:
         program_inputs = bind_program(args.program_manifest)
         require(str(Path(args.contract).resolve()) in program_inputs, 'controller contract not in frozen manifest')
-        contract = json.loads(Path(args.contract).read_bytes())
+        contract = strict_c2_json_object(args.contract)
         require(contract['execution_authorized'] is False, 'candidate contract must retain its original preparation status')
         require(contract['maximum_epochs'] == 200 and contract['cumulative_active_wall_seconds'] == 43200
                 and contract['workers'] <= 6 and contract['threads'] == 1
@@ -286,11 +325,11 @@ def run_controller(args):
         parent_plan = Path(contract['parent_campaign_plan'])
         require(sha(parent_plan) == contract['parent_campaign_plan_sha256'], 'original campaign plan differs')
         program_inputs[str(parent_plan)] = identity(parent_plan)
-        require(runtime_identity() == json.loads(Path(contract['runtime_identity_path']).read_bytes()),
+        require(runtime_identity() == strict_c2_json_object(contract['runtime_identity_path']),
                 'controller runtime differs from original training')
         require(sha(contract['runtime_identity_path']) == contract['runtime_identity_sha256'], 'runtime receipt differs')
         program_inputs[contract['runtime_identity_path']] = identity(contract['runtime_identity_path'])
-        parents = verify_roster(contract, json.loads(parent_result.read_bytes()))
+        parents = verify_roster(contract, strict_c2_json_object(parent_result))
         names = [p['name'] for p in parents]
         report['contract'] = identity(args.contract)
         report['candidate_names'] = names
