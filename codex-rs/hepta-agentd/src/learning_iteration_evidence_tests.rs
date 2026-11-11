@@ -263,25 +263,26 @@ pub(crate) fn fixture_original_receipt_client_until_close(
         verifier,
         signature,
     };
-    let (client, mut server) = fixture.client()?;
+    let (client, mut channel) = fixture.original_owner_client()?;
     let expected = fixture.signature.payload_digest.to_string();
     let peer = std::thread::spawn(move || -> anyhow::Result<usize> {
         for index in 0..128 {
-            let request = match read_request(&mut server) {
-                Ok(request) => request,
-                Err(error)
-                    if error
-                        .downcast_ref::<std::io::Error>()
-                        .is_some_and(|io| io.kind() == std::io::ErrorKind::UnexpectedEof) =>
-                {
-                    return Ok(index);
-                }
-                Err(error) => return Err(error),
-            };
-            assert_eq!(request.request_id, index as u64 + 1);
-            assert_eq!(request.operation, wire::OPERATION);
-            assert_eq!(request.receipt_digest, expected);
-            reply(&mut server, &response(request, fixture.evidence()))?;
+            let exchanged = channel.exchange(|bytes| {
+                let request: wire::Request = serde_json::from_slice(bytes)
+                    .map_err(|_| codex_hepta_contracts::HostIssuerTransportError::InvalidRequest)?;
+                assert_eq!(request.request_id, index as u64 + 1);
+                assert_eq!(request.operation, wire::OPERATION);
+                assert_eq!(request.receipt_digest, expected);
+                let encoded = serde_json::to_value(&request)
+                    .map_err(|_| codex_hepta_contracts::HostIssuerTransportError::InvalidRequest)?;
+                assert!(encoded.get("payload").is_none());
+                assert!(encoded.get("signature").is_none());
+                serde_json::to_vec(&response(request, fixture.evidence()))
+                    .map_err(|_| codex_hepta_contracts::HostIssuerTransportError::Unavailable)
+            })?;
+            if !exchanged {
+                return Ok(index);
+            }
         }
         anyhow::bail!("bounded original evidence fixture exceeded its request budget")
     });

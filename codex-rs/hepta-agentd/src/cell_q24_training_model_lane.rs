@@ -90,7 +90,13 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
             .try_acquire_owned()
             .map_err(|_| Error::Busy)?;
         let mut owners = self.owners.try_lock().map_err(|_| Error::CommitUncertain)?;
-        let Owners { training, receipts } = &mut *owners;
+        #[cfg(target_os = "linux")]
+        if owners.source_fenced {
+            return Err(Error::CommitUncertain);
+        }
+        let Owners {
+            training, receipts, ..
+        } = &mut *owners;
         let training: &mut CellQ24TrainingOwnerV1<TW> = training;
         training
             .require_original_dataset_scope(&receipts.config.dataset, &receipts.config.scope)?;
@@ -100,13 +106,32 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
         let result = work(&mut owners.training, &original);
         // The Model operation can block. Re-read both original owners before
         // returning even an error; never renew a signature or retry a claim.
-        let current = owners
-            .read_original_completion()
-            .map_err(|_| Error::CommitUncertain)?;
         #[cfg(target_os = "linux")]
-        CellQ24TrainingOwnerV1::require_live_source_if_captured(&mut owners.training)
-            .map_err(|_| Error::CommitUncertain)?;
+        let source_bound =
+            CellQ24TrainingOwnerV1::require_live_source_if_captured(&mut owners.training)
+                .map_err(|_| Error::CommitUncertain)?;
+        let current = owners.read_original_completion().map_err(|_| {
+            #[cfg(target_os = "linux")]
+            if source_bound {
+                owners.source_fenced = true;
+            }
+            Error::CommitUncertain
+        })?;
+        #[cfg(target_os = "linux")]
+        if source_bound {
+            if owners
+                .require_retained_attestation_current(&current)
+                .is_err()
+            {
+                owners.source_fenced = true;
+                return Err(Error::CommitUncertain);
+            }
+        }
         if current.receipt != original.receipt || current.attestation != original.attestation {
+            #[cfg(target_os = "linux")]
+            if source_bound {
+                owners.source_fenced = true;
+            }
             return Err(Error::CommitUncertain);
         }
         result

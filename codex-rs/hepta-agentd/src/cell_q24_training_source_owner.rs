@@ -119,11 +119,15 @@ impl<W: AnchorWitnessStore> CellQ24TrainingOwnerV1<W> {
         Ok(())
     }
 
-    pub(crate) fn require_live_source_if_captured(&mut self) -> Result<(), Error> {
+    /// True identifies an actual private capture after this fresh read. It is
+    /// not a cached authorization and cannot be supplied by a command caller.
+    pub(crate) fn require_live_source_if_captured(&mut self) -> Result<bool, Error> {
         if self.source.is_some() {
             self.require_original_source_capture()?;
+            Ok(true)
+        } else {
+            Ok(false)
         }
-        Ok(())
     }
 }
 

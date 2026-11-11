@@ -121,6 +121,9 @@ class OriginalTrainingSourceCaptureClosureTests(unittest.TestCase):
 
     def test_existing_native_and_model_lanes_keep_live_checks_before_return(self):
         self.rejects(NATIVE, "fn fit_or_readback(", "self.require_live_source_if_captured()?")
+        self.rejects(STAGE, "fn require_captured_tail_current(", "self.read_original_completion()?")
+        self.rejects(STAGE, "fn require_captured_tail_current(", "self.require_retained_attestation_current(&completed)?")
+        self.rejects(STAGE, "fn require_retained_attestation_current(", "super::now()")
         self.rejects(STAGE, "fn execute_training(", "training.require_live_source_if_captured()?")
         self.rejects(STAGE, "fn execute_training(", "fresh_now >= dataset.request.envelope.expiry_unix_seconds")
         for path, function in ((STAGE, "fn in_lane<"), (MODEL, "fn in_model_lane<")):

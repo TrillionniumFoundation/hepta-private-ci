@@ -61,6 +61,8 @@ pub struct OriginalCellQ24TrainingCompletionV1 {
 struct Owners<TW: AnchorWitnessStore, RW: AnchorWitnessStore> {
     training: CellQ24TrainingOwnerV1<TW>,
     receipts: OriginalCellQ24TrainingReceiptOwnerV1<RW>,
+    #[cfg(target_os = "linux")]
+    source_fenced: bool,
 }
 
 pub struct OriginalCellQ24TrainingStageV1<TW: AnchorWitnessStore, RW: AnchorWitnessStore> {
@@ -79,7 +81,12 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
     ) -> Result<Self, Error> {
         let stage = Self {
             dataset: receipts.config.dataset.clone(),
-            owners: Arc::new(Mutex::new(Owners { training, receipts })),
+            owners: Arc::new(Mutex::new(Owners {
+                training,
+                receipts,
+                #[cfg(target_os = "linux")]
+                source_fenced: false,
+            })),
             lane: Arc::new(Semaphore::new(/*permits*/ 1)),
         };
         stage
@@ -121,7 +128,7 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
                         let training: &mut CellQ24TrainingOwnerV1<TW> = &mut owners.training;
                         let receipts: &mut OriginalCellQ24TrainingReceiptOwnerV1<RW> =
                             &mut owners.receipts;
-                        let retained_outcome = match training.readback() {
+                        let retained_outcome = match CellQ24TrainingOwnerV1::readback(training) {
                             Ok(outcome) => Some(outcome),
                             Err(CellQ24TrainingOwnerErrorV1::Store(
                                 ProductEvaluationExecutionStoreErrorV1::Missing,
@@ -226,7 +233,13 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
         tokio::task::spawn_blocking(move || {
             let _permit = permit;
             let mut owners = owners.try_lock().map_err(|_| Error::CommitUncertain)?;
-            let Owners { training, receipts } = &mut *owners;
+            #[cfg(target_os = "linux")]
+            if owners.source_fenced {
+                return Err(Error::CommitUncertain);
+            }
+            let Owners {
+                training, receipts, ..
+            } = &mut *owners;
             let training: &mut CellQ24TrainingOwnerV1<TW> = training;
             training
                 .require_original_dataset_scope(&receipts.config.dataset, &receipts.config.scope)?;
@@ -236,8 +249,14 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
             // Work or its acknowledgement may already have happened. A failed
             // tail read cannot return a candidate, NoUpdate, or fresh signature.
             #[cfg(target_os = "linux")]
-            CellQ24TrainingOwnerV1::require_live_source_if_captured(&mut owners.training)
-                .map_err(|_| Error::CommitUncertain)?;
+            if CellQ24TrainingOwnerV1::require_live_source_if_captured(&mut owners.training)
+                .map_err(|_| Error::CommitUncertain)?
+            {
+                if owners.require_captured_tail_current().is_err() {
+                    owners.source_fenced = true;
+                    return Err(Error::CommitUncertain);
+                }
+            }
             result
         })
         .await
@@ -248,12 +267,62 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
 impl<TW: AnchorWitnessStore, RW: AnchorWitnessStore> Owners<TW, RW> {
     fn read_original_completion(&mut self) -> Result<OriginalCellQ24TrainingCompletionV1, Error> {
         let training: &mut CellQ24TrainingOwnerV1<TW> = &mut self.training;
-        let (receipt, attestation) = self.receipts.readback(training)?;
-        let outcome = training.readback()?;
+        let (receipt, attestation) =
+            OriginalCellQ24TrainingReceiptOwnerV1::readback(&mut self.receipts, training)?;
+        let outcome = CellQ24TrainingOwnerV1::readback(training)?;
         Ok(OriginalCellQ24TrainingCompletionV1 {
             outcome,
             receipt,
             attestation,
         })
+    }
+
+    /// A source RPC can block after work finishes. Re-read both original owners
+    /// after that RPC without claiming Missing or retrying Pending. Any failure
+    /// is handled by the occupied lane as an uncertain completion.
+    #[cfg(target_os = "linux")]
+    fn require_captured_tail_current(&mut self) -> Result<(), Error> {
+        self.training.require_original_dataset_scope(
+            &self.receipts.config.dataset,
+            &self.receipts.config.scope,
+        )?;
+        match self.receipts.journal.read(&self.receipts.saved) {
+            Ok(_) => {
+                let completed = self.read_original_completion()?;
+                self.require_retained_attestation_current(&completed)?;
+            }
+            Err(
+                LearningOriginalOwnerErrorV1::Store(
+                    ProductEvaluationExecutionStoreErrorV1::Missing,
+                )
+                | LearningOriginalOwnerErrorV1::Pending,
+            ) => {}
+            Err(error) => return Err(OriginalCellQ24TrainingReceiptErrorV1::from(error).into()),
+        }
+        Ok(())
+    }
+
+    /// Keep the original signature window valid after all blocking tail reads.
+    /// This verifies the exact retained bytes; it never signs or extends time.
+    #[cfg(target_os = "linux")]
+    fn require_retained_attestation_current(
+        &self,
+        completed: &OriginalCellQ24TrainingCompletionV1,
+    ) -> Result<(), Error> {
+        let payload = codex_hepta_learning_artifacts::learning_iteration_receipt_signing_bytes_v1(
+            &completed.receipt,
+        )
+        .map_err(OriginalCellQ24TrainingReceiptErrorV1::from)?;
+        self.receipts
+            .config
+            .verifier
+            .verify(
+                LearningEvidenceRoleV1::Generator,
+                &completed.attestation,
+                &payload,
+                super::now().map_err(OriginalCellQ24TrainingReceiptErrorV1::from)?,
+            )
+            .map_err(OriginalCellQ24TrainingReceiptErrorV1::from)?;
+        Ok(())
     }
 }

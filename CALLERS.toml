@@ -3461,11 +3461,11 @@ forbidden = ["SigningKey", "File::open", "UnixStream::connect", ".sign(", ".clai
 required_order = [["async fn in_lane<T:", "let permit = Arc::clone(&self.lane)", ".try_acquire_owned()", "Error::Busy", "tokio::task::spawn_blocking(move ||", "let _permit = permit;", "owners.try_lock()", "training\n                .require_original_dataset_scope(&receipts.config.dataset, &receipts.config.scope)?", "work(&mut owners)"]]
 required_function_order = [
   { function = "fn from_original_owners(", sequence = ["dataset: receipts.config.dataset.clone()", "stage", ".in_lane(", "super::validate_config(", "owners.receipts.journal.read(&owners.receipts.saved)", "Ok(_) => owners.read_original_completion().map(|_| ())", "ProductEvaluationExecutionStoreErrorV1::Missing", "Ok(stage)"], top_level = [] },
-  { function = "fn execute_training(", sequence = ["self.require_dataset(dataset)?", ".in_lane(", "owners.receipts.journal.read(&owners.receipts.saved)", "Ok(_) => owners", "Err(LearningOriginalOwnerErrorV1::Store(", "ProductEvaluationExecutionStoreErrorV1::Missing", "let retained_outcome = match training.readback()", "Ok(outcome) => Some(outcome)", "Err(CellQ24TrainingOwnerErrorV1::Store(", "ProductEvaluationExecutionStoreErrorV1::Missing", ")) => None", "Err(error) => return Err(error.into())", "super::now()", ".require_signer_binding(", "LearningEvidenceRoleV1::Generator", "if now >= receipts.config.dataset.request.envelope.expiry_unix_seconds", "return Err(Error::DeadlineExceeded)", "let outcome = match retained_outcome", "Some(outcome) => outcome", "None => training.fit_or_readback(&cancellation)?", "receipts.attest_original_completion(training)?"], top_level = ["self.require_dataset(dataset)?;"] },
+  { function = "fn execute_training(", sequence = ["self.require_dataset(dataset)?", ".in_lane(", "owners.receipts.journal.read(&owners.receipts.saved)", "Ok(_) => owners", "Err(LearningOriginalOwnerErrorV1::Store(", "ProductEvaluationExecutionStoreErrorV1::Missing", "let retained_outcome = match CellQ24TrainingOwnerV1::readback(training)", "Ok(outcome) => Some(outcome)", "Err(CellQ24TrainingOwnerErrorV1::Store(", "ProductEvaluationExecutionStoreErrorV1::Missing", ")) => None", "Err(error) => return Err(error.into())", "super::now()", ".require_signer_binding(", "LearningEvidenceRoleV1::Generator", "if now >= receipts.config.dataset.request.envelope.expiry_unix_seconds", "return Err(Error::DeadlineExceeded)", "let outcome = match retained_outcome", "Some(outcome) => outcome", "None => training.fit_or_readback(&cancellation)?", "receipts.attest_original_completion(training)?"], top_level = ["self.require_dataset(dataset)?;"] },
   { function = "fn readback(", sequence = ["self.require_dataset(dataset)?", "self.in_lane(Owners::read_original_completion).await"], top_level = ["self.require_dataset(dataset)?;"] },
   { function = "fn receipt_attestation(", sequence = ["OriginalCellQ24TrainingStageV1::readback(self, dataset).await?", "if &completed.receipt != expected", "return Err(Error::Binding(", "Ok(completed.attestation)"], top_level = ["let completed = OriginalCellQ24TrainingStageV1::readback(self, dataset).await?;", "if &completed.receipt != expected"] },
   { function = "fn require_dataset(", sequence = ["if dataset != &self.dataset", "return Err(Error::Binding(", "Ok(())"], top_level = ["if dataset != &self.dataset"] },
-  { function = "fn read_original_completion(", sequence = ["self.receipts.readback(training)?", "training.readback()?", "Ok(OriginalCellQ24TrainingCompletionV1"], top_level = [] },
+  { function = "fn read_original_completion(", sequence = ["OriginalCellQ24TrainingReceiptOwnerV1::readback(&mut self.receipts, training)?", "CellQ24TrainingOwnerV1::readback(training)?", "Ok(OriginalCellQ24TrainingCompletionV1"], top_level = [] },
 ]
 
 
@@ -3690,7 +3690,7 @@ required_order = [
   ["fn recover_model_owner<", "self.in_model_lane(", "CellQ24ModelProposalOwnerV1::recover(file, witness, training, self.dataset.clone())"],
   ["fn commit_model_or_readback<", "self.in_model_lane(", "require_original_training(inputs, completed)?", "CellQ24ModelProposalOwnerV1::commit_or_readback(model, training, inputs)"],
   ["fn read_model_proposal<", "self.in_model_lane(", "require_original_training(inputs, completed)?", "CellQ24ModelProposalOwnerV1::readback(model, training, inputs)"],
-  ["fn in_model_lane<T>", "let _permit = Arc::clone(&self.lane)", ".try_acquire_owned()", "Error::Busy", "self.owners.try_lock()", "Error::CommitUncertain", "training\n            .require_original_dataset_scope(&receipts.config.dataset, &receipts.config.scope)?", "let original = owners.read_original_completion()?", "let result = work(&mut owners.training, &original)", "let current = owners", ".read_original_completion()", ".map_err(|_| Error::CommitUncertain)?", "if current.receipt != original.receipt || current.attestation != original.attestation", "return Err(Error::CommitUncertain)", "result"],
+  ["fn in_model_lane<T>", "let _permit = Arc::clone(&self.lane)", ".try_acquire_owned()", "Error::Busy", "self.owners.try_lock()", "Error::CommitUncertain", "training\n            .require_original_dataset_scope(&receipts.config.dataset, &receipts.config.scope)?", "let original = owners.read_original_completion()?", "let result = work(&mut owners.training, &original)", "let current = owners", ".read_original_completion().map_err(", "Error::CommitUncertain", "if current.receipt != original.receipt || current.attestation != original.attestation", "return Err(Error::CommitUncertain)", "result"],
 ]
 required_function_order = [
   { function = "fn require_original_training(", sequence = ["if inputs.training_cut.receipts.last() != Some(&completed.receipt)", "|| inputs.training_attestation != &completed.attestation", "return Err(Error::Binding(", "Ok(())"], top_level = ["if inputs.training_cut.receipts.last() != Some(&completed.receipt)", "Ok(())"] },
@@ -4184,7 +4184,7 @@ top_level = []
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/cell_q24_training_source_owner.rs"
-required = ["source: Some(source)","hepta.cell.q24.original-source-training-job.v1\\0"]
+required = ["source: Some(source)","hepta.cell.q24.original-source-training-job.v1\\0","ordinary Training requires original source capture"]
 forbidden = ["SigningKey",".sign(","File::open","UnixStream::connect","FrozenLearningScopeV2::freeze(","unwrap_or","permit_all","if false"]
 
 [[protected_file.required_function_order]]
@@ -4204,12 +4204,12 @@ top_level = []
 
 [[protected_file.required_function_order]]
 function = "fn require_original_source_capture("
-sequence = ["if self.fenced","return Err(Error::CommitUncertain)","let result = self",".source",".as_ref()","ordinary Training requires original source capture","OriginalCellQ24TrainingSourceV1::require_current_in_lane(source)","if result.is_err()","self.fenced = true","result"]
+sequence = ["if self.fenced","return Err(Error::CommitUncertain)","let result = self",".source",".as_ref()",".ok_or(Error::Binding(","OriginalCellQ24TrainingSourceV1::require_current_in_lane(source)","if result.is_err()","self.fenced = true","result"]
 top_level = []
 
 [[protected_file.required_function_order]]
 function = "fn require_live_source_if_captured("
-sequence = ["if self.source.is_some()","self.require_original_source_capture()?","Ok(())"]
+sequence = ["if self.source.is_some()","self.require_original_source_capture()?","Ok(true)","Ok(false)"]
 top_level = []
 
 [[protected_file.required_function_order]]
@@ -4259,7 +4259,7 @@ forbidden = []
 
 [[protected_file.required_function_order]]
 function = "fn fit_or_readback("
-sequence = ["self.require_current()?","self.require_live_source_if_captured()?","self.require_captured_work_deadline()?","self.journal.claim(&self.key)?","self.plan.fit(self.batch.clone(), self.rule, cancellation)?","self.require_live_source_if_captured()?","self.require_captured_work_deadline()?","self.journal.complete(&self.key, &payload)?"]
+sequence = ["self.require_current()?","self.require_live_source_if_captured()?","self.require_current()?","self.require_captured_work_deadline()?","self.journal.claim(&self.key)?","self.plan.fit(self.batch.clone(), self.rule, cancellation)?","self.require_live_source_if_captured()?","self.require_current()?","self.require_captured_work_deadline()?","self.journal.complete(&self.key, &payload)?"]
 top_level = []
 
 [[protected_file]]
@@ -4269,7 +4269,7 @@ forbidden = []
 
 [[protected_file.required_function_order]]
 function = "fn execute_training("
-sequence = ["let operation_started_at","let (completed, new_work_started_at)","let outcome = match retained_outcome","training.require_live_source_if_captured()?","let fresh_now","fresh_now < now","receipts.attest_original_completion(training)?","if let Some(started_at) = new_work_started_at","fresh_now >= dataset.request.envelope.expiry_unix_seconds","return Err(Error::CommitUncertain)","Ok(completed)"]
+sequence = ["let operation_started_at","super::now()","let (completed, new_work_started_at)","let outcome = match retained_outcome","training.require_live_source_if_captured()?","let fresh_now","fresh_now < now","receipts.attest_original_completion(training)?","if let Some(started_at) = new_work_started_at","fresh_now >= dataset.request.envelope.expiry_unix_seconds","return Err(Error::CommitUncertain)","Ok(completed)"]
 top_level = []
 
 [[protected_file]]
@@ -4287,7 +4287,7 @@ required = []
 forbidden = []
 [[protected_file.required_function_order]]
 function = "fn fit_or_readback("
-sequence = ["if self.source.is_some()", "self.require_live_source_if_captured()?", "match self.journal.readback(&self.key)", "Ok(state) => return self.decode_state(state)", "Err(ProductEvaluationExecutionStoreErrorV1::Missing)", "self.require_captured_work_deadline()?", "Err(error) => return Err(error.into())", "match self.journal.claim(&self.key)?"]
+sequence = ["if self.source.is_some()", "self.require_live_source_if_captured()?", "self.require_current()?", "match self.journal.readback(&self.key)", "Ok(state) => return self.decode_state(state)", "Err(ProductEvaluationExecutionStoreErrorV1::Missing)", "self.require_captured_work_deadline()?", "Err(error) => return Err(error.into())", "match self.journal.claim(&self.key)?"]
 top_level = ["if self.source.is_some()"]
 
 [[protected_file]]
@@ -4304,10 +4304,26 @@ top_level = []
 path = "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs"
 required = []
 forbidden = []
-required_order = [["async fn in_lane<T:","training.require_live_source_if_captured()?","let result = work(&mut owners)","CellQ24TrainingOwnerV1::require_live_source_if_captured(&mut owners.training)",".map_err(|_| Error::CommitUncertain)?","result"]]
+required_order = [["async fn in_lane<T:","training.require_live_source_if_captured()?","let result = work(&mut owners)","if CellQ24TrainingOwnerV1::require_live_source_if_captured(&mut owners.training)",".map_err(|_| Error::CommitUncertain)?","if owners.require_captured_tail_current().is_err()","owners.source_fenced = true","return Err(Error::CommitUncertain)","result"]]
+required_function_order = [
+  { function = "fn require_captured_tail_current(", sequence = [".require_original_dataset_scope(&self.receipts.config.dataset, &self.receipts.config.scope)?", "match self.receipts.journal.read(&self.receipts.saved)", "Ok(_) =>", "self.read_original_completion()?", "self.require_retained_attestation_current(&completed)?", "ProductEvaluationExecutionStoreErrorV1::Missing", "LearningOriginalOwnerErrorV1::Pending", "Err(error) => return Err(OriginalCellQ24TrainingReceiptErrorV1::from(error).into())", "Ok(())"] },
+  { function = "fn require_retained_attestation_current(", sequence = ["learning_iteration_receipt_signing_bytes_v1(", "&completed.receipt", "self.receipts", ".verifier", ".verify(", "LearningEvidenceRoleV1::Generator", "&completed.attestation", "&payload", "super::now()", ".map_err(OriginalCellQ24TrainingReceiptErrorV1::from)?", "Ok(())"] },
+]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs"
 required = []
 forbidden = []
-required_order = [["fn in_model_lane<T>","training.require_live_source_if_captured()?","let original = owners.read_original_completion()?","let result = work(&mut owners.training, &original)","let current = owners","CellQ24TrainingOwnerV1::require_live_source_if_captured(&mut owners.training)",".map_err(|_| Error::CommitUncertain)?","current.receipt != original.receipt || current.attestation != original.attestation","result"]]
+required_order = [["fn in_model_lane<T>","training.require_live_source_if_captured()?","let original = owners.read_original_completion()?","let result = work(&mut owners.training, &original)","let source_bound","CellQ24TrainingOwnerV1::require_live_source_if_captured(&mut owners.training)",".map_err(|_| Error::CommitUncertain)?","let current = owners",".read_original_completion().map_err(","if source_bound","owners.source_fenced = true","Error::CommitUncertain","if source_bound","owners.require_retained_attestation_current(&current).is_err()","owners.source_fenced = true","return Err(Error::CommitUncertain)","current.receipt != original.receipt || current.attestation != original.attestation","result"]]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs"
+required = ["source_fenced: bool", "source_fenced: false"]
+forbidden = []
+required_order = [["async fn in_lane<T:", "owners.try_lock()", "if owners.source_fenced", "return Err(Error::CommitUncertain)", "let result = work(&mut owners)", "if owners.require_captured_tail_current().is_err()", "owners.source_fenced = true", "return Err(Error::CommitUncertain)"]]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs"
+required = []
+forbidden = []
+required_order = [["fn in_model_lane<T>", "self.owners.try_lock()", "if owners.source_fenced", "return Err(Error::CommitUncertain)", "let original = owners.read_original_completion()?", "let current = owners", "if source_bound", "owners.source_fenced = true", "owners.require_retained_attestation_current(&current)", "owners.source_fenced = true", "return Err(Error::CommitUncertain)"]]

@@ -174,6 +174,9 @@ impl<W: AnchorWitnessStore> CellQ24TrainingOwnerV1<W> {
         #[cfg(target_os = "linux")]
         if self.source.is_some() {
             self.require_live_source_if_captured()?;
+            // The original source/evidence reads can block. Revalidate the
+            // locked native journal before using any cached operation state.
+            self.require_current()?;
             match self.journal.readback(&self.key) {
                 Ok(state) => return self.decode_state(state),
                 Err(ProductEvaluationExecutionStoreErrorV1::Missing) => {
@@ -194,9 +197,9 @@ impl<W: AnchorWitnessStore> CellQ24TrainingOwnerV1<W> {
         self.decode(&payload)?;
         #[cfg(target_os = "linux")]
         self.require_live_source_if_captured()?;
+        self.require_current()?;
         #[cfg(target_os = "linux")]
         self.require_captured_work_deadline()?;
-        self.require_current()?;
         let before = anchor(self.journal.anchor());
         self.journal.complete(&self.key, &payload)?;
         self.anchor_append(before)?;
