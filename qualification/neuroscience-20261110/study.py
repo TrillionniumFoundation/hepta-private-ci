@@ -367,6 +367,13 @@ def paired_evidence(rows: Iterable[TrialRow]) -> dict:
     retention_diffs_by_seed: dict[int, list[float]] = {}
     seen_receipts: set[str] = set()
     all_independent = True
+    # The evaluator and offered resource ceilings are pre-registered once per
+    # task family. Within-arm matching alone cannot prevent each new training
+    # seed or episode from silently switching the scoring rule or opportunity.
+    # Different task families may use different locked contracts; trained
+    # model/ability digests may legitimately differ between seeds.
+    frozen_evaluators: dict[str, str] = {}
+    frozen_opportunities: dict[str, tuple[int, int, int, int]] = {}
     for (episode_id, seed, family), block in keys.items():
         if set(block) != set(ARMS):
             raise ContractError("missing matched arm")
@@ -384,6 +391,16 @@ def paired_evidence(rows: Iterable[TrialRow]) -> dict:
             if row.outcome_receipt_digest in seen_receipts:
                 raise ContractError("reused outcome receipt across trial arms or blocks")
             seen_receipts.add(row.outcome_receipt_digest)
+        evaluator = ref.evaluator_digest
+        if family in frozen_evaluators and evaluator != frozen_evaluators[family]:
+            raise ContractError("unfrozen evaluator within task family")
+        frozen_evaluators[family] = evaluator
+        opportunity = (ref.feedback_budget_bits, ref.query_budget,
+                       ref.training_budget, ref.compute_budget_us)
+        if (family in frozen_opportunities
+                and opportunity != frozen_opportunities[family]):
+            raise ContractError("unfrozen resource opportunity within task family")
+        frozen_opportunities[family] = opportunity
         all_independent &= all(row.evaluator_independent for row in block.values())
         shuffled = block["shuffled"]
         net_diffs_by_seed.setdefault(seed, []).append(
