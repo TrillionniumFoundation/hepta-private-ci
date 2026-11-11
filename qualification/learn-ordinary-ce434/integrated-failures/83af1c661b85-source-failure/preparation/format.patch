@@ -1,0 +1,50 @@
+diff --git a/codex-rs/hepta-agentd/src/cell_q24_material_pair_readback.rs b/codex-rs/hepta-agentd/src/cell_q24_material_pair_readback.rs
+index aa1ec5f0..be5d6172 100644
+--- a/codex-rs/hepta-agentd/src/cell_q24_material_pair_readback.rs
++++ b/codex-rs/hepta-agentd/src/cell_q24_material_pair_readback.rs
+@@ -17,7 +17,10 @@ impl<EW: AnchorWitnessStore, DW: AnchorWitnessStore>
+         &mut self,
+         mut sources: OriginalCellQ24MaterialReceiptSourcesV1<'_, impl AnchorWitnessStore>,
+     ) -> Result<
+-        (OriginalCellQ24MaterialCompletionV1, OriginalCellQ24MaterialCompletionV1),
++        (
++            OriginalCellQ24MaterialCompletionV1,
++            OriginalCellQ24MaterialCompletionV1,
++        ),
+         Error,
+     > {
+         let started_at = binding::now()?;
+diff --git a/codex-rs/hepta-agentd/src/cell_q24_material_source_service.rs b/codex-rs/hepta-agentd/src/cell_q24_material_source_service.rs
+index 7e5ef12f..9b4db7d8 100644
+--- a/codex-rs/hepta-agentd/src/cell_q24_material_source_service.rs
++++ b/codex-rs/hepta-agentd/src/cell_q24_material_source_service.rs
+@@ -114,18 +114,17 @@ impl<EW: AnchorWitnessStore, DW: AnchorWitnessStore, SW: AnchorWitnessStore>
+             .try_lock()
+             .map_err(|_| Error::Owner(OriginalCellQ24MaterialEvidenceErrorV1::Unavailable))?;
+         let original: &mut OriginalCellQ24MaterialReceiptOwnersV1<EW, DW> = &mut owners;
+-        let (experience, dataset) =
+-            OriginalCellQ24MaterialReceiptOwnersV1::readback_material_pair(
+-                original,
+-                OriginalCellQ24MaterialReceiptSourcesV1 {
+-                    snapshot: &self.config.initial,
+-                    source: &self.source,
+-                    identity: &self.identity,
+-                    ledger: &mut ledger,
+-                    baseline: &self.baseline,
+-                },
+-            )
+-            .map_err(OriginalCellQ24MaterialEvidenceErrorV1::Material)?;
++        let (experience, dataset) = OriginalCellQ24MaterialReceiptOwnersV1::readback_material_pair(
++            original,
++            OriginalCellQ24MaterialReceiptSourcesV1 {
++                snapshot: &self.config.initial,
++                source: &self.source,
++                identity: &self.identity,
++                ledger: &mut ledger,
++                baseline: &self.baseline,
++            },
++        )
++        .map_err(OriginalCellQ24MaterialEvidenceErrorV1::Material)?;
+         // No wire encoding or socket I/O occurs under either original lock.
+         drop(ledger);
+         drop(owners);
