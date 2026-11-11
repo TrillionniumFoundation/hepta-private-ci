@@ -1,302 +1,23 @@
 {
-  "schema": "hepta.mem8.owner-followup.v1",
-  "date_utc": "2026-11-11",
-  "predecessor": {
-    "source_commit": "adef61556284cc5b58c4f23a33d7c8455e821c3f",
-    "path": "qualification/memory-cell-mem7/read-freshness-20261110/BLOCKERS.json"
-  },
-  "common_source": {
-    "commit": "96038ccf0660154fac143ba6cbe4be81e00813e8",
-    "tree": "1277666f3285cdf006d36478e6f74ddec38e1fe0",
-    "pr": 5873
-  },
-  "scientific_acceptance": "HOLD",
-  "production_adoption": false,
   "adoption_action": "NoUpdate",
-  "new_real_actor_episodes": 0,
-  "closed_this_followup": [
-    {
-      "id": "HOSTED-MEM-COMMON-SOURCE",
-      "status": "PASSED",
-      "scope": "Two hosted MEM jobs on exact common source: nine groups, 154 execution observations, 120 distinct test IDs, 34 repeated observations, zero failures or skips. This is not whole-repository CI or a new model experiment."
-    },
-    {
-      "id": "HOSTED-MEM-RAW-EVIDENCE",
-      "status": "PUBLISHED_AND_READ_BACK",
-      "scope": "PR 5889 retains the original CI artifacts/logs and reproducible audits; both archive files were read back byte-for-byte from commit 2fc8e9d07ad613c1bf308695b51cd910777f5095."
-    },
-    {
-      "id": "MEM6-CLOUD-AND-GITHUB-RAW-COPY",
-      "status": "COMPLETE_BYTES_PUBLISHED_AND_INDEPENDENTLY_DOWNLOADED",
-      "scope": "All 128 GitHub parts were read back, reconstructed and verified as the original 61412948-byte archive. A separate connector download to the current workspace verified all 128 parts and the complete archive again. Historical partial copies remain historical evidence.",
-      "evidence_commit": "b66d74d4a61b15f3d9e1eb3b5ddfa251777ee4c1",
-      "index_path": "qualification/memory-cell-mem6/run-001/ARCHIVE_COMPLETE_INDEX_20261111_ED353.json",
-      "cloud_receipt_path": "qualification/memory-cell-mem6/run-001/CLOUD_COPY_RECEIPT_20261111_ED353.json"
-    }
-  ],
-  "historical_results_unchanged": {
-    "retention_successes": [
-      30,
-      28
-    ],
-    "retention_pairs": 84,
-    "retention_initial_noops_per_arm": 16,
-    "retention_source_bootstrap_lower_bound": 0,
-    "selector_successes": [
-      21,
-      13
-    ],
-    "selector_pairs": 54,
-    "selector_wins_ties_losses": [
-      9,
-      44,
-      1
-    ],
-    "selector_initial_noops_per_arm": 10,
-    "selector_bypasses": [
-      1,
-      0
-    ]
-  },
   "archive": {
-    "original_bytes": 61412948,
-    "original_sha256": "f77acd9feb27fda3f8000b0d089dbdbe258a4adfb7acedcb2e0cd590cc4f361e",
-    "restored_logical_files": 10365,
-    "restored_logical_bytes": 243281645,
-    "restore_host": "desktop",
-    "restore_job_id": "1a1c6670efe-5074-ff",
     "archived_runtime_executed": false,
-    "independent_trust_domain": false,
-    "full_owner_cold_recovery": false,
-    "complete_archive_published": true,
     "cloud_complete_archive_downloaded": true,
+    "complete_archive_published": true,
+    "full_owner_cold_recovery": false,
     "github_branch": "research/mem6-full-archive-20261111-ed353",
     "github_commit": "b66d74d4a61b15f3d9e1eb3b5ddfa251777ee4c1",
     "github_content_commit": "4862c7145f86a4ff14c2c1c12ba18c2c35aad608",
     "github_part_count": 128,
+    "independent_trust_domain": false,
+    "new_github_bytes": 37099092,
     "new_github_part_count": 76,
-    "new_github_bytes": 37099092
-  },
-  "open": [
-    {
-      "id": "WORKING-STATE-SCIENTIFIC-GATE",
-      "status": "NOT_MET",
-      "finding": "Historical MEM6 30/84 vs 28/84; source-level one-sided 95% lower bound 0.0. No reweighting or threshold change."
-    },
-    {
-      "id": "ORDINARY-OWNER-BRIDGE",
-      "status": "PUBLISHED_NATIVE_COMPILE_FIX_PENDING",
-      "finding": "Source A passes 4 selected native tests and clean scoped fix on exact ad5. Full owner, retained import/control/drain, and explicit source freshness are published on c6aa; two earlier 81889 attempts stopped before tests during compilation. The one-line E0382 fix now needs a fresh full native run. Authenticated original deployed owner/source binding remains open.",
-      "closure": "Implement the bridge using the retained original writer capability and authenticated source events; recover the exact cut and preserve tombstones and uncertain-commit reconciliation."
-    },
-    {
-      "id": "PROVIDER-RUNTIME-BINDING",
-      "status": "EXISTING_ROUTE_OBSERVED_REAL_OWNER_TURN_PENDING",
-      "finding": "Existing authenticated desktop Responses route health/routing/models returned 200, model qwen38-flash-next-uc. A fresh persistent fixture-owner smoke is being prepared with requested/observed provider, thread and turn identities. No real inference call or original deployed-owner final use is qualified at this checkpoint."
-    },
-    {
-      "id": "UNSEEN-EPISODIC-BENEFIT",
-      "status": "NOT_EVALUATED",
-      "finding": "Fresh-process fixture delivery uses zero model calls. Historical working-state and selector experiments do not establish episodic successor benefit."
-    },
-    {
-      "id": "STRONG-BASELINES-AND-ASSOCIATION",
-      "status": "PARTIAL",
-      "finding": "Exact KV, BM25, chronological ICL and uniform read replay exist as mechanism paths. Real matched successor competition, trained association and model-driven cross-document inference are not evaluated."
-    },
-    {
-      "id": "SOURCE-OWNERSHIP-EXPOSURE-AND-TRUST",
-      "status": "HOLD",
-      "finding": "Source ownership, complete exposure history and independent trust-domain authority are not authenticated by hashes or same-owner receipts. Malicious-owner rollback resistance is not established."
-    },
-    {
-      "id": "DELETION-AND-EXTERNAL-EFFECT",
-      "status": "PARTIAL",
-      "finding": "Logical exclusion and dependency invalidation are tested. Physical erasure, consumer-cache propagation and external-effect commit fencing remain unqualified."
-    },
-    {
-      "id": "FULL-OWNER-EFFECT-COLD-RECOVERY",
-      "status": "HOLD",
-      "finding": "Second-host file restoration does not recover original live owners, grants, credentials, effect state or all external runtime/material inputs."
-    },
-    {
-      "id": "FULL-COST-AND-SLOW-CONSOLIDATION",
-      "status": "NOT_QUALIFIED",
-      "finding": "Successful read timing is bounded; full producer/consumer/model/failure/recovery cost and slow semantic/skill consolidation are not established."
-    },
-    {
-      "id": "HOSTED-CI",
-      "status": "PARTIAL",
-      "finding": "Exact common-source hosted MEM and exact Source A gates passed. The complete owner is awaiting native validation after an observed compile fix. Original Windows signed-credit on 4eb failed OS33; the strict original-descriptor repair #5902 is under new validation. Dependency closure and remaining whole-repository consumers are not yet qualified."
-    }
-  ],
-  "native_source_validation": {
-    "status": "PARTIALLY_VALIDATED",
-    "formatter_attempt": {
-      "head": "e68a2fbcc8b72d9081e1cc44ab1066837e53649c",
-      "run_id": 42935621920,
-      "job_id": 130244877806,
-      "artifact_id": 13818498494,
-      "command_exit_code": 0,
-      "source_gate_exit_code": 1,
-      "changed_files": 5,
-      "native_tests_executed": false,
-      "postimages_applied_in": "1b86d19810c9d422a8f8ea3b76a0a2e8c9956585"
-    },
-    "source_admission_last_completed": {
-      "head": "1b86d19810c9d422a8f8ea3b76a0a2e8c9956585",
-      "tree": "ee63508413afd29a95c03172724fce6fa9dc5a8a",
-      "run_id": 42938555796,
-      "job_id": 130254558254,
-      "artifact_id": 13821160489,
-      "format_clean": true,
-      "actual_native_passed": 4,
-      "actual_native_failed": 0,
-      "source_before_after_equal_clean_for_tests": true,
-      "fix_command_exit_code": 0,
-      "fix_source_gate_exit_code": 1,
-      "fix_changed_files": 1,
-      "tests_rerun_after_fix": false,
-      "evidence_archive_git_blob": "53e1ab04328fb01325a230111ed03a78f5a901ec"
-    },
-    "source_admission": {
-      "head": "ad5a4ed6d40a2eceac189afaced5d93137724a52",
-      "tree": "e601d41a97fadbee17947805f4ec507453522800",
-      "run_id": 42941652722,
-      "job_id": 130264640971,
-      "artifact_id": 13823187722,
-      "status": "PASSED_ON_EXACT_UNCHANGED_SOURCE",
-      "format_clean": true,
-      "actual_native_passed": 4,
-      "actual_native_failed": 0,
-      "filtered_unselected": 420,
-      "fix_clean": true,
-      "all_before_after_exact_and_clean": true,
-      "all_five_input_files_match_exact_head": true,
-      "archive_git_blob": "3bb7f16aeaddac1fe93033475497afc7eecbc1dd",
-      "scope": "Source admission fixture tests; not complete owner integration or source custody."
-    },
-    "complete_owner": {
-      "head": "c6aa120a5a35a0208ed4b92d466904b00cd58f9b",
-      "tree": "6a4634549e055d4f81d4e4dbd8e400b8c6d97b89",
-      "status": "FRESH_EXACT_HEAD_NATIVE_ATTEMPT_ADMITTED_NO_RESULT_YET",
-      "actual_native_test_count": 0,
-      "actual_native_count_scope": "Two completed 81889 attempts both stopped during compilation; the new source has no result at this checkpoint.",
-      "expected_memory_cases": 11,
-      "expected_agentd_cases": 5,
-      "protocol_package": true,
-      "scoped_fix_packages": 3,
-      "required_drain_child_markers": 3,
-      "limits": "Source A's 4 passing cases do not stand in for the full-owner runs. Fixture owner/source grants do not establish original deployed binding.",
-      "formatter": {
-        "head": "6be7ddd743d9a2180a274599a0df7766f5e41519",
-        "tree": "d434dc66fc711d81242d9a4f83c081d04e2cfff1",
-        "host": "ai395",
-        "github_run_id": 42941694535,
-        "github_job_id": 130264782338,
-        "github_artifact_id": 13822717976,
-        "command_exit_code": 0,
-        "source_gate_exit_code": 1,
-        "changed_files": 18,
-        "tests_executed": 0,
-        "host_github_all_before_after_and_patch_byte_identical": true,
-        "postimages_applied_in": "66b904beb9a56cc23a894ac3a3a617786db9f350",
-        "audit_git_blob": "0dd2819c5d4eecde7899eeb6fce5bdc323d16457"
-      },
-      "source_read_formatter": {
-        "head": "5496ff0cf33c116f8b8d458e821b42c71c9ffa67",
-        "command_exit_code": 0,
-        "source_gate_exit_code": 1,
-        "changed_files": 5,
-        "tests_executed": 0,
-        "postimages_applied_in": "4c71ab20e21c06565af799a0128a5c4b226b907d",
-        "audit_git_blob": "266494d0fcb8364b0d899057b198600aca55dedc"
-      },
-      "completed_native_attempts": [
-        {
-          "run_id": "mem8-native-81889-ai395-20261111-ed353-v1",
-          "head": "81889f5e09c247473aa7f20d927bb0eca16c7c48",
-          "tree": "146f33459795629d181026eed3a380272f40912f",
-          "format_clean": true,
-          "v8_inputs_clean": true,
-          "exit_code": 101,
-          "tests_executed": 0,
-          "source_after_clean": true,
-          "reason": "aws-lc-sys bindgen compilation could not find stddef.h."
-        },
-        {
-          "run_id": "mem8-native-81889-gcc-ai395-20261111-ed353-v2",
-          "head": "81889f5e09c247473aa7f20d927bb0eca16c7c48",
-          "tree": "146f33459795629d181026eed3a380272f40912f",
-          "format_clean": true,
-          "v8_inputs_clean": true,
-          "exit_code": 101,
-          "tests_executed": 0,
-          "source_after_clean": true,
-          "reason": "Rust E0382: reopening regression called drop(store) after close(self).",
-          "process_local_bindgen_extra_clang_args": "-isystem /usr/lib/gcc/x86_64-linux-gnu/15/include",
-          "raw_memory_compile_log_bytes": 34434,
-          "raw_memory_compile_log_sha256": "2c4b03529960dfe2570a1dacb0688277231938e5ab06c071955711c8607dc572"
-        }
-      ],
-      "compile_fix": {
-        "commit": "c6aa120a5a35a0208ed4b92d466904b00cd58f9b",
-        "parent": "81889f5e09c247473aa7f20d927bb0eca16c7c48",
-        "path": "codex-rs/hepta-memory/src/production_episodic_tests.rs",
-        "preimage_blob": "983dbbf40e29ca603732b6b27771e83fba6e9696",
-        "postimage_blob": "245dc875742fb5e645859bd1cfe8c370e4189f12",
-        "added_lines": 0,
-        "removed_lines": 1,
-        "change": "Delete the redundant drop(store); retain close().await and the original reopen assertions."
-      },
-      "current_attempt": {
-        "run_id": "mem8-native-c6aa-ai395-20261111-ed353-v3",
-        "host": "ai395",
-        "directory": "/home/qq/mem8-owner-20261111-ed353817/native-fresh-c6aa-20261111",
-        "launch_acknowledged": true,
-        "launch_reused": false,
-        "deadline_utc": "2026-11-11 04:47:03 UTC",
-        "gcc_header_environment_retained": true,
-        "dependency_target_cache_reused": true,
-        "tests_results_reused": false
-      },
-      "current_github": {
-        "run_id": 42950147964,
-        "job_id": 130292286204,
-        "last_observed_status": "queued",
-        "passed": false
-      },
-      "superseded_github_81889": {
-        "run_id": 42948189449,
-        "native_job_id": 130285956507,
-        "status": "completed",
-        "conclusion": "cancelled",
-        "steps": null,
-        "scope": "Superseded without execution; does not replace the actual ai395 compilation failures."
-      }
-    }
-  },
-  "runtime_transport": {
-    "status": "RESTORED_WITH_INTERMITTENT_TOOL_FAILURES",
-    "prior_outage_error": "MCP -32603 Internal error",
-    "uncertain_requests_replayed_under_new_identity": false,
-    "ai395_original_request": {
-      "request_id": "mem8-native-v4-003",
-      "observed_outcome": "Stopped before capsule application because both the capsule and gh were absent; the PTY returned to its shell. Current source remains 96038/tree1277666 clean; no application or native-result receipt exists."
-    },
-    "archive_preflight": {
-      "original_idempotency_key": "mem6-original-publication-preflight-pty-20261111-ed353-v2",
-      "reconciliation_returned_reused": false,
-      "exit_code": 0,
-      "github_write_attempted": false
-    },
-    "archive_publication": {
-      "idempotency_key": "mem6-original-publication-desktop-20261111-ed353-v1",
-      "session_id": "dpty-6ca74b715a0436d45fb15a8299667f52b6f56c7e3a2eec1923572826a093e106",
-      "exit_code": 0,
-      "status": "VERIFIED_PUBLISHED"
-    },
-    "reconciliation_required_for_other_unresolved_requests": true
+    "original_bytes": 61412948,
+    "original_sha256": "f77acd9feb27fda3f8000b0d089dbdbe258a4adfb7acedcb2e0cd590cc4f361e",
+    "restore_host": "desktop",
+    "restore_job_id": "1a1c6670efe-5074-ff",
+    "restored_logical_bytes": 243281645,
+    "restored_logical_files": 10365
   },
   "boundaries": [
     "A source digest does not authenticate source custody or establish fact truth.",
@@ -306,124 +27,545 @@
     "A source-only staging manifest is not native compilation evidence.",
     "Filtered or unselected tests are reported separately and are not passing executions.",
     "A process-local compiler header fix changes the validation environment, not the source or test assertions.",
-    "Same-tree validation of a different commit is not described as an exact-head result."
+    "Same-tree validation of a different commit is not described as an exact-head result.",
+    "Raw nextest progress and repeated summary lines are deduplicated by case identity; retry attempts are not independent experiments.",
+    "Ordinary provider smoke is not the native model-only inference client or a memory efficacy experiment."
   ],
-  "checkpoint_utc": "2026-11-11 03:04:26 UTC",
+  "checkpoint_utc": "2026-11-11 03:55:14 UTC",
+  "ci_fixture_followup": {
+    "actual_failed": 1,
+    "actual_passed": 0,
+    "artifact_id": 13822740721,
+    "change": "Windows-only directory handle write access in the existing signed-credit fixture; original sync, lock and assertions remain.",
+    "commit": "1530ca1c29991185efe686721a5c97f8c40adc16",
+    "filtered_skips": 269,
+    "job_id": 130263259830,
+    "native_result": "ONE_SELECTED_CASE_FAILED",
+    "next_repair": {
+      "actual_failed": 0,
+      "actual_passed": 1,
+      "artifact_id": 13825285327,
+      "change": "Read complete bounded bytes through the original locked descriptor under the existing qualification-only feature, with cursor restoration and fail-closed I/O handling. Keep the original signed test and complete-byte assertions; no cached snapshot/witness or length-only substitution.",
+      "evidence_archive_blob": "2f5633e306445a679b7eeb14a7d5d187e81fe3e4",
+      "evidence_archive_bytes": 51212,
+      "evidence_archive_sha256": "804da03f64ad110450e6a9820470bb0ca17739b6c4bd06041cc1211b19e69f8d",
+      "evidence_commit": "1d10aebcc3308acc12c982cc77a7137a745c3708",
+      "filtered_unselected": 269,
+      "head": "cb0b276ffdb9852323cdd13ba9b4399b30ae0c37",
+      "job_id": 130284818815,
+      "linux_exact_head_result": "Still zero-test compilation failure before a new attempt; missing Unix proposal_worker.py must be materialized from the same commit.",
+      "linux_original_case_first_attempt": {
+        "executed_cases": 0,
+        "exit_code": 101,
+        "reason": "Sparse checkout omitted docs/modules/MODULES.json used by include_str!; new exact published-source attempt will include that directory."
+      },
+      "local_observer_cases_passed": 2,
+      "native_source_checked": "817dfaf8 (full identity retained in CI follow-up evidence)",
+      "nextest_run_id": "b3e2fe3d-1bb1-4584-8580-dce96cb1cab7",
+      "pr": 5902,
+      "published_exact_head_pass_claim": true,
+      "raw_log_bytes": 30039,
+      "raw_log_sha256": "ec565bd335a10979ffcb0be04a389a09ddb48035221fd25b4f990750f185a003",
+      "retries": 0,
+      "root_full_readback_and_validator": "PASSED",
+      "run_id": 42947836619,
+      "same_tree_as_published": true,
+      "status": "ORIGINAL_WINDOWS_CASE_PASSED",
+      "tree": "61f266ce7f02e0c3b94c22871ebedcc72f28e456"
+    },
+    "parent": "96038ccf0660154fac143ba6cbe4be81e00813e8",
+    "pr": 5895,
+    "qualification_head": "4eb497e889b053dd40af87469e594d08585f93e8",
+    "qualification_pr": 5898,
+    "qualification_tree": "5bac6ffbef18f9f22317951a059835fe218c4383",
+    "retries": 0,
+    "run_id": 42941228468,
+    "secondary_os33_result": "REPRODUCED_IN_ORIGINAL_CASE",
+    "source_before_after_clean": true,
+    "tree": "6aa5220e0f23ac3676332a53583a6c462b4a06ba"
+  },
+  "closed_this_followup": [
+    {
+      "id": "HOSTED-MEM-COMMON-SOURCE",
+      "scope": "Two hosted MEM jobs on exact common source: nine groups, 154 execution observations, 120 distinct test IDs, 34 repeated observations, zero failures or skips. This is not whole-repository CI or a new model experiment.",
+      "status": "PASSED"
+    },
+    {
+      "id": "HOSTED-MEM-RAW-EVIDENCE",
+      "scope": "PR 5889 retains the original CI artifacts/logs and reproducible audits; both archive files were read back byte-for-byte from commit 2fc8e9d07ad613c1bf308695b51cd910777f5095.",
+      "status": "PUBLISHED_AND_READ_BACK"
+    },
+    {
+      "cloud_receipt_path": "qualification/memory-cell-mem6/run-001/CLOUD_COPY_RECEIPT_20261111_ED353.json",
+      "evidence_commit": "b66d74d4a61b15f3d9e1eb3b5ddfa251777ee4c1",
+      "id": "MEM6-CLOUD-AND-GITHUB-RAW-COPY",
+      "index_path": "qualification/memory-cell-mem6/run-001/ARCHIVE_COMPLETE_INDEX_20261111_ED353.json",
+      "scope": "All 128 GitHub parts were read back, reconstructed and verified as the original 61412948-byte archive. A separate connector download to the current workspace verified all 128 parts and the complete archive again. Historical partial copies remain historical evidence.",
+      "status": "COMPLETE_BYTES_PUBLISHED_AND_INDEPENDENTLY_DOWNLOADED"
+    },
+    {
+      "id": "SOURCE-ADMISSION-EXACT-AD5",
+      "scope": "Four source-admission fixture cases, clean fmt and scoped fix on exact ad5; original deployed source authority remains open.",
+      "status": "PASSED"
+    },
+    {
+      "evidence_commit": "1d10aebcc3308acc12c982cc77a7137a745c3708",
+      "id": "WINDOWS-ORIGINAL-SIGNED-CREDIT-CASE",
+      "job_id": 130284818815,
+      "run_id": 42947836619,
+      "scope": "Exact cb0b original signed-credit case: 1 passed, 0 failed, 269 filtered/unselected, zero retries, unchanged source. Strict original-descriptor bytes and all original assertions retained. This is one Windows case, not whole Windows or repository CI.",
+      "status": "PASSED_PUBLISHED_AND_READ_BACK"
+    }
+  ],
+  "common_source": {
+    "commit": "96038ccf0660154fac143ba6cbe4be81e00813e8",
+    "pr": 5873,
+    "tree": "1277666f3285cdf006d36478e6f74ddec38e1fe0"
+  },
+  "date_utc": "2026-11-11",
+  "dependency_consumer_followup": {
+    "bazel_cache_isolated_retry": {
+      "exit_code": 0,
+      "lock_sha256": "783b3ad329fa53bd4a0e48be6907d38259fa2880d61bd1994b863d7f78bbca57",
+      "original_cache_failure_retained": true,
+      "raw_log_bytes": 4290,
+      "raw_log_sha256": "3eeac675e16cb9749cd26f858414ed5798dab746dd533d2ef464c65ba9204e16",
+      "source_and_lock_unchanged": true
+    },
+    "candidate_head": "dc96a441312e239c165c1642880084dfeccc2c71",
+    "candidate_tree": "7796279284170f0f2c92449c1185eecac1f4f1b6",
+    "matrix_actual_failed": 1,
+    "matrix_actual_passed": 29,
+    "matrix_diagnostic": {
+      "actual_failed": 1,
+      "actual_passed": 0,
+      "failure_stage": "login_or_restore.build.timeout",
+      "filtered_unselected": 2,
+      "followup": "A separately identified SHA-256 development-profile experiment is in progress; no passing result is inferred.",
+      "head": "6ef3cf7a400c0099b858b314ef67751d4e1dae1e",
+      "original_error_type_control_flow_timeout_kdf_assertions_preserved": true,
+      "parent": "dc96a441312e239c165c1642880084dfeccc2c71",
+      "prepare_seconds": 12.828216719,
+      "raw_log_bytes": 29560,
+      "raw_log_sha256": "b9234a59a9220543dc65daa7f0080d02f4d92c30b9317005c1fd3bf7ce23d3d1",
+      "reopen_seconds": 5.510876159,
+      "retries": 0,
+      "source_unchanged": true,
+      "tree": "a0ff66e92e7dd51435c0a74e9ef88a112285c991"
+    },
+    "published_source_pr": null,
+    "rmcp_actual_failed": 3,
+    "rmcp_actual_passed": 265,
+    "scope": "Full retained raw logs and actual JUnit; filtered/ignored tests are not passing executions."
+  },
+  "historical_results_unchanged": {
+    "retention_initial_noops_per_arm": 16,
+    "retention_pairs": 84,
+    "retention_source_bootstrap_lower_bound": 0,
+    "retention_successes": [
+      30,
+      28
+    ],
+    "selector_bypasses": [
+      1,
+      0
+    ],
+    "selector_initial_noops_per_arm": 10,
+    "selector_pairs": 54,
+    "selector_successes": [
+      21,
+      13
+    ],
+    "selector_wins_ties_losses": [
+      9,
+      44,
+      1
+    ]
+  },
   "implementation_progress": [
     {
       "id": "COMMON-SOURCE-MECHANICAL-REPAIRS",
-      "status": "PUBLISHED_PARTIALLY_VALIDATED",
-      "scope": "Common source repairs and source-head hosted MEM tests passed. macOS Agentd/TUI targets passed; later Windows evidence still fails in a durable signed-credit fixture, so cross-platform closure is not inferred."
+      "scope": "Common hosted MEM and macOS targets passed. The original signed-credit Windows fixture now passes on cb0b with complete-byte assertions; remaining repository consumers still require their own results.",
+      "status": "PUBLISHED_PARTIALLY_VALIDATED"
+    }
+  ],
+  "implicit_memory_isolation": {
+    "base": "66f570a77c60aac8d33e6cbeac8dfd120ef1d867",
+    "change": "Clear derived token-budget config after embedding disables TokenBudget; select ExplicitContextOnly for configured episodic ingress, disabling Hepta memory, independent memories extension, history notes and qualification lifecycle hooks while retaining the original native store for explicit context.",
+    "compatibility_scope": "Existing profiles without the new episodic ingress retain their existing selection.",
+    "format_scope": "Six local Rust files after exact 66f; one actual app_runtime.rs rewrite, zero build/tests.",
+    "limits": "F is not yet compiled. Direct host/store callers, prompt contributors and external effects are not globally isolated by this profile.",
+    "native_tool_router_observation": "NativeAppServer already uses hepta-infer-worker, whose model-visible and registered tool router is empty. Other ordinary clients are different.",
+    "stage": "F1/F2",
+    "status": "ACTUAL_FORMAT_CAPTURED_NATIVE_UNRUN"
+  },
+  "native_source_validation": {
+    "complete_owner": {
+      "actual_native_count_scope": "Current exact 66f attempt stopped before build/tests. Earlier exact c6aa results are separate completed attempts below.",
+      "actual_native_test_count": 0,
+      "compile_fix": {
+        "added_lines": 0,
+        "change": "Delete the redundant drop(store); retain close().await and the original reopen assertions.",
+        "commit": "c6aa120a5a35a0208ed4b92d466904b00cd58f9b",
+        "parent": "81889f5e09c247473aa7f20d927bb0eca16c7c48",
+        "path": "codex-rs/hepta-memory/src/production_episodic_tests.rs",
+        "postimage_blob": "245dc875742fb5e645859bd1cfe8c370e4189f12",
+        "preimage_blob": "983dbbf40e29ca603732b6b27771e83fba6e9696",
+        "removed_lines": 1
+      },
+      "completed_native_attempts": [
+        {
+          "exit_code": 101,
+          "format_clean": true,
+          "head": "81889f5e09c247473aa7f20d927bb0eca16c7c48",
+          "reason": "aws-lc-sys bindgen compilation could not find stddef.h.",
+          "run_id": "mem8-native-81889-ai395-20261111-ed353-v1",
+          "source_after_clean": true,
+          "tests_executed": 0,
+          "tree": "146f33459795629d181026eed3a380272f40912f",
+          "v8_inputs_clean": true
+        },
+        {
+          "exit_code": 101,
+          "format_clean": true,
+          "head": "81889f5e09c247473aa7f20d927bb0eca16c7c48",
+          "process_local_bindgen_extra_clang_args": "-isystem /usr/lib/gcc/x86_64-linux-gnu/15/include",
+          "raw_memory_compile_log_bytes": 34434,
+          "raw_memory_compile_log_sha256": "2c4b03529960dfe2570a1dacb0688277231938e5ab06c071955711c8607dc572",
+          "reason": "Rust E0382: reopening regression called drop(store) after close(self).",
+          "run_id": "mem8-native-81889-gcc-ai395-20261111-ed353-v2",
+          "source_after_clean": true,
+          "tests_executed": 0,
+          "tree": "146f33459795629d181026eed3a380272f40912f",
+          "v8_inputs_clean": true
+        },
+        {
+          "agentd_executed": false,
+          "fixes_executed": false,
+          "format_clean": true,
+          "head": "c6aa120a5a35a0208ed4b92d466904b00cd58f9b",
+          "memory": {
+            "actual_failed": 0,
+            "actual_passed": 11,
+            "exact_before_after_clean": true,
+            "filtered_unselected": 420,
+            "kind": "independent root audit of original native receipt and complete log; not a new execution",
+            "nextest_run_id": "ed6c3992-595a-491a-a2be-4c61f0c88f9b",
+            "orchestration_result": "Original driver failed closed after this successful command because its case parser did not recognize the progress column. Original terminal is retained; later stages were not executed by this attempt.",
+            "raw_log_bytes": 17782,
+            "raw_log_sha256": "158e0b826d7049848d520a86dbbb22e781672c159fd0433e46f2134e373247c1",
+            "receipt_sha256": "c6d78e34507bc06ed87ed8f5df2eb02e701f1e04ac8bee575fa853d7156372ca",
+            "source_sha": "c6aa120a5a35a0208ed4b92d466904b00cd58f9b",
+            "source_tree": "6a4634549e055d4f81d4e4dbd8e400b8c6d97b89",
+            "unique_actual_passed_cases": [
+              "episodic_source::tests::admits_actual_python_unicode_export_with_exact_original_observations",
+              "episodic_source::tests::provisional_admission_remains_distinct_from_verified_source_admission",
+              "episodic_source::tests::a_valid_digest_cannot_replace_missing_or_different_source_admission",
+              "episodic_source::tests::final_source_check_detects_changed_observation_metadata",
+              "production_writer::episodic::regression_tests::actual_python_unicode_export_preserves_exact_observed_fact_bytes",
+              "production_writer::episodic::regression_tests::custody_preserves_provisional_state_and_cannot_upgrade_it_on_replay",
+              "production_writer::episodic::regression_tests::update_withdraws_dependent_memory_and_preserves_unrelated_source",
+              "production_writer::episodic::regression_tests::changed_source_admission_cannot_reuse_an_old_canonical_binding",
+              "production_writer::episodic::regression_tests::source_and_writer_revocation_roll_back_all_native_changes",
+              "production_writer::episodic::tests::committed_import_reopens_and_reconciles_lost_response_without_rewriting",
+              "production_writer::episodic::regression_tests::historical_or_incoherent_source_states_cannot_overwrite_native_heads"
+            ]
+          },
+          "protocol_executed": false,
+          "run_id": "mem8-native-c6aa-ai395-20261111-ed353-v3",
+          "source_after_clean": true,
+          "tree": "6a4634549e055d4f81d4e4dbd8e400b8c6d97b89",
+          "v8_inputs_clean": true
+        },
+        {
+          "agentd_actual_failed": 1,
+          "agentd_actual_passed": 4,
+          "agentd_filtered_unselected": 781,
+          "agentd_unique_executed": 5,
+          "failed_case_attempts": 2,
+          "failure": "First commit child: App Server exited before readiness.",
+          "fixes_executed": false,
+          "format_clean": true,
+          "head": "c6aa120a5a35a0208ed4b92d466904b00cd58f9b",
+          "memory_executed_this_attempt": false,
+          "memory_receipt_referenced_without_recount": true,
+          "nextest_run_id": "c65419fe-66d6-46ca-8b02-86eec80be1ff",
+          "observed_drain_markers": [],
+          "protocol_executed": false,
+          "raw_agentd_log_bytes": 59977,
+          "raw_agentd_log_sha256": "bc2d4439491617ada71a46fce8286a528b9e82be5516d7a8527d42c148985e86",
+          "retry_scope": "Default nextest profile retried one failed case once; repeated summary row is not another attempt.",
+          "run_id": "mem8-native-c6aa-cont-ai395-20261111-ed353-v4",
+          "source_after_clean": true,
+          "tree": "6a4634549e055d4f81d4e4dbd8e400b8c6d97b89",
+          "v8_inputs_clean": true
+        },
+        {
+          "actual_failed": 1,
+          "actual_passed": 0,
+          "failure": "Codex executable path is not configured (run Codex App Server unix socket transport).",
+          "filtered_unselected": 785,
+          "head": "4d1186a4c7f63a0b1f4f64c7bc35a0049688d59a",
+          "observed_drain_markers": [],
+          "raw_log_bytes": 42325,
+          "raw_log_sha256": "87252e0a86441b2556def95678f7fe3c8c1609159c952aa6072a39243f4e20f3",
+          "retries": 0,
+          "run_id": "mem8-native-4d1186-diag-ai395-20261111-ed353-v5",
+          "scope": "Diagnostic changes preserve the original readiness assertion and timeout.",
+          "source_after_clean": true,
+          "tree": "05fdde0c70e67449fd2986bdd2394f07040172f8"
+        },
+        {
+          "actual_native_test_count": 0,
+          "build_executed": false,
+          "failure": "Bazel formatter could not start: dotslash executable absent. Original Rust source has no rewrite.",
+          "format_exit_code": 1,
+          "head": "66f570a77c60aac8d33e6cbeac8dfd120ef1d867",
+          "run_id": "mem8-native-66f570-ai395-20261111-ed353-v6",
+          "scope": "Environment failure; not passing or skipped native tests.",
+          "source_after_clean": true,
+          "tree": "8eaee893e1e6e43423f288fc654e05c3c95f6179"
+        }
+      ],
+      "current_attempt": {
+        "new_native_result_available": false,
+        "original_deadline_utc": "2026-11-11 04:47:03 UTC",
+        "previous_request": "mem8-native-66f570-ai395-20261111-ed353-v6",
+        "scope": "Pinned DotSlash asset installation is separately recorded. The failed v6 receipt is not overwritten.",
+        "status": "ENVIRONMENT_PREPARATION_FOR_NEW_IDENTITY"
+      },
+      "current_github": {
+        "job_id": 130303174020,
+        "last_observed_status": "queued",
+        "observed_at": "2026-11-11 03:48 UTC",
+        "passed": false,
+        "run_id": 42953532462
+      },
+      "expected_agentd_cases": 5,
+      "expected_memory_cases": 11,
+      "formatter": {
+        "audit_git_blob": "0dd2819c5d4eecde7899eeb6fce5bdc323d16457",
+        "changed_files": 18,
+        "command_exit_code": 0,
+        "github_artifact_id": 13822717976,
+        "github_job_id": 130264782338,
+        "github_run_id": 42941694535,
+        "head": "6be7ddd743d9a2180a274599a0df7766f5e41519",
+        "host": "ai395",
+        "host_github_all_before_after_and_patch_byte_identical": true,
+        "postimages_applied_in": "66b904beb9a56cc23a894ac3a3a617786db9f350",
+        "source_gate_exit_code": 1,
+        "tests_executed": 0,
+        "tree": "d434dc66fc711d81242d9a4f83c081d04e2cfff1"
+      },
+      "head": "66f570a77c60aac8d33e6cbeac8dfd120ef1d867",
+      "limits": "Source A's 4 passing cases do not stand in for the full-owner runs. Fixture owner/source grants do not establish original deployed binding.",
+      "protocol_package": true,
+      "real_cli_fix": {
+        "assertions_or_timeout_relaxed": false,
+        "change": "Resolve real codex CLI through Cargo/Bazel metadata, declare Bazel binary input, build and bind exact-source CLI with full before/after binary hashes, forward only exact observed child completion markers.",
+        "commit": "66f570a77c60aac8d33e6cbeac8dfd120ef1d867",
+        "parent": "4d1186a4c7f63a0b1f4f64c7bc35a0049688d59a",
+        "static_validation_only": "YAML, 25 shell blocks and embedded Python syntax checked before native attempt."
+      },
+      "required_drain_child_markers": 3,
+      "scoped_fix_packages": 3,
+      "source_read_formatter": {
+        "audit_git_blob": "266494d0fcb8364b0d899057b198600aca55dedc",
+        "changed_files": 5,
+        "command_exit_code": 0,
+        "head": "5496ff0cf33c116f8b8d458e821b42c71c9ffa67",
+        "postimages_applied_in": "4c71ab20e21c06565af799a0128a5c4b226b907d",
+        "source_gate_exit_code": 1,
+        "tests_executed": 0
+      },
+      "status": "CURRENT_HEAD_ZERO_TEST_FORMAT_ENVIRONMENT_FAILURE",
+      "superseded_github_81889": {
+        "conclusion": "cancelled",
+        "native_job_id": 130285956507,
+        "run_id": 42948189449,
+        "scope": "Superseded without execution; does not replace the actual ai395 compilation failures.",
+        "status": "completed",
+        "steps": null
+      },
+      "superseded_github_c6aa": {
+        "conclusion": "cancelled",
+        "job_id": 130292286204,
+        "run_id": 42950147964,
+        "scope": "Superseded without GitHub execution; actual ai395 results remain authoritative for that host.",
+        "status": "completed",
+        "steps": null
+      },
+      "tree": "8eaee893e1e6e43423f288fc654e05c3c95f6179"
+    },
+    "formatter_attempt": {
+      "artifact_id": 13818498494,
+      "changed_files": 5,
+      "command_exit_code": 0,
+      "head": "e68a2fbcc8b72d9081e1cc44ab1066837e53649c",
+      "job_id": 130244877806,
+      "native_tests_executed": false,
+      "postimages_applied_in": "1b86d19810c9d422a8f8ea3b76a0a2e8c9956585",
+      "run_id": 42935621920,
+      "source_gate_exit_code": 1
+    },
+    "source_admission": {
+      "actual_native_failed": 0,
+      "actual_native_passed": 4,
+      "all_before_after_exact_and_clean": true,
+      "all_five_input_files_match_exact_head": true,
+      "archive_git_blob": "3bb7f16aeaddac1fe93033475497afc7eecbc1dd",
+      "artifact_id": 13823187722,
+      "filtered_unselected": 420,
+      "fix_clean": true,
+      "format_clean": true,
+      "head": "ad5a4ed6d40a2eceac189afaced5d93137724a52",
+      "job_id": 130264640971,
+      "run_id": 42941652722,
+      "scope": "Source admission fixture tests; not complete owner integration or source custody.",
+      "status": "PASSED_ON_EXACT_UNCHANGED_SOURCE",
+      "tree": "e601d41a97fadbee17947805f4ec507453522800"
+    },
+    "source_admission_last_completed": {
+      "actual_native_failed": 0,
+      "actual_native_passed": 4,
+      "artifact_id": 13821160489,
+      "evidence_archive_git_blob": "53e1ab04328fb01325a230111ed03a78f5a901ec",
+      "fix_changed_files": 1,
+      "fix_command_exit_code": 0,
+      "fix_source_gate_exit_code": 1,
+      "format_clean": true,
+      "head": "1b86d19810c9d422a8f8ea3b76a0a2e8c9956585",
+      "job_id": 130254558254,
+      "run_id": 42938555796,
+      "source_before_after_equal_clean_for_tests": true,
+      "tests_rerun_after_fix": false,
+      "tree": "ee63508413afd29a95c03172724fce6fa9dc5a8a"
+    },
+    "status": "PARTIALLY_VALIDATED"
+  },
+  "new_real_actor_episodes": 0,
+  "open": [
+    {
+      "finding": "Historical MEM6 30/84 vs 28/84; source-level one-sided 95% lower bound 0.0. No reweighting or threshold change.",
+      "id": "WORKING-STATE-SCIENTIFIC-GATE",
+      "status": "NOT_MET"
+    },
+    {
+      "closure": "Implement the bridge using the retained original writer capability and authenticated source events; recover the exact cut and preserve tombstones and uncertain-commit reconciliation.",
+      "finding": "Exact c6aa passed 11 memory cases and four of five Agentd cases; the drain case failed before App Server readiness. Exact 4d diagnostic exposed the missing real Codex executable. 66f supplies the actual CLI, Bazel dependency and binary-bound CI path; its first attempt stopped in formatting because dotslash was absent and executed zero tests. Original deployed owner/source binding remains open.",
+      "id": "ORDINARY-OWNER-BRIDGE",
+      "status": "NATIVE_MEMORY_PASSED_DRAIN_STARTUP_FIX_PENDING"
+    },
+    {
+      "finding": "Existing authenticated Responses route is observed by GET-only checks. Published 55951 retains the private fixture directory, records thread/turn identity, disables unbounded retries and bounds completion waiting. No new real inference result is available at this snapshot; fixture owner is not the original production owner.",
+      "id": "PROVIDER-RUNTIME-BINDING",
+      "status": "EXISTING_ROUTE_OBSERVED_RETAINED_OWNER_SMOKE_PREPARED"
+    },
+    {
+      "finding": "Fresh-process fixture delivery uses zero model calls. Historical working-state and selector experiments do not establish episodic successor benefit.",
+      "id": "UNSEEN-EPISODIC-BENEFIT",
+      "status": "NOT_EVALUATED"
+    },
+    {
+      "finding": "Exact KV, BM25, chronological ICL and uniform read replay exist as mechanism paths. Real matched successor competition, trained association and model-driven cross-document inference are not evaluated.",
+      "id": "STRONG-BASELINES-AND-ASSOCIATION",
+      "status": "PARTIAL"
+    },
+    {
+      "finding": "Source ownership, complete exposure history and independent trust-domain authority are not authenticated by hashes or same-owner receipts. Malicious-owner rollback resistance is not established.",
+      "id": "SOURCE-OWNERSHIP-EXPOSURE-AND-TRUST",
+      "status": "HOLD"
+    },
+    {
+      "finding": "Logical exclusion and dependency invalidation are tested. Physical erasure, consumer-cache propagation and external-effect commit fencing remain unqualified.",
+      "id": "DELETION-AND-EXTERNAL-EFFECT",
+      "status": "PARTIAL"
+    },
+    {
+      "finding": "Second-host file restoration does not recover original live owners, grants, credentials, effect state or all external runtime/material inputs.",
+      "id": "FULL-OWNER-EFFECT-COLD-RECOVERY",
+      "status": "HOLD"
+    },
+    {
+      "finding": "Successful read timing is bounded; full producer/consumer/model/failure/recovery cost and slow semantic/skill consolidation are not established.",
+      "id": "FULL-COST-AND-SLOW-CONSOLIDATION",
+      "status": "NOT_QUALIFIED"
+    },
+    {
+      "finding": "Exact common-source MEM, Source A and the original Windows signed-credit case passed. c6aa complete-owner coverage is partial, 66f first attempt is zero-test environment failure. Dependency candidate dc96 retains RMCP 265/3 and Matrix 29/1; separate cache-isolated Bazel lock update passed without lock drift. An independent Matrix diagnostic identifies login_or_restore.build timeout. Whole-repository CI remains open.",
+      "id": "HOSTED-CI",
+      "status": "PARTIAL_WITH_WINDOWS_CASE_CLOSED"
     }
   ],
   "owner_stages": {
-    "source_admission_pr": 5888,
+    "current_complete_owner_commit": "66f570a77c60aac8d33e6cbeac8dfd120ef1d867",
+    "current_complete_owner_tree": "8eaee893e1e6e43423f288fc654e05c3c95f6179",
+    "current_source_admission_commit": "ad5a4ed6d40a2eceac189afaced5d93137724a52",
+    "current_source_admission_tree": "e601d41a97fadbee17947805f4ec507453522800",
+    "formatted_stages_historical": {
+      "manifest_blob": "2031631bdeb60ab65d85f54f4489bece26bbbfe6",
+      "status": "SOURCE_REPLAY_ONLY_NOT_PER_STAGE_NATIVE_VALIDATION",
+      "target": "81889f5e09c247473aa7f20d927bb0eca16c7c48"
+    },
     "integration_validation_pr": 5892,
     "manifest_blob": "f7b9404d75f3dbc842805349dc052169cd9a1ce7",
+    "original_stage_manifest_scope": "Historical B-C-D1-D2-D3 commits on source A 1b86; exact current overlays are listed separately.",
     "source_admission_commit": "1b86d19810c9d422a8f8ea3b76a0a2e8c9956585",
+    "source_admission_pr": 5888,
     "source_admission_tree": "ee63508413afd29a95c03172724fce6fa9dc5a8a",
     "stages": [
       {
-        "stage": "B",
         "branch": "codex/mem8-owner-transaction-20261111-ed353817",
-        "parent": "1b86d19810c9d422a8f8ea3b76a0a2e8c9956585",
         "commit": "2ee204e6c9d9851e7a7486c29606742eac62e158",
-        "tree": "2d51219b92ebd3d908b19dfee402a91a877eb0ee",
-        "files": 6
+        "files": 6,
+        "parent": "1b86d19810c9d422a8f8ea3b76a0a2e8c9956585",
+        "stage": "B",
+        "tree": "2d51219b92ebd3d908b19dfee402a91a877eb0ee"
       },
       {
-        "stage": "C",
         "branch": "codex/mem8-owner-regressions-20261111-ed353817",
-        "parent": "2ee204e6c9d9851e7a7486c29606742eac62e158",
         "commit": "c6ef9abb2b45bf3342fca01c2ae97da2773ce1da",
-        "tree": "61c5ae684eef24fc88f6eac5838f04c8609f4656",
-        "files": 4
+        "files": 4,
+        "parent": "2ee204e6c9d9851e7a7486c29606742eac62e158",
+        "stage": "C",
+        "tree": "61c5ae684eef24fc88f6eac5838f04c8609f4656"
       },
       {
-        "stage": "D1",
         "branch": "codex/mem8-control-wire-20261111-ed353817",
-        "parent": "c6ef9abb2b45bf3342fca01c2ae97da2773ce1da",
         "commit": "6fc67caaeb748491190ba12a61aaf17f5c469e58",
-        "tree": "b0a96d66db416fe6f10d58410d2aa87c5b75b4a3",
-        "files": 8
+        "files": 8,
+        "parent": "c6ef9abb2b45bf3342fca01c2ae97da2773ce1da",
+        "stage": "D1",
+        "tree": "b0a96d66db416fe6f10d58410d2aa87c5b75b4a3"
       },
       {
-        "stage": "D2",
         "branch": "codex/mem8-control-owner-20261111-ed353817",
-        "parent": "6fc67caaeb748491190ba12a61aaf17f5c469e58",
         "commit": "172f079baecc11a0da800072c15e25c2282b80fd",
-        "tree": "8bd39d812454ca7ae9a0d7e4cb08a40756826f04",
-        "files": 10
+        "files": 10,
+        "parent": "6fc67caaeb748491190ba12a61aaf17f5c469e58",
+        "stage": "D2",
+        "tree": "8bd39d812454ca7ae9a0d7e4cb08a40756826f04"
       },
       {
-        "stage": "D3",
         "branch": "codex/mem8-owner-drain-20261111-ed353817",
-        "parent": "172f079baecc11a0da800072c15e25c2282b80fd",
         "commit": "eb430c1e4f122784f5a91d4a5ddf2ae8bb5063da",
-        "tree": "24bea5bc952f3bab7f9180ce7b340e22794e63ad",
-        "files": 2
+        "files": 2,
+        "parent": "172f079baecc11a0da800072c15e25c2282b80fd",
+        "stage": "D3",
+        "tree": "24bea5bc952f3bab7f9180ce7b340e22794e63ad"
       }
-    ],
-    "original_stage_manifest_scope": "Historical B-C-D1-D2-D3 commits on source A 1b86; exact current overlays are listed separately.",
-    "current_source_admission_commit": "ad5a4ed6d40a2eceac189afaced5d93137724a52",
-    "current_source_admission_tree": "e601d41a97fadbee17947805f4ec507453522800",
-    "current_complete_owner_commit": "c6aa120a5a35a0208ed4b92d466904b00cd58f9b",
-    "current_complete_owner_tree": "6a4634549e055d4f81d4e4dbd8e400b8c6d97b89",
-    "formatted_stages_historical": {
-      "target": "81889f5e09c247473aa7f20d927bb0eca16c7c48",
-      "manifest_blob": "2031631bdeb60ab65d85f54f4489bece26bbbfe6",
-      "status": "SOURCE_REPLAY_ONLY_NOT_PER_STAGE_NATIVE_VALIDATION"
-    }
+    ]
   },
-  "ci_fixture_followup": {
-    "pr": 5895,
-    "commit": "1530ca1c29991185efe686721a5c97f8c40adc16",
-    "tree": "6aa5220e0f23ac3676332a53583a6c462b4a06ba",
-    "parent": "96038ccf0660154fac143ba6cbe4be81e00813e8",
-    "change": "Windows-only directory handle write access in the existing signed-credit fixture; original sync, lock and assertions remain.",
-    "native_result": "ONE_SELECTED_CASE_FAILED",
-    "secondary_os33_result": "REPRODUCED_IN_ORIGINAL_CASE",
-    "qualification_pr": 5898,
-    "qualification_head": "4eb497e889b053dd40af87469e594d08585f93e8",
-    "qualification_tree": "5bac6ffbef18f9f22317951a059835fe218c4383",
-    "run_id": 42941228468,
-    "job_id": 130263259830,
-    "artifact_id": 13822740721,
-    "actual_passed": 0,
-    "actual_failed": 1,
-    "filtered_skips": 269,
-    "retries": 0,
-    "source_before_after_clean": true,
-    "next_repair": {
-      "pr": 5902,
-      "head": "cb0b276ffdb9852323cdd13ba9b4399b30ae0c37",
-      "tree": "61f266ce7f02e0c3b94c22871ebedcc72f28e456",
-      "status": "WINDOWS_ORIGINAL_CASE_PENDING",
-      "run_id": 42947836619,
-      "job_id": 130284818815,
-      "change": "Read complete bounded bytes through the original locked descriptor under the existing qualification-only feature, with cursor restoration and fail-closed I/O handling. Keep the original signed test and complete-byte assertions; no cached snapshot/witness or length-only substitution.",
-      "native_source_checked": "817dfaf8 (full identity retained in CI follow-up evidence)",
-      "same_tree_as_published": true,
-      "local_observer_cases_passed": 2,
-      "published_exact_head_pass_claim": false,
-      "linux_original_case_first_attempt": {
-        "exit_code": 101,
-        "executed_cases": 0,
-        "reason": "Sparse checkout omitted docs/modules/MODULES.json used by include_str!; new exact published-source attempt will include that directory."
-      }
-    }
+  "predecessor": {
+    "path": "qualification/memory-cell-mem7/read-freshness-20261110/BLOCKERS.json",
+    "source_commit": "adef61556284cc5b58c4f23a33d7c8455e821c3f"
   },
-  "source_read_followup": {
-    "status": "PUBLISHED_AWAITING_FULL_NATIVE_VALIDATION",
-    "stage": "E",
-    "capsule_git_blob": "be086371ac7faa662ce4ddd5494544efe7658d26",
-    "source_base": "66b904beb9a56cc23a894ac3a3a617786db9f350",
-    "source_commit": "5496ff0cf33c116f8b8d458e821b42c71c9ffa67",
-    "actual_formatter_commit": "4c71ab20e21c06565af799a0128a5c4b226b907d",
-    "predicate_cleanup_commit": "81889f5e09c247473aa7f20d927bb0eca16c7c48",
-    "behavior": "Retain the original bounded raw snapshot, full typed admission and original receipt only after native commit acknowledgement. Check the original verifier and retained observation before and after explicit context reads/final revalidation. Cold configured state refuses until import/reconcile. Delayed publication cannot replace a newer generation; conflicting same-generation receipts are refused.",
-    "limits": "Explicit CognitiveContext, Revalidate and NativeAppServer final-use path only; automatic attachments, recall/explain, history and direct store callers need their own binding or effective isolation. Source custody is not factual truth. Read linearization is not an external-effect lease."
+  "previous_checkpoint": {
+    "checkpoint_utc": "2026-11-11 03:04:26 UTC",
+    "commit": "51a7540fd276ef6fbcce5c15f00408252a934104"
   },
+  "production_adoption": false,
   "provider_readonly_observation": {
     "base_url": "http://127.0.0.1:18083/v1",
     "credentials_read": false,
@@ -483,5 +625,55 @@
       "properties": "MainPID=48315\nActiveState=active\nSubState=running\nFragmentPath=/home/qian-qi/.config/systemd/user/hepta-openresponses-transport.service\n",
       "stderr_bytes": 0
     }
+  },
+  "provider_smoke_prepared": {
+    "client_and_nextest_automatic_retries": 0,
+    "completion_wait_seconds": 20,
+    "credential_values_exported": false,
+    "format_clean": true,
+    "head": "55951ed9094ae894f0256a3461fd9504ef060473",
+    "pr": 5908,
+    "real_model_results": 0,
+    "retained_fixture_home": true,
+    "same_tree_formatter_head": "c7650e78c5ed379f544f094612f2f4bf4e78ae53",
+    "tree": "2ca6930d8abd148fe26fbe7d2857c760daa9316b",
+    "unbounded_connection_retries_disabled": true,
+    "unknown_ack_rule": "Reconcile original thread/turn/owner identity; do not create a fresh request to hide an unknown result."
+  },
+  "runtime_transport": {
+    "ai395_original_request": {
+      "observed_outcome": "Stopped before capsule application because both the capsule and gh were absent; the PTY returned to its shell. Current source remains 96038/tree1277666 clean; no application or native-result receipt exists.",
+      "request_id": "mem8-native-v4-003"
+    },
+    "archive_preflight": {
+      "exit_code": 0,
+      "github_write_attempted": false,
+      "original_idempotency_key": "mem6-original-publication-preflight-pty-20261111-ed353-v2",
+      "reconciliation_returned_reused": false
+    },
+    "archive_publication": {
+      "exit_code": 0,
+      "idempotency_key": "mem6-original-publication-desktop-20261111-ed353-v1",
+      "session_id": "dpty-6ca74b715a0436d45fb15a8299667f52b6f56c7e3a2eec1923572826a093e106",
+      "status": "VERIFIED_PUBLISHED"
+    },
+    "prior_outage_error": "MCP -32603 Internal error",
+    "reconciliation_required_for_other_unresolved_requests": true,
+    "status": "RESTORED_WITH_INTERMITTENT_TOOL_FAILURES",
+    "uncertain_requests_replayed_under_new_identity": false
+  },
+  "schema": "hepta.mem8.owner-followup.v1",
+  "scientific_acceptance": "HOLD",
+  "source_read_followup": {
+    "actual_formatter_commit": "4c71ab20e21c06565af799a0128a5c4b226b907d",
+    "behavior": "Retain the original bounded raw snapshot, full typed admission and original receipt only after native commit acknowledgement. Check the original verifier and retained observation before and after explicit context reads/final revalidation. Cold configured state refuses until import/reconcile. Delayed publication cannot replace a newer generation; conflicting same-generation receipts are refused.",
+    "capsule_git_blob": "be086371ac7faa662ce4ddd5494544efe7658d26",
+    "limits": "Explicit CognitiveContext, Revalidate and NativeAppServer final-use path only; automatic attachments, recall/explain, history and direct store callers need their own binding or effective isolation. Source custody is not factual truth. Read linearization is not an external-effect lease.",
+    "passed_scope": "Actual UDS import/replay/withdrawn-context and generation-order cases passed on exact c6aa; native drain readiness did not pass.",
+    "predicate_cleanup_commit": "81889f5e09c247473aa7f20d927bb0eca16c7c48",
+    "source_base": "66b904beb9a56cc23a894ac3a3a617786db9f350",
+    "source_commit": "5496ff0cf33c116f8b8d458e821b42c71c9ffa67",
+    "stage": "E",
+    "status": "EXPLICIT_SOURCE_READ_CASES_PASSED_ON_C6AA_FULL_OWNER_INCOMPLETE"
   }
 }

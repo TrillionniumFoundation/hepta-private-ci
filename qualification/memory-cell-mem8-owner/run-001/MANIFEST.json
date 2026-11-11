@@ -1,135 +1,165 @@
 {
-  "schema": "hepta.mem8.owner-checkpoint.evidence.v1",
-  "checkpoint_utc": "2026-11-11 03:04:26 UTC",
-  "repository": "TrillionniumFoundation/hepta-private-ci",
-  "source_admission_pr": 5888,
-  "integration_pr": 5892,
-  "original_staging_manifest": {
-    "path": "STAGES.json",
-    "git_blob_sha": "f7b9404d75f3dbc842805349dc052169cd9a1ce7"
-  },
   "archives": [
     {
-      "path": "runtime-transport-checkpoint.tar.xz",
       "bytes": 24500,
-      "sha256": "90ca1ca556f1259da8a430dc8f42be59a3c8cbf832ade8c2f41ac947cb366ac0",
       "git_blob_sha": "7a0f77c8a0c58f90f16384e83e8396d3fdf3890d",
-      "scope": "Original-host observations, publication helper and unresolved execution identities. No helper execution or completed native receipt inferred."
+      "path": "runtime-transport-checkpoint.tar.xz",
+      "scope": "Original-host observations, publication helper and unresolved execution identities. No helper execution or completed native receipt inferred.",
+      "sha256": "90ca1ca556f1259da8a430dc8f42be59a3c8cbf832ade8c2f41ac947cb366ac0"
     },
     {
-      "path": "native-ci-infrastructure-evidence.tar.xz",
       "bytes": 9908,
-      "sha256": "46a3ab8d92c38827dbe6a866dd34fd06b7fe804edfc935fab7c2f0197944b0f7",
       "git_blob_sha": "c572c6d87bdb45f195ee5462007ea342e5554d81",
-      "scope": "Exact workflow inputs, static shell/YAML validation and infrastructure publication receipts."
+      "path": "native-ci-infrastructure-evidence.tar.xz",
+      "scope": "Exact workflow inputs, static shell/YAML validation and infrastructure publication receipts.",
+      "sha256": "46a3ab8d92c38827dbe6a866dd34fd06b7fe804edfc935fab7c2f0197944b0f7"
     },
     {
-      "path": "source-admission-format-e68a-evidence.tar.xz",
       "bytes": 70620,
-      "sha256": "95263f4373d62889646bc760493a2a4dea175776fd0ce1ff8407d2aad8ba9b86",
       "git_blob_sha": "6df63cffb3f73811b771798778d6222cb350946f",
-      "scope": "Original artifact ZIP, full native job log, source hashes, receipts and exact formatter patch replay. Tests and fixes skipped on the rejected dirty source."
+      "path": "source-admission-format-e68a-evidence.tar.xz",
+      "scope": "Original artifact ZIP, full native job log, source hashes, receipts and exact formatter patch replay. Tests and fixes skipped on the rejected dirty source.",
+      "sha256": "95263f4373d62889646bc760493a2a4dea175776fd0ce1ff8407d2aad8ba9b86"
     },
     {
-      "path": "runtime-archive-provider-followup.tar.xz",
       "bytes": 26540,
-      "sha256": "5650d9eac750712e30308006a6ee2b30726ef97a07f8fe62684137e495f9fa71",
       "git_blob_sha": "7245ce683f3b96787abfcef3b1d4ed3dc6264ac5",
-      "scope": "02:33:51 UTC historical snapshot, complete archive publication/cloud verification receipts and verifier, runtime reconciliation and GET-only provider observations. Zero model calls."
+      "path": "runtime-archive-provider-followup.tar.xz",
+      "scope": "02:33:51 UTC historical snapshot, complete archive publication/cloud verification receipts and verifier, runtime reconciliation and GET-only provider observations. Zero model calls.",
+      "sha256": "5650d9eac750712e30308006a6ee2b30726ef97a07f8fe62684137e495f9fa71"
     },
     {
-      "path": "source-a-1b86-native-and-fix.tar.xz",
       "bytes": 96956,
-      "sha256": "8b86f75e33fd5c28f8a834fe46f41b09862f3aa01403eeb4c4a63ecabf5d38a2",
       "git_blob_sha": "53e1ab04328fb01325a230111ed03a78f5a901ec",
-      "scope": "4 native source-admission cases passed on clean 1b86 source, then scoped fix rewrote one predicate and failed the unchanged-source gate. No post-fix pass inferred."
+      "path": "source-a-1b86-native-and-fix.tar.xz",
+      "scope": "4 native source-admission cases passed on clean 1b86 source, then scoped fix rewrote one predicate and failed the unchanged-source gate. No post-fix pass inferred.",
+      "sha256": "8b86f75e33fd5c28f8a834fe46f41b09862f3aa01403eeb4c4a63ecabf5d38a2"
     },
     {
-      "path": "source-a-ad5-clean-native.tar.xz",
       "bytes": 106164,
-      "sha256": "2cf3dada46cef88da16879183d5a6f374f3eeaeb4fbecb34f83d070b62a3cd00",
       "git_blob_sha": "3bb7f16aeaddac1fe93033475497afc7eecbc1dd",
-      "scope": "Exact ad5 source A: 4 selected native cases passed, 420 unselected, format/fix and all source guards clean. Original artifact/logs/receipts and independent audits."
+      "path": "source-a-ad5-clean-native.tar.xz",
+      "scope": "Exact ad5 source A: 4 selected native cases passed, 420 unselected, format/fix and all source guards clean. Original artifact/logs/receipts and independent audits.",
+      "sha256": "2cf3dada46cef88da16879183d5a6f374f3eeaeb4fbecb34f83d070b62a3cd00"
     },
     {
-      "path": "formatter-e-5496/changed-source-before.tar.xz",
       "bytes": 86676,
-      "sha256": "ed058d37fd32efc99ff7b4727c353f2a00c9b65a02b43ce2ca02a86cec062f77",
       "git_blob_sha": "44a68e4183cb8f572df736e8d950b52ef5df6404",
-      "scope": "Original 5496 exact-source format evidence: 5 rewrites, source gate rejected, zero native tests."
+      "path": "formatter-e-5496/changed-source-before.tar.xz",
+      "scope": "Original 5496 exact-source format evidence: 5 rewrites, source gate rejected, zero native tests.",
+      "sha256": "ed058d37fd32efc99ff7b4727c353f2a00c9b65a02b43ce2ca02a86cec062f77"
     },
     {
-      "path": "formatter-e-5496/changed-source-after-format.tar.xz",
       "bytes": 13136,
-      "sha256": "d08680539e7f0d209b889450163b05db2c4929c99e1d747588d1dd0bb01c3392",
       "git_blob_sha": "1db497b802a3739cd4fc9248c086c64f57e33fff",
-      "scope": "Original 5496 exact-source format evidence: 5 rewrites, source gate rejected, zero native tests."
+      "path": "formatter-e-5496/changed-source-after-format.tar.xz",
+      "scope": "Original 5496 exact-source format evidence: 5 rewrites, source gate rejected, zero native tests.",
+      "sha256": "d08680539e7f0d209b889450163b05db2c4929c99e1d747588d1dd0bb01c3392"
     },
     {
-      "path": "formatter-e-5496/native-e-5496-format-records.tar.xz",
       "bytes": 12348,
-      "sha256": "ae3f6f6455318d599b71939f0b57debc323a133ea12b0c0be567c2eb957807eb",
       "git_blob_sha": "e807afc01e65a0807dced238e11375cfd11fbdb5",
-      "scope": "Original 5496 exact-source format evidence: 5 rewrites, source gate rejected, zero native tests."
+      "path": "formatter-e-5496/native-e-5496-format-records.tar.xz",
+      "scope": "Original 5496 exact-source format evidence: 5 rewrites, source gate rejected, zero native tests.",
+      "sha256": "ae3f6f6455318d599b71939f0b57debc323a133ea12b0c0be567c2eb957807eb"
     },
     {
-      "path": "formatter-full-6be/changed-source-before.tar.xz",
       "bytes": 84404,
-      "sha256": "08123f92768812ed3b1ab563c4e843182740b9d4f60b51c4b2a59baffb91c6ba",
       "git_blob_sha": "7a2dec5990879d08335d08bbb924a32cbbf3a9f4",
-      "scope": "Original 6be exact-source format evidence: 18 rewrites, source gate rejected, zero native tests. Host/GitHub before/after and full patch were independently compared."
+      "path": "formatter-full-6be/changed-source-before.tar.xz",
+      "scope": "Original 6be exact-source format evidence: 18 rewrites, source gate rejected, zero native tests. Host/GitHub before/after and full patch were independently compared.",
+      "sha256": "08123f92768812ed3b1ab563c4e843182740b9d4f60b51c4b2a59baffb91c6ba"
     },
     {
-      "path": "formatter-full-6be/changed-source-after-format.tar.xz",
       "bytes": 54036,
-      "sha256": "ce102af5a46fe164747a4a80edb293bbfcfdfdcf514608fc0317d4b269e39874",
       "git_blob_sha": "abf66e79195645bc3d73e65f337c428f939efd0b",
-      "scope": "Original 6be exact-source format evidence: 18 rewrites, source gate rejected, zero native tests. Host/GitHub before/after and full patch were independently compared."
+      "path": "formatter-full-6be/changed-source-after-format.tar.xz",
+      "scope": "Original 6be exact-source format evidence: 18 rewrites, source gate rejected, zero native tests. Host/GitHub before/after and full patch were independently compared.",
+      "sha256": "ce102af5a46fe164747a4a80edb293bbfcfdfdcf514608fc0317d4b269e39874"
     },
     {
-      "path": "formatter-full-6be/native-6be-format-records-v2.tar.xz",
       "bytes": 37120,
-      "sha256": "b13363c82412b4e65ef03bfb7f1d91d0ef39bc2bea4af2e21a0ed9639f22afa9",
       "git_blob_sha": "4a7053308ed5a2b8e4c038231c23ad5b9b0daaa6",
-      "scope": "Original 6be exact-source format evidence: 18 rewrites, source gate rejected, zero native tests. Host/GitHub before/after and full patch were independently compared."
+      "path": "formatter-full-6be/native-6be-format-records-v2.tar.xz",
+      "scope": "Original 6be exact-source format evidence: 18 rewrites, source gate rejected, zero native tests. Host/GitHub before/after and full patch were independently compared.",
+      "sha256": "b13363c82412b4e65ef03bfb7f1d91d0ef39bc2bea4af2e21a0ed9639f22afa9"
+    },
+    {
+      "bytes": 130152,
+      "git_blob_sha": "5fe3f4c2163ae6d5ce96e0ed0ee44761e301b769",
+      "path": "native-attempts/mem-native-81889-ai395-full-evidence.tar.xz",
+      "scope": "terminal failed source-head native attempt; 0 tests; no Agentd/protocol/fix",
+      "sha256": "60c5a868bca61181429ce596a1b023b11a5e13c51dccd8ccfbb3112a161db426"
+    },
+    {
+      "bytes": 135800,
+      "git_blob_sha": "b32187e8a75c30999159129c3042408cead98775",
+      "path": "native-attempts/mem-native-81889-gcc-ai395-full-evidence.tar.xz",
+      "scope": "terminal failed source-head native attempt; 0 tests; no Agentd/protocol/fix",
+      "sha256": "f827815a0c4fa4ec7fb022497f7b1d8c4bcd7410bc5e0d42c1ecfc3ebc3a531b"
+    },
+    {
+      "bytes": 126604,
+      "git_blob_sha": "ac55b1370426a4267876ae834052bc62c09041bd",
+      "path": "native-attempts/mem-native-c6aa-ai395-full-evidence.tar.xz",
+      "scope": "Actual 11 memory passes on exact c6aa; original orchestration parser failure retained. No later phase executed in this attempt.",
+      "sha256": "4c281fa7de63afb818227b1ffcc0ec616f6718ec7631224aacbef7c315942315"
+    },
+    {
+      "bytes": 136076,
+      "git_blob_sha": "580242b76fb364c85ea5a99bf19f634498d50779",
+      "path": "native-attempts/mem-native-c6aa-cont-ai395-full-evidence.tar.xz",
+      "scope": "Actual exact c6aa Agentd 4 passed/1 failed with one default retry; zero drain completion markers. Original memory receipts referenced without recount.",
+      "sha256": "0f500f5b3120aac045ab596a2e05548cc7e35594b55a1ce7d1fefb06d277da29"
     }
   ],
-  "new_model_episodes": 0,
-  "production_adoption": false,
-  "scientific_acceptance": "HOLD",
+  "audits": [
+    {
+      "git_blob_sha": "266494d0fcb8364b0d899057b198600aca55dedc",
+      "path": "formatter-e-5496/FINAL_AUDIT.json"
+    },
+    {
+      "git_blob_sha": "0dd2819c5d4eecde7899eeb6fce5bdc323d16457",
+      "path": "formatter-full-6be/HOST_GITHUB_FORMATTER_COMPARISON.json"
+    }
+  ],
+  "checkpoint_utc": "2026-11-11 03:55:14 UTC",
+  "ci_evidence_parent": "5ddc248b7e46214da728b44496d66c2e7ae3f62d",
+  "closed_original_blockers": [
+    "MEM6-CLOUD-AND-GITHUB-RAW-COPY"
+  ],
+  "current_sources": {
+    "head": "66f570a77c60aac8d33e6cbeac8dfd120ef1d867",
+    "path": "CURRENT_SOURCES.json",
+    "paths": 32,
+    "tree": "8eaee893e1e6e43423f288fc654e05c3c95f6179"
+  },
+  "formatted_stage_source_only_manifest": {
+    "git_blob_sha": "2031631bdeb60ab65d85f54f4489bece26bbbfe6",
+    "path": "historical-formatted-stages-81889.json",
+    "scope": "Historical source-only replay; excludes the subsequent c6aa one-line compile repair; no per-stage compilation claim.",
+    "target_commit": "81889f5e09c247473aa7f20d927bb0eca16c7c48"
+  },
   "full_owner_cold_recovery": false,
-  "unknown_host_requests_replayed": false,
+  "integration_pr": 5892,
+  "new_model_episodes": 0,
   "notes": [
     "Every archive is an immutable Git blob smaller than 500000 bytes.",
     "Completed results are bound to their actual source. Compilation failures execute zero test cases. Running jobs are not passing results.",
     "Source-only stage replay is distinct from native qualification.",
-    "Dependency review and Windows original failure evidence remain in memory-cell-mem8-ci-followup; this checkpoint is stacked on current evidence commit 63e6bd8379b8500b029f7d3da7db1324ce5a2a6c.",
+    "Dependency review and Windows original failure evidence remain in memory-cell-mem8-ci-followup; this checkpoint is stacked on current evidence commit 5ddc248b7e46214da728b44496d66c2e7ae3f62d.",
     "The complete original archive is preserved separately in research/mem6-full-archive-20261111-ed353 at immutable commit b66d74d4a61b15f3d9e1eb3b5ddfa251777ee4c1."
   ],
-  "audits": [
-    {
-      "path": "formatter-e-5496/FINAL_AUDIT.json",
-      "git_blob_sha": "266494d0fcb8364b0d899057b198600aca55dedc"
-    },
-    {
-      "path": "formatter-full-6be/HOST_GITHUB_FORMATTER_COMPARISON.json",
-      "git_blob_sha": "0dd2819c5d4eecde7899eeb6fce5bdc323d16457"
-    }
-  ],
-  "formatted_stage_source_only_manifest": {
-    "path": "historical-formatted-stages-81889.json",
-    "git_blob_sha": "2031631bdeb60ab65d85f54f4489bece26bbbfe6",
-    "target_commit": "81889f5e09c247473aa7f20d927bb0eca16c7c48",
-    "scope": "Historical source-only replay; excludes the subsequent c6aa one-line compile repair; no per-stage compilation claim."
+  "open_original_blocker_count": 10,
+  "original_staging_manifest": {
+    "git_blob_sha": "f7b9404d75f3dbc842805349dc052169cd9a1ce7",
+    "path": "STAGES.json"
   },
-  "current_sources": {
-    "path": "CURRENT_SOURCES.json",
-    "head": "c6aa120a5a35a0208ed4b92d466904b00cd58f9b",
-    "tree": "6a4634549e055d4f81d4e4dbd8e400b8c6d97b89",
-    "paths": 30
-  },
-  "closed_original_blockers": [
-    "MEM6-CLOUD-AND-GITHUB-RAW-COPY"
-  ],
-  "open_original_blocker_count": 10
+  "previous_checkpoint_commit": "51a7540fd276ef6fbcce5c15f00408252a934104",
+  "production_adoption": false,
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "schema": "hepta.mem8.owner-checkpoint.evidence.v1",
+  "scientific_acceptance": "HOLD",
+  "source_admission_pr": 5888,
+  "unknown_host_requests_replayed": false
 }
