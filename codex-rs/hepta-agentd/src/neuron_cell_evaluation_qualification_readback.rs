@@ -14,8 +14,12 @@ impl<W: AnchorWitnessStore> OriginalCellEvaluationQualificationOwnerV1<W> {
     /// actual raw execution, holdout, Cell journals and Trainer to still agree.
     pub async fn readback(
         &mut self,
-        mut source: OriginalCellEvaluationQualificationSourcesV1<'_,
-            impl AnchorWitnessStore, impl AnchorWitnessStore, impl AnchorWitnessStore>,
+        mut source: OriginalCellEvaluationQualificationSourcesV1<
+            '_,
+            impl AnchorWitnessStore,
+            impl AnchorWitnessStore,
+            impl AnchorWitnessStore,
+        >,
     ) -> Result<CellEvaluationQualificationV1, Error> {
         let started_at = binding::now()?;
         let bytes = self.completed_bytes()?;
@@ -24,15 +28,21 @@ impl<W: AnchorWitnessStore> OriginalCellEvaluationQualificationOwnerV1<W> {
 
     pub(super) async fn read_completed(
         &mut self,
-        source: &mut OriginalCellEvaluationQualificationSourcesV1<'_,
-            impl AnchorWitnessStore, impl AnchorWitnessStore, impl AnchorWitnessStore>,
+        source: &mut OriginalCellEvaluationQualificationSourcesV1<
+            '_,
+            impl AnchorWitnessStore,
+            impl AnchorWitnessStore,
+            impl AnchorWitnessStore,
+        >,
         bytes: &[u8],
         started_at: u64,
     ) -> Result<CellEvaluationQualificationV1, Error> {
         let result = async {
             let prepared = source.prepare(&self.config, started_at).await?;
-            self.finish_readback(source, &prepared, bytes, started_at, false).await
-        }.await;
+            self.finish_readback(source, &prepared, bytes, started_at, false)
+                .await
+        }
+        .await;
         if result.is_err() {
             self.fenced = true;
         }
@@ -41,8 +51,12 @@ impl<W: AnchorWitnessStore> OriginalCellEvaluationQualificationOwnerV1<W> {
 
     pub(super) async fn finish_readback(
         &mut self,
-        source: &mut OriginalCellEvaluationQualificationSourcesV1<'_,
-            impl AnchorWitnessStore, impl AnchorWitnessStore, impl AnchorWitnessStore>,
+        source: &mut OriginalCellEvaluationQualificationSourcesV1<
+            '_,
+            impl AnchorWitnessStore,
+            impl AnchorWitnessStore,
+            impl AnchorWitnessStore,
+        >,
         prepared: &Prepared,
         bytes: &[u8],
         started_at: u64,

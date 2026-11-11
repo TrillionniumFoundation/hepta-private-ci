@@ -118,10 +118,15 @@ impl<W: AnchorWitnessStore> OriginalCellEvaluationQualificationOwnerV1<W> {
         config: OriginalCellEvaluationQualificationConfigV1,
     ) -> Result<Self, Error> {
         let saved = binding::validate_config(&config)?;
-        let journal = OriginalCellEvaluationExecutionStoreV1::create(
-            file, witness, saved.binding_digest,
-        )?;
-        Ok(Self { journal, config, saved, fresh_dispatch: true, fenced: false })
+        let journal =
+            OriginalCellEvaluationExecutionStoreV1::create(file, witness, saved.binding_digest)?;
+        Ok(Self {
+            journal,
+            config,
+            saved,
+            fresh_dispatch: true,
+            fenced: false,
+        })
     }
 
     /// Strict exact-CURRENT recovery. This instance can only read existing
@@ -132,10 +137,15 @@ impl<W: AnchorWitnessStore> OriginalCellEvaluationQualificationOwnerV1<W> {
         config: OriginalCellEvaluationQualificationConfigV1,
     ) -> Result<Self, Error> {
         let saved = binding::validate_config(&config)?;
-        let journal = OriginalCellEvaluationExecutionStoreV1::recover(
-            file, witness, saved.binding_digest,
-        )?;
-        Ok(Self { journal, config, saved, fresh_dispatch: false, fenced: false })
+        let journal =
+            OriginalCellEvaluationExecutionStoreV1::recover(file, witness, saved.binding_digest)?;
+        Ok(Self {
+            journal,
+            config,
+            saved,
+            fresh_dispatch: false,
+            fenced: false,
+        })
     }
 
     /// Persist the original independent decision once, or read its exact
@@ -143,8 +153,12 @@ impl<W: AnchorWitnessStore> OriginalCellEvaluationQualificationOwnerV1<W> {
     /// accepted. All work uses this owner's fixed original configuration.
     pub async fn qualify_or_readback(
         &mut self,
-        mut source: OriginalCellEvaluationQualificationSourcesV1<'_,
-            impl AnchorWitnessStore, impl AnchorWitnessStore, impl AnchorWitnessStore>,
+        mut source: OriginalCellEvaluationQualificationSourcesV1<
+            '_,
+            impl AnchorWitnessStore,
+            impl AnchorWitnessStore,
+            impl AnchorWitnessStore,
+        >,
     ) -> Result<CellEvaluationQualificationV1, Error> {
         let started_at = binding::now()?;
         match self.state() {
@@ -168,8 +182,12 @@ impl<W: AnchorWitnessStore> OriginalCellEvaluationQualificationOwnerV1<W> {
 
     async fn publish_once(
         &mut self,
-        source: &mut OriginalCellEvaluationQualificationSourcesV1<'_,
-            impl AnchorWitnessStore, impl AnchorWitnessStore, impl AnchorWitnessStore>,
+        source: &mut OriginalCellEvaluationQualificationSourcesV1<
+            '_,
+            impl AnchorWitnessStore,
+            impl AnchorWitnessStore,
+            impl AnchorWitnessStore,
+        >,
         started_at: u64,
     ) -> Result<CellEvaluationQualificationV1, Error> {
         binding::new_work_time(&self.config, started_at, binding::now()?)?;
@@ -204,9 +222,9 @@ impl<W: AnchorWitnessStore> OriginalCellEvaluationQualificationOwnerV1<W> {
         let qualification = result?;
         drop(sink);
         let bytes = self.completed_bytes()?;
-        let restored = self.finish_readback(
-            source, &prepared, &bytes, started_at, true,
-        ).await?;
+        let restored = self
+            .finish_readback(source, &prepared, &bytes, started_at, true)
+            .await?;
         if restored != qualification {
             return Err(Error::CommitUncertain);
         }
@@ -218,7 +236,9 @@ impl<W: AnchorWitnessStore> OriginalCellEvaluationQualificationOwnerV1<W> {
             return Err(Error::CommitUncertain);
         }
         match ProductEvaluationExecutionStoreV1::readback(&mut self.journal, &self.saved) {
-            Err(error @ (StoreError::Unavailable | StoreError::Indeterminate | StoreError::Corrupt)) => {
+            Err(
+                error @ (StoreError::Unavailable | StoreError::Indeterminate | StoreError::Corrupt),
+            ) => {
                 self.fenced = true;
                 Err(error.into())
             }
