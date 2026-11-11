@@ -24,6 +24,9 @@ mod q24_model;
 #[path = "authority_host_generation_initial_session.rs"]
 mod generation_initial;
 pub use generation_initial::RootGenerationInitialEnrollmentCapabilityV1;
+pub use generation_initial::RootGenerationInitialDeploymentFilesV1;
+pub use generation_initial::RootGenerationInitialDeploymentSessionV1;
+pub use generation_initial::RootGenerationInitialDeploymentV1;
 pub use generation_initial::RootGenerationInitialRegistrationV1;
 
 #[path = "authority_host_generation_publication_session.rs"]

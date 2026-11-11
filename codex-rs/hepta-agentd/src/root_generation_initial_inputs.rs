@@ -10,8 +10,8 @@ use codex_hepta_types::Digest32;
 
 use crate::AgentdError;
 use crate::AgentdRootAuthorityPeer;
-use crate::RootGenerationPublicationConnectionV1;
 use crate::RootGenerationInitialHandoffV1;
+use crate::RootGenerationPublicationConnectionV1;
 
 /// Same original Root route before any initial CURRENT exists. It is not
 /// Clone or deserializable; the distinct initial preparation consumes it.
@@ -34,10 +34,17 @@ impl RootGenerationInitialHandoffV1 {
         lifetime: Duration,
     ) -> Result<OriginalRootGenerationInitialV1, AgentdError> {
         // SAFETY: both calls only read the current process's credentials.
-        if unsafe { libc::getuid() } == 0 || unsafe { libc::geteuid() } == 0
-            || timeout.is_zero() || timeout > Duration::from_millis(500)
-            || lifetime.is_zero() || lifetime > Duration::from_secs(300)
-        { return Err(refused("original non-Root consumer and bounded initial publication timing required")); }
+        if unsafe { libc::getuid() } == 0
+            || unsafe { libc::geteuid() } == 0
+            || timeout.is_zero()
+            || timeout > Duration::from_millis(500)
+            || lifetime.is_zero()
+            || lifetime > Duration::from_secs(300)
+        {
+            return Err(refused(
+                "original non-Root consumer and bounded initial publication timing required",
+            ));
+        }
         connection.require_original_publication_session()?;
         let end = Instant::now() + lifetime;
         let size = self.bootstrap.metadata()?.len();
@@ -47,44 +54,74 @@ impl RootGenerationInitialHandoffV1 {
         crate::authority_host_bootstrap_seal::validate_sealed(&self.bootstrap, size)?;
         self.bootstrap.rewind()?;
         let mut raw = Vec::with_capacity(size as usize);
-        self.bootstrap.by_ref().take(size + 1).read_to_end(&mut raw)?;
+        self.bootstrap
+            .by_ref()
+            .take(size + 1)
+            .read_to_end(&mut raw)?;
         crate::authority_host_bootstrap_seal::validate_sealed(&self.bootstrap, size)?;
-        if raw.len() as u64 != size { return Err(refused("initial publication bootstrap changed")); }
+        if raw.len() as u64 != size {
+            return Err(refused("initial publication bootstrap changed"));
+        }
         let bundle: InitialBootstrap = serde_json::from_slice(&raw)?;
         let (original, identity) = connection.original_launch_binding();
-        let socket = original.sockets.observation.parent()
-            .ok_or_else(|| refused("original Root socket parent missing"))?.join(SOCKET);
-        if bundle.purpose != PURPOSE || bundle.root != original.root || bundle.consumer != original.consumer
-            || bundle.root.pid != self.root_pid || bundle.root.uid != 0
+        let socket = original
+            .sockets
+            .observation
+            .parent()
+            .ok_or_else(|| refused("original Root socket parent missing"))?
+            .join(SOCKET);
+        if bundle.purpose != PURPOSE
+            || bundle.root != original.root
+            || bundle.consumer != original.consumer
+            || bundle.root.pid != self.root_pid
+            || bundle.root.uid != 0
             || bundle.identity.identity()? != *identity
             || original.registered_identity.identity()? != *identity
             || bundle.writer != original.writer_proof.sha256()?.as_str()
             || bundle.socket != socket
-            || !bundle.writer.parse::<Digest32>()
+            || !bundle
+                .writer
+                .parse::<Digest32>()
                 .is_ok_and(|digest| !digest.is_zero() && digest.to_string() == bundle.writer)
             || bundle.deployment.target.scope().agent_id != identity.agent_id.as_str()
-        { return Err(refused("initial publication route differs from original Root launch")); }
+        {
+            return Err(refused(
+                "initial publication route differs from original Root launch",
+            ));
+        }
         codex_hepta_types::StableId::new(&bundle.deployment.operation)
             .map_err(|error| refused(error.to_string()))?;
         let paths = &original.sockets;
         // SAFETY: getegid only observes the actual current credential.
         crate::authority_host_runtime::validate_lane_paths(
-            &[&paths.observation, &paths.issuer, &paths.checkpoint, &paths.device_frontier,
-                &paths.notes_frontier, &socket],
+            &[
+                &paths.observation,
+                &paths.issuer,
+                &paths.checkpoint,
+                &paths.device_frontier,
+                &paths.notes_frontier,
+                &socket,
+            ],
             unsafe { libc::getegid() },
         )?;
         connection.require_original_publication_session()?;
-        let stream = tokio::time::timeout(timeout,
-            tokio::net::UnixStream::connect(&socket)).await
+        let stream = tokio::time::timeout(timeout, tokio::net::UnixStream::connect(&socket))
+            .await
             .map_err(|_| refused("initial publication Root connection timed out"))??;
-        let remaining = end.checked_duration_since(Instant::now()).filter(|value| !value.is_zero())
+        let remaining = end
+            .checked_duration_since(Instant::now())
+            .filter(|value| !value.is_zero())
             .ok_or_else(|| refused("initial publication route expired"))?;
         let original = OriginalPublicationStream::from_stream(
-            stream.into_std()?, self.root_pidfd,
+            stream.into_std()?,
+            self.root_pidfd,
             AgentdRootAuthorityPeer {
-                pid: bundle.root.pid, boot_id: bundle.root.boot_id.clone(),
+                pid: bundle.root.pid,
+                boot_id: bundle.root.boot_id.clone(),
                 process_start_ticks: bundle.root.process_start_ticks,
-            }, timeout, remaining,
+            },
+            timeout,
+            remaining,
         )?;
         // Only observation occurs during bootstrap. Cancellation discards the
         // result and original stream; it never starts a CURRENT mutation.
@@ -94,7 +131,9 @@ impl RootGenerationInitialHandoffV1 {
                 original, &bundle, connection,
             )?;
             Ok(OriginalRootGenerationInitialV1 { client })
-        }).await.map_err(|_| refused("initial publication connect worker lost"))?
+        })
+        .await
+        .map_err(|_| refused("initial publication connect worker lost"))?
     }
 }
 

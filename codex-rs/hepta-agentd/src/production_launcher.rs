@@ -360,7 +360,8 @@ impl AgentdProductionLaunch {
         config.require_root_learning_assembled()?;
         if self.initial_publication.is_some() {
             return Err(AgentdError::Invalid(
-                "original initial handoff must be taken for actual initial publication before run".into(),
+                "original initial handoff must be taken for actual initial publication before run"
+                    .into(),
             ));
         }
         if self.publication.is_some() {

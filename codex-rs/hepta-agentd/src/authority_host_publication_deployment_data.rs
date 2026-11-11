@@ -57,7 +57,7 @@ pub(super) struct LateMaterial {
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
-pub(super) struct ObserverData {
+pub(in crate::authority_host_runtime::session) struct ObserverData {
     pub generation: CellGenerationConfigV2,
     pub journal_records: u64,
     pub witness_scope: [u8; 32],
@@ -67,7 +67,7 @@ pub(super) struct ObserverData {
 }
 
 impl ObserverData {
-    pub(super) fn original_observer_config(&self) -> io::Result<CellGenerationObserverConfigV1> {
+    pub(in crate::authority_host_runtime::session) fn original_observer_config(&self) -> io::Result<CellGenerationObserverConfigV1> {
         Ok(CellGenerationObserverConfigV1 {
             generation: self.generation.clone(),
             journal_records: self.journal_records,
@@ -84,7 +84,7 @@ impl ObserverData {
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
-pub(super) struct SignerData {
+pub(in crate::authority_host_runtime::session) struct SignerData {
     pub id: String,
     pub verifying_key: [u8; 32],
     pub minimum_authority_epoch: u64,
@@ -123,7 +123,7 @@ impl SignerData {
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
-pub(super) struct OwnerTrustData {
+pub(in crate::authority_host_runtime::session) struct OwnerTrustData {
     pub registry_id: String,
     pub withdrawal_scope: [u8; 32],
     pub minimum_registry_generation: u64,
@@ -134,7 +134,7 @@ pub(super) struct OwnerTrustData {
 }
 
 impl OwnerTrustData {
-    pub(super) fn original_owner_trust(&self) -> io::Result<ArtifactOwnerTrustV1> {
+    pub(in crate::authority_host_runtime::session) fn original_owner_trust(&self) -> io::Result<ArtifactOwnerTrustV1> {
         Ok(ArtifactOwnerTrustV1 {
             registry_id: StableId::new(&self.registry_id).map_err(io::Error::other)?,
             withdrawal_scope_digest: Digest32::from_array(self.withdrawal_scope),
@@ -158,7 +158,7 @@ impl OwnerTrustData {
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
-pub(super) struct SelectorTrustData {
+pub(in crate::authority_host_runtime::session) struct SelectorTrustData {
     pub registry_id: String,
     pub withdrawal_scope: [u8; 32],
     pub minimum_authority_epoch: u64,
@@ -166,7 +166,7 @@ pub(super) struct SelectorTrustData {
 }
 
 impl SelectorTrustData {
-    pub(super) fn original_selector(
+    pub(in crate::authority_host_runtime::session) fn original_selector(
         &self,
         owner: &ArtifactOwnerTrustV1,
     ) -> io::Result<ArtifactSelectionVerifierV1> {
@@ -189,7 +189,7 @@ impl SelectorTrustData {
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
-pub(super) struct CurrentData {
+pub(in crate::authority_host_runtime::session) struct CurrentData {
     pub withdrawal_scope: [u8; 32],
     pub binding: [u8; 32],
     pub registry_id: String,
@@ -205,7 +205,7 @@ pub(super) struct CurrentData {
 }
 
 impl CurrentData {
-    pub(super) fn original_current(&self) -> io::Result<SignedCurrentArtifactHeadV1> {
+    pub(in crate::authority_host_runtime::session) fn original_current(&self) -> io::Result<SignedCurrentArtifactHeadV1> {
         Ok(SignedCurrentArtifactHeadV1 {
             withdrawal_scope_digest: Digest32::from_array(self.withdrawal_scope),
             binding: Digest32::from_array(self.binding),
@@ -231,7 +231,7 @@ impl CurrentData {
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
-pub(super) struct WithdrawalData {
+pub(in crate::authority_host_runtime::session) struct WithdrawalData {
     pub binding: [u8; 32],
     pub scope: [u8; 32],
     pub head: [u8; 32],
@@ -242,7 +242,7 @@ pub(super) struct WithdrawalData {
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
-pub(super) struct IssuerKeyData {
+pub(in crate::authority_host_runtime::session) struct IssuerKeyData {
     pub key_id: String,
     pub verifying_key: [u8; 32],
     pub not_before_authority_epoch: u64,
@@ -251,7 +251,7 @@ pub(super) struct IssuerKeyData {
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
-pub(super) struct SelectionData {
+pub(in crate::authority_host_runtime::session) struct SelectionData {
     pub selection_id: String,
     pub artifact_id: String,
     pub registry_id: String,
@@ -279,12 +279,12 @@ pub(super) struct SelectionData {
 
 #[derive(Clone, Copy, Debug, Deserialize, Serialize)]
 #[serde(rename_all = "snake_case")]
-pub(super) enum ModelKind {
+pub(in crate::authority_host_runtime::session) enum ModelKind {
     Model,
 }
 
 impl SelectionData {
-    pub(super) fn original_selection(&self) -> io::Result<SignedArtifactSelectionV1> {
+    pub(in crate::authority_host_runtime::session) fn original_selection(&self) -> io::Result<SignedArtifactSelectionV1> {
         Ok(SignedArtifactSelectionV1 {
             selection_id: StableId::new(&self.selection_id).map_err(io::Error::other)?,
             artifact_id: StableId::new(&self.artifact_id).map_err(io::Error::other)?,
@@ -331,7 +331,7 @@ where
 }
 
 impl ObserverData {
-    pub(super) fn from_original_observer(original: &CellGenerationObserverConfigV1) -> Self {
+    pub(in crate::authority_host_runtime::session) fn from_original_observer(original: &CellGenerationObserverConfigV1) -> Self {
         Self {
             generation: original.generation.clone(),
             journal_records: original.journal_records,
@@ -344,7 +344,7 @@ impl ObserverData {
 }
 
 impl SelectionData {
-    pub(super) fn from_original_selection(
+    pub(in crate::authority_host_runtime::session) fn from_original_selection(
         original: &SignedArtifactSelectionV1,
     ) -> io::Result<Self> {
         if original.artifact_kind != ArtifactKind::Model {

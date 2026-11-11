@@ -20,7 +20,7 @@ pub(super) use runtime::BoundPublication;
 pub(super) use runtime::serve_optional;
 
 #[path = "authority_host_publication_deployment.rs"]
-mod deployment;
+pub(super) mod deployment;
 pub use deployment::RootGenerationPublicationDeploymentSessionV1;
 pub use deployment::RootGenerationPublicationDeploymentV1;
 

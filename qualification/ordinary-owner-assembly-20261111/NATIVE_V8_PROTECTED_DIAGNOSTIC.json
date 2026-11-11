@@ -1,0 +1,50 @@
+{
+  "candidate_tree": "33e4e75de5804400363c15919c4913d359d188ae",
+  "checker_blob": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+  "entries": 332,
+  "failures": [
+    {
+      "error": "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs: required code order missing: ['let publication_handoff = publication_handoff', 'inherited_descriptor(fd, &mut claimed)', 'publication_deployment.is_some() != publication_handoff.is_some()', 'let owner = std::io::stdin().as_fd().try_clone_to_owned()?', 'prepared.with_registered_learning(&profile)?', 'prepared.enable_generation_publication()?', 'capability.with_original_deployment(&path)?', 'send_root_generation_publication_handoff(', 'let stop = PublicationDeploymentStop', 'deployment.wait_and_register(stop_ref)', 'let served = match', 'prepared.serve_with_ready(ready)', 'drop(stop)', 'worker.join()', 'served?']",
+      "index": 163,
+      "path": "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs"
+    },
+    {
+      "error": "codex-rs/hepta-agentd/src/authority_host_publication_deployment.rs: required marker missing: 'ATTEMPTS.fetch_update'",
+      "index": 311,
+      "path": "codex-rs/hepta-agentd/src/authority_host_publication_deployment.rs"
+    },
+    {
+      "error": "codex-rs/hepta-agentd/src/authority_host_generation_initial.rs:fn fence_initial_record(: required code order missing: ['store.load(owner)', 'next.fenced = true', 'store.compare_and_set(owner, &before, &next)', 'store.load(owner)']",
+      "index": 317,
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial.rs"
+    },
+    {
+      "error": "codex-rs/hepta-agentd/src/authority_host_generation_initial_transport.rs:fn serve_generation_initial(: required code order missing: ['HostAuthorityPeerChannel::from_stream(', 'channel.exchange(', 'self.with_initial_publication_context(', 'request.purpose != PURPOSE', 'slot.require_profile()?', 'slot.require_selection(now)?', 'read_current(slot, current.as_ref())?', 'slot.require_target(/*fresh*/ true)?', 'require_fresh_window(now, signed, witness)?', 'slot.verify_retained(signed, witness)?', 'slot.require_genesis()?', 'let raw = serde_json::to_vec(', 'NeuronGenerationCurrentOwnerV1::prepare_initial(', 'read_current(slot, Some(&owner))?', 'original_broker_initial_publish(', 'slot.require_selection(after_time)?', 'read_current(slot, current.as_ref())? != after', 'encoded_response = Some(raw)']",
+      "index": 320,
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_transport.rs"
+    },
+    {
+      "error": "codex-rs/hepta-agentd/src/root_generation_initial_client.rs:fn from_original_initial_stream(: required code order missing: ['connection.require_original_publication_session()?', 'Command::Observe', 'stream.exchange(', 'profile.digest()? != profile.binding', 'RootGenerationInitialModeV1::Reserve', 'validate_profile(profile)?', 'validate_head(profile, response.head.as_ref())?', 'connection.require_original_publication_session()?', 'Ok(Self {']",
+      "index": 323,
+      "path": "codex-rs/hepta-agentd/src/root_generation_initial_client.rs"
+    },
+    {
+      "error": "codex-rs/hepta-agentd/src/root_generation_initial_prepare.rs:fn prepare_original_initial(: required code order missing: ['RootGenerationInitialModeV1::Reserve', 'self.require_original_target(&files)?', 'observer.require_original_unwritten()', 'artifact_owner.lock()', 'selected.revalidate(', 'validate_initial_target(&selected, &target)?', 'observer.require_original_unwritten()', 'self.client.prepare_initial_current()?', 'let completed =', 'from_original_root_initial(self.client)?', 'current.recover_initial_operation(', 'CellGenerationJournalV2::open_guarded(', 'journal.prepared_checkpoint()', 'observer.observe()', 'PreparedAgentdGenerationInitialV1::from_parts(', 'completed.map_err(']",
+      "index": 326,
+      "path": "codex-rs/hepta-agentd/src/root_generation_initial_prepare.rs"
+    },
+    {
+      "error": "codex-rs/hepta-agentd/src/circuit_feature_initial_root.rs:fn publish(: required code order missing: ['require_feature(', 'let original: PreparedAgentdGenerationInitialV1<FileAnchorWitnessStore>', 'original.publish(signed)?', 'into_circuit_feature_task(']",
+      "index": 327,
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_initial_root.rs"
+    },
+    {
+      "error": "codex-rs/hepta-agentd/src/neuron_generation_current_store.rs: unique code function required: fn from_original_initial(",
+      "index": 329,
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_current_store.rs"
+    }
+  ],
+  "native_behavior_executed": false,
+  "official_full_verifier_executed": false,
+  "source_sha": "89b3b44747bedbc80732f73eda2405b7a397b926"
+}

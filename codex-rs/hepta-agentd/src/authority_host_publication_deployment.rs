@@ -21,9 +21,9 @@ use super::RootGenerationPublicationEnrollmentCapabilityV1;
 use super::RootGenerationPublicationRegistrationV1;
 
 #[path = "authority_host_publication_deployment_files.rs"]
-mod files;
+pub(in crate::authority_host_runtime::session) mod files;
 #[path = "authority_host_publication_deployment_data.rs"]
-mod data;
+pub(in crate::authority_host_runtime::session) mod data;
 #[path = "authority_host_publication_deployment_inputs.rs"]
 mod inputs;
 

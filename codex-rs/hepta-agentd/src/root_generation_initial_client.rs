@@ -2,19 +2,19 @@
 //! session are mandatory. It can express no update, forward recovery, arbitrary
 //! CAS, alternate owner or retry after uncertain framing.
 
-use std::sync::Mutex;
-use std::sync::atomic::AtomicBool;
-use std::sync::atomic::Ordering;
 use crate::AgentdError;
 use crate::authority_host_service::generation_initial::Command;
 use crate::authority_host_service::generation_initial::InitialBootstrap;
 use crate::authority_host_service::generation_initial::InitialProfile;
+use crate::authority_host_service::generation_initial::PURPOSE;
 use crate::authority_host_service::generation_initial::Request;
 use crate::authority_host_service::generation_initial::Response;
-use crate::authority_host_service::generation_initial::PURPOSE;
 use crate::authority_host_service::generation_initial::head_digest;
 use crate::neuron_generation_current::types::CurrentHead;
 use crate::root_generation_current_client::OriginalPublicationStream;
+use std::sync::Mutex;
+use std::sync::atomic::AtomicBool;
+use std::sync::atomic::Ordering;
 
 struct Lane {
     stream: OriginalPublicationStream,
@@ -53,18 +53,28 @@ impl RootGenerationInitialClient {
     ) -> Result<Self, AgentdError> {
         connection.require_original_publication_session()?;
         let request = Request {
-            schema: 1, purpose: PURPOSE.into(), request_id: 1,
-            profile: String::new(), command: Command::Observe,
+            schema: 1,
+            purpose: PURPOSE.into(),
+            request_id: 1,
+            profile: String::new(),
+            command: Command::Observe,
         };
-        let raw = stream.exchange(&serde_json::to_vec(&request)?).map_err(AgentdError::Io)?;
+        let raw = stream
+            .exchange(&serde_json::to_vec(&request)?)
+            .map_err(AgentdError::Io)?;
         let response: Response = serde_json::from_slice(&raw)?;
         let profile = &response.profile;
-        if response.schema != 1 || response.purpose != PURPOSE || response.request_id != 1
-            || profile.purpose != PURPOSE || profile.deployment != bootstrap.deployment
+        if response.schema != 1
+            || response.purpose != PURPOSE
+            || response.request_id != 1
+            || profile.purpose != PURPOSE
+            || profile.deployment != bootstrap.deployment
             || profile.writer != bootstrap.writer
-            || profile.identity != crate::neuron_generation_process_identity_digest_v1(
-                &bootstrap.identity.identity()?,
-            )?.to_string()
+            || profile.identity
+                != crate::neuron_generation_process_identity_digest_v1(
+                    &bootstrap.identity.identity()?,
+                )?
+                .to_string()
             || profile.digest()? != profile.binding
             || (response.mode == crate::RootGenerationInitialModeV1::Reserve
                 && response.head.is_some())
@@ -80,13 +90,20 @@ impl RootGenerationInitialClient {
             profile: response.profile,
             mode: response.mode,
             connection,
-            lane: Mutex::new(Some(Lane { stream, sequence: 2 })),
+            lane: Mutex::new(Some(Lane {
+                stream,
+                sequence: 2,
+            })),
             fenced: AtomicBool::new(false),
         })
     }
 
-    pub(crate) fn profile(&self) -> &InitialProfile { &self.profile }
-    pub(crate) fn mode(&self) -> crate::RootGenerationInitialModeV1 { self.mode }
+    pub(crate) fn profile(&self) -> &InitialProfile {
+        &self.profile
+    }
+    pub(crate) fn mode(&self) -> crate::RootGenerationInitialModeV1 {
+        self.mode
+    }
     pub(crate) fn scope(&self) -> &codex_hepta_neuron::CellGenerationScopeV2 {
         self.profile.deployment.target.scope()
     }
@@ -128,12 +145,15 @@ impl RootGenerationInitialClient {
         }
         let (signed, witness) =
             crate::neuron_generation_current::initial_root::original_initial_record(
-                &self.profile.prepared, next,
-            )?.ok_or_else(uncertain)?;
+                &self.profile.prepared,
+                next,
+            )?
+            .ok_or_else(uncertain)?;
         let command = Command::Publish {
             expected: head_digest(&Some(expected.clone()))?,
             intent: self.profile.intent.clone(),
-            signed, witness,
+            signed,
+            witness,
         };
         if self.exchange(command)?.as_ref() != Some(next) {
             self.fence();
@@ -144,12 +164,20 @@ impl RootGenerationInitialClient {
 
     fn fence(&self) {
         self.fenced.store(true, Ordering::Release);
-        if let Ok(mut held) = self.lane.try_lock() { held.take(); }
+        if let Ok(mut held) = self.lane.try_lock() {
+            held.take();
+        }
     }
 
     fn exchange(&self, command: Command) -> Result<Option<CurrentHead>, AgentdError> {
-        if self.fenced.load(Ordering::Acquire) { return Err(uncertain()); }
-        if self.connection.require_original_publication_session().is_err() {
+        if self.fenced.load(Ordering::Acquire) {
+            return Err(uncertain());
+        }
+        if self
+            .connection
+            .require_original_publication_session()
+            .is_err()
+        {
             self.fence();
             return Err(uncertain());
         }
@@ -161,18 +189,32 @@ impl RootGenerationInitialClient {
         let request_id = lane.sequence;
         lane.sequence = request_id.checked_add(1).ok_or_else(uncertain)?;
         let request = Request {
-            schema: 1, purpose: PURPOSE.into(), request_id,
-            profile: self.profile.binding.clone(), command,
+            schema: 1,
+            purpose: PURPOSE.into(),
+            request_id,
+            profile: self.profile.binding.clone(),
+            command,
         };
-        let raw = lane.stream.exchange(&serde_json::to_vec(&request).map_err(|_| uncertain())?)
+        let raw = lane
+            .stream
+            .exchange(&serde_json::to_vec(&request).map_err(|_| uncertain())?)
             .map_err(|_| uncertain())?;
         let response: Response = serde_json::from_slice(&raw).map_err(|_| uncertain())?;
-        if response.schema != 1 || response.purpose != PURPOSE || response.request_id != request_id
-            || response.profile != self.profile || response.mode != self.mode
+        if response.schema != 1
+            || response.purpose != PURPOSE
+            || response.request_id != request_id
+            || response.profile != self.profile
+            || response.mode != self.mode
             || self.fenced.load(Ordering::Acquire)
-        { return Err(uncertain()); }
+        {
+            return Err(uncertain());
+        }
         validate_head(&self.profile, response.head.as_ref())?;
-        if self.connection.require_original_publication_session().is_err() {
+        if self
+            .connection
+            .require_original_publication_session()
+            .is_err()
+        {
             self.fenced.store(true, Ordering::Release);
             return Err(uncertain());
         }
@@ -183,7 +225,9 @@ impl RootGenerationInitialClient {
 
 fn validate_profile(profile: &InitialProfile) -> Result<(), AgentdError> {
     crate::neuron_generation_current::initial_root::require_original_initial_contract(
-        &profile.prepared, &profile.deployment.operation, &profile.deployment.target,
+        &profile.prepared,
+        &profile.deployment.operation,
+        &profile.deployment.target,
         profile.intent.parse().map_err(|_| uncertain())?,
         profile.selection.parse().map_err(|_| uncertain())?,
         &profile.final_use,
@@ -193,7 +237,8 @@ fn validate_profile(profile: &InitialProfile) -> Result<(), AgentdError> {
 fn validate_head(profile: &InitialProfile, head: Option<&CurrentHead>) -> Result<(), AgentdError> {
     if let Some(head) = head {
         crate::neuron_generation_current::initial_root::original_initial_record(
-            &profile.prepared, head,
+            &profile.prepared,
+            head,
         )?;
     }
     Ok(())

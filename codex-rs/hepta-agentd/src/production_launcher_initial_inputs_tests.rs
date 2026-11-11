@@ -6,9 +6,9 @@ use std::os::fd::AsRawFd;
 use std::os::fd::IntoRawFd;
 use std::os::unix::net::UnixDatagram;
 
-use pretty_assertions::assert_eq;
 use super::DesktopDescriptors;
 use super::parse;
+use pretty_assertions::assert_eq;
 
 #[test]
 fn initial_offer_transfers_once_without_learning_or_model_inputs() -> anyhow::Result<()> {
@@ -17,8 +17,10 @@ fn initial_offer_transfers_once_without_learning_or_model_inputs() -> anyhow::Re
     let expected = initial.as_raw_fd();
     let mut arguments = fixture.arguments();
     arguments.extend([
-        "--root-generation-initial-handoff-fd".into(), expected.to_string().into(),
-        "--objective-profile-file".into(), "/original/first-task.json".into(),
+        "--root-generation-initial-handoff-fd".into(),
+        expected.to_string().into(),
+        "--objective-profile-file".into(),
+        "/original/first-task.json".into(),
     ]);
     for descriptor in fixture.descriptors.drain(..) {
         let _ = descriptor.into_raw_fd();
@@ -28,15 +30,23 @@ fn initial_offer_transfers_once_without_learning_or_model_inputs() -> anyhow::Re
     let inputs = inputs.ok_or_else(|| anyhow::anyhow!("original initial launch absent"))?;
     assert!(inputs.learning_handoff.is_none() && inputs.q24_model_handoff.is_none());
     assert!(inputs.publication_handoff.is_none());
-    let initial = inputs.initial_handoff
+    let initial = inputs
+        .initial_handoff
         .ok_or_else(|| anyhow::anyhow!("original initial descriptor was lost"))?;
     assert_eq!(initial.as_raw_fd(), expected);
     assert!(initial.local_addr()?.is_unnamed() && initial.peer_addr()?.is_unnamed());
-    assert_eq!(ordinary, vec![
-        OsString::from("--objective-profile-file"), OsString::from("/original/first-task.json"),
-    ]);
+    assert_eq!(
+        ordinary,
+        vec![
+            OsString::from("--objective-profile-file"),
+            OsString::from("/original/first-task.json"),
+        ]
+    );
     // SAFETY: only observes the actual sole retained descriptor's metadata.
-    assert_ne!(unsafe { libc::fcntl(initial.as_raw_fd(), libc::F_GETFD) } & libc::FD_CLOEXEC, 0);
+    assert_ne!(
+        unsafe { libc::fcntl(initial.as_raw_fd(), libc::F_GETFD) } & libc::FD_CLOEXEC,
+        0
+    );
     Ok(())
 }
 
@@ -57,7 +67,10 @@ fn initial_and_learned_publication_refuse_before_any_descriptor_is_taken() -> an
     let Err(crate::AgentdError::Invalid(message)) = parse(arguments) else {
         anyhow::bail!("mixed original purposes must refuse before ownership transfer");
     };
-    assert_eq!(message, "initial and learned publication require separate original Root sessions");
+    assert_eq!(
+        message,
+        "initial and learned publication require separate original Root sessions"
+    );
     fixture.assert_retained();
     for file in [&initial, &publication, &learning] {
         // SAFETY: these original descriptors were never adopted by a parser.

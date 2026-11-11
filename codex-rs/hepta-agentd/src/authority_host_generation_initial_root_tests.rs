@@ -38,24 +38,25 @@ use crate::PreparedHostAuthoritySession;
 use crate::RootGenerationJournalInputsV1;
 use crate::RootPublicationFinalUseConsumerV1;
 
-#[path = "authority_host_generation_initial_data_tests.rs"]
-mod data;
 #[path = "authority_host_generation_initial_artifacts_tests.rs"]
 mod artifacts;
-#[path = "authority_host_generation_initial_material_tests.rs"]
-mod material;
-#[path = "authority_host_generation_initial_fixture_tests.rs"]
-mod fixture;
 #[path = "authority_host_generation_initial_child_tests.rs"]
 mod child;
+#[path = "authority_host_generation_initial_data_tests.rs"]
+mod data;
 #[path = "authority_host_generation_initial_fd_tests.rs"]
 mod descriptors;
+#[path = "authority_host_generation_initial_fixture_tests.rs"]
+mod fixture;
+#[path = "authority_host_generation_initial_material_tests.rs"]
+mod material;
 #[path = "authority_host_generation_publication_root_support_tests.rs"]
 mod support;
 use descriptors::receive_target_files;
 use descriptors::send_target_files;
 
-const CHILD_TEST: &str = "neuron_generation_current::initial_root_tests::child::original_initial_dedicated_uid_child";
+const CHILD_TEST: &str =
+    "neuron_generation_current::initial_root_tests::child::original_initial_dedicated_uid_child";
 const RECORDS: u64 = 128;
 const TIMEOUT: Duration = Duration::from_millis(500);
 const LIFETIME: Duration = Duration::from_secs(15);
@@ -81,8 +82,10 @@ struct Plan {
 }
 
 fn now_ms() -> anyhow::Result<u64> {
-    Ok(std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH)?
-        .as_millis().try_into()?)
+    Ok(std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)?
+        .as_millis()
+        .try_into()?)
 }
 
 fn control(socket: &UnixDatagram, expected: &[u8]) -> anyhow::Result<()> {
@@ -95,7 +98,10 @@ fn control(socket: &UnixDatagram, expected: &[u8]) -> anyhow::Result<()> {
 
 fn send_data(socket: &UnixDatagram, value: &impl serde::Serialize) -> anyhow::Result<()> {
     let bytes = serde_json::to_vec(value)?;
-    anyhow::ensure!(!bytes.is_empty() && bytes.len() <= 32768, "bounded component control");
+    anyhow::ensure!(
+        !bytes.is_empty() && bytes.len() <= 32768,
+        "bounded component control"
+    );
     assert_eq!(socket.send(&bytes)?, bytes.len());
     Ok(())
 }
@@ -108,7 +114,9 @@ fn data<T: serde::de::DeserializeOwned>(socket: &UnixDatagram) -> anyhow::Result
     Ok(serde_json::from_slice(&bytes[..size])?)
 }
 
-fn observer_config(generation: CellGenerationConfigV2) -> anyhow::Result<CellGenerationObserverConfigV1> {
+fn observer_config(
+    generation: CellGenerationConfigV2,
+) -> anyhow::Result<CellGenerationObserverConfigV1> {
     let binding = CellGenerationOwnerBindingV1::new(&generation, RECORDS)?;
     Ok(CellGenerationObserverConfigV1 {
         witness_scope: JournalScope {
@@ -123,14 +131,22 @@ fn observer_config(generation: CellGenerationConfigV2) -> anyhow::Result<CellGen
 }
 
 fn private_file(path: &Path) -> io::Result<File> {
-    OpenOptions::new().read(true).write(true).create_new(true).mode(0o600).open(path)
+    OpenOptions::new()
+        .read(true)
+        .write(true)
+        .create_new(true)
+        .mode(0o600)
+        .open(path)
 }
 
 fn owned_mode(path: &Path, uid: u32, gid: u32, mode: u32) -> anyhow::Result<()> {
     let name = std::ffi::CString::new(path.as_os_str().as_encoded_bytes())?;
     // SAFETY: only this test's newly created path, never a deployment directory.
-    anyhow::ensure!(unsafe { libc::chown(name.as_ptr(), uid, gid) } == 0,
-        "{}", io::Error::last_os_error());
+    anyhow::ensure!(
+        unsafe { libc::chown(name.as_ptr(), uid, gid) } == 0,
+        "{}",
+        io::Error::last_os_error()
+    );
     std::fs::set_permissions(path, std::fs::Permissions::from_mode(mode))?;
     Ok(())
 }
@@ -140,17 +156,26 @@ fn initial_feature_preflight_rejects_inexecutable_target_before_current() -> any
     let root = tempfile::tempdir()?;
     let (model, bundle, definition) = material::model(root.path())?;
     let source = material::source("component-agent")?;
-    let config = material::configuration(&model, &bundle, &definition, &source, /*generation*/ 1)?;
+    let config =
+        material::configuration(&model, &bundle, &definition, &source, /*generation*/ 1)?;
     crate::circuit_feature_initial_root::require_feature(
-        &config, &bundle, &model, &definition, &source,
+        &config,
+        &bundle,
+        &model,
+        &definition,
+        &source,
     )?;
     let check = |definition: &CellDefinitionV1, source: &crate::CircuitTaskSourceInputV1| {
-        let config = material::configuration(&model, &bundle, definition, source, /*generation*/ 1)?;
+        let config =
+            material::configuration(&model, &bundle, definition, source, /*generation*/ 1)?;
         // The complete task and manifest hashes are recomputed. Rejection
         // comes from the actual worker/encoder, not a stale outer digest.
-        Ok::<bool, anyhow::Error>(crate::circuit_feature_initial_root::require_feature(
-            &config, &bundle, &model, definition, source,
-        ).is_err())
+        Ok::<bool, anyhow::Error>(
+            crate::circuit_feature_initial_root::require_feature(
+                &config, &bundle, &model, definition, source,
+            )
+            .is_err(),
+        )
     };
     let mut weights = definition.clone();
     weights.runtime.weights_digest = Digest32::of_bytes(b"different-actual-weights");
@@ -168,9 +193,16 @@ fn initial_feature_preflight_rejects_inexecutable_target_before_current() -> any
     let mut device = config.clone();
     device.manifest.device_digest = [99; 32];
     device.initial.manifest_digest = device.manifest.digest()?;
-    assert!(crate::circuit_feature_initial_root::require_feature(
-        &device, &bundle, &model, &definition, &source,
-    ).is_err());
+    assert!(
+        crate::circuit_feature_initial_root::require_feature(
+            &device,
+            &bundle,
+            &model,
+            &definition,
+            &source,
+        )
+        .is_err()
+    );
     Ok(())
 }
 
@@ -189,14 +221,21 @@ fn root_initial_publication_uses_original_consumer_and_readonly_recovery() -> an
         assert_eq!(published.current, fixture.deployment.target);
         assert_eq!(published.prepared, None);
         assert_eq!(published.published, None);
-        assert!(matches!(published.initial, Some(InitialState::Published(_))));
+        assert!(matches!(
+            published.initial,
+            Some(InitialState::Published(_))
+        ));
         let protected = support::protected_files(&fixture.current_path)?;
         let claims_path = fixture.local.join("device/authority.claims");
         let claims = std::fs::read(&claims_path)?;
         assert!(!claims.is_empty());
         let original_target = std::fs::read(&fixture.target_journal)?;
         assert!(!original_target.is_empty());
-        for phase in [Phase::ReserveExisting, Phase::Recover, Phase::RetiredSession] {
+        for phase in [
+            Phase::ReserveExisting,
+            Phase::Recover,
+            Phase::RetiredSession,
+        ] {
             fixture.run_phase(phase)?;
             assert_eq!(fixture.head()?, published);
             assert_eq!(support::protected_files(&fixture.current_path)?, protected);
@@ -206,14 +245,18 @@ fn root_initial_publication_uses_original_consumer_and_readonly_recovery() -> an
 
         // All original workers and owners have stopped and joined. Corrupt
         // only this fixture's actual journal, keeping its inode and witness.
-        let file = OpenOptions::new().write(true).open(&fixture.target_journal)?;
+        let file = OpenOptions::new()
+            .write(true)
+            .open(&fixture.target_journal)?;
         file.set_len(0)?;
         file.sync_all()?;
         drop(file);
         fixture.run_phase(Phase::Corrupt)?;
         assert_eq!(fixture.head()?, published);
         assert_eq!(std::fs::read(&claims_path)?, claims);
-        let mut file = OpenOptions::new().write(true).open(&fixture.target_journal)?;
+        let mut file = OpenOptions::new()
+            .write(true)
+            .open(&fixture.target_journal)?;
         file.write_all(&original_target)?;
         file.sync_all()?;
         drop(file);
@@ -223,7 +266,10 @@ fn root_initial_publication_uses_original_consumer_and_readonly_recovery() -> an
         assert_eq!(std::fs::read(&claims_path)?, claims);
         fixture.child.release()?;
         let output = fixture.child.finish()?;
-        assert!(output.contains("ROOT_INITIAL_ORIGINAL lifecycle=passed"), "{output}");
+        assert!(
+            output.contains("ROOT_INITIAL_ORIGINAL lifecycle=passed"),
+            "{output}"
+        );
         println!("{output}");
     }
     Ok(())

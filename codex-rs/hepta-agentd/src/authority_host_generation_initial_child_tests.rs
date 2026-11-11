@@ -13,12 +13,18 @@ fn original_initial_dedicated_uid_child() -> anyhow::Result<()> {
     crate::authority_host_runtime::verify_process_credentials(std::process::id(), 60001, 60001)?;
     let descriptor: i32 = std::env::var("HEPTA_LEARNING_SERVICE_CHILD_FD")?.parse()?;
     let root: u32 = std::env::var("HEPTA_LEARNING_SERVICE_ROOT_PID")?.parse()?;
-    anyhow::ensure!(descriptor >= 3 && root != std::process::id(), "original inherited pair");
+    anyhow::ensure!(
+        descriptor >= 3 && root != std::process::id(),
+        "original inherited pair"
+    );
     // SAFETY: only the dedicated child process; the whole component is bounded.
     unsafe { libc::alarm(60) };
     let state = std::env::var_os("HEPTA_LEARNING_SERVICE_STATE")
         .ok_or_else(|| anyhow::anyhow!("original protected state"))?;
-    assert_eq!(std::fs::read_dir(state).unwrap_err().kind(), io::ErrorKind::PermissionDenied);
+    assert_eq!(
+        std::fs::read_dir(state).unwrap_err().kind(),
+        io::ErrorKind::PermissionDenied
+    );
     // SAFETY: the original parent explicitly passes this one owned descriptor.
     let socket = unsafe { UnixDatagram::from_raw_fd(descriptor) };
     let mut observed_ack_loss = false;
@@ -124,7 +130,10 @@ fn original_initial_dedicated_uid_child() -> anyhow::Result<()> {
         }
         Ok::<(), anyhow::Error>(())
     })?;
-    println!("ROOT_INITIAL_ORIGINAL lifecycle=passed actual_consumer_uid=60001 actual_consumer_pid={} original_root_pid={root} separate_initial_purpose=true actual_current_initial_cas=true actual_claims=1 read_only_same_operation_recovery=true controlled_post_cas_ack_loss={observed_ack_loss} existing_current_refused=true sticky_restored_source_refused=true explicit_same_process_root_reopen=true ordinary_complete=0 independent_consumer=0 physical_cold_restart=0", std::process::id());
+    println!(
+        "ROOT_INITIAL_ORIGINAL lifecycle=passed actual_consumer_uid=60001 actual_consumer_pid={} original_root_pid={root} separate_initial_purpose=true actual_current_initial_cas=true actual_claims=1 read_only_same_operation_recovery=true controlled_post_cas_ack_loss={observed_ack_loss} existing_current_refused=true sticky_restored_source_refused=true explicit_same_process_root_reopen=true ordinary_complete=0 independent_consumer=0 physical_cold_restart=0",
+        std::process::id()
+    );
     let mut released = [0];
     std::io::stdin().read_exact(&mut released)?;
     assert_eq!(released, [1]);
@@ -132,8 +141,10 @@ fn original_initial_dedicated_uid_child() -> anyhow::Result<()> {
 }
 
 fn require_uncertain(error: crate::AgentdError) {
-    assert!(matches!(error, crate::AgentdError::Io(ref error)
+    assert!(
+        matches!(error, crate::AgentdError::Io(ref error)
         if error.get_ref().is_some_and(|source|
             source.is::<crate::root_generation_initial_client::RootGenerationInitialUncertain>())),
-        "original Initial acknowledgement remains typed uncertain: {error}");
+        "original Initial acknowledgement remains typed uncertain: {error}"
+    );
 }

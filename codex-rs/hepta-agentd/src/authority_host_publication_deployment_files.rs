@@ -63,7 +63,7 @@ impl Stamp {
     }
 }
 
-pub(super) struct DirectoryPin {
+pub(in crate::authority_host_runtime::session) struct DirectoryPin {
     path: PathBuf,
     identity: Identity,
     file: File,
@@ -71,7 +71,7 @@ pub(super) struct DirectoryPin {
 }
 
 impl DirectoryPin {
-    pub(super) fn capture_root(path: &Path) -> io::Result<Self> {
+    pub(in crate::authority_host_runtime::session) fn capture_root(path: &Path) -> io::Result<Self> {
         RootAuthorityDirectory::open(path).map_err(io::Error::other)?;
         let mut pin = Self::capture_private(path)?;
         if pin.identity.uid != 0 || pin.identity.mode & 0o077 != 0 {
@@ -83,7 +83,7 @@ impl DirectoryPin {
         Ok(pin)
     }
 
-    pub(super) fn capture_private(path: &Path) -> io::Result<Self> {
+    pub(in crate::authority_host_runtime::session) fn capture_private(path: &Path) -> io::Result<Self> {
         require_absolute(path)?;
         let metadata = std::fs::symlink_metadata(path)?;
         if !metadata.is_dir()
@@ -112,7 +112,7 @@ impl DirectoryPin {
         })
     }
 
-    pub(super) fn require_directory(&self) -> io::Result<()> {
+    pub(in crate::authority_host_runtime::session) fn require_directory(&self) -> io::Result<()> {
         if self.root_owned {
             RootAuthorityDirectory::open(&self.path).map_err(io::Error::other)?;
         }
@@ -128,7 +128,7 @@ impl DirectoryPin {
     }
 }
 
-pub(super) struct MetadataFile {
+pub(in crate::authority_host_runtime::session) struct MetadataFile {
     path: PathBuf,
     parent: DirectoryPin,
     file: File,
@@ -137,7 +137,7 @@ pub(super) struct MetadataFile {
 }
 
 impl MetadataFile {
-    pub(super) fn open_metadata(path: &Path) -> io::Result<(Self, Vec<u8>)> {
+    pub(in crate::authority_host_runtime::session) fn open_metadata(path: &Path) -> io::Result<(Self, Vec<u8>)> {
         require_absolute(path)?;
         let parent = DirectoryPin::capture_root(parent(path)?)?;
         let file = open_readonly(path)?;
@@ -167,11 +167,11 @@ impl MetadataFile {
         Ok((held, bytes))
     }
 
-    pub(super) fn digest(&self) -> Digest32 {
+    pub(in crate::authority_host_runtime::session) fn digest(&self) -> Digest32 {
         self.digest
     }
 
-    pub(super) fn require_metadata_unchanged(&self) -> io::Result<()> {
+    pub(in crate::authority_host_runtime::session) fn require_metadata_unchanged(&self) -> io::Result<()> {
         self.parent.require_directory()?;
         let path = std::fs::symlink_metadata(&self.path)?;
         if !path.is_file()
@@ -199,7 +199,7 @@ impl MetadataFile {
 
 /// Journal bytes may advance normally. Their original descriptor and parent
 /// cannot be replaced; the original owner verifies private custody and the cut.
-pub(super) struct OriginalFile {
+pub(in crate::authority_host_runtime::session) struct OriginalFile {
     path: PathBuf,
     parent: DirectoryPin,
     file: File,
@@ -207,7 +207,7 @@ pub(super) struct OriginalFile {
 }
 
 impl OriginalFile {
-    pub(super) fn open_original(path: &Path) -> io::Result<Self> {
+    pub(in crate::authority_host_runtime::session) fn open_original(path: &Path) -> io::Result<Self> {
         require_absolute(path)?;
         let parent = DirectoryPin::capture_private(parent(path)?)?;
         let file = open_readonly(path)?;
@@ -227,12 +227,12 @@ impl OriginalFile {
         Ok(held)
     }
 
-    pub(super) fn original_descriptor(&self) -> io::Result<File> {
+    pub(in crate::authority_host_runtime::session) fn original_descriptor(&self) -> io::Result<File> {
         self.require_original_file()?;
         self.file.try_clone()
     }
 
-    pub(super) fn require_original_file(&self) -> io::Result<()> {
+    pub(in crate::authority_host_runtime::session) fn require_original_file(&self) -> io::Result<()> {
         self.parent.require_directory()?;
         let path = std::fs::symlink_metadata(&self.path)?;
         if !path.is_file()
@@ -248,7 +248,7 @@ impl OriginalFile {
     }
 }
 
-pub(super) fn require_absolute(path: &Path) -> io::Result<()> {
+pub(in crate::authority_host_runtime::session) fn require_absolute(path: &Path) -> io::Result<()> {
     if !path.is_absolute()
         || path
             .components()
@@ -260,7 +260,7 @@ pub(super) fn require_absolute(path: &Path) -> io::Result<()> {
     Ok(())
 }
 
-pub(super) fn parent(path: &Path) -> io::Result<&Path> {
+pub(in crate::authority_host_runtime::session) fn parent(path: &Path) -> io::Result<&Path> {
     path.parent()
         .ok_or_else(|| io::Error::other("original path parent required"))
 }

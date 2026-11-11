@@ -1334,6 +1334,12 @@ mod circuit_feature_initial_root;
 #[cfg(target_os = "linux")]
 pub use authority_host_runtime::RootGenerationInitialEnrollmentCapabilityV1;
 #[cfg(target_os = "linux")]
+pub use authority_host_runtime::RootGenerationInitialDeploymentFilesV1;
+#[cfg(target_os = "linux")]
+pub use authority_host_runtime::RootGenerationInitialDeploymentSessionV1;
+#[cfg(target_os = "linux")]
+pub use authority_host_runtime::RootGenerationInitialDeploymentV1;
+#[cfg(target_os = "linux")]
 pub use authority_host_runtime::RootGenerationInitialRegistrationV1;
 #[cfg(target_os = "linux")]
 pub use authority_host_service::HostGenerationInitialDeploymentV1;

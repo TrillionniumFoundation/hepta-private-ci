@@ -168,14 +168,18 @@ pub(super) fn parse(
         .map(descriptor_number)
         .transpose()?;
     if publication_handoff.is_some() && learning_handoff.is_none() {
-        return Err(invalid("original publication requires its learning handoff"));
+        return Err(invalid(
+            "original publication requires its learning handoff",
+        ));
     }
     let initial_handoff = selected
         .remove("--root-generation-initial-handoff-fd")
         .map(descriptor_number)
         .transpose()?;
     if initial_handoff.is_some() && publication_handoff.is_some() {
-        return Err(invalid("initial and learned publication require separate original Root sessions"));
+        return Err(invalid(
+            "initial and learned publication require separate original Root sessions",
+        ));
     }
     let notes = selected
         .remove("--notes-production-handoff-fd")

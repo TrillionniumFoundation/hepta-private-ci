@@ -92,4 +92,3 @@ pub fn receive_root_generation_initial_handoff(
         root_pid: peer.pid as u32,
     })
 }
-

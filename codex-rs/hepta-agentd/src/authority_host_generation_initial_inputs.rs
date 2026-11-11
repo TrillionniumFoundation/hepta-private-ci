@@ -1,9 +1,9 @@
 //! Root-only original inputs. The independent selection and original readonly
 //! descriptors are fixed before the consumer can send any initial request.
 
-use std::os::unix::fs::MetadataExt;
-use codex_hepta_contracts::FinalUseFrontier;
 use super::*;
+use codex_hepta_contracts::FinalUseFrontier;
+use std::os::unix::fs::MetadataExt;
 
 /// Reserve never opens or overwrites an existing initial CURRENT. Recover
 /// opens only retained state and serves readback; it cannot Prepare or Publish.
@@ -41,12 +41,10 @@ pub(super) fn artifact_pin(
 ) -> io::Result<ArtifactPin> {
     let artifact_pin = ArtifactPin {
         root: inputs.root.clone(),
-        trust: codex_hepta_learning_artifacts::ArtifactOwnerVerifierV1::new(
-            inputs.trust.clone(),
-        )
-        .map_err(io::Error::other)?
-        .trust_digest()
-        .to_string(),
+        trust: codex_hepta_learning_artifacts::ArtifactOwnerVerifierV1::new(inputs.trust.clone())
+            .map_err(io::Error::other)?
+            .trust_digest()
+            .to_string(),
         storage: inputs.storage_binding.to_string(),
         retained_current: Digest32::of_parts(&[
             b"hepta.root.publication.artifact-floor.v1\0",
@@ -82,13 +80,23 @@ pub(super) fn open_artifacts(
     now: u64,
 ) -> io::Result<(LearningArtifactReadViewV1, AgentdSelectedGenerationV1)> {
     let artifacts = LearningArtifactReadViewV1::open_original(
-        inputs.root, consumer_uid, inputs.trust, inputs.retained_current, now,
-    ).map_err(io::Error::other)?
-        .with_original_withdrawal_floor(inputs.storage_binding, inputs.withdrawal_floor)
-        .map_err(io::Error::other)?;
+        inputs.root,
+        consumer_uid,
+        inputs.trust,
+        inputs.retained_current,
+        now,
+    )
+    .map_err(io::Error::other)?
+    .with_original_withdrawal_floor(inputs.storage_binding, inputs.withdrawal_floor)
+    .map_err(io::Error::other)?;
     let selected = AgentdSelectedGenerationV1::load_from_original_artifacts(
-        &artifacts, inputs.selector, inputs.signed_selection, inputs.files, now,
-    ).map_err(io::Error::other)?;
+        &artifacts,
+        inputs.selector,
+        inputs.signed_selection,
+        inputs.files,
+        now,
+    )
+    .map_err(io::Error::other)?;
     Ok((artifacts, selected))
 }
 
@@ -98,7 +106,8 @@ pub(super) fn open_target(
 ) -> io::Result<CellGenerationJournalObserverV1> {
     for file in [&inputs.journal, &inputs.witness] {
         let metadata = file.metadata()?;
-        if !metadata.is_file() || metadata.nlink() != 1
+        if !metadata.is_file()
+            || metadata.nlink() != 1
             || ![0, consumer_uid].contains(&metadata.uid())
             || metadata.mode() & 0o077 != 0
         {
@@ -106,8 +115,11 @@ pub(super) fn open_target(
         }
     }
     CellGenerationJournalObserverV1::from_original_files(
-        inputs.journal, inputs.witness, inputs.config,
-    ).map_err(io::Error::other)
+        inputs.journal,
+        inputs.witness,
+        inputs.config,
+    )
+    .map_err(io::Error::other)
 }
 
 impl HostAuthorityService {
@@ -118,38 +130,56 @@ impl HostAuthorityService {
         local_root: PathBuf,
         issuer_keys: Vec<codex_hepta_contracts::FinalUseIssuerTrustKey>,
     ) -> io::Result<(RootFinalUseObserverV1, PathBuf)> {
-        let slots = config.consumers.as_ref()
+        let slots = config
+            .consumers
+            .as_ref()
             .ok_or_else(|| io::Error::other("original consumer slots required"))?;
         if self.consumers.is_none() {
-            return Err(io::Error::other("same Root original consumer owners required"));
+            return Err(io::Error::other(
+                "same Root original consumer owners required",
+            ));
         }
         let (slot, name) = match consumer_slot {
             crate::RootPublicationFinalUseConsumerV1::Device => (&slots.device, "device"),
             crate::RootPublicationFinalUseConsumerV1::Notes => (&slots.notes, "notes"),
         };
         let key = self.issuer.trust_key()?;
-        if slot.owner_id != key.key_id || slot.owner_id != config.signer_id
+        if slot.owner_id != key.key_id
+            || slot.owner_id != config.signer_id
             || !issuer_keys.contains(&key)
         {
-            return Err(io::Error::other("original canonical initial signer differs"));
+            return Err(io::Error::other(
+                "original canonical initial signer differs",
+            ));
         }
         let local = std::fs::symlink_metadata(&local_root)?;
-        if !local_root.is_absolute() || local_root.canonicalize()? != local_root
-            || !local.is_dir() || local.uid() != config.peer_uid
-            || local.gid() != config.peer_gid || local.mode() & 0o7777 != 0o700
+        if !local_root.is_absolute()
+            || local_root.canonicalize()? != local_root
+            || !local.is_dir()
+            || local.uid() != config.peer_uid
+            || local.gid() != config.peer_gid
+            || local.mode() & 0o7777 != 0o700
         {
-            return Err(io::Error::other("original private consumer parent required"));
+            return Err(io::Error::other(
+                "original private consumer parent required",
+            ));
         }
         let path = local_root.join(name);
         let frontier: Arc<dyn AuthorityFrontierStore<FinalUseFrontier>> = Arc::new(
             HostAuthorityFrontierStore::<FinalUseFrontier>::open(
                 RootAuthorityDirectory::open(&slot.state_dir).map_err(io::Error::other)?,
                 slot.owner_id.clone(),
-            ).map_err(io::Error::other)?,
+            )
+            .map_err(io::Error::other)?,
         );
         let consumer = RootFinalUseObserverV1::open_original(
-            &path, config.peer_uid, key.key_id, issuer_keys, frontier,
-        ).map_err(io::Error::other)?;
+            &path,
+            config.peer_uid,
+            key.key_id,
+            issuer_keys,
+            frontier,
+        )
+        .map_err(io::Error::other)?;
         if consumer.consumer_uid() != config.peer_uid || consumer.signer_id() != slot.owner_id {
             return Err(io::Error::other("original initial consumer differs"));
         }

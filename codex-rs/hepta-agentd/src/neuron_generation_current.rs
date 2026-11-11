@@ -23,11 +23,11 @@ use codex_hepta_types::StableId;
 use crate::AgentdError;
 use crate::neuron_generation_update_selection::AgentdSelectedGenerationV1;
 
+#[path = "neuron_generation_current_initial.rs"]
+mod initial;
 #[cfg(target_os = "linux")]
 #[path = "neuron_generation_current_initial_root.rs"]
 pub(crate) mod initial_root;
-#[path = "neuron_generation_current_initial.rs"]
-mod initial;
 #[path = "neuron_generation_current_initial_types.rs"]
 mod initial_types;
 #[path = "neuron_generation_current_prepare.rs"]

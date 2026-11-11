@@ -37,6 +37,11 @@ impl PreparedHostAuthoritySession {
                 "registered learning requires the consuming original session serve scope",
             ));
         }
+        if self.initial_publication.is_some() {
+            return Err(io::Error::other(
+                "registered Initial publication requires the consuming original session serve scope",
+            ));
+        }
         if self.root_admin.is_none() {
             return listeners::serve_lanes(
                 &self.service,
@@ -128,6 +133,7 @@ impl PreparedHostAuthoritySession {
             root_admin: None,
             learning: None,
             publication: None,
+            initial_publication: None,
         })
     }
 
@@ -160,6 +166,7 @@ impl PreparedHostAuthoritySession {
             root_admin: None,
             learning: None,
             publication: None,
+            initial_publication: None,
         })
     }
 
@@ -188,6 +195,7 @@ impl PreparedHostAuthoritySession {
             root_admin: None,
             learning: None,
             publication: None,
+            initial_publication: None,
         })
     }
 }

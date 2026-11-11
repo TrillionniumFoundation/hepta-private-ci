@@ -327,6 +327,11 @@ impl Artifacts {
 }
 
 impl Transfer {
+    /// Actual public trust from this fixture's already signed selection.
+    pub(super) fn selector_description(&self) -> anyhow::Result<Vec<u8>> {
+        Ok(serde_json::to_vec(&self.selector)?)
+    }
+
     pub(super) fn inputs(&self) -> anyhow::Result<RootArtifactPublicationInputsV1> {
         let trust = self.owner.original_owner_trust()?;
         let floor = empty_floor()?;

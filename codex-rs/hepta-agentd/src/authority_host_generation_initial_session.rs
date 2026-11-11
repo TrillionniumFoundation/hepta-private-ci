@@ -14,6 +14,12 @@ use crate::authority_host_service::generation_initial::PURPOSE;
 use crate::authority_host_service::generation_initial::InitialBootstrap;
 use crate::authority_host_service::generation_initial::SOCKET;
 
+#[path = "authority_host_initial_deployment.rs"]
+mod deployment;
+pub use deployment::RootGenerationInitialDeploymentFilesV1;
+pub use deployment::RootGenerationInitialDeploymentSessionV1;
+pub use deployment::RootGenerationInitialDeploymentV1;
+
 #[path = "authority_host_generation_initial_runtime.rs"]
 mod runtime;
 pub(super) use runtime::BoundInitial;
@@ -55,6 +61,7 @@ pub struct RootGenerationInitialEnrollmentCapabilityV1 {
     sender: mpsc::SyncSender<Submission>,
     phase: Arc<AtomicU8>,
     root_pid: u32,
+    consumer_uid: u32,
     boot_id: String,
     process_start_ticks: u64,
     lifetime: Duration,
@@ -164,7 +171,8 @@ impl PreparedHostAuthoritySession {
         });
         Ok((
             RootGenerationInitialEnrollmentCapabilityV1 {
-                sender, phase, root_pid: bundle.root.pid, boot_id: bundle.root.boot_id,
+                sender, phase, root_pid: bundle.root.pid, consumer_uid: self.config.peer_uid,
+                boot_id: bundle.root.boot_id,
                 process_start_ticks: bundle.root.process_start_ticks,
                 lifetime: Duration::from_millis(self.config.lifetime_ms),
             },

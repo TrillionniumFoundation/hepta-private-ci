@@ -71,14 +71,15 @@ impl HostGenerationInitialDeploymentV1 {
             || !target.generation.initial.prefix.is_empty()
             || target.generation.initial.stopped
         {
-            return Err(io::Error::other("original selected initial genesis required"));
+            return Err(io::Error::other(
+                "original selected initial genesis required",
+            ));
         }
         Ok(Self {
             operation,
             target_context: target_context(target)?,
-            target: CellGenerationOwnerBindingV1::new(
-                &target.generation, target.journal_records,
-            ).map_err(io::Error::other)?,
+            target: CellGenerationOwnerBindingV1::new(&target.generation, target.journal_records)
+                .map_err(io::Error::other)?,
         })
     }
 }
@@ -96,7 +97,8 @@ pub(crate) fn target_context(
         config.witness_scope.objective_digest.as_array(),
         &config.witness_generation.get().to_be_bytes(),
         &records.to_be_bytes(),
-    ]).to_string())
+    ])
+    .to_string())
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Deserialize, Serialize)]
@@ -125,7 +127,8 @@ impl InitialProfile {
         Ok(Digest32::of_parts(&[
             b"hepta.root.generation-initial.profile.v1\0",
             &serde_json::to_vec(&value).map_err(io::Error::other)?,
-        ]).to_string())
+        ])
+        .to_string())
     }
 }
 
@@ -168,8 +171,14 @@ pub(crate) struct RegisteredGenerationInitial {
 
 impl RegisteredGenerationInitial {
     fn require_profile(&self) -> io::Result<()> {
-        if self.profile_store.load(&self.profile_owner).map_err(io::Error::other)?
-            != (InitialRecord { profile: self.profile.clone(), fenced: false })
+        if self
+            .profile_store
+            .load(&self.profile_owner)
+            .map_err(io::Error::other)?
+            != (InitialRecord {
+                profile: self.profile.clone(),
+                fenced: false,
+            })
             || self.profile.digest()? != self.profile.binding
             || self.target.files_binding().to_string() != self.profile.target_files
         {
@@ -180,9 +189,12 @@ impl RegisteredGenerationInitial {
 
     fn require_selection(&self, now: u64) -> io::Result<()> {
         let result = (|| {
-            let mut selected: std::sync::MutexGuard<'_, AgentdSelectedGenerationV1> =
-                self.selected.try_lock().map_err(|_| io::Error::other("original selection busy"))?;
-            selected.revalidate_original_artifacts(&self.artifacts, now)
+            let mut selected: std::sync::MutexGuard<'_, AgentdSelectedGenerationV1> = self
+                .selected
+                .try_lock()
+                .map_err(|_| io::Error::other("original selection busy"))?;
+            selected
+                .revalidate_original_artifacts(&self.artifacts, now)
                 .map_err(io::Error::other)?;
             if selected.observation().digest().to_string() != self.profile.selection {
                 return Err(io::Error::other("original initial selection changed"));
@@ -203,11 +215,15 @@ impl RegisteredGenerationInitial {
                 || observed.observation().owner_checkpoint()
                     != self.profile.deployment.target.genesis_checkpoint()
             {
-                return Err(io::Error::other("original physical initial genesis required"));
+                return Err(io::Error::other(
+                    "original physical initial genesis required",
+                ));
             }
             Ok(())
         })();
-        if result.is_err() { self.fence()?; }
+        if result.is_err() {
+            self.fence()?;
+        }
         result
     }
 
@@ -216,14 +232,19 @@ impl RegisteredGenerationInitial {
             self.target.require_original_unwritten()
         } else {
             self.target.require_original_unwritten_or_genesis()
-        }.map_err(io::Error::other);
-        if result.is_err() { self.fence()?; }
+        }
+        .map_err(io::Error::other);
+        if result.is_err() {
+            self.fence()?;
+        }
         result
     }
 
     fn observe_published_target(&self) -> io::Result<()> {
         let result = self.target.observe().map(|_| ()).map_err(io::Error::other);
-        if result.is_err() { self.fence()?; }
+        if result.is_err() {
+            self.fence()?;
+        }
         result
     }
 
@@ -233,7 +254,9 @@ impl RegisteredGenerationInitial {
         witness: &VerifiedUseTokenWitnessV1,
     ) -> io::Result<codex_hepta_contracts::FinalUseRevocations> {
         let result = self.verify_retained(signed, witness);
-        if result.is_err() { self.fence()?; }
+        if result.is_err() {
+            self.fence()?;
+        }
         result
     }
 
@@ -242,7 +265,8 @@ impl RegisteredGenerationInitial {
         signed: &SignedFinalUseGrant,
         witness: &VerifiedUseTokenWitnessV1,
     ) -> io::Result<codex_hepta_contracts::FinalUseRevocations> {
-        self.consumer.verify_original_retained_use(signed, &self.profile.final_use, witness)
+        self.consumer
+            .verify_original_retained_use(signed, &self.profile.final_use, witness)
             .map_err(io::Error::other)
     }
 
@@ -255,7 +279,8 @@ pub(crate) fn head_digest(head: &Option<CurrentHead>) -> io::Result<String> {
     Ok(Digest32::of_parts(&[
         b"hepta.root.generation-initial.current.v1\0",
         &serde_json::to_vec(head).map_err(io::Error::other)?,
-    ]).to_string())
+    ])
+    .to_string())
 }
 
 fn fence_initial_record(
@@ -266,7 +291,9 @@ fn fence_initial_record(
     if !before.fenced {
         let mut next = before.clone();
         next.fenced = true;
-        store.compare_and_set(owner, &before, &next).map_err(io::Error::other)?;
+        store
+            .compare_and_set(owner, &before, &next)
+            .map_err(io::Error::other)?;
     }
     if !store.load(owner).map_err(io::Error::other)?.fenced {
         return Err(io::Error::other("initial enrollment fencing uncertain"));

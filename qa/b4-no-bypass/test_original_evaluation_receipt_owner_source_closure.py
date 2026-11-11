@@ -129,8 +129,11 @@ class OriginalEvaluationReceiptOwnerSourceClosureTests(unittest.TestCase):
             "learning_original_evaluation_receipt_recover": (HANDOFF,),
             "learning_original_evaluation_receipt_attest": (),
             "learning_original_evaluation_receipt_readback": (),
-            "evaluation_original_sources_attest": (OWNER, EVALUATION_STAGE),
-            "evaluation_original_sources_readback": (OWNER, EVALUATION_STAGE),
+            # The checker excludes the boundary's definition file. The same-file
+            # external-client wrappers remain covered by their protected markers
+            # and deletion mutants below; only the real stage is an outside caller.
+            "evaluation_original_sources_attest": (EVALUATION_STAGE,),
+            "evaluation_original_sources_readback": (EVALUATION_STAGE,),
         }
         for identifier, expected in ports.items():
             with self.subTest(boundary=identifier):

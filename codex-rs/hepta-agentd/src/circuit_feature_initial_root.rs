@@ -2,14 +2,6 @@
 //! The real worker/decoder preflight confers no authority. Publication still
 //! uses the original artifact owner and original FinalUse consumer.
 
-use std::sync::Arc;
-use codex_hepta_contracts::FinalUseBinding;
-use codex_hepta_contracts::SignedFinalUseGrant;
-use codex_hepta_learning_artifacts::CellCompatibilityBundleV1;
-use codex_hepta_neuron::CellDefinitionV1;
-use codex_hepta_neuron::CellGenerationConfigV2;
-use codex_hepta_neuron::FileAnchorWitnessStore;
-use codex_hepta_types::Digest32;
 use crate::AgentdError;
 use crate::AgentdGenerationUpdateAuthoritiesV1;
 use crate::AgentdSelectedGenerationV1;
@@ -19,6 +11,14 @@ use crate::OriginalRootGenerationInitialV1;
 use crate::PreparedAgentdGenerationInitialV1;
 use crate::PublishedCircuitFeatureTaskV1;
 use crate::RootGenerationJournalInputsV1;
+use codex_hepta_contracts::FinalUseBinding;
+use codex_hepta_contracts::SignedFinalUseGrant;
+use codex_hepta_learning_artifacts::CellCompatibilityBundleV1;
+use codex_hepta_neuron::CellDefinitionV1;
+use codex_hepta_neuron::CellGenerationConfigV2;
+use codex_hepta_neuron::FileAnchorWitnessStore;
+use codex_hepta_types::Digest32;
+use std::sync::Arc;
 
 /// Original host inputs. A model, bundle or scope description cannot replace
 /// the retained files, live Root route, independently selected artifact or grant.
@@ -49,14 +49,21 @@ impl OriginalRootGenerationInitialV1 {
         target: OriginalRootInitialFeatureTargetV1,
     ) -> Result<PreparedRootInitialFeatureV1, AgentdError> {
         require_feature(
-            &target.files.config.generation, &target.bundle, &target.model,
-            &target.definition, &target.source,
+            &target.files.config.generation,
+            &target.bundle,
+            &target.model,
+            &target.definition,
+            &target.source,
         )?;
         let config = target.files.config.generation.clone();
         let original = self.prepare_original_initial(authorities, selected, target.files)?;
         Ok(PreparedRootInitialFeatureV1 {
-            original, config, model: target.model, bundle: target.bundle,
-            definition: target.definition, source: target.source,
+            original,
+            config,
+            model: target.model,
+            bundle: target.bundle,
+            definition: target.definition,
+            source: target.source,
         })
     }
 
@@ -69,8 +76,11 @@ impl OriginalRootGenerationInitialV1 {
         target: OriginalRootInitialFeatureTargetV1,
     ) -> Result<PublishedCircuitFeatureTaskV1, AgentdError> {
         require_feature(
-            &target.files.config.generation, &target.bundle, &target.model,
-            &target.definition, &target.source,
+            &target.files.config.generation,
+            &target.bundle,
+            &target.model,
+            &target.definition,
+            &target.source,
         )?;
         let ready = self.recover_original_initial(authorities, selected, target.files)?;
         ready.into_circuit_feature_task(target.definition, target.source)
@@ -91,10 +101,15 @@ impl PreparedRootInitialFeatureV1 {
         signed: &SignedFinalUseGrant,
     ) -> Result<PublishedCircuitFeatureTaskV1, AgentdError> {
         require_feature(
-            &self.config, &self.bundle, &self.model, &self.definition, &self.source,
+            &self.config,
+            &self.bundle,
+            &self.model,
+            &self.definition,
+            &self.source,
         )?;
         let original: PreparedAgentdGenerationInitialV1<FileAnchorWitnessStore> = self.original;
-        original.publish(signed)?
+        original
+            .publish(signed)?
             .into_circuit_feature_task(self.definition, self.source)
     }
 }
@@ -120,9 +135,12 @@ pub(crate) fn require_feature(
         || manifest.encoder != Some(definition.runtime.encoder_digest.into_array())
         || manifest.head != Some(definition.runtime.head_digest.into_array())
     {
-        return Err(AgentdError::GenerationFenced("exact original initial Feature target required".into()));
+        return Err(AgentdError::GenerationFenced(
+            "exact original initial Feature target required".into(),
+        ));
     }
     crate::cell_q24_publication_driver::validation::require_executable_feature(
         bundle, manifest, model, definition, source,
-    ).map_err(|error| AgentdError::GenerationFenced(error.to_string()))
+    )
+    .map_err(|error| AgentdError::GenerationFenced(error.to_string()))
 }

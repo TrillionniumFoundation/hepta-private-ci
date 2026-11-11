@@ -1,13 +1,13 @@
 //! Original Root writer/lease/process fence for the independent initial
 //! purpose. It has no learning profile and cannot create a writer or lease.
 
-use std::time::Duration;
-use std::time::Instant;
-use codex_hepta_contracts::RootAuthorityDirectory;
-use crate::authority_host_runtime::verify_pinned_process;
+use super::*;
 use crate::HostAuthorityRegistration;
 use crate::HostAuthorityServiceConfig;
-use super::*;
+use crate::authority_host_runtime::verify_pinned_process;
+use codex_hepta_contracts::RootAuthorityDirectory;
+use std::time::Duration;
+use std::time::Instant;
 
 impl HostAuthorityService {
     pub(crate) fn with_initial_publication_context(

@@ -2,15 +2,6 @@
 //! and worker definition checks are reused; there is no RuntimeFixture, fake
 //! CURRENT, task completion or business outcome in this setup.
 
-use std::fs;
-use std::fs::File;
-use std::path::Path;
-use std::sync::Arc;
-use codex_hepta_learning_artifacts::CellCompatibilityBundleV1;
-use codex_hepta_neuron::*;
-use codex_hepta_types::Digest32;
-use codex_hepta_types::Generation;
-use codex_hepta_types::StableId;
 use crate::CellQ24FeatureWorkerV1;
 use crate::CellQ24GenerationWorkerV1;
 use crate::CellQ24ModelFilesV1;
@@ -18,6 +9,15 @@ use crate::CircuitTaskSourceInputV1;
 use crate::LoadedCellQ24ModelV1;
 use crate::circuit_cell::tests::support as cell;
 use crate::neuron_generation_current::test_support::config as version_config;
+use codex_hepta_learning_artifacts::CellCompatibilityBundleV1;
+use codex_hepta_neuron::*;
+use codex_hepta_types::Digest32;
+use codex_hepta_types::Generation;
+use codex_hepta_types::StableId;
+use std::fs;
+use std::fs::File;
+use std::path::Path;
+use std::sync::Arc;
 const Q: i64 = 1 << 24;
 
 pub(super) fn model(
@@ -139,14 +139,24 @@ pub(super) fn configuration(
 
 pub(super) fn load(
     root: &Path,
-) -> anyhow::Result<(Arc<LoadedCellQ24ModelV1>, CellCompatibilityBundleV1, CellDefinitionV1)> {
+) -> anyhow::Result<(
+    Arc<LoadedCellQ24ModelV1>,
+    CellCompatibilityBundleV1,
+    CellDefinitionV1,
+)> {
     let model = Arc::new(LoadedCellQ24ModelV1::open_files(CellQ24ModelFilesV1 {
-        base: File::open(root.join("base"))?, encoder: File::open(root.join("encoder"))?,
-        heads: File::open(root.join("heads"))?, organ_adapter: None, cell_adapter: None,
+        base: File::open(root.join("base"))?,
+        encoder: File::open(root.join("encoder"))?,
+        heads: File::open(root.join("heads"))?,
+        organ_adapter: None,
+        cell_adapter: None,
     })?);
     let bundle = CellCompatibilityBundleV1 {
-        artifact_id: StableId::new("selected-candidate")?, generation: Generation::new(1)?,
-        components: model.components().clone(), training_lineage: None, rollback_predecessor: None,
+        artifact_id: StableId::new("selected-candidate")?,
+        generation: Generation::new(1)?,
+        components: model.components().clone(),
+        training_lineage: None,
+        rollback_predecessor: None,
     };
     let definition = definition(&model, &bundle)?;
     Ok((model, bundle, definition))
@@ -157,15 +167,25 @@ pub(super) fn source(agent: &str) -> anyhow::Result<CircuitTaskSourceInputV1> {
     scope.agent_id = StableId::new(agent)?;
     let mut observation = b"HQ24I001".to_vec();
     observation.extend_from_slice(&2_u16.to_le_bytes());
-    for value in [Q, Q / 4] { observation.extend_from_slice(&value.to_le_bytes()); }
+    for value in [Q, Q / 4] {
+        observation.extend_from_slice(&value.to_le_bytes());
+    }
     Ok(CircuitTaskSourceInputV1 {
-        scope, source_frontier: Digest32::of_bytes(b"initial-component-source"),
+        scope,
+        source_frontier: Digest32::of_bytes(b"initial-component-source"),
         objective_digest: Digest32::of_bytes(b"initial-component-unexecuted-objective"),
         ndu_snapshot_digest: Digest32::of_bytes(b"initial-component-ndu"),
-        monotonic_micros: 10, deadline_micros: 60_000_010, observation,
-        candidates: cell::definition().candidates.iter().map(|candidate| CellCandidateMaskV1 {
-            candidate_id: candidate.candidate_id.clone(), allowed: true,
-        }).collect(),
+        monotonic_micros: 10,
+        deadline_micros: 60_000_010,
+        observation,
+        candidates: cell::definition()
+            .candidates
+            .iter()
+            .map(|candidate| CellCandidateMaskV1 {
+                candidate_id: candidate.candidate_id.clone(),
+                allowed: true,
+            })
+            .collect(),
         lease_duration_ms: 60_000,
     })
 }

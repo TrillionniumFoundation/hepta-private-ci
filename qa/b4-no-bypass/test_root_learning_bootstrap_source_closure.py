@@ -23,6 +23,7 @@ REGISTRATION = AGENT + "authority_host_learning_registration.rs"
 SESSION = AGENT + "authority_host_learning_session.rs"
 MODEL_REGISTRATION = AGENT + "authority_host_q24_model_registration.rs"
 PUBLICATION_SESSION = AGENT + "authority_host_generation_publication_session.rs"
+INITIAL_SESSION = AGENT + "authority_host_generation_initial_session.rs"
 HANDOFF = AGENT + "root_production_learning_handoff.rs"
 INPUTS = AGENT + "root_production_learning_inputs.rs"
 CONFIG = AGENT + "config_root_learning.rs"
@@ -56,7 +57,7 @@ CALLERS = {
     "root_learning_completed_circuit_source": (DELIVERY,),
     "root_original_registered_ready_serve": (CLI,),
     "root_original_private_sealed_bytes": (
-        REGISTRATION, MODEL_REGISTRATION, PUBLICATION_SESSION,
+        REGISTRATION, MODEL_REGISTRATION, PUBLICATION_SESSION, INITIAL_SESSION,
     ),
 }
 
@@ -257,13 +258,54 @@ class RootLearningBootstrapSourceClosureTests(unittest.TestCase):
     def test_original_root_source_join_cannot_be_dropped_or_downgraded(self):
         self.rejects(INPUTS, "fn into_learning_runtime(", "bootstrap.with_original_circuit_learning_delivery(self.initial.request)?")
         self.rejects(DELIVERY, "fn with_original_circuit_learning_delivery(", "bootstrap.circuit_delivery_source = CircuitLearningSourceV1::OriginalObjective")
-        self.rejects(DELIVERY, "fn run(", "if !claimed && matches!(self.source, CircuitLearningSourceV1::OriginalObjective)")
+        self.rejects(DELIVERY, "fn run(", "if !claimed && self.source.requires_original_objective()")
         self.rejects(DELIVERY, "fn run(", "state.require_circuit_learning_source(request)")
+        self.rejects(
+            DELIVERY, "fn run(", "else if self.source.requires_original_objective()",
+            replacement="else if false",
+        )
+        self.rejects(DELIVERY, "fn run(", ".require_circuit_learning_source(&source_request)")
         for occurrence in range(2):
             self.rejects(SOURCE, "fn require_circuit_learning_source(", "self.require_learning_source_authentication(&original.0)?", occurrence)
         self.rejects(SOURCE, "fn require_learning_source_authentication(", "authbus_ingress::require_objective_ready(self)?")
         self.rejects(SOURCE, "fn require_learning_source_authentication(", "authbus_ingress::attached(self)?.trust(self)?")
         self.rejects(SOURCE, "fn authenticate_learning_source_at(", "authentication_is_current(record, trust, identity, admitted_ms)?")
+
+    def test_each_original_source_kind_cannot_fall_back_to_host_stage_owners(self):
+        branches = (
+            "Self::HostStageOwners => false,\n"
+            "            Self::OriginalObjective | Self::OriginalQ24 => true,"
+        )
+        for replacement in (
+            "Self::HostStageOwners | Self::OriginalObjective => false,\n"
+            "            Self::OriginalQ24 => true,",
+            "Self::HostStageOwners | Self::OriginalQ24 => false,\n"
+            "            Self::OriginalObjective => true,",
+        ):
+            with self.subTest(replacement=replacement):
+                self.rejects(
+                    DELIVERY, "fn requires_original_objective(", branches,
+                    replacement=replacement,
+                )
+
+    def test_retained_original_source_cannot_be_dropped_or_use_current_outbox(self):
+        for path, function, marker, replacement in (
+            (DELIVERY, "fn take_circuit_delivery(",
+             "retained_source: self.retained_source.take()", "retained_source: None"),
+            (DELIVERY, "fn attach_sources(",
+             "return state.attach_original_retained_learning_source(Arc::clone(source));", ""),
+            (DELIVERY, "fn run(",
+             "source.observe_retained_learning(state.identity()).await?;", ""),
+            (DELIVERY, "fn run(",
+             "self.requests.as_slice() != std::slice::from_ref(source.request())", "false"),
+            (DELIVERY, "fn run(",
+             "source.original_outbox(state.identity(), source.request())?", "store"),
+            (SOURCE, "fn require_circuit_learning_source(",
+             "return self\n                .require_registered_retained_source(request, source)\n                .await",
+             "return Ok(())"),
+        ):
+            with self.subTest(path=path, marker=marker):
+                self.rejects(path, function, marker, replacement=replacement)
 
     def test_pending_guard_must_execute_at_top_level(self):
         guard = "config.require_root_learning_assembled()?;"

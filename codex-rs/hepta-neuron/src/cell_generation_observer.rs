@@ -138,9 +138,7 @@ impl CellGenerationJournalObserverV1 {
     /// and initialized empty witness. This read never creates genesis.
     pub fn require_original_unwritten(&self) -> Result<(), CellGenerationErrorV2> {
         let before = self.stamps()?;
-        if before.0.0 != 0 || self.witness_head()?.is_some()
-            || self.stamps()? != before
-        {
+        if before.0.0 != 0 || self.witness_head()?.is_some() || self.stamps()? != before {
             return Err(CellGenerationErrorV2::Pending);
         }
         Ok(())

@@ -5,9 +5,9 @@
 use codex_hepta_contracts::SignedFinalUseGrant;
 use codex_hepta_contracts::VerifiedUseTokenWitnessV1;
 
-use super::*;
 use super::initial_types::InitialPublished;
 use super::initial_types::InitialState;
+use super::*;
 
 /// A description only. Reserving CURRENT still requires the original Root
 /// store and prepare_initial; this value has no publication authority.
@@ -52,7 +52,9 @@ pub(crate) fn original_initial_record(
         }))),
     };
     if actual != &expected {
-        return Err(invalid("original initial operation or complete head differs"));
+        return Err(invalid(
+            "original initial operation or complete head differs",
+        ));
     }
     record.validate()?;
     Ok(Some((record.signed.clone(), record.witness.clone())))
@@ -107,7 +109,6 @@ impl NeuronGenerationCurrentOwnerV1 {
         store.load()?;
         Ok(Self { store })
     }
-
 }
 
 pub(crate) fn require_original_initial_contract(
@@ -122,8 +123,10 @@ pub(crate) fn require_original_initial_contract(
     let Some(InitialState::Prepared(intent)) = &head.initial else {
         return Err(invalid("original initial preparation required"));
     };
-    if intent.operation_id != operation || &intent.target != target
-        || intent.digest()? != intent_digest || intent.selection != selection.into_array()
+    if intent.operation_id != operation
+        || &intent.target != target
+        || intent.digest()? != intent_digest
+        || intent.selection != selection.into_array()
         || &intent.binding()? != binding
     {
         return Err(invalid("original complete initial contract differs"));

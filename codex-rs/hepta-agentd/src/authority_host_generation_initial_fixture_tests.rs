@@ -216,7 +216,6 @@ impl Fixture {
         sealed.read_to_end(&mut raw)?;
         let bootstrap: HostAuthorityPublicBootstrapV1 = serde_json::from_slice(&raw)?;
         sealed.rewind()?;
-        let (capability, initial) = prepared.enable_generation_initial(self.deployment.clone())?;
         let inputs = crate::RootGenerationInitialEnrollmentV1 {
             mode: if matches!(phase, Phase::Publish | Phase::ReserveExisting) { crate::RootGenerationInitialModeV1::Reserve }
                 else { crate::RootGenerationInitialModeV1::Recover },
@@ -228,6 +227,21 @@ impl Fixture {
             artifacts: self.artifacts.inputs()?, consumer: RootPublicationFinalUseConsumerV1::Device,
             consumer_state_root: self.local.clone(), issuer_keys: vec![FinalUseIssuerTrustKey::from(bootstrap.issuer_key)],
         };
+        let deployment_directory = tempfile::Builder::new().prefix("initial-deployment-")
+            .tempdir_in(self._protected.path())?;
+        std::fs::set_permissions(deployment_directory.path(), std::fs::Permissions::from_mode(0o700))?;
+        let files = crate::RootGenerationInitialDeploymentFilesV1::component_initial_files(
+            deployment_directory.path(),
+            &[self.current_path.clone(), self.target_journal.clone(), self.target_witness.clone()],
+            self.deployment.operation.clone(), &self.artifacts.selector_description()?, &inputs,
+        )?;
+        assert_eq!(files.deployment(), &self.deployment);
+        let (capability, initial) = prepared.enable_generation_initial(files.deployment().clone())?;
+        let before_retained = support::protected_files(&self.current_path)?;
+        assert!(prepared.serve_retained().is_err());
+        assert_eq!(support::protected_files(&self.current_path)?, before_retained);
+        let capability: crate::RootGenerationInitialEnrollmentCapabilityV1 = capability;
+        let deployment = capability.with_original_initial_deployment(files)?;
         let target_writer = OpenOptions::new().read(true).write(true).open(&self.target_journal)?;
         let witness_writer = OpenOptions::new().read(true).write(true).open(&self.target_witness)?;
         let plan = Plan {
@@ -243,7 +257,16 @@ impl Fixture {
         std::thread::scope(|scope| -> anyhow::Result<()> {
             let registration = scope.spawn(|| -> anyhow::Result<()> {
                 control(&self.offer, b"ORIGINAL_INPUTS_READY")?;
-                let outcome = capability.register(inputs);
+                // The original child has now opened both real nonce owners.
+                // The production loader invokes the original same-PID cap.
+                let unchanged = support::protected_files(&self.current_path)?;
+                let claims_before = std::fs::read(self.local.join("device/authority.claims"))?;
+                deployment.component_trigger_initial()?;
+                assert_eq!(support::protected_files(&self.current_path)?, unchanged);
+                assert_eq!(std::fs::read(self.local.join("device/authority.claims"))?, claims_before);
+                let stopping = std::sync::atomic::AtomicBool::new(/*val*/ false);
+                let deployment: crate::RootGenerationInitialDeploymentV1 = deployment;
+                let outcome = deployment.wait_and_register_initial(&stopping);
                 if reject {
                     anyhow::ensure!(outcome.is_err(), "original bad or sticky fenced target rejected");
                     send_data(&self.offer, &false)?;
