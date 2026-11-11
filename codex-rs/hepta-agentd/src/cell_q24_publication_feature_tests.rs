@@ -223,8 +223,8 @@ fn prepublication_pins_worker_runtime_and_device_to_full_selected_manifest() -> 
 }
 
 #[test]
-fn prepublication_rejects_candidate_mask_truncation_injection_and_reordering()
--> anyhow::Result<()> {
+fn prepublication_rejects_candidate_mask_truncation_injection_and_reordering() -> anyhow::Result<()>
+{
     let mut p = Preflight::new()?;
     p.validate()?;
     let original = p.source.clone();
@@ -239,8 +239,7 @@ fn prepublication_rejects_candidate_mask_truncation_injection_and_reordering()
             "extra" => p.source.candidates.push(original.candidates[0].clone()),
             "reordered" => p.source.candidates.swap(0, 1),
             "relabeled" => {
-                p.source.candidates[0].candidate_id =
-                    StableId::new("unrecognized-q24-candidate")?;
+                p.source.candidates[0].candidate_id = StableId::new("unrecognized-q24-candidate")?;
             }
             _ => unreachable!(),
         }
