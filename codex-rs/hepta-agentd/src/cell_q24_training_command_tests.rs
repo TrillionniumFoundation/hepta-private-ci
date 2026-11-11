@@ -293,6 +293,7 @@ async fn original_training_command_wrong_context_cannot_claim_or_consume_admissi
     transport::reject_wrong_actor(Arc::clone(&owner))
         .join()
         .expect("wrong original actor")?;
+    transport::reject_cancelled_queued_dispatch(context(&fixture))?;
     assert_eq!(fixture.bytes()?, before);
     let (client, channel) = transport::client(context(&fixture), false, None)?;
     let server = transport::serve(Arc::clone(&owner), channel);

@@ -6170,12 +6170,12 @@ top_level = []
 
 [[protected_file.required_function_order]]
 function = "fn execute_training("
-sequence = ["cancellation.load(Ordering::Acquire)","return Err(Error::Cancelled)","now()? >= self.context.dataset.request.envelope.expiry_unix_seconds","return Err(Error::DeadlineExceeded)","self.exchange(wire::Action::Execute, false).await"]
+sequence = ["cancellation.load(Ordering::Acquire)","return Err(Error::Cancelled)","now()? >= self.context.dataset.request.envelope.expiry_unix_seconds","return Err(Error::DeadlineExceeded)","self.exchange(wire::Action::Execute, false, Some(cancellation))"]
 top_level = []
 
 [[protected_file.required_function_order]]
 function = "fn exchange("
-sequence = ["let started_at = now()?","self.channel.try_lock()","channel.execution_requested","return Err(Error::ReadbackRequired)","slot.take().ok_or(Error::Unavailable)?","channel.execution_requested = true","request_id.checked_add(1)","wire::Request::new(","tokio::task::spawn_blocking(move ||","let bytes = channel\n                .peer\n                .request(&encoded)",".map_err(|_| Error::CommitUncertain)?","response.require_request(&request)?","channel.peer.check_peer_lifetime()?","let fresh_now = now()?","if fresh_now < started_at","wire::decode_completed(","original != &completed","*retained = Some(completed.clone())","wire::CommandResult::Uncertain => return Err(Error::CommitUncertain)","Some(channel)","result"]
+sequence = ["let started_at = now()?","self.channel.try_lock()","channel.execution_requested","return Err(Error::ReadbackRequired)","slot.take().ok_or(Error::Unavailable)?","channel.execution_requested = true","request_id.checked_add(1)","wire::Request::new(","tokio::task::spawn_blocking(move ||","if cancellation",".is_some_and(|flag| flag.load(Ordering::Acquire))","return Err(Error::Cancelled)","let bytes = channel\n                .peer\n                .request(&encoded)",".map_err(|_| Error::CommitUncertain)?","response.require_request(&request)?","channel.peer.check_peer_lifetime()?","let fresh_now = now()?","if fresh_now < started_at","wire::decode_completed(","original != &completed","*retained = Some(completed.clone())","wire::CommandResult::Uncertain => return Err(Error::CommitUncertain)","Some(channel)","result"]
 top_level = ["let started_at = now()?","channel.peer.check_peer_lifetime()?","let fresh_now = now()?","if fresh_now < started_at"]
 
 [[protected_file.required_function_order]]
@@ -6827,6 +6827,13 @@ caller_markers = ["OriginalCellEvaluationExecutionStoreV1::readback_only("]
 
 
 
+
+[[protected_file]]
+path = "codex-rs/hepta-intelligence-eval/src/fenced_holdout.rs"
+forbidden = ["SigningKey","LearningEvidenceVerifierV1::new","File::open","std::fs::read","try_clone("]
+required_function_order = [
+  { function = "fn read_consumption(", sequence = ["if self.poisoned","return Err(FencedHoldoutError::Poisoned)","let current = match self.store.load(self.binding)","Ok(current) => current.ok_or(FencedHoldoutError::Missing)?","Err(FinalHoldoutCasStoreError::Indeterminate)","self.poisoned = true","return Err(FencedHoldoutError::Indeterminate)","Err(error) => return Err(FencedHoldoutError::Store(error))","current.validate(self.binding)?","if current.fence != self.fence","self.poisoned = true","return Err(FencedHoldoutError::StaleFence)","if current.state_digest != self.state_digest","self.poisoned = true","return Err(FencedHoldoutError::Conflict)","FinalHoldoutJournalV1::from_snapshot_with_record_limit","if journal.snapshot() != self.journal.snapshot()","return Err(FencedHoldoutError::Corrupt)","return Ok((self.binding, None))","if &record.plan != plan","return Err(FencedHoldoutError::Binding)","authority: codex_hepta_types::AuthorityPosture::DENY_ALL"], top_level = ["if self.poisoned","let current = match self.store.load(self.binding)","current.validate(self.binding)?"] },
+]
 
 [[protected_file]]
 path = "codex-rs/hepta-intelligence-eval/src/fenced_holdout_file.rs"

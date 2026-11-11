@@ -310,10 +310,14 @@ impl<S: FinalHoldoutCasStoreV1> FencedFinalHoldoutOwnerV1<S> {
         if self.poisoned {
             return Err(FencedHoldoutError::Poisoned);
         }
-        let current = self
-            .store
-            .load(self.binding)?
-            .ok_or(FencedHoldoutError::Missing)?;
+        let current = match self.store.load(self.binding) {
+            Ok(current) => current.ok_or(FencedHoldoutError::Missing)?,
+            Err(FinalHoldoutCasStoreError::Indeterminate) => {
+                self.poisoned = true;
+                return Err(FencedHoldoutError::Indeterminate);
+            }
+            Err(error) => return Err(FencedHoldoutError::Store(error)),
+        };
         current.validate(self.binding)?;
         if current.fence != self.fence {
             self.poisoned = true;

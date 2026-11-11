@@ -252,8 +252,9 @@ impl OriginalCellQ24TrainingCommandClientV1 {
     /// Request execution once. No retry occurs after Busy, cancellation, a lost
     /// ACK or an unknown result. Dropping this future consumes its connection;
     /// already admitted native work retains the original Stage's semantics.
-    /// The dispatch flag is sampled here. The original host retains the live
-    /// cancellation token used during the fit; no cross-process Arc is claimed.
+    /// The dispatch flag is sampled here and immediately before the queued
+    /// socket request. The original host retains the live cancellation token
+    /// used during the fit; no cross-process Arc is claimed.
     pub async fn execute_training(
         &self,
         cancellation: Arc<AtomicBool>,
@@ -264,11 +265,12 @@ impl OriginalCellQ24TrainingCommandClientV1 {
         if now()? >= self.context.dataset.request.envelope.expiry_unix_seconds {
             return Err(Error::DeadlineExceeded);
         }
-        self.exchange(wire::Action::Execute, false).await
+        self.exchange(wire::Action::Execute, false, Some(cancellation))
+            .await
     }
 
     pub async fn readback(&self) -> Result<OriginalCellQ24TrainingCommandReceiptV1, Error> {
-        self.exchange(wire::Action::Readback, false).await
+        self.exchange(wire::Action::Readback, false, None).await
     }
 
     /// Equality with the expected receipt is checked only after an actual
@@ -288,6 +290,7 @@ impl OriginalCellQ24TrainingCommandClientV1 {
         &self,
         action: wire::Action,
         cancelled: bool,
+        cancellation: Option<Arc<AtomicBool>>,
     ) -> Result<OriginalCellQ24TrainingCommandReceiptV1, Error> {
         let started_at = now()?;
         let mut channel = {
@@ -314,6 +317,12 @@ impl OriginalCellQ24TrainingCommandClientV1 {
         // complete validation. Cancellation of the await drops the task result,
         // including its channel, and cannot consume a delayed reply later.
         let (channel, bytes) = tokio::task::spawn_blocking(move || {
+            if cancellation
+                .as_ref()
+                .is_some_and(|flag| flag.load(Ordering::Acquire))
+            {
+                return Err(Error::Cancelled);
+            }
             let bytes = channel
                 .peer
                 .request(&encoded)

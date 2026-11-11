@@ -6,6 +6,8 @@ use std::os::fd::OwnedFd;
 use std::os::unix::net::UnixStream;
 use std::sync::Arc;
 use std::sync::Mutex;
+use std::sync::atomic::AtomicBool;
+use std::sync::atomic::Ordering;
 use std::time::Duration;
 
 use codex_hepta_contracts::HostAuthorityPeerChannel;
@@ -197,4 +199,71 @@ pub(crate) fn reject_wrong_actor<
         );
         Ok(())
     })
+}
+
+pub(crate) fn reject_cancelled_queued_dispatch(
+    context: OriginalCellQ24TrainingCommandContextV1,
+) -> anyhow::Result<()> {
+    std::thread::spawn(move || -> anyhow::Result<()> {
+        let runtime = tokio::runtime::Builder::new_current_thread()
+            .max_blocking_threads(1)
+            .enable_all()
+            .build()?;
+        runtime.block_on(async move {
+            let (client, mut channel) = client(context, false, None)?;
+            let server = std::thread::spawn(move || -> anyhow::Result<()> {
+                let mut delivered = false;
+                let result = channel.exchange(|_| {
+                    delivered = true;
+                    Err(HostIssuerTransportError::Unavailable)
+                });
+                anyhow::ensure!(!delivered, "cancelled queued request reached the socket");
+                anyhow::ensure!(matches!(result, Ok(false)), "unused connection must close");
+                Ok(())
+            });
+
+            // Occupy the only blocking worker before polling the real client.
+            // The Execute future has sampled false and moved its original
+            // connection before its socket-request closure can begin.
+            let (occupied_tx, occupied_rx) = tokio::sync::oneshot::channel();
+            let (release_tx, release_rx) = std::sync::mpsc::channel();
+            let blocker = tokio::task::spawn_blocking(move || {
+                let _ = occupied_tx.send(());
+                release_rx.recv()
+            });
+            occupied_rx.await?;
+            let cancellation = Arc::new(AtomicBool::new(false));
+            let mut execute = Box::pin(client.execute_training(Arc::clone(&cancellation)));
+            std::future::poll_fn(|cx| {
+                match std::future::Future::poll(execute.as_mut(), cx) {
+                    std::task::Poll::Pending => std::task::Poll::Ready(()),
+                    std::task::Poll::Ready(_) => panic!("Execute must queue behind the blocker"),
+                }
+            })
+            .await;
+            cancellation.store(true, Ordering::Release);
+            release_tx.send(())?;
+            blocker.await??;
+            anyhow::ensure!(
+                matches!(execute.await, Err(super::Error::Cancelled)),
+                "the original cancellation token must be sampled before sending"
+            );
+            anyhow::ensure!(
+                matches!(client.readback().await, Err(super::Error::Unavailable)),
+                "cancellation must consume the original connection"
+            );
+            anyhow::ensure!(
+                matches!(
+                    client.execute_training(Arc::new(AtomicBool::new(false))).await,
+                    Err(super::Error::Unavailable)
+                ),
+                "cancellation must not restore an executable connection"
+            );
+            drop(client);
+            server.join().expect("cancelled original socket")?;
+            Ok(())
+        })
+    })
+    .join()
+    .expect("queued cancellation runtime")
 }

@@ -311,10 +311,19 @@ fn holdout_current_completed_execution_readback_requires_physical_original() {
         crate::FencedHoldoutError::Indeterminate,
     )));
     assert_eq!(test.readback(), physical_error);
+    assert!(
+        test.runner
+            .as_ref()
+            .expect("original runner")
+            .holdout
+            .is_poisoned()
+    );
     test.files.replace_holdout(&original[0]);
     assert_eq!(
         test.readback(),
-        physical_error,
+        Err(Error::Evaluation(ProductEvaluationError::Holdout(
+            crate::FencedHoldoutError::Poisoned,
+        ))),
         "restoring bytes cannot unfence this owner"
     );
     assert_eq!(

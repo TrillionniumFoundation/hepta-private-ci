@@ -19,7 +19,9 @@ SPEC.loader.exec_module(PROOF)
 DIRECTORY = "codex-rs/hepta-intelligence-eval/src/"
 STORE = DIRECTORY + "fenced_holdout_file.rs"
 CURRENT = DIRECTORY + "fenced_holdout_current.rs"
+OWNER = DIRECTORY + "fenced_holdout.rs"
 FUNCTIONS = {
+    OWNER: {"fn read_consumption("},
     STORE: {"fn create(", "fn recover(", "fn require_current(", "fn load(", "fn compare_and_swap("},
     CURRENT: {"fn read_physical(", "fn replay("},
 }
