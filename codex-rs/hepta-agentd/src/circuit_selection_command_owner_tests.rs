@@ -6,15 +6,15 @@ use super::*;
 use pretty_assertions::assert_eq;
 use pretty_assertions::assert_ne;
 
-use crate::OriginalCircuitSelectionCommandClientV1 as CommandClient;
-use crate::OriginalCircuitSelectionCommandContextV1 as CommandContext;
-use crate::OriginalCircuitSelectionCommandErrorV1 as CommandError;
-use crate::OriginalCircuitSelectionCommandOwnerV1 as CommandOwner;
+use crate::OriginalCircuitSelectionCommandClientV1;
+use crate::OriginalCircuitSelectionCommandContextV1;
+use crate::OriginalCircuitSelectionCommandErrorV1;
+use crate::OriginalCircuitSelectionCommandOwnerV1;
 use crate::learning_iteration_evidence_client::fixture_original_receipt_client_until_close;
 use crate::learning_iteration_evidence_client::selection_command_test_support as command;
 
-type RoleOwner = CommandOwner<FileAnchorWitnessStore>;
-type RoleThread = std::thread::JoinHandle<Result<u64, CommandError>>;
+type RoleOwner = OriginalCircuitSelectionCommandOwnerV1<FileAnchorWitnessStore>;
+type RoleThread = std::thread::JoinHandle<Result<u64, OriginalCircuitSelectionCommandErrorV1>>;
 type TrainerThread = std::thread::JoinHandle<anyhow::Result<usize>>;
 
 struct OriginalService {
@@ -63,7 +63,9 @@ impl OriginalService {
     }
 }
 
-async fn command_context(f: &SelectionFixture) -> anyhow::Result<CommandContext> {
+async fn command_context(
+    f: &SelectionFixture,
+) -> anyhow::Result<OriginalCircuitSelectionCommandContextV1> {
     let (dataset, original) = command::training_fixture_result(
         f.config.decision.clone(),
         f.config.scope.clone(),
@@ -71,15 +73,20 @@ async fn command_context(f: &SelectionFixture) -> anyhow::Result<CommandContext>
         f.config.training_evidence.clone(),
     )
     .await?;
-    Ok(CommandContext::from_original_training(
-        dataset,
-        f.config.scope.clone(),
-        f.config.verifier.clone(),
-        &original,
-    )?)
+    Ok(
+        OriginalCircuitSelectionCommandContextV1::from_original_training(
+            dataset,
+            f.config.scope.clone(),
+            f.config.verifier.clone(),
+            &original,
+        )?,
+    )
 }
 
-fn finish_command(client: CommandClient, server: RoleThread) -> anyhow::Result<u64> {
+fn finish_command(
+    client: OriginalCircuitSelectionCommandClientV1,
+    server: RoleThread,
+) -> anyhow::Result<u64> {
     drop(client);
     Ok(server
         .join()
@@ -97,7 +104,7 @@ async fn q24_selector_command_binds_opaque_training_result_and_shared_dispatch()
     let before = f.bytes()?;
     assert!(matches!(
         client.readback().await,
-        Err(CommandError::Missing)
+        Err(OriginalCircuitSelectionCommandErrorV1::Missing)
     ));
     assert_eq!(f.bytes()?, before);
     let selected = client.execute_selection().await?;
@@ -111,7 +118,7 @@ async fn q24_selector_command_binds_opaque_training_result_and_shared_dispatch()
     let bytes = f.bytes()?;
     assert!(matches!(
         client.execute_selection().await,
-        Err(CommandError::ReadbackRequired)
+        Err(OriginalCircuitSelectionCommandErrorV1::ReadbackRequired)
     ));
     assert_eq!(client.readback().await?, selected);
     assert_eq!(f.bytes()?, bytes);
@@ -121,7 +128,7 @@ async fn q24_selector_command_binds_opaque_training_result_and_shared_dispatch()
     let second_server = command::serve(Arc::clone(&service.owner), channel);
     assert!(matches!(
         second.execute_selection().await,
-        Err(CommandError::ReadbackRequired)
+        Err(OriginalCircuitSelectionCommandErrorV1::ReadbackRequired)
     ));
     assert_eq!(second.readback().await?, selected);
     assert_eq!(f.bytes()?, bytes);
@@ -155,11 +162,11 @@ async fn q24_selector_command_lost_ack_recovers_original_signature_readonly() ->
     let server = command::lose_ack(Arc::clone(&service.owner), channel);
     assert!(matches!(
         client.execute_selection().await,
-        Err(CommandError::CommitUncertain)
+        Err(OriginalCircuitSelectionCommandErrorV1::CommitUncertain)
     ));
     assert!(matches!(
         client.readback().await,
-        Err(CommandError::Unavailable)
+        Err(OriginalCircuitSelectionCommandErrorV1::Unavailable)
     ));
     drop(client);
     let original = server
@@ -174,7 +181,7 @@ async fn q24_selector_command_lost_ack_recovers_original_signature_readonly() ->
     let fresh_server = command::serve(Arc::clone(&recovered.owner), channel);
     assert!(matches!(
         fresh.execute_selection().await,
-        Err(CommandError::ReadbackRequired)
+        Err(OriginalCircuitSelectionCommandErrorV1::ReadbackRequired)
     ));
     assert_eq!(fresh.readback().await?, original);
     let (cold, channel) = command::recover_client(
@@ -187,7 +194,7 @@ async fn q24_selector_command_lost_ack_recovers_original_signature_readonly() ->
     let cold_server = command::serve(Arc::clone(&recovered.owner), channel);
     assert!(matches!(
         cold.execute_selection().await,
-        Err(CommandError::ReadbackRequired)
+        Err(OriginalCircuitSelectionCommandErrorV1::ReadbackRequired)
     ));
     assert_eq!(cold.readback().await?, original);
     assert_eq!(
@@ -213,11 +220,11 @@ async fn q24_selector_command_recovered_missing_never_dispatches() -> anyhow::Re
     let server = command::serve(Arc::clone(&service.owner), channel);
     assert!(matches!(
         client.execute_selection().await,
-        Err(CommandError::ReadbackRequired)
+        Err(OriginalCircuitSelectionCommandErrorV1::ReadbackRequired)
     ));
     assert!(matches!(
         client.readback().await,
-        Err(CommandError::Missing)
+        Err(OriginalCircuitSelectionCommandErrorV1::Missing)
     ));
     assert_eq!(f.bytes()?, before);
     assert_eq!(finish_command(client, server)?, 2);
@@ -254,7 +261,7 @@ async fn q24_selector_command_rejects_wrong_context_and_valid_renewal_before_dis
         renewed,
     )
     .await?;
-    let changed = CommandContext::from_original_training(
+    let changed = OriginalCircuitSelectionCommandContextV1::from_original_training(
         dataset,
         f.config.scope.clone(),
         f.config.verifier.clone(),
@@ -264,7 +271,7 @@ async fn q24_selector_command_rejects_wrong_context_and_valid_renewal_before_dis
     let wrong_server = command::serve(Arc::clone(&service.owner), channel);
     assert!(matches!(
         wrong.execute_selection().await,
-        Err(CommandError::CommitUncertain)
+        Err(OriginalCircuitSelectionCommandErrorV1::CommitUncertain)
     ));
     drop(wrong);
     assert!(
@@ -321,7 +328,7 @@ async fn q24_selector_command_evidence_readback_detects_live_withdrawal() -> any
     );
     assert!(matches!(
         client.readback().await,
-        Err(CommandError::CommitUncertain)
+        Err(OriginalCircuitSelectionCommandErrorV1::CommitUncertain)
     ));
     assert_eq!(f.bytes()?, bytes);
     assert_eq!(finish_command(client, server)?, 2);
@@ -339,7 +346,7 @@ async fn q24_selector_command_keeps_original_expiry_and_external_custody() -> an
     // SAFETY: observe the test UID, which the public bootstrap must refuse.
     let uid = unsafe { libc::geteuid() };
     assert!(
-        CommandClient::from_original_stream(
+        OriginalCircuitSelectionCommandClientV1::from_original_stream(
             stream,
             crate::LearningIterationEvidencePeerV1 {
                 pid: peer.pid,
@@ -358,7 +365,7 @@ async fn q24_selector_command_keeps_original_expiry_and_external_custody() -> an
     drop(unused);
     let (stream, unused) = UnixStream::pair()?;
     assert!(
-        CommandClient::recover_from_original_stream(
+        OriginalCircuitSelectionCommandClientV1::recover_from_original_stream(
             stream,
             crate::LearningIterationEvidencePeerV1 {
                 pid: peer.pid,
@@ -391,7 +398,7 @@ async fn q24_selector_command_keeps_original_expiry_and_external_custody() -> an
     let server = command::serve(Arc::clone(&service.owner), channel);
     assert!(matches!(
         client.readback().await,
-        Err(CommandError::Missing)
+        Err(OriginalCircuitSelectionCommandErrorV1::Missing)
     ));
     let before = f.bytes()?;
     tokio::time::sleep(
@@ -401,7 +408,7 @@ async fn q24_selector_command_keeps_original_expiry_and_external_custody() -> an
     assert!(client.execute_selection().await.is_err());
     assert!(matches!(
         client.readback().await,
-        Err(CommandError::Unavailable)
+        Err(OriginalCircuitSelectionCommandErrorV1::Unavailable)
     ));
     assert_eq!(f.bytes()?, before);
     assert_eq!(finish_command(client, server)?, 1);
@@ -409,3 +416,6 @@ async fn q24_selector_command_keeps_original_expiry_and_external_custody() -> an
     f.original.session.stop().await?;
     Ok(())
 }
+
+#[path = "circuit_next_use_command_owner_tests.rs"]
+mod next_use_command;

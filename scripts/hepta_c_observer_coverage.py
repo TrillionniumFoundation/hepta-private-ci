@@ -238,6 +238,20 @@ INITIAL_TRAINING_CONNECTION_CASES = tuple(
         "deferred_training_connection_preserves_expiry_and_readonly_cold_original_signature",
     )
 )
+
+NEXT_USE_COMMAND_PREFIX = "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::"
+NEXT_USE_COMMAND_CASES = tuple(
+    NEXT_USE_COMMAND_PREFIX + name
+    for name in (
+        "q24_next_use_command_attests_actual_different_c_and_shares_dispatch",
+        "q24_next_use_command_lost_ack_recovers_exact_original_signature_readonly",
+        "q24_next_use_command_early_dispatch_never_runs_c_or_resets_admission",
+        "q24_next_use_command_pins_both_original_signatures_before_dispatch",
+        "q24_next_use_command_readback_refuses_actual_publication_withdrawal",
+        "q24_next_use_command_preserves_original_expiry_and_external_custody",
+    )
+)
+
 OWNER_GROUPS = (
     ("next_use_observer", PACKAGE, NEXT_USE_CASES),
     ("material_observers", PACKAGE, MATERIAL_CASES),
@@ -263,6 +277,7 @@ OWNER_GROUPS = (
     ("original_published_circuit_read", PACKAGE, PUBLISHED_READ_CASES),
     ("original_task_source_current", PACKAGE, SOURCE_CURRENT_CASES),
     ("original_selector_command", PACKAGE, SELECTOR_COMMAND_CASES),
+    ("original_next_use_command", PACKAGE, NEXT_USE_COMMAND_CASES),
 )
 EXPECTED_CASES = tuple(
     (package, name) for _, package, names in OWNER_GROUPS for name in names

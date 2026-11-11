@@ -37,20 +37,9 @@ EXPECTED = {
     "learning_original_training_command_owner_serve": (),
     "learning_original_training_command_owner_evidence": (AGENT + "cell_q24_training_bootstrap_service.rs",),
     "learning_source_bound_training_command_context": ("codex-rs/hepta-agentd/src/cell_q24_training_command_service.rs",),
-    "learning_original_owner_command_channel": (
-        "codex-rs/hepta-agentd/src/cell_q24_training_command.rs",
-        "codex-rs/hepta-agentd/src/cell_q24_training_command_service.rs",
-        "codex-rs/hepta-agentd/src/cell_q24_material_command.rs",
-        "codex-rs/hepta-agentd/src/cell_q24_material_command_service.rs",
-        "codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs",
-        "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs",
-        "codex-rs/hepta-agentd/src/circuit_selection_command.rs",
-        "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs",
-        "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_service.rs",
-        "codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs",
-    ),
-    "learning_original_owner_snapshot_encode": ("codex-rs/hepta-agentd/src/cell_q24_training_command_wire.rs", "codex-rs/hepta-agentd/src/cell_q24_material_command_wire.rs", "codex-rs/hepta-agentd/src/circuit_learning_read_wire.rs", "codex-rs/hepta-agentd/src/circuit_selection_command.rs", "codex-rs/hepta-agentd/src/circuit_selection_command_wire.rs",),
-    "learning_original_owner_snapshot_decode": ("codex-rs/hepta-agentd/src/cell_q24_training_command_wire.rs", "codex-rs/hepta-agentd/src/cell_q24_material_command_wire.rs", "codex-rs/hepta-agentd/src/circuit_selection_command_wire.rs",),
+    "learning_original_owner_command_channel": ("codex-rs/hepta-agentd/src/cell_q24_training_command.rs", "codex-rs/hepta-agentd/src/cell_q24_training_command_service.rs", "codex-rs/hepta-agentd/src/cell_q24_material_command.rs", "codex-rs/hepta-agentd/src/cell_q24_material_command_service.rs", "codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs", "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs", "codex-rs/hepta-agentd/src/circuit_selection_command.rs", "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_service.rs", "codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs", "codex-rs/hepta-agentd/src/circuit_next_use_command.rs", "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs",),
+    "learning_original_owner_snapshot_encode": ("codex-rs/hepta-agentd/src/cell_q24_training_command_wire.rs", "codex-rs/hepta-agentd/src/cell_q24_material_command_wire.rs", "codex-rs/hepta-agentd/src/circuit_learning_read_wire.rs", "codex-rs/hepta-agentd/src/circuit_selection_command.rs", "codex-rs/hepta-agentd/src/circuit_selection_command_wire.rs", "codex-rs/hepta-agentd/src/circuit_next_use_command.rs", "codex-rs/hepta-agentd/src/circuit_next_use_command_wire.rs",),
+    "learning_original_owner_snapshot_decode": ("codex-rs/hepta-agentd/src/cell_q24_training_command_wire.rs", "codex-rs/hepta-agentd/src/cell_q24_material_command_wire.rs", "codex-rs/hepta-agentd/src/circuit_selection_command_wire.rs", "codex-rs/hepta-agentd/src/circuit_next_use_command_wire.rs",),
 }
 
 

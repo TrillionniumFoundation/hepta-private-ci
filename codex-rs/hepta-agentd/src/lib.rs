@@ -399,6 +399,17 @@ pub use learning_iteration_evidence_client::OriginalCircuitSelectionCommandError
 pub use learning_iteration_evidence_client::OriginalCircuitSelectionCommandOwnerV1;
 #[cfg(target_os = "linux")]
 pub use learning_iteration_evidence_client::OriginalCircuitSelectionCommandReceiptV1;
+
+#[cfg(target_os = "linux")]
+pub use learning_iteration_evidence_client::OriginalCircuitNextUseCommandClientV1;
+#[cfg(target_os = "linux")]
+pub use learning_iteration_evidence_client::OriginalCircuitNextUseCommandContextV1;
+#[cfg(target_os = "linux")]
+pub use learning_iteration_evidence_client::OriginalCircuitNextUseCommandErrorV1;
+#[cfg(target_os = "linux")]
+pub use learning_iteration_evidence_client::OriginalCircuitNextUseCommandOwnerV1;
+#[cfg(target_os = "linux")]
+pub use learning_iteration_evidence_client::OriginalCircuitNextUseCommandReceiptV1;
 #[cfg(target_os = "linux")]
 pub use learning_iteration_evidence_client::read_cell_learning_evaluation_v1;
 #[cfg(target_os = "linux")]

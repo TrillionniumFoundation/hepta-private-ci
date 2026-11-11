@@ -197,11 +197,17 @@ async fn read_remote_next_use(
     Ok(original.observation().clone())
 }
 
+enum CommandOrigin {
+    FreshCreate,
+    Recovered,
+}
+
 pub struct OriginalCircuitNextUseReceiptOwnerV1<W: AnchorWitnessStore> {
     journal: LearningOwnerJournalV1<W>,
     config: OriginalCircuitNextUseReceiptConfigV1,
     key: SigningKey,
     saved: ProductEvaluationExecutionKeyV1,
+    command_origin: CommandOrigin,
 }
 
 impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W> {
@@ -218,6 +224,7 @@ impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W> {
             config,
             key,
             saved,
+            command_origin: CommandOrigin::FreshCreate,
         })
     }
 
@@ -236,7 +243,37 @@ impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W> {
             config,
             key,
             saved,
+            command_origin: CommandOrigin::Recovered,
         })
+    }
+
+    /// Transfer this original Observer into its one shared command host.
+    /// The task and predecessor channels are already original capabilities.
+    /// This performs no C execution, observation signing or custody reopening.
+    pub fn into_command_owner(
+        self,
+        live: OriginalCircuitLearningReadClientV1,
+        trainer: LearningIterationEvidenceClientV1,
+        selector: LearningIterationEvidenceClientV1,
+    ) -> Result<
+        crate::OriginalCircuitNextUseCommandOwnerV1<W>,
+        crate::OriginalCircuitNextUseCommandErrorV1,
+    >
+    where
+        W: Send + 'static,
+    {
+        crate::OriginalCircuitNextUseCommandOwnerV1::from_original_receipt_owner(
+            self, live, trainer, selector,
+        )
+    }
+
+    pub(crate) fn original_command_profile(
+        &self,
+    ) -> (&OriginalCircuitNextUseReceiptConfigV1, bool) {
+        (
+            &self.config,
+            matches!(self.command_origin, CommandOrigin::Recovered),
+        )
     }
 
     /// Claim once, then sign only an actual original C completion. The original

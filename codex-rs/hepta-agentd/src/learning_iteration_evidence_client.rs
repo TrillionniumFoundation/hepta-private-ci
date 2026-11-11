@@ -50,6 +50,14 @@ pub use selection_command::OriginalCircuitSelectionCommandErrorV1;
 pub use selection_command::OriginalCircuitSelectionCommandOwnerV1;
 pub use selection_command::OriginalCircuitSelectionCommandReceiptV1;
 
+#[path = "circuit_next_use_command.rs"]
+mod next_use_command;
+pub use next_use_command::OriginalCircuitNextUseCommandClientV1;
+pub use next_use_command::OriginalCircuitNextUseCommandContextV1;
+pub use next_use_command::OriginalCircuitNextUseCommandErrorV1;
+pub use next_use_command::OriginalCircuitNextUseCommandOwnerV1;
+pub use next_use_command::OriginalCircuitNextUseCommandReceiptV1;
+
 #[path = "cell_q24_material_evidence_service.rs"]
 mod material;
 pub use material::OriginalCellQ24DatasetCommandReadbackV1;
@@ -265,3 +273,6 @@ pub(crate) use training_command::command_test_support;
 
 #[cfg(test)]
 pub(crate) use selection_command::command_test_support as selection_command_test_support;
+
+#[cfg(test)]
+pub(crate) use next_use_command::command_test_support as next_use_command_test_support;

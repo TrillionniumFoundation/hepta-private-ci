@@ -17,9 +17,9 @@ use codex_hepta_neuron::AnchorWitnessStore;
 
 use super::Channel;
 use super::Error;
-use super::OriginalCircuitLearningReadClientV1 as Client;
-use super::OriginalCircuitLearningReadContextV1 as Context;
-use super::OriginalCircuitLearningReadOwnerV1 as Owner;
+use super::OriginalCircuitLearningReadClientV1;
+use super::OriginalCircuitLearningReadContextV1;
+use super::OriginalCircuitLearningReadOwnerV1;
 use super::now;
 use super::wire;
 use crate::AgentdRootAuthorityPeer;
@@ -69,11 +69,16 @@ fn channel(stream: UnixStream) -> anyhow::Result<HostAuthorityPeerChannel> {
     )?)
 }
 
-pub(crate) fn client(context: Context) -> anyhow::Result<(Client, HostAuthorityPeerChannel)> {
+pub(crate) fn client(
+    context: OriginalCircuitLearningReadContextV1,
+) -> anyhow::Result<(
+    OriginalCircuitLearningReadClientV1,
+    HostAuthorityPeerChannel,
+)> {
     let (stream, server) = UnixStream::pair()?;
     let binding = wire::context_binding(&context, now()?)?;
     Ok((
-        Client {
+        OriginalCircuitLearningReadClientV1 {
             context,
             binding,
             channel: Mutex::new(Some(Channel {
@@ -90,7 +95,7 @@ pub(crate) fn serve<
     C: AnchorWitnessStore + Send + 'static,
     S: AnchorWitnessStore + Send + 'static,
 >(
-    owner: Arc<Owner<C, S>>,
+    owner: Arc<OriginalCircuitLearningReadOwnerV1<C, S>>,
     mut channel: HostAuthorityPeerChannel,
 ) -> std::thread::JoinHandle<Result<u64, Error>> {
     std::thread::spawn(move || owner.serve_channel(&mut channel))
@@ -100,7 +105,7 @@ pub(crate) fn changed_nonce<
     C: AnchorWitnessStore + Send + 'static,
     S: AnchorWitnessStore + Send + 'static,
 >(
-    owner: Arc<Owner<C, S>>,
+    owner: Arc<OriginalCircuitLearningReadOwnerV1<C, S>>,
     mut channel: HostAuthorityPeerChannel,
 ) -> std::thread::JoinHandle<anyhow::Result<()>> {
     std::thread::spawn(move || {
@@ -128,7 +133,7 @@ pub(crate) fn delayed_response<
     C: AnchorWitnessStore + Send + 'static,
     S: AnchorWitnessStore + Send + 'static,
 >(
-    owner: Arc<Owner<C, S>>,
+    owner: Arc<OriginalCircuitLearningReadOwnerV1<C, S>>,
     mut channel: HostAuthorityPeerChannel,
 ) -> std::thread::JoinHandle<anyhow::Result<()>> {
     std::thread::spawn(move || {
@@ -156,8 +161,8 @@ pub(crate) fn delayed_response<
 }
 
 pub(crate) fn reject_wrong_context<C: AnchorWitnessStore, S: AnchorWitnessStore>(
-    owner: &Owner<C, S>,
-    context: &Context,
+    owner: &OriginalCircuitLearningReadOwnerV1<C, S>,
+    context: &OriginalCircuitLearningReadContextV1,
 ) -> anyhow::Result<()> {
     let binding = wire::context_binding(context, now()?)?;
     let mut request = wire::Request::new(context, binding, 1)?;

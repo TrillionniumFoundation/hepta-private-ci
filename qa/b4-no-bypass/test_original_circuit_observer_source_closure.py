@@ -39,6 +39,7 @@ FUNCTIONS = {
     "fn attest_original_completion(", "fn attest_original_remote_completion(",
     "fn readback(", "fn readback_remote(", "fn read_local_next_use(",
     "fn read_remote_next_use(", "fn remote_predecessors(",
+    "fn original_command_profile(", "fn into_command_owner(",
 }
 
 
