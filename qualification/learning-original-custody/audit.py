@@ -41,7 +41,7 @@ def _reject_nonfinite_json(_token):
 
 
 
-def _receipt_sha256(root: Path, relative: str) -> str:
+def _receipt_sha256(root_fd: int, relative: str) -> str:
     """Hash a receipt under a pinned directory, never traversing symlinks.
 
     Opening a leaf with O_NOFOLLOW is insufficient when an intermediate
@@ -58,7 +58,7 @@ def _receipt_sha256(root: Path, relative: str) -> str:
         raise ValueError('unsafe receipt components')
     directory_flags = os.O_RDONLY | directory | nofollow | getattr(os, 'O_NONBLOCK', 0)
     receipt_flags = os.O_RDONLY | nofollow | getattr(os, 'O_NONBLOCK', 0)
-    parent_fd = os.open(root, directory_flags)
+    parent_fd = os.dup(root_fd)
     try:
         for part in parts[:-1]:
             next_fd = os.open(part, directory_flags, dir_fd=parent_fd)
@@ -94,15 +94,20 @@ def inspect(manifest: Path) -> dict:
         if code not in issues:
             issues.append(code)
 
+    root_fd = None
     try:
-        root = manifest.resolve(strict=True).parent
+        root = manifest.parent.resolve(strict=True)
+        # Pin one original parent directory for the manifest AND every receipt.
+        # A renamed/replaced parent pathname must not mix different snapshots.
         # Limit the read AND refuse special-file and symlink manifest leaves.
         # A bounded read from a blocking FIFO is still an unbounded wait.
         nofollow = getattr(os, 'O_NOFOLLOW', None)
-        if nofollow is None:
-            raise ValueError('no-follow manifest open not supported')
+        directory = getattr(os, 'O_DIRECTORY', None)
+        if nofollow is None or directory is None or os.open not in os.supports_dir_fd:
+            raise ValueError('descriptor-relative no-follow manifest open not supported')
+        root_fd = os.open(root, os.O_RDONLY | directory | nofollow)
         flags = os.O_RDONLY | nofollow | getattr(os, 'O_NONBLOCK', 0)
-        with os.fdopen(os.open(manifest, flags), 'rb') as stream:
+        with os.fdopen(os.open(manifest.name, flags, dir_fd=root_fd), 'rb') as stream:
             opened = os.fstat(stream.fileno())
             if not stat.S_ISREG(opened.st_mode) or opened.st_size > MAX_MANIFEST_BYTES:
                 raise ValueError('manifest not regular or exceeds maximum bytes')
@@ -113,6 +118,8 @@ def inspect(manifest: Path) -> dict:
                             object_pairs_hook=_unique_json_object,
                             parse_constant=_reject_nonfinite_json)
     except (OSError, UnicodeError, ValueError, RecursionError) as exc:
+        if root_fd is not None:
+            os.close(root_fd)
         return {'status': 'HOLD', 'integrity': 'FAIL', 'issues': [f'bad_manifest:{type(exc).__name__}'],
                 'owner_authenticated': False, 'benefit_established': False}
     if not isinstance(record, dict) or record.get('schema') != 'hepta-original-learning-custody-precheck-v1':
@@ -191,7 +198,7 @@ def inspect(manifest: Path) -> dict:
         seen_paths.add(path)
         seen_digests.add(sha)
         try:
-            digest = _receipt_sha256(root, path)
+            digest = _receipt_sha256(root_fd, path)
             if digest != sha:
                 fail(f'receipt_bytes_mismatch:{stage}')
             else:
@@ -235,6 +242,7 @@ def inspect(manifest: Path) -> dict:
                     else:
                         fail(f'{stage}_selection_unbound')
 
+    os.close(root_fd)
     # Each admitted attempt must have a terminal or explicitly unresolved
     # record, including failed/cancelled attempts; UNKNOWN is never success.
     admitted, attempts = record.get('admitted_attempt_ids'), record.get('attempts')
