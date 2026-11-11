@@ -96,16 +96,20 @@ def assess_retained_original_observer_coverage(
     record = json.loads(encoded_record)
     if (
         record.get("status") != "passed"
-        or any(type(record.get(field)) is not int or record[field] != 0
-               for field in ("returncode", "command_exit_code", "exit_code"))
+        or any(
+            type(record.get(field)) is not int or record[field] != 0
+            for field in ("returncode", "command_exit_code", "exit_code")
+        )
         or record.get("timed_out") is not False
         or record.get("output_limit_exceeded") is not False
     ):
         raise ValueError("Observer coverage requires a successful retained execution")
     name = record.get("log_file")
-    if not isinstance(name, str) or re.fullmatch(
-        re.escape(execution_path.name) + r"\.[0-9a-f]{32}\.log", name
-    ) is None:
+    if (
+        not isinstance(name, str)
+        or re.fullmatch(re.escape(execution_path.name) + r"\.[0-9a-f]{32}\.log", name)
+        is None
+    ):
         raise ValueError("retained execution log must be its exact relative basename")
     expected_size = record.get("log_bytes")
     expected_digest = record.get("log_sha256")
@@ -120,8 +124,12 @@ def assess_retained_original_observer_coverage(
 
     def identity(value):
         return (
-            value.st_dev, value.st_ino, value.st_mode, value.st_size,
-            value.st_mtime_ns, value.st_ctime_ns,
+            value.st_dev,
+            value.st_ino,
+            value.st_mode,
+            value.st_size,
+            value.st_mtime_ns,
+            value.st_ctime_ns,
         )
 
     before = path.lstat()

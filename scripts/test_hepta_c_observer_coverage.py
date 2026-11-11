@@ -112,7 +112,6 @@ class OriginalObserverCoverageTests(unittest.TestCase):
         ):
             self.assertFalse(self.assess(root, changed))
 
-
     def retained(self, directory):
         root, log = self.reports()
         record_path = directory / "ordinary.json"
@@ -120,9 +119,14 @@ class OriginalObserverCoverageTests(unittest.TestCase):
         name = record_path.name + "." + "a" * 32 + ".log"
         raw = log.encode()
         record = {
-            "status": "passed", "returncode": 0, "command_exit_code": 0,
-            "exit_code": 0, "timed_out": False, "output_limit_exceeded": False,
-            "log_file": name, "log_bytes": len(raw),
+            "status": "passed",
+            "returncode": 0,
+            "command_exit_code": 0,
+            "exit_code": 0,
+            "timed_out": False,
+            "output_limit_exceeded": False,
+            "log_file": name,
+            "log_bytes": len(raw),
             "log_sha256": hashlib.sha256(raw).hexdigest(),
         }
         (directory / name).write_bytes(raw)
@@ -135,7 +139,9 @@ class OriginalObserverCoverageTests(unittest.TestCase):
             directory = Path(temporary)
             record_path, xml_path, record = self.retained(directory)
             self.assertFalse((directory / "ordinary.log").exists())
-            result = coverage.assess_retained_original_observer_coverage(record_path, xml_path)
+            result = coverage.assess_retained_original_observer_coverage(
+                record_path, xml_path
+            )
             self.assertTrue(result["exact_pass_coverage"])
             self.assertEqual(result["log_file"], record["log_file"])
             self.assertEqual(result["log_bytes"], record["log_bytes"])
@@ -146,14 +152,18 @@ class OriginalObserverCoverageTests(unittest.TestCase):
             directory = Path(temporary)
             record_path, xml_path, record = self.retained(directory)
             for name in (
-                "ordinary.log", "../" + record["log_file"],
-                str(directory / record["log_file"]), "elsewhere.json." + "a" * 32 + ".log",
+                "ordinary.log",
+                "../" + record["log_file"],
+                str(directory / record["log_file"]),
+                "elsewhere.json." + "a" * 32 + ".log",
                 "subdir\\\\ordinary.json." + "a" * 32 + ".log",
             ):
                 with self.subTest(name=name):
                     record_path.write_text(json.dumps({**record, "log_file": name}))
                     with self.assertRaises(ValueError):
-                        coverage.assess_retained_original_observer_coverage(record_path, xml_path)
+                        coverage.assess_retained_original_observer_coverage(
+                            record_path, xml_path
+                        )
 
     def test_retained_raw_bytes_cannot_be_changed_truncated_or_extended(self):
         with tempfile.TemporaryDirectory() as temporary:
@@ -165,39 +175,54 @@ class OriginalObserverCoverageTests(unittest.TestCase):
                 with self.subTest(size=len(changed)):
                     log_path.write_bytes(changed)
                     with self.assertRaises(ValueError):
-                        coverage.assess_retained_original_observer_coverage(record_path, xml_path)
+                        coverage.assess_retained_original_observer_coverage(
+                            record_path, xml_path
+                        )
 
     def test_retained_execution_refuses_failed_records_bad_identity_and_symlinks(self):
         with tempfile.TemporaryDirectory() as temporary:
             directory = Path(temporary)
             record_path, xml_path, record = self.retained(directory)
             for key, value in (
-                ("status", "failed"), ("exit_code", 1), ("returncode", True),
-                ("command_exit_code", None), ("timed_out", True),
-                ("output_limit_exceeded", True), ("log_bytes", -1),
-                ("log_bytes", 64 * 1024 * 1024 + 1), ("log_sha256", "0" * 64),
+                ("status", "failed"),
+                ("exit_code", 1),
+                ("returncode", True),
+                ("command_exit_code", None),
+                ("timed_out", True),
+                ("output_limit_exceeded", True),
+                ("log_bytes", -1),
+                ("log_bytes", 64 * 1024 * 1024 + 1),
+                ("log_sha256", "0" * 64),
                 ("log_sha256", None),
             ):
                 with self.subTest(field=key, value=value):
                     record_path.write_text(json.dumps({**record, key: value}))
                     with self.assertRaises(ValueError):
-                        coverage.assess_retained_original_observer_coverage(record_path, xml_path)
+                        coverage.assess_retained_original_observer_coverage(
+                            record_path, xml_path
+                        )
             record_path.write_text(json.dumps(record))
             log_path = directory / record["log_file"]
             actual = directory / "actual.log"
             log_path.rename(actual)
             log_path.symlink_to(actual)
             with self.assertRaises(ValueError):
-                coverage.assess_retained_original_observer_coverage(record_path, xml_path)
+                coverage.assess_retained_original_observer_coverage(
+                    record_path, xml_path
+                )
 
     def test_actual_workflow_ordinary_report_wiring_reads_recorded_log(self):
-        workflow = Path(__file__).resolve().parents[1] / ".github/workflows/hepta-daemon-learning-native.yml"
+        workflow = (
+            Path(__file__).resolve().parents[1]
+            / ".github/workflows/hepta-daemon-learning-native.yml"
+        )
         text = workflow.read_text()
-        start = text.index('          import base64\n')
-        end = text.index('          PY\n', start)
+        start = text.index("          import base64\n")
+        end = text.index("          PY\n", start)
         driver = "\n".join(line[10:] for line in text[start:end].splitlines())
         method = next(
-            node for node in ast.parse(driver).body
+            node
+            for node in ast.parse(driver).body
             if isinstance(node, ast.FunctionDef) and node.name == "test"
         )
         with tempfile.TemporaryDirectory() as temporary:
@@ -205,15 +230,28 @@ class OriginalObserverCoverageTests(unittest.TestCase):
             self.retained(directory)
             saved = {}
             namespace = {
-                "repo": directory / "source", "records": directory,
-                "os": SimpleNamespace(geteuid=lambda: 1000, environ={"SOURCE_SHA": "b" * 40}),
-                "subprocess": SimpleNamespace(run=lambda *args, **kwargs: SimpleNamespace(returncode=0)),
-                "collect": lambda *args: 0, "save": lambda name, value: saved.update({name: value}),
+                "repo": directory / "source",
+                "records": directory,
+                "os": SimpleNamespace(
+                    geteuid=lambda: 1000, environ={"SOURCE_SHA": "b" * 40}
+                ),
+                "subprocess": SimpleNamespace(
+                    run=lambda *args, **kwargs: SimpleNamespace(returncode=0)
+                ),
+                "collect": lambda *args: 0,
+                "save": lambda name, value: saved.update({name: value}),
                 "assess_retained_original_observer_coverage": coverage.assess_retained_original_observer_coverage,
             }
-            exec(compile(ast.Module(body=[method], type_ignores=[]), str(workflow), "exec"), namespace)
+            exec(
+                compile(
+                    ast.Module(body=[method], type_ignores=[]), str(workflow), "exec"
+                ),
+                namespace,
+            )
             namespace["test"]("ordinary", ["--lib"])
-            self.assertTrue(saved["original-c-observer-coverage.json"]["exact_pass_coverage"])
+            self.assertTrue(
+                saved["original-c-observer-coverage.json"]["exact_pass_coverage"]
+            )
             self.assertFalse((directory / "ordinary.log").exists())
 
 
