@@ -1,5 +1,5 @@
 //! Purpose-fixed original C Observer commands for an actual TrainingNoUpdate cut.
-//! The original key and journal remain in the Selector host. No request carries
+//! The original key and journal remain in the Observer host. No request carries
 //! a selection observation, predecessor snapshot, signature payload or grant.
 
 use std::os::fd::OwnedFd;

@@ -3754,7 +3754,7 @@ required_function_order = [
   { function = "fn read_remote_next_use(", sequence = ["let live: &OriginalCircuitLearningReadClientV1 = source.live;","live.require_original_context(","&config.selection","&config.scope","&config.verifier","&config.training_evidence","Some(&config.selection_evidence)","remote_predecessors(source, config).await?","authenticate_predecessors(config, &before, now()?)?","live.read_current().await?","remote_predecessors(source, config).await?","authenticate_predecessors(config, &after, now()?)?","Ok(original.observation().clone())"], top_level = ["live.require_original_context(","let original = live.read_current().await?","authenticate_predecessors(config, &after, now()?)?"] },
 
   {"function" ="fn original_command_profile(","sequence" =["&self.config","matches!(self.command_origin, CommandOrigin::Recovered)"]},
-  {"function" ="fn into_command_owner(","sequence" =["crate::OriginalCircuitNextUseCommandOwnerV1::from_original_receipt_owner(","self,","live,","trainer,","selector,"]},
+  {"function" ="fn into_command_owner(","sequence" =["\n        self,\n","crate::OriginalCircuitNextUseCommandOwnerV1::from_original_receipt_owner(","self, live, trainer, selector,"]},
 ]
 
 [[boundary]]
