@@ -2,7 +2,7 @@
 
 import json
 from pathlib import Path
-from .metacontrol_macro_contract import sha
+from .metacontrol_macro_contract import digest, sha
 
 
 class FixtureHost:
@@ -110,6 +110,8 @@ class FixtureHost:
             "model_sha256": self.profile["model_sha256"],
             "score_components": score,
             "gross_score": 0.5,
+            "rubric_sha256": self.config["rubric_sha256"],
+            "output_text_sha256": digest("fixture"),
         }
         (self.output / "result.json").write_text(json.dumps(result))
         return result
