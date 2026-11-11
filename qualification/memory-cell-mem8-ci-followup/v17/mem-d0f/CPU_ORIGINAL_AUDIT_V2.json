@@ -1,0 +1,449 @@
+{
+  "additional_raw_only_python_tests_observed": 0,
+  "archived_commands_executed": 0,
+  "artifact": {
+    "archive": {
+      "bytes": 64561,
+      "git_blob": "53a3575544115cdb741b69200a2b2e5488992dcc",
+      "sha256": "9f1701a6ae7e130df20af4ffa55dd8e367d813667c4aab755667cfedf8a14754"
+    },
+    "artifact_id": 13873374531,
+    "members": 25
+  },
+  "attempt": 1,
+  "combined_MEM_overlap_case_count": 34,
+  "combined_MEM_python_distinct_case_ids": 120,
+  "combined_MEM_python_execution_count": 154,
+  "distinct_case_ids": 119,
+  "executions": 119,
+  "failed": 0,
+  "groups": [
+    {
+      "artifact_id": 13873374531,
+      "case_ids": [
+        "ndu_real_runtime.test_run_candidate_retention.CandidateRetentionRunnerTests.test_evidence_preserves_actor_digest_and_malformed_trajectory",
+        "ndu_real_runtime.test_run_candidate_retention.CandidateRetentionRunnerTests.test_exclusions_preserve_sealed_quarantine_outside_released_catalog",
+        "ndu_real_runtime.test_run_candidate_retention.CandidateRetentionRunnerTests.test_freeze_pins_both_arms_before_any_actor_and_source_mutation_fails",
+        "ndu_real_runtime.test_run_candidate_retention.CandidateRetentionRunnerTests.test_isolation_refusal_keeps_all_planned_failures_without_retry",
+        "ndu_real_runtime.test_run_candidate_retention.CandidateRetentionRunnerTests.test_model_load_and_training_roster_bind_actual_tensor_bytes",
+        "ndu_real_runtime.test_run_candidate_retention.CandidateRetentionRunnerTests.test_post_episode_ocr_drift_with_later_restore_blocks_report",
+        "ndu_real_runtime.test_run_candidate_retention.CandidateRetentionRunnerTests.test_selection_is_stable_complete_and_source_excluded"
+      ],
+      "command": [
+        "python",
+        "-B",
+        "-m",
+        "unittest",
+        "-v",
+        "ndu_real_runtime.test_run_candidate_retention"
+      ],
+      "failed": 0,
+      "finished_at": "2026-11-11T16:54:47.266926+00:00",
+      "lane": "source-head",
+      "log": "candidate-runner-tests.json.53be1d8444b749a3a929de6187465566.log",
+      "log_identity": {
+        "bytes": 1573,
+        "git_blob": "04099df3078a6ec054aaf0a338e0a9f7182f77c8",
+        "sha256": "45b4bc0be1d2a4877d1f18f9bad302f52e4d33f71a2120aabbd593ddeec5c6f4"
+      },
+      "passed": 7,
+      "receipt": "candidate-runner-tests.json",
+      "receipt_identity": {
+        "bytes": 1511,
+        "git_blob": "8e2d7d70c32d92f72effeaabfecd3d15272fe8a2",
+        "sha256": "a2009ad5dbf712834af4c921b9cb440e74642e16b9737603f3d35004aeb964ac"
+      },
+      "source_before_after_clean": true,
+      "source_sha": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+      "started_at": "2026-11-11T16:54:44.873423+00:00",
+      "tested_sha": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+      "tree": "658fa040046285116b1fd81b94ff8c96444072ad"
+    },
+    {
+      "artifact_id": 13873374531,
+      "case_ids": [
+        "ndu_real_runtime.test_candidate_memory.CandidateMemoryTests.test_caller_mutation_and_rejected_new_scope_cannot_leak_old_records",
+        "ndu_real_runtime.test_candidate_memory.CandidateMemoryTests.test_every_original_source_scope_change_resets_the_entire_pool",
+        "ndu_real_runtime.test_candidate_memory.CandidateMemoryTests.test_eviction_priority_distinct_identity_and_exact_byte_accounting",
+        "ndu_real_runtime.test_candidate_memory.CandidateMemoryTests.test_invalid_public_inputs_are_rejected_without_same_scope_loss",
+        "ndu_real_runtime.test_candidate_memory.CandidateMemoryTests.test_overview_candidate_survives_roi_and_current_duplicate_refreshes",
+        "ndu_real_runtime.test_candidate_runtime.CandidateActorProcessTests.test_real_ocr_torch_actor_and_host_delivery_use_offered_candidates",
+        "ndu_real_runtime.test_candidate_runtime.CandidateRuntimeTests.test_no_selection_stop_and_incomplete_resume_are_explicit",
+        "ndu_real_runtime.test_candidate_runtime.CandidateRuntimeTests.test_only_retention_differs_and_exact_actor_selection_is_bound",
+        "ndu_real_runtime.test_candidate_runtime.CandidateRuntimeTests.test_rebinding_mutation_duplicate_step_and_wrong_write_are_rejected",
+        "ndu_real_runtime.test_candidate_runtime.CandidateRuntimeTests.test_same_caps_evict_and_empty_pool_does_not_fallback",
+        "ndu_real_runtime.test_candidate_retention_report.CandidateRetentionReportTests.test_bound_generator_rescores_pixels_and_ignores_actor_claimed_quality",
+        "ndu_real_runtime.test_candidate_retention_report.CandidateRetentionReportTests.test_full_control_plan_cannot_change_while_control_subobject_matches",
+        "ndu_real_runtime.test_candidate_retention_report.CandidateRetentionReportTests.test_identity_and_unobserved_origin_mutations_are_rejected",
+        "ndu_real_runtime.test_candidate_retention_report.CandidateRetentionReportTests.test_initial_correct_stop_is_not_candidate_mediated",
+        "ndu_real_runtime.test_candidate_retention_report.CandidateRetentionReportTests.test_missing_evidence_and_zero_condition_keep_planned_denominators",
+        "ndu_real_runtime.test_candidate_retention_report.CandidateRetentionReportTests.test_retained_candidate_at_final_write_has_separate_stage_counts",
+        "ndu_real_runtime.test_candidate_retention_report.CandidateRetentionReportTests.test_selection_does_not_make_failed_or_unscored_delivery_correct"
+      ],
+      "command": [
+        "python",
+        "-B",
+        "-m",
+        "unittest",
+        "-v",
+        "ndu_real_runtime.test_candidate_memory",
+        "ndu_real_runtime.test_candidate_runtime",
+        "ndu_real_runtime.test_candidate_retention_report"
+      ],
+      "failed": 0,
+      "finished_at": "2026-11-11T16:54:38.711931+00:00",
+      "lane": "source-head",
+      "log": "candidate-tests.json.28fdac28377c46ae90496b28aa8f93ba.log",
+      "log_identity": {
+        "bytes": 3599,
+        "git_blob": "75925f82fafb2e07356569891b4ab81700cb0c00",
+        "sha256": "7fcdda10838ff58e5cbdc24ca14c6f93d3f2a482951b80d388516894b12e8755"
+      },
+      "passed": 17,
+      "receipt": "candidate-tests.json",
+      "receipt_identity": {
+        "bytes": 1603,
+        "git_blob": "103e51ba2d668b1300f80bb89387d28be1031912",
+        "sha256": "35b1bf6dbdc08c9cbfc955ad81bdf723c53cb5e65bc79594fd7c6bdfe21d8a0f"
+      },
+      "source_before_after_clean": true,
+      "source_sha": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+      "started_at": "2026-11-11T16:54:26.352439+00:00",
+      "tested_sha": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+      "tree": "658fa040046285116b1fd81b94ff8c96444072ad"
+    },
+    {
+      "artifact_id": 13873374531,
+      "case_ids": [
+        "test_mechanism.MechanismTests.test_failed_training_or_later_task_preserves_cost_and_full_roster",
+        "test_mechanism.MechanismTests.test_gate_does_not_correct_wrong_prediction_or_replace_its_path",
+        "test_mechanism.MechanismTests.test_gate_tracks_versions_dependencies_expiry_and_has_no_values",
+        "test_mechanism.MechanismTests.test_native_read_path_never_uses_retrieved_values",
+        "test_mechanism.MechanismTests.test_safe_sources_do_not_hide_invalid_terminal_assertion",
+        "test_mechanism.MechanismTests.test_strong_retrievers_compose_current_evidence",
+        "test_mechanism.MechanismTests.test_terminal_success_cannot_be_forged_over_wrong_raw_path"
+      ],
+      "command": [
+        "python",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "scripts/memory_cell_mem3",
+        "-p",
+        "test_mechanism.py",
+        "-v"
+      ],
+      "failed": 0,
+      "finished_at": "2026-11-11T16:54:47.653309+00:00",
+      "lane": "source-head",
+      "log": "composition-tests.json.8c27032bab3443d69f2d71e84bbb60ab.log",
+      "log_identity": {
+        "bytes": 1437,
+        "git_blob": "c18ef1b5db5c523b57ddcdcf3cf445dac5e396b1",
+        "sha256": "a5b15cca398e8148616ed984d19785cea00e593d131f2ac30f438efad86ebbf6"
+      },
+      "passed": 7,
+      "receipt": "composition-tests.json",
+      "receipt_identity": {
+        "bytes": 1547,
+        "git_blob": "6ed9c99e59c76b58c4c3ce3fe3f859618d523eae",
+        "sha256": "fa788f9b5624a24f2f5b15d969a669ceaac40a28783198b6a4a7bb63453bd105"
+      },
+      "source_before_after_clean": true,
+      "source_sha": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+      "started_at": "2026-11-11T16:54:47.335644+00:00",
+      "tested_sha": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+      "tree": "658fa040046285116b1fd81b94ff8c96444072ad"
+    },
+    {
+      "artifact_id": 13873374531,
+      "case_ids": [
+        "ndu_real_runtime.test_candidate_retention_public_plan.PublicRetentionPlanTests.test_allocation_or_selector_changes_fail_before_material_read",
+        "ndu_real_runtime.test_candidate_retention_public_plan.PublicRetentionPlanTests.test_exhaustion_never_relaxes_old_source_exclusions",
+        "ndu_real_runtime.test_candidate_retention_public_plan.PublicRetentionPlanTests.test_frozen_pairs_use_public_selector_and_new_schema",
+        "ndu_real_runtime.test_candidate_retention_public_plan.PublicRetentionPlanTests.test_independent_cohort_rebuild_rejects_omitted_family_or_changed_episode",
+        "ndu_real_runtime.test_candidate_retention_public.PublicRetentionReportTests.test_absent_evidence_remains_unknown_in_frozen_report",
+        "ndu_real_runtime.test_candidate_retention_public.PublicRetentionReportTests.test_attempt_costs_are_byte_bound_and_invalid_values_reject",
+        "ndu_real_runtime.test_candidate_retention_public.PublicRetentionReportTests.test_known_success_without_memory_or_selector_chain_is_not_attributable",
+        "ndu_real_runtime.test_candidate_retention_public.PublicRetentionReportTests.test_malformed_episode_shape_keeps_attempt_cost_and_other_denominators",
+        "ndu_real_runtime.test_candidate_retention_public.PublicRetentionReportTests.test_new_execution_sources_must_be_pinned_before_actor_planning",
+        "ndu_real_runtime.test_candidate_retention_public.PublicRetentionReportTests.test_report_rejects_rebound_selector_budget_or_old_source",
+        "ndu_real_runtime.test_candidate_retention_public.PublicRetentionReportTests.test_unknown_noop_and_source_pairs_keep_all_denominators",
+        "ndu_real_runtime.test_candidate_retention_public.PublicRetentionRunnerTests.test_cli_uses_mem6_report_and_failed_run_exits_nonzero",
+        "ndu_real_runtime.test_candidate_retention_public.PublicRetentionRunnerTests.test_runner_passes_both_memory_modes_to_fixed_selector_host",
+        "ndu_real_runtime.test_candidate_retention_public_actor.PublicRetentionActorProcessTests.test_both_retention_arms_reach_real_ocr_actor_with_fixed_public_selector",
+        "ndu_real_runtime.test_candidate_retention_inference.SourceInferenceTests.test_incomplete_or_reassigned_pairs_are_rejected",
+        "ndu_real_runtime.test_candidate_retention_inference.SourceInferenceTests.test_numeric_threshold_does_not_grant_scientific_adoption",
+        "ndu_real_runtime.test_candidate_retention_inference.SourceInferenceTests.test_sources_receive_equal_weight_despite_unequal_case_counts",
+        "ndu_real_runtime.test_candidate_retention_inference.SourceInferenceTests.test_unknowns_keep_labels_and_use_memory_adverse_bounds",
+        "ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests.test_bounded_tombstones_prevent_replay_and_admission_rolls_back",
+        "ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests.test_byte_admission_failure_preserves_existing_data_and_generation",
+        "ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests.test_caller_cannot_mutate_stored_provenance_or_returned_record",
+        "ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests.test_current_authority_is_required_and_snapshot_has_its_identity",
+        "ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests.test_empty_snapshot_and_valid_old_dependency_chain_remain_readable",
+        "ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests.test_namespace_isolation_and_foreign_dependency_rejection",
+        "ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests.test_redigested_snapshot_cannot_move_records_before_their_write",
+        "ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests.test_redigested_snapshot_requires_a_consistent_historical_roster",
+        "ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests.test_reverse_key_order_chain_revokes_entire_dependency_closure",
+        "ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests.test_revoke_removes_payload_and_old_snapshot_never_reactivates_it",
+        "ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests.test_snapshot_corruption_and_forged_record_are_rejected",
+        "ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests.test_snapshot_rejects_fifo_directory_and_symlink_before_read",
+        "ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests.test_update_cannot_create_an_indirect_dependency_cycle",
+        "ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests.test_update_revokes_transitive_dependencies_and_filters_old_snapshot",
+        "ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests.test_working_state_is_copied_bounded_and_cleared_on_new_session",
+        "ndu_real_runtime.test_episodic_retrieval.EpisodicRetrievalTests.test_callback_cannot_change_original_source_allowlist",
+        "ndu_real_runtime.test_episodic_retrieval.EpisodicRetrievalTests.test_exact_kv_and_bm25_only_read_approved_sources",
+        "ndu_real_runtime.test_episodic_retrieval.EpisodicRetrievalTests.test_foreign_dependency_and_transitive_summary_are_not_retrieved",
+        "ndu_real_runtime.test_episodic_retrieval.EpisodicRetrievalTests.test_inflight_namespace_or_authority_replacement_aborts_delivery",
+        "ndu_real_runtime.test_episodic_retrieval.EpisodicRetrievalTests.test_inflight_revocation_of_a_dependency_aborts_summary_delivery",
+        "ndu_real_runtime.test_episodic_retrieval.EpisodicRetrievalTests.test_modes_separate_store_read_retrieval_and_delivery",
+        "ndu_real_runtime.test_episodic_retrieval.EpisodicRetrievalTests.test_new_process_cli_reads_then_rejects_revoked_snapshot",
+        "ndu_real_runtime.test_episodic_retrieval.EpisodicRetrievalTests.test_ranking_cannot_deliver_a_fact_revoked_or_updated_during_the_read",
+        "ndu_real_runtime.test_episodic_retrieval.EpisodicRetrievalTests.test_real_callback_and_its_ablation_do_not_mutate_evidence",
+        "ndu_real_runtime.test_episodic_retrieval.EpisodicRetrievalTests.test_receipt_rejects_changed_context_records_or_audit_fields",
+        "ndu_real_runtime.test_episodic_retrieval.EpisodicRetrievalTests.test_receipts_allow_actual_empty_partial_and_disabled_callback_paths",
+        "ndu_real_runtime.test_episodic_retrieval.EpisodicRetrievalTests.test_recomputed_digest_does_not_hide_contradictory_interventions",
+        "ndu_real_runtime.test_episodic_retrieval.EpisodicRetrievalTests.test_recomputed_digest_does_not_hide_roster_loss_duplication_or_reordering",
+        "ndu_real_runtime.test_episodic_retrieval.EpisodicRetrievalTests.test_recomputed_receipts_reject_malformed_schema_bounds_and_authority",
+        "ndu_real_runtime.test_episodic_retrieval.EpisodicRetrievalTests.test_recomputed_record_and_receipt_reject_impossible_chronology",
+        "ndu_real_runtime.test_episodic_retrieval.EpisodicRetrievalTests.test_separate_writer_process_cannot_revoke_between_retrieval_and_delivery",
+        "ndu_real_runtime.test_episodic_retrieval.EpisodicRetrievalTests.test_suppressed_delivery_does_not_revalidate_or_emit_revoked_content",
+        "ndu_real_runtime.test_episodic_retrieval.EpisodicRetrievalTests.test_uniform_replay_and_icl_are_bounded_deterministic_baselines",
+        "ndu_real_runtime.test_episodic_qualification.FreshProcessQualificationTests.test_exited_writers_new_readers_and_actual_deliveries"
+      ],
+      "command": [
+        "python",
+        "-B",
+        "-m",
+        "unittest",
+        "-v",
+        "ndu_real_runtime.test_candidate_retention_public_plan",
+        "ndu_real_runtime.test_candidate_retention_public",
+        "ndu_real_runtime.test_candidate_retention_public_actor",
+        "ndu_real_runtime.test_candidate_retention_inference",
+        "ndu_real_runtime.test_episodic_memory",
+        "ndu_real_runtime.test_episodic_retrieval",
+        "ndu_real_runtime.test_episodic_qualification"
+      ],
+      "failed": 0,
+      "finished_at": "2026-11-11T16:54:57.211563+00:00",
+      "lane": "source-head",
+      "log": "mem6-tests.json.c170054fa4e040d5bbf8960e2f17766c.log",
+      "log_identity": {
+        "bytes": 10594,
+        "git_blob": "52aa761b125a35d7cedde5564228a43a257851ca",
+        "sha256": "7f8e2cde652a6b8b91f8592fe1c1bc2bc31fdbb8613589f087c255e27d9a314b"
+      },
+      "passed": 52,
+      "receipt": "mem6-tests.json",
+      "receipt_identity": {
+        "bytes": 1832,
+        "git_blob": "04981e0ca85838c1798c4ff2f65c26dd7fdbe48f",
+        "sha256": "a84c20145b0ca753ed5ce7d019a86897a284b1c2ecd11a6c3783a1b34a5e795c"
+      },
+      "source_before_after_clean": true,
+      "source_sha": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+      "started_at": "2026-11-11T16:54:47.752077+00:00",
+      "tested_sha": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+      "tree": "658fa040046285116b1fd81b94ff8c96444072ad"
+    },
+    {
+      "artifact_id": 13873374531,
+      "case_ids": [
+        "test_coverage_control.CoverageControlTests.test_audit_derives_truth_and_rejects_changed_provenance",
+        "test_coverage_control.CoverageControlTests.test_failed_later_phase_preserves_earlier_windows_and_full_roster",
+        "test_coverage_control.CoverageControlTests.test_invalid_pool_rejected_before_native_mutation",
+        "test_coverage_control.CoverageControlTests.test_legacy_selectors_reproduce_existing_pool_rule",
+        "test_coverage_control.CoverageControlTests.test_matching_is_exact_for_sources_versions_payload_and_counts",
+        "test_coverage_control.CoverageControlTests.test_pair_rejects_same_coverage_count_with_changed_identity_or_bytes"
+      ],
+      "command": [
+        "python",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "scripts/memory_cell_mem1",
+        "-p",
+        "test_coverage_control.py",
+        "-v"
+      ],
+      "failed": 0,
+      "finished_at": "2026-11-11T16:54:39.912880+00:00",
+      "lane": "source-head",
+      "log": "replay-tests.json.ca726cc44fd94f50afcb8270d61aa7c6.log",
+      "log_identity": {
+        "bytes": 1235,
+        "git_blob": "62f89e0b09fdc5bffaea297da44b47d937517bd6",
+        "sha256": "2bc3f70063c6cb13c9001f2fc1d08c26b5dc4e53add278c4a7a9ce9a65642c5a"
+      },
+      "passed": 6,
+      "receipt": "replay-tests.json",
+      "receipt_identity": {
+        "bytes": 1549,
+        "git_blob": "57175855c671b6e434e56e07ecc73bb44e50fdc6",
+        "sha256": "b28b6f98426bf33ff9eb6022ca852afbbcf05cc9e183e193fedee2243b2d9df4"
+      },
+      "source_before_after_clean": true,
+      "source_sha": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+      "started_at": "2026-11-11T16:54:39.174011+00:00",
+      "tested_sha": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+      "tree": "658fa040046285116b1fd81b94ff8c96444072ad"
+    },
+    {
+      "artifact_id": 13873374531,
+      "case_ids": [
+        "ndu_real_runtime.test_candidate_selection_plan.PriorPlanTests.test_byte_mutation_and_missing_mandatory_campaign_are_rejected",
+        "ndu_real_runtime.test_candidate_selection_plan.PriorPlanTests.test_changed_sample_allocation_is_rejected_before_source_reads",
+        "ndu_real_runtime.test_candidate_selection_plan.PriorPlanTests.test_duplicate_plan_pins_do_not_create_a_fake_exclusion_roster",
+        "ndu_real_runtime.test_candidate_selection_plan.PriorPlanTests.test_pinned_prior_plans_cover_both_arms_without_dropping_sources",
+        "ndu_real_runtime.test_candidate_selection_plan.PriorPlanTests.test_registry_role_source_and_operation_corruption_are_rejected",
+        "ndu_real_runtime.test_run_candidate_selection.WorkerFailureTests.test_completed_arm_is_preserved_when_later_arm_has_no_receipt",
+        "ndu_real_runtime.test_run_candidate_selection.WorkerFailureTests.test_corrupt_attempt_retains_bytes_and_unknown_denominator",
+        "ndu_real_runtime.test_run_candidate_selection.WorkerFailureTests.test_missing_or_unusable_terminal_status_preserves_unknown_roster",
+        "ndu_real_runtime.test_run_candidate_selection.WorkerFailureTests.test_report_flag_uses_fixed_independent_generator",
+        "ndu_real_runtime.test_run_candidate_selection.WorkerFailureTests.test_unresolved_cli_does_not_report_a_successful_experiment",
+        "ndu_real_runtime.test_candidate_selection_report.SelectionReportTests.test_generate_keeps_all_absent_artifacts_and_rejects_wrong_original_plan_hash",
+        "ndu_real_runtime.test_candidate_selection_report.SelectionReportTests.test_missing_episode_stays_in_primary_denominator_and_not_shadow_delivery",
+        "ndu_real_runtime.test_candidate_selection_report.SelectionReportTests.test_plan_rejects_changed_inputs_duplicate_pairs_and_sealed_sources",
+        "ndu_real_runtime.test_candidate_selection_report.SelectionReportTests.test_real_shared_support_reader_reconstructs_two_choices_and_rejects_rehashed_forgery",
+        "ndu_real_runtime.test_candidate_selection_report.SelectionReportTests.test_unprocessed_final_stop_never_reuses_earlier_available_candidate"
+      ],
+      "command": [
+        "python",
+        "-B",
+        "-m",
+        "unittest",
+        "-v",
+        "ndu_real_runtime.test_candidate_selection_plan",
+        "ndu_real_runtime.test_run_candidate_selection",
+        "ndu_real_runtime.test_candidate_selection_report"
+      ],
+      "failed": 0,
+      "finished_at": "2026-11-11T16:54:44.806423+00:00",
+      "lane": "source-head",
+      "log": "selector-study-tests.json.c27cc181b509463a95298940a13165b1.log",
+      "log_identity": {
+        "bytes": 3199,
+        "git_blob": "2a5a3e9d194379c1e5404ae7c0c4eed603f1f9e4",
+        "sha256": "8ea4ba7a7737ef5e88d007691efc6d3df5ec6c1db375d8c92e3b98e06263a884"
+      },
+      "passed": 15,
+      "receipt": "selector-study-tests.json",
+      "receipt_identity": {
+        "bytes": 1622,
+        "git_blob": "ebecd1e90f0c77c3840a7487f1bd4c54b6c68e1b",
+        "sha256": "eabd5de0076a688bcb2048f46e8cc8ef5fde70b690d34718d508023db848a52e"
+      },
+      "source_before_after_clean": true,
+      "source_sha": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+      "started_at": "2026-11-11T16:54:44.392755+00:00",
+      "tested_sha": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+      "tree": "658fa040046285116b1fd81b94ff8c96444072ad"
+    },
+    {
+      "artifact_id": 13873374531,
+      "case_ids": [
+        "ndu_real_runtime.test_candidate_selector.SelectorTests.test_ascii_escaping_matches_existing_runtime_hash_and_scope_is_bound",
+        "ndu_real_runtime.test_candidate_selector.SelectorTests.test_empty_ocr_support_and_historical_candidates_remain_admissible",
+        "ndu_real_runtime.test_candidate_selector.SelectorTests.test_malformed_features_logits_and_original_image_bounds_are_rejected",
+        "ndu_real_runtime.test_candidate_selector.SelectorTests.test_private_fields_and_incomplete_identity_are_rejected",
+        "ndu_real_runtime.test_candidate_selector.SelectorTests.test_public_ties_follow_content_while_neural_ties_keep_first_index",
+        "ndu_real_runtime.test_candidate_selector.SelectorTests.test_two_modes_share_exact_support_and_do_not_mutate_caller",
+        "ndu_real_runtime.test_selector_runtime.SelectorRuntimeTests.test_actual_selection_bound_to_memory_and_caller_mutation_isolated",
+        "ndu_real_runtime.test_selector_runtime.SelectorRuntimeTests.test_order_wrong_memory_and_direct_child_limits_fail_closed",
+        "ndu_real_runtime.test_selector_runtime.SelectorRuntimeTests.test_rebound_mutations_cannot_change_choices_features_or_support",
+        "ndu_real_runtime.test_selector_runtime.SelectorRuntimeTests.test_unprocessed_stop_is_unknown_and_preserves_original_chain"
+      ],
+      "command": [
+        "python",
+        "-B",
+        "-m",
+        "unittest",
+        "-v",
+        "ndu_real_runtime.test_candidate_selector",
+        "ndu_real_runtime.test_selector_runtime"
+      ],
+      "failed": 0,
+      "finished_at": "2026-11-11T16:54:39.106576+00:00",
+      "lane": "source-head",
+      "log": "selector-tests.json.9ae43ffd355d4f098eb86799e37ccf2c.log",
+      "log_identity": {
+        "bytes": 2047,
+        "git_blob": "9b2be65e0c4225eabfbe7af047447159feeb992a",
+        "sha256": "ceb311e8bcc821562d364614990b82f77cb366f3acd8a13c99348305fb36a1f9"
+      },
+      "passed": 10,
+      "receipt": "selector-tests.json",
+      "receipt_identity": {
+        "bytes": 1546,
+        "git_blob": "437d384c3e8691e5c2539029b8b57d4f4fda439d",
+        "sha256": "5f098b947af0ba66e468dae267bf2fe6f9c615aa72026dc340c38c83d20efce2"
+      },
+      "source_before_after_clean": true,
+      "source_sha": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+      "started_at": "2026-11-11T16:54:38.779831+00:00",
+      "tested_sha": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+      "tree": "658fa040046285116b1fd81b94ff8c96444072ad"
+    },
+    {
+      "artifact_id": 13873374531,
+      "case_ids": [
+        "test_trajectory_coverage.TrajectoryTests.test_complete_trajectories_carry_order_with_matched_work",
+        "test_trajectory_coverage.TrajectoryTests.test_failed_native_admission_closes_open_event_stream",
+        "test_trajectory_coverage.TrajectoryTests.test_late_failure_preserves_completed_runs_and_roster",
+        "test_trajectory_coverage.TrajectoryTests.test_pool_alignment_permits_priority_only",
+        "test_trajectory_coverage.TrajectoryTests.test_readback_rejects_ledger_and_provenance_mutations"
+      ],
+      "command": [
+        "python",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "scripts/memory_cell_mem1",
+        "-p",
+        "test_trajectory_coverage.py",
+        "-v"
+      ],
+      "failed": 0,
+      "finished_at": "2026-11-11T16:54:44.322778+00:00",
+      "lane": "source-head",
+      "log": "trajectory-tests.json.1ee64dce3b2441b6803958fab0601852.log",
+      "log_identity": {
+        "bytes": 870,
+        "git_blob": "e2d7eb0c9fa2b093d094d2c61ad1d6559c7b20b9",
+        "sha256": "ac409e0ef90438bd1f75b1696b7deb7bde7e1c13654c5db69ea874e61fbdc99b"
+      },
+      "passed": 5,
+      "receipt": "trajectory-tests.json",
+      "receipt_identity": {
+        "bytes": 1554,
+        "git_blob": "e64bb84198ee75262b1793b671fb1b2559d6ac36",
+        "sha256": "9050e88efe7aa2f805a5213db50b03405f5dcbdc3f46bef6645bc9f8341b04c4"
+      },
+      "source_before_after_clean": true,
+      "source_sha": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+      "started_at": "2026-11-11T16:54:39.980848+00:00",
+      "tested_sha": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+      "tree": "658fa040046285116b1fd81b94ff8c96444072ad"
+    }
+  ],
+  "historical_passes_transferred": false,
+  "job_id": 130668436811,
+  "original_fulljob": {
+    "bytes": 96809,
+    "git_blob": "50fbbb40a5cb80aadea51b24b181b87b1e53051b",
+    "sha256": "0fea508e6c341976432a569e6647e52b9a3041ef9c6988f15468ec1f2ad9c4b8"
+  },
+  "original_raw_execution_blocks": 8,
+  "run_id": 43062473099,
+  "schema": "mem8.d0f.mem-cpu-original.v2",
+  "scope": "CPU/software fixture contracts only; no new scored actor, provider call or source-benefit result.",
+  "source_head": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+  "source_tree": "658fa040046285116b1fd81b94ff8c96444072ad"
+}

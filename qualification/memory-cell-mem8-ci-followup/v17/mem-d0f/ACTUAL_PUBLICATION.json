@@ -1,0 +1,135 @@
+{
+  "schema": "mem8.d0f.mem-original.actual-publication.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "archive": {
+    "bytes": 2105848,
+    "git_blob": "f3100bd7af78a38d4112c046a6109a0e89375037",
+    "path": "MEM_D0F_ORIGINAL.tar.xz",
+    "sha256": "7983d5d4719732e206ab29785e23c1c58d7a97ae435d80bcf856c6959c89dd7e"
+  },
+  "members": 31,
+  "parts": [
+    {
+      "bytes": 460800,
+      "git_blob": "0659d70b45ba367f435a1acc6cfce3a3ce860526",
+      "offset": 0,
+      "path": "MEM_D0F_ORIGINAL.part-001.xz.part",
+      "sha256": "b8fa7a030b3d8b22b8b6f1333b3484b844c7c59d44ad8567cf38d2a0825881e0",
+      "actual_git_blob": "0659d70b45ba367f435a1acc6cfce3a3ce860526",
+      "complete_remote_readback": false
+    },
+    {
+      "bytes": 460800,
+      "git_blob": "0005dd916582146830c47441e4c70bb47aff474d",
+      "offset": 460800,
+      "path": "MEM_D0F_ORIGINAL.part-002.xz.part",
+      "sha256": "a241b78724eb4927df6c2a72e55fa4f0db7322c542977caec916950c37e13929",
+      "actual_git_blob": "0005dd916582146830c47441e4c70bb47aff474d",
+      "complete_remote_readback": false
+    },
+    {
+      "bytes": 460800,
+      "git_blob": "302276eee9e3427a24e8c00fd47e29ad37fc45e4",
+      "offset": 921600,
+      "path": "MEM_D0F_ORIGINAL.part-003.xz.part",
+      "sha256": "fcaaa03a6d51315ee639cce7b9e829c62e4e0565a05372b7dca7fef03f7b48e5",
+      "actual_git_blob": "302276eee9e3427a24e8c00fd47e29ad37fc45e4",
+      "complete_remote_readback": false
+    },
+    {
+      "bytes": 460800,
+      "git_blob": "f205ed9579889820e973b23b44f8ec794af51087",
+      "offset": 1382400,
+      "path": "MEM_D0F_ORIGINAL.part-004.xz.part",
+      "sha256": "ba9db772506363b88c0db6ca40b081f106804b756ae35ac92e434b4efa1f4720",
+      "actual_git_blob": "f205ed9579889820e973b23b44f8ec794af51087",
+      "complete_remote_readback": false
+    },
+    {
+      "bytes": 262648,
+      "git_blob": "efc46d45793d43f0acc1ecd0ce2e5b5596d8a3ab",
+      "offset": 1843200,
+      "path": "MEM_D0F_ORIGINAL.part-005.xz.part",
+      "sha256": "5385ad36f06b5706d331e3fddd38b868825f65d5c500db329949bcb03dd2188f",
+      "actual_git_blob": "efc46d45793d43f0acc1ecd0ce2e5b5596d8a3ab",
+      "complete_remote_readback": false
+    }
+  ],
+  "texts": [
+    {
+      "path": "ARCHIVE_INDEX.json",
+      "local_relative_path": "mem-publication/ARCHIVE_INDEX.json",
+      "bytes": 1569,
+      "sha256": "f8d0dbaa6e6b21a6d1e2bcd3f16ffd1e4da7fe40bf3782450e3d17af04651f53",
+      "git_blob": "51b8e40a690a8bf5a87add8e4fb52ac77c8e663b",
+      "actual_create": true,
+      "complete_utf8_readback": true
+    },
+    {
+      "path": "PACKAGE_MANIFEST.json",
+      "local_relative_path": "mem-publication/PACKAGE_MANIFEST.json",
+      "bytes": 6974,
+      "sha256": "439597f0db4023f00ba51f5c67b64ed0dfe2771bfe0e9bbb06802d12c34861c3",
+      "git_blob": "7e26e5ebf0ce9effda6ee5012fdc15eb1c829059",
+      "actual_create": true,
+      "complete_utf8_readback": true
+    },
+    {
+      "path": "OFFLINE_PACKAGE_REPLAY.json",
+      "local_relative_path": "mem-publication/OFFLINE_PACKAGE_REPLAY.json",
+      "bytes": 1235,
+      "sha256": "9d7f2f2fa5d136139c8a5504d3139c65ce5254896f03afdbb04fda8b6d0851cb",
+      "git_blob": "ea6c6e2df0848f42c57614f73dc350e0dfd7e1dd",
+      "actual_create": true,
+      "complete_utf8_readback": true
+    },
+    {
+      "path": "MEM_COMPLETE_ORIGINAL_AUDIT.json",
+      "local_relative_path": "MEM_COMPLETE_ORIGINAL_AUDIT.json",
+      "bytes": 10936,
+      "sha256": "5d2ead0506e8cc00cdb2afe558ea9a2c6b287ef4e8d9f1e56c003bfed0cac794",
+      "git_blob": "d46e88fd6fec0e3592d1d55e7e0c195d7405b542",
+      "actual_create": true,
+      "complete_utf8_readback": true
+    },
+    {
+      "path": "MEM_NATIVE_ORIGINAL_AUDIT.json",
+      "local_relative_path": "MEM_NATIVE_ORIGINAL_AUDIT.json",
+      "bytes": 9983,
+      "sha256": "a01f1f8fed28bb5cc5b9d95c0d0884f4e8f013cb6261fb288a4d2f346634e01b",
+      "git_blob": "087611dd35cf4dd8e6a81da829c0fe95f3e97a1c",
+      "actual_create": true,
+      "complete_utf8_readback": true
+    },
+    {
+      "path": "CPU_ORIGINAL_AUDIT_V2.json",
+      "local_relative_path": "CPU_ORIGINAL_AUDIT_V2.json",
+      "bytes": 27539,
+      "sha256": "b05cee9891abc4465848596482950f94e3714d23d641cf1010cbbda112e75001",
+      "git_blob": "de1f47b20af6532e1505e7574360cc7abdfb9dd5",
+      "actual_create": true,
+      "complete_utf8_readback": true
+    },
+    {
+      "path": "verify_mem_package.py",
+      "local_relative_path": "verify_mem_package.py",
+      "bytes": 4687,
+      "sha256": "adaada35042c0ee396402f9fb928ee4de978ba8a4ecb9848e9ce624c52e8eb74",
+      "git_blob": "c78d41094c040037d7943016f0fdb77fc7fbf117",
+      "actual_create": true,
+      "complete_utf8_readback": true
+    },
+    {
+      "path": "README.md",
+      "local_relative_path": "MEM_README.md",
+      "bytes": 2015,
+      "sha256": "a1b343f8a53818261f601b233af96969e4b747e1cd116b4e8a5c2efce3af46ae",
+      "git_blob": "853a72f9812e8263bfb879d88ec774d9ac0cbd81",
+      "actual_create": true,
+      "complete_utf8_readback": true
+    }
+  ],
+  "refs_changed": false,
+  "binary_full_readback": "PENDING_ROOT_IMMUTABLE_CARRIER",
+  "archived_commands_executed": 0
+}
