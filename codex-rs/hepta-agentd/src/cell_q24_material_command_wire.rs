@@ -288,7 +288,9 @@ pub(super) fn authenticate_cut(
 ) -> Result<OriginalCellQ24MaterialCommandReceiptV1, Error> {
     let expected_context = context_binding(config, at)?;
     if completed.original_context != expected_context {
-        return Err(Error::Binding("same original Material configuration and freeze"));
+        return Err(Error::Binding(
+            "same original Material configuration and freeze",
+        ));
     }
     let expected = match role {
         Role::Experience => 1,

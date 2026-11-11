@@ -15,11 +15,17 @@ fn pair(
     material: OriginalCellQ24MaterialReceiptConfigV1,
     origin: Origin,
     lifetime: Duration,
-) -> anyhow::Result<(OriginalCellQ24TrainingCommandConnectionV1, HostAuthorityPeerChannel)> {
+) -> anyhow::Result<(
+    OriginalCellQ24TrainingCommandConnectionV1,
+    HostAuthorityPeerChannel,
+)> {
     let (client, server) = UnixStream::pair()?;
     let policy = || HostAuthorityPeerPolicy {
         // SAFETY: explicit same-process fixture credentials.
-        peer: HostIssuerPeer { uid: unsafe { libc::geteuid() }, pid: std::process::id() },
+        peer: HostIssuerPeer {
+            uid: unsafe { libc::geteuid() },
+            pid: std::process::id(),
+        },
         timeout: Duration::from_secs(30).min(lifetime),
         lifetime,
         request_bound: 16_384,
@@ -29,13 +35,24 @@ fn pair(
     let server = HostAuthorityPeerChannel::from_stream(server, policy(), transport::pidfd()?)?;
     let (initial_binding, _) =
         OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(&material)?;
-    Ok((OriginalCellQ24TrainingCommandConnectionV1 { peer, material, initial_binding, origin }, server))
+    Ok((
+        OriginalCellQ24TrainingCommandConnectionV1 {
+            peer,
+            material,
+            initial_binding,
+            origin,
+        },
+        server,
+    ))
 }
 
 pub(crate) fn fresh_peer(
     material: OriginalCellQ24MaterialReceiptConfigV1,
     lifetime: Duration,
-) -> anyhow::Result<(OriginalCellQ24TrainingCommandConnectionV1, HostAuthorityPeerChannel)> {
+) -> anyhow::Result<(
+    OriginalCellQ24TrainingCommandConnectionV1,
+    HostAuthorityPeerChannel,
+)> {
     pair(material, Origin::Fresh, lifetime)
 }
 
@@ -43,6 +60,9 @@ pub(crate) fn recovered_peer(
     material: OriginalCellQ24MaterialReceiptConfigV1,
     expected: Option<OriginalCellQ24TrainingCommandReceiptV1>,
     lifetime: Duration,
-) -> anyhow::Result<(OriginalCellQ24TrainingCommandConnectionV1, HostAuthorityPeerChannel)> {
+) -> anyhow::Result<(
+    OriginalCellQ24TrainingCommandConnectionV1,
+    HostAuthorityPeerChannel,
+)> {
     pair(material, Origin::Recovered(expected), lifetime)
 }

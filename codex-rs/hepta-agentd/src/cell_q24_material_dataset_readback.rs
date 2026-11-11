@@ -98,7 +98,9 @@ impl OriginalCellQ24MaterialCommandReceiptV1 {
         let at = now()?;
         let binding = wire::context_binding(expected, at)?;
         if self.original_context != binding {
-            return Err(Error::Binding("same originally authenticated Material context"));
+            return Err(Error::Binding(
+                "same originally authenticated Material context",
+            ));
         }
         wire::authenticate_cut(expected, Role::Dataset, self.clone(), at)?;
         Ok(at)

@@ -167,6 +167,8 @@ fn renew_experience(
         renewed
     );
     *snapshot = STANDARD_NO_PAD.encode(encode_original_owner_snapshot_v1(coordinator.snapshot())?);
-    evidence.push(super::super::super::evidence_wire::Evidence::from_original(&signed));
+    evidence.push(super::super::super::evidence_wire::Evidence::from_original(
+        &signed,
+    ));
     Ok(())
 }

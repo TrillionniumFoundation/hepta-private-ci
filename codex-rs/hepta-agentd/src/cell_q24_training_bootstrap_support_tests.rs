@@ -206,7 +206,6 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
     }
 }
 
-
 /// Bind the actual Trainer transport while only the original initial context
 /// exists. Dataset completion cannot restart its session or replace its peer.
 pub(super) fn prebound(

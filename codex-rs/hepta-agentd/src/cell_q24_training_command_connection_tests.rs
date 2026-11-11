@@ -14,7 +14,11 @@ async fn deferred_training_connection_rejects_experience_and_valid_other_freeze_
     let (owner, peers) = support::owner(&fixture, Origin::Fresh)?;
     let before = fixture.training_bytes()?;
     let (first, server) = prebound(
-        Arc::clone(&owner), fixture.config.clone(), Origin::Fresh, None, Duration::from_secs(300),
+        Arc::clone(&owner),
+        fixture.config.clone(),
+        Origin::Fresh,
+        None,
+        Duration::from_secs(300),
     )?;
     let (experience, original_e) = material::commands(&fixture, Role::Experience)?;
     let experience = {
@@ -25,9 +29,14 @@ async fn deferred_training_connection_rejects_experience_and_valid_other_freeze_
     };
     assert!(matches!(
         first.bind_original_dataset(experience),
-        Err(ConnectionError::Command(CommandError::Binding("exact original Dataset context")))
+        Err(ConnectionError::Command(CommandError::Binding(
+            "exact original Dataset context"
+        )))
     ));
-    assert_eq!(server.join().expect("unactivated original Trainer peer")?, 0);
+    assert_eq!(
+        server.join().expect("unactivated original Trainer peer")?,
+        0
+    );
     assert_eq!(fixture.training_bytes()?, before);
 
     let (dataset, original_d) = material::commands(&fixture, Role::Dataset)?;
@@ -37,7 +46,11 @@ async fn deferred_training_connection_rejects_experience_and_valid_other_freeze_
     let changed = fixture.renewed_material_configuration()?;
     assert_ne!(changed.freeze_evidence, fixture.config.freeze_evidence);
     let (other, server) = prebound(
-        Arc::clone(&owner), changed, Origin::Fresh, None, Duration::from_secs(300),
+        Arc::clone(&owner),
+        changed,
+        Origin::Fresh,
+        None,
+        Duration::from_secs(300),
     )?;
     assert!(matches!(
         other.bind_original_dataset(cut.clone()),
@@ -49,12 +62,19 @@ async fn deferred_training_connection_rejects_experience_and_valid_other_freeze_
     assert_eq!(fixture.training_bytes()?, before);
 
     let (same, server) = prebound(
-        Arc::clone(&owner), fixture.config.clone(), Origin::Fresh, None, Duration::from_secs(300),
+        Arc::clone(&owner),
+        fixture.config.clone(),
+        Origin::Fresh,
+        None,
+        Duration::from_secs(300),
     )?;
     let client = same.bind_original_dataset(cut)?;
     assert_eq!(finish(client, server)?, 0);
     assert_eq!(fixture.training_bytes()?, before);
-    assert!(matches!(&*owner.state.lock().expect("same original bootstrap state"), State::Awaiting(_)));
+    assert!(matches!(
+        &*owner.state.lock().expect("same original bootstrap state"),
+        State::Awaiting(_)
+    ));
     drop(owner);
     assert_eq!(finish_material(peers)?, [0, 0, 0, 0]);
     Ok(())
@@ -66,11 +86,17 @@ async fn deferred_training_connection_preserves_expiry_and_readonly_cold_origina
     let fixture = MaterialCommandFixture::new().await?;
     let (owner, peers) = support::owner(&fixture, Origin::Fresh)?;
     let (first, server) = prebound(
-        Arc::clone(&owner), fixture.config.clone(), Origin::Fresh, None, Duration::from_secs(300),
+        Arc::clone(&owner),
+        fixture.config.clone(),
+        Origin::Fresh,
+        None,
+        Duration::from_secs(300),
     )?;
     let cut = complete_material(&fixture).await?;
     let client = first.bind_original_dataset(cut.clone())?;
-    let original = client.execute_training(Arc::new(AtomicBool::new(false))).await?;
+    let original = client
+        .execute_training(Arc::new(AtomicBool::new(false)))
+        .await?;
     assert_eq!(finish(client, server)?, 1);
     let held = fixture.training_bytes()?;
     drop(owner);
@@ -79,8 +105,11 @@ async fn deferred_training_connection_preserves_expiry_and_readonly_cold_origina
     let (owner, peers) = support::owner(&fixture, Origin::Recovered)?;
     // The original connection starts before the actual Dataset readback.
     let (cold, server) = prebound(
-        Arc::clone(&owner), fixture.config.clone(), Origin::Recovered,
-        Some(original.clone()), Duration::from_secs(300),
+        Arc::clone(&owner),
+        fixture.config.clone(),
+        Origin::Recovered,
+        Some(original.clone()),
+        Duration::from_secs(300),
     )?;
     let (dataset, original_d) = material::commands(&fixture, Role::Dataset)?;
     let reread = dataset.readback().await?;
@@ -89,7 +118,9 @@ async fn deferred_training_connection_preserves_expiry_and_readonly_cold_origina
     assert_eq!(reread, cut);
     let client = cold.bind_original_dataset(reread.clone())?;
     assert!(matches!(
-        client.execute_training(Arc::new(AtomicBool::new(false))).await,
+        client
+            .execute_training(Arc::new(AtomicBool::new(false)))
+            .await,
         Err(CommandError::ReadbackRequired)
     ));
     assert_eq!(client.readback().await?, original);
@@ -97,8 +128,11 @@ async fn deferred_training_connection_preserves_expiry_and_readonly_cold_origina
     assert_eq!(finish(client, server)?, 1);
 
     let (expired, server) = prebound(
-        Arc::clone(&owner), fixture.config.clone(), Origin::Recovered,
-        Some(original), Duration::from_millis(40),
+        Arc::clone(&owner),
+        fixture.config.clone(),
+        Origin::Recovered,
+        Some(original),
+        Duration::from_millis(40),
     )?;
     tokio::time::sleep(Duration::from_millis(80)).await;
     assert!(matches!(
@@ -118,15 +152,21 @@ async fn deferred_training_connection_preserves_expiry_and_readonly_cold_origina
             pid: peer.pid,
             // SAFETY: test rejection of same UID and process, no external host.
             uid: unsafe { libc::geteuid() },
-            boot_id: peer.boot_id, process_start_ticks: peer.process_start_ticks,
+            boot_id: peer.boot_id,
+            process_start_ticks: peer.process_start_ticks,
             actor_id: fixture.config.initial.owners.trainer.clone(),
         },
-        transport::pidfd()?, fixture.config.clone(),
-        Duration::from_secs(30), Duration::from_secs(300),
+        transport::pidfd()?,
+        fixture.config.clone(),
+        Duration::from_secs(30),
+        Duration::from_secs(300),
     );
-    assert!(matches!(result, Err(ConnectionError::Command(CommandError::Transport(
-        codex_hepta_contracts::HostIssuerTransportError::PeerDenied
-    )))));
+    assert!(matches!(
+        result,
+        Err(ConnectionError::Command(CommandError::Transport(
+            codex_hepta_contracts::HostIssuerTransportError::PeerDenied
+        )))
+    ));
     drop(owner);
     finish_material(peers)?;
     assert_eq!(fixture.training_bytes()?, held);

@@ -199,7 +199,11 @@ OWNER_GROUPS = (
     ("original_training_source", PACKAGE, SOURCE_CASES),
     ("original_training_command", PACKAGE, TRAINING_COMMAND_CASES),
     ("original_deferred_training", PACKAGE, DEFERRED_TRAINING_CASES),
-    ("original_initial_training_connection", PACKAGE, INITIAL_TRAINING_CONNECTION_CASES),
+    (
+        "original_initial_training_connection",
+        PACKAGE,
+        INITIAL_TRAINING_CONNECTION_CASES,
+    ),
     ("original_material_service", PACKAGE, MATERIAL_SERVICE_CASES),
     ("original_remote_material_source", PACKAGE, REMOTE_MATERIAL_CASES),
     ("original_material_command", PACKAGE, MATERIAL_COMMAND_CASES),

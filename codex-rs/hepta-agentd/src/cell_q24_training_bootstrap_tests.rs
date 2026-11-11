@@ -52,7 +52,11 @@ async fn deferred_training_uses_actual_material_cut_and_original_source_without_
     let original_material = fixture.bytes()?;
     let (owner, peers) = support::owner(&fixture, Origin::Fresh)?;
     let (connection, server) = prebound(
-        Arc::clone(&owner), fixture.config.clone(), Origin::Fresh, None, Duration::from_secs(300),
+        Arc::clone(&owner),
+        fixture.config.clone(),
+        Origin::Fresh,
+        None,
+        Duration::from_secs(300),
     )?;
     let before = fixture.training_bytes()?;
     assert!(before[0].is_empty() && before[2].is_empty());

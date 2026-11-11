@@ -59,7 +59,13 @@ impl OriginalCellQ24TrainingCommandConnectionV1 {
         lifetime: Duration,
     ) -> Result<Self, Error> {
         Self::bind_original_stream(
-            stream, peer, original_owner_pidfd, material, timeout, lifetime, Origin::Fresh,
+            stream,
+            peer,
+            original_owner_pidfd,
+            material,
+            timeout,
+            lifetime,
+            Origin::Fresh,
         )
     }
 
@@ -75,7 +81,12 @@ impl OriginalCellQ24TrainingCommandConnectionV1 {
         lifetime: Duration,
     ) -> Result<Self, Error> {
         Self::bind_original_stream(
-            stream, peer, original_owner_pidfd, material, timeout, lifetime,
+            stream,
+            peer,
+            original_owner_pidfd,
+            material,
+            timeout,
+            lifetime,
             Origin::Recovered(expected),
         )
     }
@@ -97,18 +108,29 @@ impl OriginalCellQ24TrainingCommandConnectionV1 {
         let peer = original_owner_command_channel_v1(
             stream,
             AgentdRootAuthorityPeer {
-                pid: peer.pid, boot_id: peer.boot_id,
+                pid: peer.pid,
+                boot_id: peer.boot_id,
                 process_start_ticks: peer.process_start_ticks,
             },
-            peer.uid, original_owner_pidfd, timeout, lifetime,
-        ).map_err(OriginalCellQ24TrainingCommandErrorV1::from)?;
-        peer.check_peer_lifetime().map_err(OriginalCellQ24TrainingCommandErrorV1::from)?;
+            peer.uid,
+            original_owner_pidfd,
+            timeout,
+            lifetime,
+        )
+        .map_err(OriginalCellQ24TrainingCommandErrorV1::from)?;
+        peer.check_peer_lifetime()
+            .map_err(OriginalCellQ24TrainingCommandErrorV1::from)?;
         let (current_binding, fresh_now) =
             OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(&material)?;
         if current_binding != initial_binding || fresh_now < started_at {
             return Err(Error::Binding("original Trainer initial context and clock"));
         }
-        Ok(Self { peer, material, initial_binding, origin })
+        Ok(Self {
+            peer,
+            material,
+            initial_binding,
+            origin,
+        })
     }
 
     /// Consume the original connection after actual Material completion.
@@ -127,24 +149,40 @@ impl OriginalCellQ24TrainingCommandConnectionV1 {
             return Err(Error::Binding("same original Root initial context"));
         }
         let binding = context.binding()?;
-        self.peer.check_peer_lifetime().map_err(OriginalCellQ24TrainingCommandErrorV1::from)?;
+        self.peer
+            .check_peer_lifetime()
+            .map_err(OriginalCellQ24TrainingCommandErrorV1::from)?;
         let (original_binding, fresh_now) =
-            OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(&self.material)?;
-        let verified_at = OriginalCellQ24MaterialCommandReceiptV1::require_original_dataset_context(
-            &completed, &self.material,
-        )?;
+            OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(
+                &self.material,
+            )?;
+        let verified_at =
+            OriginalCellQ24MaterialCommandReceiptV1::require_original_dataset_context(
+                &completed,
+                &self.material,
+            )?;
         if original_binding != self.initial_binding
-            || fresh_now < started_at || verified_at < fresh_now
+            || fresh_now < started_at
+            || verified_at < fresh_now
         {
-            return Err(Error::Binding("same original Trainer connection and fresh Material cut"));
+            return Err(Error::Binding(
+                "same original Trainer connection and fresh Material cut",
+            ));
         }
         let (execution_requested, retained) = match self.origin {
             Origin::Fresh => (false, None),
             Origin::Recovered(expected) => (
                 true,
-                expected.map(|original| wire::authenticate_receipt(
-                    &context, original.receipt, original.attestation, verified_at,
-                )).transpose()?,
+                expected
+                    .map(|original| {
+                        wire::authenticate_receipt(
+                            &context,
+                            original.receipt,
+                            original.attestation,
+                            verified_at,
+                        )
+                    })
+                    .transpose()?,
             ),
         };
         Ok(OriginalCellQ24TrainingCommandClientV1 {
