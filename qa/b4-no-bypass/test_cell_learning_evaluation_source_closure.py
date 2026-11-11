@@ -34,6 +34,7 @@ CALLERS = {
     "learning_evidence_original_owner_readback": (
         READBACK, GENERATION_READBACK, EVALUATION_OWNER,
         AGENT + "circuit_next_use_receipt_owner.rs",
+        AGENT + "circuit_selection_receipt_owner.rs",
     ),
     "root_learning_original_stage_assembly": (),
 }

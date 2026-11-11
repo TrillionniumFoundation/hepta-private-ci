@@ -133,13 +133,15 @@ impl<W: AnchorWitnessStore> OriginalCircuitSelectionReceiptOwnerV1<W> {
             Err(OwnerError::Store(ProductEvaluationExecutionStoreErrorV1::Missing)) => {}
             Err(error) => return Err(error.into()),
         }
-        require_new_attestation(&self.config, started_at, started_at)?;
+        require_new_attestation(&self.config, started_at, now()?)?;
         let observed = self.prepare(&source)?;
         let evidence = self.training_evidence(&source).await?;
         authenticate_training(&self.config, &evidence, now()?)?;
         if self.prepare(&source)? != observed {
             return Err(OwnerError::CommitUncertain.into());
         }
+        let claim_at = now()?;
+        require_new_attestation(&self.config, started_at, claim_at)?;
         let config = &self.config;
         let key = &self.key;
         let identity = self.saved.binding_digest;

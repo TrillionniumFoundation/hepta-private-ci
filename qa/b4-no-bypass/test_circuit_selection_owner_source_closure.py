@@ -106,6 +106,9 @@ class OriginalCircuitSelectionOwnerSourceClosureTests(unittest.TestCase):
 
     def test_missing_pending_deadline_and_role_separation_remain_distinct(self):
         for function, marker in (
+            ("fn attest_original_selection(", "let started_at = now()?;"),
+            ("fn attest_original_selection(", "require_new_attestation(&self.config, started_at, now()?)?"),
+            ("fn attest_original_selection(", "require_new_attestation(&self.config, started_at, claim_at)?"),
             ("fn attest_original_selection(", "ProductEvaluationExecutionStoreErrorV1::Missing"),
             ("fn attest_original_selection(", "require_new_attestation(config, started_at, issued_at)?"),
             ("fn require_new_attestation(", "current >= config.decision.request.envelope.expiry_unix_seconds"),
