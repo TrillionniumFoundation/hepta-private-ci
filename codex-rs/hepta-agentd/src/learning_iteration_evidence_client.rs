@@ -28,6 +28,14 @@ use crate::root_observation_stream::RootObservationStream;
 #[path = "learning_iteration_evidence_wire.rs"]
 mod wire;
 
+#[path = "cell_q24_training_command.rs"]
+mod training_command;
+pub use training_command::OriginalCellQ24TrainingCommandClientV1;
+pub use training_command::OriginalCellQ24TrainingCommandContextV1;
+pub use training_command::OriginalCellQ24TrainingCommandErrorV1;
+pub use training_command::OriginalCellQ24TrainingCommandOwnerV1;
+pub use training_command::OriginalCellQ24TrainingCommandReceiptV1;
+
 #[path = "cell_q24_material_evidence_service.rs"]
 mod material;
 pub use material::OriginalCellQ24MaterialEvidenceErrorV1;
@@ -230,3 +238,6 @@ pub(crate) use tests::fixture_original_receipt_client;
 
 #[cfg(test)]
 pub(crate) use tests::fixture_original_receipt_client_until_close;
+
+#[cfg(test)]
+pub(crate) use training_command::command_test_support;

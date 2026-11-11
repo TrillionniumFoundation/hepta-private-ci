@@ -530,3 +530,6 @@ async fn source_bound_training_cold_identity_rejects_valid_material_signature_re
     assert_eq!(fs::read(fixture.root.join("native-training"))?, before);
     Ok(())
 }
+
+#[path = "cell_q24_training_command_tests.rs"]
+mod command;
