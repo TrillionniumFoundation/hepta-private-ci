@@ -243,7 +243,20 @@ def content_identity_report(
             if key in wires:
                 raise ValueError("Duplicate actor content step")
             wires[key] = (raw, exchange["event_sha256"])
-    evaluations = {score["delivery_sha256"]: score for score in scores}
+    # score() evaluates either EVERY snapshot (training) or ONLY the final
+    # snapshot (inference). A shared delivery digest is not a snapshot ID:
+    # identical repeat writes must never borrow a later evaluation, nor may
+    # a conflicting earlier scorer receipt be overwritten by a later one.
+    if len(snapshots) != len(steps) + 1:
+        raise ValueError("Content snapshot count differs from actor steps")
+    if len(scores) == len(snapshots):
+        scored_snapshots = scores
+    elif len(scores) == 1:
+        scored_snapshots = [None] * (len(snapshots) - 1) + list(scores)
+    elif len(scores) == 0:
+        scored_snapshots = [None] * len(snapshots)
+    else:
+        raise ValueError("Ambiguous evaluator snapshot coverage")
     receipts = []
     for index, step in enumerate(steps):
         if step["action"]["action"] != "WRITE_TEXT":
@@ -254,7 +267,7 @@ def content_identity_report(
             verify_content_identity(
                 step,
                 raw,
-                evaluations.get(hashlib.sha256(raw).hexdigest()),
+                scored_snapshots[index + 1],
                 expected_evaluator_sha256=evaluator_sha256,
                 expected_rubric_sha256=rubric_sha256,
                 actor_payload_raw=wire,
