@@ -374,7 +374,7 @@ impl LearningIterationRuntimeBootstrapV1 {
         let restored = LearningIterationCoordinatorV1::from_snapshot(snapshot)?;
         if let Some(scope) = &self.scope {
             scope.validate_snapshot(restored.snapshot())?;
-        } else if restored.snapshot().training_no_update_v2().is_some() {
+        } else if restored.snapshot().requires_scoped_owner_v2() {
             return Err(LearningIterationRuntimeErrorV1::WrongScope);
         }
         crate::learning_iteration_auth::authenticate_restored_iteration_v1(
@@ -412,7 +412,7 @@ impl LearningIterationRuntimeBootstrapV1 {
                 let restored = LearningIterationCoordinatorV1::from_snapshot(snapshot)?;
                 if let Some(scope) = &self.scope {
                     scope.validate_snapshot(restored.snapshot())?;
-                } else if restored.snapshot().training_no_update_v2().is_some() {
+                } else if restored.snapshot().requires_scoped_owner_v2() {
                     return Err(LearningIterationRuntimeErrorV1::WrongScope);
                 }
                 require_ready(state)?;
@@ -452,6 +452,23 @@ impl LearningIterationRuntimeBootstrapV1 {
             if clock()? >= request.envelope.expiry_unix_seconds {
                 return Err(LearningIterationRuntimeErrorV1::DeadlineExceeded);
             }
+            // Check the current local authorization before asking an original
+            // owner to publish or use its selected generation, not only after
+            // that owner returns an observation of the side effect.
+            if let Some(decision) = coordinator.snapshot().receipts.iter().find(|receipt| {
+                matches!(receipt.observation,
+                    codex_hepta_learning_artifacts::LearningIterationObservationV1::LocalDecisionV2(_))
+            }) {
+                crate::learning_iteration_auth::authenticate_iteration_receipt_v1(
+                    state,
+                    self.ports.as_ref(),
+                    &self.verifier,
+                    &coordinator,
+                    decision,
+                    &clock,
+                )
+                .await?;
+            }
             let receipt = if stage == LearningIterationStageV1::Proposal {
                 crate::learning_iteration_proposal::submit_iteration_proposal_v1(
                     state,
@@ -474,7 +491,8 @@ impl LearningIterationRuntimeBootstrapV1 {
                 };
                 if self.scope.is_none()
                     && matches!(receipt.observation,
-                        codex_hepta_learning_artifacts::LearningIterationObservationV1::TrainingNoUpdateV2(_))
+                        codex_hepta_learning_artifacts::LearningIterationObservationV1::TrainingNoUpdateV2(_)
+                        | codex_hepta_learning_artifacts::LearningIterationObservationV1::LocalDecisionV2(_))
                 {
                     return Err(LearningIterationRuntimeErrorV1::WrongScope);
                 }

@@ -53,6 +53,10 @@ pub trait LearningIterationStageOwnerPortsV1: Send + Sync {
         snapshot: &'a LearningIterationSnapshotV1,
     ) -> LearningIterationOwnerFutureV1<'a, ()>;
 
+    /// A scoped Selector may first return LocalDecisionV2 after a qualified
+    /// proposal. The worker authenticates and checkpoints it, then calls
+    /// Selection again for the original version owner's actual publication.
+    /// Policy retention/deferral must never be reported as evaluator NoUpdate.
     fn execute_stage<'a>(
         &'a self,
         snapshot: &'a LearningIterationSnapshotV1,
