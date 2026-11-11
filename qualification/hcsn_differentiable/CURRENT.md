@@ -5,6 +5,35 @@ network constrained by a shared generator**. Its numerical operators, learned
 observation updates and content memory have separate evidence requirements.
 The legacy He--Xiong equity kernel already exists and is not being reinvented.
 
+> **Latest separate observation (2026-11-11 08:50 UTC; engineering status addendum,
+> not a rewrite of the archived 01:52 UTC observation):** The original desktop
+> C2 job `1a1c74f3308-be2a-75` is still `finalizing/outcome unknown`,
+> `status_authoritative=false`, `terminal_publication_confirmed=false`.
+> A fresh independent **read-only** check of the original eight frozen file
+> identities finds **4/6 immutable producer-reported `result.json`**, two
+> missing producer results with **zero-byte `interrupted.pt`**, two separately
+> pinned `best.pt` files (not interrupted-state recovery), and the unchanged
+> **28,672-byte** `commands.jsonl` SHA-256
+> `1405bced8c59a294276616cd7054f2b4068e10d858ab61d78bb578b93992239f`
+> with **16 complete rows and a torn 17th**. The original controller
+> `RESULT.json` remains absent. The [original reconciliation](evidence/p0p5-c2-terminal-reconcile-20261111/README.md)
+> and [independent structural inventory](evidence/p0p5-c2-independent-inventory-20261111/README.md)
+> distinguish **4/6 producer reports** from **0/6 confirmed full independent
+> native training replays**. None of the missing original work was restarted.
+>
+> **New successor candidate, not historical reclassification:** Stacked Draft
+> [#5952](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5952)
+> preserves the [strict JSON admission red/green logs](evidence/p0p5-c2-strict-json-20261111/README.md).
+> Its exact-source HCSN [CPU fixture CI](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42990086869)
+> passed **95** qualification, **27** C2 I/O/structural checks (including
+> real Torch CPU checkpoint interop, no skips), **3** QVI oracle and **3**
+> nondiffusion memory controls; [artifact 13841800543](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42990086869/artifacts/13841800543)
+> retains the original hosted output. This is **`PASSED_DECLARED_FIXTURES`**,
+> not an independently replayed six-training result or repository-wide,
+> numerical-full-domain, scientific, or production GO. **P0–P5 remain
+> `HOLD_NO_GO`.** The previous historical timestamps below are retained
+> verbatim as observations at their own times, not live current status.
+
 The [P0--P5 evidence index](evidence/p0p5-20261110/README.md) binds each new claim
 to exact source, runtime, data, configuration, model, raw execution records and
 independent review. Historical source snapshots and failed attempts remain
@@ -57,7 +86,7 @@ supersedes the older progress appendix's phrase "E remains unread".
 | Mathematical/API contract | Versioned definitions, drift regimes, reset and repeated-readout semantics | Defined and tested |
 | Local numerical regression | 92 tests and four unchanged error-budget fixtures on the archived source | Passed within those fixtures |
 | Actual training-domain accuracy | 49/60 terminal finite fixtures pass the original scaled gate; 12 tiny-gap pressure failures and six log-risk ordinary-FD holds remain | Selected fixtures pass; full training domain HOLD |
-| Recorded quality and resource comparison | Original42/C1 results reproduced; original C2 job running in the 01:50 read; complete 01:52 journal retains three producer terminals | All-six independent adequacy and later resource view pending |
+| Recorded quality and resource comparison | Original42/C1 reproduced; the 01:50 running/01:52 three-terminal snapshots are historical; new 08:50 desktop read confirms original terminal unknown, four producer JSON reports, two missing results and zero-byte interrupted checkpoints, with independent all-six replay still absent | All-six independent adequacy and full resource accounting **HOLD** |
 | Fair, sufficiently trained real-task benefit | Full-data development attempts and independent replay; output-interface diagnosis | HOLD |
 | Endogenous optimal boundary | Independent finite DP/QVI fixture, three boundary groups | Finite fixture only; neural/continuum benefit HOLD |
 | Real asynchronous multimodal benefit | Existing real localization data; new non-diffusion controls | HOLD |
