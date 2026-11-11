@@ -52,8 +52,11 @@ fn run_probe(
 ) -> anyhow::Result<(Journal, Vec<u8>)> {
     let definition = support::definition(&model, bundle)?;
     let source = fixture.task.publication.input();
+    let published_source = fixture.task.session.retirement.source();
+    assert_eq!(&published_source.observation, &source.observation);
+    assert_eq!(published_source.objective_digest, source.objective_digest);
     let mut config = support::configuration(
-        &model, bundle, &definition, source, /*generation*/ 1,
+        &model, bundle, &definition, published_source, /*generation*/ 1,
     )?;
     config.initial.scope.cell_id = name.to_owned();
     config.initial.scope.run_id = format!("comparison-{name}");

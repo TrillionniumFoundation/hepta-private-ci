@@ -193,6 +193,7 @@ pub(super) struct OriginalDataset {
 }
 
 impl CellQ24TrainingBatchV1 {
+    #[cfg(target_os = "linux")]
     pub(crate) fn require_original_ledger_capability(
         &self,
         ledger: &Arc<Mutex<LedgerWriter>>,

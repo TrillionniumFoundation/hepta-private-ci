@@ -3,6 +3,7 @@
 
 use super::*;
 use crate::OriginalCellQ24RetainedLearningSourceV1;
+use pretty_assertions::assert_eq;
 
 async fn completed_prepared(
     f: &Fixture,
@@ -14,7 +15,8 @@ async fn completed_prepared(
     let trace = store.bounded_circuit_committed_trace(f.publication.input().scope.run_id.as_str())
         .await?.expect("actual original committed task");
     let intent = store.enqueue_circuit_learning(&trace,
-        codex_hepta_contracts::Sha256Digest::parse(f.publication.input().objective_digest.to_string())?,
+        codex_hepta_contracts::Sha256Digest::parse(f.publication.input().objective_digest.to_string())
+            .map_err(anyhow::Error::msg)?,
     ).await.map_err(|error| anyhow::anyhow!("{error:?}"))?;
     let mut preparation = f.preparation()?;
     preparation.request.operation_id = StableId::new(intent.operation_id)?;

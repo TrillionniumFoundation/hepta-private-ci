@@ -192,7 +192,9 @@ async fn ordinary_task_ready_rejects_same_run_changed_authentication_and_withdra
     ready.require_task(&f.session.runtime.identity, &record, &trace)?;
     let original = f.learning_bytes()?;
     let mut different = record.clone();
-    different.authentication.message_id.push_str("-different");
+    different.authentication.message_id = StableId::new(format!(
+        "{}-different", different.authentication.message_id.as_str(),
+    ))?;
     assert!(ready.require_task(&f.session.runtime.identity, &different, &trace).is_err());
     assert!(matches!(
         f.producer.observe_learning(&f.session.runtime.identity, &different, &trace),
