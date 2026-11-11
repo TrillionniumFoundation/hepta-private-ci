@@ -7,6 +7,8 @@ bound. The perpetual constant-minimum-gap pressure test remains separate.
 """
 
 from dataclasses import asdict
+from itertools import islice
+from numbers import Real
 import hashlib
 import json
 import math
@@ -18,6 +20,50 @@ import torch
 from .contract import PhysicalParameters
 from .operator import DifferentiableDistributionOperator
 from .value import finite_basis_value
+
+
+
+def _fixed_gap_schedule(durations):
+    """Admit bounded, explicitly fixed real intervals without coercing tensors.
+
+    Torch scalars (including trainable ones), strings, booleans and infinite
+    iterables must never be silently interpreted as a recorded time schedule.
+    """
+    try:
+        iterator = iter(durations)
+    except TypeError as error:
+        raise ValueError("fixed gap schedule must be iterable") from error
+    values = []
+    for item in islice(iterator, 4097):
+        if isinstance(item, bool) or not isinstance(item, Real):
+            raise ValueError(
+                "gap durations must be fixed real scalars, not tensors or strings"
+            )
+        value = float(item)
+        if not math.isfinite(value):
+            raise ValueError("gap durations must be finite")
+        values.append(value)
+    if not values or len(values) > 4096:
+        raise ValueError("fixed gap schedule must contain 1 to 4096 intervals")
+    return tuple(values)
+
+
+def _error_diagnostics(projected, reference):
+    """Return absolute, scaled and ordinary relative errors separately.
+
+    A zero reference has undefined relative error unless the observed error
+    is exactly zero. None is JSON-safe and never represents a passed gate.
+    """
+    absolute = np.abs(projected - reference)
+    scaled = absolute / np.maximum(1.0, np.abs(reference))
+    relative = []
+    for deviation, target in zip(absolute, reference):
+        if target == 0:
+            relative.append(0.0 if deviation == 0 else None)
+        else:
+            ratio = float(deviation) / abs(float(target))
+            relative.append(ratio if math.isfinite(ratio) else None)
+    return absolute, scaled, relative
 
 
 def _point(x, horizon, values, delay, active_reward, hit_reward, terminal_reward):
@@ -148,7 +194,7 @@ def _reference(probability, grid, values, horizon, operator, order):
 def audit_finite_schedule(
     probability, grid, params, durations, *, reference_order=16, operator=None
 ):
-    durations = tuple(float(d) for d in durations)
+    durations = _fixed_gap_schedule(durations)
     if (
         not durations
         or len(durations) > 4096
@@ -232,7 +278,7 @@ def audit_finite_schedule(
         )
     scale = np.maximum(1.0, np.abs(refined))
     sensitivity = float(np.max(np.abs(first - refined) / scale))
-    error = np.abs(actual - refined) / scale
+    absolute_error, error, relative_error = _error_diagnostics(actual, refined)
     return {
         "schema": "hcsn-recorded-law-finite-continuation-v1",
         "quantities": [
@@ -246,6 +292,9 @@ def audit_finite_schedule(
         "projected": actual.tolist(),
         "reference": refined.tolist(),
         "scaled_errors": error.tolist(),
+        "absolute_errors": absolute_error.tolist(),
+        "relative_errors": relative_error,
+        "relative_error_scope": "Diagnostic only; zero reference is undefined unless exact agreement. Not a tail-precision admission gate.",
         "horizon": math.fsum(durations),
         "intervals": len(durations),
         "minimum_dt": min(durations),
