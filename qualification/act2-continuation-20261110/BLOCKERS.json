@@ -998,7 +998,19 @@
             "architecture": 42921479928,
             "v8": 42921480095,
             "blocking": 42921480204,
-            "status": "NEW_QUEUED_OR_IN_PROGRESS_NO_RESULT"
+            "status": "ARCHITECTURE_AND_V8_SUCCESS_BLOCKING_TERMINAL_FAILURE",
+            "blocking_result": {
+              "source": "80419fb63f00d1ce6c4a9796b399b6d9d2fec519",
+              "perception_fixture_target": "//codex-rs/hepta-neuron:hepta-neuron-unit-tests",
+              "perception_fixture_target_status": "PASSED",
+              "perception_fixture_target_duration_seconds": 104.3,
+              "tui_target": "//codex-rs/tui:tui-unit-tests",
+              "tui_target_status": "PASSED",
+              "tui_target_duration_seconds": 46.4,
+              "remaining_windows_shard_3": "codex-hepta-agentd failed: one Durable(Io(PermissionDenied)) credit fixture and sixteen OS error 33 locked-file evaluation/generation fixtures; neither repaired target failed",
+              "other_failures": "cargo-deny transport closed while retrieving its original log; macOS ARM hepta-memory lease test failed; macOS Intel and Windows shards 1/2/4 retain separately classified roots",
+              "classification": "the two exact fixture/path repairs are independently green at this source, but blocking-ci remains failure; no whole-run pass and no predecessor count transfer"
+            }
           },
           "scope_limit": "does not repair or relabel the Hepta journal lock/PermissionDenied failures, the generation-control race, or any fail-closed Windows sandbox result; no result transfers"
         }
