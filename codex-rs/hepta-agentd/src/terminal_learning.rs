@@ -327,13 +327,13 @@ fn fit_native(
         Err(TryLockError::Poisoned(_)) => return Err(TerminalLearningErrorV1::Unavailable),
     };
     anchored_snapshot(&ledger, request.budget.maximum_ledger_records)?;
-    let dataset = ledger
-        .freeze_dataset(
-            request.dataset_plan.clone(),
-            &request.dataset_evidence,
-            projected_now(now, started),
-        )
-        .map_err(owner_error)?;
+    let dataset = LedgerWriter::freeze_dataset(
+        &ledger,
+        request.dataset_plan.clone(),
+        &request.dataset_evidence,
+        projected_now(now, started),
+    )
+    .map_err(owner_error)?;
     if dataset.snapshot.dataset_digest != request.expected_dataset_digest {
         return Err(TerminalLearningErrorV1::Conflict);
     }

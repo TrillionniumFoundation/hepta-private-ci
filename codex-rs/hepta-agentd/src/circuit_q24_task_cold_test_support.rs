@@ -64,7 +64,7 @@ pub(super) fn fence(identity: &AgentdIdentity) -> anyhow::Result<TaskFlowFence> 
     )?)
 }
 
-pub(super) fn original_source(
+pub(crate) fn original_source(
     identity: &AgentdIdentity,
     definition: &CellDefinitionV1,
     source: &CircuitTaskSourceInputV1,

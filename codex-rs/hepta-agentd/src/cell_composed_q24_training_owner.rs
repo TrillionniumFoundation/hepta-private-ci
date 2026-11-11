@@ -79,6 +79,19 @@ impl<W: AnchorWitnessStore> CellQ24TrainingOwnerV1<W> {
         self.require_current()
     }
 
+    /// Match complete source-derived bytes before claiming any optimizer work.
+    /// A shared Dataset digest alone cannot authenticate the selected rows or
+    /// extraction profile. This is an equality check, not a source capability.
+    pub(crate) fn require_original_batch(
+        &self,
+        batch: &CellQ24TrainingBatchV1,
+    ) -> Result<(), Error> {
+        if self.batch.digest() != batch.digest() || self.batch.encoded() != batch.encoded() {
+            return Err(Error::Binding("exact original source-derived batch"));
+        }
+        self.require_current()
+    }
+
     /// Explicit genesis only. An existing file or witness is never reset.
     pub fn create(
         file: File,

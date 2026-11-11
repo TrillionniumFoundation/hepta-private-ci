@@ -34,7 +34,7 @@ use crate::circuit_task::driver::CircuitTaskDriverV1;
 
 type Source = DurableCircuitTaskSourceV1<FileAnchorWitnessStore>;
 
-fn opened(root: &Path, name: &str) -> anyhow::Result<File> {
+pub(crate) fn opened(root: &Path, name: &str) -> anyhow::Result<File> {
     Ok(OpenOptions::new()
         .read(true)
         .write(true)
@@ -43,7 +43,7 @@ fn opened(root: &Path, name: &str) -> anyhow::Result<File> {
         .open(root.join(name))?)
 }
 
-fn witness(root: &Path, name: &str) -> anyhow::Result<FileAnchorWitnessStore> {
+pub(crate) fn witness(root: &Path, name: &str) -> anyhow::Result<FileAnchorWitnessStore> {
     Ok(FileAnchorWitnessStore::open(
         opened(root, name)?,
         JournalScope {
@@ -55,7 +55,7 @@ fn witness(root: &Path, name: &str) -> anyhow::Result<FileAnchorWitnessStore> {
     )?)
 }
 
-fn identity(root: &Path) -> anyhow::Result<AgentdIdentity> {
+pub(crate) fn identity(root: &Path) -> anyhow::Result<AgentdIdentity> {
     let root = root.canonicalize()?;
     let agent_id = AgentId::parse(cell::scope("A").agent_id.as_str())?;
     let fleet = HeptaFleetRoot::parse(root.join("fleet"))?;
@@ -74,7 +74,7 @@ fn identity(root: &Path) -> anyhow::Result<AgentdIdentity> {
     })
 }
 
-fn fence(identity: &AgentdIdentity) -> anyhow::Result<TaskFlowFence> {
+pub(crate) fn fence(identity: &AgentdIdentity) -> anyhow::Result<TaskFlowFence> {
     Ok(TaskFlowFence::new(
         identity.agent_id.clone(),
         "original-source-owner",
@@ -84,7 +84,7 @@ fn fence(identity: &AgentdIdentity) -> anyhow::Result<TaskFlowFence> {
     )?)
 }
 
-fn source(run: &str, observation: &[u8]) -> CircuitTaskSourceInputV1 {
+pub(crate) fn source(run: &str, observation: &[u8]) -> CircuitTaskSourceInputV1 {
     let input = cell::input(run);
     CircuitTaskSourceInputV1 {
         scope: input.scope,
@@ -99,7 +99,7 @@ fn source(run: &str, observation: &[u8]) -> CircuitTaskSourceInputV1 {
     }
 }
 
-fn record(run: &str) -> RunStartRecordV1 {
+pub(crate) fn record(run: &str) -> RunStartRecordV1 {
     RunStartRecordV1 {
         authentication: RunStartAuthenticationV1 {
             issuer_id: cell::id("fixture-issuer"),
@@ -142,12 +142,12 @@ fn record(run: &str) -> RunStartRecordV1 {
     }
 }
 
-fn registry() -> anyhow::Result<CircuitCellRegistryV1> {
+pub(crate) fn registry() -> anyhow::Result<CircuitCellRegistryV1> {
     let (definition, bindings) = configuration();
     Ok(CircuitCellRegistryV1::new(definition, bindings)?)
 }
 
-fn cell_owner(
+pub(crate) fn cell_owner(
     root: &Path,
     inputs: &[CircuitTaskSourceInputV1],
 ) -> anyhow::Result<CellOwnerJournalV1<FileAnchorWitnessStore>> {
@@ -167,7 +167,7 @@ fn cell_owner(
     )?)
 }
 
-fn time() -> crate::CircuitCellTimeV1 {
+pub(crate) fn time() -> crate::CircuitCellTimeV1 {
     crate::CircuitCellTimeV1 {
         circuit_millis: 20,
         cell_micros: 20,
