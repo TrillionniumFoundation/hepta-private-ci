@@ -35,6 +35,8 @@ pub use training_command::OriginalCellQ24TrainingBootstrapCustodyV1;
 pub use training_command::OriginalCellQ24TrainingBootstrapErrorV1;
 pub use training_command::OriginalCellQ24TrainingBootstrapOwnerV1;
 pub use training_command::OriginalCellQ24TrainingCommandClientV1;
+pub use training_command::OriginalCellQ24TrainingCommandConnectionErrorV1;
+pub use training_command::OriginalCellQ24TrainingCommandConnectionV1;
 pub use training_command::OriginalCellQ24TrainingCommandContextV1;
 pub use training_command::OriginalCellQ24TrainingCommandErrorV1;
 pub use training_command::OriginalCellQ24TrainingCommandOwnerV1;

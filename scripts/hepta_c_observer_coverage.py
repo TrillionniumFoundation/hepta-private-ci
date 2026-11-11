@@ -231,6 +231,13 @@ DEFERRED_TRAINING_CASES = tuple(
         "deferred_training_attenuation_and_prebound_transport_preserve_original_custody",
     )
 )
+INITIAL_TRAINING_CONNECTION_CASES = tuple(
+    DEFERRED_TRAINING_PREFIX + "command_connection::" + name
+    for name in (
+        "deferred_training_connection_rejects_experience_and_valid_other_freeze_context",
+        "deferred_training_connection_preserves_expiry_and_readonly_cold_original_signature",
+    )
+)
 OWNER_GROUPS = (
     ("next_use_observer", PACKAGE, NEXT_USE_CASES),
     ("material_observers", PACKAGE, MATERIAL_CASES),
@@ -242,6 +249,11 @@ OWNER_GROUPS = (
     ("original_training_source", PACKAGE, SOURCE_CASES),
     ("original_training_command", PACKAGE, TRAINING_COMMAND_CASES),
     ("original_deferred_training", PACKAGE, DEFERRED_TRAINING_CASES),
+    (
+        "original_initial_training_connection",
+        PACKAGE,
+        INITIAL_TRAINING_CONNECTION_CASES,
+    ),
     ("original_material_service", PACKAGE, MATERIAL_SERVICE_CASES),
     ("original_remote_material_source", PACKAGE, REMOTE_MATERIAL_CASES),
     ("original_material_command", PACKAGE, MATERIAL_COMMAND_CASES),

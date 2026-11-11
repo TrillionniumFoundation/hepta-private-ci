@@ -288,7 +288,11 @@ impl<EW: AnchorWitnessStore, DW: AnchorWitnessStore, SW: AnchorWitnessStore>
         let snapshot = coordinator.snapshot().clone();
         drop(ledger);
         drop(owners);
-        Ok(OriginalCellQ24MaterialCommandReceiptV1 { snapshot, evidence })
+        Ok(OriginalCellQ24MaterialCommandReceiptV1 {
+            snapshot,
+            evidence,
+            original_context: self.binding,
+        })
     }
 
     /// These fixed-role delegates expose no underlying pair or execution API.
