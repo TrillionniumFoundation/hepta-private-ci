@@ -31,57 +31,10 @@
       ],
       "review_checks": 220,
       "does_not_establish": "five independent product controllers, independent field confirmation, full paid operational costs or destination-family generalization"
-    }
-  ],
-  "open": [
-    {
-      "id": "DESTINATION_FENCE_NATIVE",
-      "prs": [
-        "desktop#301",
-        "hepta#5641"
-      ],
-      "status": "MAINTAINED_NATIVE_SCOPED_PASS",
-      "original_companion": "0e884b4cf6831d7cb614b87786c40137a575672d",
-      "original_result": "RUST_2021_COMPILE_FAILURE",
-      "maintained_companion": "cc33ab6c44f3c945d83cb96be71d861e5613f99e",
-      "note": "Bounded destination fence/checkpoint candidate qualified at exact maintained Linux-native source. Does not settle source responsibility, full DynamicToolCall authority, common rollback, or production.",
-      "maintained_run": 42784159083,
-      "maintained_run_status": "SUCCESS",
-      "maintained_tree": "66f1b4f08d3b501139c09df08441595910f93987",
-      "cargo_lock_sha256": "a8b00de25b9b5d47cba0d3458ab24f1c20871a6a2420f91e9c7bf0c1d792c35f",
-      "artifact_id": 13756318832,
-      "artifact_sha256": "0eb7a8dbf15027dba76ba1f20cbfed88ce89e0a22455d15be8423e0cb859fbe9",
-      "test_result": "68 core/integration passed; original App 60 passed and 1 ignored; locked Session/App build, scoped Clippy and exact formatter clean",
-      "binary_sha256": {
-        "trill-session": "dcd8636abef49d14238fbbbaf7766039fd51a0dbf204974769b8027567e82358",
-        "trill-app-window": "d8426ebd6d8f29e867b6f92202eb76c32facfd83ec49c4be0fe7185fd68cc012"
-      }
-    },
-    {
-      "id": "SOURCE_FLOOR_AND_REAL_APP_FENCE",
-      "pr": 5645,
-      "status": "SUCCESSOR_EXACT_NATIVE_AND_ACTUAL_APP_SCOPED_PASS",
-      "source": "ebe5db6790fd17966ea8033fa518e901dad40b7c",
-      "limits": [
-        "not physical source/App checkpoint rewind",
-        "not hidden history-membership corruption oracle",
-        "not jointly rolled-back independent custody",
-        "not later asynchronous report freshness"
-      ],
-      "candidate": "4dc5f724c023aedeefddfa2e67de8083ce968126",
-      "exact_observer_run": 42794177546,
-      "exact_observer_run_status": "PENDING_NO_JOBS",
-      "qualified_successor": {
-        "source": "378c06a898728a7fa60498ef051843e38d592e67",
-        "tree": "1c8af7b5c875f449d2fb04dc4b08d97a6c45c8d1",
-        "run": 42893302150,
-        "status": "SUCCESS",
-        "result": "complete Memory/typed-fence owner, bounded read floor, Notes owner/readback, locked pinned Session/App build, real Notes goal, two actual-App fence races and final clean fix all passed at this exact successor"
-      }
     },
     {
       "id": "ORIGINAL_CANCELLATION_RESPONSIBILITY",
-      "status": "IMPLEMENTED_AND_EXACT_SUCCESSOR_HOSTED_SCOPED_PASS",
+      "status": "EXACT_SUCCESSOR_NATIVE_AND_ACTUAL_APP_SCOPED_PASS",
       "pr": 5693,
       "source": "c0d5d0ededb6627103c390e86b8714135977025c",
       "tree": "76472eac11a1292700c0d8deeff03059bc18bd27",
@@ -131,7 +84,6 @@
           "classification": "test-module macro import ambiguity; no typed fence transaction or replay assertion executed"
         }
       ],
-      "required": "read exact terminal native/real-App/cross-platform results at this source; no earlier commit count transfers",
       "compile_fix": {
         "pr": 5783,
         "source": "eb6a0eb06eba09dcb6006f82f3e94c77adc23503",
@@ -170,6 +122,85 @@
         "cargo_lock_sha256": "48b55c7ff5c23516fd0aeedca7c10a6e7902aeb5dc49fa4cef80971e1ae57d3f",
         "changed_file_sha256": "166e441ef6522555dbdafbce0fe1bd0094bc913362d390a0166c974b483ccdc3",
         "changed_files": 1
+      },
+      "qualified_successor": {
+        "source": "378c06a898728a7fa60498ef051843e38d592e67",
+        "tree": "1c8af7b5c875f449d2fb04dc4b08d97a6c45c8d1",
+        "run": 42893302150,
+        "run_attempt": 1,
+        "status": "SUCCESS",
+        "format_job": 130112323362,
+        "native_and_real_notes_job": 130112323090,
+        "observed": "Automation 172/172, complete Memory and typed NotesFenceProof owner 417/417, exact 1025-operation capacity 1/1, Notes owner/readback 12/12, locked Session/App build, real Notes goal 1/1, actual-App fence 1/1, final clean fix",
+        "artifacts": [
+          {
+            "id": 13802572777,
+            "bytes": 127745,
+            "sha256": "aa68162702dcbed5a0a42ac11070888671e7e42cdf5b13a56476c4d887f44a87"
+          },
+          {
+            "id": 13800917089,
+            "bytes": 188107,
+            "sha256": "71f221b27f4aa8c17d09f1f289c121670e7031bc4872a8d9be5e6eaea8c4266f"
+          }
+        ],
+        "no_predecessor_result_transfer": true
+      },
+      "scope_limits": [
+        "fixture authority; no production authority",
+        "complete DynamicToolCall Core/AuthBus/Root/queued-turn handler not exercised",
+        "post-close current readback remains UNKNOWN",
+        "common rollback and independently retained external checkpoint cut not qualified",
+        "Windows hosted parent FILE_DELETE_CHILD sandbox failures remain separate",
+        "cancel JSON is not an original App NotApplied receipt"
+      ],
+      "satisfied": "The source responsibility proof, transaction/replay/tamper behavior and actual-App fence path ran at the exact 378c successor; c0d/83cd partial or failing results remain predecessor records only."
+    }
+  ],
+  "open": [
+    {
+      "id": "DESTINATION_FENCE_NATIVE",
+      "prs": [
+        "desktop#301",
+        "hepta#5641"
+      ],
+      "status": "MAINTAINED_NATIVE_SCOPED_PASS",
+      "original_companion": "0e884b4cf6831d7cb614b87786c40137a575672d",
+      "original_result": "RUST_2021_COMPILE_FAILURE",
+      "maintained_companion": "cc33ab6c44f3c945d83cb96be71d861e5613f99e",
+      "note": "Bounded destination fence/checkpoint candidate qualified at exact maintained Linux-native source. Does not settle source responsibility, full DynamicToolCall authority, common rollback, or production.",
+      "maintained_run": 42784159083,
+      "maintained_run_status": "SUCCESS",
+      "maintained_tree": "66f1b4f08d3b501139c09df08441595910f93987",
+      "cargo_lock_sha256": "a8b00de25b9b5d47cba0d3458ab24f1c20871a6a2420f91e9c7bf0c1d792c35f",
+      "artifact_id": 13756318832,
+      "artifact_sha256": "0eb7a8dbf15027dba76ba1f20cbfed88ce89e0a22455d15be8423e0cb859fbe9",
+      "test_result": "68 core/integration passed; original App 60 passed and 1 ignored; locked Session/App build, scoped Clippy and exact formatter clean",
+      "binary_sha256": {
+        "trill-session": "dcd8636abef49d14238fbbbaf7766039fd51a0dbf204974769b8027567e82358",
+        "trill-app-window": "d8426ebd6d8f29e867b6f92202eb76c32facfd83ec49c4be0fe7185fd68cc012"
+      }
+    },
+    {
+      "id": "SOURCE_FLOOR_AND_REAL_APP_FENCE",
+      "pr": 5645,
+      "status": "SUCCESSOR_EXACT_NATIVE_AND_ACTUAL_APP_SCOPED_PASS",
+      "source": "ebe5db6790fd17966ea8033fa518e901dad40b7c",
+      "limits": [
+        "not physical source/App checkpoint rewind",
+        "not hidden history-membership corruption oracle",
+        "not jointly rolled-back independent custody",
+        "not later asynchronous report freshness"
+      ],
+      "candidate": "4dc5f724c023aedeefddfa2e67de8083ce968126",
+      "exact_observer_run": 42794177546,
+      "exact_observer_run_status": "PENDING_NO_JOBS",
+      "qualified_successor": {
+        "source": "378c06a898728a7fa60498ef051843e38d592e67",
+        "tree": "1c8af7b5c875f449d2fb04dc4b08d97a6c45c8d1",
+        "run": 42893302150,
+        "status": "SUCCESS",
+        "result": "complete Memory/typed-fence owner, bounded read floor, Notes owner/readback, locked pinned Session/App build, real Notes goal, two actual-App fence races and final clean fix all passed at this exact successor"
       }
     },
     {
