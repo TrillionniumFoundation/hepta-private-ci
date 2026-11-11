@@ -3,8 +3,6 @@
 
 use pretty_assertions::assert_eq;
 use sqlx::SqlitePool;
-use sqlx::sqlite::SqliteConnectOptions;
-use sqlx::sqlite::SqlitePoolOptions;
 
 use super::*;
 
@@ -115,13 +113,15 @@ async fn acknowledged_before_retirement(
 }
 
 async fn inspect(store: &AutomationStore) -> SqlitePool {
-    ok(SqlitePoolOptions::new()
-        .max_connections(1)
-        .connect_with(
-            SqliteConnectOptions::new()
-                .filename(store.path())
-                .read_only(true),
-        )
+    let sqlite_home = ok(codex_utils_absolute_path::AbsolutePathBuf::try_from(
+        store
+            .path()
+            .parent()
+            .expect("the durable store has a parent directory")
+            .to_path_buf(),
+    ));
+    ok(codex_state::SqliteConfig::new_for_testing(sqlite_home)
+        .open_read_only_pool(store.path())
         .await)
 }
 
@@ -141,6 +141,18 @@ async fn cold_ack_cleanup_releases_slot_without_contacting_unavailable_learning_
     let original = CurrentEvidencePorts::new();
     let (store, request, acknowledged) = acknowledged_before_retirement(&daemon, &original).await;
     let inspection = inspect(&store).await;
+    assert_eq!(retired(&inspection, &request).await, 0);
+    let write_attempt = sqlx::query(
+        "UPDATE circuit_learning_outbox_v1 SET retired = 1 WHERE owner_agent_id = ? AND run_id = ?",
+    )
+    .bind(request.agent_id.as_str())
+    .bind(request.source_run_id.as_str())
+    .execute(&inspection)
+    .await;
+    assert!(
+        write_attempt.is_err(),
+        "original post-recovery inspection must not write the outbox"
+    );
     assert_eq!(retired(&inspection, &request).await, 0);
     let ports = Arc::new(UnavailableLearningPorts {
         calls: AtomicUsize::new(0),

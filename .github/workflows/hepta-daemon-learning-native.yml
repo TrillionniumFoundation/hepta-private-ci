@@ -6,6 +6,7 @@ on:
       - "codex-rs/hepta-agentd/**"
       - "codex-rs/hepta-learning-artifacts/**"
       - "codex-rs/hepta-intelligence-eval/**"
+      - "scripts/test_hepta_cell_research_units.py"
       - ".github/workflows/hepta-daemon-learning-native.yml"
   workflow_dispatch:
 
@@ -274,6 +275,10 @@ jobs:
       - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
         with:
           tool: just@1.51.0,nextest@0.9.103
+      - name: Install repository-pinned uv for Python maintenance
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+        with:
+          version: "0.11.3"
       - uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
       - run: sudo install -m 0755 "$(command -v dotslash)" /usr/local/bin/dotslash
       - name: Resolve the repository-verified V8 pair
@@ -290,6 +295,7 @@ jobs:
             rustc --version --verbose
             cargo --version
             just --version
+            uv --version
             cargo nextest --version
             cargo fetch --locked --target x86_64-unknown-linux-gnu
           } 2>&1 | tee "$RUNNER_TEMP/daemon-learning-records/toolchain-and-fetch.log"
