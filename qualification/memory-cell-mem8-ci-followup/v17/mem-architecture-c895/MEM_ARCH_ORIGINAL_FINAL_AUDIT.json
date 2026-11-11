@@ -1,0 +1,1153 @@
+{
+  "schema": "mem8.c895.mem-architecture.original-audit.final.v2",
+  "source_commit": "c89540598693697577cda8cba31cb07f6ce65317",
+  "source_tree": "5a7c897a33e4eef48ea8f4bf52eaf48ea7c866ae",
+  "artifacts": [
+    {
+      "artifact_id": 13868481966,
+      "archive": {
+        "bytes": 51493,
+        "sha256": "a70d984f63759306ecf82ded62ca8fff9ef1ba936d8f21a7de6463903e6cbad2",
+        "git_blob": "207c11e23d35dcd2f789b0b0dae6d200e592e42b"
+      },
+      "members": 78
+    },
+    {
+      "artifact_id": 13868718108,
+      "archive": {
+        "bytes": 50552,
+        "sha256": "35cc62eae4696ef4a8c6fc5aff7cf5df06ed972717ce00c62e7f7dd3e525a4d1",
+        "git_blob": "81417a36c23faab4a573901f85a35ab5cc5e2503"
+      },
+      "members": 6
+    },
+    {
+      "artifact_id": 13867409972,
+      "archive": {
+        "bytes": 1327581,
+        "sha256": "e1480b1d28421403c9aecc5041cd0c47b75211f5967dee8cb92cf63768013374",
+        "git_blob": "cbb6c2a3675e4182fb1fd9e780c9ff84a53d22fd"
+      },
+      "members": 19
+    },
+    {
+      "artifact_id": 13867373162,
+      "archive": {
+        "bytes": 14049,
+        "sha256": "def7aa107b643e9cc9f8f6063f09e3ed744fb5d48453e59fe05e0031cd0b0027",
+        "git_blob": "acd77e9ee02d06ed76dd05f0eb1cfd3f10614982"
+      },
+      "members": 20
+    }
+  ],
+  "large_source_archive": {
+    "scope": "Original ZIP and entire source tar fully read locally; no archived command executed",
+    "original_zip": {
+      "artifact_id": 13867509444,
+      "archive": {
+        "bytes": 125277595,
+        "sha256": "94f8686979d211d1ea25aef50144dd071f181722b60d4dbd19e72535e4ca4026",
+        "git_blob": "fd744db853ab33e7fc30f8430b267d9bd0bf6d41"
+      },
+      "members": 10
+    },
+    "source_tar": {
+      "bytes": 125292249,
+      "sha256": "5983138150b3503163ca41e8cb616aa4790c8d403815392deaec17aac5489c02"
+    },
+    "source_commit": "c89540598693697577cda8cba31cb07f6ce65317",
+    "source_tree": "5a7c897a33e4eef48ea8f4bf52eaf48ea7c866ae",
+    "source_entries": 14053,
+    "root_tree_recomputed": true,
+    "source_index": {
+      "bytes": 4006522,
+      "sha256": "087034edae4e0c1dda1d261588cb26771fa5e44eabe2efa4d4ae1d1ad8f7a43c",
+      "git_blob": "035175d6c13d470971ddd846e136fb8dfd3991d7"
+    },
+    "large_wrapper_persisted_to_evidence_Git": false,
+    "retained_boundary": "The complete original source bytes match existing immutable Git objects; evidence Git will retain the exact full source index and small diagnostics, not claim the 125 MB compressed wrapper was archived."
+  },
+  "MEM_integrity_python": {
+    "passed": 35,
+    "failed": 0
+  },
+  "MEM_CPU_contract_tests_executed": 0,
+  "MEM_native_tests_executed": 0,
+  "MEM_format": "passed_without_rewrites",
+  "MEM_source_before_after_clean": true,
+  "MEM_workflow_conclusion": "failure",
+  "Architecture_source_qualification_receipt_python": {
+    "passed": 136,
+    "failed": 0
+  },
+  "Architecture_base_merge_qualification_receipt_python": {
+    "passed": 136,
+    "failed": 0
+  },
+  "Architecture_additional_raw_only_candidate_preflight": {
+    "source_head": 8,
+    "base_merge": 8,
+    "unique_ids": 8
+  },
+  "Architecture_total_python": {
+    "source_commit": "c89540598693697577cda8cba31cb07f6ce65317",
+    "qualification_receipted_executions": 272,
+    "additional_raw_only_executions": 16,
+    "all_python_executions": 288,
+    "distinct_python_case_ids": 144,
+    "each_lane": {
+      "receipted": 136,
+      "raw_only": 8,
+      "total": 144
+    }
+  },
+  "Architecture_native_tests_executed": 0,
+  "Architecture_source_derived_check_executed": false,
+  "Architecture_source_final_whole_worktree_clean_observed": false,
+  "Architecture_source_final_scope": "Qualification receipts bind their own before/after state. The immutable source archive is complete; final whole-worktree gate after apt failure was skipped.",
+  "Architecture_required": {
+    "job_id": 130625313196,
+    "status": "completed",
+    "conclusion": "failure",
+    "completed_at": "2026-11-11T15:47:56Z",
+    "raw_log": {
+      "bytes": 2765,
+      "sha256": "355f67f20a638b8841c1c8187d9e11e01f5a03a1c00935aab313ca0d4606d60f",
+      "git_blob": "ab2b40f65304585cca60d3ea8ea2712f75e036e2"
+    },
+    "command_exit_code": 1,
+    "reason": "The original source-head lane failed, so the original required gate rejected RESULT=failure."
+  },
+  "synthetic_campaign": {
+    "reader_processes": 14,
+    "writer_processes": 3,
+    "scenario_ids": [
+      "live_updated_fact",
+      "snapshot_current_fact",
+      "snapshot_active_chain",
+      "restricted_dependency_closure",
+      "snapshot_off",
+      "snapshot_retrieval_off",
+      "snapshot_delivery_off",
+      "revoked_live_fact",
+      "revoked_snapshot_fact",
+      "revoked_snapshot_bm25",
+      "revoked_snapshot_uniform",
+      "revoked_snapshot_icl",
+      "unrelated_snapshot_fact",
+      "unrelated_live_fact"
+    ],
+    "request_response_context_hashes_checked": true,
+    "model_calls": 0,
+    "deletion_scope": "logical read exclusion; snapshot bytes remain",
+    "real_task_benefit": false,
+    "independent_trust_domain": false,
+    "full_owner_cold_recovery": false
+  },
+  "native_source_archives": [
+    {
+      "name": "changed-source-before.tar.gz",
+      "archive": {
+        "bytes": 1078814,
+        "sha256": "c194a5ff69eec8d9c34d97cb0a8ff1c3b042d6b069c7a5b2dcb769014346fe32",
+        "git_blob": "22f8e5d20cc262708c37f16fdce6253b75edd866"
+      },
+      "source_files": 222
+    },
+    {
+      "name": "changed-source-after.tar.gz",
+      "archive": {
+        "bytes": 45,
+        "sha256": "85cea451eec057fa7e734548ca3ba6d779ed5836a3f9de14b8394575ef0d7d8e",
+        "git_blob": "872c01559ea7ac2302b7d73ae653f7ad29f8981d"
+      },
+      "source_files": 0
+    }
+  ],
+  "groups": [
+    {
+      "artifact_id": 13868481966,
+      "receipt": "tests.json",
+      "receipt_identity": {
+        "bytes": 1655,
+        "sha256": "8d6029eec685db8845de0372cdfe95be561295b8a9d2e263fde5c8b921a8164d",
+        "git_blob": "9e999d9c87bd5cce06e09ca88c59861c856f7e4f"
+      },
+      "log": "tests.json.055e8c15d60143e088ae411c9f4f6f71.log",
+      "log_identity": {
+        "bytes": 7097,
+        "sha256": "837388116d9a60396e90a504419193e16186de3f08abd9f5679a887ec54707bf",
+        "git_blob": "8cf3f6338eeefb03f4523e0b2dc62f4ff2bceb07"
+      },
+      "command": [
+        "python",
+        "-B",
+        "-m",
+        "unittest",
+        "-v",
+        "ndu_real_runtime.test_episodic_memory",
+        "ndu_real_runtime.test_episodic_retrieval",
+        "ndu_real_runtime.test_episodic_qualification",
+        "ndu_real_runtime.test_revocation_qualification"
+      ],
+      "case_ids": [
+        "ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests.test_bounded_tombstones_prevent_replay_and_admission_rolls_back",
+        "ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests.test_byte_admission_failure_preserves_existing_data_and_generation",
+        "ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests.test_caller_cannot_mutate_stored_provenance_or_returned_record",
+        "ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests.test_current_authority_is_required_and_snapshot_has_its_identity",
+        "ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests.test_empty_snapshot_and_valid_old_dependency_chain_remain_readable",
+        "ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests.test_namespace_isolation_and_foreign_dependency_rejection",
+        "ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests.test_redigested_snapshot_cannot_move_records_before_their_write",
+        "ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests.test_redigested_snapshot_requires_a_consistent_historical_roster",
+        "ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests.test_reverse_key_order_chain_revokes_entire_dependency_closure",
+        "ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests.test_revoke_removes_payload_and_old_snapshot_never_reactivates_it",
+        "ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests.test_snapshot_corruption_and_forged_record_are_rejected",
+        "ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests.test_snapshot_rejects_fifo_directory_and_symlink_before_read",
+        "ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests.test_update_cannot_create_an_indirect_dependency_cycle",
+        "ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests.test_update_revokes_transitive_dependencies_and_filters_old_snapshot",
+        "ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests.test_working_state_is_copied_bounded_and_cleared_on_new_session",
+        "ndu_real_runtime.test_episodic_retrieval.EpisodicRetrievalTests.test_callback_cannot_change_original_source_allowlist",
+        "ndu_real_runtime.test_episodic_retrieval.EpisodicRetrievalTests.test_exact_kv_and_bm25_only_read_approved_sources",
+        "ndu_real_runtime.test_episodic_retrieval.EpisodicRetrievalTests.test_foreign_dependency_and_transitive_summary_are_not_retrieved",
+        "ndu_real_runtime.test_episodic_retrieval.EpisodicRetrievalTests.test_inflight_namespace_or_authority_replacement_aborts_delivery",
+        "ndu_real_runtime.test_episodic_retrieval.EpisodicRetrievalTests.test_inflight_revocation_of_a_dependency_aborts_summary_delivery",
+        "ndu_real_runtime.test_episodic_retrieval.EpisodicRetrievalTests.test_modes_separate_store_read_retrieval_and_delivery",
+        "ndu_real_runtime.test_episodic_retrieval.EpisodicRetrievalTests.test_new_process_cli_reads_then_rejects_revoked_snapshot",
+        "ndu_real_runtime.test_episodic_retrieval.EpisodicRetrievalTests.test_ranking_cannot_deliver_a_fact_revoked_or_updated_during_the_read",
+        "ndu_real_runtime.test_episodic_retrieval.EpisodicRetrievalTests.test_real_callback_and_its_ablation_do_not_mutate_evidence",
+        "ndu_real_runtime.test_episodic_retrieval.EpisodicRetrievalTests.test_receipt_rejects_changed_context_records_or_audit_fields",
+        "ndu_real_runtime.test_episodic_retrieval.EpisodicRetrievalTests.test_receipts_allow_actual_empty_partial_and_disabled_callback_paths",
+        "ndu_real_runtime.test_episodic_retrieval.EpisodicRetrievalTests.test_recomputed_digest_does_not_hide_contradictory_interventions",
+        "ndu_real_runtime.test_episodic_retrieval.EpisodicRetrievalTests.test_recomputed_digest_does_not_hide_roster_loss_duplication_or_reordering",
+        "ndu_real_runtime.test_episodic_retrieval.EpisodicRetrievalTests.test_recomputed_receipts_reject_malformed_schema_bounds_and_authority",
+        "ndu_real_runtime.test_episodic_retrieval.EpisodicRetrievalTests.test_recomputed_record_and_receipt_reject_impossible_chronology",
+        "ndu_real_runtime.test_episodic_retrieval.EpisodicRetrievalTests.test_separate_writer_process_cannot_revoke_between_retrieval_and_delivery",
+        "ndu_real_runtime.test_episodic_retrieval.EpisodicRetrievalTests.test_suppressed_delivery_does_not_revalidate_or_emit_revoked_content",
+        "ndu_real_runtime.test_episodic_retrieval.EpisodicRetrievalTests.test_uniform_replay_and_icl_are_bounded_deterministic_baselines",
+        "ndu_real_runtime.test_episodic_qualification.FreshProcessQualificationTests.test_exited_writers_new_readers_and_actual_deliveries",
+        "ndu_real_runtime.test_revocation_qualification.RevocationQualificationTests.test_active_post_update_snapshot_and_chain_are_revoked_in_new_readers"
+      ],
+      "passed": 35,
+      "failed": 0,
+      "lane": "source-head",
+      "tested_sha": "c89540598693697577cda8cba31cb07f6ce65317",
+      "source_sha": "c89540598693697577cda8cba31cb07f6ce65317",
+      "tree": "5a7c897a33e4eef48ea8f4bf52eaf48ea7c866ae",
+      "source_before_after_clean": true,
+      "started_at": "2026-11-11T15:27:53.886726+00:00",
+      "finished_at": "2026-11-11T15:27:57.716808+00:00"
+    },
+    {
+      "artifact_id": 13867409972,
+      "receipt": "format.json",
+      "receipt_identity": {
+        "bytes": 1464,
+        "sha256": "f97e864b3408baa65448b7246b20e0b29bfbf074953122cb24310e3d18971b60",
+        "git_blob": "eaa5bf0427efcd7aaf81f2aadd20bc521f6b25af"
+      },
+      "log": "format.json.d6a2185b952f436f8285330578ff2f1f.log",
+      "log_identity": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+      },
+      "command": [
+        "just",
+        "fmt",
+        "--base",
+        "96038ccf0660154fac143ba6cbe4be81e00813e8"
+      ],
+      "case_ids": [],
+      "passed": 0,
+      "failed": 0,
+      "lane": "source-head",
+      "tested_sha": "c89540598693697577cda8cba31cb07f6ce65317",
+      "source_sha": "c89540598693697577cda8cba31cb07f6ce65317",
+      "tree": "5a7c897a33e4eef48ea8f4bf52eaf48ea7c866ae",
+      "source_before_after_clean": true,
+      "started_at": "2026-11-11T15:28:13.588812+00:00",
+      "finished_at": "2026-11-11T15:28:21.667662+00:00"
+    },
+    {
+      "artifact_id": 13867509444,
+      "receipt": "repository-controls.json",
+      "receipt_identity": {
+        "bytes": 1656,
+        "sha256": "2c8b94ef64880e935291f18de6b3031708d39c6419a8068df346d4de995f51e9",
+        "git_blob": "b72b6986a440ffea2602eaa530eff205d5d1cd8e"
+      },
+      "log": "repository-controls.json.562631b677ca4c9a96eb60a7f2c1b018.log",
+      "log_identity": {
+        "bytes": 12097,
+        "sha256": "baffae46c26d11196e560fb7aa2f7f7bb2c47f9c559cafa6611a0102fe5f402e",
+        "git_blob": "a36277684784e58d40935e58bd1e417a3685577c"
+      },
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "-v",
+        "scripts.tests.test_hepta_repository_controls",
+        "scripts.test_hepta_control_hardening",
+        "scripts.test_hepta_candidate_transport_workflow",
+        "scripts.test_hepta_merge_identity_records"
+      ],
+      "case_ids": [
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_activation_is_not_self_authorized",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_admin_bypass",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_any_app_cannot_sign_evaluation",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_api_denial_cannot_be_replaced_with_source_policy",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_app_review_bypass",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_boolean_does_not_count_as_one_review",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_context_name_alone_is_not_an_independent_identity",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_explicit_disabled_reviews_do_not_replace_independent_evaluation",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_force_push_enabled",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_main_drift_during_observation_fails",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_main_unprotected",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_missing_codeowner_review_policy_fails_closed",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_missing_conversation_policy_fails_closed",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_missing_extra_required_gate_fails",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_missing_review_policy_is_not_observed_disabled_policy",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_neutral_is_not_success",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_new_pending_invalidates_old_success",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_no_reviews_required",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_old_main_head",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_owner_may_disable_codeowner_review",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_owner_may_disable_last_push_review",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_owner_may_disable_stale_review_dismissal",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_pagination_reads_beyond_first_page",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_policy_drift_during_observation_fails",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_shared_actions_identity_is_not_independent",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_skipped_is_not_success",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_stale_base_allowed",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_strict_observed_profile",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_unbounded_pagination_fails_instead_of_certifying_prefix",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_unknown_admin_enforcement",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_unknown_codeowner_policy_is_rejected",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_unknown_conversation_policy_fails_closed",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_unknown_force_push_policy",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_unknown_owner_policy_rejects_before_loading_check_history",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_untrusted_success_cannot_replace_trusted_failure",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_user_review_bypass",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_wrong_sha_check_not_reused",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_wrong_trusted_app",
+        "scripts.test_hepta_control_hardening.CheckSourceTests.test_api_has_a_request_timeout",
+        "scripts.test_hepta_control_hardening.CheckSourceTests.test_api_timeout_never_emits_success",
+        "scripts.test_hepta_control_hardening.CheckSourceTests.test_boolean_observed_identity_is_not_app_one",
+        "scripts.test_hepta_control_hardening.CheckSourceTests.test_evaluator_cannot_also_publish_blocking_check",
+        "scripts.test_hepta_control_hardening.CheckSourceTests.test_extra_required_context_must_pin_its_source",
+        "scripts.test_hepta_control_hardening.CheckSourceTests.test_oversized_check_page_rejected",
+        "scripts.test_hepta_control_hardening.CheckSourceTests.test_owner_and_conversation_controls_cannot_be_inferred_from_fixture",
+        "scripts.test_hepta_control_hardening.CheckSourceTests.test_owner_can_disable_review_without_substituting_check_source",
+        "scripts.test_hepta_control_hardening.CheckSourceTests.test_unpinned_blocking_context_rejected",
+        "scripts.test_hepta_control_hardening.CheckSourceTests.test_valid_distinct_pinned_sources",
+        "scripts.test_hepta_control_hardening.CheckSourceTests.test_wrong_branch_fails_before_collecting_checks",
+        "scripts.test_hepta_control_hardening.FormattingCommandTests.test_format_failure_is_retained_and_not_swallowed",
+        "scripts.test_hepta_control_hardening.FormattingCommandTests.test_format_success_does_not_become_failure",
+        "scripts.test_hepta_control_hardening.TransportObservationTests.test_auth_network_policy_and_success_remain_unknown_observations",
+        "scripts.test_hepta_control_hardening.TransportObservationTests.test_cli_preserves_verified_controls_and_reports_transport_unknown",
+        "scripts.test_hepta_control_hardening.TransportObservationTests.test_cli_transport_denial_cannot_replace_failed_live_protection",
+        "scripts.test_hepta_control_hardening.TransportObservationTests.test_explicit_authenticated_write_denial_is_narrow_observation",
+        "scripts.test_hepta_control_hardening.TransportObservationTests.test_missing_token_and_bad_repository_never_access_network",
+        "scripts.test_hepta_control_hardening.TransportObservationTests.test_read_api_failure_does_not_probe_or_pass",
+        "scripts.test_hepta_control_hardening.TransportObservationTests.test_repository_identity_mismatch_rejected",
+        "scripts.test_hepta_control_hardening.TransportObservationTests.test_response_size_is_bounded",
+        "scripts.test_hepta_control_hardening.TransportObservationTests.test_timeout_is_not_denial_and_closes_connection",
+        "scripts.test_hepta_candidate_transport_workflow.CandidateTransportWorkflowTests.test_advisory_observation_follows_behavior_and_does_not_replace_required_native_result",
+        "scripts.test_hepta_candidate_transport_workflow.CandidateTransportWorkflowTests.test_explicit_denial_is_retained_without_claiming_other_permissions",
+        "scripts.test_hepta_candidate_transport_workflow.CandidateTransportWorkflowTests.test_prerequisites_and_lock_check_precede_native_builds",
+        "scripts.test_hepta_candidate_transport_workflow.CandidateTransportWorkflowTests.test_timeout_is_unknown_not_a_permission_denial",
+        "scripts.test_hepta_candidate_transport_workflow.CandidateTransportWorkflowTests.test_unknown_transport_is_retained_without_claiming_write_denial",
+        "scripts.test_hepta_merge_identity_records.MergeIdentityRecordTests.test_commit_api_failure_retains_ref_and_failure",
+        "scripts.test_hepta_merge_identity_records.MergeIdentityRecordTests.test_different_tree_is_refused_and_observed",
+        "scripts.test_hepta_merge_identity_records.MergeIdentityRecordTests.test_exact_parents_and_tree_succeed_with_observations",
+        "scripts.test_hepta_merge_identity_records.MergeIdentityRecordTests.test_merge_conflict_is_refused_and_git_output_is_retained",
+        "scripts.test_hepta_merge_identity_records.MergeIdentityRecordTests.test_ref_api_failure_retains_expected_identity_and_failure",
+        "scripts.test_hepta_merge_identity_records.MergeIdentityRecordTests.test_single_parent_is_refused_and_observed",
+        "scripts.test_hepta_merge_identity_records.MergeIdentityRecordTests.test_stale_base_is_refused_and_observed",
+        "scripts.test_hepta_merge_identity_records.MergeIdentityRecordTests.test_stale_source_is_refused_and_observed"
+      ],
+      "passed": 73,
+      "failed": 0,
+      "lane": "source-head",
+      "tested_sha": "c89540598693697577cda8cba31cb07f6ce65317",
+      "source_sha": "c89540598693697577cda8cba31cb07f6ce65317",
+      "tree": "5a7c897a33e4eef48ea8f4bf52eaf48ea7c866ae",
+      "source_before_after_clean": true,
+      "started_at": "2026-11-11T15:28:13.409927+00:00",
+      "finished_at": "2026-11-11T15:28:15.035771+00:00"
+    },
+    {
+      "artifact_id": 13867509444,
+      "receipt": "runner-tests.json",
+      "receipt_identity": {
+        "bytes": 1528,
+        "sha256": "283e2b74d191107a96d5e6e2c5843c61c99883c56108b52f5e24b70364dd86e6",
+        "git_blob": "3e3db077ee662f5e29ea1186e3fba5b384a72069"
+      },
+      "log": "runner-tests.json.62fb603d4f544c21abb7329dcdc81cb0.log",
+      "log_identity": {
+        "bytes": 7126,
+        "sha256": "9105687de5b271b8d0d0aefcc09ad4159ecdfd28ad8896085ebaaa265af92d62",
+        "git_blob": "a4692ff4cf921977963371ce383c7cd78fd4207a"
+      },
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-v",
+        "-s",
+        "scripts",
+        "-p",
+        "test_hepta_ci_exec*.py"
+      ],
+      "case_ids": [
+        "test_hepta_ci_exec.ExecutionRecordTests.test_actual_command_success_binds_source_tree_parents_and_argv",
+        "test_hepta_ci_exec.ExecutionRecordTests.test_conflicting_merge_never_dispatches_an_arbitrary_resolution",
+        "test_hepta_ci_exec.ExecutionRecordTests.test_divergent_clean_merge_records_recomputed_tree",
+        "test_hepta_ci_exec.ExecutionRecordTests.test_existing_receipt_cannot_be_overwritten_or_reused",
+        "test_hepta_ci_exec.ExecutionRecordTests.test_killed_command_is_failed_not_passed",
+        "test_hepta_ci_exec.ExecutionRecordTests.test_matching_parents_with_wrong_tree_reject_before_command",
+        "test_hepta_ci_exec.ExecutionRecordTests.test_merge_lane_rejects_symbolic_base_identity",
+        "test_hepta_ci_exec.ExecutionRecordTests.test_nonzero_command_is_retained_and_not_converted_to_pass",
+        "test_hepta_ci_exec.ExecutionRecordTests.test_shallow_checkout_records_real_commit_parents_not_traversal_grafts",
+        "test_hepta_ci_exec.ExecutionRecordTests.test_source_lane_cannot_relabel_another_commit",
+        "test_hepta_ci_exec.ExecutionRecordTests.test_successful_command_mutating_source_still_fails",
+        "test_hepta_ci_exec.ExecutionRecordTests.test_synthetic_merge_accepts_only_exact_ordered_parents",
+        "test_hepta_ci_exec.ExecutionRecordTests.test_wrong_checkout_and_dirty_inputs_never_dispatch",
+        "test_hepta_ci_exec.WorkflowCommandBindingTests.test_shell_preserves_test_targets_and_strict_lint_arguments",
+        "test_hepta_ci_exec.WorkflowCommandBindingTests.test_shell_test_failure_has_no_lint_pass_receipt",
+        "test_hepta_ci_exec_deadline.CommandDeadlineTests.test_cli_retains_failed_receipt_instead_of_successful_parent_exit",
+        "test_hepta_ci_exec_deadline.CommandDeadlineTests.test_detached_pipe_holder_does_not_deadlock_stream_close",
+        "test_hepta_ci_exec_deadline.CommandDeadlineTests.test_diagnostics_before_timeout_survive",
+        "test_hepta_ci_exec_deadline.CommandDeadlineTests.test_eof_is_not_completion",
+        "test_hepta_ci_exec_deadline.CommandDeadlineTests.test_exited_parent_cannot_leave_a_running_pipe_holder",
+        "test_hepta_ci_exec_deadline.CommandDeadlineTests.test_invalid_bounds_dispatch_nothing",
+        "test_hepta_ci_exec_deadline.CommandDeadlineTests.test_normal_exit_is_not_a_timeout",
+        "test_hepta_ci_exec_deadline.CommandDeadlineTests.test_output_cap_remains_independent_of_deadline",
+        "test_hepta_ci_exec_deadline.CommandDeadlineTests.test_silent_process_times_out",
+        "test_hepta_ci_exec_output.CommandOutputTests.test_bounded_output_kills_command_and_preserves_bounded_prefix",
+        "test_hepta_ci_exec_output.CommandOutputTests.test_compile_only_success_does_not_satisfy_test_gate",
+        "test_hepta_ci_exec_output.CommandOutputTests.test_deleted_receipt_does_not_allow_overwriting_an_earlier_log",
+        "test_hepta_ci_exec_output.CommandOutputTests.test_empty_other_test_binaries_do_not_invalidate_real_selected_tests",
+        "test_hepta_ci_exec_output.CommandOutputTests.test_existing_log_cannot_be_reused",
+        "test_hepta_ci_exec_output.CommandOutputTests.test_ignored_tests_are_not_executed_tests",
+        "test_hepta_ci_exec_output.CommandOutputTests.test_nextest_summary_does_not_double_count_nested_libtest",
+        "test_hepta_ci_exec_output.CommandOutputTests.test_no_test_requirement_keeps_existing_non_test_commands_compatible",
+        "test_hepta_ci_exec_output.CommandOutputTests.test_real_failure_output_and_digest_are_retained",
+        "test_hepta_ci_exec_output.CommandOutputTests.test_real_unittest_empty_suite_fails_minimum",
+        "test_hepta_ci_exec_output.CommandOutputTests.test_real_unittest_partial_skip_counts_only_success",
+        "test_hepta_ci_exec_output.CommandOutputTests.test_real_unittest_skip_and_expected_failure_do_not_count_as_pass",
+        "test_hepta_ci_exec_output.CommandOutputTests.test_real_unittest_success_satisfies_minimum",
+        "test_hepta_ci_exec_output.CommandOutputTests.test_real_unittest_unexpected_success_is_failure",
+        "test_hepta_ci_exec_output.CommandOutputTests.test_successful_source_mutation_is_still_rejected",
+        "test_hepta_ci_exec_output.CommandOutputTests.test_swallowed_nextest_timeout_is_not_a_pass",
+        "test_hepta_ci_exec_output.CommandOutputTests.test_swallowed_unittest_failure_cannot_become_success",
+        "test_hepta_ci_exec_output.CommandOutputTests.test_unfinished_unittest_footer_is_not_success",
+        "test_hepta_ci_exec_output.CommandOutputTests.test_unittest_footer_at_eof_is_counted",
+        "test_hepta_ci_exec_output.CommandOutputTests.test_wrong_source_never_creates_a_command_log",
+        "test_hepta_ci_exec_output.CommandOutputTests.test_zero_tests_is_failure_even_with_process_success"
+      ],
+      "passed": 45,
+      "failed": 0,
+      "lane": "source-head",
+      "tested_sha": "c89540598693697577cda8cba31cb07f6ce65317",
+      "source_sha": "c89540598693697577cda8cba31cb07f6ce65317",
+      "tree": "5a7c897a33e4eef48ea8f4bf52eaf48ea7c866ae",
+      "source_before_after_clean": true,
+      "started_at": "2026-11-11T15:28:04.725497+00:00",
+      "finished_at": "2026-11-11T15:28:13.349895+00:00"
+    },
+    {
+      "artifact_id": 13867509444,
+      "receipt": "scope-tests.json",
+      "receipt_identity": {
+        "bytes": 1489,
+        "sha256": "d87cd8c2c2f7d812b647c5744c5d35b7fb2b3909529ee42a649cc281bd0dfc4a",
+        "git_blob": "065f0762701a4caf5ba0f1b78146b3eb46bdcc42"
+      },
+      "log": "scope-tests.json.d2be2893a74048f799f4ff4e663d9be9.log",
+      "log_identity": {
+        "bytes": 3009,
+        "sha256": "d23ee0b1cbfb40841447dd415dd90e1ee13a1a1fc6ba68f39a111717748af68e",
+        "git_blob": "c587187d54f502e3326b549eb60efb2ef4c5eb4e"
+      },
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "-v",
+        "scripts.tests.test_hepta_ci_scope"
+      ],
+      "case_ids": [
+        "scripts.tests.test_hepta_ci_scope.ScopeTests.test_bad_paths_fail_instead_of_selecting_nothing",
+        "scripts.tests.test_hepta_ci_scope.ScopeTests.test_code_owned_markdown_is_not_assumed_pure_prose",
+        "scripts.tests.test_hepta_ci_scope.ScopeTests.test_commit_id_validation_precedes_subprocess",
+        "scripts.tests.test_hepta_ci_scope.ScopeTests.test_effectful_retirement_keeps_lifecycle_and_effect_tests",
+        "scripts.tests.test_hepta_ci_scope.ScopeTests.test_generated_module_projections_do_not_force_native_builds",
+        "scripts.tests.test_hepta_ci_scope.ScopeTests.test_generated_projection_is_derived_only",
+        "scripts.tests.test_hepta_ci_scope.ScopeTests.test_git_diff_covers_real_rename_and_deleted_path",
+        "scripts.tests.test_hepta_ci_scope.ScopeTests.test_inference_local_change_does_not_run_browser_learning_or_objective",
+        "scripts.tests.test_hepta_ci_scope.ScopeTests.test_manual_full_keeps_all_groups_even_with_no_paths",
+        "scripts.tests.test_hepta_ci_scope.ScopeTests.test_plasticity_change_runs_learning_and_lifecycle_only",
+        "scripts.tests.test_hepta_ci_scope.ScopeTests.test_readme_and_ordinary_prose_do_not_prepare_native_dependencies",
+        "scripts.tests.test_hepta_ci_scope.ScopeTests.test_registry_is_runtime_consumed_lifecycle_input",
+        "scripts.tests.test_hepta_ci_scope.ScopeTests.test_rename_keeps_source_and_destination_groups",
+        "scripts.tests.test_hepta_ci_scope.ScopeTests.test_repository_policy_regressions_keep_their_python_scope",
+        "scripts.tests.test_hepta_ci_scope.ScopeTests.test_runtime_module_abi_stays_on_lifecycle_boundary",
+        "scripts.tests.test_hepta_ci_scope.ScopeTests.test_shared_types_and_agentd_keep_cross_domain_coverage",
+        "scripts.tests.test_hepta_ci_scope.ScopeTests.test_topology_contract_stays_on_lifecycle_boundary",
+        "scripts.tests.test_hepta_ci_scope.ScopeTests.test_unknown_or_executable_document_selects_full"
+      ],
+      "passed": 18,
+      "failed": 0,
+      "lane": "source-head",
+      "tested_sha": "c89540598693697577cda8cba31cb07f6ce65317",
+      "source_sha": "c89540598693697577cda8cba31cb07f6ce65317",
+      "tree": "5a7c897a33e4eef48ea8f4bf52eaf48ea7c866ae",
+      "source_before_after_clean": true,
+      "started_at": "2026-11-11T15:28:04.279318+00:00",
+      "finished_at": "2026-11-11T15:28:04.623346+00:00"
+    },
+    {
+      "artifact_id": 13867373162,
+      "receipt": "derived.json",
+      "receipt_identity": {
+        "bytes": 1649,
+        "sha256": "9b618f77a68f39fc1387acc2be7060cfed1c95540f6b6ccc5af94b3ca2691b1c",
+        "git_blob": "b47c63ebbd61fe9ad3e2e30611f7e104ebd6ba93"
+      },
+      "log": "derived.json.a38bce72b5704906aaf699fde520e767.log",
+      "log_identity": {
+        "bytes": 42,
+        "sha256": "dd338ae2d65000941c4a2c3afe356096d35c98d69ca23ec86c7b98ba0490ab1f",
+        "git_blob": "ca053c29c2105cdcfb3f441d667da91fc01b0a9f"
+      },
+      "command": [
+        "python3",
+        "scripts/hepta-module-docs.py",
+        "refresh-derived",
+        "--check"
+      ],
+      "case_ids": [],
+      "passed": 0,
+      "failed": 0,
+      "lane": "base-merge",
+      "tested_sha": "84f1cc53ffddce902df541cdef33524ecaa93c7b",
+      "source_sha": "c89540598693697577cda8cba31cb07f6ce65317",
+      "tree": "5a7c897a33e4eef48ea8f4bf52eaf48ea7c866ae",
+      "source_before_after_clean": true,
+      "started_at": "2026-11-11T15:28:15.382972+00:00",
+      "finished_at": "2026-11-11T15:28:15.507696+00:00"
+    },
+    {
+      "artifact_id": 13867373162,
+      "receipt": "repository-controls.json",
+      "receipt_identity": {
+        "bytes": 1826,
+        "sha256": "11098147e39a8b4f19380ca16a17d8fb9b6d426aacb38296894e476cb92fb629",
+        "git_blob": "1ad171b9e604337213818f7066a0d876013a2042"
+      },
+      "log": "repository-controls.json.d360af64167d4b26a988560a0ac93e3b.log",
+      "log_identity": {
+        "bytes": 12097,
+        "sha256": "d34cbad20eb3d8c6a71e9653a1b92e14c4e291b569a4194d0d96670c0ac30044",
+        "git_blob": "ca5bcaacef14ecd9e0505dd0f15c357fba906d28"
+      },
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "-v",
+        "scripts.tests.test_hepta_repository_controls",
+        "scripts.test_hepta_control_hardening",
+        "scripts.test_hepta_candidate_transport_workflow",
+        "scripts.test_hepta_merge_identity_records"
+      ],
+      "case_ids": [
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_activation_is_not_self_authorized",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_admin_bypass",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_any_app_cannot_sign_evaluation",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_api_denial_cannot_be_replaced_with_source_policy",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_app_review_bypass",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_boolean_does_not_count_as_one_review",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_context_name_alone_is_not_an_independent_identity",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_explicit_disabled_reviews_do_not_replace_independent_evaluation",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_force_push_enabled",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_main_drift_during_observation_fails",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_main_unprotected",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_missing_codeowner_review_policy_fails_closed",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_missing_conversation_policy_fails_closed",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_missing_extra_required_gate_fails",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_missing_review_policy_is_not_observed_disabled_policy",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_neutral_is_not_success",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_new_pending_invalidates_old_success",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_no_reviews_required",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_old_main_head",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_owner_may_disable_codeowner_review",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_owner_may_disable_last_push_review",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_owner_may_disable_stale_review_dismissal",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_pagination_reads_beyond_first_page",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_policy_drift_during_observation_fails",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_shared_actions_identity_is_not_independent",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_skipped_is_not_success",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_stale_base_allowed",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_strict_observed_profile",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_unbounded_pagination_fails_instead_of_certifying_prefix",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_unknown_admin_enforcement",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_unknown_codeowner_policy_is_rejected",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_unknown_conversation_policy_fails_closed",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_unknown_force_push_policy",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_unknown_owner_policy_rejects_before_loading_check_history",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_untrusted_success_cannot_replace_trusted_failure",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_user_review_bypass",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_wrong_sha_check_not_reused",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_wrong_trusted_app",
+        "scripts.test_hepta_control_hardening.CheckSourceTests.test_api_has_a_request_timeout",
+        "scripts.test_hepta_control_hardening.CheckSourceTests.test_api_timeout_never_emits_success",
+        "scripts.test_hepta_control_hardening.CheckSourceTests.test_boolean_observed_identity_is_not_app_one",
+        "scripts.test_hepta_control_hardening.CheckSourceTests.test_evaluator_cannot_also_publish_blocking_check",
+        "scripts.test_hepta_control_hardening.CheckSourceTests.test_extra_required_context_must_pin_its_source",
+        "scripts.test_hepta_control_hardening.CheckSourceTests.test_oversized_check_page_rejected",
+        "scripts.test_hepta_control_hardening.CheckSourceTests.test_owner_and_conversation_controls_cannot_be_inferred_from_fixture",
+        "scripts.test_hepta_control_hardening.CheckSourceTests.test_owner_can_disable_review_without_substituting_check_source",
+        "scripts.test_hepta_control_hardening.CheckSourceTests.test_unpinned_blocking_context_rejected",
+        "scripts.test_hepta_control_hardening.CheckSourceTests.test_valid_distinct_pinned_sources",
+        "scripts.test_hepta_control_hardening.CheckSourceTests.test_wrong_branch_fails_before_collecting_checks",
+        "scripts.test_hepta_control_hardening.FormattingCommandTests.test_format_failure_is_retained_and_not_swallowed",
+        "scripts.test_hepta_control_hardening.FormattingCommandTests.test_format_success_does_not_become_failure",
+        "scripts.test_hepta_control_hardening.TransportObservationTests.test_auth_network_policy_and_success_remain_unknown_observations",
+        "scripts.test_hepta_control_hardening.TransportObservationTests.test_cli_preserves_verified_controls_and_reports_transport_unknown",
+        "scripts.test_hepta_control_hardening.TransportObservationTests.test_cli_transport_denial_cannot_replace_failed_live_protection",
+        "scripts.test_hepta_control_hardening.TransportObservationTests.test_explicit_authenticated_write_denial_is_narrow_observation",
+        "scripts.test_hepta_control_hardening.TransportObservationTests.test_missing_token_and_bad_repository_never_access_network",
+        "scripts.test_hepta_control_hardening.TransportObservationTests.test_read_api_failure_does_not_probe_or_pass",
+        "scripts.test_hepta_control_hardening.TransportObservationTests.test_repository_identity_mismatch_rejected",
+        "scripts.test_hepta_control_hardening.TransportObservationTests.test_response_size_is_bounded",
+        "scripts.test_hepta_control_hardening.TransportObservationTests.test_timeout_is_not_denial_and_closes_connection",
+        "scripts.test_hepta_candidate_transport_workflow.CandidateTransportWorkflowTests.test_advisory_observation_follows_behavior_and_does_not_replace_required_native_result",
+        "scripts.test_hepta_candidate_transport_workflow.CandidateTransportWorkflowTests.test_explicit_denial_is_retained_without_claiming_other_permissions",
+        "scripts.test_hepta_candidate_transport_workflow.CandidateTransportWorkflowTests.test_prerequisites_and_lock_check_precede_native_builds",
+        "scripts.test_hepta_candidate_transport_workflow.CandidateTransportWorkflowTests.test_timeout_is_unknown_not_a_permission_denial",
+        "scripts.test_hepta_candidate_transport_workflow.CandidateTransportWorkflowTests.test_unknown_transport_is_retained_without_claiming_write_denial",
+        "scripts.test_hepta_merge_identity_records.MergeIdentityRecordTests.test_commit_api_failure_retains_ref_and_failure",
+        "scripts.test_hepta_merge_identity_records.MergeIdentityRecordTests.test_different_tree_is_refused_and_observed",
+        "scripts.test_hepta_merge_identity_records.MergeIdentityRecordTests.test_exact_parents_and_tree_succeed_with_observations",
+        "scripts.test_hepta_merge_identity_records.MergeIdentityRecordTests.test_merge_conflict_is_refused_and_git_output_is_retained",
+        "scripts.test_hepta_merge_identity_records.MergeIdentityRecordTests.test_ref_api_failure_retains_expected_identity_and_failure",
+        "scripts.test_hepta_merge_identity_records.MergeIdentityRecordTests.test_single_parent_is_refused_and_observed",
+        "scripts.test_hepta_merge_identity_records.MergeIdentityRecordTests.test_stale_base_is_refused_and_observed",
+        "scripts.test_hepta_merge_identity_records.MergeIdentityRecordTests.test_stale_source_is_refused_and_observed"
+      ],
+      "passed": 73,
+      "failed": 0,
+      "lane": "base-merge",
+      "tested_sha": "84f1cc53ffddce902df541cdef33524ecaa93c7b",
+      "source_sha": "c89540598693697577cda8cba31cb07f6ce65317",
+      "tree": "5a7c897a33e4eef48ea8f4bf52eaf48ea7c866ae",
+      "source_before_after_clean": true,
+      "started_at": "2026-11-11T15:28:13.777387+00:00",
+      "finished_at": "2026-11-11T15:28:15.316827+00:00"
+    },
+    {
+      "artifact_id": 13867373162,
+      "receipt": "runner-tests.json",
+      "receipt_identity": {
+        "bytes": 1698,
+        "sha256": "752a9b88e03a32c035ae73a94bcc07ccfe7e6c7573017261fe77402a431a60c3",
+        "git_blob": "9e1d4a061aa582ce43f82404728732170a173777"
+      },
+      "log": "runner-tests.json.5c92c07cd88f4d95898891c9409d9445.log",
+      "log_identity": {
+        "bytes": 7126,
+        "sha256": "4946e7c0842879f6ecc5fe32b8f7969a0ea495ada3d37433263e1d987de9f23a",
+        "git_blob": "18c4ff15adc8c094a47599431d2a6ec4a0cc4c1a"
+      },
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-v",
+        "-s",
+        "scripts",
+        "-p",
+        "test_hepta_ci_exec*.py"
+      ],
+      "case_ids": [
+        "test_hepta_ci_exec.ExecutionRecordTests.test_actual_command_success_binds_source_tree_parents_and_argv",
+        "test_hepta_ci_exec.ExecutionRecordTests.test_conflicting_merge_never_dispatches_an_arbitrary_resolution",
+        "test_hepta_ci_exec.ExecutionRecordTests.test_divergent_clean_merge_records_recomputed_tree",
+        "test_hepta_ci_exec.ExecutionRecordTests.test_existing_receipt_cannot_be_overwritten_or_reused",
+        "test_hepta_ci_exec.ExecutionRecordTests.test_killed_command_is_failed_not_passed",
+        "test_hepta_ci_exec.ExecutionRecordTests.test_matching_parents_with_wrong_tree_reject_before_command",
+        "test_hepta_ci_exec.ExecutionRecordTests.test_merge_lane_rejects_symbolic_base_identity",
+        "test_hepta_ci_exec.ExecutionRecordTests.test_nonzero_command_is_retained_and_not_converted_to_pass",
+        "test_hepta_ci_exec.ExecutionRecordTests.test_shallow_checkout_records_real_commit_parents_not_traversal_grafts",
+        "test_hepta_ci_exec.ExecutionRecordTests.test_source_lane_cannot_relabel_another_commit",
+        "test_hepta_ci_exec.ExecutionRecordTests.test_successful_command_mutating_source_still_fails",
+        "test_hepta_ci_exec.ExecutionRecordTests.test_synthetic_merge_accepts_only_exact_ordered_parents",
+        "test_hepta_ci_exec.ExecutionRecordTests.test_wrong_checkout_and_dirty_inputs_never_dispatch",
+        "test_hepta_ci_exec.WorkflowCommandBindingTests.test_shell_preserves_test_targets_and_strict_lint_arguments",
+        "test_hepta_ci_exec.WorkflowCommandBindingTests.test_shell_test_failure_has_no_lint_pass_receipt",
+        "test_hepta_ci_exec_deadline.CommandDeadlineTests.test_cli_retains_failed_receipt_instead_of_successful_parent_exit",
+        "test_hepta_ci_exec_deadline.CommandDeadlineTests.test_detached_pipe_holder_does_not_deadlock_stream_close",
+        "test_hepta_ci_exec_deadline.CommandDeadlineTests.test_diagnostics_before_timeout_survive",
+        "test_hepta_ci_exec_deadline.CommandDeadlineTests.test_eof_is_not_completion",
+        "test_hepta_ci_exec_deadline.CommandDeadlineTests.test_exited_parent_cannot_leave_a_running_pipe_holder",
+        "test_hepta_ci_exec_deadline.CommandDeadlineTests.test_invalid_bounds_dispatch_nothing",
+        "test_hepta_ci_exec_deadline.CommandDeadlineTests.test_normal_exit_is_not_a_timeout",
+        "test_hepta_ci_exec_deadline.CommandDeadlineTests.test_output_cap_remains_independent_of_deadline",
+        "test_hepta_ci_exec_deadline.CommandDeadlineTests.test_silent_process_times_out",
+        "test_hepta_ci_exec_output.CommandOutputTests.test_bounded_output_kills_command_and_preserves_bounded_prefix",
+        "test_hepta_ci_exec_output.CommandOutputTests.test_compile_only_success_does_not_satisfy_test_gate",
+        "test_hepta_ci_exec_output.CommandOutputTests.test_deleted_receipt_does_not_allow_overwriting_an_earlier_log",
+        "test_hepta_ci_exec_output.CommandOutputTests.test_empty_other_test_binaries_do_not_invalidate_real_selected_tests",
+        "test_hepta_ci_exec_output.CommandOutputTests.test_existing_log_cannot_be_reused",
+        "test_hepta_ci_exec_output.CommandOutputTests.test_ignored_tests_are_not_executed_tests",
+        "test_hepta_ci_exec_output.CommandOutputTests.test_nextest_summary_does_not_double_count_nested_libtest",
+        "test_hepta_ci_exec_output.CommandOutputTests.test_no_test_requirement_keeps_existing_non_test_commands_compatible",
+        "test_hepta_ci_exec_output.CommandOutputTests.test_real_failure_output_and_digest_are_retained",
+        "test_hepta_ci_exec_output.CommandOutputTests.test_real_unittest_empty_suite_fails_minimum",
+        "test_hepta_ci_exec_output.CommandOutputTests.test_real_unittest_partial_skip_counts_only_success",
+        "test_hepta_ci_exec_output.CommandOutputTests.test_real_unittest_skip_and_expected_failure_do_not_count_as_pass",
+        "test_hepta_ci_exec_output.CommandOutputTests.test_real_unittest_success_satisfies_minimum",
+        "test_hepta_ci_exec_output.CommandOutputTests.test_real_unittest_unexpected_success_is_failure",
+        "test_hepta_ci_exec_output.CommandOutputTests.test_successful_source_mutation_is_still_rejected",
+        "test_hepta_ci_exec_output.CommandOutputTests.test_swallowed_nextest_timeout_is_not_a_pass",
+        "test_hepta_ci_exec_output.CommandOutputTests.test_swallowed_unittest_failure_cannot_become_success",
+        "test_hepta_ci_exec_output.CommandOutputTests.test_unfinished_unittest_footer_is_not_success",
+        "test_hepta_ci_exec_output.CommandOutputTests.test_unittest_footer_at_eof_is_counted",
+        "test_hepta_ci_exec_output.CommandOutputTests.test_wrong_source_never_creates_a_command_log",
+        "test_hepta_ci_exec_output.CommandOutputTests.test_zero_tests_is_failure_even_with_process_success"
+      ],
+      "passed": 45,
+      "failed": 0,
+      "lane": "base-merge",
+      "tested_sha": "84f1cc53ffddce902df541cdef33524ecaa93c7b",
+      "source_sha": "c89540598693697577cda8cba31cb07f6ce65317",
+      "tree": "5a7c897a33e4eef48ea8f4bf52eaf48ea7c866ae",
+      "source_before_after_clean": true,
+      "started_at": "2026-11-11T15:28:05.427790+00:00",
+      "finished_at": "2026-11-11T15:28:13.720206+00:00"
+    },
+    {
+      "artifact_id": 13867373162,
+      "receipt": "scope-tests.json",
+      "receipt_identity": {
+        "bytes": 1659,
+        "sha256": "23033e644f6c05e64ddfc894e49e69388b7bc1d046423b06488769e4f04915e5",
+        "git_blob": "5562b7f8e4c6e48318b24cafad432dcce15b0a50"
+      },
+      "log": "scope-tests.json.acba163721a64fd9adc8b8348196db7d.log",
+      "log_identity": {
+        "bytes": 3009,
+        "sha256": "f6f37d9b601833fb84e7e7093d54afad2a1b90e80d7f39c6ddeb06841e1efb40",
+        "git_blob": "f2392f5c83e2030f5145e4faea0fb0b3d1626e0a"
+      },
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "-v",
+        "scripts.tests.test_hepta_ci_scope"
+      ],
+      "case_ids": [
+        "scripts.tests.test_hepta_ci_scope.ScopeTests.test_bad_paths_fail_instead_of_selecting_nothing",
+        "scripts.tests.test_hepta_ci_scope.ScopeTests.test_code_owned_markdown_is_not_assumed_pure_prose",
+        "scripts.tests.test_hepta_ci_scope.ScopeTests.test_commit_id_validation_precedes_subprocess",
+        "scripts.tests.test_hepta_ci_scope.ScopeTests.test_effectful_retirement_keeps_lifecycle_and_effect_tests",
+        "scripts.tests.test_hepta_ci_scope.ScopeTests.test_generated_module_projections_do_not_force_native_builds",
+        "scripts.tests.test_hepta_ci_scope.ScopeTests.test_generated_projection_is_derived_only",
+        "scripts.tests.test_hepta_ci_scope.ScopeTests.test_git_diff_covers_real_rename_and_deleted_path",
+        "scripts.tests.test_hepta_ci_scope.ScopeTests.test_inference_local_change_does_not_run_browser_learning_or_objective",
+        "scripts.tests.test_hepta_ci_scope.ScopeTests.test_manual_full_keeps_all_groups_even_with_no_paths",
+        "scripts.tests.test_hepta_ci_scope.ScopeTests.test_plasticity_change_runs_learning_and_lifecycle_only",
+        "scripts.tests.test_hepta_ci_scope.ScopeTests.test_readme_and_ordinary_prose_do_not_prepare_native_dependencies",
+        "scripts.tests.test_hepta_ci_scope.ScopeTests.test_registry_is_runtime_consumed_lifecycle_input",
+        "scripts.tests.test_hepta_ci_scope.ScopeTests.test_rename_keeps_source_and_destination_groups",
+        "scripts.tests.test_hepta_ci_scope.ScopeTests.test_repository_policy_regressions_keep_their_python_scope",
+        "scripts.tests.test_hepta_ci_scope.ScopeTests.test_runtime_module_abi_stays_on_lifecycle_boundary",
+        "scripts.tests.test_hepta_ci_scope.ScopeTests.test_shared_types_and_agentd_keep_cross_domain_coverage",
+        "scripts.tests.test_hepta_ci_scope.ScopeTests.test_topology_contract_stays_on_lifecycle_boundary",
+        "scripts.tests.test_hepta_ci_scope.ScopeTests.test_unknown_or_executable_document_selects_full"
+      ],
+      "passed": 18,
+      "failed": 0,
+      "lane": "base-merge",
+      "tested_sha": "84f1cc53ffddce902df541cdef33524ecaa93c7b",
+      "source_sha": "c89540598693697577cda8cba31cb07f6ce65317",
+      "tree": "5a7c897a33e4eef48ea8f4bf52eaf48ea7c866ae",
+      "source_before_after_clean": true,
+      "started_at": "2026-11-11T15:28:05.139527+00:00",
+      "finished_at": "2026-11-11T15:28:05.319261+00:00"
+    }
+  ],
+  "prerequisite_failures": [
+    {
+      "job_id": 130619113256,
+      "started_at": "2026-11-11T15:27:42Z",
+      "completed_at": "2026-11-11T15:36:27Z",
+      "raw_log": {
+        "bytes": 41095,
+        "sha256": "cb514355a6f7b1250a4831774a4334b8d36bc67a9c4690b3e836a6394d991633",
+        "git_blob": "9702473006ec93e8e2a373bad1128de3a15b0f73"
+      },
+      "failed_step": "Retain source and install real CPU actor dependencies",
+      "exit_code": 100,
+      "observed_error_lines": [
+        {
+          "line": 293,
+          "text": "2026-11-11T15:30:37.0247637Z   Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 297,
+          "text": "2026-11-11T15:30:57.0513035Z   Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 301,
+          "text": "2026-11-11T15:31:17.0872888Z   Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 303,
+          "text": "2026-11-11T15:31:37.1177681Z   Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 306,
+          "text": "2026-11-11T15:31:43.7073476Z W: Failed to fetch mirror+file:/etc/apt/apt-mirrors.txt/dists/noble/InRelease  Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 307,
+          "text": "2026-11-11T15:31:43.7075313Z W: Failed to fetch mirror+file:/etc/apt/apt-mirrors.txt/dists/noble-updates/InRelease  Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 308,
+          "text": "2026-11-11T15:31:43.7076290Z W: Failed to fetch mirror+file:/etc/apt/apt-mirrors.txt/dists/noble-backports/InRelease  Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 309,
+          "text": "2026-11-11T15:31:43.7077282Z W: Failed to fetch mirror+file:/etc/apt/apt-mirrors.txt/dists/noble-security/InRelease  Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 335,
+          "text": "2026-11-11T15:34:44.3412212Z   Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 340,
+          "text": "2026-11-11T15:35:04.3719150Z   Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 344,
+          "text": "2026-11-11T15:35:24.4062421Z   Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 348,
+          "text": "2026-11-11T15:35:44.4331705Z   Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 351,
+          "text": "2026-11-11T15:36:04.4557868Z   Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 353,
+          "text": "2026-11-11T15:36:24.4858476Z   Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 354,
+          "text": "2026-11-11T15:36:24.4908852Z E: Failed to fetch mirror+file:/etc/apt/apt-mirrors.txt/pool/main/g/giflib/libgif7_5.2.2-1ubuntu1.2_amd64.deb  Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 355,
+          "text": "2026-11-11T15:36:24.4909891Z E: Failed to fetch https://security.ubuntu.com/ubuntu/pool/universe/l/leptonlib/liblept5_1.82.0-3build4_amd64.deb  Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 356,
+          "text": "2026-11-11T15:36:24.4910854Z E: Failed to fetch https://security.ubuntu.com/ubuntu/pool/universe/t/tesseract/libtesseract5_5.3.4-1build5_amd64.deb  Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 357,
+          "text": "2026-11-11T15:36:24.4911839Z E: Failed to fetch https://security.ubuntu.com/ubuntu/pool/universe/t/tesseract-lang/tesseract-ocr-eng_4.1.0-2_all.deb  Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 358,
+          "text": "2026-11-11T15:36:24.4913330Z E: Failed to fetch https://security.ubuntu.com/ubuntu/pool/universe/t/tesseract-lang/tesseract-ocr-osd_4.1.0-2_all.deb  Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 359,
+          "text": "2026-11-11T15:36:24.4914479Z E: Failed to fetch https://security.ubuntu.com/ubuntu/pool/universe/t/tesseract/tesseract-ocr_5.3.4-1build5_amd64.deb  Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 361,
+          "text": "2026-11-11T15:36:24.4940283Z ##[error]Process completed with exit code 100."
+        }
+      ],
+      "skipped_steps": [
+        "Check real actor and independent candidate evidence",
+        "Check identical-support selectors and bound action receipts",
+        "Check replay matching and incomplete-run accounting",
+        "Check full-trajectory replay matching and failure accounting",
+        "Check prospective selector plans, failures and independent scoring",
+        "Check frozen cohort and failed-attempt accounting",
+        "Check composition paths and partial native failure costs",
+        "Check fixed-public retention attribution and fresh-session memory"
+      ],
+      "failure_domain": "Original apt dependency installation; observed DNS resolution failure"
+    },
+    {
+      "job_id": 130619113264,
+      "started_at": "2026-11-11T15:27:43Z",
+      "completed_at": "2026-11-11T15:40:34Z",
+      "raw_log": {
+        "bytes": 152880,
+        "sha256": "3e447527b0d24a73231fe34f0f62e34257e751c52f9c59c6f75b30b588ad761a",
+        "git_blob": "aa0c5befb13929d5cff230b51e4450bf8bbcd615"
+      },
+      "failed_step": "Install existing native build prerequisites",
+      "exit_code": 100,
+      "observed_error_lines": [
+        {
+          "line": 1605,
+          "text": "2026-11-11T15:30:41.8217427Z   Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 1609,
+          "text": "2026-11-11T15:31:01.8421311Z   Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 1612,
+          "text": "2026-11-11T15:31:21.8760908Z   Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 1615,
+          "text": "2026-11-11T15:31:41.9019569Z   Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 1618,
+          "text": "2026-11-11T15:31:50.4836877Z W: Failed to fetch mirror+file:/etc/apt/apt-mirrors.txt/dists/noble/InRelease  Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 1619,
+          "text": "2026-11-11T15:31:50.4839196Z W: Failed to fetch mirror+file:/etc/apt/apt-mirrors.txt/dists/noble-updates/InRelease  Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 1620,
+          "text": "2026-11-11T15:31:50.4840860Z W: Failed to fetch mirror+file:/etc/apt/apt-mirrors.txt/dists/noble-backports/InRelease  Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 1621,
+          "text": "2026-11-11T15:31:50.4842250Z W: Failed to fetch mirror+file:/etc/apt/apt-mirrors.txt/dists/noble-security/InRelease  Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 1660,
+          "text": "2026-11-11T15:36:50.6113050Z   Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 1664,
+          "text": "2026-11-11T15:37:10.6371100Z   Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 1667,
+          "text": "2026-11-11T15:37:30.6614154Z   Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 1671,
+          "text": "2026-11-11T15:37:50.6768774Z   Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 1676,
+          "text": "2026-11-11T15:38:10.7120995Z   Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 1679,
+          "text": "2026-11-11T15:38:30.7358223Z   Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 1684,
+          "text": "2026-11-11T15:38:50.7612528Z   Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 1689,
+          "text": "2026-11-11T15:39:10.7845039Z   Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 1694,
+          "text": "2026-11-11T15:39:30.8119172Z   Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 1699,
+          "text": "2026-11-11T15:39:50.8346279Z   Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 1703,
+          "text": "2026-11-11T15:40:10.8580908Z   Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 1706,
+          "text": "2026-11-11T15:40:30.8789595Z   Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 1707,
+          "text": "2026-11-11T15:40:30.8851262Z E: Failed to fetch mirror+file:/etc/apt/apt-mirrors.txt/pool/main/b/bubblewrap/bubblewrap_0.9.0-1ubuntu0.3_amd64.deb  Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 1708,
+          "text": "2026-11-11T15:40:30.8852845Z E: Failed to fetch https://security.ubuntu.com/ubuntu/pool/main/b/build-essential/build-essential_12.10ubuntu1_amd64.deb  Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 1709,
+          "text": "2026-11-11T15:40:30.8854399Z E: Failed to fetch https://security.ubuntu.com/ubuntu/pool/universe/l/llvm-defaults/clang_18.0-59%7eexp2_amd64.deb  Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 1710,
+          "text": "2026-11-11T15:40:30.8856135Z E: Failed to fetch https://security.ubuntu.com/ubuntu/pool/main/libj/libjsoncpp/libjsoncpp25_1.9.5-6build1_amd64.deb  Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 1711,
+          "text": "2026-11-11T15:40:30.8857749Z E: Failed to fetch https://security.ubuntu.com/ubuntu/pool/main/r/rhash/librhash0_1.4.3-3build1_amd64.deb  Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 1712,
+          "text": "2026-11-11T15:40:30.8860010Z E: Failed to fetch https://security.ubuntu.com/ubuntu/pool/main/c/cmake/cmake-data_3.28.3-1build7_all.deb  Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 1713,
+          "text": "2026-11-11T15:40:30.8861905Z E: Failed to fetch https://security.ubuntu.com/ubuntu/pool/main/c/cmake/cmake_3.28.3-1build7_amd64.deb  Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 1714,
+          "text": "2026-11-11T15:40:30.8864235Z E: Failed to fetch mirror+file:/etc/apt/apt-mirrors.txt/pool/main/libc/libcap2/libcap-dev_2.66-5ubuntu2.4_amd64.deb  Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 1715,
+          "text": "2026-11-11T15:40:30.8866664Z E: Failed to fetch mirror+file:/etc/apt/apt-mirrors.txt/pool/main/p/protobuf/libprotobuf32t64_3.21.12-8.2ubuntu0.4_amd64.deb  Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 1716,
+          "text": "2026-11-11T15:40:30.8869329Z E: Failed to fetch mirror+file:/etc/apt/apt-mirrors.txt/pool/main/p/protobuf/libprotoc32t64_3.21.12-8.2ubuntu0.4_amd64.deb  Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 1717,
+          "text": "2026-11-11T15:40:30.8871483Z E: Failed to fetch mirror+file:/etc/apt/apt-mirrors.txt/pool/main/p/protobuf/libprotobuf-dev_3.21.12-8.2ubuntu0.4_amd64.deb  Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 1718,
+          "text": "2026-11-11T15:40:30.8873441Z E: Failed to fetch mirror+file:/etc/apt/apt-mirrors.txt/pool/universe/p/protobuf/protobuf-compiler_3.21.12-8.2ubuntu0.4_amd64.deb  Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 1720,
+          "text": "2026-11-11T15:40:30.8887241Z ##[error]Process completed with exit code 100."
+        }
+      ],
+      "skipped_steps": [
+        "Resolve repository-verified V8 inputs for the control stage",
+        "Test staged memory owner contracts on unchanged source",
+        "Build and bind the exact Codex executable for real App Server drain",
+        "Test staged Agentd control contracts on unchanged source",
+        "Test the qualification feature preserves explicit memory isolation",
+        "Test protocol package after the control stage is present",
+        "Run scoped fixes after tests and reject any source rewrite"
+      ],
+      "failure_domain": "Original apt dependency installation; observed DNS resolution failure"
+    },
+    {
+      "job_id": 130619111897,
+      "started_at": "2026-11-11T15:27:44Z",
+      "completed_at": "2026-11-11T15:38:08Z",
+      "raw_log": {
+        "bytes": 85755,
+        "sha256": "02abd9d018cc833a337a89dd4bbdf352dbbe97982fe6c6a85da31a411eb750ac",
+        "git_blob": "c7c828bcdc4f507652f0cf0d144a0a631f250bdd"
+      },
+      "failed_step": "Prepare native prerequisites",
+      "exit_code": 100,
+      "observed_error_lines": [
+        {
+          "line": 484,
+          "text": "2026-11-11T15:32:35.3833751Z   Temporary failure resolving 'ports.ubuntu.com'"
+        },
+        {
+          "line": 486,
+          "text": "2026-11-11T15:32:55.4105928Z   Temporary failure resolving 'ports.ubuntu.com'"
+        },
+        {
+          "line": 488,
+          "text": "2026-11-11T15:33:15.4363869Z   Temporary failure resolving 'ports.ubuntu.com'"
+        },
+        {
+          "line": 490,
+          "text": "2026-11-11T15:33:35.4691731Z   Temporary failure resolving 'ports.ubuntu.com'"
+        },
+        {
+          "line": 493,
+          "text": "2026-11-11T15:33:40.2276175Z W: Failed to fetch http://ports.ubuntu.com/ubuntu-ports/dists/noble/InRelease  Temporary failure resolving 'ports.ubuntu.com'"
+        },
+        {
+          "line": 494,
+          "text": "2026-11-11T15:33:40.2277709Z W: Failed to fetch http://ports.ubuntu.com/ubuntu-ports/dists/noble-updates/InRelease  Temporary failure resolving 'ports.ubuntu.com'"
+        },
+        {
+          "line": 495,
+          "text": "2026-11-11T15:33:40.2278812Z W: Failed to fetch http://ports.ubuntu.com/ubuntu-ports/dists/noble-backports/InRelease  Temporary failure resolving 'ports.ubuntu.com'"
+        },
+        {
+          "line": 496,
+          "text": "2026-11-11T15:33:40.2279692Z W: Failed to fetch http://ports.ubuntu.com/ubuntu-ports/dists/noble-security/InRelease  Temporary failure resolving 'ports.ubuntu.com'"
+        },
+        {
+          "line": 519,
+          "text": "2026-11-11T15:36:57.0187077Z   Temporary failure resolving 'ports.ubuntu.com'"
+        },
+        {
+          "line": 521,
+          "text": "2026-11-11T15:37:17.0563389Z   Temporary failure resolving 'ports.ubuntu.com'"
+        },
+        {
+          "line": 524,
+          "text": "2026-11-11T15:37:57.1143553Z   Temporary failure resolving 'ports.ubuntu.com'"
+        },
+        {
+          "line": 525,
+          "text": "2026-11-11T15:37:57.1178050Z E: Failed to fetch http://ports.ubuntu.com/ubuntu-ports/pool/main/b/bubblewrap/bubblewrap_0.9.0-1ubuntu0.3_arm64.deb  Temporary failure resolving 'ports.ubuntu.com'"
+        },
+        {
+          "line": 526,
+          "text": "2026-11-11T15:37:57.1179204Z E: Failed to fetch http://ports.ubuntu.com/ubuntu-ports/pool/main/b/build-essential/build-essential_12.10ubuntu1_arm64.deb  Temporary failure resolving 'ports.ubuntu.com'"
+        },
+        {
+          "line": 527,
+          "text": "2026-11-11T15:37:57.1180323Z E: Failed to fetch http://ports.ubuntu.com/ubuntu-ports/pool/main/libc/libcap2/libcap-dev_2.66-5ubuntu2.4_arm64.deb  Temporary failure resolving 'ports.ubuntu.com'"
+        },
+        {
+          "line": 529,
+          "text": "2026-11-11T15:37:57.1213027Z ##[error]Process completed with exit code 100."
+        }
+      ],
+      "skipped_steps": [
+        "Run facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a",
+        "Expose DotSlash for existing integration tests",
+        "Run taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532",
+        "Resolve verified V8 artifacts",
+        "Verify Cargo lock resolution and print exact resolver drift",
+        "Inference owner regressions and streaming digest",
+        "Durable operation and external-effect recovery",
+        "Module lifecycle generations and migration rollback",
+        "Objective and prompt policy convergence",
+        "Converged authority and browser semantics",
+        "Selected-artifact adoption and explicit rollback",
+        "Compiled service lifecycle and actual process restart",
+        "Derived-view drift",
+        "Verify unchanged reviewed source"
+      ],
+      "failure_domain": "Original apt dependency installation; observed DNS resolution failure"
+    }
+  ],
+  "historical_results_transferred": false,
+  "commands_tests_models_executed_during_audit": 0,
+  "limits": [
+    "Three original jobs failed apt dependency installation with observed DNS resolution errors, before their native/CPU test steps.",
+    "Architecture base-merge has an identical tree but requires source-head success; its native skips do not constitute native qualification.",
+    "Synthetic revocation and Python tests do not establish unseen successor-task benefit, original owner recovery, independent trust, external effects or complete cost.",
+    "The 125 MB original Architecture ZIP/source tar was fully read locally and bound to all immutable Git objects. Its compressed wrapper is not claimed persisted in evidence Git."
+  ]
+}
