@@ -46,7 +46,10 @@ pub(super) fn witness(file: File) -> FileAnchorWitnessStore {
 }
 
 pub(super) struct OriginalQualificationFixture {
-    pub runner: ProductEvaluationRunnerV1<LockedFileFinalHoldoutCasStoreV1>,
+    pub runner: CellEvaluationRunnerV1<LockedFileFinalHoldoutCasStoreV1>,
+    pub cell_plan: CellEvaluationPlanV1,
+    pub candidate: Journal,
+    pub fixed: Journal,
     pub executions: LockedFileProductEvaluationExecutionStoreV1,
     pub plan: ProductFrozenEvaluationPlanV1,
     pub candidate_plan: TemporalEvaluationPlan,
@@ -146,7 +149,10 @@ impl OriginalQualificationFixture {
         // Publication and recovery have no execution signer or provider object.
         drop(signer);
         let mut value = Self {
-            runner: original.runner.product,
+            runner: original.runner,
+            cell_plan: plan.clone(),
+            candidate: original.candidate,
+            fixed: original.fixed,
             executions,
             plan: plan.product_plan().clone(),
             candidate_plan: original.candidate_temporal,
@@ -166,7 +172,7 @@ impl OriginalQualificationFixture {
     }
 
     pub(super) fn material(&mut self) -> ProductEvaluationExecutionMaterialV1 {
-        checked(self.runner.readback_temporal_comparison_material(
+        checked(self.runner.product.readback_temporal_comparison_material(
             &ProductEvaluationExecutionRequestV1 {
                 plan: &self.plan,
                 candidate_plan: &self.candidate_plan,
@@ -183,6 +189,7 @@ impl OriginalQualificationFixture {
         let material = self.material();
         let bundle = checked(
             self.runner
+                .product
                 .qualification_bundle(material.execution(), &self.context),
         );
         let time = clock();
@@ -225,7 +232,7 @@ impl OriginalQualificationFixture {
         owner: &mut OriginalProductQualificationOwnerV1<W>,
     ) -> Result<ProductQualificationReceiptV1, OriginalProductQualificationErrorV1> {
         owner.publish(
-            &mut self.runner,
+            &mut self.runner.product,
             &mut self.executions,
             &OriginalProductQualificationSourceV1 {
                 plan: &self.plan,
@@ -244,7 +251,7 @@ impl OriginalQualificationFixture {
         owner: &mut OriginalProductQualificationOwnerV1<W>,
     ) -> Result<ProductQualificationReceiptV1, OriginalProductQualificationErrorV1> {
         owner.readback(
-            &mut self.runner,
+            &mut self.runner.product,
             &mut self.executions,
             &OriginalProductQualificationSourceV1 {
                 plan: &self.plan,
@@ -257,10 +264,25 @@ impl OriginalQualificationFixture {
     }
 
     pub(super) fn reopen_sources(self) -> Self {
-        let holdout_anchor = self.runner.holdout_anchor();
+        self.snapshot_source_bytes().0
+    }
+
+    /// Release both original exclusive source owners before opening their files
+    /// by path. Reacquire only those same files, namespace, fence and anchors.
+    pub(super) fn snapshot_source_bytes(self) -> (Self, Vec<Vec<u8>>) {
+        let holdout_anchor = self.runner.product.holdout_anchor();
         let execution_anchor = self.executions.anchor();
         drop(self.runner);
         drop(self.executions);
+        let bytes = [
+            "holdout",
+            "executions",
+            "original-evaluator",
+            "original-evaluator-witness",
+        ]
+        .into_iter()
+        .map(|name| checked(std::fs::read(self.directory.path().join(name))))
+        .collect();
         let holdout = checked(LockedFileFinalHoldoutCasStoreV1::recover(
             existing(&self.directory.path().join("holdout")),
             digest("binding"),
@@ -276,24 +298,54 @@ impl OriginalQualificationFixture {
             digest("execution-file"),
             execution_anchor,
         ));
-        Self {
-            runner,
-            executions,
-            ..self
-        }
+        (
+            Self {
+                runner: CellEvaluationRunnerV1::new(runner),
+                executions,
+                ..self
+            },
+            bytes,
+        )
     }
+}
 
-    pub(super) fn source_bytes(&self) -> Vec<Vec<u8>> {
-        [
-            "holdout",
-            "executions",
-            "original-evaluator",
-            "original-evaluator-witness",
-        ]
-        .into_iter()
-        .map(|name| checked(std::fs::read(self.directory.path().join(name))))
-        .collect()
-    }
+/// Initialize once, then relinquish both publication locks before the baseline
+/// path reads. Tests subsequently recover this exact owner rather than create.
+pub(super) fn initialize_publication(path: &Path) -> [Vec<u8>; 2] {
+    let owner = checked(OriginalProductQualificationOwnerV1::create(
+        file(&path.join("publication")),
+        witness(file(&path.join("publication-witness"))),
+        digest("publication-namespace"),
+    ));
+    drop(owner);
+    publication_bytes(path)
+}
+
+/// Caller must have relinquished the actual publication and witness owner.
+pub(super) fn publication_bytes(path: &Path) -> [Vec<u8>; 2] {
+    ["publication", "publication-witness"].map(|name| checked(std::fs::read(path.join(name))))
+}
+
+pub(super) fn recover_publication(
+    path: &Path,
+) -> OriginalProductQualificationOwnerV1<FileAnchorWitnessStore> {
+    checked(OriginalProductQualificationOwnerV1::recover(
+        existing(&path.join("publication")),
+        witness(existing(&path.join("publication-witness"))),
+        digest("publication-namespace"),
+    ))
+}
+
+pub(super) fn snapshot_publication(
+    owner: OriginalProductQualificationOwnerV1<FileAnchorWitnessStore>,
+    path: &Path,
+) -> (
+    OriginalProductQualificationOwnerV1<FileAnchorWitnessStore>,
+    [Vec<u8>; 2],
+) {
+    drop(owner);
+    let bytes = publication_bytes(path);
+    (recover_publication(path), bytes)
 }
 
 fn placeholder(

@@ -14,26 +14,23 @@ use crate::OriginalProductQualificationOwnerV1;
 #[path = "product_qualification_owner_support_tests.rs"]
 mod original_support;
 use original_support::*;
+#[path = "neuron_cell_qualification_owner_tests.rs"]
+mod cell_bridge;
 #[path = "product_qualification_owner_witness_tests.rs"]
 mod witness_faults;
 
 #[test]
 fn publication_reopens_complete_original_material_without_provider_or_signer() {
-    let mut fixture = OriginalQualificationFixture::new();
+    let fixture = OriginalQualificationFixture::new();
     assert_eq!(fixture.provider_calls, (1, 1));
     let path = fixture.directory.path().to_path_buf();
-    let source_before = fixture.source_bytes();
-    let mut owner = checked(OriginalProductQualificationOwnerV1::create(
-        file(&path.join("publication")),
-        witness(file(&path.join("publication-witness"))),
-        digest("publication-namespace"),
-    ));
-    let empty = checked(fs::read(path.join("publication")));
+    let (mut fixture, source_before) = fixture.snapshot_source_bytes();
+    let [empty, _] = initialize_publication(&path);
+    let mut owner = recover_publication(&path);
     let first = checked(fixture.publish(&mut owner));
     checked(first.validate_integrity());
     let first_time = clock();
-    let original = checked(fs::read(path.join("publication")));
-    let original_witness = checked(fs::read(path.join("publication-witness")));
+    let (mut owner, [original, original_witness]) = snapshot_publication(owner, &path);
     assert_ne!(original, empty);
     for signature in [
         fixture.evidence.generator_plan.signature,
@@ -49,12 +46,16 @@ fn publication_reopens_complete_original_material_without_provider_or_signer() {
     assert!(clock() > first_time);
     assert_eq!(checked(fixture.publish(&mut owner)), first);
     assert_eq!(checked(fixture.readback(&mut owner)), first);
-    assert_eq!(checked(fs::read(path.join("publication"))), original);
-    assert_eq!(fixture.source_bytes(), source_before);
     drop(owner);
+    assert_eq!(
+        publication_bytes(&path),
+        [original.clone(), original_witness.clone()]
+    );
+    let (mut fixture, source_after) = fixture.snapshot_source_bytes();
+    assert_eq!(source_after, source_before);
 
     // The saved signatures and context must come from the original publication,
-    // not from these discarded caller inputs. All source owners are also dropped.
+    // not from these discarded caller inputs. Both Product source owners are dropped.
     fixture.evidence.generator_plan.signature.fill(0);
     fixture.evidence.evaluator_bundle.signature.fill(0);
     fixture.context.generator.principal_id = id("discarded-caller-context");
@@ -66,13 +67,10 @@ fn publication_reopens_complete_original_material_without_provider_or_signer() {
     ));
     assert_eq!(checked(fixture.readback(&mut recovered)), first);
     assert_eq!(checked(fixture.readback(&mut recovered)), first);
-    assert_eq!(checked(fs::read(path.join("publication"))), original);
-    assert_eq!(
-        checked(fs::read(path.join("publication-witness"))),
-        original_witness
-    );
-    assert_eq!(fixture.source_bytes(), source_before);
     drop(recovered);
+    assert_eq!(publication_bytes(&path), [original, original_witness]);
+    let (_fixture, source_after) = fixture.snapshot_source_bytes();
+    assert_eq!(source_after, source_before);
 
     // An acknowledged complete witness cannot be paired with an older owner file.
     checked(fs::write(path.join("publication"), empty));
@@ -90,13 +88,8 @@ fn publication_reopens_complete_original_material_without_provider_or_signer() {
 fn missing_forged_and_longitudinal_material_never_claims_a_publication() {
     let mut fixture = OriginalQualificationFixture::new();
     let path = fixture.directory.path().to_path_buf();
-    let mut owner = checked(OriginalProductQualificationOwnerV1::create(
-        file(&path.join("publication")),
-        witness(file(&path.join("publication-witness"))),
-        digest("publication-namespace"),
-    ));
-    let before =
-        ["publication", "publication-witness"].map(|name| checked(fs::read(path.join(name))));
+    let before = initialize_publication(&path);
+    let mut owner = recover_publication(&path);
     assert!(matches!(
         fixture.readback(&mut owner),
         Err(OriginalProductQualificationErrorV1::Owner(
@@ -119,10 +112,8 @@ fn missing_forged_and_longitudinal_material_never_claims_a_publication() {
             "Qualification/v2 scope"
         ))
     ));
-    assert_eq!(
-        ["publication", "publication-witness"].map(|name| checked(fs::read(path.join(name)))),
-        before
-    );
+    drop(owner);
+    assert_eq!(publication_bytes(&path), before);
 }
 
 #[test]
@@ -135,15 +126,14 @@ fn valid_but_conflicting_material_cannot_replace_an_acknowledged_publication() {
         digest("publication-namespace"),
     ));
     let first = checked(fixture.publish(&mut owner));
-    let before =
-        ["publication", "publication-witness"].map(|name| checked(fs::read(path.join(name))));
+    let (mut owner, before) = snapshot_publication(owner, &path);
     fixture
         .context
         .retention_receipt_digests
         .push(digest("additional-retention"));
     fixture.sign_context();
     let material = fixture.material();
-    checked(fixture.runner.original_qualification_decision(
+    checked(fixture.runner.product.original_qualification_decision(
         &material,
         &fixture.context,
         &fixture.evidence,
@@ -157,30 +147,23 @@ fn valid_but_conflicting_material_cannot_replace_an_acknowledged_publication() {
         ))
     ));
     assert_eq!(checked(fixture.readback(&mut owner)), first);
-    assert_eq!(
-        ["publication", "publication-witness"].map(|name| checked(fs::read(path.join(name)))),
-        before
-    );
+    drop(owner);
+    assert_eq!(publication_bytes(&path), before);
 }
 
 #[test]
 fn complete_material_exceeding_original_capacity_is_rejected_before_claim() {
     let mut fixture = OriginalQualificationFixture::new();
     let path = fixture.directory.path().to_path_buf();
-    let mut owner = checked(OriginalProductQualificationOwnerV1::create(
-        file(&path.join("publication")),
-        witness(file(&path.join("publication-witness"))),
-        digest("publication-namespace"),
-    ));
-    let before =
-        ["publication", "publication-witness"].map(|name| checked(fs::read(path.join(name))));
+    let before = initialize_publication(&path);
+    let mut owner = recover_publication(&path);
     fixture.context.retention_receipt_digests = (0..4096)
         .map(|i| digest(&format!("retention-{i}")))
         .collect();
     fixture.sign_context();
     let material = fixture.material();
     // The original signatures and decision are valid; the bound is the refusal.
-    checked(fixture.runner.original_qualification_decision(
+    checked(fixture.runner.product.original_qualification_decision(
         &material,
         &fixture.context,
         &fixture.evidence,
@@ -193,10 +176,8 @@ fn complete_material_exceeding_original_capacity_is_rejected_before_claim() {
             ProductEvaluationError::Binding("qualification record capacity")
         ))
     ));
-    assert_eq!(
-        ["publication", "publication-witness"].map(|name| checked(fs::read(path.join(name)))),
-        before
-    );
+    drop(owner);
+    assert_eq!(publication_bytes(&path), before);
 }
 
 #[test]
@@ -209,7 +190,7 @@ fn recovery_rechecks_current_trust_and_original_complete_source_bytes() {
         digest("publication-namespace"),
     ));
     let first = checked(fixture.publish(&mut owner));
-    let original = checked(fs::read(path.join("publication")));
+    let (mut owner, original) = snapshot_publication(owner, &path);
     let verifier = fixture.verifier.clone();
     let mut revoked = fixture.trust.clone();
     revoked.signers[1].revoked_at = Some(clock() - 1);
@@ -228,7 +209,8 @@ fn recovery_rechecks_current_trust_and_original_complete_source_bytes() {
             .is_err()
     );
     assert_eq!(checked(fixture.readback(&mut owner)), first);
-    assert_eq!(checked(fs::read(path.join("publication"))), original);
+    drop(owner);
+    assert_eq!(publication_bytes(&path), original);
 }
 
 #[test]
@@ -241,13 +223,8 @@ fn missing_pending_or_replaced_actual_execution_never_qualifies() {
         digest("execution-file"),
     ));
     let _original = std::mem::replace(&mut fixture.executions, replacement);
-    let mut owner = checked(OriginalProductQualificationOwnerV1::create(
-        file(&path.join("publication")),
-        witness(file(&path.join("publication-witness"))),
-        digest("publication-namespace"),
-    ));
-    let before =
-        ["publication", "publication-witness"].map(|name| checked(fs::read(path.join(name))));
+    let before = initialize_publication(&path);
+    let mut owner = recover_publication(&path);
     assert!(fixture.publish(&mut owner).is_err());
     assert_eq!(
         checked(fixture.executions.claim(material.key())),
@@ -264,10 +241,8 @@ fn missing_pending_or_replaced_actual_execution_never_qualifies() {
     replaced[last] ^= 1;
     checked(fixture.executions.complete(material.key(), &replaced));
     assert!(fixture.publish(&mut owner).is_err());
-    assert_eq!(
-        ["publication", "publication-witness"].map(|name| checked(fs::read(path.join(name)))),
-        before
-    );
+    drop(owner);
+    assert_eq!(publication_bytes(&path), before);
 }
 
 #[test]

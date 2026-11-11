@@ -41,9 +41,9 @@ impl AnchorWitnessStore for LostAckWitness {
 fn lost_claim_or_completion_ack_never_reexecutes_or_replaces_original_material() {
     for sequence in [2, 3] {
         for fault in [LostAck::BeforeWrite, LostAck::AfterWrite] {
-            let mut fixture = OriginalQualificationFixture::new();
+            let fixture = OriginalQualificationFixture::new();
             let path = fixture.directory.path().to_path_buf();
-            let source_before = fixture.source_bytes();
+            let (mut fixture, source_before) = fixture.snapshot_source_bytes();
             let mut owner = checked(OriginalProductQualificationOwnerV1::create(
                 file(&path.join("publication")),
                 LostAckWitness {
@@ -65,8 +65,8 @@ fn lost_claim_or_completion_ack_never_reexecutes_or_replaces_original_material()
                     LearningOriginalOwnerErrorV1::CommitUncertain
                 ))
             ));
-            let original = checked(fs::read(path.join("publication")));
             drop(owner);
+            let original = checked(fs::read(path.join("publication")));
             let mut owner = checked(OriginalProductQualificationOwnerV1::recover(
                 existing(&path.join("publication")),
                 witness(existing(&path.join("publication-witness"))),
@@ -89,8 +89,10 @@ fn lost_claim_or_completion_ack_never_reexecutes_or_replaces_original_material()
                 let first = checked(fixture.readback(&mut owner));
                 assert_eq!(checked(fixture.readback(&mut owner)), first);
             }
+            drop(owner);
             assert_eq!(checked(fs::read(path.join("publication"))), original);
-            assert_eq!(fixture.source_bytes(), source_before);
+            let (_fixture, source_after) = fixture.snapshot_source_bytes();
+            assert_eq!(source_after, source_before);
         }
     }
 }
@@ -137,21 +139,21 @@ impl AnchorWitnessStore for AdvanceAfterCompletionReads {
 
 #[test]
 fn final_publication_witness_change_rejects_after_durable_completion() {
-    let mut fixture = OriginalQualificationFixture::new();
+    let fixture = OriginalQualificationFixture::new();
     let path = fixture.directory.path().to_path_buf();
-    let source_before = fixture.source_bytes();
+    let (mut fixture, source_before) = fixture.snapshot_source_bytes();
     let changed = Rc::new(Cell::new(false));
-    let mut owner = checked(OriginalProductQualificationOwnerV1::create(
-        file(&path.join("publication")),
+    let [empty, _] = initialize_publication(&path);
+    let mut owner = checked(OriginalProductQualificationOwnerV1::recover(
+        existing(&path.join("publication")),
         AdvanceAfterCompletionReads {
-            inner: RefCell::new(witness(file(&path.join("publication-witness")))),
+            inner: RefCell::new(witness(existing(&path.join("publication-witness")))),
             completed: Cell::new(false),
             reads: Cell::new(0),
             changed: changed.clone(),
         },
         digest("publication-namespace"),
     ));
-    let empty = checked(fs::read(path.join("publication")));
     assert!(matches!(
         fixture.publish(&mut owner),
         Err(OriginalProductQualificationErrorV1::Owner(
@@ -159,9 +161,10 @@ fn final_publication_witness_change_rejects_after_durable_completion() {
         ))
     ));
     assert!(changed.get());
-    assert_ne!(checked(fs::read(path.join("publication"))), empty);
-    assert_eq!(fixture.source_bytes(), source_before);
     drop(owner);
+    assert_ne!(checked(fs::read(path.join("publication"))), empty);
+    let (_fixture, source_after) = fixture.snapshot_source_bytes();
+    assert_eq!(source_after, source_before);
     assert!(
         OriginalProductQualificationOwnerV1::recover(
             existing(&path.join("publication")),
