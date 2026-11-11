@@ -13,6 +13,8 @@ use crate::OriginalCellQ24TrainingSourceConfigV1;
 use crate::cell_q24_material_receipt_owner::MaterialCommandFixture;
 use crate::learning_iteration_evidence_client::command_test_support as transport;
 use crate::learning_iteration_evidence_client::material::bootstrap_ports as material;
+use codex_hepta_learning_artifacts::LearningIterationReceiptV1;
+use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
 use codex_hepta_neuron::FileAnchorWitnessStore;
 use pretty_assertions::assert_eq;
 
@@ -212,7 +214,7 @@ pub(super) fn prebound(
     owner: Arc<Host>,
     config: crate::OriginalCellQ24MaterialReceiptConfigV1,
     origin: Origin,
-    expected: Option<OriginalCellQ24TrainingCommandReceiptV1>,
+    expected: Option<(LearningIterationReceiptV1, SignedLearningEvidenceV1)>,
     lifetime: Duration,
 ) -> anyhow::Result<(crate::OriginalCellQ24TrainingCommandConnectionV1, Server)> {
     use super::super::super::connection;

@@ -58,7 +58,7 @@ pub(crate) fn fresh_peer(
 
 pub(crate) fn recovered_peer(
     material: OriginalCellQ24MaterialReceiptConfigV1,
-    expected: Option<OriginalCellQ24TrainingCommandReceiptV1>,
+    expected: Option<(LearningIterationReceiptV1, SignedLearningEvidenceV1)>,
     lifetime: Duration,
 ) -> anyhow::Result<(
     OriginalCellQ24TrainingCommandConnectionV1,

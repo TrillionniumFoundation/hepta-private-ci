@@ -102,13 +102,25 @@ async fn deferred_training_connection_preserves_expiry_and_readonly_cold_origina
     drop(owner);
     finish_material(peers)?;
 
+    let retained = (original.receipt().clone(), original.attestation().clone());
     let (owner, peers) = support::owner(&fixture, Origin::Recovered)?;
+    // Cold Root state supplies saved receipt and full signature bytes. No opaque
+    // Training result survives, and actual D has not yet been read back.
     // The original connection starts before the actual Dataset readback.
     let (cold, server) = prebound(
         Arc::clone(&owner),
         fixture.config.clone(),
         Origin::Recovered,
-        Some(original.clone()),
+        Some(retained.clone()),
+        Duration::from_secs(300),
+    )?;
+    let mut changed = retained.clone();
+    changed.1.issued_at += 1;
+    let (invalid, invalid_server) = prebound(
+        Arc::clone(&owner),
+        fixture.config.clone(),
+        Origin::Recovered,
+        Some(changed),
         Duration::from_secs(300),
     )?;
     let (dataset, original_d) = material::commands(&fixture, Role::Dataset)?;
@@ -116,6 +128,14 @@ async fn deferred_training_connection_preserves_expiry_and_readonly_cold_origina
     drop(dataset);
     assert_eq!(material::finish(original_d)?, 1);
     assert_eq!(reread, cut);
+    assert!(matches!(
+        invalid.bind_original_dataset(reread.clone()),
+        Err(ConnectionError::Command(CommandError::Binding(
+            "original Training actor and time"
+        )))
+    ));
+    assert_eq!(invalid_server.join().expect("invalid retained Training")?, 0);
+    assert_eq!(fixture.training_bytes()?, held);
     let client = cold.bind_original_dataset(reread.clone())?;
     assert!(matches!(
         client
@@ -131,7 +151,7 @@ async fn deferred_training_connection_preserves_expiry_and_readonly_cold_origina
         Arc::clone(&owner),
         fixture.config.clone(),
         Origin::Recovered,
-        Some(original),
+        Some(retained),
         Duration::from_millis(40),
     )?;
     tokio::time::sleep(Duration::from_millis(80)).await;

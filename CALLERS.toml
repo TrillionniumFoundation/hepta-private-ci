@@ -5562,7 +5562,7 @@ caller_markers = []
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs"
-required = ["enum Origin {","Fresh,","Recovered(Option<OriginalCellQ24TrainingCommandReceiptV1>)","peer: HostAuthorityPeerChannel","material: OriginalCellQ24MaterialReceiptConfigV1","initial_binding: Digest32","origin: Origin"]
+required = ["enum Origin {","Fresh,","Recovered(Option<(LearningIterationReceiptV1, SignedLearningEvidenceV1)>)","peer: HostAuthorityPeerChannel","material: OriginalCellQ24MaterialReceiptConfigV1","initial_binding: Digest32","origin: Origin"]
 forbidden = ["SigningKey","SignedLearningEvidenceV1 {","File::open","OpenOptions","UnixStream::connect","UnixListener","HostAuthorityPeerChannel::from_stream","RootObservationStream","serde_json","pub peer:","pub material:","pub initial_binding:","pub origin:","pub now:","execution_requested: false","Origin::Fresh => (true","Origin::Recovered(expected) => (false","impl Clone","derive(Clone","dyn Fn","impl Fn","permit_all","if false",".claim(",".complete(",".sign("]
 
 [[protected_file.required_function_order]]
@@ -5572,7 +5572,7 @@ top_level = ["Self::bind_original_stream("]
 
 [[protected_file.required_function_order]]
 function = "fn recover_from_original_stream("
-sequence = ["Self::bind_original_stream(","stream","peer","original_owner_pidfd","material","timeout","lifetime","Origin::Recovered(expected)"]
+sequence = ["expected: Option<(LearningIterationReceiptV1, SignedLearningEvidenceV1)>","Self::bind_original_stream(","stream","peer","original_owner_pidfd","material","timeout","lifetime","Origin::Recovered(expected)"]
 top_level = ["Self::bind_original_stream("]
 
 [[protected_file.required_function_order]]
@@ -5582,5 +5582,5 @@ top_level = ["let (initial_binding, started_at) =","let (current_binding, fresh_
 
 [[protected_file.required_function_order]]
 function = "fn bind_original_dataset("
-sequence = ["completed: OriginalCellQ24MaterialCommandReceiptV1","let started_at = now()?;","let context = OriginalCellQ24TrainingCommandContextV1 {","dataset: completed.snapshot().clone()","scope: self.material.scope.clone()","verifier: self.material.verifier.clone()","context.validate()? != self.material.initial","return Err(Error::Binding(","let binding = context.binding()?;","self.peer",".check_peer_lifetime()","let (original_binding, fresh_now) =","OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(","&self.material","OriginalCellQ24MaterialCommandReceiptV1::require_original_dataset_context(","&completed","&self.material","original_binding != self.initial_binding","fresh_now < started_at","verified_at < fresh_now","return Err(Error::Binding(","let (execution_requested, retained) = match self.origin {","Origin::Fresh => (false, None)","Origin::Recovered(expected) => (","true","expected","wire::authenticate_receipt(","&context","original.receipt","original.attestation","verified_at",".transpose()?","Ok(OriginalCellQ24TrainingCommandClientV1 {","channel: Mutex::new(Some(Channel {","peer: self.peer","next_request_id: 1","execution_requested","context","binding","retained: Mutex::new(retained)"]
+sequence = ["completed: OriginalCellQ24MaterialCommandReceiptV1","let started_at = now()?;","let context = OriginalCellQ24TrainingCommandContextV1 {","dataset: completed.snapshot().clone()","scope: self.material.scope.clone()","verifier: self.material.verifier.clone()","context.validate()? != self.material.initial","return Err(Error::Binding(","let binding = context.binding()?;","self.peer",".check_peer_lifetime()","let (original_binding, fresh_now) =","OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(","&self.material","OriginalCellQ24MaterialCommandReceiptV1::require_original_dataset_context(","&completed","&self.material","original_binding != self.initial_binding","fresh_now < started_at","verified_at < fresh_now","return Err(Error::Binding(","let (execution_requested, retained) = match self.origin {","Origin::Fresh => (false, None)","Origin::Recovered(expected) => (","true","expected",".map(|(receipt, attestation)|","wire::authenticate_receipt(","&context","receipt,","attestation,","verified_at",".transpose()?","Ok(OriginalCellQ24TrainingCommandClientV1 {","channel: Mutex::new(Some(Channel {","peer: self.peer","next_request_id: 1","execution_requested","context","binding","retained: Mutex::new(retained)"]
 top_level = ["let started_at = now()?;","let context = OriginalCellQ24TrainingCommandContextV1 {","let binding = context.binding()?;","let (original_binding, fresh_now) =","let (execution_requested, retained) = match self.origin {","Ok(OriginalCellQ24TrainingCommandClientV1 {"]

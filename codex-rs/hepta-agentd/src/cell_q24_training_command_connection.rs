@@ -7,6 +7,8 @@ use std::sync::Mutex;
 use std::time::Duration;
 
 use codex_hepta_contracts::HostAuthorityPeerChannel;
+use codex_hepta_learning_artifacts::LearningIterationReceiptV1;
+use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
 use codex_hepta_types::Digest32;
 
 use super::Channel;
@@ -14,7 +16,6 @@ use super::LearningIterationEvidencePeerV1;
 use super::OriginalCellQ24TrainingCommandClientV1;
 use super::OriginalCellQ24TrainingCommandContextV1;
 use super::OriginalCellQ24TrainingCommandErrorV1;
-use super::OriginalCellQ24TrainingCommandReceiptV1;
 use super::now;
 use super::wire;
 use crate::AgentdRootAuthorityPeer;
@@ -37,7 +38,7 @@ type Error = OriginalCellQ24TrainingCommandConnectionErrorV1;
 
 enum Origin {
     Fresh,
-    Recovered(Option<OriginalCellQ24TrainingCommandReceiptV1>),
+    Recovered(Option<(LearningIterationReceiptV1, SignedLearningEvidenceV1)>),
 }
 
 pub struct OriginalCellQ24TrainingCommandConnectionV1 {
@@ -69,14 +70,15 @@ impl OriginalCellQ24TrainingCommandConnectionV1 {
         )
     }
 
-    /// Recovery cannot restore execution. A retained original Training result,
-    /// when available, is authenticated against actual D before any readback.
+    /// Recovery cannot restore execution. Original checkpoint receipt and full
+    /// signature bytes are retained privately until actual D authenticates them.
+    /// The same original Trainer must then read back exactly that retained result.
     pub fn recover_from_original_stream(
         stream: UnixStream,
         peer: LearningIterationEvidencePeerV1,
         original_owner_pidfd: OwnedFd,
         material: OriginalCellQ24MaterialReceiptConfigV1,
-        expected: Option<OriginalCellQ24TrainingCommandReceiptV1>,
+        expected: Option<(LearningIterationReceiptV1, SignedLearningEvidenceV1)>,
         timeout: Duration,
         lifetime: Duration,
     ) -> Result<Self, Error> {
@@ -174,11 +176,11 @@ impl OriginalCellQ24TrainingCommandConnectionV1 {
             Origin::Recovered(expected) => (
                 true,
                 expected
-                    .map(|original| {
+                    .map(|(receipt, attestation)| {
                         wire::authenticate_receipt(
                             &context,
-                            original.receipt,
-                            original.attestation,
+                            receipt,
+                            attestation,
                             verified_at,
                         )
                     })

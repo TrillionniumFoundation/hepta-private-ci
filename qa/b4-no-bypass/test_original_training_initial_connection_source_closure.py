@@ -169,14 +169,16 @@ class OriginalTrainingConnectionClosureTests(unittest.TestCase):
             "Origin::Fresh => (false, None)",
             "Origin::Recovered(expected) => (",
             "wire::authenticate_receipt(",
-            "original.receipt",
-            "original.attestation",
+            ".map(|(receipt, attestation)|",
+            "receipt,",
+            "attestation,",
             "verified_at,",
             ".transpose()?",
             "retained: Mutex::new(retained)",
         ):
             with self.subTest(marker=marker):
                 self.rejects(CONNECTION, "fn bind_original_dataset(", marker)
+        self.rejects(CONNECTION, "fn recover_from_original_stream(", "expected: Option<(LearningIterationReceiptV1, SignedLearningEvidenceV1)>", "expected: Option<OriginalCellQ24TrainingCommandReceiptV1>")
         source = (ROOT / CONNECTION).read_text()
         changed = source.replace("origin: Origin,", "pub origin: Origin,", 1)
         with self.assertRaises(PROOF.VerificationFailure):
