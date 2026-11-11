@@ -126,3 +126,9 @@ The exact-source shared run `42955998124` / job `130311123893` is also terminal 
 
 These native results close only the exact package/fixture snapshot-readback component. They do not establish the ordinary product caller, complete `LearningIterationStageOwnerPortsV1` assembly, Root startup, real file/key/trust and Dataset custody, governed native model proposal, independent B/retention/new-C, cold recovery, complete handler FinalUse, field benefit, or learned-skill promotion. Complete Adopt and correct NoUpdate product-chain counts therefore remain zero.
 
+## #5865 architecture required aggregate closed (2026-11-11 05:59 UTC)
+
+Run `42951157615` at exact source `30a697c50e10abd56e61b6b84f28ac9ae9f32f5d` / tree `b2a21d98380340b1c091006f4130aafdbeabca50` is now terminal **SUCCESS** across all three jobs. Source-head job `130305174594` and base-merge job `130305174839` retain the previously recorded 31 passed command records / 663 observed tests / zero failures and their original artifacts. Required job `130326050196` is also terminal success; its raw log states that all applicable exact-candidate lanes succeeded and that identical-tree reuse includes source-head success.
+
+This closes the architecture-required gate only for source 30a697. It does not transfer to child source be8adc, whose required aggregator remains queued, and it does not establish the production StageOwner, ordinary product caller, original custody, independent B/retention/new-C, cold recovery, complete handler FinalUse, field benefit or learned-skill promotion.
+
