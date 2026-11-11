@@ -236,6 +236,14 @@ class CellRoster:
                     )
 
     def cell(self, partition):
+        # Native CellStatePartitionV1 fields are ordinary bounded StableIds.
+        # Python subclass equality must not select a different run/owner.
+        if type(partition) is not tuple or len(partition) != 4:
+            raise LineagePolicyError("invalid native CellStatePartition tuple")
+        for name, value in zip(
+            ("principal_id", "agent_id", "cell_id", "run_id"), partition
+        ):
+            _token(value, name)
         matches = [c for c in self.cells if c.partition == partition]
         if len(matches) != 1:
             raise LineagePolicyError("unknown or ambiguous Cell partition")
