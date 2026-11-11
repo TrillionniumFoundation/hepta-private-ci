@@ -26,6 +26,7 @@ READERS = (
     AGENT + "learning_iteration_generation_evidence.rs",
     AGENT + "neuron_cell_evaluation_receipt_owner.rs",
     OWNER,
+    AGENT + "circuit_selection_receipt_owner.rs",
 )
 FUNCTIONS = {
     "fn create(", "fn recover(", "fn validate_config(", "fn prepare(",

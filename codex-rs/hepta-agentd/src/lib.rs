@@ -362,6 +362,8 @@ mod cell_q24_training_receipt_owner;
 mod cell_q24_training_snapshot_readback;
 #[cfg(target_os = "linux")]
 mod circuit_next_use_receipt_owner;
+#[cfg(target_os = "linux")]
+mod circuit_selection_receipt_owner;
 mod learning_iteration_auth;
 #[cfg(unix)]
 mod learning_iteration_checkpoint;
@@ -438,6 +440,14 @@ pub use circuit_q24_task_profile::CircuitQ24TaskProfileV1;
 pub use circuit_q24_task_profile::CircuitQ24TaskRuntimeV1;
 #[cfg(target_os = "linux")]
 pub use circuit_q24_task_profile::circuit_q24_task_channel_v1;
+#[cfg(target_os = "linux")]
+pub use circuit_selection_receipt_owner::OriginalCircuitSelectionReceiptConfigV1;
+#[cfg(target_os = "linux")]
+pub use circuit_selection_receipt_owner::OriginalCircuitSelectionReceiptErrorV1;
+#[cfg(target_os = "linux")]
+pub use circuit_selection_receipt_owner::OriginalCircuitSelectionReceiptOwnerV1;
+#[cfg(target_os = "linux")]
+pub use circuit_selection_receipt_owner::OriginalCircuitSelectionReceiptSourcesV1;
 pub use learning_owner_journal::LearningOriginalOwnerErrorV1;
 pub use neuron_cell_evaluation_owner::OriginalCellEvaluationExecutionOwnerV1;
 pub use neuron_cell_evaluation_owner::OriginalCellEvaluationSigningConfigV1;
