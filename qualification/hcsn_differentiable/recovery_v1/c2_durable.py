@@ -227,11 +227,11 @@ def append_receipt(root: Path, *, owner_start_id: str, attempt_id: str,
         fcntl.flock(lock, fcntl.LOCK_EX)
         try:
             events = read_receipts(root, owner_start_id=owner_start_id)
-            if event_type == "terminal" and any(
+            if any(
                 row["event_type"] == "terminal" and row["attempt_id"] == attempt_id
                 for row in events
             ):
-                raise EvidenceError("second terminal for same attempt")
+                raise EvidenceError("event after terminal for same attempt")
             sequence = len(events)
             previous = (_sha((root / f"{sequence - 1:08d}.json").read_bytes())
                         if sequence else ZERO)
