@@ -1,0 +1,99 @@
+===== test_hepta_cells_bundle_canonical.py =====
+test_bundle_rejects_noncanonical_outer_and_component_fields (test_hepta_cells_bundle_canonical.BundleCanonicalIdentityTests.test_bundle_rejects_noncanonical_outer_and_component_fields) ... ok
+test_component_and_lineage_keys_reject_subclass_equalities (test_hepta_cells_bundle_canonical.BundleCanonicalIdentityTests.test_component_and_lineage_keys_reject_subclass_equalities) ... ok
+test_immediate_successor_cannot_spoof_parent_digest (test_hepta_cells_bundle_canonical.BundleCanonicalIdentityTests.test_immediate_successor_cannot_spoof_parent_digest) ... ok
+test_native_stable_id_and_digest_reject_subclass (test_hepta_cells_bundle_canonical.BundleCanonicalIdentityTests.test_native_stable_id_and_digest_reject_subclass) ... ok
+test_rejects_derived_bundle_containers_and_policy_strings (test_hepta_cells_bundle_canonical.BundleCanonicalIdentityTests.test_rejects_derived_bundle_containers_and_policy_strings) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.001s
+
+OK
+===== test_hepta_cells_bundle.py =====
+test_explicit_adapter_and_temporal_scopes (test_hepta_cells_bundle.BundleTests.test_explicit_adapter_and_temporal_scopes) ... ok
+test_frozen_base_domain_and_state_cannot_change_in_local_training (test_hepta_cells_bundle.BundleTests.test_frozen_base_domain_and_state_cannot_change_in_local_training) ... ok
+test_invalid_or_noop_successor_rejected (test_hepta_cells_bundle.BundleTests.test_invalid_or_noop_successor_rejected) ... ok
+test_native_compatibility_bundle_and_reset_conformance (test_hepta_cells_bundle.BundleTests.test_native_compatibility_bundle_and_reset_conformance) ... ok
+test_rollback_is_new_successor_and_partition_affects_plan (test_hepta_cells_bundle.BundleTests.test_rollback_is_new_successor_and_partition_affects_plan) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.001s
+
+OK
+===== test_hepta_cells_lifecycle.py =====
+test_configuration_substitution_is_bound_even_with_same_declared_bundle (test_hepta_cells_lifecycle.DeterministicTests.test_configuration_substitution_is_bound_even_with_same_declared_bundle) ... ok
+test_exact_retriever_enforces_independent_views (test_hepta_cells_lifecycle.DeterministicTests.test_exact_retriever_enforces_independent_views) ... ok
+test_rule_grammar_and_numeric_algorithms (test_hepta_cells_lifecycle.DeterministicTests.test_rule_grammar_and_numeric_algorithms) ... ok
+test_checkpoint_write_failure_cannot_commit_create_or_transition (test_hepta_cells_lifecycle.OwnerCapacityTests.test_checkpoint_write_failure_cannot_commit_create_or_transition) ... ok
+test_each_global_creation_limit_rejects_before_initializer_and_retains_evidence (test_hepta_cells_lifecycle.OwnerCapacityTests.test_each_global_creation_limit_rejects_before_initializer_and_retains_evidence) ... ok
+test_full_global_quotas_survive_reopen_without_blocking_replay_or_readback (test_hepta_cells_lifecycle.OwnerCapacityTests.test_full_global_quotas_survive_reopen_without_blocking_replay_or_readback) ... ok
+test_global_epoch_and_checkpoint_limits_reject_transition_without_partial_publish (test_hepta_cells_lifecycle.OwnerCapacityTests.test_global_epoch_and_checkpoint_limits_reject_transition_without_partial_publish) ... ok
+test_actual_process_exit_leaves_durable_pending_without_replay (test_hepta_cells_lifecycle.OwnerTests.test_actual_process_exit_leaves_durable_pending_without_replay) ... ok
+test_adopt_reset_rollback_retain_replay_and_refuse_old_hidden (test_hepta_cells_lifecycle.OwnerTests.test_adopt_reset_rollback_retain_replay_and_refuse_old_hidden) ... ok
+test_bad_inputs_are_rejected_before_reservation (test_hepta_cells_lifecycle.OwnerTests.test_bad_inputs_are_rejected_before_reservation) ... ok
+test_budget_failure_is_durable_and_preserves_old_state (test_hepta_cells_lifecycle.OwnerTests.test_budget_failure_is_durable_and_preserves_old_state) ... ok
+test_confirmed_effect_overrun_preserves_state_and_requires_explicit_recovery (test_hepta_cells_lifecycle.OwnerTests.test_confirmed_effect_overrun_preserves_state_and_requires_explicit_recovery) ... ok
+test_effect_readback_requires_original_cost_and_never_reinvokes (test_hepta_cells_lifecycle.OwnerTests.test_effect_readback_requires_original_cost_and_never_reinvokes) ... ok
+test_initialization_cannot_change_the_qualified_identity (test_hepta_cells_lifecycle.OwnerTests.test_initialization_cannot_change_the_qualified_identity) ... ok
+test_invalid_result_retains_pending_reservation_and_attempt (test_hepta_cells_lifecycle.OwnerTests.test_invalid_result_retains_pending_reservation_and_attempt) ... ok
+test_observed_timeout_is_not_replaced_with_zero_cost (test_hepta_cells_lifecycle.OwnerTests.test_observed_timeout_is_not_replaced_with_zero_cost) ... ok
+test_partition_state_view_and_payload_are_detached (test_hepta_cells_lifecycle.OwnerTests.test_partition_state_view_and_payload_are_detached) ... ok
+test_readback_cannot_publish_state_under_a_changed_identity (test_hepta_cells_lifecycle.OwnerTests.test_readback_cannot_publish_state_under_a_changed_identity) ... ok
+test_restart_replays_exact_receipt_without_callback (test_hepta_cells_lifecycle.OwnerTests.test_restart_replays_exact_receipt_without_callback) ... ok
+test_restore_compatible_state_never_refunds_budget (test_hepta_cells_lifecycle.OwnerTests.test_restore_compatible_state_never_refunds_budget) ... ok
+
+----------------------------------------------------------------------
+Ran 20 tests in 0.058s
+
+OK
+===== test_hepta_cells_population_plan.py =====
+test_canonical_order_roundtrip_and_detached_records (test_hepta_cells_population_plan.PopulationPlanTests.test_canonical_order_roundtrip_and_detached_records) ... ok
+test_complete_policy_changes_change_commitment (test_hepta_cells_population_plan.PopulationPlanTests.test_complete_policy_changes_change_commitment) ... ok
+test_extra_plastic_instances_consume_cap_even_with_same_lineage (test_hepta_cells_population_plan.PopulationPlanTests.test_extra_plastic_instances_consume_cap_even_with_same_lineage) ... ok
+test_frozen_instances_can_scale_without_enabling_updates (test_hepta_cells_population_plan.PopulationPlanTests.test_frozen_instances_can_scale_without_enabling_updates) ... ok
+test_kernel_family_and_training_policy_cannot_be_relabelled (test_hepta_cells_population_plan.PopulationPlanTests.test_kernel_family_and_training_policy_cannot_be_relabelled) ... ok
+test_lineage_coverage_and_population_bounds (test_hepta_cells_population_plan.PopulationPlanTests.test_lineage_coverage_and_population_bounds) ... ok
+test_population_policy_refuses_subclassed_plan (test_hepta_cells_population_plan.PopulationPlanTests.test_population_policy_refuses_subclassed_plan) ... ok
+test_reject_python_string_subclasses_in_stable_cell_identity (test_hepta_cells_population_plan.PopulationPlanTests.test_reject_python_string_subclasses_in_stable_cell_identity) ... ok
+test_reject_spoofed_population_owner_and_wire_record_keys (test_hepta_cells_population_plan.PopulationPlanTests.test_reject_spoofed_population_owner_and_wire_record_keys) ... ok
+test_repeated_runs_keep_one_logical_update_point_and_owner_scope (test_hepta_cells_population_plan.PopulationPlanTests.test_repeated_runs_keep_one_logical_update_point_and_owner_scope) ... ok
+test_strict_record_fields_and_bounded_types (test_hepta_cells_population_plan.PopulationPlanTests.test_strict_record_fields_and_bounded_types) ... ok
+
+----------------------------------------------------------------------
+Ran 11 tests in 0.004s
+
+OK
+===== test_hepta_cells_population_owner.py =====
+test_aba_fences_stale_run_and_excludes_its_observations_from_new_epoch (test_hepta_cells_population_owner.PopulationOwnerTests.test_aba_fences_stale_run_and_excludes_its_observations_from_new_epoch) ... ok
+test_all_seven_lineages_execute_and_semantic_successor_keeps_shared_base (test_hepta_cells_population_owner.PopulationOwnerTests.test_all_seven_lineages_execute_and_semantic_successor_keeps_shared_base) ... ok
+test_capacity_and_stale_run_cannot_change_current_version (test_hepta_cells_population_owner.PopulationOwnerTests.test_capacity_and_stale_run_cannot_change_current_version) ... ok
+test_failed_cutover_rolls_back_current_version_and_consumption (test_hepta_cells_population_owner.PopulationOwnerTests.test_failed_cutover_rolls_back_current_version_and_consumption) ... ok
+test_fresh_process_loads_adopted_parameters_but_resets_new_run_hidden_state (test_hepta_cells_population_owner.PopulationOwnerTests.test_fresh_process_loads_adopted_parameters_but_resets_new_run_hidden_state) ... ok
+test_only_fresh_committed_observations_enable_reset_adoption_and_new_run (test_hepta_cells_population_owner.PopulationOwnerTests.test_only_fresh_committed_observations_enable_reset_adoption_and_new_run) ... ok
+test_real_candidate_cannot_change_frozen_training_or_evaluation_rule (test_hepta_cells_population_owner.PopulationOwnerTests.test_real_candidate_cannot_change_frozen_training_or_evaluation_rule) ... ok
+test_reopen_refuses_missing_policy_or_corrupt_population_admission (test_hepta_cells_population_owner.PopulationOwnerTests.test_reopen_refuses_missing_policy_or_corrupt_population_admission) ... ok
+test_reopen_without_plan_cannot_bypass_frozen_cadence_or_family (test_hepta_cells_population_owner.PopulationOwnerTests.test_reopen_without_plan_cannot_bypass_frozen_cadence_or_family) ... ok
+test_rollback_does_not_refund_consumed_observations_or_work (test_hepta_cells_population_owner.PopulationOwnerTests.test_rollback_does_not_refund_consumed_observations_or_work) ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 0.172s
+
+OK
+===== test_hepta_cells_partition_identity_canonical.py =====
+test_component_identity_rejects_subclass_and_noncanonical_digest (test_hepta_cells_partition_identity_canonical.CanonicalStableIdentityTests.test_component_identity_rejects_subclass_and_noncanonical_digest) ... ok
+test_partition_owner_cell_and_run_ids_reject_subclass_identity (test_hepta_cells_partition_identity_canonical.CanonicalStableIdentityTests.test_partition_owner_cell_and_run_ids_reject_subclass_identity) ... ok
+test_qualification_rejects_subclass_digest (test_hepta_cells_partition_identity_canonical.CanonicalStableIdentityTests.test_qualification_rejects_subclass_digest) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.000s
+
+OK
+===== test_hepta_cells_temporal_qualification.py =====
+test_audit_detects_corrupt_analytic_gradient_without_mutating_parent (test_hepta_cells_temporal_qualification.TemporalQualificationTests.test_audit_detects_corrupt_analytic_gradient_without_mutating_parent) ... ok
+test_bounds_and_unknown_labels_do_not_claim_gradient_evidence (test_hepta_cells_temporal_qualification.TemporalQualificationTests.test_bounds_and_unknown_labels_do_not_claim_gradient_evidence) ... ok
+test_post_training_derivatives_and_restore_use_actual_shared_kernel (test_hepta_cells_temporal_qualification.TemporalQualificationTests.test_post_training_derivatives_and_restore_use_actual_shared_kernel) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.075s
+
+OK
