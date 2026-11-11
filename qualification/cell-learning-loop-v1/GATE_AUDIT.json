@@ -1,0 +1,38 @@
+{
+  "actual_publish_receipt": {
+    "bytes": 2478,
+    "sha256": "ff2f8ca4c96dc55347158f02afba7e9fddf6ce1dbbc87bf0a3bd949e7b5a9712"
+  },
+  "always_false_callback_frozen_in_advance": true,
+  "callback_calls": [
+    {
+      "candidate_state_matches_evaluation": true,
+      "formal_gate_policy": "unchanged; this run grants no efficacy adoption",
+      "future_adoption_gate_invoked": false,
+      "historical_correct_delta": -4,
+      "kind": "SourceOwner executable engineering validator",
+      "passed": false,
+      "reasons": [
+        "independent_nine_arm_future_round_not_registered",
+        "complete_lifecycle_cost_unknown"
+      ]
+    }
+  ],
+  "causal_refusal_reasons": [
+    "independent_nine_arm_future_round_not_registered",
+    "complete_lifecycle_cost_unknown"
+  ],
+  "formal_future_adoption_gate_invoked": false,
+  "frozen_worker_source": {
+    "bytes": 16204,
+    "sha256": "4a1139c7fa29f18bd576d64b5ec1ef2aa50578357985796e13c76e032c4ff926"
+  },
+  "historical_retention_delta_observed": -4,
+  "interpretation": "Actual SourceOwner refusal, parent preservation and source freshness were exercised. Quality-based adoption and positive adoption of a newly trained candidate remain unqualified.",
+  "positive_historical_parent_restoration_exercised": true,
+  "positive_new_candidate_adoption_exercised": false,
+  "refusal": "executable publication validator rejected the model",
+  "release_unchanged": true,
+  "retention_delta_was_dynamic_gate_trigger": false,
+  "schema": "hepta.cell-learning.executed-gate-audit.v1"
+}

@@ -1,0 +1,228 @@
+{
+  "schema_version": 1,
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "hcsn_base_commit": "44e539313e0c54badb4b9b687425dd87ecba6e67",
+  "published_pq_lineage": "dd32a0d510cbeb3dfed0554d982c75168a59d95d",
+  "reviewed_local_pq_source": "be6f772a82d5a5057901dee5701e94f02980c4c5",
+  "reviewed_local_source_claimed_published": false,
+  "scope": "focused FinalUse authentication, durable state and Linux trust transport; no whole-branch merge",
+  "omitted": [
+    "unrelated Windows owner migration",
+    "learning/release trust operations and host extensions"
+  ],
+  "qualification": "Final combined commit, compiler artifacts and retained run receipts determine acceptance; this inventory is provenance, not an aggregate pass report.",
+  "additional_changes": [
+    "existing TaskFlow claim hook and native pre-contact guard",
+    "signed schema3 HCSN owner composition",
+    "fresh full-frontier and post-I/O feed expiry checks",
+    "signed exact source inventory and source-only Python loader",
+    "real worker cancellation and cold owner acceptance",
+    "optional spatial resolution preserving the default32 canonical representation"
+  ],
+  "crypto_dependencies": [
+    {
+      "name": "cmov",
+      "version": "0.5.4",
+      "checksum": "0c9ea0ac24bc397ab3c98583a3c9ba74fa56b09a4449bbe172b9b1ddb016027a"
+    },
+    {
+      "name": "ctutils",
+      "version": "0.4.6",
+      "checksum": "fe3e9d21d39e6f39ff46e03d5b621424f88ee23d8a1672c6bfc9ccc7f2da4f6a"
+    },
+    {
+      "name": "ml-dsa",
+      "version": "0.1.1",
+      "checksum": "add6b9d92e496f16f4526d68ff29da1483aba4b119baeab8bed3b9e3544a6f3d"
+    },
+    {
+      "name": "module-lattice",
+      "version": "0.2.3",
+      "checksum": "0c61b87c9683ab7cb1c6871d261ad5479b6b10ceb52c4352aaca3b5d35a8febe"
+    }
+  ],
+  "imported_files": [
+    {
+      "path": "codex-rs/hepta-contracts/src/pq_auth.rs",
+      "reviewed_source_git_blob": "c5b7e1397decc0c1353ee85853b470680727491c",
+      "initial_import_sha256": "2f7d9381730cf312ed2798170892c662df044fcac8285b9535129e2b60a0035d",
+      "candidate_sha256": "2f7d9381730cf312ed2798170892c662df044fcac8285b9535129e2b60a0035d",
+      "initial_adaptation": "byte-identical immutable source import"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_authentication.rs",
+      "reviewed_source_git_blob": "49d6cc84f7b9f4079340927fa1fd4a6b25d5e46b",
+      "initial_import_sha256": "487fc561a16d61426d7c3011e5c873c551ff3cff58447a5924bd3550af940e44",
+      "candidate_sha256": "487fc561a16d61426d7c3011e5c873c551ff3cff58447a5924bd3550af940e44",
+      "initial_adaptation": "byte-identical immutable source import"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/lib.rs",
+      "reviewed_source_git_blob": "e34dc114c47664bb48f5ee0eb5c6306b6a103839",
+      "initial_import_sha256": "350c3906f6322add9e5e58533197fde82ab46584eeb5add86185f154f20f6551",
+      "candidate_sha256": "e429dd0409f32d2a71b4b84190a053a0496430191d28126d3184203fefab7c80",
+      "initial_adaptation": "add only the imported PQ and external FinalUse trust APIs"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/Cargo.toml",
+      "reviewed_source_git_blob": "10dba2f9e51c367720b444a8361435e76621747f",
+      "initial_import_sha256": "2d44d41f5ca73fb32ac651f242c44f1617ae657d119a822515acab9048425d47",
+      "candidate_sha256": "2d44d41f5ca73fb32ac651f242c44f1617ae657d119a822515acab9048425d47",
+      "initial_adaptation": "canonical ML-DSA dependency and Linux socket/poll feature closure; no Windows or macOS dependency import"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use.rs",
+      "reviewed_source_git_blob": "c5c4d81b1be5556e241810fc617037ebdad4ba11",
+      "initial_import_sha256": "70bc8625b6624bc20fe0a768c281c6f66fb9421e1dec07f43691f958e676e0c0",
+      "candidate_sha256": "70bc8625b6624bc20fe0a768c281c6f66fb9421e1dec07f43691f958e676e0c0",
+      "initial_adaptation": "existing profile and live-owner implementation, excluding unrelated Windows owner constructor"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use_pq.rs",
+      "reviewed_source_git_blob": "c6694d4c450816cd2e846773f715fe7bf7050e21",
+      "initial_import_sha256": "ae4db0e2845a6e14d9f8b9823530a0c0f5d5e810673093353e8e5cb0aec5956b",
+      "candidate_sha256": "ae4db0e2845a6e14d9f8b9823530a0c0f5d5e810673093353e8e5cb0aec5956b",
+      "initial_adaptation": "byte-identical immutable source import"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use_control.rs",
+      "reviewed_source_git_blob": "ef6e2f7f6d58ce7fe5e558752d92f1bb9e99c915",
+      "initial_import_sha256": "4bc589b9295c128f2eb677b9cba879a75436783a97e1f94ebddaf1d70d9ba3c2",
+      "candidate_sha256": "4bc589b9295c128f2eb677b9cba879a75436783a97e1f94ebddaf1d70d9ba3c2",
+      "initial_adaptation": "byte-identical immutable source import"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use_control_pq.rs",
+      "reviewed_source_git_blob": "b58c0a9a1d5f6bbd3b2e8a0b8d576aeab170cbb4",
+      "initial_import_sha256": "38d782089568165e8c3f6830fea9288fedc234ebdd305b321f68ece11a8e37bc",
+      "candidate_sha256": "38d782089568165e8c3f6830fea9288fedc234ebdd305b321f68ece11a8e37bc",
+      "initial_adaptation": "byte-identical immutable source import"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use_live_owner.rs",
+      "reviewed_source_git_blob": "8a3bd8afc6cdcb88a3176511797849b9c9005214",
+      "initial_import_sha256": "2aafe9a918c8ecc2d5c99fba3befbcf8b3b78db980f30f37d5a7780a57343b9c",
+      "candidate_sha256": "2aafe9a918c8ecc2d5c99fba3befbcf8b3b78db980f30f37d5a7780a57343b9c",
+      "initial_adaptation": "retain external frontier revalidation and fencing; preserve the baseline platform owner boundary"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use_store.rs",
+      "reviewed_source_git_blob": "a9e4b389a7e57e15bedf71274dee2e02ada2d04c",
+      "initial_import_sha256": "1ce76b4189d1a1fb41998072e4a71d9a6080db5e252d69321ac6447ec43d9ff6",
+      "candidate_sha256": "1ce76b4189d1a1fb41998072e4a71d9a6080db5e252d69321ac6447ec43d9ff6",
+      "initial_adaptation": "PQ schema/profile deltas; omit unrelated Windows owner migration and use unchanged baseline Unix I/O"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use_store_io.rs",
+      "reviewed_source_git_blob": "5dc155c4d3a26b09c75a0660a4514a22c0182aef",
+      "initial_import_sha256": "c61283325178c48490eab56d086fbc35c3305c3b5cf4616138e97a5310c62932",
+      "candidate_sha256": "c129e85659c2ac68e85ce9259418d1be5e0fb59c10c8f23b384f9ee2b3568082",
+      "initial_adaptation": "mechanical extraction of baseline private I/O, with the pinned source lock-directory helper"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_trust_unix.rs",
+      "reviewed_source_git_blob": "1f9452369e75ee175be5ec6f7bba7118f6beceb9",
+      "initial_import_sha256": "4b3599fba35e90ff72ba189eb5faaee5234bf997a321a5449cc693228132614f",
+      "candidate_sha256": "4b3599fba35e90ff72ba189eb5faaee5234bf997a321a5449cc693228132614f",
+      "initial_adaptation": "existing signed clock/FinalUse CAS protocol subset; omit unrelated learning/release variants; Linux transport only"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_trust_unix/transport.rs",
+      "reviewed_source_git_blob": "0269689c24890a61115d1176344d5f023598ccf6",
+      "initial_import_sha256": "63da7139a7550c91c22f5f9df7b5a98ac6c6eb534e8aabe3f98c7322c5c7e887",
+      "candidate_sha256": "63da7139a7550c91c22f5f9df7b5a98ac6c6eb534e8aabe3f98c7322c5c7e887",
+      "initial_adaptation": "retain Linux absolute-deadline transport and unsupported-platform refusal; omit unrelated macOS dependency"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use_tests.rs",
+      "reviewed_source_git_blob": "76ea4ef5aab6c25c806fcbfe6a0f24329b60dc69",
+      "initial_import_sha256": "7beefbf2cd04a6981d2f6e12e4fb3436e115d6f824438c5931f3cc7c691f82b7",
+      "candidate_sha256": "7beefbf2cd04a6981d2f6e12e4fb3436e115d6f824438c5931f3cc7c691f82b7",
+      "initial_adaptation": "byte-identical immutable source import"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use_store_tests.rs",
+      "reviewed_source_git_blob": "1d9c63c812c6bd17d7329172f4b63659d5330215",
+      "initial_import_sha256": "2c4d3b4504351e3a2bdbd92b2b4f18c49c66c5b6f91a2559edbad93b3df48136",
+      "candidate_sha256": "2c4d3b4504351e3a2bdbd92b2b4f18c49c66c5b6f91a2559edbad93b3df48136",
+      "initial_adaptation": "byte-identical immutable source import"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use_pq_tests.rs",
+      "reviewed_source_git_blob": "73f1c59545ea1ca4d8deefdec025aee18e53daa4",
+      "initial_import_sha256": "3f197f33ad2d792399d7d0355f870de7671b9e363e196f2e5a375847fc316553",
+      "candidate_sha256": "3f197f33ad2d792399d7d0355f870de7671b9e363e196f2e5a375847fc316553",
+      "initial_adaptation": "byte-identical immutable source import"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use_pq_capacity_tests.rs",
+      "reviewed_source_git_blob": "bfea36463ffd53d2080f1ae7ae95eaad6d248cb4",
+      "initial_import_sha256": "c97a84aee5998dab1943e84b3c826d92212eb112a90a0d4bebd8ae2e582ca084",
+      "candidate_sha256": "c97a84aee5998dab1943e84b3c826d92212eb112a90a0d4bebd8ae2e582ca084",
+      "initial_adaptation": "byte-identical immutable source import"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use_pq_frontier_tests.rs",
+      "reviewed_source_git_blob": "73360f987ad58c0e16f8749e83bdbce60e34f9ec",
+      "initial_import_sha256": "e34b2da9a14601687b5e45f937c2e30c99e84fee4d9a46d1ec66eb69673f986c",
+      "candidate_sha256": "e34b2da9a14601687b5e45f937c2e30c99e84fee4d9a46d1ec66eb69673f986c",
+      "initial_adaptation": "byte-identical immutable source import"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use_pq_recovery_tests.rs",
+      "reviewed_source_git_blob": "d06c4f2ef0a8bf6017502ad21a4f4082158d4e31",
+      "initial_import_sha256": "5311addafdf70718608b45ffa4d92f40f40192db8529a2f898daec371b65b22a",
+      "candidate_sha256": "5311addafdf70718608b45ffa4d92f40f40192db8529a2f898daec371b65b22a",
+      "initial_adaptation": "byte-identical immutable source import"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use_pq_entry_tests.rs",
+      "reviewed_source_git_blob": "05a91337a3071dae4bdfa1be5f83adb12d94f35e",
+      "initial_import_sha256": "9880dd5b060ea74e326b415fe02bd77de90300b239abf33eca757a4f87a1de2a",
+      "candidate_sha256": "9880dd5b060ea74e326b415fe02bd77de90300b239abf33eca757a4f87a1de2a",
+      "initial_adaptation": "byte-identical immutable source import"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_trust_unix_tests.rs",
+      "reviewed_source_git_blob": "3af49ba0df4ec650144eaec86a55524bbc7fa846",
+      "initial_import_sha256": "f315a49d5d3abccd16063f865cc21cc42e782a7edca1bd3fa883e3b3daa277ee",
+      "candidate_sha256": "f315a49d5d3abccd16063f865cc21cc42e782a7edca1bd3fa883e3b3daa277ee",
+      "initial_adaptation": "existing external trust tests, matching the imported clock/FinalUse operation subset"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_trust_unix/transport_tests.rs",
+      "reviewed_source_git_blob": "9cb0190150fa807200ccf2fd1823be52f161b3e3",
+      "initial_import_sha256": "caff77418d2b50555d9f32a0d36b0670601555b25fff54e77c09cb0d1aa444ee",
+      "candidate_sha256": "caff77418d2b50555d9f32a0d36b0670601555b25fff54e77c09cb0d1aa444ee",
+      "initial_adaptation": "byte-identical immutable source import"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/pq_final_use.rs",
+      "reviewed_source_git_blob": "88828a3a44fdfa1f411ab3a31a71ab52c24cce65",
+      "initial_import_sha256": "b8242201eeb99570ba4f9ce5a7d7e2dbda5bd831a8c7ff7d2b1bfcaa5d11a4e1",
+      "candidate_sha256": "8e3a4411ae86afbf56c51cd7fab679c1810dbd95fa82525845e7732ff5695ae4",
+      "initial_adaptation": "reviewed local feed-refresh extraction plus new final-contact full frontier comparison; no owner API widening"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/protected_file.rs",
+      "reviewed_source_git_blob": "830332989d798544babbc03de2018e167a2c5079",
+      "initial_import_sha256": "4d5a5373456daab10e4b641481a51b59862de570c13caad3161c4459aad08847",
+      "candidate_sha256": "4d5a5373456daab10e4b641481a51b59862de570c13caad3161c4459aad08847",
+      "initial_adaptation": "byte-identical immutable source import"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/protected_file_tests.rs",
+      "reviewed_source_git_blob": "877beaeea20dc8fb3a94939577eb704b8c6815c0",
+      "initial_import_sha256": "c66e5136cda2aca2b47db7cbc59d648f8433d72b60f4429436a4154355c17a47",
+      "candidate_sha256": "a3bc3e794ee59ba1e7715fcc4ffe04f61bb056699165bfcc0318d9614401ef73",
+      "initial_adaptation": "byte-identical immutable source import"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/pq_final_use_tests.rs",
+      "reviewed_source_git_blob": null,
+      "initial_import_sha256": "fbd98b037cc5dfdd75b32580f4c06ff424395105309db722fff208919ddcf3c2",
+      "candidate_sha256": "6928c8730dcfb880264c0c9b28165c5f84ac9c624023550a352c431a714b4080",
+      "initial_adaptation": "new tests: original active effect guard observes external nonce progress or unavailable frontier without provider contact or local-state replacement"
+    }
+  ]
+}

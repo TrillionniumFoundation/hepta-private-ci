@@ -79,7 +79,8 @@ fn complete_denies_compare_mapped_masks_and_require_every_right() -> Result<()> 
         let mut acl = NativeAcl::new()?;
         acl.deny(&sid, mask, inheritance)?;
         // SAFETY: both arguments point into live, initialized native objects.
-        let complete = unsafe { kind.already_present(acl.as_ptr(), sid.as_ptr()) };
+        let complete =
+            unsafe { kind.already_present(acl.as_ptr(), sid.as_ptr(), DenyAceScope::Directory) };
         assert_eq!(complete, expected, "mask={mask:#x}");
     }
     Ok(())
@@ -102,7 +103,9 @@ fn complete_denies_require_effective_recursive_scope_and_precede_allows() -> Res
             acl.deny(&sid, kind.mask(), flags)?;
             // SAFETY: the ACL and SID are valid and retained for this query.
             assert!(
-                !unsafe { kind.already_present(acl.as_ptr(), sid.as_ptr()) },
+                !unsafe {
+                    kind.already_present(acl.as_ptr(), sid.as_ptr(), DenyAceScope::Directory)
+                },
                 "flags={flags:#x}",
             );
         }
@@ -123,7 +126,117 @@ fn complete_denies_require_effective_recursive_scope_and_precede_allows() -> Res
         }
         acl.deny(&sid, kind.mask(), inheritance)?;
         // SAFETY: the ACL and SID remain valid through the query.
-        assert!(!unsafe { kind.already_present(acl.as_ptr(), sid.as_ptr()) });
+        assert!(!unsafe {
+            kind.already_present(acl.as_ptr(), sid.as_ptr(), DenyAceScope::Directory)
+        });
+    }
+    Ok(())
+}
+
+#[test]
+fn complete_file_denies_require_direct_scope() -> Result<()> {
+    let sid = LocalSid::from_string("S-1-5-21-181-282-383-484")?;
+    for kind in [DenyAceKind::Read, DenyAceKind::Write] {
+        for flags in [
+            0,
+            OBJECT_INHERIT_ACE,
+            CONTAINER_INHERIT_ACE,
+            OBJECT_INHERIT_ACE | CONTAINER_INHERIT_ACE,
+            u32::from(INHERIT_ONLY_ACE),
+            u32::from(INHERITED_ACE),
+            NO_PROPAGATE_INHERIT_ACE,
+        ] {
+            let mut acl = NativeAcl::new()?;
+            acl.deny(&sid, kind.mask(), flags)?;
+            // SAFETY: the ACL and SID remain valid for the complete query.
+            let complete =
+                unsafe { kind.already_present(acl.as_ptr(), sid.as_ptr(), DenyAceScope::File) };
+            assert_eq!(complete, flags == 0, "flags={flags:#x}");
+        }
+    }
+    Ok(())
+}
+
+fn native_deny_entries(path: &Path, sid: &LocalSid) -> Result<Vec<(u8, u32)>> {
+    // SAFETY: the existing path is live; this function owns the returned descriptor.
+    let (dacl, descriptor) = unsafe { fetch_dacl_handle(path)? };
+    let result = (|| {
+        let mut entries = Vec::new();
+        let mut info: ACL_SIZE_INFORMATION = unsafe { std::mem::zeroed() };
+        // SAFETY: the descriptor retains the ACL; info is writable and correctly sized.
+        if unsafe {
+            GetAclInformation(
+                dacl,
+                (&mut info as *mut ACL_SIZE_INFORMATION).cast(),
+                std::mem::size_of::<ACL_SIZE_INFORMATION>() as u32,
+                AclSizeInformation,
+            )
+        } == 0
+        {
+            return Err(std::io::Error::last_os_error().into());
+        }
+        for index in 0..info.AceCount {
+            let mut ace = std::ptr::null_mut();
+            // SAFETY: the descriptor retains each ACE returned by the ACL query.
+            if unsafe { GetAce(dacl, index, &mut ace) } == 0 {
+                return Err(std::io::Error::last_os_error().into());
+            }
+            // SAFETY: GetAce returned a live native ACE header.
+            let header = unsafe { &*(ace as *const ACE_HEADER) };
+            if header.AceType == ACCESS_DENIED_ACE_TYPE {
+                // SAFETY: the native header identifies an ACCESS_DENIED_ACE.
+                let deny = unsafe { &*(ace as *const ACCESS_DENIED_ACE) };
+                let trustee = std::ptr::addr_of!(deny.SidStart).cast_mut().cast();
+                // SAFETY: both SIDs are valid and live throughout the comparison.
+                if unsafe { EqualSid(trustee, sid.as_ptr()) } != 0 {
+                    entries.push((header.AceFlags, deny.Mask));
+                }
+            }
+        }
+        Ok(entries)
+    })();
+    // SAFETY: no ACL or ACE reference escapes the closure; release the owned descriptor.
+    unsafe { LocalFree(descriptor as HLOCAL) };
+    result
+}
+
+#[test]
+fn native_file_and_directory_denies_retain_full_masks_and_are_idempotent() -> Result<()> {
+    let fixture = tempfile::tempdir()?;
+    let sid = LocalSid::from_string("S-1-5-21-191-292-393-494")?;
+    for (kind, name, expected_mask) in [
+        (DenyAceKind::Read, "read", FILE_GENERIC_READ),
+        (
+            DenyAceKind::Write,
+            "write",
+            FILE_GENERIC_WRITE | DELETE | FILE_DELETE_CHILD,
+        ),
+    ] {
+        for directory in [false, true] {
+            let path = fixture.path().join(format!("{name}-{directory}"));
+            let expected_flags = if directory {
+                std::fs::create_dir(&path)?;
+                (OBJECT_INHERIT_ACE | CONTAINER_INHERIT_ACE) as u8
+            } else {
+                std::fs::write(&path, "preserved")?;
+                0
+            };
+            // SAFETY: the native fixture object and validated SID remain live.
+            let first = unsafe { add_deny_ace(&path, sid.as_ptr(), kind)? };
+            let after_first = native_deny_entries(&path, &sid)?;
+            // SAFETY: repeat the repair against the same existing native object.
+            let second = unsafe { add_deny_ace(&path, sid.as_ptr(), kind)? };
+            let after_second = native_deny_entries(&path, &sid)?;
+            assert_eq!(
+                (first, second, after_first, after_second),
+                (
+                    true,
+                    false,
+                    vec![(expected_flags, expected_mask)],
+                    vec![(expected_flags, expected_mask)],
+                )
+            );
+        }
     }
     Ok(())
 }

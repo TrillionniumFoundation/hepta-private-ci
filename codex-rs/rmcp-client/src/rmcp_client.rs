@@ -7,6 +7,7 @@ use std::sync::Arc;
 use std::sync::Mutex as StdMutex;
 use std::sync::OnceLock;
 use std::sync::PoisonError;
+use std::sync::atomic::AtomicBool;
 use std::sync::atomic::AtomicUsize;
 use std::sync::atomic::Ordering;
 use std::time::Duration;
@@ -77,6 +78,7 @@ use crate::http_client_adapter::StreamableHttpClientAdapter;
 use crate::http_client_adapter::StreamableHttpClientAdapterError;
 use crate::http_client_adapter::StreamableHttpRedirectMode;
 use crate::in_process_transport::InProcessTransportFactory;
+use crate::mrtr::InputRequestOwner;
 use crate::oauth::OAuthPersistor;
 use crate::oauth::ResolvedOAuthCredentialStore;
 use crate::oauth::ResolvedOAuthTokens;
@@ -126,6 +128,7 @@ enum ClientState {
     Ready {
         service: Arc<RunningService<RoleClient, ElicitationClientService>>,
         oauth: Option<OAuthPersistor>,
+        retained_lifetime: crate::retained_tool_session::RetainedSessionLifetime,
     },
     Closed,
 }
@@ -161,6 +164,7 @@ enum TransportRecipe {
         auth_provider: Option<SharedAuthProvider>,
         redirect_mode: StreamableHttpRedirectMode,
         initialize_deadline: Arc<StdMutex<Option<Instant>>>,
+        single_attempt_requests: Arc<AtomicBool>,
     },
 }
 
@@ -187,7 +191,7 @@ pub(crate) struct ElicitationPauseState {
 }
 
 impl ElicitationPauseState {
-    fn new() -> Self {
+    pub(crate) fn new() -> Self {
         let (paused, _rx) = watch::channel(false);
         Self {
             active_count: Arc::new(AtomicUsize::new(0)),
@@ -385,6 +389,70 @@ impl RmcpClient {
         self.protocol_mode
     }
 
+    /// Retain the exact initialized peer for calls which must never be repaired
+    /// or replayed. HTTP becomes strictly non-redirecting on the original peer;
+    /// OAuth transports (including access-token-only fallback) and opaque
+    /// delegated HTTP credentials are refused. The original HTTP capability
+    /// must explicitly support sending once below its authentication layer.
+    pub async fn retain_tool_session(&self) -> Result<crate::RetainedMcpToolSession> {
+        let state = self.state.lock().await;
+        let transport_allowed = match &self.transport_recipe {
+            TransportRecipe::InProcess { .. } | TransportRecipe::Stdio { .. } => true,
+            TransportRecipe::StreamableHttp {
+                bearer_token,
+                http_headers,
+                env_http_headers,
+                pinned_credential_store,
+                http_client,
+                auth_provider,
+                ..
+            } => {
+                pinned_credential_store.get().is_none()
+                    && auth_provider.is_none()
+                    && !matches!(
+                        bearer_token,
+                        Some(StreamableHttpBearerToken::ProvidedByHttpClient)
+                    )
+                    && http_client.supports_single_attempt_requests()
+                    && (bearer_token.is_some()
+                        || http_headers
+                            .as_ref()
+                            .is_some_and(|headers| !headers.is_empty())
+                        || env_http_headers
+                            .as_ref()
+                            .is_some_and(|headers| !headers.is_empty()))
+            }
+        };
+        if !transport_allowed || self.protocol_mode != McpProtocolMode::Legacy {
+            return Err(anyhow!(
+                "MCP transport does not support retained single-attempt calls"
+            ));
+        }
+        match &*state {
+            ClientState::Ready {
+                service,
+                retained_lifetime,
+                ..
+            } => {
+                if let TransportRecipe::StreamableHttp {
+                    single_attempt_requests,
+                    ..
+                } = &self.transport_recipe
+                {
+                    // Monotonic for this original peer: subsequent HTTP posts use
+                    // the existing transport's no-retry capability, never a new client.
+                    single_attempt_requests.store(true, Ordering::Release);
+                }
+                Ok(crate::RetainedMcpToolSession {
+                    service: Arc::clone(service),
+                    lifetime: retained_lifetime.0.clone(),
+                })
+            }
+            ClientState::Connecting { .. } => Err(anyhow!("MCP client not initialized")),
+            ClientState::Closed => Err(anyhow!("MCP client is shut down")),
+        }
+    }
+
     pub async fn new_in_process_client(
         factory: Arc<dyn InProcessTransportFactory>,
     ) -> io::Result<Self> {
@@ -563,6 +631,7 @@ impl RmcpClient {
             auth_provider,
             redirect_mode,
             initialize_deadline: Arc::new(StdMutex::new(None)),
+            single_attempt_requests: Arc::default(),
         };
         let transport = Self::create_pending_transport(&transport_recipe).await?;
         Ok(Self {
@@ -634,6 +703,7 @@ impl RmcpClient {
             *guard = ClientState::Ready {
                 service,
                 oauth: oauth_persistor.clone(),
+                retained_lifetime: Default::default(),
             };
         }
 
@@ -746,17 +816,20 @@ impl RmcpClient {
         timeout: Option<Duration>,
     ) -> Result<ReadResourceResult> {
         self.refresh_oauth_if_needed().await?;
+        let owner = InputRequestOwner::new();
+        let owner_ref = owner.reference();
         let requested_modern = self.protocol_mode == McpProtocolMode::V20260728;
         let result = self
             .run_service_operation("resources/read", timeout, move |service| {
                 let params = params.clone();
+                let owner_ref = owner_ref.clone();
                 async move {
                     let modern_session = requested_modern
                         && service.peer().peer_info().is_some_and(|info| {
                             info.protocol_version == ProtocolVersion::V_2026_07_28
                         });
                     if modern_session {
-                        service.read_resource(params).await
+                        crate::mrtr::read_resource(&service, params, &owner_ref).await
                     } else {
                         service.peer().read_resource(params).await
                     }
@@ -796,11 +869,14 @@ impl RmcpClient {
         };
         let mut rmcp_params = CallToolRequestParams::new(name);
         rmcp_params.arguments = arguments;
+        let owner = InputRequestOwner::new();
+        let owner_ref = owner.reference();
         let requested_modern = self.protocol_mode == McpProtocolMode::V20260728;
         let result = self
             .run_service_operation("tools/call", timeout, move |service| {
                 let mut rmcp_params = rmcp_params.clone();
                 let meta = meta.clone();
+                let owner_ref = owner_ref.clone();
                 async move {
                     let modern_session = requested_modern
                         && service.peer().peer_info().is_some_and(|info| {
@@ -808,7 +884,7 @@ impl RmcpClient {
                         });
                     if modern_session {
                         rmcp_params.meta = meta;
-                        return service.call_tool(rmcp_params).await;
+                        return crate::mrtr::call_tool(&service, rmcp_params, &owner_ref).await;
                     }
                     let mut options = rmcp::service::PeerRequestOptions::no_options();
                     options.meta = meta;
@@ -1020,6 +1096,7 @@ impl RmcpClient {
                 auth_provider,
                 redirect_mode,
                 initialize_deadline,
+                single_attempt_requests,
             } => {
                 let has_configured_headers = matches!(
                     bearer_token,
@@ -1143,8 +1220,11 @@ impl RmcpClient {
                         Err(err) => Err(err),
                     }
                 } else {
+                    // Session repair belongs to RmcpClient, where replacing the peer
+                    // revokes retained handles. The SDK must never replay an effect.
                     let mut http_config =
-                        StreamableHttpClientTransportConfig::with_uri(url.clone());
+                        StreamableHttpClientTransportConfig::with_uri(url.clone())
+                            .reinit_on_expired_session(/*enable*/ false);
                     if let Some(StreamableHttpBearerToken::Resolved(bearer_token)) = bearer_token {
                         http_config = http_config.auth_header(bearer_token.clone());
                     }
@@ -1157,7 +1237,8 @@ impl RmcpClient {
                             has_configured_headers,
                             *redirect_mode,
                             Arc::clone(initialize_deadline),
-                        ),
+                        )
+                        .with_single_attempt_requests(Arc::clone(single_attempt_requests)),
                         http_config,
                     );
                     Ok(PendingTransport::StreamableHttp { transport })
@@ -1472,6 +1553,7 @@ impl RmcpClient {
             *guard = ClientState::Ready {
                 service,
                 oauth: oauth_persistor.clone(),
+                retained_lifetime: Default::default(),
             };
         }
 

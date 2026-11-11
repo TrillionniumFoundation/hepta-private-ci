@@ -1,0 +1,134 @@
+{
+  "schema": "memory-v13-recorded-cost-denominator-readback-v1",
+  "source_commit": "aeedeee98a5f7472f11b88ef7b869fc5a6d3d8e1",
+  "git_blob": "cc6e36aaa3243306084f55accca632a57ad8338a",
+  "raw_bytes": 924270,
+  "raw_sha256": "e7cad4429e948a37f413043090d4beb0b7dc53379b118ea274fd92291ada5285",
+  "profiled_checkpoint_sha256": "5f28dbda0393259005091a2fde9f56dd99837f4667e4924affd9906e8b0f7719",
+  "current_loop_parent_artifact_distinct": true,
+  "scope": "Warm resident single CPU process: public input copy, actual query encoding when required, prediction, registered skill execution, output canonicalization. Golden scoring is excluded from per-request latency.",
+  "denominator": {
+    "authored_unique_requests": 72,
+    "methods": [
+      "bm25",
+      "centroid",
+      "exact_store",
+      "nearest",
+      "ridge",
+      "single_adapter"
+    ],
+    "timing_repeats": [
+      0,
+      1,
+      2
+    ],
+    "method_request_trials": 1296,
+    "complete_cartesian_census": true,
+    "each_tuple_exactly_once": true,
+    "encoder_calls": 864,
+    "warmup_rows": 6,
+    "warmup_encoder_calls": 4,
+    "training_feature_rows": 120,
+    "profile_exact_snapshots": 12,
+    "profile_exact_unique_projects": 3,
+    "profile_exact_unique_frontiers": 4,
+    "independent_timing_samples_claim": false
+  },
+  "fixed_setup": {
+    "adapter_checkpoint_load": {
+      "cpu_seconds": 0.008102893,
+      "wall_seconds": 0.00810219399863854
+    },
+    "cpu_seconds": 1.038763745,
+    "encoder_stats": {
+      "calls": 1,
+      "encode_seconds": 0.5829755759914406,
+      "encoded_tokens": 1652,
+      "examples": 120,
+      "input_tokens": 1652,
+      "load_seconds": 0.44329062500037253,
+      "padded_tokens": 2248,
+      "truncated_examples": 0
+    },
+    "index_build_or_ridge_fit": {
+      "bm25": {
+        "cpu_seconds": 0.0006749820000000462,
+        "wall_seconds": 0.0006741450051777065
+      },
+      "centroid": {
+        "cpu_seconds": 0.003951728999999959,
+        "wall_seconds": 0.003950294994865544
+      },
+      "exact_store": {
+        "cpu_seconds": 0.00017199500000009138,
+        "wall_seconds": 0.00017228000797331333
+      },
+      "nearest": {
+        "cpu_seconds": 0.0001773229999999515,
+        "wall_seconds": 0.0001770270027918741
+      },
+      "ridge": {
+        "cpu_seconds": 0.0009845920000000064,
+        "wall_seconds": 0.0009836610115598887
+      }
+    },
+    "train_feature_encoding": {
+      "attribution": "One common train-feature encoding, reported separately; methods use the identical frozen training matrix.",
+      "cpu_seconds": 0.5827610499999999,
+      "encoded_tokens": 1652,
+      "examples": 120,
+      "input_tokens": 1652,
+      "max_abs_delta_from_frozen": 0.0,
+      "wall_seconds": 0.583176657994045
+    },
+    "wall_seconds": 1.0476219190022675
+  },
+  "whole_profiler_envelope": {
+    "wall_seconds": 6.9486532250011805,
+    "cpu_seconds": 6.933707602,
+    "includes_inner_records_do_not_add_again": true
+  },
+  "archived_storage": {
+    "checkpoint_files": 81,
+    "recorded_checkpoint_bytes": 18558416,
+    "all_files_preserved_in_record": true,
+    "individual_file_bytes_not_refetched": true,
+    "shared_encoder": {
+      "amortization": "one resident shared encoder; never duplicate-counted as independent per-cell models",
+      "assets_and_manifest": 470038,
+      "weights_file": 90405214,
+      "weights_sha256": "6fd5d72fe4589f189f8ebc006442dbb529bb7ce38f8082112682524616046452"
+    },
+    "dedicated_runtime": {
+      "attribution": "whole dedicated pinned dependency directory including dependencies; not peak RSS",
+      "bytes": 157091260,
+      "directory": "/workspace/scratch/c7f5fb7f221c/memory-runtime/site-packages"
+    }
+  },
+  "source_pins": {
+    "adapter.py": "f4c3b03dd22c4a5e7a27459348ba673842060624c6f983e9211112a49bfccba9",
+    "backend.py": "47b18cca113cf50ee47bb67032083abb39c44fe151410be792888d3abea55a53",
+    "baselines.py": "92022d8450a7edea3d97f1b3084d83680bcdd35fb7c766b7c01aa5181f53a355",
+    "experiment.py": "2491064e2ae2dfdc888c811fef1d065718f4d52408c29dcfcbbe5757b6f0af95",
+    "latency_cost.py": "b26b9a874577caa553c236992ab9f322c0310a4a3db29bc55beeb4253963a0dd",
+    "tasks.py": "b2e9942631aa645b3e9e2d77ecd7bb8092fa4c7a2a3fa96efae0b9e6bbb49b54"
+  },
+  "exclusions": [
+    "cold process/startup per request",
+    "request transport",
+    "queueing and concurrency",
+    "remote node discovery",
+    "source ingestion and training amortization",
+    "failure recovery",
+    "energy"
+  ],
+  "network_measurement": {
+    "included": false,
+    "reason": "Cross-node transport is a separate measurement; local timing cannot establish a network benefit."
+  },
+  "memory_measurement": "Weights/index/source/profile/optimizer file and array sizes are reported. Process RAM, allocator overhead, page-cache residency, and peak activation memory were not isolated per method.",
+  "full_cost_claim": false,
+  "new_model_executions": 0,
+  "new_training_updates": 0,
+  "formal_adoption_gate_restored": false
+}

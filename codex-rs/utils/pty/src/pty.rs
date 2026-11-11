@@ -177,6 +177,10 @@ async fn spawn_process_portable(
         command_builder.env(key, value);
     }
 
+    // These handles already exist after openpty. Keep both alive while spawning,
+    // so a fallible clone/take cannot lose an already-created target process.
+    #[cfg(not(unix))]
+    let (mut reader, writer) = (pair.master.try_clone_reader()?, pair.master.take_writer()?);
     let mut child = pair.slave.spawn_command(command_builder)?;
     #[cfg(unix)]
     // portable-pty establishes the spawned PTY child as a new session leader on
@@ -196,7 +200,6 @@ async fn spawn_process_portable(
     );
     #[cfg(not(unix))]
     let (reader_handle, writer_handle) = {
-        let mut reader = pair.master.try_clone_reader()?;
         let reader_handle: JoinHandle<()> = tokio::task::spawn_blocking(move || {
             let mut buf = [0u8; 8_192];
             loop {
@@ -216,7 +219,6 @@ async fn spawn_process_portable(
         });
 
         let mut writer_rx = writer_rx;
-        let writer = pair.master.take_writer()?;
         let writer = Arc::new(tokio::sync::Mutex::new(writer));
         let writer_handle: JoinHandle<()> = tokio::spawn({
             let writer = Arc::clone(&writer);

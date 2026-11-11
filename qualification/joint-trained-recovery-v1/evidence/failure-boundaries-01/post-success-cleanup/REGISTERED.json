@@ -1,0 +1,70 @@
+{
+  "schema": "hepta.historical-trained-joint-numeric-run.v1",
+  "registered_utc": "2026-11-06T07:49:18.591700+00:00",
+  "protocol_sha256": "ace30f533b17a886a2e6c5399238003e30c41bed1f4292452013763bace4742e",
+  "reference_source_sha": "18dac3ccd30317893ad922792c12400390522f00",
+  "protocol": {
+    "schema": "hepta.historical-trained-joint-numeric-protocol.v1",
+    "checkpoint_sha256": "33c1aa759bddb5e9b33b906e1796de7a6f89e5b5916711f99033584b3cbafb97",
+    "fixture_manifest_sha256": "f2dbd68ab42137d7c604d9026fa60757304fdde4688ba4e17ef6f42fd927e704",
+    "weights_sha256": "41ce6de8a9095e1ef6b8756c3117a160ed40acfad8b297390de95083664d223e",
+    "public_sha256": "86c55417fdf2abdd065fc9828c40260aed0ded4a0d607c551e15b2f6b5fd2c00",
+    "reference_source_sha": "18dac3ccd30317893ad922792c12400390522f00",
+    "native_numeric_profile": "fp64-linux-libm-v1",
+    "state_absolute_error_strictly_below_fp64": 1e-09,
+    "state_absolute_error_strictly_below_fp32": 5e-05,
+    "relative_tolerance": 0,
+    "tolerance_origin": "Same limits as the pinned historical native_bridge.differential; frozen before this helper comparison.",
+    "action_sequence": [
+      "shared",
+      "image",
+      "verify",
+      "audio",
+      "video",
+      "text",
+      "stop"
+    ],
+    "auto_remaining_millionths_after": {
+      "init": 1000000,
+      "shared": 500000,
+      "verify": 0
+    },
+    "seed": 17,
+    "sampler": "mean",
+    "media_audit": "Each of four full modality Commit proposals from every nonterminal main state; Stop flush from terminal state.",
+    "media_reference": "Unchanged Torch model FP64 output heads; independent sigmoid/tanh, ties-to-even quantization and first-maximum label selection; exact framed payload bytes.",
+    "state_scope": "Every context/shared/slot/feedback/core scalar plus exact discrete state, prefix tensors, cursors and asset bindings.",
+    "new_process_per_call": true,
+    "new_training_updates": 0,
+    "excluded": [
+      "Actor, critic and emission-head raw floating vectors are not exported by the proposal ABI",
+      "Splitmix sampler",
+      "Natural-task quality",
+      "Frozen LM and learned text-prefix execution",
+      "Optimizer resume",
+      "Adoption benefit",
+      "Complete historical cost"
+    ]
+  },
+  "helper_sha256": "f0c813b016c895f4a1b333cf2012b248ab84db275227ca6c0c6dd0972b5a769c",
+  "helper_bytes": 1145208,
+  "helper_build_origin": "Link this exact binary digest to the separate Cargo build receipt; this field alone is not build proof.",
+  "validator_sha256": "966c25efa8a0adf9ce0fe72c5d48cd1302f0e36588ec0ed63a7bd3273cdf493a",
+  "recovery_source_sha256": "c119336703d4d05afe1e8ca229220e5e477afd384e8f2943da8f011201a5b130",
+  "helper_sources": {
+    "codex-rs/hepta-infer-worker-host/src/joint_generation/bridge_state.rs": "f771d2c8aa031f5eb1e4f934f2b9a2eca43e0c5537b2c103001d807e7cecbb04",
+    "codex-rs/hepta-infer-worker-host/src/joint_generation/codec.rs": "f34940064e8ea419a086abd3eb6c20fb81eefe6184c526ef663037be84d64c96",
+    "codex-rs/hepta-infer-worker-host/src/joint_generation/decoder.rs": "c6120c09e9dcce76cd63dba5e327d593cdb1bfe6acea0261285bf2a1deccd0bd",
+    "codex-rs/hepta-infer-worker-host/src/joint_generation/math.rs": "8fc24bb6d19aac099389c50ff3ae7ef0f45c8c995c9f87e67f1d2534ef0cc655",
+    "codex-rs/hepta-infer-worker-host/src/joint_generation/model.rs": "2436dfc2393e2702e1ae13e6b111a65bd45e995231c8d11b614ceb08e40a54e7",
+    "codex-rs/hepta-infer-worker-host/src/joint_generation/proposal.rs": "e3847f78bc9d66af9c1d49696a874b318000e374fa5400078c4c5457008142c4",
+    "codex-rs/hepta-infer-worker-host/src/joint_generation/proposal_test_support.rs": "f81a18056680f1f198fe62ffd855dc5cef363a7b8fc82c50328ab48eb93b735b",
+    "codex-rs/hepta-infer-worker-host/src/joint_generation/proposal_tests.rs": "05b859f5bc48a62b32d020a9e6ef5758917533c21f19a0f3f9bbdbef45f90ac4",
+    "codex-rs/hepta-infer-worker-host/src/joint_generation/protocol.rs": "102d74d1afed890ae737a52bb44392209b2b2e8410728eb128d4ba6832b88bd2",
+    "codex-rs/hepta-infer-worker-host/src/joint_generation/state.rs": "44cfb9d0e4d17ad6417eb6d873f667ff9568a1cffbe2948589a7194f22220517"
+  },
+  "helper_entry_sha256": "7800ffc427d55983266602507165ed75dcbe8a59b0f0f1c6d47cf0044c8d463e",
+  "python": "3.12.14",
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+  "new_training_updates": 0
+}

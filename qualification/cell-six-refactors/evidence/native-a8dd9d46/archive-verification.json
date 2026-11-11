@@ -1,0 +1,93 @@
+{
+  "archive": "/workspace/scratch/37175388b26f/native-a8dd9d46.tar.gz",
+  "archive_bytes": 531052,
+  "archive_sha256": "4a65450b81e7fe82483f5568d020d821a74587ddf53026f9affa6bfb06b2d655",
+  "remote_version": "66306:76823805:531052:1793952636298896143:1793952636298896143",
+  "staging_root": "/workspace/scratch/37175388b26f/evidence-staging/native-a8dd9d46",
+  "tar_members": 28,
+  "regular_files": 28,
+  "links_or_escapes": 0,
+  "indexed_files_verified": 27,
+  "indexed_bytes_verified": 7140495,
+  "expanded_bytes_including_index": 7145062,
+  "raw_index_bytes": 4567,
+  "raw_index_sha256": "f1452646affd593fec9463e7a0e5926e4029043de682a9753aceecbed9cb665b",
+  "source_sha": "a8dd9d4639ebe781ceb06afdf09e3fdcb9bf48be",
+  "source_tree": "999653ebe8167c67ce0559719fb1581a8cb28396",
+  "native_state": "passed",
+  "native_exit_code": 0,
+  "phase_exit_codes": [
+    {
+      "name": "scoped-fix",
+      "exit_code": 0
+    },
+    {
+      "name": "scoped-strict",
+      "exit_code": 0
+    },
+    {
+      "name": "helpers",
+      "exit_code": 0
+    },
+    {
+      "name": "scoped-test",
+      "exit_code": 0
+    }
+  ],
+  "junit": {
+    "tests": 954,
+    "passed": 954,
+    "failures": 0,
+    "errors": 0,
+    "skipped_nodes": 0,
+    "flaky_failure_nodes": 0,
+    "rerun_failure_nodes": 0
+  },
+  "junit_bytes": 202499,
+  "junit_sha256": "a1e63838ffb6aac9681936cf0874ad1f44896fd0ba6e70744e3fd66106365903",
+  "packages": {
+    "codex-hepta-agentd": {
+      "tests": 653,
+      "passed": 653,
+      "failures": 0,
+      "errors": 0,
+      "skipped_nodes": 0,
+      "flaky_failure_nodes": 0,
+      "rerun_failure_nodes": 0
+    },
+    "codex-hepta-infer-core": {
+      "tests": 35,
+      "passed": 35,
+      "failures": 0,
+      "errors": 0,
+      "skipped_nodes": 0,
+      "flaky_failure_nodes": 0,
+      "rerun_failure_nodes": 0
+    },
+    "codex-hepta-infer-worker-host": {
+      "tests": 57,
+      "passed": 57,
+      "failures": 0,
+      "errors": 0,
+      "skipped_nodes": 0,
+      "flaky_failure_nodes": 0,
+      "rerun_failure_nodes": 0
+    },
+    "codex-hepta-neuron": {
+      "tests": 209,
+      "passed": 209,
+      "failures": 0,
+      "errors": 0,
+      "skipped_nodes": 0,
+      "flaky_failure_nodes": 0,
+      "rerun_failure_nodes": 0
+    }
+  },
+  "whole_workspace_tested": false,
+  "helper_build_count": 8,
+  "helper_artifact_count": 10,
+  "helper_before_after_identities_match": true,
+  "helper_cargo_records_verified": 18,
+  "runner_skipped_before_execution": 67,
+  "runner_elapsed_seconds": 110.583
+}

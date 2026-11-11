@@ -970,11 +970,12 @@ mod tests {
 
         let initialize = read_websocket_json(&mut websocket).await;
         assert_eq!(initialize["method"], "initialize");
+        assert_eq!(initialize["params"]["processExitObservation"], true);
         websocket
             .send(Message::Text(
                 serde_json::json!({
                     "id": initialize["id"],
-                    "result": { "sessionId": "test-session" }
+                    "result": { "sessionId": "test-session", "processExitObservation": true }
                 })
                 .to_string()
                 .into(),
@@ -1221,6 +1222,11 @@ url = "ws://127.0.0.1:8765"
 
     #[tokio::test]
     async fn blocking_snapshot_waits_for_starting_environment() {
+        // Keep callsite registration aware of this scoped subscriber when a
+        // parallel test first reaches a shared callsite without a subscriber.
+        // tracing-core's single-dispatch fast path otherwise caches it as off.
+        let _callsite_registry_guard =
+            tracing::Dispatch::new(tracing::subscriber::NoSubscriber::default());
         let buffer: &'static std::sync::Mutex<Vec<u8>> =
             Box::leak(Box::new(std::sync::Mutex::new(Vec::new())));
         let subscriber = tracing_subscriber::fmt()
@@ -1262,7 +1268,8 @@ url = "ws://127.0.0.1:8765"
             .update_selections(std::slice::from_ref(&selection), &test_environment_config());
         let snapshot_task = tokio::spawn({
             let environments = Arc::clone(&environments);
-            async move { environments.snapshot().await }
+            // set_default is thread-local; preserve it across Tokio workers.
+            async move { environments.snapshot().await }.with_current_subscriber()
         });
         tokio::task::yield_now().await;
         assert!(!snapshot_task.is_finished());

@@ -1,0 +1,44 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "ProcessIndeterminateReason": {
+      "description": "The server cannot confirm the native process's exit. This is not an exit code or evidence that a cleanup request reached the process.",
+      "enum": [
+        "exitObservationLost"
+      ],
+      "type": "string"
+    }
+  },
+  "description": "Terminal observation failed for an acknowledged `process/spawn`.\n\nThe original owner remains retained and new `process/spawn` requests are fenced server-wide, including on new connections. The handle is not reusable. Only reconciliation of the original owner can establish exit; reconnecting or restarting the server is not exit evidence.",
+  "properties": {
+    "processHandle": {
+      "type": "string"
+    },
+    "reason": {
+      "$ref": "#/definitions/ProcessIndeterminateReason"
+    },
+    "stderr": {
+      "type": "string"
+    },
+    "stderrCapReached": {
+      "type": "boolean"
+    },
+    "stdout": {
+      "description": "Output observed before the original bounded drain ended; not a complete-exit claim.",
+      "type": "string"
+    },
+    "stdoutCapReached": {
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "processHandle",
+    "reason",
+    "stderr",
+    "stderrCapReached",
+    "stdout",
+    "stdoutCapReached"
+  ],
+  "title": "ProcessIndeterminateNotification",
+  "type": "object"
+}

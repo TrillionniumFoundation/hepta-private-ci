@@ -355,6 +355,7 @@ pub(super) async fn list_rollout_threads(
 
 #[cfg(test)]
 mod tests {
+    use crate::local::test_support::private_home;
     use chrono::Utc;
     use codex_protocol::ThreadId;
     use codex_protocol::protocol::SessionSource;
@@ -415,7 +416,7 @@ mod tests {
 
     #[tokio::test]
     async fn list_threads_preserves_sqlite_title_search_results() {
-        let home = TempDir::new().expect("temp dir");
+        let home = private_home().expect("temp dir");
         let config = test_config(home.path());
         let uuid = Uuid::from_u128(103);
         let thread_id = ThreadId::from_string(&uuid.to_string()).expect("valid thread id");
@@ -485,7 +486,7 @@ mod tests {
 
     #[tokio::test]
     async fn list_paginated_threads_uses_sqlite_name_over_legacy_compatibility() {
-        let home = TempDir::new().expect("temp dir");
+        let home = private_home().expect("temp dir");
         let config = test_config(home.path());
         let uuid = Uuid::from_u128(104);
         let thread_id = ThreadId::from_string(&uuid.to_string()).expect("valid thread id");
@@ -672,7 +673,7 @@ mod tests {
 
     #[tokio::test]
     async fn section_listing_uses_sqlite_metadata_without_reading_rollouts() {
-        let home = TempDir::new().expect("temp dir");
+        let home = private_home().expect("temp dir");
         let config = test_config(home.path());
         let state = codex_state::StateRuntime::init(
             config.sqlite.clone(),

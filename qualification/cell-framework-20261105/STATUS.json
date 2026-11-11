@@ -1,0 +1,98 @@
+{
+  "schema_version": 1,
+  "candidate": "cell-framework-20261105",
+  "review_pr": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4887",
+  "branch": "codex/cell-framework-20261105",
+  "base_commit": "07378034e060f23259bc99c7367f12b1284140f3",
+  "source_checkpoint": "217ab49d9688b506088e094ff83437231ee605df",
+  "status": "source_candidate_pending_native_and_product_qualification",
+  "source_change_files": 65,
+  "authored_test_functions": 110,
+  "authored_tests_by_file": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_cell_tests.rs",
+      "authored_test_functions": 10
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_runtime_tests.rs",
+      "authored_test_functions": 5
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/terminal_learning_tests.rs",
+      "authored_test_functions": 4
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/circuit_admission_tests.rs",
+      "authored_test_functions": 9
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/circuit_runtime_tests.rs",
+      "authored_test_functions": 19
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/circuit_store_tests.rs",
+      "authored_test_functions": 8
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/cell_bundle_tests.rs",
+      "authored_test_functions": 4
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/learning_iteration_tests.rs",
+      "authored_test_functions": 6
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_inference_tests.rs",
+      "authored_test_functions": 7
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_journal_tests.rs",
+      "authored_test_functions": 11
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_tests.rs",
+      "authored_test_functions": 17
+    },
+    {
+      "path": "codex-rs/hepta-runtime/src/cell_lifecycle_tests.rs",
+      "authored_test_functions": 10
+    }
+  ],
+  "verification": {
+    "source_saved_and_read_back": true,
+    "native_compilation": "not_run",
+    "native_tests": "not_run",
+    "executed_new_test_functions": 0,
+    "rustfmt": "not_run",
+    "clippy": "not_run",
+    "target_host": "not_run",
+    "source_head_workflow": ".github/workflows/hepta-cell-framework-native.yml",
+    "blockers": [
+      "Native execution environment unavailable",
+      "Observed source CI jobs queued with runner_id 0 and no executed steps"
+    ]
+  },
+  "production": {
+    "ordinary_cell_circuit_startup_enabled": false,
+    "generic_learning_provider_checkpoint_and_next_use_closed": false,
+    "native_terminal_training_source_present": true,
+    "terminal_job_checkpoint_durable": false,
+    "physical_structural_lifecycle_closed": false,
+    "public_cell_lifecycle_admission": "held",
+    "external_effect_authority": "unchanged",
+    "independent_acceptance": false,
+    "activation": false,
+    "promotion": false,
+    "release": false
+  },
+  "invariants": [
+    "TaskFlow V1 cycle checks preserved",
+    "Shared owners/facilities; no per-Cell server or database",
+    "Immutable bundles and explicit state transition",
+    "Unknown outcomes cannot become fresh dispatch",
+    "Actual cost is never clamped to the reservation",
+    "Lifecycle observations bind the precise durable prepare attempt",
+    "Lifecycle pending observations retain shared journal capacity",
+    "DENY_ALL on Cell decisions/update proposals/lifecycle intents"
+  ]
+}

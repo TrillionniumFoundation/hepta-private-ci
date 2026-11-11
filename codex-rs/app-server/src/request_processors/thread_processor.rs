@@ -20,7 +20,9 @@ use codex_protocol::config_types::MultiAgentMode;
 use codex_protocol::error::CodexErrorDetails;
 use codex_protocol::mcp::ClientMcpExtensions;
 use codex_protocol::protocol::ThreadHistoryMode;
-use codex_thread_store::PersistContext;
+
+#[path = "thread_items_legacy.rs"]
+mod thread_items_legacy;
 
 pub(super) const THREAD_LIST_DEFAULT_LIMIT: usize = 25;
 pub(super) const THREAD_LIST_MAX_LIMIT: usize = 100;
@@ -3242,8 +3244,8 @@ impl ThreadRequestProcessor {
                 thread.history_mode,
                 codex_app_server_protocol::ThreadHistoryMode::Paginated
             ) {
-                self.thread_store
-                    .persist_thread(thread_id, PersistContext::Standard)
+                loaded_thread
+                    .materialize_thread()
                     .await
                     .map_err(|err| thread_read_history_load_error(thread_id, err))?;
                 thread.turns = self
@@ -3619,66 +3621,6 @@ impl ThreadRequestProcessor {
             .await
             .map_err(paginated_history_list_error)?;
         Ok((turns_page.backwards_cursor, items_page.backwards_cursor))
-    }
-
-    async fn thread_items_list_response_inner(
-        &self,
-        params: ThreadItemsListParams,
-    ) -> Result<ThreadItemsListResponse, JSONRPCErrorError> {
-        let ThreadItemsListParams {
-            thread_id,
-            turn_id,
-            cursor,
-            limit,
-            sort_direction,
-        } = params;
-        let thread_id = ThreadId::from_string(&thread_id)
-            .map_err(|err| invalid_request(format!("invalid thread id: {err}")))?;
-        let page_size = limit
-            .map(|value| value as usize)
-            .unwrap_or(THREAD_ITEMS_DEFAULT_LIMIT)
-            .clamp(1, THREAD_ITEMS_MAX_LIMIT);
-        let page = self
-            .thread_store
-            .list_items(StoreListItemsParams {
-                thread_id,
-                turn_id,
-                include_archived: true,
-                cursor,
-                page_size,
-                sort_direction: match sort_direction.unwrap_or(SortDirection::Asc) {
-                    SortDirection::Asc => StoreSortDirection::Asc,
-                    SortDirection::Desc => StoreSortDirection::Desc,
-                },
-                sort_key: StoreItemSortKey::CreatedAtOrdinal,
-                after_updated_at_ordinal: None,
-            })
-            .await
-            .map_err(|err| match err {
-                ThreadStoreError::InvalidRequest { message } => invalid_request(message),
-                ThreadStoreError::Unsupported { .. } => {
-                    method_not_found("thread/items/list is not supported yet")
-                }
-                ThreadStoreError::ThreadNotFound { thread_id } => {
-                    invalid_request(format!("no rollout found for thread id {thread_id}"))
-                }
-                err => internal_error(format!("failed to list thread items: {err}")),
-            })?;
-        let data = page
-            .items
-            .into_iter()
-            .map(|stored_item| {
-                let turn_id = stored_item.turn_id.clone();
-                let item = deserialize_stored_thread_item(stored_item)?;
-                Ok(ThreadItemEntry { turn_id, item })
-            })
-            .collect::<Result<Vec<_>, _>>()?;
-
-        Ok(ThreadItemsListResponse {
-            data,
-            next_cursor: page.next_cursor,
-            backwards_cursor: page.backwards_cursor,
-        })
     }
 
     async fn load_thread_turns_list_history(
@@ -4125,9 +4067,8 @@ impl ThreadRequestProcessor {
                 // previous write failure. Persist after reopening the live writer so legacy
                 // response hydration reads the latest durable turns and items.
                 if paginated_resume
-                    && let Err(error) = self
-                        .thread_store
-                        .persist_thread(thread_id, PersistContext::Standard)
+                    && let Err(error) = codex_thread
+                        .materialize_thread()
                         .await
                         .map_err(thread_store_resume_read_error)
                 {
@@ -4414,6 +4355,22 @@ impl ThreadRequestProcessor {
         } else if let Ok(existing_thread_id) = ThreadId::from_string(&params.thread_id)
             && let Ok(existing_thread) = self.thread_manager.get_thread(existing_thread_id).await
         {
+            // A live thread can exist before its lazy rollout is materialized.
+            // Rejoin that SAME Core instance through its original store writer;
+            // do not fall into cold resume or create a replacement thread just
+            // because no user turn has been submitted yet. Corrupt/unavailable
+            // metadata still fails closed through the existing typed reader.
+            if self
+                .read_stored_thread_for_read(existing_thread_id, /*include_history*/ false)
+                .await
+                .map_err(thread_read_view_error)?
+                .is_none()
+            {
+                existing_thread
+                    .materialize_thread()
+                    .await
+                    .map_err(thread_store_resume_read_error)?;
+            }
             let source_thread = self
                 .read_stored_thread_for_resume(
                     &params.thread_id,
@@ -4524,9 +4481,18 @@ impl ThreadRequestProcessor {
                     )
                     .await?;
             }
-            if paginated_resume && (include_turns || params.initial_turns_page.is_some()) {
-                self.thread_store
-                    .persist_thread(existing_thread_id, PersistContext::Standard)
+            if paginated_resume {
+                // Even an excludeTurns response computes pagination cursors. A prior attempt
+                // may have written JSONL before metadata failed, so a readable rollout alone
+                // does not prove the pending metadata reached SQLite. Reuse the same owner.
+                existing_thread
+                    .materialize_thread()
+                    .await
+                    .map_err(thread_store_resume_read_error)?;
+                source_thread = existing_thread
+                    .read_thread(
+                        /*include_archived*/ true, /*include_history*/ false,
+                    )
                     .await
                     .map_err(thread_store_resume_read_error)?;
             }

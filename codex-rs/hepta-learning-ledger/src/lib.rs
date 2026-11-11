@@ -132,6 +132,7 @@ pub use run_start::RunStartAuthenticationV1;
 pub use run_start::RunStartConflictRecordV1;
 pub use run_start::RunStartJournal;
 pub use run_start::RunStartObjectiveDispositionV1;
+pub use run_start::RunStartPublication;
 pub use run_start::RunStartRecordV1;
 pub use run_start::RunStartRecovery;
 pub use run_start::RunStartSnapshotV1;

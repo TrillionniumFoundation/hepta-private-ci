@@ -1,0 +1,54 @@
+{
+  "schema": "hepta.scoped-ci-timeout.retained-evidence.v1",
+  "original_fix_commit": "1c06c2cf9b6d2b4a95e10be11f720e70ec52e17f",
+  "original_source_commit": "2be5fc052ae7b2e9fb08c68a3ae7e5a218ad37d5",
+  "files": [
+    {
+      "path": "diagnosis.json",
+      "bytes": 7277,
+      "sha256": "83066e5d44181bc3ffb480bd592eee17d4c5ab36545a37942720c3df7099374d"
+    },
+    {
+      "path": "ci-required-117680130373.log",
+      "bytes": 18421,
+      "sha256": "a5c5366d87810ff93c2f8e6ce60339063fbcebde0e3bcd17608301868bd81191"
+    },
+    {
+      "path": "source-and-fallback-observations.json",
+      "bytes": 4225,
+      "sha256": "c48d5e23dd1dd50149026e4ed03fa7a1e498a16d5e9a773dbb8b3485d3b99a4c"
+    },
+    {
+      "path": "validation-01/receipt.json",
+      "bytes": 5717,
+      "sha256": "5ce3f40c980f5c055401306e5306bda407c0a5216f22dc10946790e2075cbcbf"
+    },
+    {
+      "path": "validation-01/python-tests.log",
+      "bytes": 11451,
+      "sha256": "3eb98c93ef57321f451d1d385c12093f638cffdea2fd659b856570aba7f06498"
+    },
+    {
+      "path": "validation-01/static-workflow-validation.json",
+      "bytes": 830,
+      "sha256": "633bf1f21434ccf83473f48df39d970827f519943917dcee0fa1baa3be5a7fb6"
+    },
+    {
+      "path": "validation-01/actionlint.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "validation-01/actionlint-version.log",
+      "bytes": 95,
+      "sha256": "9d34cdaec053c6005199c08f2bac628bd8c087303faa26fd8ab58c3e22216ff5"
+    },
+    {
+      "path": "fmt-receipt-02.json",
+      "bytes": 811,
+      "sha256": "ddb00e671979198592b4490e5b6eb3feb6f3de7fa48892f1a01fb0a8225b20d7"
+    }
+  ],
+  "scope": "Original diagnosis, failed required-job log and local validation records, copied without alteration. This is a selected retained set, not the entire transient work directory. Absolute paths in original records identify where the original execution occurred.",
+  "remote_ci_at_time_of_original_validation": "Not rerun. Later candidate CI must be observed separately."
+}

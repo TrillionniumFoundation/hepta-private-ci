@@ -61,6 +61,14 @@ pub struct AuthBusDeliveryStatus {
     pub acknowledgement: Option<Digest32>,
 }
 
+/// Exact retained admission data, with no delivery lease or send permission.
+/// Reading it cannot enqueue, claim, renew, acknowledge, or dispatch a message.
+pub struct AuthBusRetainedDelivery {
+    pub message: SignedMessage,
+    pub payload: Vec<u8>,
+    pub status: AuthBusDeliveryStatus,
+}
+
 /// Owner-issued message delivery lease, not authority to perform an effect.
 /// A new fence invalidates every token held by the previous worker.
 #[derive(Debug)]

@@ -75,9 +75,11 @@ async fn user_turn_includes_skill_instructions() -> Result<()> {
 
     let server = start_mock_server().await;
     let skill_body = "skill body";
-    let mut builder = test_codex().with_workspace_setup(move |cwd, fs| async move {
-        write_repo_skill(cwd, fs, "demo", "demo skill", skill_body).await
-    });
+    let mut builder = test_codex()
+        .with_internal_metadata_for_mock()
+        .with_workspace_setup(move |cwd, fs| async move {
+            write_repo_skill(cwd, fs, "demo", "demo skill", skill_body).await
+        });
     let test = builder.build_with_auto_env(&server).await?;
 
     let skill_path = test

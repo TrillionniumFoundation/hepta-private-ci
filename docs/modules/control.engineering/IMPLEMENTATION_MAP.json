@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "e8e81b7d541a81e75635cc1c0a713edaedb999d5",
-    "tree": "aaa6e4ecb7d45d01ea88f93b6a716e7dca3cf395"
+    "commit": "331b81d385a88837e252bd80fda8b8ac35ea4191",
+    "tree": "0b67403646bb9ba576b39edd88607eb54aa121db"
   },
   "laneId": "LANE-G-ENGINEERING",
   "module": "control.engineering",
@@ -944,8 +944,8 @@
     "tree": "0b67403646bb9ba576b39edd88607eb54aa121db"
   },
   "observedAtHead": {
-    "commit": "e8e81b7d541a81e75635cc1c0a713edaedb999d5",
-    "tree": "aaa6e4ecb7d45d01ea88f93b6a716e7dca3cf395"
+    "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+    "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384"
   },
   "observedSourcePaths": [
     "tools/hepta-engineering-control"
@@ -1087,5 +1087,11 @@
       "path": "tools/hepta-engineering-control/test_worker_lifecycle.py",
       "object": "caa8a8f49cd8b671010632e616dcdcfac2000e87"
     }
-  ]
+  ],
+  "sourceObservationRebind": {
+    "ledger": "qualification/module-execution-dossiers/SOURCE_OBSERVATION_REBIND_20261027.json",
+    "record": "control.engineering",
+    "previousMapBlob": "4dd8c5a5f55f44d50e6f407528f14bc92f77d1c4",
+    "scope": "source_navigation_only_no_execution_evidence_transferred"
+  }
 }

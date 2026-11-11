@@ -35,6 +35,7 @@ async fn first_request_item_types_roles_and_content_annotations() -> Result<()> 
     )
     .await;
     let test = test_codex()
+        .with_internal_metadata_for_mock()
         .with_model_info_override("gpt-5.5", |model_info| {
             model_info.input_modalities.push(InputModality::Audio);
         })
@@ -227,6 +228,7 @@ async fn content_item_kinds_are_omitted_when_feature_disabled() -> Result<()> {
     )
     .await;
     let test = test_codex()
+        .with_internal_metadata_for_mock()
         .with_config(|config| {
             config.developer_instructions = Some("Keep other metadata intact.".into());
             config

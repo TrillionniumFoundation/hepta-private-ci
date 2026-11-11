@@ -1,0 +1,52 @@
+{
+  "startedAt": "2026-10-23T23:58:41.563405+00:00",
+  "phase": "finished",
+  "qualified": false,
+  "sourceFrozenAt": "f4044f8d77b1c1142f84525b1b1f243e2ddf95d6",
+  "sourceMutationAllowed": false,
+  "finalUnifiedFullQualified": false,
+  "nativeAsterinasQualified": false,
+  "testedBase": "f4044f8d77b1c1142f84525b1b1f243e2ddf95d6",
+  "testedDiffSha256": "6af3ff2c920b674b9e6bce90f91e32105feac8093fecad28b42ae1c37cd48f2d",
+  "helperCopyRoot": "/data/hh.3h35nezo",
+  "helperManifest": "/data/hh.3h35nezo/manifest.json",
+  "standardTargetRunner": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-3/work/dependency-alerts/remaining_three_fixed_helper_runner.py",
+  "environment": {
+    "TMPDIR": "/data/hw.v572808v",
+    "RUNNER_TEMP": "/data/hw.v572808v/r",
+    "RUSTUP_TOOLCHAIN": "1.95.0",
+    "CARGO_TARGET_DIR": "/data/hepta-mcp-integer-target",
+    "CARGO_BUILD_JOBS": "1",
+    "CARGO_NET_OFFLINE": "true"
+  },
+  "originalAssertionsDeadlinesRetriesChanged": false,
+  "temporaryDiagnosticInstrumentationOnly": true,
+  "results": {
+    "core-startup-timing-trace-spawn-original": {
+      "test": "deferred_executor_spawn_agent_inherits_ready_step_environments",
+      "exitCode": 0,
+      "elapsedSeconds": 46.55788253992796
+    },
+    "core-startup-timing-trace-pending-original": {
+      "test": "deferred_executor_stays_pending_after_materialization",
+      "exitCode": 0,
+      "elapsedSeconds": 11.267713908920996
+    }
+  },
+  "finishedAt": "2026-10-23T23:59:50.162053+00:00",
+  "originalResults": {
+    "core-startup-timing-trace-spawn-original": {
+      "test": "deferred_executor_spawn_agent_inherits_ready_step_environments",
+      "exitCode": 0,
+      "elapsedSeconds": 46.55788253992796
+    },
+    "core-startup-timing-trace-pending-original": {
+      "test": "deferred_executor_stays_pending_after_materialization",
+      "exitCode": 0,
+      "elapsedSeconds": 11.267713908920996
+    }
+  },
+  "trackedInputsUnchangedDuringTests": true,
+  "sourceRestoredToProvisionalHelper": true,
+  "noAdditionalSemanticCodeChanges": true
+}

@@ -1,0 +1,34 @@
+{
+  "phase": "cold_check",
+  "process_metrics": {
+    "cpu_system_seconds": 0.245718,
+    "cpu_user_seconds": 0.702001,
+    "exit_code": 0,
+    "peak_rss_bytes": 209743872,
+    "pid": 16,
+    "wall_seconds": 0.9482769539972651
+  },
+  "result": {
+    "engineering_passed": true,
+    "optimizer_updates": 0,
+    "receipt": {
+      "artifact": "1b5091f1d5a920bddf57999367d60aa56116f2040da933cb8afc2b330c5e4455",
+      "epoch": 1,
+      "predictions": [
+        0
+      ],
+      "source_version": "bcdfb871c32611f228aa878fd4f45dc78eab87c78ee8c1c6f93b979b04bea453"
+    },
+    "result": {
+      "correct": true,
+      "error": null,
+      "label_correct": true,
+      "output": [
+        "learn",
+        "verify",
+        "serve"
+      ],
+      "predicted_skill": "unique_stable"
+    }
+  }
+}

@@ -140,6 +140,32 @@ impl HeptaEvidenceStore {
         Ok(OutboxRecord::decode(row)?.status)
     }
 
+    /// Observe one original admitted message. The immutable signed envelope,
+    /// delivery identity and payload digest are checked without a new lease.
+    pub async fn retained_authbus_delivery(
+        &self,
+        delivery_id: Digest32,
+    ) -> Result<AuthBusRetainedDelivery, AuthBusOutboxError> {
+        let row = sqlx::query("SELECT * FROM authbus_outbox WHERE delivery_id = ?")
+            .bind(delivery_id.as_array().as_slice())
+            .fetch_optional(&self.pool)
+            .await
+            .map_err(classify_sqlx_error)?
+            .ok_or(AuthBusOutboxError::NotFound)?;
+        let record = OutboxRecord::decode(row)?;
+        if record.status.delivery_id != delivery_id || record.message.delivery_id() != delivery_id {
+            return Err(EvidenceError::Corrupt(
+                "retained AuthBus delivery identity mismatch".into(),
+            )
+            .into());
+        }
+        Ok(AuthBusRetainedDelivery {
+            message: record.message,
+            payload: record.payload,
+            status: record.status,
+        })
+    }
+
     /// Bounded route-specific recovery scan, including abandoned expired leases.
     /// The host resolves each message's current issuer before claiming its ID.
     pub async fn pending_authbus_deliveries(

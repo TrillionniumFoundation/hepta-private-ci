@@ -1,0 +1,90 @@
+{
+  "adoption_performed": false,
+  "baseline": {
+    "command": "python -B -m unittest -v test_attempt_accounting",
+    "errors": 0,
+    "exit_code": 1,
+    "failures": 5,
+    "log": "baseline-five-counterexamples.log",
+    "tests": 5
+  },
+  "baseline_commit": "9bbf4bb4d1b5466f62d75d6b70dad4d26ec75d55",
+  "baseline_pr": 5089,
+  "diagnostics": {
+    "diagnostic-initial-imported-suite.log": "4 failures/1 error; importing the TestCase class also discovered 13 existing tests; unknown-attempt dispatch hit a MagicMock bytes error. Not the final regression invocation.",
+    "diagnostic-path-error-suite.log": "Test editing command had an incorrect relative path, then repeated the initial 18-test diagnostic. No model load or training.",
+    "fixed-initial-eighteen-tests.log": "First passing 18-test suite; final rerun replaces sorting mixed phase identifiers with stable extension to preserve malformed-record handling."
+  },
+  "executed_source": {
+    "loop_common.py": {
+      "bytes": 2898,
+      "sha256": "60ef013907e9b2b4e2659f8e2508cbc4f45747dedd7326717076b5655621d6ec"
+    },
+    "loop_tests.py": {
+      "bytes": 11404,
+      "sha256": "34f48f967cb8f066b54aac83e6b8ad10c9c7f6ee82d9458cc35954db1a3553f9"
+    },
+    "prepare_run.py": {
+      "bytes": 7427,
+      "sha256": "7a6c86dd351b3d08acb55bf7d7bb4af40d8389eadd76e8079359ab5062ca4fe4"
+    },
+    "receipt_verifier.py": {
+      "bytes": 4492,
+      "sha256": "804aa168c8e751bdaaf660eea26db1bc395615a6b02fa3050bf5da7795de2d30"
+    },
+    "run_loop.py": {
+      "bytes": 13282,
+      "sha256": "66508200685c4a4a00fe43bd2c2fd353f012d6764732b44e272037f1dee989eb"
+    },
+    "test_attempt_accounting.py": {
+      "bytes": 4562,
+      "sha256": "0efa99b9d9b235a5ce68c97e6ef18e022d0e3d06ed8d8aa9b6ed118078e3eaba"
+    }
+  },
+  "fixed": {
+    "command": "python -B -m unittest -v loop_tests test_attempt_accounting",
+    "errors": 0,
+    "exit_code": 0,
+    "failures": 0,
+    "log": "fixed-eighteen-tests.log",
+    "skipped": 0,
+    "tests": 18
+  },
+  "limits": [
+    "Tests exercise real fresh subprocesses with bounded synthetic worker receipts; they do not execute the real MiniLM model.",
+    "No newly trained candidate, full-cost comparison, formal future gate, positive adoption or next real task qualification is established.",
+    "OS filesystem I/O and concurrent invocation ownership are not newly bounded by this change."
+  ],
+  "logs": {
+    "baseline-five-counterexamples.log": {
+      "bytes": 4318,
+      "sha256": "b75cd85ec7b0edaa1cc5e5511dfd02b4f80cfc183c5f89055cae2ce8030c57dd"
+    },
+    "diagnostic-initial-imported-suite.log": {
+      "bytes": 6665,
+      "sha256": "8e2a488d525339ad4cde6b768921ecb328cabe13bb4bbca35126de24d523b44c"
+    },
+    "diagnostic-path-error-suite.log": {
+      "bytes": 6665,
+      "sha256": "852505e7f43e7b39b65904d7fee13617bb6d0d26e7fb03b62b7ea177eb95779c"
+    },
+    "fixed-eighteen-tests.log": {
+      "bytes": 2833,
+      "sha256": "fcd87dc4f806d94de4ca860fc37614637e25d3c4f5d5f3069eea43534516b2e8"
+    },
+    "fixed-initial-eighteen-tests.log": {
+      "bytes": 2833,
+      "sha256": "0f75999ea61718ad78560735ddfa0380d69bed49d26aaf9ae75760b6506213ca"
+    }
+  },
+  "model_loads": 0,
+  "optimizer_updates": 0,
+  "original_experiment_modified": false,
+  "positive_adoption_qualified": false,
+  "production_deployment": false,
+  "runtime": {
+    "platform": "Linux",
+    "python": "3.12.14"
+  },
+  "schema": "hepta.memory.attempt-inventory.regression.v1"
+}

@@ -1,0 +1,16 @@
+{
+  "command": [
+    "/home/qian-qi/.cargo/bin/just",
+    "test",
+    "-p",
+    "codex-hepta-contracts",
+    "--lib",
+    "--locked",
+    "-E",
+    "test(entry_rechecks_time_after_waiting_for_owner_fence)",
+    "--test-threads",
+    "2"
+  ],
+  "exit": 100,
+  "seconds": 50.522576847928576
+}

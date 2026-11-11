@@ -1,0 +1,222 @@
+{
+  "blob_policy": {
+    "largest_file_bytes": 250625,
+    "limit_bytes": 512000,
+    "observed_files": 84,
+    "violations": []
+  },
+  "candidate": {
+    "artifact": "c1d0f24ef0cda82ee93e59ccd250be4373d4a6c3c23e609d284eb0c5a5741137",
+    "checkpoint": {
+      "bytes": 250625,
+      "sha256": "65bc5a7d5da59b1d312b8663bfa056c675cd9709af04ce08056c87297112947f"
+    },
+    "source_version": "729f6bb5697b28765b021e1af9f42af87ad43afbaa551b11938118d1c7191862",
+    "state_sha256": "602bd8a029ae7f8a69895674ea1702554d40379635736f22f770eaa933af44e9",
+    "step": 256
+  },
+  "complete_new_run_process_measurement": {
+    "cpu_seconds": 7.7308959999999995,
+    "failed_real_worker_attempts": 0,
+    "failed_training_attempts": 0,
+    "parent_cpu_seconds": 0.2735539999999999,
+    "peak_rss_bytes": 212811776,
+    "scope": "Linux wait4 covers both full driver lifetimes and their waited descendants, including startup, preparation, all ten lifecycle workers and finalization",
+    "wall_seconds_sum_of_two_invocations": 7.792046205002407
+  },
+  "engineering_passed": true,
+  "fixed_inventory_sha256": "d914d2e5af5b7780a22b8d72390722eb5180affa57337e110a8c606e04e26f65",
+  "limitations": [
+    "authored Cedar engineering task, not observed future traffic",
+    "parent never trained on the superseded Cedar label",
+    "final skills revision changes provenance only; labels unchanged",
+    "nine-arm formal gate not invoked or weakened",
+    "no benefit/cost superiority or full-cost admission established"
+  ],
+  "parent": {
+    "artifact": "1b5091f1d5a920bddf57999367d60aa56116f2040da933cb8afc2b330c5e4455",
+    "checkpoint": {
+      "bytes": 250077,
+      "sha256": "c64db4368b56bef47ea4571c31b4b551a43c8064ef976241ae272cbde6ef2948"
+    },
+    "state_sha256": "8a03519dff1585b1b49c808371c7e143dac2f91e5cd6a2bef5da5fdceb9f0654",
+    "step": 240
+  },
+  "phase_costs": [
+    {
+      "cpu_system_seconds": 0.389372,
+      "cpu_user_seconds": 1.511714,
+      "instance": "ddc4e65364fc43049371596e311e3ca6",
+      "peak_rss_bytes": 212811776,
+      "phase": "bootstrap",
+      "pid": 7,
+      "wall_seconds": 1.9684699390018068
+    },
+    {
+      "cpu_system_seconds": 0.035697,
+      "cpu_user_seconds": 0.229566,
+      "instance": "81512812167e4e3aa324596bba84fa75",
+      "peak_rss_bytes": 48807936,
+      "phase": "feedback",
+      "pid": 6,
+      "wall_seconds": 0.2745365070004482
+    },
+    {
+      "cpu_system_seconds": 0.224726,
+      "cpu_user_seconds": 1.173087,
+      "instance": "2396e56c9afd44a88a979909c3c82178",
+      "peak_rss_bytes": 211988480,
+      "phase": "train",
+      "pid": 7,
+      "wall_seconds": 1.3853327390024788
+    },
+    {
+      "cpu_system_seconds": 0.058725999999999945,
+      "cpu_user_seconds": 0.31348200000000004,
+      "instance": "6e4c58bd50c849c496b8416fce5d4cc1",
+      "peak_rss_bytes": 51175424,
+      "phase": "verify",
+      "pid": 17,
+      "wall_seconds": 0.37367126699973596
+    },
+    {
+      "cpu_system_seconds": 0.200795,
+      "cpu_user_seconds": 0.9083600000000001,
+      "instance": "10982865793b4995b894b432b4e9829f",
+      "peak_rss_bytes": 211939328,
+      "phase": "evaluate",
+      "pid": 18,
+      "wall_seconds": 1.0935737330000848
+    },
+    {
+      "cpu_system_seconds": 0.193658,
+      "cpu_user_seconds": 0.541941,
+      "instance": "d1f61f293c5a4c13a200f459664b9277",
+      "peak_rss_bytes": 209375232,
+      "phase": "candidate_next",
+      "pid": 28,
+      "wall_seconds": 0.7366038869986369
+    },
+    {
+      "cpu_system_seconds": 0.04387399999999997,
+      "cpu_user_seconds": 0.20152100000000006,
+      "instance": "93ecb6b3b415430492643ccc676be5e2",
+      "peak_rss_bytes": 50102272,
+      "phase": "publish",
+      "pid": 38,
+      "wall_seconds": 0.24607642199771362
+    },
+    {
+      "cpu_system_seconds": 0.15420500000000004,
+      "cpu_user_seconds": 0.586357,
+      "instance": "304ebdfc5d654edc8f6668641310cd9e",
+      "peak_rss_bytes": 209682432,
+      "phase": "parent_next",
+      "pid": 39,
+      "wall_seconds": 0.7429745299996284
+    },
+    {
+      "cpu_system_seconds": 0.028119000000000005,
+      "cpu_user_seconds": 0.22361200000000014,
+      "instance": "da4a1f01f2a84f0ca2933369f7ec5394",
+      "peak_rss_bytes": 48697344,
+      "phase": "revise_dependency",
+      "pid": 49,
+      "wall_seconds": 0.2579936540023482
+    },
+    {
+      "cpu_system_seconds": 0.05328900000000003,
+      "cpu_user_seconds": 0.381907,
+      "instance": "446f63eda62b49a8958fdffa3545fe53",
+      "peak_rss_bytes": 53403648,
+      "phase": "fence",
+      "pid": 50,
+      "wall_seconds": 0.4390961770004651
+    }
+  ],
+  "physical_optimizer_updates": 16,
+  "physical_training_attempts": 1,
+  "pids_may_be_reused_between_executor_namespaces": true,
+  "protocol_sha256": "84bd11616fe532ad4539837a2ccd4bf53e8c5b0659d2fe910241a847be7c939a",
+  "qualification": {
+    "authority": "DENY_ALL for every #4930 receipt; original SourceOwner remains the publication/freshness authority",
+    "formal_future_adoption_qualified": false,
+    "formal_nine_arm_gate_invoked": false,
+    "knowledge_correction_of_already_learned_cedar_state_proved": false,
+    "natural_future_source_groups": 0,
+    "net_benefit_proved": false,
+    "new_authored_cedar_mapping_learned_descriptively": true,
+    "retention_preserved": false
+  },
+  "results": {
+    "authored_correction_candidate_correct": 2,
+    "authored_correction_cases": 2,
+    "authored_correction_parent_correct": 0,
+    "candidate_adopted": false,
+    "candidate_next": {
+      "correct": true,
+      "error": null,
+      "label_correct": true,
+      "output": [
+        "-2",
+        "0",
+        "3",
+        "3",
+        "12"
+      ],
+      "predicted_skill": "sort_numeric"
+    },
+    "historical_candidate_correct": 55,
+    "historical_cases": 72,
+    "historical_gain_ids": [
+      "8e4ab0388da1ec6c1e9736881562073ba0adb402bc80b41017a6d864629bc4b6"
+    ],
+    "historical_parent_correct": 59,
+    "historical_regression_ids": [
+      "819602040a74b950fd8a3dfbe15361086190dc95171eb28bc66395064deef673",
+      "dea60188901bedee106838ee68240d03728b9febc7fa934dbe8ab9d19c430be0",
+      "a3b3cb1aa1c332a2912b51de73bfc94d8a4a04aa49f153b1506b04e3ef9b9cc0",
+      "a02477c6262ce81805c657e10d6b6f0ce9d9a5f5ad2dc3b5a412a8a6f658e804",
+      "704c0bac8825b0151d363d85737199d8b0ade76c4df5e4395554d2e22b3e78d8"
+    ],
+    "parent_bytes_preserved": true,
+    "parent_epoch_after_rejection": 1,
+    "parent_next": {
+      "correct": true,
+      "error": null,
+      "label_correct": true,
+      "output": [
+        "learn",
+        "verify",
+        "serve"
+      ],
+      "predicted_skill": "unique_stable"
+    },
+    "stale_parent_fenced": true
+  },
+  "schema": "hepta.cell-learning.engineering.delivery.v1",
+  "training_presentations": 288,
+  "unique_training_rows": 124,
+  "unique_worker_instances": 10,
+  "unknown_or_excluded_costs": {
+    "billed_usd": null,
+    "energy_joules": null,
+    "full_retained_byte_seconds": null,
+    "historical_acquisition": null,
+    "host_network_bytes": null,
+    "human_and_agent_development_and_review": null,
+    "p99_seconds": null,
+    "posthoc_delivery_reporting": null
+  },
+  "wrapper_regression_test": {
+    "child_cpu_system_seconds": 0.012067,
+    "child_cpu_user_seconds": 0.022636999999999997,
+    "cpu_system_seconds": 0.005105999999999999,
+    "cpu_user_seconds": 0.089553,
+    "kind": "wrapper boundary regression; no model loaded or trained",
+    "passed": true,
+    "stdout": "test_failed_engineering_result_is_retained_and_cannot_be_resumed (loop_tests.ResumeBoundary.test_failed_engineering_result_is_retained_and_cannot_be_resumed) ... ok\n\n----------------------------------------------------------------------\nRan 1 test in 0.042s\n\nOK\n",
+    "tests": 1,
+    "wall_seconds": 0.1376111250028771
+  }
+}

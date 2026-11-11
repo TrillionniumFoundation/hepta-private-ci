@@ -1,0 +1,11 @@
+{
+  "state": "proposal-only",
+  "applied": false,
+  "executed": false,
+  "currentInitialOPathPhaseSourceSha256": {
+    "codex-rs/exec-server/src/linux_authorized_read.rs": "b7e5acd268a48409b96e500ae217c536f1fb591ed634420be730cbf5c2a188ae",
+    "codex-rs/exec-server/src/linux_authorized_read_tests.rs": "915093b92e7e91eeec04ea59eec6c1082f5bf712c0c52427393c920f47bc3d3e",
+    "codex-rs/exec-server/README.md": "be4543908a9ba483f4aad412ca104e2c1f4992058397dec5af3988358e9ed9ac"
+  },
+  "scope": "No caller-path read-open after either O_PATH proof; owned proved regular FD only via controlled proc link, readable identity/path verification retained; no device or attack tests."
+}

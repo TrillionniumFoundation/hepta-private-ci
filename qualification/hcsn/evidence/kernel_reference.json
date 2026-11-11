@@ -1,0 +1,4007 @@
+{
+  "schema": "hcsn-hx-kernel-reference-v1",
+  "status": "passed",
+  "scope": "FP64 formal stationary ODE kernels and independent integration, with separate economic feasibility screens; no tensor/training/performance claims",
+  "generated_at_utc": "2026-11-05T13:07:53.301797+00:00",
+  "source_files_sha256": {
+    "reference.py": "8cae6a0b5274bde355e0eeacaf9600f04be779cdde65a379ddcfb0194cd461c2",
+    "validate.py": "d6f925e9784770705230adbe871547726dd0db91f476dcfc1e265c525e377045",
+    "tests/test_reference.py": "d95e4eefbd46f8f9fd37813b63f20549ad1fbae43ae436a0f1ca0fdae4c0eb8d",
+    "MATH.md": "240abe1e5ba2c2db9f1bbc56be8f14f9f70663ad8ef7d68f6276384e8d352da8"
+  },
+  "runtime": {
+    "python": "3.12.14",
+    "numpy": "2.3.5",
+    "scipy": "1.17.0",
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+    "dtype": "float64"
+  },
+  "reproduce_command": "PYTHONPATH=qualification python -m hcsn.validate --output qualification/hcsn/evidence/kernel_reference.json",
+  "source_paper": {
+    "title": "Rollover Risk and Credit Risk",
+    "authors": [
+      "Zhiguo He",
+      "Wei Xiong"
+    ],
+    "year": 2012,
+    "doi": "10.1111/j.1540-6261.2012.01721.x",
+    "url": "https://zhiguohe.net/wp-content/uploads/2023/12/The-Journal-of-Finance-2012-HE-Rollover-Risk-and-Credit-Risk.pdf",
+    "equations": [
+      "8",
+      "9",
+      "12",
+      "A5",
+      "A7"
+    ]
+  },
+  "baseline_parameters": {
+    "r": 0.05,
+    "delta": 0.02,
+    "sigma": 0.2,
+    "coupon": 5.0,
+    "principal": 100.0,
+    "maturity": 1.0,
+    "tax": 0.25,
+    "recovery": 0.6,
+    "ell": 0.01
+  },
+  "checks": {
+    "equity_closed_vs_independent_resolvent_scaled": {
+      "cases": 144,
+      "max_abs_error": 3.998411204700745e-12,
+      "tolerance": 2e-09,
+      "passed": true
+    },
+    "inadmissible_formal_solution_is_identified": {
+      "passed": true,
+      "parameters": {
+        "r": 0.05,
+        "delta": 0.02,
+        "sigma": 0.2,
+        "coupon": 5.0,
+        "principal": 100.0,
+        "maturity": 0.05,
+        "tax": 0.25,
+        "recovery": 0.6,
+        "ell": 0.3
+      },
+      "feasibility": {
+        "status": "inadmissible_local",
+        "boundary": 198.12124032015288,
+        "boundary_running_cashflow": 377.66730864823694,
+        "equity_boundary_second_derivative": -18883.365432411843,
+        "local_admissible": false,
+        "sufficient_monotone_subdomain": false,
+        "uncapped_recovery_exceeds_face": true,
+        "recovery_to_face_ratio": 1.188727441920917,
+        "floating_point_tolerance": 3.378566594622376e-11,
+        "warnings": [
+          "Positive boundary running cashflow forces negative equity immediately above the root.",
+          "The uncapped recovery alpha*b exceeds aggregate face value P."
+        ]
+      },
+      "equity_at_margin_0_01": -0.8768665372101422,
+      "meaning": "ODE equality alone does not prove limited-liability equity admissibility."
+    },
+    "cdf_vs_density_integral": {
+      "cases": 72,
+      "max_abs_error": 4.440892098500626e-16,
+      "tolerance": 2e-10,
+      "passed": true
+    },
+    "discounted_cdf_vs_density_integral": {
+      "cases": 72,
+      "max_abs_error": 5.551115123125783e-16,
+      "tolerance": 2e-10,
+      "passed": true
+    },
+    "infinite_discounted_claim_vs_integral": {
+      "cases": 24,
+      "max_abs_error": 4.440892098500626e-16,
+      "tolerance": 2e-10,
+      "passed": true
+    },
+    "cdf_spatial_derivative_vs_finite_difference": {
+      "cases": 72,
+      "max_abs_error": 1.903610602482786e-11,
+      "tolerance": 2e-08,
+      "passed": true
+    },
+    "debt_pde_residual": {
+      "cases": 40,
+      "max_abs_error": 1.2561461204541047e-08,
+      "tolerance": 3e-05,
+      "passed": true
+    },
+    "equity_ode_residual": {
+      "cases": 20,
+      "max_abs_error": 1.0059411081897451e-07,
+      "tolerance": 3e-05,
+      "passed": true
+    },
+    "smooth_pasting_independent_integral": {
+      "cases": 5,
+      "max_abs_error": 3.552713678800501e-15,
+      "tolerance": 2e-08,
+      "passed": true
+    },
+    "equity_value_matching": {
+      "cases": 5,
+      "max_abs_error": 0.0,
+      "tolerance": 2e-12,
+      "passed": true
+    },
+    "equity_right_derivative_at_boundary": {
+      "cases": 5,
+      "max_abs_error": 8.246880051067242e-09,
+      "tolerance": 2e-07,
+      "passed": true
+    },
+    "debt_value_matching": {
+      "cases": 5,
+      "max_abs_error": 0.0,
+      "tolerance": 2e-10,
+      "passed": true
+    },
+    "boundary_parameter_gradient_vs_implicit_integral_scaled": {
+      "cases": 9,
+      "max_abs_error": 1.528296397591151e-10,
+      "tolerance": 3e-06,
+      "passed": true
+    },
+    "money_scale_homogeneity": {
+      "cases": 24,
+      "max_abs_error": 2.886579864025407e-15,
+      "tolerance": 2e-10,
+      "passed": true
+    },
+    "full_hx_time_unit_covariance": {
+      "cases": 24,
+      "max_abs_error": 2.4424906541753444e-15,
+      "tolerance": 3e-10,
+      "passed": true
+    },
+    "small_margin_quadratic_limit": {
+      "cases": 7,
+      "max_abs_error": 4.428907560027895e-06,
+      "tolerance": 0.0001,
+      "passed": true
+    },
+    "time_zero_boundary_atom": {
+      "passed": true,
+      "result": {
+        "b": 121.48629220149449,
+        "E_HX": 0.0,
+        "F": 1.0,
+        "G": 1.0,
+        "f": 0.0,
+        "first_passage_atom": 1.0
+      },
+      "meaning": "F/G include the zero-time atom; f is only the regular density."
+    }
+  },
+  "feasibility_summary": {
+    "parameter_sets": 36,
+    "sufficient_monotone_subdomain": 24,
+    "necessary_screen_only": 7,
+    "inadmissible_local": 5,
+    "sampled_negative_equity_points": 12,
+    "all_scanned_parameters_economically_admissible": false
+  },
+  "equity_scan": [
+    {
+      "sigma": 0.05,
+      "maturity": 0.05,
+      "ell": 0.0,
+      "x": 0.01,
+      "boundary": 143.29128043184042,
+      "equity_closed": 7.742757664683403,
+      "equity_oracle": 7.742757664683371,
+      "absolute_error": 3.197442310920451e-14,
+      "scaled_error": 3.657246870557346e-15,
+      "feasibility": {
+        "status": "sufficient_monotone_subdomain",
+        "boundary": 143.29128043184042,
+        "boundary_running_cashflow": -281.3888092092782,
+        "equity_boundary_second_derivative": 225111.0473674225,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": true,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.8597476825910425,
+        "floating_point_tolerance": 2.8421709430404007e-11,
+        "warnings": []
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.05,
+      "maturity": 0.05,
+      "ell": 0.0,
+      "x": 0.1,
+      "boundary": 143.29128043184042,
+      "equity_closed": 76.34579098466621,
+      "equity_oracle": 76.34579098466602,
+      "absolute_error": 1.8474111129762605e-13,
+      "scaled_error": 2.3885089149098155e-15,
+      "feasibility": {
+        "status": "sufficient_monotone_subdomain",
+        "boundary": 143.29128043184042,
+        "boundary_running_cashflow": -281.3888092092782,
+        "equity_boundary_second_derivative": 225111.0473674225,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": true,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.8597476825910425,
+        "floating_point_tolerance": 2.8421709430404007e-11,
+        "warnings": []
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.05,
+      "maturity": 0.05,
+      "ell": 0.0,
+      "x": 0.5,
+      "boundary": 143.29128043184042,
+      "equity_closed": 161.24701181435321,
+      "equity_oracle": 161.24701181435324,
+      "absolute_error": 2.842170943040401e-14,
+      "scaled_error": 1.751755493834597e-16,
+      "feasibility": {
+        "status": "sufficient_monotone_subdomain",
+        "boundary": 143.29128043184042,
+        "boundary_running_cashflow": -281.3888092092782,
+        "equity_boundary_second_derivative": 225111.0473674225,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": true,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.8597476825910425,
+        "floating_point_tolerance": 2.8421709430404007e-11,
+        "warnings": []
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.05,
+      "maturity": 0.05,
+      "ell": 0.0,
+      "x": 2.0,
+      "boundary": 143.29128043184042,
+      "equity_closed": 983.7873095984726,
+      "equity_oracle": 983.7873095984726,
+      "absolute_error": 0.0,
+      "scaled_error": 0.0,
+      "feasibility": {
+        "status": "sufficient_monotone_subdomain",
+        "boundary": 143.29128043184042,
+        "boundary_running_cashflow": -281.3888092092782,
+        "equity_boundary_second_derivative": 225111.0473674225,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": true,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.8597476825910425,
+        "floating_point_tolerance": 2.8421709430404007e-11,
+        "warnings": []
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.05,
+      "maturity": 0.05,
+      "ell": 1e-10,
+      "x": 0.01,
+      "boundary": 143.29128047881946,
+      "equity_closed": 7.742757649288935,
+      "equity_oracle": 7.742757649288911,
+      "absolute_error": 2.398081733190338e-14,
+      "scaled_error": 2.742935157747836e-15,
+      "feasibility": {
+        "status": "sufficient_monotone_subdomain",
+        "boundary": 143.29128047881946,
+        "boundary_running_cashflow": -281.3888086445904,
+        "equity_boundary_second_derivative": 225111.04691567228,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": true,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.8597476828729167,
+        "floating_point_tolerance": 2.8421709430404007e-11,
+        "warnings": []
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.05,
+      "maturity": 0.05,
+      "ell": 1e-10,
+      "x": 0.1,
+      "boundary": 143.29128047881946,
+      "equity_closed": 76.34579085228263,
+      "equity_oracle": 76.34579085228256,
+      "absolute_error": 7.105427357601002e-14,
+      "scaled_error": 9.186572765376685e-16,
+      "feasibility": {
+        "status": "sufficient_monotone_subdomain",
+        "boundary": 143.29128047881946,
+        "boundary_running_cashflow": -281.3888086445904,
+        "equity_boundary_second_derivative": 225111.04691567228,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": true,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.8597476828729167,
+        "floating_point_tolerance": 2.8421709430404007e-11,
+        "warnings": []
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.05,
+      "maturity": 0.05,
+      "ell": 1e-10,
+      "x": 0.5,
+      "boundary": 143.29128047881946,
+      "equity_closed": 161.24701169205912,
+      "equity_oracle": 161.24701169205915,
+      "absolute_error": 2.842170943040401e-14,
+      "scaled_error": 1.7517554951549872e-16,
+      "feasibility": {
+        "status": "sufficient_monotone_subdomain",
+        "boundary": 143.29128047881946,
+        "boundary_running_cashflow": -281.3888086445904,
+        "equity_boundary_second_derivative": 225111.04691567228,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": true,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.8597476828729167,
+        "floating_point_tolerance": 2.8421709430404007e-11,
+        "warnings": []
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.05,
+      "maturity": 0.05,
+      "ell": 1e-10,
+      "x": 2.0,
+      "boundary": 143.29128047881946,
+      "equity_closed": 983.787309745853,
+      "equity_oracle": 983.7873097458531,
+      "absolute_error": 1.1368683772161603e-13,
+      "scaled_error": 1.154430368837262e-16,
+      "feasibility": {
+        "status": "sufficient_monotone_subdomain",
+        "boundary": 143.29128047881946,
+        "boundary_running_cashflow": -281.3888086445904,
+        "equity_boundary_second_derivative": 225111.04691567228,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": true,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.8597476828729167,
+        "floating_point_tolerance": 2.8421709430404007e-11,
+        "warnings": []
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.05,
+      "maturity": 0.05,
+      "ell": 0.01,
+      "x": 0.01,
+      "boundary": 147.9885753812981,
+      "equity_closed": 6.203642123728603,
+      "equity_oracle": 6.2036421237292005,
+      "absolute_error": 5.977440764581843e-13,
+      "scaled_error": 8.297803613663452e-14,
+      "feasibility": {
+        "status": "necessary_screen_only",
+        "boundary": 147.9885753812981,
+        "boundary_running_cashflow": -224.92732391679715,
+        "equity_boundary_second_derivative": 179941.85913343768,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": false,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.8879314522877886,
+        "floating_point_tolerance": 2.8421709430404007e-11,
+        "warnings": [
+          "The local necessary condition passes; global nonnegativity and optimal stopping are not certified."
+        ]
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.05,
+      "maturity": 0.05,
+      "ell": 0.01,
+      "x": 0.1,
+      "boundary": 147.9885753812981,
+      "equity_closed": 63.11128753886946,
+      "equity_oracle": 63.11128753886933,
+      "absolute_error": 1.3500311979441904e-13,
+      "scaled_error": 2.1057621048800412e-15,
+      "feasibility": {
+        "status": "necessary_screen_only",
+        "boundary": 147.9885753812981,
+        "boundary_running_cashflow": -224.92732391679715,
+        "equity_boundary_second_derivative": 179941.85913343768,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": false,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.8879314522877886,
+        "floating_point_tolerance": 2.8421709430404007e-11,
+        "warnings": [
+          "The local necessary condition passes; global nonnegativity and optimal stopping are not certified."
+        ]
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.05,
+      "maturity": 0.05,
+      "ell": 0.01,
+      "x": 0.5,
+      "boundary": 147.9885753812981,
+      "equity_closed": 149.02159340704767,
+      "equity_oracle": 149.02159340704767,
+      "absolute_error": 0.0,
+      "scaled_error": 0.0,
+      "feasibility": {
+        "status": "necessary_screen_only",
+        "boundary": 147.9885753812981,
+        "boundary_running_cashflow": -224.92732391679715,
+        "equity_boundary_second_derivative": 179941.85913343768,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": false,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.8879314522877886,
+        "floating_point_tolerance": 2.8421709430404007e-11,
+        "warnings": [
+          "The local necessary condition passes; global nonnegativity and optimal stopping are not certified."
+        ]
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.05,
+      "maturity": 0.05,
+      "ell": 0.01,
+      "x": 2.0,
+      "boundary": 147.9885753812981,
+      "equity_closed": 998.5258555157255,
+      "equity_oracle": 998.5258555157255,
+      "absolute_error": 0.0,
+      "scaled_error": 0.0,
+      "feasibility": {
+        "status": "necessary_screen_only",
+        "boundary": 147.9885753812981,
+        "boundary_running_cashflow": -224.92732391679715,
+        "equity_boundary_second_derivative": 179941.85913343768,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": false,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.8879314522877886,
+        "floating_point_tolerance": 2.8421709430404007e-11,
+        "warnings": [
+          "The local necessary condition passes; global nonnegativity and optimal stopping are not certified."
+        ]
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.05,
+      "maturity": 0.05,
+      "ell": 0.3,
+      "x": 0.01,
+      "boundary": 283.6799590879256,
+      "equity_closed": -38.14365365353612,
+      "equity_oracle": -38.14365365353694,
+      "absolute_error": 8.171241461241152e-13,
+      "scaled_error": 2.0875009608365508e-14,
+      "feasibility": {
+        "status": "inadmissible_local",
+        "boundary": 283.6799590879256,
+        "boundary_running_cashflow": 1406.0831082368659,
+        "equity_boundary_second_derivative": -1124866.4865894925,
+        "local_admissible": false,
+        "sufficient_monotone_subdomain": false,
+        "uncapped_recovery_exceeds_face": true,
+        "recovery_to_face_ratio": 1.7020797545275537,
+        "floating_point_tolerance": 4.837601621055551e-11,
+        "warnings": [
+          "Positive boundary running cashflow forces negative equity immediately above the root.",
+          "The uncapped recovery alpha*b exceeds aggregate face value P."
+        ]
+      },
+      "sample_equity_nonnegative": false
+    },
+    {
+      "sigma": 0.05,
+      "maturity": 0.05,
+      "ell": 0.3,
+      "x": 0.1,
+      "boundary": 283.6799590879256,
+      "equity_closed": -317.35740247235594,
+      "equity_oracle": -317.3574024723587,
+      "absolute_error": 2.7284841053187847e-12,
+      "scaled_error": 8.570506242761812e-15,
+      "feasibility": {
+        "status": "inadmissible_local",
+        "boundary": 283.6799590879256,
+        "boundary_running_cashflow": 1406.0831082368659,
+        "equity_boundary_second_derivative": -1124866.4865894925,
+        "local_admissible": false,
+        "sufficient_monotone_subdomain": false,
+        "uncapped_recovery_exceeds_face": true,
+        "recovery_to_face_ratio": 1.7020797545275537,
+        "floating_point_tolerance": 4.837601621055551e-11,
+        "warnings": [
+          "Positive boundary running cashflow forces negative equity immediately above the root.",
+          "The uncapped recovery alpha*b exceeds aggregate face value P."
+        ]
+      },
+      "sample_equity_nonnegative": false
+    },
+    {
+      "sigma": 0.05,
+      "maturity": 0.05,
+      "ell": 0.3,
+      "x": 0.5,
+      "boundary": 283.6799590879256,
+      "equity_closed": -202.0692560740115,
+      "equity_oracle": -202.06925607401143,
+      "absolute_error": 5.684341886080802e-14,
+      "scaled_error": 2.799213428944194e-16,
+      "feasibility": {
+        "status": "inadmissible_local",
+        "boundary": 283.6799590879256,
+        "boundary_running_cashflow": 1406.0831082368659,
+        "equity_boundary_second_derivative": -1124866.4865894925,
+        "local_admissible": false,
+        "sufficient_monotone_subdomain": false,
+        "uncapped_recovery_exceeds_face": true,
+        "recovery_to_face_ratio": 1.7020797545275537,
+        "floating_point_tolerance": 4.837601621055551e-11,
+        "warnings": [
+          "Positive boundary running cashflow forces negative equity immediately above the root.",
+          "The uncapped recovery alpha*b exceeds aggregate face value P."
+        ]
+      },
+      "sample_equity_nonnegative": false
+    },
+    {
+      "sigma": 0.05,
+      "maturity": 0.05,
+      "ell": 0.3,
+      "x": 2.0,
+      "boundary": 283.6799590879256,
+      "equity_closed": 1426.3466403598281,
+      "equity_oracle": 1426.3466403598281,
+      "absolute_error": 0.0,
+      "scaled_error": 0.0,
+      "feasibility": {
+        "status": "inadmissible_local",
+        "boundary": 283.6799590879256,
+        "boundary_running_cashflow": 1406.0831082368659,
+        "equity_boundary_second_derivative": -1124866.4865894925,
+        "local_admissible": false,
+        "sufficient_monotone_subdomain": false,
+        "uncapped_recovery_exceeds_face": true,
+        "recovery_to_face_ratio": 1.7020797545275537,
+        "floating_point_tolerance": 4.837601621055551e-11,
+        "warnings": [
+          "Positive boundary running cashflow forces negative equity immediately above the root.",
+          "The uncapped recovery alpha*b exceeds aggregate face value P."
+        ]
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.05,
+      "maturity": 1.0,
+      "ell": 0.0,
+      "x": 0.01,
+      "boundary": 103.28775154331989,
+      "equity_closed": 1.3348462119936109,
+      "equity_oracle": 1.334846211993614,
+      "absolute_error": 3.1086244689504383e-15,
+      "scaled_error": 1.3314043781479432e-15,
+      "feasibility": {
+        "status": "sufficient_monotone_subdomain",
+        "boundary": 103.28775154331989,
+        "boundary_running_cashflow": -39.71159404314167,
+        "equity_boundary_second_derivative": 31769.275234513334,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": true,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.6197265092599192,
+        "floating_point_tolerance": 1.4210854715202004e-12,
+        "warnings": []
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.05,
+      "maturity": 1.0,
+      "ell": 0.0,
+      "x": 0.1,
+      "boundary": 103.28775154331989,
+      "equity_closed": 33.62019845197106,
+      "equity_oracle": 33.62019845197107,
+      "absolute_error": 7.105427357601002e-15,
+      "scaled_error": 2.0523935954493237e-16,
+      "feasibility": {
+        "status": "sufficient_monotone_subdomain",
+        "boundary": 103.28775154331989,
+        "boundary_running_cashflow": -39.71159404314167,
+        "equity_boundary_second_derivative": 31769.275234513334,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": true,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.6197265092599192,
+        "floating_point_tolerance": 1.4210854715202004e-12,
+        "warnings": []
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.05,
+      "maturity": 1.0,
+      "ell": 0.0,
+      "x": 0.5,
+      "boundary": 103.28775154331989,
+      "equity_closed": 95.2924147837674,
+      "equity_oracle": 95.29241478376743,
+      "absolute_error": 2.842170943040401e-14,
+      "scaled_error": 2.9516041833852963e-16,
+      "feasibility": {
+        "status": "sufficient_monotone_subdomain",
+        "boundary": 103.28775154331989,
+        "boundary_running_cashflow": -39.71159404314167,
+        "equity_boundary_second_derivative": 31769.275234513334,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": true,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.6197265092599192,
+        "floating_point_tolerance": 1.4210854715202004e-12,
+        "warnings": []
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.05,
+      "maturity": 1.0,
+      "ell": 0.0,
+      "x": 2.0,
+      "boundary": 103.28775154331989,
+      "equity_closed": 688.1989904860015,
+      "equity_oracle": 688.1989904860015,
+      "absolute_error": 0.0,
+      "scaled_error": 0.0,
+      "feasibility": {
+        "status": "sufficient_monotone_subdomain",
+        "boundary": 103.28775154331989,
+        "boundary_running_cashflow": -39.71159404314167,
+        "equity_boundary_second_derivative": 31769.275234513334,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": true,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.6197265092599192,
+        "floating_point_tolerance": 1.4210854715202004e-12,
+        "warnings": []
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.05,
+      "maturity": 1.0,
+      "ell": 1e-10,
+      "x": 0.01,
+      "boundary": 103.28775166438939,
+      "equity_closed": 1.3348462095170097,
+      "equity_oracle": 1.334846209517009,
+      "absolute_error": 6.661338147750939e-16,
+      "scaled_error": 2.8530093847718207e-16,
+      "feasibility": {
+        "status": "sufficient_monotone_subdomain",
+        "boundary": 103.28775166438939,
+        "boundary_running_cashflow": -39.71159396807858,
+        "equity_boundary_second_derivative": 31769.27517446286,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": true,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.6197265099863363,
+        "floating_point_tolerance": 1.4210854715202004e-12,
+        "warnings": []
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.05,
+      "maturity": 1.0,
+      "ell": 1e-10,
+      "x": 0.1,
+      "boundary": 103.28775166438939,
+      "equity_closed": 33.620198403523574,
+      "equity_oracle": 33.62019840352357,
+      "absolute_error": 7.105427357601002e-15,
+      "scaled_error": 2.0523935983214433e-16,
+      "feasibility": {
+        "status": "sufficient_monotone_subdomain",
+        "boundary": 103.28775166438939,
+        "boundary_running_cashflow": -39.71159396807858,
+        "equity_boundary_second_derivative": 31769.27517446286,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": true,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.6197265099863363,
+        "floating_point_tolerance": 1.4210854715202004e-12,
+        "warnings": []
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.05,
+      "maturity": 1.0,
+      "ell": 1e-10,
+      "x": 0.5,
+      "boundary": 103.28775166438939,
+      "equity_closed": 95.29241478829566,
+      "equity_oracle": 95.2924147882957,
+      "absolute_error": 4.263256414560601e-14,
+      "scaled_error": 4.42740627486974e-16,
+      "feasibility": {
+        "status": "sufficient_monotone_subdomain",
+        "boundary": 103.28775166438939,
+        "boundary_running_cashflow": -39.71159396807858,
+        "equity_boundary_second_derivative": 31769.27517446286,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": true,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.6197265099863363,
+        "floating_point_tolerance": 1.4210854715202004e-12,
+        "warnings": []
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.05,
+      "maturity": 1.0,
+      "ell": 1e-10,
+      "x": 2.0,
+      "boundary": 103.28775166438939,
+      "equity_closed": 688.1989911855086,
+      "equity_oracle": 688.1989911855086,
+      "absolute_error": 0.0,
+      "scaled_error": 0.0,
+      "feasibility": {
+        "status": "sufficient_monotone_subdomain",
+        "boundary": 103.28775166438939,
+        "boundary_running_cashflow": -39.71159396807858,
+        "equity_boundary_second_derivative": 31769.27517446286,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": true,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.6197265099863363,
+        "floating_point_tolerance": 1.4210854715202004e-12,
+        "warnings": []
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.05,
+      "maturity": 1.0,
+      "ell": 0.01,
+      "x": 0.01,
+      "boundary": 115.3452866248459,
+      "equity_closed": 1.0883074875729921,
+      "equity_oracle": 1.088307487572765,
+      "absolute_error": 2.2715163083830703e-13,
+      "scaled_error": 1.0877307685293264e-13,
+      "feasibility": {
+        "status": "sufficient_monotone_subdomain",
+        "boundary": 115.3452866248459,
+        "boundary_running_cashflow": -32.235922292595546,
+        "equity_boundary_second_derivative": 25788.737834076434,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": true,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.6920717197490753,
+        "floating_point_tolerance": 1.4210854715202004e-12,
+        "warnings": []
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.05,
+      "maturity": 1.0,
+      "ell": 0.01,
+      "x": 0.1,
+      "boundary": 115.3452866248459,
+      "equity_closed": 28.807600453098907,
+      "equity_oracle": 28.8076004530987,
+      "absolute_error": 2.0605739337042905e-13,
+      "scaled_error": 6.9129144995973e-15,
+      "feasibility": {
+        "status": "sufficient_monotone_subdomain",
+        "boundary": 115.3452866248459,
+        "boundary_running_cashflow": -32.235922292595546,
+        "equity_boundary_second_derivative": 25788.737834076434,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": true,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.6920717197490753,
+        "floating_point_tolerance": 1.4210854715202004e-12,
+        "warnings": []
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.05,
+      "maturity": 1.0,
+      "ell": 0.01,
+      "x": 0.5,
+      "boundary": 115.3452866248459,
+      "equity_closed": 95.76017569207622,
+      "equity_oracle": 95.76017569207623,
+      "absolute_error": 1.4210854715202004e-14,
+      "scaled_error": 1.4686677254933657e-16,
+      "feasibility": {
+        "status": "sufficient_monotone_subdomain",
+        "boundary": 115.3452866248459,
+        "boundary_running_cashflow": -32.235922292595546,
+        "equity_boundary_second_derivative": 25788.737834076434,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": true,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.6920717197490753,
+        "floating_point_tolerance": 1.4210854715202004e-12,
+        "warnings": []
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.05,
+      "maturity": 1.0,
+      "ell": 0.01,
+      "x": 2.0,
+      "boundary": 115.3452866248459,
+      "equity_closed": 757.8809714796378,
+      "equity_oracle": 757.8809714796379,
+      "absolute_error": 1.1368683772161603e-13,
+      "scaled_error": 1.4980852333133834e-16,
+      "feasibility": {
+        "status": "sufficient_monotone_subdomain",
+        "boundary": 115.3452866248459,
+        "boundary_running_cashflow": -32.235922292595546,
+        "equity_boundary_second_derivative": 25788.737834076434,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": true,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.6920717197490753,
+        "floating_point_tolerance": 1.4210854715202004e-12,
+        "warnings": []
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.05,
+      "maturity": 1.0,
+      "ell": 0.3,
+      "x": 0.01,
+      "boundary": 425.20352133208337,
+      "equity_closed": -5.16556821406801,
+      "equity_oracle": -5.165568214068149,
+      "absolute_error": 1.3944401189291966e-13,
+      "scaled_error": 2.261657110122411e-14,
+      "feasibility": {
+        "status": "inadmissible_local",
+        "boundary": 425.20352133208337,
+        "boundary_running_cashflow": 159.87618322589168,
+        "equity_boundary_second_derivative": -127900.94658071332,
+        "local_admissible": false,
+        "sufficient_monotone_subdomain": false,
+        "uncapped_recovery_exceeds_face": true,
+        "recovery_to_face_ratio": 2.5512211279925,
+        "floating_point_tolerance": 3.6255032796255194e-12,
+        "warnings": [
+          "Positive boundary running cashflow forces negative equity immediately above the root.",
+          "The uncapped recovery alpha*b exceeds aggregate face value P."
+        ]
+      },
+      "sample_equity_nonnegative": false
+    },
+    {
+      "sigma": 0.05,
+      "maturity": 1.0,
+      "ell": 0.3,
+      "x": 0.1,
+      "boundary": 425.20352133208337,
+      "equity_closed": -85.97537195390237,
+      "equity_oracle": -85.97537195390233,
+      "absolute_error": 4.263256414560601e-14,
+      "scaled_error": 4.901682302457025e-16,
+      "feasibility": {
+        "status": "inadmissible_local",
+        "boundary": 425.20352133208337,
+        "boundary_running_cashflow": 159.87618322589168,
+        "equity_boundary_second_derivative": -127900.94658071332,
+        "local_admissible": false,
+        "sufficient_monotone_subdomain": false,
+        "uncapped_recovery_exceeds_face": true,
+        "recovery_to_face_ratio": 2.5512211279925,
+        "floating_point_tolerance": 3.6255032796255194e-12,
+        "warnings": [
+          "Positive boundary running cashflow forces negative equity immediately above the root.",
+          "The uncapped recovery alpha*b exceeds aggregate face value P."
+        ]
+      },
+      "sample_equity_nonnegative": false
+    },
+    {
+      "sigma": 0.05,
+      "maturity": 1.0,
+      "ell": 0.3,
+      "x": 0.5,
+      "boundary": 425.20352133208337,
+      "equity_closed": 119.79445969014552,
+      "equity_oracle": 119.79445969014557,
+      "absolute_error": 5.684341886080802e-14,
+      "scaled_error": 4.705796855801104e-16,
+      "feasibility": {
+        "status": "inadmissible_local",
+        "boundary": 425.20352133208337,
+        "boundary_running_cashflow": 159.87618322589168,
+        "equity_boundary_second_derivative": -127900.94658071332,
+        "local_admissible": false,
+        "sufficient_monotone_subdomain": false,
+        "uncapped_recovery_exceeds_face": true,
+        "recovery_to_face_ratio": 2.5512211279925,
+        "floating_point_tolerance": 3.6255032796255194e-12,
+        "warnings": [
+          "Positive boundary running cashflow forces negative equity immediately above the root.",
+          "The uncapped recovery alpha*b exceeds aggregate face value P."
+        ]
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.05,
+      "maturity": 1.0,
+      "ell": 0.3,
+      "x": 2.0,
+      "boundary": 425.20352133208337,
+      "equity_closed": 2560.6036835319856,
+      "equity_oracle": 2560.6036835319856,
+      "absolute_error": 0.0,
+      "scaled_error": 0.0,
+      "feasibility": {
+        "status": "inadmissible_local",
+        "boundary": 425.20352133208337,
+        "boundary_running_cashflow": 159.87618322589168,
+        "equity_boundary_second_derivative": -127900.94658071332,
+        "local_admissible": false,
+        "sufficient_monotone_subdomain": false,
+        "uncapped_recovery_exceeds_face": true,
+        "recovery_to_face_ratio": 2.5512211279925,
+        "floating_point_tolerance": 3.6255032796255194e-12,
+        "warnings": [
+          "Positive boundary running cashflow forces negative equity immediately above the root.",
+          "The uncapped recovery alpha*b exceeds aggregate face value P."
+        ]
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.05,
+      "maturity": 10.0,
+      "ell": 0.0,
+      "x": 0.01,
+      "boundary": 78.31969964658306,
+      "equity_closed": 0.2620485624998874,
+      "equity_oracle": 0.26204856249990727,
+      "absolute_error": 1.9872992140790302e-14,
+      "scaled_error": 1.5746614457866207e-14,
+      "feasibility": {
+        "status": "sufficient_monotone_subdomain",
+        "boundary": 78.31969964658306,
+        "boundary_running_cashflow": -7.484424028273355,
+        "equity_boundary_second_derivative": 5987.539222618683,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": true,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.46991819787949834,
+        "floating_point_tolerance": 1.4210854715202004e-13,
+        "warnings": []
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.05,
+      "maturity": 10.0,
+      "ell": 0.0,
+      "x": 0.1,
+      "boundary": 78.31969964658306,
+      "equity_closed": 9.938379185644857,
+      "equity_oracle": 9.938379185644843,
+      "absolute_error": 1.4210854715202004e-14,
+      "scaled_error": 1.2991737143151744e-15,
+      "feasibility": {
+        "status": "sufficient_monotone_subdomain",
+        "boundary": 78.31969964658306,
+        "boundary_running_cashflow": -7.484424028273355,
+        "equity_boundary_second_derivative": 5987.539222618683,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": true,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.46991819787949834,
+        "floating_point_tolerance": 1.4210854715202004e-13,
+        "warnings": []
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.05,
+      "maturity": 10.0,
+      "ell": 0.0,
+      "x": 0.5,
+      "boundary": 78.31969964658306,
+      "equity_closed": 54.12710868715539,
+      "equity_oracle": 54.12710868715543,
+      "absolute_error": 3.552713678800501e-14,
+      "scaled_error": 6.44458554676255e-16,
+      "feasibility": {
+        "status": "sufficient_monotone_subdomain",
+        "boundary": 78.31969964658306,
+        "boundary_running_cashflow": -7.484424028273355,
+        "equity_boundary_second_derivative": 5987.539222618683,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": true,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.46991819787949834,
+        "floating_point_tolerance": 1.4210854715202004e-13,
+        "warnings": []
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.05,
+      "maturity": 10.0,
+      "ell": 0.0,
+      "x": 2.0,
+      "boundary": 78.31969964658306,
+      "equity_closed": 503.7086543400013,
+      "equity_oracle": 503.7086543400013,
+      "absolute_error": 0.0,
+      "scaled_error": 0.0,
+      "feasibility": {
+        "status": "sufficient_monotone_subdomain",
+        "boundary": 78.31969964658306,
+        "boundary_running_cashflow": -7.484424028273355,
+        "equity_boundary_second_derivative": 5987.539222618683,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": true,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.46991819787949834,
+        "floating_point_tolerance": 1.4210854715202004e-13,
+        "warnings": []
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.05,
+      "maturity": 10.0,
+      "ell": 1e-10,
+      "x": 0.01,
+      "boundary": 78.31969977933491,
+      "equity_closed": 0.2620485621521842,
+      "equity_oracle": 0.26204856215216327,
+      "absolute_error": 2.09277040141842e-14,
+      "scaled_error": 1.658232863757344e-14,
+      "feasibility": {
+        "status": "sufficient_monotone_subdomain",
+        "boundary": 78.31969977933491,
+        "boundary_running_cashflow": -7.4844240176532075,
+        "equity_boundary_second_derivative": 5987.539214122565,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": true,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.4699181986760095,
+        "floating_point_tolerance": 1.4210854715202004e-13,
+        "warnings": []
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.05,
+      "maturity": 10.0,
+      "ell": 1e-10,
+      "x": 0.1,
+      "boundary": 78.31969977933491,
+      "equity_closed": 9.938379180971769,
+      "equity_oracle": 9.938379180971749,
+      "absolute_error": 1.9539925233402755e-14,
+      "scaled_error": 1.7863638579465353e-15,
+      "feasibility": {
+        "status": "sufficient_monotone_subdomain",
+        "boundary": 78.31969977933491,
+        "boundary_running_cashflow": -7.4844240176532075,
+        "equity_boundary_second_derivative": 5987.539214122565,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": true,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.4699181986760095,
+        "floating_point_tolerance": 1.4210854715202004e-13,
+        "warnings": []
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.05,
+      "maturity": 10.0,
+      "ell": 1e-10,
+      "x": 0.5,
+      "boundary": 78.31969977933491,
+      "equity_closed": 54.127108748639216,
+      "equity_oracle": 54.12710874863923,
+      "absolute_error": 1.4210854715202004e-14,
+      "scaled_error": 2.5778342158299366e-16,
+      "feasibility": {
+        "status": "sufficient_monotone_subdomain",
+        "boundary": 78.31969977933491,
+        "boundary_running_cashflow": -7.4844240176532075,
+        "equity_boundary_second_derivative": 5987.539214122565,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": true,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.4699181986760095,
+        "floating_point_tolerance": 1.4210854715202004e-13,
+        "warnings": []
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.05,
+      "maturity": 10.0,
+      "ell": 1e-10,
+      "x": 2.0,
+      "boundary": 78.31969977933491,
+      "equity_closed": 503.70865516352444,
+      "equity_oracle": 503.70865516352444,
+      "absolute_error": 0.0,
+      "scaled_error": 0.0,
+      "feasibility": {
+        "status": "sufficient_monotone_subdomain",
+        "boundary": 78.31969977933491,
+        "boundary_running_cashflow": -7.4844240176532075,
+        "equity_boundary_second_derivative": 5987.539214122565,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": true,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.4699181986760095,
+        "floating_point_tolerance": 1.4210854715202004e-13,
+        "warnings": []
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.05,
+      "maturity": 10.0,
+      "ell": 0.01,
+      "x": 0.01,
+      "boundary": 91.01556772822913,
+      "equity_closed": 0.22882025648329152,
+      "equity_oracle": 0.22882025648329202,
+      "absolute_error": 4.996003610813204e-16,
+      "scaled_error": 4.0656911248444527e-16,
+      "feasibility": {
+        "status": "sufficient_monotone_subdomain",
+        "boundary": 91.01556772822913,
+        "boundary_running_cashflow": -6.4687545817416705,
+        "equity_boundary_second_derivative": 5175.003665393336,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": true,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.5460934063693748,
+        "floating_point_tolerance": 1.4210854715202004e-13,
+        "warnings": []
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.05,
+      "maturity": 10.0,
+      "ell": 0.01,
+      "x": 0.1,
+      "boundary": 91.01556772822913,
+      "equity_closed": 9.497349716765592,
+      "equity_oracle": 9.497349716765607,
+      "absolute_error": 1.4210854715202004e-14,
+      "scaled_error": 1.3537564336363354e-15,
+      "feasibility": {
+        "status": "sufficient_monotone_subdomain",
+        "boundary": 91.01556772822913,
+        "boundary_running_cashflow": -6.4687545817416705,
+        "equity_boundary_second_derivative": 5175.003665393336,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": true,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.5460934063693748,
+        "floating_point_tolerance": 1.4210854715202004e-13,
+        "warnings": []
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.05,
+      "maturity": 10.0,
+      "ell": 0.01,
+      "x": 0.5,
+      "boundary": 91.01556772822913,
+      "equity_closed": 60.01951521959204,
+      "equity_oracle": 60.019515219592094,
+      "absolute_error": 5.684341886080802e-14,
+      "scaled_error": 9.315612989753281e-16,
+      "feasibility": {
+        "status": "sufficient_monotone_subdomain",
+        "boundary": 91.01556772822913,
+        "boundary_running_cashflow": -6.4687545817416705,
+        "equity_boundary_second_derivative": 5175.003665393336,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": true,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.5460934063693748,
+        "floating_point_tolerance": 1.4210854715202004e-13,
+        "warnings": []
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.05,
+      "maturity": 10.0,
+      "ell": 0.01,
+      "x": 2.0,
+      "boundary": 91.01556772822913,
+      "equity_closed": 582.479523689708,
+      "equity_oracle": 582.479523689708,
+      "absolute_error": 0.0,
+      "scaled_error": 0.0,
+      "feasibility": {
+        "status": "sufficient_monotone_subdomain",
+        "boundary": 91.01556772822913,
+        "boundary_running_cashflow": -6.4687545817416705,
+        "equity_boundary_second_derivative": 5175.003665393336,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": true,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.5460934063693748,
+        "floating_point_tolerance": 1.4210854715202004e-13,
+        "warnings": []
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.05,
+      "maturity": 10.0,
+      "ell": 0.3,
+      "x": 0.01,
+      "boundary": 221.1068192583064,
+      "equity_closed": -0.10357837777570733,
+      "equity_oracle": -0.10357837777571054,
+      "absolute_error": 3.2057689836051395e-15,
+      "scaled_error": 2.904885641259524e-15,
+      "feasibility": {
+        "status": "inadmissible_local",
+        "boundary": 221.1068192583064,
+        "boundary_running_cashflow": 3.93854554066451,
+        "equity_boundary_second_derivative": -3150.8364325316074,
+        "local_admissible": false,
+        "sufficient_monotone_subdomain": false,
+        "uncapped_recovery_exceeds_face": true,
+        "recovery_to_face_ratio": 1.3266409155498382,
+        "floating_point_tolerance": 1.8852701310121323e-13,
+        "warnings": [
+          "Positive boundary running cashflow forces negative equity immediately above the root.",
+          "The uncapped recovery alpha*b exceeds aggregate face value P."
+        ]
+      },
+      "sample_equity_nonnegative": false
+    },
+    {
+      "sigma": 0.05,
+      "maturity": 10.0,
+      "ell": 0.3,
+      "x": 0.1,
+      "boundary": 221.1068192583064,
+      "equity_closed": 6.472494922244454,
+      "equity_oracle": 6.472494922244425,
+      "absolute_error": 2.930988785010413e-14,
+      "scaled_error": 3.922369724581983e-15,
+      "feasibility": {
+        "status": "inadmissible_local",
+        "boundary": 221.1068192583064,
+        "boundary_running_cashflow": 3.93854554066451,
+        "equity_boundary_second_derivative": -3150.8364325316074,
+        "local_admissible": false,
+        "sufficient_monotone_subdomain": false,
+        "uncapped_recovery_exceeds_face": true,
+        "recovery_to_face_ratio": 1.3266409155498382,
+        "floating_point_tolerance": 1.8852701310121323e-13,
+        "warnings": [
+          "Positive boundary running cashflow forces negative equity immediately above the root.",
+          "The uncapped recovery alpha*b exceeds aggregate face value P."
+        ]
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.05,
+      "maturity": 10.0,
+      "ell": 0.3,
+      "x": 0.5,
+      "boundary": 221.1068192583064,
+      "equity_closed": 123.29188224922248,
+      "equity_oracle": 123.29188224922254,
+      "absolute_error": 5.684341886080802e-14,
+      "scaled_error": 4.573381449548655e-16,
+      "feasibility": {
+        "status": "inadmissible_local",
+        "boundary": 221.1068192583064,
+        "boundary_running_cashflow": 3.93854554066451,
+        "equity_boundary_second_derivative": -3150.8364325316074,
+        "local_admissible": false,
+        "sufficient_monotone_subdomain": false,
+        "uncapped_recovery_exceeds_face": true,
+        "recovery_to_face_ratio": 1.3266409155498382,
+        "floating_point_tolerance": 1.8852701310121323e-13,
+        "warnings": [
+          "Positive boundary running cashflow forces negative equity immediately above the root.",
+          "The uncapped recovery alpha*b exceeds aggregate face value P."
+        ]
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.05,
+      "maturity": 10.0,
+      "ell": 0.3,
+      "x": 2.0,
+      "boundary": 221.1068192583064,
+      "equity_closed": 1392.5188142281434,
+      "equity_oracle": 1392.5188142281434,
+      "absolute_error": 0.0,
+      "scaled_error": 0.0,
+      "feasibility": {
+        "status": "inadmissible_local",
+        "boundary": 221.1068192583064,
+        "boundary_running_cashflow": 3.93854554066451,
+        "equity_boundary_second_derivative": -3150.8364325316074,
+        "local_admissible": false,
+        "sufficient_monotone_subdomain": false,
+        "uncapped_recovery_exceeds_face": true,
+        "recovery_to_face_ratio": 1.3266409155498382,
+        "floating_point_tolerance": 1.8852701310121323e-13,
+        "warnings": [
+          "Positive boundary running cashflow forces negative equity immediately above the root.",
+          "The uncapped recovery alpha*b exceeds aggregate face value P."
+        ]
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.2,
+      "maturity": 0.05,
+      "ell": 0.0,
+      "x": 0.01,
+      "boundary": 152.24345799904535,
+      "equity_closed": 0.4076976579088183,
+      "equity_oracle": 0.40769765790880597,
+      "absolute_error": 1.2323475573339238e-14,
+      "scaled_error": 8.754348282177495e-15,
+      "feasibility": {
+        "status": "sufficient_monotone_subdomain",
+        "boundary": 152.24345799904535,
+        "boundary_running_cashflow": -173.7836348514752,
+        "equity_boundary_second_derivative": 8689.181742573759,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": true,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.913460747994272,
+        "floating_point_tolerance": 2.8421709430404007e-11,
+        "warnings": []
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.2,
+      "maturity": 0.05,
+      "ell": 0.0,
+      "x": 0.1,
+      "boundary": 152.24345799904535,
+      "equity_closed": 21.91840691196034,
+      "equity_oracle": 21.918406911960336,
+      "absolute_error": 3.552713678800501e-15,
+      "scaled_error": 1.5501573440283324e-16,
+      "feasibility": {
+        "status": "sufficient_monotone_subdomain",
+        "boundary": 152.24345799904535,
+        "boundary_running_cashflow": -173.7836348514752,
+        "equity_boundary_second_derivative": 8689.181742573759,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": true,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.913460747994272,
+        "floating_point_tolerance": 2.8421709430404007e-11,
+        "warnings": []
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.2,
+      "maturity": 0.05,
+      "ell": 0.0,
+      "x": 0.5,
+      "boundary": 152.24345799904535,
+      "equity_closed": 141.9593155117473,
+      "equity_oracle": 141.95931551174732,
+      "absolute_error": 2.842170943040401e-14,
+      "scaled_error": 1.9880977555511956e-16,
+      "feasibility": {
+        "status": "sufficient_monotone_subdomain",
+        "boundary": 152.24345799904535,
+        "boundary_running_cashflow": -173.7836348514752,
+        "equity_boundary_second_derivative": 8689.181742573759,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": true,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.913460747994272,
+        "floating_point_tolerance": 2.8421709430404007e-11,
+        "warnings": []
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.2,
+      "maturity": 0.05,
+      "ell": 0.0,
+      "x": 2.0,
+      "boundary": 152.24345799904535,
+      "equity_closed": 1047.8150804830964,
+      "equity_oracle": 1047.8150804830966,
+      "absolute_error": 2.2737367544323206e-13,
+      "scaled_error": 2.1679100508213618e-16,
+      "feasibility": {
+        "status": "sufficient_monotone_subdomain",
+        "boundary": 152.24345799904535,
+        "boundary_running_cashflow": -173.7836348514752,
+        "equity_boundary_second_derivative": 8689.181742573759,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": true,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.913460747994272,
+        "floating_point_tolerance": 2.8421709430404007e-11,
+        "warnings": []
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.2,
+      "maturity": 0.05,
+      "ell": 1e-10,
+      "x": 0.01,
+      "boundary": 152.24345801438642,
+      "equity_closed": 0.4076976574788955,
+      "equity_oracle": 0.40769765747891223,
+      "absolute_error": 1.6708856520608606e-14,
+      "scaled_error": 1.186963438621685e-14,
+      "feasibility": {
+        "status": "sufficient_monotone_subdomain",
+        "boundary": 152.24345801438642,
+        "boundary_running_cashflow": -173.78363466707515,
+        "equity_boundary_second_derivative": 8689.181733353756,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": true,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.9134607480863185,
+        "floating_point_tolerance": 2.8421709430404007e-11,
+        "warnings": []
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.2,
+      "maturity": 0.05,
+      "ell": 1e-10,
+      "x": 0.1,
+      "boundary": 152.24345801438642,
+      "equity_closed": 21.918406890239652,
+      "equity_oracle": 21.91840689023972,
+      "absolute_error": 6.750155989720952e-14,
+      "scaled_error": 2.9452989564451996e-15,
+      "feasibility": {
+        "status": "sufficient_monotone_subdomain",
+        "boundary": 152.24345801438642,
+        "boundary_running_cashflow": -173.78363466707515,
+        "equity_boundary_second_derivative": 8689.181733353756,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": true,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.9134607480863185,
+        "floating_point_tolerance": 2.8421709430404007e-11,
+        "warnings": []
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.2,
+      "maturity": 0.05,
+      "ell": 1e-10,
+      "x": 0.5,
+      "boundary": 152.24345801438642,
+      "equity_closed": 141.95931541414177,
+      "equity_oracle": 141.95931541414183,
+      "absolute_error": 5.684341886080802e-14,
+      "scaled_error": 3.9761955138171396e-16,
+      "feasibility": {
+        "status": "sufficient_monotone_subdomain",
+        "boundary": 152.24345801438642,
+        "boundary_running_cashflow": -173.78363466707515,
+        "equity_boundary_second_derivative": 8689.181733353756,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": true,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.9134607480863185,
+        "floating_point_tolerance": 2.8421709430404007e-11,
+        "warnings": []
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.2,
+      "maturity": 0.05,
+      "ell": 1e-10,
+      "x": 2.0,
+      "boundary": 152.24345801438642,
+      "equity_closed": 1047.815080401488,
+      "equity_oracle": 1047.8150804014883,
+      "absolute_error": 2.2737367544323206e-13,
+      "scaled_error": 2.167910050990047e-16,
+      "feasibility": {
+        "status": "sufficient_monotone_subdomain",
+        "boundary": 152.24345801438642,
+        "boundary_running_cashflow": -173.78363466707515,
+        "equity_boundary_second_derivative": 8689.181733353756,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": true,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.9134607480863185,
+        "floating_point_tolerance": 2.8421709430404007e-11,
+        "warnings": []
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.2,
+      "maturity": 0.05,
+      "ell": 0.01,
+      "x": 0.01,
+      "boundary": 153.77740410075754,
+      "equity_closed": 0.36471400962238043,
+      "equity_oracle": 0.364714009620963,
+      "absolute_error": 1.4174217355389374e-12,
+      "scaled_error": 1.0386218105378823e-12,
+      "feasibility": {
+        "status": "necessary_screen_only",
+        "boundary": 153.77740410075754,
+        "boundary_running_cashflow": -155.34560270889483,
+        "equity_boundary_second_derivative": 7767.28013544474,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": false,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.9226644246045451,
+        "floating_point_tolerance": 2.8421709430404007e-11,
+        "warnings": [
+          "The local necessary condition passes; global nonnegativity and optimal stopping are not certified."
+        ]
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.2,
+      "maturity": 0.05,
+      "ell": 0.01,
+      "x": 0.1,
+      "boundary": 153.77740410075754,
+      "equity_closed": 19.746868879623495,
+      "equity_oracle": 19.746868879624216,
+      "absolute_error": 7.212008767965017e-13,
+      "scaled_error": 3.4761914242625926e-14,
+      "feasibility": {
+        "status": "necessary_screen_only",
+        "boundary": 153.77740410075754,
+        "boundary_running_cashflow": -155.34560270889483,
+        "equity_boundary_second_derivative": 7767.28013544474,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": false,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.9226644246045451,
+        "floating_point_tolerance": 2.8421709430404007e-11,
+        "warnings": [
+          "The local necessary condition passes; global nonnegativity and optimal stopping are not certified."
+        ]
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.2,
+      "maturity": 0.05,
+      "ell": 0.01,
+      "x": 0.5,
+      "boundary": 153.77740410075754,
+      "equity_closed": 132.20144347930432,
+      "equity_oracle": 132.20144347930443,
+      "absolute_error": 1.1368683772161603e-13,
+      "scaled_error": 8.534955384269511e-16,
+      "feasibility": {
+        "status": "necessary_screen_only",
+        "boundary": 153.77740410075754,
+        "boundary_running_cashflow": -155.34560270889483,
+        "equity_boundary_second_derivative": 7767.28013544474,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": false,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.9226644246045451,
+        "floating_point_tolerance": 2.8421709430404007e-11,
+        "warnings": [
+          "The local necessary condition passes; global nonnegativity and optimal stopping are not certified."
+        ]
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.2,
+      "maturity": 0.05,
+      "ell": 0.01,
+      "x": 2.0,
+      "boundary": 153.77740410075754,
+      "equity_closed": 1039.6579411838763,
+      "equity_oracle": 1039.6579411838763,
+      "absolute_error": 0.0,
+      "scaled_error": 0.0,
+      "feasibility": {
+        "status": "necessary_screen_only",
+        "boundary": 153.77740410075754,
+        "boundary_running_cashflow": -155.34560270889483,
+        "equity_boundary_second_derivative": 7767.28013544474,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": false,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.9226644246045451,
+        "floating_point_tolerance": 2.8421709430404007e-11,
+        "warnings": [
+          "The local necessary condition passes; global nonnegativity and optimal stopping are not certified."
+        ]
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.2,
+      "maturity": 0.05,
+      "ell": 0.3,
+      "x": 0.01,
+      "boundary": 198.12124032015288,
+      "equity_closed": -0.8768665372062188,
+      "equity_oracle": -0.8768665372101422,
+      "absolute_error": 3.923417146722841e-12,
+      "scaled_error": 2.090408171779109e-12,
+      "feasibility": {
+        "status": "inadmissible_local",
+        "boundary": 198.12124032015288,
+        "boundary_running_cashflow": 377.66730864823694,
+        "equity_boundary_second_derivative": -18883.365432411843,
+        "local_admissible": false,
+        "sufficient_monotone_subdomain": false,
+        "uncapped_recovery_exceeds_face": true,
+        "recovery_to_face_ratio": 1.188727441920917,
+        "floating_point_tolerance": 3.378566594622376e-11,
+        "warnings": [
+          "Positive boundary running cashflow forces negative equity immediately above the root.",
+          "The uncapped recovery alpha*b exceeds aggregate face value P."
+        ]
+      },
+      "sample_equity_nonnegative": false
+    },
+    {
+      "sigma": 0.2,
+      "maturity": 0.05,
+      "ell": 0.3,
+      "x": 0.1,
+      "boundary": 198.12124032015288,
+      "equity_closed": -42.775332299487445,
+      "equity_oracle": -42.77533229948918,
+      "absolute_error": 1.7337242752546445e-12,
+      "scaled_error": 3.9605051159711595e-14,
+      "feasibility": {
+        "status": "inadmissible_local",
+        "boundary": 198.12124032015288,
+        "boundary_running_cashflow": 377.66730864823694,
+        "equity_boundary_second_derivative": -18883.365432411843,
+        "local_admissible": false,
+        "sufficient_monotone_subdomain": false,
+        "uncapped_recovery_exceeds_face": true,
+        "recovery_to_face_ratio": 1.188727441920917,
+        "floating_point_tolerance": 3.378566594622376e-11,
+        "warnings": [
+          "Positive boundary running cashflow forces negative equity immediately above the root.",
+          "The uncapped recovery alpha*b exceeds aggregate face value P."
+        ]
+      },
+      "sample_equity_nonnegative": false
+    },
+    {
+      "sigma": 0.2,
+      "maturity": 0.05,
+      "ell": 0.3,
+      "x": 0.5,
+      "boundary": 198.12124032015288,
+      "equity_closed": -148.4601322078441,
+      "equity_oracle": -148.46013220784488,
+      "absolute_error": 7.673861546209082e-13,
+      "scaled_error": 5.1343869651724394e-15,
+      "feasibility": {
+        "status": "inadmissible_local",
+        "boundary": 198.12124032015288,
+        "boundary_running_cashflow": 377.66730864823694,
+        "equity_boundary_second_derivative": -18883.365432411843,
+        "local_admissible": false,
+        "sufficient_monotone_subdomain": false,
+        "uncapped_recovery_exceeds_face": true,
+        "recovery_to_face_ratio": 1.188727441920917,
+        "floating_point_tolerance": 3.378566594622376e-11,
+        "warnings": [
+          "Positive boundary running cashflow forces negative equity immediately above the root.",
+          "The uncapped recovery alpha*b exceeds aggregate face value P."
+        ]
+      },
+      "sample_equity_nonnegative": false
+    },
+    {
+      "sigma": 0.2,
+      "maturity": 0.05,
+      "ell": 0.3,
+      "x": 2.0,
+      "boundary": 198.12124032015288,
+      "equity_closed": 806.2720560332807,
+      "equity_oracle": 806.2720560332807,
+      "absolute_error": 0.0,
+      "scaled_error": 0.0,
+      "feasibility": {
+        "status": "inadmissible_local",
+        "boundary": 198.12124032015288,
+        "boundary_running_cashflow": 377.66730864823694,
+        "equity_boundary_second_derivative": -18883.365432411843,
+        "local_admissible": false,
+        "sufficient_monotone_subdomain": false,
+        "uncapped_recovery_exceeds_face": true,
+        "recovery_to_face_ratio": 1.188727441920917,
+        "floating_point_tolerance": 3.378566594622376e-11,
+        "warnings": [
+          "Positive boundary running cashflow forces negative equity immediately above the root.",
+          "The uncapped recovery alpha*b exceeds aggregate face value P."
+        ]
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.2,
+      "maturity": 1.0,
+      "ell": 0.0,
+      "x": 0.01,
+      "boundary": 116.90749360418775,
+      "equity_closed": 0.07691959463349396,
+      "equity_oracle": 0.07691959463348431,
+      "absolute_error": 9.645062526431047e-15,
+      "scaled_error": 8.956158449056375e-15,
+      "feasibility": {
+        "status": "sufficient_monotone_subdomain",
+        "boundary": 116.90749360418775,
+        "boundary_running_cashflow": -31.267353965403586,
+        "equity_boundary_second_derivative": 1563.367698270179,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": true,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.7014449616251265,
+        "floating_point_tolerance": 1.4210854715202004e-12,
+        "warnings": []
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.2,
+      "maturity": 1.0,
+      "ell": 0.0,
+      "x": 0.1,
+      "boundary": 116.90749360418775,
+      "equity_closed": 6.630296619492217,
+      "equity_oracle": 6.630296619492209,
+      "absolute_error": 7.993605777301127e-15,
+      "scaled_error": 1.0476140281205866e-15,
+      "feasibility": {
+        "status": "sufficient_monotone_subdomain",
+        "boundary": 116.90749360418775,
+        "boundary_running_cashflow": -31.267353965403586,
+        "equity_boundary_second_derivative": 1563.367698270179,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": true,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.7014449616251265,
+        "floating_point_tolerance": 1.4210854715202004e-12,
+        "warnings": []
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.2,
+      "maturity": 1.0,
+      "ell": 0.0,
+      "x": 0.5,
+      "boundary": 116.90749360418775,
+      "equity_closed": 89.36366618270054,
+      "equity_oracle": 89.36366618270056,
+      "absolute_error": 1.4210854715202004e-14,
+      "scaled_error": 1.5726292785055865e-16,
+      "feasibility": {
+        "status": "sufficient_monotone_subdomain",
+        "boundary": 116.90749360418775,
+        "boundary_running_cashflow": -31.267353965403586,
+        "equity_boundary_second_derivative": 1563.367698270179,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": true,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.7014449616251265,
+        "floating_point_tolerance": 1.4210854715202004e-12,
+        "warnings": []
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.2,
+      "maturity": 1.0,
+      "ell": 0.0,
+      "x": 2.0,
+      "boundary": 116.90749360418775,
+      "equity_closed": 787.0645636609613,
+      "equity_oracle": 787.0645636609613,
+      "absolute_error": 0.0,
+      "scaled_error": 0.0,
+      "feasibility": {
+        "status": "sufficient_monotone_subdomain",
+        "boundary": 116.90749360418775,
+        "boundary_running_cashflow": -31.267353965403586,
+        "equity_boundary_second_derivative": 1563.367698270179,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": true,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.7014449616251265,
+        "floating_point_tolerance": 1.4210854715202004e-12,
+        "warnings": []
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.2,
+      "maturity": 1.0,
+      "ell": 1e-10,
+      "x": 0.01,
+      "boundary": 116.90749365011982,
+      "equity_closed": 0.07691959456398023,
+      "equity_oracle": 0.07691959456398341,
+      "absolute_error": 3.1780134079895106e-15,
+      "scaled_error": 2.9510219927572266e-15,
+      "feasibility": {
+        "status": "sufficient_monotone_subdomain",
+        "boundary": 116.90749365011982,
+        "boundary_running_cashflow": -31.267353936925716,
+        "equity_boundary_second_derivative": 1563.3676968462855,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": true,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.7014449619007189,
+        "floating_point_tolerance": 1.4210854715202004e-12,
+        "warnings": []
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.2,
+      "maturity": 1.0,
+      "ell": 1e-10,
+      "x": 0.1,
+      "boundary": 116.90749365011982,
+      "equity_closed": 6.630296613937487,
+      "equity_oracle": 6.630296613937454,
+      "absolute_error": 3.2862601528904634e-14,
+      "scaled_error": 4.306857674297746e-15,
+      "feasibility": {
+        "status": "sufficient_monotone_subdomain",
+        "boundary": 116.90749365011982,
+        "boundary_running_cashflow": -31.267353936925716,
+        "equity_boundary_second_derivative": 1563.3676968462855,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": true,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.7014449619007189,
+        "floating_point_tolerance": 1.4210854715202004e-12,
+        "warnings": []
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.2,
+      "maturity": 1.0,
+      "ell": 1e-10,
+      "x": 0.5,
+      "boundary": 116.90749365011982,
+      "equity_closed": 89.36366613586738,
+      "equity_oracle": 89.36366613586739,
+      "absolute_error": 1.4210854715202004e-14,
+      "scaled_error": 1.5726292793206398e-16,
+      "feasibility": {
+        "status": "sufficient_monotone_subdomain",
+        "boundary": 116.90749365011982,
+        "boundary_running_cashflow": -31.267353936925716,
+        "equity_boundary_second_derivative": 1563.3676968462855,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": true,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.7014449619007189,
+        "floating_point_tolerance": 1.4210854715202004e-12,
+        "warnings": []
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.2,
+      "maturity": 1.0,
+      "ell": 1e-10,
+      "x": 2.0,
+      "boundary": 116.90749365011982,
+      "equity_closed": 787.064563809794,
+      "equity_oracle": 787.0645638097939,
+      "absolute_error": 1.1368683772161603e-13,
+      "scaled_error": 1.4426081687014585e-16,
+      "feasibility": {
+        "status": "sufficient_monotone_subdomain",
+        "boundary": 116.90749365011982,
+        "boundary_running_cashflow": -31.267353936925716,
+        "equity_boundary_second_derivative": 1563.3676968462855,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": true,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.7014449619007189,
+        "floating_point_tolerance": 1.4210854715202004e-12,
+        "warnings": []
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.2,
+      "maturity": 1.0,
+      "ell": 0.01,
+      "x": 0.01,
+      "boundary": 121.48629220149449,
+      "equity_closed": 0.06999214233222073,
+      "equity_oracle": 0.0699921423323184,
+      "absolute_error": 9.767187059139815e-14,
+      "scaled_error": 9.128279239368768e-14,
+      "feasibility": {
+        "status": "sufficient_monotone_subdomain",
+        "boundary": 121.48629220149449,
+        "boundary_running_cashflow": -28.428498835073412,
+        "equity_boundary_second_derivative": 1421.4249417536703,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": true,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.728917753208967,
+        "floating_point_tolerance": 1.4210854715202004e-12,
+        "warnings": []
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.2,
+      "maturity": 1.0,
+      "ell": 0.01,
+      "x": 0.1,
+      "boundary": 121.48629220149449,
+      "equity_closed": 6.077151191926499,
+      "equity_oracle": 6.0771511919266645,
+      "absolute_error": 1.652011860642233e-13,
+      "scaled_error": 2.334289343043544e-14,
+      "feasibility": {
+        "status": "sufficient_monotone_subdomain",
+        "boundary": 121.48629220149449,
+        "boundary_running_cashflow": -28.428498835073412,
+        "equity_boundary_second_derivative": 1421.4249417536703,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": true,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.728917753208967,
+        "floating_point_tolerance": 1.4210854715202004e-12,
+        "warnings": []
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.2,
+      "maturity": 1.0,
+      "ell": 0.01,
+      "x": 0.5,
+      "boundary": 121.48629220149449,
+      "equity_closed": 84.71022800632649,
+      "equity_oracle": 84.71022800632653,
+      "absolute_error": 4.263256414560601e-14,
+      "scaled_error": 4.974034620752517e-16,
+      "feasibility": {
+        "status": "sufficient_monotone_subdomain",
+        "boundary": 121.48629220149449,
+        "boundary_running_cashflow": -28.428498835073412,
+        "equity_boundary_second_derivative": 1421.4249417536703,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": true,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.728917753208967,
+        "floating_point_tolerance": 1.4210854715202004e-12,
+        "warnings": []
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.2,
+      "maturity": 1.0,
+      "ell": 0.01,
+      "x": 2.0,
+      "boundary": 121.48629220149449,
+      "equity_closed": 801.9351034082314,
+      "equity_oracle": 801.9351034082315,
+      "absolute_error": 1.1368683772161603e-13,
+      "scaled_error": 1.415890739351757e-16,
+      "feasibility": {
+        "status": "sufficient_monotone_subdomain",
+        "boundary": 121.48629220149449,
+        "boundary_running_cashflow": -28.428498835073412,
+        "equity_boundary_second_derivative": 1421.4249417536703,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": true,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.728917753208967,
+        "floating_point_tolerance": 1.4210854715202004e-12,
+        "warnings": []
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.2,
+      "maturity": 1.0,
+      "ell": 0.3,
+      "x": 0.01,
+      "boundary": 242.4001731534508,
+      "equity_closed": -0.11230671869904985,
+      "equity_oracle": -0.11230671869902062,
+      "absolute_error": 2.9226621123257246e-14,
+      "scaled_error": 2.627568514325021e-14,
+      "feasibility": {
+        "status": "inadmissible_local",
+        "boundary": 242.4001731534508,
+        "boundary_running_cashflow": 46.53810735513949,
+        "equity_boundary_second_derivative": -2326.905367756974,
+        "local_admissible": false,
+        "sufficient_monotone_subdomain": false,
+        "uncapped_recovery_exceeds_face": true,
+        "recovery_to_face_ratio": 1.4544010389207047,
+        "floating_point_tolerance": 2.066828186174099e-12,
+        "warnings": [
+          "Positive boundary running cashflow forces negative equity immediately above the root.",
+          "The uncapped recovery alpha*b exceeds aggregate face value P."
+        ]
+      },
+      "sample_equity_nonnegative": false
+    },
+    {
+      "sigma": 0.2,
+      "maturity": 1.0,
+      "ell": 0.3,
+      "x": 0.1,
+      "boundary": 242.4001731534508,
+      "equity_closed": -8.0878393402377,
+      "equity_oracle": -8.087839340237538,
+      "absolute_error": 1.616484723854228e-13,
+      "scaled_error": 1.7787338258688628e-14,
+      "feasibility": {
+        "status": "inadmissible_local",
+        "boundary": 242.4001731534508,
+        "boundary_running_cashflow": 46.53810735513949,
+        "equity_boundary_second_derivative": -2326.905367756974,
+        "local_admissible": false,
+        "sufficient_monotone_subdomain": false,
+        "uncapped_recovery_exceeds_face": true,
+        "recovery_to_face_ratio": 1.4544010389207047,
+        "floating_point_tolerance": 2.066828186174099e-12,
+        "warnings": [
+          "Positive boundary running cashflow forces negative equity immediately above the root.",
+          "The uncapped recovery alpha*b exceeds aggregate face value P."
+        ]
+      },
+      "sample_equity_nonnegative": false
+    },
+    {
+      "sigma": 0.2,
+      "maturity": 1.0,
+      "ell": 0.3,
+      "x": 0.5,
+      "boundary": 242.4001731534508,
+      "equity_closed": -27.003199616767475,
+      "equity_oracle": -27.003199616767347,
+      "absolute_error": 1.2789769243681803e-13,
+      "scaled_error": 4.56725282064687e-15,
+      "feasibility": {
+        "status": "inadmissible_local",
+        "boundary": 242.4001731534508,
+        "boundary_running_cashflow": 46.53810735513949,
+        "equity_boundary_second_derivative": -2326.905367756974,
+        "local_admissible": false,
+        "sufficient_monotone_subdomain": false,
+        "uncapped_recovery_exceeds_face": true,
+        "recovery_to_face_ratio": 1.4544010389207047,
+        "floating_point_tolerance": 2.066828186174099e-12,
+        "warnings": [
+          "Positive boundary running cashflow forces negative equity immediately above the root.",
+          "The uncapped recovery alpha*b exceeds aggregate face value P."
+        ]
+      },
+      "sample_equity_nonnegative": false
+    },
+    {
+      "sigma": 0.2,
+      "maturity": 1.0,
+      "ell": 0.3,
+      "x": 2.0,
+      "boundary": 242.4001731534508,
+      "equity_closed": 1219.492065922323,
+      "equity_oracle": 1219.492065922323,
+      "absolute_error": 0.0,
+      "scaled_error": 0.0,
+      "feasibility": {
+        "status": "inadmissible_local",
+        "boundary": 242.4001731534508,
+        "boundary_running_cashflow": 46.53810735513949,
+        "equity_boundary_second_derivative": -2326.905367756974,
+        "local_admissible": false,
+        "sufficient_monotone_subdomain": false,
+        "uncapped_recovery_exceeds_face": true,
+        "recovery_to_face_ratio": 1.4544010389207047,
+        "floating_point_tolerance": 2.066828186174099e-12,
+        "warnings": [
+          "Positive boundary running cashflow forces negative equity immediately above the root.",
+          "The uncapped recovery alpha*b exceeds aggregate face value P."
+        ]
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.2,
+      "maturity": 10.0,
+      "ell": 0.0,
+      "x": 0.01,
+      "boundary": 74.53548230807147,
+      "equity_closed": 0.019326882107440935,
+      "equity_oracle": 0.019326882107419768,
+      "absolute_error": 2.1167095853869e-14,
+      "scaled_error": 2.0765758487705956e-14,
+      "feasibility": {
+        "status": "sufficient_monotone_subdomain",
+        "boundary": 74.53548230807147,
+        "boundary_running_cashflow": -7.787161415354284,
+        "equity_boundary_second_derivative": 389.3580707677141,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": true,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.44721289384842877,
+        "floating_point_tolerance": 1.4210854715202004e-13,
+        "warnings": []
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.2,
+      "maturity": 10.0,
+      "ell": 0.0,
+      "x": 0.1,
+      "boundary": 74.53548230807147,
+      "equity_closed": 1.814040692057545,
+      "equity_oracle": 1.81404069205753,
+      "absolute_error": 1.4876988529977098e-14,
+      "scaled_error": 5.286699859020004e-15,
+      "feasibility": {
+        "status": "sufficient_monotone_subdomain",
+        "boundary": 74.53548230807147,
+        "boundary_running_cashflow": -7.787161415354284,
+        "equity_boundary_second_derivative": 389.3580707677141,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": true,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.44721289384842877,
+        "floating_point_tolerance": 1.4210854715202004e-13,
+        "warnings": []
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.2,
+      "maturity": 10.0,
+      "ell": 0.0,
+      "x": 0.5,
+      "boundary": 74.53548230807147,
+      "equity_closed": 35.88756278574692,
+      "equity_oracle": 35.88756278574691,
+      "absolute_error": 1.4210854715202004e-14,
+      "scaled_error": 3.852478624771864e-16,
+      "feasibility": {
+        "status": "sufficient_monotone_subdomain",
+        "boundary": 74.53548230807147,
+        "boundary_running_cashflow": -7.787161415354284,
+        "equity_boundary_second_derivative": 389.3580707677141,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": true,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.44721289384842877,
+        "floating_point_tolerance": 1.4210854715202004e-13,
+        "warnings": []
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.2,
+      "maturity": 10.0,
+      "ell": 0.0,
+      "x": 2.0,
+      "boundary": 74.53548230807147,
+      "equity_closed": 474.39872109689617,
+      "equity_oracle": 474.3987210968961,
+      "absolute_error": 5.684341886080802e-14,
+      "scaled_error": 1.1956998691467272e-16,
+      "feasibility": {
+        "status": "sufficient_monotone_subdomain",
+        "boundary": 74.53548230807147,
+        "boundary_running_cashflow": -7.787161415354284,
+        "equity_boundary_second_derivative": 389.3580707677141,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": true,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.44721289384842877,
+        "floating_point_tolerance": 1.4210854715202004e-13,
+        "warnings": []
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.2,
+      "maturity": 10.0,
+      "ell": 1e-10,
+      "x": 0.01,
+      "boundary": 74.53548236022651,
+      "equity_closed": 0.019326882097201348,
+      "equity_oracle": 0.019326882097198454,
+      "absolute_error": 2.8935187579293142e-15,
+      "scaled_error": 2.838656380744211e-15,
+      "feasibility": {
+        "status": "sufficient_monotone_subdomain",
+        "boundary": 74.53548236022651,
+        "boundary_running_cashflow": -7.787161411181879,
+        "equity_boundary_second_derivative": 389.35807055909385,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": true,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.447212894161359,
+        "floating_point_tolerance": 1.4210854715202004e-13,
+        "warnings": []
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.2,
+      "maturity": 10.0,
+      "ell": 1e-10,
+      "x": 0.1,
+      "boundary": 74.53548236022651,
+      "equity_closed": 1.814040691212253,
+      "equity_oracle": 1.8140406912122582,
+      "absolute_error": 5.10702591327572e-15,
+      "scaled_error": 1.814837265581852e-15,
+      "feasibility": {
+        "status": "sufficient_monotone_subdomain",
+        "boundary": 74.53548236022651,
+        "boundary_running_cashflow": -7.787161411181879,
+        "equity_boundary_second_derivative": 389.35807055909385,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": true,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.447212894161359,
+        "floating_point_tolerance": 1.4210854715202004e-13,
+        "warnings": []
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.2,
+      "maturity": 10.0,
+      "ell": 1e-10,
+      "x": 0.5,
+      "boundary": 74.53548236022651,
+      "equity_closed": 35.887562779064645,
+      "equity_oracle": 35.88756277906465,
+      "absolute_error": 7.105427357601002e-15,
+      "scaled_error": 1.9262393127348742e-16,
+      "feasibility": {
+        "status": "sufficient_monotone_subdomain",
+        "boundary": 74.53548236022651,
+        "boundary_running_cashflow": -7.787161411181879,
+        "equity_boundary_second_derivative": 389.35807055909385,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": true,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.447212894161359,
+        "floating_point_tolerance": 1.4210854715202004e-13,
+        "warnings": []
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.2,
+      "maturity": 10.0,
+      "ell": 1e-10,
+      "x": 2.0,
+      "boundary": 74.53548236022651,
+      "equity_closed": 474.39872132998113,
+      "equity_oracle": 474.39872132998113,
+      "absolute_error": 0.0,
+      "scaled_error": 0.0,
+      "feasibility": {
+        "status": "sufficient_monotone_subdomain",
+        "boundary": 74.53548236022651,
+        "boundary_running_cashflow": -7.787161411181879,
+        "equity_boundary_second_derivative": 389.35807055909385,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": true,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.447212894161359,
+        "floating_point_tolerance": 1.4210854715202004e-13,
+        "warnings": []
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.2,
+      "maturity": 10.0,
+      "ell": 0.01,
+      "x": 0.01,
+      "boundary": 79.55160536032443,
+      "equity_closed": 0.01834413411067254,
+      "equity_oracle": 0.018344134110686004,
+      "absolute_error": 1.3464923620531977e-14,
+      "scaled_error": 1.3222370679525557e-14,
+      "feasibility": {
+        "status": "sufficient_monotone_subdomain",
+        "boundary": 79.55160536032443,
+        "boundary_running_cashflow": -7.385871571174046,
+        "equity_boundary_second_derivative": 369.2935785587022,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": true,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.4773096321619466,
+        "floating_point_tolerance": 1.4210854715202004e-13,
+        "warnings": []
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.2,
+      "maturity": 10.0,
+      "ell": 0.01,
+      "x": 0.1,
+      "boundary": 79.55160536032443,
+      "equity_closed": 1.7330069523054323,
+      "equity_oracle": 1.7330069523054088,
+      "absolute_error": 2.353672812205332e-14,
+      "scaled_error": 8.612026435644109e-15,
+      "feasibility": {
+        "status": "sufficient_monotone_subdomain",
+        "boundary": 79.55160536032443,
+        "boundary_running_cashflow": -7.385871571174046,
+        "equity_boundary_second_derivative": 369.2935785587022,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": true,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.4773096321619466,
+        "floating_point_tolerance": 1.4210854715202004e-13,
+        "warnings": []
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.2,
+      "maturity": 10.0,
+      "ell": 0.01,
+      "x": 0.5,
+      "boundary": 79.55160536032443,
+      "equity_closed": 35.26069395314954,
+      "equity_oracle": 35.26069395314954,
+      "absolute_error": 0.0,
+      "scaled_error": 0.0,
+      "feasibility": {
+        "status": "sufficient_monotone_subdomain",
+        "boundary": 79.55160536032443,
+        "boundary_running_cashflow": -7.385871571174046,
+        "equity_boundary_second_derivative": 369.2935785587022,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": true,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.4773096321619466,
+        "floating_point_tolerance": 1.4210854715202004e-13,
+        "warnings": []
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.2,
+      "maturity": 10.0,
+      "ell": 0.01,
+      "x": 2.0,
+      "boundary": 79.55160536032443,
+      "equity_closed": 496.90547046446187,
+      "equity_oracle": 496.90547046446187,
+      "absolute_error": 0.0,
+      "scaled_error": 0.0,
+      "feasibility": {
+        "status": "sufficient_monotone_subdomain",
+        "boundary": 79.55160536032443,
+        "boundary_running_cashflow": -7.385871571174046,
+        "equity_boundary_second_derivative": 369.2935785587022,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": true,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.4773096321619466,
+        "floating_point_tolerance": 1.4210854715202004e-13,
+        "warnings": []
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.2,
+      "maturity": 10.0,
+      "ell": 0.3,
+      "x": 0.01,
+      "boundary": 137.41179011953957,
+      "equity_closed": 0.007104473583150472,
+      "equity_oracle": 0.007104473583152745,
+      "absolute_error": 2.2724877535296173e-15,
+      "scaled_error": 2.2564568156910155e-15,
+      "feasibility": {
+        "status": "necessary_screen_only",
+        "boundary": 137.41179011953957,
+        "boundary_running_cashflow": -2.7570567904368346,
+        "equity_boundary_second_derivative": 137.8528395218417,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": false,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.8244707407172375,
+        "floating_point_tolerance": 1.4210854715202004e-13,
+        "warnings": [
+          "The local necessary condition passes; global nonnegativity and optimal stopping are not certified."
+        ]
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.2,
+      "maturity": 10.0,
+      "ell": 0.3,
+      "x": 0.1,
+      "boundary": 137.41179011953957,
+      "equity_closed": 0.8770819262558529,
+      "equity_oracle": 0.877081926255862,
+      "absolute_error": 9.103828801926284e-15,
+      "scaled_error": 4.849990122746169e-15,
+      "feasibility": {
+        "status": "necessary_screen_only",
+        "boundary": 137.41179011953957,
+        "boundary_running_cashflow": -2.7570567904368346,
+        "equity_boundary_second_derivative": 137.8528395218417,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": false,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.8244707407172375,
+        "floating_point_tolerance": 1.4210854715202004e-13,
+        "warnings": [
+          "The local necessary condition passes; global nonnegativity and optimal stopping are not certified."
+        ]
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.2,
+      "maturity": 10.0,
+      "ell": 0.3,
+      "x": 0.5,
+      "boundary": 137.41179011953957,
+      "equity_closed": 32.231868374916914,
+      "equity_oracle": 32.23186837491696,
+      "absolute_error": 4.263256414560601e-14,
+      "scaled_error": 1.282881951283383e-15,
+      "feasibility": {
+        "status": "necessary_screen_only",
+        "boundary": 137.41179011953957,
+        "boundary_running_cashflow": -2.7570567904368346,
+        "equity_boundary_second_derivative": 137.8528395218417,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": false,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.8244707407172375,
+        "floating_point_tolerance": 1.4210854715202004e-13,
+        "warnings": [
+          "The local necessary condition passes; global nonnegativity and optimal stopping are not certified."
+        ]
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.2,
+      "maturity": 10.0,
+      "ell": 0.3,
+      "x": 2.0,
+      "boundary": 137.41179011953957,
+      "equity_closed": 777.104773466182,
+      "equity_oracle": 777.1047734661821,
+      "absolute_error": 1.1368683772161603e-13,
+      "scaled_error": 1.4610736445579339e-16,
+      "feasibility": {
+        "status": "necessary_screen_only",
+        "boundary": 137.41179011953957,
+        "boundary_running_cashflow": -2.7570567904368346,
+        "equity_boundary_second_derivative": 137.8528395218417,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": false,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.8244707407172375,
+        "floating_point_tolerance": 1.4210854715202004e-13,
+        "warnings": [
+          "The local necessary condition passes; global nonnegativity and optimal stopping are not certified."
+        ]
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.7,
+      "maturity": 0.05,
+      "ell": 0.0,
+      "x": 0.01,
+      "boundary": 140.12871671790785,
+      "equity_closed": 0.06435480103611746,
+      "equity_oracle": 0.0643548010361289,
+      "absolute_error": 1.1435297153639112e-14,
+      "scaled_error": 1.0743877081690309e-14,
+      "feasibility": {
+        "status": "sufficient_monotone_subdomain",
+        "boundary": 140.12871671790785,
+        "boundary_running_cashflow": -319.4028250507479,
+        "equity_boundary_second_derivative": 1303.6850002071344,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": true,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.840772300307447,
+        "floating_point_tolerance": 2.8421709430404007e-11,
+        "warnings": []
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.7,
+      "maturity": 0.05,
+      "ell": 0.0,
+      "x": 0.1,
+      "boundary": 140.12871671790785,
+      "equity_closed": 5.675886597342631,
+      "equity_oracle": 5.675886597342616,
+      "absolute_error": 1.509903313490213e-14,
+      "scaled_error": 2.2617270252781716e-15,
+      "feasibility": {
+        "status": "sufficient_monotone_subdomain",
+        "boundary": 140.12871671790785,
+        "boundary_running_cashflow": -319.4028250507479,
+        "equity_boundary_second_derivative": 1303.6850002071344,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": true,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.840772300307447,
+        "floating_point_tolerance": 2.8421709430404007e-11,
+        "warnings": []
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.7,
+      "maturity": 0.05,
+      "ell": 0.0,
+      "x": 0.5,
+      "boundary": 140.12871671790785,
+      "equity_closed": 82.36748246310862,
+      "equity_oracle": 82.36748246310862,
+      "absolute_error": 0.0,
+      "scaled_error": 0.0,
+      "feasibility": {
+        "status": "sufficient_monotone_subdomain",
+        "boundary": 140.12871671790785,
+        "boundary_running_cashflow": -319.4028250507479,
+        "equity_boundary_second_derivative": 1303.6850002071344,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": true,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.840772300307447,
+        "floating_point_tolerance": 2.8421709430404007e-11,
+        "warnings": []
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.7,
+      "maturity": 0.05,
+      "ell": 0.0,
+      "x": 2.0,
+      "boundary": 140.12871671790785,
+      "equity_closed": 905.100690185731,
+      "equity_oracle": 905.100690185731,
+      "absolute_error": 0.0,
+      "scaled_error": 0.0,
+      "feasibility": {
+        "status": "sufficient_monotone_subdomain",
+        "boundary": 140.12871671790785,
+        "boundary_running_cashflow": -319.4028250507479,
+        "equity_boundary_second_derivative": 1303.6850002071344,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": true,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.840772300307447,
+        "floating_point_tolerance": 2.8421709430404007e-11,
+        "warnings": []
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.7,
+      "maturity": 0.05,
+      "ell": 1e-10,
+      "x": 0.01,
+      "boundary": 140.1287167229025,
+      "equity_closed": 0.0643548010241981,
+      "equity_oracle": 0.06435480102409233,
+      "absolute_error": 1.0577649867116179e-13,
+      "scaled_error": 9.938086300675922e-14,
+      "feasibility": {
+        "status": "sufficient_monotone_subdomain",
+        "boundary": 140.1287167229025,
+        "boundary_running_cashflow": -319.4028249907119,
+        "equity_boundary_second_derivative": 1303.6849999620895,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": true,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.840772300337415,
+        "floating_point_tolerance": 2.8421709430404007e-11,
+        "warnings": []
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.7,
+      "maturity": 0.05,
+      "ell": 1e-10,
+      "x": 0.1,
+      "boundary": 140.1287167229025,
+      "equity_closed": 5.675886596328105,
+      "equity_oracle": 5.675886596328091,
+      "absolute_error": 1.4210854715202004e-14,
+      "scaled_error": 2.128684259408831e-15,
+      "feasibility": {
+        "status": "sufficient_monotone_subdomain",
+        "boundary": 140.1287167229025,
+        "boundary_running_cashflow": -319.4028249907119,
+        "equity_boundary_second_derivative": 1303.6849999620895,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": true,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.840772300337415,
+        "floating_point_tolerance": 2.8421709430404007e-11,
+        "warnings": []
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.7,
+      "maturity": 0.05,
+      "ell": 1e-10,
+      "x": 0.5,
+      "boundary": 140.1287167229025,
+      "equity_closed": 82.36748245159725,
+      "equity_oracle": 82.36748245159727,
+      "absolute_error": 1.4210854715202004e-14,
+      "scaled_error": 1.7046040371259566e-16,
+      "feasibility": {
+        "status": "sufficient_monotone_subdomain",
+        "boundary": 140.1287167229025,
+        "boundary_running_cashflow": -319.4028249907119,
+        "equity_boundary_second_derivative": 1303.6849999620895,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": true,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.840772300337415,
+        "floating_point_tolerance": 2.8421709430404007e-11,
+        "warnings": []
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.7,
+      "maturity": 0.05,
+      "ell": 1e-10,
+      "x": 2.0,
+      "boundary": 140.1287167229025,
+      "equity_closed": 905.1006901580516,
+      "equity_oracle": 905.1006901580516,
+      "absolute_error": 0.0,
+      "scaled_error": 0.0,
+      "feasibility": {
+        "status": "sufficient_monotone_subdomain",
+        "boundary": 140.1287167229025,
+        "boundary_running_cashflow": -319.4028249907119,
+        "equity_boundary_second_derivative": 1303.6849999620895,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": true,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.840772300337415,
+        "floating_point_tolerance": 2.8421709430404007e-11,
+        "warnings": []
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.7,
+      "maturity": 0.05,
+      "ell": 0.01,
+      "x": 0.01,
+      "boundary": 140.628128949744,
+      "equity_closed": 0.06315128856793212,
+      "equity_oracle": 0.06315128856695401,
+      "absolute_error": 9.78106484694763e-13,
+      "scaled_error": 9.200068656392028e-13,
+      "feasibility": {
+        "status": "necessary_screen_only",
+        "boundary": 140.628128949744,
+        "boundary_running_cashflow": -313.3998900240772,
+        "equity_boundary_second_derivative": 1279.1832245880703,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": false,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.8437687736984639,
+        "floating_point_tolerance": 2.8421709430404007e-11,
+        "warnings": [
+          "The local necessary condition passes; global nonnegativity and optimal stopping are not certified."
+        ]
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.7,
+      "maturity": 0.05,
+      "ell": 0.01,
+      "x": 0.1,
+      "boundary": 140.628128949744,
+      "equity_closed": 5.574452326116314,
+      "equity_oracle": 5.574452326116124,
+      "absolute_error": 1.900701818158268e-13,
+      "scaled_error": 2.891042057766525e-14,
+      "feasibility": {
+        "status": "necessary_screen_only",
+        "boundary": 140.628128949744,
+        "boundary_running_cashflow": -313.3998900240772,
+        "equity_boundary_second_derivative": 1279.1832245880703,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": false,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.8437687736984639,
+        "floating_point_tolerance": 2.8421709430404007e-11,
+        "warnings": [
+          "The local necessary condition passes; global nonnegativity and optimal stopping are not certified."
+        ]
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.7,
+      "maturity": 0.05,
+      "ell": 0.01,
+      "x": 0.5,
+      "boundary": 140.628128949744,
+      "equity_closed": 81.21665515728249,
+      "equity_oracle": 81.21665515728246,
+      "absolute_error": 2.842170943040401e-14,
+      "scaled_error": 3.4569284503282927e-16,
+      "feasibility": {
+        "status": "necessary_screen_only",
+        "boundary": 140.628128949744,
+        "boundary_running_cashflow": -313.3998900240772,
+        "equity_boundary_second_derivative": 1279.1832245880703,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": false,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.8437687736984639,
+        "floating_point_tolerance": 2.8421709430404007e-11,
+        "warnings": [
+          "The local necessary condition passes; global nonnegativity and optimal stopping are not certified."
+        ]
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.7,
+      "maturity": 0.05,
+      "ell": 0.01,
+      "x": 2.0,
+      "boundary": 140.628128949744,
+      "equity_closed": 902.3339102068688,
+      "equity_oracle": 902.3339102068688,
+      "absolute_error": 0.0,
+      "scaled_error": 0.0,
+      "feasibility": {
+        "status": "necessary_screen_only",
+        "boundary": 140.628128949744,
+        "boundary_running_cashflow": -313.3998900240772,
+        "equity_boundary_second_derivative": 1279.1832245880703,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": false,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.8437687736984639,
+        "floating_point_tolerance": 2.8421709430404007e-11,
+        "warnings": [
+          "The local necessary condition passes; global nonnegativity and optimal stopping are not certified."
+        ]
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.7,
+      "maturity": 0.05,
+      "ell": 0.3,
+      "x": 0.01,
+      "boundary": 155.06233562554448,
+      "equity_closed": 0.02837524364537991,
+      "equity_oracle": 0.028375243641268044,
+      "absolute_error": 4.111867096812105e-12,
+      "scaled_error": 3.998411204700745e-12,
+      "feasibility": {
+        "status": "necessary_screen_only",
+        "boundary": 155.06233562554448,
+        "boundary_running_cashflow": -139.90072578095555,
+        "equity_boundary_second_derivative": 571.0233705345125,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": false,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.9303740137532668,
+        "floating_point_tolerance": 2.8421709430404007e-11,
+        "warnings": [
+          "The local necessary condition passes; global nonnegativity and optimal stopping are not certified."
+        ]
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.7,
+      "maturity": 0.05,
+      "ell": 0.3,
+      "x": 0.1,
+      "boundary": 155.06233562554448,
+      "equity_closed": 2.6485583798571355,
+      "equity_oracle": 2.6485583798562105,
+      "absolute_error": 9.250378241176804e-13,
+      "scaled_error": 2.535351576734634e-13,
+      "feasibility": {
+        "status": "necessary_screen_only",
+        "boundary": 155.06233562554448,
+        "boundary_running_cashflow": -139.90072578095555,
+        "equity_boundary_second_derivative": 571.0233705345125,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": false,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.9303740137532668,
+        "floating_point_tolerance": 2.8421709430404007e-11,
+        "warnings": [
+          "The local necessary condition passes; global nonnegativity and optimal stopping are not certified."
+        ]
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.7,
+      "maturity": 0.05,
+      "ell": 0.3,
+      "x": 0.5,
+      "boundary": 155.06233562554448,
+      "equity_closed": 48.10773942311594,
+      "equity_oracle": 48.107739423116,
+      "absolute_error": 6.394884621840902e-14,
+      "scaled_error": 1.3022152306262954e-15,
+      "feasibility": {
+        "status": "necessary_screen_only",
+        "boundary": 155.06233562554448,
+        "boundary_running_cashflow": -139.90072578095555,
+        "equity_boundary_second_derivative": 571.0233705345125,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": false,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.9303740137532668,
+        "floating_point_tolerance": 2.8421709430404007e-11,
+        "warnings": [
+          "The local necessary condition passes; global nonnegativity and optimal stopping are not certified."
+        ]
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.7,
+      "maturity": 0.05,
+      "ell": 0.3,
+      "x": 2.0,
+      "boundary": 155.06233562554448,
+      "equity_closed": 823.0726829323775,
+      "equity_oracle": 823.0726829323775,
+      "absolute_error": 0.0,
+      "scaled_error": 0.0,
+      "feasibility": {
+        "status": "necessary_screen_only",
+        "boundary": 155.06233562554448,
+        "boundary_running_cashflow": -139.90072578095555,
+        "equity_boundary_second_derivative": 571.0233705345125,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": false,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.9303740137532668,
+        "floating_point_tolerance": 2.8421709430404007e-11,
+        "warnings": [
+          "The local necessary condition passes; global nonnegativity and optimal stopping are not certified."
+        ]
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.7,
+      "maturity": 1.0,
+      "ell": 0.0,
+      "x": 0.01,
+      "boundary": 83.88472980529905,
+      "equity_closed": 0.01056183726731641,
+      "equity_oracle": 0.0105618372673047,
+      "absolute_error": 1.1709383462843448e-14,
+      "scaled_error": 1.1587003418323413e-14,
+      "feasibility": {
+        "status": "sufficient_monotone_subdomain",
+        "boundary": 83.88472980529905,
+        "boundary_running_cashflow": -51.74146752071459,
+        "equity_boundary_second_derivative": 211.18966334985552,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": true,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.5033083788317942,
+        "floating_point_tolerance": 1.4210854715202004e-12,
+        "warnings": []
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.7,
+      "maturity": 1.0,
+      "ell": 0.0,
+      "x": 0.1,
+      "boundary": 83.88472980529905,
+      "equity_closed": 1.05812199720652,
+      "equity_oracle": 1.0581219972064917,
+      "absolute_error": 2.8199664825478976e-14,
+      "scaled_error": 1.370164881564584e-14,
+      "feasibility": {
+        "status": "sufficient_monotone_subdomain",
+        "boundary": 83.88472980529905,
+        "boundary_running_cashflow": -51.74146752071459,
+        "equity_boundary_second_derivative": 211.18966334985552,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": true,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.5033083788317942,
+        "floating_point_tolerance": 1.4210854715202004e-12,
+        "warnings": []
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.7,
+      "maturity": 1.0,
+      "ell": 0.0,
+      "x": 0.5,
+      "boundary": 83.88472980529905,
+      "equity_closed": 26.63687471247301,
+      "equity_oracle": 26.63687471247298,
+      "absolute_error": 2.842170943040401e-14,
+      "scaled_error": 1.0283980994991745e-15,
+      "feasibility": {
+        "status": "sufficient_monotone_subdomain",
+        "boundary": 83.88472980529905,
+        "boundary_running_cashflow": -51.74146752071459,
+        "equity_boundary_second_derivative": 211.18966334985552,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": true,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.5033083788317942,
+        "floating_point_tolerance": 1.4210854715202004e-12,
+        "warnings": []
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.7,
+      "maturity": 1.0,
+      "ell": 0.0,
+      "x": 2.0,
+      "boundary": 83.88472980529905,
+      "equity_closed": 504.94218171316305,
+      "equity_oracle": 504.942181713163,
+      "absolute_error": 5.684341886080802e-14,
+      "scaled_error": 1.1235161035265213e-16,
+      "feasibility": {
+        "status": "sufficient_monotone_subdomain",
+        "boundary": 83.88472980529905,
+        "boundary_running_cashflow": -51.74146752071459,
+        "equity_boundary_second_derivative": 211.18966334985552,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": true,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.5033083788317942,
+        "floating_point_tolerance": 1.4210854715202004e-12,
+        "warnings": []
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.7,
+      "maturity": 1.0,
+      "ell": 1e-10,
+      "x": 0.01,
+      "boundary": 83.88472981552046,
+      "equity_closed": 0.01056183726600135,
+      "equity_oracle": 0.010561837266019688,
+      "absolute_error": 1.8337761864550828e-14,
+      "scaled_error": 1.8146105649667043e-14,
+      "feasibility": {
+        "status": "sufficient_monotone_subdomain",
+        "boundary": 83.88472981552046,
+        "boundary_running_cashflow": -51.74146751437732,
+        "equity_boundary_second_derivative": 211.1896633239891,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": true,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.5033083788931227,
+        "floating_point_tolerance": 1.4210854715202004e-12,
+        "warnings": []
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.7,
+      "maturity": 1.0,
+      "ell": 1e-10,
+      "x": 0.1,
+      "boundary": 83.88472981552046,
+      "equity_closed": 1.0581219970855154,
+      "equity_oracle": 1.0581219970855165,
+      "absolute_error": 1.1102230246251565e-15,
+      "scaled_error": 5.394349927736699e-16,
+      "feasibility": {
+        "status": "sufficient_monotone_subdomain",
+        "boundary": 83.88472981552046,
+        "boundary_running_cashflow": -51.74146751437732,
+        "equity_boundary_second_derivative": 211.1896633239891,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": true,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.5033083788931227,
+        "floating_point_tolerance": 1.4210854715202004e-12,
+        "warnings": []
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.7,
+      "maturity": 1.0,
+      "ell": 1e-10,
+      "x": 0.5,
+      "boundary": 83.88472981552046,
+      "equity_closed": 26.636874710302557,
+      "equity_oracle": 26.636874710302564,
+      "absolute_error": 7.105427357601002e-15,
+      "scaled_error": 2.5709952489498453e-16,
+      "feasibility": {
+        "status": "sufficient_monotone_subdomain",
+        "boundary": 83.88472981552046,
+        "boundary_running_cashflow": -51.74146751437732,
+        "equity_boundary_second_derivative": 211.1896633239891,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": true,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.5033083788931227,
+        "floating_point_tolerance": 1.4210854715202004e-12,
+        "warnings": []
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.7,
+      "maturity": 1.0,
+      "ell": 1e-10,
+      "x": 2.0,
+      "boundary": 83.88472981552046,
+      "equity_closed": 504.9421817289952,
+      "equity_oracle": 504.94218172899525,
+      "absolute_error": 5.684341886080802e-14,
+      "scaled_error": 1.1235161034913637e-16,
+      "feasibility": {
+        "status": "sufficient_monotone_subdomain",
+        "boundary": 83.88472981552046,
+        "boundary_running_cashflow": -51.74146751437732,
+        "equity_boundary_second_derivative": 211.1896633239891,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": true,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.5033083788931227,
+        "floating_point_tolerance": 1.4210854715202004e-12,
+        "warnings": []
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.7,
+      "maturity": 1.0,
+      "ell": 0.01,
+      "x": 0.01,
+      "boundary": 84.90340293210522,
+      "equity_closed": 0.010433776560336283,
+      "equity_oracle": 0.010433776560328564,
+      "absolute_error": 7.719519468096792e-15,
+      "scaled_error": 7.639807424465975e-15,
+      "feasibility": {
+        "status": "sufficient_monotone_subdomain",
+        "boundary": 84.90340293210522,
+        "boundary_running_cashflow": -51.10989018209476,
+        "equity_boundary_second_derivative": 208.6117966616113,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": true,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.5094204175926313,
+        "floating_point_tolerance": 1.4210854715202004e-12,
+        "warnings": []
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.7,
+      "maturity": 1.0,
+      "ell": 0.01,
+      "x": 0.1,
+      "boundary": 84.90340293210522,
+      "equity_closed": 1.0460696085291579,
+      "equity_oracle": 1.0460696085285732,
+      "absolute_error": 5.846434447676074e-13,
+      "scaled_error": 2.8573976287544414e-13,
+      "feasibility": {
+        "status": "sufficient_monotone_subdomain",
+        "boundary": 84.90340293210522,
+        "boundary_running_cashflow": -51.10989018209476,
+        "equity_boundary_second_derivative": 208.6117966616113,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": true,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.5094204175926313,
+        "floating_point_tolerance": 1.4210854715202004e-12,
+        "warnings": []
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.7,
+      "maturity": 1.0,
+      "ell": 0.01,
+      "x": 0.5,
+      "boundary": 84.90340293210522,
+      "equity_closed": 26.420944072933978,
+      "equity_oracle": 26.420944072933693,
+      "absolute_error": 2.8421709430404007e-13,
+      "scaled_error": 1.036496385930714e-14,
+      "feasibility": {
+        "status": "sufficient_monotone_subdomain",
+        "boundary": 84.90340293210522,
+        "boundary_running_cashflow": -51.10989018209476,
+        "equity_boundary_second_derivative": 208.6117966616113,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": true,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.5094204175926313,
+        "floating_point_tolerance": 1.4210854715202004e-12,
+        "warnings": []
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.7,
+      "maturity": 1.0,
+      "ell": 0.01,
+      "x": 2.0,
+      "boundary": 84.90340293210522,
+      "equity_closed": 506.52647884653146,
+      "equity_oracle": 506.5264788465314,
+      "absolute_error": 5.684341886080802e-14,
+      "scaled_error": 1.1200089301743927e-16,
+      "feasibility": {
+        "status": "sufficient_monotone_subdomain",
+        "boundary": 84.90340293210522,
+        "boundary_running_cashflow": -51.10989018209476,
+        "equity_boundary_second_derivative": 208.6117966616113,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": true,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.5094204175926313,
+        "floating_point_tolerance": 1.4210854715202004e-12,
+        "warnings": []
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.7,
+      "maturity": 1.0,
+      "ell": 0.3,
+      "x": 0.01,
+      "boundary": 111.60980632309644,
+      "equity_closed": 0.007079838517360826,
+      "equity_oracle": 0.007079838517259224,
+      "absolute_error": 1.016018866262236e-13,
+      "scaled_error": 1.008876185782984e-13,
+      "feasibility": {
+        "status": "necessary_screen_only",
+        "boundary": 111.60980632309644,
+        "boundary_running_cashflow": -34.551920079680215,
+        "equity_boundary_second_derivative": 141.02824522318457,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": false,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.6696588379385786,
+        "floating_point_tolerance": 1.4210854715202004e-12,
+        "warnings": [
+          "The local necessary condition passes; global nonnegativity and optimal stopping are not certified."
+        ]
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.7,
+      "maturity": 1.0,
+      "ell": 0.3,
+      "x": 0.1,
+      "boundary": 111.60980632309644,
+      "equity_closed": 0.7332597971715815,
+      "equity_oracle": 0.7332597971714618,
+      "absolute_error": 1.1968204205459188e-13,
+      "scaled_error": 6.905026139180241e-14,
+      "feasibility": {
+        "status": "necessary_screen_only",
+        "boundary": 111.60980632309644,
+        "boundary_running_cashflow": -34.551920079680215,
+        "equity_boundary_second_derivative": 141.02824522318457,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": false,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.6696588379385786,
+        "floating_point_tolerance": 1.4210854715202004e-12,
+        "warnings": [
+          "The local necessary condition passes; global nonnegativity and optimal stopping are not certified."
+        ]
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.7,
+      "maturity": 1.0,
+      "ell": 0.3,
+      "x": 0.5,
+      "boundary": 111.60980632309644,
+      "equity_closed": 21.03982903329525,
+      "equity_oracle": 21.039829033295305,
+      "absolute_error": 5.684341886080802e-14,
+      "scaled_error": 2.579122495684306e-15,
+      "feasibility": {
+        "status": "necessary_screen_only",
+        "boundary": 111.60980632309644,
+        "boundary_running_cashflow": -34.551920079680215,
+        "equity_boundary_second_derivative": 141.02824522318457,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": false,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.6696588379385786,
+        "floating_point_tolerance": 1.4210854715202004e-12,
+        "warnings": [
+          "The local necessary condition passes; global nonnegativity and optimal stopping are not certified."
+        ]
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.7,
+      "maturity": 1.0,
+      "ell": 0.3,
+      "x": 2.0,
+      "boundary": 111.60980632309644,
+      "equity_closed": 552.7990738153957,
+      "equity_oracle": 552.7990738153957,
+      "absolute_error": 0.0,
+      "scaled_error": 0.0,
+      "feasibility": {
+        "status": "necessary_screen_only",
+        "boundary": 111.60980632309644,
+        "boundary_running_cashflow": -34.551920079680215,
+        "equity_boundary_second_derivative": 141.02824522318457,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": false,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.6696588379385786,
+        "floating_point_tolerance": 1.4210854715202004e-12,
+        "warnings": [
+          "The local necessary condition passes; global nonnegativity and optimal stopping are not certified."
+        ]
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.7,
+      "maturity": 10.0,
+      "ell": 0.0,
+      "x": 0.01,
+      "boundary": 32.60623311443349,
+      "equity_closed": 0.002278768402240172,
+      "equity_oracle": 0.002278768402269706,
+      "absolute_error": 2.953366717850514e-14,
+      "scaled_error": 2.946651980425036e-14,
+      "feasibility": {
+        "status": "sufficient_monotone_subdomain",
+        "boundary": 32.60623311443349,
+        "boundary_running_cashflow": -11.14150135084532,
+        "equity_boundary_second_derivative": 45.47551571773601,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": true,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.19563739868660096,
+        "floating_point_tolerance": 1.4210854715202004e-13,
+        "warnings": []
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.7,
+      "maturity": 10.0,
+      "ell": 0.0,
+      "x": 0.1,
+      "boundary": 32.60623311443349,
+      "equity_closed": 0.23249687791872953,
+      "equity_oracle": 0.23249687791877835,
+      "absolute_error": 4.882205750789126e-14,
+      "scaled_error": 3.9612317388043425e-14,
+      "feasibility": {
+        "status": "sufficient_monotone_subdomain",
+        "boundary": 32.60623311443349,
+        "boundary_running_cashflow": -11.14150135084532,
+        "equity_boundary_second_derivative": 45.47551571773601,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": true,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.19563739868660096,
+        "floating_point_tolerance": 1.4210854715202004e-13,
+        "warnings": []
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.7,
+      "maturity": 10.0,
+      "ell": 0.0,
+      "x": 0.5,
+      "boundary": 32.60623311443349,
+      "equity_closed": 6.402010671076162,
+      "equity_oracle": 6.402010671076177,
+      "absolute_error": 1.4210854715202004e-14,
+      "scaled_error": 1.9198641216138493e-15,
+      "feasibility": {
+        "status": "sufficient_monotone_subdomain",
+        "boundary": 32.60623311443349,
+        "boundary_running_cashflow": -11.14150135084532,
+        "equity_boundary_second_derivative": 45.47551571773601,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": true,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.19563739868660096,
+        "floating_point_tolerance": 1.4210854715202004e-13,
+        "warnings": []
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.7,
+      "maturity": 10.0,
+      "ell": 0.0,
+      "x": 2.0,
+      "boundary": 32.60623311443349,
+      "equity_closed": 165.38428484930716,
+      "equity_oracle": 165.38428484930716,
+      "absolute_error": 0.0,
+      "scaled_error": 0.0,
+      "feasibility": {
+        "status": "sufficient_monotone_subdomain",
+        "boundary": 32.60623311443349,
+        "boundary_running_cashflow": -11.14150135084532,
+        "equity_boundary_second_derivative": 45.47551571773601,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": true,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.19563739868660096,
+        "floating_point_tolerance": 1.4210854715202004e-13,
+        "warnings": []
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.7,
+      "maturity": 10.0,
+      "ell": 1e-10,
+      "x": 0.01,
+      "boundary": 32.60623311840741,
+      "equity_closed": 0.0022787684022130827,
+      "equity_oracle": 0.0022787684022055354,
+      "absolute_error": 7.547348163106093e-15,
+      "scaled_error": 7.530188607245255e-15,
+      "feasibility": {
+        "status": "sufficient_monotone_subdomain",
+        "boundary": 32.60623311840741,
+        "boundary_running_cashflow": -11.141501350527408,
+        "equity_boundary_second_derivative": 45.47551571643841,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": true,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.19563739871044444,
+        "floating_point_tolerance": 1.4210854715202004e-13,
+        "warnings": []
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.7,
+      "maturity": 10.0,
+      "ell": 1e-10,
+      "x": 0.1,
+      "boundary": 32.60623311840741,
+      "equity_closed": 0.23249687791301232,
+      "equity_oracle": 0.23249687791301843,
+      "absolute_error": 6.106226635438361e-15,
+      "scaled_error": 4.95435464776025e-15,
+      "feasibility": {
+        "status": "sufficient_monotone_subdomain",
+        "boundary": 32.60623311840741,
+        "boundary_running_cashflow": -11.141501350527408,
+        "equity_boundary_second_derivative": 45.47551571643841,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": true,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.19563739871044444,
+        "floating_point_tolerance": 1.4210854715202004e-13,
+        "warnings": []
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.7,
+      "maturity": 10.0,
+      "ell": 1e-10,
+      "x": 0.5,
+      "boundary": 32.60623311840741,
+      "equity_closed": 6.4020106710158995,
+      "equity_oracle": 6.4020106710158835,
+      "absolute_error": 1.5987211554602254e-14,
+      "scaled_error": 2.159847136833174e-15,
+      "feasibility": {
+        "status": "sufficient_monotone_subdomain",
+        "boundary": 32.60623311840741,
+        "boundary_running_cashflow": -11.141501350527408,
+        "equity_boundary_second_derivative": 45.47551571643841,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": true,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.19563739871044444,
+        "floating_point_tolerance": 1.4210854715202004e-13,
+        "warnings": []
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.7,
+      "maturity": 10.0,
+      "ell": 1e-10,
+      "x": 2.0,
+      "boundary": 32.60623311840741,
+      "equity_closed": 165.38428485706135,
+      "equity_oracle": 165.38428485706137,
+      "absolute_error": 2.842170943040401e-14,
+      "scaled_error": 1.7081967479573408e-16,
+      "feasibility": {
+        "status": "sufficient_monotone_subdomain",
+        "boundary": 32.60623311840741,
+        "boundary_running_cashflow": -11.141501350527408,
+        "equity_boundary_second_derivative": 45.47551571643841,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": true,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.19563739871044444,
+        "floating_point_tolerance": 1.4210854715202004e-13,
+        "warnings": []
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.7,
+      "maturity": 10.0,
+      "ell": 0.01,
+      "x": 0.01,
+      "boundary": 32.98959185986259,
+      "equity_closed": 0.002272579077020692,
+      "equity_oracle": 0.002272579076997667,
+      "absolute_error": 2.302498469664016e-14,
+      "scaled_error": 2.297277724373552e-14,
+      "feasibility": {
+        "status": "sufficient_monotone_subdomain",
+        "boundary": 32.98959185986259,
+        "boundary_running_cashflow": -11.110832651210993,
+        "equity_boundary_second_derivative": 45.35033735188161,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": true,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.19793755115917555,
+        "floating_point_tolerance": 1.4210854715202004e-13,
+        "warnings": []
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.7,
+      "maturity": 10.0,
+      "ell": 0.01,
+      "x": 0.1,
+      "boundary": 32.98959185986259,
+      "equity_closed": 0.23194229550639078,
+      "equity_oracle": 0.23194229550634576,
+      "absolute_error": 4.50195436485501e-14,
+      "scaled_error": 3.654354900612161e-14,
+      "feasibility": {
+        "status": "sufficient_monotone_subdomain",
+        "boundary": 32.98959185986259,
+        "boundary_running_cashflow": -11.110832651210993,
+        "equity_boundary_second_derivative": 45.35033735188161,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": true,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.19793755115917555,
+        "floating_point_tolerance": 1.4210854715202004e-13,
+        "warnings": []
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.7,
+      "maturity": 10.0,
+      "ell": 0.01,
+      "x": 0.5,
+      "boundary": 32.98959185986259,
+      "equity_closed": 6.3963186861021875,
+      "equity_oracle": 6.396318686102177,
+      "absolute_error": 1.0658141036401503e-14,
+      "scaled_error": 1.4410061935849725e-15,
+      "feasibility": {
+        "status": "sufficient_monotone_subdomain",
+        "boundary": 32.98959185986259,
+        "boundary_running_cashflow": -11.110832651210993,
+        "equity_boundary_second_derivative": 45.35033735188161,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": true,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.19793755115917555,
+        "floating_point_tolerance": 1.4210854715202004e-13,
+        "warnings": []
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.7,
+      "maturity": 10.0,
+      "ell": 0.01,
+      "x": 2.0,
+      "boundary": 32.98959185986259,
+      "equity_closed": 166.13837648327234,
+      "equity_oracle": 166.13837648327228,
+      "absolute_error": 5.684341886080802e-14,
+      "scaled_error": 3.4009794792099753e-16,
+      "feasibility": {
+        "status": "sufficient_monotone_subdomain",
+        "boundary": 32.98959185986259,
+        "boundary_running_cashflow": -11.110832651210993,
+        "equity_boundary_second_derivative": 45.35033735188161,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": true,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.19793755115917555,
+        "floating_point_tolerance": 1.4210854715202004e-13,
+        "warnings": []
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.7,
+      "maturity": 10.0,
+      "ell": 0.3,
+      "x": 0.01,
+      "boundary": 37.893648536318814,
+      "equity_closed": 0.0021938151718673,
+      "equity_oracle": 0.0021938151718687332,
+      "absolute_error": 1.4333152720258369e-15,
+      "scaled_error": 1.4301777264311234e-15,
+      "feasibility": {
+        "status": "necessary_screen_only",
+        "boundary": 37.893648536318814,
+        "boundary_running_cashflow": -10.718508117094494,
+        "equity_boundary_second_derivative": 43.74901272283468,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": false,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.22736189121791286,
+        "floating_point_tolerance": 1.4210854715202004e-13,
+        "warnings": [
+          "The local necessary condition passes; global nonnegativity and optimal stopping are not certified."
+        ]
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.7,
+      "maturity": 10.0,
+      "ell": 0.3,
+      "x": 0.1,
+      "boundary": 37.893648536318814,
+      "equity_closed": 0.2252508350790649,
+      "equity_oracle": 0.22525083507906754,
+      "absolute_error": 2.6367796834847468e-15,
+      "scaled_error": 2.1520325536563217e-15,
+      "feasibility": {
+        "status": "necessary_screen_only",
+        "boundary": 37.893648536318814,
+        "boundary_running_cashflow": -10.718508117094494,
+        "equity_boundary_second_derivative": 43.74901272283468,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": false,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.22736189121791286,
+        "floating_point_tolerance": 1.4210854715202004e-13,
+        "warnings": [
+          "The local necessary condition passes; global nonnegativity and optimal stopping are not certified."
+        ]
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.7,
+      "maturity": 10.0,
+      "ell": 0.3,
+      "x": 0.5,
+      "boundary": 37.893648536318814,
+      "equity_closed": 6.369096213385482,
+      "equity_oracle": 6.369096213385479,
+      "absolute_error": 2.6645352591003757e-15,
+      "scaled_error": 3.615823680331955e-16,
+      "feasibility": {
+        "status": "necessary_screen_only",
+        "boundary": 37.893648536318814,
+        "boundary_running_cashflow": -10.718508117094494,
+        "equity_boundary_second_derivative": 43.74901272283468,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": false,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.22736189121791286,
+        "floating_point_tolerance": 1.4210854715202004e-13,
+        "warnings": [
+          "The local necessary condition passes; global nonnegativity and optimal stopping are not certified."
+        ]
+      },
+      "sample_equity_nonnegative": true
+    },
+    {
+      "sigma": 0.7,
+      "maturity": 10.0,
+      "ell": 0.3,
+      "x": 2.0,
+      "boundary": 37.893648536318814,
+      "equity_closed": 177.77912344744024,
+      "equity_oracle": 177.7791234474402,
+      "absolute_error": 2.842170943040401e-14,
+      "scaled_error": 1.5897666842940858e-16,
+      "feasibility": {
+        "status": "necessary_screen_only",
+        "boundary": 37.893648536318814,
+        "boundary_running_cashflow": -10.718508117094494,
+        "equity_boundary_second_derivative": 43.74901272283468,
+        "local_admissible": true,
+        "sufficient_monotone_subdomain": false,
+        "uncapped_recovery_exceeds_face": false,
+        "recovery_to_face_ratio": 0.22736189121791286,
+        "floating_point_tolerance": 1.4210854715202004e-13,
+        "warnings": [
+          "The local necessary condition passes; global nonnegativity and optimal stopping are not certified."
+        ]
+      },
+      "sample_equity_nonnegative": true
+    }
+  ],
+  "boundary_sensitivities": [
+    {
+      "parameter": "r",
+      "step": 5e-06,
+      "closed_finite_difference": -296.1852468580161,
+      "implicit_integral_derivative": -296.185246864575,
+      "absolute_error": 6.558877885254333e-09,
+      "scaled_error": 2.2069998273646346e-11
+    },
+    {
+      "parameter": "delta",
+      "step": 2.0000000000000003e-06,
+      "closed_finite_difference": 128.7164073945727,
+      "implicit_integral_derivative": 128.7164073747482,
+      "absolute_error": 1.982451180992939e-08,
+      "scaled_error": 1.528296397591151e-10
+    },
+    {
+      "parameter": "sigma",
+      "step": 2e-05,
+      "closed_finite_difference": -57.84572300306933,
+      "implicit_integral_derivative": -57.8457230025719,
+      "absolute_error": 4.974296530235733e-10,
+      "scaled_error": 8.453114816888778e-12
+    },
+    {
+      "parameter": "coupon",
+      "step": 0.0005,
+      "closed_finite_difference": -0.5499688665414245,
+      "implicit_integral_derivative": -0.549968866685763,
+      "absolute_error": 1.4433843009697966e-10,
+      "scaled_error": 9.312343828273971e-11
+    },
+    {
+      "parameter": "principal",
+      "step": 0.01,
+      "closed_finite_difference": 1.242361365342859,
+      "implicit_integral_derivative": 1.2423613653406795,
+      "absolute_error": 2.1793677973391823e-12,
+      "scaled_error": 9.719074860211362e-13
+    },
+    {
+      "parameter": "maturity",
+      "step": 0.0001,
+      "closed_finite_difference": -16.204934580497838,
+      "implicit_integral_derivative": -16.204934580545764,
+      "absolute_error": 4.792610752701876e-11,
+      "scaled_error": 2.7856024271786842e-12
+    },
+    {
+      "parameter": "tax",
+      "step": 2.5e-05,
+      "closed_finite_difference": -27.42963632916447,
+      "implicit_integral_derivative": -27.42963632895652,
+      "absolute_error": 2.0795098976122972e-10,
+      "scaled_error": 7.314584940695312e-12
+    },
+    {
+      "parameter": "recovery",
+      "step": 6e-05,
+      "closed_finite_difference": -116.93013181750285,
+      "implicit_integral_derivative": -116.93013181744816,
+      "absolute_error": 5.469757979881251e-11,
+      "scaled_error": 4.63813437294232e-13
+    },
+    {
+      "parameter": "ell",
+      "step": 1.0000000000000002e-06,
+      "closed_finite_difference": 456.44162479045264,
+      "implicit_integral_derivative": 456.4416247799023,
+      "absolute_error": 1.055030907082255e-08,
+      "scaled_error": 2.306372769618161e-11
+    }
+  ],
+  "limit_cases": [
+    {
+      "parameters": {
+        "r": 0.05,
+        "delta": 0.02,
+        "sigma": 0.2,
+        "coupon": 5.0,
+        "principal": 100.0,
+        "maturity": 1.0,
+        "tax": 0.25,
+        "recovery": 0.6,
+        "ell": 0
+      },
+      "boundary": 116.90749360418775,
+      "equity_at_margin_1e_minus_7": 7.816837236396669e-12,
+      "small_margin_quadratic_relative_error": 1.6054498597206646e-07,
+      "equity_at_margin_0_1": 6.630296619492209
+    },
+    {
+      "parameters": {
+        "r": 0.05,
+        "delta": 0.03,
+        "sigma": 0.2,
+        "coupon": 5.0,
+        "principal": 100.0,
+        "maturity": 1.0,
+        "tax": 0.25,
+        "recovery": 0.6,
+        "ell": 0
+      },
+      "boundary": 118.72129819595526,
+      "equity_at_margin_1e_minus_7": 7.238894500660969e-12,
+      "small_margin_quadratic_relative_error": 1.4276709370264484e-07,
+      "equity_at_margin_0_1": 6.243399793598917
+    },
+    {
+      "parameters": {
+        "r": 0.05,
+        "delta": 0.02,
+        "sigma": 0.2,
+        "coupon": 5.0,
+        "principal": 100.0,
+        "maturity": 0.01,
+        "tax": 0.25,
+        "recovery": 0.6,
+        "ell": 0.01
+      },
+      "boundary": 160.64213742098974,
+      "equity_at_margin_1e_minus_7": 9.050210613112789e-11,
+      "small_margin_quadratic_relative_error": 1.3465626620412507e-06,
+      "equity_at_margin_0_1": 24.98716333948507
+    },
+    {
+      "parameters": {
+        "r": 0.05,
+        "delta": 0.02,
+        "sigma": 0.2,
+        "coupon": 5.0,
+        "principal": 100.0,
+        "maturity": 30,
+        "tax": 0.25,
+        "recovery": 0.6,
+        "ell": 0.01
+      },
+      "boundary": 63.144758644088554,
+      "equity_at_margin_1e_minus_7": 1.1393856911173012e-12,
+      "small_margin_quadratic_relative_error": 4.895194327669827e-08,
+      "equity_at_margin_0_1": 1.0875336913176925
+    },
+    {
+      "parameters": {
+        "r": 0.05,
+        "delta": 1e-08,
+        "sigma": 0.2,
+        "coupon": 5.0,
+        "principal": 100.0,
+        "maturity": 1.0,
+        "tax": 0.25,
+        "recovery": 0.6,
+        "ell": 0.01
+      },
+      "boundary": 118.64178617420116,
+      "equity_at_margin_1e_minus_7": 8.14123023618829e-12,
+      "small_margin_quadratic_relative_error": 1.8929286260682687e-07,
+      "equity_at_margin_0_1": 6.727631825807341
+    },
+    {
+      "parameters": {
+        "r": 0.05,
+        "delta": 0.02,
+        "sigma": 0.03,
+        "coupon": 5.0,
+        "principal": 100.0,
+        "maturity": 1.0,
+        "tax": 0.25,
+        "recovery": 0.6,
+        "ell": 0.01
+      },
+      "boundary": 107.17390295736772,
+      "equity_at_margin_1e_minus_7": 4.14466832872492e-10,
+      "small_margin_quadratic_relative_error": 4.428907560027895e-06,
+      "equity_at_margin_0_1": 23.976765021179478
+    },
+    {
+      "parameters": {
+        "r": 0.05,
+        "delta": 0.02,
+        "sigma": 0.2,
+        "coupon": 5.0,
+        "principal": 100.0,
+        "maturity": 1.0,
+        "tax": 0.25,
+        "recovery": 1,
+        "ell": 0.01
+      },
+      "boundary": 87.71582294556467,
+      "equity_at_margin_1e_minus_7": 3.5699646832518053e-12,
+      "small_margin_quadratic_relative_error": 1.3042962199172337e-07,
+      "equity_at_margin_0_1": 3.123479683033003
+    }
+  ],
+  "time_unit_covariance": [
+    {
+      "time_scale": 0.01,
+      "relative_errors": {
+        "b": 0.0,
+        "E_HX": 6.661338147750939e-16,
+        "F": 5.551115123125783e-16,
+        "G": 0.0,
+        "f_inverse_time": 5.551115123125783e-16,
+        "debt_per_maturity_unit_inverse_time": 0.0
+      }
+    },
+    {
+      "time_scale": 0.1,
+      "relative_errors": {
+        "b": 2.220446049250313e-16,
+        "E_HX": 1.887379141862766e-15,
+        "F": 1.7763568394002505e-15,
+        "G": 2.4424906541753444e-15,
+        "f_inverse_time": 6.661338147750939e-16,
+        "debt_per_maturity_unit_inverse_time": 0.0
+      }
+    },
+    {
+      "time_scale": 10.0,
+      "relative_errors": {
+        "b": 2.220446049250313e-16,
+        "E_HX": 5.551115123125783e-16,
+        "F": 1.3322676295501878e-15,
+        "G": 1.1102230246251565e-15,
+        "f_inverse_time": 2.220446049250313e-16,
+        "debt_per_maturity_unit_inverse_time": 0.0
+      }
+    },
+    {
+      "time_scale": 100.0,
+      "relative_errors": {
+        "b": 2.220446049250313e-16,
+        "E_HX": 1.887379141862766e-15,
+        "F": 2.220446049250313e-15,
+        "G": 2.4424906541753444e-15,
+        "f_inverse_time": 1.4432899320127035e-15,
+        "debt_per_maturity_unit_inverse_time": 0.0
+      }
+    }
+  ],
+  "elapsed_seconds": 10.065845499999341
+}

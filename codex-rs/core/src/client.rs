@@ -164,7 +164,6 @@ use codex_model_provider::create_model_provider;
 use codex_model_provider_info::DEFAULT_WEBSOCKET_CONNECT_TIMEOUT_MS;
 use codex_model_provider_info::ModelProviderInfo;
 use codex_model_provider_info::WireApi;
-use codex_model_provider_info::provider_accepts_internal_chat_message_metadata;
 use codex_protocol::error::CodexErr;
 use codex_protocol::error::CodexErrorDetails;
 use codex_protocol::error::Result;
@@ -391,7 +390,7 @@ impl WebsocketConnectionIdentity {
         responses_metadata: &CodexResponsesMetadata,
     ) -> std::result::Result<Self, ApiError> {
         let compatibility_projection_json =
-            serde_json::to_vec(&responses_metadata.turn_recovery_compatibility_projection())
+            serde_json::to_vec(&responses_metadata.websocket_connection_compatibility_projection())
                 .map_err(|error| {
                     ApiError::Stream(format!(
                         "failed to bind websocket compatibility identity: {error}"
@@ -1223,7 +1222,12 @@ impl ModelClient {
                 }
             }
         }
-        if !provider_accepts_internal_chat_message_metadata(&api_provider.base_url) {
+        if !self
+            .state
+            .provider
+            .info()
+            .accepts_internal_chat_message_metadata_for_request(&api_provider.base_url)
+        {
             for item in &mut input {
                 item.clear_internal_chat_message_metadata_passthrough();
             }
@@ -1279,8 +1283,11 @@ impl ModelClient {
         input: &mut [ResponseItem],
         api_provider: &ApiProvider,
     ) {
-        let strip_internal_metadata =
-            !provider_accepts_internal_chat_message_metadata(&api_provider.base_url);
+        let strip_internal_metadata = !self
+            .state
+            .provider
+            .info()
+            .accepts_internal_chat_message_metadata_for_request(&api_provider.base_url);
         for item in input {
             if item.id().is_some_and(|id| !id.is_prefixed()) {
                 item.set_id(/*new_id*/ None);
@@ -3090,11 +3097,20 @@ fn map_response_stream(
         api_stream,
         session_telemetry,
         inference_trace_attempt,
-        provider,
-        provider_attempt,
-        redact_provider_errors,
+        ResponseProviderContext {
+            provider,
+            provider_attempt,
+            redact_provider_errors,
+        },
         encoded_request_observer,
     )
+}
+
+/// Provider policy and attempt ownership for one mapped response stream.
+struct ResponseProviderContext {
+    provider: SharedModelProvider,
+    provider_attempt: Option<ProviderAttemptOwner>,
+    redact_provider_errors: bool,
 }
 
 fn map_response_events<S>(
@@ -3102,9 +3118,7 @@ fn map_response_events<S>(
     api_stream: S,
     session_telemetry: SessionTelemetry,
     inference_trace_attempt: InferenceTraceAttempt,
-    provider: SharedModelProvider,
-    provider_attempt: Option<ProviderAttemptOwner>,
-    redact_provider_errors: bool,
+    provider_context: ResponseProviderContext,
     encoded_request_observer: Option<Arc<dyn codex_api::EncodedRequestBodyObserver>>,
 ) -> (ResponseStream, oneshot::Receiver<LastResponse>)
 where
@@ -3113,6 +3127,11 @@ where
         + Send
         + 'static,
 {
+    let ResponseProviderContext {
+        provider,
+        provider_attempt,
+        redact_provider_errors,
+    } = provider_context;
     let (tx_event, rx_event) =
         mpsc::channel::<Result<ResponseEvent>>(RESPONSE_STREAM_CHANNEL_CAPACITY);
     let (tx_last_response, rx_last_response) = oneshot::channel::<LastResponse>();

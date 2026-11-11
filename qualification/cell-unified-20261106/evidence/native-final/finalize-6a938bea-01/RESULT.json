@@ -1,0 +1,43 @@
+{
+  "source": "6a938bea7ba0fc3dd234930c765729c1a9172a65",
+  "tree": "bf3c2501b0d9ad370cf035481a07cb5a2bf1a3c4",
+  "commands": [
+    {
+      "name": "fix",
+      "command": [
+        "just",
+        "fix",
+        "--locked",
+        "-p",
+        "codex-hepta-neuron",
+        "-p",
+        "codex-hepta-plasticity",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-infer-core",
+        "-p",
+        "codex-hepta-infer-worker-host"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 104.04798208002467,
+      "cpu_user_seconds": 146.448074,
+      "cpu_system_seconds": 14.843857000000002
+    },
+    {
+      "name": "fmt",
+      "command": [
+        "just",
+        "fmt",
+        "--base",
+        "7391c3dc3b0a496b62be4c6cf2769d2ae0c9db75"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.3771681620273739,
+      "cpu_user_seconds": 0.1798339999999996,
+      "cpu_system_seconds": 0.13652699999999918
+    }
+  ],
+  "source_status_after": "",
+  "tests_rerun_after_fix_or_fmt": false
+}

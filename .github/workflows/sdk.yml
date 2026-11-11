@@ -21,6 +21,10 @@ jobs:
         run: |
           set -euo pipefail
 
+          # Schema evidence tests exercise the real zstd command.
+          docker build --tag hepta-python-sdk-ci \
+            --file .github/workflows/Dockerfile.python-sdk .github/workflows
+
           # Run inside a glibc Linux image so dependency resolution exercises
           # the pinned manylinux runtime wheel that users install.
           docker run --rm \
@@ -29,7 +33,7 @@ jobs:
             -e UV_LINK_MODE=copy \
             -v "${GITHUB_WORKSPACE}:${GITHUB_WORKSPACE}" \
             -w "${GITHUB_WORKSPACE}/sdk/python" \
-            python:3.12-slim \
+            hepta-python-sdk-ci \
             sh -euxc '
               python -m venv /tmp/uv
               /tmp/uv/bin/python -m pip install uv==0.11.3

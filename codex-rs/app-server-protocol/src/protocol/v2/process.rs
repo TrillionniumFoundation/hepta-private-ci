@@ -202,3 +202,31 @@ pub struct ProcessExitedNotification {
     /// final stderr `process/outputDelta` notification.
     pub stderr_cap_reached: bool,
 }
+
+/// The server cannot confirm the native process's exit. This is not an exit
+/// code or evidence that a cleanup request reached the process.
+#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, JsonSchema, TS)]
+#[serde(rename_all = "camelCase")]
+#[ts(rename_all = "camelCase", export_to = "v2/")]
+pub enum ProcessIndeterminateReason {
+    ExitObservationLost,
+}
+
+/// Terminal observation failed for an acknowledged `process/spawn`.
+///
+/// The original owner remains retained and new `process/spawn` requests are
+/// fenced server-wide, including on new connections. The handle is not reusable.
+/// Only reconciliation of the original owner can establish exit; reconnecting
+/// or restarting the server is not exit evidence.
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[serde(rename_all = "camelCase")]
+#[ts(export_to = "v2/")]
+pub struct ProcessIndeterminateNotification {
+    pub process_handle: String,
+    pub reason: ProcessIndeterminateReason,
+    /// Output observed before the original bounded drain ended; not a complete-exit claim.
+    pub stdout: String,
+    pub stdout_cap_reached: bool,
+    pub stderr: String,
+    pub stderr_cap_reached: bool,
+}

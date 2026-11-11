@@ -1,0 +1,920 @@
+{
+  "source_sha": "7391c3dc3b0a496b62be4c6cf2769d2ae0c9db75",
+  "source_tree": "1b3a22ee08028175433d20b87263bd1dc1c4eca4",
+  "native_path": "/home/qq/work/hepta-neuron-framework-734df8eaf8dc-20261106/records/final-generation-followup-7391c3d/junit-scoped.xml",
+  "sha256": "bc3da8cece8e4f399de52a61b3d5b3b2fa92ccccbc7f7e9fe5020be7b3dff896",
+  "bytes": 1458707,
+  "fresh": true,
+  "counts": {
+    "testcases": 6631,
+    "failures": 54,
+    "errors": 0,
+    "skipped": 0,
+    "passed": 6577,
+    "timed_out": 3,
+    "failed_without_timeout": 51
+  },
+  "nextest_uuid": "dd3e2bc4-d083-479c-ba51-e96ac978f2c2",
+  "xml_suite_count": 81,
+  "packages": {
+    "codex-core": {
+      "testcases": 3824,
+      "failures": 43,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 3781,
+      "timed_out": 2
+    },
+    "codex-exec-server": {
+      "testcases": 524,
+      "failures": 3,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 521,
+      "timed_out": 0
+    },
+    "codex-hepta-agent-protocol": {
+      "testcases": 14,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 14,
+      "timed_out": 0
+    },
+    "codex-hepta-agentd": {
+      "testcases": 647,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 646,
+      "timed_out": 0
+    },
+    "codex-hepta-automation": {
+      "testcases": 138,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 138,
+      "timed_out": 0
+    },
+    "codex-hepta-context-compiler": {
+      "testcases": 45,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 45,
+      "timed_out": 0
+    },
+    "codex-hepta-control-plane": {
+      "testcases": 115,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 115,
+      "timed_out": 0
+    },
+    "codex-hepta-infer-core": {
+      "testcases": 35,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 35,
+      "timed_out": 0
+    },
+    "codex-hepta-infer-worker-host": {
+      "testcases": 54,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 54,
+      "timed_out": 0
+    },
+    "codex-hepta-intelligence": {
+      "testcases": 85,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 85,
+      "timed_out": 0
+    },
+    "codex-hepta-learning-artifacts": {
+      "testcases": 102,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 102,
+      "timed_out": 0
+    },
+    "codex-hepta-memory": {
+      "testcases": 411,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 411,
+      "timed_out": 0
+    },
+    "codex-hepta-memory-extension": {
+      "testcases": 100,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 100,
+      "timed_out": 0
+    },
+    "codex-hepta-neuron": {
+      "testcases": 163,
+      "failures": 5,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 158,
+      "timed_out": 0
+    },
+    "codex-hepta-runtime": {
+      "testcases": 26,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 26,
+      "timed_out": 0
+    },
+    "codex-hepta-supervisor": {
+      "testcases": 123,
+      "failures": 2,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 121,
+      "timed_out": 1
+    },
+    "codex-linux-sandbox": {
+      "testcases": 146,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 146,
+      "timed_out": 0
+    },
+    "codex-model-provider-info": {
+      "testcases": 31,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 31,
+      "timed_out": 0
+    },
+    "codex-shell-escalation": {
+      "testcases": 20,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 20,
+      "timed_out": 0
+    },
+    "codex-utils-pty": {
+      "testcases": 28,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 28,
+      "timed_out": 0
+    }
+  },
+  "suites": [
+    {
+      "name": "codex-core",
+      "testcases": 2446,
+      "failures": 2,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 2444,
+      "timed_out": 0
+    },
+    {
+      "name": "codex-core::all",
+      "testcases": 1374,
+      "failures": 41,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 1333,
+      "timed_out": 2
+    },
+    {
+      "name": "codex-core::responses_headers",
+      "testcases": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 4,
+      "timed_out": 0
+    },
+    {
+      "name": "codex-exec-server",
+      "testcases": 289,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 289,
+      "timed_out": 0
+    },
+    {
+      "name": "codex-exec-server::accepted_websocket",
+      "testcases": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 5,
+      "timed_out": 0
+    },
+    {
+      "name": "codex-exec-server::authorized_read_rpc",
+      "testcases": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 1,
+      "timed_out": 0
+    },
+    {
+      "name": "codex-exec-server::capability_discovery",
+      "testcases": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 4,
+      "timed_out": 0
+    },
+    {
+      "name": "codex-exec-server::deferred_environment",
+      "testcases": 12,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 12,
+      "timed_out": 0
+    },
+    {
+      "name": "codex-exec-server::chatgpt_cloudflare_affinity",
+      "testcases": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 1,
+      "timed_out": 0
+    },
+    {
+      "name": "codex-exec-server::environment",
+      "testcases": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 4,
+      "timed_out": 0
+    },
+    {
+      "name": "codex-exec-server::environment_config",
+      "testcases": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 2,
+      "timed_out": 0
+    },
+    {
+      "name": "codex-exec-server::exec_process",
+      "testcases": 40,
+      "failures": 3,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 37,
+      "timed_out": 0
+    },
+    {
+      "name": "codex-exec-server::file_stream",
+      "testcases": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 7,
+      "timed_out": 0
+    },
+    {
+      "name": "codex-exec-server::file_system_unix",
+      "testcases": 116,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 116,
+      "timed_out": 0
+    },
+    {
+      "name": "codex-exec-server::health",
+      "testcases": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 3,
+      "timed_out": 0
+    },
+    {
+      "name": "codex-exec-server::http_client",
+      "testcases": 11,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 11,
+      "timed_out": 0
+    },
+    {
+      "name": "codex-exec-server::http_request",
+      "testcases": 10,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 10,
+      "timed_out": 0
+    },
+    {
+      "name": "codex-exec-server::http_request_logging",
+      "testcases": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 2,
+      "timed_out": 0
+    },
+    {
+      "name": "codex-exec-server::initialize",
+      "testcases": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 2,
+      "timed_out": 0
+    },
+    {
+      "name": "codex-exec-server::process",
+      "testcases": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 6,
+      "timed_out": 0
+    },
+    {
+      "name": "codex-exec-server::relay",
+      "testcases": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 4,
+      "timed_out": 0
+    },
+    {
+      "name": "codex-exec-server::selected_capability_roots",
+      "testcases": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 1,
+      "timed_out": 0
+    },
+    {
+      "name": "codex-exec-server::websocket",
+      "testcases": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 3,
+      "timed_out": 0
+    },
+    {
+      "name": "codex-hepta-agent-protocol",
+      "testcases": 14,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 14,
+      "timed_out": 0
+    },
+    {
+      "name": "codex-hepta-agentd",
+      "testcases": 601,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 600,
+      "timed_out": 0
+    },
+    {
+      "name": "codex-exec-server::forward",
+      "testcases": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 1,
+      "timed_out": 0
+    },
+    {
+      "name": "codex-hepta-agentd::authbus_text_product",
+      "testcases": 8,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 8,
+      "timed_out": 0
+    },
+    {
+      "name": "codex-hepta-agentd::cognitive_product_e2e",
+      "testcases": 9,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 9,
+      "timed_out": 0
+    },
+    {
+      "name": "codex-hepta-agentd::cognitive_store_product_writer",
+      "testcases": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 1,
+      "timed_out": 0
+    },
+    {
+      "name": "codex-hepta-agentd::fleet_harness_diagnostics",
+      "testcases": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 1,
+      "timed_out": 0
+    },
+    {
+      "name": "codex-hepta-agentd::intuition_policy_product",
+      "testcases": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 1,
+      "timed_out": 0
+    },
+    {
+      "name": "codex-hepta-agentd::kernel_evidence_product",
+      "testcases": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 3,
+      "timed_out": 0
+    },
+    {
+      "name": "codex-hepta-agentd::optional_module_restart",
+      "testcases": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 1,
+      "timed_out": 0
+    },
+    {
+      "name": "codex-hepta-agentd::plasticity_process_e2e",
+      "testcases": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 1,
+      "timed_out": 0
+    },
+    {
+      "name": "codex-hepta-agentd::queue_capacity_product",
+      "testcases": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 2,
+      "timed_out": 0
+    },
+    {
+      "name": "codex-hepta-agentd::five_agent_rolling_upgrade",
+      "testcases": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 2,
+      "timed_out": 0
+    },
+    {
+      "name": "codex-hepta-agentd::runtime_shutdown_outcomes",
+      "testcases": 9,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 9,
+      "timed_out": 0
+    },
+    {
+      "name": "codex-hepta-agentd::runtime_codex_product_e2e",
+      "testcases": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 1,
+      "timed_out": 0
+    },
+    {
+      "name": "codex-hepta-agentd::supervisord_product_e2e",
+      "testcases": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 2,
+      "timed_out": 0
+    },
+    {
+      "name": "codex-hepta-agentd::terminal_cell_owner",
+      "testcases": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 2,
+      "timed_out": 0
+    },
+    {
+      "name": "codex-hepta-agentd::supervised_two_agents",
+      "testcases": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 1,
+      "timed_out": 0
+    },
+    {
+      "name": "codex-hepta-agentd::two_agent_turn_recovery",
+      "testcases": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 2,
+      "timed_out": 0
+    },
+    {
+      "name": "codex-hepta-automation",
+      "testcases": 61,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 61,
+      "timed_out": 0
+    },
+    {
+      "name": "codex-hepta-automation::authorized_effect",
+      "testcases": 10,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 10,
+      "timed_out": 0
+    },
+    {
+      "name": "codex-hepta-automation::automation",
+      "testcases": 18,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 18,
+      "timed_out": 0
+    },
+    {
+      "name": "codex-hepta-automation::durable_causal_chain",
+      "testcases": 10,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 10,
+      "timed_out": 0
+    },
+    {
+      "name": "codex-hepta-automation::kernel_operations_destination",
+      "testcases": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 4,
+      "timed_out": 0
+    },
+    {
+      "name": "codex-hepta-automation::operation_timer_fence",
+      "testcases": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 3,
+      "timed_out": 0
+    },
+    {
+      "name": "codex-hepta-automation::retirement_recovery",
+      "testcases": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 4,
+      "timed_out": 0
+    },
+    {
+      "name": "codex-hepta-automation::taskflow",
+      "testcases": 13,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 13,
+      "timed_out": 0
+    },
+    {
+      "name": "codex-hepta-automation::taskflow_execution_boundary",
+      "testcases": 11,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 11,
+      "timed_out": 0
+    },
+    {
+      "name": "codex-hepta-automation::taskflow_step",
+      "testcases": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 4,
+      "timed_out": 0
+    },
+    {
+      "name": "codex-hepta-context-compiler",
+      "testcases": 45,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 45,
+      "timed_out": 0
+    },
+    {
+      "name": "codex-hepta-control-plane",
+      "testcases": 111,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 111,
+      "timed_out": 0
+    },
+    {
+      "name": "codex-hepta-control-plane::runtime_retirement_dependencies",
+      "testcases": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 4,
+      "timed_out": 0
+    },
+    {
+      "name": "codex-hepta-infer-core",
+      "testcases": 35,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 35,
+      "timed_out": 0
+    },
+    {
+      "name": "codex-hepta-infer-worker-host",
+      "testcases": 50,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 50,
+      "timed_out": 0
+    },
+    {
+      "name": "codex-hepta-infer-worker-host::bin/hepta-joint-propose",
+      "testcases": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 4,
+      "timed_out": 0
+    },
+    {
+      "name": "codex-hepta-intelligence",
+      "testcases": 83,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 83,
+      "timed_out": 0
+    },
+    {
+      "name": "codex-hepta-intelligence::lane_f_shadow_vertical",
+      "testcases": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 1,
+      "timed_out": 0
+    },
+    {
+      "name": "codex-hepta-learning-artifacts",
+      "testcases": 102,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 102,
+      "timed_out": 0
+    },
+    {
+      "name": "codex-hepta-intelligence::intuition_frozen_qualification",
+      "testcases": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 1,
+      "timed_out": 0
+    },
+    {
+      "name": "codex-hepta-memory",
+      "testcases": 411,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 411,
+      "timed_out": 0
+    },
+    {
+      "name": "codex-hepta-memory-extension",
+      "testcases": 100,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 100,
+      "timed_out": 0
+    },
+    {
+      "name": "codex-hepta-neuron",
+      "testcases": 163,
+      "failures": 5,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 158,
+      "timed_out": 0
+    },
+    {
+      "name": "codex-hepta-runtime",
+      "testcases": 26,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 26,
+      "timed_out": 0
+    },
+    {
+      "name": "codex-hepta-supervisor",
+      "testcases": 112,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 112,
+      "timed_out": 0
+    },
+    {
+      "name": "codex-hepta-supervisor::isolated_execution_handoff_unix",
+      "testcases": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 1,
+      "timed_out": 0
+    },
+    {
+      "name": "codex-hepta-supervisor::daemon_product",
+      "testcases": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 1,
+      "timed_out": 0
+    },
+    {
+      "name": "codex-hepta-supervisor::process_deadline_unix",
+      "testcases": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 1,
+      "timed_out": 0
+    },
+    {
+      "name": "codex-hepta-supervisor::restart_budget",
+      "testcases": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 1,
+      "timed_out": 0
+    },
+    {
+      "name": "codex-hepta-supervisor::restart_budget_recovery",
+      "testcases": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 1,
+      "timed_out": 0
+    },
+    {
+      "name": "codex-hepta-supervisor::robrix_control_projection",
+      "testcases": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 2,
+      "timed_out": 0
+    },
+    {
+      "name": "codex-hepta-supervisor::signed_intent_recovery",
+      "testcases": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 1,
+      "timed_out": 0
+    },
+    {
+      "name": "codex-hepta-supervisor::writer_handoff_production",
+      "testcases": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 1,
+      "timed_out": 0
+    },
+    {
+      "name": "codex-linux-sandbox",
+      "testcases": 108,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 108,
+      "timed_out": 0
+    },
+    {
+      "name": "codex-linux-sandbox::all",
+      "testcases": 38,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 38,
+      "timed_out": 0
+    },
+    {
+      "name": "codex-model-provider-info",
+      "testcases": 31,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 31,
+      "timed_out": 0
+    },
+    {
+      "name": "codex-shell-escalation",
+      "testcases": 20,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 20,
+      "timed_out": 0
+    },
+    {
+      "name": "codex-utils-pty",
+      "testcases": 28,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 28,
+      "timed_out": 0
+    },
+    {
+      "name": "codex-hepta-supervisor::paired_process_product",
+      "testcases": 2,
+      "failures": 2,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 0,
+      "timed_out": 1
+    }
+  ],
+  "runner_summary": [
+    "     Summary [ 578.803s] 6631 tests run: 6577 passed (1 slow), 51 failed, 3 timed out, 94 skipped",
+    "error: test run failed"
+  ],
+  "runner_skipped_before_execution": 94,
+  "skip_accounting": "The runner omitted 94 tests; the fresh XML contains only 6631 executed testcases and zero skipped testcase nodes. Nextest watchdog timeouts are represented as failure nodes. Retries are not counted as additional testcases.",
+  "retry_failure_nodes": 54,
+  "flaky_failure_nodes": 0
+}

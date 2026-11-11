@@ -593,11 +593,9 @@ pub(crate) async fn run_turn(
             let sampling_request_input: Vec<ResponseItem> =
                 prepare_sampling_request_input_future(&sess, step_context.as_ref()).await;
 
-            let responses_metadata = turn_context.turn_metadata_state.to_responses_metadata(
-                sess.installation_id.clone(),
-                window_id,
-                CodexResponsesRequestKind::Turn,
-            );
+            let responses_metadata = sess
+                .responses_metadata(turn_context.as_ref(), CodexResponsesRequestKind::Turn)
+                .await;
             run_sampling_request_future(
                 Arc::clone(&sess),
                 Arc::clone(&step_context),
@@ -856,19 +854,28 @@ async fn turn_diff_display_roots(step_context: &StepContext) -> Vec<(String, Pat
     let mut display_roots = Vec::new();
     for turn_environment in step_context.environments.turn_environments() {
         let cwd = turn_environment.cwd();
-        // A turn cwd is expected to be a directory. If it is a file, the failed `<cwd>/.git` probe
-        // is ignored and ancestor search continues from its parent.
-        let root = find_nearest_ancestor_with_markers(
-            turn_environment.environment.get_filesystem().as_ref(),
-            cwd,
-            vec![".git".to_string()],
-            FindUpErrorPolicy::Ignore,
-            /*sandbox*/ None,
-        )
-        .await
-        .ok()
-        .flatten()
-        .unwrap_or_else(|| cwd.clone());
+        let root = if step_context
+            .turn
+            .config
+            .features
+            .enabled(Feature::CwdRelativeTurnDiffs)
+        {
+            cwd.clone()
+        } else {
+            // A turn cwd is expected to be a directory. If it is a file, the failed `<cwd>/.git`
+            // probe is ignored and ancestor search continues from its parent.
+            find_nearest_ancestor_with_markers(
+                turn_environment.environment.get_filesystem().as_ref(),
+                cwd,
+                vec![".git".to_string()],
+                FindUpErrorPolicy::Ignore,
+                /*sandbox*/ None,
+            )
+            .await
+            .ok()
+            .flatten()
+            .unwrap_or_else(|| cwd.clone())
+        };
         display_roots.push((turn_environment.selection.environment_id.clone(), root));
     }
     display_roots

@@ -67,6 +67,9 @@ use tokio_tungstenite::tungstenite::protocol::WebSocketConfig;
 use tracing::warn;
 use url::Url;
 
+#[path = "remote_shutdown.rs"]
+mod shutdown;
+
 const CONNECT_TIMEOUT: Duration = Duration::from_secs(10);
 const INITIALIZE_TIMEOUT: Duration = Duration::from_secs(10);
 const REMOTE_APP_SERVER_MAX_WEBSOCKET_MESSAGE_SIZE: usize = 128 << 20;
@@ -100,6 +103,7 @@ pub struct RemoteAppServerConnectArgs {
 impl RemoteAppServerConnectArgs {
     pub(crate) fn initialize_params(&self) -> InitializeParams {
         let capabilities = InitializeCapabilities {
+            process_indeterminate: true,
             experimental_api: self.experimental_api,
             request_attestation: false,
             extensions: None,
@@ -571,13 +575,14 @@ impl RemoteAppServerClient {
         S: AsyncRead + AsyncWrite + Unpin + Send + 'static,
     {
         let mut stream = stream;
-        let (pending_events, server_version, codex_home) = initialize_remote_connection(
-            &mut stream,
-            &endpoint,
-            initialize_params,
-            INITIALIZE_TIMEOUT,
-        )
-        .await?;
+        let (pending_events, server_version, codex_home, process_indeterminate_enabled) =
+            initialize_remote_connection(
+                &mut stream,
+                &endpoint,
+                initialize_params,
+                INITIALIZE_TIMEOUT,
+            )
+            .await?;
 
         if let RemoteEventMode::Bounded { capacity } = event_mode
             && pending_events.len() > capacity
@@ -628,6 +633,19 @@ impl RemoteAppServerClient {
                         };
                         match command {
                             RemoteClientCommand::Request { request, response_tx } => {
+                                // Only skip cancellation observed before this request enters the writer.
+                                // Cancellation after this check or a lost reply still leaves the
+                                // existing pending/unknown handling in charge; it is not a no-effect proof.
+                                if response_tx.is_closed() {
+                                    continue;
+                                }
+                                if request.method == "process/spawn" && !process_indeterminate_enabled {
+                                    let _ = response_tx.send(Err(IoError::new(
+                                        ErrorKind::Unsupported,
+                                        "process/spawn requires the server's processIndeterminate initialize confirmation",
+                                    )));
+                                    continue;
+                                }
                                 let request_id = request.id.clone();
                                 if pending_requests.contains_key(&request_id) {
                                     let _ = response_tx.send(Err(IoError::new(
@@ -936,7 +954,7 @@ impl RemoteAppServerClient {
     {
         self.request_typed_observed_response(request)
             .await
-            .map(|observed| observed.into_response())
+            .map(RemoteAppServerObservedResponse::into_response)
     }
 
     pub async fn request_typed_observed_response<T>(
@@ -1084,18 +1102,26 @@ impl RemoteAppServerClient {
             worker_handle,
         } = self;
         let mut worker_handle = worker_handle;
+        let _abort_on_cancel = shutdown::AbortOnDrop(worker_handle.abort_handle());
+        let deadline = tokio::time::Instant::now() + SHUTDOWN_TIMEOUT;
         drop(event_rx);
         let (response_tx, response_rx) = oneshot::channel();
-        if command_tx
-            .send(RemoteClientCommand::Shutdown { response_tx })
-            .await
-            .is_ok()
-            && let Ok(Ok(close_result)) = timeout(SHUTDOWN_TIMEOUT, response_rx).await
-        {
-            close_result?;
+        let close = async {
+            if command_tx
+                .send(RemoteClientCommand::Shutdown { response_tx })
+                .await
+                .is_ok()
+                && let Ok(result) = response_rx.await
+            {
+                result?;
+            }
+            Ok::<_, IoError>(())
+        };
+        if let Ok(result) = tokio::time::timeout_at(deadline, close).await {
+            result?;
         }
 
-        if let Err(_elapsed) = timeout(SHUTDOWN_TIMEOUT, &mut worker_handle).await {
+        if let Err(_elapsed) = tokio::time::timeout_at(deadline, &mut worker_handle).await {
             worker_handle.abort();
             let _ = worker_handle.await;
         }
@@ -1275,7 +1301,7 @@ async fn initialize_remote_connection<S>(
     endpoint: &str,
     params: InitializeParams,
     initialize_timeout: Duration,
-) -> IoResult<(Vec<AppServerEvent>, Option<String>, Option<String>)>
+) -> IoResult<(Vec<AppServerEvent>, Option<String>, Option<String>, bool)>
 where
     S: AsyncRead + AsyncWrite + Unpin,
 {
@@ -1283,6 +1309,7 @@ where
     let mut pending_events = Vec::new();
     let mut server_version = None;
     let mut codex_home = None;
+    let mut process_indeterminate_enabled = false;
     write_jsonrpc_message(
         stream,
         JSONRPCMessage::Request(jsonrpc_request_from_client_request(
@@ -1306,6 +1333,8 @@ where
                     })?;
                     match message {
                         JSONRPCMessage::Response(response) if response.id == initialize_request_id => {
+                            process_indeterminate_enabled = response.result.get("processIndeterminate")
+                                .and_then(serde_json::Value::as_bool) == Some(true);
                             server_version = response
                                 .result
                                 .get("userAgent")
@@ -1412,7 +1441,12 @@ where
     )
     .await?;
 
-    Ok((pending_events, server_version, codex_home))
+    Ok((
+        pending_events,
+        server_version,
+        codex_home,
+        process_indeterminate_enabled,
+    ))
 }
 
 fn app_server_event_from_notification(notification: JSONRPCNotification) -> Option<AppServerEvent> {
@@ -1530,3 +1564,11 @@ mod tests {
             .expect("shutdown should complete when worker exits first");
     }
 }
+
+#[cfg(test)]
+#[path = "remote_process_indeterminate_tests.rs"]
+mod process_indeterminate_tests;
+
+#[cfg(test)]
+#[path = "remote_request_cancellation_tests.rs"]
+mod request_cancellation_tests;

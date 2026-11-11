@@ -1,0 +1,44 @@
+{
+  "source": "6a938bea7ba0fc3dd234930c765729c1a9172a65",
+  "commands": [
+    {
+      "command": [
+        "cargo",
+        "metadata",
+        "--locked",
+        "--no-deps",
+        "--format-version=1"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.07523259404115379,
+      "cpu_user_seconds": 0.037503,
+      "cpu_system_seconds": 0.016072
+    },
+    {
+      "command": [
+        "cargo",
+        "nextest",
+        "list",
+        "--cargo-metadata",
+        "/home/qq/work/hepta-cell-learning-050e-20261106/records/coverage-6a938bea-01/metadata.json",
+        "--message-format",
+        "json",
+        "-p",
+        "codex-hepta-neuron",
+        "-p",
+        "codex-hepta-plasticity",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-infer-core",
+        "-p",
+        "codex-hepta-infer-worker-host"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 1.9863798740552738,
+      "cpu_user_seconds": 0.5457690000000001,
+      "cpu_system_seconds": 0.40124
+    }
+  ],
+  "operation": "test enumeration only; no test execution or source mutation"
+}

@@ -1,0 +1,210 @@
+{
+  "profile": {
+    "actions": [
+      {
+        "actionId": "notes.replace",
+        "sourceActionClass": "notes.replace"
+      },
+      {
+        "actionId": "network",
+        "sourceActionClass": "network"
+      },
+      {
+        "actionId": "process.execute",
+        "sourceActionClass": "process.execute"
+      }
+    ],
+    "allowedLocales": [
+      "en-US",
+      "zh-CN"
+    ],
+    "allowedTrustedSourceIdentities": [
+      "notes-objective-test-issuer"
+    ],
+    "constraints": [
+      {
+        "axis": "notes.exact.destination",
+        "class": "principal",
+        "expectedUnit": "boolean",
+        "sourceConstraintId": "notes.exact.destination"
+      }
+    ],
+    "deadlineRequired": true,
+    "evidenceRequirements": [
+      {
+        "axis": "notes.receipt.confidence",
+        "sourceRequirementId": "notes.exact.receipt"
+      }
+    ],
+    "expectedInputSchemaDigest": "5a32bd00b995f7077c81a407a7544bc0af65366e57e63791d8e892c2812cdb56",
+    "expectedNormalizationProfileDigest": "9b4dcbc621dd7c26fbd28a7dd95de1d015ccc0ad2b27d5adb5202ef297f1ef0c",
+    "maximumFutureSkewMicros": 1000000,
+    "maximumSourceAgeMicros": 60000000,
+    "predicates": [
+      {
+        "axis": "notes.document.matches",
+        "expectedUnit": "boolean",
+        "sourcePredicateId": "notes.document.matches"
+      },
+      {
+        "axis": "notes.operation.committed",
+        "expectedUnit": "boolean",
+        "sourcePredicateId": "notes.operation.committed"
+      }
+    ],
+    "principalScope": "notes.objective.test.scope",
+    "principalScopeDigest": "7c6b03048affd647d6789054ba0206648acf8d0038d3cd5849d01ab2ab51834f",
+    "profileId": "organ.notes.literal.v1",
+    "profileRevision": 1,
+    "resources": {
+      "computeMicros": {
+        "axis": "notes.resource.compute",
+        "class": "principal",
+        "constraintId": "notes.resource.compute.ceiling",
+        "evidenceSource": "notes.literal.profile",
+        "q32PerSourceUnit": 1
+      },
+      "externalEffectCount": {
+        "axis": "notes.resource.effects",
+        "class": "principal",
+        "constraintId": "notes.resource.effects.ceiling",
+        "evidenceSource": "notes.literal.profile",
+        "q32PerSourceUnit": 1
+      },
+      "memoryBytes": {
+        "axis": "notes.resource.memory",
+        "class": "principal",
+        "constraintId": "notes.resource.memory.ceiling",
+        "evidenceSource": "notes.literal.profile",
+        "q32PerSourceUnit": 1
+      },
+      "networkBytes": {
+        "axis": "notes.resource.network",
+        "class": "principal",
+        "constraintId": "notes.resource.network.ceiling",
+        "evidenceSource": "notes.literal.profile",
+        "q32PerSourceUnit": 1
+      },
+      "timeMicros": {
+        "axis": "notes.resource.time",
+        "class": "principal",
+        "constraintId": "notes.resource.time.ceiling",
+        "evidenceSource": "notes.literal.profile",
+        "q32PerSourceUnit": 1
+      },
+      "tokenCount": {
+        "axis": "notes.resource.tokens",
+        "class": "principal",
+        "constraintId": "notes.resource.tokens.ceiling",
+        "evidenceSource": "notes.literal.profile",
+        "q32PerSourceUnit": 1
+      }
+    },
+    "risk": {
+      "abstentionAxis": "notes.risk.abstention.value",
+      "abstentionConstraintId": "notes.risk.abstention",
+      "abstentionRules": [
+        {
+          "sourceRule": "refuse_if_unbound",
+          "valueQ32": 1
+        }
+      ],
+      "class": "principal",
+      "compensationAxis": "notes.risk.compensation.value",
+      "compensationConstraintId": "notes.risk.compensation",
+      "compensationFalseValueQ32": 0,
+      "compensationTrueValueQ32": 1,
+      "criticalValueQ32": 3,
+      "evidenceSource": "notes.literal.profile",
+      "highValueQ32": 2,
+      "lowValueQ32": 0,
+      "mediumValueQ32": 1,
+      "riskAxis": "notes.risk.class.value",
+      "riskConstraintId": "notes.risk.class",
+      "rollbackAxis": "notes.risk.rollback.value",
+      "rollbackCompensatableValueQ32": 2,
+      "rollbackConstraintId": "notes.risk.rollback",
+      "rollbackIrreversibleValueQ32": 3,
+      "rollbackNoneValueQ32": 0,
+      "rollbackReversibleValueQ32": 1
+    },
+    "softDimensions": []
+  },
+  "source": {
+    "deadline": "2026-10-23T00:01:00Z",
+    "inputSchemaDigest": "5a32bd00b995f7077c81a407a7544bc0af65366e57e63791d8e892c2812cdb56",
+    "intentDigest": "0050e070d2df9f9b7f8acab9e773e7a0038b05e8d49df7aee132ee4892324874",
+    "locale": "en-US",
+    "observedAt": "2026-10-23T00:00:00Z",
+    "principalScopeDigest": "7c6b03048affd647d6789054ba0206648acf8d0038d3cd5849d01ab2ab51834f",
+    "requestId": "note-test",
+    "sourceTrustClass": "authorized_adapter",
+    "structuredIntent": {
+      "confirmationActionClasses": [],
+      "constraints": [
+        {
+          "boundQ32": 4294967296,
+          "comparator": "eq",
+          "constraintId": "notes.exact.destination",
+          "evidenceSourceId": "notes.literal.profile",
+          "terminal": false,
+          "unit": "boolean"
+        }
+      ],
+      "evidenceRequirements": [
+        {
+          "evidenceSourceId": "notes.original.owner",
+          "minimumConfidencePpm": 1000000,
+          "requirementId": "notes.exact.receipt",
+          "terminal": true
+        }
+      ],
+      "forbiddenActionClasses": [
+        "network",
+        "process.execute"
+      ],
+      "legalActionClasses": [
+        "notes.replace"
+      ],
+      "provenance": {
+        "normalizationProfileDigest": "9b4dcbc621dd7c26fbd28a7dd95de1d015ccc0ad2b27d5adb5202ef297f1ef0c",
+        "sourceDigest": "90d9cef684d3855b4e57a1d5d1f5855ec8becc600b1e6d8ffc4821812282ce81"
+      },
+      "resources": {
+        "computeMicros": 1000000,
+        "externalEffectCount": 1,
+        "memoryBytes": 8192,
+        "networkBytes": 0,
+        "timeMicros": 5000000,
+        "tokenCount": 0
+      },
+      "risk": {
+        "abstentionRule": "refuse_if_unbound",
+        "compensationRequired": false,
+        "riskClass": "low",
+        "rollbackClass": "none"
+      },
+      "softDimensions": [],
+      "successPredicates": [
+        {
+          "boundQ32": 4294967296,
+          "comparator": "eq",
+          "evidenceSourceId": "notes.original.readback",
+          "predicateId": "notes.document.matches",
+          "terminal": false,
+          "unit": "boolean"
+        }
+      ],
+      "terminalConditions": [
+        {
+          "boundQ32": 4294967296,
+          "comparator": "eq",
+          "evidenceSourceId": "notes.original.owner",
+          "predicateId": "notes.operation.committed",
+          "terminal": true,
+          "unit": "boolean"
+        }
+      ]
+    }
+  }
+}

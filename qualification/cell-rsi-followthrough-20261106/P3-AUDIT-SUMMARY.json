@@ -1,0 +1,47 @@
+{
+  "schema": "hepta.cell.p3-readonly-fairness-audit.v1",
+  "authority": "DENY_ALL",
+  "audit_valid": true,
+  "scientific_decision": "HOLD",
+  "p3_strong_control_satisfied": false,
+  "trials_with_matched_strong_control": 0,
+  "new_training_updates": 0,
+  "new_predictions": 0,
+  "rsi_proven": false,
+  "reason": "Original gate failed; fixed-expert training budget/selective updates and no-split capacity are unmatched.",
+  "method": "Hash-bound original evidence, row arithmetic, existing parameter equality and frozen-source update counts only.",
+  "trial_count": 10,
+  "arms_per_trial": 6,
+  "test_outcome_rows": 11520,
+  "training_count_scope": "Shared pretraining plus arm fits and diagnostic probe in this study; no external history or physical energy inferred.",
+  "inputs": {
+    "execution_commit": "caf06e0d9c78ba2b8e2ab860ec1b37f049e30f1b",
+    "execution_tree": "d922da89a2523bf5d7e8c64ef5c519c7c8aec608",
+    "archive_sha256": "5249c60f9779b621aa40951dbdb21ccddcc1f6a4ef49eb0b6db90a3e36812bd7",
+    "study_sha256": "d0b0c4af1490f06f0b73260e0bc0c7a8a533295895ddef4ce479d4adca945b19",
+    "manifest_sha256": "ba4f97cd819914da4b7c4472fcad080c5ddacf69b95a0073cc432c2447aba95a",
+    "audit_source_sha256": "8fd98f7203a2e511094083ee0e4c28e50b9d9e87d5d2f97661992bfd20868a2a",
+    "source_digest": "19a6a6261d6d832243f394d73f2cbc80f1d063f127da71e3c08bf636c0a485a9",
+    "source_files": {
+      "run_study.py": "417855fedcd46dc8de2f920e3f270e3233a06f03d7d38b172449bf0b09a341c6",
+      "study_cost.py": "d4cf26fd27fef65203786d70b3ff1d097aa82db1521242d26ab87a40d001cefd",
+      "study_data.py": "ffa701aace20d69cdee66fd3b8a723719dfd4956e48780ed933f4d3c3ee6ed6f",
+      "study_evidence.py": "644cfeb651c430837a596db019dfe474ad6cb9344d92ec54fd13b40c2b457db3",
+      "study_gate.py": "7301e22dffc93e03521f7e651a86d37681bbbc47bea1a9891f27eda192e6e316",
+      "study_model.py": "a4e24975c9561fa08452ba9e250aafaed9b1cbccb5049ddf5b6a9ff9637ac704"
+    },
+    "plan_digest": "3765b36e70afe73d65ad61d03f1e59ac30cf1d92ebbc9480b063f1276d09f090"
+  },
+  "complete_report": {
+    "delivery_package": "hepta-cell-rsi-20261106.zip",
+    "member": "qualification-review/p3-audit/AUDIT.json",
+    "bytes": 76035,
+    "sha256": "123b0c77b77fe8c3cbe56024dafaef8f4eb55971119eb1cbd592ad43d4f781d4"
+  },
+  "tool_tests": {
+    "executed": 16,
+    "passed": 16,
+    "skipped": 0,
+    "new_experiment": false
+  }
+}

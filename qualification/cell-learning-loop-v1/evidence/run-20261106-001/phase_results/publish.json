@@ -1,0 +1,63 @@
+{
+  "parent_observed": {
+    "cpu_system_seconds": 0.04387399999999997,
+    "cpu_user_seconds": 0.20152100000000006,
+    "finished_at_utc": "2026-11-06T07:34:13.222791+00:00",
+    "returncode": 0,
+    "scope": "entire direct child including interpreter startup and failures",
+    "started_at_utc": "2026-11-06T07:34:12.976699+00:00",
+    "stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stdout": {
+      "bytes": 1523,
+      "sha256": "080b751049e3b3c38029e6bc435d711a43b8e95476be5ecb62cd2c74a19fb724"
+    },
+    "wall_seconds": 0.24607642199771362
+  },
+  "phase": "publish",
+  "pid": 38,
+  "process_instance_id": "93ecb6b3b415430492643ccc676be5e2",
+  "protocol_sha256": "84bd11616fe532ad4539837a2ccd4bf53e8c5b0659d2fe910241a847be7c939a",
+  "python_optimize": 0,
+  "result": {
+    "engineering_passed": true,
+    "gate_calls": [
+      {
+        "candidate_state_matches_evaluation": true,
+        "formal_gate_policy": "unchanged; this run grants no efficacy adoption",
+        "future_adoption_gate_invoked": false,
+        "historical_correct_delta": -4,
+        "kind": "SourceOwner executable engineering validator",
+        "passed": false,
+        "reasons": [
+          "independent_nine_arm_future_round_not_registered",
+          "complete_lifecycle_cost_unknown"
+        ]
+      }
+    ],
+    "refusal": "executable publication validator rejected the model",
+    "release_after": {
+      "artifact": "1b5091f1d5a920bddf57999367d60aa56116f2040da933cb8afc2b330c5e4455",
+      "cell": "semantic-memory",
+      "epoch": 1,
+      "scope": "v13-provenance-independent-run",
+      "validation": "{\"closure_checkpoint\":\"c64db4368b56bef47ea4571c31b4b551a43c8064ef976241ae272cbde6ef2948\",\"kind\":\"exact archived parent restoration; no efficacy adoption\",\"passed\":true}"
+    },
+    "release_before": {
+      "artifact": "1b5091f1d5a920bddf57999367d60aa56116f2040da933cb8afc2b330c5e4455",
+      "cell": "semantic-memory",
+      "epoch": 1,
+      "scope": "v13-provenance-independent-run",
+      "validation": "{\"closure_checkpoint\":\"c64db4368b56bef47ea4571c31b4b551a43c8064ef976241ae272cbde6ef2948\",\"kind\":\"exact archived parent restoration; no efficacy adoption\",\"passed\":true}"
+    }
+  },
+  "status": "completed",
+  "worker_metrics": {
+    "cpu_system_seconds": 0.034184,
+    "cpu_user_seconds": 0.163023,
+    "peak_rss_bytes": 50102272,
+    "wall_seconds": 0.19724695399781922
+  }
+}

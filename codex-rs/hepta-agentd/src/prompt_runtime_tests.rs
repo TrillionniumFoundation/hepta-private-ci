@@ -751,6 +751,47 @@ fn named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host() {
     assert_eq!(staged.developer_fragments[0].text.as_bytes(), payload);
 }
 
+#[cfg(windows)]
+#[test]
+fn windows_prompt_runtime_private_owner_reopens_without_reset_or_acl_waiver() {
+    let temp = tempfile::tempdir().unwrap_or_else(|error| panic!("fixture: {error}"));
+    let root = temp.path().join("prompt-runtime-owner");
+    let (mut store, initial) =
+        PromptRuntimeStore::open(&root).unwrap_or_else(|error| panic!("secure open: {error}"));
+    assert_eq!(initial, PromptRuntimeState::default());
+    store
+        .persist(&initial)
+        .unwrap_or_else(|error| panic!("private durable persist: {error}"));
+    drop(store);
+    let (reopened, state) =
+        PromptRuntimeStore::open(&root).unwrap_or_else(|error| panic!("secure reopen: {error}"));
+    assert_eq!(state, PromptRuntimeState::default());
+    drop(reopened);
+
+    // An on-disk hardlink must not let a second name mutate the same state
+    // inode. The owner refuses it, even if the owner SID matches.
+    std::fs::hard_link(root.join(STATE_FILE), root.join("linked-state"))
+        .unwrap_or_else(|error| panic!("hardlink fixture: {error}"));
+    assert!(matches!(
+        PromptRuntimeStore::open(&root),
+        Err(AgentdPromptRuntimeError::Unavailable)
+    ));
+}
+
+#[cfg(windows)]
+#[test]
+fn windows_prompt_runtime_existing_insecure_directory_is_never_repaired() {
+    let temp = tempfile::tempdir().unwrap_or_else(|error| panic!("fixture: {error}"));
+    let root = temp.path().join("inherited-prompt-runtime");
+    std::fs::create_dir(&root).unwrap_or_else(|error| panic!("directory: {error}"));
+    // A normal inherited ACL may be private or public depending on runner
+    // identity. Never silently reset the ACL: compare the handle owner's
+    // fail-closed verdict to the canonical audited NTFS verifier.
+    let direct = codex_utils_path::open_private_state_directory(&root);
+    let opened = PromptRuntimeStore::open(&root);
+    assert_eq!(opened.is_ok(), direct.is_ok());
+}
+
 #[test]
 fn owner_remains_send_sync_with_fault_injection() {
     fn assert_send_sync<T: Send + Sync>() {}

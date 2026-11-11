@@ -145,6 +145,18 @@ but cannot create a backward causal dependency within one recorded activation.
 Feedback is not retry of an uncertain effect. TaskFlow V1 DAG validation remains
 unchanged; richer circuit semantics require a negotiated version/profile.
 
+The Cell framework source candidate implements the explicit
+`bounded_feedback_v2` profile in the existing AutomationStore, with bounded
+rounds, delayed feedback, subcircuit calls, join policies and hierarchical work
+reservations. Canonical events reconstruct the finite causal trace; TaskFlow V1
+still rejects cycles. A durable computation claim issues a non-serializable
+admission to the shared Agentd Cell owner. Reopening, takeover and repeated claims
+produce readback-only admissions. Actual overrun costs are recorded before budget
+fallback; unknown work keeps its reservation. This source profile has not yet
+completed native or target-host qualification and does not grant external-effect
+authority. The initialization graph, runtime communication graph and actual
+causal trace remain separate objects.
+
 | Concern | Existing owner or composition boundary |
 | --- | --- |
 | organ membership, ports and lifecycle | existing organ registry/OrganHost and Supervisor; no second circuit-owned body registry |

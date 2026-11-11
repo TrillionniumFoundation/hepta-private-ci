@@ -12,6 +12,8 @@ use std::time::Duration;
 use anyhow::Context;
 use codex_config::types::AuthKeyringBackendKind;
 use codex_config::types::OAuthCredentialsStoreMode;
+use codex_exec_server::HttpRedirectPolicy;
+use codex_exec_server::HttpRequestParams;
 use codex_rmcp_client::ElicitationAction;
 use codex_rmcp_client::ElicitationResponse;
 use codex_rmcp_client::McpProtocolMode;
@@ -28,6 +30,7 @@ use wiremock::MockServer;
 use wiremock::ResponseTemplate;
 use wiremock::matchers::body_partial_json;
 use wiremock::matchers::method;
+use wiremock::matchers::path;
 
 use streamable_http_test_support::call_echo_tool;
 use streamable_http_test_support::create_remote_client;
@@ -74,6 +77,12 @@ async fn stalled_handshake_unblocks_remote_executor(
     expected_method: &str,
 ) -> anyhow::Result<()> {
     let http_server = MockServer::start().await;
+    Mock::given(method("GET"))
+        .and(path("/executor-ready"))
+        .respond_with(ResponseTemplate::new(200))
+        .expect(1)
+        .mount(&http_server)
+        .await;
     Mock::given(method("POST"))
         .and(body_partial_json(json!({ "method": expected_method })))
         .respond_with(ResponseTemplate::new(200).set_delay(Duration::from_secs(10)))
@@ -81,6 +90,25 @@ async fn stalled_handshake_unblocks_remote_executor(
         .mount(&http_server)
         .await;
     let exec_server = spawn_exec_server().await?;
+    // Establish the real executor HTTP route before measuring a stalled MCP
+    // request. The original 500ms handshake and 2s health deadlines stay intact.
+    let ready = tokio::time::timeout(
+        Duration::from_secs(2),
+        exec_server.client.http_request(HttpRequestParams {
+            method: "GET".to_string(),
+            url: format!("{}/executor-ready", http_server.uri()),
+            headers: vec![],
+            body: None,
+            timeout_ms: Some(2_000),
+            redirect_policy: HttpRedirectPolicy::Stop,
+            request_id: "executor-http-readiness".to_string(),
+            stream_response: false,
+        }),
+    )
+    .await
+    .context("executor HTTP fixture did not become ready")??;
+    assert_eq!(ready.status, 200);
+
     let client = RmcpClient::new_streamable_http_client_with_protocol_mode(
         "stalled-remote-http",
         &format!("{}/mcp", http_server.uri()),

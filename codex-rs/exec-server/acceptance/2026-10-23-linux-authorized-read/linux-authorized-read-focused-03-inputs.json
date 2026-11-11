@@ -1,0 +1,45 @@
+{
+  "observedAt": "2026-10-23T20:02:18.493931+00:00",
+  "unit": "hepta-linux-authorized-read-focused-03-20261023T200218.service",
+  "cwd": "/data/hepta-mcp-implementation-closure",
+  "head": "3b880e484c1e31632ffe900f97753209d14ab7d5",
+  "dirtyDiffSha256": "73a185c1d707077e7138a440ec6f253fa27ba883b43795491b92ea7cecd56d93",
+  "environment": {
+    "CARGO_HOME": "/home/qian-qi/.cargo",
+    "CARGO_NET_OFFLINE": "true",
+    "CARGO_TARGET_DIR": "/data/hepta-mcp-integer-target",
+    "CARGO_BUILD_JOBS": "1",
+    "RUSTUP_TOOLCHAIN": "1.95.0",
+    "TMPDIR": "/data/hepta-mcp-integer-tmp",
+    "RUNNER_TEMP": "/data/hepta-mcp-integer-tmp/reports",
+    "RUSTY_V8_ARCHIVE": "/data/hepta-dependency-v8-pair/rusty-v8-150.4.0-x86_64-unknown-linux-gnu/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz",
+    "RUSTY_V8_SRC_BINDING_PATH": "/data/hepta-dependency-v8-pair/rusty-v8-150.4.0-x86_64-unknown-linux-gnu/src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs",
+    "PATH": "/home/qian-qi/.elan/bin:/home/qian-qi/.local/bin:/home/qian-qi/.codex/tmp/arg0-linux/codex-arg0OVEtJ2:/home/qian-qi/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/override:/home/qian-qi/.elan/bin:/home/qian-qi/.local/bin:/home/qian-qi/.npm-global/bin:/home/qian-qi/.elan/bin:/home/qian-qi/.cargo/bin:/home/qian-qi/.local/bin:/opt/gradle/current/bin:/opt/android-sdk/cmdline-tools/latest/bin:/opt/android-sdk/platform-tools:/opt/android-sdk/build-tools/35.0.1:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/qian-qi/.linuxbrew/bin:/home/qian-qi/.linuxbrew/sbin:/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin:/home/qian-qi/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/fallback:/usr/lib/chatgpt/resources",
+    "LANG": "C.UTF-8",
+    "LC_ALL": "C.UTF-8",
+    "CODEX_CI": "1"
+  },
+  "command": [
+    "just",
+    "test",
+    "-p",
+    "codex-exec-server",
+    "--locked",
+    "--test-threads",
+    "2",
+    "-E",
+    "test(local_file_system::authorized_read_tests::) | test(linux_authorized_read::tests::) | test(file_system_bounded_authorized_read) | test(remote_file_system::path_uri_tests::authorized_) | test(authorized_read_rpc_is_capability_gated_and_denies_outside_root)"
+  ],
+  "sourceFilesSha256": {
+    "codex-rs/exec-server/README.md": "be4543908a9ba483f4aad412ca104e2c1f4992058397dec5af3988358e9ed9ac",
+    "codex-rs/exec-server/src/lib.rs": "76a8a4945f9f7ef1a8e46c9f2cef198468f9ee50a7b6a76cb9c44e0528fdda42",
+    "codex-rs/exec-server/src/linux_authorized_read.rs": "bb8c89689f39973de430d3024e5ad9412e5365312549e845666ad745803123bf",
+    "codex-rs/exec-server/src/linux_authorized_read_tests.rs": "f130f03da828604863eeb5abf72ed60bcc4c964429dab43a4a3bc974515cb36d",
+    "codex-rs/exec-server/src/local_file_system.rs": "3eae307a26f63bf08ed27003d855c2cc3d66683750f18b6efb25395746faed12",
+    "codex-rs/exec-server/src/local_file_system_authorized_read_tests.rs": "04995b8a042d08be8363ce90c9600eb47a384e86ff619b2b57ea7cdcc8fb8c10",
+    "codex-rs/exec-server/src/remote_file_system.rs": "4fda581c2e6ab14d444e842fdaf6ac8e55a568f674644ba3b5ca6933f330769a",
+    "codex-rs/exec-server/src/remote_file_system_path_uri_tests.rs": "8f3d8e0cf7efac2cd191cf82b08e9643aba7d1093b81f48c9fe57f6a5cd7e96e",
+    "codex-rs/exec-server/src/rpc.rs": "b2ea850310b525861c917b2fb5bafb2a5c17a28dd590bd2ac160cc125ef8db75",
+    "codex-rs/exec-server/src/server/file_system_handler.rs": "f9743b7fe8cf3a1a8afcda673ad362034638428f8f47e904e23a898f615592a9"
+  }
+}

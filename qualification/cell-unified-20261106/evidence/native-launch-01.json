@@ -1,0 +1,18 @@
+{
+  "schema": "hepta.cell-unified.launch-failure.v1",
+  "host": "ai395",
+  "job_id": "1a1afcad28c-fc05-6ba6",
+  "source": "7e1cd4f02500a7733ed82678f4a039f42cf08ecc",
+  "source_tree": "ffc729b03542e847005287c79509d5bf037560db",
+  "exit_code": 2,
+  "gate_started": false,
+  "training_started": false,
+  "reason": "Inherited sparse checkout omitted the newly added native_gate.py. No native qualification command ran.",
+  "stdout": "{\"source\": \"7e1cd4f02500a7733ed82678f4a039f42cf08ecc\", \"tree\": \"ffc729b03542e847005287c79509d5bf037560db\", \"command\": [\"/usr/bin/python3\", \"/home/qq/work/hepta-cell-learning-050e-20261106/source/qualification/cell-unified-20261106/native_gate.py\", \"--source\", \"/home/qq/work/hepta-cell-learning-050e-20261106/source\", \"--commit\", \"7e1cd4f02500a7733ed82678f4a039f42cf08ecc\", \"--output\", \"/home/qq/work/hepta-cell-learning-050e-20261106/records/native-7e1cd4f0-01\"]}\n",
+  "stderr": "From https://github.com/TrillionniumFoundation/hepta-private-ci\n * branch                codex/cell-learning-unified-20261106-050e -> FETCH_HEAD\n * [new branch]          codex/cell-learning-unified-20261106-050e -> origin/codex/cell-learning-unified-20261106-050e\nPrevious HEAD position was 7391c3dc3 fix(neuron): distinguish clock rollback from actual generation expiry\nHEAD is now at 7e1cd4f02 feat(qualification): bind native gates to one clean source and compiler artifacts\n/usr/bin/python3: can't open file '/home/qq/work/hepta-cell-learning-050e-20261106/source/qualification/cell-unified-20261106/native_gate.py': [Errno 2] No such file or directory\n",
+  "cost": {
+    "cpu_seconds": null,
+    "wall_seconds": null,
+    "unknown_is_zero": false
+  }
+}

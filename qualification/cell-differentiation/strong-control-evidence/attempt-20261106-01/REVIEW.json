@@ -1,0 +1,79 @@
+{
+  "base_source_commit": "9bbf4bb4d1b5466f62d75d6b70dad4d26ec75d55",
+  "conditions": {
+    "accumulated_budget_by_scenario": {
+      "helpful_specialization": {
+        "candidate_searches": 1,
+        "gradient_updates": 257,
+        "old_slot_updates_after_parent": 0,
+        "retained_coefficients": 12,
+        "retained_parameter_bytes": 96,
+        "retries": 0,
+        "training_presentations": 49280,
+        "updated_coordinates_per_step": 6
+      },
+      "redundant_specialization": {
+        "candidate_searches": 1,
+        "gradient_updates": 129,
+        "old_slot_updates_after_parent": 0,
+        "retained_coefficients": 12,
+        "retained_parameter_bytes": 96,
+        "retries": 0,
+        "training_presentations": 32896,
+        "updated_coordinates_per_step": 6
+      }
+    },
+    "candidate_selection": "One candidate per arm, unchanged seeds and thresholds, no retry or selection; all ten original trial positions retained.",
+    "capacity": "12 retained FP64 coefficients / 96 bytes for every arm; second demand slot is reserved, not a production dynamic-allocation experiment.",
+    "common_initial_parent": "Same immutable six-FP64 parent; copied independently into all updated slots, confirmed by source and retained parent/old-slot bytes.",
+    "independent_fits": "Candidate and fixed each execute fit separately; unsplit executes an independent update loop, not a copy of candidate output.",
+    "selective_update": "Same frozen six old-task coordinates; six new-task coordinates updated iff the common training/monitor gate fires.",
+    "visible_information": "Same task identity, train rows, monitor labels and shared diagnostic gate. Source interfaces exclude held-out labels from learners; no separate-process visibility isolation."
+  },
+  "cost_limitations": [
+    "Four failed numerical payloads and their actual costs are unavailable.",
+    "Energy, GPU/VRAM, network and actual billing unmeasured.",
+    "Declared kernel ledger does not include every orchestration/audit overhead.",
+    "Common physical pretrain/diagnosis ran once per trial; summing per-arm comparison ledgers triple-counts that shared work."
+  ],
+  "failed_trial_ids": [
+    [
+      "helpful_specialization",
+      307
+    ],
+    [
+      "helpful_specialization",
+      401
+    ],
+    [
+      "redundant_specialization",
+      307
+    ],
+    [
+      "redundant_specialization",
+      401
+    ]
+  ],
+  "failed_trials": 4,
+  "final_implementation_model_qualified": false,
+  "formal_model_attempts_after_repair": 0,
+  "frozen_maximum_old_task_mse_increase": 0.01,
+  "frozen_minimum_mse_gain": 0.0005,
+  "full_campaign_cost_measured": false,
+  "kind": "independent_source_and_retained_artifact_review",
+  "matched_parameter_trials": 6,
+  "max_abs_fixed_gain": 0.0,
+  "max_abs_unsplit_gain": 2.6020852139652106e-18,
+  "model_class_equivalence": "For the supplied task identity, both routed experts and the fixed masked tensor represent the same piecewise linear functions and use equivalent optimizer updates.",
+  "original_failure_attribution": "The scalar/vector one-ULP issue is independently demonstrated; the four lost numerical payloads prevent exact individual attribution.",
+  "p3_qualified": false,
+  "p4_qualified": false,
+  "p4_remaining": "Actual descendant-improver comparison with common starting system, hidden tasks and total budget.",
+  "p5_qualified": false,
+  "p5_remaining": "Same-candidate long-service quality, tail latency, effective throughput, resource, recovery, state-growth and total-cost measurements.",
+  "planned_trials": 10,
+  "production_authority": false,
+  "retained_valid_trials": 6,
+  "review_scope": "Source inspection plus independent archived data, inference, diagnostic gate, and declared cost ledger checks; no optimizer or training-trajectory replay.",
+  "scientific_decision": "HOLD"
+}

@@ -298,7 +298,7 @@ enabled = false
 
         let initial_config_manager =
             ConfigManager::without_managed_config_for_tests(temp_dir.path().to_path_buf());
-        let good_config = initial_config_manager
+        let mut good_config = initial_config_manager
             .load_for_cwd(
                 /*request_overrides*/ None,
                 ConfigOverrides::default(),
@@ -314,7 +314,7 @@ enabled = false
             .await?;
 
         let auth_manager = AuthManager::from_auth_for_testing(CodexAuth::from_api_key("dummy"));
-        let state_db = init_state_db(&good_config)
+        let state_db = init_state_db(&mut good_config)
             .await
             .expect("refresh tests require state db");
         let thread_store = thread_store_from_config(&good_config, Some(state_db.clone()));

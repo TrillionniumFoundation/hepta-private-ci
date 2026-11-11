@@ -184,6 +184,34 @@ impl JobObject {
         Ok(child)
     }
 
+    /// Starts a synchronous child only after assignment to this job has succeeded.
+    /// A failed assignment or resume kills and reaps the still-owned child.
+    pub fn spawn_contained_std(
+        &self,
+        command: &mut std::process::Command,
+    ) -> io::Result<std::process::Child> {
+        use std::os::windows::process::CommandExt;
+
+        command.creation_flags(CREATE_SUSPENDED);
+        let mut child = command.spawn()?;
+        let process_handle = child.as_raw_handle();
+        let assignment = self.assign_process(process_handle);
+        if let Err(error) = assignment {
+            let _ = child.kill();
+            let _ = child.wait();
+            return Err(error);
+        }
+        let status = unsafe { NtResumeProcess(process_handle.cast()) };
+        if !NT_SUCCESS(status) {
+            let _ = child.kill();
+            let _ = child.wait();
+            return Err(io::Error::other(format!(
+                "failed to resume contained synchronous process: NTSTATUS {status:#x}"
+            )));
+        }
+        Ok(child)
+    }
+
     /// Allows contained descendants to keep running after the root exits normally.
     ///
     /// This disables both explicit job termination and kill-on-close for this

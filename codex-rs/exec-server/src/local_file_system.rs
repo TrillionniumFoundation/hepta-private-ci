@@ -3,9 +3,9 @@ use codex_file_system::MAX_WALK_DIRECTORIES;
 use codex_file_system::MAX_WALK_ENTRIES;
 use codex_file_system::MAX_WALK_RESPONSE_BYTES;
 use codex_file_system::WALK_RESPONSE_ITEM_OVERHEAD_BYTES;
-#[cfg(target_os = "macos")]
+#[cfg(any(target_os = "linux", target_os = "macos"))]
 use codex_protocol::models::PermissionProfile;
-#[cfg(target_os = "macos")]
+#[cfg(any(target_os = "linux", target_os = "macos"))]
 use codex_protocol::permissions::ReadDenyMatcher;
 use codex_utils_absolute_path::AbsolutePathBuf;
 use codex_utils_path_uri::PathUri;
@@ -307,6 +307,18 @@ impl ExecutorFileSystem for LocalFileSystem {
     ) -> ExecutorFileSystemFuture<'a, Vec<u8>> {
         Box::pin(LocalFileSystem::read_file_bounded_authorized(
             self, path, sandbox, max_bytes,
+        ))
+    }
+
+    #[cfg(target_os = "linux")]
+    fn read_file_bounded_authorized<'a>(
+        &'a self,
+        path: &'a PathUri,
+        sandbox: &'a FileSystemSandboxContext,
+        max_bytes: usize,
+    ) -> ExecutorFileSystemFuture<'a, Vec<u8>> {
+        Box::pin(crate::linux_authorized_read::read_bounded_authorized(
+            path, sandbox, max_bytes,
         ))
     }
 
@@ -1235,8 +1247,8 @@ fn reject_platform_sandbox_context(sandbox: Option<&FileSystemSandboxContext>) -
     Ok(())
 }
 
-#[cfg(target_os = "macos")]
-fn authorized_read_limit(max_bytes: usize) -> io::Result<u64> {
+#[cfg(any(target_os = "linux", target_os = "macos"))]
+pub(super) fn authorized_read_limit(max_bytes: usize) -> io::Result<u64> {
     max_bytes
         .checked_add(1)
         .and_then(|limit| u64::try_from(limit).ok())
@@ -1375,13 +1387,18 @@ pub(crate) fn stable_handle_authorized_read_available() -> bool {
     *STABLE_HANDLE_AUTHORIZED_READ_AVAILABLE
 }
 
-#[cfg(not(target_os = "macos"))]
+#[cfg(target_os = "linux")]
+pub(crate) fn stable_handle_authorized_read_available() -> bool {
+    crate::linux_authorized_read::available()
+}
+
+#[cfg(not(any(target_os = "linux", target_os = "macos")))]
 pub(crate) fn stable_handle_authorized_read_available() -> bool {
     false
 }
 
-#[cfg(target_os = "macos")]
-fn authorize_stable_file_path(
+#[cfg(any(target_os = "linux", target_os = "macos"))]
+pub(super) fn authorize_stable_file_path(
     final_path: &Path,
     sandbox: &FileSystemSandboxContext,
 ) -> io::Result<()> {
@@ -1455,8 +1472,8 @@ fn stable_file_path_from_raw_fd(fd: std::os::fd::RawFd) -> io::Result<AbsolutePa
         .map_err(|_| authorized_read_error(io::ErrorKind::PermissionDenied))
 }
 
-#[cfg(target_os = "macos")]
-fn redact_file_access_error(error: io::Error) -> io::Error {
+#[cfg(any(target_os = "linux", target_os = "macos"))]
+pub(super) fn redact_file_access_error(error: io::Error) -> io::Error {
     if error.kind() == io::ErrorKind::NotFound {
         authorized_read_error(io::ErrorKind::NotFound)
     } else {
@@ -1464,8 +1481,8 @@ fn redact_file_access_error(error: io::Error) -> io::Error {
     }
 }
 
-#[cfg(target_os = "macos")]
-fn authorized_read_error(kind: io::ErrorKind) -> io::Error {
+#[cfg(any(target_os = "linux", target_os = "macos"))]
+pub(super) fn authorized_read_error(kind: io::ErrorKind) -> io::Error {
     let message = match kind {
         io::ErrorKind::NotFound => "No such file or directory",
         io::ErrorKind::PermissionDenied => "Permission denied",
@@ -1575,7 +1592,14 @@ fn system_time_to_unix_ms(time: SystemTime) -> i64 {
 #[path = "local_file_system_path_uri_tests.rs"]
 mod path_uri_tests;
 
-#[cfg(all(test, target_os = "macos"))]
+#[cfg(all(test, target_os = "linux"))]
+use crate::linux_authorized_read::secure_reopen_matching_identity;
+#[cfg(all(test, target_os = "linux"))]
+use crate::linux_authorized_read::stable_file_path;
+#[cfg(all(test, target_os = "linux"))]
+use crate::linux_authorized_read::unique_file_identity;
+
+#[cfg(all(test, any(target_os = "linux", target_os = "macos")))]
 #[path = "local_file_system_authorized_read_tests.rs"]
 mod authorized_read_tests;
 

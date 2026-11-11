@@ -28,7 +28,8 @@ const ALLOWED: &[u8] = b"ALLOWED";
 const SECRET: &[u8] = b"SECRET";
 
 fn read_only_sandbox(root: &Path) -> Result<FileSystemSandboxContext> {
-    let root = AbsolutePathBuf::from_absolute_path(root)?;
+    // Bind the grant to the created fixture, not macOS's /var path alias.
+    let root = AbsolutePathBuf::from_absolute_path(std::fs::canonicalize(root)?)?;
     let policy = FileSystemSandboxPolicy::restricted(vec![FileSystemSandboxEntry::new(
         FileSystemPath::Path {
             path: PathUri::from_abs_path(&root),
@@ -101,6 +102,15 @@ async fn authorized_read_rpc_is_capability_gated_and_denies_outside_root() -> Re
         };
         assert_eq!(*code, -32600);
         assert_eq!(message, "Permission denied");
+    } else {
+        // Unsupported platforms must not fall through to a generic read
+        // that only happens to fail on the test sandbox. The capability
+        // contract requires an explicit fail-closed unsupported response.
+        let ExecServerError::Server { code, message } = &denied else {
+            bail!("expected unsupported authorized-read rejection, got {denied:?}");
+        };
+        assert_eq!(*code, -32603);
+        assert_eq!(message, "bounded authorized file reads are unsupported");
     }
     assert!(!denied.to_string().contains("secret.txt"));
 

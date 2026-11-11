@@ -1,0 +1,34 @@
+{
+  "finishedAt": "2026-10-23T19:45:16.018153+00:00",
+  "commit": "12a4c2e3487476b54fc28e4fa3109604c498f566",
+  "tree": "89e4d06d6b50642185a5e566f744f77ed3b46992",
+  "sourceBase": "58882f852e64d5c2562c5dfb441c2bb8daa05179",
+  "testedDiffSha256": "a46ab7c3cbb4be8a2dfb39531a3a5ac3f1707189144b3be7111ee98473075e45",
+  "finalDiffSha256": "08dd042ebf9e964feef145072d3983ff2a1d92273bc524e7cf92c753d123d9fb",
+  "fixtureBaseline": {
+    "run": 1,
+    "passed": 0,
+    "failed": 1
+  },
+  "fixtureAfter": {
+    "run": 1,
+    "passed": 1,
+    "failed": 0
+  },
+  "owningPackage": {
+    "run": 420,
+    "passed": 420,
+    "failed": 0,
+    "skipped": 0
+  },
+  "fixExitCode": 0,
+  "fmtExitCode": 0,
+  "noTestsAfterFixOrFmt": true,
+  "productionExtractionBehaviorChanged": false,
+  "productionSourceChange": "Two automatic Clippy method-reference substitutions only; no assertion or extraction behavior change. Final bytes were not retested after fix/fmt.",
+  "originalExtractionAssertionsPreserved": true,
+  "priorDriverGuardFailure": "Preserved failed phase receipt: strict one-file guard halted after fix changed two existing redundant closures; reviewed exact diff before independent finalization.",
+  "scopedTestedBehaviorQualified": true,
+  "finalCommitBytesTested": false,
+  "finalUnifiedFullQualified": false
+}

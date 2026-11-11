@@ -1,0 +1,45 @@
+{
+  "authority_rule": "fixed formal/cost HOLD; no caller-provided authorization Boolean",
+  "bindings": {
+    "candidate": {
+      "artifact": "c1d0f24ef0cda82ee93e59ccd250be4373d4a6c3c23e609d284eb0c5a5741137",
+      "checkpoint_sha256": "65bc5a7d5da59b1d312b8663bfa056c675cd9709af04ce08056c87297112947f",
+      "encoder_sha256": "8b8d070f392fd30181f217daa4de166dfe785897b5d4d64f2244bc6fcb5f42aa",
+      "source_version": "729f6bb5697b28765b021e1af9f42af87ad43afbaa551b11938118d1c7191862",
+      "state_sha256": "602bd8a029ae7f8a69895674ea1702554d40379635736f22f770eaa933af44e9"
+    },
+    "historical_cases": 72,
+    "parent": {
+      "artifact": "1b5091f1d5a920bddf57999367d60aa56116f2040da933cb8afc2b330c5e4455",
+      "checkpoint_sha256": "c64db4368b56bef47ea4571c31b4b551a43c8064ef976241ae272cbde6ef2948",
+      "encoder_sha256": "8b8d070f392fd30181f217daa4de166dfe785897b5d4d64f2244bc6fcb5f42aa",
+      "source_version": "bcdfb871c32611f228aa878fd4f45dc78eab87c78ee8c1c6f93b979b04bea453",
+      "state_sha256": "8a03519dff1585b1b49c808371c7e143dac2f91e5cd6a2bef5da5fdceb9f0654"
+    }
+  },
+  "cell": "semantic-memory",
+  "data_ids": {
+    "candidate": "bde53df4d34daa60736e5a157c2905369439fe8f23de1df01cbacc04a0db3ec2",
+    "parent": "a365892342cd04abfc2f4c762470cf0f2945c3c191cc3d91519132e2d9cfac9b"
+  },
+  "feedback_id": "cedar-intake",
+  "frozen_at_utc": "2026-11-06T07:59:38.043344+00:00",
+  "model_dir": "/workspace/scratch/40d04650905b/v13-work/minilm",
+  "optimizer_updates": 0,
+  "original_protocol": {
+    "bytes": 2288,
+    "sha256": "84bd11616fe532ad4539837a2ccd4bf53e8c5b0659d2fe910241a847be7c939a"
+  },
+  "original_run": "/workspace/scratch/050e013c53db/hepta-learning/qualification/cell-learning-loop-v1/evidence/run-20261106-001",
+  "owner_kind": "explicit reconstructed SourceOwner fork; original owner remains untouched",
+  "phases": [
+    "decision",
+    "cold_check"
+  ],
+  "post_run_replay": true,
+  "prior_results_known": true,
+  "prospective_claim": false,
+  "quality_rule": "corrected-task strict improvement AND no aggregate historical loss",
+  "schema": "hepta.engineering.post-run-decision.v1",
+  "scope": "v13-provenance-independent-run"
+}

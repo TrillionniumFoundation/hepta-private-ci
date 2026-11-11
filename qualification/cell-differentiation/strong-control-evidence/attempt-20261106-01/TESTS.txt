@@ -1,0 +1,19 @@
+test_audit_failure_keeps_original_numerical_result (test_strong_control.StrongControlTests.test_audit_failure_keeps_original_numerical_result) ... ok
+test_failure_preserves_all_trials_and_unknown_cost_without_retry (test_strong_control.StrongControlTests.test_failure_preserves_all_trials_and_unknown_cost_without_retry) ... ok
+test_protocol_cannot_change_after_freeze_or_be_overwritten (test_strong_control.StrongControlTests.test_protocol_cannot_change_after_freeze_or_be_overwritten) ... ok
+test_readback_rejects_dropped_requests_or_relabelled_metrics (test_strong_control.StrongControlTests.test_readback_rejects_dropped_requests_or_relabelled_metrics) ... ok
+test_three_arms_train_independently_and_do_not_claim_positive_gain (test_strong_control.StrongControlTests.test_three_arms_train_independently_and_do_not_claim_positive_gain) ... ok
+test_training_keeps_old_coordinates_and_uses_only_admitted_rows (test_strong_control.StrongControlTests.test_training_keeps_old_coordinates_and_uses_only_admitted_rows) ... ok
+test_archive_corruption_is_rejected_before_replay (test_strong_control_archive.StrongControlArchiveTests.test_archive_corruption_is_rejected_before_replay) ... ok
+test_declared_kernel_costs_and_totals_are_recomputed (test_strong_control_archive.StrongControlArchiveTests.test_declared_kernel_costs_and_totals_are_recomputed) ... ok
+test_diagnostic_information_is_replayed_from_saved_models (test_strong_control_archive.StrongControlArchiveTests.test_diagnostic_information_is_replayed_from_saved_models) ... ok
+test_failed_trial_cannot_be_credited_zero_cost (test_strong_control_archive.StrongControlArchiveTests.test_failed_trial_cannot_be_credited_zero_cost) ... ok
+test_failed_trial_cannot_be_dropped_even_with_resealed_inventory (test_strong_control_archive.StrongControlArchiveTests.test_failed_trial_cannot_be_dropped_even_with_resealed_inventory) ... ok
+test_hold_cannot_be_promoted_or_authority_granted (test_strong_control_archive.StrongControlArchiveTests.test_hold_cannot_be_promoted_or_authority_granted) ... ok
+test_preserved_complete_denominator_yields_hold_without_training (test_strong_control_archive.StrongControlArchiveTests.test_preserved_complete_denominator_yields_hold_without_training) ... ok
+test_unsafe_archive_members_are_rejected_without_extraction (test_strong_control_archive.StrongControlArchiveTests.test_unsafe_archive_members_are_rejected_without_extraction) ... ok
+
+----------------------------------------------------------------------
+Ran 14 tests in 1.010s
+
+OK

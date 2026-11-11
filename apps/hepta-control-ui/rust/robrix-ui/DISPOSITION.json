@@ -1,0 +1,29 @@
+{
+  "schema": "hepta.robrix-ui.source-disposition.v1",
+  "publicationParent": "711859f23b73ad89af4d23e75fe0ed4a461e7979",
+  "nativeInput": {
+    "pr": 1321,
+    "commit": "711859f23b73ad89af4d23e75fe0ed4a461e7979",
+    "disposition": "Native owner/recovery/platform implementation preserved; egui host is compatibility only."
+  },
+  "controlInput": {
+    "pr": 1322,
+    "commit": "0063323c884d4ac0abb0605dce9c8ca914fbd86a",
+    "disposition": "Reuse existing Rust control core/contracts and explicit semantic-DOM compatibility tests; no old chat renderer in default artifact."
+  },
+  "localSupersededCheckpoint": "6a94f019ae",
+  "supersededRendererDisposition": "Not published in commit ancestry. EgUI chat modules/snapshots/CPU renderer and DOM chat modules/tests removed from final tree; native and DOM host files restored to pre-prototype source. Old chat CSS projection removed.",
+  "retainedPrototypeWork": [
+    "Authority-free ChatWorkspace, keyed history/stream projection, per-principal isolation and tests",
+    "Typed default-denied owner admission/recovery correlation and tests",
+    "Explicit compile-time fixture data reused through actual Makepad widgets"
+  ],
+  "canonicalRenderer": "robrix-ui/src/robrix/*; exact upstream source hashes in UPSTREAM.json",
+  "remainingComposition": [
+    "Console operation widgets",
+    "Production principal/signer and browser owner bridge",
+    "Desktop installation/package integration",
+    "Actual host accessibility, IME and mobile Web input qualification",
+    "Light-theme and final visual qualification"
+  ]
+}

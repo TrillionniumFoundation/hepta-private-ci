@@ -1,0 +1,19 @@
+{
+  "schema": "hepta.joint-differential-failure-boundaries.v1",
+  "passed": true,
+  "validator_sha256": "966c25efa8a0adf9ce0fe72c5d48cd1302f0e36588ec0ed63a7bd3273cdf493a",
+  "checks": [
+    "bad helper identity has a failed prelaunch receipt",
+    "post-success cleanup error forces exit 1",
+    "Popen failure is recorded without a launched child",
+    "malformed response raw bytes are retained before rejection"
+  ],
+  "actual_cargo_helper_executions": 0,
+  "new_training_updates": 0,
+  "controlled_invalid_response_processes": 1,
+  "controlled_response_process_wall_seconds": 0.003417767002247274,
+  "controlled_response_process_cpu_seconds": 0.0031810000000000033,
+  "wall_seconds": 1.289031189000525,
+  "parent_cpu_seconds": 2.159102322,
+  "scope": "Recorder failure behavior only. The one shell response stub and mocked comparison are not model or ordinary-owner qualification."
+}

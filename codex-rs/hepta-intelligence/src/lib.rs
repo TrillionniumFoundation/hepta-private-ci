@@ -40,6 +40,9 @@ pub use canonical::prepare_intelligence_run;
 pub use canonical::validate_current_snapshot;
 
 mod evaluated_shadow;
+mod generation_episode;
+#[cfg(test)]
+pub(crate) mod generation_episode_test_support;
 mod ndu_stochastic_admission;
 mod neuron_runtime;
 mod outcome_credit_v2;
@@ -51,6 +54,11 @@ pub use evaluated_shadow::evaluated_candidate_signing_payload_v1;
 pub use evaluated_shadow::evaluated_candidate_signing_payload_v2;
 pub use evaluated_shadow::evaluated_shadow_production_decision_v2;
 pub use evaluated_shadow::run_evaluated_shadow_v1;
+pub use generation_episode::FrozenGenerationEpisodeInputV1;
+pub use generation_episode::FrozenGenerationEpisodeV1;
+pub use generation_episode::GenerationEpisodeErrorV1;
+pub use generation_episode::GenerationEpisodeEvidenceV1;
+pub use generation_episode::append_generation_outcome_v1;
 pub use outcome_credit_v2::ObservedOutcomeRequestV2;
 pub use outcome_credit_v2::OutcomeCreditClosureErrorV2;
 pub use outcome_credit_v2::OutcomeCreditClosureReceiptV2;

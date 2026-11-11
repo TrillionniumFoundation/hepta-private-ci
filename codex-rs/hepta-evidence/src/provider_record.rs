@@ -130,53 +130,55 @@ pub(crate) async fn verify_provider_receipt(
 pub(crate) fn decode_provider_intent_row(
     row: &SqliteRow,
 ) -> Result<ProviderInvocationIntent, EvidenceError> {
-    let payload_json: String = row.get("payload_json");
-    verify_stored_digest(&payload_json, row.get("payload_sha256"), "provider intent")?;
+    let payload_json: String = read_provider_column(row, "payload_json")?;
+    verify_stored_digest(
+        &payload_json,
+        read_provider_column(row, "payload_sha256")?,
+        "provider intent",
+    )?;
     let intent: ProviderInvocationIntent = serde_json::from_str(&payload_json)
         .map_err(|error| EvidenceError::Corrupt(error.to_string()))?;
     validate_provider_intent(&intent).map_err(invalid_as_corrupt)?;
     verify_canonical_payload(&intent, &payload_json, "provider intent")?;
     let binding = &intent.binding;
-    if row.get::<String, _>("attempt_id") != intent.attempt_id.as_str()
-        || row.get::<String, _>("request_binding_id") != intent.request_binding_id.as_str()
-        || row.get::<String, _>("attempt_nonce_sha256") != intent.attempt_nonce_sha256.as_str()
-        || row
-            .get::<Option<String>, _>("host_request_binding_id_sha256")
-            .as_deref()
+    if read_provider_column::<String>(row, "attempt_id")? != intent.attempt_id.as_str()
+        || read_provider_column::<String>(row, "request_binding_id")?
+            != intent.request_binding_id.as_str()
+        || read_provider_column::<String>(row, "attempt_nonce_sha256")?
+            != intent.attempt_nonce_sha256.as_str()
+        || read_provider_column::<Option<String>>(row, "host_request_binding_id_sha256")?.as_deref()
             != Some(binding.host_request_binding_id_sha256.as_str())
-        || row.get::<String, _>("thread_id") != binding.thread_id
-        || row.get::<String, _>("turn_id") != binding.turn_id
-        || row.get::<String, _>("request_kind") != binding.request_kind.as_str()
-        || row.get::<String, _>("provider_id") != binding.provider_id
-        || row.get::<String, _>("provider_config_sha256") != binding.provider_config_sha256.as_str()
-        || row.get::<String, _>("model") != binding.model
-        || row.get::<String, _>("transport") != binding.transport.as_str()
-        || row.get::<String, _>("endpoint_sha256") != binding.endpoint_sha256.as_str()
-        || row.get::<String, _>("logical_request_sha256") != binding.logical_request_sha256.as_str()
-        || row.get::<String, _>("wire_semantic_sha256") != binding.wire_semantic_sha256.as_str()
-        || row
-            .get::<Option<String>, _>("ephemeral_input_sha256")
-            .as_deref()
+        || read_provider_column::<String>(row, "thread_id")? != binding.thread_id
+        || read_provider_column::<String>(row, "turn_id")? != binding.turn_id
+        || read_provider_column::<String>(row, "request_kind")? != binding.request_kind.as_str()
+        || read_provider_column::<String>(row, "provider_id")? != binding.provider_id
+        || read_provider_column::<String>(row, "provider_config_sha256")?
+            != binding.provider_config_sha256.as_str()
+        || read_provider_column::<String>(row, "model")? != binding.model
+        || read_provider_column::<String>(row, "transport")? != binding.transport.as_str()
+        || read_provider_column::<String>(row, "endpoint_sha256")?
+            != binding.endpoint_sha256.as_str()
+        || read_provider_column::<String>(row, "logical_request_sha256")?
+            != binding.logical_request_sha256.as_str()
+        || read_provider_column::<String>(row, "wire_semantic_sha256")?
+            != binding.wire_semantic_sha256.as_str()
+        || read_provider_column::<Option<String>>(row, "ephemeral_input_sha256")?.as_deref()
             != binding
                 .ephemeral_input_sha256
                 .as_ref()
                 .map(Sha256Digest::as_str)
-        || row
-            .get::<Option<String>, _>("ephemeral_input_witness_sha256")
-            .as_deref()
+        || read_provider_column::<Option<String>>(row, "ephemeral_input_witness_sha256")?.as_deref()
             != binding
                 .ephemeral_input_witness_sha256
                 .as_ref()
                 .map(Sha256Digest::as_str)
-        || row
-            .get::<Option<String>, _>("previous_response_id_sha256")
-            .as_deref()
+        || read_provider_column::<Option<String>>(row, "previous_response_id_sha256")?.as_deref()
             != binding
                 .previous_response_id_sha256
                 .as_ref()
                 .map(Sha256Digest::as_str)
-        || row.get::<bool, _>("generate") != binding.generate
-        || row.get::<i64, _>("schema_version") != i64::from(intent.schema_version)
+        || read_provider_column::<bool>(row, "generate")? != binding.generate
+        || read_provider_column::<i64>(row, "schema_version")? != i64::from(intent.schema_version)
     {
         return Err(EvidenceError::Corrupt(
             "provider intent columns do not match canonical payload".to_string(),
@@ -188,29 +190,41 @@ pub(crate) fn decode_provider_intent_row(
 pub(crate) fn decode_provider_receipt_row(
     row: &SqliteRow,
 ) -> Result<ProviderInvocationReceipt, EvidenceError> {
-    let payload_json: String = row.get("payload_json");
+    let payload_json: String = read_provider_column(row, "payload_json")?;
     verify_stored_digest(
         &payload_json,
-        row.get("payload_sha256"),
+        read_provider_column(row, "payload_sha256")?,
         "provider terminal",
     )?;
     let receipt: ProviderInvocationReceipt = serde_json::from_str(&payload_json)
         .map_err(|error| EvidenceError::Corrupt(error.to_string()))?;
     validate_provider_receipt(&receipt).map_err(invalid_as_corrupt)?;
     verify_canonical_payload(&receipt, &payload_json, "provider terminal")?;
-    if row.get::<String, _>("receipt_id") != receipt.receipt_id.as_str()
-        || row.get::<String, _>("attempt_id") != receipt.attempt_id.as_str()
-        || row.get::<String, _>("request_binding_id") != receipt.request_binding_id.as_str()
-        || row.get::<String, _>("thread_id") != receipt.intent.binding.thread_id
-        || row.get::<String, _>("turn_id") != receipt.intent.binding.turn_id
-        || row.get::<String, _>("terminal_kind") != receipt.terminal.kind()
-        || row.get::<i64, _>("schema_version") != i64::from(receipt.schema_version)
+    if read_provider_column::<String>(row, "receipt_id")? != receipt.receipt_id.as_str()
+        || read_provider_column::<String>(row, "attempt_id")? != receipt.attempt_id.as_str()
+        || read_provider_column::<String>(row, "request_binding_id")?
+            != receipt.request_binding_id.as_str()
+        || read_provider_column::<String>(row, "thread_id")? != receipt.intent.binding.thread_id
+        || read_provider_column::<String>(row, "turn_id")? != receipt.intent.binding.turn_id
+        || read_provider_column::<String>(row, "terminal_kind")? != receipt.terminal.kind()
+        || read_provider_column::<i64>(row, "schema_version")? != i64::from(receipt.schema_version)
     {
         return Err(EvidenceError::Corrupt(
             "provider terminal columns do not match canonical payload".to_string(),
         ));
     }
     Ok(receipt)
+}
+
+// SQLite's non-STRICT columns can contain values with a different storage
+// type. A restored malformed row must report corruption, never panic in get.
+fn read_provider_column<'row, T>(row: &'row SqliteRow, column: &str) -> Result<T, EvidenceError>
+where
+    T: sqlx::Decode<'row, Sqlite> + sqlx::Type<Sqlite>,
+{
+    row.try_get(column).map_err(|error| {
+        EvidenceError::Corrupt(format!("invalid provider {column} column: {error}"))
+    })
 }
 
 pub(crate) fn validate_provider_intent(

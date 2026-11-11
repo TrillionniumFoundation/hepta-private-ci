@@ -1,0 +1,79 @@
+{
+  "schema": "hepta.cell-rsi.recovery-validation.v1",
+  "base_commit": "9f73f82ca7454d9d00e4fc71af43fdffba14c5e3",
+  "commands": [
+    {
+      "name": "memory-receipts",
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-B",
+        "-m",
+        "unittest",
+        "-v",
+        "loop_tests"
+      ],
+      "cwd": "/workspace/scratch/cbdaff2355d2/hepta-cell-unified/qualification/cell-learning-loop-v1",
+      "returncode": 0,
+      "wall_seconds": 1.0745549319999554,
+      "log": "memory-receipts.log",
+      "log_sha256": "a1623a6bbcd7f038f2c6c40e3acc97cd3f2aed6ccac47fda7e3b4fcde9f5d1c6"
+    },
+    {
+      "name": "replay-phase",
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-B",
+        "-m",
+        "unittest",
+        "-v",
+        "test_phase_process",
+        "test_replay_dispatch"
+      ],
+      "cwd": "/workspace/scratch/cbdaff2355d2/hepta-cell-unified/qualification/cell-learning-loop-v1/decision_replay",
+      "returncode": 0,
+      "wall_seconds": 0.43051241500006654,
+      "log": "replay-phase.log",
+      "log_sha256": "5f2485917bca4e5641302a92d325352fc169c5c77dd16e723f00cedf0fe7c053"
+    }
+  ],
+  "executed_tests": 23,
+  "passed": 23,
+  "skipped": 0,
+  "model_loads": 0,
+  "optimizer_updates": 0,
+  "scientific_adoption_qualified": false,
+  "source_files": {
+    "qualification/cell-learning-loop-v1/run_loop.py": {
+      "bytes": 11500,
+      "sha256": "45b91275504a13b0e701d615a59c0c1960c79c6b0188f88d4bd505294b31f394"
+    },
+    "qualification/cell-learning-loop-v1/receipt_verifier.py": {
+      "bytes": 4492,
+      "sha256": "804aa168c8e751bdaaf660eea26db1bc395615a6b02fa3050bf5da7795de2d30"
+    },
+    "qualification/cell-learning-loop-v1/loop_tests.py": {
+      "bytes": 11404,
+      "sha256": "34f48f967cb8f066b54aac83e6b8ad10c9c7f6ee82d9458cc35954db1a3553f9"
+    },
+    "qualification/cell-learning-loop-v1/decision_replay/run_replay.py": {
+      "bytes": 14980,
+      "sha256": "0c3ef2630daa4ed995af2d719d8b97090f26aab57663de4c9c3fe86c14bacf92"
+    },
+    "qualification/cell-learning-loop-v1/decision_replay/measure.py": {
+      "bytes": 1854,
+      "sha256": "1e659b6e6e61323a3598bbe854a4e45339c6e241e690ab1f39932e70382ec128"
+    },
+    "qualification/cell-learning-loop-v1/decision_replay/phase_process.py": {
+      "bytes": 3454,
+      "sha256": "196cfc19429e2b1a1f44a0a6dbb6cd815f18c6af985365a64c6ff21b79827fd5"
+    },
+    "qualification/cell-learning-loop-v1/decision_replay/test_phase_process.py": {
+      "bytes": 6586,
+      "sha256": "3855c74a956eaf80710d2c84c9230e5354fed5cfd002ba9d1b385e78db99f16e"
+    },
+    "qualification/cell-learning-loop-v1/decision_replay/test_replay_dispatch.py": {
+      "bytes": 3462,
+      "sha256": "84ee25f5fcb13de8d41043c011bd686ea6829c9ab3ac33e2bd5d97af70c1fbf5"
+    }
+  }
+}

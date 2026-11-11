@@ -1,0 +1,357 @@
+, \"OPENSSL_NO_PSK\", \"OPENSSL_NO_DEPRECATED_3_0\", \"OPENSSL_NO_SCRYPT\", \"OPENSSL_NO_SM3\", \"OPENSSL_NO_RMD160\", \"OPENSSL_NO_EC2M\", \"OPENSSL_NO_OCSP\", \"OPENSSL_NO_CMS\", \"OPENSSL_NO_COMP\", \"OPENSSL_NO_SOCK\", \"OPENSSL_NO_STDIO\", \"OPENSSL_NO_EC\", \"OPENSSL_NO_SSL3_METHOD\", \"OPENSSL_NO_KRB5\", \"OPENSSL_NO_TLSEXT\", \"OPENSSL_NO_SRP\", \"OPENSSL_NO_SRTP\", \"OPENSSL_NO_RFC3779\", \"OPENSSL_NO_SHA\", \"OPENSSL_NO_NEXTPROTONEG\", \"OPENSSL_NO_ENGINE\", \"OPENSSL_NO_BUF_FREELISTS\", \"OPENSSL_NO_RC2\"))\n  cargo:rustc-check-cfg=cfg(openssl)\n  cargo:rustc-check-cfg=cfg(libressl)\n  cargo:rustc-check-cfg=cfg(boringssl)\n  cargo:rustc-check-cfg=cfg(awslc)\n  cargo:rustc-check-cfg=cfg(awslc_pregenerated)\n  cargo:rustc-check-cfg=cfg(libressl250)\n  cargo:rustc-check-cfg=cfg(libressl251)\n  cargo:rustc-check-cfg=cfg(libressl252)\n  cargo:rustc-check-cfg=cfg(libressl261)\n  cargo:rustc-check-cfg=cfg(libressl270)\n  cargo:rustc-check-cfg=cfg(libressl271)\n  cargo:rustc-check-cfg=cfg(libressl273)\n  cargo:rustc-check-cfg=cfg(libressl280)\n  cargo:rustc-check-cfg=cfg(libressl281)\n  cargo:rustc-check-cfg=cfg(libressl291)\n  cargo:rustc-check-cfg=cfg(libressl310)\n  cargo:rustc-check-cfg=cfg(libressl321)\n  cargo:rustc-check-cfg=cfg(libressl332)\n  cargo:rustc-check-cfg=cfg(libressl340)\n  cargo:rustc-check-cfg=cfg(libressl350)\n  cargo:rustc-check-cfg=cfg(libressl360)\n  cargo:rustc-check-cfg=cfg(libressl361)\n  cargo:rustc-check-cfg=cfg(libressl370)\n  cargo:rustc-check-cfg=cfg(libressl380)\n  cargo:rustc-check-cfg=cfg(libressl381)\n  cargo:rustc-check-cfg=cfg(libressl382)\n  cargo:rustc-check-cfg=cfg(libressl390)\n  cargo:rustc-check-cfg=cfg(libressl400)\n  cargo:rustc-check-cfg=cfg(libressl410)\n  cargo:rustc-check-cfg=cfg(libressl420)\n  cargo:rustc-check-cfg=cfg(libressl430)\n  cargo:rustc-check-cfg=cfg(ossl101)\n  cargo:rustc-check-cfg=cfg(ossl102)\n  cargo:rustc-check-cfg=cfg(ossl102f)\n  cargo:rustc-check-cfg=cfg(ossl102h)\n  cargo:rustc-check-cfg=cfg(ossl110)\n  cargo:rustc-check-cfg=cfg(ossl110f)\n  cargo:rustc-check-cfg=cfg(ossl110g)\n  cargo:rustc-check-cfg=cfg(ossl110h)\n  cargo:rustc-check-cfg=cfg(ossl111)\n  cargo:rustc-check-cfg=cfg(ossl111b)\n  cargo:rustc-check-cfg=cfg(ossl111c)\n  cargo:rustc-check-cfg=cfg(ossl111d)\n  cargo:rustc-check-cfg=cfg(ossl300)\n  cargo:rustc-check-cfg=cfg(ossl310)\n  cargo:rustc-check-cfg=cfg(ossl320)\n  cargo:rustc-check-cfg=cfg(ossl330)\n  cargo:rustc-check-cfg=cfg(ossl340)\n  cargo:rustc-check-cfg=cfg(ossl400)\n  cargo:rerun-if-env-changed=X86_64_UNKNOWN_LINUX_GNU_OPENSSL_LIB_DIR\n  X86_64_UNKNOWN_LINUX_GNU_OPENSSL_LIB_DIR unset\n  cargo:rerun-if-env-changed=OPENSSL_LIB_DIR\n  OPENSSL_LIB_DIR unset\n  cargo:rerun-if-env-changed=X86_64_UNKNOWN_LINUX_GNU_OPENSSL_INCLUDE_DIR\n  X86_64_UNKNOWN_LINUX_GNU_OPENSSL_INCLUDE_DIR unset\n  cargo:rerun-if-env-changed=OPENSSL_INCLUDE_DIR\n  OPENSSL_INCLUDE_DIR unset\n  cargo:rerun-if-env-changed=X86_64_UNKNOWN_LINUX_GNU_OPENSSL_DIR\n  X86_64_UNKNOWN_LINUX_GNU_OPENSSL_DIR unset\n  cargo:rerun-if-env-changed=OPENSSL_DIR\n  OPENSSL_DIR unset\n  cargo:rerun-if-env-changed=OPENSSL_NO_PKG_CONFIG\n  cargo:rerun-if-env-changed=PKG_CONFIG_x86_64-unknown-linux-gnu\n  cargo:rerun-if-env-changed=PKG_CONFIG_x86_64_unknown_linux_gnu\n  cargo:rerun-if-env-changed=HOST_PKG_CONFIG\n  cargo:rerun-if-env-changed=PKG_CONFIG\n  cargo:rerun-if-env-changed=OPENSSL_STATIC\n  cargo:rerun-if-env-changed=OPENSSL_DYNAMIC\n  cargo:rerun-if-env-changed=PKG_CONFIG_ALL_STATIC\n  cargo:rerun-if-env-changed=PKG_CONFIG_ALL_DYNAMIC\n  cargo:rerun-if-env-changed=PKG_CONFIG_PATH_x86_64-unknown-linux-gnu\n  cargo:rerun-if-env-changed=PKG_CONFIG_PATH_x86_64_unknown_linux_gnu\n  cargo:rerun-if-env-changed=HOST_PKG_CONFIG_PATH\n  cargo:rerun-if-env-changed=PKG_CONFIG_PATH\n  cargo:rerun-if-env-changed=PKG_CONFIG_LIBDIR_x86_64-unknown-linux-gnu\n  cargo:rerun-if-env-changed=PKG_CONFIG_LIBDIR_x86_64_unknown_linux_gnu\n  cargo:rerun-if-env-changed=HOST_PKG_CONFIG_LIBDIR\n  cargo:rerun-if-env-changed=PKG_CONFIG_LIBDIR\n  cargo:rerun-if-env-changed=PKG_CONFIG_SYSROOT_DIR_x86_64-unknown-linux-gnu\n  cargo:rerun-if-env-changed=PKG_CONFIG_SYSROOT_DIR_x86_64_unknown_linux_gnu\n  cargo:rerun-if-env-changed=HOST_PKG_CONFIG_SYSROOT_DIR\n  cargo:rerun-if-env-changed=PKG_CONFIG_SYSROOT_DIR\n  cargo:rerun-if-env-changed=OPENSSL_STATIC\n  cargo:rerun-if-env-changed=OPENSSL_DYNAMIC\n  cargo:rerun-if-env-changed=PKG_CONFIG_ALL_STATIC\n  cargo:rerun-if-env-changed=PKG_CONFIG_ALL_DYNAMIC\n  cargo:rerun-if-env-changed=PKG_CONFIG_PATH_x86_64-unknown-linux-gnu\n  cargo:rerun-if-env-changed=PKG_CONFIG_PATH_x86_64_unknown_linux_gnu\n  cargo:rerun-if-env-changed=HOST_PKG_CONFIG_PATH\n  cargo:rerun-if-env-changed=PKG_CONFIG_PATH\n  cargo:rerun-if-env-changed=PKG_CONFIG_LIBDIR_x86_64-unknown-linux-gnu\n  cargo:rerun-if-env-changed=PKG_CONFIG_LIBDIR_x86_64_unknown_linux_gnu\n  cargo:rerun-if-env-changed=HOST_PKG_CONFIG_LIBDIR\n  cargo:rerun-if-env-changed=PKG_CONFIG_LIBDIR\n  cargo:rerun-if-env-changed=PKG_CONFIG_SYSROOT_DIR_x86_64-unknown-linux-gnu\n  cargo:rerun-if-env-changed=PKG_CONFIG_SYSROOT_DIR_x86_64_unknown_linux_gnu\n  cargo:rerun-if-env-changed=HOST_PKG_CONFIG_SYSROOT_DIR\n  cargo:rerun-if-env-changed=PKG_CONFIG_SYSROOT_DIR\n\n\n  Could not find openssl via pkg-config:\n  Could not run `PKG_CONFIG_ALLOW_SYSTEM_CFLAGS=1 pkg-config --libs --cflags openssl`\n  The pkg-config command could not be found.\n\n  Most likely, you need to install a pkg-config package for your OS.\n  Try `apt install pkg-config`, or `yum install pkg-config`, or `brew install pkgconf`\n  or `pkg install pkg-config`, or `apk add pkgconfig` depending on your distribution.\n\n  If you've already installed it, ensure the pkg-config command is one of the\n  directories in the PATH environment variable.\n\n  If you did not expect this build to link to a pre-installed system library,\n  then check documentation of the openssl-sys crate for an option to\n  build the library from source, or disable features or dependencies\n  that require pkg-config.\n\n  cargo:warning=Could not find directory of OpenSSL installation, and this `-sys` crate cannot proceed without this knowledge. If OpenSSL is installed and this crate had trouble finding it,  you can set the `OPENSSL_DIR` environment variable for the compilation process. See stderr section below for further information.\n\n  --- stderr\n\n\n  Could not find directory of OpenSSL installation, and this `-sys` crate cannot\n  proceed without this knowledge. If OpenSSL is installed and this crate had\n  trouble finding it,  you can set the `OPENSSL_DIR` environment variable for the\n  compilation process.\n\n  Make sure you also have the development packages of openssl installed.\n  For example, `libssl-dev` on Ubuntu or `openssl-devel` on Fedora.\n\n  If you're in a situation where you think the directory *should* be found\n  automatically, please open a bug at https://github.com/rust-openssl/rust-openssl\n  and include information about your system as well as this message.\n\n  $HOST = x86_64-unknown-linux-gnu\n  $TARGET = x86_64-unknown-linux-gnu\n  openssl-sys = 0.9.117\n\n\n  It looks like you're compiling on Linux and also targeting Linux. Currently this\n  requires the `pkg-config` utility to find OpenSSL but unfortunately `pkg-config`\n  could not be found. If you have OpenSSL installed you can likely fix this by\n  installing `pkg-config`.\n\n\nerror: command `/tmp/hepta-native-rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/cargo '--color=auto' test --manifest-path /dev/shm/organ-3d6a75235bcb-hepta3398/source/codex-rs/Cargo.toml --no-run --message-format json-render-diagnostics --package codex-hepta-agentd --lib --jobs 1 --profile dev-small --locked` exited with code 101\nerror: Recipe `test` failed on line 89 with exit code 101\n"
+      }
+    },
+    {
+      "filename": "original-online-composition-tests-resume-2.json",
+      "bytes": 37888,
+      "sha256": "6ee87ffa810b9b8b52209cc31a2c880469ee69df4eb2bea9dc9bf05684864ab9",
+      "receipt": {
+        "head": "16418ddc3416a38a122b883cee46e2d3583cbd41",
+        "tree": "43fde98e9ea789b81b941e48bb65300c76c4292c",
+        "command": [
+          "just",
+          "test",
+          "--locked",
+          "--cargo-profile",
+          "dev-small",
+          "--build-jobs",
+          "1",
+          "--test-threads",
+          "1",
+          "-p",
+          "codex-hepta-agentd",
+          "--lib",
+          "-E",
+          "test(production_composition::)"
+        ],
+        "tool_versions": {
+          "rustc --version --verbose": {
+            "exit_code": 0,
+            "stdout": "rustc 1.95.0 (59807616e 2026-04-14)\nbinary: rustc\ncommit-hash: 59807616e1fa2540724bfbac14d7976d7e4a3860\ncommit-date: 2026-04-14\nhost: x86_64-unknown-linux-gnu\nrelease: 1.95.0\nLLVM version: 22.1.2\n",
+            "stderr": ""
+          },
+          "cargo --version": {
+            "exit_code": 0,
+            "stdout": "cargo 1.95.0 (f2d3ce0bd 2026-03-21)\n",
+            "stderr": ""
+          },
+          "cargo nextest --version": {
+            "exit_code": 0,
+            "stdout": "cargo-nextest 0.9.149 (3fe4ef319 2026-10-20)\nrelease: 0.9.149\ncommit-hash: 3fe4ef31972f24e0c94cfe291718eab0fe678260\ncommit-date: 2026-10-20\nhost: x86_64-unknown-linux-gnu\n",
+            "stderr": ""
+          },
+          "just --version": {
+            "exit_code": 0,
+            "stdout": "just 1.40.0\n",
+            "stderr": ""
+          }
+        },
+        "cwd": "/dev/shm/organ-3d6a75235bcb-hepta3398/source",
+        "environment": {
+          "CARGO_HOME": "/dev/shm/organ-3d6a75235bcb-hepta3398/cargo-home",
+          "CARGO_TARGET_DIR": "/dev/shm/organ-3d6a75235bcb-hepta3398/target",
+          "CARGO_INCREMENTAL": "0",
+          "CARGO_BUILD_JOBS": "1",
+          "CARGO_HTTP_TIMEOUT": "30",
+          "CARGO_NET_RETRY": "1",
+          "RUSTUP_TOOLCHAIN": "1.95.0",
+          "TMPDIR": "/dev/shm/organ-3d6a75235bcb-hepta3398/tmp",
+          "OPENSSL_LIB_DIR": "/usr/lib/x86_64-linux-gnu",
+          "OPENSSL_INCLUDE_DIR": "/usr/include"
+        },
+        "started_at": "2026-10-23T06:46:12.763376+00:00",
+        "finished_at": "2026-10-23T06:52:37.469939+00:00",
+        "exit_code": 130,
+        "controlled_stop_reason": "Available system memory fell below 1.5 GiB.",
+        "resource_limits": {
+          "cache_bytes": 1181116006,
+          "target_bytes": 2147483648,
+          "minimum_memory_available_bytes": 1610612736,
+          "minimum_shm_available_bytes": 268435456
+        },
+        "Cargo_lock_sha256_before": "83651f11dea7f58dc96f3d119c120ab2bd8019e418979ab091ef49de7cceb9e8",
+        "Cargo_lock_sha256_after": "83651f11dea7f58dc96f3d119c120ab2bd8019e418979ab091ef49de7cceb9e8",
+        "resources": [
+          {
+            "recorded_at": "2026-10-23T06:46:12.663135+00:00",
+            "cache_bytes": 1091029028,
+            "target_bytes": 566726140,
+            "shm_available_bytes": 1592430592,
+            "memory_available_bytes": 2853003264
+          },
+          {
+            "recorded_at": "2026-10-23T06:46:22.774052+00:00",
+            "cache_bytes": 1091029028,
+            "target_bytes": 566725996,
+            "shm_available_bytes": 1591095296,
+            "memory_available_bytes": 3236925440
+          },
+          {
+            "recorded_at": "2026-10-23T06:46:32.886961+00:00",
+            "cache_bytes": 1091029028,
+            "target_bytes": 566725996,
+            "shm_available_bytes": 1590702080,
+            "memory_available_bytes": 3358695424
+          },
+          {
+            "recorded_at": "2026-10-23T06:46:42.980466+00:00",
+            "cache_bytes": 1091029028,
+            "target_bytes": 556066887,
+            "shm_available_bytes": 1600970752,
+            "memory_available_bytes": 2606620672
+          },
+          {
+            "recorded_at": "2026-10-23T06:46:53.093984+00:00",
+            "cache_bytes": 1091029028,
+            "target_bytes": 556067151,
+            "shm_available_bytes": 1600602112,
+            "memory_available_bytes": 2978926592
+          },
+          {
+            "recorded_at": "2026-10-23T06:47:03.188999+00:00",
+            "cache_bytes": 1091029028,
+            "target_bytes": 570257046,
+            "shm_available_bytes": 1585905664,
+            "memory_available_bytes": 2950221824
+          },
+          {
+            "recorded_at": "2026-10-23T06:47:13.301441+00:00",
+            "cache_bytes": 1091029028,
+            "target_bytes": 611999441,
+            "shm_available_bytes": 1543086080,
+            "memory_available_bytes": 2048299008
+          },
+          {
+            "recorded_at": "2026-10-23T06:47:23.490961+00:00",
+            "cache_bytes": 1091029028,
+            "target_bytes": 658618359,
+            "shm_available_bytes": 1495695360,
+            "memory_available_bytes": 2126901248
+          },
+          {
+            "recorded_at": "2026-10-23T06:47:33.603645+00:00",
+            "cache_bytes": 1091029028,
+            "target_bytes": 685455506,
+            "shm_available_bytes": 1465085952,
+            "memory_available_bytes": 2508566528
+          },
+          {
+            "recorded_at": "2026-10-23T06:47:43.714024+00:00",
+            "cache_bytes": 1091029028,
+            "target_bytes": 703406474,
+            "shm_available_bytes": 1449709568,
+            "memory_available_bytes": 2099974144
+          },
+          {
+            "recorded_at": "2026-10-23T06:47:53.823355+00:00",
+            "cache_bytes": 1091029028,
+            "target_bytes": 756411276,
+            "shm_available_bytes": 1395970048,
+            "memory_available_bytes": 1943388160
+          },
+          {
+            "recorded_at": "2026-10-23T06:48:03.946568+00:00",
+            "cache_bytes": 1091029028,
+            "target_bytes": 786251350,
+            "shm_available_bytes": 1365307392,
+            "memory_available_bytes": 2656780288
+          },
+          {
+            "recorded_at": "2026-10-23T06:48:14.070570+00:00",
+            "cache_bytes": 1091029028,
+            "target_bytes": 827106643,
+            "shm_available_bytes": 1323405312,
+            "memory_available_bytes": 2755440640
+          },
+          {
+            "recorded_at": "2026-10-23T06:48:24.196550+00:00",
+            "cache_bytes": 1091029028,
+            "target_bytes": 867023868,
+            "shm_available_bytes": 1282240512,
+            "memory_available_bytes": 2750181376
+          },
+          {
+            "recorded_at": "2026-10-23T06:48:34.283276+00:00",
+            "cache_bytes": 1091029028,
+            "target_bytes": 911442301,
+            "shm_available_bytes": 1236717568,
+            "memory_available_bytes": 2720628736
+          },
+          {
+            "recorded_at": "2026-10-23T06:48:44.395178+00:00",
+            "cache_bytes": 1091029028,
+            "target_bytes": 948799183,
+            "shm_available_bytes": 1198018560,
+            "memory_available_bytes": 2674769920
+          },
+          {
+            "recorded_at": "2026-10-23T06:48:54.577996+00:00",
+            "cache_bytes": 1091029028,
+            "target_bytes": 977202562,
+            "shm_available_bytes": 1168822272,
+            "memory_available_bytes": 2506924032
+          },
+          {
+            "recorded_at": "2026-10-23T06:49:04.717992+00:00",
+            "cache_bytes": 1091029028,
+            "target_bytes": 1008296440,
+            "shm_available_bytes": 1651929088,
+            "memory_available_bytes": 2967273472
+          },
+          {
+            "recorded_at": "2026-10-23T06:49:14.838771+00:00",
+            "cache_bytes": 1091029028,
+            "target_bytes": 1061827224,
+            "shm_available_bytes": 1597820928,
+            "memory_available_bytes": 3265998848
+          },
+          {
+            "recorded_at": "2026-10-23T06:49:25.078022+00:00",
+            "cache_bytes": 1091029028,
+            "target_bytes": 1097004872,
+            "shm_available_bytes": 1562107904,
+            "memory_available_bytes": 3365011456
+          },
+          {
+            "recorded_at": "2026-10-23T06:49:35.210107+00:00",
+            "cache_bytes": 1091029028,
+            "target_bytes": 1126676987,
+            "shm_available_bytes": 1531441152,
+            "memory_available_bytes": 3231477760
+          },
+          {
+            "recorded_at": "2026-10-23T06:49:45.331335+00:00",
+            "cache_bytes": 1091029028,
+            "target_bytes": 1162443947,
+            "shm_available_bytes": 1437437952,
+            "memory_available_bytes": 2975580160
+          },
+          {
+            "recorded_at": "2026-10-23T06:49:55.430225+00:00",
+            "cache_bytes": 1091029028,
+            "target_bytes": 1191053710,
+            "shm_available_bytes": 1330413568,
+            "memory_available_bytes": 2749591552
+          },
+          {
+            "recorded_at": "2026-10-23T06:50:05.545118+00:00",
+            "cache_bytes": 1091029028,
+            "target_bytes": 1222071622,
+            "shm_available_bytes": 1182511104,
+            "memory_available_bytes": 2787459072
+          },
+          {
+            "recorded_at": "2026-10-23T06:50:15.670086+00:00",
+            "cache_bytes": 1091029028,
+            "target_bytes": 1234558876,
+            "shm_available_bytes": 1121095680,
+            "memory_available_bytes": 1825984512
+          },
+          {
+            "recorded_at": "2026-10-23T06:50:25.786243+00:00",
+            "cache_bytes": 1091029028,
+            "target_bytes": 1264739455,
+            "shm_available_bytes": 1081315328,
+            "memory_available_bytes": 1963950080
+          },
+          {
+            "recorded_at": "2026-10-23T06:50:35.926081+00:00",
+            "cache_bytes": 1091029028,
+            "target_bytes": 1338104164,
+            "shm_available_bytes": 1007431680,
+            "memory_available_bytes": 2839814144
+          },
+          {
+            "recorded_at": "2026-10-23T06:50:46.039877+00:00",
+            "cache_bytes": 1091029028,
+            "target_bytes": 1373444219,
+            "shm_available_bytes": 971337728,
+            "memory_available_bytes": 2848845824
+          },
+          {
+            "recorded_at": "2026-10-23T06:50:56.142425+00:00",
+            "cache_bytes": 1091029028,
+            "target_bytes": 1395007898,
+            "shm_available_bytes": 949301248,
+            "memory_available_bytes": 2331049984
+          },
+          {
+            "recorded_at": "2026-10-23T06:51:06.246337+00:00",
+            "cache_bytes": 1091029028,
+            "target_bytes": 1434697821,
+            "shm_available_bytes": 908857344,
+            "memory_available_bytes": 2615762944
+          },
+          {
+            "recorded_at": "2026-10-23T06:51:16.384120+00:00",
+            "cache_bytes": 1091029028,
+            "target_bytes": 1434703333,
+            "shm_available_bytes": 908357632,
+            "memory_available_bytes": 2169225216
+          },
+          {
+            "recorded_at": "2026-10-23T06:51:26.491025+00:00",
+            "cache_bytes": 1091029028,
+            "target_bytes": 1468746652,
+            "shm_available_bytes": 873865216,
+            "memory_available_bytes": 1717719040
+          },
+          {
+            "recorded_at": "2026-10-23T06:51:36.598788+00:00",
+            "cache_bytes": 1091029028,
+            "target_bytes": 1526176249,
+            "shm_available_bytes": 815329280,
+            "memory_available_bytes": 2391232512
+          },
+          {
+            "recorded_at": "2026-10-23T06:51:46.703066+00:00",
+            "cache_bytes": 1091029028,
+            "target_bytes": 1569395320,
+            "shm_available_bytes": 770981888,
+            "memory_available_bytes": 2845413376
+          },
+          {
+            "recorded_at": "2026-10-23T06:51:56.797363+00:00",
+            "cache_bytes": 1091029028,
+            "target_bytes": 1603058381,
+            "shm_available_bytes": 736092160,
+            "memory_available_bytes": 2824163328
+          },
+          {
+            "recorded_at": "2026-10-23T06:52:06.906323+00:00",
+            "cache_bytes": 1091029028,
+            "target_bytes": 1640302286,
+            "shm_available_bytes": 698089472,
+            "memory_available_bytes": 2656280576
+          },
+          {
+            "recorded_at": "2026-10-23T06:52:17.038302+00:00",
+            "cache_bytes": 1091029028,
+            "target_bytes": 1668161537,
+            "shm_available_bytes": 665763840,
+            "memory_available_bytes": 2539536384
+          },
+          {
+            "recorded_at": "2026-10-23T06:52:27.150734+00:00",
+            "cache_bytes": 1091029028,
+            "target_bytes": 1700965742,
+            "shm_available_bytes": 632008704,
+            "memory_available_bytes": 2397556736
+          },
+          {
+            "recorded_at": "2026-10-23T06:52:37.254178+00:00",
+            "cache_bytes": 1091029028,
+            "target_bytes": 1733817669,
+            "shm_available_bytes": 598388736,
+            "memory_available_bytes": 1577275392
+          },
+          {
+            "recorded_at": "2026-10-23T06:52:37.350528+00:00",
+            "cache_bytes": 1091029028,
+            "target_bytes": 1733817669,
+            "shm_available_bytes": 598360064,
+            "memory_available_bytes": 1633984512
+          }
+        ],
+        "stdout": "",
+        "stderr": "RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py \"$@\"\nwarning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#proc-macro2@1.0.107` which wasn't produced by cargo metadata\nwarning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#quote@1.0.47` which wasn't produced by cargo metadata\nwarning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#libc@0.2.191` which wasn't produced by cargo metadata\nwarning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde@1.0.229` which wasn't produced by cargo metadata\nwarning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_core@1.0.229` which wasn't produced by cargo metadata\nwarning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#parking_lot_core@0.9.12` which wasn't produced by cargo metadata\nwarning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#generic-array@0.14.7` which wasn't produced by cargo metadata\nwarning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#portable-atomic@1.15.0` which wasn't produced by cargo metadata\nwarning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#libc@0.2.191` which wasn't produced by cargo metadata\nwarning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#thiserror@2.0.21` which wasn't produced by cargo metadata\nwarning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zmij@1.0.23` which wasn't produced by cargo metadata\nwarning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_json@1.0.154` which wasn't produced by cargo metadata\nwarning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#getrandom@0.4.3` which wasn't produced by cargo metadata\nwarning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#num-traits@0.2.19` which wasn't produced by cargo metadata\nwarning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_core@1.0.229` which wasn't produced by cargo metadata\nwarning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#getrandom@0.3.4` which wasn't produced by cargo metadata\nwarning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#icu_properties_data@2.3.0` which wasn't produced by cargo metadata\nwarning: warning: saw package ID `registry+https://github.com/rust-lang/crates

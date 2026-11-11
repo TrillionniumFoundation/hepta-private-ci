@@ -52,6 +52,7 @@ async fn exec_server_reports_environment_status_over_websocket() -> anyhow::Resu
         .send_request(
             "initialize",
             serde_json::to_value(InitializeParams {
+                process_exit_observation: true,
                 client_name: "exec-server-health-test".to_string(),
                 resume_session_id: None,
             })?,

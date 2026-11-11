@@ -1,0 +1,7 @@
+Traceback (most recent call last):
+  File "/workspace/scratch/050e013c53db/hepta-learning/qualification/joint-trained-recovery-v1/differential.py", line 330, in main
+    binary = checked(args.helper.read_bytes(), args.expected_helper_sha256)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/050e013c53db/hepta-learning/qualification/joint-trained-recovery-v1/recover.py", line 42, in checked
+    raise ValueError("Historical byte identity mismatch")
+ValueError: Historical byte identity mismatch

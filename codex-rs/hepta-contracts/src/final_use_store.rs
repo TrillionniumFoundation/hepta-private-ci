@@ -4,11 +4,12 @@
 //! fixed-width append-only journal so the dispatch hot path does not rewrite an
 //! ever-growing JSON set.
 
+use super::FinalUseAuthenticationProfile;
 use super::FinalUseError;
 use super::FinalUseRevocations;
 use super::MAX_CLAIMS;
 use super::State;
-use super::valid_head;
+use super::valid_head_with_profile;
 use serde::Deserialize;
 use serde::Serialize;
 use std::collections::BTreeSet;
@@ -18,10 +19,17 @@ use std::io::Seek;
 use std::io::SeekFrom;
 use std::io::Write;
 use std::path::Path;
+#[cfg(unix)]
+use std::sync::Mutex;
+
+#[cfg(windows)]
+#[path = "final_use_store_windows.rs"]
+mod windows;
 
 const STATE_SCHEMA_V1: u32 = 1;
 const STATE_SCHEMA_V2: u32 = 2;
 const STATE_SCHEMA_V3: u32 = 3;
+const STATE_SCHEMA_PQ_V4: u32 = 4;
 const CLAIM_FRAME_BYTES: usize = 8 + 32;
 
 #[derive(Deserialize)]
@@ -68,19 +76,109 @@ struct StoredV3 {
 }
 
 #[derive(Clone, Copy, Deserialize, Eq, PartialEq, Serialize)]
-enum StoreTrust {
+pub(super) enum StoreTrust {
     SingleKey([u8; 32]),
     IssuerKeyRing([u8; 32]),
+    PqIssuerKeyRing([u8; 32]),
+}
+
+#[derive(Clone, Copy, Eq, PartialEq)]
+enum OpenSelection {
+    Compatibility,
+    #[cfg(unix)]
+    ExistingV3,
+    #[cfg(unix)]
+    FreshInExistingDirectory,
 }
 
 pub(super) struct Store {
     root: File,
     signer_id: String,
     trust: StoreTrust,
+    #[cfg(unix)]
+    claims: Mutex<Option<ClaimJournal>>,
+    #[cfg(unix)]
+    strict_owner: bool,
     _lock: File,
 }
 
+#[cfg(unix)]
+struct ClaimJournal {
+    file: File,
+    durable_length: u64,
+}
+
+#[cfg(unix)]
+impl ClaimJournal {
+    fn revalidate(&self, root: &File) -> Result<(), FinalUseError> {
+        use std::os::unix::fs::MetadataExt;
+        let retained = self
+            .file
+            .metadata()
+            .map_err(|_| FinalUseError::Unavailable)?;
+        let named = open_private(root, "authority.claims", Access::Read)?
+            .metadata()
+            .map_err(|_| FinalUseError::Unavailable)?;
+        if retained.dev() != named.dev()
+            || retained.ino() != named.ino()
+            || retained.len() != self.durable_length
+            || named.len() != self.durable_length
+        {
+            return Err(FinalUseError::Unavailable);
+        }
+        Ok(())
+    }
+}
+
 impl Store {
+    /// Permanently fence a replaced or resized live journal.
+    #[cfg(unix)]
+    pub(super) fn revalidate_owner(&self) -> Result<(), FinalUseError> {
+        let mut claims = self.claims.lock().map_err(|_| FinalUseError::Unavailable)?;
+        let journal = claims.take().ok_or(FinalUseError::Unavailable)?;
+        if self.strict_owner {
+            self.revalidate_original_lock()?;
+        }
+        journal.revalidate(&self.root)?;
+        *claims = Some(journal);
+        Ok(())
+    }
+
+    pub(super) fn open_pq_key_ring_exact(
+        root: &Path,
+        signer_id: &str,
+        issuer_trust_sha256: [u8; 32],
+        initial: FinalUseRevocations,
+    ) -> Result<(Self, State), FinalUseError> {
+        Self::open_inner(
+            root,
+            signer_id,
+            StoreTrust::PqIssuerKeyRing(issuer_trust_sha256),
+            initial,
+            /*allow_startup_head_advance*/ false,
+        )
+    }
+
+    #[cfg(unix)]
+    fn revalidate_original_lock(&self) -> Result<(), FinalUseError> {
+        use std::os::unix::fs::MetadataExt;
+        let retained = self
+            ._lock
+            .metadata()
+            .map_err(|_| FinalUseError::Unavailable)?;
+        let named = open_private(&self.root, "authority.lock", Access::Read)?
+            .metadata()
+            .map_err(|_| FinalUseError::Unavailable)?;
+        if retained.dev() != named.dev()
+            || retained.ino() != named.ino()
+            || retained.nlink() != 1
+            || named.nlink() != 1
+        {
+            return Err(FinalUseError::Unavailable);
+        }
+        Ok(())
+    }
+
     pub(super) fn open(
         root: &Path,
         signer_id: &str,
@@ -92,7 +190,7 @@ impl Store {
             signer_id,
             StoreTrust::SingleKey(verifying_key),
             initial,
-            true,
+            /*allow_startup_head_advance*/ true,
         )
     }
 
@@ -107,7 +205,7 @@ impl Store {
             signer_id,
             StoreTrust::SingleKey(verifying_key),
             initial,
-            false,
+            /*allow_startup_head_advance*/ false,
         )
     }
 
@@ -122,7 +220,7 @@ impl Store {
             signer_id,
             StoreTrust::IssuerKeyRing(issuer_trust_sha256),
             initial,
-            false,
+            /*allow_startup_head_advance*/ false,
         )
     }
 
@@ -133,21 +231,129 @@ impl Store {
         initial: FinalUseRevocations,
         allow_startup_head_advance: bool,
     ) -> Result<(Self, State), FinalUseError> {
-        let root = prepare_directory(root)?;
+        Self::open_selected(
+            root,
+            signer_id,
+            trust,
+            initial,
+            allow_startup_head_advance,
+            OpenSelection::Compatibility,
+        )
+    }
+
+    #[cfg(unix)]
+    pub(super) fn open_key_ring_existing(
+        root: &Path,
+        signer_id: &str,
+        issuer_trust_sha256: [u8; 32],
+        initial: FinalUseRevocations,
+    ) -> Result<(Self, State), FinalUseError> {
+        Self::open_selected(
+            root,
+            signer_id,
+            StoreTrust::IssuerKeyRing(issuer_trust_sha256),
+            initial,
+            /*allow_startup_head_advance*/ false,
+            OpenSelection::ExistingV3,
+        )
+    }
+
+    #[cfg(unix)]
+    pub(super) fn initialize_key_ring_fresh(
+        root: &Path,
+        signer_id: &str,
+        issuer_trust_sha256: [u8; 32],
+        initial: FinalUseRevocations,
+    ) -> Result<(Self, State), FinalUseError> {
+        Self::open_selected(
+            root,
+            signer_id,
+            StoreTrust::IssuerKeyRing(issuer_trust_sha256),
+            initial,
+            /*allow_startup_head_advance*/ false,
+            OpenSelection::FreshInExistingDirectory,
+        )
+    }
+
+    fn open_selected(
+        root: &Path,
+        signer_id: &str,
+        trust: StoreTrust,
+        initial: FinalUseRevocations,
+        allow_startup_head_advance: bool,
+        selection: OpenSelection,
+    ) -> Result<(Self, State), FinalUseError> {
+        let root = match selection {
+            OpenSelection::Compatibility => prepare_directory(root)?,
+            #[cfg(unix)]
+            OpenSelection::ExistingV3 | OpenSelection::FreshInExistingDirectory => {
+                open_existing_directory(root)?
+            }
+        };
         let initialized = entry_exists(&root, "authority.lock")?;
-        let lock = open_private(&root, "authority.lock", Access::Create)?;
+        let access = match selection {
+            OpenSelection::Compatibility => Access::Create,
+            #[cfg(unix)]
+            OpenSelection::ExistingV3 => {
+                // Runtime reopen never creates a missing lock, journal or
+                // snapshot, and never completes an interrupted staging write.
+                require_complete_v3_entries(&root)?;
+                Access::Write
+            }
+            #[cfg(unix)]
+            OpenSelection::FreshInExistingDirectory => {
+                require_absent_authority_entries(&root)?;
+                // The actual Worker creates every journal file as its own
+                // UID. O_EXCL consumes the sole initialization attempt before
+                // any snapshot write; partial failure is never retried here.
+                Access::CreateNew
+            }
+        };
+        let lock = open_private(&root, "authority.lock", access)?;
         lock.try_lock().map_err(|_| FinalUseError::StateLocked)?;
+        #[cfg(unix)]
+        if selection == OpenSelection::FreshInExistingDirectory {
+            lock.sync_all().map_err(|_| FinalUseError::Unavailable)?;
+            root.sync_all().map_err(|_| FinalUseError::Unavailable)?;
+        }
         let store = Self {
             root,
             signer_id: signer_id.to_owned(),
             trust,
+            #[cfg(unix)]
+            claims: Mutex::new(None),
+            #[cfg(unix)]
+            strict_owner: selection != OpenSelection::Compatibility,
             _lock: lock,
         };
         let has_state = entry_exists(&store.root, "authority.json")?;
+        #[cfg(unix)]
+        match selection {
+            OpenSelection::ExistingV3 => require_complete_v3_entries(&store.root)?,
+            OpenSelection::FreshInExistingDirectory => {
+                for name in [
+                    "authority.json",
+                    "authority.claims",
+                    "authority.next",
+                    "authority.claims.next",
+                ] {
+                    if entry_exists(&store.root, name)? {
+                        return Err(FinalUseError::InvalidTrust);
+                    }
+                }
+            }
+            OpenSelection::Compatibility => {}
+        }
         let mut state = if has_state {
             let bytes = read_bounded(&store.root, "authority.json", 8 * 1024 * 1024)?;
             let header: StoredHeader =
                 serde_json::from_slice(&bytes).map_err(|_| FinalUseError::InvalidTrust)?;
+            #[cfg(unix)]
+            if selection == OpenSelection::ExistingV3 && header.schema != STATE_SCHEMA_V3 {
+                // Legacy migration belongs to the explicit compatibility
+                // constructor. A runtime open cannot manufacture a journal.
+                return Err(FinalUseError::InvalidTrust);
+            }
             let (mut state, legacy_snapshot) = match (trust, header.schema) {
                 (StoreTrust::SingleKey(verifying_key), STATE_SCHEMA_V1) => {
                     let stored: StoredV1 =
@@ -186,7 +392,8 @@ impl Store {
                         false,
                     )
                 }
-                (_, STATE_SCHEMA_V3) => {
+                (StoreTrust::SingleKey(_) | StoreTrust::IssuerKeyRing(_), STATE_SCHEMA_V3)
+                | (StoreTrust::PqIssuerKeyRing(_), STATE_SCHEMA_PQ_V4) => {
                     let stored: StoredV3 =
                         serde_json::from_slice(&bytes).map_err(|_| FinalUseError::InvalidTrust)?;
                     if stored.signer_id != signer_id || stored.trust != trust {
@@ -203,11 +410,19 @@ impl Store {
                 }
                 _ => return Err(FinalUseError::InvalidTrust),
             };
-            if !valid_head(&state.head) || state.used_nonces.len() > MAX_CLAIMS {
+            let profile = match trust {
+                StoreTrust::SingleKey(_) | StoreTrust::IssuerKeyRing(_) => {
+                    FinalUseAuthenticationProfile::ClassicalV1
+                }
+                StoreTrust::PqIssuerKeyRing(_) => FinalUseAuthenticationProfile::MlDsa65V2,
+            };
+            if !valid_head_with_profile(&state.head, profile)
+                || state.used_nonces.len() > MAX_CLAIMS
+            {
                 return Err(FinalUseError::InvalidTrust);
             }
             state.failed = false;
-            if header.schema != STATE_SCHEMA_V3 {
+            if header.schema != STATE_SCHEMA_V3 && header.schema != STATE_SCHEMA_PQ_V4 {
                 // Publish a complete legacy nonce set before its journal-based
                 // snapshot. Retrying an interrupted migration is idempotent.
                 if legacy_snapshot {
@@ -266,6 +481,8 @@ impl Store {
     /// Persist a revocation/epoch transition. This path is not the per-claim
     /// hot path, so it may compact the claim journal to the current epoch.
     pub(super) fn persist(&self, state: &State) -> Result<(), FinalUseError> {
+        #[cfg(unix)]
+        self.revalidate_owner()?;
         self.persist_snapshot(&state.head)?;
         self.replace_claims(state.head.authority_epoch, &state.used_nonces)
     }
@@ -280,18 +497,60 @@ impl Store {
         if authority_epoch == 0 || nonce == [0; 32] {
             return Err(FinalUseError::InvalidTrust);
         }
+        #[cfg(unix)]
+        let mut claims = self.claims.lock().map_err(|_| FinalUseError::Unavailable)?;
+        #[cfg(unix)]
+        let mut journal = claims.take().ok_or(FinalUseError::Unavailable)?;
+        #[cfg(unix)]
+        if self.strict_owner {
+            self.revalidate_original_lock()?;
+        }
+        #[cfg(unix)]
+        journal.revalidate(&self.root)?;
+        #[cfg(unix)]
+        let file = &mut journal.file;
+        #[cfg(not(unix))]
         let mut file = open_private(&self.root, "authority.claims", Access::Write)?;
+        #[cfg(unix)]
+        if file
+            .seek(SeekFrom::End(0))
+            .map_err(|_| FinalUseError::Unavailable)?
+            != journal.durable_length
+        {
+            return Err(FinalUseError::Unavailable);
+        }
+        #[cfg(not(unix))]
         file.seek(SeekFrom::End(0))
             .map_err(|_| FinalUseError::Unavailable)?;
         file.write_all(&authority_epoch.to_be_bytes())
             .and_then(|()| file.write_all(&nonce))
             .and_then(|()| file.sync_all())
-            .map_err(|_| FinalUseError::Unavailable)
+            .map_err(|_| FinalUseError::Unavailable)?;
+        #[cfg(unix)]
+        {
+            journal.durable_length = journal
+                .durable_length
+                .checked_add(CLAIM_FRAME_BYTES as u64)
+                .ok_or(FinalUseError::Unavailable)?;
+            journal.revalidate(&self.root)?;
+            if self.strict_owner {
+                self.revalidate_original_lock()?;
+            }
+            *claims = Some(journal);
+        }
+        Ok(())
     }
 
     fn persist_snapshot(&self, head: &FinalUseRevocations) -> Result<(), FinalUseError> {
+        #[cfg(unix)]
+        if self.strict_owner {
+            self.revalidate_original_lock()?;
+        }
         let stored = StoredV3 {
-            schema: STATE_SCHEMA_V3,
+            schema: match self.trust {
+                StoreTrust::SingleKey(_) | StoreTrust::IssuerKeyRing(_) => STATE_SCHEMA_V3,
+                StoreTrust::PqIssuerKeyRing(_) => STATE_SCHEMA_PQ_V4,
+            },
             signer_id: self.signer_id.clone(),
             trust: self.trust,
             head: head.clone(),
@@ -314,6 +573,21 @@ impl Store {
             .checked_mul(CLAIM_FRAME_BYTES)
             .and_then(|value| value.checked_add(CLAIM_FRAME_BYTES))
             .ok_or(FinalUseError::InvalidTrust)?;
+        #[cfg(unix)]
+        let mut file = open_private(&self.root, "authority.claims", Access::Write)?;
+        #[cfg(unix)]
+        let bytes = {
+            let mut bytes = Vec::new();
+            Read::by_ref(&mut file)
+                .take(u64::try_from(maximum).map_err(|_| FinalUseError::InvalidTrust)? + 1)
+                .read_to_end(&mut bytes)
+                .map_err(|_| FinalUseError::Unavailable)?;
+            if bytes.len() > maximum {
+                return Err(FinalUseError::InvalidTrust);
+            }
+            bytes
+        };
+        #[cfg(not(unix))]
         let bytes = read_bounded(&self.root, "authority.claims", maximum)?;
         if bytes.len() % CLAIM_FRAME_BYTES != 0 {
             return Err(FinalUseError::InvalidTrust);
@@ -337,6 +611,15 @@ impl Store {
         if claims.len() > MAX_CLAIMS {
             return Err(FinalUseError::InvalidTrust);
         }
+        #[cfg(unix)]
+        {
+            let journal = ClaimJournal {
+                file,
+                durable_length: bytes.len() as u64,
+            };
+            journal.revalidate(&self.root)?;
+            *self.claims.lock().map_err(|_| FinalUseError::Unavailable)? = Some(journal);
+        }
         Ok(claims)
     }
 
@@ -345,8 +628,14 @@ impl Store {
         authority_epoch: u64,
         claims: &BTreeSet<[u8; 32]>,
     ) -> Result<(), FinalUseError> {
-        if authority_epoch == 0 || claims.len() > MAX_CLAIMS {
+        if authority_epoch == 0 || claims.len() > MAX_CLAIMS || claims.contains(&[0; 32]) {
             return Err(FinalUseError::InvalidTrust);
+        }
+        #[cfg(unix)]
+        let mut current = self.claims.lock().map_err(|_| FinalUseError::Unavailable)?;
+        #[cfg(unix)]
+        if let Some(journal) = current.take() {
+            journal.revalidate(&self.root)?;
         }
         let mut file = open_private(&self.root, "authority.claims.next", Access::Create)?;
         file.set_len(0).map_err(|_| FinalUseError::Unavailable)?;
@@ -360,7 +649,19 @@ impl Store {
         }
         file.sync_all().map_err(|_| FinalUseError::Unavailable)?;
         replace_claims(&self.root)?;
-        self.root.sync_all().map_err(|_| FinalUseError::Unavailable)
+        self.root
+            .sync_all()
+            .map_err(|_| FinalUseError::Unavailable)?;
+        #[cfg(unix)]
+        {
+            let journal = ClaimJournal {
+                file,
+                durable_length: (claims.len() * CLAIM_FRAME_BYTES) as u64,
+            };
+            journal.revalidate(&self.root)?;
+            *current = Some(journal);
+        }
+        Ok(())
     }
 }
 
@@ -380,17 +681,24 @@ enum Access {
     Read,
     Write,
     Create,
+    #[cfg(unix)]
+    CreateNew,
 }
 
 #[cfg(unix)]
 fn prepare_directory(root: &Path) -> Result<File, FinalUseError> {
     use std::os::unix::fs::DirBuilderExt;
-    use std::os::unix::fs::MetadataExt;
     if let Err(error) = std::fs::DirBuilder::new().mode(0o700).create(root)
         && error.kind() != std::io::ErrorKind::AlreadyExists
     {
         return Err(FinalUseError::Unavailable);
     }
+    open_existing_directory(root)
+}
+
+#[cfg(unix)]
+fn open_existing_directory(root: &Path) -> Result<File, FinalUseError> {
+    use std::os::unix::fs::MetadataExt;
     let directory: File = rustix::fs::open(
         root,
         rustix::fs::OFlags::RDONLY
@@ -422,6 +730,7 @@ fn open_private(directory: &File, name: &str, access: Access) -> Result<File, Fi
         Access::Read => OFlags::RDONLY,
         Access::Write => OFlags::RDWR,
         Access::Create => OFlags::RDWR | OFlags::CREATE,
+        Access::CreateNew => OFlags::RDWR | OFlags::CREATE | OFlags::EXCL,
     } | OFlags::NOFOLLOW
         | OFlags::CLOEXEC;
     let file: File = rustix::fs::openat(directory, name, flags, Mode::RUSR | Mode::WUSR)
@@ -438,13 +747,52 @@ fn open_private(directory: &File, name: &str, access: Access) -> Result<File, Fi
     Ok(file)
 }
 
-#[cfg(not(unix))]
+#[cfg(windows)]
+fn prepare_directory(root: &Path) -> Result<File, FinalUseError> {
+    windows::prepare_directory(root)
+}
+#[cfg(windows)]
+fn open_private(directory: &File, name: &str, access: Access) -> Result<File, FinalUseError> {
+    windows::open_private(directory, name, access)
+}
+#[cfg(all(not(unix), not(windows)))]
 fn prepare_directory(_root: &Path) -> Result<File, FinalUseError> {
     Err(FinalUseError::UnsafeStateDirectory)
 }
-#[cfg(not(unix))]
+#[cfg(all(not(unix), not(windows)))]
 fn open_private(_directory: &File, _name: &str, _access: Access) -> Result<File, FinalUseError> {
     Err(FinalUseError::UnsafeStateDirectory)
+}
+
+#[cfg(unix)]
+fn require_complete_v3_entries(directory: &File) -> Result<(), FinalUseError> {
+    for name in ["authority.lock", "authority.json", "authority.claims"] {
+        if !entry_exists(directory, name)? {
+            return Err(FinalUseError::InvalidTrust);
+        }
+    }
+    for name in ["authority.next", "authority.claims.next"] {
+        if entry_exists(directory, name)? {
+            return Err(FinalUseError::InvalidTrust);
+        }
+    }
+    Ok(())
+}
+
+#[cfg(unix)]
+fn require_absent_authority_entries(directory: &File) -> Result<(), FinalUseError> {
+    for name in [
+        "authority.lock",
+        "authority.json",
+        "authority.claims",
+        "authority.next",
+        "authority.claims.next",
+    ] {
+        if entry_exists(directory, name)? {
+            return Err(FinalUseError::InvalidTrust);
+        }
+    }
+    Ok(())
 }
 
 #[cfg(unix)]
@@ -473,15 +821,27 @@ fn replace_claims(directory: &File) -> Result<(), FinalUseError> {
     .map_err(|_| FinalUseError::Unavailable)
 }
 
-#[cfg(not(unix))]
+#[cfg(windows)]
+fn entry_exists(directory: &File, name: &str) -> Result<bool, FinalUseError> {
+    windows::entry_exists(directory, name)
+}
+#[cfg(windows)]
+fn replace_state(directory: &File) -> Result<(), FinalUseError> {
+    windows::replace_state(directory)
+}
+#[cfg(windows)]
+fn replace_claims(directory: &File) -> Result<(), FinalUseError> {
+    windows::replace_claims(directory)
+}
+#[cfg(all(not(unix), not(windows)))]
 fn entry_exists(_directory: &File, _name: &str) -> Result<bool, FinalUseError> {
     Err(FinalUseError::UnsafeStateDirectory)
 }
-#[cfg(not(unix))]
+#[cfg(all(not(unix), not(windows)))]
 fn replace_state(_directory: &File) -> Result<(), FinalUseError> {
     Err(FinalUseError::UnsafeStateDirectory)
 }
-#[cfg(not(unix))]
+#[cfg(all(not(unix), not(windows)))]
 fn replace_claims(_directory: &File) -> Result<(), FinalUseError> {
     Err(FinalUseError::UnsafeStateDirectory)
 }
@@ -489,3 +849,7 @@ fn replace_claims(_directory: &File) -> Result<(), FinalUseError> {
 #[cfg(all(test, unix))]
 #[path = "final_use_store_tests.rs"]
 mod tests;
+
+#[cfg(all(test, unix))]
+#[path = "final_use_store_selection_tests.rs"]
+mod selection_tests;

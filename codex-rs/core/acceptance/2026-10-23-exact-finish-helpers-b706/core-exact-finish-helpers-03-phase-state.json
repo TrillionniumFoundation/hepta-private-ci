@@ -1,0 +1,50 @@
+{
+  "startedAt": "2026-10-24T00:05:02.712431+00:00",
+  "phase": "finished",
+  "qualified": true,
+  "sourceFrozenAt": "f4044f8d77b1c1142f84525b1b1f243e2ddf95d6",
+  "productionFenceChanged": false,
+  "originalAssertionsDeadlinesRetriesChanged": false,
+  "sourceMutationAllowed": false,
+  "finalUnifiedFullQualified": false,
+  "nativeAsterinasQualified": false,
+  "testedBase": "f4044f8d77b1c1142f84525b1b1f243e2ddf95d6",
+  "testedDiffSha256": "640e8d5025dd653331aa66ec74e4995fbef54a92f3d8d514c4020354119947cb",
+  "helperCopyRoot": "/data/hh.3h35nezo",
+  "helperManifest": "/data/hh.3h35nezo/manifest.json",
+  "standardTargetRunner": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-3/work/dependency-alerts/remaining_three_fixed_helper_runner.py",
+  "environment": {
+    "TMPDIR": "/data/hf.fudbpbnr",
+    "RUNNER_TEMP": "/data/hf.fudbpbnr/r",
+    "RUSTUP_TOOLCHAIN": "1.95.0",
+    "CARGO_TARGET_DIR": "/data/hepta-mcp-integer-target",
+    "CARGO_BUILD_JOBS": "1",
+    "CARGO_NET_OFFLINE": "true"
+  },
+  "originalBudgetSeconds": 30,
+  "exactFinishObserverSharesOriginalBudget": true,
+  "previousFocusPhase": "core-exact-finish-helpers-02",
+  "previousOwnerFailuresRetained": true,
+  "startupDiagnosticOnly": "Original pending builder timed out at 5.002646s once; original retry passed; no timeout change or causal claim for previous full run",
+  "results": {
+    "core-exact-finish-03-related-owning": {
+      "expression": "test(suite::retry_after::) | test(suite::remote_env::)",
+      "exitCode": 0,
+      "elapsedSeconds": 141.816616552067
+    }
+  },
+  "commit": "b706678b9f678c55fe959c7ee0cabdf233e0d6f9",
+  "tree": "d1fef4dbcccf56040c34162f23fa8f500fc51b60",
+  "finalDiffSha256": "640e8d5025dd653331aa66ec74e4995fbef54a92f3d8d514c4020354119947cb",
+  "noTestsAfterFixOrFmt": true,
+  "finishedAt": "2026-10-24T00:14:37.733296+00:00",
+  "scopedResults": {
+    "core-exact-finish-03-related-owning": {
+      "expression": "test(suite::retry_after::) | test(suite::remote_env::)",
+      "exitCode": 0,
+      "elapsedSeconds": 141.816616552067
+    }
+  },
+  "trackedInputsUnchangedDuringTests": true,
+  "noProductionAdmissionAuthorityChanged": true
+}

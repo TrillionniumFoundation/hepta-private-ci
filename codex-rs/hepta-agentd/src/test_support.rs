@@ -72,8 +72,11 @@ pub struct CognitiveTestHost {
 }
 
 impl CognitiveTestHost {
+    /// The executable must register Codex's arg0 helper dispatch before its
+    /// ordinary entry point, including when it is a test executable.
     pub async fn start(
         root: PathBuf,
+        codex_self_exe: PathBuf,
         agent_id: AgentId,
         model: &str,
         provider_base_url: &str,
@@ -118,6 +121,10 @@ impl CognitiveTestHost {
         state.attach_cognitive_store(Arc::clone(&store))?;
         registry.compare_and_transition(&agent_id, 1, AgentLifecycle::Running)?;
         state.refresh_generation()?;
+        // Match default startup after attaching this generation's real store.
+        // This host has no production effect owner, so it uses the original
+        // zero-authority revocation baseline before opening App Server admission.
+        state.mark_runtime_prerequisites_ready()?;
 
         codex_utils_home_dir::set_process_codex_home_override(
             AbsolutePathBuf::from_absolute_path(identity.home_root.clone())?,
@@ -133,10 +140,15 @@ impl CognitiveTestHost {
         let control_task = tokio::spawn(control.run());
         let app_server_task = tokio::spawn(run_app_server(
             identity.clone(),
-            Arg0DispatchPaths::default(),
+            Arg0DispatchPaths {
+                codex_self_exe: Some(codex_self_exe),
+                ..Default::default()
+            },
             CognitiveRuntime::Available(Arc::clone(&store)),
             Arc::clone(&state),
             /*production_writer_host*/ None,
+            crate::app_runtime::AppServerSocket::Bind,
+            crate::app_runtime::AppServerModelToolProfile::Standard,
         ));
 
         let deadline = Instant::now() + READY_TIMEOUT;

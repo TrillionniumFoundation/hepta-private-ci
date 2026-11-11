@@ -3,6 +3,8 @@ use std::collections::HashSet;
 use std::collections::VecDeque;
 use std::collections::hash_map::Entry;
 use std::sync::Arc;
+use std::sync::OnceLock;
+use std::sync::atomic::AtomicBool;
 use std::sync::atomic::AtomicU64;
 use std::sync::atomic::Ordering;
 use std::time::Duration;
@@ -45,6 +47,7 @@ use crate::protocol::EXEC_CLOSED_METHOD;
 use crate::protocol::ExecClosedNotification;
 use crate::protocol::ExecEnvPolicy;
 use crate::protocol::ExecExitedNotification;
+use crate::protocol::ExecObservationFailedNotification;
 use crate::protocol::ExecOutputDeltaNotification;
 use crate::protocol::ExecOutputStream;
 use crate::protocol::ExecParams;
@@ -53,6 +56,7 @@ use crate::protocol::ExecServerNetworkProtocol;
 use crate::protocol::MAX_NETWORK_POLICY_PROCESS_ID_BYTES;
 use crate::protocol::NETWORK_POLICY_DECISION_METHOD;
 use crate::protocol::NetworkPolicyDecisionNotification;
+use crate::protocol::ProcessObservationFailureReason;
 use crate::protocol::ProcessOutputChunk;
 use crate::protocol::ProcessSandboxType;
 use crate::protocol::ProcessSignal;
@@ -73,6 +77,12 @@ use crate::rpc::invalid_request;
 use crate::rpc_server_requests::RpcServerRequestSender;
 use crate::telemetry::ExecServerTelemetry;
 use crate::telemetry::ProcessMetricGuard;
+
+#[path = "local_process_custody.rs"]
+mod custody;
+use custody::ProcessCustody;
+pub(crate) use custody::ProcessCustodyRegistry;
+use custody::ProcessLaunch;
 
 const RETAINED_OUTPUT_BYTES_PER_PROCESS: usize = 1024 * 1024;
 // Each process/read chunk needs four JSON values. Keep retained replay below the
@@ -95,7 +105,8 @@ struct RetainedOutputChunk {
 }
 
 struct RunningProcess {
-    session: ExecCommandSession,
+    session: Arc<ExecCommandSession>,
+    custody: Arc<ProcessCustody>,
     tty: bool,
     pipe_stdin: bool,
     accepted_stdin_write_ids: Arc<Mutex<AcceptedStdinWriteIds>>,
@@ -103,6 +114,7 @@ struct RunningProcess {
     retained_bytes: usize,
     next_seq: u64,
     exit_code: Option<i32>,
+    observation_failure: Option<String>,
     wake_tx: watch::Sender<u64>,
     events: ExecProcessEventLog,
     output_notify: Arc<Notify>,
@@ -147,7 +159,11 @@ impl AcceptedStdinWriteIds {
     }
 }
 
-struct ProcessStart;
+struct ProcessStart {
+    custody: Arc<ProcessCustody>,
+    cancelled: AtomicBool,
+    failure: OnceLock<String>,
+}
 
 enum ProcessEntry {
     Starting(Arc<ProcessStart>),
@@ -158,6 +174,7 @@ struct Inner {
     notifications: std::sync::RwLock<Option<RpcNotificationSender>>,
     requests: Arc<std::sync::RwLock<Option<RpcServerRequestSender>>>,
     processes: Mutex<HashMap<ProcessId, ProcessEntry>>,
+    custody: Arc<ProcessCustodyRegistry>,
     #[cfg(unix)]
     shell_snapshots: crate::shell_snapshot::ShellSnapshotCache,
     telemetry: ExecServerTelemetry,
@@ -202,8 +219,9 @@ impl LocalProcess {
         notifications: RpcNotificationSender,
         telemetry: ExecServerTelemetry,
         runtime_paths: ExecServerRuntimePaths,
+        custody: Arc<ProcessCustodyRegistry>,
     ) -> Self {
-        Self::with_runtime_paths(notifications, telemetry, Some(runtime_paths))
+        Self::with_runtime_paths_and_custody(notifications, telemetry, Some(runtime_paths), custody)
     }
 
     fn with_runtime_paths(
@@ -211,12 +229,27 @@ impl LocalProcess {
         telemetry: ExecServerTelemetry,
         runtime_paths: Option<ExecServerRuntimePaths>,
     ) -> Self {
+        Self::with_runtime_paths_and_custody(
+            notifications,
+            telemetry,
+            runtime_paths,
+            Arc::new(ProcessCustodyRegistry::default()),
+        )
+    }
+
+    fn with_runtime_paths_and_custody(
+        notifications: RpcNotificationSender,
+        telemetry: ExecServerTelemetry,
+        runtime_paths: Option<ExecServerRuntimePaths>,
+        custody: Arc<ProcessCustodyRegistry>,
+    ) -> Self {
         let requests = notifications.request_sender();
         Self {
             inner: Arc::new(Inner {
                 notifications: std::sync::RwLock::new(Some(notifications)),
                 requests: Arc::new(std::sync::RwLock::new(Some(requests))),
                 processes: Mutex::new(HashMap::new()),
+                custody,
                 #[cfg(unix)]
                 shell_snapshots: crate::shell_snapshot::ShellSnapshotCache::default(),
                 telemetry,
@@ -226,24 +259,31 @@ impl LocalProcess {
     }
 
     pub(crate) async fn shutdown(&self) {
-        let remaining = {
-            let mut processes = self.inner.processes.lock().await;
-            processes
-                .drain()
-                .filter_map(|(_, process)| match process {
-                    ProcessEntry::Starting(_) => None,
-                    ProcessEntry::Running(process) => Some(process),
-                })
-                .collect::<Vec<_>>()
-        };
-        for mut process in remaining {
+        let mut processes = self.inner.processes.lock().await;
+        for entry in processes.values_mut() {
+            let ProcessEntry::Running(process) = entry else {
+                if let ProcessEntry::Starting(start) = entry {
+                    start.cancelled.store(true, Ordering::SeqCst);
+                    start.custody.mark_unknown();
+                    start.custody.request_cleanup();
+                }
+                continue;
+            };
             if let Some(network_policy_shutdown) = process.network_policy_shutdown.take() {
                 network_policy_shutdown.cancel();
             }
             if let Some(metrics) = process.metrics.take() {
                 metrics.finish("terminated");
             }
-            process.session.terminate();
+            if process
+                .exit_code
+                .or(process.custody.observed_exit_code())
+                .is_none()
+            {
+                process.custody.mark_unknown();
+                process.termination_requested = true;
+                process.session.request_terminate();
+            }
         }
     }
 
@@ -367,19 +407,28 @@ impl LocalProcess {
             SandboxType::WindowsRestrictedToken => Some(ProcessSandboxType::WindowsRestrictedToken),
         };
 
-        let start = Arc::new(ProcessStart);
-        {
+        let (start, launch) = {
             let mut process_map = self.inner.processes.lock().await;
             if process_map.contains_key(&process_id) {
                 return Err(invalid_request(format!(
                     "process {process_id} already exists"
                 )));
             }
+            let mut launch = self.inner.custody.reserve(Arc::clone(&self.inner))?;
+            let start = Arc::new(ProcessStart {
+                custody: launch.custody(),
+                cancelled: AtomicBool::new(false),
+                failure: OnceLock::new(),
+            });
             process_map.insert(
                 process_id.clone(),
                 ProcessEntry::Starting(Arc::clone(&start)),
             );
-        }
+            // Shutdown uses this same map lock. Once it can see Starting,
+            // an untyped backend call may already have created a child.
+            launch.begin_effect();
+            (start, launch)
+        };
 
         let spawned_result = codex_sandboxing::spawn_process(codex_sandboxing::SpawnRequest {
             command: &prepared.command,
@@ -396,16 +445,16 @@ impl LocalProcess {
         let spawned = match spawned_result {
             Ok(spawned) => spawned,
             Err(err) => {
-                let mut process_map = self.inner.processes.lock().await;
-                if matches!(
-                    process_map.get(&process_id),
-                    Some(ProcessEntry::Starting(current)) if Arc::ptr_eq(current, &start)
-                ) {
-                    process_map.remove(&process_id);
-                }
+                // The backend may have failed after spawn. Keep the same reservation.
+                start.custody.mark_unknown();
+                let _ = start
+                    .failure
+                    .set("process start outcome is unknown".to_string());
                 return Err(internal_error(err.to_string()));
             }
         };
+        let session = Arc::new(spawned.session);
+        start.custody.attach_owner(Arc::clone(&session))?;
 
         let output_notify = Arc::new(Notify::new());
         let (wake_tx, _wake_rx) = watch::channel(0);
@@ -413,6 +462,11 @@ impl LocalProcess {
             PROCESS_EVENT_CHANNEL_CAPACITY,
             RETAINED_OUTPUT_BYTES_PER_PROCESS,
         );
+        start.custody.attach_observation(
+            wake_tx.clone(),
+            Arc::clone(&output_notify),
+            events.clone(),
+        )?;
         {
             let mut process_map = self.inner.processes.lock().await;
             if !matches!(
@@ -420,7 +474,8 @@ impl LocalProcess {
                 Some(ProcessEntry::Starting(current)) if Arc::ptr_eq(current, &start)
             ) {
                 drop(process_map);
-                spawned.session.terminate();
+                start.custody.mark_unknown();
+                session.request_terminate();
                 return Err(invalid_request(format!(
                     "process {process_id} start was cancelled"
                 )));
@@ -428,7 +483,8 @@ impl LocalProcess {
             process_map.insert(
                 process_id.clone(),
                 ProcessEntry::Running(Box::new(RunningProcess {
-                    session: spawned.session,
+                    session: Arc::clone(&session),
+                    custody: Arc::clone(&start.custody),
                     tty: params.tty,
                     pipe_stdin: params.pipe_stdin,
                     accepted_stdin_write_ids: Arc::new(
@@ -438,6 +494,7 @@ impl LocalProcess {
                     retained_bytes: 0,
                     next_seq: 1,
                     exit_code: None,
+                    observation_failure: None,
                     wake_tx: wake_tx.clone(),
                     events: events.clone(),
                     output_notify: Arc::clone(&output_notify),
@@ -479,7 +536,16 @@ impl LocalProcess {
             spawned.exit_rx,
             Arc::clone(&self.inner),
             output_notify,
+            launch,
         ));
+
+        if start.cancelled.load(Ordering::SeqCst) {
+            start.custody.mark_unknown();
+            session.request_terminate();
+            return Err(invalid_request(format!(
+                "process {process_id} start was cancelled"
+            )));
+        }
 
         Ok((
             ExecResponse {
@@ -513,6 +579,14 @@ impl LocalProcess {
                     invalid_request(format!("unknown process id {}", params.process_id))
                 })?;
                 let ProcessEntry::Running(process) = process else {
+                    if let ProcessEntry::Starting(start) = process {
+                        if let Some(failure) = start.failure.get() {
+                            return Err(internal_error(failure.clone()));
+                        }
+                        if start.custody.outcome_is_unknown() {
+                            return Err(internal_error(custody::UNKNOWN_OUTCOME.to_string()));
+                        }
+                    }
                     return Err(invalid_request(format!(
                         "process id {} is starting",
                         params.process_id
@@ -541,14 +615,20 @@ impl LocalProcess {
                 if params.max_bytes.is_none() {
                     next_seq = process.next_seq;
                 }
+                let exit_code = process.exit_code.or(process.custody.observed_exit_code());
                 (
                     ReadResponse {
                         chunks,
                         next_seq,
-                        exited: process.exit_code.is_some(),
-                        exit_code: process.exit_code,
+                        exited: exit_code.is_some(),
+                        exit_code,
                         closed: process.closed,
-                        failure: None,
+                        failure: process.observation_failure.clone().or_else(|| {
+                            process
+                                .custody
+                                .outcome_is_unknown()
+                                .then(|| custody::UNKNOWN_OUTCOME.to_string())
+                        }),
                         sandbox_denied: process.sandbox_denied,
                     },
                     Arc::clone(&process.output_notify),
@@ -559,6 +639,7 @@ impl LocalProcess {
                 response.exited && after_seq < response.next_seq.saturating_sub(1);
             if !response.chunks.is_empty()
                 || response.closed
+                || response.failure.is_some()
                 || has_new_terminal_event
                 || tokio::time::Instant::now() >= deadline
             {
@@ -587,7 +668,7 @@ impl LocalProcess {
             return Err(invalid_params("writeId must not be empty".to_string()));
         }
 
-        let (writer_tx, accepted_stdin_write_ids) = {
+        let (writer_tx, accepted_stdin_write_ids, custody, published_exit_code, mut outcome_wake) = {
             let process_map = self.inner.processes.lock().await;
             let Some(process) = process_map.get(&params.process_id) else {
                 return Ok(WriteResponse {
@@ -599,6 +680,9 @@ impl LocalProcess {
                     status: WriteStatus::Starting,
                 });
             };
+            if process.observation_failure.is_some() || process.custody.outcome_is_unknown() {
+                return Err(internal_error("process outcome is unknown".to_string()));
+            }
             if !process.tty && !process.pipe_stdin {
                 return Ok(WriteResponse {
                     status: WriteStatus::StdinClosed,
@@ -607,6 +691,9 @@ impl LocalProcess {
             (
                 process.session.writer_sender(),
                 Arc::clone(&process.accepted_stdin_write_ids),
+                Arc::clone(&process.custody),
+                process.exit_code,
+                process.wake_tx.subscribe(),
             )
         };
 
@@ -620,15 +707,60 @@ impl LocalProcess {
             });
         }
 
-        let permit = writer_tx
-            .reserve()
-            .await
-            .map_err(|_| internal_error("failed to write to process stdin".to_string()))?;
+        // A previously accepted id keeps its acknowledgement. A new write must
+        // not wait on stdin after native exit was retained but map publication
+        // was cancelled before it could copy that same fact.
+        if published_exit_code
+            .or(custody.observed_exit_code())
+            .is_some()
+        {
+            return Ok(WriteResponse {
+                status: WriteStatus::StdinClosed,
+            });
+        }
+
+        let reserve = writer_tx.reserve();
+        tokio::pin!(reserve);
+        let permit = loop {
+            if published_exit_code
+                .or(custody.observed_exit_code())
+                .is_some()
+            {
+                return Ok(WriteResponse {
+                    status: WriteStatus::StdinClosed,
+                });
+            }
+            if custody.outcome_is_unknown() {
+                return Err(internal_error("process outcome is unknown".to_string()));
+            }
+            tokio::select! {
+                result = &mut reserve => {
+                    break result.map_err(|_| internal_error("failed to write to process stdin".to_string()))?;
+                }
+                changed = outcome_wake.changed() => {
+                    if changed.is_err() {
+                        custody.mark_unknown();
+                        return Err(internal_error("process outcome is unknown".to_string()));
+                    }
+                }
+            }
+        };
         let mut accepted_stdin_write_ids = accepted_stdin_write_ids.lock().await;
         if accepted_stdin_write_ids.contains(&params.write_id) {
             return Ok(WriteResponse {
                 status: WriteStatus::Accepted,
             });
+        }
+        if published_exit_code
+            .or(custody.observed_exit_code())
+            .is_some()
+        {
+            return Ok(WriteResponse {
+                status: WriteStatus::StdinClosed,
+            });
+        }
+        if custody.outcome_is_unknown() {
+            return Err(internal_error("process outcome is unknown".to_string()));
         }
 
         // After this synchronous send, record the write id before any further await.
@@ -649,8 +781,16 @@ impl LocalProcess {
             let process_map = self.inner.processes.lock().await;
             match process_map.get(&params.process_id) {
                 Some(ProcessEntry::Running(process)) => {
-                    if process.exit_code.is_some() {
+                    if process
+                        .exit_code
+                        .or(process.custody.observed_exit_code())
+                        .is_some()
+                    {
                         return Ok(SignalResponse {});
+                    }
+                    if process.observation_failure.is_some() || process.custody.outcome_is_unknown()
+                    {
+                        return Err(internal_error("process outcome is unknown".to_string()));
                     }
                     process
                         .session
@@ -675,15 +815,21 @@ impl LocalProcess {
                     if let Some(network_policy_shutdown) = &process.network_policy_shutdown {
                         network_policy_shutdown.cancel();
                     }
-                    if process.exit_code.is_some() {
+                    if process
+                        .exit_code
+                        .or(process.custody.observed_exit_code())
+                        .is_some()
+                    {
                         return Ok(TerminateResponse { running: false });
                     }
                     process.termination_requested = true;
-                    process.session.terminate();
+                    process.session.request_terminate();
                     true
                 }
-                Some(ProcessEntry::Starting(_)) => {
-                    process_map.remove(&params.process_id);
+                Some(ProcessEntry::Starting(start)) => {
+                    start.cancelled.store(true, Ordering::SeqCst);
+                    start.custody.mark_unknown();
+                    start.custody.request_cleanup();
                     true
                 }
                 None => false,
@@ -950,8 +1096,49 @@ async fn watch_exit(
     exit_rx: tokio::sync::oneshot::Receiver<i32>,
     inner: Arc<Inner>,
     output_notify: Arc<Notify>,
+    launch: ProcessLaunch,
 ) {
-    let exit_code = exit_rx.await.unwrap_or(-1);
+    let exit_code = match exit_rx.await {
+        Ok(exit_code) => {
+            launch.confirm_native_exit(exit_code);
+            exit_code
+        }
+        Err(_) => {
+            // Publish the global fence before any asynchronous cleanup/notification.
+            // Dropping the guard requests cleanup but cannot claim native termination.
+            drop(launch);
+            let notification = {
+                let mut processes = inner.processes.lock().await;
+                if let Some(ProcessEntry::Running(process)) = processes.get_mut(&process_id) {
+                    let message = custody::UNKNOWN_OUTCOME.to_string();
+                    process
+                        .observation_failure
+                        .get_or_insert_with(|| message.clone());
+                    if let Some(metrics) = process.metrics.take() {
+                        metrics.finish("error");
+                    }
+                    Some(ExecObservationFailedNotification {
+                        process_id: process_id.clone(),
+                        reason: ProcessObservationFailureReason::ExitObservationLost,
+                    })
+                } else {
+                    None
+                }
+            };
+            output_notify.notify_waiters();
+            if let Some(notification) = notification
+                && let Some(notifications) = notification_sender(&inner)
+            {
+                let _ = notifications
+                    .notify(
+                        crate::protocol::EXEC_OBSERVATION_FAILED_METHOD,
+                        &notification,
+                    )
+                    .await;
+            }
+            return;
+        }
+    };
     let sandboxed = {
         let mut processes = inner.processes.lock().await;
         match processes.get_mut(&process_id) {
@@ -1847,15 +2034,16 @@ mod tests {
         backend.shutdown().await;
     }
 
-    struct TestProcess {
-        process_id: ProcessId,
-        stdout_tx: mpsc::Sender<Vec<u8>>,
-        stderr_tx: mpsc::Sender<Vec<u8>>,
-        exit_tx: Option<oneshot::Sender<i32>>,
+    pub(super) struct TestProcess {
+        pub(super) process_id: ProcessId,
+        pub(super) stdout_tx: mpsc::Sender<Vec<u8>>,
+        pub(super) stderr_tx: mpsc::Sender<Vec<u8>>,
+        pub(super) exit_tx: Option<oneshot::Sender<i32>>,
+        pub(super) exit_task: tokio::task::JoinHandle<()>,
     }
 
     impl TestProcess {
-        fn exit(&mut self, exit_code: i32) {
+        pub(super) fn exit(&mut self, exit_code: i32) {
             self.exit_tx
                 .take()
                 .expect("process should not have exited")
@@ -1864,7 +2052,18 @@ mod tests {
         }
     }
 
-    async fn spawn_test_process(backend: &LocalProcess, process_id: &str) -> TestProcess {
+    pub(super) async fn spawn_test_process(
+        backend: &LocalProcess,
+        process_id: &str,
+    ) -> TestProcess {
+        spawn_test_process_with_session(backend, process_id, dummy_session()).await
+    }
+
+    pub(super) async fn spawn_test_process_with_session(
+        backend: &LocalProcess,
+        process_id: &str,
+        session: ExecCommandSession,
+    ) -> TestProcess {
         let process_id = ProcessId::from(process_id);
         let (stdout_tx, stdout_rx) = mpsc::channel(16);
         let (stderr_tx, stderr_rx) = mpsc::channel(16);
@@ -1876,11 +2075,28 @@ mod tests {
             RETAINED_OUTPUT_BYTES_PER_PROCESS,
         );
 
+        let mut launch = match backend.inner.custody.reserve(Arc::clone(&backend.inner)) {
+            Ok(launch) => launch,
+            Err(error) => panic!("fixture custody admission failed: {}", error.message),
+        };
+        let session = Arc::new(session);
+        let custody = launch.custody();
+        if let Err(error) = custody.attach_owner(Arc::clone(&session)) {
+            panic!("fixture custody attachment failed: {}", error.message);
+        }
+        if let Err(error) =
+            custody.attach_observation(wake_tx.clone(), Arc::clone(&output_notify), events.clone())
+        {
+            panic!("fixture observation attachment failed: {}", error.message);
+        }
+        launch.begin_effect();
+
         let mut processes = backend.inner.processes.lock().await;
         let previous = processes.insert(
             process_id.clone(),
             ProcessEntry::Running(Box::new(RunningProcess {
-                session: dummy_session(),
+                session,
+                custody,
                 tty: false,
                 pipe_stdin: false,
                 accepted_stdin_write_ids: Arc::new(Mutex::new(AcceptedStdinWriteIds::default())),
@@ -1888,6 +2104,7 @@ mod tests {
                 retained_bytes: 0,
                 next_seq: 1,
                 exit_code: None,
+                observation_failure: None,
                 wake_tx: wake_tx.clone(),
                 events: events.clone(),
                 output_notify: Arc::clone(&output_notify),
@@ -1918,11 +2135,12 @@ mod tests {
             Arc::clone(&backend.inner),
             Arc::clone(&output_notify),
         ));
-        tokio::spawn(watch_exit(
+        let exit_task = tokio::spawn(watch_exit(
             process_id.clone(),
             exit_rx,
             Arc::clone(&backend.inner),
             output_notify,
+            launch,
         ));
 
         TestProcess {
@@ -1930,6 +2148,7 @@ mod tests {
             stdout_tx,
             stderr_tx,
             exit_tx: Some(exit_tx),
+            exit_task,
         }
     }
 
@@ -1989,3 +2208,7 @@ mod tests {
         }
     }
 }
+
+#[cfg(test)]
+#[path = "local_process_observation_tests.rs"]
+mod observation_tests;

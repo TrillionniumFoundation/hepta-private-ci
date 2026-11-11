@@ -108,6 +108,8 @@ fn effective_workspace_intersection_preserves_network_metadata_and_temp() {
     .expect("worktree git pointer");
     let authority = workspace(&root, Enabled);
     let mut requested_policy = workspace(&project, Restricted).file_system_sandbox_policy();
+    // TMPDIR may enclose the fixture; explicitly keep its parent workspace read-only.
+    requested_policy.entries.push(entry(root.as_path(), Read));
     requested_policy
         .entries
         .push(skipped(gitdir.clone().into(), Read));

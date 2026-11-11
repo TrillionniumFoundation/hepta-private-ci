@@ -1,0 +1,16 @@
+from pathlib import Path
+base=Path('/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-3')
+exec((base/'work/run-five-lane-qualification-01.py').read_text().split('source=snapshot();')[0])
+repo=base/'work/hepta-lease-pair-closure';cwd=repo/'codex-rs';source=snapshot()
+assert source==json.loads((out/'sealed-bootstrap-source-before-01.json').read_text())
+def run(name,command):
+ start=time.monotonic()
+ with (out/(name+'.log')).open('w') as f:r=subprocess.run(command,cwd=cwd,env=env,stdout=f,stderr=subprocess.STDOUT)
+ (out/(name+'.json')).write_text(json.dumps({'command':command,'exit':r.returncode,'seconds':time.monotonic()-start,'source_before':source,'cache_reused':True,'toolchain':'1.96.0'},indent=2)+'\n');print(name,r.returncode,flush=True)
+ if r.returncode:raise SystemExit(r.returncode)
+run('sealed-bootstrap-fmt-01',['/home/qian-qi/.cargo/bin/just','fmt'])
+run('sealed-bootstrap-fix-01',['/home/qian-qi/.cargo/bin/just','fix','-p','codex-hepta-agentd'])
+run('sealed-bootstrap-range-fmt-01',['/home/qian-qi/.cargo/bin/just','fmt','--base','2ff4a7ed6'])
+run('sealed-bootstrap-range-fmt-check-01',['/home/qian-qi/.cargo/bin/just','fmt','--base','2ff4a7ed6','--check'])
+(out/'sealed-bootstrap-source-after-finish-01.json').write_text(json.dumps(snapshot(),indent=2)+'\n')
+print('sealed finish complete; no tests after formatting',flush=True)

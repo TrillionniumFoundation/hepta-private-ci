@@ -146,7 +146,8 @@ Request params:
 
 ```json
 {
-  "clientName": "my-client"
+  "clientName": "my-client",
+  "processExitObservation": true
 }
 ```
 
@@ -155,6 +156,7 @@ Response:
 ```json
 {
   "sessionId": "00000000-0000-4000-8000-000000000001",
+  "processExitObservation": true,
   "environmentInfo": {
     "shell": { "name": "bash", "path": "/bin/bash" },
     "cwd": "file:///workspace"
@@ -379,6 +381,8 @@ for invalid or unavailable paths. Native absolute path strings are rejected;
 callers must convert them to `file:` URIs before sending requests:
 
 - `fs/readFile`
+- `fs/readFileAuthorized` (bounded reads with a required sandbox and the
+  `stableHandleAuthorizedRead` capability)
 - `fs/open`, `fs/readBlock`, and `fs/close` (internal transport for
   `ExecutorFileSystem::read_file_stream`)
 - `fs/writeFile`
@@ -389,11 +393,26 @@ callers must convert them to `file:` URIs before sending requests:
 - `fs/remove`
 - `fs/copy`
 
-Each filesystem request accepts an optional `sandbox` object. When `sandbox`
-contains a `ReadOnly` or `WorkspaceWrite` policy, the operation runs in a
+Ordinary filesystem requests accept an optional `sandbox` object; authorized
+reads require one. When an ordinary request contains a `ReadOnly` or
+`WorkspaceWrite` policy, the operation runs in a
 hidden helper process launched from the top-level `codex` executable and
 prepared through the shared sandbox transform path. Helper requests and
 responses are passed over stdin/stdout.
+
+Authorized reads keep the initial file descriptor alive while admitting a
+second descriptor against the resolved physical path and permission policy.
+The Linux implementation uses `O_PATH` for both path opens without opening an
+unchecked object for I/O. Only a private descriptor already proved regular is
+converted through its kernel proc link to a readable handle and checked again;
+the conversion never falls back to opening the caller's path.
+Linux requires a successful runtime probe of `openat2` link-resolution flags,
+descriptor paths, mount identity, and single-link regular-file checks; a kernel
+without these primitives advertises no capability and rejects the operation.
+Namespace, mount, device/inode and physical-path mismatches reject admission.
+Reads after admission use only the admitted descriptor, so later replacement or
+hardlink creation does not redirect an authorized read. Linux checks link count
+after opening; this does not provide Darwin's atomic `O_UNIQUE` semantics.
 
 ## Errors
 
@@ -402,6 +421,11 @@ The server returns JSON-RPC errors with these codes:
 - `-32600`: invalid request
 - `-32602`: invalid params
 - `-32603`: internal error
+- `-32012`: `fs/readFileAuthorized` exceeded its byte bound
+
+Authorized-read clients preserve the existing invalid-request code for
+permission rejection and translate the method-specific bound code to a fixed
+bound error. Neither exposes arbitrary remote error messages.
 
 Typical error cases:
 
@@ -441,8 +465,8 @@ provider from Codex auth state before starting remote mode.
 Initialize:
 
 ```json
-{"id":1,"method":"initialize","params":{"clientName":"example-client"}}
-{"id":1,"result":{"sessionId":"00000000-0000-4000-8000-000000000001","environmentInfo":{"shell":{"name":"bash","path":"/bin/bash"},"cwd":"file:///tmp"}}}
+{"id":1,"method":"initialize","params":{"clientName":"example-client","processExitObservation":true}}
+{"id":1,"result":{"sessionId":"00000000-0000-4000-8000-000000000001","processExitObservation":true,"environmentInfo":{"shell":{"name":"bash","path":"/bin/bash"},"cwd":"file:///tmp"}}}
 {"method":"initialized","params":{}}
 ```
 
@@ -470,3 +494,5 @@ Terminate it:
 {"method":"process/exited","params":{"processId":"proc-1","seq":3,"exitCode":0,"sandboxDenied":false}}
 {"method":"process/closed","params":{"processId":"proc-1","seq":4}}
 ```
+
+[Linux authorized-read source and original package qualification](acceptance/2026-10-23-linux-authorized-read/README.md) retains all intermediate failures, the O_PATH admission review, final512-case scope and its native/full-workspace limits.

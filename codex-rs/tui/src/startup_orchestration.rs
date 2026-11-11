@@ -337,7 +337,7 @@ pub(super) async fn run_main_inner(
         ..Default::default()
     };
 
-    let config = startup_draft
+    let mut config = startup_draft
         .run_until(load_config_or_exit(
             cli_kv_overrides.clone(),
             overrides.clone(),
@@ -406,7 +406,7 @@ pub(super) async fn run_main_inner(
     }
     let state_db = startup_draft
         .run_until(init_state_db_for_app_server_target(
-            &config,
+            &mut config,
             &app_server_target,
         ))
         .await??;

@@ -17,6 +17,9 @@ use crate::spawn_pty_process;
 #[path = "windows_tests.rs"]
 mod windows_tests;
 
+#[path = "driver_terminal_tests.rs"]
+mod driver_terminal_tests;
+
 fn find_python() -> Option<String> {
     for candidate in ["python3", "python"] {
         if let Ok(output) = std::process::Command::new(candidate)

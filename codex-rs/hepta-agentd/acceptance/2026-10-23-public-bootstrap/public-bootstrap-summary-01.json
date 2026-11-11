@@ -1,0 +1,104 @@
+{
+  "schema": "hepta.public-bootstrap-dto-qualification.v1",
+  "final_source_commit": "b64fb4403254bdfbfdba0bf69e69bede270ed96f",
+  "source_tree": "551f8e1b903e89224046930f8f3cdbb6fccb1214",
+  "status": "",
+  "original_wire_and_proof_passed": 6,
+  "seconds": 0.169,
+  "stages": {
+    "public-bootstrap-original-wire-tests-01": {
+      "command": [
+        "/home/qian-qi/.cargo/bin/just",
+        "test",
+        "-p",
+        "codex-hepta-agentd",
+        "--lib",
+        "--locked",
+        "-E",
+        "test(authority_host_wire) | test(root_writer_proof)",
+        "--test-threads",
+        "2"
+      ],
+      "exit": 0,
+      "seconds": 336.3390222140588,
+      "cache_reused": true,
+      "source_before": {
+        "head": "035d67e99dcbe1243718d8f9e2b4efffcaa6b54b",
+        "tree": "606c34106e613bff342c452f05aa54dd042c6b8b",
+        "status": "M codex-rs/hepta-agentd/src/lib.rs\n?? codex-rs/hepta-agentd/src/authority_host_bootstrap.rs",
+        "index_flags": [
+          "H"
+        ],
+        "files": 9337,
+        "live_source_sha256": "fd7edbcafc17674022e8616a22fd10d9b290bbafb25c45b692c6cc72a53fe214"
+      },
+      "toolchain": "1.96.0"
+    },
+    "public-bootstrap-fmt-01": {
+      "command": [
+        "/home/qian-qi/.cargo/bin/just",
+        "fmt"
+      ],
+      "exit": 0,
+      "seconds": 0.2623530919663608,
+      "cache_reused": true,
+      "source_before": {
+        "head": "035d67e99dcbe1243718d8f9e2b4efffcaa6b54b",
+        "tree": "606c34106e613bff342c452f05aa54dd042c6b8b",
+        "status": "M codex-rs/hepta-agentd/ROOT_AUTHORITY_CLIENT.md\n M codex-rs/hepta-agentd/src/lib.rs\n?? codex-rs/hepta-agentd/src/authority_host_bootstrap.rs",
+        "index_flags": [
+          "H"
+        ],
+        "files": 9337,
+        "live_source_sha256": "f1895c6cee7544352abe3b58e8056fc061078f7c2d71d0412caff8b03127f19a"
+      },
+      "toolchain": "1.96.0"
+    },
+    "public-bootstrap-fix-01": {
+      "command": [
+        "/home/qian-qi/.cargo/bin/just",
+        "fix",
+        "-p",
+        "codex-hepta-agentd"
+      ],
+      "exit": 0,
+      "seconds": 124.34141862101387,
+      "cache_reused": true,
+      "source_before": {
+        "head": "035d67e99dcbe1243718d8f9e2b4efffcaa6b54b",
+        "tree": "606c34106e613bff342c452f05aa54dd042c6b8b",
+        "status": "M codex-rs/hepta-agentd/ROOT_AUTHORITY_CLIENT.md\n M codex-rs/hepta-agentd/src/lib.rs\n?? codex-rs/hepta-agentd/src/authority_host_bootstrap.rs",
+        "index_flags": [
+          "H"
+        ],
+        "files": 9337,
+        "live_source_sha256": "f1895c6cee7544352abe3b58e8056fc061078f7c2d71d0412caff8b03127f19a"
+      },
+      "toolchain": "1.96.0"
+    },
+    "public-bootstrap-final-fmt-01": {
+      "command": [
+        "/home/qian-qi/.cargo/bin/just",
+        "fmt"
+      ],
+      "exit": 0,
+      "seconds": 0.26258558593690395,
+      "cache_reused": true,
+      "source_before": {
+        "head": "035d67e99dcbe1243718d8f9e2b4efffcaa6b54b",
+        "tree": "606c34106e613bff342c452f05aa54dd042c6b8b",
+        "status": "M codex-rs/hepta-agentd/ROOT_AUTHORITY_CLIENT.md\n M codex-rs/hepta-agentd/src/lib.rs\n?? codex-rs/hepta-agentd/src/authority_host_bootstrap.rs",
+        "index_flags": [
+          "H"
+        ],
+        "files": 9337,
+        "live_source_sha256": "f1895c6cee7544352abe3b58e8056fc061078f7c2d71d0412caff8b03127f19a"
+      },
+      "toolchain": "1.96.0"
+    }
+  },
+  "tests_after_format": false,
+  "deployment_qualified": false,
+  "data_bundle_is_authority": false,
+  "real_example": "to be emitted by actual root five-lane fixture from actual canonical state; no invented recovery cut"
+}

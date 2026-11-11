@@ -26,6 +26,7 @@ pub const EXEC_TERMINATE_METHOD: &str = "process/terminate";
 pub const EXEC_OUTPUT_DELTA_METHOD: &str = "process/output";
 pub const EXEC_EXITED_METHOD: &str = "process/exited";
 pub const EXEC_CLOSED_METHOD: &str = "process/closed";
+pub const EXEC_OBSERVATION_FAILED_METHOD: &str = "process/observationFailed";
 pub const ENVIRONMENT_INFO_METHOD: &str = "environment/info";
 pub const ENVIRONMENT_STATUS_METHOD: &str = "environment/status";
 pub const FS_READ_FILE_METHOD: &str = "fs/readFile";
@@ -81,12 +82,18 @@ pub struct InitializeParams {
     pub client_name: String,
     #[serde(default)]
     pub resume_session_id: Option<String>,
+    /// The client can preserve an unknown process outcome without fabricating exit.
+    #[serde(default)]
+    pub process_exit_observation: bool,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct InitializeResponse {
     pub session_id: String,
+    /// Both peers must opt in before process/start or session resumption.
+    #[serde(default)]
+    pub process_exit_observation: bool,
     /// Executor metadata at initialization, with the same shape as `environment/info`.
     // TODO: Make this required once all supported exec-server versions return environmentInfo.
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -832,6 +839,25 @@ pub struct ExecClosedNotification {
     pub process_id: ProcessId,
     pub seq: u64,
 }
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum ProcessObservationFailureReason {
+    ExitObservationLost,
+}
+
+/// An observation failure has no exit code and does not consume an output sequence.
+/// The original process remains owned; this is neither process/exited nor closed.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ExecObservationFailedNotification {
+    pub process_id: ProcessId,
+    pub reason: ProcessObservationFailureReason,
+}
+
+#[cfg(test)]
+#[path = "observation_wire_tests.rs"]
+mod observation_wire_tests;
 
 mod base64_bytes {
     use super::BASE64_STANDARD;

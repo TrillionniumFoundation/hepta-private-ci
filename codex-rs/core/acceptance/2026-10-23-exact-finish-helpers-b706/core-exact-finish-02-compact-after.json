@@ -1,0 +1,27 @@
+{
+  "name": "core-exact-finish-02-compact-after",
+  "cwd": "/data/hepta-mcp-implementation-closure",
+  "command": [
+    "just",
+    "test",
+    "-p",
+    "codex-core",
+    "--locked",
+    "--test-threads",
+    "2",
+    "-E",
+    "test(compact_v2_overload_without_retry_after_exhausts_request_retries)"
+  ],
+  "baseSha": "f4044f8d77b1c1142f84525b1b1f243e2ddf95d6",
+  "workingDiffSha256": "640e8d5025dd653331aa66ec74e4995fbef54a92f3d8d514c4020354119947cb",
+  "startedAt": "2026-10-23T23:51:05.840570+00:00",
+  "finishedAt": "2026-10-23T23:54:39.017094+00:00",
+  "elapsedSeconds": 213.17650789301842,
+  "exitCode": 0,
+  "log": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-3/work/dependency-alerts/core-exact-finish-02-compact-after.log",
+  "environment": {
+    "CARGO_TARGET_DIR": "/data/hepta-mcp-integer-target",
+    "CARGO_BUILD_JOBS": "1",
+    "RUSTUP_TOOLCHAIN": "1.95.0"
+  }
+}

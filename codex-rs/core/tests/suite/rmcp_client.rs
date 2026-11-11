@@ -26,6 +26,7 @@ use codex_config::types::OAuthCredentialsStoreMode;
 use codex_core::EnvironmentConfig;
 use codex_core::EnvironmentMcpPolicy;
 use codex_core::TurnInputRequest;
+use codex_core::TurnInputSubmission;
 use codex_core::config::Config;
 use codex_exec_server::CreateDirectoryOptions;
 use codex_exec_server::Environment;
@@ -3541,8 +3542,17 @@ async fn streamable_http_with_oauth_round_trip_impl() -> anyhow::Result<()> {
                     _ => {}
                 }
             }
+            let contended_turn = contended_turn.context("turn completion was observed")?;
+            // The credential-store lock remains held while this exact turn's
+            // finish owner releases admission, within the original five seconds.
+            if let Some(completion) = fixture
+                .codex
+                .pending_normal_turn_finish_completion(&contended_turn.turn_id)
+            {
+                completion.await;
+            }
             Ok::<_, anyhow::Error>((
-                contended_turn.expect("turn completion was observed"),
+                contended_turn,
                 refreshed_failure.expect("failure status was observed"),
                 refreshed_failed_servers.expect("startup summary was observed"),
             ))
@@ -3583,13 +3593,17 @@ async fn streamable_http_with_oauth_round_trip_impl() -> anyhow::Result<()> {
             .codex
             .refresh_runtime_config(refreshed_config.clone())
             .await;
-        fixture
+        let submission = fixture
             .codex
             .start_or_steer_turn(read_only_user_turn(
                 &fixture,
                 "continue while a newly discovered OAuth server is starting",
             ))
             .await?;
+        assert!(
+            matches!(&submission, TurnInputSubmission::Started { .. }),
+            "the discovered-server turn was not admitted: {submission:?}"
+        );
         loop {
             if let EventMsg::TurnComplete(turn) = fixture.codex.next_event().await?.msg {
                 return Ok::<_, anyhow::Error>(turn);

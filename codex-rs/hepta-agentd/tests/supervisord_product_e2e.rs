@@ -71,6 +71,11 @@ fn supervisord_child_entry() -> Result<()> {
 #[tokio::test(flavor = "multi_thread", worker_threads = 8)]
 async fn five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_changes()
 -> Result<()> {
+    // Keep this independent product fixture within Darwin's original socket
+    // path limit; the fleet layout, five identities and deadlines stay intact.
+    #[cfg(target_os = "macos")]
+    let temp = tempfile::tempdir_in(Path::new("/tmp").canonicalize()?)?;
+    #[cfg(not(target_os = "macos"))]
     let temp = tempfile::tempdir()?;
     let root = temp.path().canonicalize()?;
     let fleet_root = HeptaFleetRoot::parse(root.join("fleet"))?;
@@ -85,7 +90,7 @@ async fn five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_c
 
     let sources = root.join("release-sources");
     std::fs::create_dir(&sources)?;
-    let agentd = PathBuf::from(env!("CARGO_BIN_EXE_codex-hepta-agentd"));
+    let agentd = codex_utils_cargo_bin::cargo_bin("codex-hepta-agentd")?;
     let source_v1 = agentd_wrapper(&sources, "agentd-v1", &agentd)?;
     let source_v2 = agentd_wrapper(&sources, "agentd-v2", &agentd)?;
     let release_v1 = ReleaseId::parse("agentd-v1")?;

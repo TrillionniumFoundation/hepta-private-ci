@@ -1,0 +1,9 @@
+Traceback (most recent call last):
+  File "/workspace/scratch/050e013c53db/hepta-learning/qualification/joint-trained-recovery-v1/differential.py", line 349, in main
+    with donor_modules(args.source_repository) as donor:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/contextlib.py", line 144, in __exit__
+    next(self.gen)
+  File "/workspace/scratch/050e013c53db/hepta-learning/qualification/joint-trained-recovery-v1/verify_failure_boundaries.py", line 59, in cleanup_failure
+    raise RuntimeError("intentional post-comparison cleanup failure")
+RuntimeError: intentional post-comparison cleanup failure

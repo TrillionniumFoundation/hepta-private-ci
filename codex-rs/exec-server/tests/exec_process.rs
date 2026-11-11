@@ -1,7 +1,7 @@
 mod common;
 
 use std::collections::HashMap;
-#[cfg(target_os = "linux")]
+#[cfg(unix)]
 use std::os::unix::fs::PermissionsExt;
 use std::sync::Arc;
 
@@ -381,6 +381,16 @@ async fn shell_snapshot_v2_capture_failure_falls_back_and_retries(
         "bash" => ("/bin/bash", ".bashrc"),
         "zsh" => ("/bin/zsh", ".zshrc"),
         name => anyhow::bail!("unsupported test shell {name}"),
+    };
+    // Keep the real login-shell command and snapshot retry path, while only
+    // sourcing the fixture's profile. Host /etc/profile is unrelated to retries.
+    let shell_path = if shell_name == "bash" {
+        let wrapper = home.path().join("snapshot-bash");
+        std::fs::write(&wrapper, "#!/bin/sh\nexec /bin/bash --noprofile \"$@\"\n")?;
+        std::fs::set_permissions(&wrapper, std::fs::Permissions::from_mode(0o700))?;
+        wrapper.to_string_lossy().into_owned()
+    } else {
+        shell_path.to_string()
     };
     std::fs::write(
         home.path().join(profile_name),

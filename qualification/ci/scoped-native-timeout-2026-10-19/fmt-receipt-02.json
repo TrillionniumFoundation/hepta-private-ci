@@ -1,0 +1,16 @@
+{
+  "started_at_utc": "2026-10-19T01:12:08.999102+00:00",
+  "finished_at_utc": "2026-10-19T01:12:09.160542+00:00",
+  "command": [
+    "/workspace/scratch/499c7902de8e/r10-evidence/owner-ci/tools/bin/just",
+    "fmt",
+    "--base",
+    "2be5fc052ae7b2e9fb08c68a3ae7e5a218ad37d5"
+  ],
+  "exit_code": 0,
+  "output": "No changed files need formatting. Use --all for a full repository check.\n",
+  "workflow_sha256_before": "96eb7f9ea698ea353c757c3ba9f4a82a3ea448b45f676a208e09187748f4b9e3",
+  "workflow_sha256_after": "96eb7f9ea698ea353c757c3ba9f4a82a3ea448b45f676a208e09187748f4b9e3",
+  "reason_for_second_format_pass": "Removed one extra blank line at EOF from the newly added verification note after staged whitespace check; workflow and tested Python inputs did not change.",
+  "tests_rerun_after_fmt": false
+}

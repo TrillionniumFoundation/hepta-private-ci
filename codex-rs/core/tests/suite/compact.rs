@@ -1,6 +1,7 @@
 use anyhow::Result;
 use anyhow::anyhow;
 use codex_core::TurnInputRequest;
+use codex_core::TurnInputSubmission;
 use codex_core::compact::SUMMARIZATION_PROMPT;
 use codex_core::compact::SUMMARY_PREFIX;
 use codex_core::config::Config;
@@ -69,6 +70,7 @@ use serde_json::json;
 use std::fs;
 use std::path::Path;
 use std::sync::Arc;
+use std::time::Duration;
 use tempfile::TempDir;
 use wiremock::MockServer;
 // --- Test helpers -----------------------------------------------------------
@@ -1106,10 +1108,17 @@ async fn multiple_auto_compact_per_task_runs_after_token_limit_hit() {
         .with_pre_build_hook(allow_echo_commands)
         .with_config(move |config| {
             config.model_provider.name = non_openai_provider_name;
+            config.model_provider.mock_internal_chat_metadata = None;
         })
         .build(&server)
         .await
         .expect("build codex");
+    assert!(
+        !test
+            .config
+            .model_provider
+            .accepts_internal_chat_message_metadata_for_request(&format!("{}/v1", server.uri()),)
+    );
 
     // user message
     let user_message = "create an app";
@@ -1862,15 +1871,18 @@ async fn auto_compact_emits_context_compaction_items() {
     let mut legacy_event = false;
 
     for user in [FIRST_AUTO_MSG, SECOND_AUTO_MSG, POST_AUTO_USER_MSG] {
-        codex
+        let submission = codex
             .start_or_steer_turn(TurnInputRequest::user_input(vec![UserInput::Text {
                 text: user.into(),
                 text_elements: Vec::new(),
             }]))
             .await
             .unwrap();
+        let TurnInputSubmission::Started { turn_id } = submission else {
+            panic!("compaction item fixture turn must start: {submission:?}");
+        };
 
-        loop {
+        let completed_turn_id = loop {
             let event = codex.next_event().await.unwrap();
             match event.msg {
                 EventMsg::ItemStarted(ItemStartedEvent {
@@ -1888,11 +1900,19 @@ async fn auto_compact_emits_context_compaction_items() {
                 EventMsg::ContextCompacted(_) => {
                     legacy_event = true;
                 }
-                EventMsg::TurnComplete(_) if !event.id.starts_with("auto-compact-") => {
-                    break;
+                EventMsg::TurnComplete(completed) if !event.id.starts_with("auto-compact-") => {
+                    break completed.turn_id;
                 }
                 _ => {}
             }
+        };
+        assert_eq!(completed_turn_id, turn_id);
+        // TurnComplete is visible before this exact finish owner releases its
+        // admission fence; do not submit the next fixture turn before that.
+        if let Some(completion) = codex.pending_normal_turn_finish_completion(&completed_turn_id) {
+            tokio::time::timeout(Duration::from_secs(10), completion)
+                .await
+                .expect("compaction item fixture finish owner did not complete within 10 seconds");
         }
     }
 
@@ -4012,15 +4032,18 @@ async fn auto_compact_allows_multiple_attempts_when_interleaved_with_other_turn_
 
     let mut auto_compact_lifecycle_events = Vec::new();
     for user in [MULTI_AUTO_MSG, follow_up_user, final_user] {
-        codex
+        let submission = codex
             .start_or_steer_turn(TurnInputRequest::user_input(vec![UserInput::Text {
                 text: user.into(),
                 text_elements: Vec::new(),
             }]))
             .await
             .unwrap();
+        let TurnInputSubmission::Started { turn_id } = submission else {
+            panic!("interleaved compaction fixture turn must start: {submission:?}");
+        };
 
-        loop {
+        let completed_turn_id = loop {
             let event = codex.next_event().await.unwrap();
             if event.id.starts_with("auto-compact-")
                 && matches!(
@@ -4031,11 +4054,19 @@ async fn auto_compact_allows_multiple_attempts_when_interleaved_with_other_turn_
                 auto_compact_lifecycle_events.push(event);
                 continue;
             }
-            if let EventMsg::TurnComplete(_) = &event.msg
+            if let EventMsg::TurnComplete(completed) = event.msg
                 && !event.id.starts_with("auto-compact-")
             {
-                break;
+                break completed.turn_id;
             }
+        };
+        assert_eq!(completed_turn_id, turn_id);
+        // Preserve the observed auto-compaction events while waiting only for
+        // the completed normal turn's own post-terminal cleanup.
+        if let Some(completion) = codex.pending_normal_turn_finish_completion(&completed_turn_id) {
+            tokio::time::timeout(Duration::from_secs(10), completion)
+                .await
+                .expect("interleaved compaction finish owner did not complete within 10 seconds");
         }
     }
 
@@ -5212,6 +5243,7 @@ async fn remote_v2_compaction_keeps_creation_time_instructions_after_same_path_m
         OLD_GLOBAL_INSTRUCTIONS,
     )?;
     let mut builder = test_codex()
+        .with_internal_metadata_for_mock()
         .with_home(Arc::clone(&home))
         .with_auth(CodexAuth::create_dummy_chatgpt_auth_for_testing())
         .with_config(|config| {
@@ -5274,6 +5306,7 @@ async fn remote_v2_compaction_keeps_creation_time_instructions_after_same_path_m
     .await;
     let resumed_cwd = test.config.cwd.clone();
     let mut resume_builder = test_codex()
+        .with_internal_metadata_for_mock()
         .with_home(Arc::clone(&home))
         .with_auth(CodexAuth::create_dummy_chatgpt_auth_for_testing())
         .with_config(move |config| {

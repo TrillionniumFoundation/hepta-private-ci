@@ -31,6 +31,7 @@ pub use authbus_outbox_record::AuthBusDeliveryState;
 pub use authbus_outbox_record::AuthBusDeliveryStatus;
 pub use authbus_outbox_record::AuthBusLease;
 pub use authbus_outbox_record::AuthBusOutboxError;
+pub use authbus_outbox_record::AuthBusRetainedDelivery;
 pub use authbus_recovery::AuthBusRecoveryError;
 pub use authbus_recovery::ReplayCheckpoint;
 pub use authbus_store::AuthBusAdmissionError;
@@ -135,3 +136,7 @@ mod authbus_outbox_quarantine_tests;
 #[cfg(test)]
 #[path = "qualification_tests.rs"]
 mod qualification_tests;
+
+#[cfg(test)]
+#[path = "recovery_snapshot_transaction_tests.rs"]
+mod recovery_snapshot_transaction_tests;

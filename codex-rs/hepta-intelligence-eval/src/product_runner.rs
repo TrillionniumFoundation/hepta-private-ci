@@ -27,7 +27,9 @@ use crate::FencedHoldoutError;
 use crate::FinalHoldoutCasStoreV1;
 use crate::FinalHoldoutJournalReceiptV1;
 use crate::HeldOutTarget;
+use crate::HoldoutUseDispositionV1;
 use crate::IndependentEvaluationBundleV1;
+use crate::IndependentEvaluationDispositionV1;
 use crate::LongitudinalTimeEvidenceV1;
 use crate::MetricContractV1;
 use crate::MetricGateV1;
@@ -373,6 +375,8 @@ impl<S: FinalHoldoutCasStoreV1> ProductEvaluationRunnerV1<S> {
         product_plan.validate_integrity()?;
         if candidate_plan.plan_digest != product_plan.candidate_temporal_plan_digest
             || baseline_plan.plan_digest != product_plan.baseline_temporal_plan_digest
+            || candidate_plan.plan_digest != candidate_plan.canonical_digest()?
+            || baseline_plan.plan_digest != baseline_plan.canonical_digest()?
             || candidate_plan.objective_digest != product_plan.frozen_plan.objective_digest
             || baseline_plan.objective_digest != product_plan.frozen_plan.objective_digest
         {
@@ -384,6 +388,16 @@ impl<S: FinalHoldoutCasStoreV1> ProductEvaluationRunnerV1<S> {
         }
 
         let holdout = self.holdout.consume(&product_plan.frozen_plan)?;
+        // Replaying the durable consumption is not permission to release the
+        // holdout again, including after an indeterminate provider response.
+        match holdout.disposition {
+            HoldoutUseDispositionV1::Recorded => {}
+            HoldoutUseDispositionV1::IdempotentReplay => {
+                return Err(ProductEvaluationError::Binding(
+                    "final holdout already consumed",
+                ));
+            }
+        }
         let mut inputs = provider.release_after_consumption(&holdout)?;
         validate_released_inputs(&product_plan.frozen_plan, &inputs)?;
         validate_comparable_observations(
@@ -548,7 +562,7 @@ impl<S: FinalHoldoutCasStoreV1> ProductEvaluationRunnerV1<S> {
 }
 
 fn product_qualification_evidence_digest(receipt: &ProductQualificationReceiptV1) -> Digest32 {
-    let mut bytes = b"hepta.intelligence-eval.product-qualification.v3".to_vec();
+    let mut bytes = b"hepta.intelligence-eval.product-qualification.v4".to_vec();
     for digest in [
         receipt.temporal_execution_digest,
         receipt.objective_digest,
@@ -560,6 +574,23 @@ fn product_qualification_evidence_digest(receipt: &ProductQualificationReceiptV1
     ] {
         bytes.extend_from_slice(digest.as_array());
     }
+    // The evaluator evidence digest is opaque here. Bind the complete public
+    // decision as well, so changing its disposition or lineage cannot preserve
+    // a terminal receipt that downstream consumers treat as qualified.
+    let decision = &receipt.decision.decision;
+    for id in [
+        &decision.evaluation_id,
+        &decision.candidate_id,
+        &decision.baseline_id,
+    ] {
+        push_id(&mut bytes, id);
+    }
+    bytes.push(match decision.disposition {
+        IndependentEvaluationDispositionV1::EligibleForIndependentSelection => 0,
+        IndependentEvaluationDispositionV1::Ineligible => 1,
+        IndependentEvaluationDispositionV1::InsufficientEvidence => 2,
+    });
+    push_ids(&mut bytes, &decision.failed_metrics);
     push_id(&mut bytes, &receipt.candidate_id);
     push_principal(&mut bytes, &receipt.evaluator);
     push_principal(&mut bytes, &receipt.generator);
@@ -574,7 +605,7 @@ fn product_qualification_evidence_digest(receipt: &ProductQualificationReceiptV1
 }
 
 fn product_qualification_seal(receipt: &ProductQualificationReceiptV1) -> Digest32 {
-    let mut bytes = b"hepta.intelligence-eval.product-qualification-receipt.v1".to_vec();
+    let mut bytes = b"hepta.intelligence-eval.product-qualification-receipt.v2".to_vec();
     bytes.extend_from_slice(product_qualification_evidence_digest(receipt).as_array());
     bytes.extend_from_slice(receipt.evidence_digest.as_array());
     Digest32::of_bytes(&bytes)

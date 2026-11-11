@@ -63,6 +63,26 @@ pub struct AuthenticatedMessage {
 }
 
 impl SignedMessage {
+    /// Deterministic correlation with the original durable outbox. This is an
+    /// identity calculation only: it neither verifies the signature nor admits
+    /// a message. It lets a caller look up the same delivery after a lost reply
+    /// without minting a new signature, sequence, or Core user-message ID.
+    pub fn delivery_id(&self) -> Digest32 {
+        crate::envelope_digest(
+            &self.claims.issuer_id,
+            self.claims.key_epoch,
+            &PreverifiedAuthEnvelope {
+                message_id: self.claims.message_id.clone(),
+                subject_id: self.claims.subject_id.clone(),
+                scope_digest: self.claims.scope_digest,
+                payload_digest: self.claims.payload_digest,
+                signature_digest: Digest32::of_bytes(&self.signature),
+                sequence: self.claims.sequence,
+                expires_at_ms: self.claims.expires_at_ms,
+            },
+        )
+    }
+
     pub fn authenticate(
         &self,
         issuer: &IssuerRegistration,

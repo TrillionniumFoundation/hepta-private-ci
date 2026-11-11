@@ -1,3 +1,4 @@
+use std::fs::File;
 use std::fs::OpenOptions;
 use std::io::ErrorKind;
 use std::io::Write;
@@ -192,7 +193,7 @@ fn legacy_main(
     }))
 }
 
-fn read_record(run_root: &Path) -> Result<Option<RestartRecord>, SupervisorError> {
+fn read_record_file(run_root: &Path) -> Result<Option<(File, Vec<u8>)>, SupervisorError> {
     use std::io::Read;
     let path = run_root.join(RESTART_JOURNAL_FILE);
     let metadata = match std::fs::symlink_metadata(&path) {
@@ -209,7 +210,8 @@ fn read_record(run_root: &Path) -> Result<Option<RestartRecord>, SupervisorError
         ));
     }
     let mut bytes = Vec::new();
-    std::fs::File::open(path)?
+    let mut file = open_record_file(&path, &metadata)?;
+    (&mut file)
         .take(MAX_RESTART_JOURNAL_BYTES + 1)
         .read_to_end(&mut bytes)?;
     if bytes.len() as u64 > MAX_RESTART_JOURNAL_BYTES {
@@ -217,7 +219,44 @@ fn read_record(run_root: &Path) -> Result<Option<RestartRecord>, SupervisorError
             "restart record grew beyond its bound".to_string(),
         ));
     }
-    let value: serde_json::Value = serde_json::from_slice(&bytes)
+    Ok(Some((file, bytes)))
+}
+
+fn open_record_file(path: &Path, metadata: &std::fs::Metadata) -> Result<File, SupervisorError> {
+    let mut options = OpenOptions::new();
+    options.read(true);
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::OpenOptionsExt;
+        options.custom_flags(libc::O_NOFOLLOW | libc::O_NONBLOCK);
+    }
+    let file = options.open(path)?;
+    let opened = file.metadata()?;
+    if !opened.file_type().is_file() || opened.len() > MAX_RESTART_JOURNAL_BYTES {
+        return Err(SupervisorError::CorruptLease(
+            "opened restart record is not a bounded regular file".to_string(),
+        ));
+    }
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::MetadataExt;
+        if opened.dev() != metadata.dev() || opened.ino() != metadata.ino() {
+            return Err(SupervisorError::CorruptLease(
+                "restart record changed during descriptor binding".to_string(),
+            ));
+        }
+    }
+    Ok(file)
+}
+
+fn read_record(run_root: &Path) -> Result<Option<RestartRecord>, SupervisorError> {
+    read_record_file(run_root)?
+        .map(|(_, bytes)| decode_record(&bytes))
+        .transpose()
+}
+
+fn decode_record(bytes: &[u8]) -> Result<RestartRecord, SupervisorError> {
+    let value: serde_json::Value = serde_json::from_slice(bytes)
         .map_err(|error| SupervisorError::CorruptLease(error.to_string()))?;
     let mut record = if value
         .get("schema_version")
@@ -227,7 +266,7 @@ fn read_record(run_root: &Path) -> Result<Option<RestartRecord>, SupervisorError
         let record: RestartRecord = serde_json::from_value(value)
             .map_err(|error| SupervisorError::CorruptLease(error.to_string()))?;
         record.validate()?;
-        return Ok(Some(record));
+        return Ok(record);
     } else if value.get("agent_id").is_some() {
         // The historical companion writer also carried a main-window
         // projection. Migrate its acknowledged attempts, never erase them.
@@ -256,19 +295,30 @@ fn read_record(run_root: &Path) -> Result<Option<RestartRecord>, SupervisorError
     };
     record.record_sha256 = record.digest()?;
     record.validate()?;
-    Ok(Some(record))
+    Ok(record)
 }
 
-fn write_record(run_root: &Path, mut record: RestartRecord) -> Result<(), SupervisorError> {
+fn write_record(run_root: &Path, record: RestartRecord) -> Result<(), SupervisorError> {
+    write_record_with_io(
+        run_root,
+        record,
+        crate::durable_publish::publish,
+        |file, parent| {
+            file.sync_all()?;
+            parent.sync_all()
+        },
+    )
+}
+
+fn write_record_with_io(
+    run_root: &Path,
+    mut record: RestartRecord,
+    publish: impl FnOnce(&Path, &Path) -> std::io::Result<()>,
+    _sync_unchanged: impl FnOnce(&File, &File) -> std::io::Result<()>,
+) -> Result<(), SupervisorError> {
     record.record_sha256 = record.digest()?;
     record.validate()?;
     std::fs::create_dir_all(run_root)?;
-    let sequence = RESTART_JOURNAL_SEQUENCE.fetch_add(1, Ordering::Relaxed);
-    let temp_path = run_root.join(format!(
-        ".supervisor-restart-budget-{}-{sequence}.tmp",
-        std::process::id()
-    ));
-    let final_path = run_root.join(RESTART_JOURNAL_FILE);
     let mut bytes = serde_json::to_vec(&record)
         .map_err(|error| SupervisorError::CorruptLease(error.to_string()))?;
     bytes.push(b'\n');
@@ -277,6 +327,33 @@ fn write_record(run_root: &Path, mut record: RestartRecord) -> Result<(), Superv
             "restart record exceeds bound".to_string(),
         ));
     }
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        // Hold both original descriptors while confirming the whole canonical
+        // record. A normalized legacy record still takes the migration path.
+        use std::os::unix::fs::OpenOptionsExt;
+        let parent = OpenOptions::new()
+            .read(true)
+            .custom_flags(libc::O_DIRECTORY | libc::O_NOFOLLOW)
+            .open(run_root)?;
+        if let Some((file, current)) = read_record_file(run_root)? {
+            decode_record(&current)?;
+            if current == bytes && file.metadata()?.permissions().mode() & 0o7777 == 0o600 {
+                // Visibility is not a durable acknowledgement: an earlier
+                // rename may have succeeded before directory sync failed.
+                // Reconfirm the unchanged file AND parent without rewriting.
+                _sync_unchanged(&file, &parent)?;
+                return Ok(());
+            }
+        }
+    }
+    let sequence = RESTART_JOURNAL_SEQUENCE.fetch_add(1, Ordering::Relaxed);
+    let temp_path = run_root.join(format!(
+        ".supervisor-restart-budget-{}-{sequence}.tmp",
+        std::process::id()
+    ));
+    let final_path = run_root.join(RESTART_JOURNAL_FILE);
     let mut options = OpenOptions::new();
     options.write(true).create_new(true);
     #[cfg(unix)]
@@ -288,7 +365,7 @@ fn write_record(run_root: &Path, mut record: RestartRecord) -> Result<(), Superv
     file.write_all(&bytes)?;
     file.sync_all()?;
     drop(file);
-    if let Err(error) = crate::durable_publish::publish(&temp_path, &final_path) {
+    if let Err(error) = publish(&temp_path, &final_path) {
         let _ = std::fs::remove_file(&temp_path);
         return Err(error.into());
     }
@@ -452,3 +529,7 @@ mod tests {
         assert!(exhausted);
     }
 }
+
+#[cfg(all(test, unix))]
+#[path = "restart_journal_persistence_tests.rs"]
+mod persistence_tests;

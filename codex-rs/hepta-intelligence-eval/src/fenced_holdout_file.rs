@@ -14,6 +14,8 @@ use std::io::Read;
 use std::io::Seek;
 use std::io::SeekFrom;
 use std::io::Write;
+use std::ops::Deref;
+use std::ops::DerefMut;
 
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
@@ -57,16 +59,40 @@ impl fmt::Display for LockedFileCasErrorV1 {
 impl StdError for LockedFileCasErrorV1 {}
 
 pub struct LockedFileFinalHoldoutCasStoreV1 {
-    file: File,
+    file: HeldFile,
     binding: Digest32,
     state: Option<FinalHoldoutCasRecordV1>,
     length: u64,
     poisoned: bool,
 }
 
+// Own the acquisition, including fallible constructor validation. Closing one
+// fd alone does not release a lock retained by a fork's open description.
+struct HeldFile(File);
+
+impl Deref for HeldFile {
+    type Target = File;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+impl DerefMut for HeldFile {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
+}
+
+impl Drop for HeldFile {
+    fn drop(&mut self) {
+        let _ = self.0.unlock();
+    }
+}
+
 impl LockedFileFinalHoldoutCasStoreV1 {
-    pub fn create(mut file: File, binding: Digest32) -> Result<Self, LockedFileCasErrorV1> {
-        acquire(&file, binding)?;
+    pub fn create(file: File, binding: Digest32) -> Result<Self, LockedFileCasErrorV1> {
+        let mut file = acquire(file, binding)?;
         if file.metadata().map_err(io_error)?.len() != 0 {
             return Err(LockedFileCasErrorV1::AlreadyInitialized);
         }
@@ -87,18 +113,18 @@ impl LockedFileFinalHoldoutCasStoreV1 {
     }
 
     pub fn recover(
-        mut file: File,
+        file: File,
         binding: Digest32,
         minimum: Option<FinalHoldoutCasAnchorV1>,
     ) -> Result<Self, LockedFileCasErrorV1> {
-        acquire(&file, binding)?;
+        let mut file = acquire(file, binding)?;
         let length = file.metadata().map_err(io_error)?.len();
         if length > MAX_BYTES {
             return Err(LockedFileCasErrorV1::Capacity);
         }
         file.seek(SeekFrom::Start(0)).map_err(io_error)?;
         let mut bytes = Vec::new();
-        (&mut file)
+        (&mut *file)
             .take(MAX_BYTES + 1)
             .read_to_end(&mut bytes)
             .map_err(io_error)?;
@@ -426,7 +452,7 @@ fn record_anchor(record: &FinalHoldoutCasRecordV1) -> FinalHoldoutCasAnchorV1 {
     }
 }
 
-fn acquire(file: &File, binding: Digest32) -> Result<(), LockedFileCasErrorV1> {
+fn acquire(file: File, binding: Digest32) -> Result<HeldFile, LockedFileCasErrorV1> {
     if binding.is_zero() {
         return Err(LockedFileCasErrorV1::Binding);
     }
@@ -436,7 +462,8 @@ fn acquire(file: &File, binding: Digest32) -> Result<(), LockedFileCasErrorV1> {
     file.try_lock().map_err(|error| match error {
         TryLockError::WouldBlock => LockedFileCasErrorV1::Busy,
         TryLockError::Error(error) => LockedFileCasErrorV1::Io(error.kind()),
-    })
+    })?;
+    Ok(HeldFile(file))
 }
 
 fn io_error(error: io::Error) -> LockedFileCasErrorV1 {

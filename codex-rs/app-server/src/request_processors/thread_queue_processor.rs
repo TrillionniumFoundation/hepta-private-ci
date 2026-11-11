@@ -107,6 +107,7 @@ impl ThreadQueueRequestProcessor {
         let mode = match params.mode {
             ThreadQueueReconcileMode::AllowIfAbsent => QueueReconcileMode::AllowIfAbsent,
             ThreadQueueReconcileMode::ReconcileOnly => QueueReconcileMode::ReconcileOnly,
+            ThreadQueueReconcileMode::CloseIfAbsent => QueueReconcileMode::CloseIfAbsent,
         };
         let service_response = self
             .service()?

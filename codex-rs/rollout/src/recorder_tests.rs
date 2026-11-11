@@ -5,6 +5,7 @@ use crate::ResponseItemEnvelope;
 use crate::RolloutItem;
 use crate::RolloutLine;
 use crate::config::RolloutConfig;
+use crate::test_support::private_home;
 use chrono::TimeZone;
 use codex_protocol::SessionId;
 use codex_protocol::ThreadId;
@@ -171,7 +172,7 @@ async fn opening_existing_rollout_preserves_modified_time() -> std::io::Result<(
 
 #[tokio::test]
 async fn state_db_init_backfills_before_returning() -> anyhow::Result<()> {
-    let home = TempDir::new().expect("temp dir");
+    let home = private_home().expect("temp dir");
     let uuid = Uuid::new_v4();
     let thread_id = ThreadId::from_string(&uuid.to_string())?;
     let rollout_path = home.path().join(format!(
@@ -1156,7 +1157,7 @@ async fn list_threads_db_disabled_does_not_skip_paginated_items() -> std::io::Re
 #[tokio::test]
 async fn list_threads_db_enabled_preserves_metadata_for_missing_rollout_paths()
 -> std::io::Result<()> {
-    let home = TempDir::new().expect("temp dir");
+    let home = private_home().expect("temp dir");
     let config = test_config(home.path());
 
     let uuid = Uuid::from_u128(9010);
@@ -1250,7 +1251,7 @@ async fn list_threads_db_enabled_preserves_metadata_for_missing_rollout_paths()
 
 #[tokio::test]
 async fn list_threads_state_db_only_skips_jsonl_repair_scan() -> std::io::Result<()> {
-    let home = TempDir::new().expect("temp dir");
+    let home = private_home().expect("temp dir");
     let config = test_config(home.path());
 
     let runtime = codex_state::StateRuntime::init(
@@ -1349,7 +1350,7 @@ async fn list_threads_state_db_only_skips_jsonl_repair_scan() -> std::io::Result
 
 #[tokio::test]
 async fn list_threads_default_filter_returns_filesystem_scan_results() -> std::io::Result<()> {
-    let home = TempDir::new().expect("temp dir");
+    let home = private_home().expect("temp dir");
     let config = test_config(home.path());
 
     let uuid = Uuid::from_u128(9013);
@@ -1440,7 +1441,7 @@ async fn list_threads_default_filter_returns_filesystem_scan_results() -> std::i
 
 #[tokio::test]
 async fn list_threads_metadata_filter_overlays_state_db_list_metadata() -> std::io::Result<()> {
-    let home = TempDir::new().expect("temp dir");
+    let home = private_home().expect("temp dir");
     let config = test_config(home.path());
 
     let uuid = Uuid::from_u128(9015);
@@ -1596,7 +1597,7 @@ fn fill_missing_thread_item_metadata_preserves_identity_and_prefers_state_git_fi
 
 #[tokio::test]
 async fn list_threads_search_repairs_stale_state_db_hits_before_returning() -> std::io::Result<()> {
-    let home = TempDir::new().expect("temp dir");
+    let home = private_home().expect("temp dir");
     let config = test_config(home.path());
 
     let uuid = Uuid::from_u128(9014);

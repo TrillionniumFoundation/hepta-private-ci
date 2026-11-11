@@ -13,6 +13,21 @@ use codex_hepta_paths::HeptaFleetRoot;
 
 use crate::AgentdError;
 
+#[path = "config_desktop.rs"]
+mod desktop;
+
+#[path = "config_sockets.rs"]
+mod sockets;
+pub(crate) use sockets::AgentdSocketInputs;
+
+#[cfg(target_os = "linux")]
+#[path = "config_root_handoff.rs"]
+mod root_handoff;
+#[cfg(target_os = "linux")]
+pub use root_handoff::PreparedRootAgentdConfig;
+#[cfg(target_os = "linux")]
+pub use root_handoff::drop_root_native_owner_credentials;
+
 pub const HEPTA_AGENT_ID_ENV: &str = "HEPTA_AGENT_ID";
 pub const HEPTA_AGENT_GENERATION_ENV: &str = "HEPTA_AGENT_GENERATION";
 pub const HEPTA_AGENT_HOME_ENV: &str = "HEPTA_AGENT_HOME";
@@ -71,10 +86,16 @@ fn cognitive_retrieval_mode_from_process_environment() -> Result<CognitiveRetrie
     parse_cognitive_retrieval_mode(std::env::var_os(HEPTA_COGNITIVE_RETRIEVAL_MODE_ENV))
 }
 
+enum WriterSource {
+    OrdinaryPath,
+    #[cfg(target_os = "linux")]
+    RootDescriptor(File),
+}
+
 pub struct AgentdConfig {
     identity: AgentdIdentity,
+    sockets: AgentdSocketInputs,
     registry: FleetRegistry,
-    _writer_lock: File,
     authbus_trust_file: Option<PathBuf>,
     evidence_trust_file: Option<PathBuf>,
     automation_effect_host_file: Option<PathBuf>,
@@ -85,14 +106,27 @@ pub struct AgentdConfig {
     cognitive_ranker: Option<std::sync::Arc<crate::PinnedCognitiveRanker>>,
     production_operations: Option<crate::AgentdProductionOperationRuntimeConfig>,
     production_writer_host: Option<std::sync::Arc<crate::AgentdProductionWriterHost>>,
+    notes_objective: Option<crate::AgentdNotesObjectiveConfig>,
+    desktop_objective: Option<crate::AgentdDesktopObjectiveConfig>,
+    #[cfg(target_os = "linux")]
+    notes_ui: Option<crate::AgentdNotesUiRuntime>,
+    #[cfg(target_os = "linux")]
+    notes_thread_tools: Option<crate::AgentdNotesThreadToolRuntime>,
+    #[cfg(target_os = "linux")]
+    desktop_thread_tools: Option<crate::AgentdDesktopThreadToolRuntime>,
     cognitive_retrieval_mode: CognitiveRetrievalMode,
     cognitive_retrieval_context: Option<std::sync::Arc<dyn crate::CurrentMemoryRetrievalContext>>,
     cognitive_retrieval_learning: Option<std::sync::Arc<crate::CognitiveRetrievalLearningSink>>,
     plasticity_bootstrap: Option<crate::PlasticityRuntimeBootstrapV1>,
+    learning_iteration_bootstrap: Option<crate::LearningIterationRuntimeBootstrapV1>,
+    terminal_learning_bootstrap: Option<crate::TerminalLearningRuntimeBootstrapV1>,
+    neuron_generation_bootstrap: Option<crate::NeuronGenerationRuntimeBootstrapV2>,
     intuition_policy_host: Option<std::sync::Arc<crate::AgentdIntuitionPolicyHostV1>>,
     intelligence_product_runner: Option<std::sync::Arc<crate::AgentdIntelligenceProductRunnerV1>>,
     intelligence_invocation_provider:
         Option<std::sync::Arc<dyn crate::AgentdIntelligenceInvocationProviderV1>>,
+    // Retire original facade state before the one retained process-owner file.
+    _writer_lock: std::sync::Arc<File>,
 }
 
 impl AgentdConfig {
@@ -133,6 +167,29 @@ impl AgentdConfig {
         codex_home: PathBuf,
         current_dir: PathBuf,
     ) -> Result<Self, AgentdError> {
+        Self::load_with_writer_source(
+            fleet_root,
+            agent_id,
+            spawn_generation,
+            home_root,
+            run_root,
+            codex_home,
+            current_dir,
+            WriterSource::OrdinaryPath,
+        )
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    fn load_with_writer_source(
+        fleet_root: PathBuf,
+        agent_id: AgentId,
+        spawn_generation: u64,
+        home_root: PathBuf,
+        run_root: PathBuf,
+        codex_home: PathBuf,
+        current_dir: PathBuf,
+        writer_source: WriterSource,
+    ) -> Result<Self, AgentdError> {
         if spawn_generation == 0 {
             return Err(AgentdError::Invalid(
                 "spawn generation must be non-zero".to_string(),
@@ -168,12 +225,16 @@ impl AgentdConfig {
             )));
         }
 
-        let writer_lock = OpenOptions::new()
-            .create(true)
-            .truncate(false)
-            .read(true)
-            .write(true)
-            .open(record.layout.writer_lock())?;
+        let writer_lock = match writer_source {
+            WriterSource::OrdinaryPath => OpenOptions::new()
+                .create(true)
+                .truncate(false)
+                .read(true)
+                .write(true)
+                .open(record.layout.writer_lock())?,
+            #[cfg(target_os = "linux")]
+            WriterSource::RootDescriptor(file) => file,
+        };
         writer_lock.try_lock().map_err(|error| {
             AgentdError::Invalid(format!(
                 "agent {agent_id} already has a live writer lock: {error}"
@@ -197,7 +258,8 @@ impl AgentdConfig {
                 app_server_socket,
             },
             registry,
-            _writer_lock: writer_lock,
+            _writer_lock: std::sync::Arc::new(writer_lock),
+            sockets: AgentdSocketInputs::Bind,
             authbus_trust_file: None,
             evidence_trust_file: None,
             automation_effect_host_file: None,
@@ -208,10 +270,21 @@ impl AgentdConfig {
             cognitive_ranker: None,
             production_operations: None,
             production_writer_host: None,
+            notes_objective: None,
+            desktop_objective: None,
+            #[cfg(target_os = "linux")]
+            notes_ui: None,
+            #[cfg(target_os = "linux")]
+            notes_thread_tools: None,
+            #[cfg(target_os = "linux")]
+            desktop_thread_tools: None,
             cognitive_retrieval_mode: CognitiveRetrievalMode::Compatibility,
             cognitive_retrieval_context: None,
             cognitive_retrieval_learning: None,
             plasticity_bootstrap: None,
+            learning_iteration_bootstrap: None,
+            terminal_learning_bootstrap: None,
+            neuron_generation_bootstrap: None,
             intuition_policy_host: None,
             intelligence_product_runner: None,
             intelligence_invocation_provider: None,
@@ -318,13 +391,56 @@ impl AgentdConfig {
         self.cognitive_ranker.clone()
     }
 
+    #[cfg(target_os = "linux")]
+    pub(crate) fn require_unconfigured_production_hosts(&self) -> Result<(), AgentdError> {
+        if self.production_writer_host.is_some() || self.production_operations.is_some() {
+            return Err(AgentdError::Invalid(
+                "production host is already configured".to_string(),
+            ));
+        }
+        Ok(())
+    }
+
+    #[cfg(target_os = "linux")]
+    pub(crate) fn install_production_hosts(
+        &mut self,
+        host: std::sync::Arc<crate::AgentdProductionWriterHost>,
+        mut operations: crate::AgentdProductionOperationRuntimeConfig,
+    ) -> Result<(), AgentdError> {
+        self.require_unconfigured_production_hosts()?;
+        operations.validate_for(self)?;
+        let writer = host.writer();
+        if writer.owner_agent_id() != &self.identity.agent_id
+            || host.spawn_generation() != self.identity.spawn_generation
+            || writer.authority() != &operations.authority
+            || writer.lease_id() != operations.lease_id
+            || writer.generation() != operations.lease_generation
+        {
+            return Err(AgentdError::GenerationFenced(
+                "production recovered writer identity differs from Agentd".to_string(),
+            ));
+        }
+        // After every metadata callback and recovery await, recheck the same
+        // live verifier immediately before publishing either handle.
+        operations
+            .verifier
+            .verify(&operations.authority, &self.identity.agent_id)
+            .map_err(AgentdError::GenerationFenced)?;
+        // No fallible operation follows either assignment. The caller has
+        // revalidated this same original owner before this exclusive commit.
+        operations.verifier = self.retain_production_verifier(operations.verifier);
+        self.production_writer_host = Some(host);
+        self.production_operations = Some(operations);
+        Ok(())
+    }
+
     /// Attach an externally-authorized long-lived production operation host.
     /// Default process-environment startup never manufactures or loads this
     /// authority; an embedding must provide the complete verified runtime
     /// configuration explicitly.
     pub fn with_production_operations(
         mut self,
-        operations: crate::AgentdProductionOperationRuntimeConfig,
+        mut operations: crate::AgentdProductionOperationRuntimeConfig,
     ) -> Result<Self, AgentdError> {
         operations.validate_for(&self)?;
         if self.production_operations.is_some() {
@@ -332,6 +448,7 @@ impl AgentdConfig {
                 "production operation runtime already configured".to_string(),
             ));
         }
+        operations.verifier = self.retain_production_verifier(operations.verifier);
         self.production_operations = Some(operations);
         Ok(self)
     }
@@ -340,6 +457,143 @@ impl AgentdConfig {
         &mut self,
     ) -> Option<crate::AgentdProductionOperationRuntimeConfig> {
         self.production_operations.take()
+    }
+
+    /// Install the actual Session UI beside the same original protected writer.
+    /// `run` supervises it as a required task; a Session exit drains this host.
+    #[cfg(target_os = "linux")]
+    pub fn with_original_notes_ui(
+        mut self,
+        runtime: crate::AgentdNotesUiRuntime,
+    ) -> Result<Self, AgentdError> {
+        if self.notes_ui.is_some()
+            || self.notes_thread_tools.is_some()
+            || self.desktop_thread_tools.is_some()
+        {
+            return Err(AgentdError::Invalid(
+                "original Notes UI already configured".into(),
+            ));
+        }
+        runtime.validate_for(&self)?;
+        self.notes_ui = Some(runtime);
+        Ok(self)
+    }
+
+    #[cfg(target_os = "linux")]
+    pub(crate) fn take_original_notes_ui(&mut self) -> Option<crate::AgentdNotesUiRuntime> {
+        self.notes_ui.take()
+    }
+
+    #[cfg(target_os = "linux")]
+    pub(crate) fn install_original_notes_thread_tools(
+        mut self,
+        runtime: crate::AgentdNotesThreadToolRuntime,
+    ) -> Result<Self, AgentdError> {
+        if self.notes_ui.is_some()
+            || self.notes_thread_tools.is_some()
+            || self.desktop_thread_tools.is_some()
+        {
+            return Err(AgentdError::Invalid(
+                "original Notes operation mode already selected".into(),
+            ));
+        }
+        runtime.validate_for(&self)?;
+        self.notes_thread_tools = Some(runtime);
+        Ok(self)
+    }
+
+    /// Hold the actual Session for the required original-thread worker. The
+    /// original inherited pidfd and birth validation must precede installation.
+    #[cfg(target_os = "linux")]
+    pub fn with_original_notes_thread_session(
+        mut self,
+        session: crate::AgentdNotesSessionLifetime,
+    ) -> Result<Self, AgentdError> {
+        let runtime = self.notes_thread_tools.as_mut().ok_or_else(|| {
+            AgentdError::Invalid("original Notes thread mode is not installed".into())
+        })?;
+        runtime.install_session(session)?;
+        Ok(self)
+    }
+
+    /// Retain only the mandatory original Start receipt bound to the installed
+    /// model tool profile. It is reverified on the final actual connection.
+    #[cfg(target_os = "linux")]
+    pub fn with_original_notes_thread_seed(
+        mut self,
+        seed: crate::NotesThreadSeedReceipt,
+    ) -> Result<Self, AgentdError> {
+        self.notes_thread_tools
+            .as_mut()
+            .ok_or_else(|| {
+                AgentdError::Invalid("original Notes tool runtime is not installed".into())
+            })?
+            .install_seed(seed)?;
+        Ok(self)
+    }
+
+    #[cfg(target_os = "linux")]
+    pub(crate) fn take_original_notes_thread_tools(
+        &mut self,
+    ) -> Option<crate::AgentdNotesThreadToolRuntime> {
+        self.notes_thread_tools.take()
+    }
+
+    /// Explicit old-incarnation recovery from the trusted sealed deployment.
+    /// The actual current target is taken from the already installed Session
+    /// observer; no UI command supplies either target or a helper path.
+    #[cfg(target_os = "linux")]
+    pub fn with_original_notes_previous_recovery(
+        mut self,
+        launch: crate::AgentdNotesPreviousRecoveryLaunch,
+    ) -> Result<Self, AgentdError> {
+        self.production_operations
+            .as_mut()
+            .ok_or(AgentdError::CognitiveWriteRuntimeUnavailable)?
+            .select_previous_notes_process(launch)?;
+        Ok(self)
+    }
+
+    /// Resolve only on the already recovered original writer. Latest requires
+    /// the installed original-thread seed/session and complete protected cut;
+    /// the existing helper still receives one exact old operation only.
+    #[cfg(target_os = "linux")]
+    pub async fn with_original_notes_previous_recovery_request(
+        self,
+        request: crate::AgentdNotesPreviousRecoveryRequest,
+    ) -> Result<Self, AgentdError> {
+        let operation_id = match &request.selector {
+            crate::AgentdNotesRecoverySelector::ExactOperation { operation_id } => {
+                operation_id.clone()
+            }
+            crate::AgentdNotesRecoverySelector::LatestRecordedOriginalNotes => {
+                self.notes_thread_tools
+                    .as_ref()
+                    .ok_or_else(|| {
+                        AgentdError::Invalid(
+                            "latest recorded recovery requires original thread mode".into(),
+                        )
+                    })?
+                    .latest_recovery_operation(&request.previous_target)
+                    .await?
+            }
+        };
+        self.with_original_notes_previous_recovery(request.resolved(operation_id))
+    }
+
+    /// Attach a sealed old Calculator operation to the same recovered runtime.
+    /// The supplied current identity must already be an actual attached target.
+    #[cfg(target_os = "linux")]
+    pub fn with_original_calculator_previous_recovery(
+        mut self,
+        current: &codex_hepta_memory::CalculatorTargetIdentity,
+        launch: crate::AgentdCalculatorPreviousRecoveryLaunch,
+    ) -> Result<Self, AgentdError> {
+        self.production_operations
+            .as_mut()
+            .ok_or(AgentdError::CognitiveWriteRuntimeUnavailable)?
+            .select_previous_calculator_process(current, launch)?;
+        Ok(self)
     }
 
     /// Attach an externally verified production cognitive writer to normal
@@ -359,10 +613,10 @@ impl AgentdConfig {
                 "production cognitive writer owner does not match Agentd identity".to_string(),
             ));
         }
-        if writer.generation() != self.identity.spawn_generation {
+        if host.spawn_generation() != self.identity.spawn_generation {
             return Err(AgentdError::GenerationFenced(format!(
-                "production cognitive writer generation {} does not match Agentd spawn generation {}",
-                writer.generation(),
+                "production host spawn generation {} does not match Agentd spawn generation {}",
+                host.spawn_generation(),
                 self.identity.spawn_generation
             )));
         }
@@ -467,6 +721,81 @@ impl AgentdConfig {
         self.plasticity_bootstrap.take()
     }
 
+    /// Explicit control-owner opt-in. Work runs separately from foreground turns.
+    /// The governed plasticity owner must also be attached before runtime start.
+    pub fn with_learning_iteration_bootstrap(
+        mut self,
+        bootstrap: crate::LearningIterationRuntimeBootstrapV1,
+    ) -> Result<Self, AgentdError> {
+        bootstrap.require_identity(&self.identity)?;
+        if self.learning_iteration_bootstrap.is_some() {
+            return Err(AgentdError::Invalid(
+                "learning iteration owner already configured".into(),
+            ));
+        }
+        self.learning_iteration_bootstrap = Some(bootstrap);
+        Ok(self)
+    }
+
+    pub(crate) fn take_learning_iteration_bootstrap(
+        &mut self,
+    ) -> Option<crate::LearningIterationRuntimeBootstrapV1> {
+        self.learning_iteration_bootstrap.take()
+    }
+
+    /// Attach the narrow native terminal-value learner explicitly. It shares
+    /// the existing ledger/Memory owners and runs outside foreground turns.
+    pub fn with_terminal_learning_bootstrap(
+        mut self,
+        bootstrap: crate::TerminalLearningRuntimeBootstrapV1,
+    ) -> Result<Self, AgentdError> {
+        bootstrap.require_identity(&self.identity)?;
+        if self.terminal_learning_bootstrap.is_some() {
+            return Err(AgentdError::Invalid(
+                "terminal learning owner already configured".into(),
+            ));
+        }
+        self.terminal_learning_bootstrap = Some(bootstrap);
+        Ok(self)
+    }
+
+    pub(crate) fn take_terminal_learning_bootstrap(
+        &mut self,
+    ) -> Option<crate::TerminalLearningRuntimeBootstrapV1> {
+        self.terminal_learning_bootstrap.take()
+    }
+
+    /// Attach an already admitted stateful control adapter and its exclusive
+    /// journal. Ordinary process configuration leaves this service absent.
+    pub fn with_neuron_generation_bootstrap(
+        mut self,
+        bootstrap: crate::NeuronGenerationRuntimeBootstrapV2,
+    ) -> Result<Self, AgentdError> {
+        bootstrap.require_identity(&self.identity)?;
+        self.require_neuron_generation_profile()?;
+        self.neuron_generation_bootstrap = Some(bootstrap);
+        Ok(self)
+    }
+
+    /// Check the explicit generation profile before opening its durable owners.
+    pub fn require_neuron_generation_profile(&self) -> Result<(), AgentdError> {
+        if self.neuron_generation_bootstrap.is_some()
+            || self.notes_objective.is_some()
+            || self.desktop_objective.is_some()
+        {
+            return Err(AgentdError::Invalid(
+                "generation service requires its own explicit non-finite profile".into(),
+            ));
+        }
+        Ok(())
+    }
+
+    pub(crate) fn take_neuron_generation_bootstrap(
+        &mut self,
+    ) -> Option<crate::NeuronGenerationRuntimeBootstrapV2> {
+        self.neuron_generation_bootstrap.take()
+    }
+
     /// Attach the authenticated current intuition-policy product caller.
     /// The caller is pinned to this exact Agentd identity/generation and owns
     /// no model, scorer, RNG or learning facts itself.
@@ -534,11 +863,64 @@ impl AgentdConfig {
         self.intelligence_invocation_provider.clone()
     }
 
+    /// Opt in to one frozen literal Notes profile; no general AI executor.
+    pub fn with_notes_objective(
+        mut self,
+        config: crate::AgentdNotesObjectiveConfig,
+    ) -> Result<Self, AgentdError> {
+        config.validate()?;
+        if self.notes_objective.is_some()
+            || self.desktop_objective.is_some()
+            || self.neuron_generation_bootstrap.is_some()
+        {
+            return Err(AgentdError::Invalid(
+                "Notes Objective adapter already configured".into(),
+            ));
+        }
+        self.notes_objective = Some(config);
+        Ok(self)
+    }
+
+    #[cfg(target_os = "linux")]
+    pub(crate) fn require_finite_notes_profile(&self) -> Result<(), AgentdError> {
+        if self.production_writer_host.is_none()
+            || self.notes_objective.is_none()
+            || self.authbus_trust_file.is_none()
+            || self.authbus_checkpoint_file.is_none()
+            || self.objective_profile_file.is_none()
+            || self.production_operations.is_some()
+            || self.evidence_trust_file.is_some()
+            || self.evidence_recovery_frontier_file.is_some()
+            || self.evidence_recovery_frontier_trust_file.is_some()
+            || self.automation_effect_host_file.is_some()
+            || self.cognitive_ranker.is_some()
+            || self.cognitive_retrieval_mode != CognitiveRetrievalMode::Compatibility
+            || self.cognitive_retrieval_context.is_some()
+            || self.cognitive_retrieval_learning.is_some()
+            || self.plasticity_bootstrap.is_some()
+            || self.learning_iteration_bootstrap.is_some()
+            || self.terminal_learning_bootstrap.is_some()
+            || self.neuron_generation_bootstrap.is_some()
+            || self.intuition_policy_host.is_some()
+            || self.intelligence_product_runner.is_some()
+            || self.intelligence_invocation_provider.is_some()
+        {
+            return Err(AgentdError::Invalid(
+                "finite Notes profile requires its original writer, Notes, AuthBus and admission owners without another execution plane".into(),
+            ));
+        }
+        Ok(())
+    }
+
+    pub(crate) fn notes_objective(&self) -> Option<crate::AgentdNotesObjectiveConfig> {
+        self.notes_objective.clone()
+    }
+
     pub fn identity(&self) -> &AgentdIdentity {
         &self.identity
     }
 
-    pub(crate) fn into_parts(self) -> (AgentdIdentity, FleetRegistry, File) {
+    pub(crate) fn into_parts(self) -> (AgentdIdentity, FleetRegistry, std::sync::Arc<File>) {
         (self.identity, self.registry, self._writer_lock)
     }
 }
@@ -585,3 +967,6 @@ fn require_exact_path(actual: &Path, expected: &Path, label: &str) -> Result<(),
 #[cfg(test)]
 #[path = "config_tests.rs"]
 mod tests;
+
+#[path = "owner_writer_custody.rs"]
+mod writer_custody;

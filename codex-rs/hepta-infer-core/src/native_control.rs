@@ -280,6 +280,7 @@ impl DurableInferenceControl {
             .maximum_in_flight
             .is_some_and(|limit| limit != maximum_in_flight)
             || self.records.contains_key(&request.request_id)
+            || self.generation.records.contains_key(&request.request_id)
         {
             return Err(Error::Conflict);
         }
@@ -290,7 +291,9 @@ impl DurableInferenceControl {
                 Err(Error::Conflict)
             };
         }
-        if self.records.len() + self.native.records.len() >= self.capacity {
+        if self.records.len() + self.native.records.len() + self.generation.records.len()
+            >= self.capacity
+        {
             return Err(Error::CapacityExceeded);
         }
         self.ensure_native_dispatch_space()?;
@@ -475,7 +478,11 @@ impl DurableInferenceControl {
         // This exclusive owner serializes active calls. Leave room for bounded
         // dispatch/cancel metadata and the next maximal observed output before
         // admitting a new external execution. This is not an archival policy.
-        if self.journal_bytes > super::MAX_JOURNAL_BYTES - 2 * super::MAX_JOURNAL_LINE_BYTES as u64
+        if self
+            .journal_bytes
+            .checked_add(self.generation.reserved_bytes()?)
+            .ok_or(Error::ArithmeticOverflow)?
+            > super::MAX_JOURNAL_BYTES - 2 * super::MAX_JOURNAL_LINE_BYTES as u64
         {
             return Err(Error::CapacityExceeded);
         }

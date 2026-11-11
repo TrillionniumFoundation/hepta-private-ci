@@ -1,0 +1,15 @@
+cargo clippy --fix --tests --allow-dirty {args}
+    Checking codex-hepta-types v0.0.0 (/workspace/scratch/37175388b26f/hepta-cell-convergence/codex-rs/hepta-types)
+    Checking codex-hepta-infer-core v0.0.0 (/workspace/scratch/37175388b26f/hepta-cell-convergence/codex-rs/hepta-infer-core)
+    Checking codex-hepta-neuron v0.0.0 (/workspace/scratch/37175388b26f/hepta-cell-convergence/codex-rs/hepta-neuron)
+warning: this call to `clone` can be replaced with `std::slice::from_ref`
+   --> hepta-neuron/src/cell_owner_population_tests.rs:267:58
+    |
+267 |     let census = checked(cell_owner_population_census_v2(&[active.clone()], limits()));
+    |                                                          ^^^^^^^^^^^^^^^^^ help: try: `std::slice::from_ref(&active)`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#cloned_ref_to_slice_refs
+    = note: `#[warn(clippy::cloned_ref_to_slice_refs)]` on by default
+
+warning: `codex-hepta-neuron` (lib test) generated 1 warning
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 21.04s

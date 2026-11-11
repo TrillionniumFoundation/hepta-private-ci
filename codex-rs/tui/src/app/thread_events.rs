@@ -159,6 +159,7 @@ impl ThreadEventStore {
                 | ServerNotification::CommandExecOutputDelta(_)
                 | ServerNotification::ProcessOutputDelta(_)
                 | ServerNotification::ProcessExited(_)
+                | ServerNotification::ProcessIndeterminate(_)
         ) {
             return;
         }

@@ -1,0 +1,80 @@
+{
+  "parent_observed": {
+    "cpu_system_seconds": 0.15420500000000004,
+    "cpu_user_seconds": 0.586357,
+    "finished_at_utc": "2026-11-06T07:34:13.967729+00:00",
+    "returncode": 0,
+    "scope": "entire direct child including interpreter startup and failures",
+    "started_at_utc": "2026-11-06T07:34:13.224742+00:00",
+    "stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stdout": {
+      "bytes": 1151,
+      "sha256": "e42c2120fcd5a1157236445b1462c5727bb1010f410e0787226d81743ad7a1d1"
+    },
+    "wall_seconds": 0.7429745299996284
+  },
+  "phase": "parent_next",
+  "pid": 39,
+  "process_instance_id": "304ebdfc5d654edc8f6668641310cd9e",
+  "protocol_sha256": "84bd11616fe532ad4539837a2ccd4bf53e8c5b0659d2fe910241a847be7c939a",
+  "python_optimize": 0,
+  "result": {
+    "encoder": {
+      "calls": 1,
+      "encode_seconds": 0.010364606998336967,
+      "encoded_tokens": 13,
+      "examples": 1,
+      "input_tokens": 13,
+      "load_seconds": 0.438984401000198,
+      "padded_tokens": 13,
+      "truncated_examples": 0
+    },
+    "engineering_passed": true,
+    "expected": [
+      "learn",
+      "verify",
+      "serve"
+    ],
+    "public_input": {
+      "payload": [
+        "learn",
+        "verify",
+        "learn",
+        "serve",
+        "verify"
+      ],
+      "text": "Remove repeated items but keep their first-seen order."
+    },
+    "receipt": {
+      "artifact": "1b5091f1d5a920bddf57999367d60aa56116f2040da933cb8afc2b330c5e4455",
+      "epoch": 1,
+      "predictions": [
+        0
+      ],
+      "source_version": "bcdfb871c32611f228aa878fd4f45dc78eab87c78ee8c1c6f93b979b04bea453"
+    },
+    "request_wall_seconds": 0.03632441199806635,
+    "result": {
+      "correct": true,
+      "error": null,
+      "label_correct": true,
+      "output": [
+        "learn",
+        "verify",
+        "serve"
+      ],
+      "predicted_skill": "unique_stable"
+    },
+    "state_preserved": true
+  },
+  "status": "completed",
+  "worker_metrics": {
+    "cpu_system_seconds": 0.14542399999999997,
+    "cpu_user_seconds": 0.531426,
+    "peak_rss_bytes": 209682432,
+    "wall_seconds": 0.6758410429974901
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "observedAt": "2026-10-23T20:16:32.110091+00:00",
+  "unit": "hepta-tmp-private-roots-fixture-after-20261023T201632.service",
+  "cwd": "/data/hepta-cur-decoding-closure",
+  "head": "ec392d3067809cbc4c1728a53bc0c48d4a7f7347",
+  "dirtyDiffSha256": "313f3de35f5190618ff942a1d4c936951a3792268b7131c0b80fd87197997f0d",
+  "environment": {
+    "CARGO_HOME": "/home/qian-qi/.cargo",
+    "CARGO_NET_OFFLINE": "true",
+    "CARGO_TARGET_DIR": "/data/hepta-cur-decoding-target",
+    "CARGO_BUILD_JOBS": "1",
+    "RUSTUP_TOOLCHAIN": "1.95.0",
+    "TMPDIR": "/data/hepta-cur-decoding-tmp",
+    "RUNNER_TEMP": "/data/hepta-cur-decoding-tmp/reports",
+    "RUSTY_V8_ARCHIVE": "/data/hepta-dependency-v8-pair/rusty-v8-150.4.0-x86_64-unknown-linux-gnu/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz",
+    "RUSTY_V8_SRC_BINDING_PATH": "/data/hepta-dependency-v8-pair/rusty-v8-150.4.0-x86_64-unknown-linux-gnu/src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs",
+    "PATH": "/home/qian-qi/.elan/bin:/home/qian-qi/.local/bin:/home/qian-qi/.codex/tmp/arg0-linux/codex-arg0OVEtJ2:/home/qian-qi/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/override:/home/qian-qi/.elan/bin:/home/qian-qi/.local/bin:/home/qian-qi/.npm-global/bin:/home/qian-qi/.elan/bin:/home/qian-qi/.cargo/bin:/home/qian-qi/.local/bin:/opt/gradle/current/bin:/opt/android-sdk/cmdline-tools/latest/bin:/opt/android-sdk/platform-tools:/opt/android-sdk/build-tools/35.0.1:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/qian-qi/.linuxbrew/bin:/home/qian-qi/.linuxbrew/sbin:/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin:/home/qian-qi/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/fallback:/usr/lib/chatgpt/resources",
+    "LANG": "C.UTF-8",
+    "LC_ALL": "C.UTF-8",
+    "CODEX_CI": "1"
+  },
+  "command": [
+    "just",
+    "test",
+    "-p",
+    "codex-linux-sandbox",
+    "--locked",
+    "--test-threads",
+    "2",
+    "-E",
+    "test(sandbox_keeps_parent_repo_discovery_while_blocking_child_metadata)",
+    "--success-output",
+    "immediate"
+  ],
+  "sourceFilesSha256": {
+    "codex-rs/linux-sandbox/tests/suite/landlock.rs": "501e41290678816212dd3f10b65d50c71497c3cddabba0fcfdf149209bbb2344"
+  }
+}

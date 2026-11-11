@@ -1,0 +1,25 @@
+{
+  "status": "failed_exception",
+  "passed": false,
+  "error": "ValueError: Historical byte identity mismatch",
+  "registration_sha256": null,
+  "wall_seconds": 0.02031974600322428,
+  "parent_cpu_seconds": 0.019668138,
+  "sum_helper_process_wall_seconds": 0,
+  "sum_helper_process_cpu_seconds": 0,
+  "cpu_scope": "Parent measurement starts after stdlib imports. Child CPU includes full spawned helper lifetime; nested wall is not additive.",
+  "energy": null,
+  "helper_launch_attempts": 0,
+  "physical_helper_attempts": 0,
+  "new_training_updates": 0,
+  "scope": "Actual proposal helper differential; ordinary Agentd owner/ACK/cancel qualification is recorded separately.",
+  "excluded": [
+    "Actor, critic and emission-head raw floating vectors are not exported by the proposal ABI",
+    "Splitmix sampler",
+    "Natural-task quality",
+    "Frozen LM and learned text-prefix execution",
+    "Optimizer resume",
+    "Adoption benefit",
+    "Complete historical cost"
+  ]
+}

@@ -29,7 +29,20 @@ class ModuleStatusFactsTests(unittest.TestCase):
         self.assertEqual(set(by_id), set(by_binding))
         self.assertEqual(set(by_id), set(by_document))
         for module_id, module in by_id.items():
-            projected = [module, by_binding[module_id], by_document[module_id]]
+            implementation = json.loads(
+                (ROOT / f"docs/modules/{module_id}/IMPLEMENTATION_MAP.json").read_text()
+            )
+            projected = [
+                module,
+                by_binding[module_id],
+                by_document[module_id],
+                {
+                    "source_root_present": implementation["sourceRootPresent"],
+                    "production_implementation": implementation[
+                        "productionImplementation"
+                    ],
+                },
+            ]
             self.assertTrue(
                 all(type(row["source_root_present"]) is bool for row in projected)
             )

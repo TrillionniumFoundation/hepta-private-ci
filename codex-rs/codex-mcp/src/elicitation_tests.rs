@@ -165,6 +165,45 @@ fn closed_event_channel_immediately_cleans_up_pending_elicitation() {
 }
 
 #[tokio::test]
+async fn dropping_callbacks_cleans_exact_responders_and_removes_backpressured_prompts() {
+    let (manager, events, sender) = elicitation_fixture(
+        AskForApproval::OnRequest,
+        PermissionProfile::Disabled,
+        /*reviewer*/ None,
+    );
+    let keys = || {
+        manager
+            .router
+            .requests
+            .lock()
+            .unwrap()
+            .keys()
+            .cloned()
+            .collect::<std::collections::HashSet<_>>()
+    };
+    let mut published = send_elicitation(&sender, /*marker*/ None).boxed();
+    assert!(futures::poll!(&mut published).is_pending());
+    let published_keys = keys();
+    assert_eq!(published_keys.len(), 1);
+    // The existing one-slot channel keeps this second prompt backpressured.
+    let mut backpressured = send_elicitation(&sender, /*marker*/ None).boxed();
+    assert!(futures::poll!(&mut backpressured).is_pending());
+    assert_eq!(keys().len(), 2);
+    let waiting_keys = keys()
+        .difference(&published_keys)
+        .cloned()
+        .collect::<std::collections::HashSet<_>>();
+    drop(published);
+    assert_eq!(keys(), waiting_keys);
+    drop(backpressured);
+    assert!(keys().is_empty());
+    // Teardown cannot withdraw an event already published, but the blocked
+    // event must never appear after the callback future has been dropped.
+    assert!(events.try_recv().is_ok());
+    assert!(events.try_recv().is_err());
+}
+
+#[tokio::test]
 async fn strict_auto_review_respects_explicit_elicitation_denials() {
     for policy in [
         AskForApproval::OnRequest,

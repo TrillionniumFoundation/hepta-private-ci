@@ -97,36 +97,50 @@ async fn five_real_agentd_processes_roll_one_agent_without_stopping_peers() -> R
     // Install the immutable fixture launcher for every agent. Each launcher
     // starts the same real Agentd executable; this lifecycle test must not copy
     // and repeatedly hash a gigabyte debug binary once per isolated peer.
-    for (index, agent) in agents.iter().enumerate() {
-        eprintln!("FLEET_STAGE install agent={index}");
-        let initial = release(
-            &fleet.registry,
-            &agent.agent_id,
-            &format!("initial-{index}"),
-            &v1,
-        )?;
-        eprintln!("FLEET_STAGE start agent={index}");
-        fleet.start_release(agent, initial)?;
-        let (control, health) = fleet.wait_ready(agent, 1).await?;
-        eprintln!("FLEET_STAGE ready agent={index}");
-        ensure!(health.ready, "agent {index} did not become ready");
-        ensure!(control.session_ingress().await?.socket_path == agent.layout.app_server_socket());
-        ensure!(
-            agent
-                .layout
-                .cognitive_root()
-                .join("cognitive_1.sqlite3")
-                .is_file(),
-            "agent {index} cognitive store was not materialized"
-        );
-        ensure!(
-            agent
-                .layout
-                .automation_root()
-                .join("automation_1.sqlite3")
-                .is_file(),
-            "agent {index} automation store was not materialized"
-        );
+    // Keep the real per-agent bootstrap and readiness checks, but let at most
+    // two independent processes initialize concurrently under the same gate.
+    let bootstrap_started = Instant::now();
+    let indexed_agents: Vec<_> = agents.iter().enumerate().collect();
+    for group in indexed_agents.chunks(/*chunk_size*/ 2) {
+        for &(index, agent) in group {
+            eprintln!("FLEET_STAGE install agent={index}");
+            let initial = release(
+                &fleet.registry,
+                &agent.agent_id,
+                &format!("initial-{index}"),
+                &v1,
+            )?;
+            eprintln!("FLEET_STAGE start agent={index}");
+            fleet.start_release(agent, initial)?;
+        }
+        for &(index, agent) in group {
+            let (control, health) = fleet.wait_ready(agent, 1).await?;
+            eprintln!("FLEET_STAGE ready agent={index}");
+            ensure!(health.ready, "agent {index} did not become ready");
+            ensure!(
+                control.session_ingress().await?.socket_path == agent.layout.app_server_socket()
+            );
+            ensure!(
+                agent
+                    .layout
+                    .cognitive_root()
+                    .join("cognitive_1.sqlite3")
+                    .is_file(),
+                "agent {index} cognitive store was not materialized"
+            );
+            ensure!(
+                agent
+                    .layout
+                    .automation_root()
+                    .join("automation_1.sqlite3")
+                    .is_file(),
+                "agent {index} automation store was not materialized"
+            );
+            eprintln!(
+                "FLEET_STAGE bootstrap agent={index} elapsed={:?}",
+                bootstrap_started.elapsed()
+            );
+        }
     }
 
     let peer_ids: Vec<_> = agents[1..]
@@ -317,6 +331,13 @@ async fn five_real_agentd_processes_roll_one_agent_without_stopping_peers() -> R
 /// it does not grant fleet-wide release or promotion authority.
 #[tokio::test(flavor = "multi_thread", worker_threads = 8)]
 async fn six_agent_fleet_lifecycle_keeps_peers_fair_and_isolated() -> Result<()> {
+    let scenario_started = Instant::now();
+    let report_stage = |phase: &str| {
+        eprintln!(
+            "FLEET_TIMING phase={phase} elapsed={:?}",
+            scenario_started.elapsed()
+        );
+    };
     let mut fleet = FleetHarness::new()?;
     let mut agents = Vec::new();
     for (index, agent_id) in SIX_AGENT_IDS.iter().enumerate() {
@@ -344,31 +365,45 @@ async fn six_agent_fleet_lifecycle_keeps_peers_fair_and_isolated() -> Result<()>
     // Install the immutable fixture launcher for every agent. Each launcher
     // starts the same real Agentd executable; this lifecycle test must not copy
     // and repeatedly hash a gigabyte debug binary once per isolated peer.
-    for (index, agent) in agents.iter().enumerate() {
-        eprintln!("FLEET_STAGE install agent={index}");
-        let initial = release(
-            &fleet.registry,
-            &agent.agent_id,
-            &format!("six-initial-{index}"),
-            &v1,
-        )?;
-        eprintln!("FLEET_STAGE start agent={index}");
-        fleet.start_release(agent, initial)?;
-        let (control, health) = fleet
-            .wait_ready(agent, 1)
-            .await
-            .with_context(|| format!("six-agent {index} readiness/control handshake"))?;
-        eprintln!("FLEET_STAGE ready six-agent={index}");
-        ensure!(health.ready, "six-agent {index} did not become ready");
-        let ingress = control
-            .session_ingress()
-            .await
-            .with_context(|| format!("six-agent {index} session ingress"))?;
-        ensure!(
-            ingress.socket_path == agent.layout.app_server_socket(),
-            "six-agent {index} ingress drifted"
-        );
+    // Keep the real per-agent bootstrap and readiness checks, but let at most
+    // two independent processes initialize concurrently under the same gate.
+    let bootstrap_started = Instant::now();
+    let indexed_agents: Vec<_> = agents.iter().enumerate().collect();
+    for group in indexed_agents.chunks(/*chunk_size*/ 2) {
+        for &(index, agent) in group {
+            eprintln!("FLEET_STAGE install agent={index}");
+            let initial = release(
+                &fleet.registry,
+                &agent.agent_id,
+                &format!("six-initial-{index}"),
+                &v1,
+            )?;
+            eprintln!("FLEET_STAGE start agent={index}");
+            fleet.start_release(agent, initial)?;
+        }
+        for &(index, agent) in group {
+            let (control, health) = fleet
+                .wait_ready(agent, 1)
+                .await
+                .with_context(|| format!("six-agent {index} readiness/control handshake"))?;
+            eprintln!("FLEET_STAGE ready six-agent={index}");
+            ensure!(health.ready, "six-agent {index} did not become ready");
+            let ingress = control
+                .session_ingress()
+                .await
+                .with_context(|| format!("six-agent {index} session ingress"))?;
+            ensure!(
+                ingress.socket_path == agent.layout.app_server_socket(),
+                "six-agent {index} ingress drifted"
+            );
+            eprintln!(
+                "FLEET_STAGE bootstrap agent={index} elapsed={:?}",
+                bootstrap_started.elapsed()
+            );
+        }
     }
+
+    report_stage("bootstrap_complete");
 
     // Stop only Agent 0, then prove the other five continue real turns.
     let peer_ids: Vec<_> = agents[1..]
@@ -378,12 +413,16 @@ async fn six_agent_fleet_lifecycle_keeps_peers_fair_and_isolated() -> Result<()>
     let peer_baseline = peer_snapshots(&fleet, &peer_ids)?;
     let target_zero_pid = process_id(&fleet, &agents[0].agent_id)?;
     fleet.supervisor.stop(&agents[0].agent_id, Instant::now())?;
+    report_stage("stop_requested");
     wait_inactive(&mut fleet, &agents[0].agent_id).await?;
+    report_stage("target_inactive");
     assert_peers_healthy_and_unchanged(&fleet, &agents[1..], &peer_baseline).await?;
+    report_stage("peer_health_after_stop");
 
     let thread_ids = create_peer_threads(&fleet, &agents[1..])
         .await
         .context("six-agent peer thread creation")?;
+    report_stage("peer_threads_created");
     let response_mock = responses::mount_sse_sequence(
         &model,
         (0..5)
@@ -407,7 +446,9 @@ async fn six_agent_fleet_lifecycle_keeps_peers_fair_and_isolated() -> Result<()>
             .with_context(|| format!("six-agent peer {index} automation create"))?;
         peer_tasks.push((control, task.task_id));
     }
+    report_stage("peer_tasks_created");
     wait_peer_automation_materialized(&peer_tasks).await?;
+    report_stage("peer_automation_materialized");
     timeout(Duration::from_secs(20), async {
         while response_mock.requests().len() != 5 {
             tokio::time::sleep(Duration::from_millis(25)).await;
@@ -415,6 +456,7 @@ async fn six_agent_fleet_lifecycle_keeps_peers_fair_and_isolated() -> Result<()>
     })
     .await
     .context("six-agent peer automation did not reach all peer App Servers")?;
+    report_stage("peer_model_requests_observed");
     ensure!(
         response_mock.requests().len() == 5,
         "all five peers must receive a turn while Agent 0 is stopped"
@@ -426,6 +468,7 @@ async fn six_agent_fleet_lifecycle_keeps_peers_fair_and_isolated() -> Result<()>
     let (_, restarted_zero) = wait_release(&mut fleet, &agents[0], "six-initial-0")
         .await
         .context("six-agent Agent 0 restart readiness")?;
+    report_stage("target_restarted");
     ensure!(
         restarted_zero.process_id != target_zero_pid,
         "Agent 0 restart reused its stopped process"
@@ -702,8 +745,7 @@ async fn raw_health_response(agent: &AgentFixture, generation: u64) -> Result<St
 }
 
 async fn create_peer_threads(fleet: &FleetHarness, peers: &[AgentFixture]) -> Result<Vec<String>> {
-    let mut thread_ids = Vec::new();
-    for peer in peers {
+    let create_peer_thread = async |peer: &AgentFixture| -> Result<String> {
         let control = fleet.control_client(peer, 1)?;
         let ingress = control.session_ingress().await?;
         let client = connect_app_server(&ingress.socket_path, "hepta-five-agent-e2e", 64).await?;
@@ -717,8 +759,26 @@ async fn create_peer_threads(fleet: &FleetHarness, peers: &[AgentFixture]) -> Re
                 },
             })
             .await?;
-        thread_ids.push(response.thread.id);
         client.shutdown().await?;
+        Ok(response.thread.id)
+    };
+    let mut thread_ids = Vec::new();
+    // Each peer owns a separate ingress and App Server. Await both real
+    // requests and their shutdowns before advancing, retaining input order.
+    // No model responses are installed until this whole helper returns.
+    for group in peers.chunks(2) {
+        if let [first, second] = group {
+            let (first, second) =
+                tokio::join!(create_peer_thread(first), create_peer_thread(second));
+            thread_ids.push(first?);
+            thread_ids.push(second?);
+        } else {
+            thread_ids.push(create_peer_thread(&group[0]).await?);
+        }
+        eprintln!(
+            "FLEET_TIMING peer_threads_complete count={}",
+            thread_ids.len()
+        );
     }
     Ok(thread_ids)
 }

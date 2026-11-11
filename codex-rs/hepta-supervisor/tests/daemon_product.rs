@@ -125,7 +125,7 @@ fn send_bounded_frame(path: &std::path::Path, frame: &[u8]) -> Result<serde_json
     let mut stream = std::os::unix::net::UnixStream::connect(path)?;
     stream.set_read_timeout(Some(Duration::from_secs(3)))?;
     stream.write_all(frame)?;
-    stream.shutdown(std::net::Shutdown::Write)?;
+    // The newline completes this frame; the server does not wait for EOF.
     let mut response = Vec::new();
     stream.read_to_end(&mut response)?;
     ensure!(
@@ -150,7 +150,7 @@ fn send_oversized_frame(path: &std::path::Path) -> Result<()> {
     let mut stream = std::os::unix::net::UnixStream::connect(path)?;
     stream.set_write_timeout(Some(Duration::from_secs(3)))?;
     stream.write_all(&vec![b'x'; 65_537])?;
-    stream.shutdown(std::net::Shutdown::Write)?;
+    // The server's 65_537-byte read cap decides rejection without request EOF.
     Ok(())
 }
 

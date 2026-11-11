@@ -343,6 +343,7 @@ async fn initialize_exec_server(server: &mut ExecServerHarness) -> anyhow::Resul
         .send_request(
             "initialize",
             serde_json::to_value(InitializeParams {
+                process_exit_observation: true,
                 client_name: "cloudflare-affinity-test".to_string(),
                 resume_session_id: None,
             })?,

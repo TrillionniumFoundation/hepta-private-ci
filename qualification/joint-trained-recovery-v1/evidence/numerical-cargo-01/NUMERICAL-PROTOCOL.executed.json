@@ -1,0 +1,23 @@
+{
+  "schema": "hepta.historical-trained-joint-numeric-protocol.v1",
+  "checkpoint_sha256": "33c1aa759bddb5e9b33b906e1796de7a6f89e5b5916711f99033584b3cbafb97",
+  "fixture_manifest_sha256": "f2dbd68ab42137d7c604d9026fa60757304fdde4688ba4e17ef6f42fd927e704",
+  "weights_sha256": "41ce6de8a9095e1ef6b8756c3117a160ed40acfad8b297390de95083664d223e",
+  "public_sha256": "86c55417fdf2abdd065fc9828c40260aed0ded4a0d607c551e15b2f6b5fd2c00",
+  "reference_source_sha": "18dac3ccd30317893ad922792c12400390522f00",
+  "native_numeric_profile": "fp64-linux-libm-v1",
+  "state_absolute_error_strictly_below_fp64": 1e-9,
+  "state_absolute_error_strictly_below_fp32": 5e-5,
+  "relative_tolerance": 0,
+  "tolerance_origin": "Same limits as the pinned historical native_bridge.differential; frozen before this helper comparison.",
+  "action_sequence": ["shared", "image", "verify", "audio", "video", "text", "stop"],
+  "auto_remaining_millionths_after": {"init": 1000000, "shared": 500000, "verify": 0},
+  "seed": 17,
+  "sampler": "mean",
+  "media_audit": "Each of four full modality Commit proposals from every nonterminal main state; Stop flush from terminal state.",
+  "media_reference": "Unchanged Torch model FP64 output heads; independent sigmoid/tanh, ties-to-even quantization and first-maximum label selection; exact framed payload bytes.",
+  "state_scope": "Every context/shared/slot/feedback/core scalar plus exact discrete state, prefix tensors, cursors and asset bindings.",
+  "new_process_per_call": true,
+  "new_training_updates": 0,
+  "excluded": ["Actor and critic raw vectors are not exported by the proposal ABI", "Splitmix sampler", "Natural-task quality", "Frozen LM and learned text-prefix execution", "Optimizer resume", "Adoption benefit", "Complete historical cost"]
+}

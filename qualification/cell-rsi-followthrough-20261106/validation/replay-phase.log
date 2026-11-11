@@ -1,0 +1,15 @@
+test_bad_deadline_rejects_before_spawn (test_phase_process.PhaseProcessTests.test_bad_deadline_rejects_before_spawn) ... ok
+test_failure_keeps_exit_and_stderr (test_phase_process.PhaseProcessTests.test_failure_keeps_exit_and_stderr) ... ok
+test_log_sync_failure_keeps_real_exit_and_cost (test_phase_process.PhaseProcessTests.test_log_sync_failure_keeps_real_exit_and_cost) ... ok
+test_lost_wait_ownership_never_signals_pid (test_phase_process.PhaseProcessTests.test_lost_wait_ownership_never_signals_pid) ... ok
+test_signal_failure_retains_unknown_cost (test_phase_process.PhaseProcessTests.test_signal_failure_retains_unknown_cost) ... ok
+test_sleeping_child_times_out_and_is_reaped (test_phase_process.PhaseProcessTests.test_sleeping_child_times_out_and_is_reaped) ... ok
+test_success_observed_after_deadline_cannot_pass (test_phase_process.PhaseProcessTests.test_success_observed_after_deadline_cannot_pass) ... ok
+test_success_retains_exact_output_and_waited_cost (test_phase_process.PhaseProcessTests.test_success_retains_exact_output_and_waited_cost) ... ok
+test_unknown_wait_result_is_not_zero_cost (test_phase_process.PhaseProcessTests.test_unknown_wait_result_is_not_zero_cost) ... ok
+test_dispatch_exception_preserves_phase_and_unknown_cpu (test_replay_dispatch.ReplayDispatchBoundary.test_dispatch_exception_preserves_phase_and_unknown_cpu) ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 0.285s
+
+OK

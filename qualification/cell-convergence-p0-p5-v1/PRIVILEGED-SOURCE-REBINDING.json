@@ -1,0 +1,39 @@
+{
+  "schema": "hepta.privileged-source-rebinding.v1",
+  "original_donor": "a20ea6a862e501d8a4993195c7da1ac52ca9a7be",
+  "reviewed_source_snapshot": "86fa9319617b2c8783018fe0f0ea7e38a39c19ab",
+  "required_source_pin_count": 11,
+  "rebound_source_pin_count": 4,
+  "unchanged_source_pin_count": 7,
+  "protected_records": 154,
+  "scanner_modified": false,
+  "all_non_hash_caller_fields_unchanged": true,
+  "historical_evidence_modified": false,
+  "native_qualification": "PENDING",
+  "records": [
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use.rs",
+      "original_hcsn_donor_sha256": "70bc8625b6624bc20fe0a768c281c6f66fb9421e1dec07f43691f958e676e0c0",
+      "reviewed_combination_sha256": "dc190d99d51887ab80b53926acb32cbfcdad3c0c329eda02c01ef4833c2bf815",
+      "review": "Unix existing-owner entry and retained final-use validation share the exact claimed head and a fresh checked entry time."
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use_control.rs",
+      "original_hcsn_donor_sha256": "4bc589b9295c128f2eb677b9cba879a75436783a97e1f94ebddaf1d70d9ba3c2",
+      "reviewed_combination_sha256": "1ff07198512077ab135529b903593aff5f562d7e39235c4ba029dd4d7c988054",
+      "review": "Formatting-only trailing comma in an existing revocation regression."
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use_live_owner.rs",
+      "original_hcsn_donor_sha256": "2aafe9a918c8ecc2d5c99fba3befbcf8b3b78db980f30f37d5a7780a57343b9c",
+      "reviewed_combination_sha256": "f0fd6d4b91fb88171cf71b6df116ae9799961145461a49e574f11a081be56502",
+      "review": "State lock and frontier checks remain; Unix retained owner and fresh clock revalidation are explicit. Windows does not inherit the Unix live-journal claim."
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use_store.rs",
+      "original_hcsn_donor_sha256": "1ce76b4189d1a1fb41998072e4a71d9a6080db5e252d69321ac6447ec43d9ff6",
+      "reviewed_combination_sha256": "cbee79d2925bb65cc285bdab6d72d70b3dd53d1469da423b90305f436f3a7c99",
+      "review": "PQ schema 4/trust and Windows R3 remain; Unix keeps actual journal/lock inode and length fences plus explicit existing/fresh modes without runtime repair."
+    }
+  ]
+}

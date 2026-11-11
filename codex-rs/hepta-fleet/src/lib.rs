@@ -14,6 +14,8 @@ mod allocation_digest;
 mod allocation_model;
 mod allocation_validation;
 mod error;
+#[cfg(target_os = "linux")]
+mod lifecycle_gate;
 mod model;
 mod module_catalog;
 mod registry;

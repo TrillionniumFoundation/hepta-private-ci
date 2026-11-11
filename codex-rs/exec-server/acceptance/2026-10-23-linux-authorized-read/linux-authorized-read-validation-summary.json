@@ -1,0 +1,102 @@
+{
+  "recordedAt": "2026-10-23T20:19:21.284442+00:00",
+  "commit": "f3ee06d59275582cdcccfdec44bab96e57db6a49",
+  "tree": "bbb73b21d74b9d3148f9690c70d9b22083b78303",
+  "testedSourceBase": "3b880e484c1e31632ffe900f97753209d14ab7d5",
+  "testedBinaryDiffSha256": "73a185c1d707077e7138a440ec6f253fa27ba883b43795491b92ea7cecd56d93",
+  "reconstructedTestedTree": "5ed57c98be9e534bc91921b2f90bf45acb8c857e",
+  "preAndPostOwningTenSourceFilesUnchanged": true,
+  "actualHostKernel": "7.0.0-38-generic",
+  "toolchain": "1.95.0",
+  "focusedFinal": {
+    "run": 24,
+    "passed": 24,
+    "failed": 0,
+    "filteredOrOriginalSkipped": 489
+  },
+  "owningFinal": {
+    "run": 510,
+    "passed": 510,
+    "failed": 0,
+    "retried": 0,
+    "originalSkipped": 3,
+    "testSeconds": 56.632
+  },
+  "preservedFailures": [
+    {
+      "phase": "focused01",
+      "run": 18,
+      "passed": 16,
+      "failed": 2,
+      "cause": "Original remote error mapping discarded authorized-read error kind and canonical denial contract."
+    },
+    {
+      "phase": "owning01",
+      "run": 510,
+      "passed": 509,
+      "failed": 1,
+      "originalSkipped": 3,
+      "cause": "New permission error code broke original raw RPC -32600 contract; restored original wire code and exact server Permission denied message without changing the test."
+    }
+  ],
+  "admission": [
+    "Keep initial descriptor alive through final identity proof to prevent inode reuse ABA.",
+    "Require regular-file and single-link fstat, actual statx mount identity, and pinned current mount namespace identity.",
+    "Resolve physical descriptor path, authorize that path including deny globs, reopen using openat2 NO_SYMLINKS|NO_MAGICLINKS, reauthorize the proved reopened physical path, and perform final identity/path checks.",
+    "Read only the admitted descriptor after admission; retain original allowed later hardlink/replacement semantics."
+  ],
+  "capabilityProbe": "Real normal reopen plus direct per-flag openat2 ELOOP checks, ordinary symlink under NO_MAGICLINKS positive control, statx mount identity and namespace/proc descriptor checks, single-link and deleted-file rejection. Any failure advertises false and returns Unsupported.",
+  "originalContracts": "Original12 stable-handle cases now compile on Linux with original availability guards and all assertions retained; real RPC capability/authority, two original remote cases, redaction, malformed/oversized responses, legacy/disabled capability, and all snapshot contracts pass in owning run.",
+  "namespaceTestLimit": "Mismatch component test changes expected identity; no actual setns or remote/native namespace qualification claimed.",
+  "linuxDarwinAtomicEquivalenceClaimed": false,
+  "originalPermissionWireCode": -32600,
+  "newMethodSpecificBoundWireCode": -32012,
+  "arbitraryRemoteMessagesExposed": false,
+  "genericPathReadFallbackAdded": false,
+  "cargoOrBazelDependenciesChanged": false,
+  "fixExitCode": 0,
+  "fmtExitCode": 0,
+  "posttestChanges": "Formatting, module and import sorting only; exact reconstructed diff retained in linux-authorized-read-format-only-posttest.diff.",
+  "finalCommitBytesRetested": false,
+  "noTestsAfterFixOrFmt": true,
+  "receipts": {
+    "linux-authorized-read-focused-01": {
+      "exitCode": 100,
+      "elapsedSeconds": 644.7448107900564,
+      "receipt": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-3/work/dependency-alerts/linux-authorized-read-focused-01.json"
+    },
+    "linux-authorized-read-focused-02": {
+      "exitCode": 0,
+      "elapsedSeconds": 535.1366366689326,
+      "receipt": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-3/work/dependency-alerts/linux-authorized-read-focused-02.json"
+    },
+    "linux-authorized-read-owning-after": {
+      "exitCode": 100,
+      "elapsedSeconds": 143.1248789950041,
+      "receipt": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-3/work/dependency-alerts/linux-authorized-read-owning-after.json"
+    },
+    "linux-authorized-read-focused-03": {
+      "exitCode": 0,
+      "elapsedSeconds": 587.1513616350712,
+      "receipt": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-3/work/dependency-alerts/linux-authorized-read-focused-03.json"
+    },
+    "linux-authorized-read-owning-after-02": {
+      "exitCode": 0,
+      "elapsedSeconds": 127.28014943399467,
+      "receipt": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-3/work/dependency-alerts/linux-authorized-read-owning-after-02.json"
+    },
+    "linux-authorized-read-fix-02": {
+      "exitCode": 0,
+      "elapsedSeconds": 94.29167092998978,
+      "receipt": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-3/work/dependency-alerts/linux-authorized-read-fix-02.json"
+    },
+    "linux-authorized-read-fmt-02": {
+      "exitCode": 0,
+      "elapsedSeconds": 0.6430078000994399,
+      "receipt": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-3/work/dependency-alerts/linux-authorized-read-fmt-02.json"
+    }
+  },
+  "scope": "Standalone Linux host semantic leaf from MCP/core branch. Rust1.95 original package/nextest checks only. No Rama1.96, native Asterinas, other OS, or combined-source full qualification transfer.",
+  "nativeAsterinasQualified": false,
+  "finalUnifiedFullQualified": false
+}

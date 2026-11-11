@@ -536,11 +536,13 @@ async fn run_command(params: RunCommandParams) {
                 session.request_terminate();
             }
             exit = &mut exit_rx => {
-                if matches!(expiration_outcome, Some(ExecExpirationOutcome::TimedOut)) {
-                    break EXEC_TIMEOUT_EXIT_CODE;
-                } else {
-                    break exit.unwrap_or(-1);
-                }
+                break exit.map(|code| {
+                    if matches!(expiration_outcome, Some(ExecExpirationOutcome::TimedOut)) {
+                        EXEC_TIMEOUT_EXIT_CODE
+                    } else {
+                        code
+                    }
+                });
             }
         }
     };
@@ -554,16 +556,28 @@ async fn run_command(params: RunCommandParams) {
     let stderr = stderr_handle.await.unwrap_or_default();
     timeout_handle.abort();
 
-    outgoing
-        .send_response(
-            request_id,
-            CommandExecResponse {
-                exit_code,
-                stdout,
-                stderr,
-            },
-        )
-        .await;
+    match exit_code {
+        Ok(exit_code) => {
+            outgoing
+                .send_response(
+                    request_id,
+                    CommandExecResponse {
+                        exit_code,
+                        stdout,
+                        stderr,
+                    },
+                )
+                .await;
+        }
+        Err(_) => {
+            outgoing
+                .send_error(
+                    request_id,
+                    internal_error("command/exec process exit observation was lost"),
+                )
+                .await;
+        }
+    }
 }
 
 fn spawn_process_output(params: SpawnProcessOutputParams) -> tokio::task::JoinHandle<String> {
@@ -606,8 +620,8 @@ fn spawn_process_output(params: SpawnProcessOutputParams) -> tokio::task::JoinHa
             };
             let cap_reached = Some(observed_num_bytes) == output_bytes_cap;
             if let (true, Some(process_id)) = (stream_output, process_id.as_ref()) {
-                outgoing
-                    .send_server_notification_to_connection_and_wait(
+                tokio::select! {
+                    _ = outgoing.send_server_notification_to_connection_and_wait(
                         connection_id,
                         ServerNotification::CommandExecOutputDelta(
                             CommandExecOutputDeltaNotification {
@@ -617,8 +631,9 @@ fn spawn_process_output(params: SpawnProcessOutputParams) -> tokio::task::JoinHa
                                 cap_reached,
                             },
                         ),
-                    )
-                    .await;
+                    ) => {}
+                    _ = stdio_timeout_rx.wait_for(|&v| v) => break,
+                }
             } else if !stream_output {
                 buffer.extend_from_slice(capped_chunk);
             }
@@ -1080,3 +1095,11 @@ mod tests {
         assert_eq!(err.message, "command/exec \"proc-13\" is no longer running");
     }
 }
+
+#[cfg(test)]
+#[path = "command_exec_terminal_tests.rs"]
+mod command_exec_terminal_tests;
+
+#[cfg(test)]
+#[path = "command_exec_drain_tests.rs"]
+mod drain_tests;

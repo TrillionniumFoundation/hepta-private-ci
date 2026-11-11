@@ -1432,6 +1432,7 @@ impl JsonRpcPeer {
         assert_eq!(
             params,
             InitializeParams {
+                process_exit_observation: true,
                 client_name: CLIENT_NAME.to_string(),
                 resume_session_id: None,
             }
@@ -1439,6 +1440,7 @@ impl JsonRpcPeer {
         self.write_response(
             request.id,
             InitializeResponse {
+                process_exit_observation: true,
                 session_id: "session-1".to_string(),
                 environment_info: None,
             },

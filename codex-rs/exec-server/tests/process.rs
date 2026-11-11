@@ -34,6 +34,7 @@ async fn exec_server_starts_process_over_websocket() -> anyhow::Result<()> {
         .send_request(
             "initialize",
             serde_json::to_value(InitializeParams {
+                process_exit_observation: true,
                 client_name: "exec-server-test".to_string(),
                 resume_session_id: None,
             })?,
@@ -125,6 +126,7 @@ async fn exec_server_runs_ordinary_requests_serially_by_default() -> anyhow::Res
         .send_request(
             "initialize",
             serde_json::to_value(InitializeParams {
+                process_exit_observation: true,
                 client_name: "exec-server-test".to_string(),
                 resume_session_id: None,
             })?,
@@ -281,6 +283,7 @@ async fn exec_server_keeps_control_requests_live_during_long_reads_and_queued_re
         .send_request(
             "initialize",
             serde_json::to_value(InitializeParams {
+                process_exit_observation: true,
                 client_name: "exec-server-test".to_string(),
                 resume_session_id: None,
             })?,
@@ -455,6 +458,7 @@ async fn exec_server_defaults_omitted_pipe_stdin_to_closed_stdin() -> anyhow::Re
         .send_request(
             "initialize",
             serde_json::to_value(InitializeParams {
+                process_exit_observation: true,
                 client_name: "exec-server-test".to_string(),
                 resume_session_id: None,
             })?,
@@ -566,6 +570,7 @@ async fn exec_server_dedupes_retried_process_write_ids() -> anyhow::Result<()> {
         .send_request(
             "initialize",
             serde_json::to_value(InitializeParams {
+                process_exit_observation: true,
                 client_name: "exec-server-test".to_string(),
                 resume_session_id: None,
             })?,
@@ -709,6 +714,7 @@ async fn exec_server_resumes_detached_session_without_killing_processes() -> any
         .send_request(
             "initialize",
             serde_json::to_value(InitializeParams {
+                process_exit_observation: true,
                 client_name: "exec-server-test".to_string(),
                 resume_session_id: None,
             })?,
@@ -761,6 +767,7 @@ async fn exec_server_resumes_detached_session_without_killing_processes() -> any
         .send_request(
             "initialize",
             serde_json::to_value(InitializeParams {
+                process_exit_observation: true,
                 client_name: "exec-server-test".to_string(),
                 resume_session_id: Some(initialize_response.session_id.clone()),
             })?,

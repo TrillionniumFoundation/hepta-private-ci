@@ -91,6 +91,11 @@ use crate::reopen_agentd_topology_writer_v1;
 use crate::resolve_agentd_plasticity_admission_v1;
 use crate::resolve_agentd_topology_admission_v1;
 
+#[path = "learning_iteration_runtime_tests.rs"]
+mod learning_iteration_tests;
+#[path = "terminal_learning_tests.rs"]
+mod terminal_learning_tests;
+
 const Q24: i64 = 1_i64 << 24;
 
 fn id(value: &str) -> StableId {

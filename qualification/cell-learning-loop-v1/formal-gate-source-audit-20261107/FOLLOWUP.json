@@ -1,0 +1,143 @@
+{
+  "schema": "hepta.memory.formal-gate-source-followup.v1",
+  "status": "HOLD",
+  "scope": "Read-only source retrieval and original recorded cost census. This extends the earlier audit without editing its source, thresholds, old reports or original evidence.",
+  "executions": {
+    "new_model_inferences": 0,
+    "new_training_updates": 0,
+    "replayed_original_training_attempts": 0,
+    "formal_adoptions": 0
+  },
+  "original_protocol": {
+    "maximum_training_attempts": 1,
+    "attempts_consumed": 1,
+    "balance": 0,
+    "user_research_authorization": "Broad authorization already exists; this is not a permission refusal. A new prospective protocol must carry all earlier attempts, failures, exposure and cost unknowns."
+  },
+  "donor_role": {
+    "recorded_head": "0abc3f5132c944d517e6a75d6d5362819fd285ec",
+    "frozen_prepare_source": {
+      "relative_path": "EXECUTED_SOURCE/prepare_run.py",
+      "bytes": 7427,
+      "sha256": "7a6c86dd351b3d08acb55bf7d7bb4af40d8389eadd76e8079359ab5062ca4fe4"
+    },
+    "semantics": "prepare_run.py reads donor/qualification/memory-cell-v13 and records that donor checkout HEAD. This value does not bind a separate V15 FutureAdoptionGate implementation.",
+    "github_commit_lookup": "422: No commit found for SHA",
+    "scope_limit": "This is a retrieval result under the available repository connection, not proof of absence from every storage system."
+  },
+  "v15_source_retrieval": {
+    "sources": [
+      {
+        "commit": "379c21c2e625c3a3dfbb514e11b9e8fe2213cda8",
+        "path": "qualification/memory-cell-v15/admission.py",
+        "git_blob": "23618c4366a71c319640742e5f080021f916f15c",
+        "bytes": 10959,
+        "sha256": "7e3cf0ae3d6cb12d904d5d2d5e104f93bb8d2677124cfc232fd19818975a9cf0",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/379c21c2e625c3a3dfbb514e11b9e8fe2213cda8/qualification/memory-cell-v15/admission.py"
+      },
+      {
+        "commit": "379c21c2e625c3a3dfbb514e11b9e8fe2213cda8",
+        "path": "qualification/memory-cell-v15/README.md",
+        "git_blob": "5629aaeeba0d7e992d0777eeec6e695202c2fa84",
+        "bytes": 13205,
+        "sha256": "c7c6879f340a9d064a3969e748470d299608bf4ea3e02225c4aceb59b64dbd46",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/379c21c2e625c3a3dfbb514e11b9e8fe2213cda8/qualification/memory-cell-v15/README.md"
+      },
+      {
+        "commit": "c8a8bdc5ef9ac060f2c6abf3dc7e561953f8b684",
+        "path": "qualification/memory-cell-v15/admission.py",
+        "git_blob": "4a0289ba33e3163e497d4d163a7a288666d206be",
+        "bytes": 11852,
+        "sha256": "1b062799b90ba89a26a8da9c71f00a411127d371a9c2dd3b3ddf4de0013da775",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/c8a8bdc5ef9ac060f2c6abf3dc7e561953f8b684/qualification/memory-cell-v15/admission.py"
+      },
+      {
+        "commit": "c8a8bdc5ef9ac060f2c6abf3dc7e561953f8b684",
+        "path": "qualification/memory-cell-v15/cohort.py",
+        "git_blob": "a97615a752e9aa25e7480a1d48eab5f021d70c34",
+        "bytes": 5030,
+        "sha256": "c14e4ecc87e926894da1ba2838df02b420b6fd660c9ec28039567840f85b1bfe",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/c8a8bdc5ef9ac060f2c6abf3dc7e561953f8b684/qualification/memory-cell-v15/cohort.py"
+      }
+    ],
+    "named_symbol": "FutureAdoptionGate",
+    "actual_evaluator_in_retrieved_admission_sources": "MatchedEvaluator",
+    "original_loop_source_map_recovered": false,
+    "original_nine_arm_registration_recovered": false,
+    "original_fixed_gate_threshold_binding_recovered": false,
+    "new_reference_must_not_replace_frozen_gate": true,
+    "notes": [
+      "The base and native-transfer branches share admission.py Git blob 23618c4366a71c319640742e5f080021f916f15c. The cohort branch is a distinct later implementation.",
+      "The recovered cohort validator binds phase isolation, unique source units, comparison roster, information parity and finite monitoring looks. It does not itself authenticate provenance.",
+      "MatchedEvaluator.evaluate still invokes both predictors after collecting refusal reasons. Do not call it as a read-only readiness preflight or expose a hidden cohort to check missing costs."
+    ]
+  },
+  "cost_readback": {
+    "artifact": "COST_DENOMINATOR_READBACK.json",
+    "raw_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/aeedeee98a5f7472f11b88ef7b869fc5a6d3d8e1/qualification/memory-cell-v13/evidence/run/LATENCY_COST.json",
+    "raw_git_blob": "cc6e36aaa3243306084f55accca632a57ad8338a",
+    "raw_sha256": "e7cad4429e948a37f413043090d4beb0b7dc53379b118ea274fd92291ada5285",
+    "raw_bytes": 924270,
+    "result": "All 1296 method/request/repeat tuples are present exactly once: 72 authored requests x 6 methods x 3 timing repeats. These are not 1296 independent tasks.",
+    "checkpoint_distinct_from_loop_parent": true,
+    "full_cost_comparable": false,
+    "nested_setup_and_request_costs_not_added_to_profiler_envelope_again": true
+  },
+  "restored_preparation": {
+    "encoder_revision": "1110a243fdf4706b3f48f1d95db1a4f5529b4d41",
+    "official_files": 8,
+    "asset_payload_bytes": 90873127,
+    "asset_receipt_sha256": "146dcde90130d57aff09e6fc8adaa8817aad8d2e47d9abf7a367e3fb6b0ab17a",
+    "asset_restore_wall_seconds": 22.421607313,
+    "runtime_python": "3.12.14",
+    "runtime_packages": {
+      "numpy": "2.3.5",
+      "onnxruntime": "1.23.2",
+      "tokenizers": "0.21.4"
+    },
+    "runtime_interpreter_sha256": "5ebcd7993f0e40cb4b16e15d2c4c3c343ecad419966299b8e8f6f9e6a36bf779",
+    "runtime_prepare_wall_seconds": 125.666741165,
+    "same_declared_versions_new_binary_boundary": true,
+    "historical_runtime_binary_identity_recovered": false,
+    "historical_cost_fields_filled_by_restoration": false
+  },
+  "remaining_blockers": [
+    {
+      "id": "frozen_gate_binding",
+      "state": "missing",
+      "required_evidence": "Original source bundle/commit and frozen settings/roster tying the named gate to this loop; alternatively an explicitly distinct new prospective protocol, never a retroactive substitution."
+    },
+    {
+      "id": "owner_current_frontier",
+      "state": "stale_historical_parent",
+      "required_evidence": "Current owner revision 2 and source cut must authorize the exact parent/closure. Replacing a manifest digest does not reauthorize a historical revision-1 parent."
+    },
+    {
+      "id": "natural_future",
+      "state": "zero_independent_natural_future_groups",
+      "required_evidence": "Previously unseen natural source units after candidate/protocol freeze, with authentic chronology and phase isolation. Cedar and all 72 exposed cases stay historical."
+    },
+    {
+      "id": "old_ability_retention",
+      "state": "original_candidate_failed_posthoc_no_loss_veto",
+      "required_evidence": "Preserve the original 48-case calibration gate separately from the later 72-case no-loss replay. Historical replay remains 59/72 ->55/72 (5 losses,1 gain); no adoption."
+    },
+    {
+      "id": "complete_historical_cost",
+      "state": "unknown",
+      "required_evidence": "Original acquisition/search/failure/energy/bill/network/retained-byte-time records and a common workload horizon. New measurements or zero prices cannot reconstruct missing past values."
+    },
+    {
+      "id": "remaining_frozen_attempt_budget",
+      "state": "zero",
+      "required_evidence": "Do not replay the one consumed Cedar attempt. Any prospective work requires a distinct frozen finite budget that inherits the cumulative history and all unresolved cost fields."
+    }
+  ],
+  "executable_next_steps_without_model_execution": [
+    "Retain and hash the recovered original raw cost record outside the source tree; the compact readback here records its exact identity.",
+    "Resolve the original gate source map from an authoritative original bundle or provenance record if one becomes available; retain current lookup failures.",
+    "Prepare a prospective source/owner/exposure/cost manifest with null values for unrecoverable fields and explicit inherited attempt history; do not run a predictor on missing preflight evidence.",
+    "Acquire genuinely new natural tasks only after the prospective freeze; exposed authored cases and P2 engineering fixtures never become natural future evidence."
+  ],
+  "authority": "Research preparation only. No publication, adoption or permission change."
+}

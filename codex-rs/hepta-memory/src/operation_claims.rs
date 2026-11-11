@@ -6,6 +6,20 @@ use sqlx::Transaction;
 use crate::CognitiveStore;
 use crate::LocalLeaseOutboxError;
 
+#[path = "operation_claim_entry.rs"]
+mod entry;
+pub(crate) use entry::require_entered_transaction;
+
+#[path = "operation_pre_boundary.rs"]
+mod pre_boundary;
+pub(crate) use pre_boundary::ReauthorizationBinding;
+pub(crate) use pre_boundary::RejectionStage;
+pub(crate) use pre_boundary::awaiting_reauthorization;
+pub(crate) use pre_boundary::claim_reauthorization;
+pub(crate) use pre_boundary::enter_reauthorization;
+pub(crate) use pre_boundary::has_rejection_proof;
+pub(crate) use pre_boundary::record_rejection;
+
 pub(crate) const MAX_DURABLE_DISPATCH_ATTEMPTS: u32 = 64;
 pub(crate) const MAX_DURABLE_CLAIM_LEASE_MS: u64 = 60_000;
 const MAX_RETRY_BACKOFF_MS: u64 = 5_000;
@@ -81,11 +95,7 @@ pub(crate) async fn claim(
         now_unix_ms,
         lease_duration_ms,
     )?;
-    let mut transaction = store
-        .pool
-        .begin_with("BEGIN IMMEDIATE")
-        .await
-        .map_err(crate::cognitive_store::unavailable)?;
+    let mut transaction = store.begin_write_transaction().await?;
     verify_operation_fence(
         &mut transaction,
         store,
@@ -193,11 +203,7 @@ pub(crate) async fn renew(
         now_unix_ms,
         lease_duration_ms,
     )?;
-    let mut transaction = store
-        .pool
-        .begin_with("BEGIN IMMEDIATE")
-        .await
-        .map_err(crate::cognitive_store::unavailable)?;
+    let mut transaction = store.begin_write_transaction().await?;
     verify_operation_fence(
         &mut transaction,
         store,
@@ -286,11 +292,7 @@ async fn transition_claim(
             "dispatch claim timestamp must be non-zero".to_string(),
         ));
     }
-    let mut transaction = store
-        .pool
-        .begin_with("BEGIN IMMEDIATE")
-        .await
-        .map_err(crate::cognitive_store::unavailable)?;
+    let mut transaction = store.begin_write_transaction().await?;
     verify_operation_fence(
         &mut transaction,
         store,

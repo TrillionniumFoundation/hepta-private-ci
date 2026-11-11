@@ -1,0 +1,8 @@
+[package]
+name = "anymap2"
+version = "0.13.0"
+edition = "2021"
+license = "MIT OR Apache-2.0"
+description = "Compatibility shim for anymap2 using anymap3"
+[dependencies]
+anymap3 = { version = "1.1.0", default-features = false, features = ["std"] }

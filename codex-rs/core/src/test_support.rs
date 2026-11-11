@@ -208,6 +208,11 @@ pub fn with_parent_turn(mut metadata: CodexResponsesMetadata, id: &str) -> Codex
     metadata
 }
 
+pub fn with_root_turn(mut metadata: CodexResponsesMetadata, id: &str) -> CodexResponsesMetadata {
+    metadata.root_turn_id = Some(id.to_string());
+    metadata
+}
+
 pub fn all_model_presets() -> &'static Vec<ModelPreset> {
     &TEST_MODEL_PRESETS
 }

@@ -21,6 +21,14 @@ pub struct CognitiveRetrievalLearningSink {
     writer: Mutex<LedgerWriter>,
 }
 
+pub(crate) struct CognitiveRetrievalDelivery<'a> {
+    pub(crate) delivered_candidates: &'a [RetrievalCandidateIdentityV1],
+    pub(crate) context_exposed: bool,
+    pub(crate) published_context_digest: Option<Digest32>,
+    pub(crate) downstream_policy_digest: Option<Digest32>,
+    pub(crate) delivery_propensity: ProbabilityQ32,
+}
+
 impl CognitiveRetrievalLearningSink {
     #[must_use]
     pub fn new(writer: LedgerWriter) -> Self {
@@ -29,6 +37,7 @@ impl CognitiveRetrievalLearningSink {
         }
     }
 
+    #[cfg(test)]
     pub(crate) fn append(
         &self,
         owner: &AgentId,
@@ -41,50 +50,31 @@ impl CognitiveRetrievalLearningSink {
             body_generation,
             request_id,
             observation,
-            &[],
-            false,
-            None,
-            None,
-            ProbabilityQ32::ONE,
+            CognitiveRetrievalDelivery {
+                delivered_candidates: &[],
+                context_exposed: false,
+                published_context_digest: None,
+                downstream_policy_digest: None,
+                delivery_propensity: ProbabilityQ32::ONE,
+            },
         )
     }
 
-    pub(crate) fn append_with_delivery(
-        &self,
-        owner: &AgentId,
-        body_generation: u64,
-        request_id: u64,
-        observation: &RetrievalAssignmentObservationV1,
-        delivered_candidates: &[RetrievalCandidateIdentityV1],
-        context_exposed: bool,
-        published_context_digest: Option<Digest32>,
-    ) -> Result<AppendReceipt, String> {
-        self.append_with_delivery_policy(
-            owner,
-            body_generation,
-            request_id,
-            observation,
-            delivered_candidates,
-            context_exposed,
-            published_context_digest,
-            None,
-            ProbabilityQ32::ONE,
-        )
-    }
-
-    #[allow(clippy::too_many_arguments)]
     pub(crate) fn append_with_delivery_policy(
         &self,
         owner: &AgentId,
         body_generation: u64,
         request_id: u64,
         observation: &RetrievalAssignmentObservationV1,
-        delivered_candidates: &[RetrievalCandidateIdentityV1],
-        context_exposed: bool,
-        published_context_digest: Option<Digest32>,
-        downstream_policy_digest: Option<Digest32>,
-        delivery_propensity: ProbabilityQ32,
+        delivery: CognitiveRetrievalDelivery<'_>,
     ) -> Result<AppendReceipt, String> {
+        let CognitiveRetrievalDelivery {
+            delivered_candidates,
+            context_exposed,
+            published_context_digest,
+            downstream_policy_digest,
+            delivery_propensity,
+        } = delivery;
         let episode_id = StableId::new(format!(
             "retrieval-episode:{}:{body_generation}:{request_id}",
             owner.as_str()
