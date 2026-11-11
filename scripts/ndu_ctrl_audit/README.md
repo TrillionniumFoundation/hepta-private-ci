@@ -44,3 +44,36 @@ evaluator semantics and score provenance. Preserve UNKNOWN for any missing
 receipt. A later independent B set, paid continuation comparison, calibrated
 implementation probability, control-value prediction, and matched light
 policy are separate gates. No model adoption or claimed policy benefit.
+
+## Observed-receipt contract v2 (declaration only)
+
+The original eight v1 tests cover SHA-claim consistency. To avoid silently
+treating a failed actor launch or an unknown selected index as actual delivery,
+use `python audit_delivery_chain.py receipt.json --observed` with the
+`ctrl.delivery-chain.observed.v2` schema. It additionally requires:
+
+- Immutable `identity` fields: source-tree/evaluator SHA256, run/task/episode
+  IDs and integer evidence cutoff (ns). Each stage carries SHA256 of canonical
+  JSON identity and an ordered, non-future observation timestamp.
+- An isolated, completed actor launch with **integer** exit code zero,
+  enforcement before execution, bound run/episode, and original actor wire SHA.
+- A bounded candidate inventory and **historically recorded** selected index.
+  The indexed ID and bytes must match the selected-stage claim.
+- The original v1 selected→serialized→delivered→evaluated byte and receipt
+  checks remain mandatory.
+
+**Important:** this is a strict *consistency checker for self-declared
+receipts*. It does not verify signatures, source-owner authority, completeness
+of candidate inventories, real effects or evaluator semantics. Its CLI output
+always contains `owner_signature_verified=false` and
+`production_admitted=false`, even if `pass=true`. No original #5450 receipt
+is backfilled from public diagnostic fields; missing historical selected index
+is an UNKNOWN, not a reconstructed observed success.
+
+The later independent readback in [#5610](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5610)
+places the first observable semantic failure at the actual actor WRITE_TEXT
+payload in all six cases: the actor emitted another candidate while the wire,
+post-WRITE delivery and original scorer matched. Internal selection index and
+ranking provenance remain unobserved. This corrects the *chronology* of the
+older #5450 posthoc-only description; the v2 synthetic tests are not that
+independent native replay. Production and scientific disposition remain HOLD.
