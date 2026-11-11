@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="nextest-run" tests="38" failures="0" errors="0" uuid="02cf5487-a7e8-468b-a0e9-d45069d2f395" timestamp="2026-11-11T13:26:27.658-05:00" time="151.941">
+    <testsuite name="codex-hepta-agentd" tests="34" disabled="0" errors="0" failures="0">
+        <testcase name="cell_q24_material_receipt_owner::tests::original_material_pair_partial_creation_never_finishes_missing_dataset_during_recovery" classname="codex-hepta-agentd" timestamp="2026-11-11T13:26:27.673-05:00" time="1.175">
+        </testcase>
+        <testcase name="cell_q24_material_receipt_owner::tests::original_material_pair_expired_work_only_reads_original_completed_windows" classname="codex-hepta-agentd" timestamp="2026-11-11T13:26:27.673-05:00" time="2.156">
+        </testcase>
+        <testcase name="cell_q24_material_receipt_owner::tests::original_material_pair_pending_claim_reopens_without_signing_or_replacing_bytes" classname="codex-hepta-agentd" timestamp="2026-11-11T13:26:28.863-05:00" time="1.477">
+        </testcase>
+        <testcase name="cell_q24_material_receipt_owner::tests::original_material_pair_rejects_changed_custody_prefix_and_valid_freeze_resigning" classname="codex-hepta-agentd" timestamp="2026-11-11T13:26:29.829-05:00" time="1.725">
+        </testcase>
+        <testcase name="cell_q24_material_receipt_owner::tests::original_material_pair_signs_recovers_and_feeds_actual_no_update_training" classname="codex-hepta-agentd" timestamp="2026-11-11T13:26:30.340-05:00" time="1.970">
+        </testcase>
+        <testcase name="cell_q24_material_receipt_owner::tests::original_material_pair_withdrawal_refuses_cached_material_without_dataset_claim" classname="codex-hepta-agentd" timestamp="2026-11-11T13:26:31.554-05:00" time="1.204">
+        </testcase>
+        <testcase name="cell_q24_material_receipt_owner::tests::support::training_source::source_bound_capture_rejects_valid_freeze_resigning_with_identical_training_bytes" classname="codex-hepta-agentd" timestamp="2026-11-11T13:26:32.311-05:00" time="1.748">
+        </testcase>
+        <testcase name="cell_q24_material_receipt_owner::tests::support::training_source::source_bound_training_cold_identity_rejects_valid_material_signature_renewal" classname="codex-hepta-agentd" timestamp="2026-11-11T13:26:32.758-05:00" time="2.161">
+        </testcase>
+        <testcase name="cell_q24_material_receipt_owner::tests::support::training_source::source_bound_training_rejects_identical_legacy_batch_before_admission" classname="codex-hepta-agentd" timestamp="2026-11-11T13:26:34.919-05:00" time="1.478">
+        </testcase>
+        <testcase name="cell_q24_material_receipt_owner::tests::support::training_source::source_bound_training_preserves_frozen_rule_and_recovers_exact_no_update" classname="codex-hepta-agentd" timestamp="2026-11-11T13:26:34.059-05:00" time="4.653">
+        </testcase>
+        <testcase name="cell_q24_material_receipt_owner::tests::support::training_source::source_bound_training_withdrawal_after_claim_preserves_pending_without_signature" classname="codex-hepta-agentd" timestamp="2026-11-11T13:26:36.398-05:00" time="3.054">
+        </testcase>
+        <testcase name="circuit_next_use_receipt_owner::tests::original_observer_configuration_rejects_substituted_custody_before_journal_creation" classname="codex-hepta-agentd" timestamp="2026-11-11T13:26:39.452-05:00" time="0.108">
+        </testcase>
+        <testcase name="circuit_next_use_receipt_owner::tests::original_observer_deadline_and_saved_signature_window_never_renew" classname="codex-hepta-agentd" timestamp="2026-11-11T13:26:39.560-05:00" time="0.037">
+        </testcase>
+        <testcase name="circuit_next_use_receipt_owner::tests::original_observer_pending_claim_reopens_without_signing_or_rewriting" classname="codex-hepta-agentd" timestamp="2026-11-11T13:26:39.598-05:00" time="0.227">
+        </testcase>
+        <testcase name="circuit_next_use_receipt_owner::tests::original_observer_predecessors_require_bound_signed_roles_and_independent_custody" classname="codex-hepta-agentd" timestamp="2026-11-11T13:26:39.826-05:00" time="0.119">
+        </testcase>
+        <testcase name="learning_iteration_evidence_client::material::tests::material_readback_service_failed_frame_permanently_consumes_channel" classname="codex-hepta-agentd" timestamp="2026-11-11T13:26:39.945-05:00" time="1.256">
+        </testcase>
+        <testcase name="cell_q24_material_receipt_owner::tests::support::training_source::source_bound_training_withdrawal_before_claim_fences_without_no_update" classname="codex-hepta-agentd" timestamp="2026-11-11T13:26:38.712-05:00" time="2.519">
+        </testcase>
+        <testcase name="learning_iteration_evidence_client::material::tests::material_readback_service_never_finishes_missing_dataset" classname="codex-hepta-agentd" timestamp="2026-11-11T13:26:41.201-05:00" time="1.460">
+        </testcase>
+        <testcase name="learning_iteration_evidence_client::material::tests::material_readback_service_refuses_request_rebinding_and_replay_without_writes" classname="codex-hepta-agentd" timestamp="2026-11-11T13:26:41.231-05:00" time="2.337">
+        </testcase>
+        <testcase name="learning_iteration_evidence_client::material::tests::material_readback_service_refuses_withdrawn_source_and_busy_ledger" classname="codex-hepta-agentd" timestamp="2026-11-11T13:26:42.661-05:00" time="1.444">
+        </testcase>
+        <testcase name="learning_iteration_evidence_client::material::tests::material_readback_service_rejects_same_uid_peer_and_widened_transport" classname="codex-hepta-agentd" timestamp="2026-11-11T13:26:43.569-05:00" time="1.261">
+        </testcase>
+        <testcase name="learning_iteration_evidence_client::material::tests::material_readback_service_returns_original_signatures_and_cold_rereads" classname="codex-hepta-agentd" timestamp="2026-11-11T13:26:44.105-05:00" time="2.823">
+        </testcase>
+        <testcase name="learning_iteration_evidence_client::tests::original_receipt_fixture_retains_peer_during_owner_work_between_frames" classname="codex-hepta-agentd" timestamp="2026-11-11T13:26:44.831-05:00" time="5.167">
+        </testcase>
+        <testcase name="neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::training_lane::original_training_model_lane_fences_physical_mutation_after_bytes_restore" classname="codex-hepta-agentd" timestamp="2026-11-11T13:26:46.928-05:00" time="8.972">
+        </testcase>
+        <testcase name="neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::training_lane::original_training_model_lane_preserves_pending_and_lost_ack" classname="codex-hepta-agentd" timestamp="2026-11-11T13:26:49.998-05:00" time="11.192">
+        </testcase>
+        <testcase name="neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::training_lane::original_training_model_lane_retains_custody_and_exact_generator_evidence" classname="codex-hepta-agentd" timestamp="2026-11-11T13:26:55.901-05:00" time="10.064">
+        </testcase>
+        <testcase name="runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::q24_original_selector_attests_actual_publication_and_recovers_exact_signature" classname="codex-hepta-agentd" timestamp="2026-11-11T13:27:01.190-05:00" time="28.379">
+        </testcase>
+        <testcase name="runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::q24_original_selector_preserves_pending_and_recovers_completed_lost_ack" classname="codex-hepta-agentd" timestamp="2026-11-11T13:27:05.965-05:00" time="34.675">
+        </testcase>
+        <testcase name="runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::q24_original_selector_refuses_valid_training_renewal_live_and_cold" classname="codex-hepta-agentd" timestamp="2026-11-11T13:27:29.569-05:00" time="17.013">
+        </testcase>
+        <testcase name="runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::q24_original_selector_refuses_withdrawn_publication_before_claim" classname="codex-hepta-agentd" timestamp="2026-11-11T13:27:40.641-05:00" time="15.911">
+        </testcase>
+        <testcase name="runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::q24_original_selector_rejects_substituted_custody_before_store_creation" classname="codex-hepta-agentd" timestamp="2026-11-11T13:27:56.552-05:00" time="15.981">
+        </testcase>
+        <testcase name="runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::q24_original_selector_rejects_another_real_completion_with_same_run_and_manifest" classname="codex-hepta-agentd" timestamp="2026-11-11T13:27:46.581-05:00" time="32.012">
+        </testcase>
+        <testcase name="runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::q24_ordinary_original_observer_attests_and_recovers_exact_completed_next_use" classname="codex-hepta-agentd" timestamp="2026-11-11T13:28:12.533-05:00" time="30.864">
+        </testcase>
+        <testcase name="runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::q24_ordinary_original_observer_refuses_uncommitted_or_withdrawn_next_use" classname="codex-hepta-agentd" timestamp="2026-11-11T13:28:18.594-05:00" time="41.005">
+        </testcase>
+    </testsuite>
+    <testsuite name="codex-hepta-intelligence-eval" tests="4" disabled="0" errors="0" failures="0">
+        <testcase name="product_runner::tests::execution_tests::original_evidence::equal_execution_with_validly_renewed_signature_has_different_original_evidence" classname="codex-hepta-intelligence-eval" timestamp="2026-11-11T13:28:43.397-05:00" time="0.134">
+        </testcase>
+        <testcase name="product_runner::tests::execution_tests::original_evidence::original_execution_evidence_missing_and_pending_never_claim" classname="codex-hepta-intelligence-eval" timestamp="2026-11-11T13:28:43.531-05:00" time="0.024">
+        </testcase>
+        <testcase name="product_runner::tests::execution_tests::original_evidence::original_execution_evidence_rechecks_expiry_after_owner_reads" classname="codex-hepta-intelligence-eval" timestamp="2026-11-11T13:28:43.555-05:00" time="0.082">
+        </testcase>
+        <testcase name="product_runner::tests::execution_tests::original_evidence::original_execution_evidence_survives_recovery_without_work_or_renewal" classname="codex-hepta-intelligence-eval" timestamp="2026-11-11T13:28:43.638-05:00" time="0.124">
+        </testcase>
+    </testsuite>
+</testsuites>

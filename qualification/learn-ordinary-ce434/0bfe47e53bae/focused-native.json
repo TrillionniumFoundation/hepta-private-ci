@@ -1,0 +1,67 @@
+{
+  "after": {
+    "commit": "0bfe47e53bae47977c4423362e4d3823edac99fd",
+    "dirty": false,
+    "parents": [
+      "129ddee27614f71351f6ea013927caff25fc8c7c"
+    ],
+    "tree": "8663f89daca111ba7f681d2c36442f6f4ded97f5"
+  },
+  "base_sha": "73f20ed9a09bc5716484f497654640aedcec268d",
+  "before": {
+    "commit": "0bfe47e53bae47977c4423362e4d3823edac99fd",
+    "dirty": false,
+    "parents": [
+      "129ddee27614f71351f6ea013927caff25fc8c7c"
+    ],
+    "tree": "8663f89daca111ba7f681d2c36442f6f4ded97f5"
+  },
+  "command": [
+    "just",
+    "test",
+    "--locked",
+    "--offline",
+    "-p",
+    "codex-hepta-agentd",
+    "-p",
+    "codex-hepta-intelligence-eval",
+    "--lib",
+    "-E",
+    "(package(=codex-hepta-agentd) & test(=circuit_next_use_receipt_owner::tests::original_observer_configuration_rejects_substituted_custody_before_journal_creation)) | (package(=codex-hepta-agentd) & test(=circuit_next_use_receipt_owner::tests::original_observer_predecessors_require_bound_signed_roles_and_independent_custody)) | (package(=codex-hepta-agentd) & test(=circuit_next_use_receipt_owner::tests::original_observer_deadline_and_saved_signature_window_never_renew)) | (package(=codex-hepta-agentd) & test(=circuit_next_use_receipt_owner::tests::original_observer_pending_claim_reopens_without_signing_or_rewriting)) | (package(=codex-hepta-agentd) & test(=runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::q24_ordinary_original_observer_attests_and_recovers_exact_completed_next_use)) | (package(=codex-hepta-agentd) & test(=runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::q24_ordinary_original_observer_refuses_uncommitted_or_withdrawn_next_use)) | (package(=codex-hepta-agentd) & test(=cell_q24_material_receipt_owner::tests::original_material_pair_signs_recovers_and_feeds_actual_no_update_training)) | (package(=codex-hepta-agentd) & test(=cell_q24_material_receipt_owner::tests::original_material_pair_rejects_changed_custody_prefix_and_valid_freeze_resigning)) | (package(=codex-hepta-agentd) & test(=cell_q24_material_receipt_owner::tests::original_material_pair_withdrawal_refuses_cached_material_without_dataset_claim)) | (package(=codex-hepta-agentd) & test(=cell_q24_material_receipt_owner::tests::original_material_pair_pending_claim_reopens_without_signing_or_replacing_bytes)) | (package(=codex-hepta-agentd) & test(=cell_q24_material_receipt_owner::tests::original_material_pair_expired_work_only_reads_original_completed_windows)) | (package(=codex-hepta-agentd) & test(=cell_q24_material_receipt_owner::tests::original_material_pair_partial_creation_never_finishes_missing_dataset_during_recovery)) | (package(=codex-hepta-agentd) & test(=runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::q24_original_selector_attests_actual_publication_and_recovers_exact_signature)) | (package(=codex-hepta-agentd) & test(=runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::q24_original_selector_refuses_withdrawn_publication_before_claim)) | (package(=codex-hepta-agentd) & test(=runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::q24_original_selector_refuses_valid_training_renewal_live_and_cold)) | (package(=codex-hepta-agentd) & test(=runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::q24_original_selector_preserves_pending_and_recovers_completed_lost_ack)) | (package(=codex-hepta-agentd) & test(=runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::q24_original_selector_rejects_substituted_custody_before_store_creation)) | (package(=codex-hepta-agentd) & test(=runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::q24_original_selector_rejects_another_real_completion_with_same_run_and_manifest)) | (package(=codex-hepta-agentd) & test(=neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::training_lane::original_training_model_lane_retains_custody_and_exact_generator_evidence)) | (package(=codex-hepta-agentd) & test(=neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::training_lane::original_training_model_lane_preserves_pending_and_lost_ack)) | (package(=codex-hepta-agentd) & test(=neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::training_lane::original_training_model_lane_fences_physical_mutation_after_bytes_restore)) | (package(=codex-hepta-agentd) & test(=cell_q24_material_receipt_owner::tests::support::training_source::source_bound_training_preserves_frozen_rule_and_recovers_exact_no_update)) | (package(=codex-hepta-agentd) & test(=cell_q24_material_receipt_owner::tests::support::training_source::source_bound_training_rejects_identical_legacy_batch_before_admission)) | (package(=codex-hepta-agentd) & test(=cell_q24_material_receipt_owner::tests::support::training_source::source_bound_training_withdrawal_before_claim_fences_without_no_update)) | (package(=codex-hepta-agentd) & test(=cell_q24_material_receipt_owner::tests::support::training_source::source_bound_training_withdrawal_after_claim_preserves_pending_without_signature)) | (package(=codex-hepta-agentd) & test(=cell_q24_material_receipt_owner::tests::support::training_source::source_bound_capture_rejects_valid_freeze_resigning_with_identical_training_bytes)) | (package(=codex-hepta-agentd) & test(=cell_q24_material_receipt_owner::tests::support::training_source::source_bound_training_cold_identity_rejects_valid_material_signature_renewal)) | (package(=codex-hepta-agentd) & test(=learning_iteration_evidence_client::material::tests::material_readback_service_returns_original_signatures_and_cold_rereads)) | (package(=codex-hepta-agentd) & test(=learning_iteration_evidence_client::material::tests::material_readback_service_refuses_request_rebinding_and_replay_without_writes)) | (package(=codex-hepta-agentd) & test(=learning_iteration_evidence_client::material::tests::material_readback_service_refuses_withdrawn_source_and_busy_ledger)) | (package(=codex-hepta-agentd) & test(=learning_iteration_evidence_client::material::tests::material_readback_service_never_finishes_missing_dataset)) | (package(=codex-hepta-agentd) & test(=learning_iteration_evidence_client::material::tests::material_readback_service_rejects_same_uid_peer_and_widened_transport)) | (package(=codex-hepta-agentd) & test(=learning_iteration_evidence_client::material::tests::material_readback_service_failed_frame_permanently_consumes_channel)) | (package(=codex-hepta-agentd) & test(=learning_iteration_evidence_client::tests::original_receipt_fixture_retains_peer_during_owner_work_between_frames)) | (package(=codex-hepta-intelligence-eval) & test(=product_runner::tests::execution_tests::original_evidence::original_execution_evidence_survives_recovery_without_work_or_renewal)) | (package(=codex-hepta-intelligence-eval) & test(=product_runner::tests::execution_tests::original_evidence::original_execution_evidence_rechecks_expiry_after_owner_reads)) | (package(=codex-hepta-intelligence-eval) & test(=product_runner::tests::execution_tests::original_evidence::equal_execution_with_validly_renewed_signature_has_different_original_evidence)) | (package(=codex-hepta-intelligence-eval) & test(=product_runner::tests::execution_tests::original_evidence::original_execution_evidence_missing_and_pending_never_claim))",
+    "--test-threads",
+    "2",
+    "--retries",
+    "0",
+    "--no-tests",
+    "fail",
+    "--status-level",
+    "pass",
+    "--success-output",
+    "final",
+    "--failure-output",
+    "final"
+  ],
+  "command_exit_code": 0,
+  "elapsed_seconds": 488.4798587858677,
+  "exit_code": 0,
+  "finished_at": "2026-11-11T18:28:59.695790+00:00",
+  "job": null,
+  "lane": "source-head",
+  "log_bytes": 70719,
+  "log_file": "focused-native.json.43a39d7e908c4bd58fb0f82cde5d5ce9.log",
+  "log_sha256": "c45f92a3dc83bef07bfa3fdc5ff7dbd3476610c01d8f3e93e84a42e31e6e48bf",
+  "minimum_tests": 38,
+  "observed_failed_tests": 0,
+  "observed_passed_tests": 38,
+  "output_limit_exceeded": false,
+  "returncode": 0,
+  "run_attempt": null,
+  "run_id": null,
+  "schema_version": 1,
+  "source_sha": "0bfe47e53bae47977c4423362e4d3823edac99fd",
+  "started_at": "2026-11-11T18:20:51.213706+00:00",
+  "status": "passed",
+  "tested_sha": "0bfe47e53bae47977c4423362e4d3823edac99fd",
+  "timed_out": false,
+  "working_directory": "/home/qian-qi/hepta-learn-all-owners-ce434-20261111-v2/codex-rs"
+}

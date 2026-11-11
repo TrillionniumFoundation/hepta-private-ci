@@ -1,0 +1,14 @@
+diff --git a/scripts/hepta_c_observer_coverage.py b/scripts/hepta_c_observer_coverage.py
+index 93cff34e..d8d2b8ac 100644
+--- a/scripts/hepta_c_observer_coverage.py
++++ b/scripts/hepta_c_observer_coverage.py
+@@ -166,7 +166,8 @@ def assess_original_observer_coverage(log: str, xml: bytes) -> dict:
+                     "flakyError",
+                     "rerunFailure",
+                     "rerunError",
+-                ) for node in case.iter()
++                )
++                for node in case.iter()
+             )
+             for suite, case in selected
+         )
