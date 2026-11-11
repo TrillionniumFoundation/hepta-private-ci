@@ -1,0 +1,191 @@
+{
+  "schema": "hepta.mem.delivery-zero-execution-terminal.v1",
+  "classification": "RUNNER_FILTER_SELECTION_FAILURE",
+  "test_executions": 0,
+  "test_case_failures": 0,
+  "compile_completed": true,
+  "status": "FAILED_ZERO_TESTS_NOT_A_SCIENTIFIC_RED",
+  "native_runtime_terminal": {
+    "at_unix_ms": 1794402903151,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 1,
+    "job_id": "1a1cabcb509-2564-83f",
+    "launch_nonce": "00e35e7c764664830f9df7012e4f29c5",
+    "log_bytes": {
+      "stderr": {
+        "seen": 200,
+        "stored": 200
+      },
+      "stdout": {
+        "seen": 970,
+        "stored": 970
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "failed",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "native_job_id": "1a1cabcb509-2564-83f",
+  "driver_blob": "1be13dd701a286e7baf6cb0f0929ef065f6c1281",
+  "archive_blob": "6a460db9a7394b84a13d5e71d5cf447fc5e8c2e8",
+  "archive_sha256": "a8ac659ee5768b17dc86b16cebd91506d995a27fada3ca33679dc271256de380",
+  "archive_bytes": 32140,
+  "local_audit": {
+    "archive_blob": "6a460db9a7394b84a13d5e71d5cf447fc5e8c2e8",
+    "sha256": "a8ac659ee5768b17dc86b16cebd91506d995a27fada3ca33679dc271256de380",
+    "bytes": 32140,
+    "members": 38,
+    "failure": {
+      "error": "RuntimeError('delivery-native-context_GATE_FAILED')",
+      "traceback": "Traceback (most recent call last):\n  File \"<string>\", line 120, in <module>\n  File \"<string>\", line 109, in main\n  File \"<string>\", line 40, in phase\nRuntimeError: delivery-native-context_GATE_FAILED\n",
+      "identity": {
+        "commit": "542443191af06facb891f58fecb8bfe7a925c893",
+        "tree": "adcc19bcdd31c10781e57296730d9c81869c3d98",
+        "status": "",
+        "cargo_lock_sha256": "98b3767c6e74bf6eeb5894db760259dbc400cbfd0685af8ad915c92d25408d69",
+        "bazel_lock_sha256": "783b3ad329fa53bd4a0e48be6907d38259fa2880d61bd1994b863d7f78bbca57"
+      }
+    },
+    "tested": {
+      "commit": "542443191af06facb891f58fecb8bfe7a925c893",
+      "tree": "adcc19bcdd31c10781e57296730d9c81869c3d98",
+      "status": "",
+      "cargo_lock_sha256": "98b3767c6e74bf6eeb5894db760259dbc400cbfd0685af8ad915c92d25408d69",
+      "bazel_lock_sha256": "783b3ad329fa53bd4a0e48be6907d38259fa2880d61bd1994b863d7f78bbca57"
+    },
+    "postimages": [
+      {
+        "path": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+        "blob": "aaaa9a4bf7f6c89248df20e49afe5b2a85234603",
+        "sha256": "61022a9229241e6c7002a8d3f069c2731c5e78b8e220d119752deb819a1820e1",
+        "bytes": 55338,
+        "mode": "100644"
+      },
+      {
+        "path": "codex-rs/hepta-infer-worker-host/src/native_run_control.rs",
+        "blob": "79d3396ad53406a5bd17926d4c9ba73bb6be4e7f",
+        "sha256": "a448a5f968f83503693d8f98d09036169d5a9e2483a1faeef78439c0d64c661c",
+        "bytes": 10409,
+        "mode": "100644"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/test_support.rs",
+        "blob": "de3b00d16837deaa0afe47a2a365beb412a4a639",
+        "sha256": "a5feb32eb4a102c97742dede6893d0a0ba6596268cc8ac97bebf6973b1eb1bf3",
+        "bytes": 13571,
+        "mode": "100644"
+      },
+      {
+        "path": "codex-rs/hepta-infer-worker-host/src/native_run_control_tests.rs",
+        "blob": "79d9d223e44de4f38c2824a3cf1459f8c5c96002",
+        "sha256": "d94b40e32f5d90806119376a2c8f9d4d101ac7e7032e0c71bb596a3bcc9f7b17",
+        "bytes": 13431,
+        "mode": "100644"
+      },
+      {
+        "path": "codex-rs/hepta-infer-worker-host/src/native_context.rs",
+        "blob": "9b9745ce2a0aabe96a8ad0104c0e2283dc194606",
+        "sha256": "a263cdf8ae3642b172edc854bb8d80fef1cee47d3b011ee9c926921f2a2ceddc",
+        "bytes": 2684,
+        "mode": "100644"
+      },
+      {
+        "path": "codex-rs/hepta-infer-worker-host/src/native_context_tests.rs",
+        "blob": "6b8a8c20664f9884baf975ffc1a512b88b4af0ac",
+        "sha256": "7d1f8ce13d366b10aa79fcb09278886a6258081a90dc6ada56c5b04b3152543b",
+        "bytes": 10663,
+        "mode": "100644"
+      }
+    ],
+    "receipt": {
+      "after": {
+        "commit": "542443191af06facb891f58fecb8bfe7a925c893",
+        "dirty": false,
+        "parents": [
+          "189711e3563ea13a5328d52e99a286f082045b98"
+        ],
+        "tree": "adcc19bcdd31c10781e57296730d9c81869c3d98"
+      },
+      "base_sha": "189711e3563ea13a5328d52e99a286f082045b98",
+      "before": {
+        "commit": "542443191af06facb891f58fecb8bfe7a925c893",
+        "dirty": false,
+        "parents": [
+          "189711e3563ea13a5328d52e99a286f082045b98"
+        ],
+        "tree": "adcc19bcdd31c10781e57296730d9c81869c3d98"
+      },
+      "command": [
+        "/home/qian-qi/.cargo/bin/just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-infer-worker-host",
+        "--lib",
+        "-E",
+        "test(native_context) or test(native_run_control)",
+        "--no-capture",
+        "--retries",
+        "0"
+      ],
+      "command_exit_code": 4,
+      "elapsed_seconds": 166.1729666381143,
+      "error": "required tests were not observed passing",
+      "exit_code": 4,
+      "finished_at": "2026-11-11T13:15:02.629903+00:00",
+      "job": null,
+      "lane": "source-head",
+      "log_bytes": 32617,
+      "log_file": "delivery-native-context.receipt.json.c1239b5a11614064b0833d4e5907ec19.log",
+      "log_sha256": "2bdbf0e1f7dd3881137c15d7a14b9df44b9e8d1331fd9a5a2f0cd81cd0cee866",
+      "minimum_tests": 6,
+      "observed_failed_tests": 0,
+      "observed_passed_tests": 0,
+      "output_limit_exceeded": false,
+      "returncode": 4,
+      "run_attempt": null,
+      "run_id": null,
+      "schema_version": 1,
+      "source_sha": "542443191af06facb891f58fecb8bfe7a925c893",
+      "started_at": "2026-11-11T13:12:16.451548+00:00",
+      "status": "failed",
+      "tested_sha": "542443191af06facb891f58fecb8bfe7a925c893",
+      "timed_out": false,
+      "working_directory": "/home/qian-qi/mem-native-5af6-20261111/source/codex-rs"
+    },
+    "diagnostic": "────────────\n Nextest run ID 4c08fe7a-116b-41a9-b71b-fc92852f38cc with nextest profile: local\n    Starting 0 tests across 1 binary (52 tests skipped)\n────────────\n     Summary [   0.003s] 0 tests run: 0 passed, 52 skipped\nerror: no tests to run\n(hint: use `--no-tests` to customize)\nerror: recipe `test` failed on line 89 with exit code 4"
+  },
+  "formatted_manifest_blob": "2bb9922d4231e81589552b0d88e9a3bd7cb854d3",
+  "original_filter": "test(native_context) or test(native_run_control)",
+  "corrected_filter": "test(native_app_server::context::tests::) or test(native_app_server::control::tests::)",
+  "corrected_driver_blob": "05915aa7c28d424ae570dd95afa3847be29b6f82",
+  "first_progress_read_observation": {
+    "content": [
+      {
+        "type": "text",
+        "text": "tool call error: tool call failed for `codex_apps/h.process_read`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out"
+      }
+    ],
+    "isError": true
+  },
+  "native_retries": 0,
+  "source_modified_to_correct_filter": false,
+  "scientific_adoption": "HOLD"
+}
