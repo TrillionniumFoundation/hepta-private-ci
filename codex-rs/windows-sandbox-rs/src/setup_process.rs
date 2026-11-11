@@ -143,7 +143,7 @@ fn spawn_with_null_stdio(
             std::ptr::null(),
             directory
                 .as_ref()
-                .map_or(std::ptr::null(), |path| path.as_ptr()),
+                .map_or(std::ptr::null(), std::vec::Vec::as_ptr),
             &startup.StartupInfo,
             &mut information,
         )
