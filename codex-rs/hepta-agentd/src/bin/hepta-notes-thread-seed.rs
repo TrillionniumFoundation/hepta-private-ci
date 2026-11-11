@@ -13,7 +13,7 @@ use codex_app_server_client::RemoteAppServerClient;
 use codex_app_server_client::RemoteAppServerConnectArgs;
 use codex_app_server_client::RemoteAppServerEndpoint;
 use codex_hepta_agentd::AgentdClient;
-use codex_hepta_agentd::AgentdTextSessionConfig;
+use codex_hepta_agentd::text_session::AgentdTextSessionConfig;
 use codex_hepta_agentd::NotesThreadSeedOptions;
 use codex_hepta_agentd::NotesThreadSeedReceipt;
 use codex_hepta_agentd::seed_original_notes_thread;
