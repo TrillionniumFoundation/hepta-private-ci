@@ -37,6 +37,8 @@ use crate::CircuitTaskSourceReadbackV1;
 use crate::cell_composed_q24::codec;
 use crate::circuit_learning_run_id_v1;
 
+#[path = "cell_q24_source_receipt_owner.rs"]
+pub(crate) mod receipts;
 #[path = "cell_q24_dataset_recovery.rs"]
 pub(crate) mod recovery;
 

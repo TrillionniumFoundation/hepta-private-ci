@@ -29,6 +29,9 @@ mod fixtures;
 use fixtures::OriginalQ24DatasetIngressFixture;
 use fixtures::Training;
 
+#[path = "cell_q24_source_receipt_tests.rs"]
+mod source_receipts;
+
 #[tokio::test]
 async fn original_dataset_native_stage_runs_candidate_and_no_update_and_reopens_exactly()
 -> anyhow::Result<()> {
