@@ -29,16 +29,15 @@ pub(super) fn read_physical(
         if bytes.len() as u64 > MAX_BYTES {
             return Err(LockedFileCasErrorV1::Capacity);
         }
-        if bytes.len() as u64 != length
-            || file.metadata().map_err(io_error)?.len() != length
-        {
+        if bytes.len() as u64 != length || file.metadata().map_err(io_error)?.len() != length {
             return Err(LockedFileCasErrorV1::Corrupt);
         }
         Ok(bytes)
     })();
     // Restore even when the actual read failed. An unknown restoration result
     // is an I/O failure; the live store permanently fences every such failure.
-    file.seek(SeekFrom::Start(original_position)).map_err(io_error)?;
+    file.seek(SeekFrom::Start(original_position))
+        .map_err(io_error)?;
     let bytes = result?;
     let state = replay(&bytes, binding, minimum)?;
     let history_digest = Digest32::of_parts(&[
@@ -46,7 +45,11 @@ pub(super) fn read_physical(
         binding.as_array(),
         &bytes,
     ]);
-    Ok(PhysicalCurrent { bytes, state, history_digest })
+    Ok(PhysicalCurrent {
+        bytes,
+        state,
+        history_digest,
+    })
 }
 
 fn replay(
@@ -88,7 +91,9 @@ fn replay(
         }
         state = Some(replay_event(binding, state, payload)?);
         if minimum.is_some_and(|anchor| {
-            state.as_ref().is_some_and(|record| record_anchor(record) == anchor)
+            state
+                .as_ref()
+                .is_some_and(|record| record_anchor(record) == anchor)
         }) {
             minimum_witnessed = true;
         }

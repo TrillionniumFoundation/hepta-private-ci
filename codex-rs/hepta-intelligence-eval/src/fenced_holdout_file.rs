@@ -173,9 +173,7 @@ impl LockedFileFinalHoldoutCasStoreV1 {
         self.state.as_ref().map(record_anchor)
     }
 
-    fn require_current(
-        &mut self,
-    ) -> Result<current::PhysicalCurrent, FinalHoldoutCasStoreError> {
+    fn require_current(&mut self) -> Result<current::PhysicalCurrent, FinalHoldoutCasStoreError> {
         if self.poisoned {
             return Err(FinalHoldoutCasStoreError::Indeterminate);
         }
