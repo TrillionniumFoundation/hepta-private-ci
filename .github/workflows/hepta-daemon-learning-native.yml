@@ -164,10 +164,10 @@ jobs:
               if name == "ordinary" and retained == 0:
                   coverage = assess_retained_original_observer_coverage(
                       records / (name + ".json"), records / (name + ".xml"))
-                  save("original-c-observer-coverage.json",
+                  save("original-learning-owner-coverage.json",
                        {"source_sha": os.environ["SOURCE_SHA"], **coverage})
                   if not coverage["exact_pass_coverage"]:
-                      raise RuntimeError("ordinary Observer cases lack exact native package/name coverage")
+                      raise RuntimeError("ordinary learning owner cases lack exact native package/name coverage")
               if root and retained == 0:
                   cases = list(ET.parse(records / (name + ".xml")).iter("testcase"))
                   observed = [case.attrib["name"] for case in cases if case.find("skipped") is None]
@@ -276,7 +276,7 @@ jobs:
               raise SystemExit(1 if failed else 0)
           PY
           python3 "$RUNNER_TEMP/daemon-learning-driver.py" snapshot
-      - name: Check exact Observer evidence parser controls
+      - name: Check exact learning owner evidence parser controls
         run: python3 -m unittest discover -s scripts -p test_hepta_c_observer_coverage.py
       - name: Install native prerequisites
         run: |

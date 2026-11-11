@@ -1,4 +1,4 @@
-"""Positive and adversarial native Observer report coverage, without Rust work."""
+"""Positive and adversarial original-owner report coverage, without Rust work."""
 
 import ast
 import hashlib
@@ -24,14 +24,15 @@ class OriginalObserverCoverageTests(unittest.TestCase):
             name="unrelated::actual_native_test",
             classname=coverage.PACKAGE,
         )
+        total = len(coverage.CASES) + 1
         lines = [
-            f"PASS [0.001s] ({index}/7) {coverage.PACKAGE} {name}"
+            f"PASS [0.001s] ({index}/{total}) {coverage.PACKAGE} {name}"
             for index, name in enumerate(coverage.CASES, 1)
         ]
         lines.append(
-            f"PASS [0.001s] (7/7) {coverage.PACKAGE} unrelated::actual_native_test"
+            f"PASS [0.001s] ({total}/{total}) {coverage.PACKAGE} unrelated::actual_native_test"
         )
-        lines.append("Summary [0.007s] 7 tests run: 7 passed, 0 skipped")
+        lines.append(f"Summary [0.007s] {total} tests run: {total} passed, 0 skipped")
         return root, "\n".join(lines)
 
     def assess(self, root, log):
@@ -45,6 +46,25 @@ class OriginalObserverCoverageTests(unittest.TestCase):
         # --success-output final repeats native status headers after Summary.
         final_headers = "\n".join(log.splitlines()[:-1])
         self.assertTrue(self.assess(root, log + "\n" + final_headers))
+
+    def test_each_original_owner_group_is_required_in_both_reports(self):
+        for group, names in coverage.OWNER_GROUPS:
+            with self.subTest(group=group, missing_from="junit"):
+                root, log = self.reports()
+                suite = root.find("testsuite")
+                assert suite is not None
+                for case in list(suite):
+                    if case.get("name") in names:
+                        suite.remove(case)
+                self.assertFalse(self.assess(root, log))
+            with self.subTest(group=group, missing_from="native_log"):
+                root, log = self.reports()
+                lines = [
+                    line
+                    for line in log.splitlines()
+                    if not any(line.endswith(" " + name) for name in names)
+                ]
+                self.assertFalse(self.assess(root, "\n".join(lines)))
 
     def test_missing_and_duplicate_required_cases_reject(self):
         for duplicate in (False, True):
@@ -250,7 +270,7 @@ class OriginalObserverCoverageTests(unittest.TestCase):
             )
             namespace["test"]("ordinary", ["--lib"])
             self.assertTrue(
-                saved["original-c-observer-coverage.json"]["exact_pass_coverage"]
+                saved["original-learning-owner-coverage.json"]["exact_pass_coverage"]
             )
             self.assertFalse((directory / "ordinary.log").exists())
 
