@@ -151,6 +151,7 @@ impl OriginalCircuitLearningReadClientV1 {
         let response: wire::Response = serde_json::from_slice(&response)?;
         response.require_request(&request)?;
         let current = response.read.decode(&self.context)?;
+        channel.peer.check_peer_lifetime()?;
         let fresh = now()?;
         if fresh < started_at || wire::context_binding(&self.context, fresh)? != self.binding {
             return Err(Error::Binding("original read clock moved backwards"));
@@ -162,7 +163,6 @@ impl OriginalCircuitLearningReadClientV1 {
             }
             *retained = Some(current.clone());
         }
-        channel.peer.check_peer_lifetime()?;
         *self.channel.try_lock().map_err(|_| Error::Unavailable)? = Some(channel);
         Ok(current)
     }
