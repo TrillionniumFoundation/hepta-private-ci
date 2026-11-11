@@ -36,6 +36,8 @@ mod product_execution_file;
 mod product_execution_store;
 mod product_qualification_use;
 mod product_runner;
+#[cfg(any(test, feature = "qualification-file-observation"))]
+mod qualification_file_observation;
 mod self_evolution_selection;
 mod sequential;
 mod signed_evaluation;

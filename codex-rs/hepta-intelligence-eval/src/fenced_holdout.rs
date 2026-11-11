@@ -176,6 +176,19 @@ pub struct FencedFinalHoldoutOwnerV1<S> {
     poisoned: bool,
 }
 
+#[cfg(any(test, feature = "qualification-file-observation"))]
+impl FencedFinalHoldoutOwnerV1<crate::LockedFileFinalHoldoutCasStoreV1> {
+    pub(crate) fn qualification_file_bytes(
+        &mut self,
+        maximum_bytes: u64,
+    ) -> Result<Vec<u8>, crate::LockedFileCasErrorV1> {
+        if self.poisoned {
+            return Err(crate::LockedFileCasErrorV1::Indeterminate);
+        }
+        self.store.qualification_file_bytes(maximum_bytes)
+    }
+}
+
 impl<S: FinalHoldoutCasStoreV1> FencedFinalHoldoutOwnerV1<S> {
     /// Initialize a previously absent authoritative record.
     pub fn initialize(

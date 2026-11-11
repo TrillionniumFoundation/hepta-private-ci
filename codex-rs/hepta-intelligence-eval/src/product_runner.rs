@@ -347,6 +347,10 @@ impl ProductQualificationReceiptV1 {
     }
 }
 
+#[cfg(any(test, feature = "qualification-file-observation"))]
+#[path = "product_runner_file_observation.rs"]
+mod file_observation;
+
 pub struct ProductEvaluationRunnerV1<S> {
     holdout: FencedFinalHoldoutOwnerV1<S>,
 }

@@ -23,13 +23,14 @@ fn identity(role: LearningEvidenceRoleV1) -> (&'static str, u8) {
         LearningEvidenceRoleV1::Generator => ("generator", 1),
         LearningEvidenceRoleV1::Observer => ("observer", 2),
         LearningEvidenceRoleV1::CreditAllocator => ("allocator", 3),
-        LearningEvidenceRoleV1::Evaluator
-        | LearningEvidenceRoleV1::UnlearningAuthority
-        | LearningEvidenceRoleV1::Selector => panic!("unused fixture role"),
+        LearningEvidenceRoleV1::Evaluator => ("evaluator", 4),
+        LearningEvidenceRoleV1::UnlearningAuthority | LearningEvidenceRoleV1::Selector => {
+            panic!("unused fixture role")
+        }
     }
 }
 
-fn trusted(role: LearningEvidenceRoleV1) -> TrustedLearningSignerV1 {
+pub(super) fn trusted(role: LearningEvidenceRoleV1) -> TrustedLearningSignerV1 {
     let (name, seed) = identity(role);
     let key = SigningKey::from_bytes(&[seed; 32]);
     TrustedLearningSignerV1 {
@@ -49,7 +50,7 @@ fn trusted(role: LearningEvidenceRoleV1) -> TrustedLearningSignerV1 {
     }
 }
 
-fn sign(
+pub(super) fn sign(
     writer: &LedgerWriter,
     role: LearningEvidenceRoleV1,
     payload: &[u8],
@@ -76,7 +77,7 @@ fn sign(
 
 pub(super) struct LedgerFixture {
     pub(super) writer: LedgerWriter,
-    directory: tempfile::TempDir,
+    _directory: tempfile::TempDir,
 }
 
 impl LedgerFixture {
@@ -119,6 +120,7 @@ impl LedgerFixture {
                         LearningEvidenceRoleV1::Generator,
                         LearningEvidenceRoleV1::Observer,
                         LearningEvidenceRoleV1::CreditAllocator,
+                        LearningEvidenceRoleV1::Evaluator,
                     ]
                     .into_iter()
                     .map(trusted)
@@ -139,6 +141,7 @@ impl LedgerFixture {
         #[cfg(windows)]
         {
             use std::os::windows::fs::OpenOptionsExt;
+            options.write(true);
             options.custom_flags(0x0200_0000 | 0x0020_0000);
         }
         let directory_handle: File = checked(options.open(directory.path()));
@@ -149,14 +152,15 @@ impl LedgerFixture {
             &directory_handle,
             &directory_handle,
         ));
-        Self { writer, directory }
+        Self {
+            writer,
+            _directory: directory,
+        }
     }
 
-    pub(super) fn bytes(&self) -> [Vec<u8>; 2] {
-        [
-            checked(std::fs::read(self.directory.path().join("ledger"))),
-            checked(std::fs::read(self.directory.path().join("witness"))),
-        ]
+    pub(super) fn bytes(&mut self) -> [Vec<u8>; 2] {
+        const MAXIMUM_FILE_BYTES: u64 = 8 * 1024 * 1024;
+        checked(self.writer.qualification_file_bytes(MAXIMUM_FILE_BYTES))
     }
 }
 

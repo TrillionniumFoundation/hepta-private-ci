@@ -144,7 +144,7 @@ fn actual_file_owners_compute_sign_and_publish_only_bound_comparison() {
 
 #[test]
 fn unfair_or_missing_training_declarations_never_consume_holdout() {
-    let fixture = Fixture::new(Costs::Complete);
+    let mut fixture = Fixture::new(Costs::Complete);
     let before = fixture.holdout_bytes();
     for mutation in 0..9 {
         let mut registration = fixture.registration.clone();
@@ -184,7 +184,7 @@ fn missing_or_unknown_costs_refuse_gain_while_unrequested_energy_stays_unknown()
         Costs::UnknownOutcome,
         Costs::UnknownEnvelope,
     ] {
-        let fixture = Fixture::new(profile);
+        let mut fixture = Fixture::new(profile);
         let before = fixture.holdout_bytes();
         assert!(fixture.freeze().is_err());
         assert_eq!(fixture.holdout_bytes(), before);

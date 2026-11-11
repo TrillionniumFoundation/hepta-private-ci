@@ -367,7 +367,11 @@ impl Fixture {
             &mut self.provider,
         )
     }
-    pub(super) fn holdout_bytes(&self) -> Vec<u8> {
-        checked(fs::read(self.directory.path().join("holdout")))
+    pub(super) fn holdout_bytes(&mut self) -> Vec<u8> {
+        checked(
+            self.runner
+                .product
+                .qualification_holdout_file_bytes(/*maximum_bytes*/ 8 * 1024 * 1024),
+        )
     }
 }

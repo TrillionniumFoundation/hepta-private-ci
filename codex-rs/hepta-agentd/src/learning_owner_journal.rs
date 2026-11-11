@@ -88,6 +88,15 @@ impl<W: AnchorWitnessStore> LearningOwnerJournalV1<W> {
         })
     }
 
+    #[cfg(test)]
+    pub(crate) fn qualification_file_bytes(
+        &mut self,
+        maximum_bytes: u64,
+    ) -> Result<Vec<u8>, Error> {
+        self.require_current()?;
+        Ok(self.journal.qualification_file_bytes(maximum_bytes)?)
+    }
+
     /// The closure is invoked only after a new claim and its witness are durable.
     /// An existing Pending operation never invokes it, even after a cold reopen.
     pub(crate) fn commit_once(

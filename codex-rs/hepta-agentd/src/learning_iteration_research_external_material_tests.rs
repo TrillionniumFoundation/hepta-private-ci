@@ -64,15 +64,20 @@ fn research_material_tensors_reject_overlap_holes_trailing_and_nonfinite() -> an
 #[test]
 fn research_material_reads_reject_leaf_ancestor_and_hardlink_aliases() {
     let temp = tempfile::tempdir().unwrap();
-    let actual = temp.path().join("actual");
+    let canonical_temp = temp.path().canonicalize().unwrap();
+    let actual = canonical_temp.join("actual");
     fs::create_dir(&actual).unwrap();
     fs::write(actual.join("file"), b"retained").unwrap();
     let mut inputs = Inputs::default();
     assert_eq!(inputs.read(&actual.join("file"), 8).unwrap(), b"retained");
-    symlink(actual.join("file"), temp.path().join("leaf")).unwrap();
-    symlink(&actual, temp.path().join("ancestor")).unwrap();
-    assert!(inputs.read(&temp.path().join("leaf"), 8).is_err());
-    assert!(inputs.read(&temp.path().join("ancestor/file"), 8).is_err());
+    symlink(actual.join("file"), canonical_temp.join("leaf")).unwrap();
+    symlink(&actual, canonical_temp.join("ancestor")).unwrap();
+    assert!(inputs.read(&canonical_temp.join("leaf"), 8).is_err());
+    assert!(
+        inputs
+            .read(&canonical_temp.join("ancestor/file"), 8)
+            .is_err()
+    );
     fs::hard_link(actual.join("file"), actual.join("alias")).unwrap();
     assert!(inputs.read(&actual.join("file"), 8).is_err());
     assert!(directory(&actual.join("../actual")).is_err());
@@ -81,7 +86,8 @@ fn research_material_reads_reject_leaf_ancestor_and_hardlink_aliases() {
 #[test]
 fn research_material_size_reference_and_mutation_checks_use_actual_bytes() {
     let temp = tempfile::tempdir().unwrap();
-    let path = temp.path().join("input");
+    let canonical_temp = temp.path().canonicalize().unwrap();
+    let path = canonical_temp.join("input");
     fs::write(&path, b"before").unwrap();
     let reference =
         json!({"path":path,"sha256":Digest32::of_bytes(b"before").to_string(),"bytes":6});
@@ -98,12 +104,13 @@ fn research_material_size_reference_and_mutation_checks_use_actual_bytes() {
 #[test]
 fn research_owner_publication_is_create_only_and_detects_directory_replacement() {
     let temp = tempfile::tempdir().unwrap();
-    let path = temp.path().join("owner");
+    let canonical_temp = temp.path().canonicalize().unwrap();
+    let path = canonical_temp.join("owner");
     let owner = Directory::create(path.clone()).unwrap();
     owner.publish("receipt.json", b"original").unwrap();
     assert!(owner.publish("receipt.json", b"replacement").is_err());
     assert_eq!(owner.read("receipt.json").unwrap(), b"original");
-    fs::rename(&path, temp.path().join("retired")).unwrap();
+    fs::rename(&path, canonical_temp.join("retired")).unwrap();
     fs::create_dir(&path).unwrap();
     assert!(owner.require_linked().is_err());
     assert_eq!(owner.read("receipt.json").unwrap(), b"original");
@@ -112,7 +119,8 @@ fn research_owner_publication_is_create_only_and_detects_directory_replacement()
 #[test]
 fn research_owner_concurrent_handles_cas_has_exactly_one_retained_winner() {
     let temp = tempfile::tempdir().unwrap();
-    let path = temp.path().join("owner");
+    let canonical_temp = temp.path().canonicalize().unwrap();
+    let path = canonical_temp.join("owner");
     let first = Directory::create(path.clone()).unwrap();
     let second = Directory::create(path).unwrap();
     let barrier = std::sync::Arc::new(std::sync::Barrier::new(2));
@@ -128,7 +136,7 @@ fn research_owner_concurrent_handles_cas_has_exactly_one_retained_winner() {
     let won_a = a.join().unwrap();
     let won_b = b.join().unwrap();
     assert_ne!(won_a, won_b);
-    let reopened = Directory::create(temp.path().join("owner")).unwrap();
+    let reopened = Directory::create(canonical_temp.join("owner")).unwrap();
     assert_eq!(
         reopened.read("reservation.json").unwrap(),
         if won_a {
@@ -143,9 +151,10 @@ fn research_owner_concurrent_handles_cas_has_exactly_one_retained_winner() {
 #[test]
 fn research_owner_partial_entries_are_observable_and_never_replaced() {
     let temp = tempfile::tempdir().unwrap();
-    let owner = Directory::create(temp.path().join("owner")).unwrap();
+    let canonical_temp = temp.path().canonicalize().unwrap();
+    let owner = Directory::create(canonical_temp.join("owner")).unwrap();
     owner.publish("reservation.json", b"reserved").unwrap();
-    fs::write(temp.path().join("owner/receipt.json"), b"{").unwrap();
+    fs::write(canonical_temp.join("owner/receipt.json"), b"{").unwrap();
     let raw = owner.read("receipt.json").unwrap();
     assert!(parse(&raw).is_err());
     assert!(owner.publish("receipt.json", b"{}").is_err());
@@ -155,16 +164,17 @@ fn research_owner_partial_entries_are_observable_and_never_replaced() {
 #[test]
 fn research_owner_initial_freeze_rejects_existing_training_or_evaluation() {
     let temp = tempfile::tempdir().unwrap();
-    assert!(require_unstarted(temp.path()).is_ok());
+    let canonical_temp = temp.path().canonicalize().unwrap();
+    assert!(require_unstarted(&canonical_temp).is_ok());
     for name in [
         "training-start.json",
         "native-training-admission.json",
         "train-result.json",
         "evaluate-result.json",
     ] {
-        let path = temp.path().join(name);
+        let path = canonical_temp.join(name);
         fs::write(&path, b"{}").unwrap();
-        assert!(require_unstarted(temp.path()).is_err());
+        assert!(require_unstarted(&canonical_temp).is_err());
         fs::remove_file(path).unwrap();
     }
 }
