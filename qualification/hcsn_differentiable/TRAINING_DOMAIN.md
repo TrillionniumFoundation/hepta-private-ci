@@ -84,3 +84,24 @@ checks on this scale constrain absolute error, not relative tail error.
 derivatives when FP64 probability itself underflows. The network's existing
 `risk` readout remains a conditional expected interval count. The log primitive
 does not silently change network channels or confer FP32 qualification.
+
+## Additional P1 input/precision diagnostics (new candidate)
+
+The finite-schedule oracle now admits at most 4,096 explicitly fixed, finite
+real interval scalars before any model computation; Torch scalars (even if
+they have no gradient), strings and booleans are rejected rather than silently
+converted. An unbounded iterable is stopped after a 4,097-item admission
+probe. This does not permit optimizing a time schedule through the finite
+continuation audit.
+
+The existing 1% **scaled** value/count/discounted-count/active-probability
+gate is unchanged. Reports additionally include absolute and ordinary
+relative errors per quantity. A zero reference with nonzero discrepancy is
+reported as JSON `null` (undefined relative error), never an implicit pass.
+These diagnostics expose rare-event relative errors that were hidden by the
+`max(1, abs(reference))` denominator; they are **not** a new numerical
+accuracy certificate or a new scientific acceptance gate.
+
+Historical C2 and original numerical evidence remain pinned to their original
+source identities. This change must be tested and accepted as a distinct
+candidate; do not rebind earlier training traces to this source.
