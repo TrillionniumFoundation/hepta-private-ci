@@ -1132,7 +1132,7 @@
           "local_result": "git diff --check passed; PR aggregate diff verified as one addition and one deletion; native Rust execution NOT_RUN locally",
           "fresh_runs": {
             "blocking": 42941516830,
-            "blocking_status": "QUEUED",
+            "blocking_status": "TERMINAL_FAILURE_3_TESTS",
             "shared_framework": 42941516948,
             "shared_framework_status": "FAILURE_ONE_TEST",
             "windows_private": 42941516670,
@@ -1147,7 +1147,14 @@
             "windows_private_declared_tests": "34 passed total across path/prompt-registry/final-use/authority-lease/prompt-runtime; agentd prompt_runtime 12 passed",
             "windows_private_artifact_id": 13821707818,
             "windows_private_artifact_size_bytes": 13522,
-            "windows_private_artifact_sha256": "5a0a2a67bc9820d6d713e24f9b1c66ca4edabc88e35be286b880abdbd0f8f372"
+            "windows_private_artifact_sha256": "5a0a2a67bc9820d6d713e24f9b1c66ca4edabc88e35be286b880abdbd0f8f372",
+            "blocking_job": 130280042578,
+            "blocking_observed_passed": 18510,
+            "blocking_observed_failed": 3,
+            "blocking_skipped": 126,
+            "blocking_artifact_id": 13827811538,
+            "blocking_artifact_size_bytes": 671168,
+            "blocking_artifact_sha256": "8a1cfe32ad478c1e892fc201269a099910c8f1270dbeab18affee27053f4bb84"
           },
           "required": "read each exact-source terminal job; even success would only close this compile/test seam, not full handler inputs, FinalUse, field benefit or skill promotion",
           "windows_scope_limit": "the Windows workflow compiled learning_iteration_recovery_tests.rs but selected prompt_runtime::tests only; it did not execute the repaired claimed-state recovery assertion, so daemon/shared/blocking/architecture remain required",
@@ -1174,7 +1181,17 @@
             "shared_artifact_size_bytes": 176552,
             "shared_artifact_sha256": "c446a14dc7dc3062059ea126a9fcbfe48617d3820ed04b87a5cc9e51387e68db"
           },
-          "classification": "The one-line pending->claimed successor compiles and runs the suite, but the repaired assertion is semantically false at this point; both daemon and shared fail the same exact test. It is retained as failure and is not a pass source for #5865."
+          "classification": "The one-line pending->claimed successor compiles and runs the suite, but the repaired assertion is semantically false at this point; both daemon and shared fail the same exact test. It is retained as failure and is not a pass source for #5865.",
+          "blocking_terminal_failure": {
+            "run": 42941516830,
+            "summary": "18,513 tests run: 18,510 passed, 3 failed, 126 skipped",
+            "recovery_test": "actual_delivery_backpressure_precedes_claim_and_prior_claim_stays_readback_only failed both attempts at learning_iteration_recovery_tests.rs:681 because claim_circuit_learning returned non-ok",
+            "other_failures": [
+              "ext/git-attribution policy_resolution_retries_after_auth_refresh",
+              "hepta-matrix-sdk encrypted_state_identity_session_and_queues_survive_restart"
+            ],
+            "classification": "Confirms the same semantic recovery failure under the affected-owner/reverse-consumer selection; the other two failures remain independent. Not a component PASS."
+          }
         },
         "current_common_candidate": {
           "pr": 5865,
@@ -1306,14 +1323,20 @@
             "architecture": 42955998198,
             "architecture_status": "QUEUED",
             "windows_private": 42955998131,
-            "windows_private_status": "IN_PROGRESS",
+            "windows_private_status": "SUCCESS_COMPILE_AND_PROMPT_RUNTIME_SCOPED",
             "blocking": 42955998139,
             "blocking_status": "QUEUED",
             "v8": 42955998051,
-            "v8_status": "SUCCESS_METADATA_ONLY"
+            "v8_status": "SUCCESS_METADATA_ONLY",
+            "windows_private_job": 130311123817,
+            "windows_private_declared_tests": "34 passed across path/prompt-registry/final-use/authority-lease/prompt-runtime; agentd prompt_runtime 12 passed",
+            "windows_private_artifact_id": 13828641594,
+            "windows_private_artifact_size_bytes": 13537,
+            "windows_private_artifact_sha256": "5c72572bcb9b1b82911ec16593809c274df9ae101b561d3bdba222d0e536ba5c"
           },
           "qualification": "SOURCE_REVIEW_PASS_NATIVE_PENDING",
-          "limits": "Training only; no ordinary product caller, complete LearningIterationStageOwnerPortsV1, Root startup, file/key/trust custody, Dataset extraction semantics, governed native model proposal, independent B/retention/new-C or cold recovery. Historical 30a results do not transfer."
+          "limits": "Training only; no ordinary product caller, complete LearningIterationStageOwnerPortsV1, Root startup, file/key/trust custody, Dataset extraction semantics, governed native model proposal, independent B/retention/new-C or cold recovery. Historical 30a results do not transfer.",
+          "windows_scope_limit": "The Windows workflow compiled the source but selected only prompt_runtime::tests in Agentd; it did not execute the five new snapshot-recovery cases or the six Training-stage cases."
         }
       }
     }
