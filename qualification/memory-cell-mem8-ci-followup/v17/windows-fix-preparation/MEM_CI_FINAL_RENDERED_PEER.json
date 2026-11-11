@@ -1,0 +1,63 @@
+{
+  "branch": "codex/mem8-windows-sandbox-fix-v10-20261111-ed353817",
+  "checks": {
+    "AST_and_YAML_parse": true,
+    "all_20_dependency_full_bytes_equal_actual_tree": true,
+    "any_rewrite_remains_failure_with_full_patch_postimages": true,
+    "exact_two_stages_helper_build_then_one_scoped_fix": true,
+    "four_full_hashes_verified": true,
+    "full_actual_V10_NUL_tree_Merkle_recomputed": true,
+    "full_new_driver_and_original_diff_read": true,
+    "full_tree_leaf_count": 14053,
+    "no_native_PASS_admission_dependency": true,
+    "no_native_case_or_model_command": true,
+    "original_65_minute_anchor_with_no_phase_reset": true,
+    "rendered_workflow_equals_only_final_pin_replacement": true,
+    "source_locks_tools_helper_before_after_strict": true,
+    "support_byte_equal_independently_reviewed_original": true,
+    "unknown_exit_or_after_does_not_settle_pass_or_start_following_stage": true
+  },
+  "four_frozen_files": [
+    {
+      "bytes": 15877,
+      "git_blob": "a6e1f9d76de87cb7f86bfe7b7db76b2675034cc4",
+      "path": ".github/scripts/mem_windows_sandbox_fix.py",
+      "sha256": "3b6f63c55d18463ef12b5c35c456f52d720cff406615c616aa59e5514905b75f"
+    },
+    {
+      "bytes": 6574,
+      "git_blob": "85b6407d0b8a8fa6bd6859f86ccbbdbae3635595",
+      "path": ".github/scripts/mem_windows_sandbox_fix_support.py",
+      "sha256": "b5c8c1728724e01e90422f80003c1a644418478c62ea3a2228d40255a7f3f136"
+    },
+    {
+      "bytes": 4517,
+      "git_blob": "bd94e2dc6f712c3c48da30597c0c45001dd5e81e",
+      "path": ".github/workflows/hepta-mem-windows-sandbox-fix.yml",
+      "sha256": "9ea2def1193798e7c9bb6fc20f3e8998e3a8a1271bb2661b01c06456caa26a1f"
+    },
+    {
+      "bytes": 7099,
+      "git_blob": "3dbbcb516d0aa5386d2e2bbf550824422017d724",
+      "path": ".github/fixtures/mem-windows-sandbox-fix-plan.json",
+      "sha256": "db4dd341980625241262c989b816442c52b1a0ed4af95bc036e3478fe2edfaec"
+    }
+  ],
+  "new_native_or_model_executions": 0,
+  "offline_audit_note": "The first local peer hash script addressed templates at the wrong relative path and stopped with FileNotFound before reporting success. The corrected templates/.github path was read; all final checks above executed. Neither attempt ran a native command.",
+  "ref_mutations": 0,
+  "review_findings": [
+    "Only the original two real helper binaries cargo build and just fix --locked -p codex-windows-sandbox are executable stages. Native/JUnit removal is explicit scope separation, not a represented native pass.",
+    "Zero exit alone cannot pass: source/tree/full tracked and untracked state, both locks, exact tool and helper bytes and remaining original job budget are checked. The lint must be the sole required clean fix.",
+    "Any phase failure, rewrite or unknown exit stops the subsequent stage. Collection never synthesizes missing exits or after receipts; partial_or_failed remains nonzero.",
+    "The single Actions65-minute job remains authoritative. No POSIX process supervisor, child kill, per-phase timeout increase or earlier five-case PASS requirement is introduced.",
+    "The branch/event guard is exact; permissions are contents:read; source/harness checkouts are separate; runner.temp contexts are in step.env/with; complete artifact collection is always attempted.",
+    "Nextest version is identity-only: no nextest test command runs. A clean lint outcome supplies no native-case success."
+  ],
+  "reviewed_at": "2026-11-11T16:47:41.295531+00:00",
+  "schema": "mem-windows-sandbox-fix-v10-final-independent-peer-v1",
+  "scope_limit": "Static review only; actual Windows run and original after-command source/tool/lock receipts remain required.",
+  "source_head": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+  "source_tree": "658fa040046285116b1fd81b94ff8c96444072ad",
+  "status": "NO_STATIC_MUST_FIX"
+}

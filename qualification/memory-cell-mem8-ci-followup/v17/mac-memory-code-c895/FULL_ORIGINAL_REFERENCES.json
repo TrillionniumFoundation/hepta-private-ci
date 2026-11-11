@@ -1,0 +1,50 @@
+{
+  "actually_created_binary_parts": [
+    {
+      "bytes": 450000,
+      "git_blob": "960e75abca2e6b1efcfed2ee15b46dff9a5b32b7",
+      "offset": 0,
+      "path": "MEM_C895_BLOCKING_TERMINAL_ORIGINALS.tar.xz.part-01",
+      "sha256": "e53446930b120d309622835fb4eea571e05d627c7e64df604c07b1fd6deda0c0"
+    },
+    {
+      "bytes": 450000,
+      "git_blob": "268259c31ef8ef13e03031213b5034fe107f17fb",
+      "offset": 450000,
+      "path": "MEM_C895_BLOCKING_TERMINAL_ORIGINALS.tar.xz.part-02",
+      "sha256": "adb76a492bad50050d7e9ead50416a42238925c92aaa7fe93da6b712302b0d73"
+    },
+    {
+      "bytes": 288896,
+      "git_blob": "6fc30219ea21a6192d82184e274847c667250fec",
+      "offset": 900000,
+      "path": "MEM_C895_BLOCKING_TERMINAL_ORIGINALS.tar.xz.part-03",
+      "sha256": "404f8b7315ac8eb1cdb5c9fdf3b38f53776fe73a3481fde92ffb305f3ade96df"
+    }
+  ],
+  "full_blocking_archive": {
+    "bytes": 1188896,
+    "git_blob": "0fb8e1e98ca22a49d0614172f8b99a75c0b85c47",
+    "path": "MEM_C895_BLOCKING_TERMINAL_ORIGINALS.tar.xz",
+    "regular_members": 76,
+    "sha256": "2051f3661c4db6dd127071085d31edfe7452f2003fd02b99bb4a6e60bf858ec1"
+  },
+  "full_blocking_manifest_actual_blob": "a1fa0e7c08def8b9bcab98b0dfa4b27e4b2e042b",
+  "full_source_tree_inventory": {
+    "bytes": 1659663,
+    "git_blob": "91ad52bb88494fb0a7149dd8caf699594a0c7b10",
+    "member": "records/SOURCE_TREE.ls-tree",
+    "sha256": "dd6b600e07c6317d92a557ba8bc273924b39dfd986d8e8dd44bde8f34b45021e"
+  },
+  "original_attempt": 1,
+  "original_job_id": 130619380498,
+  "original_run_id": 43048568477,
+  "publication_boundary": "The source full raw and full tree are members of the already created three-part original blocking packet, not separate created blobs by this review. The whole-archive git_blob is computed, not an assertion that a single whole-archive blob was created.",
+  "raw": {
+    "bytes": 2677695,
+    "git_blob": "e2754bf690fd742978fe0a2505699a6f1ae635d1",
+    "member": "records/job-130619380498.log",
+    "sha256": "27e26dcd3c2a81f11b08ac00717f0e2b9533f6cba67d1426625f132a223a53ce"
+  },
+  "schema": "mem-c895-mac-full-original-references-v1"
+}
