@@ -102,8 +102,29 @@ impl Fixture {
     /// the per-frame deadline remains the production 500 milliseconds.
     pub fn original_owner_client(
         &self,
-    ) -> anyhow::Result<(LearningIterationEvidenceClientV1, UnixStream)> {
-        self.client_with_lifetime(Duration::from_secs(300))
+    ) -> anyhow::Result<(LearningIterationEvidenceClientV1, codex_hepta_contracts::HostAuthorityPeerChannel)> {
+        use codex_hepta_contracts::HostAuthorityPeerChannel;
+        use codex_hepta_contracts::HostAuthorityPeerPolicy;
+        use codex_hepta_contracts::HostIssuerPeer;
+
+        let (client, server) = self.client_with_lifetime(Duration::from_secs(300))?;
+        let peer = HostIssuerPeer {
+            // SAFETY: observe only the original fixture process's current UID.
+            uid: unsafe { libc::geteuid() },
+            pid: std::process::id(),
+        };
+        let channel = HostAuthorityPeerChannel::from_stream(
+            server,
+            HostAuthorityPeerPolicy {
+                peer,
+                timeout: Duration::from_millis(500),
+                lifetime: Duration::from_secs(300),
+                request_bound: 16_384,
+                response_bound: 16_384,
+            },
+            pidfd(peer.pid)?,
+        )?;
+        Ok((client, channel))
     }
 
     fn client_with_lifetime(
@@ -186,24 +207,6 @@ pub(super) fn pidfd(pid: u32) -> anyhow::Result<OwnedFd> {
     let fd = unsafe { libc::syscall(libc::SYS_pidfd_open, pid, 0) };
     anyhow::ensure!(fd >= 0, "{}", std::io::Error::last_os_error());
     Ok(unsafe { OwnedFd::from_raw_fd(fd as i32) })
-}
-
-/// A paused original owner has not started a new frame. Match the real
-/// server's distinction between the original channel lifetime while idle and
-/// its bounded frame once the first byte arrives. This remains a test fixture.
-pub(super) fn read_original_owner_request(
-    server: &mut UnixStream,
-) -> anyhow::Result<wire::Request> {
-    server.set_read_timeout(Some(Duration::from_secs(300)))?;
-    let mut prefix = [0; 4];
-    server.read_exact(&mut prefix[..1])?;
-    server.set_read_timeout(Some(Duration::from_millis(500)))?;
-    server.read_exact(&mut prefix[1..])?;
-    let length = u32::from_be_bytes(prefix) as usize;
-    anyhow::ensure!(length > 0 && length <= 16_384);
-    let mut bytes = vec![0; length];
-    server.read_exact(&mut bytes)?;
-    Ok(serde_json::from_slice(&bytes)?)
 }
 
 pub(super) fn read_request(server: &mut UnixStream) -> anyhow::Result<wire::Request> {
