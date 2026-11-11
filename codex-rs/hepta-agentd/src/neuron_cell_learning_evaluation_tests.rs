@@ -245,10 +245,15 @@ impl LearningFixture {
         disposition: IndependentEvaluationDispositionV1,
     ) -> Self {
         let profile = snapshot.request.evaluation_profile;
-        // An actual original receipt can be issued after fixture construction.
-        // Preserve the original trust while keeping evaluation after Training.
+        // This fixture's sign() uses now - 1 as its actual issued_at. Keep
+        // that Evaluation signature at or after the original Training receipt
+        // without changing the Training timestamp, trust or work deadline.
         let now = snapshot.receipts.last().map_or(self.now, |receipt| {
-            self.now.max(receipt.observed_unix_seconds)
+            let evaluation_clock = receipt
+                .observed_unix_seconds
+                .checked_add(1)
+                .expect("fixture evaluation clock after original Training");
+            self.now.max(evaluation_clock)
         });
         Self::from_original_training(
             snapshot,
