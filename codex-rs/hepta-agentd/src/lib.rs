@@ -360,6 +360,10 @@ pub use learning_iteration_generation_evidence::read_generation_learning_stage_v
 mod cell_q24_model_proposal;
 mod cell_q24_training_receipt_owner;
 mod cell_q24_training_snapshot_readback;
+#[cfg(target_os = "linux")]
+mod circuit_next_use_receipt_owner;
+#[cfg(target_os = "linux")]
+mod circuit_selection_receipt_owner;
 mod learning_iteration_auth;
 #[cfg(unix)]
 mod learning_iteration_checkpoint;
@@ -373,10 +377,6 @@ mod learning_owner_evidence;
 mod learning_owner_journal;
 mod neuron_cell_evaluation;
 mod neuron_cell_evaluation_owner;
-#[cfg(target_os = "linux")]
-mod circuit_next_use_receipt_owner;
-#[cfg(target_os = "linux")]
-mod circuit_selection_receipt_owner;
 #[cfg(target_os = "linux")]
 mod neuron_cell_evaluation_receipt_owner;
 mod neuron_cell_learning_evaluation;
@@ -421,6 +421,14 @@ pub use cell_temporal_q24::CellTemporalQ24GenerationWorkerV1;
 pub use cell_temporal_q24::CellTemporalQ24ModelFilesV1;
 pub use cell_temporal_q24::LoadedCellTemporalQ24ModelV1;
 #[cfg(target_os = "linux")]
+pub use circuit_next_use_receipt_owner::OriginalCircuitNextUseReceiptConfigV1;
+#[cfg(target_os = "linux")]
+pub use circuit_next_use_receipt_owner::OriginalCircuitNextUseReceiptErrorV1;
+#[cfg(target_os = "linux")]
+pub use circuit_next_use_receipt_owner::OriginalCircuitNextUseReceiptOwnerV1;
+#[cfg(target_os = "linux")]
+pub use circuit_next_use_receipt_owner::OriginalCircuitNextUseReceiptSourcesV1;
+#[cfg(target_os = "linux")]
 pub use circuit_q24_task_profile::AgentdQ24CircuitTaskRuntimeV1;
 #[cfg(target_os = "linux")]
 pub use circuit_q24_task_profile::CircuitQ24TaskFilesV1;
@@ -432,14 +440,6 @@ pub use circuit_q24_task_profile::CircuitQ24TaskProfileV1;
 pub use circuit_q24_task_profile::CircuitQ24TaskRuntimeV1;
 #[cfg(target_os = "linux")]
 pub use circuit_q24_task_profile::circuit_q24_task_channel_v1;
-#[cfg(target_os = "linux")]
-pub use circuit_next_use_receipt_owner::OriginalCircuitNextUseReceiptConfigV1;
-#[cfg(target_os = "linux")]
-pub use circuit_next_use_receipt_owner::OriginalCircuitNextUseReceiptErrorV1;
-#[cfg(target_os = "linux")]
-pub use circuit_next_use_receipt_owner::OriginalCircuitNextUseReceiptOwnerV1;
-#[cfg(target_os = "linux")]
-pub use circuit_next_use_receipt_owner::OriginalCircuitNextUseReceiptSourcesV1;
 #[cfg(target_os = "linux")]
 pub use circuit_selection_receipt_owner::OriginalCircuitSelectionReceiptConfigV1;
 #[cfg(target_os = "linux")]

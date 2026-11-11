@@ -91,7 +91,12 @@ impl<W: AnchorWitnessStore> OriginalCircuitSelectionReceiptOwnerV1<W> {
     ) -> Result<Self, Error> {
         let saved = validate_config(&config, &key)?;
         let journal = LearningOwnerJournalV1::create(file, witness, saved.binding_digest)?;
-        Ok(Self { journal, config, key, saved })
+        Ok(Self {
+            journal,
+            config,
+            key,
+            saved,
+        })
     }
 
     /// Recover the same independently witnessed store. Pending stays unresolved;
@@ -104,7 +109,12 @@ impl<W: AnchorWitnessStore> OriginalCircuitSelectionReceiptOwnerV1<W> {
     ) -> Result<Self, Error> {
         let saved = validate_config(&config, &key)?;
         let journal = LearningOwnerJournalV1::recover(file, witness, saved.binding_digest)?;
-        Ok(Self { journal, config, key, saved })
+        Ok(Self {
+            journal,
+            config,
+            key,
+            saved,
+        })
     }
 
     /// Sign only an original version owner's actual retained-model publication.
@@ -144,12 +154,16 @@ impl<W: AnchorWitnessStore> OriginalCircuitSelectionReceiptOwnerV1<W> {
                 .map_err(|_| OwnerError::Binding("original Selection bytes"))?;
             let signed = sign_original(config, key, &payload, identity, issued_at)?;
             let verified = config.verifier.verify(
-                LearningEvidenceRoleV1::Selector, &signed, &payload, issued_at,
+                LearningEvidenceRoleV1::Selector,
+                &signed,
+                &payload,
+                issued_at,
             )?;
             verify_signed_actor_separation(&training, &verified, issued_at)?;
             learning_owner_evidence::encode(&payload, &signed)
         })?;
-        self.authenticate_completed(&source, &observed, &bytes, started_at, true).await
+        self.authenticate_completed(&source, &observed, &bytes, started_at, true)
+            .await
     }
 
     /// Revalidate the actual version owner, original Generator and original
@@ -161,7 +175,8 @@ impl<W: AnchorWitnessStore> OriginalCircuitSelectionReceiptOwnerV1<W> {
         let started_at = now()?;
         let observed = self.prepare(&source)?;
         let bytes = self.journal.read(&self.saved)?;
-        self.authenticate_completed(&source, &observed, &bytes, started_at, false).await
+        self.authenticate_completed(&source, &observed, &bytes, started_at, false)
+            .await
     }
 
     fn prepare(
@@ -172,7 +187,10 @@ impl<W: AnchorWitnessStore> OriginalCircuitSelectionReceiptOwnerV1<W> {
         self.config.scope.validate_snapshot(source.snapshot)?;
         if source.snapshot.request != self.config.decision.request
             || source.snapshot.owners != self.config.decision.owners
-            || !source.snapshot.receipts.starts_with(&self.config.decision.receipts)
+            || !source
+                .snapshot
+                .receipts
+                .starts_with(&self.config.decision.receipts)
         {
             return Err(OwnerError::Binding("original TrainingNoUpdate prefix").into());
         }
@@ -189,7 +207,9 @@ impl<W: AnchorWitnessStore> OriginalCircuitSelectionReceiptOwnerV1<W> {
         source: &OriginalCircuitSelectionReceiptSourcesV1<'_, impl AnchorWitnessStore>,
     ) -> Result<SignedLearningEvidenceV1, Error> {
         let trainer: &LearningIterationEvidenceClientV1 = source.trainer;
-        Ok(trainer.readback(source.snapshot, training_receipt(&self.config)?).await?)
+        Ok(trainer
+            .readback(source.snapshot, training_receipt(&self.config)?)
+            .await?)
     }
 
     async fn authenticate_completed(
@@ -203,7 +223,10 @@ impl<W: AnchorWitnessStore> OriginalCircuitSelectionReceiptOwnerV1<W> {
         let (payload, signed) = learning_owner_evidence::decode(bytes)?;
         let receipt = receipt(&self.config, observed, signed.issued_at)?;
         if payload != learning_iteration_receipt_signing_bytes_v1(&receipt)?
-            || source.snapshot.receipts.get(self.config.decision.receipts.len())
+            || source
+                .snapshot
+                .receipts
+                .get(self.config.decision.receipts.len())
                 .is_some_and(|original| original != &receipt)
         {
             return Err(OwnerError::Binding("changed original Selection receipt").into());
@@ -224,7 +247,10 @@ impl<W: AnchorWitnessStore> OriginalCircuitSelectionReceiptOwnerV1<W> {
         }
         let training = authenticate_training(&self.config, &evidence, current)?;
         let verified = self.config.verifier.verify(
-            LearningEvidenceRoleV1::Selector, &signed, &payload, current,
+            LearningEvidenceRoleV1::Selector,
+            &signed,
+            &payload,
+            current,
         )?;
         if verified.principal() != &self.config.signer.principal
             || verified.controller_id() != &self.config.signer.controller_id
@@ -274,10 +300,18 @@ fn validate_config(
 fn training_receipt(
     config: &OriginalCircuitSelectionReceiptConfigV1,
 ) -> Result<&LearningIterationReceiptV1, Error> {
-    let original = config.decision.receipts.last()
+    let original = config
+        .decision
+        .receipts
+        .last()
         .ok_or(OwnerError::Binding("original TrainingNoUpdate receipt"))?;
-    if !matches!(&original.observation, LearningIterationObservationV1::TrainingNoUpdateV2(_)) {
-        return Err(OwnerError::Binding("only original TrainingNoUpdate selection is supported").into());
+    if !matches!(
+        &original.observation,
+        LearningIterationObservationV1::TrainingNoUpdateV2(_)
+    ) {
+        return Err(
+            OwnerError::Binding("only original TrainingNoUpdate selection is supported").into(),
+        );
     }
     Ok(original)
 }
@@ -291,7 +325,9 @@ fn authenticate_training(
         return Err(OwnerError::Binding("changed original Training signature").into());
     }
     config.verifier.require_signer_binding(
-        LearningEvidenceRoleV1::Selector, &config.signer, current,
+        LearningEvidenceRoleV1::Selector,
+        &config.signer,
+        current,
     )?;
     let original = training_receipt(config)?;
     let verified = config.verifier.verify(
@@ -316,7 +352,10 @@ fn receipt(
     observation: &LearningIterationObservationV1,
     observed_unix_seconds: u64,
 ) -> Result<LearningIterationReceiptV1, Error> {
-    let LearningIterationObservationV1::Selection { candidate_bundle, selection_digest } = observation
+    let LearningIterationObservationV1::Selection {
+        candidate_bundle,
+        selection_digest,
+    } = observation
     else {
         return Err(OwnerError::Binding("actual original Selection observation").into());
     };
@@ -371,7 +410,8 @@ fn signature_expiry(
     config: &OriginalCircuitSelectionReceiptConfigV1,
     issued_at: u64,
 ) -> Result<u64, OwnerError> {
-    Ok(issued_at.checked_add(config.maximum_signature_lifetime_seconds)
+    Ok(issued_at
+        .checked_add(config.maximum_signature_lifetime_seconds)
         .ok_or(OwnerError::Binding("signature deadline overflow"))?
         .min(config.signer.principal.expires_at))
 }
@@ -382,7 +422,9 @@ fn require_new_attestation(
     current: u64,
 ) -> Result<(), OwnerError> {
     if current < started_at || current >= config.decision.request.envelope.expiry_unix_seconds {
-        return Err(OwnerError::Binding("new Selection attestation outside original deadline"));
+        return Err(OwnerError::Binding(
+            "new Selection attestation outside original deadline",
+        ));
     }
     Ok(())
 }
@@ -393,7 +435,8 @@ fn evidence_id(identity: Digest32) -> Result<StableId, OwnerError> {
 }
 
 fn now() -> Result<u64, OwnerError> {
-    SystemTime::now().duration_since(UNIX_EPOCH).map(|duration| duration.as_secs())
+    SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map(|duration| duration.as_secs())
         .map_err(|_| OwnerError::Binding("original Selector clock"))
 }
-
