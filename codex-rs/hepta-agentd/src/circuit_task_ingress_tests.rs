@@ -44,6 +44,9 @@ mod drain_tests;
 mod learning_source_tests;
 #[path = "circuit_q24_task_ingress_tests.rs"]
 mod q24_tests;
+#[path = "circuit_q24_successor_runtime_tests.rs"]
+mod successor_tests;
+
 #[path = "circuit_task_runtime_tests.rs"]
 mod runtime_tests;
 

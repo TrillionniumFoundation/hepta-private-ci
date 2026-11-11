@@ -121,6 +121,26 @@ impl RootGenerationCurrentClient {
         Ok(())
     }
 
+    pub(crate) fn require_successor_context(
+        &self,
+        session: &crate::root_production_inputs::OriginalQ24SuccessorSession,
+        initial: &codex_hepta_learning_artifacts::LearningIterationSnapshotV1,
+        scope: &codex_hepta_learning_artifacts::FrozenLearningScopeV2,
+    ) -> Result<(), AgentdError> {
+        self.connection.require_same_successor_session(session)?;
+        self.observe()?;
+        if self.profile.initial != initial.head_digest.to_string()
+            || self.profile.scope != scope.binding().to_string()
+            || self.profile.writer != session.writer_proof()?
+            || self.profile.identity != crate::neuron_generation_process_identity_digest_v1(session.identity())?.to_string()
+            || self.profile.learning_operation != initial.request.operation_id.as_str()
+        {
+            self.fence();
+            return Err(uncertain());
+        }
+        self.connection.require_same_successor_session(session)
+    }
+
     fn fence(&self) {
         self.fenced.store(true, Ordering::Release);
         if let Ok(mut held) = self.lane.try_lock() {

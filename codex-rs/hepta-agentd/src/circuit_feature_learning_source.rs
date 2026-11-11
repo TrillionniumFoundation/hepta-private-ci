@@ -181,6 +181,22 @@ impl AgentdQ24CircuitTaskRuntimeV1<FileAnchorWitnessStore, FileAnchorWitnessStor
     }
 }
 
+impl crate::OriginalQ24InstalledSuccessorV1 {
+    /// Use the same ordinary signed ObjectiveStart/ACK-loss/readback path after
+    /// the supervised service installed this actual Root-published successor.
+    pub fn original_installed_successor_ingress(&self) -> Result<OriginalCircuitFeatureIngressV1, AgentdError> {
+        self.cell.task.require_current()?;
+        if !matches!(&self.cell.task.0.publication, Publication::Update { .. }) {
+            return Err(invalid("installed successor requires the original update publication"));
+        }
+        let identity = self.identity.clone();
+        let client = AgentdClient::new(identity.control_socket.clone(), identity.agent_id.clone(), identity.spawn_generation)?;
+        Ok(OriginalCircuitFeatureIngressV1 {
+            client, cell: self.cell.clone(), source: Arc::clone(&self.source), identity,
+        })
+    }
+}
+
 impl OriginalCircuitFeatureIngressV1 {
     /// Submit the host's original signed request once. Only a typed lost ACK
     /// after its complete write enters bounded original-source observation.

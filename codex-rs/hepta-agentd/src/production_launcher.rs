@@ -22,6 +22,9 @@ use crate::AgentdRootProductionInputs;
 use crate::PreparedRootAgentdConfig;
 use crate::desktop_root_composition::attach_root_desktop_operation_host_with_startup_before;
 
+#[path = "production_q24_successor.rs"]
+mod successor;
+
 #[path = "production_launcher_inputs.rs"]
 mod inputs;
 

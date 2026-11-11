@@ -12,6 +12,10 @@ use crate::AgentdIdentity;
 use crate::AgentdRootAuthoritySession;
 use crate::HostAuthorityPublicBootstrapV1;
 
+#[path = "root_q24_successor_session.rs"]
+mod successor;
+pub(crate) use successor::OriginalQ24SuccessorSession;
+
 /// Opaque, single-use connection capability captured by the actual original
 /// five-lane receiver. It carries no owner, issuer, grant or mutable authority.
 pub struct RootGenerationPublicationConnectionV1 {

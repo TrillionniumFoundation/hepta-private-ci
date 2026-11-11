@@ -188,7 +188,8 @@ impl OriginalCellQ24RetainedLearningSourceV1 {
             let snapshot = witnessed_snapshot(&ledger).map_err(ledger_error)?;
             (snapshot.head_digest, snapshot.records().len())
         };
-        self.prepared.revalidate_source().map_err(refused)?;
+        CellQ24PreparedLearningV1::revalidate_source(self.prepared.as_ref())
+            .map_err(refused)?;
         self.require_database()?;
         Ok(cut)
     }

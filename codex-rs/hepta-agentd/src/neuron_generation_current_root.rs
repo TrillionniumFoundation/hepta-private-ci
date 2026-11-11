@@ -83,6 +83,15 @@ impl NeuronGenerationCurrentOwnerV1 {
             .require_original_root_selection(decision, operation, selection)
     }
 
+    pub(crate) fn require_original_root_successor(
+        &self,
+        session: &crate::root_production_inputs::OriginalQ24SuccessorSession,
+        initial: &codex_hepta_learning_artifacts::LearningIterationSnapshotV1,
+        scope: &codex_hepta_learning_artifacts::FrozenLearningScopeV2,
+    ) -> Result<(), AgentdError> {
+        self.store.require_original_root_successor(session, initial, scope)
+    }
+
     pub(crate) fn from_original_root_publication(
         original: crate::root_generation_current_client::RootGenerationCurrentClient,
     ) -> Result<Self, AgentdError> {

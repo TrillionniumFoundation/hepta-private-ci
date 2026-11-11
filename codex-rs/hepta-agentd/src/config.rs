@@ -19,6 +19,10 @@ mod desktop;
 #[path = "config_circuit_task.rs"]
 mod circuit_task;
 
+#[cfg(target_os = "linux")]
+#[path = "config_q24_successor.rs"]
+mod q24_successor;
+
 #[path = "config_q24_circuit_task.rs"]
 #[cfg(target_os = "linux")]
 mod q24_circuit_task;

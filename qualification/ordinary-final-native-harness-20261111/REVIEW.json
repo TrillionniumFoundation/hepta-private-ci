@@ -1,0 +1,74 @@
+{
+  "schema": "hepta.final-native-harness.review.v2",
+  "original_request_git_blob": "a113448cd22e0d72d28f0745921dd7c03f7cf6f1",
+  "script": {
+    "git_blob": "5d718f99edc182f47ae99778d8e9a70a2ab88800",
+    "sha256": "5804a0509071d75b474f867a67d6c8660f9222410773e07e187adf68fc442903",
+    "bytes": 45572
+  },
+  "superseded_drafts": [
+    "f1b3b04747eedcefaa3ec5ccec6f9e4497d08cca",
+    "60811ca934b425520164f0dbdcab110e13908788"
+  ],
+  "reviewed_entire_original_script": true,
+  "original_behaviors_preserved": [
+    "original hepta_ci_exec.py and hepta_ci_junit.py byte-identical at execution source",
+    "actual just test --locked --offline and --retries 0",
+    "same-source original helper build/verify",
+    "actual UID0 wrapper and original two protected bind domains",
+    "exact original ignored Root parent tests rather than child helper names"
+  ],
+  "fixed_issues": [
+    "Old hardcoded HEAD/TREE/source paths/8-commit-chain and predecessor-result prerequisite removed.",
+    "Fresh isolated source clone, six-crate maintenance before any test, dirty maintenance stops and retains patch/postimages.",
+    "All four original QA folders must actually exit zero with observed tests; no QA rejection exemption.",
+    "Original full caller verify runs once against the final clean source after QA; checker unchanged.",
+    "Cargo operations run in codex-rs, with original CI recorder addressed by absolute source path.",
+    "Root fresh metadata and nextest list compile both Root packages in the dedicated Root target; list matches actual ignored parent names before test.",
+    "No binary-reuse flags conflict with original collector; original just test remains its command.",
+    "Root UID0, original terminal record, JUnit freshness/counts/roster and binary/source/tool hashes are verified.",
+    "New supervisor sends no signals to Rust or the original recorder; unknown/timeout/truncation/interruption blocks followup and mutating cleanup.",
+    "Actual UID0 idle preflight reads only /proc comm and cwd for Rust processes, no environment or complete command line.",
+    "Fixture cleanup requires this attempt's exclusive mkdir UID0/inode receipt; pre-existing paths are never unmounted or removed.",
+    "Each cleanup item is separate, except active/unknown execution prevents all mutations; only owned records/source nextest reports may be chowned."
+  ],
+  "unknown_completion_behavior": {
+    "signal_existing_or_rust_processes": false,
+    "original_ci_timeout_unchanged": true,
+    "new_cargo_after_unknown": false,
+    "collector_after_unknown": false,
+    "chown_after_unknown": false,
+    "unmount_after_unknown": false,
+    "remove_fixture_after_unknown": false,
+    "original_popen_retained_for_reconciliation": true,
+    "late_terminal_observation_does_not_restart_pipeline": true
+  },
+  "verification": {
+    "native_executed": false,
+    "cargo_executed": false,
+    "root_executed": false,
+    "python_ast_executed": false,
+    "python_ast_reason": "The local executor returned 'No usable execution environment is available'; parent will perform the read-only AST/parameter check before dispatch.",
+    "ordinary_acceptance": false
+  },
+  "nextest_primary_source_schema": {
+    "tag": "cargo-nextest-0.9.103",
+    "binary_and_suite_metadata_url": "https://github.com/nextest-rs/nextest/blob/cargo-nextest-0.9.103/nextest-metadata/src/test_list.rs",
+    "list_filter_cli_url": "https://github.com/nextest-rs/nextest/blob/cargo-nextest-0.9.103/cargo-nextest/src/dispatch.rs",
+    "scope": "Read-only review of serde flatten, package/binary ID, ignored/filter-match and List TestBuildFilter contract; runtime still validates actual generated metadata."
+  },
+  "qualification_counts": {
+    "ordinary_complete_chains": 0,
+    "positive_adoption_chains": 0,
+    "ordinary_no_update_rollback_chains": 0,
+    "independent_business_consumer": 0,
+    "physical_cold_restart": 0
+  },
+  "independent_static_review": {
+    "git_blob": "92df8736fcc88d1a29091a01bffc7a6b7c893dbb",
+    "sha256": "fd517d9b412bf0f331785d4b75775474c77c377e98c4066d648023fbcb374527",
+    "bytes": 6986,
+    "conclusion": "No remaining definite static blocker in the reviewed exact script; not AST-compiled or executed."
+  },
+  "timeout_scope": "overall_timeout_seconds bounds admission of new stages. It is not a hard termination guarantee: after an outer deadline, the original launcher may be retained beyond that budget for reconciliation. The harness sends no kill signal, dispatches no follow-up Rust, and does no mutating cleanup in that unknown state. An external runtime timeout is not a source completion or cleanup proof."
+}

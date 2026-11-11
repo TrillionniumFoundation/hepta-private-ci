@@ -29,6 +29,9 @@ use crate::PublishedCircuitCellOwnerV1;
 use crate::PublishedCircuitFeatureTaskV1;
 use crate::circuit_task_channel_v1;
 
+#[path = "circuit_q24_successor_execution.rs"]
+pub(crate) mod successor;
+
 #[cfg(target_os = "linux")]
 #[path = "circuit_q24_task_ledger_install.rs"]
 mod learning;

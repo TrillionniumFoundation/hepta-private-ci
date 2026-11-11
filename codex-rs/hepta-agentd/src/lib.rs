@@ -319,6 +319,10 @@ mod circuit_feature_learning_handoff;
 mod circuit_learning_delivery;
 #[cfg(target_os = "linux")]
 mod circuit_q24_task_profile;
+#[cfg(target_os = "linux")]
+mod circuit_q24_successor;
+#[cfg(target_os = "linux")]
+pub use circuit_q24_successor::{OriginalQ24SuccessorHandoffV1, OriginalQ24PreparedSuccessorV1, OriginalQ24InstalledSuccessorV1, OriginalQ24SuccessorExecutionInputsV1, OriginalQ24SuccessorPreparedUncertain};
 mod circuit_task;
 mod circuit_task_learning;
 #[cfg(target_os = "linux")]

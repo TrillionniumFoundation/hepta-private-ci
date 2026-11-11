@@ -93,6 +93,19 @@ impl CurrentStore {
         }
     }
 
+    #[cfg(target_os = "linux")]
+    pub(super) fn require_original_root_successor(
+        &self,
+        session: &crate::root_production_inputs::OriginalQ24SuccessorSession,
+        initial: &codex_hepta_learning_artifacts::LearningIterationSnapshotV1,
+        scope: &codex_hepta_learning_artifacts::FrozenLearningScopeV2,
+    ) -> Result<(), AgentdError> {
+        match &self.store {
+            Store::Root(original) => original.require_successor_context(session, initial, scope),
+            _ => Err(invalid("successor requires the same actual Root update client")),
+        }
+    }
+
     pub(super) fn load(&self) -> Result<CurrentHead, AgentdError> {
         let head = match &self.store {
             Store::Host(store) => store.load(&self.owner_id).map_err(invalid)?,

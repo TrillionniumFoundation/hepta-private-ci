@@ -1,0 +1,29 @@
+{
+  "schema": "hepta.ordinary-cold-recovery-review-manifest.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "head": "2125da36a0e49a19b725c28bb150900f20caac7b",
+  "tree": "b1aed9bcf92573ac2618ddd6931b05f09659c41a",
+  "proposed_relative_directory": "cold-recovery-2125",
+  "review_only": true,
+  "tests_executed": false,
+  "product_mutations": false,
+  "reference_mutations": false,
+  "observed_source_count": 55,
+  "source_inventory_location": "RESULT.json#/source_inventory",
+  "status": "explicit_code_and_protocol_gap_for_full_cold_continuation",
+  "artifacts": [
+    {
+      "path": "README.md",
+      "bytes": 24574,
+      "sha256": "dd5d0c9b611e4d4d3773cab796abb23a88a287f5eaeb8e1ff1a30325e27bd3b0",
+      "git_blob": "48c193573e40ce064a133cfdf4615972275ef639"
+    },
+    {
+      "path": "RESULT.json",
+      "bytes": 57812,
+      "sha256": "54425d897dbdd4beb9181bce25c74cd8d87662c97ace9a10ea61b6cf3b72134e",
+      "git_blob": "04578df5a04cda7b4c43e682f49e46499c8e5c5c"
+    }
+  ],
+  "note": "GitHub blobs preserve the review; they are not a branch or a qualification result. Later Pending successor draft and new native runs are outside this fixed-source review."
+}

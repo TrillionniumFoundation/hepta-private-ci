@@ -5,6 +5,13 @@ use std::time::Duration;
 
 use super::*;
 
+#[path = "cell_q24_publication_successor.rs"]
+mod successor;
+pub(crate) use successor::OriginalSuccessorPublication;
+#[path = "cell_q24_publication_successor_current.rs"]
+mod successor_current;
+pub(crate) use successor_current::require_successor_admission;
+
 /// A qualified adoption with actual original owners. Completed RetainParent,
 /// DeferCandidate and NoUpdate use the separate read-only Artifact phase.
 pub struct OriginalCellQ24ArtifactPublicationDriverV1 {

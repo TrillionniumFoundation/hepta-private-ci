@@ -34,6 +34,9 @@ use crate::OriginalGenerationLearningRoleV1;
 use crate::PreparedLearningIterationProposalV1;
 use crate::cell_q24_learning_owner_error::owner_error as unavailable;
 
+#[path = "cell_q24_learning_successor.rs"]
+mod successor;
+
 #[path = "cell_q24_learning_model_dispatch.rs"]
 mod model;
 #[path = "cell_q24_publication_material.rs"]
@@ -65,6 +68,7 @@ struct Q24StageState {
     owners: Arc<Mutex<Q24StageOwners>>,
     lane: Arc<Semaphore>,
     cancelled: Arc<AtomicBool>,
+    successor: std::sync::OnceLock<std::sync::Weak<crate::circuit_q24_successor::SuccessorSlot>>,
 }
 
 /// No public raw-receipt or callback constructor. Each resource is an original
@@ -165,6 +169,7 @@ impl OriginalCellQ24LearningStageOwnersV1 {
                 })),
                 lane: Arc::new(Semaphore::new(/*permits*/ 1)),
                 cancelled: Arc::new(AtomicBool::new(/*val*/ false)),
+                successor: std::sync::OnceLock::new(),
             }),
         }))
     }
@@ -293,6 +298,7 @@ impl OriginalCellQ24LearningStageOwnersV1 {
         mut selection: OriginalGenerationLearningReceiptOwnerV1<FileAnchorWitnessStore>,
         mut next_use: OriginalGenerationLearningReceiptOwnerV1<FileAnchorWitnessStore>,
     ) -> Result<(), Error> {
+        let installed_snapshot = snapshot.clone();
         let inner = Arc::clone(&self.inner);
         self.inner
             .in_lane(
@@ -353,7 +359,8 @@ impl OriginalCellQ24LearningStageOwnersV1 {
                     Ok(())
                 },
             )
-            .await
+            .await?;
+        self.notify_original_successor_generation(&installed_snapshot)
     }
 }
 

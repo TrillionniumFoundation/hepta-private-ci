@@ -162,6 +162,12 @@ impl LearningIterationReservationV1<'_> {
 
 /// Consumed once by Agentd. No mutable writer or trust root reaches the sender.
 /// Trust rotation requires a newly admitted process-owner bootstrap.
+#[cfg(target_os = "linux")]
+#[path = "learning_iteration_successor.rs"]
+mod successor;
+#[cfg(target_os = "linux")]
+pub(crate) use successor::OriginalQ24SuccessorContext;
+
 pub struct LearningIterationRuntimeBootstrapV1 {
     agent_id: AgentId,
     spawn_generation: u64,
@@ -178,6 +184,8 @@ pub struct LearningIterationRuntimeBootstrapV1 {
     enforce_circuit_admission: bool,
     #[cfg(target_os = "linux")]
     original_q24: Option<Arc<crate::OriginalCellQ24LearningStageOwnersV1>>,
+    #[cfg(target_os = "linux")]
+    successor: Option<Arc<crate::circuit_q24_successor::SuccessorSlot>>,
 }
 
 pub fn learning_iteration_channel_v1(
@@ -278,6 +286,8 @@ fn learning_iteration_channel(
             enforce_circuit_admission: false,
             #[cfg(target_os = "linux")]
             original_q24: None,
+            #[cfg(target_os = "linux")]
+            successor: None,
         },
     ))
 }
@@ -506,6 +516,8 @@ impl LearningIterationRuntimeBootstrapV1 {
             if clock()? >= request.envelope.expiry_unix_seconds {
                 return Err(LearningIterationRuntimeErrorV1::DeadlineExceeded);
             }
+            #[cfg(target_os = "linux")]
+            self.wait_original_successor_stage(state, coordinator.snapshot(), stage).await?;
             // Check the current local authorization before asking an original
             // owner to publish or use its selected generation, not only after
             // that owner returns an observation of the side effect.
