@@ -6,6 +6,7 @@ use codex_hepta_intelligence_eval::ProductEvaluationExecutionStoreErrorV1;
 use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
+use pretty_assertions::assert_eq;
 
 use crate::CellQ24ModelProposalErrorV1 as ProposalError;
 use crate::CellQ24ModelProposalInputsV1;
