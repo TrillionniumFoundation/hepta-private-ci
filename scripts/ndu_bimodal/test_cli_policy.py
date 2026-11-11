@@ -58,11 +58,22 @@ class NativePolicyAdmissionTests(unittest.TestCase):
             ]
             with (
                 patch.object(sys, "argv", arguments),
-                patch("scripts.ndu_bimodal.cli.bounded_bytes", side_effect=AssertionError("read forbidden")),
-                patch("scripts.ndu_bimodal.cli.NativeSession", side_effect=AssertionError("native dispatch forbidden")),
-                patch("scripts.ndu_bimodal.cli.torch.set_num_threads", side_effect=AssertionError("Torch setup forbidden")),
+                patch(
+                    "scripts.ndu_bimodal.cli.bounded_bytes",
+                    side_effect=AssertionError("read forbidden"),
+                ),
+                patch(
+                    "scripts.ndu_bimodal.cli.NativeSession",
+                    side_effect=AssertionError("native dispatch forbidden"),
+                ),
+                patch(
+                    "scripts.ndu_bimodal.cli.torch.set_num_threads",
+                    side_effect=AssertionError("Torch setup forbidden"),
+                ),
                 contextlib.redirect_stderr(io.StringIO()),
-                self.assertRaisesRegex(ValueError, "Native dynamic policy not admitted"),
+                self.assertRaisesRegex(
+                    ValueError, "Native dynamic policy not admitted"
+                ),
             ):
                 main()
             self.assertFalse(output.exists())
