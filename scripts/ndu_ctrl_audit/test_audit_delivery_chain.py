@@ -1,4 +1,5 @@
 """Adversarial, synthetic checks; not a native WRITE_TEXT reproduction."""
+
 import copy
 import hashlib
 import json
@@ -9,13 +10,25 @@ from audit_delivery_chain import audit, audit_observed, STAGES
 
 def valid():
     h, w = "a" * 64, "b" * 64
-    return {"schema": "ctrl.delivery-chain.v1", "stages": {
-        "candidate": {"candidate_id": "c1", "payload_sha256": h},
-        "selected": {"candidate_id": "c1", "payload_sha256": h},
-        "serialized": {"candidate_id": "c1", "payload_sha256": h, "wire_sha256": w},
-        "delivered": {"candidate_id": "c1", "wire_sha256": w, "delivery_receipt_id": "r1"},
-        "evaluated": {"candidate_id": "c1", "wire_sha256": w, "delivery_receipt_id": "r1", "score": 0},
-    }}
+    return {
+        "schema": "ctrl.delivery-chain.v1",
+        "stages": {
+            "candidate": {"candidate_id": "c1", "payload_sha256": h},
+            "selected": {"candidate_id": "c1", "payload_sha256": h},
+            "serialized": {"candidate_id": "c1", "payload_sha256": h, "wire_sha256": w},
+            "delivered": {
+                "candidate_id": "c1",
+                "wire_sha256": w,
+                "delivery_receipt_id": "r1",
+            },
+            "evaluated": {
+                "candidate_id": "c1",
+                "wire_sha256": w,
+                "delivery_receipt_id": "r1",
+                "score": 0,
+            },
+        },
+    }
 
 
 class DeliveryAuditTest(unittest.TestCase):
@@ -65,7 +78,6 @@ class DeliveryAuditTest(unittest.TestCase):
             self.assertFalse(audit(x)[0])
 
 
-
 def observed():
     x = valid()
     x["schema"] = "ctrl.delivery-chain.observed.v2"
@@ -77,9 +89,11 @@ def observed():
         "episode_id": "episode-1",
         "evidence_cutoff_ns": 200,
     }
-    digest = hashlib.sha256(json.dumps(
-        x["identity"], sort_keys=True, ensure_ascii=False, separators=(",", ":")
-    ).encode("utf-8")).hexdigest()
+    digest = hashlib.sha256(
+        json.dumps(
+            x["identity"], sort_keys=True, ensure_ascii=False, separators=(",", ":")
+        ).encode("utf-8")
+    ).hexdigest()
     for i, stage in enumerate(STAGES):
         x["stages"][stage]["identity_sha256"] = digest
         x["stages"][stage]["observed_ns"] = 100 + i
@@ -112,9 +126,12 @@ class ObservedAuditTest(unittest.TestCase):
         self.assertIn("ISOLATED_ACTOR_NOT_COMPLETED", audit_observed(x)[1])
 
     def test_nonzero_bool_and_unisolated_launch_fail_closed(self):
-        for field, value in (("exit_code", 1), ("exit_code", False),
-                             ("enforced_before_actor_exec", False),
-                             ("enforced_before_actor_exec", 1)):
+        for field, value in (
+            ("exit_code", 1),
+            ("exit_code", False),
+            ("enforced_before_actor_exec", False),
+            ("enforced_before_actor_exec", 1),
+        ):
             with self.subTest(field=field, value=value):
                 x = observed()
                 x["launch"][field] = value
@@ -196,6 +213,7 @@ class ObservedAuditTest(unittest.TestCase):
         x = observed()
         del x["identity"]
         self.assertIn("INVALID_OWNER_BOUND_IDENTITY", audit_observed(x)[1])
+
 
 if __name__ == "__main__":
     unittest.main()
