@@ -1,0 +1,35 @@
+name: Hepta HPCA real OOD forward read-only audit
+on:
+  pull_request:
+    paths:
+      - "qualification/hpca-neuroscience-20261110/HPCA_V2_OOD_PLAN.json"
+      - "qualification/hpca-neuroscience-20261110/ACTUAL_OOD_FORWARD_RESULT.json"
+      - "qualification/hpca-neuroscience-20261110/ood_forward_audit.py"
+      - "qualification/hpca-neuroscience-20261110/test_ood_forward_audit.py"
+      - "qualification/hpca-neuroscience-20261110/AUDIT_RESULT.json"
+      - ".github/workflows/hepta-hpca-ood-forward-audit.yml"
+  workflow_dispatch:
+jobs:
+  recalculate-operator-ood-only:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Refuse missing row, unknown task, altered logits and result identities
+        run: |
+          cd qualification/hpca-neuroscience-20261110
+          python3 -m unittest -v test_ood_forward_audit
+          python3 ood_forward_audit.py --plan HPCA_V2_OOD_PLAN.json --result ACTUAL_OOD_FORWARD_RESULT.json --out /tmp/audit-result.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          declared=json.loads(Path('AUDIT_RESULT.json').read_text())
+          actual=json.loads(Path('/tmp/audit-result.json').read_text())
+          assert declared==actual, 'Committed re-score does not match re-execution'
+          assert actual['status']=='HOLD_NO_GO_OPERATOR_ONLY'
+          print('HOLD_NO_GO: immutable operator OOD scores independently recomputed, no adoption')
+          PY
