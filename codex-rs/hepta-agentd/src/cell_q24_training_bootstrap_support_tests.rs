@@ -2,8 +2,7 @@
 //! actual original pair every time; no replayed-signature responder is used.
 use std::thread::JoinHandle;
 
-use codex_hepta_neuron::FileAnchorWitnessStore;
-use pretty_assertions::assert_eq;
+use super::super::super::wire;
 use super::*;
 use crate::OriginalCellQ24DatasetCommandReadbackV1;
 use crate::OriginalCellQ24MaterialCommandReceiptV1;
@@ -14,10 +13,13 @@ use crate::OriginalCellQ24TrainingSourceConfigV1;
 use crate::cell_q24_material_receipt_owner::MaterialCommandFixture;
 use crate::learning_iteration_evidence_client::command_test_support as transport;
 use crate::learning_iteration_evidence_client::material::bootstrap_ports as material;
-use super::super::super::wire;
+use codex_hepta_neuron::FileAnchorWitnessStore;
+use pretty_assertions::assert_eq;
 
-pub(super) type Host = OriginalCellQ24TrainingBootstrapOwnerV1<FileAnchorWitnessStore, FileAnchorWitnessStore>;
-pub(super) type Custody = OriginalCellQ24TrainingBootstrapCustodyV1<FileAnchorWitnessStore, FileAnchorWitnessStore>;
+pub(super) type Host =
+    OriginalCellQ24TrainingBootstrapOwnerV1<FileAnchorWitnessStore, FileAnchorWitnessStore>;
+pub(super) type Custody =
+    OriginalCellQ24TrainingBootstrapCustodyV1<FileAnchorWitnessStore, FileAnchorWitnessStore>;
 pub(super) type Peers = [material::Peer; 4];
 pub(super) type Server = JoinHandle<Result<u64, Error>>;
 type Role = crate::OriginalCellQ24MaterialEvidenceRoleV1;
@@ -33,9 +35,15 @@ pub(super) fn inputs(
     let (data_evidence, data_peer) = material::evidence(fixture, Role::Dataset)?;
     let custody = match origin {
         Origin::Fresh => fixture.fresh_training_custody(source, experience, data_evidence)?,
-        Origin::Recovered => fixture.recovered_training_custody(source, experience, data_evidence)?,
+        Origin::Recovered => {
+            fixture.recovered_training_custody(source, experience, data_evidence)?
+        }
     };
-    Ok((custody, dataset, [dataset_peer, source_peer, experience_peer, data_peer]))
+    Ok((
+        custody,
+        dataset,
+        [dataset_peer, source_peer, experience_peer, data_peer],
+    ))
 }
 
 pub(super) fn owner(
@@ -45,10 +53,16 @@ pub(super) fn owner(
     let (custody, dataset, peers) = inputs(fixture, origin)?;
     let owner = match origin {
         Origin::Fresh => Host::from_original_custody(
-            custody, fixture.training_configuration(), dataset, Arc::new(AtomicBool::new(false)),
+            custody,
+            fixture.training_configuration(),
+            dataset,
+            Arc::new(AtomicBool::new(false)),
         )?,
         Origin::Recovered => Host::recover_original_custody(
-            custody, fixture.training_configuration(), dataset, Arc::new(AtomicBool::new(false)),
+            custody,
+            fixture.training_configuration(),
+            dataset,
+            Arc::new(AtomicBool::new(false)),
         )?,
     };
     Ok((Arc::new(owner), peers))
@@ -75,7 +89,8 @@ pub(super) fn context(
     cut: &OriginalCellQ24MaterialCommandReceiptV1,
 ) -> OriginalCellQ24TrainingCommandContextV1 {
     OriginalCellQ24TrainingCommandContextV1 {
-        dataset: cut.snapshot().clone(), scope: fixture.config.scope.clone(),
+        dataset: cut.snapshot().clone(),
+        scope: fixture.config.scope.clone(),
         verifier: fixture.config.verifier.clone(),
     }
 }
@@ -86,22 +101,29 @@ pub(super) fn source_config(
 ) -> OriginalCellQ24TrainingSourceConfigV1 {
     let config = fixture.training_configuration();
     OriginalCellQ24TrainingSourceConfigV1 {
-        dataset: cut.snapshot().clone(), scope: config.material.scope,
-        rule: config.material.rule, optimizer: config.optimizer,
-        freeze_plan: config.material.freeze_plan, freeze_evidence: config.material.freeze_evidence,
+        dataset: cut.snapshot().clone(),
+        scope: config.material.scope,
+        rule: config.material.rule,
+        optimizer: config.optimizer,
+        freeze_plan: config.material.freeze_plan,
+        freeze_evidence: config.material.freeze_evidence,
         experience_evidence: cut.attestations()[0].clone(),
         dataset_evidence: cut.attestations()[1].clone(),
         verifier: config.material.verifier,
     }
 }
 
-pub(super) fn connected<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 'static>(
+pub(super) fn connected<
+    TW: AnchorWitnessStore + Send + 'static,
+    RW: AnchorWitnessStore + Send + 'static,
+>(
     owner: Arc<OriginalCellQ24TrainingBootstrapOwnerV1<TW, RW>>,
     context: OriginalCellQ24TrainingCommandContextV1,
     origin: Origin,
     expected: Option<OriginalCellQ24TrainingCommandReceiptV1>,
 ) -> anyhow::Result<(OriginalCellQ24TrainingCommandClientV1, Server)> {
-    let (client, mut channel) = transport::client(context, matches!(origin, Origin::Recovered), expected)?;
+    let (client, mut channel) =
+        transport::client(context, matches!(origin, Origin::Recovered), expected)?;
     let thread = std::thread::spawn(move || owner.serve_command_channel(&mut channel));
     Ok((client, thread))
 }
@@ -109,19 +131,26 @@ pub(super) fn connected<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitne
 pub(super) fn lose_ack(
     owner: Arc<Host>,
     context: OriginalCellQ24TrainingCommandContextV1,
-) -> anyhow::Result<(OriginalCellQ24TrainingCommandClientV1, JoinHandle<anyhow::Result<()>>)> {
+) -> anyhow::Result<(
+    OriginalCellQ24TrainingCommandClientV1,
+    JoinHandle<anyhow::Result<()>>,
+)> {
     let (client, mut channel) = transport::client(context, /*readback_only*/ false, None)?;
     let thread = std::thread::spawn(move || {
         let mut completed = false;
         let result = channel.exchange(|bytes| {
-            let response = owner.command_response(bytes, 1)
+            let response = owner
+                .command_response(bytes, 1)
                 .map_err(|_| codex_hepta_contracts::HostIssuerTransportError::InvalidRequest)?;
             let response: wire::Response = serde_json::from_slice(&response)
                 .map_err(|_| codex_hepta_contracts::HostIssuerTransportError::InvalidRequest)?;
             completed = matches!(response.result, wire::CommandResult::Completed { .. });
             Err(codex_hepta_contracts::HostIssuerTransportError::Unavailable)
         });
-        anyhow::ensure!(completed && result.is_err(), "only the ACK is lost after actual original completion");
+        anyhow::ensure!(
+            completed && result.is_err(),
+            "only the ACK is lost after actual original completion"
+        );
         Ok(())
     });
     Ok((client, thread))
@@ -138,8 +167,10 @@ pub(super) fn finish(
 pub(super) fn finish_material(peers: Peers) -> anyhow::Result<[u64; 4]> {
     let [dataset, source, experience, data] = peers;
     Ok([
-        material::finish(dataset)?, material::finish(source)?,
-        material::finish(experience)?, material::finish(data)?,
+        material::finish(dataset)?,
+        material::finish(source)?,
+        material::finish(experience)?,
+        material::finish(data)?,
     ])
 }
 
@@ -150,9 +181,12 @@ pub(super) async fn raw_response(
     request.request_id = 1;
     tokio::task::spawn_blocking(move || {
         let bytes = serde_json::to_vec(&request).expect("fixed test request");
-        owner.command_response(&bytes, 1)
+        owner
+            .command_response(&bytes, 1)
             .map(|bytes| serde_json::from_slice(&bytes).expect("original response"))
-    }).await.map_err(anyhow::Error::from)
+    })
+    .await
+    .map_err(anyhow::Error::from)
 }
 
 pub(in super::super) struct WriterGate {

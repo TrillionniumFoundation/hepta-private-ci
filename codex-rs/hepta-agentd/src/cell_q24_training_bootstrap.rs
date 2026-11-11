@@ -72,7 +72,8 @@ pub struct OriginalCellQ24TrainingBootstrapConfigV1 {
 
 /// One original host transfer. Every connection was bound when supplied;
 // neither delayed bootstrap nor cold recovery opens a path or restarts a peer.
-pub struct OriginalCellQ24TrainingBootstrapCustodyV1<TW: AnchorWitnessStore, RW: AnchorWitnessStore> {
+pub struct OriginalCellQ24TrainingBootstrapCustodyV1<TW: AnchorWitnessStore, RW: AnchorWitnessStore>
+{
     pub native_file: File,
     pub native_witness: TW,
     pub receipt_file: File,
@@ -143,24 +144,37 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
         cancellation: Arc<AtomicBool>,
         origin: Origin,
     ) -> Result<Self, Error> {
-        OriginalCellQ24DatasetCommandReadbackV1::require_initial_context(&dataset, &config.material)?;
+        OriginalCellQ24DatasetCommandReadbackV1::require_initial_context(
+            &dataset,
+            &config.material,
+        )?;
         OriginalCellQ24MaterialSourceConnectionV1::require_initial_context(
-            &custody.material_source, &config.material.initial, &config.material.scope, &custody.baseline,
+            &custody.material_source,
+            &config.material.initial,
+            &config.material.scope,
+            &custody.baseline,
         )?;
         let at = now()?;
         if custody.generator_key.verifying_key().to_bytes() != config.generator.verifying_key
             || config.generator.principal.principal_id != config.material.initial.owners.trainer
             || !(1..=86_400).contains(&config.maximum_signature_lifetime_seconds)
-            || custody.baseline.components() != &config.material.initial.request.selected_bundle.components
+            || custody.baseline.components()
+                != &config.material.initial.request.selected_bundle.components
         {
             return Err(Error::Binding("original Generator custody and baseline"));
         }
-        config.material.verifier.require_signer_binding(
-            LearningEvidenceRoleV1::Generator, &config.generator, at,
-        ).map_err(OriginalCellQ24TrainingCommandErrorV1::from)?;
+        config
+            .material
+            .verifier
+            .require_signer_binding(LearningEvidenceRoleV1::Generator, &config.generator, at)
+            .map_err(OriginalCellQ24TrainingCommandErrorV1::from)?;
         Ok(Self {
-            config, dataset: Arc::new(dataset), state: Mutex::new(State::Awaiting(custody)), origin,
-            cancellation, runtime: Handle::current(),
+            config,
+            dataset: Arc::new(dataset),
+            state: Mutex::new(State::Awaiting(custody)),
+            origin,
+            cancellation,
+            runtime: Handle::current(),
             bootstrap_lane: Semaphore::new(1),
             connections: Arc::new(Semaphore::new(4)),
             #[cfg(test)]

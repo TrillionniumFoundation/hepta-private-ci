@@ -8,5 +8,10 @@ pub(crate) fn retained_connection_fixture(
     scope: FrozenLearningScopeV2,
     baseline: Arc<LoadedCellQ24ModelV1>,
 ) -> OriginalCellQ24MaterialSourceConnectionV1 {
-    OriginalCellQ24MaterialSourceConnectionV1 { transport, initial, scope, baseline }
+    OriginalCellQ24MaterialSourceConnectionV1 {
+        transport,
+        initial,
+        scope,
+        baseline,
+    }
 }

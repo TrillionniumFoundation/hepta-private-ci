@@ -8,14 +8,14 @@ use codex_hepta_learning_artifacts::LearningIterationStageV1;
 use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
 use codex_hepta_neuron::AnchorWitnessStore;
 
+use super::super::OriginalCellQ24TrainingCommandContextV1;
+use super::super::wire;
 use super::Error;
 use super::Origin;
 use super::OriginalCellQ24TrainingBootstrapCustodyV1;
 use super::OriginalCellQ24TrainingBootstrapOwnerV1;
 use super::OriginalCellQ24TrainingCommandErrorV1;
 use super::OriginalCellQ24TrainingCommandOwnerV1;
-use super::super::OriginalCellQ24TrainingCommandContextV1;
-use super::super::wire;
 use crate::CellQ24TrainingOwnerV1;
 use crate::OriginalCellQ24DatasetCommandReadbackV1;
 use crate::OriginalCellQ24MaterialCommandReceiptV1;
@@ -43,14 +43,17 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
         let snapshot = cut.snapshot();
         let coordinator = LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())
             .map_err(OriginalCellQ24TrainingCommandErrorV1::from)?;
-        if snapshot.request != initial.request || snapshot.owners != initial.owners
-            || snapshot.receipts.len() != 2 || cut.attestations().len() != 2
+        if snapshot.request != initial.request
+            || snapshot.owners != initial.owners
+            || snapshot.receipts.len() != 2
+            || cut.attestations().len() != 2
             || coordinator.next_stage() != Some(LearningIterationStageV1::Training)
         {
             return Err(Error::Binding("actual original two-receipt Dataset cut"));
         }
         let context = OriginalCellQ24TrainingCommandContextV1 {
-            dataset: snapshot.clone(), scope: self.config.material.scope.clone(),
+            dataset: snapshot.clone(),
+            scope: self.config.material.scope.clone(),
             verifier: self.config.material.verifier.clone(),
         };
         request.require_context(&context, context.binding()?, next_request_id)?;
@@ -64,15 +67,34 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
         started_at: u64,
     ) -> Result<(), Error> {
         let at = OriginalCellQ24DatasetCommandReadbackV1::verify_original_cut(&self.dataset, cut)?;
-        OriginalCellQ24DatasetCommandReadbackV1::require_initial_context(&self.dataset, &self.config.material)?;
-        if at < started_at || matches!(self.origin, Origin::Fresh)
-            && at >= self.config.material.initial.request.envelope.expiry_unix_seconds
+        OriginalCellQ24DatasetCommandReadbackV1::require_initial_context(
+            &self.dataset,
+            &self.config.material,
+        )?;
+        if at < started_at
+            || matches!(self.origin, Origin::Fresh)
+                && at
+                    >= self
+                        .config
+                        .material
+                        .initial
+                        .request
+                        .envelope
+                        .expiry_unix_seconds
         {
-            return Err(Error::Binding("Trainer bootstrap clock or new-work deadline"));
+            return Err(Error::Binding(
+                "Trainer bootstrap clock or new-work deadline",
+            ));
         }
-        self.config.material.verifier.require_signer_binding(
-            LearningEvidenceRoleV1::Generator, &self.config.generator, at,
-        ).map_err(OriginalCellQ24TrainingCommandErrorV1::from)?;
+        self.config
+            .material
+            .verifier
+            .require_signer_binding(
+                LearningEvidenceRoleV1::Generator,
+                &self.config.generator,
+                at,
+            )
+            .map_err(OriginalCellQ24TrainingCommandErrorV1::from)?;
         Ok(())
     }
 
@@ -85,7 +107,8 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
     ) -> Result<Arc<OriginalCellQ24TrainingCommandOwnerV1<TW, RW>>, Error> {
         let source_config = OriginalCellQ24TrainingSourceConfigV1 {
             dataset: cut.snapshot().clone(),
-            scope: self.config.material.scope.clone(), rule: self.config.material.rule,
+            scope: self.config.material.scope.clone(),
+            rule: self.config.material.rule,
             optimizer: self.config.optimizer,
             freeze_plan: self.config.material.freeze_plan.clone(),
             freeze_evidence: self.config.material.freeze_evidence.clone(),
@@ -94,22 +117,38 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
             verifier: self.config.material.verifier.clone(),
         };
         let OriginalCellQ24TrainingBootstrapCustodyV1 {
-            native_file, native_witness, receipt_file, receipt_witness,
-            generator_key, baseline, material_source, experience, dataset,
+            native_file,
+            native_witness,
+            receipt_file,
+            receipt_witness,
+            generator_key,
+            baseline,
+            material_source,
+            experience,
+            dataset,
         } = custody;
         let material = OriginalCellQ24MaterialSourceConnectionV1::bind_original_dataset(
-            material_source, source_config.clone(),
+            material_source,
+            source_config.clone(),
         )?;
         let source = capture_original_remote_cell_q24_training_source_v1(
-            OriginalCellQ24RemoteTrainingSourceOwnersV1 { material, baseline, experience, dataset },
+            OriginalCellQ24RemoteTrainingSourceOwnersV1 {
+                material,
+                baseline,
+                experience,
+                dataset,
+            },
             source_config,
-        ).await?;
+        )
+        .await?;
         self.require_fresh_cut(&cut, started_at)?;
         #[cfg(test)]
         self.wait_before_writer_for_test().await;
         let signing = OriginalCellQ24TrainingSigningConfigV1 {
-            dataset: context.dataset.clone(), scope: context.scope.clone(),
-            signer: self.config.generator.clone(), verifier: context.verifier.clone(),
+            dataset: context.dataset.clone(),
+            scope: context.scope.clone(),
+            signer: self.config.generator.clone(),
+            verifier: context.verifier.clone(),
             maximum_signature_lifetime_seconds: self.config.maximum_signature_lifetime_seconds,
         };
         let origin = self.origin;
@@ -122,46 +161,74 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
             // writer, then check the exact signatures and internal clock.
             OriginalCellQ24TrainingSourceV1::require_current_in_lane(&source)?;
             let at = OriginalCellQ24DatasetCommandReadbackV1::verify_original_cut(
-                &original_dataset, &original_cut,
+                &original_dataset,
+                &original_cut,
             )?;
             OriginalCellQ24DatasetCommandReadbackV1::require_initial_context(
-                &original_dataset, &material_config,
+                &original_dataset,
+                &material_config,
             )?;
-            if at < started_at || matches!(origin, Origin::Fresh)
-                && at >= material_config.initial.request.envelope.expiry_unix_seconds
+            if at < started_at
+                || matches!(origin, Origin::Fresh)
+                    && at >= material_config.initial.request.envelope.expiry_unix_seconds
             {
                 return Err(Error::Binding("Trainer writer bootstrap clock or deadline"));
             }
-            signing.verifier.require_signer_binding(
-                LearningEvidenceRoleV1::Generator, &signing.signer, at,
-            ).map_err(OriginalCellQ24TrainingCommandErrorV1::from)?;
+            signing
+                .verifier
+                .require_signer_binding(LearningEvidenceRoleV1::Generator, &signing.signer, at)
+                .map_err(OriginalCellQ24TrainingCommandErrorV1::from)?;
             let native = match origin {
                 Origin::Fresh => CellQ24TrainingOwnerV1::create_from_original_source(
-                    native_file, native_witness, source,
+                    native_file,
+                    native_witness,
+                    source,
                 )?,
                 Origin::Recovered => CellQ24TrainingOwnerV1::recover_from_original_source(
-                    native_file, native_witness, source,
+                    native_file,
+                    native_witness,
+                    source,
                 )?,
             };
             let receipts = match origin {
                 Origin::Fresh => OriginalCellQ24TrainingReceiptOwnerV1::create(
-                    receipt_file, receipt_witness, signing, generator_key,
+                    receipt_file,
+                    receipt_witness,
+                    signing,
+                    generator_key,
                 )?,
                 Origin::Recovered => OriginalCellQ24TrainingReceiptOwnerV1::recover(
-                    receipt_file, receipt_witness, signing, generator_key,
+                    receipt_file,
+                    receipt_witness,
+                    signing,
+                    generator_key,
                 )?,
             };
             Ok::<_, Error>((native, receipts))
-        }).await.map_err(|_| Error::Uncertain)??;
-        let original = OriginalCellQ24TrainingStageV1::from_original_owners(native, receipts).await?;
-        let stage = Arc::new(SourceBoundCellQ24TrainingStageV1::from_original_stage(original).await?);
+        })
+        .await
+        .map_err(|_| Error::Uncertain)??;
+        let original =
+            OriginalCellQ24TrainingStageV1::from_original_owners(native, receipts).await?;
+        let stage =
+            Arc::new(SourceBoundCellQ24TrainingStageV1::from_original_stage(original).await?);
         let owner = match self.origin {
-            Origin::Fresh => OriginalCellQ24TrainingCommandOwnerV1::from_original_stage(
-                stage, context, Arc::clone(&self.cancellation),
-            ).await?,
-            Origin::Recovered => OriginalCellQ24TrainingCommandOwnerV1::recover_original_stage(
-                stage, context, Arc::clone(&self.cancellation),
-            ).await?,
+            Origin::Fresh => {
+                OriginalCellQ24TrainingCommandOwnerV1::from_original_stage(
+                    stage,
+                    context,
+                    Arc::clone(&self.cancellation),
+                )
+                .await?
+            }
+            Origin::Recovered => {
+                OriginalCellQ24TrainingCommandOwnerV1::recover_original_stage(
+                    stage,
+                    context,
+                    Arc::clone(&self.cancellation),
+                )
+                .await?
+            }
         };
         self.require_fresh_cut(&cut, started_at)?;
         Ok(Arc::new(owner))

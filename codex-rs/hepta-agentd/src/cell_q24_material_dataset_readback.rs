@@ -52,7 +52,11 @@ impl OriginalCellQ24DatasetCommandReadbackV1 {
         cut: &OriginalCellQ24MaterialCommandReceiptV1,
     ) -> Result<u64, Error> {
         let at = now()?;
-        let retained = self.original.retained.try_lock().map_err(|_| Error::Unavailable)?;
+        let retained = self
+            .original
+            .retained
+            .try_lock()
+            .map_err(|_| Error::Unavailable)?;
         if retained.as_ref() != Some(cut) {
             return Err(Error::Binding("same originally read Dataset cut"));
         }

@@ -43,36 +43,44 @@ impl OriginalCellQ24MaterialSourceConnectionV1 {
         lifetime: Duration,
     ) -> Result<Self, Error> {
         let started_at = now()?;
-        let coordinator = LearningIterationCoordinatorV1::new(
-            initial.request.clone(), initial.owners.clone(),
-        )?;
+        let coordinator =
+            LearningIterationCoordinatorV1::new(initial.request.clone(), initial.owners.clone())?;
         scope.validate_snapshot(&initial)?;
         // SAFETY: read only this process's original credentials.
-        let same_uid = peer.uid == unsafe { libc::getuid() }
-            || peer.uid == unsafe { libc::geteuid() };
+        let same_uid =
+            peer.uid == unsafe { libc::getuid() } || peer.uid == unsafe { libc::geteuid() };
         if coordinator.snapshot() != &initial
             || same_uid
             || peer.pid == std::process::id()
             || peer.actor_id != initial.owners.dataset
             || baseline.components() != &initial.request.selected_bundle.components
         {
-            return Err(Error::Binding("original Material connection and empty Root cut"));
+            return Err(Error::Binding(
+                "original Material connection and empty Root cut",
+            ));
         }
         let transport = RootObservationStream::from_stream_for_uid(
             stream,
             AgentdRootAuthorityPeer {
-                pid: peer.pid, boot_id: peer.boot_id,
+                pid: peer.pid,
+                boot_id: peer.boot_id,
                 process_start_ticks: peer.process_start_ticks,
             },
             original_owner_pidfd,
             timeout,
             lifetime,
             peer.uid,
-        ).map_err(|_| Error::Unavailable)?;
+        )
+        .map_err(|_| Error::Unavailable)?;
         if now()? < started_at {
             return Err(Error::Binding("Material connection clock moved backwards"));
         }
-        Ok(Self { transport, initial, scope, baseline })
+        Ok(Self {
+            transport,
+            initial,
+            scope,
+            baseline,
+        })
     }
 
     pub(crate) fn require_initial_context(
@@ -81,7 +89,8 @@ impl OriginalCellQ24MaterialSourceConnectionV1 {
         scope: &FrozenLearningScopeV2,
         baseline: &LoadedCellQ24ModelV1,
     ) -> Result<(), Error> {
-        if &self.initial != initial || &self.scope != scope
+        if &self.initial != initial
+            || &self.scope != scope
             || self.baseline.components() != baseline.components()
             || self.baseline.components() != &initial.request.selected_bundle.components
         {
@@ -96,7 +105,8 @@ impl OriginalCellQ24MaterialSourceConnectionV1 {
     ) -> Result<OriginalCellQ24RemoteMaterialClientV1, Error> {
         verify_context(&config, now()?)?;
         let initial = LearningIterationCoordinatorV1::new(
-            config.dataset.request.clone(), config.dataset.owners.clone(),
+            config.dataset.request.clone(),
+            config.dataset.owners.clone(),
         )?;
         self.require_initial_context(initial.snapshot(), &config.scope, &self.baseline)?;
         Ok(OriginalCellQ24RemoteMaterialClientV1 {

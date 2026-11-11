@@ -1,15 +1,17 @@
 //! Original host custody for deferred Training, without future Dataset data.
 use super::*;
+use crate::LearningIterationEvidenceClientV1;
+use crate::OriginalCellQ24MaterialSourceConnectionV1;
 use crate::OriginalCellQ24TrainingBootstrapConfigV1;
 use crate::OriginalCellQ24TrainingBootstrapCustodyV1;
-use crate::OriginalCellQ24MaterialSourceConnectionV1;
-use crate::LearningIterationEvidenceClientV1;
 
 impl MaterialCommandFixture {
     pub(crate) fn training_configuration(&self) -> OriginalCellQ24TrainingBootstrapConfigV1 {
         OriginalCellQ24TrainingBootstrapConfigV1 {
-            material: self.config.clone(), optimizer: self.optimizer,
-            generator: self.generator.clone(), maximum_signature_lifetime_seconds: 300,
+            material: self.config.clone(),
+            optimizer: self.optimizer,
+            generator: self.generator.clone(),
+            maximum_signature_lifetime_seconds: 300,
         }
     }
 
@@ -22,7 +24,9 @@ impl MaterialCommandFixture {
         material_source: OriginalCellQ24MaterialSourceConnectionV1,
         experience: LearningIterationEvidenceClientV1,
         dataset: LearningIterationEvidenceClientV1,
-    ) -> anyhow::Result<OriginalCellQ24TrainingBootstrapCustodyV1<FileAnchorWitnessStore, FileAnchorWitnessStore>> {
+    ) -> anyhow::Result<
+        OriginalCellQ24TrainingBootstrapCustodyV1<FileAnchorWitnessStore, FileAnchorWitnessStore>,
+    > {
         self.training_custody(material_source, experience, dataset, /*create*/ true)
     }
 
@@ -31,7 +35,9 @@ impl MaterialCommandFixture {
         material_source: OriginalCellQ24MaterialSourceConnectionV1,
         experience: LearningIterationEvidenceClientV1,
         dataset: LearningIterationEvidenceClientV1,
-    ) -> anyhow::Result<OriginalCellQ24TrainingBootstrapCustodyV1<FileAnchorWitnessStore, FileAnchorWitnessStore>> {
+    ) -> anyhow::Result<
+        OriginalCellQ24TrainingBootstrapCustodyV1<FileAnchorWitnessStore, FileAnchorWitnessStore>,
+    > {
         self.training_custody(material_source, experience, dataset, /*create*/ false)
     }
 
@@ -41,7 +47,9 @@ impl MaterialCommandFixture {
         experience: LearningIterationEvidenceClientV1,
         dataset: LearningIterationEvidenceClientV1,
         create: bool,
-    ) -> anyhow::Result<OriginalCellQ24TrainingBootstrapCustodyV1<FileAnchorWitnessStore, FileAnchorWitnessStore>> {
+    ) -> anyhow::Result<
+        OriginalCellQ24TrainingBootstrapCustodyV1<FileAnchorWitnessStore, FileAnchorWitnessStore>,
+    > {
         let witness = |name: &str| -> anyhow::Result<FileAnchorWitnessStore> {
             Ok(FileAnchorWitnessStore::open(
                 opened(&self.root, name, create)?,
@@ -49,7 +57,8 @@ impl MaterialCommandFixture {
                     scope_digest: self.config.scope.binding(),
                     objective_digest: self.config.initial.request.envelope.objective_digest,
                 },
-                Generation::new(1)?, 64,
+                Generation::new(1)?,
+                64,
             )?)
         };
         Ok(OriginalCellQ24TrainingBootstrapCustodyV1 {
@@ -59,7 +68,9 @@ impl MaterialCommandFixture {
             receipt_witness: witness("deferred-receipt-witness")?,
             generator_key: SigningKey::from_bytes(&[1; 32]),
             baseline: Arc::clone(&self.baseline),
-            material_source, experience, dataset,
+            material_source,
+            experience,
+            dataset,
         })
     }
 
