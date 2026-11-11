@@ -6,6 +6,7 @@ on:
       - "qualification/hpca-neuroscience-20261110/ACTUAL_OOD_FORWARD_RESULT.json"
       - "qualification/hpca-neuroscience-20261110/ood_forward_audit.py"
       - "qualification/hpca-neuroscience-20261110/test_ood_forward_audit.py"
+      - "qualification/hpca-neuroscience-20261110/test_frozen_prompt_condition.py"
       - "qualification/hpca-neuroscience-20261110/AUDIT_RESULT.json"
       - ".github/workflows/hepta-hpca-ood-forward-audit.yml"
   workflow_dispatch:
@@ -19,10 +20,10 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Refuse missing row, unknown task, altered logits and result identities
+      - name: Refuse missing rows, unregistered prompts and false source/seed identity
         run: |
           cd qualification/hpca-neuroscience-20261110
-          python3 -m unittest -v test_ood_forward_audit
+          python3 -m unittest -v test_ood_forward_audit test_frozen_prompt_condition
           python3 ood_forward_audit.py --plan HPCA_V2_OOD_PLAN.json --result ACTUAL_OOD_FORWARD_RESULT.json --out /tmp/audit-result.json
           python3 - <<'PY'
           import json
@@ -31,5 +32,5 @@ jobs:
           actual=json.loads(Path('/tmp/audit-result.json').read_text())
           assert declared==actual, 'Committed re-score does not match re-execution'
           assert actual['status']=='HOLD_NO_GO_OPERATOR_ONLY'
-          print('HOLD_NO_GO: immutable operator OOD scores independently recomputed, no adoption')
+          print('HOLD_NO_GO: recorded prompt/condition integrity only, no adoption')
           PY
