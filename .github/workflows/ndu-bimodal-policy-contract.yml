@@ -1,0 +1,146 @@
+name: NDU bimodal native policy admission
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/ndu-bimodal-policy-contract.yml
+      - scripts/ndu_bimodal/cli.py
+      - scripts/ndu_bimodal/test_cli_policy.py
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ndu-bimodal-policy-contract-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  strict-policy:
+    name: Policy identity and no-native-dispatch fixture
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      TESTED_SHA: ${{ github.sha }}
+      BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
+      PYTHONDONTWRITEBYTECODE: "1"
+      CUDA_VISIBLE_DEVICES: ""
+      OMP_NUM_THREADS: "1"
+      OPENBLAS_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+    steps:
+      - name: Check out pinned event commit
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 2
+          persist-credentials: false
+
+      - name: Bind exact source and tested merge
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          import subprocess
+
+          def git(*arguments):
+              return subprocess.check_output(
+                  ["git", *arguments], text=True
+              ).strip()
+
+          output = Path(os.environ["RUNNER_TEMP"]) / "ndu-bimodal-policy"
+          output.mkdir()
+          tested = git("rev-parse", "HEAD")
+          source = os.environ["SOURCE_SHA"]
+          parents = git("show", "-s", "--format=%P", "HEAD").split()
+          assert tested == os.environ["TESTED_SHA"]
+          if os.environ["GITHUB_EVENT_NAME"] == "pull_request":
+              assert parents == [os.environ["BASE_SHA"], source]
+          record = {
+              "schema": "ndu.bimodal.policy-source.v1",
+              "source_sha": source,
+              "tested_sha": tested,
+              "source_tree": git("rev-parse", source + "^{tree}"),
+              "tested_tree": git("rev-parse", "HEAD^{tree}"),
+              "parents": parents,
+              "native_dynamic_admitted": False,
+              "complete_cost_policy_gain_established": False,
+          }
+          with (output / "identity.json").open("x") as stream:
+              json.dump(record, stream, indent=2)
+          PY
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: "3.11"
+
+      - name: Install pinned CPU dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check \
+            "numpy==2.3.5" "scipy==1.16.3" "pillow==12.0.0"
+          python -m pip install --disable-pip-version-check \
+            "torch==2.5.1+cpu" --index-url https://download.pytorch.org/whl/cpu
+
+      - name: Require three strict preflight tests without skips
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY' 2>&1 | tee "$RUNNER_TEMP/ndu-bimodal-policy/tests.log"
+          import json
+          import os
+          from pathlib import Path
+          import unittest
+
+          suite = unittest.defaultTestLoader.loadTestsFromName(
+              "scripts.ndu_bimodal.test_cli_policy"
+          )
+          result = unittest.TextTestRunner(verbosity=2).run(suite)
+          passed = (
+              result.wasSuccessful()
+              and result.testsRun >= 3
+              and not result.skipped
+              and not result.expectedFailures
+          )
+          record = {
+              "schema": "ndu.bimodal.policy-contract.v1",
+              "source_sha": os.environ["SOURCE_SHA"],
+              "tested_sha": os.environ["TESTED_SHA"],
+              "executed": result.testsRun,
+              "failures": len(result.failures),
+              "errors": len(result.errors),
+              "skipped": len(result.skipped),
+              "status": "PASS_FIXTURE" if passed else "HOLD",
+              "native_dynamic_admitted": False,
+              "real_policy_improvement_established": False,
+          }
+          folder = Path(os.environ["RUNNER_TEMP"]) / "ndu-bimodal-policy"
+          with (folder / "tests.json").open("x") as stream:
+              json.dump(record, stream, indent=2)
+          print(json.dumps(record, sort_keys=True))
+          raise SystemExit(0 if passed else 1)
+          PY
+
+      - name: Require unchanged source worktree
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --exit-code
+          git diff --cached --exit-code
+          test -z "$(git status --porcelain --untracked-files=normal)"
+
+      - name: Retain pinned policy evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: ndu-bimodal-policy-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/ndu-bimodal-policy/
+          if-no-files-found: error
+          retention-days: 14
