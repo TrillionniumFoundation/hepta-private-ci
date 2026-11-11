@@ -34,9 +34,9 @@ use ed25519_dalek::SigningKey;
 use crate::AgentdError;
 use crate::LearningIterationEvidenceClientV1;
 use crate::LearningIterationRuntimeErrorV1;
-use crate::PublishedCircuitCellOwnerV1;
 use crate::OriginalCircuitLearningReadClientV1;
 use crate::OriginalCircuitLearningReadErrorV1;
+use crate::PublishedCircuitCellOwnerV1;
 use crate::learning_owner_evidence;
 use crate::learning_owner_journal::LearningOriginalOwnerErrorV1 as OwnerError;
 use crate::learning_owner_journal::LearningOwnerJournalV1;
@@ -100,17 +100,31 @@ trait SelectionSources {
 }
 
 impl<C: AnchorWitnessStore> SelectionSources for OriginalCircuitSelectionReceiptSourcesV1<'_, C> {
-    fn snapshot(&self) -> &LearningIterationSnapshotV1 { self.snapshot }
-    fn trainer(&self) -> &LearningIterationEvidenceClientV1 { self.trainer }
-    async fn observe(&self, config: &OriginalCircuitSelectionReceiptConfigV1) -> Result<LearningIterationObservationV1, Error> {
+    fn snapshot(&self) -> &LearningIterationSnapshotV1 {
+        self.snapshot
+    }
+    fn trainer(&self) -> &LearningIterationEvidenceClientV1 {
+        self.trainer
+    }
+    async fn observe(
+        &self,
+        config: &OriginalCircuitSelectionReceiptConfigV1,
+    ) -> Result<LearningIterationObservationV1, Error> {
         read_local_selection(self, config)
     }
 }
 
 impl SelectionSources for OriginalCircuitSelectionRemoteSourcesV1<'_> {
-    fn snapshot(&self) -> &LearningIterationSnapshotV1 { self.snapshot }
-    fn trainer(&self) -> &LearningIterationEvidenceClientV1 { self.trainer }
-    async fn observe(&self, config: &OriginalCircuitSelectionReceiptConfigV1) -> Result<LearningIterationObservationV1, Error> {
+    fn snapshot(&self) -> &LearningIterationSnapshotV1 {
+        self.snapshot
+    }
+    fn trainer(&self) -> &LearningIterationEvidenceClientV1 {
+        self.trainer
+    }
+    async fn observe(
+        &self,
+        config: &OriginalCircuitSelectionReceiptConfigV1,
+    ) -> Result<LearningIterationObservationV1, Error> {
         read_remote_selection(self, config).await
     }
 }
@@ -130,14 +144,21 @@ async fn read_remote_selection(
 ) -> Result<LearningIterationObservationV1, Error> {
     let live: &OriginalCircuitLearningReadClientV1 = source.live;
     live.require_original_context(
-        &config.decision, &config.scope, &config.verifier,
-        &config.training_evidence, None,
+        &config.decision,
+        &config.scope,
+        &config.verifier,
+        &config.training_evidence,
+        None,
     )?;
     let trainer: &LearningIterationEvidenceClientV1 = source.trainer;
-    let before = trainer.readback(source.snapshot, training_receipt(config)?).await?;
+    let before = trainer
+        .readback(source.snapshot, training_receipt(config)?)
+        .await?;
     authenticate_training(config, &before, now()?)?;
     let original = live.read_current().await?;
-    let after = trainer.readback(source.snapshot, training_receipt(config)?).await?;
+    let after = trainer
+        .readback(source.snapshot, training_receipt(config)?)
+        .await?;
     authenticate_training(config, &after, now()?)?;
     Ok(original.observation().clone())
 }

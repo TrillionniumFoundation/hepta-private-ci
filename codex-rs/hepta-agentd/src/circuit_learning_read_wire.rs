@@ -21,11 +21,17 @@ pub(super) const OPERATION: &str = "runtime.learning.original-circuit.current-re
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(rename_all = "snake_case")]
-pub(super) enum Mode { Selection, NextUse }
+pub(super) enum Mode {
+    Selection,
+    NextUse,
+}
 
 impl Mode {
     fn name(self) -> &'static [u8] {
-        match self { Self::Selection => b"selection", Self::NextUse => b"next_use" }
+        match self {
+            Self::Selection => b"selection",
+            Self::NextUse => b"next_use",
+        }
     }
 }
 
@@ -33,15 +39,21 @@ pub(super) fn mode(context: &Context) -> Result<Mode, Error> {
     let coordinator = LearningIterationCoordinatorV1::from_snapshot(context.prefix.clone())?;
     context.scope.validate_snapshot(&context.prefix)?;
     if context.prefix.receipts.len() < 3
-        || !matches!(context.prefix.receipts[2].observation,
-            LearningIterationObservationV1::TrainingNoUpdateV2(_))
+        || !matches!(
+            context.prefix.receipts[2].observation,
+            LearningIterationObservationV1::TrainingNoUpdateV2(_)
+        )
         || coordinator.next_task_bundle() != Some(&context.prefix.request.selected_bundle)
     {
-        return Err(Error::Binding("only original TrainingNoUpdate read profile"));
+        return Err(Error::Binding(
+            "only original TrainingNoUpdate read profile",
+        ));
     }
-    match (context.prefix.receipts.len(), coordinator.next_stage(),
-        context.selection_evidence.as_ref())
-    {
+    match (
+        context.prefix.receipts.len(),
+        coordinator.next_stage(),
+        context.selection_evidence.as_ref(),
+    ) {
         (3, Some(LearningIterationStageV1::Selection), None) => Ok(Mode::Selection),
         (4, Some(LearningIterationStageV1::NextUse), Some(_)) => Ok(Mode::NextUse),
         _ => Err(Error::Binding("exact original published read prefix")),
@@ -58,8 +70,10 @@ pub(super) fn context_binding(context: &Context, at: u64) -> Result<Digest32, Er
     }
     let training_receipt = &snapshot.receipts[2];
     let training = context.verifier.verify(
-        LearningEvidenceRoleV1::Generator, &context.training_evidence,
-        &learning_iteration_receipt_signing_bytes_v1(training_receipt)?, at,
+        LearningEvidenceRoleV1::Generator,
+        &context.training_evidence,
+        &learning_iteration_receipt_signing_bytes_v1(training_receipt)?,
+        at,
     )?;
     if training.principal().principal_id != training_receipt.actor_id {
         return Err(Error::Binding("original Generator read binding"));
@@ -69,8 +83,10 @@ pub(super) fn context_binding(context: &Context, at: u64) -> Result<Digest32, Er
     if let Some(original) = &context.selection_evidence {
         let selection_receipt = &snapshot.receipts[3];
         let selection = context.verifier.verify(
-            LearningEvidenceRoleV1::Selector, original,
-            &learning_iteration_receipt_signing_bytes_v1(selection_receipt)?, at,
+            LearningEvidenceRoleV1::Selector,
+            original,
+            &learning_iteration_receipt_signing_bytes_v1(selection_receipt)?,
+            at,
         )?;
         if selection.principal().principal_id != selection_receipt.actor_id {
             return Err(Error::Binding("original Selector read binding"));
@@ -85,17 +101,23 @@ pub(super) fn context_binding(context: &Context, at: u64) -> Result<Digest32, Er
     let prefix = encode_original_owner_snapshot_v1(snapshot)?;
     Ok(Digest32::of_parts(&[
         b"hepta.agentd.original-circuit-current-read.v1\0",
-        mode.name(), &prefix, context.scope.binding().as_array(),
+        mode.name(),
+        &prefix,
+        context.scope.binding().as_array(),
         context.verifier.trust_digest().as_array(),
         context.verifier.scope_digest().as_array(),
-        context.verifier.objective_digest().as_array(), &signatures,
+        context.verifier.objective_digest().as_array(),
+        &signatures,
     ]))
 }
 
 pub(super) fn decision(context: &Context) -> Result<LearningIterationCoordinatorV1, Error> {
     let mut prefix = context.prefix.clone();
     if mode(context)? == Mode::NextUse {
-        let selection = prefix.receipts.pop().ok_or(Error::Binding("original Selection"))?;
+        let selection = prefix
+            .receipts
+            .pop()
+            .ok_or(Error::Binding("original Selection"))?;
         prefix.head_digest = selection.predecessor;
     }
     Ok(LearningIterationCoordinatorV1::from_snapshot(prefix)?)
@@ -114,21 +136,35 @@ pub(super) struct Request {
 }
 
 impl Request {
-    pub(super) fn new(context: &Context, binding: Digest32, request_id: u64) -> Result<Self, Error> {
+    pub(super) fn new(
+        context: &Context,
+        binding: Digest32,
+        request_id: u64,
+    ) -> Result<Self, Error> {
         Ok(Self {
-            schema: 1, operation: OPERATION.into(), request_id,
-            binding: binding.to_string(), prefix_head: context.prefix.head_digest.to_string(),
-            operation_id: context.prefix.request.operation_id.to_string(), mode: mode(context)?,
+            schema: 1,
+            operation: OPERATION.into(),
+            request_id,
+            binding: binding.to_string(),
+            prefix_head: context.prefix.head_digest.to_string(),
+            operation_id: context.prefix.request.operation_id.to_string(),
+            mode: mode(context)?,
         })
     }
 
-    pub(super) fn require_context(&self, context: &Context, binding: Digest32,
-        request_id: u64) -> Result<(), Error>
-    {
+    pub(super) fn require_context(
+        &self,
+        context: &Context,
+        binding: Digest32,
+        request_id: u64,
+    ) -> Result<(), Error> {
         let expected = Self::new(context, binding, request_id)?;
-        if self.schema != expected.schema || self.operation != expected.operation
-            || self.request_id != expected.request_id || self.binding != expected.binding
-            || self.prefix_head != expected.prefix_head || self.operation_id != expected.operation_id
+        if self.schema != expected.schema
+            || self.operation != expected.operation
+            || self.request_id != expected.request_id
+            || self.binding != expected.binding
+            || self.prefix_head != expected.prefix_head
+            || self.operation_id != expected.operation_id
             || self.mode != expected.mode
         {
             return Err(Error::Binding("original fixed read request"));
@@ -146,10 +182,13 @@ pub(super) struct Response {
 
 impl Response {
     pub(super) fn require_request(&self, original: &Request) -> Result<(), Error> {
-        if self.request.schema != original.schema || self.request.operation != original.operation
-            || self.request.request_id != original.request_id || self.request.binding != original.binding
+        if self.request.schema != original.schema
+            || self.request.operation != original.operation
+            || self.request.request_id != original.request_id
+            || self.request.binding != original.binding
             || self.request.prefix_head != original.prefix_head
-            || self.request.operation_id != original.operation_id || self.request.mode != original.mode
+            || self.request.operation_id != original.operation_id
+            || self.request.mode != original.mode
         {
             return Err(Error::Binding("original fixed read response"));
         }
@@ -169,38 +208,70 @@ pub(super) struct OriginalRead {
 #[derive(Deserialize, Serialize)]
 #[serde(tag = "kind", rename_all = "snake_case", deny_unknown_fields)]
 pub(super) enum Observation {
-    Selection { bundle: String, selection: String },
+    Selection {
+        bundle: String,
+        selection: String,
+    },
     Retained {
-        bundle: String, principal: String, agent: String, cell: String, run: String,
-        checkpoint: String, selection: String, committed: String, publication: String,
+        bundle: String,
+        principal: String,
+        agent: String,
+        cell: String,
+        run: String,
+        checkpoint: String,
+        selection: String,
+        committed: String,
+        publication: String,
     },
 }
 
 impl OriginalRead {
     pub(super) fn from_original(read: Readback) -> Result<Self, Error> {
         let observation = match read.observation {
-            LearningIterationObservationV1::Selection { candidate_bundle, selection_digest } =>
-                Observation::Selection { bundle: candidate_bundle.to_string(), selection: selection_digest.to_string() },
-            LearningIterationObservationV1::RetainedModelNextUse { retained_bundle, state_partition,
-                checkpoint_digest, selection_digest, committed_step_receipt, task_owner_publication } =>
-                Observation::Retained {
-                    bundle: retained_bundle.to_string(), principal: state_partition.principal_id.to_string(),
-                    agent: state_partition.agent_id.to_string(), cell: state_partition.cell_id.to_string(),
-                    run: state_partition.run_id.to_string(), checkpoint: checkpoint_digest.to_string(),
-                    selection: selection_digest.to_string(), committed: committed_step_receipt.to_string(),
-                    publication: task_owner_publication.to_string(),
-                },
+            LearningIterationObservationV1::Selection {
+                candidate_bundle,
+                selection_digest,
+            } => Observation::Selection {
+                bundle: candidate_bundle.to_string(),
+                selection: selection_digest.to_string(),
+            },
+            LearningIterationObservationV1::RetainedModelNextUse {
+                retained_bundle,
+                state_partition,
+                checkpoint_digest,
+                selection_digest,
+                committed_step_receipt,
+                task_owner_publication,
+            } => Observation::Retained {
+                bundle: retained_bundle.to_string(),
+                principal: state_partition.principal_id.to_string(),
+                agent: state_partition.agent_id.to_string(),
+                cell: state_partition.cell_id.to_string(),
+                run: state_partition.run_id.to_string(),
+                checkpoint: checkpoint_digest.to_string(),
+                selection: selection_digest.to_string(),
+                committed: committed_step_receipt.to_string(),
+                publication: task_owner_publication.to_string(),
+            },
             _ => return Err(Error::Binding("unexpected original read observation")),
         };
-        Ok(Self { publication: read.publication.to_string(), source_input: read.source_input.to_string(),
-            source_publication: read.source_publication.map(|value| value.to_string()), observation })
+        Ok(Self {
+            publication: read.publication.to_string(),
+            source_input: read.source_input.to_string(),
+            source_publication: read.source_publication.map(|value| value.to_string()),
+            observation,
+        })
     }
 
     pub(super) fn decode(self, context: &Context) -> Result<Readback, Error> {
         let publication = digest(&self.publication)?;
         let source_input = digest(&self.source_input)?;
         let source_publication = self.source_publication.as_deref().map(digest).transpose()?;
-        let baseline = context.prefix.request.selected_bundle.digest()
+        let baseline = context
+            .prefix
+            .request
+            .selected_bundle
+            .digest()
             .map_err(codex_hepta_learning_artifacts::LearningIterationError::from)?;
         let observation = match (mode(context)?, self.observation) {
             (Mode::Selection, Observation::Selection { bundle, selection }) => {
@@ -208,17 +279,34 @@ impl OriginalRead {
                     return Err(Error::Binding("original retained selection"));
                 }
                 LearningIterationObservationV1::Selection {
-                    candidate_bundle: baseline, selection_digest: digest(&selection)?,
+                    candidate_bundle: baseline,
+                    selection_digest: digest(&selection)?,
                 }
             }
-            (Mode::NextUse, Observation::Retained { bundle, principal, agent, cell, run,
-                checkpoint, selection, committed, publication: task_publication }) => {
+            (
+                Mode::NextUse,
+                Observation::Retained {
+                    bundle,
+                    principal,
+                    agent,
+                    cell,
+                    run,
+                    checkpoint,
+                    selection,
+                    committed,
+                    publication: task_publication,
+                },
+            ) => {
                 let state_partition = CellStatePartitionV1 {
-                    principal_id: id(principal)?, agent_id: id(agent)?, cell_id: id(cell)?, run_id: id(run)?,
+                    principal_id: id(principal)?,
+                    agent_id: id(agent)?,
+                    cell_id: id(cell)?,
+                    run_id: id(run)?,
                 };
                 let selection = digest(&selection)?;
                 let expected = &context.prefix.receipts[3].observation;
-                if digest(&bundle)? != baseline || digest(&task_publication)? != publication
+                if digest(&bundle)? != baseline
+                    || digest(&task_publication)? != publication
                     || source_publication.is_none()
                     || state_partition.principal_id != context.prefix.request.principal_id
                     || state_partition.agent_id != context.prefix.request.agent_id
@@ -231,20 +319,30 @@ impl OriginalRead {
                     return Err(Error::Binding("original committed retained task"));
                 }
                 LearningIterationObservationV1::RetainedModelNextUse {
-                    retained_bundle: baseline, state_partition, checkpoint_digest: digest(&checkpoint)?,
-                    selection_digest: selection, committed_step_receipt: digest(&committed)?,
+                    retained_bundle: baseline,
+                    state_partition,
+                    checkpoint_digest: digest(&checkpoint)?,
+                    selection_digest: selection,
+                    committed_step_receipt: digest(&committed)?,
                     task_owner_publication: publication,
                 }
             }
             _ => return Err(Error::Binding("original read mode")),
         };
         context.scope.validate_observation(&observation)?;
-        Ok(Readback { observation, publication, source_input, source_publication })
+        Ok(Readback {
+            observation,
+            publication,
+            source_input,
+            source_publication,
+        })
     }
 }
 
 fn digest(text: &str) -> Result<Digest32, Error> {
-    let digest: Digest32 = text.parse().map_err(|_| Error::Binding("read digest encoding"))?;
+    let digest: Digest32 = text
+        .parse()
+        .map_err(|_| Error::Binding("read digest encoding"))?;
     if digest.is_zero() || digest.to_string() != text {
         return Err(Error::Binding("canonical nonempty read digest"));
     }

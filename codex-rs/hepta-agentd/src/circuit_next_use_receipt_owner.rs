@@ -34,9 +34,9 @@ use crate::AgentdIdentity;
 use crate::CircuitTaskSourceReadbackV1;
 use crate::LearningIterationEvidenceClientV1;
 use crate::LearningIterationRuntimeErrorV1;
-use crate::PublishedCircuitCellOwnerV1;
 use crate::OriginalCircuitLearningReadClientV1;
 use crate::OriginalCircuitLearningReadErrorV1;
+use crate::PublishedCircuitCellOwnerV1;
 use crate::learning_owner_evidence;
 use crate::learning_owner_journal::LearningOriginalOwnerErrorV1 as OwnerError;
 use crate::learning_owner_journal::LearningOwnerJournalV1;
@@ -107,25 +107,47 @@ trait NextUseSources {
 impl<C: AnchorWitnessStore, S: AnchorWitnessStore> NextUseSources
     for OriginalCircuitNextUseReceiptSourcesV1<'_, C, S>
 {
-    fn snapshot(&self) -> &LearningIterationSnapshotV1 { self.snapshot }
-    fn trainer(&self) -> &LearningIterationEvidenceClientV1 { self.trainer }
-    fn selector(&self) -> &LearningIterationEvidenceClientV1 { self.selector }
-    async fn observe(&self, config: &OriginalCircuitNextUseReceiptConfigV1) -> Result<LearningIterationObservationV1, Error> {
+    fn snapshot(&self) -> &LearningIterationSnapshotV1 {
+        self.snapshot
+    }
+    fn trainer(&self) -> &LearningIterationEvidenceClientV1 {
+        self.trainer
+    }
+    fn selector(&self) -> &LearningIterationEvidenceClientV1 {
+        self.selector
+    }
+    async fn observe(
+        &self,
+        config: &OriginalCircuitNextUseReceiptConfigV1,
+    ) -> Result<LearningIterationObservationV1, Error> {
         read_local_next_use(self, config)
     }
 }
 
 impl NextUseSources for OriginalCircuitNextUseRemoteSourcesV1<'_> {
-    fn snapshot(&self) -> &LearningIterationSnapshotV1 { self.snapshot }
-    fn trainer(&self) -> &LearningIterationEvidenceClientV1 { self.trainer }
-    fn selector(&self) -> &LearningIterationEvidenceClientV1 { self.selector }
-    async fn observe(&self, config: &OriginalCircuitNextUseReceiptConfigV1) -> Result<LearningIterationObservationV1, Error> {
+    fn snapshot(&self) -> &LearningIterationSnapshotV1 {
+        self.snapshot
+    }
+    fn trainer(&self) -> &LearningIterationEvidenceClientV1 {
+        self.trainer
+    }
+    fn selector(&self) -> &LearningIterationEvidenceClientV1 {
+        self.selector
+    }
+    async fn observe(
+        &self,
+        config: &OriginalCircuitNextUseReceiptConfigV1,
+    ) -> Result<LearningIterationObservationV1, Error> {
         read_remote_next_use(self, config).await
     }
 }
 
 fn read_local_next_use(
-    source: &OriginalCircuitNextUseReceiptSourcesV1<'_, impl AnchorWitnessStore, impl AnchorWitnessStore>,
+    source: &OriginalCircuitNextUseReceiptSourcesV1<
+        '_,
+        impl AnchorWitnessStore,
+        impl AnchorWitnessStore,
+    >,
     config: &OriginalCircuitNextUseReceiptConfigV1,
 ) -> Result<LearningIterationObservationV1, Error> {
     let coordinator = LearningIterationCoordinatorV1::from_snapshot(config.selection.clone())?;
@@ -140,8 +162,18 @@ async fn remote_predecessors(
     let trainer: &LearningIterationEvidenceClientV1 = source.trainer;
     let selector: &LearningIterationEvidenceClientV1 = source.selector;
     Ok([
-        trainer.readback(source.snapshot, prior(config, LearningIterationStageV1::Training)?).await?,
-        selector.readback(source.snapshot, prior(config, LearningIterationStageV1::Selection)?).await?,
+        trainer
+            .readback(
+                source.snapshot,
+                prior(config, LearningIterationStageV1::Training)?,
+            )
+            .await?,
+        selector
+            .readback(
+                source.snapshot,
+                prior(config, LearningIterationStageV1::Selection)?,
+            )
+            .await?,
     ])
 }
 
@@ -151,8 +183,11 @@ async fn read_remote_next_use(
 ) -> Result<LearningIterationObservationV1, Error> {
     let live: &OriginalCircuitLearningReadClientV1 = source.live;
     live.require_original_context(
-        &config.selection, &config.scope, &config.verifier,
-        &config.training_evidence, Some(&config.selection_evidence),
+        &config.selection,
+        &config.scope,
+        &config.verifier,
+        &config.training_evidence,
+        Some(&config.selection_evidence),
     )?;
     let before = remote_predecessors(source, config).await?;
     authenticate_predecessors(config, &before, now()?)?;

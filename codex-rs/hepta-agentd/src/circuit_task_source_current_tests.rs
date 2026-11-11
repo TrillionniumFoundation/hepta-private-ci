@@ -1,8 +1,8 @@
 //! Actual file mutations against the still-held original source. These Linux
 //! fixtures never unlock or replace the production owner to perform a read.
 
-use pretty_assertions::assert_eq;
 use super::*;
+use pretty_assertions::assert_eq;
 
 fn original(root: &Path) -> anyhow::Result<(Source, AgentdIdentity, CircuitTaskSourceInputV1)> {
     let identity = identity(root)?;
@@ -28,14 +28,25 @@ fn original_source_current_fences_same_length_mutation_after_restore() -> anyhow
     let before = source_bytes(&owner)?;
     let witness_before = fs::read(root.path().join("source-witness"))?;
     let mut changed = before.clone();
-    let last = changed.last_mut().expect("original initialized source file");
+    let last = changed
+        .last_mut()
+        .expect("original initialized source file");
     *last ^= 1;
     fs::write(&path, &changed)?;
-    assert_eq!(read.require_original_input(&identity, &input), Err(Error::CommitUncertain));
+    assert_eq!(
+        read.require_original_input(&identity, &input),
+        Err(Error::CommitUncertain)
+    );
     fs::write(&path, &before)?;
-    assert_eq!(read.require_original_input(&identity, &input), Err(Error::CommitUncertain));
+    assert_eq!(
+        read.require_original_input(&identity, &input),
+        Err(Error::CommitUncertain)
+    );
     assert_eq!(fs::read(&path)?, before);
-    assert_eq!(fs::read(root.path().join("source-witness"))?, witness_before);
+    assert_eq!(
+        fs::read(root.path().join("source-witness"))?,
+        witness_before
+    );
     Ok(())
 }
 
@@ -55,16 +66,23 @@ fn original_source_current_fences_truncation_and_extra_tail_without_repair() -> 
             changed.push(0);
         }
         fs::write(&path, &changed)?;
-        assert_eq!(read.require_original_input(&identity, &input), Err(Error::CommitUncertain));
+        assert_eq!(
+            read.require_original_input(&identity, &input),
+            Err(Error::CommitUncertain)
+        );
         assert_eq!(fs::read(&path)?, changed, "CURRENT cannot repair the file");
         fs::write(&path, &before)?;
-        assert_eq!(read.require_original_input(&identity, &input), Err(Error::CommitUncertain));
+        assert_eq!(
+            read.require_original_input(&identity, &input),
+            Err(Error::CommitUncertain)
+        );
     }
     Ok(())
 }
 
 #[test]
-fn original_source_input_read_is_readonly_and_requires_live_original_configuration() -> anyhow::Result<()> {
+fn original_source_input_read_is_readonly_and_requires_live_original_configuration()
+-> anyhow::Result<()> {
     let root = tempfile::tempdir()?;
     let (owner, identity, input) = original(root.path())?;
     let read = owner.readback();
@@ -72,11 +90,17 @@ fn original_source_input_read_is_readonly_and_requires_live_original_configurati
     read.require_original_input(&identity, &input)?;
     let mut wrong = input.clone();
     wrong.observation.push(1);
-    assert_eq!(read.require_original_input(&identity, &wrong), Err(Error::InvalidBinding));
+    assert_eq!(
+        read.require_original_input(&identity, &wrong),
+        Err(Error::InvalidBinding)
+    );
     read.require_original_input(&identity, &input)?;
     assert_eq!(source_bytes(&owner)?, before);
-    assert!(read.read_run_publication(&identity, &input.scope.run_id).is_err(),
-        "configured input does not manufacture a completed publication");
+    assert!(
+        read.read_run_publication(&identity, &input.scope.run_id)
+            .is_err(),
+        "configured input does not manufacture a completed publication"
+    );
     owner.withdraw_source(&input.scope.run_id)?;
     assert!(read.require_original_input(&identity, &input).is_err());
     Ok(())

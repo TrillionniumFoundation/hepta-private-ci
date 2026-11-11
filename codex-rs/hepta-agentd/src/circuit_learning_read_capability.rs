@@ -113,8 +113,12 @@ impl OriginalCircuitLearningReadClientV1 {
         let started_at = now()?;
         let binding = wire::context_binding(&context, started_at)?;
         let channel = original_owner_command_channel_v1(
-            stream, original_task_process, original_task_uid, original_task_pidfd,
-            timeout, lifetime,
+            stream,
+            original_task_process,
+            original_task_uid,
+            original_task_pidfd,
+            timeout,
+            lifetime,
         )?;
         let fresh = now()?;
         if fresh < started_at || wire::context_binding(&context, fresh)? != binding {
@@ -123,7 +127,10 @@ impl OriginalCircuitLearningReadClientV1 {
         Ok(Self {
             context,
             binding,
-            channel: Mutex::new(Some(Channel { peer: channel, next_request_id: 1 })),
+            channel: Mutex::new(Some(Channel {
+                peer: channel,
+                next_request_id: 1,
+            })),
             retained: Mutex::new(None),
         })
     }
@@ -131,8 +138,12 @@ impl OriginalCircuitLearningReadClientV1 {
     /// Each invocation performs original owner I/O. Failed or cancelled reads
     /// consume this connection. A historical successful read cannot satisfy it.
     pub async fn read_current(&self) -> Result<OriginalCircuitLearningReadbackV1, Error> {
-        let mut channel = self.channel.try_lock().map_err(|_| Error::Unavailable)?
-            .take().ok_or(Error::Unavailable)?;
+        let mut channel = self
+            .channel
+            .try_lock()
+            .map_err(|_| Error::Unavailable)?
+            .take()
+            .ok_or(Error::Unavailable)?;
         let started_at = now()?;
         if wire::context_binding(&self.context, started_at)? != self.binding {
             return Err(Error::Binding("original fixed read context"));
@@ -141,13 +152,17 @@ impl OriginalCircuitLearningReadClientV1 {
             return Err(Error::Unavailable);
         }
         let request = wire::Request::new(&self.context, self.binding, channel.next_request_id)?;
-        channel.next_request_id = channel.next_request_id.checked_add(1)
+        channel.next_request_id = channel
+            .next_request_id
+            .checked_add(1)
             .ok_or(Error::Unavailable)?;
         let bytes = serde_json::to_vec(&request)?;
         let (channel, response) = tokio::task::spawn_blocking(move || {
             let response = channel.peer.request(&bytes)?;
             Ok::<_, Error>((channel, response))
-        }).await.map_err(|_| Error::Unavailable)??;
+        })
+        .await
+        .map_err(|_| Error::Unavailable)??;
         let response: wire::Response = serde_json::from_slice(&response)?;
         response.require_request(&request)?;
         let current = response.read.decode(&self.context)?;
@@ -178,7 +193,8 @@ impl OriginalCircuitLearningReadClientV1 {
         training: &SignedLearningEvidenceV1,
         selection: Option<&SignedLearningEvidenceV1>,
     ) -> Result<(), Error> {
-        if &self.context.prefix != prefix || self.context.scope.binding() != scope.binding()
+        if &self.context.prefix != prefix
+            || self.context.scope.binding() != scope.binding()
             || self.context.verifier.trust_digest() != verifier.trust_digest()
             || self.context.verifier.scope_digest() != verifier.scope_digest()
             || self.context.verifier.objective_digest() != verifier.objective_digest()
@@ -192,8 +208,10 @@ impl OriginalCircuitLearningReadClientV1 {
 }
 
 fn require_timing(timeout: Duration, lifetime: Duration) -> Result<(), Error> {
-    if timeout.is_zero() || timeout > Duration::from_millis(500)
-        || lifetime.is_zero() || lifetime > Duration::from_secs(300)
+    if timeout.is_zero()
+        || timeout > Duration::from_millis(500)
+        || lifetime.is_zero()
+        || lifetime > Duration::from_secs(300)
     {
         return Err(Error::Binding("bounded original read timing"));
     }
@@ -201,7 +219,8 @@ fn require_timing(timeout: Duration, lifetime: Duration) -> Result<(), Error> {
 }
 
 fn now() -> Result<u64, Error> {
-    SystemTime::now().duration_since(UNIX_EPOCH)
+    SystemTime::now()
+        .duration_since(UNIX_EPOCH)
         .map(|value| value.as_secs())
         .map_err(|_| Error::Binding("original published read clock"))
 }

@@ -37,11 +37,17 @@ pub(crate) fn identity() -> anyhow::Result<AgentdRootAuthorityPeer> {
     let stat = std::fs::read_to_string(format!("/proc/{pid}/stat"))?;
     Ok(AgentdRootAuthorityPeer {
         pid,
-        boot_id: std::fs::read_to_string("/proc/sys/kernel/random/boot_id")?.trim().into(),
-        process_start_ticks: stat.rsplit_once(") ")
-            .ok_or_else(|| anyhow::anyhow!("fixture process stat"))?.1
-            .split_whitespace().nth(19)
-            .ok_or_else(|| anyhow::anyhow!("fixture start ticks"))?.parse()?,
+        boot_id: std::fs::read_to_string("/proc/sys/kernel/random/boot_id")?
+            .trim()
+            .into(),
+        process_start_ticks: stat
+            .rsplit_once(") ")
+            .ok_or_else(|| anyhow::anyhow!("fixture process stat"))?
+            .1
+            .split_whitespace()
+            .nth(19)
+            .ok_or_else(|| anyhow::anyhow!("fixture start ticks"))?
+            .parse()?,
     })
 }
 
@@ -66,28 +72,42 @@ fn channel(stream: UnixStream) -> anyhow::Result<HostAuthorityPeerChannel> {
 pub(crate) fn client(context: Context) -> anyhow::Result<(Client, HostAuthorityPeerChannel)> {
     let (stream, server) = UnixStream::pair()?;
     let binding = wire::context_binding(&context, now()?)?;
-    Ok((Client {
-        context, binding,
-        channel: Mutex::new(Some(Channel { peer: channel(stream)?, next_request_id: 1 })),
-        retained: Mutex::new(None),
-    }, channel(server)?))
+    Ok((
+        Client {
+            context,
+            binding,
+            channel: Mutex::new(Some(Channel {
+                peer: channel(stream)?,
+                next_request_id: 1,
+            })),
+            retained: Mutex::new(None),
+        },
+        channel(server)?,
+    ))
 }
 
-pub(crate) fn serve<C: AnchorWitnessStore + Send + 'static, S: AnchorWitnessStore + Send + 'static>(
+pub(crate) fn serve<
+    C: AnchorWitnessStore + Send + 'static,
+    S: AnchorWitnessStore + Send + 'static,
+>(
     owner: Arc<Owner<C, S>>,
     mut channel: HostAuthorityPeerChannel,
 ) -> std::thread::JoinHandle<Result<u64, Error>> {
     std::thread::spawn(move || owner.serve_channel(&mut channel))
 }
 
-pub(crate) fn changed_nonce<C: AnchorWitnessStore + Send + 'static, S: AnchorWitnessStore + Send + 'static>(
+pub(crate) fn changed_nonce<
+    C: AnchorWitnessStore + Send + 'static,
+    S: AnchorWitnessStore + Send + 'static,
+>(
     owner: Arc<Owner<C, S>>,
     mut channel: HostAuthorityPeerChannel,
 ) -> std::thread::JoinHandle<anyhow::Result<()>> {
     std::thread::spawn(move || {
         let mut read_original = false;
         let result = channel.exchange(|bytes| {
-            let actual = owner.response(bytes, 1)
+            let actual = owner
+                .response(bytes, 1)
                 .map_err(|_| HostIssuerTransportError::InvalidRequest)?;
             read_original = true;
             let mut response: wire::Response = serde_json::from_slice(&actual)
@@ -95,20 +115,27 @@ pub(crate) fn changed_nonce<C: AnchorWitnessStore + Send + 'static, S: AnchorWit
             response.request.request_id += 1;
             serde_json::to_vec(&response).map_err(|_| HostIssuerTransportError::InvalidRequest)
         });
-        anyhow::ensure!(read_original, "actual original read preceded nonce mutation");
+        anyhow::ensure!(
+            read_original,
+            "actual original read preceded nonce mutation"
+        );
         anyhow::ensure!(result.is_ok(), "the malformed response was actually sent");
         Ok(())
     })
 }
 
-pub(crate) fn delayed_response<C: AnchorWitnessStore + Send + 'static, S: AnchorWitnessStore + Send + 'static>(
+pub(crate) fn delayed_response<
+    C: AnchorWitnessStore + Send + 'static,
+    S: AnchorWitnessStore + Send + 'static,
+>(
     owner: Arc<Owner<C, S>>,
     mut channel: HostAuthorityPeerChannel,
 ) -> std::thread::JoinHandle<anyhow::Result<()>> {
     std::thread::spawn(move || {
         let mut read_original = false;
         let result = channel.exchange(|bytes| {
-            let actual = owner.response(bytes, 1)
+            let actual = owner
+                .response(bytes, 1)
                 .map_err(|_| HostIssuerTransportError::InvalidRequest)?;
             read_original = true;
             // Only the response is delayed. Original owner IO already occurred,
@@ -116,14 +143,21 @@ pub(crate) fn delayed_response<C: AnchorWitnessStore + Send + 'static, S: Anchor
             std::thread::sleep(Duration::from_millis(650));
             Ok(actual)
         });
-        anyhow::ensure!(read_original, "actual original read preceded lost response window");
-        anyhow::ensure!(result.is_err(), "original bounded exchange rejects the late response");
+        anyhow::ensure!(
+            read_original,
+            "actual original read preceded lost response window"
+        );
+        anyhow::ensure!(
+            result.is_err(),
+            "original bounded exchange rejects the late response"
+        );
         Ok(())
     })
 }
 
 pub(crate) fn reject_wrong_context<C: AnchorWitnessStore, S: AnchorWitnessStore>(
-    owner: &Owner<C, S>, context: &Context,
+    owner: &Owner<C, S>,
+    context: &Context,
 ) -> anyhow::Result<()> {
     let binding = wire::context_binding(context, now()?)?;
     let mut request = wire::Request::new(context, binding, 1)?;
@@ -132,8 +166,13 @@ pub(crate) fn reject_wrong_context<C: AnchorWitnessStore, S: AnchorWitnessStore>
     let request = wire::Request::new(context, binding, 1)?;
     anyhow::ensure!(owner.response(&serde_json::to_vec(&request)?, 2).is_err());
     let mut value = serde_json::to_value(&request)?;
-    value.as_object_mut().ok_or_else(|| anyhow::anyhow!("fixture request"))?
-        .insert("observation".into(), serde_json::json!({"selected": "caller supplied"}));
+    value
+        .as_object_mut()
+        .ok_or_else(|| anyhow::anyhow!("fixture request"))?
+        .insert(
+            "observation".into(),
+            serde_json::json!({"selected": "caller supplied"}),
+        );
     anyhow::ensure!(owner.response(&serde_json::to_vec(&value)?, 1).is_err());
     Ok(())
 }

@@ -137,7 +137,9 @@ impl<W: AnchorWitnessStore> SourceOwner<W> {
         }
         let result = (|| {
             let before = self.witness.current().map_err(|_| Error::CommitUncertain)?;
-            let physical = self.journal.read_current_anchor()
+            let physical = self
+                .journal
+                .read_current_anchor()
                 .map_err(|_| Error::CommitUncertain)?;
             let current = anchor(physical);
             let after = self.witness.current().map_err(|_| Error::CommitUncertain)?;

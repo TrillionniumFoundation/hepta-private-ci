@@ -12,13 +12,13 @@ use codex_hepta_neuron::AnchorWitnessStore;
 use codex_hepta_types::Digest32;
 use tokio::sync::Semaphore;
 
+use super::super::Publication;
 use super::Error;
 use super::OriginalCircuitLearningReadContextV1 as Context;
 use super::OriginalCircuitLearningReadbackV1 as Readback;
 use super::now;
 use super::require_timing;
 use super::wire;
-use super::super::Publication;
 use crate::AgentdIdentity;
 use crate::AgentdRootAuthorityPeer;
 use crate::CircuitTaskSourceReadbackV1;
@@ -44,7 +44,14 @@ impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOw
     ) -> Result<Self, Error> {
         let started_at = now()?;
         let binding = wire::context_binding(&context, started_at)?;
-        let owner = Self { cell, source, identity, context, binding, connections: Semaphore::new(4) };
+        let owner = Self {
+            cell,
+            source,
+            identity,
+            context,
+            binding,
+            connections: Semaphore::new(4),
+        };
         owner.require_original_input()?;
         let coordinator = wire::decision(&owner.context)?;
         let cell: &PublishedCircuitCellOwnerV1<_> = &owner.cell;
@@ -71,20 +78,33 @@ impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOw
         lifetime: Duration,
     ) -> Result<u64, Error> {
         require_timing(timeout, lifetime)?;
-        let _permit = self.connections.try_acquire().map_err(|_| Error::Unavailable)?;
+        let _permit = self
+            .connections
+            .try_acquire()
+            .map_err(|_| Error::Unavailable)?;
         let mut channel = original_owner_command_channel_v1(
-            stream, consumer, consumer_uid, original_consumer_pidfd, timeout, lifetime,
+            stream,
+            consumer,
+            consumer_uid,
+            original_consumer_pidfd,
+            timeout,
+            lifetime,
         )?;
         self.serve_channel(&mut channel)
     }
 
-    pub(super) fn serve_channel(&self, channel: &mut HostAuthorityPeerChannel) -> Result<u64, Error> {
+    pub(super) fn serve_channel(
+        &self,
+        channel: &mut HostAuthorityPeerChannel,
+    ) -> Result<u64, Error> {
         for request_id in 1..=128 {
             let mut failure = None;
-            let exchanged = channel.exchange(|bytes| self.response(bytes, request_id).map_err(|error| {
-                failure = Some(error);
-                HostIssuerTransportError::InvalidRequest
-            }));
+            let exchanged = channel.exchange(|bytes| {
+                self.response(bytes, request_id).map_err(|error| {
+                    failure = Some(error);
+                    HostIssuerTransportError::InvalidRequest
+                })
+            });
             match exchanged {
                 Ok(true) => {}
                 Ok(false) => return Ok(request_id - 1),
@@ -156,20 +176,23 @@ impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOw
             return Err(Error::Binding("original successor publication"));
         };
         let publication = original.publication_digest()?;
-        let source_input = circuit_feature_task_digest_v1(
-            self.cell.task.definition(), self.cell.task.source(),
-        )?;
+        let source_input =
+            circuit_feature_task_digest_v1(self.cell.task.definition(), self.cell.task.source())?;
         let (observation, source_publication) = match wire::mode(&self.context)? {
             wire::Mode::Selection => (selection.clone(), None),
             wire::Mode::NextUse => {
-                let before = self.source.read_run_publication(
-                    &self.identity, &self.cell.task.source().scope.run_id,
-                )?;
-                let prefix = LearningIterationCoordinatorV1::from_snapshot(self.context.prefix.clone())?;
-                let observed = cell.read_learning_next_use(&prefix, &self.source, &self.identity)?;
-                if self.source.read_run_publication(
-                    &self.identity, &self.cell.task.source().scope.run_id,
-                )? != before {
+                let before = self
+                    .source
+                    .read_run_publication(&self.identity, &self.cell.task.source().scope.run_id)?;
+                let prefix =
+                    LearningIterationCoordinatorV1::from_snapshot(self.context.prefix.clone())?;
+                let observed =
+                    cell.read_learning_next_use(&prefix, &self.source, &self.identity)?;
+                if self
+                    .source
+                    .read_run_publication(&self.identity, &self.cell.task.source().scope.run_id)?
+                    != before
+                {
                     return Err(Error::Binding("original C source changed during read"));
                 }
                 (observed, Some(before.publication_digest()))
@@ -180,6 +203,11 @@ impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOw
             return Err(Error::Binding("original selection changed during read"));
         }
         self.require_original_input()?;
-        Ok(Readback { observation, publication, source_input, source_publication })
+        Ok(Readback {
+            observation,
+            publication,
+            source_input,
+            source_publication,
+        })
     }
 }
