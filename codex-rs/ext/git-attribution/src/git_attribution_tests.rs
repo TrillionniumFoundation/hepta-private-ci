@@ -102,7 +102,7 @@ async fn policy_resolution_retries_after_auth_refresh() {
                 0 => {
                     request_started.notify_one();
                     ResponseTemplate::new(200)
-                        .set_delay(Duration::from_millis(100))
+                        .set_delay(Duration::from_millis(600))
                         .set_body_json(serde_json::json!({
                             "commit_attribution_enabled": true,
                         }))
@@ -120,12 +120,7 @@ async fn policy_resolution_retries_after_auth_refresh() {
     let resolve = tokio::spawn({
         let auth_manager = auth_manager.clone();
         let base_url = format!("{}/backend-api", server.uri());
-        async move {
-            resolve_attribution_policy(&auth_manager, &base_url, &http_client_factory())
-                .await
-                .ok()
-                .flatten()
-        }
+        async move { resolve_attribution_policy(&auth_manager, &base_url, &http_client_factory()).await }
     });
 
     tokio::time::timeout(Duration::from_secs(5), request_started.notified())
@@ -133,12 +128,15 @@ async fn policy_resolution_retries_after_auth_refresh() {
         .expect("first settings request should start");
     set_auth(auth_manager.as_ref(), "workspace-456").await;
 
-    assert!(
-        resolve
-            .await
-            .expect("policy task should complete")
-            .expect("policy should resolve after refresh")
-            .enabled
+    let policy = resolve
+        .await
+        .expect("policy task should complete")
+        .expect("policy resolution should not time out")
+        .expect("policy should resolve after refresh");
+    assert!(policy.enabled);
+    assert_eq!(
+        policy.auth_generation,
+        *auth_manager.auth_change_receiver().borrow()
     );
     server.verify().await;
 }
