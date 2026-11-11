@@ -188,8 +188,8 @@ jobs:
                       continue
                   path = os.fsdecode(raw)
                   if not path.endswith(".rs") or not path.startswith(
-                      ("codex-rs/hepta-agentd/", "codex-rs/hepta-learning-artifacts/",
-                           "codex-rs/hepta-intelligence-eval/")):
+                      ("codex-rs/hepta-agentd/", "codex-rs/hepta-learning-ledger/",
+                           "codex-rs/hepta-learning-artifacts/", "codex-rs/hepta-intelligence-eval/")):
                       raise RuntimeError("maintenance changed a path outside its Rust owners: " + path)
                   source = repo / path
                   if source.is_symlink() or not source.is_file():

@@ -1,8 +1,10 @@
 """Positive and adversarial original-owner report coverage, without Rust work."""
 
 import ast
+import base64
 import hashlib
 import json
+import os
 from pathlib import Path
 import tempfile
 from types import SimpleNamespace
@@ -347,6 +349,102 @@ class OriginalObserverCoverageTests(unittest.TestCase):
                 ).body
             ),
         )
+
+
+    def maintenance_driver(self, directory, paths):
+        workflow = (
+            Path(__file__).resolve().parents[1]
+            / ".github/workflows/hepta-daemon-learning-native.yml"
+        )
+        text = workflow.read_text()
+        start = text.index("          import base64\n")
+        end = text.index("          PY\n", start)
+        driver = "\n".join(line[10:] for line in text[start:end].splitlines())
+        method = next(
+            node
+            for node in ast.parse(driver).body
+            if isinstance(node, ast.FunctionDef) and node.name == "postimages"
+        )
+        repo = directory / "source"
+        records = directory / "records"
+        records.mkdir()
+        original = {}
+        for path in paths:
+            file = repo / path
+            file.parent.mkdir(parents=True, exist_ok=True)
+            original[path] = ("// original maintenance bytes: " + path + "\n").encode()
+            file.write_bytes(original[path])
+
+        def git(*args):
+            if args == ("diff", "--binary", "HEAD", "--"):
+                return b"original maintenance diff\n"
+            if args == ("diff", "--name-only", "--no-renames", "-z", "HEAD", "--"):
+                return b"\0".join(path.encode() for path in paths) + b"\0"
+            if args == ("ls-files", "--others", "--exclude-standard", "-z"):
+                return b""
+            self.fail(f"unexpected maintenance Git query: {args}")
+
+        saved = {}
+        namespace = {
+            "records": records,
+            "repo": repo,
+            "git": git,
+            "os": SimpleNamespace(fsdecode=os.fsdecode, environ={"SOURCE_SHA": "b" * 40}),
+            "hashlib": hashlib,
+            "base64": base64,
+            "json": json,
+            "print": lambda *args, **kwargs: None,
+            "save": lambda name, value: saved.update({name: value}),
+        }
+        exec(
+            compile(ast.Module(body=[method], type_ignores=[]), str(workflow), "exec"),
+            namespace,
+        )
+        return namespace["postimages"], records, original, saved
+
+    def test_actual_workflow_retains_all_four_maintained_owner_postimages(self):
+        paths = (
+            "codex-rs/hepta-agentd/src/owner.rs",
+            "codex-rs/hepta-learning-ledger/src/witness.rs",
+            "codex-rs/hepta-learning-artifacts/src/owner.rs",
+            "codex-rs/hepta-intelligence-eval/src/owner.rs",
+        )
+        with tempfile.TemporaryDirectory() as temporary:
+            postimages, records, original, saved = self.maintenance_driver(
+                Path(temporary), paths
+            )
+            postimages(True)
+            result = saved["maintenance-summary.json"]
+            self.assertTrue(result["complete"])
+            self.assertEqual({item["path"] for item in result["files"]}, set(paths))
+            restored = {}
+            for line in (records / "maintenance-postimages.jsonl").read_text().splitlines():
+                if line.startswith("HEPTA_MAINTAINED_CHUNK "):
+                    item = json.loads(line.split(" ", 1)[1])
+                    self.assertEqual(item["index"], 0)
+                    restored[item["path"]] = base64.b64decode(item["base64"], validate=True)
+            self.assertEqual(restored, original)
+            self.assertEqual(
+                (records / "maintenance.patch").read_bytes(),
+                b"original maintenance diff\n",
+            )
+
+    def test_actual_workflow_still_refuses_maintenance_outside_exact_owner_scope(self):
+        for path in (
+            "codex-rs/hepta-neuron/src/owner.rs",
+            "codex-rs/hepta-agentd-foreign/src/owner.rs",
+            "codex-rs/hepta-learning-ledger-foreign/src/witness.rs",
+            "codex-rs/hepta-learning-ledger/Cargo.toml",
+        ):
+            with self.subTest(path=path), tempfile.TemporaryDirectory() as temporary:
+                postimages, records, _, saved = self.maintenance_driver(
+                    Path(temporary), (path,)
+                )
+                with self.assertRaisesRegex(RuntimeError, "outside its Rust owners"):
+                    postimages(True)
+                self.assertEqual(saved, {})
+                self.assertFalse((records / "maintenance-postimages.jsonl").exists())
+
 
 
 if __name__ == "__main__":
