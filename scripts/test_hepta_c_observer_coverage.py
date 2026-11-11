@@ -350,7 +350,6 @@ class OriginalObserverCoverageTests(unittest.TestCase):
             ),
         )
 
-
     def maintenance_driver(self, directory, paths):
         workflow = (
             Path(__file__).resolve().parents[1]
@@ -389,7 +388,9 @@ class OriginalObserverCoverageTests(unittest.TestCase):
             "records": records,
             "repo": repo,
             "git": git,
-            "os": SimpleNamespace(fsdecode=os.fsdecode, environ={"SOURCE_SHA": "b" * 40}),
+            "os": SimpleNamespace(
+                fsdecode=os.fsdecode, environ={"SOURCE_SHA": "b" * 40}
+            ),
             "hashlib": hashlib,
             "base64": base64,
             "json": json,
@@ -418,11 +419,15 @@ class OriginalObserverCoverageTests(unittest.TestCase):
             self.assertTrue(result["complete"])
             self.assertEqual({item["path"] for item in result["files"]}, set(paths))
             restored = {}
-            for line in (records / "maintenance-postimages.jsonl").read_text().splitlines():
+            for line in (
+                (records / "maintenance-postimages.jsonl").read_text().splitlines()
+            ):
                 if line.startswith("HEPTA_MAINTAINED_CHUNK "):
                     item = json.loads(line.split(" ", 1)[1])
                     self.assertEqual(item["index"], 0)
-                    restored[item["path"]] = base64.b64decode(item["base64"], validate=True)
+                    restored[item["path"]] = base64.b64decode(
+                        item["base64"], validate=True
+                    )
             self.assertEqual(restored, original)
             self.assertEqual(
                 (records / "maintenance.patch").read_bytes(),
@@ -444,7 +449,6 @@ class OriginalObserverCoverageTests(unittest.TestCase):
                     postimages(True)
                 self.assertEqual(saved, {})
                 self.assertFalse((records / "maintenance-postimages.jsonl").exists())
-
 
 
 if __name__ == "__main__":
