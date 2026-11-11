@@ -132,3 +132,13 @@ Run `42951157615` at exact source `30a697c50e10abd56e61b6b84f28ac9ae9f32f5d` / t
 
 This closes the architecture-required gate only for source 30a697. It does not transfer to child source be8adc, whose required aggregator remains queued, and it does not establish the production StageOwner, ordinary product caller, original custody, independent B/retention/new-C, cold recovery, complete handler FinalUse, field benefit or learned-skill promotion.
 
+## #5914 architecture and blocking terminal classification (2026-11-11 07:44 UTC)
+
+At exact source `be8adcbb5e9925f72e05330b8fb30509cba4544b` / tree `eaa8b27f16a5f9fed87e9d6882cd23dfaecfd125`, architecture run `42955998198` is now terminal **SUCCESS** across source-head job `130311124361`, base-merge job `130311124745`, and required job `130336015724`. The source-head denominator remains 31 passed command records / 663 observed tests / zero failures. The required raw log explicitly checks `RESULT=success` and records that all applicable exact-candidate lanes succeeded. Original artifacts remain `13829523732` / 104,888 bytes / SHA-256 `993a3bbb7c6a90088fd303e28d07141c68777f3c75dff7e08c3d48a84021430b` and `13828318369` / 12,291 bytes / SHA-256 `cccfb1abe5d5847635561b2e66f6849b460dae0b3899a6b9e888b5534d0996fd`.
+
+The same-source blocking run `42955998139` is terminal **CANCELLED**, not PASS. Final job `130381027096` failed because the Bazel dependency failed and repo-checks was cancelled. Repo-checks job `130323909720` passed Cargo manifest boundary tests and emitted `PASS_HEPTA_CALLER_PROOF_SELF_TEST`, then was cancelled about ten minutes into the privileged caller closed-set step; its full scan result therefore remains **UNKNOWN**.
+
+The original failed Bazel logs were read rather than inherited from 30a. Windows shards retain the legacy `FILE_DELETE_CHILD` fail-closed refusal and also show independent file-lock/os-error-33, PermissionDenied/Invalid-fixture, path and timeout failures. macOS retains endpoint/timeouts, capability-denial, invalid-fixture and broader application/Core/Agentd failures. Windows native-main job `130331367751` only propagates the failed shard result. GitHub retains 14 exact-source Bazel artifacts; their IDs, names, byte sizes and SHA-256 digests are frozen in `BLOCKERS.json`.
+
+This closes #5914's repository architecture gate and terminally classifies its broad blocking run. It does not convert the cancelled repo-check scan or failed platforms to PASS and does not establish the production StageOwner/product caller, original custody, independent B/retention/new-C, cold recovery, complete handler FinalUse, field benefit or learned-skill promotion.
+
