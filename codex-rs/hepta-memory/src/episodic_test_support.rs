@@ -31,24 +31,42 @@ pub(crate) struct SourceWitness {
 impl SourceWitness {
     pub(crate) fn current(expected: &'static str) -> Self {
         let value: Value = serde_json::from_str(expected).expect("fixture");
-        let records = value["body"]["records"].as_array().expect("records").iter()
+        let records = value["body"]["records"]
+            .as_array()
+            .expect("records")
+            .iter()
             .map(|record| {
                 let id = record["record_id"].as_str().expect("id");
-                (id.to_owned(), EpisodicRecordAdmission {
-                    source: source(CognitiveScope::AgentPrivate, id, record["text"].as_str().expect("source fixture text")),
-                    verification: MemoryVerification::Verified,
-                })
-            }).collect::<BTreeMap<_, _>>();
+                (
+                    id.to_owned(),
+                    EpisodicRecordAdmission {
+                        source: source(
+                            CognitiveScope::AgentPrivate,
+                            id,
+                            record["text"].as_str().expect("source fixture text"),
+                        ),
+                        verification: MemoryVerification::Verified,
+                    },
+                )
+            })
+            .collect::<BTreeMap<_, _>>();
         Self {
             expected,
-            admitted: EpisodicSnapshotAdmission { records, withdrawal: None },
-            checks: AtomicUsize::new(0), reject_on_check: usize::MAX,
+            admitted: EpisodicSnapshotAdmission {
+                records,
+                withdrawal: None,
+            },
+            checks: AtomicUsize::new(0),
+            reject_on_check: usize::MAX,
         }
     }
 
     pub(crate) fn authorize_withdrawal(&mut self) {
-        self.admitted.withdrawal = Some(source(CognitiveScope::AgentPrivate,
-            "source-owner-withdrawal", "Withdraw superseded source evidence."));
+        self.admitted.withdrawal = Some(source(
+            CognitiveScope::AgentPrivate,
+            "source-owner-withdrawal",
+            "Withdraw superseded source evidence.",
+        ));
     }
 }
 
@@ -61,4 +79,3 @@ impl EpisodicSnapshotVerifier for SourceWitness {
         Ok(self.admitted.clone())
     }
 }
-

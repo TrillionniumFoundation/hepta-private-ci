@@ -57,7 +57,8 @@ impl Snapshot {
         if input.len() > 65_536 {
             return Err(invalid("episodic snapshot exceeds 64 KiB"));
         }
-        let snapshot: Self = serde_json::from_str(input).map_err(|error| invalid(error.to_string()))?;
+        let snapshot: Self =
+            serde_json::from_str(input).map_err(|error| invalid(error.to_string()))?;
         let body = &snapshot.body;
         if body.schema != "hepta.mem6.snapshot.v1"
             || !bounded(&body.authority_id, 128)
@@ -72,8 +73,12 @@ impl Snapshot {
         let mut slots = BTreeSet::new();
         let mut by_id = BTreeMap::new();
         for record in &body.records {
-            let mut value = serde_json::to_value(record).map_err(|error| invalid(error.to_string()))?;
-            value.as_object_mut().ok_or_else(|| invalid("invalid record"))?.remove("record_id");
+            let mut value =
+                serde_json::to_value(record).map_err(|error| invalid(error.to_string()))?;
+            value
+                .as_object_mut()
+                .ok_or_else(|| invalid("invalid record"))?
+                .remove("record_id");
             if record.namespace != body.namespace
                 || !bounded(&record.source_id, 128)
                 || !bounded(&record.key, 128)
@@ -86,17 +91,23 @@ impl Snapshot {
                 || !bounded(&record.provenance.episode_id, 128)
                 || !is_digest(&record.provenance.source_sha256)
                 || record.dependencies.len() > 32
-                || record.dependencies.iter().collect::<BTreeSet<_>>().len() != record.dependencies.len()
+                || record.dependencies.iter().collect::<BTreeSet<_>>().len()
+                    != record.dependencies.len()
                 || digest(&value)? != record.record_id
                 || !slots.insert((record.source_id.clone(), record.key.clone()))
-                || by_id.insert(record.record_id.clone(), record.write_sequence).is_some()
+                || by_id
+                    .insert(record.record_id.clone(), record.write_sequence)
+                    .is_some()
             {
                 return Err(invalid("invalid episodic source record"));
             }
         }
         for record in &body.records {
             for dependency in &record.dependencies {
-                if !by_id.get(dependency).is_some_and(|sequence| *sequence < record.write_sequence) {
+                if !by_id
+                    .get(dependency)
+                    .is_some_and(|sequence| *sequence < record.write_sequence)
+                {
                     return Err(invalid("snapshot dependency must be present and earlier"));
                 }
             }
@@ -108,8 +119,14 @@ impl Snapshot {
 pub(crate) fn digest(value: &Value) -> Result<String, ProductionCognitiveMutationError> {
     fn ordered(value: &Value) -> Value {
         match value {
-            Value::Object(fields) => Value::Object(fields.iter().collect::<BTreeMap<_, _>>().into_iter()
-                .map(|(key, value)| (key.clone(), ordered(value))).collect()),
+            Value::Object(fields) => Value::Object(
+                fields
+                    .iter()
+                    .collect::<BTreeMap<_, _>>()
+                    .into_iter()
+                    .map(|(key, value)| (key.clone(), ordered(value)))
+                    .collect(),
+            ),
             Value::Array(values) => Value::Array(values.iter().map(ordered).collect()),
             Value::Null | Value::Bool(_) | Value::Number(_) | Value::String(_) => value.clone(),
         }
@@ -123,5 +140,8 @@ fn bounded(value: &str, maximum: usize) -> bool {
 }
 
 fn is_digest(value: &str) -> bool {
-    value.len() == 64 && value.bytes().all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(&byte))
+    value.len() == 64
+        && value
+            .bytes()
+            .all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(&byte))
 }

@@ -83,7 +83,6 @@ pub struct EpisodicImportReceipt {
     pub bindings: Vec<EpisodicMemoryBinding>,
 }
 
-
 /// A bounded snapshot and source observations admitted by the original host.
 /// This object cannot be deserialized or constructed from a digest. Its source
 /// verifier remains attached for the required final read linearization check.
@@ -107,31 +106,56 @@ impl<'a> AdmittedEpisodicSnapshot<'a> {
             ProductionWriterError::AuthorityRejected(format!("episodic source: {reason}"))
         })?;
         if admitted.records.len() != body.records.len()
-            || body.records.iter().any(|record| !admitted.records.get(&record.record_id)
-                .is_some_and(|source| source.source.scope == *scope && source.source.content == record.text.as_bytes()))
-            || admitted.withdrawal.as_ref().is_some_and(|source| source.scope != *scope)
+            || body.records.iter().any(|record| {
+                !admitted
+                    .records
+                    .get(&record.record_id)
+                    .is_some_and(|source| {
+                        source.source.scope == *scope
+                            && source.source.content == record.text.as_bytes()
+                    })
+            })
+            || admitted
+                .withdrawal
+                .as_ref()
+                .is_some_and(|source| source.scope != *scope)
         {
-            return Err(invalid("admitted source payloads do not exactly bind the complete snapshot"));
+            return Err(invalid(
+                "admitted source payloads do not exactly bind the complete snapshot",
+            ));
         }
-        for source in admitted.records.values().map(|admission| &admission.source).chain(admitted.withdrawal.iter()) {
+        for source in admitted
+            .records
+            .values()
+            .map(|admission| &admission.source)
+            .chain(admitted.withdrawal.iter())
+        {
             crate::cognitive_store::validate_key(&source.event_key, "episodic source event key")?;
         }
-        if admitted.withdrawal.as_ref().is_some_and(|source| source.content.is_empty()
-            || source.content.len() > 256 || std::str::from_utf8(&source.content).is_err())
-        {
+        if admitted.withdrawal.as_ref().is_some_and(|source| {
+            source.content.is_empty()
+                || source.content.len() > 256
+                || std::str::from_utf8(&source.content).is_err()
+        }) {
             return Err(invalid("withdrawal event must contain 1..=256 UTF-8 bytes"));
         }
-        let admission_sha256 = digest(&serde_json::to_value(&admitted).map_err(|error| invalid(error.to_string()))?)?;
+        let admission_sha256 =
+            digest(&serde_json::to_value(&admitted).map_err(|error| invalid(error.to_string()))?)?;
 
         Ok(Self {
-            snapshot, admitted, admission_sha256,
-            original: snapshot_json, verifier: admission,
+            snapshot,
+            admitted,
+            admission_sha256,
+            original: snapshot_json,
+            verifier: admission,
         })
     }
 
     /// Rechecks exact source admission; it does not fence a later external use.
     pub fn revalidate(&self) -> Result<(), ProductionCognitiveMutationError> {
-        let current = self.verifier.verify_current(self.original)
+        let current = self
+            .verifier
+            .verify_current(self.original)
             .map_err(ProductionWriterError::AuthorityRejected)?;
         if current != self.admitted {
             return Err(invalid("source admission changed before commit"));
