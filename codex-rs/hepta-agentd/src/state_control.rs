@@ -325,6 +325,9 @@ impl AgentdState {
                     .get()
                     .map(EpisodicImportIngress::source_read)
                     .transpose()?;
+                if let Some(source) = &source {
+                    source.revalidate_native().await?;
+                }
                 let result = crate::cognitive_context::read_with_retrieval_context_and_learning(
                     &store,
                     &self.identity.agent_id,
@@ -342,6 +345,7 @@ impl AgentdState {
                 if result.is_ok()
                     && let Some(source) = source
                 {
+                    source.revalidate_native().await?;
                     source.revalidate()?;
                 }
                 self.refresh_generation()?;
@@ -417,6 +421,9 @@ impl AgentdState {
                     .get()
                     .map(EpisodicImportIngress::source_read)
                     .transpose()?;
+                if let Some(source) = &source {
+                    source.revalidate_native().await?;
+                }
                 let result = crate::cognitive_context::revalidate_with_retrieval_context(
                     store.as_ref(),
                     &self.identity.agent_id,
@@ -435,6 +442,7 @@ impl AgentdState {
                 if result.is_ok()
                     && let Some(source) = source
                 {
+                    source.revalidate_native().await?;
                     source.revalidate()?;
                 }
                 self.refresh_generation()?;

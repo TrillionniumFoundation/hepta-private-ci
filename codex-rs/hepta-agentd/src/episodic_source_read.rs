@@ -5,6 +5,8 @@
 use std::sync::Arc;
 use std::sync::Mutex;
 
+use codex_hepta_memory::CognitiveAccess;
+use codex_hepta_memory::CognitiveScope;
 use codex_hepta_memory::EpisodicImportReceipt;
 use codex_hepta_memory::EpisodicSnapshotAdmission;
 use codex_hepta_memory::ProductionWriterError;
@@ -113,6 +115,21 @@ impl EpisodicSourceRead {
             ));
         }
         Ok(())
+    }
+
+    pub(crate) async fn revalidate_native(&self) -> Result<(), AgentdError> {
+        self.require_current()?;
+        let access =
+            CognitiveAccess::agent_private(self.ingress.writer.writer().owner_agent_id().clone());
+        self.ingress
+            .writer
+            .revalidate_episodic_receipt(
+                &access,
+                &CognitiveScope::AgentPrivate,
+                &self.observation.receipt,
+            )
+            .await?;
+        self.require_current()
     }
 
     pub(crate) fn revalidate(&self) -> Result<(), AgentdError> {
