@@ -1,0 +1,22 @@
+{
+  "status": "PASS_HEPTA_CALLER_CLOSED_SET",
+  "head": "30692d721d67321df0414c5c3f990449d7b9fea8",
+  "tree": "790bf1330fde0ee51d9f9ea40848f3dc5d2afcb4",
+  "command": "python scripts/verify_hepta_callers.py verify --root . --manifest CALLERS.toml",
+  "cwd": "/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-integrated",
+  "resource_control": "one process, nice 10, affinity restricted to one allowed CPU",
+  "exit_code": 0,
+  "stdout": "source-checks/full-callers.stdout",
+  "stdout_sha256": "6411f4f431c13454109143339de0fb7e287aeed22f468a0c4ad236cad56c41e3",
+  "stderr": "source-checks/full-callers.stderr",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_bytes": 0,
+  "rust_files_scanned": 6304,
+  "boundaries": 225,
+  "privileged_inventory": 225,
+  "protected_files": 219,
+  "authority_granted": false,
+  "source_clean_after": true,
+  "started_utc_from_empty_stderr_creation": "2026-11-11T01:41:11.185347+00:00",
+  "completed_output_utc": "2026-11-11T01:52:45.005013+00:00"
+}

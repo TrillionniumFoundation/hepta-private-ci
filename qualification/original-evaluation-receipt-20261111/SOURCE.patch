@@ -1,0 +1,1593 @@
+diff --git a/CALLERS.toml b/CALLERS.toml
+index f58701e2761..4f9bb253844 100644
+--- a/CALLERS.toml
++++ b/CALLERS.toml
+@@ -6,7 +6,7 @@ ignored_path_fragments = ["/tests/", "/examples/", "_tests.rs"]
+ rule = "Every privileged Hepta boundary has an exact closed set of product call sites. Test, example and definition-only uses do not grant production authority."
+ 
+ [privileged_inventory]
+-required_boundary_ids = ["root_registered_learning_checkpoint_writer", "root_original_learning_checkpoint_exchange", "supervisor_authorized_boot", "memory_production_writer_open", "cognitive_store_recovery_open", "cognitive_production_mutation_capability", "agentd_production_writer_host", "agentd_production_operation_runtime", "learning_artifact_owner_bootstrap", "learning_artifact_owner_restart", "learning_artifact_verified_current_view", "provider_effect_coordinator", "http_provider_effect_adapter", "final_use_open_state", "final_use_claim", "final_use_claim_raw", "final_use_delivery", "final_use_delivery_witness", "final_use_delivery_raw", "final_use_dispatch", "final_use_dispatch_witness", "final_use_dispatch_raw", "final_use_revocation_update", "final_use_approval_trust", "final_use_approval_verify", "final_use_revocation_feed_trust", "final_use_revocation_feed_apply", "final_use_revocation_convergence_trust", "final_use_revocation_convergence_verify", "bao_final_use_consumer", "bao_registered_consumer_new", "bao_final_use_host_new", "bao_registered_revocation_update", "bao_registered_final_use_host", "authority_lease_open_state", "authority_lease_put", "authority_lease_revoke", "authority_lease_prune", "authority_lease_epoch_advance", "authority_lease_verify_use", "authority_lease_delivery", "authority_lease_delivery_witness", "authority_lease_dispatch_raw", "authority_lease_dispatch_witness", "final_use_async_dispatch_fence", "automation_taskflow_provider_effect_bridge", "final_use_guarded_effect", "notes_original_pending_call_proof", "notes_original_operation_observation_proof", "notes_original_thread_prepare", "notes_original_writer_terminal_receipt", "memory_original_owner_current_publication", "memory_original_protected_current_readback", "original_authbus_human_delivery_read", "notes_original_human_turn_proof", "root_registered_human_text_writer", "root_registered_human_text_admission", "root_human_text_same_issuer_cas", "root_retained_human_text_lookup", "root_live_human_session_install", "root_original_human_text_verification", "notes_original_turn_unprepared_admission", "root_host_original_human_text_verification", "notes_original_human_text_verification", "root_prepared_fresh_session", "root_retained_native_ui_launch", "root_prepared_native_ui_execution", "root_material_capture_original_image", "root_material_verify_retained_image", "root_material_install_original_generation", "root_material_reopen_original_installation", "root_material_release_registered_custody", "root_material_fresh_registered_session", "root_material_recover_registered_session", "root_material_existing_session_open", "root_material_resume_registered_handoff", "root_material_current_observation_chain", "root_original_writer_descriptor_chain", "root_same_retained_service_serve", "root_registered_material_recovery", "root_registered_material_handoff_resume", "root_original_writer_purpose_send", "root_original_writer_purpose_receive", "agentd_original_root_writer_consume", "root_registered_writer_rotation", "native_original_operation_host_attach", "native_original_owner_current_ack", "native_original_terminal_history_observation", "root_original_authority_initialize", "root_original_writer_authorize", "root_same_registered_bootstrap_seal", "root_same_registered_bootstrap_capture", "root_original_physical_login_install", "root_original_writer_successor_shape", "root_original_issuer_writer_rotation", "root_physical_current_retired_adoption", "root_physical_recovery_retirement_admission", "root_physical_fresh_service_genesis", "root_physical_registered_checkpoint_genesis", "root_physical_current_backend_genesis", "root_registered_physical_current_observation", "root_original_two_descriptor_send", "root_original_two_descriptor_receive", "native_original_writer_terminal_observation", "native_original_writer_next_delivery_observation", "root_notes_original_startup_before", "root_notes_recovered_successor_startup_before", "root_notes_original_reserved_session_binding", "root_notes_registered_successor_policy_replace", "root_notes_original_issuer_policy_cas", "root_desktop_original_issuer_pair_policy_cas", "root_retained_native_ready_launch", "root_prepared_native_ready_execution", "root_prepared_native_ready_text_session", "root_original_bound_native_lanes", "root_original_bound_native_lane_acceptance", "root_original_ready_lane_bridge", "notes_original_retained_reference_projection", "desktop_original_retained_reference_projection", "memory_original_sender_read_only_cut", "notes_recorded_original_observation_proof", "notes_previous_recovery_typed_resolution", "root_live_admin_enable", "root_live_admin_mint", "root_live_admin_exchange", "root_live_admin_checked_dispatch", "root_live_admin_signed_artifact_verify", "root_live_admin_exact_issuer_head_revoke", "root_live_admin_fixed_notes_revoke_prepare", "root_live_admin_existing_effect_revoke", "root_live_admin_existing_signed_grant_revoke", "root_live_admin_same_service_signed_revoke", "root_live_admin_original_issue_observer_enable", "root_live_admin_original_issue_observation", "root_live_admin_original_bounded_lease_revoke", "root_live_admin_retained_artifact_observe", "root_live_admin_original_effect_state_observe", "root_live_admin_same_service_effect_state_observe", "agentd_original_registered_writer_custody", "agentd_original_recovered_writer_custody_factory", "agentd_original_root_handoff_unique_file", "calculator_previous_recovery_owner_target", "calculator_previous_recovery_host_attach", "calculator_previous_recovery_process_attach", "calculator_previous_recovery_runtime_selection", "calculator_previous_recovery_config_selection", "root_original_issuer_renewal_prepare", "root_original_issuer_renewal_commit", "root_desktop_original_startup_before", "root_desktop_recovered_successor_startup_before", "root_desktop_registered_successor_policy_replace", "desktop_previous_original_cut_selection", "desktop_previous_joint_config_selection", "memory_original_validated_target_retirement_ack", "memory_original_owner_current_readonly_receipt", "memory_original_notes_retirement_ack", "memory_original_calculator_retirement_ack", "memory_original_retirement_ack_commit", "authority_lease_exact_bounded_revoke", "root_live_admin_exact_issuer_revoke", "root_live_admin_committed_issuer_reply", "root_live_admin_exact_issuer_reply_record", "root_learning_explicit_registration", "root_learning_original_store_registration", "root_learning_original_store_reopen", "root_learning_original_owner_install", "root_learning_original_scope_seal", "root_learning_original_scope_capture", "root_learning_same_service_serve", "root_learning_registered_checkpoint_constructor", "root_learning_original_client_constructor", "root_learning_original_purpose_send", "root_learning_original_purpose_receive", "root_learning_original_handoff_consume", "root_learning_original_config_hold", "root_learning_original_stage_assembly", "root_learning_original_runtime_consume", "root_original_registered_ready_serve", "root_original_private_sealed_bytes", "root_learning_scoped_checkpoint_constructor", "root_learning_scoped_client_constructor", "root_learning_scoped_runtime_constructor", "learning_frozen_update_scope_constructor", "root_learning_scoped_profile_constructor", "root_learning_scoped_checkpoint_record", "learning_evidence_original_owner_constructor", "learning_evidence_original_owner_readback", "original_pinned_stream_explicit_uid", "cell_learning_evaluation_profile_freeze", "cell_learning_evaluation_receipt_prepare", "cell_learning_evaluation_original_readback", "generation_learning_original_stage_readback", "cell_original_evaluation_execution", "product_original_evaluation_execution", "root_learning_original_delivery_source", "root_learning_completed_circuit_source", "circuit_learning_exact_ack_retirement", "cell_completed_evaluation_readback", "product_completed_evaluation_readback", "cell_q24_single_head_training_plan", "cell_q24_single_head_candidate_validation", "cell_q24_native_training_fit", "cell_q24_original_training_observation", "learning_original_evaluator_attestation", "learning_original_evaluation_key", "circuit_feature_original_initial_publication", "circuit_feature_original_update_publication", "circuit_feature_guarded_private_cell", "circuit_feature_private_cell_writer", "circuit_feature_original_task_control", "circuit_q24_ordinary_profile_assembly", "circuit_feature_original_predecessor_recovery", "circuit_feature_acknowledged_readonly_history", "learning_original_training_receipt_create", "learning_original_training_receipt_recover", "learning_original_training_receipt_attest", "learning_original_training_receipt_readback", "cell_q24_model_material_owner_create", "cell_q24_model_material_owner_recover", "cell_q24_model_material_owner_commit", "cell_q24_model_material_owner_readback"]
++required_boundary_ids = ["root_registered_learning_checkpoint_writer", "root_original_learning_checkpoint_exchange", "supervisor_authorized_boot", "memory_production_writer_open", "cognitive_store_recovery_open", "cognitive_production_mutation_capability", "agentd_production_writer_host", "agentd_production_operation_runtime", "learning_artifact_owner_bootstrap", "learning_artifact_owner_restart", "learning_artifact_verified_current_view", "provider_effect_coordinator", "http_provider_effect_adapter", "final_use_open_state", "final_use_claim", "final_use_claim_raw", "final_use_delivery", "final_use_delivery_witness", "final_use_delivery_raw", "final_use_dispatch", "final_use_dispatch_witness", "final_use_dispatch_raw", "final_use_revocation_update", "final_use_approval_trust", "final_use_approval_verify", "final_use_revocation_feed_trust", "final_use_revocation_feed_apply", "final_use_revocation_convergence_trust", "final_use_revocation_convergence_verify", "bao_final_use_consumer", "bao_registered_consumer_new", "bao_final_use_host_new", "bao_registered_revocation_update", "bao_registered_final_use_host", "authority_lease_open_state", "authority_lease_put", "authority_lease_revoke", "authority_lease_prune", "authority_lease_epoch_advance", "authority_lease_verify_use", "authority_lease_delivery", "authority_lease_delivery_witness", "authority_lease_dispatch_raw", "authority_lease_dispatch_witness", "final_use_async_dispatch_fence", "automation_taskflow_provider_effect_bridge", "final_use_guarded_effect", "notes_original_pending_call_proof", "notes_original_operation_observation_proof", "notes_original_thread_prepare", "notes_original_writer_terminal_receipt", "memory_original_owner_current_publication", "memory_original_protected_current_readback", "original_authbus_human_delivery_read", "notes_original_human_turn_proof", "root_registered_human_text_writer", "root_registered_human_text_admission", "root_human_text_same_issuer_cas", "root_retained_human_text_lookup", "root_live_human_session_install", "root_original_human_text_verification", "notes_original_turn_unprepared_admission", "root_host_original_human_text_verification", "notes_original_human_text_verification", "root_prepared_fresh_session", "root_retained_native_ui_launch", "root_prepared_native_ui_execution", "root_material_capture_original_image", "root_material_verify_retained_image", "root_material_install_original_generation", "root_material_reopen_original_installation", "root_material_release_registered_custody", "root_material_fresh_registered_session", "root_material_recover_registered_session", "root_material_existing_session_open", "root_material_resume_registered_handoff", "root_material_current_observation_chain", "root_original_writer_descriptor_chain", "root_same_retained_service_serve", "root_registered_material_recovery", "root_registered_material_handoff_resume", "root_original_writer_purpose_send", "root_original_writer_purpose_receive", "agentd_original_root_writer_consume", "root_registered_writer_rotation", "native_original_operation_host_attach", "native_original_owner_current_ack", "native_original_terminal_history_observation", "root_original_authority_initialize", "root_original_writer_authorize", "root_same_registered_bootstrap_seal", "root_same_registered_bootstrap_capture", "root_original_physical_login_install", "root_original_writer_successor_shape", "root_original_issuer_writer_rotation", "root_physical_current_retired_adoption", "root_physical_recovery_retirement_admission", "root_physical_fresh_service_genesis", "root_physical_registered_checkpoint_genesis", "root_physical_current_backend_genesis", "root_registered_physical_current_observation", "root_original_two_descriptor_send", "root_original_two_descriptor_receive", "native_original_writer_terminal_observation", "native_original_writer_next_delivery_observation", "root_notes_original_startup_before", "root_notes_recovered_successor_startup_before", "root_notes_original_reserved_session_binding", "root_notes_registered_successor_policy_replace", "root_notes_original_issuer_policy_cas", "root_desktop_original_issuer_pair_policy_cas", "root_retained_native_ready_launch", "root_prepared_native_ready_execution", "root_prepared_native_ready_text_session", "root_original_bound_native_lanes", "root_original_bound_native_lane_acceptance", "root_original_ready_lane_bridge", "notes_original_retained_reference_projection", "desktop_original_retained_reference_projection", "memory_original_sender_read_only_cut", "notes_recorded_original_observation_proof", "notes_previous_recovery_typed_resolution", "root_live_admin_enable", "root_live_admin_mint", "root_live_admin_exchange", "root_live_admin_checked_dispatch", "root_live_admin_signed_artifact_verify", "root_live_admin_exact_issuer_head_revoke", "root_live_admin_fixed_notes_revoke_prepare", "root_live_admin_existing_effect_revoke", "root_live_admin_existing_signed_grant_revoke", "root_live_admin_same_service_signed_revoke", "root_live_admin_original_issue_observer_enable", "root_live_admin_original_issue_observation", "root_live_admin_original_bounded_lease_revoke", "root_live_admin_retained_artifact_observe", "root_live_admin_original_effect_state_observe", "root_live_admin_same_service_effect_state_observe", "agentd_original_registered_writer_custody", "agentd_original_recovered_writer_custody_factory", "agentd_original_root_handoff_unique_file", "calculator_previous_recovery_owner_target", "calculator_previous_recovery_host_attach", "calculator_previous_recovery_process_attach", "calculator_previous_recovery_runtime_selection", "calculator_previous_recovery_config_selection", "root_original_issuer_renewal_prepare", "root_original_issuer_renewal_commit", "root_desktop_original_startup_before", "root_desktop_recovered_successor_startup_before", "root_desktop_registered_successor_policy_replace", "desktop_previous_original_cut_selection", "desktop_previous_joint_config_selection", "memory_original_validated_target_retirement_ack", "memory_original_owner_current_readonly_receipt", "memory_original_notes_retirement_ack", "memory_original_calculator_retirement_ack", "memory_original_retirement_ack_commit", "authority_lease_exact_bounded_revoke", "root_live_admin_exact_issuer_revoke", "root_live_admin_committed_issuer_reply", "root_live_admin_exact_issuer_reply_record", "root_learning_explicit_registration", "root_learning_original_store_registration", "root_learning_original_store_reopen", "root_learning_original_owner_install", "root_learning_original_scope_seal", "root_learning_original_scope_capture", "root_learning_same_service_serve", "root_learning_registered_checkpoint_constructor", "root_learning_original_client_constructor", "root_learning_original_purpose_send", "root_learning_original_purpose_receive", "root_learning_original_handoff_consume", "root_learning_original_config_hold", "root_learning_original_stage_assembly", "root_learning_original_runtime_consume", "root_original_registered_ready_serve", "root_original_private_sealed_bytes", "root_learning_scoped_checkpoint_constructor", "root_learning_scoped_client_constructor", "root_learning_scoped_runtime_constructor", "learning_frozen_update_scope_constructor", "root_learning_scoped_profile_constructor", "root_learning_scoped_checkpoint_record", "learning_evidence_original_owner_constructor", "learning_evidence_original_owner_readback", "original_pinned_stream_explicit_uid", "cell_learning_evaluation_profile_freeze", "cell_learning_evaluation_receipt_prepare", "cell_learning_evaluation_original_readback", "generation_learning_original_stage_readback", "cell_original_evaluation_execution", "product_original_evaluation_execution", "root_learning_original_delivery_source", "root_learning_completed_circuit_source", "circuit_learning_exact_ack_retirement", "cell_completed_evaluation_readback", "product_completed_evaluation_readback", "cell_q24_single_head_training_plan", "cell_q24_single_head_candidate_validation", "cell_q24_native_training_fit", "cell_q24_original_training_observation", "learning_original_evaluator_attestation", "learning_original_evaluation_key", "circuit_feature_original_initial_publication", "circuit_feature_original_update_publication", "circuit_feature_guarded_private_cell", "circuit_feature_private_cell_writer", "circuit_feature_original_task_control", "circuit_q24_ordinary_profile_assembly", "circuit_feature_original_predecessor_recovery", "circuit_feature_acknowledged_readonly_history", "learning_original_training_receipt_create", "learning_original_training_receipt_recover", "learning_original_training_receipt_attest", "learning_original_training_receipt_readback", "cell_q24_model_material_owner_create", "cell_q24_model_material_owner_recover", "cell_q24_model_material_owner_commit", "cell_q24_model_material_owner_readback", "learning_original_evaluation_receipt_create", "learning_original_evaluation_receipt_recover", "learning_original_evaluation_receipt_attest", "learning_original_evaluation_receipt_readback"]
+ 
+ [[boundary]]
+ id = "root_registered_learning_checkpoint_writer"
+@@ -2726,7 +2726,7 @@ symbol = "LearningIterationEvidenceClientV1::readback"
+ receiver_type = "LearningIterationEvidenceClientV1"
+ definition_path = "codex-rs/hepta-agentd/src/learning_iteration_evidence_client.rs"
+ definition_markers = ["pub async fn readback(", "learning_iteration_receipt_signing_bytes_v1(receipt)?", ".verify(role, &signature, &payload, now)"]
+-product_callers = ["codex-rs/hepta-agentd/src/learning_iteration_evaluation_evidence.rs", "codex-rs/hepta-agentd/src/learning_iteration_generation_evidence.rs"]
++product_callers = ["codex-rs/hepta-agentd/src/learning_iteration_evaluation_evidence.rs", "codex-rs/hepta-agentd/src/learning_iteration_generation_evidence.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs"]
+ caller_markers = []
+ 
+ [[boundary]]
+@@ -2801,7 +2801,7 @@ id = "cell_learning_evaluation_receipt_prepare"
+ symbol = "prepare_cell_learning_evaluation_v1"
+ definition_path = "codex-rs/hepta-agentd/src/neuron_cell_learning_evaluation.rs"
+ definition_markers = ["pub fn prepare_cell_learning_evaluation_v1", "revalidate_product_qualification_v1(", "coordinator.record(prepared.clone(), prepared.observed_unix_seconds)?"]
+-product_callers = ["codex-rs/hepta-agentd/src/learning_iteration_evaluation_evidence.rs", "codex-rs/hepta-agentd/src/cell_q24_model_proposal_admission.rs"]
++product_callers = ["codex-rs/hepta-agentd/src/learning_iteration_evaluation_evidence.rs", "codex-rs/hepta-agentd/src/cell_q24_model_proposal_admission.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs"]
+ caller_markers = ["prepare_cell_learning_evaluation_v1("]
+ 
+ [[protected_file]]
+@@ -2873,8 +2873,8 @@ symbol = "CellEvaluationRunnerV1::readback_completed"
+ receiver_type = "CellEvaluationRunnerV1"
+ definition_path = "codex-rs/hepta-agentd/src/neuron_cell_evaluation.rs"
+ definition_markers = ["pub fn readback_completed(", "plan.require_journals(journals)?", "request.plan != &plan.product", ".readback_temporal_comparison(request, executions)"]
+-product_callers = []
+-caller_markers = []
++product_callers = ["codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs"]
++caller_markers = ["runner.readback_completed(", "clock: &clock,", "key: &self.execution,"]
+ 
+ [[boundary]]
+ id = "product_completed_evaluation_readback"
+@@ -3070,7 +3070,7 @@ id = "learning_original_evaluation_key"
+ symbol = "product_evaluation_execution_key_v1"
+ definition_path = "codex-rs/hepta-intelligence-eval/src/product_execution.rs"
+ definition_markers = ["pub fn product_evaluation_execution_key_v1(", "plan.validate_integrity()?", "plan.receipt_seal.as_array()"]
+-product_callers = ["codex-rs/hepta-agentd/src/neuron_cell_evaluation_owner.rs"]
++product_callers = ["codex-rs/hepta-agentd/src/neuron_cell_evaluation_owner.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs"]
+ caller_markers = ["product_evaluation_execution_key_v1("]
+ 
+ 
+@@ -3449,3 +3449,50 @@ required_function_order = [
+   { function = "fn encode(", sequence = ["observed_unix_seconds", "at < lower || at >= self.cut.request.envelope.expiry_unix_seconds", "return Err(Error::Binding(", "let mut bytes =", "bytes.extend_from_slice(&at.to_le_bytes())"] },
+   { function = "fn decode(", sequence = ["ProductEvaluationExecutionStateV1::Completed(bytes)", "Error::Pending", "self.encode(at)? != bytes", "return Err(Error::Binding(", "LearningProposalDispositionV1::UpdateCandidates", "coordinator.record(receipt.clone(), at)?"] },
+ ]
++
++[[boundary]]
++id = "learning_original_evaluation_receipt_create"
++symbol = "OriginalCellEvaluationReceiptOwnerV1::create"
++receiver_type = "OriginalCellEvaluationReceiptOwnerV1"
++definition_path = "codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs"
++definition_markers = ["pub fn create("]
++product_callers = []
++caller_markers = []
++
++[[boundary]]
++id = "learning_original_evaluation_receipt_recover"
++symbol = "OriginalCellEvaluationReceiptOwnerV1::recover"
++receiver_type = "OriginalCellEvaluationReceiptOwnerV1"
++definition_path = "codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs"
++definition_markers = ["pub fn recover("]
++product_callers = []
++caller_markers = []
++
++[[boundary]]
++id = "learning_original_evaluation_receipt_attest"
++symbol = "OriginalCellEvaluationReceiptOwnerV1::attest_original_completion"
++receiver_type = "OriginalCellEvaluationReceiptOwnerV1"
++definition_path = "codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs"
++definition_markers = ["pub async fn attest_original_completion<"]
++product_callers = []
++caller_markers = []
++
++[[boundary]]
++id = "learning_original_evaluation_receipt_readback"
++symbol = "OriginalCellEvaluationReceiptOwnerV1::readback"
++receiver_type = "OriginalCellEvaluationReceiptOwnerV1"
++definition_path = "codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs"
++definition_markers = ["pub async fn readback<"]
++product_callers = []
++caller_markers = []
++
++[[protected_file]]
++path = "codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs"
++required = ["pub struct OriginalCellEvaluationReceiptOwnerV1", "SystemTime::now()", "key: &self.execution,", "ProductEvaluationExecutionStoreErrorV1::Conflict", "if self.journal.read(&self.saved)? != bytes"]
++forbidden = ["SigningKey::generate", "SigningKey::from_bytes", "LearningEvidenceVerifierV1::new", "LearningEvidenceTrustV1", "File::open", "UnixStream::connect", "with_root_learning_stage_owners(", "LearningIterationStageOwnerPortsV1 for", "evaluate_or_readback(", "qualify_and_persist(", "unwrap_or", "permit_all"]
++required_order = [["fn attest_original_completion<", "if now()? >= self.config.training.request.envelope.expiry_unix_seconds", "let prepared = self.prepare(&mut source)?", "readback(source.snapshot, self.training()?)", "self.authenticate_roles(&source, &prepared.1, &training)?", "if self.prepare(&mut source)? != prepared", "learning_iteration_receipt_signing_bytes_v1(&prepared.0)?", "self.journal.commit_once(&self.saved, ||", "let issued_at = now()?", "if issued_at >= self.config.training.request.envelope.expiry_unix_seconds", "key.sign(&signed.signing_bytes()).to_bytes()", "config.verifier.verify(", "learning_owner_evidence::encode(&payload, &signed)", "self.authenticate_completed(&mut source, prepared, &bytes)", "pub async fn readback<"], ["fn readback<", "let prepared = self.prepare(&mut source)?", "let bytes = self.journal.read(&self.saved)?", "self.authenticate_completed(&mut source, prepared, &bytes)", "fn training("], ["fn prepare<", "LearningIterationCoordinatorV1::from_snapshot(source.snapshot.clone())?", "self.config.scope.validate_snapshot(source.snapshot)?", "source.snapshot.request != self.config.training.request", "starts_with(&self.config.training.receipts)", "source.context.evaluator != self.config.signing.signer.principal", "let clock = || now()", "runner.readback_completed(", "clock: &clock,", "key: &self.execution,", "prepare_cell_learning_evaluation_v1(", "get(self.config.training.receipts.len())", ".is_some_and(|saved| saved != &receipt)", "Ok((receipt, evaluation))", "fn authenticate_roles<"], ["fn authenticate_roles<", "let now = now()?", "config.verifier.require_signer_binding(", "LearningEvidenceRoleV1::Generator", "learning_iteration_receipt_signing_bytes_v1(self.training()?)?", "qualification_bundle(execution, source.context)?", "evaluation_signing_payload_v2(", "LearningEvidenceRoleV1::Evaluator", "generator.principal() != &source.context.generator", "generator.principal().principal_id != self.config.training.owners.trainer", "evaluator.principal() != &config.signer.principal", "evaluator.controller_id() != &config.signer.controller_id", "verify_signed_actor_separation(&generator, &evaluator, now)?", "async fn authenticate_completed<"], ["fn authenticate_completed<", "learning_owner_evidence::decode(bytes)?", "if payload != learning_iteration_receipt_signing_bytes_v1(&prepared.0)?", "readback(source.snapshot, self.training()?)", "if self.prepare(source)? != prepared", "self.authenticate_roles(source, &prepared.1, &training)?", ".verify(LearningEvidenceRoleV1::Evaluator, &signed, &payload, now()?)?", "verified.principal() != &config.signer.principal", "verified.controller_id() != &config.signer.controller_id", "signed.evidence_id != evidence_id(self.saved.binding_digest)?", "if self.journal.read(&self.saved)? != bytes", "Ok((prepared.0, signed))", "fn validate_config("], ["impl<E: ProductEvaluationExecutionStoreV1> ProductEvaluationExecutionStoreV1", "fn claim(", "Err(ProductEvaluationExecutionStoreErrorV1::Rejected)", "fn complete(", "Err(ProductEvaluationExecutionStoreErrorV1::Rejected)", "fn readback(", "if key != self.key", "return Err(ProductEvaluationExecutionStoreErrorV1::Conflict)", "ProductEvaluationExecutionStoreV1::readback(self.inner, key)"]]
++required_function_order = [
++  { function = "fn create(", sequence = ["validate_config(&config, &key)?", "LearningOwnerJournalV1::create(file, witness, saved.binding_digest)?", "Ok(Self"], top_level = ["let (execution, saved) = validate_config(&config, &key)?"] },
++  { function = "fn recover(", sequence = ["validate_config(&config, &key)?", "LearningOwnerJournalV1::recover(file, witness, saved.binding_digest)?", "Ok(Self"], top_level = ["let (execution, saved) = validate_config(&config, &key)?"] },
++  { function = "fn validate_config(", sequence = ["LearningIterationCoordinatorV1::from_snapshot(config.training.clone())?", "config.scope.validate_snapshot(&config.training)?", "coordinator.next_stage() != Some(LearningIterationStageV1::Evaluation)", "key.verifying_key().to_bytes() != signing.signer.verifying_key", "signing.signer.principal.principal_id != config.training.owners.evaluator", "config.training.owners.evidence_trust_digest != signing.verifier.trust_digest()", "config.training.request.envelope.objective_digest != signing.verifier.objective_digest()", "config.plan.product_plan() != &signing.plan", "signing.verifier.require_signer_binding(", "product_evaluation_execution_key_v1(", "config.training.head_digest.as_array()", "config.scope.binding().as_array()", "execution.binding_digest.as_array()", "signing.verifier.trust_digest().as_array()"], top_level = ["config.scope.validate_snapshot(&config.training)?", "signing.verifier.require_signer_binding("] },
++]
+diff --git a/codex-rs/hepta-agentd/src/learning_iteration_evaluation_evidence_tests.rs b/codex-rs/hepta-agentd/src/learning_iteration_evaluation_evidence_tests.rs
+index c350256b2e5..7dc9c197f00 100644
+--- a/codex-rs/hepta-agentd/src/learning_iteration_evaluation_evidence_tests.rs
++++ b/codex-rs/hepta-agentd/src/learning_iteration_evaluation_evidence_tests.rs
+@@ -9,8 +9,23 @@ use codex_hepta_intelligence_eval::ProductTimingEvidenceV1;
+ use pretty_assertions::assert_eq;
+ 
+ use super::*;
++use crate::OriginalCellEvaluationReceiptConfigV1;
++use crate::OriginalCellEvaluationReceiptErrorV1;
++use crate::OriginalCellEvaluationReceiptOwnerV1;
++use crate::OriginalCellEvaluationReceiptSourcesV1;
++use crate::OriginalCellEvaluationSigningConfigV1;
+ use crate::neuron_cell_evaluation::tests::learning::LearningFixture;
+ use crate::prepare_cell_learning_evaluation_v1;
++use codex_hepta_learning_artifacts::FrozenLearningScopeV2;
++use codex_hepta_learning_artifacts::LearningUpdateScopeV2;
++use codex_hepta_learning_ledger::TrustedLearningSignerV1;
++use codex_hepta_neuron::AnchorWitnessStore;
++use codex_hepta_neuron::FileAnchorWitnessStore;
++use codex_hepta_neuron::JournalAnchor;
++use codex_hepta_neuron::JournalScope;
++use codex_hepta_neuron::WitnessStoreError;
++use codex_hepta_types::Generation;
++use ed25519_dalek::SigningKey;
+ 
+ #[path = "learning_iteration_evaluation_recovery_tests.rs"]
+ mod recovery;
+@@ -213,3 +228,524 @@ async fn missing_original_trainer_refuses_no_update_before_contacting_evaluator(
+     );
+     Ok(())
+ }
++
++// The existing synthetic signed cohort now drives the native original receipt
++// journal. This qualifies source binding and recovery, not deployed key custody.
++fn receipt_config(
++    fixture: &LearningFixture,
++) -> anyhow::Result<OriginalCellEvaluationReceiptConfigV1> {
++    Ok(OriginalCellEvaluationReceiptConfigV1 {
++        training: fixture.snapshot.clone(),
++        scope: FrozenLearningScopeV2::freeze(
++            &fixture.snapshot.request,
++            &fixture.snapshot.owners,
++            LearningUpdateScopeV2::Cell,
++            Digest32::of_bytes(b"rule"),
++        )?,
++        plan: fixture.receipt.plan().clone(),
++        signing: OriginalCellEvaluationSigningConfigV1 {
++            plan: fixture.receipt.plan().product_plan().clone(),
++            execution_namespace: Digest32::of_bytes(b"binding"),
++            signer: TrustedLearningSignerV1 {
++                principal: fixture.context.evaluator.clone(),
++                controller_id: fixture.context.evaluator.principal_id.clone(),
++                verifying_key: SigningKey::from_bytes(&[42; 32]).verifying_key().to_bytes(),
++                roles: vec![LearningEvidenceRoleV1::Evaluator],
++                revoked_at: None,
++            },
++            verifier: fixture.verifier.clone(),
++            maximum_signature_lifetime_seconds: 300,
++        },
++    })
++}
++
++fn receipt_file(path: &std::path::Path) -> anyhow::Result<std::fs::File> {
++    Ok(std::fs::OpenOptions::new()
++        .create(true)
++        .truncate(false)
++        .read(true)
++        .write(true)
++        .open(path)?)
++}
++fn receipt_witness(
++    path: &std::path::Path,
++    config: &OriginalCellEvaluationReceiptConfigV1,
++) -> anyhow::Result<FileAnchorWitnessStore> {
++    Ok(FileAnchorWitnessStore::open(
++        receipt_file(&path.join("witness"))?,
++        JournalScope {
++            scope_digest: config.signing.verifier.scope_digest(),
++            objective_digest: config.signing.verifier.objective_digest(),
++        },
++        Generation::new(1)?,
++        /*max_records*/ 64,
++    )?)
++}
++fn trainer_fixture(
++    fixture: &LearningFixture,
++    training: &LearningIterationReceiptV1,
++) -> anyhow::Result<Fixture> {
++    Ok(Fixture {
++        initial: LearningIterationCoordinatorV1::new(
++            fixture.snapshot.request.clone(),
++            fixture.snapshot.owners.clone(),
++        )?
++        .snapshot()
++        .clone(),
++        receipt: training.clone(),
++        verifier: fixture.verifier.clone(),
++        signature: fixture.stage_attestation(training),
++    })
++}
++
++#[tokio::test]
++async fn original_evaluation_receipt_signs_actual_qualification_and_recovers_original_bytes()
++-> anyhow::Result<()> {
++    for disposition in [
++        IndependentEvaluationDispositionV1::EligibleForIndependentSelection,
++        IndependentEvaluationDispositionV1::Ineligible,
++        IndependentEvaluationDispositionV1::InsufficientEvidence,
++    ] {
++        let now = SystemTime::now().duration_since(UNIX_EPOCH)?.as_secs();
++        let mut fixture = LearningFixture::new_at(disposition, now);
++        let config = receipt_config(&fixture)?;
++        let path = tempfile::tempdir()?;
++        let mut owner = OriginalCellEvaluationReceiptOwnerV1::create(
++            receipt_file(&path.path().join("owner"))?,
++            receipt_witness(path.path(), &config)?,
++            config.clone(),
++            SigningKey::from_bytes(&[42; 32]),
++        )?;
++        let genesis = std::fs::read(path.path().join("owner"))?;
++        let training = config.training.receipts.last().expect("Training");
++        let original_trainer = trainer_fixture(&fixture, training)?;
++        let (client, server) = original_trainer.client()?;
++        let peer = serve(
++            server,
++            original_trainer,
++            fixture.snapshot.head_digest,
++            /*requests*/ 2,
++        );
++        let original = owner
++            .attest_original_completion(fixture.receipt_owner_sources(&client))
++            .await?;
++        peer.join().expect("original Trainer")?;
++        let prepared = prepare_cell_learning_evaluation_v1(
++            fixture.runner(),
++            &config.training,
++            &fixture.receipt,
++            &fixture.qualification,
++            &fixture.request(now),
++        )?;
++        assert_eq!(original.0, prepared);
++        assert_ne!(
++            original.1.payload_digest,
++            fixture.evidence.evaluator_bundle.payload_digest
++        );
++        config.signing.verifier.verify(
++            LearningEvidenceRoleV1::Evaluator,
++            &original.1,
++            &learning_iteration_receipt_signing_bytes_v1(&original.0)?,
++            SystemTime::now().duration_since(UNIX_EPOCH)?.as_secs(),
++        )?;
++        let completed = std::fs::read(path.path().join("owner"))?;
++        drop(owner);
++        let mut recovered = OriginalCellEvaluationReceiptOwnerV1::recover(
++            receipt_file(&path.path().join("owner"))?,
++            receipt_witness(path.path(), &config)?,
++            config.clone(),
++            SigningKey::from_bytes(&[42; 32]),
++        )?;
++        let mut coordinator =
++            LearningIterationCoordinatorV1::from_snapshot(fixture.snapshot.clone())?;
++        coordinator.record(original.0.clone(), original.0.observed_unix_seconds)?;
++        fixture.snapshot = coordinator.snapshot().clone();
++        let original_trainer = trainer_fixture(&fixture, training)?;
++        let (client, server) = original_trainer.client()?;
++        let peer = serve(
++            server,
++            original_trainer,
++            fixture.snapshot.head_digest,
++            /*requests*/ 1,
++        );
++        assert_eq!(
++            recovered
++                .readback(fixture.receipt_owner_sources(&client))
++                .await?,
++            original
++        );
++        peer.join().expect("recovered Trainer")?;
++        assert_eq!(std::fs::read(path.path().join("owner"))?, completed);
++        drop(recovered);
++        std::fs::write(path.path().join("owner"), genesis)?;
++        assert!(
++            OriginalCellEvaluationReceiptOwnerV1::recover(
++                receipt_file(&path.path().join("owner"))?,
++                receipt_witness(path.path(), &config)?,
++                config,
++                SigningKey::from_bytes(&[42; 32])
++            )
++            .is_err()
++        );
++    }
++    Ok(())
++}
++
++#[tokio::test]
++async fn original_evaluation_receipt_rejects_changed_custody_namespace_and_unsigned_no_update()
++-> anyhow::Result<()> {
++    let now = SystemTime::now().duration_since(UNIX_EPOCH)?.as_secs();
++    let mut fixture = LearningFixture::new_at(IndependentEvaluationDispositionV1::Ineligible, now);
++    let config = receipt_config(&fixture)?;
++    for case in 0..5 {
++        let path = tempfile::tempdir()?;
++        let mut changed = config.clone();
++        let mut key = SigningKey::from_bytes(&[42; 32]);
++        match case {
++            0 => key = SigningKey::from_bytes(&[43; 32]),
++            1 => changed.signing.signer.controller_id = StableId::new("substituted-controller")?,
++            2 => {
++                changed.signing.signer.principal.credential_chain_digest =
++                    Digest32::of_bytes(b"substituted-credential")
++            }
++            3 => {
++                changed.signing.plan.frozen_plan.objective_digest =
++                    Digest32::of_bytes(b"substituted-plan")
++            }
++            4 => changed.training.head_digest = Digest32::of_bytes(b"substituted-Training-cut"),
++            _ => unreachable!(),
++        }
++        assert!(
++            OriginalCellEvaluationReceiptOwnerV1::create(
++                receipt_file(&path.path().join("owner"))?,
++                receipt_witness(path.path(), &changed)?,
++                changed,
++                key
++            )
++            .is_err()
++        );
++        assert_eq!(std::fs::metadata(path.path().join("owner"))?.len(), 0);
++    }
++    for case in 0..3 {
++        let path = tempfile::tempdir()?;
++        let mut changed = config.clone();
++        if case == 0 {
++            changed.signing.execution_namespace = Digest32::of_bytes(b"another-owner-namespace");
++        }
++        let mut owner = OriginalCellEvaluationReceiptOwnerV1::create(
++            receipt_file(&path.path().join("owner"))?,
++            receipt_witness(path.path(), &changed)?,
++            changed,
++            SigningKey::from_bytes(&[42; 32]),
++        )?;
++        let before = std::fs::read(path.path().join("owner"))?;
++        let original_trainer =
++            trainer_fixture(&fixture, config.training.receipts.last().expect("Training"))?;
++        let (client, server) = original_trainer.client()?;
++        drop(server);
++        let evidence = fixture.evidence.clone();
++        if case == 1 {
++            fixture.evidence.evaluator_bundle.signature[0] ^= 1;
++        }
++        let result = owner
++            .attest_original_completion(fixture.receipt_owner_sources(&client))
++            .await;
++        match case {
++            0 => assert!(matches!(
++                result,
++                Err(OriginalCellEvaluationReceiptErrorV1::Cell(_))
++            )),
++            1 => assert!(matches!(
++                result,
++                Err(OriginalCellEvaluationReceiptErrorV1::Preparation(_))
++            )),
++            2 => assert!(matches!(
++                result,
++                Err(OriginalCellEvaluationReceiptErrorV1::Trainer(_))
++            )),
++            _ => unreachable!(),
++        }
++        fixture.evidence = evidence;
++        assert_eq!(std::fs::read(path.path().join("owner"))?, before);
++    }
++    Ok(())
++}
++
++struct ReceiptLostAck {
++    inner: FileAnchorWitnessStore,
++    sequence: u64,
++    after_write: bool,
++}
++impl AnchorWitnessStore for ReceiptLostAck {
++    fn current(&self) -> Result<Option<JournalAnchor>, WitnessStoreError> {
++        self.inner.current()
++    }
++    fn compare_and_swap(
++        &mut self,
++        expected: Option<JournalAnchor>,
++        next: JournalAnchor,
++    ) -> Result<(), WitnessStoreError> {
++        if next.sequence == self.sequence {
++            if self.after_write {
++                self.inner.compare_and_swap(expected, next)?;
++            }
++            return Err(WitnessStoreError::Indeterminate);
++        }
++        self.inner.compare_and_swap(expected, next)
++    }
++}
++
++#[tokio::test]
++async fn original_evaluation_receipt_pending_never_resigns_and_complete_ack_replays()
++-> anyhow::Result<()> {
++    for sequence in [2, 3] {
++        for after_write in [false, true] {
++            let now = SystemTime::now().duration_since(UNIX_EPOCH)?.as_secs();
++            let mut fixture =
++                LearningFixture::new_at(IndependentEvaluationDispositionV1::Ineligible, now);
++            let config = receipt_config(&fixture)?;
++            let path = tempfile::tempdir()?;
++            let mut owner = OriginalCellEvaluationReceiptOwnerV1::create(
++                receipt_file(&path.path().join("owner"))?,
++                ReceiptLostAck {
++                    inner: receipt_witness(path.path(), &config)?,
++                    sequence,
++                    after_write,
++                },
++                config.clone(),
++                SigningKey::from_bytes(&[42; 32]),
++            )?;
++            let original_trainer =
++                trainer_fixture(&fixture, config.training.receipts.last().expect("Training"))?;
++            let (client, server) = original_trainer.client()?;
++            let peer = serve(
++                server,
++                original_trainer,
++                fixture.snapshot.head_digest,
++                /*requests*/ 1,
++            );
++            assert!(matches!(
++                owner
++                    .attest_original_completion(fixture.receipt_owner_sources(&client))
++                    .await,
++                Err(OriginalCellEvaluationReceiptErrorV1::Owner(
++                    crate::LearningOriginalOwnerErrorV1::CommitUncertain
++                ))
++            ));
++            peer.join().expect("original Trainer before claim")?;
++            drop(owner);
++            let mut owner = OriginalCellEvaluationReceiptOwnerV1::recover(
++                receipt_file(&path.path().join("owner"))?,
++                receipt_witness(path.path(), &config)?,
++                config.clone(),
++                SigningKey::from_bytes(&[42; 32]),
++            )?;
++            let before = std::fs::read(path.path().join("owner"))?;
++            if sequence == 2 {
++                assert!(matches!(
++                    owner.readback(fixture.receipt_owner_sources(&client)).await,
++                    Err(OriginalCellEvaluationReceiptErrorV1::Owner(
++                        crate::LearningOriginalOwnerErrorV1::Pending
++                    ))
++                ));
++                let original_trainer =
++                    trainer_fixture(&fixture, config.training.receipts.last().expect("Training"))?;
++                let (client, server) = original_trainer.client()?;
++                let peer = serve(
++                    server,
++                    original_trainer,
++                    fixture.snapshot.head_digest,
++                    /*requests*/ 1,
++                );
++                assert!(matches!(
++                    owner
++                        .attest_original_completion(fixture.receipt_owner_sources(&client))
++                        .await,
++                    Err(OriginalCellEvaluationReceiptErrorV1::Owner(
++                        crate::LearningOriginalOwnerErrorV1::Pending
++                    ))
++                ));
++                peer.join().expect("Pending recheck")?;
++            } else {
++                let original_trainer =
++                    trainer_fixture(&fixture, config.training.receipts.last().expect("Training"))?;
++                let (client, server) = original_trainer.client()?;
++                let peer = serve(
++                    server,
++                    original_trainer,
++                    fixture.snapshot.head_digest,
++                    /*requests*/ 2,
++                );
++                let first = owner
++                    .readback(fixture.receipt_owner_sources(&client))
++                    .await?;
++                assert_eq!(
++                    owner
++                        .readback(fixture.receipt_owner_sources(&client))
++                        .await?,
++                    first
++                );
++                peer.join().expect("completed original signatures")?;
++            }
++            assert_eq!(std::fs::read(path.path().join("owner"))?, before);
++        }
++    }
++    Ok(())
++}
++
++struct DisappearingExecution<'a, E> {
++    inner: &'a mut E,
++    reads: usize,
++    disappear_at: usize,
++}
++impl<E: codex_hepta_intelligence_eval::ProductEvaluationExecutionStoreV1>
++    codex_hepta_intelligence_eval::ProductEvaluationExecutionStoreV1
++    for DisappearingExecution<'_, E>
++{
++    fn claim(
++        &mut self,
++        _: &codex_hepta_intelligence_eval::ProductEvaluationExecutionKeyV1,
++    ) -> Result<
++        codex_hepta_intelligence_eval::ProductEvaluationExecutionClaimV1,
++        codex_hepta_intelligence_eval::ProductEvaluationExecutionStoreErrorV1,
++    > {
++        panic!("receipt owner cannot claim an execution")
++    }
++    fn complete(
++        &mut self,
++        _: &codex_hepta_intelligence_eval::ProductEvaluationExecutionKeyV1,
++        _: &[u8],
++    ) -> Result<(), codex_hepta_intelligence_eval::ProductEvaluationExecutionStoreErrorV1> {
++        panic!("receipt owner cannot complete an execution")
++    }
++    fn readback(
++        &mut self,
++        key: &codex_hepta_intelligence_eval::ProductEvaluationExecutionKeyV1,
++    ) -> Result<
++        codex_hepta_intelligence_eval::ProductEvaluationExecutionStateV1,
++        codex_hepta_intelligence_eval::ProductEvaluationExecutionStoreErrorV1,
++    > {
++        self.reads += 1;
++        if self.reads >= self.disappear_at {
++            return Err(
++                codex_hepta_intelligence_eval::ProductEvaluationExecutionStoreErrorV1::Missing,
++            );
++        }
++        self.inner.readback(key)
++    }
++}
++
++#[tokio::test]
++async fn original_evaluation_receipt_rechecks_source_before_signing_and_after_commit()
++-> anyhow::Result<()> {
++    for disappear_at in [2, 3] {
++        let now = SystemTime::now().duration_since(UNIX_EPOCH)?.as_secs();
++        let mut fixture =
++            LearningFixture::new_at(IndependentEvaluationDispositionV1::Ineligible, now);
++        let config = receipt_config(&fixture)?;
++        let path = tempfile::tempdir()?;
++        let mut owner = OriginalCellEvaluationReceiptOwnerV1::create(
++            receipt_file(&path.path().join("owner"))?,
++            receipt_witness(path.path(), &config)?,
++            config.clone(),
++            SigningKey::from_bytes(&[42; 32]),
++        )?;
++        let before = std::fs::read(path.path().join("owner"))?;
++        let original_trainer =
++            trainer_fixture(&fixture, config.training.receipts.last().expect("Training"))?;
++        let (client, server) = original_trainer.client()?;
++        let peer = serve(
++            server,
++            original_trainer,
++            fixture.snapshot.head_digest,
++            (disappear_at - 1) as u64,
++        );
++        let source = fixture.receipt_owner_sources(&client);
++        let mut executions = DisappearingExecution {
++            inner: source.executions,
++            reads: 0,
++            disappear_at,
++        };
++        let source = OriginalCellEvaluationReceiptSourcesV1 {
++            executions: &mut executions,
++            snapshot: source.snapshot,
++            runner: source.runner,
++            journals: source.journals,
++            candidate_plan: source.candidate_plan,
++            baseline_plan: source.baseline_plan,
++            qualification: source.qualification,
++            context: source.context,
++            evidence: source.evidence,
++            timing: source.timing,
++            trainer: source.trainer,
++        };
++        assert!(matches!(
++            owner.attest_original_completion(source).await,
++            Err(OriginalCellEvaluationReceiptErrorV1::Cell(_))
++        ));
++        peer.join().expect("source freshness reads")?;
++        let after = std::fs::read(path.path().join("owner"))?;
++        if disappear_at == 2 {
++            assert_eq!(after, before);
++        } else {
++            assert_ne!(after, before);
++        }
++    }
++    Ok(())
++}
++
++#[tokio::test]
++async fn original_evaluation_receipt_expired_signature_is_not_renewed() -> anyhow::Result<()> {
++    let now = SystemTime::now().duration_since(UNIX_EPOCH)?.as_secs();
++    let mut fixture = LearningFixture::new_at(IndependentEvaluationDispositionV1::Ineligible, now);
++    let mut config = receipt_config(&fixture)?;
++    config.signing.maximum_signature_lifetime_seconds = 3;
++    let path = tempfile::tempdir()?;
++    let mut owner = OriginalCellEvaluationReceiptOwnerV1::create(
++        receipt_file(&path.path().join("owner"))?,
++        receipt_witness(path.path(), &config)?,
++        config.clone(),
++        SigningKey::from_bytes(&[42; 32]),
++    )?;
++    let original_trainer =
++        trainer_fixture(&fixture, config.training.receipts.last().expect("Training"))?;
++    let (client, server) = original_trainer.client()?;
++    let peer = serve(
++        server,
++        original_trainer,
++        fixture.snapshot.head_digest,
++        /*requests*/ 2,
++    );
++    owner
++        .attest_original_completion(fixture.receipt_owner_sources(&client))
++        .await?;
++    peer.join().expect("initial signing")?;
++    let before = std::fs::read(path.path().join("owner"))?;
++    tokio::time::sleep(Duration::from_secs(4)).await;
++    let original_trainer =
++        trainer_fixture(&fixture, config.training.receipts.last().expect("Training"))?;
++    let (client, server) = original_trainer.client()?;
++    let peer = serve(
++        server,
++        original_trainer,
++        fixture.snapshot.head_digest,
++        /*requests*/ 3,
++    );
++    assert!(matches!(
++        owner.readback(fixture.receipt_owner_sources(&client)).await,
++        Err(OriginalCellEvaluationReceiptErrorV1::Evidence(
++            SignedEvidenceError::ValidityWindow
++        ))
++    ));
++    assert!(matches!(
++        owner
++            .attest_original_completion(fixture.receipt_owner_sources(&client))
++            .await,
++        Err(OriginalCellEvaluationReceiptErrorV1::Evidence(
++            SignedEvidenceError::ValidityWindow
++        ))
++    ));
++    peer.join().expect("expired original signature readback")?;
++    assert_eq!(std::fs::read(path.path().join("owner"))?, before);
++    Ok(())
++}
+diff --git a/codex-rs/hepta-agentd/src/lib.rs b/codex-rs/hepta-agentd/src/lib.rs
+index 227313d5fb1..666748f626e 100644
+--- a/codex-rs/hepta-agentd/src/lib.rs
++++ b/codex-rs/hepta-agentd/src/lib.rs
+@@ -371,6 +371,8 @@ mod learning_owner_evidence;
+ mod learning_owner_journal;
+ mod neuron_cell_evaluation;
+ mod neuron_cell_evaluation_owner;
++#[cfg(target_os = "linux")]
++mod neuron_cell_evaluation_receipt_owner;
+ mod neuron_cell_learning_evaluation;
+ pub use cell_composed_q24::CellQ24FeatureEncoderV1;
+ pub use cell_composed_q24::CellQ24FeatureWorkerV1;
+@@ -418,6 +420,14 @@ pub use circuit_q24_task_profile::circuit_q24_task_channel_v1;
+ pub use learning_owner_journal::LearningOriginalOwnerErrorV1;
+ pub use neuron_cell_evaluation_owner::OriginalCellEvaluationExecutionOwnerV1;
+ pub use neuron_cell_evaluation_owner::OriginalCellEvaluationSigningConfigV1;
++#[cfg(target_os = "linux")]
++pub use neuron_cell_evaluation_receipt_owner::OriginalCellEvaluationReceiptConfigV1;
++#[cfg(target_os = "linux")]
++pub use neuron_cell_evaluation_receipt_owner::OriginalCellEvaluationReceiptErrorV1;
++#[cfg(target_os = "linux")]
++pub use neuron_cell_evaluation_receipt_owner::OriginalCellEvaluationReceiptOwnerV1;
++#[cfg(target_os = "linux")]
++pub use neuron_cell_evaluation_receipt_owner::OriginalCellEvaluationReceiptSourcesV1;
+ mod neuron_generation;
+ #[cfg(unix)]
+ mod neuron_generation_current;
+diff --git a/codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs b/codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs
+new file mode 100644
+index 00000000000..8dbf4097769
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs
+@@ -0,0 +1,495 @@
++//! Original learning Evaluation receipts over the existing signed execution.
++//! The host supplies an already enrolled Evaluator key, original files, witness
++//! and Trainer connection. No key, role, holdout, Root or CURRENT is provisioned.
++//! Qualification remains signed material: this owner does not establish its
++//! publication sink's custody or assemble the production learning stage ports.
++
++use std::fs::File;
++use std::time::SystemTime;
++use std::time::UNIX_EPOCH;
++
++use codex_hepta_intelligence_eval::FinalHoldoutCasStoreV1;
++use codex_hepta_intelligence_eval::ProductEvaluationExecutionClaimV1;
++use codex_hepta_intelligence_eval::ProductEvaluationExecutionKeyV1;
++use codex_hepta_intelligence_eval::ProductEvaluationExecutionRequestV1;
++use codex_hepta_intelligence_eval::ProductEvaluationExecutionStateV1;
++use codex_hepta_intelligence_eval::ProductEvaluationExecutionStoreErrorV1;
++use codex_hepta_intelligence_eval::ProductEvaluationExecutionStoreV1;
++use codex_hepta_intelligence_eval::ProductProviderErrorV1;
++use codex_hepta_intelligence_eval::ProductQualificationContextV1;
++use codex_hepta_intelligence_eval::ProductTimingEvidenceV1;
++use codex_hepta_intelligence_eval::SignedEvaluationEvidenceV1;
++use codex_hepta_intelligence_eval::TemporalEvaluationPlan;
++use codex_hepta_intelligence_eval::evaluation_signing_payload_v2;
++use codex_hepta_intelligence_eval::product_evaluation_execution_key_v1;
++use codex_hepta_learning_artifacts::FrozenLearningScopeV2;
++use codex_hepta_learning_artifacts::LearningIterationCoordinatorV1;
++use codex_hepta_learning_artifacts::LearningIterationError;
++use codex_hepta_learning_artifacts::LearningIterationReceiptV1;
++use codex_hepta_learning_artifacts::LearningIterationSnapshotV1;
++use codex_hepta_learning_artifacts::LearningIterationStageV1;
++use codex_hepta_learning_artifacts::learning_iteration_receipt_signing_bytes_v1;
++use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
++use codex_hepta_learning_ledger::SignedEvidenceError;
++use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
++use codex_hepta_learning_ledger::verify_signed_actor_separation;
++use codex_hepta_neuron::AnchorWitnessStore;
++use codex_hepta_types::Digest32;
++use codex_hepta_types::StableId;
++use ed25519_dalek::Signer;
++use ed25519_dalek::SigningKey;
++
++use crate::CellEvaluationErrorV1;
++use crate::CellEvaluationJournalsV1;
++use crate::CellEvaluationPlanV1;
++use crate::CellEvaluationQualificationRequestV1;
++use crate::CellEvaluationQualificationV1;
++use crate::CellEvaluationReceiptV1;
++use crate::CellEvaluationRunnerV1;
++use crate::CellLearningEvaluationErrorV1;
++use crate::LearningIterationEvidenceClientV1;
++use crate::LearningIterationRuntimeErrorV1;
++use crate::OriginalCellEvaluationSigningConfigV1;
++use crate::learning_owner_evidence;
++use crate::learning_owner_journal::LearningOriginalOwnerErrorV1 as OwnerError;
++use crate::learning_owner_journal::LearningOwnerJournalV1;
++use crate::prepare_cell_learning_evaluation_v1;
++
++#[derive(Debug, thiserror::Error)]
++pub enum OriginalCellEvaluationReceiptErrorV1 {
++    #[error("original Evaluation owner: {0}")]
++    Owner(#[from] OwnerError),
++    #[error("original Cell execution: {0}")]
++    Cell(#[from] CellEvaluationErrorV1),
++    #[error("original qualification: {0}")]
++    Preparation(#[from] CellLearningEvaluationErrorV1),
++    #[error("original iteration: {0}")]
++    Iteration(#[from] LearningIterationError),
++    #[error("original Trainer connection: {0}")]
++    Trainer(#[from] LearningIterationRuntimeErrorV1),
++    #[error("original role evidence: {0}")]
++    Evidence(#[from] SignedEvidenceError),
++}
++type Error = OriginalCellEvaluationReceiptErrorV1;
++
++/// Fixed by the original host before giving this owner its signing capability.
++/// The Training cut, Cell comparison and original execution namespace are exact.
++#[derive(Clone)]
++pub struct OriginalCellEvaluationReceiptConfigV1 {
++    pub training: LearningIterationSnapshotV1,
++    pub scope: FrozenLearningScopeV2,
++    pub plan: CellEvaluationPlanV1,
++    pub signing: OriginalCellEvaluationSigningConfigV1,
++}
++
++/// Borrow the original owners for this read. No provider, attestor, arbitrary
++/// receipt, caller clock or replacement trust is accepted. The full recovered
++/// history is retained when asking the Trainer for its original attestation.
++pub struct OriginalCellEvaluationReceiptSourcesV1<
++    'a,
++    S,
++    C: AnchorWitnessStore,
++    F: AnchorWitnessStore,
++    E,
++> {
++    pub snapshot: &'a LearningIterationSnapshotV1,
++    pub runner: &'a mut CellEvaluationRunnerV1<S>,
++    pub journals: CellEvaluationJournalsV1<'a, C, F>,
++    pub candidate_plan: &'a TemporalEvaluationPlan,
++    pub baseline_plan: &'a TemporalEvaluationPlan,
++    pub executions: &'a mut E,
++    pub qualification: &'a CellEvaluationQualificationV1,
++    pub context: &'a ProductQualificationContextV1,
++    pub evidence: &'a SignedEvaluationEvidenceV1,
++    pub timing: ProductTimingEvidenceV1<'a>,
++    pub trainer: &'a LearningIterationEvidenceClientV1,
++}
++
++pub struct OriginalCellEvaluationReceiptOwnerV1<W: AnchorWitnessStore> {
++    journal: LearningOwnerJournalV1<W>,
++    config: OriginalCellEvaluationReceiptConfigV1,
++    key: SigningKey,
++    execution: ProductEvaluationExecutionKeyV1,
++    saved: ProductEvaluationExecutionKeyV1,
++}
++
++impl<W: AnchorWitnessStore> OriginalCellEvaluationReceiptOwnerV1<W> {
++    pub fn create(
++        file: File,
++        witness: W,
++        config: OriginalCellEvaluationReceiptConfigV1,
++        key: SigningKey,
++    ) -> Result<Self, Error> {
++        let (execution, saved) = validate_config(&config, &key)?;
++        let journal = LearningOwnerJournalV1::create(file, witness, saved.binding_digest)?;
++        Ok(Self {
++            journal,
++            config,
++            key,
++            execution,
++            saved,
++        })
++    }
++
++    /// Reopen the same file and independent witness. This never signs or
++    /// resolves Pending, and cannot renew an original validity window.
++    pub fn recover(
++        file: File,
++        witness: W,
++        config: OriginalCellEvaluationReceiptConfigV1,
++        key: SigningKey,
++    ) -> Result<Self, Error> {
++        let (execution, saved) = validate_config(&config, &key)?;
++        let journal = LearningOwnerJournalV1::recover(file, witness, saved.binding_digest)?;
++        Ok(Self {
++            journal,
++            config,
++            key,
++            execution,
++            saved,
++        })
++    }
++
++    /// Sign only the exact Evaluation reconstructed from the original completed
++    /// execution and current, independent Trainer evidence. The durable claim
++    /// precedes signing; ambiguous claims never retry the signing closure.
++    pub async fn attest_original_completion<
++        S: FinalHoldoutCasStoreV1,
++        C: AnchorWitnessStore,
++        F: AnchorWitnessStore,
++        E: ProductEvaluationExecutionStoreV1,
++    >(
++        &mut self,
++        mut source: OriginalCellEvaluationReceiptSourcesV1<'_, S, C, F, E>,
++    ) -> Result<(LearningIterationReceiptV1, SignedLearningEvidenceV1), Error> {
++        if now()? >= self.config.training.request.envelope.expiry_unix_seconds {
++            return Err(OwnerError::Binding("new Evaluation attestation after deadline").into());
++        }
++        let prepared = self.prepare(&mut source)?;
++        let trainer: &LearningIterationEvidenceClientV1 = source.trainer;
++        let training = trainer.readback(source.snapshot, self.training()?).await?;
++        self.authenticate_roles(&source, &prepared.1, &training)?;
++        if self.prepare(&mut source)? != prepared {
++            return Err(OwnerError::CommitUncertain.into());
++        }
++        let payload = learning_iteration_receipt_signing_bytes_v1(&prepared.0)?;
++        let config = &self.config.signing;
++        let key = &self.key;
++        let identity = self.saved.binding_digest;
++        let bytes = self.journal.commit_once(&self.saved, || {
++            let issued_at = now()?;
++            if issued_at >= self.config.training.request.envelope.expiry_unix_seconds {
++                return Err(OwnerError::Binding(
++                    "new Evaluation attestation after deadline",
++                ));
++            }
++            let expires_at = issued_at
++                .checked_add(config.maximum_signature_lifetime_seconds)
++                .ok_or(OwnerError::Binding("signature deadline overflow"))?
++                .min(config.signer.principal.expires_at);
++            let mut signed = SignedLearningEvidenceV1 {
++                evidence_id: evidence_id(identity)?,
++                principal_id: config.signer.principal.principal_id.clone(),
++                role: LearningEvidenceRoleV1::Evaluator,
++                trust_digest: config.verifier.trust_digest(),
++                scope_digest: config.verifier.scope_digest(),
++                objective_digest: config.verifier.objective_digest(),
++                authority_epoch: config.signer.principal.authority_epoch,
++                issued_at,
++                expires_at,
++                payload_digest: Digest32::of_bytes(&payload),
++                signature: [0; 64],
++            };
++            signed.signature = key.sign(&signed.signing_bytes()).to_bytes();
++            config.verifier.verify(
++                LearningEvidenceRoleV1::Evaluator,
++                &signed,
++                &payload,
++                issued_at,
++            )?;
++            learning_owner_evidence::encode(&payload, &signed)
++        })?;
++        self.authenticate_completed(&mut source, prepared, &bytes)
++            .await
++    }
++
++    /// Read the original signature, including after the work deadline while all
++    /// original evidence remains current. No claim, signature or holdout release
++    /// occurs. Missing, Pending and invalid evidence are errors, never NoUpdate.
++    pub async fn readback<
++        S: FinalHoldoutCasStoreV1,
++        C: AnchorWitnessStore,
++        F: AnchorWitnessStore,
++        E: ProductEvaluationExecutionStoreV1,
++    >(
++        &mut self,
++        mut source: OriginalCellEvaluationReceiptSourcesV1<'_, S, C, F, E>,
++    ) -> Result<(LearningIterationReceiptV1, SignedLearningEvidenceV1), Error> {
++        let prepared = self.prepare(&mut source)?;
++        let bytes = self.journal.read(&self.saved)?;
++        self.authenticate_completed(&mut source, prepared, &bytes)
++            .await
++    }
++
++    fn training(&self) -> Result<&LearningIterationReceiptV1, Error> {
++        // Construction validates this exact, nonempty Training cut.
++        self.config
++            .training
++            .receipts
++            .last()
++            .ok_or(OwnerError::Binding("original Training cut").into())
++    }
++
++    fn prepare<
++        S: FinalHoldoutCasStoreV1,
++        C: AnchorWitnessStore,
++        F: AnchorWitnessStore,
++        E: ProductEvaluationExecutionStoreV1,
++    >(
++        &self,
++        source: &mut OriginalCellEvaluationReceiptSourcesV1<'_, S, C, F, E>,
++    ) -> Result<(LearningIterationReceiptV1, CellEvaluationReceiptV1), Error> {
++        LearningIterationCoordinatorV1::from_snapshot(source.snapshot.clone())?;
++        self.config.scope.validate_snapshot(source.snapshot)?;
++        if source.snapshot.request != self.config.training.request
++            || source.snapshot.owners != self.config.training.owners
++            || !source
++                .snapshot
++                .receipts
++                .starts_with(&self.config.training.receipts)
++            || source.context.evaluator != self.config.signing.signer.principal
++        {
++            return Err(OwnerError::Binding("original Evaluation scope and principal").into());
++        }
++        let clock = || now().map_err(|_| ProductProviderErrorV1::Unavailable);
++        let runner: &mut CellEvaluationRunnerV1<S> = source.runner;
++        let evaluation = runner.readback_completed(
++            &self.config.plan,
++            CellEvaluationJournalsV1 {
++                candidate: source.journals.candidate,
++                fixed_expert: source.journals.fixed_expert,
++            },
++            &ProductEvaluationExecutionRequestV1 {
++                plan: self.config.plan.product_plan(),
++                candidate_plan: source.candidate_plan,
++                baseline_plan: source.baseline_plan,
++                evaluator: &self.config.signing.signer.principal,
++                verifier: &self.config.signing.verifier,
++                clock: &clock,
++            },
++            &mut OriginalExecution {
++                inner: source.executions,
++                key: &self.execution,
++            },
++        )?;
++        let timing = match &source.timing {
++            ProductTimingEvidenceV1::Qualification => ProductTimingEvidenceV1::Qualification,
++            ProductTimingEvidenceV1::SystemLongitudinal {
++                timing,
++                minimum_window_micros,
++            } => ProductTimingEvidenceV1::SystemLongitudinal {
++                timing,
++                minimum_window_micros: *minimum_window_micros,
++            },
++        };
++        let receipt = prepare_cell_learning_evaluation_v1(
++            source.runner,
++            &self.config.training,
++            &evaluation,
++            source.qualification,
++            &CellEvaluationQualificationRequestV1 {
++                context: source.context,
++                evidence: source.evidence,
++                timing,
++                verifier: &self.config.signing.verifier,
++                now: now()?,
++            },
++        )?;
++        if source
++            .snapshot
++            .receipts
++            .get(self.config.training.receipts.len())
++            .is_some_and(|saved| saved != &receipt)
++        {
++            return Err(OwnerError::Binding("original retained Evaluation receipt").into());
++        }
++        Ok((receipt, evaluation))
++    }
++
++    fn authenticate_roles<
++        S: FinalHoldoutCasStoreV1,
++        C: AnchorWitnessStore,
++        F: AnchorWitnessStore,
++        E,
++    >(
++        &self,
++        source: &OriginalCellEvaluationReceiptSourcesV1<'_, S, C, F, E>,
++        execution: &CellEvaluationReceiptV1,
++        training: &SignedLearningEvidenceV1,
++    ) -> Result<(), Error> {
++        let config = &self.config.signing;
++        let now = now()?;
++        config.verifier.require_signer_binding(
++            LearningEvidenceRoleV1::Evaluator,
++            &config.signer,
++            now,
++        )?;
++        let generator = config.verifier.verify(
++            LearningEvidenceRoleV1::Generator,
++            training,
++            &learning_iteration_receipt_signing_bytes_v1(self.training()?)?,
++            now,
++        )?;
++        let bundle = source
++            .runner
++            .qualification_bundle(execution, source.context)?;
++        let payload = evaluation_signing_payload_v2(&bundle, &config.plan.metric_roles)
++            .map_err(|_| OwnerError::Binding("original qualification payload"))?;
++        let evaluator = config.verifier.verify(
++            LearningEvidenceRoleV1::Evaluator,
++            &source.evidence.evaluator_bundle,
++            &payload,
++            now,
++        )?;
++        if generator.principal() != &source.context.generator
++            || generator.principal().principal_id != self.config.training.owners.trainer
++            || evaluator.principal() != &config.signer.principal
++            || evaluator.controller_id() != &config.signer.controller_id
++        {
++            return Err(OwnerError::Binding("original Training and Evaluation principals").into());
++        }
++        verify_signed_actor_separation(&generator, &evaluator, now)?;
++        Ok(())
++    }
++
++    async fn authenticate_completed<
++        S: FinalHoldoutCasStoreV1,
++        C: AnchorWitnessStore,
++        F: AnchorWitnessStore,
++        E: ProductEvaluationExecutionStoreV1,
++    >(
++        &mut self,
++        source: &mut OriginalCellEvaluationReceiptSourcesV1<'_, S, C, F, E>,
++        prepared: (LearningIterationReceiptV1, CellEvaluationReceiptV1),
++        bytes: &[u8],
++    ) -> Result<(LearningIterationReceiptV1, SignedLearningEvidenceV1), Error> {
++        let (payload, signed) = learning_owner_evidence::decode(bytes)?;
++        if payload != learning_iteration_receipt_signing_bytes_v1(&prepared.0)? {
++            return Err(OwnerError::Binding("changed original Evaluation payload").into());
++        }
++        let trainer: &LearningIterationEvidenceClientV1 = source.trainer;
++        let training = trainer.readback(source.snapshot, self.training()?).await?;
++        if self.prepare(source)? != prepared {
++            return Err(OwnerError::CommitUncertain.into());
++        }
++        self.authenticate_roles(source, &prepared.1, &training)?;
++        let config = &self.config.signing;
++        let verified =
++            config
++                .verifier
++                .verify(LearningEvidenceRoleV1::Evaluator, &signed, &payload, now()?)?;
++        if verified.principal() != &config.signer.principal
++            || verified.controller_id() != &config.signer.controller_id
++            || signed.evidence_id != evidence_id(self.saved.binding_digest)?
++        {
++            return Err(OwnerError::Binding("original Evaluation signature identity").into());
++        }
++        if self.journal.read(&self.saved)? != bytes {
++            return Err(OwnerError::CommitUncertain.into());
++        }
++        Ok((prepared.0, signed))
++    }
++}
++
++fn validate_config(
++    config: &OriginalCellEvaluationReceiptConfigV1,
++    key: &SigningKey,
++) -> Result<
++    (
++        ProductEvaluationExecutionKeyV1,
++        ProductEvaluationExecutionKeyV1,
++    ),
++    Error,
++> {
++    let coordinator = LearningIterationCoordinatorV1::from_snapshot(config.training.clone())?;
++    config.scope.validate_snapshot(&config.training)?;
++    let signing = &config.signing;
++    if coordinator.next_stage() != Some(LearningIterationStageV1::Evaluation)
++        || key.verifying_key().to_bytes() != signing.signer.verifying_key
++        || signing.signer.principal.principal_id != config.training.owners.evaluator
++        || config.training.owners.evidence_trust_digest != signing.verifier.trust_digest()
++        || config.training.request.envelope.objective_digest != signing.verifier.objective_digest()
++        || config.plan.product_plan() != &signing.plan
++        || config.plan.record().learning_evaluation_profile
++            != Some(config.training.request.evaluation_profile.into_array())
++        || !(1..=86_400).contains(&signing.maximum_signature_lifetime_seconds)
++    {
++        return Err(OwnerError::Binding("original Evaluation signing capability").into());
++    }
++    signing.verifier.require_signer_binding(
++        LearningEvidenceRoleV1::Evaluator,
++        &signing.signer,
++        now()?,
++    )?;
++    let execution = product_evaluation_execution_key_v1(
++        &signing.plan,
++        signing.execution_namespace,
++        &signing.signer.principal,
++    )
++    .map_err(|_| OwnerError::Binding("original execution identity"))?;
++    let saved = ProductEvaluationExecutionKeyV1 {
++        plan_id: config.training.request.operation_id.clone(),
++        binding_digest: Digest32::of_parts(&[
++            b"hepta.agentd.original-evaluation-receipt.v1\0",
++            config.training.head_digest.as_array(),
++            config.scope.binding().as_array(),
++            execution.binding_digest.as_array(),
++            signing.verifier.trust_digest().as_array(),
++            &signing.maximum_signature_lifetime_seconds.to_be_bytes(),
++        ]),
++    };
++    Ok((execution, saved))
++}
++
++// Restrict the original store to the host-pinned execution key. The runner
++// derives that key from its actual holdout namespace, not from caller metadata.
++struct OriginalExecution<'a, E> {
++    inner: &'a mut E,
++    key: &'a ProductEvaluationExecutionKeyV1,
++}
++impl<E: ProductEvaluationExecutionStoreV1> ProductEvaluationExecutionStoreV1
++    for OriginalExecution<'_, E>
++{
++    fn claim(
++        &mut self,
++        _: &ProductEvaluationExecutionKeyV1,
++    ) -> Result<ProductEvaluationExecutionClaimV1, ProductEvaluationExecutionStoreErrorV1> {
++        Err(ProductEvaluationExecutionStoreErrorV1::Rejected)
++    }
++    fn complete(
++        &mut self,
++        _: &ProductEvaluationExecutionKeyV1,
++        _: &[u8],
++    ) -> Result<(), ProductEvaluationExecutionStoreErrorV1> {
++        Err(ProductEvaluationExecutionStoreErrorV1::Rejected)
++    }
++    fn readback(
++        &mut self,
++        key: &ProductEvaluationExecutionKeyV1,
++    ) -> Result<ProductEvaluationExecutionStateV1, ProductEvaluationExecutionStoreErrorV1> {
++        if key != self.key {
++            return Err(ProductEvaluationExecutionStoreErrorV1::Conflict);
++        }
++        ProductEvaluationExecutionStoreV1::readback(self.inner, key)
++    }
++}
++fn evidence_id(identity: Digest32) -> Result<StableId, OwnerError> {
++    StableId::new(format!("original-evaluation-receipt:{identity}"))
++        .map_err(|_| OwnerError::Binding("evidence id"))
++}
++fn now() -> Result<u64, OwnerError> {
++    SystemTime::now()
++        .duration_since(UNIX_EPOCH)
++        .map(|duration| duration.as_secs())
++        .map_err(|_| OwnerError::Binding("original owner clock"))
++}
+diff --git a/codex-rs/hepta-agentd/src/neuron_cell_learning_evaluation_tests.rs b/codex-rs/hepta-agentd/src/neuron_cell_learning_evaluation_tests.rs
+index 81ebffad7c9..6562026955e 100644
+--- a/codex-rs/hepta-agentd/src/neuron_cell_learning_evaluation_tests.rs
++++ b/codex-rs/hepta-agentd/src/neuron_cell_learning_evaluation_tests.rs
+@@ -59,6 +59,7 @@ pub(crate) struct LearningFixture {
+     pub(crate) evidence: SignedEvaluationEvidenceV1,
+     pub(crate) verifier: LearningEvidenceVerifierV1,
+     fixture: Fixture,
++    executions: LockedFileProductEvaluationExecutionStoreV1,
+     now: u64,
+ }
+ 
+@@ -435,6 +436,7 @@ impl LearningFixture {
+             evidence,
+             verifier,
+             fixture,
++            executions,
+             now,
+         }
+     }
+@@ -443,6 +445,35 @@ impl LearningFixture {
+         &self.fixture.runner
+     }
+ 
++    #[cfg(target_os = "linux")]
++    pub(crate) fn receipt_owner_sources<'a>(
++        &'a mut self,
++        trainer: &'a crate::LearningIterationEvidenceClientV1,
++    ) -> crate::OriginalCellEvaluationReceiptSourcesV1<
++        'a,
++        LockedFileFinalHoldoutCasStoreV1,
++        FileAnchorWitnessStore,
++        FileAnchorWitnessStore,
++        LockedFileProductEvaluationExecutionStoreV1,
++    > {
++        crate::OriginalCellEvaluationReceiptSourcesV1 {
++            snapshot: &self.snapshot,
++            runner: &mut self.fixture.runner,
++            journals: CellEvaluationJournalsV1 {
++                candidate: &self.fixture.candidate,
++                fixed_expert: &self.fixture.fixed,
++            },
++            candidate_plan: &self.fixture.candidate_temporal,
++            baseline_plan: &self.fixture.baseline_temporal,
++            executions: &mut self.executions,
++            qualification: &self.qualification,
++            context: &self.context,
++            evidence: &self.evidence,
++            timing: ProductTimingEvidenceV1::Qualification,
++            trainer,
++        }
++    }
++
+     pub(crate) fn request(&self, now: u64) -> CellEvaluationQualificationRequestV1<'_> {
+         CellEvaluationQualificationRequestV1 {
+             context: &self.context,
+diff --git a/qa/b4-no-bypass/test_cell_learning_evaluation_source_closure.py b/qa/b4-no-bypass/test_cell_learning_evaluation_source_closure.py
+index 01e6ccc9610..63b205bc1c1 100644
+--- a/qa/b4-no-bypass/test_cell_learning_evaluation_source_closure.py
++++ b/qa/b4-no-bypass/test_cell_learning_evaluation_source_closure.py
+@@ -22,15 +22,16 @@ ARTIFACTS = "codex-rs/hepta-learning-artifacts/src/"
+ BRIDGE = AGENT + "neuron_cell_learning_evaluation.rs"
+ READBACK = AGENT + "learning_iteration_evaluation_evidence.rs"
+ MODEL_MATERIAL = AGENT + "cell_q24_model_proposal_admission.rs"
++EVALUATION_OWNER = AGENT + "neuron_cell_evaluation_receipt_owner.rs"
+ GENERATION_READBACK = AGENT + "learning_iteration_generation_evidence.rs"
+ CODEC = AGENT + "learning_iteration_checkpoint_codec.rs"
+ PREPARE = "fn prepare_cell_learning_evaluation_v1"
+ READ = "fn read_cell_learning_evaluation_v1"
+ CALLERS = {
+     "cell_learning_evaluation_profile_freeze": (),
+-    "cell_learning_evaluation_receipt_prepare": (READBACK, MODEL_MATERIAL),
++    "cell_learning_evaluation_receipt_prepare": (READBACK, MODEL_MATERIAL, EVALUATION_OWNER),
+     "cell_learning_evaluation_original_readback": (),
+-    "learning_evidence_original_owner_readback": (READBACK, GENERATION_READBACK),
++    "learning_evidence_original_owner_readback": (READBACK, GENERATION_READBACK, EVALUATION_OWNER),
+     "root_learning_original_stage_assembly": (),
+ }
+ 
+diff --git a/qa/b4-no-bypass/test_generation_learning_evidence_source_closure.py b/qa/b4-no-bypass/test_generation_learning_evidence_source_closure.py
+index 537c22ed937..2032e55bab4 100644
+--- a/qa/b4-no-bypass/test_generation_learning_evidence_source_closure.py
++++ b/qa/b4-no-bypass/test_generation_learning_evidence_source_closure.py
+@@ -25,6 +25,7 @@ CALLERS = {
+     "learning_evidence_original_owner_readback": (
+         AGENT + "learning_iteration_evaluation_evidence.rs",
+         READER,
++        AGENT + "neuron_cell_evaluation_receipt_owner.rs",
+     ),
+ }
+ 
+diff --git a/qa/b4-no-bypass/test_learning_evaluation_recovery_source_closure.py b/qa/b4-no-bypass/test_learning_evaluation_recovery_source_closure.py
+index 5203176af56..8d607e733cf 100644
+--- a/qa/b4-no-bypass/test_learning_evaluation_recovery_source_closure.py
++++ b/qa/b4-no-bypass/test_learning_evaluation_recovery_source_closure.py
+@@ -19,10 +19,11 @@ sys.modules[SPEC.name] = PROOF
+ SPEC.loader.exec_module(PROOF)
+ CELL = "codex-rs/hepta-agentd/src/neuron_cell_evaluation.rs"
+ PRODUCT = "codex-rs/hepta-intelligence-eval/src/product_execution.rs"
++OWNER = "codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs"
+ CALLERS = {
+     "cell_original_evaluation_execution": (),
+     "product_original_evaluation_execution": (CELL,),
+-    "cell_completed_evaluation_readback": (),
++    "cell_completed_evaluation_readback": (OWNER,),
+     "product_completed_evaluation_readback": (CELL,),
+ }
+ 
+@@ -36,7 +37,7 @@ class LearningEvaluationRecoverySourceClosureTests(unittest.TestCase):
+             path: PROOF._strip_cfg_test_items(
+                 PROOF._strip_rust_non_code((ROOT / path).read_text())
+             )
+-            for path in (CELL, PRODUCT)
++            for path in (CELL, PRODUCT, OWNER)
+         }
+ 
+     def rejects(self, path, changed):
+diff --git a/qa/b4-no-bypass/test_original_evaluation_receipt_owner_source_closure.py b/qa/b4-no-bypass/test_original_evaluation_receipt_owner_source_closure.py
+new file mode 100644
+index 00000000000..83c2b0ab02f
+--- /dev/null
++++ b/qa/b4-no-bypass/test_original_evaluation_receipt_owner_source_closure.py
+@@ -0,0 +1,286 @@
++"""Guard original Evaluation receipt custody without assembling production ports.
++
++These are source closure and mutation checks. Native signed-owner tests establish
++behavior separately; neither suite establishes ordinary production role custody.
++"""
++
++from dataclasses import replace
++import importlib.util
++from pathlib import Path
++import sys
++import tempfile
++import tomllib
++import unittest
++
++
++ROOT = Path(__file__).resolve().parents[2]
++SPEC = importlib.util.spec_from_file_location(
++    "original_evaluation_receipt_owner_proof", ROOT / "scripts/verify_hepta_callers.py"
++)
++assert SPEC is not None and SPEC.loader is not None
++PROOF = importlib.util.module_from_spec(SPEC)
++sys.modules[SPEC.name] = PROOF
++SPEC.loader.exec_module(PROOF)
++AGENT = "codex-rs/hepta-agentd/src/"
++OWNER = AGENT + "neuron_cell_evaluation_receipt_owner.rs"
++CALLERS = {
++    "cell_learning_evaluation_receipt_prepare": (
++        AGENT + "learning_iteration_evaluation_evidence.rs",
++        AGENT + "cell_q24_model_proposal_admission.rs",
++        OWNER,
++    ),
++    "learning_evidence_original_owner_readback": (
++        AGENT + "learning_iteration_evaluation_evidence.rs",
++        AGENT + "learning_iteration_generation_evidence.rs",
++        OWNER,
++    ),
++    "cell_completed_evaluation_readback": (OWNER,),
++    "learning_original_evaluation_key": (
++        AGENT + "neuron_cell_evaluation_owner.rs",
++        OWNER,
++    ),
++}
++
++
++class OriginalEvaluationReceiptOwnerSourceClosureTests(unittest.TestCase):
++    @classmethod
++    def setUpClass(cls):
++        cls.manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text())
++        cls.boundaries = {row.identifier: row for row in PROOF._boundary_rows(cls.manifest)}
++        cls.rows = [row for row in cls.manifest["protected_file"] if row["path"] == OWNER]
++        cls.source = (ROOT / OWNER).read_text()
++        paths = {
++            path
++            for identifier in CALLERS
++            for path in (
++                cls.boundaries[identifier].definition_path,
++                *cls.boundaries[identifier].product_callers,
++            )
++        }
++        cls.sources = {
++            path: PROOF._strip_cfg_test_items(
++                PROOF._strip_rust_non_code((ROOT / path).read_text())
++            )
++            for path in paths
++        }
++
++    def rejects_source(self, changed):
++        self.assertTrue(self.rows)
++        self.assertNotEqual(self.source, changed)
++        with tempfile.TemporaryDirectory() as directory:
++            root = Path(directory)
++            target = root / OWNER
++            target.parent.mkdir(parents=True)
++            target.write_text(self.source)
++            manifest = {"protected_file": self.rows}
++            PROOF._verify_protected_files(root, manifest)
++            target.write_text(changed)
++            with self.assertRaises(PROOF.VerificationFailure):
++                PROOF._verify_protected_files(root, manifest)
++
++    def rejects(self, function, marker, replacement=""):
++        code = PROOF._strip_rust_non_code(self.source)
++        self.assertEqual(code.count(function), 1, function)
++        start = code.index(function)
++        end = PROOF._rust_item_end(code, start)
++        self.assertIsNotNone(end)
++        assert end is not None
++        body = self.source[start : end + 1]
++        self.assertEqual(body.count(marker), 1, (function, marker))
++        offset = start + body.index(marker)
++        self.rejects_source(self.source[:offset] + replacement + self.source[offset + len(marker) :])
++
++    def reject_unregistered_caller(self, row):
++        method = row.symbol.rsplit("::", 1)[-1]
++        call = (
++            f"fn unexpected(owner: &{row.receiver_type}) {{ owner.{method}(); }}"
++            if row.receiver_type
++            else f"fn unexpected() {{ {row.symbol}(); }}"
++        )
++        sources = dict(self.sources)
++        sources[AGENT + "unregistered_evaluation_receipt_owner.rs"] = call
++        with self.assertRaisesRegex(PROOF.VerificationFailure, "unexpected"):
++            PROOF._verify_boundary(ROOT, row, sources, ())
++
++    def test_four_original_read_edges_have_exact_typed_registered_callers(self):
++        inventory = self.manifest["privileged_inventory"]["required_boundary_ids"]
++        for identifier, callers in CALLERS.items():
++            with self.subTest(boundary=identifier):
++                self.assertIn(identifier, inventory)
++                row = self.boundaries[identifier]
++                self.assertEqual(row.product_callers, callers)
++                PROOF._verify_boundary(ROOT, row, self.sources, ())
++                without_owner = tuple(path for path in callers if path != OWNER)
++                with self.assertRaises(PROOF.VerificationFailure):
++                    PROOF._verify_boundary(
++                        ROOT, replace(row, product_callers=without_owner), self.sources, ()
++                    )
++                self.reject_unregistered_caller(row)
++
++    def test_four_receipt_ports_and_stage_assembly_remain_closed(self):
++        inventory = self.manifest["privileged_inventory"]["required_boundary_ids"]
++        for suffix in ("create", "recover", "attest", "readback"):
++            identifier = "learning_original_evaluation_receipt_" + suffix
++            with self.subTest(boundary=identifier):
++                self.assertIn(identifier, inventory)
++                row = self.boundaries[identifier]
++                self.assertEqual(row.product_callers, ())
++                PROOF._verify_boundary(ROOT, row, self.sources, ())
++                self.reject_unregistered_caller(row)
++        for identifier in (
++            "cell_learning_evaluation_original_readback",
++            "learning_evidence_original_owner_constructor",
++            "root_learning_original_stage_assembly",
++        ):
++            self.assertEqual(self.boundaries[identifier].product_callers, ())
++        self.assertTrue(all(value is False for value in self.manifest["authority"].values()))
++
++    def test_exact_training_scope_and_enrolled_key_precede_journal_custody(self):
++        for function in ("fn create(", "fn recover("):
++            marker = "validate_config(&config, &key)?"
++            with self.subTest(function=function):
++                self.rejects(function, marker)
++                statement = "let (execution, saved) = " + marker + ";"
++                self.rejects(function, statement, "if false { " + statement + " }")
++        for marker in (
++            "LearningIterationCoordinatorV1::from_snapshot(config.training.clone())?",
++            "config.scope.validate_snapshot(&config.training)?",
++            "coordinator.next_stage() != Some(LearningIterationStageV1::Evaluation)",
++            "key.verifying_key().to_bytes() != signing.signer.verifying_key",
++            "signing.signer.principal.principal_id != config.training.owners.evaluator",
++            "config.training.owners.evidence_trust_digest != signing.verifier.trust_digest()",
++            "config.training.request.envelope.objective_digest != signing.verifier.objective_digest()",
++            "config.plan.product_plan() != &signing.plan",
++            "signing.verifier.require_signer_binding(",
++            "product_evaluation_execution_key_v1(",
++            "config.training.head_digest.as_array()",
++            "config.scope.binding().as_array()",
++            "execution.binding_digest.as_array()",
++            "signing.verifier.trust_digest().as_array()",
++        ):
++            with self.subTest(marker=marker):
++                self.rejects("fn validate_config(", marker)
++
++    def test_original_execution_and_sealed_qualification_bind_full_recovered_history(self):
++        for marker in (
++            "LearningIterationCoordinatorV1::from_snapshot(source.snapshot.clone())?",
++            "self.config.scope.validate_snapshot(source.snapshot)?",
++            "source.snapshot.request != self.config.training.request",
++            "starts_with(&self.config.training.receipts)",
++            "source.context.evaluator != self.config.signing.signer.principal",
++            "let clock = || now()",
++            "runner.readback_completed(",
++            "clock: &clock,",
++            "key: &self.execution,",
++            "prepare_cell_learning_evaluation_v1(",
++            "get(self.config.training.receipts.len())",
++            ".is_some_and(|saved| saved != &receipt)",
++        ):
++            with self.subTest(marker=marker):
++                self.rejects("fn prepare<", marker)
++
++    def test_current_original_sources_and_durable_pending_precede_exact_signature(self):
++        for marker in (
++            "if now()? >= self.config.training.request.envelope.expiry_unix_seconds",
++            "let prepared = self.prepare(&mut source)?",
++            "readback(source.snapshot, self.training()?)",
++            "self.authenticate_roles(&source, &prepared.1, &training)?",
++            "if self.prepare(&mut source)? != prepared",
++            "learning_iteration_receipt_signing_bytes_v1(&prepared.0)?",
++            "self.journal.commit_once(&self.saved, ||",
++            "let issued_at = now()?",
++            "if issued_at >= self.config.training.request.envelope.expiry_unix_seconds",
++            "key.sign(&signed.signing_bytes()).to_bytes()",
++            "config.verifier.verify(",
++            "learning_owner_evidence::encode(&payload, &signed)",
++            "self.authenticate_completed(&mut source, prepared, &bytes)",
++        ):
++            with self.subTest(marker=marker):
++                self.rejects("fn attest_original_completion<", marker)
++        for marker in (
++            "if now()? >= self.config.training.request.envelope.expiry_unix_seconds",
++            "if issued_at >= self.config.training.request.envelope.expiry_unix_seconds",
++        ):
++            with self.subTest(deadline=marker):
++                self.rejects("fn attest_original_completion<", marker, marker.replace(">=", ">"))
++
++    def test_actual_time_full_principals_and_controller_separation_remain_required(self):
++        for marker in (
++            "let now = now()?",
++            "config.verifier.require_signer_binding(",
++            "LearningEvidenceRoleV1::Generator",
++            "learning_iteration_receipt_signing_bytes_v1(self.training()?)?",
++            "qualification_bundle(execution, source.context)?",
++            "evaluation_signing_payload_v2(",
++            "LearningEvidenceRoleV1::Evaluator",
++            "generator.principal() != &source.context.generator",
++            "generator.principal().principal_id != self.config.training.owners.trainer",
++            "evaluator.principal() != &config.signer.principal",
++            "evaluator.controller_id() != &config.signer.controller_id",
++            "verify_signed_actor_separation(&generator, &evaluator, now)?",
++        ):
++            with self.subTest(marker=marker):
++                # The Evaluator role occurs both in enrollment and verification.
++                if marker == "LearningEvidenceRoleV1::Evaluator":
++                    marker = "let evaluator = config.verifier.verify(\n            " + marker
++                    self.rejects_source(self.source.replace(marker, "let evaluator = unchecked(", 1))
++                else:
++                    self.rejects("fn authenticate_roles<", marker)
++        self.rejects("fn now(", "SystemTime::now()")
++
++    def test_original_signature_readback_revalidates_sources_and_witness_before_ack(self):
++        for marker in (
++            "let prepared = self.prepare(&mut source)?",
++            "let bytes = self.journal.read(&self.saved)?",
++            "self.authenticate_completed(&mut source, prepared, &bytes)",
++        ):
++            with self.subTest(marker=marker):
++                self.rejects("fn readback<", marker)
++        for marker in (
++            "learning_owner_evidence::decode(bytes)?",
++            "if payload != learning_iteration_receipt_signing_bytes_v1(&prepared.0)?",
++            "readback(source.snapshot, self.training()?)",
++            "if self.prepare(source)? != prepared",
++            "self.authenticate_roles(source, &prepared.1, &training)?",
++            ".verify(LearningEvidenceRoleV1::Evaluator, &signed, &payload, now()?)?",
++            "verified.principal() != &config.signer.principal",
++            "verified.controller_id() != &config.signer.controller_id",
++            "signed.evidence_id != evidence_id(self.saved.binding_digest)?",
++            "if self.journal.read(&self.saved)? != bytes",
++        ):
++            with self.subTest(marker=marker):
++                self.rejects("fn authenticate_completed<", marker)
++
++    def test_original_execution_adapter_rejects_writes_and_substituted_namespace(self):
++        for function in ("fn claim(", "fn complete("):
++            with self.subTest(function=function):
++                self.rejects(function, "Err(ProductEvaluationExecutionStoreErrorV1::Rejected)")
++        for marker in (
++            "if key != self.key",
++            "return Err(ProductEvaluationExecutionStoreErrorV1::Conflict)",
++            "ProductEvaluationExecutionStoreV1::readback(self.inner, key)",
++        ):
++            with self.subTest(marker=marker):
++                self.rejects("fn readback(", marker)
++
++    def test_owner_cannot_generate_keys_replace_trust_or_assemble_stage_authority(self):
++        for marker in (
++            "SigningKey::generate",
++            "SigningKey::from_bytes",
++            "LearningEvidenceVerifierV1::new",
++            "LearningEvidenceTrustV1",
++            "File::open",
++            "UnixStream::connect",
++            "with_root_learning_stage_owners(",
++            "LearningIterationStageOwnerPortsV1 for",
++            "evaluate_or_readback(",
++            "qualify_and_persist(",
++            "unwrap_or",
++            "permit_all",
++        ):
++            with self.subTest(marker=marker):
++                self.rejects_source(self.source + "\n" + marker + "\n")
++
++
++if __name__ == "__main__":
++    unittest.main()

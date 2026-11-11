@@ -1,0 +1,83 @@
+{
+  "schema_version": 2,
+  "current_code_commit": "c1d6537f7d979e1ad792eee796c6709d23a86697",
+  "current_code_tree": "e7762b742e6baff12e447a89f40ae1cfb68aa7e1",
+  "original_source_manifest": "history/30692_SOURCE_MANIFEST.json",
+  "original_check_commit": "30692d721d67321df0414c5c3f990449d7b9fea8",
+  "original_check_tree": "790bf1330fde0ee51d9f9ea40848f3dc5d2afcb4",
+  "same_tree_local_check_commit": "9f5e5b99831c6c19ecb231c3a5c2fbdc83febac5",
+  "targeted_source_tests_passed_on_original_tree": 56,
+  "full_scanner_result_on_original_tree": "source-checks/full-callers-execution.json",
+  "full_scanner_rerun_on_current": false,
+  "source_comparison": "SOURCE_COMPARISON.json",
+  "reviewed_evaluation_owner_revision": 4,
+  "reviewed_evaluation_owner_sha256": "44e1c771ae778f2637178eb0a19a540349969485a20f2e86f45896cb381a7dd7",
+  "original_evaluation_change_paths": [
+    {
+      "path": "CALLERS.toml",
+      "base_blob": "f58701e2761b585a24a07b15eb06eb5fa03156ae",
+      "blob": "4f9bb253844ce98ad8adbdca5bc1166def8c540b",
+      "sha256": "d17051d0108930e7499a1d1aab4b7273226de3e992916eda1a09002f6ee263b2",
+      "bytes": 351650
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_evaluation_evidence_tests.rs",
+      "base_blob": "c350256b2e513053afde2e1950faf5739d525870",
+      "blob": "7dc9c197f009b90fde594f05523b6e7f9820a162",
+      "sha256": "53d31cc6a1844ae7e890b0557269a651f61d51046be2ffdd2d151eaf2f52ccb9",
+      "bytes": 29257
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "base_blob": "227313d5fb146d67af1cfe3fc86ea7f985bd2e73",
+      "blob": "666748f626ecf9adbe44201ee1ea79562d8cf835",
+      "sha256": "59c4182b2649ba576a7808d252542da6d9b12514805024c0bd2f204a79eb9f01",
+      "bytes": 50753
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs",
+      "base_blob": null,
+      "blob": "8dbf4097769d84b4093867d6918e0e871c89bd30",
+      "sha256": "44e1c771ae778f2637178eb0a19a540349969485a20f2e86f45896cb381a7dd7",
+      "bytes": 20868
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_learning_evaluation_tests.rs",
+      "base_blob": "81ebffad7c918f1c89df9e4923de1142bbff9765",
+      "blob": "6562026955ed620f96c3ef19457b5c3b3d97dff3",
+      "sha256": "b3732dee71f54ead10f859f8b5013616efc3cb5d6460e625035ed077a72ded49",
+      "bytes": 31170
+    },
+    {
+      "path": "qa/b4-no-bypass/test_cell_learning_evaluation_source_closure.py",
+      "base_blob": "01e6ccc961082d1f214bb18cc6e41602981f61f2",
+      "blob": "63b205bc1c145ef10aaed87217e44ec1c601102b",
+      "sha256": "c3a45003ea4271bdb906e4dbc3494d87a63530e29537e16962d1bddb2e4c446e",
+      "bytes": 11132
+    },
+    {
+      "path": "qa/b4-no-bypass/test_generation_learning_evidence_source_closure.py",
+      "base_blob": "537c22ed9376683668c9c92d1e2b4164ebd1719f",
+      "blob": "2032e55bab47db0f18263bdfd82a130d901811e4",
+      "sha256": "a7d73a77de4634ad8ec3ae655e1444617f3d1dbfb3dd998cd810e6b1195846cc",
+      "bytes": 7286
+    },
+    {
+      "path": "qa/b4-no-bypass/test_learning_evaluation_recovery_source_closure.py",
+      "base_blob": "5203176af56587b7b4d0cac527c7236143187afc",
+      "blob": "8d607e733cf950165475cd80b9e3a080b13ed949",
+      "sha256": "36c96acedbed534ce2df59f60afc362ce2cccdf7b9631a1a165b2303cb661fde",
+      "bytes": 8442
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_evaluation_receipt_owner_source_closure.py",
+      "base_blob": null,
+      "blob": "83c2b0ab02f2e505ad4a615646c5088fd27177e0",
+      "sha256": "28c0d2779b2ef3d7c679a15edaf1554b21c698769964f1e9c95c164dc502d3dd",
+      "bytes": 13759
+    }
+  ],
+  "current_maintenance": "maintenance/INDEX.json",
+  "current_native_status": "PENDING_HOSTED_LINUX",
+  "native_results_are_source_specific": true
+}

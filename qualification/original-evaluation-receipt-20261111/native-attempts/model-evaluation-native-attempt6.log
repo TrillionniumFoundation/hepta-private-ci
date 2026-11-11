@@ -1,0 +1,463 @@
+{"source": "/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-build", "source_commit": "30692d721d67321df0414c5c3f990449d7b9fea8", "source_tree": "790bf1330fde0ee51d9f9ea40848f3dc5d2afcb4", "source_clean_before": true, "cargo_lock_sha256": "98b3767c6e74bf6eeb5894db760259dbc400cbfd0685af8ad915c92d25408d69", "tool_versions": {"rustc --version": "rustc 1.96.0 (ac68faa20 2026-05-25)", "cargo --version": "cargo 1.96.0 (30a34c682 2026-05-25)", "cargo nextest --version": "cargo-nextest 0.9.103 (d2e7b879f 2025-08-25)", "just --version": "just 1.51.0"}, "started_utc": "2026-11-11T02:16:30.609434+00:00", "command": ["just", "test", "-p", "codex-hepta-agentd", "--lib", "--locked", "-E", "test(q24_model_proposal) | test(original_evaluation_receipt) | test(original_training_receipt) | test(neuron_cell_evaluation::tests) | test(q24_training_owner)"], "environment_overrides": {"CARGO_TARGET_DIR": "/workspace/scratch/b4d6d3702e3a/hepta-rmcp-target", "CARGO_BUILD_JOBS": "1", "CARGO_PROFILE_DEV_DEBUG": "0", "CARGO_PROFILE_TEST_DEBUG": "0", "CARGO_INCREMENTAL": "0", "BINDGEN_EXTRA_CLANG_ARGS": "-resource-dir=/workspace/scratch/623459b0e1bc/toolchains/llvm20/unpacked/usr/lib/llvm-20/lib/clang/20"}, "cpu_affinity": [0], "resource_log": "/workspace/scratch/b4d6d3702e3a/model-evaluation-native-attempt6-resources.jsonl", "disk_free_before_bytes": 4570984448, "profile_basis": ".github/workflows/hepta-daemon-learning-native.yml DEBUG=0/INCREMENTAL=0; jobs=1 and 1 CPUs bound local resources"}
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+warning: hiding a lifetime that's elided elsewhere is confusing
+   --> third_party/i18n-config-0.4.8/src/lib.rs:144:9
+    |
+144 |         &self,
+    |         ^^^^^ the lifetime is elided here
+145 |     ) -> Result<Option<(&'_ Crate, &'_ I18nConfig)>, I18nConfigError> {
+    |                          ^^ ^^^^^   ^^ the same lifetime is elided here
+    |                          |  |
+    |                          |  the same lifetime is hidden here
+    |                          the same lifetime is elided here
+    |
+    = help: the same lifetime is referred to in inconsistent ways, making the signature confusing
+    = note: `#[warn(mismatched_lifetime_syntaxes)]` on by default
+help: use `'_` for type paths
+    |
+145 |     ) -> Result<Option<(&'_ Crate<'_>, &'_ I18nConfig)>, I18nConfigError> {
+    |                                  ++++
+
+warning: hiding a lifetime that's elided elsewhere is confusing
+   --> third_party/i18n-config-0.4.8/src/lib.rs:155:26
+    |
+155 |     pub fn active_config(&self) -> Result<Option<(&'_ Crate, &'_ I18nConfig)>, I18nConfigError> {
+    |                          ^^^^^                     ^^ ^^^^^   ^^ the same lifetime is elided here
+    |                          |                         |  |
+    |                          |                         |  the same lifetime is hidden here
+    |                          |                         the same lifetime is elided here
+    |                          the lifetime is elided here
+    |
+    = help: the same lifetime is referred to in inconsistent ways, making the signature confusing
+help: use `'_` for type paths
+    |
+155 |     pub fn active_config(&self) -> Result<Option<(&'_ Crate<'_>, &'_ I18nConfig)>, I18nConfigError> {
+    |                                                            ++++
+
+warning: `i18n-config` (lib) generated 2 warnings (run `cargo fix --lib -p i18n-config` to apply 2 suggestions)
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:204:55
+    |
+204 |     use time::format_description::BorrowedFormatItem::Literal;
+    |                                                       ^^^^^^^
+    |
+    = note: `#[warn(deprecated)]` on by default
+
+warning: use of deprecated tuple variant `time::format_description::Component::Year`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:208:52
+    |
+208 |     const YEAR: BorrowedFormatItem<'_> = Component(Year({
+    |                                                    ^^^^
+
+warning: use of deprecated struct `time::format_description::modifier::Year`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:209:35
+    |
+209 |         let mut value = modifier::Year::default();
+    |                                   ^^^^
+
+warning: use of deprecated unit variant `time::format_description::modifier::YearRepr::Full`: used only in the deprecated `Year` component
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:211:42
+    |
+211 |         value.repr = modifier::YearRepr::Full;
+    |                                          ^^^^
+
+warning: use of deprecated tuple variant `time::format_description::Component::Month`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:217:53
+    |
+217 |     const MONTH: BorrowedFormatItem<'_> = Component(Month({
+    |                                                     ^^^^^
+
+warning: use of deprecated struct `time::format_description::modifier::Month`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:218:35
+    |
+218 |         let mut value = modifier::Month::default();
+    |                                   ^^^^^
+
+warning: use of deprecated unit variant `time::format_description::modifier::MonthRepr::Numerical`: used only in the deprecated `Month` component
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:220:43
+    |
+220 |         value.repr = modifier::MonthRepr::Numerical;
+    |                                           ^^^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::Component::Hour`: use `Hour12` or `Hour24` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:231:52
+    |
+231 |     const HOUR: BorrowedFormatItem<'_> = Component(Hour({
+    |                                                    ^^^^
+
+warning: use of deprecated struct `time::format_description::modifier::Hour`: use `Hour12` or `Hour24` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:232:35
+    |
+232 |         let mut value = modifier::Hour::default();
+    |                                   ^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:272:13
+    |
+272 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:274:13
+    |
+274 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:276:23
+    |
+276 |             Optional(&Literal(b" ")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:277:23
+    |
+277 |             Optional(&Literal(b"T")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:279:13
+    |
+279 |             Literal(b":"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:281:23
+    |
+281 |             Optional(&Literal(b":")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:283:23
+    |
+283 |             Optional(&Literal(b".")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:286:23
+    |
+286 |             Optional(&Literal(b":")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:294:13
+    |
+294 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:296:13
+    |
+296 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:298:13
+    |
+298 |             Literal(b" "),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:300:13
+    |
+300 |             Literal(b":"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:302:23
+    |
+302 |             Optional(&Literal(b":")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:304:23
+    |
+304 |             Optional(&Literal(b".")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:306:23
+    |
+306 |             Optional(&Literal(b"Z")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:313:13
+    |
+313 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:315:13
+    |
+315 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:317:13
+    |
+317 |             Literal(b"T"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:319:13
+    |
+319 |             Literal(b":"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:321:23
+    |
+321 |             Optional(&Literal(b":")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:323:23
+    |
+323 |             Optional(&Literal(b".")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:325:23
+    |
+325 |             Optional(&Literal(b"Z")),
+    |                       ^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Year::padding`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:210:9
+    |
+210 |         value.padding = modifier::Padding::Zero;
+    |         ^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Year::repr`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:211:9
+    |
+211 |         value.repr = modifier::YearRepr::Full;
+    |         ^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Year::iso_week_based`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:212:9
+    |
+212 |         value.iso_week_based = false;
+    |         ^^^^^^^^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Year::sign_is_mandatory`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:213:9
+    |
+213 |         value.sign_is_mandatory = false;
+    |         ^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Month::padding`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:219:9
+    |
+219 |         value.padding = modifier::Padding::Zero;
+    |         ^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Month::repr`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:220:9
+    |
+220 |         value.repr = modifier::MonthRepr::Numerical;
+    |         ^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Month::case_sensitive`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:221:9
+    |
+221 |         value.case_sensitive = true;
+    |         ^^^^^^^^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Hour::padding`: use `Hour12` or `Hour24` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:233:9
+    |
+233 |         value.padding = modifier::Padding::Zero;
+    |         ^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Hour::is_12_hour_clock`: use `Hour12` or `Hour24` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:234:9
+    |
+234 |         value.is_12_hour_clock = false;
+    |         ^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `sqlx-sqlite` (lib) generated 40 warnings
+warning: `sqlx-sqlite` (lib) generated 40 warnings (40 duplicates)
+   Compiling codex-rmcp-client v0.0.0 (/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-build/codex-rs/rmcp-client)
+warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+ --> rmcp-client/src/elicitation_client_service.rs:4:18
+  |
+4 | use rmcp::model::ClientInfo;
+  |                  ^^^^^^^^^^
+  |
+  = note: `#[warn(deprecated)]` on by default
+
+warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+  --> rmcp-client/src/elicitation_client_service.rs:55:22
+   |
+55 |         client_info: ClientInfo,
+   |                      ^^^^^^^^^^
+
+warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+   --> rmcp-client/src/elicitation_client_service.rs:191:27
+    |
+191 |     fn get_info(&self) -> ClientInfo {
+    |                           ^^^^^^^^^^
+
+warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+ --> rmcp-client/src/logging_client_handler.rs:6:18
+  |
+6 | use rmcp::model::ClientInfo;
+  |                  ^^^^^^^^^^
+
+warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+  --> rmcp-client/src/logging_client_handler.rs:27:18
+   |
+27 |     client_info: ClientInfo,
+   |                  ^^^^^^^^^^
+
+warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+  --> rmcp-client/src/logging_client_handler.rs:32:36
+   |
+32 |     pub(crate) fn new(client_info: ClientInfo, send_elicitation: SendElicitation) -> Self {
+   |                                    ^^^^^^^^^^
+
+warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+  --> rmcp-client/src/logging_client_handler.rs:94:27
+   |
+94 |     fn get_info(&self) -> ClientInfo {
+   |                           ^^^^^^^^^^
+
+warning: `codex-rmcp-client` (lib) generated 7 warnings
+   Compiling codex-exec-server-test-support v0.0.0 (/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-build/codex-rs/exec-server/tests/support)
+   Compiling codex-diagnostics v0.0.0 (/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-build/codex-rs/diagnostics)
+   Compiling jsonptr v0.7.1
+   Compiling codex-tools v0.0.0 (/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-build/codex-rs/tools)
+   Compiling codex-mcp v0.0.0 (/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-build/codex-rs/codex-mcp)
+   Compiling symphonia-core v0.6.1
+   Compiling rayon v1.12.0
+   Compiling nucleo-matcher v0.3.1 (https://github.com/helix-editor/nucleo.git?rev=4253de9faabb4e5c6d81d946a5e35a90f87347ee#4253de9f)
+   Compiling nucleo v0.5.0 (https://github.com/helix-editor/nucleo.git?rev=4253de9faabb4e5c6d81d946a5e35a90f87347ee#4253de9f)
+   Compiling codex-context-fragments v0.0.0 (/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-build/codex-rs/context-fragments)
+   Compiling ignore v0.4.33
+   Compiling libm v0.2.16
+   Compiling codex-file-search v0.0.0 (/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-build/codex-rs/file-search)
+   Compiling symphonia-metadata v0.6.1
+   Compiling noyalib v0.0.58
+   Compiling runfiles v0.1.0 (https://github.com/dzbarsky/rules_rust?rev=b56cbaa8465e74127f1ea216f813cd377295ad81#b56cbaa8)
+   Compiling codex-utils-cargo-bin v0.0.0 (/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-build/codex-rs/utils/cargo-bin)
+   Compiling codex-rollout v0.0.0 (/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-build/codex-rs/rollout)
+   Compiling codex-extension-api v0.0.0 (/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-build/codex-rs/ext/extension-api)
+   Compiling codex-experimental-api-macros v0.0.0 (/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-build/codex-rs/codex-experimental-api-macros)
+   Compiling codex-app-server-protocol-noop-macros v0.0.0 (/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-build/codex-rs/app-server-protocol-noop-macros)
+   Compiling codex-app-server-protocol v0.0.0 (/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-build/codex-rs/app-server-protocol)
+   Compiling symphonia-common v0.6.1
+   Compiling darling_core v0.20.11
+   Compiling constant_time_eq v0.6.1
+   Compiling include_dir_macros v0.7.4
+   Compiling codex-skills v0.0.0 (/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-build/codex-rs/skills)
+   Compiling include_dir v0.7.4
+   Compiling darling_macro v0.20.11
+   Compiling noyalib-serde-yaml v0.0.58
+   Compiling libbz2-rs-sys v0.2.5
+   Compiling bzip2 v0.6.1
+   Compiling darling v0.20.11
+   Compiling codex-analytics v0.0.0 (/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-build/codex-rs/analytics)
+   Compiling pbkdf2 v0.13.0
+   Compiling zopfli v0.8.4
+   Compiling stop-words v0.9.0
+   Compiling lzma-rust2 v0.22.0
+   Compiling filetime v0.2.29
+   Compiling typed-path v0.12.3
+   Compiling extended v0.1.0
+   Compiling ppmd-rust v1.5.0
+   Compiling pulldown-cmark v0.10.3
+   Compiling deflate64 v0.1.12
+   Compiling zip v9.0.5
+   Compiling symphonia-format-riff v0.6.1
+   Compiling tar v0.4.45
+   Compiling cached_proc_macro v0.25.0
+   Compiling symphonia-format-ogg v0.6.1
+   Compiling symphonia-format-mkv v0.6.1
+   Compiling symphonia-format-isomp4 v0.6.1
+   Compiling symphonia-bundle-mp3 v0.6.1
+   Compiling codex-hooks v0.0.0 (/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-build/codex-rs/hooks)
+   Compiling hashbrown v0.15.5
+   Compiling cached_proc_macro_types v0.1.1
+   Compiling web-time v1.1.0
+   Compiling cached v0.56.0
+   Compiling codex-core-plugins v0.0.0 (/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-build/codex-rs/core-plugins)
+   Compiling symphonia v0.6.1
+   Compiling codex-apply-patch v0.0.0 (/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-build/codex-rs/apply-patch)
+   Compiling codex-shell-escalation v0.0.0 (/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-build/codex-rs/shell-escalation)
+   Compiling rust-stemmers v1.2.0
+   Compiling deunicode v1.6.2
+   Compiling bm25 v2.3.2
+   Compiling codex-thread-store v0.0.0 (/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-build/codex-rs/thread-store)
+   Compiling codex-utils-audio v0.0.0 (/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-build/codex-rs/utils/audio)
+   Compiling codex-skills-extension v0.0.0 (/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-build/codex-rs/ext/skills)
+   Compiling codex-prompts v0.0.0 (/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-build/codex-rs/prompts)
+   Compiling codex-rollout-trace v0.0.0 (/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-build/codex-rs/rollout-trace)
+   Compiling codex-agent-graph-store v0.0.0 (/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-build/codex-rs/agent-graph-store)
+   Compiling codex-memories-read v0.0.0 (/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-build/codex-rs/memories/read)
+   Compiling codex-utils-stream-parser v0.0.0 (/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-build/codex-rs/utils/stream-parser)
+   Compiling whoami v1.6.1
+   Compiling codex-core v0.0.0 (/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-build/codex-rs/core)
+   Compiling codex-hepta-cognitive-types v0.0.0 (/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-build/codex-rs/hepta-cognitive-types)
+   Compiling codex-hepta-memory-retrieval v0.0.0 (/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-build/codex-rs/hepta-memory-retrieval)
+   Compiling codex-hepta-prompt-registry v0.0.0 (/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-build/codex-rs/hepta-prompt-registry)
+   Compiling codex-hepta-paths v0.0.0 (/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-build/codex-rs/hepta-paths)
+   Compiling inotify-sys v0.1.8
+   Compiling codex-hepta-kg v0.0.0 (/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-build/codex-rs/hepta-kg)
+   Compiling codex-hepta-operations v0.0.0 (/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-build/codex-rs/hepta-operations)
+   Compiling codex-hepta-cognitive-read v0.0.0 (/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-build/codex-rs/hepta-cognitive-read)
+   Compiling codex-backend-openapi-models v0.0.0 (/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-build/codex-rs/codex-backend-openapi-models)
+   Compiling codex-linux-sandbox v0.0.0 (/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-build/codex-rs/linux-sandbox)
+   Compiling codex-backend-client v0.0.0 (/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-build/codex-rs/backend-client)
+   Compiling inotify v0.11.5
+   Compiling codex-hepta-memory-federation v0.0.0 (/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-build/codex-rs/hepta-memory-federation)
+   Compiling notify-types v2.1.0
+   Compiling codex-process-hardening v0.0.0 (/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-build/codex-rs/process-hardening)
+   Compiling is_ci v1.2.0
+   Compiling notify v8.2.0
+   Compiling codex-hepta-memory v0.0.0 (/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-build/codex-rs/hepta-memory)
+   Compiling codex-hepta-intuition v0.0.0 (/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-build/codex-rs/hepta-intuition)
+   Compiling is-terminal v0.4.17
+   Compiling supports-color v2.1.0
+   Compiling codex-hepta-learning-ledger v0.0.0 (/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-build/codex-rs/hepta-learning-ledger)
+   Compiling codex-arg0 v0.0.0 (/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-build/codex-rs/arg0)
+   Compiling supports-color v3.0.2
+   Compiling codex-home v0.0.0 (/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-build/codex-rs/codex-home)
+   Compiling codex-hepta-authbus v0.0.0 (/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-build/codex-rs/hepta-authbus)
+   Compiling codex-uds v0.0.0 (/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-build/codex-rs/uds)
+   Compiling constant_time_eq v0.3.1
+   Compiling codex-hepta-evidence v0.0.0 (/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-build/codex-rs/hepta-evidence)
+   Compiling owo-colors v4.4.0
+   Compiling codex-memories-write v0.0.0 (/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-build/codex-rs/memories/write)
+   Compiling codex-connectors-extension v0.0.0 (/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-build/codex-rs/ext/connectors)
+   Compiling codex-utils-cli v0.0.0 (/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-build/codex-rs/utils/cli)
+   Compiling codex-chatgpt v0.0.0 (/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-build/codex-rs/chatgpt)
+   Compiling codex-mcp-extension v0.0.0 (/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-build/codex-rs/ext/mcp)
+   Compiling codex-external-agent-migration v0.0.0 (/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-build/codex-rs/external-agent-migration)
+   Compiling codex-app-server-transport v0.0.0 (/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-build/codex-rs/app-server-transport)
+   Compiling codex-hepta-governance v0.0.0 (/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-build/codex-rs/ext/hepta-governance)
+   Compiling codex-hepta-memory-extension v0.0.0 (/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-build/codex-rs/ext/hepta-memory)
+   Compiling codex-file-watcher v0.0.0 (/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-build/codex-rs/file-watcher)
+   Compiling codex-cloud-config v0.0.0 (/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-build/codex-rs/cloud-config)
+   Compiling codex-git-attribution v0.0.0 (/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-build/codex-rs/ext/git-attribution)
+   Compiling codex-history-notes-extension v0.0.0 (/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-build/codex-rs/ext/history-notes)
+   Compiling codex-web-search-extension v0.0.0 (/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-build/codex-rs/ext/web-search)
+   Compiling codex-agent-extension v0.0.0 (/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-build/codex-rs/ext/agent)
+   Compiling codex-memories-extension v0.0.0 (/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-build/codex-rs/ext/memories)
+   Compiling codex-image-generation-extension v0.0.0 (/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-build/codex-rs/ext/image-generation)
+   Compiling codex-guardian-v2 v0.0.0 (/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-build/codex-rs/ext/guardian-v2)
+   Compiling codex-queue-extension v0.0.0 (/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-build/codex-rs/ext/queue)
+   Compiling codex-goal-extension v0.0.0 (/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-build/codex-rs/ext/goal)
+   Compiling codex-hepta-prompt-extension v0.0.0 (/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-build/codex-rs/ext/hepta-prompt)
+   Compiling codex-hepta-wire v0.0.0 (/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-build/codex-rs/hepta-wire)
+   Compiling codex-hepta-ndu v0.0.0 (/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-build/codex-rs/hepta-ndu)
+   Compiling codex-utils-json-to-toml v0.0.0 (/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-build/codex-rs/utils/json-to-toml)
+   Compiling predicates-core v1.0.10
+   Compiling codex-app-server v0.0.0 (/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-build/codex-rs/app-server)
+error: couldn't create a temp dir: No space left on device (os error 28) at path "/workspace/scratch/b4d6d3702e3a/hepta-rmcp-target/debug/deps/rustcW0F4hv"
+
+error: could not compile `codex-app-server` (lib) due to 1 previous error
+error: command `/workspace/scratch/f7c0ded86bcc/toolchain/installed/bin/cargo test --no-run --message-format json-render-diagnostics --package codex-hepta-agentd --lib --locked` exited with code 101
+error: recipe `test` failed on line 89 with exit code 101
+{"exit_code": 101, "elapsed_seconds": 403.273, "finished_utc": "2026-11-11T02:23:13.728836+00:00", "source_status_after": "", "disk_free_after_bytes": 0, "child_peak_rss_kb": 2427312}
