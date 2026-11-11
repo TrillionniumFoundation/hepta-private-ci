@@ -175,9 +175,8 @@ pub async fn receive_root_production_inputs(
         )
         .map_err(AgentdError::GenerationFenced)?;
     remaining(end)?;
-    let publication_connection = RootGenerationPublicationSlot::capture_after_original_receive(
-        &session, &bundle, expected,
-    )?;
+    let publication_connection =
+        RootGenerationPublicationSlot::capture_after_original_receive(&session, &bundle, expected)?;
     Ok(AgentdRootProductionInputs {
         session,
         checkpoint,

@@ -18,9 +18,14 @@ impl ObjectiveRuntimeHost {
         };
         #[cfg(target_os = "linux")]
         if let Some(source) = original_state.retained_circuit_learning_source(source_run_id) {
-            return original_state.reconcile_retained_learning_source(source).await;
+            return original_state
+                .reconcile_retained_learning_source(source)
+                .await;
         }
-        if original_state.circuit_learning_origin(source_run_id).is_none() {
+        if original_state
+            .circuit_learning_origin(source_run_id)
+            .is_none()
+        {
             return Err(invalid("original learning source profile is unavailable"));
         }
         let sources = {
@@ -54,7 +59,9 @@ impl ObjectiveRuntimeHost {
             if trace.run().outcome().is_none() || trace.run().unresolved() != 0 {
                 continue;
             }
-            let readiness = original_state.observe_circuit_learning(&record, &trace).await;
+            let readiness = original_state
+                .observe_circuit_learning(&record, &trace)
+                .await;
             original_state
                 .enqueue_original_circuit_learning(&record, &trace, readiness)
                 .await?;

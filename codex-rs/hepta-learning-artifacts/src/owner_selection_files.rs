@@ -13,17 +13,21 @@ impl LearningArtifactReadViewV1 {
     ) -> Result<(PathBuf, PathBuf), ArtifactOwnerHostError> {
         let before = self.read_original_registry(now)?;
         let withdrawals = self.read_original_withdrawals()?;
-        selector.verify(selected, &before, now)
+        selector
+            .verify(selected, &before, now)
             .map_err(|_| ArtifactOwnerHostError::CurrentHeadContext)?;
         let payload_directory = directory(&self.root, "payloads", self.consumer_uid)?;
         let view = read_view::ArtifactOwnerReadView {
-            root: &self.root, verifier: &self.verifier, required_current_head: None,
+            root: &self.root,
+            verifier: &self.verifier,
+            required_current_head: None,
         };
         let registry = view.registry_snapshot_path(before.receipt());
         // This is the original ensure_payload_durable name, after authenticating
         // the actual registry manifest and independent selection above.
         let payload = self.root.join("payloads").join(format!(
-            "{}-{}.bin", selected.artifact_id, selected.content_digest,
+            "{}-{}.bin",
+            selected.artifact_id, selected.content_digest,
         ));
         if fs::canonicalize(&registry)? != registry || fs::canonicalize(&payload)? != payload {
             return Err(ArtifactOwnerHostError::PathBoundary);
@@ -39,7 +43,8 @@ impl LearningArtifactReadViewV1 {
         {
             return Err(ArtifactOwnerHostError::Indeterminate);
         }
-        selector.verify(selected, &after, now)
+        selector
+            .verify(selected, &after, now)
             .map_err(|_| ArtifactOwnerHostError::CurrentHeadContext)?;
         Ok((registry, payload))
     }

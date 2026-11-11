@@ -48,12 +48,12 @@ use crate::learning_retained_task_operation_id_v1;
 
 #[path = "authority_host_generation_publication_root_artifacts_tests.rs"]
 mod artifacts;
-#[path = "authority_host_generation_publication_root_support_tests.rs"]
-mod support;
-#[path = "authority_host_generation_publication_root_fixture_tests.rs"]
-mod fixture;
 #[path = "authority_host_generation_publication_root_child_tests.rs"]
 mod child;
+#[path = "authority_host_generation_publication_root_fixture_tests.rs"]
+mod fixture;
+#[path = "authority_host_generation_publication_root_support_tests.rs"]
+mod support;
 
 const CHILD_TEST: &str = "neuron_generation_current::publication_root_tests::child::original_publication_dedicated_uid_child";
 const RECORDS: u64 = 128;
@@ -62,13 +62,23 @@ const TIMEOUT: Duration = Duration::from_millis(500);
 const LIFETIME: Duration = Duration::from_secs(10);
 
 #[derive(Clone, Copy, Debug)]
-enum Phase { Publish, Recover, RetiredSession, Revoked }
-
-fn now_ms() -> anyhow::Result<u64> {
-    Ok(std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH)?.as_millis().try_into()?)
+enum Phase {
+    Publish,
+    Recover,
+    RetiredSession,
+    Revoked,
 }
 
-fn digest(value: &str) -> Digest32 { Digest32::of_bytes(value.as_bytes()) }
+fn now_ms() -> anyhow::Result<u64> {
+    Ok(std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)?
+        .as_millis()
+        .try_into()?)
+}
+
+fn digest(value: &str) -> Digest32 {
+    Digest32::of_bytes(value.as_bytes())
+}
 
 fn control(socket: &UnixDatagram, expected: &[u8]) -> anyhow::Result<()> {
     socket.set_read_timeout(Some(LIFETIME))?;
@@ -80,7 +90,10 @@ fn control(socket: &UnixDatagram, expected: &[u8]) -> anyhow::Result<()> {
 
 fn send_data(socket: &UnixDatagram, value: &impl serde::Serialize) -> anyhow::Result<()> {
     let bytes = serde_json::to_vec(value)?;
-    anyhow::ensure!(!bytes.is_empty() && bytes.len() <= 32768, "bounded component control");
+    anyhow::ensure!(
+        !bytes.is_empty() && bytes.len() <= 32768,
+        "bounded component control"
+    );
     assert_eq!(socket.send(&bytes)?, bytes.len());
     Ok(())
 }
@@ -95,7 +108,9 @@ fn data<T: serde::de::DeserializeOwned>(socket: &UnixDatagram) -> anyhow::Result
 
 /// Synthetic stage metadata is replayed through the actual registered Root
 /// checkpoint. It is never passed off as signed original A/B role evidence.
-fn record_component_decision(initial: LearningIterationSnapshotV1) -> anyhow::Result<LearningIterationCoordinatorV1> {
+fn record_component_decision(
+    initial: LearningIterationSnapshotV1,
+) -> anyhow::Result<LearningIterationCoordinatorV1> {
     let mut coordinator = LearningIterationCoordinatorV1::from_snapshot(initial)?;
     let request = &coordinator.snapshot().request;
     let mut candidate = request.selected_bundle.clone();
@@ -103,31 +118,43 @@ fn record_component_decision(initial: LearningIterationSnapshotV1) -> anyhow::Re
     candidate.generation = candidate.generation.next()?;
     candidate.rollback_predecessor = Some(request.selected_bundle.digest()?);
     candidate.training_lineage = Some(CellTrainingLineageV1 {
-        source_bundle: request.selected_bundle.digest()?, dataset: digest("component-dataset"),
-        update_rule: digest("component-update-rule"), evaluation_profile: request.evaluation_profile,
+        source_bundle: request.selected_bundle.digest()?,
+        dataset: digest("component-dataset"),
+        update_rule: digest("component-update-rule"),
+        evaluation_profile: request.evaluation_profile,
     });
     let observations = [
         LearningIterationObservationV1::Experience {
-            episode_digest: digest("component-episode"), completed_task_receipt: request.completed_task_receipt,
+            episode_digest: digest("component-episode"),
+            completed_task_receipt: request.completed_task_receipt,
         },
         LearningIterationObservationV1::Dataset {
-            snapshot_digest: digest("component-dataset"), episode_digest: digest("component-episode"),
-            withdrawal_frontier: digest("component-withdrawals"), rows: 1, bytes: 64,
+            snapshot_digest: digest("component-dataset"),
+            episode_digest: digest("component-episode"),
+            withdrawal_frontier: digest("component-withdrawals"),
+            rows: 1,
+            bytes: 64,
         },
         LearningIterationObservationV1::Training {
-            candidate: Box::new(candidate.clone()), steps: 1, milliseconds: 1, artifact_bytes: 64,
+            candidate: Box::new(candidate.clone()),
+            steps: 1,
+            milliseconds: 1,
+            artifact_bytes: 64,
         },
         LearningIterationObservationV1::Evaluation {
-            candidate_bundle: candidate.digest()?, evaluation_profile: request.evaluation_profile,
+            candidate_bundle: candidate.digest()?,
+            evaluation_profile: request.evaluation_profile,
             disposition: LearningEvaluationDispositionV1::NoUpdate,
         },
     ];
     for observation in observations {
         let before = coordinator.snapshot();
         let receipt = LearningIterationReceiptV1 {
-            operation_id: before.request.operation_id.clone(), predecessor: before.head_digest,
+            operation_id: before.request.operation_id.clone(),
+            predecessor: before.head_digest,
             actor_id: before.owners.owner(observation.stage()).clone(),
-            evidence_digest: digest("synthetic-component-role-evidence"), observed_unix_seconds: COMPONENT_OBSERVED,
+            evidence_digest: digest("synthetic-component-role-evidence"),
+            observed_unix_seconds: COMPONENT_OBSERVED,
             observation,
         };
         coordinator.record(receipt, COMPONENT_OBSERVED)?;
@@ -146,7 +173,10 @@ fn root_broker_late_enrolls_publishes_and_recovers_original_current() -> anyhow:
     let published = fixture.current.original_broker_head()?;
     assert_eq!(published.current, fixture.intent.target);
     assert_eq!(published.prepared, None);
-    assert_eq!(published.published.as_ref().map(|p| &p.intent), Some(&fixture.intent));
+    assert_eq!(
+        published.published.as_ref().map(|p| &p.intent),
+        Some(&fixture.intent)
+    );
     assert_ne!(published, initial_current);
     let protected = support::protected_files(&fixture.current_path)?;
     let claims_path = fixture.local.join("device/authority.claims");
@@ -165,8 +195,14 @@ fn root_broker_late_enrolls_publishes_and_recovers_original_current() -> anyhow:
     // The serving owner has finished. Reopen the exact original issuer solely
     // for its administrative revocation; no second owner is opened while live.
     {
-        let (_, _leases, issuer) = crate::authority_host_runtime::open_registered_issuer(&fixture.config)?;
-        let grant = &published.published.as_ref().ok_or_else(|| anyhow::anyhow!("published record"))?.signed.grant;
+        let (_, _leases, issuer) =
+            crate::authority_host_runtime::open_registered_issuer(&fixture.config)?;
+        let grant = &published
+            .published
+            .as_ref()
+            .ok_or_else(|| anyhow::anyhow!("published record"))?
+            .signed
+            .grant;
         issuer.revoke(&grant.grant_id)?;
     }
     fixture.run_phase(Phase::Revoked)?;
@@ -174,7 +210,10 @@ fn root_broker_late_enrolls_publishes_and_recovers_original_current() -> anyhow:
     assert_eq!(support::protected_files(&fixture.current_path)?, protected);
     fixture.child.release()?;
     let output = fixture.child.finish()?;
-    assert!(output.contains("ROOT_PUBLICATION_ORIGINAL lifecycle=passed"), "{output}");
+    assert!(
+        output.contains("ROOT_PUBLICATION_ORIGINAL lifecycle=passed"),
+        "{output}"
+    );
     println!("{output}");
     Ok(())
 }

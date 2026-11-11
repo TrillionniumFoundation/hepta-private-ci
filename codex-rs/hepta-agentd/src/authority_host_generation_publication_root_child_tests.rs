@@ -13,12 +13,18 @@ fn original_publication_dedicated_uid_child() -> anyhow::Result<()> {
     crate::authority_host_runtime::verify_process_credentials(std::process::id(), 60001, 60001)?;
     let number: i32 = std::env::var("HEPTA_LEARNING_SERVICE_CHILD_FD")?.parse()?;
     let root: u32 = std::env::var("HEPTA_LEARNING_SERVICE_ROOT_PID")?.parse()?;
-    anyhow::ensure!(number >= 3 && root != std::process::id(), "original inherited pair");
+    anyhow::ensure!(
+        number >= 3 && root != std::process::id(),
+        "original inherited pair"
+    );
     // SAFETY: this is the dedicated child process only; its whole run is bounded.
     unsafe { libc::alarm(60) };
     let state = std::env::var_os("HEPTA_LEARNING_SERVICE_STATE")
         .ok_or_else(|| anyhow::anyhow!("original protected state"))?;
-    assert_eq!(std::fs::read_dir(state).unwrap_err().kind(), io::ErrorKind::PermissionDenied);
+    assert_eq!(
+        std::fs::read_dir(state).unwrap_err().kind(),
+        io::ErrorKind::PermissionDenied
+    );
     // SAFETY: the original parent transfers this one inherited descriptor.
     let socket = unsafe { UnixDatagram::from_raw_fd(number) };
     const OBSERVATION_WORKERS: usize = 2;
@@ -184,7 +190,10 @@ fn original_publication_dedicated_uid_child() -> anyhow::Result<()> {
         }
         Ok::<(), anyhow::Error>(())
     })?;
-    println!("ROOT_PUBLICATION_ORIGINAL lifecycle=passed actual_consumer_uid=60001 actual_consumer_pid={} original_root_pid={root} vacant_learning_before_late_enrollment=true actual_current_cas=true actual_claims=1 original_connection_taken_once=true original_session_drop_fences_current=true explicit_same_process_root_reopen=true ordinary_complete=0 independent_consumer=0 physical_cold_restart=0", std::process::id());
+    println!(
+        "ROOT_PUBLICATION_ORIGINAL lifecycle=passed actual_consumer_uid=60001 actual_consumer_pid={} original_root_pid={root} vacant_learning_before_late_enrollment=true actual_current_cas=true actual_claims=1 original_connection_taken_once=true original_session_drop_fences_current=true explicit_same_process_root_reopen=true ordinary_complete=0 independent_consumer=0 physical_cold_restart=0",
+        std::process::id()
+    );
     let mut released = [0];
     std::io::stdin().read_exact(&mut released)?;
     assert_eq!(released, [1]);
@@ -192,7 +201,9 @@ fn original_publication_dedicated_uid_child() -> anyhow::Result<()> {
 }
 
 fn require_uncertain(error: crate::AgentdError) {
-    assert!(matches!(error, crate::AgentdError::Io(ref error)
+    assert!(
+        matches!(error, crate::AgentdError::Io(ref error)
         if error.get_ref().is_some_and(|source| source.is::<crate::root_generation_current_client::RootGenerationPublicationUncertain>())),
-        "original closed client must keep typed uncertainty: {error}");
+        "original closed client must keep typed uncertainty: {error}"
+    );
 }

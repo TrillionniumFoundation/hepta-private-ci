@@ -304,7 +304,14 @@ pub(super) async fn start(
     model: Arc<LoadedCellQ24ModelV1>,
     bundle: CellCompatibilityBundleV1,
 ) -> anyhow::Result<Session> {
-    start_profile(admission, published_task, model, bundle, LearningProfile::None).await
+    start_profile(
+        admission,
+        published_task,
+        model,
+        bundle,
+        LearningProfile::None,
+    )
+    .await
 }
 
 enum LearningProfile {
@@ -321,7 +328,14 @@ pub(super) async fn start_learning(
     bundle: CellCompatibilityBundleV1,
     inputs: crate::OriginalCellQ24TaskLedgerInputsV1,
 ) -> anyhow::Result<Session> {
-    start_profile(admission, published_task, model, bundle, LearningProfile::Original(inputs)).await
+    start_profile(
+        admission,
+        published_task,
+        model,
+        bundle,
+        LearningProfile::Original(inputs),
+    )
+    .await
 }
 
 async fn start_profile(

@@ -2638,7 +2638,7 @@ required_function_order = [{ function = "fn parse(", sequence = ["let handoff = 
 path = "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs"
 required = ["register-learning","--learning-profile","--root-learning-handoff-fd","learning_profile.is_some() != learning_handoff.is_some()","learning_profile.is_some() && root_fd.is_none()","PreparedHostAuthoritySession::open(&config, &registration, owner)?","prepared.with_registered_learning(&profile)?","prepared.seal_learning_bootstrap()","send_root_learning_handoff(","prepared.serve_with_ready(ready)","--generation-publication-deployment","--root-generation-publication-handoff-fd","publication_deployment.is_some() != publication_handoff.is_some()","capability.with_original_deployment(&path)?","deployment.wait_and_register(stop_ref)","PublicationDeploymentStop","let served = match","drop(stop)","served?"]
 forbidden = ["AllowVerifier", "permit_all"]
-required_order = [["let learning_handoff = learning_handoff\n            .as_deref()","inherited_descriptor(fd, &mut claimed)","learning_profile.is_some() != learning_handoff.is_some()","let owner = std::io::stdin().as_fd().try_clone_to_owned()?","prepared.with_registered_learning(&profile)?","prepared.seal_learning_bootstrap()","let ready = ||","send_root_learning_handoff(","prepared.launch_native_with_ready(","prepared.serve_with_text_and_ready(","prepared.serve_with_ready(ready)"],["let publication_handoff = publication_handoff","inherited_descriptor(fd, &mut claimed)","publication_deployment.is_some() != publication_handoff.is_some()","let owner = std::io::stdin().as_fd().try_clone_to_owned()?","prepared.with_registered_learning(&profile)?","prepared.enable_generation_publication()?","capability.with_original_deployment(&path)?","send_root_generation_publication_handoff(","let stop = PublicationDeploymentStop","deployment.wait_and_register(stop_ref)","let served = match","prepared.serve_with_ready(ready)","drop(stop)","worker.join()","served?"]]
+required_order = [["let learning_handoff = learning_handoff\n            .as_deref()","inherited_descriptor(fd, &mut claimed)","learning_profile.is_some() != learning_handoff.is_some()","let owner = std::io::stdin().as_fd().try_clone_to_owned()?","prepared.with_registered_learning(&profile)?","prepared.seal_learning_bootstrap()","let ready = ||","send_root_learning_handoff(","prepared.launch_native_with_ready(","prepared.serve_with_text_and_ready(","prepared.serve_with_ready(ready)"],["let publication_handoff = publication_handoff","inherited_descriptor(fd, &mut claimed)","publication_deployment.is_some() != publication_handoff.is_some()","let owner = std::io::stdin().as_fd().try_clone_to_owned()?","prepared.with_registered_learning(&profile)?","prepared.enable_generation_publication()?","capability.with_original_deployment(&path)?","send_root_generation_publication_handoff(","let stop = PublicationDeploymentStop","deployment.wait_and_register(stop_ref)","let served = match","prepared.serve_with_ready(ready)","drop(stop)","worker.join()","served?"],["let registered = deployment.wait_and_register(stop_ref)?","let stdout = std::io::stdout()","let mut output = stdout.lock()","writeln!(output,","output.flush()","Ok::<_, std::io::Error>(registered)","let served = match","drop(stop)","worker.join()","served?","registered?"]]
 
 required_function_order = [{ function = "fn drop(", sequence = ["self.0.store(","std::sync::atomic::Ordering::Release"] }]
 [[boundary]]
@@ -4963,7 +4963,7 @@ call_pattern = "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)enroll_generation_publication
 id = "root_generation_publication_original_serve"
 symbol = "HostAuthorityService::serve_generation_publication"
 definition_path = "codex-rs/hepta-agentd/src/authority_host_generation_publication_transport.rs"
-definition_markers = ["pub(crate) fn serve_generation_publication(", "HostAuthorityPeerChannel::from_stream(", "self.with_learning_profile(", "slot.current.original_broker_publish("]
+definition_markers = ["pub(crate) fn serve_generation_publication(", "HostAuthorityPeerChannel::from_stream(", "self.with_learning_profile(", "slot.current\n                                    .original_broker_publish("]
 product_callers = ["codex-rs/hepta-agentd/src/authority_host_generation_publication_runtime.rs"]
 caller_markers = []
 call_pattern = "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)serve_generation_publication\\s*\\("
@@ -4972,7 +4972,7 @@ call_pattern = "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)serve_generation_publication\
 id = "root_generation_publication_profile_fence"
 symbol = "fence_record"
 definition_path = "codex-rs/hepta-agentd/src/authority_host_generation_publication.rs"
-definition_markers = ["fn fence_record(", "next.fenced = true", "store.compare_and_set(owner, &before, &next)"]
+definition_markers = ["fn fence_record(", "next.fenced = true", "store\n            .compare_and_set(owner, &before, &next)"]
 product_callers = ["codex-rs/hepta-agentd/src/authority_host_generation_publication_enrollment.rs"]
 caller_markers = []
 call_pattern = "\\bfence_record\\s*\\("
@@ -5017,7 +5017,7 @@ call_pattern = "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)from_original_root_publicatio
 id = "root_generation_current_bound_selection"
 symbol = "NeuronGenerationCurrentOwnerV1::require_original_root_selection"
 definition_path = "codex-rs/hepta-agentd/src/neuron_generation_current_root.rs"
-definition_markers = ["fn require_original_root_selection(", "self.store.require_original_root_selection("]
+definition_markers = ["fn require_original_root_selection(", "self.store\n            .require_original_root_selection("]
 product_callers = ["codex-rs/hepta-agentd/src/cell_q24_publication_root_stage.rs"]
 caller_markers = []
 receiver_type = "NeuronGenerationCurrentOwnerV1"
@@ -5170,7 +5170,7 @@ call_pattern = "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)load_from_original_artifacts\
 id = "root_generation_original_selection_recheck"
 symbol = "AgentdSelectedGenerationV1::revalidate_original_artifacts"
 definition_path = "codex-rs/hepta-agentd/src/neuron_generation_update_selection_root.rs"
-definition_markers = ["fn revalidate_original_artifacts(", "now < self.observed_at", "self.candidate.with_current(current", "after.snapshot() != withdrawal.snapshot()"]
+definition_markers = ["fn revalidate_original_artifacts(", "now < self.observed_at", "self.candidate\n            .with_current(current", "after.snapshot() != withdrawal.snapshot()"]
 product_callers = ["codex-rs/hepta-agentd/src/authority_host_generation_publication.rs"]
 caller_markers = []
 call_pattern = "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)revalidate_original_artifacts\\s*\\("
@@ -5179,7 +5179,7 @@ call_pattern = "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)revalidate_original_artifacts
 id = "q24_root_artifact_qualified_phase"
 symbol = "OriginalCellQ24ArtifactPublicationDriverV1::for_qualified_adoption"
 definition_path = "codex-rs/hepta-agentd/src/cell_q24_publication_root_stage.rs"
-definition_markers = ["fn for_qualified_adoption(", "decision.require_root_publication()?", "owners.original_publication_manifest("]
+definition_markers = ["fn for_qualified_adoption(", "decision.require_root_publication()?", "owners\n            .original_publication_manifest("]
 product_callers = []
 caller_markers = []
 call_pattern = "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)for_qualified_adoption\\s*\\("
@@ -5197,7 +5197,7 @@ receiver_type = "OriginalCellQ24ArtifactPublicationDriverV1"
 id = "q24_root_artifact_publication_recovery"
 symbol = "OriginalCellQ24ArtifactPublicationDriverV1::recover_published"
 definition_path = "codex-rs/hepta-agentd/src/cell_q24_publication_root_stage.rs"
-definition_markers = ["fn recover_published(", "artifacts.read_original_publication("]
+definition_markers = ["fn recover_published(", "artifacts\n                        .read_original_publication("]
 product_callers = []
 caller_markers = []
 receiver_type = "OriginalCellQ24ArtifactPublicationDriverV1"
@@ -5276,33 +5276,33 @@ call_pattern = "\\brecover_selected\\s*\\("
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/authority_host_generation_publication.rs"
-required = ["struct PublicationRecord", "fenced: bool", "fence_record(&self.profile_store", "actual.receipts.starts_with(&self.decision.receipts)", "self.consumer.verify_original_retained_use("]
+required = ["struct PublicationRecord", "fenced: bool", "fence_record(&self.profile_store", "actual.receipts.starts_with(&self.decision.receipts)", "self.consumer\n            .verify_original_retained_use("]
 forbidden = ["AllowVerifier", "permit_all", "AuthorityPosture::ALLOW_ALL", "SigningKey"]
-required_function_order = [{ function = "fn fence_record(", sequence = ["store.load(owner)", "next.fenced = true", "store.compare_and_set(owner, &before, &next)", "store.load(owner)"] }, { function = "fn require_selection(", sequence = ["selected.revalidate_original_artifacts(", "selected.observation().digest().into_array()", "fence_record("] }]
+required_function_order = [{ function = "fn fence_record(", sequence = ["store.load(owner)", "next.fenced = true", "store\n            .compare_and_set(owner, &before, &next)", "store.load(owner)"] }, { function = "fn require_selection(", sequence = ["selected\n                .revalidate_original_artifacts(", "selected.observation().digest().into_array()", "fence_record("] }]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/authority_host_generation_publication_enrollment.rs"
-required = ["original_root()?", "self.with_learning_profile(", "scope.validate_snapshot(&actual)", "decision.require_root_publication().map_err(", "RootGenerationPublicationModeV1::Recover", "record.fenced", "inputs.issuer_keys.contains(&key)", "consumer.issuer_trust_digest()"]
+required = ["original_root()?", "self.with_learning_profile(", "scope.validate_snapshot(&actual)", "decision\n                    .require_root_publication()\n                    .map_err(", "RootGenerationPublicationModeV1::Recover", "record.fenced", "inputs.issuer_keys.contains(&key)", "consumer.issuer_trust_digest()"]
 forbidden = ["AllowVerifier", "permit_all", "AuthorityPosture::ALLOW_ALL", "SigningKey"]
-required_function_order = [{ function = "fn enroll_generation_publication(", sequence = ["original_root()?", "self.with_learning_profile(", "learning.backend.restore(", "scope.validate_snapshot(&actual)", "decision.require_root_publication().map_err(", "HostAuthorityFrontierStore::<PublicationRecord>::open(", "let artifact_pin =", "LearningArtifactReadViewV1::open_original(", "AgentdSelectedGenerationV1::load_from_original_artifacts(", "NeuronGenerationCurrentOwnerV1::open(", "RootFinalUseObserverV1::open_original(", "let mut profile = PublicationProfile", "let profile_store = match recovered", "enrolled.require_profile()?", "enrolled.require_history(", "enrolled.require_selection("] }]
+required_function_order = [{ function = "fn enroll_generation_publication(", sequence = ["original_root()?", "self.with_learning_profile(", "learning\n                    .backend\n                    .restore(", "scope.validate_snapshot(&actual)", "decision\n                    .require_root_publication()\n                    .map_err(", "HostAuthorityFrontierStore::<PublicationRecord>::open(", "let artifact_pin =", "LearningArtifactReadViewV1::open_original(", "AgentdSelectedGenerationV1::load_from_original_artifacts(", "NeuronGenerationCurrentOwnerV1::open(", "RootFinalUseObserverV1::open_original(", "let mut profile = PublicationProfile", "let profile_store = match recovered", "enrolled.require_profile()?", "enrolled.require_history(", "enrolled.require_selection("] }]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/authority_host_generation_publication_transport.rs"
 required = ["#[serde(tag = \"kind\"", "HostAuthorityPeerChannel::from_stream(", "request.request_id != sequence", "require_fresh_window(", "slot.verify_retained(", "slot.target.observe()"]
 forbidden = ["AllowVerifier", "permit_all", "AuthorityPosture::ALLOW_ALL", "SigningKey", "Command::CompareAndSet", "HostAuthorityFrontierStore::initialize"]
-required_function_order = [{ function = "fn serve_generation_publication(", sequence = ["HostAuthorityPeerChannel::from_stream(", "self.with_learning_profile(", "slot.require_profile()?", "slot.require_history(", "slot.require_previous()?", "slot.require_selection(now)?", "slot.current.original_broker_head()", "self.issuer.revocations()?", "require_fresh_window(", "slot.require_genesis()?", "serde_json::to_vec(&response)", "slot.current.original_broker_prepare(", "slot.current.original_broker_publish(", "slot.require_profile()?", "slot.require_history(", "slot.require_previous()?", "slot.require_selection(after_time)?", "require_fresh_window(after_time", "slot.verify_retained(", "slot.target.observe()", "self.issuer.revocations()?"] }, { function = "fn require_fresh_window(", sequence = ["now < signed.grant.not_before_unix_ms", "now >= signed.grant.expires_at_unix_ms", "now / 1000 >= work_expiry", "witness.verified_at_unix_ms > now"] }]
+required_function_order = [{ function = "fn serve_generation_publication(", sequence = ["HostAuthorityPeerChannel::from_stream(", "self.with_learning_profile(", "slot.require_profile()?", "slot.require_history(", "slot.require_previous()?", "slot.require_selection(now)?", "slot\n                            .current\n                            .original_broker_head()", "self.issuer.revocations()?", "require_fresh_window(", "slot.require_genesis()?", "serde_json::to_vec(&response)", "slot.current\n                                    .original_broker_prepare(", "slot.current\n                                    .original_broker_publish(", "slot.require_profile()?", "slot.require_history(", "slot.require_previous()?", "slot.require_selection(after_time)?", "require_fresh_window(\n                                after_time", "slot.verify_retained(", "slot.target.observe()", "self.issuer.revocations()?"] }, { function = "fn require_fresh_window(", sequence = ["now < signed.grant.not_before_unix_ms", "now >= signed.grant.expires_at_unix_ms", "now / 1000 >= work_expiry", "witness.verified_at_unix_ms > now"] }]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/authority_host_generation_publication_session.rs"
 required = ["self.publication.is_some()","self.service.with_learning_profile(","frozen_scope_binding()","root_start()?","compare_exchange(ACTIVE, CONSUMED","receiver\n            .recv_timeout(","learning\n                    .backend\n                    .restore(&initial.request)","consumer_uid: self.config.peer_uid"]
 forbidden = ["AllowVerifier", "permit_all", "AuthorityPosture::ALLOW_ALL", "SigningKey", "NeuronGenerationCurrentOwnerV1::initialize"]
-required_function_order = [{ function = "fn register(", sequence = ["original_root()?", "std::process::id() != self.root_pid", "compare_exchange(ACTIVE, CONSUMED", "self.sender\n            .try_send(", "receiver\n            .recv_timeout(", "self.phase.load(Ordering::Acquire) != CONSUMED"] }, { function = "fn enable_generation_publication(", sequence = ["original_root()?", "self.publication.is_some()", "self.learning.as_ref()", "self.service.with_learning_profile(", "frozen_scope_binding()", "let before = learning\n                    .backend\n                    .restore(", "seal_bytes(", "learning\n                    .backend\n                    .restore(&initial.request)", "self.publication = Some("] }]
+required_function_order = [{ function = "fn register(", sequence = ["original_root()?", "std::process::id() != self.root_pid", "compare_exchange(ACTIVE, CONSUMED", "self.sender\n            .try_send(", "receiver\n            .recv_timeout(", "self.phase.load(Ordering::Acquire) != CONSUMED"] }, { function = "fn enable_generation_publication(", sequence = ["original_root()?", "self.publication.is_some()", "self\n            .learning\n            .as_ref()", "self.service.with_learning_profile(", "frozen_scope_binding()", "let before = learning\n                    .backend\n                    .restore(", "seal_bytes(", "learning\n                    .backend\n                    .restore(&initial.request)", "self.publication = Some("] }]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/authority_host_generation_publication_runtime.rs"
 required = ["validate_lane_paths(&paths", "entry.dev() == self.device && entry.ino() == self.inode", "phase.store(CLOSED", "stream.shutdown(Shutdown::Both)"]
 forbidden = ["AllowVerifier", "permit_all", "AuthorityPosture::ALLOW_ALL", "SigningKey"]
-required_function_order = [{ function = "fn bind(", sequence = ["validate_lane_paths(&paths", "UnixListener::bind(", "metadata.uid() != 0", "set_permissions(", "set_nonblocking(true)"] }, { function = "fn serve_optional(", sequence = ["compare_exchange(PREPARED, ACTIVE", "std::thread::scope(", "receiver.try_recv()", "service.enroll_generation_publication(", "submission.acknowledgement.try_send(", "publication.listener.accept()", "verify_pinned_process(", "service.serve_generation_publication(", "let result = original()", "stopping.store(true", "phase.store(CLOSED", "stream.shutdown(Shutdown::Both)", "worker.join()"] }]
+required_function_order = [{ function = "fn bind(", sequence = ["validate_lane_paths(&paths", "UnixListener::bind(", "metadata.uid() != 0", "set_permissions(", "set_nonblocking(true)"] }, { function = "fn serve_optional(", sequence = ["compare_exchange(PREPARED, ACTIVE", "std::thread::scope(", "receiver.try_recv()", "service.enroll_generation_publication(", "submission.acknowledgement.try_send(", "publication.listener.accept()", "verify_pinned_process(", "service.serve_generation_publication(", "let result = original()", "stopping.store(true", "phase.store(CLOSED", "stream.shutdown(Shutdown::Both)", "worker\n            .join()"] }]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/neuron_generation_current_root.rs"
@@ -5312,13 +5312,13 @@ required_function_order = [{ function = "fn original_broker_publish(", sequence 
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/root_generation_current_client.rs"
-required = ["RootGenerationPublicationUncertain","Mutex<Option<Lane>>","let mut lane = held.take()","fenced.store(true","response.profile != self.profile","validate_head(&self.profile, &response.head)?","self.fence();","connection: crate::RootGenerationPublicationConnectionV1","self.connection.require_original_publication_session()"]
+required = ["RootGenerationPublicationUncertain","Mutex<Option<Lane>>","let mut lane = held.take()","fenced.store(true","response.profile != self.profile","validate_head(&self.profile, &response.head)?","self.fence();","connection: crate::RootGenerationPublicationConnectionV1","self\n            .connection\n            .require_original_publication_session()"]
 forbidden = ["AllowVerifier", "permit_all", "AuthorityPosture::ALLOW_ALL", "SigningKey", "CurrentStore::initialize", "connect("]
-required_function_order = [{ function = "fn from_original_stream(", sequence = ["connection.require_original_publication_session()?","Command::Observe","stream.exchange(","validate_head(profile, &response.head)?","connection.require_original_publication_session()?","Ok(Self {"] }, { function = "fn exchange(", sequence = ["self.fenced.load(","self.connection.require_original_publication_session()","self.lane.try_lock()","held.take()","lane.stream.exchange(","response.profile != self.profile","validate_head(&self.profile, &response.head)?","self.connection.require_original_publication_session()","*held = Some(lane)"] }]
+required_function_order = [{ function = "fn from_original_stream(", sequence = ["connection.require_original_publication_session()?","Command::Observe","stream\n            .exchange(","validate_head(profile, &response.head)?","connection.require_original_publication_session()?","Ok(Self {"] }, { function = "fn exchange(", sequence = ["self.fenced.load(","self\n            .connection\n            .require_original_publication_session()","self.lane.try_lock()","held.take()","lane\n            .stream\n            .exchange(","response.profile != self.profile","validate_head(&self.profile, &response.head)?","self\n            .connection\n            .require_original_publication_session()","*held = Some(lane)"] }]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/root_generation_publication_stream.rs"
-required = ["anon_inode:[pidfd]", "libc::SO_PEERCRED", "actual.uid != 0 || actual.pid != peer.pid as i32", "timeout > Duration::from_millis(500)", "lifetime > Duration::from_secs(300)", "fds[0].revents != 0"]
+required = ["anon_inode:[pidfd]", "libc::SO_PEERCRED", "actual.uid != 0\n            || actual.pid != peer.pid as i32", "timeout > Duration::from_millis(500)", "lifetime > Duration::from_secs(300)", "fds[0].revents != 0"]
 forbidden = ["AllowVerifier", "permit_all", "AuthorityPosture::ALLOW_ALL", "SigningKey", "block_on(", "UnixStream::connect("]
 required_function_order = [{ function = "fn exchange(", sequence = ["request.len() > 16_384", "check_lifetime(&self.root)", "self.write(", "self.read(&mut prefix", "size > 16_384", "self.read(&mut response", "check_lifetime(&self.root)", "Instant::now() >= end"] }]
 
@@ -5326,7 +5326,7 @@ required_function_order = [{ function = "fn exchange(", sequence = ["request.len
 path = "codex-rs/hepta-agentd/src/root_generation_publication_inputs.rs"
 required = ["libc::getuid()","bundle.root != original.root","bundle.consumer != original.consumer","bundle.writer != original.writer_proof.sha256()","OriginalPublicationStream::from_stream(","RootGenerationCurrentClient::from_original_stream(","NeuronGenerationCurrentOwnerV1::from_original_root_publication(","connection: RootGenerationPublicationConnectionV1","connection.original_launch_binding()","connection.require_original_publication_session()?"]
 forbidden = ["AllowVerifier", "permit_all", "AuthorityPosture::ALLOW_ALL", "SigningKey", "RootAuthorityDirectory::open", "HostAuthorityFrontierStore::initialize"]
-required_function_order = [{ function = "fn connect(", sequence = ["connection.require_original_publication_session()?","validate_sealed(&self.bootstrap","self.bootstrap.by_ref()","validate_sealed(&self.bootstrap","serde_json::from_slice(&raw)","connection.original_launch_binding()","bundle.purpose != PURPOSE","validate_lane_paths(","connection.require_original_publication_session()?","tokio::net::UnixStream::connect(","OriginalPublicationStream::from_stream(","connection.require_original_publication_session()?","RootGenerationCurrentClient::from_original_stream(","NeuronGenerationCurrentOwnerV1::from_original_root_publication("] }]
+required_function_order = [{ function = "fn connect(", sequence = ["connection.require_original_publication_session()?","validate_sealed(&self.bootstrap","self.bootstrap\n            .by_ref()","validate_sealed(&self.bootstrap","serde_json::from_slice(&raw)","connection.original_launch_binding()","bundle.purpose != PURPOSE","validate_lane_paths(","connection.require_original_publication_session()?","tokio::net::UnixStream::connect(","OriginalPublicationStream::from_stream(","connection.require_original_publication_session()?","RootGenerationCurrentClient::from_original_stream(","NeuronGenerationCurrentOwnerV1::from_original_root_publication("] }]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/root_generation_publication_handoff.rs"
@@ -5338,7 +5338,7 @@ required_function_order = [{ function = "fn send_root_generation_publication_han
 path = "codex-rs/hepta-neuron/src/cell_generation_observer.rs"
 required = ["self.binding.header()", "GenerationState::new(", "state.apply(", "head != expected", "self.witness_head()? != expected", "FilePin::read(&self.journal)? != self.journal_pin", "/proc/self/fd/"]
 forbidden = ["write_all(", "set_len(", "sync_all(", "try_lock_exclusive", "File::create("]
-required_function_order = [{ function = "fn observe(", sequence = ["self.stamps()?", "self.witness_head()?", "self.journal.read_exact_at(", "self.binding.header()", "GenerationState::new(", "next_anchor(", "state.apply(", "head != expected", "CellGenerationObservationV1::capture(", "self.witness_head()? != expected", "self.stamps()? != before"] }]
+required_function_order = [{ function = "fn observe(", sequence = ["self.stamps()?", "self.witness_head()?", "self.journal\n            .read_exact_at(", "self.binding.header()", "GenerationState::new(", "next_anchor(", "state.apply(", "head != expected", "CellGenerationObservationV1::capture(", "self.witness_head()? != expected", "self.stamps()? != before"] }]
 
 [[protected_file]]
 path = "codex-rs/hepta-neuron/src/witness_observer.rs"
@@ -5350,7 +5350,7 @@ required_function_order = [{ function = "fn read_original_file(", sequence = ["1
 path = "codex-rs/hepta-learning-artifacts/src/owner_original_reader.rs"
 required = ["fs::canonicalize(&root)? != root", "state.fenced = true", "state.floor = after.signed", "withdrawal_frontier::require_extension(floor, &current)"]
 forbidden = ["write_all(", "set_len(", "sync_all(", "try_lock_exclusive", "File::create("]
-required_function_order = [{ function = "fn read_original_registry(", sequence = ["state.fenced = true", "self.require_directories()?", "view.recovery_required_operations()?", "view.discover_current_head(now)?", "view.registry_at_current(&before)?", "view.discover_current_head(now)?", "before.signed != after.signed", "self.require_directories()?", "state.floor = after.signed", "state.fenced = false"] }, { function = "fn read_original_withdrawals(", sequence = ["state.fenced = true", "self.require_directories()?", "withdrawal_frontier::read_original(", "withdrawal_frontier::require_extension(", "self.require_directories()?", "state.withdrawal = Some(", "state.fenced = false"] }]
+required_function_order = [{ function = "fn read_original_registry(", sequence = ["state.fenced = true", "self.require_directories()?", "view.recovery_required_operations()?", "view\n            .discover_current_head(now)?", "view.registry_at_current(&before)?", "view\n            .discover_current_head(now)?", "before.signed != after.signed", "self.require_directories()?", "state.floor = after.signed", "state.fenced = false"] }, { function = "fn read_original_withdrawals(", sequence = ["state.fenced = true", "self.require_directories()?", "withdrawal_frontier::read_original(", "withdrawal_frontier::require_extension(", "self.require_directories()?", "state.withdrawal = Some(", "state.fenced = false"] }]
 
 [[protected_file]]
 path = "codex-rs/hepta-learning-artifacts/src/owner_read_view.rs"
@@ -5366,15 +5366,15 @@ required_function_order = [{ function = "fn commit(", sequence = ["complete_stag
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/neuron_generation_update_selection_root.rs"
-required = ["VerifiedCurrentRegistryViewV1", "self.candidate.with_current(", "after.snapshot() != withdrawal.snapshot()"]
+required = ["VerifiedCurrentRegistryViewV1", "self.candidate\n            .with_current(", "after.snapshot() != withdrawal.snapshot()"]
 forbidden = ["AllowVerifier", "permit_all", "AuthorityPosture::ALLOW_ALL", "SigningKey"]
-required_function_order = [{ function = "fn revalidate_original_artifacts(", sequence = ["now < self.observed_at", "reader.read_original_withdrawals()", "withdrawal.head_digest() != self.observation.withdrawal_head", "reader.read_original_registry(now)", "self.verifier.verify(", "verified.selection_digest()", "self.candidate.with_current(", "reader.read_original_withdrawals()", "after.snapshot() != withdrawal.snapshot()", "self.observed_at = now"] }]
+required_function_order = [{ function = "fn revalidate_original_artifacts(", sequence = ["now < self.observed_at", "reader.read_original_withdrawals()", "withdrawal.head_digest() != self.observation.withdrawal_head", "reader.read_original_registry(now)", "self\n            .verifier\n            .verify(", "verified.selection_digest()", "self.candidate\n            .with_current(", "reader.read_original_withdrawals()", "after.snapshot() != withdrawal.snapshot()", "self.observed_at = now"] }]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/cell_q24_publication_root_stage.rs"
-required = ["OriginalCellQ24RetainedArtifactForRootV1","OriginalCellQ24SelectedArtifactForRootV1","decision.require_root_publication()?","artifacts.read_original_publication(","with_original_publication(","current.require_original_root_selection(","validation::predecessor(","connection: crate::RootGenerationPublicationConnectionV1"]
+required = ["OriginalCellQ24RetainedArtifactForRootV1","OriginalCellQ24SelectedArtifactForRootV1","decision.require_root_publication()?","artifacts\n                        .read_original_publication(","with_original_publication(","current.require_original_root_selection(","validation::predecessor(","connection: crate::RootGenerationPublicationConnectionV1"]
 forbidden = ["AllowVerifier", "permit_all", "AuthorityPosture::ALLOW_ALL", "SigningKey", "RootAuthorityDirectory::open", "HostAuthorityFrontierStore::initialize", "NeuronGenerationCurrentOwnerV1::initialize", "spawn_blocking"]
-required_function_order = [{ function = "fn for_qualified_adoption(", sequence = ["Decision::new(snapshot)?","decision.require_root_publication()?","!decision.adopts()","owners.validate_recovery(","owners.original_publication_manifest(","original.require_current().await?"] }, { function = "fn from_original_result(", sequence = ["Decision::new(snapshot)?","decision.require_root_publication()?","decision.adopts()","owners.validate_recovery(","original.require_current().await?"] }, { function = "fn publish_candidate(", sequence = ["original.require_current().await?","validation::artifact_request(","with_original_publication(","self.original.decision.require_new_work()?","request.now = self.authorities.now()?","artifacts.publish(request)?"] }, { function = "fn connect_current(", sequence = ["self.original.require_current().await?","handoff.connect(","current.require_original_root_selection(","self.original.require_current().await?"] }, { function = "fn prepare_feature(", sequence = ["original.require_current().await?","original.decision.require_new_work()?","validation::feature_target(","validation::predecessor(","with_original_publication(","revalidate(","current::prepare_selected("] }, { function = "fn recover_feature(", sequence = ["original.require_current().await?","validation::feature_target(","with_original_publication(","revalidate(","current::recover_selected("] }]
+required_function_order = [{ function = "fn for_qualified_adoption(", sequence = ["Decision::new(snapshot)?","decision.require_root_publication()?","!decision.adopts()","owners.validate_recovery(","owners\n            .original_publication_manifest(","original.require_current().await?"] }, { function = "fn from_original_result(", sequence = ["Decision::new(snapshot)?","decision.require_root_publication()?","decision.adopts()","owners.validate_recovery(","original.require_current().await?"] }, { function = "fn publish_candidate(", sequence = ["original.require_current().await?","validation::artifact_request(","with_original_publication(","self.original.decision.require_new_work()?","request.now = self.authorities.now()?","artifacts.publish(request)?"] }, { function = "fn connect_current(", sequence = ["self.original.require_current().await?","handoff\n            .connect(","current.require_original_root_selection(","self.original.require_current().await?"] }, { function = "fn prepare_feature(", sequence = ["original.require_current().await?","original.decision.require_new_work()?","validation::feature_target(","validation::predecessor(","with_original_publication(","revalidate(","current::prepare_selected("] }, { function = "fn recover_feature(", sequence = ["original.require_current().await?","validation::feature_target(","with_original_publication(","revalidate(","current::recover_selected("] }]
 
 [[boundary]]
 id = "root_original_final_use_observer_enrollment"
@@ -5392,13 +5392,13 @@ receiver_type = "RootFinalUseObserverV1"
 definition_path = "codex-rs/hepta-contracts/src/final_use_root_observer.rs"
 definition_markers = ["pub fn verify_original_retained_use(", "RetainedUse::authenticate(", "retained.verify_state(&self.read_current()?)"]
 product_callers = ["codex-rs/hepta-agentd/src/authority_host_generation_publication.rs"]
-caller_markers = ["consumer: RootFinalUseObserverV1", "self.consumer.verify_original_retained_use("]
+caller_markers = ["consumer: RootFinalUseObserverV1", "self.consumer\n            .verify_original_retained_use("]
 
 [[protected_file]]
 path = "codex-rs/hepta-contracts/src/final_use_root_observer.rs"
 required = ["pub struct RootFinalUseObserverV1", "failed: AtomicBool", "metadata.uid() == consumer_uid && metadata.mode() & 0o077 == 0", "self.dev == other.dev && self.ino == other.ino", "open_file(&directory, \"authority.lock\", consumer_uid)?", "open_file(&directory, \"authority.claims\", consumer_uid)?", "self.read_file(\"authority.json\", 8 * 1024 * 1024)?", "self.read_file(\"authority.claims\", (MAX_CLAIMS + 1) * CLAIM_FRAME_BYTES)?", "self.require_readback(\"authority.json\", &snapshot)?", "self.require_readback(\"authority.claims\", &claims)?", "pub fn issuer_trust_digest(&self) -> [u8; 32]"]
 forbidden = ["SigningKey", "Store::open", "try_lock", "compare_and_set", "set_len(", ".write_all(", "OFlags::CREATE", "FinalUseAuthority {"]
-required_function_order = [{ function = "fn open_original(", sequence = ["rustix::process::geteuid().as_raw() != 0", "consumer_uid == 0", "consumer_uid == u32::MAX", "!directory.is_absolute()", "!identifier(&signer_id)", "pin_issuer_keys(issuer_keys)?", "open_directory(directory, consumer_uid)?", "let lock = open_file(&directory,", "let claims = open_file(&directory,", "observer.read_current()?", "Ok(observer)"] }, { function = "fn verify_original_retained_use(", sequence = ["RetainedUse::authenticate(", "&self.issuer_keys", "retained.verify_state(&self.read_current()?)"] }, { function = "fn read_current(", sequence = ["self.failed.load(Ordering::Acquire)", "rustix::process::geteuid().as_raw() != 0", "self.require_original_files()?", "let before = self.frontier.load", "let snapshot = self.read_file(", "stored.schema != STATE_SCHEMA_V3", "stored.signer_id != self.signer_id", "stored.trust != StoreTrust::IssuerKeyRing(self.issuer_trust_sha256)", "!valid_head(&stored.head)", "let claims = self.read_file(", "claims.stamp.same_inode", "decode_claims(&claims.bytes, stored.head.authority_epoch)?", "frontier_for_state(&state) != before", "self.frontier.load(&self.signer_id).map_err(map_trust_error)? != before", "&snapshot)?", "&claims)?", "self.require_original_files()?", "self.failed.load(Ordering::Acquire)", "if result.is_err()", "self.failed.store(true, Ordering::Release)"] }, { function = "fn require_original_files(", sequence = ["open_directory(&self.directory_path, self.consumer_uid)?", "let named_lock = open_file(&self.directory,", "let named_claims = open_file(&self.directory,", "FileStamp::read(&directory)?.same_inode", "FileStamp::read(&self.lock)? != self.lock_stamp", "FileStamp::read(&named_lock)? != self.lock_stamp", "FileStamp::read(&named_claims)?.same_inode"] }, { function = "fn read_file(", sequence = ["open_file(&self.directory, name, self.consumer_uid)?", "FileStamp::read(&file)?", ".take(maximum as u64 + 1)", ".read_to_end(&mut bytes)", "bytes.len() > maximum || stamp.len != bytes.len() as u64", "self.require_readback(name, &readback)?", "Ok(readback)"] }, { function = "fn require_readback(", sequence = ["open_file(&self.directory, name, self.consumer_uid)?", "FileStamp::read(&readback.file)? != readback.stamp", "FileStamp::read(&named)? != readback.stamp"] }, { function = "fn open_directory(", sequence = ["OFlags::RDONLY | OFlags::DIRECTORY | OFlags::NOFOLLOW | OFlags::CLOEXEC", "!metadata.is_dir() || !private(&metadata, consumer_uid)"] }, { function = "fn open_file(", sequence = ["OFlags::RDONLY | OFlags::NOFOLLOW | OFlags::CLOEXEC | OFlags::NONBLOCK", "!metadata.is_file() || metadata.nlink() != 1 || !private(&metadata, consumer_uid)"] }, { function = "fn issuer_trust_digest(", sequence = ["self.issuer_trust_sha256"] }]
+required_function_order = [{ function = "fn open_original(", sequence = ["rustix::process::geteuid().as_raw() != 0", "consumer_uid == 0", "consumer_uid == u32::MAX", "!directory.is_absolute()", "!identifier(&signer_id)", "pin_issuer_keys(issuer_keys)?", "open_directory(directory, consumer_uid)?", "let lock = open_file(&directory,", "let claims = open_file(&directory,", "observer.read_current()?", "Ok(observer)"] }, { function = "fn verify_original_retained_use(", sequence = ["RetainedUse::authenticate(", "&self.issuer_keys", "retained.verify_state(&self.read_current()?)"] }, { function = "fn read_current(", sequence = ["self.failed.load(Ordering::Acquire)", "rustix::process::geteuid().as_raw() != 0", "self.require_original_files()?", "let before = self\n                .frontier\n                .load", "let snapshot = self.read_file(", "stored.schema != STATE_SCHEMA_V3", "stored.signer_id != self.signer_id", "stored.trust != StoreTrust::IssuerKeyRing(self.issuer_trust_sha256)", "!valid_head(&stored.head)", "let claims =\n                self.read_file(", "claims.stamp.same_inode", "decode_claims(&claims.bytes, stored.head.authority_epoch)?", "frontier_for_state(&state) != before", "self\n                    .frontier\n                    .load(&self.signer_id)\n                    .map_err(map_trust_error)?\n                    != before", "&snapshot)?", "&claims)?", "self.require_original_files()?", "self.failed.load(Ordering::Acquire)", "if result.is_err()", "self.failed.store(true, Ordering::Release)"] }, { function = "fn require_original_files(", sequence = ["open_directory(&self.directory_path, self.consumer_uid)?", "let named_lock = open_file(&self.directory,", "let named_claims = open_file(&self.directory,", "FileStamp::read(&directory)?.same_inode", "FileStamp::read(&self.lock)? != self.lock_stamp", "FileStamp::read(&named_lock)? != self.lock_stamp", "FileStamp::read(&named_claims)?.same_inode"] }, { function = "fn read_file(", sequence = ["open_file(&self.directory, name, self.consumer_uid)?", "FileStamp::read(&file)?", ".take(maximum as u64 + 1)", ".read_to_end(&mut bytes)", "bytes.len() > maximum || stamp.len != bytes.len() as u64", "self.require_readback(name, &readback)?", "Ok(readback)"] }, { function = "fn require_readback(", sequence = ["open_file(&self.directory, name, self.consumer_uid)?", "FileStamp::read(&readback.file)? != readback.stamp", "FileStamp::read(&named)? != readback.stamp"] }, { function = "fn open_directory(", sequence = ["OFlags::RDONLY | OFlags::DIRECTORY | OFlags::NOFOLLOW | OFlags::CLOEXEC", "!metadata.is_dir() || !private(&metadata, consumer_uid)"] }, { function = "fn open_file(", sequence = ["OFlags::RDONLY | OFlags::NOFOLLOW | OFlags::CLOEXEC | OFlags::NONBLOCK", "!metadata.is_file() || metadata.nlink() != 1 || !private(&metadata, consumer_uid)"] }, { function = "fn issuer_trust_digest(", sequence = ["self.issuer_trust_sha256"] }]
 
 [[protected_file]]
 path = "codex-rs/hepta-contracts/src/final_use_retained.rs"
@@ -5556,7 +5556,7 @@ required_function_order = [
   { function = "fn resume_from_original_source(", sequence = ["self.capture(&mut state)?","self.require_ledger(ledger)?","decision_signing_payload_v2(&captured.decision)?","state.journal.read(&self.decision_key)","witnessed_snapshot(ledger)?","journal.commit_once(","binding::sign(","binding::decode(&bytes)?","let (snapshot, frontier) = original_snapshot(ledger)?","if !witnessed","ledger.append_decision(","self.resume_original_outcome(","self.status("] },
   { function = "fn prepare_learning(", sequence = ["self.prepare_dataset(","OriginalCellQ24DatasetFreezeOwnerV1::create(","OriginalCellQ24DatasetFreezeOwnerV1::recover(","preparation.authorize_and_materialize(&mut owner)?","self.readback()?","prepared.revalidate_source()?"] },
   { function = "fn recover_learning(", sequence = ["!matches!(freeze.open_mode, CircuitQ24TaskOpenModeV1::Recover)","self.capture(&mut state)?","self.status(","config.projection.unit_profile_digest != self.config.unit_profile_digest","original_history.push(captured.task.clone())","CellQ24DatasetFreezePreparationV1::recover(","OriginalCellQ24DatasetFreezeOwnerV1::recover(","owner.readback(&preparation)?","authorization != frozen.authorization","crate::CellQ24PreparedLearningV1::recover(","self.require_source(&captured)?","self.readback()?","prepared.revalidate_source()?"] },
-  { function = "fn capture(", sequence = ["self.source.read_run_publication(","cell.committed(&publication)","CellQ24DatasetTaskV1::capture(","binding::decision(","self.require_source(&captured)?","state.captured = Some(captured.clone())"] },
+  { function = "fn capture(", sequence = ["self\n            .source\n            .read_run_publication(","cell\n            .committed(&publication)","CellQ24DatasetTaskV1::capture(","binding::decision(","self.require_source(&captured)?","state.captured = Some(captured.clone())"] },
 ]
 
 [[protected_file]]
@@ -5610,7 +5610,7 @@ path = "codex-rs/hepta-agentd/src/objective_learning_outbox.rs"
 required = ["original_state: &crate::AgentdState","record.disposition == RunStartObjectiveDispositionV1::Compiled"]
 forbidden = [".enqueue_circuit_learning(","execute_circuit_task_record(",".submit("]
 required_function_order = [
-  { function = "fn reconcile_learning_outbox(", sequence = ["original_state.circuit_learning_origin(source_run_id).is_none()","state","journal",".records()",".bounded_circuit_committed_trace(run_id)","trace.run().outcome().is_none() || trace.run().unresolved() != 0","original_state.observe_circuit_learning(&record, &trace).await",".enqueue_original_circuit_learning(&record, &trace, readiness)"] },
+  { function = "fn reconcile_learning_outbox(", sequence = ["original_state\n            .circuit_learning_origin(source_run_id)\n            .is_none()","state","journal",".records()",".bounded_circuit_committed_trace(run_id)","trace.run().outcome().is_none() || trace.run().unresolved() != 0","original_state\n                .observe_circuit_learning(&record, &trace)\n                .await",".enqueue_original_circuit_learning(&record, &trace, readiness)"] },
 ]
 
 [[protected_file]]
@@ -5618,7 +5618,7 @@ path = "codex-rs/hepta-agentd/src/learning_iteration_delivery_runtime.rs"
 required = ["Self::HostStageOwners => false","Self::OriginalObjective | Self::OriginalQ24 => true"]
 forbidden = []
 required_function_order = [
-  { function = "fn attach_sources(", sequence = ["state.attach_circuit_learning_delivery(","self.requests.iter().map(|request| request.source_run_id.clone()).collect()","self.source"] },
+  { function = "fn attach_sources(", sequence = ["state.attach_circuit_learning_delivery(","self.requests\n                .iter()\n                .map(|request| request.source_run_id.clone())\n                .collect()","self.source"] },
 ]
 
 [[protected_file]]
@@ -6003,13 +6003,13 @@ path = "codex-rs/hepta-agentd/src/cell_q24_retained_learning_source.rs"
 required = ["producer: Arc<OriginalCellQ24TaskLedgerProducerV1>","database: File","fenced: AtomicBool","state: Arc::clone(&self.state)","task: OriginalTaskCustodyV1::Retained"]
 forbidden = ["pub producer:","pub prepared:","pub registered:","SigningKey::",".sign(",".append_decision(",".append_outcome(",".resume_from_original_source(",".write(",".create(","OriginalTaskCustodyV1::Active"]
 required_function_order = [
-  { function = "fn retained_learning_source(", sequence = ["prepared.require_original_task_ledger(&self.ledger)","store.owner_agent_id()","self.capture(&mut state)","self.status(","prepared.read_validated_facts()","facts.experience()","snapshot.records().contains(&decision)","snapshot.records().contains(&outcome)","OpenOptions::new()","libc::O_NOFOLLOW","bounded_circuit_committed_trace(","trace.history_digest() != captured.publication.history_digest()","OriginalCellQ24TaskLedgerProducerV1 {","state: Arc::clone(&self.state)","task: OriginalTaskCustodyV1::Retained","source.read_original().await?"] },
-  { function = "fn register_original_scope(", sequence = ["self.prepared.require_initial(initial, scope)","consumer.agent_id != self.producer.identity.agent_id","RegisteredCellQ24RetainedSourceV1 { source: self, consumer }"] },
-  { function = "fn read_accepted(", sequence = ["self.prepared.require_original_task_ledger(&self.producer.ledger)","self.require_database()?","self.producer.status(","decision == self.decision && outcome == self.outcome","witnessed_snapshot(&ledger)","self.prepared.revalidate_source()","self.require_database()?"] },
+  { function = "fn retained_learning_source(", sequence = ["prepared\n            .require_original_task_ledger(&self.ledger)","store.owner_agent_id()","self.capture(&mut state)","self\n                .status(","prepared.read_validated_facts()","facts.experience()","snapshot\n                .records()\n                .contains(&decision)","snapshot\n                .records()\n                .contains(&outcome)","OpenOptions::new()","libc::O_NOFOLLOW","bounded_circuit_committed_trace(","trace.history_digest() != captured.publication.history_digest()","OriginalCellQ24TaskLedgerProducerV1 {","state: Arc::clone(&self.state)","task: OriginalTaskCustodyV1::Retained","source.read_original().await?"] },
+  { function = "fn register_original_scope(", sequence = ["self.prepared\n            .require_initial(initial, scope)","consumer.agent_id != self.producer.identity.agent_id","RegisteredCellQ24RetainedSourceV1 {\n            source: self,\n            consumer,\n        }"] },
+  { function = "fn read_accepted(", sequence = ["self.prepared\n            .require_original_task_ledger(&self.producer.ledger)","self.require_database()?","self\n                .producer\n                .status(","decision == self.decision && outcome == self.outcome","witnessed_snapshot(&ledger)","self.prepared.revalidate_source()","self.require_database()?"] },
   { function = "fn read_original(", sequence = ["self.fenced.load(Ordering::Acquire)","self.read_accepted()?","bounded_circuit_committed_trace(","trace != self.trace || self.read_accepted()? != before","Err(error) =>","self.fenced.store(","Err(error)","!self.fenced.load(Ordering::Acquire)"] },
   { function = "fn require_database(", sequence = ["self.database.metadata()?","symlink_metadata(self.store.path())?","retained.nlink() != 1","retained.ino() != current.ino()","Err(error) =>","self.fenced.store(","!self.fenced.load(Ordering::Acquire)"] },
   { function = "fn original_outbox(", sequence = ["consumer != &self.consumer","request != &self.source.prepared.initial().request","self.source.require_database()?","Ok(self.source.store.clone())"] },
-  { function = "fn observe_retained_learning(", sequence = ["consumer != &self.consumer","self.source.read_original().await?","OriginalCellQ24RetainedLearningReadyV1 { registered: Arc::clone(self), cut }"] },
+  { function = "fn observe_retained_learning(", sequence = ["consumer != &self.consumer","self.source.read_original().await?","OriginalCellQ24RetainedLearningReadyV1 {\n            registered: Arc::clone(self),\n            cut,\n        }"] },
   { function = "fn require_retained_task(", sequence = ["!Arc::ptr_eq(&self.registered, registered)","consumer != &registered.consumer","record != registered.original_record()","trace != registered.original_trace()","self.registered.source.read_original().await? != self.cut"] },
 ]
 
@@ -6026,9 +6026,9 @@ path = "codex-rs/hepta-agentd/src/state_retained_learning_source.rs"
 required = ["retained_source: Some(source)","CircuitLearningSourceV1::OriginalQ24"]
 forbidden = ["Ready {","SigningKey",".submit(",".publish_result("]
 required_function_order = [
-  { function = "fn attach_original_retained_learning_source(", sequence = ["source.original_outbox(self.identity(), source.request())?","self.circuit_learning_source.set(","sources: vec![source.source_run_id().clone()]","origin: CircuitLearningSourceV1::OriginalQ24","retained_source: Some(source)"] },
+  { function = "fn attach_original_retained_learning_source(", sequence = ["source.original_outbox(self.identity(), source.request())?","self.circuit_learning_source\n            .set(","sources: vec![source.source_run_id().clone()]","origin: CircuitLearningSourceV1::OriginalQ24","retained_source: Some(source)"] },
   { function = "fn retained_circuit_learning_source(", sequence = ["self.circuit_learning_source.get()?","registry.retained_source.as_ref()?","matches!(registry.origin, CircuitLearningSourceV1::OriginalQ24)","registry.sources.as_slice() == std::slice::from_ref(run)","source.source_run_id() == run"] },
-  { function = "fn reconcile_retained_learning_source(", sequence = ["source.observe_retained_learning(self.identity()).await?","self.enqueue_original_circuit_learning(","source.original_record(), source.original_trace()","CircuitTaskLearningReadinessV1::Retained(ready)"] },
+  { function = "fn reconcile_retained_learning_source(", sequence = ["source.observe_retained_learning(self.identity()).await?","self.enqueue_original_circuit_learning(","source.original_record(),\n            source.original_trace()","CircuitTaskLearningReadinessV1::Retained(ready)"] },
 ]
 
 [[protected_file]]
@@ -6036,7 +6036,7 @@ path = "codex-rs/hepta-agentd/src/objective_retained_learning_source.rs"
 required = ["source.original_identity()","current.intent != delivery.intent"]
 forbidden = [".enqueue_circuit_learning(",".claim_circuit_learning(",".acknowledge_circuit_learning(","SigningKey",".sign("]
 required_function_order = [
-  { function = "fn require_registered_retained_source(", sequence = ["source.original_outbox(self.identity(), request)?","source.observe_retained_learning(self.identity()).await?","self.require_retained_source_authentication(source)?","store.circuit_learning_delivery(","intent.source_run_id != request.source_run_id.as_str()","intent.operation_id != request.operation_id.as_str()","intent.completed_task_receipt.as_str() != request.completed_task_receipt.to_string()","intent.objective_digest.as_str() != request.envelope.objective_digest.to_string()","store.bounded_circuit_committed_trace(","observed.require_retained_task(","store.circuit_learning_delivery(","current.intent != delivery.intent","observed.require_retained_task(","self.require_retained_source_authentication(source)"] },
+  { function = "fn require_registered_retained_source(", sequence = ["source.original_outbox(self.identity(), request)?","source.observe_retained_learning(self.identity()).await?","self.require_retained_source_authentication(source)?","store\n            .circuit_learning_delivery(","intent.source_run_id != request.source_run_id.as_str()","intent.operation_id != request.operation_id.as_str()","intent.completed_task_receipt.as_str() != request.completed_task_receipt.to_string()","intent.objective_digest.as_str() != request.envelope.objective_digest.to_string()","store\n            .bounded_circuit_committed_trace(","observed\n            .require_retained_task(","store\n            .circuit_learning_delivery(","current.intent != delivery.intent","observed\n            .require_retained_task(","self.require_retained_source_authentication(source)"] },
   { function = "fn require_retained_source_authentication(", sequence = ["authbus_ingress::require_objective_ready(self)?","authbus_ingress::attached(self)?.trust(self)?","authenticate_learning_source_at(","source.original_record()","source.original_identity()","authbus_ingress::now_ms()?"] },
 ]
 
@@ -6045,8 +6045,8 @@ path = "codex-rs/hepta-agentd/src/production_q24_retained_learning.rs"
 required = ["producer: Arc<OriginalCellQ24TaskLedgerProducerV1>","original_store: AutomationStore"]
 forbidden = ["File::open","OpenOptions","SigningKey","serde_json","AgentdConfig::new"]
 required_function_order = [
-  { function = "fn receive_q24_learning_from_retained_source(", sequence = ["producer.retained_learning_source(","Arc::clone(&inputs.prepared)","drop(producer)","self.receive_q24_learning_with_retained_capability(inputs, source)"] },
-  { function = "fn assemble_q24_learning_from_retained_source(", sequence = ["producer.retained_learning_source(","Arc::clone(&inputs.prepared)","drop(producer)","self.assemble_q24_learning_with_retained_capability(config, inputs, source)"] },
+  { function = "fn receive_q24_learning_from_retained_source(", sequence = ["producer\n            .retained_learning_source(","Arc::clone(&inputs.prepared)","drop(producer)","self.receive_q24_learning_with_retained_capability(inputs, source)"] },
+  { function = "fn assemble_q24_learning_from_retained_source(", sequence = ["producer\n            .retained_learning_source(","Arc::clone(&inputs.prepared)","drop(producer)","self.assemble_q24_learning_with_retained_capability(config, inputs, source)"] },
   { function = "fn receive_q24_learning_with_retained_capability(", sequence = ["self.receive_q24_learning(inputs).await?","retain_in_config(config, source)?"] },
   { function = "fn assemble_q24_learning_with_retained_capability(", sequence = ["self.assemble_q24_learning(config, inputs).await?","retain_in_config(config, source)?"] },
   { function = "fn retain_in_config(", sequence = ["config.take_learning_iteration_bootstrap()","bootstrap.with_retained_q24_source(source, config.identity())?","config.with_learning_iteration_bootstrap(bootstrap)"] },
@@ -6057,7 +6057,7 @@ path = "codex-rs/hepta-agentd/src/cell_q24_task_ledger.rs"
 required = ["state: Arc<Mutex<State>>","enum OriginalTaskCustodyV1","task: OriginalTaskCustodyV1::Active { cell, published }"]
 forbidden = []
 required_function_order = [
-  { function = "fn capture(", sequence = ["if let Some(captured) = &state.captured","self.require_source(captured)?","return Ok(captured.clone())","OriginalTaskCustodyV1::Active { cell, published } = &self.task","original task capture was not retained","self.source.read_run_publication(","cell.committed(&publication)","CellQ24DatasetTaskV1::capture(","state.captured = Some(captured.clone())"] },
+  { function = "fn capture(", sequence = ["if let Some(captured) = &state.captured","self.require_source(captured)?","return Ok(captured.clone())","OriginalTaskCustodyV1::Active { cell, published } = &self.task","original task capture was not retained","self\n            .source\n            .read_run_publication(","cell\n            .committed(&publication)","CellQ24DatasetTaskV1::capture(","state.captured = Some(captured.clone())"] },
 ]
 
 [[protected_file]]
@@ -6065,7 +6065,7 @@ path = "codex-rs/hepta-agentd/src/cell_q24_dataset_materializer.rs"
 required = []
 forbidden = []
 required_function_order = [
-  { function = "fn require_original_ledger_capability(", sequence = ["self.source.as_ref().ok_or(","!Arc::ptr_eq(&source.ledger, ledger)","source.require_batch(self)"] },
+  { function = "fn require_original_ledger_capability(", sequence = ["self\n            .source\n            .as_ref()\n            .ok_or(","!Arc::ptr_eq(&source.ledger, ledger)","source.require_batch(self)"] },
 ]
 
 [[protected_file]]
@@ -6081,8 +6081,8 @@ path = "codex-rs/hepta-agentd/src/circuit_task_learning.rs"
 required = ["Retained(crate::OriginalCellQ24RetainedLearningReadyV1)"]
 forbidden = []
 required_function_order = [
-  { function = "fn observe_circuit_learning(", sequence = ["self.retained_circuit_learning_source(&record.snapshot.run_id)","source.observe_retained_learning(self.identity()).await","ready.require_retained_task(source, self.identity(), record, trace).await","CircuitTaskLearningReadinessV1::Retained(ready)","self.circuit_task_invocation.get()"] },
-  { function = "fn enqueue_original_circuit_learning(", sequence = ["CircuitTaskLearningReadinessV1::Retained(ready)","self.retained_circuit_learning_source(&record.snapshot.run_id)","ready.require_retained_task(source, self.identity(), record, trace).await?","source.original_outbox(self.identity(), source.request())?","store.enqueue_circuit_learning(trace, objective).await","intent.operation_id != source.request().operation_id.as_str()","ready.require_retained_task(source, self.identity(), record, trace).await?","CircuitTaskLearningReadinessV1::Ready(ready)","ready.require_task(self.identity(), record, trace)?"] },
+  { function = "fn observe_circuit_learning(", sequence = ["self.retained_circuit_learning_source(&record.snapshot.run_id)","source.observe_retained_learning(self.identity()).await","ready\n                        .require_retained_task(source, self.identity(), record, trace)\n                        .await","CircuitTaskLearningReadinessV1::Retained(ready)","self.circuit_task_invocation.get()"] },
+  { function = "fn enqueue_original_circuit_learning(", sequence = ["CircuitTaskLearningReadinessV1::Retained(ready)","self.retained_circuit_learning_source(&record.snapshot.run_id)","ready\n                    .require_retained_task(source, self.identity(), record, trace)\n                    .await?","source.original_outbox(self.identity(), source.request())?","store\n                    .enqueue_circuit_learning(trace, objective)\n                    .await","intent.operation_id != source.request().operation_id.as_str()","ready\n                    .require_retained_task(source, self.identity(), record, trace)\n                    .await?","CircuitTaskLearningReadinessV1::Ready(ready)","ready.require_task(self.identity(), record, trace)?"] },
 ]
 
 [[protected_file]]
@@ -6090,7 +6090,7 @@ path = "codex-rs/hepta-agentd/src/objective_learning_outbox.rs"
 required = []
 forbidden = []
 required_function_order = [
-  { function = "fn reconcile_learning_outbox(", sequence = ["let Some(source_run_id) = source_run_id","original_state.retained_circuit_learning_source(source_run_id)","return original_state.reconcile_retained_learning_source(source).await","original_state.circuit_learning_origin(source_run_id).is_none()","let state = self"] },
+  { function = "fn reconcile_learning_outbox(", sequence = ["let Some(source_run_id) = source_run_id","original_state.retained_circuit_learning_source(source_run_id)","return original_state\n                .reconcile_retained_learning_source(source)\n                .await","original_state\n            .circuit_learning_origin(source_run_id)\n            .is_none()","let state = self"] },
 ]
 
 [[protected_file]]
@@ -6098,7 +6098,7 @@ path = "codex-rs/hepta-agentd/src/objective_learning_source.rs"
 required = []
 forbidden = []
 required_function_order = [
-  { function = "fn require_circuit_learning_source(", sequence = ["request.agent_id.as_str() != self.identity().agent_id.as_str()",".contains(&request.source_run_id)","self.retained_circuit_learning_source(&request.source_run_id)","return self.require_registered_retained_source(request, source).await","let host = self","host.learning_source_record(request)?"] },
+  { function = "fn require_circuit_learning_source(", sequence = ["request.agent_id.as_str() != self.identity().agent_id.as_str()",".contains(&request.source_run_id)","self.retained_circuit_learning_source(&request.source_run_id)","return self\n                .require_registered_retained_source(request, source)\n                .await","let host = self","host.learning_source_record(request)?"] },
 ]
 
 [[protected_file]]
@@ -6159,7 +6159,7 @@ call_pattern = "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)enrollment_inputs\\s*\\("
 id = "root_artifact_original_selection_files"
 symbol = "LearningArtifactReadViewV1::locate_selected_original_files"
 definition_path = "codex-rs/hepta-learning-artifacts/src/owner_selection_files.rs"
-definition_markers = ["pub fn locate_selected_original_files(","self.read_original_registry(now)?","selector.verify(","view.registry_snapshot_path(before.receipt())","withdrawals.head_digest() != withdrawals_after.head_digest()"]
+definition_markers = ["pub fn locate_selected_original_files(","self.read_original_registry(now)?","selector\n            .verify(","view.registry_snapshot_path(before.receipt())","withdrawals.head_digest() != withdrawals_after.head_digest()"]
 product_callers = ["codex-rs/hepta-agentd/src/authority_host_publication_deployment_inputs.rs"]
 caller_markers = []
 call_pattern = "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)locate_selected_original_files\\s*\\("
@@ -6180,17 +6180,17 @@ required_function_order = [{ function = "fn open_metadata(", sequence = ["requir
 path = "codex-rs/hepta-agentd/src/authority_host_publication_deployment_data.rs"
 required = ["#[serde(deny_unknown_fields)]","pub(super) struct DeploymentData","pub(super) struct LateMaterial","pub target: ObserverData","pub selection: SelectionData","required_option","from_original_selection(","data.original_selection()? != *original"]
 forbidden = ["AllowVerifier","permit_all","AuthorityPosture::ALLOW_ALL","SigningKey","FinalUseAuthority::","HostAuthorityFrontierStore::initialize","NeuronGenerationCurrentOwnerV1::initialize"]
-required_function_order = [{ function = "fn original_selection(", sequence = ["Ok(SignedArtifactSelectionV1","self.signature.as_slice().try_into()"] }, { function = "fn from_original_selection(", sequence = ["original.artifact_kind != ArtifactKind::Model","let data = Self","data.original_selection()? != *original","Ok(data)"] }]
+required_function_order = [{ function = "fn original_selection(", sequence = ["Ok(SignedArtifactSelectionV1","self\n                .signature\n                .as_slice()\n                .try_into()"] }, { function = "fn from_original_selection(", sequence = ["original.artifact_kind != ArtifactKind::Model","let data = Self","data.original_selection()? != *original","Ok(data)"] }]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/authority_host_publication_deployment_inputs.rs"
 required = ["self.require_original_inputs()?","read_dataset_withdrawal_snapshot(","data.selector_trust.original_selector(&trust)?","LearningArtifactReadViewV1::open_original(","with_original_withdrawal_floor(","locate_selected_original_files(","OriginalFile::open_original(","RootGenerationPublicationEnrollmentV1","Mode::Reserve","Mode::Recover"]
 forbidden = ["AllowVerifier","permit_all","AuthorityPosture::ALLOW_ALL","SigningKey","FinalUseAuthority::","HostAuthorityFrontierStore::initialize","NeuronGenerationCurrentOwnerV1::initialize"]
-required_function_order = [{ function = "fn enrollment_inputs(", sequence = ["self.require_original_inputs()?","material.schema_version != 1","data.owner_trust.original_owner_trust()?","data.selector_trust.original_selector(&trust)?","read_dataset_withdrawal_snapshot(","material.selection.original_selection()?","LearningArtifactReadViewV1::open_original(","with_original_withdrawal_floor(","reader.locate_selected_original_files(","OriginalFile::open_original(&paths.0)?","OriginalFile::open_original(&paths.1)?","reader.locate_selected_original_files(","RootGenerationPublicationEnrollmentV1","self.require_original_inputs()?","Ok((inputs"] }]
+required_function_order = [{ function = "fn enrollment_inputs(", sequence = ["self.require_original_inputs()?","material.schema_version != 1","data.owner_trust.original_owner_trust()?","data.selector_trust.original_selector(&trust)?","read_dataset_withdrawal_snapshot(","material.selection.original_selection()?","LearningArtifactReadViewV1::open_original(","with_original_withdrawal_floor(","reader\n            .locate_selected_original_files(","OriginalFile::open_original(&paths.0)?","OriginalFile::open_original(&paths.1)?","reader\n            .locate_selected_original_files(","RootGenerationPublicationEnrollmentV1","self.require_original_inputs()?","Ok((inputs"] }]
 
 [[protected_file]]
 path = "codex-rs/hepta-learning-artifacts/src/owner_selection_files.rs"
-required = ["self.read_original_registry(now)?","self.read_original_withdrawals()?","selector.verify(","view.registry_snapshot_path(before.receipt())","before.receipt() != after.receipt()","before.witness_digest() != after.witness_digest()","before.trust_digest() != after.trust_digest()","withdrawals.head_digest() != withdrawals_after.head_digest()"]
+required = ["self.read_original_registry(now)?","self.read_original_withdrawals()?","selector\n            .verify(","view.registry_snapshot_path(before.receipt())","before.receipt() != after.receipt()","before.witness_digest() != after.witness_digest()","before.trust_digest() != after.trust_digest()","withdrawals.head_digest() != withdrawals_after.head_digest()"]
 forbidden = ["AllowVerifier","permit_all","AuthorityPosture::ALLOW_ALL","SigningKey","FinalUseAuthority::","HostAuthorityFrontierStore::initialize","NeuronGenerationCurrentOwnerV1::initialize"]
-required_function_order = [{ function = "fn locate_selected_original_files(", sequence = ["self.read_original_registry(now)?","self.read_original_withdrawals()?","selector.verify(","directory(&self.root","view.registry_snapshot_path(before.receipt())","fs::canonicalize(&registry)?","self.read_original_registry(now)?","self.read_original_withdrawals()?","before.receipt() != after.receipt()","selector.verify(","Ok((registry, payload))"] }]
+required_function_order = [{ function = "fn locate_selected_original_files(", sequence = ["self.read_original_registry(now)?","self.read_original_withdrawals()?","selector\n            .verify(","directory(&self.root","view.registry_snapshot_path(before.receipt())","fs::canonicalize(&registry)?","self.read_original_registry(now)?","self.read_original_withdrawals()?","before.receipt() != after.receipt()","selector\n            .verify(","Ok((registry, payload))"] }]
 

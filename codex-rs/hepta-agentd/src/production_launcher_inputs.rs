@@ -166,7 +166,9 @@ pub(super) fn parse(
         .map(descriptor_number)
         .transpose()?;
     if publication_handoff.is_some() && learning_handoff.is_none() {
-        return Err(invalid("original publication requires its learning handoff"));
+        return Err(invalid(
+            "original publication requires its learning handoff",
+        ));
     }
     let notes = selected
         .remove("--notes-production-handoff-fd")

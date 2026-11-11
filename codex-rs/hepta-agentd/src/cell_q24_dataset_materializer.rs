@@ -198,9 +198,14 @@ impl CellQ24TrainingBatchV1 {
         &self,
         ledger: &Arc<Mutex<LedgerWriter>>,
     ) -> Result<(), Error> {
-        let source = self.source.as_ref().ok_or(Error::Binding("original Dataset capability missing"))?;
+        let source = self
+            .source
+            .as_ref()
+            .ok_or(Error::Binding("original Dataset capability missing"))?;
         if !Arc::ptr_eq(&source.ledger, ledger) {
-            return Err(Error::Binding("original Dataset and producer Ledger differ"));
+            return Err(Error::Binding(
+                "original Dataset and producer Ledger differ",
+            ));
         }
         source.require_batch(self)
     }

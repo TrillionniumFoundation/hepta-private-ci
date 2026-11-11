@@ -301,6 +301,8 @@ mod calculator_recovery_process;
 mod calculator_recovery_selection;
 mod cell_composed_q24;
 mod cell_q24_backend;
+#[cfg(target_os = "linux")]
+mod cell_q24_task_ledger;
 mod cell_temporal_q24;
 mod circuit_cell;
 mod circuit_cell_binding;
@@ -317,12 +319,8 @@ mod circuit_feature_learning_handoff;
 mod circuit_learning_delivery;
 #[cfg(target_os = "linux")]
 mod circuit_q24_task_profile;
-mod circuit_task_learning;
-#[cfg(target_os = "linux")]
-mod production_q24_retained_learning;
-#[cfg(target_os = "linux")]
-mod cell_q24_task_ledger;
 mod circuit_task;
+mod circuit_task_learning;
 #[cfg(target_os = "linux")]
 mod cpu_policy;
 #[cfg(target_os = "linux")]
@@ -362,6 +360,8 @@ mod learning_iteration;
 mod learning_iteration_evidence_client;
 #[cfg(target_os = "linux")]
 mod learning_iteration_generation_evidence;
+#[cfg(target_os = "linux")]
+mod production_q24_retained_learning;
 #[cfg(target_os = "linux")]
 pub use learning_iteration_evidence_client::AuthenticatedCellLearningEvaluationV1;
 #[cfg(target_os = "linux")]
@@ -547,6 +547,24 @@ pub use cell_q24_source_receipt_owner::OriginalCellQ24SourceReceiptOwnerV1;
 pub use cell_q24_source_receipt_owner::OriginalCellQ24SourceSigningConfigV1;
 #[cfg(target_os = "linux")]
 pub use cell_q24_source_receipt_owner::OriginalCellQ24SourceStageV1;
+#[cfg(target_os = "linux")]
+pub use cell_q24_task_ledger::OriginalCellQ24RetainedLearningReadyV1;
+#[cfg(target_os = "linux")]
+pub use cell_q24_task_ledger::OriginalCellQ24RetainedLearningSourceV1;
+#[cfg(target_os = "linux")]
+pub use cell_q24_task_ledger::OriginalCellQ24TaskDatasetFreezeInputsV1;
+#[cfg(target_os = "linux")]
+pub use cell_q24_task_ledger::OriginalCellQ24TaskLearningReadyV1;
+#[cfg(target_os = "linux")]
+pub use cell_q24_task_ledger::OriginalCellQ24TaskLedgerConfigV1;
+#[cfg(target_os = "linux")]
+pub use cell_q24_task_ledger::OriginalCellQ24TaskLedgerErrorV1;
+#[cfg(target_os = "linux")]
+pub use cell_q24_task_ledger::OriginalCellQ24TaskLedgerInputsV1;
+#[cfg(target_os = "linux")]
+pub use cell_q24_task_ledger::OriginalCellQ24TaskLedgerProducerV1;
+#[cfg(target_os = "linux")]
+pub use cell_q24_task_ledger::OriginalCellQ24TaskLedgerStatusV1;
 pub use cell_q24_training_receipt_owner::OriginalCellQ24TrainingCompletionV1;
 pub use cell_q24_training_receipt_owner::OriginalCellQ24TrainingReceiptErrorV1;
 pub use cell_q24_training_receipt_owner::OriginalCellQ24TrainingReceiptOwnerV1;
@@ -562,26 +580,6 @@ pub use cell_temporal_q24::LoadedCellTemporalQ24ModelV1;
 pub use circuit_q24_task_profile::AgentdQ24CircuitTaskRuntimeV1;
 #[cfg(target_os = "linux")]
 pub use circuit_q24_task_profile::AgentdQ24LearningTaskRuntimeV1;
-pub use circuit_task_learning::CircuitTaskLearningPendingV1;
-pub use circuit_task_learning::CircuitTaskLearningReadinessV1;
-#[cfg(target_os = "linux")]
-pub use cell_q24_task_ledger::OriginalCellQ24TaskLedgerConfigV1;
-#[cfg(target_os = "linux")]
-pub use cell_q24_task_ledger::OriginalCellQ24TaskLedgerInputsV1;
-#[cfg(target_os = "linux")]
-pub use cell_q24_task_ledger::OriginalCellQ24TaskDatasetFreezeInputsV1;
-#[cfg(target_os = "linux")]
-pub use cell_q24_task_ledger::OriginalCellQ24TaskLedgerStatusV1;
-#[cfg(target_os = "linux")]
-pub use cell_q24_task_ledger::OriginalCellQ24TaskLedgerErrorV1;
-#[cfg(target_os = "linux")]
-pub use cell_q24_task_ledger::OriginalCellQ24TaskLedgerProducerV1;
-#[cfg(target_os = "linux")]
-pub use cell_q24_task_ledger::OriginalCellQ24TaskLearningReadyV1;
-#[cfg(target_os = "linux")]
-pub use cell_q24_task_ledger::OriginalCellQ24RetainedLearningSourceV1;
-#[cfg(target_os = "linux")]
-pub use cell_q24_task_ledger::OriginalCellQ24RetainedLearningReadyV1;
 #[cfg(target_os = "linux")]
 pub use circuit_q24_task_profile::CircuitQ24TaskFilesV1;
 #[cfg(target_os = "linux")]
@@ -592,6 +590,8 @@ pub use circuit_q24_task_profile::CircuitQ24TaskProfileV1;
 pub use circuit_q24_task_profile::CircuitQ24TaskRuntimeV1;
 #[cfg(target_os = "linux")]
 pub use circuit_q24_task_profile::circuit_q24_task_channel_v1;
+pub use circuit_task_learning::CircuitTaskLearningPendingV1;
+pub use circuit_task_learning::CircuitTaskLearningReadinessV1;
 pub use learning_owner_journal::LearningOriginalOwnerErrorV1;
 pub use neuron_cell_evaluation_owner::OriginalCellEvaluationExecutionOwnerV1;
 pub use neuron_cell_evaluation_owner::OriginalCellEvaluationSigningConfigV1;
@@ -1328,11 +1328,11 @@ mod root_generation_current_client;
 #[cfg(target_os = "linux")]
 mod root_generation_publication_inputs;
 #[cfg(target_os = "linux")]
-pub use authority_host_runtime::RootGenerationPublicationEnrollmentCapabilityV1;
+pub use authority_host_runtime::RootGenerationPublicationDeploymentSessionV1;
 #[cfg(target_os = "linux")]
 pub use authority_host_runtime::RootGenerationPublicationDeploymentV1;
 #[cfg(target_os = "linux")]
-pub use authority_host_runtime::RootGenerationPublicationDeploymentSessionV1;
+pub use authority_host_runtime::RootGenerationPublicationEnrollmentCapabilityV1;
 #[cfg(target_os = "linux")]
 pub use authority_host_runtime::RootGenerationPublicationRegistrationV1;
 #[cfg(target_os = "linux")]

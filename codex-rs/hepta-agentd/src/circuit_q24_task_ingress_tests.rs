@@ -18,11 +18,11 @@ mod cold_recovery;
 mod feature_learning;
 #[path = "circuit_q24_task_test_support.rs"]
 mod support;
-#[path = "circuit_q24_task_trained_ingress_tests.rs"]
-mod trained;
 #[cfg(target_os = "linux")]
 #[path = "cell_q24_task_ledger_tests.rs"]
 mod task_ledger;
+#[path = "circuit_q24_task_trained_ingress_tests.rs"]
+mod trained;
 
 use support::Q;
 

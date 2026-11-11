@@ -125,11 +125,8 @@ impl OriginalDecision {
             input.files,
             authorities.now()?,
         )?;
-        crate::cell_composed_q24::validate_manifest(
-            &self.decision.bundle,
-            selected.manifest(),
-        )
-        .map_err(|_| Error::Binding("selected complete Q24 manifest"))?;
+        crate::cell_composed_q24::validate_manifest(&self.decision.bundle, selected.manifest())
+            .map_err(|_| Error::Binding("selected complete Q24 manifest"))?;
         Ok(selected)
     }
 

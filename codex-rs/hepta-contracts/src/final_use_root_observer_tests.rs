@@ -343,9 +343,7 @@ fn root_observer_reads_live_original_and_rejects_revocation_without_claiming() {
         (CONSUMER_UID, SIGNER)
     );
     let original_state: StoredV3 = serde_json::from_slice(&before[1]).unwrap();
-    assert!(
-        original_state.trust == StoreTrust::IssuerKeyRing(observer.issuer_trust_digest())
-    );
+    assert!(original_state.trust == StoreTrust::IssuerKeyRing(observer.issuer_trust_digest()));
     assert_eq!(
         consumer.verify(&observer),
         Ok(consumer.original.head.clone())

@@ -28,13 +28,7 @@ pub struct OriginalCellEvaluationReceiptSourcesV1<
 /// Borrow the original owners for this read. No provider, attestor, arbitrary
 /// receipt, caller clock or replacement trust is accepted. The full recovered
 /// history is retained when asking the Trainer for its original attestation.
-pub(crate) struct ReceiptSources<
-    'a,
-    S,
-    C: AnchorWitnessStore,
-    F: AnchorWitnessStore,
-    E,
-> {
+pub(crate) struct ReceiptSources<'a, S, C: AnchorWitnessStore, F: AnchorWitnessStore, E> {
     pub(crate) snapshot: &'a LearningIterationSnapshotV1,
     pub(crate) runner: &'a mut CellEvaluationRunnerV1<S>,
     pub(crate) journals: CellEvaluationJournalsV1<'a, C, F>,
@@ -47,7 +41,6 @@ pub(crate) struct ReceiptSources<
     pub(crate) timing: ProductTimingEvidenceV1<'a>,
     pub(crate) trainer: OriginalCellEvaluationTrainerReadbackV1<'a>,
 }
-
 
 impl<'a, S, C: AnchorWitnessStore, F: AnchorWitnessStore, E>
     From<OriginalCellEvaluationReceiptSourcesV1<'a, S, C, F, E>>

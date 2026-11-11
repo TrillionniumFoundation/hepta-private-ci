@@ -341,7 +341,8 @@ pub async fn run_with_shutdown(
         state.attach_automation_store(store.clone())?;
         if let Some(host) = state.objective_runtime.get() {
             for source in state.circuit_learning_sources() {
-                host.reconcile_learning_outbox(store, Some(source), &state).await?;
+                host.reconcile_learning_outbox(store, Some(source), &state)
+                    .await?;
             }
         }
     }

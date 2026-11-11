@@ -23,12 +23,17 @@ impl OriginalCellQ24LearningStageOwnersV1 {
     ) -> Result<OriginalCellQ24TrainingReadbackV1, Error> {
         self.inner.require_snapshot(&snapshot)?;
         let inner = Arc::clone(&self.inner);
-        self.inner.in_lane(move |_, _, runtime| {
-            runtime.block_on(OriginalCellQ24TrainingReadbackV1::from_original_stage(
-                Arc::clone(&inner.prepared), Arc::clone(&inner.training),
-                inner.dataset_cut.clone(), snapshot, Arc::clone(&inner.cancelled),
-            ))
-        }).await
+        self.inner
+            .in_lane(move |_, _, runtime| {
+                runtime.block_on(OriginalCellQ24TrainingReadbackV1::from_original_stage(
+                    Arc::clone(&inner.prepared),
+                    Arc::clone(&inner.training),
+                    inner.dataset_cut.clone(),
+                    snapshot,
+                    Arc::clone(&inner.cancelled),
+                ))
+            })
+            .await
     }
 }
 
@@ -37,7 +42,9 @@ impl OriginalCellQ24TrainingReadbackV1 {
     // with actual component owners; no product constructor accepts raw bytes.
     async fn from_original_stage(
         prepared: Arc<CellQ24PreparedLearningV1>,
-        training: Arc<OriginalCellQ24TrainingStageV1<FileAnchorWitnessStore, FileAnchorWitnessStore>>,
+        training: Arc<
+            OriginalCellQ24TrainingStageV1<FileAnchorWitnessStore, FileAnchorWitnessStore>,
+        >,
         dataset: LearningIterationSnapshotV1,
         snapshot: LearningIterationSnapshotV1,
         cancelled: Arc<AtomicBool>,
@@ -46,18 +53,38 @@ impl OriginalCellQ24TrainingReadbackV1 {
             return Err(Error::CommitUncertain);
         }
         prepared.revalidate_source().map_err(unavailable)?;
-        prepared.scope().validate_snapshot(&dataset).map_err(|_| Error::WrongScope)?;
-        if dataset.request != prepared.initial().request || dataset.owners != prepared.initial().owners {
+        prepared
+            .scope()
+            .validate_snapshot(&dataset)
+            .map_err(|_| Error::WrongScope)?;
+        if dataset.request != prepared.initial().request
+            || dataset.owners != prepared.initial().owners
+        {
             return Err(Error::WrongScope);
         }
-        let original: &OriginalCellQ24TrainingStageV1<FileAnchorWitnessStore, FileAnchorWitnessStore> = &training;
-        let completed = original.read_original_dataset_completion(&dataset).await.map_err(unavailable)?;
+        let original: &OriginalCellQ24TrainingStageV1<
+            FileAnchorWitnessStore,
+            FileAnchorWitnessStore,
+        > = &training;
+        let completed = original
+            .read_original_dataset_completion(&dataset)
+            .await
+            .map_err(unavailable)?;
         let cut = completed_cut(&dataset, completed.receipt)?;
         if cut != snapshot {
             return Err(Error::WrongScope);
         }
-        let original: OriginalCellQ24TrainingReadbackV1 = Self { prepared, training, dataset, completed: cut, cancelled };
-        original.require_context(&snapshot, snapshot.receipts.last().ok_or(Error::WrongScope)?)?;
+        let original: OriginalCellQ24TrainingReadbackV1 = Self {
+            prepared,
+            training,
+            dataset,
+            completed: cut,
+            cancelled,
+        };
+        original.require_context(
+            &snapshot,
+            snapshot.receipts.last().ok_or(Error::WrongScope)?,
+        )?;
         Ok(original)
     }
 
@@ -69,8 +96,13 @@ impl OriginalCellQ24TrainingReadbackV1 {
         expected: &LearningIterationReceiptV1,
     ) -> Result<SignedLearningEvidenceV1, Error> {
         self.require_context(snapshot, expected)?;
-        let training: &OriginalCellQ24TrainingStageV1<FileAnchorWitnessStore, FileAnchorWitnessStore> = &self.training;
-        let completed = training.read_original_dataset_completion(&self.dataset).await
+        let training: &OriginalCellQ24TrainingStageV1<
+            FileAnchorWitnessStore,
+            FileAnchorWitnessStore,
+        > = &self.training;
+        let completed = training
+            .read_original_dataset_completion(&self.dataset)
+            .await
             .map_err(unavailable)?;
         if &completed.receipt != expected
             || completed_cut(&self.dataset, completed.receipt)? != self.completed
@@ -84,7 +116,9 @@ impl OriginalCellQ24TrainingReadbackV1 {
     pub(crate) fn require_original_owner(
         &self,
         prepared: &Arc<CellQ24PreparedLearningV1>,
-        training: &Arc<OriginalCellQ24TrainingStageV1<FileAnchorWitnessStore, FileAnchorWitnessStore>>,
+        training: &Arc<
+            OriginalCellQ24TrainingStageV1<FileAnchorWitnessStore, FileAnchorWitnessStore>,
+        >,
         dataset: &LearningIterationSnapshotV1,
         cancelled: &Arc<AtomicBool>,
     ) -> Result<(), Error> {
@@ -95,7 +129,10 @@ impl OriginalCellQ24TrainingReadbackV1 {
         {
             return Err(Error::WrongScope);
         }
-        self.require_context(&self.completed, self.completed.receipts.last().ok_or(Error::WrongScope)?)
+        self.require_context(
+            &self.completed,
+            self.completed.receipts.last().ok_or(Error::WrongScope)?,
+        )
     }
 
     pub(crate) fn require_training(
@@ -121,7 +158,10 @@ impl OriginalCellQ24TrainingReadbackV1 {
         let prepared: &CellQ24PreparedLearningV1 = &self.prepared;
         prepared.revalidate_source().map_err(unavailable)?;
         LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())?;
-        self.prepared.scope().validate_snapshot(snapshot).map_err(|_| Error::WrongScope)?;
+        self.prepared
+            .scope()
+            .validate_snapshot(snapshot)
+            .map_err(|_| Error::WrongScope)?;
         if snapshot.request != self.completed.request
             || snapshot.owners != self.completed.owners
             || !snapshot.receipts.starts_with(&self.completed.receipts)

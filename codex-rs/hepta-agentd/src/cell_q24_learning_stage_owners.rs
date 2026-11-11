@@ -42,9 +42,9 @@ mod publication_material;
 mod training_material;
 #[path = "cell_q24_training_readback.rs"]
 mod training_readback;
-pub use training_readback::OriginalCellQ24TrainingReadbackV1;
 pub use model::OriginalCellQ24ModelDispatchV1;
 pub use training_material::OriginalCellQ24TrainingMaterialV1;
+pub use training_readback::OriginalCellQ24TrainingReadbackV1;
 
 struct Q24StageOwners {
     experience: OriginalCellQ24SourceReceiptOwnerV1<FileAnchorWitnessStore>,
@@ -211,9 +211,13 @@ impl OriginalCellQ24LearningStageOwnersV1 {
                     if owners.evaluation.is_some() {
                         return Err(Error::WrongScope);
                     }
-                    let trainer_source: &crate::OriginalCellEvaluationTrainerV1 = &evaluation.trainer;
+                    let trainer_source: &crate::OriginalCellEvaluationTrainerV1 =
+                        &evaluation.trainer;
                     trainer_source.require_original_owner(
-                        &inner.prepared, &inner.training, &inner.dataset_cut, &inner.cancelled,
+                        &inner.prepared,
+                        &inner.training,
+                        &inner.dataset_cut,
+                        &inner.cancelled,
                     )?;
                     let completed = runtime
                         .block_on(training.readback(&inner.dataset_cut))
@@ -253,7 +257,10 @@ impl OriginalCellQ24LearningStageOwnersV1 {
                     }
                     let trainer_source: &crate::OriginalCellEvaluationTrainerV1 = &original.trainer;
                     trainer_source.require_original_owner(
-                        &inner.prepared, &inner.training, &inner.dataset_cut, &inner.cancelled,
+                        &inner.prepared,
+                        &inner.training,
+                        &inner.dataset_cut,
+                        &inner.cancelled,
                     )?;
                     let completed = runtime
                         .block_on(training.readback(&inner.dataset_cut))

@@ -24,13 +24,23 @@ impl AgentdProductionStartup {
         inputs: OriginalCellQ24LearningInputsV1,
         producer: Arc<OriginalCellQ24TaskLedgerProducerV1>,
         original_store: AutomationStore,
-    ) -> Result<(AgentdConfig, AgentdProductionLaunch, LearningIterationHandleV1,
-        Arc<OriginalCellQ24LearningStageOwnersV1>), AgentdError> {
-        let source: OriginalCellQ24RetainedLearningSourceV1 = producer.retained_learning_source(Arc::clone(&inputs.prepared), original_store).await?;
+    ) -> Result<
+        (
+            AgentdConfig,
+            AgentdProductionLaunch,
+            LearningIterationHandleV1,
+            Arc<OriginalCellQ24LearningStageOwnersV1>,
+        ),
+        AgentdError,
+    > {
+        let source: OriginalCellQ24RetainedLearningSourceV1 = producer
+            .retained_learning_source(Arc::clone(&inputs.prepared), original_store)
+            .await?;
         // The new read side has no old Task/Cell/FinalUse owner. Release this
         // transferred active producer before opening the next Root consumers.
         drop(producer);
-        self.receive_q24_learning_with_retained_capability(inputs, source).await
+        self.receive_q24_learning_with_retained_capability(inputs, source)
+            .await
     }
 
     /// Capture and drain A before ending its original runtime, then release
@@ -41,8 +51,15 @@ impl AgentdProductionStartup {
         self,
         inputs: OriginalCellQ24LearningInputsV1,
         source: OriginalCellQ24RetainedLearningSourceV1,
-    ) -> Result<(AgentdConfig, AgentdProductionLaunch, LearningIterationHandleV1,
-        Arc<OriginalCellQ24LearningStageOwnersV1>), AgentdError> {
+    ) -> Result<
+        (
+            AgentdConfig,
+            AgentdProductionLaunch,
+            LearningIterationHandleV1,
+            Arc<OriginalCellQ24LearningStageOwnersV1>,
+        ),
+        AgentdError,
+    > {
         let (config, launch, handle, owners) = self.receive_q24_learning(inputs).await?;
         Ok((retain_in_config(config, source)?, launch, handle, owners))
     }
@@ -55,11 +72,21 @@ impl AgentdProductionLaunch {
         inputs: OriginalCellQ24LearningInputsV1,
         producer: Arc<OriginalCellQ24TaskLedgerProducerV1>,
         original_store: AutomationStore,
-    ) -> Result<(Self, AgentdConfig, LearningIterationHandleV1,
-        Arc<OriginalCellQ24LearningStageOwnersV1>), AgentdError> {
-        let source: OriginalCellQ24RetainedLearningSourceV1 = producer.retained_learning_source(Arc::clone(&inputs.prepared), original_store).await?;
+    ) -> Result<
+        (
+            Self,
+            AgentdConfig,
+            LearningIterationHandleV1,
+            Arc<OriginalCellQ24LearningStageOwnersV1>,
+        ),
+        AgentdError,
+    > {
+        let source: OriginalCellQ24RetainedLearningSourceV1 = producer
+            .retained_learning_source(Arc::clone(&inputs.prepared), original_store)
+            .await?;
         drop(producer);
-        self.assemble_q24_learning_with_retained_capability(config, inputs, source).await
+        self.assemble_q24_learning_with_retained_capability(config, inputs, source)
+            .await
     }
 
     /// The host has already released the original active A owners before
@@ -70,8 +97,15 @@ impl AgentdProductionLaunch {
         config: AgentdConfig,
         inputs: OriginalCellQ24LearningInputsV1,
         source: OriginalCellQ24RetainedLearningSourceV1,
-    ) -> Result<(Self, AgentdConfig, LearningIterationHandleV1,
-        Arc<OriginalCellQ24LearningStageOwnersV1>), AgentdError> {
+    ) -> Result<
+        (
+            Self,
+            AgentdConfig,
+            LearningIterationHandleV1,
+            Arc<OriginalCellQ24LearningStageOwnersV1>,
+        ),
+        AgentdError,
+    > {
         let (launch, config, handle, owners) = self.assemble_q24_learning(config, inputs).await?;
         Ok((launch, retain_in_config(config, source)?, handle, owners))
     }
@@ -81,8 +115,10 @@ fn retain_in_config(
     mut config: AgentdConfig,
     source: OriginalCellQ24RetainedLearningSourceV1,
 ) -> Result<AgentdConfig, AgentdError> {
-    let bootstrap: LearningIterationRuntimeBootstrapV1 = config.take_learning_iteration_bootstrap()
-        .ok_or_else(|| AgentdError::GenerationFenced("original learning worker is missing".into()))?;
+    let bootstrap: LearningIterationRuntimeBootstrapV1 =
+        config.take_learning_iteration_bootstrap().ok_or_else(|| {
+            AgentdError::GenerationFenced("original learning worker is missing".into())
+        })?;
     let bootstrap = bootstrap.with_retained_q24_source(source, config.identity())?;
     config.with_learning_iteration_bootstrap(bootstrap)
 }

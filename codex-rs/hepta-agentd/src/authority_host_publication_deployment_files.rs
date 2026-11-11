@@ -30,8 +30,16 @@ struct Identity {
 impl Identity {
     fn from_metadata(metadata: &Metadata) -> Self {
         Self {
-            device: metadata.dev(), inode: metadata.ino(), uid: metadata.uid(),
-            gid: metadata.gid(), mode: metadata.mode(), links: if metadata.is_dir() { 0 } else { metadata.nlink() },
+            device: metadata.dev(),
+            inode: metadata.ino(),
+            uid: metadata.uid(),
+            gid: metadata.gid(),
+            mode: metadata.mode(),
+            links: if metadata.is_dir() {
+                0
+            } else {
+                metadata.nlink()
+            },
         }
     }
 }
@@ -47,7 +55,8 @@ struct Stamp {
 impl Stamp {
     fn from_metadata(metadata: &Metadata) -> Self {
         Self {
-            identity: Identity::from_metadata(metadata), length: metadata.len(),
+            identity: Identity::from_metadata(metadata),
+            length: metadata.len(),
             modified: (metadata.mtime(), metadata.mtime_nsec()),
             changed: (metadata.ctime(), metadata.ctime_nsec()),
         }
@@ -66,7 +75,9 @@ impl DirectoryPin {
         RootAuthorityDirectory::open(path).map_err(io::Error::other)?;
         let mut pin = Self::capture_private(path)?;
         if pin.identity.uid != 0 || pin.identity.mode & 0o077 != 0 {
-            return Err(io::Error::other("original Root deployment directory required"));
+            return Err(io::Error::other(
+                "original Root deployment directory required",
+            ));
         }
         pin.root_owned = true;
         Ok(pin)
@@ -75,18 +86,30 @@ impl DirectoryPin {
     pub(super) fn capture_private(path: &Path) -> io::Result<Self> {
         require_absolute(path)?;
         let metadata = std::fs::symlink_metadata(path)?;
-        if !metadata.is_dir() || metadata.mode() & 0o022 != 0
+        if !metadata.is_dir()
+            || metadata.mode() & 0o022 != 0
             || std::fs::canonicalize(path)? != path
         {
-            return Err(io::Error::other("original private deployment directory required"));
+            return Err(io::Error::other(
+                "original private deployment directory required",
+            ));
         }
-        let file = OpenOptions::new().read(true)
-            .custom_flags(libc::O_DIRECTORY | libc::O_NOFOLLOW | libc::O_CLOEXEC).open(path)?;
+        let file = OpenOptions::new()
+            .read(true)
+            .custom_flags(libc::O_DIRECTORY | libc::O_NOFOLLOW | libc::O_CLOEXEC)
+            .open(path)?;
         let identity = Identity::from_metadata(&metadata);
         if Identity::from_metadata(&file.metadata()?) != identity {
-            return Err(io::Error::other("original directory changed during capture"));
+            return Err(io::Error::other(
+                "original directory changed during capture",
+            ));
         }
-        Ok(Self { path: path.to_owned(), identity, file, root_owned: false })
+        Ok(Self {
+            path: path.to_owned(),
+            identity,
+            file,
+            root_owned: false,
+        })
     }
 
     pub(super) fn require_directory(&self) -> io::Result<()> {
@@ -94,7 +117,8 @@ impl DirectoryPin {
             RootAuthorityDirectory::open(&self.path).map_err(io::Error::other)?;
         }
         let metadata = std::fs::symlink_metadata(&self.path)?;
-        if !metadata.is_dir() || Identity::from_metadata(&metadata) != self.identity
+        if !metadata.is_dir()
+            || Identity::from_metadata(&metadata) != self.identity
             || Identity::from_metadata(&self.file.metadata()?) != self.identity
             || std::fs::canonicalize(&self.path)? != self.path
         {
@@ -118,31 +142,45 @@ impl MetadataFile {
         let parent = DirectoryPin::capture_root(parent(path)?)?;
         let file = open_readonly(path)?;
         let metadata = file.metadata()?;
-        if !metadata.is_file() || metadata.uid() != 0
-            || metadata.mode() & 0o7777 != 0o600 || metadata.nlink() != 1
-            || metadata.len() == 0 || metadata.len() > METADATA_BOUND
+        if !metadata.is_file()
+            || metadata.uid() != 0
+            || metadata.mode() & 0o7777 != 0o600
+            || metadata.nlink() != 1
+            || metadata.len() == 0
+            || metadata.len() > METADATA_BOUND
         {
-            return Err(io::Error::other("bounded Root0600 single-link metadata required"));
+            return Err(io::Error::other(
+                "bounded Root0600 single-link metadata required",
+            ));
         }
         let stamp = Stamp::from_metadata(&metadata);
         let mut bytes = vec![0; metadata.len() as usize];
         file.read_exact_at(&mut bytes, /*offset*/ 0)?;
         let held = Self {
-            path: path.to_owned(), parent, file, stamp, digest: Digest32::of_bytes(&bytes),
+            path: path.to_owned(),
+            parent,
+            file,
+            stamp,
+            digest: Digest32::of_bytes(&bytes),
         };
         held.require_metadata_unchanged()?;
         Ok((held, bytes))
     }
 
-    pub(super) fn digest(&self) -> Digest32 { self.digest }
+    pub(super) fn digest(&self) -> Digest32 {
+        self.digest
+    }
 
     pub(super) fn require_metadata_unchanged(&self) -> io::Result<()> {
         self.parent.require_directory()?;
         let path = std::fs::symlink_metadata(&self.path)?;
-        if !path.is_file() || Stamp::from_metadata(&path) != self.stamp
+        if !path.is_file()
+            || Stamp::from_metadata(&path) != self.stamp
             || Stamp::from_metadata(&self.file.metadata()?) != self.stamp
         {
-            return Err(io::Error::other("original Root metadata file replaced or changed"));
+            return Err(io::Error::other(
+                "original Root metadata file replaced or changed",
+            ));
         }
         let mut bytes = vec![0; self.stamp.length as usize];
         self.file.read_exact_at(&mut bytes, /*offset*/ 0)?;
@@ -150,7 +188,9 @@ impl MetadataFile {
             || Stamp::from_metadata(&self.file.metadata()?) != self.stamp
             || Stamp::from_metadata(&std::fs::symlink_metadata(&self.path)?) != self.stamp
         {
-            return Err(io::Error::other("original Root metadata bytes or path changed"));
+            return Err(io::Error::other(
+                "original Root metadata bytes or path changed",
+            ));
         }
         self.parent.require_directory()?;
         Ok(())
@@ -173,11 +213,15 @@ impl OriginalFile {
         let file = open_readonly(path)?;
         let metadata = file.metadata()?;
         if !metadata.is_file() || metadata.nlink() != 1 || metadata.mode() & 0o022 != 0 {
-            return Err(io::Error::other("original single-link material must reject unrelated writers"));
+            return Err(io::Error::other(
+                "original single-link material must reject unrelated writers",
+            ));
         }
         let held = Self {
-            path: path.to_owned(), parent,
-            identity: Identity::from_metadata(&metadata), file,
+            path: path.to_owned(),
+            parent,
+            identity: Identity::from_metadata(&metadata),
+            file,
         };
         held.require_original_file()?;
         Ok(held)
@@ -191,10 +235,13 @@ impl OriginalFile {
     pub(super) fn require_original_file(&self) -> io::Result<()> {
         self.parent.require_directory()?;
         let path = std::fs::symlink_metadata(&self.path)?;
-        if !path.is_file() || Identity::from_metadata(&path) != self.identity
+        if !path.is_file()
+            || Identity::from_metadata(&path) != self.identity
             || Identity::from_metadata(&self.file.metadata()?) != self.identity
         {
-            return Err(io::Error::other("original material path or descriptor replaced"));
+            return Err(io::Error::other(
+                "original material path or descriptor replaced",
+            ));
         }
         self.parent.require_directory()?;
         Ok(())
@@ -203,7 +250,9 @@ impl OriginalFile {
 
 pub(super) fn require_absolute(path: &Path) -> io::Result<()> {
     if !path.is_absolute()
-        || path.components().any(|part| matches!(part, Component::ParentDir | Component::CurDir))
+        || path
+            .components()
+            .any(|part| matches!(part, Component::ParentDir | Component::CurDir))
         || path.as_os_str().as_encoded_bytes().len() > 4096
     {
         return Err(io::Error::other("bounded absolute original path required"));
@@ -212,11 +261,13 @@ pub(super) fn require_absolute(path: &Path) -> io::Result<()> {
 }
 
 pub(super) fn parent(path: &Path) -> io::Result<&Path> {
-    path.parent().ok_or_else(|| io::Error::other("original path parent required"))
+    path.parent()
+        .ok_or_else(|| io::Error::other("original path parent required"))
 }
 
 fn open_readonly(path: &Path) -> io::Result<File> {
-    OpenOptions::new().read(true)
+    OpenOptions::new()
+        .read(true)
         .custom_flags(libc::O_NOFOLLOW | libc::O_CLOEXEC | libc::O_NONBLOCK)
         .open(path)
 }

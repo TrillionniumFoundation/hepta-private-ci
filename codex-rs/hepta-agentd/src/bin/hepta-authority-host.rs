@@ -2,6 +2,7 @@
 
 #[cfg(target_os = "linux")]
 fn main() -> Result<(), Box<dyn std::error::Error>> {
+    use std::io::Write;
     use std::os::fd::AsFd;
     use std::path::PathBuf;
     let mut args = std::env::args_os().skip(1);
@@ -320,6 +321,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             }
             if let Some(session) = deployment_ready {
                 println!("{{\"publication_deployment_session\":{session}}}");
+                std::io::stdout().flush()?;
             }
             Ok(())
         };
@@ -331,7 +333,17 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             let stop_ref = &stopping;
             let worker = deployment.map(|deployment| scope.spawn(move || {
                 let deployment: codex_hepta_agentd::RootGenerationPublicationDeploymentV1 = deployment;
-                deployment.wait_and_register(stop_ref)
+                let registered = deployment.wait_and_register(stop_ref)?;
+                // Report the original completed registration while serving, so
+                // the trusted host can connect without racing its short timeout.
+                let stdout = std::io::stdout();
+                let mut output = stdout.lock();
+                writeln!(output, "{{\"publication_registered_binding\":\"{}\"}}", registered.binding())
+                    .and_then(|()| output.flush())
+                    .map_err(|error| std::io::Error::other(format!(
+                        "original publication registered; acknowledgement output uncertain: {error}",
+                    )))?;
+                Ok::<_, std::io::Error>(registered)
             }));
             let served = match (native_profile, text) {
                 (Some(profile), None) => prepared.launch_native_with_ready(&config, &registration, &profile, ready),
@@ -346,8 +358,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             };
             served?;
             if let Some(registered) = registered {
-                let registered = registered?;
-                println!("{{\"publication_registered_binding\":\"{}\"}}", registered.binding());
+                registered?;
             }
             Ok(())
         })?;

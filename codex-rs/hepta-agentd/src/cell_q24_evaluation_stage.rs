@@ -22,12 +22,12 @@ use crate::CellEvaluationQualificationRequestV1;
 use crate::CellEvaluationQualificationV1;
 use crate::CellEvaluationReceiptV1;
 use crate::CellEvaluationRunnerV1;
-use crate::OriginalCellEvaluationTrainerV1;
-use crate::neuron_cell_evaluation_training_source::OriginalCellEvaluationTrainerReadbackV1;
-use crate::neuron_cell_evaluation_receipt_owner::ReceiptSources;
 use crate::LearningIterationRuntimeErrorV1 as Error;
 use crate::OriginalCellEvaluationReceiptOwnerV1;
+use crate::OriginalCellEvaluationTrainerV1;
 use crate::cell_q24_learning_owner_error::owner_error;
+use crate::neuron_cell_evaluation_receipt_owner::ReceiptSources;
+use crate::neuron_cell_evaluation_training_source::OriginalCellEvaluationTrainerReadbackV1;
 
 pub enum OriginalCellQ24EvaluationTimingV1 {
     Qualification,

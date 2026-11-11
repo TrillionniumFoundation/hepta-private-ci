@@ -28,7 +28,9 @@ impl AgentdState {
         }
         #[cfg(target_os = "linux")]
         if let Some(source) = self.retained_circuit_learning_source(&request.source_run_id) {
-            return self.require_registered_retained_source(request, source).await;
+            return self
+                .require_registered_retained_source(request, source)
+                .await;
         }
         let host = self
             .objective_runtime

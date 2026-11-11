@@ -293,7 +293,10 @@ impl LearningIterationRuntimeBootstrapV1 {
             || self.owners != prepared.initial().owners
             || self.scope.as_ref() != Some(prepared.scope())
             || !self.enforce_circuit_admission
-            || !matches!(self.circuit_delivery_source, CircuitLearningSourceV1::OriginalObjective)
+            || !matches!(
+                self.circuit_delivery_source,
+                CircuitLearningSourceV1::OriginalObjective
+            )
         {
             return Err(AgentdError::Invalid(
                 "original Root Q24 learning profile differs".into(),

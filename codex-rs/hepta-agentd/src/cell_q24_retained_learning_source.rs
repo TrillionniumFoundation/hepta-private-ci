@@ -52,19 +52,26 @@ impl OriginalCellQ24TaskLedgerProducerV1 {
         prepared: Arc<CellQ24PreparedLearningV1>,
         store: AutomationStore,
     ) -> Result<OriginalCellQ24RetainedLearningSourceV1, AgentdError> {
-        prepared.require_original_task_ledger(&self.ledger).map_err(refused)?;
+        prepared
+            .require_original_task_ledger(&self.ledger)
+            .map_err(refused)?;
         if store.owner_agent_id() != &self.identity.agent_id
             || store.path().parent() != Some(self.identity.layout.automation_root())
         {
-            return Err(refused("retained source requires its original Automation owner"));
+            return Err(refused(
+                "retained source requires its original Automation owner",
+            ));
         }
         let (captured, decision, outcome) = {
             let mut state = self.state.lock().map_err(refused)?;
             let captured = self.capture(&mut state).map_err(ledger_error)?;
             let ledger = self.ledger.lock().map_err(refused)?;
-            let OriginalCellQ24TaskLedgerStatusV1::Complete { decision, outcome } =
-                self.status(&mut state, &ledger, &captured).map_err(ledger_error)?
-            else { return Err(refused("retained source has no accepted Terminal outcome")); };
+            let OriginalCellQ24TaskLedgerStatusV1::Complete { decision, outcome } = self
+                .status(&mut state, &ledger, &captured)
+                .map_err(ledger_error)?
+            else {
+                return Err(refused("retained source has no accepted Terminal outcome"));
+            };
             (captured, decision, outcome)
         };
         let request = &prepared.initial().request;
@@ -76,35 +83,64 @@ impl OriginalCellQ24TaskLedgerProducerV1 {
         if request.source_run_id != captured.publication.original_record().snapshot.run_id
             || request.agent_id.as_str() != self.identity.agent_id.as_str()
             || facts.experience() != &experience
-            || !prepared.frozen_dataset().snapshot.records().contains(&decision)
-            || !prepared.frozen_dataset().snapshot.records().contains(&outcome)
+            || !prepared
+                .frozen_dataset()
+                .snapshot
+                .records()
+                .contains(&decision)
+            || !prepared
+                .frozen_dataset()
+                .snapshot
+                .records()
+                .contains(&outcome)
         {
-            return Err(refused("retained producer differs from the original Prepared source"));
+            return Err(refused(
+                "retained producer differs from the original Prepared source",
+            ));
         }
-        let database = std::fs::OpenOptions::new().read(/*read*/ true)
-            .custom_flags(libc::O_NOFOLLOW).open(store.path())?;
-        let trace = store.bounded_circuit_committed_trace(request.source_run_id.as_str())
-            .await.map_err(refused)?
+        let database = std::fs::OpenOptions::new()
+            .read(/*read*/ true)
+            .custom_flags(libc::O_NOFOLLOW)
+            .open(store.path())?;
+        let trace = store
+            .bounded_circuit_committed_trace(request.source_run_id.as_str())
+            .await
+            .map_err(refused)?
             .ok_or_else(|| refused("original committed trace is missing"))?;
         if trace.run().run_id() != request.source_run_id.as_str()
             || trace.history_digest() != captured.publication.history_digest()
             || trace.history_digest().as_str() != request.completed_task_receipt.to_string()
-            || trace.run().outcome().is_none() || trace.run().unresolved() != 0
+            || trace.run().outcome().is_none()
+            || trace.run().unresolved() != 0
         {
-            return Err(refused("original committed trace differs from the sealed task"));
+            return Err(refused(
+                "original committed trace differs from the sealed task",
+            ));
         }
         // Share the same original journal/witness, Ledger and source reader.
         // Do not retain the retired Cell/GenV2 writer locks in this read side.
         let producer = Arc::new(OriginalCellQ24TaskLedgerProducerV1 {
-            state: Arc::clone(&self.state), ledger: Arc::clone(&self.ledger),
-            source: Arc::clone(&self.source), task: OriginalTaskCustodyV1::Retained,
-            identity: self.identity.clone(), config: self.config.clone(),
-            decision_key: self.decision_key.clone(), outcome_key: self.outcome_key.clone(),
-            ledger_binding: self.ledger_binding, trust_digest: self.trust_digest,
+            state: Arc::clone(&self.state),
+            ledger: Arc::clone(&self.ledger),
+            source: Arc::clone(&self.source),
+            task: OriginalTaskCustodyV1::Retained,
+            identity: self.identity.clone(),
+            config: self.config.clone(),
+            decision_key: self.decision_key.clone(),
+            outcome_key: self.outcome_key.clone(),
+            ledger_binding: self.ledger_binding,
+            trust_digest: self.trust_digest,
         });
         let source = OriginalCellQ24RetainedLearningSourceV1 {
-            producer, prepared, captured, decision, outcome,
-            store, database, trace, fenced: AtomicBool::new(/*value*/ false),
+            producer,
+            prepared,
+            captured,
+            decision,
+            outcome,
+            store,
+            database,
+            trace,
+            fenced: AtomicBool::new(/*value*/ false),
         };
         source.read_original().await?;
         Ok(source)
@@ -118,20 +154,33 @@ impl OriginalCellQ24RetainedLearningSourceV1 {
         initial: &LearningIterationSnapshotV1,
         scope: &FrozenLearningScopeV2,
     ) -> Result<Arc<RegisteredCellQ24RetainedSourceV1>, AgentdError> {
-        self.prepared.require_initial(initial, scope).map_err(refused)?;
+        self.prepared
+            .require_initial(initial, scope)
+            .map_err(refused)?;
         if consumer.agent_id != self.producer.identity.agent_id || consumer.spawn_generation == 0 {
-            return Err(refused("retained source consumer differs from its Root scope"));
+            return Err(refused(
+                "retained source consumer differs from its Root scope",
+            ));
         }
-        Ok(Arc::new(RegisteredCellQ24RetainedSourceV1 { source: self, consumer }))
+        Ok(Arc::new(RegisteredCellQ24RetainedSourceV1 {
+            source: self,
+            consumer,
+        }))
     }
 
     fn read_accepted(&self) -> Result<(Digest32, usize), AgentdError> {
-        self.prepared.require_original_task_ledger(&self.producer.ledger).map_err(refused)?;
+        self.prepared
+            .require_original_task_ledger(&self.producer.ledger)
+            .map_err(refused)?;
         self.require_database()?;
         let cut = {
             let mut state = self.producer.state.lock().map_err(refused)?;
             let ledger = self.producer.ledger.lock().map_err(refused)?;
-            match self.producer.status(&mut state, &ledger, &self.captured).map_err(ledger_error)? {
+            match self
+                .producer
+                .status(&mut state, &ledger, &self.captured)
+                .map_err(ledger_error)?
+            {
                 OriginalCellQ24TaskLedgerStatusV1::Complete { decision, outcome }
                     if decision == self.decision && outcome == self.outcome => {}
                 _ => return Err(refused("original accepted source changed")),
@@ -145,17 +194,23 @@ impl OriginalCellQ24RetainedLearningSourceV1 {
     }
 
     async fn read_original(&self) -> Result<(Digest32, usize), AgentdError> {
-        if self.fenced.load(Ordering::Acquire) { return Err(refused("retained source is fenced")); }
+        if self.fenced.load(Ordering::Acquire) {
+            return Err(refused("retained source is fenced"));
+        }
         let result = async {
             let before = self.read_accepted()?;
-            let trace = self.store.bounded_circuit_committed_trace(self.trace.run().run_id())
-                .await.map_err(refused)?
+            let trace = self
+                .store
+                .bounded_circuit_committed_trace(self.trace.run().run_id())
+                .await
+                .map_err(refused)?
                 .ok_or_else(|| refused("original committed trace disappeared"))?;
             if trace != self.trace || self.read_accepted()? != before {
                 return Err(refused("retained source changed across original readback"));
             }
             Ok(before)
-        }.await;
+        }
+        .await;
         match result {
             Err(error) => {
                 self.fenced.store(/*value*/ true, Ordering::Release);
@@ -170,8 +225,12 @@ impl OriginalCellQ24RetainedLearningSourceV1 {
         let checked = (|| {
             let retained = self.database.metadata()?;
             let current = std::fs::symlink_metadata(self.store.path())?;
-            if !retained.is_file() || !current.is_file() || retained.nlink() != 1
-                || current.nlink() != 1 || retained.dev() != current.dev() || retained.ino() != current.ino()
+            if !retained.is_file()
+                || !current.is_file()
+                || retained.nlink() != 1
+                || current.nlink() != 1
+                || retained.dev() != current.dev()
+                || retained.ino() != current.ino()
             {
                 return Err(refused("original Automation database was replaced"));
             }
@@ -197,13 +256,17 @@ impl RegisteredCellQ24RetainedSourceV1 {
         &self.source.prepared.initial().request.source_run_id
     }
 
-    pub(crate) fn original_identity(&self) -> &AgentdIdentity { &self.source.producer.identity }
+    pub(crate) fn original_identity(&self) -> &AgentdIdentity {
+        &self.source.producer.identity
+    }
 
     pub(crate) fn original_record(&self) -> &RunStartRecordV1 {
         self.source.captured.publication.original_record()
     }
 
-    pub(crate) fn original_trace(&self) -> &CircuitCommittedTraceV2 { &self.source.trace }
+    pub(crate) fn original_trace(&self) -> &CircuitCommittedTraceV2 {
+        &self.source.trace
+    }
 
     pub(crate) fn original_outbox(
         &self,
@@ -211,7 +274,9 @@ impl RegisteredCellQ24RetainedSourceV1 {
         request: &LearningIterationRequestV1,
     ) -> Result<AutomationStore, AgentdError> {
         if consumer != &self.consumer || request != &self.source.prepared.initial().request {
-            return Err(refused("retained source request or current consumer differs"));
+            return Err(refused(
+                "retained source request or current consumer differs",
+            ));
         }
         self.source.require_database()?;
         Ok(self.source.store.clone())
@@ -221,9 +286,14 @@ impl RegisteredCellQ24RetainedSourceV1 {
         self: &Arc<Self>,
         consumer: &AgentdIdentity,
     ) -> Result<OriginalCellQ24RetainedLearningReadyV1, AgentdError> {
-        if consumer != &self.consumer { return Err(refused("retained source consumer changed")); }
+        if consumer != &self.consumer {
+            return Err(refused("retained source consumer changed"));
+        }
         let cut = self.source.read_original().await?;
-        Ok(OriginalCellQ24RetainedLearningReadyV1 { registered: Arc::clone(self), cut })
+        Ok(OriginalCellQ24RetainedLearningReadyV1 {
+            registered: Arc::clone(self),
+            cut,
+        })
     }
 }
 
@@ -236,17 +306,22 @@ impl OriginalCellQ24RetainedLearningReadyV1 {
         trace: &CircuitCommittedTraceV2,
     ) -> Result<(), AgentdError> {
         if !Arc::ptr_eq(&self.registered, registered)
-            || consumer != &registered.consumer || record != registered.original_record()
+            || consumer != &registered.consumer
+            || record != registered.original_record()
             || trace != registered.original_trace()
             || self.registered.source.read_original().await? != self.cut
         {
-            return Err(refused("retained Ready differs from its registered original source"));
+            return Err(refused(
+                "retained Ready differs from its registered original source",
+            ));
         }
         Ok(())
     }
 }
 
-fn ledger_error(error: Error) -> AgentdError { AgentdError::Io(std::io::Error::other(error)) }
+fn ledger_error(error: Error) -> AgentdError {
+    AgentdError::Io(std::io::Error::other(error))
+}
 fn refused(error: impl std::fmt::Display) -> AgentdError {
     AgentdError::GenerationFenced(format!("original retained learning source: {error}"))
 }

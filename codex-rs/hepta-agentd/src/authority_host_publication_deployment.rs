@@ -3,7 +3,6 @@
 
 use std::io;
 use std::path::Path;
-use std::sync::Arc;
 use std::sync::atomic::AtomicBool;
 use std::sync::atomic::AtomicU64;
 use std::sync::atomic::Ordering;
@@ -99,7 +98,7 @@ impl RootGenerationPublicationEnrollmentCapabilityV1 {
         files::require_absolute(&data.trigger)?;
         files::require_absolute(&data.late_material)?;
         let inputs = OriginalInputs {
-            current: Arc::new(RootAuthorityDirectory::open(&data.current_directory).map_err(io::Error::other)?),
+            current: RootAuthorityDirectory::open(&data.current_directory).map_err(io::Error::other)?,
             previous_journal: OriginalFile::open_original(&data.previous_journal)?,
             previous_witness: OriginalFile::open_original(&data.previous_witness)?,
             target_journal: OriginalFile::open_original(&data.target_journal)?,

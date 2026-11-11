@@ -6,7 +6,9 @@ use super::*;
 impl OriginalCellQ24TrainingReadbackV1 {
     pub(crate) async fn from_component_owners(
         prepared: Arc<CellQ24PreparedLearningV1>,
-        training: Arc<OriginalCellQ24TrainingStageV1<FileAnchorWitnessStore, FileAnchorWitnessStore>>,
+        training: Arc<
+            OriginalCellQ24TrainingStageV1<FileAnchorWitnessStore, FileAnchorWitnessStore>,
+        >,
         dataset: LearningIterationSnapshotV1,
         snapshot: LearningIterationSnapshotV1,
         cancelled: Arc<AtomicBool>,

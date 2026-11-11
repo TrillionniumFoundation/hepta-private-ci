@@ -95,8 +95,13 @@ pub struct OriginalCellQ24TaskDatasetFreezeInputsV1 {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum OriginalCellQ24TaskLedgerStatusV1 {
-    AwaitingOutcome { decision: LedgerRecord },
-    Complete { decision: LedgerRecord, outcome: LedgerRecord },
+    AwaitingOutcome {
+        decision: LedgerRecord,
+    },
+    Complete {
+        decision: LedgerRecord,
+        outcome: LedgerRecord,
+    },
 }
 
 #[derive(Debug, thiserror::Error)]
@@ -165,25 +170,41 @@ impl OriginalCellQ24TaskLedgerProducerV1 {
         published: PublishedCircuitFeatureTaskV1,
         identity: AgentdIdentity,
     ) -> Result<Self, Error> {
-        let ledger = inputs.ledger.lock().map_err(|_| Error::Binding("ledger lock"))?;
+        let ledger = inputs
+            .ledger
+            .lock()
+            .map_err(|_| Error::Binding("ledger lock"))?;
         let binding = binding::configuration(&inputs, &ledger, &published, &identity)?;
         let ledger_binding = ledger.binding_digest();
         let trust_digest = ledger.verifier().trust_digest();
         drop(ledger);
         let journal = match inputs.open_mode {
             CircuitQ24TaskOpenModeV1::Create => LearningOwnerJournalV1::create(
-                inputs.signature_journal, inputs.signature_witness, binding,
+                inputs.signature_journal,
+                inputs.signature_witness,
+                binding,
             )?,
             CircuitQ24TaskOpenModeV1::Recover => LearningOwnerJournalV1::recover(
-                inputs.signature_journal, inputs.signature_witness, binding,
+                inputs.signature_journal,
+                inputs.signature_witness,
+                binding,
             )?,
         };
         Ok(Self {
-            state: Arc::new(Mutex::new(State { journal, key: inputs.generator_key, captured: None })),
-            ledger: inputs.ledger, source, task: OriginalTaskCustodyV1::Active { cell, published }, identity, config: inputs.config,
+            state: Arc::new(Mutex::new(State {
+                journal,
+                key: inputs.generator_key,
+                captured: None,
+            })),
+            ledger: inputs.ledger,
+            source,
+            task: OriginalTaskCustodyV1::Active { cell, published },
+            identity,
+            config: inputs.config,
             decision_key: execution_key("decision", binding)?,
             outcome_key: execution_key("outcome", binding)?,
-            ledger_binding, trust_digest,
+            ledger_binding,
+            trust_digest,
         })
     }
 
@@ -192,28 +213,42 @@ impl OriginalCellQ24TaskLedgerProducerV1 {
     /// historical data; an absent append still requires the original signature
     /// to authorize today's write. No timestamp or signature is renewed.
     pub fn resume_from_original_source(&self) -> Result<OriginalCellQ24TaskLedgerStatusV1, Error> {
-        let mut state = self.state.lock().map_err(|_| Error::Binding("producer lock"))?;
+        let mut state = self
+            .state
+            .lock()
+            .map_err(|_| Error::Binding("producer lock"))?;
         let captured = self.capture(&mut state)?;
-        let mut locked = self.ledger.lock().map_err(|_| Error::Binding("ledger lock"))?;
+        let mut locked = self
+            .ledger
+            .lock()
+            .map_err(|_| Error::Binding("ledger lock"))?;
         let ledger: &mut LedgerWriter = &mut locked;
         self.require_ledger(ledger)?;
         let payload = decision_signing_payload_v2(&captured.decision)?;
         let bytes = match state.journal.read(&self.decision_key) {
             Ok(bytes) => bytes,
-            Err(LearningOriginalOwnerErrorV1::Store(ProductEvaluationExecutionStoreErrorV1::Missing)) => {
+            Err(LearningOriginalOwnerErrorV1::Store(
+                ProductEvaluationExecutionStoreErrorV1::Missing,
+            )) => {
                 let cut = witnessed_snapshot(ledger)?;
                 ledger.verifier().require_signer_binding(
-                    LearningEvidenceRoleV1::Generator, &self.config.generator, now()?,
+                    LearningEvidenceRoleV1::Generator,
+                    &self.config.generator,
+                    now()?,
                 )?;
                 if now()? >= self.config.claim_deadline_unix_seconds
-                    || cut.records().iter().any(|r| r.event.record_id() == &captured.decision.record_id)
+                    || cut
+                        .records()
+                        .iter()
+                        .any(|r| r.event.record_id() == &captured.decision.record_id)
                 {
                     return Err(Error::Binding("new original Generator claim"));
                 }
                 let State { journal, key, .. } = &mut *state;
                 journal.commit_once(&self.decision_key, || {
                     self.require_source(&captured).map_err(owner_binding)?;
-                    let signed = binding::sign(self, ledger, key, &payload).map_err(owner_binding)?;
+                    let signed =
+                        binding::sign(self, ledger, key, &payload).map_err(owner_binding)?;
                     self.require_source(&captured).map_err(owner_binding)?;
                     binding::encode(cut.head_digest, &payload, &signed)
                 })?
@@ -224,10 +259,12 @@ impl OriginalCellQ24TaskLedgerProducerV1 {
         if original_payload != payload || signed.evidence_id != self.decision_key.plan_id {
             return Err(Error::Binding("original Decision signature payload"));
         }
-        let expected = binding::decision_event(&captured.decision, &signed, &self.config.generator)?;
+        let expected =
+            binding::decision_event(&captured.decision, &signed, &self.config.generator)?;
         let (snapshot, frontier) = original_snapshot(ledger)?;
         let witnessed = snapshot.records().iter().any(|r| {
-            r.event == expected && r.predecessor_chain_digest == predecessor
+            r.event == expected
+                && r.predecessor_chain_digest == predecessor
                 && r.sequence.get() <= frontier.anchor.sequence
         });
         self.require_source(&captured)?;
@@ -243,9 +280,15 @@ impl OriginalCellQ24TaskLedgerProducerV1 {
 
     /// Observation only: no signing, append, witness repair or task retry.
     pub fn readback(&self) -> Result<OriginalCellQ24TaskLedgerStatusV1, Error> {
-        let mut state = self.state.lock().map_err(|_| Error::Binding("producer lock"))?;
+        let mut state = self
+            .state
+            .lock()
+            .map_err(|_| Error::Binding("producer lock"))?;
         let captured = self.capture(&mut state)?;
-        let ledger = self.ledger.lock().map_err(|_| Error::Binding("ledger lock"))?;
+        let ledger = self
+            .ledger
+            .lock()
+            .map_err(|_| Error::Binding("ledger lock"))?;
         self.status(&mut state, &ledger, &captured)
     }
 
@@ -256,11 +299,20 @@ impl OriginalCellQ24TaskLedgerProducerV1 {
         config: CellQ24LearningPreparationConfigV1,
         mut original_history: Vec<CellQ24DatasetTaskV1>,
     ) -> Result<CellQ24DatasetFreezePreparationV1, Error> {
-        let mut state = self.state.lock().map_err(|_| Error::Binding("producer lock"))?;
+        let mut state = self
+            .state
+            .lock()
+            .map_err(|_| Error::Binding("producer lock"))?;
         let captured = self.capture(&mut state)?;
         {
-            let ledger = self.ledger.lock().map_err(|_| Error::Binding("ledger lock"))?;
-            if !matches!(self.status(&mut state, &ledger, &captured)?, OriginalCellQ24TaskLedgerStatusV1::Complete { .. }) {
+            let ledger = self
+                .ledger
+                .lock()
+                .map_err(|_| Error::Binding("ledger lock"))?;
+            if !matches!(
+                self.status(&mut state, &ledger, &captured)?,
+                OriginalCellQ24TaskLedgerStatusV1::Complete { .. }
+            ) {
                 return Err(Error::PendingOutcome);
             }
         }
@@ -269,7 +321,9 @@ impl OriginalCellQ24TaskLedgerProducerV1 {
         }
         original_history.push(captured.task.clone());
         let preparation = CellQ24DatasetFreezePreparationV1::capture(
-            config, Arc::clone(&self.ledger), original_history,
+            config,
+            Arc::clone(&self.ledger),
+            original_history,
         )?;
         self.require_source(&captured)?;
         Ok(preparation)
@@ -287,16 +341,28 @@ impl OriginalCellQ24TaskLedgerProducerV1 {
         freeze: OriginalCellQ24TaskDatasetFreezeInputsV1,
     ) -> Result<crate::CellQ24PreparedLearningV1, Error> {
         let preparation = self.prepare_dataset(config, original_history)?;
-        let mut owner: OriginalCellQ24DatasetFreezeOwnerV1<FileAnchorWitnessStore> = match freeze.open_mode {
-            CircuitQ24TaskOpenModeV1::Create => OriginalCellQ24DatasetFreezeOwnerV1::create(
-                freeze.journal, freeze.witness, &preparation, freeze.signing, freeze.evaluator_key,
-            )?,
-            CircuitQ24TaskOpenModeV1::Recover => OriginalCellQ24DatasetFreezeOwnerV1::recover(
-                freeze.journal, freeze.witness, &preparation, freeze.signing, freeze.evaluator_key,
-            )?,
-        };
+        let mut owner: OriginalCellQ24DatasetFreezeOwnerV1<FileAnchorWitnessStore> =
+            match freeze.open_mode {
+                CircuitQ24TaskOpenModeV1::Create => OriginalCellQ24DatasetFreezeOwnerV1::create(
+                    freeze.journal,
+                    freeze.witness,
+                    &preparation,
+                    freeze.signing,
+                    freeze.evaluator_key,
+                )?,
+                CircuitQ24TaskOpenModeV1::Recover => OriginalCellQ24DatasetFreezeOwnerV1::recover(
+                    freeze.journal,
+                    freeze.witness,
+                    &preparation,
+                    freeze.signing,
+                    freeze.evaluator_key,
+                )?,
+            };
         let prepared = preparation.authorize_and_materialize(&mut owner)?;
-        if !matches!(self.readback()?, OriginalCellQ24TaskLedgerStatusV1::Complete { .. }) {
+        if !matches!(
+            self.readback()?,
+            OriginalCellQ24TaskLedgerStatusV1::Complete { .. }
+        ) {
             return Err(Error::PendingOutcome);
         }
         prepared.revalidate_source()?;
@@ -318,11 +384,20 @@ impl OriginalCellQ24TaskLedgerProducerV1 {
         if !matches!(freeze.open_mode, CircuitQ24TaskOpenModeV1::Recover) {
             return Err(Error::Binding("retained Dataset requires explicit Recover"));
         }
-        let mut state = self.state.lock().map_err(|_| Error::Binding("producer lock"))?;
+        let mut state = self
+            .state
+            .lock()
+            .map_err(|_| Error::Binding("producer lock"))?;
         let captured = self.capture(&mut state)?;
         {
-            let ledger = self.ledger.lock().map_err(|_| Error::Binding("ledger lock"))?;
-            if !matches!(self.status(&mut state, &ledger, &captured)?, OriginalCellQ24TaskLedgerStatusV1::Complete { .. }) {
+            let ledger = self
+                .ledger
+                .lock()
+                .map_err(|_| Error::Binding("ledger lock"))?;
+            if !matches!(
+                self.status(&mut state, &ledger, &captured)?,
+                OriginalCellQ24TaskLedgerStatusV1::Complete { .. }
+            ) {
                 return Err(Error::PendingOutcome);
             }
         }
@@ -332,20 +407,36 @@ impl OriginalCellQ24TaskLedgerProducerV1 {
         original_history.push(captured.task.clone());
         drop(state);
         let preparation = CellQ24DatasetFreezePreparationV1::recover(
-            config.clone(), Arc::clone(&self.ledger), original_history.clone(), frozen.snapshot.clone(),
+            config.clone(),
+            Arc::clone(&self.ledger),
+            original_history.clone(),
+            frozen.snapshot.clone(),
         )?;
-        let mut owner: OriginalCellQ24DatasetFreezeOwnerV1<FileAnchorWitnessStore> = OriginalCellQ24DatasetFreezeOwnerV1::recover(
-            freeze.journal, freeze.witness, &preparation, freeze.signing, freeze.evaluator_key,
-        )?;
+        let mut owner: OriginalCellQ24DatasetFreezeOwnerV1<FileAnchorWitnessStore> =
+            OriginalCellQ24DatasetFreezeOwnerV1::recover(
+                freeze.journal,
+                freeze.witness,
+                &preparation,
+                freeze.signing,
+                freeze.evaluator_key,
+            )?;
         let authorization = owner.readback(&preparation)?;
         if authorization != frozen.authorization {
             return Err(Error::Binding("original retained Dataset authorization"));
         }
         let prepared = crate::CellQ24PreparedLearningV1::recover(
-            config, Arc::clone(&self.ledger), original_history, frozen, initial, scope,
+            config,
+            Arc::clone(&self.ledger),
+            original_history,
+            frozen,
+            initial,
+            scope,
         )?;
         self.require_source(&captured)?;
-        if !matches!(self.readback()?, OriginalCellQ24TaskLedgerStatusV1::Complete { .. }) {
+        if !matches!(
+            self.readback()?,
+            OriginalCellQ24TaskLedgerStatusV1::Complete { .. }
+        ) {
             return Err(Error::PendingOutcome);
         }
         prepared.revalidate_source()?;
@@ -361,17 +452,24 @@ impl OriginalCellQ24TaskLedgerProducerV1 {
             return Err(Error::Binding("original task capture was not retained"));
         };
         let run = published.source().scope.run_id.clone();
-        let publication = self.source.read_run_publication(&self.identity, &run)
+        let publication = self
+            .source
+            .read_run_publication(&self.identity, &run)
             .map_err(|_| Error::Binding("original task is not committed or was withdrawn"))?;
         let cell: &PublishedCircuitCellOwnerV1<FileAnchorWitnessStore> = cell;
-        let decision = cell.committed(&publication)
+        let decision = cell
+            .committed(&publication)
             .map_err(|_| Error::Binding("original committed Cell"))?;
         let task = CellQ24DatasetTaskV1::capture(
-            self.source.as_ref().clone(), cell, self.identity.clone(), run,
+            self.source.as_ref().clone(),
+            cell,
+            self.identity.clone(),
+            run,
         )?;
         let captured = Captured {
             decision: binding::decision(&self.config, published, &publication, &decision)?,
-            publication, task,
+            publication,
+            task,
         };
         self.require_source(&captured)?;
         state.captured = Some(captured.clone());
@@ -379,8 +477,11 @@ impl OriginalCellQ24TaskLedgerProducerV1 {
     }
 
     fn require_source(&self, captured: &Captured) -> Result<(), Error> {
-        if self.source.read_run_publication(&self.identity, &captured.decision.record_id)
-            .map_err(|_| Error::Binding("original source is unavailable"))? != captured.publication
+        if self
+            .source
+            .read_run_publication(&self.identity, &captured.decision.record_id)
+            .map_err(|_| Error::Binding("original source is unavailable"))?
+            != captured.publication
         {
             return Err(Error::Binding("original source changed or was withdrawn"));
         }
@@ -417,7 +518,9 @@ fn original_snapshot(
     if snapshot.records().len() > 4096
         || covered > snapshot.records().len()
         || snapshot.records().len() - covered > 1
-        || (if covered == 0 { Digest32::ZERO } else {
+        || (if covered == 0 {
+            Digest32::ZERO
+        } else {
             snapshot.records()[covered - 1].chain_digest
         }) != frontier.anchor.chain_digest
     {
@@ -441,6 +544,8 @@ fn owner_binding(_: Error) -> LearningOriginalOwnerErrorV1 {
 }
 
 fn now() -> Result<u64, Error> {
-    Ok(SystemTime::now().duration_since(UNIX_EPOCH)
-        .map_err(|_| Error::Binding("system clock"))?.as_secs())
+    Ok(SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map_err(|_| Error::Binding("system clock"))?
+        .as_secs())
 }

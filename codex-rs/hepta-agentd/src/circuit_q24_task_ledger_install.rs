@@ -30,13 +30,16 @@ impl CircuitQ24TaskRuntimeV1<FileAnchorWitnessStore, FileAnchorWitnessStore> {
         published: PublishedCircuitFeatureTaskV1,
         inputs: OriginalCellQ24TaskLedgerInputsV1,
     ) -> Result<AgentdQ24LearningTaskRuntimeV1, AgentdError> {
-        let producer = Arc::new(OriginalCellQ24TaskLedgerProducerV1::open_original(
-            inputs,
-            Arc::clone(&self.source),
-            self.cell.clone(),
-            published,
-            config.identity().clone(),
-        ).map_err(|error| AgentdError::Invalid(error.to_string()))?);
+        let producer = Arc::new(
+            OriginalCellQ24TaskLedgerProducerV1::open_original(
+                inputs,
+                Arc::clone(&self.source),
+                self.cell.clone(),
+                published,
+                config.identity().clone(),
+            )
+            .map_err(|error| AgentdError::Invalid(error.to_string()))?,
+        );
         let invocation = Arc::new(OriginalTaskInvocation {
             source: self.invocation,
             producer: Arc::clone(&producer),

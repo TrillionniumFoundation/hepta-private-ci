@@ -97,11 +97,14 @@ impl AgentdState {
             ));
         }
         self.circuit_learning_source
-            .set(crate::circuit_task_learning::RegisteredCircuitLearningSourcesV1 {
-                sources, origin,
-                #[cfg(target_os = "linux")]
-                retained_source: None,
-            })
+            .set(
+                crate::circuit_task_learning::RegisteredCircuitLearningSourcesV1 {
+                    sources,
+                    origin,
+                    #[cfg(target_os = "linux")]
+                    retained_source: None,
+                },
+            )
             .map_err(|_| AgentdError::Invalid("Circuit learning source already attached".into()))
     }
 

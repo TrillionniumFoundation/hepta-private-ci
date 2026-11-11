@@ -35,17 +35,21 @@ impl RootGenerationPublicationSlot {
         identity: &AgentdIdentity,
     ) -> Result<Self, AgentdError> {
         Ok(Self {
-            connection: Some(RootGenerationPublicationConnectionV1::capture_original_session(
-                session, original, identity,
-            )?),
+            connection: Some(
+                RootGenerationPublicationConnectionV1::capture_original_session(
+                    session, original, identity,
+                )?,
+            ),
         })
     }
 
     pub(super) fn take_original_connection(
         &mut self,
     ) -> Result<RootGenerationPublicationConnectionV1, AgentdError> {
-        let connection: RootGenerationPublicationConnectionV1 = self.connection.take()
-            .ok_or_else(|| refused("original publication connection was already taken or absent"))?;
+        let connection: RootGenerationPublicationConnectionV1 =
+            self.connection.take().ok_or_else(|| {
+                refused("original publication connection was already taken or absent")
+            })?;
         connection.require_original_publication_session()?;
         Ok(connection)
     }
@@ -60,7 +64,9 @@ impl RootGenerationPublicationConnectionV1 {
         if original.registered_identity.identity()? != *identity
             || session.authority().grant_digest != original.writer_proof.sha256()?
         {
-            return Err(refused("publication connection differs from original writer"));
+            return Err(refused(
+                "publication connection differs from original writer",
+            ));
         }
         let connection: RootGenerationPublicationConnectionV1 = Self {
             original: original.clone(),
@@ -83,19 +89,23 @@ impl RootGenerationPublicationConnectionV1 {
     pub(crate) fn require_original_publication_session(&self) -> Result<(), AgentdError> {
         // SAFETY: these calls only observe this process's kernel credentials.
         let (uid, effective_uid) = unsafe { (libc::getuid(), libc::geteuid()) };
-        if uid == 0 || effective_uid == 0 || uid != self.original.consumer.uid
+        if uid == 0
+            || effective_uid == 0
+            || uid != self.original.consumer.uid
             || effective_uid != self.original.consumer.uid
             || std::process::id() != self.original.consumer.pid
         {
             return Err(refused("publication connection left its original consumer"));
         }
-        self.verifier.verify_sender_process_binding(
-            &self.authority,
-            &self.identity.agent_id,
-            &self.original.writer.local_lease_id,
-            self.original.writer.local_lease_generation,
-            self.identity.spawn_generation,
-        ).map_err(AgentdError::GenerationFenced)
+        self.verifier
+            .verify_sender_process_binding(
+                &self.authority,
+                &self.identity.agent_id,
+                &self.original.writer.local_lease_id,
+                self.original.writer.local_lease_generation,
+                self.identity.spawn_generation,
+            )
+            .map_err(AgentdError::GenerationFenced)
     }
 }
 
