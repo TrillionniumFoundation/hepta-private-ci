@@ -55,6 +55,7 @@ use core_test_support::responses::ResponseMock;
 use core_test_support::responses::ResponsesRequest;
 use serde_json::Value;
 use serde_json::json;
+use sha2::Digest;
 use tokio::time::timeout;
 use wiremock::Mock;
 use wiremock::MockServer;
@@ -877,10 +878,18 @@ async fn real_agentd_loopback_provider_read_only_smoke() -> Result<()> {
         .context("HEPTA_LOCAL_PROVIDER_BASE_URL is required for this ignored smoke")?;
     let model_id = std::env::var("HEPTA_LOCAL_PROVIDER_MODEL")
         .context("HEPTA_LOCAL_PROVIDER_MODEL is required for this ignored smoke")?;
+    let provider_uri = provider_base_url
+        .parse::<http::Uri>()
+        .context("loopback provider URL must be a valid absolute HTTP URI")?;
     ensure!(
-        provider_base_url.starts_with("http://127.0.0.1:")
-            || provider_base_url.starts_with("http://localhost:"),
-        "loopback provider smoke refuses non-local URL: {provider_base_url}"
+        provider_uri.scheme_str() == Some("http")
+            && provider_uri.authority().is_some_and(|authority| {
+                matches!(authority.host(), "127.0.0.1" | "localhost")
+                    && !authority.as_str().contains('@')
+            })
+            && provider_uri.query().is_none()
+            && !provider_base_url.contains('#'),
+        "loopback provider smoke requires a local HTTP authority without user info, query, or fragment"
     );
     ensure!(
         !model_id.trim().is_empty(),
@@ -889,14 +898,27 @@ async fn real_agentd_loopback_provider_read_only_smoke() -> Result<()> {
 
     let mut fleet = FleetHarness::new()?;
     let agent = fleet.register(AGENT_A, "workspace-loopback-provider")?;
+    let retained_fixture_root = fleet.retain_fixture_root()?;
+    println!(
+        "HEPTA_PROVIDER_QUALIFICATION {}",
+        json!({
+            "phase": "fixture_retained",
+            "retained_fixture_root": &retained_fixture_root,
+            "root_mode": "0700",
+            "process_cleanup_remains_enabled": true,
+        })
+    );
     MockResponsesConfig::new("http://127.0.0.1:1")
         .with_model_provider(PROVIDER_ID)
         .with_provider_name("Local loopback qualification provider")
         .with_provider_base_url(&provider_base_url)
         .with_model(&model_id)
+        .disable_feature(codex_features::Feature::UnboundedConnectionRetries)
         .with_provider_config("supports_websockets = false")
         .with_root_config("model_reasoning_effort = \"minimal\"")
         .write(agent.layout.home_root())?;
+    let config_bytes = std::fs::read(agent.layout.home_root().join("config.toml"))?;
+    let config_sha256 = format!("{:x}", sha2::Sha256::digest(&config_bytes));
 
     println!(
         "HEPTA_PROVIDER_QUALIFICATION {}",
@@ -906,10 +928,14 @@ async fn real_agentd_loopback_provider_read_only_smoke() -> Result<()> {
             "requested_model": model_id,
             "requested_provider": PROVIDER_ID,
             "test_owner_home": agent.layout.home_root(),
-            "turn_timeout_seconds": TURN_TIMEOUT.as_secs(),
+            "retained_fixture_root": retained_fixture_root,
+            "rendered_config_sha256": config_sha256,
+            "turn_completion_timeout_seconds": TURN_TIMEOUT.as_secs(),
             // MockResponsesConfig renders both retry limits as zero.
             "request_max_retries": 0,
             "stream_max_retries": 0,
+            "unbounded_connection_retries": false,
+            "supports_websockets": false,
             "provider_payload_tool_inventory": "not_observed",
         })
     );
