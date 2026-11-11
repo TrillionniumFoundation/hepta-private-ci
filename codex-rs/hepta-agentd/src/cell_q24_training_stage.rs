@@ -109,63 +109,72 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
         self.require_dataset(dataset)?;
         let operation_started_at =
             super::now().map_err(OriginalCellQ24TrainingReceiptErrorV1::from)?;
-        let (completed, new_work_started_at) = self.in_lane(
-            move |owners| match owners.receipts.journal.read(&owners.receipts.saved) {
-                Ok(_) => owners.read_original_completion().map(|completed| (completed, None)),
-                Err(LearningOriginalOwnerErrorV1::Store(
-                    ProductEvaluationExecutionStoreErrorV1::Missing,
-                )) => {
-                    let training: &mut CellQ24TrainingOwnerV1<TW> = &mut owners.training;
-                    let receipts: &mut OriginalCellQ24TrainingReceiptOwnerV1<RW> =
-                        &mut owners.receipts;
-                    let retained_outcome = match training.readback() {
-                        Ok(outcome) => Some(outcome),
-                        Err(CellQ24TrainingOwnerErrorV1::Store(
-                            ProductEvaluationExecutionStoreErrorV1::Missing,
-                        )) => None,
-                        Err(error) => return Err(error.into()),
-                    };
-                    // Readback can block on the original witness. Check time
-                    // after that I/O, before any new training or receipt claim.
-                    let now = super::now().map_err(OriginalCellQ24TrainingReceiptErrorV1::from)?;
-                    receipts
-                        .config
-                        .verifier
-                        .require_signer_binding(
-                            LearningEvidenceRoleV1::Generator,
-                            &receipts.config.signer,
-                            now,
-                        )
-                        .map_err(OriginalCellQ24TrainingReceiptErrorV1::from)?;
-                    if now >= receipts.config.dataset.request.envelope.expiry_unix_seconds
-                        || now < operation_started_at
-                    {
-                        return Err(Error::DeadlineExceeded);
+        let (completed, new_work_started_at) = self
+            .in_lane(
+                move |owners| match owners.receipts.journal.read(&owners.receipts.saved) {
+                    Ok(_) => owners
+                        .read_original_completion()
+                        .map(|completed| (completed, None)),
+                    Err(LearningOriginalOwnerErrorV1::Store(
+                        ProductEvaluationExecutionStoreErrorV1::Missing,
+                    )) => {
+                        let training: &mut CellQ24TrainingOwnerV1<TW> = &mut owners.training;
+                        let receipts: &mut OriginalCellQ24TrainingReceiptOwnerV1<RW> =
+                            &mut owners.receipts;
+                        let retained_outcome = match training.readback() {
+                            Ok(outcome) => Some(outcome),
+                            Err(CellQ24TrainingOwnerErrorV1::Store(
+                                ProductEvaluationExecutionStoreErrorV1::Missing,
+                            )) => None,
+                            Err(error) => return Err(error.into()),
+                        };
+                        // Readback can block on the original witness. Check time
+                        // after that I/O, before any new training or receipt claim.
+                        let now =
+                            super::now().map_err(OriginalCellQ24TrainingReceiptErrorV1::from)?;
+                        receipts
+                            .config
+                            .verifier
+                            .require_signer_binding(
+                                LearningEvidenceRoleV1::Generator,
+                                &receipts.config.signer,
+                                now,
+                            )
+                            .map_err(OriginalCellQ24TrainingReceiptErrorV1::from)?;
+                        if now >= receipts.config.dataset.request.envelope.expiry_unix_seconds
+                            || now < operation_started_at
+                        {
+                            return Err(Error::DeadlineExceeded);
+                        }
+                        let outcome = match retained_outcome {
+                            Some(outcome) => outcome,
+                            None => training.fit_or_readback(&cancellation)?,
+                        };
+                        #[cfg(target_os = "linux")]
+                        training.require_live_source_if_captured()?;
+                        let fresh_now =
+                            super::now().map_err(OriginalCellQ24TrainingReceiptErrorV1::from)?;
+                        if fresh_now < now
+                            || fresh_now
+                                >= receipts.config.dataset.request.envelope.expiry_unix_seconds
+                        {
+                            return Err(Error::DeadlineExceeded);
+                        }
+                        let (receipt, attestation) =
+                            receipts.attest_original_completion(training)?;
+                        Ok((
+                            OriginalCellQ24TrainingCompletionV1 {
+                                outcome,
+                                receipt,
+                                attestation,
+                            },
+                            Some(operation_started_at),
+                        ))
                     }
-                    let outcome = match retained_outcome {
-                        Some(outcome) => outcome,
-                        None => training.fit_or_readback(&cancellation)?,
-                    };
-                    #[cfg(target_os = "linux")]
-                    training.require_live_source_if_captured()?;
-                    let fresh_now =
-                        super::now().map_err(OriginalCellQ24TrainingReceiptErrorV1::from)?;
-                    if fresh_now < now
-                        || fresh_now >= receipts.config.dataset.request.envelope.expiry_unix_seconds
-                    {
-                        return Err(Error::DeadlineExceeded);
-                    }
-                    let (receipt, attestation) = receipts.attest_original_completion(training)?;
-                    Ok((OriginalCellQ24TrainingCompletionV1 {
-                        outcome,
-                        receipt,
-                        attestation,
-                    }, Some(operation_started_at)))
-                }
-                Err(error) => Err(OriginalCellQ24TrainingReceiptErrorV1::from(error).into()),
-            },
-        )
-        .await?;
+                    Err(error) => Err(OriginalCellQ24TrainingReceiptErrorV1::from(error).into()),
+                },
+            )
+            .await?;
         if let Some(started_at) = new_work_started_at {
             let fresh_now = super::now().map_err(|_| Error::CommitUncertain)?;
             if fresh_now < started_at || fresh_now >= dataset.request.envelope.expiry_unix_seconds {

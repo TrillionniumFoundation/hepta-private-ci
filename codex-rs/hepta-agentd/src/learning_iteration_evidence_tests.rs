@@ -217,15 +217,23 @@ pub(crate) fn fixture_original_receipt_client_until_close(
     LearningIterationEvidenceClientV1,
     std::thread::JoinHandle<anyhow::Result<usize>>,
 )> {
-    let fixture = Fixture { initial, receipt, verifier, signature };
+    let fixture = Fixture {
+        initial,
+        receipt,
+        verifier,
+        signature,
+    };
     let (client, mut server) = fixture.client()?;
     let expected = fixture.signature.payload_digest.to_string();
     let peer = std::thread::spawn(move || -> anyhow::Result<usize> {
         for index in 0..128 {
             let request = match read_request(&mut server) {
                 Ok(request) => request,
-                Err(error) if error.downcast_ref::<std::io::Error>()
-                    .is_some_and(|io| io.kind() == std::io::ErrorKind::UnexpectedEof) => {
+                Err(error)
+                    if error
+                        .downcast_ref::<std::io::Error>()
+                        .is_some_and(|io| io.kind() == std::io::ErrorKind::UnexpectedEof) =>
+                {
                     return Ok(index);
                 }
                 Err(error) => return Err(error),

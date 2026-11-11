@@ -93,7 +93,9 @@ impl<W: AnchorWitnessStore> CellQ24TrainingOwnerV1<W> {
         let result = self
             .source
             .as_ref()
-            .ok_or(Error::Binding("ordinary Training requires original source capture"))
+            .ok_or(Error::Binding(
+                "ordinary Training requires original source capture",
+            ))
             .and_then(|source| source.require_current_in_lane().map_err(Error::from));
         if result.is_err() {
             self.fenced = true;

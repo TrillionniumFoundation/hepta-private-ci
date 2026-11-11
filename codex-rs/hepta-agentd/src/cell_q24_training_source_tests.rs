@@ -2,29 +2,26 @@
 //! The evidence transport is an explicit same-UID fixture; this does not claim
 //! an external role-host handoff, production StageOwner dispatch, or adoption.
 
-use std::sync::Mutex;
 use pretty_assertions::assert_eq;
 use pretty_assertions::assert_ne;
+use std::sync::Mutex;
 use std::sync::atomic::AtomicBool;
 
-use codex_hepta_intelligence_eval::ProductEvaluationExecutionStoreErrorV1;
-use codex_hepta_neuron::JournalAnchor;
-use codex_hepta_neuron::WitnessStoreError;
+use crate::CellQ24TrainingOwnerErrorV1;
 use crate::OriginalCellQ24TrainingSourceConfigV1;
 use crate::OriginalCellQ24TrainingSourceErrorV1;
 use crate::OriginalCellQ24TrainingSourceOwnersV1;
 use crate::OriginalCellQ24TrainingSourceV1;
 use crate::SourceBoundCellQ24TrainingStageV1;
-use crate::CellQ24TrainingOwnerErrorV1;
 use crate::capture_original_cell_q24_training_source_v1;
 use crate::learning_iteration_evidence_client::fixture_original_receipt_client_until_close;
+use codex_hepta_intelligence_eval::ProductEvaluationExecutionStoreErrorV1;
+use codex_hepta_neuron::JournalAnchor;
+use codex_hepta_neuron::WitnessStoreError;
 
 use super::*;
 
-type Peers = [
-    std::thread::JoinHandle<anyhow::Result<usize>>;
-    2
-];
+type Peers = [std::thread::JoinHandle<anyhow::Result<usize>>; 2];
 
 struct Harness {
     root: PathBuf,
@@ -48,11 +45,7 @@ impl Harness {
         let experience = owners.attest_experience(fixture.sources(&initial))?;
         let prefix = binding::experience_prefix(&fixture.config, &experience.receipt)?;
         let dataset = owners.attest_dataset(fixture.sources(&prefix))?;
-        let full = super::super::dataset_snapshot(
-            &initial,
-            &experience.receipt,
-            &dataset.receipt,
-        )?;
+        let full = super::super::dataset_snapshot(&initial, &experience.receipt, &dataset.receipt)?;
         // Actual Material signatures are produced above. The transport fixture
         // below only replays those bytes; it has no production signer API.
         drop(owners);
@@ -68,13 +61,29 @@ impl Harness {
             verifier: fixture.config.verifier.clone(),
         };
         let Fixture {
-            root, baseline, identity, source, readback, writer, config: original,
-            generator, _directory, ..
+            root,
+            baseline,
+            identity,
+            source,
+            readback,
+            writer,
+            config: original,
+            generator,
+            _directory,
+            ..
         } = fixture;
         Ok(Self {
-            root, baseline, identity, source: Arc::new(source), readback,
-            ledger: Arc::new(Mutex::new(writer)), original, config, generator,
-            material: dataset.material, _directory,
+            root,
+            baseline,
+            identity,
+            source: Arc::new(source),
+            readback,
+            ledger: Arc::new(Mutex::new(writer)),
+            original,
+            config,
+            generator,
+            material: dataset.material,
+            _directory,
         })
     }
 
@@ -94,8 +103,10 @@ impl Harness {
         )?)
     }
 
-    fn receipts(&self, create: bool)
-    -> anyhow::Result<OriginalCellQ24TrainingReceiptOwnerV1<FileAnchorWitnessStore>> {
+    fn receipts(
+        &self,
+        create: bool,
+    ) -> anyhow::Result<OriginalCellQ24TrainingReceiptOwnerV1<FileAnchorWitnessStore>> {
         let file = self.file("training-receipt", create)?;
         let witness = self.witness("training-receipt-witness", create)?;
         let config = OriginalCellQ24TrainingSigningConfigV1 {
@@ -133,14 +144,17 @@ impl Harness {
             self.config.verifier.clone(),
             dataset,
         )?;
-        Ok((OriginalCellQ24TrainingSourceOwnersV1 {
-            source: self.readback.clone(),
-            identity: self.identity.clone(),
-            ledger: Arc::clone(&self.ledger),
-            baseline: Arc::clone(&self.baseline),
-            experience,
-            dataset,
-        }, [first, second]))
+        Ok((
+            OriginalCellQ24TrainingSourceOwnersV1 {
+                source: self.readback.clone(),
+                identity: self.identity.clone(),
+                ledger: Arc::clone(&self.ledger),
+                baseline: Arc::clone(&self.baseline),
+                experience,
+                dataset,
+            },
+            [first, second],
+        ))
     }
 
     async fn capture(&self) -> anyhow::Result<(OriginalCellQ24TrainingSourceV1, Peers)> {
@@ -148,7 +162,10 @@ impl Harness {
             self.config.experience_evidence.clone(),
             self.config.dataset_evidence.clone(),
         )?;
-        Ok((capture_original_cell_q24_training_source_v1(owners, self.config.clone()).await?, peers))
+        Ok((
+            capture_original_cell_q24_training_source_v1(owners, self.config.clone()).await?,
+            peers,
+        ))
     }
 
     fn bytes(&self) -> anyhow::Result<[Vec<u8>; 4]> {
@@ -184,8 +201,10 @@ async fn source_bound_training_preserves_frozen_rule_and_recovers_exact_no_updat
     assert_eq!(optimizer.digest(&batch)?, optimizer_before);
     // The same Root scope validates the exact capture-derived plan.
     let original_plan = fixture.material.training_plan(
-        fixture.config.dataset.clone(), frozen_before.clone(),
-        Arc::clone(&fixture.baseline), optimizer,
+        fixture.config.dataset.clone(),
+        frozen_before.clone(),
+        Arc::clone(&fixture.baseline),
+        optimizer,
     )?;
     drop((plan, original_plan));
     assert_eq!(fixture.config.scope, frozen_before);
@@ -194,14 +213,17 @@ async fn source_bound_training_preserves_frozen_rule_and_recovers_exact_no_updat
         fixture.witness("native-witness", true)?,
         capture,
     )?;
-    let original = OriginalCellQ24TrainingStageV1::from_original_owners(
-        training, fixture.receipts(true)?,
-    ).await?;
+    let original =
+        OriginalCellQ24TrainingStageV1::from_original_owners(training, fixture.receipts(true)?)
+            .await?;
     let stage = SourceBoundCellQ24TrainingStageV1::from_original_stage(original).await?;
-    let completed = stage.execute_training(
-        &fixture.config.dataset, Arc::new(AtomicBool::new(false)),
-    ).await?;
-    assert!(matches!(completed.outcome, CellQ24TrainingOutcomeV1::NoUpdate { .. }));
+    let completed = stage
+        .execute_training(&fixture.config.dataset, Arc::new(AtomicBool::new(false)))
+        .await?;
+    assert!(matches!(
+        completed.outcome,
+        CellQ24TrainingOutcomeV1::NoUpdate { .. }
+    ));
     let repeated = stage.readback(&fixture.config.dataset).await?;
     assert_eq!(repeated.receipt, completed.receipt);
     assert_eq!(repeated.attestation, completed.attestation);
@@ -215,9 +237,9 @@ async fn source_bound_training_preserves_frozen_rule_and_recovers_exact_no_updat
         fixture.witness("native-witness", false)?,
         capture,
     )?;
-    let original = OriginalCellQ24TrainingStageV1::from_original_owners(
-        training, fixture.receipts(false)?,
-    ).await?;
+    let original =
+        OriginalCellQ24TrainingStageV1::from_original_owners(training, fixture.receipts(false)?)
+            .await?;
     let recovered = SourceBoundCellQ24TrainingStageV1::from_original_stage(original).await?;
     let retained = recovered.readback(&fixture.config.dataset).await?;
     assert_eq!(retained.receipt, completed.receipt);
@@ -233,17 +255,21 @@ async fn source_bound_training_rejects_identical_legacy_batch_before_admission()
 -> anyhow::Result<()> {
     let fixture = Harness::new().await?;
     let plan = fixture.material.training_plan(
-        fixture.config.dataset.clone(), fixture.config.scope.clone(),
-        Arc::clone(&fixture.baseline), fixture.config.optimizer,
+        fixture.config.dataset.clone(),
+        fixture.config.scope.clone(),
+        Arc::clone(&fixture.baseline),
+        fixture.config.optimizer,
     )?;
     let training = CellQ24TrainingOwnerV1::create(
         fixture.file("native-training", true)?,
         fixture.witness("native-witness", true)?,
-        plan, fixture.material.batch().clone(), fixture.config.optimizer,
+        plan,
+        fixture.material.batch().clone(),
+        fixture.config.optimizer,
     )?;
-    let original = OriginalCellQ24TrainingStageV1::from_original_owners(
-        training, fixture.receipts(true)?,
-    ).await?;
+    let original =
+        OriginalCellQ24TrainingStageV1::from_original_owners(training, fixture.receipts(true)?)
+            .await?;
     let before = fixture.bytes()?;
     assert!(matches!(
         SourceBoundCellQ24TrainingStageV1::from_original_stage(original).await,
@@ -267,14 +293,18 @@ async fn source_bound_training_withdrawal_before_claim_fences_without_no_update(
         fixture.witness("native-witness", true)?,
         capture,
     )?;
-    let original = OriginalCellQ24TrainingStageV1::from_original_owners(
-        training, fixture.receipts(true)?,
-    ).await?;
+    let original =
+        OriginalCellQ24TrainingStageV1::from_original_owners(training, fixture.receipts(true)?)
+            .await?;
     let stage = SourceBoundCellQ24TrainingStageV1::from_original_stage(original).await?;
     let before = fixture.bytes()?;
-    fixture.source.withdraw_source(&fixture.config.dataset.request.source_run_id)?;
+    fixture
+        .source
+        .withdraw_source(&fixture.config.dataset.request.source_run_id)?;
     assert!(matches!(
-        stage.execute_training(&fixture.config.dataset, Arc::new(AtomicBool::new(false))).await,
+        stage
+            .execute_training(&fixture.config.dataset, Arc::new(AtomicBool::new(false)))
+            .await,
         Err(crate::OriginalCellQ24TrainingStageErrorV1::Training(
             CellQ24TrainingOwnerErrorV1::Source(_)
         ))
@@ -303,11 +333,14 @@ impl AnchorWitnessStore for WithdrawAfterClaim {
     }
 
     fn compare_and_swap(
-        &mut self, expected: Option<JournalAnchor>, next: JournalAnchor,
+        &mut self,
+        expected: Option<JournalAnchor>,
+        next: JournalAnchor,
     ) -> Result<(), WitnessStoreError> {
         self.witness.compare_and_swap(expected, next)?;
         if next.sequence == 2 {
-            self.source.withdraw_source(&self.run)
+            self.source
+                .withdraw_source(&self.run)
                 .expect("explicit withdrawal after original native claim");
         }
         Ok(())
@@ -328,21 +361,28 @@ async fn source_bound_training_withdrawal_after_claim_preserves_pending_without_
         },
         capture,
     )?;
-    let original = OriginalCellQ24TrainingStageV1::from_original_owners(
-        training, fixture.receipts(true)?,
-    ).await?;
+    let original =
+        OriginalCellQ24TrainingStageV1::from_original_owners(training, fixture.receipts(true)?)
+            .await?;
     let stage = SourceBoundCellQ24TrainingStageV1::from_original_stage(original).await?;
     let before = fixture.bytes()?;
     let (recovery_capture, recovery_peers) = fixture.capture().await?;
-    assert!(stage.execute_training(
-        &fixture.config.dataset, Arc::new(AtomicBool::new(false)),
-    ).await.is_err());
+    assert!(
+        stage
+            .execute_training(&fixture.config.dataset, Arc::new(AtomicBool::new(false)),)
+            .await
+            .is_err()
+    );
     drop(stage);
     finish(peers)?;
     let after = fixture.bytes()?;
     assert_ne!(before[0], after[0], "the actual native claim is durable");
     assert_ne!(before[1], after[1], "its independent witness did advance");
-    assert_eq!(before[2..], after[2..], "the Generator never claimed or signed");
+    assert_eq!(
+        before[2..],
+        after[2..],
+        "the Generator never claimed or signed"
+    );
 
     // A previously observed capture may bind recovery, but does not authorize
     // work. The actual original journal remains Pending, never Missing/NoUpdate.
@@ -351,14 +391,21 @@ async fn source_bound_training_withdrawal_after_claim_preserves_pending_without_
         fixture.witness("native-witness", false)?,
         recovery_capture,
     )?;
-    assert!(matches!(recovered.readback(), Err(CellQ24TrainingOwnerErrorV1::Pending)));
+    assert!(matches!(
+        recovered.readback(),
+        Err(CellQ24TrainingOwnerErrorV1::Pending)
+    ));
     drop(recovered);
     finish(recovery_peers)?;
     let (owners, peers) = fixture.clients(
         fixture.config.experience_evidence.clone(),
         fixture.config.dataset_evidence.clone(),
     )?;
-    assert!(capture_original_cell_q24_training_source_v1(owners, fixture.config.clone()).await.is_err());
+    assert!(
+        capture_original_cell_q24_training_source_v1(owners, fixture.config.clone())
+            .await
+            .is_err()
+    );
     finish(peers)?;
     assert_eq!(fixture.bytes()?, after);
     Ok(())
@@ -371,20 +418,37 @@ async fn source_bound_capture_rejects_valid_freeze_resigning_with_identical_trai
     let mut changed = fixture.config.clone();
     changed.freeze_evidence.expires_at -= 1;
     changed.freeze_evidence.signature = SigningKey::from_bytes(&[3; 32])
-        .sign(&changed.freeze_evidence.signing_bytes()).to_bytes();
+        .sign(&changed.freeze_evidence.signing_bytes())
+        .to_bytes();
     let alternative = {
-        let mut ledger = fixture.ledger.lock().expect("original ledger fixture mutex");
+        let mut ledger = fixture
+            .ledger
+            .lock()
+            .expect("original ledger fixture mutex");
         CellQ24DatasetReaderV1::new(&fixture.readback, &fixture.identity, &mut ledger)
             .read_current(
-                &fixture.original.initial, &fixture.baseline, changed.rule,
-                changed.freeze_plan.clone(), &changed.freeze_evidence,
+                &fixture.original.initial,
+                &fixture.baseline,
+                changed.rule,
+                changed.freeze_plan.clone(),
+                &changed.freeze_evidence,
             )?
     };
-    assert_eq!(alternative.batch().encoded(), fixture.material.batch().encoded());
-    assert_eq!(alternative.dataset_observation(), fixture.material.dataset_observation());
-    assert_ne!(alternative.provenance_digest(), fixture.material.provenance_digest());
+    assert_eq!(
+        alternative.batch().encoded(),
+        fixture.material.batch().encoded()
+    );
+    assert_eq!(
+        alternative.dataset_observation(),
+        fixture.material.dataset_observation()
+    );
+    assert_ne!(
+        alternative.provenance_digest(),
+        fixture.material.provenance_digest()
+    );
     let (owners, peers) = fixture.clients(
-        fixture.config.experience_evidence.clone(), fixture.config.dataset_evidence.clone(),
+        fixture.config.experience_evidence.clone(),
+        fixture.config.dataset_evidence.clone(),
     )?;
     assert!(matches!(
         capture_original_cell_q24_training_source_v1(owners, changed).await,
@@ -412,31 +476,40 @@ async fn source_bound_training_cold_identity_rejects_valid_material_signature_re
     let mut renewed = fixture.config.clone();
     renewed.dataset_evidence.expires_at -= 1;
     renewed.dataset_evidence.signature = SigningKey::from_bytes(&[5; 32])
-        .sign(&renewed.dataset_evidence.signing_bytes()).to_bytes();
+        .sign(&renewed.dataset_evidence.signing_bytes())
+        .to_bytes();
     // Valid same-payload signature, with unchanged original issued_at. The
     // fixture can assert this new signature, but cold identity must still fail.
     renewed.verifier.verify(
-        LearningEvidenceRoleV1::Observer, &renewed.dataset_evidence,
+        LearningEvidenceRoleV1::Observer,
+        &renewed.dataset_evidence,
         &learning_iteration_receipt_signing_bytes_v1(&renewed.dataset.receipts[1])?,
         binding::now()?,
     )?;
     let (owners, peers) = fixture.clients(
-        fixture.config.experience_evidence.clone(), fixture.config.dataset_evidence.clone(),
+        fixture.config.experience_evidence.clone(),
+        fixture.config.dataset_evidence.clone(),
     )?;
     assert!(matches!(
         capture_original_cell_q24_training_source_v1(owners, renewed.clone()).await,
-        Err(OriginalCellQ24TrainingSourceErrorV1::Binding("complete original Material signatures"))
+        Err(OriginalCellQ24TrainingSourceErrorV1::Binding(
+            "complete original Material signatures"
+        ))
     ));
     finish(peers)?;
     let (owners, peers) = fixture.clients(
-        renewed.experience_evidence.clone(), renewed.dataset_evidence.clone(),
+        renewed.experience_evidence.clone(),
+        renewed.dataset_evidence.clone(),
     )?;
     let capture = capture_original_cell_q24_training_source_v1(owners, renewed).await?;
-    assert!(CellQ24TrainingOwnerV1::recover_from_original_source(
-        fixture.file("native-training", false)?,
-        fixture.witness("native-witness", false)?,
-        capture,
-    ).is_err());
+    assert!(
+        CellQ24TrainingOwnerV1::recover_from_original_source(
+            fixture.file("native-training", false)?,
+            fixture.witness("native-witness", false)?,
+            capture,
+        )
+        .is_err()
+    );
     finish(peers)?;
     assert_eq!(fs::read(fixture.root.join("native-training"))?, before);
 
@@ -446,8 +519,12 @@ async fn source_bound_training_cold_identity_rejects_valid_material_signature_re
         fixture.witness("native-witness", false)?,
         capture,
     )?;
-    assert!(matches!(original.readback(),
-        Err(CellQ24TrainingOwnerErrorV1::Store(ProductEvaluationExecutionStoreErrorV1::Missing))));
+    assert!(matches!(
+        original.readback(),
+        Err(CellQ24TrainingOwnerErrorV1::Store(
+            ProductEvaluationExecutionStoreErrorV1::Missing
+        ))
+    ));
     drop(original);
     finish(peers)?;
     assert_eq!(fs::read(fixture.root.join("native-training"))?, before);

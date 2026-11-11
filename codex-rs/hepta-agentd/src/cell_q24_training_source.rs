@@ -85,8 +85,10 @@ pub struct OriginalCellQ24TrainingSourceOwnersV1<SW: AnchorWitnessStore> {
 }
 
 trait OriginalMaterialReadback: Send + Sync {
-    fn read(&self, config: &OriginalCellQ24TrainingSourceConfigV1)
-    -> Result<OriginalCellQ24DatasetV1, Error>;
+    fn read(
+        &self,
+        config: &OriginalCellQ24TrainingSourceConfigV1,
+    ) -> Result<OriginalCellQ24DatasetV1, Error>;
 }
 
 struct SourceOwners<SW: AnchorWitnessStore> {
@@ -114,8 +116,7 @@ fn read_original_material(
         config.dataset.owners.clone(),
     )?;
     let mut ledger = original.ledger.try_lock().map_err(|_| Error::Busy)?;
-    let mut reader =
-        CellQ24DatasetReaderV1::new(&original.source, &original.identity, &mut ledger);
+    let mut reader = CellQ24DatasetReaderV1::new(&original.source, &original.identity, &mut ledger);
     // current_material has already read both original completed signatures.
     // This read-only recovery path does not authorize new work after expiry.
     Ok(reader.read_current_for_original_receipt(
@@ -190,7 +191,14 @@ pub async fn capture_original_cell_q24_training_source_v1(
 impl OriginalCellQ24TrainingSourceV1 {
     pub(crate) fn native_inputs(
         &self,
-    ) -> Result<(CellQ24SingleHeadTrainingPlanV1, CellQ24TrainingBatchV1, CellQ24SgdRuleV1), Error> {
+    ) -> Result<
+        (
+            CellQ24SingleHeadTrainingPlanV1,
+            CellQ24TrainingBatchV1,
+            CellQ24SgdRuleV1,
+        ),
+        Error,
+    > {
         let plan = self.material.training_plan(
             self.config.dataset.clone(),
             self.config.scope.clone(),
@@ -208,7 +216,9 @@ impl OriginalCellQ24TrainingSourceV1 {
     /// Never call it on an executor thread. No original writer is unlocked,
     /// reopened, cloned or held across an evidence-client await.
     pub(crate) fn require_current_in_lane(&self) -> Result<(), Error> {
-        let material = self.runtime.block_on(self.live.current_material(&self.config))?;
+        let material = self
+            .runtime
+            .block_on(self.live.current_material(&self.config))?;
         require_same_material(&self.material, &material)?;
         if capture_binding(&self.config, &material) != self.binding {
             return Err(Error::Binding("same original capture identity"));
@@ -244,10 +254,18 @@ impl LiveOwners {
     ) -> Result<(), Error> {
         let experience = &config.dataset.receipts[0];
         let dataset = &config.dataset.receipts[1];
-        if self.experience.readback(&config.dataset, experience).await
-            .map_err(|_| Error::OwnerUnavailable)? != config.experience_evidence
-            || self.dataset.readback(&config.dataset, dataset).await
-                .map_err(|_| Error::OwnerUnavailable)? != config.dataset_evidence
+        if self
+            .experience
+            .readback(&config.dataset, experience)
+            .await
+            .map_err(|_| Error::OwnerUnavailable)?
+            != config.experience_evidence
+            || self
+                .dataset
+                .readback(&config.dataset, dataset)
+                .await
+                .map_err(|_| Error::OwnerUnavailable)?
+                != config.dataset_evidence
         {
             return Err(Error::Binding("complete original Material signatures"));
         }
@@ -268,22 +286,24 @@ fn verify_original_evidence(
     {
         return Err(Error::Binding("exact signed Dataset cut and frozen scope"));
     }
-    for (receipt, evidence) in config.dataset.receipts.iter().zip([
-        &config.experience_evidence,
-        &config.dataset_evidence,
-    ]) {
+    for (receipt, evidence) in config
+        .dataset
+        .receipts
+        .iter()
+        .zip([&config.experience_evidence, &config.dataset_evidence])
+    {
         let payload = learning_iteration_receipt_signing_bytes_v1(receipt)?;
-        let verified = config.verifier.verify(
-            LearningEvidenceRoleV1::Observer,
-            evidence,
-            &payload,
-            at,
-        )?;
+        let verified =
+            config
+                .verifier
+                .verify(LearningEvidenceRoleV1::Observer, evidence, &payload, at)?;
         if verified.principal().principal_id != receipt.actor_id
             || receipt.observed_unix_seconds != evidence.issued_at
             || receipt.observed_unix_seconds > at
         {
-            return Err(Error::Binding("original Material actor and signature window"));
+            return Err(Error::Binding(
+                "original Material actor and signature window",
+            ));
         }
     }
     Ok(())
@@ -298,7 +318,9 @@ fn require_observations(
         || config.dataset.receipts[0].evidence_digest != material.provenance_digest()
         || config.dataset.receipts[1].evidence_digest != material.provenance_digest()
     {
-        return Err(Error::Binding("original Material observations and live data"));
+        return Err(Error::Binding(
+            "original Material observations and live data",
+        ));
     }
     Ok(())
 }
@@ -314,7 +336,9 @@ fn require_same_material(
         || before.batch().encoded() != after.batch().encoded()
         || before.batch().digest() != after.batch().digest()
     {
-        return Err(Error::Binding("original material changed during source capture"));
+        return Err(Error::Binding(
+            "original material changed during source capture",
+        ));
     }
     Ok(())
 }

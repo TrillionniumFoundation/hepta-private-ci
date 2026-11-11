@@ -360,9 +360,9 @@ pub use learning_iteration_generation_evidence::read_generation_learning_stage_v
 mod cell_q24_material_receipt_owner;
 mod cell_q24_model_proposal;
 mod cell_q24_training_receipt_owner;
+mod cell_q24_training_snapshot_readback;
 #[cfg(target_os = "linux")]
 mod cell_q24_training_source;
-mod cell_q24_training_snapshot_readback;
 #[cfg(target_os = "linux")]
 mod circuit_next_use_receipt_owner;
 #[cfg(target_os = "linux")]
@@ -426,6 +426,8 @@ pub use cell_q24_training_receipt_owner::OriginalCellQ24TrainingStageErrorV1;
 pub use cell_q24_training_receipt_owner::OriginalCellQ24TrainingStageV1;
 #[cfg(target_os = "linux")]
 pub use cell_q24_training_receipt_owner::SourceBoundCellQ24TrainingStageV1;
+pub use cell_q24_training_snapshot_readback::OriginalCellQ24TrainingReadbackErrorV1;
+pub use cell_q24_training_snapshot_readback::read_cell_q24_training_snapshot_v1;
 #[cfg(target_os = "linux")]
 pub use cell_q24_training_source::OriginalCellQ24TrainingSourceConfigV1;
 #[cfg(target_os = "linux")]
@@ -436,8 +438,6 @@ pub use cell_q24_training_source::OriginalCellQ24TrainingSourceOwnersV1;
 pub use cell_q24_training_source::OriginalCellQ24TrainingSourceV1;
 #[cfg(target_os = "linux")]
 pub use cell_q24_training_source::capture_original_cell_q24_training_source_v1;
-pub use cell_q24_training_snapshot_readback::OriginalCellQ24TrainingReadbackErrorV1;
-pub use cell_q24_training_snapshot_readback::read_cell_q24_training_snapshot_v1;
 pub use cell_temporal_q24::CellTemporalQ24GenerationWorkerV1;
 pub use cell_temporal_q24::CellTemporalQ24ModelFilesV1;
 pub use cell_temporal_q24::LoadedCellTemporalQ24ModelV1;
