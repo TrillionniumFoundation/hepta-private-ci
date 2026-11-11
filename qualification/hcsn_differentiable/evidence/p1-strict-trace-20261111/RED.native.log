@@ -1,0 +1,78 @@
+test_duplicate_footer_count_rejected (qualification.hcsn_differentiable.test_training_domain_strict_trace.StrictTrainingTraceTests.test_duplicate_footer_count_rejected) ... FAIL
+test_duplicate_top_level_schema_rejected (qualification.hcsn_differentiable.test_training_domain_strict_trace.StrictTrainingTraceTests.test_duplicate_top_level_schema_rejected) ... FAIL
+test_infinity_constant_rejected (qualification.hcsn_differentiable.test_training_domain_strict_trace.StrictTrainingTraceTests.test_infinity_constant_rejected) ... FAIL
+test_nan_constant_rejected (qualification.hcsn_differentiable.test_training_domain_strict_trace.StrictTrainingTraceTests.test_nan_constant_rejected) ... FAIL
+test_nested_duplicate_visit_key_rejected (qualification.hcsn_differentiable.test_training_domain_strict_trace.StrictTrainingTraceTests.test_nested_duplicate_visit_key_rejected) ... FAIL
+test_nonobject_record_rejected_as_value_error (qualification.hcsn_differentiable.test_training_domain_strict_trace.StrictTrainingTraceTests.test_nonobject_record_rejected_as_value_error) ... ERROR
+test_overflow_float_rejected (qualification.hcsn_differentiable.test_training_domain_strict_trace.StrictTrainingTraceTests.test_overflow_float_rejected) ... FAIL
+test_valid_canonical_trace (qualification.hcsn_differentiable.test_training_domain_strict_trace.StrictTrainingTraceTests.test_valid_canonical_trace) ... ok
+
+======================================================================
+ERROR: test_nonobject_record_rejected_as_value_error (qualification.hcsn_differentiable.test_training_domain_strict_trace.StrictTrainingTraceTests.test_nonobject_record_rejected_as_value_error)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hcsn-p1-strict-trace-r11-20261111/qualification/hcsn_differentiable/test_training_domain_strict_trace.py", line 65, in test_nonobject_record_rejected_as_value_error
+    self._check(visit='["visit",0]')
+  File "/home/qian-qi/hcsn-p1-strict-trace-r11-20261111/qualification/hcsn_differentiable/test_training_domain_strict_trace.py", line 31, in _check
+    return read_trace(path)
+           ^^^^^^^^^^^^^^^^
+  File "/home/qian-qi/hcsn-p1-strict-trace-r11-20261111/qualification/hcsn_differentiable/training_domain.py", line 255, in read_trace
+    or any(
+       ^^^^
+  File "/home/qian-qi/hcsn-p1-strict-trace-r11-20261111/qualification/hcsn_differentiable/training_domain.py", line 256, in <genexpr>
+    row.get("kind") != "visit" or row.get("index") != i
+    ^^^^^^^
+AttributeError: 'list' object has no attribute 'get'
+
+======================================================================
+FAIL: test_duplicate_footer_count_rejected (qualification.hcsn_differentiable.test_training_domain_strict_trace.StrictTrainingTraceTests.test_duplicate_footer_count_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hcsn-p1-strict-trace-r11-20261111/qualification/hcsn_differentiable/test_training_domain_strict_trace.py", line 48, in test_duplicate_footer_count_rejected
+    with self.assertRaises(ValueError):
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_duplicate_top_level_schema_rejected (qualification.hcsn_differentiable.test_training_domain_strict_trace.StrictTrainingTraceTests.test_duplicate_top_level_schema_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hcsn-p1-strict-trace-r11-20261111/qualification/hcsn_differentiable/test_training_domain_strict_trace.py", line 40, in test_duplicate_top_level_schema_rejected
+    with self.assertRaises(ValueError):
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_infinity_constant_rejected (qualification.hcsn_differentiable.test_training_domain_strict_trace.StrictTrainingTraceTests.test_infinity_constant_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hcsn-p1-strict-trace-r11-20261111/qualification/hcsn_differentiable/test_training_domain_strict_trace.py", line 56, in test_infinity_constant_rejected
+    with self.assertRaises(ValueError):
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_nan_constant_rejected (qualification.hcsn_differentiable.test_training_domain_strict_trace.StrictTrainingTraceTests.test_nan_constant_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hcsn-p1-strict-trace-r11-20261111/qualification/hcsn_differentiable/test_training_domain_strict_trace.py", line 52, in test_nan_constant_rejected
+    with self.assertRaises(ValueError):
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_nested_duplicate_visit_key_rejected (qualification.hcsn_differentiable.test_training_domain_strict_trace.StrictTrainingTraceTests.test_nested_duplicate_visit_key_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hcsn-p1-strict-trace-r11-20261111/qualification/hcsn_differentiable/test_training_domain_strict_trace.py", line 44, in test_nested_duplicate_visit_key_rejected
+    with self.assertRaises(ValueError):
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_overflow_float_rejected (qualification.hcsn_differentiable.test_training_domain_strict_trace.StrictTrainingTraceTests.test_overflow_float_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hcsn-p1-strict-trace-r11-20261111/qualification/hcsn_differentiable/test_training_domain_strict_trace.py", line 60, in test_overflow_float_rejected
+    with self.assertRaises(ValueError):
+AssertionError: ValueError not raised
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.006s
+
+FAILED (failures=6, errors=1)

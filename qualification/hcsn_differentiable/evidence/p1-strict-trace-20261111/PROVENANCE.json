@@ -1,0 +1,65 @@
+{
+  "branch": "research/hcsn-p1-strict-domain-trace-20261111-r11",
+  "green": {
+    "errors": 0,
+    "exit_code": 0,
+    "failures": 0,
+    "job_id": "1a1ccde1ef1-2564-10af",
+    "python": "3.12.3",
+    "skipped": 0,
+    "tests": 29,
+    "torch": "2.8.0+cu128"
+  },
+  "initial_green": {
+    "errors": 1,
+    "exit_code": 1,
+    "job_id": "1a1ccdcd584-2564-10aa",
+    "kind": "import-path invocation error",
+    "tests": 28
+  },
+  "logs": [
+    {
+      "bytes": 5668,
+      "name": "GREEN.initial-import-error.native.log",
+      "sha256": "75a072d8b01a9710cb4ea99354f893c97d5f3771157ceb8db835c998e8d23874"
+    },
+    {
+      "bytes": 5225,
+      "name": "GREEN.native.log",
+      "sha256": "1743e27107ff71f5a440c73acb5512bceed075fd1afcfe684af06a4042c347ef"
+    },
+    {
+      "bytes": 6339,
+      "name": "RED.native.log",
+      "sha256": "b46275e8332418ae03713b4cf8d81210b4602912334e50bc8e0b099a572fa639"
+    }
+  ],
+  "original_c2_unmodified": true,
+  "parent_head": "cec5f9ec172f0338d1869bb4cba85f99925ee5b6",
+  "red": {
+    "assertion_failures": 6,
+    "errors": 1,
+    "exit_code": 1,
+    "job_id": "1a1ccdbc13e-2564-10a8",
+    "tests": 8
+  },
+  "schema": "hcsn-p1-strict-trace-provenance-v1",
+  "scientific_admission": "HOLD_NO_GO",
+  "source": [
+    {
+      "git_blob_sha": "8b7330580ad9ffe3fea7d9cbc61c2b24f92e3170",
+      "path": "qualification/hcsn_differentiable/training_domain.py",
+      "sha256": "424074b02a9f04fc2cf0eecc491318ce846ca696c68dcdeebfa88f5242e05881"
+    },
+    {
+      "git_blob_sha": "b9b3e98ac87b3d2038f53dd6bf7d4564abe1a761",
+      "path": "qualification/hcsn_differentiable/test_training_domain_strict_trace.py",
+      "sha256": "def1e8b91f6f1edd839d6b67f184d800b08951c9f5b549c897ebe0ed2c7c9e78"
+    },
+    {
+      "git_blob_sha": "e84e44a53f417b58fb17c83c61e7d51fc60765fd",
+      "path": ".github/workflows/hcsn-differentiable.yml",
+      "sha256": "d63db6eb499c33d2b700535f8a7bc1bf48cfca8ea686155665c2506c4f066690"
+    }
+  ]
+}
