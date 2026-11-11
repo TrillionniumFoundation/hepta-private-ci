@@ -1,54 +1,50 @@
-# MEM8 original-owner integration checkpoint
+# MEM8 owner and memory-path checkpoint
 
-Observed checkpoint: **2026-11-11 03:55:14 UTC**. This supersedes the status document at `51a7540fd276ef6fbcce5c15f00408252a934104`; that immutable commit retains the earlier observation in full.
+Checkpoint: 2026-11-11 04:32:18 UTC. Adoption: **HOLD / NoUpdate**.
 
-**Scientific acceptance remains HOLD / NoUpdate. One of the eleven inherited blockers is closed: the complete original archive copy. Ten inherited blockers remain open.** Additional engineering subgates have passed, with their actual scope recorded below. There is no new actor/model efficacy result at this checkpoint.
+## Newly closed engineering subgates
 
-## Completed evidence
+The complete owner integration is now qualified on exact `66f570a77c60aac8d33e6cbeac8dfd120ef1d867` / tree `8eaee893e1e6e43423f288fc654e05c3c95f6179` in two separate executions: ai395 run `mem8-native-66f570-tools-ai395-20261111-ed353-v7` and GitHub run `42953532462`, native job `130303174020`.
 
-| Exact source / observation | Actual result | Boundary |
+| Scope | ai395 | GitHub |
 | --- | --- | --- |
-| Common source `96038ccf` hosted MEM | Nine groups, 154 execution observations, 120 distinct cases, 34 repeated observations, zero failures/skips | Mechanism tests; not new model experiments or whole-repository CI |
-| Source A `ad5a4ed6` | Four selected native cases pass; format, scoped fix and source guards clean; 420 filtered/unselected | Source-admission fixtures; original deployed custody still unverified |
-| Owner integration `c6aa120a` memory command | 11 expected unique cases pass, zero failures; 420 filtered/unselected; exact source unchanged | Original driver subsequently failed closed on nextest progress-column parsing; corrected independent audit does not count as another execution |
-| Separate `c6aa120a` Agentd continuation | Five unique cases: four pass, one fails; 781 filtered/unselected | The one drain case has two default-profile attempts; neither reached the first child marker. Memory receipt imported without reexecution |
-| Drain diagnostic `4d1186a4` | Original single case fails, zero retries; `Codex executable path is not configured` exposed | Original readiness assertion and timeout unchanged; zero completion markers |
-| Current integration `66f570a7` first attempt | Format stops because the host lacks `dotslash`; zero builds/tests; source unchanged | Environment repair is being prepared under a new attempt identity; failed receipt retained |
-| Windows original signed-credit case `cb0b276f` | One pass, zero failures, zero retries, 269 filtered/unselected; source unchanged | Original locked descriptor and full-byte assertions retained; this is one case, not all Windows CI |
-| Dependency candidate `dc96a441` | RMCP 265 pass / 3 fail; Matrix 29 pass / 1 fail | Actual full raw logs and JUnit retained; candidate is not qualified |
-| Independent Bazel cache attempt on `dc96a441` | `just bazel-lock-update` passes, source/lock unchanged | Original failed cache attempt retained; cache settings are environmental, not a source or dependency bypass |
-| Matrix diagnostic `6ef3cf7a` | One fail, zero retries; prepare succeeds in 12.828 s, reopen hits `login_or_restore.build.timeout` after 5.511 s | Same error type, control flow, five-second limit, KDF and original assertions. A separate SHA-256 build-profile experiment has no result yet |
+| Memory | 11 passed, 0 failed; 420 unselected | 11 passed, 0 failed; 420 unselected |
+| Agentd | 5 passed, 0 failed; 781 unselected | 5 passed, 0 failed; 781 unselected |
+| Protocol | 16 passed, 0 failed | 16 passed, 0 failed |
+| Actual drain children | commit, revoke, panic | commit, revoke, panic |
+| Format, V8, real CLI build | Passed | Passed |
+| Three scoped fixes | Passed, source unchanged | Passed, source unchanged |
 
-The complete c6aa memory log is 17,782 bytes, SHA-256 `158e0b826d7049848d520a86dbbb22e781672c159fd0433e46f2134e373247c1`. The Agentd continuation log is 59,977 bytes, SHA-256 `bc2d4439491617ada71a46fce8286a528b9e82be5516d7a8527d42c148985e86`. Parser corrections audit the original bytes and cannot create test executions.
+Each execution contains 32 selected cases; the three drain children belong to one Agentd case. The independent host completed at 04:07:00 UTC. Its CLI is 559,365,840 bytes with SHA-256 `2dc4165feb9cf8289b70b39c239b145d5976ec3142445cb6d15abf30bd91c8e2`; the GitHub CLI is separately built and has its own full hash. Both original binary hashes match their corresponding post-validation hashes. No source or assertion was relaxed to obtain a pass.
 
-The Windows run is [42947836619](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42947836619), job `130284818815`, nextest run `b3e2fe3d-1bb1-4584-8580-dce96cb1cab7`. Its complete evidence archive was attached to [CI evidence #5889](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5889) at `1d10aebcc3308acc12c982cc77a7137a745c3708`, read back through an independent connector download, hash/member checked and validated against the complete original log. The earlier OS33 failure remains in history. The Linux attempt still needs its exact-source Unix compile-time helper; Windows success is not transferred to it.
+F1 #5916 and F2 #5917 separately add the configured episodic ingress profile. Exact F2 `0c32926cfec58d986477fc72ba3a4787ab75fde9` / tree `0d5aa1544aad103f9099c7c8347d8075d6ecc76e` completed at 04:26:35 UTC, before the original 04:47:03 deadline.
 
-## Current source and pending validation
+| F2 group | Passed | Failed | Unselected |
+| --- | ---: | ---: | ---: |
+| Config manager constraints | 2 | 0 | 323 |
+| Agentd episodic | 6 | 0 | 781 |
+| Qualification feature profile | 1 | 0 | 789 |
+| Memory extension control | 1 | 0 | 99 |
+| Native empty tool router | 1 | 0 | 2446 |
 
-[Owner integration #5892](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5892) is at `66f570a77c60aac8d33e6cbeac8dfd120ef1d867`, tree `8eaee893e1e6e43423f288fc654e05c3c95f6179`. `CURRENT_SOURCES.json` lists 32 exact source/config inputs. The new change resolves a real Codex CLI through the existing Cargo/Bazel metadata helper, declares the Bazel test binary, builds and binds the exact-source CLI in native CI, and checks its full hash after validation. It also forwards only child completion markers actually observed in child stdout. It does not replace the CLI with a test harness executable or relax assertions/timeouts.
+These are 11 executions and 10 distinct test IDs: the profile case also runs with `qualification-cognitive-write`. Format, V8 input preparation, exact-source CLI build and two scoped fixes passed with unchanged source. F2 retains the original cognitive store for explicit source-checked context and disables the specified automatic memory paths when episodic ingress is configured. Existing profiles without this ingress retain their selection. NativeAppServer already selects the empty tool router; this is not a claim about every ordinary client, direct host/store caller, prompt contributor or skill.
 
-Required full-owner validation remains: 11 memory cases, five Agentd cases, all three actual drain child markers, protocol package and three scoped fixes with unchanged source. The original campaign deadline is **04:47:03 UTC**. Queued GitHub jobs and unstarted phases are not passing results. The earlier c6aa GitHub workflow was cancelled without steps, which does not erase its actual host results.
+The root independently checked the full 47-, 35- and 89-member host archives, the complete official GitHub ZIP, and all 88 original files in the F2 bundle. Checks include every manifest hash, raw-log/receipt binding, actual unique case IDs, the three marker lines, exact postimages and source/binary identity. The root audit and original archives are indexed in `MANIFEST.json`. Earlier real failures remain retained and are not overwritten by successful follow-ups.
 
-Stage F is separately reviewable and **not yet compiled** at this snapshot. F1 clears already-derived history-note/token-budget configuration when the embedding requires TokenBudget off. F2 selects `ExplicitContextOnly` for the newly configured episodic ingress, turning off Hepta memory, the independent `memories` extension, history notes and automatic qualification lifecycle hooks while keeping the original native store available to explicit context. Existing profiles without that ingress retain their previous selection. Actual Rust 1.96 formatting changed only `app_runtime.rs`; that postimage is retained, with zero build/test executions.
+## Work still running at this snapshot
 
-The source audit also confirmed an existing boundary: NativeAppServer identifies itself as `hepta-infer-worker`, and its model-visible and registered tool router is empty. Ordinary App Server clients differ. This is not a claim that all host RPCs, direct store callers, prompt contributors or external effects are isolated.
+The original provider smoke request is `mem8-native-provider-qualified-v1-ed353817`. Its sequential driver is compiling the original Linux signed-credit case before the exact-source provider binary and first smoke turn. No provider POST, thread, turn or new model result has been observed. Private fixture retention, exact thread/turn recording, zero automatic retries and original-identity reconciliation remain required.
 
-## Real provider path
+The dependency candidate `dc96a441` still has its original 265/3 RMCP and 29/1 Matrix observations. A same-source real CLI build for the three original RMCP failures is linking. Those results cannot be borrowed by another source.
 
-GET-only checks observed the existing authenticated local Responses route and `qwen38-flash-next-uc`. They made no inference calls and did not read credentials. [Provider smoke #5908](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5908), now at `55951ed9094ae894f0256a3461fd9504ef060473`, retains a private fixture home before startup, binds requested/observed App Server model/provider and original thread/turn identities, disables unbounded connection retries, preserves zero configured client/nextest retries and uses the existing 20-second completion wait. That wait is not the total build/probe deadline.
+Matrix diagnosis identified `login_or_restore.build.timeout`. Optimizing the actual locked `sha2 0.11.1` backend let the diagnostic case pass: preparation 2.967 seconds and reopen 1.195 seconds, without changing the five-second deadline, cryptographic rounds, algorithm or assertions. Production candidate `f1fd544b` restores original SDK/test bytes, applies the Cargo profile and matching Bazel annotations, and has passed fmt, locked metadata and cache-isolated Bazel lock update with no lock drift. Its complete 30-case Matrix command is running; no terminal pass is claimed.
 
-The smoke must obtain its own real result. Its fixture owner cannot establish the original production owner, remote physical model weight identity, provider-side request count or memory benefit. An unknown response must be reconciled using the retained owner/thread/turn rather than replayed under a new identity.
+## Original acceptance gates
 
-## Original archive and scientific gates
+The complete original 61,412,948-byte MEM6 archive is preserved and independently reconstructed from all 128 GitHub parts at `b66d74d4a61b15f3d9e1eb3b5ddfa251777ee4c1`. This closes the raw-copy blocker. It does not restore original owners or effects.
 
-The original MEM6 archive is **61,412,948 bytes**, SHA-256 `f77acd9feb27fda3f8000b0d089dbdbe258a4adfb7acedcb2e0cd590cc4f361e`. All 128 GitHub parts were reconstructed and independently downloaded again to the current workspace; both full digests match. The complete index and cloud-copy receipt are at immutable commit `b66d74d4a61b15f3d9e1eb3b5ddfa251777ee4c1` on `research/mem6-full-archive-20261111-ed353`.
+Ten original blockers remain. Complete software qualification with fixtures does not authenticate the original deployed source/writer/provider binding or independent trust domain. Physical deletion and consumer-cache propagation, final external-effect fencing, full owner/effect cold recovery, complete cost accounting and slow consolidation still require their own evidence. Whole-repository CI is also broader than the passing MEM and Windows case gates.
 
-This closes the raw-copy blocker. It does not recover original owners, source grants, credentials, independent trust authority or external-effect state. No archived runtime was executed to manufacture those claims.
+Historical science is unchanged: fixed-selector retention is 30/84 versus 28/84, 2 wins/82 ties/0 losses, with 16 initial no-ops per arm; the source-level one-sided 95% lower bound remains 0.0. The newer selector comparison is 21/54 versus 13/54 with 9 wins/44 ties/1 loss and 10 initial no-ops per arm. The latter is selector evidence. Fresh-process delivery and exact KV/BM25/ICL/uniform paths are mechanism evidence with zero model calls; they do not demonstrate unseen episodic successor benefit or a trained association head.
 
-Historical results remain unchanged: fixed-selector retention is 30/84 versus 28/84, with 16 initial no-ops per arm and source-level one-sided 95% lower bound 0.0. New-source selector results are 21/54 versus 13/54, 9 wins / 44 ties / 1 loss, ten initial no-ops per arm and one public-selector bypass. They do not establish an unseen episodic-successor benefit. No reweighting, rescoring or threshold relaxation has been applied.
-
-`BLOCKERS.json` retains the ten open inherited gates: scientific working-state benefit, original deployed owner bridge, provider runtime binding, unseen episodic benefit, strong baselines/association, source custody/exposure/independent trust, deletion/external effects, full owner/effect cold recovery, full cost/slow consolidation and whole hosted CI. Their engineering progress and scientific acceptance are recorded separately.
-
-## Evidence handling
-
-`MANIFEST.json` lists immutable archives with full sizes and SHA-256 values. Historical formatter/source-admission archives remain intact. Newly attached native attempts retain original failures, complete raw logs, receipts, exact sources and driver identities. Every new published byte is read back before it is described as verified. Same-tree results from a different commit are identified as such; filtered tests, duplicate summaries, retries, cancelled jobs and compilation failures are not counted as new passing cases.
+No adoption threshold, scoring rule or source weighting has changed. Unknown remote work is reconciled under its original request identity. The current original-blocker count is **10 open**, and the production action is **NoUpdate**.
