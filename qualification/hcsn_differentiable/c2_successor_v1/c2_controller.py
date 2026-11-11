@@ -18,7 +18,7 @@ import threading
 import traceback
 
 from c2_boundary import require
-from c2_io import exclusive_json, identity, runtime_identity, sha, verify_files, append_receipt, read_receipts
+from c2_io import exclusive_json, identity, runtime_identity, sha, verify_files, append_receipt, read_receipts, strict_object_json
 from c2_runner import bind_program, require_decision
 
 
@@ -135,13 +135,14 @@ def terminal_result_gate(row, path, parent, contract):
         path = Path(path)
         require(path.is_file() and not path.is_symlink(), 'terminal result file missing/nonregular')
         output['result'] = identity(path)
-        result = json.loads(path.read_bytes())
+        result = strict_object_json(path)
         require(isinstance(result, dict), 'terminal result JSON is not an object')
         parent_dir = Path(contract['parent_campaign']) / parent['name']
         parent_result = parent_dir / 'result.json'
         parent_identity = identity(parent_result)
         require(parent_identity['sha256'] == parent['result_sha256'], 'original parent report changed')
-        prior = json.loads(parent_result.read_bytes())
+        prior = strict_object_json(parent_result)
+        require(identity(parent_result) == parent_identity, 'parent changed during terminal parsing')
         require(result.get('schema') == 'hcsn-c2-soft-wall-continuation-v1'
                 and result.get('production_execution') is True
                 and result.get('confirmation_access') is False

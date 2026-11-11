@@ -115,7 +115,7 @@ jobs:
         run: |
           python -m unittest discover -s qualification/hcsn_differentiable/recovery_v1 -p 'test_*.py' -v 2>&1 \
             | tee "$RUNNER_TEMP/hcsn-differentiable/c2-recovery-tests.log"
-          python -m unittest discover -s qualification/hcsn_differentiable/c2_successor_v1 -p 'test_successor_wiring.py' -v 2>&1 \
+          python -m unittest discover -s qualification/hcsn_differentiable/c2_successor_v1 -p 'test_successor_*.py' -v 2>&1 \
             | tee "$RUNNER_TEMP/hcsn-differentiable/c2-successor-wiring-tests.log"
 
       - name: Enforce the predeclared numerical error budget
