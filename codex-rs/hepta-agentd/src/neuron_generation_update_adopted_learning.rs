@@ -55,7 +55,12 @@ pub fn learning_updated_task_operation_id_v1(
             snapshot
                 .receipts
                 .iter()
-                .find(|receipt| matches!(receipt.observation, LearningIterationObservationV1::Selection { .. }))
+                .find(|receipt| {
+                    matches!(
+                        receipt.observation,
+                        LearningIterationObservationV1::Selection { .. }
+                    )
+                })
                 .ok_or_else(|| invalid("completed updated task selection is missing"))?
                 .predecessor
         }

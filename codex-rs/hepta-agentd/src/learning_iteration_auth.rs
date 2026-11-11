@@ -71,7 +71,10 @@ async fn authenticate_iteration_receipt_at_clock_v1(
     // A later publication/use cannot outlive the explicit local decision's
     // current authorization. Re-read its original signed evidence as well.
     if let Some(decision) = snapshot.receipts.iter().find(|earlier| {
-        matches!(earlier.observation, codex_hepta_learning_artifacts::LearningIterationObservationV1::LocalDecisionV2(_))
+        matches!(
+            earlier.observation,
+            codex_hepta_learning_artifacts::LearningIterationObservationV1::LocalDecisionV2(_)
+        )
     }) {
         verify_receipt(ports, verifier, snapshot, decision, clock).await?;
     }

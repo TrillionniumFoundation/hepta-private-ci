@@ -21,7 +21,11 @@ pub(super) const MAX_RECEIPTS: usize = 8;
 const MAX_ID_BYTES: usize = 128;
 
 pub(super) fn encode(snapshot: &LearningIterationSnapshotV1) -> Result<Vec<u8>, Error> {
-    let limit = if snapshot.local_decision_v2().is_some() { MAX_RECEIPTS } else { 7 };
+    let limit = if snapshot.local_decision_v2().is_some() {
+        MAX_RECEIPTS
+    } else {
+        7
+    };
     if snapshot.receipts.len() > limit {
         return Err(Error::Capacity);
     }
@@ -225,8 +229,13 @@ pub(super) fn encode(snapshot: &LearningIterationSnapshotV1) -> Result<Vec<u8>, 
                     LearningLocalDispositionV2::DeferCandidate => 1,
                     LearningLocalDispositionV2::RetainParent => 2,
                 })?;
-                for digest in [decision.proposal_head, decision.candidate_bundle,
-                    decision.selected_bundle, decision.policy_digest, decision.reason_digest] {
+                for digest in [
+                    decision.proposal_head,
+                    decision.candidate_bundle,
+                    decision.selected_bundle,
+                    decision.policy_digest,
+                    decision.reason_digest,
+                ] {
                     w.digest(digest)?;
                 }
             }

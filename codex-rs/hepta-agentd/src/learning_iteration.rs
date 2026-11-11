@@ -456,8 +456,12 @@ impl LearningIterationRuntimeBootstrapV1 {
             // owner to publish or use its selected generation, not only after
             // that owner returns an observation of the side effect.
             if let Some(decision) = coordinator.snapshot().receipts.iter().find(|receipt| {
-                matches!(receipt.observation,
-                    codex_hepta_learning_artifacts::LearningIterationObservationV1::LocalDecisionV2(_))
+                matches!(
+                    receipt.observation,
+                    codex_hepta_learning_artifacts::LearningIterationObservationV1::LocalDecisionV2(
+                        _
+                    )
+                )
             }) {
                 crate::learning_iteration_auth::authenticate_iteration_receipt_v1(
                     state,
