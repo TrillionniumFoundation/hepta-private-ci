@@ -1,0 +1,44 @@
+{
+  "schema": "hepta.mem8.owner-checkpoint.evidence.v1",
+  "checkpoint_utc": "2026-11-11T01:36:54Z",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source_admission_pr": 5888,
+  "integration_pr": 5892,
+  "original_staging_manifest": {
+    "path": "STAGES.json",
+    "git_blob_sha": "f7b9404d75f3dbc842805349dc052169cd9a1ce7"
+  },
+  "archives": [
+    {
+      "path": "runtime-transport-checkpoint.tar.xz",
+      "bytes": 24500,
+      "sha256": "90ca1ca556f1259da8a430dc8f42be59a3c8cbf832ade8c2f41ac947cb366ac0",
+      "git_blob_sha": "7a0f77c8a0c58f90f16384e83e8396d3fdf3890d",
+      "scope": "Original-host observations, publication helper and unresolved execution identities. No helper execution or completed native receipt inferred."
+    },
+    {
+      "path": "native-ci-infrastructure-evidence.tar.xz",
+      "bytes": 9908,
+      "sha256": "46a3ab8d92c38827dbe6a866dd34fd06b7fe804edfc935fab7c2f0197944b0f7",
+      "git_blob_sha": "c572c6d87bdb45f195ee5462007ea342e5554d81",
+      "scope": "Exact workflow inputs, static shell/YAML validation and infrastructure publication receipts."
+    },
+    {
+      "path": "source-admission-format-e68a-evidence.tar.xz",
+      "bytes": 70620,
+      "sha256": "95263f4373d62889646bc760493a2a4dea175776fd0ce1ff8407d2aad8ba9b86",
+      "git_blob_sha": "6df63cffb3f73811b771798778d6222cb350946f",
+      "scope": "Original artifact ZIP, full native job log, source hashes, receipts and exact formatter patch replay. Tests and fixes skipped on the rejected dirty source."
+    }
+  ],
+  "new_model_episodes": 0,
+  "production_adoption": false,
+  "scientific_acceptance": "HOLD",
+  "full_owner_cold_recovery": false,
+  "unknown_host_requests_replayed": false,
+  "notes": [
+    "Each archive is an immutable Git blob smaller than 500000 bytes.",
+    "Current queued/running native jobs have no final passing-test claim in this checkpoint.",
+    "Dependency review and existing hosted MEM artifacts remain in the separate memory-cell-mem8-ci-followup directory."
+  ]
+}

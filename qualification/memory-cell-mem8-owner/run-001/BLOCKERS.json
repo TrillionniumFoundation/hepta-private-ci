@@ -1,0 +1,232 @@
+{
+  "schema": "hepta.mem8.owner-followup.v1",
+  "date_utc": "2026-11-11",
+  "predecessor": {
+    "source_commit": "adef61556284cc5b58c4f23a33d7c8455e821c3f",
+    "path": "qualification/memory-cell-mem7/read-freshness-20261110/BLOCKERS.json"
+  },
+  "common_source": {
+    "commit": "96038ccf0660154fac143ba6cbe4be81e00813e8",
+    "tree": "1277666f3285cdf006d36478e6f74ddec38e1fe0",
+    "pr": 5873
+  },
+  "scientific_acceptance": "HOLD",
+  "production_adoption": false,
+  "adoption_action": "NoUpdate",
+  "new_real_actor_episodes": 0,
+  "closed_this_followup": [
+    {
+      "id": "HOSTED-MEM-COMMON-SOURCE",
+      "status": "PASSED",
+      "scope": "Two hosted MEM jobs on exact common source: nine groups, 154 execution observations, 120 distinct test IDs, 34 repeated observations, zero failures or skips. This is not whole-repository CI or a new model experiment."
+    },
+    {
+      "id": "HOSTED-MEM-RAW-EVIDENCE",
+      "status": "PUBLISHED_AND_READ_BACK",
+      "scope": "PR 5889 retains the original CI artifacts/logs and reproducible audits; both archive files were read back byte-for-byte from commit 2fc8e9d07ad613c1bf308695b51cd910777f5095."
+    }
+  ],
+  "historical_results_unchanged": {
+    "retention_successes": [
+      30,
+      28
+    ],
+    "retention_pairs": 84,
+    "retention_initial_noops_per_arm": 16,
+    "retention_source_bootstrap_lower_bound": 0,
+    "selector_successes": [
+      21,
+      13
+    ],
+    "selector_pairs": 54,
+    "selector_wins_ties_losses": [
+      9,
+      44,
+      1
+    ],
+    "selector_initial_noops_per_arm": 10,
+    "selector_bypasses": [
+      1,
+      0
+    ]
+  },
+  "archive": {
+    "original_bytes": 61412948,
+    "original_sha256": "f77acd9feb27fda3f8000b0d089dbdbe258a4adfb7acedcb2e0cd590cc4f361e",
+    "restored_logical_files": 10365,
+    "restored_logical_bytes": 243281645,
+    "restore_host": "desktop",
+    "restore_job_id": "1a1c6670efe-5074-ff",
+    "archived_runtime_executed": false,
+    "independent_trust_domain": false,
+    "full_owner_cold_recovery": false
+  },
+  "open": [
+    {
+      "id": "WORKING-STATE-SCIENTIFIC-GATE",
+      "status": "NOT_MET",
+      "finding": "Historical MEM6 30/84 vs 28/84; source-level one-sided 95% lower bound 0.0. No reweighting or threshold change."
+    },
+    {
+      "id": "ORDINARY-OWNER-BRIDGE",
+      "status": "PUBLISHED_NATIVE_AND_ORIGINAL_BINDING_PENDING",
+      "finding": "Source admission is in PR 5888; five preimage-checked commits implementing atomic original-writer import, receipt reconciliation, ordinary control and retained cancellation/drain handling are in draft validation PR 5892. Native tests and authenticated deployed source/owner integration remain unverified.",
+      "closure": "Implement the bridge using the retained original writer capability and authenticated source events; recover the exact cut and preserve tombstones and uncertain-commit reconciliation."
+    },
+    {
+      "id": "PROVIDER-RUNTIME-BINDING",
+      "status": "NOT_VERIFIED",
+      "finding": "ai395 model server health succeeds; unauthenticated model listing returns 401. No authorized ordinary-owner/provider/final-use route was exercised."
+    },
+    {
+      "id": "UNSEEN-EPISODIC-BENEFIT",
+      "status": "NOT_EVALUATED",
+      "finding": "Fresh-process fixture delivery uses zero model calls. Historical working-state and selector experiments do not establish episodic successor benefit."
+    },
+    {
+      "id": "STRONG-BASELINES-AND-ASSOCIATION",
+      "status": "PARTIAL",
+      "finding": "Exact KV, BM25, chronological ICL and uniform read replay exist as mechanism paths. Real matched successor competition, trained association and model-driven cross-document inference are not evaluated."
+    },
+    {
+      "id": "SOURCE-OWNERSHIP-EXPOSURE-AND-TRUST",
+      "status": "HOLD",
+      "finding": "Source ownership, complete exposure history and independent trust-domain authority are not authenticated by hashes or same-owner receipts. Malicious-owner rollback resistance is not established."
+    },
+    {
+      "id": "DELETION-AND-EXTERNAL-EFFECT",
+      "status": "PARTIAL",
+      "finding": "Logical exclusion and dependency invalidation are tested. Physical erasure, consumer-cache propagation and external-effect commit fencing remain unqualified."
+    },
+    {
+      "id": "FULL-OWNER-EFFECT-COLD-RECOVERY",
+      "status": "HOLD",
+      "finding": "Second-host file restoration does not recover original live owners, grants, credentials, effect state or all external runtime/material inputs."
+    },
+    {
+      "id": "FULL-COST-AND-SLOW-CONSOLIDATION",
+      "status": "NOT_QUALIFIED",
+      "finding": "Successful read timing is bounded; full producer/consumer/model/failure/recovery cost and slow semantic/skill consolidation are not established."
+    },
+    {
+      "id": "HOSTED-CI",
+      "status": "PARTIAL",
+      "finding": "Exact common-source hosted MEM tests passed. Whole-repository macOS, Windows, SDK and cargo-deny failures remain, and repo-checks has a cancelled formatting step. New episodic native tests are queued. A later Windows signed-credit failure prevents claiming complete native fixture closure."
+    },
+    {
+      "id": "MEM6-CLOUD-AND-GITHUB-RAW-COPY",
+      "status": "PARTIAL",
+      "finding": "Historical cloud download remains 371/938 chunks, 24313856 verified bytes. Full original archive GitHub publication is not claimed. Second-host restoration is separately complete. A bounded publication helper has been prepared but not executed; the remote execution transport is unavailable. No new full archive publication is claimed."
+    }
+  ],
+  "native_source_validation": {
+    "status": "PENDING_NATIVE_RESULTS",
+    "formatter_attempt": {
+      "head": "e68a2fbcc8b72d9081e1cc44ab1066837e53649c",
+      "run_id": 42935621920,
+      "job_id": 130244877806,
+      "artifact_id": 13818498494,
+      "command_exit_code": 0,
+      "source_gate_exit_code": 1,
+      "changed_files": 5,
+      "native_tests_executed": false,
+      "postimages_applied_in": "1b86d19810c9d422a8f8ea3b76a0a2e8c9956585"
+    },
+    "source_admission": {
+      "head": "1b86d19810c9d422a8f8ea3b76a0a2e8c9956585",
+      "run_id": 42938555796,
+      "job_id": 130254558254,
+      "status": "NATIVE_TEST_COMMAND_IN_PROGRESS_LAST_OBSERVED",
+      "actual_native_test_count": null,
+      "format_step": "SUCCESS_REPORTED_BY_JOB_STEPS_FULL_ARTIFACT_PENDING"
+    },
+    "complete_owner": {
+      "head": "eb430c1e4f122784f5a91d4a5ddf2ae8bb5063da",
+      "run_id": 42939112943,
+      "job_id": 130256399667,
+      "status": "QUEUED_LAST_OBSERVED",
+      "actual_native_test_count": null
+    }
+  },
+  "runtime_transport": {
+    "status": "UNAVAILABLE",
+    "observed_error": "MCP -32603 Internal error",
+    "uncertain_requests_replayed_under_new_identity": false,
+    "reconciliation_required": true,
+    "last_read_only_health_check_utc": "2026-11-11T01:28:10Z",
+    "plugin_discovery": "Existing h tools are exposed; the hepta plugin-directory search returned no entry or repair action. Permissions were not changed."
+  },
+  "boundaries": [
+    "A source digest does not authenticate source custody or establish fact truth.",
+    "Fixture source observations and owner grants do not establish a deployed production source/provider binding.",
+    "A queued or running CI job has no passing-test result.",
+    "An archive copy and file restore do not restore original live owner, independent authority or external effects.",
+    "A source-only staging manifest is not native compilation evidence."
+  ],
+  "checkpoint_utc": "2026-11-11T01:36:54Z",
+  "implementation_progress": [
+    {
+      "id": "COMMON-SOURCE-MECHANICAL-REPAIRS",
+      "status": "PUBLISHED_PARTIALLY_VALIDATED",
+      "scope": "Common source repairs and source-head hosted MEM tests passed. macOS Agentd/TUI targets passed; later Windows evidence still fails in a durable signed-credit fixture, so cross-platform closure is not inferred."
+    }
+  ],
+  "owner_stages": {
+    "source_admission_pr": 5888,
+    "integration_validation_pr": 5892,
+    "manifest_blob": "f7b9404d75f3dbc842805349dc052169cd9a1ce7",
+    "source_admission_commit": "1b86d19810c9d422a8f8ea3b76a0a2e8c9956585",
+    "source_admission_tree": "ee63508413afd29a95c03172724fce6fa9dc5a8a",
+    "stages": [
+      {
+        "stage": "B",
+        "branch": "codex/mem8-owner-transaction-20261111-ed353817",
+        "parent": "1b86d19810c9d422a8f8ea3b76a0a2e8c9956585",
+        "commit": "2ee204e6c9d9851e7a7486c29606742eac62e158",
+        "tree": "2d51219b92ebd3d908b19dfee402a91a877eb0ee",
+        "files": 6
+      },
+      {
+        "stage": "C",
+        "branch": "codex/mem8-owner-regressions-20261111-ed353817",
+        "parent": "2ee204e6c9d9851e7a7486c29606742eac62e158",
+        "commit": "c6ef9abb2b45bf3342fca01c2ae97da2773ce1da",
+        "tree": "61c5ae684eef24fc88f6eac5838f04c8609f4656",
+        "files": 4
+      },
+      {
+        "stage": "D1",
+        "branch": "codex/mem8-control-wire-20261111-ed353817",
+        "parent": "c6ef9abb2b45bf3342fca01c2ae97da2773ce1da",
+        "commit": "6fc67caaeb748491190ba12a61aaf17f5c469e58",
+        "tree": "b0a96d66db416fe6f10d58410d2aa87c5b75b4a3",
+        "files": 8
+      },
+      {
+        "stage": "D2",
+        "branch": "codex/mem8-control-owner-20261111-ed353817",
+        "parent": "6fc67caaeb748491190ba12a61aaf17f5c469e58",
+        "commit": "172f079baecc11a0da800072c15e25c2282b80fd",
+        "tree": "8bd39d812454ca7ae9a0d7e4cb08a40756826f04",
+        "files": 10
+      },
+      {
+        "stage": "D3",
+        "branch": "codex/mem8-owner-drain-20261111-ed353817",
+        "parent": "172f079baecc11a0da800072c15e25c2282b80fd",
+        "commit": "eb430c1e4f122784f5a91d4a5ddf2ae8bb5063da",
+        "tree": "24bea5bc952f3bab7f9180ce7b340e22794e63ad",
+        "files": 2
+      }
+    ]
+  },
+  "ci_fixture_followup": {
+    "pr": 5895,
+    "commit": "1530ca1c29991185efe686721a5c97f8c40adc16",
+    "tree": "6aa5220e0f23ac3676332a53583a6c462b4a06ba",
+    "parent": "96038ccf0660154fac143ba6cbe4be81e00813e8",
+    "change": "Windows-only directory handle write access in the existing signed-credit fixture; original sync, lock and assertions remain.",
+    "native_result": "PENDING",
+    "secondary_os33_result": "UNRESOLVED"
+  }
+}
