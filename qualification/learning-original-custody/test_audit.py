@@ -382,5 +382,40 @@ class AuditTests(unittest.TestCase):
         self.record['original_receipts']['training']['file'] = 'alias/training.receipt'
         self.assertIn('receipt_unreadable:training', self.check()['issues'])
 
+
+    def test_directory_swap_does_not_substitute_other_original_receipts(self):
+        # A manifest is read from one directory. Replacing that pathname
+        # during JSON parsing must not redirect subsequent receipt reads to a
+        # different directory, even when replacement bytes match the manifest.
+        import shutil
+        from unittest import mock
+        from audit import _unique_json_object
+
+        manifest = self.root / 'manifest.json'
+        manifest.write_text(json.dumps(self.record))
+        replacement = self.root.with_name(self.root.name + '-replacement')
+        moved = self.root.with_name(self.root.name + '-moved')
+        shutil.copytree(self.root, replacement)
+        self.addCleanup(shutil.rmtree, moved, ignore_errors=True)
+        self.addCleanup(shutil.rmtree, replacement, ignore_errors=True)
+        (self.root / 'training.receipt').write_bytes(b'altered original')
+        swapped = False
+
+        def swap_during_parse(pairs):
+            nonlocal swapped
+            if not swapped:
+                swapped = True
+                self.root.rename(moved)
+                replacement.rename(self.root)
+            return _unique_json_object(pairs)
+
+        with mock.patch('audit._unique_json_object', side_effect=swap_during_parse):
+            result = inspect(manifest)
+        self.assertTrue(swapped)
+        self.assertEqual(result['status'], 'HOLD')
+        self.assertEqual(result['integrity'], 'FAIL')
+        self.assertIn('receipt_bytes_mismatch:training', result['issues'])
+
+
 if __name__ == '__main__':
     unittest.main()
