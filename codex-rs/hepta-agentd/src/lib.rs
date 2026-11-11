@@ -371,6 +371,8 @@ mod learning_owner_evidence;
 mod learning_owner_journal;
 mod neuron_cell_evaluation;
 mod neuron_cell_evaluation_owner;
+#[cfg(target_os = "linux")]
+mod neuron_cell_evaluation_receipt_owner;
 mod neuron_cell_learning_evaluation;
 pub use cell_composed_q24::CellQ24FeatureEncoderV1;
 pub use cell_composed_q24::CellQ24FeatureWorkerV1;
@@ -418,6 +420,14 @@ pub use circuit_q24_task_profile::circuit_q24_task_channel_v1;
 pub use learning_owner_journal::LearningOriginalOwnerErrorV1;
 pub use neuron_cell_evaluation_owner::OriginalCellEvaluationExecutionOwnerV1;
 pub use neuron_cell_evaluation_owner::OriginalCellEvaluationSigningConfigV1;
+#[cfg(target_os = "linux")]
+pub use neuron_cell_evaluation_receipt_owner::OriginalCellEvaluationReceiptConfigV1;
+#[cfg(target_os = "linux")]
+pub use neuron_cell_evaluation_receipt_owner::OriginalCellEvaluationReceiptErrorV1;
+#[cfg(target_os = "linux")]
+pub use neuron_cell_evaluation_receipt_owner::OriginalCellEvaluationReceiptOwnerV1;
+#[cfg(target_os = "linux")]
+pub use neuron_cell_evaluation_receipt_owner::OriginalCellEvaluationReceiptSourcesV1;
 mod neuron_generation;
 #[cfg(unix)]
 mod neuron_generation_current;

@@ -25,6 +25,7 @@ CALLERS = {
     "learning_evidence_original_owner_readback": (
         AGENT + "learning_iteration_evaluation_evidence.rs",
         READER,
+        AGENT + "neuron_cell_evaluation_receipt_owner.rs",
     ),
 }
 
