@@ -273,7 +273,7 @@ async fn reopen_fixture(root: &Path) -> TestResult {
     .await
     .inspect_err(|error| {
         eprintln!(
-            "production reopen failed after {:?}: {error}",
+            "production reopen failed after {:?}: {error:?}",
             reopen_started.elapsed()
         );
     })?;

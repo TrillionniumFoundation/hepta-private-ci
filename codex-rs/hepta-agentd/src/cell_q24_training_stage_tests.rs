@@ -10,6 +10,7 @@ use codex_hepta_intelligence_eval::ProductEvaluationExecutionStoreErrorV1;
 use super::*;
 use crate::OriginalCellQ24TrainingStageErrorV1 as StageError;
 use crate::OriginalCellQ24TrainingStageV1 as Stage;
+use pretty_assertions::assert_eq;
 
 fn retained(f: &ReceiptFixture) -> anyhow::Result<[Vec<u8>; 4]> {
     Ok([
