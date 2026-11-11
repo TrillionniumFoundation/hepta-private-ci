@@ -1,6 +1,7 @@
 """Adversarial tests for the native-Bundle/1+2+7 read-only join."""
 
 from dataclasses import asdict, replace
+import hashlib
 import unittest
 
 from hepta_cells.bundle import Bundle
@@ -83,6 +84,60 @@ class NativeBundleClaimReviewTests(unittest.TestCase):
         self.assertEqual(review_update(r, claimed).status, "REVIEW_ONLY")
         with self.assertRaisesRegex(LineagePolicyError, "Bundle bytes"):
             review_native_bundle_claims(r, claimed, source, changed, partition)
+
+    def test_bundle_subclass_must_not_override_canonical_source_or_candidate(self):
+        r, e, source, candidate, partition = case()
+
+        class MisleadingBundle(Bundle):
+            def digest(self):
+                return source.digest()
+
+        forged = MisleadingBundle(
+            "artifact:untrusted-source", source.generation, dict(source.components)
+        )
+        self.assertNotEqual(
+            hashlib.sha256(Bundle.canonical_bytes(forged)).hexdigest(),
+            source.digest(),
+        )
+        with self.assertRaisesRegex(LineagePolicyError, "native-compatible"):
+            review_native_bundle_claims(r, e, forged, candidate, partition)
+
+        class MisleadingCandidate(Bundle):
+            def digest(self):
+                return candidate.digest()
+
+        altered = replace(candidate, artifact_id="artifact:untrusted-candidate")
+        forged_candidate = MisleadingCandidate(
+            altered.artifact_id,
+            altered.generation,
+            altered.components,
+            altered.training_lineage,
+            altered.rollback_predecessor,
+        )
+        with self.assertRaisesRegex(LineagePolicyError, "native-compatible"):
+            review_native_bundle_claims(r, e, source, forged_candidate, partition)
+
+    def test_plain_frozen_bundle_cannot_shadow_digest_or_canonical_bytes(self):
+        r, e, source, candidate, partition = case()
+        for side in ("source", "candidate"):
+            for method in ("digest", "canonical_bytes"):
+                with self.subTest(side=side, method=method):
+                    original = source if side == "source" else candidate
+                    forged = replace(original, artifact_id="artifact:forged-object")
+                    # Frozen dataclasses without slots permit shadowing a method
+                    # with object.__setattr__. Hashing must ignore that method.
+                    object.__setattr__(forged, method, getattr(original, method))
+                    self.assertNotEqual(
+                        hashlib.sha256(Bundle.canonical_bytes(forged)).hexdigest(),
+                        original.digest(),
+                    )
+                    with self.assertRaisesRegex(LineagePolicyError, "Bundle bytes"):
+                        review_native_bundle_claims(
+                            r, e,
+                            forged if side == "source" else source,
+                            forged if side == "candidate" else candidate,
+                            partition,
+                        )
 
     def test_actual_bundle_dataset_cannot_be_relabelled(self):
         r, e, source, candidate, partition = case()
