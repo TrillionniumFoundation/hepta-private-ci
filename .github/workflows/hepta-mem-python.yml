@@ -10,6 +10,14 @@ on:
       - scripts/memory_cell_mem3/**
       - experiments/multimodal_output_portfolio/joint_hepta_20261029/hepta_core.py
       - scripts/hepta_ci_exec.py
+      - codex-rs/hepta-memory/**
+      - codex-rs/hepta-agentd/**
+      - codex-rs/hepta-agent-protocol/**
+      - codex-rs/rust-toolchain.toml
+      - .github/actions/setup-ci/**
+      - scripts/format.py
+      - scripts/run-nextest.py
+      - justfile
   push:
     branches:
       - research/mem-integrated-20261109-a6b21bc7
@@ -85,6 +93,150 @@ jobs:
         with:
           name: mem7-integrity-${{ github.sha }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/mem7-records
+          if-no-files-found: error
+          retention-days: 14
+  native-owner:
+    name: Staged native episodic owner contracts
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    env:
+      CARGO_BUILD_JOBS: "2"
+      CARGO_INCREMENTAL: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      SOURCE_REF: ${{ github.event.pull_request.head.ref || github.ref }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 2
+          persist-credentials: false
+      - name: Bind exact comparison and staged source presence
+        id: stage
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          records="$RUNNER_TEMP/mem-native-records"
+          mkdir -p "$records"
+          exec > >(tee "$records/preflight.log") 2>&1
+          if [[ "$GITHUB_EVENT_NAME" == workflow_dispatch ]]; then
+            BASE_SHA="$(git rev-parse HEAD^)"
+            echo "BASE_SHA=$BASE_SHA" >> "$GITHUB_ENV"
+          fi
+          python3 scripts/hepta_ci_history.py --commit "$BASE_SHA" --commit "$SOURCE_SHA"
+          git rev-parse HEAD HEAD^{tree} > "$records/source-before.txt"
+          git status --porcelain > "$records/worktree-before.txt"
+          printf '%s\n' "$SOURCE_REF" "$SOURCE_SHA" "$BASE_SHA" > "$records/event-identity.txt"
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test ! -s "$records/worktree-before.txt"
+          git diff --binary "$BASE_SHA" "$SOURCE_SHA" > "$records/source.patch"
+          git diff --name-only --diff-filter=ACMRT -z "$BASE_SHA" "$SOURCE_SHA" > "$records/source-paths.zlist"
+          tar --null -T "$records/source-paths.zlist" -czf "$records/changed-source-before.tar.gz"
+          memory=false; control=false; protocol=false
+          [[ ! -f codex-rs/hepta-memory/src/episodic_source.rs ]] || memory=true
+          [[ ! -f codex-rs/hepta-agentd/src/production_episodic_control_tests.rs ]] || control=true
+          [[ ! -f codex-rs/hepta-agent-protocol/src/episodic.rs ]] || protocol=true
+          printf 'memory=%s\ncontrol=%s\nprotocol=%s\n' "$memory" "$control" "$protocol" | tee "$records/stages.txt" >> "$GITHUB_OUTPUT"
+          printf 'Absent stages have no native test result; infrastructure success is not owner qualification.\n' >> "$records/stages.txt"
+          cat "$records/stages.txt" >> "$GITHUB_STEP_SUMMARY"
+          [[ "$control" == false || ( "$memory" == true && "$protocol" == true ) ]]
+      - uses: ./.github/actions/setup-ci
+      - uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489
+        with:
+          toolchain: "1.96.0"
+          components: rustfmt, clippy
+      - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
+        with:
+          version: "0.11.3"
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: nextest@0.9.103
+      - name: Retain native tool versions
+        shell: bash
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          { rustup show active-toolchain; rustc --version --verbose; cargo --version; just --version; cargo nextest --version; uv --version; } 2>&1 | tee "$RUNNER_TEMP/mem-native-records/tools.log"
+      - name: Format exact PR changes and reject any source rewrite
+        run: |
+          python3 scripts/hepta_ci_exec.py --timeout-seconds 900 \
+            --output "$RUNNER_TEMP/mem-native-records/format.json" \
+            -- just fmt --base "$BASE_SHA"
+      - name: Install existing native build prerequisites
+        if: steps.stage.outputs.memory == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          { sudo apt-get update; sudo apt-get install -y build-essential clang cmake protobuf-compiler libssl-dev libcap-dev pkg-config bubblewrap; } 2>&1 | tee "$RUNNER_TEMP/mem-native-records/native-prerequisites.log"
+      - name: Resolve repository-verified V8 inputs for the control stage
+        if: steps.stage.outputs.control == 'true'
+        run: |
+          python3 scripts/hepta_ci_exec.py --timeout-seconds 900 \
+            --output "$RUNNER_TEMP/mem-native-records/v8-inputs.json" \
+            -- python3 scripts/hepta_ci_v8.py
+      - name: Test staged memory owner contracts on unchanged source
+        if: steps.stage.outputs.memory == 'true'
+        run: |
+          python3 scripts/hepta_ci_exec.py --timeout-seconds 6600 --minimum-tests 1 \
+            --output "$RUNNER_TEMP/mem-native-records/memory-tests.json" \
+            -- just test --locked -p codex-hepta-memory --lib episodic
+      - name: Test staged Agentd control contracts on unchanged source
+        if: steps.stage.outputs.control == 'true'
+        run: |
+          python3 scripts/hepta_ci_exec.py --timeout-seconds 6600 --minimum-tests 1 \
+            --output "$RUNNER_TEMP/mem-native-records/agentd-tests.json" \
+            -- just test --locked -p codex-hepta-agentd --lib episodic
+      - name: Test protocol package after the control stage is present
+        if: steps.stage.outputs.control == 'true'
+        run: |
+          python3 scripts/hepta_ci_exec.py --timeout-seconds 1800 --minimum-tests 1 \
+            --output "$RUNNER_TEMP/mem-native-records/protocol-tests.json" \
+            -- just test --locked -p codex-hepta-agent-protocol
+      - name: Run scoped fixes after tests and reject any source rewrite
+        if: steps.stage.outputs.memory == 'true'
+        env:
+          CONTROL_PRESENT: ${{ steps.stage.outputs.control }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          packages=(codex-hepta-memory)
+          if [[ "$CONTROL_PRESENT" == true ]]; then
+            packages+=(codex-hepta-agentd codex-hepta-agent-protocol)
+          fi
+          for package in "${packages[@]}"; do
+            python3 scripts/hepta_ci_exec.py --timeout-seconds 6600 \
+              --output "$RUNNER_TEMP/mem-native-records/fix-$package.json" \
+              -- just fix --locked -p "$package"
+          done
+      - name: Retain final source, full rewrite patch and changed files
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          records="$RUNNER_TEMP/mem-native-records"
+          mkdir -p "$records"
+          exec > >(tee "$records/final-source.log") 2>&1
+          git rev-parse HEAD HEAD^{tree} > "$records/source-after.txt"
+          git status --porcelain > "$records/worktree-after.txt"
+          git diff --binary HEAD > "$records/source-rewrites.patch"
+          git diff --cached --binary > "$records/index-rewrites.patch"
+          git diff --name-only --diff-filter=ACMRT -z HEAD > "$records/rewrite-paths.zlist"
+          git ls-files --others --exclude-standard -z >> "$records/rewrite-paths.zlist"
+          tar --null -T "$records/rewrite-paths.zlist" -czf "$records/changed-source-after.tar.gz"
+          if [[ -f "${CARGO_TARGET_DIR:-$RUNNER_TEMP/absent-target}/nextest/local/junit.xml" ]]; then
+            cp "$CARGO_TARGET_DIR/nextest/local/junit.xml" "$records/last-nextest.junit.xml"
+          fi
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          cmp "$records/source-before.txt" "$records/source-after.txt"
+          test ! -s "$records/worktree-after.txt"
+      - name: Retain native logs and exact-source evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: mem-native-${{ env.SOURCE_SHA }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/mem-native-records
           if-no-files-found: error
           retention-days: 14
   python:
