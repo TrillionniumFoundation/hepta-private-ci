@@ -114,6 +114,7 @@ impl<W: AnchorWitnessStore> OriginalCircuitSelectionReceiptOwnerV1<W> {
         &mut self,
         source: OriginalCircuitSelectionReceiptSourcesV1<'_, impl AnchorWitnessStore>,
     ) -> Result<(LearningIterationReceiptV1, SignedLearningEvidenceV1), Error> {
+        let started_at = now()?;
         if source.snapshot.receipts.len() > self.config.decision.receipts.len() {
             return self.readback(source).await;
         }
@@ -122,7 +123,6 @@ impl<W: AnchorWitnessStore> OriginalCircuitSelectionReceiptOwnerV1<W> {
             Err(OwnerError::Store(ProductEvaluationExecutionStoreErrorV1::Missing)) => {}
             Err(error) => return Err(error.into()),
         }
-        let started_at = now()?;
         require_new_attestation(&self.config, started_at, started_at)?;
         let observed = self.prepare(&source)?;
         let evidence = self.training_evidence(&source).await?;
