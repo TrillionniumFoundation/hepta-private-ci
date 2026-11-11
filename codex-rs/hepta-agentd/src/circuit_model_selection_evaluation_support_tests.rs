@@ -329,7 +329,9 @@ impl EvaluationFixture {
             .await?;
         drop(qualification_trainer);
         assert_eq!(
-            qualification_thread.join().expect("original Qualification Trainer transport")?,
+            qualification_thread
+                .join()
+                .expect("original Qualification Trainer transport")?,
             2
         );
         assert_eq!(

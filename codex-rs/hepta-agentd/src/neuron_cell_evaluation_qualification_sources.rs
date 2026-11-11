@@ -9,7 +9,10 @@ use crate::CellEvaluationJournalsV1;
 use crate::LearningIterationEvidenceClientV1;
 
 pub struct OriginalCellEvaluationQualificationSourcesV1<
-    'a, C: AnchorWitnessStore, F: AnchorWitnessStore, X: AnchorWitnessStore,
+    'a,
+    C: AnchorWitnessStore,
+    F: AnchorWitnessStore,
+    X: AnchorWitnessStore,
 > {
     pub runner: &'a mut CellEvaluationRunnerV1<LockedFileFinalHoldoutCasStoreV1>,
     pub journals: CellEvaluationJournalsV1<'a, C, F>,
@@ -28,7 +31,8 @@ impl<C: AnchorWitnessStore, F: AnchorWitnessStore, X: AnchorWitnessStore>
     ) -> Result<Prepared, Error> {
         let clock = || binding::now().map_err(|_| ProductProviderErrorV1::Unavailable);
         let mut executions = OriginalCellEvaluationExecutionStoreV1::readback_only(
-            self.executions, config.execution_evidence.key(),
+            self.executions,
+            config.execution_evidence.key(),
         );
         let runner: &mut CellEvaluationRunnerV1<LockedFileFinalHoldoutCasStoreV1> = self.runner;
         let (evaluation, execution) = runner.readback_completed_evidence(
@@ -48,7 +52,9 @@ impl<C: AnchorWitnessStore, F: AnchorWitnessStore, X: AnchorWitnessStore>
             &mut executions,
         )?;
         if execution != config.execution_evidence || evaluation.plan() != &config.plan {
-            return Err(Error::Binding("exact original Qualification execution evidence"));
+            return Err(Error::Binding(
+                "exact original Qualification execution evidence",
+            ));
         }
         evaluation.require_original_signed_execution(&config.context.evaluator)?;
         let bundle = runner.qualification_bundle(&evaluation, &config.context)?;
@@ -60,11 +66,13 @@ impl<C: AnchorWitnessStore, F: AnchorWitnessStore, X: AnchorWitnessStore>
         config: &OriginalCellEvaluationQualificationConfigV1,
     ) -> Result<(), Error> {
         let trainer: &LearningIterationEvidenceClientV1 = self.trainer;
-        let original = trainer.readback(
-            &config.training, binding::training_receipt(config)?,
-        ).await?;
+        let original = trainer
+            .readback(&config.training, binding::training_receipt(config)?)
+            .await?;
         if original != config.training_evidence {
-            return Err(Error::Binding("changed original Qualification Training signature"));
+            return Err(Error::Binding(
+                "changed original Qualification Training signature",
+            ));
         }
         Ok(())
     }

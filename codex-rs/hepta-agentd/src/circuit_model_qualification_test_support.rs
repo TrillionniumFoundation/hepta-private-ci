@@ -28,7 +28,11 @@ impl EvaluationFixture {
     ) -> anyhow::Result<(LearningIterationEvidenceClientV1, PeerThread)> {
         fixture_original_receipt_client_until_close(
             self.initial.clone(),
-            self.training.receipts.last().expect("actual original Training").clone(),
+            self.training
+                .receipts
+                .last()
+                .expect("actual original Training")
+                .clone(),
             self.verifier.clone(),
             signature,
         )
@@ -69,11 +73,7 @@ impl EvaluationFixture {
         ])
     }
 
-    pub(crate) fn qualification_overwrite(
-        &self,
-        name: &str,
-        bytes: &[u8],
-    ) -> anyhow::Result<()> {
+    pub(crate) fn qualification_overwrite(&self, name: &str, bytes: &[u8]) -> anyhow::Result<()> {
         let path = self.fixture.directory.path().join(name);
         assert_eq!(std::fs::metadata(&path)?.len(), bytes.len() as u64);
         let mut file = OpenOptions::new().write(true).open(path)?;
@@ -94,7 +94,9 @@ impl EvaluationFixture {
         self.drop_original_qualification();
         let (file, witness) = self.qualification_files("positive-qualification", false)?;
         self.qualification_owner = Some(Owner::recover(
-            file, witness, self.qualification_config.clone(),
+            file,
+            witness,
+            self.qualification_config.clone(),
         )?);
         Ok(())
     }
@@ -102,8 +104,12 @@ impl EvaluationFixture {
     fn qualification_sources<'a>(
         &'a mut self,
         trainer: &'a LearningIterationEvidenceClientV1,
-    ) -> OriginalCellEvaluationQualificationSourcesV1<'a,
-        FileAnchorWitnessStore, FileAnchorWitnessStore, FileAnchorWitnessStore> {
+    ) -> OriginalCellEvaluationQualificationSourcesV1<
+        'a,
+        FileAnchorWitnessStore,
+        FileAnchorWitnessStore,
+        FileAnchorWitnessStore,
+    > {
         OriginalCellEvaluationQualificationSourcesV1 {
             runner: &mut self.fixture.runner,
             journals: CellEvaluationJournalsV1 {
@@ -122,7 +128,9 @@ impl EvaluationFixture {
         owner: &mut OriginalCellEvaluationQualificationOwnerV1<W>,
         trainer: &LearningIterationEvidenceClientV1,
     ) -> Result<CellEvaluationQualificationV1, Error> {
-        owner.qualify_or_readback(self.qualification_sources(trainer)).await
+        owner
+            .qualify_or_readback(self.qualification_sources(trainer))
+            .await
     }
 
     pub(crate) async fn read_qualification<W: AnchorWitnessStore>(
@@ -137,7 +145,10 @@ impl EvaluationFixture {
         &mut self,
         trainer: &LearningIterationEvidenceClientV1,
     ) -> Result<CellEvaluationQualificationV1, Error> {
-        let mut owner = self.qualification_owner.take().expect("original Qualification owner");
+        let mut owner = self
+            .qualification_owner
+            .take()
+            .expect("original Qualification owner");
         let result = owner.readback(self.qualification_sources(trainer)).await;
         self.qualification_owner = Some(owner);
         result
@@ -147,14 +158,18 @@ impl EvaluationFixture {
         (self.fixture.provider.calls, self.fixture.provider.releases)
     }
 
-    pub(crate) fn renewed_qualification_training(&self) -> anyhow::Result<SignedLearningEvidenceV1> {
+    pub(crate) fn renewed_qualification_training(
+        &self,
+    ) -> anyhow::Result<SignedLearningEvidenceV1> {
         let mut signature = self.qualification_config.training_evidence.clone();
         signature.expires_at = signature.expires_at.checked_add(1).expect("fixture expiry");
         signature.evidence_id = id("explicit-test-renewed-Qualification-Training");
         signature.signature = SigningKey::from_bytes(&[41; 32])
-            .sign(&signature.signing_bytes()).to_bytes();
+            .sign(&signature.signing_bytes())
+            .to_bytes();
         self.verifier.verify(
-            LearningEvidenceRoleV1::Generator, &signature,
+            LearningEvidenceRoleV1::Generator,
+            &signature,
             &learning_iteration_receipt_signing_bytes_v1(
                 self.training.receipts.last().expect("original Training"),
             )?,
@@ -170,24 +185,37 @@ impl EvaluationFixture {
         let mut evidence = self.evidence.clone();
         let (signature, seed, role, payload) = if generator {
             (
-                &mut evidence.generator_plan, 41,
+                &mut evidence.generator_plan,
+                41,
                 LearningEvidenceRoleV1::Generator,
-                self.receipt.plan().product_plan().frozen_plan.plan_digest.as_array().to_vec(),
+                self.receipt
+                    .plan()
+                    .product_plan()
+                    .frozen_plan
+                    .plan_digest
+                    .as_array()
+                    .to_vec(),
             )
         } else {
-            let bundle = self.fixture.runner.qualification_bundle(&self.receipt, &self.context)?;
+            let bundle = self
+                .fixture
+                .runner
+                .qualification_bundle(&self.receipt, &self.context)?;
             (
-                &mut evidence.evaluator_bundle, 42,
+                &mut evidence.evaluator_bundle,
+                42,
                 LearningEvidenceRoleV1::Evaluator,
                 evaluation_signing_payload_v2(
-                    &bundle, &self.receipt.plan().product_plan().metric_roles,
+                    &bundle,
+                    &self.receipt.plan().product_plan().metric_roles,
                 )?,
             )
         };
         signature.expires_at = signature.expires_at.checked_add(1).expect("fixture expiry");
         signature.evidence_id = id("explicit-test-renewed-Qualification-Product");
         signature.signature = SigningKey::from_bytes(&[seed; 32])
-            .sign(&signature.signing_bytes()).to_bytes();
+            .sign(&signature.signing_bytes())
+            .to_bytes();
         self.verifier.verify(role, signature, &payload, now()?)?;
         Ok(evidence)
     }
