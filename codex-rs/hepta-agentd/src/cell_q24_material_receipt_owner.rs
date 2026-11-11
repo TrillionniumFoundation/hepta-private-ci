@@ -214,11 +214,19 @@ impl<EW: AnchorWitnessStore, DW: AnchorWitnessStore>
         crate::OriginalCellQ24MaterialCommandOwnerV1<EW, DW, SW>,
         crate::OriginalCellQ24MaterialCommandErrorV1,
     > {
-        let allow_new_commands =
-            matches!(self.command_origin, OriginalMaterialCommandOriginV1::FreshCreate);
+        let allow_new_commands = matches!(
+            self.command_origin,
+            OriginalMaterialCommandOriginV1::FreshCreate
+        );
         let config = self.config.clone();
         crate::OriginalCellQ24MaterialCommandOwnerV1::from_original_pair(
-            self, config, source, identity, ledger, baseline, allow_new_commands,
+            self,
+            config,
+            source,
+            identity,
+            ledger,
+            baseline,
+            allow_new_commands,
         )
     }
 
@@ -475,4 +483,8 @@ mod tests;
 pub(crate) use tests::ReadbackServiceFixture;
 
 #[cfg(all(test, target_os = "linux"))]
-pub(crate) use tests::{MaterialCommandFixture, assert_dataset_pending, interrupt_dataset_claim};
+pub(crate) use tests::MaterialCommandFixture;
+#[cfg(all(test, target_os = "linux"))]
+pub(crate) use tests::assert_dataset_pending;
+#[cfg(all(test, target_os = "linux"))]
+pub(crate) use tests::interrupt_dataset_claim;

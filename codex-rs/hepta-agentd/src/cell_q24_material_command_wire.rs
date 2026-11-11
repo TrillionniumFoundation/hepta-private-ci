@@ -39,7 +39,9 @@ pub(super) fn context_binding(
     at: u64,
 ) -> Result<Digest32, Error> {
     let initial = LearningIterationCoordinatorV1::new(
-        config.initial.request.clone(), config.initial.owners.clone())?;
+        config.initial.request.clone(),
+        config.initial.owners.clone(),
+    )?;
     config.scope.validate_snapshot(&config.initial)?;
     let policy = config.rule.inclusion_policy_digest(&config.initial)?;
     if initial.snapshot() != &config.initial
@@ -61,7 +63,9 @@ pub(super) fn context_binding(
         return Err(Error::Binding("complete original Material context"));
     }
     for signer in [&config.experience_signer, &config.dataset_signer] {
-        config.verifier.require_signer_binding(LearningEvidenceRoleV1::Observer, signer, at)?;
+        config
+            .verifier
+            .require_signer_binding(LearningEvidenceRoleV1::Observer, signer, at)?;
     }
     let mut original_freeze = config.freeze_evidence.signing_bytes();
     original_freeze.extend_from_slice(&config.freeze_evidence.signature);
@@ -77,8 +81,18 @@ pub(super) fn context_binding(
         config.verifier.trust_digest().as_array(),
         config.verifier.scope_digest().as_array(),
         config.verifier.objective_digest().as_array(),
-        config.experience_signer.principal.principal_id.as_str().as_bytes(),
-        config.dataset_signer.principal.principal_id.as_str().as_bytes(),
+        config
+            .experience_signer
+            .principal
+            .principal_id
+            .as_str()
+            .as_bytes(),
+        config
+            .dataset_signer
+            .principal
+            .principal_id
+            .as_str()
+            .as_bytes(),
         &config.experience_signer.verifying_key,
         &config.dataset_signer.verifying_key,
         &config.maximum_signature_lifetime_seconds.to_be_bytes(),
@@ -129,8 +143,10 @@ impl Request {
         binding: Digest32,
         request_id: u64,
     ) -> Result<(), Error> {
-        if self.schema != 1 || self.operation != OPERATION
-            || self.request_id != request_id || self.binding != binding.to_string()
+        if self.schema != 1
+            || self.operation != OPERATION
+            || self.request_id != request_id
+            || self.binding != binding.to_string()
             || self.initial_head != config.initial.head_digest.to_string()
             || self.operation_id != config.initial.request.operation_id.as_str()
             || self.scope_binding != config.scope.binding().to_string()
@@ -162,20 +178,31 @@ pub(super) struct Response {
 impl Response {
     pub(super) fn from_request(request: &Request, result: CommandResult) -> Self {
         Self {
-            schema: request.schema, operation: request.operation.clone(),
-            request_id: request.request_id, binding: request.binding.clone(),
-            initial_head: request.initial_head.clone(), operation_id: request.operation_id.clone(),
-            scope_binding: request.scope_binding.clone(), actor_id: request.actor_id.clone(),
-            stage: request.stage.clone(), action: request.action, result,
+            schema: request.schema,
+            operation: request.operation.clone(),
+            request_id: request.request_id,
+            binding: request.binding.clone(),
+            initial_head: request.initial_head.clone(),
+            operation_id: request.operation_id.clone(),
+            scope_binding: request.scope_binding.clone(),
+            actor_id: request.actor_id.clone(),
+            stage: request.stage.clone(),
+            action: request.action,
+            result,
         }
     }
 
     pub(super) fn require_request(&self, request: &Request) -> Result<(), Error> {
-        if self.schema != request.schema || self.operation != request.operation
-            || self.request_id != request.request_id || self.binding != request.binding
-            || self.initial_head != request.initial_head || self.operation_id != request.operation_id
-            || self.scope_binding != request.scope_binding || self.actor_id != request.actor_id
-            || self.stage != request.stage || self.action != request.action
+        if self.schema != request.schema
+            || self.operation != request.operation
+            || self.request_id != request.request_id
+            || self.binding != request.binding
+            || self.initial_head != request.initial_head
+            || self.operation_id != request.operation_id
+            || self.scope_binding != request.scope_binding
+            || self.actor_id != request.actor_id
+            || self.stage != request.stage
+            || self.action != request.action
         {
             return Err(Error::Binding("same role-fixed Material response"));
         }
@@ -186,7 +213,10 @@ impl Response {
 #[derive(Deserialize, Serialize)]
 #[serde(tag = "state", rename_all = "snake_case", deny_unknown_fields)]
 pub(super) enum CommandResult {
-    Completed { snapshot: String, evidence: Vec<evidence_wire::Evidence> },
+    Completed {
+        snapshot: String,
+        evidence: Vec<evidence_wire::Evidence>,
+    },
     Missing,
     Pending,
     Busy,
@@ -205,7 +235,11 @@ pub(super) fn encode_completed(
     let bytes = encode_original_owner_snapshot_v1(&completed.snapshot)?;
     Ok(CommandResult::Completed {
         snapshot: STANDARD_NO_PAD.encode(bytes),
-        evidence: completed.evidence.iter().map(evidence_wire::Evidence::from_original).collect(),
+        evidence: completed
+            .evidence
+            .iter()
+            .map(evidence_wire::Evidence::from_original)
+            .collect(),
     })
 }
 
@@ -219,16 +253,27 @@ pub(super) fn decode_completed(
     if snapshot.len() > 10_924 || evidence.is_empty() || evidence.len() > 2 {
         return Err(Error::Binding("bounded original Material cut"));
     }
-    let bytes = STANDARD_NO_PAD.decode(&snapshot)
+    let bytes = STANDARD_NO_PAD
+        .decode(&snapshot)
         .map_err(|_| Error::Binding("original Material cut encoding"))?;
     if STANDARD_NO_PAD.encode(&bytes) != snapshot {
         return Err(Error::Binding("canonical original Material cut"));
     }
     let snapshot = decode_original_owner_snapshot_v1(&bytes)?;
-    let evidence = evidence.into_iter()
-        .map(|value| value.decode().map_err(|_| Error::Binding("original Observer encoding")))
+    let evidence = evidence
+        .into_iter()
+        .map(|value| {
+            value
+                .decode()
+                .map_err(|_| Error::Binding("original Observer encoding"))
+        })
         .collect::<Result<Vec<_>, _>>()?;
-    authenticate_cut(config, role, OriginalCellQ24MaterialCommandReceiptV1 { snapshot, evidence }, at)
+    authenticate_cut(
+        config,
+        role,
+        OriginalCellQ24MaterialCommandReceiptV1 { snapshot, evidence },
+        at,
+    )
 }
 
 pub(super) fn authenticate_cut(
@@ -238,7 +283,10 @@ pub(super) fn authenticate_cut(
     at: u64,
 ) -> Result<OriginalCellQ24MaterialCommandReceiptV1, Error> {
     context_binding(config, at)?;
-    let expected = match role { Role::Experience => 1, Role::Dataset => 2 };
+    let expected = match role {
+        Role::Experience => 1,
+        Role::Dataset => 2,
+    };
     if completed.snapshot.request != config.initial.request
         || completed.snapshot.owners != config.initial.owners
         || completed.snapshot.receipts.len() != expected
@@ -248,26 +296,48 @@ pub(super) fn authenticate_cut(
     }
     LearningIterationCoordinatorV1::from_snapshot(completed.snapshot.clone())?;
     config.scope.validate_snapshot(&completed.snapshot)?;
-    for (index, (receipt, signed)) in completed.snapshot.receipts.iter()
-        .zip(&completed.evidence).enumerate()
+    for (index, (receipt, signed)) in completed
+        .snapshot
+        .receipts
+        .iter()
+        .zip(&completed.evidence)
+        .enumerate()
     {
-        let signer = if index == 0 { &config.experience_signer } else { &config.dataset_signer };
-        let stage = if index == 0 { LearningIterationStageV1::Experience }
-            else { LearningIterationStageV1::Dataset };
-        let expires_at = signed.issued_at.checked_add(config.maximum_signature_lifetime_seconds)
-            .ok_or(Error::Binding("original Material signature window overflow"))?
-            .min(signer.principal.expires_at).min(config.freeze_evidence.expires_at);
+        let signer = if index == 0 {
+            &config.experience_signer
+        } else {
+            &config.dataset_signer
+        };
+        let stage = if index == 0 {
+            LearningIterationStageV1::Experience
+        } else {
+            LearningIterationStageV1::Dataset
+        };
+        let expires_at = signed
+            .issued_at
+            .checked_add(config.maximum_signature_lifetime_seconds)
+            .ok_or(Error::Binding(
+                "original Material signature window overflow",
+            ))?
+            .min(signer.principal.expires_at)
+            .min(config.freeze_evidence.expires_at);
         if receipt.observation.stage() != stage
             || receipt.actor_id != signer.principal.principal_id
             || receipt.observed_unix_seconds != signed.issued_at
-            || signed.issued_at > at || signed.issued_at < config.freeze_evidence.issued_at
+            || signed.issued_at > at
+            || signed.issued_at < config.freeze_evidence.issued_at
             || signed.expires_at != expires_at
             || receipt.evidence_digest != completed.snapshot.receipts[0].evidence_digest
         {
-            return Err(Error::Binding("original Material actor, provenance and window"));
+            return Err(Error::Binding(
+                "original Material actor, provenance and window",
+            ));
         }
         let payload = learning_iteration_receipt_signing_bytes_v1(receipt)?;
-        let verified = config.verifier.verify(LearningEvidenceRoleV1::Observer, signed, &payload, at)?;
+        let verified =
+            config
+                .verifier
+                .verify(LearningEvidenceRoleV1::Observer, signed, &payload, at)?;
         if verified.principal() != &signer.principal
             || verified.controller_id() != &signer.controller_id
         {

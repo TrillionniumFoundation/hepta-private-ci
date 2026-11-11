@@ -118,8 +118,17 @@ impl OriginalCellQ24MaterialCommandClientV1 {
         timeout: Duration,
         lifetime: Duration,
     ) -> Result<Self, Error> {
-        Self::bind_original_stream(stream, peer, original_owner_pidfd, config,
-            Role::Experience, timeout, lifetime, /*readback_only*/ false, None)
+        Self::bind_original_stream(
+            stream,
+            peer,
+            original_owner_pidfd,
+            config,
+            Role::Experience,
+            timeout,
+            lifetime,
+            /*readback_only*/ false,
+            None,
+        )
     }
 
     pub fn from_original_dataset_stream(
@@ -130,8 +139,17 @@ impl OriginalCellQ24MaterialCommandClientV1 {
         timeout: Duration,
         lifetime: Duration,
     ) -> Result<Self, Error> {
-        Self::bind_original_stream(stream, peer, original_owner_pidfd, config,
-            Role::Dataset, timeout, lifetime, /*readback_only*/ false, None)
+        Self::bind_original_stream(
+            stream,
+            peer,
+            original_owner_pidfd,
+            config,
+            Role::Dataset,
+            timeout,
+            lifetime,
+            /*readback_only*/ false,
+            None,
+        )
     }
 
     /// Reconnection never restores execution. A retained original cut, when
@@ -145,9 +163,22 @@ impl OriginalCellQ24MaterialCommandClientV1 {
         timeout: Duration,
         lifetime: Duration,
     ) -> Result<Self, Error> {
-        Self::bind_original_stream(stream, peer, original_owner_pidfd, config,
-            Role::Experience, timeout, lifetime, /*readback_only*/ true,
-            expected.map(|(snapshot, evidence)| OriginalCellQ24MaterialCommandReceiptV1 { snapshot, evidence }))
+        Self::bind_original_stream(
+            stream,
+            peer,
+            original_owner_pidfd,
+            config,
+            Role::Experience,
+            timeout,
+            lifetime,
+            /*readback_only*/ true,
+            expected.map(
+                |(snapshot, evidence)| OriginalCellQ24MaterialCommandReceiptV1 {
+                    snapshot,
+                    evidence,
+                },
+            ),
+        )
     }
 
     pub fn recover_original_dataset_stream(
@@ -159,9 +190,22 @@ impl OriginalCellQ24MaterialCommandClientV1 {
         timeout: Duration,
         lifetime: Duration,
     ) -> Result<Self, Error> {
-        Self::bind_original_stream(stream, peer, original_owner_pidfd, config,
-            Role::Dataset, timeout, lifetime, /*readback_only*/ true,
-            expected.map(|(snapshot, evidence)| OriginalCellQ24MaterialCommandReceiptV1 { snapshot, evidence }))
+        Self::bind_original_stream(
+            stream,
+            peer,
+            original_owner_pidfd,
+            config,
+            Role::Dataset,
+            timeout,
+            lifetime,
+            /*readback_only*/ true,
+            expected.map(
+                |(snapshot, evidence)| OriginalCellQ24MaterialCommandReceiptV1 {
+                    snapshot,
+                    evidence,
+                },
+            ),
+        )
     }
 
     fn bind_original_stream(
@@ -238,15 +282,18 @@ impl OriginalCellQ24MaterialCommandClientV1 {
         Ok(original.attestation().clone())
     }
 
-    async fn exchange(&self, action: wire::Action)
-        -> Result<OriginalCellQ24MaterialCommandReceiptV1, Error>
-    {
+    async fn exchange(
+        &self,
+        action: wire::Action,
+    ) -> Result<OriginalCellQ24MaterialCommandReceiptV1, Error> {
         let started_at = now()?;
         wire::context_binding(&self.config, started_at)?;
         let mut channel = {
             let mut slot = self.channel.try_lock().map_err(|_| Error::Unavailable)?;
             if action == wire::Action::Execute
-                && slot.as_ref().is_some_and(|channel| channel.execution_requested)
+                && slot
+                    .as_ref()
+                    .is_some_and(|channel| channel.execution_requested)
             {
                 return Err(Error::ReadbackRequired);
             }
@@ -256,26 +303,43 @@ impl OriginalCellQ24MaterialCommandClientV1 {
             }
             channel
         };
-        let request = wire::Request::new(&self.config, self.role, self.binding,
-            channel.next_request_id, action);
-        channel.next_request_id = channel.next_request_id.checked_add(1).ok_or(Error::Unavailable)?;
+        let request = wire::Request::new(
+            &self.config,
+            self.role,
+            self.binding,
+            channel.next_request_id,
+            action,
+        );
+        channel.next_request_id = channel
+            .next_request_id
+            .checked_add(1)
+            .ok_or(Error::Unavailable)?;
         let encoded = serde_json::to_vec(&request)?;
         let (channel, bytes) = tokio::task::spawn_blocking(move || {
-            let bytes = channel.peer.request(&encoded).map_err(|_| Error::CommitUncertain)?;
+            let bytes = channel
+                .peer
+                .request(&encoded)
+                .map_err(|_| Error::CommitUncertain)?;
             Ok::<_, Error>((channel, bytes))
-        }).await.map_err(|_| Error::CommitUncertain)??;
+        })
+        .await
+        .map_err(|_| Error::CommitUncertain)??;
         let response: wire::Response = serde_json::from_slice(&bytes)?;
         response.require_request(&request)?;
         let fresh_now = now()?;
-        if fresh_now < started_at || wire::context_binding(&self.config, fresh_now)? != self.binding {
+        if fresh_now < started_at || wire::context_binding(&self.config, fresh_now)? != self.binding
+        {
             return Err(Error::Binding("Material command clock moved backwards"));
         }
         let result = match response.result {
             wire::CommandResult::Completed { snapshot, evidence } => {
-                let completed = wire::decode_completed(&self.config, self.role, snapshot,
-                    evidence, fresh_now)?;
+                let completed =
+                    wire::decode_completed(&self.config, self.role, snapshot, evidence, fresh_now)?;
                 let mut retained = self.retained.try_lock().map_err(|_| Error::Unavailable)?;
-                if retained.as_ref().is_some_and(|original| original != &completed) {
+                if retained
+                    .as_ref()
+                    .is_some_and(|original| original != &completed)
+                {
                     return Err(Error::Binding("unchanged original Material signatures"));
                 }
                 *retained = Some(completed.clone());
@@ -295,7 +359,8 @@ impl OriginalCellQ24MaterialCommandClientV1 {
 }
 
 fn now() -> Result<u64, Error> {
-    SystemTime::now().duration_since(UNIX_EPOCH)
+    SystemTime::now()
+        .duration_since(UNIX_EPOCH)
         .map(|elapsed| elapsed.as_secs())
         .map_err(|_| Error::Binding("Material command clock before Unix epoch"))
 }

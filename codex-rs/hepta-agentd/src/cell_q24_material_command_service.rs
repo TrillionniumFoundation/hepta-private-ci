@@ -39,7 +39,9 @@ use crate::learning_owner_command_channel::original_owner_command_channel_v1;
 use crate::learning_owner_journal::LearningOriginalOwnerErrorV1;
 
 pub struct OriginalCellQ24MaterialCommandOwnerV1<
-    EW: AnchorWitnessStore, DW: AnchorWitnessStore, SW: AnchorWitnessStore,
+    EW: AnchorWitnessStore,
+    DW: AnchorWitnessStore,
+    SW: AnchorWitnessStore,
 > {
     original: OriginalCellQ24MaterialEvidenceOwnerV1<EW, DW, SW>,
     binding: Digest32,
@@ -64,7 +66,8 @@ impl<EW: AnchorWitnessStore, DW: AnchorWitnessStore, SW: AnchorWitnessStore>
         let binding = wire::context_binding(&config, now()?)?;
         let original = OriginalCellQ24MaterialEvidenceOwnerV1::from_original_owners(
             owners, config, source, identity, ledger, baseline,
-        ).map_err(|_| Error::Binding("same consumed original Material pair"))?;
+        )
+        .map_err(|_| Error::Binding("same consumed original Material pair"))?;
         Ok(Self {
             original,
             binding,
@@ -74,42 +77,80 @@ impl<EW: AnchorWitnessStore, DW: AnchorWitnessStore, SW: AnchorWitnessStore>
     }
 
     pub fn serve_experience_commands(
-        &self, stream: UnixStream, consumer: AgentdRootAuthorityPeer, consumer_uid: u32,
-        original_consumer_pidfd: OwnedFd, timeout: Duration, lifetime: Duration,
+        &self,
+        stream: UnixStream,
+        consumer: AgentdRootAuthorityPeer,
+        consumer_uid: u32,
+        original_consumer_pidfd: OwnedFd,
+        timeout: Duration,
+        lifetime: Duration,
     ) -> Result<u64, Error> {
-        self.serve_role_commands(Role::Experience, stream, consumer, consumer_uid,
-            original_consumer_pidfd, timeout, lifetime)
+        self.serve_role_commands(
+            Role::Experience,
+            stream,
+            consumer,
+            consumer_uid,
+            original_consumer_pidfd,
+            timeout,
+            lifetime,
+        )
     }
 
     pub fn serve_dataset_commands(
-        &self, stream: UnixStream, consumer: AgentdRootAuthorityPeer, consumer_uid: u32,
-        original_consumer_pidfd: OwnedFd, timeout: Duration, lifetime: Duration,
+        &self,
+        stream: UnixStream,
+        consumer: AgentdRootAuthorityPeer,
+        consumer_uid: u32,
+        original_consumer_pidfd: OwnedFd,
+        timeout: Duration,
+        lifetime: Duration,
     ) -> Result<u64, Error> {
-        self.serve_role_commands(Role::Dataset, stream, consumer, consumer_uid,
-            original_consumer_pidfd, timeout, lifetime)
+        self.serve_role_commands(
+            Role::Dataset,
+            stream,
+            consumer,
+            consumer_uid,
+            original_consumer_pidfd,
+            timeout,
+            lifetime,
+        )
     }
 
     fn serve_role_commands(
-        &self, role: Role, stream: UnixStream, consumer: AgentdRootAuthorityPeer, consumer_uid: u32,
-        original_consumer_pidfd: OwnedFd, timeout: Duration, lifetime: Duration,
+        &self,
+        role: Role,
+        stream: UnixStream,
+        consumer: AgentdRootAuthorityPeer,
+        consumer_uid: u32,
+        original_consumer_pidfd: OwnedFd,
+        timeout: Duration,
+        lifetime: Duration,
     ) -> Result<u64, Error> {
         let _permit = self.connections.try_acquire().map_err(|_| Error::Busy)?;
         let mut channel = original_owner_command_channel_v1(
-            stream, consumer, consumer_uid, original_consumer_pidfd, timeout, lifetime,
+            stream,
+            consumer,
+            consumer_uid,
+            original_consumer_pidfd,
+            timeout,
+            lifetime,
         )?;
         self.serve_command_channel(role, &mut channel)
     }
 
     fn serve_command_channel(
-        &self, role: Role, channel: &mut HostAuthorityPeerChannel,
+        &self,
+        role: Role,
+        channel: &mut HostAuthorityPeerChannel,
     ) -> Result<u64, Error> {
         for request_id in 1..=128_u64 {
             let mut failure = None;
             let exchanged = channel.exchange(|bytes| {
-                self.command_response(role, bytes, request_id).map_err(|error| {
-                    failure = Some(error);
-                    HostIssuerTransportError::InvalidRequest
-                })
+                self.command_response(role, bytes, request_id)
+                    .map_err(|error| {
+                        failure = Some(error);
+                        HostIssuerTransportError::InvalidRequest
+                    })
             });
             match exchanged {
                 Ok(true) => {}
@@ -120,7 +161,12 @@ impl<EW: AnchorWitnessStore, DW: AnchorWitnessStore, SW: AnchorWitnessStore>
         Err(Error::Unavailable)
     }
 
-    fn command_response(&self, role: Role, bytes: &[u8], request_id: u64) -> Result<Vec<u8>, Error> {
+    fn command_response(
+        &self,
+        role: Role,
+        bytes: &[u8],
+        request_id: u64,
+    ) -> Result<Vec<u8>, Error> {
         let started_at = now()?;
         let config = &self.original.config;
         let request: wire::Request = serde_json::from_slice(bytes)?;
@@ -130,7 +176,10 @@ impl<EW: AnchorWitnessStore, DW: AnchorWitnessStore, SW: AnchorWitnessStore>
         }
         let result = match request.action {
             wire::Action::Execute => {
-                let bit = match role { Role::Experience => 1, Role::Dataset => 2 };
+                let bit = match role {
+                    Role::Experience => 1,
+                    Role::Dataset => 2,
+                };
                 if self.admitted.fetch_or(bit, Ordering::AcqRel) & bit != 0 {
                     Err(Error::ReadbackRequired)
                 } else if started_at >= config.initial.request.envelope.expiry_unix_seconds {
@@ -157,7 +206,9 @@ impl<EW: AnchorWitnessStore, DW: AnchorWitnessStore, SW: AnchorWitnessStore>
     }
 
     fn original_cut(
-        &self, role: Role, action: wire::Action,
+        &self,
+        role: Role,
+        action: wire::Action,
     ) -> Result<OriginalCellQ24MaterialCommandReceiptV1, Error> {
         let mut owners = self.original.owners.try_lock().map_err(|_| Error::Busy)?;
         let mut ledger = self.original.ledger.try_lock().map_err(|_| Error::Busy)?;
@@ -166,34 +217,56 @@ impl<EW: AnchorWitnessStore, DW: AnchorWitnessStore, SW: AnchorWitnessStore>
         let initial = &config.initial;
         let experience = if role == Role::Experience && action == wire::Action::Execute {
             original.attest_experience(OriginalCellQ24MaterialReceiptSourcesV1 {
-                snapshot: initial, source: &self.original.source, identity: &self.original.identity,
-                ledger: &mut ledger, baseline: &self.original.baseline,
+                snapshot: initial,
+                source: &self.original.source,
+                identity: &self.original.identity,
+                ledger: &mut ledger,
+                baseline: &self.original.baseline,
             })?
         } else {
             // Dataset can only read its predecessor; this never admits Experience.
             original.readback_experience(OriginalCellQ24MaterialReceiptSourcesV1 {
-                snapshot: initial, source: &self.original.source, identity: &self.original.identity,
-                ledger: &mut ledger, baseline: &self.original.baseline,
+                snapshot: initial,
+                source: &self.original.source,
+                identity: &self.original.identity,
+                ledger: &mut ledger,
+                baseline: &self.original.baseline,
             })?
         };
         let mut coordinator = LearningIterationCoordinatorV1::from_snapshot(initial.clone())?;
-        coordinator.record(experience.receipt.clone(), experience.receipt.observed_unix_seconds)?;
+        coordinator.record(
+            experience.receipt.clone(),
+            experience.receipt.observed_unix_seconds,
+        )?;
         let mut evidence = vec![experience.attestation.clone()];
         if role == Role::Dataset {
             let prefix = coordinator.snapshot().clone();
             let dataset = match action {
-                wire::Action::Execute => original.attest_dataset(OriginalCellQ24MaterialReceiptSourcesV1 {
-                    snapshot: &prefix, source: &self.original.source, identity: &self.original.identity,
-                    ledger: &mut ledger, baseline: &self.original.baseline,
-                })?,
-                wire::Action::Readback => original.readback_dataset(OriginalCellQ24MaterialReceiptSourcesV1 {
-                    snapshot: &prefix, source: &self.original.source, identity: &self.original.identity,
-                    ledger: &mut ledger, baseline: &self.original.baseline,
-                })?,
+                wire::Action::Execute => {
+                    original.attest_dataset(OriginalCellQ24MaterialReceiptSourcesV1 {
+                        snapshot: &prefix,
+                        source: &self.original.source,
+                        identity: &self.original.identity,
+                        ledger: &mut ledger,
+                        baseline: &self.original.baseline,
+                    })?
+                }
+                wire::Action::Readback => {
+                    original.readback_dataset(OriginalCellQ24MaterialReceiptSourcesV1 {
+                        snapshot: &prefix,
+                        source: &self.original.source,
+                        identity: &self.original.identity,
+                        ledger: &mut ledger,
+                        baseline: &self.original.baseline,
+                    })?
+                }
             };
             let current = original.readback_dataset(OriginalCellQ24MaterialReceiptSourcesV1 {
-                snapshot: &prefix, source: &self.original.source, identity: &self.original.identity,
-                ledger: &mut ledger, baseline: &self.original.baseline,
+                snapshot: &prefix,
+                source: &self.original.source,
+                identity: &self.original.identity,
+                ledger: &mut ledger,
+                baseline: &self.original.baseline,
             })?;
             if current.receipt != dataset.receipt || current.attestation != dataset.attestation {
                 return Err(Error::CommitUncertain);
@@ -202,8 +275,11 @@ impl<EW: AnchorWitnessStore, DW: AnchorWitnessStore, SW: AnchorWitnessStore>
             evidence.push(dataset.attestation);
         }
         let current = original.readback_experience(OriginalCellQ24MaterialReceiptSourcesV1 {
-            snapshot: coordinator.snapshot(), source: &self.original.source, identity: &self.original.identity,
-            ledger: &mut ledger, baseline: &self.original.baseline,
+            snapshot: coordinator.snapshot(),
+            source: &self.original.source,
+            identity: &self.original.identity,
+            ledger: &mut ledger,
+            baseline: &self.original.baseline,
         })?;
         if current.receipt != experience.receipt || current.attestation != experience.attestation {
             return Err(Error::CommitUncertain);
@@ -218,26 +294,46 @@ impl<EW: AnchorWitnessStore, DW: AnchorWitnessStore, SW: AnchorWitnessStore>
     /// These fixed-role delegates expose no underlying pair or execution API.
     /// They retain the existing read-only purposes and 500 ms transport policy.
     pub fn serve_experience_readback(
-        &self, stream: UnixStream, policy: HostAuthorityPeerPolicy, original_consumer_pidfd: OwnedFd,
+        &self,
+        stream: UnixStream,
+        policy: HostAuthorityPeerPolicy,
+        original_consumer_pidfd: OwnedFd,
     ) -> Result<(), OriginalCellQ24MaterialEvidenceErrorV1> {
         OriginalCellQ24MaterialEvidenceOwnerV1::serve_readback(
-            &self.original, Role::Experience, stream, policy, original_consumer_pidfd,
+            &self.original,
+            Role::Experience,
+            stream,
+            policy,
+            original_consumer_pidfd,
         )
     }
 
     pub fn serve_dataset_readback(
-        &self, stream: UnixStream, policy: HostAuthorityPeerPolicy, original_consumer_pidfd: OwnedFd,
+        &self,
+        stream: UnixStream,
+        policy: HostAuthorityPeerPolicy,
+        original_consumer_pidfd: OwnedFd,
     ) -> Result<(), OriginalCellQ24MaterialEvidenceErrorV1> {
         OriginalCellQ24MaterialEvidenceOwnerV1::serve_readback(
-            &self.original, Role::Dataset, stream, policy, original_consumer_pidfd,
+            &self.original,
+            Role::Dataset,
+            stream,
+            policy,
+            original_consumer_pidfd,
         )
     }
 
     pub fn serve_dataset_source(
-        &self, stream: UnixStream, policy: HostAuthorityPeerPolicy, original_consumer_pidfd: OwnedFd,
+        &self,
+        stream: UnixStream,
+        policy: HostAuthorityPeerPolicy,
+        original_consumer_pidfd: OwnedFd,
     ) -> Result<(), OriginalCellQ24MaterialSourceErrorV1> {
         OriginalCellQ24MaterialEvidenceOwnerV1::serve_material_source(
-            &self.original, stream, policy, original_consumer_pidfd,
+            &self.original,
+            stream,
+            policy,
+            original_consumer_pidfd,
         )
     }
 }

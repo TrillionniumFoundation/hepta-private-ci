@@ -3874,7 +3874,7 @@ caller_markers = ["reader.read_current_for_original_receipt("]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/cell_q24_material_receipt_owner.rs"
-required_order = [["fn into_evidence_readback_owner<","self,","source: CircuitTaskSourceReadbackV1<SW>","ledger: std::sync::Arc<std::sync::Mutex<LedgerWriter>>","let config = self.config.clone();","OriginalCellQ24MaterialEvidenceOwnerV1::from_original_owners(","self, config, source, identity, ledger, baseline,","fn attest_experience("],["fn into_command_owner<","self,","source: CircuitTaskSourceReadbackV1<SW>","ledger: std::sync::Arc<std::sync::Mutex<LedgerWriter>>","let allow_new_commands =","self.command_origin","OriginalMaterialCommandOriginV1::FreshCreate","let config = self.config.clone();","OriginalCellQ24MaterialCommandOwnerV1::from_original_pair(","self, config, source, identity, ledger, baseline, allow_new_commands,","fn attest_experience("]]
+required_order = [["fn into_evidence_readback_owner<","self,","source: CircuitTaskSourceReadbackV1<SW>","ledger: std::sync::Arc<std::sync::Mutex<LedgerWriter>>","let config = self.config.clone();","OriginalCellQ24MaterialEvidenceOwnerV1::from_original_owners(","self, config, source, identity, ledger, baseline,","fn attest_experience("],["fn into_command_owner<","self,","source: CircuitTaskSourceReadbackV1<SW>","ledger: std::sync::Arc<std::sync::Mutex<LedgerWriter>>","let allow_new_commands =","self.command_origin","OriginalMaterialCommandOriginV1::FreshCreate","let config = self.config.clone();","OriginalCellQ24MaterialCommandOwnerV1::from_original_pair(","self,","config,","source,","identity,","ledger,","baseline,","allow_new_commands,","fn attest_experience("]]
 required = ["pub struct OriginalCellQ24MaterialReceiptOwnersV1","pub experience_signer: TrustedLearningSignerV1","pub dataset_signer: TrustedLearningSignerV1","pub ledger: &'a mut LedgerWriter"]
 forbidden = ["SigningKey::generate","SigningKey::from_bytes","LearningEvidenceVerifierV1::new","LearningEvidenceTrustV1","File::open","UnixStream::connect","with_root_learning_stage_owners(","LearningIterationStageOwnerPortsV1 for","fit_or_readback(",".fit(","unwrap_or","permit_all","if false"]
 
@@ -5076,7 +5076,7 @@ caller_markers = []
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/cell_q24_material_command.rs"
 required = ["channel: Mutex<Option<Channel>>","role: Role","retained: Mutex<Option<OriginalCellQ24MaterialCommandReceiptV1>>"]
-forbidden = ["SigningKey","SignedLearningEvidenceV1 {","LearningEvidenceVerifierV1::new","File::open","OpenOptions","UnixStream::connect","UnixListener","LearningOwnerJournalV1::create","LearningOwnerJournalV1::recover",".claim(",".complete(",".sign(","LedgerWriter::open","with_root_learning_stage_owners(","fit_or_readback(",".fit(","permit_all","if false","pub now:","pub role:","pub config:"]
+forbidden = ["SigningKey","LearningEvidenceVerifierV1::new","File::open","OpenOptions","UnixStream::connect","UnixListener","LearningOwnerJournalV1::create","LearningOwnerJournalV1::recover",".claim(",".complete(",".sign(","LedgerWriter::open","with_root_learning_stage_owners(","fit_or_readback(",".fit(","permit_all","if false","pub now:","pub role:","pub config:"]
 
 [[protected_file.required_function_order]]
 function = "fn bind_original_stream("
@@ -5089,7 +5089,7 @@ sequence = ["now()? >= self.config.initial.request.envelope.expiry_unix_seconds"
 
 [[protected_file.required_function_order]]
 function = "fn readback("
-sequence = ["self.exchange(wire::Action::Readback).await"]
+sequence = ["self.exchange(","wire::Action::Readback).await"]
 
 [[protected_file.required_function_order]]
 function = "fn receipt_attestation("
@@ -5099,7 +5099,7 @@ top_level = ["let original =","Ok(original.attestation().clone())"]
 [[protected_file.required_function_order]]
 function = "fn exchange("
 sequence = ["let started_at = now()?","wire::context_binding(&self.config, started_at)?","self.channel.try_lock()","channel.execution_requested","slot.take().ok_or(Error::Unavailable)?","channel.execution_requested = true","wire::Request::new(","checked_add(1)","tokio::task::spawn_blocking(",".request(&encoded)","serde_json::from_slice(&bytes)?","response.require_request(&request)?","let fresh_now = now()?","fresh_now < started_at","wire::context_binding(&self.config, fresh_now)? != self.binding","wire::decode_completed(","original != &completed","*retained = Some(completed.clone())","CommandResult::Uncertain => return Err(Error::CommitUncertain)","channel.peer.check_peer_lifetime()?","Some(channel)","result"]
-top_level = ["let started_at = now()?","let mut channel =","let request =","let response:","let fresh_now = now()?","channel.peer.check_peer_lifetime()?","result"]
+top_level = ["let started_at = now()?","let mut channel = {","let request =","let response:","let fresh_now = now()?","channel.peer.check_peer_lifetime()?","\n        result\n"]
 
 [[protected_file.required_function_order]]
 function = "fn now("
@@ -5124,6 +5124,11 @@ top_level = ["Self::bind_original_stream("]
 function = "fn recover_original_dataset_stream("
 sequence = ["Self::bind_original_stream(","Role::Dataset","true,"]
 top_level = ["Self::bind_original_stream("]
+[[protected_file.required_function_order]]
+function = "fn attestation("
+sequence = ["&self.evidence[","self.evidence.len() - 1]"]
+top_level = ["&self.evidence["]
+
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/cell_q24_material_command_service.rs"
@@ -5199,7 +5204,7 @@ sequence = ["self.schema != request.schema","self.operation != request.operation
 
 [[protected_file.required_function_order]]
 function = "fn decode_completed("
-sequence = ["snapshot.len() > 10_924","evidence.len() > 2","STANDARD_NO_PAD.decode(","STANDARD_NO_PAD.encode(&bytes) != snapshot","decode_original_owner_snapshot_v1(&bytes)?","value.decode()","authenticate_cut("]
+sequence = ["snapshot.len() > 10_924","evidence.len() > 2","let bytes = STANDARD_NO_PAD",".decode(&snapshot)","STANDARD_NO_PAD.encode(&bytes) != snapshot","decode_original_owner_snapshot_v1(&bytes)?",".map(|value|","value",".decode()","authenticate_cut("]
 
 [[protected_file.required_function_order]]
 function = "fn authenticate_cut("

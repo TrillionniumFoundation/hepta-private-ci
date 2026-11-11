@@ -6,6 +6,7 @@ exercise actual original journals separately; neither deploys an external host.
 
 import importlib.util
 from pathlib import Path
+import re
 import sys
 import tempfile
 import tomllib
@@ -70,6 +71,50 @@ class OriginalMaterialCommandClosureTests(unittest.TestCase):
             target.write_text(source[:offset] + replacement + source[offset + len(marker):])
             with self.assertRaises(PROOF.VerificationFailure):
                 PROOF._verify_protected_files(root, data)
+
+    def require_retained_evidence_view(self, source):
+        # A return type followed by its function body is not a struct literal.
+        # Only this unique getter signature is exempt; its body is independently
+        # protected by the exact function-order and top-level CALLERS guard.
+        code = PROOF._strip_cfg_test_items(PROOF._strip_rust_non_code(source))
+        signature = "pub fn attestation(&self) -> &SignedLearningEvidenceV1 {"
+        if code.count(signature) != 1:
+            raise PROOF.VerificationFailure("unique retained evidence getter required")
+        code = code.replace(signature, " " * len(signature), 1)
+        if re.search(r"\bSignedLearningEvidenceV1\s*\{", code):
+            raise PROOF.VerificationFailure("new evidence construction is forbidden")
+
+    def test_retained_evidence_getter_never_permits_new_struct_construction(self):
+        source = (ROOT / CLIENT).read_text()
+        PROOF._verify_protected_files(ROOT, {"protected_file": self.rows(CLIENT)})
+        self.require_retained_evidence_view(source)
+        self.require_retained_evidence_view(
+            source + "\n// SignedLearningEvidenceV1 { is a comment, not code.\n"
+        )
+        original_view = "&self.evidence[self.evidence.len() - 1]"
+        self.assertEqual(source.count(original_view), 1)
+        for gap in (" ", "\n    ", " /* no construction authority */\n    "):
+            literal = "SignedLearningEvidenceV1" + gap + "{ ..original }"
+            with self.subTest(gap=gap, location="other function"):
+                altered = source + (
+                    "\nfn unauthorized_copy(original: SignedLearningEvidenceV1) { "
+                    "let _ = &" + literal + "; }\n"
+                )
+                with self.assertRaisesRegex(PROOF.VerificationFailure, "construction"):
+                    self.require_retained_evidence_view(altered)
+            with self.subTest(gap=gap, location="getter body"):
+                altered = source.replace(
+                    original_view,
+                    "let original = self.evidence[0].clone(); let _ = " + literal
+                    + "; " + original_view,
+                    1,
+                )
+                with self.assertRaisesRegex(PROOF.VerificationFailure, "construction"):
+                    self.require_retained_evidence_view(altered)
+        with self.assertRaisesRegex(PROOF.VerificationFailure, "unique retained"):
+            self.require_retained_evidence_view(
+                source.replace("pub fn attestation(&self)", "pub fn replacement(&self)", 1)
+            )
 
     def test_only_original_pair_consumption_opens_custody_and_external_dispatch_stays_closed(self):
         paths = {path for identifier in EXPECTED for path in (

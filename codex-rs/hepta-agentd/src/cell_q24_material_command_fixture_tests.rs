@@ -1,13 +1,15 @@
 //! Original test custody only: files, witnesses and a genuinely unstarted pair.
 
-use std::sync::Mutex;
 use pretty_assertions::assert_eq;
+use std::sync::Mutex;
 
 use super::*;
 use crate::OriginalCellQ24MaterialCommandOwnerV1;
 
 pub(crate) type CommandHost = OriginalCellQ24MaterialCommandOwnerV1<
-    FileAnchorWitnessStore, FileAnchorWitnessStore, FileAnchorWitnessStore,
+    FileAnchorWitnessStore,
+    FileAnchorWitnessStore,
+    FileAnchorWitnessStore,
 >;
 
 pub(crate) struct MaterialCommandFixture {
@@ -27,30 +29,50 @@ impl MaterialCommandFixture {
         let owners = f.create()?;
         let ledger = Arc::new(Mutex::new(f.writer));
         let host = owners.into_command_owner(
-            f.readback, f.identity.clone(), Arc::clone(&ledger), Arc::clone(&f.baseline),
+            f.readback,
+            f.identity.clone(),
+            Arc::clone(&ledger),
+            Arc::clone(&f.baseline),
         )?;
         Ok(Self {
-            host: Some(Arc::new(host)), config: f.config, ledger,
-            source: f.source, identity: f.identity, baseline: f.baseline,
-            root: f.root, _directory: f._directory,
+            host: Some(Arc::new(host)),
+            config: f.config,
+            ledger,
+            source: f.source,
+            identity: f.identity,
+            baseline: f.baseline,
+            root: f.root,
+            _directory: f._directory,
         })
     }
 
     pub(crate) fn bytes(&self) -> anyhow::Result<Vec<Vec<u8>>> {
         // The enclosing module is Linux-only; retain every original byte.
-        ["experience-journal", "experience-witness", "dataset-journal",
-            "dataset-witness", "ledger", "ledger-witness"].into_iter()
-            .map(|name| Ok(fs::read(self.root.join(name))?)).collect()
+        [
+            "experience-journal",
+            "experience-witness",
+            "dataset-journal",
+            "dataset-witness",
+            "ledger",
+            "ledger-witness",
+        ]
+        .into_iter()
+        .map(|name| Ok(fs::read(self.root.join(name))?))
+        .collect()
     }
 
     pub(crate) fn withdraw(&mut self) -> anyhow::Result<()> {
-        self.source.withdraw_source(&self.config.initial.request.source_run_id)?;
+        self.source
+            .withdraw_source(&self.config.initial.request.source_run_id)?;
         Ok(())
     }
 
     pub(crate) fn reopen(&mut self) -> anyhow::Result<()> {
         let host = self.host.take().expect("original command host");
-        anyhow::ensure!(Arc::strong_count(&host) == 1, "drop all original connections first");
+        anyhow::ensure!(
+            Arc::strong_count(&host) == 1,
+            "drop all original connections first"
+        );
         drop(host);
         let witness = |name: &str| -> anyhow::Result<FileAnchorWitnessStore> {
             Ok(FileAnchorWitnessStore::open(
@@ -59,7 +81,8 @@ impl MaterialCommandFixture {
                     scope_digest: self.config.scope.binding(),
                     objective_digest: self.config.initial.request.envelope.objective_digest,
                 },
-                Generation::new(1)?, 64,
+                Generation::new(1)?,
+                64,
             )?)
         };
         let owners = Owners::recover(
@@ -74,8 +97,10 @@ impl MaterialCommandFixture {
             SigningKey::from_bytes(&[5; 32]),
         )?;
         self.host = Some(Arc::new(owners.into_command_owner(
-            self.source.readback(), self.identity.clone(),
-            Arc::clone(&self.ledger), Arc::clone(&self.baseline),
+            self.source.readback(),
+            self.identity.clone(),
+            Arc::clone(&self.ledger),
+            Arc::clone(&self.baseline),
         )?));
         Ok(())
     }
@@ -91,9 +116,11 @@ pub(crate) fn interrupt_dataset_claim(
     let experience = owners.readback_experience(sources)?;
     let saved = binding::dataset_saved(config, owners.dataset_binding, &experience)?;
     assert!(matches!(
-        owners.dataset.commit_once(&saved, || Err(binding::owner_invalid(
-            "explicit interruption after original Dataset claim"
-        ))),
+        owners
+            .dataset
+            .commit_once(&saved, || Err(binding::owner_invalid(
+                "explicit interruption after original Dataset claim"
+            ))),
         Err(LearningOriginalOwnerErrorV1::Binding(
             "explicit interruption after original Dataset claim"
         ))
@@ -103,9 +130,13 @@ pub(crate) fn interrupt_dataset_claim(
 }
 
 pub(crate) fn assert_dataset_pending(
-    owners: &mut Owners, saved: &ProductEvaluationExecutionKeyV1,
+    owners: &mut Owners,
+    saved: &ProductEvaluationExecutionKeyV1,
 ) -> anyhow::Result<()> {
-    assert!(matches!(owners.dataset.read(saved), Err(LearningOriginalOwnerErrorV1::Pending)));
+    assert!(matches!(
+        owners.dataset.read(saved),
+        Err(LearningOriginalOwnerErrorV1::Pending)
+    ));
     let config = owners.config.clone();
     assert_eq!(saved.plan_id, config.initial.request.operation_id);
     Ok(())
