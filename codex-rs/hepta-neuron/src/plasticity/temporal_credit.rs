@@ -117,6 +117,24 @@ pub struct TemporalCreditReceiptV1 {
     pub authority: AuthorityPosture,
 }
 
+/// Restricted **shadow-only** selector input for a frozen training prefix.
+///
+/// This is NOT a verified Owner receipt. A caller MUST supply only feedback
+/// that its real Owner made observable by the cutoff. Unlike the forensic
+/// TemporalCreditReceiptV1, this type cannot disclose post-cutoff transcript
+/// identity or how many future feedback records were provided.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct FrozenTemporalCreditProposalV1 {
+    pub arm: TemporalCreditArmV1,
+    pub group_deltas: Vec<TemporalGroupDeltaV1>,
+    pub matched_feedback_count: u32,
+    pub expired_feedback_count: u32,
+    pub unobserved_action_count: u32,
+    pub projection_count: u32,
+    pub causal_training_digest: Digest32,
+    pub authority: AuthorityPosture,
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum TemporalCreditError {
     InvalidContract,
@@ -126,6 +144,7 @@ pub enum TemporalCreditError {
     DuplicateFeedback,
     UnknownAction,
     FutureAction,
+    FutureFeedback,
     FeedbackBeforeAction,
     FrozenEvaluationLeak,
     OwnerOrModelDrift,
@@ -454,6 +473,51 @@ pub fn accumulate_temporal_credit_q24(
         transcript_digest: Digest32::of_bytes(&canonical),
         causal_training_digest: Digest32::of_bytes(&causal),
         authority: AuthorityPosture::DENY_ALL,
+    })
+}
+
+/// Construct an explicitly frozen, causal-prefix proposal only.
+///
+/// Reject *every* post-cutoff feedback input instead of silently returning a
+/// future-dependent complete-audit surface. The original reference remains
+/// available to a separate forensic caller but its full transcript digest is
+/// never returned here. All input identities and availability sequences
+/// remain caller declarations: no producer authentication, signed source,
+/// StageOwner authority, real effect, or adoption permission is conferred.
+pub fn accumulate_frozen_temporal_credit_q24(
+    actions: &[TemporalEligibilityActionV1],
+    declared_visible_feedback: &[TemporalFeedbackV1],
+    parameter_groups: &[ParameterGroupMapV1],
+    contract: TemporalCreditContractV1,
+    arm: TemporalCreditArmV1,
+) -> Result<FrozenTemporalCreditProposalV1, TemporalCreditError> {
+    if declared_visible_feedback
+        .iter()
+        .any(|feedback| feedback.available_sequence > contract.cutoff_sequence)
+    {
+        return Err(TemporalCreditError::FutureFeedback);
+    }
+    let receipt = accumulate_temporal_credit_q24(
+        actions,
+        declared_visible_feedback,
+        parameter_groups,
+        contract,
+        arm,
+    )?;
+    // Defensive invariant: callers must never receive a complete-audit
+    // future field, even if the full reference changes independently.
+    if receipt.withheld_future_feedback_count != 0 {
+        return Err(TemporalCreditError::FutureFeedback);
+    }
+    Ok(FrozenTemporalCreditProposalV1 {
+        arm: receipt.arm,
+        group_deltas: receipt.group_deltas,
+        matched_feedback_count: receipt.matched_feedback_count,
+        expired_feedback_count: receipt.expired_feedback_count,
+        unobserved_action_count: receipt.unobserved_action_count,
+        projection_count: receipt.projection_count,
+        causal_training_digest: receipt.causal_training_digest,
+        authority: receipt.authority,
     })
 }
 
