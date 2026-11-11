@@ -1,0 +1,210 @@
+{
+  "authority": "READ_ONLY_NOT_OWNER_ATTESTED",
+  "interpretation": "Real CPU model score arithmetic, with B exposed and C constructed; not independent future test, statistical efficacy or production authority.",
+  "model_identity_claims": {
+    "config_sha256": "8eb740e8bbe4cff95ea7b4588d17a2432deb16e8075bc5828ff7ba9be94d982a",
+    "exposed_fixture_sha256": "01ec1a644f37b9fc7a4c6616f589768df97f8eed7a289b5de86afadaa7ce6165",
+    "model_safetensors_sha256": "5af571cbf074e6d21a03528d2330792e532ca608f24ac70a143f6b369968ab8c",
+    "script_sha256": "0b6f2cb893ee1909adcd88fe4381560ad337a0fe59dd886548b665bc95c0d084",
+    "tokenizer_sha256": "9ca9acddb6525a194ec8ac7a87f24fbba7232a9a15ffa1af0c1224fcd888e47c"
+  },
+  "open_gates": [
+    "independent prospectively held-out evaluator and task C",
+    "actual original-owner attestation and NoUpdate/Adopt",
+    "complete energy/storage/network/failure costs",
+    "full seven-lineage ACT/CTRL/MEM and Core x NDU 2x2"
+  ],
+  "schema": "HPCA-CPU-PAIRED-PROBABILITY-AUDIT-V1",
+  "seed_count": 4,
+  "source_archive_sha256": "caf20e60f0e0dc09b78b9c5433727dd028a2b6627c945d8dee7b54c238a66615",
+  "source_schema": "HPCA-REAL-CPU-LORA-CLOCK-V1",
+  "status": "HOLD_NO_GO",
+  "task_families": {
+    "B_exposed_eval": {
+      "mean_heterogeneous_minus_uniform": {
+        "accuracy": 0.0,
+        "brier": -0.0040412579209653035,
+        "log_loss": -0.009179922255404621
+      },
+      "paired_seeds": [
+        {
+          "heterogeneous": {
+            "accuracy": 0.5,
+            "brier": 0.22730964685943955,
+            "log_loss": 0.6459563328812872,
+            "n": 4
+          },
+          "heterogeneous_minus_uniform": {
+            "accuracy": 0.0,
+            "brier": 0.00021779171063199265,
+            "log_loss": 0.0007885428786865711
+          },
+          "n": 4,
+          "seed": 11,
+          "uniform": {
+            "accuracy": 0.5,
+            "brier": 0.22709185514880756,
+            "log_loss": 0.6451677900026006,
+            "n": 4
+          }
+        },
+        {
+          "heterogeneous": {
+            "accuracy": 0.5,
+            "brier": 0.2552467890531297,
+            "log_loss": 0.7061132871165379,
+            "n": 4
+          },
+          "heterogeneous_minus_uniform": {
+            "accuracy": 0.0,
+            "brier": -0.009225888393809445,
+            "log_loss": -0.022520996300012808
+          },
+          "n": 4,
+          "seed": 17,
+          "uniform": {
+            "accuracy": 0.5,
+            "brier": 0.26447267744693914,
+            "log_loss": 0.7286342834165507,
+            "n": 4
+          }
+        },
+        {
+          "heterogeneous": {
+            "accuracy": 0.75,
+            "brier": 0.23391434613498294,
+            "log_loss": 0.6610379974304044,
+            "n": 4
+          },
+          "heterogeneous_minus_uniform": {
+            "accuracy": 0.0,
+            "brier": -0.002638201972162968,
+            "log_loss": -0.0057141430173839325
+          },
+          "n": 4,
+          "seed": 23,
+          "uniform": {
+            "accuracy": 0.75,
+            "brier": 0.2365525481071459,
+            "log_loss": 0.6667521404477883,
+            "n": 4
+          }
+        },
+        {
+          "heterogeneous": {
+            "accuracy": 0.75,
+            "brier": 0.22754295871793062,
+            "log_loss": 0.6478883351846606,
+            "n": 4
+          },
+          "heterogeneous_minus_uniform": {
+            "accuracy": 0.0,
+            "brier": -0.004518733028520794,
+            "log_loss": -0.009273092582908316
+          },
+          "n": 4,
+          "seed": 29,
+          "uniform": {
+            "accuracy": 0.75,
+            "brier": 0.23206169174645142,
+            "log_loss": 0.6571614277675689,
+            "n": 4
+          }
+        }
+      ]
+    },
+    "C_operator_constructed": {
+      "mean_heterogeneous_minus_uniform": {
+        "accuracy": 0.0,
+        "brier": -0.0005349281613876294,
+        "log_loss": -0.005862345737932595
+      },
+      "paired_seeds": [
+        {
+          "heterogeneous": {
+            "accuracy": 0.375,
+            "brier": 0.40045494197645465,
+            "log_loss": 1.0655875590773365,
+            "n": 8
+          },
+          "heterogeneous_minus_uniform": {
+            "accuracy": 0.0,
+            "brier": 0.01091725714715952,
+            "log_loss": 0.042579401614694756
+          },
+          "n": 8,
+          "seed": 11,
+          "uniform": {
+            "accuracy": 0.375,
+            "brier": 0.3895376848292951,
+            "log_loss": 1.0230081574626417,
+            "n": 8
+          }
+        },
+        {
+          "heterogeneous": {
+            "accuracy": 0.375,
+            "brier": 0.4078136284156889,
+            "log_loss": 1.1047959639781972,
+            "n": 8
+          },
+          "heterogeneous_minus_uniform": {
+            "accuracy": 0.0,
+            "brier": -0.0029307417298495286,
+            "log_loss": -0.022401234518499624
+          },
+          "n": 8,
+          "seed": 17,
+          "uniform": {
+            "accuracy": 0.375,
+            "brier": 0.41074437014553844,
+            "log_loss": 1.1271971984966969,
+            "n": 8
+          }
+        },
+        {
+          "heterogeneous": {
+            "accuracy": 0.375,
+            "brier": 0.4001792771048533,
+            "log_loss": 1.0684315629550287,
+            "n": 8
+          },
+          "heterogeneous_minus_uniform": {
+            "accuracy": 0.0,
+            "brier": -0.006154139313974016,
+            "log_loss": -0.02705459542622779
+          },
+          "n": 8,
+          "seed": 23,
+          "uniform": {
+            "accuracy": 0.375,
+            "brier": 0.4063334164188273,
+            "log_loss": 1.0954861583812565,
+            "n": 8
+          }
+        },
+        {
+          "heterogeneous": {
+            "accuracy": 0.375,
+            "brier": 0.3933666529192788,
+            "log_loss": 1.0416451715866382,
+            "n": 8
+          },
+          "heterogeneous_minus_uniform": {
+            "accuracy": 0.0,
+            "brier": -0.003972088748886493,
+            "log_loss": -0.016572954621697722
+          },
+          "n": 8,
+          "seed": 29,
+          "uniform": {
+            "accuracy": 0.375,
+            "brier": 0.3973387416681653,
+            "log_loss": 1.0582181262083359,
+            "n": 8
+          }
+        }
+      ]
+    }
+  }
+}
