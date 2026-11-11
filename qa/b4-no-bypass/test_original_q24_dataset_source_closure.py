@@ -19,6 +19,7 @@ sys.modules[SPEC.name] = PROOF
 SPEC.loader.exec_module(PROOF)
 AGENT = "codex-rs/hepta-agentd/src/"
 DATASET = AGENT + "cell_q24_dataset.rs"
+RECOVERY = AGENT + "cell_q24_dataset_recovery.rs"
 STAGE = AGENT + "cell_q24_training_stage.rs"
 NATIVE = AGENT + "cell_composed_q24_training_owner.rs"
 SOURCE = AGENT + "circuit_task_source.rs"
@@ -27,7 +28,7 @@ LEDGER = "codex-rs/hepta-learning-ledger/src/production.rs"
 CURRENT = "source.require_current(&owners.receipts.config.dataset)?;"
 CALLERS = {
     "cell_q24_original_dataset_freeze": (),
-    "cell_q24_original_dataset_revalidate": (STAGE,),
+    "cell_q24_original_dataset_revalidate": (STAGE, RECOVERY),
     "cell_q24_original_training_batch_binding": (STAGE,),
     "learning_original_training_stage_source_execute": (),
     "learning_original_training_stage_source_readback": (),
