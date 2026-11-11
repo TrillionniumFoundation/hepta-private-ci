@@ -56,7 +56,10 @@ impl ProductionCognitiveMutationCapability {
         self.writer.verify_current_authority().await?;
         let begin_attempt = store.commit_gate.transition_attempt();
         let mut transaction = store.begin_write_transaction().await.map_err(|source| {
-            ProductionCognitiveMutationError::TransactionSettlementUnknown { operation: "begin", source }
+            ProductionCognitiveMutationError::TransactionSettlementUnknown {
+                operation: "begin",
+                source,
+            }
         })?;
         // Move after transaction acquisition: panic drops this guard before
         // Transaction queues rollback, and before the import lock is released.
@@ -183,7 +186,8 @@ impl ProductionCognitiveMutationCapability {
             Ok(receipt) => {
                 transaction.commit().await.map_err(|error| {
                     ProductionCognitiveMutationError::TransactionSettlementUnknown {
-                        operation: "commit", source: unavailable(error),
+                        operation: "commit",
+                        source: unavailable(error),
                     }
                 })?;
                 settlement.acknowledge();
@@ -192,7 +196,8 @@ impl ProductionCognitiveMutationCapability {
             Err(error) => {
                 transaction.rollback().await.map_err(|error| {
                     ProductionCognitiveMutationError::TransactionSettlementUnknown {
-                        operation: "rollback", source: unavailable(error),
+                        operation: "rollback",
+                        source: unavailable(error),
                     }
                 })?;
                 settlement.acknowledge();
@@ -200,7 +205,6 @@ impl ProductionCognitiveMutationCapability {
             }
         }
     }
-
 }
 
 #[path = "production_episodic_write.rs"]

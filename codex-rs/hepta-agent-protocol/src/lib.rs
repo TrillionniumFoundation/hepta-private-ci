@@ -4,8 +4,8 @@
 
 mod authbus;
 mod capabilities;
-mod evidence;
 mod episodic;
+mod evidence;
 pub use episodic::EPISODIC_SNAPSHOT_IMPORT_CAPABILITY;
 pub use episodic::EpisodicSnapshotImportResult;
 pub use episodic::MAX_EPISODIC_SNAPSHOT_IMPORT_BYTES;

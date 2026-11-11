@@ -365,7 +365,10 @@ impl AgentdState {
         // Retained imports may outlive the response future. Publish their
         // unresolved owner state through the ordinary readiness/read fence,
         // even when no caller remains to observe the task's JoinError.
-        if self.episodic_import_unresolved.load(std::sync::atomic::Ordering::Acquire) {
+        if self
+            .episodic_import_unresolved
+            .load(std::sync::atomic::Ordering::Acquire)
+        {
             self.mark_fenced();
         }
         // Registration/startup retains fleet-wide validation. Serving an

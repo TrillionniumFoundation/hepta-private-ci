@@ -452,9 +452,13 @@ impl AgentdProductionWriterHost {
         admission: &dyn codex_hepta_memory::EpisodicSnapshotVerifier,
     ) -> Result<codex_hepta_memory::EpisodicImportReceipt, AgentdError> {
         let mutation = self.mutation.as_ref().ok_or_else(|| {
-            AgentdError::Protocol("production cognitive mutation capability is not attached".to_string())
+            AgentdError::Protocol(
+                "production cognitive mutation capability is not attached".to_string(),
+            )
         })?;
-        Ok(mutation.import_episodic_snapshot(access, scope, snapshot_json, admission).await?)
+        Ok(mutation
+            .import_episodic_snapshot(access, scope, snapshot_json, admission)
+            .await?)
     }
 
     pub async fn remember_with_kg(

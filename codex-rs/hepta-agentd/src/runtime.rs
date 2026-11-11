@@ -205,9 +205,10 @@ pub async fn run_with_shutdown(
         })?;
     }
     if let Some(ingress) = episodic_snapshot_import {
-        state.episodic_snapshot_import.set(ingress).map_err(|_| {
-            AgentdError::Invalid("episodic import owner already attached".into())
-        })?;
+        state
+            .episodic_snapshot_import
+            .set(ingress)
+            .map_err(|_| AgentdError::Invalid("episodic import owner already attached".into()))?;
     }
     if let Some(current) = retrieval_context {
         state

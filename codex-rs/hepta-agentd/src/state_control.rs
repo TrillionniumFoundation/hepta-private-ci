@@ -122,7 +122,8 @@ impl AgentdState {
                             codex_hepta_agent_protocol::EPISODIC_SNAPSHOT_IMPORT_CAPABILITY,
                             /*major*/ 1,
                             /*minor*/ 0,
-                        ).map_err(AgentdError::Protocol)?,
+                        )
+                        .map_err(AgentdError::Protocol)?,
                     );
                 }
                 if self.evidence.get().is_some() {

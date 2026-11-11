@@ -36,9 +36,12 @@ impl Drop for AdmittedImport {
 }
 
 fn settlement_unknown(result: &Result<EpisodicSnapshotImportResult, AgentdError>) -> bool {
-    matches!(result, Err(AgentdError::ProductionCognitiveMutation(
-        ProductionCognitiveMutationError::TransactionSettlementUnknown { .. }
-    )))
+    matches!(
+        result,
+        Err(AgentdError::ProductionCognitiveMutation(
+            ProductionCognitiveMutationError::TransactionSettlementUnknown { .. }
+        ))
+    )
 }
 
 impl AgentdState {
@@ -57,27 +60,42 @@ impl AgentdState {
         snapshot_json: &str,
     ) -> Result<AgentdPayload, AgentdError> {
         if snapshot_json.len() > MAX_EPISODIC_SNAPSHOT_IMPORT_BYTES {
-            return Err(AgentdError::Invalid("episodic control input exceeds 20 KiB".into()));
+            return Err(AgentdError::Invalid(
+                "episodic control input exceeds 20 KiB".into(),
+            ));
         }
-        let ingress = Arc::clone(self.episodic_snapshot_import.get()
-            .ok_or(AgentdError::CognitiveWriteRuntimeUnavailable)?);
+        let ingress = Arc::clone(
+            self.episodic_snapshot_import
+                .get()
+                .ok_or(AgentdError::CognitiveWriteRuntimeUnavailable)?,
+        );
         let snapshot_json = snapshot_json.to_owned();
         self.refresh_generation()?;
         let admitted = {
             let runtime = self.runtime.lock().map_err(poisoned_state)?;
             require_cognitive_control_ready(
-                runtime.lifecycle, runtime.app_server_ready, runtime.critical_stores_ready,
-                runtime.revocation_ready, runtime.required_ports_ready,
-                runtime.admission_open, runtime.fenced,
+                runtime.lifecycle,
+                runtime.app_server_ready,
+                runtime.critical_stores_ready,
+                runtime.revocation_ready,
+                runtime.required_ports_ready,
+                runtime.admission_open,
+                runtime.fenced,
             )?;
             if self.episodic_import_unresolved.load(Ordering::Acquire) {
                 return Err(AgentdError::GenerationFenced(
                     "episodic owner requires original transaction recovery".into(),
                 ));
             }
-            self.episodic_imports.fetch_update(Ordering::AcqRel, Ordering::Acquire, |count| {
-                if count < MAX_PENDING_IMPORTS { Some(count + 1) } else { None }
-            }).map_err(|_| AgentdError::Overloaded { retry_after_ms: 50 })?;
+            self.episodic_imports
+                .fetch_update(Ordering::AcqRel, Ordering::Acquire, |count| {
+                    if count < MAX_PENDING_IMPORTS {
+                        Some(count + 1)
+                    } else {
+                        None
+                    }
+                })
+                .map_err(|_| AgentdError::Overloaded { retry_after_ms: 50 })?;
             AdmittedImport {
                 pending: Arc::clone(&self.episodic_imports),
                 unresolved: Arc::clone(&self.episodic_import_unresolved),
@@ -111,9 +129,13 @@ impl AgentdState {
         {
             let runtime = self.runtime.lock().map_err(poisoned_state)?;
             require_cognitive_control_ready(
-                runtime.lifecycle, runtime.app_server_ready, runtime.critical_stores_ready,
-                runtime.revocation_ready, runtime.required_ports_ready,
-                runtime.admission_open, runtime.fenced,
+                runtime.lifecycle,
+                runtime.app_server_ready,
+                runtime.critical_stores_ready,
+                runtime.revocation_ready,
+                runtime.required_ports_ready,
+                runtime.admission_open,
+                runtime.fenced,
             )?;
         }
         result.map(AgentdPayload::EpisodicSnapshotImported)

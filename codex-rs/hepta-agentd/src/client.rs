@@ -210,14 +210,20 @@ impl AgentdClient {
         snapshot_json: String,
     ) -> Result<crate::EpisodicSnapshotImportResult, AgentdError> {
         if snapshot_json.len() > codex_hepta_agent_protocol::MAX_EPISODIC_SNAPSHOT_IMPORT_BYTES {
-            return Err(AgentdError::Invalid("episodic control input exceeds 20 KiB".into()));
+            return Err(AgentdError::Invalid(
+                "episodic control input exceeds 20 KiB".into(),
+            ));
         }
-        match self.send(AgentdRequest {
-            schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
-            request_id: self.request_id(),
-            spawn_generation: self.spawn_generation,
-            method: crate::AgentdMethod::EpisodicSnapshotImport { snapshot_json },
-        }).await?.payload {
+        match self
+            .send(AgentdRequest {
+                schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+                request_id: self.request_id(),
+                spawn_generation: self.spawn_generation,
+                method: crate::AgentdMethod::EpisodicSnapshotImport { snapshot_json },
+            })
+            .await?
+            .payload
+        {
             AgentdPayload::EpisodicSnapshotImported(receipt) => Ok(receipt),
             payload => unexpected(payload),
         }

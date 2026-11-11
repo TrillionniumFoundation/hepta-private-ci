@@ -26,9 +26,13 @@ impl AgentdConfig {
             || namespace.len() > 128
             || namespace.contains('\0')
         {
-            return Err(AgentdError::Invalid("invalid episodic import composition".into()));
+            return Err(AgentdError::Invalid(
+                "invalid episodic import composition".into(),
+            ));
         }
-        let writer = self.production_writer_host.as_ref()
+        let writer = self
+            .production_writer_host
+            .as_ref()
             .ok_or(AgentdError::CognitiveWriteRuntimeUnavailable)?;
         if writer.production_mutation().is_none() {
             return Err(AgentdError::CognitiveWriteRuntimeUnavailable);

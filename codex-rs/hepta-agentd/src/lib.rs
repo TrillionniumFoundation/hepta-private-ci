@@ -223,7 +223,6 @@ mod client;
 #[cfg(target_os = "linux")]
 mod cognitive_checkpoint_unix;
 mod cognitive_context;
-mod episodic_import;
 mod cognitive_ranker;
 mod cognitive_retrieval_context;
 mod cognitive_retrieval_learning;
@@ -231,6 +230,7 @@ mod config;
 mod control;
 #[cfg(target_os = "linux")]
 mod deployment_frontier;
+mod episodic_import;
 #[cfg(target_os = "linux")]
 pub use deployment_frontier::DeploymentFrontierStore;
 #[cfg(target_os = "linux")]
