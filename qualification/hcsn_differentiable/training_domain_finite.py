@@ -53,6 +53,20 @@ def _error_diagnostics(projected, reference):
     A zero reference has undefined relative error unless the observed error
     is exactly zero. None is JSON-safe and never represents a passed gate.
     """
+    projected = np.asarray(projected, dtype=np.float64)
+    reference = np.asarray(reference, dtype=np.float64)
+    # A later NaN can be ignored by Python's built-in max(), which is used
+    # by the fixture gate; never admit a non-finite/truncated comparison.
+    if (
+        projected.ndim != 1
+        or projected.shape != reference.shape
+        or not projected.size
+        or not np.isfinite(projected).all()
+        or not np.isfinite(reference).all()
+    ):
+        raise ValueError(
+            "finite, nonempty, equally sized one-dimensional comparison vectors required"
+        )
     absolute = np.abs(projected - reference)
     scaled = absolute / np.maximum(1.0, np.abs(reference))
     relative = []
