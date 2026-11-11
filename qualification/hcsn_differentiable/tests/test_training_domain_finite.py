@@ -2,8 +2,10 @@
 
 import math
 import unittest
+from itertools import repeat
 
 import mpmath as mp
+import numpy as np
 import torch
 
 from qualification.hcsn_differentiable.contract import GridSpec, PhysicalParameters
@@ -12,6 +14,8 @@ from qualification.hcsn_differentiable.operator import (
     DifferentiableDistributionOperator,
 )
 from qualification.hcsn_differentiable.training_domain_finite import (
+    _error_diagnostics,
+    _fixed_gap_schedule,
     _point,
     audit_finite_schedule,
 )
@@ -95,6 +99,57 @@ class FiniteDomainTests(unittest.TestCase):
         self.assertEqual(a["inputs"]["durations"], [0.05, 0.2])
         self.assertEqual(a["inputs"]["probability"], probability.tolist())
         self.numerical_evidence = {"first_schedule": a, "second_schedule": b}
+
+    def test_fixed_gap_admission_rejects_tensor_string_bool_and_infinite_stream(self):
+        self.assertEqual(_fixed_gap_schedule((0.0, np.float64(0.05))), (0.0, 0.05))
+        for schedule in (
+            (False,),
+            ("0.01",),
+            (torch.tensor(0.01, dtype=torch.float64),),
+            (torch.tensor(0.01, dtype=torch.float64, requires_grad=True),),
+        ):
+            with self.subTest(schedule=str(schedule)):
+                with self.assertRaisesRegex(ValueError, "fixed real scalars"):
+                    _fixed_gap_schedule(schedule)
+        with self.assertRaisesRegex(ValueError, "finite"):
+            _fixed_gap_schedule((float("nan"),))
+        with self.assertRaisesRegex(ValueError, "1 to 4096"):
+            _fixed_gap_schedule(repeat(0.01))
+        grid = GridSpec(active_cells=8, phase_cells=4, refractory=0.2)
+        probability = torch.zeros(grid.state_count, dtype=torch.float64)
+        probability[1] = 1.0
+        with self.assertRaisesRegex(ValueError, "fixed real scalars"):
+            audit_finite_schedule(
+                probability,
+                grid,
+                self.params,
+                (torch.tensor(0.05, dtype=torch.float64, requires_grad=True),),
+                reference_order=8,
+            )
+
+    def test_relative_diagnostic_exposes_rare_count_and_undefined_zero(self):
+        projected = np.array([0.00052, 0.2, 0.0])
+        reference = np.array([0.0005, 0.0, 0.0])
+        absolute, scaled, relative = _error_diagnostics(projected, reference)
+        self.assertLess(float(scaled[0]), 0.01)
+        self.assertAlmostEqual(relative[0], 0.04, places=12)
+        self.assertIsNone(relative[1])
+        self.assertEqual(relative[2], 0.0)
+        self.assertAlmostEqual(float(absolute[0]), 0.00002, places=12)
+
+    def test_nonfinite_or_misaligned_diagnostics_fail_closed(self):
+        invalid = (
+            (np.array([0.0, np.nan, 0.0, 0.0]), np.zeros(4)),
+            (np.array([0.0, np.inf, 0.0, 0.0]), np.zeros(4)),
+            (np.zeros(4), np.array([0.0, np.nan, 0.0, 0.0])),
+            (np.zeros(3), np.zeros(4)),
+            (np.zeros((1, 4)), np.zeros((1, 4))),
+            (np.array([]), np.array([])),
+        )
+        for projected, reference in invalid:
+            with self.subTest(projected=projected, reference=reference):
+                with self.assertRaisesRegex(ValueError, "finite, nonempty, equally sized"):
+                    _error_diagnostics(projected, reference)
 
 
 if __name__ == "__main__":
