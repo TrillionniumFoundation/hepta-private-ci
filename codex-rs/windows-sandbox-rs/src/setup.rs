@@ -934,8 +934,8 @@ fn run_setup_exe_payload(
     };
 
     if !needs_elevation {
-        let status = run_setup_helper(&exe, payload_b64, SetupHelperWindow::Hidden)
-            .map_err(|err| {
+        let status =
+            run_setup_helper(&exe, payload_b64, SetupHelperWindow::Hidden).map_err(|err| {
                 failure(
                     SetupErrorCode::OrchestratorHelperLaunchFailed,
                     format!("failed to launch setup helper (non-elevated): {err}"),

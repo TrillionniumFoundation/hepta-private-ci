@@ -23,12 +23,7 @@ enum MatchedHelper {
     Sse,
 }
 
-async fn send_request(
-    server: &MockServer,
-    method: &str,
-    path: &str,
-    body: &Value,
-) -> Result<u16> {
+async fn send_request(server: &MockServer, method: &str, path: &str, body: &Value) -> Result<u16> {
     let body = serde_json::to_vec(body)?;
     let length = body.len();
     let address = server.address();
@@ -41,7 +36,10 @@ async fn send_request(
 
     let mut response = Vec::new();
     stream.take(8193).read_to_end(&mut response).await?;
-    ensure!(response.len() <= 8192, "loopback response exceeded its bound");
+    ensure!(
+        response.len() <= 8192,
+        "loopback response exceeded its bound"
+    );
     let response = std::str::from_utf8(&response)?;
     let mut status = response
         .lines()

@@ -56,7 +56,8 @@ pub(super) fn run_setup_helper(
     let process = spawn_with_null_stdio(executable, &[payload], /*current_dir*/ None, window)?;
     // Preserve Command::status's original unbounded wait for this exact child.
     // No background read-ACL helper is waited for or terminated here.
-    if unsafe { WaitForSingleObject(process.as_raw_handle() as HANDLE, INFINITE) } != WAIT_OBJECT_0 {
+    if unsafe { WaitForSingleObject(process.as_raw_handle() as HANDLE, INFINITE) } != WAIT_OBJECT_0
+    {
         return Err(io::Error::last_os_error());
     }
     let mut exit_code = 0;
@@ -79,7 +80,10 @@ fn spawn_with_null_stdio(
     if argv0[..argv0.len() - 1].contains(&u16::from(b'"'))
         || args.iter().any(|arg| arg.contains('\0'))
     {
-        return Err(io::Error::new(io::ErrorKind::InvalidInput, "invalid setup helper argument"));
+        return Err(io::Error::new(
+            io::ErrorKind::InvalidInput,
+            "invalid setup helper argument",
+        ));
     }
     let mut command = vec![u16::from(b'"')];
     command.extend_from_slice(&argv0[..argv0.len() - 1]);
@@ -93,8 +97,14 @@ fn spawn_with_null_stdio(
         command.push(0);
     }
     let directory = current_dir.map(to_wide);
-    if directory.as_ref().is_some_and(|path| path[..path.len() - 1].contains(&0)) {
-        return Err(io::Error::new(io::ErrorKind::InvalidInput, "invalid setup helper directory"));
+    if directory
+        .as_ref()
+        .is_some_and(|path| path[..path.len() - 1].contains(&0))
+    {
+        return Err(io::Error::new(
+            io::ErrorKind::InvalidInput,
+            "invalid setup helper directory",
+        ));
     }
 
     let input = inheritable_null(File::open(r"\\.\NUL")?)?;
@@ -131,11 +141,14 @@ fn spawn_with_null_stdio(
             /*binherithandles*/ 1,
             CREATE_UNICODE_ENVIRONMENT | EXTENDED_STARTUPINFO_PRESENT | window_flags,
             std::ptr::null(),
-            directory.as_ref().map_or(std::ptr::null(), |path| path.as_ptr()),
+            directory
+                .as_ref()
+                .map_or(std::ptr::null(), |path| path.as_ptr()),
             &startup.StartupInfo,
             &mut information,
         )
-    } == 0 {
+    } == 0
+    {
         return Err(io::Error::last_os_error());
     }
     // SAFETY: successful CreateProcessW returned two new owned handles.
@@ -159,7 +172,8 @@ fn inheritable_null(file: File) -> io::Result<OwnedHandle> {
             /*binherithandle*/ 1,
             DUPLICATE_SAME_ACCESS,
         )
-    } == 0 {
+    } == 0
+    {
         return Err(io::Error::last_os_error());
     }
     Ok(unsafe { OwnedHandle::from_raw_handle(duplicate as _) })
@@ -172,7 +186,10 @@ fn resolve_executable(executable: &Path) -> io::Result<Vec<u16>> {
         || path.contains(&0)
         || path.last().is_some_and(|value| matches!(*value, 47 | 92))
     {
-        return Err(io::Error::new(io::ErrorKind::InvalidInput, "invalid setup helper executable"));
+        return Err(io::Error::new(
+            io::ErrorKind::InvalidInput,
+            "invalid setup helper executable",
+        ));
     }
     // All callers select a .exe helper. Absolute paths and relative paths with
     // a separator keep their existing meaning; only the bare fallback is searched.
@@ -189,18 +206,23 @@ fn resolve_executable(executable: &Path) -> io::Result<Vec<u16>> {
         directories.push(parent.to_owned());
     }
     for query in [GetSystemDirectoryW, GetWindowsDirectoryW] {
-        let needed = unsafe { query(std::ptr::null_mut(), /*size*/ 0) };
+        let needed = unsafe {
+            query(std::ptr::null_mut(), /*size*/ 0)
+        };
         if needed == 0 || needed > 32_768 {
             continue;
         }
         let mut buffer = vec![0; needed as usize];
         let length = unsafe { query(buffer.as_mut_ptr(), needed) };
         if length != 0 && length < needed {
-            directories.push(PathBuf::from(OsString::from_wide(&buffer[..length as usize])));
+            directories.push(PathBuf::from(OsString::from_wide(
+                &buffer[..length as usize],
+            )));
         }
     }
     if let Some(path) = std::env::var_os("PATH") {
-        directories.extend(std::env::split_paths(&path).filter(|path| !path.as_os_str().is_empty()));
+        directories
+            .extend(std::env::split_paths(&path).filter(|path| !path.as_os_str().is_empty()));
     }
     for directory in directories {
         let Ok(candidate) = executable_user_path(&directory.join(executable)) else {
@@ -233,7 +255,10 @@ fn executable_user_path(path: &Path) -> io::Result<Vec<u16>> {
 
     let encoded = to_wide(path);
     if encoded[..encoded.len() - 1].contains(&0) {
-        return Err(io::Error::new(io::ErrorKind::InvalidInput, "invalid setup helper executable"));
+        return Err(io::Error::new(
+            io::ErrorKind::InvalidInput,
+            "invalid setup helper executable",
+        ));
     }
     if encoded.len() > 260 {
         return Ok(encoded);
@@ -248,15 +273,23 @@ fn executable_user_path(path: &Path) -> io::Result<Vec<u16>> {
         _ => None,
     };
     if let Some(stripped) = stripped {
-        let absolute = to_wide(std::path::absolute(PathBuf::from(OsString::from_wide(&stripped)))?);
-        return Ok(if absolute[..absolute.len() - 1] == stripped { absolute } else { encoded });
+        let absolute = to_wide(std::path::absolute(PathBuf::from(OsString::from_wide(
+            &stripped,
+        )))?);
+        return Ok(if absolute[..absolute.len() - 1] == stripped {
+            absolute
+        } else {
+            encoded
+        });
     }
     if encoded.starts_with(VERBATIM) || encoded.starts_with(NT) || encoded == [0] {
         return Ok(encoded);
     }
     if encoded.len() < 248 {
         match encoded.as_slice() {
-            [drive, COLON, 0] | [drive, COLON, SEP | ALT, ..] if *drive != SEP && *drive != ALT => return Ok(encoded),
+            [drive, COLON, 0] | [drive, COLON, SEP | ALT, ..] if *drive != SEP && *drive != ALT => {
+                return Ok(encoded);
+            }
             [SEP | ALT, SEP | ALT, ..] => return Ok(encoded),
             _ => {}
         }
