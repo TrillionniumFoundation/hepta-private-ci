@@ -145,6 +145,8 @@ class ContentIdentityTests(unittest.TestCase):
                     }
                 ).encode()
                 launch = {
+                    "exit_code": 0,
+                    "enforced_before_actor_exec": True,
                     "stdout": (ready + b"\n" + wire + b"\n").decode(),
                     "host_exchanges": [
                         {"event_sha256": hashlib.sha256(x).hexdigest()}
@@ -175,6 +177,57 @@ class ContentIdentityTests(unittest.TestCase):
                 )
                 self.assertNotIn("Café", json.dumps(report, ensure_ascii=False))
                 host.meter.finish()
+
+    def test_identity_report_refuses_unqualified_launch_before_positive_selection(self):
+        observation = self.observation()
+        wire = json.dumps(observation, ensure_ascii=False).encode()
+        raw, evaluation, _ = self.evidence(observation)
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "delivery.json").write_bytes(raw)
+            launch = {
+                "exit_code": 0,
+                "enforced_before_actor_exec": True,
+                "stdout": wire.decode() + "\n",
+                "host_exchanges": [
+                    {"event_sha256": hashlib.sha256(wire).hexdigest()}
+                ],
+            }
+
+            def report(candidate):
+                return content_identity_report(
+                    [observation],
+                    [root, root],
+                    [evaluation],
+                    candidate,
+                    evaluator_sha256="d" * 64,
+                    rubric_sha256="e" * 64,
+                )
+
+            result = report(launch)["receipts"][0]
+            self.assertEqual((result["status"], result["selected_used"]), ("complete", True))
+            for update in (
+                {"exit_code": 1},
+                {"exit_code": False},
+                {"exit_code": None},
+                {"enforced_before_actor_exec": False},
+                {"enforced_before_actor_exec": 1},
+                {"enforced_before_actor_exec": None},
+                {"callback_error": {"type": "interrupted"}},
+                {"callback_error": {}},
+                {"protocol_error": "broken wire"},
+                {"limit_reason": "output_limit"},
+            ):
+                with self.subTest(update=update):
+                    with self.assertRaisesRegex(ValueError, "completed isolated actor"):
+                        report({**launch, **update})
+            for missing in ("exit_code", "enforced_before_actor_exec"):
+                with self.subTest(missing=missing):
+                    unqualified = dict(launch)
+                    unqualified.pop(missing)
+                    with self.assertRaisesRegex(ValueError, "completed isolated actor"):
+                        report(unqualified)
+
 
     def test_changed_candidate_payload_delivery_and_scorer_bindings_are_rejected(self):
         for stage in (
