@@ -51,6 +51,9 @@ async fn deferred_training_uses_actual_material_cut_and_original_source_without_
     let fixture = MaterialCommandFixture::new().await?;
     let original_material = fixture.bytes()?;
     let (owner, peers) = support::owner(&fixture, Origin::Fresh)?;
+    let (connection, server) = prebound(
+        Arc::clone(&owner), fixture.config.clone(), Origin::Fresh, None, Duration::from_secs(300),
+    )?;
     let before = fixture.training_bytes()?;
     assert!(before[0].is_empty() && before[2].is_empty());
     assert_eq!(fixture.bytes()?, original_material);
@@ -58,7 +61,7 @@ async fn deferred_training_uses_actual_material_cut_and_original_source_without_
     let cut = complete_material(&fixture).await?;
     assert_eq!(fixture.training_bytes()?, before);
     let context = context(&fixture, &cut);
-    let (client, server) = connected(Arc::clone(&owner), context.clone(), Origin::Fresh, None)?;
+    let client = connection.bind_original_dataset(cut.clone())?;
     assert!(matches!(
         client.readback().await,
         Err(CommandError::ReadbackRequired)
@@ -540,3 +543,6 @@ async fn deferred_training_attenuation_and_prebound_transport_preserve_original_
     assert_eq!(fixture.bytes()?, retained_material);
     Ok(())
 }
+
+#[path = "cell_q24_training_command_connection_tests.rs"]
+mod command_connection;

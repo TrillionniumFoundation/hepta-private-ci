@@ -78,6 +78,8 @@ type Error = OriginalCellQ24MaterialCommandErrorV1;
 pub struct OriginalCellQ24MaterialCommandReceiptV1 {
     snapshot: LearningIterationSnapshotV1,
     evidence: Vec<SignedLearningEvidenceV1>,
+    // Fixed by the original authenticated command context; never sent on wire.
+    original_context: Digest32,
 }
 
 impl OriginalCellQ24MaterialCommandReceiptV1 {
@@ -167,6 +169,7 @@ impl OriginalCellQ24MaterialCommandClientV1 {
         timeout: Duration,
         lifetime: Duration,
     ) -> Result<Self, Error> {
+        let original_context = wire::context_binding(&config, now()?)?;
         Self::bind_original_stream(
             stream,
             peer,
@@ -180,6 +183,7 @@ impl OriginalCellQ24MaterialCommandClientV1 {
                 |(snapshot, evidence)| OriginalCellQ24MaterialCommandReceiptV1 {
                     snapshot,
                     evidence,
+                    original_context,
                 },
             ),
         )
@@ -194,6 +198,7 @@ impl OriginalCellQ24MaterialCommandClientV1 {
         timeout: Duration,
         lifetime: Duration,
     ) -> Result<Self, Error> {
+        let original_context = wire::context_binding(&config, now()?)?;
         Self::bind_original_stream(
             stream,
             peer,
@@ -207,6 +212,7 @@ impl OriginalCellQ24MaterialCommandClientV1 {
                 |(snapshot, evidence)| OriginalCellQ24MaterialCommandReceiptV1 {
                     snapshot,
                     evidence,
+                    original_context,
                 },
             ),
         )

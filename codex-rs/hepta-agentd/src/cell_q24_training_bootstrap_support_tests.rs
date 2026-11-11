@@ -205,3 +205,22 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
         }
     }
 }
+
+
+/// Bind the actual Trainer transport while only the original initial context
+/// exists. Dataset completion cannot restart its session or replace its peer.
+pub(super) fn prebound(
+    owner: Arc<Host>,
+    config: crate::OriginalCellQ24MaterialReceiptConfigV1,
+    origin: Origin,
+    expected: Option<OriginalCellQ24TrainingCommandReceiptV1>,
+    lifetime: Duration,
+) -> anyhow::Result<(crate::OriginalCellQ24TrainingCommandConnectionV1, Server)> {
+    use super::super::super::connection;
+    let (connection, mut channel) = match origin {
+        Origin::Fresh => connection::fresh_peer(config, lifetime)?,
+        Origin::Recovered => connection::recovered_peer(config, expected, lifetime)?,
+    };
+    let server = std::thread::spawn(move || owner.serve_command_channel(&mut channel));
+    Ok((connection, server))
+}

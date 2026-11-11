@@ -139,7 +139,7 @@ fn renew_experience(
     let completed = decode_original_owner_snapshot_v1(&STANDARD_NO_PAD.decode(&*snapshot)?)?;
     anyhow::ensure!(completed.receipts.len() == 1 && evidence.len() == 1);
     let mut receipt = completed.receipts[0].clone();
-    let mut signed = evidence[0].decode()?;
+    let mut signed = evidence.remove(0).decode()?;
     receipt.observed_unix_seconds += 1;
     signed.issued_at += 1;
     signed.expires_at = signed
@@ -159,6 +159,7 @@ fn renew_experience(
     let renewed = OriginalCellQ24MaterialCommandReceiptV1 {
         snapshot: coordinator.snapshot().clone(),
         evidence: vec![signed.clone()],
+        original_context: wire::context_binding(config, now()?)?,
     };
     // This negative is a valid signature, not malformed bytes or a future time.
     assert_eq!(
@@ -166,6 +167,6 @@ fn renew_experience(
         renewed
     );
     *snapshot = STANDARD_NO_PAD.encode(encode_original_owner_snapshot_v1(coordinator.snapshot())?);
-    evidence[0] = super::super::super::evidence_wire::Evidence::from_original(&signed);
+    evidence.push(super::super::super::evidence_wire::Evidence::from_original(&signed));
     Ok(())
 }

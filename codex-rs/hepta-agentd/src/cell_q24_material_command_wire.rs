@@ -271,7 +271,11 @@ pub(super) fn decode_completed(
     authenticate_cut(
         config,
         role,
-        OriginalCellQ24MaterialCommandReceiptV1 { snapshot, evidence },
+        OriginalCellQ24MaterialCommandReceiptV1 {
+            snapshot,
+            evidence,
+            original_context: context_binding(config, at)?,
+        },
         at,
     )
 }
@@ -282,7 +286,10 @@ pub(super) fn authenticate_cut(
     completed: OriginalCellQ24MaterialCommandReceiptV1,
     at: u64,
 ) -> Result<OriginalCellQ24MaterialCommandReceiptV1, Error> {
-    context_binding(config, at)?;
+    let expected_context = context_binding(config, at)?;
+    if completed.original_context != expected_context {
+        return Err(Error::Binding("same original Material configuration and freeze"));
+    }
     let expected = match role {
         Role::Experience => 1,
         Role::Dataset => 2,

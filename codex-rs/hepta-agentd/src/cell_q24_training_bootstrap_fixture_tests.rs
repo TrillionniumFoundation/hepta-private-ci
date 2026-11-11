@@ -87,3 +87,24 @@ impl MaterialCommandFixture {
         ])
     }
 }
+
+
+impl MaterialCommandFixture {
+    pub(crate) fn renewed_material_configuration(&self)
+    -> anyhow::Result<OriginalCellQ24MaterialReceiptConfigV1> {
+        use ed25519_dalek::Signer;
+        let mut config = self.config.clone();
+        config.freeze_evidence.issued_at += 1;
+        config.freeze_evidence.expires_at += 1;
+        config.freeze_evidence.signature = SigningKey::from_bytes(&[3; 32])
+            .sign(&config.freeze_evidence.signing_bytes()).to_bytes();
+        let payload = dataset_freeze_signing_payload_v2(
+            &self.ledger.lock().expect("original fixture ledger").snapshot()?,
+            &config.freeze_plan,
+        )?;
+        config.verifier.verify(
+            LearningEvidenceRoleV1::Evaluator, &config.freeze_evidence, &payload, binding::now()?,
+        )?;
+        Ok(config)
+    }
+}

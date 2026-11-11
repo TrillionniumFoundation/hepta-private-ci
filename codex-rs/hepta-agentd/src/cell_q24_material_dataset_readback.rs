@@ -1,5 +1,7 @@
 //! Irreversible, purpose-fixed attenuation of one original Dataset command.
 //! This consumes the connected client; no caller flag or role tag creates it.
+use codex_hepta_types::Digest32;
+
 use super::Error;
 use super::OriginalCellQ24MaterialCommandClientV1;
 use super::OriginalCellQ24MaterialCommandReceiptV1;
@@ -76,5 +78,29 @@ impl OriginalCellQ24DatasetCommandReadbackV1 {
             return Err(Error::Binding("same attenuated Dataset context"));
         }
         Ok(())
+    }
+}
+
+// These crate-private checks carry the original purpose into the initial
+// Trainer connection. Neither accepts a role selector or an uploaded receipt.
+impl OriginalCellQ24MaterialReceiptConfigV1 {
+    pub(crate) fn require_original_command_initial(&self) -> Result<(Digest32, u64), Error> {
+        let at = now()?;
+        Ok((wire::context_binding(self, at)?, at))
+    }
+}
+
+impl OriginalCellQ24MaterialCommandReceiptV1 {
+    pub(crate) fn require_original_dataset_context(
+        &self,
+        expected: &OriginalCellQ24MaterialReceiptConfigV1,
+    ) -> Result<u64, Error> {
+        let at = now()?;
+        let binding = wire::context_binding(expected, at)?;
+        if self.original_context != binding {
+            return Err(Error::Binding("same originally authenticated Material context"));
+        }
+        wire::authenticate_cut(expected, Role::Dataset, self.clone(), at)?;
+        Ok(at)
     }
 }
