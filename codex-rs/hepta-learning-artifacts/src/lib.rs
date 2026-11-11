@@ -119,6 +119,8 @@ pub use learning_iteration_types::LearningIterationReceiptV1;
 pub use learning_iteration_types::LearningIterationRequestV1;
 pub use learning_iteration_types::LearningIterationSnapshotV1;
 pub use learning_iteration_types::LearningIterationStageV1;
+pub use learning_iteration_types::LearningLocalDecisionV2;
+pub use learning_iteration_types::LearningLocalDispositionV2;
 pub use learning_iteration_types::LearningProposalDispositionV1;
 pub use learning_iteration_types::LearningTrainingNoUpdateReasonV2;
 pub use learning_iteration_types::LearningTrainingNoUpdateV2;

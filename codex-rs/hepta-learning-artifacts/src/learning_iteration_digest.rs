@@ -69,7 +69,16 @@ pub(crate) fn receipt_digest(
 pub fn learning_iteration_receipt_signing_bytes_v1(
     receipt: &LearningIterationReceiptV1,
 ) -> Result<Vec<u8>, LearningIterationError> {
-    let mut bytes = b"hepta.learning.iteration-observation.v1\0".to_vec();
+    // Historical observations retain their exact signing payload. Local policy
+    // is an explicit new namespace, never a reinterpretation of V1 Selection.
+    let mut bytes = if matches!(
+        receipt.observation,
+        LearningIterationObservationV1::LocalDecisionV2(_)
+    ) {
+        b"hepta.learning.iteration-local-decision.v2\0".to_vec()
+    } else {
+        b"hepta.learning.iteration-observation.v1\0".to_vec()
+    };
     append_id(&mut bytes, &receipt.operation_id);
     bytes.extend_from_slice(receipt.predecessor.as_array());
     append_id(&mut bytes, &receipt.actor_id);
@@ -194,6 +203,23 @@ pub fn learning_iteration_receipt_signing_bytes_v1(
             }
             bytes.extend_from_slice(&outcome.steps.to_be_bytes());
             bytes.extend_from_slice(&outcome.milliseconds.to_be_bytes());
+        }
+        LearningIterationObservationV1::LocalDecisionV2(decision) => {
+            bytes.push(9);
+            bytes.push(match decision.disposition {
+                LearningLocalDispositionV2::AdoptCandidate => 0,
+                LearningLocalDispositionV2::DeferCandidate => 1,
+                LearningLocalDispositionV2::RetainParent => 2,
+            });
+            for digest in [
+                decision.proposal_head,
+                decision.candidate_bundle,
+                decision.selected_bundle,
+                decision.policy_digest,
+                decision.reason_digest,
+            ] {
+                bytes.extend_from_slice(digest.as_array());
+            }
         }
     }
     Ok(bytes)

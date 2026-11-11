@@ -2674,7 +2674,7 @@ required_function_order = [
   { function = "fn process_with_deadline(", sequence = ["let timeout_seconds = match &mode", "LearningIterationModeV1::Readback => MAX_READBACK_SECONDS", "LearningIterationModeV1::Submit =>", ".saturating_sub(now_unix_seconds()?)", "if remaining > MAX_ITERATION_SECONDS", "remaining.max(1)", "tokio::time::timeout(Duration::from_secs(timeout_seconds), async", "LearningIterationModeV1::Readback =>", "self.process_readback(state, request, now_unix_seconds)", "LearningIterationModeV1::Submit =>", "self.process(state, request, now_unix_seconds).await", ".map_err(|_| LearningIterationRuntimeErrorV1::CommitUncertain)?"] },
   { function = "fn require_frozen_scope(", sequence = ["self.ports.frozen_scope_binding()", "self.scope.as_ref().map(FrozenLearningScopeV2::binding)", "scope.validate_request(request, &self.owners)?"] },
   { function = "fn process_readback(", sequence = ["self.require_frozen_scope(&request)?", ".restore(&request)", "LearningIterationCoordinatorV1::from_snapshot(snapshot)?", "scope.validate_snapshot(restored.snapshot())?", "authenticate_restored_iteration_v1("] },
-  { function = "fn process(", sequence = ["self.require_frozen_scope(&request)?", "self.ports.restore(&request)", "LearningIterationCoordinatorV1::from_snapshot(snapshot)?", "scope.validate_snapshot(restored.snapshot())?", "authenticate_restored_iteration_v1(", "authenticate_iteration_receipt_v1(", "scope.validate_observation(&receipt.observation)?", "coordinator.record(receipt, clock()?)?", ".checkpoint(previous, coordinator.snapshot())"] },
+  { function = "fn process(", sequence = ["self.require_frozen_scope(&request)?", "self.ports.restore(&request)", "LearningIterationCoordinatorV1::from_snapshot(snapshot)?", "scope.validate_snapshot(restored.snapshot())?", "authenticate_restored_iteration_v1(", "self.ports.execute_stage(", "authenticate_iteration_receipt_v1(", "&receipt,", "scope.validate_observation(&receipt.observation)?", "coordinator.record(receipt, clock()?)?", ".checkpoint(previous, coordinator.snapshot())"] },
 ]
 
 [[boundary]]
@@ -2781,10 +2781,10 @@ forbidden = []
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_codec.rs"
-required = ["const MAGIC: &[u8; 8] = b\"HEPLCP02\"", "const TRAINER_NO_UPDATE_MAGIC: &[u8; 8] = b\"HEPLCP03\"", "w.digest(request.evaluation_profile)?", "evaluation_profile: r.digest()?", "8 if trainer_no_update =>", "snapshot.training_no_update_v2().is_some() != trainer_no_update"]
+required = ["const MAGIC: &[u8; 8] = b\"HEPLCP02\"", "const TRAINER_NO_UPDATE_MAGIC: &[u8; 8] = b\"HEPLCP03\"", "const LOCAL_DECISION_MAGIC: &[u8; 8] = b\"HEPLCP04\"", "w.digest(request.evaluation_profile)?", "evaluation_profile: r.digest()?", "8 if trainer_no_update =>", "9 if local_decision =>", "snapshot.training_no_update_v2().is_some() != trainer_no_update", "snapshot.local_decision_v2().is_some() != local_decision"]
 forbidden = []
 required_function_order = [
-  { function = "fn encode(", sequence = ["w.put(if snapshot.training_no_update_v2().is_some()", "TRAINER_NO_UPDATE_MAGIC", "MAGIC", "w.digest(request.selected_artifact_digest)?", "w.digest(request.evaluation_profile)?", "w.bundle(&request.selected_bundle)?"] },
+  { function = "fn encode(", sequence = ["w.put(if snapshot.local_decision_v2().is_some()", "LOCAL_DECISION_MAGIC", "else if snapshot.training_no_update_v2().is_some()", "TRAINER_NO_UPDATE_MAGIC", "MAGIC", "w.digest(request.selected_artifact_digest)?", "w.digest(request.evaluation_profile)?", "w.bundle(&request.selected_bundle)?"] },
   { function = "fn decode(", sequence = ["let magic = r.take::<8>()?", "let trainer_no_update = &magic == TRAINER_NO_UPDATE_MAGIC", "if &magic != MAGIC && !trainer_no_update", "selected_artifact_digest: r.digest()?", "evaluation_profile: r.digest()?", "selected_bundle: r.bundle()?"] },
 ]
 
@@ -3025,18 +3025,46 @@ required_function_order = [{ function = "fn authenticate_iteration_receipt_at_cl
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/learning_iteration.rs"
-required = ["else if restored.snapshot().training_no_update_v2().is_some()", "self.scope.is_none()", "LearningIterationObservationV1::TrainingNoUpdateV2(_)"]
+required = ["else if restored.snapshot().requires_scoped_owner_v2()", "self.scope.is_none()", "LearningIterationObservationV1::TrainingNoUpdateV2(_)", "LearningIterationObservationV1::LocalDecisionV2(_)"]
 forbidden = []
-required_function_order = [{ function = "fn process_readback(", sequence = ["scope.validate_snapshot(restored.snapshot())?", "else if restored.snapshot().training_no_update_v2().is_some()", "return Err(LearningIterationRuntimeErrorV1::WrongScope)", "authenticate_restored_iteration_v1("] }]
+required_function_order = [
+  { function = "fn process_readback(", sequence = ["scope.validate_snapshot(restored.snapshot())?", "else if restored.snapshot().requires_scoped_owner_v2()", "return Err(LearningIterationRuntimeErrorV1::WrongScope)", "authenticate_restored_iteration_v1("] },
+  { function = "fn process(", sequence = ["while let Some(stage)", "if let Some(decision)", "authenticate_iteration_receipt_v1(", "decision,", "let receipt = if stage", "self.ports.execute_stage("] },
+]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/learning_iteration_checkpoint.rs"
-required = ["else if next.training_no_update_v2().is_some()", "else if snapshot.training_no_update_v2().is_some()"]
+required = ["else if next.requires_scoped_owner_v2()", "else if snapshot.requires_scoped_owner_v2()"]
 forbidden = []
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport.rs"
-required = ["else if snapshot.training_no_update_v2().is_some()"]
+required = ["else if snapshot.requires_scoped_owner_v2()"]
+forbidden = []
+
+# A local decision is an authenticated additional Selector record, not a change
+# to the evaluator's result or to previously signed Selection semantics.
+[[protected_file]]
+path = "codex-rs/hepta-learning-artifacts/src/learning_iteration_types.rs"
+required = ["self.training_no_update_v2().is_some() || self.local_decision_v2().is_some()"]
+forbidden = []
+required_function_order = [{ function = "fn requires_scoped_owner_v2(", sequence = ["self.training_no_update_v2().is_some()", "|| self.local_decision_v2().is_some()"] }]
+
+[[protected_file]]
+path = "codex-rs/hepta-learning-artifacts/src/learning_iteration.rs"
+required = ["decision.proposal_head == self.snapshot.head_digest", "candidate_digest == Some(decision.candidate_bundle)", "!decision.policy_digest.is_zero()", "!decision.reason_digest.is_zero()", "decision.selected_bundle == request.selected_bundle.digest()?", "candidate_digest == Some(decision.selected_bundle)"]
+forbidden = []
+required_function_order = [{ function = "fn validate_observation(", sequence = ["decision.proposal_head == self.snapshot.head_digest", "candidate_digest == Some(decision.candidate_bundle)", "!decision.policy_digest.is_zero()", "!decision.reason_digest.is_zero()", "LearningProposalDispositionV1::UpdateCandidates", "match decision.disposition"] }]
+
+[[protected_file]]
+path = "codex-rs/hepta-learning-artifacts/src/learning_iteration_digest.rs"
+required = ["hepta.learning.iteration-local-decision.v2", "hepta.learning.iteration-observation.v1"]
+forbidden = []
+required_function_order = [{ function = "fn learning_iteration_receipt_signing_bytes_v1(", sequence = ["LearningIterationObservationV1::LocalDecisionV2(_)", "append_id(&mut bytes, &receipt.operation_id)"] }]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/learning_iteration_auth.rs"
+required = ["verify_receipt(ports, verifier, snapshot, decision, clock).await?"]
 forbidden = []
 
 [[boundary]]

@@ -107,6 +107,8 @@ pub fn cell_q24_dataset_run_snapshot_digest_v1(
     ])
 }
 
+/// Retains the original source owner's read capability; each call reads that
+/// owner's current original publication.
 trait OriginalTask: Send + Sync {
     fn read(&self) -> Result<CircuitTaskSourcePublicationV1, Error>;
 }

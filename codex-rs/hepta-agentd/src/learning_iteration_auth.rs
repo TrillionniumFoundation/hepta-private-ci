@@ -70,6 +70,16 @@ async fn authenticate_iteration_receipt_at_clock_v1(
 ) -> Result<(), LearningIterationRuntimeErrorV1> {
     let snapshot = coordinator.snapshot();
     let current = verify_receipt(ports, verifier, snapshot, receipt, clock).await?;
+    // A later publication/use cannot outlive the explicit local decision's
+    // current authorization. Re-read its original signed evidence as well.
+    if let Some(decision) = snapshot.receipts.iter().find(|earlier| {
+        matches!(
+            earlier.observation,
+            codex_hepta_learning_artifacts::LearningIterationObservationV1::LocalDecisionV2(_)
+        )
+    }) {
+        verify_receipt(ports, verifier, snapshot, decision, clock).await?;
+    }
     let independent_stages: &[LearningIterationStageV1] = match receipt.observation.stage() {
         LearningIterationStageV1::Evaluation => &[LearningIterationStageV1::Training],
         LearningIterationStageV1::Selection if snapshot.training_no_update_v2().is_some() => {
@@ -94,6 +104,7 @@ async fn authenticate_iteration_receipt_at_clock_v1(
         let earlier = snapshot
             .receipts
             .iter()
+            .rev()
             .find(|earlier| earlier.observation.stage() == *stage)
             .ok_or(LearningIterationRuntimeErrorV1::Evidence(
                 SignedEvidenceError::ContextMismatch,

@@ -16,6 +16,9 @@ use crate::neuron_generation_current::test_support::request;
 use crate::prepare_agentd_generation_same_model_task_v1;
 use crate::recover_agentd_generation_update_v1;
 
+#[path = "neuron_generation_local_decision_tests.rs"]
+mod local_decision_tests;
+
 fn d(label: &str) -> Digest32 {
     Digest32::of_bytes(label.as_bytes())
 }

@@ -84,10 +84,44 @@ class TrainingNoUpdateSourceClosureTests(unittest.TestCase):
                 "LearningIterationStageV1::Training => LearningEvidenceRoleV1::Generator"),
             (AGENT + "learning_iteration_auth.rs",
                 "verify_signed_actor_separation(&prior, &current, clock()?)"),
-            (AGENT + "learning_iteration.rs", "else if restored.snapshot().training_no_update_v2().is_some()"),
+            (AGENT + "learning_iteration.rs", "else if restored.snapshot().requires_scoped_owner_v2()"),
+            ("codex-rs/hepta-learning-artifacts/src/learning_iteration_types.rs",
+                "self.training_no_update_v2().is_some() || self.local_decision_v2().is_some()"),
         ):
             with self.subTest(path=path, marker=marker):
                 self.rejects(path, marker)
+
+    def test_local_choice_requires_its_own_bound_policy_and_current_selector_evidence(self):
+        artifacts = "codex-rs/hepta-learning-artifacts/src/"
+        for path, markers in (
+            (artifacts + "learning_iteration.rs", (
+                "decision.proposal_head == self.snapshot.head_digest",
+                "candidate_digest == Some(decision.candidate_bundle)",
+                "!decision.policy_digest.is_zero()",
+                "!decision.reason_digest.is_zero()",
+                "decision.selected_bundle == request.selected_bundle.digest()?",
+                "candidate_digest == Some(decision.selected_bundle)",
+            )),
+            (artifacts + "learning_iteration_digest.rs", (
+                "hepta.learning.iteration-local-decision.v2",
+                "hepta.learning.iteration-observation.v1",
+            )),
+            (AGENT + "learning_iteration_auth.rs", (
+                "verify_receipt(ports, verifier, snapshot, decision, clock).await?",
+            )),
+            (AGENT + "learning_iteration.rs", (
+                "if let Some(decision)",
+                "decision,",
+                "&receipt,",
+            )),
+            (AGENT + "learning_iteration_checkpoint_codec.rs", (
+                "9 if local_decision =>",
+                "snapshot.local_decision_v2().is_some() != local_decision",
+            )),
+        ):
+            for marker in markers:
+                with self.subTest(path=path, marker=marker):
+                    self.rejects(path, marker)
 
 
 if __name__ == "__main__":

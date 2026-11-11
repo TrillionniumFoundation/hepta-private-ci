@@ -9,6 +9,9 @@ use crate::learning_iteration_checkpoint::test_support as support;
 
 #[path = "learning_iteration_checkpoint_training_no_update_tests.rs"]
 mod training_no_update_tests;
+
+#[path = "learning_iteration_checkpoint_local_decision_tests.rs"]
+mod local_decision_tests;
 use support::Decision;
 use support::FileCas;
 use support::OWNER;
