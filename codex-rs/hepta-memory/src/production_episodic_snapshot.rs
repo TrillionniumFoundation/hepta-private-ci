@@ -104,9 +104,9 @@ impl Snapshot {
         }
         for record in &body.records {
             for dependency in &record.dependencies {
-                if !by_id
+                if by_id
                     .get(dependency)
-                    .is_some_and(|sequence| *sequence < record.write_sequence)
+                    .is_none_or(|sequence| *sequence >= record.write_sequence)
                 {
                     return Err(invalid("snapshot dependency must be present and earlier"));
                 }
