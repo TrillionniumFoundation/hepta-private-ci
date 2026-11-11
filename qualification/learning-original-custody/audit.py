@@ -218,18 +218,22 @@ def inspect(manifest: Path) -> dict:
         # checking only publication and NextUse would miss a replaced decision.
         if stage in ('selection', 'published_current', 'final_use', 'next_use', 'learning_next_use') and entry.get('bundle_sha256') != chosen:
             fail(f'wrong_consumed_version:{stage}')
-        if stage in ('selection', 'learning_next_use'):
+        if stage in ('selection', 'final_use', 'next_use', 'learning_next_use'):
             selection_digest = entry.get('selection_digest')
             if not isinstance(selection_digest, str) or not HEX64.fullmatch(selection_digest):
                 fail(f'invalid_selection_digest:{stage}')
-            elif stage == 'learning_next_use':
-                # The original coordinator's NextUse must reference the exact
-                # independently selected decision, not just the same bundle.
+            elif stage != 'selection':
+                # FinalUse and the distinct ordinary consumer must reference
+                # the original Selection, not merely the same bundle.
+                # These are still untrusted declarations until owner verification.
                 selection_entry = entries.get('selection')
                 selected_digest = (selection_entry.get('selection_digest')
                                    if isinstance(selection_entry, dict) else None)
                 if selection_digest != selected_digest:
-                    fail('terminal_selection_unbound')
+                    if stage == 'learning_next_use':
+                        fail('terminal_selection_unbound')
+                    else:
+                        fail(f'{stage}_selection_unbound')
 
     # Each admitted attempt must have a terminal or explicitly unresolved
     # record, including failed/cancelled attempts; UNKNOWN is never success.
