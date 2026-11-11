@@ -189,9 +189,7 @@ class ContentIdentityTests(unittest.TestCase):
                 "exit_code": 0,
                 "enforced_before_actor_exec": True,
                 "stdout": wire.decode() + "\n",
-                "host_exchanges": [
-                    {"event_sha256": hashlib.sha256(wire).hexdigest()}
-                ],
+                "host_exchanges": [{"event_sha256": hashlib.sha256(wire).hexdigest()}],
             }
 
             def report(candidate):
@@ -230,7 +228,6 @@ class ContentIdentityTests(unittest.TestCase):
                     with self.assertRaisesRegex(ValueError, "completed isolated actor"):
                         report(unqualified)
 
-
     def repeated_identical_delivery(self, root):
         steps = [self.observation(), self.observation()]
         steps[1]["step"] = 1
@@ -254,8 +251,7 @@ class ContentIdentityTests(unittest.TestCase):
             "enforced_before_actor_exec": True,
             "stdout": "\n".join(event.decode() for event in events) + "\n",
             "host_exchanges": [
-                {"event_sha256": hashlib.sha256(event).hexdigest()}
-                for event in events
+                {"event_sha256": hashlib.sha256(event).hexdigest()} for event in events
             ],
         }
         return steps, snapshots, evaluation, launch
@@ -266,8 +262,12 @@ class ContentIdentityTests(unittest.TestCase):
                 Path(directory)
             )
             report = content_identity_report(
-                steps, snapshots, [final_score], launch,
-                evaluator_sha256="d" * 64, rubric_sha256="e" * 64,
+                steps,
+                snapshots,
+                [final_score],
+                launch,
+                evaluator_sha256="d" * 64,
+                rubric_sha256="e" * 64,
             )
             self.assertEqual(report["complete_count"], 1)
             self.assertEqual(
@@ -284,12 +284,20 @@ class ContentIdentityTests(unittest.TestCase):
             wrong["rubric_sha256"] = "f" * 64
             with self.assertRaisesRegex(ValueError, "External evaluation differs"):
                 content_identity_report(
-                    steps, snapshots, [score, wrong, score], launch,
-                    evaluator_sha256="d" * 64, rubric_sha256="e" * 64,
+                    steps,
+                    snapshots,
+                    [score, wrong, score],
+                    launch,
+                    evaluator_sha256="d" * 64,
+                    rubric_sha256="e" * 64,
                 )
             report = content_identity_report(
-                steps, snapshots, [score, score, score], launch,
-                evaluator_sha256="d" * 64, rubric_sha256="e" * 64,
+                steps,
+                snapshots,
+                [score, score, score],
+                launch,
+                evaluator_sha256="d" * 64,
+                rubric_sha256="e" * 64,
             )
             self.assertEqual(report["complete_count"], 2)
 
@@ -300,8 +308,12 @@ class ContentIdentityTests(unittest.TestCase):
             )
             with self.assertRaisesRegex(ValueError, "Ambiguous evaluator snapshot"):
                 content_identity_report(
-                    steps, snapshots, [score, score], launch,
-                    evaluator_sha256="d" * 64, rubric_sha256="e" * 64,
+                    steps,
+                    snapshots,
+                    [score, score],
+                    launch,
+                    evaluator_sha256="d" * 64,
+                    rubric_sha256="e" * 64,
                 )
 
     def test_changed_candidate_payload_delivery_and_scorer_bindings_are_rejected(self):
