@@ -47,6 +47,16 @@ def _encode(value: object) -> bytes:
         raise EvidenceError("noncanonical JSON value") from exc
 
 
+def _valid_terminal(payload: object) -> None:
+    if type(payload) is not dict:
+        raise EvidenceError("terminal payload is not a builtin dictionary")
+    if type(payload.get("status")) is not str or payload["status"] not in _TERMINALS:
+        raise EvidenceError("terminal has no canonical terminal status")
+    _id(payload.get("native_job_id"))
+    _digest(payload.get("result_sha256"))
+    _digest(payload.get("resource_sha256"))
+
+
 def _load(raw: bytes) -> dict:
     def invalid_constant(value: str) -> None:
         raise EvidenceError("nonfinite JSON constant: " + value)
@@ -182,6 +192,8 @@ def read_receipts(root: Path, *, owner_start_id: str) -> list[dict]:
             raise EvidenceError("wrong owner, sequence, or previous digest")
         _digest(row["prev_sha256"])
         _digest(row["sha256"])
+        if row["event_type"] == "terminal":
+            _valid_terminal(row["payload"])
         base = {key: value for key, value in row.items() if key != "sha256"}
         if _sha(_encode(base)) != row["sha256"]:
             raise EvidenceError("receipt checksum mismatch")
@@ -189,10 +201,10 @@ def read_receipts(root: Path, *, owner_start_id: str) -> list[dict]:
         events.append(row)
     terminals = set()
     for row in events:
+        attempt = row["attempt_id"]
+        if attempt in terminals:
+            raise EvidenceError("event after terminal or duplicate terminal")
         if row["event_type"] == "terminal":
-            attempt = row["attempt_id"]
-            if attempt in terminals:
-                raise EvidenceError("contradictory duplicate terminal")
             terminals.add(attempt)
     return events
 
@@ -206,12 +218,7 @@ def append_receipt(root: Path, *, owner_start_id: str, attempt_id: str,
     if type(payload) is not dict:
         raise EvidenceError("payload must be a builtin dictionary")
     if event_type == "terminal":
-        if (payload.get("status") not in _TERMINALS
-                or not isinstance(payload.get("native_job_id"), str)):
-            raise EvidenceError("terminal requires status and native job ID")
-        _id(payload["native_job_id"])
-        _digest(payload.get("result_sha256"))
-        _digest(payload.get("resource_sha256"))
+        _valid_terminal(payload)
     root = Path(root)
     if root.is_symlink():
         raise EvidenceError("receipts root may not be a symlink")
