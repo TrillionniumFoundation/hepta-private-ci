@@ -1,0 +1,81 @@
+test_duplicate_attempt_consumes_its_allowed_clock_slot (test_review_generation_fence.DuplicateReviewedGenerationTests.test_duplicate_attempt_consumes_its_allowed_clock_slot) ... FAIL
+test_evidence_denied_can_receive_first_review_when_new_evidence_arrives (test_review_generation_fence.DuplicateReviewedGenerationTests.test_evidence_denied_can_receive_first_review_when_new_evidence_arrives) ... FAIL
+test_same_generation_across_separate_lineages_remains_independent (test_review_generation_fence.DuplicateReviewedGenerationTests.test_same_generation_across_separate_lineages_remains_independent) ... ok
+test_same_generation_cannot_be_reviewed_twice_after_clock_gap (test_review_generation_fence.DuplicateReviewedGenerationTests.test_same_generation_cannot_be_reviewed_twice_after_clock_gap) ... FAIL
+
+======================================================================
+FAIL: test_duplicate_attempt_consumes_its_allowed_clock_slot (test_review_generation_fence.DuplicateReviewedGenerationTests.test_duplicate_attempt_consumes_its_allowed_clock_slot)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qq/hpca-neuro4-review-fence-20261111-t5/test_review_generation_fence.py", line 36, in test_duplicate_attempt_consumes_its_allowed_clock_slot
+    self.assertEqual([r["status"] for r in rows],
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                     ["REVIEW_CANDIDATE", "NO_UPDATE", "NO_UPDATE",
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                      "REVIEW_CANDIDATE"])
+                      ^^^^^^^^^^^^^^^^^^^^
+AssertionError: Lists differ: ['REVIEW_CANDIDATE', 'REVIEW_CANDIDATE', 'NO_UPDATE', 'REVIEW_CANDIDATE'] != ['REVIEW_CANDIDATE', 'NO_UPDATE', 'NO_UPDATE', 'REVIEW_CANDIDATE']
+
+First differing element 1:
+'REVIEW_CANDIDATE'
+'NO_UPDATE'
+
+- ['REVIEW_CANDIDATE', 'REVIEW_CANDIDATE', 'NO_UPDATE', 'REVIEW_CANDIDATE']
+?                      --------------------
+
++ ['REVIEW_CANDIDATE', 'NO_UPDATE', 'NO_UPDATE', 'REVIEW_CANDIDATE']
+?                                  +++++++++++++
+
+
+======================================================================
+FAIL: test_evidence_denied_can_receive_first_review_when_new_evidence_arrives (test_review_generation_fence.DuplicateReviewedGenerationTests.test_evidence_denied_can_receive_first_review_when_new_evidence_arrives)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qq/hpca-neuro4-review-fence-20261111-t5/test_review_generation_fence.py", line 28, in test_evidence_denied_can_receive_first_review_when_new_evidence_arrives
+    self.assertEqual([r["status"] for r in rows],
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                     ["NO_UPDATE", "REVIEW_CANDIDATE", "NO_UPDATE",
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                      "REVIEW_CANDIDATE"])
+                      ^^^^^^^^^^^^^^^^^^^^
+AssertionError: Lists differ: ['NO_UPDATE', 'REVIEW_CANDIDATE', 'REVIEW_CANDIDATE', 'REVIEW_CANDIDATE'] != ['NO_UPDATE', 'REVIEW_CANDIDATE', 'NO_UPDATE', 'REVIEW_CANDIDATE']
+
+First differing element 2:
+'REVIEW_CANDIDATE'
+'NO_UPDATE'
+
+- ['NO_UPDATE', 'REVIEW_CANDIDATE', 'REVIEW_CANDIDATE', 'REVIEW_CANDIDATE']
+?                                    ^^^^^^ ^^^^^
+
++ ['NO_UPDATE', 'REVIEW_CANDIDATE', 'NO_UPDATE', 'REVIEW_CANDIDATE']
+?                                    ^^ ^^
+
+
+======================================================================
+FAIL: test_same_generation_cannot_be_reviewed_twice_after_clock_gap (test_review_generation_fence.DuplicateReviewedGenerationTests.test_same_generation_cannot_be_reviewed_twice_after_clock_gap)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qq/hpca-neuro4-review-fence-20261111-t5/test_review_generation_fence.py", line 17, in test_same_generation_cannot_be_reviewed_twice_after_clock_gap
+    self.assertEqual([r["status"] for r in rows],
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                     ["REVIEW_CANDIDATE", "NO_UPDATE", "REVIEW_CANDIDATE"])
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Lists differ: ['REVIEW_CANDIDATE', 'REVIEW_CANDIDATE', 'REVIEW_CANDIDATE'] != ['REVIEW_CANDIDATE', 'NO_UPDATE', 'REVIEW_CANDIDATE']
+
+First differing element 1:
+'REVIEW_CANDIDATE'
+'NO_UPDATE'
+
+- ['REVIEW_CANDIDATE', 'REVIEW_CANDIDATE', 'REVIEW_CANDIDATE']
+?                       ^^^^^^ ^^^^^
+
++ ['REVIEW_CANDIDATE', 'NO_UPDATE', 'REVIEW_CANDIDATE']
+?                       ^^ ^^
+
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.001s
+
+FAILED (failures=3)
+Command exited with non-zero status 1
+RED_COST wall=0.04 user=0.03 sys=0.01 rss_kb=23044 exit=1
