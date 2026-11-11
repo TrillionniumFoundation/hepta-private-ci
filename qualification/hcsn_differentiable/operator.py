@@ -13,13 +13,12 @@ from functools import lru_cache
 import math
 
 import torch
-from torch.autograd.function import once_differentiable
 
 from .contract import FlowReceipt, GridSpec, OperatorTable, PhysicalParameters
 
 
 class _LogNormalCDF(torch.autograd.Function):
-    """Stable Mills-ratio first derivative; higher derivatives unsupported.
+    """Stable Mills-ratio first derivative with differentiable backward.
 
     The formula follows the independently inspected old numerical primitive,
     but this new implementation and its new physical-parameter paths require
@@ -32,7 +31,6 @@ class _LogNormalCDF(torch.autograd.Function):
         return torch.special.log_ndtr(value)
 
     @staticmethod
-    @once_differentiable
     def backward(ctx, upstream):
         value, = ctx.saved_tensors
         negative = value <= 0

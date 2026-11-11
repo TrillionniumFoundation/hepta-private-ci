@@ -1,0 +1,214 @@
+{
+  "comparison_count": 16,
+  "dataset": "8 literal scalar fixtures in code",
+  "dtype": "torch.float64",
+  "elapsed_wall_seconds": 0.23230791185051203,
+  "maximum_scaled_second_derivative_error": 4.9261450690761e-11,
+  "model": null,
+  "mpmath": "1.3.0",
+  "optimizer_steps": 0,
+  "python": "3.12.3",
+  "records": [
+    {
+      "arguments": [
+        0.15,
+        0.1,
+        -0.12,
+        0.35,
+        0.3
+      ],
+      "d2_dmu_dsigma": {
+        "ad": 6.556310283051579,
+        "reference": 6.5563102830515785,
+        "scaled_absolute_error": 1.3546924738997103e-16
+      },
+      "d2_dsigma2": {
+        "ad": -45.88460909141006,
+        "reference": -45.88460909141008,
+        "scaled_absolute_error": 3.0970852746923317e-16
+      },
+      "log_probability": {
+        "ad": -1.6165188296143147,
+        "reference": -1.6165188296143145,
+        "scaled_absolute_error": 1.3735973924783109e-16
+      }
+    },
+    {
+      "arguments": [
+        0.15,
+        0.1,
+        0.0,
+        0.35,
+        0.3
+      ],
+      "d2_dmu_dsigma": {
+        "ad": 6.997084548104958,
+        "reference": 6.997084548104957,
+        "scaled_absolute_error": 1.2693549914880956e-16
+      },
+      "d2_dsigma2": {
+        "ad": -52.825239987236046,
+        "reference": -52.825239987236046,
+        "scaled_absolute_error": 0.0
+      },
+      "log_probability": {
+        "ad": -1.7597928187124614,
+        "reference": -1.7597928187124614,
+        "scaled_absolute_error": 0.0
+      }
+    },
+    {
+      "arguments": [
+        0.15,
+        0.1,
+        0.12,
+        0.35,
+        0.3
+      ],
+      "d2_dmu_dsigma": {
+        "ad": 7.4378588131583365,
+        "reference": 7.437858813158336,
+        "scaled_absolute_error": 1.1941318624236944e-16
+      },
+      "d2_dsigma2": {
+        "ad": -60.278611590368826,
+        "reference": -60.27861159036885,
+        "scaled_absolute_error": 3.536292809406523e-16
+      },
+      "log_probability": {
+        "ad": -1.9103963806347228,
+        "reference": -1.9103963806347226,
+        "scaled_absolute_error": 1.1622959882872986e-16
+      }
+    },
+    {
+      "arguments": [
+        1.0,
+        0.0001,
+        0.2,
+        0.1,
+        0.3
+      ],
+      "d2_dmu_dsigma": {
+        "ad": 2000.0400000467052,
+        "reference": 2000.0399999999993,
+        "scaled_absolute_error": 2.335251472029136e-11
+      },
+      "d2_dsigma2": {
+        "ad": -300012100.13497895,
+        "reference": -300012100.1201999,
+        "scaled_absolute_error": 4.9261450690761e-11
+      },
+      "log_probability": {
+        "ad": -500027.1337776312,
+        "reference": -500027.1337776311,
+        "scaled_absolute_error": 2.328180091896899e-16
+      }
+    },
+    {
+      "arguments": [
+        0.0001,
+        0.01,
+        0.2,
+        0.1,
+        0.3
+      ],
+      "d2_dmu_dsigma": {
+        "ad": 0.2470199928519495,
+        "reference": 0.24701999285195186,
+        "scaled_absolute_error": 2.3592239273284576e-15
+      },
+      "d2_dsigma2": {
+        "ad": -3.0079438156168434,
+        "reference": -3.007943815616854,
+        "scaled_absolute_error": 3.5433311556771165e-15
+      },
+      "log_probability": {
+        "ad": -0.01019270384870119,
+        "reference": -0.010192703848701261,
+        "scaled_absolute_error": 7.112366251504909e-17
+      }
+    },
+    {
+      "arguments": [
+        0.15,
+        0.1,
+        -0.12,
+        0.35,
+        null
+      ],
+      "d2_dmu_dsigma": {
+        "ad": 6.555861467122307,
+        "reference": 6.555861467122304,
+        "scaled_absolute_error": 5.419140865952381e-16
+      },
+      "d2_dsigma2": {
+        "ad": -45.814103262341646,
+        "reference": -45.81410326234164,
+        "scaled_absolute_error": 1.550925774300058e-16
+      },
+      "log_probability": {
+        "ad": -1.5977960666649778,
+        "reference": -1.5977960666649775,
+        "scaled_absolute_error": 1.3896930250210031e-16
+      }
+    },
+    {
+      "arguments": [
+        0.15,
+        0.1,
+        0.0,
+        0.35,
+        null
+      ],
+      "d2_dmu_dsigma": {
+        "ad": 6.997084548104957,
+        "reference": 6.997084548104957,
+        "scaled_absolute_error": 0.0
+      },
+      "d2_dsigma2": {
+        "ad": -52.75467348341671,
+        "reference": -52.754673483416695,
+        "scaled_absolute_error": 2.693762235049972e-16
+      },
+      "log_probability": {
+        "ad": -1.7410617326232156,
+        "reference": -1.7410617326232156,
+        "scaled_absolute_error": 0.0
+      }
+    },
+    {
+      "arguments": [
+        1.0,
+        0.0001,
+        0.2,
+        0.1,
+        null
+      ],
+      "d2_dmu_dsigma": {
+        "ad": 2000.039999901685,
+        "reference": 2000.0399999999993,
+        "scaled_absolute_error": 4.915618232564078e-11
+      },
+      "d2_dsigma2": {
+        "ad": -300012100.1136213,
+        "reference": -300012100.1201999,
+        "scaled_absolute_error": 2.192786306241952e-11
+      },
+      "log_probability": {
+        "ad": -500027.1337476312,
+        "reference": -500027.13374763116,
+        "scaled_absolute_error": 1.164090046018291e-16
+      }
+    }
+  ],
+  "reference_digits": 80,
+  "reference_test_sha256": "644e612bb3e943cc5084a3321664fb1d2b8eb564feffe1856e9801b794c20426",
+  "schema": "hcsn-p1-logrisk-hessian-fixture-v1",
+  "scientific_scope": "8 sampled scalar 80-digit reference F/G log-probability Hessians only; not training posterior/whole network/general numerical certification",
+  "source_sha256": "3db9a92fffc0d465343e598ec725db631e676dee096a2f999593c7a40038e734",
+  "status": "HOLD_NO_GO",
+  "test_sha256": "4e92694deec48092aaa3d82e57cb0df3bad42bb361c4ec0b9feade70d0886f39",
+  "tested_device": "cpu",
+  "torch": "2.8.0+cu128"
+}
