@@ -125,6 +125,7 @@ jobs:
         run: |
           set -euo pipefail
           files=(scripts/ndu_real_runtime/{critic_context,test_critic_context,metacontrol,metacontrol_checkpoint,metacontrol_study,test_metacontrol,test_metacontrol_study,test_metacontrol_context,metacontrol_value_gate,test_metacontrol_value_gate,metacontrol_macro_contract,test_macro_pair_fixtures,test_macro_wire_delivery_admission,test_macro_result_binding,candidate_coverage,test_candidate_coverage,candidate_expansion,test_candidate_expansion,candidate_coverage_legacy,test_candidate_coverage_legacy,candidate_gap_diagnostic,test_candidate_gap_diagnostic}.py)
+          uv run --frozen --project scripts --python 3.12.14 ruff format --diff "${files[@]}" || true
           uv run --frozen --project scripts --python 3.12.14 ruff format --check "${files[@]}"
           uv run --frozen --project scripts --python 3.12.14 ruff check --select E9,F63,F7,F82 "${files[@]}"
           git diff --exit-code
