@@ -225,9 +225,9 @@ mod windows_impl {
             let result = result
                 .and_then(|(exit_code, timed_out)| {
                     runner_process.wait_for_exit(exit_code, || {
-                        cancellation
-                            .as_ref()
-                            .is_some_and(super::super::WindowsSandboxCancellationToken::is_cancelled)
+                        cancellation.as_ref().is_some_and(
+                            super::super::WindowsSandboxCancellationToken::is_cancelled,
+                        )
                     })?;
                     Ok((exit_code, timed_out))
                 })
