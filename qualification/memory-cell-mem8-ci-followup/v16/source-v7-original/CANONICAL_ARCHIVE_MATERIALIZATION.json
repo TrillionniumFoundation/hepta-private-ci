@@ -1,0 +1,22 @@
+{
+  "original_archive": {
+    "path": "mem8-source-gates-v7-records.tar.xz",
+    "members": 375,
+    "bytes": 2012144,
+    "sha256": "06fa853fd3c58a16f64500e24dba64fd481d8a54674eb655ee95d144ab06f8fe",
+    "git_blob": "2792dbcfc4bd7e8469ee14da11521096e358c53e"
+  },
+  "direct_zip_equal_members": 369,
+  "direct_zip_omitted_paths": [
+    "base/.github/fixtures/windows-current-ci-scope.json",
+    "base/.github/workflows/hepta-mem-python.yml",
+    "post-format/.github/fixtures/windows-current-ci-scope.json",
+    "post-format/.github/workflows/hepta-mem-python.yml",
+    "pre-format/.github/fixtures/windows-current-ci-scope.json",
+    "pre-format/.github/workflows/hepta-mem-python.yml"
+  ],
+  "reason": "Original workflow explicitly include-hidden-files:false; exact hidden source bytes remain inside the original tar.xz",
+  "tar_members_materialized": 375,
+  "source_executions": 0,
+  "original_archive_modified": false
+}

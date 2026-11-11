@@ -1,0 +1,72 @@
+{
+  "schema": "mem8.v8.harness.independent-static-peer.v1",
+  "reviewer": "mem_ci_integration",
+  "reviewed_at": "2026-11-11T15:10:44.641765+00:00",
+  "verdict": "NO_STATIC_MUST_FIX",
+  "scope": "Static candidate review only; no source gate/native/model/ref execution",
+  "source_head": "1c063ba9e934f060181d4fc17d724361ba2a37fd",
+  "source_tree": "4e702e173439f422a7d00917d3c94064e42d45aa",
+  "driver": {
+    "bytes": 33587,
+    "sha256": "69bfd08b763db5dd76a8bc66e9698dcc94c35f5638e0230a1a89d1f4d4296bf4",
+    "git_blob": "0eeeabdb6c8604d0f6dcf4613f9586d2363c7fb1"
+  },
+  "workflow": {
+    "bytes": 9721,
+    "sha256": "5c1950f4119e325ba4909b36138dc5bdf21d3f2c0141053562639f55c4e5abe6",
+    "git_blob": "92a1cce46d0540990ac9456c342c9e9057c583f1"
+  },
+  "input": {
+    "bytes": 376112,
+    "sha256": "d99b74ae9c63f632d3beec553884cfabed7fdbc0284609cf61881dc1c1473b9b",
+    "git_blob": "43d97b2f983e8b68b015ff030b8db51f0d2f6ddf"
+  },
+  "golden": {
+    "bytes": 75046,
+    "sha256": "17ac4ede6046ccde7f2a2952d2e3e699ff75258089e195b3783638ac9735fc96",
+    "git_blob": "d783a943bb7278256bc86dc04dfe99d168c7e013"
+  },
+  "independent_checks": {
+    "all_four_output_full_bytes_and_hashes": true,
+    "all_seven_reference_full_bytes_and_hashes": true,
+    "driver_delta_exact_enumerated_substitutions": true,
+    "workflow_delta_exact_identity_namespace_and_depth_only": true,
+    "driver_ast_parse": true,
+    "workflow_yaml_parse": true,
+    "bash_scripts_syntax_checked": 4,
+    "complete_base_merkle": "12159640adcf073b51f3837e75575e11f5c20233",
+    "complete_candidate_merkle": "4e702e173439f422a7d00917d3c94064e42d45aa",
+    "full_tree_entries": 14053,
+    "all_116_source_rows_full_hash_mode_preimage_verified": true,
+    "previous_114_formatted_postimages_byte_identical": true,
+    "rust_source_roots": [
+      "codex-rs"
+    ],
+    "rust_roster_count": 6204,
+    "rust_roster_matches_frozen_full_tree": true,
+    "original_golden_bytes_identical": true,
+    "exact_regression_ids": 18,
+    "rename_inventory": 13,
+    "source_checkout_depth": 10,
+    "harness_checkout_depth": 1
+  },
+  "preserved_contract": [
+    "600-second independent source gate and 20-minute job",
+    "Pure source and harness separation; exact source HEAD/tree/base and two locks",
+    "Pinned tools including DotSlash full binary hash, instructions identity and full tree before/after",
+    "Full caller JSON golden equality except exactly tree-derived rustFilesScanned 6200 to 6204",
+    "Original 18 Python regressions and 13-name rename inventory; no excluded paths",
+    "Failure capture and complete archival; no native or model commands added"
+  ],
+  "limits": [
+    "Runtime harness commit, run/job identity and actual gate result are not yet established by this preparation.",
+    "Inherited driver rename status review_required is not itself acceptance: final original-run verifier must require zero actual old-name hits.",
+    "Static parsing and complete-tree reconstruction are not native compilation or test execution."
+  ],
+  "execution": {
+    "source_gate": 0,
+    "native_tests": 0,
+    "model_requests": 0,
+    "refs_changed": false
+  }
+}
