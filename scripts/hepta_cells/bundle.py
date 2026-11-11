@@ -36,7 +36,7 @@ def digest_bytes(value):
 
 
 def stable_id_bytes(value):
-    if not isinstance(value, str) or not re.fullmatch(r"[A-Za-z0-9._:-]{1,128}", value):
+    if type(value) is not str or not re.fullmatch(r"[A-Za-z0-9._:-]{1,128}", value):
         raise ValueError("invalid native StableId")
     raw = value.encode("ascii")
     return len(raw).to_bytes(4, "big") + raw
