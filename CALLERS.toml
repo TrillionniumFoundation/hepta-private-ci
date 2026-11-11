@@ -5433,7 +5433,7 @@ top_level = ["verify_context(&config, now()?)?","Ok(OriginalCellQ24RemoteMateria
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap.rs"
 required = ["enum Origin {","Fresh,","Recovered,","enum State<","Awaiting(OriginalCellQ24TrainingBootstrapCustodyV1<TW, RW>)","Starting,","Ready(Arc<OriginalCellQ24TrainingCommandOwnerV1<TW, RW>>)","Fenced,","dataset: Arc<OriginalCellQ24DatasetCommandReadbackV1>","state: Mutex<State<TW, RW>>","bootstrap_lane: Semaphore","connections: Arc<Semaphore>"]
-forbidden = ["SigningKey::generate","SigningKey::from_bytes","UnixStream::connect","File::open","OpenOptions",".claim(",".complete(","permit_all","if false","unwrap_or","pub state:","pub dataset:","pub config:","pub generator_key: SigningKey =","fn reset","pub fn ready","DatasetV1","Q24Batch","Vec<i64>","dyn Fn","impl Fn"]
+forbidden = ["SigningKey::generate","SigningKey::from_bytes","UnixStream::connect","File::open","OpenOptions",".claim(",".complete(","permit_all","if false","unwrap_or","pub state:","pub dataset: Arc<OriginalCellQ24DatasetCommandReadbackV1>","pub config:","pub generator_key: SigningKey =","fn reset","pub fn ready","DatasetV1","Q24Batch","Vec<i64>","dyn Fn","impl Fn"]
 
 [[protected_file.required_function_order]]
 function = "fn from_original_custody("
@@ -5473,7 +5473,7 @@ top_level = ["let source_config = OriginalCellQ24TrainingSourceConfigV1 {","let 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_service.rs"
 required = ["OriginalCellQ24TrainingBootstrapOwnerV1<TW, RW>"]
-forbidden = ["SigningKey::generate","SigningKey::from_bytes","UnixStream::connect","File::open","OpenOptions",".claim(",".complete(","permit_all","if false","unwrap_or","State::Awaiting(custody) =","wire::CommandResult::Missing","wire::CommandResult::Pending","SigningKey","LearningIterationSnapshotV1","source: Vec","receipt: Vec","batch:","dyn Fn","impl Fn"]
+forbidden = ["SigningKey::generate","SigningKey::from_bytes","UnixStream::connect","File::open","OpenOptions",".claim(",".complete(","permit_all","if false","unwrap_or","= State::Awaiting(","wire::CommandResult::Missing","wire::CommandResult::Pending","SigningKey","LearningIterationSnapshotV1","source: Vec","receipt: Vec","batch:","dyn Fn","impl Fn"]
 
 [[protected_file.required_function_order]]
 function = "fn serve_commands("

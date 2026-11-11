@@ -294,6 +294,10 @@ class OriginalTrainingBootstrapClosureTests(unittest.TestCase):
                 self.rejects(BUILD, "fn build_original_owner(", marker)
         self.rejects(MAIN, "fn bind_original_custody(", "custody.generator_key.verifying_key().to_bytes() != config.generator.verifying_key")
         self.rejects(MAIN, "fn bind_original_custody(", "LearningEvidenceRoleV1::Generator")
+        source = (ROOT / MAIN).read_text()
+        changed = source.replace("dataset: Arc<OriginalCellQ24DatasetCommandReadbackV1>", "pub dataset: Arc<OriginalCellQ24DatasetCommandReadbackV1>", 1)
+        with self.assertRaises(PROOF.VerificationFailure):
+            self.verifies(MAIN, changed)
 
 
 if __name__ == "__main__":
