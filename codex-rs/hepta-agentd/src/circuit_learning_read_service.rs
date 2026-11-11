@@ -115,13 +115,19 @@ impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOw
     }
 
     pub(super) fn response(&self, bytes: &[u8], request_id: u64) -> Result<Vec<u8>, Error> {
+        #[cfg(test)]
+        let qualification_started = std::time::Instant::now();
         let started_at = now()?;
         let request: wire::Request = serde_json::from_slice(bytes)?;
         request.require_context(&self.context, self.binding, request_id)?;
         if wire::context_binding(&self.context, started_at)? != self.binding {
             return Err(Error::Binding("same original published context"));
         }
+        #[cfg(test)]
+        let qualification_owner_started = std::time::Instant::now();
         let read = self.read_original()?;
+        #[cfg(test)]
+        let qualification_owner_us = qualification_owner_started.elapsed().as_micros();
         let fresh = now()?;
         if fresh < started_at || wire::context_binding(&self.context, fresh)? != self.binding {
             return Err(Error::Binding("original read window after owner I/O"));
@@ -132,6 +138,13 @@ impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOw
         if bytes.is_empty() || bytes.len() > 16_384 {
             return Err(Error::Binding("bounded original published response"));
         }
+        #[cfg(test)]
+        eprintln!(
+            "HEPTA_PUBLISHED_ORIGINAL_READ request_id={request_id} cut_receipts={} owner_io_us={qualification_owner_us} total_handler_us={} bytes={}",
+            self.context.prefix.receipts.len(),
+            qualification_started.elapsed().as_micros(),
+            bytes.len(),
+        );
         Ok(bytes)
     }
 

@@ -98,7 +98,16 @@ pub(crate) fn serve<
     owner: Arc<OriginalCircuitLearningReadOwnerV1<C, S>>,
     mut channel: HostAuthorityPeerChannel,
 ) -> std::thread::JoinHandle<Result<u64, Error>> {
-    std::thread::spawn(move || owner.serve_channel(&mut channel))
+    std::thread::spawn(move || {
+        let started = std::time::Instant::now();
+        let result = owner.serve_channel(&mut channel);
+        eprintln!(
+            "HEPTA_PUBLISHED_SERVER total_us={} result={:?}",
+            started.elapsed().as_micros(),
+            result.as_ref().map(|n| *n).map_err(ToString::to_string),
+        );
+        result
+    })
 }
 
 pub(crate) fn changed_nonce<
