@@ -40,6 +40,9 @@ mod control;
 
 #[path = "state_circuit_task.rs"]
 mod circuit_task;
+#[cfg(target_os = "linux")]
+#[path = "state_retained_learning_source.rs"]
+mod retained_learning_source;
 pub use circuit_task::AgentdCircuitTaskInvocationProviderV1;
 
 #[path = "notes_organ_state.rs"]

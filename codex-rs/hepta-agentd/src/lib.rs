@@ -319,8 +319,6 @@ mod circuit_learning_delivery;
 mod circuit_q24_task_profile;
 mod circuit_task_learning;
 #[cfg(target_os = "linux")]
-mod state_retained_learning_source;
-#[cfg(target_os = "linux")]
 mod production_q24_retained_learning;
 #[cfg(target_os = "linux")]
 mod cell_q24_task_ledger;
