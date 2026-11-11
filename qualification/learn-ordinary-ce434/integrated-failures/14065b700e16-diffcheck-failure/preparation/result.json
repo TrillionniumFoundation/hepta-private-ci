@@ -1,0 +1,69 @@
+{
+  "state": "failed",
+  "fixed_input_sha": "14065b700e160bc3690ffbb5734b6f9af1f7ceb0",
+  "fixed_input_tree": "906e70bf91d330693c3a15b5354f8d6536196d4d",
+  "initial_connection_merge": "8129481a876f22a3a8bc57155e2b2755338393e2",
+  "final_next_use_merge": "14065b700e160bc3690ffbb5734b6f9af1f7ceb0",
+  "expected_native_cases": 109,
+  "expected_owner_groups": 21,
+  "expected_source_controls": 230,
+  "expected_parser_controls": 16,
+  "steps": [
+    {
+      "name": "fetch-fixed",
+      "exit_code": 0,
+      "seconds": 2.6074139999691397,
+      "log_bytes": 144,
+      "log_sha256": "07262377852b45f3c71fe5a27b42802ffd4110873966b7371b9d3cc84cf8c2d9"
+    },
+    {
+      "name": "create-worktree",
+      "exit_code": 0,
+      "seconds": 1.640331455040723,
+      "log_bytes": 1606,
+      "log_sha256": "ab97da3c978b4011185464132079a42efdceb4e9f60262740999ffc7f430074e"
+    },
+    {
+      "name": "format",
+      "exit_code": 0,
+      "seconds": 6.841457223985344,
+      "log_bytes": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "diffcheck-working",
+      "exit_code": 0,
+      "seconds": 0.013818433042615652,
+      "log_bytes": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "merge-canonical",
+      "exit_code": 0,
+      "seconds": 4.977015595883131,
+      "log_bytes": 16922,
+      "log_sha256": "2f5e74b8ef8f1387f5bfe28253af6a59515b525d9f4c85c82224533919cc83bb"
+    },
+    {
+      "name": "diffcheck-full-committed",
+      "exit_code": 2,
+      "seconds": 0.04248717101290822,
+      "log_bytes": 42,
+      "log_sha256": "01e7292ff5e5df5a75e162c8decadd30a2578744a61f9c031b809e7942e181a3"
+    }
+  ],
+  "new_isolated_qualification": true,
+  "prior_private_qualifications": "Not reclassified by this job; prior original evidence and unresolved actions remain separate.",
+  "native_runner_invoked": false,
+  "native_tests_executed": null,
+  "full_chain_acceptance": {
+    "positive": 0,
+    "no_update": 0,
+    "daemon_root_cold_restart": 0
+  },
+  "source_sha": "14065b700e160bc3690ffbb5734b6f9af1f7ceb0",
+  "source_tree": "906e70bf91d330693c3a15b5354f8d6536196d4d",
+  "error": "RuntimeError('diffcheck-full-committed failed')",
+  "source_after": "14065b700e160bc3690ffbb5734b6f9af1f7ceb0",
+  "source_status_after": ""
+}

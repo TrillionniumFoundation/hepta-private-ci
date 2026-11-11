@@ -77,6 +77,39 @@
       ],
       "source_after": "1bcbcb7d43273cc6166ca6865200ddabf1fd07d9",
       "source_status_after": ""
+    },
+    {
+      "sha": "14065b700e160bc3690ffbb5734b6f9af1f7ceb0",
+      "tree": "906e70bf91d330693c3a15b5354f8d6536196d4d",
+      "job_id": "1a1ccc9b900-2564-1075",
+      "request_digest": "016ae80c7c019882973183b2c689d8690647539c1a0d64ecd7950a562ba45a0c",
+      "outer_terminal": "failed",
+      "exit_code": 1,
+      "output_complete": true,
+      "output_durable": true,
+      "terminal_publication_confirmed": true,
+      "timed_out": false,
+      "cancelled": false,
+      "automatic_retry": false,
+      "format_exit_code": 0,
+      "canonical_merge_checks": {
+        "exit_code": 0,
+        "actual_merge_graphs": 8,
+        "protected_full_row_counter": true,
+        "caller_conflicts": "only the reviewed boundary product_callers fields use base-aware set rules"
+      },
+      "committed_diff_check": {
+        "exit_code": 2,
+        "diagnostic": "CALLERS.toml:8120: new blank line at EOF."
+      },
+      "source_tests_executed": 0,
+      "parser_tests_executed": 0,
+      "native_tests_executed": 0,
+      "full_caller_proof": "not reached",
+      "source_after": "14065b700e160bc3690ffbb5734b6f9af1f7ceb0",
+      "source_status_after": "",
+      "correction_source": "7a6c00b8201f685db97ff52bc0b41094b9af1ed2",
+      "correction": "Delete exactly one trailing LF from CALLERS.toml; parsed manifest and all other blobs unchanged."
     }
   ],
   "full_chain_acceptance": {
@@ -182,6 +215,27 @@
       "bytes": 219,
       "sha256": "8158b80614ddd5894b795f715fced65c8dc4383e674a853873a4c2f40d5be47f",
       "original_version": "2050:55116881:219:1794433450765957441:1794433450765957441"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/14065b700e16-diffcheck-failure/preparation/result.json",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/integrated-owners-v7-preparation-v1/result.json",
+      "bytes": 2357,
+      "sha256": "069d450fae6712c09e7b69513b0289d58564164db315d6c26c4a0dbd63f0e31b",
+      "original_version": "2050:55117471:2357:1794437154026248786:1794437154026248786"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/14065b700e16-diffcheck-failure/preparation/diffcheck-full-committed.log",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/integrated-owners-v7-preparation-v1/diffcheck-full-committed.log",
+      "bytes": 42,
+      "sha256": "01e7292ff5e5df5a75e162c8decadd30a2578744a61f9c031b809e7942e181a3",
+      "original_version": "2050:55117467:42:1794437153969907287:1794437153969907287"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/14065b700e16-diffcheck-failure/preparation/merge-canonical.json",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/integrated-owners-v7-preparation-v1/merge-canonical.json",
+      "bytes": 20922,
+      "sha256": "8e752899d9b6d4f8fd95433350c0b194a8305cfafdae6ab8f095355fda10b55d",
+      "original_version": "2050:55117470:20922:1794437153861910580:1794437153861910580"
     }
   ],
   "normalized_observations": [
@@ -192,6 +246,16 @@
       "source_tool": "h_process_status",
       "host": "desktop",
       "job_id": "1a1cc7949e6-2564-f4a",
+      "representation": "normalized_process_status_observation",
+      "normalization": "Parsed the original h_process_status JSON and serialized it with two-space indentation. This is not a raw host file or the original MCP response envelope."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/14065b700e16-diffcheck-failure/terminal-observation.json",
+      "bytes": 1216,
+      "sha256": "1fc65c0d9fc8fb3e99842cdaeeb6d279ffca68947075956adb6557b2c16ee762",
+      "source_tool": "h_process_status",
+      "host": "desktop",
+      "job_id": "1a1ccc9b900-2564-1075",
       "representation": "normalized_process_status_observation",
       "normalization": "Parsed the original h_process_status JSON and serialized it with two-space indentation. This is not a raw host file or the original MCP response envelope."
     }

@@ -22,4 +22,12 @@ FAIL_HEPTA_CALLER_PROOF: learning_original_evaluation_receipt_readback: codex-rs
 
 The native command still has compile exit 101 and **zero executed native tests**. The final preparation record's `rust_executed` flag indicates that the native command was invoked; it does not establish test execution or success. The retained intermediate files have not been replaced or reinterpreted, and later source repairs cannot change either original failure.
 
-Neither qualification establishes an ordinary positive adoption, ordinary NoUpdate/fallback, or genuine daemon plus Root cold restart. Test custody, fixtures, distinct commit results and incomplete/uncertain control-plane actions remain separate.
+## v7: fixed source 14065b700e16
+
+Original process `1a1ccc9b900-2564-1075` finished failed, exit 1, with complete/durable output and confirmed terminal publication; there was no timeout, cancellation or automatic retry. The actual formatter made no source change. All eight original canonical merge-graph checks passed, including the reviewed boundary caller-set conflicts and full protected-row multiplicity.
+
+The next committed-source whitespace gate failed with exit 2. The original 42-byte log reports `CALLERS.toml:8120: new blank line at EOF.` Source QA, parser tests, native helpers/tests and full caller proof were not reached. The complete original preparation result, diff-check log and canonical report are retained with their byte lengths and digests.
+
+The separate exact child `7a6c00b8201f685db97ff52bc0b41094b9af1ed2` removes one final LF only; all parsed CALLERS semantics and every other file blob remain unchanged. It requires its own qualification and does not inherit a test pass from v7.
+
+These qualifications do not establish an ordinary positive adoption, ordinary NoUpdate/fallback, or genuine daemon plus Root cold restart. Test custody, fixtures, distinct commit results and incomplete/uncertain control-plane actions remain separate.
