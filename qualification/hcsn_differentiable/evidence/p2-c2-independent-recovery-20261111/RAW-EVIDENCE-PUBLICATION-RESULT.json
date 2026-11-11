@@ -1,0 +1,101 @@
+{
+  "archive_parts": {
+    "archive_bytes": 4368037,
+    "archive_sha256": "a1f624d88b3e240b3e583987210a1422c47cbab92ecd59beee5a1c6b28b2d92b",
+    "original_archive_name": "original-c2-selected-state.zip",
+    "original_controller_terminal": "unknown",
+    "original_source_file_count": 368,
+    "original_source_uncompressed_bytes": 16003349,
+    "part_order": "Ascending offset, as listed in parts.",
+    "part_size_limit_bytes": 450000,
+    "parts": [
+      {
+        "bytes": 450000,
+        "offset": 0,
+        "path": "original-c2-selected-state.zip.part-00",
+        "sha256": "48a8503a465db553547bdd97b7d2fa8c77ee6d646c1a840eaca611a81e08545d"
+      },
+      {
+        "bytes": 450000,
+        "offset": 450000,
+        "path": "original-c2-selected-state.zip.part-01",
+        "sha256": "eff0a95544930ec610cb77ba600200effb2a7807f2434020b8943f3d866f9827"
+      },
+      {
+        "bytes": 450000,
+        "offset": 900000,
+        "path": "original-c2-selected-state.zip.part-02",
+        "sha256": "3a036268433f5b69763765781fcb527c016301206b0ef6b0f52243ee4a3b0dc0"
+      },
+      {
+        "bytes": 450000,
+        "offset": 1350000,
+        "path": "original-c2-selected-state.zip.part-03",
+        "sha256": "1403830ae742785353587c01b011d7a6c1cc0f8f9a6867e66c2ccd65bf4a794d"
+      },
+      {
+        "bytes": 450000,
+        "offset": 1800000,
+        "path": "original-c2-selected-state.zip.part-04",
+        "sha256": "9f0bfcb8068605adb01183b0cc4a59490990acbe99ef0657256fe9fe4034ca58"
+      },
+      {
+        "bytes": 450000,
+        "offset": 2250000,
+        "path": "original-c2-selected-state.zip.part-05",
+        "sha256": "21f52fb2a7d0a60e13cd6cc1c7a5535024121998cb02a28c3e33999b23228474"
+      },
+      {
+        "bytes": 450000,
+        "offset": 2700000,
+        "path": "original-c2-selected-state.zip.part-06",
+        "sha256": "adea2906f12d91d7ca12978f917c4ad26eeeecc2ad0e230b536898ee8582af38"
+      },
+      {
+        "bytes": 450000,
+        "offset": 3150000,
+        "path": "original-c2-selected-state.zip.part-07",
+        "sha256": "89fdc8c743d8a4dc64a915214648504e04c0268e6360d43b33b41e0619d5a396"
+      },
+      {
+        "bytes": 450000,
+        "offset": 3600000,
+        "path": "original-c2-selected-state.zip.part-08",
+        "sha256": "c25614cb5b74c772ce71fe7632350bcb63108427666ff331a9491559cf284d25"
+      },
+      {
+        "bytes": 318037,
+        "offset": 4050000,
+        "path": "original-c2-selected-state.zip.part-09",
+        "sha256": "8f9ec6a4c7ec9a3acf17faaf9c65a6360e77c54b61847909d3fe665c3002a8da"
+      }
+    ],
+    "qualification": "HOLD_NO_GO",
+    "schema": "hcsn-original-c2-selected-archive-parts-v1",
+    "scope": "Original selected-state bytes only; no training or adoption.",
+    "selected_weights": "Four terminal best checkpoints and two incomplete last checkpoints.",
+    "source_head": "4ed61beacd9e8cf08cd1f7f8c938b75d747149e4"
+  },
+  "base": "4ed61beacd9e8cf08cd1f7f8c938b75d747149e4",
+  "branch": "codex/hcsn-recovery-raw-evidence-20261111-3b20",
+  "commit": "ec4f9297abeeeb59b502547663e67a7c46250cf9",
+  "files": [
+    "qualification/hcsn_differentiable/evidence/p2-c2-independent-recovery-20261111/original-selected-state/ARCHIVE-PARTS.json",
+    "qualification/hcsn_differentiable/evidence/p2-c2-independent-recovery-20261111/original-selected-state/ORIGINAL-SOURCE-MANIFEST.json",
+    "qualification/hcsn_differentiable/evidence/p2-c2-independent-recovery-20261111/original-selected-state/README.md",
+    "qualification/hcsn_differentiable/evidence/p2-c2-independent-recovery-20261111/original-selected-state/original-c2-selected-state.zip.part-00",
+    "qualification/hcsn_differentiable/evidence/p2-c2-independent-recovery-20261111/original-selected-state/original-c2-selected-state.zip.part-01",
+    "qualification/hcsn_differentiable/evidence/p2-c2-independent-recovery-20261111/original-selected-state/original-c2-selected-state.zip.part-02",
+    "qualification/hcsn_differentiable/evidence/p2-c2-independent-recovery-20261111/original-selected-state/original-c2-selected-state.zip.part-03",
+    "qualification/hcsn_differentiable/evidence/p2-c2-independent-recovery-20261111/original-selected-state/original-c2-selected-state.zip.part-04",
+    "qualification/hcsn_differentiable/evidence/p2-c2-independent-recovery-20261111/original-selected-state/original-c2-selected-state.zip.part-05",
+    "qualification/hcsn_differentiable/evidence/p2-c2-independent-recovery-20261111/original-selected-state/original-c2-selected-state.zip.part-06",
+    "qualification/hcsn_differentiable/evidence/p2-c2-independent-recovery-20261111/original-selected-state/original-c2-selected-state.zip.part-07",
+    "qualification/hcsn_differentiable/evidence/p2-c2-independent-recovery-20261111/original-selected-state/original-c2-selected-state.zip.part-08",
+    "qualification/hcsn_differentiable/evidence/p2-c2-independent-recovery-20261111/original-selected-state/original-c2-selected-state.zip.part-09"
+  ],
+  "remote_ref_readback_equal": true,
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "tree": "162720a8b1ee2024444e3d22f6d7715d1211019d",
+  "workspace": "/tmp/hepta-hcsn-raw-evidence-20261111-3b20-640edh5x/repo"
+}
