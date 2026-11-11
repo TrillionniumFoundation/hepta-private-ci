@@ -1,148 +1,186 @@
-"""Synthetic-only contractual negatives, not model or owner experiments."""
-from __future__ import annotations
-
+import unittest
 from dataclasses import replace
 from hashlib import sha256
-import unittest
 
-from factorial import ARMS, FactorialContractError, FactorialRow, factorial_evidence, _holm_p
-
-
-def h(s):
-    return sha256(s.encode()).hexdigest()
+from factorial import (
+    ARMS, ContractError, FactorialTrialRow, _strict_json, evaluate_core_ndu,
+)
 
 
-def panel(count=4, families=("dense_ACT",)):
-    rows = []
-    for seed in range(count):
-        for family in families:
-            for arm in ARMS:
-                rows.append(FactorialRow(
-                    episode_id=f"future-B-{seed}-{family}", seed=seed,
-                    family=family, arm=arm,
-                    workload_digest=h(f"task-{seed}-{family}"),
-                    train_data_digest=h("disjoint-train-A"),
-                    evaluator_digest=h("held-out-B-owner-declaration"),
-                    capacity_contract_digest=h("matched-contract"),
-                    core_model_digest=h("ordinary-core" if arm in "AB" else "hepta-core"),
-                    controller_digest=h("ordinary-control" if arm in "AC" else "NDU-control"),
-                    feedback_contract_digest=h(f"locked-{family}"),
-                    outcome_receipt_digest=h(f"{seed}/{family}/{arm}/outcome"),
-                    query_budget=10, training_budget=200, compute_budget_us=10_000,
-                    feedback_budget_bits=8,
-                    gross_value={"A": 1.0, "B": 2.0, "C": 3.0, "D": 5.0}[arm],
-                    full_cost={"A": 0.1, "B": 0.2, "C": 0.3, "D": 0.4}[arm],
-                    retention_value={"A": 0.95, "B": 0.94, "C": 0.90, "D": 0.88}[arm],
-                    wall_time_us=1000, cpu_time_us=800, gpu_time_us=0,
-                    failed_actions=0, evaluator_independent=False))
-    return rows
+def h(text):
+    return sha256(text.encode("utf-8")).hexdigest()
+
+
+def row(arm, *, seed=0, family="ACT", density="sparse",
+        episode="ep0", gross=None, **changes):
+    value = {"A": 1.0, "B": 2.0, "C": 3.0, "D": 5.0}[arm]
+    base = FactorialTrialRow(
+        episode_id=episode, seed=seed, family=family,
+        feedback_density=density, arm=arm, split="future_B",
+        source_task_digest=h(f"train-A:{seed}:{family}:{episode}"),
+        workload_digest=h(f"future-B:{seed}:{family}:{episode}"),
+        shared_base_digest=h("frozen-base-model"),
+        capacity_envelope_digest=h("registered-equal-opportunity"),
+        evaluator_digest=h("frozen-independent-evaluator-identity-CLAIM"),
+        training_seed_digest=h(f"training-seed:{seed}"),
+        evaluation_seed_digest=h(f"future-eval-seed:{seed}"),
+        feedback_budget_bits=100, query_budget=10, training_budget=20,
+        compute_budget_us=1_000_000, actual_cpu_us=900_000,
+        actual_wall_us=1_100_000, peak_rss_bytes=40_000_000,
+        failed_attempts=0, gross_value=value if gross is None else gross,
+        full_cost=0.2, old_task_score=0.8, ood_score=0.7,
+        evaluator_independent=True,
+        outcome_receipt_digest=h(f"receipt:{seed}:{family}:{density}:{episode}:{arm}"),
+    )
+    return replace(base, **changes)
+
+
+def panel(seeds=2, densities=("sparse", "dense"), episodes=("ep0",)):
+    return [
+        row(arm, seed=seed, density=density, episode=episode)
+        for seed in range(seeds)
+        for density in densities
+        for episode in episodes
+        for arm in ARMS
+    ]
+
+
+def required(densities=("sparse", "dense")):
+    return [("ACT", density) for density in densities]
 
 
 class FactorialPreflightTests(unittest.TestCase):
-    def test_full_cost_contrasts_and_holm(self):
-        result = factorial_evidence(panel())
-        got = result["contrasts"]
-        self.assertEqual(result["seed_clusters"], 4)
-        for name, expected in (('B_minus_A', 0.9), ('D_minus_C', 1.9),
-                               ('D_minus_B', 2.8), ('interaction', 1.0)):
-            self.assertAlmostEqual(got[name]["mean_net_delta"], expected)
-            self.assertEqual(got[name]["one_sided_exact_signflip_p"], 1 / 16)
-            self.assertEqual(got[name]["holm_four_contrasts_p"], 0.25)
-        self.assertEqual(result["authority"], "DENY_ALL")
-        self.assertEqual(result["credential_verification"], "NOT_PERFORMED")
-        self.assertEqual(result["qualification"], "HOLD_NO_GO")
-        self.assertFalse(result["all_evaluator_independence_declared"])
+    def test_four_required_contrasts_include_the_interaction(self):
+        data = evaluate_core_ndu(panel(), required_cells=required())
+        self.assertEqual(data["coverage"]["matched_blocks"], 4)
+        self.assertEqual(data["coverage"]["seed_clusters"], 2)
+        for name, expected in (("B_minus_A", 1), ("D_minus_C", 2),
+                               ("D_minus_B", 3), ("interaction", 1)):
+            self.assertAlmostEqual(data["net_contrasts"][name]["mean"], expected)
+        self.assertEqual(data["research_posture"], "HOLD_NO_GO")
+        self.assertEqual(data["owner_attestation"], "NOT_VERIFIED")
+        self.assertEqual(data["authority"], "DENY_ALL")
+        self.assertAlmostEqual(
+            data["reported_resource_means_by_arm"]["A"]["cpu_us"], 900_000)
 
-    def test_multiple_families_reused_seed_not_double_counted(self):
-        result = factorial_evidence(panel(3, ("dense_ACT", "sparse_CTRL")))
-        self.assertEqual(result["blocks"], 6)
-        self.assertEqual(result["seed_clusters"], 3)
-        self.assertEqual(result["contrasts"]["B_minus_A"]["one_sided_exact_signflip_p"], .125)
+    def test_d_minus_a_alone_cannot_mask_negative_interaction(self):
+        rows = [
+            row(arm, gross={"A": 1, "B": 2, "C": 3, "D": 2}[arm])
+            for arm in ARMS
+        ]
+        data = evaluate_core_ndu(rows, required_cells=required(("sparse",)))
+        self.assertEqual(data["net_contrasts"]["D_minus_B"]["mean"], 0)
+        self.assertAlmostEqual(data["net_contrasts"]["D_minus_C"]["mean"], -1)
+        self.assertAlmostEqual(data["net_contrasts"]["interaction"]["mean"], -2)
 
-    def test_missing_arm_fails_closed(self):
-        with self.assertRaisesRegex(FactorialContractError, "missing"):
-            factorial_evidence(panel(1)[:-1])
+    def test_missing_arm_or_cell_fails_not_as_zero(self):
+        with self.assertRaisesRegex(ContractError, "missing required"):
+            evaluate_core_ndu(panel()[:-1], required_cells=required())
+        with self.assertRaisesRegex(ContractError, "seed missing"):
+            evaluate_core_ndu(panel(densities=("sparse",)), required_cells=required())
+        with self.assertRaisesRegex(ContractError, "unregistered"):
+            evaluate_core_ndu(panel(), required_cells=required(("sparse",)))
 
-    def test_no_duplicate_trial_or_receipt(self):
-        rows = panel(1)
-        with self.assertRaisesRegex(FactorialContractError, "duplicate"):
-            factorial_evidence(rows + [replace(rows[0], outcome_receipt_digest=h("extra"))])
-        rows[1] = replace(rows[1], outcome_receipt_digest=rows[0].outcome_receipt_digest)
-        with self.assertRaisesRegex(FactorialContractError, "reused"):
-            factorial_evidence(rows)
+    def test_same_task_or_seed_cannot_be_called_future_holdout(self):
+        original = panel(seeds=1, densities=("sparse",))
+        for change in (
+            {"workload_digest": original[0].source_task_digest},
+            {"evaluation_seed_digest": original[0].training_seed_digest},
+            {"split": "training_A"},
+        ):
+            mutated = original.copy()
+            mutated[0] = replace(mutated[0], **change)
+            with self.subTest(change=change), self.assertRaises(ContractError):
+                evaluate_core_ndu(mutated, required_cells=required(("sparse",)))
 
-    def test_identity_and_opportunity_must_match(self):
-        variants = {
-            "task": {"workload_digest": h("other")},
-            "train": {"train_data_digest": h("future-B-leak")},
-            "eval": {"evaluator_digest": h("other")},
-            "capacity": {"capacity_contract_digest": h("other")},
-            "feedback": {"feedback_contract_digest": h("other")},
-            "query": {"query_budget": 11},
-            "train_budget": {"training_budget": 201},
-            "compute": {"compute_budget_us": 10001},
-            "label": {"feedback_budget_bits": 9},
-            "core": {"core_model_digest": h("wrong-core")},
-            "controller": {"controller_digest": h("wrong-control")},
-        }
-        for name, mutation in variants.items():
-            with self.subTest(name=name):
-                rows = panel(1)
-                rows[1] = replace(rows[1], **mutation)
-                with self.assertRaises(FactorialContractError):
-                    factorial_evidence(rows)
+    def test_wrong_capacity_task_evaluator_or_opportunity_rejected(self):
+        original = panel(seeds=1, densities=("sparse",))
+        for change in (
+            {"capacity_envelope_digest": h("extra-capacity")},
+            {"evaluator_digest": h("different-evaluator")},
+            {"shared_base_digest": h("different-base")},
+            {"workload_digest": h("different-future-task")},
+            {"query_budget": 11}, {"feedback_budget_bits": 101},
+            {"compute_budget_us": 1_000_001},
+        ):
+            mutated = original.copy()
+            mutated[0] = replace(mutated[0], **change)
+            with self.subTest(change=change), self.assertRaisesRegex(
+                    ContractError, "unmatched"):
+                evaluate_core_ndu(mutated, required_cells=required(("sparse",)))
 
-    def test_missing_outcome_withholds_inference_not_imputed(self):
-        rows = panel(4)
-        rows[3] = replace(rows[3], gross_value=None)
-        got = factorial_evidence(rows)
-        self.assertEqual(got["missing_outcome_blocks"], 1)
-        for result in got["contrasts"].values():
-            self.assertIsNone(result["mean_net_delta"])
-            self.assertIsNone(result["one_sided_exact_signflip_p"])
-            self.assertIsNone(result["holm_four_contrasts_p"])
+    def test_actual_resources_can_differ_but_must_be_present_and_within_budget(self):
+        rows = panel(seeds=1, densities=("sparse",))
+        rows[0] = replace(rows[0], actual_cpu_us=750_000,
+                          failed_attempts=2, full_cost=0.8)
+        data = evaluate_core_ndu(rows, required_cells=required(("sparse",)))
+        self.assertAlmostEqual(data["reported_resource_means_by_arm"]["A"]["cpu_us"],
+                               750_000)
+        self.assertEqual(data["reported_resource_means_by_arm"]["A"]["failed_attempts"], 2)
+        for invalid in ({"actual_cpu_us": 0}, {"peak_rss_bytes": 0},
+                        {"actual_cpu_us": 1_000_001}, {"full_cost": -1},
+                        {"actual_wall_us": False}):
+            bad = rows.copy()
+            bad[0] = replace(rows[0], **invalid)
+            with self.subTest(invalid=invalid), self.assertRaises(ContractError):
+                evaluate_core_ndu(bad, required_cells=required(("sparse",)))
 
-    def test_missing_retention_and_resources_are_explicit(self):
-        rows = panel(1)
-        rows[0] = replace(rows[0], retention_value=None, gpu_time_us=None)
-        got = factorial_evidence(rows)
-        self.assertEqual(got["missing_retention_blocks"], 1)
-        self.assertEqual(got["missing_resource_blocks"], 1)
-        self.assertIsNone(got["contrasts"]["D_minus_B"]["mean_retention_delta"])
-        self.assertIsNone(got["actual_resource_mean_by_arm"]["B"]["cpu_time_us"])
+    def test_independent_and_old_ood_labels_are_not_inferred(self):
+        rows = panel(seeds=1, densities=("sparse",))
+        rows[0] = replace(rows[0], old_task_score=None, ood_score=None,
+                          evaluator_independent=False)
+        report = evaluate_core_ndu(rows, required_cells=required(("sparse",)))
+        self.assertIsNone(report["retention_contrasts"])
+        self.assertIsNone(report["ood_contrasts"])
+        self.assertEqual(report["evaluator_independence"], "MISSING")
+        self.assertEqual(report["research_posture"], "HOLD_NO_GO")
 
-    def test_invalid_values_not_coerced(self):
-        variants = ("seed", "query_budget", "training_budget", "compute_budget_us",
-                    "feedback_budget_bits", "wall_time_us", "cpu_time_us",
-                    "gpu_time_us", "failed_actions")
-        for field in variants:
-            with self.subTest(field=field):
-                rows = panel(1)
-                rows[0] = replace(rows[0], **{field: True})
-                with self.assertRaises(FactorialContractError):
-                    factorial_evidence(rows)
-        for field, value in (("gross_value", float('nan')),
-                             ("full_cost", -1), ("retention_value", float('inf')),
-                             ("evaluator_independent", 'true'),
-                             ("outcome_receipt_digest", 'unverified')):
-            with self.subTest(field=field):
-                rows = panel(1)
-                rows[0] = replace(rows[0], **{field: value})
-                with self.assertRaises(FactorialContractError):
-                    factorial_evidence(rows)
+    def test_duplicate_reused_receipt_and_invalid_hash_rejected(self):
+        rows = panel(seeds=1, densities=("sparse",))
+        rows[0] = replace(rows[0], outcome_receipt_digest=rows[1].outcome_receipt_digest)
+        with self.assertRaisesRegex(ContractError, "reused outcome"):
+            evaluate_core_ndu(rows, required_cells=required(("sparse",)))
+        rows[0] = replace(rows[0], outcome_receipt_digest="a"*64,
+                          shared_base_digest="bad")
+        with self.assertRaisesRegex(ContractError, "digest"):
+            evaluate_core_ndu(rows, required_cells=required(("sparse",)))
 
-    def test_exact_signflip_not_extended_beyond_16_clusters(self):
-        result = factorial_evidence(panel(17))
-        self.assertEqual(result["seed_clusters"], 17)
-        for contrast in result["contrasts"].values():
-            self.assertIsNone(contrast["one_sided_exact_signflip_p"])
-            self.assertIsNone(contrast["holm_four_contrasts_p"])
+    def test_seed_cluster_p_and_holm_adjustment_do_not_create_a_gate(self):
+        report = evaluate_core_ndu(
+            panel(seeds=16, densities=("sparse",)),
+            required_cells=required(("sparse",)),
+        )
+        values = report["net_contrasts"]
+        self.assertAlmostEqual(values["B_minus_A"]["one_sided_signflip_p_unadjusted"],
+                               1 / 65_536)
+        self.assertAlmostEqual(values["B_minus_A"]["holm_p_four_contrasts"],
+                               4 / 65_536)
+        self.assertEqual(report["research_posture"], "HOLD_NO_GO")
+        many = evaluate_core_ndu(panel(seeds=17, densities=("sparse",)),
+                                 required_cells=required(("sparse",)))
+        for x in many["net_contrasts"].values():
+            self.assertIsNone(x["one_sided_signflip_p_unadjusted"])
+            self.assertIsNone(x["holm_p_four_contrasts"])
 
-    def test_holm_stepdown_order_and_monotonicity(self):
-        values = {"a": 0.01, "b": 0.03, "c": 0.02, "d": 0.8}
-        self.assertEqual(_holm_p(values), {"a": .04, "b": .06, "c": .06, "d": .8})
-        self.assertTrue(all(v is None for v in _holm_p({"a": .01, "b": None}).values()))
+    def test_equal_cell_weight_ignores_duplicate_episode_counts(self):
+        rows = panel(seeds=1, episodes=("e0",), densities=("dense", "sparse"))
+        rows += [
+            row(arm, seed=0, density="dense", episode="e1",
+                gross={"A": 1, "B": 11, "C": 3, "D": 5}[arm])
+            for arm in ARMS
+        ]
+        result = evaluate_core_ndu(rows, required_cells=required())
+        # Sparse B-A=1, dense B-A=(1+10)/2=5.5; each cell gets 1/2 weight.
+        self.assertAlmostEqual(result["net_contrasts"]["B_minus_A"]["mean"], 3.25)
+
+    def test_duplicate_json_fields_and_nonfinite_constants_fail_closed(self):
+        with self.assertRaisesRegex(ContractError, "duplicate JSON"):
+            _strict_json('{"arm":"A","arm":"D"}')
+        with self.assertRaisesRegex(ContractError, "nonfinite"):
+            _strict_json('{"v": NaN}')
+        self.assertEqual(_strict_json('{"v": 1}')["v"], 1)
 
 
 if __name__ == "__main__":
     unittest.main()
+
