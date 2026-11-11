@@ -37,13 +37,19 @@ use crate::neuron_generation_update_live::LiveGenerationCurrent;
 mod control;
 #[path = "circuit_feature_current_learning.rs"]
 mod learning;
+#[path = "circuit_feature_learning_source.rs"]
+mod learning_source;
 #[path = "circuit_feature_current_owner.rs"]
 mod owner;
+#[path = "circuit_feature_current_publication.rs"]
+mod publication;
 #[path = "circuit_feature_current_recovery.rs"]
 mod recovery;
 #[path = "circuit_feature_current_retirement.rs"]
 mod retirement;
 pub use control::PublishedCircuitFeatureControlV1;
+pub use learning_source::OriginalCircuitFeatureIngressV1;
+pub use learning_source::OriginalCircuitFeatureLearningSourcesV1;
 pub use owner::PublishedCircuitCellOwnerV1;
 pub use recovery::CircuitFeaturePredecessorFilesV1;
 pub(crate) use recovery::recover_predecessor;

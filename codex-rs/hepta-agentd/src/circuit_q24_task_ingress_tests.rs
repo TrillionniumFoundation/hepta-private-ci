@@ -14,6 +14,8 @@ use crate::neuron_generation_current::test_support::RECORDS;
 
 #[path = "circuit_q24_task_cold_recovery_tests.rs"]
 mod cold_recovery;
+#[path = "circuit_feature_learning_receipt_tests.rs"]
+mod feature_learning;
 #[path = "circuit_q24_task_test_support.rs"]
 mod support;
 #[path = "circuit_q24_task_trained_ingress_tests.rs"]
