@@ -29,9 +29,12 @@
     "A process-local compiler header fix changes the validation environment, not the source or test assertions.",
     "Same-tree validation of a different commit is not described as an exact-head result.",
     "Raw nextest progress and repeated summary lines are deduplicated by case identity; retry attempts are not independent experiments.",
-    "Ordinary provider smoke is not the native model-only inference client or a memory efficacy experiment."
+    "Ordinary provider smoke is not the native model-only inference client or a memory efficacy experiment.",
+    "An admitted fixture model turn is counted separately from scored actor episodes; an unknown physical provider outcome is not zero requests or a successful terminal.",
+    "A failed after-state GET does not replace the original native test failure or settle the original turn.",
+    "Repository-formatting requirements do not imply official upstream byte identity; unsupported rule wording is corrected explicitly."
   ],
-  "checkpoint_utc": "2026-11-11 04:32:18 UTC",
+  "checkpoint_utc": "2026-11-11 05:16:08 UTC",
   "ci_fixture_followup": {
     "actual_failed": 1,
     "actual_passed": 0,
@@ -53,7 +56,23 @@
       "filtered_unselected": 269,
       "head": "cb0b276ffdb9852323cdd13ba9b4399b30ae0c37",
       "job_id": 130284818815,
-      "linux_exact_head_result": "Still zero-test compilation failure before a new attempt; missing Unix proposal_worker.py must be materialized from the same commit.",
+      "linux_exact_head_result": {
+        "status": "ORIGINAL_LINUX_CASE_PASSED",
+        "source": "cb0b276ffdb9852323cdd13ba9b4399b30ae0c37",
+        "tree": "61f266ce7f02e0c3b94c22871ebedcc72f28e456",
+        "actual_passed": 1,
+        "actual_failed": 0,
+        "filtered_unselected": 780,
+        "retries": 0,
+        "nextest_uuid": "62d14f47-4b5f-4427-8adc-de46e43fa154",
+        "raw_bytes": 66447,
+        "raw_sha256": "ef58f77c3896332bb231f668c902db699b752fbae1d22e06f5051e5258fa0752",
+        "archive_blob": "b3d203ccceacba484b044d574f43c94df01d3602",
+        "archive_bytes": 43548,
+        "archive_sha256": "1db67d9a0d23000991bbc2fc65586ca1ad8cf1ba3c414e360a3de5708450759d",
+        "evidence_commit": "b300126864d07ff663397fed0e568f5957bc9c00",
+        "root_full_readback": true
+      },
       "linux_original_case_first_attempt": {
         "executed_cases": 0,
         "exit_code": 101,
@@ -125,6 +144,16 @@
       "id": "EPISODIC-INGRESS-PATH-ISOLATION-F2",
       "scope": "Five groups: 11 test executions, 10 distinct IDs across feature variants; fmt, real CLI and two clean scoped fixes. No new model episode or global tool/host isolation claim.",
       "status": "PASSED_FOCUSED_NATIVE_EXACT_SOURCE"
+    },
+    {
+      "id": "LINUX-ORIGINAL-SIGNED-CREDIT-CASE",
+      "status": "PASSED_PUBLISHED_AND_ROOT_READ_BACK",
+      "scope": "One exact cb0b original case, 1/0, 780 unselected, zero retries; no whole Linux CI claim."
+    },
+    {
+      "id": "MATRIX-ORIGINAL-FULL-CONSUMER-SUITE",
+      "status": "PASSED_PUBLISHED_AND_ROOT_READ_BACK",
+      "scope": "Exact f1fd original 30 selected cases, 0 failures, zero retries; two ignored/unselected not credited, unchanged SDK/test/5s/cryptography, scoped fix clean. Whole-repository and cross-version migration remain unqualified."
     }
   ],
   "common_source": {
@@ -167,11 +196,49 @@
       "bazel_lock_update": "PASSED_UNCHANGED_LOCK",
       "changes": "Optimize locked sha2 0.11.1 in Cargo dev profile; mirror encryption and sha2 optimization in Bazel annotations. Original SDK/test bytes, five-second deadline and full-strength cryptography retained.",
       "format_and_locked_metadata": "PASSED",
-      "full_matrix_30_case_command": "RUNNING_NO_TERMINAL_RESULT",
+      "full_matrix_30_case_command": "PASSED_ORIGINAL_30_CASES_SCOPED_FIX_CLEAN",
       "head": "f1fd544b3e12ed6aca83872cdeda8114a1e058c0",
       "new_model_calls": 0,
       "parent": "dc96a441312e239c165c1642880084dfeccc2c71",
-      "tree": "fff40d06312d4f6a185772cd8a62a618d55f31cf"
+      "tree": "fff40d06312d4f6a185772cd8a62a618d55f31cf",
+      "actual_passed": 30,
+      "actual_failed": 0,
+      "selected_skipped": 0,
+      "filtered_or_ignored_unselected": 2,
+      "retries": 0,
+      "nextest_uuid": "0b047180-e052-4017-b937-d88ca1387275",
+      "native_finished_at": "2026-11-11T04:52:50.842017+00:00",
+      "scoped_fix_finished_at": "2026-11-11T04:56:35.707316+00:00",
+      "raw_bytes": 29683,
+      "raw_sha256": "b7975bf1e79fbd83f94aac2cd64018462bacfc487fb894f6a2b6e89f73ea2a9d",
+      "native_archive": {
+        "path": "/home/qian-qi/mem8-matrix-production-profile-ed353817-v4/MATRIX_V4_FULL_EVIDENCE.tar.xz",
+        "bytes": 13328,
+        "sha256": "0b6110c470e4cce9489d3d1ab9fba6f86d9a86132304835f462d25a5fa6a27ed",
+        "git_blob": "3ce139f218c320a95d40605d3ed92e5929ddaa11",
+        "members": 23,
+        "full_remote_readback": true
+      },
+      "source_archive": {
+        "path": "/home/qian-qi/mem8-matrix-production-profile-ed353817-v4/MATRIX_F1FD_FULL_SOURCE.tar.xz",
+        "bytes": 367532,
+        "sha256": "994951bca6658bbb592f320a3db112f0f1a27df652d2d22ae6e9284aaf363ec6",
+        "git_blob": "bf01e84cb6bd204837177f4c9c502a01bcacef2f",
+        "members": 68,
+        "full_remote_readback": true
+      },
+      "source_postimages": 65,
+      "root_complete_readback": true,
+      "evidence_commit": "26467689b04bd183fef2dc347fdd085fcde6d41e",
+      "source_commit_publication": "LOCAL_ONLY_AT_CHECKPOINT_SEPARATE_PUBLICATION_IN_PROGRESS",
+      "prior_v3": {
+        "status": "COMPILE_TIMEOUT_ZERO_EXECUTED_TESTS",
+        "outer_timeout_seconds": 1200,
+        "old_junit_not_credited": true,
+        "archive_blob": "1fc0b378442da2e395bef2adc434c3126fcb5af8"
+      },
+      "cross_version_migration_qualified": false,
+      "whole_repository_ci_qualified": false
     },
     "matrix_sha2_profile_diagnostic": {
       "failed": 0,
@@ -193,9 +260,33 @@
       "request_id": "mem8-rmcp-same-source-cli-v3-ed353817",
       "retries": 0,
       "source": "dc96a441312e239c165c1642880084dfeccc2c71",
-      "status": "REAL_SAME_SOURCE_CLI_LINK_IN_PROGRESS_NO_TEST_RESULT"
+      "status": "THREE_ORIGINAL_FAILURES_PASSED_SAME_SOURCE_REAL_CLI",
+      "finished_at": "2026-11-11T04:46:09.965870+00:00",
+      "actual_passed": 3,
+      "actual_failed": 0,
+      "selected_skipped": 0,
+      "nextest_uuid": "a1810c8c-3ac2-4b4a-ad7c-f9a3d394437e",
+      "raw_bytes": 21220,
+      "raw_sha256": "a41a2250c7e058e05a3a159bd5772aa40268750e35cba4fd556bd6ad23343803",
+      "real_cli": {
+        "bytes": 1440710248,
+        "sha256": "67e70ed6924951714423b3b2760531a7416f9489f3850e2830ff0da938f5f7d9",
+        "before_after_match": true
+      },
+      "complete_raw_archive_root_readback": "PENDING",
+      "limit": "Original dc96 suite remains 265/3; this is a separate 3/0 recheck, not one 268/0 execution. No f1fd exact-head RMCP result is transferred."
     },
-    "scope": "Full retained raw logs and actual JUnit; filtered/ignored tests are not passing executions."
+    "scope": "Full retained raw logs and actual JUnit; filtered/ignored tests are not passing executions.",
+    "sqlx_provenance": {
+      "official_archive_sha256": "488e99c397a62007e4229aec669a179816339afc6d2620ca6fa420dbee2e982c",
+      "candidate_files": 57,
+      "rust_byte_changed": 44,
+      "rust_byte_equal": 7,
+      "manifest_changed": 2,
+      "other_byte_equal": 4,
+      "unsupported_repository_rule_withdrawn": "Earlier README's unreferenced exact-upstream-byte-preservation condition is not an identified repository requirement. Frozen AGENTS and formatter instead require scoped formatting. Original evidence preserved; explicit erratum added separately.",
+      "byte_identity_not_claimed": true
+    }
   },
   "historical_results_unchanged": {
     "retention_initial_noops_per_arm": 16,
@@ -646,12 +737,13 @@
       "status": "NATIVE_FIXTURE_BRIDGE_PASSED_ORIGINAL_DEPLOYED_BINDING_OPEN"
     },
     {
-      "finding": "The original retained-fixture 55951 smoke driver is still before its first observed provider turn while prerequisite native compilation proceeds. Existing GET-only route observations are retained. No model result or original production owner binding is inferred.",
+      "finding": "The 55951 ordinary fixture turn was admitted inProgress, then its 20-second completion wait failed. The after-GET returned 502. Original thread/turn and retained files remain the only reconciliation identity; remote model outcome is unknown. G is a separate prepared native memory-path fixture and has no provider result.",
       "id": "PROVIDER-RUNTIME-BINDING",
-      "status": "EXISTING_ROUTE_OBSERVED_RETAINED_OWNER_SMOKE_PREPARED"
+      "status": "ORIGINAL_TURN_ADMITTED_COMPLETION_TIMEOUT_TERMINAL_UNKNOWN",
+      "closure": "Reconcile the exact original thread/turn, establish a current provider route binding, then qualify the intended native memory path with independently identified evidence."
     },
     {
-      "finding": "Fresh-process fixture delivery uses zero model calls. Historical working-state and selector experiments do not establish episodic successor benefit.",
+      "finding": "Historical fresh-process mechanism fixtures used zero models. One ordinary provider fixture turn is now admitted with unknown outcome and is not a scored memory-benefit episode. No unseen episodic successor advantage has been measured.",
       "id": "UNSEEN-EPISODIC-BENEFIT",
       "status": "NOT_EVALUATED"
     },
@@ -681,9 +773,9 @@
       "status": "NOT_QUALIFIED"
     },
     {
-      "finding": "Exact common-source MEM, Source A, complete 66f owner CI and original Windows signed-credit case passed. F2 focused host qualification also passed. The dc96 dependency consumer failures remain historical observations; real same-source CLI RMCP repair and full production Matrix profile validation are running. Whole-repository CI remains open.",
+      "finding": "Exact common MEM, Source A, complete 66f owner CI, original Windows and Linux signed-credit cases, and F2 focused host qualification passed. Exact f1fd full Matrix 30/0 with clean fix is published and independently read back. Three original dc96 RMCP failures passed with same-source CLI; full exact f1fd RMCP and broader repository CI are not yet qualified.",
       "id": "HOSTED-CI",
-      "status": "MEM_OWNER_AND_WINDOWS_ORIGINAL_CASE_PASSED_REPOSITORY_CONSUMERS_OPEN"
+      "status": "MEM_OWNER_WINDOWS_LINUX_MATRIX_PASSED_REPOSITORY_WIDE_CI_OPEN"
     }
   ],
   "owner_stages": {
@@ -746,13 +838,37 @@
         "stage": "D3",
         "tree": "24bea5bc952f3bab7f9180ce7b340e22794e63ad"
       }
-    ]
+    ],
+    "final_review_stack": {
+      "base": "ad5a4ed6d40a2eceac189afaced5d93137724a52",
+      "target": "0c32926cfec58d986477fc72ba3a4787ab75fde9",
+      "stages": [
+        "B",
+        "C",
+        "D1",
+        "D2",
+        "D3",
+        "E",
+        "F1",
+        "F2"
+      ],
+      "archive_blob": "6c32707ad81c4bab44ebe6e195e9aab89317b5f1",
+      "archive_bytes": 151304,
+      "archive_sha256": "1be849cdf5e2854a57e4f4f352505146dfc57086d69abbc2e4ceb40c681125dd",
+      "members": 130,
+      "root_complete_tree_matches": {
+        "E": "8eaee893e1e6e43423f288fc654e05c3c95f6179",
+        "F1": "613069bac3f5c66d14b9eca452eaec517569a32a",
+        "F2": "0d5aa1544aad103f9099c7c8347d8075d6ecc76e"
+      },
+      "qualification_not_transferred_to_intermediate_stages": true
+    }
   },
   "predecessor": {
     "path": "qualification/memory-cell-mem7/read-freshness-20261110/BLOCKERS.json",
     "source_commit": "adef61556284cc5b58c4f23a33d7c8455e821c3f"
   },
-  "previous_checkpoint": "e6f74295e97a274802995b8caa01bccca851528f",
+  "previous_checkpoint": "6c47d1f6c82fd5fd2baf53b0d1dedbdcd6472874",
   "production_adoption": false,
   "provider_readonly_observation": {
     "base_url": "http://127.0.0.1:18083/v1",
@@ -820,17 +936,45 @@
     "credential_values_exported": false,
     "format_clean": true,
     "head": "55951ed9094ae894f0256a3461fd9504ef060473",
-    "last_observed_progress": "Linux original signed-credit case compilation; no provider POST/thread/turn observed at 04:29:20 UTC.",
+    "last_observed_progress": "Original turn/start was admitted inProgress; the 20-second completion wait failed. Native receipt is terminal failed, but the model/provider outcome is unknown. After-state GET returned HTTP 502.",
     "pr": 5908,
     "real_model_results": 0,
     "request_id": "mem8-native-provider-qualified-v1-ed353817",
     "retained_fixture_home": true,
     "same_tree_formatter_head": "c7650e78c5ed379f544f094612f2f4bf4e78ae53",
     "session_id": "dpty-3487d5f846e4631ca4ab45ad4bee36dce74a07d94e5fa0b88ef695cbdd8e5b3f",
-    "status": "ORIGINAL_SEQUENTIAL_DRIVER_RUNNING_BEFORE_FIRST_OBSERVED_TURN",
+    "status": "ORIGINAL_TURN_ADMITTED_COMPLETION_WAIT_FAILED_TERMINAL_UNKNOWN",
     "tree": "2ca6930d8abd148fe26fbe7d2857c760daa9316b",
     "unbounded_connection_retries_disabled": true,
-    "unknown_ack_rule": "Reconcile original thread/turn/owner identity; do not create a fresh request to hide an unknown result."
+    "unknown_ack_rule": "Reconcile original thread/turn/owner identity; do not create a fresh request to hide an unknown result.",
+    "native_started_at": "2026-11-11T04:46:25.815303+00:00",
+    "native_finished_at": "2026-11-11T04:48:18.963664+00:00",
+    "native_passed": 0,
+    "native_failed": 1,
+    "filtered_unselected": 12,
+    "native_exit_code": 100,
+    "outer_native_timeout": false,
+    "nextest_uuid": "20e63f6c-6648-4068-9b54-51f828fd99cc",
+    "thread_id": "01a1c8ef-125f-75ae-aaf1-0fe5a4c079f6",
+    "turn_id": "01a1c8ef-1fbd-75b0-bc6e-2b22a1f1f596",
+    "requested_client_user_message_id": "qualification-e2e-message:Integer(2)",
+    "client_message_id_server_echo_observed": false,
+    "retained_fixture_root": "/tmp/.tmpr79GeL",
+    "retained_directory_mode": "0700",
+    "raw_bytes": 27725,
+    "raw_sha256": "7fa0b7a888df1bdb1410c59072f718571ffbb602f3226dfb6a2eec976e915823",
+    "observed_phases": 5,
+    "expected_phases": 7,
+    "logical_turns_admitted": 1,
+    "observed_model_terminals": 0,
+    "physical_provider_requests": null,
+    "provider_final_outcome": "UNKNOWN",
+    "after_gateway_http_status": 502,
+    "after_gateway_config_invariant_verified": false,
+    "ordinary_smoke_has_native_durable_journal": false,
+    "recovered_result_is_new_observation_not_original_receipt": true,
+    "diagnostic_driver_patch": "Proposed only: retain after-GET exception separately so it does not mask the original native failure. Not applied to the original driver; no rerun.",
+    "private_owner_state_exported": false
   },
   "runtime_transport": {
     "ai395_original_request": {
@@ -867,5 +1011,44 @@
     "source_commit": "5496ff0cf33c116f8b8d458e821b42c71c9ffa67",
     "stage": "E",
     "status": "EXPLICIT_SOURCE_READ_AND_OWNER_DRAIN_PASSED_EXACT_66F"
+  },
+  "new_scored_memory_actor_episodes": 0,
+  "logical_provider_turns_admitted": 1,
+  "physical_provider_requests": null,
+  "original_deployment_binding": {
+    "status": "ORIGINAL_DEPLOYMENT_INPUTS_NOT_AUTHENTICATED",
+    "immutable_review_commit": "eb3616fdce370fc6bd23a6ddf17cd94265a5bcd3",
+    "archive_blob": "67f3a6846b1be85c9602f1e577284303fd1ac288",
+    "archive_bytes": 14348,
+    "archive_sha256": "b802bfff4768d1d6e56c29b649aa3e3ee84e9f3cd254e5381965b53ec07ac5df",
+    "public_roles_all_test_only": true,
+    "public_roles_observed_at": "2026-11-11T04:40:48Z",
+    "last_startup_release": false,
+    "last_startup_timestamp_observed": null,
+    "scope": "Bounded read-only inspected paths; not a global absence proof. No private credentials exported, no independent production identity created.",
+    "required_inputs": [
+      "Original diagnose-native config, registration, native-profile descriptors and original preheld owner pidfd",
+      "Original private writer/current cut and authenticated episodic source verifier/adapter",
+      "Original provider route descriptor and original request reconciliation evidence",
+      "Independent final-use authority and original external-effect/outbox/destination state"
+    ]
+  },
+  "g_native_context_followup": {
+    "pr": 5926,
+    "head": "9d9bdfbaeeec3c618f3fc80e2f663a29c13f4b27",
+    "tree": "07192603a5164f4b5d4da24e37595be2a0a04777",
+    "parent": "0c32926cfec58d986477fc72ba3a4787ab75fde9",
+    "status": "PUBLISHED_FORMATTED_SOURCE_ZERO_MODEL_NATIVE_PREPARATION",
+    "formatted_source_capsule_sha256": "5cb33e3183ba2e5175751f57f6b115021ced43a6f9c3b545f8f3b795c9c6f964",
+    "full_four_postimages_readback": true,
+    "independent_static_review": "NO_MUST_FIX_IDENTIFIED_NOT_COMPILATION",
+    "new_ignored_case": "production_composition::tests::episodic_control::provider::episodic_real_provider_fresh_context_smoke",
+    "actual_provider_case_executed": false,
+    "actual_g_native_result": null,
+    "existing_six_cases_only_planned": true,
+    "independent_new_run_budget_minutes": 45,
+    "old_owner_deadline_not_reset": true,
+    "fixture_only": true,
+    "unseen_benefit_evaluated": false
   }
 }

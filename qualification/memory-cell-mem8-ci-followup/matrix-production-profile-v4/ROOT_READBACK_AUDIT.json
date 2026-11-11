@@ -1,0 +1,80 @@
+{
+  "schema": "hepta.mem8.matrix.root-readback-audit.v1",
+  "immutable_evidence_commit": "beed73b97df9797b1475deed6e460d5e551fa12f",
+  "source": {
+    "bazel_lock_sha256": "783b3ad329fa53bd4a0e48be6907d38259fa2880d61bd1994b863d7f78bbca57",
+    "cargo_lock_sha256": "98b3767c6e74bf6eeb5894db760259dbc400cbfd0685af8ad915c92d25408d69",
+    "dirty": false,
+    "head": "f1fd544b3e12ed6aca83872cdeda8114a1e058c0",
+    "tree": "fff40d06312d4f6a185772cd8a62a618d55f31cf"
+  },
+  "archives": [
+    {
+      "kind": "native",
+      "archive_bytes": 13328,
+      "archive_sha256": "0b6110c470e4cce9489d3d1ab9fba6f86d9a86132304835f462d25a5fa6a27ed",
+      "git_blob": "3ce139f218c320a95d40605d3ed92e5929ddaa11",
+      "complete_members": 23,
+      "member_hashes_verified": 22
+    },
+    {
+      "kind": "source",
+      "archive_bytes": 367532,
+      "archive_sha256": "994951bca6658bbb592f320a3db112f0f1a27df652d2d22ae6e9284aaf363ec6",
+      "git_blob": "bf01e84cb6bd204837177f4c9c502a01bcacef2f",
+      "complete_members": 68,
+      "member_hashes_verified": 67
+    }
+  ],
+  "native_receipts": [
+    {
+      "phase": "matrix-consumers",
+      "bytes": 29683,
+      "sha256": "b7975bf1e79fbd83f94aac2cd64018462bacfc487fb894f6a2b6e89f73ea2a9d",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-matrix-sdk",
+        "--test-threads",
+        "2",
+        "--no-tests",
+        "fail",
+        "--retries",
+        "0"
+      ],
+      "started_at": "2026-11-11T04:48:12.118583+00:00",
+      "finished_at": "2026-11-11T04:52:50.842017+00:00"
+    },
+    {
+      "phase": "matrix-scoped-fix",
+      "bytes": 24433,
+      "sha256": "98d898b7a7d5e2bdb73eefe1947025b3834347b936c2613f5c3262e86a6b3299",
+      "command": [
+        "just",
+        "fix",
+        "-p",
+        "codex-hepta-matrix-sdk"
+      ],
+      "started_at": "2026-11-11T04:52:51.063229+00:00",
+      "finished_at": "2026-11-11T04:56:35.707316+00:00"
+    }
+  ],
+  "raw_case_ids_equal_junit_and_original_expected": true,
+  "nextest_uuid": "0b047180-e052-4017-b937-d88ca1387275",
+  "actual_passed": 30,
+  "actual_failed": 0,
+  "actual_selected_skipped": 0,
+  "filtered_or_ignored_unselected": 2,
+  "retries_observed": 0,
+  "preexisting_junit_credited": false,
+  "complete_changed_source_postimages_verified": 65,
+  "source_git_modes_not_reconstructed_from_archive": true,
+  "scoped_fix_clean": true,
+  "model_calls": 0,
+  "new_native_execution": false,
+  "whole_repository_ci_qualified": false,
+  "cross_version_migration_qualified": false,
+  "passed": true
+}

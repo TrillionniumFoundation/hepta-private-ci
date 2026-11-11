@@ -146,6 +146,14 @@
       "path": "native-attempts/mem-native-f2-0c32926-focused-evidence.tar.xz",
       "scope": "Five groups have 11 executions and 10 distinct test IDs; one profile case also runs under qualification-cognitive-write. These are fixture/path tests, not actor tasks. Unchanged memory/protocol packages were not rerun on F2.",
       "sha256": "9bc850cac9f4777281f4898a7e89c7bee0f96d611043522eeca546002a2ddfca"
+    },
+    {
+      "path": "review-stack-final/REVIEW_STACK.tar.xz",
+      "bytes": 151304,
+      "sha256": "1be849cdf5e2854a57e4f4f352505146dfc57086d69abbc2e4ceb40c681125dd",
+      "git_blob_sha": "6c32707ad81c4bab44ebe6e195e9aab89317b5f1",
+      "members": 130,
+      "scope": "Final source-only review stages and retained exact native references; no qualification transfer."
     }
   ],
   "audits": [
@@ -168,10 +176,15 @@
     {
       "git_blob_sha": "8d00638ff300a9d485af92e0034ce126bb79b4a2",
       "path": "native-attempts/F2_NATIVE_AUDIT.json"
+    },
+    {
+      "path": "review-stack-final/ROOT_FULL_TREE_AUDIT.json",
+      "git_blob_sha": "4ab58dd299c462b27d487f2a9bc526cc5b21c239",
+      "scope": "Three independently reconstructed complete Git trees; no new native execution."
     }
   ],
-  "checkpoint_utc": "2026-11-11 04:32:18 UTC",
-  "ci_evidence_parent": "5ddc248b7e46214da728b44496d66c2e7ae3f62d",
+  "checkpoint_utc": "2026-11-11 05:16:08 UTC",
+  "ci_evidence_parent": "26467689b04bd183fef2dc347fdd085fcde6d41e",
   "closed_original_blockers": [
     "MEM6-CLOUD-AND-GITHUB-RAW-COPY"
   ],
@@ -180,7 +193,15 @@
     "F2_executions": 11,
     "new_actor_episodes": 0,
     "owner_ai395": 32,
-    "owner_github": 32
+    "owner_github": 32,
+    "matrix_f1fd": 30,
+    "linux_original_cb0b": 1,
+    "provider_ordinary_smoke": {
+      "passed": 0,
+      "failed": 1,
+      "admitted_turns": 1,
+      "model_terminal_observed": false
+    }
   },
   "current_sources": {
     "complete_owner_native_base": {
@@ -201,25 +222,64 @@
   },
   "full_owner_cold_recovery": false,
   "integration_pr": 5892,
-  "new_model_episodes": 0,
+  "new_scored_memory_actor_episodes": 0,
+  "observed_model_terminals": 0,
   "notes": [
     "Every archive is an immutable Git blob smaller than 500000 bytes.",
     "Completed results are bound to their actual source. Compilation failures execute zero test cases. Running jobs are not passing results.",
     "Source-only stage replay is distinct from native qualification.",
-    "Dependency review and Windows original failure evidence remain in memory-cell-mem8-ci-followup; this checkpoint is stacked on current evidence commit 5ddc248b7e46214da728b44496d66c2e7ae3f62d.",
+    "The historical owner snapshot incorporated CI evidence commit 5ddc248b7e46214da728b44496d66c2e7ae3f62d. This checkpoint composes owner-binding base eb3616fdce370fc6bd23a6ddf17cd94265a5bcd3 (descending from 6c47) with the subsequent CI evidence through 26467689b04bd183fef2dc347fdd085fcde6d41e; original evidence bytes are retained.",
     "The complete original archive is preserved separately in research/mem6-full-archive-20261111-ed353 at immutable commit b66d74d4a61b15f3d9e1eb3b5ddfa251777ee4c1.",
-    "The 03:55 failed-environment checkpoint is historical. Exact 66f complete owner and exact F2 focused native gates have now passed; original deployed owner, science and whole-repository gates are unchanged."
+    "The 03:55 failed-environment checkpoint is historical. Exact 66f complete owner and exact F2 focused native gates have now passed; original deployed owner, science and whole-repository gates are unchanged.",
+    "This checkpoint supersedes the 04:32 running-state observations: Linux original case, dc96 three-case RMCP repair, and f1fd full Matrix are now terminal; the original ordinary provider turn is admitted but its outcome remains unknown."
   ],
   "open_original_blocker_count": 10,
   "original_staging_manifest": {
     "git_blob_sha": "f7b9404d75f3dbc842805349dc052169cd9a1ce7",
     "path": "STAGES.json"
   },
-  "previous_checkpoint_commit": "e6f74295e97a274802995b8caa01bccca851528f",
+  "previous_checkpoint_commit": "6c47d1f6c82fd5fd2baf53b0d1dedbdcd6472874",
   "production_adoption": false,
   "repository": "TrillionniumFoundation/hepta-private-ci",
   "schema": "hepta.mem8.owner-checkpoint.evidence.v1",
   "scientific_acceptance": "HOLD",
   "source_admission_pr": 5888,
-  "unknown_host_requests_replayed": false
+  "unknown_host_requests_replayed": false,
+  "physical_provider_requests": null,
+  "owner_binding_evidence": {
+    "status": "ORIGINAL_DEPLOYMENT_INPUTS_NOT_AUTHENTICATED",
+    "immutable_review_commit": "eb3616fdce370fc6bd23a6ddf17cd94265a5bcd3",
+    "archive_blob": "67f3a6846b1be85c9602f1e577284303fd1ac288",
+    "archive_bytes": 14348,
+    "archive_sha256": "b802bfff4768d1d6e56c29b649aa3e3ee84e9f3cd254e5381965b53ec07ac5df",
+    "public_roles_all_test_only": true,
+    "public_roles_observed_at": "2026-11-11T04:40:48Z",
+    "last_startup_release": false,
+    "last_startup_timestamp_observed": null,
+    "scope": "Bounded read-only inspected paths; not a global absence proof. No private credentials exported, no independent production identity created.",
+    "required_inputs": [
+      "Original diagnose-native config, registration, native-profile descriptors and original preheld owner pidfd",
+      "Original private writer/current cut and authenticated episodic source verifier/adapter",
+      "Original provider route descriptor and original request reconciliation evidence",
+      "Independent final-use authority and original external-effect/outbox/destination state"
+    ]
+  },
+  "g_native_context_followup": {
+    "pr": 5926,
+    "head": "9d9bdfbaeeec3c618f3fc80e2f663a29c13f4b27",
+    "tree": "07192603a5164f4b5d4da24e37595be2a0a04777",
+    "parent": "0c32926cfec58d986477fc72ba3a4787ab75fde9",
+    "status": "PUBLISHED_FORMATTED_SOURCE_ZERO_MODEL_NATIVE_PREPARATION",
+    "formatted_source_capsule_sha256": "5cb33e3183ba2e5175751f57f6b115021ced43a6f9c3b545f8f3b795c9c6f964",
+    "full_four_postimages_readback": true,
+    "independent_static_review": "NO_MUST_FIX_IDENTIFIED_NOT_COMPILATION",
+    "new_ignored_case": "production_composition::tests::episodic_control::provider::episodic_real_provider_fresh_context_smoke",
+    "actual_provider_case_executed": false,
+    "actual_g_native_result": null,
+    "existing_six_cases_only_planned": true,
+    "independent_new_run_budget_minutes": 45,
+    "old_owner_deadline_not_reset": true,
+    "fixture_only": true,
+    "unseen_benefit_evaluated": false
+  }
 }
