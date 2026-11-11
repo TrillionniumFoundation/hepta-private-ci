@@ -166,6 +166,36 @@ class DurableTests(unittest.TestCase):
         self.assertEqual({e["attempt_id"] for e in events}, set(names))
         self.assertEqual([e["seq"] for e in events], list(range(12)))
 
+    def test_post_terminal_progress_is_contradictory(self):
+        self.receipt(ROSTER[0])
+        with self.assertRaises(EvidenceError):
+            self.receipt(ROSTER[0], event_type="progress", update_index=10)
+        events = read_receipts(self.root / "receipts", owner_start_id=OWNER)
+        self.assertEqual(len(events), 1)
+
+    def test_forged_canonical_receipt_without_native_proofs_is_rejected(self):
+        self.receipt(ROSTER[0], event_type="progress", epoch=1)
+        path = self.root / "receipts/00000000.json"
+        row = json.loads(path.read_text())
+        row["event_type"] = "terminal"
+        row["payload"] = {"status": "completed"}
+        base = {k: v for k, v in row.items() if k != "sha256"}
+        canonical = lambda x: (
+            json.dumps(x, ensure_ascii=False, sort_keys=True,
+                       separators=(",", ":"), allow_nan=False) + "\n"
+        ).encode("utf-8")
+        row["sha256"] = hashlib.sha256(canonical(base)).hexdigest()
+        path.write_bytes(canonical(row))
+        with self.assertRaises(EvidenceError):
+            self.roster()
+
+    def test_terminal_status_str_subclass_rejected(self):
+        class Fake(str):
+            pass
+
+        with self.assertRaises(EvidenceError):
+            self.receipt(ROSTER[0], status=Fake("completed"))
+
     def test_identity_spoof_and_roster_duplicates(self):
         class Fake(str):
             pass
