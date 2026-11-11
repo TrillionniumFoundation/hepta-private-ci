@@ -37,11 +37,13 @@ CALLERS = {
         AGENT + "circuit_selection_receipt_owner.rs",
         AGENT + "cell_q24_training_source.rs",
         AGENT + "circuit_model_selection_receipt_sources.rs",
+        AGENT + "neuron_cell_evaluation_qualification_sources.rs",
     ),
     "cell_completed_evaluation_readback": (OWNER,),
     "learning_original_evaluation_key": (
         AGENT + "neuron_cell_evaluation_owner.rs",
         OWNER,
+        AGENT + "neuron_cell_evaluation_qualification_binding.rs",
     ),
 }
 

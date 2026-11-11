@@ -85,8 +85,8 @@ class OriginalModelSelectionClosureTests(unittest.TestCase):
     def test_actual_model_execution_and_publication_edges_are_exact(self):
         expected = {
             "learning_source_bound_training_stage_model_readback": (SOURCES,),
-            "cell_original_completed_evaluation_evidence_readback": (SOURCES,),
-            "product_original_execution_evidence_revalidate": (BINDING,),
+            "cell_original_completed_evaluation_evidence_readback": (SOURCES, AGENT + "neuron_cell_evaluation_qualification_sources.rs"),
+            "product_original_execution_evidence_revalidate": (BINDING, AGENT + "neuron_cell_evaluation_qualification_binding.rs"),
             "circuit_feature_original_selection_observation": (
                 AGENT + "circuit_selection_receipt_owner.rs", SOURCES,
             ),

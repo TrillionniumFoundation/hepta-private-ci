@@ -29,6 +29,7 @@ READERS = (
     AGENT + "circuit_selection_receipt_owner.rs",
     AGENT + "cell_q24_training_source.rs",
         AGENT + "circuit_model_selection_receipt_sources.rs",
+    AGENT + "neuron_cell_evaluation_qualification_sources.rs",
 )
 FUNCTIONS = {
     "fn create(", "fn recover(", "fn validate_config(", "fn prepare(",

@@ -87,9 +87,9 @@ class OriginalExecutionOwnerSourceClosureTests(unittest.TestCase):
 
     def test_original_constructors_are_closed_and_selector_gets_only_readback(self):
         expected = {
-            "learning_original_execution_store_create": (),
-            "learning_original_execution_store_recover": (),
-            "learning_original_execution_store_readback_only": (SOURCES,),
+            "learning_original_execution_store_create": (AGENT + "neuron_cell_evaluation_qualification_owner.rs",),
+            "learning_original_execution_store_recover": (AGENT + "neuron_cell_evaluation_qualification_owner.rs",),
+            "learning_original_execution_store_readback_only": (SOURCES, AGENT + "neuron_cell_evaluation_qualification_sources.rs"),
             "learning_original_owner_physical_current": (
                 AGENT + "learning_owner_journal.rs",
                 AGENT + "cell_composed_q24_training_owner.rs",
