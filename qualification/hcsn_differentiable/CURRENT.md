@@ -38,8 +38,17 @@ their exact original names. At the latest
 archived C2 observation, 2026-11-10 23:49:03 UTC, three fits remained active
 and three had producer terminal reports. No all-six
 independent C2 adequacy, new common-rate selection or scientific benefit is
-inferred from those intermediate records. The subject-E exposure clarification
-below supersedes the older progress appendix's phrase "E remains unread".
+inferred from those intermediate records. The
+[terminal verification preparation](evidence/p0p5-terminal-preparation-20261111/README.md)
+preserves later original control responses and newly validated replacement
+software. The last valid whole-job status was read at 00:25:25.440--00:25:38.584
+UTC on November 11; it has no native sample timestamp. Subsequent status and
+existing observer-result reads through 01:30 UTC returned internal errors.
+A later read at 01:50:50.391--01:50:52.855 UTC recovered the same original job's
+running status and original process identities. The complete command journal
+read at 01:52:00.712--01:52:05.137 UTC still has only three terminal records.
+No replacement training or observer job was launched. The subject-E exposure clarification below
+supersedes the older progress appendix's phrase "E remains unread".
 
 ## Admission status
 
@@ -48,7 +57,7 @@ below supersedes the older progress appendix's phrase "E remains unread".
 | Mathematical/API contract | Versioned definitions, drift regimes, reset and repeated-readout semantics | Defined and tested |
 | Local numerical regression | 92 tests and four unchanged error-budget fixtures on the archived source | Passed within those fixtures |
 | Actual training-domain accuracy | 49/60 terminal finite fixtures pass the original scaled gate; 12 tiny-gap pressure failures and six log-risk ordinary-FD holds remain | Selected fixtures pass; full training domain HOLD |
-| Recorded quality and resource comparison | Original42/C1 results reproduced; C2 has three producer terminals and three active fits at the archived 23:49:03 UTC observation | All-six independent C2 adequacy and later resource view pending |
+| Recorded quality and resource comparison | Original42/C1 results reproduced; original C2 job running in the 01:50 read; complete 01:52 journal retains three producer terminals | All-six independent adequacy and later resource view pending |
 | Fair, sufficiently trained real-task benefit | Full-data development attempts and independent replay; output-interface diagnosis | HOLD |
 | Endogenous optimal boundary | Independent finite DP/QVI fixture, three boundary groups | Finite fixture only; neural/continuum benefit HOLD |
 | Real asynchronous multimodal benefit | Existing real localization data; new non-diffusion controls | HOLD |
@@ -489,20 +498,43 @@ before terminal evidence and independent confirmation.
 The [23:49:03 UTC metadata index](evidence/p0p5-recovery-20261111/training/V8-METADATA-INDEX.json)
 binds the exactly recovered v8 observation and its preceding archive chain.
 It observed three active fits and three producer terminals; model/probability
-arrays were not read. The separate retained native status response ending at
-2026-11-11 00:08:14 UTC still reports the same original C2 job running. Neither
-dated observation establishes its subsequent state.
-The following individual best scores are intermediate D-selected values,
-not a new common-LR comparison or confirmation result.
+arrays were not read. The later valid whole-job status was read at
+2026-11-11 00:25:25.440--00:25:38.584 UTC and reported the same original C2 job
+running, without a native sample timestamp. The
+[time-scope clarification](evidence/p0p5-terminal-preparation-20261111/status-time/CLARIFICATION.json)
+distinguishes that read span from a native observation time. The fully read
+command journal ending at 00:33:29 UTC contains three terminal records.
+Subsequent read-only status and observer-result calls through 01:30 UTC return
+internal errors. A read at 01:50:50.391--01:50:52.855 UTC later recovers the
+same original job's running status, ExecMainPID and InvocationID. Its complete
+24917-byte command journal, read at 01:52:00.712--01:52:05.137 UTC, is unchanged
+and still has only three terminal rows. That journal by itself does not prove
+each remaining worker's liveness. These status/journal reads supply no new
+epoch scores. A later read at 01:55:09.609--01:55:17.790 UTC retrieved and
+SHA-checked [one latest visible immutable complete-epoch node](evidence/p0p5-terminal-preparation-20261111/control-0150/PROGRESS-SNAPSHOT.json) for each .001
+candidate. Those three nodes report epochs 105/104/105 and stale counts
+1/0/2. The .003 rows below retain the earlier producer terminal values.
+These are observations taken at different times, not an atomic six-fit
+snapshot. The individual best scores are intermediate D-selected values,
+not a new common-LR comparison, independent replay or confirmation result.
 
 | Seed | LR | Complete epoch | Strict best D macro-F1 | Observed state |
 | --- | --- | ---: | ---: | --- |
-| 101 | .001 | 77 | .2793821424 | Active |
+| 101 | .001 | 105 | .3380742987 | Latest visible complete node; no terminal row |
 | 101 | .003 | 76 | .3878342597 | Producer plateau; independent C2 audit pending |
-| 211 | .001 | 77 | .3005516559 | Active |
+| 211 | .001 | 104 | .3432623605 | Latest visible complete node; no terminal row |
 | 211 | .003 | 50 | .3910932361 | Producer plateau; independent C2 audit pending |
-| 307 | .001 | 78 | .2708893398 | Active |
+| 307 | .001 | 105 | .3192009721 | Latest visible complete node; no terminal row |
 | 307 | .003 | 72 | .3498305889 | Producer plateau; independent C2 audit pending |
+
+The new .001 nodes select strict-best epochs 104, 104 and 103, respectively.
+Their reported cumulative process-wall prefixes at the latest complete
+epochs are 31162.668936423725, 30971.151812249096 and 31073.909521705238
+seconds. These prefixes are neither time to the selected best checkpoint
+nor first observed target crossings, and they omit the eventual complete
+continuation wrapper. The controller's final RESULT was still absent in
+the 01:53 read. No final attempt bill or all-six admission follows from
+these producer metadata records.
 
 The [first actual terminal report](evidence/p0p5-c2-progress-20261110/first-terminal/payload/fit/result.json)
 records three added complete epochs and 36 new updates for seed 211/rate .003.
@@ -537,6 +569,20 @@ trained comparison while the original C2 roster is incomplete. The
 the uncommitted preparation gaps. Partial source recovery does not authorize
 the old resource program. Replacement preparation needs its own complete
 source, validation and binding under the unchanged 120-second analysis limit.
+
+The [new preparation and its original receipts](evidence/p0p5-terminal-preparation-20261111/README.md)
+now preserve a replacement resource core with 52 passing metadata tests,
+an independently checked complete-OS supervisor binding, nine actual process
+helper checks, and a source-bound terminal bootstrap. The bootstrap's 21 v2
+tests and four targeted v3 tests retain their separate source scopes. The
+resource core keeps failed attempts and three independently exposed native
+CPU/wall/PID inconsistencies together with the corrected positive/negative
+closure. The supervisor's single manifest-literal change received static
+review; that is not a complete functional execution of the supervisor.
+All execution templates remain disabled. No actual terminal assembly,
+independent C2 audit, later resource analysis or rendering has occurred.
+The native controller result, all-six terminal barrier and complete durable
+logs are still required before any of those prepared stages can run.
 
 ### Development outcomes and HCSN censoring
 
@@ -823,6 +869,24 @@ between the previous published source and this head. An unavailable cargo
 log leaves its underlying cause unknown. These observations do not certify
 this later recovery/CURRENT edit or establish repository-wide success.
 
+The [later exact verification originals](evidence/p0p5-terminal-preparation-20261111/verification/ORIGINALS.zip)
+bind recovery head `9f16aa325b12004ddc0d9fa325fdc67531d027fc` to tree
+`92f8647353bd34a194b94fde015428641e3549e4`. A fresh filtered Git clone, without
+local object seeding or alternates, read all 87 changed regular files and
+verified complete bytes, SHA256 and Git blob identities. Separate local
+checks passed 12 manifests, 1664 evidence files, 106 direct ZIPs and 479 links;
+the committed-object proof covered 1667 regular evidence/extra files.
+Hosted science run 42933021590, attempt 1, tested merge
+`d96e66a23f4608133827df43d8ec127d98bad681` at that same tree and passed all
+declared steps, including 92 qualification fixtures. The original 127296-byte
+artifact was read in full. All 42 recorded qualification source files were
+verified against the then-local bytes of the recorded 9f16 tree; later
+CURRENT edits are outside that equality claim. These are tests of that
+recorded source, not this later status edit.
+The separate blocking run 42933021807 was still in progress when its first
+jobs page was retained and already showed failed contract, Windows and
+cargo-deny jobs. No new failure cause or repository-wide success is inferred.
+
 At the retained later observation, source
 `fdbc954bb259a709275771fe151b4f0c8d245b48` had successful science run42902660902
 and canary42902660830, architecture42902660993 in progress, and blocking
@@ -873,23 +937,44 @@ python -B -m qualification.hcsn_differentiable.evidence_chain \
   --manifest qualification/hcsn_differentiable/evidence/p0p5-ci-launch-closure-20261110/MANIFEST.json \
   --manifest qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/MANIFEST.json \
   --manifest qualification/hcsn_differentiable/evidence/p0p5-terminal-numerics-20261110/MANIFEST.json \
+  --manifest qualification/hcsn_differentiable/evidence/p0p5-recovery-20261111/MANIFEST.json \
+  --manifest qualification/hcsn_differentiable/evidence/p0p5-recovery-20261111/LINK-CLOSURE-MANIFEST.json \
+  --manifest qualification/hcsn_differentiable/evidence/p0p5-terminal-preparation-20261111/MANIFEST.json \
   --manifest qualification/hcsn_differentiable/evidence/localization-v2-20261108/MANIFEST.json \
   --manifest qualification/hcsn_differentiable/evidence/math-closure-20261108/MANIFEST.json \
   --markdown qualification/hcsn_differentiable/CURRENT.md \
+  --markdown qualification/hcsn_differentiable/evidence/p0p5-terminal-preparation-20261111/README.md \
+  --markdown qualification/hcsn_differentiable/evidence/p0p5-terminal-preparation-20261111/terminal-bootstrap/program/README.md \
+  --markdown qualification/hcsn_differentiable/evidence/p0p5-terminal-preparation-20261111/resource-core/program/README.md \
+  --markdown qualification/hcsn_differentiable/evidence/p0p5-terminal-preparation-20261111/resource-core/program/STAGES.md \
+  --markdown qualification/hcsn_differentiable/evidence/p0p5-terminal-preparation-20261111/resource-core/review/native-H2/README.md \
+  --markdown qualification/hcsn_differentiable/evidence/p0p5-terminal-preparation-20261111/renderer/README.md \
+  --markdown qualification/hcsn_differentiable/evidence/p0p5-terminal-preparation-20261111/renderer/program/README.md \
+  --markdown qualification/hcsn_differentiable/evidence/p0p5-20261110/README.md \
+  --markdown qualification/hcsn_differentiable/evidence/p0p5-followup-20261110/README.md \
   --markdown qualification/hcsn_differentiable/evidence/p0p5-resource-replay-20261110/README.md \
-  --markdown qualification/hcsn_differentiable/evidence/p0p5-resource-replay-20261110/resource-analysis-v1/output-v1/REPORT.md \
+  --markdown qualification/hcsn_differentiable/evidence/p0p5-resource-closure-20261110/README.md \
   --markdown qualification/hcsn_differentiable/evidence/p0p5-c2-launch-20261110/README.md \
   --markdown qualification/hcsn_differentiable/evidence/p0p5-ci-launch-closure-20261110/README.md \
   --markdown qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/README.md \
   --markdown qualification/hcsn_differentiable/evidence/p0p5-terminal-numerics-20261110/README.md \
+  --markdown qualification/hcsn_differentiable/evidence/p0p5-recovery-20261111/README.md \
+  --markdown qualification/hcsn_differentiable/evidence/p0p5-recovery-20261111/recovery/SCOPE.md \
+  --markdown qualification/hcsn_differentiable/evidence/p0p5-recovery-20261111/numerics/SCOPE.md \
+  --markdown qualification/hcsn_differentiable/evidence/p0p5-recovery-20261111/math-recovery/c2-resource-renderer-preparation-v2/README.md \
+  --markdown qualification/hcsn_differentiable/evidence/p0p5-recovery-20261111/math-recovery/rare-tail-review/NOTE-REVIEWED.md \
+  --markdown qualification/hcsn_differentiable/evidence/p0p5-recovery-20261111/rare-tail-context/sources/fixed-grid-NOTE.md \
   --markdown qualification/hcsn_differentiable/evidence/p0p5-terminal-numerics-20261110/mathematical-diagnosis/NOTE.md \
   --markdown qualification/hcsn_differentiable/evidence/p0p5-terminal-numerics-20261110/local-diagnosis/fixed48/REPORT.md \
   --markdown qualification/hcsn_differentiable/evidence/p0p5-terminal-numerics-20261110/numerics-independent-review/REPORT.md \
-  --output /tmp/hcsn-terminal-numerics-integrity.json
+  --markdown qualification/hcsn_differentiable/evidence/p0p5-resource-replay-20261110/resource-analysis-v1/output-v1/REPORT.md \
+  --markdown qualification/hcsn_differentiable/evidence/p0p5-20261110/p1/width16-v6/INDEX.md \
+  --markdown proposals/localization-v3/README.md \
+  --output /tmp/hcsn-terminal-preparation-integrity.json
 ```
 
 Choose a new result path if that output already exists. The science workflow
-checks all ten historical/current manifests. Running
+checks all thirteen historical/current manifests and the explicit Markdown inputs above. Running
 the Python file directly can shadow the standard-library `operator` module;
 use `python -B -m` as above. Integrity validates bytes and links; it does not
 grant scientific or training-domain credit.
