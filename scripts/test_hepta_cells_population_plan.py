@@ -216,7 +216,10 @@ class PopulationPlanTests(unittest.TestCase):
             ("family", _SpoofedString("UNLISTED", "shared_semantic")),
             ("trainable", _SpoofedString("UNLISTED", "frozen")),
             ("cell_id", _SpoofedString("other-cell", source.cell_id)),
-            ("initial_identity", _SpoofedString(source.initial_identity, source.initial_identity)),
+            (
+                "initial_identity",
+                _SpoofedString(source.initial_identity, source.initial_identity),
+            ),
             ("objective", _SpoofedString(source.objective, source.objective)),
         )
         for field, value in cases:
@@ -266,7 +269,9 @@ class PopulationPlanTests(unittest.TestCase):
             with self.assertRaises(CellError):
                 PopulationPolicy(
                     database,
-                    DerivedPlan(self.plan.principal_id, self.plan.agent_id, self.plan.cells),
+                    DerivedPlan(
+                        self.plan.principal_id, self.plan.agent_id, self.plan.cells
+                    ),
                 )
 
 
