@@ -191,7 +191,9 @@ pub(super) fn pidfd(pid: u32) -> anyhow::Result<OwnedFd> {
 /// A paused original owner has not started a new frame. Match the real
 /// server's distinction between the original channel lifetime while idle and
 /// its bounded frame once the first byte arrives. This remains a test fixture.
-pub(super) fn read_original_owner_request(server: &mut UnixStream) -> anyhow::Result<wire::Request> {
+pub(super) fn read_original_owner_request(
+    server: &mut UnixStream,
+) -> anyhow::Result<wire::Request> {
     server.set_read_timeout(Some(Duration::from_secs(300)))?;
     let mut prefix = [0; 4];
     server.read_exact(&mut prefix[..1])?;
