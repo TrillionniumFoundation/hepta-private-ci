@@ -2,7 +2,8 @@
 //! Roles, keys, terminal label and Root scope are explicit test custody. The
 //! terminal label is fixed independently of every model output.
 use codex_hepta_learning_ledger::*;
-use codex_hepta_types::{FixedQ32, ProbabilityQ32};
+use codex_hepta_types::FixedQ32;
+use codex_hepta_types::ProbabilityQ32;
 
 use super::*;
 
@@ -43,7 +44,10 @@ pub(super) fn sign(
     at: u64,
 ) -> SignedLearningEvidenceV1 {
     let mut evidence = SignedLearningEvidenceV1 {
-        evidence_id: id(&format!("explicit-positive-evidence:{}", Digest32::of_bytes(payload))),
+        evidence_id: id(&format!(
+            "explicit-positive-evidence:{}",
+            Digest32::of_bytes(payload)
+        )),
         principal_id: signer.principal.principal_id.clone(),
         role: signer.roles[0],
         trust_digest: verifier.trust_digest(),
@@ -56,22 +60,49 @@ pub(super) fn sign(
         signature: [0; 64],
     };
     evidence.signature = SigningKey::from_bytes(&[seed; 32])
-        .sign(&evidence.signing_bytes()).to_bytes();
+        .sign(&evidence.signing_bytes())
+        .to_bytes();
     evidence
 }
 
-pub(super) fn ledger(root: &std::path::Path, objective: Digest32)
-    -> anyhow::Result<(LedgerWriter, Credentials)>
-{
+pub(super) fn ledger(
+    root: &std::path::Path,
+    objective: Digest32,
+) -> anyhow::Result<(LedgerWriter, Credentials)> {
     let at = now()?;
     let credentials = Credentials {
-        generator: signer("positive-generator", LearningEvidenceRoleV1::Generator, 41, at),
-        evaluator: signer("positive-evaluator", LearningEvidenceRoleV1::Evaluator, 42, at),
+        generator: signer(
+            "positive-generator",
+            LearningEvidenceRoleV1::Generator,
+            41,
+            at,
+        ),
+        evaluator: signer(
+            "positive-evaluator",
+            LearningEvidenceRoleV1::Evaluator,
+            42,
+            at,
+        ),
         observer: signer("positive-outcome", LearningEvidenceRoleV1::Observer, 43, at),
-        experience: signer("positive-experience", LearningEvidenceRoleV1::Observer, 44, at),
+        experience: signer(
+            "positive-experience",
+            LearningEvidenceRoleV1::Observer,
+            44,
+            at,
+        ),
         dataset: signer("positive-dataset", LearningEvidenceRoleV1::Observer, 45, at),
-        selector: signer("positive-selector", LearningEvidenceRoleV1::Selector, 46, at),
-        unlearning: signer("positive-unlearning", LearningEvidenceRoleV1::UnlearningAuthority, 48, at),
+        selector: signer(
+            "positive-selector",
+            LearningEvidenceRoleV1::Selector,
+            46,
+            at,
+        ),
+        unlearning: signer(
+            "positive-unlearning",
+            LearningEvidenceRoleV1::UnlearningAuthority,
+            48,
+            at,
+        ),
     };
     let mut distribution = SignedLearningTrustDistributionV1 {
         distribution: LearningTrustDistributionV1 {
@@ -83,9 +114,12 @@ pub(super) fn ledger(root: &std::path::Path, objective: Digest32)
                 objective_digest: objective,
                 authority_epoch: 7,
                 signers: vec![
-                    credentials.generator.clone(), credentials.evaluator.clone(),
-                    credentials.observer.clone(), credentials.experience.clone(),
-                    credentials.dataset.clone(), credentials.selector.clone(),
+                    credentials.generator.clone(),
+                    credentials.evaluator.clone(),
+                    credentials.observer.clone(),
+                    credentials.experience.clone(),
+                    credentials.dataset.clone(),
+                    credentials.selector.clone(),
                     credentials.unlearning.clone(),
                 ],
             },
@@ -102,23 +136,40 @@ pub(super) fn ledger(root: &std::path::Path, objective: Digest32)
             root_id: distribution.root_id.clone(),
             scope_digest: d("explicit-positive-original-trust"),
             verifying_key: root_key.verifying_key().to_bytes(),
-            valid_from: at - 60, expires_at: at + 3_600, revoked_at: None,
+            valid_from: at - 60,
+            expires_at: at + 3_600,
+            revoked_at: None,
         },
-        distribution, None, at,
+        distribution,
+        None,
+        at,
     )?;
-    let ledger = DurableLedger::create(opened(root, "positive-ledger", true)?,
-        d("explicit-positive-ledger"), 64)?;
-    let witness = LedgerWitnessStore::create(opened(root, "positive-ledger-witness", true)?,
-        d("explicit-positive-ledger"))?;
+    let ledger = DurableLedger::create(
+        opened(root, "positive-ledger", true)?,
+        d("explicit-positive-ledger"),
+        64,
+    )?;
+    let witness = LedgerWitnessStore::create(
+        opened(root, "positive-ledger-witness", true)?,
+        d("explicit-positive-ledger"),
+    )?;
     let directory = File::open(root)?;
-    Ok((LedgerWriter::from_durable(ledger, witness, trust, &directory, &directory)?, credentials))
+    Ok((
+        LedgerWriter::from_durable(ledger, witness, trust, &directory, &directory)?,
+        credentials,
+    ))
 }
 
 pub(super) fn decision(
-    writer: &mut LedgerWriter, credentials: &Credentials,
+    writer: &mut LedgerWriter,
+    credentials: &Credentials,
     source: &crate::CircuitTaskSourceInputV1,
 ) -> anyhow::Result<()> {
-    let candidates = source.candidates.iter().map(|item| item.candidate_id.clone()).collect::<Vec<_>>();
+    let candidates = source
+        .candidates
+        .iter()
+        .map(|item| item.candidate_id.clone())
+        .collect::<Vec<_>>();
     let record = ProductionDecisionV2 {
         record_id: source.scope.run_id.clone(),
         episode_id: id("positive-original-episode"),
@@ -145,15 +196,21 @@ pub(super) fn decision(
         support_digest: d("explicit-positive-original-decision-support"),
     };
     let at = now()?;
-    let evidence = sign(writer.verifier(), &credentials.generator, 41,
-        &decision_signing_payload_v2(&record)?, at);
+    let evidence = sign(
+        writer.verifier(),
+        &credentials.generator,
+        41,
+        &decision_signing_payload_v2(&record)?,
+        at,
+    );
     writer.append_decision(Digest32::ZERO, record, &evidence, at)?;
     Ok(())
 }
 
-pub(super) fn terminal_outcome(writer: &mut LedgerWriter, credentials: &Credentials)
-    -> anyhow::Result<()>
-{
+pub(super) fn terminal_outcome(
+    writer: &mut LedgerWriter,
+    credentials: &Credentials,
+) -> anyhow::Result<()> {
     let at = now()?;
     // Explicit independent terminal target 2.0, never inferred from A's output
     // or the subsequently trained/evaluated candidate.
@@ -170,11 +227,18 @@ pub(super) fn terminal_outcome(writer: &mut LedgerWriter, credentials: &Credenti
             latest_observable_at: at,
             expected_delay_profile_digest: d("explicit-positive-observation-delay"),
             terminality: OutcomeTerminalityV1::Terminal,
-            censoring_reason: None, correction_predecessor: None, finalized_at: Some(at),
+            censoring_reason: None,
+            correction_predecessor: None,
+            finalized_at: Some(at),
         },
     };
-    let evidence = sign(writer.verifier(), &credentials.observer, 43,
-        &outcome_signing_payload_v2(&outcome), at);
+    let evidence = sign(
+        writer.verifier(),
+        &credentials.observer,
+        43,
+        &outcome_signing_payload_v2(&outcome),
+        at,
+    );
     writer.append_outcome(writer.snapshot()?.head_digest, outcome, &evidence, at)?;
     Ok(())
 }
@@ -213,13 +277,17 @@ pub(super) fn material(
                 base_tree: d("8663f89daca111ba7f681d2c36442f6f4ded97f5"),
                 objective_digest: input.objective_digest,
                 grammar_digest: d("explicit-positive-single-head-grammar"),
-                maximum_files: 1, maximum_diff_bytes: 4_096,
-                maximum_candidates: 1, maximum_parallel_sandboxes: 1,
+                maximum_files: 1,
+                maximum_diff_bytes: 4_096,
+                maximum_candidates: 1,
+                maximum_parallel_sandboxes: 1,
                 expiry_unix_seconds: now()? + 900,
             },
             budget: LearningIterationBudgetV1 {
-                maximum_dataset_rows: 1, maximum_dataset_bytes: 128,
-                maximum_training_steps: 2, maximum_training_milliseconds: 10_000,
+                maximum_dataset_rows: 1,
+                maximum_dataset_bytes: 128,
+                maximum_training_steps: 2,
+                maximum_training_milliseconds: 10_000,
                 maximum_artifact_bytes: 4_096,
             },
         },
@@ -233,7 +301,9 @@ pub(super) fn material(
             selector: credentials.selector.principal.principal_id.clone(),
             next_use_observer: id("unused-positive-next-use-role"),
         },
-    )?.snapshot().clone();
+    )?
+    .snapshot()
+    .clone();
     let rule = crate::CellQ24DatasetRuleV1 {
         head: crate::CellQ24PrivateHeadV1::Prediction { index: 0 },
         unit_profile_digest: d("explicit-positive-terminal-unit"),
@@ -243,48 +313,103 @@ pub(super) fn material(
         objective_digest: input.objective_digest,
         inclusion_policy_digest: rule.inclusion_policy_digest(&initial)?,
     };
-    let freeze_evidence = sign(writer.verifier(), &credentials.evaluator, 42,
-        &dataset_freeze_signing_payload_v2(&writer.snapshot()?, &freeze_plan)?, now()?);
+    let freeze_evidence = sign(
+        writer.verifier(),
+        &credentials.evaluator,
+        42,
+        &dataset_freeze_signing_payload_v2(&writer.snapshot()?, &freeze_plan)?,
+        now()?,
+    );
     let observed = crate::CellQ24DatasetReaderV1::new(source, identity, writer).read_current(
-        &initial, baseline, rule, freeze_plan.clone(), &freeze_evidence,
+        &initial,
+        baseline,
+        rule,
+        freeze_plan.clone(),
+        &freeze_evidence,
     )?;
-    let optimizer = crate::CellQ24SgdRuleV1 { epochs: 2, learning_rate_q24: Q / 2 };
+    let optimizer = crate::CellQ24SgdRuleV1 {
+        epochs: 2,
+        learning_rate_q24: Q / 2,
+    };
     let update_rule = crate::cell_q24_single_head_update_rule_v1(
-        bundle, rule.head, optimizer.digest(observed.batch())?,
+        bundle,
+        rule.head,
+        optimizer.digest(observed.batch())?,
     )?;
-    let scope = FrozenLearningScopeV2::freeze(&initial.request, &initial.owners,
-        LearningUpdateScopeV2::Cell, update_rule)?;
+    let scope = FrozenLearningScopeV2::freeze(
+        &initial.request,
+        &initial.owners,
+        LearningUpdateScopeV2::Cell,
+        update_rule,
+    )?;
     let config = crate::OriginalCellQ24MaterialReceiptConfigV1 {
-        initial: initial.clone(), scope: scope.clone(), rule,
-        freeze_plan: freeze_plan.clone(), freeze_evidence: freeze_evidence.clone(),
+        initial: initial.clone(),
+        scope: scope.clone(),
+        rule,
+        freeze_plan: freeze_plan.clone(),
+        freeze_evidence: freeze_evidence.clone(),
         experience_signer: credentials.experience.clone(),
-        dataset_signer: credentials.dataset.clone(), verifier: writer.verifier().clone(),
+        dataset_signer: credentials.dataset.clone(),
+        verifier: writer.verifier().clone(),
         maximum_signature_lifetime_seconds: 600,
     };
     let mut owners = crate::OriginalCellQ24MaterialReceiptOwnersV1::create(
         crate::OriginalCellQ24MaterialReceiptFilesV1 {
             experience: opened(root, "positive-experience", true)?,
-            experience_witness: original_witness(root, "positive-experience-witness", &scope, input.objective_digest, true)?,
+            experience_witness: original_witness(
+                root,
+                "positive-experience-witness",
+                &scope,
+                input.objective_digest,
+                true,
+            )?,
             dataset: opened(root, "positive-dataset", true)?,
-            dataset_witness: original_witness(root, "positive-dataset-witness", &scope, input.objective_digest, true)?,
-        }, config, SigningKey::from_bytes(&[44; 32]), SigningKey::from_bytes(&[45; 32]),
+            dataset_witness: original_witness(
+                root,
+                "positive-dataset-witness",
+                &scope,
+                input.objective_digest,
+                true,
+            )?,
+        },
+        config,
+        SigningKey::from_bytes(&[44; 32]),
+        SigningKey::from_bytes(&[45; 32]),
     )?;
     let experience = owners.attest_experience(crate::OriginalCellQ24MaterialReceiptSourcesV1 {
-        snapshot: &initial, source, identity, ledger: writer, baseline,
+        snapshot: &initial,
+        source,
+        identity,
+        ledger: writer,
+        baseline,
     })?;
     let mut coordinator = LearningIterationCoordinatorV1::from_snapshot(initial.clone())?;
-    coordinator.record(experience.receipt.clone(), experience.receipt.observed_unix_seconds)?;
+    coordinator.record(
+        experience.receipt.clone(),
+        experience.receipt.observed_unix_seconds,
+    )?;
     let dataset = owners.attest_dataset(crate::OriginalCellQ24MaterialReceiptSourcesV1 {
-        snapshot: coordinator.snapshot(), source, identity, ledger: writer, baseline,
+        snapshot: coordinator.snapshot(),
+        source,
+        identity,
+        ledger: writer,
+        baseline,
     })?;
-    coordinator.record(dataset.receipt.clone(), dataset.receipt.observed_unix_seconds)?;
+    coordinator.record(
+        dataset.receipt.clone(),
+        dataset.receipt.observed_unix_seconds,
+    )?;
     let frozen = dataset.material.receipt().clone();
     drop(owners);
     Ok(Material {
         initial,
         config: crate::OriginalCellQ24TrainingSourceConfigV1 {
-            dataset: coordinator.snapshot().clone(), scope, rule, optimizer,
-            freeze_plan, freeze_evidence,
+            dataset: coordinator.snapshot().clone(),
+            scope,
+            rule,
+            optimizer,
+            freeze_plan,
+            freeze_evidence,
             experience_evidence: experience.attestation,
             dataset_evidence: dataset.attestation,
             verifier: writer.verifier().clone(),

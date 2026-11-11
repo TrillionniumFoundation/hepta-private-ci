@@ -1,12 +1,15 @@
 //! Test-only original Evaluator host custody for the raw execution file.
 //! The witness is initialized before runner admission and advances with each
 //! real store mutation. This is not a production host installation.
-use codex_hepta_intelligence_eval::{
-    LockedFileProductEvaluationExecutionStoreV1, ProductEvaluationExecutionClaimV1,
-    ProductEvaluationExecutionKeyV1, ProductEvaluationExecutionStateV1,
-    ProductEvaluationExecutionStoreErrorV1, ProductEvaluationExecutionStoreV1,
-};
-use codex_hepta_neuron::{AnchorWitnessStore, FileAnchorWitnessStore, JournalAnchor};
+use codex_hepta_intelligence_eval::LockedFileProductEvaluationExecutionStoreV1;
+use codex_hepta_intelligence_eval::ProductEvaluationExecutionClaimV1;
+use codex_hepta_intelligence_eval::ProductEvaluationExecutionKeyV1;
+use codex_hepta_intelligence_eval::ProductEvaluationExecutionStateV1;
+use codex_hepta_intelligence_eval::ProductEvaluationExecutionStoreErrorV1;
+use codex_hepta_intelligence_eval::ProductEvaluationExecutionStoreV1;
+use codex_hepta_neuron::AnchorWitnessStore;
+use codex_hepta_neuron::FileAnchorWitnessStore;
+use codex_hepta_neuron::JournalAnchor;
 use pretty_assertions::assert_eq;
 
 type Error = ProductEvaluationExecutionStoreErrorV1;
@@ -34,7 +37,11 @@ impl WitnessedExecutions {
                 checkpoint_digest: physical.history_digest,
             },
         )?;
-        Ok(Self { store, witness, fenced: false })
+        Ok(Self {
+            store,
+            witness,
+            fenced: false,
+        })
     }
 
     fn current(&mut self) -> Result<JournalAnchor, Error> {
@@ -43,9 +50,15 @@ impl WitnessedExecutions {
         }
         let observed = (|| {
             let before = self.witness.current().map_err(|_| Error::Indeterminate)?;
-            let physical = self.store.read_current_anchor().map_err(|_| Error::Indeterminate)?;
+            let physical = self
+                .store
+                .read_current_anchor()
+                .map_err(|_| Error::Indeterminate)?;
             let current = JournalAnchor {
-                sequence: physical.sequence.checked_add(1).ok_or(Error::Indeterminate)?,
+                sequence: physical
+                    .sequence
+                    .checked_add(1)
+                    .ok_or(Error::Indeterminate)?,
                 checkpoint_digest: physical.history_digest,
             };
             let after = self.witness.current().map_err(|_| Error::Indeterminate)?;
@@ -54,43 +67,60 @@ impl WitnessedExecutions {
             }
             Ok(current)
         })();
-        if observed.is_err() { self.fenced = true; }
+        if observed.is_err() {
+            self.fenced = true;
+        }
         observed
     }
 
     fn anchor_after(&mut self, previous: JournalAnchor) -> Result<(), Error> {
         let result = (|| {
-            let physical = self.store.read_current_anchor().map_err(|_| Error::Indeterminate)?;
+            let physical = self
+                .store
+                .read_current_anchor()
+                .map_err(|_| Error::Indeterminate)?;
             let next = JournalAnchor {
-                sequence: physical.sequence.checked_add(1).ok_or(Error::Indeterminate)?,
+                sequence: physical
+                    .sequence
+                    .checked_add(1)
+                    .ok_or(Error::Indeterminate)?,
                 checkpoint_digest: physical.history_digest,
             };
             if next != previous {
-                self.witness.compare_and_swap(Some(previous), next)
+                self.witness
+                    .compare_and_swap(Some(previous), next)
                     .map_err(|_| Error::Indeterminate)?;
             }
             self.current()?;
             Ok(())
         })();
-        if result.is_err() { self.fenced = true; }
+        if result.is_err() {
+            self.fenced = true;
+        }
         result
     }
 }
 
 impl ProductEvaluationExecutionStoreV1 for WitnessedExecutions {
-    fn claim(&mut self, key: &ProductEvaluationExecutionKeyV1)
-        -> Result<ProductEvaluationExecutionClaimV1, Error>
-    {
+    fn claim(
+        &mut self,
+        key: &ProductEvaluationExecutionKeyV1,
+    ) -> Result<ProductEvaluationExecutionClaimV1, Error> {
         let before = self.current()?;
         let result = self.store.claim(key);
-        if result.is_err() { self.fenced = true; return result; }
+        if result.is_err() {
+            self.fenced = true;
+            return result;
+        }
         self.anchor_after(before)?;
         result
     }
 
-    fn complete(&mut self, key: &ProductEvaluationExecutionKeyV1, bytes: &[u8])
-        -> Result<(), Error>
-    {
+    fn complete(
+        &mut self,
+        key: &ProductEvaluationExecutionKeyV1,
+        bytes: &[u8],
+    ) -> Result<(), Error> {
         let before = self.current()?;
         if let Err(error) = self.store.complete(key, bytes) {
             self.fenced = true;
@@ -99,9 +129,10 @@ impl ProductEvaluationExecutionStoreV1 for WitnessedExecutions {
         self.anchor_after(before)
     }
 
-    fn readback(&mut self, key: &ProductEvaluationExecutionKeyV1)
-        -> Result<ProductEvaluationExecutionStateV1, Error>
-    {
+    fn readback(
+        &mut self,
+        key: &ProductEvaluationExecutionKeyV1,
+    ) -> Result<ProductEvaluationExecutionStateV1, Error> {
         let before = self.current()?;
         let result = self.store.readback(key);
         if self.current()? != before {
