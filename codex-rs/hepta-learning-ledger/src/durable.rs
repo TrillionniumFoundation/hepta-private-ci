@@ -248,6 +248,21 @@ impl DurableLedger {
         }
     }
 
+    #[cfg(feature = "qualification-legacy-write")]
+    pub(crate) fn qualification_file_bytes(
+        &mut self,
+        maximum_bytes: u64,
+    ) -> Result<Vec<u8>, DurableLedgerError> {
+        if self.poisoned {
+            return Err(DurableLedgerError::Poisoned);
+        }
+        let bytes = self.file.qualification_bytes(maximum_bytes);
+        if matches!(&bytes, Err(DurableLedgerError::Io(_))) {
+            self.poisoned = true;
+        }
+        bytes
+    }
+
     pub fn snapshot(&self) -> Result<LedgerSnapshot, DurableLedgerError> {
         if self.poisoned {
             Err(DurableLedgerError::Poisoned)
