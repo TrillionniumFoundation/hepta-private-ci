@@ -113,6 +113,20 @@ REMOTE_MATERIAL_CASES = tuple(
         "material_source_peer_consumes_wrong_purpose_or_failed_frames",
     )
 )
+MATERIAL_COMMAND_PREFIX = (
+    "learning_iteration_evidence_client::material::command::serving::tests::"
+)
+MATERIAL_COMMAND_CASES = tuple(
+    MATERIAL_COMMAND_PREFIX + name
+    for name in (
+        "material_command_executes_original_experience_then_dataset_without_uploads",
+        "material_command_lost_ack_recovers_original_signatures_and_shared_admission",
+        "material_command_missing_predecessor_and_cold_missing_never_execute",
+        "material_command_pending_claim_and_withdrawal_never_complete_or_rearm",
+        "material_command_wrong_context_role_or_custody_never_claims",
+        "material_command_pins_original_signatures_and_consumes_invalid_replies",
+    )
+)
 TRANSPORT_CASES = (
     "learning_iteration_evidence_client::tests::"
     "original_receipt_fixture_retains_peer_during_owner_work_between_frames",
@@ -137,6 +151,7 @@ OWNER_GROUPS = (
     ("original_training_command", PACKAGE, TRAINING_COMMAND_CASES),
     ("original_material_service", PACKAGE, MATERIAL_SERVICE_CASES),
     ("original_remote_material_source", PACKAGE, REMOTE_MATERIAL_CASES),
+    ("original_material_command", PACKAGE, MATERIAL_COMMAND_CASES),
     ("original_peer_lifetime", PACKAGE, TRANSPORT_CASES),
     ("original_execution_evidence", EXECUTION_PACKAGE, EXECUTION_CASES),
 )

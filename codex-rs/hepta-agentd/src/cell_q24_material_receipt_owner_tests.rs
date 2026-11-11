@@ -443,3 +443,6 @@ async fn original_material_pair_partial_creation_never_finishes_missing_dataset_
 
 #[cfg(target_os = "linux")]
 pub(crate) use support::ReadbackServiceFixture;
+
+#[cfg(target_os = "linux")]
+pub(crate) use support::{MaterialCommandFixture, assert_dataset_pending, interrupt_dataset_claim};

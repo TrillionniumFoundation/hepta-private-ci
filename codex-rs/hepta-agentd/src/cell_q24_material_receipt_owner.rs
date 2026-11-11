@@ -100,6 +100,12 @@ pub struct OriginalCellQ24MaterialCompletionV1 {
     pub material: OriginalCellQ24DatasetV1,
 }
 
+#[cfg(target_os = "linux")]
+enum OriginalMaterialCommandOriginV1 {
+    FreshCreate,
+    Recovered,
+}
+
 pub struct OriginalCellQ24MaterialReceiptOwnersV1<EW: AnchorWitnessStore, DW: AnchorWitnessStore> {
     experience: LearningOwnerJournalV1<EW>,
     dataset: LearningOwnerJournalV1<DW>,
@@ -108,6 +114,8 @@ pub struct OriginalCellQ24MaterialReceiptOwnersV1<EW: AnchorWitnessStore, DW: An
     dataset_key: SigningKey,
     experience_saved: ProductEvaluationExecutionKeyV1,
     dataset_binding: Digest32,
+    #[cfg(target_os = "linux")]
+    command_origin: OriginalMaterialCommandOriginV1,
 }
 
 impl<EW: AnchorWitnessStore, DW: AnchorWitnessStore>
@@ -136,6 +144,8 @@ impl<EW: AnchorWitnessStore, DW: AnchorWitnessStore>
             dataset_key,
             experience_saved,
             dataset_binding,
+            #[cfg(target_os = "linux")]
+            command_origin: OriginalMaterialCommandOriginV1::FreshCreate,
         })
     }
 
@@ -166,6 +176,8 @@ impl<EW: AnchorWitnessStore, DW: AnchorWitnessStore>
             dataset_key,
             experience_saved,
             dataset_binding,
+            #[cfg(target_os = "linux")]
+            command_origin: OriginalMaterialCommandOriginV1::Recovered,
         })
     }
 
@@ -185,6 +197,28 @@ impl<EW: AnchorWitnessStore, DW: AnchorWitnessStore>
         let config = self.config.clone();
         crate::learning_iteration_evidence_client::OriginalCellQ24MaterialEvidenceOwnerV1::from_original_owners(
             self, config, source, identity, ledger, baseline,
+        )
+    }
+
+    /// Explicit original dual-role command bootstrap consumes this pair once.
+    /// This cannot be called on a previously handed-out readback owner. Fresh
+    /// creation admits each stage once; recovery serves only original readback.
+    #[cfg(target_os = "linux")]
+    pub fn into_command_owner<SW: AnchorWitnessStore>(
+        self,
+        source: CircuitTaskSourceReadbackV1<SW>,
+        identity: AgentdIdentity,
+        ledger: std::sync::Arc<std::sync::Mutex<LedgerWriter>>,
+        baseline: std::sync::Arc<LoadedCellQ24ModelV1>,
+    ) -> Result<
+        crate::OriginalCellQ24MaterialCommandOwnerV1<EW, DW, SW>,
+        crate::OriginalCellQ24MaterialCommandErrorV1,
+    > {
+        let allow_new_commands =
+            matches!(self.command_origin, OriginalMaterialCommandOriginV1::FreshCreate);
+        let config = self.config.clone();
+        crate::OriginalCellQ24MaterialCommandOwnerV1::from_original_pair(
+            self, config, source, identity, ledger, baseline, allow_new_commands,
         )
     }
 
@@ -439,3 +473,6 @@ mod tests;
 
 #[cfg(all(test, target_os = "linux"))]
 pub(crate) use tests::ReadbackServiceFixture;
+
+#[cfg(all(test, target_os = "linux"))]
+pub(crate) use tests::{MaterialCommandFixture, assert_dataset_pending, interrupt_dataset_claim};

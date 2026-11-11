@@ -522,3 +522,9 @@ mod training_source;
 mod evidence_service;
 #[cfg(target_os = "linux")]
 pub(crate) use evidence_service::ReadbackServiceFixture;
+
+#[cfg(target_os = "linux")]
+#[path = "cell_q24_material_command_fixture_tests.rs"]
+mod command_fixture;
+#[cfg(target_os = "linux")]
+pub(crate) use command_fixture::{MaterialCommandFixture, assert_dataset_pending, interrupt_dataset_claim};
