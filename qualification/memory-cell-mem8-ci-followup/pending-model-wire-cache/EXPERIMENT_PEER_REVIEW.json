@@ -1,0 +1,53 @@
+{
+  "schema": "mem8.model-list-wire-cache.peer-review.v1",
+  "reviewer": "/root/mem_experiment_review",
+  "scope": "STATIC_READONLY_CANDIDATE_AND_EXACT_REFERENCE_SOURCE",
+  "candidate": {
+    "path": "codex-rs/app-server/tests/suite/v2/model_list.rs",
+    "preimage_git_blob": "bcfad8884054e1eebb9abc27b9fbfc8f0f6a8578",
+    "postimage_git_blob": "0295b921099f63f245953eafd9b377db435184a9",
+    "postimage_bytes": 14469,
+    "postimage_sha256": "1136589db852ba45ce9bee975dd10fcf7a48a24c832aca5c0b8019db5a987177",
+    "patch_bytes": 1315,
+    "patch_sha256": "63f91e235980f85b3599dbfaa26a417933431a745e0a632849bec802b2769c42",
+    "added": 10,
+    "deleted": 1
+  },
+  "conclusion": "NO_STATIC_MUST_FIX_IDENTIFIED",
+  "correction_to_prior_review": "The earlier cache-ready barrier review missed ModelsResponse's custom serde transformation. The unchanged remote_models fixture value is not equal to the decoded endpoint/catalog cache value, even after a successful refresh. The earlier static review is not native qualification and must not be read as evidence that the barrier can complete.",
+  "causal_chain": [
+    "The fixture constructs ModelInfo directly from JSON lacking model_messages, so its value remains None.",
+    "core_test_support::responses::mount_models_once calls set_body_json(ModelsResponse), whose serialize_model_infos_with_legacy_base emits a String base_instructions for each model.",
+    "ModelsResponse deserialization promotes that legacy field to Some(ModelMessages) with Some(instructions_template) when canonical instructions are absent.",
+    "ModelsManager stores the endpoint-decoded models in ModelsCacheEntry; cache deserialization retains the canonical instructions.",
+    "Therefore the previous cache.models == remote_models condition cannot hold for this fixture, independently of whether the background HTTP fetch succeeds."
+  ],
+  "reviewed_repair": [
+    "The candidate computes expected_cache_models by serializing and deserializing the same ModelsResponse type used on the actual mock/endpoint wire.",
+    "Only the cache gate comparison changes to expected_cache_models. Original remote_models remains available for the original mock payload and model/list response assertions.",
+    "Full Vec<ModelInfo> equality, client version, fetched_at interval, the existing absolute ten-second budget, local poll interval, one-response HTTP mock, and original RPC assertions remain unchanged.",
+    "No dependency, process launch, network call, retry, timeout extension, or model invocation is introduced."
+  ],
+  "reference_source": {
+    "read_baseline": "2ae5215beaf8d7b7df111a090b82134beae2683d",
+    "paths": [
+      "codex-rs/protocol/src/openai_models.rs::ModelsResponse",
+      "codex-rs/protocol/src/openai_models.rs::serialize_model_infos_with_legacy_base",
+      "codex-rs/protocol/src/openai_models.rs::deserialize_model_infos_with_legacy_base",
+      "codex-rs/core/tests/common/responses.rs::mount_models_once",
+      "codex-rs/models-manager/src/manager.rs::fetch_and_update_models",
+      "codex-rs/models-manager/src/cache.rs::ModelsCacheEntry",
+      "codex-rs/app-server/src/models_refresh_worker.rs::spawn_with_interval",
+      "codex-rs/app-server/src/message_processor.rs"
+    ],
+    "latest_endpoint_binding": {
+      "git_blob": "ecd50a0f1d3ce5b253e61da56e436cd97b920279",
+      "verification": "Reported and reviewed by owning CI agent; this peer did not retrieve it independently"
+    }
+  },
+  "limitations": [
+    "No Rustfmt, compilation, native test, or model request was executed by this review.",
+    "The candidate fixes the proven impossible equality. Actual source-head execution is still required to show all initialization, persistence, and RPC preconditions complete.",
+    "No conclusion about the original Mac provider or actual remote model requests follows from this local fixture repair."
+  ]
+}

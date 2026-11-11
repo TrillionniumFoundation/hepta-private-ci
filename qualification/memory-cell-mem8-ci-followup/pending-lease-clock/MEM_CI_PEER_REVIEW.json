@@ -1,0 +1,25 @@
+{
+  "schema": "mem8.qualification-lease-clock.ci-peer-review.v1",
+  "reviewer": "mem_ci_integration",
+  "status": "no_must_fix_found_static_only",
+  "base_tree": "e253b99e0a5c3b3a680569da0d224fabff0781ba",
+  "candidate_patch_bytes": 34628,
+  "candidate_patch_sha256": "8f95aab31d8124f22ae9ddd67ae78f05862ee707459637ce32285a79c4010898",
+  "attributes_audit": "MEM_CI_ATTRIBUTE_AUDIT.json",
+  "findings": [
+    "All 23 current candidate postimage byte hashes and preimage blobs independently matched the frozen manifest and complete formatted-69 ls-tree. Three author changes during the first read were not treated as a pass; the final f7f6375d/0fb4061d/f45edad4 files and updated manifest were checked after the author froze them.",
+    "All nine added library variants preserve crate name, compile_data, source glob/binary exclusions, and any existing unit extra sources. The only nonempty compile_data sets are Agentd and memory; both equal their original expressions. No original library declares omitted extra runtime data, rustc flags/env/env_files, deps_extra, custom source list, custom edition or proc_macro attributes. All nine src/lib.rs files exist and no build.rs exists in the exact complete tree.",
+    "The helper's serde_yaml alias filtering, normal external Cargo dependencies and Rust library construction follow the existing defs.bzl lib_rule strategy. No independent proc_macro-deps argument is missing relative to the pinned normal implementation.",
+    "BAZEL_PACKAGE is preserved. Explicit edition 2024 matches the pinned default toolchain in MODULE.bazel blob f0be7de63337cb7c0aa2c68dc93771aa5723e546. App-server-client retains test-support; Agentd retains production-cognitive-write; only memory adds qualification-lease-clock.",
+    "The nine replacement labels are distinct testonly libraries. Both the Agentd qualification roots and extension unit root select this memory identity. The helper unions existing base replacements first and clock replacements last, so worker-host gets the same clock app-server-client/adapter/Agentd identities rather than older normal or test variants.",
+    "Agentd's normal codex_rust_crate call and original _UNIT_TEST_DEPENDENCIES mapping are unchanged. Its dedicated cognitive qualification library, harness, binary and process harness use the clock union. The modified runtime expiry case remains gated by qualification-cognitive-write and does not require the clock API in the ordinary Bazel unit library.",
+    "Agentd qualification normal/dev dependencies and worker-host qualification normal dependencies both resolve infer-core to the same existing infer-core-test-lib. Worker-host's normal dependency on Agentd resolves to the separate production-feature clock Agentd library; the latter resolves normal dependencies only, so it does not pull its worker-host dev dependency back in and form a graph cycle.",
+    "The fresh-only clock constructor keeps the original exclusive open guard, refuses any directory entry except the lock file, binds the clock before a store/clone/lease escapes, and exposes only a Weak controller with monotonic advance. Ordinary open, recovery and read-only constructors select Real. Existing audit timestamp helpers remain real; no new production clock setter is introduced."
+  ],
+  "proof_boundaries": [
+    "Source and AST checks are static and cannot establish actual Bazel target analysis, Rust compilation, runtime expiry behavior or final caller-gate success.",
+    "The author’s two original read-only host queries covered all 216 exact-base Cargo manifests and reported the eight normal / nine root-dev affected closure. This peer independently checked the resulting nine-package Bazel attributes and edge substitutions, but did not independently reread all 216 manifest bodies. Original query jobs: 1a1c9f8a200-2564-3c4 and 1a1c9fadef2-2564-3d3.",
+    "No native test, Bazel lock regeneration, model request or source-ref update was executed for this Clock candidate by this peer.",
+    "The prior successful lock command belongs to the formatted-69 tree e253 and is not inherited by this expanded Clock candidate."
+  ]
+}
