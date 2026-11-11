@@ -53,7 +53,6 @@ async fn committed_import_reopens_and_reconciles_lost_response_without_rewriting
     drop(capability);
     drop(writer); // The client loses the response before its own state advances.
     store.close().await;
-    drop(store);
     let layout = cognitive_test_support::layout(&directory, &authority.agent_id);
     let recovered = CognitiveStore::open_with_recovery(
         &layout,
