@@ -1047,7 +1047,7 @@
               "architecture": 42941333761,
               "architecture_status": "SUCCESS_SOURCE_HEAD_BASE_MERGE_AGGREGATE",
               "blocking": 42941333585,
-              "blocking_status": "QUEUED",
+              "blocking_status": "TERMINAL_FAILURE_LOG_BLOB_NOT_FOUND",
               "v8": 42941333582,
               "v8_status": "SUCCESS_METADATA_ONLY",
               "windows_private_job": 130263598488,
@@ -1063,11 +1063,16 @@
               "architecture_artifact_sha256": "d0bf19d2af6385fe7948769610dbc3b3e9b527b3c68c2140768fb696cfa53e7c",
               "architecture_base_merge_artifact_id": 13822114175,
               "architecture_base_merge_artifact_size_bytes": 11256,
-              "architecture_base_merge_artifact_sha256": "cea1b3a001622185da1764d1e4954555fe30aa3ffae744a378846bb708a873ec"
+              "architecture_base_merge_artifact_sha256": "cea1b3a001622185da1764d1e4954555fe30aa3ffae744a378846bb708a873ec",
+              "blocking_job": 130277316066,
+              "blocking_log_result": "GitHub Actions job log endpoint returned BlobNotFound/404 after terminal failure; run artifacts list is empty",
+              "blocking_root": "UNKNOWN",
+              "blocking_observed_semantic_tests": "UNKNOWN"
             },
             "required": "read each exact-source terminal job and original logs; no predecessor transfer",
             "windows_scope_limit": "the Windows workflow compiled the changed agentd crate and ran prompt_runtime::tests only; it did not execute the 17 generation/evaluation/credit fixtures changed by #5880, so architecture/blocking native remain required",
-            "architecture_scope_limit": "Architecture source-head recorded 31 successful command records and 662 observed tests, but its selected commands do not directly execute the 17 generation/evaluation/credit fixtures changed by #5880; blocking native remains required."
+            "architecture_scope_limit": "Architecture source-head recorded 31 successful command records and 662 observed tests, but its selected commands do not directly execute the 17 generation/evaluation/credit fixtures changed by #5880; blocking native remains required.",
+            "blocking_scope_limit": "No blocking semantic verdict is inferred because the original terminal job log and artifacts are unavailable; Architecture/Windows selected counts do not transfer."
           }
         }
       ]
@@ -1127,7 +1132,7 @@
           "local_result": "git diff --check passed; PR aggregate diff verified as one addition and one deletion; native Rust execution NOT_RUN locally",
           "fresh_runs": {
             "blocking": 42941516830,
-            "blocking_status": "IN_PROGRESS_AFFECTED_OWNERS_REVERSE_CONSUMERS",
+            "blocking_status": "QUEUED",
             "shared_framework": 42941516948,
             "shared_framework_status": "FAILURE_ONE_TEST",
             "windows_private": 42941516670,
@@ -1137,7 +1142,7 @@
             "daemon_learning": 42941516723,
             "daemon_learning_status": "FAILURE_ONE_TEST",
             "architecture": 42941516717,
-            "architecture_status": "QUEUED",
+            "architecture_status": "SUCCESS_SOURCE_HEAD_BASE_MERGE_AGGREGATE",
             "windows_private_job": 130264197770,
             "windows_private_declared_tests": "34 passed total across path/prompt-registry/final-use/authority-lease/prompt-runtime; agentd prompt_runtime 12 passed",
             "windows_private_artifact_id": 13821707818,
@@ -1186,23 +1191,23 @@
             "windows_private_artifact_size_bytes": 13521,
             "windows_private_artifact_sha256": "fd6dfa58478d3afad8b65608827c6f04c86cd10b4017e63cb6b4b6a5ec03b7f9",
             "daemon_learning": 42951157619,
-            "daemon_learning_status": "IN_PROGRESS",
+            "daemon_learning_status": "ATTEMPT_1_TRANSPORT_FAILURE_ATTEMPT_2_IN_PROGRESS",
             "shared_framework": 42951157663,
-            "shared_framework_status": "QUEUED",
+            "shared_framework_status": "SUCCESS_1190_NATIVE",
             "cell_research": 42951157633,
             "cell_research_status": "SUCCESS_EVIDENCE_CONTRACT_ONLY_74_TESTS",
             "local_update_contracts": 42951157664,
             "local_update_contracts_status": "SUCCESS_NATIVE_ARTIFACT_CONTRACT_119_TESTS",
             "bazel_stable_lock": 42951157657,
-            "bazel_stable_lock_status": "QUEUED",
+            "bazel_stable_lock_status": "SUCCESS_METADATA_SCOPE",
             "architecture": 42951157615,
-            "architecture_status": "PENDING",
+            "architecture_status": "IN_PROGRESS_SOURCE_HEAD_BASE_MERGE_SUCCESS",
             "blocking": 42951157880,
-            "blocking_status": "QUEUED",
+            "blocking_status": "TERMINAL_FAILURE_MIXED_PLATFORM",
             "hcsn": 42951157687,
-            "hcsn_status": "IN_PROGRESS",
+            "hcsn_status": "SUCCESS_SCOPE_SEPARATE",
             "v8": 42951157710,
-            "v8_status": "QUEUED",
+            "v8_status": "SUCCESS_METADATA_ONLY",
             "hos2": 42951157616,
             "hos2_status": "SKIPPED",
             "cell_research_job": 130295511262,
@@ -1217,12 +1222,42 @@
             "local_update_skipped": 1,
             "local_update_artifact_id": 13825452497,
             "local_update_artifact_size_bytes": 4041,
-            "local_update_artifact_sha256": "cc1c566cb71a3f2b06e57ed586a5a5cc4a928349109a0b0e90e4529099ca5443"
+            "local_update_artifact_sha256": "cc1c566cb71a3f2b06e57ed586a5a5cc4a928349109a0b0e90e4529099ca5443",
+            "daemon_attempt_1_job": 130295510605,
+            "daemon_attempt_1_result": "cargo fetch failed before native cases: curl 55 / OpenSSL 3.5.4 unexpected EOF while retrieving thiserror-impl",
+            "daemon_attempt_1_observed_tests": 0,
+            "daemon_attempt_1_artifact_id": 13825853320,
+            "daemon_attempt_1_artifact_size_bytes": 1110544,
+            "daemon_attempt_1_artifact_sha256": "56147b7627cf2377a4be4fbc3866678e647211b97fccb4bb6d7901b0db576a5e",
+            "daemon_attempt_2_job": 130304826142,
+            "daemon_attempt_2_status": "IN_PROGRESS_ORDINARY_AND_ROOT_SUITES",
+            "shared_framework_job": 130295511508,
+            "shared_framework_observed_passed": 1190,
+            "shared_framework_observed_failed": 0,
+            "shared_framework_skipped_not_run": 71,
+            "shared_framework_training_stage_cases": 6,
+            "shared_framework_artifact_id": 13826946544,
+            "shared_framework_artifact_size_bytes": 174816,
+            "shared_framework_artifact_sha256": "3b9d567cfa6b0ea4f1f92d5e6868ef37174f83be8cb669fd9dcef8858cac4a84"
           },
           "windows_scope_limit": "Windows compiled the candidate but selected only prompt_runtime::tests; it did not execute the six new Training-stage cases or complete the ordinary learning chain.",
           "required": "Read every exact-source terminal native/original artifact. No cb0598, #5884 or #5900 test count transfers.",
           "open": "Production StageOwner assembly, public host entry points, receipt-owner create/recover, real frozen model/data/config/Circuit/evaluator tuple, original authority/custody, independent B/retention/new-C, cold recovery, field full-cost benefit, and learned-skill promotion remain unestablished; complete Adopt and correct NoUpdate chains remain zero.",
-          "scoped_completed_limit": "Cell-research 74/0 and local-update 119/0 close only their evidence/contract selections. They do not execute the six new Agentd Training-stage cases or production StageOwner/ordinary A-to-B-to-C recovery."
+          "scoped_completed_limit": "Cell-research 74/0 and local-update 119/0 close only their evidence/contract selections. They do not execute the six new Agentd Training-stage cases or production StageOwner/ordinary A-to-B-to-C recovery.",
+          "shared_scope_limit": "Exact 30a source ran 1,190 unique native cases and each of the six original Training-stage cases exactly once. This is package behavior evidence, not production StageOwner/public-host/Root assembly or a complete Adopt/NoUpdate product chain.",
+          "blocking_result": {
+            "run": 42951157880,
+            "status": "TERMINAL_FAILURE",
+            "classification": "mixed independent broad-CI failures; not a whole-run pass and not an ACT semantic verdict",
+            "windows_shard_1": "exec-server remote Windows sandbox positive fails because production deliberately refuses legacy isolation under ambient parent FILE_DELETE_CHILD",
+            "windows_shard_2": "windows-sandbox/CLI/app-server and Matrix reopen failures include the same fail-closed sandbox boundary, timeouts and permission/cache conditions",
+            "windows_shard_3": "multiple real fixture failures remain: durable file locks/os error 33, PermissionDenied/Invalid fixtures, queue/TUI/neuron/Agentd failures",
+            "windows_shard_4": "exec-server filesystem and Core tests retain legacy sandbox boundary and file/path failures",
+            "macos_arm": "core/app-server/Agentd failures include timeouts, missing files, malformed fixture input and invalid automation fixtures",
+            "macos_intel": "code-mode host endpoint/timeouts, exec-forward timeout, rolling-upgrade socket error 57, queue recovery mismatch, Agentd fixture failures and Matrix login_or_restore.build.timeout",
+            "linux": "gnu and musl Bazel tests passed; Linux clippy and release passed",
+            "artifacts": "original per-platform Bazel execution-log artifacts retained by GitHub and source-bound to 30a697"
+          }
         },
         "previous_common_candidate": {
           "source": "cb0598a9099a0d828ce73aedb51e397e600e49d1",
@@ -1256,6 +1291,29 @@
             "local_update_contracts_status": "SUCCESS_CONTRACT_GATE_ONLY"
           },
           "boundary": "All results remain bound to cb0598.../59a019... and do not transfer to 30a697...."
+        },
+        "training_snapshot_recovery_component": {
+          "pr": 5914,
+          "source": "be8adcbb5e9925f72e05330b8fb30509cba4544b",
+          "tree": "eaa8b27f16a5f9fed87e9d6882cd23dfaecfd125",
+          "parent": "30a697c50e10abd56e61b6b84f28ac9ae9f32f5d",
+          "change": "read-only original Training receipt recovery from Coordinator-validated full iteration snapshots; compares retained, expected and actual original-owner completion field-for-field and delegates once",
+          "current_runs": {
+            "shared": 42955998124,
+            "shared_status": "QUEUED",
+            "daemon": 42955998126,
+            "daemon_status": "QUEUED",
+            "architecture": 42955998198,
+            "architecture_status": "QUEUED",
+            "windows_private": 42955998131,
+            "windows_private_status": "IN_PROGRESS",
+            "blocking": 42955998139,
+            "blocking_status": "QUEUED",
+            "v8": 42955998051,
+            "v8_status": "SUCCESS_METADATA_ONLY"
+          },
+          "qualification": "SOURCE_REVIEW_PASS_NATIVE_PENDING",
+          "limits": "Training only; no ordinary product caller, complete LearningIterationStageOwnerPortsV1, Root startup, file/key/trust custody, Dataset extraction semantics, governed native model proposal, independent B/retention/new-C or cold recovery. Historical 30a results do not transfer."
         }
       }
     }
