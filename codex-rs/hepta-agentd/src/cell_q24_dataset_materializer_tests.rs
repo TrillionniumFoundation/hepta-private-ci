@@ -94,7 +94,13 @@ impl Dataset {
         terminality: OutcomeTerminalityV1,
         outcome_unit: Digest32,
     ) -> anyhow::Result<Self> {
-        Self::with_candidate_mutation(root, sources, terminality, outcome_unit, /*mutation*/ None)
+        Self::with_candidate_mutation(
+            root,
+            sources,
+            terminality,
+            outcome_unit,
+            /*mutation*/ None,
+        )
     }
 
     fn with_candidate_mutation(
@@ -404,8 +410,12 @@ fn prefix(
 async fn q24_dataset_original_task_and_terminal_target_drive_native_fit_and_no_update()
 -> anyhow::Result<()> {
     let root = tempfile::tempdir()?;
-    let (mut a, baseline, bundle, _current) =
-        ordinary(root.path(), "dataset-original-A", /*source_envelope*/ None).await?;
+    let (mut a, baseline, bundle, _current) = ordinary(
+        root.path(),
+        "dataset-original-A",
+        /*source_envelope*/ None,
+    )
+    .await?;
     a.request.body.artifact_set_digest = cell::d("independent-ingress-artifact-set").to_string();
     a.request.signature_hex = SigningKey::from_bytes(&[91; 32])
         .sign(&crate::authbus_objective_claims(&a.runtime.identity, &a.request)?.signing_bytes())
@@ -537,8 +547,12 @@ async fn q24_dataset_original_task_and_terminal_target_drive_native_fit_and_no_u
 async fn q24_dataset_rejects_missing_censored_wrong_units_and_untrusted_freeze()
 -> anyhow::Result<()> {
     let root = tempfile::tempdir()?;
-    let (mut a, _, _, _current) =
-        ordinary(root.path(), "dataset-negative-A", /*source_envelope*/ None).await?;
+    let (mut a, _, _, _current) = ordinary(
+        root.path(),
+        "dataset-negative-A",
+        /*source_envelope*/ None,
+    )
+    .await?;
     let publication = execute(&a, 1).await?;
     for terminality in [
         OutcomeTerminalityV1::Pending,
@@ -654,8 +668,12 @@ async fn q24_dataset_rejects_missing_censored_wrong_units_and_untrusted_freeze()
 async fn q24_dataset_row_order_and_original_withdrawal_are_preserved() -> anyhow::Result<()> {
     let root_a = tempfile::tempdir()?;
     let root_b = tempfile::tempdir()?;
-    let (mut a, baseline, bundle, _current_a) =
-        ordinary(root_a.path(), "dataset-order-A", /*source_envelope*/ None).await?;
+    let (mut a, baseline, bundle, _current_a) = ordinary(
+        root_a.path(),
+        "dataset-order-A",
+        /*source_envelope*/ None,
+    )
+    .await?;
     let (mut b, _, _, _current_b) = ordinary(
         root_b.path(),
         "dataset-order-B",
@@ -737,8 +755,12 @@ async fn q24_dataset_row_order_and_original_withdrawal_are_preserved() -> anyhow
 #[tokio::test]
 async fn q24_dataset_expiry_is_an_error_for_a_no_update_target() -> anyhow::Result<()> {
     let root = tempfile::tempdir()?;
-    let (mut a, baseline, bundle, _current) =
-        ordinary(root.path(), "dataset-expiry-A", /*source_envelope*/ None).await?;
+    let (mut a, baseline, bundle, _current) = ordinary(
+        root.path(),
+        "dataset-expiry-A",
+        /*source_envelope*/ None,
+    )
+    .await?;
     let publication = execute(&a, 1).await?;
     let files = tempfile::tempdir()?;
     let mut dataset = Dataset::new(
