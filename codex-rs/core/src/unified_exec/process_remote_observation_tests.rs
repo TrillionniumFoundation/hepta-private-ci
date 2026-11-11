@@ -3,12 +3,14 @@ use super::UnifiedExecProcess;
 use crate::unified_exec::UnifiedExecError;
 use crate::unified_exec::process_state::ProcessState;
 use anyhow::Result;
+use codex_exec_server::ExecOutputStream;
 use codex_exec_server::ExecProcess;
 use codex_exec_server::ExecProcessEvent;
 use codex_exec_server::ExecProcessEventReceiver;
 use codex_exec_server::ExecProcessFuture;
 use codex_exec_server::ExecServerError;
 use codex_exec_server::ProcessId;
+use codex_exec_server::ProcessOutputChunk;
 use codex_exec_server::ProcessSignal;
 use codex_exec_server::ReadResponse;
 use codex_exec_server::StartedExecProcess;
@@ -299,6 +301,78 @@ async fn logical_failure_before_native_exit_preserves_first_failure() -> Result<
     assert_eq!(
         fixture.process.failure_message(),
         Some("first policy failure".to_string())
+    );
+    Ok(())
+}
+
+#[tokio::test]
+async fn remote_transcript_records_recovered_sequences_once_after_poll_drain() -> Result<()> {
+    let fixture = RemoteFixture::new(WriteStatus::Accepted).await?;
+    let chunk = |seq, bytes: &[u8]| ProcessOutputChunk {
+        seq,
+        stream: ExecOutputStream::Stdout,
+        chunk: bytes.to_vec().into(),
+    };
+    fixture
+        .remote
+        .events
+        .send(ExecProcessEvent::Output(chunk(1, b"HEAD\n")))?;
+    tokio::time::timeout(Duration::from_secs(2), async {
+        while fixture
+            .process
+            .output
+            .output_buffer
+            .lock()
+            .await
+            .total_bytes()
+            != 5
+        {
+            tokio::task::yield_now().await;
+        }
+    })
+    .await?;
+    let drained = std::mem::take(&mut *fixture.process.output.output_buffer.lock().await);
+    assert_eq!(drained.to_bytes(), b"HEAD\n");
+    *fixture.remote.read_response.lock().await = ReadResponse {
+        chunks: vec![
+            chunk(1, b"HEAD\n"),
+            chunk(2, b"middle\n"),
+            chunk(3, b"TAIL\n"),
+        ],
+        next_seq: 4,
+        exited: false,
+        exit_code: None,
+        closed: false,
+        failure: None,
+        sandbox_denied: false,
+    };
+    // A sequence gap rereads the original process. Its repeated prefix and a
+    // later duplicate event must not duplicate the canonical transcript.
+    fixture
+        .remote
+        .events
+        .send(ExecProcessEvent::Output(chunk(3, b"TAIL\n")))?;
+    fixture
+        .remote
+        .events
+        .send(ExecProcessEvent::Output(chunk(2, b"middle\n")))?;
+    fixture.remote.events.send(ExecProcessEvent::Exited {
+        seq: 4,
+        exit_code: 0,
+        sandbox_denied: Some(false),
+    })?;
+    fixture
+        .remote
+        .events
+        .send(ExecProcessEvent::Closed { seq: 5 })?;
+    fixture.wait_for_state(|state| state.has_exited).await?;
+    assert_eq!(
+        fixture.process.transcript().lock().await.to_bytes(),
+        b"HEAD\nmiddle\nTAIL\n"
+    );
+    assert_eq!(
+        fixture.process.output.output_buffer.lock().await.to_bytes(),
+        b"middle\nTAIL\n"
     );
     Ok(())
 }
