@@ -82,6 +82,24 @@ def bind_program(manifest_path):
         require(path.is_relative_to(root) and path.is_file() and not path.is_symlink(), 'unsafe candidate manifest path')
         require(identity(path) == item, 'candidate program source differs: ' + name)
         inputs[str(path)] = item
+    # The durable receipt/publisher module is imported from the sibling
+    # recovery_v1 directory, not from this manifest's ordinary files map.
+    # A source-only hash of c2_runner/c2_io omits the real publication code.
+    # Require its byte identity in every prospective execution manifest.
+    dependency_key = 'recovery_v1/c2_durable.py'
+    dependencies = value.get('dependencies')
+    require(type(dependencies) is dict and set(dependencies) == {dependency_key},
+            'C2 program manifest lacks exact durable implementation dependency')
+    dependency = Path(__file__).resolve().parent.parent / 'recovery_v1' / 'c2_durable.py'
+    require(dependency.is_file() and not dependency.is_symlink()
+            and not dependency.parent.is_symlink(),
+            'durable dependency is missing or symlinked')
+    require(identity(dependency) == dependencies[dependency_key],
+            'durable publisher implementation changed since freeze')
+    import c2_durable
+    require(Path(c2_durable.__file__).resolve() == dependency.resolve(),
+            'loaded durable publisher is not the pinned recovery module')
+    inputs[str(dependency.resolve())] = dependencies[dependency_key]
     inputs[str(Path(manifest_path).resolve())] = identity(manifest_path)
     require(str(Path(__file__).resolve()) in inputs, 'running unbound C2 entry point')
     return inputs
