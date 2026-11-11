@@ -354,6 +354,14 @@ def paired_evidence(rows: Iterable[TrialRow]) -> dict:
         block[row.arm] = row
     if len(keys) > 100_000:
         raise ContractError("too many matched evaluation blocks")
+    # Prospective seed clusters must have the same family-by-episode roster.
+    # Complete individual arm blocks alone do not make seed means comparable.
+    roster_by_seed: dict[int, dict[str, int]] = {}
+    for (_, seed, family) in keys:
+        roster = roster_by_seed.setdefault(seed, {})
+        roster[family] = roster.get(family, 0) + 1
+    if len({tuple(sorted(r.items())) for r in roster_by_seed.values()}) != 1:
+        raise ContractError("unequal family/episode roster across seed clusters")
     net_diffs_by_seed: dict[int, list[float]] = {}
     cost_diffs_by_seed: dict[int, list[float]] = {}
     retention_diffs_by_seed: dict[int, list[float]] = {}
@@ -383,7 +391,8 @@ def paired_evidence(rows: Iterable[TrialRow]) -> dict:
             (shuffled.gross_value - shuffled.full_cost))
         cost_diffs_by_seed.setdefault(seed, []).append(
             ref.full_cost - shuffled.full_cost)
-        if ref.retention_value is not None and shuffled.retention_value is not None:
+        # A full four-arm retention panel cannot be inferred from primary arms.
+        if all(row.retention_value is not None for row in block.values()):
             retention_diffs_by_seed.setdefault(seed, []).append(
                 ref.retention_value - shuffled.retention_value)
     # A seed reused across task families is ONE randomization unit, not
