@@ -205,7 +205,9 @@ class ContentIdentityTests(unittest.TestCase):
                 )
 
             result = report(launch)["receipts"][0]
-            self.assertEqual((result["status"], result["selected_used"]), ("complete", True))
+            self.assertEqual(
+                (result["status"], result["selected_used"]), ("complete", True)
+            )
             for update in (
                 {"exit_code": 1},
                 {"exit_code": False},
