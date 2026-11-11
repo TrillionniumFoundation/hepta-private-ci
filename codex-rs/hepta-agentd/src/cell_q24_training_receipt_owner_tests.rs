@@ -7,6 +7,7 @@ use codex_hepta_learning_ledger::AuthenticatedPrincipalV1;
 use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
 use codex_hepta_learning_ledger::LearningEvidenceTrustV1;
 use codex_hepta_learning_ledger::LearningEvidenceVerifierV1;
+use codex_hepta_learning_ledger::SignedEvidenceError;
 use codex_hepta_learning_ledger::TrustedLearningSignerV1;
 use ed25519_dalek::SigningKey;
 use pretty_assertions::assert_eq;
@@ -377,5 +378,93 @@ fn original_training_receipt_lost_ack_reopens_pending_or_exact_completed_signatu
             assert_eq!(fs::read(f.root.path().join("job"))?, original_training);
         }
     }
+    Ok(())
+}
+
+#[test]
+fn original_training_receipt_expired_signature_never_renews_or_retrains() -> anyhow::Result<()> {
+    let mut f = ReceiptFixture::new(2 * Q)?;
+    f.config.maximum_signature_lifetime_seconds = 1;
+    let mut training = f.create_training()?;
+    training.fit_or_readback(&AtomicBool::new(false))?;
+    let mut receipts = f.create_receipts()?;
+    let first = receipts.attest_original_completion(&mut training)?;
+    let original_training = fs::read(f.root.path().join("job"))?;
+    let original_receipts = fs::read(f.root.path().join("receipts"))?;
+    std::thread::sleep(std::time::Duration::from_secs(2));
+    assert!(clock()? > first.1.expires_at);
+    assert!(matches!(
+        receipts.readback(&mut training),
+        Err(ReceiptError::Evidence(SignedEvidenceError::ValidityWindow))
+    ));
+    assert!(matches!(
+        receipts.attest_original_completion(&mut training),
+        Err(ReceiptError::Evidence(SignedEvidenceError::ValidityWindow))
+    ));
+    drop(receipts);
+    let mut receipts = f.recover_receipts()?;
+    assert!(matches!(
+        receipts.readback(&mut training),
+        Err(ReceiptError::Evidence(SignedEvidenceError::ValidityWindow))
+    ));
+    assert!(matches!(
+        receipts.attest_original_completion(&mut training),
+        Err(ReceiptError::Evidence(SignedEvidenceError::ValidityWindow))
+    ));
+    assert_eq!(fs::read(f.root.path().join("job"))?, original_training);
+    assert_eq!(fs::read(f.root.path().join("receipts"))?, original_receipts);
+    Ok(())
+}
+
+#[test]
+fn original_training_receipt_lost_genesis_witness_ack_stays_blocked() -> anyhow::Result<()> {
+    let f = ReceiptFixture::new(2 * Q)?;
+    assert!(matches!(
+        OriginalCellQ24TrainingReceiptOwnerV1::create(
+            opened(f.root.path(), "receipts")?,
+            FaultWitness {
+                inner: f.receipt_witness()?,
+                sequence: 1,
+                fault: LostAck::BeforeWrite,
+            },
+            f.config.clone(),
+            SigningKey::from_bytes(&[79; 32]),
+        ),
+        Err(ReceiptError::Owner(
+            LearningOriginalOwnerErrorV1::CommitUncertain
+        ))
+    ));
+    let original_receipts = fs::read(f.root.path().join("receipts"))?;
+    let original_witness = fs::read(f.root.path().join("receipt-witness"))?;
+    assert!(!original_receipts.is_empty());
+    assert_eq!(f.receipt_witness()?.current()?, None);
+    assert!(matches!(
+        OriginalCellQ24TrainingReceiptOwnerV1::recover(
+            opened(f.root.path(), "receipts")?,
+            f.receipt_witness()?,
+            f.config.clone(),
+            SigningKey::from_bytes(&[79; 32]),
+        ),
+        Err(ReceiptError::Owner(LearningOriginalOwnerErrorV1::Binding(
+            "original independent witness"
+        )))
+    ));
+    assert!(matches!(
+        OriginalCellQ24TrainingReceiptOwnerV1::create(
+            opened(f.root.path(), "receipts")?,
+            f.receipt_witness()?,
+            f.config.clone(),
+            SigningKey::from_bytes(&[79; 32]),
+        ),
+        Err(ReceiptError::Owner(LearningOriginalOwnerErrorV1::File(
+            LockedFileProductEvaluationExecutionErrorV1::AlreadyInitialized
+        )))
+    ));
+    assert_eq!(f.receipt_witness()?.current()?, None);
+    assert_eq!(fs::read(f.root.path().join("receipts"))?, original_receipts);
+    assert_eq!(
+        fs::read(f.root.path().join("receipt-witness"))?,
+        original_witness
+    );
     Ok(())
 }
