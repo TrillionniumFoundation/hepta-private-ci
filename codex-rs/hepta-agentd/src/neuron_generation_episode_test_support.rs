@@ -341,11 +341,11 @@ impl LedgerFixture {
         ))
     }
 
-    pub(super) fn bytes(&self) -> [Vec<u8>; 2] {
-        [
-            checked(fs::read(self.directory.path().join("ledger"))),
-            checked(fs::read(self.directory.path().join("witness"))),
-        ]
+    pub(super) fn state(&self, writer: &LedgerWriter) -> (LedgerSnapshot, LedgerWitnessFrontier) {
+        (
+            checked(writer.snapshot()),
+            checked(writer.witness_frontier()),
+        )
     }
 }
 

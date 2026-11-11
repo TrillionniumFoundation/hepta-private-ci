@@ -43,10 +43,10 @@ fn actual_file_owners_compute_sign_and_publish_only_bound_comparison() {
         plan.record().candidate.manifest.source_digest,
         plan.record().fixed_expert.manifest.source_digest
     );
-    let before = fixture.holdout_bytes();
+    let before = fixture.holdout_state();
     let inputs = fixture.provider.inputs.clone();
     let receipt = checked(fixture.run(&plan));
-    assert_ne!(fixture.holdout_bytes(), before);
+    assert_ne!(fixture.holdout_state(), before);
     assert_eq!((fixture.provider.calls, fixture.provider.releases), (1, 1));
     let summary = checked(receipt.plan().record().candidate.cost.summary());
     assert_eq!(
@@ -108,7 +108,7 @@ fn actual_file_owners_compute_sign_and_publish_only_bound_comparison() {
     assert_eq!(sink.publications, 1);
 
     let anchor = fixture.runner.product.holdout_anchor();
-    let consumed = fixture.holdout_bytes();
+    let consumed = fixture.holdout_state();
     drop(fixture.runner);
     let store = checked(LockedFileFinalHoldoutCasStoreV1::recover(
         file(&fixture.directory.path().join("holdout")),
@@ -132,13 +132,13 @@ fn actual_file_owners_compute_sign_and_publish_only_bound_comparison() {
     assert_eq!((fixture.provider.calls, fixture.provider.releases), (2, 1));
     assert!(fixture.provider.inputs.is_some());
     assert_eq!(fixture.runner.product.holdout_anchor(), anchor);
-    assert_eq!(fixture.holdout_bytes(), consumed);
+    assert_eq!(fixture.holdout_state(), consumed);
 }
 
 #[test]
 fn unfair_or_missing_training_declarations_never_consume_holdout() {
     let fixture = Fixture::new(Costs::Complete);
-    let before = fixture.holdout_bytes();
+    let before = fixture.holdout_state();
     for mutation in 0..9 {
         let mut registration = fixture.registration.clone();
         let fixed = &mut registration.comparison.fixed_expert;
@@ -163,7 +163,7 @@ fn unfair_or_missing_training_declarations_never_consume_holdout() {
             )
             .is_err()
         );
-        assert_eq!(fixture.holdout_bytes(), before);
+        assert_eq!(fixture.holdout_state(), before);
     }
     assert_eq!((fixture.provider.calls, fixture.provider.releases), (0, 0));
 }
@@ -178,9 +178,9 @@ fn missing_or_unknown_costs_refuse_gain_while_unrequested_energy_stays_unknown()
         Costs::UnknownEnvelope,
     ] {
         let fixture = Fixture::new(profile);
-        let before = fixture.holdout_bytes();
+        let before = fixture.holdout_state();
         assert!(fixture.freeze().is_err());
-        assert_eq!(fixture.holdout_bytes(), before);
+        assert_eq!(fixture.holdout_state(), before);
         assert_eq!((fixture.provider.calls, fixture.provider.releases), (0, 0));
     }
     let mut fixture = Fixture::new(Costs::Complete);
@@ -205,7 +205,7 @@ fn same_snapshot_but_changed_journal_cut_is_rejected_before_provider() {
     let mut fixture = Fixture::new(Costs::Complete);
     let plan = checked(fixture.freeze());
     let snapshot = checked(fixture.candidate.snapshot()).clone();
-    let before = fixture.holdout_bytes();
+    let before = fixture.holdout_state();
     checked(fixture.candidate.resume());
     checked(fixture.candidate.drain());
     assert_eq!(fixture.candidate.snapshot(), Ok(&snapshot));
@@ -215,7 +215,7 @@ fn same_snapshot_but_changed_journal_cut_is_rejected_before_provider() {
             "Cell journal changed after registration"
         ))
     ));
-    assert_eq!(fixture.holdout_bytes(), before);
+    assert_eq!(fixture.holdout_state(), before);
     assert_eq!((fixture.provider.calls, fixture.provider.releases), (0, 0));
 }
 
@@ -235,11 +235,11 @@ fn changed_costs_or_unclosed_owner_cannot_reuse_a_frozen_comparison() {
             ..CellCostMetricsV2::default()
         },
     }));
-    let before = fixture.holdout_bytes();
+    let before = fixture.holdout_state();
     assert!(fixture.run(&plan).is_err());
     checked(fixture.candidate.resume());
     assert!(fixture.freeze().is_err());
-    assert_eq!(fixture.holdout_bytes(), before);
+    assert_eq!(fixture.holdout_state(), before);
     assert_eq!((fixture.provider.calls, fixture.provider.releases), (0, 0));
 }
 
@@ -252,7 +252,7 @@ fn different_task_and_unknown_holdout_release_remain_fail_closed() {
         Costs::Complete,
         [18; 32],
     );
-    let before = fixture.holdout_bytes();
+    let before = fixture.holdout_state();
     assert!(
         freeze_cell_evaluation_plan_v1(
             fixture.registration.clone(),
@@ -277,11 +277,11 @@ fn different_task_and_unknown_holdout_release_remain_fail_closed() {
         )
         .is_err()
     );
-    assert_eq!(fixture.holdout_bytes(), before);
+    assert_eq!(fixture.holdout_state(), before);
     let plan = checked(fixture.freeze());
     let inputs = fixture.provider.inputs.take();
     assert!(fixture.run(&plan).is_err());
-    let consumed = fixture.holdout_bytes();
+    let consumed = fixture.holdout_state();
     assert_ne!(consumed, before);
     assert_eq!(fixture.provider.releases, 1);
     let anchor = fixture.runner.product.holdout_anchor();
@@ -296,7 +296,7 @@ fn different_task_and_unknown_holdout_release_remain_fail_closed() {
     assert_eq!((fixture.provider.calls, fixture.provider.releases), (2, 1));
     assert!(fixture.provider.inputs.is_some());
     assert_eq!(fixture.runner.product.holdout_anchor(), anchor);
-    assert_eq!(fixture.holdout_bytes(), consumed);
+    assert_eq!(fixture.holdout_state(), consumed);
 }
 
 #[test]

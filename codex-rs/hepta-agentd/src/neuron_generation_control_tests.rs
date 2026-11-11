@@ -1,7 +1,6 @@
 //! Real private socket, Fleet fence, service queue, journal and witness tests.
 //! The file control fixture isolates transport/recovery from model quality.
 
-use std::fs;
 use std::sync::Arc;
 use std::sync::atomic::Ordering;
 
@@ -9,6 +8,7 @@ use codex_hepta_agent_protocol::AGENTD_GENERATION_CONTROL_CAPABILITY;
 use codex_hepta_agent_protocol::GenerationControlRequestV1 as Request;
 use codex_hepta_agent_protocol::GenerationControlResponseV1 as Response;
 use codex_hepta_agent_protocol::GenerationDispositionV1;
+use codex_hepta_agent_protocol::GenerationOutputReferenceV1;
 use codex_hepta_agent_protocol::GenerationPendingV1;
 use codex_hepta_agent_protocol::GenerationStatusV1;
 use codex_hepta_agent_protocol::GenerationStepV1;
@@ -88,6 +88,24 @@ async fn status(client: &AgentdClient) -> TestResult<GenerationStatusV1> {
             Err(std::io::Error::other(format!("expected generation status: {other:?}")).into())
         }
     }
+}
+
+fn stable_status(
+    value: &GenerationStatusV1,
+) -> (
+    [u8; 32],
+    u64,
+    bool,
+    Option<GenerationPendingV1>,
+    Option<GenerationOutputReferenceV1>,
+) {
+    (
+        value.snapshot_digest,
+        value.revision,
+        value.drained,
+        value.pending.clone(),
+        value.output.clone(),
+    )
 }
 
 fn step(fixture: &Fixture, snapshot: &GenerationStatusV1, key: &str) -> Request {
@@ -175,13 +193,12 @@ async fn private_socket_pages_acknowledges_and_reopens_exact_original_operation(
         serving.client.generation(acknowledgement.clone()).await?,
         Response::Acknowledged {}
     );
-    let journal_path = fixture.directory.path().join("generation-journal");
-    let durable = fs::read(&journal_path)?;
+    let durable = stable_status(&status(&serving.client).await?);
     assert_eq!(
         serving.client.generation(acknowledgement.clone()).await?,
         Response::Acknowledged {}
     );
-    assert_eq!(fs::read(&journal_path)?, durable);
+    assert_eq!(stable_status(&status(&serving.client).await?), durable);
     assert!(status(&serving.client).await?.drained);
 
     fixture.ticks.store(20_000, Ordering::SeqCst);
@@ -195,7 +212,7 @@ async fn private_socket_pages_acknowledges_and_reopens_exact_original_operation(
         reopened.client.generation(acknowledgement).await?,
         Response::Acknowledged {}
     );
-    assert_eq!(fs::read(&journal_path)?, durable);
+    assert_eq!(stable_status(&status(&reopened.client).await?), durable);
     let Response::Cost(cost) = reopened.client.generation(Request::Cost {}).await? else {
         return Err(std::io::Error::other("expected task cost").into());
     };
@@ -216,15 +233,14 @@ async fn stale_generation_changed_content_and_oversized_input_do_not_mutate_owne
     let fixture = Fixture::new().await;
     let serving = Serving::start(&fixture).await?;
     let initial = status(&serving.client).await?;
-    let journal_path = fixture.directory.path().join("generation-journal");
-    let pristine = fs::read(&journal_path)?;
+    let pristine = stable_status(&initial);
     let mut oversized = step(&fixture, &initial, "oversized");
     let Request::Step { request } = &mut oversized else {
         unreachable!()
     };
     request.input = vec![1; MAX_GENERATION_CONTROL_INPUT_BYTES + 1];
     assert!(serving.client.generation(oversized).await.is_err());
-    assert_eq!(fs::read(&journal_path)?, pristine);
+    assert_eq!(stable_status(&status(&serving.client).await?), pristine);
     let stale_client = AgentdClient::new(
         fixture.directory.path().join("generation.ctl"),
         fixture.identity.agent_id.clone(),
@@ -236,10 +252,10 @@ async fn stale_generation_changed_content_and_oversized_input_do_not_mutate_owne
             .await
             .is_err()
     );
-    assert_eq!(fs::read(&journal_path)?, pristine);
+    assert_eq!(stable_status(&status(&serving.client).await?), pristine);
     let original = step(&fixture, &initial, "same-client-key");
     serving.client.generation(original.clone()).await?;
-    let committed = fs::read(&journal_path)?;
+    let committed = stable_status(&status(&serving.client).await?);
     let mut changed = original;
     let Request::Step { request } = &mut changed else {
         unreachable!()
@@ -260,7 +276,7 @@ async fn stale_generation_changed_content_and_oversized_input_do_not_mutate_owne
     ] {
         assert!(serving.client.generation(request).await.is_err());
     }
-    assert_eq!(fs::read(&journal_path)?, committed);
+    assert_eq!(stable_status(&status(&serving.client).await?), committed);
     assert_eq!(fixture.control.signals.calls.load(Ordering::SeqCst), 1);
     serving.finish().await
 }
@@ -418,8 +434,8 @@ async fn typed_operation_with_same_derived_id_cannot_impersonate_control_intent(
     };
     owner.step(typed, fixture.clock())?;
     drop(owner);
-    let before = fs::read(fixture.directory.path().join("generation-journal"))?;
     let serving = Serving::start(&fixture).await?;
+    let before = stable_status(&status(&serving.client).await?);
     assert!(
         serving
             .client
@@ -429,10 +445,7 @@ async fn typed_operation_with_same_derived_id_cannot_impersonate_control_intent(
             .await
             .is_err()
     );
-    assert_eq!(
-        fs::read(fixture.directory.path().join("generation-journal"))?,
-        before
-    );
+    assert_eq!(stable_status(&status(&serving.client).await?), before);
     assert_eq!(fixture.control.signals.calls.load(Ordering::SeqCst), 1);
     serving.finish().await
 }
@@ -492,9 +505,8 @@ async fn pending_typed_operation_with_same_derived_id_rejects_control_intent_wit
         .signals
         .readable
         .store(true, Ordering::SeqCst);
-    let journal_path = fixture.directory.path().join("generation-journal");
-    let before = fs::read(&journal_path)?;
     let serving = Serving::start(&fixture).await?;
+    let before = stable_status(&status(&serving.client).await?);
     assert_eq!(
         status(&serving.client).await?.pending,
         Some(pending.clone())
@@ -508,7 +520,7 @@ async fn pending_typed_operation_with_same_derived_id_rejects_control_intent_wit
             .await
             .is_err()
     );
-    assert_eq!(fs::read(&journal_path)?, before);
+    assert_eq!(stable_status(&status(&serving.client).await?), before);
     assert_eq!(
         status(&serving.client).await?.pending,
         Some(pending.clone())

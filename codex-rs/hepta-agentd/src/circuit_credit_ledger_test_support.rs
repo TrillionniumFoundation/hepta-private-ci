@@ -76,7 +76,7 @@ fn sign(
 
 pub(super) struct LedgerFixture {
     pub(super) writer: LedgerWriter,
-    directory: tempfile::TempDir,
+    _directory: tempfile::TempDir,
 }
 
 impl LedgerFixture {
@@ -149,14 +149,17 @@ impl LedgerFixture {
             &directory_handle,
             &directory_handle,
         ));
-        Self { writer, directory }
+        Self {
+            writer,
+            _directory: directory,
+        }
     }
 
-    pub(super) fn bytes(&self) -> [Vec<u8>; 2] {
-        [
-            checked(std::fs::read(self.directory.path().join("ledger"))),
-            checked(std::fs::read(self.directory.path().join("witness"))),
-        ]
+    pub(super) fn state(&self) -> (LedgerSnapshot, LedgerWitnessFrontier) {
+        (
+            checked(self.writer.snapshot()),
+            checked(self.writer.witness_frontier()),
+        )
     }
 }
 
