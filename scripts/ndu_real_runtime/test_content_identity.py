@@ -316,6 +316,63 @@ class ContentIdentityTests(unittest.TestCase):
                     rubric_sha256="e" * 64,
                 )
 
+
+    def test_reordered_identical_writes_are_not_attached_to_wrong_snapshots(self):
+        with tempfile.TemporaryDirectory() as directory:
+            steps, snapshots, score, launch = self.repeated_identical_delivery(
+                Path(directory)
+            )
+            with self.assertRaisesRegex(ValueError, "chronology"):
+                content_identity_report(
+                    list(reversed(steps)),
+                    snapshots,
+                    [score, score, score],
+                    launch,
+                    evaluator_sha256="d" * 64,
+                    rubric_sha256="e" * 64,
+                )
+
+    def test_actor_wire_extra_observation_is_not_ignored(self):
+        with tempfile.TemporaryDirectory() as directory:
+            steps, snapshots, score, launch = self.repeated_identical_delivery(
+                Path(directory)
+            )
+            extra = copy.deepcopy(steps[-1])
+            extra["step"] = 2
+            raw = json.dumps(extra, ensure_ascii=False).encode()
+            launch["stdout"] += raw.decode() + "\n"
+            launch["host_exchanges"].append(
+                {"event_sha256": hashlib.sha256(raw).hexdigest()}
+            )
+            with self.assertRaisesRegex(ValueError, "chronology"):
+                content_identity_report(
+                    steps,
+                    snapshots,
+                    [score],
+                    launch,
+                    evaluator_sha256="d" * 64,
+                    rubric_sha256="e" * 64,
+                )
+
+    def test_actor_ready_after_observation_is_not_accepted(self):
+        with tempfile.TemporaryDirectory() as directory:
+            steps, snapshots, score, launch = self.repeated_identical_delivery(
+                Path(directory)
+            )
+            lines = launch["stdout"].splitlines()
+            launch["stdout"] = "\n".join(lines[1:] + lines[:1]) + "\n"
+            receipts = launch["host_exchanges"]
+            launch["host_exchanges"] = receipts[1:] + receipts[:1]
+            with self.assertRaisesRegex(ValueError, "chronology"):
+                content_identity_report(
+                    steps,
+                    snapshots,
+                    [score],
+                    launch,
+                    evaluator_sha256="d" * 64,
+                    rubric_sha256="e" * 64,
+                )
+
     def test_changed_candidate_payload_delivery_and_scorer_bindings_are_rejected(self):
         for stage in (
             "candidate",
