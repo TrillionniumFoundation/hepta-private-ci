@@ -16,6 +16,31 @@ from .lifecycle import CostLedger, Limits
 from .native import NativeSession, encode_input, sha
 
 
+NATIVE_POLICIES = ("encoder-only", "static-quota", "fixed-steps", "dynamic")
+DYNAMIC_FALLBACK_REASON = (
+    "native state/semantic calibration and measured future net-gain absent"
+)
+
+
+def resolve_native_policy(requested, *, require_exact=False):
+    """Resolve the actual dispatched policy before opening any native resources.
+
+    Ordinary compatibility mode retains the declared static fallback. A
+    prospective matched-policy study must enable require_exact=True to prevent
+    a "dynamic" arm silently executing a different treatment.
+    """
+    if requested not in NATIVE_POLICIES or type(require_exact) is not bool:
+        raise ValueError("Invalid native policy or exact-policy requirement")
+    if requested == "dynamic":
+        if require_exact:
+            raise ValueError(
+                "Native dynamic policy not admitted: "
+                + DYNAMIC_FALLBACK_REASON
+            )
+        return "static-quota", DYNAMIC_FALLBACK_REASON
+    return requested, None
+
+
 def bounded_bytes(path, maximum, expected=None):
     path = Path(path)
     if path.is_symlink() or not path.is_file() or path.stat().st_size > maximum:
@@ -49,7 +74,16 @@ def main():
         default="static-quota",
     )
     infer.add_argument("--wall-seconds", type=float, default=30)
+    infer.add_argument(
+        "--require-exact-policy",
+        action="store_true",
+        help="reject an unadmitted dynamic policy instead of running static-quota",
+    )
     args = parser.parse_args()
+    if args.command == "infer":
+        effective, fallback_reason = resolve_native_policy(
+            args.policy, require_exact=args.require_exact_policy
+        )
     torch.set_num_threads(1)
     output = Path(args.output)
     if output.exists():
@@ -87,7 +121,6 @@ def main():
     )
     ledger.retain("candidate-state", len(session.native_state))
     ledger.retain("public-wire-payload", len(session.public_bytes))
-    effective = "static-quota" if args.policy == "dynamic" else args.policy
     schedules = {
         "encoder-only": (),
         "static-quota": ("text", "image"),
@@ -104,9 +137,7 @@ def main():
         requested_policy=args.policy,
         effective_policy=effective,
         dynamic_admitted=False,
-        fallback_reason="native state/semantic calibration and measured future net-gain absent"
-        if args.policy == "dynamic"
-        else None,
+        fallback_reason=fallback_reason,
         cost_ledger=ledger.summary(),
         whole_cli_wall_seconds=time.perf_counter() - started,
         whole_cli_parent_cpu_seconds=time.process_time() - parent_cpu,
