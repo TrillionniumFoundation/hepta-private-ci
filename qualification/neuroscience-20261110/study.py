@@ -294,6 +294,10 @@ def cadence_gate(events: Iterable[UpdateOpportunity], gaps: dict[str, int]
     # Track observed candidate generations separately from admitted clock slots.
     # A denied opportunity must not permit a stale generation to reappear.
     last_generation: dict[str, int] = {}
+    # A lineage/generation can enter REVIEW_CANDIDATE only once, even if
+    # the clock advances. Evidence-denied generations may receive their first
+    # review when independent evidence subsequently becomes available.
+    last_review_generation: dict[str, int] = {}
     outputs = []
     for ev in events:
         if (ev.lineage not in LINEAGES or type(ev.sequence) is not int
@@ -315,14 +319,22 @@ def cadence_gate(events: Iterable[UpdateOpportunity], gaps: dict[str, int]
         allowed = previous is None or ev.sequence - previous >= gaps[ev.lineage]
         if allowed:
             last[ev.lineage] = ev.sequence
-        qualified = allowed and ev.evaluation_independent and ev.preregistered_gate_passed
+        already_reviewed = (
+            last_review_generation.get(ev.lineage) == ev.candidate_generation
+        )
+        qualified = (allowed and ev.evaluation_independent
+                     and ev.preregistered_gate_passed and not already_reviewed)
+        if qualified:
+            last_review_generation[ev.lineage] = ev.candidate_generation
         outputs.append({
             "lineage": ev.lineage,
             "sequence": ev.sequence,
             "candidate_generation": ev.candidate_generation,
             "status": "REVIEW_CANDIDATE" if qualified else "NO_UPDATE",
             "reason": ("review_only" if qualified else
-                       "clock_gate" if not allowed else "evidence_gate"),
+                       "clock_gate" if not allowed else
+                       "duplicate_reviewed_generation" if already_reviewed else
+                       "evidence_gate"),
             "authority": "DENY_ALL",
         })
     return tuple(outputs)
