@@ -85,3 +85,73 @@ class ProgramManifestFreezeTests(TestCase):
         with self.assertRaises(FileExistsError):
             publish_manifest(self.root)
         self.bind()
+
+    # Regression: exact digest binding cannot rehabilitate an ambiguous or
+    # symlinked source/manifest or grant an undeclared execution scope.
+    def test_manifest_requires_exact_status_and_schema(self):
+        manifest, _ = publish_manifest(self.root)
+        path = self.root / 'PROGRAM-MANIFEST.json'
+        for key, value in (
+            ('scientific_admission', 'GO'),
+            ('execution_authorized', True),
+            ('schema', 'legacy-unversioned'),
+        ):
+            with self.subTest(field=key):
+                variant = dict(manifest)
+                variant[key] = value
+                path.write_text(json.dumps(variant), encoding='utf-8')
+                with self.assertRaises(Ineligible):
+                    self.bind()
+
+    def test_manifest_rejects_missing_schema_and_extra_file(self):
+        manifest, _ = publish_manifest(self.root)
+        path = self.root / 'PROGRAM-MANIFEST.json'
+        without_schema = dict(manifest)
+        without_schema.pop('schema')
+        path.write_text(json.dumps(without_schema), encoding='utf-8')
+        with self.assertRaises(Ineligible):
+            self.bind()
+        (self.root / 'unreviewed.py').write_text('pass\n', encoding='utf-8')
+        with_extra = dict(manifest)
+        with_extra['files'] = dict(manifest['files'])
+        with_extra['files']['unreviewed.py'] = identity(self.root / 'unreviewed.py')
+        path.write_text(json.dumps(with_extra), encoding='utf-8')
+        with self.assertRaises(Ineligible):
+            self.bind()
+
+    def test_manifest_rejects_duplicate_root_key(self):
+        manifest, _ = publish_manifest(self.root)
+        text = json.dumps(manifest)
+        self.assertIn('"schema":', text)
+        text = text.replace('"schema":', '"schema": "attacker-override", "schema":', 1)
+        (self.root / 'PROGRAM-MANIFEST.json').write_text(text, encoding='utf-8')
+        with self.assertRaises(Ineligible):
+            self.bind()
+
+    def test_manifest_rejects_nonfinite_metadata(self):
+        manifest, _ = publish_manifest(self.root)
+        manifest['cost_claim'] = float('nan')
+        (self.root / 'PROGRAM-MANIFEST.json').write_text(
+            json.dumps(manifest), encoding='utf-8')
+        with self.assertRaises(Ineligible):
+            self.bind()
+
+    def test_manifest_rejects_source_symlink_to_matching_bytes(self):
+        manifest, _ = publish_manifest(self.root)
+        path = self.root / 'c2_io.py'
+        path.unlink()
+        path.symlink_to(self.root / 'c2_recording.py')
+        manifest['files']['c2_io.py'] = identity(self.root / 'c2_recording.py')
+        (self.root / 'PROGRAM-MANIFEST.json').write_text(
+            json.dumps(manifest), encoding='utf-8')
+        with self.assertRaises(Ineligible):
+            self.bind()
+
+    def test_manifest_rejects_manifest_symlink(self):
+        publish_manifest(self.root)
+        old = self.root / 'PROGRAM-MANIFEST.json'
+        alternate = self.root / 'alias.json'
+        old.rename(alternate)
+        old.symlink_to(alternate)
+        with self.assertRaises(Ineligible):
+            self.bind()
