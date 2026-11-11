@@ -314,3 +314,7 @@ fn authenticate(
     }
     Ok(())
 }
+
+#[path = "product_execution_evidence.rs"]
+mod evidence;
+pub use evidence::OriginalProductEvaluationExecutionEvidenceV1;

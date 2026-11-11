@@ -82,10 +82,10 @@ class OriginalCircuitSelectionOwnerSourceClosureTests(unittest.TestCase):
             row.identifier,
             self.manifest["privileged_inventory"]["required_boundary_ids"],
         )
-        self.assertEqual(row.product_callers, (OWNER,))
+        self.assertEqual(row.product_callers, (OWNER, "codex-rs/hepta-agentd/src/circuit_model_selection_receipt_sources.rs"))
         sources = {
             path: PROOF._strip_rust_non_code((ROOT / path).read_text())
-            for path in (OWNER, CELL)
+            for path in (OWNER, CELL, "codex-rs/hepta-agentd/src/circuit_model_selection_receipt_sources.rs")
         }
         PROOF._verify_boundary(ROOT, row, sources, ())
         self.rejects("fn prepare(", "cell.read_learning_selection(&coordinator)?")

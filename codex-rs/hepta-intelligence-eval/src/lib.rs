@@ -163,6 +163,7 @@ pub use product_runner::ProductQualificationReceiptV1;
 pub use product_runner::ProductTemporalEvaluationReceiptV1;
 pub use product_runner::ProductTimingEvidenceV1;
 pub use product_runner::TemporalComparisonInputsV1;
+pub use product_runner::execution::OriginalProductEvaluationExecutionEvidenceV1;
 pub use product_runner::execution::ProductEvaluationExecutionAttestationRequestV1;
 pub use product_runner::execution::ProductEvaluationExecutionAttestorV1;
 pub use product_runner::execution::ProductEvaluationExecutionErrorV1;

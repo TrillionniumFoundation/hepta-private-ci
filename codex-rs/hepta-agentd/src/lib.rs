@@ -370,6 +370,8 @@ mod cell_q24_training_snapshot_readback;
 #[cfg(target_os = "linux")]
 mod cell_q24_training_source;
 #[cfg(target_os = "linux")]
+mod circuit_model_selection_receipt_owner;
+#[cfg(target_os = "linux")]
 mod circuit_next_use_receipt_owner;
 #[cfg(target_os = "linux")]
 mod circuit_selection_receipt_owner;
@@ -447,6 +449,16 @@ pub use cell_q24_training_source::capture_original_cell_q24_training_source_v1;
 pub use cell_temporal_q24::CellTemporalQ24GenerationWorkerV1;
 pub use cell_temporal_q24::CellTemporalQ24ModelFilesV1;
 pub use cell_temporal_q24::LoadedCellTemporalQ24ModelV1;
+#[cfg(target_os = "linux")]
+pub use circuit_model_selection_receipt_owner::OriginalCircuitModelSelectionEvaluationSourcesV1;
+#[cfg(target_os = "linux")]
+pub use circuit_model_selection_receipt_owner::OriginalCircuitModelSelectionReceiptConfigV1;
+#[cfg(target_os = "linux")]
+pub use circuit_model_selection_receipt_owner::OriginalCircuitModelSelectionReceiptErrorV1;
+#[cfg(target_os = "linux")]
+pub use circuit_model_selection_receipt_owner::OriginalCircuitModelSelectionReceiptOwnerV1;
+#[cfg(target_os = "linux")]
+pub use circuit_model_selection_receipt_owner::OriginalCircuitModelSelectionReceiptSourcesV1;
 #[cfg(target_os = "linux")]
 pub use circuit_next_use_receipt_owner::OriginalCircuitNextUseReceiptConfigV1;
 #[cfg(target_os = "linux")]

@@ -497,3 +497,108 @@ async fn q24_original_selector_rejects_substituted_custody_before_store_creation
     f.original.session.stop().await?;
     Ok(())
 }
+
+#[tokio::test]
+async fn q24_original_selector_rejects_another_real_completion_with_same_run_and_manifest()
+-> anyhow::Result<()> {
+    let mut f = SelectionFixture::ready().await?;
+    let decision = LearningIterationCoordinatorV1::from_snapshot(f.config.decision.clone())?;
+    f.original.session.cell.read_learning_selection(&decision)?;
+    assert_eq!(
+        f.original.previous.history_digest().as_str(),
+        f.config.decision.request.completed_task_receipt.to_string()
+    );
+
+    // Execute a second real A with the same run and complete model manifest,
+    // but different input. This is not a fabricated receipt or mutated digest.
+    let model_root = tempfile::tempdir()?;
+    let (model, bundle, definition) = support::model(model_root.path())?;
+    assert_eq!(bundle, f.config.decision.request.selected_bundle);
+    let other_a = support::admission(f.config.decision.request.source_run_id.as_str()).await?;
+    let other_source = support::source(&other_a, [Q / 2, Q])?;
+    let config_a = support::configuration(&model, &bundle, &definition, &other_source, 1)?;
+    assert_eq!(config_a.manifest, f.original.version.target_config.manifest);
+    let version = VersionFixture::new_initial(config_a.clone(), "ordinary-q24-initial")?;
+    let published_a = support::publish_initial(&version, definition.clone(), other_source.clone())?;
+    let mut other_a =
+        support::start(other_a, published_a, Arc::clone(&model), bundle.clone()).await?;
+    let other_completed = execute(&other_a, 1).await?;
+    read_receipt(&other_a, &definition, &other_completed)?;
+    assert_eq!(
+        other_completed.input().scope.run_id,
+        f.original.previous.input().scope.run_id
+    );
+    assert_ne!(
+        other_completed.input().observation,
+        f.original.previous.input().observation
+    );
+    assert_ne!(
+        other_completed.history_digest(),
+        f.original.previous.history_digest()
+    );
+    let completion = other_a.retirement.drain_completed_task(
+        &other_a.cell,
+        other_a.source.as_ref(),
+        &other_a.runtime.identity,
+    )?;
+    other_a.stop().await?;
+    drop(other_a);
+
+    // The original A1 decision supplies the exact operation expected by the
+    // pre-existing version checks, while the actual drained predecessor is A2.
+    // Thus run / manifest / operation checks alone cannot reject this join.
+    let c = support::admission("selector-other-completion-C").await?;
+    let source_c = support::source(&c, [Q / 4, Q])?;
+    let config_c = support::configuration(&model, &bundle, &definition, &source_c, 2)?;
+    assert_eq!(config_a.manifest, config_c.manifest);
+    let operation = crate::learning_retained_task_operation_id_v1(&decision)?;
+    let prepared = crate::prepare_agentd_generation_cold_same_model_task_v1(
+        version.reopen_current()?,
+        version.authorities()?,
+        AgentdGenerationUpdatePredecessorFilesV1 {
+            file: version.file("target-journal")?,
+            witness: version.witness("target-witness", &config_a)?,
+            config: config_a,
+            max_records: RECORDS,
+        },
+        version.selection()?,
+        version.named_target_create(
+            "other-completion-C-journal",
+            "other-completion-C-witness",
+            config_c,
+        )?,
+        AgentdGenerationUpdateRequestV1 {
+            operation_id: operation.to_string(),
+        },
+    )?;
+    let final_use = version.sign(prepared.final_use_binding())?;
+    let published_c = prepared
+        .publish(&final_use)?
+        .into_circuit_feature_task(definition, source_c, completion)?;
+    let mut c = support::start(c, published_c, model, bundle).await?;
+    let source_before = owner_bytes(&c)?;
+    let (trainer, peer) = f.peer(f.config.training_evidence.clone(), 0)?;
+    let mut owner = f.create()?;
+    let before = f.bytes()?;
+    let result = owner
+        .attest_original_selection(OriginalCircuitSelectionReceiptSourcesV1 {
+            snapshot: &f.config.decision,
+            cell: &c.cell,
+            trainer: &trainer,
+        })
+        .await;
+    assert!(matches!(
+        result,
+        Err(OriginalCircuitSelectionReceiptErrorV1::Observation(error))
+            if error.to_string().contains(
+                "learning selection differs from original completed source"
+            )
+    ));
+    assert_eq!(f.bytes()?, before);
+    assert_eq!(owner_bytes(&c)?, source_before);
+    drop(owner);
+    finish(trainer, peer)?;
+    c.stop().await?;
+    f.original.session.stop().await?;
+    Ok(())
+}
