@@ -401,6 +401,8 @@ pub use cell_q24_dataset::CellQ24DatasetEpisodeV1;
 pub use cell_q24_dataset::CellQ24DatasetProfileV1;
 pub use cell_q24_dataset::OriginalCellQ24DatasetErrorV1;
 pub use cell_q24_dataset::OriginalCellQ24DatasetV1;
+pub use cell_q24_dataset::recovery::OriginalCellQ24DatasetRecoveryErrorV1;
+pub use cell_q24_dataset::recovery::OriginalCellQ24DatasetRecoveryOwnerV1;
 pub use cell_q24_model_proposal::CellQ24ModelProposalErrorV1;
 pub use cell_q24_model_proposal::CellQ24ModelProposalInputsV1;
 pub use cell_q24_model_proposal::CellQ24ModelProposalOwnerV1;

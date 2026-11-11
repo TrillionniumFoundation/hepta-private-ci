@@ -5,16 +5,24 @@ use std::path::Path;
 use std::sync::Arc;
 use std::sync::atomic::AtomicUsize;
 
+use codex_hepta_automation::BoundedCircuitDefinitionV2;
+use codex_hepta_automation::TaskFlowFence;
 use codex_hepta_learning_ledger::*;
 use codex_hepta_neuron::FileAnchorWitnessStore;
+use codex_hepta_neuron::JournalScope;
 use codex_hepta_types::FixedQ32;
+use codex_hepta_types::Generation;
 use codex_hepta_types::ProbabilityQ32;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
 
 use super::*;
 use crate::AgentdCircuitTaskInvocationProviderV1;
+use crate::CircuitCellBindingV1;
+use crate::CircuitCellRegistryV1;
+use crate::CircuitTaskSourceInputV1;
 use crate::DurableCircuitTaskSourceV1;
+use crate::circuit_cell::tests::configuration;
 use crate::circuit_cell::tests::support as cell;
 use crate::circuit_task::original_source_test_support as original;
 
@@ -31,6 +39,19 @@ pub(crate) struct Fixture {
     pub(crate) profile: CellQ24DatasetProfileV1,
     pub(crate) calls: Arc<AtomicUsize>,
     pub(crate) at: u64,
+    // Retain the exact producer inputs for file-only process recovery tests.
+    pub(crate) trust_root: LearningTrustRootV1,
+    pub(crate) signed_distribution: SignedLearningTrustDistributionV1,
+    pub(crate) ledger_binding: Digest32,
+    pub(crate) ledger_limit: usize,
+    pub(crate) source_input: CircuitTaskSourceInputV1,
+    pub(crate) fence: TaskFlowFence,
+    pub(crate) circuit: BoundedCircuitDefinitionV2,
+    pub(crate) bindings: Vec<CircuitCellBindingV1>,
+    pub(crate) source_witness_scope: JournalScope,
+    pub(crate) source_witness_generation: Generation,
+    pub(crate) source_witness_limit: usize,
+    pub(crate) decision: ProductionDecisionV2,
     publication: CircuitTaskSourcePublicationV1,
 }
 
@@ -87,6 +108,20 @@ pub(crate) fn sign(
     evidence
 }
 pub(crate) fn ledger(root: &Path, at: u64, objective: Digest32) -> anyhow::Result<LedgerWriter> {
+    Ok(ledger_with_inputs(root, at, objective, d("q24-ledger"), 64)?.0)
+}
+
+fn ledger_with_inputs(
+    root: &Path,
+    at: u64,
+    objective: Digest32,
+    binding: Digest32,
+    max_records: usize,
+) -> anyhow::Result<(
+    LedgerWriter,
+    LearningTrustRootV1,
+    SignedLearningTrustDistributionV1,
+)> {
     let key = SigningKey::from_bytes(&[99; 32]);
     let trust_root = LearningTrustRootV1 {
         root_id: id("root"),
@@ -121,22 +156,26 @@ pub(crate) fn ledger(root: &Path, at: u64, objective: Digest32) -> anyhow::Resul
         signature: [0; 64],
     };
     signed.signature = key.sign(&signed.signing_bytes()?).to_bytes();
-    let trust = activate_learning_trust(&trust_root, signed, /*previous*/ None, at)?;
+    let trust = activate_learning_trust(&trust_root, signed.clone(), /*previous*/ None, at)?;
     let directory = File::open(root)?;
-    Ok(LedgerWriter::from_durable(
-        DurableLedger::create(original::opened(root, "ledger")?, d("q24-ledger"), 64)?,
-        LedgerWitnessStore::create(original::opened(root, "ledger-witness")?, d("q24-ledger"))?,
+    let writer = LedgerWriter::from_durable(
+        DurableLedger::create(original::opened(root, "ledger")?, binding, max_records)?,
+        LedgerWitnessStore::create(original::opened(root, "ledger-witness")?, binding)?,
         trust,
         &directory,
         &directory,
-    )?)
+    )?;
+    Ok((writer, trust_root, signed))
 }
 impl Fixture {
     pub(crate) async fn new(second_input: i64) -> anyhow::Result<Self> {
         let directory = tempfile::tempdir()?;
         let root = directory.path();
         let at = now()?;
-        let mut writer = ledger(root, at, d("objective"))?;
+        let ledger_binding = d("q24-ledger");
+        let ledger_limit = 64;
+        let (mut writer, trust_root, signed_distribution) =
+            ledger_with_inputs(root, at, d("objective"), ledger_binding, ledger_limit)?;
         let identity = original::identity(root)?;
         let run = circuit_learning_run_id_v1(&writer, &identity.agent_id, &id("train-A"))?;
         let input = cell::input(run.as_str());
@@ -147,10 +186,22 @@ impl Fixture {
         }
         let source_input = original::source(run.as_str(), &observation);
         let fence = original::fence(&identity)?;
-        let registry = original::registry()?;
+        let (circuit, bindings) = configuration();
+        let registry = CircuitCellRegistryV1::new(circuit.clone(), bindings.clone())?;
+        let source_witness_scope = JournalScope {
+            scope_digest: d("source-witness"),
+            objective_digest: d("original ordinary source"),
+        };
+        let source_witness_generation = Generation::new(7)?;
+        let source_witness_limit = 64;
         let source = Source::create(
             original::opened(root, "source-journal")?,
-            original::witness(root, "source-witness")?,
+            FileAnchorWitnessStore::open(
+                original::opened(root, "source-witness")?,
+                source_witness_scope,
+                source_witness_generation,
+                source_witness_limit,
+            )?,
             &identity,
             &fence,
             &registry,
@@ -162,7 +213,7 @@ impl Fixture {
             &identity,
             source.clone(),
             &request,
-            fence,
+            fence.clone(),
             registry,
             cells,
         )
@@ -206,7 +257,7 @@ impl Fixture {
             at,
             &decision_signing_payload_v2(&decision)?,
         );
-        writer.append_decision(Digest32::ZERO, decision, &evidence, at)?;
+        writer.append_decision(Digest32::ZERO, decision.clone(), &evidence, at)?;
         let profile = CellQ24DatasetProfileV1 {
             principal_id: id("principal"),
             agent_id: identity.agent_id.clone(),
@@ -233,6 +284,18 @@ impl Fixture {
             profile,
             calls,
             at,
+            trust_root,
+            signed_distribution,
+            ledger_binding,
+            ledger_limit,
+            source_input,
+            fence,
+            circuit,
+            bindings,
+            source_witness_scope,
+            source_witness_generation,
+            source_witness_limit,
+            decision,
             publication,
         })
     }
