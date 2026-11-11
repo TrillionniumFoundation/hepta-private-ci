@@ -1,0 +1,37 @@
+test_actual_bind_program_accepts_only_exact_preview_bytes (test_program_manifest_freeze.ProgramManifestFreezeTests.test_actual_bind_program_accepts_only_exact_preview_bytes) ... ok
+test_cli_missing_contract_reports_hold_without_writing (test_program_manifest_freeze.ProgramManifestFreezeTests.test_cli_missing_contract_reports_hold_without_writing) ... ok
+test_manifest_create_once_not_overwritten (test_program_manifest_freeze.ProgramManifestFreezeTests.test_manifest_create_once_not_overwritten) ... ok
+test_manifest_rejects_duplicate_root_key (test_program_manifest_freeze.ProgramManifestFreezeTests.test_manifest_rejects_duplicate_root_key) ... ok
+test_manifest_rejects_manifest_symlink (test_program_manifest_freeze.ProgramManifestFreezeTests.test_manifest_rejects_manifest_symlink) ... ok
+test_manifest_rejects_missing_schema_and_extra_file (test_program_manifest_freeze.ProgramManifestFreezeTests.test_manifest_rejects_missing_schema_and_extra_file) ... ok
+test_manifest_rejects_nonfinite_metadata (test_program_manifest_freeze.ProgramManifestFreezeTests.test_manifest_rejects_nonfinite_metadata) ... ok
+test_manifest_rejects_source_symlink_to_matching_bytes (test_program_manifest_freeze.ProgramManifestFreezeTests.test_manifest_rejects_source_symlink_to_matching_bytes) ... ok
+test_manifest_requires_exact_status_and_schema (test_program_manifest_freeze.ProgramManifestFreezeTests.test_manifest_requires_exact_status_and_schema) ... ok
+test_missing_publisher_is_fail_closed (test_program_manifest_freeze.ProgramManifestFreezeTests.test_missing_publisher_is_fail_closed) ... ok
+test_mutation_after_freeze_is_rejected_by_actual_runner (test_program_manifest_freeze.ProgramManifestFreezeTests.test_mutation_after_freeze_is_rejected_by_actual_runner) ... ok
+test_no_implicit_manifest_or_authorization (test_program_manifest_freeze.ProgramManifestFreezeTests.test_no_implicit_manifest_or_authorization) ... ok
+test_partial_candidate_has_no_publication (test_program_manifest_freeze.ProgramManifestFreezeTests.test_partial_candidate_has_no_publication) ... ok
+test_symlinked_publisher_is_fail_closed (test_program_manifest_freeze.ProgramManifestFreezeTests.test_symlinked_publisher_is_fail_closed) ... ok
+test_actual_torch_optimizer_rng_and_frozen_data_roundtrip (test_successor_wiring.SuccessorWiringTests.test_actual_torch_optimizer_rng_and_frozen_data_roundtrip) ... ok
+test_both_real_c2_entrypoints_wired (test_successor_wiring.SuccessorWiringTests.test_both_real_c2_entrypoints_wired) ... ok
+test_checkpoint_incomplete_semantic_roundtrip_never_publishes (test_successor_wiring.SuccessorWiringTests.test_checkpoint_incomplete_semantic_roundtrip_never_publishes) ... ok
+test_completed_producer_roster_remains_hold (test_successor_wiring.SuccessorWiringTests.test_completed_producer_roster_remains_hold) ... ok
+test_result_file_create_only_even_after_failure (test_successor_wiring.SuccessorWiringTests.test_result_file_create_only_even_after_failure) ... ok
+test_serialize_exception_never_creates_zero_final_checkpoint (test_successor_wiring.SuccessorWiringTests.test_serialize_exception_never_creates_zero_final_checkpoint) ... ok
+test_successor_source_closure (unittest.loader._FailedTest.test_successor_source_closure) ... ERROR
+
+======================================================================
+ERROR: test_successor_source_closure (unittest.loader._FailedTest.test_successor_source_closure)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_successor_source_closure
+Traceback (most recent call last):
+  File "/usr/lib/python3.12/unittest/loader.py", line 137, in loadTestsFromName
+    module = __import__(module_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^
+ModuleNotFoundError: No module named 'test_successor_source_closure'
+
+
+----------------------------------------------------------------------
+Ran 21 tests in 4.856s
+
+FAILED (errors=1)
