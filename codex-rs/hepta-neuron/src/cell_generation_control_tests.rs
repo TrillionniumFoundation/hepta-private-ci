@@ -416,10 +416,9 @@ fn terminal_readback_does_not_promote_persistent_uncertainty_to_success() {
 
     // This uses terminal's original five-second wait. The caught panic must
     // come from that bound, not an unrelated error or an accepted proposal.
-    let failure = std::panic::catch_unwind(AssertUnwindSafe(|| {
-        terminal(&mut port, &fixture.request)
-    }))
-    .expect_err("persistent uncertainty must not produce a terminal proposal");
+    let failure =
+        std::panic::catch_unwind(AssertUnwindSafe(|| terminal(&mut port, &fixture.request)))
+            .expect_err("persistent uncertainty must not produce a terminal proposal");
     let message = failure
         .downcast_ref::<String>()
         .map(String::as_str)

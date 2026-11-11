@@ -39,7 +39,8 @@ fn legacy_refuses_before_elevated_four_cell_delete_boundary() {
             fs::create_dir(path).expect("create allowed root");
         }
         let host = DeleteMatrix::new(&fixture.path().join("host")).expect("host matrix");
-        let restricted = DeleteMatrix::new(&fixture.path().join("outside")).expect("outside matrix");
+        let restricted =
+            DeleteMatrix::new(&fixture.path().join("outside")).expect("outside matrix");
         host.assert_same_acls(&restricted);
         let host_access_context = host.access_diagnostics();
         let (script, env) = matrix_script(&host);
@@ -47,69 +48,173 @@ fn legacy_refuses_before_elevated_four_cell_delete_boundary() {
         fs::write(&host_script, script).expect("write host script");
         let (status, host_log) = crate::delete_permission_control::cmd(&host_script, env)
             .expect("run the ordinary cmd control without Backup/Restore privileges");
-        let host_outcomes = host.finish("ordinary-host-cmd-done").expect("host physical readback");
+        let host_outcomes = host
+            .finish("ordinary-host-cmd-done")
+            .expect("host physical readback");
         eprintln!("delete_matrix host_cmd_status={status:?} output={host_log:?}");
         assert_eq!(status, Some(0), "{host_access_context}");
-        assert_eq!(host_log.lines().filter(|line| line.starts_with("MATRIX_")).collect::<Vec<_>>(),
-            ["MATRIX_ATTEMPT_0", "MATRIX_ATTEMPT_1", "MATRIX_ATTEMPT_2", "MATRIX_ATTEMPT_3", "MATRIX_DONE"],
-            "{host_access_context}");
-        assert_eq!(host_outcomes, [DeleteRoute::Neither, DeleteRoute::TargetOnly, DeleteRoute::ParentOnly, DeleteRoute::Both]
-            .map(|route| DeleteOutcome { route, file_deleted: route != DeleteRoute::Neither,
-                directory_deleted: route != DeleteRoute::Neither }), "{host_access_context}");
+        assert_eq!(
+            host_log
+                .lines()
+                .filter(|line| line.starts_with("MATRIX_"))
+                .collect::<Vec<_>>(),
+            [
+                "MATRIX_ATTEMPT_0",
+                "MATRIX_ATTEMPT_1",
+                "MATRIX_ATTEMPT_2",
+                "MATRIX_ATTEMPT_3",
+                "MATRIX_DONE"
+            ],
+            "{host_access_context}"
+        );
+        assert_eq!(
+            host_outcomes,
+            [
+                DeleteRoute::Neither,
+                DeleteRoute::TargetOnly,
+                DeleteRoute::ParentOnly,
+                DeleteRoute::Both
+            ]
+            .map(|route| DeleteOutcome {
+                route,
+                file_deleted: route != DeleteRoute::Neither,
+                directory_deleted: route != DeleteRoute::Neither
+            }),
+            "{host_access_context}"
+        );
 
         let allowed_file = workspace.join("allowed-file");
         let allowed_directory = workspace.join("allowed-directory");
         fs::write(&allowed_file, "allowed").expect("seed allowed file");
         fs::create_dir(&allowed_directory).expect("seed allowed directory");
         let (script, mut env) = matrix_script(&restricted);
-        let script = script.replacen("@echo off\r\n", concat!(
+        let script = script.replacen(
             "@echo off\r\n",
-            "del /f /q \"%ALLOWED_FILE%\"\r\n",
-            "rmdir \"%ALLOWED_DIRECTORY%\"\r\n",
-        ), /*count*/ 1);
+            concat!(
+                "@echo off\r\n",
+                "del /f /q \"%ALLOWED_FILE%\"\r\n",
+                "rmdir \"%ALLOWED_DIRECTORY%\"\r\n",
+            ),
+            /*count*/ 1,
+        );
         let script_path = workspace.join("restricted-matrix.cmd");
         fs::write(&script_path, script).expect("write restricted script");
         env.extend([
             ("TEMP".to_owned(), temp_root.to_string_lossy().into_owned()),
             ("TMP".to_owned(), tmp_root.to_string_lossy().into_owned()),
-            ("ALLOWED_FILE".to_owned(), allowed_file.to_string_lossy().into_owned()),
-            ("ALLOWED_DIRECTORY".to_owned(), allowed_directory.to_string_lossy().into_owned()),
+            (
+                "ALLOWED_FILE".to_owned(),
+                allowed_file.to_string_lossy().into_owned(),
+            ),
+            (
+                "ALLOWED_DIRECTORY".to_owned(),
+                allowed_directory.to_string_lossy().into_owned(),
+            ),
         ]);
         let permission_profile = PermissionProfile::workspace_write();
         let before = snapshot(fixture.path()).expect("snapshot four-cell fixture");
         let home_before = snapshot(codex_home.path()).expect("snapshot legacy home");
         let refused = spawn_windows_sandbox_session_legacy(
-            &permission_profile, workspace_roots_for(&workspace).as_slice(), codex_home.path(),
-            vec!["C:\\Windows\\System32\\cmd.exe".to_owned(), "/d".to_owned(),
-                "/c".to_owned(), script_path.display().to_string()],
-            &workspace, env.clone(), /*timeout_ms*/ Some(5_000), &[], &[],
-            /*tty*/ false, /*stdin_open*/ false, /*use_private_desktop*/ true,
-        ).await;
-        assert_unavailable(refused);
-        assert_eq!(snapshot(fixture.path()).expect("read back four-cell fixture"), before);
-        assert_eq!(snapshot(codex_home.path()).expect("read back legacy home"), home_before);
-        let spawned = spawn_windows_sandbox_session_elevated_for_permission_profile(
-            &permission_profile, workspace_roots_for(&workspace).as_slice(), codex_home.path(),
-            vec!["C:\\Windows\\System32\\cmd.exe".to_owned(), "/d".to_owned(), "/c".to_owned(), script_path.display().to_string()],
-            &workspace, env,
-            /*proxy_enforced*/ false, /*network_proxy_restricting_sid*/ None,
+            &permission_profile,
+            workspace_roots_for(&workspace).as_slice(),
+            codex_home.path(),
+            vec![
+                "C:\\Windows\\System32\\cmd.exe".to_owned(),
+                "/d".to_owned(),
+                "/c".to_owned(),
+                script_path.display().to_string(),
+            ],
+            &workspace,
+            env.clone(),
             /*timeout_ms*/ Some(5_000),
-            /*read_roots_override*/ None, /*read_roots_include_platform_defaults*/ true,
-            /*write_roots_override*/ None, &[], &[],
-            /*tty*/ false, /*stdin_open*/ false, /*use_private_desktop*/ true,
-        ).await.expect("spawn explicit elevated four-cell path");
+            &[],
+            &[],
+            /*tty*/ false,
+            /*stdin_open*/ false,
+            /*use_private_desktop*/ true,
+        )
+        .await;
+        assert_unavailable(refused);
+        assert_eq!(
+            snapshot(fixture.path()).expect("read back four-cell fixture"),
+            before
+        );
+        assert_eq!(
+            snapshot(codex_home.path()).expect("read back legacy home"),
+            home_before
+        );
+        let spawned = spawn_windows_sandbox_session_elevated_for_permission_profile(
+            &permission_profile,
+            workspace_roots_for(&workspace).as_slice(),
+            codex_home.path(),
+            vec![
+                "C:\\Windows\\System32\\cmd.exe".to_owned(),
+                "/d".to_owned(),
+                "/c".to_owned(),
+                script_path.display().to_string(),
+            ],
+            &workspace,
+            env,
+            /*proxy_enforced*/ false,
+            /*network_proxy_restricting_sid*/ None,
+            /*timeout_ms*/ Some(5_000),
+            /*read_roots_override*/ None,
+            /*read_roots_include_platform_defaults*/ true,
+            /*write_roots_override*/ None,
+            &[],
+            &[],
+            /*tty*/ false,
+            /*stdin_open*/ false,
+            /*use_private_desktop*/ true,
+        )
+        .await
+        .expect("spawn explicit elevated four-cell path");
         let (stdout, exit_code) = collect_elevated_stdout_and_exit(
-            spawned, codex_home.path(), Duration::from_secs(/*secs*/ 10),
-        ).await;
+            spawned,
+            codex_home.path(),
+            Duration::from_secs(/*secs*/ 10),
+        )
+        .await;
         let stdout = String::from_utf8_lossy(&stdout);
-        let outcomes = restricted.finish("elevated-child-done").expect("restricted physical readback");
+        let outcomes = restricted
+            .finish("elevated-child-done")
+            .expect("restricted physical readback");
         eprintln!("delete_matrix elevated_exit={exit_code} stdout={stdout:?}");
         assert_eq!(exit_code, 0);
-        assert_eq!(stdout.lines().filter(|line| line.starts_with("MATRIX_")).collect::<Vec<_>>(),
-            ["MATRIX_ATTEMPT_0", "MATRIX_ATTEMPT_1", "MATRIX_ATTEMPT_2", "MATRIX_ATTEMPT_3", "MATRIX_DONE"]);
-        assert_eq!(fs::symlink_metadata(&allowed_file).unwrap_err().kind(), std::io::ErrorKind::NotFound);
-        assert_eq!(fs::symlink_metadata(&allowed_directory).unwrap_err().kind(), std::io::ErrorKind::NotFound);
-        assert_eq!(outcomes, [DeleteRoute::Neither, DeleteRoute::TargetOnly, DeleteRoute::ParentOnly, DeleteRoute::Both]
-            .map(|route| DeleteOutcome { route, file_deleted: false, directory_deleted: false }));
+        assert_eq!(
+            stdout
+                .lines()
+                .filter(|line| line.starts_with("MATRIX_"))
+                .collect::<Vec<_>>(),
+            [
+                "MATRIX_ATTEMPT_0",
+                "MATRIX_ATTEMPT_1",
+                "MATRIX_ATTEMPT_2",
+                "MATRIX_ATTEMPT_3",
+                "MATRIX_DONE"
+            ]
+        );
+        assert_eq!(
+            fs::symlink_metadata(&allowed_file).unwrap_err().kind(),
+            std::io::ErrorKind::NotFound
+        );
+        assert_eq!(
+            fs::symlink_metadata(&allowed_directory).unwrap_err().kind(),
+            std::io::ErrorKind::NotFound
+        );
+        assert_eq!(
+            outcomes,
+            [
+                DeleteRoute::Neither,
+                DeleteRoute::TargetOnly,
+                DeleteRoute::ParentOnly,
+                DeleteRoute::Both
+            ]
+            .map(|route| DeleteOutcome {
+                route,
+                file_deleted: false,
+                directory_deleted: false
+            })
+        );
     });
 }

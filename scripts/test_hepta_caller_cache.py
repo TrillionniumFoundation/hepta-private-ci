@@ -74,9 +74,7 @@ forbidden = []
             verifier.verify(self.root)
 
     def test_no_method_call_does_not_suppress_global_field_index_failure(self):
-        self.client.write_text(
-            "struct Holder { authority: Gate", encoding="utf-8"
-        )
+        self.client.write_text("struct Holder { authority: Gate", encoding="utf-8")
         with self.assertRaisesRegex(
             verifier.VerificationFailure,
             "gate_enter: unbalanced Rust authority context",
