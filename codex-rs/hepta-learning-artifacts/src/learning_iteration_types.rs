@@ -90,6 +90,29 @@ pub struct LearningTrainingNoUpdateV2 {
     pub reason: LearningTrainingNoUpdateReasonV2,
 }
 
+/// A local Selector's decision after a qualified proposal. Deferral or retention
+/// preserves the evaluator's result; neither is a Training/Evaluation NoUpdate.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum LearningLocalDispositionV2 {
+    AdoptCandidate,
+    DeferCandidate,
+    RetainParent,
+}
+
+/// Scoped by the original request's principal/agent/cell and Selector trust.
+/// The original Selector attests its actual policy, reason and evidence; these
+/// digests alone confer no authority. Persist this decision before publishing
+/// the selected task owner, then observe the real Selection and NextUse.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct LearningLocalDecisionV2 {
+    pub proposal_head: Digest32,
+    pub candidate_bundle: Digest32,
+    pub selected_bundle: Digest32,
+    pub policy_digest: Digest32,
+    pub reason_digest: Digest32,
+    pub disposition: LearningLocalDispositionV2,
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum LearningIterationObservationV1 {
     Experience {
@@ -131,6 +154,10 @@ pub enum LearningIterationObservationV1 {
         candidate_bundle: Digest32,
         selection_digest: Digest32,
     },
+    /// Explicit versioned local decision, signed by the original Selector.
+    /// This remains at Selection until the original version owner publishes
+    /// and provides the separate Selection observation. Scoped owners only.
+    LocalDecisionV2(LearningLocalDecisionV2),
     /// Actual committed use by another task, in the same principal/agent/cell.
     NextUse {
         candidate_bundle: Digest32,
@@ -172,6 +199,17 @@ pub struct LearningIterationSnapshotV1 {
 }
 
 impl LearningIterationSnapshotV1 {
+    pub fn local_decision_v2(&self) -> Option<&LearningLocalDecisionV2> {
+        self.receipts.iter().find_map(|receipt| match &receipt.observation {
+            LearningIterationObservationV1::LocalDecisionV2(decision) => Some(decision),
+            _ => None,
+        })
+    }
+
+    pub fn requires_scoped_owner_v2(&self) -> bool {
+        self.training_no_update_v2().is_some() || self.local_decision_v2().is_some()
+    }
+
     pub fn training_no_update_v2(&self) -> Option<&LearningTrainingNoUpdateV2> {
         self.receipts
             .iter()
@@ -188,6 +226,10 @@ pub enum LearningIterationDispositionV1 {
     /// The authenticated decision retains the deployed bundle. Selection and
     /// next-task use remain outstanding until next_stage returns None.
     NoUpdate,
+    /// Local policy kept the parent despite a qualified proposal. Original
+    /// Selection and actual parent use remain mandatory.
+    LocallyDeferredV2,
+    LocallyRetainedV2,
     /// Only a committed NextUse observation completes either decision path.
     UsedByNextTask,
 }
@@ -202,7 +244,7 @@ impl LearningIterationObservationV1 {
             }
             Self::Evaluation { .. } => LearningIterationStageV1::Evaluation,
             Self::Proposal { .. } => LearningIterationStageV1::Proposal,
-            Self::Selection { .. } => LearningIterationStageV1::Selection,
+            Self::Selection { .. } | Self::LocalDecisionV2(_) => LearningIterationStageV1::Selection,
             Self::NextUse { .. } | Self::RetainedModelNextUse { .. } => {
                 LearningIterationStageV1::NextUse
             }

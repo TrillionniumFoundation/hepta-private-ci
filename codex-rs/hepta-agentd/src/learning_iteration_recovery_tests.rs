@@ -13,6 +13,9 @@ mod delivery_runtime_tests;
 #[path = "learning_iteration_training_no_update_auth_tests.rs"]
 mod training_no_update_auth_tests;
 
+#[path = "learning_iteration_local_decision_runtime_tests.rs"]
+mod local_decision_tests;
+
 #[derive(Clone, Copy)]
 enum Decision {
     EvaluatedNoUpdate,

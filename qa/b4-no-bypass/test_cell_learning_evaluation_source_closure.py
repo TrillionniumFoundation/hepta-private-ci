@@ -134,7 +134,9 @@ class CellLearningEvaluationSourceClosureTests(unittest.TestCase):
         for item, marker in (
             (None, 'const MAGIC: &[u8; 8] = b"HEPLCP02"'),
             (None, 'const TRAINER_NO_UPDATE_MAGIC: &[u8; 8] = b"HEPLCP03"'),
-            ("fn encode(", "w.put(if snapshot.training_no_update_v2().is_some()"),
+            (None, 'const LOCAL_DECISION_MAGIC: &[u8; 8] = b"HEPLCP04"'),
+            ("fn encode(", "w.put(if snapshot.local_decision_v2().is_some()"),
+            ("fn encode(", "else if snapshot.training_no_update_v2().is_some()"),
             ("fn encode(", "TRAINER_NO_UPDATE_MAGIC"),
             ("fn encode(", "w.digest(request.evaluation_profile)?"),
             ("fn decode(", "let magic = r.take::<8>()?"),
