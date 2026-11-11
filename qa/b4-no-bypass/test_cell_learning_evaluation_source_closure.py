@@ -31,7 +31,10 @@ CALLERS = {
     "cell_learning_evaluation_profile_freeze": (),
     "cell_learning_evaluation_receipt_prepare": (READBACK, MODEL_MATERIAL, EVALUATION_OWNER),
     "cell_learning_evaluation_original_readback": (),
-    "learning_evidence_original_owner_readback": (READBACK, GENERATION_READBACK, EVALUATION_OWNER),
+    "learning_evidence_original_owner_readback": (
+        READBACK, GENERATION_READBACK, EVALUATION_OWNER,
+        AGENT + "circuit_next_use_receipt_owner.rs",
+    ),
     "root_learning_original_stage_assembly": (),
 }
 

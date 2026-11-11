@@ -168,3 +168,35 @@ mod root;
 
 #[path = "learning_iteration_generation_evidence_tests.rs"]
 mod generation;
+
+/// Same-UID, synthetic evidence transport for original receipt-owner mechanism
+/// tests. The public constructor still refuses this custody configuration.
+pub(crate) fn fixture_original_receipt_client(
+    initial: LearningIterationSnapshotV1,
+    receipt: LearningIterationReceiptV1,
+    verifier: LearningEvidenceVerifierV1,
+    signature: SignedLearningEvidenceV1,
+    expected_reads: usize,
+) -> anyhow::Result<(
+    LearningIterationEvidenceClientV1,
+    std::thread::JoinHandle<anyhow::Result<()>>,
+)> {
+    let fixture = Fixture { initial, receipt, verifier, signature };
+    let (client, mut server) = fixture.client()?;
+    let expected = fixture.signature.payload_digest.to_string();
+    let evidence: Vec<_> = (0..expected_reads).map(|_| fixture.evidence()).collect();
+    let peer = std::thread::spawn(move || -> anyhow::Result<()> {
+        for (index, evidence) in evidence.into_iter().enumerate() {
+            let request = read_request(&mut server)?;
+            assert_eq!(request.request_id, index as u64 + 1);
+            assert_eq!(request.operation, wire::OPERATION);
+            assert_eq!(request.receipt_digest, expected);
+            let encoded = serde_json::to_value(&request)?;
+            assert!(encoded.get("payload").is_none());
+            assert!(encoded.get("signature").is_none());
+            reply(&mut server, &response(request, evidence))?;
+        }
+        Ok(())
+    });
+    Ok((client, peer))
+}

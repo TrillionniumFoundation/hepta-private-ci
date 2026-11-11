@@ -7,6 +7,8 @@ on:
       - "codex-rs/hepta-learning-artifacts/**"
       - "codex-rs/hepta-intelligence-eval/**"
       - "scripts/test_hepta_cell_research_units.py"
+      - "scripts/hepta_c_observer_coverage.py"
+      - "scripts/test_hepta_c_observer_coverage.py"
       - ".github/workflows/hepta-daemon-learning-native.yml"
   workflow_dispatch:
 
@@ -62,6 +64,7 @@ jobs:
           sys.path.insert(0, str(repo / "scripts"))
           from hepta_ci_exec import execute_logged
           from hepta_ci_junit import collect
+          from hepta_c_observer_coverage import assess_original_observer_coverage
 
           parents = [
               "authority_host_service::writer::learning_registration::tests::root_learning_registration_reopens_without_replacing_original_history",
@@ -129,7 +132,7 @@ jobs:
               command = ["python3", "scripts/hepta_ci_exec.py", "--timeout-seconds", "7200",
                          "--minimum-tests", "1", "--output", str(records / (name + ".json")),
                          "--", "just", "test", "--locked", "--offline", *arguments,
-                         "--retries", "0", "--success-output", "final", "--failure-output", "final"]
+                         "--retries", "0", "--status-level", "pass", "--success-output", "final", "--failure-output", "final"]
               if root:
                   names = ("PATH", "SOURCE_SHA", "TESTED_SHA", "HEPTA_CI_LANE",
                            "GITHUB_RUN_ID", "GITHUB_RUN_ATTEMPT", "GITHUB_JOB",
@@ -156,6 +159,14 @@ jobs:
               if root:
                   restore_ownership()
               retained = collect(records / (name + ".json"), report, records / (name + ".xml"))
+              if name == "ordinary" and retained == 0:
+                  coverage = assess_original_observer_coverage(
+                      (records / (name + ".log")).read_text(),
+                      (records / (name + ".xml")).read_bytes())
+                  save("original-c-observer-coverage.json",
+                       {"source_sha": os.environ["SOURCE_SHA"], **coverage})
+                  if not coverage["exact_pass_coverage"]:
+                      raise RuntimeError("ordinary Observer cases lack exact native package/name coverage")
               if root and retained == 0:
                   cases = list(ET.parse(records / (name + ".xml")).iter("testcase"))
                   observed = [case.attrib["name"] for case in cases if case.find("skipped") is None]
@@ -264,6 +275,8 @@ jobs:
               raise SystemExit(1 if failed else 0)
           PY
           python3 "$RUNNER_TEMP/daemon-learning-driver.py" snapshot
+      - name: Check exact Observer evidence parser controls
+        run: python3 -m unittest discover -s scripts -p test_hepta_c_observer_coverage.py
       - name: Install native prerequisites
         run: |
           sudo apt-get update

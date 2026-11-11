@@ -26,6 +26,7 @@ CALLERS = {
         AGENT + "learning_iteration_evaluation_evidence.rs",
         READER,
         AGENT + "neuron_cell_evaluation_receipt_owner.rs",
+        AGENT + "circuit_next_use_receipt_owner.rs",
     ),
 }
 
