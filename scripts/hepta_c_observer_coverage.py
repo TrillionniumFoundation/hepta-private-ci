@@ -1,6 +1,11 @@
 """Exact Observer subset coverage within a complete native nextest report."""
 
 from collections import Counter
+import hashlib
+import json
+import os
+from pathlib import Path
+import stat
 import re
 import xml.etree.ElementTree as ET
 
@@ -80,4 +85,72 @@ def assess_original_observer_coverage(log: str, xml: bytes) -> dict:
         "terminal_rows": named,
         "terminal_phase": "before_first_nextest_summary",
         "exact_pass_coverage": xml_ok and log_ok,
+    }
+
+
+def assess_retained_original_observer_coverage(
+    execution_path: Path, junit_path: Path
+) -> dict:
+    """Read the recorder's original bounded log, never a guessed log name."""
+    encoded_record = execution_path.read_bytes()
+    record = json.loads(encoded_record)
+    if (
+        record.get("status") != "passed"
+        or any(type(record.get(field)) is not int or record[field] != 0
+               for field in ("returncode", "command_exit_code", "exit_code"))
+        or record.get("timed_out") is not False
+        or record.get("output_limit_exceeded") is not False
+    ):
+        raise ValueError("Observer coverage requires a successful retained execution")
+    name = record.get("log_file")
+    if not isinstance(name, str) or re.fullmatch(
+        re.escape(execution_path.name) + r"\.[0-9a-f]{32}\.log", name
+    ) is None:
+        raise ValueError("retained execution log must be its exact relative basename")
+    expected_size = record.get("log_bytes")
+    expected_digest = record.get("log_sha256")
+    if (
+        type(expected_size) is not int
+        or not 0 <= expected_size <= 64 * 1024 * 1024
+        or not isinstance(expected_digest, str)
+        or re.fullmatch(r"[0-9a-f]{64}", expected_digest) is None
+    ):
+        raise ValueError("retained execution lacks bounded original log identity")
+    path = execution_path.parent / name
+
+    def identity(value):
+        return (
+            value.st_dev, value.st_ino, value.st_mode, value.st_size,
+            value.st_mtime_ns, value.st_ctime_ns,
+        )
+
+    before = path.lstat()
+    if not stat.S_ISREG(before.st_mode):
+        raise ValueError("retained execution log is not an original regular file")
+    with path.open("rb") as stream:
+        opened = os.fstat(stream.fileno())
+        raw = stream.read(expected_size + 1)
+        after = os.fstat(stream.fileno())
+    current = path.lstat()
+    if (
+        identity(before) != identity(opened)
+        or identity(opened) != identity(after)
+        or identity(after) != identity(current)
+        or len(raw) != expected_size
+        or hashlib.sha256(raw).hexdigest() != expected_digest
+    ):
+        raise ValueError("retained original log bytes or identity changed")
+    with junit_path.open("rb") as stream:
+        xml = stream.read(64 * 1024 * 1024 + 1)
+    if execution_path.read_bytes() != encoded_record:
+        raise ValueError("retained execution record changed during coverage read")
+    result = assess_original_observer_coverage(
+        raw.decode("utf-8", errors="replace"), xml
+    )
+    return {
+        "execution_record_sha256": hashlib.sha256(encoded_record).hexdigest(),
+        "log_file": name,
+        "log_bytes": len(raw),
+        "log_sha256": expected_digest,
+        **result,
     }

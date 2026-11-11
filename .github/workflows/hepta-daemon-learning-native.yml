@@ -7,6 +7,8 @@ on:
       - "codex-rs/hepta-learning-artifacts/**"
       - "codex-rs/hepta-intelligence-eval/**"
       - "scripts/test_hepta_cell_research_units.py"
+      - "scripts/hepta_ci_exec.py"
+      - "scripts/hepta_ci_junit.py"
       - "scripts/hepta_c_observer_coverage.py"
       - "scripts/test_hepta_c_observer_coverage.py"
       - ".github/workflows/hepta-daemon-learning-native.yml"
@@ -64,7 +66,7 @@ jobs:
           sys.path.insert(0, str(repo / "scripts"))
           from hepta_ci_exec import execute_logged
           from hepta_ci_junit import collect
-          from hepta_c_observer_coverage import assess_original_observer_coverage
+          from hepta_c_observer_coverage import assess_retained_original_observer_coverage
 
           parents = [
               "authority_host_service::writer::learning_registration::tests::root_learning_registration_reopens_without_replacing_original_history",
@@ -160,9 +162,8 @@ jobs:
                   restore_ownership()
               retained = collect(records / (name + ".json"), report, records / (name + ".xml"))
               if name == "ordinary" and retained == 0:
-                  coverage = assess_original_observer_coverage(
-                      (records / (name + ".log")).read_text(),
-                      (records / (name + ".xml")).read_bytes())
+                  coverage = assess_retained_original_observer_coverage(
+                      records / (name + ".json"), records / (name + ".xml"))
                   save("original-c-observer-coverage.json",
                        {"source_sha": os.environ["SOURCE_SHA"], **coverage})
                   if not coverage["exact_pass_coverage"]:
