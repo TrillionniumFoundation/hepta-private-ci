@@ -1,7 +1,7 @@
 {
   "schema": "hepta.p0.implemented-source-blobs.v1",
-  "candidate_source_sha": "6ecfa504d2132f3682ffb01f8c9d65346b26cf5b",
-  "candidate_tree": "9184583f3842d90a560436f279c753f15792e3ab",
+  "candidate_source_sha": "cb0598a9099a0d828ce73aedb51e397e600e49d1",
+  "candidate_tree": "59a019b79a6b879bbc27f6a614e1222fe87581ca",
   "base": "0c99a30dbe9307d48aa50ffc63404235ade8ae9c",
   "scope": "All non-qualification paths changed from the original common recovery base. The full repository is fixed by commit and tree.",
   "files": [
@@ -22,9 +22,9 @@
     {
       "path": "CALLERS.toml",
       "mode": "100644",
-      "git_blob": "1b60db58712cf0dea8cf184902bedbe742cf2936",
-      "bytes": 339206,
-      "sha256": "c17ec71b31959a7d8854bcde29dadd44b9baf06cfdb71a7c34e87fd1f3b8ff54"
+      "git_blob": "470bf7bc71420b79223dac86826d61704abba3ea",
+      "bytes": 345198,
+      "sha256": "e24624826d94bd7726e55c5ffb3ffc55f182819949dbe7b66c92879441e38b19"
     },
     {
       "path": "codex-rs/core/src/unified_exec/async_watcher.rs",
@@ -127,9 +127,9 @@
     {
       "path": "codex-rs/hepta-agentd/src/cell_composed_q24_training_owner.rs",
       "mode": "100644",
-      "git_blob": "990293d971e24849c326092d781ffccb3b7b1f00",
-      "bytes": 14021,
-      "sha256": "6e7cb76c5b37d01cbaa1ed4e078225cd89a958dd567138edb23b134b7a54b8c9"
+      "git_blob": "2f99436cc89f15f99198b3e414135707ecee391d",
+      "bytes": 14599,
+      "sha256": "121e08b87de9fceadeffeda8a0a02f530575510bf3640ed20ee073da4b554380"
     },
     {
       "path": "codex-rs/hepta-agentd/src/cell_composed_q24_training_owner_tests.rs",
@@ -162,16 +162,30 @@
     {
       "path": "codex-rs/hepta-agentd/src/cell_q24_training_receipt_owner.rs",
       "mode": "100644",
-      "git_blob": "0fdca1023b1a4eff420e776c7cebcb04543f17c8",
-      "bytes": 12403,
-      "sha256": "80544b1360f4fd419b89109381fb58ce614e877b2a4904041f8f1d07dd7ae55c"
+      "git_blob": "fffe066843ecc6ff02e5887a9ac926983d019e05",
+      "bytes": 12605,
+      "sha256": "5840b19c784bb58dc812271d10487c201aa8cd9a193f6e1930b1e9817eddde39"
     },
     {
       "path": "codex-rs/hepta-agentd/src/cell_q24_training_receipt_owner_tests.rs",
       "mode": "100644",
-      "git_blob": "179e982d5db2a3e29b512ff18866795a13a8cb32",
-      "bytes": 18320,
-      "sha256": "9a910003ec742732f70045549e5c7ab341b36ec3c37b9f2b2f38777e9cef58a0"
+      "git_blob": "55412aa998e15961d9c11118250a68739ec54a40",
+      "bytes": 18377,
+      "sha256": "bb9358e3a4d928f662d6a205b5c2af2017911d4c50fb371dd94df6dbbec8a9be"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs",
+      "mode": "100644",
+      "git_blob": "c56be75dd8a2e86894864c3d26a33eb1a3d4d416",
+      "bytes": 8915,
+      "sha256": "cec5780821b4e092ebc09f41d13876d0f271bc2858ebbb0d8796b11b119b226d"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_stage_tests.rs",
+      "mode": "100644",
+      "git_blob": "0c3e0c2ea4ae503a2e4b7959d5223ae2120f3c34",
+      "bytes": 13736,
+      "sha256": "ecb33c1b9fd6f0ea588b4b600e7945004cfc7c6cfa8b0b7308f5b120a04a6373"
     },
     {
       "path": "codex-rs/hepta-agentd/src/circuit_cell_dispatch.rs",
@@ -449,9 +463,9 @@
     {
       "path": "codex-rs/hepta-agentd/src/lib.rs",
       "mode": "100644",
-      "git_blob": "6cfef32060750955bd8282c591da8fad7959c2b7",
-      "bytes": 49952,
-      "sha256": "7f3166eb2ddcc08bc20bf7528da1ee2e85e6336a3c8fd6c26ec854a87d082c2e"
+      "git_blob": "991f196a05ab5cb8430d15e27e49b51635004c3b",
+      "bytes": 50181,
+      "sha256": "3550ba0c65e110dba0c3594b363beef3908d2cbacb3db733470ce2c0b985455d"
     },
     {
       "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_owner.rs",
@@ -715,9 +729,9 @@
     {
       "path": "qa/b4-no-bypass/test_original_training_owner_source_closure.py",
       "mode": "100644",
-      "git_blob": "b67e45761add0147c90581faa911e9a1a7d23de0",
-      "bytes": 5869,
-      "sha256": "0d584a3295eb9abe09d0f5831546b88301e40bf41a2c3bf9179d384218ed797d"
+      "git_blob": "c1e8f70d07990a0c16bb54bcc6d016755575344d",
+      "bytes": 8971,
+      "sha256": "dcc4d25dbf22dd9256510c99c01fa0640135aea7e599cf7c6c3369aa8d6ac25c"
     },
     {
       "path": "qa/b4-no-bypass/test_q24_training_plan_source_closure.py",

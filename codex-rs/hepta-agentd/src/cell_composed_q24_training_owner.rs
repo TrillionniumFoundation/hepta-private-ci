@@ -15,6 +15,8 @@ use codex_hepta_intelligence_eval::ProductEvaluationExecutionKeyV1;
 use codex_hepta_intelligence_eval::ProductEvaluationExecutionStateV1;
 use codex_hepta_intelligence_eval::ProductEvaluationExecutionStoreErrorV1;
 use codex_hepta_intelligence_eval::ProductEvaluationExecutionStoreV1;
+use codex_hepta_learning_artifacts::FrozenLearningScopeV2;
+use codex_hepta_learning_artifacts::LearningIterationSnapshotV1;
 use codex_hepta_neuron::AnchorWitnessStore;
 use codex_hepta_neuron::JournalAnchor;
 use codex_hepta_neuron::WitnessStoreError;
@@ -65,6 +67,18 @@ pub struct CellQ24TrainingOwnerV1<W: AnchorWitnessStore> {
 }
 
 impl<W: AnchorWitnessStore> CellQ24TrainingOwnerV1<W> {
+    /// Read-only preflight for the original typed training/signature pair.
+    pub(crate) fn require_original_dataset_scope(
+        &self,
+        dataset: &LearningIterationSnapshotV1,
+        scope: &FrozenLearningScopeV2,
+    ) -> Result<(), Error> {
+        if dataset != &self.plan.prefix || scope != &self.plan.scope {
+            return Err(Error::Binding("original training Dataset and scope"));
+        }
+        self.require_current()
+    }
+
     /// Explicit genesis only. An existing file or witness is never reset.
     pub fn create(
         file: File,

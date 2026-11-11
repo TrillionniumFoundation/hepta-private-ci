@@ -1,0 +1,424 @@
+{
+  "schema": "p0-windows-original-ci-readback-v1",
+  "scope": "Existing Windows run only; no CI/test/job replay. Not full P0 chain, not training adapter qualification, not independent task-gain evidence.",
+  "source": {
+    "head": "6ecfa504d2132f3682ffb01f8c9d65346b26cf5b",
+    "tree": "9184583f3842d90a560436f279c753f15792e3ab",
+    "head_sources": [
+      "run.head_sha",
+      "job log checkout/HEAD check",
+      "original ZIP manifest.source_head"
+    ],
+    "tree_sources": [
+      "run.head_commit.tree_id",
+      "original ZIP manifest.source_tree",
+      "local git rev-parse exact head tree"
+    ],
+    "production_path": "codex-rs/utils/path-utils/src/private_state_windows_directory.rs",
+    "production_sha256": "21600c6d3b738afbd53db9fffd088944fb7fe1fbc947efde9520fc49e439e1ac",
+    "positive_source_bytes_equal_exact_git_head": true
+  },
+  "run": {
+    "id": 42937198409,
+    "job_id": 130250125460,
+    "attempt": 1,
+    "conclusion": "success",
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42937198409",
+    "job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42937198409/job/130250125460",
+    "created_at": "2026-11-11T01:12:15Z",
+    "updated_at": "2026-11-11T01:33:02Z",
+    "workflow_path": ".github/workflows/hepta-windows-private-state-native.yml"
+  },
+  "original_artifact": {
+    "id": 13820071570,
+    "bytes": 13533,
+    "sha256": "b5cd3b06015b9d1aef2ba721540b21fd0b1bf10ae4d566d48ef6ae6be5823273",
+    "github_digest_match": true,
+    "all_nine_members_crc_checked": true,
+    "all_member_hashes": "ARTIFACT_INDEX.json"
+  },
+  "complete_decoded_job_log": {
+    "file": "job_130250125460.decoded.log.gz",
+    "utf8_bytes": 260174,
+    "utf16_units": 259932,
+    "decoded_utf8_sha256": "f172b40f7d1f2e9effed39ddf9d2f4cad834072c30a0355b9f4373d0f986e1f2",
+    "gzip_bytes": 52663,
+    "gzip_sha256": "66afb1756e19b964622d1ebc010a87dc988967b3e6e006def01812fbe7c9090b",
+    "crlf_count": 3297,
+    "utf8_bom_preserved": true,
+    "scope": "Complete tool-decoded log encoded as UTF-8 without line-ending/BOM normalization; not a claim about original HTTP transport encoding."
+  },
+  "main_nextest_suites": [
+    {
+      "command": "just test --locked -p codex-utils-path --lib -E 'test(private_state_windows::)' --test-threads 1 --no-tests fail --retries 0",
+      "command_log_line": 322,
+      "nextest_run_line": "2026-11-11T01:14:46.3818186Z  Nextest run ID 8420192c-db11-4096-b35e-d365812a8409 with nextest profile: local",
+      "summary": "2026-11-11T01:14:46.5704261Z      Summary [   0.189s] 15 tests run: 15 passed, 5 skipped",
+      "summary_log_line": 449,
+      "passed": 15,
+      "failed": 0,
+      "nextest_skipped": 5,
+      "tests": [
+        {
+          "package": "codex-utils-path",
+          "test": "private_state_windows::directory::api_tests::exclusive_child_creation_preserves_an_existing_private_file",
+          "seconds": 0.015,
+          "raw_log_line": 433
+        },
+        {
+          "package": "codex-utils-path",
+          "test": "private_state_windows::directory::api_tests::exclusive_creation_refuses_existing_and_racing_directories",
+          "seconds": 0.012,
+          "raw_log_line": 434
+        },
+        {
+          "package": "codex-utils-path",
+          "test": "private_state_windows::directory::api_tests::existing_directory_open_never_initializes_missing_state",
+          "seconds": 0.01,
+          "raw_log_line": 435
+        },
+        {
+          "package": "codex-utils-path",
+          "test": "private_state_windows::directory::tests::rejects_ancestor_substitution_at_retained_open",
+          "seconds": 0.022,
+          "raw_log_line": 436
+        },
+        {
+          "package": "codex-utils-path",
+          "test": "private_state_windows::directory::tests::rejects_junction_before_creating_private_leaf",
+          "seconds": 0.018,
+          "raw_log_line": 437
+        },
+        {
+          "package": "codex-utils-path",
+          "test": "private_state_windows::security_tests::native_creation_rejects_nul_without_creating_a_prefix_path",
+          "seconds": 0.01,
+          "raw_log_line": 438
+        },
+        {
+          "package": "codex-utils-path",
+          "test": "private_state_windows::security_tests::new_directory_and_child_have_explicit_token_user_ownership",
+          "seconds": 0.01,
+          "raw_log_line": 439
+        },
+        {
+          "package": "codex-utils-path",
+          "test": "private_state_windows::security_tests::opening_existing_objects_never_rewrites_their_security",
+          "seconds": 0.011,
+          "raw_log_line": 440
+        },
+        {
+          "package": "codex-utils-path",
+          "test": "private_state_windows::security_tests::relative_root_uses_one_absolute_spelling_for_create_and_open",
+          "seconds": 0.009,
+          "raw_log_line": 441
+        },
+        {
+          "package": "codex-utils-path",
+          "test": "private_state_windows::tests::hard_link_is_rejected",
+          "seconds": 0.01,
+          "raw_log_line": 442
+        },
+        {
+          "package": "codex-utils-path",
+          "test": "private_state_windows::tests::malformed_ace_sid_bounds_fail_closed",
+          "seconds": 0.008,
+          "raw_log_line": 443
+        },
+        {
+          "package": "codex-utils-path",
+          "test": "private_state_windows::tests::malformed_getace_spans_fail_closed",
+          "seconds": 0.008,
+          "raw_log_line": 444
+        },
+        {
+          "package": "codex-utils-path",
+          "test": "private_state_windows::tests::public_read_access_is_not_private",
+          "seconds": 0.008,
+          "raw_log_line": 445
+        },
+        {
+          "package": "codex-utils-path",
+          "test": "private_state_windows::tests::retained_directory_opens_private_single_link_children",
+          "seconds": 0.01,
+          "raw_log_line": 446
+        },
+        {
+          "package": "codex-utils-path",
+          "test": "private_state_windows::tests::retained_directory_pins_root_and_ancestor_until_drop",
+          "seconds": 0.025,
+          "raw_log_line": 447
+        }
+      ]
+    },
+    {
+      "command": "just test --locked -p codex-hepta-prompt-registry --lib -E 'test(durable::windows::tests::)' --test-threads 1 --no-tests fail --retries 0",
+      "command_log_line": 452,
+      "nextest_run_line": "2026-11-11T01:15:16.8432880Z  Nextest run ID edfa6ee5-278f-473e-bf01-41bc76103ff0 with nextest profile: local",
+      "summary": "2026-11-11T01:15:17.1725909Z      Summary [   0.329s] 2 tests run: 2 passed, 26 skipped",
+      "summary_log_line": 544,
+      "passed": 2,
+      "failed": 0,
+      "nextest_skipped": 26,
+      "tests": [
+        {
+          "package": "codex-hepta-prompt-registry",
+          "test": "durable::windows::tests::full_private_registry_roundtrip_reopens_without_resetting_owner_history",
+          "seconds": 0.314,
+          "raw_log_line": 541
+        },
+        {
+          "package": "codex-hepta-prompt-registry",
+          "test": "durable::windows::tests::hard_link_is_rejected_before_registry_bytes_are_read",
+          "seconds": 0.014,
+          "raw_log_line": 542
+        }
+      ]
+    },
+    {
+      "command": "just test --locked -p codex-hepta-contracts --lib -E 'test(final_use::store::windows::tests::)' --test-threads 1 --no-tests fail --retries 0",
+      "command_log_line": 547,
+      "nextest_run_line": "2026-11-11T01:15:53.1938353Z  Nextest run ID dae55987-3981-470c-857e-7c2b1936fc2b with nextest profile: local",
+      "summary": "2026-11-11T01:15:53.3454165Z      Summary [   0.152s] 3 tests run: 3 passed, 147 skipped",
+      "summary_log_line": 618,
+      "passed": 3,
+      "failed": 0,
+      "nextest_skipped": 147,
+      "tests": [
+        {
+          "package": "codex-hepta-contracts",
+          "test": "final_use::store::windows::tests::windows_final_use_denies_issuer_or_epoch_substitution",
+          "seconds": 0.051,
+          "raw_log_line": 614
+        },
+        {
+          "package": "codex-hepta-contracts",
+          "test": "final_use::store::windows::tests::windows_final_use_rejects_hardlinked_claims_before_nonce_replay",
+          "seconds": 0.04,
+          "raw_log_line": 615
+        },
+        {
+          "package": "codex-hepta-contracts",
+          "test": "final_use::store::windows::tests::windows_nonce_burn_persists_across_real_private_store_reopen",
+          "seconds": 0.057,
+          "raw_log_line": 616
+        }
+      ]
+    },
+    {
+      "command": "just test --locked -p codex-hepta-contracts --lib -E 'test(authority_lease::windows::tests::)' --test-threads 1 --no-tests fail --retries 0",
+      "command_log_line": 549,
+      "nextest_run_line": "2026-11-11T01:15:55.2115653Z  Nextest run ID 56ca3219-49d9-4660-9d54-958ebbb19921 with nextest profile: local",
+      "summary": "2026-11-11T01:15:55.2927784Z      Summary [   0.081s] 2 tests run: 2 passed, 148 skipped",
+      "summary_log_line": 640,
+      "passed": 2,
+      "failed": 0,
+      "nextest_skipped": 148,
+      "tests": [
+        {
+          "package": "codex-hepta-contracts",
+          "test": "authority_lease::windows::tests::hardlink_alias_of_authority_state_is_rejected_before_reopen",
+          "seconds": 0.024,
+          "raw_log_line": 637
+        },
+        {
+          "package": "codex-hepta-contracts",
+          "test": "authority_lease::windows::tests::private_authority_lease_roundtrip_reopens_with_exact_frontier",
+          "seconds": 0.054,
+          "raw_log_line": 638
+        }
+      ]
+    },
+    {
+      "command": "just test --locked -p codex-hepta-agentd --lib -E 'test(prompt_runtime::tests::)' --test-threads 1 --no-tests fail --retries 0",
+      "command_log_line": 643,
+      "nextest_run_line": "2026-11-11T01:32:40.7189214Z  Nextest run ID 26888b4d-e993-469b-9aaa-6db8d57f58e4 with nextest profile: local",
+      "summary": "2026-11-11T01:32:41.2707946Z      Summary [   0.552s] 12 tests run: 12 passed, 326 skipped",
+      "summary_log_line": 3160,
+      "passed": 12,
+      "failed": 0,
+      "nextest_skipped": 326,
+      "tests": [
+        {
+          "package": "codex-hepta-agentd",
+          "test": "prompt_runtime::tests::dispatch_without_terminal_reopens_as_unknown_and_blocks_blind_retry",
+          "seconds": 0.05,
+          "raw_log_line": 3147
+        },
+        {
+          "package": "codex-hepta-agentd",
+          "test": "prompt_runtime::tests::final_delivered_terminal_releases_staged_turn",
+          "seconds": 0.017,
+          "raw_log_line": 3148
+        },
+        {
+          "package": "codex-hepta-agentd",
+          "test": "prompt_runtime::tests::indeterminate_terminal_reopens_blocked_and_reconciles_monotonically",
+          "seconds": 0.076,
+          "raw_log_line": 3149
+        },
+        {
+          "package": "codex-hepta-agentd",
+          "test": "prompt_runtime::tests::named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host",
+          "seconds": 0.138,
+          "raw_log_line": 3150
+        },
+        {
+          "package": "codex-hepta-agentd",
+          "test": "prompt_runtime::tests::non_dispatch_terminal_is_idempotent_and_retains_stage_for_retry",
+          "seconds": 0.017,
+          "raw_log_line": 3151
+        },
+        {
+          "package": "codex-hepta-agentd",
+          "test": "prompt_runtime::tests::not_dispatched_retry_then_final_delivery_reopens_without_stale_stage_requirement",
+          "seconds": 0.074,
+          "raw_log_line": 3152
+        },
+        {
+          "package": "codex-hepta-agentd",
+          "test": "prompt_runtime::tests::owner_drop_releases_retained_descriptor_without_releasing_successor_lock",
+          "seconds": 0.032,
+          "raw_log_line": 3153
+        },
+        {
+          "package": "codex-hepta-agentd",
+          "test": "prompt_runtime::tests::owner_remains_send_sync_with_fault_injection",
+          "seconds": 0.016,
+          "raw_log_line": 3154
+        },
+        {
+          "package": "codex-hepta-agentd",
+          "test": "prompt_runtime::tests::post_rename_ack_loss_poison_reopens_to_dispatch_claim_not_absent",
+          "seconds": 0.059,
+          "raw_log_line": 3155
+        },
+        {
+          "package": "codex-hepta-agentd",
+          "test": "prompt_runtime::tests::staged_attachment_is_bound_to_exact_thread_and_turn",
+          "seconds": 0.017,
+          "raw_log_line": 3156
+        },
+        {
+          "package": "codex-hepta-agentd",
+          "test": "prompt_runtime::tests::windows_prompt_runtime_existing_insecure_directory_is_never_repaired",
+          "seconds": 0.018,
+          "raw_log_line": 3157
+        },
+        {
+          "package": "codex-hepta-agentd",
+          "test": "prompt_runtime::tests::windows_prompt_runtime_private_owner_reopens_without_reset_or_acl_waiver",
+          "seconds": 0.032,
+          "raw_log_line": 3158
+        }
+      ]
+    }
+  ],
+  "main_suite_total_executions": {
+    "passed": 34,
+    "failed": 0,
+    "note": "Selected tests across five suite invocations. Skipped counts are per invocation, overlapping, and not summed into independent tests."
+  },
+  "format": {
+    "status": "success",
+    "step": {
+      "name": "Enforce source-level Rust formatting for durable owners",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 9
+    },
+    "command": "cargo fmt --package codex-utils-path --package codex-hepta-prompt-registry --package codex-hepta-contracts --package codex-hepta-agentd -- --check",
+    "scope": "Four named packages only; stable rustfmt emitted nightly-only imports_granularity warnings."
+  },
+  "attack_proof": {
+    "status": "success",
+    "python_script_unit_tests": 6,
+    "python_seconds": 0.003,
+    "lanes": [
+      {
+        "lane": "positive",
+        "production_sha256": "21600c6d3b738afbd53db9fffd088944fb7fe1fbc947efde9520fc49e439e1ac",
+        "exit_code": 0,
+        "log_sha256": "a82fa89a3fcb6e9b74bac9791b87f80a99bf89c4ab0642a067f0d2ee241b2212",
+        "statuses": {
+          "private_state_windows::directory::tests::rejects_ancestor_substitution_at_retained_open": "PASS",
+          "private_state_windows::directory::tests::rejects_junction_before_creating_private_leaf": "PASS"
+        },
+        "observations": {
+          "substitution": "swapped=true denied=true redirected=false",
+          "creation": "denied=true created=false"
+        },
+        "nextest_summary": "     Summary [   0.043s] 2 tests run: 2 passed, 18 skipped",
+        "passed": 2,
+        "failed": 0,
+        "nextest_skipped": 18,
+        "interpretation": "original source positive"
+      },
+      {
+        "lane": "unchecked-create",
+        "patch_sha256": "f55d66d0a5b10e98b6ba1ebb60a56081e6027eff85068e01107c3a1e7ea4f74c",
+        "production_sha256": "a1aa002dc62686156f92071c1ff572987559c73230bf1c4acc3ea072739d400e",
+        "exit_code": 1,
+        "log_sha256": "794b8f686b7e3e7f2d10d1ffb6ab8acdd6378eb4f4866894e89788add4ef335c",
+        "statuses": {
+          "private_state_windows::directory::tests::rejects_ancestor_substitution_at_retained_open": "PASS",
+          "private_state_windows::directory::tests::rejects_junction_before_creating_private_leaf": "FAIL"
+        },
+        "observations": {
+          "substitution": "swapped=true denied=true redirected=false",
+          "creation": "denied=true created=true"
+        },
+        "nextest_summary": "     Summary [   0.044s] 2 tests run: 1 passed, 1 failed, 18 skipped",
+        "passed": 1,
+        "failed": 1,
+        "nextest_skipped": 18,
+        "interpretation": "expected mutant rejection, not production failure"
+      },
+      {
+        "lane": "path-check-open",
+        "patch_sha256": "102a2659d4e6d6b3bc0316ce2d2966f5045b4c8578ed3cbb257c502afebbc4d3",
+        "production_sha256": "01787b0a9cf467436ad0cc35aa47b7c05e24ec5dae9b562c2382d1e7c56acdd4",
+        "exit_code": 1,
+        "log_sha256": "4f19d4c1607f9615dfa7b8bf0336fa9a1e8daf8474da915446acb4d09e9e099b",
+        "statuses": {
+          "private_state_windows::directory::tests::rejects_ancestor_substitution_at_retained_open": "FAIL",
+          "private_state_windows::directory::tests::rejects_junction_before_creating_private_leaf": "PASS"
+        },
+        "observations": {
+          "substitution": "swapped=true denied=false redirected=true",
+          "creation": "denied=true created=false"
+        },
+        "nextest_summary": "     Summary [   0.043s] 2 tests run: 1 passed, 1 failed, 18 skipped",
+        "passed": 1,
+        "failed": 1,
+        "nextest_skipped": 18,
+        "interpretation": "expected mutant rejection, not production failure"
+      }
+    ],
+    "qualified": true,
+    "restored": true,
+    "note": "Positive and mutant lanes reuse the same two directory tests. Mutation failures are expected and must not be added as independent confirmation tasks."
+  },
+  "clean": {
+    "status": "success",
+    "step": {
+      "name": "Confirm no generated or modified tracked source",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 11
+    },
+    "checks": [
+      "git diff --check",
+      "git diff --exit-code",
+      "git status --porcelain --untracked-files=no; fail if trackedChanges.Count != 0"
+    ],
+    "scope": "Tracked source cleanliness after source restoration; untracked artifacts intentionally excluded."
+  },
+  "compiler": "rustc 1.96.0 (ac68faa20 2026-05-25)\nbinary: rustc\ncommit-hash: ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96\ncommit-date: 2026-05-25\nhost: x86_64-pc-windows-msvc\nrelease: 1.96.0\nLLVM version: 22.1.2\n",
+  "limits": [
+    "No JUnit is present in this artifact; suite counts verified from complete original nextest log and named PASS rows.",
+    "No daemon/shared/core full-suite qualification, generic bins check or cargo fix is established by this Windows lane.",
+    "No training-stage adapter was present in this tested source; no independent real-task sample or gain evidence.",
+    "Source is exact head 6ec; results are not transferred to any later source head."
+  ]
+}

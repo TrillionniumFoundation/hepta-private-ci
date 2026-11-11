@@ -1,0 +1,59 @@
+{
+  "schema": "hepta.p0.original-training-stage-review.v1",
+  "published_source_sha": "cb0598a9099a0d828ce73aedb51e397e600e49d1",
+  "published_source_tree": "59a019b79a6b879bbc27f6a614e1222fe87581ca",
+  "reviewed_components": [
+    "61d118656e2b8dc99f36e1addc83296cefa35325",
+    "6478491f35eba1dd999fba018175ae746132d771"
+  ],
+  "integrated_component_file_blobs_identical": 8,
+  "review_result": "NO_BLOCKER_FOUND_AFTER_EXPIRY_ADMISSION_REPAIR",
+  "review_kind": "Independent source review; not native execution or scientific independence.",
+  "identified_and_repaired_issue": "The first adapter version could claim native Missing state before rejecting an already-expired request. The final version obtains a fresh time after readback I/O and validates enrollment and request expiry before new fit or first receipt attestation.",
+  "implemented_invariants": [
+    "Consume existing typed original native trainer and receipt owner; create no signing authority or dataset custody.",
+    "Use one non-queuing semaphore permit, retained inside the real blocking closure through async waiter cancellation.",
+    "Recheck exact Dataset, scope, native CURRENT and original receipt/native readback semantics.",
+    "Fit only exact native Missing; reject Pending and other custody errors without fallback.",
+    "Completed original receipts retain their authenticated readback and original signature/validity window without retraining, resigning or renewal."
+  ],
+  "component_static_checks": {
+    "source_closure_tests": 6,
+    "training_no_update_tests": 3,
+    "required_boundaries": 223,
+    "protected_rows": 218,
+    "overlap_historical_checks": true,
+    "full_caller_scan": false
+  },
+  "component_format_command": "just fmt --base 61d118656e2b8dc99f36e1addc83296cefa35325",
+  "component_format_result": "PASS",
+  "written_native_tests": [
+    "original_training_stage_runs_both_outcomes_and_reopens_exactly",
+    "original_training_stage_rejects_wrong_pair_and_pending_without_work",
+    "original_training_stage_distinguishes_missing_receipt_from_missing_native",
+    "original_training_stage_expired_missing_never_claims_or_attests",
+    "original_training_stage_request_expiry_preserves_only_original_completed_receipts",
+    "original_training_stage_keeps_lane_until_cancelled_waiter_worker_exits"
+  ],
+  "native_execution_on_published_source": "PENDING_FRESH_SOURCE_CI",
+  "ordinary_stage_public_entry_callers": [],
+  "receipt_owner_create_and_recover_product_callers": [],
+  "actual_new_internal_caller": "cell_q24_training_stage.rs calls original native fit and original receipt attest/readback.",
+  "full_production_stage_owner_assembly": false,
+  "cold_recovery_scope_of_written_tests": "Reopened file objects in one process; not original daemon/Root process cold restoration.",
+  "deadline_atomicity_limit": "Pre-admission checks do not make later time passage atomic. After-admission failure keeps original fail-closed owner semantics.",
+  "files": {
+    "p0-training-adapter-expiry-no-update-source-tests.log": {
+      "bytes": 101,
+      "sha256": "c2a1ed1bbdeadfddde61892b4a30ed86d0dac18bfb6661b57df35ff9796a6a0c"
+    },
+    "p0-training-adapter-expiry-protected.json": {
+      "bytes": 160,
+      "sha256": "d45bd6821ac5622a600f4dd54def14a0ee0051ebdfff842233019c9a802acf90"
+    },
+    "p0-training-adapter-expiry-source-tests.log": {
+      "bytes": 104,
+      "sha256": "5581c5cd30fec726425055fcc04de7c0bf99397075d6b29cb4644690121064d7"
+    }
+  }
+}

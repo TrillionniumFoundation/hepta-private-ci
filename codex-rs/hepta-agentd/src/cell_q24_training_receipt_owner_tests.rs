@@ -18,6 +18,9 @@ use crate::OriginalCellQ24TrainingReceiptErrorV1 as ReceiptError;
 use crate::OriginalCellQ24TrainingReceiptOwnerV1;
 use crate::OriginalCellQ24TrainingSigningConfigV1;
 
+#[path = "cell_q24_training_stage_tests.rs"]
+mod stage;
+
 fn clock() -> anyhow::Result<u64> {
     Ok(std::time::SystemTime::now()
         .duration_since(std::time::UNIX_EPOCH)?

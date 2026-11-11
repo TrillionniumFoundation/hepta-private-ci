@@ -1,0 +1,572 @@
+{
+  "schema": "hepta.p0.exact-source-daemon-readback.v1",
+  "retrieved_at_utc": "2026-11-11T02:03:47.708262+00:00",
+  "source_sha": "6ecfa504d2132f3682ffb01f8c9d65346b26cf5b",
+  "source_tree": "9184583f3842d90a560436f279c753f15792e3ab",
+  "run_id": 42937198717,
+  "run_attempt": 1,
+  "job_id": 130250073525,
+  "github_run_conclusion": "success",
+  "github_job_conclusion": "success",
+  "tests_independently_parsed": {
+    "ordinary": {
+      "passed": 1146,
+      "failed": 0,
+      "errors": 0,
+      "junit_testcases": 1146,
+      "junit_skipped_elements": 0,
+      "nextest_excluded_or_ignored": 72,
+      "nextest_summary_line": "     Summary [ 199.746s] 1146 tests run: 1146 passed (1 slow), 72 skipped",
+      "junit_sha256": "ecf88abeac7821f9d721f74efbcd9ff5ccd24f84cac76ace1f59c9b4677325b1",
+      "junit_bytes": 272342,
+      "execution_record_sha256": "9f24f3428af4ecf0ad67b3ccffee6dc4c8f6bf0d06f3f41df6690e2710acb1dc",
+      "execution_elapsed_seconds": 503.015228544,
+      "junit_runtime_seconds": 199.746,
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-learning-artifacts",
+        "-p",
+        "codex-hepta-intelligence-eval",
+        "--lib",
+        "--test-threads",
+        "2",
+        "--retries",
+        "0",
+        "--success-output",
+        "final",
+        "--failure-output",
+        "final"
+      ],
+      "testcases_by_binary": {
+        "codex-hepta-agentd": 884,
+        "codex-hepta-intelligence-eval": 143,
+        "codex-hepta-learning-artifacts": 119
+      }
+    },
+    "root": {
+      "passed": 7,
+      "failed": 0,
+      "errors": 0,
+      "junit_testcases": 7,
+      "junit_skipped_elements": 0,
+      "nextest_excluded_or_ignored": 948,
+      "nextest_summary_line": "     Summary [   0.382s] 7 tests run: 7 passed, 948 skipped",
+      "junit_sha256": "afa062d9e788d7a81603ff82df4725f3a88aeba5b6c269d6fcdfda373f82dc25",
+      "junit_bytes": 2115,
+      "execution_record_sha256": "5c941e9b807821c1b8cdf5ea5e43050a1a84ff89616bdf68b74710fda97e7004",
+      "execution_elapsed_seconds": 1.8284289319999516,
+      "junit_runtime_seconds": 0.382,
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "codex-hepta-agentd",
+        "--lib",
+        "--run-ignored",
+        "only",
+        "-E",
+        "test(=authority_host_service::writer::learning_registration::tests::root_learning_registration_reopens_without_replacing_original_history) | test(=authority_host_service::writer::learning_registration::tests::root_learning_sealed_pin_and_dedicated_uds_recover_original_checkpoint) | test(=authority_host_service::writer::learning_registration::tests::root_scoped_learning_reopens_exact_scope_and_refuses_legacy_client) | test(=authority_host_service::writer::learning_registration::tests::root_learning_scoped_sealed_pin_preserves_scope_on_cold_reopen) | test(=root_production_handoff::learning::tests::root_learning_handoff_reaches_dedicated_uid_with_original_root_pin) | test(=authority_host_learning_service_root_tests::root_learning_public_registration_serves_retained_writer_and_recovers_history) | test(=learning_iteration_evidence_client::tests::root::original_external_uid_returns_a_verified_receipt_through_held_pidfd)",
+        "--test-threads",
+        "1",
+        "--retries",
+        "0",
+        "--success-output",
+        "final",
+        "--failure-output",
+        "final"
+      ],
+      "testcases_by_binary": {
+        "codex-hepta-agentd": 7
+      }
+    }
+  },
+  "root_independence": {
+    "actual_uid_output": [
+      {
+        "line": 24169,
+        "text": "2026-11-11T01:39:10.2357658Z Root test uid=0"
+      }
+    ],
+    "required_root_euid": 0,
+    "required_ordinary_euid": 1001,
+    "expected_names": [
+      "authority_host_learning_service_root_tests::root_learning_public_registration_serves_retained_writer_and_recovers_history",
+      "authority_host_service::writer::learning_registration::tests::root_learning_registration_reopens_without_replacing_original_history",
+      "authority_host_service::writer::learning_registration::tests::root_learning_scoped_sealed_pin_preserves_scope_on_cold_reopen",
+      "authority_host_service::writer::learning_registration::tests::root_learning_sealed_pin_and_dedicated_uds_recover_original_checkpoint",
+      "authority_host_service::writer::learning_registration::tests::root_scoped_learning_reopens_exact_scope_and_refuses_legacy_client",
+      "learning_iteration_evidence_client::tests::root::original_external_uid_returns_a_verified_receipt_through_held_pidfd",
+      "root_production_handoff::learning::tests::root_learning_handoff_reaches_dedicated_uid_with_original_root_pin"
+    ],
+    "junit_names": [
+      "authority_host_learning_service_root_tests::root_learning_public_registration_serves_retained_writer_and_recovers_history",
+      "authority_host_service::writer::learning_registration::tests::root_learning_registration_reopens_without_replacing_original_history",
+      "authority_host_service::writer::learning_registration::tests::root_learning_scoped_sealed_pin_preserves_scope_on_cold_reopen",
+      "authority_host_service::writer::learning_registration::tests::root_learning_sealed_pin_and_dedicated_uds_recover_original_checkpoint",
+      "authority_host_service::writer::learning_registration::tests::root_scoped_learning_reopens_exact_scope_and_refuses_legacy_client",
+      "learning_iteration_evidence_client::tests::root::original_external_uid_returns_a_verified_receipt_through_held_pidfd",
+      "root_production_handoff::learning::tests::root_learning_handoff_reaches_dedicated_uid_with_original_root_pin"
+    ],
+    "expected_and_observed_and_junit_sets_equal": true,
+    "prior_root_junit_byte_identical_to_ordinary": true,
+    "prior_root_junit_sha256": "ecf88abeac7821f9d721f74efbcd9ff5ccd24f84cac76ace1f59c9b4677325b1",
+    "prior_root_junit_retained_as_exclusion_evidence_but_not_counted": true,
+    "fresh_root_xml_distinct": true,
+    "root_parent_names_also_executed_in_ordinary": [],
+    "nested_child_output_not_counted_as_additional_root_parents": true
+  },
+  "source_cuts": {
+    "checkout": {
+      "commit": "6ecfa504d2132f3682ffb01f8c9d65346b26cf5b",
+      "files": 14399,
+      "inventory_sha256": "733e9f65946fc4cc67f8aa843c691b1fbb5eff77d3f94a8073ab3599861e73fe",
+      "status": "",
+      "tree": "9184583f3842d90a560436f279c753f15792e3ab"
+    },
+    "before-tests": {
+      "commit": "6ecfa504d2132f3682ffb01f8c9d65346b26cf5b",
+      "files": 14399,
+      "inventory_sha256": "733e9f65946fc4cc67f8aa843c691b1fbb5eff77d3f94a8073ab3599861e73fe",
+      "status": "",
+      "tree": "9184583f3842d90a560436f279c753f15792e3ab"
+    },
+    "after-tests": {
+      "commit": "6ecfa504d2132f3682ffb01f8c9d65346b26cf5b",
+      "files": 14399,
+      "inventory_sha256": "733e9f65946fc4cc67f8aa843c691b1fbb5eff77d3f94a8073ab3599861e73fe",
+      "status": "",
+      "tree": "9184583f3842d90a560436f279c753f15792e3ab"
+    },
+    "after-maintenance": {
+      "commit": "6ecfa504d2132f3682ffb01f8c9d65346b26cf5b",
+      "files": 14399,
+      "inventory_sha256": "733e9f65946fc4cc67f8aa843c691b1fbb5eff77d3f94a8073ab3599861e73fe",
+      "status": "",
+      "tree": "9184583f3842d90a560436f279c753f15792e3ab"
+    },
+    "after-bins": {
+      "commit": "6ecfa504d2132f3682ffb01f8c9d65346b26cf5b",
+      "files": 14399,
+      "inventory_sha256": "733e9f65946fc4cc67f8aa843c691b1fbb5eff77d3f94a8073ab3599861e73fe",
+      "status": "",
+      "tree": "9184583f3842d90a560436f279c753f15792e3ab"
+    },
+    "final": {
+      "commit": "6ecfa504d2132f3682ffb01f8c9d65346b26cf5b",
+      "files": 14399,
+      "inventory_sha256": "733e9f65946fc4cc67f8aa843c691b1fbb5eff77d3f94a8073ab3599861e73fe",
+      "status": "",
+      "tree": "9184583f3842d90a560436f279c753f15792e3ab"
+    }
+  },
+  "inventories_actually_decompressed_and_full_bytes_compared": {
+    "checkout.files.json.gz": {
+      "compressed_member_bytes": 1108875,
+      "compressed_member_sha256": "bee3d8e27a207701fba472564b39a163529a0c6bc5abd04b3111da71ad1abedc",
+      "uncompressed_bytes": 3332743,
+      "uncompressed_sha256": "733e9f65946fc4cc67f8aa843c691b1fbb5eff77d3f94a8073ab3599861e73fe",
+      "parsed_file_count": 14399,
+      "actually_decompressed_and_compared_to_checkout": true,
+      "identical_to_checkout_full_bytes": true,
+      "included_in_selected_archive": false,
+      "omission_reason": "Large source inventory; fully hashed and verified but intentionally not republished."
+    },
+    "before-tests.files.json.gz": {
+      "compressed_member_bytes": 1108879,
+      "compressed_member_sha256": "04860280cac3a2a6fc458e93b5487ca9de1f3a225512f2fa1f75d72d21ff380b",
+      "uncompressed_bytes": 3332743,
+      "uncompressed_sha256": "733e9f65946fc4cc67f8aa843c691b1fbb5eff77d3f94a8073ab3599861e73fe",
+      "parsed_file_count": 14399,
+      "actually_decompressed_and_compared_to_checkout": true,
+      "identical_to_checkout_full_bytes": true,
+      "included_in_selected_archive": false,
+      "omission_reason": "Large source inventory; fully hashed and verified but intentionally not republished."
+    },
+    "after-tests.files.json.gz": {
+      "compressed_member_bytes": 1108878,
+      "compressed_member_sha256": "efc450361789b17bad754d8d9cb8a67371bb135703b8cf32bc4d69993e764e9c",
+      "uncompressed_bytes": 3332743,
+      "uncompressed_sha256": "733e9f65946fc4cc67f8aa843c691b1fbb5eff77d3f94a8073ab3599861e73fe",
+      "parsed_file_count": 14399,
+      "actually_decompressed_and_compared_to_checkout": true,
+      "identical_to_checkout_full_bytes": true,
+      "included_in_selected_archive": false,
+      "omission_reason": "Large source inventory; fully hashed and verified but intentionally not republished."
+    },
+    "after-maintenance.files.json.gz": {
+      "compressed_member_bytes": 1108884,
+      "compressed_member_sha256": "d9b6895f7f356b909964c57aaf9f35231b4ae42e9ecd6a92e0f7a0fc920fe553",
+      "uncompressed_bytes": 3332743,
+      "uncompressed_sha256": "733e9f65946fc4cc67f8aa843c691b1fbb5eff77d3f94a8073ab3599861e73fe",
+      "parsed_file_count": 14399,
+      "actually_decompressed_and_compared_to_checkout": true,
+      "identical_to_checkout_full_bytes": true,
+      "included_in_selected_archive": false,
+      "omission_reason": "Large source inventory; fully hashed and verified but intentionally not republished."
+    },
+    "after-bins.files.json.gz": {
+      "compressed_member_bytes": 1108877,
+      "compressed_member_sha256": "0c6f7e282bbecf992d4ff96119145e669dc1a83f934cf2bf2d38863382b036d9",
+      "uncompressed_bytes": 3332743,
+      "uncompressed_sha256": "733e9f65946fc4cc67f8aa843c691b1fbb5eff77d3f94a8073ab3599861e73fe",
+      "parsed_file_count": 14399,
+      "actually_decompressed_and_compared_to_checkout": true,
+      "identical_to_checkout_full_bytes": true,
+      "included_in_selected_archive": false,
+      "omission_reason": "Large source inventory; fully hashed and verified but intentionally not republished."
+    },
+    "final.files.json.gz": {
+      "compressed_member_bytes": 1108872,
+      "compressed_member_sha256": "7e7be2e8fe05f0d6bf7603e57ec6f5435f1f150bb374cf0684ac2f4a49099af6",
+      "uncompressed_bytes": 3332743,
+      "uncompressed_sha256": "733e9f65946fc4cc67f8aa843c691b1fbb5eff77d3f94a8073ab3599861e73fe",
+      "parsed_file_count": 14399,
+      "actually_decompressed_and_compared_to_checkout": true,
+      "identical_to_checkout_full_bytes": true,
+      "included_in_selected_archive": false,
+      "omission_reason": "Large source inventory; fully hashed and verified but intentionally not republished."
+    }
+  },
+  "all_six_full_uncompressed_inventories_identical": true,
+  "command_records_with_log_byte_and_hash_checks": {
+    "bins-check.json": {
+      "command": [
+        "cargo",
+        "check",
+        "--locked",
+        "--offline",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-learning-artifacts",
+        "-p",
+        "codex-hepta-intelligence-eval",
+        "--bins"
+      ],
+      "returncode": 0,
+      "timed_out": false,
+      "output_limit_exceeded": false,
+      "log": "bins-check.log",
+      "log_bytes": 34024,
+      "log_sha256": "993a955e6031bfd1d9c32acdf25f281c11bd17eee4d46824cfe6c7abc5b03b0b",
+      "elapsed_seconds_reported": null
+    },
+    "fix.json": {
+      "command": [
+        "just",
+        "fix",
+        "--locked",
+        "--offline",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-learning-artifacts",
+        "-p",
+        "codex-hepta-intelligence-eval"
+      ],
+      "returncode": 0,
+      "timed_out": false,
+      "output_limit_exceeded": false,
+      "log": "fix.log",
+      "log_bytes": 60860,
+      "log_sha256": "c78f20cbf0a9baa79c6b49e218c4e6e37b076ef2af04077b394a6913f57e98e8",
+      "elapsed_seconds_reported": null
+    },
+    "fmt.json": {
+      "command": [
+        "just",
+        "fmt",
+        "--base",
+        "b8e8c6e82abc1479c573f61a5e17d28d581e6cad"
+      ],
+      "returncode": 0,
+      "timed_out": false,
+      "output_limit_exceeded": false,
+      "log": "fmt.log",
+      "log_bytes": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "elapsed_seconds_reported": null
+    },
+    "helper-build.json": {
+      "command": [
+        "python3",
+        "scripts/hepta_cell_test_helpers.py",
+        "--package",
+        "codex-hepta-infer-worker-host",
+        "--output-dir",
+        "/home/runner/work/_temp/daemon-learning-records/helpers",
+        "--github-env",
+        "/home/runner/work/_temp/_runner_file_commands/set_env_2b984972-3bfe-4d8c-8319-c651588979ee"
+      ],
+      "returncode": 0,
+      "timed_out": false,
+      "output_limit_exceeded": false,
+      "log": "helper-build.json.5dc817a6343d4f1094649fa09457d02b.log",
+      "log_bytes": 173,
+      "log_sha256": "ee101f8d7690e6ef53d5bb7b6371da8af194f581626152581e302c06d73fae7b",
+      "elapsed_seconds_reported": 512.436105983
+    },
+    "helper-verification.json": {
+      "command": [
+        "python3",
+        "scripts/hepta_cell_test_helpers.py",
+        "--package",
+        "codex-hepta-infer-worker-host",
+        "--output-dir",
+        "/home/runner/work/_temp/daemon-learning-records/helpers",
+        "--verify-only"
+      ],
+      "returncode": 0,
+      "timed_out": false,
+      "output_limit_exceeded": false,
+      "log": "helper-verification.log",
+      "log_bytes": 1077,
+      "log_sha256": "df7e0090d90c288c1e36baf2b32bf0def017645441d6c55af6d355bdc7374df0",
+      "elapsed_seconds_reported": null
+    },
+    "ordinary.json": {
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-learning-artifacts",
+        "-p",
+        "codex-hepta-intelligence-eval",
+        "--lib",
+        "--test-threads",
+        "2",
+        "--retries",
+        "0",
+        "--success-output",
+        "final",
+        "--failure-output",
+        "final"
+      ],
+      "returncode": 0,
+      "timed_out": false,
+      "output_limit_exceeded": false,
+      "log": "ordinary.json.c7de232b4fde42e4a0fa4de3c999d818.log",
+      "log_bytes": 819539,
+      "log_sha256": "e6412caec490e70698dbc5a165702d0fbed208053b627102ff69389bd3600aba",
+      "elapsed_seconds_reported": 503.015228544
+    },
+    "root-setup.json": {
+      "command": [
+        "sudo",
+        "-n",
+        "python3",
+        "-c",
+        "import os,subprocess,sys; from pathlib import Path; p=Path(sys.argv[1]); p.mkdir(mode=0o700); [ (p/n).mkdir(mode=0o700) for n in ('source','bind','checkpoints') ]; subprocess.run(['mount','--bind',str(p/'source'),str(p/'bind')],check=True); print('Root fixture uid='+str(os.geteuid())+' path='+str(p),flush=True)",
+        "/run/hepta-daemon-learning-42937198717-1"
+      ],
+      "returncode": 0,
+      "timed_out": false,
+      "output_limit_exceeded": false,
+      "log": "root-setup.log",
+      "log_bytes": 65,
+      "log_sha256": "a1a9deb174c4a365e8f070819cc871dcd7745c71632b5dbc91425028a601d4ee",
+      "elapsed_seconds_reported": null
+    },
+    "root-unmount.json": {
+      "command": [
+        "sudo",
+        "-n",
+        "umount",
+        "/run/hepta-daemon-learning-42937198717-1/bind"
+      ],
+      "returncode": 0,
+      "timed_out": false,
+      "output_limit_exceeded": false,
+      "log": "root-unmount.log",
+      "log_bytes": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "elapsed_seconds_reported": null
+    },
+    "root.json": {
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "codex-hepta-agentd",
+        "--lib",
+        "--run-ignored",
+        "only",
+        "-E",
+        "test(=authority_host_service::writer::learning_registration::tests::root_learning_registration_reopens_without_replacing_original_history) | test(=authority_host_service::writer::learning_registration::tests::root_learning_sealed_pin_and_dedicated_uds_recover_original_checkpoint) | test(=authority_host_service::writer::learning_registration::tests::root_scoped_learning_reopens_exact_scope_and_refuses_legacy_client) | test(=authority_host_service::writer::learning_registration::tests::root_learning_scoped_sealed_pin_preserves_scope_on_cold_reopen) | test(=root_production_handoff::learning::tests::root_learning_handoff_reaches_dedicated_uid_with_original_root_pin) | test(=authority_host_learning_service_root_tests::root_learning_public_registration_serves_retained_writer_and_recovers_history) | test(=learning_iteration_evidence_client::tests::root::original_external_uid_returns_a_verified_receipt_through_held_pidfd)",
+        "--test-threads",
+        "1",
+        "--retries",
+        "0",
+        "--success-output",
+        "final",
+        "--failure-output",
+        "final"
+      ],
+      "returncode": 0,
+      "timed_out": false,
+      "output_limit_exceeded": false,
+      "log": "root.json.587f4f3c59c74cf1a9751c5b2d90013c.log",
+      "log_bytes": 36355,
+      "log_sha256": "0d235a44f3e13b27357471b6db07e437f15d3916eb54943eeab991ffc14eeca3",
+      "elapsed_seconds_reported": 1.8284289319999516
+    }
+  },
+  "maintenance_summary": {
+    "complete": true,
+    "files": [],
+    "source_sha": "6ecfa504d2132f3682ffb01f8c9d65346b26cf5b"
+  },
+  "qualification_status": {
+    "failed": false,
+    "maintenance_complete": true,
+    "maintenance_started": true,
+    "source_sha": "6ecfa504d2132f3682ffb01f8c9d65346b26cf5b"
+  },
+  "maintenance_patch_bytes": 0,
+  "maintenance_postimages_bytes": 0,
+  "helper": {
+    "manifest": {
+      "schema_version": 1,
+      "source_sha": "6ecfa504d2132f3682ffb01f8c9d65346b26cf5b",
+      "source_sha_after": "6ecfa504d2132f3682ffb01f8c9d65346b26cf5b",
+      "source_status_before": "",
+      "source_status_after": "",
+      "workspace": "/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs",
+      "selected_packages": [
+        "codex-hepta-infer-worker-host"
+      ],
+      "builds": [
+        {
+          "package": "codex-hepta-infer-worker-host",
+          "binaries": [
+            "hepta-joint-propose"
+          ],
+          "command": [
+            "cargo",
+            "build",
+            "--locked",
+            "--message-format=json-render-diagnostics",
+            "-p",
+            "codex-hepta-infer-worker-host",
+            "--bin",
+            "hepta-joint-propose"
+          ],
+          "stdout": "/home/runner/work/_temp/daemon-learning-records/helpers/codex-hepta-infer-worker-host.jsonl",
+          "stderr": "/home/runner/work/_temp/daemon-learning-records/helpers/codex-hepta-infer-worker-host.stderr.log",
+          "exit_code": 0,
+          "cargo_finished": true,
+          "complete": true
+        }
+      ],
+      "artifacts": {
+        "hepta-joint-propose": {
+          "package": "codex-hepta-infer-worker-host",
+          "package_id": "path+file:///home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-infer-worker-host#codex-hepta-infer-worker-host@0.0.0",
+          "compiler_executable": "/home/runner/work/_temp/hepta-daemon-learning-target/debug/hepta-joint-propose",
+          "executable": "/home/runner/work/_temp/daemon-learning-records/helpers/bin/hepta-joint-propose",
+          "profile": {
+            "opt_level": "0",
+            "debuginfo": 0,
+            "debug_assertions": true,
+            "overflow_checks": true,
+            "test": false
+          },
+          "sha256": "26c976816b7e748ecfe1056944211d7bd4eee329111476c0fc7c5bde422e8824",
+          "bytes": 1439816
+        }
+      },
+      "complete": true,
+      "exit_code": 0
+    },
+    "verification": {
+      "schema_version": 1,
+      "mode": "verify-only",
+      "manifest": "/home/runner/work/_temp/daemon-learning-records/helpers/manifest.json",
+      "env": "/home/runner/work/_temp/daemon-learning-records/helpers/env.json",
+      "source_before": {
+        "head": "6ecfa504d2132f3682ffb01f8c9d65346b26cf5b",
+        "tree": "9184583f3842d90a560436f279c753f15792e3ab",
+        "status": ""
+      },
+      "source_after": {
+        "head": "6ecfa504d2132f3682ffb01f8c9d65346b26cf5b",
+        "tree": "9184583f3842d90a560436f279c753f15792e3ab",
+        "status": ""
+      },
+      "selected_packages": [
+        "codex-hepta-infer-worker-host"
+      ],
+      "artifacts": {
+        "hepta-joint-propose": {
+          "package": "codex-hepta-infer-worker-host",
+          "compiler_executable": "/home/runner/work/_temp/hepta-daemon-learning-target/debug/hepta-joint-propose",
+          "executable": "/home/runner/work/_temp/daemon-learning-records/helpers/bin/hepta-joint-propose",
+          "sha256": "26c976816b7e748ecfe1056944211d7bd4eee329111476c0fc7c5bde422e8824",
+          "bytes": 1439816,
+          "match": true
+        }
+      },
+      "complete": true,
+      "exit_code": 0
+    },
+    "complete_compiler_jsonl_preserved": true,
+    "compiler_jsonl_lines_parsed": 1303,
+    "compiler_build_finished_success": true,
+    "compiler_emitted_executable_matches_manifest": true,
+    "executable_bytes_independently_downloaded": false,
+    "executable_absent_from_original_artifact": true
+  },
+  "decoded_job_log": {
+    "raw_bytes": 3145405,
+    "raw_sha256": "b0256d7bd9aff7ba2c54efc4de79a2851a057fe2b149a9142907fe18fcfe2688",
+    "gzip_bytes": 402156,
+    "gzip_sha256": "17b98578644814d8b6e9571dd1e6de1b077dfc4cb29510445fe8b0465f87c844",
+    "complete_decoded_utf8_preserved": true,
+    "utf8_bom_preserved": true,
+    "line_endings_preserved": true
+  },
+  "api_capture": {
+    "uncompressed_bytes": 22472,
+    "uncompressed_sha256": "8a52bb952f641f07c0aeb5dc2e43a24925f0651e92c4d654b1d776b37decf349"
+  },
+  "known_execution_costs_seconds": {
+    "helper_build_command": 512.436105983,
+    "ordinary_command_including_build": 503.015228544,
+    "ordinary_nextest_runtime": 199.746,
+    "root_command_including_wrapper": 1.8284289319999516,
+    "root_nextest_runtime": 0.382,
+    "fmt_command": null,
+    "fix_command": null,
+    "bins_check_command": null
+  },
+  "unmeasured_costs": {
+    "cpu_seconds": null,
+    "peak_rss_bytes": null,
+    "energy_joules": null,
+    "monetary_cost": null
+  },
+  "scope_exclusions": [
+    "No new CI, native test, model training or business task was started by this readback.",
+    "Counts are engineering test executions, not independent scientific tasks or adoption-gain samples.",
+    "Daemon fmt/fix/bins package scope is Agentd, learning-artifacts and intelligence-eval; no core/RMCP whole-suite or maintenance completion is inferred.",
+    "No qualification transfers to any other source head, newly added adapter, scientific adoption claim or complete common-candidate dependency closure.",
+    "The large six inventories and original ZIP bytes are not in E; their complete hashes and actual equality checks are retained, and the original ZIP stays in scratch.",
+    "The helper executable itself was absent from the artifact; its binary hash is original CI custody evidence, not an independently downloaded binary hash."
+  ],
+  "new_ci_runs_started": 0,
+  "new_native_jobs_started": 0
+}

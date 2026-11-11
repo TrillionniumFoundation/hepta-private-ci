@@ -7,25 +7,34 @@
 - 继承并保留 `source_sha` 与实际 checkout/tested SHA 的绑定。原修复来自 `dbb3bce393685469bd5587bb591d01099f1df697`，不是待重新修复的缺口。
 - 合并 `0c99a30d` 的完整 CURRENT 恢复、`f97f3c90` 的普通 Q24 LEARN 和 `c7633658` 的原生 CI 维护修复。普通执行与只读恢复共享 canonical evaluation key，执行前身份核验保留。
 - 新增原始 Generator 回执 owner：只从 typed 原训练 owner 读取完成结果；固定 Dataset、scope、已有角色和信任、签名 journal 与独立 witness。原 receipt、签名及签发时间一次持久化，冷读取不训练、不续签。Candidate、NoUpdate、错误绑定、Pending 和 lost-ACK 路径都有行为测试。
+- 新增有界 Training 适配层，实际消费原训练 owner 与原回执 owner。单槽 permit 随 blocking worker 保留，等待者取消不提前释放；逐次验证 Dataset/scope/CURRENT。读回后用新时间检查 enrollment 与请求期限，再允许新 fit/首次 attest；原 Completed receipt 仍只按原签名窗口读取。
 - RMCP 3.9 的 source-bearing discovery 错误恢复原分类与明确的有界重定向诊断，同时保留原错误链。
 - 修复 unified exec 把有界历史交给可能落后的广播订阅者的问题：原进程先保留历史，再发送实时增量；轮询读取与历史分开。新回归覆盖慢订阅、两次轮询、退出后的 stderr 尾字节、关闭后订阅及精确省略计数。
 - 两处现有失败测试保留原始 auth refresh / Matrix reopen 错误；没有放宽超时或验收断言。
 
-固定候选源码为 `6ecfa504d2132f3682ffb01f8c9d65346b26cf5b`，tree 为 `9184583f3842d90a560436f279c753f15792e3ab`，集成 PR 为 [#5865](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5865)。代码身份、组件证据和未完成门槛见 [INTEGRATION.json](INTEGRATION.json)。后续证据保存于单独的证据分支，保持受测源码身份不变。
+固定候选源码为 `cb0598a9099a0d828ce73aedb51e397e600e49d1`，tree 为 `59a019b79a6b879bbc27f6a614e1222fe87581ca`，集成 PR 为 [#5865](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5865)。代码身份、组件证据和未完成门槛见 [INTEGRATION.json](INTEGRATION.json)。后续证据保存于单独的证据分支，保持受测源码身份不变。
 
 普通 LEARN 合并版的完整调用边界检查通过，覆盖 6,298 个 Rust 文件、213 个边界和 215 个受保护条目。新增训练回执的 138 项来源/变异检查与 217 边界、216 个受保护条目的静态检查另行保存，不把重叠测试相加，也不转称最终共同源的原生测试通过。
 
 上一候选 `4073268e…` 的原生 CI 在 helper 构建阶段实际失败：旧 generation-use readback 未显式覆盖新增 `TrainingNoUpdateV2`，普通与 Root 测试均未执行。当前候选增加了明确拒绝分支及普通 actor 的回归用例；[原始失败记录](NATIVE_FAILURE_4073268.json)和完整 helper 输出已保留，新的 source-head CI 才能确认修复。
 
-此外，同一旧候选的 Windows 原日志确认了另一项错误：恢复测试引用不存在的 `pending`。合并还残留同一 intent 的第二次 claim；仅改变量名会继续触发失败。当前源码恢复原 `claimed` 快照并复用原 coordinator，保留 backpressure、owner loss、readback-only 与不再训练的全部断言。两项修复都等待新源码的实际原生验证。
+此外，同一旧候选的 Windows 原日志确认了另一项错误：恢复测试引用不存在的 `pending`。合并还残留同一 intent 的第二次 claim；仅改变量名会继续触发失败。当前源码恢复原 `claimed` 快照并复用原 coordinator，保留 backpressure、owner loss、readback-only 与不再训练的全部断言。两项修复已在后继 `6ecfa504…` 的实际 daemon/Windows 门禁中通过；新增 Training 适配层后的 `cb0598a…` 继续单独验收。
 
 ### 历史源码的实际原生通过
 
 [原始 CI 读回报告](ci-readback/RESULTS.md)保存 5 个 artifact 的成员索引、77 个原始文件及 6 份完整 job log。仅维护集成版本 `8c9c51e…` 实际通过 daemon ordinary 1,104 项、独立 Root parent 7 项和 shared 1,134 项；对应 nextest 排除/忽略数为 72、908、71。三个执行集合不能相加为独立测试或研究样本。daemon 的 fmt、fix、bins 均返回 0，六份源码 inventory 完整字节相同。
 
-后继 `0b13…` 与 `407…` 的 Linux helper 失败由各自原 stderr 独立确认，不能用上述通过记录替代。新的 `6ecfa504…` CI 另行等待。最终源码上 scoped Clippy/fix 和完整 native 门禁仍未宣告通过。
+后继 `0b13…` 与 `407…` 的 Linux helper 失败由各自原 stderr 独立确认，不能用上述通过记录替代。前一候选 `6ecfa504…` 的 daemon 与 Windows 已有下述实际通过记录；当前新增适配层的 `cb0598a…` 必须完成自己的 native、维护和全仓库门禁。
 
-训练回执重开测试的范围是有效凭证/签名窗口内的文件对象重开，尚不是完整 daemon/Root 进程冷启动。过期签名拒绝续签，genesis witness 写入未确认时保持阻塞；两项限制均有新增回归代码。四个新 public 回执接口的产品调用者仍为空，不能据此称全链已装配。本目录不授予模型采用或生产权限。
+前一共同源 `6ecfa504…` 的 [Windows 原生门禁已通过](windows-6ec/RESULTS.md)：五次筛选执行分别通过 15、2、3、2、12 项，另验证原始攻击样例能被正向源码拒绝、两个有缺陷的原生变体按预期失败，四包格式检查与恢复后 tracked clean 均通过。这是私有状态、durable owner 与选定 Prompt Runtime 的资格，尚不代表完整 P0、全仓库 CI 或后续训练适配器通过。
+
+[前一共同源的 daemon 原始归档](daemon-6ec/RESULTS.md)逐项核实了 ordinary 1,146 个 JUnit testcase、Root 7 个 testcase，均为零失败；另有 nextest 排除/忽略 72 与 948 项。原日志实际记录 Root UID=0，旧 ordinary XML 只作 Root 排除证据。六阶段均为 exact `6ecfa504…`/tree `9184583…`，14,399 文件的完整清单逐字节相同。该 lane 的 fmt/fix/bins 返回码均为 0、维护补丁为空；其 fix/bins 只覆盖 agentd、learning-artifacts、intelligence-eval。
+
+当前适配层的 9 项聚焦来源检查、223 边界/218 个受保护条目的静态 inventory 与独立源码审查通过；6 个原生行为测试已写入新源码，实际执行仍以新 CI 的日志/JUnit 为准。固定 `cb0598a…` 的完整 caller scan 正在独立 checkout 运行，尚未返回最终扫描量或通过结果。详情见 [适配层检查与边界](engineering/training-stage/REVIEW_AND_SCOPE.json)。这些检查与历史测试重叠，不累计为新增独立样本。
+
+一次独立的 exact `6ecfa504…`、单 job、本地三包 Clippy 命令在共享空闲磁盘降至 683,872,256 字节时受控中止（exit 130）；源码未改，运行测试为 0。完整记录保存在 [维护尝试归档](p0-maintenance-6ecfa504-attempt1.zip)。这次停止原因已知，但不能据此解释更早的 SIGKILL；最终 child CPU/RSS 和精确单调时钟耗时未捕获，仍为未知。
+
+训练回执重开测试的范围是有效凭证/签名窗口内的文件对象重开，尚不是完整 daemon/Root 进程冷启动。过期签名拒绝续签，genesis witness 写入未确认时保持阻塞；两项限制均有新增回归代码。在当前 `cb0598a…` 中，原 native fit 与回执 attest/readback 已由 Training 适配层实际调用；回执 create/recover、适配层四个 public host 接口和完整生产 StageOwner 装配仍未接通。本目录不授予模型采用或生产权限。
 
 ## CTRL：本轮真正执行并读回的冻结诊断
 

@@ -15,6 +15,7 @@ PROOF = importlib.util.module_from_spec(SPEC)
 sys.modules[SPEC.name] = PROOF
 SPEC.loader.exec_module(PROOF)
 OWNER = "codex-rs/hepta-agentd/src/cell_q24_training_receipt_owner.rs"
+STAGE = "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs"
 
 
 class OriginalTrainingOwnerSourceClosureTests(unittest.TestCase):
@@ -24,28 +25,30 @@ class OriginalTrainingOwnerSourceClosureTests(unittest.TestCase):
         cls.rows = [row for row in cls.manifest["protected_file"] if row["path"] == OWNER]
         cls.source = (ROOT / OWNER).read_text()
 
-    def rejects(self, function, marker, replacement=""):
-        start = self.source.index(function)
-        end = PROOF._rust_item_end(PROOF._strip_rust_non_code(self.source), start)
+    def rejects(self, function, marker, replacement="", path=OWNER):
+        source = (ROOT / path).read_text()
+        rows = [row for row in self.manifest["protected_file"] if row["path"] == path]
+        start = source.index(function)
+        end = PROOF._rust_item_end(PROOF._strip_rust_non_code(source), start)
         self.assertIsNotNone(end)
-        offset = self.source.index(marker, start, end + 1)
+        offset = source.index(marker, start, end + 1)
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            target = root / OWNER
+            target = root / path
             target.parent.mkdir(parents=True)
-            target.write_text(self.source)
-            PROOF._verify_protected_files(root, {"protected_file": self.rows})
-            target.write_text(self.source[:offset] + replacement + self.source[offset + len(marker):])
+            target.write_text(source)
+            PROOF._verify_protected_files(root, {"protected_file": rows})
+            target.write_text(source[:offset] + replacement + source[offset + len(marker):])
             with self.assertRaises(PROOF.VerificationFailure):
-                PROOF._verify_protected_files(root, {"protected_file": self.rows})
+                PROOF._verify_protected_files(root, {"protected_file": rows})
 
     def test_training_receipt_ports_remain_unassembled_and_caller_closed(self):
         rows = {row.identifier: row for row in PROOF._boundary_rows(self.manifest)}
-        sources = {OWNER: PROOF._strip_rust_non_code(self.source)}
+        sources = {path: PROOF._strip_rust_non_code((ROOT / path).read_text()) for path in (OWNER, STAGE)}
         for suffix in ("create", "recover", "attest", "readback"):
             row = rows["learning_original_training_receipt_" + suffix]
             self.assertIn(row.identifier, self.manifest["privileged_inventory"]["required_boundary_ids"])
-            self.assertEqual(row.product_callers, ())
+            self.assertEqual(row.product_callers, (STAGE,) if suffix in ("attest", "readback") else ())
             PROOF._verify_boundary(ROOT, row, sources, ())
             method = row.symbol.rsplit("::", 1)[1]
             changed = dict(sources)
@@ -55,6 +58,42 @@ class OriginalTrainingOwnerSourceClosureTests(unittest.TestCase):
             with self.assertRaisesRegex(PROOF.VerificationFailure, "unexpected"):
                 PROOF._verify_boundary(ROOT, row, changed, ())
         self.assertEqual(rows["root_learning_original_stage_assembly"].product_callers, ())
+
+    def test_pair_consumer_is_the_only_native_execute_and_scope_caller(self):
+        native = "codex-rs/hepta-agentd/src/cell_composed_q24_training_owner.rs"
+        rows = {row.identifier: row for row in PROOF._boundary_rows(self.manifest)}
+        sources = {path: PROOF._strip_rust_non_code((ROOT / path).read_text()) for path in (OWNER, STAGE, native)}
+        for name in ("cell_q24_original_training_execute", "cell_q24_original_training_pair_binding"):
+            row = rows[name]
+            self.assertIn(name, self.manifest["privileged_inventory"]["required_boundary_ids"])
+            self.assertEqual(row.product_callers, (STAGE,))
+            PROOF._verify_boundary(ROOT, row, sources, ())
+            changed = dict(sources)
+            method = row.symbol.rsplit("::", 1)[1]
+            changed["codex-rs/hepta-agentd/src/unregistered_fit.rs"] = f"fn unexpected(owner: &CellQ24TrainingOwnerV1) {{ owner.{method}(); }}"
+            with self.assertRaisesRegex(PROOF.VerificationFailure, "unexpected"):
+                PROOF._verify_boundary(ROOT, row, changed, ())
+        for suffix in ("constructor", "execute", "readback", "attestation"):
+            row = rows["learning_original_training_stage_" + suffix]
+            self.assertEqual(row.product_callers, ())
+            PROOF._verify_boundary(ROOT, row, sources, ())
+
+    def test_pair_requires_exact_missing_enrollment_and_retained_blocking_lane(self):
+        for function, markers in (
+            ("fn execute_training(", ("self.require_dataset(dataset)?", "owners.receipts.journal.read(&owners.receipts.saved)",
+                "Ok(_) => owners.read_original_completion()", "ProductEvaluationExecutionStoreErrorV1::Missing",
+                "let retained_outcome = match training.readback()", "Ok(outcome) => Some(outcome)",
+                "Err(CellQ24TrainingOwnerErrorV1::Store(", ")) => None", "Err(error) => return Err(error.into())",
+                "super::now()", ".require_signer_binding(", "LearningEvidenceRoleV1::Generator",
+                "if now >= receipts.config.dataset.request.envelope.expiry_unix_seconds", "return Err(Error::DeadlineExceeded)",
+                "Some(outcome) => outcome", "None => training.fit_or_readback(&cancellation)?", "receipts.attest_original_completion(training)?")),
+            ("fn in_lane<", (".try_acquire_owned()", "let _permit = permit;", "owners.try_lock()", "training.require_original_dataset_scope(")),
+            ("fn receipt_attestation(", ("self.readback(dataset).await?", "if &completed.receipt != expected")),
+            ("fn read_original_completion(&mut self)", ("self.receipts.readback(training)?", "training.readback()?")),
+        ):
+            for marker in markers:
+                with self.subTest(function=function, marker=marker):
+                    self.rejects(function, marker, path=STAGE)
 
     def test_signer_enrollment_exact_dataset_and_scope_precede_signature_custody(self):
         for function, markers in (

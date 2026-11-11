@@ -1,9 +1,9 @@
 {
   "schema": "hepta.cell-p0-converged-implementation-and-evidence.v1",
-  "observed_at_utc": "2026-11-11T01:34:01.764610+00:00",
+  "observed_at_utc": "2026-11-11T02:11:09.394532+00:00",
   "candidate": {
-    "source_sha": "6ecfa504d2132f3682ffb01f8c9d65346b26cf5b",
-    "source_tree": "9184583f3842d90a560436f279c753f15792e3ab",
+    "source_sha": "cb0598a9099a0d828ce73aedb51e397e600e49d1",
+    "source_tree": "59a019b79a6b879bbc27f6a614e1222fe87581ca",
     "pull_request": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5865",
     "branch": "codex/cell-p0-converged-20261110-f7c0",
     "status": "DRAFT_P0_NOT_CLOSED",
@@ -22,7 +22,10 @@
     "output_retention_and_failure_diagnostics": "4073268ead64aa1f8303973d37c5c6d73c951061",
     "original_training_receipt_port": "b55a73ad3024fc2ac501dcfcda096628272cde6d",
     "source_fix_and_additional_recovery_tests": "72251601928807febae580dbd7754edac20bda10",
-    "single_claim_recovery_fixture_repair": "6ecfa504d2132f3682ffb01f8c9d65346b26cf5b"
+    "single_claim_recovery_fixture_repair": "6ecfa504d2132f3682ffb01f8c9d65346b26cf5b",
+    "original_training_stage_component": "61d118656e2b8dc99f36e1addc83296cefa35325",
+    "original_training_stage_expiry_repair": "6478491f35eba1dd999fba018175ae746132d771",
+    "integrated_original_training_stage": "cb0598a9099a0d828ce73aedb51e397e600e49d1"
   },
   "implemented": [
     "Preserve source_sha/tested_sha binding and original full CURRENT authentication, independent witness, bounded readback, post-claim reauthentication and exact ACK retirement.",
@@ -34,7 +37,9 @@
     "Restore RMCP 3.9 source-bearing OAuth discovery classification and a narrowly identified redirect-limit diagnostic while preserving rejection and the typed error cause.",
     "Preserve underlying auth-refresh/Matrix errors in failing test diagnostics without extending timeouts or weakening assertions.",
     "Repair the actual E0004 by explicitly rejecting TrainingNoUpdateV2 at committed generation-use readback, with an ordinary-actor wrong-stage regression.",
-    "Repair the actual E0425 and duplicate-claim merge residue by restoring the original claimed snapshot and reusing the original coordinator snapshot; preserve all backpressure and no-retraining assertions."
+    "Repair the actual E0425 and duplicate-claim merge residue by restoring the original claimed snapshot and reusing the original coordinator snapshot; preserve all backpressure and no-retraining assertions.",
+    "Pair the existing typed native trainer and original Generator receipt owner in a bounded Training stage, retaining its single permit through waiter cancellation and rechecking exact Dataset/scope/CURRENT per operation.",
+    "Distinguish native/receipt Missing, Completed, Pending and custody errors; after readback I/O, validate fresh Generator enrollment and request expiry before new fit or first attestation, while retaining the original Completed receipt readback path."
   ],
   "checks": [
     {
@@ -109,7 +114,8 @@
         "Genesis witness BeforeWrite lost ACK remains blocked with the original nonempty journal and absent witness.",
         "Tests reopen file objects in one process; they do not establish complete daemon/Root process cold restoration.",
         "All four new public receipt-owner product caller sets remain empty; complete StageOwner assembly remains open."
-      ]
+      ],
+      "historical_component_before_stage_adapter": true
     },
     {
       "name": "training NoUpdate source closure after E0004 repair",
@@ -156,12 +162,14 @@
     {
       "name": "current candidate native and whole repository qualification",
       "status": "PENDING_FRESH_SOURCE_HEAD_CI",
-      "source_sha": "6ecfa504d2132f3682ffb01f8c9d65346b26cf5b",
+      "source_sha": "cb0598a9099a0d828ce73aedb51e397e600e49d1",
       "previous_head_results_transferred": false,
-      "daemon_run_id": 42937198717,
-      "shared_run_id": 42937198345,
-      "windows_run_id": 42937198409,
-      "blocking_run_id": 42937198454
+      "daemon_run_id": 42942991526,
+      "shared_run_id": 42942991327,
+      "windows_run_id": 42942991263,
+      "blocking_run_id": 42942991404,
+      "source_tree": "59a019b79a6b879bbc27f6a614e1222fe87581ca",
+      "architecture_run_id": 42942991572
     },
     {
       "name": "exact-source Windows prior-candidate failure",
@@ -179,7 +187,8 @@
     {
       "name": "required scoped Clippy fix on changed final component sources",
       "status": "NOT_YET_VERIFIED_ON_FINAL_SOURCE",
-      "scope": "Current Agentd CI contains maintenance after native tests; local core just fix has not run. Historical 8c9 maintenance cannot satisfy this source."
+      "scope": "Fresh final-source daemon maintenance is pending. Previous 6ec daemon completed its own three-package maintenance; the separate core/agentd/RMCP local command was interrupted for measured low disk and does not establish completion.",
+      "source_sha": "cb0598a9099a0d828ce73aedb51e397e600e49d1"
     },
     {
       "name": "local focused core native output-retention attempt",
@@ -208,11 +217,125 @@
       "source_sha": "6ecfa504d2132f3682ffb01f8c9d65346b26cf5b",
       "evidence": "engineering/output-retention-review.json",
       "native_tests_executed": 0
+    },
+    {
+      "name": "preceding-candidate selected Windows native qualification",
+      "status": "PASS_EXACT_SOURCE_SCOPED",
+      "source_sha": "6ecfa504d2132f3682ffb01f8c9d65346b26cf5b",
+      "source_tree": "9184583f3842d90a560436f279c753f15792e3ab",
+      "run_id": 42937198409,
+      "job_id": 130250125460,
+      "selected_suite_executions": [
+        {
+          "package": "codex-utils-path",
+          "passed": 15,
+          "nextest_skipped": 5
+        },
+        {
+          "package": "codex-hepta-prompt-registry",
+          "passed": 2,
+          "nextest_skipped": 26
+        },
+        {
+          "package": "codex-hepta-contracts/final_use",
+          "passed": 3,
+          "nextest_skipped": 147
+        },
+        {
+          "package": "codex-hepta-contracts/authority_lease",
+          "passed": 2,
+          "nextest_skipped": 148
+        },
+        {
+          "package": "codex-hepta-agentd/prompt_runtime",
+          "passed": 12,
+          "nextest_skipped": 326
+        }
+      ],
+      "format_four_packages": "PASS_CHECK",
+      "positive_native_attack_cases_passed": 2,
+      "negative_mutants_rejected": 2,
+      "tracked_source_restored_and_clean": true,
+      "full_p0_qualified": false,
+      "later_training_adapter_qualified": false,
+      "evidence": "windows-6ec/RESULTS.md"
+    },
+    {
+      "name": "preceding-candidate daemon native qualification",
+      "status": "PASS_EXACT_SOURCE_SCOPED",
+      "source_sha": "6ecfa504d2132f3682ffb01f8c9d65346b26cf5b",
+      "source_tree": "9184583f3842d90a560436f279c753f15792e3ab",
+      "run_id": 42937198717,
+      "job_id": 130250073525,
+      "ordinary_junit_cases": 1146,
+      "ordinary_nextest_skipped": 72,
+      "root_junit_cases": 7,
+      "root_nextest_skipped": 948,
+      "actual_root_uid": 0,
+      "fresh_root_names_exact": true,
+      "prior_junit_excluded": true,
+      "fmt_fix_bins_return_codes": [
+        0,
+        0,
+        0
+      ],
+      "fix_bins_package_scope": [
+        "codex-hepta-agentd",
+        "codex-hepta-learning-artifacts",
+        "codex-hepta-intelligence-eval"
+      ],
+      "source_cuts_full_bytes_equal": 6,
+      "source_cut_inventory_files": 14399,
+      "maintenance_patch_bytes": 0,
+      "root_independently_reverified_original_archive": true,
+      "new_stage_source_qualified": false,
+      "evidence": "daemon-6ec/RESULTS.md"
+    },
+    {
+      "name": "original Training stage reviewed component",
+      "status": "SOURCE_REVIEW_AND_FOCUSED_STATIC_PASS",
+      "component_sha": "6478491f35eba1dd999fba018175ae746132d771",
+      "integrated_source_sha": "cb0598a9099a0d828ce73aedb51e397e600e49d1",
+      "focused_source_tests": 9,
+      "required_boundaries": 223,
+      "protected_rows": 218,
+      "written_native_tests": 6,
+      "native_tests_status": "PENDING_FRESH_SOURCE_CI",
+      "evidence": "engineering/training-stage/REVIEW_AND_SCOPE.json"
+    },
+    {
+      "name": "full caller scan on current immutable candidate",
+      "status": "RUNNING",
+      "source_sha": "cb0598a9099a0d828ce73aedb51e397e600e49d1",
+      "source_tree": "59a019b79a6b879bbc27f6a614e1222fe87581ca",
+      "execution_key": "p0-cb0598-full-caller-scan-20261111-v1",
+      "started_at_utc": "2026-11-11T02:04:06.305159Z",
+      "rust_files_scanned": null,
+      "full_scan_pass": false,
+      "authority_granted": false
+    },
+    {
+      "name": "controlled local three-package Clippy attempt",
+      "status": "CONTROLLED_INTERRUPTION_LOW_DISK",
+      "source_sha": "6ecfa504d2132f3682ffb01f8c9d65346b26cf5b",
+      "source_tree": "9184583f3842d90a560436f279c753f15792e3ab",
+      "command": "just fix -p codex-core -p codex-hepta-agentd -p codex-rmcp-client --locked",
+      "cargo_build_jobs": 1,
+      "exit_code": 130,
+      "observed_free_bytes_at_stop": 683872256,
+      "source_unchanged": true,
+      "patch_bytes": 0,
+      "native_runtime_test_cases": 0,
+      "overall_maintenance_pass": false,
+      "final_child_cpu_and_rss": null,
+      "evidence": "p0-maintenance-6ecfa504-attempt1.zip"
     }
   ],
   "remaining_p0": [
-    "Production implementation and original host assembly of LearningIterationStageOwnerPortsV1; keep require_root_learning_assembled fail-closed.",
+    "Production implementation and original host assembly of LearningIterationStageOwnerPortsV1. The new Training stage consumes original owners, but its public host entry points and original receipt owner create/recover still have no ordinary product callers; keep require_root_learning_assembled fail-closed.",
     "Original Dataset/experience custody and one actual frozen model/data/configuration/Circuit/evaluator tuple.",
+    "Exact original Dataset bridge from DurableLedger/CURRENT, source_record_digests, fixed Q24 extraction/target rule and original Observer Dataset receipt to CellQ24TrainingBatchV1 and an exact Dataset cut; a batch constructor alone is not provenance.",
+    "Original enrolled Generator authority and existing native/receipt file+witness pairs must come from the production custodian; no new keys, forged original receipts or self-declared custody.",
     "Production governed Model proposal path for the Q24 trained Model; current ordinary proposal payload exposes Parameter/Topology and test-only research external material is not a production substitute.",
     "Independent B/retention/new-C task custody, original evaluator and selector receipts, and committed distinct-task use.",
     "Full original owner/daemon/Root process cold restoration in an independent rollback domain, with both Adopt and correct NoUpdate branches.",
@@ -231,7 +354,9 @@
     "energy": null,
     "provider_billing": null,
     "unknown_is_not_zero": true,
-    "full_cost_coverage": false
+    "full_cost_coverage": false,
+    "previous_daemon_measured_command_clocks": "daemon-6ec/CI_EVIDENCE.json; command and nextest timings have different scopes and are not additive.",
+    "controlled_maintenance_stop": "p0-maintenance-6ecfa504-attempt1.zip; exact monotonic elapsed and final child CPU/RSS remain null after interruption."
   },
   "research_status": "RESEARCH_STATUS.json",
   "new_frozen_diagnostic": "ctrl-gap/RESULTS.md",
