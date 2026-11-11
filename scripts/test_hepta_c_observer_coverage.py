@@ -116,7 +116,15 @@ class OriginalObserverCoverageTests(unittest.TestCase):
             self.assertFalse(self.assess(root, log))
 
     def test_skipped_failed_and_errored_cases_are_not_passes(self):
-        for status in ("skipped", "failure", "error"):
+        for status in (
+            "skipped",
+            "failure",
+            "error",
+            "flakyFailure",
+            "flakyError",
+            "rerunFailure",
+            "rerunError",
+        ):
             root, log = self.reports()
             ET.SubElement(root.find("testsuite")[0], status)
             self.assertFalse(self.assess(root, log))

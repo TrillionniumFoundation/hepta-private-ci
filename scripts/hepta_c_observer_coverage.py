@@ -157,7 +157,16 @@ def assess_original_observer_coverage(log: str, xml: bytes) -> dict:
         and all(
             suite.get("name") == case.get("classname")
             and not any(
-                node.tag in ("failure", "error", "skipped") for node in case.iter()
+                node.tag
+                in (
+                    "failure",
+                    "error",
+                    "skipped",
+                    "flakyFailure",
+                    "flakyError",
+                    "rerunFailure",
+                    "rerunError",
+                ) for node in case.iter()
             )
             for suite, case in selected
         )
