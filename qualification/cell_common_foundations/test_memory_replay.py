@@ -97,6 +97,62 @@ class MemoryReplayTests(unittest.TestCase):
         pool.add(item)
         self.assertEqual(pool.select("error_prioritized")[0].item_id, item.item_id)
 
+    def test_restore_rejects_rehashed_impossible_replay_accounting(self):
+        try:
+            from .protocol import canonical_digest
+        except ImportError:
+            from protocol import canonical_digest
+        pool = self.pool()
+        pool.select("uniform")
+        snapshot = pool.checkpoint()
+        for changes in (
+            {"calls": 0},
+            {"presentations": 33, "timesteps": 33, "numeric_payload_bytes": 2904},
+            {"presentations": 0},
+            {"timesteps": 0, "numeric_payload_bytes": 0},
+            {"timesteps": 33, "numeric_payload_bytes": 2904},
+            {"numeric_payload_bytes": 0},
+            {"distinct": []},
+        ):
+            with self.subTest(changes=changes):
+                forged = deepcopy(snapshot)
+                forged["payload"].update(changes)
+                forged["digest"] = canonical_digest(forged["payload"])
+                with self.assertRaisesRegex(ValueError, "accounting"):
+                    ReplayPool.restore(forged, pool.scope, pool.versions)
+        self.assertEqual(pool.checkpoint(), snapshot)
+
+    def test_restore_rejects_invalid_historical_identity_encoding(self):
+        try:
+            from .protocol import canonical_digest
+        except ImportError:
+            from protocol import canonical_digest
+        pool = self.pool()
+        pool.select("uniform")
+        for identities in ("x", {"x": 1}, [3], [None], [""], ["x" * 161], [[]]):
+            with self.subTest(identities=identities):
+                forged = pool.checkpoint()
+                forged["payload"]["distinct"] = identities
+                forged["digest"] = canonical_digest(forged["payload"])
+                with self.assertRaisesRegex(ValueError, "accounting"):
+                    ReplayPool.restore(forged, pool.scope, pool.versions)
+
+    def test_restore_preserves_history_after_fifo_and_source_eviction(self):
+        pool = ReplayPool("synthetic", dict.fromkeys(KINDS, "v1"), capacity=1)
+        historical = []
+        for index in (3, 7):
+            item = make_item(11, index)
+            pool.add(item)
+            historical.append(pool.select("error_prioritized")[0].item_id)
+        pool.update_version("error", "v2")
+        self.assertEqual(pool.items, [])
+        snapshot = pool.checkpoint()
+        restored = ReplayPool.restore(snapshot, pool.scope, pool.versions)
+        self.assertEqual(restored.distinct, set(historical))
+        self.assertEqual(restored.checkpoint(), snapshot)
+        self.assertEqual(restored.select("uniform"), pool.select("uniform"))
+        self.assertEqual(restored.checkpoint(), pool.checkpoint())
+
     def test_error_stratum_uniform_selection_does_not_consume_priorities(self):
         low = ReplayPool("synthetic", dict.fromkeys(KINDS, "v1"), seed=11)
         high = ReplayPool("synthetic", dict.fromkeys(KINDS, "v1"), seed=11)
@@ -217,9 +273,7 @@ class MemoryReplayTests(unittest.TestCase):
                 [e.item_id for e in ordinary], [e.item_id for e in with_audit]
             )
             self.assertEqual(control.checkpoint(), audited.checkpoint())
-            self.assertEqual(
-                receipt["selected_ids"], [e.item_id for e in ordinary]
-            )
+            self.assertEqual(receipt["selected_ids"], [e.item_id for e in ordinary])
             self.assertEqual(receipt["selection_index"], audited.calls)
 
     def test_items_do_not_alias_input_or_returned_arrays(self):

@@ -5,10 +5,12 @@ on:
     branches:
       - research/neuroscience-priority-audit-20261110-475c
       - research/neuroscience-replay-fullpool-audit-20261110-475c
+      - research/neuroscience-recovery-20261111-317f
   pull_request:
     branches:
       - research/neuroscience-mechanisms-20261110
       - research/neuroscience-priority-audit-20261110-475c
+      - research/neuroscience-replay-fullpool-audit-20261110-475c
     types: [opened, synchronize, reopened]
   workflow_dispatch:
 
@@ -37,14 +39,15 @@ jobs:
           python3 -m venv "$RUNNER_TEMP/hpca-venv"
           "$RUNNER_TEMP/hpca-venv/bin/python" -m pip install numpy==2.3.5 ruff==0.15.13
           echo "$RUNNER_TEMP/hpca-venv/bin" >> "$GITHUB_PATH"
-      - name: Check source and exercise selected replay contracts
+      - name: Check source and exercise clock, replay and cold recovery contracts
         run: |
           set -euo pipefail
           mkdir -p "$RUNNER_TEMP/hpca-evidence"
           test "$(git rev-parse HEAD)" = "$SOURCE_HEAD"
-          ruff check qualification/cell_common_foundations/{memory_replay,test_memory_replay}.py
-          ruff format --check qualification/cell_common_foundations/{memory_replay,test_memory_replay}.py
-          python -m unittest -v qualification.cell_common_foundations.test_memory_replay \
+          ruff check qualification/cell_common_foundations/{learning_clocks,test_learning_clocks,memory_replay,test_memory_replay,test_cold_recovery}.py
+          ruff format --check qualification/cell_common_foundations/{learning_clocks,test_learning_clocks,memory_replay,test_memory_replay,test_cold_recovery}.py
+          /usr/bin/time -v -o "$RUNNER_TEMP/hpca-evidence/test-cpu-time.txt" \
+            python -m unittest -v qualification.cell_common_foundations.test_{credit,credit_axes,learning_clocks,memory_replay,plasticity,protocol,runner,run_neuroscience,cold_recovery} \
             2>&1 | tee "$RUNNER_TEMP/hpca-evidence/tests.log"
       - name: Fit candidate-only replay models and retain every priority receipt
         run: |
