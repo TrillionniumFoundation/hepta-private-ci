@@ -29,6 +29,9 @@ mod planner_legacy;
 #[path = "observed_tests.rs"]
 mod observed;
 
+#[path = "kernel_profile_tests.rs"]
+mod kernel_profile;
+
 fn init() -> Command {
     Command::Init(EmissionLaw {
         seed: 17,

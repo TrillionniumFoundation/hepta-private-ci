@@ -5,15 +5,14 @@ authorize native deployment. A dynamic request retains the fixed fallback.
 """
 
 import argparse
+import hashlib
 import json
 from pathlib import Path
 import resource
 import time
-import torch
 
-from .generator_training import train
+from .delivery import read_delivery
 from .lifecycle import CostLedger, Limits
-from .native import NativeSession, encode_input, sha
 
 
 def bounded_bytes(path, maximum, expected=None):
@@ -21,7 +20,9 @@ def bounded_bytes(path, maximum, expected=None):
     if path.is_symlink() or not path.is_file() or path.stat().st_size > maximum:
         raise ValueError("Input is outside the bounded regular-file profile")
     raw = path.read_bytes()
-    if len(raw) > maximum or (expected is not None and sha(raw) != expected):
+    if len(raw) > maximum or (
+        expected is not None and hashlib.sha256(raw).hexdigest() != expected
+    ):
         raise ValueError("Input size or SHA256 differs")
     return raw
 
@@ -49,12 +50,28 @@ def main():
         default="static-quota",
     )
     infer.add_argument("--wall-seconds", type=float, default=30)
+    readback = commands.add_parser("read-delivery")
+    readback.add_argument("--output", required=True)
+    readback.add_argument("--identity", required=True)
     args = parser.parse_args()
+    if args.command == "read-delivery":
+        print(
+            json.dumps(
+                read_delivery(args.output, expected_identity=args.identity),
+                sort_keys=True,
+            )
+        )
+        return 0
+
+    import torch
+
     torch.set_num_threads(1)
     output = Path(args.output)
     if output.exists():
         raise ValueError("Output directory already exists")
     if args.command == "train":
+        from .generator_training import train
+
         baseline, candidate, report = train(seed=args.seed, steps=args.steps)
         output.mkdir(parents=True)
         (output / "baseline.heptapk").write_bytes(baseline)
@@ -70,6 +87,11 @@ def main():
             )
         )
         return 0
+    from .native import NativeSession, encode_input
+
+    execution_receipt = output.with_name(output.name + ".execution.json")
+    if execution_receipt.exists() or execution_receipt.is_symlink():
+        raise ValueError("Execution receipt already exists")
     ledger = CostLedger(Limits(32 * 1024 * 1024, 16, args.wall_seconds, 3, 1))
     with ledger.operation("observation"):
         weights = bounded_bytes(args.weights, 64 * 1024 * 1024, args.weights_sha256)
@@ -97,6 +119,7 @@ def main():
         session.repair(modality)
         ledger.retain("candidate-state", len(session.native_state))
     result = session.finish(submit=True, output=output)
+    result = read_delivery(output, expected_identity=result["delivery"]["identity"])
     ledger.retain("candidate-state", len(session.native_state))
     ledger.retain("committed-prefix", len(session.prefix))
     child_after = resource.getrusage(resource.RUSAGE_CHILDREN)
@@ -118,12 +141,20 @@ def main():
         residency_scope="logical named payload bytes; Python/Torch/native heap and RSS are not fully inventoried",
         complete_real_resource_accounting=False,
     )
-    (output / "execution.json").write_text(json.dumps(result, indent=2) + "\n")
+    with execution_receipt.open("x", encoding="utf-8") as stream:
+        stream.write(json.dumps(result, indent=2) + "\n")
     print(
         json.dumps(
             {
-                k: result[k]
-                for k in ("requested_policy", "effective_policy", "production_update")
+                **{
+                    k: result[k]
+                    for k in (
+                        "requested_policy",
+                        "effective_policy",
+                        "production_update",
+                    )
+                },
+                "delivery_identity": result["delivery"]["identity"],
             }
         )
     )

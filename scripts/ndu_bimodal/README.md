@@ -2,7 +2,7 @@
 
 本目录提供 Linux CPU 上可训练、可推理、可保存及回滚的双模态研究原型。有限控制实验和真实 v4 数值生成适配器分别保留证据：前者能够计算明确模型内的精确 DP，并训练续行 advantage；后者实际更新 v4 参数、调用 Rust 推理、执行付费 READ 重编码与重放、交付文本和图片。目前原生动态策略的准入结论是 **`no-update`**。`--policy dynamic` 明确执行 `static-quota` 回退，不代表有限策略已经部署到真实生成器。
 
-当前实现基于 [PR #5440](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5440) 的提交 [`d13761500aba28634238ec23fb1d62eae5cf81ec`](https://github.com/TrillionniumFoundation/hepta-private-ci/commit/d13761500aba28634238ec23fb1d62eae5cf81ec)。这不是声称该提交已进入 `main`。同期 [PR #5445](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5445) 的条件残差与采集器工作没有合入本原型；其记录、校准结论及测试结果不能直接归入本目录。
+当前统一候选以 [PR #5451](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5451) 的提交 `de9cf9d3eba7ac48706e030ed323ac72da10c1a3` 为源码基线，保留其既有 v4 与有限控制路径，并合入 [PR #5445](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5445) 的条件联合残差和终止宏采集器源码。这不是声称这些提交已进入 `main`；每轮结果必须在统一 tree 上重新核验，历史分支的测试与科学结论不能自动移入。
 
 ## 1. 模块与证据范围
 
@@ -118,6 +118,10 @@ production_update = no-update
 
 原因是尚缺真实 native 状态到有限控制状态的已验证映射、语义校准及真实 future 净收益证据。`SUBMIT` 只在新的本地目录写出文本、PPM 和交付收据，不代表上线或向外部服务提交。
 
+本地交付以 `delivery.json` 的独占原子链接为完成标记；目录或 `delivery.intent.json` 存在都不能视为成功。这是原子完成标记，并非原子目录改名。先写入并同步原始 intent 和各模态字节，再发布完成标记。中途失败可用同一内存会话保留的 terminal bytes、同一目标和同一预算继续提交；不得重跑生成或延长截止时间。提交确认丢失后，只按原来独立保存的 `delivery.identity` 读取并核对全部字节。损坏、陌生文件、不同身份和软链接均拒绝。
+
+`python -m scripts.ndu_bimodal.cli read-delivery --output <原目录> --identity <原identity>` 可在新 Python 进程冷读已提交结果，不加载 Torch 或执行原生模型。该读回返回历史生成收据；额外恢复读取的成本由调用方单独记录，不能当成历史生成费用为零。CLI 的完整执行/成本记录在同级 `<目录名>.execution.json`，不修改已经绑定的交付目录。这里只验证本地交付与读取机制，尚未建立真实 `StageOwnerPorts`、CURRENT/NextUse、daemon/Root 冷恢复或完整机器断电持久性。
+
 ## 6. 成本账本与 no-update
 
 有限 tariff 按 observation、residency、recompute、reuse、coordination、generate、control 七类扣费，包含终止自身费用。真实账本独立记录观测、生成、控制、驻留 byte-seconds、重算、复用、协调和提交；失败、超时及拒绝也保留收据。CLI 从读取权重/图片起计观测成本，跟踪已命名输入、公开张量、候选状态及 checkpoint 载荷的驻留；READ 重放不能免费。
@@ -190,6 +194,26 @@ BINARY_SHA256="$(sha256sum "$BINARY" | cut -d ' ' -f 1)"
 有限研究亦可通过 `evaluation.run_study(output, seeds=(11,29,47), epochs=240, calibration_sources=24, future_sources=48)` 调用。核心收据为 `finite-study/registration.json`、`candidate-freeze.json`、六个 controller checkpoint 及 `report.json`；原生证据为 `content-training.json`、`native-demo/report.json`、交付文件和 `qualification.json` 的摘要清单。保留原始配对轨迹及失败记录；不要只保留聚合均值。
 
 正式结果表应由对应源码/产物摘要的实际运行收据填入。本契约不预填尚未完成的训练收益、测试数量、校准覆盖率或性能数字。
+
+### 固定图与冻结共享底座的统一资格入口
+
+`milestone.py` 为新的统一候选入口。它要求完整且干净的源码 commit，绑定 v4、图文模型、后果模块、原生 Rust、普通桥、验收测试和 CI 文件；同时绑定实际模型、数据注册、codec、效用、预算和恢复契约。Git replace、隐藏的 selected-source 改动和未注册的可执行源码不能沿用同一身份。
+
+```bash
+"$PYTHON" -m scripts.ndu_bimodal.milestone \
+  --source-commit "$(git rev-parse HEAD)" --rustc "$RUSTC" \
+  --output "$RUN_ROOT/fixed-graph" \
+  --seed 101 --base-steps 1800 --adapter-steps 100 \
+  --future-sources 24 --max-training-seconds 600
+```
+
+固定图是 `text → image`，共享底座采用 width32/depth1、可替换 dual/ordinary 内核。训练、Torch 解码与原生交付使用相同图与 codec。底座的前 300 次更新只训练观测图像重建，剩余 1,500 次更新训练完整 caption、128-scalar padding 和图像重建；这 300 次计入总更新数，未增加更新预算。随后只允许文本/图像私有 adapter 与 emission 参数训练 100 次，共享参数要求梯度为空且字节摘要不变。
+
+底座必须先在预注册校准集通过实际解码的文本和图像任务；不通过就抛出 `BaseCapabilityError`，保留 baseline、训练轨迹、校准输出和失败收据，不启动私有训练，也不生成 future 数据。失败或超时仍记录命令、已花费用和最终源码检查。新入口记录 `milestone.json`；成功时另存 `candidate.json`，冷验证必须提供原先保留的 candidate identity。
+
+本次开发中，旧联合训练配方在 seed73 上发生条件表征塌缩；该失败及其已观察的 future 不能重称为未触碰数据。修正课程只使用开发初始化 41/73/117 的训练与校准数据；seed101 用作修正冻结后的新资格运行。之后再次运行相同 seed 是复现，不能计作新的独立测试。
+
+语义范围仍是 16×16 三色色卡的完整 caption 与图像重建。该入口不训练全局 NDU 任务效用，也不将动作重放演示当作已准入的动态控制器。即使有界内容通过，仍保留 `HOLD_NO_GO` 和 `NoUpdate`：现实最强普通控制器、两类内容参数 2×2、完整成本和原 owner 的 StageOwnerPorts/普通 NextUse/daemon 证据需要分别成立。
 
 ## 10. 研究依据
 
