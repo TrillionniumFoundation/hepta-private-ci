@@ -138,8 +138,15 @@ def evaluate_core_ndu(rows: list[FactorialTrialRow], *,
     seed_training: dict[int, str] = {}
     training_owner: dict[str, int] = {}
     evaluation_owner: dict[str, int] = {}
+    training_task_digests: set[str] = set()
+    future_task_digests: set[str] = set()
     for row in rows:
         _validate(row)
+        # A task used for training anywhere in the panel cannot be a future-B
+        # evaluation elsewhere (including another seed or episode). Comparing
+        # each row with itself misses this cross-partition exposure.
+        training_task_digests.add(row.source_task_digest)
+        future_task_digests.add(row.workload_digest)
         previous_training = seed_training.setdefault(row.seed, row.training_seed_digest)
         if previous_training != row.training_seed_digest:
             raise ContractError("training seed identity changed within one seed cluster")
@@ -159,6 +166,8 @@ def evaluate_core_ndu(rows: list[FactorialTrialRow], *,
         if row.arm in arm_rows:
             raise ContractError("duplicate arm within matched episode")
         arm_rows[row.arm] = row
+    if training_task_digests & future_task_digests:
+        raise ContractError("training/evaluation task identity reused across partitions")
     if training_owner.keys() & evaluation_owner.keys():
         raise ContractError("training/evaluation seed identity reused across partitions")
 
@@ -282,6 +291,7 @@ def evaluate_core_ndu(rows: list[FactorialTrialRow], *,
             "equal_episode_opportunities_per_seed": True,
             "frozen_cell_contract": "SELF_DECLARED_ONLY",
             "declared_seed_identity_alias_guard": "SELF_DECLARED_ONLY",
+            "declared_train_eval_task_disjointness": "SELF_DECLARED_ONLY",
         },
         "net_contrasts": {
             name: {
