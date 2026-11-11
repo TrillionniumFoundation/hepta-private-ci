@@ -12,17 +12,26 @@ class OriginalObserverCoverageTests(unittest.TestCase):
         suite = ET.SubElement(root, "testsuite", name=coverage.PACKAGE)
         for name in coverage.CASES:
             ET.SubElement(suite, "testcase", name=name, classname=coverage.PACKAGE)
-        ET.SubElement(suite, "testcase", name="unrelated::actual_native_test", classname=coverage.PACKAGE)
+        ET.SubElement(
+            suite,
+            "testcase",
+            name="unrelated::actual_native_test",
+            classname=coverage.PACKAGE,
+        )
         lines = [
             f"PASS [0.001s] ({index}/7) {coverage.PACKAGE} {name}"
             for index, name in enumerate(coverage.CASES, 1)
         ]
-        lines.append(f"PASS [0.001s] (7/7) {coverage.PACKAGE} unrelated::actual_native_test")
+        lines.append(
+            f"PASS [0.001s] (7/7) {coverage.PACKAGE} unrelated::actual_native_test"
+        )
         lines.append("Summary [0.007s] 7 tests run: 7 passed, 0 skipped")
         return root, "\n".join(lines)
 
     def assess(self, root, log):
-        return coverage.assess_original_observer_coverage(log, ET.tostring(root))["exact_pass_coverage"]
+        return coverage.assess_original_observer_coverage(log, ET.tostring(root))[
+            "exact_pass_coverage"
+        ]
 
     def test_exact_subset_retains_other_native_cases(self):
         root, log = self.reports()
@@ -37,13 +46,22 @@ class OriginalObserverCoverageTests(unittest.TestCase):
             suite = root.find("testsuite")
             assert suite is not None
             if duplicate:
-                ET.SubElement(suite, "testcase", name=coverage.CASES[0], classname=coverage.PACKAGE)
+                ET.SubElement(
+                    suite,
+                    "testcase",
+                    name=coverage.CASES[0],
+                    classname=coverage.PACKAGE,
+                )
             else:
                 suite.remove(suite[0])
             self.assertFalse(self.assess(root, log))
 
     def test_same_names_require_native_package_and_suite_identity(self):
-        for attribute, value in (("classname", "foreign-package"), ("classname", None), ("suite", "foreign-package")):
+        for attribute, value in (
+            ("classname", "foreign-package"),
+            ("classname", None),
+            ("suite", "foreign-package"),
+        ):
             root, log = self.reports()
             suite = root.find("testsuite")
             assert suite is not None
@@ -62,7 +80,11 @@ class OriginalObserverCoverageTests(unittest.TestCase):
             assert suite is not None
             case = suite[0]
             suite.remove(case)
-            parent = ET.SubElement(suite, "testsuite", name=coverage.PACKAGE) if nested else root
+            parent = (
+                ET.SubElement(suite, "testsuite", name=coverage.PACKAGE)
+                if nested
+                else root
+            )
             parent.append(case)
             self.assertFalse(self.assess(root, log))
 

@@ -46,9 +46,16 @@ fn fixture_with_controller_collision(
         (&owners.trainer, LearningEvidenceRoleV1::Generator),
         (&owners.selector, LearningEvidenceRoleV1::Selector),
         (&owners.next_use_observer, LearningEvidenceRoleV1::Observer),
-    ].into_iter().enumerate() {
+    ]
+    .into_iter()
+    .enumerate()
+    {
         let verifying_key = keys[index].verifying_key().to_bytes();
-        let controller = if index == 2 { collision.unwrap_or(index) } else { index };
+        let controller = if index == 2 {
+            collision.unwrap_or(index)
+        } else {
+            index
+        };
         signers.push(TrustedLearningSignerV1 {
             principal: AuthenticatedPrincipalV1 {
                 principal_id: actor.clone(),
@@ -73,18 +80,25 @@ fn fixture_with_controller_collision(
     })?;
     owners.evidence_trust_digest = verifier.trust_digest();
     let scope = FrozenLearningScopeV2::freeze(
-        &request, &owners, LearningUpdateScopeV2::Cell, d("explicit-observer-rule"),
+        &request,
+        &owners,
+        LearningUpdateScopeV2::Cell,
+        d("explicit-observer-rule"),
     )?;
     let retained_bundle = request.selected_bundle.digest()?;
     let completed_task_receipt = request.completed_task_receipt;
     let mut coordinator = LearningIterationCoordinatorV1::new(request, owners)?;
     for observation in [
         LearningIterationObservationV1::Experience {
-            episode_digest: d("explicit-episode"), completed_task_receipt,
+            episode_digest: d("explicit-episode"),
+            completed_task_receipt,
         },
         LearningIterationObservationV1::Dataset {
-            snapshot_digest: d("explicit-dataset"), episode_digest: d("explicit-episode"),
-            withdrawal_frontier: d("explicit-withdrawal"), rows: 1, bytes: 64,
+            snapshot_digest: d("explicit-dataset"),
+            episode_digest: d("explicit-episode"),
+            withdrawal_frontier: d("explicit-withdrawal"),
+            rows: 1,
+            bytes: 64,
         },
         LearningIterationObservationV1::TrainingNoUpdateV2(LearningTrainingNoUpdateV2 {
             retained_bundle,
@@ -95,13 +109,18 @@ fn fixture_with_controller_collision(
             reason: LearningTrainingNoUpdateReasonV2::QuantizedWeightsUnchanged,
         }),
         LearningIterationObservationV1::Selection {
-            candidate_bundle: retained_bundle, selection_digest: d("explicit-selection"),
+            candidate_bundle: retained_bundle,
+            selection_digest: d("explicit-selection"),
         },
     ] {
         let receipt = LearningIterationReceiptV1 {
             operation_id: coordinator.snapshot().request.operation_id.clone(),
             predecessor: coordinator.snapshot().head_digest,
-            actor_id: coordinator.snapshot().owners.owner(observation.stage()).clone(),
+            actor_id: coordinator
+                .snapshot()
+                .owners
+                .owner(observation.stage())
+                .clone(),
             evidence_digest: d("explicit-stage-evidence"),
             observed_unix_seconds: current,
             observation,
@@ -110,20 +129,27 @@ fn fixture_with_controller_collision(
     }
     let selection = coordinator.snapshot().clone();
     let evidence = predecessor_signatures(&selection, &verifier, &keys)?;
-    Ok((OriginalCircuitNextUseReceiptConfigV1 {
-        selection,
-        scope,
-        signer: signers[2].clone(),
-        verifier,
-        training_evidence: evidence[0].clone(),
-        selection_evidence: evidence[1].clone(),
-        maximum_signature_lifetime_seconds: 300,
-    }, keys))
+    Ok((
+        OriginalCircuitNextUseReceiptConfigV1 {
+            selection,
+            scope,
+            signer: signers[2].clone(),
+            verifier,
+            training_evidence: evidence[0].clone(),
+            selection_evidence: evidence[1].clone(),
+            maximum_signature_lifetime_seconds: 300,
+        },
+        keys,
+    ))
 }
 
 fn opened(root: &Path, name: &str) -> anyhow::Result<File> {
     Ok(std::fs::OpenOptions::new()
-        .read(true).write(true).create(true).truncate(false).mode(0o600)
+        .read(true)
+        .write(true)
+        .create(true)
+        .truncate(false)
+        .mode(0o600)
         .open(root.join(name))?)
 }
 
@@ -149,10 +175,21 @@ fn predecessor_signatures(
 ) -> anyhow::Result<[SignedLearningEvidenceV1; 2]> {
     let mut values = Vec::new();
     for (index, (stage, role)) in [
-        (LearningIterationStageV1::Training, LearningEvidenceRoleV1::Generator),
-        (LearningIterationStageV1::Selection, LearningEvidenceRoleV1::Selector),
-    ].into_iter().enumerate() {
-        let receipt = selection.receipts.iter()
+        (
+            LearningIterationStageV1::Training,
+            LearningEvidenceRoleV1::Generator,
+        ),
+        (
+            LearningIterationStageV1::Selection,
+            LearningEvidenceRoleV1::Selector,
+        ),
+    ]
+    .into_iter()
+    .enumerate()
+    {
+        let receipt = selection
+            .receipts
+            .iter()
             .find(|receipt| receipt.observation.stage() == stage)
             .ok_or_else(|| anyhow::anyhow!("missing original predecessor"))?;
         let payload = learning_iteration_receipt_signing_bytes_v1(receipt)?;
@@ -192,12 +229,15 @@ fn original_observer_configuration_rejects_substituted_custody_before_journal_cr
             6 => config.selection.owners.next_use_observer = StableId::new("substituted-observer")?,
             _ => unreachable!(),
         }
-        assert!(OriginalCircuitNextUseReceiptOwnerV1::create(
-            opened(root.path(), "journal")?,
-            witness(root.path(), &original)?,
-            config,
-            keys[2].clone(),
-        ).is_err());
+        assert!(
+            OriginalCircuitNextUseReceiptOwnerV1::create(
+                opened(root.path(), "journal")?,
+                witness(root.path(), &original)?,
+                config,
+                keys[2].clone(),
+            )
+            .is_err()
+        );
         assert_eq!(std::fs::metadata(root.path().join("journal"))?.len(), 0);
     }
     Ok(())
@@ -229,22 +269,38 @@ fn original_observer_predecessors_require_bound_signed_roles_and_independent_cus
         renewed[index].expires_at += 1;
         renewed[index].signature = keys[index].sign(&renewed[index].signing_bytes()).to_bytes();
         let (stage, role) = if index == 0 {
-            (LearningIterationStageV1::Training, LearningEvidenceRoleV1::Generator)
+            (
+                LearningIterationStageV1::Training,
+                LearningEvidenceRoleV1::Generator,
+            )
         } else {
-            (LearningIterationStageV1::Selection, LearningEvidenceRoleV1::Selector)
+            (
+                LearningIterationStageV1::Selection,
+                LearningEvidenceRoleV1::Selector,
+            )
         };
         let payload = learning_iteration_receipt_signing_bytes_v1(prior(&config, stage)?)?;
-        assert!(config.verifier.verify(role, &renewed[index], &payload, now()?).is_ok());
-        assert!(matches!(authenticate_predecessors(&config, &renewed, now()?),
-            Err(Error::Owner(OwnerError::Binding(_)))));
+        assert!(
+            config
+                .verifier
+                .verify(role, &renewed[index], &payload, now()?)
+                .is_ok()
+        );
+        assert!(matches!(
+            authenticate_predecessors(&config, &renewed, now()?),
+            Err(Error::Owner(OwnerError::Binding(_)))
+        ));
     }
     // Binding succeeds for these actually enrolled fixture controllers. Only
     // the independent-role check may reject their common control.
     for index in 0..2 {
         let (changed, keys) = fixture_with_controller_collision(Some(index))?;
-        assert!(changed.verifier.require_signer_binding(
-            LearningEvidenceRoleV1::Observer, &changed.signer, now()?,
-        ).is_ok());
+        assert!(
+            changed
+                .verifier
+                .require_signer_binding(LearningEvidenceRoleV1::Observer, &changed.signer, now()?,)
+                .is_ok()
+        );
         let evidence = predecessor_signatures(&changed.selection, &changed.verifier, &keys)?;
         assert!(matches!(
             authenticate_predecessors(&changed, &evidence, now()?),
@@ -260,23 +316,53 @@ fn original_observer_deadline_and_saved_signature_window_never_renew() -> anyhow
     let started_at = now()?;
     assert!(require_new_attestation(&config, started_at, started_at).is_ok());
     assert!(require_new_attestation(&config, started_at, started_at - 1).is_err());
-    assert!(require_new_attestation(
-        &config, started_at, config.selection.request.envelope.expiry_unix_seconds,
-    ).is_err());
+    assert!(
+        require_new_attestation(
+            &config,
+            started_at,
+            config.selection.request.envelope.expiry_unix_seconds,
+        )
+        .is_err()
+    );
     let payload = b"explicit-clock-unit-payload";
-    let signed = sign_original(&config, &keys[2], payload, d("explicit-identity"), started_at)?;
+    let signed = sign_original(
+        &config,
+        &keys[2],
+        payload,
+        d("explicit-identity"),
+        started_at,
+    )?;
     let saved = learning_owner_evidence::encode(payload, &signed)?;
     let (recovered_payload, recovered) = learning_owner_evidence::decode(&saved)?;
     assert_eq!(recovered, signed);
     assert_eq!(recovered.issued_at, started_at);
     assert_eq!(recovered.expires_at, started_at + 300);
-    assert!(config.verifier.verify(
-        LearningEvidenceRoleV1::Observer, &recovered, &recovered_payload, recovered.expires_at,
-    ).is_ok());
-    assert!(config.verifier.verify(
-        LearningEvidenceRoleV1::Observer, &recovered, &recovered_payload, recovered.expires_at + 1,
-    ).is_err());
-    assert_eq!(learning_owner_evidence::encode(&recovered_payload, &recovered)?, saved);
+    assert!(
+        config
+            .verifier
+            .verify(
+                LearningEvidenceRoleV1::Observer,
+                &recovered,
+                &recovered_payload,
+                recovered.expires_at,
+            )
+            .is_ok()
+    );
+    assert!(
+        config
+            .verifier
+            .verify(
+                LearningEvidenceRoleV1::Observer,
+                &recovered,
+                &recovered_payload,
+                recovered.expires_at + 1,
+            )
+            .is_err()
+    );
+    assert_eq!(
+        learning_owner_evidence::encode(&recovered_payload, &recovered)?,
+        saved
+    );
     Ok(())
 }
 
@@ -285,14 +371,21 @@ fn original_observer_pending_claim_reopens_without_signing_or_rewriting() -> any
     let root = tempfile::tempdir()?;
     let (config, keys) = fixture()?;
     let mut owner = OriginalCircuitNextUseReceiptOwnerV1::create(
-        opened(root.path(), "journal")?, witness(root.path(), &config)?,
-        config.clone(), keys[2].clone(),
+        opened(root.path(), "journal")?,
+        witness(root.path(), &config)?,
+        config.clone(),
+        keys[2].clone(),
     )?;
     let calls = AtomicUsize::new(0);
-    assert!(owner.journal.commit_once(&owner.saved, || {
-        calls.fetch_add(1, Ordering::SeqCst);
-        Err(OwnerError::CommitUncertain)
-    }).is_err());
+    assert!(
+        owner
+            .journal
+            .commit_once(&owner.saved, || {
+                calls.fetch_add(1, Ordering::SeqCst);
+                Err(OwnerError::CommitUncertain)
+            })
+            .is_err()
+    );
     let original = owner.journal.qualification_file_bytes(1 << 20)?;
     drop(owner);
     let before = std::fs::read(root.path().join("witness"))?;
@@ -308,23 +401,36 @@ fn original_observer_pending_claim_reopens_without_signing_or_rewriting() -> any
         evidence.expires_at += 1;
         evidence.signature = keys[index].sign(&evidence.signing_bytes()).to_bytes();
         assert!(validate_config(&renewed, &keys[2]).is_ok());
-        assert!(OriginalCircuitNextUseReceiptOwnerV1::recover(
-            opened(root.path(), "journal")?, witness(root.path(), &renewed)?,
-            renewed, keys[2].clone(),
-        ).is_err());
+        assert!(
+            OriginalCircuitNextUseReceiptOwnerV1::recover(
+                opened(root.path(), "journal")?,
+                witness(root.path(), &renewed)?,
+                renewed,
+                keys[2].clone(),
+            )
+            .is_err()
+        );
         assert_eq!(std::fs::read(root.path().join("journal"))?, original);
         assert_eq!(std::fs::read(root.path().join("witness"))?, before);
     }
     let mut recovered = OriginalCircuitNextUseReceiptOwnerV1::recover(
-        opened(root.path(), "journal")?, witness(root.path(), &config)?,
-        config, keys[2].clone(),
+        opened(root.path(), "journal")?,
+        witness(root.path(), &config)?,
+        config,
+        keys[2].clone(),
     )?;
-    assert!(matches!(recovered.journal.commit_once(&recovered.saved, || {
-        calls.fetch_add(1, Ordering::SeqCst);
-        Ok(Vec::new())
-    }), Err(OwnerError::Pending)));
+    assert!(matches!(
+        recovered.journal.commit_once(&recovered.saved, || {
+            calls.fetch_add(1, Ordering::SeqCst);
+            Ok(Vec::new())
+        }),
+        Err(OwnerError::Pending)
+    ));
     assert_eq!(calls.load(Ordering::SeqCst), 1);
-    assert_eq!(recovered.journal.qualification_file_bytes(1 << 20)?, original);
+    assert_eq!(
+        recovered.journal.qualification_file_bytes(1 << 20)?,
+        original
+    );
     drop(recovered);
     assert_eq!(std::fs::read(root.path().join("witness"))?, before);
     Ok(())

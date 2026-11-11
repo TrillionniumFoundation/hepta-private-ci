@@ -21,31 +21,55 @@ async fn q24_ordinary_original_observer_attests_and_recovers_exact_completed_nex
     let mut f = ObserverFixture::ready().await?;
     let publication = execute(&f.session, 1).await?;
     let actual = read_receipt(&f.session, &f.definition, &publication)?;
-    assert_ne!(publication.input().scope.run_id, f.previous.input().scope.run_id);
-    assert_ne!(publication.input().observation, f.previous.input().observation);
+    assert_ne!(
+        publication.input().scope.run_id,
+        f.previous.input().scope.run_id
+    );
+    assert_ne!(
+        publication.input().observation,
+        f.previous.input().observation
+    );
     assert_eq!(actual.bundle_digest, f.previous_decision.bundle_digest);
-    assert_ne!(actual.checkpoint_after, f.previous_decision.checkpoint_after);
+    assert_ne!(
+        actual.checkpoint_after,
+        f.previous_decision.checkpoint_after
+    );
     let selected = LearningIterationCoordinatorV1::from_snapshot(f.config.selection.clone())?;
     let expected = f.session.cell.read_learning_next_use(
-        &selected, f.session.source.as_ref(), &f.session.runtime.identity,
+        &selected,
+        f.session.source.as_ref(),
+        &f.session.runtime.identity,
     )?;
-    assert!(matches!(&expected, LearningIterationObservationV1::RetainedModelNextUse { .. }));
+    assert!(matches!(
+        &expected,
+        LearningIterationObservationV1::RetainedModelNextUse { .. }
+    ));
 
     // Exactly two original reads per peer for attestation, then one for each
     // of the two readbacks. A saved receipt never invokes another signer.
     let peers = f.peers(4)?;
     let mut owner = f.create_owner()?;
-    let saved = owner.attest_original_completion(f.sources(&f.config.selection, &peers)).await?;
+    let saved = owner
+        .attest_original_completion(f.sources(&f.config.selection, &peers))
+        .await?;
     assert_eq!(saved.0.observation, expected);
     assert_eq!(saved.0.observed_unix_seconds, saved.1.issued_at);
     assert!(saved.1.expires_at > saved.1.issued_at);
     assert!(saved.1.expires_at - saved.1.issued_at <= 300);
     let bytes = f.bytes()?;
-    assert_eq!(owner.readback(f.sources(&f.config.selection, &peers)).await?, saved);
+    assert_eq!(
+        owner
+            .readback(f.sources(&f.config.selection, &peers))
+            .await?,
+        saved
+    );
     assert_eq!(f.bytes()?, bytes);
     let mut completed = LearningIterationCoordinatorV1::from_snapshot(f.config.selection.clone())?;
     completed.record(saved.0.clone(), saved.0.observed_unix_seconds)?;
-    assert_eq!(completed.disposition(), LearningIterationDispositionV1::UsedByNextTask);
+    assert_eq!(
+        completed.disposition(),
+        LearningIterationDispositionV1::UsedByNextTask
+    );
     assert_eq!(completed.next_stage(), None);
 
     // Drop only this Observer owner, then recover its same files, witness,
@@ -53,14 +77,24 @@ async fn q24_ordinary_original_observer_attests_and_recovers_exact_completed_nex
     drop(owner);
     let mut recovered = f.recover_owner()?;
     assert_eq!(f.bytes()?, bytes);
-    assert_eq!(recovered.readback(f.sources(completed.snapshot(), &peers)).await?, saved);
+    assert_eq!(
+        recovered
+            .readback(f.sources(completed.snapshot(), &peers))
+            .await?,
+        saved
+    );
     assert_eq!(f.bytes()?, bytes);
 
     // The original artifact owner withdraws the retained selection. Historical
     // Observer bytes cannot make the live sealed Cell current again.
     f.version.withdraw()?;
-    let rejected = recovered.readback(f.sources(completed.snapshot(), &peers)).await;
-    assert!(matches!(rejected, Err(OriginalCircuitNextUseReceiptErrorV1::Observation(_))));
+    let rejected = recovered
+        .readback(f.sources(completed.snapshot(), &peers))
+        .await;
+    assert!(matches!(
+        rejected,
+        Err(OriginalCircuitNextUseReceiptErrorV1::Observation(_))
+    ));
     assert_eq!(f.bytes()?, bytes);
     drop(recovered);
     peers.finish()?;
@@ -81,20 +115,30 @@ async fn q24_ordinary_original_observer_refuses_uncommitted_or_withdrawn_next_us
         let peers = f.peers(0)?;
         let mut owner = f.create_owner()?;
         let before = f.bytes()?;
-        let rejected = owner.attest_original_completion(f.sources(&f.config.selection, &peers)).await;
+        let rejected = owner
+            .attest_original_completion(f.sources(&f.config.selection, &peers))
+            .await;
         // A mistaken peer request would produce Connection, not Observation:
         // this checks the actual missing/stale sealed completion before claim.
         assert!(
-            matches!(rejected, Err(OriginalCircuitNextUseReceiptErrorV1::Observation(_))),
+            matches!(
+                rejected,
+                Err(OriginalCircuitNextUseReceiptErrorV1::Observation(_))
+            ),
             "{change}"
         );
         assert_eq!(f.bytes()?, before, "{change}");
         drop(owner);
         let mut recovered = f.recover_owner()?;
         assert_eq!(f.bytes()?, before, "{change}");
-        let rejected = recovered.readback(f.sources(&f.config.selection, &peers)).await;
+        let rejected = recovered
+            .readback(f.sources(&f.config.selection, &peers))
+            .await;
         assert!(
-            matches!(rejected, Err(OriginalCircuitNextUseReceiptErrorV1::Observation(_))),
+            matches!(
+                rejected,
+                Err(OriginalCircuitNextUseReceiptErrorV1::Observation(_))
+            ),
             "{change}"
         );
         assert_eq!(f.bytes()?, before, "{change}");

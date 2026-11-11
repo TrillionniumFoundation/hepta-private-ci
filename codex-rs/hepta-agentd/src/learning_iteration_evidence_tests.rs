@@ -181,7 +181,12 @@ pub(crate) fn fixture_original_receipt_client(
     LearningIterationEvidenceClientV1,
     std::thread::JoinHandle<anyhow::Result<()>>,
 )> {
-    let fixture = Fixture { initial, receipt, verifier, signature };
+    let fixture = Fixture {
+        initial,
+        receipt,
+        verifier,
+        signature,
+    };
     let (client, mut server) = fixture.client()?;
     let expected = fixture.signature.payload_digest.to_string();
     let evidence: Vec<_> = (0..expected_reads).map(|_| fixture.evidence()).collect();

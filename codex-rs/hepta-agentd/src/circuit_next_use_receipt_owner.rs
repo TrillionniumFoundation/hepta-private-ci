@@ -70,11 +70,8 @@ pub struct OriginalCircuitNextUseReceiptConfigV1 {
 /// Borrow the sealed original Cell, live source and connected original owners.
 /// The complete recovered history is sent to the predecessor evidence owners.
 /// No receipt, observation, caller clock or replacement CURRENT is accepted.
-pub struct OriginalCircuitNextUseReceiptSourcesV1<
-    'a,
-    C: AnchorWitnessStore,
-    S: AnchorWitnessStore,
-> {
+pub struct OriginalCircuitNextUseReceiptSourcesV1<'a, C: AnchorWitnessStore, S: AnchorWitnessStore>
+{
     pub snapshot: &'a LearningIterationSnapshotV1,
     pub cell: &'a PublishedCircuitCellOwnerV1<C>,
     pub source: &'a CircuitTaskSourceReadbackV1<S>,
@@ -99,7 +96,12 @@ impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W> {
     ) -> Result<Self, Error> {
         let saved = validate_config(&config, &key)?;
         let journal = LearningOwnerJournalV1::create(file, witness, saved.binding_digest)?;
-        Ok(Self { journal, config, key, saved })
+        Ok(Self {
+            journal,
+            config,
+            key,
+            saved,
+        })
     }
 
     /// Reopen the same independently witnessed signature journal. Recovery
@@ -112,7 +114,12 @@ impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W> {
     ) -> Result<Self, Error> {
         let saved = validate_config(&config, &key)?;
         let journal = LearningOwnerJournalV1::recover(file, witness, saved.binding_digest)?;
-        Ok(Self { journal, config, key, saved })
+        Ok(Self {
+            journal,
+            config,
+            key,
+            saved,
+        })
     }
 
     /// Claim once, then sign only an actual original C completion. The original
@@ -120,7 +127,11 @@ impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W> {
     /// Missing, uncertain or withdrawn material is an error, never NoUpdate.
     pub async fn attest_original_completion(
         &mut self,
-        source: OriginalCircuitNextUseReceiptSourcesV1<'_, impl AnchorWitnessStore, impl AnchorWitnessStore>,
+        source: OriginalCircuitNextUseReceiptSourcesV1<
+            '_,
+            impl AnchorWitnessStore,
+            impl AnchorWitnessStore,
+        >,
     ) -> Result<(LearningIterationReceiptV1, SignedLearningEvidenceV1), Error> {
         let started_at = now()?;
         require_new_attestation(&self.config, started_at, started_at)?;
@@ -158,7 +169,8 @@ impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W> {
             }
             learning_owner_evidence::encode(&payload, &signed)
         })?;
-        self.authenticate_completed(&source, &observed, &bytes, started_at, true).await
+        self.authenticate_completed(&source, &observed, &bytes, started_at, true)
+            .await
     }
 
     /// Read the same signature against current original C and predecessor
@@ -166,23 +178,35 @@ impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W> {
     /// No claim, signature, private step, publication or clock renewal occurs.
     pub async fn readback(
         &mut self,
-        source: OriginalCircuitNextUseReceiptSourcesV1<'_, impl AnchorWitnessStore, impl AnchorWitnessStore>,
+        source: OriginalCircuitNextUseReceiptSourcesV1<
+            '_,
+            impl AnchorWitnessStore,
+            impl AnchorWitnessStore,
+        >,
     ) -> Result<(LearningIterationReceiptV1, SignedLearningEvidenceV1), Error> {
         let started_at = now()?;
         let observed = self.prepare(&source)?;
         let bytes = self.journal.read(&self.saved)?;
-        self.authenticate_completed(&source, &observed, &bytes, started_at, false).await
+        self.authenticate_completed(&source, &observed, &bytes, started_at, false)
+            .await
     }
 
     fn prepare(
         &self,
-        source: &OriginalCircuitNextUseReceiptSourcesV1<'_, impl AnchorWitnessStore, impl AnchorWitnessStore>,
+        source: &OriginalCircuitNextUseReceiptSourcesV1<
+            '_,
+            impl AnchorWitnessStore,
+            impl AnchorWitnessStore,
+        >,
     ) -> Result<LearningIterationObservationV1, Error> {
         LearningIterationCoordinatorV1::from_snapshot(source.snapshot.clone())?;
         self.config.scope.validate_snapshot(source.snapshot)?;
         if source.snapshot.request != self.config.selection.request
             || source.snapshot.owners != self.config.selection.owners
-            || !source.snapshot.receipts.starts_with(&self.config.selection.receipts)
+            || !source
+                .snapshot
+                .receipts
+                .starts_with(&self.config.selection.receipts)
         {
             return Err(OwnerError::Binding("original Selection prefix").into());
         }
@@ -197,25 +221,37 @@ impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W> {
 
     async fn predecessors(
         &self,
-        source: &OriginalCircuitNextUseReceiptSourcesV1<'_, impl AnchorWitnessStore, impl AnchorWitnessStore>,
+        source: &OriginalCircuitNextUseReceiptSourcesV1<
+            '_,
+            impl AnchorWitnessStore,
+            impl AnchorWitnessStore,
+        >,
     ) -> Result<[SignedLearningEvidenceV1; 2], Error> {
         let trainer: &LearningIterationEvidenceClientV1 = source.trainer;
         let selector: &LearningIterationEvidenceClientV1 = source.selector;
         Ok([
-            trainer.readback(
-                source.snapshot,
-                prior(&self.config, LearningIterationStageV1::Training)?,
-            ).await?,
-            selector.readback(
-                source.snapshot,
-                prior(&self.config, LearningIterationStageV1::Selection)?,
-            ).await?,
+            trainer
+                .readback(
+                    source.snapshot,
+                    prior(&self.config, LearningIterationStageV1::Training)?,
+                )
+                .await?,
+            selector
+                .readback(
+                    source.snapshot,
+                    prior(&self.config, LearningIterationStageV1::Selection)?,
+                )
+                .await?,
         ])
     }
 
     async fn authenticate_completed(
         &mut self,
-        source: &OriginalCircuitNextUseReceiptSourcesV1<'_, impl AnchorWitnessStore, impl AnchorWitnessStore>,
+        source: &OriginalCircuitNextUseReceiptSourcesV1<
+            '_,
+            impl AnchorWitnessStore,
+            impl AnchorWitnessStore,
+        >,
         observed: &LearningIterationObservationV1,
         bytes: &[u8],
         started_at: u64,
@@ -224,7 +260,10 @@ impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W> {
         let (payload, signed) = learning_owner_evidence::decode(bytes)?;
         let receipt = receipt(&self.config, observed, signed.issued_at)?;
         if payload != learning_iteration_receipt_signing_bytes_v1(&receipt)?
-            || source.snapshot.receipts.get(self.config.selection.receipts.len())
+            || source
+                .snapshot
+                .receipts
+                .get(self.config.selection.receipts.len())
                 .is_some_and(|saved| saved != &receipt)
         {
             return Err(OwnerError::Binding("changed original C receipt").into());
@@ -281,7 +320,10 @@ fn validate_config(
     let current = now()?;
     authenticate_predecessors(
         config,
-        &[config.training_evidence.clone(), config.selection_evidence.clone()],
+        &[
+            config.training_evidence.clone(),
+            config.selection_evidence.clone(),
+        ],
         current,
     )?;
     Ok(ProductEvaluationExecutionKeyV1 {
@@ -306,7 +348,11 @@ fn prior(
     config: &OriginalCircuitNextUseReceiptConfigV1,
     stage: LearningIterationStageV1,
 ) -> Result<&LearningIterationReceiptV1, Error> {
-    config.selection.receipts.iter().find(|receipt| receipt.observation.stage() == stage)
+    config
+        .selection
+        .receipts
+        .iter()
+        .find(|receipt| receipt.observation.stage() == stage)
         .ok_or_else(|| OwnerError::Binding("original predecessor receipt").into())
 }
 
@@ -342,8 +388,16 @@ fn authenticate_predecessors(
         Ok(verified)
     };
     Ok([
-        verify(0, LearningIterationStageV1::Training, LearningEvidenceRoleV1::Generator)?,
-        verify(1, LearningIterationStageV1::Selection, LearningEvidenceRoleV1::Selector)?,
+        verify(
+            0,
+            LearningIterationStageV1::Training,
+            LearningEvidenceRoleV1::Generator,
+        )?,
+        verify(
+            1,
+            LearningIterationStageV1::Selection,
+            LearningEvidenceRoleV1::Selector,
+        )?,
     ])
 }
 
@@ -353,9 +407,13 @@ fn receipt(
     observed_unix_seconds: u64,
 ) -> Result<LearningIterationReceiptV1, Error> {
     let committed = match observation {
-        LearningIterationObservationV1::NextUse { committed_step_receipt, .. }
+        LearningIterationObservationV1::NextUse {
+            committed_step_receipt,
+            ..
+        }
         | LearningIterationObservationV1::RetainedModelNextUse {
-            committed_step_receipt, ..
+            committed_step_receipt,
+            ..
         } => committed_step_receipt,
         _ => return Err(OwnerError::Binding("actual original C completion").into()),
     };
@@ -387,7 +445,8 @@ fn sign_original(
     identity: Digest32,
     issued_at: u64,
 ) -> Result<SignedLearningEvidenceV1, OwnerError> {
-    let expires_at = issued_at.checked_add(config.maximum_signature_lifetime_seconds)
+    let expires_at = issued_at
+        .checked_add(config.maximum_signature_lifetime_seconds)
         .ok_or(OwnerError::Binding("signature deadline overflow"))?
         .min(config.signer.principal.expires_at);
     let mut signed = SignedLearningEvidenceV1 {
@@ -413,7 +472,9 @@ fn require_new_attestation(
     current: u64,
 ) -> Result<(), OwnerError> {
     if current < started_at || current >= config.selection.request.envelope.expiry_unix_seconds {
-        return Err(OwnerError::Binding("new C attestation outside original deadline"));
+        return Err(OwnerError::Binding(
+            "new C attestation outside original deadline",
+        ));
     }
     Ok(())
 }
@@ -424,7 +485,9 @@ fn evidence_id(identity: Digest32) -> Result<StableId, OwnerError> {
 }
 
 fn now() -> Result<u64, OwnerError> {
-    SystemTime::now().duration_since(UNIX_EPOCH).map(|duration| duration.as_secs())
+    SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map(|duration| duration.as_secs())
         .map_err(|_| OwnerError::Binding("original Observer clock"))
 }
 

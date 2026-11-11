@@ -106,7 +106,10 @@ impl Metadata {
         for (index, (actor, role)) in [
             (owners.trainer.clone(), LearningEvidenceRoleV1::Generator),
             (owners.selector.clone(), LearningEvidenceRoleV1::Selector),
-            (owners.next_use_observer.clone(), LearningEvidenceRoleV1::Observer),
+            (
+                owners.next_use_observer.clone(),
+                LearningEvidenceRoleV1::Observer,
+            ),
         ]
         .into_iter()
         .enumerate()
@@ -178,7 +181,12 @@ impl Metadata {
             );
             decision.record(observed, at)?;
         }
-        let training = decision.snapshot().receipts.last().context("training fixture")?.clone();
+        let training = decision
+            .snapshot()
+            .receipts
+            .last()
+            .context("training fixture")?
+            .clone();
         let training_signature = signed(
             &training,
             &verifier,
@@ -209,8 +217,12 @@ impl Peers {
     pub(super) fn finish(self) -> anyhow::Result<()> {
         drop(self.trainer);
         drop(self.selector);
-        self.trainer_thread.join().map_err(|_| anyhow::anyhow!("trainer fixture panicked"))??;
-        self.selector_thread.join().map_err(|_| anyhow::anyhow!("selector fixture panicked"))??;
+        self.trainer_thread
+            .join()
+            .map_err(|_| anyhow::anyhow!("trainer fixture panicked"))??;
+        self.selector_thread
+            .join()
+            .map_err(|_| anyhow::anyhow!("selector fixture panicked"))??;
         Ok(())
     }
 }
@@ -241,10 +253,15 @@ impl ObserverFixture {
         let version = VersionFixture::new_initial(config_a.clone(), "ordinary-q24-initial")?;
         let published_a = support::publish_initial(&version, definition.clone(), source_a.clone())?;
         let mut a = support::start(a, published_a, Arc::clone(&model), bundle.clone()).await?;
-        a.runtime.state.attach_circuit_learning_source(source_a.scope.run_id.clone())?;
+        a.runtime
+            .state
+            .attach_circuit_learning_source(source_a.scope.run_id.clone())?;
         let previous = execute(&a, 1).await?;
         let previous_decision = read_receipt(&a, &definition, &previous)?;
-        let intent = a.runtime.state.circuit_task_store()?
+        let intent = a
+            .runtime
+            .state
+            .circuit_task_store()?
             .circuit_learning_delivery(source_a.scope.run_id.as_str())
             .await
             .map_err(|error| anyhow::anyhow!("original A delivery: {error:?}"))?
@@ -281,11 +298,14 @@ impl ObserverFixture {
                 maximum_artifact_bytes: 128,
             },
         };
-        a.runtime.state.require_circuit_learning_source(&request).await?;
+        a.runtime
+            .state
+            .require_circuit_learning_source(&request)
+            .await?;
         let mut metadata = Metadata::new(request)?;
-        let completion_a = a.retirement.drain_completed_task(
-            &a.cell, a.source.as_ref(), &a.runtime.identity,
-        )?;
+        let completion_a =
+            a.retirement
+                .drain_completed_task(&a.cell, a.source.as_ref(), &a.runtime.identity)?;
         a.stop().await?;
         drop(a);
 
@@ -306,23 +326,40 @@ impl ObserverFixture {
             },
             version.selection()?,
             version.named_target_create("observer-C-journal", "observer-C-witness", config_c)?,
-            AgentdGenerationUpdateRequestV1 { operation_id: operation.to_string() },
+            AgentdGenerationUpdateRequestV1 {
+                operation_id: operation.to_string(),
+            },
         )?;
         let final_use = version.sign(prepared.final_use_binding())?;
         let published_c = prepared.publish(&final_use)?.into_circuit_feature_task(
-            definition.clone(), source_c, completion_a,
+            definition.clone(),
+            source_c,
+            completion_a,
         )?;
         let session = support::start(c, published_c, model, bundle).await?;
         // The learning selection is read from the actual just-published owner.
         // Its separate Selector role signature remains explicit test custody.
         let observed = session.cell.read_learning_selection(&metadata.decision)?;
-        let selection = receipt(&metadata.decision, observed, now()?, "explicit-selector-evidence");
+        let selection = receipt(
+            &metadata.decision,
+            observed,
+            now()?,
+            "explicit-selector-evidence",
+        );
         let selection_signature = signed(
-            &selection, &metadata.verifier, LearningEvidenceRoleV1::Selector,
-            &SigningKey::from_bytes(&[102; 32]), "explicit-original-selector-receipt",
+            &selection,
+            &metadata.verifier,
+            LearningEvidenceRoleV1::Selector,
+            &SigningKey::from_bytes(&[102; 32]),
+            "explicit-original-selector-receipt",
         )?;
-        metadata.decision.record(selection.clone(), selection.observed_unix_seconds)?;
-        assert_eq!(metadata.decision.next_stage(), Some(LearningIterationStageV1::NextUse));
+        metadata
+            .decision
+            .record(selection.clone(), selection.observed_unix_seconds)?;
+        assert_eq!(
+            metadata.decision.next_stage(),
+            Some(LearningIterationStageV1::NextUse)
+        );
         let config = OriginalCircuitNextUseReceiptConfigV1 {
             selection: metadata.decision.snapshot().clone(),
             scope: metadata.scope,
@@ -351,21 +388,33 @@ impl ObserverFixture {
 
     pub(super) fn peers(&self, expected_reads: usize) -> anyhow::Result<Peers> {
         let (trainer, trainer_thread) = fixture_original_receipt_client(
-            self.initial.clone(), self.training.clone(), self.config.verifier.clone(),
-            self.training_signature.clone(), expected_reads,
+            self.initial.clone(),
+            self.training.clone(),
+            self.config.verifier.clone(),
+            self.training_signature.clone(),
+            expected_reads,
         )?;
         let (selector, selector_thread) = fixture_original_receipt_client(
-            self.initial.clone(), self.selection.clone(), self.config.verifier.clone(),
-            self.selection_signature.clone(), expected_reads,
+            self.initial.clone(),
+            self.selection.clone(),
+            self.config.verifier.clone(),
+            self.selection_signature.clone(),
+            expected_reads,
         )?;
-        Ok(Peers { trainer, selector, trainer_thread, selector_thread })
+        Ok(Peers {
+            trainer,
+            selector,
+            trainer_thread,
+            selector_thread,
+        })
     }
 
     pub(super) fn sources<'a>(
         &'a self,
         snapshot: &'a LearningIterationSnapshotV1,
         peers: &'a Peers,
-    ) -> OriginalCircuitNextUseReceiptSourcesV1<'a, FileAnchorWitnessStore, FileAnchorWitnessStore> {
+    ) -> OriginalCircuitNextUseReceiptSourcesV1<'a, FileAnchorWitnessStore, FileAnchorWitnessStore>
+    {
         OriginalCircuitNextUseReceiptSourcesV1 {
             snapshot,
             cell: &self.session.cell,
@@ -379,7 +428,9 @@ impl ObserverFixture {
     fn file(&self, name: &str, create: bool) -> anyhow::Result<File> {
         let mut options = OpenOptions::new();
         options.read(true).write(true).mode(0o600);
-        if create { options.create_new(true); }
+        if create {
+            options.create_new(true);
+        }
         Ok(options.open(self.observer_root.path().join(name))?)
     }
 
@@ -397,15 +448,19 @@ impl ObserverFixture {
 
     pub(super) fn create_owner(&self) -> anyhow::Result<Owner> {
         Ok(OriginalCircuitNextUseReceiptOwnerV1::create(
-            self.file("observer.journal", true)?, self.witness(true)?,
-            self.config.clone(), SigningKey::from_bytes(&[103; 32]),
+            self.file("observer.journal", true)?,
+            self.witness(true)?,
+            self.config.clone(),
+            SigningKey::from_bytes(&[103; 32]),
         )?)
     }
 
     pub(super) fn recover_owner(&self) -> anyhow::Result<Owner> {
         Ok(OriginalCircuitNextUseReceiptOwnerV1::recover(
-            self.file("observer.journal", false)?, self.witness(false)?,
-            self.config.clone(), SigningKey::from_bytes(&[103; 32]),
+            self.file("observer.journal", false)?,
+            self.witness(false)?,
+            self.config.clone(),
+            SigningKey::from_bytes(&[103; 32]),
         )?)
     }
 
