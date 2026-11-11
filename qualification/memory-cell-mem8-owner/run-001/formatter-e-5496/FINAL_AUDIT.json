@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "source_sha": "5496ff0cf33c116f8b8d458e821b42c71c9ffa67",
+  "source_tree": "5a531bbd732f1d9cb75df32b63b67261295e0cb7",
+  "source_parent": "66b904beb9a56cc23a894ac3a3a617786db9f350",
+  "actual_formatter_command": [
+    "just",
+    "fmt",
+    "--base",
+    "ad5a4ed6d40a2eceac189afaced5d93137724a52"
+  ],
+  "command_exit_code": 0,
+  "source_identity_gate_exit_code": 1,
+  "native_tests_run": false,
+  "published_input_preimages_verified": true,
+  "actual_rewritten_files": 5,
+  "unchanged_files": [
+    "codex-rs/hepta-agentd/src/config_episodic.rs"
+  ],
+  "actual_archive": {
+    "file": "changed-source-after-format.tar.xz",
+    "bytes": 13136,
+    "sha256": "d08680539e7f0d209b889450163b05db2c4929c99e1d747588d1dd0bb01c3392"
+  },
+  "actual_patch": {
+    "file": "source-rewrites.patch",
+    "bytes": 16916,
+    "sha256": "a4cee2b7f7ff819f83aa3cf5e86c85f6ad6044d231c454bb61fdd0675877a73f"
+  },
+  "raw_log": {
+    "file": "format.json.e0ab8201ee7c47128f5a08a6e2036e2d.log",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "full_original_patch_apply_check": true,
+  "full_original_patch_reproduces_all_six_source_files": true,
+  "unexpected_source_files": [],
+  "manual_patch_review": "All five complete diffs inspected. Whitespace/layout, trailing commas, and equivalent closure-body blocks only; no executable predicate changes.",
+  "canonical_predicate_followup": "Not part of actual formatter output; delegated to root as a separately reviewed equivalence change.",
+  "postimages_match_sibling_uploaded_blob_receipts": true,
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/episodic_import.rs",
+      "preimage_git_blob": "f9cfd9058307e1448a57a23722e04cab94f25826",
+      "postimage_git_blob": "eac6a0a296176332eb0a89e2eadb13f657236062",
+      "postimage_sha256": "a453ca69b4dce2a661f4cfd1101ae7ebd19a65883e723291a0ae4dd4132574d2",
+      "bytes": 4813
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/episodic_source_read.rs",
+      "preimage_git_blob": "ff04a1e2e1c97c0d6b47011d81fb4de69c1b4bd9",
+      "postimage_git_blob": "4a26cc29418ef4ceaee1350681b7197a6830112d",
+      "postimage_sha256": "ce4309acab8e8e7525ba44034d8c53284d2684d7fe502087c8a768c299d9754a",
+      "bytes": 4792
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/episodic_source_read_tests.rs",
+      "preimage_git_blob": "5849a39700d14989c5557a6fa866b5e1de91340e",
+      "postimage_git_blob": "7aa7ed11cff846a8f9c4a5363399c3a7c1680101",
+      "postimage_sha256": "4f941d1e4c8f0ff85e88954863eaf2e2def3dbe5d2bf99b36bcde7e34525d603",
+      "bytes": 2647
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_episodic_control_tests.rs",
+      "preimage_git_blob": "d88ad6a05c6ee062613be3b47212134d72b1260e",
+      "postimage_git_blob": "9145d2e46aa9d0f5022f09fde38c3ea97ac56838",
+      "postimage_sha256": "4af3dab861a0d64a70eff732f6279c877ef4fdf989c196fa826928c431f1d6ad",
+      "bytes": 13050
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/state_control.rs",
+      "preimage_git_blob": "5bf2c8e3979b546cb3fb7046de65e1979c913020",
+      "postimage_git_blob": "e53d6ada7c222ad0084b44803bdfbed4789160fa",
+      "postimage_sha256": "3bdfa3151dc0a77e6e926c81a1407b0309d841f859612fa54383b72f7760765e",
+      "bytes": 60831
+    }
+  ]
+}

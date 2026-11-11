@@ -1,0 +1,160 @@
+{
+  "schema": "hepta.mem8.g-zero-model-native-audit.v1",
+  "status": "passed",
+  "run_id": "mem8-native-g-9d9bdfb-ai395-20261111-ed353-v1",
+  "source_sha": "9d9bdfbaeeec3c618f3fc80e2f663a29c13f4b27",
+  "source_tree": "07192603a5164f4b5d4da24e37595be2a0a04777",
+  "base_sha": "0c32926cfec58d986477fc72ba3a4787ab75fde9",
+  "started_at": "2026-11-11T05:18:34.833360+00:00",
+  "finished_at": "2026-11-11T05:26:34.961045+00:00",
+  "deadline_utc": "2026-11-11T06:03:34.833360+00:00",
+  "archive": {
+    "bytes": 49292,
+    "sha256": "3babe551f6a029803467dbc89f5ea949c88b93916bb20c3638bb5ba276b50a75",
+    "git_blob": "887bd1823ce74a0e579dac39deae6bd9a77fae8c",
+    "members": 67
+  },
+  "receipts": [
+    {
+      "phase": "format",
+      "receipt_sha256": "1a5ab08fb071954df149f381a25738fbeebac23f3ba4be47d6bc6cad2a90d46e",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "log_bytes": 0,
+      "command": [
+        "just",
+        "fmt",
+        "--base",
+        "0c32926cfec58d986477fc72ba3a4787ab75fde9"
+      ],
+      "started_at": "2026-11-11T05:19:16.649490+00:00",
+      "finished_at": "2026-11-11T05:19:17.368027+00:00"
+    },
+    {
+      "phase": "v8-inputs",
+      "receipt_sha256": "05d6bf5c5b6aa56028afc9e7ef13a7c4a1a0ed45de9c81eaf3893c2c3554a7e5",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "log_bytes": 0,
+      "command": [
+        "python3",
+        "scripts/hepta_ci_v8.py"
+      ],
+      "started_at": "2026-11-11T05:19:17.420634+00:00",
+      "finished_at": "2026-11-11T05:19:21.535675+00:00"
+    },
+    {
+      "phase": "codex-cli-build",
+      "receipt_sha256": "ee7e4f2c7be3dc97326568d1800a52764621dac8f3ba0fbecabefd74c2fb24eb",
+      "log_sha256": "3887025fe6f0f324a26376ab3435a0f10c9cd242426bdb1a038d8e420767e56f",
+      "log_bytes": 25599,
+      "command": [
+        "cargo",
+        "build",
+        "--locked",
+        "-p",
+        "codex-cli",
+        "--bin",
+        "codex"
+      ],
+      "started_at": "2026-11-11T05:19:21.642354+00:00",
+      "finished_at": "2026-11-11T05:21:55.430104+00:00"
+    },
+    {
+      "phase": "agentd-tests",
+      "receipt_sha256": "f0497a0e3784a4e2227429cf54078f839aace5b4e40aeaf6e6be91cb63b522f0",
+      "log_sha256": "3ce5210b8df628a28d1c9a4fbf0c1b7fe9f795e04e4a27c003f1215500c7f4ae",
+      "log_bytes": 41272,
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-agentd",
+        "--lib",
+        "-E",
+        "test(=app_runtime::tests::episodic_embedding_keeps_the_store_but_removes_implicit_memory_paths) | test(=episodic_import::source_read::tests::episodic_source_observation_follows_commit_generation_not_ack_order) | test(=production_composition::tests::episodic_control::drain::episodic_import_cancellation_cannot_overtake_owner_settlement) | test(=production_composition::tests::episodic_control::episodic_config_cannot_create_a_missing_production_writer) | test(=production_composition::tests::episodic_control::episodic_control_replays_original_commit_then_rejects_revoked_context) | test(=production_composition::tests::episodic_control::episodic_wire_without_configured_source_cannot_mutate_original_owner)",
+        "--no-capture",
+        "--retries",
+        "0",
+        "--test-threads",
+        "1"
+      ],
+      "started_at": "2026-11-11T05:21:55.828112+00:00",
+      "finished_at": "2026-11-11T05:24:49.705240+00:00"
+    },
+    {
+      "phase": "fix-codex-hepta-agentd",
+      "receipt_sha256": "7c98d0c34a3d7f7948f399b846e36a93deb59db94f9f290952e7926e065afebc",
+      "log_sha256": "044135be2fdd0b7de44fec2b34696cbb6fa7e7e7253523c2f4169f735552aaae",
+      "log_bytes": 25331,
+      "command": [
+        "just",
+        "fix",
+        "--locked",
+        "-p",
+        "codex-hepta-agentd"
+      ],
+      "started_at": "2026-11-11T05:24:50.157562+00:00",
+      "finished_at": "2026-11-11T05:26:33.672810+00:00"
+    }
+  ],
+  "passed_cases": [
+    "app_runtime::tests::episodic_embedding_keeps_the_store_but_removes_implicit_memory_paths",
+    "episodic_import::source_read::tests::episodic_source_observation_follows_commit_generation_not_ack_order",
+    "production_composition::tests::episodic_control::drain::episodic_import_cancellation_cannot_overtake_owner_settlement",
+    "production_composition::tests::episodic_control::episodic_config_cannot_create_a_missing_production_writer",
+    "production_composition::tests::episodic_control::episodic_control_replays_original_commit_then_rejects_revoked_context",
+    "production_composition::tests::episodic_control::episodic_wire_without_configured_source_cannot_mutate_original_owner"
+  ],
+  "failed_cases": [],
+  "observed_summary_lines": [
+    "     Summary [   2.110s] 6 tests run: 6 passed, 782 skipped"
+  ],
+  "actual_drain_markers": [
+    "commit",
+    "revoke",
+    "panic"
+  ],
+  "source_before_after": {
+    "head": "9d9bdfbaeeec3c618f3fc80e2f663a29c13f4b27",
+    "tree": "07192603a5164f4b5d4da24e37595be2a0a04777",
+    "status": ""
+  },
+  "original_donor_before_after": {
+    "head": "0c32926cfec58d986477fc72ba3a4787ab75fde9",
+    "tree": "0d5aa1544aad103f9099c7c8347d8075d6ecc76e",
+    "status": ""
+  },
+  "four_published_postimages_match": true,
+  "binary_before_after": {
+    "binding": "CARGO_BIN_EXE_codex; current run child environment only",
+    "build_receipt": "codex-cli-build.json",
+    "bytes": 559365856,
+    "ctime_ns": 1794374515335084069,
+    "device": 66306,
+    "inode": 52215355,
+    "mode": 33216,
+    "mtime_ns": 1794374515172089867,
+    "path": "/home/qq/mem8-owner-20261111-ed353817/native-fresh-81889-gcc-20261111/target/debug/codex",
+    "sha256": "49bfbb583bc08a549f8f023880875d2541473f5ec9b3ddd613298855fdf3e976",
+    "source_after_build": {
+      "head": "9d9bdfbaeeec3c618f3fc80e2f663a29c13f4b27",
+      "status": "",
+      "tree": "07192603a5164f4b5d4da24e37595be2a0a04777"
+    },
+    "source_sha": "9d9bdfbaeeec3c618f3fc80e2f663a29c13f4b27",
+    "source_tree": "07192603a5164f4b5d4da24e37595be2a0a04777"
+  },
+  "provider_case_selected": false,
+  "provider_calls_authorized": false,
+  "boundaries": [
+    "Actual compile and six existing controls only; the ignored real-provider context case did not run.",
+    "No predecessor/successor benefit or original deployment recovery is established.",
+    "Separate G 45-minute phase; no prior F result or deadline was reused."
+  ],
+  "raw_source_tar_audit": {
+    "file": "RAW_SOURCE_AUDIT.json",
+    "sha256": "34ad5ca51b0c00e268ddb30439518caa1ac34a73b752c36e4a38de6a043932b5",
+    "files": 4,
+    "all_full_bytes_verified": true
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "schema": "mem8.source-v11.actual-publication.v1",
+  "observed_utc": "2026-11-11 18:54:39 UTC",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "pr": 5935,
+  "branch": "codex/mem8-integrated-source-20261111-ed353817",
+  "expected_previous_head": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+  "ref_update_result": {
+    "success": true
+  },
+  "after": {
+    "ref": "refs/heads/codex/mem8-integrated-source-20261111-ed353817",
+    "head": "ceadcb3b11dbd94a9d07afb7e6301555e4ff3f80",
+    "pr_head": "ceadcb3b11dbd94a9d07afb7e6301555e4ff3f80",
+    "base": "96038ccf0660154fac143ba6cbe4be81e00813e8",
+    "tree": "27651abb15e269c427c75f28f92a3bd1cd9d191f",
+    "parent": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+    "draft": true,
+    "state": "open",
+    "full_body": "## Problem and changes\n\nThe original d0f Windows sandbox lint exited zero but rewrote one source expression, so its strict clean-source guard correctly failed. This revision includes that exact original Clippy postimage and qualifies it separately.\n\nCurrent pure source: `ceadcb3b11dbd94a9d07afb7e6301555e4ff3f80`; complete tree: `27651abb15e269c427c75f28f92a3bd1cd9d191f`; parent: `d0f6507e08f7f5c5855f5164d07c049a34d1a6d9`. Only `codex-rs/windows-sandbox-rs/src/setup_process.rs` changes relative to d0f: the closure in `map_or` becomes `std::vec::Vec::as_ptr`. The Option value, pointer lifetime and runtime control flow are unchanged. The cumulative reviewed overlay remains 118 paths.\n\nThe earlier V2 subagent fixture corrections, matched-response recorder, explicit setup-handle inheritance allowlist, exact formatter postimages and reviewed Fence v0.13 pin remain. Qualification harnesses are outside the pure source ancestry. Assertions, authority checks, source exposure rules, case deadlines and retry limits remain unchanged.\n\n## Exact V11 qualification\n\n| Original scope | Actual result |\n| --- | --- |\n| [Source-only run 43069105073](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43069105073), job 130691870162, attempt 1 | PASS in 285.119599 / 600 seconds; 18 Python cases passed; all 14,053 source entries and 6,204 Rust files checked; zero formatter changes |\n| [Windows scoped-lint run 43072390230](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43072390230), job 130703409994, attempt 1 | PASS; real helper build exit 0 in 723.468 seconds, then one clean `just fix --locked -p codex-windows-sandbox` exit 0 in 403.797 seconds |\n| Source and integrity | Exact cead tree before/after; both locks, tools and helper bindings unchanged; source rewrite paths empty; full caller golden preserved except the existing tree-derived Rust-file count; all thirteen retired names absent |\n\nThe source gate's complete original archive and unchanged reader were independently replayed before the environment outage. The lint auditor and complete package replay also passed before that outage. All compressed bytes were subsequently read remotely and checked against their original size, SHA-256 and Git identities. No later root XZ replay is claimed where the local runtime was unavailable. Helper PE files are compiler/hash-bound observations, not archived binary bodies.\n\nThese V11 scopes run no native testcase or model command. They do not transfer native passes from older heads.\n\n## Earlier original outcomes retained\n\nThe exact d0f two-case qualification passed both V2 spawned-child fixtures and a subsequent clean core scoped fix under its unchanged single 65-minute envelope. The d0f sandbox lint remains the original `FAIL_DIRTY_SOURCE`; V11 does not rewrite that result.\n\n| Original d0f workflow | Retained scope |\n| --- | --- |\n| MEM | 154 Python executions / 120 distinct IDs; 34 native executions / 33 names; all three original jobs succeeded |\n| Architecture | 290 Python executions / 146 distinct IDs; 526 native executions / 521 normalized IDs; the original required check succeeded |\n| Private | 34 distinct selected cases passed; repeated positives and mutant controls remain separate |\n| Windows-current | Cancelled; 123 PASS, 1 FAIL, 0 LEAK; 43 of 167 cases have no observed terminal; final source-after absent |\n| Blocking | Original run 43062473474 completed with failure: all 37 jobs terminal, 24 success / 4 failure / 5 cancelled / 4 skipped; the original final CI required check failed. Musl ended cancelled before any Bazel/operator test execution. |\n\nThe elevated outside-root delete case still deletes outside files and directories in three permission cells. Mac memory reports completed peers zero versus sixteen, code-mode retains its backpressure timeout, and the supervisor target has an unresolved timeout. API-successful Windows lanes still retain their original flaky attempts. The successful captured-output case and scoped lint do not close the delete-isolation boundary.\n\nTwenty-six full original blocking logs, 13,669,185 bytes, have been reconstructed from remote immutable parts and checked against every original full-file hash. The environment outage prevented recovery of the original detailed parser/output and some local analysis records. A separately identified raw review does not impersonate the missing original parser. The original Mac profile ZIP remains a separately listed GitHub artifact and is not copied into the Git evidence checkpoint.\n\n## Prepared work and adoption\n\nA separate test-only diagnostic adds the returned typed coverage counters to the existing memory assertion's failure message. It is preserved as a reviewed patch only: no V12 source commit, source gate or native run exists, and it is not part of this source PR.\n\nAll ten adoption gates remain OPEN, with `HOLD`, `NoUpdate` and no production adoption. The original provider turn and physical request count remain unresolved; ignored Provider G was not run. The H V3 process and V4 upload remain UNKNOWN after identity-bound read-only investigation. No unknown request was replayed under a new key. No new real model generation, scored memory-benefit episode, merge or deployment is claimed.\n\nThe current ordinary required CI must be judged on this exact cead head and its actual dependencies. Earlier d0f passes do not qualify it. Full original evidence and remaining blockers are in draft [#5889](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5889); the complete baseline owner ledger plus explicit current companion are in draft [#5897](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5897).\n"
+  },
+  "all_five_previous_d0f_original_workflows_completed_before_update": true,
+  "original_blocking": {
+    "run_id": 43062473474,
+    "attempt": 1,
+    "status": "completed",
+    "conclusion": "failure",
+    "jobs": 37,
+    "counts": {
+      "success": 24,
+      "cancelled": 5,
+      "skipped": 4,
+      "failure": 4
+    },
+    "CI_required": {
+      "job": 130736222112,
+      "conclusion": "failure"
+    }
+  },
+  "full_raw_ref_and_PR_read": true,
+  "full_PR_body_equal_to_submitted": true,
+  "exact_changed_file_full_readback": {
+    "path": "codex-rs/windows-sandbox-rs/src/setup_process.rs",
+    "bytes": 12410,
+    "sha256": "6d0f48bd28cf4f348118ee9071d9b1db4f482c61054dc7067ee6c689ad1deeec",
+    "git_blob": "9e40662b31d10cf3231c3e69e5bcb6b258ad4248"
+  },
+  "current_head_CI_acceptance": "NOT_ESTABLISHED_BY_THIS_PUBLICATION",
+  "old_results_transferred": false,
+  "merged": false,
+  "deployed": false
+}

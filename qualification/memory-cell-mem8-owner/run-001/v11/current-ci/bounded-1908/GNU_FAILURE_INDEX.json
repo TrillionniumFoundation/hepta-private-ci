@@ -1,0 +1,50 @@
+[
+  {
+    "line": 8431,
+    "text": "2026-11-11T19:00:51.3747717Z ---- suite::v2::plugin_list::plugin_list_fetches_workspace_directory_kind_when_remote_plugin_disabled stdout ----"
+  },
+  {
+    "line": 8454,
+    "text": "2026-11-11T19:00:51.3808995Z test result: FAILED. 70 passed; 1 failed; 0 ignored; 0 measured; 954 filtered out; finished in 11.79s"
+  },
+  {
+    "line": 9531,
+    "text": "2026-11-11T19:01:22.5730969Z //codex-rs/app-server:app-server-all-wine-exec-test                       FLAKY, failed in 1 out of 17 in 29.4s"
+  },
+  {
+    "line": 9549,
+    "text": "2026-11-11T19:01:22.5773285Z //codex-rs/core:core-all-wine-exec-test                                  FAILED in 3 out of 18 in 27.3s"
+  },
+  {
+    "line": 9570,
+    "text": "2026-11-11T19:01:22.5818299Z Executed 4 out of 583 tests: 415 tests pass, 1 fails remotely, and 167 were skipped."
+  },
+  {
+    "line": 9573,
+    "text": "2026-11-11T19:01:32.2267806Z ##[error]FAILED: //codex-rs/core:core-all-wine-exec-test (Summary)"
+  },
+  {
+    "line": 9643,
+    "text": "2026-11-11T19:01:38.1931146Z thread 'suite::extension_sandbox::extension_tool_uses_granted_turn_permissions_without_host_local_persistence' (2548) panicked at core/tests/suite/extension_sandbox.rs:313:5:"
+  },
+  {
+    "line": 9657,
+    "text": "2026-11-11T19:01:38.1938277Z ---- suite::pending_input::any_new_input_interrupts_sleep stdout ----"
+  },
+  {
+    "line": 9771,
+    "text": "2026-11-11T19:01:38.3201458Z thread 'suite::pending_input::any_new_input_interrupts_sleep' (2874) panicked at codex-rs/core/tests/common/lib.rs:356:14:"
+  },
+  {
+    "line": 9780,
+    "text": "2026-11-11T19:01:38.3204254Z test result: FAILED. 77 passed; 3 failed; 0 ignored; 0 measured; 1346 filtered out; finished in 15.48s"
+  },
+  {
+    "line": 9784,
+    "text": "2026-11-11T19:01:38.3211179Z ##[error]Process completed with exit code 3."
+  },
+  {
+    "line": 9849,
+    "text": "2026-11-11T19:02:03.7214765Z Executed 1 out of 1 test: 1 test passes."
+  }
+]
