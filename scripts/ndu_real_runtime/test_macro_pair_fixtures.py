@@ -37,7 +37,13 @@ class FixtureHost:
                     "schema": "ndu.real.actor-observation.v1",
                     "case_id": self.case["id"],
                     "step": len(self.steps),
-                    "action": {"action": action},
+                    "action": {
+                        "schema": "ndu.real.actor-action.v1",
+                        "action": action,
+                        "arguments": (
+                            {"text": "fixture"} if action == "WRITE_TEXT" else {}
+                        ),
+                    },
                     "candidate_features": [[1.0]],
                     "candidate_metadata": [{"text": "fixture"}],
                     "public_features": [1.0],
@@ -64,6 +70,7 @@ class FixtureHost:
         events = [
             {
                 "schema": "ndu.real.actor-ready.v1",
+                "case_id": self.case["id"],
                 "weights_sha256": self.profile["model_sha256"],
             },
             *self.steps,

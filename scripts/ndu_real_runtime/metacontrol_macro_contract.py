@@ -117,6 +117,9 @@ def observe_branch(directory, result, expected_actions, wall_seconds, tariff, co
         or launch["exit_code"] != 0
         or launch.get("enforced_before_actor_exec") is not True
         or launch.get("launcher_source_sha256") != config["isolator_sha256"]
+        or launch.get("callback_error") is not None
+        or launch.get("protocol_error") is not None
+        or launch.get("limit_reason") is not None
     ):
         raise ValueError("Declared isolated actor did not actually complete")
     lines = [line.encode() for line in launch["stdout"].split("\n") if line.strip()]
@@ -130,10 +133,25 @@ def observe_branch(directory, result, expected_actions, wall_seconds, tariff, co
     ):
         raise ValueError("Raw actor wire receipt differs")
     events = [json.loads(raw) for raw in lines]
-    ready = [e for e in events if e.get("schema") == "ndu.real.actor-ready.v1"]
-    observed = [e for e in events if e.get("schema") == "ndu.real.actor-observation.v1"]
-    if len(ready) != 1 or ready[0].get("weights_sha256") != result["model_sha256"]:
-        raise ValueError("Actual actor readiness/model differs")
+    # A filtered subsequence is not a host-admitted actor stream.  Exactly
+    # one initial ready must precede the declared ordered observations; extra
+    # events or an unrelated-case handshake cannot certify an actual macro.
+    if (
+        len(events) != len(steps) + 1
+        or any(not isinstance(event, dict) for event in events)
+        or events[0].get("schema") != "ndu.real.actor-ready.v1"
+        or any(
+            event.get("schema") != "ndu.real.actor-observation.v1"
+            for event in events[1:]
+        )
+    ):
+        raise ValueError("Actual actor readiness/observation chronology differs")
+    ready, observed = events[0], events[1:]
+    if (
+        ready.get("weights_sha256") != result["model_sha256"]
+        or ready.get("case_id") != result["case_id"]
+    ):
+        raise ValueError("Actual actor readiness/model/case differs")
     if len(observed) != len(steps) or any(
         {k: v for k, v in step.items() if k != "observed_action_seconds"} != event
         or event.get("case_id") != result["case_id"]
@@ -152,6 +170,22 @@ def observe_branch(directory, result, expected_actions, wall_seconds, tariff, co
         raise ValueError("Native weights changed during branch")
     snapshot = directory / f"delivery-{len(steps):02d}"
     delivered = (snapshot / "delivery.json").read_bytes()
+    delivery = json.loads(delivered)
+    text_actions = [
+        step["action"] for step in steps if step["action"]["action"] == "WRITE_TEXT"
+    ]
+    # Both macros declare one actual WRITE_TEXT finalizer followed by STOP.
+    # Scoring a different delivered text is not evidence that this actor's
+    # selected output was implemented, even when scorer hashes are consistent.
+    if (
+        len(text_actions) != 1
+        or not isinstance(delivery, dict)
+        or delivery.get("case_id") != result["case_id"]
+        or not isinstance(delivery.get("text"), str)
+        or not isinstance(text_actions[0].get("arguments"), dict)
+        or text_actions[0]["arguments"].get("text") != delivery["text"]
+    ):
+        raise ValueError("Actor WRITE_TEXT payload differs from final delivery")
     score_raw = (snapshot / "evaluation.json").read_bytes()
     score = json.loads(score_raw)
     if (
