@@ -1,0 +1,64 @@
+{
+  "active_cells": 128,
+  "discount": 0.15,
+  "endpoint": 4.8,
+  "executed_in": "current assistant isolated Python container, not heptaruntime owner host",
+  "model": "finite-volume active killed diffusion, reflecting artificial upper boundary",
+  "observed_utc": "2026-11-11T00:46:22.854866+00:00",
+  "production_admission": false,
+  "python": "3.13.5",
+  "reference": "infinite-half-line constant-drift discounted first passage",
+  "rows": [
+    {
+      "full_grid_max_absolute_error": 0.004360919744539393,
+      "interior_max_absolute_error_x_lt_2": 0.00042561657473239034,
+      "max_laplace": 0.9961138294389392,
+      "min_laplace": 0.41749971931437146,
+      "mu": -0.8,
+      "subgenerator_row_balance": 7.105427357601002e-15
+    },
+    {
+      "full_grid_max_absolute_error": 0.00454734642193139,
+      "interior_max_absolute_error_x_lt_2": 0.00041971660820527834,
+      "max_laplace": 0.9834620555225402,
+      "min_laplace": 0.020412462257504312,
+      "mu": -0.12,
+      "subgenerator_row_balance": 0.0
+    },
+    {
+      "full_grid_max_absolute_error": 0.000531592248189927,
+      "interior_max_absolute_error_x_lt_2": 0.0004136641109580008,
+      "max_laplace": 0.9706703609549232,
+      "min_laplace": 0.0010945638533849575,
+      "mu": 0.0,
+      "subgenerator_row_balance": 1.4210854715202004e-14
+    },
+    {
+      "full_grid_max_absolute_error": 0.0004045741622538124,
+      "interior_max_absolute_error_x_lt_2": 0.0004045741622538124,
+      "max_laplace": 0.9479903912613604,
+      "min_laplace": 5.4866892819518955e-06,
+      "mu": 0.12,
+      "subgenerator_row_balance": 0.0
+    },
+    {
+      "full_grid_max_absolute_error": 0.0003331660193920394,
+      "interior_max_absolute_error_x_lt_2": 0.0003331660193920394,
+      "max_laplace": 0.7797423763966271,
+      "min_laplace": 1.789855795594586e-26,
+      "mu": 0.8,
+      "subgenerator_row_balance": 7.105427357601002e-15
+    }
+  ],
+  "schema": "hcsn-sg-generator-comparator-v1",
+  "scientific_benefit_established": false,
+  "semigroup_16cell_2x_0p001_max_abs": 1.0403122807645104e-11,
+  "sigma": 0.35,
+  "source_sha256": "e3362ef21bb9961726bc91ec8fcd454fe2f15b2fab0b753a8b89ef26c97220f6",
+  "test_sha256": "35bba72a96edc34a18d48cac787b519aa1fe6de5b1bbce5c6487e8e37396adb6",
+  "tested_with": "python -m unittest -v proposals.hcsn_semigroup_v1.test_semigroup_candidate",
+  "tests_passed": 4,
+  "tests_run": 4,
+  "torch": "2.10.0+cpu",
+  "whole_training_domain_admission": false
+}
