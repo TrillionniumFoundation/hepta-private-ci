@@ -25,6 +25,8 @@ use codex_hepta_learning_ledger::LearningEvidenceTrustV1;
 use codex_hepta_learning_ledger::LearningTrustDistributionV1;
 use codex_hepta_learning_ledger::LearningTrustRootV1;
 use codex_hepta_learning_ledger::LedgerRecovery;
+use codex_hepta_learning_ledger::LedgerSnapshot;
+use codex_hepta_learning_ledger::LedgerWitnessFrontier;
 use codex_hepta_learning_ledger::LedgerWitnessStore;
 use codex_hepta_learning_ledger::LedgerWriter;
 use codex_hepta_learning_ledger::OutcomeTerminalityV1;
