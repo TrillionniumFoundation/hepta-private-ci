@@ -4271,3 +4271,12 @@ forbidden = []
 function = "fn execute_training("
 sequence = ["let operation_started_at","let (completed, new_work_started_at)","let outcome = match retained_outcome","training.require_live_source_if_captured()?","let fresh_now","fresh_now < now","receipts.attest_original_completion(training)?","if let Some(started_at) = new_work_started_at","fresh_now >= dataset.request.envelope.expiry_unix_seconds","return Err(Error::CommitUncertain)","Ok(completed)"]
 top_level = []
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/cell_q24_training_source.rs"
+required = []
+forbidden = []
+[[protected_file.required_function_order]]
+function = "fn require_observations("
+sequence = ["config.dataset.receipts[0].observation != material.experience_observation()", "config.dataset.receipts[1].observation != material.dataset_observation()", "config.dataset.receipts[0].evidence_digest != material.provenance_digest()", "config.dataset.receipts[1].evidence_digest != material.provenance_digest()", "return Err(Error::Binding(", "Ok(())"]
+top_level = ["if config.dataset.receipts[0].observation != material.experience_observation()"]

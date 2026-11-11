@@ -295,6 +295,8 @@ fn require_observations(
 ) -> Result<(), Error> {
     if config.dataset.receipts[0].observation != material.experience_observation()
         || config.dataset.receipts[1].observation != material.dataset_observation()
+        || config.dataset.receipts[0].evidence_digest != material.provenance_digest()
+        || config.dataset.receipts[1].evidence_digest != material.provenance_digest()
     {
         return Err(Error::Binding("original Material observations and live data"));
     }
