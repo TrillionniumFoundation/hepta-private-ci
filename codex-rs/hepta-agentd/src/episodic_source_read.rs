@@ -40,8 +40,15 @@ impl EpisodicSourceReads {
     ) -> Result<(), AgentdError> {
         // Only the retained owner task calls this after acknowledged commit.
         // No lock is held while verifying a source or awaiting SQLite.
-        let next = Arc::new(CommittedSource { snapshot_json, admission, receipt });
-        let mut current = self.current.lock().map_err(|_| unavailable("observation lock poisoned"))?;
+        let next = Arc::new(CommittedSource {
+            snapshot_json,
+            admission,
+            receipt,
+        });
+        let mut current = self
+            .current
+            .lock()
+            .map_err(|_| unavailable("observation lock poisoned"))?;
         if let Some(previous) = current.as_ref() {
             if previous.receipt.owner_agent_id != next.receipt.owner_agent_id
                 || previous.receipt.scope_binding != next.receipt.scope_binding
@@ -56,7 +63,9 @@ impl EpisodicSourceReads {
             }
             if next.receipt.generation == previous.receipt.generation {
                 if next.receipt != previous.receipt || next.admission != previous.admission {
-                    return Err(unavailable("same generation has another committed observation"));
+                    return Err(unavailable(
+                        "same generation has another committed observation",
+                    ));
                 }
                 if next.snapshot_json == previous.snapshot_json {
                     // An identical reconciliation must not invalidate live readers.
@@ -71,10 +80,17 @@ impl EpisodicSourceReads {
 
 impl EpisodicImportIngress {
     pub(crate) fn source_read(self: &Arc<Self>) -> Result<EpisodicSourceRead, AgentdError> {
-        let observation = self.source_reads.current.lock()
+        let observation = self
+            .source_reads
+            .current
+            .lock()
             .map_err(|_| unavailable("observation lock poisoned"))?
-            .clone().ok_or_else(|| unavailable("current snapshot must be reconciled after startup"))?;
-        let read = EpisodicSourceRead { ingress: Arc::clone(self), observation };
+            .clone()
+            .ok_or_else(|| unavailable("current snapshot must be reconciled after startup"))?;
+        let read = EpisodicSourceRead {
+            ingress: Arc::clone(self),
+            observation,
+        };
         read.revalidate()?;
         Ok(read)
     }
@@ -82,28 +98,47 @@ impl EpisodicImportIngress {
 
 impl EpisodicSourceRead {
     fn require_current(&self) -> Result<(), AgentdError> {
-        let current = self.ingress.source_reads.current.lock()
+        let current = self
+            .ingress
+            .source_reads
+            .current
+            .lock()
             .map_err(|_| unavailable("observation lock poisoned"))?;
-        if !current.as_ref().is_some_and(|current| Arc::ptr_eq(current, &self.observation)) {
-            return Err(unavailable("committed observation changed during context read"));
+        if !current
+            .as_ref()
+            .is_some_and(|current| Arc::ptr_eq(current, &self.observation))
+        {
+            return Err(unavailable(
+                "committed observation changed during context read",
+            ));
         }
         Ok(())
     }
 
     pub(crate) fn revalidate(&self) -> Result<(), AgentdError> {
         self.require_current()?;
-        let admission = self.ingress.verifier.verify_current(&self.observation.snapshot_json)
+        let admission = self
+            .ingress
+            .verifier
+            .verify_current(&self.observation.snapshot_json)
             .map_err(unavailable)?;
         if admission != self.observation.admission {
-            return Err(unavailable("source bytes, metadata or verification changed"));
+            return Err(unavailable(
+                "source bytes, metadata or verification changed",
+            ));
         }
         self.require_current()
     }
 }
 
 fn unavailable(reason: impl AsRef<str>) -> AgentdError {
-    let reason: String = reason.as_ref().chars().take(MAX_SOURCE_ERROR_CHARACTERS).collect();
-    ProductionWriterError::AuthorityRejected(format!("episodic source read unavailable: {reason}")).into()
+    let reason: String = reason
+        .as_ref()
+        .chars()
+        .take(MAX_SOURCE_ERROR_CHARACTERS)
+        .collect();
+    ProductionWriterError::AuthorityRejected(format!("episodic source read unavailable: {reason}"))
+        .into()
 }
 
 #[cfg(test)]

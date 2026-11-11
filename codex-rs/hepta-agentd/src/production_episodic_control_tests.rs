@@ -48,25 +48,28 @@ impl EpisodicSnapshotVerifier for FixtureSource {
 fn observed_source() -> Arc<FixtureSource> {
     let body: serde_json::Value = serde_json::from_str(SNAPSHOT).unwrap();
     let record = &body["body"]["records"][0];
-    Arc::new(FixtureSource(Mutex::new((
-        SNAPSHOT.into(),
-        EpisodicSnapshotAdmission {
-            records: BTreeMap::from([(
-                record["record_id"].as_str().unwrap().to_owned(),
-                EpisodicRecordAdmission {
-                    source: SourceDraft {
-                        scope: CognitiveScope::AgentPrivate,
-                        kind: LedgerSourceKind::FileObservation,
-                        event_key: "episodic-control-original-observation".into(),
-                        content: record["text"].as_str().unwrap().as_bytes().to_vec(),
-                        observed_at_unix_seconds: 1,
+    Arc::new(FixtureSource(
+        Mutex::new((
+            SNAPSHOT.into(),
+            EpisodicSnapshotAdmission {
+                records: BTreeMap::from([(
+                    record["record_id"].as_str().unwrap().to_owned(),
+                    EpisodicRecordAdmission {
+                        source: SourceDraft {
+                            scope: CognitiveScope::AgentPrivate,
+                            kind: LedgerSourceKind::FileObservation,
+                            event_key: "episodic-control-original-observation".into(),
+                            content: record["text"].as_str().unwrap().as_bytes().to_vec(),
+                            observed_at_unix_seconds: 1,
+                        },
+                        verification: MemoryVerification::Verified,
                     },
-                    verification: MemoryVerification::Verified,
-                },
-            )]),
-            withdrawal: None,
-        },
-    )), Mutex::new(None)))
+                )]),
+                withdrawal: None,
+            },
+        )),
+        Mutex::new(None),
+    ))
 }
 
 #[tokio::test]
@@ -127,7 +130,12 @@ async fn episodic_control_replays_original_commit_then_rejects_revoked_context()
     // A fresh configured process has no current source observation, even if
     // native context would otherwise be empty. Reconciliation opens this path.
     let before = host.writer().recovery_anchor().await?;
-    assert!(first.cognitive_context("café".into(), /*limit*/ 4).await.is_err());
+    assert!(
+        first
+            .cognitive_context("café".into(), /*limit*/ 4)
+            .await
+            .is_err()
+    );
     assert_eq!(host.writer().recovery_anchor().await?, before);
     let wrong_namespace = SNAPSHOT.replace("bridge-fixture", "another-namespace");
     assert!(
@@ -164,14 +172,30 @@ async fn episodic_control_replays_original_commit_then_rejects_revoked_context()
     );
     let original = source.0.lock().unwrap().1.clone();
     let mut metadata_changed = original.clone();
-    metadata_changed.records.values_mut().next().unwrap().source.event_key.push_str("-changed");
+    metadata_changed
+        .records
+        .values_mut()
+        .next()
+        .unwrap()
+        .source
+        .event_key
+        .push_str("-changed");
     let mut provisional = original.clone();
-    provisional.records.values_mut().next().unwrap().verification = MemoryVerification::Provisional;
+    provisional
+        .records
+        .values_mut()
+        .next()
+        .unwrap()
+        .verification = MemoryVerification::Provisional;
     // Independent source changes with byte-identical facts do not reuse the
     // previously Verified canonical cut. Reset only the test fixture between cases.
     for changed in [metadata_changed.clone(), provisional] {
         source.0.lock().unwrap().1 = changed;
-        assert!(next.cognitive_context("café".into(), /*limit*/ 4).await.is_err());
+        assert!(
+            next.cognitive_context("café".into(), /*limit*/ 4)
+                .await
+                .is_err()
+        );
         assert!(next.revalidate_cognitive_context(&context).await.is_err());
         assert_eq!(host.writer().recovery_anchor().await?, cut);
         source.0.lock().unwrap().1 = original.clone();
@@ -179,7 +203,11 @@ async fn episodic_control_replays_original_commit_then_rejects_revoked_context()
     // The first source check succeeds, then the fixture changes before the
     // owner async read. Publication and final revalidation must check again.
     *source.1.lock().unwrap() = Some(metadata_changed.clone());
-    assert!(next.cognitive_context("café".into(), /*limit*/ 4).await.is_err());
+    assert!(
+        next.cognitive_context("café".into(), /*limit*/ 4)
+            .await
+            .is_err()
+    );
     source.0.lock().unwrap().1 = original.clone();
     *source.1.lock().unwrap() = Some(metadata_changed);
     assert!(next.revalidate_cognitive_context(&context).await.is_err());
@@ -205,7 +233,11 @@ async fn episodic_control_replays_original_commit_then_rejects_revoked_context()
     );
     // External revocation alone must close reads before any native tombstone
     // is imported. The refused reads do not mutate the canonical owner.
-    assert!(next.cognitive_context("café".into(), /*limit*/ 4).await.is_err());
+    assert!(
+        next.cognitive_context("café".into(), /*limit*/ 4)
+            .await
+            .is_err()
+    );
     assert!(next.revalidate_cognitive_context(&context).await.is_err());
     assert_eq!(host.writer().recovery_anchor().await?, cut);
     assert!(

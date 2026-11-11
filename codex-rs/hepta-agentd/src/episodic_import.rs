@@ -48,7 +48,10 @@ impl EpisodicSnapshotVerifier for ImportSource<'_> {
         self.require_owner()?;
         let admission = self.original.verify_current(input)?;
         self.require_owner()?;
-        *self.observed.lock().map_err(|_| "source observation lock poisoned")? = Some(admission.clone());
+        *self
+            .observed
+            .lock()
+            .map_err(|_| "source observation lock poisoned")? = Some(admission.clone());
         Ok(admission)
     }
 }
@@ -91,10 +94,14 @@ impl EpisodicImportIngress {
                 },
             )
             .await?;
-        let admission = observed.into_inner()
+        let admission = observed
+            .into_inner()
             .map_err(|_| AgentdError::Protocol("source observation lock poisoned".into()))?
-            .ok_or_else(|| AgentdError::Protocol("committed import omitted source observation".into()))?;
-        self.source_reads.publish(snapshot_json.to_owned(), admission, receipt.clone())?;
+            .ok_or_else(|| {
+                AgentdError::Protocol("committed import omitted source observation".into())
+            })?;
+        self.source_reads
+            .publish(snapshot_json.to_owned(), admission, receipt.clone())?;
         let receipt_sha256 = Sha256Digest::for_bytes(&serde_json::to_vec(&receipt)?);
         let active_records = receipt
             .bindings

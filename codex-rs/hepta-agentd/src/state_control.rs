@@ -320,8 +320,11 @@ impl AgentdState {
                 };
                 // The model and context plan bind to the body that was launched.
                 // Current lifecycle authority remains fenced before and after I/O.
-                let source = self.episodic_snapshot_import.get()
-                    .map(EpisodicImportIngress::source_read).transpose()?;
+                let source = self
+                    .episodic_snapshot_import
+                    .get()
+                    .map(EpisodicImportIngress::source_read)
+                    .transpose()?;
                 let result = crate::cognitive_context::read_with_retrieval_context_and_learning(
                     &store,
                     &self.identity.agent_id,
@@ -409,8 +412,11 @@ impl AgentdState {
                         cognitive_control_unavailable(),
                     );
                 };
-                let source = self.episodic_snapshot_import.get()
-                    .map(EpisodicImportIngress::source_read).transpose()?;
+                let source = self
+                    .episodic_snapshot_import
+                    .get()
+                    .map(EpisodicImportIngress::source_read)
+                    .transpose()?;
                 let result = crate::cognitive_context::revalidate_with_retrieval_context(
                     store.as_ref(),
                     &self.identity.agent_id,
