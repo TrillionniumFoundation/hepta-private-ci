@@ -6,6 +6,7 @@
 use std::os::fd::FromRawFd;
 use std::thread::JoinHandle;
 
+use anyhow::Context;
 use base64::Engine;
 use base64::engine::general_purpose::STANDARD_NO_PAD;
 use codex_hepta_contracts::HostAuthorityPeerChannel;
@@ -113,19 +114,36 @@ fn connected_fixture(
         let mut channel = HostAuthorityPeerChannel::from_stream(server, policy(), held_pidfd)?;
         let mut next = 1_u64;
         loop {
+            let request_id = next;
             let mut failure = None;
+            let mut owner_measurement = None;
+            let mut response_bytes = None;
             let exchanged = channel.exchange(|request| {
                 let result = (|| -> Result<Vec<u8>, Error> {
-                    let original = owner.respond_material(&mut next, request)?;
+                    let started = std::time::Instant::now();
+                    let original = owner.respond_material(&mut next, request);
+                    owner_measurement = Some((
+                        started.elapsed().as_micros(),
+                        original.as_ref().ok().map(Vec::len),
+                        original.as_ref().err().map(ToString::to_string),
+                    ));
+                    let original = original?;
                     let mut response = serde_json::from_slice(&original)?;
                     change_reply(&mut response);
-                    Ok(serde_json::to_vec(&response)?)
+                    let encoded = serde_json::to_vec(&response)?;
+                    response_bytes = Some(encoded.len());
+                    Ok(encoded)
                 })();
                 result.map_err(|error| {
                     failure = Some(error);
                     HostIssuerTransportError::Unavailable
                 })
             });
+            // Diagnostics run after the bounded exchange. No payload or key is
+            // printed, and neither the deadline nor its failure is changed.
+            eprintln!(
+                "HEPTA_MATERIAL_SOURCE_FRAME request={request_id} owner={owner_measurement:?} response_bytes={response_bytes:?} exchange={exchanged:?}"
+            );
             match exchanged {
                 Ok(true) => {}
                 Ok(false) => return Ok(()),
@@ -231,8 +249,10 @@ async fn material_source_peer_reconstructs_exact_sealed_material_and_cold_reread
         let config = f.source_config()?;
         let (client, thread) = connected_fixture(&f, config.clone(), |_| {})?;
         client.require_source_binding(&config, &f.baseline())?;
-        for _ in 0..2 {
-            let material = client.read_current().await?;
+        for attempt in 0..2 {
+            let material = client.read_current().await.with_context(|| {
+                format!("original Material direct read cold={cold} attempt={attempt}")
+            })?;
             assert_eq!(material.receipt(), expected.receipt());
             assert_eq!(material.batch().encoded(), expected.batch().encoded());
             assert_eq!(material.provenance_digest(), expected.provenance_digest());
@@ -263,14 +283,16 @@ async fn material_source_peer_reconstructs_exact_sealed_material_and_cold_reread
             },
             config,
         )
-        .await?;
+        .await
+        .context("capture original remote Material source")?;
         let (_, batch, _) = source.native_inputs()?;
         assert_eq!(batch.encoded(), expected.batch().encoded());
         let source = tokio::task::spawn_blocking(move || {
             source.require_current_in_lane()?;
             Ok::<_, crate::OriginalCellQ24TrainingSourceErrorV1>(source)
         })
-        .await??;
+        .await?
+        .context("reread original remote Material source in native lane")?;
         drop(source);
         material_thread
             .join()
@@ -329,14 +351,22 @@ async fn material_source_peer_rejects_raw_batch_provenance_and_frozen_optimizer_
         })?;
         let result = client.read_current().await;
         if field == "source_records" {
-            assert!(matches!(result, Err(Error::Evidence(_))));
+            assert!(
+                matches!(&result, Err(Error::Evidence(_))),
+                "{field}: {:?}",
+                result.as_ref().err()
+            );
         } else {
-            assert!(matches!(
-                result,
-                Err(Error::Binding(
-                    "original signatures bind recomputed material"
-                ))
-            ));
+            assert!(
+                matches!(
+                    &result,
+                    Err(Error::Binding(
+                        "original signatures bind recomputed material"
+                    ))
+                ),
+                "{field}: {:?}",
+                result.as_ref().err()
+            );
         }
         assert!(matches!(
             client.read_current().await,
@@ -608,10 +638,14 @@ async fn material_source_peer_consumes_wrong_purpose_or_failed_frames() -> anyho
         if field == "unrequested_field" {
             assert!(matches!(result, Err(Error::Unavailable)));
         } else {
-            assert!(matches!(
-                result,
-                Err(Error::Binding("same original Material response"))
-            ));
+            assert!(
+                matches!(
+                    &result,
+                    Err(Error::Binding("same original Material response"))
+                ),
+                "{field}: {:?}",
+                result.as_ref().err()
+            );
         }
         assert!(matches!(
             client.read_current().await,
