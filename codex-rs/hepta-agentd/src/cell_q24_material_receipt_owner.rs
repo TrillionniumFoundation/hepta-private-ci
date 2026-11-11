@@ -38,6 +38,9 @@ use crate::learning_owner_journal::LearningOwnerJournalV1;
 
 #[path = "cell_q24_material_receipt_binding.rs"]
 mod binding;
+#[cfg(target_os = "linux")]
+#[path = "cell_q24_material_pair_readback.rs"]
+mod paired_readback;
 
 #[derive(Debug, thiserror::Error)]
 pub enum OriginalCellQ24MaterialReceiptErrorV1 {

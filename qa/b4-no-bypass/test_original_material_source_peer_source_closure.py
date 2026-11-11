@@ -27,11 +27,14 @@ CLIENT = AGENT + "cell_q24_material_source.rs"
 SERVE = AGENT + "cell_q24_material_source_service.rs"
 WIRE = AGENT + "cell_q24_material_source_wire.rs"
 HOST = AGENT + "cell_q24_material_evidence_service.rs"
+PAIR = AGENT + "cell_q24_material_receipt_owner.rs"
+PAIRED = AGENT + "cell_q24_material_pair_readback.rs"
 CAPTURE = AGENT + "cell_q24_training_source.rs"
 EXPECTED = {
     "learning_original_material_source_projection": (SERVE,),
     "learning_original_material_source_decode": (CLIENT,),
-    "learning_original_material_completed_source_read": (SERVE,),
+    "learning_original_material_completed_source_read": (),
+    "learning_original_material_pair_readback": (SERVE,),
     "learning_original_material_source_serve": (AGENT + "cell_q24_material_command_service.rs",),
     "learning_original_material_source_client": (),
     "learning_original_material_source_current": (CAPTURE,),
@@ -166,7 +169,12 @@ class OriginalMaterialSourcePeerClosureTests(unittest.TestCase):
             ("fn serve_material_source(", "policy.timeout > Duration::from_millis(500)"),
             ("fn serve_material_source(", "policy.lifetime > Duration::from_secs(300)"),
             ("fn serve_material_source(", "HostAuthorityPeerChannel::from_stream(stream, policy, original_consumer_pidfd)?"),
-            ("fn respond_material(", "OriginalCellQ24MaterialEvidenceOwnerV1::read_original("),
+            ("fn respond_material(", "let mut owners ="),
+            ("fn respond_material(", "let mut ledger ="),
+            ("fn respond_material(", "OriginalCellQ24MaterialReceiptOwnersV1::readback_material_pair("),
+            ("fn respond_material(", "snapshot: &self.config.initial"),
+            ("fn respond_material(", "drop(ledger);"),
+            ("fn respond_material(", "drop(owners);"),
             ("fn respond_material(", "experience.receipt.evidence_digest != dataset.material.provenance_digest()"),
             ("fn respond_material(", "dataset.receipt.evidence_digest != dataset.material.provenance_digest()"),
             ("fn respond_material(", "fresh_now < started_at"),
@@ -177,6 +185,27 @@ class OriginalMaterialSourcePeerClosureTests(unittest.TestCase):
         for function, marker in checks:
             with self.subTest(function=function, marker=marker):
                 self.rejects(SERVE, function, marker)
+        for marker in (
+            "binding::now()?",
+            "self.read_experience(&mut sources, started_at)?",
+            "binding::dataset_saved(&self.config, self.dataset_binding, &experience)?",
+            "self.dataset.read(&saved)?",
+            "self.authenticate_dataset(&mut sources, &experience, &saved, &bytes, started_at)?",
+            "Ok((experience, dataset))",
+        ):
+            self.rejects(PAIRED, "fn readback_material_pair(", marker)
+        # The paired view keeps both real material reads and original journal
+        # comparisons in the existing authenticator; none becomes a cache.
+        for function, marker in (
+            ("fn authenticate_experience(", "binding::read_material(&self.config, sources, true)?"),
+            ("fn authenticate_experience(", "self.experience.read(&self.experience_saved)? != bytes"),
+            ("fn authenticate_dataset(", "self.read_experience(sources, started_at)?"),
+            ("fn authenticate_dataset(", "experience.attestation != original_experience.attestation"),
+            ("fn authenticate_dataset(", "self.dataset.read(saved)? != bytes"),
+            ("fn authenticate_dataset(", "self.experience.read(&self.experience_saved)? != original_experience_bytes"),
+            ("fn authenticate_dataset(", "binding::fresh_time(started_at)?"),
+        ):
+            self.rejects(PAIR, function, marker)
         source = (ROOT / WIRE).read_text()
         self.assertEqual(source.count("#[serde(deny_unknown_fields)]"), 2)
         request = source.split("struct Request {", 1)[1].split("}", 1)[0]

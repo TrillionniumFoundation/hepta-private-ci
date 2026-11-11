@@ -15,13 +15,15 @@ use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
 use codex_hepta_neuron::AnchorWitnessStore;
 use codex_hepta_types::Digest32;
 
+use super::super::OriginalCellQ24MaterialEvidenceErrorV1;
 use super::super::OriginalCellQ24MaterialEvidenceOwnerV1;
-use super::super::OriginalCellQ24MaterialEvidenceRoleV1 as Role;
 use super::Error;
 use super::evidence_wire;
 use super::now;
 use super::wire;
 use crate::OriginalCellQ24DatasetV1;
+use crate::OriginalCellQ24MaterialReceiptOwnersV1;
+use crate::OriginalCellQ24MaterialReceiptSourcesV1;
 
 impl<EW: AnchorWitnessStore, DW: AnchorWitnessStore, SW: AnchorWitnessStore>
     OriginalCellQ24MaterialEvidenceOwnerV1<EW, DW, SW>
@@ -100,19 +102,33 @@ impl<EW: AnchorWitnessStore, DW: AnchorWitnessStore, SW: AnchorWitnessStore>
         if requested_head.to_string() != request.dataset_head {
             return Err(Error::Binding("canonical Material Dataset head"));
         }
-        // Each call takes owner then Ledger locks, performs physical original
-        // reads and releases both locks before returning. No socket I/O occurs
-        // under either lock. A missing Dataset is refused, never completed here.
-        let experience = OriginalCellQ24MaterialEvidenceOwnerV1::read_original(
-            self,
-            Role::Experience,
-            requested_head,
-        )?;
-        let dataset = OriginalCellQ24MaterialEvidenceOwnerV1::read_original(
-            self,
-            Role::Dataset,
-            requested_head,
-        )?;
+        // One original pair supplies both retained signatures. Its Dataset
+        // authenticator still performs the two complete Source/Ledger reads
+        // and the final physical reread of both journals.
+        let mut owners = self
+            .owners
+            .try_lock()
+            .map_err(|_| Error::Owner(OriginalCellQ24MaterialEvidenceErrorV1::Unavailable))?;
+        let mut ledger = self
+            .ledger
+            .try_lock()
+            .map_err(|_| Error::Owner(OriginalCellQ24MaterialEvidenceErrorV1::Unavailable))?;
+        let original: &mut OriginalCellQ24MaterialReceiptOwnersV1<EW, DW> = &mut owners;
+        let (experience, dataset) =
+            OriginalCellQ24MaterialReceiptOwnersV1::readback_material_pair(
+                original,
+                OriginalCellQ24MaterialReceiptSourcesV1 {
+                    snapshot: &self.config.initial,
+                    source: &self.source,
+                    identity: &self.identity,
+                    ledger: &mut ledger,
+                    baseline: &self.baseline,
+                },
+            )
+            .map_err(OriginalCellQ24MaterialEvidenceErrorV1::Material)?;
+        // No wire encoding or socket I/O occurs under either original lock.
+        drop(ledger);
+        drop(owners);
         let mut cut = LearningIterationCoordinatorV1::from_snapshot(self.config.initial.clone())?;
         cut.record(
             experience.receipt.clone(),
