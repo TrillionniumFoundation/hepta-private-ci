@@ -255,20 +255,24 @@ impl LiveOwners {
         let experience = &config.dataset.receipts[0];
         let dataset = &config.dataset.receipts[1];
         let original_experience = LearningIterationEvidenceClientV1::readback(
-            &self.experience, &config.dataset, experience,
-        ).await.map_err(|_| Error::OwnerUnavailable)?;
+            &self.experience,
+            &config.dataset,
+            experience,
+        )
+        .await
+        .map_err(|_| Error::OwnerUnavailable)?;
         if original_experience != config.experience_evidence {
             return Err(Error::Binding("complete original Material signatures"));
         }
-        let original_dataset = LearningIterationEvidenceClientV1::readback(
-            &self.dataset, &config.dataset, dataset,
-        ).await.map_err(|_| Error::OwnerUnavailable)?;
+        let original_dataset =
+            LearningIterationEvidenceClientV1::readback(&self.dataset, &config.dataset, dataset)
+                .await
+                .map_err(|_| Error::OwnerUnavailable)?;
         if original_dataset != config.dataset_evidence {
             return Err(Error::Binding("complete original Material signatures"));
         }
         Ok(())
     }
-
 }
 
 fn verify_original_evidence(

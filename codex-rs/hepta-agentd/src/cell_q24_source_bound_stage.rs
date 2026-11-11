@@ -47,7 +47,8 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
         dataset: &LearningIterationSnapshotV1,
         cancellation: Arc<AtomicBool>,
     ) -> Result<OriginalCellQ24TrainingCompletionV1, Error> {
-        OriginalCellQ24TrainingStageV1::execute_training(&self.original, dataset, cancellation).await
+        OriginalCellQ24TrainingStageV1::execute_training(&self.original, dataset, cancellation)
+            .await
     }
 
     pub async fn readback(
