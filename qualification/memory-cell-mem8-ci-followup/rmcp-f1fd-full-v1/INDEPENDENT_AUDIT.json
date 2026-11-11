@@ -1,0 +1,134 @@
+{
+  "cli_after": {
+    "bytes": 529,
+    "sha256": "701dbadfd9ca988b26b17e9d87bd7617bf7f7a250444de77de5b7844d89eebe2",
+    "workspace_relative_path": "mem8-dependency-closure/f1fd-full-evidence-v1/records/CLI_AFTER_TESTS.json"
+  },
+  "cli_before": {
+    "bytes": 584,
+    "sha256": "000443a7a87bcc393f715af1a3a15ba141dbc1eb9cf2a9354a74aad11b2af5f3",
+    "workspace_relative_path": "mem8-dependency-closure/f1fd-full-evidence-v1/records/CLI_BEFORE_TESTS.json"
+  },
+  "cli_binding": {
+    "bytes": 1440865824,
+    "path": "/home/qian-qi/mem8-dependency-validation-ed353817-v2/target/debug/codex",
+    "sha256": "da59e2327aa74b81be2b6f64a97c060bf67e17db17c860f7642541f804dadbe2",
+    "source": {
+      "bazel_lock_sha256": "783b3ad329fa53bd4a0e48be6907d38259fa2880d61bd1994b863d7f78bbca57",
+      "cargo_lock_sha256": "98b3767c6e74bf6eeb5894db760259dbc400cbfd0685af8ad915c92d25408d69",
+      "commit": "f1fd544b3e12ed6aca83872cdeda8114a1e058c0",
+      "dirty": false,
+      "tree": "fff40d06312d4f6a185772cd8a62a618d55f31cf"
+    }
+  },
+  "expected_ids": {
+    "bytes": 32505,
+    "sha256": "09685bd7eaf6f4d5df8853a68ea0b1a9b142e770bfe61ec87df4c5b426bca316",
+    "workspace_relative_path": "mem8-dependency-closure/f1fd-full-evidence-v1/EXPECTED_CASE_IDS.json"
+  },
+  "failed": 0,
+  "junit": {
+    "bytes": 59390,
+    "sha256": "19b1028b33bebbd26bd92ddc15195f397d6ce8cfe1107bf3b4bab399680c299e",
+    "workspace_relative_path": "mem8-dependency-closure/f1fd-full-evidence-v1/records/full-rmcp-268.junit.xml"
+  },
+  "junit_case_count": 268,
+  "junit_selected_skipped": 0,
+  "junit_timestamps_within_original_receipt": true,
+  "original_inputs_modified": false,
+  "raw_case_count": 268,
+  "raw_filtered_or_skipped": 7,
+  "raw_junit_expected_ids_equal": true,
+  "receipt": {
+    "bytes": 1557,
+    "sha256": "f9eefc70b6502fa3ca722ab200b745b6bcf20fd15a65639a8d3216c25202f047",
+    "workspace_relative_path": "mem8-dependency-closure/f1fd-full-evidence-v1/records/full-rmcp-268.json"
+  },
+  "reviewed_at_utc": "2026-11-11T06:16:11.297820+00:00",
+  "run_id": "b86c9959-e257-4ce0-91e0-f2eb7120d2cc",
+  "schema": "hepta.mem.final-composition.rmcp-evidence-review.v1",
+  "scope_limits": [
+    "No combined MEM/owner/dependency head was executed by this evidence.",
+    "The 7 unselected tests remain outside this package execution; no ignored provider model test ran.",
+    "The original dc96 265/3 and separate 3/0 records are not rewritten or arithmetically substituted.",
+    "This read-only audit performs zero native, host or model executions and changes no source/ref."
+  ],
+  "source": "f1fd544b3e12ed6aca83872cdeda8114a1e058c0",
+  "status": "PASSED_EXACT_F1FD_RMCP_SCOPE_ONLY",
+  "steps": [
+    {
+      "command": [
+        "cargo",
+        "build",
+        "--locked",
+        "-p",
+        "codex-cli",
+        "--bin",
+        "codex"
+      ],
+      "name": "same-source-codex-cli-build",
+      "passed": true,
+      "raw": {
+        "bytes": 66000,
+        "sha256": "f7b3c2b902a00cfc6bfc18c129cf7b3e704c9990ef259b14c852343ce8300b66",
+        "workspace_relative_path": "mem8-dependency-closure/f1fd-full-evidence-v1/records/same-source-codex-cli-build.json.46d8df3f79d64fd6a81488f8b9f844fa.log"
+      },
+      "receipt": {
+        "bytes": 1500,
+        "sha256": "d7defac989961abe0c20e086cdec03cf642754967299cb1003d0e437a4c027b3",
+        "workspace_relative_path": "mem8-dependency-closure/f1fd-full-evidence-v1/records/same-source-codex-cli-build.json"
+      }
+    },
+    {
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-rmcp-client",
+        "--test-threads",
+        "2",
+        "--no-tests",
+        "fail",
+        "--retries",
+        "0"
+      ],
+      "name": "full-rmcp-268",
+      "passed": true,
+      "raw": {
+        "bytes": 68445,
+        "sha256": "cc9bd580088f8ed2af79e585efa61b8eff9fc55adfaa46497c89b86773a3685d",
+        "workspace_relative_path": "mem8-dependency-closure/f1fd-full-evidence-v1/records/full-rmcp-268.json.258dccb802c34ff5a2f0500c989f7b30.log"
+      },
+      "receipt": {
+        "bytes": 1557,
+        "sha256": "f9eefc70b6502fa3ca722ab200b745b6bcf20fd15a65639a8d3216c25202f047",
+        "workspace_relative_path": "mem8-dependency-closure/f1fd-full-evidence-v1/records/full-rmcp-268.json"
+      }
+    },
+    {
+      "command": [
+        "just",
+        "fix",
+        "--locked",
+        "-p",
+        "codex-rmcp-client"
+      ],
+      "name": "scoped-rmcp-fix",
+      "passed": true,
+      "raw": {
+        "bytes": 33761,
+        "sha256": "5ac223b0373f39debf43675f9390385680dd1f6d7201fcc85662a82136179b7f",
+        "workspace_relative_path": "mem8-dependency-closure/f1fd-full-evidence-v1/records/scoped-rmcp-fix.json.b633af9047a84f49930a74d665f577c9.log"
+      },
+      "receipt": {
+        "bytes": 1468,
+        "sha256": "cfd3058ece5293ccf572a7963d5fe6d17f904c9c9bda0f95984cd7d65329cae1",
+        "workspace_relative_path": "mem8-dependency-closure/f1fd-full-evidence-v1/records/scoped-rmcp-fix.json"
+      }
+    }
+  ],
+  "test_retries": 0,
+  "tree": "fff40d06312d4f6a185772cd8a62a618d55f31cf",
+  "unique_expected_count": 268
+}
