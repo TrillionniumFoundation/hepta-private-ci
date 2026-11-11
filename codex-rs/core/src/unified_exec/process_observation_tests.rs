@@ -2,6 +2,7 @@ use super::EXIT_OBSERVATION_LOST;
 use super::NoopSpawnLifecycle;
 use super::UnifiedExecProcess;
 use crate::unified_exec::UnifiedExecError;
+use crate::unified_exec::head_tail_buffer::HeadTailBuffer;
 use anyhow::Result;
 use codex_sandboxing::SandboxType;
 use codex_utils_pty::ProcessDriver;
@@ -151,5 +152,56 @@ async fn observed_driver_exit_keeps_its_actual_code() -> Result<()> {
     assert!(process.has_exited());
     assert_eq!(process.exit_code(), Some(23));
     assert_eq!(process.failure_message(), None);
+    Ok(())
+}
+
+#[tokio::test]
+async fn transcript_survives_late_subscriber_lag_and_repeated_poll_drains() -> Result<()> {
+    let fixture = driver_fixture();
+    let process = UnifiedExecProcess::from_spawned(
+        fixture.spawned,
+        SandboxType::None,
+        Box::new(NoopSpawnLifecycle),
+    )
+    .await?;
+    let mut expected = HeadTailBuffer::default();
+    let mut lagging = None;
+    for index in 0..132 {
+        let chunk = match index {
+            0 => b"HEAD\n\xff".to_vec(),
+            131 => b"TAIL\n\xc3".to_vec(),
+            _ => vec![b'x'; 8192],
+        };
+        expected.push_chunk(&chunk);
+        fixture.stdout_tx.send(chunk.clone())?;
+        // Let the original ingress consume each source chunk before sending
+        // another. Only the downstream optional subscriber is forced to lag.
+        tokio::time::timeout(Duration::from_secs(2), async {
+            while process.output.output_buffer.lock().await.total_bytes() < chunk.len() {
+                tokio::task::yield_now().await;
+            }
+        })
+        .await?;
+        let drained = std::mem::take(&mut *process.output.output_buffer.lock().await);
+        assert_eq!(drained.to_bytes(), chunk);
+        if index == 0 {
+            lagging = Some(process.output_receiver());
+        }
+    }
+    assert!(matches!(
+        lagging.expect("late subscriber").try_recv(),
+        Err(broadcast::error::TryRecvError::Lagged(_))
+    ));
+    fixture.exit_tx.send(0).expect("send exit");
+    drop(fixture.stdout_tx);
+    tokio::time::timeout(Duration::from_secs(2), async {
+        while !process.output.output_closed.load(Ordering::Acquire) {
+            tokio::task::yield_now().await;
+        }
+    })
+    .await?;
+    assert_eq!(*process.output.transcript.lock().await, expected);
+    assert_eq!(process.output.output_buffer.lock().await.total_bytes(), 0);
+    assert!(expected.omitted_bytes() > 0);
     Ok(())
 }
