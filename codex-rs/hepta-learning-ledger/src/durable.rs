@@ -248,6 +248,67 @@ impl DurableLedger {
         }
     }
 
+    #[cfg(feature = "qualification-legacy-write")]
+    pub(crate) fn qualification_file_bytes(
+        &mut self,
+        maximum_bytes: u64,
+    ) -> Result<Vec<u8>, DurableLedgerError> {
+        if self.poisoned {
+            return Err(DurableLedgerError::Poisoned);
+        }
+        let bytes = self.file.qualification_bytes(maximum_bytes);
+        if matches!(&bytes, Err(DurableLedgerError::Io(_))) {
+            self.poisoned = true;
+        }
+        bytes
+    }
+
+    /// Authenticate the complete bytes still held by this original writer.
+    /// Replay is read-only, bounded by the original limits, and must equal the
+    /// retained in-memory history. No short tail or changed file is repaired.
+    pub(crate) fn read_current_snapshot(&mut self) -> Result<LedgerSnapshot, DurableLedgerError> {
+        if self.poisoned {
+            return Err(DurableLedgerError::Poisoned);
+        }
+        let position = match self.file.stream_position() {
+            Ok(position) => position,
+            Err(error) => {
+                self.poisoned = true;
+                return Err(error.into());
+            }
+        };
+        let checked = (|| {
+            if self.file.metadata()?.len() != self.durable_length {
+                return Err(DurableLedgerError::Corrupt);
+            }
+            let (current, cursor, length) = replay_frames(
+                &mut self.file,
+                self.binding,
+                self.max_records,
+                LedgerRecovery::Unacknowledged,
+            )?;
+            if cursor != length {
+                return Err(DurableLedgerError::IncompleteTail);
+            }
+            if length != self.durable_length
+                || self.file.metadata()?.len() != length
+                || current.snapshot() != self.core.snapshot()
+            {
+                return Err(DurableLedgerError::AnchorMismatch);
+            }
+            Ok(current.snapshot())
+        })();
+        let restored = self.file.seek(SeekFrom::Start(position));
+        let result = match restored {
+            Ok(_) => checked,
+            Err(error) => Err(error.into()),
+        };
+        if result.is_err() {
+            self.poisoned = true;
+        }
+        result
+    }
+
     pub fn snapshot(&self) -> Result<LedgerSnapshot, DurableLedgerError> {
         if self.poisoned {
             Err(DurableLedgerError::Poisoned)
@@ -416,3 +477,7 @@ mod tests;
 #[cfg(test)]
 #[path = "inspection_tests.rs"]
 mod inspection_tests;
+
+#[cfg(test)]
+#[path = "durable_current_tests.rs"]
+mod current_tests;

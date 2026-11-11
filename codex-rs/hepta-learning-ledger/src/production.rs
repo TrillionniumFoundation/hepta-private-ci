@@ -251,6 +251,25 @@ impl LedgerWriter {
         self.trust.generation()
     }
 
+    /// Qualification-only physical bytes from the original locked durable
+    /// ledger and witness. The exclusive borrow serializes observation with
+    /// writes. Each file is bounded by `maximum_bytes` (at most 8 MiB), and its
+    /// cursor is restored. No handle is cloned, reopened, unlocked or synced;
+    /// read/restoration errors fail instead of substituting cached state.
+    #[cfg(feature = "qualification-legacy-write")]
+    pub fn qualification_file_bytes(
+        &mut self,
+        maximum_bytes: u64,
+    ) -> Result<[Vec<u8>; 2], ProductionLedgerError> {
+        let LedgerBackend::Durable(ledger) = &mut self.backend else {
+            return Err(ProductionLedgerError::UnsupportedBackend);
+        };
+        Ok([
+            ledger.qualification_file_bytes(maximum_bytes)?,
+            self.witness.qualification_file_bytes(maximum_bytes)?,
+        ])
+    }
+
     pub fn snapshot(&self) -> Result<LedgerSnapshot, ProductionLedgerError> {
         self.backend.snapshot().map_err(Into::into)
     }
@@ -1274,3 +1293,6 @@ impl From<DatasetReceiptError> for ProductionLedgerError {
 #[cfg(test)]
 #[path = "production_tests.rs"]
 mod tests;
+
+#[path = "production_current.rs"]
+mod current;
