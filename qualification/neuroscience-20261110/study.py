@@ -258,7 +258,13 @@ def frozen_credit_from_prefix(
     if type(cutoff_sequence) is not int or cutoff_sequence < 0:
         raise ContractError("invalid training cutoff")
     observed: list[Feedback] = []
-    for item in feedback:
+    # Match the raw 65,536-receipt forensic input cap even when every event
+    # claims to arrive after cutoff. Otherwise a hostile future-only iterator
+    # bypasses the bounded evaluator by being filtered before validation.
+    # This is a resource refusal, not evidence of a model or owner decision.
+    for index, item in enumerate(feedback):
+        if index >= 65_536:
+            raise ContractError("frozen credit raw feedback exceeds size limit")
         if type(item) is not Feedback or type(item.available_sequence) is not int:
             raise ContractError("invalid feedback availability")
         if item.available_sequence < 0:
