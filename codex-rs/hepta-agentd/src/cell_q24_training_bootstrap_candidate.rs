@@ -48,17 +48,17 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
     ) -> Result<u64, Error> {
         let mut session = candidate_wire::Session::new();
         for request_id in 1..=128_u64 {
-            let mut continues = false;
+            let mut disposition = candidate_wire::SessionDisposition::CloseReadback;
             let exchanged = channel.exchange(|bytes| {
-                let (response, more) = self.candidate_material_response(bytes, request_id, &mut session)
+                let (response, next) = self.candidate_material_response(bytes, request_id, &mut session)
                     .map_err(|_| HostIssuerTransportError::InvalidRequest)?;
-                continues = more;
+                disposition = next;
                 Ok(response)
             }).map_err(OriginalCellQ24TrainingCommandErrorV1::from)?;
             if !exchanged {
                 return Ok(request_id - 1);
             }
-            if !continues {
+            if disposition == candidate_wire::SessionDisposition::CloseReadback {
                 return Ok(request_id);
             }
         }
@@ -70,7 +70,7 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
         bytes: &[u8],
         request_id: u64,
         session: &mut candidate_wire::Session,
-    ) -> Result<(Vec<u8>, bool), Error> {
+    ) -> Result<(Vec<u8>, candidate_wire::SessionDisposition), Error> {
         let request: candidate_wire::Request = serde_json::from_slice(bytes)
             .map_err(OriginalCellQ24TrainingCommandErrorV1::from)?;
         request.require_initial(&self.config.material, request_id)?;

@@ -132,6 +132,12 @@ pub(super) enum MaterialResult {
     Unavailable,
 }
 
+#[derive(Clone, Copy, Eq, PartialEq)]
+pub(super) enum SessionDisposition {
+    ContinueReadback,
+    CloseReadback,
+}
+
 pub(super) struct Session {
     next_page: u8,
     completion: Option<String>,
@@ -155,27 +161,33 @@ impl Session {
         &mut self,
         request: Request,
         result: MaterialResult,
-    ) -> Result<(Vec<u8>, bool), Error> {
+    ) -> Result<(Vec<u8>, SessionDisposition), Error> {
         self.require_request(&request)?;
-        let continues = if let MaterialResult::Page { offset, total, heads } = &result {
+        let disposition = if let MaterialResult::Page { offset, total, heads } = &result {
             let bytes = STANDARD_NO_PAD.decode(heads)
                 .map_err(|_| Error::Binding("original Candidate page encoding"))?;
             let end = (*offset as usize).checked_add(bytes.len())
                 .ok_or(Error::Binding("original Candidate page end"))?;
-            if end > *total as usize {
+            if !(12..=32_780).contains(&(*total as usize))
+                || *offset as usize != usize::from(request.page) * PAGE_BYTES
+                || *offset as usize >= *total as usize
+                || bytes.len() != PAGE_BYTES.min(*total as usize - *offset as usize)
+                || STANDARD_NO_PAD.encode(&bytes) != *heads
+                || end > *total as usize
+            {
                 return Err(Error::Binding("original Candidate page total"));
             }
             self.next_page = if end == *total as usize { 0 } else { request.page + 1 };
             self.completion = Some(request.completion.clone());
-            true
+            SessionDisposition::ContinueReadback
         } else {
-            false
+            SessionDisposition::CloseReadback
         };
         let bytes = serde_json::to_vec(&Response { request, result })?;
         if bytes.len() > FRAME_BYTES {
             return Err(Error::Binding("existing Candidate frame bound"));
         }
-        Ok((bytes, continues))
+        Ok((bytes, disposition))
     }
 }
 

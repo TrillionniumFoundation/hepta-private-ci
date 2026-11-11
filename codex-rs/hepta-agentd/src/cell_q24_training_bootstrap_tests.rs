@@ -550,3 +550,6 @@ async fn deferred_training_attenuation_and_prebound_transport_preserve_original_
 
 #[path = "cell_q24_training_command_connection_tests.rs"]
 mod command_connection;
+
+#[path = "cell_q24_training_candidate_tests.rs"]
+mod candidate_material;
