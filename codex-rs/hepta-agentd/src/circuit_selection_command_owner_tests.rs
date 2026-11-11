@@ -63,7 +63,9 @@ impl OriginalService {
     }
 }
 
-async fn command_context(f: &SelectionFixture) -> anyhow::Result<OriginalCircuitSelectionCommandContextV1> {
+async fn command_context(
+    f: &SelectionFixture,
+) -> anyhow::Result<OriginalCircuitSelectionCommandContextV1> {
     let (dataset, original) = command::training_fixture_result(
         f.config.decision.clone(),
         f.config.scope.clone(),
@@ -71,15 +73,20 @@ async fn command_context(f: &SelectionFixture) -> anyhow::Result<OriginalCircuit
         f.config.training_evidence.clone(),
     )
     .await?;
-    Ok(OriginalCircuitSelectionCommandContextV1::from_original_training(
-        dataset,
-        f.config.scope.clone(),
-        f.config.verifier.clone(),
-        &original,
-    )?)
+    Ok(
+        OriginalCircuitSelectionCommandContextV1::from_original_training(
+            dataset,
+            f.config.scope.clone(),
+            f.config.verifier.clone(),
+            &original,
+        )?,
+    )
 }
 
-fn finish_command(client: OriginalCircuitSelectionCommandClientV1, server: RoleThread) -> anyhow::Result<u64> {
+fn finish_command(
+    client: OriginalCircuitSelectionCommandClientV1,
+    server: RoleThread,
+) -> anyhow::Result<u64> {
     drop(client);
     Ok(server
         .join()

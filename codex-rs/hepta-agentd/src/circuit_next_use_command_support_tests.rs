@@ -56,7 +56,10 @@ pub(crate) fn client(
     context: OriginalCircuitNextUseCommandContextV1,
     readback_only: bool,
     retained: Option<OriginalCircuitNextUseCommandReceiptV1>,
-) -> anyhow::Result<(OriginalCircuitNextUseCommandClientV1, HostAuthorityPeerChannel)> {
+) -> anyhow::Result<(
+    OriginalCircuitNextUseCommandClientV1,
+    HostAuthorityPeerChannel,
+)> {
     let (stream, server) = UnixStream::pair()?;
     let binding = context.binding(now()?)?;
     if let Some(expected) = &retained {
@@ -92,7 +95,10 @@ pub(crate) fn recover_client(
     training_evidence: SignedLearningEvidenceV1,
     selection_evidence: SignedLearningEvidenceV1,
     expected: Option<(LearningIterationSnapshotV1, SignedLearningEvidenceV1)>,
-) -> anyhow::Result<(OriginalCircuitNextUseCommandClientV1, HostAuthorityPeerChannel)> {
+) -> anyhow::Result<(
+    OriginalCircuitNextUseCommandClientV1,
+    HostAuthorityPeerChannel,
+)> {
     let context = OriginalCircuitNextUseCommandContextV1::from_checkpoint(
         selection,
         scope,

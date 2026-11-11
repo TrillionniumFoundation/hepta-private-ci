@@ -116,7 +116,10 @@ pub(crate) fn client(
     context: OriginalCircuitSelectionCommandContextV1,
     readback_only: bool,
     retained: Option<OriginalCircuitSelectionCommandReceiptV1>,
-) -> anyhow::Result<(OriginalCircuitSelectionCommandClientV1, HostAuthorityPeerChannel)> {
+) -> anyhow::Result<(
+    OriginalCircuitSelectionCommandClientV1,
+    HostAuthorityPeerChannel,
+)> {
     let (stream, server) = UnixStream::pair()?;
     let binding = context.binding(now()?)?;
     if let Some(expected) = &retained {
@@ -151,8 +154,16 @@ pub(crate) fn recover_client(
     verifier: LearningEvidenceVerifierV1,
     training_evidence: SignedLearningEvidenceV1,
     expected: Option<(LearningIterationSnapshotV1, SignedLearningEvidenceV1)>,
-) -> anyhow::Result<(OriginalCircuitSelectionCommandClientV1, HostAuthorityPeerChannel)> {
-    let context = OriginalCircuitSelectionCommandContextV1::from_checkpoint(training, scope, verifier, training_evidence)?;
+) -> anyhow::Result<(
+    OriginalCircuitSelectionCommandClientV1,
+    HostAuthorityPeerChannel,
+)> {
+    let context = OriginalCircuitSelectionCommandContextV1::from_checkpoint(
+        training,
+        scope,
+        verifier,
+        training_evidence,
+    )?;
     let retained = expected
         .map(|(snapshot, signed)| wire::authenticate_completed(&context, snapshot, signed, now()?))
         .transpose()?;

@@ -69,7 +69,12 @@ fn channel(stream: UnixStream) -> anyhow::Result<HostAuthorityPeerChannel> {
     )?)
 }
 
-pub(crate) fn client(context: OriginalCircuitLearningReadContextV1) -> anyhow::Result<(OriginalCircuitLearningReadClientV1, HostAuthorityPeerChannel)> {
+pub(crate) fn client(
+    context: OriginalCircuitLearningReadContextV1,
+) -> anyhow::Result<(
+    OriginalCircuitLearningReadClientV1,
+    HostAuthorityPeerChannel,
+)> {
     let (stream, server) = UnixStream::pair()?;
     let binding = wire::context_binding(&context, now()?)?;
     Ok((

@@ -16,10 +16,13 @@ use crate::OriginalCircuitNextUseRemoteSourcesV1;
 use crate::OriginalCircuitSelectionRemoteSourcesV1;
 use crate::circuit_feature_current::original_learning_read_fixture as transport;
 
-type OriginalReadOwner = OriginalCircuitLearningReadOwnerV1<FileAnchorWitnessStore, FileAnchorWitnessStore>;
+type OriginalReadOwner =
+    OriginalCircuitLearningReadOwnerV1<FileAnchorWitnessStore, FileAnchorWitnessStore>;
 type ReadThread = std::thread::JoinHandle<Result<u64, OriginalCircuitLearningReadErrorV1>>;
 
-fn selection_context(config: &OriginalCircuitSelectionReceiptConfigV1) -> OriginalCircuitLearningReadContextV1 {
+fn selection_context(
+    config: &OriginalCircuitSelectionReceiptConfigV1,
+) -> OriginalCircuitLearningReadContextV1 {
     OriginalCircuitLearningReadContextV1 {
         prefix: config.decision.clone(),
         scope: config.scope.clone(),
@@ -29,7 +32,9 @@ fn selection_context(config: &OriginalCircuitSelectionReceiptConfigV1) -> Origin
     }
 }
 
-fn next_use_context(config: &OriginalCircuitNextUseReceiptConfigV1) -> OriginalCircuitLearningReadContextV1 {
+fn next_use_context(
+    config: &OriginalCircuitNextUseReceiptConfigV1,
+) -> OriginalCircuitLearningReadContextV1 {
     OriginalCircuitLearningReadContextV1 {
         prefix: config.selection.clone(),
         scope: config.scope.clone(),
@@ -39,13 +44,18 @@ fn next_use_context(config: &OriginalCircuitNextUseReceiptConfigV1) -> OriginalC
     }
 }
 
-fn original(f: &ObserverFixture, context: OriginalCircuitLearningReadContextV1) -> anyhow::Result<Arc<OriginalReadOwner>> {
-    Ok(Arc::new(OriginalCircuitLearningReadOwnerV1::from_original_owners(
-        f.session.cell.clone(),
-        f.session.source.as_ref().clone(),
-        f.session.runtime.identity.clone(),
-        context,
-    )?))
+fn original(
+    f: &ObserverFixture,
+    context: OriginalCircuitLearningReadContextV1,
+) -> anyhow::Result<Arc<OriginalReadOwner>> {
+    Ok(Arc::new(
+        OriginalCircuitLearningReadOwnerV1::from_original_owners(
+            f.session.cell.clone(),
+            f.session.source.as_ref().clone(),
+            f.session.runtime.identity.clone(),
+            context,
+        )?,
+    ))
 }
 
 fn remote_selection<'a>(
@@ -73,7 +83,11 @@ fn remote_c<'a>(
     }
 }
 
-fn finish_read(client: OriginalCircuitLearningReadClientV1, thread: ReadThread, reads: u64) -> anyhow::Result<()> {
+fn finish_read(
+    client: OriginalCircuitLearningReadClientV1,
+    thread: ReadThread,
+    reads: u64,
+) -> anyhow::Result<()> {
     drop(client);
     let actual = thread
         .join()
@@ -389,7 +403,9 @@ async fn q24_remote_read_refuses_expired_original_window_and_same_process_bootst
                 timeout,
                 lifetime,
             ),
-            Err(OriginalCircuitLearningReadErrorV1::Binding("bounded original read timing"))
+            Err(OriginalCircuitLearningReadErrorV1::Binding(
+                "bounded original read timing"
+            ))
         ));
         drop(unused);
     }
