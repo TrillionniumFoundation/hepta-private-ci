@@ -10,7 +10,7 @@ import unittest
 
 from ndu_real_materials import evaluator
 from .content_audit import SCHEMA, audit
-from .content_identity import selection_receipt
+from .content_identity import content_identity_report, selection_receipt
 
 
 class ContentAuditTests(unittest.TestCase):
@@ -410,6 +410,69 @@ class ContentAuditTests(unittest.TestCase):
                             "content_failure_present_at_actor_payload"
                         ]
                     )
+
+    def test_selection_witness_requires_matching_ready_profile(self):
+        for kind in ("absent", "unknown", "advertised", "legacy"):
+            with self.subTest(kind=kind), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                selected = kind != "legacy"
+                raw, _ = self.fixture(root, selected=selected)
+                manifest = json.loads(raw)
+                launch = json.loads((root / "launch.json").read_bytes())
+                wires = launch["stdout"].splitlines()
+                ready = json.loads(wires[0])
+                if kind in ("absent", "legacy"):
+                    ready.pop("content_identity_profile")
+                elif kind == "unknown":
+                    ready["content_identity_profile"] = "unrecognized-profile.v1"
+                wires[0] = json.dumps(ready)
+                launch["stdout"] = "\n".join(wires) + "\n"
+                launch["host_exchanges"][0]["event_sha256"] = hashlib.sha256(
+                    wires[0].encode()
+                ).hexdigest()
+                launch_raw = (json.dumps(launch) + "\n").encode()
+                (root / "launch.json").write_bytes(launch_raw)
+                manifest["episodes"][0]["launch"] = {
+                    "path": "launch.json",
+                    "bytes": len(launch_raw),
+                    "sha256": hashlib.sha256(launch_raw).hexdigest(),
+                }
+                manifest_raw = json.dumps(manifest).encode()
+                row = audit(
+                    root, manifest_raw, hashlib.sha256(manifest_raw).hexdigest()
+                )["episodes"][0]["rows"][0]
+                if kind == "advertised":
+                    self.assertIs(row["selected_used"], True)
+                elif kind == "legacy":
+                    self.assertIsNone(row["selected_used"])
+                    self.assertIsNone(row["checks"]["candidate_selection"])
+                else:
+                    self.assertIs(row["checks"]["candidate_selection"], True)
+                    self.assertIs(row["checks"]["selection_profile_advertised"], False)
+                    self.assertIsNone(row["selected_used"])
+                steps = json.loads((root / "trajectory.json").read_bytes())["steps"]
+                evaluation = json.loads((root / "evaluation.json").read_bytes())
+                (root / "initial").mkdir()
+
+                def report():
+                    return content_identity_report(
+                        steps,
+                        [root / "initial", root],
+                        [evaluation],
+                        launch,
+                        evaluator_sha256=manifest["evaluator_source_sha256"],
+                        rubric_sha256=manifest["rubric_sha256"],
+                    )
+
+                if kind in ("absent", "unknown"):
+                    with self.assertRaisesRegex(
+                        ValueError,
+                        "readiness contract|readiness content identity profile",
+                    ):
+                        report()
+                else:
+                    receipt = report()["receipts"][0]
+                    self.assertIs(receipt["selected_used"], True if selected else None)
 
 
 if __name__ == "__main__":

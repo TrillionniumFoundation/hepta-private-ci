@@ -237,6 +237,8 @@ def content_identity_report(
         if value.get("schema") == "ndu.real.actor-ready.v1":
             if ready_seen or observed_order:
                 raise ValueError("Actor readiness chronology differs")
+            if value.get("content_identity_profile") not in (None, SELECTION_SCHEMA):
+                raise ValueError("Actor readiness content identity profile differs")
             ready_seen = True
             require_selection = (
                 value.get("content_identity_profile") == SELECTION_SCHEMA
@@ -267,6 +269,14 @@ def content_identity_report(
             or (index > 0 and step["case_id"] != steps[0]["case_id"])
         ):
             raise ValueError("Actor observation chronology differs from snapshots")
+        # A self-described selection cannot be credited when the readiness
+        # handshake did not advertise the corresponding receipt contract.
+        if (
+            step["action"]["action"] == "WRITE_TEXT"
+            and step.get("content_selection") is not None
+            and not require_selection
+        ):
+            raise ValueError("Actor selection witness lacks readiness contract")
     # score() evaluates either EVERY snapshot (training) or ONLY the final
     # snapshot (inference). A shared delivery digest is not a snapshot ID:
     # identical repeat writes must never borrow a later evaluation, nor may
