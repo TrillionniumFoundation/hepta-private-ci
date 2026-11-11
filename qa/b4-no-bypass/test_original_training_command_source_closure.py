@@ -92,7 +92,7 @@ class OriginalTrainingCommandClosureTests(unittest.TestCase):
     def test_external_original_process_and_existing_transport_limits_remain_required(self):
         for marker in ("if same_uid", "peer.pid == std::process::id()", "peer.process_start_ticks == 0",
                        "timeout > Duration::from_secs(30)", "lifetime > Duration::from_secs(300)",
-                       "original_peer_pidfd", "require_original_process(&peer)?",
+                       "        original_peer_pidfd,", "require_original_process(&peer)?",
                        "channel.check_peer_lifetime()?"):
             with self.subTest(marker=marker):
                 self.rejects(CHANNEL, "fn original_owner_command_channel_v1(", marker)

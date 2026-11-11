@@ -77,6 +77,18 @@ SOURCE_CASES = tuple(
         "source_bound_training_cold_identity_rejects_valid_material_signature_renewal",
     )
 )
+TRAINING_COMMAND_PREFIX = SOURCE_PREFIX + "command::"
+TRAINING_COMMAND_CASES = tuple(
+    TRAINING_COMMAND_PREFIX + name
+    for name in (
+        "original_training_command_executes_and_produces_actual_evidence_readback",
+        "original_training_command_recovers_same_job_and_full_signature_read_only",
+        "original_training_command_lost_ack_reads_existing_completion_without_reexecution",
+        "original_training_command_withdrawal_after_claim_preserves_pending_without_signature",
+        "original_training_command_wrong_context_cannot_claim_or_consume_admission",
+        "original_training_command_public_bootstrap_refuses_same_process_custody",
+    )
+)
 MATERIAL_SERVICE_PREFIX = "learning_iteration_evidence_client::material::tests::"
 MATERIAL_SERVICE_CASES = tuple(
     MATERIAL_SERVICE_PREFIX + "material_readback_service_" + name
@@ -110,6 +122,7 @@ OWNER_GROUPS = (
     ("original_selector", PACKAGE, SELECTION_CASES),
     ("training_model_lane", PACKAGE, TRAINING_LANE_CASES),
     ("original_training_source", PACKAGE, SOURCE_CASES),
+    ("original_training_command", PACKAGE, TRAINING_COMMAND_CASES),
     ("original_material_service", PACKAGE, MATERIAL_SERVICE_CASES),
     ("original_peer_lifetime", PACKAGE, TRANSPORT_CASES),
     ("original_execution_evidence", EXECUTION_PACKAGE, EXECUTION_CASES),
