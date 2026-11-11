@@ -1,4 +1,4 @@
-"""Exact Observer subset coverage within a complete native nextest report."""
+"""Exact original learning-owner subsets in one complete native report."""
 
 from collections import Counter
 import hashlib
@@ -14,7 +14,7 @@ from hepta_ci_junit import NoDoctypeTreeBuilder
 PACKAGE = "codex-hepta-agentd"
 PREFIX = "circuit_next_use_receipt_owner::tests::"
 INGRESS = "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::"
-CASES = (
+NEXT_USE_CASES = (
     PREFIX
     + "original_observer_configuration_rejects_substituted_custody_before_journal_creation",
     PREFIX
@@ -26,6 +26,39 @@ CASES = (
     INGRESS
     + "q24_ordinary_original_observer_refuses_uncommitted_or_withdrawn_next_use",
 )
+MATERIAL_PREFIX = "cell_q24_material_receipt_owner::tests::"
+MATERIAL_CASES = tuple(
+    MATERIAL_PREFIX + name
+    for name in (
+        "original_material_pair_signs_recovers_and_feeds_actual_no_update_training",
+        "original_material_pair_rejects_changed_custody_prefix_and_valid_freeze_resigning",
+        "original_material_pair_withdrawal_refuses_cached_material_without_dataset_claim",
+        "original_material_pair_pending_claim_reopens_without_signing_or_replacing_bytes",
+        "original_material_pair_expired_work_only_reads_original_completed_windows",
+        "original_material_pair_partial_creation_never_finishes_missing_dataset_during_recovery",
+    )
+)
+SELECTION_PREFIX = (
+    "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::"
+    "observer_support::selection_owner::"
+)
+SELECTION_CASES = tuple(
+    SELECTION_PREFIX + name
+    for name in (
+        "q24_original_selector_attests_actual_publication_and_recovers_exact_signature",
+        "q24_original_selector_refuses_withdrawn_publication_before_claim",
+        "q24_original_selector_refuses_valid_training_renewal_live_and_cold",
+        "q24_original_selector_preserves_pending_and_recovers_completed_lost_ack",
+        "q24_original_selector_rejects_substituted_custody_before_store_creation",
+    )
+)
+OWNER_GROUPS = (
+    ("next_use_observer", NEXT_USE_CASES),
+    ("material_observers", MATERIAL_CASES),
+    ("original_selector", SELECTION_CASES),
+)
+CASES = tuple(name for _, names in OWNER_GROUPS for name in names)
+
 ANSI = re.compile(r"\x1b\[[0-?]*[ -/]*[@-~]")
 TERMINAL = re.compile(
     r"^\s*(PASS|FAIL|TIMEOUT|EXECFAIL|LEAK|SKIP)\s+\[[^\]\n]+\]\s+"
@@ -80,6 +113,7 @@ def assess_original_observer_coverage(log: str, xml: bytes) -> dict:
     )
     return {
         "expected_count": len(CASES),
+        "required_owner_groups": {name: len(cases) for name, cases in OWNER_GROUPS},
         "expected": sorted(expected),
         "junit_observed": sorted(observed.elements(), key=repr),
         "terminal_rows": named,
