@@ -24,6 +24,10 @@ mod preparation;
 #[path = "cell_q24_source_receipt_owner_tests.rs"]
 mod source_receipts;
 
+#[cfg(target_os = "linux")]
+#[path = "cell_q24_training_readback_tests.rs"]
+mod training_readback;
+
 struct Dataset {
     ledger: Arc<Mutex<LedgerWriter>>,
     frozen: LedgerSnapshot,

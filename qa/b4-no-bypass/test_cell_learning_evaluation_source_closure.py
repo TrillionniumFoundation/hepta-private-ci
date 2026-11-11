@@ -32,8 +32,8 @@ CALLERS = {
     "cell_learning_evaluation_receipt_prepare": (READBACK, MODEL_MATERIAL, EVALUATION_OWNER),
     "cell_learning_evaluation_original_readback": (),
     "learning_evidence_original_owner_readback": (
-        READBACK, GENERATION_READBACK, EVALUATION_OWNER,
-        AGENT + "cell_q24_evaluation_stage.rs",
+        READBACK, GENERATION_READBACK,
+        AGENT + "neuron_cell_evaluation_training_source.rs",
     ),
     "root_learning_original_stage_assembly": (),
 }

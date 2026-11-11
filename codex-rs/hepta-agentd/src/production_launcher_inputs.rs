@@ -15,11 +15,12 @@ use std::time::Instant;
 use crate::AgentdError;
 use crate::calculator_deadline::Deadline;
 
-const FLAGS: [&str; 20] = [
+const FLAGS: [&str; 21] = [
     "--root-production-profile",
     "--root-production-handoff-fd",
     "--root-learning-handoff-fd",
     "--root-q24-model-handoff-fd",
+    "--root-generation-publication-handoff-fd",
     "--root-production-uid",
     "--root-production-gid",
     "--root-production-control-fd",
@@ -49,6 +50,7 @@ pub(super) struct LaunchInputs {
     pub(super) handoff: UnixDatagram,
     pub(super) learning_handoff: Option<UnixDatagram>,
     pub(super) q24_model_handoff: Option<UnixDatagram>,
+    pub(super) publication_handoff: Option<UnixDatagram>,
     pub(super) uid: u32,
     pub(super) gid: u32,
     pub(super) control: OwnedFd,
@@ -159,6 +161,13 @@ pub(super) fn parse(
             "original Q24 Model factory requires its learning handoff",
         ));
     }
+    let publication_handoff = selected
+        .remove("--root-generation-publication-handoff-fd")
+        .map(descriptor_number)
+        .transpose()?;
+    if publication_handoff.is_some() && learning_handoff.is_none() {
+        return Err(invalid("original publication requires its learning handoff"));
+    }
     let notes = selected
         .remove("--notes-production-handoff-fd")
         .map(descriptor_number)
@@ -237,6 +246,7 @@ pub(super) fn parse(
         Some(handoff),
         learning_handoff,
         q24_model_handoff,
+        publication_handoff,
         Some(control),
         Some(app_server),
         payload,
@@ -275,6 +285,10 @@ pub(super) fn parse(
         .transpose()?
         .map(UnixDatagram::from);
     let q24_model_handoff = q24_model_handoff
+        .map(take_descriptor)
+        .transpose()?
+        .map(UnixDatagram::from);
+    let publication_handoff = publication_handoff
         .map(take_descriptor)
         .transpose()?
         .map(UnixDatagram::from);
@@ -322,6 +336,7 @@ pub(super) fn parse(
             handoff,
             learning_handoff,
             q24_model_handoff,
+            publication_handoff,
             uid,
             gid,
             control,

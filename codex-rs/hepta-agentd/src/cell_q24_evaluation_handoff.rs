@@ -18,7 +18,7 @@ use ed25519_dalek::SigningKey;
 use crate::CellEvaluationPlanV1;
 use crate::CellEvaluationQualificationV1;
 use crate::CellEvaluationRunnerV1;
-use crate::LearningIterationEvidenceClientV1;
+use crate::OriginalCellEvaluationTrainerV1;
 use crate::LearningIterationRuntimeErrorV1 as Error;
 use crate::OriginalCellEvaluationReceiptConfigV1;
 use crate::OriginalCellEvaluationReceiptOwnerV1;
@@ -40,7 +40,7 @@ pub struct OriginalCellQ24EvaluationInputsV1 {
     pub context: ProductQualificationContextV1,
     pub evidence: SignedEvaluationEvidenceV1,
     pub timing: OriginalCellQ24EvaluationTimingV1,
-    pub trainer: LearningIterationEvidenceClientV1,
+    pub trainer: OriginalCellEvaluationTrainerV1,
     pub receipt_file: File,
     pub receipt_witness: FileAnchorWitnessStore,
     pub signing: OriginalCellEvaluationSigningConfigV1,
@@ -54,6 +54,8 @@ impl OriginalCellQ24EvaluationInputsV1 {
         training: LearningIterationSnapshotV1,
         scope: FrozenLearningScopeV2,
     ) -> Result<OriginalCellQ24EvaluationStageV1, Error> {
+        let trainer: &OriginalCellEvaluationTrainerV1 = &self.trainer;
+        trainer.require_training(&training, &scope)?;
         let verifier = self.signing.verifier.clone();
         let config = OriginalCellEvaluationReceiptConfigV1 {
             training: training.clone(),

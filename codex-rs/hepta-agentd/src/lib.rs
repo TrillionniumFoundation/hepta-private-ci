@@ -433,6 +433,8 @@ pub use cell_q24_learning_stage_owners::OriginalCellQ24ModelDispatchV1;
 #[cfg(target_os = "linux")]
 pub use cell_q24_learning_stage_owners::OriginalCellQ24TrainingMaterialV1;
 #[cfg(target_os = "linux")]
+pub use cell_q24_learning_stage_owners::OriginalCellQ24TrainingReadbackV1;
+#[cfg(target_os = "linux")]
 pub use cell_q24_local_decision_owner::CellQ24LocalPolicyV1;
 #[cfg(target_os = "linux")]
 pub use cell_q24_local_decision_owner::OriginalCellQ24LocalDecisionConfigV1;
@@ -477,6 +479,8 @@ mod neuron_cell_evaluation;
 mod neuron_cell_evaluation_owner;
 #[cfg(target_os = "linux")]
 mod neuron_cell_evaluation_receipt_owner;
+#[cfg(target_os = "linux")]
+mod neuron_cell_evaluation_training_source;
 mod neuron_cell_learning_evaluation;
 pub use cell_composed_q24::CellQ24DatasetErrorV1;
 #[cfg(target_os = "linux")]
@@ -593,6 +597,8 @@ pub use neuron_cell_evaluation_receipt_owner::OriginalCellEvaluationReceiptError
 pub use neuron_cell_evaluation_receipt_owner::OriginalCellEvaluationReceiptOwnerV1;
 #[cfg(target_os = "linux")]
 pub use neuron_cell_evaluation_receipt_owner::OriginalCellEvaluationReceiptSourcesV1;
+#[cfg(target_os = "linux")]
+pub use neuron_cell_evaluation_training_source::OriginalCellEvaluationTrainerV1;
 mod neuron_generation;
 #[cfg(unix)]
 mod neuron_generation_current;

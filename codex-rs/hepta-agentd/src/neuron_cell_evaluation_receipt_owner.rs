@@ -48,6 +48,7 @@ use crate::CellEvaluationReceiptV1;
 use crate::CellEvaluationRunnerV1;
 use crate::CellLearningEvaluationErrorV1;
 use crate::LearningIterationEvidenceClientV1;
+use crate::neuron_cell_evaluation_training_source::OriginalCellEvaluationTrainerReadbackV1;
 use crate::LearningIterationRuntimeErrorV1;
 use crate::OriginalCellEvaluationSigningConfigV1;
 use crate::learning_owner_evidence;
@@ -82,28 +83,10 @@ pub struct OriginalCellEvaluationReceiptConfigV1 {
     pub signing: OriginalCellEvaluationSigningConfigV1,
 }
 
-/// Borrow the original owners for this read. No provider, attestor, arbitrary
-/// receipt, caller clock or replacement trust is accepted. The full recovered
-/// history is retained when asking the Trainer for its original attestation.
-pub struct OriginalCellEvaluationReceiptSourcesV1<
-    'a,
-    S,
-    C: AnchorWitnessStore,
-    F: AnchorWitnessStore,
-    E,
-> {
-    pub snapshot: &'a LearningIterationSnapshotV1,
-    pub runner: &'a mut CellEvaluationRunnerV1<S>,
-    pub journals: CellEvaluationJournalsV1<'a, C, F>,
-    pub candidate_plan: &'a TemporalEvaluationPlan,
-    pub baseline_plan: &'a TemporalEvaluationPlan,
-    pub executions: &'a mut E,
-    pub qualification: &'a CellEvaluationQualificationV1,
-    pub context: &'a ProductQualificationContextV1,
-    pub evidence: &'a SignedEvaluationEvidenceV1,
-    pub timing: ProductTimingEvidenceV1<'a>,
-    pub trainer: &'a LearningIterationEvidenceClientV1,
-}
+#[path = "neuron_cell_evaluation_receipt_sources.rs"]
+mod sources;
+pub use sources::OriginalCellEvaluationReceiptSourcesV1;
+pub(crate) use sources::ReceiptSources;
 
 pub struct OriginalCellEvaluationReceiptOwnerV1<W: AnchorWitnessStore> {
     journal: LearningOwnerJournalV1<W>,
@@ -136,9 +119,35 @@ impl<W: AnchorWitnessStore> OriginalCellEvaluationReceiptOwnerV1<W> {
         E: ProductEvaluationExecutionStoreV1,
     >(
         &self,
-        mut source: OriginalCellEvaluationReceiptSourcesV1<'_, S, C, F, E>,
+        mut source: ReceiptSources<'_, S, C, F, E>,
     ) -> Result<CellEvaluationReceiptV1, Error> {
         self.prepare(&mut source).map(|(_, execution)| execution)
+    }
+
+    /// Preserve the original external-client API and its pinned peer checks.
+    pub async fn attest_original_completion<
+        S: FinalHoldoutCasStoreV1,
+        C: AnchorWitnessStore,
+        F: AnchorWitnessStore,
+        E: ProductEvaluationExecutionStoreV1,
+    >(
+        &mut self,
+        source: OriginalCellEvaluationReceiptSourcesV1<'_, S, C, F, E>,
+    ) -> Result<(LearningIterationReceiptV1, SignedLearningEvidenceV1), Error> {
+        self.attest_original_sources(source.into()).await
+    }
+
+    /// The external path keeps its exact existing readback-only semantics.
+    pub async fn readback<
+        S: FinalHoldoutCasStoreV1,
+        C: AnchorWitnessStore,
+        F: AnchorWitnessStore,
+        E: ProductEvaluationExecutionStoreV1,
+    >(
+        &mut self,
+        source: OriginalCellEvaluationReceiptSourcesV1<'_, S, C, F, E>,
+    ) -> Result<(LearningIterationReceiptV1, SignedLearningEvidenceV1), Error> {
+        self.readback_sources(source.into()).await
     }
 
     pub fn create(
@@ -180,20 +189,20 @@ impl<W: AnchorWitnessStore> OriginalCellEvaluationReceiptOwnerV1<W> {
     /// Sign only the exact Evaluation reconstructed from the original completed
     /// execution and current, independent Trainer evidence. The durable claim
     /// precedes signing; ambiguous claims never retry the signing closure.
-    pub async fn attest_original_completion<
+    pub(crate) async fn attest_original_sources<
         S: FinalHoldoutCasStoreV1,
         C: AnchorWitnessStore,
         F: AnchorWitnessStore,
         E: ProductEvaluationExecutionStoreV1,
     >(
         &mut self,
-        mut source: OriginalCellEvaluationReceiptSourcesV1<'_, S, C, F, E>,
+        mut source: ReceiptSources<'_, S, C, F, E>,
     ) -> Result<(LearningIterationReceiptV1, SignedLearningEvidenceV1), Error> {
         if now()? >= self.config.training.request.envelope.expiry_unix_seconds {
             return Err(OwnerError::Binding("new Evaluation attestation after deadline").into());
         }
         let prepared = self.prepare(&mut source)?;
-        let trainer: &LearningIterationEvidenceClientV1 = source.trainer;
+        let trainer: OriginalCellEvaluationTrainerReadbackV1<'_> = source.trainer;
         let training = trainer.readback(source.snapshot, self.training()?).await?;
         self.authenticate_roles(&source, &prepared.1, &training)?;
         if self.prepare(&mut source)? != prepared {
@@ -243,14 +252,14 @@ impl<W: AnchorWitnessStore> OriginalCellEvaluationReceiptOwnerV1<W> {
     /// Read the original signature, including after the work deadline while all
     /// original evidence remains current. No claim, signature or holdout release
     /// occurs. Missing, Pending and invalid evidence are errors, never NoUpdate.
-    pub async fn readback<
+    pub(crate) async fn readback_sources<
         S: FinalHoldoutCasStoreV1,
         C: AnchorWitnessStore,
         F: AnchorWitnessStore,
         E: ProductEvaluationExecutionStoreV1,
     >(
         &mut self,
-        mut source: OriginalCellEvaluationReceiptSourcesV1<'_, S, C, F, E>,
+        mut source: ReceiptSources<'_, S, C, F, E>,
     ) -> Result<(LearningIterationReceiptV1, SignedLearningEvidenceV1), Error> {
         let prepared = self.prepare(&mut source)?;
         let bytes = self.journal.read(&self.saved)?;
@@ -274,7 +283,7 @@ impl<W: AnchorWitnessStore> OriginalCellEvaluationReceiptOwnerV1<W> {
         E: ProductEvaluationExecutionStoreV1,
     >(
         &self,
-        source: &mut OriginalCellEvaluationReceiptSourcesV1<'_, S, C, F, E>,
+        source: &mut ReceiptSources<'_, S, C, F, E>,
     ) -> Result<(LearningIterationReceiptV1, CellEvaluationReceiptV1), Error> {
         LearningIterationCoordinatorV1::from_snapshot(source.snapshot.clone())?;
         self.config.scope.validate_snapshot(source.snapshot)?;
@@ -350,7 +359,7 @@ impl<W: AnchorWitnessStore> OriginalCellEvaluationReceiptOwnerV1<W> {
         E,
     >(
         &self,
-        source: &OriginalCellEvaluationReceiptSourcesV1<'_, S, C, F, E>,
+        source: &ReceiptSources<'_, S, C, F, E>,
         execution: &CellEvaluationReceiptV1,
         training: &SignedLearningEvidenceV1,
     ) -> Result<(), Error> {
@@ -396,7 +405,7 @@ impl<W: AnchorWitnessStore> OriginalCellEvaluationReceiptOwnerV1<W> {
         E: ProductEvaluationExecutionStoreV1,
     >(
         &mut self,
-        source: &mut OriginalCellEvaluationReceiptSourcesV1<'_, S, C, F, E>,
+        source: &mut ReceiptSources<'_, S, C, F, E>,
         prepared: (LearningIterationReceiptV1, CellEvaluationReceiptV1),
         bytes: &[u8],
     ) -> Result<(LearningIterationReceiptV1, SignedLearningEvidenceV1), Error> {
@@ -404,7 +413,7 @@ impl<W: AnchorWitnessStore> OriginalCellEvaluationReceiptOwnerV1<W> {
         if payload != learning_iteration_receipt_signing_bytes_v1(&prepared.0)? {
             return Err(OwnerError::Binding("changed original Evaluation payload").into());
         }
-        let trainer: &LearningIterationEvidenceClientV1 = source.trainer;
+        let trainer: OriginalCellEvaluationTrainerReadbackV1<'_> = source.trainer;
         let training = trainer.readback(source.snapshot, self.training()?).await?;
         if self.prepare(source)? != prepared {
             return Err(OwnerError::CommitUncertain.into());

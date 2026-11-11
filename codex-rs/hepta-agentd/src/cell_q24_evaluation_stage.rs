@@ -22,10 +22,11 @@ use crate::CellEvaluationQualificationRequestV1;
 use crate::CellEvaluationQualificationV1;
 use crate::CellEvaluationReceiptV1;
 use crate::CellEvaluationRunnerV1;
-use crate::LearningIterationEvidenceClientV1;
+use crate::OriginalCellEvaluationTrainerV1;
+use crate::neuron_cell_evaluation_training_source::OriginalCellEvaluationTrainerReadbackV1;
+use crate::neuron_cell_evaluation_receipt_owner::ReceiptSources;
 use crate::LearningIterationRuntimeErrorV1 as Error;
 use crate::OriginalCellEvaluationReceiptOwnerV1;
-use crate::OriginalCellEvaluationReceiptSourcesV1;
 use crate::cell_q24_learning_owner_error::owner_error;
 
 pub enum OriginalCellQ24EvaluationTimingV1 {
@@ -52,7 +53,8 @@ impl OriginalCellQ24EvaluationTimingV1 {
 }
 
 /// Original concrete resources, not arbitrary callbacks or an unsigned result.
-/// The Trainer channel must retain its independently pinned original peer.
+/// Trainer evidence uses the pinned original peer or the same original Q24
+/// owner's sealed readback handle; both retain independent B verification.
 pub struct OriginalCellQ24EvaluationStageV1 {
     pub training: LearningIterationSnapshotV1,
     pub scope: FrozenLearningScopeV2,
@@ -67,7 +69,7 @@ pub struct OriginalCellQ24EvaluationStageV1 {
     pub context: ProductQualificationContextV1,
     pub evidence: SignedEvaluationEvidenceV1,
     pub timing: OriginalCellQ24EvaluationTimingV1,
-    pub trainer: LearningIterationEvidenceClientV1,
+    pub trainer: OriginalCellEvaluationTrainerV1,
     pub verifier: LearningEvidenceVerifierV1,
 }
 
@@ -83,6 +85,8 @@ impl OriginalCellQ24EvaluationStageV1 {
         {
             return Err(Error::WrongScope);
         }
+        let trainer: &OriginalCellEvaluationTrainerV1 = &self.trainer;
+        trainer.require_training(training, scope)?;
         self.receipts
             .require_original_training(training, scope)
             .map_err(owner_error)?;
@@ -95,7 +99,7 @@ impl OriginalCellQ24EvaluationStageV1 {
         original: &SignedLearningEvidenceV1,
     ) -> Result<(), Error> {
         let receipt = self.training.receipts.last().ok_or(Error::WrongScope)?;
-        let trainer: &LearningIterationEvidenceClientV1 = &self.trainer;
+        let trainer: OriginalCellEvaluationTrainerReadbackV1<'_> = self.trainer.borrow();
         if &trainer.readback(&self.training, receipt).await? != original {
             return Err(Error::WrongScope);
         }
@@ -120,8 +124,9 @@ impl OriginalCellQ24EvaluationStageV1 {
             ..
         } = self;
         let receipts: &mut OriginalCellEvaluationReceiptOwnerV1<FileAnchorWitnessStore> = receipts;
+        let trainer: &OriginalCellEvaluationTrainerV1 = trainer;
         receipts
-            .read_original_execution(OriginalCellEvaluationReceiptSourcesV1 {
+            .read_original_execution(ReceiptSources {
                 snapshot: training,
                 runner,
                 journals: CellEvaluationJournalsV1 {
@@ -135,7 +140,7 @@ impl OriginalCellQ24EvaluationStageV1 {
                 context,
                 evidence,
                 timing: timing.borrow(),
-                trainer,
+                trainer: trainer.borrow(),
             })
             .map_err(owner_error)
     }
@@ -173,7 +178,8 @@ impl OriginalCellQ24EvaluationStageV1 {
             ..
         } = self;
         let receipts: &mut OriginalCellEvaluationReceiptOwnerV1<FileAnchorWitnessStore> = receipts;
-        let source = OriginalCellEvaluationReceiptSourcesV1 {
+        let trainer: &OriginalCellEvaluationTrainerV1 = trainer;
+        let source = ReceiptSources {
             snapshot,
             runner,
             journals: CellEvaluationJournalsV1 {
@@ -187,13 +193,13 @@ impl OriginalCellQ24EvaluationStageV1 {
             context,
             evidence,
             timing: timing.borrow(),
-            trainer,
+            trainer: trainer.borrow(),
         };
         if read_only {
-            receipts.readback(source).await.map_err(owner_error)
+            receipts.readback_sources(source).await.map_err(owner_error)
         } else {
             receipts
-                .attest_original_completion(source)
+                .attest_original_sources(source)
                 .await
                 .map_err(owner_error)
         }

@@ -46,6 +46,7 @@ struct RootStartup {
     root_pidfd: OwnedFd,
     learning: Option<crate::RootLearningHandoffV1>,
     q24_model: Option<crate::RootQ24ModelFactoryHandoffV1>,
+    publication: Option<crate::RootGenerationPublicationHandoffV1>,
     control: OwnedFd,
     app_server: OwnedFd,
     lifetime: Duration,
@@ -63,6 +64,7 @@ pub struct AgentdProductionLaunch {
     root: AgentdRootProductionInputs,
     inputs: RuntimeInputs,
     q24_model: Option<crate::AgentdRootQ24ModelFactoryV1>,
+    publication: Option<crate::RootGenerationPublicationHandoffV1>,
 }
 
 struct RuntimeInputs {
@@ -87,6 +89,7 @@ impl AgentdProductionStartup {
                     handoff,
                     learning_handoff,
                     q24_model_handoff,
+                    publication_handoff,
                     uid,
                     gid,
                     control,
@@ -122,6 +125,14 @@ impl AgentdProductionStartup {
                         )
                     })
                     .transpose()?;
+                let publication = publication_handoff
+                    .map(|handoff| {
+                        crate::receive_root_generation_publication_handoff(
+                            handoff,
+                            remaining(bootstrap_deadline)?,
+                        )
+                    })
+                    .transpose()?;
                 let inputs = RuntimeInputs {
                     primary,
                     notes,
@@ -133,6 +144,7 @@ impl AgentdProductionStartup {
                     root_pidfd,
                     learning,
                     q24_model,
+                    publication,
                     control,
                     app_server,
                     lifetime,
@@ -190,6 +202,7 @@ impl AgentdProductionStartup {
                     root_pidfd,
                     learning,
                     q24_model,
+                    publication,
                     control,
                     app_server,
                     lifetime,
@@ -254,6 +267,7 @@ impl AgentdProductionStartup {
                         root,
                         inputs,
                         q24_model: model_factory,
+                        publication,
                     }),
                 ))
             }
@@ -262,6 +276,18 @@ impl AgentdProductionStartup {
 }
 
 impl AgentdProductionLaunch {
+    /// Take the actual separately received purpose offer before `run` consumes
+    /// this launch. Retain it beside the original connection capability until
+    /// the actual B and independently signed selection are available. This
+    /// method does not connect, enroll or mutate CURRENT.
+    pub fn take_generation_publication_handoff(
+        &mut self,
+    ) -> Result<crate::RootGenerationPublicationHandoffV1, AgentdError> {
+        self.publication.take().ok_or_else(|| {
+            AgentdError::Invalid("original publication handoff was absent or already taken".into())
+        })
+    }
+
     /// Retain this single original connection capability before `run` consumes
     /// the launch. A later actual B/Selection can then connect its separate
     /// purpose handoff while the original runtime still owns the Root session.
@@ -307,6 +333,11 @@ impl AgentdProductionLaunch {
         arg0_paths: Arg0DispatchPaths,
     ) -> Result<(), AgentdError> {
         config.require_root_learning_assembled()?;
+        if self.publication.is_some() {
+            return Err(AgentdError::Invalid(
+                "original publication handoff must be taken for the later actual selection before run".into(),
+            ));
+        }
         if self.q24_model.is_some() {
             return Err(AgentdError::Invalid("original Root Model factory received, but concrete learning owners are not assembled".into()));
         }

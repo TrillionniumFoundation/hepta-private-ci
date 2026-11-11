@@ -25,6 +25,7 @@ AGENT = "codex-rs/hepta-agentd/src/"
 OWNER = AGENT + "neuron_cell_evaluation_receipt_owner.rs"
 HANDOFF = AGENT + "cell_q24_evaluation_handoff.rs"
 EVALUATION_STAGE = AGENT + "cell_q24_evaluation_stage.rs"
+TRAINER_SOURCE = AGENT + "neuron_cell_evaluation_training_source.rs"
 CALLERS = {
     "cell_learning_evaluation_receipt_prepare": (
         AGENT + "learning_iteration_evaluation_evidence.rs",
@@ -34,8 +35,7 @@ CALLERS = {
     "learning_evidence_original_owner_readback": (
         AGENT + "learning_iteration_evaluation_evidence.rs",
         AGENT + "learning_iteration_generation_evidence.rs",
-        OWNER,
-        EVALUATION_STAGE,
+        TRAINER_SOURCE,
     ),
     "cell_completed_evaluation_readback": (OWNER,),
     "learning_original_evaluation_key": (
@@ -114,27 +114,37 @@ class OriginalEvaluationReceiptOwnerSourceClosureTests(unittest.TestCase):
                 row = self.boundaries[identifier]
                 self.assertEqual(row.product_callers, callers)
                 PROOF._verify_boundary(ROOT, row, self.sources, ())
-                without_owner = tuple(path for path in callers if path != OWNER)
-                with self.assertRaises(PROOF.VerificationFailure):
-                    PROOF._verify_boundary(
-                        ROOT, replace(row, product_callers=without_owner), self.sources, ()
-                    )
+                for caller in callers:
+                    without_caller = tuple(path for path in callers if path != caller)
+                    with self.assertRaises(PROOF.VerificationFailure):
+                        PROOF._verify_boundary(
+                            ROOT, replace(row, product_callers=without_caller), self.sources, ()
+                        )
                 self.reject_unregistered_caller(row)
 
     def test_four_receipt_ports_and_legacy_stage_assembly_remain_closed(self):
         inventory = self.manifest["privileged_inventory"]["required_boundary_ids"]
-        for suffix in ("create", "recover", "attest", "readback"):
-            identifier = "learning_original_evaluation_receipt_" + suffix
+        ports = {
+            "learning_original_evaluation_receipt_create": (HANDOFF,),
+            "learning_original_evaluation_receipt_recover": (HANDOFF,),
+            "learning_original_evaluation_receipt_attest": (),
+            "learning_original_evaluation_receipt_readback": (),
+            "evaluation_original_sources_attest": (OWNER, EVALUATION_STAGE),
+            "evaluation_original_sources_readback": (OWNER, EVALUATION_STAGE),
+        }
+        for identifier, expected in ports.items():
             with self.subTest(boundary=identifier):
                 self.assertIn(identifier, inventory)
                 row = self.boundaries[identifier]
-                expected = (HANDOFF,) if suffix in ("create", "recover") else (EVALUATION_STAGE,)
                 self.assertEqual(row.product_callers, expected)
                 PROOF._verify_boundary(ROOT, row, self.sources, ())
-                with self.assertRaises(PROOF.VerificationFailure):
-                    PROOF._verify_boundary(
-                        ROOT, replace(row, product_callers=()), self.sources, ()
-                    )
+                for caller in expected:
+                    with self.assertRaises(PROOF.VerificationFailure):
+                        PROOF._verify_boundary(
+                            ROOT,
+                            replace(row, product_callers=tuple(path for path in expected if path != caller)),
+                            self.sources, (),
+                        )
                 self.reject_unregistered_caller(row)
         for identifier in (
             "cell_learning_evaluation_original_readback",
@@ -189,6 +199,7 @@ class OriginalEvaluationReceiptOwnerSourceClosureTests(unittest.TestCase):
                 self.rejects("fn prepare<", marker)
 
     def test_current_original_sources_and_durable_pending_precede_exact_signature(self):
+        self.rejects("fn attest_original_completion<", "self.attest_original_sources(source.into()).await")
         for marker in (
             "if now()? >= self.config.training.request.envelope.expiry_unix_seconds",
             "let prepared = self.prepare(&mut source)?",
@@ -205,13 +216,13 @@ class OriginalEvaluationReceiptOwnerSourceClosureTests(unittest.TestCase):
             "self.authenticate_completed(&mut source, prepared, &bytes)",
         ):
             with self.subTest(marker=marker):
-                self.rejects("fn attest_original_completion<", marker)
+                self.rejects("fn attest_original_sources<", marker)
         for marker in (
             "if now()? >= self.config.training.request.envelope.expiry_unix_seconds",
             "if issued_at >= self.config.training.request.envelope.expiry_unix_seconds",
         ):
             with self.subTest(deadline=marker):
-                self.rejects("fn attest_original_completion<", marker, marker.replace(">=", ">"))
+                self.rejects("fn attest_original_sources<", marker, marker.replace(">=", ">"))
 
     def test_actual_time_full_principals_and_controller_separation_remain_required(self):
         for marker in (
@@ -238,13 +249,14 @@ class OriginalEvaluationReceiptOwnerSourceClosureTests(unittest.TestCase):
         self.rejects("fn now(", "SystemTime::now()")
 
     def test_original_signature_readback_revalidates_sources_and_witness_before_ack(self):
+        self.rejects("fn readback<", "self.readback_sources(source.into()).await")
         for marker in (
             "let prepared = self.prepare(&mut source)?",
             "let bytes = self.journal.read(&self.saved)?",
             "self.authenticate_completed(&mut source, prepared, &bytes)",
         ):
             with self.subTest(marker=marker):
-                self.rejects("fn readback<", marker)
+                self.rejects("fn readback_sources<", marker)
         for marker in (
             "learning_owner_evidence::decode(bytes)?",
             "if payload != learning_iteration_receipt_signing_bytes_v1(&prepared.0)?",

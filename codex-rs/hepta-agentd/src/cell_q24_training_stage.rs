@@ -170,6 +170,26 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
         self.in_lane(Owners::read_original_completion).await
     }
 
+    /// Read the already completed original HQ24T002 owners in the same lane.
+    /// This separate path refuses legacy batches without changing their old
+    /// readback contract. Missing and Pending cannot fit or first-attest here.
+    #[cfg(target_os = "linux")]
+    pub(crate) async fn read_original_dataset_completion(
+        &self,
+        dataset: &LearningIterationSnapshotV1,
+    ) -> Result<OriginalCellQ24TrainingCompletionV1, Error> {
+        self.require_dataset(dataset)?;
+        self.in_lane(|owners| {
+            let training: &CellQ24TrainingOwnerV1<TW> = &owners.training;
+            training.require_original_dataset_provenance()?;
+            let completed = owners.read_original_completion()?;
+            let training: &CellQ24TrainingOwnerV1<TW> = &owners.training;
+            training.require_original_dataset_provenance()?;
+            Ok(completed)
+        })
+        .await
+    }
+
     /// The caller supplies only an equality check, never bytes to be signed.
     pub async fn receipt_attestation(
         &self,
