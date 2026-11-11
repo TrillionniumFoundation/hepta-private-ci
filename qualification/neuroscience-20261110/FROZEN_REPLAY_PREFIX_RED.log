@@ -1,0 +1,21 @@
+test_frozen_replay_prefix (unittest.loader._FailedTest.test_frozen_replay_prefix) ... ERROR
+
+======================================================================
+ERROR: test_frozen_replay_prefix (unittest.loader._FailedTest.test_frozen_replay_prefix)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_frozen_replay_prefix
+Traceback (most recent call last):
+  File "/usr/lib/python3.14/unittest/loader.py", line 426, in _find_test_path
+    module = self._get_module_from_name(name)
+  File "/usr/lib/python3.14/unittest/loader.py", line 367, in _get_module_from_name
+    __import__(name)
+    ~~~~~~~~~~^^^^^^
+  File "/home/qq/neuro4-auto6-20261111-2202/qualification/neuroscience-20261110/test_frozen_replay_prefix.py", line 8, in <module>
+    from study import ContractError, MemoryRecord, select_replay, frozen_replay_from_prefix
+ImportError: cannot import name 'frozen_replay_from_prefix' from 'study' (/home/qq/neuro4-auto6-20261111-2202/qualification/neuroscience-20261110/study.py). Did you mean: 'frozen_credit_from_prefix'?
+
+
+----------------------------------------------------------------------
+Ran 1 test in 0.000s
+
+FAILED (errors=1)
