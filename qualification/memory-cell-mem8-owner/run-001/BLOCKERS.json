@@ -24,6 +24,14 @@
       "id": "HOSTED-MEM-RAW-EVIDENCE",
       "status": "PUBLISHED_AND_READ_BACK",
       "scope": "PR 5889 retains the original CI artifacts/logs and reproducible audits; both archive files were read back byte-for-byte from commit 2fc8e9d07ad613c1bf308695b51cd910777f5095."
+    },
+    {
+      "id": "MEM6-CLOUD-AND-GITHUB-RAW-COPY",
+      "status": "COMPLETE_BYTES_PUBLISHED_AND_INDEPENDENTLY_DOWNLOADED",
+      "scope": "All 128 GitHub parts were read back, reconstructed and verified as the original 61412948-byte archive. A separate connector download to the current workspace verified all 128 parts and the complete archive again. Historical partial copies remain historical evidence.",
+      "evidence_commit": "b66d74d4a61b15f3d9e1eb3b5ddfa251777ee4c1",
+      "index_path": "qualification/memory-cell-mem6/run-001/ARCHIVE_COMPLETE_INDEX_20261111_ED353.json",
+      "cloud_receipt_path": "qualification/memory-cell-mem6/run-001/CLOUD_COPY_RECEIPT_20261111_ED353.json"
     }
   ],
   "historical_results_unchanged": {
@@ -59,7 +67,15 @@
     "restore_job_id": "1a1c6670efe-5074-ff",
     "archived_runtime_executed": false,
     "independent_trust_domain": false,
-    "full_owner_cold_recovery": false
+    "full_owner_cold_recovery": false,
+    "complete_archive_published": true,
+    "cloud_complete_archive_downloaded": true,
+    "github_branch": "research/mem6-full-archive-20261111-ed353",
+    "github_commit": "b66d74d4a61b15f3d9e1eb3b5ddfa251777ee4c1",
+    "github_content_commit": "4862c7145f86a4ff14c2c1c12ba18c2c35aad608",
+    "github_part_count": 128,
+    "new_github_part_count": 76,
+    "new_github_bytes": 37099092
   },
   "open": [
     {
@@ -69,14 +85,14 @@
     },
     {
       "id": "ORDINARY-OWNER-BRIDGE",
-      "status": "PUBLISHED_NATIVE_AND_ORIGINAL_BINDING_PENDING",
-      "finding": "Source admission is in PR 5888; five preimage-checked commits implementing atomic original-writer import, receipt reconciliation, ordinary control and retained cancellation/drain handling are in draft validation PR 5892. Native tests and authenticated deployed source/owner integration remain unverified.",
+      "status": "PUBLISHED_NATIVE_COMPILE_FIX_PENDING",
+      "finding": "Source A passes 4 selected native tests and clean scoped fix on exact ad5. Full owner, retained import/control/drain, and explicit source freshness are published on c6aa; two earlier 81889 attempts stopped before tests during compilation. The one-line E0382 fix now needs a fresh full native run. Authenticated original deployed owner/source binding remains open.",
       "closure": "Implement the bridge using the retained original writer capability and authenticated source events; recover the exact cut and preserve tombstones and uncertain-commit reconciliation."
     },
     {
       "id": "PROVIDER-RUNTIME-BINDING",
-      "status": "NOT_VERIFIED",
-      "finding": "ai395 model server health succeeds; unauthenticated model listing returns 401. No authorized ordinary-owner/provider/final-use route was exercised."
+      "status": "EXISTING_ROUTE_OBSERVED_REAL_OWNER_TURN_PENDING",
+      "finding": "Existing authenticated desktop Responses route health/routing/models returned 200, model qwen38-flash-next-uc. A fresh persistent fixture-owner smoke is being prepared with requested/observed provider, thread and turn identities. No real inference call or original deployed-owner final use is qualified at this checkpoint."
     },
     {
       "id": "UNSEEN-EPISODIC-BENEFIT",
@@ -111,16 +127,11 @@
     {
       "id": "HOSTED-CI",
       "status": "PARTIAL",
-      "finding": "Exact common-source hosted MEM tests passed. Whole-repository macOS, Windows, SDK and cargo-deny failures remain, and repo-checks has a cancelled formatting step. New episodic native tests are queued. A later Windows signed-credit failure prevents claiming complete native fixture closure."
-    },
-    {
-      "id": "MEM6-CLOUD-AND-GITHUB-RAW-COPY",
-      "status": "PARTIAL",
-      "finding": "Historical cloud download remains 371/938 chunks, 24313856 verified bytes. Full original archive GitHub publication is not claimed. Second-host restoration is separately complete. A bounded publication helper has been prepared but not executed; the remote execution transport is unavailable. No new full archive publication is claimed."
+      "finding": "Exact common-source hosted MEM and exact Source A gates passed. The complete owner is awaiting native validation after an observed compile fix. Original Windows signed-credit on 4eb failed OS33; the strict original-descriptor repair #5902 is under new validation. Dependency closure and remaining whole-repository consumers are not yet qualified."
     }
   ],
   "native_source_validation": {
-    "status": "PENDING_NATIVE_RESULTS",
+    "status": "PARTIALLY_VALIDATED",
     "formatter_attempt": {
       "head": "e68a2fbcc8b72d9081e1cc44ab1066837e53649c",
       "run_id": 42935621920,
@@ -132,38 +143,172 @@
       "native_tests_executed": false,
       "postimages_applied_in": "1b86d19810c9d422a8f8ea3b76a0a2e8c9956585"
     },
-    "source_admission": {
+    "source_admission_last_completed": {
       "head": "1b86d19810c9d422a8f8ea3b76a0a2e8c9956585",
+      "tree": "ee63508413afd29a95c03172724fce6fa9dc5a8a",
       "run_id": 42938555796,
       "job_id": 130254558254,
-      "status": "NATIVE_TEST_COMMAND_IN_PROGRESS_LAST_OBSERVED",
-      "actual_native_test_count": null,
-      "format_step": "SUCCESS_REPORTED_BY_JOB_STEPS_FULL_ARTIFACT_PENDING"
+      "artifact_id": 13821160489,
+      "format_clean": true,
+      "actual_native_passed": 4,
+      "actual_native_failed": 0,
+      "source_before_after_equal_clean_for_tests": true,
+      "fix_command_exit_code": 0,
+      "fix_source_gate_exit_code": 1,
+      "fix_changed_files": 1,
+      "tests_rerun_after_fix": false,
+      "evidence_archive_git_blob": "53e1ab04328fb01325a230111ed03a78f5a901ec"
+    },
+    "source_admission": {
+      "head": "ad5a4ed6d40a2eceac189afaced5d93137724a52",
+      "tree": "e601d41a97fadbee17947805f4ec507453522800",
+      "run_id": 42941652722,
+      "job_id": 130264640971,
+      "artifact_id": 13823187722,
+      "status": "PASSED_ON_EXACT_UNCHANGED_SOURCE",
+      "format_clean": true,
+      "actual_native_passed": 4,
+      "actual_native_failed": 0,
+      "filtered_unselected": 420,
+      "fix_clean": true,
+      "all_before_after_exact_and_clean": true,
+      "all_five_input_files_match_exact_head": true,
+      "archive_git_blob": "3bb7f16aeaddac1fe93033475497afc7eecbc1dd",
+      "scope": "Source admission fixture tests; not complete owner integration or source custody."
     },
     "complete_owner": {
-      "head": "eb430c1e4f122784f5a91d4a5ddf2ae8bb5063da",
-      "run_id": 42939112943,
-      "job_id": 130256399667,
-      "status": "QUEUED_LAST_OBSERVED",
-      "actual_native_test_count": null
+      "head": "c6aa120a5a35a0208ed4b92d466904b00cd58f9b",
+      "tree": "6a4634549e055d4f81d4e4dbd8e400b8c6d97b89",
+      "status": "FRESH_EXACT_HEAD_NATIVE_ATTEMPT_ADMITTED_NO_RESULT_YET",
+      "actual_native_test_count": 0,
+      "actual_native_count_scope": "Two completed 81889 attempts both stopped during compilation; the new source has no result at this checkpoint.",
+      "expected_memory_cases": 11,
+      "expected_agentd_cases": 5,
+      "protocol_package": true,
+      "scoped_fix_packages": 3,
+      "required_drain_child_markers": 3,
+      "limits": "Source A's 4 passing cases do not stand in for the full-owner runs. Fixture owner/source grants do not establish original deployed binding.",
+      "formatter": {
+        "head": "6be7ddd743d9a2180a274599a0df7766f5e41519",
+        "tree": "d434dc66fc711d81242d9a4f83c081d04e2cfff1",
+        "host": "ai395",
+        "github_run_id": 42941694535,
+        "github_job_id": 130264782338,
+        "github_artifact_id": 13822717976,
+        "command_exit_code": 0,
+        "source_gate_exit_code": 1,
+        "changed_files": 18,
+        "tests_executed": 0,
+        "host_github_all_before_after_and_patch_byte_identical": true,
+        "postimages_applied_in": "66b904beb9a56cc23a894ac3a3a617786db9f350",
+        "audit_git_blob": "0dd2819c5d4eecde7899eeb6fce5bdc323d16457"
+      },
+      "source_read_formatter": {
+        "head": "5496ff0cf33c116f8b8d458e821b42c71c9ffa67",
+        "command_exit_code": 0,
+        "source_gate_exit_code": 1,
+        "changed_files": 5,
+        "tests_executed": 0,
+        "postimages_applied_in": "4c71ab20e21c06565af799a0128a5c4b226b907d",
+        "audit_git_blob": "266494d0fcb8364b0d899057b198600aca55dedc"
+      },
+      "completed_native_attempts": [
+        {
+          "run_id": "mem8-native-81889-ai395-20261111-ed353-v1",
+          "head": "81889f5e09c247473aa7f20d927bb0eca16c7c48",
+          "tree": "146f33459795629d181026eed3a380272f40912f",
+          "format_clean": true,
+          "v8_inputs_clean": true,
+          "exit_code": 101,
+          "tests_executed": 0,
+          "source_after_clean": true,
+          "reason": "aws-lc-sys bindgen compilation could not find stddef.h."
+        },
+        {
+          "run_id": "mem8-native-81889-gcc-ai395-20261111-ed353-v2",
+          "head": "81889f5e09c247473aa7f20d927bb0eca16c7c48",
+          "tree": "146f33459795629d181026eed3a380272f40912f",
+          "format_clean": true,
+          "v8_inputs_clean": true,
+          "exit_code": 101,
+          "tests_executed": 0,
+          "source_after_clean": true,
+          "reason": "Rust E0382: reopening regression called drop(store) after close(self).",
+          "process_local_bindgen_extra_clang_args": "-isystem /usr/lib/gcc/x86_64-linux-gnu/15/include",
+          "raw_memory_compile_log_bytes": 34434,
+          "raw_memory_compile_log_sha256": "2c4b03529960dfe2570a1dacb0688277231938e5ab06c071955711c8607dc572"
+        }
+      ],
+      "compile_fix": {
+        "commit": "c6aa120a5a35a0208ed4b92d466904b00cd58f9b",
+        "parent": "81889f5e09c247473aa7f20d927bb0eca16c7c48",
+        "path": "codex-rs/hepta-memory/src/production_episodic_tests.rs",
+        "preimage_blob": "983dbbf40e29ca603732b6b27771e83fba6e9696",
+        "postimage_blob": "245dc875742fb5e645859bd1cfe8c370e4189f12",
+        "added_lines": 0,
+        "removed_lines": 1,
+        "change": "Delete the redundant drop(store); retain close().await and the original reopen assertions."
+      },
+      "current_attempt": {
+        "run_id": "mem8-native-c6aa-ai395-20261111-ed353-v3",
+        "host": "ai395",
+        "directory": "/home/qq/mem8-owner-20261111-ed353817/native-fresh-c6aa-20261111",
+        "launch_acknowledged": true,
+        "launch_reused": false,
+        "deadline_utc": "2026-11-11 04:47:03 UTC",
+        "gcc_header_environment_retained": true,
+        "dependency_target_cache_reused": true,
+        "tests_results_reused": false
+      },
+      "current_github": {
+        "run_id": 42950147964,
+        "job_id": 130292286204,
+        "last_observed_status": "queued",
+        "passed": false
+      },
+      "superseded_github_81889": {
+        "run_id": 42948189449,
+        "native_job_id": 130285956507,
+        "status": "completed",
+        "conclusion": "cancelled",
+        "steps": null,
+        "scope": "Superseded without execution; does not replace the actual ai395 compilation failures."
+      }
     }
   },
   "runtime_transport": {
-    "status": "UNAVAILABLE",
-    "observed_error": "MCP -32603 Internal error",
+    "status": "RESTORED_WITH_INTERMITTENT_TOOL_FAILURES",
+    "prior_outage_error": "MCP -32603 Internal error",
     "uncertain_requests_replayed_under_new_identity": false,
-    "reconciliation_required": true,
-    "last_read_only_health_check_utc": "2026-11-11T01:28:10Z",
-    "plugin_discovery": "Existing h tools are exposed; the hepta plugin-directory search returned no entry or repair action. Permissions were not changed."
+    "ai395_original_request": {
+      "request_id": "mem8-native-v4-003",
+      "observed_outcome": "Stopped before capsule application because both the capsule and gh were absent; the PTY returned to its shell. Current source remains 96038/tree1277666 clean; no application or native-result receipt exists."
+    },
+    "archive_preflight": {
+      "original_idempotency_key": "mem6-original-publication-preflight-pty-20261111-ed353-v2",
+      "reconciliation_returned_reused": false,
+      "exit_code": 0,
+      "github_write_attempted": false
+    },
+    "archive_publication": {
+      "idempotency_key": "mem6-original-publication-desktop-20261111-ed353-v1",
+      "session_id": "dpty-6ca74b715a0436d45fb15a8299667f52b6f56c7e3a2eec1923572826a093e106",
+      "exit_code": 0,
+      "status": "VERIFIED_PUBLISHED"
+    },
+    "reconciliation_required_for_other_unresolved_requests": true
   },
   "boundaries": [
     "A source digest does not authenticate source custody or establish fact truth.",
     "Fixture source observations and owner grants do not establish a deployed production source/provider binding.",
     "A queued or running CI job has no passing-test result.",
     "An archive copy and file restore do not restore original live owner, independent authority or external effects.",
-    "A source-only staging manifest is not native compilation evidence."
+    "A source-only staging manifest is not native compilation evidence.",
+    "Filtered or unselected tests are reported separately and are not passing executions.",
+    "A process-local compiler header fix changes the validation environment, not the source or test assertions.",
+    "Same-tree validation of a different commit is not described as an exact-head result."
   ],
-  "checkpoint_utc": "2026-11-11T01:36:54Z",
+  "checkpoint_utc": "2026-11-11 03:04:26 UTC",
   "implementation_progress": [
     {
       "id": "COMMON-SOURCE-MECHANICAL-REPAIRS",
@@ -218,7 +363,17 @@
         "tree": "24bea5bc952f3bab7f9180ce7b340e22794e63ad",
         "files": 2
       }
-    ]
+    ],
+    "original_stage_manifest_scope": "Historical B-C-D1-D2-D3 commits on source A 1b86; exact current overlays are listed separately.",
+    "current_source_admission_commit": "ad5a4ed6d40a2eceac189afaced5d93137724a52",
+    "current_source_admission_tree": "e601d41a97fadbee17947805f4ec507453522800",
+    "current_complete_owner_commit": "c6aa120a5a35a0208ed4b92d466904b00cd58f9b",
+    "current_complete_owner_tree": "6a4634549e055d4f81d4e4dbd8e400b8c6d97b89",
+    "formatted_stages_historical": {
+      "target": "81889f5e09c247473aa7f20d927bb0eca16c7c48",
+      "manifest_blob": "2031631bdeb60ab65d85f54f4489bece26bbbfe6",
+      "status": "SOURCE_REPLAY_ONLY_NOT_PER_STAGE_NATIVE_VALIDATION"
+    }
   },
   "ci_fixture_followup": {
     "pr": 5895,
@@ -226,7 +381,107 @@
     "tree": "6aa5220e0f23ac3676332a53583a6c462b4a06ba",
     "parent": "96038ccf0660154fac143ba6cbe4be81e00813e8",
     "change": "Windows-only directory handle write access in the existing signed-credit fixture; original sync, lock and assertions remain.",
-    "native_result": "PENDING",
-    "secondary_os33_result": "UNRESOLVED"
+    "native_result": "ONE_SELECTED_CASE_FAILED",
+    "secondary_os33_result": "REPRODUCED_IN_ORIGINAL_CASE",
+    "qualification_pr": 5898,
+    "qualification_head": "4eb497e889b053dd40af87469e594d08585f93e8",
+    "qualification_tree": "5bac6ffbef18f9f22317951a059835fe218c4383",
+    "run_id": 42941228468,
+    "job_id": 130263259830,
+    "artifact_id": 13822740721,
+    "actual_passed": 0,
+    "actual_failed": 1,
+    "filtered_skips": 269,
+    "retries": 0,
+    "source_before_after_clean": true,
+    "next_repair": {
+      "pr": 5902,
+      "head": "cb0b276ffdb9852323cdd13ba9b4399b30ae0c37",
+      "tree": "61f266ce7f02e0c3b94c22871ebedcc72f28e456",
+      "status": "WINDOWS_ORIGINAL_CASE_PENDING",
+      "run_id": 42947836619,
+      "job_id": 130284818815,
+      "change": "Read complete bounded bytes through the original locked descriptor under the existing qualification-only feature, with cursor restoration and fail-closed I/O handling. Keep the original signed test and complete-byte assertions; no cached snapshot/witness or length-only substitution.",
+      "native_source_checked": "817dfaf8 (full identity retained in CI follow-up evidence)",
+      "same_tree_as_published": true,
+      "local_observer_cases_passed": 2,
+      "published_exact_head_pass_claim": false,
+      "linux_original_case_first_attempt": {
+        "exit_code": 101,
+        "executed_cases": 0,
+        "reason": "Sparse checkout omitted docs/modules/MODULES.json used by include_str!; new exact published-source attempt will include that directory."
+      }
+    }
+  },
+  "source_read_followup": {
+    "status": "PUBLISHED_AWAITING_FULL_NATIVE_VALIDATION",
+    "stage": "E",
+    "capsule_git_blob": "be086371ac7faa662ce4ddd5494544efe7658d26",
+    "source_base": "66b904beb9a56cc23a894ac3a3a617786db9f350",
+    "source_commit": "5496ff0cf33c116f8b8d458e821b42c71c9ffa67",
+    "actual_formatter_commit": "4c71ab20e21c06565af799a0128a5c4b226b907d",
+    "predicate_cleanup_commit": "81889f5e09c247473aa7f20d927bb0eca16c7c48",
+    "behavior": "Retain the original bounded raw snapshot, full typed admission and original receipt only after native commit acknowledgement. Check the original verifier and retained observation before and after explicit context reads/final revalidation. Cold configured state refuses until import/reconcile. Delayed publication cannot replace a newer generation; conflicting same-generation receipts are refused.",
+    "limits": "Explicit CognitiveContext, Revalidate and NativeAppServer final-use path only; automatic attachments, recall/explain, history and direct store callers need their own binding or effective isolation. Source custody is not factual truth. Read linearization is not an external-effect lease."
+  },
+  "provider_readonly_observation": {
+    "base_url": "http://127.0.0.1:18083/v1",
+    "credentials_read": false,
+    "inference_calls": 0,
+    "observed_at": "2026-11-11T02:26:36.572609+00:00",
+    "permissions_changed": false,
+    "requests": [
+      {
+        "bytes": 35,
+        "content_type": "application/json",
+        "health_status": "ok",
+        "method": "GET",
+        "path": "/health",
+        "sha256": "7c25cfc56d93b19fc9acce2f4530785951467c3ccdadea3f8f5f6b97d6cf3376",
+        "status": 200
+      },
+      {
+        "bytes": 605,
+        "content_type": "application/json",
+        "method": "GET",
+        "path": "/routing",
+        "routing_keys": [
+          "active",
+          "active_requests",
+          "backends",
+          "config_sha256",
+          "connect_only_failover",
+          "drain_owner",
+          "draining",
+          "generated_at",
+          "queued_requests",
+          "request_id",
+          "schema",
+          "tool_contract"
+        ],
+        "sha256": "96f3e4512826311a3fc5d5736143cc90a4fca541bb0c19128aa18bcfe0f2a3a4",
+        "status": 200
+      },
+      {
+        "bytes": 718,
+        "content_type": "application/json; charset=utf-8",
+        "method": "GET",
+        "models": [
+          {
+            "id": "qwen38-flash-next-uc",
+            "owned_by": "llamacpp"
+          }
+        ],
+        "path": "/v1/models",
+        "sha256": "1d56aa243849d66fe41ad74036a222bb74bd6e9af2b02fa7171aba3462d4d36f",
+        "status": 200
+      }
+    ],
+    "schema": "mem8-existing-responses-route-observation-v1",
+    "service": {
+      "exit": 0,
+      "properties": "MainPID=48315\nActiveState=active\nSubState=running\nFragmentPath=/home/qian-qi/.config/systemd/user/hepta-openresponses-transport.service\n",
+      "stderr_bytes": 0
+    }
   }
 }

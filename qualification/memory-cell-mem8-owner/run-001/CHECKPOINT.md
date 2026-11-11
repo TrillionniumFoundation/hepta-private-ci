@@ -1,119 +1,55 @@
-# MEM8 original-owner integration checkpoint
+# MEM8 owner checkpoint
 
-**Status: HOLD / NoUpdate. Native owner validation is pending.**
-Checkpoint: 2026-11-11 01:36:54 UTC. New real actor episodes: **0**.
+Snapshot: 2026-11-11 03:04:26 UTC. Scientific acceptance remains **HOLD**; adoption action remains **NoUpdate**.
 
-## Confirmed progress
+## Closed archive milestone
 
-[Common source #5873](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5873)
-is commit `96038ccf0660154fac143ba6cbe4be81e00813e8`, tree
-`1277666f3285cdf006d36478e6f74ddec38e1fe0`. Its two hosted MEM jobs passed
-nine groups: **154 execution observations, 120 distinct test IDs, 34 repeated
-observations, zero failures and zero skips**. The 14-case revocation campaign
-uses no model calls. The original downloaded artifacts, logs and independent
-binding audit are retained in [evidence #5889](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5889).
+The original MEM6 archive is now completely published as 128 GitHub parts. All parts were read back from GitHub, then independently downloaded through the connector into this workspace, reconstructed in order and verified again: **61,412,948 bytes**, SHA-256 `f77acd9feb27fda3f8000b0d089dbdbe258a4adfb7acedcb2e0cd590cc4f361e`.
 
-macOS Agentd and TUI targets also passed. Later Windows results still contain a
-durable signed-credit fixture failure. These results do not establish a whole
-repository CI pass or complete cross-platform owner qualification. A separate one-line Windows fixture repair
-is published in [#5895](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5895);
-its native result and possible later lock-sharing failure are still pending.
+The complete index and separate cloud-copy receipt are retained at immutable commit [b66d74d4](https://github.com/TrillionniumFoundation/hepta-private-ci/tree/b66d74d4a61b15f3d9e1eb3b5ddfa251777ee4c1/qualification/memory-cell-mem6/run-001). This closes **MEM6-CLOUD-AND-GITHUB-RAW-COPY**. Earlier partial indexes remain historical evidence. Archive verification did not execute the archived runtime or recover original live owners, grants, independent authority or external effect state.
 
-The three memory layers, matched interventions, strong baselines and unchanged
-source-group adoption thresholds remain defined by the
-[MEM6 protocol](../../memory-cell-mem6/PROTOCOL.md). The
-[ordinary-product contract](../../memory-cell-mem7/PRODUCT_MEMORY_CONTRACT.md)
-continues to govern actual fresh-session inference and persistence-off.
+## Exact Source A result
 
-## Implementation and review boundaries
+Source admission [#5888](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5888), commit `ad5a4ed6d40a2eceac189afaced5d93137724a52`, tree `e601d41a97fadbee17947805f4ec507453522800`, completed all selected gates:
 
-The source-admission stage is [#5888](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5888).
-Its current commit is `1b86d19810c9d422a8f8ea3b76a0a2e8c9956585`.
-Five dependent commits are published in
-[draft integration validation #5892](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5892);
-the final source is `eb430c1e4f122784f5a91d4a5ddf2ae8bb5063da`,
-tree `24bea5bc952f3bab7f9180ce7b340e22794e63ad`.
-See `STAGES.json` for exact file preimages/postimages and expected case IDs,
-and `BLOCKERS.json` for each published commit and the outstanding conditions.
+- Pinned format and scoped fix completed with unchanged source.
+- **4 selected native tests passed**, 0 failed; **420 filtered/unselected** tests are separate.
+- Every before/after receipt names the exact clean source; all five source input files match that commit.
+- Artifact `13823187722`, complete raw job log and independently checked receipts are preserved in `source-a-ad5-clean-native.tar.xz`.
 
-| Stage | Implemented boundary | Native result |
-| --- | --- | --- |
-| A | Strict complete-snapshot parsing, typed original source observations, explicit Verified/Provisional status and retained source revalidation | Exact formatter postimages applied; tests pending |
-| B | Original-writer atomic canonical import, durable source/revision mapping, original receipt reconciliation and explicit commit/rollback settlement | Pending |
-| C | Update, withdrawal, source/owner revocation, foreign head changes, Unicode and Provisional retrieval regressions | Pending |
-| D1 | Bounded typed control/client/host interface; actual UDS refusal without configured source ingress | Pending |
-| D2 | Configured original writer/source/namespace; retained cancelled work, bounded pending admission and unresolved-owner readiness fencing | Pending |
-| D3 | Actual App Server/AutomationStore drain with commit, revoke and panic cases, including two cancelled queued imports | Pending |
+The preceding `1b86` source had four native passes but a subsequent one-line Clippy rewrite. Its result and original patch remain in a separate archive; they do not stand in for the final exact-source run.
 
-Each B–D3 stage has a separate commit and branch. The temporary aggregate
-validation comparison lets the native job retain the complete formatter output
-before the review bases are split at those existing boundaries.
+## Complete owner integration
 
-The control caller supplies only snapshot JSON. The embedding supplies the
-original writer, private scope, namespace and source verifier. Hashes and
-provenance strings do not authenticate a source; authentic custody does not
-automatically make its facts Verified. No authority constructor or deployment
-binding is synthesized by this checkpoint.
+Current [#5892](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5892) source is `c6aa120a5a35a0208ed4b92d466904b00cd58f9b`, tree `6a4634549e055d4f81d4e4dbd8e400b8c6d97b89`. `CURRENT_SOURCES.json` inventories its 30 owner-related files.
 
-Canonical mutations, the source/revision mapping and the full import receipt
-share one SQLite transaction. An identical retry returns the original receipt
-without adding another canonical memory revision. Coordination and checkpoint
-bookkeeping are not claimed to perform no writes.
+The implementation includes the original-writer transaction bridge, retained import tasks, bounded control admission, unresolved-settlement fencing, cancellation/drain regression cases, and an explicit-context source-currentness guard. That guard retains the admitted observation only after native commit acknowledgement and checks the original verifier before and after explicit reads/final revalidation. Cold configured state refuses until import/reconciliation; older delayed publication cannot replace a newer generation.
 
-Retained work survives cancellation of its response future. Drain waits for an
-acknowledged commit or rollback. Unresolved settlement is published before the
-pending count is released. The original writer's shared import mutex keeps
-queued episodic transactions behind its existing native commit fence; readiness
-and ordinary cognitive reads also observe unresolved state. Existing fenced
-owner recovery observation is preserved.
+Pinned Rustfmt was actually run on `6be` and `5496`. Original preimages, postimages, complete patches and receipts are retained. The `6be` host and GitHub outputs match byte for byte across all 24 before files, 18 rewritten files and the complete 75,556-byte patch. Those dirty-source attempts ran **zero native tests**. Their actual postimages were published before subsequent native attempts.
 
-SQLite can release a lock before a failed commit acknowledgement is observed.
-The new mutex protects later episodic imports; ordinary native writes before
-that observation retain the existing native transaction contract. The final
-source check is a read linearization point, not an external-effect lease.
+Two exact `81889` native attempts both passed clean format and V8 input preparation, then stopped in compilation with **zero test cases executed**:
 
-The v1 bridge admits at most 32 lifetime fact slots. A retired slot stays retired,
-including when Python explicitly writes a valid newer version. This is narrower
-than Python's write-after-revoke semantics and requires a separately authorized
-namespace or a future qualified reconstruction path. The control input is
-bounded at 20 KiB; the native snapshot parser is bounded at 64 KiB.
+1. Bindgen could not find `stddef.h`. A new process used the verified GCC include directory through `BINDGEN_EXTRA_CLANG_ARGS`; no source or system configuration changed.
+2. Rust reported E0382 because a reopen regression called `drop(store)` after `close(self)`. Commit `c6aa` removes only that redundant line and retains the close and original reopen assertions.
 
-## Actual formatter evidence
+The fresh `c6aa` host attempt is admitted with a fixed overall deadline of 04:47:03 UTC. It will rerun 11 selected memory cases, 5 selected Agentd cases, the protocol package and all three scoped fixes on the exact source, checking all three drain child completion markers. **No result is claimed yet.** Its separate GitHub run is queued. Completed/cancelled GitHub runs with no executed steps remain distinct from the actual host compilation failures.
 
-The first A job, [130244877806](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42935621920/job/130244877806),
-used Rust 1.96.0 and exact source `e68a2fbcc8b72d9081e1cc44ab1066837e53649c`.
-The formatter exited zero, changed exactly five A files, and the clean-source
-gate correctly exited one. All native test and fix steps were skipped.
+`STAGES.json` preserves the original unformatted B/C/D1/D2/D3 history. `historical-formatted-stages-81889.json` preserves the independently replayed formatted source stack through E at `81889`; it excludes the later compile repair and makes no per-stage native validation claim.
 
-The original artifact's before archive matches the published blobs byte for
-byte. Applying its complete patch reproduces every formatter postimage. Those
-exact postimages are committed in the current A source. No compilation or test
-result is inferred from applying formatting. The new source-head run reports a successful format step and is running the
-native test command; final receipts and test counts are pending. The full B–D3
-integration run is separately queued.
+## Windows, dependencies and provider route
 
-## Runtime and outstanding acceptance
+The original signed-credit case on `4eb497e` completed with 0 passes, 1 failure, 269 filtered/unselected and 0 retries: Windows OS error 33 occurred when the fixture reopened a byte-range-locked file. Source remained clean. [#5889](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5889) retains its complete terminal evidence.
 
-The h remote execution channel currently returns `MCP -32603 Internal error`
-for read-only health checks. Earlier native/preflight requests without a
-terminal receipt remain **UNKNOWN**. Their original request/session identities
-are retained in the runtime archive; no replacement identity was used to replay
-them. The MEM6 archive publisher is prepared but has not run.
+The separate [#5902](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5902) repair observes complete bounded bytes through the original locked descriptor under the existing qualification-only feature. It preserves the original complete-byte assertions and does not substitute cached state or lengths. The new Windows original-case run is still pending. An earlier Linux compile attempt omitted a required sparse-checkout directory and executed zero cases; its original failure is retained.
 
-The restored MEM6 archive remains a verified file-restoration milestone:
-61,412,948 original archive bytes and 10,365 restored logical files. It does not
-recover original live grants, provider bindings, independent source custody or
-external-effect state. Full archive publication is still incomplete.
+A minimal dependency closure is being validated separately. Upstream results are not transferred to the candidate or to whole-repository CI.
 
-Historical scientific results are unchanged: fixed-public working-state
-retention was 30/84 versus 28/84, with source-level one-sided 95% bootstrap lower
-bound **0.0**. The new-source selector comparison was 21/54 versus 13/54, with
-9 wins, 44 ties and 1 loss. Their original no-op and bypass accounting stays in
-the previous reports. No unseen episodic successor experiment has been run here.
+The existing authenticated Responses route answered read-only health, routing and model-list requests and reported `qwen38-flash-next-uc`. A persistent fixture-owner smoke is being prepared to record requested and observed provider/model plus thread/turn identity. **This checkpoint contains zero new real actor episodes and zero newly qualified inference calls.** A route observation does not establish original-owner final-use binding or episodic successor benefit.
 
-All original open blocker IDs remain in `BLOCKERS.json`. Production source and
-provider binding, true memory-off exposure control, matched unseen successor
-benefit, strong-baseline/association comparison, deletion and external-effect
-qualification, independent full-owner recovery and complete cost/slow
-consolidation still require their own evidence. The adoption decision is
-**HOLD / NoUpdate**.
+## Remaining adoption gates
+
+One of the eleven inherited blockers is closed; **ten remain open**, with explicit findings in `BLOCKERS.json`. Historical MEM6 retention remains 30/84 versus 28/84 with a source-level one-sided 95% lower bound of 0.0. New-source selector results remain 21/54 versus 13/54, including initial no-ops and a bypass. No statistic was reweighted or threshold relaxed.
+
+Outstanding work includes original source/owner authority, real provider final use, unseen episodic successor benefit against matched baselines, deletion propagation and external effects, independent trust and full owner/effect cold recovery, complete cost/slow consolidation, and remaining repository consumers.
+
+The source-currentness guard covers explicit context and final revalidation paths. Automatic attachments, recall/explain, history and direct store callers still require their own binding or effective isolation. Source custody does not establish factual truth, and a read guard does not provide an external-effect lease.
