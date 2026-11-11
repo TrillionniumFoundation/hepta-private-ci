@@ -63,9 +63,9 @@ All entries below belong to b054, tree `3f89ddeff13d0af85f4abe2690699107357f1038
 | --- | --- |
 | Private CI, run 43035589916 | 34 distinct selected PASS; repeated positives and counterfactual mutants kept separate |
 | MEM, run 43035589682 | 35 integrity Python PASS; 14 synthetic reader processes; 0 CPU-contract tests and 0 native tests |
-| Architecture source head, run 43035589987 | 136 Python PASS; 0 Rust/native tests; source-derived check not reached |
-| Architecture separate base merge, same run | 136 Python PASS with the same case IDs |
-| Architecture combined accounting | 272 Python executions / 136 distinct cases |
+| Architecture source head, run 43035589987 | 136 qualification-receipted Python PASS plus 8 raw-only preflight PASS; 0 Rust/native tests; source-derived check not reached |
+| Architecture separate base merge, same run | The same 136 receipted and 8 raw-only Python case IDs: 144 PASS |
+| Architecture combined accounting | 288 Python executions / 144 distinct cases; of these, 272 executions / 136 IDs have qualification command receipts |
 | Blocking, run 43035589938 | 37 terminal jobs: 23 success, 6 failure, 4 cancelled, 4 skipped |
 | Windows-current, run 43035590081 | Cancelled; 124 completed of 167 cases: 122 strict PASS, 1 LEAK, 1 FAIL; 43 unfinished |
 
@@ -77,7 +77,9 @@ The Private scope includes the original signed-credit case and its clean before/
 
 The MEM CPU/native jobs failed during apt prerequisites after DNS failures for `azure.archive.ubuntu.com`. The Architecture source job failed during its apt prerequisite after DNS failures for `ports.ubuntu.com`. Those are prerequisite failures; unexecuted Rust or CPU suites are not counted as failed test cases or inherited passes. The completed integrity/source Python results retain their actual identities.
 
-The separate Architecture base merge was `52c1eb3eba7e58a09f262bd2bfec5440fa3e3d41`, with the b054 tree. Its 136 Python IDs equal the source job's 136 IDs. Earlier 138-case or 526-Rust results are not transferred into this checkpoint.
+The separate Architecture base merge was `52c1eb3eba7e58a09f262bd2bfec5440fa3e3d41`, with the b054 tree. Its 136 qualification-receipted Python IDs equal the source job's 136 IDs. Each original complete job log additionally contains one actual invocation, eight contiguous successful `CandidatePlanTests` results, an eight-test successful summary and the subsequent source binding. Those eight IDs are distinct from the 136 receipted IDs and equal across both lanes. Thus the complete observed Python count is **144 per lane, 288 executions and 144 distinct IDs across the two lanes**. The original 136/272 audits remain unchanged as historical receipt-scope reports; the separate additive correction verifies exact original lines and line endings. Raw-only outcomes do not create missing per-command source receipts. Earlier 138-case or 526-Rust results are not transferred into this checkpoint.
+
+[Additive count correction and original line bindings](v16/architecture-count-addendum/ARCH_CANDIDATE_RAW_ONLY_COUNT_ADDENDUM.json) · [independent full-raw and offline replay](v16/architecture-count-addendum/ROOT_ARCH_PREFLIGHT_ADDENDUM_AUDIT.json)
 
 The 14 synthetic reader processes retain request/response/context hashes and zero model calls. They exercise logical read exclusion; snapshot bytes still exist. These are not real-task benefit, an independent trust domain, or full original-owner cold recovery.
 
@@ -144,6 +146,10 @@ The job keeps one 65-minute envelope, original capture/local profile/100 ms leak
 A known failed native group stops later native groups. Independently authorized scoped lint may continue only after an acknowledged exit and stable source, tools, helpers and both locks. An unknown exit or any drift stops all later commands. Overall acceptance requires five actual PASS cases and all three scoped fixes clean. The failed-result field `native_case_count` counts only accepted cases; actual attempts, partial passes, failures and LEAK are taken from original per-group raw/JUnit.
 
 [Actual admission](v16/native-five-preparation/ACTUAL_ADMISSION.json) · [final rendered-source peer](v16/native-five-preparation/FINAL_RENDERED_PEER.json)
+
+The preparation package was independently read back in full from two actual binary parts at immutable `247cb54f146c52a757c1419d303dba39d0d040ca`. Its 815,008 bytes, all 73 members, 19 original references, 26 final-source dependencies, four rendered harness files and complete source tree were verified by the unchanged offline reader. This verifies the admitted preparation and its source binding; it contains no completed native results.
+
+[Complete preparation remote replay](v16/native-five-preparation/ROOT_REMOTE_ARCHIVE_AUDIT.json)
 
 The newly discovered regular c895 runs are blocking [43048568477](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43048568477), Private [43048568252](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43048568252), MEM [43048568457](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43048568457), Architecture [43048568183](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43048568183) and Windows-current [43048569129](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43048569129). They are separate original runs on the new source. This checkpoint assigns no old native result to them and does not claim a completed required-CI result.
 

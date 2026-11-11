@@ -1,0 +1,665 @@
+{
+  "schema": "mem8.architecture.raw-preflight-count-addendum.v1",
+  "correction": "136 per lane denotes hepta_ci_exec qualification-receipted Python cases, not every Python execution. Each original lane additionally executed 8 distinct CandidatePlanTests visible in complete raw, with their own invocation and successful summary.",
+  "per_source_counts": [
+    {
+      "source_commit": "b0547d2f874c0aeb54dabd3491caa2bee49fcb0b",
+      "qualification_receipted_executions": 272,
+      "additional_raw_only_executions": 16,
+      "all_python_executions": 288,
+      "distinct_python_case_ids": 144,
+      "each_lane": {
+        "receipted": 136,
+        "raw_only": 8,
+        "total": 144
+      }
+    },
+    {
+      "source_commit": "c89540598693697577cda8cba31cb07f6ce65317",
+      "qualification_receipted_executions": 272,
+      "additional_raw_only_executions": 16,
+      "all_python_executions": 288,
+      "distinct_python_case_ids": 144,
+      "each_lane": {
+        "receipted": 136,
+        "raw_only": 8,
+        "total": 144
+      }
+    }
+  ],
+  "identical_8_raw_only_ids_across_all_four_original_jobs": true,
+  "identical_144_case_id_union_across_all_four_original_jobs": true,
+  "all_144_case_ids": [
+    "scripts.test_hepta_candidate_transport_workflow.CandidateTransportWorkflowTests.test_advisory_observation_follows_behavior_and_does_not_replace_required_native_result",
+    "scripts.test_hepta_candidate_transport_workflow.CandidateTransportWorkflowTests.test_explicit_denial_is_retained_without_claiming_other_permissions",
+    "scripts.test_hepta_candidate_transport_workflow.CandidateTransportWorkflowTests.test_prerequisites_and_lock_check_precede_native_builds",
+    "scripts.test_hepta_candidate_transport_workflow.CandidateTransportWorkflowTests.test_timeout_is_unknown_not_a_permission_denial",
+    "scripts.test_hepta_candidate_transport_workflow.CandidateTransportWorkflowTests.test_unknown_transport_is_retained_without_claiming_write_denial",
+    "scripts.test_hepta_control_hardening.CheckSourceTests.test_api_has_a_request_timeout",
+    "scripts.test_hepta_control_hardening.CheckSourceTests.test_api_timeout_never_emits_success",
+    "scripts.test_hepta_control_hardening.CheckSourceTests.test_boolean_observed_identity_is_not_app_one",
+    "scripts.test_hepta_control_hardening.CheckSourceTests.test_evaluator_cannot_also_publish_blocking_check",
+    "scripts.test_hepta_control_hardening.CheckSourceTests.test_extra_required_context_must_pin_its_source",
+    "scripts.test_hepta_control_hardening.CheckSourceTests.test_oversized_check_page_rejected",
+    "scripts.test_hepta_control_hardening.CheckSourceTests.test_owner_and_conversation_controls_cannot_be_inferred_from_fixture",
+    "scripts.test_hepta_control_hardening.CheckSourceTests.test_owner_can_disable_review_without_substituting_check_source",
+    "scripts.test_hepta_control_hardening.CheckSourceTests.test_unpinned_blocking_context_rejected",
+    "scripts.test_hepta_control_hardening.CheckSourceTests.test_valid_distinct_pinned_sources",
+    "scripts.test_hepta_control_hardening.CheckSourceTests.test_wrong_branch_fails_before_collecting_checks",
+    "scripts.test_hepta_control_hardening.FormattingCommandTests.test_format_failure_is_retained_and_not_swallowed",
+    "scripts.test_hepta_control_hardening.FormattingCommandTests.test_format_success_does_not_become_failure",
+    "scripts.test_hepta_control_hardening.TransportObservationTests.test_auth_network_policy_and_success_remain_unknown_observations",
+    "scripts.test_hepta_control_hardening.TransportObservationTests.test_cli_preserves_verified_controls_and_reports_transport_unknown",
+    "scripts.test_hepta_control_hardening.TransportObservationTests.test_cli_transport_denial_cannot_replace_failed_live_protection",
+    "scripts.test_hepta_control_hardening.TransportObservationTests.test_explicit_authenticated_write_denial_is_narrow_observation",
+    "scripts.test_hepta_control_hardening.TransportObservationTests.test_missing_token_and_bad_repository_never_access_network",
+    "scripts.test_hepta_control_hardening.TransportObservationTests.test_read_api_failure_does_not_probe_or_pass",
+    "scripts.test_hepta_control_hardening.TransportObservationTests.test_repository_identity_mismatch_rejected",
+    "scripts.test_hepta_control_hardening.TransportObservationTests.test_response_size_is_bounded",
+    "scripts.test_hepta_control_hardening.TransportObservationTests.test_timeout_is_not_denial_and_closes_connection",
+    "scripts.test_hepta_merge_identity_records.MergeIdentityRecordTests.test_commit_api_failure_retains_ref_and_failure",
+    "scripts.test_hepta_merge_identity_records.MergeIdentityRecordTests.test_different_tree_is_refused_and_observed",
+    "scripts.test_hepta_merge_identity_records.MergeIdentityRecordTests.test_exact_parents_and_tree_succeed_with_observations",
+    "scripts.test_hepta_merge_identity_records.MergeIdentityRecordTests.test_merge_conflict_is_refused_and_git_output_is_retained",
+    "scripts.test_hepta_merge_identity_records.MergeIdentityRecordTests.test_ref_api_failure_retains_expected_identity_and_failure",
+    "scripts.test_hepta_merge_identity_records.MergeIdentityRecordTests.test_single_parent_is_refused_and_observed",
+    "scripts.test_hepta_merge_identity_records.MergeIdentityRecordTests.test_stale_base_is_refused_and_observed",
+    "scripts.test_hepta_merge_identity_records.MergeIdentityRecordTests.test_stale_source_is_refused_and_observed",
+    "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_different_merge_tree_requires_real_tests_not_only_compile",
+    "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_identical_merge_reuses_tree_only_with_required_source_success",
+    "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_invalid_identity_and_unknown_lane_fail_before_git",
+    "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_parent_order_is_part_of_exact_merge_identity",
+    "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_source_always_executes_native_checks",
+    "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_source_lane_cannot_test_a_different_commit",
+    "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_synthetic_merge_alias_has_same_exact_tree_semantics",
+    "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_wrong_checkout_cannot_reuse_a_receipt",
+    "scripts.tests.test_hepta_ci_scope.ScopeTests.test_bad_paths_fail_instead_of_selecting_nothing",
+    "scripts.tests.test_hepta_ci_scope.ScopeTests.test_code_owned_markdown_is_not_assumed_pure_prose",
+    "scripts.tests.test_hepta_ci_scope.ScopeTests.test_commit_id_validation_precedes_subprocess",
+    "scripts.tests.test_hepta_ci_scope.ScopeTests.test_effectful_retirement_keeps_lifecycle_and_effect_tests",
+    "scripts.tests.test_hepta_ci_scope.ScopeTests.test_generated_module_projections_do_not_force_native_builds",
+    "scripts.tests.test_hepta_ci_scope.ScopeTests.test_generated_projection_is_derived_only",
+    "scripts.tests.test_hepta_ci_scope.ScopeTests.test_git_diff_covers_real_rename_and_deleted_path",
+    "scripts.tests.test_hepta_ci_scope.ScopeTests.test_inference_local_change_does_not_run_browser_learning_or_objective",
+    "scripts.tests.test_hepta_ci_scope.ScopeTests.test_manual_full_keeps_all_groups_even_with_no_paths",
+    "scripts.tests.test_hepta_ci_scope.ScopeTests.test_plasticity_change_runs_learning_and_lifecycle_only",
+    "scripts.tests.test_hepta_ci_scope.ScopeTests.test_readme_and_ordinary_prose_do_not_prepare_native_dependencies",
+    "scripts.tests.test_hepta_ci_scope.ScopeTests.test_registry_is_runtime_consumed_lifecycle_input",
+    "scripts.tests.test_hepta_ci_scope.ScopeTests.test_rename_keeps_source_and_destination_groups",
+    "scripts.tests.test_hepta_ci_scope.ScopeTests.test_repository_policy_regressions_keep_their_python_scope",
+    "scripts.tests.test_hepta_ci_scope.ScopeTests.test_runtime_module_abi_stays_on_lifecycle_boundary",
+    "scripts.tests.test_hepta_ci_scope.ScopeTests.test_shared_types_and_agentd_keep_cross_domain_coverage",
+    "scripts.tests.test_hepta_ci_scope.ScopeTests.test_topology_contract_stays_on_lifecycle_boundary",
+    "scripts.tests.test_hepta_ci_scope.ScopeTests.test_unknown_or_executable_document_selects_full",
+    "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_activation_is_not_self_authorized",
+    "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_admin_bypass",
+    "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_any_app_cannot_sign_evaluation",
+    "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_api_denial_cannot_be_replaced_with_source_policy",
+    "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_app_review_bypass",
+    "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_boolean_does_not_count_as_one_review",
+    "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_context_name_alone_is_not_an_independent_identity",
+    "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_explicit_disabled_reviews_do_not_replace_independent_evaluation",
+    "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_force_push_enabled",
+    "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_main_drift_during_observation_fails",
+    "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_main_unprotected",
+    "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_missing_codeowner_review_policy_fails_closed",
+    "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_missing_conversation_policy_fails_closed",
+    "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_missing_extra_required_gate_fails",
+    "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_missing_review_policy_is_not_observed_disabled_policy",
+    "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_neutral_is_not_success",
+    "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_new_pending_invalidates_old_success",
+    "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_no_reviews_required",
+    "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_old_main_head",
+    "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_owner_may_disable_codeowner_review",
+    "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_owner_may_disable_last_push_review",
+    "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_owner_may_disable_stale_review_dismissal",
+    "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_pagination_reads_beyond_first_page",
+    "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_policy_drift_during_observation_fails",
+    "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_shared_actions_identity_is_not_independent",
+    "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_skipped_is_not_success",
+    "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_stale_base_allowed",
+    "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_strict_observed_profile",
+    "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_unbounded_pagination_fails_instead_of_certifying_prefix",
+    "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_unknown_admin_enforcement",
+    "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_unknown_codeowner_policy_is_rejected",
+    "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_unknown_conversation_policy_fails_closed",
+    "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_unknown_force_push_policy",
+    "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_unknown_owner_policy_rejects_before_loading_check_history",
+    "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_untrusted_success_cannot_replace_trusted_failure",
+    "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_user_review_bypass",
+    "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_wrong_sha_check_not_reused",
+    "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_wrong_trusted_app",
+    "test_hepta_ci_exec.ExecutionRecordTests.test_actual_command_success_binds_source_tree_parents_and_argv",
+    "test_hepta_ci_exec.ExecutionRecordTests.test_conflicting_merge_never_dispatches_an_arbitrary_resolution",
+    "test_hepta_ci_exec.ExecutionRecordTests.test_divergent_clean_merge_records_recomputed_tree",
+    "test_hepta_ci_exec.ExecutionRecordTests.test_existing_receipt_cannot_be_overwritten_or_reused",
+    "test_hepta_ci_exec.ExecutionRecordTests.test_killed_command_is_failed_not_passed",
+    "test_hepta_ci_exec.ExecutionRecordTests.test_matching_parents_with_wrong_tree_reject_before_command",
+    "test_hepta_ci_exec.ExecutionRecordTests.test_merge_lane_rejects_symbolic_base_identity",
+    "test_hepta_ci_exec.ExecutionRecordTests.test_nonzero_command_is_retained_and_not_converted_to_pass",
+    "test_hepta_ci_exec.ExecutionRecordTests.test_shallow_checkout_records_real_commit_parents_not_traversal_grafts",
+    "test_hepta_ci_exec.ExecutionRecordTests.test_source_lane_cannot_relabel_another_commit",
+    "test_hepta_ci_exec.ExecutionRecordTests.test_successful_command_mutating_source_still_fails",
+    "test_hepta_ci_exec.ExecutionRecordTests.test_synthetic_merge_accepts_only_exact_ordered_parents",
+    "test_hepta_ci_exec.ExecutionRecordTests.test_wrong_checkout_and_dirty_inputs_never_dispatch",
+    "test_hepta_ci_exec.WorkflowCommandBindingTests.test_shell_preserves_test_targets_and_strict_lint_arguments",
+    "test_hepta_ci_exec.WorkflowCommandBindingTests.test_shell_test_failure_has_no_lint_pass_receipt",
+    "test_hepta_ci_exec_deadline.CommandDeadlineTests.test_cli_retains_failed_receipt_instead_of_successful_parent_exit",
+    "test_hepta_ci_exec_deadline.CommandDeadlineTests.test_detached_pipe_holder_does_not_deadlock_stream_close",
+    "test_hepta_ci_exec_deadline.CommandDeadlineTests.test_diagnostics_before_timeout_survive",
+    "test_hepta_ci_exec_deadline.CommandDeadlineTests.test_eof_is_not_completion",
+    "test_hepta_ci_exec_deadline.CommandDeadlineTests.test_exited_parent_cannot_leave_a_running_pipe_holder",
+    "test_hepta_ci_exec_deadline.CommandDeadlineTests.test_invalid_bounds_dispatch_nothing",
+    "test_hepta_ci_exec_deadline.CommandDeadlineTests.test_normal_exit_is_not_a_timeout",
+    "test_hepta_ci_exec_deadline.CommandDeadlineTests.test_output_cap_remains_independent_of_deadline",
+    "test_hepta_ci_exec_deadline.CommandDeadlineTests.test_silent_process_times_out",
+    "test_hepta_ci_exec_output.CommandOutputTests.test_bounded_output_kills_command_and_preserves_bounded_prefix",
+    "test_hepta_ci_exec_output.CommandOutputTests.test_compile_only_success_does_not_satisfy_test_gate",
+    "test_hepta_ci_exec_output.CommandOutputTests.test_deleted_receipt_does_not_allow_overwriting_an_earlier_log",
+    "test_hepta_ci_exec_output.CommandOutputTests.test_empty_other_test_binaries_do_not_invalidate_real_selected_tests",
+    "test_hepta_ci_exec_output.CommandOutputTests.test_existing_log_cannot_be_reused",
+    "test_hepta_ci_exec_output.CommandOutputTests.test_ignored_tests_are_not_executed_tests",
+    "test_hepta_ci_exec_output.CommandOutputTests.test_nextest_summary_does_not_double_count_nested_libtest",
+    "test_hepta_ci_exec_output.CommandOutputTests.test_no_test_requirement_keeps_existing_non_test_commands_compatible",
+    "test_hepta_ci_exec_output.CommandOutputTests.test_real_failure_output_and_digest_are_retained",
+    "test_hepta_ci_exec_output.CommandOutputTests.test_real_unittest_empty_suite_fails_minimum",
+    "test_hepta_ci_exec_output.CommandOutputTests.test_real_unittest_partial_skip_counts_only_success",
+    "test_hepta_ci_exec_output.CommandOutputTests.test_real_unittest_skip_and_expected_failure_do_not_count_as_pass",
+    "test_hepta_ci_exec_output.CommandOutputTests.test_real_unittest_success_satisfies_minimum",
+    "test_hepta_ci_exec_output.CommandOutputTests.test_real_unittest_unexpected_success_is_failure",
+    "test_hepta_ci_exec_output.CommandOutputTests.test_successful_source_mutation_is_still_rejected",
+    "test_hepta_ci_exec_output.CommandOutputTests.test_swallowed_nextest_timeout_is_not_a_pass",
+    "test_hepta_ci_exec_output.CommandOutputTests.test_swallowed_unittest_failure_cannot_become_success",
+    "test_hepta_ci_exec_output.CommandOutputTests.test_unfinished_unittest_footer_is_not_success",
+    "test_hepta_ci_exec_output.CommandOutputTests.test_unittest_footer_at_eof_is_counted",
+    "test_hepta_ci_exec_output.CommandOutputTests.test_wrong_source_never_creates_a_command_log",
+    "test_hepta_ci_exec_output.CommandOutputTests.test_zero_tests_is_failure_even_with_process_success"
+  ],
+  "case_ids_digest_serialization": "JSON array in listed order, ensure_ascii=True, separators=(',', ':'), UTF-8, no trailing newline",
+  "original_raw_bytes_modified": false,
+  "new_tests_models_or_CI_runs": 0,
+  "old_audit_preserved_as_historical_receipt_scope": true,
+  "limits": "Raw-only preflight outcomes do not create missing per-command source-before/after receipts or native success; no result is transferred between source heads.",
+  "jobs": [
+    {
+      "raw_file": "/workspace/scratch/ed3538174819/mem-ci-b054-memarch-root/original/job-130573424803.log",
+      "full_raw": {
+        "bytes": 85376,
+        "sha256": "611a587ef421183bfe1b837bcd229e4a9fe3968c2001afee0259b9b4efdf44e5",
+        "git_blob": "4fcbb1d5a1a3860f5341540fea37b746f235ba5c"
+      },
+      "job_id": 130573424803,
+      "lane": "source-head",
+      "source_commit": "b0547d2f874c0aeb54dabd3491caa2bee49fcb0b",
+      "source_tree": "3f89ddeff13d0af85f4abe2690699107357f1038",
+      "tested_commit": "b0547d2f874c0aeb54dabd3491caa2bee49fcb0b",
+      "literal_invocation": {
+        "line": 209,
+        "text": "2026-11-11T14:08:44.4791368Z \u001b[36;1mpython3 -m unittest -v scripts.tests.test_hepta_ci_candidate\u001b[0m",
+        "sha256_including_line_ending": "bbe97a3d1739d4ace9b86f375057ecb943d5c10286084654bb8b1fe6924bf5a4"
+      },
+      "case_results": [
+        {
+          "line": 224,
+          "case_id": "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_different_merge_tree_requires_real_tests_not_only_compile",
+          "status": "PASS",
+          "text": "2026-11-11T14:08:44.6569227Z test_different_merge_tree_requires_real_tests_not_only_compile (scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_different_merge_tree_requires_real_tests_not_only_compile) ... ok",
+          "sha256_including_line_ending": "7ac37263f321711cd4d352a59588257f185f8cc28cced49205ce954559c1edcb"
+        },
+        {
+          "line": 225,
+          "case_id": "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_identical_merge_reuses_tree_only_with_required_source_success",
+          "status": "PASS",
+          "text": "2026-11-11T14:08:44.6886448Z test_identical_merge_reuses_tree_only_with_required_source_success (scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_identical_merge_reuses_tree_only_with_required_source_success) ... ok",
+          "sha256_including_line_ending": "7c658abe055d672dc7d99c1e50db334f9942cfa051a72252ffc81b6e85100746"
+        },
+        {
+          "line": 226,
+          "case_id": "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_invalid_identity_and_unknown_lane_fail_before_git",
+          "status": "PASS",
+          "text": "2026-11-11T14:08:44.7109028Z test_invalid_identity_and_unknown_lane_fail_before_git (scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_invalid_identity_and_unknown_lane_fail_before_git) ... ok",
+          "sha256_including_line_ending": "3ef73dc49f5412e2610d567983a1705bed532bd2ad1c8995ce522a3919e1836e"
+        },
+        {
+          "line": 227,
+          "case_id": "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_parent_order_is_part_of_exact_merge_identity",
+          "status": "PASS",
+          "text": "2026-11-11T14:08:44.7406265Z test_parent_order_is_part_of_exact_merge_identity (scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_parent_order_is_part_of_exact_merge_identity) ... ok",
+          "sha256_including_line_ending": "6644ce63dc9c5f25deb5c3d0a28b9ed1a6e81ff50d6eda77b878ce4e57f8bcf8"
+        },
+        {
+          "line": 228,
+          "case_id": "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_source_always_executes_native_checks",
+          "status": "PASS",
+          "text": "2026-11-11T14:08:44.7654040Z test_source_always_executes_native_checks (scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_source_always_executes_native_checks) ... ok",
+          "sha256_including_line_ending": "7ac0002ea9c967122e118a5a8406984d550ba3ef9cabc52d4b39a8c5ff2c2891"
+        },
+        {
+          "line": 229,
+          "case_id": "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_source_lane_cannot_test_a_different_commit",
+          "status": "PASS",
+          "text": "2026-11-11T14:08:44.7932372Z test_source_lane_cannot_test_a_different_commit (scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_source_lane_cannot_test_a_different_commit) ... ok",
+          "sha256_including_line_ending": "d4e00e4b617ba24a680d31b3f5440584dd856f2e70213b54a95a8b504e5857c9"
+        },
+        {
+          "line": 230,
+          "case_id": "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_synthetic_merge_alias_has_same_exact_tree_semantics",
+          "status": "PASS",
+          "text": "2026-11-11T14:08:44.8254414Z test_synthetic_merge_alias_has_same_exact_tree_semantics (scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_synthetic_merge_alias_has_same_exact_tree_semantics) ... ok",
+          "sha256_including_line_ending": "b1deedf6043ef6ff57a7d1c502ec99260967813ddc662af327aac9f1f1e0de12"
+        },
+        {
+          "line": 231,
+          "case_id": "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_wrong_checkout_cannot_reuse_a_receipt",
+          "status": "PASS",
+          "text": "2026-11-11T14:08:44.8670408Z test_wrong_checkout_cannot_reuse_a_receipt (scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_wrong_checkout_cannot_reuse_a_receipt) ... ok",
+          "sha256_including_line_ending": "67f7599f6d7097c60ef54b883a6bd196d364efb6ea53d553f2a7d0f1e620034b"
+        }
+      ],
+      "original_result_block": {
+        "first_line": 224,
+        "last_line": 236,
+        "bytes": 1853,
+        "sha256": "f664396b98fe12b5b4d9a8d11962536c8f9b00726a002ac78c87c5412179c782",
+        "git_blob": "624da0c8210426da29aeacc05d9ef03bde6020e2",
+        "text": "2026-11-11T14:08:44.6569227Z test_different_merge_tree_requires_real_tests_not_only_compile (scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_different_merge_tree_requires_real_tests_not_only_compile) ... ok\n2026-11-11T14:08:44.6886448Z test_identical_merge_reuses_tree_only_with_required_source_success (scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_identical_merge_reuses_tree_only_with_required_source_success) ... ok\n2026-11-11T14:08:44.7109028Z test_invalid_identity_and_unknown_lane_fail_before_git (scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_invalid_identity_and_unknown_lane_fail_before_git) ... ok\n2026-11-11T14:08:44.7406265Z test_parent_order_is_part_of_exact_merge_identity (scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_parent_order_is_part_of_exact_merge_identity) ... ok\n2026-11-11T14:08:44.7654040Z test_source_always_executes_native_checks (scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_source_always_executes_native_checks) ... ok\n2026-11-11T14:08:44.7932372Z test_source_lane_cannot_test_a_different_commit (scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_source_lane_cannot_test_a_different_commit) ... ok\n2026-11-11T14:08:44.8254414Z test_synthetic_merge_alias_has_same_exact_tree_semantics (scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_synthetic_merge_alias_has_same_exact_tree_semantics) ... ok\n2026-11-11T14:08:44.8670408Z test_wrong_checkout_cannot_reuse_a_receipt (scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_wrong_checkout_cannot_reuse_a_receipt) ... ok\n2026-11-11T14:08:44.8671314Z \n2026-11-11T14:08:44.8671585Z ----------------------------------------------------------------------\n2026-11-11T14:08:44.8671995Z Ran 8 tests in 0.246s\n2026-11-11T14:08:44.8672536Z \n2026-11-11T14:08:44.8672724Z OK\n"
+      },
+      "summary": {
+        "line": 234,
+        "text": "2026-11-11T14:08:44.8671995Z Ran 8 tests in 0.246s"
+      },
+      "source_binding": {
+        "line": 237,
+        "text": "2026-11-11T14:08:44.9138845Z {\"base_sha\": \"96038ccf0660154fac143ba6cbe4be81e00813e8\", \"lane\": \"source-head\", \"native_execution_required\": true, \"requires_source_head_success\": false, \"schema_version\": 1, \"source_sha\": \"b0547d2f874c0aeb54dabd3491caa2bee49fcb0b\", \"source_tree\": \"3f89ddeff13d0af85f4abe2690699107357f1038\", \"tested_sha\": \"b0547d2f874c0aeb54dabd3491caa2bee49fcb0b\", \"tested_tree\": \"3f89ddeff13d0af85f4abe2690699107357f1038\"}",
+        "sha256_including_line_ending": "dd7ae810a980b42460b5cb7d7b5bc5d2ae1f28c0510eb84c7ed82711a325feb0",
+        "parsed": {
+          "base_sha": "96038ccf0660154fac143ba6cbe4be81e00813e8",
+          "lane": "source-head",
+          "native_execution_required": true,
+          "requires_source_head_success": false,
+          "schema_version": 1,
+          "source_sha": "b0547d2f874c0aeb54dabd3491caa2bee49fcb0b",
+          "source_tree": "3f89ddeff13d0af85f4abe2690699107357f1038",
+          "tested_sha": "b0547d2f874c0aeb54dabd3491caa2bee49fcb0b",
+          "tested_tree": "3f89ddeff13d0af85f4abe2690699107357f1038"
+        }
+      },
+      "raw_only_case_ids": [
+        "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_different_merge_tree_requires_real_tests_not_only_compile",
+        "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_identical_merge_reuses_tree_only_with_required_source_success",
+        "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_invalid_identity_and_unknown_lane_fail_before_git",
+        "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_parent_order_is_part_of_exact_merge_identity",
+        "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_source_always_executes_native_checks",
+        "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_source_lane_cannot_test_a_different_commit",
+        "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_synthetic_merge_alias_has_same_exact_tree_semantics",
+        "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_wrong_checkout_cannot_reuse_a_receipt"
+      ],
+      "raw_only_passed": 8,
+      "qualification_receipt_unique_ids": 136,
+      "raw_only_ids_disjoint_from_qualification_receipt_ids": true,
+      "all_python_executions_in_this_lane": 144,
+      "structured_command_receipt_for_this_preflight": false,
+      "all_python_case_ids_canonical_json_sha256": "7b157dd7424962d72364b7a4b03aa2f91133b5af174239037fde47ec4b99f0b6"
+    },
+    {
+      "raw_file": "/workspace/scratch/ed3538174819/mem-ci-b054-memarch-root/original/job-130573424857.log",
+      "full_raw": {
+        "bytes": 92313,
+        "sha256": "d730a01752b78e0c7840c8811688a13e41dba9b6597ec0b28798de5d8becff8b",
+        "git_blob": "f5b8912540913a35a839e4994f25eadb33676815"
+      },
+      "job_id": 130573424857,
+      "lane": "base-merge",
+      "source_commit": "b0547d2f874c0aeb54dabd3491caa2bee49fcb0b",
+      "source_tree": "3f89ddeff13d0af85f4abe2690699107357f1038",
+      "tested_commit": "52c1eb3eba7e58a09f262bd2bfec5440fa3e3d41",
+      "literal_invocation": {
+        "line": 350,
+        "text": "2026-11-11T14:08:47.8767177Z \u001b[36;1mpython3 -m unittest -v scripts.tests.test_hepta_ci_candidate\u001b[0m",
+        "sha256_including_line_ending": "a8e8f347d347c3204db307855e341c7788f66a05ad322c1e1a88c4f5329e48c3"
+      },
+      "case_results": [
+        {
+          "line": 367,
+          "case_id": "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_different_merge_tree_requires_real_tests_not_only_compile",
+          "status": "PASS",
+          "text": "2026-11-11T14:08:48.0433517Z test_different_merge_tree_requires_real_tests_not_only_compile (scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_different_merge_tree_requires_real_tests_not_only_compile) ... ok",
+          "sha256_including_line_ending": "dfbbb437288dfcde4dea5b0b1d4073085c999259f81211ecb86c542a7946bc30"
+        },
+        {
+          "line": 368,
+          "case_id": "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_identical_merge_reuses_tree_only_with_required_source_success",
+          "status": "PASS",
+          "text": "2026-11-11T14:08:48.0726649Z test_identical_merge_reuses_tree_only_with_required_source_success (scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_identical_merge_reuses_tree_only_with_required_source_success) ... ok",
+          "sha256_including_line_ending": "b7626b59a2663a91ccb977b09c69420914008aac38feed8158f48878f323f9f1"
+        },
+        {
+          "line": 369,
+          "case_id": "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_invalid_identity_and_unknown_lane_fail_before_git",
+          "status": "PASS",
+          "text": "2026-11-11T14:08:48.0922473Z test_invalid_identity_and_unknown_lane_fail_before_git (scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_invalid_identity_and_unknown_lane_fail_before_git) ... ok",
+          "sha256_including_line_ending": "3f63a400f933a32bb6170d0078a944a79a43a499d746c98edc7dc565ba834707"
+        },
+        {
+          "line": 370,
+          "case_id": "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_parent_order_is_part_of_exact_merge_identity",
+          "status": "PASS",
+          "text": "2026-11-11T14:08:48.1179140Z test_parent_order_is_part_of_exact_merge_identity (scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_parent_order_is_part_of_exact_merge_identity) ... ok",
+          "sha256_including_line_ending": "64609afcedf228a30f83d26ffd11dba320683437b3b6239e7a19a88ab27f56d5"
+        },
+        {
+          "line": 371,
+          "case_id": "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_source_always_executes_native_checks",
+          "status": "PASS",
+          "text": "2026-11-11T14:08:48.1401465Z test_source_always_executes_native_checks (scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_source_always_executes_native_checks) ... ok",
+          "sha256_including_line_ending": "ef861bf6de4512e5a50aa900ed0e313182003d24f03fff0a4ffc6713bd507160"
+        },
+        {
+          "line": 372,
+          "case_id": "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_source_lane_cannot_test_a_different_commit",
+          "status": "PASS",
+          "text": "2026-11-11T14:08:48.1654330Z test_source_lane_cannot_test_a_different_commit (scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_source_lane_cannot_test_a_different_commit) ... ok",
+          "sha256_including_line_ending": "daac6dd7f1072084ae040a9dea974aac82b57b0f047b3d27530da6f7f82ca173"
+        },
+        {
+          "line": 373,
+          "case_id": "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_synthetic_merge_alias_has_same_exact_tree_semantics",
+          "status": "PASS",
+          "text": "2026-11-11T14:08:48.1931253Z test_synthetic_merge_alias_has_same_exact_tree_semantics (scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_synthetic_merge_alias_has_same_exact_tree_semantics) ... ok",
+          "sha256_including_line_ending": "ce5c1704ad102ffef2dd73ef2840e4aeaa0a1e564b88ca34763f5cd723dafc6f"
+        },
+        {
+          "line": 374,
+          "case_id": "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_wrong_checkout_cannot_reuse_a_receipt",
+          "status": "PASS",
+          "text": "2026-11-11T14:08:48.2173617Z test_wrong_checkout_cannot_reuse_a_receipt (scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_wrong_checkout_cannot_reuse_a_receipt) ... ok",
+          "sha256_including_line_ending": "7053d3c927cc346a20c50062385dc83638247024b914f429f8eab8d811a01cda"
+        }
+      ],
+      "original_result_block": {
+        "first_line": 367,
+        "last_line": 379,
+        "bytes": 1853,
+        "sha256": "19cc39b60d1264afd8624edb92cec078948c1c9aa4d8adb5881b49aec01d71ae",
+        "git_blob": "747c8d23b9904aa38b79efa0ed2799f673774a5f",
+        "text": "2026-11-11T14:08:48.0433517Z test_different_merge_tree_requires_real_tests_not_only_compile (scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_different_merge_tree_requires_real_tests_not_only_compile) ... ok\n2026-11-11T14:08:48.0726649Z test_identical_merge_reuses_tree_only_with_required_source_success (scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_identical_merge_reuses_tree_only_with_required_source_success) ... ok\n2026-11-11T14:08:48.0922473Z test_invalid_identity_and_unknown_lane_fail_before_git (scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_invalid_identity_and_unknown_lane_fail_before_git) ... ok\n2026-11-11T14:08:48.1179140Z test_parent_order_is_part_of_exact_merge_identity (scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_parent_order_is_part_of_exact_merge_identity) ... ok\n2026-11-11T14:08:48.1401465Z test_source_always_executes_native_checks (scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_source_always_executes_native_checks) ... ok\n2026-11-11T14:08:48.1654330Z test_source_lane_cannot_test_a_different_commit (scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_source_lane_cannot_test_a_different_commit) ... ok\n2026-11-11T14:08:48.1931253Z test_synthetic_merge_alias_has_same_exact_tree_semantics (scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_synthetic_merge_alias_has_same_exact_tree_semantics) ... ok\n2026-11-11T14:08:48.2173617Z test_wrong_checkout_cannot_reuse_a_receipt (scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_wrong_checkout_cannot_reuse_a_receipt) ... ok\n2026-11-11T14:08:48.2174388Z \n2026-11-11T14:08:48.2174610Z ----------------------------------------------------------------------\n2026-11-11T14:08:48.2174945Z Ran 8 tests in 0.206s\n2026-11-11T14:08:48.2175062Z \n2026-11-11T14:08:48.2175256Z OK\n"
+      },
+      "summary": {
+        "line": 377,
+        "text": "2026-11-11T14:08:48.2174945Z Ran 8 tests in 0.206s"
+      },
+      "source_binding": {
+        "line": 380,
+        "text": "2026-11-11T14:08:48.2666320Z {\"base_sha\": \"96038ccf0660154fac143ba6cbe4be81e00813e8\", \"lane\": \"base-merge\", \"native_execution_required\": false, \"requires_source_head_success\": true, \"schema_version\": 1, \"source_sha\": \"b0547d2f874c0aeb54dabd3491caa2bee49fcb0b\", \"source_tree\": \"3f89ddeff13d0af85f4abe2690699107357f1038\", \"tested_sha\": \"52c1eb3eba7e58a09f262bd2bfec5440fa3e3d41\", \"tested_tree\": \"3f89ddeff13d0af85f4abe2690699107357f1038\"}",
+        "sha256_including_line_ending": "d143f76250110fa21a751b850d42eaa53c1b2c5c9c5656731b3231bef75e9ae0",
+        "parsed": {
+          "base_sha": "96038ccf0660154fac143ba6cbe4be81e00813e8",
+          "lane": "base-merge",
+          "native_execution_required": false,
+          "requires_source_head_success": true,
+          "schema_version": 1,
+          "source_sha": "b0547d2f874c0aeb54dabd3491caa2bee49fcb0b",
+          "source_tree": "3f89ddeff13d0af85f4abe2690699107357f1038",
+          "tested_sha": "52c1eb3eba7e58a09f262bd2bfec5440fa3e3d41",
+          "tested_tree": "3f89ddeff13d0af85f4abe2690699107357f1038"
+        }
+      },
+      "raw_only_case_ids": [
+        "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_different_merge_tree_requires_real_tests_not_only_compile",
+        "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_identical_merge_reuses_tree_only_with_required_source_success",
+        "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_invalid_identity_and_unknown_lane_fail_before_git",
+        "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_parent_order_is_part_of_exact_merge_identity",
+        "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_source_always_executes_native_checks",
+        "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_source_lane_cannot_test_a_different_commit",
+        "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_synthetic_merge_alias_has_same_exact_tree_semantics",
+        "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_wrong_checkout_cannot_reuse_a_receipt"
+      ],
+      "raw_only_passed": 8,
+      "qualification_receipt_unique_ids": 136,
+      "raw_only_ids_disjoint_from_qualification_receipt_ids": true,
+      "all_python_executions_in_this_lane": 144,
+      "structured_command_receipt_for_this_preflight": false,
+      "all_python_case_ids_canonical_json_sha256": "7b157dd7424962d72364b7a4b03aa2f91133b5af174239037fde47ec4b99f0b6"
+    },
+    {
+      "raw_file": "/workspace/scratch/ed3538174819/mem-ci-c895-original/original/job-130619111897.log",
+      "full_raw": {
+        "bytes": 85755,
+        "sha256": "02abd9d018cc833a337a89dd4bbdf352dbbe97982fe6c6a85da31a411eb750ac",
+        "git_blob": "c7c828bcdc4f507652f0cf0d144a0a631f250bdd"
+      },
+      "job_id": 130619111897,
+      "lane": "source-head",
+      "source_commit": "c89540598693697577cda8cba31cb07f6ce65317",
+      "source_tree": "5a7c897a33e4eef48ea8f4bf52eaf48ea7c866ae",
+      "tested_commit": "c89540598693697577cda8cba31cb07f6ce65317",
+      "literal_invocation": {
+        "line": 209,
+        "text": "2026-11-11T15:28:03.7834643Z \u001b[36;1mpython3 -m unittest -v scripts.tests.test_hepta_ci_candidate\u001b[0m",
+        "sha256_including_line_ending": "a7a38f215c75c2b4b799ec4f2787c9c5e16ebd4ce211a73a55d000e2d1f05453"
+      },
+      "case_results": [
+        {
+          "line": 224,
+          "case_id": "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_different_merge_tree_requires_real_tests_not_only_compile",
+          "status": "PASS",
+          "text": "2026-11-11T15:28:03.9738466Z test_different_merge_tree_requires_real_tests_not_only_compile (scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_different_merge_tree_requires_real_tests_not_only_compile) ... ok",
+          "sha256_including_line_ending": "6cfd0f3fd3678b929a5a28e9ad64d4a3724be2ac6f8afe45aa6e680192aaefae"
+        },
+        {
+          "line": 225,
+          "case_id": "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_identical_merge_reuses_tree_only_with_required_source_success",
+          "status": "PASS",
+          "text": "2026-11-11T15:28:04.0058503Z test_identical_merge_reuses_tree_only_with_required_source_success (scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_identical_merge_reuses_tree_only_with_required_source_success) ... ok",
+          "sha256_including_line_ending": "ab45d6950ce3b146b58f1cb21acd4a6402940d6e39ccb03e2cd14b3b7f244d77"
+        },
+        {
+          "line": 226,
+          "case_id": "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_invalid_identity_and_unknown_lane_fail_before_git",
+          "status": "PASS",
+          "text": "2026-11-11T15:28:04.0275738Z test_invalid_identity_and_unknown_lane_fail_before_git (scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_invalid_identity_and_unknown_lane_fail_before_git) ... ok",
+          "sha256_including_line_ending": "90dc749c0e77fdd6d9fbbefa269c9d1045986f054127ade9644dae0c3902329d"
+        },
+        {
+          "line": 227,
+          "case_id": "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_parent_order_is_part_of_exact_merge_identity",
+          "status": "PASS",
+          "text": "2026-11-11T15:28:04.0568395Z test_parent_order_is_part_of_exact_merge_identity (scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_parent_order_is_part_of_exact_merge_identity) ... ok",
+          "sha256_including_line_ending": "f193f1ae3227b906876d3c0f676e23c4c3cb6a01e8073de2647491ce1aef50d3"
+        },
+        {
+          "line": 228,
+          "case_id": "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_source_always_executes_native_checks",
+          "status": "PASS",
+          "text": "2026-11-11T15:28:04.0820695Z test_source_always_executes_native_checks (scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_source_always_executes_native_checks) ... ok",
+          "sha256_including_line_ending": "a40d98fd74c25d8f9d9ce37e60a97626a10b50809977b1c7508156579c21cbfb"
+        },
+        {
+          "line": 229,
+          "case_id": "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_source_lane_cannot_test_a_different_commit",
+          "status": "PASS",
+          "text": "2026-11-11T15:28:04.1106646Z test_source_lane_cannot_test_a_different_commit (scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_source_lane_cannot_test_a_different_commit) ... ok",
+          "sha256_including_line_ending": "d642840a917f485dc4ec192b9b62e6388d4f63c767ef7b14d2fd1937e2e1f65f"
+        },
+        {
+          "line": 230,
+          "case_id": "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_synthetic_merge_alias_has_same_exact_tree_semantics",
+          "status": "PASS",
+          "text": "2026-11-11T15:28:04.1426623Z test_synthetic_merge_alias_has_same_exact_tree_semantics (scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_synthetic_merge_alias_has_same_exact_tree_semantics) ... ok",
+          "sha256_including_line_ending": "6be741006b9998e3d66b6ed8f2c7f49efb4bb681104bd41905cd5747444c176d"
+        },
+        {
+          "line": 231,
+          "case_id": "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_wrong_checkout_cannot_reuse_a_receipt",
+          "status": "PASS",
+          "text": "2026-11-11T15:28:04.1718687Z test_wrong_checkout_cannot_reuse_a_receipt (scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_wrong_checkout_cannot_reuse_a_receipt) ... ok",
+          "sha256_including_line_ending": "70207c51e556db2244cdd57673997957de89cb7f778f401bd6fa7eb0058cd029"
+        }
+      ],
+      "original_result_block": {
+        "first_line": 224,
+        "last_line": 236,
+        "bytes": 1853,
+        "sha256": "09b5cbae6abd657efcf86d8c19c169d0519f31518a3d0d21b660173f7c20e08d",
+        "git_blob": "dc0cce441e180a563ad71075485cefb8345e7050",
+        "text": "2026-11-11T15:28:03.9738466Z test_different_merge_tree_requires_real_tests_not_only_compile (scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_different_merge_tree_requires_real_tests_not_only_compile) ... ok\n2026-11-11T15:28:04.0058503Z test_identical_merge_reuses_tree_only_with_required_source_success (scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_identical_merge_reuses_tree_only_with_required_source_success) ... ok\n2026-11-11T15:28:04.0275738Z test_invalid_identity_and_unknown_lane_fail_before_git (scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_invalid_identity_and_unknown_lane_fail_before_git) ... ok\n2026-11-11T15:28:04.0568395Z test_parent_order_is_part_of_exact_merge_identity (scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_parent_order_is_part_of_exact_merge_identity) ... ok\n2026-11-11T15:28:04.0820695Z test_source_always_executes_native_checks (scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_source_always_executes_native_checks) ... ok\n2026-11-11T15:28:04.1106646Z test_source_lane_cannot_test_a_different_commit (scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_source_lane_cannot_test_a_different_commit) ... ok\n2026-11-11T15:28:04.1426623Z test_synthetic_merge_alias_has_same_exact_tree_semantics (scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_synthetic_merge_alias_has_same_exact_tree_semantics) ... ok\n2026-11-11T15:28:04.1718687Z test_wrong_checkout_cannot_reuse_a_receipt (scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_wrong_checkout_cannot_reuse_a_receipt) ... ok\n2026-11-11T15:28:04.1719477Z \n2026-11-11T15:28:04.1719675Z ----------------------------------------------------------------------\n2026-11-11T15:28:04.1720444Z Ran 8 tests in 0.234s\n2026-11-11T15:28:04.1720581Z \n2026-11-11T15:28:04.1720662Z OK\n"
+      },
+      "summary": {
+        "line": 234,
+        "text": "2026-11-11T15:28:04.1720444Z Ran 8 tests in 0.234s"
+      },
+      "source_binding": {
+        "line": 237,
+        "text": "2026-11-11T15:28:04.2200132Z {\"base_sha\": \"96038ccf0660154fac143ba6cbe4be81e00813e8\", \"lane\": \"source-head\", \"native_execution_required\": true, \"requires_source_head_success\": false, \"schema_version\": 1, \"source_sha\": \"c89540598693697577cda8cba31cb07f6ce65317\", \"source_tree\": \"5a7c897a33e4eef48ea8f4bf52eaf48ea7c866ae\", \"tested_sha\": \"c89540598693697577cda8cba31cb07f6ce65317\", \"tested_tree\": \"5a7c897a33e4eef48ea8f4bf52eaf48ea7c866ae\"}",
+        "sha256_including_line_ending": "7be375f529891f391d211dae6a48018467c7251c7f5e0c3285dc877b0111e29f",
+        "parsed": {
+          "base_sha": "96038ccf0660154fac143ba6cbe4be81e00813e8",
+          "lane": "source-head",
+          "native_execution_required": true,
+          "requires_source_head_success": false,
+          "schema_version": 1,
+          "source_sha": "c89540598693697577cda8cba31cb07f6ce65317",
+          "source_tree": "5a7c897a33e4eef48ea8f4bf52eaf48ea7c866ae",
+          "tested_sha": "c89540598693697577cda8cba31cb07f6ce65317",
+          "tested_tree": "5a7c897a33e4eef48ea8f4bf52eaf48ea7c866ae"
+        }
+      },
+      "raw_only_case_ids": [
+        "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_different_merge_tree_requires_real_tests_not_only_compile",
+        "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_identical_merge_reuses_tree_only_with_required_source_success",
+        "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_invalid_identity_and_unknown_lane_fail_before_git",
+        "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_parent_order_is_part_of_exact_merge_identity",
+        "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_source_always_executes_native_checks",
+        "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_source_lane_cannot_test_a_different_commit",
+        "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_synthetic_merge_alias_has_same_exact_tree_semantics",
+        "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_wrong_checkout_cannot_reuse_a_receipt"
+      ],
+      "raw_only_passed": 8,
+      "qualification_receipt_unique_ids": 136,
+      "raw_only_ids_disjoint_from_qualification_receipt_ids": true,
+      "all_python_executions_in_this_lane": 144,
+      "structured_command_receipt_for_this_preflight": false,
+      "all_python_case_ids_canonical_json_sha256": "7b157dd7424962d72364b7a4b03aa2f91133b5af174239037fde47ec4b99f0b6"
+    },
+    {
+      "raw_file": "/workspace/scratch/ed3538174819/mem-ci-c895-original/original/job-130619111431.log",
+      "full_raw": {
+        "bytes": 92701,
+        "sha256": "24da201ffb1eac0d0bd68cc9301d01f69ffaeaff34b11a49f93304f6d8de5288",
+        "git_blob": "c0e697a278eb87540cac7880221e711ba9fb3b8f"
+      },
+      "job_id": 130619111431,
+      "lane": "base-merge",
+      "source_commit": "c89540598693697577cda8cba31cb07f6ce65317",
+      "source_tree": "5a7c897a33e4eef48ea8f4bf52eaf48ea7c866ae",
+      "tested_commit": "84f1cc53ffddce902df541cdef33524ecaa93c7b",
+      "literal_invocation": {
+        "line": 350,
+        "text": "2026-11-11T15:28:04.6713152Z \u001b[36;1mpython3 -m unittest -v scripts.tests.test_hepta_ci_candidate\u001b[0m",
+        "sha256_including_line_ending": "8887f4163b69f8d6d4a14aa53c809da2efdcd063c0c32a7b812c0712f7c7a3d7"
+      },
+      "case_results": [
+        {
+          "line": 367,
+          "case_id": "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_different_merge_tree_requires_real_tests_not_only_compile",
+          "status": "PASS",
+          "text": "2026-11-11T15:28:04.8676634Z test_different_merge_tree_requires_real_tests_not_only_compile (scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_different_merge_tree_requires_real_tests_not_only_compile) ... ok",
+          "sha256_including_line_ending": "ab3ad72485c1f0b84bbac547e3c33b6c2a7e38167a7d2988d86257a1d26a9e68"
+        },
+        {
+          "line": 368,
+          "case_id": "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_identical_merge_reuses_tree_only_with_required_source_success",
+          "status": "PASS",
+          "text": "2026-11-11T15:28:04.8944814Z test_identical_merge_reuses_tree_only_with_required_source_success (scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_identical_merge_reuses_tree_only_with_required_source_success) ... ok",
+          "sha256_including_line_ending": "14ece6c52e4dd2e2cc82284d13f26826878a23601f46846b6cbdae90b9358095"
+        },
+        {
+          "line": 369,
+          "case_id": "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_invalid_identity_and_unknown_lane_fail_before_git",
+          "status": "PASS",
+          "text": "2026-11-11T15:28:04.9123988Z test_invalid_identity_and_unknown_lane_fail_before_git (scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_invalid_identity_and_unknown_lane_fail_before_git) ... ok",
+          "sha256_including_line_ending": "58ddc78d9f3536b56d9cda4be07101ff27eb3415bb1b8d82b3a6830ae06559e4"
+        },
+        {
+          "line": 370,
+          "case_id": "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_parent_order_is_part_of_exact_merge_identity",
+          "status": "PASS",
+          "text": "2026-11-11T15:28:04.9371552Z test_parent_order_is_part_of_exact_merge_identity (scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_parent_order_is_part_of_exact_merge_identity) ... ok",
+          "sha256_including_line_ending": "b4b719b79845a88f7b8fff9e9ae62aebb9e33899bed2ffa09642cc178e6a1e50"
+        },
+        {
+          "line": 371,
+          "case_id": "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_source_always_executes_native_checks",
+          "status": "PASS",
+          "text": "2026-11-11T15:28:04.9574142Z test_source_always_executes_native_checks (scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_source_always_executes_native_checks) ... ok",
+          "sha256_including_line_ending": "d1ab74f4c2491f5f8cd35de32bd0b143083616285ec70f65379ee9c6817ff38c"
+        },
+        {
+          "line": 372,
+          "case_id": "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_source_lane_cannot_test_a_different_commit",
+          "status": "PASS",
+          "text": "2026-11-11T15:28:04.9804599Z test_source_lane_cannot_test_a_different_commit (scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_source_lane_cannot_test_a_different_commit) ... ok",
+          "sha256_including_line_ending": "8848b9f16086f73897f543d36ac902d4c08fbb346cb99db6c8822c1f92f8184d"
+        },
+        {
+          "line": 373,
+          "case_id": "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_synthetic_merge_alias_has_same_exact_tree_semantics",
+          "status": "PASS",
+          "text": "2026-11-11T15:28:05.0074948Z test_synthetic_merge_alias_has_same_exact_tree_semantics (scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_synthetic_merge_alias_has_same_exact_tree_semantics) ... ok",
+          "sha256_including_line_ending": "91506867a55ba23d59471fa1ea1ff673bc354905505d17879c9da2aa39d06b68"
+        },
+        {
+          "line": 374,
+          "case_id": "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_wrong_checkout_cannot_reuse_a_receipt",
+          "status": "PASS",
+          "text": "2026-11-11T15:28:05.0317840Z test_wrong_checkout_cannot_reuse_a_receipt (scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_wrong_checkout_cannot_reuse_a_receipt) ... ok",
+          "sha256_including_line_ending": "adae24109c4bf113f427201b6de68ba573675e4cf3ff387d5b740574979799f3"
+        }
+      ],
+      "original_result_block": {
+        "first_line": 367,
+        "last_line": 379,
+        "bytes": 1853,
+        "sha256": "76e3d0d1c5e1192a7a318a7ae37ab57642ebe07532999d9a9b19de8f51997bce",
+        "git_blob": "2096864088798a3860e762cd56cf66c5a7ce22df",
+        "text": "2026-11-11T15:28:04.8676634Z test_different_merge_tree_requires_real_tests_not_only_compile (scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_different_merge_tree_requires_real_tests_not_only_compile) ... ok\n2026-11-11T15:28:04.8944814Z test_identical_merge_reuses_tree_only_with_required_source_success (scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_identical_merge_reuses_tree_only_with_required_source_success) ... ok\n2026-11-11T15:28:04.9123988Z test_invalid_identity_and_unknown_lane_fail_before_git (scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_invalid_identity_and_unknown_lane_fail_before_git) ... ok\n2026-11-11T15:28:04.9371552Z test_parent_order_is_part_of_exact_merge_identity (scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_parent_order_is_part_of_exact_merge_identity) ... ok\n2026-11-11T15:28:04.9574142Z test_source_always_executes_native_checks (scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_source_always_executes_native_checks) ... ok\n2026-11-11T15:28:04.9804599Z test_source_lane_cannot_test_a_different_commit (scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_source_lane_cannot_test_a_different_commit) ... ok\n2026-11-11T15:28:05.0074948Z test_synthetic_merge_alias_has_same_exact_tree_semantics (scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_synthetic_merge_alias_has_same_exact_tree_semantics) ... ok\n2026-11-11T15:28:05.0317840Z test_wrong_checkout_cannot_reuse_a_receipt (scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_wrong_checkout_cannot_reuse_a_receipt) ... ok\n2026-11-11T15:28:05.0318536Z \n2026-11-11T15:28:05.0318812Z ----------------------------------------------------------------------\n2026-11-11T15:28:05.0319374Z Ran 8 tests in 0.196s\n2026-11-11T15:28:05.0319518Z \n2026-11-11T15:28:05.0319622Z OK\n"
+      },
+      "summary": {
+        "line": 377,
+        "text": "2026-11-11T15:28:05.0319374Z Ran 8 tests in 0.196s"
+      },
+      "source_binding": {
+        "line": 380,
+        "text": "2026-11-11T15:28:05.0818910Z {\"base_sha\": \"96038ccf0660154fac143ba6cbe4be81e00813e8\", \"lane\": \"base-merge\", \"native_execution_required\": false, \"requires_source_head_success\": true, \"schema_version\": 1, \"source_sha\": \"c89540598693697577cda8cba31cb07f6ce65317\", \"source_tree\": \"5a7c897a33e4eef48ea8f4bf52eaf48ea7c866ae\", \"tested_sha\": \"84f1cc53ffddce902df541cdef33524ecaa93c7b\", \"tested_tree\": \"5a7c897a33e4eef48ea8f4bf52eaf48ea7c866ae\"}",
+        "sha256_including_line_ending": "9b951826c02558cce88817f0fec9734d230371d827c9c31904c470df1e31a775",
+        "parsed": {
+          "base_sha": "96038ccf0660154fac143ba6cbe4be81e00813e8",
+          "lane": "base-merge",
+          "native_execution_required": false,
+          "requires_source_head_success": true,
+          "schema_version": 1,
+          "source_sha": "c89540598693697577cda8cba31cb07f6ce65317",
+          "source_tree": "5a7c897a33e4eef48ea8f4bf52eaf48ea7c866ae",
+          "tested_sha": "84f1cc53ffddce902df541cdef33524ecaa93c7b",
+          "tested_tree": "5a7c897a33e4eef48ea8f4bf52eaf48ea7c866ae"
+        }
+      },
+      "raw_only_case_ids": [
+        "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_different_merge_tree_requires_real_tests_not_only_compile",
+        "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_identical_merge_reuses_tree_only_with_required_source_success",
+        "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_invalid_identity_and_unknown_lane_fail_before_git",
+        "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_parent_order_is_part_of_exact_merge_identity",
+        "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_source_always_executes_native_checks",
+        "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_source_lane_cannot_test_a_different_commit",
+        "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_synthetic_merge_alias_has_same_exact_tree_semantics",
+        "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_wrong_checkout_cannot_reuse_a_receipt"
+      ],
+      "raw_only_passed": 8,
+      "qualification_receipt_unique_ids": 136,
+      "raw_only_ids_disjoint_from_qualification_receipt_ids": true,
+      "all_python_executions_in_this_lane": 144,
+      "structured_command_receipt_for_this_preflight": false,
+      "all_python_case_ids_canonical_json_sha256": "7b157dd7424962d72364b7a4b03aa2f91133b5af174239037fde47ec4b99f0b6"
+    }
+  ]
+}
