@@ -1,0 +1,658 @@
+{
+  "schema": "hepta.ordinary.unified.native-evidence.v2",
+  "source": {
+    "commit": "54de04371be6d625e1ecda49931c7d3585d0a2d0",
+    "tree": "0003e1f9f859fda1ebbe1c756cce34d5ddc3a170",
+    "worktree": ""
+  },
+  "source_sha": "54de04371be6d625e1ecda49931c7d3585d0a2d0",
+  "tested_sha": "54de04371be6d625e1ecda49931c7d3585d0a2d0",
+  "parents": [
+    "5dcec722472eab39064416d50bf4c4bb7b96b361"
+  ],
+  "scope": "Exact-source native library component regressions; not ordinary production learning/adoption/FinalUse qualification",
+  "authority_granted": false,
+  "ordinary_complete_chains": 0,
+  "positive_adoption_chains": 0,
+  "ordinary_no_update_rollback_chains": 0,
+  "root_uid0_gate": "not run",
+  "model_root_stage_owner": "not installed by this component",
+  "native_summary": {
+    "schema": "hepta.ordinary.unified.native.v1",
+    "phase": "complete",
+    "initial_local": {
+      "commit": "bc8ac0dc25c621959b7be52280bcfed70b52bb07",
+      "tree": "f0f85fcccf7c51e4d6ae46a252bf785bcaa66f61",
+      "worktree": ""
+    },
+    "original_after": {
+      "commit": "bc8ac0dc25c621959b7be52280bcfed70b52bb07",
+      "tree": "f0f85fcccf7c51e4d6ae46a252bf785bcaa66f61",
+      "worktree": ""
+    },
+    "before": {
+      "commit": "54de04371be6d625e1ecda49931c7d3585d0a2d0",
+      "tree": "0003e1f9f859fda1ebbe1c756cce34d5ddc3a170",
+      "worktree": ""
+    },
+    "after": {
+      "commit": "54de04371be6d625e1ecda49931c7d3585d0a2d0",
+      "tree": "0003e1f9f859fda1ebbe1c756cce34d5ddc3a170",
+      "worktree": ""
+    },
+    "exact_published_commit": "54de04371be6d625e1ecda49931c7d3585d0a2d0",
+    "parents": [
+      "5dcec722472eab39064416d50bf4c4bb7b96b361"
+    ],
+    "source_sha": "54de04371be6d625e1ecda49931c7d3585d0a2d0",
+    "tested_sha": "54de04371be6d625e1ecda49931c7d3585d0a2d0",
+    "exit": 0,
+    "gates": {
+      "fmt-before": {
+        "command": [
+          "/home/qq/hepta-learning-native-4f559bf-d9fb-20261108/transfer/just",
+          "fmt",
+          "--base",
+          "08f963973e02e0f74e499c962635518965f4f68a"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.7476706504821777,
+        "before": {
+          "commit": "54de04371be6d625e1ecda49931c7d3585d0a2d0",
+          "tree": "0003e1f9f859fda1ebbe1c756cce34d5ddc3a170",
+          "worktree": ""
+        },
+        "after": {
+          "commit": "54de04371be6d625e1ecda49931c7d3585d0a2d0",
+          "tree": "0003e1f9f859fda1ebbe1c756cce34d5ddc3a170",
+          "worktree": ""
+        },
+        "source_unchanged": true,
+        "log": "/home/qq/af52-learning-20261111/ordinary-unified-native-v3-fmt-before.log",
+        "log_bytes": 0,
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "result_lines": []
+      },
+      "fix-agentd": {
+        "command": [
+          "/home/qq/hepta-learning-native-4f559bf-d9fb-20261108/transfer/just",
+          "fix",
+          "-p",
+          "codex-hepta-agentd",
+          "--locked",
+          "--offline"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 68.98168873786926,
+        "before": {
+          "commit": "54de04371be6d625e1ecda49931c7d3585d0a2d0",
+          "tree": "0003e1f9f859fda1ebbe1c756cce34d5ddc3a170",
+          "worktree": ""
+        },
+        "after": {
+          "commit": "54de04371be6d625e1ecda49931c7d3585d0a2d0",
+          "tree": "0003e1f9f859fda1ebbe1c756cce34d5ddc3a170",
+          "worktree": ""
+        },
+        "source_unchanged": true,
+        "log": "/home/qq/af52-learning-20261111/ordinary-unified-native-v3-fix-agentd.log",
+        "log_bytes": 18768,
+        "log_sha256": "2a66b4cca676940f7d10a117a556acb10e6f008ce4c1f44aac5cb9fd639b335a",
+        "result_lines": []
+      },
+      "fix-artifacts": {
+        "command": [
+          "/home/qq/hepta-learning-native-4f559bf-d9fb-20261108/transfer/just",
+          "fix",
+          "-p",
+          "codex-hepta-learning-artifacts",
+          "--locked",
+          "--offline"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 3.958256244659424,
+        "before": {
+          "commit": "54de04371be6d625e1ecda49931c7d3585d0a2d0",
+          "tree": "0003e1f9f859fda1ebbe1c756cce34d5ddc3a170",
+          "worktree": ""
+        },
+        "after": {
+          "commit": "54de04371be6d625e1ecda49931c7d3585d0a2d0",
+          "tree": "0003e1f9f859fda1ebbe1c756cce34d5ddc3a170",
+          "worktree": ""
+        },
+        "source_unchanged": true,
+        "log": "/home/qq/af52-learning-20261111/ordinary-unified-native-v3-fix-artifacts.log",
+        "log_bytes": 904,
+        "log_sha256": "e4bbbd6dc4cc6a63be2bf59523d850ea024beb657acded54b7f9500a9a8e06e1",
+        "result_lines": []
+      },
+      "fmt-after": {
+        "command": [
+          "/home/qq/hepta-learning-native-4f559bf-d9fb-20261108/transfer/just",
+          "fmt",
+          "--base",
+          "08f963973e02e0f74e499c962635518965f4f68a"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.3772470951080322,
+        "before": {
+          "commit": "54de04371be6d625e1ecda49931c7d3585d0a2d0",
+          "tree": "0003e1f9f859fda1ebbe1c756cce34d5ddc3a170",
+          "worktree": ""
+        },
+        "after": {
+          "commit": "54de04371be6d625e1ecda49931c7d3585d0a2d0",
+          "tree": "0003e1f9f859fda1ebbe1c756cce34d5ddc3a170",
+          "worktree": ""
+        },
+        "source_unchanged": true,
+        "log": "/home/qq/af52-learning-20261111/ordinary-unified-native-v3-fmt-after.log",
+        "log_bytes": 0,
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "result_lines": []
+      },
+      "helper-build": {
+        "command": [
+          "/usr/bin/python3",
+          "scripts/hepta_cell_test_helpers.py",
+          "--package",
+          "codex-hepta-infer-worker-host",
+          "--output-dir",
+          "/home/qq/af52-learning-20261111/ordinary-unified-native-v3-helpers"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 60.168962240219116,
+        "before": {
+          "commit": "54de04371be6d625e1ecda49931c7d3585d0a2d0",
+          "tree": "0003e1f9f859fda1ebbe1c756cce34d5ddc3a170",
+          "worktree": ""
+        },
+        "after": {
+          "commit": "54de04371be6d625e1ecda49931c7d3585d0a2d0",
+          "tree": "0003e1f9f859fda1ebbe1c756cce34d5ddc3a170",
+          "worktree": ""
+        },
+        "source_unchanged": true,
+        "log": "/home/qq/af52-learning-20261111/ordinary-unified-native-v3-helper-build.log",
+        "log_bytes": 184,
+        "log_sha256": "e6563f4177defde15d574b4c9cf5d01339dc5effd21c63c40bf8b51e3e1c4e77",
+        "result_lines": []
+      },
+      "helper-verify-before": {
+        "command": [
+          "/usr/bin/python3",
+          "scripts/hepta_cell_test_helpers.py",
+          "--package",
+          "codex-hepta-infer-worker-host",
+          "--output-dir",
+          "/home/qq/af52-learning-20261111/ordinary-unified-native-v3-helpers",
+          "--verify-only"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.19271612167358398,
+        "before": {
+          "commit": "54de04371be6d625e1ecda49931c7d3585d0a2d0",
+          "tree": "0003e1f9f859fda1ebbe1c756cce34d5ddc3a170",
+          "worktree": ""
+        },
+        "after": {
+          "commit": "54de04371be6d625e1ecda49931c7d3585d0a2d0",
+          "tree": "0003e1f9f859fda1ebbe1c756cce34d5ddc3a170",
+          "worktree": ""
+        },
+        "source_unchanged": true,
+        "log": "/home/qq/af52-learning-20261111/ordinary-unified-native-v3-helper-verify-before.log",
+        "log_bytes": 1096,
+        "log_sha256": "34b7200f2646b0b55223b17695943512d450d754a110f3b27786fd3d9e77c091",
+        "result_lines": []
+      },
+      "focused-dataset": {
+        "command": [
+          "/home/qq/hepta-learning-native-4f559bf-d9fb-20261108/transfer/just",
+          "test",
+          "-p",
+          "codex-hepta-agentd",
+          "--lib",
+          "--locked",
+          "--offline",
+          "-E",
+          "test(q24_dataset_)"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 82.6712760925293,
+        "before": {
+          "commit": "54de04371be6d625e1ecda49931c7d3585d0a2d0",
+          "tree": "0003e1f9f859fda1ebbe1c756cce34d5ddc3a170",
+          "worktree": ""
+        },
+        "after": {
+          "commit": "54de04371be6d625e1ecda49931c7d3585d0a2d0",
+          "tree": "0003e1f9f859fda1ebbe1c756cce34d5ddc3a170",
+          "worktree": ""
+        },
+        "source_unchanged": true,
+        "log": "/home/qq/af52-learning-20261111/ordinary-unified-native-v3-focused-dataset.log",
+        "log_bytes": 32142,
+        "log_sha256": "d949f611553d7e4d79dccbcd5fa7d69c76d2bfac5f7c3038dc9834288570d282",
+        "result_lines": [
+          "     Summary [  12.141s] 4 tests run: 4 passed, 985 skipped"
+        ]
+      },
+      "full-agentd": {
+        "command": [
+          "/home/qq/hepta-learning-native-4f559bf-d9fb-20261108/transfer/just",
+          "test",
+          "-p",
+          "codex-hepta-agentd",
+          "--lib",
+          "--locked",
+          "--offline"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 45.16554021835327,
+        "before": {
+          "commit": "54de04371be6d625e1ecda49931c7d3585d0a2d0",
+          "tree": "0003e1f9f859fda1ebbe1c756cce34d5ddc3a170",
+          "worktree": ""
+        },
+        "after": {
+          "commit": "54de04371be6d625e1ecda49931c7d3585d0a2d0",
+          "tree": "0003e1f9f859fda1ebbe1c756cce34d5ddc3a170",
+          "worktree": ""
+        },
+        "source_unchanged": true,
+        "log": "/home/qq/af52-learning-20261111/ordinary-unified-native-v3-full-agentd.log",
+        "log_bytes": 173698,
+        "log_sha256": "4dd763d2d6291d687327cee852e76700427e20cdeb78e3c7cd0cdf08ec63d278",
+        "result_lines": [
+          "     Summary [  43.361s] 918 tests run: 918 passed (1 slow), 71 skipped"
+        ]
+      },
+      "full-artifacts": {
+        "command": [
+          "/home/qq/hepta-learning-native-4f559bf-d9fb-20261108/transfer/just",
+          "test",
+          "-p",
+          "codex-hepta-learning-artifacts",
+          "--lib",
+          "--locked",
+          "--offline"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 3.1141037940979004,
+        "before": {
+          "commit": "54de04371be6d625e1ecda49931c7d3585d0a2d0",
+          "tree": "0003e1f9f859fda1ebbe1c756cce34d5ddc3a170",
+          "worktree": ""
+        },
+        "after": {
+          "commit": "54de04371be6d625e1ecda49931c7d3585d0a2d0",
+          "tree": "0003e1f9f859fda1ebbe1c756cce34d5ddc3a170",
+          "worktree": ""
+        },
+        "source_unchanged": true,
+        "log": "/home/qq/af52-learning-20261111/ordinary-unified-native-v3-full-artifacts.log",
+        "log_bytes": 18407,
+        "log_sha256": "4d239d72e5fa5d5309ad4e3f934fb6020cf82485fb9be7d8ef77af9b69561e18",
+        "result_lines": [
+          "     Summary [   0.377s] 123 tests run: 123 passed, 1 skipped"
+        ]
+      },
+      "helper-verify-after": {
+        "command": [
+          "/usr/bin/python3",
+          "scripts/hepta_cell_test_helpers.py",
+          "--package",
+          "codex-hepta-infer-worker-host",
+          "--output-dir",
+          "/home/qq/af52-learning-20261111/ordinary-unified-native-v3-helpers",
+          "--verify-only"
+        ],
+        "exit": 0,
+        "elapsed_seconds": 0.08260798454284668,
+        "before": {
+          "commit": "54de04371be6d625e1ecda49931c7d3585d0a2d0",
+          "tree": "0003e1f9f859fda1ebbe1c756cce34d5ddc3a170",
+          "worktree": ""
+        },
+        "after": {
+          "commit": "54de04371be6d625e1ecda49931c7d3585d0a2d0",
+          "tree": "0003e1f9f859fda1ebbe1c756cce34d5ddc3a170",
+          "worktree": ""
+        },
+        "source_unchanged": true,
+        "log": "/home/qq/af52-learning-20261111/ordinary-unified-native-v3-helper-verify-after.log",
+        "log_bytes": 1096,
+        "log_sha256": "34b7200f2646b0b55223b17695943512d450d754a110f3b27786fd3d9e77c091",
+        "result_lines": []
+      }
+    },
+    "all_requested_gates_completed": true,
+    "source_unchanged": true,
+    "original_unchanged": true,
+    "toolchain": "rustc 1.96.0 (ac68faa20 2026-05-25)\nbinary: rustc\ncommit-hash: ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96\ncommit-date: 2026-05-25\nhost: x86_64-unknown-linux-gnu\nrelease: 1.96.0\nLLVM version: 22.1.2\n",
+    "target": "/home/qq/af52-learning-20261111/target",
+    "bindgen_args": "-isystem/usr/lib/gcc/x86_64-linux-gnu/15/include",
+    "helper_manifest": "/home/qq/af52-learning-20261111/ordinary-unified-native-v3-helpers/manifest.json",
+    "helper_manifest_sha256": "5f30c91ed104f494516b5fff18f12b3005e1d55efd32464e0ebbdd52cdf5ace7",
+    "helper_artifacts": {
+      "hepta-joint-propose": {
+        "package": "codex-hepta-infer-worker-host",
+        "package_id": "path+file:///home/qq/af52-learning-20261111/native-97a1/codex-rs/hepta-infer-worker-host#codex-hepta-infer-worker-host@0.0.0",
+        "compiler_executable": "/home/qq/af52-learning-20261111/target/debug/hepta-joint-propose",
+        "executable": "/home/qq/af52-learning-20261111/ordinary-unified-native-v3-helpers/bin/hepta-joint-propose",
+        "profile": {
+          "opt_level": "0",
+          "debuginfo": 1,
+          "debug_assertions": true,
+          "overflow_checks": true,
+          "test": false
+        },
+        "sha256": "71bff16418b740b22c3252fb157278f3aaa3c1d38b9922bb3b4e8e1fe13fcfe0",
+        "bytes": 6680632
+      }
+    },
+    "helper_environment": {
+      "CARGO_BIN_EXE_hepta-joint-propose": "/home/qq/af52-learning-20261111/ordinary-unified-native-v3-helpers/bin/hepta-joint-propose",
+      "CARGO_BIN_EXE_hepta_joint_propose": "/home/qq/af52-learning-20261111/ordinary-unified-native-v3-helpers/bin/hepta-joint-propose"
+    },
+    "ordinary_complete_chains": 0,
+    "positive_adoption_chains": 0,
+    "ordinary_no_update_rollback_chains": 0,
+    "root_uid0_gate": "not run",
+    "scope": "Native library component regressions for the exact unified source; not ordinary full-loop qualification"
+  },
+  "unique_full_suite_tests_passed": 1041,
+  "full_suite_skipped": 72,
+  "focused_subset": {
+    "passed": 4,
+    "included_in_agentd_full_suite": true,
+    "not_added_to_unique_total": true
+  },
+  "native_summary_git_blob": "5ef548330bab8d5106bccabe2a0e5616101498ea",
+  "native_summary_sha256": "7f7b85a0589b4b28ed7bcfd21c210eb4da6187d438ac5c9cf9a1bda5b151337a",
+  "harness_provenance": {
+    "classification": "reconstructed-from-original-request",
+    "original_request_git_blob": "ef0e027016dc9be6322754b34814447d00fd1c4e",
+    "original_request_bytes": 9218,
+    "request_sha256": "0117e589f884548cfe9568ba7873a2e5d973f504205dc11dcd6471aa8187ab2e",
+    "extraction": "Exact UTF-8 bytes of the original request JSON stdin field; no code rewriting",
+    "harness_sha256": "877e5324ae1f398a20ac74c02391066e02db699580295ba03b1314348e5a5d9b",
+    "historical_v1_v2": "Their original per-step commands, raw logs and source before/after records are preserved; no reconstructed older harness is presented as an original execution file."
+  },
+  "archive_operation": {
+    "kind": "independent read-only evidence collection",
+    "native_tests_rerun": false,
+    "source_modified": false,
+    "target_modified": false,
+    "earlier_archive_v1_admission": "unknown; its pending response was not recovered and directory absence was only one observation; this collection is not a retry-success claim"
+  },
+  "source_closure": "Exact-source full typed CALLERS evidence is independently recorded by runtime_access; no earlier-source PASS is transferred here.",
+  "prior_unified_attempts": [
+    {
+      "source": "952f2ae677d5110e369ae11f49af973891002b53",
+      "phase": "maintenance-source-drift",
+      "exit": 2,
+      "summary": "ordinary-unified-native-v1-summary.json"
+    },
+    {
+      "source": "5dcec722472eab39064416d50bf4c4bb7b96b361",
+      "phase": "fix-agentd",
+      "exit": 101,
+      "source_unchanged": true,
+      "summary": "ordinary-unified-native-v2-summary.json"
+    }
+  ],
+  "earlier_materializer_history": {
+    "archive_git_blob": "635054b15d2cde1bc39ca93fc6366564ae47df7f",
+    "archive_bytes": 151696,
+    "archive_sha256": "d7d5b9e00b275bb341a0bb9f9be3c4d84965902c8b208dcb3edb63c493f85324",
+    "result_git_blob": "0d7faa9a167e37d268182d69e94b065089d50b58",
+    "scope": "Separate lossless archive preserves 97a1 failed full suite, 08f failed focused suite, older caller scans and initial header failure; counts are not transferred to this source."
+  },
+  "archive_source_before": {
+    "commit": "54de04371be6d625e1ecda49931c7d3585d0a2d0",
+    "tree": "0003e1f9f859fda1ebbe1c756cce34d5ddc3a170",
+    "worktree": ""
+  },
+  "archive_source_after": {
+    "commit": "54de04371be6d625e1ecda49931c7d3585d0a2d0",
+    "tree": "0003e1f9f859fda1ebbe1c756cce34d5ddc3a170",
+    "worktree": ""
+  },
+  "original_source_before": {
+    "commit": "bc8ac0dc25c621959b7be52280bcfed70b52bb07",
+    "tree": "f0f85fcccf7c51e4d6ae46a252bf785bcaa66f61",
+    "worktree": ""
+  },
+  "original_source_after": {
+    "commit": "bc8ac0dc25c621959b7be52280bcfed70b52bb07",
+    "tree": "f0f85fcccf7c51e4d6ae46a252bf785bcaa66f61",
+    "worktree": ""
+  },
+  "files": [
+    {
+      "path": "ordinary-unified-native-v1-summary.json",
+      "bytes": 1966,
+      "sha256": "c8758761089abadb60588b4cfc0aca42e0be5ac2f4d7aa68c271706f10eeedab"
+    },
+    {
+      "path": "ordinary-unified-native-v1-before.json",
+      "bytes": 654,
+      "sha256": "93268687f9b1b0c2bdf509e9b8107d56dec2a9d5a6e1d4ac1609b88c1aa7cabe"
+    },
+    {
+      "path": "ordinary-unified-native-v1-fetch.log",
+      "bytes": 142,
+      "sha256": "bb036767584f6fa620334595a7f4db900dae5148de8b14a01841cd70e32cf22e"
+    },
+    {
+      "path": "ordinary-unified-native-v1-fmt-before.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ordinary-unified-native-v1-fmt-before-result.json",
+      "bytes": 831,
+      "sha256": "9329df331baa319396d41c4b24184191234b5be05c5c7eb3606c23edd424f62c"
+    },
+    {
+      "path": "ordinary-unified-native-v1-fmt-before-source-drift.patch",
+      "bytes": 3507,
+      "sha256": "a99a98b1702df45b6e3f97d153fc604b1274bd37e067030ab327768f0ef72859"
+    },
+    {
+      "path": "ordinary-unified-native-v1-fmt-postimage.rs",
+      "bytes": 30341,
+      "sha256": "09503af68af5bd9acbafa8bf44eb07761656d0a2bc9b9110bde353b1a9a7bf05"
+    },
+    {
+      "path": "ordinary-unified-native-v2-summary.json",
+      "bytes": 2673,
+      "sha256": "3c589a7541ee5a9791dc435735a2430d43cbe70b0cd9e9b2b2f682d2680e4d43"
+    },
+    {
+      "path": "ordinary-unified-native-v2-before.json",
+      "bytes": 606,
+      "sha256": "d98653858b8f3c645b9098e70bd29c122203add8a90fb50bc0728ab15f30bdb6"
+    },
+    {
+      "path": "ordinary-unified-native-v2-fetch.log",
+      "bytes": 142,
+      "sha256": "19044ea5b4befd98c9bb2a663352101ed5295cd995f2be2b98f2db6eea19227c"
+    },
+    {
+      "path": "ordinary-unified-native-v2-fmt-before.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ordinary-unified-native-v2-fmt-before-result.json",
+      "bytes": 764,
+      "sha256": "dad2c05ed187950277ddb76c239a5ad2b819cb4617f43af6bc916ad7a16f85b6"
+    },
+    {
+      "path": "ordinary-unified-native-v2-fix-agentd.log",
+      "bytes": 35269,
+      "sha256": "a49307641bc953592bf5711875efd6ab95ecb9518b3b1aee6ba2cedd0a625e71"
+    },
+    {
+      "path": "ordinary-unified-native-v2-fix-agentd-result.json",
+      "bytes": 926,
+      "sha256": "8d9f4a8bbc8a9388c3d822f6dc4d2aa80d11ec8e505ced5d56a3fd46990885cb"
+    },
+    {
+      "path": "ordinary-unified-native-v2-restore-fmt.json",
+      "bytes": 872,
+      "sha256": "f098e3190b847c1113a56a311d9dedf379fc551ceac20871e60b4bc9733be86f"
+    },
+    {
+      "path": "ordinary-unified-native-v3-summary.json",
+      "bytes": 12533,
+      "sha256": "7f7b85a0589b4b28ed7bcfd21c210eb4da6187d438ac5c9cf9a1bda5b151337a"
+    },
+    {
+      "path": "ordinary-unified-native-v3-before.json",
+      "bytes": 606,
+      "sha256": "9076dba682aec7e5d225be6eeeb776f58f7b77db01e6d2147e06e7da715f34dc"
+    },
+    {
+      "path": "ordinary-unified-native-v3-fetch.log",
+      "bytes": 142,
+      "sha256": "95c447aa3ef381f1c9c9bc7863659bc1048a0a788b2bf423ed4f5bd417fa34fb"
+    },
+    {
+      "path": "ordinary-unified-native-v3-fmt-before.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ordinary-unified-native-v3-fmt-before-result.json",
+      "bytes": 764,
+      "sha256": "d64f25df4072d5042a2addafbbdace387a904d98be409a9382d96acc34e1e66b"
+    },
+    {
+      "path": "ordinary-unified-native-v3-fix-agentd.log",
+      "bytes": 18768,
+      "sha256": "2a66b4cca676940f7d10a117a556acb10e6f008ce4c1f44aac5cb9fd639b335a"
+    },
+    {
+      "path": "ordinary-unified-native-v3-fix-agentd-result.json",
+      "bytes": 774,
+      "sha256": "e9a3e800fc5c7f75bf759f3f7a6ab91fcb4108730965197ef23e529d6317bd6e"
+    },
+    {
+      "path": "ordinary-unified-native-v3-fix-artifacts.log",
+      "bytes": 904,
+      "sha256": "e4bbbd6dc4cc6a63be2bf59523d850ea024beb657acded54b7f9500a9a8e06e1"
+    },
+    {
+      "path": "ordinary-unified-native-v3-fix-artifacts-result.json",
+      "bytes": 787,
+      "sha256": "71cac5f2f5044f1cddb7bac67920fc0e02c5842130a917ddffab9e70342375fd"
+    },
+    {
+      "path": "ordinary-unified-native-v3-fmt-after.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "ordinary-unified-native-v3-fmt-after-result.json",
+      "bytes": 763,
+      "sha256": "173803ca082eff9c83206c062e2cb53936a54cf416a7833e0929e0138ba7b17f"
+    },
+    {
+      "path": "ordinary-unified-native-v3-helper-build.log",
+      "bytes": 184,
+      "sha256": "e6563f4177defde15d574b4c9cf5d01339dc5effd21c63c40bf8b51e3e1c4e77"
+    },
+    {
+      "path": "ordinary-unified-native-v3-helper-build-result.json",
+      "bytes": 835,
+      "sha256": "28a3e239fa121e06aa392174c328d89fb2bccdd4b39c23a41d51099a89756823"
+    },
+    {
+      "path": "ordinary-unified-native-v3-helper-verify-before.log",
+      "bytes": 1096,
+      "sha256": "34b7200f2646b0b55223b17695943512d450d754a110f3b27786fd3d9e77c091"
+    },
+    {
+      "path": "ordinary-unified-native-v3-helper-verify-before-result.json",
+      "bytes": 866,
+      "sha256": "a574f943b6448511933a2d54554afc4dc1420ab55981dc01a1ddaf31da278366"
+    },
+    {
+      "path": "ordinary-unified-native-v3-focused-dataset.log",
+      "bytes": 32142,
+      "sha256": "d949f611553d7e4d79dccbcd5fa7d69c76d2bfac5f7c3038dc9834288570d282"
+    },
+    {
+      "path": "ordinary-unified-native-v3-focused-dataset-result.json",
+      "bytes": 897,
+      "sha256": "bb4692f79b43ca55ae1ad48a7c1c63f707482ac5032f31d8ee9b11b6928a3a12"
+    },
+    {
+      "path": "ordinary-unified-native-v3-full-agentd.log",
+      "bytes": 173698,
+      "sha256": "4dd763d2d6291d687327cee852e76700427e20cdeb78e3c7cd0cdf08ec63d278"
+    },
+    {
+      "path": "ordinary-unified-native-v3-full-agentd-result.json",
+      "bytes": 871,
+      "sha256": "6aa707d2f8f66ddd658cd0a72e882417c86be3b2d54c28daa3753a5dfc610c96"
+    },
+    {
+      "path": "ordinary-unified-native-v3-full-artifacts.log",
+      "bytes": 18407,
+      "sha256": "4d239d72e5fa5d5309ad4e3f934fb6020cf82485fb9be7d8ef77af9b69561e18"
+    },
+    {
+      "path": "ordinary-unified-native-v3-full-artifacts-result.json",
+      "bytes": 876,
+      "sha256": "84749390f6513936e5571d2e70cfb63e778b36228f8c116576bee245f4b8df7d"
+    },
+    {
+      "path": "ordinary-unified-native-v3-helper-verify-after.log",
+      "bytes": 1096,
+      "sha256": "34b7200f2646b0b55223b17695943512d450d754a110f3b27786fd3d9e77c091"
+    },
+    {
+      "path": "ordinary-unified-native-v3-helper-verify-after-result.json",
+      "bytes": 865,
+      "sha256": "4664808c166de2ffac48ee473d17534902a0f529df809ad0390664f90d1379a3"
+    },
+    {
+      "path": "ordinary-unified-native-v3-helpers/manifest.json",
+      "bytes": 1826,
+      "sha256": "5f30c91ed104f494516b5fff18f12b3005e1d55efd32464e0ebbdd52cdf5ace7"
+    },
+    {
+      "path": "ordinary-unified-native-v3-helpers/env.json",
+      "bytes": 269,
+      "sha256": "260284007fc3e52165a3c786d6fec3b9ad5b1ef96a573b92f0e00e089c2a868f"
+    },
+    {
+      "path": "ordinary-unified-native-v3-helpers/codex-hepta-infer-worker-host.jsonl",
+      "bytes": 1003466,
+      "sha256": "30b243b44c283ca3256710df36cfbdc36aa39b9f8647102ea9b3433d37197d90"
+    },
+    {
+      "path": "ordinary-unified-native-v3-helpers/codex-hepta-infer-worker-host.stderr.log",
+      "bytes": 25866,
+      "sha256": "403ac0db2e05afb5b42c577ca21ec98a356e4086e1c1c656da75a892576a51eb"
+    },
+    {
+      "path": "execution/native-v3-exact-request.json",
+      "bytes": 9218,
+      "sha256": "0117e589f884548cfe9568ba7873a2e5d973f504205dc11dcd6471aa8187ab2e"
+    },
+    {
+      "path": "execution/native-v3-harness-from-original-request.py",
+      "bytes": 7974,
+      "sha256": "877e5324ae1f398a20ac74c02391066e02db699580295ba03b1314348e5a5d9b"
+    }
+  ],
+  "helper_binaries": "Exact immutable pins were rehashed while collecting evidence. Complete source-bound preparation metadata and pre/post verification are included; executable bytes are not duplicated in this archive.",
+  "reproduction": "The preserved final harness has its original workspace and transition assertions. To rerun library gates, use the exact source and recorded source-bound helper/just commands in an authorized configured environment. Hosted CI/synthetic merges are separate records."
+}

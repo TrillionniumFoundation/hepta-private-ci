@@ -97,7 +97,7 @@ impl<W: AnchorWitnessStore> PublishedCircuitCellOwnerV1<W> {
             .map_err(|_| CellExecutionError::OwnerUnavailable)
     }
 
-    pub(super) fn committed(
+    pub(crate) fn committed(
         &self,
         source: &CircuitTaskSourcePublicationV1,
     ) -> Result<CellDecisionReceiptV1, AgentdError> {

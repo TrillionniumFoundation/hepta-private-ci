@@ -142,6 +142,7 @@ impl<W: AnchorWitnessStore> GenerationLearningReadbackV1<'_, W> {
             | LearningIterationObservationV1::Dataset { .. }
             | LearningIterationObservationV1::Training { .. }
             | LearningIterationObservationV1::TrainingNoUpdateV2(_)
+            | LearningIterationObservationV1::LocalDecisionV2(_)
             | LearningIterationObservationV1::Evaluation { .. }
             | LearningIterationObservationV1::Proposal { .. }
             | LearningIterationObservationV1::Selection { .. } => {

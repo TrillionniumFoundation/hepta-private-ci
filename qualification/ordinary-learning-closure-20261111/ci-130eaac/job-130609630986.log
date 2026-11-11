@@ -1,0 +1,259 @@
+﻿2026-11-11T15:12:10.9555893Z Current runner version: '2.338.2'
+2026-11-11T15:12:10.9578071Z ##[group]Runner Image Provisioner
+2026-11-11T15:12:10.9578780Z Hosted Compute Agent
+2026-11-11T15:12:10.9579401Z Version: 20261028.624
+2026-11-11T15:12:10.9579962Z Commit: 54898b74c23fde5556c9b3c3a2290865feef0dfe
+2026-11-11T15:12:10.9580552Z Build Date: 2026-10-28T21:51:42Z
+2026-11-11T15:12:10.9581216Z Worker ID: {b132d632-d700-41e6-b881-ca115ea679d5}
+2026-11-11T15:12:10.9581995Z Region: eastus2
+2026-11-11T15:12:10.9582497Z Cloud: Azure
+2026-11-11T15:12:10.9583023Z ##[endgroup]
+2026-11-11T15:12:10.9584165Z ##[group]Operating System
+2026-11-11T15:12:10.9584795Z Ubuntu
+2026-11-11T15:12:10.9585252Z 24.04.5
+2026-11-11T15:12:10.9585723Z LTS
+2026-11-11T15:12:10.9586190Z ##[endgroup]
+2026-11-11T15:12:10.9586671Z ##[group]Runner Image
+2026-11-11T15:12:10.9587501Z Image: ubuntu-24.04
+2026-11-11T15:12:10.9588015Z Version: 20261101.360.1
+2026-11-11T15:12:10.9589124Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261101.360/images/ubuntu/Ubuntu2404-Readme.md
+2026-11-11T15:12:10.9590385Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261101.360
+2026-11-11T15:12:10.9591256Z ##[endgroup]
+2026-11-11T15:12:10.9592183Z ##[group]GITHUB_TOKEN Permissions
+2026-11-11T15:12:10.9594346Z Contents: read
+2026-11-11T15:12:10.9594865Z Metadata: read
+2026-11-11T15:12:10.9595477Z ##[endgroup]
+2026-11-11T15:12:10.9597730Z Secret source: Actions
+2026-11-11T15:12:10.9598564Z Cache mode: write
+2026-11-11T15:12:10.9599431Z Prepare workflow directory
+2026-11-11T15:12:10.9871486Z Prepare all required actions
+2026-11-11T15:12:10.9910711Z Getting action download info
+2026-11-11T15:12:11.2426159Z Download action repository 'actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd' (SHA:de0fac2e4500dabe0009e67214ff5f5447ce83dd)
+2026-11-11T15:12:11.4173147Z Download action repository 'pnpm/action-setup@a8198c4bff370c8506180b035930dea56dbd5288' (SHA:a8198c4bff370c8506180b035930dea56dbd5288)
+2026-11-11T15:12:11.7162856Z Download action repository 'actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f' (SHA:53b83947a5a98c8d113130e565377fae1a50d02f)
+2026-11-11T15:12:11.9584800Z Download action repository 'actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7' (SHA:668228422ae6a00e4ad889ee87cd7109ec5666a7)
+2026-11-11T15:12:12.4134737Z Uses: TrillionniumFoundation/hepta-private-ci/.github/workflows/sdk.yml@refs/pull/5978/merge (49ca46c5f706dc46d463e091e4c68a4a1f0da571)
+2026-11-11T15:12:12.4138718Z Complete job name: sdk / sdks
+2026-11-11T15:12:12.4961147Z ##[group]Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+2026-11-11T15:12:12.4961776Z with:
+2026-11-11T15:12:12.4962017Z   persist-credentials: false
+2026-11-11T15:12:12.4962322Z   repository: TrillionniumFoundation/hepta-private-ci
+2026-11-11T15:12:12.4964455Z   token: ***
+2026-11-11T15:12:12.4964686Z   ssh-strict: true
+2026-11-11T15:12:12.4964907Z   ssh-user: git
+2026-11-11T15:12:12.4965122Z   clean: true
+2026-11-11T15:12:12.4965353Z   sparse-checkout-cone-mode: true
+2026-11-11T15:12:12.4965659Z   fetch-depth: 1
+2026-11-11T15:12:12.4965877Z   fetch-tags: false
+2026-11-11T15:12:12.4966112Z   show-progress: true
+2026-11-11T15:12:12.4966356Z   lfs: false
+2026-11-11T15:12:12.4966560Z   submodules: false
+2026-11-11T15:12:12.4966786Z   set-safe-directory: true
+2026-11-11T15:12:12.4967325Z ##[endgroup]
+2026-11-11T15:12:12.7294921Z Syncing repository: TrillionniumFoundation/hepta-private-ci
+2026-11-11T15:12:12.7296539Z ##[group]Getting Git version info
+2026-11-11T15:12:12.7297409Z Working directory is '/home/runner/work/hepta-private-ci/hepta-private-ci'
+2026-11-11T15:12:12.7298247Z [command]/usr/bin/git version
+2026-11-11T15:12:12.7351807Z git version 2.56.0
+2026-11-11T15:12:12.7370376Z ##[endgroup]
+2026-11-11T15:12:12.7383541Z Temporarily overriding HOME='/home/runner/work/_temp/0d3c4ba1-b1ca-4b3d-96c4-fdee771acc05' before making global git config changes
+2026-11-11T15:12:12.7385155Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-11T15:12:12.7388232Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-11T15:12:12.7434018Z Deleting the contents of '/home/runner/work/hepta-private-ci/hepta-private-ci'
+2026-11-11T15:12:12.7437355Z ##[group]Initializing the repository
+2026-11-11T15:12:12.7441519Z [command]/usr/bin/git init /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-11T15:12:12.7637305Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-11-11T15:12:12.7638465Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-11-11T15:12:12.7639454Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-11-11T15:12:12.7640393Z hint: call:
+2026-11-11T15:12:12.7640749Z hint:
+2026-11-11T15:12:12.7641176Z hint: 	git config --global init.defaultBranch <name>
+2026-11-11T15:12:12.7641619Z hint:
+2026-11-11T15:12:12.7642036Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-11-11T15:12:12.7642751Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-11-11T15:12:12.7643290Z hint:
+2026-11-11T15:12:12.7643627Z hint: 	git branch -m <name>
+2026-11-11T15:12:12.7643989Z hint:
+2026-11-11T15:12:12.7644421Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-11-11T15:12:12.7645621Z Initialized empty Git repository in /home/runner/work/hepta-private-ci/hepta-private-ci/.git/
+2026-11-11T15:12:12.7663864Z [command]/usr/bin/git remote add origin https://github.com/TrillionniumFoundation/hepta-private-ci
+2026-11-11T15:12:12.7699127Z ##[endgroup]
+2026-11-11T15:12:12.7699741Z ##[group]Disabling automatic garbage collection
+2026-11-11T15:12:12.7702233Z [command]/usr/bin/git config --local gc.auto 0
+2026-11-11T15:12:12.7732717Z ##[endgroup]
+2026-11-11T15:12:12.7733335Z ##[group]Setting up auth
+2026-11-11T15:12:12.7733807Z Removing SSH command configuration
+2026-11-11T15:12:12.7740559Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-11T15:12:12.7779108Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-11T15:12:12.8067717Z Removing HTTP extra header
+2026-11-11T15:12:12.8073062Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-11T15:12:12.8111277Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-11T15:12:12.8312133Z Removing includeIf entries pointing to credentials config files
+2026-11-11T15:12:12.8317803Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-11T15:12:12.8355186Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-11T15:12:12.8563208Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-a5e494d5-9069-4793-a6c9-68c03d5afe4e.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-11-11T15:12:12.8605123Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path /home/runner/work/_temp/git-credentials-a5e494d5-9069-4793-a6c9-68c03d5afe4e.config
+2026-11-11T15:12:12.8641232Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-a5e494d5-9069-4793-a6c9-68c03d5afe4e.config
+2026-11-11T15:12:12.8685156Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-a5e494d5-9069-4793-a6c9-68c03d5afe4e.config
+2026-11-11T15:12:12.8720987Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-a5e494d5-9069-4793-a6c9-68c03d5afe4e.config
+2026-11-11T15:12:12.8753502Z ##[endgroup]
+2026-11-11T15:12:12.8754056Z ##[group]Fetching the repository
+2026-11-11T15:12:12.8759856Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +49ca46c5f706dc46d463e091e4c68a4a1f0da571:refs/remotes/pull/5978/merge
+2026-11-11T15:12:18.5880375Z From https://github.com/TrillionniumFoundation/hepta-private-ci
+2026-11-11T15:12:18.5880965Z  * [new ref]         49ca46c5f706dc46d463e091e4c68a4a1f0da571 -> pull/5978/merge
+2026-11-11T15:12:18.5890974Z ##[endgroup]
+2026-11-11T15:12:18.5891316Z ##[group]Determining the checkout info
+2026-11-11T15:12:18.5891679Z ##[endgroup]
+2026-11-11T15:12:18.5893155Z [command]/usr/bin/git sparse-checkout disable
+2026-11-11T15:12:18.5945939Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-11-11T15:12:18.5979578Z ##[group]Checking out the ref
+2026-11-11T15:12:18.5982949Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/5978/merge
+2026-11-11T15:12:19.4712441Z Note: switching to 'refs/remotes/pull/5978/merge'.
+2026-11-11T15:12:19.4712854Z 
+2026-11-11T15:12:19.4713134Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-11-11T15:12:19.4713741Z changes and commit them, and you can discard any commits you make in this
+2026-11-11T15:12:19.4714230Z state without impacting any branches by switching back to a branch.
+2026-11-11T15:12:19.4714503Z 
+2026-11-11T15:12:19.4714730Z If you want to create a new branch to retain commits you create, you may
+2026-11-11T15:12:19.4715111Z do so (now or later) by using -c with the switch command. Example:
+2026-11-11T15:12:19.4715334Z 
+2026-11-11T15:12:19.4715435Z   git switch -c <new-branch-name>
+2026-11-11T15:12:19.4715579Z 
+2026-11-11T15:12:19.4715693Z Or undo this operation with:
+2026-11-11T15:12:19.4715826Z 
+2026-11-11T15:12:19.4715910Z   git switch -
+2026-11-11T15:12:19.4716060Z 
+2026-11-11T15:12:19.4716245Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-11-11T15:12:19.4716493Z 
+2026-11-11T15:12:19.4716765Z HEAD is now at 49ca46c Merge 130eaac29ef73259e10ae167744bda8320796216 into be8adcbb5e9925f72e05330b8fb30509cba4544b
+2026-11-11T15:12:19.4753778Z ##[endgroup]
+2026-11-11T15:12:19.4803160Z [command]/usr/bin/git log -1 --format=%H
+2026-11-11T15:12:19.4835049Z 49ca46c5f706dc46d463e091e4c68a4a1f0da571
+2026-11-11T15:12:19.4843887Z ##[group]Removing auth
+2026-11-11T15:12:19.4844733Z Removing SSH command configuration
+2026-11-11T15:12:19.4846740Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-11T15:12:19.4883891Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-11T15:12:19.5108387Z Removing HTTP extra header
+2026-11-11T15:12:19.5113307Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-11T15:12:19.5157423Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-11T15:12:19.5393618Z Removing includeIf entries pointing to credentials config files
+2026-11-11T15:12:19.5398500Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-11T15:12:19.5438090Z includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path
+2026-11-11T15:12:19.5438784Z includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path
+2026-11-11T15:12:19.5439406Z includeif.gitdir:/github/workspace/.git.path
+2026-11-11T15:12:19.5440031Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-11T15:12:19.5449054Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path
+2026-11-11T15:12:19.5479537Z /home/runner/work/_temp/git-credentials-a5e494d5-9069-4793-a6c9-68c03d5afe4e.config
+2026-11-11T15:12:19.5498530Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path /home/runner/work/_temp/git-credentials-a5e494d5-9069-4793-a6c9-68c03d5afe4e.config
+2026-11-11T15:12:19.5537533Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path
+2026-11-11T15:12:19.5566821Z /home/runner/work/_temp/git-credentials-a5e494d5-9069-4793-a6c9-68c03d5afe4e.config
+2026-11-11T15:12:19.5575377Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-a5e494d5-9069-4793-a6c9-68c03d5afe4e.config
+2026-11-11T15:12:19.5614298Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git.path
+2026-11-11T15:12:19.5646168Z /github/runner_temp/git-credentials-a5e494d5-9069-4793-a6c9-68c03d5afe4e.config
+2026-11-11T15:12:19.5653480Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-a5e494d5-9069-4793-a6c9-68c03d5afe4e.config
+2026-11-11T15:12:19.5692042Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-11T15:12:19.5727567Z /github/runner_temp/git-credentials-a5e494d5-9069-4793-a6c9-68c03d5afe4e.config
+2026-11-11T15:12:19.5743534Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-a5e494d5-9069-4793-a6c9-68c03d5afe4e.config
+2026-11-11T15:12:19.5799328Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-11T15:12:19.6018292Z Removing credentials config '/home/runner/work/_temp/git-credentials-a5e494d5-9069-4793-a6c9-68c03d5afe4e.config'
+2026-11-11T15:12:19.6027230Z ##[endgroup]
+2026-11-11T15:12:19.6216246Z ##[group]Run set -euo pipefail
+2026-11-11T15:12:19.6216545Z [36;1mset -euo pipefail[0m
+2026-11-11T15:12:19.6216764Z [36;1msudo apt-get update -y[0m
+2026-11-11T15:12:19.6217458Z [36;1msudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends pkg-config libcap-dev[0m
+2026-11-11T15:12:19.6240140Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-11T15:12:19.6240439Z ##[endgroup]
+2026-11-11T15:12:19.6918296Z Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
+2026-11-11T15:12:19.7375893Z Get:6 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease [3600 B]
+2026-11-11T15:12:19.8117142Z Get:7 https://packages.microsoft.com/ubuntu/24.04/prod noble/main amd64 Packages [760 kB]
+2026-11-11T15:12:19.8312875Z Get:8 https://packages.microsoft.com/ubuntu/24.04/prod noble/main armhf Packages [12.6 kB]
+2026-11-11T15:12:19.8348080Z Get:9 https://packages.microsoft.com/ubuntu/24.04/prod noble/main arm64 Packages [690 kB]
+2026-11-11T15:12:39.7203585Z Ign:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease
+2026-11-11T15:12:59.7584332Z Ign:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease
+2026-11-11T15:13:19.7830849Z Ign:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease
+2026-11-11T15:13:39.8098211Z Ign:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease
+2026-11-11T15:13:59.8297068Z Ign:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease
+2026-11-11T15:14:19.8555643Z Ign:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease
+2026-11-11T15:14:19.8611951Z Ign:2 https://archive.ubuntu.com/ubuntu noble InRelease
+2026-11-11T15:14:39.8837664Z Ign:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease
+2026-11-11T15:14:39.8888301Z Ign:3 https://archive.ubuntu.com/ubuntu noble-updates InRelease
+2026-11-11T15:14:39.9089470Z Err:2 https://security.ubuntu.com/ubuntu noble InRelease
+2026-11-11T15:14:39.9090044Z   Temporary failure resolving 'azure.archive.ubuntu.com'
+2026-11-11T15:14:59.9102707Z Ign:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease
+2026-11-11T15:14:59.9149713Z Ign:4 https://archive.ubuntu.com/ubuntu noble-backports InRelease
+2026-11-11T15:14:59.9288216Z Err:3 https://security.ubuntu.com/ubuntu noble-updates InRelease
+2026-11-11T15:14:59.9288780Z   Temporary failure resolving 'azure.archive.ubuntu.com'
+2026-11-11T15:15:19.9381989Z Ign:5 https://archive.ubuntu.com/ubuntu noble-security InRelease
+2026-11-11T15:15:19.9477134Z Err:4 https://security.ubuntu.com/ubuntu noble-backports InRelease
+2026-11-11T15:15:19.9479036Z   Temporary failure resolving 'azure.archive.ubuntu.com'
+2026-11-11T15:15:39.3675336Z Err:5 https://security.ubuntu.com/ubuntu noble-security InRelease
+2026-11-11T15:15:39.3675918Z   Temporary failure resolving 'azure.archive.ubuntu.com'
+2026-11-11T15:15:42.2352010Z Fetched 1467 kB in 3min 20s (7344 B/s)
+2026-11-11T15:15:43.1380710Z Reading package lists...
+2026-11-11T15:15:43.1507672Z W: Failed to fetch mirror+file:/etc/apt/apt-mirrors.txt/dists/noble/InRelease  Temporary failure resolving 'azure.archive.ubuntu.com'
+2026-11-11T15:15:43.1508907Z W: Failed to fetch mirror+file:/etc/apt/apt-mirrors.txt/dists/noble-updates/InRelease  Temporary failure resolving 'azure.archive.ubuntu.com'
+2026-11-11T15:15:43.1510017Z W: Failed to fetch mirror+file:/etc/apt/apt-mirrors.txt/dists/noble-backports/InRelease  Temporary failure resolving 'azure.archive.ubuntu.com'
+2026-11-11T15:15:43.1510727Z W: Failed to fetch mirror+file:/etc/apt/apt-mirrors.txt/dists/noble-security/InRelease  Temporary failure resolving 'azure.archive.ubuntu.com'
+2026-11-11T15:15:43.1511322Z W: Some index files failed to download. They have been ignored, or old ones used instead.
+2026-11-11T15:15:43.1697395Z Reading package lists...
+2026-11-11T15:15:43.3897677Z Building dependency tree...
+2026-11-11T15:15:43.3903644Z Reading state information...
+2026-11-11T15:15:43.5260308Z pkg-config is already the newest version (1.8.1-2build1).
+2026-11-11T15:15:43.5260768Z Suggested packages:
+2026-11-11T15:15:43.5261546Z   manpages-dev
+2026-11-11T15:15:43.5408190Z The following NEW packages will be installed:
+2026-11-11T15:15:43.5411921Z   libcap-dev
+2026-11-11T15:15:43.5579269Z 0 upgraded, 1 newly installed, 0 to remove and 3 not upgraded.
+2026-11-11T15:15:43.5579766Z Need to get 596 kB of archives.
+2026-11-11T15:15:43.5580186Z After this operation, 2930 kB of additional disk space will be used.
+2026-11-11T15:15:43.5580688Z Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
+2026-11-11T15:16:03.5949551Z Ign:2 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 libcap-dev amd64 1:2.66-5ubuntu2.4
+2026-11-11T15:16:24.6211436Z Ign:2 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 libcap-dev amd64 1:2.66-5ubuntu2.4
+2026-11-11T15:16:44.6567325Z Ign:2 https://archive.ubuntu.com/ubuntu noble-updates/main amd64 libcap-dev amd64 1:2.66-5ubuntu2.4
+2026-11-11T15:17:03.3766681Z Ign:2 https://security.ubuntu.com/ubuntu noble-updates/main amd64 libcap-dev amd64 1:2.66-5ubuntu2.4
+2026-11-11T15:17:03.3767525Z Err:2 mirror+file:/etc/apt/apt-mirrors.txt noble-updates/main amd64 libcap-dev amd64 1:2.66-5ubuntu2.4
+2026-11-11T15:17:03.3767962Z   Temporary failure resolving 'azure.archive.ubuntu.com'
+2026-11-11T15:17:03.3818074Z E: Failed to fetch mirror+file:/etc/apt/apt-mirrors.txt/pool/main/libc/libcap2/libcap-dev_2.66-5ubuntu2.4_amd64.deb  Temporary failure resolving 'azure.archive.ubuntu.com'
+2026-11-11T15:17:03.3818826Z E: Unable to fetch some archives, maybe run apt-get update or try with --fix-missing?
+2026-11-11T15:17:03.3852428Z ##[error]Process completed with exit code 100.
+2026-11-11T15:17:03.4532959Z ##[group]Run actions/cache/save@668228422ae6a00e4ad889ee87cd7109ec5666a7
+2026-11-11T15:17:03.4533283Z with:
+2026-11-11T15:17:03.4533665Z   key: bazel-cache-x86_64-unknown-linux-gnu-e2be8e7f5e1b36d0472179dd0d5a1e4d69f374cba1667eb9476cf219757a3b3c
+2026-11-11T15:17:03.4534120Z   enableCrossOsArchive: false
+2026-11-11T15:17:03.4534514Z ##[endgroup]
+2026-11-11T15:17:03.5518134Z [warning]Input required and not supplied: path
+2026-11-11T15:17:03.5530919Z ##[warning]Cache save failed.
+2026-11-11T15:17:03.5691612Z Prepare all required actions
+2026-11-11T15:17:03.5721652Z ##[group]Run ./.github/actions/check-clean-worktree
+2026-11-11T15:17:03.5721911Z ##[endgroup]
+2026-11-11T15:17:03.5769788Z ##[start-action display=Check for a clean worktree;id=__self.__run]
+2026-11-11T15:17:03.5792378Z ##[group]Run set -euo pipefail
+2026-11-11T15:17:03.5792641Z [36;1mset -euo pipefail[0m
+2026-11-11T15:17:03.5792828Z [36;1m[0m
+2026-11-11T15:17:03.5793198Z [36;1mstatus="$(git -C "${GITHUB_WORKSPACE}" status --porcelain=v1 --untracked-files=normal --ignore-submodules=none)"[0m
+2026-11-11T15:17:03.5793612Z [36;1mif [[ -z "${status}" ]]; then[0m
+2026-11-11T15:17:03.5793823Z [36;1m  exit 0[0m
+2026-11-11T15:17:03.5793984Z [36;1mfi[0m
+2026-11-11T15:17:03.5794143Z [36;1m[0m
+2026-11-11T15:17:03.5794436Z [36;1mecho "::error::CI job left tracked changes or untracked files in the repository worktree"[0m
+2026-11-11T15:17:03.5794800Z [36;1mprintf '%s\n' "${status}"[0m
+2026-11-11T15:17:03.5795046Z [36;1mexit 1[0m
+2026-11-11T15:17:03.5812259Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-11T15:17:03.5812544Z ##[endgroup]
+2026-11-11T15:17:03.9454389Z ##[end-action id=__self.__run;outcome=success;conclusion=success;duration_ms=368]
+2026-11-11T15:17:03.9542759Z Post job cleanup.
+2026-11-11T15:17:04.0238402Z [command]/usr/bin/git version
+2026-11-11T15:17:04.0273190Z git version 2.56.0
+2026-11-11T15:17:04.0306648Z Temporarily overriding HOME='/home/runner/work/_temp/cfb637dd-ab1e-405d-92db-894db1e0d575' before making global git config changes
+2026-11-11T15:17:04.0307859Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-11T15:17:04.0310569Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-11T15:17:04.0343212Z Removing SSH command configuration
+2026-11-11T15:17:04.0349150Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-11T15:17:04.0381180Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-11T15:17:04.0621947Z Removing HTTP extra header
+2026-11-11T15:17:04.0627510Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-11T15:17:04.0660569Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-11T15:17:04.0923602Z Removing includeIf entries pointing to credentials config files
+2026-11-11T15:17:04.0930186Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-11T15:17:04.0971297Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-11T15:17:04.1346213Z Cleaning up orphan processes

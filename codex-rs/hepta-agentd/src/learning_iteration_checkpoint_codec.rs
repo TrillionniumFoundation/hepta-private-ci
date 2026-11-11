@@ -14,15 +14,25 @@ const MAGIC: &[u8; 8] = b"HEPLCP02";
 // Only the explicit trainer-NoUpdate path uses this format. Historical
 // snapshots retain their exact HEPLCP02 encoding and signed observation bytes.
 const TRAINER_NO_UPDATE_MAGIC: &[u8; 8] = b"HEPLCP03";
-pub(super) const MAX_RECEIPTS: usize = 7;
+// V4 retains a separate local decision before the original Selection. Earlier
+// histories keep their exact bytes; a header relabel is not a migration.
+const LOCAL_DECISION_MAGIC: &[u8; 8] = b"HEPLCP04";
+pub(super) const MAX_RECEIPTS: usize = 8;
 const MAX_ID_BYTES: usize = 128;
 
 pub(super) fn encode(snapshot: &LearningIterationSnapshotV1) -> Result<Vec<u8>, Error> {
-    if snapshot.receipts.len() > MAX_RECEIPTS {
+    let limit = if snapshot.local_decision_v2().is_some() {
+        MAX_RECEIPTS
+    } else {
+        7
+    };
+    if snapshot.receipts.len() > limit {
         return Err(Error::Capacity);
     }
     let mut w = Writer(Vec::with_capacity(MAX_BYTES));
-    w.put(if snapshot.training_no_update_v2().is_some() {
+    w.put(if snapshot.local_decision_v2().is_some() {
+        LOCAL_DECISION_MAGIC
+    } else if snapshot.training_no_update_v2().is_some() {
         TRAINER_NO_UPDATE_MAGIC
     } else {
         MAGIC
@@ -212,6 +222,23 @@ pub(super) fn encode(snapshot: &LearningIterationSnapshotV1) -> Result<Vec<u8>, 
                 w.u64(outcome.steps)?;
                 w.u64(outcome.milliseconds)?;
             }
+            LearningIterationObservationV1::LocalDecisionV2(decision) => {
+                w.u8(/*value*/ 9)?;
+                w.u8(match decision.disposition {
+                    LearningLocalDispositionV2::AdoptCandidate => 0,
+                    LearningLocalDispositionV2::DeferCandidate => 1,
+                    LearningLocalDispositionV2::RetainParent => 2,
+                })?;
+                for digest in [
+                    decision.proposal_head,
+                    decision.candidate_bundle,
+                    decision.selected_bundle,
+                    decision.policy_digest,
+                    decision.reason_digest,
+                ] {
+                    w.digest(digest)?;
+                }
+            }
         }
     }
     w.digest(snapshot.head_digest)?;
@@ -225,7 +252,8 @@ pub(super) fn decode(bytes: &[u8]) -> Result<LearningIterationSnapshotV1, Error>
     let mut r = Reader { bytes, offset: 0 };
     let magic = r.take::<8>()?;
     let trainer_no_update = &magic == TRAINER_NO_UPDATE_MAGIC;
-    if &magic != MAGIC && !trainer_no_update {
+    let local_decision = &magic == LOCAL_DECISION_MAGIC;
+    if &magic != MAGIC && !trainer_no_update && !local_decision {
         return Err(Error::InvalidRecord);
     }
     let request = LearningIterationRequestV1 {
@@ -269,7 +297,7 @@ pub(super) fn decode(bytes: &[u8]) -> Result<LearningIterationSnapshotV1, Error>
         next_use_observer: r.id()?,
     };
     let count = usize::from(r.u8()?);
-    if count > MAX_RECEIPTS {
+    if count > if local_decision { MAX_RECEIPTS } else { 7 } {
         return Err(Error::Capacity);
     }
     let mut receipts = Vec::with_capacity(count);
@@ -351,6 +379,22 @@ pub(super) fn decode(bytes: &[u8]) -> Result<LearningIterationSnapshotV1, Error>
                         reason,
                     })
                 }
+                9 if local_decision => {
+                    let disposition = match r.u8()? {
+                        0 => LearningLocalDispositionV2::AdoptCandidate,
+                        1 => LearningLocalDispositionV2::DeferCandidate,
+                        2 => LearningLocalDispositionV2::RetainParent,
+                        _ => return Err(Error::InvalidRecord),
+                    };
+                    LearningIterationObservationV1::LocalDecisionV2(LearningLocalDecisionV2 {
+                        proposal_head: r.digest()?,
+                        candidate_bundle: r.digest()?,
+                        selected_bundle: r.digest()?,
+                        policy_digest: r.digest()?,
+                        reason_digest: r.digest()?,
+                        disposition,
+                    })
+                }
                 _ => return Err(Error::InvalidRecord),
             },
         });
@@ -361,7 +405,10 @@ pub(super) fn decode(bytes: &[u8]) -> Result<LearningIterationSnapshotV1, Error>
         receipts,
         head_digest: r.digest()?,
     };
-    if r.offset != bytes.len() || snapshot.training_no_update_v2().is_some() != trainer_no_update {
+    if r.offset != bytes.len()
+        || snapshot.training_no_update_v2().is_some() != trainer_no_update
+        || snapshot.local_decision_v2().is_some() != local_decision
+    {
         return Err(Error::InvalidRecord);
     }
     LearningIterationCoordinatorV1::from_snapshot(snapshot.clone()).map_err(Error::Snapshot)?;

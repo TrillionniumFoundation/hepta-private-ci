@@ -297,3 +297,6 @@ async fn q24_ordinary_fresh_task_consumes_original_trainer_changed_head_after_ve
     c.stop().await?;
     Ok(())
 }
+
+#[path = "cell_q24_dataset_materializer_tests.rs"]
+mod dataset;

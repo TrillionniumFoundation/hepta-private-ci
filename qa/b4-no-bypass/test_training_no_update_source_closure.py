@@ -19,6 +19,7 @@ SPEC.loader.exec_module(PROOF)
 AGENT = "codex-rs/hepta-agentd/src/"
 READBACK = AGENT + "cell_composed_q24_training_observation.rs"
 RECEIPTS = AGENT + "cell_q24_training_receipt_owner.rs"
+MODEL_MATERIAL = AGENT + "cell_q24_model_proposal_admission.rs"
 
 
 class TrainingNoUpdateSourceClosureTests(unittest.TestCase):
@@ -41,14 +42,14 @@ class TrainingNoUpdateSourceClosureTests(unittest.TestCase):
             with self.assertRaises(PROOF.VerificationFailure):
                 PROOF._verify_protected_files(root, {"protected_file": rows})
 
-    def test_readback_boundary_only_admits_original_generator_receipt_owner(self):
+    def test_readback_boundary_only_admits_original_receipt_and_material_owners(self):
         rows = {row.identifier: row for row in PROOF._boundary_rows(self.manifest)}
         row = rows["cell_q24_original_training_observation"]
         self.assertIn(row.identifier, self.manifest["privileged_inventory"]["required_boundary_ids"])
-        self.assertEqual(row.product_callers, (RECEIPTS,))
+        self.assertEqual(row.product_callers, (RECEIPTS, MODEL_MATERIAL))
         sources = {
             path: PROOF._strip_rust_non_code((ROOT / path).read_text())
-            for path in (READBACK, RECEIPTS)
+            for path in (READBACK, RECEIPTS, MODEL_MATERIAL)
         }
         PROOF._verify_boundary(ROOT, row, sources, ())
         sources[AGENT + "unregistered_training_result.rs"] = (
@@ -83,10 +84,44 @@ class TrainingNoUpdateSourceClosureTests(unittest.TestCase):
                 "LearningIterationStageV1::Training => LearningEvidenceRoleV1::Generator"),
             (AGENT + "learning_iteration_auth.rs",
                 "verify_signed_actor_separation(&prior, &current, clock()?)"),
-            (AGENT + "learning_iteration.rs", "else if restored.snapshot().training_no_update_v2().is_some()"),
+            (AGENT + "learning_iteration.rs", "else if restored.snapshot().requires_scoped_owner_v2()"),
+            ("codex-rs/hepta-learning-artifacts/src/learning_iteration_types.rs",
+                "self.training_no_update_v2().is_some() || self.local_decision_v2().is_some()"),
         ):
             with self.subTest(path=path, marker=marker):
                 self.rejects(path, marker)
+
+    def test_local_choice_requires_its_own_bound_policy_and_current_selector_evidence(self):
+        artifacts = "codex-rs/hepta-learning-artifacts/src/"
+        for path, markers in (
+            (artifacts + "learning_iteration.rs", (
+                "decision.proposal_head == self.snapshot.head_digest",
+                "candidate_digest == Some(decision.candidate_bundle)",
+                "!decision.policy_digest.is_zero()",
+                "!decision.reason_digest.is_zero()",
+                "decision.selected_bundle == request.selected_bundle.digest()?",
+                "candidate_digest == Some(decision.selected_bundle)",
+            )),
+            (artifacts + "learning_iteration_digest.rs", (
+                "hepta.learning.iteration-local-decision.v2",
+                "hepta.learning.iteration-observation.v1",
+            )),
+            (AGENT + "learning_iteration_auth.rs", (
+                "verify_receipt(ports, verifier, snapshot, decision, clock).await?",
+            )),
+            (AGENT + "learning_iteration.rs", (
+                "if let Some(decision)",
+                "decision,",
+                "&receipt,",
+            )),
+            (AGENT + "learning_iteration_checkpoint_codec.rs", (
+                "9 if local_decision =>",
+                "snapshot.local_decision_v2().is_some() != local_decision",
+            )),
+        ):
+            for marker in markers:
+                with self.subTest(path=path, marker=marker):
+                    self.rejects(path, marker)
 
 
 if __name__ == "__main__":

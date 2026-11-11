@@ -116,7 +116,9 @@ impl LearningIterationCoordinatorV1 {
     pub fn from_snapshot(
         snapshot: LearningIterationSnapshotV1,
     ) -> Result<Self, LearningIterationError> {
-        if snapshot.receipts.len() > STAGES.len() {
+        if snapshot.receipts.len()
+            > STAGES.len() + usize::from(snapshot.local_decision_v2().is_some())
+        {
             return Err(LearningIterationError::CapacityExceeded);
         }
         let mut coordinator = Self::new(snapshot.request.clone(), snapshot.owners.clone())?;
@@ -145,6 +147,17 @@ impl LearningIterationCoordinatorV1 {
             )
         ) {
             return LearningIterationDispositionV1::UsedByNextTask;
+        }
+        if let Some(decision) = self.snapshot.local_decision_v2() {
+            match decision.disposition {
+                LearningLocalDispositionV2::DeferCandidate => {
+                    return LearningIterationDispositionV1::LocallyDeferredV2;
+                }
+                LearningLocalDispositionV2::RetainParent => {
+                    return LearningIterationDispositionV1::LocallyRetainedV2;
+                }
+                LearningLocalDispositionV2::AdoptCandidate => {}
+            }
         }
         if self.snapshot.receipts.iter().any(|receipt| {
             matches!(
@@ -195,7 +208,8 @@ impl LearningIterationCoordinatorV1 {
                 ..
             })
             | Some(LearningIterationObservationV1::TrainingNoUpdateV2(_))
-            | Some(LearningIterationObservationV1::Proposal { .. }) => {
+            | Some(LearningIterationObservationV1::Proposal { .. })
+            | Some(LearningIterationObservationV1::LocalDecisionV2(_)) => {
                 Some(LearningIterationStageV1::Selection)
             }
             Some(LearningIterationObservationV1::Selection { .. }) => {
@@ -216,6 +230,15 @@ impl LearningIterationCoordinatorV1 {
             .iter()
             .rev()
             .find_map(|receipt| match &receipt.observation {
+                LearningIterationObservationV1::LocalDecisionV2(decision) => {
+                    match decision.disposition {
+                        LearningLocalDispositionV2::AdoptCandidate => self.candidate(),
+                        LearningLocalDispositionV2::DeferCandidate
+                        | LearningLocalDispositionV2::RetainParent => {
+                            Some(&self.snapshot.request.selected_bundle)
+                        }
+                    }
+                }
                 LearningIterationObservationV1::TrainingNoUpdateV2(_)
                 | LearningIterationObservationV1::Evaluation {
                     disposition: LearningEvaluationDispositionV1::NoUpdate,
@@ -407,6 +430,33 @@ impl LearningIterationCoordinatorV1 {
                 candidate_bundle,
                 selection_digest,
             } => next_task_bundle == Some(*candidate_bundle) && !selection_digest.is_zero(),
+            LearningIterationObservationV1::LocalDecisionV2(decision) => {
+                // Only one explicit choice may follow the original qualified
+                // proposal. Its receipt is signed by Selector, never Evaluator.
+                decision.proposal_head == self.snapshot.head_digest
+                    && candidate_digest == Some(decision.candidate_bundle)
+                    && !decision.policy_digest.is_zero()
+                    && !decision.reason_digest.is_zero()
+                    && matches!(
+                        self.snapshot
+                            .receipts
+                            .last()
+                            .map(|receipt| &receipt.observation),
+                        Some(LearningIterationObservationV1::Proposal {
+                            disposition: LearningProposalDispositionV1::UpdateCandidates,
+                            ..
+                        })
+                    )
+                    && match decision.disposition {
+                        LearningLocalDispositionV2::AdoptCandidate => {
+                            candidate_digest == Some(decision.selected_bundle)
+                        }
+                        LearningLocalDispositionV2::DeferCandidate
+                        | LearningLocalDispositionV2::RetainParent => {
+                            decision.selected_bundle == request.selected_bundle.digest()?
+                        }
+                    }
+            }
             LearningIterationObservationV1::NextUse {
                 candidate_bundle,
                 state_partition,
@@ -470,3 +520,7 @@ mod profile_tests;
 #[cfg(test)]
 #[path = "learning_iteration_training_no_update_tests.rs"]
 mod training_no_update_tests;
+
+#[cfg(test)]
+#[path = "learning_iteration_local_decision_tests.rs"]
+mod local_decision_tests;

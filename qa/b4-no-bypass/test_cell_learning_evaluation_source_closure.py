@@ -21,15 +21,17 @@ AGENT = "codex-rs/hepta-agentd/src/"
 ARTIFACTS = "codex-rs/hepta-learning-artifacts/src/"
 BRIDGE = AGENT + "neuron_cell_learning_evaluation.rs"
 READBACK = AGENT + "learning_iteration_evaluation_evidence.rs"
+MODEL_MATERIAL = AGENT + "cell_q24_model_proposal_admission.rs"
+EVALUATION_OWNER = AGENT + "neuron_cell_evaluation_receipt_owner.rs"
 GENERATION_READBACK = AGENT + "learning_iteration_generation_evidence.rs"
 CODEC = AGENT + "learning_iteration_checkpoint_codec.rs"
 PREPARE = "fn prepare_cell_learning_evaluation_v1"
 READ = "fn read_cell_learning_evaluation_v1"
 CALLERS = {
     "cell_learning_evaluation_profile_freeze": (),
-    "cell_learning_evaluation_receipt_prepare": (READBACK,),
+    "cell_learning_evaluation_receipt_prepare": (READBACK, MODEL_MATERIAL, EVALUATION_OWNER),
     "cell_learning_evaluation_original_readback": (),
-    "learning_evidence_original_owner_readback": (READBACK, GENERATION_READBACK),
+    "learning_evidence_original_owner_readback": (READBACK, GENERATION_READBACK, EVALUATION_OWNER),
     "root_learning_original_stage_assembly": (),
 }
 
@@ -134,7 +136,9 @@ class CellLearningEvaluationSourceClosureTests(unittest.TestCase):
         for item, marker in (
             (None, 'const MAGIC: &[u8; 8] = b"HEPLCP02"'),
             (None, 'const TRAINER_NO_UPDATE_MAGIC: &[u8; 8] = b"HEPLCP03"'),
-            ("fn encode(", "w.put(if snapshot.training_no_update_v2().is_some()"),
+            (None, 'const LOCAL_DECISION_MAGIC: &[u8; 8] = b"HEPLCP04"'),
+            ("fn encode(", "w.put(if snapshot.local_decision_v2().is_some()"),
+            ("fn encode(", "else if snapshot.training_no_update_v2().is_some()"),
             ("fn encode(", "TRAINER_NO_UPDATE_MAGIC"),
             ("fn encode(", "w.digest(request.evaluation_profile)?"),
             ("fn decode(", "let magic = r.take::<8>()?"),
