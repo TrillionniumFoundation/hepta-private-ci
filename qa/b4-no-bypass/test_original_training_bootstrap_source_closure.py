@@ -173,7 +173,7 @@ class OriginalTrainingBootstrapClosureTests(unittest.TestCase):
                 "coordinator.snapshot() != &initial",
                 "peer.pid == std::process::id()",
                 "peer.actor_id != initial.owners.dataset",
-                "original_owner_pidfd",
+                "original_owner_pidfd,\n",
                 "if now()? < started_at",
             )),
             ("fn bind_original_dataset(", (
@@ -276,7 +276,7 @@ class OriginalTrainingBootstrapClosureTests(unittest.TestCase):
             changed = source.replace("State::Fenced;", replacement + ";", 1)
             with self.assertRaises(PROOF.VerificationFailure):
                 self.require_no_custody_rearm(changed)
-        self.rejects(SERVICE, "fn serve_evidence_readback(", "self.ready()?")
+        self.rejects(SERVICE, "fn serve_evidence_readback(", ".ready()?")
         self.rejects(SERVICE, "fn ready(", "State::Fenced => Err(Error::Uncertain)")
 
     def test_only_original_captured_native_and_generator_enter_the_same_stage(self):
