@@ -409,3 +409,6 @@ async fn q24_selector_command_keeps_original_expiry_and_external_custody() -> an
     f.original.session.stop().await?;
     Ok(())
 }
+
+#[path = "circuit_next_use_command_owner_tests.rs"]
+mod next_use_command;
