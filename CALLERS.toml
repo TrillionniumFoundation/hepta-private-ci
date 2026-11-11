@@ -4381,7 +4381,7 @@ id = "learning_original_circuit_model_selection_receipt_attest"
 symbol = "OriginalCircuitModelSelectionReceiptOwnerV1::attest_original_selection"
 receiver_type = "OriginalCircuitModelSelectionReceiptOwnerV1"
 definition_path = "codex-rs/hepta-agentd/src/circuit_model_selection_receipt_owner.rs"
-definition_markers = ["pub fn attest_original_selection<"]
+definition_markers = ["pub fn attest_original_selection("]
 product_callers = []
 caller_markers = []
 
@@ -4390,7 +4390,7 @@ id = "learning_original_circuit_model_selection_receipt_readback"
 symbol = "OriginalCircuitModelSelectionReceiptOwnerV1::readback"
 receiver_type = "OriginalCircuitModelSelectionReceiptOwnerV1"
 definition_path = "codex-rs/hepta-agentd/src/circuit_model_selection_receipt_owner.rs"
-definition_markers = ["pub fn readback<"]
+definition_markers = ["pub fn readback("]
 product_callers = []
 caller_markers = []
 
