@@ -100,7 +100,6 @@ class FiniteDomainTests(unittest.TestCase):
         self.assertEqual(a["inputs"]["probability"], probability.tolist())
         self.numerical_evidence = {"first_schedule": a, "second_schedule": b}
 
-
     def test_fixed_gap_admission_rejects_tensor_string_bool_and_infinite_stream(self):
         self.assertEqual(_fixed_gap_schedule((0.0, np.float64(0.05))), (0.0, 0.05))
         for schedule in (
