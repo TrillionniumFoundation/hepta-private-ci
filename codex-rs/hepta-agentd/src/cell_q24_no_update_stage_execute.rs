@@ -1,8 +1,6 @@
 //! Exactly one resident continuation reaches these effect edges. Readiness
 //! waits are reads; only an actual Ready is followed by Observer dispatch.
 
-use std::sync::Arc;
-use std::sync::atomic::AtomicBool;
 use std::time::Duration;
 
 use codex_hepta_learning_artifacts::LearningIterationCoordinatorV1;
@@ -82,10 +80,10 @@ impl Owners {
             }
             Stage::Training => {
                 let trainer = state.trainer.as_ref().ok_or(Error::CommitUncertain)?;
-                // This is the existing client's local dispatch sample. Root
-                // cancellation was just checked by the sealed gate; the remote
-                // original host still owns its live native cancellation token.
-                let dispatch = Arc::new(AtomicBool::new(false));
+                // The same resident continuation owns this cancellation flag.
+                // Dropping or fencing it also cancels a queued local send; it
+                // cannot undo a command already accepted by the original host.
+                let dispatch = RootResidentLearningEffectGateV3::training_cancellation(gate);
                 let original = OriginalCellQ24TrainingCommandClientV1::execute_training(trainer, dispatch)
                     .await.map_err(auth::trainer_failure);
                 original.and_then(|value| {

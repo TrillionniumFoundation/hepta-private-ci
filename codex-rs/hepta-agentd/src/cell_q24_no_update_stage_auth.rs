@@ -30,7 +30,7 @@ pub(super) fn require_clock(started_at: u64, current: u64) -> Result<(), Error> 
 }
 
 pub(super) fn require_material(material: &Material, binding: Digest32) -> Result<u64, Error> {
-    let (actual, current) = Material::require_original_command_initial(material)
+    let (actual, current) = crate::OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(material)
         .map_err(|_| Error::WrongScope)?;
     if actual != binding { return Err(Error::WrongScope); }
     Ok(current)

@@ -114,10 +114,13 @@ impl LearningIterationStageOwnerPortsV1 for OriginalCellQ24NoUpdateStageOwnersV1
     ) -> LearningIterationOwnerFutureV1<'a, ()> {
         Box::pin(async move {
             tokio::time::timeout_at(self.end.into(), async {
+                let started_at = auth::now()?;
                 auth::require_snapshot(&self.material, snapshot)?;
                 let mut state = self.continuation.try_lock().map_err(|_| Error::QueueFull)?;
                 state.read_prefix(self, snapshot).await?;
-                auth::verify_prefix(&self.material, snapshot, &state, auth::now()?)
+                let fresh = auth::require_material(&self.material, self.initial_binding)?;
+                auth::require_clock(started_at, fresh)?;
+                auth::verify_prefix(&self.material, snapshot, &state, fresh)
             }).await.map_err(|_| Error::CommitUncertain)?
         })
     }
@@ -154,7 +157,7 @@ impl LearningIterationStageOwnerPortsV1 for OriginalCellQ24NoUpdateStageOwnersV1
                 auth::require_snapshot(&self.material, snapshot)?;
                 let mut state = self.continuation.try_lock().map_err(|_| Error::QueueFull)?;
                 let signature = state.read_attestation(self, snapshot, receipt).await?;
-                let fresh = auth::now()?;
+                let fresh = auth::require_material(&self.material, self.initial_binding)?;
                 auth::require_clock(started_at, fresh)?;
                 auth::verify_receipt(&self.material, receipt, &signature, fresh)?;
                 Ok(signature)
