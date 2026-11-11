@@ -1,0 +1,67 @@
+{
+  "after": {
+    "commit": "73f20ed9a09bc5716484f497654640aedcec268d",
+    "dirty": false,
+    "parents": [
+      "3efb1ec82c7d0cc508a320d717b607709412e9ee"
+    ],
+    "tree": "00837edc418de10fe93077b4176c03c8ffd940f8"
+  },
+  "base_sha": "be8adcbb5e9925f72e05330b8fb30509cba4544b",
+  "before": {
+    "commit": "73f20ed9a09bc5716484f497654640aedcec268d",
+    "dirty": false,
+    "parents": [
+      "3efb1ec82c7d0cc508a320d717b607709412e9ee"
+    ],
+    "tree": "00837edc418de10fe93077b4176c03c8ffd940f8"
+  },
+  "command": [
+    "just",
+    "test",
+    "--locked",
+    "--offline",
+    "-p",
+    "codex-hepta-agentd",
+    "-p",
+    "codex-hepta-learning-ledger",
+    "-p",
+    "codex-hepta-learning-artifacts",
+    "-p",
+    "codex-hepta-intelligence-eval",
+    "--lib",
+    "--test-threads",
+    "2",
+    "--retries",
+    "0",
+    "--no-tests",
+    "fail",
+    "--success-output",
+    "final",
+    "--failure-output",
+    "final"
+  ],
+  "command_exit_code": 0,
+  "elapsed_seconds": 643.4199036839418,
+  "exit_code": 0,
+  "finished_at": "2026-11-11T15:16:31.934625+00:00",
+  "job": null,
+  "lane": "source-head",
+  "log_bytes": 927509,
+  "log_file": "full-native.json.be0bcc6af39e4a38a891e0f10d993454.log",
+  "log_sha256": "6c467cf200d49c38bf819bc5151cb43347aea6662488353ffdacd6f8d7dc3d47",
+  "minimum_tests": 1305,
+  "observed_failed_tests": 0,
+  "observed_passed_tests": 1305,
+  "output_limit_exceeded": false,
+  "returncode": 0,
+  "run_attempt": null,
+  "run_id": null,
+  "schema_version": 1,
+  "source_sha": "73f20ed9a09bc5716484f497654640aedcec268d",
+  "started_at": "2026-11-11T15:05:48.509874+00:00",
+  "status": "passed",
+  "tested_sha": "73f20ed9a09bc5716484f497654640aedcec268d",
+  "timed_out": false,
+  "working_directory": "/home/qian-qi/hepta-learn-ordinary-ce434-20261111/codex-rs"
+}
