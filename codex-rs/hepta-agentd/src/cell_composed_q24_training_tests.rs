@@ -81,7 +81,7 @@ fn predict(
         input, admitted_at_micros: 10, deadline_micros: 100,
     };
     let output = worker.execute(&config.manifest, &request, &AtomicBool::new(false))?;
-    assert_eq!(output.disposition, CellGenerationDispositionV2::Stopped);
+    std::assert_eq!(output.disposition, CellGenerationDispositionV2::Stopped);
     Ok(output.output_delta[10..].chunks_exact(8)
         .map(|value| value.try_into().map(i64::from_le_bytes))
         .collect::<Result<Vec<_>, _>>()?)
@@ -103,10 +103,10 @@ fn q24_native_sgd_changes_one_row_and_serves_distinct_inputs_after_reopen() -> a
         let CellQ24TrainingOutcomeV1::Candidate(candidate) = plan.fit(data, rule, &AtomicBool::new(false))?
         else { anyhow::bail!("expected real changed head") };
         let CellQ24TrainedCandidateV1 { model, bundle: candidate_bundle, heads, metrics } = *candidate;
-        assert_eq!((metrics.optimizer_steps, metrics.squared_error_before_q48, metrics.squared_error_after_q48),
+        std::assert_eq!((metrics.optimizer_steps, metrics.squared_error_before_q48, metrics.squared_error_after_q48),
             (2, (Q as u128).pow(2), ((Q / 4) as u128).pow(2)));
-        assert_eq!(baseline.components(), &original_components);
-        assert_eq!(Digest32::of_bytes(&heads), model.components().heads);
+        std::assert_eq!(baseline.components(), &original_components);
+        std::assert_eq!(Digest32::of_bytes(&heads), model.components().heads);
         let mut coordinator = LearningIterationCoordinatorV1::from_snapshot(prefix)?;
         coordinator.record(learning_test_receipt(&coordinator, LearningIterationObservationV1::Training {
             candidate: Box::new(candidate_bundle.clone()), steps: metrics.optimizer_steps,
@@ -119,17 +119,17 @@ fn q24_native_sgd_changes_one_row_and_serves_distinct_inputs_after_reopen() -> a
         let after = predict(&model, &candidate_bundle, [Q / 4, Q / 8], "candidate-b")?;
         let mut expected_outputs = before.clone();
         expected_outputs[changed] = expected;
-        assert_eq!(after, expected_outputs);
+        std::assert_eq!(after, expected_outputs);
         let desired = if changed == 0 { Q } else { 0 };
         assert!((after[changed] - desired).abs() < (before[changed] - desired).abs());
         fs::write(root.path().join("heads"), &heads)?;
         let reopened = Arc::new(private_head::reopen(root.path())?);
-        assert_eq!(reopened.components(), model.components());
+        std::assert_eq!(reopened.components(), model.components());
         // C has another input and another actual worker, consuming exact bytes.
-        assert_eq!(predict(&reopened, &candidate_bundle, [Q / 8, Q / 16], "fresh-c")?,
+        std::assert_eq!(predict(&reopened, &candidate_bundle, [Q / 8, Q / 16], "fresh-c")?,
             predict(&model, &candidate_bundle, [Q / 8, Q / 16], "loaded-c")?);
         fs::write(root.path().join("heads"), b"untrusted-replacement")?;
-        assert_eq!(predict(&baseline, &selected, [Q / 4, Q / 8], "retained-parent")?, before);
+        std::assert_eq!(predict(&baseline, &selected, [Q / 4, Q / 8], "retained-parent")?, before);
     }
     Ok(())
 }
@@ -146,10 +146,10 @@ fn q24_native_sgd_reports_no_update_when_actual_quantized_bytes_stay_equal() -> 
     let CellQ24TrainingOutcomeV1::NoUpdate { retained_bundle, metrics } =
         plan.fit(data, rule, &AtomicBool::new(false))?
     else { anyhow::bail!("unchanged coefficients must not create a candidate") };
-    assert_eq!((retained_bundle, metrics.optimizer_steps, metrics.squared_error_before_q48,
+    std::assert_eq!((retained_bundle, metrics.optimizer_steps, metrics.squared_error_before_q48,
         metrics.squared_error_after_q48), (selected.digest()?, 3, 0, 0));
-    assert_eq!(prefix.receipts.len(), 2);
-    assert_eq!(predict(&baseline, &selected, [Q / 4, 0], "no-update-c")?, vec![Q / 2, 0, -Q / 2, 0]);
+    std::assert_eq!(prefix.receipts.len(), 2);
+    std::assert_eq!(predict(&baseline, &selected, [Q / 4, 0], "no-update-c")?, vec![Q / 2, 0, -Q / 2, 0]);
     Ok(())
 }
 
@@ -176,6 +176,6 @@ fn q24_native_sgd_refuses_changed_frozen_inputs_quota_deadline_and_cancellation(
     assert!(matches!(plan.fit(batch(Q)?, rule, &AtomicBool::new(false)), Err(CellQ24TrainingErrorV1::Plan(_))));
     assert!(matches!(plan.fit(original, CellQ24SgdRuleV1 { epochs: 3, ..rule }, &AtomicBool::new(false)),
         Err(CellQ24TrainingErrorV1::Plan(_))));
-    assert_eq!(predict(&baseline, &selected, [Q / 2, 0], "unchanged-after-refusals")?, vec![Q, 0, -Q, 0]);
+    std::assert_eq!(predict(&baseline, &selected, [Q / 2, 0], "unchanged-after-refusals")?, vec![Q, 0, -Q, 0]);
     Ok(())
 }
