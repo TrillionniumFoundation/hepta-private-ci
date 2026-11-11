@@ -1,0 +1,32 @@
+test_complete_and_partial_contrasts_preserve_source_equal_weighting (ndu_real_runtime.test_metacontrol_reporting.MetacontrolReportingTests.test_complete_and_partial_contrasts_preserve_source_equal_weighting) ... FAIL
+test_missing_contexts_cannot_report_positive_subset_as_cohort_gain (ndu_real_runtime.test_metacontrol_reporting.MetacontrolReportingTests.test_missing_contexts_cannot_report_positive_subset_as_cohort_gain) ... FAIL
+test_unsupported_policy_preserves_its_own_pairing_denominator (ndu_real_runtime.test_metacontrol_reporting.MetacontrolReportingTests.test_unsupported_policy_preserves_its_own_pairing_denominator) ... FAIL
+
+======================================================================
+FAIL: test_complete_and_partial_contrasts_preserve_source_equal_weighting (ndu_real_runtime.test_metacontrol_reporting.MetacontrolReportingTests.test_complete_and_partial_contrasts_preserve_source_equal_weighting)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/0808b779e729/hepta-ctrl/scripts/ndu_real_runtime/test_metacontrol_reporting.py", line 116, in test_complete_and_partial_contrasts_preserve_source_equal_weighting
+    self.assertIsNone(partial["mean"])
+AssertionError: 0.5 is not None
+
+======================================================================
+FAIL: test_missing_contexts_cannot_report_positive_subset_as_cohort_gain (ndu_real_runtime.test_metacontrol_reporting.MetacontrolReportingTests.test_missing_contexts_cannot_report_positive_subset_as_cohort_gain)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/0808b779e729/hepta-ctrl/scripts/ndu_real_runtime/test_metacontrol_reporting.py", line 51, in test_missing_contexts_cannot_report_positive_subset_as_cohort_gain
+    self.assertIsNone(report["summaries"]["conditional"]["source_balanced_net_gain"])
+AssertionError: 0.17999999999999997 is not None
+
+======================================================================
+FAIL: test_unsupported_policy_preserves_its_own_pairing_denominator (ndu_real_runtime.test_metacontrol_reporting.MetacontrolReportingTests.test_unsupported_policy_preserves_its_own_pairing_denominator)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/0808b779e729/hepta-ctrl/scripts/ndu_real_runtime/test_metacontrol_reporting.py", line 84, in test_unsupported_policy_preserves_its_own_pairing_denominator
+    self.assertIsNone(report["summaries"]["conditional"]["source_balanced_net_gain"])
+AssertionError: 0.08999999999999998 is not None
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.476s
+
+FAILED (failures=3)
