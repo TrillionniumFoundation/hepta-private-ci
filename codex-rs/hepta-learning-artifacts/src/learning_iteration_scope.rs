@@ -86,6 +86,11 @@ impl FrozenLearningScopeV2 {
         &self,
         observation: &LearningIterationObservationV1,
     ) -> Result<(), LearningIterationError> {
+        if let LearningIterationObservationV1::TrainingNoUpdateV2(outcome) = observation
+            && outcome.update_rule != self.update_rule
+        {
+            return Err(LearningIterationError::UpdateScopeMismatch);
+        }
         if let LearningIterationObservationV1::Training { candidate, .. } = observation {
             let mut preserved = candidate.components.clone();
             // These changed components remain subject to the existing tensor,

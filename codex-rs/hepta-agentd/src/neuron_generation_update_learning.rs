@@ -22,7 +22,7 @@ use crate::NeuronGenerationPredecessorCompletionV1;
 use crate::PublishedNeuronGenerationUpdateV1;
 
 /// Deterministic identity for the original same-model task operation. This
-/// binds the complete evaluated decision cut without changing CURRENT's wire
+/// binds the complete authenticated decision cut without changing CURRENT's wire
 /// schema or authorizing a grant. The issuer still authenticates that cut.
 /// Completed retained-use snapshots recover the same decision predecessor;
 /// this identity read cannot reopen a completed iteration stage.
@@ -32,7 +32,7 @@ pub fn learning_retained_task_operation_id_v1(
     let snapshot = coordinator.snapshot();
     if coordinator.next_task_bundle() != Some(&snapshot.request.selected_bundle) {
         return Err(invalid(
-            "retained task requires an evaluated baseline decision",
+            "retained task requires an authenticated baseline decision",
         ));
     }
     let decision_head = match coordinator.next_stage() {

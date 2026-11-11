@@ -37,9 +37,7 @@ pub(crate) use registry::MAX_REGISTERED_CIRCUIT_LEARNING;
 
 const MAX_LEARNING_QUEUE: usize = 64;
 const MAX_ITERATION_SECONDS: u64 = 86_400;
-// A complete history needs multiple sequential original-owner reads. Keep
-// their total reconciliation bounded independently of the old work deadline.
-const READBACK_TIMEOUT: Duration = Duration::from_secs(30);
+const MAX_READBACK_SECONDS: u64 = 30;
 
 #[derive(Debug)]
 pub enum LearningIterationRuntimeErrorV1 {
@@ -318,20 +316,24 @@ impl LearningIterationRuntimeBootstrapV1 {
         request: LearningIterationRequestV1,
         mode: LearningIterationModeV1,
     ) -> Result<LearningIterationSnapshotV1, LearningIterationRuntimeErrorV1> {
-        let remaining = request
-            .envelope
-            .expiry_unix_seconds
-            .saturating_sub(now_unix_seconds()?);
-        if remaining > MAX_ITERATION_SECONDS {
-            return Err(LearningIterationRuntimeErrorV1::DeadlineExceeded);
-        }
-        // Only explicit readback receives a separate reconciliation budget.
-        // Submission keeps its work deadline even while restoring a checkpoint.
-        let timeout = match mode {
-            LearningIterationModeV1::Readback => READBACK_TIMEOUT,
-            LearningIterationModeV1::Submit => Duration::from_secs(remaining.max(1)),
+        // Readback can only restore the original operation and reauthenticate
+        // its historical owner receipts. It must not inherit a one-second work
+        // timeout after expiry or a far-future new-work admission ceiling.
+        // Neither expiry nor this bounded read-only window grants new stages.
+        let timeout_seconds = match &mode {
+            LearningIterationModeV1::Readback => MAX_READBACK_SECONDS,
+            LearningIterationModeV1::Submit => {
+                let remaining = request
+                    .envelope
+                    .expiry_unix_seconds
+                    .saturating_sub(now_unix_seconds()?);
+                if remaining > MAX_ITERATION_SECONDS {
+                    return Err(LearningIterationRuntimeErrorV1::DeadlineExceeded);
+                }
+                remaining.max(1)
+            }
         };
-        tokio::time::timeout(timeout, async {
+        tokio::time::timeout(Duration::from_secs(timeout_seconds), async {
             match mode {
                 LearningIterationModeV1::Readback => {
                     self.process_readback(state, request, now_unix_seconds)
@@ -372,6 +374,8 @@ impl LearningIterationRuntimeBootstrapV1 {
         let restored = LearningIterationCoordinatorV1::from_snapshot(snapshot)?;
         if let Some(scope) = &self.scope {
             scope.validate_snapshot(restored.snapshot())?;
+        } else if restored.snapshot().training_no_update_v2().is_some() {
+            return Err(LearningIterationRuntimeErrorV1::WrongScope);
         }
         crate::learning_iteration_auth::authenticate_restored_iteration_v1(
             state,
@@ -408,6 +412,8 @@ impl LearningIterationRuntimeBootstrapV1 {
                 let restored = LearningIterationCoordinatorV1::from_snapshot(snapshot)?;
                 if let Some(scope) = &self.scope {
                     scope.validate_snapshot(restored.snapshot())?;
+                } else if restored.snapshot().training_no_update_v2().is_some() {
+                    return Err(LearningIterationRuntimeErrorV1::WrongScope);
                 }
                 require_ready(state)?;
                 if restored.next_stage().is_some()
@@ -466,6 +472,12 @@ impl LearningIterationRuntimeBootstrapV1 {
                 } else {
                     call.await?
                 };
+                if self.scope.is_none()
+                    && matches!(receipt.observation,
+                        codex_hepta_learning_artifacts::LearningIterationObservationV1::TrainingNoUpdateV2(_))
+                {
+                    return Err(LearningIterationRuntimeErrorV1::WrongScope);
+                }
                 crate::learning_iteration_auth::authenticate_iteration_receipt_v1(
                     state,
                     self.ports.as_ref(),

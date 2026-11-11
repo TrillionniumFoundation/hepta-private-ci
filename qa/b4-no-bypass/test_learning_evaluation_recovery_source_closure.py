@@ -113,6 +113,21 @@ class LearningEvaluationRecoverySourceClosureTests(unittest.TestCase):
         )
         self.rejects(PRODUCT, changed)
 
+    def test_execution_context_keeps_canonical_original_owner_key_before_claim(self):
+        source = (ROOT / PRODUCT).read_text()
+        for function, marker in (
+            ("fn execution_context(", ".read_consumption(&request.plan.frozen_plan)"),
+            ("fn execution_context(", "product_evaluation_execution_key_v1(request.plan, namespace, request.evaluator)?"),
+            ("fn product_evaluation_execution_key_v1(", "if namespace.is_zero()"),
+            ("fn product_evaluation_execution_key_v1(", "evaluator\n        .validate(evaluator.authenticated_at)"),
+            ("fn evaluate_or_readback_temporal_comparison<", "let (key, previous) = self.execution_context(request)?;"),
+        ):
+            with self.subTest(function=function, marker=marker):
+                offset = source.index(marker, source.index(function))
+                self.rejects(PRODUCT, source[:offset] + source[offset + len(marker) :])
+        marker = "let key = product_evaluation_execution_key_v1(request.plan, namespace, request.evaluator)?;"
+        self.rejects(PRODUCT, source.replace(marker, "if false {" + marker + "}", 1))
+
     def test_read_only_recovery_keeps_plan_journal_and_original_authentication(self):
         cases = {
             CELL: (

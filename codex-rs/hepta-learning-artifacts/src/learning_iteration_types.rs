@@ -72,6 +72,24 @@ pub enum LearningProposalDispositionV1 {
     NoAdmissibleUpdate,
 }
 
+/// An original trainer result, distinct from independent evaluation rejection.
+/// This version represents only equality of the final quantized weights.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum LearningTrainingNoUpdateReasonV2 {
+    QuantizedWeightsUnchanged,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct LearningTrainingNoUpdateV2 {
+    pub retained_bundle: Digest32,
+    pub dataset: Digest32,
+    /// Must match the original separately held FrozenLearningScopeV2.
+    pub update_rule: Digest32,
+    pub steps: u64,
+    pub milliseconds: u64,
+    pub reason: LearningTrainingNoUpdateReasonV2,
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum LearningIterationObservationV1 {
     Experience {
@@ -91,6 +109,10 @@ pub enum LearningIterationObservationV1 {
         milliseconds: u64,
         artifact_bytes: u64,
     },
+    /// No candidate was produced. The original Generator must attest this
+    /// result; selection and actual retained-model next use remain required.
+    /// Unscoped legacy owners cannot admit or restore this versioned outcome.
+    TrainingNoUpdateV2(LearningTrainingNoUpdateV2),
     Evaluation {
         candidate_bundle: Digest32,
         evaluation_profile: Digest32,
@@ -118,8 +140,8 @@ pub enum LearningIterationObservationV1 {
         committed_step_receipt: Digest32,
         state_cutover_receipt: Digest32,
     },
-    /// A distinct task used the unchanged bundle after an evaluated no-update
-    /// decision. The published task owner is not a model-bundle cutover.
+    /// A distinct task used the unchanged bundle after an authenticated
+    /// no-update decision. The published task owner is not a model-bundle cutover.
     RetainedModelNextUse {
         retained_bundle: Digest32,
         state_partition: CellStatePartitionV1,
@@ -149,10 +171,21 @@ pub struct LearningIterationSnapshotV1 {
     pub head_digest: Digest32,
 }
 
+impl LearningIterationSnapshotV1 {
+    pub fn training_no_update_v2(&self) -> Option<&LearningTrainingNoUpdateV2> {
+        self.receipts
+            .iter()
+            .find_map(|receipt| match &receipt.observation {
+                LearningIterationObservationV1::TrainingNoUpdateV2(outcome) => Some(outcome),
+                _ => None,
+            })
+    }
+}
+
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum LearningIterationDispositionV1 {
     InProgress,
-    /// The evaluated decision retains the deployed bundle. Selection and
+    /// The authenticated decision retains the deployed bundle. Selection and
     /// next-task use remain outstanding until next_stage returns None.
     NoUpdate,
     /// Only a committed NextUse observation completes either decision path.
@@ -164,7 +197,9 @@ impl LearningIterationObservationV1 {
         match self {
             Self::Experience { .. } => LearningIterationStageV1::Experience,
             Self::Dataset { .. } => LearningIterationStageV1::Dataset,
-            Self::Training { .. } => LearningIterationStageV1::Training,
+            Self::Training { .. } | Self::TrainingNoUpdateV2(_) => {
+                LearningIterationStageV1::Training
+            }
             Self::Evaluation { .. } => LearningIterationStageV1::Evaluation,
             Self::Proposal { .. } => LearningIterationStageV1::Proposal,
             Self::Selection { .. } => LearningIterationStageV1::Selection,

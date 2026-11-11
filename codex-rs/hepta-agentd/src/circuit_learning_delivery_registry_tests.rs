@@ -92,6 +92,56 @@ fn explicit_registry_rejects_aliases_foreign_agents_and_capacity() {
 }
 
 #[tokio::test]
+async fn unavailable_or_full_actor_cannot_strand_a_fresh_delivery_claim() {
+    let daemon = AgentdFixture::new();
+    let (store, request) = completed_circuit(&daemon).await;
+    let ports = CurrentEvidencePorts::new();
+    let (handle, bootstrap) = ok(learning_iteration_channel_v1(
+        daemon.identity.agent_id.clone(),
+        /*spawn_generation*/ 1,
+        ports.inner.owners(),
+        ports.clone(),
+        ports.inner.verifier.clone(),
+        /*capacity*/ 1,
+    ));
+    let original = ok(store
+        .circuit_learning_delivery(request.source_run_id.as_str())
+        .await);
+    let reserved = ok(handle.reserve());
+    assert!(matches!(
+        crate::deliver_circuit_learning_v1(
+            &store,
+            Some(&handle),
+            request.clone(),
+            ports.inner.owners(),
+        )
+        .await,
+        Err(LearningIterationRuntimeErrorV1::QueueFull)
+    ));
+    drop(reserved);
+    drop(bootstrap);
+    assert!(matches!(
+        crate::deliver_circuit_learning_v1(
+            &store,
+            Some(&handle),
+            request.clone(),
+            ports.inner.owners(),
+        )
+        .await,
+        Err(LearningIterationRuntimeErrorV1::Unavailable)
+    ));
+    assert_eq!(
+        ok(store
+            .circuit_learning_delivery(request.source_run_id.as_str())
+            .await),
+        original
+    );
+    assert!(ok(ports.inner.executed.lock()).is_empty());
+    assert!(ok(ports.inner.checkpoint_calls.lock()).is_empty());
+    store.close().await;
+}
+
+#[tokio::test]
 async fn serial_registry_keeps_missing_claim_pending_and_acknowledges_following_original_tasks() {
     let daemon = AgentdFixture::new();
     let (store, pending) = completed_circuit_named(&daemon, "registry-pending").await;

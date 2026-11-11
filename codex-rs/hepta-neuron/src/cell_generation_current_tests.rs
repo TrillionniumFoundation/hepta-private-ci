@@ -21,6 +21,9 @@ use crate::CellRuntimeSnapshotV2;
 use crate::FileAnchorWitnessStore;
 use crate::JournalScope;
 
+#[path = "cell_feature_current_journal_tests.rs"]
+mod feature_journal;
+
 static NEXT: AtomicU64 = AtomicU64::new(0);
 
 struct Files(PathBuf);

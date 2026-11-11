@@ -267,6 +267,8 @@ impl LearningIterationCheckpointOwnerV1 {
         LearningIterationCoordinatorV1::from_snapshot(next.clone()).map_err(Error::Snapshot)?;
         if let Some(scope) = &self.scope {
             scope.validate_snapshot(next).map_err(Error::Snapshot)?;
+        } else if next.training_no_update_v2().is_some() {
+            return Err(Error::WrongScope);
         }
         let predecessor = next
             .receipts
@@ -360,6 +362,8 @@ impl LearningIterationCheckpointOwnerV1 {
             scope
                 .validate_snapshot(&snapshot)
                 .map_err(Error::Snapshot)?;
+        } else if snapshot.training_no_update_v2().is_some() {
+            return Err(Error::WrongScope);
         }
         if snapshot.request != self.initial.request || snapshot.owners != self.initial.owners {
             return Err(Error::WrongScope);

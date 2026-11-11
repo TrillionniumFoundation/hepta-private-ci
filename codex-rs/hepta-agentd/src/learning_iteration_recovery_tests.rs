@@ -16,6 +16,9 @@ mod current_tests;
 #[path = "learning_iteration_scoped_recovery_tests.rs"]
 mod scoped_recovery_tests;
 
+#[path = "learning_iteration_training_no_update_auth_tests.rs"]
+mod training_no_update_auth_tests;
+
 #[derive(Clone, Copy)]
 enum Decision {
     EvaluatedNoUpdate,
@@ -27,6 +30,7 @@ enum Decision {
 enum Trust {
     Independent,
     SharedController,
+    SharedSelectorController,
     RevokedEvaluator,
 }
 
@@ -55,7 +59,9 @@ fn recovery_ports(decision: Decision, trust: Trust) -> IterationPorts {
                 principal: principal.clone(),
                 controller_id: id(&format!(
                     "recovery-controller-{}",
-                    if matches!(trust, Trust::SharedController) && index == 2 {
+                    if (matches!(trust, Trust::SharedController) && index == 2)
+                        || (matches!(trust, Trust::SharedSelectorController) && index == 1)
+                    {
                         0
                     } else {
                         index
@@ -658,13 +664,27 @@ async fn actual_delivery_backpressure_precedes_claim_and_prior_claim_stays_readb
     ));
     assert_eq!(
         ok(store.pending_circuit_learning(/*limit*/ 1).await),
-        claimed
+        pending
     );
     assert!(ok(ports.executed.lock()).is_empty());
     assert!(ok(ports.checkpoint_calls.lock()).is_empty());
 
-    // A replacement worker receives only readback for the original durable
-    // claim. Neither absent state nor an initial checkpoint permits another fit.
+    // Model an original durable claim whose acknowledgement was lost. Queue
+    // closure above cannot create this claim; only its original store can.
+    let partial = ok(LearningIterationCoordinatorV1::new(
+        request.clone(),
+        ports.owners(),
+    ))
+    .snapshot()
+    .clone();
+    let request_digest = ok(Sha256Digest::parse(partial.head_digest.to_string()));
+    assert!(ok(store
+        .claim_circuit_learning(&intent, &request_digest)
+        .await));
+    let claimed = ok(store.pending_circuit_learning(/*limit*/ 1).await);
+
+    // A replacement worker receives only readback for that durable claim.
+    // Neither absent state nor an initial checkpoint permits another fit.
     let (live_handle, live_owner) = ok(learning_iteration_channel_v1(
         daemon.identity.agent_id.clone(),
         /*spawn_generation*/ 1,
@@ -686,12 +706,6 @@ async fn actual_delivery_backpressure_precedes_claim_and_prior_claim_stays_readb
         Err(LearningIterationRuntimeErrorV1::CommitUncertain)
     ));
     assert!(ok(ports.checkpoint.lock()).is_none());
-    let partial = ok(LearningIterationCoordinatorV1::new(
-        request.clone(),
-        ports.owners(),
-    ))
-    .snapshot()
-    .clone();
     install_checkpoint(&ports, &partial);
     assert!(matches!(
         crate::reconcile_circuit_learning_v1(&store, Some(&live_handle), request, ports.owners(),)
