@@ -489,5 +489,5 @@ impl EvaluationFixture {
     }
 }
 
-#[path = "circuit_model_qualification_test_support.rs"]
+#[path = "circuit_model_qualification_support_tests.rs"]
 mod qualification_support;
