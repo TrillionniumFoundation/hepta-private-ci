@@ -16,6 +16,14 @@ use crate::CellQ24TrainingErrorV1;
 use crate::CellQ24TrainingOwnerErrorV1;
 use crate::cell_q24_dataset_run_snapshot_digest_v1;
 
+#[path = "cell_q24_dataset_freeze_owner_tests.rs"]
+mod freeze_owner;
+#[path = "cell_q24_learning_preparation_tests.rs"]
+mod preparation;
+
+#[path = "cell_q24_source_receipt_owner_tests.rs"]
+mod source_receipts;
+
 struct Dataset {
     ledger: Arc<Mutex<LedgerWriter>>,
     frozen: LedgerSnapshot,
@@ -24,6 +32,7 @@ struct Dataset {
     projection: CellQ24DatasetProjectionV1,
     tasks: Vec<CellQ24DatasetTaskV1>,
     outcomes: Vec<AuthenticatedOutcomeV1>,
+    signers: [TrustedLearningSignerV1; 3],
 }
 
 fn now() -> u64 {
@@ -310,6 +319,7 @@ impl Dataset {
             projection,
             tasks,
             outcomes,
+            signers,
         })
     }
 

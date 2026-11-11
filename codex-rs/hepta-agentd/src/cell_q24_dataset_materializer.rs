@@ -139,6 +139,12 @@ pub struct CellQ24DatasetTaskV1 {
 }
 
 impl CellQ24DatasetTaskV1 {
+    #[cfg(target_os = "linux")]
+    pub(super) fn read_current(&self) -> Result<&CircuitTaskSourcePublicationV1, Error> {
+        self.require_current()?;
+        Ok(&self.publication)
+    }
+
     /// The original published Cell capability is currently installed on Linux.
     #[cfg(target_os = "linux")]
     pub fn capture(
