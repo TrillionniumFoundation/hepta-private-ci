@@ -161,5 +161,45 @@ class NativeObservationTests(unittest.TestCase):
         self.assertIn(NAMES[0], out["rejected"])
 
 
+    def _rebound_typed_resource(self, **changes):
+        name = NAMES[0]
+        self.add(name)
+        directory = self.root / "artifacts" / name
+        path = directory / "resource.json"
+        resource = json.loads(path.read_text())
+        resource.update(changes)
+        path.write_text(json.dumps(resource))
+        rebound = self.root / "rebound-typed-receipts"
+        append_receipt(rebound, owner_start_id=OWNER, attempt_id=name,
+                       event_type="terminal", payload={
+                           "status": "completed", "native_job_id": "job-" + name,
+                           "result_sha256": digest(directory / "result.json"),
+                           "resource_sha256": digest(path)})
+        return inspect_exported_observations(
+            rebound, owner_start_id=OWNER, expected_attempts=NAMES,
+            native_observations=self.native,
+            artifacts_root=self.root / "artifacts")
+
+    def test_fractional_native_rss_rejected_even_with_bound_checksum(self):
+        out = self._rebound_typed_resource(child_peak_rss_bytes=8192.5)
+        self.assertIn(NAMES[0], out["rejected"])
+
+    def test_impossible_zero_wall_with_positive_cpu_rejected(self):
+        out = self._rebound_typed_resource(whole_process_wall_seconds=0.0)
+        self.assertIn(NAMES[0], out["rejected"])
+
+    def test_native_log_truncation_numeric_zero_rejected(self):
+        self.add(NAMES[0])
+        self.native["job-" + NAMES[0]]["log_truncated"] = 0
+        self.assertIn(NAMES[0], self.audit()["rejected"])
+
+    def test_native_log_truncation_nested_numeric_flags_rejected(self):
+        self.add(NAMES[0])
+        self.native["job-" + NAMES[0]]["log_truncated"] = {
+            "stdout": 0, "stderr": 0}
+        self.assertIn(NAMES[0], self.audit()["rejected"])
+
+
+
 if __name__ == "__main__":
     unittest.main()

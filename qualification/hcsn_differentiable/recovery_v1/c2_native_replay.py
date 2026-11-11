@@ -71,8 +71,14 @@ def _resource(report, job_id):
         raise EvidenceError("wait4 child CPU does not reconcile")
     if report["attempt_wrapper_wall_seconds"] + 1e-9 < report["whole_process_wall_seconds"]:
         raise EvidenceError("attempt wrapper shorter than entire child execution")
-    if report["child_peak_rss_bytes"] <= 0:
-        raise EvidenceError("missing child peak RSS")
+    # wait4 rusage.ru_maxrss is a whole-byte quantity after unit conversion.
+    # Accepting floats (including fractional bytes) loses the native measurement
+    # type, even if both producer and receipt agree on those bytes.
+    if (type(report["child_peak_rss_bytes"]) is not int
+            or report["child_peak_rss_bytes"] <= 0):
+        raise EvidenceError("child peak RSS must be a positive whole-byte count")
+    if cpu > 0 and report["whole_process_wall_seconds"] == 0:
+        raise EvidenceError("positive child CPU with zero elapsed child wall")
 
 
 def _native_status(status, expected_job_id, expected_success):
@@ -83,7 +89,12 @@ def _native_status(status, expected_job_id, expected_success):
             or status.get("output_complete") is not True
             or status.get("output_durable") is not True):
         raise EvidenceError("native terminal or output not confirmed")
-    if status.get("log_truncated") not in (False, {"stderr": False, "stdout": False}):
+    truncated = status.get("log_truncated")
+    if not (truncated is False or (
+            type(truncated) is dict
+            and set(truncated) == {"stderr", "stdout"}
+            and truncated["stderr"] is False
+            and truncated["stdout"] is False)):
         raise EvidenceError("native output truncated or unknown")
     if expected_success:
         if status.get("state") != SUCCESS_STATE or type(status.get("exit_code")) is not int or status["exit_code"] != 0:
