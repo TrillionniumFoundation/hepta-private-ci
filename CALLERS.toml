@@ -6675,7 +6675,7 @@ top_level = []
 
 [[protected_file.required_function_order]]
 function = "fn execute_training("
-sequence = ["cancellation.load(Ordering::Acquire)","return Err(Error::Cancelled)","now()? >= self.context.dataset.request.envelope.expiry_unix_seconds","return Err(Error::DeadlineExceeded)","self.exchange(wire::Action::Execute, false, Some(cancellation))"]
+sequence = ["cancellation.load(Ordering::Acquire)","return Err(Error::Cancelled)","now()? >= self.context.dataset.request.envelope.expiry_unix_seconds","return Err(Error::DeadlineExceeded)","self.exchange(","wire::Action::Execute,","false,","Some(cancellation)",".await"]
 top_level = []
 
 [[protected_file.required_function_order]]

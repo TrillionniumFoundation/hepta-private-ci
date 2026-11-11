@@ -265,12 +265,21 @@ impl OriginalCellQ24TrainingCommandClientV1 {
         if now()? >= self.context.dataset.request.envelope.expiry_unix_seconds {
             return Err(Error::DeadlineExceeded);
         }
-        self.exchange(wire::Action::Execute, false, Some(cancellation))
-            .await
+        self.exchange(
+            wire::Action::Execute,
+            /*cancelled*/ false,
+            Some(cancellation),
+        )
+        .await
     }
 
     pub async fn readback(&self) -> Result<OriginalCellQ24TrainingCommandReceiptV1, Error> {
-        self.exchange(wire::Action::Readback, false, None).await
+        self.exchange(
+            wire::Action::Readback,
+            /*cancelled*/ false,
+            /*cancellation*/ None,
+        )
+        .await
     }
 
     /// Equality with the expected receipt is checked only after an actual
