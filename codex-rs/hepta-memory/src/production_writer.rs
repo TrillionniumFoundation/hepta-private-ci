@@ -494,8 +494,8 @@ pub struct ProductionDurableWriter {
     lease: LocalLeaseOutbox,
     lease_id: Arc<str>,
     live_verifier: Option<Arc<dyn ProductionAuthorityVerifier>>,
-    // Shared by every capability/clone of this original writer.
-    episodic_imports: Arc<tokio::sync::Mutex<()>>,
+    // One admission slot, shared by every capability/clone of this writer.
+    episodic_imports: Arc<tokio::sync::Semaphore>,
     // Retain the OS-level lock for the lifetime of the writer.  SQLite's
     // transaction lock serializes individual mutations, but it does not
     // establish the H4 single-writer boundary: two processes could otherwise
@@ -716,7 +716,7 @@ impl ProductionDurableWriter {
             lease,
             lease_id: Arc::from(lease_id),
             live_verifier: None,
-            episodic_imports: Arc::new(tokio::sync::Mutex::new(())),
+            episodic_imports: Arc::new(tokio::sync::Semaphore::new(/*permits*/ 1)),
             _writer_lock: writer_lock,
         })
     }
