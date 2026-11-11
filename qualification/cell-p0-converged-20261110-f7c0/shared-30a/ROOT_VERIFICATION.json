@@ -1,0 +1,39 @@
+{
+  "schema": "hepta.p0.root-shared-readback-verification.v1",
+  "verified_at_utc": "2026-11-11T03:58:40.538595+00:00",
+  "source_sha": "30a697c50e10abd56e61b6b84f28ac9ae9f32f5d",
+  "source_tree": "b2a21d98380340b1c091006f4130aafdbeabca50",
+  "bundle_sha256": "5d2eb4996755b5de6967d7c00c1658824deb46c1e2068788d7503fe0ff87f54e",
+  "outer_manifest_members_verified": 5,
+  "complete_original_members_verified": 14,
+  "full_job_log_roundtrip_verified": true,
+  "original_api_run_job_and_artifact_digest_verified": true,
+  "actual_unique_junit_cases": 1190,
+  "cases_by_binary": {
+    "codex-hepta-agentd": 890,
+    "codex-hepta-automation": 85,
+    "codex-hepta-neuron": 215
+  },
+  "failure_error_or_xml_skips": 0,
+  "nextest_excluded_or_ignored": 71,
+  "training_cases_each_once_in_original_junit_and_nextest": [
+    "original_training_stage_runs_both_outcomes_and_reopens_exactly",
+    "original_training_stage_rejects_wrong_pair_and_pending_without_work",
+    "original_training_stage_distinguishes_missing_receipt_from_missing_native",
+    "original_training_stage_expired_missing_never_claims_or_attests",
+    "original_training_stage_request_expiry_preserves_only_original_completed_receipts",
+    "original_training_stage_keeps_lane_until_cancelled_waiter_worker_exits"
+  ],
+  "python_gate_cases_separate": 15,
+  "source_before_after_clean": true,
+  "full_source_inventory_present": false,
+  "helper_build_jsonl_and_verify_only_binding_verified": true,
+  "helper_binary_independently_downloaded": false,
+  "command_wall_seconds": 477.96954546099994,
+  "test_wall_seconds": 227.579,
+  "cpu_seconds": null,
+  "peak_rss_bytes": null,
+  "independent_scientific_tasks_added": 0,
+  "full_p0_qualification": false,
+  "other_source_or_dependency_suites_qualified": false
+}

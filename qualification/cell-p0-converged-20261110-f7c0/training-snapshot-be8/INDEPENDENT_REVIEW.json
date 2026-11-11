@@ -1,0 +1,119 @@
+{
+  "schema": "hepta_training_snapshot_independent_review_v1",
+  "reviewed_at_utc": "2026-11-11T03:54:23.542653+00:00",
+  "reviewer": "/root/mem_ctrl_audit",
+  "status": "NO_BLOCKING_ISSUE_FOUND_IN_READ_ONLY_SOURCE_REVIEW",
+  "commit": "8ad9f24e238b0680f975fea8c9d26db146066a8c",
+  "tree": "eaa8b27f16a5f9fed87e9d6882cd23dfaecfd125",
+  "parent": "30a697c50e10abd56e61b6b84f28ac9ae9f32f5d",
+  "checkout": "/tmp/hepta-p0-training-snapshot-f7c0",
+  "files": [
+    {
+      "path": "CALLERS.toml",
+      "local_path": "/tmp/hepta-p0-training-snapshot-f7c0/CALLERS.toml",
+      "bytes": 347585,
+      "sha256": "10ea7897b74a14e09857f6f4b229535da6df689ad6168e7b5f2f34395c192a53",
+      "working_bytes_match_commit": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_receipt_owner_tests.rs",
+      "local_path": "/tmp/hepta-p0-training-snapshot-f7c0/codex-rs/hepta-agentd/src/cell_q24_training_receipt_owner_tests.rs",
+      "bytes": 18458,
+      "sha256": "b75e9f1c18e1d3bfc1717cdec3dffb7295cdd8423bb90e6f14870ef8a3e0f891",
+      "working_bytes_match_commit": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_snapshot_readback.rs",
+      "local_path": "/tmp/hepta-p0-training-snapshot-f7c0/codex-rs/hepta-agentd/src/cell_q24_training_snapshot_readback.rs",
+      "bytes": 3427,
+      "sha256": "c82cad6dbfac212d2d26c43926630fbc88dd781e53ffebccccb68859b0c340bd",
+      "working_bytes_match_commit": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_snapshot_readback_tests.rs",
+      "local_path": "/tmp/hepta-p0-training-snapshot-f7c0/codex-rs/hepta-agentd/src/cell_q24_training_snapshot_readback_tests.rs",
+      "bytes": 18455,
+      "sha256": "a50c0d66d4c048ff429b833d16e80a0d952ed121dc0c37af32b865447a7207d6",
+      "working_bytes_match_commit": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "local_path": "/tmp/hepta-p0-training-snapshot-f7c0/codex-rs/hepta-agentd/src/lib.rs",
+      "bytes": 50388,
+      "sha256": "5c4c11e1ee4a498bcc8c04eda896d3c399a7ef5a528911a0225e61f9fee3a73a",
+      "working_bytes_match_commit": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_training_owner_source_closure.py",
+      "local_path": "/tmp/hepta-p0-training-snapshot-f7c0/qa/b4-no-bypass/test_original_training_owner_source_closure.py",
+      "bytes": 9100,
+      "sha256": "854c5e30481313f7e8d9e9fd5f21398d8fe61c4bbfbba70b2f85b2907b3a0226",
+      "working_bytes_match_commit": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_training_snapshot_source_closure.py",
+      "local_path": "/tmp/hepta-p0-training-snapshot-f7c0/qa/b4-no-bypass/test_original_training_snapshot_source_closure.py",
+      "bytes": 4501,
+      "sha256": "ab02ddf560c56627b28a5b441e6dddb54ddd40b3d9cbc0e950f0206268237cf7",
+      "working_bytes_match_commit": true
+    }
+  ],
+  "verified_semantics": [
+    "The complete supplied snapshot is validated with Coordinator::from_snapshot before extracting any prefix; invalid suffix/head cannot be hidden by truncation.",
+    "Only Training-stage expected receipts are accepted. TrainingNoUpdateV2 is classified by its existing stage()==Training.",
+    "Request/owners and predecessor observations are replayed at original observation times to derive the exact Dataset prefix; next_stage must be Training.",
+    "If CURRENT contains Training, retained receipt must equal expected. Expected is then validated as an original-time structural extension; the one typed stage.readback result must also equal expected in every field.",
+    "Dataset-only lost-ACK recovery may return an already completed original receipt; it cannot start fit, claim work, first attest, sign, renew, checkpoint or authenticate another stage.",
+    "There is exactly one production call to existing stage.readback. Original lane, frozen Dataset/scope checks, both original CURRENT witnesses and fresh signature-validity verification remain in unchanged owners.",
+    "Request-expired historical recovery is not blocked by a new wall-clock admission check; original signed evidence must remain valid.",
+    "The full checkpoint CURRENT anti-rollback proof and authentication of other stages remain caller responsibilities, stated in code documentation."
+  ],
+  "test_source_oracles_reviewed": [
+    "Actual optimizer Candidate and NoUpdate fixtures cover Dataset-only, Training-prefix and full structural histories; original outcome result_identity, receipt/signature and all four retained files stay exact, including owner reopen.",
+    "Rebuilt Training evidence/time replacements first pass Coordinator::from_snapshot, then both original expected and replacement expected must be rejected. These are not merely malformed-head controls.",
+    "Missing Dataset, invalid full head/suffix predecessor/order, foreign request/owner and non-Training expected receipts are refused.",
+    "Native Missing, native Pending and completed-native/missing-receipt paths preserve original errors and four file bytes. Receipt Pending is rejected by original stage construction before a helper can be obtained.",
+    "Historical request deadline crossing preserves original valid signature; expired signature yields the original validity-window error; four retained files remain unchanged.",
+    "Training and receipt CURRENT changes independently produce original uncertainty errors; no file bytes change.",
+    "The new test module explicitly imports pretty_assertions::assert_eq, avoiding the prior inherited macro ambiguity."
+  ],
+  "native_test_functions_added": 5,
+  "native_tests_executed_by_review": 0,
+  "native_builds_started_by_review": 0,
+  "full_caller_scans_started_by_review": 0,
+  "source_guard_review": "Read both guard diffs and new mutation cases; did not execute them. The author reported nine source cases/fmt and inventory/protected checks separately.",
+  "caller_configuration": {
+    "boundary_records": 224,
+    "inventory_records": 224,
+    "protected_records": 219,
+    "new_boundary": "learning_original_training_snapshot_readback",
+    "actual_product_caller_change": "OriginalCellQ24TrainingStageV1::readback now lists only cell_q24_training_snapshot_readback.rs",
+    "new_helper_product_callers": [],
+    "stage_constructor_execute_attestation_product_callers": [],
+    "root_stage_assembly_product_callers": [],
+    "authority_values_all_false": true,
+    "scope": "Configuration inspection, not a full caller proof execution on this new commit."
+  },
+  "unchanged_original_blob_ids": {
+    "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs": "c56be75dd8a2e86894864c3d26a33eb1a3d4d416",
+    "codex-rs/hepta-agentd/src/cell_q24_training_stage_tests.rs": "abdeea194ee4bd1de796c2d21bf7d6b4f212c4a1",
+    "codex-rs/hepta-agentd/src/cell_q24_training_receipt_owner.rs": "fffe066843ecc6ff02e5887a9ac926983d019e05",
+    "codex-rs/hepta-agentd/src/cell_composed_q24_training_owner.rs": "2f99436cc89f15f99198b3e414135707ecee391d",
+    "codex-rs/hepta-agentd/src/learning_iteration_auth.rs": "6e1a88f8412304bf92456d4cec0705eded02e6c4",
+    "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_ports.rs": "8f54b20150252f6f119120810b1930ebb50d034d",
+    "scripts/verify_hepta_callers.py": "7a6709691c372504ca11b5d2a74e14ba819fca8f"
+  },
+  "preserved_30a_audit": {
+    "checkout_head": "30a697c50e10abd56e61b6b84f28ac9ae9f32f5d",
+    "bundle_path": "/workspace/scratch/f7c0ded86bcc/p0_final_caller_audit_30a697c_20261111",
+    "manifest_sha256": "7e871967279e433faea0855103cd9998210975f2b1556b1067ddbeba06b0bd75",
+    "all_manifest_file_hashes_verified": true,
+    "file_count_including_manifest": 22
+  },
+  "limits": [
+    "No compilation or Rust test execution was performed; no native passing status is claimed.",
+    "Later-stage histories in the new tests are structural fixtures, not independently authenticated B/C or ordinary production custody.",
+    "The helper has no ordinary product caller or StageOwner implementation/Root startup assembly.",
+    "The existing 30a caller PASS applies only to its original source and is not transferred to this seven-file patch."
+  ]
+}

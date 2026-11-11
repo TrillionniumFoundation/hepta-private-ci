@@ -1,6 +1,6 @@
 {
   "schema": "hepta.cell-p0-converged-implementation-and-evidence.v1",
-  "observed_at_utc": "2026-11-11T03:44:18.827037+00:00",
+  "observed_at_utc": "2026-11-11T03:59:41.964017+00:00",
   "candidate": {
     "source_sha": "30a697c50e10abd56e61b6b84f28ac9ae9f32f5d",
     "source_tree": "b2a21d98380340b1c091006f4130aafdbeabca50",
@@ -321,8 +321,10 @@
       "required_boundaries": 223,
       "protected_rows": 218,
       "written_native_tests": 6,
-      "native_tests_status": "CB_COMPILE_FAILED_BEFORE_ANY_TEST; FIXED_IMPORT_REQUIRES_30A_NATIVE_CI",
-      "evidence": "engineering/training-stage/REVIEW_AND_SCOPE.json"
+      "native_tests_status": "SIX_ACTUAL_PASS_ON_EXACT_30A_SHARED; CB_COMPILE_FAILURE_PRESERVED",
+      "evidence": "engineering/training-stage/REVIEW_AND_SCOPE.json",
+      "native_source_sha": "30a697c50e10abd56e61b6b84f28ac9ae9f32f5d",
+      "native_evidence": "shared-30a/SUMMARY.json"
     },
     {
       "name": "full caller scan on preceding immutable cb candidate",
@@ -460,7 +462,7 @@
     },
     {
       "name": "current candidate native and whole repository qualification",
-      "status": "PARTIAL_WINDOWS_PASS_OTHER_NATIVE_AND_FULL_CI_PENDING",
+      "status": "PARTIAL_SHARED_AND_WINDOWS_PASS_DAEMON_RETRY_OTHER_FULL_CI_PENDING",
       "source_sha": "30a697c50e10abd56e61b6b84f28ac9ae9f32f5d",
       "source_tree": "b2a21d98380340b1c091006f4130aafdbeabca50",
       "previous_head_results_transferred": false,
@@ -477,7 +479,11 @@
       "daemon_attempt1": "FETCH_TRANSPORT_FAILURE_BEFORE_NATIVE",
       "daemon_attempt2_job_id": 130304826142,
       "daemon_attempt2": "ONE_BOUNDED_RERUN_ACCEPTED_PENDING_NATIVE",
-      "daemon_retry_evidence": "current-30a/DAEMON_RETRY_REQUEST.json"
+      "daemon_retry_evidence": "current-30a/DAEMON_RETRY_REQUEST.json",
+      "shared_native_actual_unique_junit_cases": 1190,
+      "shared_training_stage_cases_actual_passed_once": 6,
+      "shared_evidence": "shared-30a/SUMMARY.json",
+      "latest_workflow_metadata_only": "current-30a/STATUS_SNAPSHOT_20261111T0356.json.gz"
     },
     {
       "name": "full caller scan on current immutable candidate",
@@ -551,11 +557,44 @@
       "source_tree": "b2a21d98380340b1c091006f4130aafdbeabca50",
       "source_files_pinned": 27,
       "actual_native_or_ci_or_caller_runs": 0,
-      "small_existing_protocol_code_step": "Snapshot-aware Training original receipt readback/attestation; being implemented separately and not part of 30a.",
+      "small_existing_protocol_code_step": "Snapshot-aware Training readback implemented separately as be8 / draft #5914; not part of frozen 30a.",
       "data_extraction_semantics_provided": false,
       "model_baseline_allowed": true,
       "native_trained_model_governed_candidate_protocol_present": false,
       "evidence": "current-30a/wiring-handoff/HANDOFF.json"
+    },
+    {
+      "name": "current 30a shared original owner native qualification",
+      "status": "PASS_EXACT_SOURCE_SCOPED",
+      "source_sha": "30a697c50e10abd56e61b6b84f28ac9ae9f32f5d",
+      "source_tree": "b2a21d98380340b1c091006f4130aafdbeabca50",
+      "run_id": 42951157663,
+      "job_id": 130295511508,
+      "run_attempt": 1,
+      "actual_unique_junit_cases": 1190,
+      "cases_by_binary": {
+        "codex-hepta-agentd": 890,
+        "codex-hepta-automation": 85,
+        "codex-hepta-neuron": 215
+      },
+      "junit_failures": 0,
+      "junit_errors": 0,
+      "junit_skipped": 0,
+      "nextest_excluded_or_ignored": 71,
+      "original_six_training_stage_cases_each_passed_once": true,
+      "python_execution_gate_cases_separate": 15,
+      "source_before_after_clean": true,
+      "full_source_file_inventory_in_this_artifact": false,
+      "helper_same_source_build_and_postverify": true,
+      "helper_binary_independently_downloaded": false,
+      "root_or_dependency_suites_or_new_be8_source_qualified": false,
+      "command_wall_seconds": 477.96954546099994,
+      "test_wall_seconds": 227.579,
+      "cpu_seconds": null,
+      "peak_rss_bytes": null,
+      "independent_scientific_tasks_added": 0,
+      "evidence": "shared-30a/SUMMARY.json",
+      "root_verification": "shared-30a/ROOT_VERIFICATION.json"
     }
   ],
   "remaining_p0": [
@@ -615,5 +654,24 @@
     "old_matrix_reopen_cause_established": false,
     "auth_refresh_fresh_case_observed": false
   },
-  "wiring_handoff": "current-30a/wiring-handoff/HANDOFF.json"
+  "wiring_handoff": "current-30a/wiring-handoff/HANDOFF.json",
+  "parallel_components": [
+    {
+      "name": "Original Training full-snapshot readback",
+      "source_sha": "be8adcbb5e9925f72e05330b8fb30509cba4544b",
+      "source_tree": "eaa8b27f16a5f9fed87e9d6882cd23dfaecfd125",
+      "parent": "30a697c50e10abd56e61b6b84f28ac9ae9f32f5d",
+      "pull_request": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5914",
+      "status": "PUBLISHED_DRAFT_STATIC_AND_REVIEW_PASS_NATIVE_AND_FULL_CALLER_PENDING",
+      "production_module_lines": 74,
+      "source_guard_test_cases": 9,
+      "new_rust_behavior_test_definitions": 5,
+      "boundary_records": 224,
+      "protected_records": 219,
+      "counts_are_configuration_not_full_caller_result": true,
+      "ordinary_product_host_caller_added": false,
+      "original_30a_gate_results_transferred": false,
+      "evidence": "training-snapshot-be8/PUBLICATION.json"
+    }
+  ]
 }

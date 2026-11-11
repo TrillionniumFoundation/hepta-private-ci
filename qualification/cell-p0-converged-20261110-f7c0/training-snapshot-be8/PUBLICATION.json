@@ -1,0 +1,90 @@
+{
+  "schema": "hepta.p0.training-snapshot-publication.v1",
+  "recorded_at_utc": "2026-11-11T03:59:41.964017+00:00",
+  "published_source_sha": "be8adcbb5e9925f72e05330b8fb30509cba4544b",
+  "published_tree": "eaa8b27f16a5f9fed87e9d6882cd23dfaecfd125",
+  "parent_sha": "30a697c50e10abd56e61b6b84f28ac9ae9f32f5d",
+  "reviewed_local_commit": "8ad9f24e238b0680f975fea8c9d26db146066a8c",
+  "reviewed_tree_exactly_matches_publication": true,
+  "github_commit_and_branch_and_draft_pr_readback_verified": true,
+  "branch": "codex/cell-p0-training-snapshot-20261111-f7c0",
+  "pull_request": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5914",
+  "pull_request_base": "codex/cell-p0-converged-20261110-f7c0",
+  "changed_files": [
+    {
+      "path": "CALLERS.toml",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "7525a353bbb2aee06bf6dfb35588b4c58dcbe308",
+      "bytes": 347585,
+      "sha256": "10ea7897b74a14e09857f6f4b229535da6df689ad6168e7b5f2f34395c192a53",
+      "local_path": "/tmp/hepta-p0-training-snapshot-f7c0/CALLERS.toml"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_receipt_owner_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "610db805b51925b649080aa464464c1881e90e79",
+      "bytes": 18458,
+      "sha256": "b75e9f1c18e1d3bfc1717cdec3dffb7295cdd8423bb90e6f14870ef8a3e0f891",
+      "local_path": "/tmp/hepta-p0-training-snapshot-f7c0/codex-rs/hepta-agentd/src/cell_q24_training_receipt_owner_tests.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_snapshot_readback.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "6f9ba4031af987ffb601298846101759799d5a05",
+      "bytes": 3427,
+      "sha256": "c82cad6dbfac212d2d26c43926630fbc88dd781e53ffebccccb68859b0c340bd",
+      "local_path": "/tmp/hepta-p0-training-snapshot-f7c0/codex-rs/hepta-agentd/src/cell_q24_training_snapshot_readback.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_snapshot_readback_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a5f1bc5cd5906f44a9ce894e7ad48f0d59cec466",
+      "bytes": 18455,
+      "sha256": "a50c0d66d4c048ff429b833d16e80a0d952ed121dc0c37af32b865447a7207d6",
+      "local_path": "/tmp/hepta-p0-training-snapshot-f7c0/codex-rs/hepta-agentd/src/cell_q24_training_snapshot_readback_tests.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "8ae53316bb7124c31c2b0b51f7ef575678835231",
+      "bytes": 50388,
+      "sha256": "5c4c11e1ee4a498bcc8c04eda896d3c399a7ef5a528911a0225e61f9fee3a73a",
+      "local_path": "/tmp/hepta-p0-training-snapshot-f7c0/codex-rs/hepta-agentd/src/lib.rs"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_training_owner_source_closure.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "add14d6354650fa53114fbe3a22502877981758d",
+      "bytes": 9100,
+      "sha256": "854c5e30481313f7e8d9e9fd5f21398d8fe61c4bbfbba70b2f85b2907b3a0226",
+      "local_path": "/tmp/hepta-p0-training-snapshot-f7c0/qa/b4-no-bypass/test_original_training_owner_source_closure.py"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_training_snapshot_source_closure.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "491868616affe26601a9b04516463d0ded855290",
+      "bytes": 4501,
+      "sha256": "ab02ddf560c56627b28a5b441e6dddb54ddd40b3d9cbc0e950f0206268237cf7",
+      "local_path": "/tmp/hepta-p0-training-snapshot-f7c0/qa/b4-no-bypass/test_original_training_snapshot_source_closure.py"
+    }
+  ],
+  "common_source_branch_moved": false,
+  "native_result_transferred_from_30a": false,
+  "full_caller_scan": "IN_PROGRESS_ON_EXACT_PUBLISHED_BE8",
+  "native_ci": "QUEUED_ON_EXACT_PUBLISHED_BE8",
+  "shared_run_id": 42955998124,
+  "shared_job_id": 130311123893,
+  "daemon_run_id": 42955998126,
+  "daemon_job_id": 130311123517,
+  "architecture_run_id": 42955998198,
+  "ordinary_full_adopt_runs": 0,
+  "ordinary_full_no_update_runs": 0,
+  "production_host_caller_added": false
+}

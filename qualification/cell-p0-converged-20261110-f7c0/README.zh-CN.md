@@ -42,7 +42,8 @@
 | 四项独立源码复核 | 未发现复核范围内阻塞项 | 不是 native 执行或科研独立性证明 |
 | `30a697c…` 完整 caller scan | 本次实际 exit 0 / PASS | 6,302 Rust、223 边界、218 protected records；不授予权限 |
 | `30a697c…` Windows 选定原生范围 | 34 个唯一原测试 PASS | Python 与重复/变异探针单列；未选六个 Training stage 测试 |
-| `30a697c…` daemon / shared / 全仓库 CI | daemon 首次下载失败；单次重试及其它关键 lane 待终态 | 不移植旧源码的通过数 |
+| `30a697c…` shared 原生 owner 库 | 1,190 个唯一 JUnit PASS，原六项 Training 各执行一次通过 | 三个 owner 库范围；不证明 Root、依赖目标或新 be8 源码 |
+| `30a697c…` daemon / 全仓库 CI | daemon 首次下载失败；单次重试及其它关键 lane 待终态 | 不移植旧源码的通过数 |
 
 [新候选的完整 caller 原始记录](caller-30a/RESULTS.md)已由 root 逐项复核：唯一一次完整 verifier 调用，707.986497 秒 wall、692.379395 秒 child CPU；9 个变更文件、CALLERS、verifier、HEAD/tree 与 clean 前后相同。218 个 protected records 对应 173 个去重路径，另有 223 个 privileged inventory records。原 stdout 与旧 cb 恰好字节相同，但新 before/after/执行记录绑定实际 30a 调用，未移植旧结果。CALLERS 的 codex-rs 范围完整包含 6,302 个 tracked/worktree Rust 文件；原 sparse 文档元数据预检失败发生在 verifier 启动前，已独立留档。
 
@@ -54,13 +55,15 @@
 
 ### 30a 的新增实际读回与仍可推进的代码
 
+[当前 shared 的完整原始归档](shared-30a/SUMMARY.json)与 [root 独立核验](shared-30a/ROOT_VERIFICATION.json)确认 1,190 个唯一 JUnit 全部通过：Agentd 890、automation 85、neuron 215，XML failure/error/skipped 均为 0；nextest 另列 71 个排除/忽略。六个原 Training stage case 均在原始 JUnit 和 nextest 中唯一出现一次并 PASS，另有 15 项 Python execution-gate 检查。完整原 artifact 的 14 成员、完整 345,635 字节 job log、源码前后 clean 与 helper 同源构建/postverify 均核验；此包没有完整源码 inventory，也没有 helper 可执行文件本体。命令 wall 477.969545 秒，测试 wall 227.579 秒；CPU/RSS 未测。这里没有 Root、Matrix/core/RMCP、完整链或新组件的通过主张。
+
 [当前 Windows 原始归档](windows-30a/SUMMARY.json)包含本次 34 个唯一原始 native PASS（15+2+3+2+12）、6 个独立列出的 Python harness 检查、原始两例正向复跑和两个变异负控共 4 次执行。原 artifact 全 9 成员和完整 259,732 字节 job log 均保留；root 对源码、原日志行、哈希与恢复状态逐项复核。派生摘要中一处旧源码标签已更正并保存前后哈希，原 CI 证据未改。这里没有执行六个 Training stage 用例。
 
 [当前 daemon attempt 1](daemon-30a-attempt1/SUMMARY.json)在 `cargo fetch --locked` 时因 thiserror-impl 的 crates.io index 连接出现 curl55/TLS unexpected EOF 而失败；helper 构建、ordinary、Root 和维护均未开始，native testcase 为 0。仅有原 checkout 快照，不能声明六阶段源码一致。原始失败归档后，[只对该失败 job 发起一次重试](current-30a/DAEMON_RETRY_REQUEST.json)，同一 source 的 attempt 2 为 job `130304826142`，与 attempt 1 独立记录。没有修改依赖版本、TLS 或断言。
 
 [固定 30a 的接线核查](current-30a/wiring-handoff/HANDOFF.json)把源码缺口与真实材料依赖分开：生产 StageOwner composition、Dataset→Q24 来源/回执桥、Q24 训练结果的 governed Model 提案协议都是实际源码缺口。Model 作为基线已被允许；问题在于原 SGD 结果不满足 Parameter V3 的完整确定性重生成协议，不能强行转换。
 
-一个更小且已有规则足以定义的源码动作已单独启动：将完整 CURRENT snapshot 适配到原 Training owner 的 exact Dataset prefix，读取并比较原签名回执。它不在冻结 30a 中，也不代替完整 StageOwner。真实 Dataset 特征/目标转换仍需要原持有人预先冻结的规则和源记录；这里不选择默认目标或从所需结果反推标签。原 key、journal/CURRENT、独立 anchors、B qualification 和 C use 仍必须由真实持有人交付并认证。本审查没有断言这些材料在所有外部系统中不存在。
+这个已具备既有规则的源码动作现已完成并单独发布为 [草稿 #5914](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5914)：source `be8adcbb5e9925f72e05330b8fb30509cba4544b` / tree `eaa8b27f16a5f9fed87e9d6882cd23dfaecfd125`，直接 parent 为 30a。74 行生产模块先验证完整 CURRENT snapshot，按原时间重建 exact Dataset prefix，再以 retained/expected/actual 三方全等读取原回执与签名；Missing/Pending 不启动新训练或首次签名。新增五项 Rust 行为测试，九项源码测试与配置 inventory 通过，独立审查无阻塞项；精确 published be8 的完整 caller 与原生 CI 仍待结果。原 stage、两个 owner 和六项旧测试均未改。它不在冻结 30a 中，也不代替完整 StageOwner；新 helper 自身仍无普通产品调用者。详见 [发布身份](training-snapshot-be8/PUBLICATION.json)、[独立审查](training-snapshot-be8/INDEPENDENT_REVIEW.json)及完整作者证据。真实 Dataset 特征/目标转换仍需要原持有人预先冻结的规则和源记录；这里不选择默认目标或从所需结果反推标签。原 key、journal/CURRENT、独立 anchors、B qualification 和 C use 仍必须由真实持有人交付并认证。本审查没有断言这些材料在所有外部系统中不存在。
 
 ### 历史源码的实际原生通过
 
@@ -72,7 +75,7 @@
 
 [前一共同源的 daemon 原始归档](daemon-6ec/RESULTS.md)逐项核实了 ordinary 1,146 个 JUnit testcase、Root 7 个 testcase，均为零失败；另有 nextest 排除/忽略 72 与 948 项。原日志实际记录 Root UID=0，旧 ordinary XML 只作 Root 排除证据。六阶段均为 exact `6ecfa504…`/tree `9184583…`，14,399 文件的完整清单逐字节相同。该 lane 的 fmt/fix/bins 返回码均为 0、维护补丁为空；其 fix/bins 只覆盖 agentd、learning-artifacts、intelligence-eval。
 
-适配层原组件的 9 项聚焦来源检查、223 边界/218 个受保护条目的静态 inventory 与独立源码审查通过；6 个原生行为测试已写入源码；`cb0598a…` 未编译成功，实际执行为 0，需以 `30a697c…` 新 CI 的日志/JUnit 确认。固定 `cb0598a…` 的[完整 caller scan 已实际通过](caller-cb/RESULTS.md)：6,302 个 Rust 文件、223 个边界、223 个 privileged inventory 条目，以及 218 个 protected-file 记录（173 个去重路径）。原 stdout 完整保留，前后源码、CALLERS 与 verifier 身份相同且 clean；该扫描不授予权限。详情见 [适配层检查与边界](engineering/training-stage/REVIEW_AND_SCOPE.json)。这些检查与历史测试重叠，不累计为新增独立样本。
+适配层原组件的 9 项聚焦来源检查、223 边界/218 个受保护条目的静态 inventory 与独立源码审查通过；6 个原生行为测试已写入源码；`cb0598a…` 未编译成功，实际执行为 0；后继 `30a697c…` 的 shared 原始日志/JUnit 现已确认六项各通过一次。固定 `cb0598a…` 的[完整 caller scan 已实际通过](caller-cb/RESULTS.md)：6,302 个 Rust 文件、223 个边界、223 个 privileged inventory 条目，以及 218 个 protected-file 记录（173 个去重路径）。原 stdout 完整保留，前后源码、CALLERS 与 verifier 身份相同且 clean；该扫描不授予权限。详情见 [适配层检查与边界](engineering/training-stage/REVIEW_AND_SCOPE.json)。这些检查与历史测试重叠，不累计为新增独立样本。
 
 一次独立的 exact `6ecfa504…`、单 job、本地三包 Clippy 命令在共享空闲磁盘降至 683,872,256 字节时受控中止（exit 130）；源码未改，运行测试为 0。完整记录保存在 [维护尝试归档](p0-maintenance-6ecfa504-attempt1.zip)。这次停止原因已知，但不能据此解释更早的 SIGKILL；最终 child CPU/RSS 和精确单调时钟耗时未捕获，仍为未知。
 

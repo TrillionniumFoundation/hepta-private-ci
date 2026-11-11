@@ -1,0 +1,24 @@
+{
+  "schema": "hepta.p0.training-snapshot-root-review.v1",
+  "recorded_at_utc": "2026-11-11T03:59:41.964017+00:00",
+  "reviewed_local_commit": "8ad9f24e238b0680f975fea8c9d26db146066a8c",
+  "published_source_sha": "be8adcbb5e9925f72e05330b8fb30509cba4544b",
+  "exact_tree": "eaa8b27f16a5f9fed87e9d6882cd23dfaecfd125",
+  "status": "NO_BLOCKING_SOURCE_ISSUE_FOUND",
+  "all_seven_changed_source_blobs_verified": true,
+  "author_manifest_members_verified": 26,
+  "independent_review_sha256": "1abac1ad2fa7cccc4f55c8734768122854b045025cfd27514f18ccadce0428b9",
+  "reviewed": [
+    "Full Coordinator snapshot validation precedes prefix construction; original observed times preserved.",
+    "Retained Training equals expected and actual original completion equals expected; structural validity alone is insufficient.",
+    "Exactly one original stage readback; no fit, first attestation, new signer, time renewal or checkpoint mutation.",
+    "Unchanged original stage requires exact Dataset cut and native plan scope, retains one blocking-worker lane and original witness checks.",
+    "Five new behavior fixtures cover actual native Candidate/NoUpdate, lost ACK, structurally legal replacement, Missing/Pending, deadline/signature expiry, witness drift and four unchanged files.",
+    "result_identity compares bundle, head bytes and complete metrics, including existing elapsed-time fields.",
+    "New helper has no ordinary host caller; this is one typed consumer of original stage readback, not complete production assembly."
+  ],
+  "actual_native_testcases_executed_by_root_review": 0,
+  "root_repeated_source_guards_or_full_caller": false,
+  "independent_tasks_added": 0,
+  "full_p0_qualification": false
+}

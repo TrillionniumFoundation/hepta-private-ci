@@ -1,0 +1,165 @@
+{
+  "schema": "hepta.p0.shared-owner-readback.v1",
+  "recorded_at_utc": "2026-11-11T03:55:18.944186+00:00",
+  "source_sha": "30a697c50e10abd56e61b6b84f28ac9ae9f32f5d",
+  "source_tree": "b2a21d98380340b1c091006f4130aafdbeabca50",
+  "run_id": 42951157663,
+  "run_attempt": 1,
+  "job_id": 130295511508,
+  "artifact_id": 13826946544,
+  "github_run_and_job_conclusion": "success",
+  "native": {
+    "actual_unique_junit_cases": 1190,
+    "failures": 0,
+    "errors": 0,
+    "skipped_in_xml": 0,
+    "nextest_excluded_or_ignored": 71,
+    "summary_line": "     Summary [ 227.579s] 1190 tests run: 1190 passed (1 slow), 71 skipped",
+    "cases_by_binary": {
+      "codex-hepta-agentd": 890,
+      "codex-hepta-automation": 85,
+      "codex-hepta-neuron": 215
+    },
+    "command": [
+      "just",
+      "test",
+      "--locked",
+      "-p",
+      "codex-hepta-automation",
+      "-p",
+      "codex-hepta-neuron",
+      "-p",
+      "codex-hepta-agentd",
+      "--lib"
+    ],
+    "nextest_runtime_seconds": 227.579,
+    "command_elapsed_seconds": 477.96954546099994,
+    "junit_bytes": 281628,
+    "junit_sha256": "6ecdb5db415f37e95819eb8738b8a9fbbf0449f656e896f541c6789ea5365e0e",
+    "execution_record_sha256": "9d239c12c3d924f807eb397f69717cb6a87a4c5f15cb918541b6124781526e40"
+  },
+  "python_execution_gate": {
+    "actual_named_passes": 15,
+    "failed": 0,
+    "unittest_runtime_seconds": 3.073,
+    "command_elapsed_seconds": 3.583309729000007,
+    "command": [
+      "python3",
+      "-B",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "scripts",
+      "-p",
+      "test_hepta_ci_exec.py",
+      "-v"
+    ]
+  },
+  "source_identity": {
+    "before_and_after_text_byte_equal": true,
+    "text_bytes": 82,
+    "text_sha256": "feb61e4673a7fa2e493bed335b7f08116d75d1959117a3395a18b9cc0782251c",
+    "execution_records_before_and_after_clean": true,
+    "helper_before_and_after_clean": true,
+    "source_status_shell_checks_completed_successfully": true,
+    "full_source_file_inventories_in_this_artifact": false
+  },
+  "helper": {
+    "full_jsonl_preserved": true,
+    "jsonl_parsed_messages": 1303,
+    "jsonl_bytes": 1084888,
+    "build_finished_success": true,
+    "manifest_emitted_executable_match": true,
+    "verify_only_match": true,
+    "recorded_binary_bytes": 1439816,
+    "recorded_binary_sha256": "26c976816b7e748ecfe1056944211d7bd4eee329111476c0fc7c5bde422e8824",
+    "executable_binary_in_original_artifact": false,
+    "executable_independently_downloaded": false
+  },
+  "training_stage_actual_cases": [
+    {
+      "case": "original_training_stage_runs_both_outcomes_and_reopens_exactly",
+      "classname": "codex-hepta-agentd",
+      "full_name": "neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::receipts::stage::original_training_stage_runs_both_outcomes_and_reopens_exactly",
+      "result": "passed",
+      "junit_time_seconds": 0.415,
+      "unique_junit_instances": 1,
+      "original_nextest_pass_line": "        PASS [   0.415s] codex-hepta-agentd neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::receipts::stage::original_training_stage_runs_both_outcomes_and_reopens_exactly"
+    },
+    {
+      "case": "original_training_stage_rejects_wrong_pair_and_pending_without_work",
+      "classname": "codex-hepta-agentd",
+      "full_name": "neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::receipts::stage::original_training_stage_rejects_wrong_pair_and_pending_without_work",
+      "result": "passed",
+      "junit_time_seconds": 0.4,
+      "unique_junit_instances": 1,
+      "original_nextest_pass_line": "        PASS [   0.400s] codex-hepta-agentd neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::receipts::stage::original_training_stage_rejects_wrong_pair_and_pending_without_work"
+    },
+    {
+      "case": "original_training_stage_distinguishes_missing_receipt_from_missing_native",
+      "classname": "codex-hepta-agentd",
+      "full_name": "neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::receipts::stage::original_training_stage_distinguishes_missing_receipt_from_missing_native",
+      "result": "passed",
+      "junit_time_seconds": 0.18,
+      "unique_junit_instances": 1,
+      "original_nextest_pass_line": "        PASS [   0.180s] codex-hepta-agentd neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::receipts::stage::original_training_stage_distinguishes_missing_receipt_from_missing_native"
+    },
+    {
+      "case": "original_training_stage_expired_missing_never_claims_or_attests",
+      "classname": "codex-hepta-agentd",
+      "full_name": "neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::receipts::stage::original_training_stage_expired_missing_never_claims_or_attests",
+      "result": "passed",
+      "junit_time_seconds": 0.153,
+      "unique_junit_instances": 1,
+      "original_nextest_pass_line": "        PASS [   0.153s] codex-hepta-agentd neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::receipts::stage::original_training_stage_expired_missing_never_claims_or_attests"
+    },
+    {
+      "case": "original_training_stage_request_expiry_preserves_only_original_completed_receipts",
+      "classname": "codex-hepta-agentd",
+      "full_name": "neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::receipts::stage::original_training_stage_request_expiry_preserves_only_original_completed_receipts",
+      "result": "passed",
+      "junit_time_seconds": 6.331,
+      "unique_junit_instances": 1,
+      "original_nextest_pass_line": "        PASS [   6.331s] codex-hepta-agentd neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::receipts::stage::original_training_stage_request_expiry_preserves_only_original_completed_receipts"
+    },
+    {
+      "case": "original_training_stage_keeps_lane_until_cancelled_waiter_worker_exits",
+      "classname": "codex-hepta-agentd",
+      "full_name": "neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::receipts::stage::original_training_stage_keeps_lane_until_cancelled_waiter_worker_exits",
+      "result": "passed",
+      "junit_time_seconds": 0.192,
+      "unique_junit_instances": 1,
+      "original_nextest_pass_line": "        PASS [   0.192s] codex-hepta-agentd neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::receipts::stage::original_training_stage_keeps_lane_until_cancelled_waiter_worker_exits"
+    }
+  ],
+  "training_stage_all_six_observed_once_in_junit_and_nextest": true,
+  "decoded_job_log": {
+    "bytes": 345635,
+    "sha256": "9dbea5e2f5aee5a4c1f73a2e04de296e9dabdb621cd455aeba587c420db1f6b7",
+    "gzip_bytes": 66174,
+    "gzip_sha256": "5b310e2dc6464dc49117ec28e645265c6263828a02edabf2c9510ed3c5fddd4d",
+    "full_decoded_utf8_preserved": true
+  },
+  "original_artifact": {
+    "bytes": 174816,
+    "sha256": "3b9d567cfa6b0ea4f1f92d5e6868ef37174f83be8cb669fd9dcef8858cac4a84",
+    "all_14_members_retained": true
+  },
+  "scope_limits": [
+    "Only source 30a697c50e10abd56e61b6b84f28ac9ae9f32f5d and the recorded three-owner-library command plus execution-gate tests are qualified by these records.",
+    "Six Training stage cases executed once each; this is engineering regression evidence, not an independent task sample or full product A-to-learning-to-B-to-C-to-cold-recovery qualification.",
+    "No ignored Root lane, core/RMCP/auth-refresh/Matrix test suite, or later component SHA is qualified by this shared lane.",
+    "No fmt/fix/bins completion is claimed for this shared lane.",
+    "Repeated engineering case executions do not increase the number of independent scientific tasks or source groups.",
+    "Helper hash is original CI custody evidence; the executable itself is absent from the original artifact and was not independently downloaded."
+  ],
+  "unmeasured_costs": {
+    "cpu_seconds": null,
+    "peak_rss_bytes": null,
+    "energy_joules": null,
+    "monetary_cost": null
+  },
+  "new_ci_runs_started": 0,
+  "new_native_jobs_started": 0
+}
