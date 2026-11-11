@@ -2,6 +2,9 @@
 //! This verifies local choice binding, not independent model quality.
 
 use super::*;
+use crate::neuron_generation_runtime::verify_completed_learning_readback_test_bytes;
+use crate::neuron_generation_runtime::verify_learning_use_readback_test_bytes;
+use crate::neuron_generation_update_bootstrap::GenerationLearningReadbackV1;
 use pretty_assertions::assert_eq;
 
 fn qualified_local(
@@ -51,9 +54,15 @@ fn qualified_local(
 
 #[test]
 fn qualified_local_retention_reaches_actual_parent_use_and_cold_recovery() -> anyhow::Result<()> {
-    for disposition in [
-        LearningLocalDispositionV2::DeferCandidate,
-        LearningLocalDispositionV2::RetainParent,
+    for (disposition, phase) in [
+        (
+            LearningLocalDispositionV2::DeferCandidate,
+            "local_defer_cold",
+        ),
+        (
+            LearningLocalDispositionV2::RetainParent,
+            "local_retain_cold",
+        ),
     ] {
         let (f, original) = setup()?;
         let mut c = qualified_local(&original, disposition, "original-node-policy")?;
@@ -78,6 +87,11 @@ fn qualified_local_retention_reaches_actual_parent_use_and_cold_recovery() -> an
             actual,
             LearningIterationObservationV1::RetainedModelNextUse { .. }
         ));
+        let readback = GenerationLearningReadbackV1 {
+            journal: &ready.journal,
+            publication: &ready.publication,
+        }
+        .export_next_use(&c, /*previous_manifest*/ None, &intent)?;
         let saved = (
             f.bytes("current.json")?,
             f.bytes("target-journal")?,
@@ -97,7 +111,28 @@ fn qualified_local_retention_reaches_actual_parent_use_and_cold_recovery() -> an
             },
         )?;
         assert_eq!(ready.read_learning_next_use(&c, &intent)?, actual);
+        assert_eq!(
+            GenerationLearningReadbackV1 {
+                journal: &ready.journal,
+                publication: &ready.publication,
+            }
+            .export_next_use(&c, /*previous_manifest*/ None, &intent)?,
+            readback
+        );
+        let receipt = ready
+            .journal
+            .receipt_for_intent(&intent)?
+            .ok_or_else(|| anyhow::anyhow!("missing original local-choice use"))?;
+        verify_learning_use_readback_test_bytes(
+            &readback,
+            &c,
+            ready.journal.manifest(),
+            &receipt,
+            &ready.journal.observe_generation()?,
+            phase,
+        )?;
         c.record(observed(&c, actual), 20)?;
+        verify_completed_learning_readback_test_bytes(&readback, &c, phase)?;
         assert_eq!(c.snapshot().receipts.len(), 8);
         assert_eq!(
             c.disposition(),
