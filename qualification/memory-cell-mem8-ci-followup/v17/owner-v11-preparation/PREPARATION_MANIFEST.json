@@ -1,0 +1,69 @@
+{
+  "schema": "mem8.owner-v11.generator-preparation.v1",
+  "status": "FROZEN_FOR_ROOT_STATIC_REVIEW_NOT_A_RENDERED_OR_PUBLISHED_LEDGER",
+  "files": [
+    {
+      "path": "AUDIT_DESIGN.md",
+      "bytes": 5530,
+      "sha256": "42a564dc0cf6c753b21b51741984e7910271fc5e596e8dd73b04aab0129e2e12",
+      "git_blob": "3ceda62eafa598d6f142f4de9ddc2da7714cecfd"
+    },
+    {
+      "path": "BINDINGS_INTERFACE.md",
+      "bytes": 3624,
+      "sha256": "59a31cf2e855edef3ee3a234b0b18f670d3aba772f959edfe19e840a5f230f87",
+      "git_blob": "4149d2e47a1190ab1fd1c886002e79803828e8bd"
+    },
+    {
+      "path": "FROZEN_REPORT_SELECTIONS_01758.json",
+      "bytes": 26965,
+      "sha256": "be3743b60d7486d3dff8011aa0ccc56ee6af55dddbf174aa7073480ae599358e",
+      "git_blob": "6a2fc7ba242b946906b86e6d47fc57ac390b161b"
+    },
+    {
+      "path": "LOCAL_PREPARATION_EXECUTION_001.json",
+      "bytes": 1677,
+      "sha256": "df0eb6bb1df257d1ab43b05a2df62ce19de11dbe6cb0a3c703f73443a77817c6",
+      "git_blob": "608366e6261d4e3c4f91b0999c2859a65c193168"
+    },
+    {
+      "path": "LOCAL_PREPARATION_EXECUTION_002.json",
+      "bytes": 776,
+      "sha256": "858c2ccf196e331aaaa9b55e9f81b55230065fe29f58d5d71685163fb77142a5",
+      "git_blob": "8924ba82ce8d266bf9f02440e9328d1180117d9c"
+    },
+    {
+      "path": "OFFLINE_INVARIANT_CONTROLS.json",
+      "bytes": 1543,
+      "sha256": "2f7972e8d27eaad4c332151feca7febcc4d3616cab2e3e50546e4072244db3dc",
+      "git_blob": "3e0544317c87986fdde865b908c5b93a1482f20e"
+    },
+    {
+      "path": "audit_generator_invariants.py",
+      "bytes": 2969,
+      "sha256": "c3ccf35fa69816bb6a1f0dcc0150bc330f39833e85f205357faf7d8804dca965",
+      "git_blob": "ae2c7329099fb710bbd1a35f5e49fedf7529d8e8"
+    },
+    {
+      "path": "freeze_report_selections.py",
+      "bytes": 15884,
+      "sha256": "b9f700c145d2f49a757b135ea27b73ad3f76406b7551562ba44476a3ba7813c6",
+      "git_blob": "1effda3604afd9ee7a58aaf4b07c82bc18fb7c96"
+    },
+    {
+      "path": "prepare_owner_v11.py",
+      "bytes": 22129,
+      "sha256": "6392145a2cce0187f4d6dc4eddfd381bca6892a32a0bf97c9a64636cc05af30b",
+      "git_blob": "a305575e93303b53f01842768f9fc06403893c16"
+    }
+  ],
+  "baseline_bytes": 134567,
+  "baseline_sha256": "bac85ca6969f7fe47b75245cb688bbcf995871204e5ad921c327df736aa85b36",
+  "frozen_observation_scope": "Original 17:58:08 UTC d0f run remains nonterminal; select a separately frozen later snapshot explicitly for final rendering.",
+  "generated_owner_ledger": false,
+  "actual_publication_bindings_present": false,
+  "Git_or_ref_writes": 0,
+  "native_or_model_execution": 0,
+  "offline_invariant_controls_passed": 8,
+  "post_control_delta": "Reject nonfinite JSON and label supporting receipt path as belonging to this unpublished owner proposal; protected-span implementation unchanged."
+}

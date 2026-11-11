@@ -1,0 +1,55 @@
+{
+  "schema": "mem8.owner-v11.generator-offline-controls.v1",
+  "status": "PASS",
+  "baseline": {
+    "bytes": 134567,
+    "sha256": "bac85ca6969f7fe47b75245cb688bbcf995871204e5ad921c327df736aa85b36",
+    "git_blob": "2d5f0256776089b386f8e5ebd9d9eefcbfaac5f2"
+  },
+  "controls": [
+    {
+      "control": "allowed_local_description_preserves_original_value_spans",
+      "passed": true,
+      "protected_span_count": 55
+    },
+    {
+      "control": "non_CI_gate_change_rejected",
+      "passed": true,
+      "rejection": "non-CI gate changed"
+    },
+    {
+      "control": "old_closed_entry_change_rejected",
+      "passed": true,
+      "rejection": "protected value changed: closed_this_followup"
+    },
+    {
+      "control": "HOSTED_CI_closure_change_rejected",
+      "passed": true,
+      "rejection": "HOSTED closure changed"
+    },
+    {
+      "control": "physical_provider_count_change_rejected",
+      "passed": true,
+      "rejection": "protected value changed: physical_provider_requests"
+    },
+    {
+      "control": "scientific_acceptance_change_rejected",
+      "passed": true,
+      "rejection": "protected value changed: scientific_acceptance"
+    },
+    {
+      "control": "non_CI_intake_change_rejected",
+      "passed": true,
+      "rejection": "protected intake changed"
+    },
+    {
+      "control": "duplicate_JSON_key_rejected",
+      "passed": true
+    }
+  ],
+  "control_count": 8,
+  "test_fixture_only_in_memory": true,
+  "candidate_ledger_written": false,
+  "native_or_model_execution": 0,
+  "Git_or_ref_writes": 0
+}
