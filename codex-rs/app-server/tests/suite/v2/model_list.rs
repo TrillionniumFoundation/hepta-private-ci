@@ -203,12 +203,11 @@ async fn list_models_uses_chatgpt_remote_catalog_as_source_of_truth() -> Result<
     // The endpoint decodes ModelsResponse's legacy base instructions into
     // model_messages before the manager writes its cache. Compare that wire
     // round trip, while keeping the original raw catalog for response assertions.
-    let expected_cache_models = serde_json::from_value::<ModelsResponse>(serde_json::to_value(
-        ModelsResponse {
+    let expected_cache_models =
+        serde_json::from_value::<ModelsResponse>(serde_json::to_value(ModelsResponse {
             models: remote_models.clone(),
-        },
-    )?)?
-    .models;
+        })?)?
+        .models;
     let models_mock = mount_models_once(
         &server,
         ModelsResponse {

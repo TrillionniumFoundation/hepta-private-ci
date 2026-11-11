@@ -1,5 +1,5 @@
-load("//bazel/rules/testing:qualification_lease_clock.bzl", "qualification_lease_clock_library")
 load("//:defs.bzl", "codex_rust_crate")
+load("//bazel/rules/testing:qualification_lease_clock.bzl", "qualification_lease_clock_library")
 
 codex_rust_crate(
     name = "app-server-client",
@@ -9,6 +9,6 @@ codex_rust_crate(
 
 qualification_lease_clock_library(
     name = "app-server-client",
-    crate_name = "codex_app_server_client",
     crate_features = ["test-support"],
+    crate_name = "codex_app_server_client",
 )

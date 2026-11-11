@@ -30,7 +30,8 @@ fn write_request(
 }
 
 #[tokio::test]
-async fn restricted_helper_rejects_existing_hard_links_without_modification() -> anyhow::Result<()> {
+async fn restricted_helper_rejects_existing_hard_links_without_modification() -> anyhow::Result<()>
+{
     for follow_symlinks in [true, false] {
         let directory = tempfile::tempdir()?;
         let outside = directory.path().join("outside.txt");
@@ -48,7 +49,10 @@ async fn restricted_helper_rejects_existing_hard_links_without_modification() ->
             error.message,
             "restricted filesystem write requires a file with exactly one hard link"
         );
-        assert_eq!(std::fs::read(&outside)?.as_slice(), b"original outside bytes");
+        assert_eq!(
+            std::fs::read(&outside)?.as_slice(),
+            b"original outside bytes"
+        );
         assert_eq!(std::fs::read(&link)?.as_slice(), b"original outside bytes");
         std::fs::write(&outside, b"still the same file")?;
         assert_eq!(std::fs::read(&link)?.as_slice(), b"still the same file");

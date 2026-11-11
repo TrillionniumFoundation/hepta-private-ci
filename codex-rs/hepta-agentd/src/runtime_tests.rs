@@ -778,7 +778,9 @@ async fn qualification_prepare_quarantines_expired_registry_attempt_with_h7_evid
     drop(lease);
     tokio::time::sleep(Duration::from_secs(2)).await;
     // Both H7 writes completed while live; now cross the original +1 deadline.
-    clock.advance_to(expires_at).expect("advance to lease expiry");
+    clock
+        .advance_to(expires_at)
+        .expect("advance to lease expiry");
 
     let result = prepare_qualification_turn_writer_input(
         Arc::clone(&fixture.state),

@@ -243,10 +243,10 @@ pub use cognitive_store::CognitiveRecoveryError;
 pub use cognitive_store::CognitiveRecoveryRequirement;
 pub use cognitive_store::CognitiveStore;
 pub use cognitive_store::CognitiveStoreError;
-#[cfg(any(test, feature = "qualification-lease-clock"))]
-pub use cognitive_store::QualificationLeaseClock;
 #[cfg(target_os = "linux")]
 pub use cognitive_store::InstalledRootCheckpointImage;
+#[cfg(any(test, feature = "qualification-lease-clock"))]
+pub use cognitive_store::QualificationLeaseClock;
 pub use cognitive_store::RecoveredCognitiveReadOnly;
 pub use compact_persistence::COMPACT_PERSISTENCE_EXTERNAL_EFFECTS;
 pub use compact_persistence::COMPACT_PERSISTENCE_KG_WRITE_AUTHORITY;

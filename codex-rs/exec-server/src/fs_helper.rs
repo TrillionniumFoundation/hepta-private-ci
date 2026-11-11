@@ -278,7 +278,11 @@ pub(crate) async fn run_direct_request(
             // and required its platform sandbox. Unrestricted writes use DirectFileSystem.
             #[cfg(windows)]
             crate::windows_restricted_write::write_file(
-                params.path.to_abs_path().map_err(map_fs_error)?.to_path_buf(),
+                params
+                    .path
+                    .to_abs_path()
+                    .map_err(map_fs_error)?
+                    .to_path_buf(),
                 bytes,
                 params.follow_symlinks.unwrap_or(true),
             )

@@ -1,6 +1,6 @@
-load("//bazel/rules/testing:qualification_lease_clock.bzl", "LEASE_CLOCK_TEST_DEPENDENCIES", "qualification_lease_clock_library")
 load("@rules_rust//rust:defs.bzl", "rust_binary", "rust_library", "rust_test")
 load("//:defs.bzl", "WINDOWS_RUSTC_LINK_FLAGS", "codex_rust_crate", "workspace_root_test")
+load("//bazel/rules/testing:qualification_lease_clock.bzl", "LEASE_CLOCK_TEST_DEPENDENCIES", "qualification_lease_clock_library")
 load("//bazel/rules/testing:rust_test_dependencies.bzl", "rust_test_dependencies")
 load(":v13_acceptance.bzl", "v13_acceptance_example")
 
@@ -208,7 +208,7 @@ exports_files(
 
 qualification_lease_clock_library(
     name = "hepta-agentd",
-    crate_name = "codex_hepta_agentd",
+    base_replacements = _UNIT_TEST_DEPENDENCIES,
     compile_data = [
         "tests/fixtures/android-bound-text-v1.json",
         "tests/fixtures/hos2_production_owner.json",
@@ -219,6 +219,6 @@ qualification_lease_clock_library(
         "tests/fixtures/notes-model-v1.json",
     ] + _GENERATION_TEST_FIXTURE,
     crate_features = ["production-cognitive-write"],
+    crate_name = "codex_hepta_agentd",
     extra_srcs = ["tests/support/terminal_cell_owner.rs"],
-    base_replacements = _UNIT_TEST_DEPENDENCIES,
 )

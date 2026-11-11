@@ -58,15 +58,15 @@ use windows_sys::Win32::Foundation::ERROR_NO_TOKEN;
 use windows_sys::Win32::Foundation::GetLastError;
 use windows_sys::Win32::Foundation::LUID;
 use windows_sys::Win32::Security::GetTokenInformation;
-use windows_sys::Win32::Security::LookupPrivilegeValueW;
 use windows_sys::Win32::Security::LUID_AND_ATTRIBUTES;
+use windows_sys::Win32::Security::LookupPrivilegeValueW;
 use windows_sys::Win32::Security::SE_PRIVILEGE_ENABLED;
 use windows_sys::Win32::Security::TOKEN_PRIVILEGES;
 use windows_sys::Win32::Security::TOKEN_QUERY;
 use windows_sys::Win32::Security::TokenPrivileges;
 use windows_sys::Win32::Storage::FileSystem::FILE_FLAG_OPEN_REPARSE_POINT;
-use windows_sys::Win32::System::SystemServices::FILE_PERSISTENT_ACLS;
 use windows_sys::Win32::Storage::FileSystem::GetVolumeInformationByHandleW;
+use windows_sys::Win32::System::SystemServices::FILE_PERSISTENT_ACLS;
 use windows_sys::Win32::System::Threading::GetCurrentProcess;
 use windows_sys::Win32::System::Threading::GetCurrentThread;
 use windows_sys::Win32::System::Threading::OpenProcessToken;
@@ -316,7 +316,10 @@ impl HeldObject {
             )
         } != 0
         {
-            format!("persistent_acls={}", volume_flags & FILE_PERSISTENT_ACLS != 0)
+            format!(
+                "persistent_acls={}",
+                volume_flags & FILE_PERSISTENT_ACLS != 0
+            )
         } else {
             format!("volume_query_errno={}", unsafe { GetLastError() })
         };
@@ -331,9 +334,8 @@ impl HeldObject {
             Ok(file) => {
                 // SAFETY: the complete native output is initialized by success.
                 let mut info: BY_HANDLE_FILE_INFORMATION = unsafe { std::mem::zeroed() };
-                if unsafe {
-                    GetFileInformationByHandle(file.as_raw_handle() as HANDLE, &mut info)
-                } == 0
+                if unsafe { GetFileInformationByHandle(file.as_raw_handle() as HANDLE, &mut info) }
+                    == 0
                 {
                     let errno = unsafe { GetLastError() };
                     format!("{volume} open_success=true identity_query_errno={errno}")
@@ -520,7 +522,9 @@ impl DeleteMatrix {
                 )
             } == 0
             {
-                context.push_str(&format!(" privileges_query_errno={}", unsafe { GetLastError() }));
+                context.push_str(&format!(" privileges_query_errno={}", unsafe {
+                    GetLastError()
+                }));
             } else {
                 let offset = std::mem::offset_of!(TOKEN_PRIVILEGES, Privileges);
                 let stride = std::mem::size_of::<LUID_AND_ATTRIBUTES>();
@@ -528,11 +532,16 @@ impl DeleteMatrix {
                     context.push_str(" privileges_query_size_valid=false");
                 } else {
                     // SAFETY: the complete count field lies inside the returned buffer.
-                    let count = unsafe { std::ptr::read_unaligned(words.as_ptr().cast::<u32>()) } as usize;
+                    let count =
+                        unsafe { std::ptr::read_unaligned(words.as_ptr().cast::<u32>()) } as usize;
                     if count > (returned as usize - offset) / stride {
                         context.push_str(" privileges_query_size_valid=false");
                     } else {
-                        for name in ["SeBackupPrivilege", "SeRestorePrivilege", "SeTakeOwnershipPrivilege"] {
+                        for name in [
+                            "SeBackupPrivilege",
+                            "SeRestorePrivilege",
+                            "SeTakeOwnershipPrivilege",
+                        ] {
                             // SAFETY: the fixed privilege name and output LUID are valid.
                             let mut luid: LUID = unsafe { std::mem::zeroed() };
                             if unsafe {
@@ -553,19 +562,26 @@ impl DeleteMatrix {
                                 // returned, offset and count validated above.
                                 let entry = unsafe {
                                     std::ptr::read_unaligned(
-                                        words.as_ptr().cast::<u8>()
+                                        words
+                                            .as_ptr()
+                                            .cast::<u8>()
                                             .add(offset + index * stride)
                                             .cast::<LUID_AND_ATTRIBUTES>(),
                                     )
                                 };
-                                if entry.Luid.LowPart == luid.LowPart && entry.Luid.HighPart == luid.HighPart {
+                                if entry.Luid.LowPart == luid.LowPart
+                                    && entry.Luid.HighPart == luid.HighPart
+                                {
                                     attributes = Some(entry.Attributes);
                                     break;
                                 }
                             }
                             let present = attributes.is_some();
-                            let enabled = attributes.is_some_and(|value| value & SE_PRIVILEGE_ENABLED != 0);
-                            context.push_str(&format!(" {name}_present={present} {name}_enabled={enabled}"));
+                            let enabled =
+                                attributes.is_some_and(|value| value & SE_PRIVILEGE_ENABLED != 0);
+                            context.push_str(&format!(
+                                " {name}_present={present} {name}_enabled={enabled}"
+                            ));
                         }
                     }
                 }
@@ -575,9 +591,24 @@ impl DeleteMatrix {
             let route = row.route;
             for (object, held, access, flags) in [
                 ("file_delete", &row.file, DELETE, 0),
-                ("file_delete_backup", &row.file, DELETE, FILE_FLAG_BACKUP_SEMANTICS),
-                ("directory_delete_backup", &row.directory, DELETE, FILE_FLAG_BACKUP_SEMANTICS),
-                ("parent_delete_child_backup", &row.parent, FILE_DELETE_CHILD, FILE_FLAG_BACKUP_SEMANTICS),
+                (
+                    "file_delete_backup",
+                    &row.file,
+                    DELETE,
+                    FILE_FLAG_BACKUP_SEMANTICS,
+                ),
+                (
+                    "directory_delete_backup",
+                    &row.directory,
+                    DELETE,
+                    FILE_FLAG_BACKUP_SEMANTICS,
+                ),
+                (
+                    "parent_delete_child_backup",
+                    &row.parent,
+                    FILE_DELETE_CHILD,
+                    FILE_FLAG_BACKUP_SEMANTICS,
+                ),
             ] {
                 let observation = held.access_diagnostic(access, flags);
                 context.push_str(&format!("\nroute={route:?} object={object} {observation}"));

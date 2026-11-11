@@ -1,5 +1,5 @@
-load("//bazel/rules/testing:qualification_lease_clock.bzl", "qualification_lease_clock_library")
 load("//:defs.bzl", "codex_rust_crate")
+load("//bazel/rules/testing:qualification_lease_clock.bzl", "qualification_lease_clock_library")
 
 codex_rust_crate(
     name = "hepta-memory",
@@ -24,7 +24,6 @@ exports_files(
 
 qualification_lease_clock_library(
     name = "hepta-memory",
-    crate_name = "codex_hepta_memory",
     compile_data = glob(["migrations/**"]) + [
         "tests/fixtures/android-bound-text-v1.json",
         "tests/fixtures/notes-target-v1.json",
@@ -34,4 +33,5 @@ qualification_lease_clock_library(
         "tests/fixtures/notes-previous-receipt-v1.json",
     ],
     crate_features = ["qualification-lease-clock"],
+    crate_name = "codex_hepta_memory",
 )

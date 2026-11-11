@@ -222,11 +222,10 @@ async fn explicit_owner_expires_bound_lease_and_fences_old_witness() {
     let fleet = HeptaFleetRoot::parse(fleet_root.canonicalize().expect("canonical fleet root"))
         .expect("fleet");
     let owner_id = AgentId::parse("00000000-0000-4000-8000-000000000920").expect("owner id");
-    let (store, clock) = CognitiveStore::open_new_with_qualification_lease_clock(
-        &fleet.layout().agent(&owner_id),
-    )
-    .await
-    .expect("fresh qualification store");
+    let (store, clock) =
+        CognitiveStore::open_new_with_qualification_lease_clock(&fleet.layout().agent(&owner_id))
+            .await
+            .expect("fresh qualification store");
     let current_fence = CompactFence::new(7, 8, 1, "e21-owner-fence").expect("fence");
     let checkpoint = checkpoint(current_fence.clone());
     let expires_at = clock.now_unix_seconds().expect("clock") + 1;
@@ -275,10 +274,11 @@ async fn explicit_owner_expires_bound_lease_and_fences_old_witness() {
     ));
 
     // Advance only after the live lease, executor and wrong-store checks pass.
-    clock.advance_to(expires_at).expect("advance to lease expiry");
+    clock
+        .advance_to(expires_at)
+        .expect("advance to lease expiry");
     for _ in 0..120 {
-        if clock.now_unix_seconds().expect("clock") >= expires_at
-        {
+        if clock.now_unix_seconds().expect("clock") >= expires_at {
             break;
         }
         tokio::time::sleep(Duration::from_millis(25)).await;

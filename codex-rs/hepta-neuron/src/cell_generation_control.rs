@@ -180,9 +180,15 @@ impl ControlledCellGenerationPortV2 {
     #[cfg(test)]
     fn qualification_rpc_progress(&self) -> (bool, usize, usize) {
         (
-            self.qualification_progress.actor_entered.load(Ordering::Acquire),
-            self.qualification_progress.operations_received.load(Ordering::Acquire),
-            self.qualification_progress.operation_replies_ready.load(Ordering::Acquire),
+            self.qualification_progress
+                .actor_entered
+                .load(Ordering::Acquire),
+            self.qualification_progress
+                .operations_received
+                .load(Ordering::Acquire),
+            self.qualification_progress
+                .operation_replies_ready
+                .load(Ordering::Acquire),
         )
     }
 
@@ -345,7 +351,9 @@ struct Actor {
 impl Actor {
     fn run(&mut self) {
         #[cfg(test)]
-        self.qualification_progress.actor_entered.store(true, Ordering::Release);
+        self.qualification_progress
+            .actor_entered
+            .store(true, Ordering::Release);
         loop {
             self.collect();
             if self.stopping.load(Ordering::Acquire) {
@@ -364,7 +372,9 @@ impl Actor {
             match self.commands.recv_timeout(Duration::from_millis(5)) {
                 Ok(ActorCommand::Operation(command)) => {
                     #[cfg(test)]
-                    self.qualification_progress.operations_received.fetch_add(1, Ordering::AcqRel);
+                    self.qualification_progress
+                        .operations_received
+                        .fetch_add(1, Ordering::AcqRel);
                     let result = if self.stopping.load(Ordering::Acquire) {
                         Err(CellGenerationErrorV2::Unavailable)
                     } else {
@@ -375,7 +385,9 @@ impl Actor {
                         }
                     };
                     #[cfg(test)]
-                    self.qualification_progress.operation_replies_ready.fetch_add(1, Ordering::AcqRel);
+                    self.qualification_progress
+                        .operation_replies_ready
+                        .fetch_add(1, Ordering::AcqRel);
                     let _ = command.reply.try_send(result);
                 }
                 #[cfg(feature = "qualification-owned-file-read")]

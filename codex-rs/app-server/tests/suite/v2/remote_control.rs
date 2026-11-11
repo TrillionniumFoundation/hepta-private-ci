@@ -604,7 +604,9 @@ async fn remote_control_websocket_rejects_truncated_handshake() -> Result<()> {
                 Err(error) => error,
             };
             assert_eq!(
-                error.downcast_ref::<std::io::Error>().map(std::io::Error::kind),
+                error
+                    .downcast_ref::<std::io::Error>()
+                    .map(std::io::Error::kind),
                 Some(ErrorKind::UnexpectedEof)
             );
         }
