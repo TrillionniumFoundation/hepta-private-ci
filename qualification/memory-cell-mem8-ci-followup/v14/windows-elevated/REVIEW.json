@@ -1,0 +1,157 @@
+{
+  "schema": "hepta.mem8.elevated-delete.product-closure-review.v1",
+  "reviewed_at": "2026-11-11T12:17:59.253Z",
+  "source_head": "189711e3563ea13a5328d52e99a286f082045b98",
+  "source_tree": "e253b99e0a5c3b3a680569da0d224fabff0781ba",
+  "result": "PRODUCT_BOUNDARY_REMAINS_UNQUALIFIED_NO_PARTIAL_PRODUCTION_PATCH",
+  "executions": {
+    "host": 0,
+    "native": 0,
+    "model": 0,
+    "ci": 0,
+    "source_refs_modified": 0,
+    "production_sources_modified": 0
+  },
+  "original_observation": {
+    "case": "unified_exec::tests::delete_permission_tests::legacy_refuses_before_elevated_four_cell_delete_boundary",
+    "raw_sha256": "b002b5f84f101847e3de893c7de810c024bb309fd7ca7397776f93400e514c5c",
+    "raw_bytes": 27138,
+    "observed": "Actual elevated child completed and deleted both file/directory in TargetOnly, ParentOnly and Both outside matrices; Neither remained. Ordinary host control had the intended four-cell behavior.",
+    "acl_scope": "12 exact original object ACLs, raw lines 220-231, decoded independently; only SID S-1-1-0, with target DELETE and/or parent FILE_DELETE_CHILD according to route.",
+    "not_observed": [
+      "actual child TokenUser/TokenGroups/TokenRestrictedSids",
+      "actual child TokenPrivileges/TokenIsRestricted/TokenWriteRestricted",
+      "actual ALE classification for that token"
+    ],
+    "not_conflated_with": "Separate Bazel ordinary-host Neither failure; original summary reprints are not new executions."
+  },
+  "source_chain": [
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/unified_exec/backends/elevated.rs",
+      "lines": "142-160,169-192",
+      "fact": "Resolve typed permission profile/workspace roots, prepare dedicated-account context, send capability SIDs and network marker in the existing SpawnRequest."
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/spawn_prep.rs",
+      "lines": "438-452",
+      "fact": "Writable profile selects active write-root capability SIDs; read-only profile selects caps.readonly. Workspace tokens do not additionally receive a general read-capability grant."
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/bin/command_runner/win.rs",
+      "lines": "269-285,569-589",
+      "fact": "Original sandbox-account runner opens both parent IPC pipes and reads SpawnRequest before deriving the restricted child token. Typed token mode selects workspace or read-only elevated constructors."
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/token.rs",
+      "lines": "450-468,500-515,533-543",
+      "fact": "Shared elevated helper adds token user; RestrictingIdentity::Include adds Logon and Everyone. CreateRestrictedToken keeps DISABLE_MAX_PRIVILEGE|LUA_TOKEN|WRITE_RESTRICTED. Default DACL independently retains Logon/Everyone plus capabilities and excludes extra network identities."
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/process.rs",
+      "lines": "105,125-154,242-276",
+      "fact": "Private/default desktop preparation remains separate. Parent-created pipe handles are passed through the explicit inherited-handle list; child tokens are supplied to CreateProcessAsUserW."
+    }
+  ],
+  "mechanism": {
+    "source_supported_inference": "Restricting SIDs are alternative matching principals in the second access check, not an all-capabilities-must-match condition. A matching Everyone ACE can therefore satisfy that check in the source-derived elevated token. Removing Everyone alone leaves user and Logon alternatives.",
+    "original_cause_status": "Consistent concrete source mechanism, not an observed dump or unique dynamic explanation of the original child token.",
+    "important_independent_constraint": "The same exact source's legacy_admission.rs records an original FILE_DELETE_CHILD bypass while WRITE_RESTRICTED is in use. A changed SID set alone is not proof of a repaired ParentOnly route."
+  },
+  "compatibility_and_missing_conditions": [
+    {
+      "id": "PARENT_DELETE_CHECK",
+      "source": "codex-rs/windows-sandbox-rs/src/legacy_admission.rs",
+      "status": "OPEN",
+      "requirement": "Demonstrate both target DELETE and immediate-parent FILE_DELETE_CHILD are denied for an actual original-route child lacking its active capability, while inside-root deletes remain permitted. Preserve the four original outcomes/assertions and time budgets.",
+      "reason": "WRITE_RESTRICTED only subjects writes to restricting-SID checks; the repository already has a native parent-delete counterexample. A source-only SID deletion is insufficient."
+    },
+    {
+      "id": "FULL_RESTRICTION_READ_AUTHORIZATION",
+      "source": "codex-rs/windows-sandbox-rs/src/bin/setup_main/win.rs:189-257,811-848",
+      "status": "OPEN",
+      "requirement": "If WRITE_RESTRICTED is removed, introduce explicit read-only capability coverage for every previously admissible read/execute path and runtime helper before admitting a child. Include deny-read propagation and active-profile scope; do not substitute sandbox-users, User, Logon or Everyone in the restricting list.",
+      "reason": "Current apply_read_acls grants the sandbox-users group and can skip a root when built-in identities already read it. These are normal-identity grants, not root-capability grants. The read helper is spawned asynchronously and an existing mutex can skip a new spawn; there is no per-request read-capability completion receipt."
+    },
+    {
+      "id": "STALE_SHARED_GROUP_GRANTS",
+      "source": "codex-rs/windows-sandbox-rs/src/bin/setup_main/win.rs:866-910",
+      "status": "OPEN",
+      "requirement": "Keep write authority tied to currently selected root capabilities, with a read-only principal that never inherits shared-group write authority.",
+      "reason": "Sandbox-users group is shared and gets write ACEs alongside per-root capabilities. Reintroducing it into the second check could authorize earlier configured roots."
+    },
+    {
+      "id": "IPC_STDIO_DEFAULT_DACL",
+      "source": "codex-rs/windows-sandbox-rs/src/elevated/runner_pipe.rs:55-87; process.rs; token.rs:533-543",
+      "status": "WIRING_IDENTIFIED_NATIVE_COMPATIBILITY_PENDING",
+      "requirement": "Retain original runner IPC identity/authentication and inherited stdio handles; retain explicit capability access in child-created IPC default DACLs. Validate real PowerShell/stdio/ConPTY paths, not only token-list membership.",
+      "reason": "Runner opens authenticated named pipes before restricted child creation; default-DACL and handle-inheritance code already offers the relevant separation. Removing broad restricting principals does not itself prove all child-created-object access still works."
+    },
+    {
+      "id": "PRIVATE_DESKTOP_CAPABILITY_FILTER",
+      "source": "codex-rs/windows-sandbox-rs/src/desktop.rs:70-91,146-198,201-252",
+      "status": "OPEN",
+      "requirement": "Select actual desktop capabilities rather than copying every restricting SID. Demonstrate two different root-capability tokens sharing one network route cannot use each other's private desktop.",
+      "reason": "Without Logon, current code copies the entire restricting list to the new desktop DACL. A retained route SID would also get DESKTOP_ALL_ACCESS. Existing two-capability tests omit route identities and do not spawn a real child."
+    },
+    {
+      "id": "WINSTA0_AND_DEFAULT_DESKTOP",
+      "source": "codex-rs/windows-sandbox-rs/src/desktop.rs; codex-rs/core/src/windows_sandbox.rs:52-56",
+      "status": "OPEN",
+      "requirement": "Validate actual child startup on Winsta0 and the owned private desktop with the final token. Preserve explicit false behavior without silently forcing a different profile or granting broad shared-desktop rights.",
+      "reason": "Core default is private=true. Current cap-only/default=false path refuses. Private desktop DACL setup exists, but the mechanism tests do not independently establish WinSta0 authorization or actual child startup."
+    },
+    {
+      "id": "WFP_ACCOUNT_AND_ROUTE_MATCH",
+      "source": "codex-rs/windows-sandbox-rs/src/wfp.rs:169-211,315-322; token_tests.rs:198-217",
+      "status": "OPEN",
+      "requirement": "Keep intended WFP block/allow conditions true or false for the final real token, including offline-account and proxy route cases. Preserve the route identity without treating it as filesystem/desktop authority.",
+      "reason": "ALE_USER_ID conditions are security descriptors for an account and FWP_ACTRL_MATCH_FILTER. Deleting a restricting principal can affect a descriptor-match condition; retaining the marker in TokenRestrictedSids alone does not prove a block filter still matches. This is an identified verification obligation, not a claim that a network bypass was dynamically observed."
+    }
+  ],
+  "minimal_options": {
+    "broad_sid_only_patch": {
+      "decision": "NOT_FROZEN_OR_PROPOSED_FOR_MERGE",
+      "reason": "It would remove a concrete broad-identity alternative but does not close parent-delete, real startup/desktop-route, or network-match obligations. No unqualified narrow change is presented as full recovery."
+    },
+    "full_restricted_capability_design": {
+      "decision": "REQUIRES_A_COMPLETE_TYPED_PERMISSION_CLOSURE",
+      "minimum_inputs": [
+        "Authoritative active read-capability set and synchronously acknowledged read/execute grants for the existing allowed-path contract",
+        "Separate exact capability inputs for desktop and child-created objects, distinct from network identity",
+        "Verified final-token WFP matching semantics and actual Windows target/parent access behavior"
+      ],
+      "constraint": "No blanket read denial, broad SID fallback, unrestricted retry, changed original budgets or weakened outside-delete assertions."
+    },
+    "fail_closed_admission": {
+      "decision": "SAFE_NON_RECOVERY_DIRECTION_ONLY_NO_CANDIDATE_WRITTEN",
+      "first_gates": [
+        {
+          "path": "codex-rs/windows-sandbox-rs/src/elevated_impl.rs",
+          "function": "windows_impl::run_windows_sandbox_capture_for_permission_profile",
+          "before": "ensure_codex_home_exists / require_logon_sandbox_creds / cap persistence / ACL setup"
+        },
+        {
+          "path": "codex-rs/windows-sandbox-rs/src/unified_exec/backends/elevated.rs",
+          "function": "spawn_windows_sandbox_session_elevated_for_permission_profile",
+          "before": "prepare_elevated_spawn_context_for_permissions"
+        }
+      ],
+      "requirement": "Use a distinguishable typed isolation-unavailable error with propagation through both callers; verify no fallback to unrestricted execution and audit direct runner entry before declaring its closure. Do not treat disabled elevated execution as restored functionality or rewrite existing positive cases into capability-success evidence."
+    }
+  },
+  "recommended_validation_order": [
+    "Keep the original Windows-current group/case inventory, budgets, retry policy, native helper identity and all assertions unchanged on the next exact formatted source.",
+    "Add the three new Windows typed-writer hardlink cases as a separate source-qualified scope; their guarantee excludes shell/exec and concurrent alias creation.",
+    "If adding token diagnostics, use an independently reviewed source revision and bounded test-only observations of the actual child/token or exact equivalent token constructor. Record only safe classification/masks/counts, original object identities and syscall results; no credentials or provider state.",
+    "Only after actual token/parent-read/desktop/network evidence resolves the obligations should a replacement permission policy be proposed as qualified."
+  ],
+  "reviews": {
+    "desktop_peer": "mem_experiment_review read the exact 0b01f011 desktop, c09e8fe6 ConPTY, 4d4f1d94 process and be380a8b config references and independently confirmed private/default, route-copy and WinSta0 limitations. This report records that communicated static review, not a separate native result."
+  },
+  "limits": [
+    "No actual child token inspection was present in the original evidence.",
+    "No production candidate has been written or integrated into running V5.",
+    "No source-only/native/model execution or reference mutation is claimed by this review.",
+    "Original 19-group campaign incompleteness, other Windows failures, provider outcome and MEM scientific/owner gates are separate."
+  ]
+}

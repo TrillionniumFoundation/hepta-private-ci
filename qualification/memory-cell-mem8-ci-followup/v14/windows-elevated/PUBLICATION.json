@@ -1,0 +1,203 @@
+{
+  "schema": "hepta.mem8.elevated-delete.immutable-publication.v1",
+  "source_head": "189711e3563ea13a5328d52e99a286f082045b98",
+  "archive": {
+    "file": "elevated-outside-delete-189711-review.tar.xz",
+    "git_blob": "8f83ef014873388d99d2e6adfb2018410efc8d2c",
+    "bytes": 79280,
+    "sha256": "0d1649c76b76fa3899cfdd3dda4c91862b1be9949a2878fd13a35c6abe09973a",
+    "members": 30,
+    "actual_create_blob_returned_expected_sha": true,
+    "local_full_tar_reopen_and_all_member_comparison": true,
+    "remote_binary_content_readback": "PENDING_PATH_ATTACHMENT; github_fetch_blob returned UnicodeDecodeError for raw XZ bytes. This error is retained and is not reported as successful remote binary readback."
+  },
+  "report": {
+    "file": "PRODUCT_CLOSURE_REVIEW.json",
+    "bytes": 12381,
+    "sha256": "72950258e8dfbe3fa96b0d10fc633f6da1db8de99fedc539c29a8128fe3f3e14",
+    "git_blob": "3e1b57ac549a3606ca9cf3c8d59935158f94badb"
+  },
+  "file_manifest": {
+    "file": "FILE_MANIFEST.json",
+    "bytes": 7211,
+    "sha256": "c90c8ff2f74bbe709f8c8f32abb6f7377cfe67737ca4f74701ec928df09f7f98",
+    "git_blob": "6f9b7c7ff6de40de3a00c9a98acd3259c1d42d55",
+    "members": [
+      {
+        "path": "ORIGINAL_ACL_AUDIT.json",
+        "bytes": 7927,
+        "sha256": "72cd3ffcd9e5d6a22225152cd1cfae2aa045a0cefb890656af956317d1111d0e",
+        "git_blob": "a6db517b39fb20c4267965ff00977ba33f263a33"
+      },
+      {
+        "path": "PRIMARY_REFERENCES.json",
+        "bytes": 989,
+        "sha256": "040091ad5d40ea6d1aec1293df0a525c65453689441be1f36a020161cfd3cdd6",
+        "git_blob": "02f84dd72cb616cbca2fac3a6b8420d867bc42d8"
+      },
+      {
+        "path": "PRODUCT_CLOSURE_REVIEW.json",
+        "bytes": 12381,
+        "sha256": "72950258e8dfbe3fa96b0d10fc633f6da1db8de99fedc539c29a8128fe3f3e14",
+        "git_blob": "3e1b57ac549a3606ca9cf3c8d59935158f94badb"
+      },
+      {
+        "path": "README.md",
+        "bytes": 5434,
+        "sha256": "727385ad6d62c0b46c0965e8246dd08675ce67ae9e22bde6abccca6ab73d6fbe",
+        "git_blob": "7ff8c76443f118bf094f5afb08a89859c6ff1c9b"
+      },
+      {
+        "path": "SOURCE_INDEX.json",
+        "bytes": 6953,
+        "sha256": "ff68472cfeb670617ba35f73d92d84ca18dc8270651c3489adf0adeb1e99024f",
+        "git_blob": "8858962413ed030b82723627abfa88eeeba63abe"
+      },
+      {
+        "path": "original/sandbox-native-delete-routes.log",
+        "bytes": 27138,
+        "sha256": "b002b5f84f101847e3de893c7de810c024bb309fd7ca7397776f93400e514c5c",
+        "git_blob": "9abe58997c71c93579f22281b26f45d24e0d7cbd"
+      },
+      {
+        "path": "source/codex-rs/core/src/windows_sandbox.rs",
+        "bytes": 13609,
+        "sha256": "713b0612e159c6e01a9a076ab1aeda07b0cb04f0e66ff5989ab9d0c57b11e777",
+        "git_blob": "be380a8b2c9fd2501564bcf162e4e417fc4f5c3a"
+      },
+      {
+        "path": "source/codex-rs/windows-sandbox-rs/src/bin/command_runner/win.rs",
+        "bytes": 25993,
+        "sha256": "ae8428e9ecfc484995e0e0e7d65228d092f621bef723d6bdd64e23c39a6adf15",
+        "git_blob": "146d5290e35bfb3b926a1e7a53c7345c5598b0b9"
+      },
+      {
+        "path": "source/codex-rs/windows-sandbox-rs/src/bin/setup_main/win.rs",
+        "bytes": 47955,
+        "sha256": "ba3bf6444e72c443575281e192e7b343c7c61180a1a699f4ffb4f87cba7e0ac3",
+        "git_blob": "1d9340c6db26d6d10c1b3edecb1c9fecc908ef1d"
+      },
+      {
+        "path": "source/codex-rs/windows-sandbox-rs/src/cap.rs",
+        "bytes": 7394,
+        "sha256": "8e566bf403711781568ba6aec41d13d565caeef48c396d05a7cc8ea323d32354",
+        "git_blob": "41b33b63fda6f9bbc648fef98e5c9065f8f17b5e"
+      },
+      {
+        "path": "source/codex-rs/windows-sandbox-rs/src/conpty/mod.rs",
+        "bytes": 6442,
+        "sha256": "a16c9b5a46e0e04a1942a30df824f08d9275d93177f06cc6afaa554cd718ea78",
+        "git_blob": "c09e8fe656f0322d82bd47248a24583518b9c6bb"
+      },
+      {
+        "path": "source/codex-rs/windows-sandbox-rs/src/delete_permission_matrix_tests.rs",
+        "bytes": 16679,
+        "sha256": "b701ad01169eb9f64b62ad50099dfcda51b014a5c96dbc2080631fd2e6d7ee75",
+        "git_blob": "6f05793ec6ee043a933073ada3a1bf9122de5a73"
+      },
+      {
+        "path": "source/codex-rs/windows-sandbox-rs/src/desktop.rs",
+        "bytes": 9710,
+        "sha256": "4e26ba072fada10f6185d16682274022108ef843f8292d1e7f9ed237f7e1a56f",
+        "git_blob": "0b01f011119bef623bc9e46e710caa371520380d"
+      },
+      {
+        "path": "source/codex-rs/windows-sandbox-rs/src/desktop_tests.rs",
+        "bytes": 5570,
+        "sha256": "8495e1c12a6b5bce1bb316abb33b6e814bcf43acff497e73cf08b6e29aedb335",
+        "git_blob": "4bfb9de1c6a1012ce9b86534a3f7352eb2018197"
+      },
+      {
+        "path": "source/codex-rs/windows-sandbox-rs/src/elevated/runner_client.rs",
+        "bytes": 20359,
+        "sha256": "b0e9be0e44beb1ca53d9a2f38f882aaa46e7ea9deb2a0a3df62e6a237de10fbe",
+        "git_blob": "ec52ca708354d9d1aa3abfdc1755c90033cde8c7"
+      },
+      {
+        "path": "source/codex-rs/windows-sandbox-rs/src/elevated/runner_pipe.rs",
+        "bytes": 5321,
+        "sha256": "fa1fd3c5822c10303421a895cbe76ab3dd368c645c831ffc1c003bba626925db",
+        "git_blob": "c8ae092c4a00fc3e029be48cb77cc78db4580d87"
+      },
+      {
+        "path": "source/codex-rs/windows-sandbox-rs/src/elevated_impl.rs",
+        "bytes": 11083,
+        "sha256": "be25bc4eff5f02d5243cec71b865c548fc531e3114ed7fa498e9201ac32c8b30",
+        "git_blob": "a8cc511dfd6f876e94da04f7413f0a26d42d4e18"
+      },
+      {
+        "path": "source/codex-rs/windows-sandbox-rs/src/legacy_admission.rs",
+        "bytes": 1417,
+        "sha256": "eb1048cf27a5a7896d44ae7e32af60a4b25d7f561c4c1b2bf49093ad078189a4",
+        "git_blob": "f1fc37fc9ef53244773504746482a0a77027daaf"
+      },
+      {
+        "path": "source/codex-rs/windows-sandbox-rs/src/process.rs",
+        "bytes": 11792,
+        "sha256": "7c7ea19f6fcfa88990cf5582273eede6139a52ccda8212468087276bb50eaca7",
+        "git_blob": "4d4f1d9435aad3cf9cd27a82d51b2be5b7659a4c"
+      },
+      {
+        "path": "source/codex-rs/windows-sandbox-rs/src/resolved_permissions.rs",
+        "bytes": 18747,
+        "sha256": "4127b471c288dae936a50ce0dd4d98df8efc64a1dd8027ecac08c2a21b7faf0d",
+        "git_blob": "0e28b9d3dc169a61e8c00c9ae63cecef7afd3e06"
+      },
+      {
+        "path": "source/codex-rs/windows-sandbox-rs/src/setup.rs",
+        "bytes": 83794,
+        "sha256": "1fa3bfafe7eb75d3ff009bc7ed741689ee9cf25595f7a5433538c325b1254b09",
+        "git_blob": "890755d01ca24f5ede1960582eacb9714633a0db"
+      },
+      {
+        "path": "source/codex-rs/windows-sandbox-rs/src/spawn_prep.rs",
+        "bytes": 27802,
+        "sha256": "6183cb67c92ea1afa2a6451f6d40373d815614e8721273377f7967c6b0270003",
+        "git_blob": "dff24c7c51d46b7f64d00b49dc2d0271a3ebb723"
+      },
+      {
+        "path": "source/codex-rs/windows-sandbox-rs/src/token.rs",
+        "bytes": 18866,
+        "sha256": "74683686b59bd8949d98f5d7fd0ce0c69164df0fb8007365dd6a8ee8757286f7",
+        "git_blob": "dbf1460422b93823d1e2fe7ad763be448a97bcbc"
+      },
+      {
+        "path": "source/codex-rs/windows-sandbox-rs/src/token_tests.rs",
+        "bytes": 19457,
+        "sha256": "5de538b700abb9e7b3e0e798566e617165de71ce3eac5897e33489ececad56f1",
+        "git_blob": "867fcfad7244b8951155720dcae0e21bb634eafb"
+      },
+      {
+        "path": "source/codex-rs/windows-sandbox-rs/src/unified_exec/backends/elevated.rs",
+        "bytes": 8676,
+        "sha256": "536ea30b6f0decbe39bd7e84c5e92b1adbe9053d8d00697d7a62ed708badb3be",
+        "git_blob": "bc1ab54debdfce028751e869fea6d047604873cd"
+      },
+      {
+        "path": "source/codex-rs/windows-sandbox-rs/src/unified_exec/delete_permission_tests.rs",
+        "bytes": 7954,
+        "sha256": "c622cb87f40a6768fb57546dc0f5d2996e8d0d35838ccba613dab983eff2ac39",
+        "git_blob": "fe9017be8f0252983a44677ba900e7b17d2007a6"
+      },
+      {
+        "path": "source/codex-rs/windows-sandbox-rs/src/unified_exec/tests.rs",
+        "bytes": 49498,
+        "sha256": "a0d63210b29e534b7f1ca822a5f254e7bdc2dd5cd9f4b12c1cecd6ed4683ae11",
+        "git_blob": "913096ca90dced2efa4aa4e3366193e3a6761b50"
+      },
+      {
+        "path": "source/codex-rs/windows-sandbox-rs/src/wfp.rs",
+        "bytes": 15710,
+        "sha256": "2bef44b9abde719f02853818b1309f70228367d51142193fba6676a9ebb80d70",
+        "git_blob": "9291b6eb994d640828a16493e5b558339ed73156"
+      },
+      {
+        "path": "verify_packet.py",
+        "bytes": 3894,
+        "sha256": "c71d1cfd3ad78230d2c646182118b73594cf21824634e1eda8b2e095c0c136a2",
+        "git_blob": "37f8ba6fc90887f4a5c734a58dcee752fa50c331"
+      }
+    ]
+  },
+  "scope": "Source/ACL review only. No production mutation, native/host/model/CI operation or ref change."
+}
