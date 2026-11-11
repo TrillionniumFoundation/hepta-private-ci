@@ -11,9 +11,9 @@ use std::thread::JoinHandle;
 use codex_hepta_contracts::HostIssuerPeer;
 use pretty_assertions::assert_eq;
 
-use super::*;
 use super::super::Channel;
 use super::super::LearningIterationEvidenceClientV1;
+use super::*;
 use crate::AgentdRootAuthorityPeer;
 use crate::cell_q24_material_receipt_owner::ReadbackServiceFixture;
 use crate::root_observation_stream::RootObservationStream;
@@ -32,10 +32,17 @@ fn peer() -> anyhow::Result<AgentdRootAuthorityPeer> {
     let status = std::fs::read_to_string(format!("/proc/{pid}/stat"))?;
     Ok(AgentdRootAuthorityPeer {
         pid,
-        boot_id: std::fs::read_to_string("/proc/sys/kernel/random/boot_id")?.trim().into(),
-        process_start_ticks: status.rsplit_once(") ")
-            .ok_or_else(|| anyhow::anyhow!("fixture process stat"))?.1.split_whitespace()
-            .nth(19).ok_or_else(|| anyhow::anyhow!("fixture process start"))?.parse()?,
+        boot_id: std::fs::read_to_string("/proc/sys/kernel/random/boot_id")?
+            .trim()
+            .into(),
+        process_start_ticks: status
+            .rsplit_once(") ")
+            .ok_or_else(|| anyhow::anyhow!("fixture process stat"))?
+            .1
+            .split_whitespace()
+            .nth(19)
+            .ok_or_else(|| anyhow::anyhow!("fixture process start"))?
+            .parse()?,
     })
 }
 
@@ -68,8 +75,10 @@ fn request(f: &ReadbackServiceFixture, role: Role, request_id: u64) -> wire::Req
         actor_id: receipt.actor_id.to_string(),
         predecessor: receipt.predecessor.to_string(),
         receipt_digest: Digest32::of_bytes(
-            &learning_iteration_receipt_signing_bytes_v1(receipt).expect("original fixture receipt"),
-        ).to_string(),
+            &learning_iteration_receipt_signing_bytes_v1(receipt)
+                .expect("original fixture receipt"),
+        )
+        .to_string(),
     }
 }
 
@@ -79,7 +88,10 @@ fn reply(
     next: &mut u64,
     request: &wire::Request,
 ) -> Result<wire::Response, Error> {
-    let bytes = f.service.as_ref().expect("original fixture owner")
+    let bytes = f
+        .service
+        .as_ref()
+        .expect("original fixture owner")
         .respond(role, next, &serde_json::to_vec(request)?)?;
     Ok(serde_json::from_slice(&bytes)?)
 }
@@ -87,11 +99,18 @@ fn reply(
 fn connected_fixture(
     f: &ReadbackServiceFixture,
     role: Role,
-) -> anyhow::Result<(LearningIterationEvidenceClientV1, JoinHandle<Result<(), HostIssuerTransportError>>)> {
+) -> anyhow::Result<(
+    LearningIterationEvidenceClientV1,
+    JoinHandle<Result<(), HostIssuerTransportError>>,
+)> {
     let owner = Arc::clone(f.service.as_ref().expect("original service"));
     let (client, server) = UnixStream::pair()?;
     let transport = RootObservationStream::from_stream_for_uid(
-        client, peer()?, pidfd()?, Duration::from_millis(500), Duration::from_secs(30),
+        client,
+        peer()?,
+        pidfd()?,
+        Duration::from_millis(500),
+        Duration::from_secs(30),
         policy().peer.uid,
     )?;
     let original_pidfd = pidfd()?;
@@ -99,12 +118,18 @@ fn connected_fixture(
         // Explicit mechanism fixture: production serve_readback refuses this UID.
         let mut channel = HostAuthorityPeerChannel::from_stream(server, policy(), original_pidfd)?;
         let mut next = 1;
-        while channel.exchange(|bytes| owner.respond(role, &mut next, bytes)
-            .map_err(|_| HostIssuerTransportError::Unavailable))? {}
+        while channel.exchange(|bytes| {
+            owner
+                .respond(role, &mut next, bytes)
+                .map_err(|_| HostIssuerTransportError::Unavailable)
+        })? {}
         Ok(())
     });
     let client = LearningIterationEvidenceClientV1 {
-        channel: Mutex::new(Some(Channel { transport, next_request_id: 1 })),
+        channel: Mutex::new(Some(Channel {
+            transport,
+            next_request_id: 1,
+        })),
         initial: f.initial.clone(),
         actor_id: f.initial.owners.owner(role.stage()).clone(),
         verifier: f.config.verifier.clone(),
@@ -117,12 +142,15 @@ fn finish(
     thread: JoinHandle<Result<(), HostIssuerTransportError>>,
 ) -> anyhow::Result<()> {
     drop(client);
-    thread.join().map_err(|_| anyhow::anyhow!("original fixture service panicked"))??;
+    thread
+        .join()
+        .map_err(|_| anyhow::anyhow!("original fixture service panicked"))??;
     Ok(())
 }
 
 #[tokio::test]
-async fn material_readback_service_returns_original_signatures_and_cold_rereads() -> anyhow::Result<()> {
+async fn material_readback_service_returns_original_signatures_and_cold_rereads()
+-> anyhow::Result<()> {
     let mut f = ReadbackServiceFixture::new(true).await?;
     let before = f.bytes()?;
     for role in [Role::Experience, Role::Dataset] {
@@ -159,15 +187,28 @@ async fn material_readback_service_returns_original_signatures_and_cold_rereads(
 }
 
 #[tokio::test]
-async fn material_readback_service_refuses_request_rebinding_and_replay_without_writes() -> anyhow::Result<()> {
+async fn material_readback_service_refuses_request_rebinding_and_replay_without_writes()
+-> anyhow::Result<()> {
     let f = ReadbackServiceFixture::new(true).await?;
     let before = f.bytes()?;
-    for field in ["operation", "binding", "operation_id", "actor_id", "predecessor", "receipt_digest", "snapshot_head"] {
+    for field in [
+        "operation",
+        "binding",
+        "operation_id",
+        "actor_id",
+        "predecessor",
+        "receipt_digest",
+        "snapshot_head",
+    ] {
         let mut encoded = serde_json::to_value(request(&f, Role::Dataset, 1))?;
         encoded[field] = serde_json::Value::String(Digest32::of_bytes(b"substituted").to_string());
         let mut next = 1;
         assert!(matches!(
-            f.service.as_ref().expect("owner").respond(Role::Dataset, &mut next, &serde_json::to_vec(&encoded)?),
+            f.service.as_ref().expect("owner").respond(
+                Role::Dataset,
+                &mut next,
+                &serde_json::to_vec(&encoded)?
+            ),
             Err(Error::Request)
         ));
         assert_eq!(next, 1);
@@ -177,7 +218,11 @@ async fn material_readback_service_refuses_request_rebinding_and_replay_without_
         let mut encoded = serde_json::to_value(request(&f, Role::Dataset, 1))?;
         encoded[field] = serde_json::Value::String("caller supplied".into());
         assert!(matches!(
-            f.service.as_ref().expect("owner").respond(Role::Dataset, &mut 1, &serde_json::to_vec(&encoded)?),
+            f.service.as_ref().expect("owner").respond(
+                Role::Dataset,
+                &mut 1,
+                &serde_json::to_vec(&encoded)?
+            ),
             Err(Error::Encoding(_))
         ));
     }
@@ -185,20 +230,27 @@ async fn material_readback_service_refuses_request_rebinding_and_replay_without_
     let mut next = 1;
     let response = reply(&f, Role::Experience, &mut next, &original)?;
     assert_eq!(response.evidence.decode()?, f.experience_attestation);
-    assert!(matches!(reply(&f, Role::Experience, &mut next, &original), Err(Error::Request)));
+    assert!(matches!(
+        reply(&f, Role::Experience, &mut next, &original),
+        Err(Error::Request)
+    ));
     assert_eq!(next, 2);
     assert_eq!(f.bytes()?, before);
     Ok(())
 }
 
 #[tokio::test]
-async fn material_readback_service_refuses_withdrawn_source_and_busy_ledger() -> anyhow::Result<()> {
+async fn material_readback_service_refuses_withdrawn_source_and_busy_ledger() -> anyhow::Result<()>
+{
     let mut f = ReadbackServiceFixture::new(true).await?;
     let before = f.bytes()?;
     let query = request(&f, Role::Dataset, 1);
     {
         let held = f.ledger.lock().expect("original unique ledger");
-        assert!(matches!(reply(&f, Role::Dataset, &mut 1, &query), Err(Error::Unavailable)));
+        assert!(matches!(
+            reply(&f, Role::Dataset, &mut 1, &query),
+            Err(Error::Unavailable)
+        ));
         drop(held);
     }
     assert_eq!(f.bytes()?, before);
@@ -206,13 +258,17 @@ async fn material_readback_service_refuses_withdrawn_source_and_busy_ledger() ->
     f.withdraw()?;
     assert!(matches!(
         reply(&f, Role::Dataset, &mut 1, &query),
-        Err(Error::Material(OriginalCellQ24MaterialReceiptErrorV1::Material(_)))
+        Err(Error::Material(
+            OriginalCellQ24MaterialReceiptErrorV1::Material(_)
+        ))
     ));
     assert_eq!(f.bytes()?, before);
     f.reopen()?;
     assert!(matches!(
         reply(&f, Role::Dataset, &mut 1, &query),
-        Err(Error::Material(OriginalCellQ24MaterialReceiptErrorV1::Material(_)))
+        Err(Error::Material(
+            OriginalCellQ24MaterialReceiptErrorV1::Material(_)
+        ))
     ));
     assert_eq!(f.bytes()?, before);
     Ok(())
@@ -225,20 +281,25 @@ async fn material_readback_service_never_finishes_missing_dataset() -> anyhow::R
     let query = request(&f, Role::Experience, 1);
     assert!(matches!(
         reply(&f, Role::Experience, &mut 1, &query),
-        Err(Error::Material(OriginalCellQ24MaterialReceiptErrorV1::Owner(_)))
+        Err(Error::Material(
+            OriginalCellQ24MaterialReceiptErrorV1::Owner(_)
+        ))
     ));
     assert_eq!(f.bytes()?, before);
     f.reopen()?;
     assert!(matches!(
         reply(&f, Role::Experience, &mut 1, &query),
-        Err(Error::Material(OriginalCellQ24MaterialReceiptErrorV1::Owner(_)))
+        Err(Error::Material(
+            OriginalCellQ24MaterialReceiptErrorV1::Owner(_)
+        ))
     ));
     assert_eq!(f.bytes()?, before);
     Ok(())
 }
 
 #[tokio::test]
-async fn material_readback_service_rejects_same_uid_peer_and_widened_transport() -> anyhow::Result<()> {
+async fn material_readback_service_rejects_same_uid_peer_and_widened_transport()
+-> anyhow::Result<()> {
     let f = ReadbackServiceFixture::new(true).await?;
     let before = f.bytes()?;
     let owner = f.service.as_ref().expect("owner");
@@ -254,7 +315,10 @@ async fn material_readback_service_rejects_same_uid_peer_and_widened_transport()
     policies.push(lifetime);
     for policy in policies {
         let (server, peer) = UnixStream::pair()?;
-        assert!(matches!(owner.serve_readback(Role::Dataset, server, policy, pidfd()?), Err(Error::Request)));
+        assert!(matches!(
+            owner.serve_readback(Role::Dataset, server, policy, pidfd()?),
+            Err(Error::Request)
+        ));
         drop(peer);
         assert_eq!(f.bytes()?, before);
     }
@@ -262,7 +326,8 @@ async fn material_readback_service_rejects_same_uid_peer_and_widened_transport()
 }
 
 #[tokio::test]
-async fn material_readback_service_failed_frame_permanently_consumes_channel() -> anyhow::Result<()> {
+async fn material_readback_service_failed_frame_permanently_consumes_channel() -> anyhow::Result<()>
+{
     let f = ReadbackServiceFixture::new(true).await?;
     let before = f.bytes()?;
     let owner = Arc::clone(f.service.as_ref().expect("owner"));
@@ -273,11 +338,15 @@ async fn material_readback_service_failed_frame_permanently_consumes_channel() -
         let mut channel = HostAuthorityPeerChannel::from_stream(server, policy(), original_pidfd)?;
         let mut next = 1;
         assert!(matches!(
-            channel.exchange(|bytes| owner.respond(Role::Experience, &mut next, bytes)
+            channel.exchange(|bytes| owner
+                .respond(Role::Experience, &mut next, bytes)
                 .map_err(|_| HostIssuerTransportError::Unavailable)),
             Err(HostIssuerTransportError::Unavailable)
         ));
-        assert!(matches!(channel.exchange(|_| Ok(vec![1])), Err(HostIssuerTransportError::Closed)));
+        assert!(matches!(
+            channel.exchange(|_| Ok(vec![1])),
+            Err(HostIssuerTransportError::Closed)
+        ));
         assert_eq!(next, 1);
         Ok(())
     });
@@ -287,7 +356,9 @@ async fn material_readback_service_failed_frame_permanently_consumes_channel() -
     let mut byte = [0];
     assert_eq!(client.read(&mut byte)?, 0);
     drop(client);
-    thread.join().map_err(|_| anyhow::anyhow!("fixture service panicked"))??;
+    thread
+        .join()
+        .map_err(|_| anyhow::anyhow!("fixture service panicked"))??;
     assert_eq!(f.bytes()?, before);
     Ok(())
 }

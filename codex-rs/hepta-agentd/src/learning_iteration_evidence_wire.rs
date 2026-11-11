@@ -64,8 +64,11 @@ impl Evidence {
                 LearningEvidenceRoleV1::Generator => "generator",
                 LearningEvidenceRoleV1::Observer => "observer",
                 LearningEvidenceRoleV1::Evaluator => "evaluator",
+                LearningEvidenceRoleV1::CreditAllocator => "credit_allocator",
+                LearningEvidenceRoleV1::UnlearningAuthority => "unlearning_authority",
                 LearningEvidenceRoleV1::Selector => "selector",
-            }.into(),
+            }
+            .into(),
             trust_digest: signed.trust_digest.to_string(),
             scope_digest: signed.scope_digest.to_string(),
             objective_digest: signed.objective_digest.to_string(),

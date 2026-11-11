@@ -208,6 +208,8 @@ class OriginalMaterialEvidenceClosureTests(unittest.TestCase):
             "evidence_id: signed.evidence_id.to_string()",
             "principal_id: signed.principal_id.to_string()",
             "role: match signed.role",
+            "LearningEvidenceRoleV1::CreditAllocator",
+            "LearningEvidenceRoleV1::UnlearningAuthority",
             "trust_digest: signed.trust_digest.to_string()",
             "scope_digest: signed.scope_digest.to_string()",
             "objective_digest: signed.objective_digest.to_string()",

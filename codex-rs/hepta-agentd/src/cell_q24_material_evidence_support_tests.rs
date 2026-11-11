@@ -1,14 +1,17 @@
 //! Test-only original files, signed Material completions and source capabilities.
 //! The enclosing fixture owns its directory; no production visibility is widened.
 
-use std::sync::Mutex;
 use pretty_assertions::assert_eq;
+use std::sync::Mutex;
 
 use super::*;
 use crate::OriginalCellQ24MaterialEvidenceOwnerV1;
 
-pub(crate) type Service =
-    OriginalCellQ24MaterialEvidenceOwnerV1<FileAnchorWitnessStore, FileAnchorWitnessStore, FileAnchorWitnessStore>;
+pub(crate) type Service = OriginalCellQ24MaterialEvidenceOwnerV1<
+    FileAnchorWitnessStore,
+    FileAnchorWitnessStore,
+    FileAnchorWitnessStore,
+>;
 
 pub(crate) struct ReadbackServiceFixture {
     pub(crate) service: Option<Arc<Service>>,
@@ -37,7 +40,10 @@ impl ReadbackServiceFixture {
         let dataset_attestation = if complete_dataset {
             let dataset = owners.attest_dataset(f.sources(&prefix))?;
             assert_eq!(dataset.receipt.actor_id, initial.owners.dataset);
-            coordinator.record(dataset.receipt.clone(), dataset.receipt.observed_unix_seconds)?;
+            coordinator.record(
+                dataset.receipt.clone(),
+                dataset.receipt.observed_unix_seconds,
+            )?;
             Some(dataset.attestation)
         } else {
             None
@@ -70,19 +76,33 @@ impl ReadbackServiceFixture {
         // This entire module is Linux-only. These qualification observations
         // retain the complete files, including each original witness.
         [
-            "experience-journal", "experience-witness", "dataset-journal",
-            "dataset-witness", "ledger", "ledger-witness",
-        ].into_iter().map(|name| Ok(fs::read(self.root.join(name))?)).collect()
+            "experience-journal",
+            "experience-witness",
+            "dataset-journal",
+            "dataset-witness",
+            "ledger",
+            "ledger-witness",
+        ]
+        .into_iter()
+        .map(|name| Ok(fs::read(self.root.join(name))?))
+        .collect()
     }
 
     pub(crate) fn withdraw(&mut self) -> anyhow::Result<()> {
-        self.source.withdraw_source(&self.initial.request.source_run_id)?;
+        self.source
+            .withdraw_source(&self.initial.request.source_run_id)?;
         Ok(())
     }
 
     pub(crate) fn reopen(&mut self) -> anyhow::Result<()> {
-        let owner = self.service.take().expect("fixture retained original service");
-        anyhow::ensure!(Arc::strong_count(&owner) == 1, "drop every original service peer first");
+        let owner = self
+            .service
+            .take()
+            .expect("fixture retained original service");
+        anyhow::ensure!(
+            Arc::strong_count(&owner) == 1,
+            "drop every original service peer first"
+        );
         drop(owner);
         let witness = |name: &str| -> anyhow::Result<FileAnchorWitnessStore> {
             Ok(FileAnchorWitnessStore::open(

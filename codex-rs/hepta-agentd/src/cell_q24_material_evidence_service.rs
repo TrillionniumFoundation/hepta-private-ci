@@ -269,7 +269,10 @@ impl<EW: AnchorWitnessStore, DW: AnchorWitnessStore, SW: AnchorWitnessStore>
             ledger: &mut ledger,
             baseline: &self.baseline,
         })?;
-        coordinator.record(dataset.receipt.clone(), dataset.receipt.observed_unix_seconds)?;
+        coordinator.record(
+            dataset.receipt.clone(),
+            dataset.receipt.observed_unix_seconds,
+        )?;
         let dataset_prefix = coordinator.snapshot().clone();
         let valid_head = requested_head == dataset_prefix.head_digest
             || requested_head == experience_prefix.head_digest
@@ -281,13 +284,14 @@ impl<EW: AnchorWitnessStore, DW: AnchorWitnessStore, SW: AnchorWitnessStore>
         let completion = match role {
             OriginalCellQ24MaterialEvidenceRoleV1::Dataset => dataset,
             OriginalCellQ24MaterialEvidenceRoleV1::Experience => {
-                let current = original.readback_experience(OriginalCellQ24MaterialReceiptSourcesV1 {
-                    snapshot: &dataset_prefix,
-                    source: &self.source,
-                    identity: &self.identity,
-                    ledger: &mut ledger,
-                    baseline: &self.baseline,
-                })?;
+                let current =
+                    original.readback_experience(OriginalCellQ24MaterialReceiptSourcesV1 {
+                        snapshot: &dataset_prefix,
+                        source: &self.source,
+                        identity: &self.identity,
+                        ledger: &mut ledger,
+                        baseline: &self.baseline,
+                    })?;
                 if current.receipt != experience.receipt
                     || current.attestation != experience.attestation
                 {
