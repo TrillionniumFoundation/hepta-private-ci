@@ -102,6 +102,11 @@ pub async fn run_with_shutdown(
     let ranker = config.cognitive_ranker();
     let mut production_writer_host = config.production_writer_host();
     let episodic_snapshot_import = config.take_episodic_snapshot_import();
+    let app_server_model_tools = if episodic_snapshot_import.is_some() {
+        crate::app_runtime::AppServerModelToolProfile::ExplicitContextOnly
+    } else {
+        app_server_model_tools
+    };
     if production_operations.is_some() && production_writer_host.is_none() {
         return Err(AgentdError::Invalid(
             "production operations require an independently recovered production writer host"
