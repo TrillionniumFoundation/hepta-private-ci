@@ -21,6 +21,11 @@ class AuditTests(unittest.TestCase):
             'next_operation_id': 'op-2',
             'source_task_id': 'task-A',
             'next_task_id': 'task-B',
+            'principal_id': 'principal-A',
+            'agent_id': 'agent-A',
+            'cell_id': 'cell-A',
+            'source_run_id': 'run-A',
+            'next_run_id': 'run-B',
             'baseline_bundle': 'a' * 64,
             'selected_bundle': 'b' * 64,
             'decision': 'adopt',
@@ -49,6 +54,11 @@ class AuditTests(unittest.TestCase):
                 'bundle_sha256': 'b' * 64,
                 'selection_digest': 'c' * 64 if stage in ('selection', 'final_use', 'next_use', 'learning_next_use') else None,
             }
+            if stage in ('next_use', 'learning_next_use'):
+                self.record['original_receipts'][stage]['state_partition'] = {
+                    'principal_id': 'principal-A', 'agent_id': 'agent-A',
+                    'cell_id': 'cell-A', 'run_id': 'run-B',
+                }
 
     def check(self):
         manifest = self.root / 'manifest.json'
@@ -206,6 +216,33 @@ class AuditTests(unittest.TestCase):
         self.record['next_operation_id'] = 'op-2'
         self.record['original_receipts']['next_use']['learning_operation_id'] = 'foreign-op'
         self.assertIn('next_use_unbound_to_learning', self.check()['issues'])
+
+    def test_source_run_reuse_cannot_hide_behind_new_task_name(self):
+        self.record['next_run_id'] = 'run-A'
+        for stage in ('next_use', 'learning_next_use'):
+            self.record['original_receipts'][stage]['state_partition']['run_id'] = 'run-A'
+        self.assertIn('next_run_not_distinct', self.check()['issues'])
+
+    def test_coordinator_terminal_requires_frozen_partition(self):
+        self.record['original_receipts']['learning_next_use']['state_partition']['agent_id'] = 'foreign'
+        self.assertIn('next_use_partition_mismatch:learning_next_use', self.check()['issues'])
+
+    def test_independent_consumer_requires_same_frozen_partition(self):
+        self.record['original_receipts']['next_use']['state_partition']['run_id'] = 'run-C'
+        self.assertIn('next_use_partition_mismatch:next_use', self.check()['issues'])
+
+    def test_absent_consumer_partition_cannot_pass(self):
+        self.record['original_receipts']['next_use'].pop('state_partition')
+        self.assertIn('next_use_partition_mismatch:next_use', self.check()['issues'])
+
+    def test_trainer_no_update_still_needs_new_run_and_partition(self):
+        self.trainer_no_update()
+        self.assertEqual(self.check()['integrity'], 'PASS')
+        self.record['next_run_id'] = self.record['source_run_id']
+        self.assertIn('next_run_not_distinct', self.check()['issues'])
+        self.record['next_run_id'] = 'run-B'
+        self.record['original_receipts']['learning_next_use']['state_partition']['run_id'] = 'run-A'
+        self.assertIn('next_use_partition_mismatch:learning_next_use', self.check()['issues'])
 
     def test_corrupt_original_bytes(self):
         (self.root / 'evaluation.receipt').write_bytes(b'changed')
