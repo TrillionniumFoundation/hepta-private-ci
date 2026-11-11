@@ -25,7 +25,9 @@ MAX_NEW_TOKENS = 8
 
 def parse_leading_answer(text):
     # Do not postprocess reasoning or extract a convenient buried label.
-    m = re.match(r"^\s*(yes|no)(?=$|[^A-Za-z])", text, flags=re.IGNORECASE)
+    # A word suffix (including digits, underscore or Unicode letters) is not
+    # a standalone YES/NO answer. Keep punctuation and whitespace valid.
+    m = re.match(r"^\s*(yes|no)(?!\w)", text, flags=re.IGNORECASE)
     return m.group(1).lower() if m else None
 
 def check_previous(path, tasks):
