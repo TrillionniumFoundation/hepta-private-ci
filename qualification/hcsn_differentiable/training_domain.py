@@ -9,6 +9,7 @@ Reaching the limit is retained explicitly and cannot yield qualification.
 from dataclasses import asdict
 import hashlib
 import json
+import math
 from pathlib import Path
 import re
 
@@ -230,15 +231,47 @@ class TrainingDomainRecorder:
         self.closed = True
 
 
+
+def _unique_trace_object(pairs):
+    """Reject JSON field ambiguity at every nesting depth."""
+    value = {}
+    for key, item in pairs:
+        if key in value:
+            raise ValueError(f"duplicate trace JSON key: {key}")
+        value[key] = item
+    return value
+
+
+def _finite_trace_float(token):
+    value = float(token)
+    if not math.isfinite(value):
+        raise ValueError("nonfinite trace JSON number")
+    return value
+
+
+def _reject_trace_constant(token):
+    raise ValueError(f"nonfinite trace JSON constant: {token}")
+
+
+def _strict_trace_row(line):
+    return json.loads(
+        line,
+        object_pairs_hook=_unique_trace_object,
+        parse_constant=_reject_trace_constant,
+        parse_float=_finite_trace_float,
+    )
+
+
 def read_trace(path):
     path = Path(path)
     if path.stat().st_size > 64 * 1024 * 1024:
         raise ValueError("trace exceeds the declared 64 MiB read budget")
     data = path.read_bytes()
     lines = data.splitlines(keepends=True)
-    rows = [json.loads(line) for line in lines]
+    rows = [_strict_trace_row(line) for line in lines]
     if (
         len(rows) < 2
+        or any(type(row) is not dict for row in rows)
         or rows[0].get("schema") != "hcsn-training-domain-v1"
         or rows[-1].get("kind") != "end"
     ):
