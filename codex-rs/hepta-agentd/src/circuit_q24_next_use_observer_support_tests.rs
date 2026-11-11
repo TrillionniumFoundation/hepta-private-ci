@@ -416,3 +416,6 @@ impl ObserverFixture {
         ))
     }
 }
+
+#[path = "circuit_selection_receipt_owner_published_tests.rs"]
+mod selection_owner;

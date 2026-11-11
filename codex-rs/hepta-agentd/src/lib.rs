@@ -376,6 +376,8 @@ mod neuron_cell_evaluation_owner;
 #[cfg(target_os = "linux")]
 mod circuit_next_use_receipt_owner;
 #[cfg(target_os = "linux")]
+mod circuit_selection_receipt_owner;
+#[cfg(target_os = "linux")]
 mod neuron_cell_evaluation_receipt_owner;
 mod neuron_cell_learning_evaluation;
 pub use cell_composed_q24::CellQ24FeatureEncoderV1;
@@ -438,6 +440,14 @@ pub use circuit_next_use_receipt_owner::OriginalCircuitNextUseReceiptErrorV1;
 pub use circuit_next_use_receipt_owner::OriginalCircuitNextUseReceiptOwnerV1;
 #[cfg(target_os = "linux")]
 pub use circuit_next_use_receipt_owner::OriginalCircuitNextUseReceiptSourcesV1;
+#[cfg(target_os = "linux")]
+pub use circuit_selection_receipt_owner::OriginalCircuitSelectionReceiptConfigV1;
+#[cfg(target_os = "linux")]
+pub use circuit_selection_receipt_owner::OriginalCircuitSelectionReceiptErrorV1;
+#[cfg(target_os = "linux")]
+pub use circuit_selection_receipt_owner::OriginalCircuitSelectionReceiptOwnerV1;
+#[cfg(target_os = "linux")]
+pub use circuit_selection_receipt_owner::OriginalCircuitSelectionReceiptSourcesV1;
 pub use learning_owner_journal::LearningOriginalOwnerErrorV1;
 pub use neuron_cell_evaluation_owner::OriginalCellEvaluationExecutionOwnerV1;
 pub use neuron_cell_evaluation_owner::OriginalCellEvaluationSigningConfigV1;
