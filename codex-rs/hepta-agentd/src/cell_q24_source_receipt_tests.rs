@@ -367,7 +367,7 @@ async fn observer_capability_trigger_and_complete_predecessor_conflicts_are_reje
     altered.source_run_id = signed::id("another-real-looking-run");
     let coordinator =
         LearningIterationCoordinatorV1::new(altered, snapshot(&config).owners.clone())?;
-    let mut other = config.clone();
+    let mut other = config;
     other.scope = FrozenLearningScopeV2::freeze(
         &coordinator.snapshot().request,
         &coordinator.snapshot().owners,
