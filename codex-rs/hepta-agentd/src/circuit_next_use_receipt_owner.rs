@@ -34,6 +34,8 @@ use crate::AgentdIdentity;
 use crate::CircuitTaskSourceReadbackV1;
 use crate::LearningIterationEvidenceClientV1;
 use crate::LearningIterationRuntimeErrorV1;
+use crate::OriginalCircuitLearningReadClientV1;
+use crate::OriginalCircuitLearningReadErrorV1;
 use crate::PublishedCircuitCellOwnerV1;
 use crate::learning_owner_evidence;
 use crate::learning_owner_journal::LearningOriginalOwnerErrorV1 as OwnerError;
@@ -51,6 +53,8 @@ pub enum OriginalCircuitNextUseReceiptErrorV1 {
     Connection(#[from] LearningIterationRuntimeErrorV1),
     #[error("original role evidence: {0}")]
     Evidence(#[from] SignedEvidenceError),
+    #[error("original published Circuit read capability: {0}")]
+    PublishedRead(#[from] OriginalCircuitLearningReadErrorV1),
 }
 type Error = OriginalCircuitNextUseReceiptErrorV1;
 
@@ -78,6 +82,119 @@ pub struct OriginalCircuitNextUseReceiptSourcesV1<'a, C: AnchorWitnessStore, S: 
     pub identity: &'a AgentdIdentity,
     pub trainer: &'a LearningIterationEvidenceClientV1,
     pub selector: &'a LearningIterationEvidenceClientV1,
+}
+
+/// A purpose-fixed original task peer for the TrainingNoUpdate profile.
+/// Every use rereads the actual C publication, committed Cell and TaskSource;
+/// a saved observation is never accepted as CURRENT or as a signing input.
+pub struct OriginalCircuitNextUseRemoteSourcesV1<'a> {
+    pub snapshot: &'a LearningIterationSnapshotV1,
+    pub live: &'a OriginalCircuitLearningReadClientV1,
+    pub trainer: &'a LearningIterationEvidenceClientV1,
+    pub selector: &'a LearningIterationEvidenceClientV1,
+}
+
+trait NextUseSources {
+    fn snapshot(&self) -> &LearningIterationSnapshotV1;
+    fn trainer(&self) -> &LearningIterationEvidenceClientV1;
+    fn selector(&self) -> &LearningIterationEvidenceClientV1;
+    async fn observe(
+        &self,
+        config: &OriginalCircuitNextUseReceiptConfigV1,
+    ) -> Result<LearningIterationObservationV1, Error>;
+}
+
+impl<C: AnchorWitnessStore, S: AnchorWitnessStore> NextUseSources
+    for OriginalCircuitNextUseReceiptSourcesV1<'_, C, S>
+{
+    fn snapshot(&self) -> &LearningIterationSnapshotV1 {
+        self.snapshot
+    }
+    fn trainer(&self) -> &LearningIterationEvidenceClientV1 {
+        self.trainer
+    }
+    fn selector(&self) -> &LearningIterationEvidenceClientV1 {
+        self.selector
+    }
+    async fn observe(
+        &self,
+        config: &OriginalCircuitNextUseReceiptConfigV1,
+    ) -> Result<LearningIterationObservationV1, Error> {
+        read_local_next_use(self, config)
+    }
+}
+
+impl NextUseSources for OriginalCircuitNextUseRemoteSourcesV1<'_> {
+    fn snapshot(&self) -> &LearningIterationSnapshotV1 {
+        self.snapshot
+    }
+    fn trainer(&self) -> &LearningIterationEvidenceClientV1 {
+        self.trainer
+    }
+    fn selector(&self) -> &LearningIterationEvidenceClientV1 {
+        self.selector
+    }
+    async fn observe(
+        &self,
+        config: &OriginalCircuitNextUseReceiptConfigV1,
+    ) -> Result<LearningIterationObservationV1, Error> {
+        read_remote_next_use(self, config).await
+    }
+}
+
+fn read_local_next_use(
+    source: &OriginalCircuitNextUseReceiptSourcesV1<
+        '_,
+        impl AnchorWitnessStore,
+        impl AnchorWitnessStore,
+    >,
+    config: &OriginalCircuitNextUseReceiptConfigV1,
+) -> Result<LearningIterationObservationV1, Error> {
+    let coordinator = LearningIterationCoordinatorV1::from_snapshot(config.selection.clone())?;
+    let cell: &PublishedCircuitCellOwnerV1<_> = source.cell;
+    Ok(cell.read_learning_next_use(&coordinator, source.source, source.identity)?)
+}
+
+async fn remote_predecessors(
+    source: &OriginalCircuitNextUseRemoteSourcesV1<'_>,
+    config: &OriginalCircuitNextUseReceiptConfigV1,
+) -> Result<[SignedLearningEvidenceV1; 2], Error> {
+    let trainer: &LearningIterationEvidenceClientV1 = source.trainer;
+    let selector: &LearningIterationEvidenceClientV1 = source.selector;
+    Ok([
+        trainer
+            .readback(
+                source.snapshot,
+                prior(config, LearningIterationStageV1::Training)?,
+            )
+            .await?,
+        selector
+            .readback(
+                source.snapshot,
+                prior(config, LearningIterationStageV1::Selection)?,
+            )
+            .await?,
+    ])
+}
+
+async fn read_remote_next_use(
+    source: &OriginalCircuitNextUseRemoteSourcesV1<'_>,
+    config: &OriginalCircuitNextUseReceiptConfigV1,
+) -> Result<LearningIterationObservationV1, Error> {
+    let live: &OriginalCircuitLearningReadClientV1 = source.live;
+    live.require_original_context(
+        &config.selection,
+        &config.scope,
+        &config.verifier,
+        &config.training_evidence,
+        Some(&config.selection_evidence),
+    )?;
+    let before = remote_predecessors(source, config).await?;
+    authenticate_predecessors(config, &before, now()?)?;
+    let original = live.read_current().await?;
+    let after = remote_predecessors(source, config).await?;
+    authenticate_predecessors(config, &after, now()?)?;
+    Ok(original.observation().clone())
 }
 
 pub struct OriginalCircuitNextUseReceiptOwnerV1<W: AnchorWitnessStore> {
@@ -133,16 +250,32 @@ impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W> {
             impl AnchorWitnessStore,
         >,
     ) -> Result<(LearningIterationReceiptV1, SignedLearningEvidenceV1), Error> {
+        self.attest_source(source).await
+    }
+
+    /// Sign only after the same originally published C is read from its
+    /// purpose-fixed task process, with both original evidence owners live.
+    pub async fn attest_original_remote_completion(
+        &mut self,
+        source: OriginalCircuitNextUseRemoteSourcesV1<'_>,
+    ) -> Result<(LearningIterationReceiptV1, SignedLearningEvidenceV1), Error> {
+        self.attest_source(source).await
+    }
+
+    async fn attest_source(
+        &mut self,
+        source: impl NextUseSources,
+    ) -> Result<(LearningIterationReceiptV1, SignedLearningEvidenceV1), Error> {
         let started_at = now()?;
         require_new_attestation(&self.config, started_at, started_at)?;
-        let observed = self.prepare(&source)?;
+        let observed = self.prepare(&source).await?;
         // A completed coordinator can only recover an existing owner result.
-        if source.snapshot.receipts.len() > self.config.selection.receipts.len() {
-            return self.readback(source).await;
+        if source.snapshot().receipts.len() > self.config.selection.receipts.len() {
+            return self.readback_source(source).await;
         }
         let evidence = self.predecessors(&source).await?;
         authenticate_predecessors(&self.config, &evidence, now()?)?;
-        if self.prepare(&source)? != observed {
+        if self.prepare(&source).await? != observed {
             return Err(OwnerError::CommitUncertain.into());
         }
         let config = &self.config;
@@ -184,61 +317,65 @@ impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W> {
             impl AnchorWitnessStore,
         >,
     ) -> Result<(LearningIterationReceiptV1, SignedLearningEvidenceV1), Error> {
+        self.readback_source(source).await
+    }
+
+    /// Recover the original signature through fresh task and predecessor
+    /// readbacks. This never runs C, signs again or extends the original window.
+    pub async fn readback_remote(
+        &mut self,
+        source: OriginalCircuitNextUseRemoteSourcesV1<'_>,
+    ) -> Result<(LearningIterationReceiptV1, SignedLearningEvidenceV1), Error> {
+        self.readback_source(source).await
+    }
+
+    async fn readback_source(
+        &mut self,
+        source: impl NextUseSources,
+    ) -> Result<(LearningIterationReceiptV1, SignedLearningEvidenceV1), Error> {
         let started_at = now()?;
-        let observed = self.prepare(&source)?;
+        let observed = self.prepare(&source).await?;
         let bytes = self.journal.read(&self.saved)?;
         self.authenticate_completed(&source, &observed, &bytes, started_at, false)
             .await
     }
 
-    fn prepare(
+    async fn prepare(
         &self,
-        source: &OriginalCircuitNextUseReceiptSourcesV1<
-            '_,
-            impl AnchorWitnessStore,
-            impl AnchorWitnessStore,
-        >,
+        source: &impl NextUseSources,
     ) -> Result<LearningIterationObservationV1, Error> {
-        LearningIterationCoordinatorV1::from_snapshot(source.snapshot.clone())?;
-        self.config.scope.validate_snapshot(source.snapshot)?;
-        if source.snapshot.request != self.config.selection.request
-            || source.snapshot.owners != self.config.selection.owners
+        LearningIterationCoordinatorV1::from_snapshot(source.snapshot().clone())?;
+        self.config.scope.validate_snapshot(source.snapshot())?;
+        if source.snapshot().request != self.config.selection.request
+            || source.snapshot().owners != self.config.selection.owners
             || !source
-                .snapshot
+                .snapshot()
                 .receipts
                 .starts_with(&self.config.selection.receipts)
         {
             return Err(OwnerError::Binding("original Selection prefix").into());
         }
-        let coordinator =
-            LearningIterationCoordinatorV1::from_snapshot(self.config.selection.clone())?;
-        let cell: &PublishedCircuitCellOwnerV1<_> = source.cell;
-        let observation =
-            cell.read_learning_next_use(&coordinator, source.source, source.identity)?;
+        let observation = source.observe(&self.config).await?;
         self.config.scope.validate_observation(&observation)?;
         Ok(observation)
     }
 
     async fn predecessors(
         &self,
-        source: &OriginalCircuitNextUseReceiptSourcesV1<
-            '_,
-            impl AnchorWitnessStore,
-            impl AnchorWitnessStore,
-        >,
+        source: &impl NextUseSources,
     ) -> Result<[SignedLearningEvidenceV1; 2], Error> {
-        let trainer: &LearningIterationEvidenceClientV1 = source.trainer;
-        let selector: &LearningIterationEvidenceClientV1 = source.selector;
+        let trainer: &LearningIterationEvidenceClientV1 = source.trainer();
+        let selector: &LearningIterationEvidenceClientV1 = source.selector();
         Ok([
             trainer
                 .readback(
-                    source.snapshot,
+                    source.snapshot(),
                     prior(&self.config, LearningIterationStageV1::Training)?,
                 )
                 .await?,
             selector
                 .readback(
-                    source.snapshot,
+                    source.snapshot(),
                     prior(&self.config, LearningIterationStageV1::Selection)?,
                 )
                 .await?,
@@ -247,11 +384,7 @@ impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W> {
 
     async fn authenticate_completed(
         &mut self,
-        source: &OriginalCircuitNextUseReceiptSourcesV1<
-            '_,
-            impl AnchorWitnessStore,
-            impl AnchorWitnessStore,
-        >,
+        source: &impl NextUseSources,
         observed: &LearningIterationObservationV1,
         bytes: &[u8],
         started_at: u64,
@@ -261,7 +394,7 @@ impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W> {
         let receipt = receipt(&self.config, observed, signed.issued_at)?;
         if payload != learning_iteration_receipt_signing_bytes_v1(&receipt)?
             || source
-                .snapshot
+                .snapshot()
                 .receipts
                 .get(self.config.selection.receipts.len())
                 .is_some_and(|saved| saved != &receipt)
@@ -269,7 +402,7 @@ impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W> {
             return Err(OwnerError::Binding("changed original C receipt").into());
         }
         let evidence = self.predecessors(source).await?;
-        if self.prepare(source)? != *observed {
+        if self.prepare(source).await? != *observed {
             return Err(OwnerError::CommitUncertain.into());
         }
         if self.journal.read(&self.saved)? != bytes {

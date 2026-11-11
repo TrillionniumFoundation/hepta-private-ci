@@ -131,14 +131,27 @@ impl<W: AnchorWitnessStore> SourceOwner<W> {
         self.require_bytes(stage, run, payload)
     }
 
-    pub(super) fn require_current(&self) -> Result<(), Error> {
-        if self.fenced
-            || self.witness.current().map_err(|_| Error::CommitUncertain)?
-                != Some(anchor(self.journal.anchor()))
-        {
+    pub(super) fn require_current(&mut self) -> Result<(), Error> {
+        if self.fenced {
             return Err(Error::CommitUncertain);
         }
-        Ok(())
+        let result = (|| {
+            let before = self.witness.current().map_err(|_| Error::CommitUncertain)?;
+            let journal: &mut LockedFileProductEvaluationExecutionStoreV1 = &mut self.journal;
+            let physical = journal
+                .read_current_anchor()
+                .map_err(|_| Error::CommitUncertain)?;
+            let current = anchor(physical);
+            let after = self.witness.current().map_err(|_| Error::CommitUncertain)?;
+            if before != Some(current) || after != Some(current) {
+                return Err(Error::CommitUncertain);
+            }
+            Ok(())
+        })();
+        if result.is_err() {
+            self.fenced = true;
+        }
+        result
     }
 
     fn anchor_append(&mut self, before: JournalAnchor) -> Result<(), Error> {

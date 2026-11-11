@@ -769,3 +769,7 @@ async fn ordinary_source_input_and_result_ack_loss_never_repeat_committed_infere
     }
     Ok(())
 }
+
+#[cfg(target_os = "linux")]
+#[path = "circuit_task_source_current_tests.rs"]
+mod physical_current;

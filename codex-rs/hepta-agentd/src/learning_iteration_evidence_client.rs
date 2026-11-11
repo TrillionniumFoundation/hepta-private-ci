@@ -36,6 +36,14 @@ pub use training_command::OriginalCellQ24TrainingCommandErrorV1;
 pub use training_command::OriginalCellQ24TrainingCommandOwnerV1;
 pub use training_command::OriginalCellQ24TrainingCommandReceiptV1;
 
+#[path = "circuit_selection_command.rs"]
+mod selection_command;
+pub use selection_command::OriginalCircuitSelectionCommandClientV1;
+pub use selection_command::OriginalCircuitSelectionCommandContextV1;
+pub use selection_command::OriginalCircuitSelectionCommandErrorV1;
+pub use selection_command::OriginalCircuitSelectionCommandOwnerV1;
+pub use selection_command::OriginalCircuitSelectionCommandReceiptV1;
+
 #[path = "cell_q24_material_evidence_service.rs"]
 mod material;
 pub use material::OriginalCellQ24MaterialCommandClientV1;
@@ -246,3 +254,6 @@ pub(crate) use tests::fixture_original_receipt_client;
 pub(crate) use tests::fixture_original_receipt_client_until_close;
 #[cfg(test)]
 pub(crate) use training_command::command_test_support;
+
+#[cfg(test)]
+pub(crate) use selection_command::command_test_support as selection_command_test_support;

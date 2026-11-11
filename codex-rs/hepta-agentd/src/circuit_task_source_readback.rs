@@ -35,6 +35,25 @@ impl<W: AnchorWitnessStore> DurableCircuitTaskSourceV1<W> {
 }
 
 impl<W: AnchorWitnessStore> CircuitTaskSourceReadbackV1<W> {
+    /// Check the original configured input without admitting a request or
+    /// requiring a completed task. Selection can precede ordinary C execution.
+    /// Both physical CURRENT reads retain the original lock and witness.
+    pub(crate) fn require_original_input(
+        &self,
+        identity: &AgentdIdentity,
+        input: &super::CircuitTaskSourceInputV1,
+    ) -> Result<(), Error> {
+        let mut owner = self.original.0.try_lock().map_err(|_| Error::Unavailable)?;
+        owner.require_current()?;
+        if identity != &owner.identity
+            || owner.sources.get(input.scope.run_id.as_str()) != Some(input)
+        {
+            return Err(Error::InvalidBinding);
+        }
+        owner.require_active(input.scope.run_id.as_str())?;
+        owner.require_current()
+    }
+
     pub fn read_publication(
         &self,
         identity: &AgentdIdentity,
