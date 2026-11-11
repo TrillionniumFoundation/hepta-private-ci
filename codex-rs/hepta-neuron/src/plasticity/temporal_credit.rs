@@ -238,7 +238,8 @@ pub fn accumulate_temporal_credit_q24(
         }
     }
 
-    let mut groups = parameter_groups.to_vec();
+    // Nested projection dimensions are untrusted until validation below.
+    let mut groups = parameter_groups.iter().collect::<Vec<_>>();
     groups.sort_by(|left, right| left.group_id.cmp(&right.group_id));
     let mut seen_groups = BTreeSet::new();
     for group in &groups {
@@ -252,7 +253,8 @@ pub fn accumulate_temporal_credit_q24(
         return Err(TemporalCreditError::InvalidGroup);
     }
 
-    let mut feedback_sorted = feedback.to_vec();
+    // Sort references so an invalid modulator is rejected without copying it.
+    let mut feedback_sorted = feedback.iter().collect::<Vec<_>>();
     feedback_sorted.sort_by(|a, b| {
         a.action_id
             .cmp(&b.action_id)
