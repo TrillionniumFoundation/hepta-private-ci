@@ -148,7 +148,7 @@ class Q24ModelProposalSourceClosureTests(unittest.TestCase):
         for function, markers in (
             ("fn in_model_lane<", (
                 ".try_acquire_owned()", "self.owners.try_lock()",
-                "training.require_original_dataset_scope(",
+                ".require_original_dataset_scope(",
                 "let original = owners.read_original_completion()?",
                 "let result = work(&mut owners.training, &original)",
                 "let current = owners",

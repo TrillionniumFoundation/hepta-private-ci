@@ -90,7 +90,7 @@ class OriginalTrainingOwnerSourceClosureTests(unittest.TestCase):
                 "super::now()", ".require_signer_binding(", "LearningEvidenceRoleV1::Generator",
                 "if now >= receipts.config.dataset.request.envelope.expiry_unix_seconds", "return Err(Error::DeadlineExceeded)",
                 "Some(outcome) => outcome", "None => training.fit_or_readback(&cancellation)?", "receipts.attest_original_completion(training)?")),
-            ("fn in_lane<", (".try_acquire_owned()", "let _permit = permit;", "owners.try_lock()", "training.require_original_dataset_scope(")),
+            ("fn in_lane<", (".try_acquire_owned()", "let _permit = permit;", "owners.try_lock()", ".require_original_dataset_scope(")),
             ("fn receipt_attestation(", ("self.readback(dataset).await?", "if &completed.receipt != expected")),
             ("fn read_original_completion(&mut self)", ("self.receipts.readback(training)?", "training.readback()?")),
         ):
