@@ -181,6 +181,37 @@ class FactorialPreflightTests(unittest.TestCase):
         self.assertEqual(_strict_json('{"v": 1}')["v"], 1)
 
 
+    def test_frozen_cell_evaluator_cannot_change_between_training_seeds(self):
+        rows = panel(seeds=2, densities=("sparse",))
+        rows = [replace(r, evaluator_digest=h("late-evaluator-revision"))
+                if r.seed == 1 else r for r in rows]
+        with self.assertRaisesRegex(ContractError, "frozen cell"):
+            evaluate_core_ndu(rows, required_cells=required(("sparse",)))
+
+    def test_frozen_cell_opportunity_cannot_change_between_episodes(self):
+        rows = panel(seeds=1, densities=("sparse",), episodes=("e0", "e1"))
+        rows = [replace(r, query_budget=99) if r.episode_id == "e1"
+                else r for r in rows]
+        with self.assertRaisesRegex(ContractError, "frozen cell"):
+            evaluate_core_ndu(rows, required_cells=required(("sparse",)))
+
+    def test_unequal_per_seed_episode_cohort_rejected(self):
+        rows = panel(seeds=2, densities=("sparse",))
+        rows += [row(arm, seed=1, density="sparse", episode="extra")
+                 for arm in ARMS]
+        with self.assertRaisesRegex(ContractError, "unequal seed episode"):
+            evaluate_core_ndu(rows, required_cells=required(("sparse",)))
+
+    def test_frozen_contract_may_differ_across_registered_cells(self):
+        rows = panel(seeds=2)
+        rows = [replace(r, evaluator_digest=h("dense-independent-evaluator"),
+                        query_budget=20, compute_budget_us=1_500_000)
+                if r.feedback_density == "dense" else r for r in rows]
+        result = evaluate_core_ndu(rows, required_cells=required())
+        self.assertEqual(result["coverage"]["matched_blocks"], 4)
+        self.assertEqual(result["research_posture"], "HOLD_NO_GO")
+
+
 if __name__ == "__main__":
     unittest.main()
 

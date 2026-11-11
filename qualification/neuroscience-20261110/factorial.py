@@ -152,6 +152,15 @@ def evaluate_core_ndu(rows: list[FactorialTrialRow], *,
         "evaluation_seed_digest", "feedback_budget_bits", "query_budget",
         "training_budget", "compute_budget_us",
     )
+    # A paired episode is insufficient if a later seed or episode silently
+    # changes its evaluator or opportunity. Freeze the cell-scoped declared
+    # contract without freezing legitimate per-seed training/evaluation IDs.
+    frozen_cell_fields = (
+        "shared_base_digest", "capacity_envelope_digest", "evaluator_digest",
+        "feedback_budget_bits", "query_budget", "training_budget",
+        "compute_budget_us",
+    )
+    frozen_cell_contracts: dict[tuple[str, str], tuple[object, ...]] = {}
     per_seed_cell: dict[tuple[int, str, str], list[dict[str, float]]] = defaultdict(list)
     incomplete_retention = False
     incomplete_ood = False
@@ -169,6 +178,11 @@ def evaluate_core_ndu(rows: list[FactorialTrialRow], *,
             series = resources[row.arm]
             for name in series:
                 series[name].append(getattr(row, {"cpu_us": "actual_cpu_us", "wall_us": "actual_wall_us"}.get(name, name)))
+        cell = (family, density)
+        signature = tuple(getattr(ref, name) for name in frozen_cell_fields)
+        previous = frozen_cell_contracts.setdefault(cell, signature)
+        if signature != previous:
+            raise ContractError("frozen cell evaluator or opportunity drift")
         values = {arm: block[arm].gross_value - block[arm].full_cost for arm in ARMS}
         contrasts = _differences(values)
         if any(row.old_task_score is None for row in block.values()):
@@ -188,6 +202,13 @@ def evaluate_core_ndu(rows: list[FactorialTrialRow], *,
         cells = {(family, density) for s, family, density in per_seed_cell if s == seed}
         if cells != registered:
             raise ContractError("seed missing registered sparse/dense or family cell")
+    # Do not silently turn unequal, selectively retained per-seed episode
+    # cohorts into exchangeable seed clusters. Cell counts may differ across
+    # task families, but each training seed must receive the same opportunity.
+    for cell in registered:
+        counts = {len(per_seed_cell[(seed, *cell)]) for seed in seeds}
+        if len(counts) != 1:
+            raise ContractError("unequal seed episode opportunity within cell")
 
     # Equal weight to registered cells per independent training seed.
     by_seed: dict[int, dict[str, list[float]]] = {}
@@ -242,6 +263,8 @@ def evaluate_core_ndu(rows: list[FactorialTrialRow], *,
             "complete_for_declared_matrix": True,
             "registered_cells": [list(c) for c in sorted(registered)],
             "seed_clusters": len(seeds), "matched_blocks": len(blocks),
+            "equal_episode_opportunities_per_seed": True,
+            "frozen_cell_contract": "SELF_DECLARED_ONLY",
         },
         "net_contrasts": {
             name: {
