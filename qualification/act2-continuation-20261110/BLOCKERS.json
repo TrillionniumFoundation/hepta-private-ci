@@ -1351,11 +1351,11 @@
             "daemon": 42955998126,
             "daemon_status": "SUCCESS_1157_PLUS_7_ROOT",
             "architecture": 42955998198,
-            "architecture_status": "SOURCE_HEAD_AND_BASE_MERGE_SUCCESS_REQUIRED_QUEUED",
+            "architecture_status": "SUCCESS_SOURCE_HEAD_BASE_MERGE_AGGREGATE",
             "windows_private": 42955998131,
             "windows_private_status": "SUCCESS_COMPILE_AND_PROMPT_RUNTIME_SCOPED",
             "blocking": 42955998139,
-            "blocking_status": "IN_PROGRESS_MIXED_PLATFORM_FAILURES",
+            "blocking_status": "TERMINAL_CANCELLED_MIXED_FAILURES",
             "v8": 42955998051,
             "v8_status": "SUCCESS_METADATA_ONLY",
             "windows_private_job": 130311123817,
@@ -1399,12 +1399,145 @@
             "architecture_base_merge_artifact_size_bytes": 12291,
             "architecture_base_merge_artifact_sha256": "cccfb1abe5d5847635561b2e66f6849b460dae0b3899a6b9e888b5534d0996fd",
             "architecture_required_job": 130336015724,
-            "architecture_required_status": "QUEUED"
+            "architecture_required_status": "SUCCESS",
+            "architecture_required_completed_at": "2026-11-11T06:12:38Z",
+            "architecture_required_log_result": "All applicable exact-candidate lanes succeeded; identical-tree reuse includes source-head success",
+            "blocking_conclusion": "cancelled",
+            "blocking_completed_at": "2026-11-11T07:16:58Z",
+            "blocking_final_ci_job": 130381027096,
+            "blocking_final_ci_status": "FAILURE_BAZEL_AND_REPO_CHECKS",
+            "blocking_final_ci_log_result": "CI dependencies did not succeed: bazel: failure, repo-checks: cancelled",
+            "blocking_repo_checks_job": 130323909720,
+            "blocking_repo_checks_status": "CANCELLED_DURING_PRIVILEGED_CALLER_SCAN",
+            "blocking_repo_checks_observed_before_cancel": "manifest boundary checks passed; HEPTA caller proof self-test emitted PASS; operation cancelled about ten minutes into the privileged caller closed-set step",
+            "blocking_repo_checks_full_result": "UNKNOWN",
+            "blocking_windows_native_aggregate_job": 130331367751,
+            "blocking_windows_native_aggregate_status": "FAILURE_DUE_TO_SHARD_RESULT",
+            "blocking_failed_bazel_jobs": [
+              {
+                "job": 130323910199,
+                "platform": "macos-15 aarch64",
+                "status": "failure"
+              },
+              {
+                "job": 130323910246,
+                "platform": "macos-15-intel x86_64",
+                "status": "failure"
+              },
+              {
+                "job": 130323910314,
+                "platform": "windows shard 1",
+                "status": "failure"
+              },
+              {
+                "job": 130323910247,
+                "platform": "windows shard 2",
+                "status": "failure"
+              },
+              {
+                "job": 130323910297,
+                "platform": "windows shard 3",
+                "status": "failure"
+              },
+              {
+                "job": 130323910411,
+                "platform": "windows shard 4",
+                "status": "failure"
+              }
+            ],
+            "blocking_root_summary": "Windows shards preserve FILE_DELETE_CHILD fail-closed refusal plus independent lock/os33, PermissionDenied/Invalid fixture, path and timeout failures; macOS preserves endpoint/timeout, capability-denial and invalid-fixture/application failures. The native Windows aggregate only propagates shard failure.",
+            "blocking_artifact_count": 14,
+            "blocking_artifacts": [
+              {
+                "id": 13832006927,
+                "name": "bazel-execution-logs-test-x86_64-unknown-linux-gnu",
+                "size_in_bytes": 16127110,
+                "sha256": "7c5dd610675251fefba3530ec7049462f04b26dc3196fe637fb7d2eab8f87507"
+              },
+              {
+                "id": 13831419221,
+                "name": "bazel-execution-logs-clippy-x86_64-unknown-linux-gnu",
+                "size_in_bytes": 15562534,
+                "sha256": "89f4a33c760025d7139af3d4ff9f7d7257e3d5c81809f0cb6b736068ca89c294"
+              },
+              {
+                "id": 13830709495,
+                "name": "bazel-execution-logs-test-x86_64-unknown-linux-musl",
+                "size_in_bytes": 16167004,
+                "sha256": "bbabe6553958b34ed9b825415d3c3fa0a69795e3f3a3753ce6e4cfc653020c00"
+              },
+              {
+                "id": 13830499947,
+                "name": "bazel-execution-logs-verify-release-build-x86_64-unknown-linux-gnu",
+                "size_in_bytes": 15118197,
+                "sha256": "74c00fbbd3e9016e56d2813b3f602187803db87261eecc9f6d0cca93cdb1664e"
+              },
+              {
+                "id": 13829910735,
+                "name": "bazel-execution-logs-verify-release-build-x86_64-pc-windows-msvc",
+                "size_in_bytes": 5251899,
+                "sha256": "7df9e1297da400e24b370cf4a0577d332b7a8b74aa90bfde1af8c8cb7f5d962f"
+              },
+              {
+                "id": 13829895738,
+                "name": "bazel-execution-logs-clippy-x86_64-pc-windows-msvc",
+                "size_in_bytes": 5498839,
+                "sha256": "26a40e3790bc135cce3d2e6da7c01369161f3b6d05e0b66de0b11397f380bd91"
+              },
+              {
+                "id": 13829550768,
+                "name": "bazel-execution-logs-verify-release-build-aarch64-apple-darwin",
+                "size_in_bytes": 10359801,
+                "sha256": "0e23333fdd235210eb0750f68d2e95b778cb673411ddbb50d224a13fe212584b"
+              },
+              {
+                "id": 13829457300,
+                "name": "bazel-execution-logs-test-x86_64-apple-darwin",
+                "size_in_bytes": 10555621,
+                "sha256": "ec491c9e092d99d93565bc13c60bdce769e03742e0bf3f91768a0a40a2f6c9c5"
+              },
+              {
+                "id": 13829311376,
+                "name": "bazel-execution-logs-clippy-aarch64-apple-darwin",
+                "size_in_bytes": 10521582,
+                "sha256": "e6e86a127f9288200649731fd23b6e0797a0b0246a78002c6c7d6b344d83306a"
+              },
+              {
+                "id": 13829301855,
+                "name": "bazel-execution-logs-test-x86_64-pc-windows-msvc-shard-2",
+                "size_in_bytes": 5180187,
+                "sha256": "5e574e42d9d3f0c13eb0aa8e2756a6d3928f6cd559039517bb449a20c1972972"
+              },
+              {
+                "id": 13829189205,
+                "name": "bazel-execution-logs-test-x86_64-pc-windows-msvc-shard-4",
+                "size_in_bytes": 5133537,
+                "sha256": "35ff10837e0afd67ec9e9ca9d889e0499a8951a69f976c0167fb5b5b547da94b"
+              },
+              {
+                "id": 13828974370,
+                "name": "bazel-execution-logs-test-aarch64-apple-darwin",
+                "size_in_bytes": 10650080,
+                "sha256": "7eaa2f3424c717f9f2068ef255e7312d34d0810f86787e5c946e7d621343ea4f"
+              },
+              {
+                "id": 13828913219,
+                "name": "bazel-execution-logs-test-x86_64-pc-windows-msvc-shard-1",
+                "size_in_bytes": 5176874,
+                "sha256": "f990a09ff81c573567e806d27da41213d86a5b4a494cc07d58725e4d32370b10"
+              },
+              {
+                "id": 13828819766,
+                "name": "bazel-execution-logs-test-x86_64-pc-windows-msvc-shard-3",
+                "size_in_bytes": 5122605,
+                "sha256": "fe6e7fe8a89c9cda7bd83a904844b13003540870d7978735b3d4d1ec3263da5a"
+              }
+            ]
           },
-          "qualification": "SCOPED_NATIVE_COMPONENT_PASS_REQUIRED_AGGREGATE_PENDING",
+          "qualification": "SCOPED_NATIVE_AND_ARCHITECTURE_PASS_BLOCKING_CANCELLED",
           "limits": "Training only; no ordinary product caller, complete LearningIterationStageOwnerPortsV1, Root startup, file/key/trust custody, Dataset extraction semantics, governed native model proposal, independent B/retention/new-C or cold recovery. Historical 30a results do not transfer.",
           "windows_scope_limit": "The Windows workflow compiled the source but selected only prompt_runtime::tests in Agentd; it did not execute the five new snapshot-recovery cases or the six Training-stage cases.",
-          "native_scope_limit": "At exact be8 source, daemon and shared each execute the same five unique snapshot-recovery cases (not ten independent cases), plus the six retained Training-stage cases. Architecture source-head/base-merge are successful, but its required aggregator is queued. These results do not instantiate production StageOwner, product caller, authority/custody, governed model proposal, independent B/retention/new-C, FinalUse, or cold recovery."
+          "native_scope_limit": "At exact be8 source, daemon and shared execute the five unique snapshot-recovery cases plus six retained Training-stage cases; architecture now passes source-head/base-merge/required. Blocking is terminal cancelled with actual Bazel failures and an independently cancelled repo-checks scan, so it is not a whole-CI PASS. None of these instantiate production StageOwner, product caller, authority/custody, governed model proposal, independent B/retention/new-C, FinalUse, or cold recovery."
         }
       }
     }
@@ -1435,6 +1568,6 @@
     "automation_id": "Automation_8e4cdb1c54948191973ff06d6fbdba1b",
     "enabled": true,
     "cadence": "hourly existing task, minute 25; latest PRs and these limits added to its prompt",
-    "last_updated_at": "2026-11-11T05:59:38Z"
+    "last_updated_at": "2026-11-11T07:44:06Z"
   }
 }
