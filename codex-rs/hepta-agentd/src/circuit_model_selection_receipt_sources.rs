@@ -3,19 +3,12 @@
 //! reconstructed version journal or caller-selected clock satisfies this path.
 
 use codex_hepta_intelligence_eval::FinalHoldoutCasStoreV1;
-use codex_hepta_intelligence_eval::LockedFileProductEvaluationExecutionStoreV1;
-use codex_hepta_intelligence_eval::ProductEvaluationExecutionClaimV1;
-use codex_hepta_intelligence_eval::ProductEvaluationExecutionKeyV1;
 use codex_hepta_intelligence_eval::ProductEvaluationExecutionRequestV1;
-use codex_hepta_intelligence_eval::ProductEvaluationExecutionStateV1;
-use codex_hepta_intelligence_eval::ProductEvaluationExecutionStoreErrorV1;
-use codex_hepta_intelligence_eval::ProductEvaluationExecutionStoreV1;
 use codex_hepta_intelligence_eval::ProductProviderErrorV1;
 use codex_hepta_intelligence_eval::ProductQualificationContextV1;
 use codex_hepta_intelligence_eval::ProductTimingEvidenceV1;
 use codex_hepta_intelligence_eval::TemporalEvaluationPlan;
 use codex_hepta_learning_artifacts::LearningIterationCoordinatorV1;
-use codex_hepta_neuron::JournalAnchor;
 
 use super::*;
 use crate::CellEvaluationJournalsV1;
@@ -24,6 +17,7 @@ use crate::CellEvaluationRunnerV1;
 use crate::CellQ24ModelProposalInputsV1;
 use crate::CellQ24ModelProposalOwnerV1;
 use crate::LearningIterationEvidenceClientV1;
+use crate::OriginalCellEvaluationExecutionStoreV1;
 use crate::PublishedCircuitCellOwnerV1;
 use crate::SourceBoundCellQ24TrainingStageV1;
 
@@ -41,8 +35,7 @@ pub struct OriginalCircuitModelSelectionEvaluationSourcesV1<
     pub journals: CellEvaluationJournalsV1<'a, C, F>,
     pub candidate_plan: &'a TemporalEvaluationPlan,
     pub baseline_plan: &'a TemporalEvaluationPlan,
-    pub executions: &'a mut LockedFileProductEvaluationExecutionStoreV1,
-    pub execution_witness: &'a mut W,
+    pub executions: &'a mut OriginalCellEvaluationExecutionStoreV1<W>,
     pub context: &'a ProductQualificationContextV1,
     pub timing: ProductTimingEvidenceV1<'a>,
 }
@@ -185,6 +178,9 @@ impl<S: FinalHoldoutCasStoreV1, C: AnchorWitnessStore, F: AnchorWitnessStore, W:
     ) -> Result<(), Error> {
         let clock = || binding::now().map_err(|_| ProductProviderErrorV1::Unavailable);
         let runner: &mut CellEvaluationRunnerV1<S> = self.runner;
+        let mut executions = OriginalCellEvaluationExecutionStoreV1::readback_only(
+            self.executions, config.execution_evidence.key(),
+        );
         let (evaluation, execution) = runner.readback_completed_evidence(
             config.evaluation.plan(),
             CellEvaluationJournalsV1 {
@@ -199,11 +195,7 @@ impl<S: FinalHoldoutCasStoreV1, C: AnchorWitnessStore, F: AnchorWitnessStore, W:
                 verifier: &config.verifier,
                 clock: &clock,
             },
-            &mut OriginalExecution {
-                journal: self.executions,
-                witness: self.execution_witness,
-                key: config.execution_evidence.key(),
-            },
+            &mut executions,
         )?;
         if evaluation != config.evaluation || execution != config.execution_evidence {
             return Err(OwnerError::Binding("exact original completed evaluation evidence").into());
@@ -212,63 +204,3 @@ impl<S: FinalHoldoutCasStoreV1, C: AnchorWitnessStore, F: AnchorWitnessStore, W:
     }
 }
 
-/// Read-only access to one original execution. The generic runner cannot claim
-/// or complete through this port, and the exact key and physical witness are
-/// checked around every returned cached state.
-struct OriginalExecution<'a, W: AnchorWitnessStore> {
-    journal: &'a mut LockedFileProductEvaluationExecutionStoreV1,
-    witness: &'a mut W,
-    key: &'a ProductEvaluationExecutionKeyV1,
-}
-impl<W: AnchorWitnessStore> OriginalExecution<'_, W> {
-    fn require_current(&mut self) -> Result<JournalAnchor, OwnerError> {
-        let before = self.witness.current()?;
-        let physical = self.journal.read_current_anchor()?;
-        let current = JournalAnchor {
-            sequence: physical
-                .sequence
-                .checked_add(1)
-                .ok_or(OwnerError::Binding("original execution witness sequence"))?,
-            checkpoint_digest: physical.history_digest,
-        };
-        let after = self.witness.current()?;
-        if before != Some(current) || after != Some(current) {
-            return Err(OwnerError::CommitUncertain);
-        }
-        Ok(current)
-    }
-}
-impl<W: AnchorWitnessStore> ProductEvaluationExecutionStoreV1 for OriginalExecution<'_, W> {
-    fn claim(
-        &mut self,
-        _: &ProductEvaluationExecutionKeyV1,
-    ) -> Result<ProductEvaluationExecutionClaimV1, ProductEvaluationExecutionStoreErrorV1> {
-        Err(ProductEvaluationExecutionStoreErrorV1::Rejected)
-    }
-    fn complete(
-        &mut self,
-        _: &ProductEvaluationExecutionKeyV1,
-        _: &[u8],
-    ) -> Result<(), ProductEvaluationExecutionStoreErrorV1> {
-        Err(ProductEvaluationExecutionStoreErrorV1::Rejected)
-    }
-    fn readback(
-        &mut self,
-        key: &ProductEvaluationExecutionKeyV1,
-    ) -> Result<ProductEvaluationExecutionStateV1, ProductEvaluationExecutionStoreErrorV1> {
-        if key != self.key {
-            return Err(ProductEvaluationExecutionStoreErrorV1::Conflict);
-        }
-        let before = self
-            .require_current()
-            .map_err(|_| ProductEvaluationExecutionStoreErrorV1::Indeterminate)?;
-        let state = ProductEvaluationExecutionStoreV1::readback(self.journal, key);
-        let after = self
-            .require_current()
-            .map_err(|_| ProductEvaluationExecutionStoreErrorV1::Indeterminate)?;
-        if before != after {
-            return Err(ProductEvaluationExecutionStoreErrorV1::Indeterminate);
-        }
-        state
-    }
-}
