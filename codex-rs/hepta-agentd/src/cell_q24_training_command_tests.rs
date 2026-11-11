@@ -16,6 +16,9 @@ use crate::learning_iteration_evidence_client::command_test_support as transport
 type CommandOwner =
     OriginalCellQ24TrainingCommandOwnerV1<FileAnchorWitnessStore, FileAnchorWitnessStore>;
 
+type SharedStage =
+    Arc<SourceBoundCellQ24TrainingStageV1<FileAnchorWitnessStore, FileAnchorWitnessStore>>;
+
 fn context(fixture: &Harness) -> OriginalCellQ24TrainingCommandContextV1 {
     OriginalCellQ24TrainingCommandContextV1 {
         dataset: fixture.config.dataset.clone(),
@@ -24,7 +27,10 @@ fn context(fixture: &Harness) -> OriginalCellQ24TrainingCommandContextV1 {
     }
 }
 
-async fn owner(fixture: &Harness, create: bool) -> anyhow::Result<(Arc<CommandOwner>, Peers)> {
+async fn shared_owner(
+    fixture: &Harness,
+    create: bool,
+) -> anyhow::Result<(Arc<CommandOwner>, SharedStage, Peers)> {
     let (capture, peers) = fixture.capture().await?;
     let training = if create {
         CellQ24TrainingOwnerV1::create_from_original_source(
@@ -42,31 +48,37 @@ async fn owner(fixture: &Harness, create: bool) -> anyhow::Result<(Arc<CommandOw
     let original =
         OriginalCellQ24TrainingStageV1::from_original_owners(training, fixture.receipts(create)?)
             .await?;
-    let stage = SourceBoundCellQ24TrainingStageV1::from_original_stage(original).await?;
+    let stage = Arc::new(SourceBoundCellQ24TrainingStageV1::from_original_stage(original).await?);
     let cancellation = Arc::new(AtomicBool::new(false));
     let owner = if create {
         OriginalCellQ24TrainingCommandOwnerV1::from_original_stage(
-            stage,
+            Arc::clone(&stage),
             context(fixture),
             cancellation,
         )
         .await?
     } else {
         OriginalCellQ24TrainingCommandOwnerV1::recover_original_stage(
-            stage,
+            Arc::clone(&stage),
             context(fixture),
             cancellation,
         )
         .await?
     };
-    Ok((Arc::new(owner), peers))
+    Ok((Arc::new(owner), stage, peers))
+}
+
+async fn owner(fixture: &Harness, create: bool) -> anyhow::Result<(Arc<CommandOwner>, Peers)> {
+    let (owner, stage, peers) = shared_owner(fixture, create).await?;
+    drop(stage);
+    Ok((owner, peers))
 }
 
 #[tokio::test]
 async fn original_training_command_executes_and_produces_actual_evidence_readback()
 -> anyhow::Result<()> {
     let fixture = Harness::new().await?;
-    let (owner, peers) = owner(&fixture, true).await?;
+    let (owner, stage, peers) = shared_owner(&fixture, true).await?;
     let (client, channel) = transport::client(context(&fixture), false, None)?;
     let server = transport::serve(Arc::clone(&owner), channel);
     assert!(matches!(
@@ -82,6 +94,14 @@ async fn original_training_command_executes_and_produces_actual_evidence_readbac
         LearningIterationObservationV1::TrainingNoUpdateV2(_)
     ));
     let after = fixture.bytes()?;
+    // A second typed host handler retains the very same facade, with no
+    // trainer/key getter or writer reopen. It reads the original completion.
+    let shared = SourceBoundCellQ24TrainingStageV1::readback(
+        stage.as_ref(),
+        &fixture.config.dataset,
+    ).await?;
+    assert_eq!(shared.receipt, *completed.receipt());
+    assert_eq!(shared.attestation, *completed.attestation());
     assert_ne!(
         before, after,
         "actual native and Generator durable completion"
@@ -120,6 +140,7 @@ async fn original_training_command_executes_and_produces_actual_evidence_readbac
     drop(client);
     assert_eq!(server.join().expect("original command producer")?, 4);
     drop(owner);
+    drop(stage);
     finish(peers)?;
     Ok(())
 }
@@ -222,7 +243,7 @@ async fn original_training_command_withdrawal_after_claim_preserves_pending_with
     let original =
         OriginalCellQ24TrainingStageV1::from_original_owners(training, fixture.receipts(true)?)
             .await?;
-    let stage = SourceBoundCellQ24TrainingStageV1::from_original_stage(original).await?;
+    let stage = Arc::new(SourceBoundCellQ24TrainingStageV1::from_original_stage(original).await?);
     let owner = Arc::new(
         OriginalCellQ24TrainingCommandOwnerV1::from_original_stage(
             stage,

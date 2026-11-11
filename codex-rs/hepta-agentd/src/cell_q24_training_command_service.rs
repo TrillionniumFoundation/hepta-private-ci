@@ -35,7 +35,7 @@ enum Admission {
 }
 
 pub struct OriginalCellQ24TrainingCommandOwnerV1<TW: AnchorWitnessStore, RW: AnchorWitnessStore> {
-    stage: SourceBoundCellQ24TrainingStageV1<TW, RW>,
+    stage: Arc<SourceBoundCellQ24TrainingStageV1<TW, RW>>,
     context: OriginalCellQ24TrainingCommandContextV1,
     initial_head: Digest32,
     binding: Digest32,
@@ -48,10 +48,13 @@ pub struct OriginalCellQ24TrainingCommandOwnerV1<TW: AnchorWitnessStore, RW: Anc
 impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 'static>
     OriginalCellQ24TrainingCommandOwnerV1<TW, RW>
 {
-    /// Transfer the already captured original Stage and its actual host-side
-    /// cancellation token. This cannot create a native owner, key, grant or job.
+    /// Retain the same captured Stage facade and actual host cancellation.
+    /// The original host can keep this same Arc for its four narrow Model
+    /// handlers. The facade retains one semaphore, mutex and source identity;
+    /// no native writer or key is cloned, reopened, exposed or reconstructed.
+    /// This local sharing does not transfer custody across a UID boundary.
     pub async fn from_original_stage(
-        stage: SourceBoundCellQ24TrainingStageV1<TW, RW>,
+        stage: Arc<SourceBoundCellQ24TrainingStageV1<TW, RW>>,
         context: OriginalCellQ24TrainingCommandContextV1,
         cancellation: Arc<AtomicBool>,
     ) -> Result<Self, Error> {
@@ -62,7 +65,7 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
     /// Serving resumes readback only, including Missing and unresolved Pending;
     /// this path never sends execution to the Stage or renews a signature.
     pub async fn recover_original_stage(
-        stage: SourceBoundCellQ24TrainingStageV1<TW, RW>,
+        stage: Arc<SourceBoundCellQ24TrainingStageV1<TW, RW>>,
         context: OriginalCellQ24TrainingCommandContextV1,
         cancellation: Arc<AtomicBool>,
     ) -> Result<Self, Error> {
@@ -70,7 +73,7 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
     }
 
     async fn bind_original_stage(
-        stage: SourceBoundCellQ24TrainingStageV1<TW, RW>,
+        stage: Arc<SourceBoundCellQ24TrainingStageV1<TW, RW>>,
         context: OriginalCellQ24TrainingCommandContextV1,
         cancellation: Arc<AtomicBool>,
         admission: Admission,
