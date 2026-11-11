@@ -1,0 +1,267 @@
+{
+  "schema": "mem8.v6.minimum-native-qualification-selection.v1",
+  "status": "READ_ONLY_PLAN_NOT_EXECUTED",
+  "reference_source_head": "9bd2f589debdba4a93baa363817c3669cb103721",
+  "reference_source_tree": "c77785ecb368c44ea699769001a47402c9f50591",
+  "future_v6_head": null,
+  "minimum_behavior_cases": [
+    "cell_generation_control::tests::lost_rpc_reply_and_queue_capacity_cannot_duplicate_original_dispatch",
+    "cell_generation_control::tests::terminal_readback_does_not_promote_persistent_uncertainty_to_success",
+    "token::tests::legacy_workspace_capability_refuses_all_four_native_delete_routes",
+    "unified_exec::tests::delete_permission_tests::legacy_refuses_before_elevated_four_cell_delete_boundary",
+    "suite::apply_patch_cli::apply_patch_cli_preserves_existing_hard_link_outside_workspace"
+  ],
+  "minimum_top_level_case_count": 5,
+  "private_child_observations": {
+    "case": "delete_permission_control::ordinary_delete_control_child",
+    "expected_invocations_if_both_parents_reach_helper": 2,
+    "role": "Explicit private ignored libtest entry, invoked only by the two active parent tests. Not an extra public qualification case and not a general --ignored run.",
+    "bounded_cmd_grandchild": true
+  },
+  "candidate_source_provenance": {
+    "neuron_tests_post": "d81a69390659f1fa9d8a67000565a00c54cb0ac0",
+    "ordinary_helper_post": "d2d220c002715474a6187b4b4e6ee8ae6d93f0f8",
+    "ordinary_parent_posts": [
+      "dc0727567a8321afcd7920db2f3087c2328695cc",
+      "05623f4354e478853584ef702985869a1beb9c4c"
+    ],
+    "ordinary_module_post": "22185fc9765823265a99b27e851cd142fcd80e6d",
+    "hardlink_post": "dd76ce5536f75a4e66b7310a2fbf91c96663e78d",
+    "source_gate_or_native_result_inferred_from_static_review": false
+  },
+  "existing_lanes": [
+    {
+      "lane": "Windows original CI regressions",
+      "workflow": ".github/workflows/hepta-windows-current-ci.yml",
+      "event": "PR path match from windows-sandbox-rs changes; workflow_dispatch has no selection inputs",
+      "platform": "windows-latest",
+      "job_timeout_minutes": 65,
+      "checkout": "exact PR head",
+      "coverage": [
+        "token::tests::legacy_workspace_capability_refuses_all_four_native_delete_routes",
+        "unified_exec::tests::delete_permission_tests::legacy_refuses_before_elevated_four_cell_delete_boundary"
+      ],
+      "group": "sandbox-native-delete-routes",
+      "expected_selected_parent_count": 2,
+      "group_position_1_based": 8,
+      "helper_preparation": "Existing driver builds both original real Windows helper binaries from exact manifest, verifies PE bytes/compiler artifacts, and materializes same bytes next to the nextest test executable.",
+      "filter_unchanged": true,
+      "private_child_auto_selected_by_nextest": false,
+      "execution_flags": [
+        "--lib",
+        "--cargo-profile",
+        "dev-small",
+        "--test-threads",
+        "1",
+        "--no-tests",
+        "fail",
+        "--retries",
+        "0"
+      ],
+      "missing_from_this_lane": [
+        "cell_generation_control::tests::lost_rpc_reply_and_queue_capacity_cannot_duplicate_original_dispatch",
+        "cell_generation_control::tests::terminal_readback_does_not_promote_persistent_uncertainty_to_success",
+        "suite::apply_patch_cli::apply_patch_cli_preserves_existing_hard_link_outside_workspace"
+      ],
+      "qualification_limit": "65-minute job can terminate before later groups; terminal/source-after evidence remains mandatory. Existing strict group cannot be relabeled PASS from partial logs."
+    },
+    {
+      "lane": "Bazel Windows outer shard 3/4",
+      "workflow": ".github/workflows/bazel.yml",
+      "called_by": "blocking-ci full_repo",
+      "target": "//codex-rs/hepta-neuron:hepta-neuron-unit-tests",
+      "platform": "windows-latest / x86_64-pc-windows-msvc",
+      "job_timeout_minutes": 120,
+      "coverage": [
+        "cell_generation_control::tests::lost_rpc_reply_and_queue_capacity_cannot_duplicate_original_dispatch",
+        "cell_generation_control::tests::terminal_readback_does_not_promote_persistent_uncertainty_to_success"
+      ],
+      "unit_test_features": [
+        "qualification-owned-file-read"
+      ],
+      "source_binding": "Current BUILD uses test-lib replacement for hepta-infer-core and required worker binary; new nonignored case belongs to the same compiled unit-test module.",
+      "posix_cksum_label_with_newline": 1137310466,
+      "outer_shard": 3,
+      "actual_9bd2_original_failure_job": 130526871668,
+      "test_result_transfer_from_9bd2": false
+    },
+    {
+      "lane": "Bazel Windows outer shard 2/4",
+      "workflow": ".github/workflows/bazel.yml",
+      "target": "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests",
+      "platform": "windows-latest / x86_64-pc-windows-msvc",
+      "job_timeout_minutes": 120,
+      "coverage": [
+        "token::tests::legacy_workspace_capability_refuses_all_four_native_delete_routes",
+        "unified_exec::tests::delete_permission_tests::legacy_refuses_before_elevated_four_cell_delete_boundary"
+      ],
+      "posix_cksum_label_with_newline": 1544371041,
+      "outer_shard": 2,
+      "ignored_child": "Default libtest skips the private child as a top-level case. Both parents explicitly launch that same exact test binary with --exact child --ignored --nocapture --test-threads=1 after suspended-token proof.",
+      "native_helpers": "Current BUILD declares original setup/command-runner as real test data; existing launcher/materialization still applies."
+    },
+    {
+      "lane": "Bazel Windows outer shard 4/4",
+      "workflow": ".github/workflows/bazel.yml",
+      "target": "//codex-rs/core:core-all-test",
+      "platform": "windows-latest / x86_64-pc-windows-msvc",
+      "job_timeout_minutes": 120,
+      "coverage": [
+        "suite::apply_patch_cli::apply_patch_cli_preserves_existing_hard_link_outside_workspace"
+      ],
+      "posix_cksum_label_with_newline": 2307284455,
+      "outer_shard": 4,
+      "inner_target_shard_count": 16,
+      "inner_target_timeout": "long",
+      "existing_target_flaky_retry_policy_unchanged": true,
+      "helper_preparation": "Core BUILD declares real CLI, code-mode host and both Windows sandbox binaries as runfiles; 9bd2 launcher has the actual-executable Windows sibling staging path.",
+      "body_reachability": "Requires actual Windows cfg, local test environment and no sandbox-network-disabled environment marker. A libtest PASS caused by an early skip is not physical assertion evidence.",
+      "positive_end_state": "After exact public exit-code/path error, both aliases retain original content; writing the outside alias afterwards must remain visible through the workspace alias. No inner runtime error cause is inferred from the outer error alone."
+    }
+  ],
+  "other_lanes": [
+    {
+      "lane": "MEM native-owner",
+      "coverage_of_five_cases": [],
+      "reason": "Selectors are memory episodic, Agentd episodic/profile and protocol; linking a dependency does not run Neuron or core integration tests."
+    },
+    {
+      "lane": "Architecture source-head",
+      "coverage_of_five_cases": [],
+      "reason": "Fixed command list has no hepta-neuron unit test or Windows sandbox/core integration target. Existing inference tests are not these cases."
+    },
+    {
+      "lane": "Bazel Linux/macOS",
+      "coverage": [
+        "cell_generation_control::tests::lost_rpc_reply_and_queue_capacity_cannot_duplicate_original_dispatch",
+        "cell_generation_control::tests::terminal_readback_does_not_promote_persistent_uncertainty_to_success"
+      ],
+      "limits": "Useful shared/helper regression; cannot establish the Windows primary-token, DACL or cfg(windows) hardlink behavior."
+    },
+    {
+      "lane": "Bazel core Wine/remote variants",
+      "coverage_as_Windows_hardlink_evidence": false,
+      "reason": "The hardlink test explicitly skips remote environment, and a Linux-compiled wrapper's cfg(windows) branch cannot substitute for the actual native Windows case."
+    }
+  ],
+  "dispatch_and_scope": {
+    "blocking_policy": "Current scope selector chooses full_repo for non-Hepta codex-rs/core and codex-rs/windows-sandbox-rs source; existing blocking-ci then calls Bazel. No new full-workspace/platform gate is invented here.",
+    "base_diff_scope": "Existing integration PR is against common96038; the final exact V6 diff still must be bound by the original scope receipt.",
+    "existing_supported_actions": [
+      "New PR head automatically triggers applicable existing lanes.",
+      "Windows-current workflow_dispatch without target-selection inputs.",
+      "Bazel workflow_dispatch without target-selection inputs; this is the whole existing matrix, not a five-case dispatch."
+    ],
+    "actions_performed": [],
+    "avoid_duplicate_dispatch": "Prefer the original automatic run for the newly published exact head. Do not rerun 9bd2 to validate V6.",
+    "no_selective_dispatch_in_existing_workflows": true,
+    "do_not_use_bazel_core_filter_naively": "The core target already has 16 shards; the current launcher TESTBRIDGE_TEST_ONLY branch bypasses its per-shard splitter. A naive --test_filter may run the same one case in all16 shards; do not interpret those as16 distinct cases."
+  },
+  "optional_focused_commands_if_root_later_authorizes_new_bounded_runner": [
+    {
+      "working_directory": "codex-rs",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-neuron",
+        "--features",
+        "qualification-owned-file-read",
+        "--lib",
+        "-E",
+        "test(=cell_generation_control::tests::lost_rpc_reply_and_queue_capacity_cannot_duplicate_original_dispatch) | test(=cell_generation_control::tests::terminal_readback_does_not_promote_persistent_uncertainty_to_success)",
+        "--test-threads",
+        "1",
+        "--no-tests",
+        "fail",
+        "--retries",
+        "0",
+        "--no-capture"
+      ],
+      "expected_cases": [
+        "cell_generation_control::tests::lost_rpc_reply_and_queue_capacity_cannot_duplicate_original_dispatch",
+        "cell_generation_control::tests::terminal_readback_does_not_promote_persistent_uncertainty_to_success"
+      ]
+    },
+    {
+      "working_directory": "codex-rs",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-windows-sandbox",
+        "--lib",
+        "--cargo-profile",
+        "dev-small",
+        "-E",
+        "test(=token::tests::legacy_workspace_capability_refuses_all_four_native_delete_routes) | test(=unified_exec::tests::delete_permission_tests::legacy_refuses_before_elevated_four_cell_delete_boundary)",
+        "--test-threads",
+        "1",
+        "--no-tests",
+        "fail",
+        "--retries",
+        "0",
+        "--no-capture"
+      ],
+      "expected_cases": [
+        "token::tests::legacy_workspace_capability_refuses_all_four_native_delete_routes",
+        "unified_exec::tests::delete_permission_tests::legacy_refuses_before_elevated_four_cell_delete_boundary"
+      ],
+      "prerequisite": "Existing exact-source prepare_sandbox_helpers and private physical TEMP setup; do not substitute PATH binaries."
+    },
+    {
+      "working_directory": "codex-rs",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-core",
+        "--test",
+        "all",
+        "-E",
+        "test(=suite::apply_patch_cli::apply_patch_cli_preserves_existing_hard_link_outside_workspace)",
+        "--test-threads",
+        "1",
+        "--no-tests",
+        "fail",
+        "--retries",
+        "0",
+        "--no-capture"
+      ],
+      "expected_cases": [
+        "suite::apply_patch_cli::apply_patch_cli_preserves_existing_hard_link_outside_workspace"
+      ],
+      "prerequisite": "Actual Windows local test environment with network-enabled local mock support; separately built exact-source CLI/runtime/helpers with original sibling/runfile bindings. This command alone is not a ready runner."
+    }
+  ],
+  "unchanged_budgets": {
+    "neuron": "Original RPC30ms and nominal wait_until5s unchanged. The new persistent-uncertainty control must fail its terminal wait at the same original limit, retain UNKNOWN, require worker1, and use original shutdown; no reopen or new request identity.",
+    "ordinary_control": "Original5s execution deadline, original elevated10s deadline and existing failure-only5000ms native cleanup grace. No strict5s whole-run claim.",
+    "core_hardlink": "Original helper/test deadlines, mock expectations, physical assertions and shared Nextest timeout are unchanged.",
+    "CI": "Existing Windows-current65min / Bazel120min ceilings remain. Source-only V6 600s is a separate gate, not native qualification time.",
+    "no_retry_or_timeout_expansion_proposed": true
+  },
+  "qualification_evidence": [
+    "Final formatted V6 exact commit/tree and clean before/after; final CLI/helper bytes if a focused Cargo runner is used.",
+    "Two exact Neuron case IDs actually run with zero failed cases. Persistent unknown negative must pass only by catching original deadline panic, not by accepting CommitUncertain as a result.",
+    "Both ordinary parent case IDs actually run; distinguish original child proof/one structured response from unrelated parent diagnostic privileges.",
+    "Four-cell ordinary expected results and original restricted/elevated assertions remain required. A new ordinary-control success cannot relabel a still-failing elevated boundary as fixed.",
+    "Core hardlink PASS with actual Windows/local/non-skipping path demonstrated; retain full TestRunner/JUnit and safe test-environment metadata or uncaptured skip diagnostics.",
+    "Preserve LEAK, timeout, retries and unknown status separately; do not count private child markers, repeated inner shards or framework retries as new independent cases.",
+    "No original provider/G model case is included; do not add broad ignored-test flags. Source/static/test engineering progress does not establish unseen memory benefit."
+  ],
+  "references_index": "SOURCE_INDEX.json + DEFS_PIN.json",
+  "actions": {
+    "read_only_source_fetches": true,
+    "local_source_hash_and_cksum_checks": true,
+    "host_requests": 0,
+    "native_runs": 0,
+    "model_calls": 0,
+    "workflow_dispatch": 0,
+    "reruns": 0,
+    "refs_changed": false
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "review": "Full token constructor/default DACL, desktop selection and current read ACL helper admission read directly. Broad restricting identities can be removed as partial tightening, but no complete parent-delete repair or read-capability completion acknowledgement exists. No native result inferred.",
+  "critical_paths": [
+    "source/codex-rs/windows-sandbox-rs/src/token.rs",
+    "source/codex-rs/windows-sandbox-rs/src/desktop.rs",
+    "source/codex-rs/windows-sandbox-rs/src/bin/setup_main/win.rs"
+  ],
+  "source_files_bound_to_complete_9bd2_tree": 23,
+  "schema": "mem8.root-readonly-source-review.v1",
+  "head": "9bd2f589debdba4a93baa363817c3669cb103721",
+  "tree": "c77785ecb368c44ea699769001a47402c9f50591",
+  "product_blocker_closed": false,
+  "new_native_tests": 0,
+  "new_model_requests": 0
+}

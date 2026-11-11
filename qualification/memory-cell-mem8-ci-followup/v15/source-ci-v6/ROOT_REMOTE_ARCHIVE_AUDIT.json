@@ -1,0 +1,36 @@
+{
+  "schema": "mem8.v6.root-full-remote-audit.v1",
+  "immutable_commit": "605f7959c6e00b981dad54cc69d913014ab65bab",
+  "actual_parts": 13,
+  "archive": {
+    "bytes": 5545448,
+    "sha256": "32351e2c72e74209718864e6a06a8b08f8ad810482eaf5d5cba592a198181d40",
+    "git_blob": "706aaf47e6a4c3a203c94406c5af6523c0e2b9fa"
+  },
+  "outer_members": 22,
+  "original_artifact": {
+    "bytes": 6686095,
+    "sha256": "1bcacc894f007f62f288cec8384ff93982ae524f7567fe21d4bab5951e83fe1f",
+    "git_blob": "b3b07a277e70d886513bcec5b00d9cfa04f2b5d9"
+  },
+  "full_raw_job": {
+    "bytes": 108272,
+    "sha256": "24db8bfddbcd83244d8f7c49defb2558fa91ec303a68ccb5de6b95b94716c51c",
+    "git_blob": "53f0bfcbb6d1d1cae3fdda88344d60c6beffa5a5"
+  },
+  "offline_replay": {
+    "status": "PASS_OFFLINE_V6_PACKAGE",
+    "archive_members": 22,
+    "zip_members": 365,
+    "tar_members": 363,
+    "source_paths": 109,
+    "source_python_actual_pass": 18,
+    "rust_files": 6201,
+    "full_golden_comparison": "only derived rustFilesScanned differs by +1",
+    "native_execution": 0,
+    "model_calls": 0
+  },
+  "whole_archive_created_as_blob": false,
+  "native_executions": 0,
+  "model_calls": 0
+}
