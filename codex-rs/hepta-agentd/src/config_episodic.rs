@@ -12,6 +12,9 @@ impl AgentdConfig {
     /// The embedding authenticates the original live source owner and supplies
     /// stable fact observations. Hashes and request provenance are not authority.
     /// The verifier must bound blocking I/O and reject stale or revoked input.
+    /// Explicit cognitive-context reads recheck that source before and after
+    /// reading the owner. Restart requires a current snapshot reconciliation.
+    /// Automatic attachments and recall tools need a separate source binding.
     pub fn with_episodic_snapshot_import(
         mut self,
         namespace: String,
@@ -41,6 +44,7 @@ impl AgentdConfig {
             namespace,
             writer: Arc::clone(writer),
             verifier,
+            source_reads: Default::default(),
         }));
         Ok(self)
     }

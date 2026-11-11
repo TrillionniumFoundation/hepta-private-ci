@@ -25,15 +25,23 @@ use super::attach_production_operation_host;
 // Exact Unicode export produced by the pinned Python EpisodicStore.
 const SNAPSHOT: &str = r#"{"body":{"authority_id":"0000000000004000800000000000e001","generation":1,"namespace":"bridge-fixture","records":[{"dependencies":[],"key":"流程","namespace":"bridge-fixture","provenance":{"episode_id":"独立来源","source_sha256":"81b2ada28e09db7ffcc8f0f0dde36515818b1d79b29c75c4bbda85c7cc881e81","source_uri":"fixture://café/路径","source_version":"修订一"},"record_id":"df205a88266e26029285c4ae4e570edf47a2435888a26500de19e6af2820af4a","source_id":"源A","text":"更新：蓝色路径 café 🚀\n保留事实，而不是执行指令。","version":1,"write_sequence":1}],"schema":"hepta.mem6.snapshot.v1"},"sha256":"fb4e834f9e8d6cec04fcbbfa7c20b11f7f42aac1e9385754d336e2825581032e"}"#;
 
-struct FixtureSource(Mutex<(String, EpisodicSnapshotAdmission)>);
+struct FixtureSource(
+    Mutex<(String, EpisodicSnapshotAdmission)>,
+    Mutex<Option<EpisodicSnapshotAdmission>>,
+);
 
 impl EpisodicSnapshotVerifier for FixtureSource {
     fn verify_current(&self, snapshot_json: &str) -> Result<EpisodicSnapshotAdmission, String> {
-        let current = self.0.lock().map_err(|error| error.to_string())?;
+        let mut current = self.0.lock().map_err(|error| error.to_string())?;
         if current.0 != snapshot_json {
             return Err("test-only source rejects stale input".into());
         }
-        Ok(current.1.clone())
+        let observed = current.1.clone();
+        // Explicit fixture transition after this read, before its caller's I/O.
+        if let Some(next) = self.1.lock().map_err(|error| error.to_string())?.take() {
+            current.1 = next;
+        }
+        Ok(observed)
     }
 }
 
@@ -58,7 +66,7 @@ fn observed_source() -> Arc<FixtureSource> {
             )]),
             withdrawal: None,
         },
-    ))))
+    )), Mutex::new(None)))
 }
 
 #[tokio::test]
@@ -116,6 +124,11 @@ async fn episodic_control_replays_original_commit_then_rejects_revoked_context()
         identity.agent_id.clone(),
         /*spawn_generation*/ 1,
     )?;
+    // A fresh configured process has no current source observation, even if
+    // native context would otherwise be empty. Reconciliation opens this path.
+    let before = host.writer().recovery_anchor().await?;
+    assert!(first.cognitive_context("café".into(), /*limit*/ 4).await.is_err());
+    assert_eq!(host.writer().recovery_anchor().await?, before);
     let wrong_namespace = SNAPSHOT.replace("bridge-fixture", "another-namespace");
     assert!(
         first
@@ -149,6 +162,29 @@ async fn episodic_control_replays_original_commit_then_rejects_revoked_context()
             .verified_item_count,
         1
     );
+    let original = source.0.lock().unwrap().1.clone();
+    let mut metadata_changed = original.clone();
+    metadata_changed.records.values_mut().next().unwrap().source.event_key.push_str("-changed");
+    let mut provisional = original.clone();
+    provisional.records.values_mut().next().unwrap().verification = MemoryVerification::Provisional;
+    // Independent source changes with byte-identical facts do not reuse the
+    // previously Verified canonical cut. Reset only the test fixture between cases.
+    for changed in [metadata_changed.clone(), provisional] {
+        source.0.lock().unwrap().1 = changed;
+        assert!(next.cognitive_context("café".into(), /*limit*/ 4).await.is_err());
+        assert!(next.revalidate_cognitive_context(&context).await.is_err());
+        assert_eq!(host.writer().recovery_anchor().await?, cut);
+        source.0.lock().unwrap().1 = original.clone();
+    }
+    // The first source check succeeds, then the fixture changes before the
+    // owner async read. Publication and final revalidation must check again.
+    *source.1.lock().unwrap() = Some(metadata_changed.clone());
+    assert!(next.cognitive_context("café".into(), /*limit*/ 4).await.is_err());
+    source.0.lock().unwrap().1 = original.clone();
+    *source.1.lock().unwrap() = Some(metadata_changed);
+    assert!(next.revalidate_cognitive_context(&context).await.is_err());
+    assert_eq!(host.writer().recovery_anchor().await?, cut);
+    source.0.lock().unwrap().1 = original;
     let body = r#"{"authority_id":"0000000000004000800000000000e001","generation":2,"namespace":"bridge-fixture","records":[],"schema":"hepta.mem6.snapshot.v1"}"#;
     let withdrawn = format!(
         r#"{{"body":{body},"sha256":"{}"}}"#,
@@ -167,6 +203,11 @@ async fn episodic_control_replays_original_commit_then_rejects_revoked_context()
             }),
         },
     );
+    // External revocation alone must close reads before any native tombstone
+    // is imported. The refused reads do not mutate the canonical owner.
+    assert!(next.cognitive_context("café".into(), /*limit*/ 4).await.is_err());
+    assert!(next.revalidate_cognitive_context(&context).await.is_err());
+    assert_eq!(host.writer().recovery_anchor().await?, cut);
     assert!(
         next.import_episodic_snapshot(SNAPSHOT.into())
             .await

@@ -1,6 +1,7 @@
 //! Imports reuse the configured original writer and authenticated source reader.
 //! An acknowledgement proves a committed cut, not future source freshness.
 use std::sync::Arc;
+use std::sync::Mutex;
 use std::sync::atomic::AtomicBool;
 use std::sync::atomic::Ordering;
 
@@ -15,10 +16,14 @@ use codex_hepta_memory::EpisodicSnapshotVerifier;
 use crate::AgentdError;
 use crate::AgentdProductionWriterHost;
 
+#[path = "episodic_source_read.rs"]
+mod source_read;
+
 pub(crate) struct EpisodicImportIngress {
     pub(crate) namespace: String,
     pub(crate) writer: Arc<AgentdProductionWriterHost>,
     pub(crate) verifier: Arc<dyn EpisodicSnapshotVerifier>,
+    pub(crate) source_reads: source_read::EpisodicSourceReads,
 }
 
 // The original verifier remains the only source authority. This shared flag
@@ -26,6 +31,7 @@ pub(crate) struct EpisodicImportIngress {
 struct ImportSource<'a> {
     original: &'a dyn EpisodicSnapshotVerifier,
     unresolved: &'a AtomicBool,
+    observed: &'a Mutex<Option<EpisodicSnapshotAdmission>>,
 }
 
 impl ImportSource<'_> {
@@ -42,6 +48,7 @@ impl EpisodicSnapshotVerifier for ImportSource<'_> {
         self.require_owner()?;
         let admission = self.original.verify_current(input)?;
         self.require_owner()?;
+        *self.observed.lock().map_err(|_| "source observation lock poisoned")? = Some(admission.clone());
         Ok(admission)
     }
 }
@@ -70,6 +77,7 @@ impl EpisodicImportIngress {
         }
         // Identity and scope come from the retained host, never the request.
         let access = CognitiveAccess::agent_private(self.writer.writer().owner_agent_id().clone());
+        let observed = Mutex::new(None);
         let receipt = self
             .writer
             .import_episodic_snapshot(
@@ -79,9 +87,14 @@ impl EpisodicImportIngress {
                 &ImportSource {
                     original: self.verifier.as_ref(),
                     unresolved,
+                    observed: &observed,
                 },
             )
             .await?;
+        let admission = observed.into_inner()
+            .map_err(|_| AgentdError::Protocol("source observation lock poisoned".into()))?
+            .ok_or_else(|| AgentdError::Protocol("committed import omitted source observation".into()))?;
+        self.source_reads.publish(snapshot_json.to_owned(), admission, receipt.clone())?;
         let receipt_sha256 = Sha256Digest::for_bytes(&serde_json::to_vec(&receipt)?);
         let active_records = receipt
             .bindings
