@@ -37,6 +37,24 @@ class CellSpec:
     total_work_units: int = 1000000
 
     def __post_init__(self):
+        # Native stable identities have one byte representation.  In particular,
+        # str subclasses can override equality/hash and spoof lineage membership.
+        if any(
+            type(value) is not str
+            for value in (
+                self.cell_id,
+                self.lineage,
+                self.family,
+                self.kernel,
+                self.initial_identity,
+                self.objective,
+                self.trainable,
+            )
+        ) or any(
+            value is not None and type(value) is not str
+            for value in (self.update_rule, self.evaluation_profile)
+        ):
+            raise CellError("Cell identities must be canonical builtin strings")
         for value in (
             self.cell_id,
             self.lineage,
@@ -102,10 +120,18 @@ class CellSpec:
 
     @classmethod
     def from_record(cls, record):
-        if type(record) is not dict or set(record) != {f.name for f in fields(cls)}:
+        if (
+            type(record) is not dict
+            or any(type(key) is not str for key in record)
+            or set(record) != {f.name for f in fields(cls)}
+        ):
             raise CellError("Cell specification fields differ from the frozen schema")
         budget = record["budget"]
-        if type(budget) is not dict or set(budget) != {f.name for f in fields(Budget)}:
+        if (
+            type(budget) is not dict
+            or any(type(key) is not str for key in budget)
+            or set(budget) != {f.name for f in fields(Budget)}
+        ):
             raise CellError("instance budget fields differ from the frozen schema")
         return cls(**dict(record, budget=Budget(**budget)))
 
@@ -125,6 +151,8 @@ class PopulationPlan:
     max_plastic_cells: int = 2
 
     def __post_init__(self):
+        if type(self.principal_id) is not str or type(self.agent_id) is not str:
+            raise CellError("population owner IDs must be canonical builtin strings")
         _token(self.principal_id)
         _token(self.agent_id)
         if (
@@ -165,15 +193,23 @@ class PopulationPlan:
 
     @classmethod
     def from_record(cls, record):
-        if type(record) is not dict or set(record) != {
-            "schema",
-            "principal_id",
-            "agent_id",
-            "cells",
-            "max_plastic_cells",
-        }:
+        if (
+            type(record) is not dict
+            or any(type(key) is not str for key in record)
+            or set(record) != {
+                "schema",
+                "principal_id",
+                "agent_id",
+                "cells",
+                "max_plastic_cells",
+            }
+        ):
             raise CellError("population fields differ from the frozen schema")
-        if record["schema"] != SCHEMA or type(record["cells"]) is not list:
+        if (
+            type(record["schema"]) is not str
+            or record["schema"] != SCHEMA
+            or type(record["cells"]) is not list
+        ):
             raise CellError("invalid population schema or instance collection")
         if not 7 <= len(record["cells"]) <= 128:
             raise CellError("population instance count is outside its bound")
