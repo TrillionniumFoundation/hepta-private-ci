@@ -1,0 +1,156 @@
+test_byte_identical_origin_and_fixed_digest (test_frozen_policy_lineage.FrozenPolicyLineageTests.test_byte_identical_origin_and_fixed_digest) ... 
+  test_byte_identical_origin_and_fixed_digest (test_frozen_policy_lineage.FrozenPolicyLineageTests.test_byte_identical_origin_and_fixed_digest) (file='POSTERIOR-POLICY.json') ... ERROR
+  test_byte_identical_origin_and_fixed_digest (test_frozen_policy_lineage.FrozenPolicyLineageTests.test_byte_identical_origin_and_fixed_digest) (file='OPTIMIZATION-POSTERIOR-POLICY-v2.json') ... ERROR
+  test_byte_identical_origin_and_fixed_digest (test_frozen_policy_lineage.FrozenPolicyLineageTests.test_byte_identical_origin_and_fixed_digest) (file='CONTRACT.json') ... ERROR
+test_cross_bound_policies_and_data (test_frozen_policy_lineage.FrozenPolicyLineageTests.test_cross_bound_policies_and_data) ... ERROR
+test_existing_hold_not_minted_into_authorization (test_frozen_policy_lineage.FrozenPolicyLineageTests.test_existing_hold_not_minted_into_authorization) ... 
+  test_existing_hold_not_minted_into_authorization (test_frozen_policy_lineage.FrozenPolicyLineageTests.test_existing_hold_not_minted_into_authorization) (file='POSTERIOR-POLICY.json') ... ERROR
+  test_existing_hold_not_minted_into_authorization (test_frozen_policy_lineage.FrozenPolicyLineageTests.test_existing_hold_not_minted_into_authorization) (file='OPTIMIZATION-POSTERIOR-POLICY-v2.json') ... ERROR
+  test_existing_hold_not_minted_into_authorization (test_frozen_policy_lineage.FrozenPolicyLineageTests.test_existing_hold_not_minted_into_authorization) (file='CONTRACT.json') ... ERROR
+test_existing_hold_not_minted_into_authorization (test_frozen_policy_lineage.FrozenPolicyLineageTests.test_existing_hold_not_minted_into_authorization) ... ERROR
+test_preflight_does_not_publish_or_authorize (test_frozen_policy_lineage.FrozenPolicyLineageTests.test_preflight_does_not_publish_or_authorize) ... ok
+test_program_preflight_is_complete_but_still_unadopted (test_frozen_policy_lineage.FrozenPolicyLineageTests.test_program_preflight_is_complete_but_still_unadopted) ... ERROR
+
+======================================================================
+ERROR: test_byte_identical_origin_and_fixed_digest (test_frozen_policy_lineage.FrozenPolicyLineageTests.test_byte_identical_origin_and_fixed_digest) (file='POSTERIOR-POLICY.json')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hcsn-p0p5-frozen-policy-r13-20261111/qualification/hcsn_differentiable/c2_successor_v1/test_frozen_policy_lineage.py", line 29, in test_byte_identical_origin_and_fixed_digest
+    candidate = (CANDIDATE / name).read_bytes()
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/qian-qi/work/hepta-cell-s0-desktop-native-20261109-898e/cpu-hc-runtime-v2/payload/python/lib/python3.12/pathlib.py", line 1019, in read_bytes
+    with self.open(mode='rb') as f:
+         ^^^^^^^^^^^^^^^^^^^^
+  File "/home/qian-qi/work/hepta-cell-s0-desktop-native-20261109-898e/cpu-hc-runtime-v2/payload/python/lib/python3.12/pathlib.py", line 1013, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/qian-qi/hcsn-p0p5-frozen-policy-r13-20261111/qualification/hcsn_differentiable/c2_successor_v1/POSTERIOR-POLICY.json'
+
+======================================================================
+ERROR: test_byte_identical_origin_and_fixed_digest (test_frozen_policy_lineage.FrozenPolicyLineageTests.test_byte_identical_origin_and_fixed_digest) (file='OPTIMIZATION-POSTERIOR-POLICY-v2.json')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hcsn-p0p5-frozen-policy-r13-20261111/qualification/hcsn_differentiable/c2_successor_v1/test_frozen_policy_lineage.py", line 29, in test_byte_identical_origin_and_fixed_digest
+    candidate = (CANDIDATE / name).read_bytes()
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/qian-qi/work/hepta-cell-s0-desktop-native-20261109-898e/cpu-hc-runtime-v2/payload/python/lib/python3.12/pathlib.py", line 1019, in read_bytes
+    with self.open(mode='rb') as f:
+         ^^^^^^^^^^^^^^^^^^^^
+  File "/home/qian-qi/work/hepta-cell-s0-desktop-native-20261109-898e/cpu-hc-runtime-v2/payload/python/lib/python3.12/pathlib.py", line 1013, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/qian-qi/hcsn-p0p5-frozen-policy-r13-20261111/qualification/hcsn_differentiable/c2_successor_v1/OPTIMIZATION-POSTERIOR-POLICY-v2.json'
+
+======================================================================
+ERROR: test_byte_identical_origin_and_fixed_digest (test_frozen_policy_lineage.FrozenPolicyLineageTests.test_byte_identical_origin_and_fixed_digest) (file='CONTRACT.json')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hcsn-p0p5-frozen-policy-r13-20261111/qualification/hcsn_differentiable/c2_successor_v1/test_frozen_policy_lineage.py", line 29, in test_byte_identical_origin_and_fixed_digest
+    candidate = (CANDIDATE / name).read_bytes()
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/qian-qi/work/hepta-cell-s0-desktop-native-20261109-898e/cpu-hc-runtime-v2/payload/python/lib/python3.12/pathlib.py", line 1019, in read_bytes
+    with self.open(mode='rb') as f:
+         ^^^^^^^^^^^^^^^^^^^^
+  File "/home/qian-qi/work/hepta-cell-s0-desktop-native-20261109-898e/cpu-hc-runtime-v2/payload/python/lib/python3.12/pathlib.py", line 1013, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/qian-qi/hcsn-p0p5-frozen-policy-r13-20261111/qualification/hcsn_differentiable/c2_successor_v1/CONTRACT.json'
+
+======================================================================
+ERROR: test_cross_bound_policies_and_data (test_frozen_policy_lineage.FrozenPolicyLineageTests.test_cross_bound_policies_and_data)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hcsn-p0p5-frozen-policy-r13-20261111/qualification/hcsn_differentiable/c2_successor_v1/test_frozen_policy_lineage.py", line 34, in test_cross_bound_policies_and_data
+    posterior, optimization, contract = (
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/qian-qi/hcsn-p0p5-frozen-policy-r13-20261111/qualification/hcsn_differentiable/c2_successor_v1/test_frozen_policy_lineage.py", line 35, in <genexpr>
+    json.loads((CANDIDATE / name).read_bytes()) for name in NAMES
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/qian-qi/work/hepta-cell-s0-desktop-native-20261109-898e/cpu-hc-runtime-v2/payload/python/lib/python3.12/pathlib.py", line 1019, in read_bytes
+    with self.open(mode='rb') as f:
+         ^^^^^^^^^^^^^^^^^^^^
+  File "/home/qian-qi/work/hepta-cell-s0-desktop-native-20261109-898e/cpu-hc-runtime-v2/payload/python/lib/python3.12/pathlib.py", line 1013, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/qian-qi/hcsn-p0p5-frozen-policy-r13-20261111/qualification/hcsn_differentiable/c2_successor_v1/POSTERIOR-POLICY.json'
+
+======================================================================
+ERROR: test_existing_hold_not_minted_into_authorization (test_frozen_policy_lineage.FrozenPolicyLineageTests.test_existing_hold_not_minted_into_authorization) (file='POSTERIOR-POLICY.json')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hcsn-p0p5-frozen-policy-r13-20261111/qualification/hcsn_differentiable/c2_successor_v1/test_frozen_policy_lineage.py", line 49, in test_existing_hold_not_minted_into_authorization
+    value = json.loads((CANDIDATE / name).read_bytes())
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/qian-qi/work/hepta-cell-s0-desktop-native-20261109-898e/cpu-hc-runtime-v2/payload/python/lib/python3.12/pathlib.py", line 1019, in read_bytes
+    with self.open(mode='rb') as f:
+         ^^^^^^^^^^^^^^^^^^^^
+  File "/home/qian-qi/work/hepta-cell-s0-desktop-native-20261109-898e/cpu-hc-runtime-v2/payload/python/lib/python3.12/pathlib.py", line 1013, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/qian-qi/hcsn-p0p5-frozen-policy-r13-20261111/qualification/hcsn_differentiable/c2_successor_v1/POSTERIOR-POLICY.json'
+
+======================================================================
+ERROR: test_existing_hold_not_minted_into_authorization (test_frozen_policy_lineage.FrozenPolicyLineageTests.test_existing_hold_not_minted_into_authorization) (file='OPTIMIZATION-POSTERIOR-POLICY-v2.json')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hcsn-p0p5-frozen-policy-r13-20261111/qualification/hcsn_differentiable/c2_successor_v1/test_frozen_policy_lineage.py", line 49, in test_existing_hold_not_minted_into_authorization
+    value = json.loads((CANDIDATE / name).read_bytes())
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/qian-qi/work/hepta-cell-s0-desktop-native-20261109-898e/cpu-hc-runtime-v2/payload/python/lib/python3.12/pathlib.py", line 1019, in read_bytes
+    with self.open(mode='rb') as f:
+         ^^^^^^^^^^^^^^^^^^^^
+  File "/home/qian-qi/work/hepta-cell-s0-desktop-native-20261109-898e/cpu-hc-runtime-v2/payload/python/lib/python3.12/pathlib.py", line 1013, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/qian-qi/hcsn-p0p5-frozen-policy-r13-20261111/qualification/hcsn_differentiable/c2_successor_v1/OPTIMIZATION-POSTERIOR-POLICY-v2.json'
+
+======================================================================
+ERROR: test_existing_hold_not_minted_into_authorization (test_frozen_policy_lineage.FrozenPolicyLineageTests.test_existing_hold_not_minted_into_authorization) (file='CONTRACT.json')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hcsn-p0p5-frozen-policy-r13-20261111/qualification/hcsn_differentiable/c2_successor_v1/test_frozen_policy_lineage.py", line 49, in test_existing_hold_not_minted_into_authorization
+    value = json.loads((CANDIDATE / name).read_bytes())
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/qian-qi/work/hepta-cell-s0-desktop-native-20261109-898e/cpu-hc-runtime-v2/payload/python/lib/python3.12/pathlib.py", line 1019, in read_bytes
+    with self.open(mode='rb') as f:
+         ^^^^^^^^^^^^^^^^^^^^
+  File "/home/qian-qi/work/hepta-cell-s0-desktop-native-20261109-898e/cpu-hc-runtime-v2/payload/python/lib/python3.12/pathlib.py", line 1013, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/qian-qi/hcsn-p0p5-frozen-policy-r13-20261111/qualification/hcsn_differentiable/c2_successor_v1/CONTRACT.json'
+
+======================================================================
+ERROR: test_existing_hold_not_minted_into_authorization (test_frozen_policy_lineage.FrozenPolicyLineageTests.test_existing_hold_not_minted_into_authorization)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hcsn-p0p5-frozen-policy-r13-20261111/qualification/hcsn_differentiable/c2_successor_v1/test_frozen_policy_lineage.py", line 52, in test_existing_hold_not_minted_into_authorization
+    contract = json.loads((CANDIDATE / NAMES[2]).read_bytes())
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/qian-qi/work/hepta-cell-s0-desktop-native-20261109-898e/cpu-hc-runtime-v2/payload/python/lib/python3.12/pathlib.py", line 1019, in read_bytes
+    with self.open(mode='rb') as f:
+         ^^^^^^^^^^^^^^^^^^^^
+  File "/home/qian-qi/work/hepta-cell-s0-desktop-native-20261109-898e/cpu-hc-runtime-v2/payload/python/lib/python3.12/pathlib.py", line 1013, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/qian-qi/hcsn-p0p5-frozen-policy-r13-20261111/qualification/hcsn_differentiable/c2_successor_v1/CONTRACT.json'
+
+======================================================================
+ERROR: test_program_preflight_is_complete_but_still_unadopted (test_frozen_policy_lineage.FrozenPolicyLineageTests.test_program_preflight_is_complete_but_still_unadopted)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hcsn-p0p5-frozen-policy-r13-20261111/qualification/hcsn_differentiable/c2_successor_v1/test_frozen_policy_lineage.py", line 56, in test_program_preflight_is_complete_but_still_unadopted
+    manifest = collect_manifest(CANDIDATE)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/qian-qi/hcsn-p0p5-frozen-policy-r13-20261111/qualification/hcsn_differentiable/c2_successor_v1/c2_program_freeze.py", line 47, in collect_manifest
+    files = {name: _regular_identity(root / name) for name in REQUIRED_FILES}
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/qian-qi/hcsn-p0p5-frozen-policy-r13-20261111/qualification/hcsn_differentiable/c2_successor_v1/c2_program_freeze.py", line 30, in _regular_identity
+    require(path.is_file() and not path.is_symlink() and not path.parent.is_symlink(),
+  File "/home/qian-qi/hcsn-p0p5-frozen-policy-r13-20261111/qualification/hcsn_differentiable/c2_successor_v1/c2_boundary.py", line 19, in require
+    raise Ineligible(reason)
+c2_boundary.Ineligible: source is absent or an unsafe symlink: /home/qian-qi/hcsn-p0p5-frozen-policy-r13-20261111/qualification/hcsn_differentiable/c2_successor_v1/POSTERIOR-POLICY.json
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.043s
+
+FAILED (errors=9)
