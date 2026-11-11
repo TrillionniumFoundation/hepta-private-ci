@@ -21,18 +21,23 @@ use codex_hepta_learning_ledger::SignedEvidenceError;
 use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
 use codex_hepta_learning_ledger::dataset_freeze_signing_payload_v2;
 use codex_hepta_learning_ledger::freeze_dataset_from_ledger;
+#[cfg(target_os = "linux")]
 use codex_hepta_neuron::AnchorWitnessStore;
 use codex_hepta_neuron::CellDecisionReceiptV1;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::ProbabilityQ32;
+#[cfg(target_os = "linux")]
 use codex_hepta_types::StableId;
 
 use super::CellQ24TrainingBatchV1;
 use super::CellQ24TrainingSampleV1;
 use super::codec;
+#[cfg(target_os = "linux")]
 use crate::AgentdIdentity;
 use crate::CircuitTaskSourcePublicationV1;
+#[cfg(target_os = "linux")]
 use crate::CircuitTaskSourceReadbackV1;
+#[cfg(target_os = "linux")]
 use crate::PublishedCircuitCellOwnerV1;
 
 #[derive(Debug, thiserror::Error)]
@@ -70,7 +75,7 @@ impl CellQ24DatasetProjectionV1 {
             return Err(Error::Binding("projection profile"));
         }
         Ok(Digest32::of_parts(&[
-            b"hepta.cell.q24.dataset-projection.v1\0HQ24I001;all-decisions-in-sequence;one-terminal;no-corrections;no-imputation;no-clipping;Q32-div256-toward-zero;raw-bound-eight;rows256;ledger4096;record=run;run-snapshot=HQ24-run-start-v1;artifact-set=historical-only;model=original-cell-bundle;policy=source-output;support=source-publication;deterministic-propensity-one",
+            b"hepta.cell.q24.dataset-projection.v1\0HQ24I001;all-decisions-in-sequence;one-terminal;no-corrections;no-imputation;no-clipping;Q32-div256-toward-zero;raw-bound-eight;rows256;ledger4096;record=run;run-snapshot=HQ24-run-start-v1;artifact-set=historical-only;model=original-cell-bundle;policy=source-output;candidate-set=ledger-sorted;policy-order=source-output;support=source-publication;deterministic-propensity-one",
             self.inherited_inclusion_policy.as_array(),
             self.unit_profile_digest.as_array(),
             self.baseline_bundle.as_array(),
@@ -106,12 +111,14 @@ trait OriginalTask: Send + Sync {
     fn read(&self) -> Result<CircuitTaskSourcePublicationV1, Error>;
 }
 
+#[cfg(target_os = "linux")]
 struct TaskSource<W: AnchorWitnessStore> {
     source: CircuitTaskSourceReadbackV1<W>,
     identity: AgentdIdentity,
     run_id: StableId,
 }
 
+#[cfg(target_os = "linux")]
 impl<W: AnchorWitnessStore + Send> OriginalTask for TaskSource<W> {
     fn read(&self) -> Result<CircuitTaskSourcePublicationV1, Error> {
         self.source
@@ -130,6 +137,8 @@ pub struct CellQ24DatasetTaskV1 {
 }
 
 impl CellQ24DatasetTaskV1 {
+    /// The original published Cell capability is currently installed on Linux.
+    #[cfg(target_os = "linux")]
     pub fn capture(
         source: CircuitTaskSourceReadbackV1<impl AnchorWitnessStore + Send + 'static>,
         cell: &PublishedCircuitCellOwnerV1<impl AnchorWitnessStore>,
@@ -307,6 +316,14 @@ impl OriginalDataset {
                 .ok_or(Error::Binding("original Terminal outcome"))?;
             let publication = &task.publication;
             let original = &task.decision;
+            // The ledger canonicalizes candidate IDs; the source output still
+            // binds the original policy order and its exact one-hot weights.
+            let mut original_candidates = original
+                .policy
+                .iter()
+                .map(|entry| entry.candidate_id.clone())
+                .collect::<Vec<_>>();
+            original_candidates.sort();
             if decision.run_snapshot_digest != cell_q24_dataset_run_snapshot_digest_v1(publication)
                 || decision.objective_digest != publication.input().objective_digest
                 || decision.objective_digest != self.receipt.snapshot.objective_digest
@@ -328,10 +345,7 @@ impl OriginalDataset {
                     .policy
                     .iter()
                     .any(|p| p.candidate_id == original.selected_candidate && p.allowed)
-                || !decision
-                    .candidate_ids
-                    .iter()
-                    .eq(original.policy.iter().map(|p| &p.candidate_id))
+                || decision.candidate_ids != original_candidates
                 || outcome.terminality != AuthenticatedOutcomeTerminality::Terminal
                 || outcome.correction_predecessor.is_some()
                 || outcome.unit_profile_digest != self.projection.unit_profile_digest

@@ -63,6 +63,13 @@ fn sign(
     evidence
 }
 
+#[derive(Clone, Copy)]
+enum CandidateMutation {
+    Missing,
+    Extra,
+    Duplicate,
+}
+
 impl Dataset {
     fn new(
         root: &Path,
@@ -85,6 +92,20 @@ impl Dataset {
         )],
         terminality: OutcomeTerminalityV1,
         outcome_unit: Digest32,
+    ) -> anyhow::Result<Self> {
+        Self::with_candidate_mutation(root, sources, terminality, outcome_unit, None)
+    }
+
+    fn with_candidate_mutation(
+        root: &Path,
+        sources: &[(
+            &support::Session,
+            &CircuitTaskSourcePublicationV1,
+            Option<i64>,
+        )],
+        terminality: OutcomeTerminalityV1,
+        outcome_unit: Digest32,
+        mutation: Option<CandidateMutation>,
     ) -> anyhow::Result<Self> {
         let projection = CellQ24DatasetProjectionV1 {
             inherited_inclusion_policy: cell::d("fixture-inherited-inclusion"),
@@ -173,11 +194,21 @@ impl Dataset {
                 session.runtime.identity.clone(),
                 publication.input().scope.run_id.clone(),
             )?);
-            let candidates: Vec<_> = receipt
+            let mut candidates: Vec<_> = receipt
                 .policy
                 .iter()
                 .map(|entry| entry.candidate_id.clone())
                 .collect();
+            match mutation {
+                Some(CandidateMutation::Missing) => {
+                    assert_eq!(candidates.pop(), Some(cell::id("abstain")));
+                }
+                Some(CandidateMutation::Extra) => {
+                    candidates.push(cell::id("not-an-original-candidate"))
+                }
+                Some(CandidateMutation::Duplicate) => candidates.push(candidates[0].clone()),
+                None => {}
+            }
             let decision = ProductionDecisionV2 {
                 record_id: publication.input().scope.run_id.clone(),
                 episode_id: cell::id(&format!("episode-{i}")),
@@ -313,6 +344,7 @@ impl Dataset {
 async fn ordinary(
     root: &Path,
     run: &str,
+    source_envelope: Option<&str>,
 ) -> anyhow::Result<(
     support::Session,
     Arc<LoadedCellQ24ModelV1>,
@@ -320,7 +352,10 @@ async fn ordinary(
     VersionFixture,
 )> {
     let (baseline, bundle, definition) = support::model(root)?;
-    let admission = support::admission(run).await?;
+    let mut admission = support::admission(run).await?;
+    if let Some(envelope) = source_envelope {
+        admission.request.body.source_envelope_json = envelope.to_owned();
+    }
     let source = support::source(&admission, [Q, Q / 4])?;
     let config = support::configuration(&baseline, &bundle, &definition, &source, 1)?;
     let version = VersionFixture::new_initial(config, "ordinary-q24-initial")?;
@@ -357,7 +392,8 @@ fn prefix(
 async fn q24_dataset_original_task_and_terminal_target_drive_native_fit_and_no_update()
 -> anyhow::Result<()> {
     let root = tempfile::tempdir()?;
-    let (mut a, baseline, bundle, _current) = ordinary(root.path(), "dataset-original-A").await?;
+    let (mut a, baseline, bundle, _current) =
+        ordinary(root.path(), "dataset-original-A", None).await?;
     a.request.body.artifact_set_digest = cell::d("independent-ingress-artifact-set").to_string();
     a.request.signature_hex = SigningKey::from_bytes(&[91; 32])
         .sign(&crate::authbus_objective_claims(&a.runtime.identity, &a.request)?.signing_bytes())
@@ -378,6 +414,19 @@ async fn q24_dataset_original_task_and_terminal_target_drive_native_fit_and_no_u
             &[(&a, &publication, Some(raw))],
             OutcomeTerminalityV1::Terminal,
         )?;
+        let original = a.cell.committed(&publication)?;
+        let mut original_ids: Vec<_> = original
+            .policy
+            .iter()
+            .map(|entry| entry.candidate_id.clone())
+            .collect();
+        let LedgerEvent::AuthenticatedDecisionV2(decision) = &dataset.frozen.records()[0].event
+        else {
+            anyhow::bail!("the original signed decision is the first ledger fact")
+        };
+        assert_ne!(decision.candidate_ids, original_ids);
+        original_ids.sort();
+        assert_eq!(decision.candidate_ids, original_ids);
         let batch = dataset.batch()?;
         assert_eq!(&batch.encoded()[..8], b"HQ24T002");
         let rule = CellQ24SgdRuleV1 {
@@ -476,7 +525,7 @@ async fn q24_dataset_original_task_and_terminal_target_drive_native_fit_and_no_u
 async fn q24_dataset_rejects_missing_censored_wrong_units_and_untrusted_freeze()
 -> anyhow::Result<()> {
     let root = tempfile::tempdir()?;
-    let (mut a, _, _, _current) = ordinary(root.path(), "dataset-negative-A").await?;
+    let (mut a, _, _, _current) = ordinary(root.path(), "dataset-negative-A", None).await?;
     let publication = execute(&a, 1).await?;
     for terminality in [
         OutcomeTerminalityV1::Pending,
@@ -486,6 +535,36 @@ async fn q24_dataset_rejects_missing_censored_wrong_units_and_untrusted_freeze()
         let dataset = Dataset::new(files.path(), &[(&a, &publication, None)], terminality)?;
         assert!(dataset.batch().is_err());
     }
+    for mutation in [CandidateMutation::Missing, CandidateMutation::Extra] {
+        let files = tempfile::tempdir()?;
+        let dataset = Dataset::with_candidate_mutation(
+            files.path(),
+            &[(&a, &publication, Some(0))],
+            OutcomeTerminalityV1::Terminal,
+            cell::d("fixture-target-unit"),
+            Some(mutation),
+        )?;
+        assert!(matches!(
+            dataset.batch(),
+            Err(crate::CellQ24DatasetErrorV1::Binding(
+                "exact task, model, decision, unit and outcome"
+            ))
+        ));
+    }
+    let duplicate_root = tempfile::tempdir()?;
+    let duplicate = Dataset::with_candidate_mutation(
+        duplicate_root.path(),
+        &[(&a, &publication, Some(0))],
+        OutcomeTerminalityV1::Terminal,
+        cell::d("fixture-target-unit"),
+        Some(CandidateMutation::Duplicate),
+    )
+    .err()
+    .expect("the original ledger rejects duplicate candidates before freezing");
+    assert!(matches!(
+        duplicate.downcast_ref::<ProductionLedgerError>(),
+        Some(ProductionLedgerError::Binding("duplicate candidate"))
+    ));
     let wrong_unit_root = tempfile::tempdir()?;
     let wrong_unit = Dataset::with_unit(
         wrong_unit_root.path(),
@@ -546,10 +625,18 @@ async fn q24_dataset_rejects_missing_censored_wrong_units_and_untrusted_freeze()
 async fn q24_dataset_row_order_and_original_withdrawal_are_preserved() -> anyhow::Result<()> {
     let root_a = tempfile::tempdir()?;
     let root_b = tempfile::tempdir()?;
-    let (mut a, baseline, bundle, _current_a) = ordinary(root_a.path(), "dataset-order-A").await?;
-    let (mut b, _, _, _current_b) = ordinary(root_b.path(), "dataset-order-B").await?;
+    let (mut a, baseline, bundle, _current_a) =
+        ordinary(root_a.path(), "dataset-order-A", None).await?;
+    let (mut b, _, _, _current_b) = ordinary(
+        root_b.path(),
+        "dataset-order-B",
+        Some(&a.request.body.source_envelope_json),
+    )
+    .await?;
     let pa = execute(&a, 1).await?;
     let pb = execute(&b, 1).await?;
+    assert_ne!(pa.input().scope.run_id, pb.input().scope.run_id);
+    assert_eq!(pa.input().objective_digest, pb.input().objective_digest);
     let files = tempfile::tempdir()?;
     let mut multiple = Dataset::new(
         files.path(),
@@ -621,7 +708,8 @@ async fn q24_dataset_row_order_and_original_withdrawal_are_preserved() -> anyhow
 #[tokio::test]
 async fn q24_dataset_expiry_is_an_error_for_a_no_update_target() -> anyhow::Result<()> {
     let root = tempfile::tempdir()?;
-    let (mut a, baseline, bundle, _current) = ordinary(root.path(), "dataset-expiry-A").await?;
+    let (mut a, baseline, bundle, _current) =
+        ordinary(root.path(), "dataset-expiry-A", None).await?;
     let publication = execute(&a, 1).await?;
     let files = tempfile::tempdir()?;
     let mut dataset = Dataset::new(

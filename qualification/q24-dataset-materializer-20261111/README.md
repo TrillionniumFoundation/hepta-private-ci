@@ -4,7 +4,7 @@ This component connects original task inputs and authenticated ledger targets to
 
 ## Authority and current integration boundary
 
-The host must supply the original source reader, the original committed Cell owner, the original `LedgerWriter`, and its existing signed Dataset freeze. No key, enrollment, file authority, source writer, Model publisher, selector, or Root scope is created here. `CellQ24DatasetTaskV1::capture` and `CellQ24TrainingBatchV1::from_original_dataset` still need installation by the authorized ordinary host/StageOwner. Their closed product caller sets remain empty.
+The host must supply the original source reader, the original committed Cell owner, the original `LedgerWriter`, and its existing signed Dataset freeze. No key, enrollment, file authority, source writer, Model publisher, selector, or Root scope is created here. `CellQ24DatasetTaskV1::capture` and `CellQ24TrainingBatchV1::from_original_dataset` still need installation by the authorized ordinary host/StageOwner. Their closed product caller sets remain empty. The capture constructor follows the original published Cell owner's Linux-only availability; the legacy trainer APIs remain available on other supported targets.
 
 The existing native training plan and durable trainer now consume the retained provenance capability: they revalidate it before admission, before returning Candidate or NoUpdate, before durable completion, and during recovery/readback. Cloning a batch retains the same original source and ledger readers. The legacy vector constructor emits only HQ24T001; the new constructor emits HQ24T002, and its digest is included in the optimizer and frozen update rule. Copying encoded bytes cannot create the private capability.
 
@@ -18,9 +18,11 @@ Freeze the inherited inclusion policy plus this versioned projection first; obta
 | decision.run_snapshot_digest | `cell_q24_dataset_run_snapshot_digest_v1`, hashing every field of the sealed RunStartSnapshot under its own versioned domain |
 | decision.policy_digest | Digest of the original source's exact policy output |
 | decision.support_digest and outcome.support_digest | The original source publication digest |
-| candidate IDs and selected candidate | The actual committed Cell receipt |
+| candidate IDs and selected candidate | The exact sorted candidate-ID vector required by the original ledger, derived from the actual committed Cell receipt; the selected candidate is unchanged |
 | source/model | The original publication and committed Cell definition equal the projection's baseline bundle; RunStart artifact-set identity remains a separate retained field |
 | outcome target | The authenticated Terminal outcome for that same decision episode, in the exact frozen unit profile |
+
+The original ledger sorts candidate IDs when authenticating its canonical event. The projection compares the complete sorted original vector, without deduplication. Original policy order and weights remain bound by the source output digest and publication; their order is not substituted with ledger order.
 
 This new snapshot convention is explicitly part of the projection. Existing ledger producers using another convention require an explicitly registered compatible projection; a Cell request digest is not a RunStartSnapshot identity. Wiring the ordinary production decision writer and complete StageOwner remains follow-up work.
 
@@ -38,6 +40,6 @@ Historical RunStart execution expiry does not revoke completed experience. Reuse
 
 ## Verification and acceptance limits
 
-The focused native tests exercise real ordinary task execution, original source/Cell readback, signed ledger decisions/outcomes/freezes, native training and candidate load, unchanged-parent NoUpdate, recovered trainer guard retention, signed wrong-unit targets, negative conversion, forged/expired freezes, row order, corrections, and original source withdrawal. Issuers, stage credential metadata, and CURRENT custody in these tests are explicit engineering fixtures.
+The focused native tests exercise real ordinary task execution, original source/Cell readback, signed ledger decisions/outcomes/freezes, native training and candidate load, unchanged-parent NoUpdate, recovered trainer guard retention, signed wrong-unit targets, rejected missing/extra/duplicate candidates, original-policy versus ledger candidate ordering, same-objective distinct-run row ordering, negative conversion, forged/expired freezes, row order, corrections, and original source withdrawal. Issuers, stage credential metadata, and CURRENT custody in these tests are explicit engineering fixtures.
 
 Run the source caller scan and the scoped native suite from the exact candidate checkout. Recorded job status, source SHA/tree, test counts, and transport failures belong to that candidate's verification evidence. This document does not assert a completed ordinary chain, independently authorized B evaluation, real publication/withdrawal/FinalUse acceptance, or daemon/Root process restart recovery.
