@@ -50,14 +50,74 @@ SELECTION_CASES = tuple(
         "q24_original_selector_refuses_valid_training_renewal_live_and_cold",
         "q24_original_selector_preserves_pending_and_recovers_completed_lost_ack",
         "q24_original_selector_rejects_substituted_custody_before_store_creation",
+        "q24_original_selector_rejects_another_real_completion_with_same_run_and_manifest",
+    )
+)
+TRAINING_LANE_PREFIX = (
+    "neuron_generation_update_bootstrap::adopted_learning::composed_tests::"
+    "training::owner::model_proposal::training_lane::"
+)
+TRAINING_LANE_CASES = tuple(
+    TRAINING_LANE_PREFIX + name
+    for name in (
+        "original_training_model_lane_retains_custody_and_exact_generator_evidence",
+        "original_training_model_lane_preserves_pending_and_lost_ack",
+        "original_training_model_lane_fences_physical_mutation_after_bytes_restore",
+    )
+)
+SOURCE_PREFIX = "cell_q24_material_receipt_owner::tests::support::training_source::"
+SOURCE_CASES = tuple(
+    SOURCE_PREFIX + name
+    for name in (
+        "source_bound_training_preserves_frozen_rule_and_recovers_exact_no_update",
+        "source_bound_training_rejects_identical_legacy_batch_before_admission",
+        "source_bound_training_withdrawal_before_claim_fences_without_no_update",
+        "source_bound_training_withdrawal_after_claim_preserves_pending_without_signature",
+        "source_bound_capture_rejects_valid_freeze_resigning_with_identical_training_bytes",
+        "source_bound_training_cold_identity_rejects_valid_material_signature_renewal",
+    )
+)
+MATERIAL_SERVICE_PREFIX = "learning_iteration_evidence_client::material::tests::"
+MATERIAL_SERVICE_CASES = tuple(
+    MATERIAL_SERVICE_PREFIX + "material_readback_service_" + name
+    for name in (
+        "returns_original_signatures_and_cold_rereads",
+        "refuses_request_rebinding_and_replay_without_writes",
+        "refuses_withdrawn_source_and_busy_ledger",
+        "never_finishes_missing_dataset",
+        "rejects_same_uid_peer_and_widened_transport",
+        "failed_frame_permanently_consumes_channel",
+    )
+)
+TRANSPORT_CASES = (
+    "learning_iteration_evidence_client::tests::"
+    "original_receipt_fixture_retains_peer_during_owner_work_between_frames",
+)
+EXECUTION_PACKAGE = "codex-hepta-intelligence-eval"
+EXECUTION_PREFIX = "product_runner::tests::execution_tests::original_evidence::"
+EXECUTION_CASES = tuple(
+    EXECUTION_PREFIX + name
+    for name in (
+        "original_execution_evidence_survives_recovery_without_work_or_renewal",
+        "original_execution_evidence_rechecks_expiry_after_owner_reads",
+        "equal_execution_with_validly_renewed_signature_has_different_original_evidence",
+        "original_execution_evidence_missing_and_pending_never_claim",
     )
 )
 OWNER_GROUPS = (
-    ("next_use_observer", NEXT_USE_CASES),
-    ("material_observers", MATERIAL_CASES),
-    ("original_selector", SELECTION_CASES),
+    ("next_use_observer", PACKAGE, NEXT_USE_CASES),
+    ("material_observers", PACKAGE, MATERIAL_CASES),
+    ("original_selector", PACKAGE, SELECTION_CASES),
+    ("training_model_lane", PACKAGE, TRAINING_LANE_CASES),
+    ("original_training_source", PACKAGE, SOURCE_CASES),
+    ("original_material_service", PACKAGE, MATERIAL_SERVICE_CASES),
+    ("original_peer_lifetime", PACKAGE, TRANSPORT_CASES),
+    ("original_execution_evidence", EXECUTION_PACKAGE, EXECUTION_CASES),
 )
-CASES = tuple(name for _, names in OWNER_GROUPS for name in names)
+EXPECTED_CASES = tuple(
+    (package, name) for _, package, names in OWNER_GROUPS for name in names
+)
+CASES = tuple(name for _, name in EXPECTED_CASES)
 
 ANSI = re.compile(r"\x1b\[[0-?]*[ -/]*[@-~]")
 TERMINAL = re.compile(
@@ -70,9 +130,9 @@ TERMINAL = re.compile(
 def assess_original_observer_coverage(log: str, xml: bytes) -> dict:
     if len(xml) > 64 * 1024 * 1024:
         raise ValueError("Observer JUnit exceeds its byte bound")
-    if len(set(CASES)) != len(CASES):
+    if len(set(EXPECTED_CASES)) != len(EXPECTED_CASES) or len(set(CASES)) != len(CASES):
         raise ValueError("duplicate Observer inventory")
-    expected = Counter((PACKAGE, name) for name in CASES)
+    expected = Counter(EXPECTED_CASES)
     document = ET.fromstring(xml, parser=ET.XMLParser(target=NoDoctypeTreeBuilder()))
     if document.tag not in ("testsuite", "testsuites"):
         raise ValueError("unexpected native JUnit root")
@@ -113,7 +173,12 @@ def assess_original_observer_coverage(log: str, xml: bytes) -> dict:
     )
     return {
         "expected_count": len(CASES),
-        "required_owner_groups": {name: len(cases) for name, cases in OWNER_GROUPS},
+        "required_owner_groups": {
+            name: len(cases) for name, _, cases in OWNER_GROUPS
+        },
+        "required_group_packages": {
+            name: package for name, package, _ in OWNER_GROUPS
+        },
         "expected": sorted(expected),
         "junit_observed": sorted(observed.elements(), key=repr),
         "terminal_rows": named,

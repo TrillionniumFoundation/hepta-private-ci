@@ -77,8 +77,8 @@ jobs:
               "authority_host_learning_service_root_tests::root_learning_public_registration_serves_retained_writer_and_recovers_history",
               "learning_iteration_evidence_client::tests::root::original_external_uid_returns_a_verified_receipt_through_held_pidfd",
           ]
-          packages = ["-p", "codex-hepta-agentd", "-p", "codex-hepta-learning-artifacts",
-                      "-p", "codex-hepta-intelligence-eval"]
+          packages = ["-p", "codex-hepta-agentd", "-p", "codex-hepta-learning-ledger",
+                      "-p", "codex-hepta-learning-artifacts", "-p", "codex-hepta-intelligence-eval"]
           helpers = ["python3", "scripts/hepta_cell_test_helpers.py", "--package",
                      "codex-hepta-infer-worker-host", "--output-dir", str(records / "helpers")]
           root_dir = Path("/run") / ("hepta-daemon-learning-" + os.environ["GITHUB_RUN_ID"]

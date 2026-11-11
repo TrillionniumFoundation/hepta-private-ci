@@ -15,19 +15,21 @@ import hepta_c_observer_coverage as coverage
 class OriginalObserverCoverageTests(unittest.TestCase):
     def reports(self):
         root = ET.Element("testsuites")
-        suite = ET.SubElement(root, "testsuite", name=coverage.PACKAGE)
-        for name in coverage.CASES:
-            ET.SubElement(suite, "testcase", name=name, classname=coverage.PACKAGE)
+        suites = {}
+        for package, name in coverage.EXPECTED_CASES:
+            if package not in suites:
+                suites[package] = ET.SubElement(root, "testsuite", name=package)
+            ET.SubElement(suites[package], "testcase", name=name, classname=package)
         ET.SubElement(
-            suite,
+            suites[coverage.PACKAGE],
             "testcase",
             name="unrelated::actual_native_test",
             classname=coverage.PACKAGE,
         )
-        total = len(coverage.CASES) + 1
+        total = len(coverage.EXPECTED_CASES) + 1
         lines = [
-            f"PASS [0.001s] ({index}/{total}) {coverage.PACKAGE} {name}"
-            for index, name in enumerate(coverage.CASES, 1)
+            f"PASS [0.001s] ({index}/{total}) {package} {name}"
+            for index, (package, name) in enumerate(coverage.EXPECTED_CASES, 1)
         ]
         lines.append(
             f"PASS [0.001s] ({total}/{total}) {coverage.PACKAGE} unrelated::actual_native_test"
@@ -48,14 +50,13 @@ class OriginalObserverCoverageTests(unittest.TestCase):
         self.assertTrue(self.assess(root, log + "\n" + final_headers))
 
     def test_each_original_owner_group_is_required_in_both_reports(self):
-        for group, names in coverage.OWNER_GROUPS:
+        for group, _, names in coverage.OWNER_GROUPS:
             with self.subTest(group=group, missing_from="junit"):
                 root, log = self.reports()
-                suite = root.find("testsuite")
-                assert suite is not None
-                for case in list(suite):
-                    if case.get("name") in names:
-                        suite.remove(case)
+                for suite in root.findall("testsuite"):
+                    for case in list(suite):
+                        if case.get("name") in names:
+                            suite.remove(case)
                 self.assertFalse(self.assess(root, log))
             with self.subTest(group=group, missing_from="native_log"):
                 root, log = self.reports()
@@ -273,6 +274,69 @@ class OriginalObserverCoverageTests(unittest.TestCase):
                 saved["original-learning-owner-coverage.json"]["exact_pass_coverage"]
             )
             self.assertFalse((directory / "ordinary.log").exists())
+
+    def test_original_evaluator_cases_cannot_be_supplied_by_agentd(self):
+        root, log = self.reports()
+        suites = {suite.get("name"): suite for suite in root.findall("testsuite")}
+        evaluator = suites[coverage.EXECUTION_PACKAGE]
+        daemon = suites[coverage.PACKAGE]
+        for case in list(evaluator):
+            evaluator.remove(case)
+            case.set("classname", coverage.PACKAGE)
+            daemon.append(case)
+        self.assertFalse(
+            self.assess(
+                root, log.replace(coverage.EXECUTION_PACKAGE, coverage.PACKAGE)
+            )
+        )
+
+    def test_workflow_ordinary_executes_all_original_owner_packages(self):
+        workflow = (
+            Path(__file__).resolve().parents[1]
+            / ".github/workflows/hepta-daemon-learning-native.yml"
+        )
+        text = workflow.read_text()
+        start = text.index("          import base64\n")
+        end = text.index("          PY\n", start)
+        driver = "\n".join(line[10:] for line in text[start:end].splitlines())
+        tree = ast.parse(driver)
+        packages = next(
+            node.value
+            for node in tree.body
+            if isinstance(node, ast.Assign)
+            and any(
+                isinstance(target, ast.Name) and target.id == "packages"
+                for target in node.targets
+            )
+        )
+        self.assertEqual(
+            ast.literal_eval(packages),
+            [
+                "-p",
+                "codex-hepta-agentd",
+                "-p",
+                "codex-hepta-learning-ledger",
+                "-p",
+                "codex-hepta-learning-artifacts",
+                "-p",
+                "codex-hepta-intelligence-eval",
+            ],
+        )
+        ordinary = [
+            node
+            for node in ast.walk(tree)
+            if isinstance(node, ast.Call)
+            and isinstance(node.func, ast.Name)
+            and node.func.id == "test"
+            and node.args
+            and isinstance(node.args[0], ast.Constant)
+            and node.args[0].value == "ordinary"
+        ]
+        self.assertEqual(len(ordinary), 1)
+        self.assertEqual(
+            ast.dump(ordinary[0].args[1]),
+            ast.dump(ast.parse('[*packages, "--lib", "--test-threads", "2"]', mode="eval").body),
+        )
 
 
 if __name__ == "__main__":
