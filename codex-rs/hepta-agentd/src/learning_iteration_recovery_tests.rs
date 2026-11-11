@@ -670,6 +670,9 @@ async fn actual_delivery_backpressure_precedes_claim_and_prior_claim_stays_readb
     assert!(ok(ports.checkpoint_calls.lock()).is_empty());
 
     let partial = initial.snapshot().clone();
+    assert!(!ok(store
+        .claim_circuit_learning(&intent, &request_digest)
+        .await));
 
     // A replacement worker receives only readback for that durable claim.
     // Neither absent state nor an initial checkpoint permits another fit.

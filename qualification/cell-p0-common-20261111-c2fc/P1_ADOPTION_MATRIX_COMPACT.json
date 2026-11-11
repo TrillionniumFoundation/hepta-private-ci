@@ -1,0 +1,145 @@
+{
+  "schema": "hepta.p1.adoption-matrix-compact.v1",
+  "as_of_utc": "2026-11-11T00:40:18Z",
+  "fixed_topology": true,
+  "new_h_jobs": 0,
+  "new_experiments": 0,
+  "unknown": null,
+  "ledger": {
+    "path": "P1_ADOPTION_MATRIX.json",
+    "bytes": 39766,
+    "sha256": "703097c929b5af37471f27572cf6e5e80d92d4ad58c7dc89bde5bf8fc93c9a66",
+    "immutable_file_refs": 19,
+    "independent_git_commit_tree_gets": 10
+  },
+  "rows": [
+    {
+      "cell": "PERC",
+      "pr": 5768,
+      "head": "2ec44e234a7164807f41af3a79e795dd71efa179",
+      "measured_source": "72ea7a144babd7e0df6138a3d7688768115d6088",
+      "unit_counts": {
+        "synthetic_task_ids": 30,
+        "seeds": 3,
+        "executions_per_arm": 90,
+        "real_confirmation_units_admitted": 0,
+        "authenticated_independent_real_sources": null
+      },
+      "baseline_result": "Rules 90/90; Global 49/90; Dense 63/90; neural online wall about 34x rules. Direct ROI is oracle-only here, mandatory strong comparator when valid public coordinates exist.",
+      "entry": "Owned-file capture/capture-read CLI exercised; production daemon/live acquisition/native owner+inference not qualified.",
+      "recovery": "Exact replay and cold receipt/wire read after deleting owned source/model copies; distributed fencing and complete product-owner recovery unknown.",
+      "changed_from_old_statement": "Not DEV-only anymore: new actual-encoder semantic evidence is synthetic, not fresh real-source confirmation.",
+      "scientific_status": "HOLD",
+      "normalized_adoption": "NoUpdate",
+      "evidence_refs": [
+        "perc_summary",
+        "perc_benchmark",
+        "perc_owner",
+        "perc_source",
+        "perc_entry"
+      ]
+    },
+    {
+      "cell": "ACT",
+      "pr": 5669,
+      "head": "0584b3344f70ed51d9e09224e105bfa4d1a4635f",
+      "product_ledger": {
+        "pr": 5675,
+        "head": "65c8f46f668eadf26da64d6455fd504af73a1186",
+        "scoped_source": "378c06a898728a7fa60498ef051843e38d592e67"
+      },
+      "unit_counts": {
+        "train_trajectories": 80,
+        "confirmation_instance_ids": 80,
+        "seeds": 8,
+        "labelled_arms": 5,
+        "episodes_per_execution": 3200,
+        "executions_same_exposed_cohort": 2,
+        "normalized_families": 1,
+        "real_confirmation_units_admitted": 0,
+        "authenticated_independent_confirmation_units": null
+      },
+      "baseline_result": "Fixed workflow/macro/flat/head all 512/640; GRU 464/640. Head adds cost; GRU reduces quality. B0/B2 are identical and B1 shares the heuristic. Keep fixed library.",
+      "entry": "Real SQLite study, not product FinalUse; full run_bound handler still lacks original Core/AuthBus/Root/queued-turn deployment inputs.",
+      "recovery": "Typed fences, durable read floors and borrowed native wait have scoped support. No learning restart/Adam-moment restoration or complete product cold recovery.",
+      "changed_from_old_statement": "3200/80 boundary unchanged. 80 IDs, five B1 decision sequences, one normalized family; run2 is not new confirmation.",
+      "scientific_status": "HOLD",
+      "normalized_adoption": "NoUpdate",
+      "evidence_refs": [
+        "act_manifest",
+        "act_result",
+        "act_review",
+        "act_handler",
+        "act_blockers"
+      ]
+    },
+    {
+      "cell": "VERIFY",
+      "pr": 5753,
+      "head": "88deb8a490565fd9b55851ba4581c9516fd1029f",
+      "separate_dependency_head": {
+        "pr": 5852,
+        "head": "4010cc2631a993d76ce9ebbeca3bddbd1e8c83a0"
+      },
+      "unit_counts": {
+        "engineering_tests": 226,
+        "sqlite_rows": 96,
+        "sqlite_train": 12,
+        "sqlite_calibration": 12,
+        "sqlite_confirmation": 72,
+        "dispatch_scenarios": 9,
+        "dispatch_subprocesses": 17,
+        "hosted_smoke_model_inferences": 0,
+        "real_confirmation_units_admitted": 0,
+        "authenticated_independent_clusters": null
+      },
+      "baseline_result": "Strong fixed/VOI comparator required on matched roster/common budget. No admissible independent prospective real-task gain is established.",
+      "entry": "Advisory scheduler/checker/journal engineering; independent real owner, assignment evidence, evaluator custody and full costs unknown.",
+      "recovery": "Retained label attestations reauthenticated on recovery; pending checker not replayed; repair lineage implemented. Real field-owner/evaluator recovery unknown.",
+      "ci_update": "Exact 88deb8a4: Ubuntu and Windows each 226 tests +72/72 rows +9/17 dispatcher PASS; macOS CANCELLED; overall workflow FAILURE. Separate #5852 810=809 pass incl flaky+1 fail is engineering only.",
+      "scientific_status": "HOLD",
+      "normalized_adoption": "NoUpdate",
+      "evidence_refs": [
+        "verify4_result",
+        "verify4_protocol",
+        "verify_matched",
+        "verify_portability",
+        "verify_dependency"
+      ]
+    },
+    {
+      "cell": "PRED",
+      "pr": 5759,
+      "head": "aeb34582ac8a6bbb6c1e79b0722daead1aadb377",
+      "measured_source": "74d3fddbc6e6cf28184848558422a81711460dc8",
+      "retained_189_head": {
+        "pr": 5681,
+        "head": "a3aa398580cbd052f9decbc08af36deea25c6155"
+      },
+      "unit_counts": {
+        "development_fits": 189,
+        "optimizer_calls": 181440,
+        "replay_new_fits": 0,
+        "later_synthetic_train": 12,
+        "later_synthetic_dev": 6,
+        "later_fixture_mlp_updates": 16,
+        "live_owner_records": 0,
+        "real_task_policy_comparisons": 0,
+        "real_confirmation_units_admitted": 0,
+        "authenticated_independent_real_tasks": null
+      },
+      "baseline_result": "All seven variants lose mean simulated expected net utility to cheap Fixed1 after declared costs. GRU short/long deltas -0.001721739/-0.001912777. Realized sample directions vary. Real decision benefit unknown.",
+      "entry": "owner_capture, train/dev CLI and prospective choice/effect join implemented; admissible actual owner history and independent effect observer not located in checked scope; other service paths unknown.",
+      "recovery": "Synthetic checkpoint/Adam resume validated; actual effect-owner chain unknown. Original historical 189-fit artifacts still unlocated; newer full execution is distinct.",
+      "changed_from_old_statement": "189 remains development volume, never 189 independent confirmations; later 12/6 fixture adds zero real confirmation.",
+      "scientific_status": "HOLD",
+      "normalized_adoption": "NoUpdate",
+      "evidence_refs": [
+        "pred_current",
+        "pred_fixture",
+        "pred_189",
+        "pred_replay"
+      ]
+    }
+  ]
+}

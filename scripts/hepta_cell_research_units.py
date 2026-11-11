@@ -135,7 +135,7 @@ def review(document, rows, evidence, sampling_spec, cost_categories):
     coverage = document["cost_coverage"]
     if not isinstance(coverage, dict) or set(coverage) - set(planned):
         raise ValueError("cost coverage contains unregistered attempts")
-    observed, counts, full_cost = set(), Counter(), True
+    observed, counts, incomplete_cost_arms = set(), Counter(), set()
     for row in rows:
         attempt_id = row["attempt_id"]
         if attempt_id in observed or attempt_id not in planned:
@@ -157,13 +157,13 @@ def review(document, rows, evidence, sampling_spec, cost_categories):
             if status == "not_applicable" and value != 0:
                 raise ValueError("inapplicable cost must be explicitly zero")
             if status == "unknown" or value is None:
-                full_cost = False
+                incomplete_cost_arms.add(row["arm"])
     missing = sorted(set(planned) - observed)
     counts["not_observed"] = len(missing)
     if missing:
         blockers.add("MISSING_PLANNED_ATTEMPTS")
-        full_cost = False
-    if not full_cost:
+        incomplete_cost_arms.update(planned[attempt]["arm"] for attempt in missing)
+    if incomplete_cost_arms:
         blockers.add("INCOMPLETE_COST_COVERAGE")
     used_initializations = {fit["initialization_sha256"] for fit in fits.values()}
     groups = len(source_splits)
@@ -191,7 +191,8 @@ def review(document, rows, evidence, sampling_spec, cost_categories):
         "sample_count_is_product": False,
         "independence_verified": False,
         "source_exposure_verified": False,
-        "full_cost_recorded": full_cost,
+        "full_cost_recorded": not incomplete_cost_arms,
+        "incomplete_cost_arms": sorted(incomplete_cost_arms),
         "cost_authenticity_verified": False,
         "blockers": sorted(blockers),
     }
