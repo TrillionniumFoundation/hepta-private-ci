@@ -1,0 +1,38 @@
+{
+  "schema": "mem9bd2.hardlink-public-error-contract.v1",
+  "base_head": "9bd2f589debdba4a93baa363817c3669cb103721",
+  "base_tree": "c77785ecb368c44ea699769001a47402c9f50591",
+  "patch": {
+    "bytes": 1058,
+    "sha256": "f1bc79f86cb89ea0df2f71193ff24cbdd316fcc7261ca9bf84055a25d75ebb53",
+    "git_blob": "2c9ab207588f7a863a235d7f864ef4290d9b5a68"
+  },
+  "source_gate": "not_executed",
+  "native": "not_executed",
+  "model": "not_executed",
+  "source_ref_changed": false,
+  "audit": {
+    "inverse_restores_exact_preimage": true,
+    "all_bytes_after_public_output_assertion_preserved": true,
+    "runtime_scope": "test-only existing Windows branch",
+    "new_dependencies": false,
+    "budgets_and_assertions_after_output_check": "unchanged"
+  },
+  "reason": "The newly added internal-cause substring was not part of the pre-existing public apply-patch stderr contract. apply-patch writes only anyhow error.to_string() for the outer Failed to write file context. Align exact exit-code line and exact requested path context; retain both physical byte comparisons and subsequent alias-write-through unchanged. This source correction does not establish which inner error caused the original refusal, and no original physical follow-up assertion was reached.",
+  "files": [
+    {
+      "path": "codex-rs/core/tests/suite/apply_patch_cli.rs",
+      "mode": "100644",
+      "before": {
+        "bytes": 87022,
+        "sha256": "7af4adabc5308eb91c97a8a28251d08ec0c69b248dec99ae5a06cb2e7ff710ce",
+        "git_blob": "a41fc531be015f02aa5f7aef58b16cd4db2e0ada"
+      },
+      "after": {
+        "bytes": 87145,
+        "sha256": "f7d06ffaa7aa7374c840c75682d727a84e073fa4110172e7e40c8e064f76651a",
+        "git_blob": "dd76ce5536f75a4e66b7310a2fbf91c96663e78d"
+      }
+    }
+  ]
+}
