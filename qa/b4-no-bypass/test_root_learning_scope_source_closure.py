@@ -118,7 +118,7 @@ class RootLearningScopeSourceClosureTests(unittest.TestCase):
         # The two existing transports call Self::from_stream_for_uid on their
         # own types. They cannot become callers of RootObservationStream.
         PROOF._verify_boundary(ROOT, row, sources, ())
-        self.assertEqual(row.product_callers, (AGENT + "learning_iteration_evidence_client.rs",))
+        self.assertEqual(row.product_callers, (AGENT + "learning_iteration_evidence_client.rs", AGENT + "cell_q24_material_source.rs", AGENT + "cell_q24_material_source_connection.rs"))
         for call in (
             "RootObservationStream :: from_stream_for_uid();",
             "use crate::root_observation_stream::RootObservationStream as Stream; "

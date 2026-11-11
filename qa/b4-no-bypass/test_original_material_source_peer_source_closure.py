@@ -39,7 +39,7 @@ EXPECTED = {
     "learning_original_material_source_client": (),
     "learning_original_material_source_current": (CAPTURE,),
     "learning_original_material_source_binding": (CAPTURE,),
-    "learning_original_remote_training_source_capture": (),
+    "learning_original_remote_training_source_capture": (AGENT + "cell_q24_training_bootstrap_build.rs",),
 }
 
 
@@ -91,9 +91,9 @@ class OriginalMaterialSourcePeerClosureTests(unittest.TestCase):
                     PROOF._verify_boundary(ROOT, row, extra, ())
         self.assertTrue(all(value is False for value in self.manifest["authority"].values()))
 
-    def test_explicit_uid_stream_has_only_both_actual_production_callers(self):
+    def test_explicit_uid_stream_has_only_the_actual_production_callers(self):
         row = self.boundaries["original_pinned_stream_explicit_uid"]
-        expected = (AGENT + "learning_iteration_evidence_client.rs", CLIENT)
+        expected = (AGENT + "learning_iteration_evidence_client.rs", CLIENT, AGENT + "cell_q24_material_source_connection.rs")
         self.assertEqual(row.product_callers, expected)
         self.assertIn(
             row.identifier,

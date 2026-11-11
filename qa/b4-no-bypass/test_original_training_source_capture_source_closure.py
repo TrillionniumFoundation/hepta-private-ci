@@ -28,17 +28,18 @@ STAGE = AGENT + "cell_q24_training_stage.rs"
 MODEL = AGENT + "cell_q24_training_model_lane.rs"
 EXPECTED = {
     "learning_original_training_source_capture": (),
-    "learning_original_remote_training_source_capture": (),
-    "learning_source_bound_training_owner_create": (),
-    "learning_source_bound_training_owner_recover": (),
+    "learning_original_remote_training_source_capture": (AGENT + "cell_q24_training_bootstrap_build.rs",),
+    "learning_source_bound_training_owner_create": (AGENT + "cell_q24_training_bootstrap_build.rs",),
+    "learning_source_bound_training_owner_recover": (AGENT + "cell_q24_training_bootstrap_build.rs",),
     **{"learning_source_bound_training_stage_" + name: () for name in (
-        "constructor", "attestation",
+        "attestation",
         "model_create", "model_recover", "model_commit",
     )},
+    "learning_source_bound_training_stage_constructor": (AGENT + "cell_q24_training_bootstrap_build.rs",),
     "learning_source_bound_training_stage_execute": (AGENT + "cell_q24_training_command_service.rs",),
     "learning_source_bound_training_stage_readback": (AGENT + "cell_q24_training_command_service.rs",),
     "learning_source_bound_training_stage_model_readback": (AGENT + "circuit_model_selection_receipt_sources.rs",),
-    "learning_original_training_source_current": (OWNER,),
+    "learning_original_training_source_current": (OWNER, AGENT + "cell_q24_training_bootstrap_build.rs"),
     "learning_original_training_source_inputs": (OWNER,),
     "learning_original_training_source_identity": (OWNER,),
     "learning_source_bound_training_admission": (BOUND,),

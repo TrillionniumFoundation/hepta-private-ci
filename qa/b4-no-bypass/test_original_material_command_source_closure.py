@@ -39,7 +39,7 @@ EXPECTED = {
     "learning_original_material_command_client_recover_original_experience_stream": (),
     "learning_original_material_command_client_recover_original_dataset_stream": (),
     "learning_original_material_command_client_execute": (),
-    "learning_original_material_command_client_readback": (),
+    "learning_original_material_command_client_readback": (AGENT + "cell_q24_material_dataset_readback.rs",),
     "learning_original_material_command_client_receipt_attestation": (),
 }
 

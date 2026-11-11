@@ -168,6 +168,20 @@ EXECUTION_OWNER_CASES = tuple(
         "original_execution_owner_readback_port_rejects_writes_keys_and_unwitnessed_tail",
     )
 )
+DEFERRED_TRAINING_PREFIX = (
+    "learning_iteration_evidence_client::training_command::bootstrap::tests::"
+)
+DEFERRED_TRAINING_CASES = tuple(
+    DEFERRED_TRAINING_PREFIX + name
+    for name in (
+        "deferred_training_uses_actual_material_cut_and_original_source_without_precreation",
+        "deferred_training_lost_ack_recovers_same_job_and_original_signature",
+        "deferred_training_missing_dataset_or_partial_owners_never_bootstrap_replacements",
+        "deferred_training_wrong_context_does_not_consume_original_custody",
+        "deferred_training_failed_source_or_pending_claim_never_rearms",
+        "deferred_training_attenuation_and_prebound_transport_preserve_original_custody",
+    )
+)
 OWNER_GROUPS = (
     ("next_use_observer", PACKAGE, NEXT_USE_CASES),
     ("material_observers", PACKAGE, MATERIAL_CASES),
@@ -177,6 +191,7 @@ OWNER_GROUPS = (
     ("training_model_lane", PACKAGE, TRAINING_LANE_CASES),
     ("original_training_source", PACKAGE, SOURCE_CASES),
     ("original_training_command", PACKAGE, TRAINING_COMMAND_CASES),
+    ("original_deferred_training", PACKAGE, DEFERRED_TRAINING_CASES),
     ("original_material_service", PACKAGE, MATERIAL_SERVICE_CASES),
     ("original_remote_material_source", PACKAGE, REMOTE_MATERIAL_CASES),
     ("original_material_command", PACKAGE, MATERIAL_COMMAND_CASES),

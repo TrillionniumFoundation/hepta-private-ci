@@ -6,7 +6,7 @@ ignored_path_fragments = ["/tests/", "/examples/", "_tests.rs"]
 rule = "Every privileged Hepta boundary has an exact closed set of product call sites. Test, example and definition-only uses do not grant production authority."
 
 [privileged_inventory]
-required_boundary_ids = ["root_registered_learning_checkpoint_writer","root_original_learning_checkpoint_exchange","supervisor_authorized_boot","memory_production_writer_open","cognitive_store_recovery_open","cognitive_production_mutation_capability","agentd_production_writer_host","agentd_production_operation_runtime","learning_artifact_owner_bootstrap","learning_artifact_owner_restart","learning_artifact_verified_current_view","provider_effect_coordinator","http_provider_effect_adapter","final_use_open_state","final_use_claim","final_use_claim_raw","final_use_delivery","final_use_delivery_witness","final_use_delivery_raw","final_use_dispatch","final_use_dispatch_witness","final_use_dispatch_raw","final_use_revocation_update","final_use_approval_trust","final_use_approval_verify","final_use_revocation_feed_trust","final_use_revocation_feed_apply","final_use_revocation_convergence_trust","final_use_revocation_convergence_verify","bao_final_use_consumer","bao_registered_consumer_new","bao_final_use_host_new","bao_registered_revocation_update","bao_registered_final_use_host","authority_lease_open_state","authority_lease_put","authority_lease_revoke","authority_lease_prune","authority_lease_epoch_advance","authority_lease_verify_use","authority_lease_delivery","authority_lease_delivery_witness","authority_lease_dispatch_raw","authority_lease_dispatch_witness","final_use_async_dispatch_fence","automation_taskflow_provider_effect_bridge","final_use_guarded_effect","notes_original_pending_call_proof","notes_original_operation_observation_proof","notes_original_thread_prepare","notes_original_writer_terminal_receipt","memory_original_owner_current_publication","memory_original_protected_current_readback","original_authbus_human_delivery_read","notes_original_human_turn_proof","root_registered_human_text_writer","root_registered_human_text_admission","root_human_text_same_issuer_cas","root_retained_human_text_lookup","root_live_human_session_install","root_original_human_text_verification","notes_original_turn_unprepared_admission","root_host_original_human_text_verification","notes_original_human_text_verification","root_prepared_fresh_session","root_retained_native_ui_launch","root_prepared_native_ui_execution","root_material_capture_original_image","root_material_verify_retained_image","root_material_install_original_generation","root_material_reopen_original_installation","root_material_release_registered_custody","root_material_fresh_registered_session","root_material_recover_registered_session","root_material_existing_session_open","root_material_resume_registered_handoff","root_material_current_observation_chain","root_original_writer_descriptor_chain","root_same_retained_service_serve","root_registered_material_recovery","root_registered_material_handoff_resume","root_original_writer_purpose_send","root_original_writer_purpose_receive","agentd_original_root_writer_consume","root_registered_writer_rotation","native_original_operation_host_attach","native_original_owner_current_ack","native_original_terminal_history_observation","root_original_authority_initialize","root_original_writer_authorize","root_same_registered_bootstrap_seal","root_same_registered_bootstrap_capture","root_original_physical_login_install","root_original_writer_successor_shape","root_original_issuer_writer_rotation","root_physical_current_retired_adoption","root_physical_recovery_retirement_admission","root_physical_fresh_service_genesis","root_physical_registered_checkpoint_genesis","root_physical_current_backend_genesis","root_registered_physical_current_observation","root_original_two_descriptor_send","root_original_two_descriptor_receive","native_original_writer_terminal_observation","native_original_writer_next_delivery_observation","root_notes_original_startup_before","root_notes_recovered_successor_startup_before","root_notes_original_reserved_session_binding","root_notes_registered_successor_policy_replace","root_notes_original_issuer_policy_cas","root_desktop_original_issuer_pair_policy_cas","root_retained_native_ready_launch","root_prepared_native_ready_execution","root_prepared_native_ready_text_session","root_original_bound_native_lanes","root_original_bound_native_lane_acceptance","root_original_ready_lane_bridge","notes_original_retained_reference_projection","desktop_original_retained_reference_projection","memory_original_sender_read_only_cut","notes_recorded_original_observation_proof","notes_previous_recovery_typed_resolution","root_live_admin_enable","root_live_admin_mint","root_live_admin_exchange","root_live_admin_checked_dispatch","root_live_admin_signed_artifact_verify","root_live_admin_exact_issuer_head_revoke","root_live_admin_fixed_notes_revoke_prepare","root_live_admin_existing_effect_revoke","root_live_admin_existing_signed_grant_revoke","root_live_admin_same_service_signed_revoke","root_live_admin_original_issue_observer_enable","root_live_admin_original_issue_observation","root_live_admin_original_bounded_lease_revoke","root_live_admin_retained_artifact_observe","root_live_admin_original_effect_state_observe","root_live_admin_same_service_effect_state_observe","agentd_original_registered_writer_custody","agentd_original_recovered_writer_custody_factory","agentd_original_root_handoff_unique_file","calculator_previous_recovery_owner_target","calculator_previous_recovery_host_attach","calculator_previous_recovery_process_attach","calculator_previous_recovery_runtime_selection","calculator_previous_recovery_config_selection","root_original_issuer_renewal_prepare","root_original_issuer_renewal_commit","root_desktop_original_startup_before","root_desktop_recovered_successor_startup_before","root_desktop_registered_successor_policy_replace","desktop_previous_original_cut_selection","desktop_previous_joint_config_selection","memory_original_validated_target_retirement_ack","memory_original_owner_current_readonly_receipt","memory_original_notes_retirement_ack","memory_original_calculator_retirement_ack","memory_original_retirement_ack_commit","authority_lease_exact_bounded_revoke","root_live_admin_exact_issuer_revoke","root_live_admin_committed_issuer_reply","root_live_admin_exact_issuer_reply_record","root_learning_explicit_registration","root_learning_original_store_registration","root_learning_original_store_reopen","root_learning_original_owner_install","root_learning_original_scope_seal","root_learning_original_scope_capture","root_learning_same_service_serve","root_learning_registered_checkpoint_constructor","root_learning_original_client_constructor","root_learning_original_purpose_send","root_learning_original_purpose_receive","root_learning_original_handoff_consume","root_learning_original_config_hold","root_learning_original_stage_assembly","root_learning_original_runtime_consume","root_original_registered_ready_serve","root_original_private_sealed_bytes","root_learning_scoped_checkpoint_constructor","root_learning_scoped_client_constructor","root_learning_scoped_runtime_constructor","learning_frozen_update_scope_constructor","root_learning_scoped_profile_constructor","root_learning_scoped_checkpoint_record","learning_evidence_original_owner_constructor","learning_evidence_original_owner_readback","original_pinned_stream_explicit_uid","cell_learning_evaluation_profile_freeze","cell_learning_evaluation_receipt_prepare","cell_learning_evaluation_original_readback","generation_learning_original_stage_readback","cell_original_evaluation_execution","product_original_evaluation_execution","root_learning_original_delivery_source","root_learning_completed_circuit_source","circuit_learning_exact_ack_retirement","cell_completed_evaluation_readback","product_completed_evaluation_readback","cell_q24_single_head_training_plan","cell_q24_single_head_candidate_validation","cell_q24_native_training_fit","cell_q24_original_training_observation","learning_original_evaluator_attestation","learning_original_evaluation_key","circuit_feature_original_initial_publication","circuit_feature_original_update_publication","circuit_feature_guarded_private_cell","circuit_feature_private_cell_writer","circuit_feature_original_task_control","circuit_q24_ordinary_profile_assembly","circuit_feature_original_predecessor_recovery","circuit_feature_acknowledged_readonly_history","learning_original_training_receipt_create","learning_original_training_receipt_recover","learning_original_training_receipt_attest","learning_original_training_receipt_readback","cell_q24_original_training_execute","cell_q24_original_training_pair_binding","learning_original_training_stage_constructor","learning_original_training_stage_execute","learning_original_training_stage_readback","learning_original_training_stage_attestation","learning_original_training_snapshot_readback","cell_q24_model_material_owner_create","cell_q24_model_material_owner_recover","cell_q24_model_material_owner_commit","cell_q24_model_material_owner_readback","learning_original_evaluation_receipt_create","learning_original_evaluation_receipt_recover","learning_original_evaluation_receipt_attest","learning_original_evaluation_receipt_readback","learning_original_owner_physical_current","learning_original_training_model_create","learning_original_training_model_recover","learning_original_training_model_commit","learning_original_training_model_readback","learning_original_circuit_next_use_receipt_create","learning_original_circuit_next_use_receipt_recover","learning_original_circuit_next_use_receipt_attest","learning_original_circuit_next_use_receipt_readback","circuit_feature_original_next_use_observation","learning_original_circuit_selection_receipt_create","learning_original_circuit_selection_receipt_recover","learning_original_circuit_selection_receipt_attest","learning_original_circuit_selection_receipt_readback","circuit_feature_original_selection_observation","learning_original_material_create","learning_original_material_recover","learning_original_material_experience_attest","learning_original_material_experience_readback","learning_original_material_dataset_attest","learning_original_material_dataset_readback","learning_original_material_completed_dataset_read","learning_original_training_source_capture","learning_source_bound_training_owner_create","learning_source_bound_training_owner_recover","learning_source_bound_training_stage_constructor","learning_source_bound_training_stage_execute","learning_source_bound_training_stage_readback","learning_source_bound_training_stage_attestation","learning_source_bound_training_stage_model_create","learning_source_bound_training_stage_model_recover","learning_source_bound_training_stage_model_commit","learning_source_bound_training_stage_model_readback","learning_original_training_source_current","learning_original_training_source_inputs","learning_original_training_source_identity","learning_source_bound_training_admission","learning_source_bound_training_live_check","learning_source_bound_training_work_deadline","learning_original_material_readback_host","learning_original_material_readback_custody","learning_original_material_evidence_serve","product_original_completed_execution_evidence_readback","cell_original_completed_evaluation_evidence_readback","product_original_execution_evidence_revalidate","learning_original_circuit_model_selection_receipt_create","learning_original_circuit_model_selection_receipt_recover","learning_original_circuit_model_selection_receipt_attest","learning_original_circuit_model_selection_receipt_readback","learning_original_material_source_projection","learning_original_material_source_decode","learning_original_material_completed_source_read","learning_original_material_source_serve","learning_original_material_source_client","learning_original_material_source_current","learning_original_material_source_binding","learning_original_remote_training_source_capture","learning_original_training_command_client_create","learning_original_training_command_client_recover","learning_original_training_command_client_execute","learning_original_training_command_client_readback","learning_original_training_command_client_attestation","learning_original_training_command_owner_create","learning_original_training_command_owner_recover","learning_original_training_command_owner_serve","learning_original_training_command_owner_evidence","learning_source_bound_training_command_context","learning_original_owner_command_channel","learning_original_owner_snapshot_encode","learning_original_owner_snapshot_decode","learning_original_execution_store_create","learning_original_execution_store_recover","learning_original_execution_store_readback_only","learning_original_material_command_bootstrap","learning_original_material_command_custody","learning_original_material_command_serve_experience_commands","learning_original_material_command_serve_dataset_commands","learning_original_material_command_serve_experience_readback","learning_original_material_command_serve_dataset_readback","learning_original_material_command_serve_dataset_source","learning_original_material_command_client_from_original_experience_stream","learning_original_material_command_client_from_original_dataset_stream","learning_original_material_command_client_recover_original_experience_stream","learning_original_material_command_client_recover_original_dataset_stream","learning_original_material_command_client_execute","learning_original_material_command_client_readback","learning_original_material_command_client_receipt_attestation","learning_original_material_pair_readback"]
+required_boundary_ids = ["root_registered_learning_checkpoint_writer","root_original_learning_checkpoint_exchange","supervisor_authorized_boot","memory_production_writer_open","cognitive_store_recovery_open","cognitive_production_mutation_capability","agentd_production_writer_host","agentd_production_operation_runtime","learning_artifact_owner_bootstrap","learning_artifact_owner_restart","learning_artifact_verified_current_view","provider_effect_coordinator","http_provider_effect_adapter","final_use_open_state","final_use_claim","final_use_claim_raw","final_use_delivery","final_use_delivery_witness","final_use_delivery_raw","final_use_dispatch","final_use_dispatch_witness","final_use_dispatch_raw","final_use_revocation_update","final_use_approval_trust","final_use_approval_verify","final_use_revocation_feed_trust","final_use_revocation_feed_apply","final_use_revocation_convergence_trust","final_use_revocation_convergence_verify","bao_final_use_consumer","bao_registered_consumer_new","bao_final_use_host_new","bao_registered_revocation_update","bao_registered_final_use_host","authority_lease_open_state","authority_lease_put","authority_lease_revoke","authority_lease_prune","authority_lease_epoch_advance","authority_lease_verify_use","authority_lease_delivery","authority_lease_delivery_witness","authority_lease_dispatch_raw","authority_lease_dispatch_witness","final_use_async_dispatch_fence","automation_taskflow_provider_effect_bridge","final_use_guarded_effect","notes_original_pending_call_proof","notes_original_operation_observation_proof","notes_original_thread_prepare","notes_original_writer_terminal_receipt","memory_original_owner_current_publication","memory_original_protected_current_readback","original_authbus_human_delivery_read","notes_original_human_turn_proof","root_registered_human_text_writer","root_registered_human_text_admission","root_human_text_same_issuer_cas","root_retained_human_text_lookup","root_live_human_session_install","root_original_human_text_verification","notes_original_turn_unprepared_admission","root_host_original_human_text_verification","notes_original_human_text_verification","root_prepared_fresh_session","root_retained_native_ui_launch","root_prepared_native_ui_execution","root_material_capture_original_image","root_material_verify_retained_image","root_material_install_original_generation","root_material_reopen_original_installation","root_material_release_registered_custody","root_material_fresh_registered_session","root_material_recover_registered_session","root_material_existing_session_open","root_material_resume_registered_handoff","root_material_current_observation_chain","root_original_writer_descriptor_chain","root_same_retained_service_serve","root_registered_material_recovery","root_registered_material_handoff_resume","root_original_writer_purpose_send","root_original_writer_purpose_receive","agentd_original_root_writer_consume","root_registered_writer_rotation","native_original_operation_host_attach","native_original_owner_current_ack","native_original_terminal_history_observation","root_original_authority_initialize","root_original_writer_authorize","root_same_registered_bootstrap_seal","root_same_registered_bootstrap_capture","root_original_physical_login_install","root_original_writer_successor_shape","root_original_issuer_writer_rotation","root_physical_current_retired_adoption","root_physical_recovery_retirement_admission","root_physical_fresh_service_genesis","root_physical_registered_checkpoint_genesis","root_physical_current_backend_genesis","root_registered_physical_current_observation","root_original_two_descriptor_send","root_original_two_descriptor_receive","native_original_writer_terminal_observation","native_original_writer_next_delivery_observation","root_notes_original_startup_before","root_notes_recovered_successor_startup_before","root_notes_original_reserved_session_binding","root_notes_registered_successor_policy_replace","root_notes_original_issuer_policy_cas","root_desktop_original_issuer_pair_policy_cas","root_retained_native_ready_launch","root_prepared_native_ready_execution","root_prepared_native_ready_text_session","root_original_bound_native_lanes","root_original_bound_native_lane_acceptance","root_original_ready_lane_bridge","notes_original_retained_reference_projection","desktop_original_retained_reference_projection","memory_original_sender_read_only_cut","notes_recorded_original_observation_proof","notes_previous_recovery_typed_resolution","root_live_admin_enable","root_live_admin_mint","root_live_admin_exchange","root_live_admin_checked_dispatch","root_live_admin_signed_artifact_verify","root_live_admin_exact_issuer_head_revoke","root_live_admin_fixed_notes_revoke_prepare","root_live_admin_existing_effect_revoke","root_live_admin_existing_signed_grant_revoke","root_live_admin_same_service_signed_revoke","root_live_admin_original_issue_observer_enable","root_live_admin_original_issue_observation","root_live_admin_original_bounded_lease_revoke","root_live_admin_retained_artifact_observe","root_live_admin_original_effect_state_observe","root_live_admin_same_service_effect_state_observe","agentd_original_registered_writer_custody","agentd_original_recovered_writer_custody_factory","agentd_original_root_handoff_unique_file","calculator_previous_recovery_owner_target","calculator_previous_recovery_host_attach","calculator_previous_recovery_process_attach","calculator_previous_recovery_runtime_selection","calculator_previous_recovery_config_selection","root_original_issuer_renewal_prepare","root_original_issuer_renewal_commit","root_desktop_original_startup_before","root_desktop_recovered_successor_startup_before","root_desktop_registered_successor_policy_replace","desktop_previous_original_cut_selection","desktop_previous_joint_config_selection","memory_original_validated_target_retirement_ack","memory_original_owner_current_readonly_receipt","memory_original_notes_retirement_ack","memory_original_calculator_retirement_ack","memory_original_retirement_ack_commit","authority_lease_exact_bounded_revoke","root_live_admin_exact_issuer_revoke","root_live_admin_committed_issuer_reply","root_live_admin_exact_issuer_reply_record","root_learning_explicit_registration","root_learning_original_store_registration","root_learning_original_store_reopen","root_learning_original_owner_install","root_learning_original_scope_seal","root_learning_original_scope_capture","root_learning_same_service_serve","root_learning_registered_checkpoint_constructor","root_learning_original_client_constructor","root_learning_original_purpose_send","root_learning_original_purpose_receive","root_learning_original_handoff_consume","root_learning_original_config_hold","root_learning_original_stage_assembly","root_learning_original_runtime_consume","root_original_registered_ready_serve","root_original_private_sealed_bytes","root_learning_scoped_checkpoint_constructor","root_learning_scoped_client_constructor","root_learning_scoped_runtime_constructor","learning_frozen_update_scope_constructor","root_learning_scoped_profile_constructor","root_learning_scoped_checkpoint_record","learning_evidence_original_owner_constructor","learning_evidence_original_owner_readback","original_pinned_stream_explicit_uid","cell_learning_evaluation_profile_freeze","cell_learning_evaluation_receipt_prepare","cell_learning_evaluation_original_readback","generation_learning_original_stage_readback","cell_original_evaluation_execution","product_original_evaluation_execution","root_learning_original_delivery_source","root_learning_completed_circuit_source","circuit_learning_exact_ack_retirement","cell_completed_evaluation_readback","product_completed_evaluation_readback","cell_q24_single_head_training_plan","cell_q24_single_head_candidate_validation","cell_q24_native_training_fit","cell_q24_original_training_observation","learning_original_evaluator_attestation","learning_original_evaluation_key","circuit_feature_original_initial_publication","circuit_feature_original_update_publication","circuit_feature_guarded_private_cell","circuit_feature_private_cell_writer","circuit_feature_original_task_control","circuit_q24_ordinary_profile_assembly","circuit_feature_original_predecessor_recovery","circuit_feature_acknowledged_readonly_history","learning_original_training_receipt_create","learning_original_training_receipt_recover","learning_original_training_receipt_attest","learning_original_training_receipt_readback","cell_q24_original_training_execute","cell_q24_original_training_pair_binding","learning_original_training_stage_constructor","learning_original_training_stage_execute","learning_original_training_stage_readback","learning_original_training_stage_attestation","learning_original_training_snapshot_readback","cell_q24_model_material_owner_create","cell_q24_model_material_owner_recover","cell_q24_model_material_owner_commit","cell_q24_model_material_owner_readback","learning_original_evaluation_receipt_create","learning_original_evaluation_receipt_recover","learning_original_evaluation_receipt_attest","learning_original_evaluation_receipt_readback","learning_original_owner_physical_current","learning_original_training_model_create","learning_original_training_model_recover","learning_original_training_model_commit","learning_original_training_model_readback","learning_original_circuit_next_use_receipt_create","learning_original_circuit_next_use_receipt_recover","learning_original_circuit_next_use_receipt_attest","learning_original_circuit_next_use_receipt_readback","circuit_feature_original_next_use_observation","learning_original_circuit_selection_receipt_create","learning_original_circuit_selection_receipt_recover","learning_original_circuit_selection_receipt_attest","learning_original_circuit_selection_receipt_readback","circuit_feature_original_selection_observation","learning_original_material_create","learning_original_material_recover","learning_original_material_experience_attest","learning_original_material_experience_readback","learning_original_material_dataset_attest","learning_original_material_dataset_readback","learning_original_material_completed_dataset_read","learning_original_training_source_capture","learning_source_bound_training_owner_create","learning_source_bound_training_owner_recover","learning_source_bound_training_stage_constructor","learning_source_bound_training_stage_execute","learning_source_bound_training_stage_readback","learning_source_bound_training_stage_attestation","learning_source_bound_training_stage_model_create","learning_source_bound_training_stage_model_recover","learning_source_bound_training_stage_model_commit","learning_source_bound_training_stage_model_readback","learning_original_training_source_current","learning_original_training_source_inputs","learning_original_training_source_identity","learning_source_bound_training_admission","learning_source_bound_training_live_check","learning_source_bound_training_work_deadline","learning_original_material_readback_host","learning_original_material_readback_custody","learning_original_material_evidence_serve","product_original_completed_execution_evidence_readback","cell_original_completed_evaluation_evidence_readback","product_original_execution_evidence_revalidate","learning_original_circuit_model_selection_receipt_create","learning_original_circuit_model_selection_receipt_recover","learning_original_circuit_model_selection_receipt_attest","learning_original_circuit_model_selection_receipt_readback","learning_original_material_source_projection","learning_original_material_source_decode","learning_original_material_completed_source_read","learning_original_material_source_serve","learning_original_material_source_client","learning_original_material_source_current","learning_original_material_source_binding","learning_original_remote_training_source_capture","learning_original_training_command_client_create","learning_original_training_command_client_recover","learning_original_training_command_client_execute","learning_original_training_command_client_readback","learning_original_training_command_client_attestation","learning_original_training_command_owner_create","learning_original_training_command_owner_recover","learning_original_training_command_owner_serve","learning_original_training_command_owner_evidence","learning_source_bound_training_command_context","learning_original_owner_command_channel","learning_original_owner_snapshot_encode","learning_original_owner_snapshot_decode","learning_original_execution_store_create","learning_original_execution_store_recover","learning_original_execution_store_readback_only","learning_original_material_command_bootstrap","learning_original_material_command_custody","learning_original_material_command_serve_experience_commands","learning_original_material_command_serve_dataset_commands","learning_original_material_command_serve_experience_readback","learning_original_material_command_serve_dataset_readback","learning_original_material_command_serve_dataset_source","learning_original_material_command_client_from_original_experience_stream","learning_original_material_command_client_from_original_dataset_stream","learning_original_material_command_client_recover_original_experience_stream","learning_original_material_command_client_recover_original_dataset_stream","learning_original_material_command_client_execute","learning_original_material_command_client_readback","learning_original_material_command_client_receipt_attestation","learning_original_material_pair_readback","learning_original_dataset_readback_attenuation","learning_original_dataset_readback_current","learning_original_dataset_readback_context","learning_original_dataset_readback_cut","learning_original_material_connection_create","learning_original_material_connection_context","learning_original_material_connection_dataset","learning_original_training_bootstrap_create","learning_original_training_bootstrap_recover","learning_original_training_bootstrap_serve","learning_original_training_bootstrap_evidence"]
 
 [[boundary]]
 id = "root_registered_learning_checkpoint_writer"
@@ -2726,7 +2726,7 @@ symbol = "RootObservationStream::from_stream_for_uid"
 receiver_type = "RootObservationStream"
 definition_path = "codex-rs/hepta-agentd/src/root_observation_stream.rs"
 definition_markers = ["pub(super) fn from_stream_for_uid(", "actual.uid() != uid", "check_lifetime(root.get_ref())?"]
-product_callers = ["codex-rs/hepta-agentd/src/learning_iteration_evidence_client.rs","codex-rs/hepta-agentd/src/cell_q24_material_source.rs"]
+product_callers = ["codex-rs/hepta-agentd/src/learning_iteration_evidence_client.rs","codex-rs/hepta-agentd/src/cell_q24_material_source.rs","codex-rs/hepta-agentd/src/cell_q24_material_source_connection.rs"]
 caller_markers = []
 
 [[protected_file]]
@@ -3326,7 +3326,7 @@ symbol = "OriginalCellQ24TrainingReceiptOwnerV1::create"
 receiver_type = "OriginalCellQ24TrainingReceiptOwnerV1"
 definition_path = "codex-rs/hepta-agentd/src/cell_q24_training_receipt_owner.rs"
 definition_markers = ["pub fn create("]
-product_callers = []
+product_callers = ["codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_build.rs"]
 caller_markers = []
 
 [[boundary]]
@@ -3335,7 +3335,7 @@ symbol = "OriginalCellQ24TrainingReceiptOwnerV1::recover"
 receiver_type = "OriginalCellQ24TrainingReceiptOwnerV1"
 definition_path = "codex-rs/hepta-agentd/src/cell_q24_training_receipt_owner.rs"
 definition_markers = ["pub fn recover("]
-product_callers = []
+product_callers = ["codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_build.rs"]
 caller_markers = []
 
 [[boundary]]
@@ -3396,7 +3396,7 @@ symbol = "OriginalCellQ24TrainingStageV1::from_original_owners"
 receiver_type = "OriginalCellQ24TrainingStageV1"
 definition_path = "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs"
 definition_markers = ["pub async fn from_original_owners("]
-product_callers = []
+product_callers = ["codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_build.rs"]
 caller_markers = []
 
 [[boundary]]
@@ -3920,7 +3920,7 @@ symbol = "CellQ24TrainingOwnerV1::create_from_original_source"
 receiver_type = "CellQ24TrainingOwnerV1"
 definition_path = "codex-rs/hepta-agentd/src/cell_q24_training_source_owner.rs"
 definition_markers = ["pub fn create_from_original_source(","source.native_inputs()?","source: Some(source)"]
-product_callers = []
+product_callers = ["codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_build.rs"]
 caller_markers = []
 
 [[boundary]]
@@ -3929,7 +3929,7 @@ symbol = "CellQ24TrainingOwnerV1::recover_from_original_source"
 receiver_type = "CellQ24TrainingOwnerV1"
 definition_path = "codex-rs/hepta-agentd/src/cell_q24_training_source_owner.rs"
 definition_markers = ["pub fn recover_from_original_source(","source.native_inputs()?","source: Some(source)"]
-product_callers = []
+product_callers = ["codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_build.rs"]
 caller_markers = []
 
 [[boundary]]
@@ -3938,7 +3938,7 @@ symbol = "SourceBoundCellQ24TrainingStageV1::from_original_stage"
 receiver_type = "SourceBoundCellQ24TrainingStageV1"
 definition_path = "codex-rs/hepta-agentd/src/cell_q24_source_bound_stage.rs"
 definition_markers = ["pub async fn from_original_stage("]
-product_callers = []
+product_callers = ["codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_build.rs"]
 caller_markers = []
 
 [[boundary]]
@@ -4010,7 +4010,7 @@ symbol = "OriginalCellQ24TrainingSourceV1::require_current_in_lane"
 receiver_type = "OriginalCellQ24TrainingSourceV1"
 definition_path = "codex-rs/hepta-agentd/src/cell_q24_training_source.rs"
 definition_markers = ["pub(crate) fn require_current_in_lane("]
-product_callers = ["codex-rs/hepta-agentd/src/cell_q24_training_source_owner.rs"]
+product_callers = ["codex-rs/hepta-agentd/src/cell_q24_training_source_owner.rs","codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_build.rs"]
 caller_markers = []
 
 [[boundary]]
@@ -4431,7 +4431,7 @@ id = "learning_original_remote_training_source_capture"
 symbol = "capture_original_remote_cell_q24_training_source_v1"
 definition_path = "codex-rs/hepta-agentd/src/cell_q24_training_source.rs"
 definition_markers = ["pub async fn capture_original_remote_cell_q24_training_source_v1("]
-product_callers = []
+product_callers = ["codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_build.rs"]
 caller_markers = []
 
 [[protected_file]]
@@ -4575,7 +4575,7 @@ id = "learning_original_training_command_owner_create"
 symbol = "OriginalCellQ24TrainingCommandOwnerV1::from_original_stage"
 definition_path = "codex-rs/hepta-agentd/src/cell_q24_training_command_service.rs"
 definition_markers = ["pub async fn from_original_stage("]
-product_callers = []
+product_callers = ["codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_build.rs"]
 caller_markers = []
 receiver_type = "OriginalCellQ24TrainingCommandOwnerV1"
 
@@ -4584,7 +4584,7 @@ id = "learning_original_training_command_owner_recover"
 symbol = "OriginalCellQ24TrainingCommandOwnerV1::recover_original_stage"
 definition_path = "codex-rs/hepta-agentd/src/cell_q24_training_command_service.rs"
 definition_markers = ["pub async fn recover_original_stage("]
-product_callers = []
+product_callers = ["codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_build.rs"]
 caller_markers = []
 receiver_type = "OriginalCellQ24TrainingCommandOwnerV1"
 
@@ -4602,7 +4602,7 @@ id = "learning_original_training_command_owner_evidence"
 symbol = "OriginalCellQ24TrainingCommandOwnerV1::serve_evidence_readback"
 definition_path = "codex-rs/hepta-agentd/src/cell_q24_training_command_service.rs"
 definition_markers = ["pub async fn serve_evidence_readback("]
-product_callers = []
+product_callers = ["codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_service.rs"]
 caller_markers = []
 receiver_type = "OriginalCellQ24TrainingCommandOwnerV1"
 
@@ -4985,7 +4985,7 @@ id = "learning_original_owner_command_channel"
 symbol = "original_owner_command_channel_v1"
 definition_path = "codex-rs/hepta-agentd/src/learning_owner_command_channel.rs"
 definition_markers = ["pub(crate) fn original_owner_command_channel_v1("]
-product_callers = ["codex-rs/hepta-agentd/src/cell_q24_training_command.rs","codex-rs/hepta-agentd/src/cell_q24_training_command_service.rs","codex-rs/hepta-agentd/src/cell_q24_material_command.rs","codex-rs/hepta-agentd/src/cell_q24_material_command_service.rs"]
+product_callers = ["codex-rs/hepta-agentd/src/cell_q24_training_command.rs","codex-rs/hepta-agentd/src/cell_q24_training_command_service.rs","codex-rs/hepta-agentd/src/cell_q24_material_command.rs","codex-rs/hepta-agentd/src/cell_q24_material_command_service.rs","codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_service.rs"]
 caller_markers = []
 
 [[boundary]]
@@ -5118,7 +5118,7 @@ symbol = "OriginalCellQ24MaterialCommandClientV1::readback"
 receiver_type = "OriginalCellQ24MaterialCommandClientV1"
 definition_path = "codex-rs/hepta-agentd/src/cell_q24_material_command.rs"
 definition_markers = ["pub async fn readback("]
-product_callers = []
+product_callers = ["codex-rs/hepta-agentd/src/cell_q24_material_dataset_readback.rs"]
 caller_markers = []
 
 [[boundary]]
@@ -5285,3 +5285,222 @@ forbidden = ["SigningKey","File::open","UnixStream::connect","LedgerWriter::open
 function = "fn readback_material_pair("
 sequence = ["let started_at = binding::now()?","let experience = self.read_experience(&mut sources, started_at)?","binding::dataset_saved(&self.config, self.dataset_binding, &experience)?","self.dataset.read(&saved)?","self.authenticate_dataset(&mut sources, &experience, &saved, &bytes, started_at)?","Ok((experience, dataset))"]
 top_level = ["let started_at =","let experience =","let saved =","let bytes =","let dataset =","Ok((experience, dataset))"]
+
+[[boundary]]
+id = "learning_original_dataset_readback_attenuation"
+symbol = "OriginalCellQ24MaterialCommandClientV1::into_original_dataset_readback"
+receiver_type = "OriginalCellQ24MaterialCommandClientV1"
+definition_path = "codex-rs/hepta-agentd/src/cell_q24_material_dataset_readback.rs"
+definition_markers = ["pub fn into_original_dataset_readback("]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
+id = "learning_original_dataset_readback_current"
+symbol = "OriginalCellQ24DatasetCommandReadbackV1::readback"
+receiver_type = "OriginalCellQ24DatasetCommandReadbackV1"
+definition_path = "codex-rs/hepta-agentd/src/cell_q24_material_dataset_readback.rs"
+definition_markers = ["pub async fn readback("]
+product_callers = ["codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_service.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "learning_original_dataset_readback_context"
+symbol = "OriginalCellQ24DatasetCommandReadbackV1::require_initial_context"
+receiver_type = "OriginalCellQ24DatasetCommandReadbackV1"
+definition_path = "codex-rs/hepta-agentd/src/cell_q24_material_dataset_readback.rs"
+definition_markers = ["pub(crate) fn require_initial_context("]
+product_callers = ["codex-rs/hepta-agentd/src/cell_q24_training_bootstrap.rs","codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_build.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "learning_original_dataset_readback_cut"
+symbol = "OriginalCellQ24DatasetCommandReadbackV1::verify_original_cut"
+receiver_type = "OriginalCellQ24DatasetCommandReadbackV1"
+definition_path = "codex-rs/hepta-agentd/src/cell_q24_material_dataset_readback.rs"
+definition_markers = ["pub(crate) fn verify_original_cut("]
+product_callers = ["codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_build.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "learning_original_material_connection_create"
+symbol = "OriginalCellQ24MaterialSourceConnectionV1::from_original_stream"
+receiver_type = "OriginalCellQ24MaterialSourceConnectionV1"
+definition_path = "codex-rs/hepta-agentd/src/cell_q24_material_source_connection.rs"
+definition_markers = ["pub fn from_original_stream("]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
+id = "learning_original_material_connection_context"
+symbol = "OriginalCellQ24MaterialSourceConnectionV1::require_initial_context"
+receiver_type = "OriginalCellQ24MaterialSourceConnectionV1"
+definition_path = "codex-rs/hepta-agentd/src/cell_q24_material_source_connection.rs"
+definition_markers = ["pub(crate) fn require_initial_context("]
+product_callers = ["codex-rs/hepta-agentd/src/cell_q24_training_bootstrap.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "learning_original_material_connection_dataset"
+symbol = "OriginalCellQ24MaterialSourceConnectionV1::bind_original_dataset"
+receiver_type = "OriginalCellQ24MaterialSourceConnectionV1"
+definition_path = "codex-rs/hepta-agentd/src/cell_q24_material_source_connection.rs"
+definition_markers = ["pub(crate) fn bind_original_dataset("]
+product_callers = ["codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_build.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "learning_original_training_bootstrap_create"
+symbol = "OriginalCellQ24TrainingBootstrapOwnerV1::from_original_custody"
+receiver_type = "OriginalCellQ24TrainingBootstrapOwnerV1"
+definition_path = "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap.rs"
+definition_markers = ["pub fn from_original_custody("]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
+id = "learning_original_training_bootstrap_recover"
+symbol = "OriginalCellQ24TrainingBootstrapOwnerV1::recover_original_custody"
+receiver_type = "OriginalCellQ24TrainingBootstrapOwnerV1"
+definition_path = "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap.rs"
+definition_markers = ["pub fn recover_original_custody("]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
+id = "learning_original_training_bootstrap_serve"
+symbol = "OriginalCellQ24TrainingBootstrapOwnerV1::serve_commands"
+receiver_type = "OriginalCellQ24TrainingBootstrapOwnerV1"
+definition_path = "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_service.rs"
+definition_markers = ["pub async fn serve_commands("]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
+id = "learning_original_training_bootstrap_evidence"
+symbol = "OriginalCellQ24TrainingBootstrapOwnerV1::serve_evidence_readback"
+receiver_type = "OriginalCellQ24TrainingBootstrapOwnerV1"
+definition_path = "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_service.rs"
+definition_markers = ["pub async fn serve_evidence_readback("]
+product_callers = []
+caller_markers = []
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/cell_q24_material_dataset_readback.rs"
+required = ["pub struct OriginalCellQ24DatasetCommandReadbackV1 {","original: OriginalCellQ24MaterialCommandClientV1"]
+forbidden = ["SigningKey::generate","SigningKey::from_bytes","UnixStream::connect","File::open","OpenOptions",".claim(",".complete(","permit_all","if false","unwrap_or","pub original:","pub fn execute","pub async fn execute","pub fn into_inner","pub fn into_original(","execution_requested = false"]
+
+[[protected_file.required_function_order]]
+function = "fn into_original_dataset_readback("
+sequence = ["let started_at = now()?;","wire::context_binding(expected, started_at)?","self.role != Role::Dataset || self.binding != binding","return Err(Error::Binding(","self.channel.try_lock()","slot.as_mut().ok_or(Error::Unavailable)?","channel.peer.check_peer_lifetime()?","let fresh_now = now()?;","fresh_now < started_at","wire::context_binding(expected, fresh_now)? != binding","wire::context_binding(&self.config, fresh_now)? != binding","channel.execution_requested = true","Ok(OriginalCellQ24DatasetCommandReadbackV1 { original: self })"]
+top_level = ["let started_at = now()?;","Ok(OriginalCellQ24DatasetCommandReadbackV1 { original: self })"]
+
+[[protected_file.required_function_order]]
+function = "fn readback("
+sequence = ["fn readback(","OriginalCellQ24MaterialCommandClientV1::readback(&self.original).await"]
+top_level = ["OriginalCellQ24MaterialCommandClientV1::readback(&self.original).await"]
+
+[[protected_file.required_function_order]]
+function = "fn verify_original_cut("
+sequence = ["let at = now()?;","self.original.retained.try_lock()","retained.as_ref() != Some(cut)","return Err(Error::Binding(","wire::authenticate_cut(&self.original.config, Role::Dataset, cut.clone(), at)?","Ok(at)"]
+top_level = ["let at = now()?;","Ok(at)"]
+
+[[protected_file.required_function_order]]
+function = "fn require_initial_context("
+sequence = ["let at = now()?;","self.original.role != Role::Dataset","wire::context_binding(expected, at)? != self.original.binding","wire::context_binding(&self.original.config, at)? != self.original.binding","return Err(Error::Binding(","Ok(())"]
+top_level = ["let at = now()?;","Ok(())"]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/cell_q24_material_source_connection.rs"
+required = ["pub struct OriginalCellQ24MaterialSourceConnectionV1 {","transport: RootObservationStream","initial: LearningIterationSnapshotV1","scope: FrozenLearningScopeV2","baseline: Arc<LoadedCellQ24ModelV1>"]
+forbidden = ["SigningKey::generate","SigningKey::from_bytes","UnixStream::connect","File::open","OpenOptions",".claim(",".complete(","permit_all","if false","unwrap_or","pub transport:","pub initial:","pub scope:","pub baseline:","pub fn bind_original_dataset","pub fn into_inner","reset","set_timeout"]
+
+[[protected_file.required_function_order]]
+function = "fn from_original_stream("
+sequence = ["let started_at = now()?;","LearningIterationCoordinatorV1::new(","initial.request.clone()","initial.owners.clone()","scope.validate_snapshot(&initial)?","libc::getuid()","libc::geteuid()","coordinator.snapshot() != &initial","same_uid","peer.pid == std::process::id()","peer.actor_id != initial.owners.dataset","baseline.components() != &initial.request.selected_bundle.components","return Err(Error::Binding(","RootObservationStream::from_stream_for_uid(","stream","AgentdRootAuthorityPeer {","pid: peer.pid","boot_id: peer.boot_id","process_start_ticks: peer.process_start_ticks","original_owner_pidfd","timeout","lifetime","peer.uid","if now()? < started_at","return Err(Error::Binding(","Ok(Self {"]
+top_level = ["let started_at = now()?;","scope.validate_snapshot(&initial)?","if now()? < started_at","Ok(Self {"]
+
+[[protected_file.required_function_order]]
+function = "fn require_initial_context("
+sequence = ["&self.initial != initial","&self.scope != scope","self.baseline.components() != baseline.components()","self.baseline.components() != &initial.request.selected_bundle.components","return Err(Error::Binding(","Ok(())"]
+top_level = ["Ok(())"]
+
+[[protected_file.required_function_order]]
+function = "fn bind_original_dataset("
+sequence = ["verify_context(&config, now()?)?","LearningIterationCoordinatorV1::new(","config.dataset.request.clone()","config.dataset.owners.clone()","self.require_initial_context(initial.snapshot(), &config.scope, &self.baseline)?","Ok(OriginalCellQ24RemoteMaterialClientV1 {","channel: Mutex::new(Some(Channel {","transport: self.transport","next_request_id: 1","config","baseline: self.baseline"]
+top_level = ["verify_context(&config, now()?)?","Ok(OriginalCellQ24RemoteMaterialClientV1 {"]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap.rs"
+required = ["enum Origin {","Fresh,","Recovered,","enum State<","Awaiting(OriginalCellQ24TrainingBootstrapCustodyV1<TW, RW>)","Starting,","Ready(Arc<OriginalCellQ24TrainingCommandOwnerV1<TW, RW>>)","Fenced,","dataset: Arc<OriginalCellQ24DatasetCommandReadbackV1>","state: Mutex<State<TW, RW>>","bootstrap_lane: Semaphore","connections: Arc<Semaphore>"]
+forbidden = ["SigningKey::generate","SigningKey::from_bytes","UnixStream::connect","File::open","OpenOptions",".claim(",".complete(","permit_all","if false","unwrap_or","pub state:","pub dataset:","pub config:","pub generator_key: SigningKey =","fn reset","pub fn ready","DatasetV1","Q24Batch","Vec<i64>","dyn Fn","impl Fn"]
+
+[[protected_file.required_function_order]]
+function = "fn from_original_custody("
+sequence = ["fn from_original_custody(","Self::bind_original_custody(custody, config, dataset, cancellation, Origin::Fresh)"]
+top_level = ["Self::bind_original_custody(custody, config, dataset, cancellation, Origin::Fresh)"]
+
+[[protected_file.required_function_order]]
+function = "fn recover_original_custody("
+sequence = ["fn recover_original_custody(","Self::bind_original_custody(custody, config, dataset, cancellation, Origin::Recovered)"]
+top_level = ["Self::bind_original_custody(custody, config, dataset, cancellation, Origin::Recovered)"]
+
+[[protected_file.required_function_order]]
+function = "fn bind_original_custody("
+sequence = ["OriginalCellQ24DatasetCommandReadbackV1::require_initial_context(","&dataset","&config.material","OriginalCellQ24MaterialSourceConnectionV1::require_initial_context(","&custody.material_source","&config.material.initial","&config.material.scope","&custody.baseline","let at = now()?;","custody.generator_key.verifying_key().to_bytes() != config.generator.verifying_key","config.generator.principal.principal_id != config.material.initial.owners.trainer","!(1..=86_400).contains(&config.maximum_signature_lifetime_seconds)","custody.baseline.components() != &config.material.initial.request.selected_bundle.components","return Err(Error::Binding(",".require_signer_binding(","LearningEvidenceRoleV1::Generator","&config.generator","at","Ok(Self {","dataset: Arc::new(dataset)","state: Mutex::new(State::Awaiting(custody))","runtime: Handle::current()","bootstrap_lane: Semaphore::new(1)","connections: Arc::new(Semaphore::new(4))"]
+top_level = ["OriginalCellQ24DatasetCommandReadbackV1::require_initial_context(","OriginalCellQ24MaterialSourceConnectionV1::require_initial_context(","let at = now()?;","Ok(Self {"]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_build.rs"
+required = ["impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 'static>","OriginalCellQ24TrainingBootstrapOwnerV1<TW, RW>"]
+forbidden = ["SigningKey::generate","SigningKey::from_bytes","UnixStream::connect","File::open","OpenOptions",".claim(",".complete(","permit_all","if false","unwrap_or","FrozenLearningScopeV2::freeze","freeze_learning","clone_from_original","State::Awaiting","create_dir","std::fs::","serde_json::from","Vec<i64>","Q24Batch","dyn Fn","impl Fn"]
+
+[[protected_file.required_function_order]]
+function = "fn actual_context("
+sequence = ["let initial = &self.config.material.initial;","let snapshot = cut.snapshot();","LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())","snapshot.request != initial.request","snapshot.owners != initial.owners","snapshot.receipts.len() != 2","cut.attestations().len() != 2","coordinator.next_stage() != Some(LearningIterationStageV1::Training)","return Err(Error::Binding(","let context = OriginalCellQ24TrainingCommandContextV1 {","dataset: snapshot.clone()","scope: self.config.material.scope.clone()","verifier: self.config.material.verifier.clone()","request.require_context(&context, context.binding()?, next_request_id)?","self.require_fresh_cut(cut, started_at)?","Ok(context)"]
+top_level = ["let initial = &self.config.material.initial;","let snapshot = cut.snapshot();","request.require_context(&context, context.binding()?, next_request_id)?","self.require_fresh_cut(cut, started_at)?","Ok(context)"]
+
+[[protected_file.required_function_order]]
+function = "fn require_fresh_cut("
+sequence = ["OriginalCellQ24DatasetCommandReadbackV1::verify_original_cut(","&self.dataset","cut","OriginalCellQ24DatasetCommandReadbackV1::require_initial_context(","&self.dataset","&self.config.material","at < started_at","matches!(self.origin, Origin::Fresh)","at >= self.config.material.initial.request.envelope.expiry_unix_seconds","return Err(Error::Binding(",".require_signer_binding(","LearningEvidenceRoleV1::Generator","&self.config.generator","at","Ok(())"]
+top_level = ["OriginalCellQ24DatasetCommandReadbackV1::require_initial_context(","Ok(())"]
+
+[[protected_file.required_function_order]]
+function = "fn build_original_owner("
+sequence = ["let source_config = OriginalCellQ24TrainingSourceConfigV1 {","dataset: cut.snapshot().clone()","scope: self.config.material.scope.clone()","rule: self.config.material.rule","optimizer: self.config.optimizer","freeze_plan: self.config.material.freeze_plan.clone()","freeze_evidence: self.config.material.freeze_evidence.clone()","experience_evidence: cut.attestations()[0].clone()","dataset_evidence: cut.attestations()[1].clone()","verifier: self.config.material.verifier.clone()","OriginalCellQ24MaterialSourceConnectionV1::bind_original_dataset(","material_source","source_config.clone()","capture_original_remote_cell_q24_training_source_v1(","OriginalCellQ24RemoteTrainingSourceOwnersV1 {","material","baseline","experience","dataset","source_config",".await?","self.require_fresh_cut(&cut, started_at)?","let signing = OriginalCellQ24TrainingSigningConfigV1 {","dataset: context.dataset.clone()","scope: context.scope.clone()","signer: self.config.generator.clone()","verifier: context.verifier.clone()","maximum_signature_lifetime_seconds: self.config.maximum_signature_lifetime_seconds","let origin = self.origin;","let original_dataset = Arc::clone(&self.dataset);","let material_config = self.config.material.clone();","let original_cut = cut.clone();","tokio::task::spawn_blocking(move || {","OriginalCellQ24TrainingSourceV1::require_current_in_lane(&source)?","OriginalCellQ24DatasetCommandReadbackV1::verify_original_cut(","&original_dataset","&original_cut","OriginalCellQ24DatasetCommandReadbackV1::require_initial_context(","&original_dataset","&material_config","at < started_at","matches!(origin, Origin::Fresh)","at >= material_config.initial.request.envelope.expiry_unix_seconds","return Err(Error::Binding(",".require_signer_binding(","LearningEvidenceRoleV1::Generator","&signing.signer","at","let native = match origin {","Origin::Fresh => CellQ24TrainingOwnerV1::create_from_original_source(","native_file","native_witness","source","Origin::Recovered => CellQ24TrainingOwnerV1::recover_from_original_source(","native_file","native_witness","source","let receipts = match origin {","Origin::Fresh => OriginalCellQ24TrainingReceiptOwnerV1::create(","receipt_file","receipt_witness","signing","generator_key","Origin::Recovered => OriginalCellQ24TrainingReceiptOwnerV1::recover(","receipt_file","receipt_witness","signing","generator_key","Ok::<_, Error>((native, receipts))",".await",".map_err(|_| Error::Uncertain)??","OriginalCellQ24TrainingStageV1::from_original_owners(native, receipts)","SourceBoundCellQ24TrainingStageV1::from_original_stage(original)","let owner = match self.origin {","Origin::Fresh => OriginalCellQ24TrainingCommandOwnerV1::from_original_stage(","stage","context","Arc::clone(&self.cancellation)","Origin::Recovered => OriginalCellQ24TrainingCommandOwnerV1::recover_original_stage(","stage","context","Arc::clone(&self.cancellation)","self.require_fresh_cut(&cut, started_at)?","Ok(Arc::new(owner))"]
+top_level = ["let source_config = OriginalCellQ24TrainingSourceConfigV1 {","let origin = self.origin;","let original_dataset = Arc::clone(&self.dataset);","let material_config = self.config.material.clone();","let original_cut = cut.clone();","let owner = match self.origin {","Ok(Arc::new(owner))"]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_service.rs"
+required = ["OriginalCellQ24TrainingBootstrapOwnerV1<TW, RW>"]
+forbidden = ["SigningKey::generate","SigningKey::from_bytes","UnixStream::connect","File::open","OpenOptions",".claim(",".complete(","permit_all","if false","unwrap_or","State::Awaiting(custody) =","wire::CommandResult::Missing","wire::CommandResult::Pending","SigningKey","LearningIterationSnapshotV1","source: Vec","receipt: Vec","batch:","dyn Fn","impl Fn"]
+
+[[protected_file.required_function_order]]
+function = "fn serve_commands("
+sequence = ["Arc::clone(&self.connections)","try_acquire_owned()","tokio::task::spawn_blocking(move || {","let _permit = permit;","original_owner_command_channel_v1(","stream","consumer","consumer_uid","original_consumer_pidfd","timeout","lifetime","self.serve_command_channel(&mut channel)",".await",".map_err(|_| Error::Uncertain)?"]
+top_level = []
+
+[[protected_file.required_function_order]]
+function = "fn serve_evidence_readback("
+sequence = ["Arc::clone(&self.connections)","try_acquire_owned()","self.ready()?","ok_or(Error::Binding(","OriginalCellQ24TrainingCommandOwnerV1::serve_evidence_readback(","original","stream","consumer","consumer_uid","original_consumer_pidfd","timeout","lifetime",".await?"]
+top_level = []
+
+[[protected_file.required_function_order]]
+function = "fn ready("
+sequence = ["self.state.try_lock()","match &*state {","State::Awaiting(_) => Ok(None)","State::Starting => Err(Error::Busy)","State::Ready(original) => Ok(Some(Arc::clone(original)))","State::Fenced => Err(Error::Uncertain)"]
+top_level = []
+
+[[protected_file.required_function_order]]
+function = "fn serve_command_channel("
+sequence = ["for request_id in 1..=128_u64 {","channel.exchange(|bytes| {","self.command_response(bytes, request_id)",".map_err(|_| HostIssuerTransportError::InvalidRequest)","OriginalCellQ24TrainingCommandErrorV1::from","if !exchanged","Ok(request_id - 1)","Err(Error::Uncertain)"]
+top_level = ["for request_id in 1..=128_u64 {","Err(Error::Uncertain)"]
+
+[[protected_file.required_function_order]]
+function = "fn command_response("
+sequence = ["let request: wire::Request = serde_json::from_slice(bytes)","self.require_initial_request(&request, request_id)?","if let Some(original) = self.ready()?","return Ok(original.command_response(bytes, request_id)?)","matches!(self.origin, Origin::Recovered)","request.action == wire::Action::Execute","wire::CommandResult::ReadbackRequired","matches!(self.origin, Origin::Fresh)","request.action == wire::Action::Readback","wire::CommandResult::ReadbackRequired","self.bootstrap_lane.try_acquire()","if let Some(original) = self.ready()?","return Ok(original.command_response(bytes, request_id)?)","let started_at = now()?;","self.runtime.block_on(","OriginalCellQ24DatasetCommandReadbackV1::readback(&self.dataset)","Ok(cut) => cut","Err(OriginalCellQ24MaterialCommandErrorV1::Missing)","wire::CommandResult::Unavailable","Err(OriginalCellQ24MaterialCommandErrorV1::Pending)","wire::CommandResult::Unavailable","Err(error) => return Err(error.into())","self.actual_context(&cut, &request, request_id, started_at)?","let custody = {","self.state.try_lock()","std::mem::replace(&mut *state, State::Starting)","State::Awaiting(custody) => custody","*state = other","return Err(Error::Uncertain)","self.runtime.block_on(self.build_original_owner(","custody","context","cut","started_at","let original = match built {","Ok(original) => {","State::Ready(Arc::clone(&original))","original","Err(error) => {","State::Fenced","return Err(error)","return Ok(original.command_response(bytes, request_id)?)","self.response(&request, result)"]
+top_level = ["self.require_initial_request(&request, request_id)?","self.response(&request, result)"]
+
+[[protected_file.required_function_order]]
+function = "fn require_initial_request("
+sequence = ["let initial = &self.config.material.initial;","let digest = |text: &str|","text.parse()","if digest.is_zero() || digest.to_string() != text","return Err(Error::Binding(","digest(&request.binding)?","digest(&request.dataset_head)?","request.schema != 1","request.operation != wire::OPERATION","request.request_id != request_id","request.operation_id != initial.request.operation_id.as_str()","request.actor_id != initial.owners.trainer.as_str()","request.scope_binding != self.config.material.scope.binding().to_string()","request.action == wire::Action::Readback && request.cancelled","return Err(Error::Binding(","Ok(())"]
+top_level = ["let initial = &self.config.material.initial;","digest(&request.binding)?","digest(&request.dataset_head)?","Ok(())"]
