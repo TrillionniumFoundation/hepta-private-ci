@@ -11,7 +11,7 @@ use crate::cell_q24_dataset::test_support as signed;
 
 pub(super) type NativeSource = crate::DurableCircuitTaskSourceV1<FileAnchorWitnessStore>;
 
-pub(super) struct Native {
+pub(super) struct OriginalQ24DatasetIngressFixture {
     _models: tempfile::TempDir,
     _ledger_files: tempfile::TempDir,
     _source_files: tempfile::TempDir,
@@ -26,7 +26,7 @@ pub(super) struct Native {
     pub at: u64,
 }
 
-impl Native {
+impl OriginalQ24DatasetIngressFixture {
     pub(super) async fn new(target_q32: i64) -> anyhow::Result<Self> {
         let models = tempfile::tempdir()?;
         let ledger_files = tempfile::tempdir()?;
@@ -236,7 +236,7 @@ pub(super) struct Training {
 
 impl Training {
     pub(super) fn new(
-        native: &Native,
+        native: &OriginalQ24DatasetIngressFixture,
         principal: StableId,
         data: crate::CellQ24TrainingBatchV1,
     ) -> anyhow::Result<Self> {

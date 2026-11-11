@@ -26,14 +26,14 @@ use crate::OriginalCellQ24TrainingStageV1 as Stage;
 
 #[path = "cell_q24_dataset_training_ingress_support_tests.rs"]
 mod fixtures;
-use fixtures::Native;
+use fixtures::OriginalQ24DatasetIngressFixture;
 use fixtures::Training;
 
 #[tokio::test]
 async fn original_dataset_native_stage_runs_candidate_and_no_update_and_reopens_exactly()
 -> anyhow::Result<()> {
     for (target, unchanged) in [(2_i64 << 32, false), (1_i64 << 32, true)] {
-        let native = Native::new(target).await?;
+        let native = OriginalQ24DatasetIngressFixture::new(target).await?;
         let f = Training::new(
             &native,
             native.material.profile().principal_id.clone(),
@@ -141,7 +141,7 @@ async fn original_dataset_native_stage_runs_candidate_and_no_update_and_reopens_
 #[tokio::test]
 async fn original_dataset_scope_and_same_dataset_different_batch_reject_before_claim()
 -> anyhow::Result<()> {
-    let native = Native::new(2_i64 << 32).await?;
+    let native = OriginalQ24DatasetIngressFixture::new(2_i64 << 32).await?;
     let wrong_batch = crate::CellQ24TrainingBatchV1::new(
         native.material.dataset().snapshot.dataset_digest,
         vec![crate::CellQ24TrainingSampleV1 {
@@ -235,7 +235,7 @@ impl AnchorWitnessStore for WithdrawOnCompletedTraining {
 #[tokio::test]
 async fn original_dataset_withdrawn_during_fit_is_retained_but_never_signed_or_retrained()
 -> anyhow::Result<()> {
-    let native = Native::new(2_i64 << 32).await?;
+    let native = OriginalQ24DatasetIngressFixture::new(2_i64 << 32).await?;
     let f = Training::new(
         &native,
         native.material.profile().principal_id.clone(),

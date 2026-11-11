@@ -643,6 +643,10 @@ debug = "limited"
 [profile.dev.package.matrix-sdk-store-encryption]
 opt-level = 3
 
+# Match store encryption optimization for its SHA-256 compression backend.
+[profile.dev.package."sha2:0.11.1"]
+opt-level = 3
+
 [profile.dev-small]
 inherits = "dev"
 opt-level = 0
