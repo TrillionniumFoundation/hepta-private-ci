@@ -102,7 +102,10 @@ impl Fixture {
     /// the per-frame deadline remains the production 500 milliseconds.
     pub fn original_owner_client(
         &self,
-    ) -> anyhow::Result<(LearningIterationEvidenceClientV1, codex_hepta_contracts::HostAuthorityPeerChannel)> {
+    ) -> anyhow::Result<(
+        LearningIterationEvidenceClientV1,
+        codex_hepta_contracts::HostAuthorityPeerChannel,
+    )> {
         use codex_hepta_contracts::HostAuthorityPeerChannel;
         use codex_hepta_contracts::HostAuthorityPeerPolicy;
         use codex_hepta_contracts::HostIssuerPeer;

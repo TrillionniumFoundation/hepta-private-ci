@@ -208,7 +208,10 @@ pub(crate) fn fixture_original_receipt_client(
                 serde_json::to_vec(&response(request, evidence))
                     .map_err(|_| codex_hepta_contracts::HostIssuerTransportError::Unavailable)
             })?;
-            anyhow::ensure!(exchanged, "original receipt fixture closed before request {index}");
+            anyhow::ensure!(
+                exchanged,
+                "original receipt fixture closed before request {index}"
+            );
         }
         Ok(())
     });
