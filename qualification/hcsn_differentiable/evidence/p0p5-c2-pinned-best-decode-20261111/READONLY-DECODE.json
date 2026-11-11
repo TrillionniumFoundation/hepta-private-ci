@@ -1,0 +1,41 @@
+{
+  "all_six_independently_replayed": false,
+  "controller_terminal_confirmed": false,
+  "decoded_best_count": 2,
+  "expected_best_decodes": 2,
+  "expected_original_attempts": 6,
+  "independent_training_replay": false,
+  "original_job_id": "1a1c74f3308-be2a-75",
+  "rows": [
+    {
+      "checkpoint_bytes": 450552,
+      "checkpoint_sha256": "a83e259366c76f1f3856c4be1291d2e842d32b283c661f656ae44fd156b37b3c",
+      "data_manifest_sha256": "0eb233da8d0b766c35356ba450d0572f1e6a87a47f1d8a17cd32c2ae6f25a1cb",
+      "epochs_completed": 124,
+      "independent_training_replay": false,
+      "main_updates": 1488,
+      "model_tensor_count": 23,
+      "name": "hcsn-s211-lr0.001",
+      "optimizer_state_count": 11,
+      "status": "PINNED_BEST_DECODED_NOT_REPLAYED",
+      "tensor_finite": true
+    },
+    {
+      "checkpoint_bytes": 450552,
+      "checkpoint_sha256": "14a9c527bf87ad6524c771ab7da5a1ccf32723cd1f2fc6c7d8f6d8797d1b2ed9",
+      "data_manifest_sha256": "0eb233da8d0b766c35356ba450d0572f1e6a87a47f1d8a17cd32c2ae6f25a1cb",
+      "epochs_completed": 126,
+      "independent_training_replay": false,
+      "main_updates": 1512,
+      "model_tensor_count": 23,
+      "name": "hcsn-s307-lr0.001",
+      "optimizer_state_count": 11,
+      "status": "PINNED_BEST_DECODED_NOT_REPLAYED",
+      "tensor_finite": true
+    }
+  ],
+  "schema": "hcsn-c2-original-pinned-best-decode-v1",
+  "scientific_admission": "HOLD_NO_GO",
+  "scope": "Frozen-identity weights_only CPU decoding and finite state structure of two best.pt only; not interrupted.pt, optimizer trajectory, or independent B.",
+  "source_inventory_sha256": "ced4684a427b255e5686aae2f88fee27e6b2edc40cf31d48516a700158259abf"
+}
