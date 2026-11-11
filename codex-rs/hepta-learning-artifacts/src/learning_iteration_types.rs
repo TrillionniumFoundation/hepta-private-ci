@@ -200,10 +200,12 @@ pub struct LearningIterationSnapshotV1 {
 
 impl LearningIterationSnapshotV1 {
     pub fn local_decision_v2(&self) -> Option<&LearningLocalDecisionV2> {
-        self.receipts.iter().find_map(|receipt| match &receipt.observation {
-            LearningIterationObservationV1::LocalDecisionV2(decision) => Some(decision),
-            _ => None,
-        })
+        self.receipts
+            .iter()
+            .find_map(|receipt| match &receipt.observation {
+                LearningIterationObservationV1::LocalDecisionV2(decision) => Some(decision),
+                _ => None,
+            })
     }
 
     pub fn requires_scoped_owner_v2(&self) -> bool {
@@ -244,7 +246,9 @@ impl LearningIterationObservationV1 {
             }
             Self::Evaluation { .. } => LearningIterationStageV1::Evaluation,
             Self::Proposal { .. } => LearningIterationStageV1::Proposal,
-            Self::Selection { .. } | Self::LocalDecisionV2(_) => LearningIterationStageV1::Selection,
+            Self::Selection { .. } | Self::LocalDecisionV2(_) => {
+                LearningIterationStageV1::Selection
+            }
             Self::NextUse { .. } | Self::RetainedModelNextUse { .. } => {
                 LearningIterationStageV1::NextUse
             }
