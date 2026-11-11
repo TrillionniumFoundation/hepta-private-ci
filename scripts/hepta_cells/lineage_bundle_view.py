@@ -49,14 +49,49 @@ def review_native_bundle_claims(
     owner must confirm the partition and generation, and the original evaluator
     must authenticate its signatures. This function performs none of those acts.
     """
-    if not isinstance(source, Bundle) or not isinstance(candidate, Bundle):
+    if type(source) is not Bundle or type(candidate) is not Bundle:
         raise LineagePolicyError(
             "native-compatible source and candidate Bundle required"
         )
-    if type(state_partition) is not dict or set(state_partition) != set(
-        _PARTITION_KEYS
+    if (
+        type(state_partition) is not dict
+        or any(type(key) is not str for key in state_partition)
+        or set(state_partition) != set(_PARTITION_KEYS)
     ):
         raise LineagePolicyError("complete native CellStatePartitionV1 required")
+
+    # An untrusted Bundle may carry a per-instance 'digest' or 'canonical_bytes'
+    # attribute shadowing the codec methods, even though Bundle is frozen.
+    # Capture ordinary objects and ordinary maps once before any hashing or
+    # successor validation; never call methods on caller-supplied instances.
+    snapshots = []
+    for supplied in (source, candidate):
+        if (
+            type(supplied.components) is not dict
+            or any(type(key) is not str for key in supplied.components)
+            or (
+                supplied.training_lineage is not None
+                and (
+                    type(supplied.training_lineage) is not dict
+                    or any(type(key) is not str for key in supplied.training_lineage)
+                )
+            )
+        ):
+            raise LineagePolicyError("invalid original native Bundle maps")
+        snapshots.append(
+            Bundle(
+                artifact_id=supplied.artifact_id,
+                generation=supplied.generation,
+                components=dict(supplied.components),
+                training_lineage=(
+                    None
+                    if supplied.training_lineage is None
+                    else dict(supplied.training_lineage)
+                ),
+                rollback_predecessor=supplied.rollback_predecessor,
+            )
+        )
+    source, candidate = snapshots
 
     # review_update already bounds generation, changed component scope, costs,
     # missing receipts and source/evaluator declarations; it never grants Adopt.
