@@ -34,3 +34,11 @@ Six **manufactured adversarial** checks were red before the code fix (17 unittes
 ## Remaining gates
 
 Independent GitHub exact-head CI and full original-owner native integration must be evaluated separately. The 6/6 historical zero-score root cause remains **UNKNOWN** without actual source-owner selection→wire→delivery→evaluator receipts for each original episode. No independent prospective B, real outcome/implementation-probability calibration, matched light baseline, total cost gain or production admission is established.
+
+## Historical original-owner boundary update (source already reviewed separately)
+
+An **earlier** read-only analysis on #5610 recovered the original frozen #5450 native artifacts: [readback report](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/fa40154c1de35af750910f117ad6a0c7aceda1be/qualification/ctrl-metacontrol-20261109/ORIGINAL_NATIVE_READBACK_20261110.md) and [digest-only six-case data](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/fa40154c1de35af750910f117ad6a0c7aceda1be/qualification/ctrl-metacontrol-20261109/ORIGINAL_NATIVE_READBACK_20261110.json). This is **not** new work in this PR, nor an independent operator-key attestation.
+
+Across six original diagnostic WRITE_TEXT runs, a correct reference-matching candidate was present (6/6), but the ACTUAL actor-emitted candidate was a nonmatching alternative (6/6). The actor wire, post-action delivery and scorer receipts were mutually consistent (6/6). Thus the **first observable semantic mismatch was the emitted actor payload**, not the delivery or canonical scoring. Historical internal selected-index receipts were absent (0/6), and the model-ranking/selection cause remains **UNKNOWN**. The original READ-only trajectories stopped without an answer suffix and cannot support a READ value gain.
+
+The synthetic chronology counterexamples fixed here are distinct from, and do **not** retroactively explain, these six historical zero scores. This qualification still remains HOLD_NO_GO.
