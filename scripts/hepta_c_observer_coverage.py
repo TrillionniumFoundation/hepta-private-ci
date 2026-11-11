@@ -166,7 +166,8 @@ def assess_original_observer_coverage(log: str, xml: bytes) -> dict:
                     "flakyError",
                     "rerunFailure",
                     "rerunError",
-                ) for node in case.iter()
+                )
+                for node in case.iter()
             )
             for suite, case in selected
         )
