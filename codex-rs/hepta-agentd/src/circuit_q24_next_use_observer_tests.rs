@@ -10,7 +10,7 @@ use pretty_assertions::assert_eq;
 use super::*;
 use crate::OriginalCircuitNextUseReceiptErrorV1;
 
-#[path = "circuit_q24_next_use_observer_test_support.rs"]
+#[path = "circuit_q24_next_use_observer_support_tests.rs"]
 mod observer_support;
 
 use observer_support::ObserverFixture;
