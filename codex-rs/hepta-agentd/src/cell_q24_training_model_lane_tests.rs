@@ -9,6 +9,7 @@ use crate::OriginalCellQ24TrainingStageErrorV1 as StageError;
 use crate::OriginalCellQ24TrainingStageV1 as Stage;
 use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
 use codex_hepta_learning_ledger::TrustedLearningSignerV1;
+use pretty_assertions::assert_eq;
 
 use super::*;
 
