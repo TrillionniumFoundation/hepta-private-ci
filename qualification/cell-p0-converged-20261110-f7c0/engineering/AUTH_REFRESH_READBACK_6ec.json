@@ -1,0 +1,77 @@
+{
+  "schema": "hepta.p0.auth-refresh-readback.v1",
+  "recorded_at_utc": "2026-11-11T02:21:20.583026+00:00",
+  "run_id": 42937198454,
+  "run_head_sha": "6ecfa504d2132f3682ffb01f8c9d65346b26cf5b",
+  "actual_checkout_sha": "3fc1acb49d5bbf9621411c1673de4e50a0bcd71e",
+  "actual_tree": "9184583f3842d90a560436f279c753f15792e3ab",
+  "same_tree_as_run_head": true,
+  "actual_checkout_differs_from_run_head": true,
+  "case": {
+    "package": "codex-git-attribution",
+    "name": "tests::policy_resolution_retries_after_auth_refresh"
+  },
+  "original_job_log_findings": [
+    {
+      "job_id": 130259560731,
+      "path": "/workspace/scratch/f7c0ded86bcc/p0-cb0598-ci-observation/job-130259560731.log",
+      "bytes": 3526643,
+      "sha256": "3e59ac628d490aebaefccc3a3e5e3dd44a48e15b68ee12c3b2da7c44e4d2a587",
+      "original_cache_result": [
+        {
+          "line": 13717,
+          "text": "2026-11-11T01:54:47.3232100Z //codex-rs/ext/git-attribution:git-attribution-unit-tests       (cached) PASSED in 0.3s"
+        }
+      ],
+      "exact_case_lines": []
+    },
+    {
+      "job_id": 130259560901,
+      "path": "/workspace/scratch/f7c0ded86bcc/p0-cb0598-ci-observation/job-130259560901.log",
+      "bytes": 392932,
+      "sha256": "c5021900bee2ed5b2d01bf1d200ccb0f114964c61bf3f713e563d3b17770ef52",
+      "original_cache_result": [
+        {
+          "line": 3122,
+          "text": "2026-11-11T01:47:24.5881826Z //codex-rs/ext/git-attribution:git-attribution-unit-tests       (cached) PASSED in 83.4s"
+        }
+      ],
+      "exact_case_lines": []
+    }
+  ],
+  "artifact": {
+    "id": 13819959925,
+    "bytes": 10854203,
+    "sha256": "8409b5d0f72f44a61f36c279eed6c9ab94406dbf5f75f0cc24e1c4d38ae28c29",
+    "github_digest_verified": true,
+    "crc_verified": true,
+    "members": [
+      {
+        "name": "execution-log-test-test-1657.zst",
+        "bytes": 10856455,
+        "sha256": "ca40f80025ce92e9c27850712d8e0e2677f3b516e260a86a653ca311476b42ea",
+        "crc32_hex": "a7717083",
+        "zstd_uncompressed_bytes": 98987722,
+        "zstd_uncompressed_sha256": "3c6f2b9b76180fe46e21116d3dddc1899cfcd8e9293ccc4e3f942b654cfff714",
+        "needle_occurrences": {
+          "policy_resolution_retries_after_auth_refresh": 0,
+          "git-attribution-unit-tests": 59,
+          "Elapsed": 0,
+          "policy should resolve after refresh": 0
+        }
+      }
+    ],
+    "has_standalone_junit_or_test_log": false
+  },
+  "verdict": {
+    "target_selected": true,
+    "target_status": "cached PASS on both inspected platforms",
+    "case_level_pass_or_fail_established": false,
+    "case_actual_fresh_execution_established": false,
+    "inner_elapsed_or_none_diagnostic_observed": false,
+    "not_selected_claim": false
+  },
+  "scope": "Target-level cache results do not establish a fresh execution of the exact case; no per-case JUnit or stdout was retained in the inspected original artifact. The decoded execution-log search is recorded for completeness, not used to infer testcase absence or success.",
+  "current_cb0598_qualification": false,
+  "new_native_or_ci_jobs_started": 0
+}

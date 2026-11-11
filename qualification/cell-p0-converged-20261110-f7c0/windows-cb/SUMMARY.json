@@ -1,0 +1,428 @@
+{
+  "schema": "hepta.p0.windows-exact-source-readback.v1",
+  "recorded_at_utc": "2026-11-11T02:23:45.931952+00:00",
+  "source_sha": "cb0598a9099a0d828ce73aedb51e397e600e49d1",
+  "source_tree": "59a019b79a6b879bbc27f6a614e1222fe87581ca",
+  "run_id": 42942991263,
+  "run_attempt": 1,
+  "job_id": 130268988496,
+  "artifact_id": 13822696815,
+  "github_run_and_job_conclusion": "success",
+  "original_native_execution": {
+    "actual_pass_status_lines": 34,
+    "unique_binary_name_pairs": 34,
+    "observed_failures": 0,
+    "cases_by_binary": {
+      "codex-utils-path": 15,
+      "codex-hepta-prompt-registry": 2,
+      "codex-hepta-contracts": 5,
+      "codex-hepta-agentd": 12
+    },
+    "commands": [
+      {
+        "line": 325,
+        "text": "2026-11-11T02:01:36.0179171Z just test --locked -p codex-utils-path --lib -E 'test(private_state_windows::)' --test-threads 1 --no-tests fail --retries 0"
+      },
+      {
+        "line": 455,
+        "text": "2026-11-11T02:02:23.9509438Z just test --locked -p codex-hepta-prompt-registry --lib -E 'test(durable::windows::tests::)' --test-threads 1 --no-tests fail --retries 0"
+      },
+      {
+        "line": 550,
+        "text": "2026-11-11T02:02:43.6691633Z just test --locked -p codex-hepta-contracts --lib -E 'test(final_use::store::windows::tests::)' --test-threads 1 --no-tests fail --retries 0"
+      },
+      {
+        "line": 552,
+        "text": "2026-11-11T02:02:43.6693014Z just test --locked -p codex-hepta-contracts --lib -E 'test(authority_lease::windows::tests::)' --test-threads 1 --no-tests fail --retries 0"
+      },
+      {
+        "line": 646,
+        "text": "2026-11-11T02:03:13.6915100Z just test --locked -p codex-hepta-agentd --lib -E 'test(prompt_runtime::tests::)' --test-threads 1 --no-tests fail --retries 0"
+      }
+    ],
+    "summaries": [
+      {
+        "line": 452,
+        "seconds": 0.193,
+        "passed": 15,
+        "nextest_excluded_or_ignored": 5,
+        "text": "2026-11-11T02:02:23.8594576Z      Summary [   0.193s] 15 tests run: 15 passed, 5 skipped"
+      },
+      {
+        "line": 547,
+        "seconds": 0.042,
+        "passed": 2,
+        "nextest_excluded_or_ignored": 26,
+        "text": "2026-11-11T02:02:43.5752406Z      Summary [   0.042s] 2 tests run: 2 passed, 26 skipped"
+      },
+      {
+        "line": 621,
+        "seconds": 0.114,
+        "passed": 3,
+        "nextest_excluded_or_ignored": 147,
+        "text": "2026-11-11T02:03:11.6248322Z      Summary [   0.114s] 3 tests run: 3 passed, 147 skipped"
+      },
+      {
+        "line": 643,
+        "seconds": 0.069,
+        "passed": 2,
+        "nextest_excluded_or_ignored": 148,
+        "text": "2026-11-11T02:03:13.5785980Z      Summary [   0.069s] 2 tests run: 2 passed, 148 skipped"
+      },
+      {
+        "line": 3163,
+        "seconds": 0.541,
+        "passed": 12,
+        "nextest_excluded_or_ignored": 326,
+        "text": "2026-11-11T02:21:11.8305233Z      Summary [   0.541s] 12 tests run: 12 passed, 326 skipped"
+      }
+    ],
+    "passed_cases": [
+      {
+        "line": 436,
+        "binary": "codex-utils-path",
+        "name": "private_state_windows::directory::api_tests::exclusive_child_creation_preserves_an_existing_private_file",
+        "seconds": 0.015,
+        "text": "2026-11-11T02:02:23.6825333Z         PASS [   0.015s] codex-utils-path private_state_windows::directory::api_tests::exclusive_child_creation_preserves_an_existing_private_file"
+      },
+      {
+        "line": 437,
+        "binary": "codex-utils-path",
+        "name": "private_state_windows::directory::api_tests::exclusive_creation_refuses_existing_and_racing_directories",
+        "seconds": 0.013,
+        "text": "2026-11-11T02:02:23.6957806Z         PASS [   0.013s] codex-utils-path private_state_windows::directory::api_tests::exclusive_creation_refuses_existing_and_racing_directories"
+      },
+      {
+        "line": 438,
+        "binary": "codex-utils-path",
+        "name": "private_state_windows::directory::api_tests::existing_directory_open_never_initializes_missing_state",
+        "seconds": 0.01,
+        "text": "2026-11-11T02:02:23.7059614Z         PASS [   0.010s] codex-utils-path private_state_windows::directory::api_tests::existing_directory_open_never_initializes_missing_state"
+      },
+      {
+        "line": 439,
+        "binary": "codex-utils-path",
+        "name": "private_state_windows::directory::tests::rejects_ancestor_substitution_at_retained_open",
+        "seconds": 0.022,
+        "text": "2026-11-11T02:02:23.7277705Z         PASS [   0.022s] codex-utils-path private_state_windows::directory::tests::rejects_ancestor_substitution_at_retained_open"
+      },
+      {
+        "line": 440,
+        "binary": "codex-utils-path",
+        "name": "private_state_windows::directory::tests::rejects_junction_before_creating_private_leaf",
+        "seconds": 0.02,
+        "text": "2026-11-11T02:02:23.7483089Z         PASS [   0.020s] codex-utils-path private_state_windows::directory::tests::rejects_junction_before_creating_private_leaf"
+      },
+      {
+        "line": 441,
+        "binary": "codex-utils-path",
+        "name": "private_state_windows::security_tests::native_creation_rejects_nul_without_creating_a_prefix_path",
+        "seconds": 0.011,
+        "text": "2026-11-11T02:02:23.7595107Z         PASS [   0.011s] codex-utils-path private_state_windows::security_tests::native_creation_rejects_nul_without_creating_a_prefix_path"
+      },
+      {
+        "line": 442,
+        "binary": "codex-utils-path",
+        "name": "private_state_windows::security_tests::new_directory_and_child_have_explicit_token_user_ownership",
+        "seconds": 0.011,
+        "text": "2026-11-11T02:02:23.7710150Z         PASS [   0.011s] codex-utils-path private_state_windows::security_tests::new_directory_and_child_have_explicit_token_user_ownership"
+      },
+      {
+        "line": 443,
+        "binary": "codex-utils-path",
+        "name": "private_state_windows::security_tests::opening_existing_objects_never_rewrites_their_security",
+        "seconds": 0.011,
+        "text": "2026-11-11T02:02:23.7819594Z         PASS [   0.011s] codex-utils-path private_state_windows::security_tests::opening_existing_objects_never_rewrites_their_security"
+      },
+      {
+        "line": 444,
+        "binary": "codex-utils-path",
+        "name": "private_state_windows::security_tests::relative_root_uses_one_absolute_spelling_for_create_and_open",
+        "seconds": 0.009,
+        "text": "2026-11-11T02:02:23.7913896Z         PASS [   0.009s] codex-utils-path private_state_windows::security_tests::relative_root_uses_one_absolute_spelling_for_create_and_open"
+      },
+      {
+        "line": 445,
+        "binary": "codex-utils-path",
+        "name": "private_state_windows::tests::hard_link_is_rejected",
+        "seconds": 0.011,
+        "text": "2026-11-11T02:02:23.8022427Z         PASS [   0.011s] codex-utils-path private_state_windows::tests::hard_link_is_rejected"
+      },
+      {
+        "line": 446,
+        "binary": "codex-utils-path",
+        "name": "private_state_windows::tests::malformed_ace_sid_bounds_fail_closed",
+        "seconds": 0.008,
+        "text": "2026-11-11T02:02:23.8102150Z         PASS [   0.008s] codex-utils-path private_state_windows::tests::malformed_ace_sid_bounds_fail_closed"
+      },
+      {
+        "line": 447,
+        "binary": "codex-utils-path",
+        "name": "private_state_windows::tests::malformed_getace_spans_fail_closed",
+        "seconds": 0.008,
+        "text": "2026-11-11T02:02:23.8179473Z         PASS [   0.008s] codex-utils-path private_state_windows::tests::malformed_getace_spans_fail_closed"
+      },
+      {
+        "line": 448,
+        "binary": "codex-utils-path",
+        "name": "private_state_windows::tests::public_read_access_is_not_private",
+        "seconds": 0.008,
+        "text": "2026-11-11T02:02:23.8258516Z         PASS [   0.008s] codex-utils-path private_state_windows::tests::public_read_access_is_not_private"
+      },
+      {
+        "line": 449,
+        "binary": "codex-utils-path",
+        "name": "private_state_windows::tests::retained_directory_opens_private_single_link_children",
+        "seconds": 0.01,
+        "text": "2026-11-11T02:02:23.8361818Z         PASS [   0.010s] codex-utils-path private_state_windows::tests::retained_directory_opens_private_single_link_children"
+      },
+      {
+        "line": 450,
+        "binary": "codex-utils-path",
+        "name": "private_state_windows::tests::retained_directory_pins_root_and_ancestor_until_drop",
+        "seconds": 0.023,
+        "text": "2026-11-11T02:02:23.8592425Z         PASS [   0.023s] codex-utils-path private_state_windows::tests::retained_directory_pins_root_and_ancestor_until_drop"
+      },
+      {
+        "line": 544,
+        "binary": "codex-hepta-prompt-registry",
+        "name": "durable::windows::tests::full_private_registry_roundtrip_reopens_without_resetting_owner_history",
+        "seconds": 0.029,
+        "text": "2026-11-11T02:02:43.5628824Z         PASS [   0.029s] codex-hepta-prompt-registry durable::windows::tests::full_private_registry_roundtrip_reopens_without_resetting_owner_history"
+      },
+      {
+        "line": 545,
+        "binary": "codex-hepta-prompt-registry",
+        "name": "durable::windows::tests::hard_link_is_rejected_before_registry_bytes_are_read",
+        "seconds": 0.011,
+        "text": "2026-11-11T02:02:43.5749824Z         PASS [   0.011s] codex-hepta-prompt-registry durable::windows::tests::hard_link_is_rejected_before_registry_bytes_are_read"
+      },
+      {
+        "line": 617,
+        "binary": "codex-hepta-contracts",
+        "name": "final_use::store::windows::tests::windows_final_use_denies_issuer_or_epoch_substitution",
+        "seconds": 0.035,
+        "text": "2026-11-11T02:03:11.5472437Z         PASS [   0.035s] codex-hepta-contracts final_use::store::windows::tests::windows_final_use_denies_issuer_or_epoch_substitution"
+      },
+      {
+        "line": 618,
+        "binary": "codex-hepta-contracts",
+        "name": "final_use::store::windows::tests::windows_final_use_rejects_hardlinked_claims_before_nonce_replay",
+        "seconds": 0.029,
+        "text": "2026-11-11T02:03:11.5767170Z         PASS [   0.029s] codex-hepta-contracts final_use::store::windows::tests::windows_final_use_rejects_hardlinked_claims_before_nonce_replay"
+      },
+      {
+        "line": 619,
+        "binary": "codex-hepta-contracts",
+        "name": "final_use::store::windows::tests::windows_nonce_burn_persists_across_real_private_store_reopen",
+        "seconds": 0.048,
+        "text": "2026-11-11T02:03:11.6246270Z         PASS [   0.048s] codex-hepta-contracts final_use::store::windows::tests::windows_nonce_burn_persists_across_real_private_store_reopen"
+      },
+      {
+        "line": 640,
+        "binary": "codex-hepta-contracts",
+        "name": "authority_lease::windows::tests::hardlink_alias_of_authority_state_is_rejected_before_reopen",
+        "seconds": 0.021,
+        "text": "2026-11-11T02:03:13.5324915Z         PASS [   0.021s] codex-hepta-contracts authority_lease::windows::tests::hardlink_alias_of_authority_state_is_rejected_before_reopen"
+      },
+      {
+        "line": 641,
+        "binary": "codex-hepta-contracts",
+        "name": "authority_lease::windows::tests::private_authority_lease_roundtrip_reopens_with_exact_frontier",
+        "seconds": 0.045,
+        "text": "2026-11-11T02:03:13.5784238Z         PASS [   0.045s] codex-hepta-contracts authority_lease::windows::tests::private_authority_lease_roundtrip_reopens_with_exact_frontier"
+      },
+      {
+        "line": 3150,
+        "binary": "codex-hepta-agentd",
+        "name": "prompt_runtime::tests::dispatch_without_terminal_reopens_as_unknown_and_blocks_blind_retry",
+        "seconds": 0.044,
+        "text": "2026-11-11T02:21:11.3376065Z         PASS [   0.044s] codex-hepta-agentd prompt_runtime::tests::dispatch_without_terminal_reopens_as_unknown_and_blocks_blind_retry"
+      },
+      {
+        "line": 3151,
+        "binary": "codex-hepta-agentd",
+        "name": "prompt_runtime::tests::final_delivered_terminal_releases_staged_turn",
+        "seconds": 0.021,
+        "text": "2026-11-11T02:21:11.3594188Z         PASS [   0.021s] codex-hepta-agentd prompt_runtime::tests::final_delivered_terminal_releases_staged_turn"
+      },
+      {
+        "line": 3152,
+        "binary": "codex-hepta-agentd",
+        "name": "prompt_runtime::tests::indeterminate_terminal_reopens_blocked_and_reconciles_monotonically",
+        "seconds": 0.06,
+        "text": "2026-11-11T02:21:11.4197807Z         PASS [   0.060s] codex-hepta-agentd prompt_runtime::tests::indeterminate_terminal_reopens_blocked_and_reconciles_monotonically"
+      },
+      {
+        "line": 3153,
+        "binary": "codex-hepta-agentd",
+        "name": "prompt_runtime::tests::named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host",
+        "seconds": 0.142,
+        "text": "2026-11-11T02:21:11.5617544Z         PASS [   0.142s] codex-hepta-agentd prompt_runtime::tests::named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host"
+      },
+      {
+        "line": 3154,
+        "binary": "codex-hepta-agentd",
+        "name": "prompt_runtime::tests::non_dispatch_terminal_is_idempotent_and_retains_stage_for_retry",
+        "seconds": 0.019,
+        "text": "2026-11-11T02:21:11.5808920Z         PASS [   0.019s] codex-hepta-agentd prompt_runtime::tests::non_dispatch_terminal_is_idempotent_and_retains_stage_for_retry"
+      },
+      {
+        "line": 3155,
+        "binary": "codex-hepta-agentd",
+        "name": "prompt_runtime::tests::not_dispatched_retry_then_final_delivery_reopens_without_stale_stage_requirement",
+        "seconds": 0.077,
+        "text": "2026-11-11T02:21:11.6580488Z         PASS [   0.077s] codex-hepta-agentd prompt_runtime::tests::not_dispatched_retry_then_final_delivery_reopens_without_stale_stage_requirement"
+      },
+      {
+        "line": 3156,
+        "binary": "codex-hepta-agentd",
+        "name": "prompt_runtime::tests::owner_drop_releases_retained_descriptor_without_releasing_successor_lock",
+        "seconds": 0.038,
+        "text": "2026-11-11T02:21:11.6962898Z         PASS [   0.038s] codex-hepta-agentd prompt_runtime::tests::owner_drop_releases_retained_descriptor_without_releasing_successor_lock"
+      },
+      {
+        "line": 3157,
+        "binary": "codex-hepta-agentd",
+        "name": "prompt_runtime::tests::owner_remains_send_sync_with_fault_injection",
+        "seconds": 0.017,
+        "text": "2026-11-11T02:21:11.7133759Z         PASS [   0.017s] codex-hepta-agentd prompt_runtime::tests::owner_remains_send_sync_with_fault_injection"
+      },
+      {
+        "line": 3158,
+        "binary": "codex-hepta-agentd",
+        "name": "prompt_runtime::tests::post_rename_ack_loss_poison_reopens_to_dispatch_claim_not_absent",
+        "seconds": 0.044,
+        "text": "2026-11-11T02:21:11.7573247Z         PASS [   0.044s] codex-hepta-agentd prompt_runtime::tests::post_rename_ack_loss_poison_reopens_to_dispatch_claim_not_absent"
+      },
+      {
+        "line": 3159,
+        "binary": "codex-hepta-agentd",
+        "name": "prompt_runtime::tests::staged_attachment_is_bound_to_exact_thread_and_turn",
+        "seconds": 0.018,
+        "text": "2026-11-11T02:21:11.7754270Z         PASS [   0.018s] codex-hepta-agentd prompt_runtime::tests::staged_attachment_is_bound_to_exact_thread_and_turn"
+      },
+      {
+        "line": 3160,
+        "binary": "codex-hepta-agentd",
+        "name": "prompt_runtime::tests::windows_prompt_runtime_existing_insecure_directory_is_never_repaired",
+        "seconds": 0.02,
+        "text": "2026-11-11T02:21:11.7955545Z         PASS [   0.020s] codex-hepta-agentd prompt_runtime::tests::windows_prompt_runtime_existing_insecure_directory_is_never_repaired"
+      },
+      {
+        "line": 3161,
+        "binary": "codex-hepta-agentd",
+        "name": "prompt_runtime::tests::windows_prompt_runtime_private_owner_reopens_without_reset_or_acl_waiver",
+        "seconds": 0.034,
+        "text": "2026-11-11T02:21:11.8303538Z         PASS [   0.034s] codex-hepta-agentd prompt_runtime::tests::windows_prompt_runtime_private_owner_reopens_without_reset_or_acl_waiver"
+      }
+    ],
+    "junit_available_in_original_artifact": false,
+    "count_basis": "Actual original nextest PASS lines and five matching summaries; not JUnit."
+  },
+  "python_acquisition_harness": {
+    "actual_unittest_count": 6,
+    "seconds": 0.003,
+    "result": "OK",
+    "these_are_not_training_stage_cases": true
+  },
+  "acquisition_probes": {
+    "lanes": {
+      "positive": {
+        "lane": "positive",
+        "production_sha256": "21600c6d3b738afbd53db9fffd088944fb7fe1fbc947efde9520fc49e439e1ac",
+        "exit_code": 0,
+        "log_sha256": "5cec7d7560c02d89fb92dd0cafb5671cc038cd03b0085e2201c371685d6ab62a",
+        "statuses": {
+          "private_state_windows::directory::tests::rejects_ancestor_substitution_at_retained_open": "PASS",
+          "private_state_windows::directory::tests::rejects_junction_before_creating_private_leaf": "PASS"
+        },
+        "observations": {
+          "substitution": "swapped=true denied=true redirected=false",
+          "creation": "denied=true created=false"
+        }
+      },
+      "unchecked-create": {
+        "lane": "unchecked-create",
+        "patch_sha256": "f55d66d0a5b10e98b6ba1ebb60a56081e6027eff85068e01107c3a1e7ea4f74c",
+        "production_sha256": "a1aa002dc62686156f92071c1ff572987559c73230bf1c4acc3ea072739d400e",
+        "exit_code": 1,
+        "log_sha256": "f1e5693c540d801e14be0bd6377fe9ae74adf969c4fc76a42f41ed017f8bf904",
+        "statuses": {
+          "private_state_windows::directory::tests::rejects_ancestor_substitution_at_retained_open": "PASS",
+          "private_state_windows::directory::tests::rejects_junction_before_creating_private_leaf": "FAIL"
+        },
+        "observations": {
+          "substitution": "swapped=true denied=true redirected=false",
+          "creation": "denied=true created=true"
+        }
+      },
+      "path-check-open": {
+        "lane": "path-check-open",
+        "patch_sha256": "102a2659d4e6d6b3bc0316ce2d2966f5045b4c8578ed3cbb257c502afebbc4d3",
+        "production_sha256": "01787b0a9cf467436ad0cc35aa47b7c05e24ec5dae9b562c2382d1e7c56acdd4",
+        "exit_code": 1,
+        "log_sha256": "6aa8de4592c849df1ccd2f40ea08879302080b271d0f201c3dd45f9c991f725f",
+        "statuses": {
+          "private_state_windows::directory::tests::rejects_ancestor_substitution_at_retained_open": "FAIL",
+          "private_state_windows::directory::tests::rejects_junction_before_creating_private_leaf": "PASS"
+        },
+        "observations": {
+          "substitution": "swapped=true denied=false redirected=true",
+          "creation": "denied=true created=false"
+        }
+      }
+    },
+    "original_positive_repeat_passes": 2,
+    "mutant_case_executions": 4,
+    "expected_mutant_failures": 2,
+    "source_restored": true,
+    "original_probe_names_already_in_34_unique_cases": true
+  },
+  "source_checks": {
+    "immutable_checkout_guard_succeeded": true,
+    "artifact_manifest_head_and_tree_verified": true,
+    "positive_source_full_hash_verified": true,
+    "negative_patch_and_source_full_hashes_verified": true,
+    "final_diff_check_and_tracked_status_checks_succeeded": true,
+    "full_before_after_source_inventories_present": false
+  },
+  "maintenance": {
+    "cargo_fmt_check_four_packages_succeeded": true,
+    "compiler_warnings_about_stable_imports_granularity_preserved": true,
+    "just_fix_or_bins_check_claimed": false
+  },
+  "training_stage": {
+    "exact_six_new_training_stage_cases_selected_or_executed_here": false,
+    "qualification_from_this_lane": false,
+    "daemon_run_to_observe": 42942991526
+  },
+  "original_artifact": {
+    "bytes": 13540,
+    "sha256": "95539f807cf86d9043c73c6d8bbb453497f28d456444c5653d977d8b5accf42a",
+    "member_count": 9
+  },
+  "decoded_job_log": {
+    "bytes": 260374,
+    "sha256": "d7989cc8834d1b5e82a51f38b025f00e2ff51db63d61c2697ca984e72c83b19b",
+    "gzip_bytes": 52675,
+    "gzip_sha256": "b287393bd37ff0a6a5a2b6fef345ae2ce2d66928c854b7622f7d16400cf29ea8",
+    "crlf_count": 3300,
+    "complete_text_and_newlines_preserved": true
+  },
+  "scope_limits": [
+    "Only the recorded Windows private-state and Prompt Runtime scope is established on cb0598.",
+    "The six Python acquisition harness tests do not establish execution of the six newly added training-stage native tests.",
+    "The acquisition positive rerun repeats two already counted original cases; mutants are separate deliberate negative controls.",
+    "No daemon, full learning StageOwner assembly, scientific adoption, core/RMCP suite, or another head is qualified by this result."
+  ],
+  "unmeasured_costs": {
+    "command_cpu_seconds": null,
+    "peak_rss_bytes": null,
+    "energy_joules": null,
+    "monetary_cost": null,
+    "full_build_and_test_command_elapsed_seconds": null
+  },
+  "new_ci_runs_started": 0,
+  "new_native_jobs_started": 0
+}

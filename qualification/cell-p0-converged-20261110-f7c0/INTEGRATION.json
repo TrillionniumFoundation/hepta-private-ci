@@ -1,6 +1,6 @@
 {
   "schema": "hepta.cell-p0-converged-implementation-and-evidence.v1",
-  "observed_at_utc": "2026-11-11T02:11:09.394532+00:00",
+  "observed_at_utc": "2026-11-11T02:25:13.305127+00:00",
   "candidate": {
     "source_sha": "cb0598a9099a0d828ce73aedb51e397e600e49d1",
     "source_tree": "59a019b79a6b879bbc27f6a614e1222fe87581ca",
@@ -305,14 +305,23 @@
     },
     {
       "name": "full caller scan on current immutable candidate",
-      "status": "RUNNING",
+      "status": "PASS_HEPTA_CALLER_CLOSED_SET",
       "source_sha": "cb0598a9099a0d828ce73aedb51e397e600e49d1",
       "source_tree": "59a019b79a6b879bbc27f6a614e1222fe87581ca",
       "execution_key": "p0-cb0598-full-caller-scan-20261111-v1",
       "started_at_utc": "2026-11-11T02:04:06.305159Z",
-      "rust_files_scanned": null,
-      "full_scan_pass": false,
-      "authority_granted": false
+      "rust_files_scanned": 6302,
+      "full_scan_pass": true,
+      "authority_granted": false,
+      "boundary_records": 223,
+      "privileged_inventory_entries": 223,
+      "protected_file_records": 218,
+      "distinct_protected_paths": 173,
+      "source_identity_unchanged": true,
+      "wall_seconds": 752.917854263,
+      "child_user_cpu_seconds": 734.443381,
+      "child_system_cpu_seconds": 2.857495,
+      "evidence": "caller-cb/RESULTS.md"
     },
     {
       "name": "controlled local three-package Clippy attempt",
@@ -329,6 +338,61 @@
       "overall_maintenance_pass": false,
       "final_child_cpu_and_rss": null,
       "evidence": "p0-maintenance-6ecfa504-attempt1.zip"
+    },
+    {
+      "name": "preceding-candidate shared owner native qualification",
+      "status": "PASS_EXACT_SOURCE_SCOPED",
+      "source_sha": "6ecfa504d2132f3682ffb01f8c9d65346b26cf5b",
+      "source_tree": "9184583f3842d90a560436f279c753f15792e3ab",
+      "run_id": 42937198345,
+      "job_id": 130252735026,
+      "actual_junit_cases": 1184,
+      "junit_failures": 0,
+      "junit_errors": 0,
+      "nextest_skipped": 71,
+      "python_execution_gate_cases": 15,
+      "same_source_daemon_overlap": 884,
+      "overlap_is_repeated_execution_not_independent_samples": true,
+      "source_before_after_clean": true,
+      "new_training_stage_qualified": false,
+      "fmt_fix_bins_qualified": false,
+      "evidence": "shared-6ec/SUMMARY.json"
+    },
+    {
+      "name": "preceding-candidate auth-refresh target readback",
+      "status": "TARGET_CACHED_PASS_EXACT_CASE_NOT_OBSERVED",
+      "run_head_sha": "6ecfa504d2132f3682ffb01f8c9d65346b26cf5b",
+      "tested_checkout_sha": "3fc1acb49d5bbf9621411c1673de4e50a0bcd71e",
+      "same_tree": "9184583f3842d90a560436f279c753f15792e3ab",
+      "case_fresh_execution_established": false,
+      "inner_failure_diagnosis_established": false,
+      "evidence": "engineering/AUTH_REFRESH_READBACK_6ec.json"
+    },
+    {
+      "name": "current Training-stage source selected Windows qualification",
+      "status": "PASS_EXACT_SOURCE_SCOPED",
+      "source_sha": "cb0598a9099a0d828ce73aedb51e397e600e49d1",
+      "source_tree": "59a019b79a6b879bbc27f6a614e1222fe87581ca",
+      "run_id": 42942991263,
+      "job_id": 130268988496,
+      "actual_unique_original_native_cases": 34,
+      "native_case_source": "Original nextest PASS lines and five matching summaries; original artifact has no JUnit.",
+      "selected_suite_passes": [
+        15,
+        2,
+        3,
+        2,
+        12
+      ],
+      "python_acquisition_harness_cases": 6,
+      "python_cases_are_not_training_stage_tests": true,
+      "positive_probes_repeat_original_cases": 2,
+      "mutant_case_executions": 4,
+      "expected_mutant_failures": 2,
+      "source_restored_and_tracked_clean": true,
+      "cargo_fmt_check_four_packages": "PASS",
+      "new_training_stage_native_cases_executed": 0,
+      "evidence": "windows-cb/SUMMARY.json"
     }
   ],
   "remaining_p0": [
@@ -356,7 +420,8 @@
     "unknown_is_not_zero": true,
     "full_cost_coverage": false,
     "previous_daemon_measured_command_clocks": "daemon-6ec/CI_EVIDENCE.json; command and nextest timings have different scopes and are not additive.",
-    "controlled_maintenance_stop": "p0-maintenance-6ecfa504-attempt1.zip; exact monotonic elapsed and final child CPU/RSS remain null after interruption."
+    "controlled_maintenance_stop": "p0-maintenance-6ecfa504-attempt1.zip; exact monotonic elapsed and final child CPU/RSS remain null after interruption.",
+    "current_source_full_caller_scan": "caller-cb/EXECUTION.json; wall and child CPU cover only this verifier invocation, not preparation or communication."
   },
   "research_status": "RESEARCH_STATUS.json",
   "new_frozen_diagnostic": "ctrl-gap/RESULTS.md",

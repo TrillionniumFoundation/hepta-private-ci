@@ -30,11 +30,15 @@
 
 [前一共同源的 daemon 原始归档](daemon-6ec/RESULTS.md)逐项核实了 ordinary 1,146 个 JUnit testcase、Root 7 个 testcase，均为零失败；另有 nextest 排除/忽略 72 与 948 项。原日志实际记录 Root UID=0，旧 ordinary XML 只作 Root 排除证据。六阶段均为 exact `6ecfa504…`/tree `9184583…`，14,399 文件的完整清单逐字节相同。该 lane 的 fmt/fix/bins 返回码均为 0、维护补丁为空；其 fix/bins 只覆盖 agentd、learning-artifacts、intelligence-eval。
 
-当前适配层的 9 项聚焦来源检查、223 边界/218 个受保护条目的静态 inventory 与独立源码审查通过；6 个原生行为测试已写入新源码，实际执行仍以新 CI 的日志/JUnit 为准。固定 `cb0598a…` 的完整 caller scan 正在独立 checkout 运行，尚未返回最终扫描量或通过结果。详情见 [适配层检查与边界](engineering/training-stage/REVIEW_AND_SCOPE.json)。这些检查与历史测试重叠，不累计为新增独立样本。
+当前适配层的 9 项聚焦来源检查、223 边界/218 个受保护条目的静态 inventory 与独立源码审查通过；6 个原生行为测试已写入新源码，实际执行仍以新 CI 的日志/JUnit 为准。固定 `cb0598a…` 的[完整 caller scan 已实际通过](caller-cb/RESULTS.md)：6,302 个 Rust 文件、223 个边界、223 个 privileged inventory 条目，以及 218 个 protected-file 记录（173 个去重路径）。原 stdout 完整保留，前后源码、CALLERS 与 verifier 身份相同且 clean；该扫描不授予权限。详情见 [适配层检查与边界](engineering/training-stage/REVIEW_AND_SCOPE.json)。这些检查与历史测试重叠，不累计为新增独立样本。
 
 一次独立的 exact `6ecfa504…`、单 job、本地三包 Clippy 命令在共享空闲磁盘降至 683,872,256 字节时受控中止（exit 130）；源码未改，运行测试为 0。完整记录保存在 [维护尝试归档](p0-maintenance-6ecfa504-attempt1.zip)。这次停止原因已知，但不能据此解释更早的 SIGKILL；最终 child CPU/RSS 和精确单调时钟耗时未捕获，仍为未知。
 
 训练回执重开测试的范围是有效凭证/签名窗口内的文件对象重开，尚不是完整 daemon/Root 进程冷启动。过期签名拒绝续签，genesis witness 写入未确认时保持阻塞；两项限制均有新增回归代码。在当前 `cb0598a…` 中，原 native fit 与回执 attest/readback 已由 Training 适配层实际调用；回执 create/recover、适配层四个 public host 接口和完整生产 StageOwner 装配仍未接通。本目录不授予模型采用或生产权限。
+
+前一 `6ecfa504…` 的 [shared owner 原生执行](shared-6ec/SUMMARY.json)也已逐项核实：实际 JUnit 1,184 项通过、nextest 排除/忽略 71 项，另有 15 项 Python 执行门禁。该 lane 与同源 daemon 有 884 个完全相同的 Agentd testcase，不能相加为独立测试或任务样本。旧 blocking 中 auth-refresh 所属目标只有缓存 PASS，可确认被选入，却未观测到精确用例重执行或内层诊断，详见[读回边界](engineering/AUTH_REFRESH_READBACK_6ec.json)。
+
+当前 `cb0598a…` 的 [Windows 选定范围已通过](windows-cb/SUMMARY.json)：五次原生调用各通过 15、2、3、2、12 项，34 个唯一原始测试。两个原始攻击样例复跑与两个变异控制单列；另 6 项 Python acquisition harness 测试也单列，不能与待执行的 6 个 Training stage 原生测试混淆。完整日志、原 artifact 的全部 9 成员和精确 source/tree 记录均保留；该 artifact 没有 JUnit，计数来自实际 nextest PASS 与 summary。四包格式检查与恢复后 tracked clean 均通过。
 
 ## CTRL：本轮真正执行并读回的冻结诊断
 
