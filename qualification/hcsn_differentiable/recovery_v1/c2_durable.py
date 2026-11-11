@@ -9,6 +9,7 @@ from __future__ import annotations
 import fcntl
 import hashlib
 import json
+import math
 import os
 from pathlib import Path
 import re
@@ -39,7 +40,28 @@ def _digest(value: object) -> str:
     return value
 
 
+def _require_builtin_json(value: object, depth: int = 0) -> None:
+    # Do not silently turn tuples, key types or subclasses into different JSON.
+    if depth > 32:
+        raise EvidenceError("nested receipt exceeds maximum depth")
+    if type(value) is dict:
+        for key, item in value.items():
+            if type(key) is not str:
+                raise EvidenceError("non-string receipt JSON key")
+            _require_builtin_json(item, depth + 1)
+    elif type(value) is list:
+        for item in value:
+            _require_builtin_json(item, depth + 1)
+    elif value is None or type(value) in (str, int, bool):
+        return
+    elif type(value) is float and math.isfinite(value):
+        return
+    else:
+        raise EvidenceError("noncanonical nested receipt JSON type")
+
+
 def _encode(value: object) -> bytes:
+    _require_builtin_json(value)
     try:
         return (json.dumps(value, ensure_ascii=False, sort_keys=True,
                            separators=(",", ":"), allow_nan=False) + "\n").encode("utf-8")
