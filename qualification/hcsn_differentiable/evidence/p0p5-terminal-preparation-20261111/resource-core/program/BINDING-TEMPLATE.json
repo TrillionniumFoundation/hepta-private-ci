@@ -1,0 +1,89 @@
+{
+  "schema": "c2-resource-input-binding-v1",
+  "all_six_terminal": false,
+  "confirmation_E_access": false,
+  "fixed_inputs": {
+    "NOTE": "Every original path in unchanged PLAN maps to a verified exact byte copy."
+  },
+  "old_curves": {
+    "path": null,
+    "identity": null
+  },
+  "historical_reviews": {
+    "baseline_v1": {
+      "path": null,
+      "identity": null
+    },
+    "baseline_v2": {
+      "path": null,
+      "identity": null
+    }
+  },
+  "controller_result": {
+    "path": null,
+    "source_path": null,
+    "identity": null
+  },
+  "controller_commands": {
+    "path": null,
+    "source_path": null,
+    "identity": null
+  },
+  "native_terminal": {
+    "path": null,
+    "identity": null
+  },
+  "native_job_id": null,
+  "independent_auditor": {
+    "external_receipt": {
+      "path": null,
+      "identity": null
+    },
+    "archive": {
+      "path": null,
+      "identity": null
+    },
+    "native_complete_envelope": {
+      "path": null,
+      "identity": null
+    }
+  },
+  "C2_reports": [
+    {
+      "name": "hcsn-s101-lr0.001",
+      "report": null,
+      "missing_reason": "UNBOUND PREPARATION TEMPLATE; not a production missing-output finding"
+    },
+    {
+      "name": "hcsn-s101-lr0.003",
+      "report": null,
+      "missing_reason": "UNBOUND PREPARATION TEMPLATE; not a production missing-output finding"
+    },
+    {
+      "name": "hcsn-s211-lr0.001",
+      "report": null,
+      "missing_reason": "UNBOUND PREPARATION TEMPLATE; not a production missing-output finding"
+    },
+    {
+      "name": "hcsn-s211-lr0.003",
+      "report": null,
+      "missing_reason": "UNBOUND PREPARATION TEMPLATE; not a production missing-output finding"
+    },
+    {
+      "name": "hcsn-s307-lr0.001",
+      "report": null,
+      "missing_reason": "UNBOUND PREPARATION TEMPLATE; not a production missing-output finding"
+    },
+    {
+      "name": "hcsn-s307-lr0.003",
+      "report": null,
+      "missing_reason": "UNBOUND PREPARATION TEMPLATE; not a production missing-output finding"
+    }
+  ],
+  "separate_cost_receipts": [],
+  "notes": [
+    "Each present C2 report spec needs path, original native source_path, and exact bytes/sha256 identity.",
+    "Independent native auditor full-exit receipt and full resource-supervisor receipt are separate non-additive accounts.",
+    "Missing bytes, CPUs or energy are not filled from defaults."
+  ]
+}

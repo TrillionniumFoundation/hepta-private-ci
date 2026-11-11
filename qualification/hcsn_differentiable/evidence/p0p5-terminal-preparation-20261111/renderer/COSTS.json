@@ -1,0 +1,87 @@
+{
+  "schema": "renderer-v3-preparation-costs-v1",
+  "attempts": [
+    {
+      "attempt": "owner-validation-01",
+      "scope": "Six native-only synthetic JSON tests with nine rejection variants and two positive cases; full renderer/archive pipeline not exercised.",
+      "receipt": {
+        "path": "validation-attempt-01/RESULT.json",
+        "bytes": 3677,
+        "sha256": "2090f7605d7ae5a1c4b69e2b021e6e5ae6c7c6135146a27076cf379a09a4d3cc"
+      },
+      "whole_child_wall_seconds": 0.17727379000007204,
+      "wait4_child_CPU_seconds": 0.16031199999999998,
+      "wait4_peak_RSS_bytes": 15507456,
+      "returncode": 0,
+      "source_unchanged": true
+    },
+    {
+      "attempt": "owner-validation-02",
+      "scope": "Eight native-only synthetic JSON tests with twelve rejection variants and two positive cases; full renderer/archive pipeline not exercised.",
+      "receipt": {
+        "path": "validation-attempt-02/RESULT.json",
+        "bytes": 3670,
+        "sha256": "d4b4f9f5b621babd58979ebefba1d7fd649dcc74cbfdd5d9228487fe9226ee80"
+      },
+      "whole_child_wall_seconds": 0.48457767099989724,
+      "wait4_child_CPU_seconds": 0.414062,
+      "wait4_peak_RSS_bytes": 15507456,
+      "returncode": 0,
+      "source_unchanged": true
+    },
+    {
+      "attempt": "original_partial_contract_counterexamples",
+      "receipt": {
+        "bytes": 3051,
+        "path": "/workspace/scratch/c385a7439f8e/renderer-native155-independent-review-v1/EXECUTION.json",
+        "sha256": "65b8a93b48aa39f26d33d35069805c710758acb447808d27f0efc889246c01b1"
+      },
+      "returncode": 0,
+      "scope": "One stdlib pure synthetic metadata process. No Matplotlib, render, model, actual C2, E or native audit. Parent receipt/save/exit excluded from child cost.",
+      "timed_out": false,
+      "wait4_child_CPU_seconds": 0.07310499999999999,
+      "wait4_peak_RSS_bytes": 12582912,
+      "whole_child_wall_seconds": 0.07759632199940825
+    },
+    {
+      "attempt": "fixed_contract_and_raw_native_closure",
+      "receipt": {
+        "bytes": 3333,
+        "path": "/workspace/scratch/c385a7439f8e/renderer-native155-independent-closure-v1/EXECUTION.json",
+        "sha256": "3a76ce227b0e86b5247027a7dc180dd4839b61cb13e3b4f200617e52d5ee3e9f"
+      },
+      "returncode": 0,
+      "scope": "One stdlib pure synthetic metadata process. No Matplotlib, render, model, actual C2, E or native audit. Parent receipt/save/exit excluded from child cost.",
+      "timed_out": false,
+      "wait4_child_CPU_seconds": 0.114596,
+      "wait4_peak_RSS_bytes": 16384000,
+      "whole_child_wall_seconds": 0.12404531800075347
+    },
+    {
+      "attempt": "posthoc_source_roster_only",
+      "receipt": {
+        "bytes": 1162,
+        "path": "/workspace/scratch/c385a7439f8e/renderer-native155-independent-closure-v1/coverage-rebind-v1/EXECUTION.json",
+        "sha256": "cbb458ce8d92d435b916aefd24e21a1fdf9cd61066eb782883ea0c09a0373523"
+      },
+      "returncode": 0,
+      "scope": "One read-only source/hash child, no probe rerun; parent receipt serialization/exit excluded from this exact child cost.",
+      "timed_out": false,
+      "wait4_child_CPU_seconds": 0.055958999999999995,
+      "wait4_peak_RSS_bytes": 10092544,
+      "whole_child_wall_seconds": 0.09608313199987606
+    }
+  ],
+  "unique_disjoint_children": 5,
+  "sum_disjoint_child_wall_seconds": 0.959576233000007,
+  "sum_disjoint_wait4_CPU_seconds": 0.8180339999999999,
+  "cost_accounting_complete": false,
+  "deduplication": "These are the same five unique children represented in original receipts and ZIP copies. No nested or copied record is a second execution. Summed process wall is not calendar duration.",
+  "unmetered": [
+    "source reading/reasoning",
+    "outer validation setup/compile/receipt/save/exit",
+    "source/ZIP packaging",
+    "tool transport and Git persistence"
+  ],
+  "actual_analysis_or_renderer_or_model_execution": false
+}

@@ -1,0 +1,73 @@
+{
+  "schema": "new-bootstrap-recovery-software-validation-v2",
+  "status": "passed",
+  "argv": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-B",
+    "-m",
+    "unittest",
+    "test_bootstrap",
+    "-v"
+  ],
+  "cwd": "/workspace/scratch/c385a7439f8e/c2-terminal-bootstrap-recovery-validation-attempt-03/source",
+  "PID": 4,
+  "returncode": 0,
+  "timed_out": false,
+  "source_before": {
+    "bootstrap.py": {
+      "bytes": 18074,
+      "sha256": "c18f7341f0ca972c6070b8b440b0b6c7679368a0b798a935f9b301b6532da63b"
+    },
+    "os_processes.py": {
+      "bytes": 15037,
+      "sha256": "f58ca60428d3abafea377ca64e1d71040df98c4f149adce88436951187c990d6"
+    },
+    "test_bootstrap.py": {
+      "bytes": 13207,
+      "sha256": "afc17f649d71b1cf35f98a6b22d058fed9fdd8ef602a62a9398b07a6e49c6118"
+    },
+    "auditor-core.zip": {
+      "bytes": 73473,
+      "sha256": "87bedabde7f37ec8d70a80305691f1116e80493174a5cd33bf7058f635230b3a"
+    }
+  },
+  "source_after": {
+    "bootstrap.py": {
+      "bytes": 18074,
+      "sha256": "c18f7341f0ca972c6070b8b440b0b6c7679368a0b798a935f9b301b6532da63b"
+    },
+    "os_processes.py": {
+      "bytes": 15037,
+      "sha256": "f58ca60428d3abafea377ca64e1d71040df98c4f149adce88436951187c990d6"
+    },
+    "test_bootstrap.py": {
+      "bytes": 13207,
+      "sha256": "afc17f649d71b1cf35f98a6b22d058fed9fdd8ef602a62a9398b07a6e49c6118"
+    },
+    "auditor-core.zip": {
+      "bytes": 73473,
+      "sha256": "87bedabde7f37ec8d70a80305691f1116e80493174a5cd33bf7058f635230b3a"
+    }
+  },
+  "source_unchanged": true,
+  "whole_child_wall_seconds": 1.314479289999781,
+  "wait4_child_CPU_seconds": 0.46442399999999995,
+  "wait4_peak_RSS_bytes": 21270528,
+  "limits": {
+    "wall_seconds": 30,
+    "address_space_bytes": 268435456
+  },
+  "stdout": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "stderr": {
+    "bytes": 2543,
+    "sha256": "b020cf3dbc35b64b95e9105935abb7a47f076211b79ca2077cb64efd54fdc745"
+  },
+  "production_C2_inputs_read": false,
+  "model_or_E_access": false,
+  "actual_audit_or_training_executed": false,
+  "original_lost_14_test_receipt_recreated": false,
+  "scope": "New stdlib software checks with explicit metadata mocks and two actual short non-model children. Complete test-child wall/wait4 includes those nested costs; no double addition."
+}

@@ -1,0 +1,29 @@
+{
+  "command": [
+    "python",
+    "-B",
+    "package_metadata_handoff_v1.py",
+    "recovery-verification-pack-v1/CONFIG.json",
+    "recovery-verification-capsule-v1"
+  ],
+  "complete_child_wait4_CPU_seconds": 0.404382,
+  "complete_child_wall_seconds": 2.771439673000259,
+  "output_files": {
+    "stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stdout": {
+      "bytes": 788,
+      "sha256": "5778e1955c7347e017d99921337918bba41d34081805edaf06b0e752c73971cf"
+    }
+  },
+  "pid": 3,
+  "returncode": 0,
+  "schema": "hcsn-local-complete-child-receipt-v1",
+  "scope": "Local Linux child pre-spawn through wait4 reap. The wrapper's final hashing, receipt write and exit are outside this measurement. No grand total or scientific pass inferred.",
+  "source": "package_metadata_handoff_v1.py",
+  "source_sha256": "19a96f8338786a562e37bf2776dff7c4822ce15dc9695361ae769cd9abd281da",
+  "source_unchanged": true,
+  "wait4_peak_RSS_KiB": 13472
+}

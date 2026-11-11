@@ -1,0 +1,204 @@
+{
+  "ack_binding": {
+    "created_unix_ms": 1794345218824,
+    "cwd": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training",
+    "env_keys": [
+      "CUDA_VISIBLE_DEVICES",
+      "MKL_NUM_THREADS",
+      "NUMEXPR_NUM_THREADS",
+      "OMP_NUM_THREADS",
+      "OPENBLAS_NUM_THREADS",
+      "PYTHONDONTWRITEBYTECODE",
+      "PYTHONHASHSEED"
+    ],
+    "executable": "/usr/bin/time",
+    "execution_mode": "operator",
+    "host": "desktop",
+    "id": "1a1c74f3308-be2a-75",
+    "idempotency_key": "hcsn-c2-native-execution-c385-v1",
+    "launch_error": null,
+    "launch_state": "launched",
+    "request_digest": "0f1c7c91dfd667d6965e38fb20c584da94dca5918b17778c08153f7027b2b6ee",
+    "unit": "hepta-runtime-job-1a1c74f3308-be2a-75"
+  },
+  "ack_job_keys": [
+    "args",
+    "created_unix_ms",
+    "cwd",
+    "env_keys",
+    "executable",
+    "execution_mode",
+    "host",
+    "id",
+    "idempotency_key",
+    "launch_error",
+    "launch_state",
+    "remote_job_dir",
+    "request_digest",
+    "request_fingerprint",
+    "ssh_target",
+    "system_jobctl",
+    "unit"
+  ],
+  "ack_launch": {
+    "backend": "systemd",
+    "launcher_pid": null,
+    "ok": true,
+    "unit": "hepta-runtime-job-1a1c74f3308-be2a-75"
+  },
+  "ack_reused": false,
+  "ack_top_level_keys": [
+    "audit_recorded",
+    "job",
+    "launch",
+    "local_record_pending",
+    "reused"
+  ],
+  "actual_C2_request_extract": {
+    "args_count": 7,
+    "args_prefix": [
+      "-v",
+      "-o",
+      "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1.time.txt",
+      "/home/qian-qi/hepta-hcsn-trainer-20261108-s3-v1/dependency-recovery-v2/venv/bin/python",
+      "-B",
+      "-c"
+    ],
+    "cpu_quota_percent": 600,
+    "cwd": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training",
+    "env": {
+      "CUDA_VISIBLE_DEVICES": "",
+      "MKL_NUM_THREADS": "1",
+      "NUMEXPR_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "PYTHONHASHSEED": "0"
+    },
+    "executable": "/usr/bin/time",
+    "host": "desktop",
+    "idempotency_key": "hcsn-c2-native-execution-c385-v1",
+    "inline_arg_sha256": "0902e278ddaac1fe5eb1c237dc2f90ad4290177fdf4d71bfa1144580f147fb1e",
+    "memory_max_bytes": 51539607552,
+    "nice": 10,
+    "stdin_bytes": 21885,
+    "stdin_sha256": "48847bc2a3286afd9e0afce6e42d83e68fcb898f1bd56849097dd57c4cb84639",
+    "timeout_seconds": 30000
+  },
+  "limits": [
+    "The ACK does not echo env values, timeout_seconds, nice, CPU quota or MemoryMax; retain and bind exact REQUEST independently.",
+    "REQUEST file SHA256 is not the daemon request_digest; the latter uses runtime request canonicalization.",
+    "Parse original content.text with an integer-preserving parser; do not bind the 64-bit request_fingerprint through JavaScript Number.",
+    "The succeeded status/read sample belongs to the completed v8 observer, not the currently running/unknown C2 job.",
+    "Actual C2 REQUEST uses -c plus stdin deployment. A future pre-staged direct bootstrap request is a new request, not this historical one.",
+    "Future audit timeout1950/resources must come from its frozen contract, not these historical C2 values."
+  ],
+  "model_operations": 0,
+  "native_processes_started_by_extraction": 0,
+  "read_job_id": "1a1c7dd738b-be2a-1ec",
+  "read_streams": {
+    "stderr": {
+      "decoded_bytes": 0,
+      "eof": true,
+      "keys": [
+        "bytes_hex",
+        "eof",
+        "next_offset",
+        "offset",
+        "size",
+        "text"
+      ],
+      "next_offset": 0,
+      "offset": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    "stdout": {
+      "decoded_bytes": 3008,
+      "eof": true,
+      "keys": [
+        "bytes_hex",
+        "eof",
+        "next_offset",
+        "offset",
+        "size",
+        "text"
+      ],
+      "next_offset": 3008,
+      "offset": 0,
+      "sha256": "9eedc285c3bc3c22f6fa965b4a766853cf4c4c9abae0c70c2f41b7143e9ff0e2",
+      "size": 3008
+    }
+  },
+  "read_top_level_keys": [
+    "audit_recorded",
+    "job_id",
+    "stderr",
+    "stdout"
+  ],
+  "request_original": {
+    "bytes": 25059,
+    "path": "/workspace/scratch/c385a7439f8e/operator-native-schema-handoff-v1/ORIGINAL-LAUNCH-REQUEST.json",
+    "sha256": "72f319c01eccafb3b50b48d4e0aecebbd1e7b372d87869267392db9f7838eb53"
+  },
+  "request_top_level_keys": [
+    "host",
+    "executable",
+    "args",
+    "cwd",
+    "env",
+    "idempotency_key",
+    "timeout_seconds",
+    "nice",
+    "cpu_quota_percent",
+    "memory_max_bytes",
+    "stdin"
+  ],
+  "request_zip_member": {
+    "archive": {
+      "bytes": 222763,
+      "path": "/workspace/scratch/c385a7439f8e/hcsn-repo/qualification/hcsn_differentiable/evidence/p0p5-c2-launch-20261110/first-step/control-plane-originals-v1.zip",
+      "sha256": "eca6d7a877401b42cb624b7ef18073e0b68a3c3f0f5434c342c8f214052c08c6"
+    },
+    "member": "c2-native-execution-preparation-v1/LAUNCH-REQUEST.json"
+  },
+  "schema": "retained-operator-native-schema-extract-v1",
+  "scope": "Actual retained C2 launch and completed observer schemas; no live C2 input or new native call",
+  "terminal_status_actual_observer": {
+    "at_unix_ms": 1794354543859,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a1c7dd738b-be2a-1ec",
+    "launch_nonce": "5b051943bd3a21208519a00bd980801d",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 3008,
+        "stored": 3008
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  }
+}

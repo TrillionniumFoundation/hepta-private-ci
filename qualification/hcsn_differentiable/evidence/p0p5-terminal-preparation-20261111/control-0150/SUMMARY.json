@@ -1,0 +1,243 @@
+{
+  "all_six_terminal_established": false,
+  "command_rows": 15,
+  "commands_identical_to_prior_v8_and_0033_snapshot": true,
+  "commands_identity": {
+    "bytes": 24917,
+    "sha256": "2830d8017b5612319fd24ad816f43595bf1ceff2abb5b124e85a833f8c86b082"
+  },
+  "control_cost_scope": "Concurrent call spans are retained individually. Do not sum overlapping calls as elapsed time or add them to already-overlapping training wall. Native helper CPU was not provided.",
+  "controller_RESULT_read": "Structured INVALID_ARGUMENT with FileNotFoundError for RESULT.json; not a durable terminal receipt.",
+  "latest_visible_complete_epochs": {
+    "hcsn-s101-lr0.001": 105,
+    "hcsn-s211-lr0.001": 104,
+    "hcsn-s307-lr0.001": 105
+  },
+  "model_or_probability_array_reads": 0,
+  "native_exact_sample_timestamp": null,
+  "native_job_id": "1a1c74f3308-be2a-75",
+  "native_running_response": {
+    "audit_recorded": true,
+    "backend": "systemd",
+    "job_id": "1a1c74f3308-be2a-75",
+    "state": "running",
+    "systemd": {
+      "ActiveState": "active",
+      "Description": "Hepta Runtime job 1a1c74f3308-be2a-75 876ca10aa2964465c1e65bd359cf9469",
+      "ExecMainCode": "0",
+      "ExecMainPID": "2132804",
+      "ExecMainStatus": "0",
+      "InvocationID": "c869c0b70cfe4caeb69bb49f8890b12e",
+      "LoadState": "loaded",
+      "Result": "success",
+      "SubState": "running"
+    }
+  },
+  "native_state_after_last_read": "not rechecked by this snapshot",
+  "native_status_read_span": {
+    "control_wall_seconds": 2.464,
+    "finished": "2026-11-11T01:50:52.855Z",
+    "started": "2026-11-11T01:50:50.391Z"
+  },
+  "new_job_starts": 0,
+  "new_training_steps": 0,
+  "original_idempotency_key": "hcsn-c2-native-execution-c385-v1",
+  "read_only_control_calls": [
+    {
+      "control_wall_seconds": 2.464,
+      "finished": "2026-11-11T01:50:52.855Z",
+      "identity": {
+        "bytes": 975,
+        "sha256": "5ef8539589f4d8f6913fa7550448eda6be18e825e680dac015a4b0b10d5f2b28"
+      },
+      "isError": false,
+      "member": "raw/01-ORIGINAL-STATUS.json",
+      "request": {
+        "args": {
+          "host": "desktop",
+          "job_id": "1a1c74f3308-be2a-75"
+        },
+        "label": "ORIGINAL-C2-STATUS",
+        "tool": "h_process_status"
+      },
+      "started": "2026-11-11T01:50:50.391Z",
+      "thrown": null
+    },
+    {
+      "control_wall_seconds": 2.708,
+      "finished": "2026-11-11T01:50:53.099Z",
+      "identity": {
+        "bytes": 765,
+        "sha256": "ca450e6779d8b9233c9f0ca41c0f2f93c7947f75b01cacf28d002c980ced21f3"
+      },
+      "isError": true,
+      "member": "raw/02-V9-RESULT.json",
+      "request": {
+        "args": {
+          "host": "desktop",
+          "limit": 16384,
+          "offset": 0,
+          "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-epoch-observation-20261110-c385-v9/RESULT.json"
+        },
+        "label": "V9-RESULT-RECONCILE",
+        "tool": "h_binary_read"
+      },
+      "started": "2026-11-11T01:50:50.391Z",
+      "thrown": null
+    },
+    {
+      "control_wall_seconds": 4.425,
+      "finished": "2026-11-11T01:52:05.137Z",
+      "identity": {
+        "bytes": 34070,
+        "sha256": "4a00128bdf7bc6b9968e530711f348b433c5b730418af2c0864d6db41e9de494"
+      },
+      "isError": false,
+      "member": "raw/03-COMMANDS.json",
+      "request": {
+        "host": "desktop",
+        "limit": 65536,
+        "offset": 0,
+        "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/commands.jsonl"
+      },
+      "started": "2026-11-11T01:52:00.712Z",
+      "thrown": null
+    },
+    {
+      "control_wall_seconds": 2.936,
+      "finished": "2026-11-11T01:53:12.170Z",
+      "identity": {
+        "bytes": 645,
+        "sha256": "1956a878f5bf2593b9e68e53b55a33285bce282a2c1331a98a4c7988b60c483d"
+      },
+      "isError": true,
+      "member": "raw/04-CONTROLLER-RESULT.json",
+      "request": {
+        "host": "desktop",
+        "limit": 65536,
+        "offset": 0,
+        "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/RESULT.json"
+      },
+      "started": "2026-11-11T01:53:09.234Z",
+      "thrown": null
+    },
+    {
+      "control_wall_seconds": 8.181,
+      "finished": "2026-11-11T01:55:17.790Z",
+      "identity": {
+        "bytes": 6142,
+        "sha256": "88e36edf77dd134913ea63fe7101d5a5968dc1219595b941f6e32d0721b0ff65"
+      },
+      "isError": false,
+      "member": "raw/LATEST-COMMIT-s101.json",
+      "request": {
+        "host": "desktop",
+        "limit": 16384,
+        "offset": 0,
+        "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/fits/hcsn-s101-lr0.001/commits/epoch-0105.json"
+      },
+      "started": "2026-11-11T01:55:09.609Z",
+      "thrown": null
+    },
+    {
+      "control_wall_seconds": 8.061,
+      "finished": "2026-11-11T01:55:17.670Z",
+      "identity": {
+        "bytes": 6138,
+        "sha256": "3c236f4f750645917c966757961d75203fa0f392281391cf9295142eb0cbbe3b"
+      },
+      "isError": false,
+      "member": "raw/LATEST-COMMIT-s211.json",
+      "request": {
+        "host": "desktop",
+        "limit": 16384,
+        "offset": 0,
+        "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/fits/hcsn-s211-lr0.001/commits/epoch-0104.json"
+      },
+      "started": "2026-11-11T01:55:09.609Z",
+      "thrown": null
+    },
+    {
+      "control_wall_seconds": 6.719,
+      "finished": "2026-11-11T01:55:16.328Z",
+      "identity": {
+        "bytes": 6138,
+        "sha256": "3c49d289f54e9534669080b2ad6d71b42ec41b3d7551acdcc0f53b7be02d92a9"
+      },
+      "isError": false,
+      "member": "raw/LATEST-COMMIT-s307.json",
+      "request": {
+        "host": "desktop",
+        "limit": 16384,
+        "offset": 0,
+        "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/fits/hcsn-s307-lr0.001/commits/epoch-0105.json"
+      },
+      "started": "2026-11-11T01:55:09.609Z",
+      "thrown": null
+    },
+    {
+      "control_wall_seconds": 3.086,
+      "finished": "2026-11-11T01:54:25.804Z",
+      "identity": {
+        "bytes": 1794,
+        "sha256": "eaba7c31caf8fc865aac64d0e72f69fdd4aa99b3cfb690a4fd1f035b741493c3"
+      },
+      "isError": false,
+      "member": "raw/LIST-COMMITS-s101.json",
+      "request": {
+        "max_depth": 1,
+        "path": "ssh://desktop-ts/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/fits/hcsn-s101-lr0.001/commits",
+        "pattern": "epoch-*.json"
+      },
+      "started": "2026-11-11T01:54:22.718Z",
+      "thrown": null
+    },
+    {
+      "control_wall_seconds": 3.888,
+      "finished": "2026-11-11T01:54:26.606Z",
+      "identity": {
+        "bytes": 1772,
+        "sha256": "ef82348f58a0a08b58d70f9fce8f338f5f3d98fb59d04d54a00b852fd1fee5ac"
+      },
+      "isError": false,
+      "member": "raw/LIST-COMMITS-s211.json",
+      "request": {
+        "max_depth": 1,
+        "path": "ssh://desktop-ts/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/fits/hcsn-s211-lr0.001/commits",
+        "pattern": "epoch-*.json"
+      },
+      "started": "2026-11-11T01:54:22.718Z",
+      "thrown": null
+    },
+    {
+      "control_wall_seconds": 3.979,
+      "finished": "2026-11-11T01:54:26.697Z",
+      "identity": {
+        "bytes": 1794,
+        "sha256": "064a23d3f0854729c986ff1aa682aeba5e3ebc98ba3649bbdedc67228500e45e"
+      },
+      "isError": false,
+      "member": "raw/LIST-COMMITS-s307.json",
+      "request": {
+        "max_depth": 1,
+        "path": "ssh://desktop-ts/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/fits/hcsn-s307-lr0.001/commits",
+        "pattern": "epoch-*.json"
+      },
+      "started": "2026-11-11T01:54:22.718Z",
+      "thrown": null
+    }
+  ],
+  "schema": "native-control-restoration-0150-snapshot-v1",
+  "scientific_admission": "HOLD",
+  "scope": "Ten bounded existing-metadata reads only; no new observer, no model evaluation, no reconfiguration or restart.",
+  "service_or_credential_mutations": 0,
+  "status": "original_job_reported_running_all_six_terminal_not_established",
+  "terminal_candidate_names": [
+    "hcsn-s211-lr0.003",
+    "hcsn-s307-lr0.003",
+    "hcsn-s101-lr0.003"
+  ],
+  "terminal_rows_observed": 3,
+  "v9_RESULT_read": "Structured INVALID_ARGUMENT with FileNotFoundError for the v9 observation directory; original launch acknowledgement remains unknown.",
+  "whole_training_numeric_admission": "HOLD"
+}

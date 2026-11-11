@@ -1,0 +1,100 @@
+{
+  "Matplotlib_imported": false,
+  "actual_analysis_model_E_native_render_execution": false,
+  "cases": [
+    {
+      "accepted_by_envelopes_and_accounting": true,
+      "error": null,
+      "input": {
+        "bytes": 5662,
+        "sha256": "5d733b71e0d31a3b62513e47bd42fe47474eeea77566e50b434fd3608bbe4731"
+      },
+      "mutation": null,
+      "name": "positive_control",
+      "returned": {
+        "GNU_CPU_print_comparison_slack_seconds": 0.02,
+        "complete_analysis_child_seconds": 1.0,
+        "disjoint_CPU_lower_bound_seconds": 0.35,
+        "metadata_finalization_prefix_seconds": 0.3,
+        "scope": "GNU is the complete native155 command; supervisor prefix excludes its final receipt and exit. Nested costs are not added again.",
+        "supervisor_wall_prefix_seconds": 3.0
+      },
+      "scope": "Direct actual metadata contract/accounting functions only; not the full raw-file authorize/load/verify_native path. All objects are explicit synthetic fixtures."
+    },
+    {
+      "accepted_by_envelopes_and_accounting": true,
+      "error": null,
+      "input": {
+        "bytes": 5663,
+        "sha256": "13f0f283ac9bafc684610abf2ac435996afc77a3767e52b8dae2d9a6ad912493"
+      },
+      "mutation": "finalization",
+      "name": "finalization_beyond_native_whole",
+      "returned": {
+        "GNU_CPU_print_comparison_slack_seconds": 0.02,
+        "complete_analysis_child_seconds": 1.0,
+        "disjoint_CPU_lower_bound_seconds": 0.35,
+        "metadata_finalization_prefix_seconds": 29.0,
+        "scope": "GNU is the complete native155 command; supervisor prefix excludes its final receipt and exit. Nested costs are not added again.",
+        "supervisor_wall_prefix_seconds": 3.0
+      },
+      "scope": "Direct actual metadata contract/accounting functions only; not the full raw-file authorize/load/verify_native path. All objects are explicit synthetic fixtures."
+    },
+    {
+      "accepted_by_envelopes_and_accounting": true,
+      "error": null,
+      "input": {
+        "bytes": 5664,
+        "sha256": "fc7d814b86108103f191189254d3731520ceeffaabcd0a2fd48bd5d0eca72fec"
+      },
+      "mutation": "worker_CPU",
+      "name": "worker_CPU_beyond_complete_parent_CPU",
+      "returned": {
+        "GNU_CPU_print_comparison_slack_seconds": 0.02,
+        "complete_analysis_child_seconds": 1.0,
+        "disjoint_CPU_lower_bound_seconds": 0.35,
+        "metadata_finalization_prefix_seconds": 0.3,
+        "scope": "GNU is the complete native155 command; supervisor prefix excludes its final receipt and exit. Nested costs are not added again.",
+        "supervisor_wall_prefix_seconds": 3.0
+      },
+      "scope": "Direct actual metadata contract/accounting functions only; not the full raw-file authorize/load/verify_native path. All objects are explicit synthetic fixtures."
+    },
+    {
+      "accepted_by_envelopes_and_accounting": true,
+      "error": null,
+      "input": {
+        "bytes": 5612,
+        "sha256": "54c783af79a7f0f30f762d677d1da2d7eaa29b2c30329a2e3a093bdc066236df"
+      },
+      "mutation": "wrong_argv",
+      "name": "unrelated_core_argv",
+      "returned": {
+        "GNU_CPU_print_comparison_slack_seconds": 0.02,
+        "complete_analysis_child_seconds": 1.0,
+        "disjoint_CPU_lower_bound_seconds": 0.35,
+        "metadata_finalization_prefix_seconds": 0.3,
+        "scope": "GNU is the complete native155 command; supervisor prefix excludes its final receipt and exit. Nested costs are not added again.",
+        "supervisor_wall_prefix_seconds": 3.0
+      },
+      "scope": "Direct actual metadata contract/accounting functions only; not the full raw-file authorize/load/verify_native path. All objects are explicit synthetic fixtures."
+    },
+    {
+      "accepted_by_envelopes_and_accounting": false,
+      "error": {
+        "message": "complete OS analysis-child terminal not admitted",
+        "type": "ValueError"
+      },
+      "input": {
+        "bytes": 5661,
+        "sha256": "cbbd9d5e9ada4cc00150a886427ba8be6e1e15ea70922bee58f58239fb553c19"
+      },
+      "mutation": "unknown",
+      "name": "unknown_CPU_negative_control",
+      "returned": null,
+      "scope": "Direct actual metadata contract/accounting functions only; not the full raw-file authorize/load/verify_native path. All objects are explicit synthetic fixtures."
+    }
+  ],
+  "qualification": "None; prospective contract gaps, not claims about actual production records.",
+  "schema": "renderer-native155-independent-partial-contract-counterexamples-v1",
+  "static_full_consumer_scope": "verify_native calls accounting and does not otherwise compare finalization+child wall to GNU whole, inner CPU to outer wait4, or outer.argv to expected core argv."
+}

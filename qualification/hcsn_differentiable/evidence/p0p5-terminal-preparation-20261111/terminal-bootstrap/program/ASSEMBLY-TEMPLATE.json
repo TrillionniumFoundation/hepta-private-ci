@@ -1,0 +1,74 @@
+{
+  "schema": "c2-terminal-auditor-assembly-authorization-template-v3",
+  "assembly_authorized": false,
+  "execution_authorized": false,
+  "scope": "independent-c2-terminal-input-assembly-only",
+  "confirmation_E_access": false,
+  "bootstrap_sources": {
+    "bootstrap.py": {
+      "bytes": 18282,
+      "sha256": "fedff1dde25bdff874b99ad2a13a0b39a12a4452bd5e38bb262c0f96db77697e"
+    },
+    "os_processes.py": {
+      "bytes": 15037,
+      "sha256": "f58ca60428d3abafea377ca64e1d71040df98c4f149adce88436951187c990d6"
+    }
+  },
+  "core_zip": {
+    "path": "/NOT-BOUND/auditor-core.zip",
+    "bytes": 73473,
+    "sha256": "87bedabde7f37ec8d70a80305691f1116e80493174a5cd33bf7058f635230b3a"
+  },
+  "output_directory": "/NOT-BOUND/new-exclusive-assembly-output",
+  "assembly_resources": {
+    "whole_wall_seconds": 120,
+    "RSS_bytes": 268435456,
+    "workers": 1,
+    "threads": 1,
+    "automatic_retry": false
+  },
+  "inputs": {
+    "launch_ack": {
+      "path": "/NOT-BOUND/launch_ack.json",
+      "bytes": null,
+      "sha256": null
+    },
+    "first_commands": {
+      "path": "/NOT-BOUND/first_commands.json",
+      "bytes": null,
+      "sha256": null
+    },
+    "daemon_status": {
+      "path": "/NOT-BOUND/daemon_status.json",
+      "bytes": null,
+      "sha256": null
+    },
+    "ready": {
+      "path": "/NOT-BOUND/ready.json",
+      "bytes": null,
+      "sha256": null
+    },
+    "controller_result": {
+      "path": "/NOT-BOUND/controller_result.json",
+      "bytes": null,
+      "sha256": null
+    },
+    "commands": {
+      "path": "/NOT-BOUND/commands.json",
+      "bytes": null,
+      "sha256": null
+    },
+    "decision": {
+      "path": "/NOT-BOUND/decision.json",
+      "bytes": null,
+      "sha256": null
+    },
+    "daemon_read_pages": [
+      {
+        "path": "/NOT-BOUND/raw-daemon-read-page-0001.json",
+        "bytes": null,
+        "sha256": null
+      }
+    ]
+  }
+}
