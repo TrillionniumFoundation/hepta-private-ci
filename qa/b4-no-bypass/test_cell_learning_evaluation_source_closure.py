@@ -36,6 +36,7 @@ CALLERS = {
         AGENT + "circuit_next_use_receipt_owner.rs",
         AGENT + "circuit_selection_receipt_owner.rs",
         AGENT + "cell_q24_training_source.rs",
+        AGENT + "circuit_model_selection_receipt_sources.rs",
     ),
     "root_learning_original_stage_assembly": (),
 }

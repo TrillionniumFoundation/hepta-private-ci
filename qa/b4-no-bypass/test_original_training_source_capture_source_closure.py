@@ -32,8 +32,9 @@ EXPECTED = {
     "learning_source_bound_training_owner_recover": (),
     **{"learning_source_bound_training_stage_" + name: () for name in (
         "constructor", "execute", "readback", "attestation",
-        "model_create", "model_recover", "model_commit", "model_readback",
+        "model_create", "model_recover", "model_commit",
     )},
+    "learning_source_bound_training_stage_model_readback": (AGENT + "circuit_model_selection_receipt_sources.rs",),
     "learning_original_training_source_current": (OWNER,),
     "learning_original_training_source_inputs": (OWNER,),
     "learning_original_training_source_identity": (OWNER,),

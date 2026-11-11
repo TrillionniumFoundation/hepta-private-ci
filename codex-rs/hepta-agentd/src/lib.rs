@@ -364,6 +364,8 @@ mod cell_q24_training_receipt_owner;
 mod cell_q24_training_source;
 mod cell_q24_training_snapshot_readback;
 #[cfg(target_os = "linux")]
+mod circuit_model_selection_receipt_owner;
+#[cfg(target_os = "linux")]
 mod circuit_next_use_receipt_owner;
 #[cfg(target_os = "linux")]
 mod circuit_selection_receipt_owner;
@@ -461,6 +463,16 @@ pub use circuit_q24_task_profile::CircuitQ24TaskProfileV1;
 pub use circuit_q24_task_profile::CircuitQ24TaskRuntimeV1;
 #[cfg(target_os = "linux")]
 pub use circuit_q24_task_profile::circuit_q24_task_channel_v1;
+#[cfg(target_os = "linux")]
+pub use circuit_model_selection_receipt_owner::OriginalCircuitModelSelectionEvaluationSourcesV1;
+#[cfg(target_os = "linux")]
+pub use circuit_model_selection_receipt_owner::OriginalCircuitModelSelectionReceiptConfigV1;
+#[cfg(target_os = "linux")]
+pub use circuit_model_selection_receipt_owner::OriginalCircuitModelSelectionReceiptErrorV1;
+#[cfg(target_os = "linux")]
+pub use circuit_model_selection_receipt_owner::OriginalCircuitModelSelectionReceiptOwnerV1;
+#[cfg(target_os = "linux")]
+pub use circuit_model_selection_receipt_owner::OriginalCircuitModelSelectionReceiptSourcesV1;
 #[cfg(target_os = "linux")]
 pub use circuit_selection_receipt_owner::OriginalCircuitSelectionReceiptConfigV1;
 #[cfg(target_os = "linux")]
