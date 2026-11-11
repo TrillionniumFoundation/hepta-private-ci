@@ -1,0 +1,1659 @@
+{
+  "actual_archive_create_ack": {
+    "content": [
+      {
+        "text": "Action completed.",
+        "type": "text"
+      }
+    ],
+    "isError": false,
+    "structuredContent": {
+      "sha": "569637188eb87f6d2d0eedb05b84edee311fdba7"
+    }
+  },
+  "actual_package_tool_execution": {
+    "chunk_id": "1b3f79",
+    "exit_code": 0,
+    "original_token_count": 436,
+    "output": "{\n  \"actual_distinct_terminal_case_count\": 124,\n  \"actual_terminal_counts\": {\n    \"FAIL\": 1,\n    \"PASS\": 123\n  },\n  \"all_local_members_full_byte_readback\": true,\n  \"archive\": {\n    \"bytes\": 161572,\n    \"git_blob\": \"569637188eb87f6d2d0eedb05b84edee311fdba7\",\n    \"sha256\": \"75b568f54657b656ed2311018ee5d6f7d94598d5f07743ac9b10cccdc7b15536\"\n  },\n  \"attempt\": 1,\n  \"completed_group_receipts\": 13,\n  \"declared_cases\": 167,\n  \"declared_groups\": 19,\n  \"helper_pe_binary_bytes_archived\": false,\n  \"job_completed_at\": \"2026-11-11T17:57:02Z\",\n  \"job_conclusion\": \"cancelled\",\n  \"job_started_at\": \"2026-11-11T16:51:51Z\",\n  \"members\": 41,\n  \"native_model_or_host_requests_started_by_auditor\": 0,\n  \"original_full_raw\": {\n    \"bytes\": 152252,\n    \"git_blob\": \"5400b9041a38f117f419ebd240aaa0b6effa438e\",\n    \"sha256\": \"3fa56362ec014c456443d7a743d9d8d7e50d66dd5ca53492a7df6686402bf984\"\n  },\n  \"original_job\": 130668436858,\n  \"original_run\": 43062473110,\n  \"original_zip\": {\n    \"bytes\": 108425,\n    \"git_blob\": \"14a05019138f1bd6b4eb765de115245f289a7a92\",\n    \"sha256\": \"fe6535a78b73e0755191c7ce9d8a2c755f82c31f8d55d4e3bbb93cc4d34bff10\"\n  },\n  \"original_zip_members\": 20,\n  \"physical_network_requests\": null,\n  \"publication_state\": \"NOT_YET_UPLOADED\",\n  \"qualification_boundary\": \"NOT_QUALIFIED_ORIGINAL_CANCELLED_ONE_FAILED_CASE_AND_43_UNOBSERVED_TERMINALS\",\n  \"replay\": \"python3 records/verify_original.py records\",\n  \"schema\": \"mem-d0f-windows-current-complete-original-index-v1\",\n  \"source_after\": \"UNOBSERVED_NO_FINAL_RECEIPT\",\n  \"source_head\": \"d0f6507e08f7f5c5855f5164d07c049a34d1a6d9\",\n  \"source_refs_changed\": false,\n  \"source_tree\": \"658fa040046285116b1fd81b94ff8c96444072ad\",\n  \"strict_passing_groups\": 12,\n  \"unobserved_terminal_case_count\": 43\n}\n",
+    "wall_time_seconds": 0.140140959
+  },
+  "archive_index": {
+    "actual_distinct_terminal_case_count": 124,
+    "actual_terminal_counts": {
+      "FAIL": 1,
+      "PASS": 123
+    },
+    "all_local_members_full_byte_readback": true,
+    "archive": {
+      "bytes": 161572,
+      "git_blob": "569637188eb87f6d2d0eedb05b84edee311fdba7",
+      "sha256": "75b568f54657b656ed2311018ee5d6f7d94598d5f07743ac9b10cccdc7b15536"
+    },
+    "attempt": 1,
+    "completed_group_receipts": 13,
+    "declared_cases": 167,
+    "declared_groups": 19,
+    "helper_pe_binary_bytes_archived": false,
+    "job_completed_at": "2026-11-11T17:57:02Z",
+    "job_conclusion": "cancelled",
+    "job_started_at": "2026-11-11T16:51:51Z",
+    "members": 41,
+    "native_model_or_host_requests_started_by_auditor": 0,
+    "original_full_raw": {
+      "bytes": 152252,
+      "git_blob": "5400b9041a38f117f419ebd240aaa0b6effa438e",
+      "sha256": "3fa56362ec014c456443d7a743d9d8d7e50d66dd5ca53492a7df6686402bf984"
+    },
+    "original_job": 130668436858,
+    "original_run": 43062473110,
+    "original_zip": {
+      "bytes": 108425,
+      "git_blob": "14a05019138f1bd6b4eb765de115245f289a7a92",
+      "sha256": "fe6535a78b73e0755191c7ce9d8a2c755f82c31f8d55d4e3bbb93cc4d34bff10"
+    },
+    "original_zip_members": 20,
+    "physical_network_requests": null,
+    "publication_state": "NOT_YET_UPLOADED",
+    "qualification_boundary": "NOT_QUALIFIED_ORIGINAL_CANCELLED_ONE_FAILED_CASE_AND_43_UNOBSERVED_TERMINALS",
+    "replay": "python3 records/verify_original.py records",
+    "schema": "mem-d0f-windows-current-complete-original-index-v1",
+    "source_after": "UNOBSERVED_NO_FINAL_RECEIPT",
+    "source_head": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+    "source_refs_changed": false,
+    "source_tree": "658fa040046285116b1fd81b94ff8c96444072ad",
+    "strict_passing_groups": 12,
+    "unobserved_terminal_case_count": 43
+  },
+  "full_remote_binary_readback": "PENDING_ROOT_CARRIER; create ACK is not whole-byte remote archive readback",
+  "member_manifest": [
+    {
+      "bytes": 1038,
+      "git_blob": "e618d15d8dcf21cebe0ad65dfe9e66563c182de5",
+      "path": "API_PROJECTION_COMPARISON.json",
+      "sha256": "3c8119a7ecbd4a662bbdd23f799a4aa4b9ee671e37900f5d8673909b9b6fbbd8"
+    },
+    {
+      "bytes": 1135,
+      "git_blob": "2c70182e359d2761358d52acc68ccb8b7faa3c96",
+      "path": "ARTIFACTS_API.json",
+      "sha256": "21428ec3727a9b48adc3a9e057e4f78880b6adf72c1931b66bc979d04a37a747"
+    },
+    {
+      "bytes": 855,
+      "git_blob": "8a182f6638e8c1b6d51600905126ca6ad6264343",
+      "path": "ARTIFACT_DOWNLOAD_METADATA.json",
+      "sha256": "0d4acc89ba726f58b9fbeb9d9e9efe382f7e21703356cdfea57be873bdc91f9d"
+    },
+    {
+      "bytes": 48687,
+      "git_blob": "89eb7269f3c3e5e8b3efcb90502b4f6946374f86",
+      "path": "AUDIT.json",
+      "sha256": "1feff6e424c630d6fcc9e248f06b63724c9a54a7eb119df4265b12d68b855552"
+    },
+    {
+      "bytes": 1791,
+      "git_blob": "ce90120e2690510dd1001b120ffc5dd94828c947",
+      "path": "AUDITOR_FROM_C895.patch",
+      "sha256": "76c635e631c5f054f0ed9317fbc42d258c9bd6b4151f6879bf621f09583af5e1"
+    },
+    {
+      "bytes": 1655,
+      "git_blob": "c9c221ec2875420b18b3c5a60a6dbc7f43e60d9d",
+      "path": "AUDITOR_PREPARATION.json",
+      "sha256": "eea92ae630169e447176bbb480ce06e769a62803617e0c9b681b136d5d5c70c6"
+    },
+    {
+      "bytes": 0,
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "path": "AUDIT_V1.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 48687,
+      "git_blob": "89eb7269f3c3e5e8b3efcb90502b4f6946374f86",
+      "path": "AUDIT_V1.stdout",
+      "sha256": "1feff6e424c630d6fcc9e248f06b63724c9a54a7eb119df4265b12d68b855552"
+    },
+    {
+      "bytes": 661,
+      "git_blob": "eb310157a01b348d8ac33e84b372753dc2403f63",
+      "path": "AUDIT_V1_EXECUTION.json",
+      "sha256": "45a3995d659e103dbf4dd8fc3adef5d21967cacbe95314a950df16fbed6f237d"
+    },
+    {
+      "bytes": 430,
+      "git_blob": "e1a962ce194e298920ea1cab624c2f1919f8ccd5",
+      "path": "AUDIT_V1_TOOL_EXECUTION.json",
+      "sha256": "1d2f592699788ce7f0b2821255dffb42ed08141dcf5d7c8514b645dad152d952"
+    },
+    {
+      "bytes": 504,
+      "git_blob": "325308e3cc72d12e7359bcc45d1d00d19e64a045",
+      "path": "COLLECTION_TOOL_EXECUTION.json",
+      "sha256": "9c7f323462079eed8215136ec16c974cec7c9b5cfdbe3d97d62eba379230589a"
+    },
+    {
+      "bytes": 338,
+      "git_blob": "27c09e6b52bf300205a50f2ecfa84a21a2bf479f",
+      "path": "DOWNLOAD_EXECUTION.json",
+      "sha256": "6efc6ca5a431c3b7dd3d47de9325eb8d1b6d17f69b13847a86e361e6585ccc56"
+    },
+    {
+      "bytes": 292,
+      "git_blob": "47420884bb05ab119ad8f85a3966c1fc66e5be25",
+      "path": "DOWNLOAD_TOOL_EXECUTION.json",
+      "sha256": "f4dcf6dc27cacec9f37416c2586a28613f5f38941fb8d68bee45296fb5971b57"
+    },
+    {
+      "bytes": 32364,
+      "git_blob": "69eef1f0f72a4e1a9ca092abc09daa5e20f177ea",
+      "path": "FULL_RUN_API.json",
+      "sha256": "6bee6d326496262a275a2d7d7797cb048d5a27e435ea4fe5c61c7ad9d687910b"
+    },
+    {
+      "bytes": 6626,
+      "git_blob": "03aef3a4325a6eb8d22015bc226e5dadf4c3ad28",
+      "path": "FULL_TERMINAL_JOBS_API.json",
+      "sha256": "09dc75df2547282c5a0d8ac5f1c9c91ba03c8da4a8de06a7f4cd6d5497972701"
+    },
+    {
+      "bytes": 3324,
+      "git_blob": "5aa68629e219501407ebfee22fe48537d04988ca",
+      "path": "INITIAL_JOBS.json",
+      "sha256": "a4c9449f0d27f8979712e8d3fd7ff04af7bb10b294ae20a7895b7044122d4175"
+    },
+    {
+      "bytes": 157549,
+      "git_blob": "e2ef6dce08b7dd555d43bdb7aea5b248cf2b1ce3",
+      "path": "JOB_LOG_TOOL_RESPONSE.json",
+      "sha256": "8dc2f886f438744eaf1a53787a798a40681cbf2613817f5e5103679cb8312bce"
+    },
+    {
+      "bytes": 2002,
+      "git_blob": "b4967fc4b3a461448d00d07ae36ff2e5aec18b52",
+      "path": "NORMALIZED_TERMINAL_JOBS.json",
+      "sha256": "bd519b51f86857df4b20db6bf4b7829b5d98b2d3e1eba3e8f5659d0c543f28cc"
+    },
+    {
+      "bytes": 3324,
+      "git_blob": "5aa68629e219501407ebfee22fe48537d04988ca",
+      "path": "OBSERVATION_003.json",
+      "sha256": "a4c9449f0d27f8979712e8d3fd7ff04af7bb10b294ae20a7895b7044122d4175"
+    },
+    {
+      "bytes": 1527,
+      "git_blob": "36b1eb86ff52883ef5213da12117f9972be0bf1c",
+      "path": "OFFLINE_REPLAY_INPUTS.json",
+      "sha256": "49c43ef1129c8104925e73fbd883e16ac88fe7ddd38acbc962fd4bd9b2c0200d"
+    },
+    {
+      "bytes": 16543,
+      "git_blob": "9aeabdd058e275ffb39d303a0461d9620593d76e",
+      "path": "RUN_DISCOVERY.json",
+      "sha256": "e6f72f87061a8700824288fabe9028ad377cb673da126a7bde0101b655c581e3"
+    },
+    {
+      "bytes": 2166,
+      "git_blob": "30efad4f7f639def63e77ea40be0036a03481071",
+      "path": "TAKEOVER_OBSERVATION_001.json",
+      "sha256": "250226fe22ca569b89c69a88e2799e28442123613c2bb09b33d91d2182cfda21"
+    },
+    {
+      "bytes": 2112,
+      "git_blob": "c8ecbba0fa9d2c3dd80162d2a9ef4813f76a8236",
+      "path": "TAKEOVER_OBSERVATION_002.json",
+      "sha256": "271a677a8cf054d4a8029afb854e8def2534e74db1be1f87575f26c0114b7fdc"
+    },
+    {
+      "bytes": 2112,
+      "git_blob": "122bb8f698b35b34a31b7e09d00942ef116c9c8d",
+      "path": "TAKEOVER_OBSERVATION_003.json",
+      "sha256": "08952d3f56c282b09f55bd64fe185e830c94d7b0d27649c71401116526bc59e9"
+    },
+    {
+      "bytes": 2301,
+      "git_blob": "2d5cd62cd33df34a948c18930f1db58218de80bb",
+      "path": "TAKEOVER_OBSERVATION_004.json",
+      "sha256": "1073fa0a117da85a9b8c7ead60de3f6b1c4571ef8f5c03c0c9adefdb018b4f64"
+    },
+    {
+      "bytes": 1647,
+      "git_blob": "070084952a8dfca29859b655e87733546986597c",
+      "path": "TAKEOVER_SOURCE_VERIFICATION.json",
+      "sha256": "7d409ece07ea95c5faae7b27a85946f7bc0c4287888d7cf01ac5fee93af3399f"
+    },
+    {
+      "bytes": 7261,
+      "git_blob": "9e8c666f54bc7dd9633e64b3a5c5ed3694304a7f",
+      "path": "TERMINAL_CLASSIFICATION.json",
+      "sha256": "d51d0e5c4da8e2a415153c493ae1aa953394fe5e193e87b68a850ca5235f75fb"
+    },
+    {
+      "bytes": 4779,
+      "git_blob": "f199fe85c751a147257390c0f171389b71852eb0",
+      "path": "artifact-original-download/MANIFEST.json",
+      "sha256": "093ffd7209c0d2afe5bf42b379cf8b197359c2e3a84a321d1085d2c21a40a763"
+    },
+    {
+      "bytes": 4479,
+      "git_blob": "2e7c1a164f61ca31f0d2141797aa467a72cc1b15",
+      "path": "collect_terminal_records.py",
+      "sha256": "b450dfa2988ff0ecee16cf8b694cd95acfba8a79bec2a9ecfda232274938d639"
+    },
+    {
+      "bytes": 2925,
+      "git_blob": "42ac9e851adf177fe0845a5fd02442644d25c0e8",
+      "path": "download_artifact.py",
+      "sha256": "23418797b1c1246cd00b5b08077fbc276b50c956ee08f243e2e865f9c4d1e6a3"
+    },
+    {
+      "bytes": 6510,
+      "git_blob": "5d7bd252e867cf7f8ad472b234a68f64da065a93",
+      "path": "package_original_evidence.py",
+      "sha256": "8900d4692d4028dda4b5ebdc5a91e89a9317610d69c36ba02373c1fcaa49b72f"
+    },
+    {
+      "bytes": 855,
+      "git_blob": "8a182f6638e8c1b6d51600905126ca6ad6264343",
+      "path": "records/ARTIFACT_METADATA.json",
+      "sha256": "0d4acc89ba726f58b9fbeb9d9e9efe382f7e21703356cdfea57be873bdc91f9d"
+    },
+    {
+      "bytes": 108425,
+      "git_blob": "14a05019138f1bd6b4eb765de115245f289a7a92",
+      "path": "records/ORIGINAL_ARTIFACT.zip",
+      "sha256": "fe6535a78b73e0755191c7ce9d8a2c755f82c31f8d55d4e3bbb93cc4d34bff10"
+    },
+    {
+      "bytes": 2220,
+      "git_blob": "ddb4ceff43207117b7f3bf760aec807c9b840416",
+      "path": "records/ORIGINAL_BYTE_PINS.json",
+      "sha256": "a44227084c7d836ab11770ff2a80cd1ae7899b222e14d6e25f82972f658d5fac"
+    },
+    {
+      "bytes": 152252,
+      "git_blob": "5400b9041a38f117f419ebd240aaa0b6effa438e",
+      "path": "records/ORIGINAL_JOB.log",
+      "sha256": "3fa56362ec014c456443d7a743d9d8d7e50d66dd5ca53492a7df6686402bf984"
+    },
+    {
+      "bytes": 6626,
+      "git_blob": "03aef3a4325a6eb8d22015bc226e5dadf4c3ad28",
+      "path": "records/TERMINAL_JOBS.json",
+      "sha256": "09dc75df2547282c5a0d8ac5f1c9c91ba03c8da4a8de06a7f4cd6d5497972701"
+    },
+    {
+      "bytes": 16548,
+      "git_blob": "82d878b76115bf12e44883c580727f7c77a9b28f",
+      "path": "records/WORKFLOW_RUN.json",
+      "sha256": "29ebdb5aeaee66cba1d35f3b6d4296cba7c80becc7fc63c9a9353feb05bf8d47"
+    },
+    {
+      "bytes": 31515,
+      "git_blob": "72f75127e9f92236def02a67a099fd90bb2a9b09",
+      "path": "records/source/.github/fixtures/windows-current-ci-scope.json",
+      "sha256": "0f07308d07f630fe29faa27fbc3a95abc67a9a315bbeab58033fc3aad711adab"
+    },
+    {
+      "bytes": 11926,
+      "git_blob": "161ed1149c8ffb5f2bb2a8272f555f8b91d729fe",
+      "path": "records/source/.github/scripts/windows_current_ci.py",
+      "sha256": "cefa811a6cd39bb2dc6a3dfa23225832a55e5ff4a7c21bc6b05bb7effcc0a3fd"
+    },
+    {
+      "bytes": 2749,
+      "git_blob": "d9dc4986a86a6d29e51203e34b7cc3e4f08c536b",
+      "path": "records/source/.github/workflows/hepta-windows-current-ci.yml",
+      "sha256": "cd649ec9a1786c20531c6757ad07743f5a16ecc698d25ad59be8cf2dfd15a794"
+    },
+    {
+      "bytes": 13797,
+      "git_blob": "4e4550c82d09c985b0e678085db9679644fd583f",
+      "path": "records/verify_original.py",
+      "sha256": "e141e5bccfba7a66602a548585d69cce4f8df34816a09c285931cf5625b54550"
+    }
+  ],
+  "native_model_host_execution_or_ref_mutation_by_publication": false,
+  "offline_audit": {
+    "archive": {
+      "bytes": 108425,
+      "git_blob": "14a05019138f1bd6b4eb765de115245f289a7a92",
+      "sha256": "fe6535a78b73e0755191c7ce9d8a2c755f82c31f8d55d4e3bbb93cc4d34bff10"
+    },
+    "artifact_id": 13878563215,
+    "attempt": 1,
+    "cancellation_scheduler_cause": "UNKNOWN_UNLESS_ADDITIONAL_ORIGINAL_METADATA_IDENTIFIES_REASON",
+    "completed_group_receipts": 13,
+    "delete_failure_observations": {
+      "elevated_child_token_inventory": "UNOBSERVED",
+      "elevated_outside_routes": [
+        [
+          "Neither",
+          "false",
+          "false"
+        ],
+        [
+          "TargetOnly",
+          "true",
+          "true"
+        ],
+        [
+          "ParentOnly",
+          "true",
+          "true"
+        ],
+        [
+          "Both",
+          "true",
+          "true"
+        ]
+      ],
+      "exact_lines": [
+        {
+          "bytes": {
+            "bytes": 137,
+            "git_blob": "21a6e3fb4b545f48b77b26e2beb6a7cd528de515",
+            "sha256": "a8e04053534722bbf52d714722f85d38586b97cd163819cdd75ecaa366ccad71"
+          },
+          "line": 204,
+          "text": "    delete_control verified_before_resume distinct_token=true backup_present=false restore_present=false other_privileges_unchanged=true"
+        },
+        {
+          "bytes": {
+            "bytes": 377,
+            "git_blob": "7ca11e4eb1d31b9ad56cdf320b247cd9ac319b3e",
+            "sha256": "20e7a1c052e883ce436a67171b91902a27bbaab5ccb68b3eaefc7c46adb8bec5"
+          },
+          "line": 217,
+          "text": "    delete_matrix ordinary-host-cmd-done after_release=[DeleteOutcome { route: Neither, file_deleted: false, directory_deleted: false }, DeleteOutcome { route: TargetOnly, file_deleted: true, directory_deleted: true }, DeleteOutcome { route: ParentOnly, file_deleted: true, directory_deleted: true }, DeleteOutcome { route: Both, file_deleted: true, directory_deleted: true }]"
+        },
+        {
+          "bytes": {
+            "bytes": 374,
+            "git_blob": "207f85884dbb6c2920f9d45994e2dec521950492",
+            "sha256": "cc283d9cc0c5c5d23a0e75ccda278cc150c99c8349d73798586fa649f7343b66"
+          },
+          "line": 233,
+          "text": "    delete_matrix elevated-child-done after_release=[DeleteOutcome { route: Neither, file_deleted: false, directory_deleted: false }, DeleteOutcome { route: TargetOnly, file_deleted: true, directory_deleted: true }, DeleteOutcome { route: ParentOnly, file_deleted: true, directory_deleted: true }, DeleteOutcome { route: Both, file_deleted: true, directory_deleted: true }]"
+        },
+        {
+          "bytes": {
+            "bytes": 117,
+            "git_blob": "6cef8d441059a69b705d0acaaa048c903dcbd828",
+            "sha256": "3a6cc11f1eec8eacd42daed479746f0063af186e43119d4be6421ea15c9eec1e"
+          },
+          "line": 219,
+          "text": "    elevated_terminal_observation cleanup=Ok(Some(OwnerTerminated { owner_exit_code: Some(0) })) output_drained=true"
+        }
+      ],
+      "ordinary_child_privilege_check_is_not_elevated_child_token_inventory": true,
+      "ordinary_control_routes": [
+        [
+          "Neither",
+          "false",
+          "false"
+        ],
+        [
+          "TargetOnly",
+          "true",
+          "true"
+        ],
+        [
+          "ParentOnly",
+          "true",
+          "true"
+        ],
+        [
+          "Both",
+          "true",
+          "true"
+        ]
+      ],
+      "original_group_raw": {
+        "bytes": 27273,
+        "git_blob": "30bb832b65731ceffe72ad178d5dae2a999abb82",
+        "sha256": "984b5d5891de0a1e80a212d38f3dd22f8872844b706aa47c33e46abbc9daab36"
+      },
+      "production_authority_or_global_isolation_claim": false
+    },
+    "groups": [
+      {
+        "command": [
+          "just",
+          "test",
+          "--locked",
+          "-p",
+          "codex-state",
+          "--lib",
+          "--cargo-profile",
+          "dev-small",
+          "-E",
+          "test(=sqlite_recovery::windows::tests::retained_windows_bundle_is_read_only_and_same_handles) | test(=sqlite_recovery::windows::tests::retained_windows_replacement_uses_file_id_even_with_same_metadata) | test(=sqlite_recovery::windows::tests::retained_windows_rejects_extra_links_for_each_component) | test(=sqlite_recovery::windows::tests::retained_windows_rejects_new_sidecar_and_mutated_bytes) | test(=sqlite_recovery::windows::tests::retained_windows_rejects_parent_junction_and_replacement) | test(=sqlite_recovery::windows::tests::retained_windows_rejects_foreign_read_grants) | test(=sqlite_recovery::windows::tests::cold_image_windows_reconnects_to_original_immutable_copy) | test(=sqlite_recovery::windows::tests::retained_windows_does_not_repair_existing_shared_home)",
+          "--test-threads",
+          "1",
+          "--no-tests",
+          "fail",
+          "--retries",
+          "0"
+        ],
+        "declared_cases": 8,
+        "duplicate_summary_terminal_rows": 0,
+        "duration_seconds_includes_compile": 490.625,
+        "exit_code": 0,
+        "id": "retained-windows-identity",
+        "missing_original_terminal_ids": [],
+        "nextest_run_ids": [
+          "b60a6e79-23c2-45fa-93c1-65a62a9fa725"
+        ],
+        "package": "codex-state",
+        "raw": {
+          "bytes": 37034,
+          "git_blob": "075bdbcd5a64eb5beb132b1d174777157ea16d34",
+          "sha256": "77f183734639c538ad5700038cc6b073c4b848eef578e523ff747b40cfa06ce6"
+        },
+        "skipped": 207,
+        "start_headers": [
+          [
+            "8",
+            "1",
+            "207"
+          ]
+        ],
+        "state": "original_completed_group_receipt",
+        "strict_pass": true,
+        "terminal_cases": {
+          "sqlite_recovery::windows::tests::cold_image_windows_reconnects_to_original_immutable_copy": "PASS",
+          "sqlite_recovery::windows::tests::retained_windows_bundle_is_read_only_and_same_handles": "PASS",
+          "sqlite_recovery::windows::tests::retained_windows_does_not_repair_existing_shared_home": "PASS",
+          "sqlite_recovery::windows::tests::retained_windows_rejects_extra_links_for_each_component": "PASS",
+          "sqlite_recovery::windows::tests::retained_windows_rejects_foreign_read_grants": "PASS",
+          "sqlite_recovery::windows::tests::retained_windows_rejects_new_sidecar_and_mutated_bytes": "PASS",
+          "sqlite_recovery::windows::tests::retained_windows_rejects_parent_junction_and_replacement": "PASS",
+          "sqlite_recovery::windows::tests::retained_windows_replacement_uses_file_id_even_with_same_metadata": "PASS"
+        },
+        "terminal_counts": {
+          "PASS": 8
+        }
+      },
+      {
+        "command": [
+          "just",
+          "test",
+          "--locked",
+          "-p",
+          "codex-git-utils",
+          "--lib",
+          "--cargo-profile",
+          "dev-small",
+          "-E",
+          "test(=git_process::tests::timed_out_git_wrapper_does_not_leave_child_process_running) | test(=git_process::tests::timed_out_exited_git_wrapper_does_not_leave_child_process_running)",
+          "--test-threads",
+          "1",
+          "--no-tests",
+          "fail",
+          "--retries",
+          "0"
+        ],
+        "declared_cases": 2,
+        "duplicate_summary_terminal_rows": 0,
+        "duration_seconds_includes_compile": 230.562,
+        "exit_code": 0,
+        "id": "git-process-cleanup",
+        "missing_original_terminal_ids": [],
+        "nextest_run_ids": [
+          "1cdddf93-901c-438a-8145-9390d2cec039"
+        ],
+        "package": "codex-git-utils",
+        "raw": {
+          "bytes": 15216,
+          "git_blob": "bde1684188345c4cf4e2fa2270bceb91bc764aec",
+          "sha256": "1da64998ed9770281b1f82c4ab19a86d29a23a0048d0c813bf6b853ecbbdd4e4"
+        },
+        "skipped": 33,
+        "start_headers": [
+          [
+            "2",
+            "1",
+            "33"
+          ]
+        ],
+        "state": "original_completed_group_receipt",
+        "strict_pass": true,
+        "terminal_cases": {
+          "git_process::tests::timed_out_exited_git_wrapper_does_not_leave_child_process_running": "PASS",
+          "git_process::tests::timed_out_git_wrapper_does_not_leave_child_process_running": "PASS"
+        },
+        "terminal_counts": {
+          "PASS": 2
+        }
+      },
+      {
+        "command": [
+          "just",
+          "test",
+          "--locked",
+          "-p",
+          "codex-mcp",
+          "--lib",
+          "--cargo-profile",
+          "dev-small",
+          "-E",
+          "test(=connection_manager::tests::retained_binding_tests::retained_binding_preserves_tool_environment_and_catalog_fences) | test(=connection_manager::tests::retained_binding_tests::retained_binding_holds_catalog_until_original_server_budget_expires) | test(=connection_manager::tests::retained_binding_tests::retained_binding_refuses_disabled_tools_and_original_shutdown)",
+          "--test-threads",
+          "1",
+          "--no-tests",
+          "fail",
+          "--retries",
+          "0"
+        ],
+        "declared_cases": 3,
+        "duplicate_summary_terminal_rows": 0,
+        "duration_seconds_includes_compile": 703.766,
+        "exit_code": 0,
+        "id": "retained-mcp",
+        "missing_original_terminal_ids": [],
+        "nextest_run_ids": [
+          "355d5e40-f6f9-4573-b646-e29f1f37f4d4"
+        ],
+        "package": "codex-mcp",
+        "raw": {
+          "bytes": 42428,
+          "git_blob": "e2bff074372202257b824e0ea7d64798fa7f3275",
+          "sha256": "c97aeef4f6d423c1175c132ff86caf0f82cda88cfa40a672b54c7fa11c24d4dc"
+        },
+        "skipped": 195,
+        "start_headers": [
+          [
+            "3",
+            "1",
+            "195"
+          ]
+        ],
+        "state": "original_completed_group_receipt",
+        "strict_pass": true,
+        "terminal_cases": {
+          "connection_manager::tests::retained_binding_tests::retained_binding_holds_catalog_until_original_server_budget_expires": "PASS",
+          "connection_manager::tests::retained_binding_tests::retained_binding_preserves_tool_environment_and_catalog_fences": "PASS",
+          "connection_manager::tests::retained_binding_tests::retained_binding_refuses_disabled_tools_and_original_shutdown": "PASS"
+        },
+        "terminal_counts": {
+          "PASS": 3
+        }
+      },
+      {
+        "command": [
+          "just",
+          "test",
+          "--locked",
+          "-p",
+          "codex-hepta-memory",
+          "--lib",
+          "--cargo-profile",
+          "dev-small",
+          "-E",
+          "test(=production_writer::objective_sender::gate_tests::recovered_generation_keeps_its_exclusive_store_fence_after_checkpoint_failure) | test(=production_writer::objective_sender::protected_checkpoint_tests::barrier_tests::protected_checkpoint_barrier_cancelled_acquisition_cannot_return_write_mode) | test(=production_writer::objective_sender::protected_checkpoint_tests::barrier_tests::protected_checkpoint_barrier_excludes_writers_without_dirtying_current) | test(=production_writer::objective_sender::protected_checkpoint_tests::barrier_tests::protected_checkpoint_barrier_never_commits_even_if_query_only_is_disabled) | test(=production_writer::objective_sender::protected_checkpoint_tests::notes_retirement_tests::notes_retirement_acknowledges_exact_terminal_cut_without_an_objective) | test(=production_writer::objective_sender::protected_checkpoint_tests::notes_retirement_tests::notes_retirement_cancelled_publication_retains_receipt_and_never_reopens_writer) | test(=production_writer::objective_sender::protected_checkpoint_tests::notes_retirement_tests::notes_retirement_holds_original_sqlite_lock_through_synchronous_metadata_ack) | test(=production_writer::objective_sender::protected_checkpoint_tests::notes_retirement_tests::notes_retirement_managed_owner_without_bound_capability_cannot_fall_back_to_local_commit) | test(=production_writer::objective_sender::protected_checkpoint_tests::notes_retirement_tests::notes_retirement_revoked_after_current_ack_keeps_application_receipt) | test(=production_writer::objective_sender::protected_checkpoint_tests::notes_retirement_tests::notes_retirement_waits_for_bound_whole_owner_publication) | test(=production_writer::objective_sender::protected_checkpoint_tests::observation_tests::protected_checkpoint_read_only_polling_preserves_current_and_rejects_writes) | test(=production_writer::objective_sender::protected_checkpoint_tests::protected_checkpoint_invalidates_current_before_normal_owner_writes_and_can_republish) | test(=production_writer::objective_sender::protected_checkpoint_tests::protected_checkpoint_lost_current_ack_fences_waiting_and_previously_checked_out_connections) | test(=production_writer::objective_sender::protected_checkpoint_tests::protected_checkpoint_mismatched_dirty_ack_never_opens_commit_permission)",
+          "--test-threads",
+          "1",
+          "--no-tests",
+          "fail",
+          "--retries",
+          "0"
+        ],
+        "declared_cases": 14,
+        "duplicate_summary_terminal_rows": 0,
+        "duration_seconds_includes_compile": 374.406,
+        "exit_code": 0,
+        "id": "original-protected-owner",
+        "missing_original_terminal_ids": [],
+        "nextest_run_ids": [
+          "b0ea58a2-1b6c-4e88-bee3-2d276333c79e"
+        ],
+        "package": "codex-hepta-memory",
+        "raw": {
+          "bytes": 33511,
+          "git_blob": "5eee72ebfe26be74795556b356d6a33826f210de",
+          "sha256": "32bd0ea28c5aefb0d07e16ec70cd0aa99aa6b45cea371f62792189046064d4e5"
+        },
+        "skipped": 366,
+        "start_headers": [
+          [
+            "14",
+            "1",
+            "366"
+          ]
+        ],
+        "state": "original_completed_group_receipt",
+        "strict_pass": true,
+        "terminal_cases": {
+          "production_writer::objective_sender::gate_tests::recovered_generation_keeps_its_exclusive_store_fence_after_checkpoint_failure": "PASS",
+          "production_writer::objective_sender::protected_checkpoint_tests::barrier_tests::protected_checkpoint_barrier_cancelled_acquisition_cannot_return_write_mode": "PASS",
+          "production_writer::objective_sender::protected_checkpoint_tests::barrier_tests::protected_checkpoint_barrier_excludes_writers_without_dirtying_current": "PASS",
+          "production_writer::objective_sender::protected_checkpoint_tests::barrier_tests::protected_checkpoint_barrier_never_commits_even_if_query_only_is_disabled": "PASS",
+          "production_writer::objective_sender::protected_checkpoint_tests::notes_retirement_tests::notes_retirement_acknowledges_exact_terminal_cut_without_an_objective": "PASS",
+          "production_writer::objective_sender::protected_checkpoint_tests::notes_retirement_tests::notes_retirement_cancelled_publication_retains_receipt_and_never_reopens_writer": "PASS",
+          "production_writer::objective_sender::protected_checkpoint_tests::notes_retirement_tests::notes_retirement_holds_original_sqlite_lock_through_synchronous_metadata_ack": "PASS",
+          "production_writer::objective_sender::protected_checkpoint_tests::notes_retirement_tests::notes_retirement_managed_owner_without_bound_capability_cannot_fall_back_to_local_commit": "PASS",
+          "production_writer::objective_sender::protected_checkpoint_tests::notes_retirement_tests::notes_retirement_revoked_after_current_ack_keeps_application_receipt": "PASS",
+          "production_writer::objective_sender::protected_checkpoint_tests::notes_retirement_tests::notes_retirement_waits_for_bound_whole_owner_publication": "PASS",
+          "production_writer::objective_sender::protected_checkpoint_tests::observation_tests::protected_checkpoint_read_only_polling_preserves_current_and_rejects_writes": "PASS",
+          "production_writer::objective_sender::protected_checkpoint_tests::protected_checkpoint_invalidates_current_before_normal_owner_writes_and_can_republish": "PASS",
+          "production_writer::objective_sender::protected_checkpoint_tests::protected_checkpoint_lost_current_ack_fences_waiting_and_previously_checked_out_connections": "PASS",
+          "production_writer::objective_sender::protected_checkpoint_tests::protected_checkpoint_mismatched_dirty_ack_never_opens_commit_permission": "PASS"
+        },
+        "terminal_counts": {
+          "PASS": 14
+        }
+      },
+      {
+        "command": [
+          "just",
+          "test",
+          "--locked",
+          "-p",
+          "codex-hepta-operator-acceptance",
+          "--lib",
+          "--cargo-profile",
+          "dev-small",
+          "-E",
+          "package(codex-hepta-operator-acceptance)",
+          "--test-threads",
+          "1",
+          "--no-tests",
+          "fail",
+          "--retries",
+          "0"
+        ],
+        "declared_cases": 33,
+        "duplicate_summary_terminal_rows": 0,
+        "duration_seconds_includes_compile": 43.641,
+        "exit_code": 0,
+        "id": "operator-native",
+        "missing_original_terminal_ids": [],
+        "nextest_run_ids": [
+          "650b164b-82a4-4274-86b4-50ec821e7560"
+        ],
+        "package": "codex-hepta-operator-acceptance",
+        "raw": {
+          "bytes": 8239,
+          "git_blob": "1243b6047c273f2710d277a66044b85ed00629a4",
+          "sha256": "e73e6a1fa9f447d21545661d93aa5ce173c8a15de59fc61d0cdce395c91794af"
+        },
+        "skipped": 0,
+        "start_headers": [
+          [
+            "33",
+            "1",
+            ""
+          ]
+        ],
+        "state": "original_completed_group_receipt",
+        "strict_pass": true,
+        "terminal_cases": {
+          "ceremony::tests::v1_paths_are_exact_and_sidecar_is_a_strict_child": "PASS",
+          "durable::windows::private_tests::foreign_acl_is_rejected_without_repair_or_partial_write": "PASS",
+          "durable::windows::private_tests::private_sidecar_roundtrip_preserves_atomic_replace_and_refuses_duplicate": "PASS",
+          "durable::windows::private_tests::retained_parent_refuses_replacement_and_missing_parent_is_not_created": "PASS",
+          "durable::windows::private_tests::sidecar_lock_is_exclusive_until_its_original_guard_drops": "PASS",
+          "durable::windows::tests::hardlinked_artifacts_are_rejected_before_reading_or_hashing": "PASS",
+          "durable::windows::tests::hardlinks_added_after_open_are_rejected": "PASS",
+          "durable::windows::tests::path_replacement_after_open_is_rejected": "PASS",
+          "g5_trust::tests::exact_head_and_predecessor_binding_is_required": "PASS",
+          "g5_trust::tests::expiry_is_half_open_and_never_creates_acceptance": "PASS",
+          "g5_trust::tests::fresh_head_scoped_challenge_reaches_ready_without_authority": "PASS",
+          "g5_trust::tests::independently_signed_challenge_is_verified_but_not_accepted": "PASS",
+          "g5_trust::tests::policy_and_revocation_files_must_be_canonical": "PASS",
+          "g5_trust::tests::revocation_digest_change_invalidates_existing_challenge": "PASS",
+          "g5_trust::tests::revocation_is_external_and_fail_closed_before_challenge_issuance": "PASS",
+          "manifest_inventory::tests::manifest_parser_requires_sorted_safe_unique_paths": "PASS",
+          "manifest_inventory::tests::verified_manifest_rejects_extra_files_and_hardlinks": "PASS",
+          "openssh_windows::tests::frozen_private_inputs_deny_writes_deletes_and_directory_replacement": "PASS",
+          "openssh_windows::tests::hardlink_added_to_frozen_input_is_refused": "PASS",
+          "openssh_windows::tests::retained_unknown_verifier_reconciles_only_its_original_child": "PASS",
+          "preflight::tests::every_missing_or_wrong_formal_environment_pin_is_rejected": "PASS",
+          "tests::durable_time_watermark_rejects_clock_rollback": "PASS",
+          "tests::exact_challenge_boundary_accepts_only_operator_acceptance": "PASS",
+          "tests::exact_replay_returns_same_receipt_and_conflicting_claim_fails": "PASS",
+          "tests::final_consumption_at_expiry_creates_no_claim_or_receipt": "PASS",
+          "tests::read_only_lock_never_creates_missing_state": "PASS",
+          "tests::receipt_repeated_authority_must_match_exact_boundary": "PASS",
+          "tests::unknown_or_noncanonical_stored_json_is_rejected": "PASS",
+          "tests::validity_window_is_half_open_and_policy_bounded": "PASS",
+          "trust::tests::sshsig_verifies_only_exact_namespace_against_pinned_policy": "PASS",
+          "trust::tests::trust_policy_digest_is_external_and_fail_closed": "PASS",
+          "trust::tests::trust_policy_pins_store_principal_fingerprint_and_allowed_signers": "PASS",
+          "trust::tests::weak_ed25519_public_key_is_rejected_before_openssh": "PASS"
+        },
+        "terminal_counts": {
+          "PASS": 33
+        }
+      },
+      {
+        "command": [
+          "just",
+          "test",
+          "--locked",
+          "-p",
+          "codex-hepta-shadow-qualification",
+          "--lib",
+          "--cargo-profile",
+          "dev-small",
+          "-E",
+          "package(codex-hepta-shadow-qualification)",
+          "--test-threads",
+          "1",
+          "--no-tests",
+          "fail",
+          "--retries",
+          "0"
+        ],
+        "declared_cases": 35,
+        "duplicate_summary_terminal_rows": 0,
+        "duration_seconds_includes_compile": 135.281,
+        "exit_code": 0,
+        "id": "shadow-native",
+        "missing_original_terminal_ids": [],
+        "nextest_run_ids": [
+          "7d192530-8298-439f-b844-d1a5b26f1cb4"
+        ],
+        "package": "codex-hepta-shadow-qualification",
+        "raw": {
+          "bytes": 24460,
+          "git_blob": "ba643e63d5b60a8eb18e8d96e6946bc1b6cf3d5c",
+          "sha256": "d97c15b595950c968afb63abfa1bd31e6724fb69e2f00a265fe25c797b6422af"
+        },
+        "skipped": 0,
+        "start_headers": [
+          [
+            "35",
+            "1",
+            ""
+          ]
+        ],
+        "state": "original_completed_group_receipt",
+        "strict_pass": true,
+        "terminal_cases": {
+          "child_tests::drains_and_bounds_stderr_while_hashing_the_full_stream": "PASS",
+          "child_tests::persists_inbound_wire_before_rejecting_invalid_json": "PASS",
+          "driver_tests::app_and_mcp_fsm_persist_before_every_sample_write": "PASS",
+          "driver_tests::failed_pipe_write_keeps_durable_pre_send_and_poisoned_fsm": "PASS",
+          "durable::windows::tests::private_artifact_flush_and_bounded_read_preserve_original_bytes": "PASS",
+          "durable::windows::tests::private_artifacts_reject_foreign_acl_without_repair": "PASS",
+          "durable::windows::tests::private_artifacts_reject_native_hard_links": "PASS",
+          "durable::windows::tests::private_readback_never_initializes_missing_state": "PASS",
+          "importer_tests::imports_exactly_four_artifacts_and_writes_a_checkpoint": "PASS",
+          "importer_tests::inventories_all_broken_samples_before_checkpointing_failure": "PASS",
+          "lane_e_closure_tests::lane_e_causal_candidate_chain_is_digest_bound_and_deny_all": "PASS",
+          "loopback_tests::persists_exact_http_requests_and_responses": "PASS",
+          "observer_tests::rejects_noncanonical_input_before_writing_an_artifact": "PASS",
+          "observer_tests::rejects_out_of_order_or_incomplete_runs_without_minting_tokens": "PASS",
+          "observer_tests::returns_tokens_only_after_four_private_durable_pairs": "PASS",
+          "oracle_tests::loads_the_embedded_frozen_oracle": "PASS",
+          "oracle_tests::rejects_nonofficial_or_mutated_oracle_bytes": "PASS",
+          "product_receipts_tests::validates_exact_row_and_rejects_index_drift": "PASS",
+          "report_tests::inventories_import_semantic_duplicate_and_missing_failures": "PASS",
+          "report_tests::writes_an_exact_report_with_no_authority": "PASS",
+          "request_tests::parses_the_frozen_app_server_pair": "PASS",
+          "request_tests::parses_the_frozen_mcp_pair": "PASS",
+          "request_tests::rejects_noncanonical_or_multiline_requests": "PASS",
+          "runtime_tests::creates_private_surface_layouts_and_strict_configs": "PASS",
+          "runtime_tests::rejects_an_unpinned_product_binary": "PASS",
+          "sealer_tests::rejects_a_checkpoint_changed_before_sealing": "PASS",
+          "sealer_tests::seals_a_complete_checkpoint_with_every_gate_disabled": "PASS",
+          "sealer_tests::seals_a_failed_checkpoint_without_losing_failures": "PASS",
+          "semantic_verifier_tests::normalizes_dynamic_identity_and_matches_oracle_bytes": "PASS",
+          "semantic_verifier_tests::rejects_semantic_or_identity_divergence": "PASS",
+          "session_tests::extracts_only_bounded_dynamic_identifiers": "PASS",
+          "session_tests::requires_an_explicit_response_result": "PASS",
+          "transport_tests::detects_transport_artifact_changes_after_capture": "PASS",
+          "trial_tests::rejects_an_unbounded_trial_before_creating_runtime_state": "PASS",
+          "value_learning_tests::objective_to_ndu_to_independent_learning_ledger_is_replayable_and_revocable": "PASS"
+        },
+        "terminal_counts": {
+          "PASS": 35
+        }
+      },
+      {
+        "command": [
+          "just",
+          "test",
+          "--locked",
+          "-p",
+          "codex-windows-sandbox",
+          "--lib",
+          "--cargo-profile",
+          "dev-small",
+          "-E",
+          "test(=token::tests::legacy_workspace_capabilities_refuse_broad_identity_delete_routes) | test(=unified_exec::tests::acl_setup_tests::legacy_capture_refuses_before_unwritable_dacl_setup) | test(=unified_exec::tests::acl_setup_tests::legacy_session_refuses_before_unwritable_dacl_setup) | test(=unified_exec::tests::elevated_non_tty_cmd_forwards_env_output_and_exit) | test(=unified_exec::tests::legacy_non_tty_refuses_before_elevated_cmd_emits_output) | test(=unified_exec::tests::legacy_non_tty_refuses_before_deny_read_setup) | test(=unified_exec::tests::legacy_refuses_before_elevated_delete_is_limited_to_writable_roots)",
+          "--test-threads",
+          "1",
+          "--no-tests",
+          "fail",
+          "--retries",
+          "0"
+        ],
+        "declared_cases": 7,
+        "duplicate_summary_terminal_rows": 0,
+        "duration_seconds_includes_compile": 23.422,
+        "exit_code": 0,
+        "id": "sandbox-original-failures",
+        "missing_original_terminal_ids": [],
+        "nextest_run_ids": [
+          "2001e52c-a890-45d3-8cca-4799e9e4fa24"
+        ],
+        "package": "codex-windows-sandbox",
+        "raw": {
+          "bytes": 15793,
+          "git_blob": "06096abe505e1091b3c2c6680297a043ca29c916",
+          "sha256": "2154b87f99f6682b499c6d861615666621278876be4faa2464c76568e9a860ee"
+        },
+        "skipped": 182,
+        "start_headers": [
+          [
+            "7",
+            "1",
+            "182"
+          ]
+        ],
+        "state": "original_completed_group_receipt",
+        "strict_pass": true,
+        "terminal_cases": {
+          "token::tests::legacy_workspace_capabilities_refuse_broad_identity_delete_routes": "PASS",
+          "unified_exec::tests::acl_setup_tests::legacy_capture_refuses_before_unwritable_dacl_setup": "PASS",
+          "unified_exec::tests::acl_setup_tests::legacy_session_refuses_before_unwritable_dacl_setup": "PASS",
+          "unified_exec::tests::elevated_non_tty_cmd_forwards_env_output_and_exit": "PASS",
+          "unified_exec::tests::legacy_non_tty_refuses_before_deny_read_setup": "PASS",
+          "unified_exec::tests::legacy_non_tty_refuses_before_elevated_cmd_emits_output": "PASS",
+          "unified_exec::tests::legacy_refuses_before_elevated_delete_is_limited_to_writable_roots": "PASS"
+        },
+        "terminal_counts": {
+          "PASS": 7
+        }
+      },
+      {
+        "command": [
+          "just",
+          "test",
+          "--locked",
+          "-p",
+          "codex-windows-sandbox",
+          "--lib",
+          "--cargo-profile",
+          "dev-small",
+          "-E",
+          "test(=token::tests::legacy_workspace_capability_refuses_all_four_native_delete_routes) | test(=unified_exec::tests::delete_permission_tests::legacy_refuses_before_elevated_four_cell_delete_boundary)",
+          "--test-threads",
+          "1",
+          "--no-tests",
+          "fail",
+          "--retries",
+          "0"
+        ],
+        "declared_cases": 2,
+        "duplicate_summary_terminal_rows": 1,
+        "duration_seconds_includes_compile": 4.406,
+        "exit_code": 1,
+        "id": "sandbox-native-delete-routes",
+        "missing_original_terminal_ids": [],
+        "nextest_run_ids": [
+          "ce59d9d1-afa5-43e4-886d-5f0ad64e33f2"
+        ],
+        "package": "codex-windows-sandbox",
+        "raw": {
+          "bytes": 27273,
+          "git_blob": "30bb832b65731ceffe72ad178d5dae2a999abb82",
+          "sha256": "984b5d5891de0a1e80a212d38f3dd22f8872844b706aa47c33e46abbc9daab36"
+        },
+        "skipped": 187,
+        "start_headers": [
+          [
+            "2",
+            "1",
+            "187"
+          ]
+        ],
+        "state": "original_completed_group_receipt",
+        "strict_pass": false,
+        "terminal_cases": {
+          "token::tests::legacy_workspace_capability_refuses_all_four_native_delete_routes": "PASS",
+          "unified_exec::tests::delete_permission_tests::legacy_refuses_before_elevated_four_cell_delete_boundary": "FAIL"
+        },
+        "terminal_counts": {
+          "FAIL": 1,
+          "PASS": 1
+        }
+      },
+      {
+        "command": [
+          "just",
+          "test",
+          "--locked",
+          "-p",
+          "codex-state",
+          "--lib",
+          "--cargo-profile",
+          "dev-small",
+          "-E",
+          "test(=sqlite_recovery::windows::tests::materialize_tests::retained_windows_materialization_preserves_bound_source_bundle)",
+          "--test-threads",
+          "1",
+          "--no-tests",
+          "fail",
+          "--retries",
+          "0"
+        ],
+        "declared_cases": 1,
+        "duplicate_summary_terminal_rows": 0,
+        "duration_seconds_includes_compile": 3.234,
+        "exit_code": 0,
+        "id": "retained-windows-materialization",
+        "missing_original_terminal_ids": [],
+        "nextest_run_ids": [
+          "68934a24-f493-425a-a40f-235c05ec6ed6"
+        ],
+        "package": "codex-state",
+        "raw": {
+          "bytes": 23823,
+          "git_blob": "613d9a0f5033a83729184ebc5b7b1e34f9556806",
+          "sha256": "0357cb78d4bb0b60054ca5cb3e9d1d2a87ac739b3922a7f68861c49b884f7863"
+        },
+        "skipped": 214,
+        "start_headers": [
+          [
+            "1",
+            "1",
+            "214"
+          ]
+        ],
+        "state": "original_completed_group_receipt",
+        "strict_pass": true,
+        "terminal_cases": {
+          "sqlite_recovery::windows::tests::materialize_tests::retained_windows_materialization_preserves_bound_source_bundle": "PASS"
+        },
+        "terminal_counts": {
+          "PASS": 1
+        }
+      },
+      {
+        "command": [
+          "just",
+          "test",
+          "--locked",
+          "-p",
+          "codex-hepta-memory",
+          "--lib",
+          "--cargo-profile",
+          "dev-small",
+          "-E",
+          "test(=cognitive_store::recovery::tests::windows::canonical_windows_root_reads_retained_cold_image_without_mutating_source) | test(=cognitive_store::recovery::tests::windows::canonical_windows_root_recovers_and_reopens_the_original_generation_path)",
+          "--test-threads",
+          "1",
+          "--no-tests",
+          "fail",
+          "--retries",
+          "0"
+        ],
+        "declared_cases": 2,
+        "duplicate_summary_terminal_rows": 0,
+        "duration_seconds_includes_compile": 4.188,
+        "exit_code": 0,
+        "id": "canonical-windows-memory-recovery",
+        "missing_original_terminal_ids": [],
+        "nextest_run_ids": [
+          "15015a49-a819-48a0-8514-efc2828b551c"
+        ],
+        "package": "codex-hepta-memory",
+        "raw": {
+          "bytes": 24655,
+          "git_blob": "681905127c67205e980365ae1b3b061b29661cf8",
+          "sha256": "b959704c298e79ca7f511088b9184299cf891f1e7515aac2b64126ee3397f4d3"
+        },
+        "skipped": 378,
+        "start_headers": [
+          [
+            "2",
+            "1",
+            "378"
+          ]
+        ],
+        "state": "original_completed_group_receipt",
+        "strict_pass": true,
+        "terminal_cases": {
+          "cognitive_store::recovery::tests::windows::canonical_windows_root_reads_retained_cold_image_without_mutating_source": "PASS",
+          "cognitive_store::recovery::tests::windows::canonical_windows_root_recovers_and_reopens_the_original_generation_path": "PASS"
+        },
+        "terminal_counts": {
+          "PASS": 2
+        }
+      },
+      {
+        "command": [
+          "just",
+          "test",
+          "--locked",
+          "-p",
+          "codex-windows-sandbox",
+          "--lib",
+          "--cargo-profile",
+          "dev-small",
+          "-E",
+          "test(=elevated::runner_client::process::tests::native_wait_observes_release_and_exact_exit) | test(=elevated::runner_client::process::tests::native_wait_rejects_conflicting_exit_message) | test(=elevated::runner_client::process::tests::native_wait_does_not_reset_expired_command_budget) | test(=elevated::runner_client::process::tests::native_wait_cancellation_does_not_report_live_process_as_terminal)",
+          "--test-threads",
+          "1",
+          "--no-tests",
+          "fail",
+          "--retries",
+          "0"
+        ],
+        "declared_cases": 4,
+        "duplicate_summary_terminal_rows": 0,
+        "duration_seconds_includes_compile": 2.922,
+        "exit_code": 0,
+        "id": "runner-native-terminal",
+        "missing_original_terminal_ids": [],
+        "nextest_run_ids": [
+          "8769f227-3ef2-41e0-8e0a-393569b09343"
+        ],
+        "package": "codex-windows-sandbox",
+        "raw": {
+          "bytes": 15346,
+          "git_blob": "5c9348346d469671f100e2f8ade690abcde792a1",
+          "sha256": "e1a83da4719b6f706ad3813abb0d56bdaee496f9556bb9882ff44c7d49c5e037"
+        },
+        "skipped": 185,
+        "start_headers": [
+          [
+            "4",
+            "1",
+            "185"
+          ]
+        ],
+        "state": "original_completed_group_receipt",
+        "strict_pass": true,
+        "terminal_cases": {
+          "elevated::runner_client::process::tests::native_wait_cancellation_does_not_report_live_process_as_terminal": "PASS",
+          "elevated::runner_client::process::tests::native_wait_does_not_reset_expired_command_budget": "PASS",
+          "elevated::runner_client::process::tests::native_wait_observes_release_and_exact_exit": "PASS",
+          "elevated::runner_client::process::tests::native_wait_rejects_conflicting_exit_message": "PASS"
+        },
+        "terminal_counts": {
+          "PASS": 4
+        }
+      },
+      {
+        "command": [
+          "just",
+          "test",
+          "--locked",
+          "-p",
+          "codex-windows-sandbox",
+          "--lib",
+          "--cargo-profile",
+          "dev-small",
+          "-E",
+          "test(=elevated::runner_client::process::owner::tests::owned_cancel_aborts_only_retained_child_with_same_deadline) | test(=elevated::runner_client::process::owner::tests::owned_expired_abort_does_not_claim_terminal_or_restart_budget) | test(=elevated::runner_client::process::owner::tests::owned_abort_failure_preserves_live_child_and_unknown_state) | test(=elevated::runner_client::process::owner::tests::owned_pipe_disconnect_aborts_real_child_without_exit_message) | test(=elevated::runner_client::process::owner::tests::owned_early_drop_aborts_exact_child) | test(=elevated::runner_client::process::pipe_read::tests::pipe_reader_decodes_frame_larger_than_native_pipe_buffer) | test(=elevated::runner_client::process::pipe_read::tests::pipe_reader_preserves_original_partial_eof_and_size_limit) | test(=elevated::runner_client::process::pipe_read::tests::pipe_reader_partial_frame_uses_original_absolute_deadline) | test(=elevated::runner_client::process::pipe_read::tests::pipe_reader_cancelled_live_pipe_returns_error_without_retry) | test(=elevated::runner_client::process::owner::tests::owned_partial_frame_cancellation_aborts_without_control_writer) | test(=elevated::runner_client::process::owner::job_tests::owned_broker_abort_terminates_original_private_job_descendant) | test(=elevated::runner_client::process::owner::job_tests::owned_broker_normal_exit_preserves_original_job_descendant)",
+          "--test-threads",
+          "1",
+          "--no-tests",
+          "fail",
+          "--retries",
+          "0"
+        ],
+        "declared_cases": 12,
+        "duplicate_summary_terminal_rows": 0,
+        "duration_seconds_includes_compile": 3.219,
+        "exit_code": 0,
+        "id": "runner-native-abort",
+        "missing_original_terminal_ids": [],
+        "nextest_run_ids": [
+          "86fc2d1e-8738-4b6c-9a35-523a2bc3854a"
+        ],
+        "package": "codex-windows-sandbox",
+        "raw": {
+          "bytes": 16650,
+          "git_blob": "ad6b9c6210ec0ed6b28bb9949094dd2f6b7eb1e6",
+          "sha256": "b5ebc019d1de12652ee10ce3aa7d536f67f7f6dde39547150d723271fbd11004"
+        },
+        "skipped": 177,
+        "start_headers": [
+          [
+            "12",
+            "1",
+            "177"
+          ]
+        ],
+        "state": "original_completed_group_receipt",
+        "strict_pass": true,
+        "terminal_cases": {
+          "elevated::runner_client::process::owner::job_tests::owned_broker_abort_terminates_original_private_job_descendant": "PASS",
+          "elevated::runner_client::process::owner::job_tests::owned_broker_normal_exit_preserves_original_job_descendant": "PASS",
+          "elevated::runner_client::process::owner::tests::owned_abort_failure_preserves_live_child_and_unknown_state": "PASS",
+          "elevated::runner_client::process::owner::tests::owned_cancel_aborts_only_retained_child_with_same_deadline": "PASS",
+          "elevated::runner_client::process::owner::tests::owned_early_drop_aborts_exact_child": "PASS",
+          "elevated::runner_client::process::owner::tests::owned_expired_abort_does_not_claim_terminal_or_restart_budget": "PASS",
+          "elevated::runner_client::process::owner::tests::owned_partial_frame_cancellation_aborts_without_control_writer": "PASS",
+          "elevated::runner_client::process::owner::tests::owned_pipe_disconnect_aborts_real_child_without_exit_message": "PASS",
+          "elevated::runner_client::process::pipe_read::tests::pipe_reader_cancelled_live_pipe_returns_error_without_retry": "PASS",
+          "elevated::runner_client::process::pipe_read::tests::pipe_reader_decodes_frame_larger_than_native_pipe_buffer": "PASS",
+          "elevated::runner_client::process::pipe_read::tests::pipe_reader_partial_frame_uses_original_absolute_deadline": "PASS",
+          "elevated::runner_client::process::pipe_read::tests::pipe_reader_preserves_original_partial_eof_and_size_limit": "PASS"
+        },
+        "terminal_counts": {
+          "PASS": 12
+        }
+      },
+      {
+        "command": [
+          "just",
+          "test",
+          "--locked",
+          "-p",
+          "codex-utils-pty",
+          "--lib",
+          "--cargo-profile",
+          "dev-small",
+          "-E",
+          "test(=tests::driver_terminal_tests::driver_sender_drop_keeps_unknown_exit_and_drains_output)",
+          "--test-threads",
+          "1",
+          "--no-tests",
+          "fail",
+          "--retries",
+          "0"
+        ],
+        "declared_cases": 1,
+        "duplicate_summary_terminal_rows": 0,
+        "duration_seconds_includes_compile": 28.14,
+        "exit_code": 0,
+        "id": "driver-exit-unknown",
+        "missing_original_terminal_ids": [],
+        "nextest_run_ids": [
+          "e41f8dbd-f5a1-4616-bb54-0f0039c92476"
+        ],
+        "package": "codex-utils-pty",
+        "raw": {
+          "bytes": 2196,
+          "git_blob": "3ac80dddb32a2f5738e253d25fc4a2b7f74da69e",
+          "sha256": "bf14d33053118ec5c52ff6c4273d10e18540ed991cef090c6f6535a19f4819a7"
+        },
+        "skipped": 25,
+        "start_headers": [
+          [
+            "1",
+            "1",
+            "25"
+          ]
+        ],
+        "state": "original_completed_group_receipt",
+        "strict_pass": true,
+        "terminal_cases": {
+          "tests::driver_terminal_tests::driver_sender_drop_keeps_unknown_exit_and_drains_output": "PASS"
+        },
+        "terminal_counts": {
+          "PASS": 1
+        }
+      },
+      {
+        "declared_cases": 9,
+        "duplicate_summary_terminal_rows": 0,
+        "id": "core-exit-observation",
+        "missing_original_terminal_ids": [
+          "unified_exec::process::observation_tests::early_driver_sender_loss_returns_process_failure",
+          "unified_exec::process::observation_tests::late_driver_sender_loss_cannot_be_upgraded_by_write_or_termination",
+          "unified_exec::process::observation_tests::observed_driver_exit_keeps_its_actual_code",
+          "unified_exec::process::remote_observation_tests::logical_failure_before_native_exit_preserves_first_failure",
+          "unified_exec::process::remote_observation_tests::observed_exit_survives_concurrent_control_failure",
+          "unified_exec::process::remote_observation_tests::observed_exit_without_code_is_terminal",
+          "unified_exec::process::remote_observation_tests::remote_stdin_or_handle_errors_do_not_establish_exit",
+          "unified_exec::process::remote_observation_tests::termination_ack_after_observation_loss_stays_indeterminate",
+          "unified_exec::process::remote_observation_tests::termination_ack_without_exit_is_indeterminate"
+        ],
+        "nextest_run_ids": [],
+        "package": "codex-core",
+        "raw": {
+          "bytes": 43072,
+          "git_blob": "d9249e40746fdc96f909debcc2c73b6be89cf86f",
+          "sha256": "f3c0d5da2b5d82beb714ec9d75f9dd81c9b3dc8f12272dd4c5c5f22abaa84797"
+        },
+        "start_headers": [],
+        "state": "partial_log_without_final_group_receipt",
+        "strict_pass": false,
+        "terminal_cases": {},
+        "terminal_counts": {}
+      },
+      {
+        "declared_cases": 6,
+        "id": "runner-native-custody",
+        "state": "not_started_no_original_log"
+      },
+      {
+        "declared_cases": 12,
+        "id": "exec-server-observation-wire",
+        "state": "not_started_no_original_log"
+      },
+      {
+        "declared_cases": 3,
+        "id": "exec-server-protocol-observation-wire",
+        "state": "not_started_no_original_log"
+      },
+      {
+        "declared_cases": 3,
+        "id": "direct-pty-native-observation",
+        "state": "not_started_no_original_log"
+      },
+      {
+        "declared_cases": 10,
+        "id": "legacy-isolation-admission",
+        "state": "not_started_no_original_log"
+      }
+    ],
+    "head": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+    "helper_binary_bytes_archived": false,
+    "helper_boundary": "original source-pinned driver retained compiler-artifact and PE/hash receipt; actual helper executables are not inside this artifact",
+    "job_completed_at": "2026-11-11T17:57:02Z",
+    "job_conclusion": "cancelled",
+    "job_id": 130668436858,
+    "job_started_at": "2026-11-11T16:51:51Z",
+    "members": [
+      {
+        "bytes": 24655,
+        "git_blob": "681905127c67205e980365ae1b3b061b29661cf8",
+        "path": "canonical-windows-memory-recovery.log",
+        "sha256": "b959704c298e79ca7f511088b9184299cf891f1e7515aac2b64126ee3397f4d3"
+      },
+      {
+        "bytes": 201,
+        "git_blob": "33285fd1d5ae5f8d0d827b722d14f748e82568bc",
+        "path": "compiler.txt",
+        "sha256": "88b7810119b8cb6083d3f2835d072d7048f479595a7c152b6716f4859675be36"
+      },
+      {
+        "bytes": 43072,
+        "git_blob": "d9249e40746fdc96f909debcc2c73b6be89cf86f",
+        "path": "core-exit-observation.log",
+        "sha256": "f3c0d5da2b5d82beb714ec9d75f9dd81c9b3dc8f12272dd4c5c5f22abaa84797"
+      },
+      {
+        "bytes": 2196,
+        "git_blob": "3ac80dddb32a2f5738e253d25fc4a2b7f74da69e",
+        "path": "driver-exit-unknown.log",
+        "sha256": "bf14d33053118ec5c52ff6c4273d10e18540ed991cef090c6f6535a19f4819a7"
+      },
+      {
+        "bytes": 15216,
+        "git_blob": "bde1684188345c4cf4e2fa2270bceb91bc764aec",
+        "path": "git-process-cleanup.log",
+        "sha256": "1da64998ed9770281b1f82c4ab19a86d29a23a0048d0c813bf6b853ecbbdd4e4"
+      },
+      {
+        "bytes": 27520,
+        "git_blob": "7d3e0ed7db84eeb03384f6e0b3f7095fd7de6253",
+        "path": "groups.json",
+        "sha256": "6b257862cdfa9240871572d57f808938700f466aa1db6ce33c4359dbcb895f71"
+      },
+      {
+        "bytes": 8239,
+        "git_blob": "1243b6047c273f2710d277a66044b85ed00629a4",
+        "path": "operator-native.log",
+        "sha256": "e73e6a1fa9f447d21545661d93aa5ce173c8a15de59fc61d0cdce395c91794af"
+      },
+      {
+        "bytes": 33511,
+        "git_blob": "5eee72ebfe26be74795556b356d6a33826f210de",
+        "path": "original-protected-owner.log",
+        "sha256": "32bd0ea28c5aefb0d07e16ec70cd0aa99aa6b45cea371f62792189046064d4e5"
+      },
+      {
+        "bytes": 42428,
+        "git_blob": "e2bff074372202257b824e0ea7d64798fa7f3275",
+        "path": "retained-mcp.log",
+        "sha256": "c97aeef4f6d423c1175c132ff86caf0f82cda88cfa40a672b54c7fa11c24d4dc"
+      },
+      {
+        "bytes": 37034,
+        "git_blob": "075bdbcd5a64eb5beb132b1d174777157ea16d34",
+        "path": "retained-windows-identity.log",
+        "sha256": "77f183734639c538ad5700038cc6b073c4b848eef578e523ff747b40cfa06ce6"
+      },
+      {
+        "bytes": 23823,
+        "git_blob": "613d9a0f5033a83729184ebc5b7b1e34f9556806",
+        "path": "retained-windows-materialization.log",
+        "sha256": "0357cb78d4bb0b60054ca5cb3e9d1d2a87ac739b3922a7f68861c49b884f7863"
+      },
+      {
+        "bytes": 16650,
+        "git_blob": "ad6b9c6210ec0ed6b28bb9949094dd2f6b7eb1e6",
+        "path": "runner-native-abort.log",
+        "sha256": "b5ebc019d1de12652ee10ce3aa7d536f67f7f6dde39547150d723271fbd11004"
+      },
+      {
+        "bytes": 15346,
+        "git_blob": "5c9348346d469671f100e2f8ade690abcde792a1",
+        "path": "runner-native-terminal.log",
+        "sha256": "e1a83da4719b6f706ad3813abb0d56bdaee496f9556bb9882ff44c7d49c5e037"
+      },
+      {
+        "bytes": 626027,
+        "git_blob": "5b7d51ad0834b25273ec81041251fb69ef43d16b",
+        "path": "sandbox-helper-build.log",
+        "sha256": "354d810b2e1b80e10ec80ec41608c22957a3ba3a448e1717081659efe873a9da"
+      },
+      {
+        "bytes": 1133,
+        "git_blob": "ddfc916d23c709bad62eca07fbfb630c843a23f7",
+        "path": "sandbox-helper-preparation.json",
+        "sha256": "926226d22052ea2aba7494d25b9cd6e3992d4ede422ed229ad5bcff8260dab85"
+      },
+      {
+        "bytes": 27273,
+        "git_blob": "30bb832b65731ceffe72ad178d5dae2a999abb82",
+        "path": "sandbox-native-delete-routes.log",
+        "sha256": "984b5d5891de0a1e80a212d38f3dd22f8872844b706aa47c33e46abbc9daab36"
+      },
+      {
+        "bytes": 15793,
+        "git_blob": "06096abe505e1091b3c2c6680297a043ca29c916",
+        "path": "sandbox-original-failures.log",
+        "sha256": "2154b87f99f6682b499c6d861615666621278876be4faa2464c76568e9a860ee"
+      },
+      {
+        "bytes": 24460,
+        "git_blob": "ba643e63d5b60a8eb18e8d96e6946bc1b6cf3d5c",
+        "path": "shadow-native.log",
+        "sha256": "d97c15b595950c968afb63abfa1bd31e6724fb69e2f00a265fe25c797b6422af"
+      },
+      {
+        "bytes": 230,
+        "git_blob": "7ed6a5dd92ab8dbbb05ce61444491e2fef2cdb93",
+        "path": "source-before.json",
+        "sha256": "9b614f860a4f3518eda2c51596547e57942465a401c9730302e4c74cb1720a28"
+      },
+      {
+        "bytes": 230,
+        "git_blob": "144e3e428087b2837ce0f5b6190465edebaf4518",
+        "path": "temporary-environment.json",
+        "sha256": "e0c0af4493be1e294bd2ac00393427e25237b050108951f231756faf6bbab635"
+      }
+    ],
+    "memory_benefit_or_original_owner_recovery_established": false,
+    "native_or_model_executions_by_auditor": 0,
+    "no_observed_terminal_case_count": 43,
+    "original_final_receipt": null,
+    "original_scope_cases": 167,
+    "original_scope_groups": 19,
+    "python_driver_preflight": {
+      "fixture_fake_nextest_rows": "excluded from Rust counts; Rust cases come only from original per-group logs",
+      "individual_ids_in_original_raw": "not enumerated by unittest",
+      "observed_summary_count": 9,
+      "result": "OK",
+      "summary_line": 604,
+      "summary_line_bytes": {
+        "bytes": 52,
+        "git_blob": "be98832926bc9a6485c1ef980ff29cdabe1cfeb5",
+        "sha256": "8d78b8c7022bc9f1e7d7fc4aa1dea2badfd4085bbbd5f179a73e476642bc77f7"
+      }
+    },
+    "raw": {
+      "bytes": 152252,
+      "git_blob": "5400b9041a38f117f419ebd240aaa0b6effa438e",
+      "sha256": "3fa56362ec014c456443d7a743d9d8d7e50d66dd5ca53492a7df6686402bf984"
+    },
+    "run_id": 43062473110,
+    "sandbox_helper_preparation": {
+      "artifacts": [
+        {
+          "bytes": 35408896,
+          "name": "codex-windows-sandbox-setup",
+          "sha256": "21c612f8286ce3573bfcaa9e484fbc84e963972fafcdda01ce954acaebef76a0",
+          "source": "D:\\a\\_temp\\hepta-windows-current-target\\dev-small\\codex-windows-sandbox-setup.exe",
+          "testSibling": "D:\\a\\_temp\\hepta-windows-current-target\\dev-small\\deps\\codex-windows-sandbox-setup.exe"
+        },
+        {
+          "bytes": 24122368,
+          "name": "codex-command-runner",
+          "sha256": "d9f605a33448595cdfb4fe12b661ecc5f1520b05f094a023a091104fcd1d1472",
+          "source": "D:\\a\\_temp\\hepta-windows-current-target\\dev-small\\codex-command-runner.exe",
+          "testSibling": "D:\\a\\_temp\\hepta-windows-current-target\\dev-small\\deps\\codex-command-runner.exe"
+        }
+      ],
+      "command": [
+        "cargo",
+        "build",
+        "--locked",
+        "-p",
+        "codex-windows-sandbox",
+        "--profile",
+        "dev-small",
+        "--message-format=json",
+        "--bin",
+        "codex-windows-sandbox-setup",
+        "--bin",
+        "codex-command-runner"
+      ],
+      "durationSeconds": 820.766,
+      "exitCode": 0,
+      "passed": true
+    },
+    "schema": "mem.d0f.windows-current-original-audit.v1",
+    "source_after_observation": "UNOBSERVED_NO_FINAL_RECEIPT",
+    "source_before": {
+      "cargoLockSha256": "564bc3f207a9f15cd66b0a18a81e4146522deb43c7cf8e90fc2f3d4d6638fd9b",
+      "head": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+      "trackedChanges": "",
+      "tree": "658fa040046285116b1fd81b94ff8c96444072ad"
+    },
+    "strict_passing_groups": 12,
+    "terminal_counts": {
+      "FAIL": 1,
+      "PASS": 123
+    },
+    "terminal_distinct_original_case_ids": 124,
+    "three_new_hardlink_helpers_in_167_scope": false,
+    "tree": "658fa040046285116b1fd81b94ff8c96444072ad"
+  },
+  "reader": {
+    "bytes": 13797,
+    "git_blob": "4e4550c82d09c985b0e678085db9679644fd583f",
+    "sha256": "e141e5bccfba7a66602a548585d69cce4f8df34816a09c285931cf5625b54550"
+  },
+  "reader_actual_exit_code": 0,
+  "reader_change_for_new_outcome": false,
+  "schema": "mem-d0f-windows-current-complete-original-publication-v1",
+  "terminal_classification": {
+    "actual_case_status_counts": {
+      "FAIL": 1,
+      "PASS": 123
+    },
+    "attempt": 1,
+    "cargo_lock_representation": {
+      "binding_reference": "The exact source Cargo.lock Git blob is 025813e20504f31d12dae2092a0807a1a4066419; complete source bytes also reside in the previously published two-native preparation package. Only the original checksum is observed here, not archived original Windows lock bytes.",
+      "derived_crlf": {
+        "bytes": 439848,
+        "git_blob": "3705e02f20a0cfeed0114531f336dfce09b6791b",
+        "sha256": "564bc3f207a9f15cd66b0a18a81e4146522deb43c7cf8e90fc2f3d4d6638fd9b"
+      },
+      "exact_observed_hash_equals_pinned_source_with_CRLF": true,
+      "original_observed_sha256": "564bc3f207a9f15cd66b0a18a81e4146522deb43c7cf8e90fc2f3d4d6638fd9b",
+      "pinned_source_lf": {
+        "bytes": 421005,
+        "git_blob": "025813e20504f31d12dae2092a0807a1a4066419",
+        "sha256": "98b3767c6e74bf6eeb5894db760259dbc400cbfd0685af8ad915c92d25408d69"
+      },
+      "scope": "No after-hash/whole-worktree stability claim follows from this before-only observation."
+    },
+    "completed_group_receipts": 13,
+    "declared_cases": 167,
+    "declared_groups": 19,
+    "failure_boundary": {
+      "elevated_child_token_inventory": "UNOBSERVED",
+      "elevated_outside_routes": [
+        [
+          "Neither",
+          "false",
+          "false"
+        ],
+        [
+          "TargetOnly",
+          "true",
+          "true"
+        ],
+        [
+          "ParentOnly",
+          "true",
+          "true"
+        ],
+        [
+          "Both",
+          "true",
+          "true"
+        ]
+      ],
+      "exact_lines": [
+        {
+          "bytes": {
+            "bytes": 137,
+            "git_blob": "21a6e3fb4b545f48b77b26e2beb6a7cd528de515",
+            "sha256": "a8e04053534722bbf52d714722f85d38586b97cd163819cdd75ecaa366ccad71"
+          },
+          "line": 204,
+          "text": "    delete_control verified_before_resume distinct_token=true backup_present=false restore_present=false other_privileges_unchanged=true"
+        },
+        {
+          "bytes": {
+            "bytes": 377,
+            "git_blob": "7ca11e4eb1d31b9ad56cdf320b247cd9ac319b3e",
+            "sha256": "20e7a1c052e883ce436a67171b91902a27bbaab5ccb68b3eaefc7c46adb8bec5"
+          },
+          "line": 217,
+          "text": "    delete_matrix ordinary-host-cmd-done after_release=[DeleteOutcome { route: Neither, file_deleted: false, directory_deleted: false }, DeleteOutcome { route: TargetOnly, file_deleted: true, directory_deleted: true }, DeleteOutcome { route: ParentOnly, file_deleted: true, directory_deleted: true }, DeleteOutcome { route: Both, file_deleted: true, directory_deleted: true }]"
+        },
+        {
+          "bytes": {
+            "bytes": 374,
+            "git_blob": "207f85884dbb6c2920f9d45994e2dec521950492",
+            "sha256": "cc283d9cc0c5c5d23a0e75ccda278cc150c99c8349d73798586fa649f7343b66"
+          },
+          "line": 233,
+          "text": "    delete_matrix elevated-child-done after_release=[DeleteOutcome { route: Neither, file_deleted: false, directory_deleted: false }, DeleteOutcome { route: TargetOnly, file_deleted: true, directory_deleted: true }, DeleteOutcome { route: ParentOnly, file_deleted: true, directory_deleted: true }, DeleteOutcome { route: Both, file_deleted: true, directory_deleted: true }]"
+        },
+        {
+          "bytes": {
+            "bytes": 117,
+            "git_blob": "6cef8d441059a69b705d0acaaa048c903dcbd828",
+            "sha256": "3a6cc11f1eec8eacd42daed479746f0063af186e43119d4be6421ea15c9eec1e"
+          },
+          "line": 219,
+          "text": "    elevated_terminal_observation cleanup=Ok(Some(OwnerTerminated { owner_exit_code: Some(0) })) output_drained=true"
+        }
+      ],
+      "ordinary_child_privilege_check_is_not_elevated_child_token_inventory": true,
+      "ordinary_control_routes": [
+        [
+          "Neither",
+          "false",
+          "false"
+        ],
+        [
+          "TargetOnly",
+          "true",
+          "true"
+        ],
+        [
+          "ParentOnly",
+          "true",
+          "true"
+        ],
+        [
+          "Both",
+          "true",
+          "true"
+        ]
+      ],
+      "original_group_raw": {
+        "bytes": 27273,
+        "git_blob": "30bb832b65731ceffe72ad178d5dae2a999abb82",
+        "sha256": "984b5d5891de0a1e80a212d38f3dd22f8872844b706aa47c33e46abbc9daab36"
+      },
+      "production_authority_or_global_isolation_claim": false
+    },
+    "groups_without_original_log": [
+      {
+        "declared_cases": 6,
+        "id": "runner-native-custody"
+      },
+      {
+        "declared_cases": 12,
+        "id": "exec-server-observation-wire"
+      },
+      {
+        "declared_cases": 3,
+        "id": "exec-server-protocol-observation-wire"
+      },
+      {
+        "declared_cases": 3,
+        "id": "direct-pty-native-observation"
+      },
+      {
+        "declared_cases": 10,
+        "id": "legacy-isolation-admission"
+      }
+    ],
+    "head": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+    "helper_pe_bytes_archived": false,
+    "job_id": 130668436858,
+    "legacy_leak_case": {
+      "actual_status": "PASS",
+      "line": "        PASS [   2.155s] codex-windows-sandbox unified_exec::tests::elevated_non_tty_cmd_forwards_env_output_and_exit",
+      "line_identity": {
+        "bytes": 118,
+        "git_blob": "dab5069053eb2e6ca330ae3231b0b0f2e1296ab9",
+        "sha256": "31d590a5df9659de82e131ddca47824dc0e6a794900e0d849da67efe75b44e7e"
+      },
+      "name": "unified_exec::tests::elevated_non_tty_cmd_forwards_env_output_and_exit",
+      "original_line": 193
+    },
+    "native_or_model_requests_started_by_auditor": 0,
+    "observed_distinct_native_terminals": 124,
+    "original_9_python_driver_controls_excluded_from_native_counts": true,
+    "original_error_lines": [
+      {
+        "line": 1108,
+        "line_identity": {
+          "bytes": 66,
+          "git_blob": "9a4ec9b69fab272316578a0bdc115675e431bb66",
+          "sha256": "92f3cea6fe4f324d0fa31be7c7981a745b65e95884f4daaae296252946563b8d"
+        },
+        "text": "2026-11-11T17:56:51.8490494Z ##[error]The operation was canceled."
+      }
+    ],
+    "partial_group": {
+      "command_exit": "UNKNOWN",
+      "declared_cases": 9,
+      "id": "core-exit-observation",
+      "nextest_start_or_case_terminal_observed": false,
+      "original_log": {
+        "bytes": 43072,
+        "git_blob": "d9249e40746fdc96f909debcc2c73b6be89cf86f",
+        "sha256": "f3c0d5da2b5d82beb714ec9d75f9dd81c9b3dc8f12272dd4c5c5f22abaa84797"
+      }
+    },
+    "physical_network_request_count": null,
+    "run_id": 43062473110,
+    "scheduler_cancellation_reason": "UNKNOWN; raw only states The operation was canceled. Timestamp proximity to 65 minutes is not a separate scheduler receipt.",
+    "schema": "mem-d0f-windows-current-terminal-classification-v1",
+    "source_after": "UNOBSERVED_NO_FINAL_RECEIPT",
+    "source_refs_changed": false,
+    "strict_passing_groups": 12,
+    "tracked_source_before": {
+      "cargoLockSha256": "564bc3f207a9f15cd66b0a18a81e4146522deb43c7cf8e90fc2f3d4d6638fd9b",
+      "head": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+      "trackedChanges": "",
+      "tree": "658fa040046285116b1fd81b94ff8c96444072ad"
+    },
+    "tree": "658fa040046285116b1fd81b94ff8c96444072ad",
+    "unique_failed_case": "unified_exec::tests::delete_permission_tests::legacy_refuses_before_elevated_four_cell_delete_boundary",
+    "unobserved_terminal_case_count": 43,
+    "whole_scope_qualification": "NOT_QUALIFIED_ORIGINAL_CANCELLED_ONE_FAILED_CASE_AND_43_UNOBSERVED_TERMINALS"
+  }
+}

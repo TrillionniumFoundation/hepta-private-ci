@@ -1,0 +1,32 @@
+{
+  "all_shared_projection_fields_equal": true,
+  "attempt": 1,
+  "compared_job_fields": [
+    "id",
+    "name",
+    "status",
+    "conclusion",
+    "run_id"
+  ],
+  "compared_step_fields": [
+    "name",
+    "status",
+    "conclusion",
+    "number"
+  ],
+  "full_api": {
+    "bytes": 6626,
+    "git_blob": "03aef3a4325a6eb8d22015bc226e5dadf4c3ad28",
+    "sha256": "09dc75df2547282c5a0d8ac5f1c9c91ba03c8da4a8de06a7f4cd6d5497972701"
+  },
+  "head_attempt_branch_timestamps": "Read from the complete original API JSON; not inferred from absent projected fields.",
+  "logs_url_boundary": "Normalized logs_url is a tool-specific null projection, not a raw GitHub field and not evidence that original logs are unavailable.",
+  "normalized_api": {
+    "bytes": 2002,
+    "git_blob": "b4967fc4b3a461448d00d07ae36ff2e5aec18b52",
+    "sha256": "bd519b51f86857df4b20db6bf4b7829b5d98b2d3e1eba3e8f5659d0c543f28cc"
+  },
+  "original_job": 130668436858,
+  "original_run": 43062473110,
+  "schema": "github-original-job-normalized-projection-comparison-v1"
+}
