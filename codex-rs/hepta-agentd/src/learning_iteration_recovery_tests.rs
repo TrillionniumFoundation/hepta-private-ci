@@ -664,7 +664,7 @@ async fn actual_delivery_backpressure_precedes_claim_and_prior_claim_stays_readb
     ));
     assert_eq!(
         ok(store.pending_circuit_learning(/*limit*/ 1).await),
-        pending
+        claimed
     );
     assert!(ok(ports.executed.lock()).is_empty());
     assert!(ok(ports.checkpoint_calls.lock()).is_empty());
