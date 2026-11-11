@@ -25,8 +25,8 @@
 - No synthetic test measures live Source/Action/Feedback ownership, real downstream utility or model learning.
 
 Original action: https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43113372212
-- Python job: https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43113372212/job/130834954054, **76/76 tests passed**, unit test runner measured 0.041 s; GitHub job elapsed approx. NaN s. Full original log: `FROZEN_CREDIT_RAW_BUDGET_PYTHON_CI.log`.
-- Native Q24 reference job: https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43113372212/job/130834953648, **101/101 tests passed**, Cargo test runner measured 0.29 s; GitHub job elapsed approx. NaN s. Full original log: `FROZEN_CREDIT_RAW_BUDGET_Q24_CI.log`.
+- Python job: https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43113372212/job/130834954054, **76/76 tests passed**, unit test runner measured 0.041 s; GitHub job elapsed time not independently measured. Full original log: `FROZEN_CREDIT_RAW_BUDGET_PYTHON_CI.log`.
+- Native Q24 reference job: https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43113372212/job/130834953648, **101/101 tests passed**, Cargo test runner measured 0.29 s; GitHub job elapsed time not independently measured. Full original log: `FROZEN_CREDIT_RAW_BUDGET_Q24_CI.log`.
 - Those hosted job durations include runner overhead and cannot be used as model-training speed or full resource cost. CPU seconds, RSS, GPU/energy, inference, model storage, remote Owner work, and real task costs were **not measured**. Model/data/config/seed: no external neural model, model dataset, or training seed; the deterministic 1-action reference test config fixes cutoff=10, decay=1, max_lag=10, and 65,536 max raw feedback records.
 
 ## Remaining gates
