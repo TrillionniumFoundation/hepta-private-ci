@@ -463,7 +463,10 @@ async fn product_v2_reports_peer_truncation_before_aggregation() {
         .expect("bounded product retrieval");
     assert!(batch.candidates.is_empty());
     assert_eq!(coverage.requested_peers, 16);
-    assert_eq!(coverage.completed_peers, 16);
+    assert_eq!(
+        coverage.completed_peers, 16,
+        "federation product coverage: {coverage:?}"
+    );
     assert_eq!(coverage.failed_peers, 0);
     assert_eq!(coverage.truncated_peers, 1);
     assert_eq!(coverage.omitted_peer_candidates, 0);
