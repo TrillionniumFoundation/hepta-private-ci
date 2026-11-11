@@ -128,6 +128,9 @@ class CellEnrollment:
     update_rule: str | None = None
 
     def __post_init__(self):
+        # Enum identities must be literal strings, never overridden equality keys.
+        if type(self.lineage) is not str or type(self.kernel) is not str:
+            raise LineagePolicyError("unknown lineage or kernel")
         if self.lineage not in LINEAGES or self.kernel not in KERNELS:
             raise LineagePolicyError("unknown lineage or kernel")
         for key in (
@@ -155,9 +158,9 @@ class CellEnrollment:
             _digest(self.feature_abi, "feature_abi")
         elif self.feature_abi is not None:
             raise LineagePolicyError("unshared Cell cannot claim a pooled feature ABI")
-        if (
-            self.trainable_scope not in SCOPES[self.kernel]
-            and self.trainable_scope is not None
+        if self.trainable_scope is not None and (
+            type(self.trainable_scope) is not str
+            or self.trainable_scope not in SCOPES[self.kernel]
         ):
             raise LineagePolicyError("kernel cannot train the requested fields")
         if self.lineage == "LEARN" and (
@@ -318,7 +321,11 @@ def review_update(roster: CellRoster, evidence: UpdateEvidence) -> UpdateReview:
     changed = cell.components.changed(evidence.candidate_components)
     if not changed or not changed <= ALLOWED_CHANGES[cell.trainable_scope]:
         raise LineagePolicyError("candidate changes frozen or absent parameter fields")
-    if type(evidence.costs) is not dict or set(evidence.costs) != COST_AXES:
+    if (
+        type(evidence.costs) is not dict
+        or any(type(axis) is not str for axis in evidence.costs)
+        or set(evidence.costs) != COST_AXES
+    ):
         raise LineagePolicyError("all eight real-cost axes must be retained")
     missing = []
     for axis in sorted(COST_AXES):
