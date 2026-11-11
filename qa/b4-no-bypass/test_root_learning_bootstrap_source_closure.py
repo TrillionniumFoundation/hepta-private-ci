@@ -21,6 +21,7 @@ AGENT = "codex-rs/hepta-agentd/src/"
 PROFILE = AGENT + "authority_host_learning_profile.rs"
 REGISTRATION = AGENT + "authority_host_learning_registration.rs"
 SESSION = AGENT + "authority_host_learning_session.rs"
+MODEL_REGISTRATION = AGENT + "authority_host_q24_model_registration.rs"
 HANDOFF = AGENT + "root_production_learning_handoff.rs"
 INPUTS = AGENT + "root_production_learning_inputs.rs"
 CONFIG = AGENT + "config_root_learning.rs"
@@ -35,7 +36,7 @@ CALLERS = {
     "root_prepared_native_ready_text_session": (AGENT + "authority_host_native_launch.rs", CLI),
     "root_learning_explicit_registration": (CLI,),
     "root_learning_original_store_registration": (AGENT + "authority_host_runtime.rs",),
-    "root_learning_original_store_reopen": (SESSION,),
+    "root_learning_original_store_reopen": (SESSION, MODEL_REGISTRATION),
     "root_learning_original_owner_install": (CLI,),
     "root_learning_original_scope_seal": (CLI,),
     "root_learning_original_scope_capture": (SESSION,),
@@ -53,7 +54,7 @@ CALLERS = {
     "root_learning_original_delivery_source": (INPUTS,),
     "root_learning_completed_circuit_source": (DELIVERY,),
     "root_original_registered_ready_serve": (CLI,),
-    "root_original_private_sealed_bytes": (REGISTRATION,),
+    "root_original_private_sealed_bytes": (REGISTRATION, MODEL_REGISTRATION),
 }
 
 

@@ -1,5 +1,6 @@
 """Keep full-snapshot Training recovery on the original read-only typed owner."""
 
+from dataclasses import replace
 import importlib.util
 from pathlib import Path
 import sys
@@ -16,6 +17,9 @@ sys.modules[SPEC.name] = PROOF
 SPEC.loader.exec_module(PROOF)
 SOURCE = "codex-rs/hepta-agentd/src/cell_q24_training_snapshot_readback.rs"
 STAGE = "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs"
+STAGE_OWNERS = "codex-rs/hepta-agentd/src/cell_q24_learning_stage_owners.rs"
+MODEL_DISPATCH = "codex-rs/hepta-agentd/src/cell_q24_learning_model_dispatch.rs"
+TRAINING_MATERIAL = "codex-rs/hepta-agentd/src/cell_q24_training_material.rs"
 
 
 class OriginalTrainingSnapshotSourceClosureTests(unittest.TestCase):
@@ -61,19 +65,31 @@ class OriginalTrainingSnapshotSourceClosureTests(unittest.TestCase):
             with self.subTest(mutation=mutation):
                 self.rejects("training.readback(dataset.snapshot()).await?", mutation)
 
-    def test_only_snapshot_adapter_reads_stage_and_no_product_host_is_claimed(self):
+    def test_snapshot_and_stage_reads_have_exact_original_callers(self):
         rows = {row.identifier: row for row in PROOF._boundary_rows(self.manifest)}
-        sources = {path: PROOF._strip_rust_non_code((ROOT / path).read_text()) for path in (SOURCE, STAGE)}
+        sources = {
+            path: PROOF._strip_cfg_test_items(PROOF._strip_rust_non_code((ROOT / path).read_text()))
+            for path in (SOURCE, STAGE, STAGE_OWNERS, MODEL_DISPATCH, TRAINING_MATERIAL)
+        }
         for name, callers in (
-            ("learning_original_training_stage_readback", (SOURCE,)),
-            ("learning_original_training_snapshot_readback", ()),
+            ("learning_original_training_stage_readback", (SOURCE, STAGE_OWNERS, MODEL_DISPATCH, TRAINING_MATERIAL)),
+            ("learning_original_training_snapshot_readback", (STAGE_OWNERS,)),
         ):
             row = rows[name]
             self.assertIn(name, self.manifest["privileged_inventory"]["required_boundary_ids"])
             self.assertEqual(row.product_callers, callers)
             PROOF._verify_boundary(ROOT, row, sources, ())
+            for caller in callers:
+                with self.assertRaises(PROOF.VerificationFailure):
+                    PROOF._verify_boundary(
+                        ROOT, replace(row, product_callers=tuple(path for path in callers if path != caller)), sources, ()
+                    )
             changed = dict(sources)
-            call = "read_cell_q24_training_snapshot_v1()" if not callers else "owner.readback()"
+            call = (
+                "read_cell_q24_training_snapshot_v1()"
+                if name == "learning_original_training_snapshot_readback"
+                else "owner.readback()"
+            )
             changed["codex-rs/hepta-agentd/src/unregistered_training_read.rs"] = (
                 f"fn unexpected(owner: &OriginalCellQ24TrainingStageV1) {{ {call}; }}"
             )

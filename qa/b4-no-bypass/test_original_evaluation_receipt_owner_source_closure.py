@@ -1,4 +1,4 @@
-"""Guard original Evaluation receipt custody without assembling production ports.
+"""Guard original Evaluation receipt custody through its exact assembled ports.
 
 These are source closure and mutation checks. Native signed-owner tests establish
 behavior separately; neither suite establishes ordinary production role custody.
@@ -23,6 +23,8 @@ sys.modules[SPEC.name] = PROOF
 SPEC.loader.exec_module(PROOF)
 AGENT = "codex-rs/hepta-agentd/src/"
 OWNER = AGENT + "neuron_cell_evaluation_receipt_owner.rs"
+HANDOFF = AGENT + "cell_q24_evaluation_handoff.rs"
+EVALUATION_STAGE = AGENT + "cell_q24_evaluation_stage.rs"
 CALLERS = {
     "cell_learning_evaluation_receipt_prepare": (
         AGENT + "learning_iteration_evaluation_evidence.rs",
@@ -33,6 +35,7 @@ CALLERS = {
         AGENT + "learning_iteration_evaluation_evidence.rs",
         AGENT + "learning_iteration_generation_evidence.rs",
         OWNER,
+        EVALUATION_STAGE,
     ),
     "cell_completed_evaluation_readback": (OWNER,),
     "learning_original_evaluation_key": (
@@ -57,6 +60,7 @@ class OriginalEvaluationReceiptOwnerSourceClosureTests(unittest.TestCase):
                 *cls.boundaries[identifier].product_callers,
             )
         }
+        paths.update((HANDOFF, EVALUATION_STAGE))
         cls.sources = {
             path: PROOF._strip_cfg_test_items(
                 PROOF._strip_rust_non_code((ROOT / path).read_text())
@@ -117,15 +121,20 @@ class OriginalEvaluationReceiptOwnerSourceClosureTests(unittest.TestCase):
                     )
                 self.reject_unregistered_caller(row)
 
-    def test_four_receipt_ports_and_stage_assembly_remain_closed(self):
+    def test_four_receipt_ports_and_legacy_stage_assembly_remain_closed(self):
         inventory = self.manifest["privileged_inventory"]["required_boundary_ids"]
         for suffix in ("create", "recover", "attest", "readback"):
             identifier = "learning_original_evaluation_receipt_" + suffix
             with self.subTest(boundary=identifier):
                 self.assertIn(identifier, inventory)
                 row = self.boundaries[identifier]
-                self.assertEqual(row.product_callers, ())
+                expected = (HANDOFF,) if suffix in ("create", "recover") else (EVALUATION_STAGE,)
+                self.assertEqual(row.product_callers, expected)
                 PROOF._verify_boundary(ROOT, row, self.sources, ())
+                with self.assertRaises(PROOF.VerificationFailure):
+                    PROOF._verify_boundary(
+                        ROOT, replace(row, product_callers=()), self.sources, ()
+                    )
                 self.reject_unregistered_caller(row)
         for identifier in (
             "cell_learning_evaluation_original_readback",
