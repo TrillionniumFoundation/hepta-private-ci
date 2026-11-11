@@ -47,6 +47,12 @@ pub enum OriginalCellQ24TrainingReceiptErrorV1 {
 
 type Error = OriginalCellQ24TrainingReceiptErrorV1;
 
+#[path = "cell_q24_training_stage.rs"]
+mod stage;
+pub use stage::OriginalCellQ24TrainingCompletionV1;
+pub use stage::OriginalCellQ24TrainingStageErrorV1;
+pub use stage::OriginalCellQ24TrainingStageV1;
+
 /// Original host configuration, fixed before requesting a training signature.
 /// Structural validation cannot manufacture Dataset custody or Root enrollment.
 #[derive(Clone)]
