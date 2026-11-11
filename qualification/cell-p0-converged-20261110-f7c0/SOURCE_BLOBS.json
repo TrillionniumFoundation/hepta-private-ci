@@ -1,9 +1,9 @@
 {
   "schema": "hepta.p0.implemented-source-blobs.v1",
-  "candidate_source_sha": "cb0598a9099a0d828ce73aedb51e397e600e49d1",
-  "candidate_tree": "59a019b79a6b879bbc27f6a614e1222fe87581ca",
+  "candidate_source_sha": "30a697c50e10abd56e61b6b84f28ac9ae9f32f5d",
+  "candidate_tree": "b2a21d98380340b1c091006f4130aafdbeabca50",
   "base": "0c99a30dbe9307d48aa50ffc63404235ade8ae9c",
-  "scope": "All non-qualification paths changed from the original common recovery base. The full repository is fixed by commit and tree.",
+  "scope": "All non-qualification paths changed from original common recovery base. Full repository is fixed by commit and tree.",
   "files": [
     {
       "path": ".github/workflows/codespell.yml",
@@ -13,11 +13,18 @@
       "sha256": "58f1fa2d4a5ad3c0885187b7191dc2330301e6d6921e72796fd1b2a7ed2149c8"
     },
     {
+      "path": ".github/workflows/hcsn-differentiable.yml",
+      "mode": "100644",
+      "git_blob": "2375bd00314e26c70aea54209a8ca8f606eee0f3",
+      "bytes": 6820,
+      "sha256": "f6d6906c6a6b4602d8358b9c324f57e1e7fbbb6aa7e75f68500bfc8b7bb48e65"
+    },
+    {
       "path": ".github/workflows/hepta-daemon-learning-native.yml",
       "mode": "100644",
-      "git_blob": "30542aef705485940519a346517ec8f6f4a740f8",
-      "bytes": 18828,
-      "sha256": "913be8cd1abdf2c4d90d41734336d6730e18506360093814506d9c659d994ab9"
+      "git_blob": "6dbee7f5c44b6581d7adce8719b8f3f25f211219",
+      "bytes": 18827,
+      "sha256": "278f90e1b14afd235106c84efe2d14dd7458ff4eb36ed71f4c823bc8392b885d"
     },
     {
       "path": "CALLERS.toml",
@@ -25,6 +32,13 @@
       "git_blob": "470bf7bc71420b79223dac86826d61704abba3ea",
       "bytes": 345198,
       "sha256": "e24624826d94bd7726e55c5ffb3ffc55f182819949dbe7b66c92879441e38b19"
+    },
+    {
+      "path": "MODULE.bazel",
+      "mode": "100644",
+      "git_blob": "f3e7c21d9e7d54c0ac371caf17fe170c356bdf34",
+      "bytes": 24766,
+      "sha256": "3be346c68d608527936a029ca5685e5cb44d3c55d98ee1ff3b210d740318800e"
     },
     {
       "path": "codex-rs/core/src/unified_exec/async_watcher.rs",
@@ -36,9 +50,9 @@
     {
       "path": "codex-rs/core/src/unified_exec/async_watcher_tests.rs",
       "mode": "100644",
-      "git_blob": "0992e0fd217b7c38ee7327b48e9d3b5cce4ea4fb",
-      "bytes": 15218,
-      "sha256": "c21b3d86a6b06b58ef2a2084c9e7fee79e1a1e789ce7479e8abf1536e10f013b"
+      "git_blob": "278bf63d343b4615e34179d85e2ad98cc3ea0fce",
+      "bytes": 15270,
+      "sha256": "f5073ba560a08f5c496e1f13272498b28fd1652eddbd90a18c254dacca5b468e"
     },
     {
       "path": "codex-rs/core/src/unified_exec/process.rs",
@@ -183,9 +197,9 @@
     {
       "path": "codex-rs/hepta-agentd/src/cell_q24_training_stage_tests.rs",
       "mode": "100644",
-      "git_blob": "0c3e0c2ea4ae503a2e4b7959d5223ae2120f3c34",
-      "bytes": 13736,
-      "sha256": "ecb33c1b9fd6f0ea588b4b600e7945004cfc7c6cfa8b0b7308f5b120a04a6373"
+      "git_blob": "abdeea194ee4bd1de796c2d21bf7d6b4f212c4a1",
+      "bytes": 13770,
+      "sha256": "c8be41a31e4dc3cd7d70508fcc5b200de2ec438df75e197240cc8c20eb80b65e"
     },
     {
       "path": "codex-rs/hepta-agentd/src/circuit_cell_dispatch.rs",
@@ -601,11 +615,25 @@
       "sha256": "7e21357b0ee7a1938312be7d0e542b11f9da72e228eb6943ac8a32d4c13bde35"
     },
     {
+      "path": "codex-rs/hepta-matrix-sdk/src/sdk.rs",
+      "mode": "100644",
+      "git_blob": "bc6b518fb1016af209319b7e7e4eda0f96999c52",
+      "bytes": 28154,
+      "sha256": "737a92f3af84b4ba1356f36307c6b2c3ca81a0fe22bc24829fe620ff1d656e09"
+    },
+    {
+      "path": "codex-rs/hepta-matrix-sdk/src/sync_tests.rs",
+      "mode": "100644",
+      "git_blob": "31ffc6a9806768dd93f12f02228dc9c5f54e6d4f",
+      "bytes": 23061,
+      "sha256": "aa42e1eebd256f356089e00857718310deb5aa93721bad161b0252ad18156acd"
+    },
+    {
       "path": "codex-rs/hepta-matrix-sdk/tests/store_version_migration.rs",
       "mode": "100644",
-      "git_blob": "7b872dbc7ae3a845d8ba8d4920b48d6113f2f272",
-      "bytes": 12463,
-      "sha256": "836b24ea32d377f8ecc1586f1bba29661a624e7a354172bec87157b5dc3cfb71"
+      "git_blob": "56cb4b9d8a9a597d4b1f7097087f98bd80e409dd",
+      "bytes": 12465,
+      "sha256": "0db33a2e8505870351f54fb53c4b0d11b698ee162c88167af54499dd379e4fae"
     },
     {
       "path": "codex-rs/hepta-neuron/src/cell_feature_current_journal_tests.rs",
@@ -697,6 +725,13 @@
       "git_blob": "36d4f1d1272cb99b72a79ef8c9076ebc35246ff9",
       "bytes": 24899,
       "sha256": "6fc049cfb81ea58b408e36ca16871dedbf06b5113ade44d4509d6fbf778bbfc2"
+    },
+    {
+      "path": "docs/hepta-generation-learning-readback.md",
+      "mode": "100644",
+      "git_blob": "4ae25ef4acf0e4f8dc0b3f55fe33e5c9df2c4617",
+      "bytes": 8285,
+      "sha256": "11581f969668abd0b8b3e131cbcdb76254955db9da9f7d3b0ba2cee193f3f62b"
     },
     {
       "path": "qa/b4-no-bypass/test_cell_learning_evaluation_source_closure.py",

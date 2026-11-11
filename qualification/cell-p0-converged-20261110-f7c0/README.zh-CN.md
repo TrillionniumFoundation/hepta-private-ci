@@ -12,33 +12,62 @@
 - 修复 unified exec 把有界历史交给可能落后的广播订阅者的问题：原进程先保留历史，再发送实时增量；轮询读取与历史分开。新回归覆盖慢订阅、两次轮询、退出后的 stderr 尾字节、关闭后订阅及精确省略计数。
 - 两处现有失败测试保留原始 auth refresh / Matrix reopen 错误；没有放宽超时或验收断言。
 
-固定候选源码为 `cb0598a9099a0d828ce73aedb51e397e600e49d1`，tree 为 `59a019b79a6b879bbc27f6a614e1222fe87581ca`，集成 PR 为 [#5865](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5865)。代码身份、组件证据和未完成门槛见 [INTEGRATION.json](INTEGRATION.json)。后续证据保存于单独的证据分支，保持受测源码身份不变。
+固定候选源码为 `30a697c50e10abd56e61b6b84f28ac9ae9f32f5d`，tree 为 `b2a21d98380340b1c091006f4130aafdbeabca50`，集成 PR 为 [#5865](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5865)。代码身份、组件证据和未完成门槛见 [INTEGRATION.json](INTEGRATION.json)。后续证据保存于单独的证据分支，保持受测源码身份不变。
 
 普通 LEARN 合并版的完整调用边界检查通过，覆盖 6,298 个 Rust 文件、213 个边界和 215 个受保护条目。新增训练回执的 138 项来源/变异检查与 217 边界、216 个受保护条目的静态检查另行保存，不把重叠测试相加，也不转称最终共同源的原生测试通过。
 
 上一候选 `4073268e…` 的原生 CI 在 helper 构建阶段实际失败：旧 generation-use readback 未显式覆盖新增 `TrainingNoUpdateV2`，普通与 Root 测试均未执行。当前候选增加了明确拒绝分支及普通 actor 的回归用例；[原始失败记录](NATIVE_FAILURE_4073268.json)和完整 helper 输出已保留，新的 source-head CI 才能确认修复。
 
-此外，同一旧候选的 Windows 原日志确认了另一项错误：恢复测试引用不存在的 `pending`。合并还残留同一 intent 的第二次 claim；仅改变量名会继续触发失败。当前源码恢复原 `claimed` 快照并复用原 coordinator，保留 backpressure、owner loss、readback-only 与不再训练的全部断言。两项修复已在后继 `6ecfa504…` 的实际 daemon/Windows 门禁中通过；新增 Training 适配层后的 `cb0598a…` 继续单独验收。
+此外，同一旧候选的 Windows 原日志确认了另一项错误：恢复测试引用不存在的 `pending`。合并还残留同一 intent 的第二次 claim；仅改变量名会继续触发失败。当前源码恢复原 `claimed` 快照并复用原 coordinator，保留 backpressure、owner loss、readback-only 与不再训练的全部断言。两项修复已在后继 `6ecfa504…` 的实际 daemon/Windows 门禁中通过；新增 Training 适配层后的 `cb0598a…` 在下一轮编译阶段暴露宏歧义，现由 `30a697c…` 修复后重新验收。
+
+### 本轮新增的九文件修复与验收
+
+[完整补丁、来源、独立复核和边界](engineering/ci-fixes/REVIEW_AND_SCOPE.json)覆盖以下变更：
+
+- `cb0598a…` 的 daemon 与 shared 均在六个新训练测试编译时产生 22 条 `E0659`。显式导入父测试原本使用的 `pretty_assertions::assert_eq`；删除这唯一新增行即可逐字还原旧测试文件，全部测试和断言保留。
+- 旧 blocking 的三个 Prettier 失败已按固定 3.5.3 修复；watcher 测试的 guard 改为词法 block。旧代码已有显式 drop，故这里只认定 Clippy 作用域修复，没有声称观察到运行时死锁。
+- Matrix 初始化错误保留失败阶段与原始底层错误；恢复失败后仍仅尝试一次 fresh login，双失败保留 restore 与 fallback。原有 5 秒期限、passphrase、KDF 强度、存储和成功校验未改变。
+- 仅对 Bazel `crates` 中的 `matrix-sdk-store-encryption 0.19.1` 增加 `-Copt-level=3`，与已有 Cargo package 设置一致。旧实际 Bazel action 使用 opt-level=0 已读回；配置差异不能证明旧重开失败由 KDF 引起，也不能证明运行修复已经通过。
+
+**兼容性：** `MatrixSdkError::Initialization` 改为带 stage/source 的结构体变体，新增 `RestoreFallback`，并移除 Clone/Copy/Eq/PartialEq。仓内现有消费者及六条精确错误分类断言已检查。`Error::source` 的双失败链只沿 fallback；restore 保留在字段和 Debug 中，没有宣称单条 source 链包含两个分支。跨 crate/目标平台的编译资格仍需新 CI。
+
+当前已实际完成的本地检查绑定 local `03f4bfea…`，与发布源 `30a697c…` 的 tree **完全相同**：
+
+| 检查 | 实际结果 | 范围 |
+| --- | --- | --- |
+| `just fmt --base cb0598a…` | exit 0，源码 clean | 修改的 Rust/Bazel 格式 |
+| Prettier 3.5.3 `--check` | exit 0 | 三个修改的 Markdown/YAML 文件 |
+| `git diff --check` | exit 0 | 九文件源码补丁 |
+| 标准 `just bazel-lock-check` | exit 0，105.212 秒 | `mod deps --lockfile_mode=error`；锁文件未改 |
+| 四项独立源码复核 | 未发现复核范围内阻塞项 | 不是 native 执行或科研独立性证明 |
+| `30a697c…` 完整 caller scan | 已启动，待原始终态 | 不移植 `cb0598a…` 的 PASS |
+| `30a697c…` native / 全仓库 CI | 已创建，待实际结果 | 不移植旧源码的通过数 |
+
+[标准锁检查原记录](engineering/bazel-lock/RESULTS.json)保留更早的资源保护中止和 PKIX 失败。后一次通过采用 Bazel 支持的显式 JVM startup 参数，使用系统受信 CA；TLS 和继承代理保持启用。检查未修改依赖声明，没有运行 native build/test。原 direct-dependency/annotation 警告保留，Bazel server CPU 和峰值内存未知；客户端开销不冒充完整服务器成本。
+
+前一 `cb0598a…` 的 [daemon 完整失败归档](daemon-cb-failure/SUMMARY.json)与 [shared 完整失败归档](shared-cb-failure/RESULTS.json)分别确认 **0 个 native testcase**，不是 22 个测试失败。daemon helper 构建实际成功，随后编译失败；Root、维护及 post-test helper 验证没有到达。shared 的 15 项 Python execution-gate 测试通过，fresh JUnit 缺失是编译失败的后果。两份完整原日志和原始成员均保留；daemon 仅三个大源码 inventory 从交付压缩包中省略，但已完整解压逐字比较并记录哈希，未截断原日志。
+
+[旧 blocking 原日志](blocking-6ec/RESULTS.json)还记录 Windows bindgen 下载 transport failure，不能归为 Rust 源码错误；Matrix migration 测试实际 1 项失败、2 项 ignored，重开报告 17.460891417 秒和泛化 Initialization，原因尚未判定。run head `6ecfa504…` 与实际测试 checkout `3fc1acb…` 不混用；二者 tree 相同的 API 证据另存。
 
 ### 历史源码的实际原生通过
 
 [原始 CI 读回报告](ci-readback/RESULTS.md)保存 5 个 artifact 的成员索引、77 个原始文件及 6 份完整 job log。仅维护集成版本 `8c9c51e…` 实际通过 daemon ordinary 1,104 项、独立 Root parent 7 项和 shared 1,134 项；对应 nextest 排除/忽略数为 72、908、71。三个执行集合不能相加为独立测试或研究样本。daemon 的 fmt、fix、bins 均返回 0，六份源码 inventory 完整字节相同。
 
-后继 `0b13…` 与 `407…` 的 Linux helper 失败由各自原 stderr 独立确认，不能用上述通过记录替代。前一候选 `6ecfa504…` 的 daemon 与 Windows 已有下述实际通过记录；当前新增适配层的 `cb0598a…` 必须完成自己的 native、维护和全仓库门禁。
+后继 `0b13…` 与 `407…` 的 Linux helper 失败由各自原 stderr 独立确认，不能用上述通过记录替代。前一候选 `6ecfa504…` 的 daemon 与 Windows 已有下述实际通过记录；新增适配层的 `cb0598a…` 随后的 daemon/shared 编译失败；当前 `30a697c…` 必须完成自己的 native、维护和全仓库门禁。
 
 前一共同源 `6ecfa504…` 的 [Windows 原生门禁已通过](windows-6ec/RESULTS.md)：五次筛选执行分别通过 15、2、3、2、12 项，另验证原始攻击样例能被正向源码拒绝、两个有缺陷的原生变体按预期失败，四包格式检查与恢复后 tracked clean 均通过。这是私有状态、durable owner 与选定 Prompt Runtime 的资格，尚不代表完整 P0、全仓库 CI 或后续训练适配器通过。
 
 [前一共同源的 daemon 原始归档](daemon-6ec/RESULTS.md)逐项核实了 ordinary 1,146 个 JUnit testcase、Root 7 个 testcase，均为零失败；另有 nextest 排除/忽略 72 与 948 项。原日志实际记录 Root UID=0，旧 ordinary XML 只作 Root 排除证据。六阶段均为 exact `6ecfa504…`/tree `9184583…`，14,399 文件的完整清单逐字节相同。该 lane 的 fmt/fix/bins 返回码均为 0、维护补丁为空；其 fix/bins 只覆盖 agentd、learning-artifacts、intelligence-eval。
 
-当前适配层的 9 项聚焦来源检查、223 边界/218 个受保护条目的静态 inventory 与独立源码审查通过；6 个原生行为测试已写入新源码，实际执行仍以新 CI 的日志/JUnit 为准。固定 `cb0598a…` 的[完整 caller scan 已实际通过](caller-cb/RESULTS.md)：6,302 个 Rust 文件、223 个边界、223 个 privileged inventory 条目，以及 218 个 protected-file 记录（173 个去重路径）。原 stdout 完整保留，前后源码、CALLERS 与 verifier 身份相同且 clean；该扫描不授予权限。详情见 [适配层检查与边界](engineering/training-stage/REVIEW_AND_SCOPE.json)。这些检查与历史测试重叠，不累计为新增独立样本。
+适配层原组件的 9 项聚焦来源检查、223 边界/218 个受保护条目的静态 inventory 与独立源码审查通过；6 个原生行为测试已写入源码；`cb0598a…` 未编译成功，实际执行为 0，需以 `30a697c…` 新 CI 的日志/JUnit 确认。固定 `cb0598a…` 的[完整 caller scan 已实际通过](caller-cb/RESULTS.md)：6,302 个 Rust 文件、223 个边界、223 个 privileged inventory 条目，以及 218 个 protected-file 记录（173 个去重路径）。原 stdout 完整保留，前后源码、CALLERS 与 verifier 身份相同且 clean；该扫描不授予权限。详情见 [适配层检查与边界](engineering/training-stage/REVIEW_AND_SCOPE.json)。这些检查与历史测试重叠，不累计为新增独立样本。
 
 一次独立的 exact `6ecfa504…`、单 job、本地三包 Clippy 命令在共享空闲磁盘降至 683,872,256 字节时受控中止（exit 130）；源码未改，运行测试为 0。完整记录保存在 [维护尝试归档](p0-maintenance-6ecfa504-attempt1.zip)。这次停止原因已知，但不能据此解释更早的 SIGKILL；最终 child CPU/RSS 和精确单调时钟耗时未捕获，仍为未知。
 
-训练回执重开测试的范围是有效凭证/签名窗口内的文件对象重开，尚不是完整 daemon/Root 进程冷启动。过期签名拒绝续签，genesis witness 写入未确认时保持阻塞；两项限制均有新增回归代码。在当前 `cb0598a…` 中，原 native fit 与回执 attest/readback 已由 Training 适配层实际调用；回执 create/recover、适配层四个 public host 接口和完整生产 StageOwner 装配仍未接通。本目录不授予模型采用或生产权限。
+训练回执重开测试的范围是有效凭证/签名窗口内的文件对象重开，尚不是完整 daemon/Root 进程冷启动。过期签名拒绝续签，genesis witness 写入未确认时保持阻塞；两项限制均有新增回归代码。自 `cb0598a…` 起，原 native fit 与回执 attest/readback 已由 Training 适配层实际调用；回执 create/recover、适配层四个 public host 接口和完整生产 StageOwner 装配仍未接通。本目录不授予模型采用或生产权限。
 
 前一 `6ecfa504…` 的 [shared owner 原生执行](shared-6ec/SUMMARY.json)也已逐项核实：实际 JUnit 1,184 项通过、nextest 排除/忽略 71 项，另有 15 项 Python 执行门禁。该 lane 与同源 daemon 有 884 个完全相同的 Agentd testcase，不能相加为独立测试或任务样本。旧 blocking 中 auth-refresh 所属目标只有缓存 PASS，可确认被选入，却未观测到精确用例重执行或内层诊断，详见[读回边界](engineering/AUTH_REFRESH_READBACK_6ec.json)。
 
-当前 `cb0598a…` 的 [Windows 选定范围已通过](windows-cb/SUMMARY.json)：五次原生调用各通过 15、2、3、2、12 项，34 个唯一原始测试。两个原始攻击样例复跑与两个变异控制单列；另 6 项 Python acquisition harness 测试也单列，不能与待执行的 6 个 Training stage 原生测试混淆。完整日志、原 artifact 的全部 9 成员和精确 source/tree 记录均保留；该 artifact 没有 JUnit，计数来自实际 nextest PASS 与 summary。四包格式检查与恢复后 tracked clean 均通过。
+前一 `cb0598a…` 的 [Windows 选定范围已通过](windows-cb/SUMMARY.json)：五次原生调用各通过 15、2、3、2、12 项，34 个唯一原始测试。两个原始攻击样例复跑与两个变异控制单列；另 6 项 Python acquisition harness 测试也单列，不能与待执行的 6 个 Training stage 原生测试混淆。完整日志、原 artifact 的全部 9 成员和精确 source/tree 记录均保留；该 artifact 没有 JUnit，计数来自实际 nextest PASS 与 summary。四包格式检查与恢复后 tracked clean 均通过。
 
 ## CTRL：本轮真正执行并读回的冻结诊断
 

@@ -1,9 +1,9 @@
 {
   "schema": "hepta.cell-p0-converged-implementation-and-evidence.v1",
-  "observed_at_utc": "2026-11-11T02:25:13.305127+00:00",
+  "observed_at_utc": "2026-11-11T03:21:24.905475+00:00",
   "candidate": {
-    "source_sha": "cb0598a9099a0d828ce73aedb51e397e600e49d1",
-    "source_tree": "59a019b79a6b879bbc27f6a614e1222fe87581ca",
+    "source_sha": "30a697c50e10abd56e61b6b84f28ac9ae9f32f5d",
+    "source_tree": "b2a21d98380340b1c091006f4130aafdbeabca50",
     "pull_request": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5865",
     "branch": "codex/cell-p0-converged-20261110-f7c0",
     "status": "DRAFT_P0_NOT_CLOSED",
@@ -25,7 +25,15 @@
     "single_claim_recovery_fixture_repair": "6ecfa504d2132f3682ffb01f8c9d65346b26cf5b",
     "original_training_stage_component": "61d118656e2b8dc99f36e1addc83296cefa35325",
     "original_training_stage_expiry_repair": "6478491f35eba1dd999fba018175ae746132d771",
-    "integrated_original_training_stage": "cb0598a9099a0d828ce73aedb51e397e600e49d1"
+    "integrated_original_training_stage": "cb0598a9099a0d828ce73aedb51e397e600e49d1",
+    "joint_ci_repairs": {
+      "published_source_sha": "30a697c50e10abd56e61b6b84f28ac9ae9f32f5d",
+      "parent_sha": "cb0598a9099a0d828ce73aedb51e397e600e49d1",
+      "reviewed_local_sha": "03f4bfea4cc96ef3bb2ec743b7501a45ddf756b8",
+      "identical_tree": "b2a21d98380340b1c091006f4130aafdbeabca50",
+      "changed_files": 9,
+      "evidence": "engineering/ci-fixes/REVIEW_AND_SCOPE.json"
+    }
   },
   "implemented": [
     "Preserve source_sha/tested_sha binding and original full CURRENT authentication, independent witness, bounded readback, post-claim reauthentication and exact ACK retirement.",
@@ -39,7 +47,11 @@
     "Repair the actual E0004 by explicitly rejecting TrainingNoUpdateV2 at committed generation-use readback, with an ordinary-actor wrong-stage regression.",
     "Repair the actual E0425 and duplicate-claim merge residue by restoring the original claimed snapshot and reusing the original coordinator snapshot; preserve all backpressure and no-retraining assertions.",
     "Pair the existing typed native trainer and original Generator receipt owner in a bounded Training stage, retaining its single permit through waiter cancellation and rechecking exact Dataset/scope/CURRENT per operation.",
-    "Distinguish native/receipt Missing, Completed, Pending and custody errors; after readback I/O, validate fresh Generator enrollment and request expiry before new fit or first attestation, while retaining the original Completed receipt readback path."
+    "Distinguish native/receipt Missing, Completed, Pending and custody errors; after readback I/O, validate fresh Generator enrollment and request expiry before new fit or first attestation, while retaining the original Completed receipt readback path.",
+    "Fix actual cb test E0659 by importing the existing pretty_assertions macro explicitly; removing that one line reproduces the byte-identical original six-test file.",
+    "Use a lexical block for the watcher test MutexGuard while preserving every original assertion and all production output code; fix actual Prettier findings in three existing files.",
+    "Preserve Matrix initialization stage and original source errors, plus both restore/fallback failures. Public MatrixSdkError API changes are explicit; no deadline, KDF, retry-count or expected test classification is relaxed.",
+    "Align Bazel matrix-sdk-store-encryption 0.19.1 opt-level=3 with the existing Cargo setting; exact annotation scope/schema and historical opt-level=0 are recorded. Standard lock check passes without a lockfile change; old runtime failure cause remains unproven."
   ],
   "checks": [
     {
@@ -124,9 +136,10 @@
       "tests": 3
     },
     {
-      "name": "required scoped native formatter and whitespace check",
+      "name": "preceding integrated source formatter and whitespace check",
       "status": "PASS",
-      "scope": "Executed after integration changes; repository source tree matches the published candidate tree."
+      "scope": "Executed for the then-published cb0598a9099a0d828ce73aedb51e397e600e49d1 tree 59a019b79a6b879bbc27f6a614e1222fe87581ca; not a 30a native or format gate.",
+      "source_sha": "cb0598a9099a0d828ce73aedb51e397e600e49d1"
     },
     {
       "name": "original lossy helper counterexample",
@@ -160,8 +173,8 @@
       "source_scope": "Component workspace based on 0c99; not the final common candidate source head."
     },
     {
-      "name": "current candidate native and whole repository qualification",
-      "status": "PENDING_FRESH_SOURCE_HEAD_CI",
+      "name": "preceding cb candidate native and whole repository observation",
+      "status": "FAILED_NATIVE_COMPILATION_WINDOWS_SCOPED_PASS",
       "source_sha": "cb0598a9099a0d828ce73aedb51e397e600e49d1",
       "previous_head_results_transferred": false,
       "daemon_run_id": 42942991526,
@@ -169,7 +182,15 @@
       "windows_run_id": 42942991263,
       "blocking_run_id": 42942991404,
       "source_tree": "59a019b79a6b879bbc27f6a614e1222fe87581ca",
-      "architecture_run_id": 42942991572
+      "architecture_run_id": 42942991572,
+      "daemon_native_cases": 0,
+      "shared_native_cases": 0,
+      "compiler_error": "E0659 assert_eq ambiguity; 22 diagnostics in each independent compile",
+      "evidence": [
+        "daemon-cb-failure/SUMMARY.json",
+        "shared-cb-failure/RESULTS.json",
+        "windows-cb/SUMMARY.json"
+      ]
     },
     {
       "name": "exact-source Windows prior-candidate failure",
@@ -187,8 +208,8 @@
     {
       "name": "required scoped Clippy fix on changed final component sources",
       "status": "NOT_YET_VERIFIED_ON_FINAL_SOURCE",
-      "scope": "Fresh final-source daemon maintenance is pending. Previous 6ec daemon completed its own three-package maintenance; the separate core/agentd/RMCP local command was interrupted for measured low disk and does not establish completion.",
-      "source_sha": "cb0598a9099a0d828ce73aedb51e397e600e49d1"
+      "scope": "Fresh final-source CI is pending. Prior 6ec daemon maintenance covers its own three packages; the separate core/agentd/RMCP local command was interrupted for measured low disk. The cb daemon stopped at test compilation before maintenance.",
+      "source_sha": "30a697c50e10abd56e61b6b84f28ac9ae9f32f5d"
     },
     {
       "name": "local focused core native output-retention attempt",
@@ -300,11 +321,11 @@
       "required_boundaries": 223,
       "protected_rows": 218,
       "written_native_tests": 6,
-      "native_tests_status": "PENDING_FRESH_SOURCE_CI",
+      "native_tests_status": "CB_COMPILE_FAILED_BEFORE_ANY_TEST; FIXED_IMPORT_REQUIRES_30A_NATIVE_CI",
       "evidence": "engineering/training-stage/REVIEW_AND_SCOPE.json"
     },
     {
-      "name": "full caller scan on current immutable candidate",
+      "name": "full caller scan on preceding immutable cb candidate",
       "status": "PASS_HEPTA_CALLER_CLOSED_SET",
       "source_sha": "cb0598a9099a0d828ce73aedb51e397e600e49d1",
       "source_tree": "59a019b79a6b879bbc27f6a614e1222fe87581ca",
@@ -369,7 +390,7 @@
       "evidence": "engineering/AUTH_REFRESH_READBACK_6ec.json"
     },
     {
-      "name": "current Training-stage source selected Windows qualification",
+      "name": "preceding cb Training-stage source selected Windows qualification",
       "status": "PASS_EXACT_SOURCE_SCOPED",
       "source_sha": "cb0598a9099a0d828ce73aedb51e397e600e49d1",
       "source_tree": "59a019b79a6b879bbc27f6a614e1222fe87581ca",
@@ -393,6 +414,74 @@
       "cargo_fmt_check_four_packages": "PASS",
       "new_training_stage_native_cases_executed": 0,
       "evidence": "windows-cb/SUMMARY.json"
+    },
+    {
+      "name": "reviewed joint CI repairs",
+      "status": "NO_BLOCKER_FOUND_IN_CODE_REVIEW",
+      "source_sha": "30a697c50e10abd56e61b6b84f28ac9ae9f32f5d",
+      "source_tree": "b2a21d98380340b1c091006f4130aafdbeabca50",
+      "files": 9,
+      "public_matrix_error_api_changed": true,
+      "native_qualification": false,
+      "evidence": "engineering/ci-fixes/independent-review/INDEPENDENT_REVIEWS.json"
+    },
+    {
+      "name": "final source scoped formatting and whitespace",
+      "status": "PASS_IDENTICAL_PUBLISHED_TREE",
+      "actual_local_source_sha": "03f4bfea4cc96ef3bb2ec743b7501a45ddf756b8",
+      "published_source_sha": "30a697c50e10abd56e61b6b84f28ac9ae9f32f5d",
+      "tree": "b2a21d98380340b1c091006f4130aafdbeabca50",
+      "commands": [
+        "just fmt --base cb0598a9099a0d828ce73aedb51e397e600e49d1",
+        "pnpm dlx prettier@3.5.3 --check (three changed Markdown/YAML paths)",
+        "git diff --check cb0598a9099a0d828ce73aedb51e397e600e49d1 HEAD"
+      ],
+      "exit_codes": [
+        0,
+        0,
+        0
+      ],
+      "source_clean_after": true,
+      "evidence": "engineering/ci-fixes/VALIDATION.json"
+    },
+    {
+      "name": "standard Bazel lock consistency",
+      "status": "PASS_IDENTICAL_PUBLISHED_TREE",
+      "actual_local_source_sha": "03f4bfea4cc96ef3bb2ec743b7501a45ddf756b8",
+      "published_source_sha": "30a697c50e10abd56e61b6b84f28ac9ae9f32f5d",
+      "tree": "b2a21d98380340b1c091006f4130aafdbeabca50",
+      "command": "just bazel-lock-check",
+      "operation": "bazel mod deps --lockfile_mode=error",
+      "exit_code": 0,
+      "tls_verification_enabled": true,
+      "lock_changed": false,
+      "native_cases_executed": 0,
+      "evidence": "engineering/bazel-lock/RESULTS.json"
+    },
+    {
+      "name": "current candidate native and whole repository qualification",
+      "status": "PENDING_FRESH_SOURCE_HEAD_CI",
+      "source_sha": "30a697c50e10abd56e61b6b84f28ac9ae9f32f5d",
+      "source_tree": "b2a21d98380340b1c091006f4130aafdbeabca50",
+      "previous_head_results_transferred": false,
+      "daemon_run_id": 42951157619,
+      "shared_run_id": 42951157663,
+      "windows_run_id": 42951157630,
+      "blocking_run_id": 42951157880,
+      "architecture_run_id": 42951157615,
+      "research_run_id": 42951157633,
+      "local_update_run_id": 42951157664,
+      "bazel_lock_proposal_run_id": 42951157657,
+      "static_coverage_evidence": "current-30a/STATIC_GATE_COVERAGE.json",
+      "dependency_test_result_scope": "Matrix/RMCP/core targets need actual result readback; owner-library selected tests do not prove dependency test execution. Cached PASS is not fresh case execution."
+    },
+    {
+      "name": "full caller scan on current immutable candidate",
+      "status": "PENDING_ACTUAL_FULL_SCAN",
+      "source_sha": "30a697c50e10abd56e61b6b84f28ac9ae9f32f5d",
+      "source_tree": "b2a21d98380340b1c091006f4130aafdbeabca50",
+      "authority_granted": false,
+      "previous_head_result_transferred": false
     }
   ],
   "remaining_p0": [
@@ -421,7 +510,17 @@
     "full_cost_coverage": false,
     "previous_daemon_measured_command_clocks": "daemon-6ec/CI_EVIDENCE.json; command and nextest timings have different scopes and are not additive.",
     "controlled_maintenance_stop": "p0-maintenance-6ecfa504-attempt1.zip; exact monotonic elapsed and final child CPU/RSS remain null after interruption.",
-    "current_source_full_caller_scan": "caller-cb/EXECUTION.json; wall and child CPU cover only this verifier invocation, not preparation or communication."
+    "preceding_source_full_caller_scan": "caller-cb/EXECUTION.json; wall and child CPU cover only this verifier invocation, not preparation or communication.",
+    "cb_failed_native_compilation": {
+      "daemon_helper_build_wall_seconds": 490.46804687100007,
+      "daemon_test_compile_wall_seconds": 232.28716827400012,
+      "shared_test_compile_wall_seconds": 225.936693408,
+      "runtime_native_cases": 0,
+      "cpu_and_peak_rss": null,
+      "scope": "Distinct commands; no independent task sample count is implied."
+    },
+    "bazel_metadata_check": "engineering/bazel-lock/PASS_ATTEMPT.json; 105.21175995399972 s wall. Detached server CPU and peak RSS are unmeasured; client child values do not cover server.",
+    "final_format_checks": "engineering/ci-fixes/VALIDATION.json; wall and child CPU are separately scoped to each command."
   },
   "research_status": "RESEARCH_STATUS.json",
   "new_frozen_diagnostic": "ctrl-gap/RESULTS.md",
@@ -432,5 +531,11 @@
     "sha256": "fc81c386d45811dee2897292caaad829e4000b7aacf16f7cde8f8f7787fecf1f",
     "scope": "RMCP attempts and the original output-helper counterexample only; no 722516 whole-candidate native pass."
   },
-  "unresolved_dependency_diagnosis": "engineering/remaining-failures-static-20261111-v1.json"
+  "unresolved_dependency_diagnosis": {
+    "prior_static_record": "engineering/remaining-failures-static-20261111-v1.json",
+    "actual_blocking_logs": "blocking-6ec/RESULTS.json",
+    "reviewed_diagnostic_and_profile_changes": "engineering/ci-fixes/REVIEW_AND_SCOPE.json",
+    "old_matrix_reopen_cause_established": false,
+    "auth_refresh_fresh_case_observed": false
+  }
 }

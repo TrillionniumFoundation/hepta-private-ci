@@ -385,6 +385,13 @@ crate.annotation(
     repositories = ["crates"],
 )
 crate.annotation(
+    # Match Cargo's existing setting for the full-strength bounded-startup KDF.
+    crate = "matrix-sdk-store-encryption",
+    repositories = ["crates"],
+    rustc_flags = ["-Copt-level=3"],
+    version = "0.19.1",
+)
+crate.annotation(
     # The build script only validates embedded source/version metadata.
     crate = "rustc_apfloat",
     gen_build_script = "off",

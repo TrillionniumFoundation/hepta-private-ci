@@ -1,0 +1,44 @@
+{
+  "schema": "hepta.p0.bazel-lock-root-readback.v1",
+  "recorded_at_utc": "2026-11-11T03:12:24.693235+00:00",
+  "actual_checked_local_source_sha": "03f4bfea4cc96ef3bb2ec743b7501a45ddf756b8",
+  "actual_checked_tree": "b2a21d98380340b1c091006f4130aafdbeabca50",
+  "published_source_sha_with_identical_tree": "30a697c50e10abd56e61b6b84f28ac9ae9f32f5d",
+  "command": [
+    "just",
+    "bazel-lock-check"
+  ],
+  "underlying_operation": "bazel mod deps --lockfile_mode=error",
+  "status": "PASS",
+  "exit_code": 0,
+  "wall_seconds": 105.21175995399972,
+  "tls_verification_enabled": true,
+  "explicit_system_truststore": "/etc/ssl/certs/java/cacerts",
+  "network_environment_inherited_unchanged": true,
+  "no_destination_policy_override": true,
+  "lock_updated": false,
+  "lock_sha256": "783b3ad329fa53bd4a0e48be6907d38259fa2880d61bd1994b863d7f78bbca57",
+  "source_status_after": "",
+  "earlier_attempts": [
+    {
+      "kind": "RESOURCE_GUARD",
+      "source": "7d5c776dca0245a498896f612a24f5412271bb63",
+      "conclusion": "Interrupted before meaningful metadata evaluation; not a lock result."
+    },
+    {
+      "kind": "JAVA_TRUSTSTORE_PKIX",
+      "source": "03f4bfea4cc96ef3bb2ec743b7501a45ddf756b8",
+      "conclusion": "Explicit JAVA_TOOL_OPTIONS was ignored by Bazel. Fetch failed certificate validation; wrapper lock-drift generic text is not proof of drift."
+    }
+  ],
+  "observed_warnings_retained": [
+    "Direct dependencies resolved to newer versions for platforms, apple_support, rules_cc.",
+    "rules_rs annotation suggestions for zstd-sys, libgit2-sys, libssh2-sys."
+  ],
+  "native_builds_or_testcases_executed": 0,
+  "actual_runtime_matrix_failure_resolved": false,
+  "cost_boundary": "Child resource usage includes git prechecks and command client subprocesses; detached Bazel server cost is not included and remains unmeasured.",
+  "detached_server_cpu_and_peak_rss": null,
+  "all_archive_members_reverified": true,
+  "archive_members": 21
+}

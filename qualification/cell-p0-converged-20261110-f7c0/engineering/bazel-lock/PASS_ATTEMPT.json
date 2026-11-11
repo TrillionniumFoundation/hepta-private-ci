@@ -1,0 +1,153 @@
+{
+  "source": "03f4bfea4cc96ef3bb2ec743b7501a45ddf756b8",
+  "tree": "b2a21d98380340b1c091006f4130aafdbeabca50",
+  "isolated_repository": "/tmp/hepta-p0-lock-03f4-f7c0",
+  "prior_attempt": "/tmp/hepta-p0-lock-03f4-evidence-f7c0/ATTEMPT.json",
+  "started_at": "2026-11-11T03:08:40.418493+00:00",
+  "source_status_before": "",
+  "lock_before": {
+    "blob": "1565448430312c7fb7537a48f97e9cd2da945df3",
+    "sha256": "783b3ad329fa53bd4a0e48be6907d38259fa2880d61bd1994b863d7f78bbca57",
+    "bytes": 1788299
+  },
+  "supported_startup_shim": {
+    "path": "/tmp/hepta-p0-lock-03f4-evidence-f7c0/attempt-2-explicit-jvm-ca/bazel-with-system-ca",
+    "contents": "#!/bin/sh\nexec /tmp/hepta-p0-bazel-lock-f7c0/bin/bazel --host_jvm_args=-Djavax.net.ssl.trustStore=/etc/ssl/certs/java/cacerts --host_jvm_args=-Xmx1024m \"$@\"\n",
+    "sha256": "acfe0f01402abe6f18dbe0b3b933ceb5752aff3acc97bb12e5af02860ecad0f3"
+  },
+  "truststore": {
+    "path": "/etc/ssl/certs/java/cacerts",
+    "sha256": "c91c4817991caa45a70657edb22323adacf0ea4f5ec3dde3400f489a462a6cd3"
+  },
+  "network_environment_inherited_unchanged": {
+    "HTTP_PROXY": {
+      "present": true,
+      "value_sha256": "e222680a65c8496908b87aaebd5bcc80b7e970becc5e653da7f7bda9a07338b1"
+    },
+    "HTTPS_PROXY": {
+      "present": true,
+      "value_sha256": "e222680a65c8496908b87aaebd5bcc80b7e970becc5e653da7f7bda9a07338b1"
+    },
+    "ALL_PROXY": {
+      "present": true,
+      "value_sha256": "cd89eb66a5b31965a23a8885a124a7fddbfe74bcb07174b51824b8ce41d3e51a"
+    },
+    "NO_PROXY": {
+      "present": true,
+      "value_sha256": "d58298f0881c834d04fb9d406406338b6baf43b766c5242ae051f1b5b5b295e0"
+    },
+    "http_proxy": {
+      "present": true,
+      "value_sha256": "e222680a65c8496908b87aaebd5bcc80b7e970becc5e653da7f7bda9a07338b1"
+    },
+    "https_proxy": {
+      "present": true,
+      "value_sha256": "e222680a65c8496908b87aaebd5bcc80b7e970becc5e653da7f7bda9a07338b1"
+    },
+    "all_proxy": {
+      "present": true,
+      "value_sha256": "cd89eb66a5b31965a23a8885a124a7fddbfe74bcb07174b51824b8ce41d3e51a"
+    },
+    "no_proxy": {
+      "present": true,
+      "value_sha256": "d58298f0881c834d04fb9d406406338b6baf43b766c5242ae051f1b5b5b295e0"
+    },
+    "SSL_CERT_FILE": {
+      "present": true,
+      "value_sha256": "28dd638d515beb42559e271b6ed14f64e52e400f4994891ed6f18af1b4c92631"
+    },
+    "SSL_CERT_DIR": {
+      "present": false,
+      "value_sha256": null
+    },
+    "REQUESTS_CA_BUNDLE": {
+      "present": true,
+      "value_sha256": "28dd638d515beb42559e271b6ed14f64e52e400f4994891ed6f18af1b4c92631"
+    },
+    "CURL_CA_BUNDLE": {
+      "present": false,
+      "value_sha256": null
+    }
+  },
+  "policy_boundary": "No network target policy was applied, overridden or bypassed by this attempt. Existing proxy and CA variables are inherited unchanged. TLS verification remains enabled.",
+  "lock_check": {
+    "command": [
+      "just",
+      "bazel-lock-check"
+    ],
+    "wrapper_generated_argv": [
+      "/tmp/hepta-p0-lock-03f4-evidence-f7c0/attempt-2-explicit-jvm-ca/bazel-with-system-ca",
+      "--output_user_root=/tmp/hepta-p0-bazel-lock-f7c0/output-user-root",
+      "mod",
+      "deps",
+      "--lockfile_mode=error",
+      "--repo_contents_cache=/tmp/hepta-p0-bazel-lock-f7c0/repo-contents-cache",
+      "--repository_cache=/tmp/hepta-p0-bazel-lock-f7c0/repository-cache"
+    ],
+    "cwd": "/tmp/hepta-p0-lock-03f4-f7c0",
+    "started_at": "2026-11-11T03:08:40.528067+00:00",
+    "environment_overrides": {
+      "PATH": "/tmp/hepta-p0-bazel-lock-f7c0/bin:/workspace/scratch/f7c0ded86bcc/toolchain/installed/bin:/workspace/scratch/1f3ba4601505/tools/just-1.51.0:/opt/codex/runtimes/codex-primary-runtime/dependencies/bin/override:/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin:/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin:/opt/codex/runtimes/codex-primary-runtime/dependencies/bin:/opt/codex/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/home/agent/.local/bin:/opt/codex/runtimes/codex-primary-runtime/dependencies/bin/fallback",
+      "BAZEL_OUTPUT_USER_ROOT": "/tmp/hepta-p0-bazel-lock-f7c0/output-user-root",
+      "BAZEL_REPOSITORY_CACHE": "/tmp/hepta-p0-bazel-lock-f7c0/repository-cache",
+      "BAZEL_REPO_CONTENTS_CACHE": "/tmp/hepta-p0-bazel-lock-f7c0/repo-contents-cache",
+      "TMPDIR": "/tmp/hepta-p0-bazel-lock-f7c0/tmp",
+      "CODEX_BAZEL_BIN": "/tmp/hepta-p0-lock-03f4-evidence-f7c0/attempt-2-explicit-jvm-ca/bazel-with-system-ca"
+    },
+    "log": "/tmp/hepta-p0-lock-03f4-evidence-f7c0/attempt-2-explicit-jvm-ca/bazel-lock-check.log",
+    "maximum_wall_seconds": 600,
+    "minimum_tmp_free_bytes": 536870912,
+    "space_policy": "Only the writable tmp filesystem is a gate; source Git alternates are read-only on workspace.",
+    "state": "completed",
+    "finished_at": "2026-11-11T03:10:25.739719+00:00",
+    "exit_code": 0,
+    "wall_seconds": 105.21175995399972,
+    "controlled_stop_reason": null,
+    "direct_children_user_seconds": 0.611061,
+    "direct_children_system_seconds": 0.240835,
+    "direct_children_max_rss_kib": 12160,
+    "cost_boundary": "Child resource usage includes git prechecks and command client subprocesses; detached Bazel server cost is not included and remains unmeasured.",
+    "log_bytes": 3755,
+    "log_sha256": "167a55880aa14a4ff4119b665b100c7fb04ad76a365b1521c102c2b3ad705f8e"
+  },
+  "lock_after_check": {
+    "sha256": "783b3ad329fa53bd4a0e48be6907d38259fa2880d61bd1994b863d7f78bbca57",
+    "bytes": 1788299
+  },
+  "source_after_check": "03f4bfea4cc96ef3bb2ec743b7501a45ddf756b8",
+  "status_after_check": "",
+  "space_after_check": {
+    "tmp_free_bytes": 3454734336
+  },
+  "administrative_shutdown": {
+    "command": [
+      "/tmp/hepta-p0-lock-03f4-evidence-f7c0/attempt-2-explicit-jvm-ca/bazel-with-system-ca",
+      "--output_user_root=/tmp/hepta-p0-bazel-lock-f7c0/output-user-root",
+      "shutdown"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 0.02092346599965822,
+    "log": "/tmp/hepta-p0-lock-03f4-evidence-f7c0/attempt-2-explicit-jvm-ca/bazel-shutdown.log"
+  },
+  "finished_at": "2026-11-11T03:11:23.229356+00:00",
+  "final_isolated_head": "03f4bfea4cc96ef3bb2ec743b7501a45ddf756b8",
+  "final_isolated_tree": "b2a21d98380340b1c091006f4130aafdbeabca50",
+  "final_isolated_status": "",
+  "readonly_origin_head_observed": "03f4bfea4cc96ef3bb2ec743b7501a45ddf756b8",
+  "readonly_origin_status": "",
+  "lock_final_sha256": "783b3ad329fa53bd4a0e48be6907d38259fa2880d61bd1994b863d7f78bbca57",
+  "lock_final_blob": "1565448430312c7fb7537a48f97e9cd2da945df3",
+  "readonly_origin_lock_final_sha256": "783b3ad329fa53bd4a0e48be6907d38259fa2880d61bd1994b863d7f78bbca57",
+  "tmp_free_final": 3455045632,
+  "disk_usage": {
+    "command": [
+      "du",
+      "-sk",
+      "/tmp/hepta-p0-bazel-lock-f7c0",
+      "/tmp/hepta-p0-lock-03f4-f7c0",
+      "/tmp/hepta-p0-lock-03f4-evidence-f7c0"
+    ],
+    "output": "1429472\t/tmp/hepta-p0-bazel-lock-f7c0\n247708\t/tmp/hepta-p0-lock-03f4-f7c0\n64\t/tmp/hepta-p0-lock-03f4-evidence-f7c0\n"
+  },
+  "interpretation": "PASS: standard just bazel-lock-check / mod deps --lockfile_mode=error completed with exit0 on exact03f4 source, with explicitly supported Bazel JVM system truststore startup parameters. Source and MODULE lock remain unchanged. No lock regeneration, native build/test, TLS bypass, network policy change or unchanged-config retry was performed. This does not prove Matrix runtime correctness or optimization benefit."
+}
