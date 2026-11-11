@@ -223,16 +223,21 @@ pub(super) async fn open_file(path: PathBuf) -> io::Result<tokio::fs::File> {
         .map_err(|error| io::Error::other(format!("filesystem task failed: {error}")))?
 }
 
+pub(super) fn open_file_for_write(path: &Path) -> io::Result<std::fs::File> {
+    let handle = open_handle(
+        path,
+        FILE_READ_ATTRIBUTES | FILE_WRITE_DATA,
+        FILE_OPEN_IF,
+        FILE_NON_DIRECTORY_FILE,
+    )?;
+    let file = std::fs::File::from(handle);
+    validate_regular_file(&file, path)?;
+    Ok(file)
+}
+
 pub(super) async fn write_file(path: PathBuf, contents: Vec<u8>) -> io::Result<()> {
     tokio::task::spawn_blocking(move || {
-        let handle = open_handle(
-            &path,
-            FILE_READ_ATTRIBUTES | FILE_WRITE_DATA,
-            FILE_OPEN_IF,
-            FILE_NON_DIRECTORY_FILE,
-        )?;
-        let mut file = std::fs::File::from(handle);
-        validate_regular_file(&file, &path)?;
+        let mut file = open_file_for_write(&path)?;
         file.set_len(0)?;
         file.write_all(&contents)
     })

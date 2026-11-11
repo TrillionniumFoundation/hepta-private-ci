@@ -15,6 +15,8 @@ use std::io::Seek;
 use std::io::SeekFrom;
 use std::io::Write;
 use std::io::{self};
+use std::ops::Deref;
+use std::ops::DerefMut;
 
 use crate::CrossFoldPlanReceiptV1;
 use crate::FinalHoldoutJournalReceiptV1;
@@ -85,16 +87,42 @@ impl From<io::Error> for DurableHoldoutError {
 }
 
 pub struct DurableFinalHoldoutJournalV1 {
-    file: File,
+    file: HeldFile,
     journal: FinalHoldoutJournalV1,
     binding: Digest32,
     length: u64,
     poisoned: bool,
 }
+
+// Own the acquisition through constructor failures and normal owner exit.
+// A concurrent spawn can retain the open description after this owner's fd closes.
+struct HeldFile(File);
+
+impl Deref for HeldFile {
+    type Target = File;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+impl DerefMut for HeldFile {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
+}
+
+impl Drop for HeldFile {
+    fn drop(&mut self) {
+        // This releases ownership, not durability. File close remains the fallback.
+        let _ = self.0.unlock();
+    }
+}
+
 impl DurableFinalHoldoutJournalV1 {
     /// Explicit initialization only; never use creation as a recovery fallback.
-    pub fn create(mut file: File, binding: Digest32) -> Result<Self, DurableHoldoutError> {
-        acquire(&file, binding)?;
+    pub fn create(file: File, binding: Digest32) -> Result<Self, DurableHoldoutError> {
+        let mut file = acquire(file, binding)?;
         if file.metadata()?.len() != 0 {
             return Err(DurableHoldoutError::AlreadyInitialized);
         }
@@ -118,11 +146,11 @@ impl DurableFinalHoldoutJournalV1 {
     /// Replay without trimming, recreating or inferring an anchor from this file.
     /// The minimum anchor must survive independently of backups of this store.
     pub fn recover(
-        mut file: File,
+        file: File,
         binding: Digest32,
         minimum: HoldoutAnchorV1,
     ) -> Result<Self, DurableHoldoutError> {
-        acquire(&file, binding)?;
+        let mut file = acquire(file, binding)?;
         if (minimum.sequence == 0) != minimum.head.is_zero()
             || minimum.sequence > MAX_RECORDS as u64
         {
@@ -134,7 +162,7 @@ impl DurableFinalHoldoutJournalV1 {
         }
         file.seek(SeekFrom::Start(0))?;
         let mut bytes = Vec::new();
-        (&mut file).take(MAX_BYTES + 1).read_to_end(&mut bytes)?;
+        (&mut *file).take(MAX_BYTES + 1).read_to_end(&mut bytes)?;
         if bytes.len() as u64 != length {
             return Err(DurableHoldoutError::Corrupt);
         }
@@ -321,7 +349,7 @@ impl DurableFinalHoldoutJournalV1 {
     }
 }
 
-fn acquire(file: &File, binding: Digest32) -> Result<(), DurableHoldoutError> {
+fn acquire(file: File, binding: Digest32) -> Result<HeldFile, DurableHoldoutError> {
     if binding.is_zero() {
         return Err(DurableHoldoutError::Binding);
     }
@@ -331,7 +359,8 @@ fn acquire(file: &File, binding: Digest32) -> Result<(), DurableHoldoutError> {
     file.try_lock().map_err(|error| match error {
         TryLockError::WouldBlock => DurableHoldoutError::Busy,
         TryLockError::Error(error) => DurableHoldoutError::Io(error.kind()),
-    })
+    })?;
+    Ok(HeldFile(file))
 }
 
 #[cfg(test)]

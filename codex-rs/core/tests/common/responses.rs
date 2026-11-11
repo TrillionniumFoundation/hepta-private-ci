@@ -35,6 +35,10 @@ use wiremock::http::HeaderValue;
 use wiremock::matchers::method;
 use wiremock::matchers::path_regex;
 
+#[cfg(test)]
+#[path = "responses_matcher_tests.rs"]
+mod matcher_tests;
+
 #[derive(Debug, Clone)]
 pub struct ResponseMock {
     requests: Arc<Mutex<Vec<ResponsesRequest>>>,
@@ -1066,8 +1070,12 @@ pub async fn mount_response_once_match<M>(
 where
     M: wiremock::Match + Send + Sync + 'static,
 {
-    let (mock, response_mock) = base_mock();
-    mock.and(matcher)
+    let response_mock = ResponseMock::new();
+    Mock::given(method("POST"))
+        .and(path_regex(".*/responses$"))
+        .and(matcher)
+        // Record only requests accepted by every semantic matcher.
+        .and(response_mock.clone())
         .respond_with(response)
         .up_to_n_times(1)
         .mount(server)
@@ -1103,13 +1111,7 @@ pub async fn mount_sse_once_match<M>(server: &MockServer, matcher: M, body: Stri
 where
     M: wiremock::Match + Send + Sync + 'static,
 {
-    let (mock, response_mock) = base_mock();
-    mock.and(matcher)
-        .respond_with(sse_response(body))
-        .up_to_n_times(1)
-        .mount(server)
-        .await;
-    response_mock
+    mount_response_once_match(server, matcher, sse_response(body)).await
 }
 
 pub async fn mount_sse_once(server: &MockServer, body: String) -> ResponseMock {

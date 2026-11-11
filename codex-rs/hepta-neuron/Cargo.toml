@@ -10,6 +10,10 @@ name = "codex_hepta_neuron"
 path = "src/lib.rs"
 doctest = false
 
+[features]
+default = []
+qualification-owned-file-read = ["codex-hepta-infer-core/qualification-owned-file-read"]
+
 [lints]
 workspace = true
 

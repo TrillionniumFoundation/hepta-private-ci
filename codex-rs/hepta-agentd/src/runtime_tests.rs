@@ -609,7 +609,19 @@ async fn qualification_prepare_takes_over_expired_registry_head_without_evidence
 #[tokio::test]
 async fn qualification_prepare_quarantines_expired_registry_attempt_with_h7_evidence() {
     let fixture = runtime_fixture();
-    attach_runtime_prerequisites(&fixture).await;
+    let (store, clock) =
+        CognitiveStore::open_new_with_qualification_lease_clock(&fixture.identity.layout)
+            .await
+            .expect("fresh qualification store");
+    let store = Arc::new(store);
+    fixture
+        .state
+        .attach_cognitive_store(Arc::clone(&store))
+        .expect("owner attachment");
+    fixture
+        .state
+        .mark_runtime_prerequisites_ready()
+        .expect("owner prerequisites");
     fixture
         .registry
         .compare_and_transition(
@@ -624,11 +636,6 @@ async fn qualification_prepare_quarantines_expired_registry_attempt_with_h7_evid
         .mark_app_server_ready()
         .expect("mark App Server ready");
 
-    let store = Arc::new(
-        CognitiveStore::open(&fixture.identity.layout)
-            .await
-            .expect("open cognitive store"),
-    );
     let fleet_generation = fixture
         .state
         .qualification_turn_authority()
@@ -642,17 +649,18 @@ async fn qualification_prepare_quarantines_expired_registry_attempt_with_h7_evid
     )
     .expect("logical request");
     let fixture_started = std::time::Instant::now();
-    let minted_at = SystemTime::now().duration_since(UNIX_EPOCH).expect("clock");
+    let minted_at = Duration::from_secs(clock.now_unix_seconds().expect("clock"));
     let expires_at = minted_at.as_secs() + 1;
     let expiry_stage = |stage: &str| {
         let observed_at = SystemTime::now()
             .duration_since(UNIX_EPOCH)
             .map(|duration| duration.as_millis());
         format!(
-            "expired-registry fixture stage={stage}, minted_at_unix_ms={}, expires_at_unix_seconds={expires_at}, remaining_ms_at_mint={}, elapsed_ms={}, observed_at_unix_ms={observed_at:?}",
+            "expired-registry fixture stage={stage}, qualification_minted_at_unix_ms={}, expires_at_unix_seconds={expires_at}, remaining_ms_at_mint={}, elapsed_ms={}, observed_wall_unix_ms={observed_at:?}, observed_lease_clock_seconds={:?}",
             minted_at.as_millis(),
             (u128::from(expires_at) * 1_000).saturating_sub(minted_at.as_millis()),
             fixture_started.elapsed().as_millis(),
+            clock.now_unix_seconds(),
         )
     };
     let old = LogicalTurnAttemptRequest::new(
@@ -769,6 +777,10 @@ async fn qualification_prepare_quarantines_expired_registry_attempt_with_h7_evid
     drop(executor);
     drop(lease);
     tokio::time::sleep(Duration::from_secs(2)).await;
+    // Both H7 writes completed while live; now cross the original +1 deadline.
+    clock
+        .advance_to(expires_at)
+        .expect("advance to lease expiry");
 
     let result = prepare_qualification_turn_writer_input(
         Arc::clone(&fixture.state),

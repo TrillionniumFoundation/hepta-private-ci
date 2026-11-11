@@ -340,6 +340,16 @@ pub trait AnchorWitnessStore {
         expected: Option<JournalAnchor>,
         next: JournalAnchor,
     ) -> Result<(), WitnessStoreError>;
+
+    /// Qualification-only original-file observation. Backends without a file
+    /// must refuse; cached state is not a substitute for physical bytes.
+    #[cfg(any(test, feature = "qualification-owned-file-read"))]
+    fn qualification_file_bytes(
+        &mut self,
+        _max_bytes: usize,
+    ) -> Result<Vec<u8>, WitnessStoreError> {
+        Err(WitnessStoreError::Unavailable)
+    }
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]

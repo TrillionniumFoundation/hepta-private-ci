@@ -13,6 +13,7 @@ use crate::ExecutorFileSystem;
 use crate::GetMetadataOptions;
 use crate::ReadFileOptions;
 use crate::RemoveOptions;
+#[cfg(not(windows))]
 use crate::WriteFileOptions;
 use crate::local_file_system::DirectFileSystem;
 use crate::protocol::CAPABILITY_ROOTS_DISCOVER_METHOD;
@@ -273,6 +274,21 @@ pub(crate) async fn run_direct_request(
                     "{FS_WRITE_FILE_METHOD} requires valid base64 dataBase64: {err}"
                 ))
             })?;
+            // Typed restricted writes reach this helper after the parent has selected
+            // and required its platform sandbox. Unrestricted writes use DirectFileSystem.
+            #[cfg(windows)]
+            crate::windows_restricted_write::write_file(
+                params
+                    .path
+                    .to_abs_path()
+                    .map_err(map_fs_error)?
+                    .to_path_buf(),
+                bytes,
+                params.follow_symlinks.unwrap_or(true),
+            )
+            .await
+            .map_err(map_fs_error)?;
+            #[cfg(not(windows))]
             file_system
                 .write_file(
                     &params.path,

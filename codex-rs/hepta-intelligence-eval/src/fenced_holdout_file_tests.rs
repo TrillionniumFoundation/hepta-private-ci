@@ -21,6 +21,79 @@ use crate::freeze_cross_fold_plan;
 
 static NEXT: AtomicU64 = AtomicU64::new(0);
 
+#[cfg(feature = "qualification-owned-file-read")]
+#[test]
+fn physical_observation_keeps_the_cursor_and_excludes_contenders() {
+    let temp = TempFile::new();
+    let mut store = LockedFileFinalHoldoutCasStoreV1::create(temp.create(), digest("binding"))
+        .unwrap_or_else(|error| panic!("create store: {error}"));
+    let position = store.file.stream_position().expect("owner position");
+    let original = store
+        .qualification_file_bytes(/*max_bytes*/ 1024 * 1024)
+        .expect("physical owner bytes");
+    assert_eq!(
+        store.file.stream_position().expect("restored position"),
+        position
+    );
+    assert_eq!(
+        LockedFileFinalHoldoutCasStoreV1::recover(
+            temp.open(),
+            digest("binding"),
+            /*minimum*/ None,
+        )
+        .err(),
+        Some(LockedFileCasErrorV1::Busy)
+    );
+    let mut changed = original.clone();
+    changed[0] ^= 1;
+    store
+        .file
+        .rewind()
+        .expect("seek for physical negative control");
+    store
+        .file
+        .write_all(&changed)
+        .expect("same-length physical negative control");
+    store
+        .file
+        .seek(SeekFrom::Start(position))
+        .expect("restore test position");
+    assert_eq!(
+        store
+            .qualification_file_bytes(/*max_bytes*/ 1024 * 1024)
+            .expect("observe changed physical bytes"),
+        changed
+    );
+    assert_eq!(
+        store.file.stream_position().expect("restored position"),
+        position
+    );
+    assert!(store.state.is_none());
+}
+
+#[cfg(feature = "qualification-owned-file-read")]
+#[test]
+fn rejected_observation_preserves_the_cursor_and_never_unpoisons() {
+    let temp = TempFile::new();
+    let mut store = LockedFileFinalHoldoutCasStoreV1::create(temp.create(), digest("binding"))
+        .unwrap_or_else(|error| panic!("create store: {error}"));
+    let position = store.file.stream_position().expect("owner position");
+    assert_eq!(
+        store.qualification_file_bytes(/*max_bytes*/ HEADER - 1),
+        Err(LockedFileCasErrorV1::Capacity)
+    );
+    assert_eq!(
+        store.file.stream_position().expect("restored position"),
+        position
+    );
+    assert!(store.poisoned);
+    let bytes = store
+        .qualification_file_bytes(/*max_bytes*/ 1024 * 1024)
+        .expect("physical bytes remain observable for diagnosis");
+    assert_eq!(bytes.len(), HEADER);
+    assert!(store.poisoned);
+}
+
 fn id(value: &str) -> StableId {
     match StableId::new(value) {
         Ok(value) => value,

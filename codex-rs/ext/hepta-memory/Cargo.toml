@@ -28,6 +28,7 @@ sha2 = { workspace = true }
 tokio = { workspace = true, features = ["time"] }
 
 [dev-dependencies]
+codex-hepta-memory = { workspace = true, features = ["qualification-lease-clock"] }
 chrono = { workspace = true }
 codex-hepta-paths = { workspace = true }
 codex-utils-absolute-path = { workspace = true }

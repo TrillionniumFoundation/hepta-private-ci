@@ -483,6 +483,7 @@ def _verify_boundary(
     boundary: Boundary,
     source_index: dict[str, str],
     ignored_fragments: tuple[str, ...],
+    field_indexes: dict[str, typed_callers.AuthorityFields] | None = None,
 ) -> dict[str, Any]:
     definition = root / boundary.definition_path
     if not definition.is_file():
@@ -499,11 +500,16 @@ def _verify_boundary(
     else:
         call_pattern = re.compile(boundary.call_pattern)
     try:
-        fields = (
-            authority_fields(source_index, boundary.receiver_type)
-            if boundary.receiver_type
-            else {}
-        )
+        if boundary.receiver_type is None:
+            fields = {}
+        elif field_indexes is None:
+            fields = authority_fields(source_index, boundary.receiver_type)
+        else:
+            if boundary.receiver_type not in field_indexes:
+                field_indexes[boundary.receiver_type] = authority_fields(
+                    source_index, boundary.receiver_type
+                )
+            fields = field_indexes[boundary.receiver_type]
     except UnresolvedTypedReceiver as error:
         raise VerificationFailure(f"{boundary.identifier}: {error}") from error
     observed: set[str] = set()
@@ -688,8 +694,10 @@ def verify(root: Path = ROOT, manifest_path: Path | None = None) -> dict[str, An
         source_index[source_path.relative_to(root).as_posix()] = _strip_cfg_test_items(
             code
         )
+    # This index belongs only to this invocation's fully read source snapshot.
+    field_indexes: dict[str, typed_callers.AuthorityFields] = {}
     results = [
-        _verify_boundary(root, boundary, source_index, ignored)
+        _verify_boundary(root, boundary, source_index, ignored, field_indexes)
         for boundary in boundaries
     ]
     protected = _verify_protected_files(root, data)

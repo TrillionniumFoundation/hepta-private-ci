@@ -4,6 +4,9 @@ use super::legacy_process_test_guard;
 use super::sandbox_cwd;
 use super::spawn_windows_sandbox_session_legacy;
 use super::workspace_roots_for;
+use crate::legacy_admission_tests::EntrySnapshot;
+use crate::legacy_admission_tests::assert_unavailable;
+use crate::legacy_admission_tests::snapshot;
 use crate::run_windows_sandbox_capture_with_filesystem_overrides;
 use crate::token::LocalSid;
 use crate::winutil::to_wide;
@@ -191,11 +194,12 @@ impl Drop for DaclRestore {
 struct AclSetupFailureFixture {
     // Restore the ACL before TempDir tries to remove the fixture.
     _acl_restore: DaclRestore,
-    _test_root: TempDir,
+    test_root: TempDir,
     workspace: PathBuf,
     codex_home: PathBuf,
     protected_file: AbsolutePathBuf,
     marker: PathBuf,
+    before: Vec<EntrySnapshot>,
 }
 
 impl AclSetupFailureFixture {
@@ -311,10 +315,12 @@ impl AclSetupFailureFixture {
             "fixture must deny a fresh WRITE_DAC handle",
         );
 
+        let before = snapshot(test_root.path()).expect("snapshot unwritable DACL fixture");
         Self {
+            before,
             _acl_restore: acl_restore,
             marker: workspace.join("process-started.txt"),
-            _test_root: test_root,
+            test_root,
             workspace,
             codex_home,
             protected_file: AbsolutePathBuf::from_absolute_path(protected_path)
@@ -343,31 +349,27 @@ impl AclSetupFailureFixture {
     }
 
     fn assert_rejected(&self, error: anyhow::Error) {
+        assert_unavailable::<()>(Err(error));
+        // The real WRITE_DAC denial was checked while preparing this fixture.
+        // Admission must now reject before reaching that setter or spawning.
         assert_eq!(
             (
-                error.to_string(),
-                // ACL repair retains one WRITE_DAC handle. This fixture must
-                // fail at that open, before any native setter or child spawn.
-                error
-                    .root_cause()
-                    .downcast_ref::<std::io::Error>()
-                    .and_then(std::io::Error::raw_os_error),
                 self.marker.try_exists().expect("inspect process marker"),
+                self.codex_home
+                    .try_exists()
+                    .expect("inspect uncreated sandbox home"),
             ),
-            (
-                format!(
-                    "apply legacy deny-write ACL to {}",
-                    self.protected_file.display()
-                ),
-                Some(ERROR_ACCESS_DENIED as i32),
-                false,
-            ),
+            (false, false),
+        );
+        assert_eq!(
+            snapshot(self.test_root.path()).expect("read back unwritable DACL fixture"),
+            self.before,
         );
     }
 }
 
 #[test]
-fn legacy_session_rejects_deny_acl_setup_failure_before_spawn() {
+fn legacy_session_refuses_before_unwritable_dacl_setup() {
     let _guard = legacy_process_test_guard();
     // Keep privilege removal local to this thread, including the native setup
     // calls in the current-thread runtime. The process token remains unchanged.
@@ -402,7 +404,7 @@ fn legacy_session_rejects_deny_acl_setup_failure_before_spawn() {
 }
 
 #[test]
-fn legacy_capture_rejects_deny_acl_setup_failure_before_spawn() {
+fn legacy_capture_refuses_before_unwritable_dacl_setup() {
     let _guard = legacy_process_test_guard();
     let _caller = PrivilegeRestrictedCaller::enter();
     let fixture = AclSetupFailureFixture::new();

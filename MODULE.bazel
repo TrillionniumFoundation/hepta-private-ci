@@ -462,6 +462,18 @@ crate.annotation(
 
 inject_repo(crate, "openssl")
 
+# Keep the full-strength Matrix passphrase KDF within bounded startup.
+# Match Cargo's optimized store cipher and SHA-256 compression backend.
+crate.annotation(
+    crate = "matrix-sdk-store-encryption",
+    rustc_flags = ["-Copt-level=3"],
+    version = "0.19.1",
+)
+crate.annotation(
+    crate = "sha2",
+    rustc_flags = ["-Copt-level=3"],
+    version = "0.11.1",
+)
 crate.annotation(
     crate = "runfiles",
     workspace_cargo_toml = "rust/runfiles/Cargo.toml",

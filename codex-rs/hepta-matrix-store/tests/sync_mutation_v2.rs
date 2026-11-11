@@ -1375,7 +1375,9 @@ async fn tombstone_refuses_to_orphan_an_active_dispatch() -> TestResult {
     let temp = TempDir::new()?;
     let agent_id = agent()?;
     let room_id = room("!active-dispatch:example.test")?;
-    let store = store_and_room(&temp, &room_id).await?;
+    let store = store_and_room(&temp, &room_id)
+        .await
+        .map_err(|error| format!("active_dispatch_tombstone:open_and_bind_room: {error}"))?;
     store
         .bind_room_thread(&RoomThreadBindingDraft {
             room_id: room_id.clone(),
@@ -1385,7 +1387,8 @@ async fn tombstone_refuses_to_orphan_an_active_dispatch() -> TestResult {
             thread_id: Some("thread-active".to_string()),
             changed_at_ms: 2,
         })
-        .await?;
+        .await
+        .map_err(|error| format!("active_dispatch_tombstone:bind_room_thread: {error}"))?;
     let target = event("$active-target")?;
     let timeline = mutation(
         target.clone(),
@@ -1403,10 +1406,12 @@ async fn tombstone_refuses_to_orphan_an_active_dispatch() -> TestResult {
             /*observed_at_ms*/ 11,
             vec![timeline],
         ))
-        .await?;
+        .await
+        .map_err(|error| format!("active_dispatch_tombstone:timeline_commit: {error}"))?;
     store
         .begin_inbox_dispatch(&target, /*begun_at_ms*/ 12)
-        .await?;
+        .await
+        .map_err(|error| format!("active_dispatch_tombstone:begin_dispatch: {error}"))?;
     let redaction_source = event("$active-redaction")?;
     let redaction = mutation(
         redaction_source.clone(),
@@ -1428,13 +1433,19 @@ async fn tombstone_refuses_to_orphan_an_active_dispatch() -> TestResult {
         Err(MatrixDurableError::Conflict)
     );
     assert_eq!(
-        store.inbox(&target).await?.ok_or("inbox")?.state,
+        store
+            .inbox(&target)
+            .await
+            .map_err(|error| format!("active_dispatch_tombstone:read_inbox: {error}"))?
+            .ok_or("inbox")?
+            .state,
         InboxState::Pending
     );
     assert_eq!(
         store
             .sync_checkpoint(/*binding_revision*/ 1, /*generation*/ 1)
-            .await?
+            .await
+            .map_err(|error| format!("active_dispatch_tombstone:read_checkpoint: {error}"))?
             .ok_or("checkpoint")?
             .next_batch,
         "s1"
@@ -1446,7 +1457,8 @@ async fn tombstone_refuses_to_orphan_an_active_dispatch() -> TestResult {
             b"failed decision left no ledger",
             /*at_ms*/ 15,
         )?)
-        .await?;
+        .await
+        .map_err(|error| format!("active_dispatch_tombstone:post_conflict_ingest: {error}"))?;
     Ok(())
 }
 

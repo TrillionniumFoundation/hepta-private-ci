@@ -95,6 +95,28 @@ class TypedAuthorityCallTests(unittest.TestCase):
             )
         )
 
+    def test_malformed_matching_owner_still_refuses(self):
+        parent = "struct Holder { authority: Gate }"
+        child = "impl Holder { fn f(&self) { self.authority.enter();"
+        with self.assertRaisesRegex(
+            UnresolvedTypedReceiver, "unbalanced Rust authority context"
+        ):
+            self.match(child, {"parent": parent, "child": child})
+
+    def test_absent_method_does_not_parse_unbalanced_owner(self):
+        parent = "struct Holder { authority: Gate }"
+        child = "impl Holder { fn f(&self) { self.authority.other();"
+        self.assertFalse(self.match(child, {"parent": parent, "child": child}))
+
+    def test_qualified_use_does_not_hide_an_opaque_receiver(self):
+        with self.assertRaisesRegex(
+            UnresolvedTypedReceiver, "unresolved possible Gate::enter receiver"
+        ):
+            self.match(
+                "fn f(known: &Gate) { Gate::enter(known); "
+                "let opaque = opaque_factory(known); opaque.enter(); }"
+            )
+
 
 if __name__ == "__main__":
     unittest.main()

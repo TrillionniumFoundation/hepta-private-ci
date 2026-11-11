@@ -888,7 +888,10 @@ fn store_error(error: CognitiveStoreError) -> FunctionCallError {
 
 fn mutation_error(error: ProductionCognitiveMutationError) -> FunctionCallError {
     match error {
-        ProductionCognitiveMutationError::Store(error) => store_error(error),
+        ProductionCognitiveMutationError::Store(error)
+        | ProductionCognitiveMutationError::TransactionSettlementUnknown {
+            source: error, ..
+        } => store_error(error),
         ProductionCognitiveMutationError::Authority(_) => typed_error(
             "hepta_cognitive_write_authority_rejected",
             "production cognitive mutation authority was rejected",

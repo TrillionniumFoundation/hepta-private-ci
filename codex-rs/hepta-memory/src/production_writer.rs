@@ -57,6 +57,9 @@ use crate::local_lease_outbox::legacy_dispatch_operation_digest;
 use crate::operation_claims;
 use crate::operation_claims::DurableDispatchClaim;
 
+#[path = "production_episodic.rs"]
+mod episodic;
+
 #[path = "production_retained_operation.rs"]
 mod retained_operation;
 pub use retained_operation::ProductionRetainedOperation;
@@ -375,6 +378,14 @@ pub enum ProductionCognitiveMutationError {
     Authority(#[from] ProductionWriterError),
     #[error(transparent)]
     Store(#[from] CognitiveStoreError),
+    /// The episodic owner could not confirm begin/commit/rollback settlement.
+    /// Callers must retain an unresolved fence until original owner recovery.
+    #[error("cognitive transaction {operation} did not confirm settlement: {source}")]
+    TransactionSettlementUnknown {
+        operation: &'static str,
+        #[source]
+        source: CognitiveStoreError,
+    },
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
@@ -483,6 +494,8 @@ pub struct ProductionDurableWriter {
     lease: LocalLeaseOutbox,
     lease_id: Arc<str>,
     live_verifier: Option<Arc<dyn ProductionAuthorityVerifier>>,
+    // One admission slot, shared by every capability/clone of this writer.
+    episodic_imports: Arc<tokio::sync::Semaphore>,
     // Retain the OS-level lock for the lifetime of the writer.  SQLite's
     // transaction lock serializes individual mutations, but it does not
     // establish the H4 single-writer boundary: two processes could otherwise
@@ -703,6 +716,7 @@ impl ProductionDurableWriter {
             lease,
             lease_id: Arc::from(lease_id),
             live_verifier: None,
+            episodic_imports: Arc::new(tokio::sync::Semaphore::new(/*permits*/ 1)),
             _writer_lock: writer_lock,
         })
     }

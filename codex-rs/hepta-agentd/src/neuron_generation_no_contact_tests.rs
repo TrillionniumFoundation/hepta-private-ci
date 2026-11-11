@@ -1,7 +1,6 @@
 //! Real Fleet, service, file journal and inference-control ownership. The worker
 //! deliberately returns an unknown result; no model execution is qualified.
 
-use std::fs;
 use std::sync::Arc;
 use std::sync::atomic::AtomicBool;
 use std::sync::atomic::AtomicUsize;
@@ -28,6 +27,7 @@ use crate::neuron_generation_service::spawn_neuron_generation_service;
 
 const CONTROL_FILE: &str = "no-contact-control.log";
 type Clock = Arc<dyn Fn() -> u64 + Send + Sync>;
+type ControlBytes = Box<dyn Fn() -> Result<Vec<u8>, CellGenerationErrorV2> + Send + Sync>;
 
 #[derive(Default)]
 struct UnknownWorker {
@@ -136,7 +136,7 @@ async fn start(
     clock: Clock,
     worker: Arc<UnknownWorker>,
     contacts: Arc<AtomicUsize>,
-) -> (NeuronGenerationRuntimeHandleV2, RuntimeTasks) {
+) -> (NeuronGenerationRuntimeHandleV2, RuntimeTasks, ControlBytes) {
     let port = checked(ControlledCellGenerationPortV2::spawn(
         open_control(fixture).await,
         ControlledCellGenerationConfigV2 {
@@ -149,6 +149,7 @@ async fn start(
         worker,
         Arc::clone(&clock),
     ));
+    let control_bytes = checked(port.qualification_file_reader(/*max_bytes*/ 1024 * 1024));
     let (handle, bootstrap) = checked(neuron_generation_channel_v2(
         &fixture.identity,
         fixture.journal(),
@@ -166,7 +167,7 @@ async fn start(
         Arc::clone(fixture.state()),
         lifetime,
     ));
-    (handle, tasks)
+    (handle, tasks, Box::new(control_bytes))
 }
 
 fn original(fixture: &Fixture, clock: &Clock) -> CellGenerationRequestV2 {
@@ -176,9 +177,16 @@ fn original(fixture: &Fixture, clock: &Clock) -> CellGenerationRequestV2 {
     original
 }
 
-fn durable_bytes(fixture: &Fixture) -> [Vec<u8>; 3] {
-    ["generation-journal", "generation-witness", CONTROL_FILE]
-        .map(|name| checked(fs::read(fixture.directory.path().join(name))))
+async fn durable_bytes(
+    handle: &NeuronGenerationRuntimeHandleV2,
+    control_bytes: &ControlBytes,
+) -> [Vec<u8>; 3] {
+    let [journal, witness] = checked(
+        handle
+            .qualification_file_bytes(/*max_bytes*/ 1024 * 1024)
+            .await,
+    );
+    [journal, witness, checked(control_bytes())]
 }
 
 #[tokio::test]
@@ -188,14 +196,14 @@ async fn fleet_drain_after_admission_settles_without_contact_and_cold_replays_ex
     let changing_clock = boundary_clock(&fixture, Arc::clone(&clock), PrecontactBoundary::Drain);
     let worker = Arc::new(UnknownWorker::default());
     let contacts = Arc::new(AtomicUsize::new(0));
-    let (handle, mut tasks) = start(
+    let (handle, mut tasks, control_bytes) = start(
         &fixture,
         changing_clock,
         Arc::clone(&worker),
         Arc::clone(&contacts),
     )
     .await;
-    let control_before = checked(fs::read(fixture.directory.path().join(CONTROL_FILE)));
+    let control_before = checked(control_bytes());
     let original = original(&fixture, &clock);
     let receipt = checked(handle.step(original.clone()).await);
     assert_eq!(receipt.disposition, CellGenerationDispositionV2::Rejected);
@@ -225,9 +233,9 @@ async fn fleet_drain_after_admission_settles_without_contact_and_cold_replays_ex
     let mut expected = fixture.config.initial.clone();
     expected.revision = 1;
     assert_eq!(checked(handle.snapshot().await), expected);
-    let bytes = durable_bytes(&fixture);
+    let bytes = durable_bytes(&handle, &control_bytes).await;
     assert_eq!(checked(handle.step(original.clone()).await), receipt);
-    assert_eq!(durable_bytes(&fixture), bytes);
+    assert_eq!(durable_bytes(&handle, &control_bytes).await, bytes);
     assert!(checked(handle.drain().await));
     assert_eq!(
         checked(fixture.state().neuron_generation_drain_blockers()),
@@ -240,12 +248,12 @@ async fn fleet_drain_after_admission_settles_without_contact_and_cold_replays_ex
         )
         .await,
     ));
-    let drained_bytes = durable_bytes(&fixture);
+    let drained_bytes = durable_bytes(&handle, &control_bytes).await;
     tasks.shutdown().await;
     drop(handle);
 
     fixture.reopen_state().await;
-    let (handle, mut tasks) = start(
+    let (handle, mut tasks, control_bytes) = start(
         &fixture,
         Arc::clone(&clock),
         Arc::clone(&worker),
@@ -256,11 +264,8 @@ async fn fleet_drain_after_admission_settles_without_contact_and_cold_replays_ex
     assert_eq!(checked(handle.task_cost().await), receipt.cost);
     assert_eq!(checked(handle.snapshot().await), expected);
     assert!(checked(handle.drain().await));
-    assert_eq!(durable_bytes(&fixture), drained_bytes);
-    assert_eq!(
-        checked(fs::read(fixture.directory.path().join(CONTROL_FILE))),
-        control_before
-    );
+    assert_eq!(durable_bytes(&handle, &control_bytes).await, drained_bytes);
+    assert_eq!(checked(control_bytes()), control_before);
     assert_eq!(contacts.load(Ordering::SeqCst), 0);
     assert_eq!(worker.calls.load(Ordering::SeqCst), 0);
     tasks.shutdown().await;
@@ -273,7 +278,7 @@ async fn fenced_live_stack_and_cold_missing_control_record_remain_pending() {
     let changing_clock = boundary_clock(&fixture, Arc::clone(&clock), PrecontactBoundary::Fence);
     let worker = Arc::new(UnknownWorker::default());
     let contacts = Arc::new(AtomicUsize::new(0));
-    let (handle, mut tasks) = start(
+    let (handle, mut tasks, _) = start(
         &fixture,
         changing_clock,
         Arc::clone(&worker),
@@ -299,14 +304,14 @@ async fn fenced_live_stack_and_cold_missing_control_record_remain_pending() {
     }
 
     fixture.reopen_state().await;
-    let (handle, mut tasks) = start(
+    let (handle, mut tasks, control_bytes) = start(
         &fixture,
         Arc::clone(&clock),
         Arc::clone(&worker),
         Arc::clone(&contacts),
     )
     .await;
-    let bytes = durable_bytes(&fixture);
+    let bytes = durable_bytes(&handle, &control_bytes).await;
     assert_eq!(
         handle.reconcile(checked(original.digest())).await,
         Err(CellGenerationErrorV2::Pending)
@@ -315,7 +320,7 @@ async fn fenced_live_stack_and_cold_missing_control_record_remain_pending() {
         handle.step(original.clone()).await,
         Err(CellGenerationErrorV2::Pending)
     );
-    assert_eq!(durable_bytes(&fixture), bytes);
+    assert_eq!(durable_bytes(&handle, &control_bytes).await, bytes);
     assert_eq!(
         handle.cancel(checked(original.digest())).await,
         Err(CellGenerationErrorV2::Conflict)
@@ -336,7 +341,7 @@ async fn contacted_unknown_worker_remains_unresolved_through_drain_and_reopen() 
     let clock = clock();
     let worker = Arc::new(UnknownWorker::default());
     let contacts = Arc::new(AtomicUsize::new(0));
-    let (handle, mut tasks) = start(
+    let (handle, mut tasks, _) = start(
         &fixture,
         Arc::clone(&clock),
         Arc::clone(&worker),
@@ -378,9 +383,9 @@ async fn contacted_unknown_worker_remains_unresolved_through_drain_and_reopen() 
     }
 
     fixture.reopen_state().await;
-    let (handle, mut tasks) =
+    let (handle, mut tasks, control_bytes) =
         start(&fixture, clock, Arc::clone(&worker), Arc::clone(&contacts)).await;
-    let bytes = durable_bytes(&fixture);
+    let bytes = durable_bytes(&handle, &control_bytes).await;
     assert_eq!(
         handle.reconcile(digest).await,
         Err(CellGenerationErrorV2::Pending)
@@ -391,7 +396,7 @@ async fn contacted_unknown_worker_remains_unresolved_through_drain_and_reopen() 
     );
     assert_eq!(checked(handle.pending_request().await), Some(original));
     assert!(!checked(handle.drain().await));
-    assert_eq!(durable_bytes(&fixture), bytes);
+    assert_eq!(durable_bytes(&handle, &control_bytes).await, bytes);
     assert_eq!(contacts.load(Ordering::SeqCst), 1);
     assert_eq!(worker.calls.load(Ordering::SeqCst), 1);
     assert!(checked(handle.pending_output().await).is_none());

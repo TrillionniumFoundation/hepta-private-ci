@@ -170,6 +170,41 @@ fn consumption_survives_a_distinct_process() {
     assert!(String::from_utf8_lossy(&output.stdout).contains("1 passed"));
 }
 
+#[cfg(any(target_os = "linux", target_vendor = "apple"))]
+#[test]
+fn owner_drop_and_failed_recovery_release_retained_lock() {
+    let directory = Directory::new();
+    let store = directory.create();
+    let anchor = store.anchor();
+    // Model a descriptor retained during spawn, never a second journal owner.
+    let retained = store.file.try_clone().unwrap();
+    assert!(matches!(
+        DurableFinalHoldoutJournalV1::recover(directory.file(), digest("binding"), anchor),
+        Err(DurableHoldoutError::Busy)
+    ));
+    drop(store);
+    let reopened =
+        DurableFinalHoldoutJournalV1::recover(directory.file(), digest("binding"), anchor).unwrap();
+    assert_eq!(reopened.anchor(), anchor);
+    drop(retained);
+    assert!(matches!(
+        DurableFinalHoldoutJournalV1::recover(directory.file(), digest("binding"), anchor),
+        Err(DurableHoldoutError::Busy)
+    ));
+    drop(reopened);
+
+    let file = directory.file();
+    let retained = file.try_clone().unwrap();
+    assert!(matches!(
+        DurableFinalHoldoutJournalV1::recover(file, digest("wrong-binding"), anchor),
+        Err(DurableHoldoutError::Corrupt)
+    ));
+    let recovered =
+        DurableFinalHoldoutJournalV1::recover(directory.file(), digest("binding"), anchor).unwrap();
+    assert_eq!(recovered.anchor(), anchor);
+    drop(retained);
+}
+
 #[test]
 fn independent_anchor_rejects_old_backup_and_partial_tail() {
     let directory = Directory::new();

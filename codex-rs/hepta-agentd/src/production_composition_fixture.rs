@@ -175,7 +175,8 @@ pub(super) struct Probes {
 }
 
 pub(super) struct Fixture {
-    directory: tempfile::TempDir,
+    // An opt-in real-provider fixture keeps this original owner for reconciliation.
+    pub(super) directory: tempfile::TempDir,
     next_inputs: AtomicUsize,
     pub cut: CognitiveRecoveryAnchor,
     authority: ProductionAuthorityLease,

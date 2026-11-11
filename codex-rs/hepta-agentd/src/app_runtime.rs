@@ -36,12 +36,13 @@ pub(crate) enum AppServerSocket {
     RootBound(std::os::fd::OwnedFd),
 }
 
-/// The original Notes adapter owns its three dynamic tools outside Core's
-/// general cognitive tool extension. This selection removes model capability;
-/// it does not remove the externally retained Root Notes writer.
+/// Host-owned restrictions on model-visible memory paths. They remove model
+/// capability without removing the externally retained original writer. The
+/// explicit-context profile keeps source-checked Agentd reads as its memory input.
 #[derive(Clone, Copy)]
 pub(crate) enum AppServerModelToolProfile {
     Standard,
+    ExplicitContextOnly,
     #[cfg(target_os = "linux")]
     OriginalNotes,
     #[cfg(target_os = "linux")]
@@ -52,6 +53,7 @@ impl AppServerModelToolProfile {
     fn cognitive_tools_enabled(self) -> bool {
         match self {
             Self::Standard => true,
+            Self::ExplicitContextOnly => false,
             #[cfg(target_os = "linux")]
             Self::OriginalNotes | Self::OriginalDesktop => false,
         }
@@ -203,10 +205,21 @@ fn app_server_runtime_options_with_writer(
     let mut required_feature_states =
         BTreeMap::from([(Feature::HeptaCognitiveWrite, cognitive_write_enabled)]);
     if !cognitive_tools_enabled {
-        // Applied after every request override. A model-backed Notes session
-        // cannot reopen general cognitive tools through a new Core config.
+        // Applied after every request override. A restricted embedding cannot
+        // reopen general cognitive tools through a new Core config.
         required_feature_states.insert(Feature::HeptaMemory, false);
     }
+    let explicit_context_only =
+        matches!(model_tools, AppServerModelToolProfile::ExplicitContextOnly);
+    if explicit_context_only {
+        required_feature_states
+            .extend([(Feature::MemoryTool, false), (Feature::TokenBudget, false)]);
+    }
+    // The qualification lifecycle is a separate automatic writer seam. Keep it
+    // unavailable to this model profile even in qualification-enabled builds.
+    let qualification_turn_writer_enabled =
+        QUALIFICATION_TURN_WRITER_ENABLED && !explicit_context_only;
+    let qualification_turn_writer = qualification_turn_writer.filter(|_| !explicit_context_only);
     let turn_queue_capacity = usize::try_from(identity.resources.turn_queue_capacity)
         .map_err(|_| std::io::Error::other("turn queue capacity does not fit this platform"))?;
     let turn_queue_capacity = NonZeroUsize::new(turn_queue_capacity).ok_or_else(|| {
@@ -226,9 +239,9 @@ fn app_server_runtime_options_with_writer(
         // policy-gated local witness writes must be host-invoked and must not
         // create an unbound lease implicitly during turn startup.
         hepta_local_turn_lifecycle_enabled: false,
-        hepta_local_development_policy: QUALIFICATION_TURN_WRITER_ENABLED
+        hepta_local_development_policy: qualification_turn_writer_enabled
             .then_some(codex_hepta_memory::LocalDevelopmentLifecyclePolicy::qualification_only()),
-        hepta_qualification_turn_writer_enabled: QUALIFICATION_TURN_WRITER_ENABLED,
+        hepta_qualification_turn_writer_enabled: qualification_turn_writer_enabled,
         hepta_qualification_turn_writer: qualification_turn_writer,
         hepta_prompt_runtime_host: prompt_runtime_host,
         // This embedding-owned product capability is applied after managed
@@ -245,6 +258,7 @@ mod tests {
     use codex_hepta_contracts::AgentId;
     use codex_hepta_fleet::ResourceBudget;
     use codex_hepta_paths::HeptaFleetRoot;
+    use pretty_assertions::assert_eq;
 
     use super::COGNITIVE_WRITE_ENABLED;
     use super::QUALIFICATION_TURN_WRITER_ENABLED;
@@ -356,6 +370,15 @@ mod tests {
     }
 
     #[cfg(target_os = "linux")]
+    #[tokio::test]
+    async fn episodic_embedding_keeps_the_store_but_removes_implicit_memory_paths() {
+        finite_embedding_keeps_only_the_original_store(
+            super::AppServerModelToolProfile::ExplicitContextOnly,
+        )
+        .await;
+    }
+
+    #[cfg(target_os = "linux")]
     async fn finite_embedding_keeps_only_the_original_store(
         profile: super::AppServerModelToolProfile,
     ) {
@@ -410,7 +433,7 @@ mod tests {
             /*graceful_drain*/ None,
             profile,
         )
-        .expect("Notes runtime options");
+        .expect("restricted runtime options");
         assert!(Arc::ptr_eq(
             options
                 .hepta_cognitive_runtime
@@ -418,6 +441,24 @@ mod tests {
                 .expect("retained store"),
             &store
         ));
+
+        if matches!(
+            profile,
+            super::AppServerModelToolProfile::ExplicitContextOnly
+        ) {
+            assert_eq!(
+                options.required_feature_states,
+                std::collections::BTreeMap::from([
+                    (Feature::HeptaCognitiveWrite, false),
+                    (Feature::HeptaMemory, false),
+                    (Feature::MemoryTool, false),
+                    (Feature::TokenBudget, false),
+                ]),
+            );
+            assert!(!options.hepta_qualification_turn_writer_enabled);
+            assert!(options.hepta_qualification_turn_writer.is_none());
+            assert!(options.hepta_local_development_policy.is_none());
+        }
 
         // Simulate a later config/request trying to reopen both features. The
         // actual embedding constraints must still prevent the original

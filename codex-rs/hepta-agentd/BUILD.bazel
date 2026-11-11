@@ -1,16 +1,21 @@
-load("@crates//:defs.bzl", "all_crate_deps")
 load("@rules_rust//rust:defs.bzl", "rust_binary", "rust_library", "rust_test")
 load("//:defs.bzl", "WINDOWS_RUSTC_LINK_FLAGS", "codex_rust_crate", "workspace_root_test")
+load("//bazel/rules/testing:qualification_lease_clock.bzl", "LEASE_CLOCK_TEST_DEPENDENCIES", "qualification_lease_clock_library")
 load("//bazel/rules/testing:rust_test_dependencies.bzl", "rust_test_dependencies")
 load(":v13_acceptance.bzl", "v13_acceptance_example")
 
 _UNIT_TEST_DEPENDENCIES = {
     "//codex-rs/hepta-bellman-operator": "//codex-rs/hepta-bellman-operator:hepta-bellman-operator-test-lib",
+    "//codex-rs/hepta-infer-core": "//codex-rs/hepta-infer-core:hepta-infer-core-test-lib",
+    "//codex-rs/hepta-infer-worker-host": "//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-test-lib",
     "//codex-rs/hepta-intelligence": "//codex-rs/hepta-intelligence:hepta-intelligence-test-lib",
     "//codex-rs/hepta-intelligence-eval": "//codex-rs/hepta-intelligence-eval:hepta-intelligence-eval-test-lib",
     "//codex-rs/hepta-learning-ledger": "//codex-rs/hepta-learning-ledger:hepta-learning-ledger-qualification-lib",
+    "//codex-rs/hepta-neuron": "//codex-rs/hepta-neuron:hepta-neuron-test-lib",
     "//codex-rs/hepta-prompt-optimizer": "//codex-rs/hepta-prompt-optimizer:hepta-prompt-optimizer-test-lib",
 }
+
+_QUALIFICATION_CLOCK_DEPENDENCIES = _UNIT_TEST_DEPENDENCIES | LEASE_CLOCK_TEST_DEPENDENCIES
 
 _GENERATION_TEST_FIXTURE = [
     "tests/support/neuron_generation.rs",
@@ -47,7 +52,10 @@ codex_rust_crate(
     # Keep the complete existing test graph without changing product binaries.
     integration_test_use_unit_test_dependencies = True,
     unit_test_dependency_replacements = _UNIT_TEST_DEPENDENCIES,
-    unit_test_extra_binaries = ["//codex-rs/hepta-infer-worker-host:hepta-joint-propose"],
+    unit_test_extra_binaries = [
+        "//codex-rs/cli:codex",
+        "//codex-rs/hepta-infer-worker-host:hepta-joint-propose",
+    ],
     unit_test_extra_srcs = ["tests/support/terminal_cell_owner.rs"],
 )
 
@@ -77,7 +85,7 @@ rust_library(
     crate_root = "src/lib.rs",
     edition = "2024",
     visibility = ["//visibility:private"],
-    deps = rust_test_dependencies(_UNIT_TEST_DEPENDENCIES),
+    deps = rust_test_dependencies(_QUALIFICATION_CLOCK_DEPENDENCIES),
 )
 
 rust_test(
@@ -103,7 +111,7 @@ rust_test(
     tags = ["manual"],
     visibility = ["//visibility:private"],
     deps = rust_test_dependencies(
-        _UNIT_TEST_DEPENDENCIES,
+        _QUALIFICATION_CLOCK_DEPENDENCIES,
         normal_dev = True,
     ),
 )
@@ -144,7 +152,7 @@ rust_binary(
     tags = ["manual"],
     target_compatible_with = _COGNITIVE_E2E_COMPATIBILITY,
     visibility = ["//visibility:private"],
-    deps = [":hepta-agentd-cognitive-write-qualification-lib"] + all_crate_deps(),
+    deps = [":hepta-agentd-cognitive-write-qualification-lib"] + rust_test_dependencies(_QUALIFICATION_CLOCK_DEPENDENCIES),
 )
 
 rust_test(
@@ -165,8 +173,8 @@ rust_test(
     tags = ["manual"],
     target_compatible_with = _COGNITIVE_E2E_COMPATIBILITY,
     visibility = ["//visibility:private"],
-    deps = [":hepta-agentd-cognitive-write-qualification-lib"] + all_crate_deps(
-        normal = True,
+    deps = [":hepta-agentd-cognitive-write-qualification-lib"] + rust_test_dependencies(
+        _QUALIFICATION_CLOCK_DEPENDENCIES,
         normal_dev = True,
     ),
 )
@@ -196,4 +204,21 @@ exports_files(
         "tests/supervisord_product_e2e.rs",
     ],
     visibility = ["//codex-rs/hepta-contracts:__pkg__"],
+)
+
+qualification_lease_clock_library(
+    name = "hepta-agentd",
+    base_replacements = _UNIT_TEST_DEPENDENCIES,
+    compile_data = [
+        "tests/fixtures/android-bound-text-v1.json",
+        "tests/fixtures/hos2_production_owner.json",
+        "tests/fixtures/notes-bootstrap-v2.json",
+        "tests/fixtures/notes-document-observation-v1.json",
+        "tests/fixtures/notes-objective-literal-v1.json",
+        "tests/fixtures/notes-target-v1.json",
+        "tests/fixtures/notes-model-v1.json",
+    ] + _GENERATION_TEST_FIXTURE,
+    crate_features = ["production-cognitive-write"],
+    crate_name = "codex_hepta_agentd",
+    extra_srcs = ["tests/support/terminal_cell_owner.rs"],
 )

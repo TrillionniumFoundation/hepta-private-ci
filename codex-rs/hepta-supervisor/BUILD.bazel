@@ -1,4 +1,5 @@
 load("//:defs.bzl", "codex_rust_crate")
+load("//bazel/rules/testing:qualification_lease_clock.bzl", "qualification_lease_clock_library")
 
 codex_rust_crate(
     name = "hepta-supervisor",
@@ -16,4 +17,9 @@ exports_files(
         "tests/robrix_control_projection.rs",
     ],
     visibility = ["//codex-rs/hepta-contracts:__pkg__"],
+)
+
+qualification_lease_clock_library(
+    name = "hepta-supervisor",
+    crate_name = "codex_hepta_supervisor",
 )

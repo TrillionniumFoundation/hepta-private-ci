@@ -130,6 +130,29 @@ impl FileAnchorWitnessStore {
 }
 
 impl AnchorWitnessStore for FileAnchorWitnessStore {
+    #[cfg(any(test, feature = "qualification-owned-file-read"))]
+    fn qualification_file_bytes(&mut self, max_bytes: usize) -> Result<Vec<u8>, WitnessStoreError> {
+        if self.poisoned {
+            return Err(WitnessStoreError::Poisoned);
+        }
+        let bytes = crate::journal_lock::qualification_file_bytes(&mut self.file, max_bytes)
+            .map_err(|error| match error {
+                crate::journal_lock::QualificationFileReadError::InvalidLimit => {
+                    WitnessStoreError::InvalidLimit
+                }
+                crate::journal_lock::QualificationFileReadError::Capacity => {
+                    WitnessStoreError::Capacity
+                }
+                crate::journal_lock::QualificationFileReadError::Io(error) => {
+                    WitnessStoreError::from(error)
+                }
+            });
+        if bytes.is_err() {
+            self.poisoned = true;
+        }
+        bytes
+    }
+
     fn current(&self) -> Result<Option<JournalAnchor>, WitnessStoreError> {
         if self.poisoned {
             Err(WitnessStoreError::Poisoned)

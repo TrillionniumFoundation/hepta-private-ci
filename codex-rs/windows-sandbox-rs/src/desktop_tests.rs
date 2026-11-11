@@ -1,8 +1,10 @@
 use super::LaunchDesktop;
+use crate::legacy_admission_tests::assert_unavailable;
 use crate::token::LocalSid;
 use crate::token::create_readonly_token_with_caps_from;
 use crate::token::create_workspace_write_token_with_caps_from;
 use crate::token::get_current_token_for_restriction;
+use crate::token::mechanism_fixture;
 use crate::winutil::to_wide;
 use anyhow::Result;
 use anyhow::bail;
@@ -73,15 +75,23 @@ fn desktop_write_access(token: HANDLE, name: &str) -> Result<u32> {
 }
 
 #[test]
-fn workspace_private_desktop_checks_the_exact_capability() -> Result<()> {
+fn legacy_refuses_before_workspace_desktop_mechanism_fixture() -> Result<()> {
     let base = TokenHandle(unsafe { get_current_token_for_restriction()? });
     let capability = LocalSid::from_string("S-1-5-21-101-202-303-404")?;
     let other_capability = LocalSid::from_string("S-1-5-21-101-202-303-405")?;
+    for capability in [&capability, &other_capability] {
+        assert_unavailable(unsafe {
+            create_workspace_write_token_with_caps_from(base.0, &[capability.as_ptr()])
+                .map(TokenHandle)
+        });
+    }
+    // No process is launched: these test-only tokens exercise only the private
+    // desktop created and owned below. Legacy admission remains unavailable.
     let workspace = TokenHandle(unsafe {
-        create_workspace_write_token_with_caps_from(base.0, &[capability.as_ptr()])?
+        mechanism_fixture::workspace_token_for_owned_objects(base.0, &[capability.as_ptr()])?
     });
     let other_workspace = TokenHandle(unsafe {
-        create_workspace_write_token_with_caps_from(base.0, &[other_capability.as_ptr()])?
+        mechanism_fixture::workspace_token_for_owned_objects(base.0, &[other_capability.as_ptr()])?
     });
     let desktop = LaunchDesktop::prepare(
         workspace.0,
@@ -110,11 +120,16 @@ fn workspace_private_desktop_checks_the_exact_capability() -> Result<()> {
 }
 
 #[test]
-fn readonly_preserves_private_and_default_desktop_access() -> Result<()> {
+fn legacy_refuses_before_readonly_desktop_mechanism_fixture() -> Result<()> {
     let base = TokenHandle(unsafe { get_current_token_for_restriction()? });
     let capability = LocalSid::from_string("S-1-5-21-101-202-303-406")?;
+    assert_unavailable(unsafe {
+        create_readonly_token_with_caps_from(base.0, &[capability.as_ptr()]).map(TokenHandle)
+    });
+    // Private-desktop access and the default-desktop selector remain native
+    // mechanism assertions; neither starts a process under this fixture token.
     let readonly = TokenHandle(unsafe {
-        create_readonly_token_with_caps_from(base.0, &[capability.as_ptr()])?
+        mechanism_fixture::readonly_token_for_owned_objects(base.0, &[capability.as_ptr()])?
     });
     let desktop = LaunchDesktop::prepare(
         readonly.0, /*use_private_desktop*/ true, /*logs_base_dir*/ None,
