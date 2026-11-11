@@ -4689,7 +4689,7 @@ top_level = []
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/cell_q24_training_command_service.rs"
-required = ["stage: SourceBoundCellQ24TrainingStageV1<TW, RW>","execution_requested: AtomicBool","connections: Arc<Semaphore>"]
+required = ["stage: Arc<SourceBoundCellQ24TrainingStageV1<TW, RW>>","execution_requested: AtomicBool","connections: Arc<Semaphore>"]
 forbidden = ["SigningKey",".sign(","File::open","UnixStream::connect",".try_clone(","CellQ24TrainingBatchV1::new(","FrozenLearningScopeV2::freeze(","permit_all","unwrap_or","if false"]
 
 [[protected_file.required_function_order]]
