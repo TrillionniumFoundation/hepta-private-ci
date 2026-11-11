@@ -1,0 +1,22 @@
+name: Hepta HPCA retained B2 rank diagnostic (HOLD)
+on:
+  pull_request:
+    paths:
+      - "qualification/hpca-neuroscience-20261110/posttrain_b2_*"
+      - "qualification/hpca-neuroscience-20261110/POSTTRAIN_B2_*"
+      - ".github/workflows/hepta-hpca-b2-rank.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  retained-rank:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Recompute original read-only B2 and rank negative controls
+        run: python3 -m unittest discover -v -s qualification/hpca-neuroscience-20261110 -p 'test_posttrain_b2_*py'
+      - name: Regenerate and compare frozen report
+        run: |
+          python3 qualification/hpca-neuroscience-20261110/posttrain_b2_rank.py --output /tmp/b2-rank-recomputed.json
+          cmp qualification/hpca-neuroscience-20261110/POSTTRAIN_B2_RANK_REPORT.json /tmp/b2-rank-recomputed.json
