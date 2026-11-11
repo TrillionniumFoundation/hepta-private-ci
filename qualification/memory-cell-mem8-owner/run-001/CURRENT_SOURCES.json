@@ -1,158 +1,598 @@
 {
+  "schema": "hepta.mem8.current-owner-sources.v2",
+  "checkpoint_utc": "2026-11-11T05:44:11.904Z",
+  "head": "9d9bdfbaeeec3c618f3fc80e2f663a29c13f4b27",
+  "tree": "07192603a5164f4b5d4da24e37595be2a0a04777",
+  "scope": "Current G source inventory computed as the union of the v6 F2 35-path inventory and the four published actual G formatter postimages. Inventory membership does not transfer native qualification results between commits.",
   "base_admission_head": "ad5a4ed6d40a2eceac189afaced5d93137724a52",
   "base_admission_tree": "e601d41a97fadbee17947805f4ec507453522800",
-  "checkpoint_utc": "2026-11-11 05:16:08 UTC",
+  "parent_inventory": {
+    "path": "mem8-owner-followup-v6/CURRENT_SOURCES.json",
+    "head": "0c32926cfec58d986477fc72ba3a4787ab75fde9",
+    "tree": "0d5aa1544aad103f9099c7c8347d8075d6ecc76e",
+    "paths": 35,
+    "verification": "All 35 original path/blob pairs read from the local v6 inventory before environment loss; each complete blob was independently fetched again from GitHub and both Git blob and SHA256 recomputed for this inventory."
+  },
+  "g_source_capsule": {
+    "git_blob_sha": "920deb0dc6a0a49a47cd9291eddf1e04522c35bc",
+    "bytes": 56702,
+    "sha256": "5cb33e3183ba2e5175751f57f6b115021ced43a6f9c3b545f8f3b795c9c6f964"
+  },
+  "composition": {
+    "base_inventory_paths": 35,
+    "g_overlay_paths": 4,
+    "overlap_paths": [
+      "codex-rs/hepta-agentd/src/production_episodic_control_tests.rs"
+    ],
+    "new_inventory_paths": [
+      "codex-rs/hepta-agentd/src/production_composition_fixture.rs",
+      "codex-rs/hepta-agentd/src/production_episodic_provider_authority.rs",
+      "codex-rs/hepta-agentd/src/production_episodic_provider_tests.rs"
+    ],
+    "unchanged_inventory_paths": 34,
+    "final_paths": 38,
+    "new_repository_files": [
+      "codex-rs/hepta-agentd/src/production_episodic_provider_authority.rs",
+      "codex-rs/hepta-agentd/src/production_episodic_provider_tests.rs"
+    ],
+    "note": "production_composition_fixture.rs already existed in the F2 repository but was absent from the v6 source inventory. Three inventory additions therefore correspond to two new repository files."
+  },
   "complete_owner_native_base": {
     "head": "66f570a77c60aac8d33e6cbeac8dfd120ef1d867",
-    "scope": "Complete owner test suite qualified here; F2 adds separate focused validation.",
-    "tree": "8eaee893e1e6e43423f288fc654e05c3c95f6179"
+    "tree": "8eaee893e1e6e43423f288fc654e05c3c95f6179",
+    "scope": "Complete owner memory/Agentd/protocol qualification remains bound to this exact 66f commit. It is not a G test result."
+  },
+  "f2_native_validation": {
+    "head": "0c32926cfec58d986477fc72ba3a4787ab75fde9",
+    "tree": "0d5aa1544aad103f9099c7c8347d8075d6ecc76e",
+    "run_id": "mem8-native-f2-0c32926-ai395-20261111-ed353-v1",
+    "scope": "Five focused F2 test groups only. Memory and protocol were not re-executed in the F2 run.",
+    "groups": [
+      {
+        "label": "config-manager-tests",
+        "passed": 2,
+        "failed": 0,
+        "skipped": 323,
+        "case_ids": [
+          "config_manager::feature_constraints_tests::required_explicit_context_features_remove_memory_prompt_after_request_override",
+          "config_manager::feature_constraints_tests::required_token_budget_off_removes_resolved_history_notes_after_request_and_reload"
+        ],
+        "features": [],
+        "actual_drain_markers": []
+      },
+      {
+        "label": "agentd-tests",
+        "passed": 6,
+        "failed": 0,
+        "skipped": 781,
+        "case_ids": [
+          "app_runtime::tests::episodic_embedding_keeps_the_store_but_removes_implicit_memory_paths",
+          "episodic_import::source_read::tests::episodic_source_observation_follows_commit_generation_not_ack_order",
+          "production_composition::tests::episodic_control::drain::episodic_import_cancellation_cannot_overtake_owner_settlement",
+          "production_composition::tests::episodic_control::episodic_config_cannot_create_a_missing_production_writer",
+          "production_composition::tests::episodic_control::episodic_control_replays_original_commit_then_rejects_revoked_context",
+          "production_composition::tests::episodic_control::episodic_wire_without_configured_source_cannot_mutate_original_owner"
+        ],
+        "features": [],
+        "actual_drain_markers": [
+          "commit",
+          "revoke",
+          "panic"
+        ]
+      },
+      {
+        "label": "qualification-profile-test",
+        "passed": 1,
+        "failed": 0,
+        "skipped": 789,
+        "case_ids": [
+          "app_runtime::tests::episodic_embedding_keeps_the_store_but_removes_implicit_memory_paths"
+        ],
+        "features": [
+          "qualification-cognitive-write"
+        ],
+        "actual_drain_markers": []
+      },
+      {
+        "label": "memory-extension-control",
+        "passed": 1,
+        "failed": 0,
+        "skipped": 99,
+        "case_ids": [
+          "extension::tests::disabled_or_missing_host_identity_never_queries_state"
+        ],
+        "features": [],
+        "actual_drain_markers": []
+      },
+      {
+        "label": "native-empty-router",
+        "passed": 1,
+        "failed": 0,
+        "skipped": 2446,
+        "case_ids": [
+          "tools::spec_plan::tests::hepta_native_inference_client_has_no_model_visible_or_registered_tools"
+        ],
+        "features": [],
+        "actual_drain_markers": []
+      }
+    ],
+    "test_executions": 11,
+    "distinct_case_names": 10,
+    "evidence": {
+      "git_blob_sha": "8d00638ff300a9d485af92e0034ce126bb79b4a2",
+      "bytes": 15122,
+      "sha256": "0a42f094428fd69179a86fd05c296428679d9f97460f130743bb90f7b82830de"
+    }
+  },
+  "g_native_validation": {
+    "head": "9d9bdfbaeeec3c618f3fc80e2f663a29c13f4b27",
+    "tree": "07192603a5164f4b5d4da24e37595be2a0a04777",
+    "run_id": "mem8-native-g-9d9bdfb-ai395-20261111-ed353-v1",
+    "scope": "Compilation of added G test source plus six existing episodic Agentd regression cases, format/V8/build/scoped fix. The ignored provider case was not selected.",
+    "started_at": "2026-11-11T05:18:34.833360+00:00",
+    "finished_at": "2026-11-11T05:26:34.961045+00:00",
+    "deadline_utc": "2026-11-11T06:03:34.833360+00:00",
+    "passed_cases": [
+      "app_runtime::tests::episodic_embedding_keeps_the_store_but_removes_implicit_memory_paths",
+      "episodic_import::source_read::tests::episodic_source_observation_follows_commit_generation_not_ack_order",
+      "production_composition::tests::episodic_control::drain::episodic_import_cancellation_cannot_overtake_owner_settlement",
+      "production_composition::tests::episodic_control::episodic_config_cannot_create_a_missing_production_writer",
+      "production_composition::tests::episodic_control::episodic_control_replays_original_commit_then_rejects_revoked_context",
+      "production_composition::tests::episodic_control::episodic_wire_without_configured_source_cannot_mutate_original_owner"
+    ],
+    "failed_cases": [],
+    "observed_summary_lines": [
+      "     Summary [   2.110s] 6 tests run: 6 passed, 782 skipped"
+    ],
+    "actual_drain_child_markers": [
+      "commit",
+      "revoke",
+      "panic"
+    ],
+    "source_clean_before_after": true,
+    "provider_case_executions": 0,
+    "evidence": {
+      "git_blob_sha": "712f89d3b78a32bc101a2b8fcca3947611f7794e",
+      "bytes": 6608,
+      "sha256": "69ca626e0dd472a899a480d16720888790bf52db1f98861664222237c9f717d6"
+    }
+  },
+  "cross_head_native_result_transfer_allowed": false,
+  "scientific_boundaries": {
+    "real_provider_context_smoke": "NOT_EXECUTED",
+    "unseen_successor_benefit": "NOT_EVALUATED",
+    "original_deployment_owner_recovery": "NOT_ESTABLISHED_BY_THIS_PHASE"
   },
   "files": [
     {
+      "path": ".github/workflows/hepta-mem-python.yml",
       "git_blob_sha": "a1ecf3968b8d9bbc27099d792c12f1c5833b4e38",
-      "path": ".github/workflows/hepta-mem-python.yml"
+      "bytes": 20501,
+      "sha256": "07ddeae1884d285cb0f819e60342ecf39557feb221e4669eabe815bf02ee99c0",
+      "provenance": {
+        "kind": "inherited_f2_exact_blob",
+        "source_head": "0c32926cfec58d986477fc72ba3a4787ab75fde9",
+        "full_blob_readback_verified": true
+      }
     },
     {
+      "path": "codex-rs/app-server/src/config_manager.rs",
       "git_blob_sha": "c4a8bf615541c48a405d08e59c643e96bdf7437a",
-      "path": "codex-rs/app-server/src/config_manager.rs"
+      "bytes": 14775,
+      "sha256": "0117c08db273f908b0ac90c29d55d1074485b7ecf5cd7a81c9eed6b219679aa6",
+      "provenance": {
+        "kind": "inherited_f2_exact_blob",
+        "source_head": "0c32926cfec58d986477fc72ba3a4787ab75fde9",
+        "full_blob_readback_verified": true
+      }
     },
     {
+      "path": "codex-rs/app-server/src/config_manager_feature_constraints_tests.rs",
       "git_blob_sha": "6c289f8f4b9ee0f1d76a18958387c5d4f3665824",
-      "path": "codex-rs/app-server/src/config_manager_feature_constraints_tests.rs"
+      "bytes": 7549,
+      "sha256": "16e6b1a1c477b81543e333b92d0674830feb76526d309919918ed842395d0eb1",
+      "provenance": {
+        "kind": "inherited_f2_exact_blob",
+        "source_head": "0c32926cfec58d986477fc72ba3a4787ab75fde9",
+        "full_blob_readback_verified": true
+      }
     },
     {
+      "path": "codex-rs/ext/hepta-memory/src/cognitive/tools.rs",
       "git_blob_sha": "fd1fd483385211eac76afc3c41571541c1de6f0f",
-      "path": "codex-rs/ext/hepta-memory/src/cognitive/tools.rs"
+      "bytes": 37044,
+      "sha256": "7fd600aa026621d9950614536a172f27aa6e3c6e438d50bba3dd71afe85fb4bf",
+      "provenance": {
+        "kind": "inherited_f2_exact_blob",
+        "source_head": "0c32926cfec58d986477fc72ba3a4787ab75fde9",
+        "full_blob_readback_verified": true
+      }
     },
     {
+      "path": "codex-rs/hepta-agent-protocol/src/episodic.rs",
       "git_blob_sha": "efcce3892dac9751927696654f5d6a19d12b1d68",
-      "path": "codex-rs/hepta-agent-protocol/src/episodic.rs"
+      "bytes": 926,
+      "sha256": "2059517a8efc9452d9c6a500cf290e519f950630943d7fcacf23f2b622bc2153",
+      "provenance": {
+        "kind": "inherited_f2_exact_blob",
+        "source_head": "0c32926cfec58d986477fc72ba3a4787ab75fde9",
+        "full_blob_readback_verified": true
+      }
     },
     {
+      "path": "codex-rs/hepta-agent-protocol/src/lib.rs",
       "git_blob_sha": "826903cc048dfa6b8f502601aed7780fa6ac3a05",
-      "path": "codex-rs/hepta-agent-protocol/src/lib.rs"
+      "bytes": 47799,
+      "sha256": "eaaf49fa285a196759194d167ef63e78a504aae9d898f55bb524d53d8a99caef",
+      "provenance": {
+        "kind": "inherited_f2_exact_blob",
+        "source_head": "0c32926cfec58d986477fc72ba3a4787ab75fde9",
+        "full_blob_readback_verified": true
+      }
     },
     {
+      "path": "codex-rs/hepta-agentd/BUILD.bazel",
       "git_blob_sha": "0f25ce6f62ce3e2fd963dda8208913adc17edbbf",
-      "path": "codex-rs/hepta-agentd/BUILD.bazel"
+      "bytes": 7976,
+      "sha256": "e393be0b48ee4bf1dd7d3c9a60d2c9fc4087fd8fb9ad5f198c1245c2db3acdec",
+      "provenance": {
+        "kind": "inherited_f2_exact_blob",
+        "source_head": "0c32926cfec58d986477fc72ba3a4787ab75fde9",
+        "full_blob_readback_verified": true
+      }
     },
     {
+      "path": "codex-rs/hepta-agentd/src/app_runtime.rs",
       "git_blob_sha": "1576de268c6da2b4b9a803d46a1244a0010b4949",
-      "path": "codex-rs/hepta-agentd/src/app_runtime.rs"
+      "bytes": 20693,
+      "sha256": "74641c88ffa29c31e9b5d79b2f6841c5ec6c5c0c8a8899f346b0a6caed003423",
+      "provenance": {
+        "kind": "inherited_f2_exact_blob",
+        "source_head": "0c32926cfec58d986477fc72ba3a4787ab75fde9",
+        "full_blob_readback_verified": true
+      }
     },
     {
+      "path": "codex-rs/hepta-agentd/src/client.rs",
       "git_blob_sha": "7e3eecfe91f4534f4fb4b2242ddcfda7760923e8",
-      "path": "codex-rs/hepta-agentd/src/client.rs"
+      "bytes": 29749,
+      "sha256": "bf7cff479842870e910c3225f2a486a56f7eb9bafb1cf64dce5119261d4c36a7",
+      "provenance": {
+        "kind": "inherited_f2_exact_blob",
+        "source_head": "0c32926cfec58d986477fc72ba3a4787ab75fde9",
+        "full_blob_readback_verified": true
+      }
     },
     {
+      "path": "codex-rs/hepta-agentd/src/config.rs",
       "git_blob_sha": "f9f69632f1859aedb23743635a3aad315cd52d65",
-      "path": "codex-rs/hepta-agentd/src/config.rs"
+      "bytes": 38713,
+      "sha256": "763fb7764bddc8083604c8ab3f1ed7cb32c1d0950aac3cfeec10c5d1cf7ca5ac",
+      "provenance": {
+        "kind": "inherited_f2_exact_blob",
+        "source_head": "0c32926cfec58d986477fc72ba3a4787ab75fde9",
+        "full_blob_readback_verified": true
+      }
     },
     {
+      "path": "codex-rs/hepta-agentd/src/config_circuit_task.rs",
       "git_blob_sha": "d6d13a226a7fd9778904893368767c4a38c23e01",
-      "path": "codex-rs/hepta-agentd/src/config_circuit_task.rs"
+      "bytes": 3410,
+      "sha256": "25c7ec1a8d0679a476d8f2ab45e179c2a2fbe54b68701508992de5aa0305702a",
+      "provenance": {
+        "kind": "inherited_f2_exact_blob",
+        "source_head": "0c32926cfec58d986477fc72ba3a4787ab75fde9",
+        "full_blob_readback_verified": true
+      }
     },
     {
+      "path": "codex-rs/hepta-agentd/src/config_episodic.rs",
       "git_blob_sha": "8c0a68c6041283c3fe04ab8c6f17320e6a2b85ef",
-      "path": "codex-rs/hepta-agentd/src/config_episodic.rs"
+      "bytes": 2434,
+      "sha256": "5ccf716806e7eff3358efe7b5aa9be6c655eb69e8c7457c871dc06c24789ac29",
+      "provenance": {
+        "kind": "inherited_f2_exact_blob",
+        "source_head": "0c32926cfec58d986477fc72ba3a4787ab75fde9",
+        "full_blob_readback_verified": true
+      }
     },
     {
+      "path": "codex-rs/hepta-agentd/src/episodic_import.rs",
       "git_blob_sha": "eac6a0a296176332eb0a89e2eadb13f657236062",
-      "path": "codex-rs/hepta-agentd/src/episodic_import.rs"
+      "bytes": 4813,
+      "sha256": "a453ca69b4dce2a661f4cfd1101ae7ebd19a65883e723291a0ae4dd4132574d2",
+      "provenance": {
+        "kind": "inherited_f2_exact_blob",
+        "source_head": "0c32926cfec58d986477fc72ba3a4787ab75fde9",
+        "full_blob_readback_verified": true
+      }
     },
     {
+      "path": "codex-rs/hepta-agentd/src/episodic_source_read.rs",
       "git_blob_sha": "595a9aec06808963b580b83f7cb856221d2a7bd5",
-      "path": "codex-rs/hepta-agentd/src/episodic_source_read.rs"
+      "bytes": 4791,
+      "sha256": "be21fd5afc24c45e822e9c90eecb5a1a6e169f836a173e02c1799bc653c20d8e",
+      "provenance": {
+        "kind": "inherited_f2_exact_blob",
+        "source_head": "0c32926cfec58d986477fc72ba3a4787ab75fde9",
+        "full_blob_readback_verified": true
+      }
     },
     {
+      "path": "codex-rs/hepta-agentd/src/episodic_source_read_tests.rs",
       "git_blob_sha": "7aa7ed11cff846a8f9c4a5363399c3a7c1680101",
-      "path": "codex-rs/hepta-agentd/src/episodic_source_read_tests.rs"
+      "bytes": 2647,
+      "sha256": "4f941d1e4c8f0ff85e88954863eaf2e2def3dbe5d2bf99b36bcde7e34525d603",
+      "provenance": {
+        "kind": "inherited_f2_exact_blob",
+        "source_head": "0c32926cfec58d986477fc72ba3a4787ab75fde9",
+        "full_blob_readback_verified": true
+      }
     },
     {
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
       "git_blob_sha": "5481bc5bc81558e1246bd3df5e2f081b334266b4",
-      "path": "codex-rs/hepta-agentd/src/lib.rs"
+      "bytes": 42746,
+      "sha256": "5e6935c2a2ef460651f6428628e7c45f53486402dcf53c88d917da77066ef068",
+      "provenance": {
+        "kind": "inherited_f2_exact_blob",
+        "source_head": "0c32926cfec58d986477fc72ba3a4787ab75fde9",
+        "full_blob_readback_verified": true
+      }
     },
     {
+      "path": "codex-rs/hepta-agentd/src/production_composition_fixture.rs",
+      "git_blob_sha": "af775eb84932c102cb00eb301e4edacd2e3cc6bc",
+      "bytes": 11660,
+      "sha256": "79e9d1632809346cca719f3c6c15f46493bf412067925bc8d14c7f346f78b128",
+      "provenance": {
+        "kind": "g_actual_formatter_postimage",
+        "source_head": "9d9bdfbaeeec3c618f3fc80e2f663a29c13f4b27",
+        "preimage_git_blob_sha": "ba41f5a812d08c7384a6f322401c785d8b3acd4e",
+        "previously_in_inventory": false,
+        "source_capsule_git_blob_sha": "920deb0dc6a0a49a47cd9291eddf1e04522c35bc",
+        "full_content_hash_verified": true
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_composition_tests.rs",
       "git_blob_sha": "ca6de6de35cdb606b17fc58efbdd5d4da9bc2657",
-      "path": "codex-rs/hepta-agentd/src/production_composition_tests.rs"
+      "bytes": 11000,
+      "sha256": "2967ed7ada1cda679f35a85aaec08bf6b04482a9b05ae99c0dcf27eb9c7549fa",
+      "provenance": {
+        "kind": "inherited_f2_exact_blob",
+        "source_head": "0c32926cfec58d986477fc72ba3a4787ab75fde9",
+        "full_blob_readback_verified": true
+      }
     },
     {
-      "git_blob_sha": "54026297a309ef228053ce697855f5181c3b9f2c",
-      "path": "codex-rs/hepta-agentd/src/production_episodic_control_tests.rs"
+      "path": "codex-rs/hepta-agentd/src/production_episodic_control_tests.rs",
+      "git_blob_sha": "1a2f49b93b9c562b9817874652184f06297615a7",
+      "bytes": 14168,
+      "sha256": "212a5970a9996352f20fa4b065c0f97563b1195a78ca40ace20ad8743d409271",
+      "provenance": {
+        "kind": "g_actual_formatter_postimage",
+        "source_head": "9d9bdfbaeeec3c618f3fc80e2f663a29c13f4b27",
+        "preimage_git_blob_sha": "54026297a309ef228053ce697855f5181c3b9f2c",
+        "previously_in_inventory": true,
+        "source_capsule_git_blob_sha": "920deb0dc6a0a49a47cd9291eddf1e04522c35bc",
+        "full_content_hash_verified": true
+      }
     },
     {
+      "path": "codex-rs/hepta-agentd/src/production_episodic_drain_tests.rs",
       "git_blob_sha": "8e0ca0b1e1860e916d4017b01bacc593597c9102",
-      "path": "codex-rs/hepta-agentd/src/production_episodic_drain_tests.rs"
+      "bytes": 11956,
+      "sha256": "e9fd027aef6b149a37e594457b6e2bfe24f2bb577d7fb2ec33f3fdbd166c6c75",
+      "provenance": {
+        "kind": "inherited_f2_exact_blob",
+        "source_head": "0c32926cfec58d986477fc72ba3a4787ab75fde9",
+        "full_blob_readback_verified": true
+      }
     },
     {
+      "path": "codex-rs/hepta-agentd/src/production_episodic_provider_authority.rs",
+      "git_blob_sha": "a9444c7ed750ff4d8d47260470d445cfd49ab118",
+      "bytes": 5238,
+      "sha256": "bd895bc3556db5a22d957dd23be6a9c8a769a57b417fdae4fb1861322663abdc",
+      "provenance": {
+        "kind": "g_actual_formatter_postimage",
+        "source_head": "9d9bdfbaeeec3c618f3fc80e2f663a29c13f4b27",
+        "preimage_git_blob_sha": null,
+        "previously_in_inventory": false,
+        "source_capsule_git_blob_sha": "920deb0dc6a0a49a47cd9291eddf1e04522c35bc",
+        "full_content_hash_verified": true
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_episodic_provider_tests.rs",
+      "git_blob_sha": "aa0e8fd90b112fe0a4f5eab18bf5dacb76d3a8a7",
+      "bytes": 19820,
+      "sha256": "0e18d2aabe9cef603a2cad8768c6d34903c3c3162ef8b7ef1ae0dfa04e1df085",
+      "provenance": {
+        "kind": "g_actual_formatter_postimage",
+        "source_head": "9d9bdfbaeeec3c618f3fc80e2f663a29c13f4b27",
+        "preimage_git_blob_sha": null,
+        "previously_in_inventory": false,
+        "source_capsule_git_blob_sha": "920deb0dc6a0a49a47cd9291eddf1e04522c35bc",
+        "full_content_hash_verified": true
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_writer_host.rs",
       "git_blob_sha": "1b7e16ff26e5dfbfa7bc7e73f845b4773cc05676",
-      "path": "codex-rs/hepta-agentd/src/production_writer_host.rs"
+      "bytes": 27869,
+      "sha256": "eeec8bb76bb13fba92a85668bc2ee47957eba7e89292197c18dea1b44e23c121",
+      "provenance": {
+        "kind": "inherited_f2_exact_blob",
+        "source_head": "0c32926cfec58d986477fc72ba3a4787ab75fde9",
+        "full_blob_readback_verified": true
+      }
     },
     {
+      "path": "codex-rs/hepta-agentd/src/runtime.rs",
       "git_blob_sha": "127d953ec345cc7cf2cfda0d6aef8b7550eb4991",
-      "path": "codex-rs/hepta-agentd/src/runtime.rs"
+      "bytes": 31170,
+      "sha256": "e93732405ec088634cf61aad59512360ca480e71549f6e18538215aff09bc55f",
+      "provenance": {
+        "kind": "inherited_f2_exact_blob",
+        "source_head": "0c32926cfec58d986477fc72ba3a4787ab75fde9",
+        "full_blob_readback_verified": true
+      }
     },
     {
+      "path": "codex-rs/hepta-agentd/src/state.rs",
       "git_blob_sha": "c587df24011d5768295a7cf431948a7d4321c5da",
-      "path": "codex-rs/hepta-agentd/src/state.rs"
+      "bytes": 38289,
+      "sha256": "56874b927c3bc17b33a2c07f1e52ed0659ee0c9055a3fa679e7895ca264d5998",
+      "provenance": {
+        "kind": "inherited_f2_exact_blob",
+        "source_head": "0c32926cfec58d986477fc72ba3a4787ab75fde9",
+        "full_blob_readback_verified": true
+      }
     },
     {
+      "path": "codex-rs/hepta-agentd/src/state_control.rs",
       "git_blob_sha": "e53d6ada7c222ad0084b44803bdfbed4789160fa",
-      "path": "codex-rs/hepta-agentd/src/state_control.rs"
+      "bytes": 60831,
+      "sha256": "3bdfa3151dc0a77e6e926c81a1407b0309d841f859612fa54383b72f7760765e",
+      "provenance": {
+        "kind": "inherited_f2_exact_blob",
+        "source_head": "0c32926cfec58d986477fc72ba3a4787ab75fde9",
+        "full_blob_readback_verified": true
+      }
     },
     {
+      "path": "codex-rs/hepta-agentd/src/state_episodic.rs",
       "git_blob_sha": "6585d7ee856310327d1823ca829ae996dda3c2b8",
-      "path": "codex-rs/hepta-agentd/src/state_episodic.rs"
+      "bytes": 5341,
+      "sha256": "6da2ac65ace12c0e8cf4e0a0dc83b09461a469538bf0b0fe939afad80a0155bf",
+      "provenance": {
+        "kind": "inherited_f2_exact_blob",
+        "source_head": "0c32926cfec58d986477fc72ba3a4787ab75fde9",
+        "full_blob_readback_verified": true
+      }
     },
     {
+      "path": "codex-rs/hepta-memory/src/episodic_source.rs",
       "git_blob_sha": "4589b4d5607d118f822a1d384f1cdd5a599721fc",
-      "path": "codex-rs/hepta-memory/src/episodic_source.rs"
+      "bytes": 6625,
+      "sha256": "a99583eb01137257e244c4f3adf36f2193cb9060ca15f2ef2122a7814ddbe322",
+      "provenance": {
+        "kind": "inherited_f2_exact_blob",
+        "source_head": "0c32926cfec58d986477fc72ba3a4787ab75fde9",
+        "full_blob_readback_verified": true
+      }
     },
     {
+      "path": "codex-rs/hepta-memory/src/episodic_source_tests.rs",
       "git_blob_sha": "d94e1b72c5d04998680147100390fc70e2820e2a",
-      "path": "codex-rs/hepta-memory/src/episodic_source_tests.rs"
+      "bytes": 4194,
+      "sha256": "5b66a0e817bf1a72f4708fb4de5556e039b908b168d809352200e750fd74ca0c",
+      "provenance": {
+        "kind": "inherited_f2_exact_blob",
+        "source_head": "0c32926cfec58d986477fc72ba3a4787ab75fde9",
+        "full_blob_readback_verified": true
+      }
     },
     {
+      "path": "codex-rs/hepta-memory/src/episodic_test_support.rs",
       "git_blob_sha": "35061a80421612bfbe92d38a20171935db59990d",
-      "path": "codex-rs/hepta-memory/src/episodic_test_support.rs"
+      "bytes": 10963,
+      "sha256": "7febade5edcbe3538f23bb858ff80e21a927db57493cf0b09c296e43654d8489",
+      "provenance": {
+        "kind": "inherited_f2_exact_blob",
+        "source_head": "0c32926cfec58d986477fc72ba3a4787ab75fde9",
+        "full_blob_readback_verified": true
+      }
     },
     {
+      "path": "codex-rs/hepta-memory/src/lib.rs",
       "git_blob_sha": "0cc27055eb23d1cd78c1b3e18cfde3a372b6351d",
-      "path": "codex-rs/hepta-memory/src/lib.rs"
+      "bytes": 29335,
+      "sha256": "2196fc17797454a079ec9e95cf60b39f4052573b688346c4cb8cffb6aa4c0388",
+      "provenance": {
+        "kind": "inherited_f2_exact_blob",
+        "source_head": "0c32926cfec58d986477fc72ba3a4787ab75fde9",
+        "full_blob_readback_verified": true
+      }
     },
     {
+      "path": "codex-rs/hepta-memory/src/production_episodic.rs",
       "git_blob_sha": "14c9d0685cc8b64a85cb9b1b9a01b8d99d702333",
-      "path": "codex-rs/hepta-memory/src/production_episodic.rs"
+      "bytes": 11936,
+      "sha256": "521bb9151d78151b8127575db130a8bfd49f0f7adc03f7e8de91ed3d0ceb03ea",
+      "provenance": {
+        "kind": "inherited_f2_exact_blob",
+        "source_head": "0c32926cfec58d986477fc72ba3a4787ab75fde9",
+        "full_blob_readback_verified": true
+      }
     },
     {
+      "path": "codex-rs/hepta-memory/src/production_episodic_regression_tests.rs",
       "git_blob_sha": "d657588ccc28bf1639155fb3fa7f889b27df30dd",
-      "path": "codex-rs/hepta-memory/src/production_episodic_regression_tests.rs"
+      "bytes": 14050,
+      "sha256": "680b27a797d578c0a1cc9fe337d7fdfc6625249332865792db3a30b1b15f9172",
+      "provenance": {
+        "kind": "inherited_f2_exact_blob",
+        "source_head": "0c32926cfec58d986477fc72ba3a4787ab75fde9",
+        "full_blob_readback_verified": true
+      }
     },
     {
+      "path": "codex-rs/hepta-memory/src/production_episodic_snapshot.rs",
       "git_blob_sha": "08d90381cff19a79eaa35f318175940b12445f11",
-      "path": "codex-rs/hepta-memory/src/production_episodic_snapshot.rs"
+      "bytes": 5228,
+      "sha256": "5e63c2aca7cc6cf0a99221c7a3cfbca42d4f456a0208d2a1be3d938dc031b1c1",
+      "provenance": {
+        "kind": "inherited_f2_exact_blob",
+        "source_head": "0c32926cfec58d986477fc72ba3a4787ab75fde9",
+        "full_blob_readback_verified": true
+      }
     },
     {
+      "path": "codex-rs/hepta-memory/src/production_episodic_test_support.rs",
       "git_blob_sha": "6cb08af29309991e19510cfecd30aaaafa55f6a3",
-      "path": "codex-rs/hepta-memory/src/production_episodic_test_support.rs"
+      "bytes": 2610,
+      "sha256": "35268abb56896174d6cc093a64e411f5017d6e9fdcbc3cbb8976dab3aab61e0c",
+      "provenance": {
+        "kind": "inherited_f2_exact_blob",
+        "source_head": "0c32926cfec58d986477fc72ba3a4787ab75fde9",
+        "full_blob_readback_verified": true
+      }
     },
     {
+      "path": "codex-rs/hepta-memory/src/production_episodic_tests.rs",
       "git_blob_sha": "245dc875742fb5e645859bd1cfe8c370e4189f12",
-      "path": "codex-rs/hepta-memory/src/production_episodic_tests.rs"
+      "bytes": 2794,
+      "sha256": "5a9b67563874477f5ceae27b5a28c53ebcea7236c8df209e99fb1aeefda81efc",
+      "provenance": {
+        "kind": "inherited_f2_exact_blob",
+        "source_head": "0c32926cfec58d986477fc72ba3a4787ab75fde9",
+        "full_blob_readback_verified": true
+      }
     },
     {
+      "path": "codex-rs/hepta-memory/src/production_episodic_write.rs",
       "git_blob_sha": "1c032b45ac066ce4ed2cf4bd204a9834d59626a9",
-      "path": "codex-rs/hepta-memory/src/production_episodic_write.rs"
+      "bytes": 6083,
+      "sha256": "67eeb411f49a51532b0aa09ccc8b95e538e5e24d4a7c5142a9c73adac54d604e",
+      "provenance": {
+        "kind": "inherited_f2_exact_blob",
+        "source_head": "0c32926cfec58d986477fc72ba3a4787ab75fde9",
+        "full_blob_readback_verified": true
+      }
     },
     {
+      "path": "codex-rs/hepta-memory/src/production_writer.rs",
       "git_blob_sha": "15487c549abfe1cf1251f6a65a4be699b6b381fc",
-      "path": "codex-rs/hepta-memory/src/production_writer.rs"
+      "bytes": 173514,
+      "sha256": "363ee295992d80f0ff35358401a02ae6b460b0bc43fc4bef726c3b26cc8115e0",
+      "provenance": {
+        "kind": "inherited_f2_exact_blob",
+        "source_head": "0c32926cfec58d986477fc72ba3a4787ab75fde9",
+        "full_blob_readback_verified": true
+      }
     }
-  ],
-  "head": "0c32926cfec58d986477fc72ba3a4787ab75fde9",
-  "schema": "hepta.mem8.current-owner-sources.v1",
-  "scope": "Current F2 source inventory reconstructed from exact 66f plus the six published F1/F2 postimages. Individual qualification results retain their own source identity.",
-  "tree": "0d5aa1544aad103f9099c7c8347d8075d6ecc76e",
-  "separate_unqualified_g_head": "9d9bdfbaeeec3c618f3fc80e2f663a29c13f4b27",
-  "separate_g_pr": 5926
+  ]
 }

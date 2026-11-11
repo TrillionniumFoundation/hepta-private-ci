@@ -32,9 +32,13 @@
     "Ordinary provider smoke is not the native model-only inference client or a memory efficacy experiment.",
     "An admitted fixture model turn is counted separately from scored actor episodes; an unknown physical provider outcome is not zero requests or a successful terminal.",
     "A failed after-state GET does not replace the original native test failure or settle the original turn.",
-    "Repository-formatting requirements do not imply official upstream byte identity; unsupported rule wording is corrected explicitly."
+    "Repository-formatting requirements do not imply official upstream byte identity; unsupported rule wording is corrected explicitly.",
+    "G native compilation and six regression passes do not execute the ignored real-provider context case.",
+    "The 16-source residual count is an upper bound outside known exclusions, not verified unseen capacity.",
+    "W source minima and the historical W allocation do not become an invented E threshold.",
+    "A healthy later GET or empty bounded gateway journal cannot settle the original admitted model turn."
   ],
-  "checkpoint_utc": "2026-11-11 05:16:08 UTC",
+  "checkpoint_utc": "2026-11-11 06:42:20 UTC",
   "ci_fixture_followup": {
     "actual_failed": 1,
     "actual_passed": 0,
@@ -154,6 +158,26 @@
       "id": "MATRIX-ORIGINAL-FULL-CONSUMER-SUITE",
       "status": "PASSED_PUBLISHED_AND_ROOT_READ_BACK",
       "scope": "Exact f1fd original 30 selected cases, 0 failures, zero retries; two ignored/unselected not credited, unchanged SDK/test/5s/cryptography, scoped fix clean. Whole-repository and cross-version migration remain unqualified."
+    },
+    {
+      "id": "G-EXACT-SOURCE-COMPILE-AND-SIX-REGRESSIONS",
+      "status": "PASSED_FULL_RAW_ROOT_READBACK",
+      "scope": "Exact 9d9b G: six original Agentd cases, format, V8, real CLI build and scoped fix, zero retries, clean source. Ignored provider case not executed; no model or original-owner recovery claim."
+    },
+    {
+      "id": "RMCP-DC96-THREE-ORIGINAL-FAILURES-READBACK",
+      "status": "PASSED_FULL_RAW_ROOT_READBACK",
+      "scope": "Original dc96 remains 265 pass / 3 fail. Separate same-source real-CLI repair is 3 pass / 0 fail; all 27 archive members and original 268 IDs independently checked. This is not one full 268-pass run."
+    },
+    {
+      "id": "KNOWN-SOURCE-EXCLUSIONS-AND-CAPACITY-AUDIT",
+      "status": "METADATA_AUDIT_COMPLETE_EXPOSURE_GATE_REMAINS_OPEN",
+      "scope": "All 69 proven exclusions, 16-candidate upper bound and W/E gate distinction verified with full original CAS and selected metadata. No candidate is certified unseen."
+    },
+    {
+      "id": "FULL-F1FD-ORIGINAL-RMCP-CONSUMER-SUITE",
+      "status": "PASSED_FULL_RAW_ROOT_READBACK",
+      "scope": "268 original unique cases passed, zero failed/selected skipped/retried; seven unselected. Fresh UUID and all 268 timestamps verified; real same-source CLI and clean scoped fix. Exact f1fd only; integrated 2ae has its own pending CI."
     }
   ],
   "common_source": {
@@ -230,7 +254,7 @@
       "source_postimages": 65,
       "root_complete_readback": true,
       "evidence_commit": "26467689b04bd183fef2dc347fdd085fcde6d41e",
-      "source_commit_publication": "LOCAL_ONLY_AT_CHECKPOINT_SEPARATE_PUBLICATION_IN_PROGRESS",
+      "source_commit_publication": "ORIGINAL_GIT_COMMIT_AND_TREE_PUBLISHED_AND_VERIFIED",
       "prior_v3": {
         "status": "COMPILE_TIMEOUT_ZERO_EXECUTED_TESTS",
         "outer_timeout_seconds": 1200,
@@ -252,7 +276,7 @@
       "tree": "0c8652eac9048d8acb9a8ac182f4eae2c998c8c8",
       "unselected": 2
     },
-    "published_source_pr": null,
+    "published_source_pr": 5934,
     "rmcp_actual_failed": 3,
     "rmcp_actual_passed": 265,
     "rmcp_same_source_cli_followup": {
@@ -273,8 +297,9 @@
         "sha256": "67e70ed6924951714423b3b2760531a7416f9489f3850e2830ff0da938f5f7d9",
         "before_after_match": true
       },
-      "complete_raw_archive_root_readback": "PENDING",
-      "limit": "Original dc96 suite remains 265/3; this is a separate 3/0 recheck, not one 268/0 execution. No f1fd exact-head RMCP result is transferred."
+      "complete_raw_archive_root_readback": "PASSED_ALL_27_MEMBERS_ORIGINAL_268_IDS_AND_THREE_REPAIR_IDS",
+      "limit": "Original dc96 suite remains 265/3; this is a separate 3/0 recheck, not one 268/0 execution. No f1fd exact-head RMCP result is transferred.",
+      "evidence_commit": "0e1817df5e97b6cf4916a6b0ca7b43602c03fd4e"
     },
     "scope": "Full retained raw logs and actual JUnit; filtered/ignored tests are not passing executions.",
     "sqlx_provenance": {
@@ -286,6 +311,222 @@
       "other_byte_equal": 4,
       "unsupported_repository_rule_withdrawn": "Earlier README's unreferenced exact-upstream-byte-preservation condition is not an identified repository requirement. Frozen AGENTS and formatter instead require scoped formatting. Original evidence preserved; explicit erratum added separately.",
       "byte_identity_not_claimed": true
+    },
+    "f1fd_full_rmcp_followup": {
+      "schema": "hepta.mem8.f1fd-full-rmcp-summary.v1",
+      "source_commit": "f1fd544b3e12ed6aca83872cdeda8114a1e058c0",
+      "source_tree": "fff40d06312d4f6a185772cd8a62a618d55f31cf",
+      "review_base": "96038ccf0660154fac143ba6cbe4be81e00813e8",
+      "source_pr": 5934,
+      "changed_source_paths": 65,
+      "run_key": "mem8-f1fd-full-rmcp-consumers-v1-ed353817",
+      "pty_session_id": "dpty-648ccfb8497838339eecb3dd3bb1cf12007730ed89c645200dd09563ee617741",
+      "native_task_path": "/home/qian-qi/mem8-f1fd-full-rmcp-consumers-ed353817-v1",
+      "started_at": "2026-11-11T05:35:42.902082+00:00",
+      "finished_at": "2026-11-11T06:02:44.268223+00:00",
+      "phases": [
+        {
+          "phase": "same-source-codex-cli-build",
+          "command": [
+            "cargo",
+            "build",
+            "--locked",
+            "-p",
+            "codex-cli",
+            "--bin",
+            "codex"
+          ],
+          "receipt": "records/same-source-codex-cli-build.json",
+          "receipt_sha256": "d7defac989961abe0c20e086cdec03cf642754967299cb1003d0e437a4c027b3",
+          "started_at": "2026-11-11T05:35:42.902082+00:00",
+          "finished_at": "2026-11-11T05:47:56.414504+00:00",
+          "command_budget_seconds": 1800,
+          "deadline": "2026-11-11T06:05:42.902082+00:00",
+          "elapsed_seconds": 733.5070005711168,
+          "command_exit_code": 0,
+          "actual_passed": 0,
+          "actual_failed": 0,
+          "source_before": {
+            "commit": "f1fd544b3e12ed6aca83872cdeda8114a1e058c0",
+            "dirty": false,
+            "parents": [
+              "dc96a441312e239c165c1642880084dfeccc2c71"
+            ],
+            "tree": "fff40d06312d4f6a185772cd8a62a618d55f31cf"
+          },
+          "source_after": {
+            "commit": "f1fd544b3e12ed6aca83872cdeda8114a1e058c0",
+            "dirty": false,
+            "parents": [
+              "dc96a441312e239c165c1642880084dfeccc2c71"
+            ],
+            "tree": "fff40d06312d4f6a185772cd8a62a618d55f31cf"
+          },
+          "raw_log": "records/same-source-codex-cli-build.json.46d8df3f79d64fd6a81488f8b9f844fa.log",
+          "raw_bytes": 66000,
+          "raw_sha256": "f7b3c2b902a00cfc6bfc18c129cf7b3e704c9990ef259b14c852343ce8300b66"
+        },
+        {
+          "phase": "full-rmcp-268",
+          "command": [
+            "just",
+            "test",
+            "--locked",
+            "-p",
+            "codex-rmcp-client",
+            "--test-threads",
+            "2",
+            "--no-tests",
+            "fail",
+            "--retries",
+            "0"
+          ],
+          "receipt": "records/full-rmcp-268.json",
+          "receipt_sha256": "f9eefc70b6502fa3ca722ab200b745b6bcf20fd15a65639a8d3216c25202f047",
+          "started_at": "2026-11-11T05:48:01.285265+00:00",
+          "finished_at": "2026-11-11T05:55:54.430909+00:00",
+          "command_budget_seconds": 1800,
+          "deadline": "2026-11-11T06:18:01.285265+00:00",
+          "elapsed_seconds": 473.1086338260211,
+          "command_exit_code": 0,
+          "actual_passed": 268,
+          "actual_failed": 0,
+          "source_before": {
+            "commit": "f1fd544b3e12ed6aca83872cdeda8114a1e058c0",
+            "dirty": false,
+            "parents": [
+              "dc96a441312e239c165c1642880084dfeccc2c71"
+            ],
+            "tree": "fff40d06312d4f6a185772cd8a62a618d55f31cf"
+          },
+          "source_after": {
+            "commit": "f1fd544b3e12ed6aca83872cdeda8114a1e058c0",
+            "dirty": false,
+            "parents": [
+              "dc96a441312e239c165c1642880084dfeccc2c71"
+            ],
+            "tree": "fff40d06312d4f6a185772cd8a62a618d55f31cf"
+          },
+          "raw_log": "records/full-rmcp-268.json.258dccb802c34ff5a2f0500c989f7b30.log",
+          "raw_bytes": 68445,
+          "raw_sha256": "cc9bd580088f8ed2af79e585efa61b8eff9fc55adfaa46497c89b86773a3685d"
+        },
+        {
+          "phase": "scoped-rmcp-fix",
+          "command": [
+            "just",
+            "fix",
+            "--locked",
+            "-p",
+            "codex-rmcp-client"
+          ],
+          "receipt": "records/scoped-rmcp-fix.json",
+          "receipt_sha256": "cfd3058ece5293ccf572a7963d5fe6d17f904c9c9bda0f95984cd7d65329cae1",
+          "started_at": "2026-11-11T05:55:59.767833+00:00",
+          "finished_at": "2026-11-11T06:02:43.963442+00:00",
+          "command_budget_seconds": 1800,
+          "deadline": "2026-11-11T06:25:59.767833+00:00",
+          "elapsed_seconds": 403.95885290391743,
+          "command_exit_code": 0,
+          "actual_passed": 0,
+          "actual_failed": 0,
+          "source_before": {
+            "commit": "f1fd544b3e12ed6aca83872cdeda8114a1e058c0",
+            "dirty": false,
+            "parents": [
+              "dc96a441312e239c165c1642880084dfeccc2c71"
+            ],
+            "tree": "fff40d06312d4f6a185772cd8a62a618d55f31cf"
+          },
+          "source_after": {
+            "commit": "f1fd544b3e12ed6aca83872cdeda8114a1e058c0",
+            "dirty": false,
+            "parents": [
+              "dc96a441312e239c165c1642880084dfeccc2c71"
+            ],
+            "tree": "fff40d06312d4f6a185772cd8a62a618d55f31cf"
+          },
+          "raw_log": "records/scoped-rmcp-fix.json.b633af9047a84f49930a74d665f577c9.log",
+          "raw_bytes": 33761,
+          "raw_sha256": "5ac223b0373f39debf43675f9390385680dd1f6d7201fcc85662a82136179b7f"
+        }
+      ],
+      "qualification": {
+        "source_commit": "f1fd544b3e12ed6aca83872cdeda8114a1e058c0",
+        "source_tree": "fff40d06312d4f6a185772cd8a62a618d55f31cf",
+        "base": "96038ccf0660154fac143ba6cbe4be81e00813e8",
+        "selected": 268,
+        "passed": 268,
+        "failed": 0,
+        "selected_skipped": 0,
+        "filtered_or_ignored": 7,
+        "retries": 0,
+        "junit_run_id": "b86c9959-e257-4ce0-91e0-f2eb7120d2cc",
+        "original_unique_case_ids_match": true,
+        "raw_unique_pass_ids_match_junit": true,
+        "full_raw_hashes_verified": 3,
+        "full_junit_hash_verified": true,
+        "cli_before_after_same": true,
+        "cli_sha256": "da59e2327aa74b81be2b6f64a97c060bf67e17db17c860f7642541f804dadbe2",
+        "scoped_fix_exit_zero_and_source_unchanged": true,
+        "all_phase_source_identities_clean": true,
+        "whole_ci_pass_claimed": false,
+        "memory_benefit_claimed": false
+      },
+      "original_case_ids_run": "c6520272-0490-4d9f-bee4-5d08be7198bd",
+      "original_case_ids_file": "EXPECTED_CASE_IDS.json",
+      "junit_path": "records/full-rmcp-268.junit.xml",
+      "junit_bytes": 59390,
+      "junit_sha256": "19b1028b33bebbd26bd92ddc15195f397d6ce8cfe1107bf3b4bab399680c299e",
+      "junit_run_id": "b86c9959-e257-4ce0-91e0-f2eb7120d2cc",
+      "actual_cli_bytes": 1440865824,
+      "actual_cli_sha256": "da59e2327aa74b81be2b6f64a97c060bf67e17db17c860f7642541f804dadbe2",
+      "cli_before_receipt": "records/CLI_BEFORE_TESTS.json",
+      "cli_after_receipt": "records/CLI_AFTER_TESTS.json",
+      "all_source_clean": true,
+      "fix_outcome": "exit0_clean_no_rewrite",
+      "terminal_exit_code": 0,
+      "whole_ci_pass_claimed": false,
+      "other_source_heads_qualified_by_this_run": false,
+      "archive_pointers": {
+        "schema": "hepta.mem8.f1fd-full-rmcp-package.v1",
+        "archive_name": "mem8-f1fd-full-rmcp-native-v1.tar.xz",
+        "bytes": 59956,
+        "sha256": "03393baed2329c3a9eb50337678c67a0856bc568f753f2527272903492f25a8a",
+        "git_blob": "b22984b6650ec4b523760f9ef09ac94196f831d3",
+        "member_count": 43,
+        "source_commit": "f1fd544b3e12ed6aca83872cdeda8114a1e058c0",
+        "source_tree": "fff40d06312d4f6a185772cd8a62a618d55f31cf",
+        "selected": 268,
+        "passed": 268,
+        "failed": 0,
+        "selected_skipped": 0,
+        "filtered_or_ignored": 7,
+        "retries": 0,
+        "junit_run_id": "b86c9959-e257-4ce0-91e0-f2eb7120d2cc",
+        "full_raw_and_junit_verified": true,
+        "all_tar_member_bytes_read_back": true,
+        "fix_exit0_clean": true,
+        "whole_ci_pass_claimed": false,
+        "publication_state": "GIT_BLOB_CREATED_AWAITING_TREE_ATTACHMENT"
+      },
+      "root_complete_archive_readback": true,
+      "evidence_commit": "943196eb18a1a04e7248307cf8708bed38b82b8b",
+      "root_audit_path": "qualification/memory-cell-mem8-ci-followup/checkpoint-v9/ROOT_READBACK_AUDIT.json"
+    },
+    "original_dependency_sources_published": {
+      "dc96": {
+        "commit": "dc96a441312e239c165c1642880084dfeccc2c71",
+        "tree": "7796279284170f0f2c92449c1185eecac1f4f1b6",
+        "parent": "96038ccf0660154fac143ba6cbe4be81e00813e8"
+      },
+      "f1fd": {
+        "commit": "f1fd544b3e12ed6aca83872cdeda8114a1e058c0",
+        "tree": "fff40d06312d4f6a185772cd8a62a618d55f31cf",
+        "parent": "dc96a441312e239c165c1642880084dfeccc2c71"
+      },
+      "original_objects_preserved": true,
+      "all_65_postimage_mode_type_blob_size_matches": true
     }
   },
   "historical_results_unchanged": {
@@ -705,7 +946,8 @@
       "status": "PASSED_ON_EXACT_UNCHANGED_SOURCE",
       "tree": "e601d41a97fadbee17947805f4ec507453522800"
     },
-    "source_admission_last_completed": {
+    "status": "SOURCE_ADMISSION_AND_COMPLETE_OWNER_FIXTURE_GATES_PASSED",
+    "source_admission_prior_completed_attempt": {
       "actual_native_failed": 0,
       "actual_native_passed": 4,
       "artifact_id": 13821160489,
@@ -719,25 +961,25 @@
       "run_id": 42938555796,
       "source_before_after_equal_clean_for_tests": true,
       "tests_rerun_after_fix": false,
-      "tree": "ee63508413afd29a95c03172724fce6fa9dc5a8a"
-    },
-    "status": "SOURCE_ADMISSION_AND_COMPLETE_OWNER_FIXTURE_GATES_PASSED"
+      "tree": "ee63508413afd29a95c03172724fce6fa9dc5a8a",
+      "historical_prior_attempt": true
+    }
   },
   "new_real_actor_episodes": 0,
   "open": [
     {
-      "finding": "Historical MEM6 30/84 vs 28/84; source-level one-sided 95% lower bound 0.0. No reweighting or threshold change.",
+      "finding": "Historical MEM6 30/84 vs 28/84; source-level one-sided 95% lower bound 0.0. No reweighting or threshold change. Even optimistically the current residual catalog cannot meet the unchanged W minimum of 20 sources; the historical 16/4 allocation would require at least nine additional development groups. E has a separately required protocol, not an inherited W minimum.",
       "id": "WORKING-STATE-SCIENTIFIC-GATE",
       "status": "NOT_MET"
     },
     {
-      "closure": "Implement the bridge using the retained original writer capability and authenticated source events; recover the exact cut and preserve tombstones and uncertain-commit reconciliation.",
-      "finding": "Exact 66f passed 11 memory, 5 Agentd and 16 protocol cases, three actual drain markers, format and three unchanged-source fixes on independent host and GitHub. F2 separately passed focused path isolation. The original deployed writer/source/provider binding is still unauthenticated; fixtures do not close that condition.",
+      "closure": "Bind the already implemented and qualified bridge to the retained original deployed writer, caller and authenticated source adapter; recover the exact cut and demonstrate ordinary import/read/replay/withdrawal while preserving original tombstones and uncertain-commit identity.",
+      "finding": "Exact 66f passed 11 memory, 5 Agentd and 16 protocol cases, three actual drain markers, format and three unchanged-source fixes on independent host and GitHub. F2 separately passed focused path isolation. The original deployed writer/source/provider binding is still unauthenticated; fixtures do not close that condition. Exact G now separately compiles the ignored provider path and passes six existing episodic cases with clean source; the provider case itself has zero executions.",
       "id": "ORDINARY-OWNER-BRIDGE",
       "status": "NATIVE_FIXTURE_BRIDGE_PASSED_ORIGINAL_DEPLOYED_BINDING_OPEN"
     },
     {
-      "finding": "The 55951 ordinary fixture turn was admitted inProgress, then its 20-second completion wait failed. The after-GET returned 502. Original thread/turn and retained files remain the only reconciliation identity; remote model outcome is unknown. G is a separate prepared native memory-path fixture and has no provider result.",
+      "finding": "The original 55951 ordinary fixture has 0 passed / 1 failed, one logical turn admitted and no observed model terminal. G separately passed six non-provider cases; its ignored native context provider case remains unexecuted. Exact original reconciliation is required; physical provider request count remains unknown. One bounded query of the original gateway window found zero matching records; three current GETs returned 200. Neither observation settles the original turn.",
       "id": "PROVIDER-RUNTIME-BINDING",
       "status": "ORIGINAL_TURN_ADMITTED_COMPLETION_TIMEOUT_TERMINAL_UNKNOWN",
       "closure": "Reconcile the exact original thread/turn, establish a current provider route binding, then qualify the intended native memory path with independently identified evidence."
@@ -753,7 +995,7 @@
       "status": "PARTIAL"
     },
     {
-      "finding": "Source ownership, complete exposure history and independent trust-domain authority are not authenticated by hashes or same-owner receipts. Malicious-owner rollback resistance is not established.",
+      "finding": "Source ownership, complete exposure history and independent trust-domain authority are not authenticated by hashes or same-owner receipts. Malicious-owner rollback resistance is not established. Pinned metadata now proves at least 69 exclusions; the remaining candidate upper bound is 16 (7 development, 9 retention_validation), all current exposure UNKNOWN. Hash and provenance validation does not authenticate current global exposure or original authority.",
       "id": "SOURCE-OWNERSHIP-EXPOSURE-AND-TRUST",
       "status": "HOLD"
     },
@@ -773,9 +1015,10 @@
       "status": "NOT_QUALIFIED"
     },
     {
-      "finding": "Exact common MEM, Source A, complete 66f owner CI, original Windows and Linux signed-credit cases, and F2 focused host qualification passed. Exact f1fd full Matrix 30/0 with clean fix is published and independently read back. Three original dc96 RMCP failures passed with same-source CLI; full exact f1fd RMCP and broader repository CI are not yet qualified.",
+      "finding": "Exact common MEM, Source A, complete 66f owner CI, original Windows/Linux signed-credit cases, F2 focused groups, G six regressions, and f1fd full Matrix 30/0 have passed their recorded scopes. The original full f1fd RMCP suite now also passed 268/0 with zero retries, all original unique IDs, same-source CLI and clean scoped fix; its complete archive is root-read-back. Final combined source 2ae5215 (112 disjoint paths) is published in #5935 and its existing automatic CI is in progress. No component result is transferred to the combination or to unmet required checks.",
       "id": "HOSTED-CI",
-      "status": "MEM_OWNER_WINDOWS_LINUX_MATRIX_PASSED_REPOSITORY_WIDE_CI_OPEN"
+      "status": "COMPONENT_GATES_PASSED_FINAL_COMPOSITION_REQUIRED_CI_IN_PROGRESS",
+      "closure": "Adjudicate the existing CI required and Architecture required checks and their actual dependencies on the final composition, retaining exact tested source, original logs and any failed or excluded scope. No new all-platform requirement is inferred from a package-level pass."
     }
   ],
   "owner_stages": {
@@ -862,13 +1105,18 @@
         "F2": "0d5aa1544aad103f9099c7c8347d8075d6ecc76e"
       },
       "qualification_not_transferred_to_intermediate_stages": true
-    }
+    },
+    "current_G_commit": "9d9bdfbaeeec3c618f3fc80e2f663a29c13f4b27",
+    "current_G_tree": "07192603a5164f4b5d4da24e37595be2a0a04777"
   },
   "predecessor": {
     "path": "qualification/memory-cell-mem7/read-freshness-20261110/BLOCKERS.json",
     "source_commit": "adef61556284cc5b58c4f23a33d7c8455e821c3f"
   },
-  "previous_checkpoint": "6c47d1f6c82fd5fd2baf53b0d1dedbdcd6472874",
+  "previous_checkpoint": {
+    "commit": "743efac8d1c89e599b427da7e37f41d18af07985",
+    "checkpoint_utc": "2026-11-11 05:16:08 UTC"
+  },
   "production_adoption": false,
   "provider_readonly_observation": {
     "base_url": "http://127.0.0.1:18083/v1",
@@ -936,7 +1184,7 @@
     "credential_values_exported": false,
     "format_clean": true,
     "head": "55951ed9094ae894f0256a3461fd9504ef060473",
-    "last_observed_progress": "Original turn/start was admitted inProgress; the 20-second completion wait failed. Native receipt is terminal failed, but the model/provider outcome is unknown. After-state GET returned HTTP 502.",
+    "last_observed_progress": "Original 04:48 failed attempt: turn/start admitted inProgress, original 20-second completion wait failed, and its after-GET returned 502. Later 05:53 GET-only observations are recorded separately and do not settle the original model/provider outcome.",
     "pr": 5908,
     "real_model_results": 0,
     "request_id": "mem8-native-provider-qualified-v1-ed353817",
@@ -974,7 +1222,8 @@
     "ordinary_smoke_has_native_durable_journal": false,
     "recovered_result_is_new_observation_not_original_receipt": true,
     "diagnostic_driver_patch": "Proposed only: retain after-GET exception separately so it does not mask the original native failure. Not applied to the original driver; no rerun.",
-    "private_owner_state_exported": false
+    "private_owner_state_exported": false,
+    "last_observed_progress_scope": "ORIGINAL_NATIVE_ATTEMPT_NOT_CURRENT_GET_AVAILABILITY"
   },
   "runtime_transport": {
     "ai395_original_request": {
@@ -1038,17 +1287,198 @@
     "head": "9d9bdfbaeeec3c618f3fc80e2f663a29c13f4b27",
     "tree": "07192603a5164f4b5d4da24e37595be2a0a04777",
     "parent": "0c32926cfec58d986477fc72ba3a4787ab75fde9",
-    "status": "PUBLISHED_FORMATTED_SOURCE_ZERO_MODEL_NATIVE_PREPARATION",
+    "status": "PASSED_EXACT_G_SIX_REGRESSIONS_BUILD_FMT_FIX_ROOT_READBACK",
     "formatted_source_capsule_sha256": "5cb33e3183ba2e5175751f57f6b115021ced43a6f9c3b545f8f3b795c9c6f964",
     "full_four_postimages_readback": true,
     "independent_static_review": "NO_MUST_FIX_IDENTIFIED_NOT_COMPILATION",
     "new_ignored_case": "production_composition::tests::episodic_control::provider::episodic_real_provider_fresh_context_smoke",
     "actual_provider_case_executed": false,
-    "actual_g_native_result": null,
-    "existing_six_cases_only_planned": true,
+    "actual_g_native_result": {
+      "head": "9d9bdfbaeeec3c618f3fc80e2f663a29c13f4b27",
+      "tree": "07192603a5164f4b5d4da24e37595be2a0a04777",
+      "run_id": "mem8-native-g-9d9bdfb-ai395-20261111-ed353-v1",
+      "scope": "Compilation of added G test source plus six existing episodic Agentd regression cases, format/V8/build/scoped fix. The ignored provider case was not selected.",
+      "started_at": "2026-11-11T05:18:34.833360+00:00",
+      "finished_at": "2026-11-11T05:26:34.961045+00:00",
+      "deadline_utc": "2026-11-11T06:03:34.833360+00:00",
+      "passed_cases": [
+        "app_runtime::tests::episodic_embedding_keeps_the_store_but_removes_implicit_memory_paths",
+        "episodic_import::source_read::tests::episodic_source_observation_follows_commit_generation_not_ack_order",
+        "production_composition::tests::episodic_control::drain::episodic_import_cancellation_cannot_overtake_owner_settlement",
+        "production_composition::tests::episodic_control::episodic_config_cannot_create_a_missing_production_writer",
+        "production_composition::tests::episodic_control::episodic_control_replays_original_commit_then_rejects_revoked_context",
+        "production_composition::tests::episodic_control::episodic_wire_without_configured_source_cannot_mutate_original_owner"
+      ],
+      "failed_cases": [],
+      "observed_summary_lines": [
+        "     Summary [   2.110s] 6 tests run: 6 passed, 782 skipped"
+      ],
+      "actual_drain_child_markers": [
+        "commit",
+        "revoke",
+        "panic"
+      ],
+      "source_clean_before_after": true,
+      "provider_case_executions": 0,
+      "evidence": {
+        "git_blob_sha": "712f89d3b78a32bc101a2b8fcca3947611f7794e",
+        "bytes": 6608,
+        "sha256": "69ca626e0dd472a899a480d16720888790bf52db1f98861664222237c9f717d6"
+      }
+    },
+    "existing_six_cases_only_planned": false,
     "independent_new_run_budget_minutes": 45,
     "old_owner_deadline_not_reset": true,
     "fixture_only": true,
-    "unseen_benefit_evaluated": false
+    "unseen_benefit_evaluated": false,
+    "new_model_calls_this_g_run": 0,
+    "root_complete_readback": true,
+    "root_audit": "g-native-context/ROOT_G_READBACK_AUDIT.json",
+    "root_audit_blob": "9ead8f72339ddb217bd8e3d98664b3a222610c32",
+    "complete_evidence_index": "g-native-context/G_COMPLETE_EVIDENCE_INDEX.json",
+    "native_archive_blob": "887bd1823ce74a0e579dac39deae6bd9a77fae8c",
+    "native_archive_sha256": "3babe551f6a029803467dbc89f5ea949c88b93916bb20c3638bb5ba276b50a75",
+    "native_archive_bytes": 49292,
+    "all_five_phase_source_guards_clean": true,
+    "provider_case_status": "COMPILED_IGNORED_NOT_EXECUTED",
+    "original_deployment_recovery_claimed": false
+  },
+  "source_exclusion_inventory": {
+    "status": "PINNED_METADATA_VERIFIED_CURRENT_GLOBAL_EXPOSURE_UNKNOWN",
+    "observed_at": "2026-11-11T05:32:15.447672+00:00",
+    "known_exclusion_groups": 69,
+    "mem_lineage_exclusion_groups": 67,
+    "additional_prior_pilot_groups": 2,
+    "catalog_groups": 178,
+    "candidate_role_groups": 81,
+    "known_excluded_candidate_groups": 65,
+    "not_in_known_union_upper_bound": 16,
+    "upper_bound_by_original_role": {
+      "development": 7,
+      "retention_validation": 9
+    },
+    "verified_unseen_capacity": null,
+    "admitted_new_sources": 0,
+    "current_complete_exposure_certified": false,
+    "working_state_gate_minimum": 20,
+    "working_state_gate_minimum_each_role": 4,
+    "historic_mem6_working_state_allocation": {
+      "development": 16,
+      "retention_validation": 4
+    },
+    "optimistic_shortfall_to_W_total": 4,
+    "optimistic_development_shortfall_to_historic_W_allocation": 9,
+    "episodic_E_numeric_minimum": null,
+    "episodic_E_requires_separate_pre_execution_protocol": true,
+    "old_W_minima_transferred_to_E": false,
+    "report": "source-exclusion/REPORT.md",
+    "per_group_provenance": "source-exclusion/EXCLUSIONS.json",
+    "capacity": "source-exclusion/CAPACITY.json",
+    "root_audit": "source-exclusion/ROOT_SOURCE_READBACK_AUDIT.json",
+    "archive_blob": "97bd07d1ec0efb027cc7737a47911ad128bd4c3c",
+    "archive_bytes": 68968,
+    "archive_sha256": "5d2780a32a4ae1b42925ce3b484c7b616e003a84679ae996b9862da427ad00b1",
+    "archive_regular_members": 25,
+    "root_full_download_and_offline_replay_passed": true,
+    "new_host_jobs_by_root_audit": 0,
+    "new_model_calls": 0,
+    "new_actor_episodes": 0
+  },
+  "final_source_composition": {
+    "pr": 5935,
+    "head": "2ae5215beaf8d7b7df111a090b82134beae2683d",
+    "tree": "12159640adcf073b51f3837e75575e11f5c20233",
+    "parents": [
+      "9d9bdfbaeeec3c618f3fc80e2f663a29c13f4b27",
+      "55951ed9094ae894f0256a3461fd9504ef060473",
+      "f1fd544b3e12ed6aca83872cdeda8114a1e058c0"
+    ],
+    "base": "96038ccf0660154fac143ba6cbe4be81e00813e8",
+    "changed_files": 112,
+    "pairwise_path_conflicts": 0,
+    "original_postimages_preserved": true,
+    "root_original_tree_objects_checked": 73,
+    "current_ci_status": "AUTOMATIC_EXISTING_CI_IN_PROGRESS_NO_TERMINAL_QUALIFICATION_YET",
+    "main_required_contexts_observed": [
+      "CI required",
+      "Architecture required"
+    ],
+    "review_base_branch_is_protected": false,
+    "classic_protection_details_read": "HTTP_403_NOT_INFERRED",
+    "new_logic_in_composition": false,
+    "provider_cases_remain_ignored": true,
+    "source_component_passes_transferred_to_this_head": false,
+    "review_bundle": "integration-review/mem8-composition-ci-blocker-review-v2.tar.xz",
+    "root_full_review_bundle_readback": "integration-review/ROOT_FINAL_REVIEW_READBACK_AUDIT.json",
+    "root_full_review_bundle_readback_passed": true,
+    "review_bundle_members": 157,
+    "final_blocker_review": "integration-review/FINAL_BLOCKER_REVIEW_V2.json"
+  },
+  "provider_readonly_followup": {
+    "status": "ORIGINAL_JOURNAL_ZERO_MATCHES_CURRENT_GETS_200_ORIGINAL_OUTCOME_UNKNOWN",
+    "original_journal_window_utc": [
+      "2026-11-11 04:47:00 UTC",
+      "2026-11-11 04:49:00 UTC"
+    ],
+    "journal_queries": 1,
+    "journal_entries": 0,
+    "exact_original_identifier_matches": 0,
+    "original_provider_final_status": "UNKNOWN",
+    "original_physical_provider_requests": null,
+    "current_gets": [
+      {
+        "method": "GET",
+        "url": "http://127.0.0.1:18083/health",
+        "http_status": 200,
+        "started_at": "2026-11-11T05:53:41.578646+00:00",
+        "finished_at": "2026-11-11T05:53:42.015641+00:00"
+      },
+      {
+        "method": "GET",
+        "url": "http://127.0.0.1:18083/routing",
+        "http_status": 200,
+        "started_at": "2026-11-11T05:53:42.015682+00:00",
+        "finished_at": "2026-11-11T05:53:42.061880+00:00"
+      },
+      {
+        "method": "GET",
+        "url": "http://127.0.0.1:18083/v1/models",
+        "http_status": 200,
+        "started_at": "2026-11-11T05:53:42.061914+00:00",
+        "finished_at": "2026-11-11T05:53:42.115229+00:00"
+      }
+    ],
+    "current_configuration_proves_historical_configuration": false,
+    "safe_results_and_terminal_receipts_complete": true,
+    "durable_process_stdout_full_readback": false,
+    "remote_jobs_cancelled_or_retried": false,
+    "new_models": 0,
+    "root_audit": "provider-gateway-readonly/ROOT_GATEWAY_READBACK_AUDIT.json",
+    "root_audit_blob": "7e84afa20d64060b68bdc4d443e65323c15bb2bb"
+  },
+  "provider_original_failure_evidence": {
+    "scope": "Original failed native 55951 and two existing read-only settlement attempts, with explicitly derived redacted observations",
+    "archive": "provider-original-failure/mem8-provider-55951-original-failure-redacted-v3.tar.xz",
+    "archive_blob": "92cde56a3c1aea8fc0d7353621ebeb2ede3257e5",
+    "archive_bytes": 56432,
+    "archive_sha256": "5cbc5b4d293b57980d9efe02bea0c0ec0bfe0ae165e1c9881801c7bc9cd1ae3c",
+    "safe_regular_members": 64,
+    "root_full_remote_readback_passed": true,
+    "native_selected": 1,
+    "native_passed": 0,
+    "native_failed": 1,
+    "native_retries": 0,
+    "physical_provider_requests": null,
+    "remote_provider_outcome": "UNKNOWN",
+    "readonly_v1_status": "FAILED_ON_OLD_LOGS_MESSAGE_COLUMN",
+    "readonly_v2_status": "COMPLETED_ORIGINAL_DB_AND_WAL_UNCHANGED_NO_TERMINAL",
+    "readonly_v2_completed_at": "2026-11-11T05:29:21.693505+00:00",
+    "original_native_raw_junit_observations_binary_unchanged": true,
+    "unsafe_original_projections_excluded": true,
+    "unsafe_previously_uploaded_unreferenced_objects_excluded": true,
+    "unsafe_objects_deleted_from_github_claimed": false,
+    "privacy_erratum": "provider-original-failure/PROJECTION_PRIVACY_ERRATUM.json",
+    "new_owner_starts_or_model_replays": 0,
+    "new_database_reads_for_redaction": 0
   }
 }

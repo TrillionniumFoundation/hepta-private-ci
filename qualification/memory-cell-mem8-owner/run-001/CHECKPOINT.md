@@ -1,70 +1,111 @@
-# MEM8 owner and memory-path checkpoint
+# MEM8 owner, source and integrated-CI checkpoint
 
-Checkpoint: 2026-11-11 05:16:08 UTC. Adoption: **HOLD / NoUpdate**. Original blockers: **10 open**.
+Checkpoint: **2026-11-11 06:42:20 UTC**. Production adoption: **HOLD / NoUpdate**. Original adoption blockers: **10 remain open**. The completed archive-copy milestone and the engineering subgates below remain closed within their stated scopes.
 
-## Newly closed engineering subgates
+## Completed engineering work
 
-The complete owner integration is now qualified on exact `66f570a77c60aac8d33e6cbeac8dfd120ef1d867` / tree `8eaee893e1e6e43423f288fc654e05c3c95f6179` in two separate executions: ai395 run `mem8-native-66f570-tools-ai395-20261111-ed353-v7` and GitHub run `42953532462`, native job `130303174020`.
-
-| Scope | ai395 | GitHub |
+| Exact source | Executed scope | Actual result |
 | --- | --- | --- |
-| Memory | 11 passed, 0 failed; 420 unselected | 11 passed, 0 failed; 420 unselected |
-| Agentd | 5 passed, 0 failed; 781 unselected | 5 passed, 0 failed; 781 unselected |
-| Protocol | 16 passed, 0 failed | 16 passed, 0 failed |
-| Actual drain children | commit, revoke, panic | commit, revoke, panic |
-| Format, V8, real CLI build | Passed | Passed |
-| Three scoped fixes | Passed, source unchanged | Passed, source unchanged |
+| Source admission `ad5a4ed6` | Source-admission fixtures, format and scoped fix | 4 passed / 0 failed; original source unchanged |
+| Complete owner `66f570a7` | Memory, Agentd and protocol, independently on ai395 and GitHub | Each execution: 11 + 5 + 16 = 32 selected cases, no failures; three drain child markers; real same-source CLI and three clean scoped fixes |
+| F2 `0c32926c` | Five focused explicit-context/isolation groups | 11 executions, 10 distinct IDs; all passed; clean format/build/fixes |
+| G `9d9bdfba` | Six existing episodic Agentd regressions, compilation of added ignored provider fixture, format/V8/real CLI/fix | 6 passed / 0 failed; 782 unselected; all five source guards clean; ignored provider case executed 0 times |
+| Original descriptor case `cb0b276f` | The original signed-credit case, separately on Windows and Linux | 1/0 on each host, zero retries; 269 and 780 unselected respectively |
+| Dependency closure `f1fd544b` | Original complete Matrix package | 30 passed / 0 failed; two unselected; zero retries and clean scoped fix |
+| Dependency closure `f1fd544b` | Original complete RMCP package with a real same-source CLI | **268 passed / 0 failed**, seven unselected, zero retries; clean scoped fix and unchanged CLI/source |
 
-Each execution contains 32 selected cases; the three drain children belong to one Agentd case. The independent host completed at 04:07:00 UTC. Its CLI is 559,365,840 bytes with SHA-256 `2dc4165feb9cf8289b70b39c239b145d5976ec3142445cb6d15abf30bd91c8e2`; the GitHub CLI is separately built and has its own full hash. Both original binary hashes match their corresponding post-validation hashes. No source or assertion was relaxed to obtain a pass.
+Every row retains its own source identity. Test executions are not actor episodes, and the three drain markers are children of one Agentd test. Build/fix commands execute zero test cases. The older dc96 RMCP run remains **265 passed / 3 failed**; its separate same-source CLI repair is **3/0**. The later full f1fd run is an actual separate 268-case execution, not a combination of those older scores.
 
-F1 #5916 and F2 #5917 separately add the configured episodic ingress profile. Exact F2 `0c32926cfec58d986477fc72ba3a4787ab75fde9` / tree `0d5aa1544aad103f9099c7c8347d8075d6ecc76e` completed at 04:26:35 UTC, before the original 04:47:03 deadline.
+### G native evidence
 
-| F2 group | Passed | Failed | Unselected |
-| --- | ---: | ---: | ---: |
-| Config manager constraints | 2 | 0 | 323 |
-| Agentd episodic | 6 | 0 | 781 |
-| Qualification feature profile | 1 | 0 | 789 |
-| Memory extension control | 1 | 0 | 99 |
-| Native empty tool router | 1 | 0 | 2446 |
+Exact G head is `9d9bdfbaeeec3c618f3fc80e2f663a29c13f4b27`, tree `07192603a5164f4b5d4da24e37595be2a0a04777`, reviewed in [#5926](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5926). The original run completed at **05:26:34 UTC** within its independently declared budget. Its nextest UUID is `b58361b0-49b7-47f2-a15a-43ee34823b29`. Actual drain markers are `commit`, `revoke` and `panic`.
 
-These are 11 executions and 10 distinct test IDs: the profile case also runs with `qualification-cognitive-write`. Format, V8 input preparation, exact-source CLI build and two scoped fixes passed with unchanged source. F2 retains the original cognitive store for explicit source-checked context and disables the specified automatic memory paths when episodic ingress is configured. Existing profiles without this ingress retain their selection. NativeAppServer already selects the empty tool router; this is not a claim about every ordinary client, direct host/store caller, prompt contributor or skill.
+The root fully downloaded and checked the 67-member native archive, 43-member formatter archive and 12-member static review archive. All original phase receipts/raw logs, four source postimages, two zero-byte rewrite patches and CLI identity match. The real CLI is 559,365,856 bytes with SHA256 `49bfbb583bc08a549f8f023880875d2541473f5ec9b3ddd613298855fdf3e976`. Equal production binary bytes between F2 and G do not transfer test results; the G build and source identity are separately retained.
 
-The root independently checked the full 47-, 35- and 89-member host archives, the complete official GitHub ZIP, and all 88 original files in the F2 bundle. Checks include every manifest hash, raw-log/receipt binding, actual unique case IDs, the three marker lines, exact postimages and source/binary identity. The root audit and original archives are indexed in `MANIFEST.json`. Earlier real failures remain retained and are not overwritten by successful follow-ups.
+[G complete index](g-native-context/G_COMPLETE_EVIDENCE_INDEX.json) · [Root readback](g-native-context/ROOT_G_READBACK_AUDIT.json) · [38-path component source inventory](CURRENT_SOURCES.json)
 
-## Additional completed engineering checks
+The G fixture can exercise native source-aware context under a retained private test writer and test issuer. It has **not executed its ignored provider case**, learned experience in a predecessor model episode, authenticated the original deployment, or measured unseen successor benefit. F2's explicit-context constraints retain the canonical store while disabling the specified implicit memory paths; they do not establish global isolation of every ordinary client, direct store caller, prompt contributor or skill.
 
-The original Linux signed-credit case passed on exact cb0b: **1 passed / 0 failed**, 780 unselected, zero retries, clean source. Its full raw log, JUnit and the two earlier zero-test sparse-checkout failures are retained under the CI evidence branch.
+### Complete f1fd consumer qualification
 
-The original dependency run on dc96 remains **RMCP 265 passed / 3 failed**. A separately identified run built the real CLI from that same source and rechecked the original three failures: **3 passed / 0 failed**, zero retries, exact source and binary unchanged. This is not a single 268-pass execution. The complete raw follow-up bundle is still being obtained; full f1fd RMCP qualification is a separate next step.
+Exact source is `f1fd544b3e12ed6aca83872cdeda8114a1e058c0`, tree `fff40d06312d4f6a185772cd8a62a618d55f31cf`, reviewed in [#5934](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5934). Original dc96/f1fd Git commits and parent relationships were published unchanged; all 65 modes, blobs, sizes and native postimages were checked.
 
-The production Matrix candidate f1fd completed the **original 30 selected cases: 30 passed / 0 failed**, zero retries, with two ignored/unselected cases excluded. Scoped fix also passed with no source rewrite. Root independently read back both published archives, every original raw log and receipt, the JUnit, all 30 case identities and all 65 changed source postimages. The test ended at 04:52:50 UTC and scoped fix at 04:56:35 UTC. The earlier v3 compilation timeout executed zero tests; its preexisting JUnit is retained but receives no credit.
+The full RMCP command ran **05:48:01–05:55:54 UTC**. Scoped fix finished at **06:02:43 UTC**. Its fresh nextest UUID is `b86c9959-e257-4ce0-91e0-f2eb7120d2cc`. The root checked all 43 archive members, all three complete raw logs, the complete JUnit, every original case identity, all 268 actual case timestamps and source/CLI guards. The CLI is 1,440,865,824 bytes, SHA256 `da59e2327aa74b81be2b6f64a97c060bf67e17db17c860f7642541f804dadbe2`, identical before and after the run.
 
-The original SDK/test bytes, five-second restart deadline and 200,000-round PBKDF2 remain unchanged. The change optimizes the locked sha2 dev profile and supplies corresponding Bazel annotations. Both real lockfiles are unchanged by that profile follow-up. Whole-repository CI and cross-version migration are not implied. Complete evidence is in CI commit [26467689b04bd183fef2dc347fdd085fcde6d41e](https://github.com/TrillionniumFoundation/hepta-private-ci/tree/26467689b04bd183fef2dc347fdd085fcde6d41e/qualification/memory-cell-mem8-ci-followup/matrix-production-profile-v4).
+The Matrix correction keeps the original SDK, test, five-second restart timeout and 200,000-round PBKDF2. It optimizes the locked sha2 dev profile and corresponding Bazel annotations. Both actual lockfiles remain unchanged by that profile follow-up. The earlier compilation timeout executed no tests; its preexisting JUnit remains excluded.
 
-The SQLx vendor review has an explicit correction: the earlier unreferenced “existing exact-upstream-byte preservation condition” was not an identified repository instruction. The frozen AGENTS/formatter require formatting and do not create that condition. The 57-file vendor nevertheless has 44 Rust files with changed bytes, seven identical Rust files, two manifest bounds changes and four identical other files. Formatter conformance, normalized syntax comparison and official byte identity are separate observations. Original archived evidence is preserved.
+[Full CI evidence at 943196eb18a1](https://github.com/TrillionniumFoundation/hepta-private-ci/tree/943196eb18a1a04e7248307cf8708bed38b82b8b/qualification/memory-cell-mem8-ci-followup) · [Full f1fd and provider readback](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/943196eb18a1a04e7248307cf8708bed38b82b8b/qualification/memory-cell-mem8-ci-followup/checkpoint-v9/ROOT_READBACK_AUDIT.json)
 
-## Original provider request: admitted, completion unknown
+The SQLx provenance erratum withdraws the earlier unreferenced claim of an existing exact-upstream-byte preservation rule. The inspected AGENTS and formatter do not contain that condition. The actual vendor comparison still has 44 changed Rust files, seven identical Rust files, two manifest changes and four other identical files. Formatting conformance does not establish official upstream byte identity. Original archived wording and failures remain retained.
 
-The exact 55951 ordinary smoke selected one case: **0 passed / 1 failed**, 12 unselected, zero retries. Original nextest UUID is 20e63f6c-6648-4068-9b54-51f828fd99cc. The turn/start RPC returned inProgress for thread 01a1c8ef-125f-75ae-aaf1-0fe5a4c079f6 and turn 01a1c8ef-1fbd-75b0-bc6e-2b22a1f1f596. Its subsequent 20-second wait failed with “timed out waiting for turn/completed”; the native wrapper itself did not hit its outer timeout.
+## Final source composition and existing CI
 
-Only five of seven expected phases were observed. No completion notification or Full thread/read terminal was obtained. The after-state GET returned HTTP 502 and masked overall driver-result generation; the original raw log and native receipt remain intact. A proposed diagnostic patch preserves that secondary exception separately, but does not change the original run, timeout or assertions.
+The source is now combined in [#5935](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5935): head `2ae5215beaf8d7b7df111a090b82134beae2683d`, tree `12159640adcf073b51f3837e75575e11f5c20233`, over common `96038ccf0660154fac143ba6cbe4be81e00813e8`. The three parents are G, provider/Windows `55951ed9`, and dependency `f1fd544b`. Their 38 + 9 + 65 paths are disjoint. The original seven Windows postimages are already identical in the provider parent.
 
-The retained fixture /tmp/.tmpr79GeL exists with mode 0700. Fixture-owner teardown does not prove cancellation or completion at the remote provider. This ordinary ProductClient run has no native DurableInferenceControl journal: one cannot be created afterward to pretend to recover it. Reconciliation uses only the original thread/turn and existing retained records. **One logical turn was admitted; physical request count and the final model outcome remain unknown. There are zero new scored memory-benefit episodes.**
+Two independent tree reconstructions checked 73 original directory objects and reproduced all four original branch roots before deriving the combined **112-path** tree. The composition adds no new source logic and preserves every original postimage.
 
-## Reviewable source and original-owner inputs
+The complete static review package has **157 members**. The root fetched its full 392,476 bytes from immutable commit `049459ac4c2b8c5626668a80d38e5aedafeb0286`, checked the archive SHA256 and Git blob, and compared every member byte with the original local package. Offline replay revalidated the 73 Git trees, four original branch roots, 112-path combination, 107 CI source files, 121 frozen CI files and 30 pinned blocker evidence files. This review performs zero new native tests or model calls.
 
-The final B/C/D1/D2/D3/E/F1/F2 review package is retained under review-stack-final. Root reconstructed complete Git trees from the exact ad5 base: E equals qualified 66f, F1 equals 911d62a9 and F2 equals 0c32926. This is exact source equivalence, not a new native run or an assertion that every intermediate stage was separately tested.
+[Root full review readback](integration-review/ROOT_FINAL_REVIEW_READBACK_AUDIT.json) · [Independent V2 blocker review](integration-review/FINAL_BLOCKER_REVIEW_V2.md) · [Existing CI policy review](integration-review/CI_REVIEW.md)
 
-The owner-binding review is retained at qualification/memory-cell-mem8/owner-binding-readonly-20261111. Its bounded public-role read found test_only roles; the startup record reports release false and supplies no observed timestamp. Neither host availability, a new fixture owner nor an archive copy supplies the original deployed writer/source verifier, independent issuer or real effect state. No private key or credential values were exported.
+At this checkpoint, the existing automatic CI for the composition is **in progress**. MEM, architecture, Windows and the blocking-CI chain have actual new run identities. main's observed required check contexts are **CI required** and **Architecture required**; the common review base is unprotected. Classic protection detail access returned HTTP 403, so no broader absence-of-protection claim is made. Cargo/workflow changes select the repository's existing full-repo CI scope. Queued jobs, completed steps without reviewed case evidence, and older component passes do not qualify this integration head.
 
-The concrete missing inputs are the original config/registration/native-profile and preheld owner pidfd; the original private writer/current cut and authenticated source adapter; the original route descriptor and pending-request reconciliation evidence; and the independent final-use authority plus original effect/outbox/destination state. A numeric PID, source digest or self-authored JSON grant is not a replacement.
+Both provider diagnostic cases remain ignored in these ordinary CI paths. This new CI campaign does not replay the old unknown turn or reset the already completed original owner/F deadline.
 
-G is separately published as draft [#5926](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5926), exact 9d9bdfbaeeec3c618f3fc80e2f663a29c13f4b27. Its four postimages match the real formatter and passed independent static review. A new bounded zero-model native phase is prepared to compile the new ignored fixture and run the six existing F2 cases. No G native pass or provider result is claimed at this snapshot. It does not reset the completed owner/F deadline and cannot establish unseen-source benefit or original deployment custody.
+## Original provider attempt remains failed and unsettled
 
-## Original acceptance gates
+The ordinary smoke on exact `55951ed9094ae894f0256a3461fd9504ef060473` remains **0 passed / 1 failed**, 12 unselected and zero retries. Its native wrapper ran **04:46:25–04:48:18 UTC**, exit 100, without hitting the wrapper's outer timeout. The original **20-second matching-completion wait** failed after turn admission. Only five of seven expected phases were observed; there is no matching completion or Full thread/read terminal.
 
-The full original 61,412,948-byte MEM6 archive is preserved and independently reconstructed from all 128 GitHub parts at b66d74d4a61b15f3d9e1eb3b5ddfa251777ee4c1. This closes the original raw-copy blocker. Full owner/effect cold recovery remains a separate open gate.
+- Original thread: `01a1c8ef-125f-75ae-aaf1-0fe5a4c079f6`
+- Original turn: `01a1c8ef-1fbd-75b0-bc6e-2b22a1f1f596`
+- Original requested client key: `qualification-e2e-message:Integer(2)`
+- Original nextest UUID: `20e63f6c-6648-4068-9b54-51f828fd99cc`
 
-Historical science is unchanged: fixed-selector retention is **30/84 versus 28/84**, 2 wins/82 ties/0 losses, with 16 initial no-ops per arm. The source-level one-sided 95% lower bound remains **0.0**. The newer selector comparison is 21/54 versus 13/54, with 9 wins/44 ties/1 loss and 10 initial no-ops per arm; that is selector evidence. Previous fresh-process delivery and KV/BM25/ICL/uniform paths are zero-model mechanism checks. The now-admitted ordinary smoke is neither a successor task nor memory-benefit evidence.
+One logical application turn was admitted. **Physical provider request count and remote outcome remain UNKNOWN.** The original after-state GET returned 502 and prevented overall driver-result generation; the actual native failure is retained separately. The retained fixture remains private. Its ordinary ProductClient did not have a native DurableInferenceControl journal, so none is fabricated retrospectively.
 
-Unseen episodic benefit, strong matched baselines/trained association, original source custody and independent trust, physical deletion/cache propagation, final external-effect fencing, complete owner/effect recovery, full cost and slow consolidation, and repository-wide CI retain their own gates. No scoring rule, threshold or weighting was relaxed. Current production action remains **NoUpdate**.
+Read-only settlement v1 failed on an obsolete logs-column assumption. Its separately identified v2 completed at **05:29:21 UTC**, with original DB/WAL hashes unchanged, an empty exact queue binding and an original recovery-ready candidate, but no assistant/terminal. A missing process path, zero local token counter or absent queue row cannot prove remote cancellation or zero physical model requests.
+
+A later single bounded gateway journal query covered **04:47–04:49 UTC** and returned zero records/matches. Three separate current GETs at **05:53:41–05:53:42 UTC** returned HTTP 200 for health, routing and models. They are current availability observations, not original inference settlement. The complete safe RESULTs and terminal receipts were read back; a subsequent durable stdout frontend read did not return and that stream is explicitly excluded.
+
+[Provider source PR](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5908) · [Original failed qualification](provider-original-failure/QUALIFICATION_RESULT.json) · [Current GET/journal readback](provider-gateway-readonly/ROOT_GATEWAY_READBACK_AUDIT.json)
+
+### Explicit projection correction
+
+The two original read-only rollout projections wrongly copied a nested world-state object while claiming private context was absent. Those original projections and the prior unreferenced unsafe archive are excluded from the current package. The original private records were not changed. Explicitly derived redacted projections retain original file/line hashes, permitted scalar observations, and only field names/type/hash/length for world-state. The old objects are not claimed deleted from GitHub.
+
+The root and independent reviewers checked all **64 members** of the new package, the absence of the removed context text, and exact identity of original native logs, JUnit, observation and binary receipts. The correction neither changes the failure nor supplies a successful terminal. [Projection erratum](provider-original-failure/PROJECTION_PRIVACY_ERRATUM.json)
+
+## Source exclusions and the real capacity limit
+
+The pinned metadata audit establishes a **minimum hard exclusion union of 69 source groups**. The old MEM union was 67; two additional groups were exposed by an earlier cell-causal pilot. The released catalog has **178 groups: 97 train, 54 development and 27 retention_validation**. Of the 81 groups in the existing candidate roles, 65 are known excluded. This leaves **at most 16: 7 development and 9 retention_validation**.
+
+All 16 have current exposure **UNKNOWN**. Verified unseen capacity is **null**, and none is admitted to a new study. The 97 train-role entries are outside the existing released-role protocol; this is not a claim that all 97 were actually trained on. Catalog/source hashes also do not authenticate custody or group independence.
+
+The existing W gate requires at least **20 groups and four per role**. Even optimistically this catalog remainder is short by at least four. Keeping the actual old W allocation of 16 development / 4 retention_validation would require at least nine more development groups. These requirements are not transferred to E: the inspected episodic gate requires its own pre-execution protocol and contains no approved numeric source minimum or allocation.
+
+The root downloaded the full 25-member metadata package and replayed the offline audit against the full original **61,412,948-byte** MEM6 CAS and the original MEM5 ZIP. All 17 retained metadata inputs, 69 per-group provenance chains, roles and residual counts passed. This metadata audit executed no new actor or model and cannot certify complete current exposure.
+
+[Full source report](source-exclusion/REPORT.md) · [69 exclusions and provenance](source-exclusion/EXCLUSIONS.json) · [Capacity and W/E distinction](source-exclusion/CAPACITY.json) · [Root full readback and replay](source-exclusion/ROOT_SOURCE_READBACK_AUDIT.json)
+
+## Scientific and original-owner gates
+
+Historical fixed-selector retention remains **30/84 versus 28/84**, 2 wins / 82 ties / 0 losses, with 16 initial no-ops per arm. The source-level one-sided 95% lower bound remains **0.0**, so the positive-benefit gate is **not met**. Historical selector comparison remains **21/54 versus 13/54**, 9 wins / 44 ties / 1 loss, with 10 initial no-ops per arm; it is selector evidence. No new scored memory-benefit actor episode has been added.
+
+The original archive-copy blocker is closed: all 128 parts reconstruct the original archive, and a separate host restored its files. Original owner/effect recovery remains a distinct gate. The bounded original-deployment review found test-only public roles and a release-false startup record; it did not authenticate the original production writer, source verifier, independent final-use issuer or effect destination.
+
+The bridge code is implemented and fixture-qualified. To close its deployment gate requires the original descriptors/caller binding, canonical store/current cut, retained authority/lease lineage and source custody adapter. Cold recovery must preserve that lineage under the authorized recovery interfaces and reconcile original pending requests/effects by identity. A new test owner or grant supplies none of those original capabilities.
+
+| Original blocker | Current evidence boundary |
+| --- | --- |
+| Working-state scientific gate | Existing lower bound 0.0; adequate new W cohort unavailable in current catalog |
+| Ordinary-owner bridge | Implemented/qualified in fixtures; original deployed binding unauthenticated |
+| Provider runtime binding | Original failed test with one admitted turn, remote terminal unknown; G provider path unexecuted |
+| Unseen episodic benefit | Separate E protocol, verified unseen cohort and actual paired successor study not completed |
+| Strong baselines and association | Python mechanism controls exist; matched native actor interventions and trained head not qualified |
+| Source ownership/exposure/trust | 69 exclusions proven; current complete exposure and independent authority not authenticated |
+| Deletion and external effect | Logical withdrawal/read checks passed; physical propagation and real commit-time effect fencing not established |
+| Full owner/effect cold recovery | Original files recovered; original authority, pending inference and real effect state not recovered |
+| Full cost and slow consolidation | Full lifecycle cost and an actual slow semantic/skill component not qualified |
+| Hosted CI | Component scopes passed; final 112-path combination is undergoing existing required CI |
+
+The minimum missing inputs and existing execution interfaces are recorded in the independent blocker review and the current [BLOCKERS.json](BLOCKERS.json). Hash validity, file restoration, native regression success and real successor benefit are recorded as separate observations. No threshold, timeout, assertion or historical denominator was relaxed to close a gate.

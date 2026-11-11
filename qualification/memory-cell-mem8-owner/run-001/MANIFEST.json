@@ -154,6 +154,62 @@
       "git_blob_sha": "6c32707ad81c4bab44ebe6e195e9aab89317b5f1",
       "members": 130,
       "scope": "Final source-only review stages and retained exact native references; no qualification transfer."
+    },
+    {
+      "path": "g-native-context/NATIVE_EVIDENCE.tar.xz",
+      "bytes": 49292,
+      "sha256": "3babe551f6a029803467dbc89f5ea949c88b93916bb20c3638bb5ba276b50a75",
+      "git_blob_sha": "887bd1823ce74a0e579dac39deae6bd9a77fae8c",
+      "members": 67,
+      "scope": "Exact G native six-case result, all five phase receipts, source and actual CLI identity; ignored provider case not executed."
+    },
+    {
+      "path": "g-native-context/FORMAT_EVIDENCE.tar.xz",
+      "bytes": 41624,
+      "sha256": "d2fee84f30985c162ef778c9956c033c74f252bef8be5a7c03ae84c290056c14",
+      "git_blob_sha": "82b44ef97739e5e1afb1fb993d16de1545517a4e",
+      "members": 43,
+      "scope": "Original G formatter inputs, postimages and clean donor receipts; not a separate native run."
+    },
+    {
+      "path": "static-reviews/mem8-static-owner-and-successor-review.tar.xz",
+      "bytes": 20424,
+      "sha256": "791f0503aa970ea041ce4e4bf1f485bd280657593ba2c2127b4a5d16e95ce1af",
+      "git_blob_sha": "37cb563274566a559352724e36a1f52c7cfb69be",
+      "members": 12,
+      "scope": "Independent static review and minimum original deployment inputs; requires separately retained exact source artifacts."
+    },
+    {
+      "path": "source-exclusion/source-exclusion-24files.tar.xz",
+      "bytes": 68968,
+      "sha256": "5d2780a32a4ae1b42925ce3b484c7b616e003a84679ae996b9862da427ad00b1",
+      "git_blob_sha": "97bd07d1ec0efb027cc7737a47911ad128bd4c3c",
+      "members": 25,
+      "scope": "24 original source-metadata files and member manifest, full root download/replay passed; current exposure UNKNOWN."
+    },
+    {
+      "path": "provider-gateway-readonly/PROVIDER_READONLY_EVIDENCE.tar.xz",
+      "bytes": 10824,
+      "sha256": "31deecb726696a4bf05b1018243757e99e4f0e63437cdd9040cfa3edd9b06ed7",
+      "git_blob_sha": "6d81a371568ca552ea4384b0b289034b150c9f86",
+      "members": 13,
+      "scope": "Original-window bounded journal and three current GET-only observations; full safe result/terminal readback, original outcome UNKNOWN. Raw process stdout frontend read was incomplete and that stream is excluded."
+    },
+    {
+      "path": "provider-original-failure/mem8-provider-55951-original-failure-redacted-v3.tar.xz",
+      "bytes": 56432,
+      "sha256": "5cbc5b4d293b57980d9efe02bea0c0ec0bfe0ae165e1c9881801c7bc9cd1ae3c",
+      "git_blob_sha": "92cde56a3c1aea8fc0d7353621ebeb2ede3257e5",
+      "members": 64,
+      "scope": "Original 55951 failure and existing settlement evidence. Native bytes unchanged; two unsafe projections excluded and replaced by explicitly derived redactions with erratum. Original remote outcome UNKNOWN."
+    },
+    {
+      "path": "integration-review/mem8-composition-ci-blocker-review-v2.tar.xz",
+      "bytes": 392476,
+      "sha256": "e5988a03861667afeb195e9c09bd6f43f89ea87d562ed59f281e2bded6afa46d",
+      "git_blob_sha": "ddbdcb458f0336d6162d9a90b942a3589c134eef",
+      "members": 157,
+      "scope": "Published 112-path composition, 73 original Git trees, 107 CI source files, 121 frozen CI files, 30 blocker evidence pins and independent V2 review. Complete remote binary and every member verified by root, offline replay passed. No combined-head CI terminal or new model result claimed."
     }
   ],
   "audits": [
@@ -181,10 +237,26 @@
       "path": "review-stack-final/ROOT_FULL_TREE_AUDIT.json",
       "git_blob_sha": "4ab58dd299c462b27d487f2a9bc526cc5b21c239",
       "scope": "Three independently reconstructed complete Git trees; no new native execution."
+    },
+    {
+      "path": "g-native-context/ROOT_G_READBACK_AUDIT.json",
+      "git_blob_sha": "9ead8f72339ddb217bd8e3d98664b3a222610c32"
+    },
+    {
+      "path": "source-exclusion/ROOT_SOURCE_READBACK_AUDIT.json",
+      "git_blob_sha": "f23c18775ad4a2f0c50dea1e4ed77fc4c201fc76"
+    },
+    {
+      "path": "provider-gateway-readonly/ROOT_GATEWAY_READBACK_AUDIT.json",
+      "git_blob_sha": "7e84afa20d64060b68bdc4d443e65323c15bb2bb"
+    },
+    {
+      "path": "integration-review/ROOT_FINAL_REVIEW_READBACK_AUDIT.json",
+      "git_blob_sha": "8091c934798106747f1b4e8856ffd32efc8a372a"
     }
   ],
-  "checkpoint_utc": "2026-11-11 05:16:08 UTC",
-  "ci_evidence_parent": "26467689b04bd183fef2dc347fdd085fcde6d41e",
+  "checkpoint_utc": "2026-11-11 06:42:20 UTC",
+  "ci_evidence_parent": "943196eb18a1a04e7248307cf8708bed38b82b8b",
   "closed_original_blockers": [
     "MEM6-CLOUD-AND-GITHUB-RAW-COPY"
   ],
@@ -201,18 +273,44 @@
       "failed": 1,
       "admitted_turns": 1,
       "model_terminal_observed": false
+    },
+    "G_existing_regression_cases": {
+      "passed": 6,
+      "failed": 0,
+      "unselected": 782,
+      "provider_case_executions": 0
+    },
+    "dc96_rmcp_original": {
+      "passed": 265,
+      "failed": 3,
+      "selected_unique": 268,
+      "retries": 0
+    },
+    "dc96_rmcp_separate_cli_recheck": {
+      "passed": 3,
+      "failed": 0,
+      "retries": 0
+    },
+    "f1fd_full_rmcp": {
+      "passed": 268,
+      "failed": 0,
+      "selected_skipped": 0,
+      "filtered_or_ignored": 7,
+      "retries": 0
     }
   },
   "current_sources": {
+    "path": "CURRENT_SOURCES.json",
+    "head": "9d9bdfbaeeec3c618f3fc80e2f663a29c13f4b27",
+    "tree": "07192603a5164f4b5d4da24e37595be2a0a04777",
+    "paths": 38,
+    "scope": "MEM component source inventory; the final 112-path integration has a separate source identity and pending CI.",
     "complete_owner_native_base": {
       "head": "66f570a77c60aac8d33e6cbeac8dfd120ef1d867",
-      "scope": "Complete owner test suite qualified here; F2 adds separate focused validation.",
-      "tree": "8eaee893e1e6e43423f288fc654e05c3c95f6179"
+      "tree": "8eaee893e1e6e43423f288fc654e05c3c95f6179",
+      "scope": "Complete owner memory/Agentd/protocol qualification remains bound to this exact 66f commit. It is not a G test result."
     },
-    "head": "0c32926cfec58d986477fc72ba3a4787ab75fde9",
-    "path": "CURRENT_SOURCES.json",
-    "paths": 35,
-    "tree": "0d5aa1544aad103f9099c7c8347d8075d6ecc76e"
+    "qualification_retains_each_exact_head": true
   },
   "formatted_stage_source_only_manifest": {
     "git_blob_sha": "2031631bdeb60ab65d85f54f4489bece26bbbfe6",
@@ -228,17 +326,18 @@
     "Every archive is an immutable Git blob smaller than 500000 bytes.",
     "Completed results are bound to their actual source. Compilation failures execute zero test cases. Running jobs are not passing results.",
     "Source-only stage replay is distinct from native qualification.",
-    "The historical owner snapshot incorporated CI evidence commit 5ddc248b7e46214da728b44496d66c2e7ae3f62d. This checkpoint composes owner-binding base eb3616fdce370fc6bd23a6ddf17cd94265a5bcd3 (descending from 6c47) with the subsequent CI evidence through 26467689b04bd183fef2dc347fdd085fcde6d41e; original evidence bytes are retained.",
+    "Historical v6 composition: owner-binding eb3616fdce370fc6bd23a6ddf17cd94265a5bcd3 with CI 26467689b04bd183fef2dc347fdd085fcde6d41e produced checkpoint 743efac8d1c89e599b427da7e37f41d18af07985. This later composition retains that ancestry and adds CI evidence through the separately recorded ci_evidence_parent.",
     "The complete original archive is preserved separately in research/mem6-full-archive-20261111-ed353 at immutable commit b66d74d4a61b15f3d9e1eb3b5ddfa251777ee4c1.",
     "The 03:55 failed-environment checkpoint is historical. Exact 66f complete owner and exact F2 focused native gates have now passed; original deployed owner, science and whole-repository gates are unchanged.",
-    "This checkpoint supersedes the 04:32 running-state observations: Linux original case, dc96 three-case RMCP repair, and f1fd full Matrix are now terminal; the original ordinary provider turn is admitted but its outcome remains unknown."
+    "This checkpoint supersedes the 04:32 running-state observations: Linux original case, dc96 three-case RMCP repair, and f1fd full Matrix are now terminal; the original ordinary provider turn is admitted but its outcome remains unknown.",
+    "This checkpoint adds exact G native qualification, actual complete f1fd RMCP 268/0, full dc96 evidence readback, the 69-group exclusion audit, explicit provider projection correction and the complete 157-member composition/CI/blocker review. Old source-specific results and failures remain unchanged; the combined source has its own ongoing existing CI. No whole-repository or model-benefit result is inferred."
   ],
   "open_original_blocker_count": 10,
   "original_staging_manifest": {
     "git_blob_sha": "f7b9404d75f3dbc842805349dc052169cd9a1ce7",
     "path": "STAGES.json"
   },
-  "previous_checkpoint_commit": "6c47d1f6c82fd5fd2baf53b0d1dedbdcd6472874",
+  "previous_checkpoint_commit": "743efac8d1c89e599b427da7e37f41d18af07985",
   "production_adoption": false,
   "repository": "TrillionniumFoundation/hepta-private-ci",
   "schema": "hepta.mem8.owner-checkpoint.evidence.v1",
@@ -269,17 +368,199 @@
     "head": "9d9bdfbaeeec3c618f3fc80e2f663a29c13f4b27",
     "tree": "07192603a5164f4b5d4da24e37595be2a0a04777",
     "parent": "0c32926cfec58d986477fc72ba3a4787ab75fde9",
-    "status": "PUBLISHED_FORMATTED_SOURCE_ZERO_MODEL_NATIVE_PREPARATION",
+    "status": "PASSED_EXACT_G_SIX_REGRESSIONS_BUILD_FMT_FIX_ROOT_READBACK",
     "formatted_source_capsule_sha256": "5cb33e3183ba2e5175751f57f6b115021ced43a6f9c3b545f8f3b795c9c6f964",
     "full_four_postimages_readback": true,
     "independent_static_review": "NO_MUST_FIX_IDENTIFIED_NOT_COMPILATION",
     "new_ignored_case": "production_composition::tests::episodic_control::provider::episodic_real_provider_fresh_context_smoke",
     "actual_provider_case_executed": false,
-    "actual_g_native_result": null,
-    "existing_six_cases_only_planned": true,
+    "actual_g_native_result": {
+      "head": "9d9bdfbaeeec3c618f3fc80e2f663a29c13f4b27",
+      "tree": "07192603a5164f4b5d4da24e37595be2a0a04777",
+      "run_id": "mem8-native-g-9d9bdfb-ai395-20261111-ed353-v1",
+      "scope": "Compilation of added G test source plus six existing episodic Agentd regression cases, format/V8/build/scoped fix. The ignored provider case was not selected.",
+      "started_at": "2026-11-11T05:18:34.833360+00:00",
+      "finished_at": "2026-11-11T05:26:34.961045+00:00",
+      "deadline_utc": "2026-11-11T06:03:34.833360+00:00",
+      "passed_cases": [
+        "app_runtime::tests::episodic_embedding_keeps_the_store_but_removes_implicit_memory_paths",
+        "episodic_import::source_read::tests::episodic_source_observation_follows_commit_generation_not_ack_order",
+        "production_composition::tests::episodic_control::drain::episodic_import_cancellation_cannot_overtake_owner_settlement",
+        "production_composition::tests::episodic_control::episodic_config_cannot_create_a_missing_production_writer",
+        "production_composition::tests::episodic_control::episodic_control_replays_original_commit_then_rejects_revoked_context",
+        "production_composition::tests::episodic_control::episodic_wire_without_configured_source_cannot_mutate_original_owner"
+      ],
+      "failed_cases": [],
+      "observed_summary_lines": [
+        "     Summary [   2.110s] 6 tests run: 6 passed, 782 skipped"
+      ],
+      "actual_drain_child_markers": [
+        "commit",
+        "revoke",
+        "panic"
+      ],
+      "source_clean_before_after": true,
+      "provider_case_executions": 0,
+      "evidence": {
+        "git_blob_sha": "712f89d3b78a32bc101a2b8fcca3947611f7794e",
+        "bytes": 6608,
+        "sha256": "69ca626e0dd472a899a480d16720888790bf52db1f98861664222237c9f717d6"
+      }
+    },
+    "existing_six_cases_only_planned": false,
     "independent_new_run_budget_minutes": 45,
     "old_owner_deadline_not_reset": true,
     "fixture_only": true,
-    "unseen_benefit_evaluated": false
+    "unseen_benefit_evaluated": false,
+    "new_model_calls_this_g_run": 0,
+    "root_complete_readback": true,
+    "root_audit": "g-native-context/ROOT_G_READBACK_AUDIT.json",
+    "root_audit_blob": "9ead8f72339ddb217bd8e3d98664b3a222610c32",
+    "complete_evidence_index": "g-native-context/G_COMPLETE_EVIDENCE_INDEX.json",
+    "native_archive_blob": "887bd1823ce74a0e579dac39deae6bd9a77fae8c",
+    "native_archive_sha256": "3babe551f6a029803467dbc89f5ea949c88b93916bb20c3638bb5ba276b50a75",
+    "native_archive_bytes": 49292,
+    "all_five_phase_source_guards_clean": true,
+    "provider_case_status": "COMPILED_IGNORED_NOT_EXECUTED",
+    "original_deployment_recovery_claimed": false
+  },
+  "source_exclusion_inventory": {
+    "status": "PINNED_METADATA_VERIFIED_CURRENT_GLOBAL_EXPOSURE_UNKNOWN",
+    "observed_at": "2026-11-11T05:32:15.447672+00:00",
+    "known_exclusion_groups": 69,
+    "mem_lineage_exclusion_groups": 67,
+    "additional_prior_pilot_groups": 2,
+    "catalog_groups": 178,
+    "candidate_role_groups": 81,
+    "known_excluded_candidate_groups": 65,
+    "not_in_known_union_upper_bound": 16,
+    "upper_bound_by_original_role": {
+      "development": 7,
+      "retention_validation": 9
+    },
+    "verified_unseen_capacity": null,
+    "admitted_new_sources": 0,
+    "current_complete_exposure_certified": false,
+    "working_state_gate_minimum": 20,
+    "working_state_gate_minimum_each_role": 4,
+    "historic_mem6_working_state_allocation": {
+      "development": 16,
+      "retention_validation": 4
+    },
+    "optimistic_shortfall_to_W_total": 4,
+    "optimistic_development_shortfall_to_historic_W_allocation": 9,
+    "episodic_E_numeric_minimum": null,
+    "episodic_E_requires_separate_pre_execution_protocol": true,
+    "old_W_minima_transferred_to_E": false,
+    "report": "source-exclusion/REPORT.md",
+    "per_group_provenance": "source-exclusion/EXCLUSIONS.json",
+    "capacity": "source-exclusion/CAPACITY.json",
+    "root_audit": "source-exclusion/ROOT_SOURCE_READBACK_AUDIT.json",
+    "archive_blob": "97bd07d1ec0efb027cc7737a47911ad128bd4c3c",
+    "archive_bytes": 68968,
+    "archive_sha256": "5d2780a32a4ae1b42925ce3b484c7b616e003a84679ae996b9862da427ad00b1",
+    "archive_regular_members": 25,
+    "root_full_download_and_offline_replay_passed": true,
+    "new_host_jobs_by_root_audit": 0,
+    "new_model_calls": 0,
+    "new_actor_episodes": 0
+  },
+  "provider_readonly_followup": {
+    "status": "ORIGINAL_JOURNAL_ZERO_MATCHES_CURRENT_GETS_200_ORIGINAL_OUTCOME_UNKNOWN",
+    "original_journal_window_utc": [
+      "2026-11-11 04:47:00 UTC",
+      "2026-11-11 04:49:00 UTC"
+    ],
+    "journal_queries": 1,
+    "journal_entries": 0,
+    "exact_original_identifier_matches": 0,
+    "original_provider_final_status": "UNKNOWN",
+    "original_physical_provider_requests": null,
+    "current_gets": [
+      {
+        "method": "GET",
+        "url": "http://127.0.0.1:18083/health",
+        "http_status": 200,
+        "started_at": "2026-11-11T05:53:41.578646+00:00",
+        "finished_at": "2026-11-11T05:53:42.015641+00:00"
+      },
+      {
+        "method": "GET",
+        "url": "http://127.0.0.1:18083/routing",
+        "http_status": 200,
+        "started_at": "2026-11-11T05:53:42.015682+00:00",
+        "finished_at": "2026-11-11T05:53:42.061880+00:00"
+      },
+      {
+        "method": "GET",
+        "url": "http://127.0.0.1:18083/v1/models",
+        "http_status": 200,
+        "started_at": "2026-11-11T05:53:42.061914+00:00",
+        "finished_at": "2026-11-11T05:53:42.115229+00:00"
+      }
+    ],
+    "current_configuration_proves_historical_configuration": false,
+    "safe_results_and_terminal_receipts_complete": true,
+    "durable_process_stdout_full_readback": false,
+    "remote_jobs_cancelled_or_retried": false,
+    "new_models": 0,
+    "root_audit": "provider-gateway-readonly/ROOT_GATEWAY_READBACK_AUDIT.json",
+    "root_audit_blob": "7e84afa20d64060b68bdc4d443e65323c15bb2bb"
+  },
+  "dependency_source_pr": 5934,
+  "final_source_composition": {
+    "pr": 5935,
+    "head": "2ae5215beaf8d7b7df111a090b82134beae2683d",
+    "tree": "12159640adcf073b51f3837e75575e11f5c20233",
+    "parents": [
+      "9d9bdfbaeeec3c618f3fc80e2f663a29c13f4b27",
+      "55951ed9094ae894f0256a3461fd9504ef060473",
+      "f1fd544b3e12ed6aca83872cdeda8114a1e058c0"
+    ],
+    "base": "96038ccf0660154fac143ba6cbe4be81e00813e8",
+    "changed_files": 112,
+    "pairwise_path_conflicts": 0,
+    "original_postimages_preserved": true,
+    "root_original_tree_objects_checked": 73,
+    "current_ci_status": "AUTOMATIC_EXISTING_CI_IN_PROGRESS_NO_TERMINAL_QUALIFICATION_YET",
+    "main_required_contexts_observed": [
+      "CI required",
+      "Architecture required"
+    ],
+    "review_base_branch_is_protected": false,
+    "classic_protection_details_read": "HTTP_403_NOT_INFERRED",
+    "new_logic_in_composition": false,
+    "provider_cases_remain_ignored": true,
+    "source_component_passes_transferred_to_this_head": false,
+    "review_bundle": "integration-review/mem8-composition-ci-blocker-review-v2.tar.xz",
+    "root_full_review_bundle_readback": "integration-review/ROOT_FINAL_REVIEW_READBACK_AUDIT.json",
+    "root_full_review_bundle_readback_passed": true,
+    "review_bundle_members": 157,
+    "final_blocker_review": "integration-review/FINAL_BLOCKER_REVIEW_V2.json"
+  },
+  "provider_original_failure_evidence": {
+    "scope": "Original failed native 55951 and two existing read-only settlement attempts, with explicitly derived redacted observations",
+    "archive": "provider-original-failure/mem8-provider-55951-original-failure-redacted-v3.tar.xz",
+    "archive_blob": "92cde56a3c1aea8fc0d7353621ebeb2ede3257e5",
+    "archive_bytes": 56432,
+    "archive_sha256": "5cbc5b4d293b57980d9efe02bea0c0ec0bfe0ae165e1c9881801c7bc9cd1ae3c",
+    "safe_regular_members": 64,
+    "root_full_remote_readback_passed": true,
+    "native_selected": 1,
+    "native_passed": 0,
+    "native_failed": 1,
+    "native_retries": 0,
+    "physical_provider_requests": null,
+    "remote_provider_outcome": "UNKNOWN",
+    "readonly_v1_status": "FAILED_ON_OLD_LOGS_MESSAGE_COLUMN",
+    "readonly_v2_status": "COMPLETED_ORIGINAL_DB_AND_WAL_UNCHANGED_NO_TERMINAL",
+    "readonly_v2_completed_at": "2026-11-11T05:29:21.693505+00:00",
+    "original_native_raw_junit_observations_binary_unchanged": true,
+    "unsafe_original_projections_excluded": true,
+    "unsafe_previously_uploaded_unreferenced_objects_excluded": true,
+    "unsafe_objects_deleted_from_github_claimed": false,
+    "privacy_erratum": "provider-original-failure/PROJECTION_PRIVACY_ERRATUM.json",
+    "new_owner_starts_or_model_replays": 0,
+    "new_database_reads_for_redaction": 0
   }
 }
