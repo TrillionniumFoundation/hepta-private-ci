@@ -1,0 +1,141 @@
+{
+  "schema": "hepta.mem.delivery-native-terminal.v1",
+  "status": "PASS_DECLARED_NATIVE_SCOPE_ONLY",
+  "scientific_adoption": "HOLD",
+  "native_job_id": "1a1cac77be5-2564-862",
+  "native_runtime_terminal": {
+    "at_unix_ms": 1794403623250,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a1cac77be5-2564-862",
+    "launch_nonce": "a6ee340c9db5a4ccedb42459dd412314",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 1614,
+        "stored": 1614
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "driver_blob": "05915aa7c28d424ae570dd95afa3847be29b6f82",
+  "archive_blob": "a43b413f68ef67ee0d9d2d0ceb26976f2b3aa47c",
+  "archive_sha256": "536eaef2efa46aa808ba05254e47ff3ffca3309037fbb14ba8227a44fec71c8e",
+  "archive_bytes": 32796,
+  "local_audit": {
+    "archive_blob": "a43b413f68ef67ee0d9d2d0ceb26976f2b3aa47c",
+    "sha256": "536eaef2efa46aa808ba05254e47ff3ffca3309037fbb14ba8227a44fec71c8e",
+    "bytes": 32796,
+    "regular_members": 42,
+    "manifest_members": 41,
+    "tested": {
+      "commit": "542443191af06facb891f58fecb8bfe7a925c893",
+      "tree": "adcc19bcdd31c10781e57296730d9c81869c3d98",
+      "status": "",
+      "cargo_lock_sha256": "98b3767c6e74bf6eeb5894db760259dbc400cbfd0685af8ad915c92d25408d69",
+      "bazel_lock_sha256": "783b3ad329fa53bd4a0e48be6907d38259fa2880d61bd1994b863d7f78bbca57"
+    },
+    "test_executions": 6,
+    "unique_cases": 6,
+    "case_ids": [
+      "native_app_server::context::tests::delivery_off_withholds_physical_context_but_keeps_revalidation_and_replay",
+      "native_app_server::control::tests::context_delivery_is_bound_before_connection_and_preserves_legacy_admission",
+      "native_app_server::control::tests::intelligence_handoff_is_committed_to_native_admission_identity",
+      "native_app_server::control::tests::pre_dispatch_cancellation_and_connection_failure_release_without_usage_claims",
+      "native_app_server::control::tests::reopened_dispatch_and_completed_duplicate_never_connect_to_provider",
+      "native_app_server::control::tests::reopened_explicit_dispatch_rejection_never_connects_or_becomes_unknown"
+    ],
+    "final_postimages": [
+      {
+        "path": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+        "blob": "aaaa9a4bf7f6c89248df20e49afe5b2a85234603",
+        "sha256": "61022a9229241e6c7002a8d3f069c2731c5e78b8e220d119752deb819a1820e1",
+        "bytes": 55338,
+        "mode": "100644"
+      },
+      {
+        "path": "codex-rs/hepta-infer-worker-host/src/native_run_control.rs",
+        "blob": "79d3396ad53406a5bd17926d4c9ba73bb6be4e7f",
+        "sha256": "a448a5f968f83503693d8f98d09036169d5a9e2483a1faeef78439c0d64c661c",
+        "bytes": 10409,
+        "mode": "100644"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/test_support.rs",
+        "blob": "de3b00d16837deaa0afe47a2a365beb412a4a639",
+        "sha256": "a5feb32eb4a102c97742dede6893d0a0ba6596268cc8ac97bebf6973b1eb1bf3",
+        "bytes": 13571,
+        "mode": "100644"
+      },
+      {
+        "path": "codex-rs/hepta-infer-worker-host/src/native_run_control_tests.rs",
+        "blob": "79d9d223e44de4f38c2824a3cf1459f8c5c96002",
+        "sha256": "d94b40e32f5d90806119376a2c8f9d4d101ac7e7032e0c71bb596a3bcc9f7b17",
+        "bytes": 13431,
+        "mode": "100644"
+      },
+      {
+        "path": "codex-rs/hepta-infer-worker-host/src/native_context.rs",
+        "blob": "9b9745ce2a0aabe96a8ad0104c0e2283dc194606",
+        "sha256": "a263cdf8ae3642b172edc854bb8d80fef1cee47d3b011ee9c926921f2a2ceddc",
+        "bytes": 2684,
+        "mode": "100644"
+      },
+      {
+        "path": "codex-rs/hepta-infer-worker-host/src/native_context_tests.rs",
+        "blob": "6b8a8c20664f9884baf975ffc1a512b88b4af0ac",
+        "sha256": "7d1f8ce13d366b10aa79fcb09278886a6258081a90dc6ada56c5b04b3152543b",
+        "bytes": 10663,
+        "mode": "100644"
+      }
+    ],
+    "source_unchanged_after_fix": true,
+    "native_binary_inventory": {
+      "scope": "Post-run matching same-source native test artifacts; current_exe fixture, no separate CLI consumption claim.",
+      "source": {
+        "commit": "542443191af06facb891f58fecb8bfe7a925c893",
+        "tree": "adcc19bcdd31c10781e57296730d9c81869c3d98",
+        "status": "",
+        "cargo_lock_sha256": "98b3767c6e74bf6eeb5894db760259dbc400cbfd0685af8ad915c92d25408d69",
+        "bazel_lock_sha256": "783b3ad329fa53bd4a0e48be6907d38259fa2880d61bd1994b863d7f78bbca57"
+      },
+      "binaries": [
+        {
+          "path": "/home/qian-qi/mem-native-5af6-20261111/target/debug/deps/codex_hepta_infer_worker_host-3457df8d495c8bbe",
+          "bytes": 1310027552,
+          "sha256": "4f00cf4712416dd197bf058e362e628bcb62d3637bb9365c1f03410280e0929c"
+        }
+      ]
+    }
+  },
+  "formatted_source_manifest_blob": "2bb9922d4231e81589552b0d88e9a3bd7cb854d3",
+  "previous_zero_execution_metadata_blob": "cd3f0b0d907c90a6436465fae5ea388a62d27a15",
+  "native_case_retries": 0,
+  "source_changed_to_correct_filter": false,
+  "provider_scope": "Native loopback mock provider fixtures; no production provider or real-model episode.",
+  "production_provider_requests": 0,
+  "real_model_episodes": 0,
+  "legacy_case_stage_separate": true
+}

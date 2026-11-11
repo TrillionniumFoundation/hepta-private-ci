@@ -1,0 +1,249 @@
+{
+  "schema": "hepta.mem.native-followup.evidence-index.v1",
+  "decision": "HOLD",
+  "action": "NoUpdate",
+  "production_adoption": false,
+  "entry_points": {
+    "results": "RESULTS.md",
+    "decision": "DECISION.json",
+    "unchanged_adoption_contract": "ADOPTION_GATES.md",
+    "source_publication": "SOURCE_PUBLICATION.json",
+    "current_ci_snapshot": "HOSTED_CI.json"
+  },
+  "source_pull_requests": [
+    5972,
+    5977
+  ],
+  "frozen_native_base_commit": "189711e3563ea13a5328d52e99a286f082045b98",
+  "source_proposals_independent": true,
+  "combined_source_qualification": null,
+  "native_green_scopes": {
+    "owner": {
+      "executions": 19,
+      "unique_cases": 18,
+      "failures": 0
+    },
+    "delivery": {
+      "executions": 7,
+      "unique_cases": 7,
+      "failures": 0
+    }
+  },
+  "original_failures_preserved": {
+    "owner_red": {
+      "executed": 1,
+      "passed": 0,
+      "failed": 1
+    },
+    "delivery_filter": {
+      "executed": 0,
+      "native_exit": 4,
+      "runtime_exit": 1
+    }
+  },
+  "archive_verification": "All six listed tar.xz archives were fully read back from immutable GitHub commits, checked against bytes/SHA256/Git blob, safely extracted, and all regular members and manifest hashes checked. Root audits preserve the exact scope.",
+  "text_verification": "Published text blobs are compared byte-for-byte after create/readback; existing native metadata is preserved verbatim.",
+  "ci_raw_files": "Complete original decoded-log text, metadata and source comparisons are inside owner-ci-failures.tar.xz; the readable report and its original file manifest are also under ci-owner/.",
+  "review": "Independent source-format review and final report/gate review completed. All ten gate IDs and closure requirements remain unchanged. The archive-copy receipt citation was added after final prose review and independently read by root.",
+  "files": [
+    {
+      "path": "ADOPTION_GATES.md",
+      "bytes": 12144,
+      "sha256": "0c8e571675f58d07e9344988549aa9eab7b488619e95f85600cffc67ba99f9a8",
+      "git_blob": "97b50cfee894093adee65a60e822a871b464f218"
+    },
+    {
+      "path": "BASE_ADVANCE.json",
+      "bytes": 5166,
+      "sha256": "1030a9932782ee439ccea5a206fb8b24ea551bff4a39f05613712d00e2e68b81",
+      "git_blob": "8f306b1e57c0c55137238fc19b1b44fcc262235a"
+    },
+    {
+      "path": "CI_BLOB_RETRY.json",
+      "bytes": 2087,
+      "sha256": "1d465f3a9deb70d52a8d87fbc79e7eaf4115fcdb673f4406fb11a6deda7b8f54",
+      "git_blob": "ea9bdfcbfad4e92212607e6b4e71c4f25a1e810f"
+    },
+    {
+      "path": "CI_BLOB_RETRY.log",
+      "bytes": 3859,
+      "sha256": "6cb0c5b96b73f48dfb3f86098951207e42ffdea9015b348f5d289ec3ce88448b",
+      "git_blob": "9a8c238ff96cdf618724a8d3fd664e818ef91365"
+    },
+    {
+      "path": "CI_DIAGNOSIS.md",
+      "bytes": 2279,
+      "sha256": "50a426b10d6daff47c50db1cb1889f44948d707d0423378fe2f668181a016e85",
+      "git_blob": "e27037c03ced92bb9a8165ab7282a6c634ea8df3"
+    },
+    {
+      "path": "DECISION.json",
+      "bytes": 6674,
+      "sha256": "bde50d84a68e1bd18b40149c85a3b5009848d1af6c5c3548062b10095aac1f9b",
+      "git_blob": "2b165054a32da484e56edb208ef0db1a2d805d1b"
+    },
+    {
+      "path": "DELIVERY_FILTER_FAILURE.json",
+      "bytes": 7412,
+      "sha256": "ae571ac63de89c888f05ac196623183e5781862902f589b78b529f5e5f14a6bc",
+      "git_blob": "cd3f0b0d907c90a6436465fae5ea388a62d27a15"
+    },
+    {
+      "path": "DELIVERY_FORMATTED_MANIFEST.json",
+      "bytes": 3428,
+      "sha256": "19615022cb6dd789aaf804101206ae226fb7d8cfbbe3174a1374fefa9682946b",
+      "git_blob": "2bb9922d4231e81589552b0d88e9a3bd7cb854d3"
+    },
+    {
+      "path": "DELIVERY_LEGACY.json",
+      "bytes": 7845,
+      "sha256": "6f0b8254277e5e2c6cf701cd0156bddca8a8380785b2195911232db884ed661b",
+      "git_blob": "c20cff1ff31692b8cb50224d777e1d9408a2ea60"
+    },
+    {
+      "path": "DELIVERY_NATIVE.json",
+      "bytes": 5680,
+      "sha256": "d2bc85bc685d65cd9b4ebcd57c77154ad0975228f365aaa9bb8c8005c3bae495",
+      "git_blob": "48a53d02a2d332a49a072e466629fc4a715790f4"
+    },
+    {
+      "path": "HOSTED_CI.json",
+      "bytes": 17414,
+      "sha256": "a419bece7ff785c3667ed5dd1c8c7129e31472b7ec08821fa4462482ce5fe576",
+      "git_blob": "d1590205d78ce0e18a86df3c7cc0f4ebdaad95c4"
+    },
+    {
+      "path": "OWNER_CI_BUNDLE.json",
+      "bytes": 736,
+      "sha256": "4572125d6f53a910617906fb6ec9d8dba7e61948842a79a76df17709adc576e4",
+      "git_blob": "4299ee1f9c83f1d5bda648d3f14f06e5be711a9a"
+    },
+    {
+      "path": "OWNER_FORMATTED_MANIFEST.json",
+      "bytes": 2619,
+      "sha256": "934883d5bcdde9dc2501368359be26fa483079f75c2e946ce18e35c788e520cb",
+      "git_blob": "4507fd2e1e6621e1cbdc4c5aced92f1725356599"
+    },
+    {
+      "path": "OWNER_GREEN.json",
+      "bytes": 7672,
+      "sha256": "3e8773e6c2ff0bc4c77e4d99ed4a9e6ef3239e2d54aefc20fbc23bc41501c5c0",
+      "git_blob": "71c5d8a4bf96d87ca9a98924288f0e3fb88a53c9"
+    },
+    {
+      "path": "RESULTS.md",
+      "bytes": 20498,
+      "sha256": "41a7794cc0dcbf4ac6577f57e912b79d128466cbad62208e3ca441a2ce9ff075",
+      "git_blob": "fe42566ff4aa1ccad5e3437f762574c85375a72e"
+    },
+    {
+      "path": "ROOT_DELIVERY_FILTER_READBACK.json",
+      "bytes": 2876,
+      "sha256": "cc8824969e3f6e5e805427316a296eef131d6bf476171cf5431ec088907daffa",
+      "git_blob": "0754e0ab1b2094eed37ff69c9d3aa867e9c1cc83"
+    },
+    {
+      "path": "ROOT_DELIVERY_LEGACY_READBACK.json",
+      "bytes": 3216,
+      "sha256": "f19bc8591d388bdab263a2a7d5f45a0b22c00a22e609b35dcfd99dfa229f53cc",
+      "git_blob": "6ebd84260ae392daec9feb3cd36e58c30321d562"
+    },
+    {
+      "path": "ROOT_DELIVERY_READBACK.json",
+      "bytes": 4826,
+      "sha256": "b6559d9076ffd9e7f5bede482c20b14375c1501479238922c1a20087869a6520",
+      "git_blob": "acbd9f72d95e01f56416ff959ced6034b6a19610"
+    },
+    {
+      "path": "ROOT_GREEN_EXACT_READBACK.json",
+      "bytes": 1846,
+      "sha256": "947478cd731892fe3a4f357c98306dd688bc0756aae23e7d6629702eea4ab585",
+      "git_blob": "b887b4c47a468cf1d006b7e2f561ac7907790e0b"
+    },
+    {
+      "path": "ROOT_OWNER_READBACK.json",
+      "bytes": 8520,
+      "sha256": "1c10018a4edfa482b6e64b5c38fb026873419e8dc69d135c243f5419195670c5",
+      "git_blob": "72bec2c15039955e27c889510d024002bb7a6eec"
+    },
+    {
+      "path": "ROOT_RED_READBACK.json",
+      "bytes": 2065,
+      "sha256": "c02dd33dee0906b9796fd9015a21969c807a39d07b85a9dd774b90e068bc6686",
+      "git_blob": "e029ab8bd298515290d65070f196503d01dadb06"
+    },
+    {
+      "path": "SETUP.json",
+      "bytes": 11705,
+      "sha256": "dcf0acb7eb16024242b5384b8c2e5bf93ce24e0bcdd1bdab5ed7ca26528e3982",
+      "git_blob": "6ba683c57de01130278c481f6ba3d85239332b31"
+    },
+    {
+      "path": "SOURCE_PUBLICATION.json",
+      "bytes": 1508,
+      "sha256": "a3a8dc3d3c429ba2d43bb0fa6020437f8699d031d166899b84e805e46a66cb9b",
+      "git_blob": "172d7c4330169b6fb2eb4d31a8d692b45db7001a"
+    },
+    {
+      "path": "SOURCE_REVIEW.json",
+      "bytes": 1534,
+      "sha256": "deca4173e676d536998a2f7f13a83b96c703203454fb9969765dbed40bf49db4",
+      "git_blob": "fe4d13485ffffb0f42f45ceedea7914c595f53e6"
+    },
+    {
+      "path": "TRANSPORT_READONLY.json",
+      "bytes": 1210,
+      "sha256": "78890d4a2cbfb11c0006ffa48b3608076d4a3cf456894e582c862f314f5cdbaa",
+      "git_blob": "5fd976d602e3e739c9eff7b46e30b01091b37103"
+    },
+    {
+      "path": "ci-owner/CI_FAILURES_OWNER.md",
+      "bytes": 8481,
+      "sha256": "99754e629d71e95f0c46a87616435793ed91ac8a9af97def46a867ca56271189",
+      "git_blob": "0da574574d81f6ce703c1a142145b37b1bf35a01"
+    },
+    {
+      "path": "ci-owner/EVIDENCE_MANIFEST.json",
+      "bytes": 3349,
+      "sha256": "41e7f81e48325d71e8099c16d969a8285a0ab5db0b97a06b62570b2311b42f41",
+      "git_blob": "a9002ef48a088b5f29c52738479fa63f01a43a2f"
+    },
+    {
+      "path": "delivery-filter-failed.tar.xz",
+      "bytes": 32140,
+      "sha256": "a8ac659ee5768b17dc86b16cebd91506d995a27fada3ca33679dc271256de380",
+      "git_blob": "6a460db9a7394b84a13d5e71d5cf447fc5e8c2e8"
+    },
+    {
+      "path": "delivery-legacy.tar.xz",
+      "bytes": 12236,
+      "sha256": "3857e409a3d2f6b55036448af93be50f36822b08cd6bc2207d57a98af9cb6ed8",
+      "git_blob": "f6db1fec837d5abb3f9f77c0a78693a70f14e9a6"
+    },
+    {
+      "path": "delivery-native.tar.xz",
+      "bytes": 32796,
+      "sha256": "536eaef2efa46aa808ba05254e47ff3ffca3309037fbb14ba8227a44fec71c8e",
+      "git_blob": "a43b413f68ef67ee0d9d2d0ceb26976f2b3aa47c"
+    },
+    {
+      "path": "owner-ci-failures.tar.xz",
+      "bytes": 164596,
+      "sha256": "7b0a473b20bdd9fc2cb27fcf0bb3f74be74f79790379fd914f3da937fbfda00d",
+      "git_blob": "8b4822c76332fe7ec8e05c1464d47f4fd2626bfa"
+    },
+    {
+      "path": "owner-green.tar.xz",
+      "bytes": 50740,
+      "sha256": "b6a8b820e987c9c87bd64c9c394d554ed534ab88fe639058238c400afde3a235",
+      "git_blob": "3860fb89c93b122426c0cb65e2593886b399a9ce"
+    },
+    {
+      "path": "owner-red.tar.xz",
+      "bytes": 24756,
+      "sha256": "6bf2240b48d8e1e151ba6448871059452de35186f78e1f80617d528480926a8e",
+      "git_blob": "e26a4a211845d44329c63dd38e01e749372065ff"
+    }
+  ],
+  "manifest_self_hash": "Not included in its own files array."
+}

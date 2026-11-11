@@ -1,0 +1,206 @@
+{
+  "schema": "hepta.mem.native-followup.decision.v1",
+  "decision": "HOLD",
+  "action": "NoUpdate",
+  "production_adoption": false,
+  "new_scored_actor_episodes": 0,
+  "new_real_model_calls": 0,
+  "adoption_gate_contract_modified": false,
+  "original_gate_count": 10,
+  "original_gates": [
+    {
+      "id": "WORKING-STATE-SCIENTIFIC-GATE",
+      "status": "OPEN",
+      "contract": "ADOPTION_GATES.md"
+    },
+    {
+      "id": "UNSEEN-EPISODIC-BENEFIT",
+      "status": "OPEN",
+      "contract": "ADOPTION_GATES.md"
+    },
+    {
+      "id": "STRONG-BASELINES-AND-ASSOCIATION",
+      "status": "OPEN",
+      "contract": "ADOPTION_GATES.md"
+    },
+    {
+      "id": "ORDINARY-OWNER-BRIDGE",
+      "status": "OPEN",
+      "contract": "ADOPTION_GATES.md"
+    },
+    {
+      "id": "PROVIDER-RUNTIME-BINDING",
+      "status": "OPEN",
+      "contract": "ADOPTION_GATES.md"
+    },
+    {
+      "id": "SOURCE-OWNERSHIP-EXPOSURE-AND-TRUST",
+      "status": "OPEN",
+      "contract": "ADOPTION_GATES.md"
+    },
+    {
+      "id": "DELETION-AND-EXTERNAL-EFFECT",
+      "status": "OPEN",
+      "contract": "ADOPTION_GATES.md"
+    },
+    {
+      "id": "FULL-OWNER-EFFECT-COLD-RECOVERY",
+      "status": "OPEN",
+      "contract": "ADOPTION_GATES.md"
+    },
+    {
+      "id": "FULL-COST-AND-SLOW-CONSOLIDATION",
+      "status": "OPEN",
+      "contract": "ADOPTION_GATES.md"
+    },
+    {
+      "id": "HOSTED-CI",
+      "status": "OPEN",
+      "contract": "ADOPTION_GATES.md"
+    }
+  ],
+  "scientific_evidence": {
+    "source": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/39d895547fa7a50c45d580d3e30236c87f99d322/qualification/memory-cell-mem6/run-001/RESULTS.md",
+    "working_state": {
+      "pairs": 84,
+      "source_groups": 20,
+      "bounded_success": 30,
+      "current_only_success": 28,
+      "wins": 2,
+      "ties": 82,
+      "losses": 0,
+      "initial_noops_per_arm": 16,
+      "source_mean_gain": 0.1,
+      "one_sided_95_source_lower_bound": 0.0,
+      "gate": "NOT_MET"
+    },
+    "selector_replication": {
+      "pairs": 54,
+      "source_groups": 14,
+      "public_success": 21,
+      "frozen_success": 13,
+      "wins": 9,
+      "ties": 44,
+      "losses": 1,
+      "initial_noops_per_arm": 10,
+      "public_image_only_bypasses": 1
+    },
+    "aggregate_actor_episodes": 276,
+    "aggregate_pairs": 138,
+    "allocated_source_groups": 34,
+    "cohorts_disjoint": true,
+    "pooled_memory_effect_claimed": false,
+    "unseen_episodic_successor_benefit": "NOT_EVALUATED"
+  },
+  "native_qualification": {
+    "owner": {
+      "pr": 5972,
+      "passed_executions": 19,
+      "unique_cases": 18,
+      "failed_green_cases": 0,
+      "retries": 0,
+      "red": {
+        "passed": 0,
+        "failed": 1,
+        "classification": "INTENDED_FRESH_READ_ASSERTION_FAILURE"
+      },
+      "same_source_cli_build_exit": 0,
+      "scoped_fix_exit": 0,
+      "source_unchanged": true,
+      "root_audit": "ROOT_OWNER_READBACK.json"
+    },
+    "delivery": {
+      "pr": 5977,
+      "passed_executions": 7,
+      "unique_cases": 7,
+      "failed_cases": 0,
+      "retries": 0,
+      "zero_execution_attempt": {
+        "test_executions": 0,
+        "nextest_exit": 4,
+        "classification": "WRONG_FILTER_SELECTION_FAILURE",
+        "root_audit": "ROOT_DELIVERY_FILTER_READBACK.json"
+      },
+      "six_case_audit": "ROOT_DELIVERY_READBACK.json",
+      "legacy_case_audit": "ROOT_DELIVERY_LEGACY_READBACK.json",
+      "scoped_fix_exit": 0,
+      "source_unchanged": true
+    },
+    "proposals_independent": true,
+    "combined_source_qualification": null,
+    "mock_provider_scope": true,
+    "scientific_actor_credit": 0
+  },
+  "source_publication": {
+    "schema": "hepta.mem.native-followup.source-publication.v1",
+    "frozen_base": "189711e3563ea13a5328d52e99a286f082045b98",
+    "target": {
+      "pr": 5935,
+      "branch": "codex/mem8-integrated-source-20261111-ed353817",
+      "head": "9bd2f589debdba4a93baa363817c3669cb103721",
+      "tree": "c77785ecb368c44ea699769001a47402c9f50591"
+    },
+    "owner": {
+      "pr": 5972,
+      "branch": "codex/mem8-native-head-guard-20261111-5af6",
+      "published_commit": "2e0f6ff4525a02143f700dee70309ef9b6169398",
+      "native_local_commit": "801a79f7b11f0c7fe1d6e2354225d686bae4325b",
+      "full_tree": "3e87a1e1e6d17191f9342e276d70cc0187dfb6b7",
+      "changed_files": 7,
+      "mergeable_observed": true,
+      "observed_merge_commit": "ddc505e2e9025e4994aa73d30a507de1c632a63e",
+      "full_tree_reconstructed_and_postimages_verified": true
+    },
+    "delivery": {
+      "pr": 5977,
+      "branch": "codex/mem8-context-delivery-20261111-5af6",
+      "published_commit": "b03214c5c2e2bf4499c211227e43cc22f8663d95",
+      "native_local_commit": "542443191af06facb891f58fecb8bfe7a925c893",
+      "full_tree": "adcc19bcdd31c10781e57296730d9c81869c3d98",
+      "changed_files": 6,
+      "mergeable_observed": true,
+      "observed_merge_commit": "5266438337b94540551995a2e72b803c9626af56",
+      "full_tree_reconstructed_and_postimages_verified": true
+    },
+    "scope": "Two independent draft source changes; neither source includes the other proposal. Equal trees do not make commits identical or qualify the newer target composition. No merge or deployment."
+  },
+  "current_source_exposure": {
+    "original_exclusions": 69,
+    "residual_candidate_upper_bound": 16,
+    "development": 7,
+    "retention_validation": 9,
+    "residual_exposure_status": "UNKNOWN",
+    "verified_unseen_capacity": null,
+    "new_sources_admitted": 0
+  },
+  "original_provider_attempt": {
+    "logical_turns_admitted": 1,
+    "settled_terminal": null,
+    "physical_request_count": null,
+    "physical_request_count_status": "UNKNOWN",
+    "different_key_replay_performed": false
+  },
+  "hosted_ci": {
+    "overall_gate": "OPEN_BLOCKED",
+    "owner_named_mem_workflow": "SUCCESS_DECLARED_SCOPE_ONLY",
+    "owner_architecture_workflow": "SUCCESS",
+    "owner_blocking_ci_observed_failed_jobs": [
+      130534279170,
+      130534450487,
+      130534450558
+    ],
+    "snapshot": "HOSTED_CI.json",
+    "failure_attribution": "ci-owner/CI_FAILURES_OWNER.md"
+  },
+  "scope_limits": [
+    "Delivery Withhold suppresses only explicit context; full memory-off requires isolation of other channels.",
+    "Native-head guard rejects stale explicit views; it does not establish physical erasure or real effect fencing.",
+    "Archive recovery is not complete original-owner/effect/trust recovery.",
+    "Equal source trees do not make local and published commits identical or qualify later merged compositions."
+  ],
+  "repository_actions": {
+    "source_pull_requests": "DRAFT",
+    "merged": false,
+    "deployed": false
+  }
+}
