@@ -210,3 +210,6 @@ async fn q24_ordinary_signed_tasks_consume_real_current_model_and_fresh_input_af
     c.stop().await?;
     Ok(())
 }
+
+#[path = "circuit_q24_next_use_observer_tests.rs"]
+mod next_use_observer;

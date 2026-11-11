@@ -33,6 +33,7 @@ CALLERS = {
         AGENT + "learning_iteration_evaluation_evidence.rs",
         AGENT + "learning_iteration_generation_evidence.rs",
         OWNER,
+        AGENT + "circuit_next_use_receipt_owner.rs",
     ),
     "cell_completed_evaluation_readback": (OWNER,),
     "learning_original_evaluation_key": (

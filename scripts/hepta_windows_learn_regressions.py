@@ -61,6 +61,14 @@ CASE_LIST = {
             "witness::current_tests::recovered_current_detects_same_length_corruption_and_valid_frontier_substitution",
         ]
     },
+    "original_owner_current_4": {
+        "codex-hepta-intelligence-eval": [
+            "product_execution_file::tests::current::current_reread_preserves_bytes_cursor_and_original_append_owner",
+            "product_execution_file::tests::current::current_rejects_same_length_corruption_and_cannot_be_rearmed",
+            "product_execution_file::tests::current::current_rejects_rehashed_valid_same_length_replacement",
+            "product_execution_file::tests::current::current_refuses_length_changes_without_repair",
+        ]
+    },
     "dataset_materialization": {
         "codex-hepta-agentd": [
             "cell_q24_dataset::tests::original_task_and_signed_cut_materialize_exact_q24_without_writes_or_new_claims",

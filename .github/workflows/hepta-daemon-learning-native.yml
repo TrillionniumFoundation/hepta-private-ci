@@ -45,6 +45,7 @@ jobs:
           printf 'CARGO_TARGET_DIR=%s\n' "$CARGO_TARGET_DIR" >> "$GITHUB_ENV"
           cat > "$RUNNER_TEMP/daemon-learning-driver.py" <<'PY'
           import base64
+          from collections import Counter
           import gzip
           import hashlib
           import json
@@ -62,6 +63,15 @@ jobs:
           sys.path.insert(0, str(repo / "scripts"))
           from hepta_ci_exec import execute_logged
           from hepta_ci_junit import collect
+
+          observer_cases = [
+              "circuit_next_use_receipt_owner::tests::original_observer_configuration_rejects_substituted_custody_before_journal_creation",
+              "circuit_next_use_receipt_owner::tests::original_observer_predecessors_require_bound_signed_roles_and_independent_custody",
+              "circuit_next_use_receipt_owner::tests::original_observer_deadline_and_saved_signature_window_never_renew",
+              "circuit_next_use_receipt_owner::tests::original_observer_pending_claim_reopens_without_signing_or_rewriting",
+              "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::q24_ordinary_original_observer_attests_and_recovers_exact_completed_next_use",
+              "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::q24_ordinary_original_observer_refuses_uncommitted_or_withdrawn_next_use"
+          ]
 
           parents = [
               "authority_host_service::writer::learning_registration::tests::root_learning_registration_reopens_without_replacing_original_history",
@@ -156,6 +166,37 @@ jobs:
               if root:
                   restore_ownership()
               retained = collect(records / (name + ".json"), report, records / (name + ".xml"))
+              if name == "ordinary" and retained == 0:
+                  expected = Counter(("codex-hepta-agentd", value) for value in observer_cases)
+                  document = ET.parse(records / (name + ".xml")).getroot()
+                  suites = [document] if document.tag == "testsuite" else document.findall("testsuite")
+                  selected = [(suite, case) for suite in suites for case in suite.findall("testcase")
+                              if case.get("name") in observer_cases]
+                  all_named = [case for case in document.iter("testcase")
+                               if case.get("name") in observer_cases]
+                  observed = Counter((case.get("classname"), case.get("name"))
+                                     for _, case in selected)
+                  xml_ok = (len(selected) == len(all_named) == len(observer_cases)
+                            and observed == expected
+                            and all(suite.get("name") == case.get("classname")
+                                    and not any(node.tag in ("failure", "error", "skipped")
+                                                for node in case)
+                                    for suite, case in selected))
+                  log = (records / (name + ".log")).read_text()
+                  log = re.sub(r"\x1b\[[0-?]*[ -/]*[@-~]", "", log)
+                  rows = re.findall(
+                      r"^\s*(PASS|FAIL|TIMEOUT|EXECFAIL|LEAK|SKIP)\s+\[[^\]\n]+\]\s+"
+                      r"(?:\(\s*\d+/\d+\)\s+)?(\S+)\s+(\S+)\s*$", log, re.MULTILINE)
+                  named = [row for row in rows if row[2] in observer_cases]
+                  log_ok = (Counter((package, test) for _, package, test in named) == expected
+                            and all(status == "PASS" for status, _, _ in named))
+                  save("original-c-observer-coverage.json", {
+                      "source_sha": os.environ["SOURCE_SHA"], "expected_count": len(observer_cases),
+                      "expected": sorted(expected), "junit_observed": sorted(observed.elements()),
+                      "terminal_rows": named, "exact_pass_coverage": xml_ok and log_ok,
+                  })
+                  if not xml_ok or not log_ok:
+                      raise RuntimeError("ordinary Observer cases lack exact native package/name coverage")
               if root and retained == 0:
                   cases = list(ET.parse(records / (name + ".xml")).iter("testcase"))
                   observed = [case.attrib["name"] for case in cases if case.find("skipped") is None]

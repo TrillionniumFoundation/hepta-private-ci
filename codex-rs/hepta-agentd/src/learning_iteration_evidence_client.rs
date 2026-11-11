@@ -218,3 +218,6 @@ fn unavailable() -> Error {
 #[cfg(test)]
 #[path = "learning_iteration_evidence_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+pub(crate) use tests::fixture_original_receipt_client;
