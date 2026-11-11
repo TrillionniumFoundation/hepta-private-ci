@@ -94,12 +94,19 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
         let training: &mut CellQ24TrainingOwnerV1<TW> = training;
         training
             .require_original_dataset_scope(&receipts.config.dataset, &receipts.config.scope)?;
+        #[cfg(target_os = "linux")]
+        training.require_live_source_if_captured()?;
         let original = owners.read_original_completion()?;
         let result = work(&mut owners.training, &original);
         // The Model operation can block. Re-read both original owners before
         // returning even an error; never renew a signature or retry a claim.
         let current = owners
             .read_original_completion()
+            .map_err(|_| Error::CommitUncertain)?;
+        #[cfg(target_os = "linux")]
+        owners
+            .training
+            .require_live_source_if_captured()
             .map_err(|_| Error::CommitUncertain)?;
         if current.receipt != original.receipt || current.attestation != original.attestation {
             return Err(Error::CommitUncertain);
