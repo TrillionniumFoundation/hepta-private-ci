@@ -37,6 +37,27 @@ pub use training::CellQ24TrainingOutcomeV1;
 pub use training::CellQ24TrainingSampleV1;
 pub use training::cell_q24_dataset_run_snapshot_digest_v1;
 
+#[cfg(target_os = "linux")]
+pub use training::CellQ24DatasetFreezePreparationV1;
+#[cfg(target_os = "linux")]
+pub use training::CellQ24FrozenDatasetV1;
+#[cfg(target_os = "linux")]
+pub use training::CellQ24LearningPreparationConfigV1;
+#[cfg(target_os = "linux")]
+pub use training::CellQ24LearningPreparationErrorV1;
+#[cfg(target_os = "linux")]
+pub use training::CellQ24PreparedLearningFactsV1;
+#[cfg(target_os = "linux")]
+pub use training::CellQ24PreparedLearningV1;
+#[cfg(target_os = "linux")]
+pub use training::CellQ24PreparedTrainingMaterialV1;
+#[cfg(target_os = "linux")]
+pub use training::OriginalCellQ24DatasetFreezeErrorV1;
+#[cfg(target_os = "linux")]
+pub use training::OriginalCellQ24DatasetFreezeOwnerV1;
+#[cfg(target_os = "linux")]
+pub use training::OriginalCellQ24DatasetFreezeSigningConfigV1;
+
 #[derive(Debug, thiserror::Error)]
 pub enum CellQ24TrainingPlanErrorV1 {
     #[error("Q24 training plan binding: {0}")]

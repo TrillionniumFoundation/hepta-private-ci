@@ -30,6 +30,30 @@ pub use dataset::CellQ24DatasetProjectionV1;
 pub use dataset::CellQ24DatasetTaskV1;
 pub use dataset::cell_q24_dataset_run_snapshot_digest_v1;
 
+#[cfg(target_os = "linux")]
+#[path = "cell_q24_learning_preparation.rs"]
+mod preparation;
+#[cfg(target_os = "linux")]
+pub use preparation::CellQ24DatasetFreezePreparationV1;
+#[cfg(target_os = "linux")]
+pub use preparation::CellQ24FrozenDatasetV1;
+#[cfg(target_os = "linux")]
+pub use preparation::CellQ24LearningPreparationConfigV1;
+#[cfg(target_os = "linux")]
+pub use preparation::CellQ24LearningPreparationErrorV1;
+#[cfg(target_os = "linux")]
+pub use preparation::CellQ24PreparedLearningFactsV1;
+#[cfg(target_os = "linux")]
+pub use preparation::CellQ24PreparedLearningV1;
+#[cfg(target_os = "linux")]
+pub use preparation::CellQ24PreparedTrainingMaterialV1;
+#[cfg(target_os = "linux")]
+pub use preparation::OriginalCellQ24DatasetFreezeErrorV1;
+#[cfg(target_os = "linux")]
+pub use preparation::OriginalCellQ24DatasetFreezeOwnerV1;
+#[cfg(target_os = "linux")]
+pub use preparation::OriginalCellQ24DatasetFreezeSigningConfigV1;
+
 const LIMIT: i64 = 8 * codec::Q;
 
 #[derive(Debug, thiserror::Error)]
@@ -108,6 +132,17 @@ impl CellQ24TrainingBatchV1 {
         if let Some(source) = &self.source {
             source.require_batch(self)?;
         }
+        Ok(())
+    }
+
+    /// New Model enrollment requires the original capability, never a byte
+    /// prefix or the legacy revalidate_source(None) compatibility result.
+    #[cfg(target_os = "linux")]
+    pub(crate) fn require_original_dataset_provenance(&self) -> Result<(), CellQ24TrainingErrorV1> {
+        let source = self.source.as_ref().ok_or(CellQ24TrainingErrorV1::Binding(
+            "original Dataset capability required",
+        ))?;
+        source.require_batch(self)?;
         Ok(())
     }
 

@@ -7,7 +7,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut args = std::env::args_os().skip(1);
     let command = args
         .next()
-        .ok_or("initialize, register-writer, register-learning, serve-session, serve-fresh-session, diagnose-native, launch-native, provider-status or provider-login required")?;
+        .ok_or("initialize, register-writer, register-learning, register-q24-model-factory, serve-session, serve-fresh-session, diagnose-native, launch-native, provider-status or provider-login required")?;
     let mut options = std::collections::BTreeMap::new();
     let mut pidfd_stdin = false;
     while let Some(option) = args.next() {
@@ -109,6 +109,26 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             &owner,
         )?;
         println!("{}", serde_json::to_string(&registered)?);
+    } else if command == "register-q24-model-factory" {
+        let config = take("--config")?;
+        let registration = take("--registration")?;
+        let learning_profile = take("--learning-profile")?;
+        let reservation = take("--q24-model-reservation")?;
+        if !options.is_empty() || !pidfd_stdin {
+            return Err(
+                "Model registration requires original Root inputs and pre-held consumer pidfd"
+                    .into(),
+            );
+        }
+        let owner = std::io::stdin().as_fd().try_clone_to_owned()?;
+        let registered = codex_hepta_agentd::register_host_q24_model_factory(
+            &config,
+            &registration,
+            &learning_profile,
+            &reservation,
+            &owner,
+        )?;
+        println!("{}", serde_json::to_string(&registered)?);
     } else if command == "serve-session" || command == "serve-fresh-session" {
         let config = take("--config")?;
         let registration = take("--registration")?;
@@ -125,6 +145,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             .remove(std::ffi::OsStr::new("--learning-profile"))
             .map(PathBuf::from);
         let learning_handoff = options.remove(std::ffi::OsStr::new("--root-learning-handoff-fd"));
+        let model_reservation = options
+            .remove(std::ffi::OsStr::new("--q24-model-reservation"))
+            .map(PathBuf::from);
+        let model_handoff = options.remove(std::ffi::OsStr::new("--root-q24-model-handoff-fd"));
         let notes_profile = options
             .remove(std::ffi::OsStr::new("--notes-launch-profile"))
             .map(PathBuf::from);
@@ -149,6 +173,15 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             .as_deref()
             .map(|fd| inherited_descriptor(fd, &mut claimed))
             .transpose()?;
+        let model_handoff = model_handoff
+            .as_deref()
+            .map(|fd| inherited_descriptor(fd, &mut claimed))
+            .transpose()?;
+        if model_reservation.is_some() != model_handoff.is_some()
+            || model_handoff.is_some() && (learning_profile.is_none() || root_fd.is_none())
+        {
+            return Err("Model serving requires its reserved Root profile and separate handoff beside original learning".into());
+        }
         if learning_profile.is_some() != learning_handoff.is_some()
             || learning_profile.is_some() && root_fd.is_none()
         {
@@ -219,18 +252,37 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             Some(profile) => prepared.with_registered_learning(&profile)?,
             None => prepared,
         };
+        let mut prepared = match model_reservation {
+            Some(reservation) => prepared.with_registered_q24_model_factory(&reservation)?,
+            None => prepared,
+        };
+        let model_offer = model_handoff
+            .as_ref()
+            .map(|_| prepared.take_q24_model_factory_offer())
+            .transpose()?;
         let learning_bootstrap = learning_handoff
             .as_ref()
             .map(|_| prepared.seal_learning_bootstrap())
             .transpose()?;
         let ready = || {
             if let (Some(handoff), Some(bootstrap), Some(root)) =
-                (learning_handoff, learning_bootstrap, root_fd)
+                (learning_handoff, learning_bootstrap, root_fd.as_ref())
             {
                 codex_hepta_agentd::send_root_learning_handoff(
                     std::os::unix::net::UnixDatagram::from(handoff),
                     &bootstrap,
-                    &root,
+                    root,
+                    std::time::Duration::from_secs(30),
+                )
+                .map_err(std::io::Error::other)?;
+            }
+            if let (Some(handoff), Some(offer), Some(root)) =
+                (model_handoff, model_offer, root_fd.as_ref())
+            {
+                codex_hepta_agentd::send_root_q24_model_factory_handoff(
+                    std::os::unix::net::UnixDatagram::from(handoff),
+                    offer,
+                    root,
                     std::time::Duration::from_secs(30),
                 )
                 .map_err(std::io::Error::other)?;

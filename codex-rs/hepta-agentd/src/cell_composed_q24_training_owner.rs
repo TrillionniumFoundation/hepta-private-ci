@@ -67,6 +67,14 @@ pub struct CellQ24TrainingOwnerV1<W: AnchorWitnessStore> {
 }
 
 impl<W: AnchorWitnessStore> CellQ24TrainingOwnerV1<W> {
+    /// The enrolled Model factory checks this owner's own retained source
+    /// capability. Legacy HQ24T001 trainers keep their existing behavior.
+    #[cfg(target_os = "linux")]
+    pub(crate) fn require_original_dataset_provenance(&self) -> Result<(), Error> {
+        self.batch.require_original_dataset_provenance()?;
+        self.require_current()
+    }
+
     /// Read-only preflight for the original typed training/signature pair.
     pub(crate) fn require_original_dataset_scope(
         &self,

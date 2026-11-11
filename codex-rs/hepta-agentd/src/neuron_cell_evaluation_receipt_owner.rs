@@ -114,6 +114,33 @@ pub struct OriginalCellEvaluationReceiptOwnerV1<W: AnchorWitnessStore> {
 }
 
 impl<W: AnchorWitnessStore> OriginalCellEvaluationReceiptOwnerV1<W> {
+    pub(crate) fn require_original_training(
+        &self,
+        training: &LearningIterationSnapshotV1,
+        scope: &FrozenLearningScopeV2,
+    ) -> Result<(), Error> {
+        if training != &self.config.training || scope != &self.config.scope {
+            return Err(OwnerError::Binding("exact original Evaluation training cut").into());
+        }
+        validate_config(&self.config, &self.key)?;
+        Ok(())
+    }
+
+    /// Reuse the original execution-key restriction when composing Model
+    /// inputs. The aggregate cannot substitute an execution namespace by
+    /// reading the underlying store through a less specific runner entry.
+    pub(crate) fn read_original_execution<
+        S: FinalHoldoutCasStoreV1,
+        C: AnchorWitnessStore,
+        F: AnchorWitnessStore,
+        E: ProductEvaluationExecutionStoreV1,
+    >(
+        &self,
+        mut source: OriginalCellEvaluationReceiptSourcesV1<'_, S, C, F, E>,
+    ) -> Result<CellEvaluationReceiptV1, Error> {
+        self.prepare(&mut source).map(|(_, execution)| execution)
+    }
+
     pub fn create(
         file: File,
         witness: W,

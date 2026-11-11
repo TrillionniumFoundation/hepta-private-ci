@@ -12,6 +12,10 @@ use crate::OriginalCellQ24TrainingStageErrorV1 as StageError;
 use crate::OriginalCellQ24TrainingStageV1 as Stage;
 use pretty_assertions::assert_eq;
 
+#[cfg(target_os = "linux")]
+#[path = "cell_q24_training_material_tests.rs"]
+mod material;
+
 fn retained(f: &ReceiptFixture) -> anyhow::Result<[Vec<u8>; 4]> {
     Ok([
         fs::read(f.root.path().join("job"))?,

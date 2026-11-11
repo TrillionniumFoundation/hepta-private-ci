@@ -30,6 +30,12 @@ pub use learning::RootLearningHandoffV1;
 pub use learning::receive_root_learning_handoff;
 pub use learning::send_root_learning_handoff;
 
+#[path = "root_production_q24_model_handoff.rs"]
+mod q24_model;
+pub use q24_model::RootQ24ModelFactoryHandoffV1;
+pub use q24_model::receive_root_q24_model_factory_handoff;
+pub use q24_model::send_root_q24_model_factory_handoff;
+
 /// Consume exactly one inherited unnamed pair. The retained creator must be
 /// actual UID0, and the second transferred descriptor must pin that same Root.
 /// All received rights close on malformed/truncated frames. This function does

@@ -170,6 +170,8 @@ pub struct LearningIterationRuntimeBootstrapV1 {
     circuit_delivery_registry: Option<CircuitLearningDeliveryRegistryV1>,
     circuit_delivery_source: delivery::CircuitLearningSourceV1,
     enforce_circuit_admission: bool,
+    #[cfg(target_os = "linux")]
+    original_q24: Option<Arc<crate::OriginalCellQ24LearningStageOwnersV1>>,
 }
 
 pub fn learning_iteration_channel_v1(
@@ -266,11 +268,50 @@ fn learning_iteration_channel(
             circuit_delivery_registry: None,
             circuit_delivery_source: delivery::CircuitLearningSourceV1::HostStageOwners,
             enforce_circuit_admission: false,
+            #[cfg(target_os = "linux")]
+            original_q24: None,
         },
     ))
 }
 
 impl LearningIterationRuntimeBootstrapV1 {
+    #[cfg(target_os = "linux")]
+    pub(crate) fn with_original_q24_stage_owners(
+        mut self,
+        owners: Arc<crate::OriginalCellQ24LearningStageOwnersV1>,
+    ) -> Result<Self, AgentdError> {
+        let prepared = owners.prepared();
+        if self.original_q24.is_some()
+            || self.owners != prepared.initial().owners
+            || self.scope.as_ref() != Some(prepared.scope())
+            || !self.enforce_circuit_admission
+        {
+            return Err(AgentdError::Invalid(
+                "original Root Q24 learning profile differs".into(),
+            ));
+        }
+        self.original_q24 = Some(owners);
+        Ok(self)
+    }
+
+    pub(crate) async fn require_proposal_owner(
+        &self,
+        governed_plasticity_present: bool,
+    ) -> Result<(), AgentdError> {
+        #[cfg(target_os = "linux")]
+        if let Some(original) = &self.original_q24 {
+            let original: &Arc<crate::OriginalCellQ24LearningStageOwnersV1> = original;
+            return original
+                .require_current()
+                .await
+                .map_err(|error| AgentdError::GenerationFenced(error.to_string()));
+        }
+        if !governed_plasticity_present {
+            return Err(AgentdError::Invalid("learning iteration requires the governed plasticity owner or original Root Q24 owner assembly".into()));
+        }
+        Ok(())
+    }
+
     pub(crate) fn require_identity(&self, identity: &AgentdIdentity) -> Result<(), AgentdError> {
         if self.agent_id != identity.agent_id || self.spawn_generation != identity.spawn_generation
         {

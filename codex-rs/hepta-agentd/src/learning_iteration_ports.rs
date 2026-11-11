@@ -19,6 +19,8 @@ pub type LearningIterationOwnerFutureV1<'a, T> =
 
 #[derive(Clone, Debug)]
 pub enum LearningIterationProposalPayloadV1 {
+    #[cfg(target_os = "linux")]
+    Model(Box<crate::OriginalCellQ24ModelDispatchV1>),
     Parameter(Box<ParameterPlasticityProductRequestV1>),
     Topology(Box<TopologyPlasticityProductRequestV1>),
     #[cfg(all(test, unix))]
