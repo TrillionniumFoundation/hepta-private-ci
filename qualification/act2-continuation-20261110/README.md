@@ -105,3 +105,9 @@ Production StageOwner assembly, real frozen tuple and original custody, independ
 - **#5914** is a separately published child at source `be8adcbb5e9925f72e05330b8fb30509cba4544b`, tree `eaa8b27f16a5f9fed87e9d6882cd23dfaecfd125`, parent 30a697. It adds read-only original Training receipt recovery from a Coordinator-validated full snapshot. Its Windows run is in progress; shared/daemon/architecture/blocking are queued and v8 is metadata-only success. It still has no ordinary product caller or complete StageOwner/Root/custody/independent-B/new-C/cold-recovery chain; prior 30a native results do not transfer.
 
 Complete production StageOwner assembly, real frozen tuple and original custody, independent B/retention/new-C, cold recovery, full handler FinalUse, field benefit and learned-skill promotion remain OPEN. Complete ordinary Adopt and correct NoUpdate chain counts remain zero.
+
+
+### 04:30 UTC additional terminal jobs
+
+- #5914 Windows run `42955998131` is terminal scoped success: 34 declared cases passed, including Agentd prompt-runtime 12/12. Artifact `13828641594` is 13,537 bytes with SHA-256 `5c72572bcb9b1b82911ec16593809c274df9ae101b561d3bdba222d0e536ba5c`. The selector did not execute the five new snapshot-recovery cases or the six Training-stage cases, so native component qualification remains pending.
+- #5900 blocking run `42941516830` is terminal failure after 18,513 tests: 18,510 passed, 3 failed, 126 skipped. The repaired recovery test failed both attempts at line 681 for the same non-ok claim; independent git-attribution auth-refresh and Matrix reopen tests also failed. Artifact `13827811538` is 671,168 bytes with SHA-256 `8a1cfe32ad478c1e892fc201269a099910c8f1270dbeab18affee27053f4bb84`. This strengthens the semantic-failure classification and is not a component pass.
