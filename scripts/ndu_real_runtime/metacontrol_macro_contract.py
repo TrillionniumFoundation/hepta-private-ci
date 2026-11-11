@@ -102,6 +102,12 @@ def validate_plan(plan):
 
 def observe_branch(directory, result, expected_actions, wall_seconds, tariff, config):
     directory = Path(directory)
+    # The in-memory result must be the exact native result archived by the
+    # host.  Matching a separate final score is insufficient if the result
+    # receipt itself drifted or was replaced.
+    persisted_result = json.loads((directory / "result.json").read_bytes())
+    if persisted_result != result:
+        raise ValueError("Returned result differs from the persisted native result")
     steps = json.loads((directory / "trajectory.json").read_bytes())["steps"]
     if (
         result["terminal_status"] != "Completed"
@@ -196,6 +202,16 @@ def observe_branch(directory, result, expected_actions, wall_seconds, tariff, co
         or score["quality"] != result["gross_score"]
     ):
         raise ValueError("Separate scorer did not consume actual final delivery")
+    # EpisodeHost reports the exact final independent score, rubric and text
+    # digest in result.json.  Verify those fields instead of matching only
+    # gross_score: other internally coherent files cannot silently substitute
+    # a different host return receipt.
+    if (
+        result.get("score_components") != score
+        or result.get("rubric_sha256") != config["rubric_sha256"]
+        or result.get("output_text_sha256") != digest(delivery["text"])
+    ):
+        raise ValueError("Native host result differs from final scored delivery")
     return {
         "operation_id": result["original_operation_id"],
         "initial_public_state_sha256": digest(initial),
