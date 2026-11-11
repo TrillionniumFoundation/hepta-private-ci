@@ -1,0 +1,46 @@
+{
+  "archive": {
+    "bytes": 16228,
+    "file": "raw-pty-logs.tar.xz",
+    "members": [
+      {
+        "bytes": 3422,
+        "classification": "format-only preflight; default stable rustfmt differs also at original unchanged lines",
+        "name": "rustfmt-baseline-mismatch.log",
+        "session_id": "dpty-3705e027debc170e949e2a04e39d74bd3ee1e5e820c9bf031f94c41afdd1f36c",
+        "sha256": "fc324b7b3252e531c5875fc18d946b2610fd350fcba7160a2f67fc6f03faf074",
+        "status": "FAILED"
+      },
+      {
+        "bytes": 49708,
+        "classification": "AWS-LC bindgen missing stddef.h",
+        "name": "build-initial-stddef-missing.log",
+        "session_id": "dpty-d4c5f9d1bd165fc3c9d8de8cd866d0ff319c0f38ca7716b3a34ab9c4455777cb",
+        "sha256": "7e75aaf22d61f78f9d6c34cb2b46bc48cf8ca812635456b3b49ae0d02950d1c6",
+        "status": "FAILED"
+      },
+      {
+        "bytes": 102676,
+        "classification": "targeted test 1 passed / 0 failed / 432 filtered",
+        "name": "build-corrected-target-test-pass.log",
+        "session_id": "dpty-a39e0a563e5587f98901fea504bd1ed289ea032f4d17d4c9b5eb39dab38eff4e",
+        "sha256": "353760cdd4ef154b633ff4d62f328f5dae6a421b5858368f822ea5771ac03fb7",
+        "status": "PASS"
+      }
+    ],
+    "sha256": "fd26268686bbe78b87d9bd0ededb87d5e5b5d77788f2d6cccdb31d45b8d5d3d0"
+  },
+  "base_source_head": "ceadcb3b11dbd94a9d07afb7e6301555e4ff3f80",
+  "original_case": "cognitive_runtime_tests::product_v2_reports_peer_truncation_before_aggregation",
+  "path": "codex-rs/hepta-memory/src/cognitive_runtime_tests.rs",
+  "schema": "mem8-federation-test-diagnostic-evidence-v1",
+  "targeted_test": {
+    "complete_required_ci": false,
+    "failed": 0,
+    "filtered_out": 432,
+    "host": "ai395",
+    "ignored": 0,
+    "owner_authenticated_mac_ci": false,
+    "passed": 1
+  }
+}
