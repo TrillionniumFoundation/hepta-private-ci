@@ -414,6 +414,42 @@ def select_replay(records: Iterable[MemoryRecord], *, policy: str, query_key: st
     return tuple(e.event_id for e in ordered[:max_items])
 
 
+def frozen_replay_from_prefix(
+    records: Iterable[MemoryRecord], *, policy: str, query_key: str,
+    now_sequence: int, max_items: int, seed: str,
+) -> tuple[str, ...]:
+    """Causal shadow replay from the owner-*declared* memory time prefix.
+
+    The full forensic selector validates every supplied record. Thus a future
+    revision, malformed hash, or duplicate event ID can make an earlier replay
+    attempt fail even when that future event was unavailable. This entrypoint
+    freezes visibility by declared sequence *before* identity and revision
+    validation; visible tombstones/revocations remain sticky and cannot revive
+    earlier versions. Malformed sequence types cannot safely be classified as
+    future and always fail closed.
+
+    Input sequence claims are NOT attested owner facts; no training, memory
+    deletion, permissions, effect execution, adoption or release is authorized.
+    This still scans the supplied raw records, so input reading is billable.
+    """
+    if type(now_sequence) is not int or now_sequence < 0:
+        raise ContractError("invalid frozen replay cutoff")
+    visible = []
+    for count, item in enumerate(records):
+        if count >= 65_536:
+            raise ContractError("frozen replay input exceeds size limit")
+        if (type(item) is not MemoryRecord
+                or type(item.observed_sequence) is not int
+                or item.observed_sequence < 0):
+            raise ContractError("invalid memory observation timestamp")
+        if item.observed_sequence <= now_sequence:
+            visible.append(item)
+    return select_replay(
+        visible, policy=policy, query_key=query_key, now_sequence=now_sequence,
+        max_items=max_items, seed=seed,
+    )
+
+
 @dataclass(frozen=True)
 class TrialRow:
     episode_id: str
