@@ -106,6 +106,9 @@ def audit_observed(record):
         and type(launch.get("exit_code")) is int
         and launch["exit_code"] == 0
         and launch.get("enforced_before_actor_exec") is True
+        and launch.get("callback_error") is None
+        and launch.get("protocol_error") is None
+        and launch.get("limit_reason") is None
         and isinstance(launch.get("wire_sha256"), str)
         and bool(HEX64.fullmatch(launch["wire_sha256"]))
     )
@@ -113,6 +116,7 @@ def audit_observed(record):
         errors.insert(0, "ISOLATED_ACTOR_NOT_COMPLETED")
     elif identity_ok and (
         launch.get("run_id") != identity["run_id"]
+        or launch.get("task_id") != identity["task_id"]
         or launch.get("episode_id") != identity["episode_id"]
     ):
         errors.insert(0, "LAUNCH_IDENTITY_DRIFT")
