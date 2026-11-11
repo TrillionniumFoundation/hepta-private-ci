@@ -12,7 +12,7 @@ from pathlib import Path
 
 from ndu_real_materials.common import read_bound, read_relative, strict_json, write_json
 from ndu_real_materials import evaluator
-from .content_identity import check_selection, verify_evaluation
+from .content_identity import SELECTION_SCHEMA, check_selection, verify_evaluation
 from .metering import canonical_sha
 
 SCHEMA = "ndu.real.content-audit-manifest.v1"
@@ -79,6 +79,12 @@ def _episode(root, entry, manifest, total):
             for event in events[1:]
         )
     )
+    ready_profile = (
+        events[0].get("content_identity_profile") if protocol_ordered else None
+    )
+    # The real host rejects unknown readiness profiles. An unadvertised
+    # selection witness is not an admitted positive selected-use receipt.
+    protocol_ordered = protocol_ordered and ready_profile in (None, SELECTION_SCHEMA)
     ordered = (
         protocol_ordered
         and len(observations) == len(steps)
@@ -179,6 +185,14 @@ def _episode(root, entry, manifest, total):
         checks = {
             "isolated_actor_completed": isolated_actor_completed,
             "candidate_selection": selection_check,
+            # Keep witness integrity separate from the declared ready protocol.
+            # A syntactically valid receipt is not an admitted selected-use claim
+            # unless the original ready exchange advertises this exact profile.
+            "selection_profile_advertised": (
+                protocol_ordered and ready_profile == SELECTION_SCHEMA
+                if selection is not None
+                else None
+            ),
             "raw_actor_wire_receipt": wire_receipts,
             "wire_to_trajectory": wire_binding,
             "action_to_delivery": delivery_binding,
