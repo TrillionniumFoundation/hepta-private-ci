@@ -270,7 +270,7 @@ pub(super) fn feature_target(
 /// inference, journal preparation, FinalUse claims or CURRENT writes. These
 /// deterministic checks confer no authority and do not predict task success.
 /// Live admission, clocks and resource observations remain the runtime owners.
-pub(super) fn require_executable_feature(
+pub(crate) fn require_executable_feature(
     bundle: &CellCompatibilityBundleV1,
     manifest: &CellBackendManifestV2,
     model: &Arc<LoadedCellQ24ModelV1>,

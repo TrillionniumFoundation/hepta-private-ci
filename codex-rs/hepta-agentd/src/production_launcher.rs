@@ -47,6 +47,7 @@ struct RootStartup {
     learning: Option<crate::RootLearningHandoffV1>,
     q24_model: Option<crate::RootQ24ModelFactoryHandoffV1>,
     publication: Option<crate::RootGenerationPublicationHandoffV1>,
+    initial_publication: Option<crate::RootGenerationInitialHandoffV1>,
     control: OwnedFd,
     app_server: OwnedFd,
     lifetime: Duration,
@@ -65,6 +66,7 @@ pub struct AgentdProductionLaunch {
     inputs: RuntimeInputs,
     q24_model: Option<crate::AgentdRootQ24ModelFactoryV1>,
     publication: Option<crate::RootGenerationPublicationHandoffV1>,
+    initial_publication: Option<crate::RootGenerationInitialHandoffV1>,
 }
 
 struct RuntimeInputs {
@@ -90,6 +92,7 @@ impl AgentdProductionStartup {
                     learning_handoff,
                     q24_model_handoff,
                     publication_handoff,
+                    initial_handoff,
                     uid,
                     gid,
                     control,
@@ -133,6 +136,14 @@ impl AgentdProductionStartup {
                         )
                     })
                     .transpose()?;
+                let initial_publication = initial_handoff
+                    .map(|handoff| {
+                        crate::receive_root_generation_initial_handoff(
+                            handoff,
+                            remaining(bootstrap_deadline)?,
+                        )
+                    })
+                    .transpose()?;
                 let inputs = RuntimeInputs {
                     primary,
                     notes,
@@ -145,6 +156,7 @@ impl AgentdProductionStartup {
                     learning,
                     q24_model,
                     publication,
+                    initial_publication,
                     control,
                     app_server,
                     lifetime,
@@ -203,6 +215,7 @@ impl AgentdProductionStartup {
                     learning,
                     q24_model,
                     publication,
+                    initial_publication,
                     control,
                     app_server,
                     lifetime,
@@ -268,6 +281,7 @@ impl AgentdProductionStartup {
                         inputs,
                         q24_model: model_factory,
                         publication,
+                        initial_publication,
                     }),
                 ))
             }
@@ -288,9 +302,20 @@ impl AgentdProductionLaunch {
         })
     }
 
+    /// Take the independently received initial purpose once. The caller must
+    /// use the original live connection and original selected target before
+    /// configuring the returned Config; taking an offer changes no CURRENT.
+    pub fn take_generation_initial_handoff(
+        &mut self,
+    ) -> Result<crate::RootGenerationInitialHandoffV1, AgentdError> {
+        self.initial_publication.take().ok_or_else(|| {
+            AgentdError::Invalid("original initial handoff was absent or already taken".into())
+        })
+    }
+
     /// Retain this single original connection capability before `run` consumes
-    /// the launch. A later actual B/Selection can then connect its separate
-    /// purpose handoff while the original runtime still owns the Root session.
+    /// the launch. Exactly one initial or learned publication purpose can use
+    /// it while the original runtime still owns the live Root session.
     pub fn take_generation_publication_connection(
         &mut self,
     ) -> Result<crate::RootGenerationPublicationConnectionV1, AgentdError> {
@@ -333,6 +358,11 @@ impl AgentdProductionLaunch {
         arg0_paths: Arg0DispatchPaths,
     ) -> Result<(), AgentdError> {
         config.require_root_learning_assembled()?;
+        if self.initial_publication.is_some() {
+            return Err(AgentdError::Invalid(
+                "original initial handoff must be taken for actual initial publication before run".into(),
+            ));
+        }
         if self.publication.is_some() {
             return Err(AgentdError::Invalid(
                 "original publication handoff must be taken for the later actual selection before run".into(),

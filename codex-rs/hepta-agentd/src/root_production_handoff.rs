@@ -16,6 +16,12 @@ use std::time::Duration;
 use crate::AgentdError;
 use crate::HOST_AUTHORITY_BOOTSTRAP_BOUND;
 
+#[path = "root_generation_initial_handoff.rs"]
+mod generation_initial;
+pub use generation_initial::RootGenerationInitialHandoffV1;
+pub use generation_initial::receive_root_generation_initial_handoff;
+pub use generation_initial::send_root_generation_initial_handoff;
+
 #[path = "root_generation_publication_handoff.rs"]
 mod generation_publication;
 pub use generation_publication::RootGenerationPublicationHandoffV1;

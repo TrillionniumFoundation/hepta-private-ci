@@ -134,6 +134,18 @@ impl CellGenerationJournalObserverV1 {
         ])
     }
 
+    /// A fresh initial reservation requires the same original unwritten file
+    /// and initialized empty witness. This read never creates genesis.
+    pub fn require_original_unwritten(&self) -> Result<(), CellGenerationErrorV2> {
+        let before = self.stamps()?;
+        if before.0.0 != 0 || self.witness_head()?.is_some()
+            || self.stamps()? != before
+        {
+            return Err(CellGenerationErrorV2::Pending);
+        }
+        Ok(())
+    }
+
     /// Before preparation the original target may still be empty. A real
     /// initialized witness with no acknowledged frame is nevertheless required.
     /// This method writes no genesis and must never substitute for publish.

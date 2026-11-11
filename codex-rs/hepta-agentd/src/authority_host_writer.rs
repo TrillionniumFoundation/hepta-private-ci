@@ -15,6 +15,9 @@ use codex_hepta_contracts::authority_lease::AuthorityLeaseVerifier;
 #[path = "authority_host_bootstrap_capture.rs"]
 mod bootstrap;
 
+#[path = "authority_host_generation_initial_context.rs"]
+mod initial_context;
+
 #[path = "authority_host_learning_registration.rs"]
 mod learning_registration;
 pub use learning_registration::HostAuthorityLearningRegistrationV1;

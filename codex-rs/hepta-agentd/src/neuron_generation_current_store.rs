@@ -19,6 +19,8 @@ pub(super) struct CurrentStore {
 
 enum Store {
     #[cfg(target_os = "linux")]
+    RootInitial(crate::root_generation_initial_client::RootGenerationInitialClient),
+    #[cfg(target_os = "linux")]
     Root(crate::root_generation_current_client::RootGenerationCurrentClient),
     Host(HostAuthorityFrontierStore<CurrentHead>),
     #[cfg(test)]
@@ -62,6 +64,16 @@ impl CurrentStore {
     }
 
     #[cfg(target_os = "linux")]
+    pub(super) fn from_original_initial(
+        original: crate::root_generation_initial_client::RootGenerationInitialClient,
+    ) -> Result<Self, AgentdError> {
+        Ok(Self {
+            owner_id: owner_id(original.scope())?,
+            store: Store::RootInitial(original),
+        })
+    }
+
+    #[cfg(target_os = "linux")]
     pub(super) fn is_original_host(&self) -> bool {
         matches!(&self.store, Store::Host(_))
     }
@@ -84,6 +96,8 @@ impl CurrentStore {
             Store::Host(store) => store.load(&self.owner_id).map_err(invalid)?,
             #[cfg(target_os = "linux")]
             Store::Root(original) => original.observe()?,
+            #[cfg(target_os = "linux")]
+            Store::RootInitial(original) => original.observe_initial_current()?,
             #[cfg(test)]
             Store::Test(store) => store.load(&self.owner_id).map_err(invalid)?,
         };
@@ -106,6 +120,8 @@ impl CurrentStore {
                 .map_err(invalid),
             #[cfg(target_os = "linux")]
             Store::Root(original) => original.replace(expected, next),
+            #[cfg(target_os = "linux")]
+            Store::RootInitial(original) => original.publish_initial_current(expected, next),
             #[cfg(test)]
             Store::Test(store) => store
                 .compare_and_set(&self.owner_id, expected, next)

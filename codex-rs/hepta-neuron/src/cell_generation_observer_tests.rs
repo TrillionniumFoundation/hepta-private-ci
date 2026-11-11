@@ -123,6 +123,7 @@ fn unwritten_target_is_not_reported_as_actual_genesis_and_wrong_context_is_refus
     let journal = files.file("journal");
     let witness = files.witness();
     let reader = observer(&files);
+    assert!(reader.require_original_unwritten().is_ok());
     assert!(reader.require_original_unwritten_or_genesis().is_ok());
     assert_eq!(reader.observe().err(), Some(CellGenerationErrorV2::Corrupt));
     let config = config();
@@ -136,6 +137,8 @@ fn unwritten_target_is_not_reported_as_actual_genesis_and_wrong_context_is_refus
     )
     .unwrap();
     assert!(reader.observe().unwrap().is_genesis());
+    assert_eq!(reader.require_original_unwritten().err(), Some(CellGenerationErrorV2::Pending));
+    assert!(reader.require_original_unwritten_or_genesis().is_ok());
     let mut wrong = observer_config();
     wrong.generation.task_digest = [97; 32];
     let wrong = CellGenerationJournalObserverV1::from_original_files(
@@ -156,4 +159,23 @@ fn unwritten_target_is_not_reported_as_actual_genesis_and_wrong_context_is_refus
         )
         .is_err()
     );
+}
+
+#[test]
+fn fresh_initial_observer_refuses_uninitialized_witness_and_existing_genesis() {
+    let files = Files::new();
+    let _journal = files.file("journal");
+    let _uninitialized = files.file("witness");
+    let reader = observer(&files);
+    assert_eq!(reader.require_original_unwritten().err(), Some(CellGenerationErrorV2::Unavailable));
+    let witness = files.witness();
+    reader.require_original_unwritten().unwrap();
+    drop(witness);
+    let original_owner = owner(&files);
+    let original = reader.observe().unwrap();
+    assert!(original.is_genesis());
+    drop(original_owner);
+    assert_eq!(reader.require_original_unwritten().err(), Some(CellGenerationErrorV2::Pending));
+    // A header cannot be called a fresh absent target, even with empty witness.
+    assert_eq!(reader.observe().unwrap(), original);
 }

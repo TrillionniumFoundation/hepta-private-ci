@@ -21,11 +21,16 @@ mod learning;
 #[path = "authority_host_q24_model_session.rs"]
 mod q24_model;
 
+#[path = "authority_host_generation_initial_session.rs"]
+mod generation_initial;
+pub use generation_initial::RootGenerationInitialEnrollmentCapabilityV1;
+pub use generation_initial::RootGenerationInitialRegistrationV1;
+
 #[path = "authority_host_generation_publication_session.rs"]
 mod generation_publication;
-pub use generation_publication::RootGenerationPublicationDeploymentSessionV1;
-pub use generation_publication::RootGenerationPublicationDeploymentV1;
 pub use generation_publication::RootGenerationPublicationEnrollmentCapabilityV1;
+pub use generation_publication::RootGenerationPublicationDeploymentV1;
+pub use generation_publication::RootGenerationPublicationDeploymentSessionV1;
 pub use generation_publication::RootGenerationPublicationRegistrationV1;
 
 /// One Root session's immutable registration, retained actual process handle
@@ -40,6 +45,7 @@ pub struct PreparedHostAuthoritySession {
     root_admin: Option<crate::authority_host_admin::RootAdminRuntime>,
     learning: Option<crate::authority_host_service::RegisteredHostLearningCheckpointV1>,
     publication: Option<generation_publication::PublicationRuntime>,
+    initial_publication: Option<generation_initial::InitialRuntime>,
 }
 
 impl PreparedHostAuthoritySession {
@@ -92,6 +98,7 @@ impl PreparedHostAuthoritySession {
             root_admin: None,
             learning: None,
             publication: None,
+            initial_publication: None,
         })
     }
 
@@ -118,6 +125,7 @@ impl PreparedHostAuthoritySession {
             root_admin: None,
             learning: None,
             publication: None,
+            initial_publication: None,
         })
     }
 
@@ -140,6 +148,7 @@ impl PreparedHostAuthoritySession {
             root_admin: None,
             learning: None,
             publication: None,
+            initial_publication: None,
         })
     }
 
@@ -333,6 +342,7 @@ impl PreparedHostAuthoritySession {
             root_admin,
             learning,
             publication,
+            initial_publication,
             ..
         } = self;
         // Bind the dedicated optional lane before either five-lane ready
@@ -340,6 +350,12 @@ impl PreparedHostAuthoritySession {
         let learning = learning
             .map(|owner| learning::BoundLearning::bind(owner, &config, publication))
             .transpose()?;
+        let initial_publication = initial_publication.map(|runtime| {
+            if learning.as_ref().is_some_and(|lane| lane.contains_path(runtime.path())) {
+                return Err(io::Error::other("initial publication requires a distinct lane"));
+            }
+            generation_initial::BoundInitial::bind(runtime, &config)
+        }).transpose()?;
         if text_ui.is_some()
             && config.issuer_record_profile
                 != crate::authority_host_config::HostIssuerRecordProfile::TextRecovery
@@ -369,6 +385,7 @@ impl PreparedHostAuthoritySession {
                 || learning
                     .as_ref()
                     .is_some_and(|lane| lane.contains_path(&text.socket_path))
+                || initial_publication.as_ref().is_some_and(|lane| lane.path() == text.socket_path)
             {
                 return Err(io::Error::other("text UI requires a distinct private lane"));
             }
@@ -384,35 +401,40 @@ impl PreparedHostAuthoritySession {
             };
             let bound = listeners::bind_runtime_lanes(&config, ready)?;
             let serve = || {
-                learning::serve_optional(
-                    learning.as_ref(),
-                    &service,
-                    &config,
-                    &registration,
-                    &owner_pidfd,
+                generation_initial::serve_optional(
+                    initial_publication.as_ref(), &service, &config, &registration, &owner_pidfd,
                     || {
-                        std::thread::scope(|scope| {
-                            let worker = scope.spawn(|| {
-                                service.serve_text_ui(
-                                    &text,
-                                    &ui_pidfd,
+                    learning::serve_optional(
+                        learning.as_ref(),
+                        &service,
+                        &config,
+                        &registration,
+                        &owner_pidfd,
+                        || {
+                            std::thread::scope(|scope| {
+                                let worker = scope.spawn(|| {
+                                    service.serve_text_ui(
+                                        &text,
+                                        &ui_pidfd,
+                                        &owner_pidfd,
+                                        std::time::Duration::from_millis(config.timeout_ms),
+                                        std::time::Duration::from_millis(config.lifetime_ms),
+                                    )
+                                });
+                                let original = listeners::serve_bound_lanes(
+                                    &service,
+                                    &config,
+                                    &registration,
                                     &owner_pidfd,
-                                    std::time::Duration::from_millis(config.timeout_ms),
-                                    std::time::Duration::from_millis(config.lifetime_ms),
-                                )
-                            });
-                            let original = listeners::serve_bound_lanes(
-                                &service,
-                                &config,
-                                &registration,
-                                &owner_pidfd,
-                                bound,
-                            );
-                            let ui = worker
-                                .join()
-                                .map_err(|_| io::Error::other("text UI lane panicked"))?;
-                            original.and(ui)
-                        })
+                                    bound,
+                                );
+                                let ui = worker
+                                    .join()
+                                    .map_err(|_| io::Error::other("text UI lane panicked"))?;
+                                original.and(ui)
+                            })
+                        },
+                    )
                     },
                 )
             };
@@ -422,26 +444,31 @@ impl PreparedHostAuthoritySession {
             }
         } else {
             let serve = || {
-                learning::serve_optional(
-                    learning.as_ref(),
-                    &service,
-                    &config,
-                    &registration,
-                    &owner_pidfd,
+                generation_initial::serve_optional(
+                    initial_publication.as_ref(), &service, &config, &registration, &owner_pidfd,
                     || {
-                        listeners::serve_lanes_with_ready(
-                            &service,
-                            &config,
-                            &registration,
-                            &owner_pidfd,
-                            || {
-                                ready()?;
-                                if let Some(admin) = &root_admin {
-                                    admin.activate()?;
-                                }
-                                Ok(())
-                            },
-                        )
+                    learning::serve_optional(
+                        learning.as_ref(),
+                        &service,
+                        &config,
+                        &registration,
+                        &owner_pidfd,
+                        || {
+                            listeners::serve_lanes_with_ready(
+                                &service,
+                                &config,
+                                &registration,
+                                &owner_pidfd,
+                                || {
+                                    ready()?;
+                                    if let Some(admin) = &root_admin {
+                                        admin.activate()?;
+                                    }
+                                    Ok(())
+                                },
+                            )
+                        },
+                    )
                     },
                 )
             };

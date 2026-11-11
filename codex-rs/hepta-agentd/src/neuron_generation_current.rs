@@ -23,6 +23,9 @@ use codex_hepta_types::StableId;
 use crate::AgentdError;
 use crate::neuron_generation_update_selection::AgentdSelectedGenerationV1;
 
+#[cfg(target_os = "linux")]
+#[path = "neuron_generation_current_initial_root.rs"]
+pub(crate) mod initial_root;
 #[path = "neuron_generation_current_initial.rs"]
 mod initial;
 #[path = "neuron_generation_current_initial_types.rs"]
@@ -377,3 +380,7 @@ pub(crate) mod test_support;
 #[cfg(all(test, target_os = "linux"))]
 #[path = "authority_host_generation_publication_root_tests.rs"]
 mod publication_root_tests;
+
+#[cfg(all(test, target_os = "linux"))]
+#[path = "authority_host_generation_initial_root_tests.rs"]
+mod initial_root_tests;
