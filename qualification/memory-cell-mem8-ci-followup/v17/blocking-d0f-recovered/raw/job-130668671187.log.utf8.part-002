@@ -1,0 +1,1488 @@
+1-11T16:56:54.6338467Z 6 | use rmcp::model::ClientInfo;
+2026-11-11T16:56:54.6338842Z   |                  ^^^^^^^^^^
+2026-11-11T16:56:54.6339077Z 
+2026-11-11T16:56:54.6340228Z warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+2026-11-11T16:56:54.6344088Z   --> rmcp-client/src\logging_client_handler.rs:27:18
+2026-11-11T16:56:54.6346411Z    |
+2026-11-11T16:56:54.6348808Z 27 |     client_info: ClientInfo,
+2026-11-11T16:56:54.6349267Z    |                  ^^^^^^^^^^
+2026-11-11T16:56:54.6350116Z 
+2026-11-11T16:56:54.6350624Z warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+2026-11-11T16:56:54.6352652Z   --> rmcp-client/src\logging_client_handler.rs:32:36
+2026-11-11T16:56:54.6353233Z    |
+2026-11-11T16:56:54.6353813Z 32 |     pub(crate) fn new(client_info: ClientInfo, send_elicitation: SendElicitation) -> Self {
+2026-11-11T16:56:54.6354838Z    |                                    ^^^^^^^^^^
+2026-11-11T16:56:54.6355412Z 
+2026-11-11T16:56:54.6356734Z warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+2026-11-11T16:56:54.6357586Z   --> rmcp-client/src\logging_client_handler.rs:94:27
+2026-11-11T16:56:54.6358078Z    |
+2026-11-11T16:56:54.6358376Z 94 |     fn get_info(&self) -> ClientInfo {
+2026-11-11T16:56:54.6358808Z    |                           ^^^^^^^^^^
+2026-11-11T16:56:54.6359078Z 
+2026-11-11T16:56:54.6359775Z warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+2026-11-11T16:56:54.6360534Z    --> rmcp-client/src\mrtr_tests.rs:149:9
+2026-11-11T16:56:54.6360951Z     |
+2026-11-11T16:56:54.6361296Z 149 |         ClientInfo::new(
+2026-11-11T16:56:54.6361659Z     |         ^^^^^^^^^^
+2026-11-11T16:56:54.6361869Z 
+2026-11-11T16:56:54.6362285Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-11T16:56:54.6363009Z    --> rmcp-client/src\mrtr_tests.rs:171:13
+2026-11-11T16:56:54.6363412Z     |
+2026-11-11T16:56:54.6363771Z 171 |             ServerInfo::new(ServerCapabilities::default())
+2026-11-11T16:56:54.6364290Z     |             ^^^^^^^^^^
+2026-11-11T16:56:54.6364511Z 
+2026-11-11T16:56:54.6364939Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-11T16:56:54.6365713Z    --> rmcp-client/src\mrtr_tests.rs:228:9
+2026-11-11T16:56:54.6366863Z     |
+2026-11-11T16:56:54.6367249Z 228 |         ServerInfo::new(ServerCapabilities::default())
+2026-11-11T16:56:54.6367750Z     |         ^^^^^^^^^^
+2026-11-11T16:56:54.6367954Z 
+2026-11-11T16:56:54.6371343Z warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+2026-11-11T16:56:54.6377183Z    --> rmcp-client/src\mrtr_tests.rs:139:22
+2026-11-11T16:56:54.6378604Z     |
+2026-11-11T16:56:54.6379369Z 139 |     use rmcp::model::ClientInfo;
+2026-11-11T16:56:54.6380005Z     |                      ^^^^^^^^^^
+2026-11-11T16:56:54.6380293Z 
+2026-11-11T16:56:54.6380736Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-11T16:56:54.6382040Z    --> rmcp-client/src\mrtr_tests.rs:144:22
+2026-11-11T16:56:54.6383552Z     |
+2026-11-11T16:56:54.6385029Z 144 |     use rmcp::model::ServerInfo;
+2026-11-11T16:56:54.6387898Z     |                      ^^^^^^^^^^
+2026-11-11T16:56:54.6388213Z 
+2026-11-11T16:56:54.6388361Z warning: 12 warnings emitted
+2026-11-11T16:56:54.6388635Z 
+2026-11-11T16:56:55.2779551Z [4,986 / 5,511] Compiling Rust bin //codex-rs/hepta-supervisor:hepta-authority-signer (50 files); 1s remote-cache, local ... (30 actions, 4 running)
+2026-11-11T16:56:55.3369371Z INFO: From Compiling Rust bin //codex-rs/rmcp-client:test_stdio_server-bin-unit-tests-bin (49 files):
+2026-11-11T16:56:55.3729791Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-11T16:56:55.3765090Z   --> rmcp-client/src/bin/test_stdio_server.rs:31:18
+2026-11-11T16:56:55.3834101Z    |
+2026-11-11T16:56:55.3963726Z 31 | use rmcp::model::ServerInfo;
+2026-11-11T16:56:55.3981405Z    |                  ^^^^^^^^^^
+2026-11-11T16:56:55.4058321Z    |
+2026-11-11T16:56:55.4217637Z    = note: `#[warn(deprecated)]` on by default
+2026-11-11T16:56:55.4247907Z 
+2026-11-11T16:56:55.4286126Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-11T16:56:55.4333969Z    --> rmcp-client/src/bin/test_stdio_server.rs:508:27
+2026-11-11T16:56:55.4408986Z     |
+2026-11-11T16:56:55.4617573Z 508 |     fn get_info(&self) -> ServerInfo {
+2026-11-11T16:56:55.4747783Z     |                           ^^^^^^^^^^
+2026-11-11T16:56:55.5008057Z 
+2026-11-11T16:56:55.5018738Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-11T16:56:55.5045189Z    --> rmcp-client/src/bin/test_stdio_server.rs:519:27
+2026-11-11T16:56:55.5128360Z     |
+2026-11-11T16:56:55.5145203Z 519 |         let server_info = ServerInfo::new(capabilities);
+2026-11-11T16:56:55.5221886Z     |                           ^^^^^^^^^^
+2026-11-11T16:56:55.5243289Z 
+2026-11-11T16:56:55.5255288Z warning: 3 warnings emitted
+2026-11-11T16:56:55.5257401Z 
+2026-11-11T16:56:55.5328595Z INFO: From Compiling Rust bin //codex-rs/rmcp-client:rmcp_test_server-bin-unit-tests-bin (49 files):
+2026-11-11T16:56:55.5378685Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-11T16:56:55.5394936Z   --> rmcp-client/src/bin/rmcp_test_server.rs:14:18
+2026-11-11T16:56:55.5547803Z    |
+2026-11-11T16:56:55.5835890Z 14 | use rmcp::model::ServerInfo;
+2026-11-11T16:56:55.5888677Z    |                  ^^^^^^^^^^
+2026-11-11T16:56:55.5903797Z    |
+2026-11-11T16:56:55.6167566Z    = note: `#[warn(deprecated)]` on by default
+2026-11-11T16:56:55.6179395Z 
+2026-11-11T16:56:55.6182028Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-11T16:56:55.6280529Z   --> rmcp-client/src/bin/rmcp_test_server.rs:81:27
+2026-11-11T16:56:55.6285027Z    |
+2026-11-11T16:56:55.6413555Z 81 |     fn get_info(&self) -> ServerInfo {
+2026-11-11T16:56:55.6458269Z    |                           ^^^^^^^^^^
+2026-11-11T16:56:55.6564009Z 
+2026-11-11T16:56:55.6651355Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-11T16:56:55.6663171Z   --> rmcp-client/src/bin/rmcp_test_server.rs:82:9
+2026-11-11T16:56:55.6670298Z    |
+2026-11-11T16:56:55.7181227Z 82 |         ServerInfo::new(
+2026-11-11T16:56:55.7284858Z    |         ^^^^^^^^^^
+2026-11-11T16:56:55.7649327Z 
+2026-11-11T16:56:55.7865311Z warning: 3 warnings emitted
+2026-11-11T16:56:55.7985286Z 
+2026-11-11T16:56:55.8757558Z INFO: From Compiling Rust bin //codex-rs/rmcp-client:test_streamable_http_server-bin-unit-tests-bin (49 files):
+2026-11-11T16:56:55.8819548Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-11T16:56:55.8970717Z   --> rmcp-client/src/bin/test_streamable_http_server.rs:43:18
+2026-11-11T16:56:55.9013474Z    |
+2026-11-11T16:56:55.9016194Z 43 | use rmcp::model::ServerInfo;
+2026-11-11T16:56:55.9123188Z    |                  ^^^^^^^^^^
+2026-11-11T16:56:55.9124783Z    |
+2026-11-11T16:56:55.9125318Z    = note: `#[warn(deprecated)]` on by default
+2026-11-11T16:56:55.9125852Z 
+2026-11-11T16:56:55.9126508Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-11T16:56:55.9130849Z    --> rmcp-client/src/bin/test_streamable_http_server.rs:240:27
+2026-11-11T16:56:55.9131656Z     |
+2026-11-11T16:56:55.9132197Z 240 |     fn get_info(&self) -> ServerInfo {
+2026-11-11T16:56:55.9132881Z     |                           ^^^^^^^^^^
+2026-11-11T16:56:55.9133433Z 
+2026-11-11T16:56:55.9136964Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-11T16:56:55.9138392Z    --> rmcp-client/src/bin/test_streamable_http_server.rs:241:9
+2026-11-11T16:56:55.9139634Z     |
+2026-11-11T16:56:55.9143699Z 241 |         ServerInfo::new(
+2026-11-11T16:56:55.9144302Z     |         ^^^^^^^^^^
+2026-11-11T16:56:55.9144867Z 
+2026-11-11T16:56:55.9145166Z warning: 3 warnings emitted
+2026-11-11T16:56:55.9147524Z 
+2026-11-11T16:56:55.9147950Z INFO: From Compiling Rust bin //codex-rs/analytics:analytics-unit-tests-bin (9 files):
+2026-11-11T16:56:55.9152564Z warning: unused import: `crate::client::AnalyticsEventsClient`
+2026-11-11T16:56:55.9156029Z  --> analytics/src\analytics_client_tests.rs:1:5
+2026-11-11T16:56:55.9174438Z   |
+2026-11-11T16:56:55.9209296Z 1 | use crate::client::AnalyticsEventsClient;
+2026-11-11T16:56:55.9238127Z   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-11T16:56:55.9566322Z   |
+2026-11-11T16:56:55.9736120Z   = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+2026-11-11T16:56:56.0165595Z 
+2026-11-11T16:56:56.0171418Z warning: unused import: `std::time::SystemTime`
+2026-11-11T16:56:56.0256135Z    --> analytics/src\analytics_client_tests.rs:196:5
+2026-11-11T16:56:56.0269364Z     |
+2026-11-11T16:56:56.0283919Z 196 | use std::time::SystemTime;
+2026-11-11T16:56:56.0284638Z     |     ^^^^^^^^^^^^^^^^^^^^^
+2026-11-11T16:56:56.0284961Z 
+2026-11-11T16:56:56.0285106Z warning: 2 warnings emitted
+2026-11-11T16:56:56.0285363Z 
+2026-11-11T16:56:56.0286198Z [5,032 / 5,511] Compiling Rust bin //codex-rs/hepta-supervisor:hepta-authority-signer (50 files); 2s remote-cache, local ... (20 actions, 4 running)
+2026-11-11T16:56:56.0287625Z INFO: From Compiling Rust bin //codex-rs/codex-mcp:codex-mcp-unit-tests-bin (44 files):
+2026-11-11T16:56:56.0288747Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-11T16:56:56.0289644Z   --> codex-mcp/src\connection_manager_tests.rs:76:18
+2026-11-11T16:56:56.0290138Z    |
+2026-11-11T16:56:56.0290425Z 76 | use rmcp::model::ServerInfo;
+2026-11-11T16:56:56.0290828Z    |                  ^^^^^^^^^^
+2026-11-11T16:56:56.0291180Z    |
+2026-11-11T16:56:56.0291494Z    = note: `#[warn(deprecated)]` on by default
+2026-11-11T16:56:56.0291853Z 
+2026-11-11T16:56:56.0292298Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-11T16:56:56.0293138Z    --> codex-mcp/src\connection_manager_tests.rs:254:27
+2026-11-11T16:56:56.0293619Z     |
+2026-11-11T16:56:56.0294224Z 254 |     fn get_info(&self) -> ServerInfo {
+2026-11-11T16:56:56.0294686Z     |                           ^^^^^^^^^^
+2026-11-11T16:56:56.0294978Z 
+2026-11-11T16:56:56.0295410Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-11T16:56:56.0296252Z    --> codex-mcp/src\connection_manager_tests.rs:255:9
+2026-11-11T16:56:56.0297093Z     |
+2026-11-11T16:56:56.0297648Z 255 |         ServerInfo::new(ServerCapabilities::builder().enable_tools().build())
+2026-11-11T16:56:56.0298313Z     |         ^^^^^^^^^^
+2026-11-11T16:56:56.0298541Z 
+2026-11-11T16:56:56.0306754Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-11T16:56:56.0316102Z    --> codex-mcp/src\connection_manager_tests.rs:302:27
+2026-11-11T16:56:56.0318542Z     |
+2026-11-11T16:56:56.0318899Z 302 |     fn get_info(&self) -> ServerInfo {
+2026-11-11T16:56:56.0319363Z     |                           ^^^^^^^^^^
+2026-11-11T16:56:56.0319661Z 
+2026-11-11T16:56:56.0320106Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-11T16:56:56.0320958Z    --> codex-mcp/src\connection_manager_tests.rs:303:9
+2026-11-11T16:56:56.0321464Z     |
+2026-11-11T16:56:56.0321979Z 303 |         ServerInfo::new(ServerCapabilities::builder().enable_tools().build())
+2026-11-11T16:56:56.0333076Z     |         ^^^^^^^^^^
+2026-11-11T16:56:56.0333305Z 
+2026-11-11T16:56:56.0333723Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-11T16:56:56.0334837Z   --> codex-mcp/src\binding_retained_tests.rs:21:27
+2026-11-11T16:56:56.0335320Z    |
+2026-11-11T16:56:56.0335637Z 21 |     fn get_info(&self) -> ServerInfo {
+2026-11-11T16:56:56.0336119Z    |                           ^^^^^^^^^^
+2026-11-11T16:56:56.0336428Z 
+2026-11-11T16:56:56.0386467Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-11T16:56:56.0757891Z   --> codex-mcp/src\binding_retained_tests.rs:22:9
+2026-11-11T16:56:56.0758554Z    |
+2026-11-11T16:56:56.0759104Z 22 |         ServerInfo::new(ServerCapabilities::builder().enable_tools().build())
+2026-11-11T16:56:56.0759786Z    |         ^^^^^^^^^^
+2026-11-11T16:56:56.0760405Z 
+2026-11-11T16:56:56.0773278Z warning: 7 warnings emitted
+2026-11-11T16:56:56.0773774Z 
+2026-11-11T16:56:56.7808063Z INFO: From Compiling Rust bin //codex-rs/hepta-supervisor:hepta-final-use-revocation-signer (50 files):
+2026-11-11T16:56:56.7906666Z warning: unused import: `zeroize::Zeroizing`
+2026-11-11T16:56:56.7969184Z   --> codex-rs/hepta-supervisor/src/bin/hepta-final-use-revocation-signer.rs:15:5
+2026-11-11T16:56:56.8006614Z    |
+2026-11-11T16:56:56.8242103Z 15 | use zeroize::Zeroizing;
+2026-11-11T16:56:57.0476113Z    |     ^^^^^^^^^^^^^^^^^^
+2026-11-11T16:56:57.0887124Z    |
+2026-11-11T16:56:57.1021803Z    = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+2026-11-11T16:56:57.1208081Z 
+2026-11-11T16:56:57.2086819Z warning: 1 warning emitted
+2026-11-11T16:56:57.2148596Z 
+2026-11-11T16:56:57.2269442Z [5,097 / 5,511] Compiling Rust bin //codex-rs/hepta-supervisor:hepta-authority-signer (50 files); 3s remote-cache, local ... (21 actions, 4 running)
+2026-11-11T16:56:58.6451409Z [5,116 / 5,511] Compiling Rust bin //codex-rs/hepta-supervisor:hepta-authority-signer (50 files); 4s remote-cache, local ... (13 actions, 4 running)
+2026-11-11T16:56:59.7136334Z [5,116 / 5,511] Compiling Rust bin //codex-rs/hepta-supervisor:hepta-authority-signer (50 files); 5s remote-cache, local ... (13 actions, 4 running)
+2026-11-11T16:56:59.8797334Z INFO: From Compiling Rust bin //codex-rs/hepta-supervisor:hepta-final-use-approver (50 files):
+2026-11-11T16:56:59.9116302Z warning: unused import: `zeroize::Zeroizing`
+2026-11-11T16:56:59.9255579Z   --> codex-rs/hepta-supervisor/src/bin/hepta-final-use-approver.rs:15:5
+2026-11-11T16:56:59.9495030Z    |
+2026-11-11T16:56:59.9697877Z 15 | use zeroize::Zeroizing;
+2026-11-11T16:56:59.9859383Z    |     ^^^^^^^^^^^^^^^^^^
+2026-11-11T16:57:00.0326044Z    |
+2026-11-11T16:57:00.0500047Z    = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+2026-11-11T16:57:00.0613037Z 
+2026-11-11T16:57:00.0670406Z warning: 1 warning emitted
+2026-11-11T16:57:00.0674906Z 
+2026-11-11T16:57:00.6279861Z [5,119 / 5,511] Compiling Rust bin //codex-rs/hepta-supervisor:hepta-authority-signer (50 files); 7s remote-cache, local ... (12 actions, 4 running)
+2026-11-11T16:57:01.6545020Z [5,119 / 5,511] Compiling Rust bin //codex-rs/hepta-supervisor:hepta-authority-signer (50 files); 8s remote-cache, local ... (12 actions, 4 running)
+2026-11-11T16:57:02.6871551Z [5,119 / 5,511] Compiling Rust bin //codex-rs/hepta-supervisor:hepta-authority-signer (50 files); 9s remote-cache, local ... (12 actions, 5 running)
+2026-11-11T16:57:03.7647102Z [5,125 / 5,511] Compiling Rust bin //codex-rs/hepta-supervisor:hepta-supervisord (50 files); 6s remote-cache, local ... (10 actions, 4 running)
+2026-11-11T16:57:05.1981007Z [5,125 / 5,511] Compiling Rust bin //codex-rs/hepta-supervisor:hepta-supervisord (50 files); 8s remote-cache, local ... (10 actions, 5 running)
+2026-11-11T16:57:06.7910206Z [5,140 / 5,511] Compiling Rust bin //codex-rs/apply-patch:apply_patch (10 files); 7s remote-cache, local ... (8 actions, 4 running)
+2026-11-11T16:57:07.8465656Z [5,144 / 5,511] Compiling Rust bin //codex-rs/hooks:write_hooks_schema_fixtures (32 files); 5s remote-cache, local ... (7 actions, 4 running)
+2026-11-11T16:57:08.8490068Z [5,144 / 5,511] Compiling Rust bin //codex-rs/hooks:write_hooks_schema_fixtures (32 files); 6s remote-cache, local ... (7 actions, 4 running)
+2026-11-11T16:57:10.1095755Z [5,144 / 5,511] Compiling Rust bin //codex-rs/hooks:write_hooks_schema_fixtures (32 files); 7s remote-cache, local ... (7 actions, 4 running)
+2026-11-11T16:57:11.3393569Z [5,144 / 5,511] Compiling Rust bin //codex-rs/hooks:write_hooks_schema_fixtures (32 files); 8s remote-cache, local ... (7 actions, 5 running)
+2026-11-11T16:57:13.3348161Z [5,147 / 5,511] Compiling Rust bin //codex-rs/rmcp-client:test_stdio_server (49 files); 7s remote-cache, local ... (6 actions, 4 running)
+2026-11-11T16:57:15.4849281Z [5,147 / 5,511] Compiling Rust bin //codex-rs/rmcp-client:test_stdio_server (49 files); 10s remote-cache, local ... (6 actions, 4 running)
+2026-11-11T16:57:16.4396387Z INFO: From Compiling Rust bin //codex-rs/rmcp-client:test_stdio_server (49 files):
+2026-11-11T16:57:16.4558861Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-11T16:57:16.5203670Z   --> codex-rs/rmcp-client/src/bin/test_stdio_server.rs:31:18
+2026-11-11T16:57:16.6007228Z    |
+2026-11-11T16:57:16.6484447Z 31 | use rmcp::model::ServerInfo;
+2026-11-11T16:57:16.7152543Z    |                  ^^^^^^^^^^
+2026-11-11T16:57:16.7683036Z    |
+2026-11-11T16:57:16.8105643Z    = note: `#[warn(deprecated)]` on by default
+2026-11-11T16:57:16.8462745Z 
+2026-11-11T16:57:16.9071333Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-11T16:57:16.9512850Z    --> codex-rs/rmcp-client/src/bin/test_stdio_server.rs:508:27
+2026-11-11T16:57:17.0124073Z     |
+2026-11-11T16:57:17.0503239Z 508 |     fn get_info(&self) -> ServerInfo {
+2026-11-11T16:57:17.0773735Z     |                           ^^^^^^^^^^
+2026-11-11T16:57:17.1163596Z 
+2026-11-11T16:57:17.1414033Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-11T16:57:17.1513030Z    --> codex-rs/rmcp-client/src/bin/test_stdio_server.rs:519:27
+2026-11-11T16:57:17.1673275Z     |
+2026-11-11T16:57:17.1687436Z 519 |         let server_info = ServerInfo::new(capabilities);
+2026-11-11T16:57:17.1713316Z     |                           ^^^^^^^^^^
+2026-11-11T16:57:17.1723877Z 
+2026-11-11T16:57:17.1773604Z warning: 3 warnings emitted
+2026-11-11T16:57:17.1903021Z 
+2026-11-11T16:57:17.1925286Z [5,148 / 5,511] Compiling Rust bin //codex-rs/rmcp-client:test_streamable_http_server (49 files); 10s remote-cache, local ... (5 actions, 4 running)
+2026-11-11T16:57:17.3947162Z [5,153 / 5,511] Compiling Rust bin //codex-rs/rmcp-client:test_streamable_http_server (49 files); 11s remote-cache, local ... (4 actions running)
+2026-11-11T16:57:17.9969550Z INFO: From Compiling Rust bin //codex-rs/rmcp-client:rmcp_test_server (49 files):
+2026-11-11T16:57:17.9980587Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-11T16:57:17.9984007Z   --> codex-rs/rmcp-client/src/bin/rmcp_test_server.rs:14:18
+2026-11-11T16:57:17.9995360Z    |
+2026-11-11T16:57:17.9996018Z 14 | use rmcp::model::ServerInfo;
+2026-11-11T16:57:18.0001023Z    |                  ^^^^^^^^^^
+2026-11-11T16:57:18.0001771Z    |
+2026-11-11T16:57:18.0031192Z    = note: `#[warn(deprecated)]` on by default
+2026-11-11T16:57:18.0034282Z 
+2026-11-11T16:57:18.0034864Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-11T16:57:18.0065424Z   --> codex-rs/rmcp-client/src/bin/rmcp_test_server.rs:81:27
+2026-11-11T16:57:18.0066253Z    |
+2026-11-11T16:57:18.0066672Z 81 |     fn get_info(&self) -> ServerInfo {
+2026-11-11T16:57:18.0088789Z    |                           ^^^^^^^^^^
+2026-11-11T16:57:18.0089185Z 
+2026-11-11T16:57:18.0089706Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-11T16:57:18.0124907Z   --> codex-rs/rmcp-client/src/bin/rmcp_test_server.rs:82:9
+2026-11-11T16:57:18.0125731Z    |
+2026-11-11T16:57:18.0132758Z 82 |         ServerInfo::new(
+2026-11-11T16:57:18.0133229Z    |         ^^^^^^^^^^
+2026-11-11T16:57:18.0138309Z 
+2026-11-11T16:57:18.0138546Z warning: 3 warnings emitted
+2026-11-11T16:57:18.0138912Z 
+2026-11-11T16:57:18.4177487Z [5,156 / 5,511] Compiling Rust bin //codex-rs/rmcp-client:test_streamable_http_server (49 files); 12s remote-cache, local ... (3 actions running)
+2026-11-11T16:57:19.1165011Z INFO: From Compiling Rust bin //codex-rs/rmcp-client:test_streamable_http_server (49 files):
+2026-11-11T16:57:19.1166274Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-11T16:57:19.1167246Z   --> codex-rs/rmcp-client/src/bin/test_streamable_http_server.rs:43:18
+2026-11-11T16:57:19.1167901Z    |
+2026-11-11T16:57:19.1168284Z 43 | use rmcp::model::ServerInfo;
+2026-11-11T16:57:19.1168776Z    |                  ^^^^^^^^^^
+2026-11-11T16:57:19.1169673Z    |
+2026-11-11T16:57:19.1170067Z    = note: `#[warn(deprecated)]` on by default
+2026-11-11T16:57:19.1170475Z 
+2026-11-11T16:57:19.1170976Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-11T16:57:19.1171948Z    --> codex-rs/rmcp-client/src/bin/test_streamable_http_server.rs:240:27
+2026-11-11T16:57:19.1172631Z     |
+2026-11-11T16:57:19.1173018Z 240 |     fn get_info(&self) -> ServerInfo {
+2026-11-11T16:57:19.1173529Z     |                           ^^^^^^^^^^
+2026-11-11T16:57:19.1173891Z 
+2026-11-11T16:57:19.1174384Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-11T16:57:19.1175356Z    --> codex-rs/rmcp-client/src/bin/test_streamable_http_server.rs:241:9
+2026-11-11T16:57:19.1176021Z     |
+2026-11-11T16:57:19.1176388Z 241 |         ServerInfo::new(
+2026-11-11T16:57:19.1176819Z     |         ^^^^^^^^^^
+2026-11-11T16:57:19.1177115Z 
+2026-11-11T16:57:19.1177333Z warning: 3 warnings emitted
+2026-11-11T16:57:19.1177664Z 
+2026-11-11T16:57:19.4264427Z [5,159 / 5,511] Compiling Rust bin //codex-rs/code-mode-host:codex-code-mode-host (20 files); 3s remote-cache, local ... (2 actions running)
+2026-11-11T16:57:20.4065625Z [5,159 / 5,511] Compiling Rust bin //codex-rs/code-mode-host:codex-code-mode-host (20 files); 4s remote-cache, local ... (2 actions running)
+2026-11-11T16:57:22.8069422Z [5,160 / 5,511] Compiling Rust rlib //codex-rs/core:core (470 files); 5s remote-cache, local ... (3 actions, 1 running)
+2026-11-11T16:57:24.4082939Z [5,167 / 5,511] Compiling Rust rlib //codex-rs/core:core (470 files); 7s remote-cache, local
+2026-11-11T16:57:26.4088718Z [5,167 / 5,511] Compiling Rust rlib //codex-rs/core:core (470 files); 9s remote-cache, local
+2026-11-11T16:57:34.4054571Z [5,167 / 5,511] Compiling Rust rlib //codex-rs/core:core (470 files); 17s remote-cache, local
+2026-11-11T16:58:04.6031500Z [5,167 / 5,511] Compiling Rust rlib //codex-rs/core:core (470 files); 47s remote-cache, local
+2026-11-11T16:58:22.4642053Z [5,168 / 5,511] [Prepa] Compiling Rust rlib //codex-rs/ext/memories:memories (19 files) ... (4 actions, 0 running)
+2026-11-11T16:58:23.7203944Z INFO: From Compiling Rust rlib //codex-rs/app-server:app-server (121 files):
+2026-11-11T16:58:23.7691158Z warning: variable does not need to be mutable
+2026-11-11T16:58:23.8631469Z     --> codex-rs/app-server/src/lib.rs:1677:5
+2026-11-11T16:58:23.8923142Z      |
+2026-11-11T16:58:23.9956374Z 1677 |     mut loader_overrides: LoaderOverrides,
+2026-11-11T16:58:24.0668611Z      |     ----^^^^^^^^^^^^^^^^
+2026-11-11T16:58:24.2004264Z      |     |
+2026-11-11T16:58:24.2145306Z      |     help: remove this `mut`
+2026-11-11T16:58:24.4423756Z      |
+2026-11-11T16:58:24.5491131Z      = note: `#[warn(unused_mut)]` (part of `#[warn(unused)]`) on by default
+2026-11-11T16:58:24.7215963Z 
+2026-11-11T16:58:24.7216505Z warning: 1 warning emitted
+2026-11-11T16:58:24.7216912Z 
+2026-11-11T16:58:24.8967362Z INFO: From Compiling Rust rlib //codex-rs/app-server:app-server-qualification-clock-lib (121 files):
+2026-11-11T16:58:25.3543478Z warning: variable does not need to be mutable
+2026-11-11T16:58:25.5948317Z     --> codex-rs/app-server/src/lib.rs:1677:5
+2026-11-11T16:58:25.5948825Z      |
+2026-11-11T16:58:25.7345313Z 1677 |     mut loader_overrides: LoaderOverrides,
+2026-11-11T16:58:26.1184304Z      |     ----^^^^^^^^^^^^^^^^
+2026-11-11T16:58:26.1894520Z      |     |
+2026-11-11T16:58:26.5754282Z      |     help: remove this `mut`
+2026-11-11T16:58:26.7191712Z      |
+2026-11-11T16:58:26.7676197Z      = note: `#[warn(unused_mut)]` (part of `#[warn(unused)]`) on by default
+2026-11-11T16:58:26.7710191Z 
+2026-11-11T16:58:26.7720916Z warning: 1 warning emitted
+2026-11-11T16:58:26.7724581Z 
+2026-11-11T16:58:26.7774176Z INFO: From Compiling Rust bin //codex-rs/app-server:app-server-unit-tests-bin (121 files):
+2026-11-11T16:58:26.7784515Z warning: variable does not need to be mutable
+2026-11-11T16:58:26.7785196Z     --> app-server/src/lib.rs:1677:5
+2026-11-11T16:58:26.7790616Z      |
+2026-11-11T16:58:26.7800208Z 1677 |     mut loader_overrides: LoaderOverrides,
+2026-11-11T16:58:26.7836506Z      |     ----^^^^^^^^^^^^^^^^
+2026-11-11T16:58:26.7869285Z      |     |
+2026-11-11T16:58:26.7873989Z      |     help: remove this `mut`
+2026-11-11T16:58:26.7926088Z      |
+2026-11-11T16:58:26.7954143Z      = note: `#[warn(unused_mut)]` (part of `#[warn(unused)]`) on by default
+2026-11-11T16:58:26.7957046Z 
+2026-11-11T16:58:26.7971921Z warning: 1 warning emitted
+2026-11-11T16:58:26.7973294Z 
+2026-11-11T16:58:26.7987793Z [5,266 / 5,511] Compiling Rust bin //codex-rs/core:codex-write-config-schema (471 files); 0s remote-cache, local ... (17 actions, 3 running)
+2026-11-11T16:58:26.8041859Z INFO: From Compiling Rust bin //codex-rs/app-server:codex-app-server-bin-unit-tests-bin (125 files):
+2026-11-11T16:58:26.8050089Z warning: unused import: `codex_app_server::PluginStartupTasks`
+2026-11-11T16:58:26.8068748Z  --> app-server/src/main.rs:6:5
+2026-11-11T16:58:26.8093367Z   |
+2026-11-11T16:58:26.8110766Z 6 | use codex_app_server::PluginStartupTasks;
+2026-11-11T16:58:26.8189126Z   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-11T16:58:26.8189532Z   |
+2026-11-11T16:58:26.8189979Z   = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+2026-11-11T16:58:26.8190503Z 
+2026-11-11T16:58:26.8190762Z warning: constant `MANAGED_CONFIG_PATH_ENV_VAR` is never used
+2026-11-11T16:58:26.8192600Z   --> app-server/src/main.rs:17:7
+2026-11-11T16:58:26.8193062Z    |
+2026-11-11T16:58:26.8193619Z 17 | const MANAGED_CONFIG_PATH_ENV_VAR: &str = "CODEX_APP_SERVER_MANAGED_CONFIG_PATH";
+2026-11-11T16:58:26.8194337Z    |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-11T16:58:26.8195056Z    |
+2026-11-11T16:58:26.8195533Z    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+2026-11-11T16:58:26.8196001Z 
+2026-11-11T16:58:26.8196304Z warning: constant `DISABLE_MANAGED_CONFIG_ENV_VAR` is never used
+2026-11-11T16:58:26.8197780Z   --> app-server/src/main.rs:18:7
+2026-11-11T16:58:26.8198244Z    |
+2026-11-11T16:58:26.8198827Z 18 | const DISABLE_MANAGED_CONFIG_ENV_VAR: &str = "CODEX_APP_SERVER_DISABLE_MANAGED_CONFIG";
+2026-11-11T16:58:26.8204393Z    |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-11T16:58:26.8204684Z 
+2026-11-11T16:58:26.8205082Z warning: 3 warnings emitted
+2026-11-11T16:58:26.8205313Z 
+2026-11-11T16:58:26.8205705Z INFO: From Compiling Rust bin //codex-rs/app-server:app-server-all-test-bin (1 file):
+2026-11-11T16:58:26.8206594Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-11T16:58:26.8207311Z   --> app-server/tests\suite\v2\app_installed.rs:30:18
+2026-11-11T16:58:26.8207801Z    |
+2026-11-11T16:58:26.8208645Z 30 | use rmcp::model::ServerInfo;
+2026-11-11T16:58:26.8209060Z    |                  ^^^^^^^^^^
+2026-11-11T16:58:26.8209434Z    |
+2026-11-11T16:58:26.8209768Z    = note: `#[warn(deprecated)]` on by default
+2026-11-11T16:58:26.8210120Z 
+2026-11-11T16:58:26.8210577Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-11T16:58:26.8212043Z    --> app-server/tests\suite\v2\app_installed.rs:250:27
+2026-11-11T16:58:26.8220688Z     |
+2026-11-11T16:58:26.8230713Z 250 |     fn get_info(&self) -> ServerInfo {
+2026-11-11T16:58:26.8231251Z     |                           ^^^^^^^^^^
+2026-11-11T16:58:26.8231553Z 
+2026-11-11T16:58:26.8234629Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-11T16:58:26.8254396Z    --> app-server/tests\suite\v2\app_installed.rs:251:9
+2026-11-11T16:58:26.8258985Z     |
+2026-11-11T16:58:26.8263532Z 251 |         ServerInfo::new(ServerCapabilities::builder().enable_tools().build())
+2026-11-11T16:58:26.8265883Z     |         ^^^^^^^^^^
+2026-11-11T16:58:26.8266139Z 
+2026-11-11T16:58:26.8266607Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-11T16:58:26.8269706Z   --> app-server/tests\suite\v2\app_list.rs:46:18
+2026-11-11T16:58:26.8312619Z    |
+2026-11-11T16:58:26.8313019Z 46 | use rmcp::model::ServerInfo;
+2026-11-11T16:58:26.8313447Z    |                  ^^^^^^^^^^
+2026-11-11T16:58:26.8313729Z 
+2026-11-11T16:58:26.8314200Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-11T16:58:26.8315077Z     --> app-server/tests\suite\v2\app_list.rs:1500:27
+2026-11-11T16:58:26.8315573Z      |
+2026-11-11T16:58:26.8315911Z 1500 |     fn get_info(&self) -> ServerInfo {
+2026-11-11T16:58:26.8316401Z      |                           ^^^^^^^^^^
+2026-11-11T16:58:26.8316712Z 
+2026-11-11T16:58:26.8317168Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-11T16:58:26.8318367Z     --> app-server/tests\suite\v2\app_list.rs:1501:9
+2026-11-11T16:58:26.8318860Z      |
+2026-11-11T16:58:26.8319402Z 1501 |         ServerInfo::new(ServerCapabilities::builder().enable_tools().build())
+2026-11-11T16:58:26.8320150Z      |         ^^^^^^^^^^
+2026-11-11T16:58:26.8320385Z 
+2026-11-11T16:58:26.8320831Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-11T16:58:26.8321650Z   --> app-server/tests\suite\v2\mcp_resource.rs:57:18
+2026-11-11T16:58:26.8322116Z    |
+2026-11-11T16:58:26.8322431Z 57 | use rmcp::model::ServerInfo;
+2026-11-11T16:58:26.8323333Z    |                  ^^^^^^^^^^
+2026-11-11T16:58:26.8323679Z 
+2026-11-11T16:58:26.8324132Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-11T16:58:26.8324930Z    --> app-server/tests\suite\v2\mcp_resource.rs:833:27
+2026-11-11T16:58:26.8325404Z     |
+2026-11-11T16:58:26.8325702Z 833 |     fn get_info(&self) -> ServerInfo {
+2026-11-11T16:58:26.8326132Z     |                           ^^^^^^^^^^
+2026-11-11T16:58:26.8326411Z 
+2026-11-11T16:58:26.8327094Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-11T16:58:26.8328098Z    --> app-server/tests\suite\v2\mcp_resource.rs:834:24
+2026-11-11T16:58:26.8328571Z     |
+2026-11-11T16:58:26.8329139Z 834 |         let mut info = ServerInfo::new(ServerCapabilities::builder().enable_resources().build())
+2026-11-11T16:58:26.8329893Z     |                        ^^^^^^^^^^
+2026-11-11T16:58:26.8330815Z 
+2026-11-11T16:58:26.8331243Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-11T16:58:26.8332086Z   --> app-server/tests\suite\v2\mcp_server_elicitation.rs:67:18
+2026-11-11T16:58:26.8332676Z    |
+2026-11-11T16:58:26.8332963Z 67 | use rmcp::model::ServerInfo;
+2026-11-11T16:58:26.8333328Z    |                  ^^^^^^^^^^
+2026-11-11T16:58:26.8333546Z 
+2026-11-11T16:58:26.8333911Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-11T16:58:26.8334771Z    --> app-server/tests\suite\v2\mcp_server_elicitation.rs:989:27
+2026-11-11T16:58:26.8335281Z     |
+2026-11-11T16:58:26.8335557Z 989 |     fn get_info(&self) -> ServerInfo {
+2026-11-11T16:58:26.8335945Z     |                           ^^^^^^^^^^
+2026-11-11T16:58:26.8336206Z 
+2026-11-11T16:58:26.8336593Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-11T16:58:26.8337372Z    --> app-server/tests\suite\v2\mcp_server_elicitation.rs:990:9
+2026-11-11T16:58:26.8338083Z     |
+2026-11-11T16:58:26.8338578Z 990 |         ServerInfo::new(ServerCapabilities::builder().enable_tools().build())
+2026-11-11T16:58:26.8339189Z     |         ^^^^^^^^^^
+2026-11-11T16:58:26.8339401Z 
+2026-11-11T16:58:26.8339790Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-11T16:58:26.8340558Z   --> app-server/tests\suite\v2\mcp_server_status.rs:45:18
+2026-11-11T16:58:26.8341038Z    |
+2026-11-11T16:58:26.8341298Z 45 | use rmcp::model::ServerInfo;
+2026-11-11T16:58:26.8341669Z    |                  ^^^^^^^^^^
+2026-11-11T16:58:26.8341916Z 
+2026-11-11T16:58:26.8342312Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-11T16:58:26.8343116Z    --> app-server/tests\suite\v2\mcp_server_status.rs:823:27
+2026-11-11T16:58:26.8343608Z     |
+2026-11-11T16:58:26.8343918Z 823 |     fn get_info(&self) -> ServerInfo {
+2026-11-11T16:58:26.8344363Z     |                           ^^^^^^^^^^
+2026-11-11T16:58:26.8344631Z 
+2026-11-11T16:58:26.8345035Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-11T16:58:26.8345820Z    --> app-server/tests\suite\v2\mcp_server_status.rs:824:9
+2026-11-11T16:58:26.8346293Z     |
+2026-11-11T16:58:26.8346881Z 824 |         ServerInfo::new(ServerCapabilities::builder().enable_tools().build()).with_server_info(
+2026-11-11T16:58:26.8347622Z     |         ^^^^^^^^^^
+2026-11-11T16:58:26.8347827Z 
+2026-11-11T16:58:26.8348404Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-11T16:58:26.8349219Z    --> app-server/tests\suite\v2\mcp_server_status.rs:857:27
+2026-11-11T16:58:26.8349705Z     |
+2026-11-11T16:58:26.8350009Z 857 |     fn get_info(&self) -> ServerInfo {
+2026-11-11T16:58:26.8350430Z     |                           ^^^^^^^^^^
+2026-11-11T16:58:26.8350696Z 
+2026-11-11T16:58:26.8351110Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-11T16:58:26.8351920Z    --> app-server/tests\suite\v2\mcp_server_status.rs:858:9
+2026-11-11T16:58:26.8352406Z     |
+2026-11-11T16:58:26.8352673Z 858 |         ServerInfo::new(
+2026-11-11T16:58:26.8353024Z     |         ^^^^^^^^^^
+2026-11-11T16:58:26.8353220Z 
+2026-11-11T16:58:26.8353613Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-11T16:58:26.8354395Z   --> app-server/tests\suite\v2\mcp_tool.rs:69:18
+2026-11-11T16:58:26.8354838Z    |
+2026-11-11T16:58:26.8355108Z 69 | use rmcp::model::ServerInfo;
+2026-11-11T16:58:26.8355657Z    |                  ^^^^^^^^^^
+2026-11-11T16:58:26.8355902Z 
+2026-11-11T16:58:26.8356310Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-11T16:58:26.8357079Z     --> app-server/tests\suite\v2\mcp_tool.rs:1265:27
+2026-11-11T16:58:26.8357515Z      |
+2026-11-11T16:58:26.8358775Z 1265 |     fn get_info(&self) -> ServerInfo {
+2026-11-11T16:58:26.8359215Z      |                           ^^^^^^^^^^
+2026-11-11T16:58:26.8359488Z 
+2026-11-11T16:58:26.8359881Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-11T16:58:26.8360660Z     --> app-server/tests\suite\v2\mcp_tool.rs:1266:9
+2026-11-11T16:58:26.8361089Z      |
+2026-11-11T16:58:26.8361527Z 1266 |         ServerInfo::new(ServerCapabilities::builder().enable_tools().build())
+2026-11-11T16:58:26.8362137Z      |         ^^^^^^^^^^
+2026-11-11T16:58:26.8362351Z 
+2026-11-11T16:58:26.8362746Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-11T16:58:26.8363481Z   --> app-server/tests\suite\v2\plugin_install.rs:46:18
+2026-11-11T16:58:26.8363901Z    |
+2026-11-11T16:58:26.8364166Z 46 | use rmcp::model::ServerInfo;
+2026-11-11T16:58:26.8364522Z    |                  ^^^^^^^^^^
+2026-11-11T16:58:26.8364749Z 
+2026-11-11T16:58:26.8365158Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-11T16:58:26.8365951Z     --> app-server/tests\suite\v2\plugin_install.rs:2330:27
+2026-11-11T16:58:26.8366382Z      |
+2026-11-11T16:58:26.8366677Z 2330 |     fn get_info(&self) -> ServerInfo {
+2026-11-11T16:58:26.8367101Z      |                           ^^^^^^^^^^
+2026-11-11T16:58:26.8367347Z 
+2026-11-11T16:58:26.8367732Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-11T16:58:26.8368659Z     --> app-server/tests\suite\v2\plugin_install.rs:2331:9
+2026-11-11T16:58:26.8369105Z      |
+2026-11-11T16:58:26.8369581Z 2331 |         ServerInfo::new(ServerCapabilities::builder().enable_tools().build())
+2026-11-11T16:58:26.8370191Z      |         ^^^^^^^^^^
+2026-11-11T16:58:26.8370388Z 
+2026-11-11T16:58:26.8370519Z warning: 23 warnings emitted
+2026-11-11T16:58:26.8370755Z 
+2026-11-11T16:58:26.8371285Z INFO: From Compiling Rust rlib //codex-rs/hepta-agentd:hepta-agentd-qualification-clock-lib (528 files):
+2026-11-11T16:58:26.8372175Z warning: method `with_desktop_objective` is never used
+2026-11-11T16:58:26.8372724Z  --> codex-rs/hepta-agentd/src\config_desktop.rs:5:19
+2026-11-11T16:58:26.8373175Z   |
+2026-11-11T16:58:26.8373421Z 4 | impl AgentdConfig {
+2026-11-11T16:58:26.8373780Z   | ----------------- method in this implementation
+2026-11-11T16:58:26.8374246Z 5 |     pub(crate) fn with_desktop_objective(
+2026-11-11T16:58:26.8374669Z   |                   ^^^^^^^^^^^^^^^^^^^^^^
+2026-11-11T16:58:26.8375043Z   |
+2026-11-11T16:58:26.8375450Z   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+2026-11-11T16:58:26.8375890Z 
+2026-11-11T16:58:26.8376052Z warning: variant `Notes` is never constructed
+2026-11-11T16:58:26.8376549Z    --> codex-rs/hepta-agentd/src\runtime.rs:590:5
+2026-11-11T16:58:26.8376977Z     |
+2026-11-11T16:58:26.8377261Z 588 | enum OperationReconcileProfile {
+2026-11-11T16:58:26.8377707Z     |      ------------------------- variant in this enum
+2026-11-11T16:58:26.8378319Z 589 |     Full,
+2026-11-11T16:58:26.8378654Z 590 |     Notes(crate::AgentdNotesObjectiveConfig),
+2026-11-11T16:58:26.8379092Z     |     ^^^^^
+2026-11-11T16:58:26.8379247Z 
+2026-11-11T16:58:26.8379521Z warning: function `run_notes_operation_reconciler` is never used
+2026-11-11T16:58:26.8380130Z    --> codex-rs/hepta-agentd/src\runtime.rs:607:21
+2026-11-11T16:58:26.8380562Z     |
+2026-11-11T16:58:26.8380915Z 607 | pub(crate) async fn run_notes_operation_reconciler(
+2026-11-11T16:58:26.8381411Z     |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-11T16:58:26.8381709Z 
+2026-11-11T16:58:26.8382124Z warning: method `close_expired_original` is never used
+2026-11-11T16:58:26.8382746Z    --> codex-rs/hepta-agentd/src\text_session_requests.rs:127:25
+2026-11-11T16:58:26.8383246Z     |
+2026-11-11T16:58:26.8383516Z   3 | impl AgentdTextRequests {
+2026-11-11T16:58:26.8383929Z     | ----------------------- method in this implementation
+2026-11-11T16:58:26.8384518Z ...
+2026-11-11T16:58:26.8384832Z 127 |     pub(crate) async fn close_expired_original(
+2026-11-11T16:58:26.8385312Z     |                         ^^^^^^^^^^^^^^^^^^^^^^
+2026-11-11T16:58:26.8385611Z 
+2026-11-11T16:58:26.8385729Z warning: 4 warnings emitted
+2026-11-11T16:58:26.8385949Z 
+2026-11-11T16:58:26.8386547Z INFO: From Compiling Rust rlib //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-lib (532 files):
+2026-11-11T16:58:26.8387508Z warning: method `with_desktop_objective` is never used
+2026-11-11T16:58:26.8388206Z  --> codex-rs/hepta-agentd/src\config_desktop.rs:5:19
+2026-11-11T16:58:26.8388650Z   |
+2026-11-11T16:58:26.8388903Z 4 | impl AgentdConfig {
+2026-11-11T16:58:26.8389266Z   | ----------------- method in this implementation
+2026-11-11T16:58:26.8389734Z 5 |     pub(crate) fn with_desktop_objective(
+2026-11-11T16:58:26.8390163Z   |                   ^^^^^^^^^^^^^^^^^^^^^^
+2026-11-11T16:58:26.8390524Z   |
+2026-11-11T16:58:26.8390903Z   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+2026-11-11T16:58:26.8391322Z 
+2026-11-11T16:58:26.8391483Z warning: variant `Notes` is never constructed
+2026-11-11T16:58:26.8391962Z    --> codex-rs/hepta-agentd/src\runtime.rs:590:5
+2026-11-11T16:58:26.8392387Z     |
+2026-11-11T16:58:26.8392666Z 588 | enum OperationReconcileProfile {
+2026-11-11T16:58:26.8393122Z     |      ------------------------- variant in this enum
+2026-11-11T16:58:26.8393535Z 589 |     Full,
+2026-11-11T16:58:26.8393872Z 590 |     Notes(crate::AgentdNotesObjectiveConfig),
+2026-11-11T16:58:26.8394299Z     |     ^^^^^
+2026-11-11T16:58:26.8394461Z 
+2026-11-11T16:58:26.8394723Z warning: function `run_notes_operation_reconciler` is never used
+2026-11-11T16:58:26.8395319Z    --> codex-rs/hepta-agentd/src\runtime.rs:607:21
+2026-11-11T16:58:26.8395741Z     |
+2026-11-11T16:58:26.8396060Z 607 | pub(crate) async fn run_notes_operation_reconciler(
+2026-11-11T16:58:26.8396545Z     |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-11T16:58:26.8396846Z 
+2026-11-11T16:58:26.8397043Z warning: method `close_expired_original` is never used
+2026-11-11T16:58:26.8397635Z    --> codex-rs/hepta-agentd/src\text_session_requests.rs:127:25
+2026-11-11T16:58:26.8398259Z     |
+2026-11-11T16:58:26.8398509Z   3 | impl AgentdTextRequests {
+2026-11-11T16:58:26.8398917Z     | ----------------------- method in this implementation
+2026-11-11T16:58:26.8399339Z ...
+2026-11-11T16:58:26.8399650Z 127 |     pub(crate) async fn close_expired_original(
+2026-11-11T16:58:26.8400095Z     |                         ^^^^^^^^^^^^^^^^^^^^^^
+2026-11-11T16:58:26.8400386Z 
+2026-11-11T16:58:26.8400513Z warning: 4 warnings emitted
+2026-11-11T16:58:26.8400728Z 
+2026-11-11T16:58:26.8400962Z INFO: From Compiling Rust rlib //codex-rs/tui:tui (490 files):
+2026-11-11T16:58:26.8401728Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-11T16:58:26.8402451Z   --> codex-rs/tui/src\dynamic_tools_mcp.rs:33:18
+2026-11-11T16:58:26.8402933Z    |
+2026-11-11T16:58:26.8403194Z 33 | use rmcp::model::ServerInfo;
+2026-11-11T16:58:26.8403548Z    |                  ^^^^^^^^^^
+2026-11-11T16:58:26.8403861Z    |
+2026-11-11T16:58:26.8404150Z    = note: `#[warn(deprecated)]` on by default
+2026-11-11T16:58:26.8404466Z 
+2026-11-11T16:58:26.8404860Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-11T16:58:26.8405611Z    --> codex-rs/tui/src\dynamic_tools_mcp.rs:188:27
+2026-11-11T16:58:26.8406040Z     |
+2026-11-11T16:58:26.8406319Z 188 |     fn get_info(&self) -> ServerInfo {
+2026-11-11T16:58:26.8406880Z     |                           ^^^^^^^^^^
+2026-11-11T16:58:26.8407139Z 
+2026-11-11T16:58:26.8407523Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-11T16:58:26.8408413Z    --> codex-rs/tui/src\dynamic_tools_mcp.rs:189:9
+2026-11-11T16:58:26.8408838Z     |
+2026-11-11T16:58:26.8409304Z 189 |         ServerInfo::new(ServerCapabilities::builder().enable_tools().build())
+2026-11-11T16:58:26.8410051Z     |         ^^^^^^^^^^
+2026-11-11T16:58:26.8410238Z 
+2026-11-11T16:58:26.8410358Z warning: 3 warnings emitted
+2026-11-11T16:58:26.8410585Z 
+2026-11-11T16:58:26.8410899Z INFO: From Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files):
+2026-11-11T16:58:26.8411749Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-11T16:58:26.8412449Z   --> tui/src\dynamic_tools_mcp.rs:33:18
+2026-11-11T16:58:26.8412829Z    |
+2026-11-11T16:58:26.8413082Z 33 | use rmcp::model::ServerInfo;
+2026-11-11T16:58:26.8413434Z    |                  ^^^^^^^^^^
+2026-11-11T16:58:26.8413751Z    |
+2026-11-11T16:58:26.8414033Z    = note: `#[warn(deprecated)]` on by default
+2026-11-11T16:58:26.8414334Z 
+2026-11-11T16:58:26.8414718Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-11T16:58:26.8415420Z    --> tui/src\dynamic_tools_mcp.rs:188:27
+2026-11-11T16:58:26.8415809Z     |
+2026-11-11T16:58:26.8416077Z 188 |     fn get_info(&self) -> ServerInfo {
+2026-11-11T16:58:26.8416475Z     |                           ^^^^^^^^^^
+2026-11-11T16:58:26.8416726Z 
+2026-11-11T16:58:26.8417117Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-11T16:58:26.8417811Z    --> tui/src\dynamic_tools_mcp.rs:189:9
+2026-11-11T16:58:26.8418349Z     |
+2026-11-11T16:58:26.8418802Z 189 |         ServerInfo::new(ServerCapabilities::builder().enable_tools().build())
+2026-11-11T16:58:26.8419400Z     |         ^^^^^^^^^^
+2026-11-11T16:58:26.8419601Z 
+2026-11-11T16:58:26.8419735Z warning: 3 warnings emitted
+2026-11-11T16:58:26.8419948Z 
+2026-11-11T16:58:26.8420287Z INFO: From Compiling Rust rlib //codex-rs/hepta-agentd:hepta-agentd (527 files):
+2026-11-11T16:58:26.8420990Z warning: method `with_desktop_objective` is never used
+2026-11-11T16:58:26.8421530Z  --> codex-rs/hepta-agentd/src\config_desktop.rs:5:19
+2026-11-11T16:58:26.8421977Z   |
+2026-11-11T16:58:26.8422230Z 4 | impl AgentdConfig {
+2026-11-11T16:58:26.8422623Z   | ----------------- method in this implementation
+2026-11-11T16:58:26.8423101Z 5 |     pub(crate) fn with_desktop_objective(
+2026-11-11T16:58:26.8423515Z   |                   ^^^^^^^^^^^^^^^^^^^^^^
+2026-11-11T16:58:26.8423876Z   |
+2026-11-11T16:58:26.8424250Z   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+2026-11-11T16:58:26.8424673Z 
+2026-11-11T16:58:26.8424833Z warning: variant `Notes` is never constructed
+2026-11-11T16:58:26.8425323Z    --> codex-rs/hepta-agentd/src\runtime.rs:590:5
+2026-11-11T16:58:26.8425761Z     |
+2026-11-11T16:58:26.8426051Z 588 | enum OperationReconcileProfile {
+2026-11-11T16:58:26.8426497Z     |      ------------------------- variant in this enum
+2026-11-11T16:58:26.8426912Z 589 |     Full,
+2026-11-11T16:58:26.8427250Z 590 |     Notes(crate::AgentdNotesObjectiveConfig),
+2026-11-11T16:58:26.8427685Z     |     ^^^^^
+2026-11-11T16:58:26.8427843Z 
+2026-11-11T16:58:26.8428248Z warning: function `run_notes_operation_reconciler` is never used
+2026-11-11T16:58:26.8428831Z    --> codex-rs/hepta-agentd/src\runtime.rs:607:21
+2026-11-11T16:58:26.8429247Z     |
+2026-11-11T16:58:26.8429581Z 607 | pub(crate) async fn run_notes_operation_reconciler(
+2026-11-11T16:58:26.8430068Z     |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-11T16:58:26.8430362Z 
+2026-11-11T16:58:26.8430565Z warning: method `close_expired_original` is never used
+2026-11-11T16:58:26.8431145Z    --> codex-rs/hepta-agentd/src\text_session_requests.rs:127:25
+2026-11-11T16:58:26.8431628Z     |
+2026-11-11T16:58:26.8432059Z   3 | impl AgentdTextRequests {
+2026-11-11T16:58:26.8432559Z     | ----------------------- method in this implementation
+2026-11-11T16:58:26.8432992Z ...
+2026-11-11T16:58:26.8433312Z 127 |     pub(crate) async fn close_expired_original(
+2026-11-11T16:58:26.8433757Z     |                         ^^^^^^^^^^^^^^^^^^^^^^
+2026-11-11T16:58:26.8434168Z 
+2026-11-11T16:58:26.8434293Z warning: 4 warnings emitted
+2026-11-11T16:58:26.8434514Z 
+2026-11-11T16:58:26.8435176Z INFO: From Compiling Rust rlib //codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-qualification-clock-lib (38 files):
+2026-11-11T16:58:26.8436156Z warning: unused import: `std::io::Read`
+2026-11-11T16:58:26.8436739Z   --> codex-rs/hepta-infer-worker-host/src\final_use_authorizer.rs:10:5
+2026-11-11T16:58:26.8437301Z    |
+2026-11-11T16:58:26.8437546Z 10 | use std::io::Read;
+2026-11-11T16:58:26.8437844Z    |     ^^^^^^^^^^^^^
+2026-11-11T16:58:26.8438286Z    |
+2026-11-11T16:58:26.8438712Z    = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+2026-11-11T16:58:26.8439172Z 
+2026-11-11T16:58:26.8439358Z warning: unused import: `tokio::io::AsyncReadExt`
+2026-11-11T16:58:26.8439972Z   --> codex-rs/hepta-infer-worker-host/src\final_use_authorizer.rs:22:5
+2026-11-11T16:58:26.8440529Z    |
+2026-11-11T16:58:26.8440795Z 22 | use tokio::io::AsyncReadExt;
+2026-11-11T16:58:26.8441161Z    |     ^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-11T16:58:26.8441390Z 
+2026-11-11T16:58:26.8441564Z warning: unused import: `tokio::io::AsyncWriteExt`
+2026-11-11T16:58:26.8442199Z   --> codex-rs/hepta-infer-worker-host/src\final_use_authorizer.rs:23:5
+2026-11-11T16:58:26.8442753Z    |
+2026-11-11T16:58:26.8443019Z 23 | use tokio::io::AsyncWriteExt;
+2026-11-11T16:58:26.8443389Z    |     ^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-11T16:58:26.8443632Z 
+2026-11-11T16:58:26.8443806Z warning: unused import: `tokio::time::timeout`
+2026-11-11T16:58:26.8444409Z   --> codex-rs/hepta-infer-worker-host/src\final_use_authorizer.rs:24:5
+2026-11-11T16:58:26.8444976Z    |
+2026-11-11T16:58:26.8445234Z 24 | use tokio::time::timeout;
+2026-11-11T16:58:26.8445577Z    |     ^^^^^^^^^^^^^^^^^^^^
+2026-11-11T16:58:26.8445799Z 
+2026-11-11T16:58:26.8446031Z warning: constant `AUTHORITY_PORT_OPERATION` is never used
+2026-11-11T16:58:26.8446710Z   --> codex-rs/hepta-infer-worker-host/src\final_use_authorizer.rs:30:7
+2026-11-11T16:58:26.8447260Z    |
+2026-11-11T16:58:26.8447677Z 30 | const AUTHORITY_PORT_OPERATION: &str = "runtime.codex.turn_start";
+2026-11-11T16:58:26.8448396Z    |       ^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-11T16:58:26.8448714Z    |
+2026-11-11T16:58:26.8449082Z    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+2026-11-11T16:58:26.8449508Z 
+2026-11-11T16:58:26.8449690Z warning: constant `MAX_CONFIG_BYTES` is never used
+2026-11-11T16:58:26.8450304Z   --> codex-rs/hepta-infer-worker-host/src\final_use_authorizer.rs:31:7
+2026-11-11T16:58:26.8450853Z    |
+2026-11-11T16:58:26.8451141Z 31 | const MAX_CONFIG_BYTES: usize = 64 * 1024;
+2026-11-11T16:58:26.8451564Z    |       ^^^^^^^^^^^^^^^^
+2026-11-11T16:58:26.8451770Z 
+2026-11-11T16:58:26.8451953Z warning: constant `MAX_REQUEST_BYTES` is never used
+2026-11-11T16:58:26.8452560Z   --> codex-rs/hepta-infer-worker-host/src\final_use_authorizer.rs:32:7
+2026-11-11T16:58:26.8453100Z    |
+2026-11-11T16:58:26.8453394Z 32 | const MAX_REQUEST_BYTES: usize = 16 * 1024;
+2026-11-11T16:58:26.8453811Z    |       ^^^^^^^^^^^^^^^^^
+2026-11-11T16:58:26.8454016Z 
+2026-11-11T16:58:26.8454211Z warning: constant `MAX_RESPONSE_BYTES` is never used
+2026-11-11T16:58:26.8454834Z   --> codex-rs/hepta-infer-worker-host/src\final_use_authorizer.rs:33:7
+2026-11-11T16:58:26.8455381Z    |
+2026-11-11T16:58:26.8455679Z 33 | const MAX_RESPONSE_BYTES: usize = 64 * 1024;
+2026-11-11T16:58:26.8456108Z    |       ^^^^^^^^^^^^^^^^^^
+2026-11-11T16:58:26.8456320Z 
+2026-11-11T16:58:26.8456670Z warning: fields `issuer_socket`, `issuer_uid`, and `issuer_timeout` are never read
+2026-11-11T16:58:26.8457609Z   --> codex-rs/hepta-infer-worker-host/src\final_use_authorizer.rs:60:5
+2026-11-11T16:58:26.8458326Z    |
+2026-11-11T16:58:26.8458620Z 59 | pub struct UnixFinalUseAuthorizer {
+2026-11-11T16:58:26.8459092Z    |            ---------------------- fields in this struct
+2026-11-11T16:58:26.8459559Z 60 |     issuer_socket: PathBuf,
+2026-11-11T16:58:26.8460039Z    |     ^^^^^^^^^^^^^
+2026-11-11T16:58:26.8460342Z 61 |     issuer_uid: u32,
+2026-11-11T16:58:26.8460654Z    |     ^^^^^^^^^^
+2026-11-11T16:58:26.8460941Z 62 |     issuer_timeout: Duration,
+2026-11-11T16:58:26.8461291Z    |     ^^^^^^^^^^^^^^
+2026-11-11T16:58:26.8461480Z 
+2026-11-11T16:58:26.8461675Z warning: struct `IssuerRequest` is never constructed
+2026-11-11T16:58:26.8462327Z    --> codex-rs/hepta-infer-worker-host/src\final_use_authorizer.rs:170:8
+2026-11-11T16:58:26.8462907Z     |
+2026-11-11T16:58:26.8463170Z 170 | struct IssuerRequest {
+2026-11-11T16:58:26.8463499Z     |        ^^^^^^^^^^^^^
+2026-11-11T16:58:26.8463698Z 
+2026-11-11T16:58:26.8463818Z warning: 10 warnings emitted
+2026-11-11T16:58:26.8464053Z 
+2026-11-11T16:58:26.8464443Z INFO: From Compiling Rust rlib //codex-rs/hepta-agentd:hepta-agentd-test-lib (528 files):
+2026-11-11T16:58:26.8465189Z warning: method `with_desktop_objective` is never used
+2026-11-11T16:58:26.8465750Z  --> codex-rs/hepta-agentd/src\config_desktop.rs:5:19
+2026-11-11T16:58:26.8466190Z   |
+2026-11-11T16:58:26.8466434Z 4 | impl AgentdConfig {
+2026-11-11T16:58:26.8466798Z   | ----------------- method in this implementation
+2026-11-11T16:58:26.8467271Z 5 |     pub(crate) fn with_desktop_objective(
+2026-11-11T16:58:26.8467683Z   |                   ^^^^^^^^^^^^^^^^^^^^^^
+2026-11-11T16:58:26.8468201Z   |
+2026-11-11T16:58:26.8468566Z   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+2026-11-11T16:58:26.8468978Z 
+2026-11-11T16:58:26.8469136Z warning: variant `Notes` is never constructed
+2026-11-11T16:58:26.8469617Z    --> codex-rs/hepta-agentd/src\runtime.rs:590:5
+2026-11-11T16:58:26.8470034Z     |
+2026-11-11T16:58:26.8470319Z 588 | enum OperationReconcileProfile {
+2026-11-11T16:58:26.8470757Z     |      ------------------------- variant in this enum
+2026-11-11T16:58:26.8471163Z 589 |     Full,
+2026-11-11T16:58:26.8471492Z 590 |     Notes(crate::AgentdNotesObjectiveConfig),
+2026-11-11T16:58:26.8471909Z     |     ^^^^^
+2026-11-11T16:58:26.8472073Z 
+2026-11-11T16:58:26.8472329Z warning: function `run_notes_operation_reconciler` is never used
+2026-11-11T16:58:26.8472912Z    --> codex-rs/hepta-agentd/src\runtime.rs:607:21
+2026-11-11T16:58:26.8473328Z     |
+2026-11-11T16:58:26.8473663Z 607 | pub(crate) async fn run_notes_operation_reconciler(
+2026-11-11T16:58:26.8474147Z     |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-11T16:58:26.8474441Z 
+2026-11-11T16:58:26.8474643Z warning: method `close_expired_original` is never used
+2026-11-11T16:58:26.8475231Z    --> codex-rs/hepta-agentd/src\text_session_requests.rs:127:25
+2026-11-11T16:58:26.8475728Z     |
+2026-11-11T16:58:26.8475997Z   3 | impl AgentdTextRequests {
+2026-11-11T16:58:26.8476430Z     | ----------------------- method in this implementation
+2026-11-11T16:58:26.8476878Z ...
+2026-11-11T16:58:26.8477189Z 127 |     pub(crate) async fn close_expired_original(
+2026-11-11T16:58:26.8477671Z     |                         ^^^^^^^^^^^^^^^^^^^^^^
+2026-11-11T16:58:26.8478124Z 
+2026-11-11T16:58:26.8478256Z warning: 4 warnings emitted
+2026-11-11T16:58:26.8478481Z 
+2026-11-11T16:58:26.8478807Z INFO: From Compiling Rust rlib //codex-rs/cloud-tasks:cloud-tasks (10 files):
+2026-11-11T16:58:26.8479557Z warning: unused import: `codex_http_client::HttpClientFactory`
+2026-11-11T16:58:26.8480104Z   --> codex-rs/cloud-tasks/src/lib.rs:16:5
+2026-11-11T16:58:26.8480502Z    |
+2026-11-11T16:58:26.8480805Z 16 | use codex_http_client::HttpClientFactory;
+2026-11-11T16:58:26.8481233Z    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-11T16:58:26.8481595Z    |
+2026-11-11T16:58:26.8482143Z    = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+2026-11-11T16:58:26.8482618Z 
+2026-11-11T16:58:26.8482874Z warning: unused import: `codex_http_client::OutboundProxyPolicy`
+2026-11-11T16:58:26.8483453Z   --> codex-rs/cloud-tasks/src/lib.rs:17:5
+2026-11-11T16:58:26.8483842Z    |
+2026-11-11T16:58:26.8484155Z 17 | use codex_http_client::OutboundProxyPolicy;
+2026-11-11T16:58:26.8484755Z    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-11T16:58:26.8485041Z 
+2026-11-11T16:58:26.8485168Z warning: 2 warnings emitted
+2026-11-11T16:58:26.8485400Z 
+2026-11-11T16:58:26.8485799Z INFO: From Compiling Rust bin //codex-rs/cloud-tasks:cloud-tasks-unit-tests-bin (10 files):
+2026-11-11T16:58:26.8486633Z warning: unused import: `codex_http_client::HttpClientFactory`
+2026-11-11T16:58:26.8487171Z   --> cloud-tasks/src/lib.rs:16:5
+2026-11-11T16:58:26.8487517Z    |
+2026-11-11T16:58:26.8487812Z 16 | use codex_http_client::HttpClientFactory;
+2026-11-11T16:58:26.8488425Z    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-11T16:58:26.8488780Z    |
+2026-11-11T16:58:26.8489188Z    = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+2026-11-11T16:58:26.8489632Z 
+2026-11-11T16:58:26.8489902Z warning: unused import: `codex_http_client::OutboundProxyPolicy`
+2026-11-11T16:58:26.8490459Z   --> cloud-tasks/src/lib.rs:17:5
+2026-11-11T16:58:26.8490816Z    |
+2026-11-11T16:58:26.8491118Z 17 | use codex_http_client::OutboundProxyPolicy;
+2026-11-11T16:58:26.8491558Z    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-11T16:58:26.8491835Z 
+2026-11-11T16:58:26.8491952Z warning: 2 warnings emitted
+2026-11-11T16:58:26.8492169Z 
+2026-11-11T16:58:26.8492798Z INFO: From Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test-bin (532 files):
+2026-11-11T16:58:26.8493754Z warning: unused import: `crate::RunPhase`
+2026-11-11T16:58:26.8494238Z   --> hepta-agentd/src\state_isolation_tests.rs:43:5
+2026-11-11T16:58:26.8494684Z    |
+2026-11-11T16:58:26.8494945Z 43 | use crate::RunPhase;
+2026-11-11T16:58:26.8495258Z    |     ^^^^^^^^^^^^^^^
+2026-11-11T16:58:26.8495545Z    |
+2026-11-11T16:58:26.8495962Z    = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+2026-11-11T16:58:26.8496435Z 
+2026-11-11T16:58:26.8496594Z warning: variable does not need to be mutable
+2026-11-11T16:58:26.8497106Z    --> hepta-agentd/src\prompt_runtime_tests.rs:759:10
+2026-11-11T16:58:26.8497562Z     |
+2026-11-11T16:58:26.8497836Z 759 |     let (mut store, initial) =
+2026-11-11T16:58:26.8498367Z     |          ----^^^^^
+2026-11-11T16:58:26.8498663Z     |          |
+2026-11-11T16:58:26.8498935Z     |          help: remove this `mut`
+2026-11-11T16:58:26.8499282Z     |
+2026-11-11T16:58:26.8499679Z     = note: `#[warn(unused_mut)]` (part of `#[warn(unused)]`) on by default
+2026-11-11T16:58:26.8500147Z 
+2026-11-11T16:58:26.8500360Z warning: method `with_desktop_objective` is never used
+2026-11-11T16:58:26.8500913Z  --> hepta-agentd/src\config_desktop.rs:5:19
+2026-11-11T16:58:26.8501330Z   |
+2026-11-11T16:58:26.8501577Z 4 | impl AgentdConfig {
+2026-11-11T16:58:26.8501932Z   | ----------------- method in this implementation
+2026-11-11T16:58:26.8502407Z 5 |     pub(crate) fn with_desktop_objective(
+2026-11-11T16:58:26.8502825Z   |                   ^^^^^^^^^^^^^^^^^^^^^^
+2026-11-11T16:58:26.8503172Z   |
+2026-11-11T16:58:26.8503544Z   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+2026-11-11T16:58:26.8503962Z 
+2026-11-11T16:58:26.8504118Z warning: variant `Notes` is never constructed
+2026-11-11T16:58:26.8504564Z    --> hepta-agentd/src\runtime.rs:590:5
+2026-11-11T16:58:26.8504945Z     |
+2026-11-11T16:58:26.8505231Z 588 | enum OperationReconcileProfile {
+2026-11-11T16:58:26.8505685Z     |      ------------------------- variant in this enum
+2026-11-11T16:58:26.8506106Z 589 |     Full,
+2026-11-11T16:58:26.8506448Z 590 |     Notes(crate::AgentdNotesObjectiveConfig),
+2026-11-11T16:58:26.8506887Z     |     ^^^^^
+2026-11-11T16:58:26.8507199Z 
+2026-11-11T16:58:26.8507465Z warning: function `run_notes_operation_reconciler` is never used
+2026-11-11T16:58:26.8508218Z    --> hepta-agentd/src\runtime.rs:607:21
+2026-11-11T16:58:26.8508611Z     |
+2026-11-11T16:58:26.8508957Z 607 | pub(crate) async fn run_notes_operation_reconciler(
+2026-11-11T16:58:26.8509461Z     |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-11T16:58:26.8509902Z 
+2026-11-11T16:58:26.8510100Z warning: method `close_expired_original` is never used
+2026-11-11T16:58:26.8510658Z    --> hepta-agentd/src\text_session_requests.rs:127:25
+2026-11-11T16:58:26.8511101Z     |
+2026-11-11T16:58:26.8511362Z   3 | impl AgentdTextRequests {
+2026-11-11T16:58:26.8511782Z     | ----------------------- method in this implementation
+2026-11-11T16:58:26.8512219Z ...
+2026-11-11T16:58:26.8512529Z 127 |     pub(crate) async fn close_expired_original(
+2026-11-11T16:58:26.8512994Z     |                         ^^^^^^^^^^^^^^^^^^^^^^
+2026-11-11T16:58:26.8513289Z 
+2026-11-11T16:58:26.8513421Z warning: 6 warnings emitted
+2026-11-11T16:58:26.8513636Z 
+2026-11-11T16:58:26.8514311Z [5,301 / 5,511] Compiling Rust bin //codex-rs/core:codex-write-config-schema (471 files); 1s remote-cache, local ... (27 actions, 4 running)
+2026-11-11T16:58:26.8515691Z INFO: From Compiling Rust rlib //codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-test-lib (38 files):
+2026-11-11T16:58:26.8516581Z warning: unused import: `std::io::Read`
+2026-11-11T16:58:26.8517157Z   --> codex-rs/hepta-infer-worker-host/src\final_use_authorizer.rs:10:5
+2026-11-11T16:58:26.8517726Z    |
+2026-11-11T16:58:26.8518168Z 10 | use std::io::Read;
+2026-11-11T16:58:26.8518472Z    |     ^^^^^^^^^^^^^
+2026-11-11T16:58:26.8518751Z    |
+2026-11-11T16:58:26.8519179Z    = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+2026-11-11T16:58:26.8519658Z 
+2026-11-11T16:58:26.8519843Z warning: unused import: `tokio::io::AsyncReadExt`
+2026-11-11T16:58:26.8520506Z   --> codex-rs/hepta-infer-worker-host/src\final_use_authorizer.rs:22:5
+2026-11-11T16:58:26.8521087Z    |
+2026-11-11T16:58:26.8521363Z 22 | use tokio::io::AsyncReadExt;
+2026-11-11T16:58:26.8521737Z    |     ^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-11T16:58:26.8521982Z 
+2026-11-11T16:58:26.8522171Z warning: unused import: `tokio::io::AsyncWriteExt`
+2026-11-11T16:58:26.8522835Z   --> codex-rs/hepta-infer-worker-host/src\final_use_authorizer.rs:23:5
+2026-11-11T16:58:26.8523426Z    |
+2026-11-11T16:58:26.8523703Z 23 | use tokio::io::AsyncWriteExt;
+2026-11-11T16:58:26.8524083Z    |     ^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-11T16:58:26.8524323Z 
+2026-11-11T16:58:26.8524503Z warning: unused import: `tokio::time::timeout`
+2026-11-11T16:58:26.8525133Z   --> codex-rs/hepta-infer-worker-host/src\final_use_authorizer.rs:24:5
+2026-11-11T16:58:26.8525714Z    |
+2026-11-11T16:58:26.8525990Z 24 | use tokio::time::timeout;
+2026-11-11T16:58:26.8526343Z    |     ^^^^^^^^^^^^^^^^^^^^
+2026-11-11T16:58:26.8526573Z 
+2026-11-11T16:58:26.8526819Z warning: constant `AUTHORITY_PORT_OPERATION` is never used
+2026-11-11T16:58:26.8527526Z   --> codex-rs/hepta-infer-worker-host/src\final_use_authorizer.rs:30:7
+2026-11-11T16:58:26.8528263Z    |
+2026-11-11T16:58:26.8528697Z 30 | const AUTHORITY_PORT_OPERATION: &str = "runtime.codex.turn_start";
+2026-11-11T16:58:26.8529222Z    |       ^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-11T16:58:26.8529529Z    |
+2026-11-11T16:58:26.8529893Z    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+2026-11-11T16:58:26.8530327Z 
+2026-11-11T16:58:26.8530516Z warning: constant `MAX_CONFIG_BYTES` is never used
+2026-11-11T16:58:26.8531129Z   --> codex-rs/hepta-infer-worker-host/src\final_use_authorizer.rs:31:7
+2026-11-11T16:58:26.8531669Z    |
+2026-11-11T16:58:26.8531963Z 31 | const MAX_CONFIG_BYTES: usize = 64 * 1024;
+2026-11-11T16:58:26.8532459Z    |       ^^^^^^^^^^^^^^^^
+2026-11-11T16:58:26.8532674Z 
+2026-11-11T16:58:26.8532865Z warning: constant `MAX_REQUEST_BYTES` is never used
+2026-11-11T16:58:26.8533695Z   --> codex-rs/hepta-infer-worker-host/src\final_use_authorizer.rs:32:7
+2026-11-11T16:58:26.8534282Z    |
+2026-11-11T16:58:26.8534571Z 32 | const MAX_REQUEST_BYTES: usize = 16 * 1024;
+2026-11-11T16:58:26.8535009Z    |       ^^^^^^^^^^^^^^^^^
+2026-11-11T16:58:26.8535217Z 
+2026-11-11T16:58:26.8535417Z warning: constant `MAX_RESPONSE_BYTES` is never used
+2026-11-11T16:58:26.8536193Z   --> codex-rs/hepta-infer-worker-host/src\final_use_authorizer.rs:33:7
+2026-11-11T16:58:26.8536742Z    |
+2026-11-11T16:58:26.8537033Z 33 | const MAX_RESPONSE_BYTES: usize = 64 * 1024;
+2026-11-11T16:58:26.8537459Z    |       ^^^^^^^^^^^^^^^^^^
+2026-11-11T16:58:26.8537683Z 
+2026-11-11T16:58:26.8538214Z warning: fields `issuer_socket`, `issuer_uid`, and `issuer_timeout` are never read
+2026-11-11T16:58:26.8539045Z   --> codex-rs/hepta-infer-worker-host/src\final_use_authorizer.rs:60:5
+2026-11-11T16:58:26.8539588Z    |
+2026-11-11T16:58:26.8539877Z 59 | pub struct UnixFinalUseAuthorizer {
+2026-11-11T16:58:26.8540338Z    |            ---------------------- fields in this struct
+2026-11-11T16:58:26.8540799Z 60 |     issuer_socket: PathBuf,
+2026-11-11T16:58:26.8541164Z    |     ^^^^^^^^^^^^^
+2026-11-11T16:58:26.8541455Z 61 |     issuer_uid: u32,
+2026-11-11T16:58:26.8541755Z    |     ^^^^^^^^^^
+2026-11-11T16:58:26.8542111Z 62 |     issuer_timeout: Duration,
+2026-11-11T16:58:26.8542476Z    |     ^^^^^^^^^^^^^^
+2026-11-11T16:58:26.8542673Z 
+2026-11-11T16:58:26.8542849Z warning: struct `IssuerRequest` is never constructed
+2026-11-11T16:58:26.8543495Z    --> codex-rs/hepta-infer-worker-host/src\final_use_authorizer.rs:170:8
+2026-11-11T16:58:26.8544069Z     |
+2026-11-11T16:58:26.8544336Z 170 | struct IssuerRequest {
+2026-11-11T16:58:26.8544673Z     |        ^^^^^^^^^^^^^
+2026-11-11T16:58:26.8544877Z 
+2026-11-11T16:58:26.8544995Z warning: 10 warnings emitted
+2026-11-11T16:58:26.8545230Z 
+2026-11-11T16:58:26.8545709Z INFO: From Compiling Rust rlib //codex-rs/hepta-infer-worker-host:hepta-infer-worker-host (38 files):
+2026-11-11T16:58:26.8546556Z warning: unused import: `std::io::Read`
+2026-11-11T16:58:26.8547149Z   --> codex-rs/hepta-infer-worker-host/src\final_use_authorizer.rs:10:5
+2026-11-11T16:58:26.8547721Z    |
+2026-11-11T16:58:26.8548137Z 10 | use std::io::Read;
+2026-11-11T16:58:26.8548446Z    |     ^^^^^^^^^^^^^
+2026-11-11T16:58:26.8548729Z    |
+2026-11-11T16:58:26.8549163Z    = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+2026-11-11T16:58:26.8549629Z 
+2026-11-11T16:58:26.8549819Z warning: unused import: `tokio::io::AsyncReadExt`
+2026-11-11T16:58:26.8550449Z   --> codex-rs/hepta-infer-worker-host/src\final_use_authorizer.rs:22:5
+2026-11-11T16:58:26.8550998Z    |
+2026-11-11T16:58:26.8551262Z 22 | use tokio::io::AsyncReadExt;
+2026-11-11T16:58:26.8551627Z    |     ^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-11T16:58:26.8551865Z 
+2026-11-11T16:58:26.8552057Z warning: unused import: `tokio::io::AsyncWriteExt`
+2026-11-11T16:58:26.8552701Z   --> codex-rs/hepta-infer-worker-host/src\final_use_authorizer.rs:23:5
+2026-11-11T16:58:26.8553276Z    |
+2026-11-11T16:58:26.8553547Z 23 | use tokio::io::AsyncWriteExt;
+2026-11-11T16:58:26.8553922Z    |     ^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-11T16:58:26.8554165Z 
+2026-11-11T16:58:26.8554332Z warning: unused import: `tokio::time::timeout`
+2026-11-11T16:58:26.8554959Z   --> codex-rs/hepta-infer-worker-host/src\final_use_authorizer.rs:24:5
+2026-11-11T16:58:26.8555524Z    |
+2026-11-11T16:58:26.8555785Z 24 | use tokio::time::timeout;
+2026-11-11T16:58:26.8556135Z    |     ^^^^^^^^^^^^^^^^^^^^
+2026-11-11T16:58:26.8556365Z 
+2026-11-11T16:58:26.8556588Z warning: constant `AUTHORITY_PORT_OPERATION` is never used
+2026-11-11T16:58:26.8557261Z   --> codex-rs/hepta-infer-worker-host/src\final_use_authorizer.rs:30:7
+2026-11-11T16:58:26.8557804Z    |
+2026-11-11T16:58:26.8558381Z 30 | const AUTHORITY_PORT_OPERATION: &str = "runtime.codex.turn_start";
+2026-11-11T16:58:26.8558934Z    |       ^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-11T16:58:26.8559284Z    |
+2026-11-11T16:58:26.8559823Z    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+2026-11-11T16:58:26.8560247Z 
+2026-11-11T16:58:26.8560428Z warning: constant `MAX_CONFIG_BYTES` is never used
+2026-11-11T16:58:26.8561031Z   --> codex-rs/hepta-infer-worker-host/src\final_use_authorizer.rs:31:7
+2026-11-11T16:58:26.8561579Z    |
+2026-11-11T16:58:26.8561990Z 31 | const MAX_CONFIG_BYTES: usize = 64 * 1024;
+2026-11-11T16:58:26.8562392Z    |       ^^^^^^^^^^^^^^^^
+2026-11-11T16:58:26.8562600Z 
+2026-11-11T16:58:26.8562786Z warning: constant `MAX_REQUEST_BYTES` is never used
+2026-11-11T16:58:26.8563420Z   --> codex-rs/hepta-infer-worker-host/src\final_use_authorizer.rs:32:7
+2026-11-11T16:58:26.8563966Z    |
+2026-11-11T16:58:26.8564243Z 32 | const MAX_REQUEST_BYTES: usize = 16 * 1024;
+2026-11-11T16:58:26.8564662Z    |       ^^^^^^^^^^^^^^^^^
+2026-11-11T16:58:26.8564868Z 
+2026-11-11T16:58:26.8565051Z warning: constant `MAX_RESPONSE_BYTES` is never used
+2026-11-11T16:58:26.8565685Z   --> codex-rs/hepta-infer-worker-host/src\final_use_authorizer.rs:33:7
+2026-11-11T16:58:26.8566232Z    |
+2026-11-11T16:58:26.8566516Z 33 | const MAX_RESPONSE_BYTES: usize = 64 * 1024;
+2026-11-11T16:58:26.8566934Z    |       ^^^^^^^^^^^^^^^^^^
+2026-11-11T16:58:26.8567143Z 
+2026-11-11T16:58:26.8567491Z warning: fields `issuer_socket`, `issuer_uid`, and `issuer_timeout` are never read
+2026-11-11T16:58:26.8568461Z   --> codex-rs/hepta-infer-worker-host/src\final_use_authorizer.rs:60:5
+2026-11-11T16:58:26.8569011Z    |
+2026-11-11T16:58:26.8569302Z 59 | pub struct UnixFinalUseAuthorizer {
+2026-11-11T16:58:26.8569761Z    |            ---------------------- fields in this struct
+2026-11-11T16:58:26.8570211Z 60 |     issuer_socket: PathBuf,
+2026-11-11T16:58:26.8570548Z    |     ^^^^^^^^^^^^^
+2026-11-11T16:58:26.8570832Z 61 |     issuer_uid: u32,
+2026-11-11T16:58:26.8571133Z    |     ^^^^^^^^^^
+2026-11-11T16:58:26.8571411Z 62 |     issuer_timeout: Duration,
+2026-11-11T16:58:26.8571765Z    |     ^^^^^^^^^^^^^^
+2026-11-11T16:58:26.8571951Z 
+2026-11-11T16:58:26.8572150Z warning: struct `IssuerRequest` is never constructed
+2026-11-11T16:58:26.8572807Z    --> codex-rs/hepta-infer-worker-host/src\final_use_authorizer.rs:170:8
+2026-11-11T16:58:26.8573363Z     |
+2026-11-11T16:58:26.8573617Z 170 | struct IssuerRequest {
+2026-11-11T16:58:26.8573951Z     |        ^^^^^^^^^^^^^
+2026-11-11T16:58:26.8574164Z 
+2026-11-11T16:58:26.8574294Z warning: 10 warnings emitted
+2026-11-11T16:58:26.8574522Z 
+2026-11-11T16:58:26.8575144Z INFO: From Compiling Rust bin //codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-unit-tests-bin (38 files):
+2026-11-11T16:58:26.8576051Z warning: unused import: `std::io::Read`
+2026-11-11T16:58:26.8576577Z   --> hepta-infer-worker-host/src\final_use_authorizer.rs:10:5
+2026-11-11T16:58:26.8577078Z    |
+2026-11-11T16:58:26.8577332Z 10 | use std::io::Read;
+2026-11-11T16:58:26.8577622Z    |     ^^^^^^^^^^^^^
+2026-11-11T16:58:26.9212252Z    |
+2026-11-11T16:58:26.9218195Z    = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+2026-11-11T16:58:26.9227069Z 
+2026-11-11T16:58:26.9233099Z warning: unused import: `tokio::io::AsyncReadExt`
+2026-11-11T16:58:26.9264686Z   --> hepta-infer-worker-host/src\final_use_authorizer.rs:22:5
+2026-11-11T16:58:26.9288379Z    |
+2026-11-11T16:58:26.9297648Z 22 | use tokio::io::AsyncReadExt;
+2026-11-11T16:58:26.9310067Z    |     ^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-11T16:58:26.9324116Z 
+2026-11-11T16:58:26.9333368Z warning: unused import: `tokio::io::AsyncWriteExt`
+2026-11-11T16:58:26.9495519Z   --> hepta-infer-worker-host/src\final_use_authorizer.rs:23:5
+2026-11-11T16:58:26.9500613Z    |
+2026-11-11T16:58:26.9501413Z 23 | use tokio::io::AsyncWriteExt;
+2026-11-11T16:58:26.9501822Z    |     ^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-11T16:58:26.9502062Z 
+2026-11-11T16:58:26.9502246Z warning: unused import: `tokio::time::timeout`
+2026-11-11T16:58:26.9504562Z   --> hepta-infer-worker-host/src\final_use_authorizer.rs:24:5
+2026-11-11T16:58:26.9505154Z    |
+2026-11-11T16:58:26.9505797Z 24 | use tokio::time::timeout;
+2026-11-11T16:58:26.9506208Z    |     ^^^^^^^^^^^^^^^^^^^^
+2026-11-11T16:58:26.9506443Z 
+2026-11-11T16:58:26.9506710Z warning: constant `AUTHORITY_PORT_OPERATION` is never used
+2026-11-11T16:58:26.9507386Z   --> hepta-infer-worker-host/src\final_use_authorizer.rs:30:7
+2026-11-11T16:58:26.9507960Z    |
+2026-11-11T16:58:26.9508965Z 30 | const AUTHORITY_PORT_OPERATION: &str = "runtime.codex.turn_start";
+2026-11-11T16:58:26.9509612Z    |       ^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-11T16:58:26.9510003Z    |
+2026-11-11T16:58:26.9512132Z    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+2026-11-11T16:58:26.9512642Z 
+2026-11-11T16:58:26.9512873Z warning: constant `MAX_CONFIG_BYTES` is never used
+2026-11-11T16:58:26.9513911Z   --> hepta-infer-worker-host/src\final_use_authorizer.rs:31:7
+2026-11-11T16:58:26.9514473Z    |
+2026-11-11T16:58:26.9514804Z 31 | const MAX_CONFIG_BYTES: usize = 64 * 1024;
+2026-11-11T16:58:26.9515288Z    |       ^^^^^^^^^^^^^^^^
+2026-11-11T16:58:26.9515522Z 
+2026-11-11T16:58:26.9515727Z warning: constant `MAX_REQUEST_BYTES` is never used
+2026-11-11T16:58:26.9516377Z   --> hepta-infer-worker-host/src\final_use_authorizer.rs:32:7
+2026-11-11T16:58:26.9516934Z    |
+2026-11-11T16:58:26.9517262Z 32 | const MAX_REQUEST_BYTES: usize = 16 * 1024;
+2026-11-11T16:58:26.9517741Z    |       ^^^^^^^^^^^^^^^^^
+2026-11-11T16:58:26.9517987Z 
+2026-11-11T16:58:26.9518760Z warning: constant `MAX_RESPONSE_BYTES` is never used
+2026-11-11T16:58:26.9523533Z   --> hepta-infer-worker-host/src\final_use_authorizer.rs:33:7
+2026-11-11T16:58:26.9524097Z    |
+2026-11-11T16:58:26.9524441Z 33 | const MAX_RESPONSE_BYTES: usize = 64 * 1024;
+2026-11-11T16:58:26.9525176Z    |       ^^^^^^^^^^^^^^^^^^
+2026-11-11T16:58:26.9534916Z 
+2026-11-11T16:58:26.9536651Z warning: fields `issuer_socket`, `issuer_uid`, and `issuer_timeout` are never read
+2026-11-11T16:58:26.9547039Z   --> hepta-infer-worker-host/src\final_use_authorizer.rs:60:5
+2026-11-11T16:58:26.9549416Z    |
+2026-11-11T16:58:26.9549792Z 59 | pub struct UnixFinalUseAuthorizer {
+2026-11-11T16:58:26.9550329Z    |            ---------------------- fields in this struct
+2026-11-11T16:58:26.9550843Z 60 |     issuer_socket: PathBuf,
+2026-11-11T16:58:26.9551222Z    |     ^^^^^^^^^^^^^
+2026-11-11T16:58:26.9551561Z 61 |     issuer_uid: u32,
+2026-11-11T16:58:26.9551908Z    |     ^^^^^^^^^^
+2026-11-11T16:58:26.9552227Z 62 |     issuer_timeout: Duration,
+2026-11-11T16:58:26.9552613Z    |     ^^^^^^^^^^^^^^
+2026-11-11T16:58:26.9552832Z 
+2026-11-11T16:58:26.9553044Z warning: struct `IssuerRequest` is never constructed
+2026-11-11T16:58:26.9553704Z    --> hepta-infer-worker-host/src\final_use_authorizer.rs:170:8
+2026-11-11T16:58:26.9559305Z     |
+2026-11-11T16:58:26.9576888Z 170 | struct IssuerRequest {
+2026-11-11T16:58:26.9587761Z     |        ^^^^^^^^^^^^^
+2026-11-11T16:58:26.9590965Z 
+2026-11-11T16:58:26.9594859Z warning: function `install_final_revalidation_test_hook` is never used
+2026-11-11T16:58:26.9596711Z    --> hepta-infer-worker-host/src\native_app_server.rs:104:4
+2026-11-11T16:58:26.9605074Z     |
+2026-11-11T16:58:26.9609098Z 104 | fn install_final_revalidation_test_hook(hook: std::sync::Arc<FinalRevalidationTestHook>) {
+2026-11-11T16:58:26.9626167Z     |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-11T16:58:26.9641027Z 
+2026-11-11T16:58:26.9650104Z warning: 11 warnings emitted
+2026-11-11T16:58:26.9657166Z 
+2026-11-11T16:58:26.9673923Z [5,334 / 5,511] Compiling Rust bin //codex-rs/core:codex-write-config-schema (471 files); 2s remote-cache, local ... (30 actions, 4 running)
+2026-11-11T16:58:26.9680141Z INFO: From Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (528 files):
+2026-11-11T16:58:26.9702954Z warning: unused import: `crate::RunPhase`
+2026-11-11T16:58:26.9711422Z   --> hepta-agentd/src\state_isolation_tests.rs:43:5
+2026-11-11T16:58:26.9718278Z    |
+2026-11-11T16:58:26.9728668Z 43 | use crate::RunPhase;
+2026-11-11T16:58:26.9738570Z    |     ^^^^^^^^^^^^^^^
+2026-11-11T16:58:26.9742242Z    |
+2026-11-11T16:58:26.9745908Z    = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+2026-11-11T16:58:26.9758018Z 
+2026-11-11T16:58:26.9758268Z warning: variable does not need to be mutable
+2026-11-11T16:58:26.9774472Z    --> hepta-agentd/src\prompt_runtime_tests.rs:759:10
+2026-11-11T16:58:26.9775351Z     |
+2026-11-11T16:58:26.9775643Z 759 |     let (mut store, initial) =
+2026-11-11T16:58:26.9776058Z     |          ----^^^^^
+2026-11-11T16:58:26.9776398Z     |          |
+2026-11-11T16:58:26.9804434Z     |          help: remove this `mut`
+2026-11-11T16:58:26.9821217Z     |
+2026-11-11T16:58:26.9831482Z     = note: `#[warn(unused_mut)]` (part of `#[warn(unused)]`) on by default
+2026-11-11T16:58:26.9839317Z 
+2026-11-11T16:58:26.9842338Z warning: method `with_desktop_objective` is never used
+2026-11-11T16:58:26.9864162Z  --> hepta-agentd/src\config_desktop.rs:5:19
+2026-11-11T16:58:26.9917291Z   |
+2026-11-11T16:58:26.9917850Z 4 | impl AgentdConfig {
+2026-11-11T16:58:26.9918252Z   | ----------------- method in this implementation
+2026-11-11T16:58:26.9918688Z 5 |     pub(crate) fn with_desktop_objective(
+2026-11-11T16:58:26.9919072Z   |                   ^^^^^^^^^^^^^^^^^^^^^^
+2026-11-11T16:58:26.9919386Z   |
+2026-11-11T16:58:26.9919721Z   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+2026-11-11T16:58:26.9920113Z 
+2026-11-11T16:58:26.9920258Z warning: variant `Notes` is never constructed
+2026-11-11T16:58:26.9920655Z    --> hepta-agentd/src\runtime.rs:590:5
+2026-11-11T16:58:26.9920993Z     |
+2026-11-11T16:58:26.9921249Z 588 | enum OperationReconcileProfile {
+2026-11-11T16:58:26.9921652Z     |      ------------------------- variant in this enum
+2026-11-11T16:58:26.9922029Z 589 |     Full,
+2026-11-11T16:58:26.9922376Z 590 |     Notes(crate::AgentdNotesObjectiveConfig),
+2026-11-11T16:58:26.9931336Z     |     ^^^^^
+2026-11-11T16:58:26.9931540Z 
+2026-11-11T16:58:26.9931839Z warning: function `run_notes_operation_reconciler` is never used
+2026-11-11T16:58:26.9932436Z    --> hepta-agentd/src\runtime.rs:607:21
+2026-11-11T16:58:26.9932814Z     |
+2026-11-11T16:58:26.9933195Z 607 | pub(crate) async fn run_notes_operation_reconciler(
+2026-11-11T16:58:26.9933752Z     |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-11T16:58:26.9934084Z 
+2026-11-11T16:58:26.9934317Z warning: method `close_expired_original` is never used
+2026-11-11T16:58:26.9934934Z    --> hepta-agentd/src\text_session_requests.rs:127:25
+2026-11-11T16:58:26.9935429Z     |
+2026-11-11T16:58:26.9935722Z   3 | impl AgentdTextRequests {
+2026-11-11T16:58:26.9936329Z     | ----------------------- method in this implementation
+2026-11-11T16:58:26.9936895Z ...
+2026-11-11T16:58:26.9937255Z 127 |     pub(crate) async fn close_expired_original(
+2026-11-11T16:58:26.9937822Z     |                         ^^^^^^^^^^^^^^^^^^^^^^
+2026-11-11T16:58:26.9957215Z 
+2026-11-11T16:58:26.9957351Z warning: 6 warnings emitted
+2026-11-11T16:58:26.9957604Z 
+2026-11-11T16:58:26.9960984Z [5,344 / 5,511] Compiling Rust bin //codex-rs/core:codex-write-config-schema (471 files); 3s remote-cache, local ... (30 actions, 4 running)
+2026-11-11T16:58:26.9962226Z INFO: From Compiling Rust bin //codex-rs/cli:cli-update-test (1 file):
+2026-11-11T16:58:26.9962902Z warning: unused import: `predicates::str::contains`
+2026-11-11T16:58:26.9963380Z  --> cli/tests/update.rs:2:5
+2026-11-11T16:58:26.9963707Z   |
+2026-11-11T16:58:26.9963973Z 2 | use predicates::str::contains;
+2026-11-11T16:58:26.9964347Z   |     ^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-11T16:58:26.9964668Z   |
+2026-11-11T16:58:26.9965090Z   = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+2026-11-11T16:58:26.9965558Z 
+2026-11-11T16:58:26.9965722Z warning: unused import: `tempfile::TempDir`
+2026-11-11T16:58:26.9966170Z  --> cli/tests/update.rs:4:5
+2026-11-11T16:58:26.9966518Z   |
+2026-11-11T16:58:26.9966786Z 4 | use tempfile::TempDir;
+2026-11-11T16:58:26.9967417Z   |     ^^^^^^^^^^^^^^^^^
+2026-11-11T16:58:26.9967645Z 
+2026-11-11T16:58:26.9967847Z warning: function `codex_command` is never used
+2026-11-11T16:58:26.9989022Z  --> cli/tests/update.rs:6:4
+2026-11-11T16:58:26.9989758Z   |
+2026-11-11T16:58:26.9990230Z 6 | fn codex_command(codex_home: &Path) -> Result<assert_cmd::Command> {
+2026-11-11T16:58:26.9991094Z   |    ^^^^^^^^^^^^^
+2026-11-11T16:58:26.9993237Z   |
+2026-11-11T16:58:26.9993674Z   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+2026-11-11T16:58:26.9994126Z 
+2026-11-11T16:58:26.9994268Z warning: 3 warnings emitted
+2026-11-11T16:58:26.9994514Z 
+2026-11-11T16:58:27.7420846Z [5,365 / 5,511] Compiling Rust bin //codex-rs/core:codex-write-config-schema (471 files); 4s remote-cache, local ... (25 actions, 4 running)
+2026-11-11T16:58:32.2427667Z [5,365 / 5,511] Compiling Rust bin //codex-rs/core:codex-write-config-schema (471 files); 9s remote-cache, local ... (25 actions, 5 running)
+2026-11-11T16:58:33.8209828Z [5,367 / 5,511] Compiling Rust bin //codex-rs/app-server-test-client:codex-app-server-test-client (9 files); 10s remote-cache, local ... (24 actions, 4 running)
+2026-11-11T16:58:35.8532331Z [5,367 / 5,511] Compiling Rust bin //codex-rs/app-server-test-client:codex-app-server-test-client (9 files); 12s remote-cache, local ... (24 actions, 4 running)
+2026-11-11T16:58:37.4552822Z [5,367 / 5,511] Compiling Rust bin //codex-rs/app-server-test-client:codex-app-server-test-client (9 files); 14s remote-cache, local ... (24 actions, 5 running)
+2026-11-11T16:58:38.9394914Z [5,370 / 5,511] Compiling Rust bin //codex-rs/core:core-all-test-bin (1 file); 15s remote-cache, local ... (23 actions, 4 running)
+2026-11-11T16:58:42.5219180Z [5,370 / 5,511] Compiling Rust bin //codex-rs/core:core-all-test-bin (1 file); 19s remote-cache, local ... (23 actions, 5 running)
+2026-11-11T16:58:44.0587294Z [5,370 / 5,511] Compiling Rust bin //codex-rs/core:core-all-test-bin (1 file); 20s remote-cache, local ... (23 actions, 5 running)
+2026-11-11T16:58:45.1791131Z [5,373 / 5,511] Compiling Rust bin //codex-rs/core:core-all-test-bin (1 file); 21s remote-cache, local ... (22 actions, 4 running)
+2026-11-11T16:58:49.7686226Z [5,373 / 5,511] Compiling Rust bin //codex-rs/core:core-all-test-bin (1 file); 26s remote-cache, local ... (22 actions, 5 running)
+2026-11-11T16:58:51.2348650Z [5,373 / 5,511] Compiling Rust bin //codex-rs/core:core-all-test-bin (1 file); 27s remote-cache, local ... (22 actions, 5 running)
+2026-11-11T16:58:52.3796723Z [5,374 / 5,511] Compiling Rust bin //codex-rs/core:core-all-test-bin (1 file); 28s remote-cache, local ... (21 actions, 4 running)
+2026-11-11T16:58:53.2852256Z [5,376 / 5,511] Compiling Rust bin //codex-rs/core:core-all-test-bin (1 file); 29s remote-cache, local ... (20 actions, 4 running)
+2026-11-11T16:58:54.3533019Z [5,376 / 5,511] Compiling Rust bin //codex-rs/core:core-all-test-bin (1 file); 30s remote-cache, local ... (20 actions, 4 running)
+2026-11-11T16:58:55.3995154Z [5,376 / 5,511] Compiling Rust bin //codex-rs/core:core-all-test-bin (1 file); 31s remote-cache, local ... (20 actions, 4 running)
+2026-11-11T16:58:56.3674611Z [5,378 / 5,511] Compiling Rust bin //codex-rs/core:core-all-test-bin (1 file); 32s remote-cache, local ... (19 actions, 4 running)
+2026-11-11T16:58:57.4088770Z [5,378 / 5,511] Compiling Rust bin //codex-rs/core:core-all-test-bin (1 file); 33s remote-cache, local ... (19 actions, 4 running)
+2026-11-11T16:58:58.4413999Z [5,378 / 5,511] Compiling Rust bin //codex-rs/core:core-all-test-bin (1 file); 34s remote-cache, local ... (19 actions, 5 running)
+2026-11-11T16:58:59.5060389Z [5,378 / 5,511] Compiling Rust bin //codex-rs/core:core-all-test-bin (1 file); 36s remote-cache, local ... (19 actions, 5 running)
+2026-11-11T16:59:00.5192848Z [5,382 / 5,511] Compiling Rust bin //codex-rs/core:core-all-test-bin (1 file); 37s remote-cache, local ... (18 actions, 4 running)
+2026-11-11T16:59:03.5901193Z [5,382 / 5,511] Compiling Rust bin //codex-rs/core:core-all-test-bin (1 file); 40s remote-cache, local ... (18 actions, 4 running)
+2026-11-11T16:59:06.4422282Z [5,382 / 5,511] Compiling Rust bin //codex-rs/core:core-all-test-bin (1 file); 43s remote-cache, local ... (18 actions, 5 running)
+2026-11-11T16:59:07.7019790Z [5,384 / 5,511] Compiling Rust bin //codex-rs/core:core-all-test-bin (1 file); 44s remote-cache, local ... (17 actions, 4 running)
+2026-11-11T16:59:11.7236168Z [5,384 / 5,511] Compiling Rust bin //codex-rs/core:core-all-test-bin (1 file); 48s remote-cache, local ... (17 actions, 4 running)
+2026-11-11T16:59:12.7356667Z [5,384 / 5,511] Compiling Rust bin //codex-rs/core:core-all-test-bin (1 file); 49s remote-cache, local ... (17 actions, 4 running)
+2026-11-11T16:59:17.8529476Z [5,384 / 5,511] Compiling Rust bin //codex-rs/core:core-all-test-bin (1 file); 54s remote-cache, local ... (17 actions, 5 running)
+2026-11-11T16:59:18.8483083Z [5,384 / 5,511] Compiling Rust bin //codex-rs/core:core-all-test-bin (1 file); 55s remote-cache, local ... (17 actions, 5 running)
+2026-11-11T16:59:19.1605463Z INFO: From Compiling Rust bin //codex-rs/app-server:codex-app-server (125 files):
+2026-11-11T16:59:19.1907157Z warning: unused import: `codex_app_server::PluginStartupTasks`
+2026-11-11T16:59:19.1977286Z  --> codex-rs/app-server/src/main.rs:6:5
+2026-11-11T16:59:19.2227291Z   |
+2026-11-11T16:59:19.2329574Z 6 | use codex_app_server::PluginStartupTasks;
+2026-11-11T16:59:19.2725630Z   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-11T16:59:19.2865358Z   |
+2026-11-11T16:59:19.3265568Z   = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+2026-11-11T16:59:19.3347289Z 
+2026-11-11T16:59:19.3757512Z warning: constant `MANAGED_CONFIG_PATH_ENV_VAR` is never used
+2026-11-11T16:59:19.3990234Z   --> codex-rs/app-server/src/main.rs:17:7
+2026-11-11T16:59:19.4536152Z    |
+2026-11-11T16:59:19.4974357Z 17 | const MANAGED_CONFIG_PATH_ENV_VAR: &str = "CODEX_APP_SERVER_MANAGED_CONFIG_PATH";
+2026-11-11T16:59:19.5595711Z    |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-11T16:59:19.6016747Z    |
+2026-11-11T16:59:19.6587582Z    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+2026-11-11T16:59:19.7356921Z 
+2026-11-11T16:59:19.7729952Z warning: constant `DISABLE_MANAGED_CONFIG_ENV_VAR` is never used
+2026-11-11T16:59:19.8078131Z   --> codex-rs/app-server/src/main.rs:18:7
+2026-11-11T16:59:19.8437448Z    |
+2026-11-11T16:59:19.8747881Z 18 | const DISABLE_MANAGED_CONFIG_ENV_VAR: &str = "CODEX_APP_SERVER_DISABLE_MANAGED_CONFIG";
+2026-11-11T16:59:19.9068271Z    |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-11T16:59:19.9446159Z 
+2026-11-11T16:59:19.9858259Z warning: 3 warnings emitted
+2026-11-11T16:59:20.0087206Z 
+2026-11-11T16:59:20.0478121Z [5,384 / 5,511] Compiling Rust bin //codex-rs/core:core-all-test-bin (1 file); 56s remote-cache, local ... (17 actions, 5 running)
+2026-11-11T16:59:20.9055250Z [5,387 / 5,511] Compiling Rust bin //codex-rs/core:core-all-test-bin (1 file); 57s remote-cache, local ... (16 actions, 4 running)
+2026-11-11T16:59:25.9312574Z [5,387 / 5,511] Compiling Rust bin //codex-rs/core:core-all-test-bin (1 file); 62s remote-cache, local ... (16 actions, 5 running)
+2026-11-11T16:59:28.2279921Z [5,387 / 5,511] Compiling Rust bin //codex-rs/core:core-all-test-bin (1 file); 64s remote-cache, local ... (16 actions, 5 running)
+2026-11-11T16:59:29.2015833Z [5,392 / 5,511] Compiling Rust bin //codex-rs/core:core-all-test-bin (1 file); 65s remote-cache, local ... (15 actions, 4 running)
+2026-11-11T16:59:30.2581490Z [5,394 / 5,511] Compiling Rust bin //codex-rs/core:core-all-test-bin (1 file); 66s remote-cache, local ... (14 actions, 4 running)
+2026-11-11T16:59:31.2965090Z [5,394 / 5,511] Compiling Rust bin //codex-rs/core:core-all-test-bin (1 file); 67s remote-cache, local ... (14 actions, 4 running)
+2026-11-11T16:59:35.5013032Z [5,394 / 5,511] Compiling Rust bin //codex-rs/core:core-all-test-bin (1 file); 71s remote-cache, local ... (14 actions, 4 running)
+2026-11-11T16:59:38.4877204Z [5,394 / 5,511] Compiling Rust bin //codex-rs/core:core-all-test-bin (1 file); 75s remote-cache, local ... (14 actions, 4 running)
+2026-11-11T16:59:40.4974186Z [5,394 / 5,511] Compiling Rust bin //codex-rs/core:core-all-test-bin (1 file); 77s remote-cache, local ... (14 actions, 4 running)
+2026-11-11T16:59:42.3491749Z [5,394 / 5,511] Compiling Rust bin //codex-rs/core:core-all-test-bin (1 file); 78s remote-cache, local ... (14 actions, 5 running)
+2026-11-11T16:59:44.5460307Z [5,394 / 5,511] Compiling Rust bin //codex-rs/core:core-all-test-bin (1 file); 81s remote-cache, local ... (14 actions, 5 running)
+2026-11-11T16:59:45.6332204Z [5,400 / 5,511] Compiling Rust bin //codex-rs/core:core-all-test-bin (1 file); 82s remote-cache, local ... (11 actions, 4 running)
+2026-11-11T16:59:47.6942211Z [5,400 / 5,511] Compiling Rust bin //codex-rs/core:core-all-test-bin (1 file); 84s remote-cache, local ... (11 actions, 4 running)
+2026-11-11T16:59:48.7061699Z [5,422 / 5,511] Compiling Rust bin //codex-rs/core:core-all-test-bin (1 file); 85s remote-cache, local ... (10 actions, 4 running)
+2026-11-11T16:59:49.7319748Z [5,422 / 5,511] Compiling Rust bin //codex-rs/core:core-all-test-bin (1 file); 86s remote-cache, local ... (10 actions, 4 running)
+2026-11-11T16:59:55.8270851Z [5,422 / 5,511] Compiling Rust bin //codex-rs/core:core-all-test-bin (1 file); 92s remote-cache, local ... (10 actions, 4 running)
+2026-11-11T16:59:59.8728889Z [5,422 / 5,511] Compiling Rust bin //codex-rs/core:core-all-test-bin (1 file); 96s remote-cache, local ... (10 actions, 4 running)
+2026-11-11T17:00:00.9063359Z [5,422 / 5,511] Compiling Rust bin //codex-rs/core:core-all-test-bin (1 file); 97s remote-cache, local ... (10 actions, 4 running)
+2026-11-11T17:00:02.0926618Z [5,422 / 5,511] Compiling Rust bin //codex-rs/core:core-all-test-bin (1 file); 98s remote-cache, local ... (10 actions, 5 running)
+2026-11-11T17:00:03.1695912Z [5,425 / 5,511] Compiling Rust bin //codex-rs/core:core-all-test-bin (1 file); 99s remote-cache, local ... (9 actions, 4 running)
+2026-11-11T17:00:06.4834894Z [5,425 / 5,511] Compiling Rust bin //codex-rs/core:core-all-test-bin (1 file); 102s remote-cache, local ... (9 actions, 4 running)
+2026-11-11T17:00:07.7862289Z [5,425 / 5,511] Compiling Rust bin //codex-rs/core:core-all-test-bin (1 file); 104s remote-cache, local ... (9 actions, 4 running)
+2026-11-11T17:00:08.6717082Z [5,427 / 5,511] Compiling Rust bin //codex-rs/core:core-all-test-bin (1 file); 105s remote-cache, local ... (8 actions, 4 running)
+2026-11-11T17:00:09.7255479Z [5,427 / 5,511] Compiling Rust bin //codex-rs/core:core-all-test-bin (1 file); 106s remote-cache, local ... (8 actions, 4 running)
+2026-11-11T17:00:19.4059093Z [5,427 / 5,511] Compiling Rust bin //codex-rs/core:core-all-test-bin (1 file); 115s remote-cache, local ... (8 actions, 5 running)
+2026-11-11T17:00:21.4292487Z [5,427 / 5,511] Compiling Rust bin //codex-rs/core:core-all-test-bin (1 file); 117s remote-cache, local ... (8 actions, 5 running)
+2026-11-11T17:00:23.5117261Z [5,427 / 5,511] Compiling Rust bin //codex-rs/core:core-all-test-bin (1 file); 119s remote-cache, local ... (8 actions, 5 running)
+2026-11-11T17:00:24.9155830Z [5,428 / 5,511] Compiling Rust bin //codex-rs/core:core-all-test-bin (1 file); 121s remote-cache, local ... (8 actions, 4 running)
+2026-11-11T17:00:26.5150160Z [5,429 / 5,511] Compiling Rust bin //codex-rs/core:core-all-test-bin (1 file); 123s remote-cache, local ... (7 actions, 4 running)
+2026-11-11T17:00:35.8177489Z [5,429 / 5,511] Compiling Rust bin //codex-rs/core:core-all-test-bin (1 file); 132s remote-cache, local ... (7 actions, 4 running)
+2026-11-11T17:00:36.9844475Z [5,429 / 5,511] Compiling Rust bin //codex-rs/core:core-all-test-bin (1 file); 133s remote-cache, local ... (7 actions, 4 running)
+2026-11-11T17:00:41.9782682Z [5,429 / 5,511] Compiling Rust bin //codex-rs/core:core-all-test-bin (1 file); 138s remote-cache, local ... (7 actions, 4 running)
+2026-11-11T17:00:46.4154643Z [5,429 / 5,511] Compiling Rust bin //codex-rs/core:core-all-test-bin (1 file); 142s remote-cache, local ... (7 actions, 5 running)
+2026-11-11T17:00:48.1960985Z [5,429 / 5,511] Compiling Rust bin //codex-rs/core:core-all-test-bin (1 file); 144s remote-cache, local ... (7 actions, 5 running)
+2026-11-11T17:00:49.2273309Z [5,430 / 5,511] Compiling Rust bin //codex-rs/core:core-unit-tests-bin (470 files); 126s remote-cache, local ... (6 actions, 4 running)
+2026-11-11T17:00:56.4174153Z [5,430 / 5,511] Compiling Rust bin //codex-rs/core:core-unit-tests-bin (470 files); 133s remote-cache, local ... (6 actions, 4 running)
+2026-11-11T17:01:00.4884720Z [5,430 / 5,511] Compiling Rust bin //codex-rs/core:core-unit-tests-bin (470 files); 137s remote-cache, local ... (6 actions, 4 running)
+2026-11-11T17:01:01.5944650Z [5,430 / 5,511] Compiling Rust bin //codex-rs/core:core-unit-tests-bin (470 files); 139s remote-cache, local ... (6 actions, 5 running)
+2026-11-11T17:01:02.6377852Z [5,430 / 5,511] Compiling Rust bin //codex-rs/core:core-unit-tests-bin (470 files); 140s remote-cache, local ... (6 actions running)
+2026-11-11T17:01:03.7052209Z [5,433 / 5,511] Compiling Rust bin //codex-rs/core:core-unit-tests-bin (470 files); 141s remote-cache, local ... (5 actions running)
+2026-11-11T17:01:04.7646168Z [5,457 / 5,511] Compiling Rust bin //codex-rs/core:core-unit-tests-bin (470 files); 142s remote-cache, local ... (27 actions, 3 running)
+2026-11-11T17:01:05.7740511Z [5,482 / 5,511] Compiling Rust bin //codex-rs/core:core-unit-tests-bin (470 files); 143s remote-cache, local ... (3 actions running)
+2026-11-11T17:01:06.7700678Z [5,482 / 5,511] Compiling Rust bin //codex-rs/core:core-unit-tests-bin (470 files); 144s remote-cache, local ... (3 actions running)
+2026-11-11T17:01:07.7953393Z [5,482 / 5,511] Compiling Rust bin //codex-rs/core:core-unit-tests-bin (470 files); 145s remote-cache, local ... (3 actions running)
+2026-11-11T17:01:08.8431413Z [5,505 / 5,511] Compiling Rust bin //codex-rs/core:core-unit-tests-bin (470 files); 146s remote-cache, local ... (2 actions running)
+2026-11-11T17:01:15.9926658Z [5,505 / 5,511] Compiling Rust bin //codex-rs/core:core-unit-tests-bin (470 files); 153s remote-cache, local ... (2 actions running)
+2026-11-11T17:01:18.9854739Z [5,505 / 5,511] Compiling Rust bin //codex-rs/core:core-unit-tests-bin (470 files); 156s remote-cache, local ... (2 actions running)
+2026-11-11T17:01:19.9566261Z [5,505 / 5,511] Compiling Rust bin //codex-rs/core:core-unit-tests-bin (470 files); 157s remote-cache, local ... (2 actions running)
+2026-11-11T17:01:21.9893751Z [5,505 / 5,511] Compiling Rust bin //codex-rs/core:core-unit-tests-bin (470 files); 159s remote-cache, local ... (2 actions running)
+2026-11-11T17:01:22.9738489Z [5,505 / 5,511] Compiling Rust bin //codex-rs/core:core-unit-tests-bin (470 files); 160s remote-cache, local ... (2 actions running)
+2026-11-11T17:01:23.9745344Z [5,509 / 5,511] Compiling Rust bin //codex-rs/core:core-unit-tests-bin (470 files); 161s remote-cache, local
+2026-11-11T17:01:27.9973739Z [5,509 / 5,511] Compiling Rust bin //codex-rs/core:core-unit-tests-bin (470 files); 165s remote-cache, local
+2026-11-11T17:01:34.9448443Z [5,509 / 5,511] Compiling Rust bin //codex-rs/core:core-unit-tests-bin (470 files); 172s remote-cache, local
+2026-11-11T17:01:39.0046776Z [5,509 / 5,511] Compiling Rust bin //codex-rs/core:core-unit-tests-bin (470 files); 176s remote-cache, local
+2026-11-11T17:02:06.1158333Z [5,509 / 5,511] Compiling Rust bin //codex-rs/core:core-unit-tests-bin (470 files); 203s remote-cache, local
+2026-11-11T17:02:46.8852355Z [5,510 / 5,511] [Prepa] runfiles for //codex-rs/core:core-unit-tests
+2026-11-11T17:02:46.9245613Z INFO: Found 1058 targets...
+2026-11-11T17:02:47.2170119Z INFO: Elapsed time: 589.771s, Critical Path: 389.56s
+2026-11-11T17:02:47.2171133Z INFO: 5511 processes: 2820 remote cache hit, 2636 internal, 55 local.
+2026-11-11T17:02:47.2327426Z INFO: Build completed successfully, 5511 total actions
+2026-11-11T17:02:47.2467618Z INFO: 
+2026-11-11T17:02:49.2096964Z INFO: 
+2026-11-11T17:02:53.2119398Z INFO: 
+2026-11-11T17:02:55.0387151Z INFO: Streaming build results to: https://app.buildbuddy.io/invocation/81d3ae1b-c7ed-40b0-b535-ff0a2ff0d923
+2026-11-11T17:02:55.4073470Z ##[group]Run actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+2026-11-11T17:02:55.4074105Z with:
+2026-11-11T17:02:55.4074567Z   name: bazel-execution-logs-verify-release-build-x86_64-pc-windows-msvc
+2026-11-11T17:02:55.4075127Z   path: D:\a\_temp/bazel-execution-logs
+2026-11-11T17:02:55.4076176Z   if-no-files-found: ignore
+2026-11-11T17:02:55.4076503Z   compression-level: 6
+2026-11-11T17:02:55.4076798Z   overwrite: false
+2026-11-11T17:02:55.4077088Z   include-hidden-files: false
+2026-11-11T17:02:55.4077424Z   archive: true
+2026-11-11T17:02:55.4077685Z env:
+2026-11-11T17:02:55.4077926Z   CI_BUILD_ROOT: D:
+2026-11-11T17:02:55.4078287Z   CODEX_REPO_ROOT: D:\a\hepta-private-ci\hepta-private-ci
+2026-11-11T17:02:55.4078750Z   BAZEL_OUTPUT_BASE: D:/o
+2026-11-11T17:02:55.4079054Z   BAZEL_OUTPUT_USER_ROOT: D:/b
+2026-11-11T17:02:55.4079917Z   BAZEL_REPOSITORY_CACHE: D:/bazel-repository-cache
+2026-11-11T17:02:55.4080601Z   BAZEL_REPO_CONTENTS_CACHE: D:/bazel-repo-contents-cache-43062473474-verify-release-build
+2026-11-11T17:02:55.4081211Z   CARGO_TARGET_DIR: D:/cargo-target
+2026-11-11T17:02:55.4081534Z   TEMP: D:/tmp
+2026-11-11T17:02:55.4081795Z   TMP: D:/tmp
+2026-11-11T17:02:55.4082059Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-11T17:02:55.4088243Z   BAZELISK_GITHUB_TOKEN: ***
+2026-11-11T17:02:55.4090921Z   INCLUDE: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\include;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\ATLMFC\include;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Auxiliary\VS\include;C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\um;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\shared;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\winrt;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\cppwinrt;C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8.1\include\um
+2026-11-11T17:02:55.4094270Z   LIB: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\ATLMFC\lib\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\lib\x64;C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8.1\lib\um\x64;C:\Program Files (x86)\Windows Kits\10\lib\10.0.26100.0\ucrt\x64;C:\Program Files (x86)\Windows Kits\10\\lib\10.0.26100.0\\um\x64
+2026-11-11T17:02:55.4096988Z   LIBPATH: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\ATLMFC\lib\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\lib\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\lib\x86\store\references;C:\Program Files (x86)\Windows Kits\10\UnionMetadata\10.0.26100.0;C:\Program Files (x86)\Windows Kits\10\References\10.0.26100.0;C:\Windows\Microsoft.NET\Framework64\v4.0.30319
+2026-11-11T17:02:55.4115519Z   PATH: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\bin\HostX64\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\VCPackages;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TestWindow;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TeamFoundation\Team Explorer;C:\Program Files\Microsoft Visual Studio\18\Enterprise\MSBuild\Current\bin\Roslyn;C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.8.1 Tools\x64\;C:\Program Files (x86)\HTML Help Workshop;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\FSharp\Tools;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Team Tools\DiagnosticsHub\Collector;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\Extensions\Microsoft\CodeCoverage.Console;C:\Program Files (x86)\Windows Kits\10\bin\10.0.26100.0\\x64;C:\Program Files (x86)\Windows Kits\10\bin\\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\\MSBuild\Current\Bin\amd64;C:\Windows\Microsoft.NET\Framework64\v4.0.30319;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\Tools\;C:\Program Files\PowerShell\7;C:\hostedtoolcache\windows\bazelisk\1.28.1\x64;D:\a\_temp/install-dotslash/bin;C:\Program Files\MongoDB\Server\7.0\bin;C:\vcpkg;C:\tools\zstd;C:\hostedtoolcache\windows\stack\3.11.1\x64;C:\cabal\bin;C:\\ghcup\bin;C:\mingw64\bin;C:\Program Files\dotnet;C:\Program Files\MySQL\MySQL Server 8.4\bin;C:\Program Files\R\R-4.6.2\bin\x64;C:\SeleniumWebDrivers\GeckoDriver;C:\SeleniumWebDrivers\EdgeDriver\;C:\SeleniumWebDrivers\ChromeDriver;C:\Program Files (x86)\sbt\bin;C:\Program Files (x86)\GitHub CLI;C:\Program Files\Git\bin;C:\Program Files (x86)\pipx_bin;C:\npm\prefix;C:\hostedtoolcache\windows\go\1.24.13\x64\bin;C:\hostedtoolcache\windows\Python\3.12.10\x64\Scripts;C:\hostedtoolcache\windows\Python\3.12.10\x64;C:\hostedtoolcache\windows\Ruby\3.3.13\x64\bin;C:\Program Files\OpenSSL\bin;C:\tools\kotlinc\bin;C:\hostedtoolcache\windows\Java_Temurin-Hotspot_jdk\17.0.21-9\x64\bin;C:\Program Files\ImageMagick-7.1.2-Q16-HDRI;C:\Program Files\Microsoft SDKs\Azure\CLI2\wbin;C:\ProgramData\kind;C:\ProgramData\Chocolatey\bin;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\WSL\;C:\Program Files\PowerShell\7\;C:\Program Files\Microsoft\Web Platform Installer\;C:\Program Files\Microsoft SQL Server\170\Tools\Binn\;C:\Program Files\Microsoft SQL Server\Client SDK\ODBC\170\Tools\Binn\;C:\Program Files\dotnet\;C:\Program Files (x86)\Windows Kits\10\Windows Performance Toolkit\;C:\Program Files (x86)\WiX Toolset v3.14\bin;C:\Program Files\Microsoft SQL Server\130\DTS\Binn\;C:\Program Files\Microsoft SQL Server\140\DTS\Binn\;C:\Program Files\Microsoft SQL Server\150\DTS\Binn\;C:\Program Files\Microsoft SQL Server\160\DTS\Binn\;C:\Program Files\Microsoft SQL Server\170\DTS\Binn\;C:\ProgramData\chocolatey\lib\pulumi\tools\Pulumi\bin;C:\Program Files\CMake\bin;C:\Strawberry\c\bin;C:\Strawberry\perl\site\bin;C:\Strawberry\perl\bin;C:\ProgramData\chocolatey\lib\maven\apache-maven-3.9.16\bin;C:\Program Files\Microsoft Service Fabric\bin\Fabric\Fabric.Code;C:\Program Files\Microsoft SDKs\Service Fabric\Tools\ServiceFabricLocalClusterManager;C:\Program Files\LLVM\bin;C:\Program Files (x86)\LLVM\bin;C:\Program Files\nodejs\;C:\Program Files\Git\cmd;C:\Program Files\Git\ucrt64\bin;C:\Program Files\Git\usr\bin;C:\Program Files\GitHub CLI\;c:\tools\php;C:\Program Files (x86)\sbt\bin;C:\Program Files\Amazon\AWSCLIV2\;C:\Program Files\Amazon\SessionManagerPlugin\bin\;C:\Program Files\Amazon\AWSSAMCLI\bin\;C:\Program Files\Microsoft SQL Server\130\Tools\Binn\;C:\Program Files\mongosh\;C:\Users\runneradmin\.dotnet\tools;C:\Users\runneradmin\.cargo\bin;C:\Users\runneradmin\AppData\Local\Microsoft\WindowsApps;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\Llvm\x64\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\Ninja;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\Linux\bin\ConnectionManagerExe;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\vcpkg
+2026-11-11T17:02:55.4131623Z   UCRTVersion: 10.0.26100.0
+2026-11-11T17:02:55.4131986Z   UniversalCRTSdkDir: C:\Program Files (x86)\Windows Kits\10\
+2026-11-11T17:02:55.4132486Z   VCINSTALLDIR: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\
+2026-11-11T17:02:55.4133111Z   VCToolsInstallDir: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\
+2026-11-11T17:02:55.4133953Z   WindowsLibPath: C:\Program Files (x86)\Windows Kits\10\UnionMetadata\10.0.26100.0;C:\Program Files (x86)\Windows Kits\10\References\10.0.26100.0
+2026-11-11T17:02:55.4134697Z   WindowsSdkBinPath: C:\Program Files (x86)\Windows Kits\10\bin\
+2026-11-11T17:02:55.4135761Z   WindowsSdkDir: C:\Program Files (x86)\Windows Kits\10\
+2026-11-11T17:02:55.4136191Z   WindowsSDKLibVersion: 10.0.26100.0\
+2026-11-11T17:02:55.4136517Z   WindowsSDKVersion: 10.0.26100.0\
+2026-11-11T17:02:55.4145187Z   CODEX_BAZEL_WINDOWS_PATH: C:\Program Files\PowerShell\7;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\bin\HostX64\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\VCPackages;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TestWindow;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TeamFoundation\Team Explorer;C:\Program Files\Microsoft Visual Studio\18\Enterprise\MSBuild\Current\bin\Roslyn;C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.8.1 Tools\x64\;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\FSharp\Tools;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Team Tools\DiagnosticsHub\Collector;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\Extensions\Microsoft\CodeCoverage.Console;C:\Program Files (x86)\Windows Kits\10\bin\10.0.26100.0\\x64;C:\Program Files (x86)\Windows Kits\10\bin\\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\\MSBuild\Current\Bin\amd64;C:\Windows\Microsoft.NET\Framework64\v4.0.30319;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\Tools\;C:\mingw64\bin;C:\Program Files\Git\bin;C:\hostedtoolcache\windows\Python\3.12.10\x64\Scripts;C:\hostedtoolcache\windows\Python\3.12.10\x64;C:\Program Files\Microsoft SDKs\Azure\CLI2\wbin;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\PowerShell\7\;C:\Program Files (x86)\Windows Kits\10\Windows Performance Toolkit\;C:\Program Files\Microsoft SDKs\Service Fabric\Tools\ServiceFabricLocalClusterManager;C:\Program Files\Git\cmd;C:\Program Files\Git\ucrt64\bin;C:\Program Files\Git\usr\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\Llvm\x64\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\Ninja;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\Linux\bin\ConnectionManagerExe;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\vcpkg;C:\Program Files\nodejs;C:\msys64\mingw64\bin;C:\msys64\ucrt64\bin;C:\Users\runneradmin\AppData\Local\Microsoft\WindowsApps
+2026-11-11T17:02:55.4154193Z   HEPTA_LOCKDOWN_ROOT: D:/a/_temp/hepta-lockdown-root
+2026-11-11T17:02:55.4154660Z   CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR: D:\a\_temp/bazel-execution-logs
+2026-11-11T17:02:55.4155128Z ##[endgroup]
+2026-11-11T17:02:56.1254411Z With the provided path, there will be 1 file uploaded
+2026-11-11T17:02:56.1260646Z Artifact name is valid!
+2026-11-11T17:02:56.1262104Z Root directory input is valid!
+2026-11-11T17:02:56.3503695Z Uploading artifact: bazel-execution-logs-verify-release-build-x86_64-pc-windows-msvc.zip
+2026-11-11T17:02:56.3504946Z Beginning upload of artifact content to blob storage
+2026-11-11T17:02:56.8785083Z Uploaded bytes 5269224
+2026-11-11T17:02:56.8954042Z Finished uploading artifact content to blob storage!
+2026-11-11T17:02:56.8955660Z SHA256 digest of uploaded artifact is 74902b42bc4d3e83c8e8f926581517969cad64f0e3e4283482391d81a994fc86
+2026-11-11T17:02:56.8956805Z Finalizing artifact upload
+2026-11-11T17:02:57.2620137Z Artifact bazel-execution-logs-verify-release-build-x86_64-pc-windows-msvc successfully finalized. Artifact ID 13874478194
+2026-11-11T17:02:57.2622246Z Artifact bazel-execution-logs-verify-release-build-x86_64-pc-windows-msvc has been successfully uploaded! Final size is 5269224 bytes. Artifact ID is 13874478194
+2026-11-11T17:02:57.2631937Z Artifact download URL: https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43062473474/artifacts/13874478194
+2026-11-11T17:02:57.2999412Z ##[group]Run actions/cache/save@668228422ae6a00e4ad889ee87cd7109ec5666a7
+2026-11-11T17:02:57.2999951Z with:
+2026-11-11T17:02:57.3000258Z   path: D:/bazel-repository-cache
+2026-11-11T17:02:57.3000977Z   key: bazel-cache-bazel-verify-release-build-x86_64-pc-windows-msvc-0efbdbad4fb8680dee021ee7f843321027843334303de6fd8d4d16cfb2cc0029
+2026-11-11T17:02:57.3001930Z   enableCrossOsArchive: false
+2026-11-11T17:02:57.3002248Z env:
+2026-11-11T17:02:57.3002476Z   CI_BUILD_ROOT: D:
+2026-11-11T17:02:57.3002810Z   CODEX_REPO_ROOT: D:\a\hepta-private-ci\hepta-private-ci
+2026-11-11T17:02:57.3003219Z   BAZEL_OUTPUT_BASE: D:/o
+2026-11-11T17:02:57.3003506Z   BAZEL_OUTPUT_USER_ROOT: D:/b
+2026-11-11T17:02:57.3003838Z   BAZEL_REPOSITORY_CACHE: D:/bazel-repository-cache
+2026-11-11T17:02:57.3004365Z   BAZEL_REPO_CONTENTS_CACHE: D:/bazel-repo-contents-cache-43062473474-verify-release-build
+2026-11-11T17:02:57.3005085Z   CARGO_TARGET_DIR: D:/cargo-target
+2026-11-11T17:02:57.3005648Z   TEMP: D:/tmp
+2026-11-11T17:02:57.3005917Z   TMP: D:/tmp
+2026-11-11T17:02:57.3106665Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-11T17:02:57.3109658Z   BAZELISK_GITHUB_TOKEN: ***
+2026-11-11T17:02:57.3112119Z   INCLUDE: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\include;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\ATLMFC\include;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Auxiliary\VS\include;C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\um;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\shared;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\winrt;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\cppwinrt;C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8.1\include\um
+2026-11-11T17:02:57.3115792Z   LIB: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\ATLMFC\lib\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\lib\x64;C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8.1\lib\um\x64;C:\Program Files (x86)\Windows Kits\10\lib\10.0.26100.0\ucrt\x64;C:\Program Files (x86)\Windows Kits\10\\lib\10.0.26100.0\\um\x64
+2026-11-11T17:02:57.3118541Z   LIBPATH: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\ATLMFC\lib\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\lib\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\lib\x86\store\references;C:\Program Files (x86)\Windows Kits\10\UnionMetadata\10.0.26100.0;C:\Program Files (x86)\Windows Kits\10\References\10.0.26100.0;C:\Windows\Microsoft.NET\Framework64\v4.0.30319
+2026-11-11T17:02:57.3137489Z   PATH: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\bin\HostX64\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\VCPackages;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TestWindow;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TeamFoundation\Team Explorer;C:\Program Files\Microsoft Visual Studio\18\Enterprise\MSBuild\Current\bin\Roslyn;C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.8.1 Tools\x64\;C:\Program Files (x86)\HTML Help Workshop;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\FSharp\Tools;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Team Tools\DiagnosticsHub\Collector;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\Extensions\Microsoft\CodeCoverage.Console;C:\Program Files (x86)\Windows Kits\10\bin\10.0.26100.0\\x64;C:\Program Files (x86)\Windows Kits\10\bin\\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\\MSBuild\Current\Bin\amd64;C:\Windows\Microsoft.NET\Framework64\v4.0.30319;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\Tools\;C:\Program Files\PowerShell\7;C:\hostedtoolcache\windows\bazelisk\1.28.1\x64;D:\a\_temp/install-dotslash/bin;C:\Program Files\MongoDB\Server\7.0\bin;C:\vcpkg;C:\tools\zstd;C:\hostedtoolcache\windows\stack\3.11.1\x64;C:\cabal\bin;C:\\ghcup\bin;C:\mingw64\bin;C:\Program Files\dotnet;C:\Program Files\MySQL\MySQL Server 8.4\bin;C:\Program Files\R\R-4.6.2\bin\x64;C:\SeleniumWebDrivers\GeckoDriver;C:\SeleniumWebDrivers\EdgeDriver\;C:\SeleniumWebDrivers\ChromeDriver;C:\Program Files (x86)\sbt\bin;C:\Program Files (x86)\GitHub CLI;C:\Program Files\Git\bin;C:\Program Files (x86)\pipx_bin;C:\npm\prefix;C:\hostedtoolcache\windows\go\1.24.13\x64\bin;C:\hostedtoolcache\windows\Python\3.12.10\x64\Scripts;C:\hostedtoolcache\windows\Python\3.12.10\x64;C:\hostedtoolcache\windows\Ruby\3.3.13\x64\bin;C:\Program Files\OpenSSL\bin;C:\tools\kotlinc\bin;C:\hostedtoolcache\windows\Java_Temurin-Hotspot_jdk\17.0.21-9\x64\bin;C:\Program Files\ImageMagick-7.1.2-Q16-HDRI;C:\Program Files\Microsoft SDKs\Azure\CLI2\wbin;C:\ProgramData\kind;C:\ProgramData\Chocolatey\bin;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\WSL\;C:\Program Files\PowerShell\7\;C:\Program Files\Microsoft\Web Platform Installer\;C:\Program Files\Microsoft SQL Server\170\Tools\Binn\;C:\Program Files\Microsoft SQL Server\Client SDK\ODBC\170\Tools\Binn\;C:\Program Files\dotnet\;C:\Program Files (x86)\Windows Kits\10\Windows Performance Toolkit\;C:\Program Files (x86)\WiX Toolset v3.14\bin;C:\Program Files\Microsoft SQL Server\130\DTS\Binn\;C:\Program Files\Microsoft SQL Server\140\DTS\Binn\;C:\Program Files\Microsoft SQL Server\150\DTS\Binn\;C:\Program Files\Microsoft SQL Server\160\DTS\Binn\;C:\Program Files\Microsoft SQL Server\170\DTS\Binn\;C:\ProgramData\chocolatey\lib\pulumi\tools\Pulumi\bin;C:\Program Files\CMake\bin;C:\Strawberry\c\bin;C:\Strawberry\perl\site\bin;C:\Strawberry\perl\bin;C:\ProgramData\chocolatey\lib\maven\apache-maven-3.9.16\bin;C:\Program Files\Microsoft Service Fabric\bin\Fabric\Fabric.Code;C:\Program Files\Microsoft SDKs\Service Fabric\Tools\ServiceFabricLocalClusterManager;C:\Program Files\LLVM\bin;C:\Program Files (x86)\LLVM\bin;C:\Program Files\nodejs\;C:\Program Files\Git\cmd;C:\Program Files\Git\ucrt64\bin;C:\Program Files\Git\usr\bin;C:\Program Files\GitHub CLI\;c:\tools\php;C:\Program Files (x86)\sbt\bin;C:\Program Files\Amazon\AWSCLIV2\;C:\Program Files\Amazon\SessionManagerPlugin\bin\;C:\Program Files\Amazon\AWSSAMCLI\bin\;C:\Program Files\Microsoft SQL Server\130\Tools\Binn\;C:\Program Files\mongosh\;C:\Users\runneradmin\.dotnet\tools;C:\Users\runneradmin\.cargo\bin;C:\Users\runneradmin\AppData\Local\Microsoft\WindowsApps;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\Llvm\x64\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\Ninja;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\Linux\bin\ConnectionManagerExe;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\vcpkg
+2026-11-11T17:02:57.3153758Z   UCRTVersion: 10.0.26100.0
+2026-11-11T17:02:57.3154166Z   UniversalCRTSdkDir: C:\Program Files (x86)\Windows Kits\10\
+2026-11-11T17:02:57.3154802Z   VCINSTALLDIR: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\
+2026-11-11T17:02:57.3155598Z   VCToolsInstallDir: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\
+2026-11-11T17:02:57.3156474Z   WindowsLibPath: C:\Program Files (x86)\Windows Kits\10\UnionMetadata\10.0.26100.0;C:\Program Files (x86)\Windows Kits\10\References\10.0.26100.0
+2026-11-11T17:02:57.3157213Z   WindowsSdkBinPath: C:\Program Files (x86)\Windows Kits\10\bin\
+2026-11-11T17:02:57.3157670Z   WindowsSdkDir: C:\Program Files (x86)\Windows Kits\10\
+2026-11-11T17:02:57.3158071Z   WindowsSDKLibVersion: 10.0.26100.0\
+2026-11-11T17:02:57.3158960Z   WindowsSDKVersion: 10.0.26100.0\
+2026-11-11T17:02:57.3167667Z   CODEX_BAZEL_WINDOWS_PATH: C:\Program Files\PowerShell\7;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\bin\HostX64\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\VCPackages;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TestWindow;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TeamFoundation\Team Explorer;C:\Program Files\Microsoft Visual Studio\18\Enterprise\MSBuild\Current\bin\Roslyn;C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.8.1 Tools\x64\;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\FSharp\Tools;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Team Tools\DiagnosticsHub\Collector;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\Extensions\Microsoft\CodeCoverage.Console;C:\Program Files (x86)\Windows Kits\10\bin\10.0.26100.0\\x64;C:\Program Files (x86)\Windows Kits\10\bin\\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\\MSBuild\Current\Bin\amd64;C:\Windows\Microsoft.NET\Framework64\v4.0.30319;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\Tools\;C:\mingw64\bin;C:\Program Files\Git\bin;C:\hostedtoolcache\windows\Python\3.12.10\x64\Scripts;C:\hostedtoolcache\windows\Python\3.12.10\x64;C:\Program Files\Microsoft SDKs\Azure\CLI2\wbin;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\PowerShell\7\;C:\Program Files (x86)\Windows Kits\10\Windows Performance Toolkit\;C:\Program Files\Microsoft SDKs\Service Fabric\Tools\ServiceFabricLocalClusterManager;C:\Program Files\Git\cmd;C:\Program Files\Git\ucrt64\bin;C:\Program Files\Git\usr\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\Llvm\x64\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\Ninja;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\Linux\bin\ConnectionManagerExe;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\vcpkg;C:\Program Files\nodejs;C:\msys64\mingw64\bin;C:\msys64\ucrt64\bin;C:\Users\runneradmin\AppData\Local\Microsoft\WindowsApps
+2026-11-11T17:02:57.3176676Z   HEPTA_LOCKDOWN_ROOT: D:/a/_temp/hepta-lockdown-root
+2026-11-11T17:02:57.3177140Z   CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR: D:\a\_temp/bazel-execution-logs
+2026-11-11T17:02:57.3177588Z ##[endgroup]
+2026-11-11T17:02:57.6409848Z [command]"C:\Program Files\Git\usr\bin\tar.exe" --posix -cf cache.tzst --exclude cache.tzst -P -C D:/a/hepta-private-ci/hepta-private-ci --files-from manifest.txt --force-local --use-compress-program "zstd -T0"
+2026-11-11T17:03:14.2221191Z Sent 0 of 631158826 (0.0%), 0.0 MBs/sec
+2026-11-11T17:03:15.2204374Z Sent 564049962 of 631158826 (89.4%), 268.2 MBs/sec
+2026-11-11T17:03:15.3494386Z Sent 631158826 of 631158826 (100.0%), 281.9 MBs/sec
+2026-11-11T17:03:15.4994067Z Cache saved with key: bazel-cache-bazel-verify-release-build-x86_64-pc-windows-msvc-0efbdbad4fb8680dee021ee7f843321027843334303de6fd8d4d16cfb2cc0029
+2026-11-11T17:03:15.5295697Z Prepare all required actions
+2026-11-11T17:03:15.5339854Z ##[group]Run ./.github/actions/check-clean-worktree
+2026-11-11T17:03:15.5340611Z env:
+2026-11-11T17:03:15.5340872Z   CI_BUILD_ROOT: D:
+2026-11-11T17:03:15.5341169Z   CODEX_REPO_ROOT: D:\a\hepta-private-ci\hepta-private-ci
+2026-11-11T17:03:15.5341586Z   BAZEL_OUTPUT_BASE: D:/o
+2026-11-11T17:03:15.5341863Z   BAZEL_OUTPUT_USER_ROOT: D:/b
+2026-11-11T17:03:15.5342225Z   BAZEL_REPOSITORY_CACHE: D:/bazel-repository-cache
+2026-11-11T17:03:15.5342756Z   BAZEL_REPO_CONTENTS_CACHE: D:/bazel-repo-contents-cache-43062473474-verify-release-build
+2026-11-11T17:03:15.5343233Z   CARGO_TARGET_DIR: D:/cargo-target
+2026-11-11T17:03:15.5343469Z   TEMP: D:/tmp
+2026-11-11T17:03:15.5343650Z   TMP: D:/tmp
+2026-11-11T17:03:15.5343838Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-11T17:03:15.5346335Z   BAZELISK_GITHUB_TOKEN: ***
+2026-11-11T17:03:15.5349168Z   INCLUDE: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\include;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\ATLMFC\include;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Auxiliary\VS\include;C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\um;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\shared;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\winrt;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\cppwinrt;C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8.1\include\um
+2026-11-11T17:03:15.5352402Z   LIB: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\ATLMFC\lib\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\lib\x64;C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8.1\lib\um\x64;C:\Program Files (x86)\Windows Kits\10\lib\10.0.26100.0\ucrt\x64;C:\Program Files (x86)\Windows Kits\10\\lib\10.0.26100.0\\um\x64
+2026-11-11T17:03:15.5355042Z   LIBPATH: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\ATLMFC\lib\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\lib\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\lib\x86\store\references;C:\Program Files (x86)\Windows Kits\10\UnionMetadata\10.0.26100.0;C:\Program Files (x86)\Windows Kits\10\References\10.0.26100.0;C:\Windows\Microsoft.NET\Framework64\v4.0.30319
+2026-11-11T17:03:15.5373932Z   PATH: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\bin\HostX64\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\VCPackages;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TestWindow;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TeamFoundation\Team Explorer;C:\Program Files\Microsoft Visual Studio\18\Enterprise\MSBuild\Current\bin\Roslyn;C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.8.1 Tools\x64\;C:\Program Files (x86)\HTML Help Workshop;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\FSharp\Tools;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Team Tools\DiagnosticsHub\Collector;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\Extensions\Microsoft\CodeCoverage.Console;C:\Program Files (x86)\Windows Kits\10\bin\10.0.26100.0\\x64;C:\Program Files (x86)\Windows Kits\10\bin\\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\\MSBuild\Current\Bin\amd64;C:\Windows\Microsoft.NET\Framework64\v4.0.30319;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\Tools\;C:\Program Files\PowerShell\7;C:\hostedtoolcache\windows\bazelisk\1.28.1\x64;D:\a\_temp/install-dotslash/bin;C:\Program Files\MongoDB\Server\7.0\bin;C:\vcpkg;C:\tools\zstd;C:\hostedtoolcache\windows\stack\3.11.1\x64;C:\cabal\bin;C:\\ghcup\bin;C:\mingw64\bin;C:\Program Files\dotnet;C:\Program Files\MySQL\MySQL Server 8.4\bin;C:\Program Files\R\R-4.6.2\bin\x64;C:\SeleniumWebDrivers\GeckoDriver;C:\SeleniumWebDrivers\EdgeDriver\;C:\SeleniumWebDrivers\ChromeDriver;C:\Program Files (x86)\sbt\bin;C:\Program Files (x86)\GitHub CLI;C:\Program Files\Git\bin;C:\Program Files (x86)\pipx_bin;C:\npm\prefix;C:\hostedtoolcache\windows\go\1.24.13\x64\bin;C:\hostedtoolcache\windows\Python\3.12.10\x64\Scripts;C:\hostedtoolcache\windows\Python\3.12.10\x64;C:\hostedtoolcache\windows\Ruby\3.3.13\x64\bin;C:\Program Files\OpenSSL\bin;C:\tools\kotlinc\bin;C:\hostedtoolcache\windows\Java_Temurin-Hotspot_jdk\17.0.21-9\x64\bin;C:\Program Files\ImageMagick-7.1.2-Q16-HDRI;C:\Program Files\Microsoft SDKs\Azure\CLI2\wbin;C:\ProgramData\kind;C:\ProgramData\Chocolatey\bin;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\WSL\;C:\Program Files\PowerShell\7\;C:\Program Files\Microsoft\Web Platform Installer\;C:\Program Files\Microsoft SQL Server\170\Tools\Binn\;C:\Program Files\Microsoft SQL Server\Client SDK\ODBC\170\Tools\Binn\;C:\Program Files\dotnet\;C:\Program Files (x86)\Windows Kits\10\Windows Performance Toolkit\;C:\Program Files (x86)\WiX Toolset v3.14\bin;C:\Program Files\Microsoft SQL Server\130\DTS\Binn\;C:\Program Files\Microsoft SQL Server\140\DTS\Binn\;C:\Program Files\Microsoft SQL Server\150\DTS\Binn\;C:\Program Files\Microsoft SQL Server\160\DTS\Binn\;C:\Program Files\Microsoft SQL Server\170\DTS\Binn\;C:\ProgramData\chocolatey\lib\pulumi\tools\Pulumi\bin;C:\Program Files\CMake\bin;C:\Strawberry\c\bin;C:\Strawberry\perl\site\bin;C:\Strawberry\perl\bin;C:\ProgramData\chocolatey\lib\maven\apache-maven-3.9.16\bin;C:\Program Files\Microsoft Service Fabric\bin\Fabric\Fabric.Code;C:\Program Files\Microsoft SDKs\Service Fabric\Tools\ServiceFabricLocalClusterManager;C:\Program Files\LLVM\bin;C:\Program Files (x86)\LLVM\bin;C:\Program Files\nodejs\;C:\Program Files\Git\cmd;C:\Program Files\Git\ucrt64\bin;C:\Program Files\Git\usr\bin;C:\Program Files\GitHub CLI\;c:\tools\php;C:\Program Files (x86)\sbt\bin;C:\Program Files\Amazon\AWSCLIV2\;C:\Program Files\Amazon\SessionManagerPlugin\bin\;C:\Program Files\Amazon\AWSSAMCLI\bin\;C:\Program Files\Microsoft SQL Server\130\Tools\Binn\;C:\Program Files\mongosh\;C:\Users\runneradmin\.dotnet\tools;C:\Users\runneradmin\.cargo\bin;C:\Users\runneradmin\AppData\Local\Microsoft\WindowsApps;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\Llvm\x64\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\Ninja;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\Linux\bin\ConnectionManagerExe;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\vcpkg
+2026-11-11T17:03:15.5389725Z   UCRTVersion: 10.0.26100.0
+2026-11-11T17:03:15.5390058Z   UniversalCRTSdkDir: C:\Program Files (x86)\Windows Kits\10\
+2026-11-11T17:03:15.5390518Z   VCINSTALLDIR: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\
+2026-11-11T17:03:15.5391101Z   VCToolsInstallDir: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\
+2026-11-11T17:03:15.5391899Z   WindowsLibPath: C:\Program Files (x86)\Windows Kits\10\UnionMetadata\10.0.26100.0;C:\Program Files (x86)\Windows Kits\10\References\10.0.26100.0
+2026-11-11T17:03:15.5392570Z   WindowsSdkBinPath: C:\Program Files (x86)\Windows Kits\10\bin\
+2026-11-11T17:03:15.5392973Z   WindowsSdkDir: C:\Program Files (x86)\Windows Kits\10\
+2026-11-11T17:03:15.5393291Z   WindowsSDKLibVersion: 10.0.26100.0\
+2026-11-11T17:03:15.5393554Z   WindowsSDKVersion: 10.0.26100.0\
+2026-11-11T17:03:15.5402744Z   CODEX_BAZEL_WINDOWS_PATH: C:\Program Files\PowerShell\7;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\bin\HostX64\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\VCPackages;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TestWindow;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TeamFoundation\Team Explorer;C:\Program Files\Microsoft Visual Studio\18\Enterprise\MSBuild\Current\bin\Roslyn;C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.8.1 Tools\x64\;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\FSharp\Tools;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Team Tools\DiagnosticsHub\Collector;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\Extensions\Microsoft\CodeCoverage.Console;C:\Program Files (x86)\Windows Kits\10\bin\10.0.26100.0\\x64;C:\Program Files (x86)\Windows Kits\10\bin\\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\\MSBuild\Current\Bin\amd64;C:\Windows\Microsoft.NET\Framework64\v4.0.30319;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\Tools\;C:\mingw64\bin;C:\Program Files\Git\bin;C:\hostedtoolcache\windows\Python\3.12.10\x64\Scripts;C:\hostedtoolcache\windows\Python\3.12.10\x64;C:\Program Files\Microsoft SDKs\Azure\CLI2\wbin;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\PowerShell\7\;C:\Program Files (x86)\Windows Kits\10\Windows Performance Toolkit\;C:\Program Files\Microsoft SDKs\Service Fabric\Tools\ServiceFabricLocalClusterManager;C:\Program Files\Git\cmd;C:\Program Files\Git\ucrt64\bin;C:\Program Files\Git\usr\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\Llvm\x64\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\Ninja;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\Linux\bin\ConnectionManagerExe;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\vcpkg;C:\Program Files\nodejs;C:\msys64\mingw64\bin;C:\msys64\ucrt64\bin;C:\Users\runneradmin\AppData\Local\Microsoft\WindowsApps
+2026-11-11T17:03:15.5413240Z   HEPTA_LOCKDOWN_ROOT: D:/a/_temp/hepta-lockdown-root
+2026-11-11T17:03:15.5413663Z   CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR: D:\a\_temp/bazel-execution-logs
+2026-11-11T17:03:15.5414036Z ##[endgroup]
+2026-11-11T17:03:15.5436230Z ##[start-action display=Check for a clean worktree;id=__self.__run]
+2026-11-11T17:03:15.5581978Z ##[group]Run set -euo pipefail
+2026-11-11T17:03:15.5582302Z [36;1mset -euo pipefail[0m
+2026-11-11T17:03:15.5582514Z [36;1m[0m
+2026-11-11T17:03:15.5582978Z [36;1mstatus="$(git -C "${GITHUB_WORKSPACE}" status --porcelain=v1 --untracked-files=normal --ignore-submodules=none)"[0m
+2026-11-11T17:03:15.5583549Z [36;1mif [[ -z "${status}" ]]; then[0m
+2026-11-11T17:03:15.5583799Z [36;1m  exit 0[0m
+2026-11-11T17:03:15.5583988Z [36;1mfi[0m
+2026-11-11T17:03:15.5584152Z [36;1m[0m
+2026-11-11T17:03:15.5584513Z [36;1mecho "::error::CI job left tracked changes or untracked files in the repository worktree"[0m
+2026-11-11T17:03:15.5584956Z [36;1mprintf '%s\n' "${status}"[0m
+2026-11-11T17:03:15.5585200Z [36;1mexit 1[0m
+2026-11-11T17:03:15.5601180Z shell: C:\Program Files\Git\bin\bash.EXE --noprofile --norc -e -o pipefail {0}
+2026-11-11T17:03:15.5601575Z env:
+2026-11-11T17:03:15.5601747Z   CI_BUILD_ROOT: D:
+2026-11-11T17:03:15.5602019Z   CODEX_REPO_ROOT: D:\a\hepta-private-ci\hepta-private-ci
+2026-11-11T17:03:15.5602348Z   BAZEL_OUTPUT_BASE: D:/o
+2026-11-11T17:03:15.5602591Z   BAZEL_OUTPUT_USER_ROOT: D:/b
+2026-11-11T17:03:15.5602873Z   BAZEL_REPOSITORY_CACHE: D:/bazel-repository-cache
+2026-11-11T17:03:15.5603357Z   BAZEL_REPO_CONTENTS_CACHE: D:/bazel-repo-contents-cache-43062473474-verify-release-build
+2026-11-11T17:03:15.5603831Z   CARGO_TARGET_DIR: D:/cargo-target
+2026-11-11T17:03:15.5604074Z   TEMP: D:/tmp
+2026-11-11T17:03:15.5604402Z   TMP: D:/tmp
+2026-11-11T17:03:15.5604608Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-11T17:03:15.5607120Z   BAZELISK_GITHUB_TOKEN: ***
+2026-11-11T17:03:15.5609707Z   INCLUDE: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\include;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\ATLMFC\include;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Auxiliary\VS\include;C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\um;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\shared;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\winrt;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\cppwinrt;C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8.1\include\um
+2026-11-11T17:03:15.5613120Z   LIB: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\ATLMFC\lib\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\lib\x64;C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8.1\lib\um\x64;C:\Program Files (x86)\Windows Kits\10\lib\10.0.26100.0\ucrt\x64;C:\Program Files (x86)\Windows Kits\10\\lib\10.0.26100.0\\um\x64
+2026-11-11T17:03:15.5615762Z   LIBPATH: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\ATLMFC\lib\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\lib\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\lib\x86\store\references;C:\Program Files (x86)\Windows Kits\10\UnionMetadata\10.0.26100.0;C:\Program Files (x86)\Windows Kits\10\References\10.0.26100.0;C:\Windows\Microsoft.NET\Framework64\v4.0.30319
+2026-11-11T17:03:15.5632457Z   PATH: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\bin\HostX64\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\VCPackages;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TestWindow;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TeamFoundation\Team Explorer;C:\Program Files\Microsoft Visual Studio\18\Enterprise\MSBuild\Current\bin\Roslyn;C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.8.1 Tools\x64\;C:\Program Files (x86)\HTML Help Workshop;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\FSharp\Tools;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Team Tools\DiagnosticsHub\Collector;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\Extensions\Microsoft\CodeCoverage.Console;C:\Program Files (x86)\Windows Kits\10\bin\10.0.26100.0\\x64;C:\Program Files (x86)\Windows Kits\10\bin\\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\\MSBuild\Current\Bin\amd64;C:\Windows\Microsoft.NET\Framework64\v4.0.30319;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\Tools\;C:\Program Files\PowerShell\7;C:\hostedtoolcache\windows\bazelisk\1.28.1\x64;D:\a\_temp/install-dotslash/bin;C:\Program Files\MongoDB\Server\7.0\bin;C:\vcpkg;C:\tools\zstd;C:\hostedtoolcache\windows\stack\3.11.1\x64;C:\cabal\bin;C:\\ghcup\bin;C:\mingw64\bin;C:\Program Files\dotnet;C:\Program Files\MySQL\MySQL Server 8.4\bin;C:\Program Files\R\R-4.6.2\bin\x64;C:\SeleniumWebDrivers\GeckoDriver;C:\SeleniumWebDrivers\EdgeDriver\;C:\SeleniumWebDrivers\ChromeDriver;C:\Program Files (x86)\sbt\bin;C:\Program Files (x86)\GitHub CLI;C:\Program Files\Git\bin;C:\Program Files (x86)\pipx_bin;C:\npm\prefix;C:\hostedtoolcache\windows\go\1.24.13\x64\bin;C:\hostedtoolcache\windows\Python\3.12.10\x64\Scripts;C:\hostedtoolcache\windows\Python\3.12.10\x64;C:\hostedtoolcache\windows\Ruby\3.3.13\x64\bin;C:\Program Files\OpenSSL\bin;C:\tools\kotlinc\bin;C:\hostedtoolcache\windows\Java_Temurin-Hotspot_jdk\17.0.21-9\x64\bin;C:\Program Files\ImageMagick-7.1.2-Q16-HDRI;C:\Program Files\Microsoft SDKs\Azure\CLI2\wbin;C:\ProgramData\kind;C:\ProgramData\Chocolatey\bin;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\WSL\;C:\Program Files\PowerShell\7\;C:\Program Files\Microsoft\Web Platform Installer\;C:\Program Files\Microsoft SQL Server\170\Tools\Binn\;C:\Program Files\Microsoft SQL Server\Client SDK\ODBC\170\Tools\Binn\;C:\Program Files\dotnet\;C:\Program Files (x86)\Windows Kits\10\Windows Performance Toolkit\;C:\Program Files (x86)\WiX Toolset v3.14\bin;C:\Program Files\Microsoft SQL Server\130\DTS\Binn\;C:\Program Files\Microsoft SQL Server\140\DTS\Binn\;C:\Program Files\Microsoft SQL Server\150\DTS\Binn\;C:\Program Files\Microsoft SQL Server\160\DTS\Binn\;C:\Program Files\Microsoft SQL Server\170\DTS\Binn\;C:\ProgramData\chocolatey\lib\pulumi\tools\Pulumi\bin;C:\Program Files\CMake\bin;C:\Strawberry\c\bin;C:\Strawberry\perl\site\bin;C:\Strawberry\perl\bin;C:\ProgramData\chocolatey\lib\maven\apache-maven-3.9.16\bin;C:\Program Files\Microsoft Service Fabric\bin\Fabric\Fabric.Code;C:\Program Files\Microsoft SDKs\Service Fabric\Tools\ServiceFabricLocalClusterManager;C:\Program Files\LLVM\bin;C:\Program Files (x86)\LLVM\bin;C:\Program Files\nodejs\;C:\Program Files\Git\cmd;C:\Program Files\Git\ucrt64\bin;C:\Program Files\Git\usr\bin;C:\Program Files\GitHub CLI\;c:\tools\php;C:\Program Files (x86)\sbt\bin;C:\Program Files\Amazon\AWSCLIV2\;C:\Program Files\Amazon\SessionManagerPlugin\bin\;C:\Program Files\Amazon\AWSSAMCLI\bin\;C:\Program Files\Microsoft SQL Server\130\Tools\Binn\;C:\Program Files\mongosh\;C:\Users\runneradmin\.dotnet\tools;C:\Users\runneradmin\.cargo\bin;C:\Users\runneradmin\AppData\Local\Microsoft\WindowsApps;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\Llvm\x64\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\Ninja;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\Linux\bin\ConnectionManagerExe;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\vcpkg
+2026-11-11T17:03:15.5647902Z   UCRTVersion: 10.0.26100.0
+2026-11-11T17:03:15.5648309Z   UniversalCRTSdkDir: C:\Program Files (x86)\Windows Kits\10\
+2026-11-11T17:03:15.5648760Z   VCINSTALLDIR: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\
+2026-11-11T17:03:15.5649331Z   VCToolsInstallDir: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\
+2026-11-11T17:03:15.5650118Z   WindowsLibPath: C:\Program Files (x86)\Windows Kits\10\UnionMetadata\10.0.26100.0;C:\Program Files (x86)\Windows Kits\10\References\10.0.26100.0
+2026-11-11T17:03:15.5650782Z   WindowsSdkBinPath: C:\Program Files (x86)\Windows Kits\10\bin\
+2026-11-11T17:03:15.5651172Z   WindowsSdkDir: C:\Program Files (x86)\Windows Kits\10\
+2026-11-11T17:03:15.5651490Z   WindowsSDKLibVersion: 10.0.26100.0\
+2026-11-11T17:03:15.5651755Z   WindowsSDKVersion: 10.0.26100.0\
+2026-11-11T17:03:15.5660866Z   CODEX_BAZEL_WINDOWS_PATH: C:\Program Files\PowerShell\7;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\bin\HostX64\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\VCPackages;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TestWindow;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TeamFoundation\Team Explorer;C:\Program Files\Microsoft Visual Studio\18\Enterprise\MSBuild\Current\bin\Roslyn;C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.8.1 Tools\x64\;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\FSharp\Tools;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Team Tools\DiagnosticsHub\Collector;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\Extensions\Microsoft\CodeCoverage.Console;C:\Program Files (x86)\Windows Kits\10\bin\10.0.26100.0\\x64;C:\Program Files (x86)\Windows Kits\10\bin\\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\\MSBuild\Current\Bin\amd64;C:\Windows\Microsoft.NET\Framework64\v4.0.30319;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\Tools\;C:\mingw64\bin;C:\Program Files\Git\bin;C:\hostedtoolcache\windows\Python\3.12.10\x64\Scripts;C:\hostedtoolcache\windows\Python\3.12.10\x64;C:\Program Files\Microsoft SDKs\Azure\CLI2\wbin;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\PowerShell\7\;C:\Program Files (x86)\Windows Kits\10\Windows Performance Toolkit\;C:\Program Files\Microsoft SDKs\Service Fabric\Tools\ServiceFabricLocalClusterManager;C:\Program Files\Git\cmd;C:\Program Files\Git\ucrt64\bin;C:\Program Files\Git\usr\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\Llvm\x64\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\Ninja;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\Linux\bin\ConnectionManagerExe;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\vcpkg;C:\Program Files\nodejs;C:\msys64\mingw64\bin;C:\msys64\ucrt64\bin;C:\Users\runneradmin\AppData\Local\Microsoft\WindowsApps
+2026-11-11T17:03:15.5669928Z   HEPTA_LOCKDOWN_ROOT: D:/a/_temp/hepta-lockdown-root
+2026-11-11T17:03:15.5670349Z   CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR: D:\a\_temp/bazel-execution-logs
+2026-11-11T17:03:15.5670727Z ##[endgroup]
+2026-11-11T17:03:16.2029806Z ##[end-action id=__self.__run;outcome=success;conclusion=success;duration_ms=659]
+2026-11-11T17:03:16.2328703Z Post job cleanup.
+2026-11-11T17:03:16.2333344Z ##[start-action display=Set up Bazel;id=__e3863d86-11f6-4476-9233-2b52095472b2.__bazel-contrib_setup-bazel]
+2026-11-11T17:03:16.2496976Z Post job cleanup.
+2026-11-11T17:03:16.4610361Z ##[end-action id=__e3863d86-11f6-4476-9233-2b52095472b2.__bazel-contrib_setup-bazel;outcome=success;conclusion=success;duration_ms=227]
+2026-11-11T17:03:16.4832009Z Post job cleanup.
+2026-11-11T17:03:16.7237054Z [command]"C:\Program Files\Git\bin\git.exe" version
+2026-11-11T17:03:16.7627406Z git version 2.56.0.windows.4
+2026-11-11T17:03:16.7691955Z Copying 'C:\Users\runneradmin\.gitconfig' to 'D:\a\_temp\09c5121a-5bb7-45e3-8fe2-2070e5e3401c\.gitconfig'
+2026-11-11T17:03:16.7717128Z Temporarily overriding HOME='D:\a\_temp\09c5121a-5bb7-45e3-8fe2-2070e5e3401c' before making global git config changes
+2026-11-11T17:03:16.7718199Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-11T17:03:16.7730855Z [command]"C:\Program Files\Git\bin\git.exe" config --global --add safe.directory D:\a\hepta-private-ci\hepta-private-ci
+2026-11-11T17:03:16.8134305Z Removing SSH command configuration
+2026-11-11T17:03:16.8147256Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+2026-11-11T17:03:16.8565066Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+2026-11-11T17:03:17.4541668Z Removing HTTP extra header
+2026-11-11T17:03:17.4553304Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-11T17:03:17.4953361Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+2026-11-11T17:03:18.0180896Z Removing includeIf entries pointing to credentials config files
+2026-11-11T17:03:18.0193842Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-11T17:03:18.0633420Z includeif.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git.path
+2026-11-11T17:03:18.0634443Z includeif.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path
+2026-11-11T17:03:18.0680783Z [command]"C:\Program Files\Git\bin\git.exe" config --local --get-all includeif.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git.path
+2026-11-11T17:03:18.1072022Z D:\a\_temp\git-credentials-a422c31f-6b45-4124-b116-e7af62aae5ca.config
+2026-11-11T17:03:18.1118220Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset includeif.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git.path D:\a\_temp\git-credentials-a422c31f-6b45-4124-b116-e7af62aae5ca.config
+2026-11-11T17:03:18.1509984Z [command]"C:\Program Files\Git\bin\git.exe" config --local --get-all includeif.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path
+2026-11-11T17:03:18.1855290Z D:\a\_temp\git-credentials-a422c31f-6b45-4124-b116-e7af62aae5ca.config
+2026-11-11T17:03:18.1901247Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset includeif.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path D:\a\_temp\git-credentials-a422c31f-6b45-4124-b116-e7af62aae5ca.config
+2026-11-11T17:03:18.2353984Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+2026-11-11T17:03:18.7488798Z Removing credentials config 'D:\a\_temp\git-credentials-a422c31f-6b45-4124-b116-e7af62aae5ca.config'
+2026-11-11T17:03:18.7757610Z Cleaning up orphan processes
+2026-11-11T17:03:18.8419844Z Terminate orphan process: pid (6880) (java)

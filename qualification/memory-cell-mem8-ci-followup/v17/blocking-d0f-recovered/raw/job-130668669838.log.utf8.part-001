@@ -1,0 +1,1170 @@
+﻿2026-11-11T16:52:16.0435345Z Current runner version: '2.338.2'
+2026-11-11T16:52:16.0469425Z ##[group]Runner Image Provisioner
+2026-11-11T16:52:16.0470579Z Hosted Compute Agent
+2026-11-11T16:52:16.0471401Z Version: 20261103.629
+2026-11-11T16:52:16.0472254Z Commit: 15dbd9ccb5dbf34fae002b6ed1a2670f52df37bc
+2026-11-11T16:52:16.0473300Z Build Date: 2026-11-03T17:26:59Z
+2026-11-11T16:52:16.0474280Z Worker ID: {e4f92fc1-00d0-44b9-acd8-4361a1a84497}
+2026-11-11T16:52:16.0475301Z Region: westcentralus
+2026-11-11T16:52:16.0476070Z Cloud: Azure
+2026-11-11T16:52:16.0476771Z ##[endgroup]
+2026-11-11T16:52:16.0478723Z ##[group]Operating System
+2026-11-11T16:52:16.0479673Z Microsoft Windows Server 2025
+2026-11-11T16:52:16.0480543Z 10.0.26100
+2026-11-11T16:52:16.0481220Z Datacenter
+2026-11-11T16:52:16.0481902Z ##[endgroup]
+2026-11-11T16:52:16.0482613Z ##[group]Runner Image
+2026-11-11T16:52:16.0483492Z Image: windows-2025-vs2026
+2026-11-11T16:52:16.0484301Z Version: 20261103.298.1
+2026-11-11T16:52:16.0486628Z Included Software: https://github.com/actions/runner-images/blob/win25-vs2026/20261103.298/images/windows/Windows2025-VS2026-Readme.md
+2026-11-11T16:52:16.0489622Z Image Release: https://github.com/actions/runner-images/releases/tag/win25-vs2026%2F20261103.298
+2026-11-11T16:52:16.0491171Z ##[endgroup]
+2026-11-11T16:52:16.0492826Z ##[group]GITHUB_TOKEN Permissions
+2026-11-11T16:52:16.0495181Z Contents: read
+2026-11-11T16:52:16.0495948Z Metadata: read
+2026-11-11T16:52:16.0496770Z ##[endgroup]
+2026-11-11T16:52:16.0499409Z Secret source: Actions
+2026-11-11T16:52:16.0500663Z Cache mode: write
+2026-11-11T16:52:16.0501629Z Prepare workflow directory
+2026-11-11T16:52:16.0910556Z Prepare all required actions
+2026-11-11T16:52:16.0958288Z Getting action download info
+2026-11-11T16:52:16.3912415Z Download action repository 'actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd' (SHA:de0fac2e4500dabe0009e67214ff5f5447ce83dd)
+2026-11-11T16:52:16.5210230Z Download action repository 'dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489' (SHA:d86e0fa8f147d6539442c26a61ebba8becc19489)
+2026-11-11T16:52:16.7333180Z Download action repository 'taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532' (SHA:44c6d64aa62cd779e873306675c7a58e86d6d532)
+2026-11-11T16:52:17.4103915Z Uses: TrillionniumFoundation/hepta-private-ci/.github/workflows/repo-checks.yml@refs/pull/5935/merge (a49776ffdea3547ed407a710bb19e93377b29535)
+2026-11-11T16:52:17.4108739Z Complete job name: repo-checks / Native Hepta paths on windows-latest
+2026-11-11T16:52:17.5578309Z ##[group]Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+2026-11-11T16:52:17.5579555Z with:
+2026-11-11T16:52:17.5579951Z   persist-credentials: false
+2026-11-11T16:52:17.5580514Z   repository: TrillionniumFoundation/hepta-private-ci
+2026-11-11T16:52:17.5584450Z   token: ***
+2026-11-11T16:52:17.5584846Z   ssh-strict: true
+2026-11-11T16:52:17.5585237Z   ssh-user: git
+2026-11-11T16:52:17.5585609Z   clean: true
+2026-11-11T16:52:17.5586004Z   sparse-checkout-cone-mode: true
+2026-11-11T16:52:17.5586542Z   fetch-depth: 1
+2026-11-11T16:52:17.5586939Z   fetch-tags: false
+2026-11-11T16:52:17.5587337Z   show-progress: true
+2026-11-11T16:52:17.5587734Z   lfs: false
+2026-11-11T16:52:17.5588100Z   submodules: false
+2026-11-11T16:52:17.5588888Z   set-safe-directory: true
+2026-11-11T16:52:17.5589582Z ##[endgroup]
+2026-11-11T16:52:17.7086543Z Syncing repository: TrillionniumFoundation/hepta-private-ci
+2026-11-11T16:52:17.7089991Z ##[group]Getting Git version info
+2026-11-11T16:52:17.7091254Z Working directory is 'D:\a\hepta-private-ci\hepta-private-ci'
+2026-11-11T16:52:17.7826590Z [command]"C:\Program Files\Git\bin\git.exe" version
+2026-11-11T16:52:18.1367160Z git version 2.56.0.windows.4
+2026-11-11T16:52:18.1421591Z ##[endgroup]
+2026-11-11T16:52:18.1441112Z Temporarily overriding HOME='D:\a\_temp\733f89f8-ff2a-4aab-9a2e-07114b70d3c7' before making global git config changes
+2026-11-11T16:52:18.1442530Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-11T16:52:18.1452248Z [command]"C:\Program Files\Git\bin\git.exe" config --global --add safe.directory D:\a\hepta-private-ci\hepta-private-ci
+2026-11-11T16:52:18.2153017Z Deleting the contents of 'D:\a\hepta-private-ci\hepta-private-ci'
+2026-11-11T16:52:18.2158660Z ##[group]Initializing the repository
+2026-11-11T16:52:18.2167838Z [command]"C:\Program Files\Git\bin\git.exe" init D:\a\hepta-private-ci\hepta-private-ci
+2026-11-11T16:52:18.3032735Z Initialized empty Git repository in D:/a/hepta-private-ci/hepta-private-ci/.git/
+2026-11-11T16:52:18.3084891Z [command]"C:\Program Files\Git\bin\git.exe" remote add origin https://github.com/TrillionniumFoundation/hepta-private-ci
+2026-11-11T16:52:18.3848027Z ##[endgroup]
+2026-11-11T16:52:18.3848907Z ##[group]Disabling automatic garbage collection
+2026-11-11T16:52:18.3858067Z [command]"C:\Program Files\Git\bin\git.exe" config --local gc.auto 0
+2026-11-11T16:52:18.4229670Z ##[endgroup]
+2026-11-11T16:52:18.4230818Z ##[group]Setting up auth
+2026-11-11T16:52:18.4231684Z Removing SSH command configuration
+2026-11-11T16:52:18.4244685Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+2026-11-11T16:52:18.4630423Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+2026-11-11T16:52:20.0614080Z Removing HTTP extra header
+2026-11-11T16:52:20.0623592Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-11T16:52:20.0998140Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+2026-11-11T16:52:20.6576305Z Removing includeIf entries pointing to credentials config files
+2026-11-11T16:52:20.6587816Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-11T16:52:20.6959132Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+2026-11-11T16:52:21.2137558Z [command]"C:\Program Files\Git\bin\git.exe" config --file D:\a\_temp\git-credentials-c0a6de44-0581-4dcd-9500-11cd77dcf7aa.config http.https://github.com/.extraheader "AUTHORIZATION: basic ***"
+2026-11-11T16:52:21.2508180Z [command]"C:\Program Files\Git\bin\git.exe" config --local includeIf.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git.path D:\a\_temp\git-credentials-c0a6de44-0581-4dcd-9500-11cd77dcf7aa.config
+2026-11-11T16:52:21.2870903Z [command]"C:\Program Files\Git\bin\git.exe" config --local includeIf.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path D:\a\_temp\git-credentials-c0a6de44-0581-4dcd-9500-11cd77dcf7aa.config
+2026-11-11T16:52:21.3291245Z [command]"C:\Program Files\Git\bin\git.exe" config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-c0a6de44-0581-4dcd-9500-11cd77dcf7aa.config
+2026-11-11T16:52:21.3659237Z [command]"C:\Program Files\Git\bin\git.exe" config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-c0a6de44-0581-4dcd-9500-11cd77dcf7aa.config
+2026-11-11T16:52:21.4018584Z ##[endgroup]
+2026-11-11T16:52:21.4019192Z ##[group]Fetching the repository
+2026-11-11T16:52:21.4031524Z [command]"C:\Program Files\Git\bin\git.exe" -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +a49776ffdea3547ed407a710bb19e93377b29535:refs/remotes/pull/5935/merge
+2026-11-11T16:52:25.5446921Z From https://github.com/TrillionniumFoundation/hepta-private-ci
+2026-11-11T16:52:25.5448536Z  * [new ref]         a49776ffdea3547ed407a710bb19e93377b29535 -> pull/5935/merge
+2026-11-11T16:52:25.5500582Z ##[endgroup]
+2026-11-11T16:52:25.5502426Z ##[group]Determining the checkout info
+2026-11-11T16:52:25.5503079Z ##[endgroup]
+2026-11-11T16:52:25.5512363Z [command]"C:\Program Files\Git\bin\git.exe" sparse-checkout disable
+2026-11-11T16:52:25.6124197Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset-all extensions.worktreeConfig
+2026-11-11T16:52:25.6586935Z ##[group]Checking out the ref
+2026-11-11T16:52:25.6588432Z [command]"C:\Program Files\Git\bin\git.exe" checkout --progress --force refs/remotes/pull/5935/merge
+2026-11-11T16:52:26.7489059Z Updating files:  24% (3414/14053)
+2026-11-11T16:52:26.7967737Z Updating files:  25% (3514/14053)
+2026-11-11T16:52:26.8340782Z Updating files:  26% (3654/14053)
+2026-11-11T16:52:26.8689954Z Updating files:  27% (3795/14053)
+2026-11-11T16:52:26.9049938Z Updating files:  28% (3935/14053)
+2026-11-11T16:52:26.9420032Z Updating files:  29% (4076/14053)
+2026-11-11T16:52:26.9762180Z Updating files:  30% (4216/14053)
+2026-11-11T16:52:27.0110461Z Updating files:  31% (4357/14053)
+2026-11-11T16:52:27.0841392Z Updating files:  32% (4497/14053)
+2026-11-11T16:52:27.1183510Z Updating files:  33% (4638/14053)
+2026-11-11T16:52:27.1995283Z Updating files:  34% (4779/14053)
+2026-11-11T16:52:27.2472694Z Updating files:  35% (4919/14053)
+2026-11-11T16:52:27.2822878Z Updating files:  36% (5060/14053)
+2026-11-11T16:52:27.3183582Z Updating files:  37% (5200/14053)
+2026-11-11T16:52:27.3538406Z Updating files:  38% (5341/14053)
+2026-11-11T16:52:27.3922300Z Updating files:  39% (5481/14053)
+2026-11-11T16:52:27.4325111Z Updating files:  40% (5622/14053)
+2026-11-11T16:52:27.4750597Z Updating files:  41% (5762/14053)
+2026-11-11T16:52:27.5117532Z Updating files:  42% (5903/14053)
+2026-11-11T16:52:27.5487212Z Updating files:  43% (6043/14053)
+2026-11-11T16:52:27.5912338Z Updating files:  44% (6184/14053)
+2026-11-11T16:52:27.6275359Z Updating files:  45% (6324/14053)
+2026-11-11T16:52:27.6711754Z Updating files:  46% (6465/14053)
+2026-11-11T16:52:27.7077757Z Updating files:  47% (6605/14053)
+2026-11-11T16:52:27.7310324Z Updating files:  48% (6746/14053)
+2026-11-11T16:52:27.7430896Z Updating files:  48% (6837/14053)
+2026-11-11T16:52:27.7862502Z Updating files:  49% (6886/14053)
+2026-11-11T16:52:27.8214567Z Updating files:  50% (7027/14053)
+2026-11-11T16:52:27.8576940Z Updating files:  51% (7168/14053)
+2026-11-11T16:52:27.8948705Z Updating files:  52% (7308/14053)
+2026-11-11T16:52:27.9299637Z Updating files:  53% (7449/14053)
+2026-11-11T16:52:27.9691773Z Updating files:  54% (7589/14053)
+2026-11-11T16:52:28.0073384Z Updating files:  55% (7730/14053)
+2026-11-11T16:52:28.0367928Z Updating files:  56% (7870/14053)
+2026-11-11T16:52:28.0749175Z Updating files:  57% (8011/14053)
+2026-11-11T16:52:28.1127228Z Updating files:  58% (8151/14053)
+2026-11-11T16:52:28.1535644Z Updating files:  59% (8292/14053)
+2026-11-11T16:52:28.4305702Z Updating files:  60% (8432/14053)
+2026-11-11T16:52:28.4616914Z Updating files:  61% (8573/14053)
+2026-11-11T16:52:28.5205322Z Updating files:  62% (8713/14053)
+2026-11-11T16:52:28.5546270Z Updating files:  63% (8854/14053)
+2026-11-11T16:52:28.5824865Z Updating files:  64% (8994/14053)
+2026-11-11T16:52:28.6108560Z Updating files:  65% (9135/14053)
+2026-11-11T16:52:28.6452355Z Updating files:  66% (9275/14053)
+2026-11-11T16:52:28.6825208Z Updating files:  67% (9416/14053)
+2026-11-11T16:52:28.7115135Z Updating files:  68% (9557/14053)
+2026-11-11T16:52:28.7354714Z Updating files:  69% (9697/14053)
+2026-11-11T16:52:28.7430525Z Updating files:  70% (9838/14053)
+2026-11-11T16:52:28.7592157Z Updating files:  70% (9880/14053)
+2026-11-11T16:52:28.8060412Z Updating files:  71% (9978/14053)
+2026-11-11T16:52:28.8352215Z Updating files:  72% (10119/14053)
+2026-11-11T16:52:28.8691664Z Updating files:  73% (10259/14053)
+2026-11-11T16:52:28.8948432Z Updating files:  74% (10400/14053)
+2026-11-11T16:52:28.9253211Z Updating files:  75% (10540/14053)
+2026-11-11T16:52:28.9593905Z Updating files:  76% (10681/14053)
+2026-11-11T16:52:28.9986168Z Updating files:  77% (10821/14053)
+2026-11-11T16:52:29.0264412Z Updating files:  78% (10962/14053)
+2026-11-11T16:52:29.0631516Z Updating files:  79% (11102/14053)
+2026-11-11T16:52:29.0953435Z Updating files:  80% (11243/14053)
+2026-11-11T16:52:29.1318523Z Updating files:  81% (11383/14053)
+2026-11-11T16:52:29.1751218Z Updating files:  82% (11524/14053)
+2026-11-11T16:52:29.2161151Z Updating files:  83% (11664/14053)
+2026-11-11T16:52:29.2802547Z Updating files:  84% (11805/14053)
+2026-11-11T16:52:29.3342473Z Updating files:  85% (11946/14053)
+2026-11-11T16:52:29.4108048Z Updating files:  86% (12086/14053)
+2026-11-11T16:52:29.4435826Z Updating files:  87% (12227/14053)
+2026-11-11T16:52:29.4701941Z Updating files:  88% (12367/14053)
+2026-11-11T16:52:29.4991787Z Updating files:  89% (12508/14053)
+2026-11-11T16:52:29.5600290Z Updating files:  90% (12648/14053)
+2026-11-11T16:52:29.7564142Z Updating files:  91% (12789/14053)
+2026-11-11T16:52:29.7760700Z Updating files:  91% (12909/14053)
+2026-11-11T16:52:29.8995844Z Updating files:  92% (12929/14053)
+2026-11-11T16:52:29.9908770Z Updating files:  93% (13070/14053)
+2026-11-11T16:52:30.0254431Z Updating files:  94% (13210/14053)
+2026-11-11T16:52:30.1090737Z Updating files:  95% (13351/14053)
+2026-11-11T16:52:30.1494066Z Updating files:  96% (13491/14053)
+2026-11-11T16:52:30.1856397Z Updating files:  97% (13632/14053)
+2026-11-11T16:52:30.2269520Z Updating files:  98% (13772/14053)
+2026-11-11T16:52:30.2629285Z Updating files:  99% (13913/14053)
+2026-11-11T16:52:30.2629881Z Updating files: 100% (14053/14053)
+2026-11-11T16:52:30.2630289Z Updating files: 100% (14053/14053), done.
+2026-11-11T16:52:30.2893601Z Note: switching to 'refs/remotes/pull/5935/merge'.
+2026-11-11T16:52:30.2894012Z 
+2026-11-11T16:52:30.2894852Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-11-11T16:52:30.2895364Z changes and commit them, and you can discard any commits you make in this
+2026-11-11T16:52:30.2895834Z state without impacting any branches by switching back to a branch.
+2026-11-11T16:52:30.2896117Z 
+2026-11-11T16:52:30.2896299Z If you want to create a new branch to retain commits you create, you may
+2026-11-11T16:52:30.2896704Z do so (now or later) by using -c with the switch command. Example:
+2026-11-11T16:52:30.2896944Z 
+2026-11-11T16:52:30.2897111Z   git switch -c <new-branch-name>
+2026-11-11T16:52:30.2897284Z 
+2026-11-11T16:52:30.2897375Z Or undo this operation with:
+2026-11-11T16:52:30.2897533Z 
+2026-11-11T16:52:30.2897604Z   git switch -
+2026-11-11T16:52:30.2898029Z 
+2026-11-11T16:52:30.2898229Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-11-11T16:52:30.2898521Z 
+2026-11-11T16:52:30.2898842Z HEAD is now at a49776f Merge d0f6507e08f7f5c5855f5164d07c049a34d1a6d9 into 96038ccf0660154fac143ba6cbe4be81e00813e8
+2026-11-11T16:52:30.3073426Z ##[endgroup]
+2026-11-11T16:52:30.3491567Z [command]"C:\Program Files\Git\bin\git.exe" log -1 --format=%H
+2026-11-11T16:52:30.3837456Z a49776ffdea3547ed407a710bb19e93377b29535
+2026-11-11T16:52:30.3881325Z ##[group]Removing auth
+2026-11-11T16:52:30.3881645Z Removing SSH command configuration
+2026-11-11T16:52:30.3891456Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+2026-11-11T16:52:30.4269749Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+2026-11-11T16:52:31.0009068Z Removing HTTP extra header
+2026-11-11T16:52:31.0018176Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-11T16:52:31.0406370Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+2026-11-11T16:52:31.5863616Z Removing includeIf entries pointing to credentials config files
+2026-11-11T16:52:31.5876505Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-11T16:52:31.6213618Z includeif.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git.path
+2026-11-11T16:52:31.6214441Z includeif.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path
+2026-11-11T16:52:31.6215773Z includeif.gitdir:/github/workspace/.git.path
+2026-11-11T16:52:31.6216156Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-11T16:52:31.6262483Z [command]"C:\Program Files\Git\bin\git.exe" config --local --get-all includeif.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git.path
+2026-11-11T16:52:31.6594477Z D:\a\_temp\git-credentials-c0a6de44-0581-4dcd-9500-11cd77dcf7aa.config
+2026-11-11T16:52:31.6639322Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset includeif.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git.path D:\a\_temp\git-credentials-c0a6de44-0581-4dcd-9500-11cd77dcf7aa.config
+2026-11-11T16:52:31.7041897Z [command]"C:\Program Files\Git\bin\git.exe" config --local --get-all includeif.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path
+2026-11-11T16:52:31.7373246Z D:\a\_temp\git-credentials-c0a6de44-0581-4dcd-9500-11cd77dcf7aa.config
+2026-11-11T16:52:31.7418159Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset includeif.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path D:\a\_temp\git-credentials-c0a6de44-0581-4dcd-9500-11cd77dcf7aa.config
+2026-11-11T16:52:31.7799843Z [command]"C:\Program Files\Git\bin\git.exe" config --local --get-all includeif.gitdir:/github/workspace/.git.path
+2026-11-11T16:52:31.8132311Z /github/runner_temp/git-credentials-c0a6de44-0581-4dcd-9500-11cd77dcf7aa.config
+2026-11-11T16:52:31.8175243Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset includeif.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-c0a6de44-0581-4dcd-9500-11cd77dcf7aa.config
+2026-11-11T16:52:31.8559065Z [command]"C:\Program Files\Git\bin\git.exe" config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-11T16:52:31.8891151Z /github/runner_temp/git-credentials-c0a6de44-0581-4dcd-9500-11cd77dcf7aa.config
+2026-11-11T16:52:31.8934477Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-c0a6de44-0581-4dcd-9500-11cd77dcf7aa.config
+2026-11-11T16:52:31.9307763Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+2026-11-11T16:52:32.4740108Z Removing credentials config 'D:\a\_temp\git-credentials-c0a6de44-0581-4dcd-9500-11cd77dcf7aa.config'
+2026-11-11T16:52:32.4752566Z ##[endgroup]
+2026-11-11T16:52:32.5136202Z ##[group]Run python -m unittest discover -s .github/scripts -p 'test_run_bazel*.py'
+2026-11-11T16:52:32.5137132Z [36;1mpython -m unittest discover -s .github/scripts -p 'test_run_bazel*.py'[0m
+2026-11-11T16:52:32.5157133Z shell: C:\Program Files\Git\bin\bash.EXE --noprofile --norc -e -o pipefail {0}
+2026-11-11T16:52:32.5157517Z ##[endgroup]
+2026-11-11T16:52:39.9396539Z ................................................
+2026-11-11T16:52:39.9397051Z ----------------------------------------------------------------------
+2026-11-11T16:52:39.9397388Z Ran 48 tests in 5.940s
+2026-11-11T16:52:39.9397524Z 
+2026-11-11T16:52:39.9397606Z OK
+2026-11-11T16:52:39.9774359Z Prepare all required actions
+2026-11-11T16:52:39.9775025Z Getting action download info
+2026-11-11T16:52:40.1157350Z Download action repository 'facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a' (SHA:1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a)
+2026-11-11T16:52:40.3400588Z ##[group]Run ./.github/actions/setup-ci
+2026-11-11T16:52:40.3400859Z ##[endgroup]
+2026-11-11T16:52:40.3462552Z ##[start-action display=Configure Dev Drive (Windows);id=__self.__run]
+2026-11-11T16:52:40.3692020Z ##[group]Run ./.github/scripts/setup-dev-drive.ps1
+2026-11-11T16:52:40.3692434Z [36;1m./.github/scripts/setup-dev-drive.ps1[0m
+2026-11-11T16:52:40.4285406Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+2026-11-11T16:52:40.4285780Z ##[endgroup]
+2026-11-11T16:52:40.9400988Z Using existing Dev Drive at D:
+2026-11-11T16:52:40.9986869Z ##[end-action id=__self.__run;outcome=success;conclusion=success;duration_ms=652]
+2026-11-11T16:52:40.9989989Z ##[start-action display=Configure CI build root (Unix);id=__self.__run_2]
+2026-11-11T16:52:40.9999309Z ##[end-action id=__self.__run_2;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-11-11T16:52:41.0001211Z ##[start-action display=Enable unprivileged user namespaces (Linux);id=__self.__run_3]
+2026-11-11T16:52:41.0004461Z ##[end-action id=__self.__run_3;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-11-11T16:52:41.0006091Z ##[start-action display=Configure CI build paths;id=__self.configure_ci_build_paths]
+2026-11-11T16:52:41.0132479Z ##[group]Run set -euo pipefail
+2026-11-11T16:52:41.0132769Z [36;1mset -euo pipefail[0m
+2026-11-11T16:52:41.0133126Z [36;1m# setup-bazel passes output_base explicitly, so keep both it and the[0m
+2026-11-11T16:52:41.0133613Z [36;1m# user root under the shared build root. Keep these directory names tiny[0m
+2026-11-11T16:52:41.0134065Z [36;1m# on every platform so Windows Bazel paths do not overflow argv or[0m
+2026-11-11T16:52:41.0134435Z [36;1m# confuse test MANIFEST handling.[0m
+2026-11-11T16:52:41.0134711Z [36;1mbazel_output_base="$CI_BUILD_ROOT/o"[0m
+2026-11-11T16:52:41.0135004Z [36;1mbazel_output_user_root="$CI_BUILD_ROOT/b"[0m
+2026-11-11T16:52:41.0135380Z [36;1mbazel_repository_cache="$CI_BUILD_ROOT/bazel-repository-cache"[0m
+2026-11-11T16:52:41.0135936Z [36;1mbazel_repo_contents_cache="$CI_BUILD_ROOT/bazel-repo-contents-cache-$GITHUB_RUN_ID-$GITHUB_JOB"[0m
+2026-11-11T16:52:41.0136447Z [36;1mcargo_target_dir="$CI_BUILD_ROOT/cargo-target"[0m
+2026-11-11T16:52:41.0136816Z [36;1mtmp="$CI_BUILD_ROOT/tmp"[0m
+2026-11-11T16:52:41.0137036Z [36;1m[0m
+2026-11-11T16:52:41.0137206Z [36;1mbuild_dirs=([0m
+2026-11-11T16:52:41.0137412Z [36;1m  "$bazel_output_base"[0m
+2026-11-11T16:52:41.0137642Z [36;1m  "$bazel_output_user_root"[0m
+2026-11-11T16:52:41.0137877Z [36;1m  "$bazel_repository_cache"[0m
+2026-11-11T16:52:41.0138111Z [36;1m  "$bazel_repo_contents_cache"[0m
+2026-11-11T16:52:41.0138348Z [36;1m  "$cargo_target_dir"[0m
+2026-11-11T16:52:41.0138562Z [36;1m  "$tmp"[0m
+2026-11-11T16:52:41.0138743Z [36;1m)[0m
+2026-11-11T16:52:41.0138919Z [36;1mmkdir -p "${build_dirs[@]}"[0m
+2026-11-11T16:52:41.0139255Z [36;1mecho "bazel-output-base=$bazel_output_base" >> "$GITHUB_OUTPUT"[0m
+2026-11-11T16:52:41.0139680Z [36;1mecho "cargo-target-dir=$cargo_target_dir" >> "$GITHUB_OUTPUT"[0m
+2026-11-11T16:52:41.0139995Z [36;1m[0m
+2026-11-11T16:52:41.0140149Z [36;1m{[0m
+2026-11-11T16:52:41.0140427Z [36;1m  echo "CODEX_REPO_ROOT=$GITHUB_WORKSPACE"[0m
+2026-11-11T16:52:41.0140767Z [36;1m  echo "BAZEL_OUTPUT_BASE=$bazel_output_base"[0m
+2026-11-11T16:52:41.0141104Z [36;1m  echo "BAZEL_OUTPUT_USER_ROOT=$bazel_output_user_root"[0m
+2026-11-11T16:52:41.0141460Z [36;1m  echo "BAZEL_REPOSITORY_CACHE=$bazel_repository_cache"[0m
+2026-11-11T16:52:41.0141842Z [36;1m  echo "BAZEL_REPO_CONTENTS_CACHE=$bazel_repo_contents_cache"[0m
+2026-11-11T16:52:41.0142209Z [36;1m  echo "CARGO_TARGET_DIR=$cargo_target_dir"[0m
+2026-11-11T16:52:41.0144581Z [36;1m  echo "TEMP=$tmp"[0m
+2026-11-11T16:52:41.0144866Z [36;1m  echo "TMP=$tmp"[0m
+2026-11-11T16:52:41.0145088Z [36;1m} >> "$GITHUB_ENV"[0m
+2026-11-11T16:52:41.0157192Z shell: C:\Program Files\Git\bin\bash.EXE --noprofile --norc -e -o pipefail {0}
+2026-11-11T16:52:41.0157557Z env:
+2026-11-11T16:52:41.0157730Z   CI_BUILD_ROOT: D:
+2026-11-11T16:52:41.0157918Z ##[endgroup]
+2026-11-11T16:52:41.1138823Z ##[end-action id=__self.configure_ci_build_paths;outcome=success;conclusion=success;duration_ms=113]
+2026-11-11T16:52:41.1143669Z ##[start-action display=Prefer the Git CLI for Cargo git dependencies;id=__self.__run_4]
+2026-11-11T16:52:41.1265567Z ##[group]Run echo "CARGO_NET_GIT_FETCH_WITH_CLI=true" >> "$GITHUB_ENV"
+2026-11-11T16:52:41.1265995Z [36;1mecho "CARGO_NET_GIT_FETCH_WITH_CLI=true" >> "$GITHUB_ENV"[0m
+2026-11-11T16:52:41.1279572Z shell: C:\Program Files\Git\bin\bash.EXE --noprofile --norc -e -o pipefail {0}
+2026-11-11T16:52:41.1279944Z env:
+2026-11-11T16:52:41.1280111Z   CI_BUILD_ROOT: D:
+2026-11-11T16:52:41.1280384Z   CODEX_REPO_ROOT: D:\a\hepta-private-ci\hepta-private-ci
+2026-11-11T16:52:41.1280690Z   BAZEL_OUTPUT_BASE: D:/o
+2026-11-11T16:52:41.1280898Z   BAZEL_OUTPUT_USER_ROOT: D:/b
+2026-11-11T16:52:41.1281169Z   BAZEL_REPOSITORY_CACHE: D:/bazel-repository-cache
+2026-11-11T16:52:41.1281585Z   BAZEL_REPO_CONTENTS_CACHE: D:/bazel-repo-contents-cache-43062473474-native-paths
+2026-11-11T16:52:41.1281975Z   CARGO_TARGET_DIR: D:/cargo-target
+2026-11-11T16:52:41.1282201Z   TEMP: D:/tmp
+2026-11-11T16:52:41.1282385Z   TMP: D:/tmp
+2026-11-11T16:52:41.1282554Z ##[endgroup]
+2026-11-11T16:52:41.1653430Z ##[end-action id=__self.__run_4;outcome=success;conclusion=success;duration_ms=50]
+2026-11-11T16:52:41.1655557Z ##[start-action display=Install DotSlash;id=__self.__facebook_install-dotslash]
+2026-11-11T16:52:41.1812136Z ##[group]Run facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
+2026-11-11T16:52:41.1812518Z env:
+2026-11-11T16:52:41.1812685Z   CI_BUILD_ROOT: D:
+2026-11-11T16:52:41.1812960Z   CODEX_REPO_ROOT: D:\a\hepta-private-ci\hepta-private-ci
+2026-11-11T16:52:41.1813264Z   BAZEL_OUTPUT_BASE: D:/o
+2026-11-11T16:52:41.1813470Z   BAZEL_OUTPUT_USER_ROOT: D:/b
+2026-11-11T16:52:41.1813724Z   BAZEL_REPOSITORY_CACHE: D:/bazel-repository-cache
+2026-11-11T16:52:41.1814134Z   BAZEL_REPO_CONTENTS_CACHE: D:/bazel-repo-contents-cache-43062473474-native-paths
+2026-11-11T16:52:41.1814525Z   CARGO_TARGET_DIR: D:/cargo-target
+2026-11-11T16:52:41.1814751Z   TEMP: D:/tmp
+2026-11-11T16:52:41.1814929Z   TMP: D:/tmp
+2026-11-11T16:52:41.1815116Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-11T16:52:41.1815342Z ##[endgroup]
+2026-11-11T16:52:41.1852084Z ##[start-action display=Run echo platform=windows >> $GITHUB_OUTPUT;id=__self.__facebook_install-dotslash.configure]
+2026-11-11T16:52:41.1974051Z ##[group]Run echo platform=windows >> $GITHUB_OUTPUT
+2026-11-11T16:52:41.1974409Z [36;1mecho platform=windows >> $GITHUB_OUTPUT[0m
+2026-11-11T16:52:41.1977633Z [36;1mecho version=$(curl https://api.github.com/repos/facebook/dotslash/releases/latest --header "authorization: ***" --location --silent --show-error --fail --retry 5 | sed -n 's/^ *"tag_name": *"\(.*\)",$/\1/p') >> $GITHUB_OUTPUT[0m
+2026-11-11T16:52:41.1990997Z shell: C:\Program Files\Git\bin\bash.EXE --noprofile --norc -e -o pipefail {0}
+2026-11-11T16:52:41.1991370Z env:
+2026-11-11T16:52:41.1991546Z   CI_BUILD_ROOT: D:
+2026-11-11T16:52:41.1991811Z   CODEX_REPO_ROOT: D:\a\hepta-private-ci\hepta-private-ci
+2026-11-11T16:52:41.1992125Z   BAZEL_OUTPUT_BASE: D:/o
+2026-11-11T16:52:41.1992329Z   BAZEL_OUTPUT_USER_ROOT: D:/b
+2026-11-11T16:52:41.1992585Z   BAZEL_REPOSITORY_CACHE: D:/bazel-repository-cache
+2026-11-11T16:52:41.1993003Z   BAZEL_REPO_CONTENTS_CACHE: D:/bazel-repo-contents-cache-43062473474-native-paths
+2026-11-11T16:52:41.1993388Z   CARGO_TARGET_DIR: D:/cargo-target
+2026-11-11T16:52:41.1993616Z   TEMP: D:/tmp
+2026-11-11T16:52:41.1993786Z   TMP: D:/tmp
+2026-11-11T16:52:41.1994583Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-11T16:52:41.1994837Z ##[endgroup]
+2026-11-11T16:52:41.8854118Z ##[end-action id=__self.__facebook_install-dotslash.configure;outcome=success;conclusion=success;duration_ms=700]
+2026-11-11T16:52:41.8859736Z ##[start-action display=Run mkdir -p "D:\a\_temp/install-dotslash/bin";id=__self.__facebook_install-dotslash.__run]
+2026-11-11T16:52:41.8988542Z ##[group]Run mkdir -p "D:\a\_temp/install-dotslash/bin"
+2026-11-11T16:52:41.8988904Z [36;1mmkdir -p "D:\a\_temp/install-dotslash/bin"[0m
+2026-11-11T16:52:41.9010272Z shell: C:\Program Files\Git\bin\bash.EXE --noprofile --norc -e -o pipefail {0}
+2026-11-11T16:52:41.9010636Z env:
+2026-11-11T16:52:41.9010805Z   CI_BUILD_ROOT: D:
+2026-11-11T16:52:41.9011064Z   CODEX_REPO_ROOT: D:\a\hepta-private-ci\hepta-private-ci
+2026-11-11T16:52:41.9011367Z   BAZEL_OUTPUT_BASE: D:/o
+2026-11-11T16:52:41.9011579Z   BAZEL_OUTPUT_USER_ROOT: D:/b
+2026-11-11T16:52:41.9011837Z   BAZEL_REPOSITORY_CACHE: D:/bazel-repository-cache
+2026-11-11T16:52:41.9012265Z   BAZEL_REPO_CONTENTS_CACHE: D:/bazel-repo-contents-cache-43062473474-native-paths
+2026-11-11T16:52:41.9012705Z   CARGO_TARGET_DIR: D:/cargo-target
+2026-11-11T16:52:41.9012936Z   TEMP: D:/tmp
+2026-11-11T16:52:41.9013109Z   TMP: D:/tmp
+2026-11-11T16:52:41.9013295Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-11T16:52:41.9013524Z ##[endgroup]
+2026-11-11T16:52:41.9571512Z ##[end-action id=__self.__facebook_install-dotslash.__run;outcome=success;conclusion=success;duration_ms=71]
+2026-11-11T16:52:41.9576894Z ##[start-action display=Run curl https://github.com/facebook/dotslash/releases/download/v0.5.9/dotslash-windows.v0.5.9.tar.gz \;id=__self.__facebook_install-dotslash.__run_2]
+2026-11-11T16:52:41.9741271Z ##[group]Run curl https://github.com/facebook/dotslash/releases/download/v0.5.9/dotslash-windows.v0.5.9.tar.gz \
+2026-11-11T16:52:41.9742026Z [36;1mcurl https://github.com/facebook/dotslash/releases/download/v0.5.9/dotslash-windows.v0.5.9.tar.gz \[0m
+2026-11-11T16:52:41.9744820Z [36;1m--header "authorization: ***" \[0m
+2026-11-11T16:52:41.9745172Z [36;1m--output "D:\a\_temp/install-dotslash/dotslash.tar.gz" \[0m
+2026-11-11T16:52:41.9745553Z [36;1m--location --silent --show-error --fail --retry 5[0m
+2026-11-11T16:52:41.9757102Z shell: C:\Program Files\Git\bin\bash.EXE --noprofile --norc -e -o pipefail {0}
+2026-11-11T16:52:41.9757468Z env:
+2026-11-11T16:52:41.9757637Z   CI_BUILD_ROOT: D:
+2026-11-11T16:52:41.9757895Z   CODEX_REPO_ROOT: D:\a\hepta-private-ci\hepta-private-ci
+2026-11-11T16:52:41.9758217Z   BAZEL_OUTPUT_BASE: D:/o
+2026-11-11T16:52:41.9758433Z   BAZEL_OUTPUT_USER_ROOT: D:/b
+2026-11-11T16:52:41.9758756Z   BAZEL_REPOSITORY_CACHE: D:/bazel-repository-cache
+2026-11-11T16:52:41.9759531Z   BAZEL_REPO_CONTENTS_CACHE: D:/bazel-repo-contents-cache-43062473474-native-paths
+2026-11-11T16:52:41.9759922Z   CARGO_TARGET_DIR: D:/cargo-target
+2026-11-11T16:52:41.9760155Z   TEMP: D:/tmp
+2026-11-11T16:52:41.9760322Z   TMP: D:/tmp
+2026-11-11T16:52:41.9760500Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-11T16:52:41.9760733Z ##[endgroup]
+2026-11-11T16:52:42.7681081Z ##[end-action id=__self.__facebook_install-dotslash.__run_2;outcome=success;conclusion=success;duration_ms=808]
+2026-11-11T16:52:42.7685871Z ##[start-action display=Run tar xvf "D:\a\_temp/install-dotslash/dotslash.tar.gz" -C "D:\a\_temp/install-dotslash/bin/";id=__self.__facebook_install-dotslash.__run_3]
+2026-11-11T16:52:42.7689546Z ##[end-action id=__self.__facebook_install-dotslash.__run_3;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-11-11T16:52:42.7692394Z ##[start-action display=Run tar xvf "D:\a\_temp/install-dotslash/dotslash.tar.gz" -O >"D:\a\_temp/install-dotslash/bin/dotslash.exe" --force-local;id=__self.__facebook_install-dotslash.__run_4]
+2026-11-11T16:52:42.7824961Z ##[group]Run tar xvf "D:\a\_temp/install-dotslash/dotslash.tar.gz" -O >"D:\a\_temp/install-dotslash/bin/dotslash.exe" --force-local
+2026-11-11T16:52:42.7825896Z [36;1mtar xvf "D:\a\_temp/install-dotslash/dotslash.tar.gz" -O >"D:\a\_temp/install-dotslash/bin/dotslash.exe" --force-local[0m
+2026-11-11T16:52:42.7838646Z shell: C:\Program Files\Git\bin\bash.EXE --noprofile --norc -e -o pipefail {0}
+2026-11-11T16:52:42.7839018Z env:
+2026-11-11T16:52:42.7839200Z   CI_BUILD_ROOT: D:
+2026-11-11T16:52:42.7839461Z   CODEX_REPO_ROOT: D:\a\hepta-private-ci\hepta-private-ci
+2026-11-11T16:52:42.7839786Z   BAZEL_OUTPUT_BASE: D:/o
+2026-11-11T16:52:42.7839990Z   BAZEL_OUTPUT_USER_ROOT: D:/b
+2026-11-11T16:52:42.7840239Z   BAZEL_REPOSITORY_CACHE: D:/bazel-repository-cache
+2026-11-11T16:52:42.7840830Z   BAZEL_REPO_CONTENTS_CACHE: D:/bazel-repo-contents-cache-43062473474-native-paths
+2026-11-11T16:52:42.7841211Z   CARGO_TARGET_DIR: D:/cargo-target
+2026-11-11T16:52:42.7841430Z   TEMP: D:/tmp
+2026-11-11T16:52:42.7841599Z   TMP: D:/tmp
+2026-11-11T16:52:42.7841778Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-11T16:52:42.7842014Z ##[endgroup]
+2026-11-11T16:52:42.9403724Z dotslash.exe
+2026-11-11T16:52:42.9561273Z ##[end-action id=__self.__facebook_install-dotslash.__run_4;outcome=success;conclusion=success;duration_ms=186]
+2026-11-11T16:52:42.9567161Z ##[start-action display=Run echo "D:\a\_temp/install-dotslash/bin" >> $GITHUB_PATH;id=__self.__facebook_install-dotslash.__run_5]
+2026-11-11T16:52:42.9743150Z ##[group]Run echo "D:\a\_temp/install-dotslash/bin" >> $GITHUB_PATH
+2026-11-11T16:52:42.9743849Z [36;1mecho "D:\a\_temp/install-dotslash/bin" >> $GITHUB_PATH[0m
+2026-11-11T16:52:42.9758344Z shell: C:\Program Files\Git\bin\bash.EXE --noprofile --norc -e -o pipefail {0}
+2026-11-11T16:52:42.9758733Z env:
+2026-11-11T16:52:42.9758908Z   CI_BUILD_ROOT: D:
+2026-11-11T16:52:42.9759173Z   CODEX_REPO_ROOT: D:\a\hepta-private-ci\hepta-private-ci
+2026-11-11T16:52:42.9759477Z   BAZEL_OUTPUT_BASE: D:/o
+2026-11-11T16:52:42.9759690Z   BAZEL_OUTPUT_USER_ROOT: D:/b
+2026-11-11T16:52:42.9759947Z   BAZEL_REPOSITORY_CACHE: D:/bazel-repository-cache
+2026-11-11T16:52:42.9760378Z   BAZEL_REPO_CONTENTS_CACHE: D:/bazel-repo-contents-cache-43062473474-native-paths
+2026-11-11T16:52:42.9760810Z   CARGO_TARGET_DIR: D:/cargo-target
+2026-11-11T16:52:42.9761037Z   TEMP: D:/tmp
+2026-11-11T16:52:42.9761206Z   TMP: D:/tmp
+2026-11-11T16:52:42.9761388Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-11T16:52:42.9761618Z ##[endgroup]
+2026-11-11T16:52:43.0158779Z ##[end-action id=__self.__facebook_install-dotslash.__run_5;outcome=success;conclusion=success;duration_ms=59]
+2026-11-11T16:52:43.0161413Z ##[start-action display=Run dotslash --version;id=__self.__facebook_install-dotslash.__run_6]
+2026-11-11T16:52:43.0292425Z ##[group]Run dotslash --version
+2026-11-11T16:52:43.0292688Z [36;1mdotslash --version[0m
+2026-11-11T16:52:43.0307415Z shell: C:\Program Files\Git\bin\bash.EXE --noprofile --norc -e -o pipefail {0}
+2026-11-11T16:52:43.0308120Z env:
+2026-11-11T16:52:43.0308297Z   CI_BUILD_ROOT: D:
+2026-11-11T16:52:43.0308566Z   CODEX_REPO_ROOT: D:\a\hepta-private-ci\hepta-private-ci
+2026-11-11T16:52:43.0308868Z   BAZEL_OUTPUT_BASE: D:/o
+2026-11-11T16:52:43.0309092Z   BAZEL_OUTPUT_USER_ROOT: D:/b
+2026-11-11T16:52:43.0309358Z   BAZEL_REPOSITORY_CACHE: D:/bazel-repository-cache
+2026-11-11T16:52:43.0309784Z   BAZEL_REPO_CONTENTS_CACHE: D:/bazel-repo-contents-cache-43062473474-native-paths
+2026-11-11T16:52:43.0310183Z   CARGO_TARGET_DIR: D:/cargo-target
+2026-11-11T16:52:43.0310414Z   TEMP: D:/tmp
+2026-11-11T16:52:43.0310584Z   TMP: D:/tmp
+2026-11-11T16:52:43.0310764Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-11T16:52:43.0310995Z ##[endgroup]
+2026-11-11T16:52:43.0905507Z DotSlash 0.5.9
+2026-11-11T16:52:43.0972568Z ##[end-action id=__self.__facebook_install-dotslash.__run_6;outcome=success;conclusion=success;duration_ms=81]
+2026-11-11T16:52:43.0987587Z ##[end-action id=__self.__facebook_install-dotslash;outcome=success;conclusion=success;duration_ms=1933]
+2026-11-11T16:52:43.0990059Z ##[start-action display=Install just;id=__self.__taiki-e_install-action]
+2026-11-11T16:52:43.1139349Z ##[group]Run taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+2026-11-11T16:52:43.1139864Z with:
+2026-11-11T16:52:43.1140560Z   tool: just@1.51.0
+2026-11-11T16:52:43.1140783Z   checksum: true
+2026-11-11T16:52:43.1140988Z   fallback: cargo-binstall
+2026-11-11T16:52:43.1141206Z env:
+2026-11-11T16:52:43.1141373Z   CI_BUILD_ROOT: D:
+2026-11-11T16:52:43.1141637Z   CODEX_REPO_ROOT: D:\a\hepta-private-ci\hepta-private-ci
+2026-11-11T16:52:43.1141957Z   BAZEL_OUTPUT_BASE: D:/o
+2026-11-11T16:52:43.1142162Z   BAZEL_OUTPUT_USER_ROOT: D:/b
+2026-11-11T16:52:43.1142415Z   BAZEL_REPOSITORY_CACHE: D:/bazel-repository-cache
+2026-11-11T16:52:43.1143828Z   BAZEL_REPO_CONTENTS_CACHE: D:/bazel-repo-contents-cache-43062473474-native-paths
+2026-11-11T16:52:43.1144216Z   CARGO_TARGET_DIR: D:/cargo-target
+2026-11-11T16:52:43.1144439Z   TEMP: D:/tmp
+2026-11-11T16:52:43.1144640Z   TMP: D:/tmp
+2026-11-11T16:52:43.1144841Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-11T16:52:43.1145085Z ##[endgroup]
+2026-11-11T16:52:43.1148702Z ##[start-action display=Run set -eu;id=__self.__taiki-e_install-action.__run]
+2026-11-11T16:52:43.1152015Z ##[end-action id=__self.__taiki-e_install-action.__run;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-11-11T16:52:43.1155266Z ##[start-action display=Run bash --noprofile --norc "${GITHUB_ACTION_PATH:?}/main.sh";id=__self.__taiki-e_install-action.__run_2]
+2026-11-11T16:52:43.1271096Z ##[group]Run bash --noprofile --norc "${GITHUB_ACTION_PATH:?}/main.sh"
+2026-11-11T16:52:43.1271538Z [36;1mbash --noprofile --norc "${GITHUB_ACTION_PATH:?}/main.sh"[0m
+2026-11-11T16:52:43.1284517Z shell: C:\Program Files\Git\bin\bash.EXE --noprofile --norc -e -o pipefail {0}
+2026-11-11T16:52:43.1284887Z env:
+2026-11-11T16:52:43.1285057Z   CI_BUILD_ROOT: D:
+2026-11-11T16:52:43.1285314Z   CODEX_REPO_ROOT: D:\a\hepta-private-ci\hepta-private-ci
+2026-11-11T16:52:43.1285616Z   BAZEL_OUTPUT_BASE: D:/o
+2026-11-11T16:52:43.1285822Z   BAZEL_OUTPUT_USER_ROOT: D:/b
+2026-11-11T16:52:43.1286085Z   BAZEL_REPOSITORY_CACHE: D:/bazel-repository-cache
+2026-11-11T16:52:43.1286536Z   BAZEL_REPO_CONTENTS_CACHE: D:/bazel-repo-contents-cache-43062473474-native-paths
+2026-11-11T16:52:43.1286953Z   CARGO_TARGET_DIR: D:/cargo-target
+2026-11-11T16:52:43.1287184Z   TEMP: D:/tmp
+2026-11-11T16:52:43.1287357Z   TMP: D:/tmp
+2026-11-11T16:52:43.1287541Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-11T16:52:43.1287775Z   INPUT_TOOL: just@1.51.0
+2026-11-11T16:52:43.1287987Z   INPUT_CHECKSUM: true
+2026-11-11T16:52:43.1288201Z   INPUT_FALLBACK: cargo-binstall
+2026-11-11T16:52:43.1290886Z   DEFAULT_GITHUB_TOKEN: ***
+2026-11-11T16:52:43.1291133Z   ACTION_USER_AGENT:  ()
+2026-11-11T16:52:43.1291338Z ##[endgroup]
+2026-11-11T16:52:43.2730676Z info: host platform: x86_64_windows
+2026-11-11T16:52:43.3203752Z info: cargo is located at /c/Users/runneradmin/.cargo/bin/cargo
+2026-11-11T16:52:43.6868314Z ##[warning]just@1.51.0 for 'x86_64_windows' is not supported; fallback to cargo-binstall
+2026-11-11T16:52:43.6869378Z info: install-action does not support just@1.51.0; fallback to cargo-binstall
+2026-11-11T16:52:43.7728734Z info: installing cargo-binstall@latest (1.15.11)
+2026-11-11T16:52:44.4963500Z info: downloading https://github.com/cargo-bins/cargo-binstall/releases/download/v1.15.11/cargo-binstall-x86_64-pc-windows-msvc.zip
+2026-11-11T16:52:44.9665665Z info: verifying sha256 checksum for cargo-binstall-x86_64-pc-windows-msvc.zip
+2026-11-11T16:52:45.3474356Z info: cargo-binstall installed at /c/Users/runneradmin/.cargo/bin/cargo-binstall.exe
+2026-11-11T16:52:45.3555992Z + cargo-binstall.exe binstall -V
+2026-11-11T16:52:45.3777681Z 1.15.11
+2026-11-11T16:52:45.4494652Z  INFO resolve: Resolving package: 'just@=1.51.0'
+2026-11-11T16:52:51.7216501Z  WARN The package just v1.51.0 (x86_64-pc-windows-msvc) has been downloaded from github.com
+2026-11-11T16:52:51.7217676Z  INFO This will install the following binaries:
+2026-11-11T16:52:51.7218250Z  INFO   - just.exe => C:\Users\runneradmin\.cargo\bin\just.exe
+2026-11-11T16:52:51.7219807Z  INFO Installing binaries...
+2026-11-11T16:52:51.7256263Z  INFO Done in 6.3172405s
+2026-11-11T16:52:51.7428382Z ##[end-action id=__self.__taiki-e_install-action.__run_2;outcome=success;conclusion=success;duration_ms=8627]
+2026-11-11T16:52:51.7434831Z ##[end-action id=__self.__taiki-e_install-action;outcome=success;conclusion=success;duration_ms=8644]
+2026-11-11T16:52:51.7438123Z ##[start-action display=Make DotSlash available in PATH (Unix);id=__self.__run_5]
+2026-11-11T16:52:51.7442947Z ##[end-action id=__self.__run_5;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-11-11T16:52:51.7444912Z ##[start-action display=Make DotSlash available in PATH (Windows);id=__self.__run_6]
+2026-11-11T16:52:51.7575894Z ##[group]Run Copy-Item (Get-Command dotslash).Source -Destination "$env:LOCALAPPDATA\Microsoft\WindowsApps\dotslash.exe"
+2026-11-11T16:52:51.7576673Z [36;1mCopy-Item (Get-Command dotslash).Source -Destination "$env:LOCALAPPDATA\Microsoft\WindowsApps\dotslash.exe"[0m
+2026-11-11T16:52:51.7646027Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+2026-11-11T16:52:51.7646565Z env:
+2026-11-11T16:52:51.7646829Z   CI_BUILD_ROOT: D:
+2026-11-11T16:52:51.7647247Z   CODEX_REPO_ROOT: D:\a\hepta-private-ci\hepta-private-ci
+2026-11-11T16:52:51.7647731Z   BAZEL_OUTPUT_BASE: D:/o
+2026-11-11T16:52:51.7648061Z   BAZEL_OUTPUT_USER_ROOT: D:/b
+2026-11-11T16:52:51.7648469Z   BAZEL_REPOSITORY_CACHE: D:/bazel-repository-cache
+2026-11-11T16:52:51.7649155Z   BAZEL_REPO_CONTENTS_CACHE: D:/bazel-repo-contents-cache-43062473474-native-paths
+2026-11-11T16:52:51.7649807Z   CARGO_TARGET_DIR: D:/cargo-target
+2026-11-11T16:52:51.7650182Z   TEMP: D:/tmp
+2026-11-11T16:52:51.7650440Z   TMP: D:/tmp
+2026-11-11T16:52:51.7650719Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-11T16:52:51.7650988Z ##[endgroup]
+2026-11-11T16:52:52.1450638Z ##[end-action id=__self.__run_6;outcome=success;conclusion=success;duration_ms=400]
+2026-11-11T16:52:52.1453021Z ##[start-action display=Enable Git long paths (Windows);id=__self.__run_7]
+2026-11-11T16:52:52.1585449Z ##[group]Run git config --global core.longpaths true
+2026-11-11T16:52:52.1585812Z [36;1mgit config --global core.longpaths true[0m
+2026-11-11T16:52:52.1651930Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+2026-11-11T16:52:52.1652265Z env:
+2026-11-11T16:52:52.1652439Z   CI_BUILD_ROOT: D:
+2026-11-11T16:52:52.1652700Z   CODEX_REPO_ROOT: D:\a\hepta-private-ci\hepta-private-ci
+2026-11-11T16:52:52.1653008Z   BAZEL_OUTPUT_BASE: D:/o
+2026-11-11T16:52:52.1653440Z   BAZEL_OUTPUT_USER_ROOT: D:/b
+2026-11-11T16:52:52.1653730Z   BAZEL_REPOSITORY_CACHE: D:/bazel-repository-cache
+2026-11-11T16:52:52.1654155Z   BAZEL_REPO_CONTENTS_CACHE: D:/bazel-repo-contents-cache-43062473474-native-paths
+2026-11-11T16:52:52.1654545Z   CARGO_TARGET_DIR: D:/cargo-target
+2026-11-11T16:52:52.1654777Z   TEMP: D:/tmp
+2026-11-11T16:52:52.1654949Z   TMP: D:/tmp
+2026-11-11T16:52:52.1655132Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-11T16:52:52.1655536Z ##[endgroup]
+2026-11-11T16:52:52.5681692Z ##[end-action id=__self.__run_7;outcome=success;conclusion=success;duration_ms=422]
+2026-11-11T16:52:52.5972096Z ##[group]Run dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489
+2026-11-11T16:52:52.5972542Z with:
+2026-11-11T16:52:52.5972719Z env:
+2026-11-11T16:52:52.5972889Z   CI_BUILD_ROOT: D:
+2026-11-11T16:52:52.5973158Z   CODEX_REPO_ROOT: D:\a\hepta-private-ci\hepta-private-ci
+2026-11-11T16:52:52.5973480Z   BAZEL_OUTPUT_BASE: D:/o
+2026-11-11T16:52:52.5973690Z   BAZEL_OUTPUT_USER_ROOT: D:/b
+2026-11-11T16:52:52.5973955Z   BAZEL_REPOSITORY_CACHE: D:/bazel-repository-cache
+2026-11-11T16:52:52.5974408Z   BAZEL_REPO_CONTENTS_CACHE: D:/bazel-repo-contents-cache-43062473474-native-paths
+2026-11-11T16:52:52.5974818Z   CARGO_TARGET_DIR: D:/cargo-target
+2026-11-11T16:52:52.5975051Z   TEMP: D:/tmp
+2026-11-11T16:52:52.5975219Z   TMP: D:/tmp
+2026-11-11T16:52:52.5975401Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-11T16:52:52.5975633Z ##[endgroup]
+2026-11-11T16:52:52.5983639Z ##[start-action display=Parse toolchain version;id=__dtolnay_rust-toolchain.parse]
+2026-11-11T16:52:52.6103416Z ##[group]Run if [[ -z $toolchain ]]; then
+2026-11-11T16:52:52.6103733Z [36;1mif [[ -z $toolchain ]]; then[0m
+2026-11-11T16:52:52.6104221Z [36;1m  # GitHub does not enforce `required: true` inputs itself. https://github.com/actions/runner/issues/1070[0m
+2026-11-11T16:52:52.6104739Z [36;1m  echo "'toolchain' is a required input" >&2[0m
+2026-11-11T16:52:52.6105005Z [36;1m  exit 1[0m
+2026-11-11T16:52:52.6105314Z [36;1melif [[ $toolchain =~ ^stable' '[0-9]+' '(year|month|week|day)s?' 'ago$ ]]; then[0m
+2026-11-11T16:52:52.6105874Z [36;1m  if [[ Windows == macOS ]]; then[0m
+2026-11-11T16:52:52.6106378Z [36;1m    echo "toolchain=1.$((($(date -v-$(sed 's/stable \([0-9]*\) \(.\).*/\1\2/' <<< $toolchain) +%s)/60/60/24-16569)/7/6))" >> $GITHUB_OUTPUT[0m
+2026-11-11T16:52:52.6106841Z [36;1m  else[0m
+2026-11-11T16:52:52.6107685Z [36;1m    echo "toolchain=1.$((($(date --date "${toolchain#stable }" +%s)/60/60/24-16569)/7/6))" >> $GITHUB_OUTPUT[0m
+2026-11-11T16:52:52.6108124Z [36;1m  fi[0m
+2026-11-11T16:52:52.6108402Z [36;1melif [[ $toolchain =~ ^stable' 'minus' '[0-9]+' 'releases?$ ]]; then[0m
+2026-11-11T16:52:52.6108894Z [36;1m  echo "toolchain=1.$((($(date +%s)/60/60/24-16569)/7/6-${toolchain//[^0-9]/}))" >> $GITHUB_OUTPUT[0m
+2026-11-11T16:52:52.6109311Z [36;1melif [[ $toolchain =~ ^1\.[0-9]+$ ]]; then[0m
+2026-11-11T16:52:52.6109789Z [36;1m  echo "toolchain=1.$((i=${toolchain#1.}, c=($(date +%s)/60/60/24-16569)/7/6, i+9*i*(10*i<=c)+90*i*(100*i<=c)))" >> $GITHUB_OUTPUT[0m
+2026-11-11T16:52:52.6110235Z [36;1melse[0m
+2026-11-11T16:52:52.6110421Z [36;1m  delimiter=EOF[0m
+2026-11-11T16:52:52.6110699Z [36;1m  while [[ $toolchain == *$delimiter* ]]; do delimiter+=_; done[0m
+2026-11-11T16:52:52.6111166Z [36;1m  printf 'toolchain<<%s\n%s\n%s\n' "$delimiter" "$toolchain" "$delimiter" >> $GITHUB_OUTPUT[0m
+2026-11-11T16:52:52.6111544Z [36;1mfi[0m
+2026-11-11T16:52:52.6123616Z shell: C:\Program Files\Git\bin\bash.EXE --noprofile --norc -e -o pipefail {0}
+2026-11-11T16:52:52.6123989Z env:
+2026-11-11T16:52:52.6124169Z   CI_BUILD_ROOT: D:
+2026-11-11T16:52:52.6124435Z   CODEX_REPO_ROOT: D:\a\hepta-private-ci\hepta-private-ci
+2026-11-11T16:52:52.6124732Z   BAZEL_OUTPUT_BASE: D:/o
+2026-11-11T16:52:52.6124953Z   BAZEL_OUTPUT_USER_ROOT: D:/b
+2026-11-11T16:52:52.6125219Z   BAZEL_REPOSITORY_CACHE: D:/bazel-repository-cache
+2026-11-11T16:52:52.6125654Z   BAZEL_REPO_CONTENTS_CACHE: D:/bazel-repo-contents-cache-43062473474-native-paths
+2026-11-11T16:52:52.6126048Z   CARGO_TARGET_DIR: D:/cargo-target
+2026-11-11T16:52:52.6126270Z   TEMP: D:/tmp
+2026-11-11T16:52:52.6126438Z   TMP: D:/tmp
+2026-11-11T16:52:52.6126628Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-11T16:52:52.6126853Z   toolchain: 1.96.0
+2026-11-11T16:52:52.6127032Z ##[endgroup]
+2026-11-11T16:52:52.6525363Z ##[end-action id=__dtolnay_rust-toolchain.parse;outcome=success;conclusion=success;duration_ms=54]
+2026-11-11T16:52:52.6527579Z ##[start-action display=Set $CARGO_HOME;id=__dtolnay_rust-toolchain.__run]
+2026-11-11T16:52:52.6645426Z ##[group]Run echo CARGO_HOME=${CARGO_HOME:-"$USERPROFILE\.cargo"} >> $GITHUB_ENV
+2026-11-11T16:52:52.6645970Z [36;1mecho CARGO_HOME=${CARGO_HOME:-"$USERPROFILE\.cargo"} >> $GITHUB_ENV[0m
+2026-11-11T16:52:52.6657778Z shell: C:\Program Files\Git\bin\bash.EXE --noprofile --norc -e -o pipefail {0}
+2026-11-11T16:52:52.6658141Z env:
+2026-11-11T16:52:52.6658312Z   CI_BUILD_ROOT: D:
+2026-11-11T16:52:52.6658571Z   CODEX_REPO_ROOT: D:\a\hepta-private-ci\hepta-private-ci
+2026-11-11T16:52:52.6658889Z   BAZEL_OUTPUT_BASE: D:/o
+2026-11-11T16:52:52.6659103Z   BAZEL_OUTPUT_USER_ROOT: D:/b
+2026-11-11T16:52:52.6659363Z   BAZEL_REPOSITORY_CACHE: D:/bazel-repository-cache
+2026-11-11T16:52:52.6659783Z   BAZEL_REPO_CONTENTS_CACHE: D:/bazel-repo-contents-cache-43062473474-native-paths
+2026-11-11T16:52:52.6660718Z   CARGO_TARGET_DIR: D:/cargo-target
+2026-11-11T16:52:52.6660946Z   TEMP: D:/tmp
+2026-11-11T16:52:52.6661113Z   TMP: D:/tmp
+2026-11-11T16:52:52.6661398Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-11T16:52:52.6661641Z ##[endgroup]
+2026-11-11T16:52:52.7055468Z ##[end-action id=__dtolnay_rust-toolchain.__run;outcome=success;conclusion=success;duration_ms=52]
+2026-11-11T16:52:52.7057688Z ##[start-action display=Install rustup if needed;id=__dtolnay_rust-toolchain.__run_2]
+2026-11-11T16:52:52.7061909Z ##[end-action id=__dtolnay_rust-toolchain.__run_2;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-11-11T16:52:52.7063748Z ##[start-action display=Install rustup if needed on windows;id=__dtolnay_rust-toolchain.__run_3]
+2026-11-11T16:52:52.7183645Z ##[group]Run if ! command -v rustup &>/dev/null; then
+2026-11-11T16:52:52.7184012Z [36;1mif ! command -v rustup &>/dev/null; then[0m
+2026-11-11T16:52:52.7184773Z [36;1m  curl --proto '=https' --tlsv1.2 --retry 10 --retry-connrefused --location --silent --show-error --fail https://win.rustup.rs/x86_64 --output 'D:\a\_temp\rustup-init.exe'[0m
+2026-11-11T16:52:52.7185652Z [36;1m  'D:\a\_temp\rustup-init.exe' --default-toolchain none --no-modify-path -y[0m
+2026-11-11T16:52:52.7186071Z [36;1m  echo "$CARGO_HOME\bin" >> $GITHUB_PATH[0m
+2026-11-11T16:52:52.7186342Z [36;1mfi[0m
+2026-11-11T16:52:52.7198419Z shell: C:\Program Files\Git\bin\bash.EXE --noprofile --norc -e -o pipefail {0}
+2026-11-11T16:52:52.7198812Z env:
+2026-11-11T16:52:52.7198985Z   CI_BUILD_ROOT: D:
+2026-11-11T16:52:52.7199246Z   CODEX_REPO_ROOT: D:\a\hepta-private-ci\hepta-private-ci
+2026-11-11T16:52:52.7199552Z   BAZEL_OUTPUT_BASE: D:/o
+2026-11-11T16:52:52.7199772Z   BAZEL_OUTPUT_USER_ROOT: D:/b
+2026-11-11T16:52:52.7200026Z   BAZEL_REPOSITORY_CACHE: D:/bazel-repository-cache
+2026-11-11T16:52:52.7200441Z   BAZEL_REPO_CONTENTS_CACHE: D:/bazel-repo-contents-cache-43062473474-native-paths
+2026-11-11T16:52:52.7200831Z   CARGO_TARGET_DIR: D:/cargo-target
+2026-11-11T16:52:52.7201057Z   TEMP: D:/tmp
+2026-11-11T16:52:52.7201231Z   TMP: D:/tmp
+2026-11-11T16:52:52.7201410Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-11T16:52:52.7201667Z   CARGO_HOME: C:\Users\runneradmin\.cargo
+2026-11-11T16:52:52.7201907Z ##[endgroup]
+2026-11-11T16:52:52.7648348Z ##[end-action id=__dtolnay_rust-toolchain.__run_3;outcome=success;conclusion=success;duration_ms=58]
+2026-11-11T16:52:52.7656200Z ##[start-action display=rustup toolchain install 1.96.0;id=__dtolnay_rust-toolchain.__run_4]
+2026-11-11T16:52:52.7773221Z ##[group]Run set -f  # split targets and components on commas and whitespace, without glob expansion
+2026-11-11T16:52:52.7773856Z [36;1mset -f  # split targets and components on commas and whitespace, without glob expansion[0m
+2026-11-11T16:52:52.7774270Z [36;1mflags=()[0m
+2026-11-11T16:52:52.7774523Z [36;1mfor t in ${targets//,/ }; do flags+=(--target "$t"); done[0m
+2026-11-11T16:52:52.7774897Z [36;1mfor c in ${components//,/ }; do flags+=(--component "$c"); done[0m
+2026-11-11T16:52:52.7775361Z [36;1mif [[ $toolchain == nightly && -n $components ]]; then flags+=(--allow-downgrade); fi[0m
+2026-11-11T16:52:52.7775749Z [36;1mlog=$(mktemp)[0m
+2026-11-11T16:52:52.7776700Z [36;1mtrap 'rm -f "$log"' EXIT[0m
+2026-11-11T16:52:52.7776943Z [36;1mfor attempt in 1 2 3 4 5; do[0m
+2026-11-11T16:52:52.7777474Z [36;1m  if rustup toolchain install "$toolchain" "${flags[@]}" --profile minimal --no-self-update --force-non-host 2>&1 | tee "$log"; then[0m
+2026-11-11T16:52:52.7777991Z [36;1m    break[0m
+2026-11-11T16:52:52.7778168Z [36;1m  else[0m
+2026-11-11T16:52:52.7778345Z [36;1m    status=$?[0m
+2026-11-11T16:52:52.7778527Z [36;1m  fi[0m
+2026-11-11T16:52:52.7778803Z [36;1m  if [[ $attempt == 5 ]] || ! grep -Fq 'checksum failed for ' "$log" \[0m
+2026-11-11T16:52:52.7779321Z [36;1m      || ! grep -Fq 'this is likely due to an ongoing update of the official release server' "$log"; then[0m
+2026-11-11T16:52:52.7779744Z [36;1m    exit "$status"[0m
+2026-11-11T16:52:52.7779945Z [36;1m  fi[0m
+2026-11-11T16:52:52.7780269Z [36;1m  echo "Retrying rustup toolchain install in 30 seconds (retry $attempt of 4)" >&2[0m
+2026-11-11T16:52:52.7780657Z [36;1m  sleep 30[0m
+2026-11-11T16:52:52.7780838Z [36;1mdone[0m
+2026-11-11T16:52:52.7793584Z shell: C:\Program Files\Git\bin\bash.EXE --noprofile --norc -e -o pipefail {0}
+2026-11-11T16:52:52.7793963Z env:
+2026-11-11T16:52:52.7794134Z   CI_BUILD_ROOT: D:
+2026-11-11T16:52:52.7794400Z   CODEX_REPO_ROOT: D:\a\hepta-private-ci\hepta-private-ci
+2026-11-11T16:52:52.7794716Z   BAZEL_OUTPUT_BASE: D:/o
+2026-11-11T16:52:52.7794927Z   BAZEL_OUTPUT_USER_ROOT: D:/b
+2026-11-11T16:52:52.7795373Z   BAZEL_REPOSITORY_CACHE: D:/bazel-repository-cache
+2026-11-11T16:52:52.7795806Z   BAZEL_REPO_CONTENTS_CACHE: D:/bazel-repo-contents-cache-43062473474-native-paths
+2026-11-11T16:52:52.7796194Z   CARGO_TARGET_DIR: D:/cargo-target
+2026-11-11T16:52:52.7796431Z   TEMP: D:/tmp
+2026-11-11T16:52:52.7796603Z   TMP: D:/tmp
+2026-11-11T16:52:52.7796781Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-11T16:52:52.7797027Z   CARGO_HOME: C:\Users\runneradmin\.cargo
+2026-11-11T16:52:52.7797265Z   toolchain: 1.96.0
+2026-11-11T16:52:52.7797446Z   targets: 
+2026-11-11T16:52:52.7797605Z   components: 
+2026-11-11T16:52:52.7797784Z   RUSTUP_PERMIT_COPY_RENAME: 1
+2026-11-11T16:52:52.7798006Z ##[endgroup]
+2026-11-11T16:52:53.6149989Z info: syncing channel updates for 1.96.0-x86_64-pc-windows-msvc
+2026-11-11T16:52:54.3752088Z info: latest update on 2026-05-28 for version 1.96.0 (ac68faa20 2026-05-25)
+2026-11-11T16:52:54.3906875Z info: downloading 3 components
+2026-11-11T16:53:02.8979545Z 
+2026-11-11T16:53:02.9298821Z   1.96.0-x86_64-pc-windows-msvc installed - rustc 1.96.0 (ac68faa20 2026-05-25)
+2026-11-11T16:53:02.9299325Z 
+2026-11-11T16:53:02.9842273Z ##[end-action id=__dtolnay_rust-toolchain.__run_4;outcome=success;conclusion=success;duration_ms=10218]
+2026-11-11T16:53:02.9846176Z ##[start-action display=rustup default 1.96.0;id=__dtolnay_rust-toolchain.__run_5]
+2026-11-11T16:53:02.9965890Z ##[group]Run rustup default "$toolchain" --force-non-host
+2026-11-11T16:53:02.9966291Z [36;1mrustup default "$toolchain" --force-non-host[0m
+2026-11-11T16:53:02.9978828Z shell: C:\Program Files\Git\bin\bash.EXE --noprofile --norc -e -o pipefail {0}
+2026-11-11T16:53:02.9979221Z env:
+2026-11-11T16:53:02.9979413Z   CI_BUILD_ROOT: D:
+2026-11-11T16:53:02.9979758Z   CODEX_REPO_ROOT: D:\a\hepta-private-ci\hepta-private-ci
+2026-11-11T16:53:02.9980085Z   BAZEL_OUTPUT_BASE: D:/o
+2026-11-11T16:53:02.9980301Z   BAZEL_OUTPUT_USER_ROOT: D:/b
+2026-11-11T16:53:02.9980566Z   BAZEL_REPOSITORY_CACHE: D:/bazel-repository-cache
+2026-11-11T16:53:02.9981027Z   BAZEL_REPO_CONTENTS_CACHE: D:/bazel-repo-contents-cache-43062473474-native-paths
+2026-11-11T16:53:02.9981431Z   CARGO_TARGET_DIR: D:/cargo-target
+2026-11-11T16:53:02.9981673Z   TEMP: D:/tmp
+2026-11-11T16:53:02.9981854Z   TMP: D:/tmp
+2026-11-11T16:53:02.9982047Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-11T16:53:02.9982307Z   CARGO_HOME: C:\Users\runneradmin\.cargo
+2026-11-11T16:53:02.9982561Z   toolchain: 1.96.0
+2026-11-11T16:53:02.9982758Z ##[endgroup]
+2026-11-11T16:53:03.1398768Z info: using existing install for 1.96.0-x86_64-pc-windows-msvc
+2026-11-11T16:53:03.1478187Z info: default toolchain set to 1.96.0-x86_64-pc-windows-msvc
+2026-11-11T16:53:03.1478835Z 
+2026-11-11T16:53:03.1680488Z   1.96.0-x86_64-pc-windows-msvc unchanged - rustc 1.96.0 (ac68faa20 2026-05-25)
+2026-11-11T16:53:03.1680847Z 
+2026-11-11T16:53:03.1754402Z ##[end-action id=__dtolnay_rust-toolchain.__run_5;outcome=success;conclusion=success;duration_ms=190]
+2026-11-11T16:53:03.1757799Z ##[start-action display=Create cachekey;id=__dtolnay_rust-toolchain.rustc-version]
+2026-11-11T16:53:03.1879541Z ##[group]Run DATE=$(rustc +"$toolchain" --version --verbose | sed -ne 's/^commit-date: \(20[0-9][0-9]\)-\([01][0-9]\)-\([0-3][0-9]\)$/\1\2\3/p')
+2026-11-11T16:53:03.1880354Z [36;1mDATE=$(rustc +"$toolchain" --version --verbose | sed -ne 's/^commit-date: \(20[0-9][0-9]\)-\([01][0-9]\)-\([0-3][0-9]\)$/\1\2\3/p')[0m
+2026-11-11T16:53:03.1880996Z [36;1mHASH=$(rustc +"$toolchain" --version --verbose | sed -ne 's/^commit-hash: //p')[0m
+2026-11-11T16:53:03.1881504Z [36;1mecho "cachekey=$(echo $DATE$HASH | head -c12)" >> $GITHUB_OUTPUT[0m
+2026-11-11T16:53:03.1894620Z shell: C:\Program Files\Git\bin\bash.EXE --noprofile --norc -e -o pipefail {0}
+2026-11-11T16:53:03.1895156Z env:
+2026-11-11T16:53:03.1895404Z   CI_BUILD_ROOT: D:
+2026-11-11T16:53:03.1895696Z   CODEX_REPO_ROOT: D:\a\hepta-private-ci\hepta-private-ci
+2026-11-11T16:53:03.1896012Z   BAZEL_OUTPUT_BASE: D:/o
+2026-11-11T16:53:03.1896231Z   BAZEL_OUTPUT_USER_ROOT: D:/b
+2026-11-11T16:53:03.1896710Z   BAZEL_REPOSITORY_CACHE: D:/bazel-repository-cache
+2026-11-11T16:53:03.1897157Z   BAZEL_REPO_CONTENTS_CACHE: D:/bazel-repo-contents-cache-43062473474-native-paths
+2026-11-11T16:53:03.1897554Z   CARGO_TARGET_DIR: D:/cargo-target
+2026-11-11T16:53:03.1897791Z   TEMP: D:/tmp
+2026-11-11T16:53:03.1897967Z   TMP: D:/tmp
+2026-11-11T16:53:03.1898164Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-11T16:53:03.1898420Z   CARGO_HOME: C:\Users\runneradmin\.cargo
+2026-11-11T16:53:03.1898677Z   toolchain: 1.96.0
+2026-11-11T16:53:03.1898868Z ##[endgroup]
+2026-11-11T16:53:03.4494399Z ##[end-action id=__dtolnay_rust-toolchain.rustc-version;outcome=success;conclusion=success;duration_ms=273]
+2026-11-11T16:53:03.4497117Z ##[start-action display=Disable incremental compilation;id=__dtolnay_rust-toolchain.__run_6]
+2026-11-11T16:53:03.4616357Z ##[group]Run if [ -z "${CARGO_INCREMENTAL+set}" ]; then
+2026-11-11T16:53:03.4616734Z [36;1mif [ -z "${CARGO_INCREMENTAL+set}" ]; then[0m
+2026-11-11T16:53:03.4617071Z [36;1m  echo CARGO_INCREMENTAL=0 >> $GITHUB_ENV[0m
+2026-11-11T16:53:03.4617338Z [36;1mfi[0m
+2026-11-11T16:53:03.4630219Z shell: C:\Program Files\Git\bin\bash.EXE --noprofile --norc -e -o pipefail {0}
+2026-11-11T16:53:03.4630598Z env:
+2026-11-11T16:53:03.4630780Z   CI_BUILD_ROOT: D:
+2026-11-11T16:53:03.4631054Z   CODEX_REPO_ROOT: D:\a\hepta-private-ci\hepta-private-ci
+2026-11-11T16:53:03.4631383Z   BAZEL_OUTPUT_BASE: D:/o
+2026-11-11T16:53:03.4631608Z   BAZEL_OUTPUT_USER_ROOT: D:/b
+2026-11-11T16:53:03.4631886Z   BAZEL_REPOSITORY_CACHE: D:/bazel-repository-cache
+2026-11-11T16:53:03.4632318Z   BAZEL_REPO_CONTENTS_CACHE: D:/bazel-repo-contents-cache-43062473474-native-paths
+2026-11-11T16:53:03.4632720Z   CARGO_TARGET_DIR: D:/cargo-target
+2026-11-11T16:53:03.4632948Z   TEMP: D:/tmp
+2026-11-11T16:53:03.4633119Z   TMP: D:/tmp
+2026-11-11T16:53:03.4633307Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-11T16:53:03.4633571Z   CARGO_HOME: C:\Users\runneradmin\.cargo
+2026-11-11T16:53:03.4633825Z ##[endgroup]
+2026-11-11T16:53:03.5020252Z ##[end-action id=__dtolnay_rust-toolchain.__run_6;outcome=success;conclusion=success;duration_ms=52]
+2026-11-11T16:53:03.5022490Z ##[start-action display=Enable colors in Cargo output;id=__dtolnay_rust-toolchain.__run_7]
+2026-11-11T16:53:03.5153566Z ##[group]Run if [ -z "${CARGO_TERM_COLOR+set}" ]; then
+2026-11-11T16:53:03.5153941Z [36;1mif [ -z "${CARGO_TERM_COLOR+set}" ]; then[0m
+2026-11-11T16:53:03.5154418Z [36;1m  echo CARGO_TERM_COLOR=always >> $GITHUB_ENV[0m
+2026-11-11T16:53:03.5154694Z [36;1mfi[0m
+2026-11-11T16:53:03.5167754Z shell: C:\Program Files\Git\bin\bash.EXE --noprofile --norc -e -o pipefail {0}
+2026-11-11T16:53:03.5168133Z env:
+2026-11-11T16:53:03.5168302Z   CI_BUILD_ROOT: D:
+2026-11-11T16:53:03.5168567Z   CODEX_REPO_ROOT: D:\a\hepta-private-ci\hepta-private-ci
+2026-11-11T16:53:03.5168869Z   BAZEL_OUTPUT_BASE: D:/o
+2026-11-11T16:53:03.5169079Z   BAZEL_OUTPUT_USER_ROOT: D:/b
+2026-11-11T16:53:03.5169340Z   BAZEL_REPOSITORY_CACHE: D:/bazel-repository-cache
+2026-11-11T16:53:03.5169786Z   BAZEL_REPO_CONTENTS_CACHE: D:/bazel-repo-contents-cache-43062473474-native-paths
+2026-11-11T16:53:03.5170168Z   CARGO_TARGET_DIR: D:/cargo-target
+2026-11-11T16:53:03.5170390Z   TEMP: D:/tmp
+2026-11-11T16:53:03.5170556Z   TMP: D:/tmp
+2026-11-11T16:53:03.5170733Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-11T16:53:03.5170980Z   CARGO_HOME: C:\Users\runneradmin\.cargo
+2026-11-11T16:53:03.5171219Z   CARGO_INCREMENTAL: 0
+2026-11-11T16:53:03.5171412Z ##[endgroup]
+2026-11-11T16:53:03.5558181Z ##[end-action id=__dtolnay_rust-toolchain.__run_7;outcome=success;conclusion=success;duration_ms=53]
+2026-11-11T16:53:03.5561539Z ##[start-action display=Enable Cargo sparse registry;id=__dtolnay_rust-toolchain.__run_8]
+2026-11-11T16:53:03.5682002Z ##[group]Run # implemented in 1.66, stabilized in 1.68, made default in 1.70
+2026-11-11T16:53:03.5682499Z [36;1m# implemented in 1.66, stabilized in 1.68, made default in 1.70[0m
+2026-11-11T16:53:03.5683318Z [36;1mif [ -z "${CARGO_REGISTRIES_CRATES_IO_PROTOCOL+set}" -o -f "D:\a\_temp"/.implicit_cargo_registries_crates_io_protocol ]; then[0m
+2026-11-11T16:53:03.5683962Z [36;1m  if rustc +"$toolchain" --version --verbose | grep -q '^release: 1\.6[89]\.'; then[0m
+2026-11-11T16:53:03.5684454Z [36;1m    touch "D:\a\_temp"/.implicit_cargo_registries_crates_io_protocol || true[0m
+2026-11-11T16:53:03.5684908Z [36;1m    echo CARGO_REGISTRIES_CRATES_IO_PROTOCOL=sparse >> $GITHUB_ENV[0m
+2026-11-11T16:53:03.5685401Z [36;1m  elif rustc +"$toolchain" --version --verbose | grep -q '^release: 1\.6[67]\.'; then[0m
+2026-11-11T16:53:03.5685905Z [36;1m    touch "D:\a\_temp"/.implicit_cargo_registries_crates_io_protocol || true[0m
+2026-11-11T16:53:03.5686343Z [36;1m    echo CARGO_REGISTRIES_CRATES_IO_PROTOCOL=git >> $GITHUB_ENV[0m
+2026-11-11T16:53:03.5686664Z [36;1m  fi[0m
+2026-11-11T16:53:03.5686839Z [36;1mfi[0m
+2026-11-11T16:53:03.5699123Z shell: C:\Program Files\Git\bin\bash.EXE --noprofile --norc -e -o pipefail {0}
+2026-11-11T16:53:03.5699509Z env:
+2026-11-11T16:53:03.5699682Z   CI_BUILD_ROOT: D:
+2026-11-11T16:53:03.5699945Z   CODEX_REPO_ROOT: D:\a\hepta-private-ci\hepta-private-ci
+2026-11-11T16:53:03.5700257Z   BAZEL_OUTPUT_BASE: D:/o
+2026-11-11T16:53:03.5700474Z   BAZEL_OUTPUT_USER_ROOT: D:/b
+2026-11-11T16:53:03.5700738Z   BAZEL_REPOSITORY_CACHE: D:/bazel-repository-cache
+2026-11-11T16:53:03.5701159Z   BAZEL_REPO_CONTENTS_CACHE: D:/bazel-repo-contents-cache-43062473474-native-paths
+2026-11-11T16:53:03.5701570Z   CARGO_TARGET_DIR: D:/cargo-target
+2026-11-11T16:53:03.5701801Z   TEMP: D:/tmp
+2026-11-11T16:53:03.5701977Z   TMP: D:/tmp
+2026-11-11T16:53:03.5702176Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-11T16:53:03.5702427Z   CARGO_HOME: C:\Users\runneradmin\.cargo
+2026-11-11T16:53:03.5702674Z   CARGO_INCREMENTAL: 0
+2026-11-11T16:53:03.5702876Z   CARGO_TERM_COLOR: always
+2026-11-11T16:53:03.5703080Z   toolchain: 1.96.0
+2026-11-11T16:53:03.5703263Z ##[endgroup]
+2026-11-11T16:53:03.7426877Z ##[end-action id=__dtolnay_rust-toolchain.__run_8;outcome=success;conclusion=success;duration_ms=186]
+2026-11-11T16:53:03.7430645Z ##[start-action display=Work around spurious network errors in curl 8.0;id=__dtolnay_rust-toolchain.__run_9]
+2026-11-11T16:53:03.7554264Z ##[group]Run # https://rust-lang.zulipchat.com/#narrow/stream/246057-t-cargo/topic/timeout.20investigation
+2026-11-11T16:53:03.7554976Z [36;1m# https://rust-lang.zulipchat.com/#narrow/stream/246057-t-cargo/topic/timeout.20investigation[0m
+2026-11-11T16:53:03.7556350Z [36;1mif rustc +"$toolchain" --version --verbose | grep -q '^release: 1\.7[01]\.'; then[0m
+2026-11-11T16:53:03.7556806Z [36;1m  echo CARGO_HTTP_MULTIPLEXING=false >> $GITHUB_ENV[0m
+2026-11-11T16:53:03.7557097Z [36;1mfi[0m
+2026-11-11T16:53:03.7580039Z shell: C:\Program Files\Git\bin\bash.EXE --noprofile --norc -e -o pipefail {0}
+2026-11-11T16:53:03.7580662Z env:
+2026-11-11T16:53:03.7580913Z   CI_BUILD_ROOT: D:
+2026-11-11T16:53:03.7581331Z   CODEX_REPO_ROOT: D:\a\hepta-private-ci\hepta-private-ci
+2026-11-11T16:53:03.7581844Z   BAZEL_OUTPUT_BASE: D:/o
+2026-11-11T16:53:03.7582180Z   BAZEL_OUTPUT_USER_ROOT: D:/b
+2026-11-11T16:53:03.7582598Z   BAZEL_REPOSITORY_CACHE: D:/bazel-repository-cache
+2026-11-11T16:53:03.7583307Z   BAZEL_REPO_CONTENTS_CACHE: D:/bazel-repo-contents-cache-43062473474-native-paths
+2026-11-11T16:53:03.7583960Z   CARGO_TARGET_DIR: D:/cargo-target
+2026-11-11T16:53:03.7584316Z   TEMP: D:/tmp
+2026-11-11T16:53:03.7584576Z   TMP: D:/tmp
+2026-11-11T16:53:03.7584870Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-11T16:53:03.7585251Z   CARGO_HOME: C:\Users\runneradmin\.cargo
+2026-11-11T16:53:03.7585625Z   CARGO_INCREMENTAL: 0
+2026-11-11T16:53:03.7585927Z   CARGO_TERM_COLOR: always
+2026-11-11T16:53:03.7586243Z   toolchain: 1.96.0
+2026-11-11T16:53:03.7586520Z ##[endgroup]
+2026-11-11T16:53:03.8702216Z ##[end-action id=__dtolnay_rust-toolchain.__run_9;outcome=success;conclusion=success;duration_ms=127]
+2026-11-11T16:53:03.8707452Z ##[start-action display=rustc +1.96.0 --version --verbose;id=__dtolnay_rust-toolchain.__run_10]
+2026-11-11T16:53:03.8859904Z ##[group]Run rustc +"$toolchain" --version --verbose
+2026-11-11T16:53:03.8860263Z [36;1mrustc +"$toolchain" --version --verbose[0m
+2026-11-11T16:53:03.8873840Z shell: C:\Program Files\Git\bin\bash.EXE --noprofile --norc -e -o pipefail {0}
+2026-11-11T16:53:03.8874209Z env:
+2026-11-11T16:53:03.8874377Z   CI_BUILD_ROOT: D:
+2026-11-11T16:53:03.8874645Z   CODEX_REPO_ROOT: D:\a\hepta-private-ci\hepta-private-ci
+2026-11-11T16:53:03.8874974Z   BAZEL_OUTPUT_BASE: D:/o
+2026-11-11T16:53:03.8875188Z   BAZEL_OUTPUT_USER_ROOT: D:/b
+2026-11-11T16:53:03.8875450Z   BAZEL_REPOSITORY_CACHE: D:/bazel-repository-cache
+2026-11-11T16:53:03.8875865Z   BAZEL_REPO_CONTENTS_CACHE: D:/bazel-repo-contents-cache-43062473474-native-paths
+2026-11-11T16:53:03.8876253Z   CARGO_TARGET_DIR: D:/cargo-target
+2026-11-11T16:53:03.8876474Z   TEMP: D:/tmp
+2026-11-11T16:53:03.8876645Z   TMP: D:/tmp
+2026-11-11T16:53:03.8876837Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-11T16:53:03.8877084Z   CARGO_HOME: C:\Users\runneradmin\.cargo
+2026-11-11T16:53:03.8877335Z   CARGO_INCREMENTAL: 0
+2026-11-11T16:53:03.8877547Z   CARGO_TERM_COLOR: always
+2026-11-11T16:53:03.8877755Z   toolchain: 1.96.0
+2026-11-11T16:53:03.8877940Z ##[endgroup]
+2026-11-11T16:53:03.9712789Z rustc 1.96.0 (ac68faa20 2026-05-25)
+2026-11-11T16:53:03.9713221Z binary: rustc
+2026-11-11T16:53:03.9713593Z commit-hash: ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96
+2026-11-11T16:53:03.9713971Z commit-date: 2026-05-25
+2026-11-11T16:53:03.9714195Z host: x86_64-pc-windows-msvc
+2026-11-11T16:53:03.9714416Z release: 1.96.0
+2026-11-11T16:53:03.9715843Z LLVM version: 22.1.2
+2026-11-11T16:53:03.9822434Z ##[end-action id=__dtolnay_rust-toolchain.__run_10;outcome=success;conclusion=success;duration_ms=111]
+2026-11-11T16:53:03.9992358Z ##[group]Run taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+2026-11-11T16:53:03.9992795Z with:
+2026-11-11T16:53:03.9993004Z   tool: nextest@0.9.103
+2026-11-11T16:53:03.9993210Z   checksum: true
+2026-11-11T16:53:03.9993397Z   fallback: cargo-binstall
+2026-11-11T16:53:03.9993596Z env:
+2026-11-11T16:53:03.9993755Z   CI_BUILD_ROOT: D:
+2026-11-11T16:53:03.9994010Z   CODEX_REPO_ROOT: D:\a\hepta-private-ci\hepta-private-ci
+2026-11-11T16:53:03.9994316Z   BAZEL_OUTPUT_BASE: D:/o
+2026-11-11T16:53:03.9994525Z   BAZEL_OUTPUT_USER_ROOT: D:/b
+2026-11-11T16:53:03.9994775Z   BAZEL_REPOSITORY_CACHE: D:/bazel-repository-cache
+2026-11-11T16:53:03.9995190Z   BAZEL_REPO_CONTENTS_CACHE: D:/bazel-repo-contents-cache-43062473474-native-paths
+2026-11-11T16:53:03.9995576Z   CARGO_TARGET_DIR: D:/cargo-target
+2026-11-11T16:53:03.9995798Z   TEMP: D:/tmp
+2026-11-11T16:53:03.9995967Z   TMP: D:/tmp
+2026-11-11T16:53:03.9996144Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-11T16:53:03.9996551Z   CARGO_HOME: C:\Users\runneradmin\.cargo
+2026-11-11T16:53:03.9996795Z   CARGO_INCREMENTAL: 0
+2026-11-11T16:53:03.9996987Z   CARGO_TERM_COLOR: always
+2026-11-11T16:53:03.9997188Z ##[endgroup]
+2026-11-11T16:53:04.0000527Z ##[start-action display=Run set -eu;id=__taiki-e_install-action.__run]
+2026-11-11T16:53:04.0003559Z ##[end-action id=__taiki-e_install-action.__run;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-11-11T16:53:04.0006411Z ##[start-action display=Run bash --noprofile --norc "${GITHUB_ACTION_PATH:?}/main.sh";id=__taiki-e_install-action.__run_2]
+2026-11-11T16:53:04.0122351Z ##[group]Run bash --noprofile --norc "${GITHUB_ACTION_PATH:?}/main.sh"
+2026-11-11T16:53:04.0122797Z [36;1mbash --noprofile --norc "${GITHUB_ACTION_PATH:?}/main.sh"[0m
+2026-11-11T16:53:04.0135130Z shell: C:\Program Files\Git\bin\bash.EXE --noprofile --norc -e -o pipefail {0}
+2026-11-11T16:53:04.0135495Z env:
+2026-11-11T16:53:04.0135668Z   CI_BUILD_ROOT: D:
+2026-11-11T16:53:04.0136095Z   CODEX_REPO_ROOT: D:\a\hepta-private-ci\hepta-private-ci
+2026-11-11T16:53:04.0136477Z   BAZEL_OUTPUT_BASE: D:/o
+2026-11-11T16:53:04.0136685Z   BAZEL_OUTPUT_USER_ROOT: D:/b
+2026-11-11T16:53:04.0137729Z   BAZEL_REPOSITORY_CACHE: D:/bazel-repository-cache
+2026-11-11T16:53:04.0138170Z   BAZEL_REPO_CONTENTS_CACHE: D:/bazel-repo-contents-cache-43062473474-native-paths
+2026-11-11T16:53:04.0138574Z   CARGO_TARGET_DIR: D:/cargo-target
+2026-11-11T16:53:04.0138804Z   TEMP: D:/tmp
+2026-11-11T16:53:04.0138980Z   TMP: D:/tmp
+2026-11-11T16:53:04.0139162Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-11T16:53:04.0139410Z   CARGO_HOME: C:\Users\runneradmin\.cargo
+2026-11-11T16:53:04.0139650Z   CARGO_INCREMENTAL: 0
+2026-11-11T16:53:04.0139894Z   CARGO_TERM_COLOR: always
+2026-11-11T16:53:04.0140103Z   INPUT_TOOL: nextest@0.9.103
+2026-11-11T16:53:04.0140328Z   INPUT_CHECKSUM: true
+2026-11-11T16:53:04.0140541Z   INPUT_FALLBACK: cargo-binstall
+2026-11-11T16:53:04.0142975Z   DEFAULT_GITHUB_TOKEN: ***
+2026-11-11T16:53:04.0143363Z   ACTION_USER_AGENT: taiki-e/install-action (44c6d64aa62cd779e873306675c7a58e86d6d532)
+2026-11-11T16:53:04.0143745Z ##[endgroup]
+2026-11-11T16:53:04.1577839Z info: host platform: x86_64_windows
+2026-11-11T16:53:04.1807577Z info: cargo is located at /c/Users/runneradmin/.cargo/bin/cargo
+2026-11-11T16:53:04.5633087Z info: installing cargo-nextest@0.9.103
+2026-11-11T16:53:04.9448854Z info: downloading https://github.com/nextest-rs/nextest/releases/download/cargo-nextest-0.9.103/cargo-nextest-0.9.103-x86_64-pc-windows-msvc.tar.gz
+2026-11-11T16:53:05.4724956Z info: verifying sha256 checksum for cargo-nextest-0.9.103-x86_64-pc-windows-msvc.tar.gz
+2026-11-11T16:53:05.9401289Z info: cargo-nextest installed at /c/Users/runneradmin/.cargo/bin/cargo-nextest.exe
+2026-11-11T16:53:05.9481464Z + cargo-nextest nextest --version
+2026-11-11T16:53:06.0007061Z cargo-nextest 0.9.103 (d2e7b879f 2025-08-25)
+2026-11-11T16:53:06.0007498Z release: 0.9.103
+2026-11-11T16:53:06.0009780Z commit-hash: d2e7b879fb79975e8b47a8e3ce569b651e6381c0
+2026-11-11T16:53:06.0010141Z commit-date: 2025-08-25
+2026-11-11T16:53:06.0010367Z host: x86_64-pc-windows-msvc
+2026-11-11T16:53:06.0047396Z 
+2026-11-11T16:53:06.0101035Z ##[end-action id=__taiki-e_install-action.__run_2;outcome=success;conclusion=success;duration_ms=2009]
+2026-11-11T16:53:06.0244779Z ##[group]Run just test --locked -p codex-hepta-paths
+2026-11-11T16:53:06.0245242Z [36;1mjust test --locked -p codex-hepta-paths[0m
+2026-11-11T16:53:06.0309283Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+2026-11-11T16:53:06.0309611Z env:
+2026-11-11T16:53:06.0309780Z   CI_BUILD_ROOT: D:
+2026-11-11T16:53:06.0310041Z   CODEX_REPO_ROOT: D:\a\hepta-private-ci\hepta-private-ci
+2026-11-11T16:53:06.0310339Z   BAZEL_OUTPUT_BASE: D:/o
+2026-11-11T16:53:06.0310542Z   BAZEL_OUTPUT_USER_ROOT: D:/b
+2026-11-11T16:53:06.0310802Z   BAZEL_REPOSITORY_CACHE: D:/bazel-repository-cache
+2026-11-11T16:53:06.0311238Z   BAZEL_REPO_CONTENTS_CACHE: D:/bazel-repo-contents-cache-43062473474-native-paths
+2026-11-11T16:53:06.0311635Z   CARGO_TARGET_DIR: D:/cargo-target
+2026-11-11T16:53:06.0311861Z   TEMP: D:/tmp
+2026-11-11T16:53:06.0312028Z   TMP: D:/tmp
+2026-11-11T16:53:06.0312228Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-11T16:53:06.0312507Z   CARGO_HOME: C:\Users\runneradmin\.cargo
+2026-11-11T16:53:06.0312751Z   CARGO_INCREMENTAL: 0
+2026-11-11T16:53:06.0312950Z   CARGO_TERM_COLOR: always
+2026-11-11T16:53:06.0313153Z ##[endgroup]
+2026-11-11T16:53:06.3170264Z $env:RUST_MIN_STACK = "8388608"; $env:NEXTEST_PROFILE = "local"; python ../scripts/run-nextest.py @($args | Select-Object -Skip 1)
+2026-11-11T16:53:07.5228740Z info: syncing channel updates for 1.96.0-x86_64-pc-windows-msvc
+2026-11-11T16:53:08.1858945Z info: latest update on 2026-05-28 for version 1.96.0 (ac68faa20 2026-05-25)
+2026-11-11T16:53:08.2139959Z info: downloading 3 components
+2026-11-11T16:53:17.0891883Z [1m[92m    Updating[0m git repository `https://github.com/openai-oss-forks/crossterm`
+2026-11-11T16:53:18.7025860Z From https://github.com/openai-oss-forks/crossterm
+2026-11-11T16:53:18.7026867Z  * [new ref]         45fecb9508105988f42fe6ff0441783ed3717f92 -> refs/commit/45fecb9508105988f42fe6ff0441783ed3717f92
+2026-11-11T16:53:18.9778951Z [1m[92m    Updating[0m git repository `https://github.com/openai-oss-forks/tokio-tungstenite`
+2026-11-11T16:53:19.5350608Z From https://github.com/openai-oss-forks/tokio-tungstenite
+2026-11-11T16:53:19.5351263Z  * [new ref]         0e5b2d73aa18dd9f0a50ee9ff199d5aef7594186 -> refs/commit/0e5b2d73aa18dd9f0a50ee9ff199d5aef7594186
+2026-11-11T16:53:19.6483636Z [1m[92m    Updating[0m git repository `https://github.com/openai-oss-forks/tungstenite-rs`
+2026-11-11T16:53:20.4630549Z From https://github.com/openai-oss-forks/tungstenite-rs
+2026-11-11T16:53:20.4631202Z  * [new ref]         4fffad30fe373adbdcffab9545e9e9bf4f2fc19f -> refs/commit/4fffad30fe373adbdcffab9545e9e9bf4f2fc19f
+2026-11-11T16:53:21.5633700Z [1m[92m    Updating[0m crates.io index
+2026-11-11T16:53:21.5657701Z [1m[92m    Updating[0m git repository `https://github.com/dzbarsky/rules_rust`
+2026-11-11T16:53:24.6382886Z From https://github.com/dzbarsky/rules_rust
+2026-11-11T16:53:24.6383568Z  * [new ref]             b56cbaa8465e74127f1ea216f813cd377295ad81 -> refs/commit/b56cbaa8465e74127f1ea216f813cd377295ad81
+2026-11-11T16:53:30.6824821Z [1m[92m    Updating[0m git repository `https://github.com/helix-editor/nucleo.git`
+2026-11-11T16:53:31.3244055Z From https://github.com/helix-editor/nucleo
+2026-11-11T16:53:31.3245114Z  * [new ref]         4253de9faabb4e5c6d81d946a5e35a90f87347ee -> refs/commit/4253de9faabb4e5c6d81d946a5e35a90f87347ee
+2026-11-11T16:53:35.4123685Z [1m[92m Downloading[0m crates ...
+2026-11-11T16:53:35.7031162Z [1m[92m  Downloaded[0m base64ct v1.8.3
+2026-11-11T16:53:35.7321899Z [1m[92m  Downloaded[0m digest v0.10.7
+2026-11-11T16:53:35.7495273Z [1m[92m  Downloaded[0m generic-array v0.14.7
+2026-11-11T16:53:35.7681935Z [1m[92m  Downloaded[0m windows-targets v0.52.6
+2026-11-11T16:53:35.7759502Z [1m[92m  Downloaded[0m windows-link v0.2.1
+2026-11-11T16:53:35.7839582Z [1m[92m  Downloaded[0m winapi-util v0.1.11
+2026-11-11T16:53:35.7981184Z [1m[92m  Downloaded[0m zmij v1.0.23
+2026-11-11T16:53:35.8117974Z [1m[92m  Downloaded[0m unicode-ident v1.0.27
+2026-11-11T16:53:35.8390557Z [1m[92m  Downloaded[0m serde_derive v1.0.229
+2026-11-11T16:53:35.8723609Z [1m[92m  Downloaded[0m yansi v1.0.1
+2026-11-11T16:53:35.8958865Z [1m[92m  Downloaded[0m typenum v1.20.1
+2026-11-11T16:53:35.9168770Z [1m[92m  Downloaded[0m memchr v2.8.3
+2026-11-11T16:53:35.9574523Z [1m[92m  Downloaded[0m ed25519-dalek v2.2.0
+2026-11-11T16:53:35.9795696Z [1m[92m  Downloaded[0m der v0.7.10
+2026-11-11T16:53:36.0245997Z [1m[92m  Downloaded[0m serde_json v1.0.154
+2026-11-11T16:53:36.0947904Z [1m[92m  Downloaded[0m serde v1.0.229
+2026-11-11T16:53:36.1204996Z [1m[92m  Downloaded[0m ts-rs v11.1.0
+2026-11-11T16:53:36.1850104Z [1m[92m  Downloaded[0m pretty_assertions v1.4.1
+2026-11-11T16:53:36.1997096Z [1m[92m  Downloaded[0m getrandom v0.4.3
+2026-11-11T16:53:36.2431608Z [1m[92m  Downloaded[0m getrandom v0.2.17
+2026-11-11T16:53:36.2689329Z [1m[92m  Downloaded[0m diff v0.1.13
+2026-11-11T16:53:36.2880550Z [1m[92m  Downloaded[0m syn v3.0.9
+2026-11-11T16:53:36.3693858Z [1m[92m  Downloaded[0m curve25519-dalek v4.1.3
+2026-11-11T16:53:36.7295719Z [1m[92m  Downloaded[0m syn v2.0.119
+2026-11-11T16:53:36.8091113Z [1m[92m  Downloaded[0m serde_core v1.0.229
+2026-11-11T16:53:36.8312599Z [1m[92m  Downloaded[0m schemars v0.8.22
+2026-11-11T16:53:36.9746833Z [1m[92m  Downloaded[0m proc-macro2 v1.0.107
+2026-11-11T16:53:37.0017153Z [1m[92m  Downloaded[0m once_cell v1.21.4
+2026-11-11T16:53:37.0268376Z [1m[92m  Downloaded[0m rustix v1.1.5
+2026-11-11T16:53:37.2368728Z [1m[92m  Downloaded[0m anyhow v1.0.104
+2026-11-11T16:53:37.2727558Z [1m[92m  Downloaded[0m termcolor v1.4.1
+2026-11-11T16:53:37.2822209Z [1m[92m  Downloaded[0m tempfile v3.27.0
+2026-11-11T16:53:37.3032109Z [1m[92m  Downloaded[0m semver v1.0.28
+2026-11-11T16:53:37.3283896Z [1m[92m  Downloaded[0m schemars_derive v0.8.22
+2026-11-11T16:53:37.3431615Z [1m[92m  Downloaded[0m rand_core v0.6.4
+2026-11-11T16:53:37.3536595Z [1m[92m  Downloaded[0m quote v1.0.47
+2026-11-11T16:53:37.3789757Z [1m[92m  Downloaded[0m pkcs8 v0.10.2
+2026-11-11T16:53:37.4089265Z [1m[92m  Downloaded[0m fastrand v2.5.0
+2026-11-11T16:53:37.4193135Z [1m[92m  Downloaded[0m ed25519 v2.2.3
+2026-11-11T16:53:37.4850473Z [1m[92m  Downloaded[0m dirs-sys v0.5.0
+2026-11-11T16:53:37.4942925Z [1m[92m  Downloaded[0m const-oid v0.9.6
+2026-11-11T16:53:37.5087336Z [1m[92m  Downloaded[0m zeroize v1.9.1
+2026-11-11T16:53:37.5240356Z [1m[92m  Downloaded[0m version_check v0.9.5
+2026-11-11T16:53:37.5342723Z [1m[92m  Downloaded[0m ts-rs-macros v11.1.0
+2026-11-11T16:53:37.5500583Z [1m[92m  Downloaded[0m thiserror-impl v2.0.21
+2026-11-11T16:53:37.5673103Z [1m[92m  Downloaded[0m thiserror v2.0.21
+2026-11-11T16:53:37.6409122Z [1m[92m  Downloaded[0m subtle v2.6.1
+2026-11-11T16:53:37.6500687Z [1m[92m  Downloaded[0m spki v0.7.3
+2026-11-11T16:53:37.6677362Z [1m[92m  Downloaded[0m sha2 v0.10.9
+2026-11-11T16:53:37.6979305Z [1m[92m  Downloaded[0m serde_derive_internals v0.29.1
+2026-11-11T16:53:37.7110924Z [1m[92m  Downloaded[0m windows_x86_64_msvc v0.52.6
+2026-11-11T16:53:37.7309317Z [1m[92m  Downloaded[0m rustc_version v0.4.1
+2026-11-11T16:53:37.7414009Z [1m[92m  Downloaded[0m option-ext v0.2.0
+2026-11-11T16:53:37.7522528Z [1m[92m  Downloaded[0m dyn-clone v1.0.20
+2026-11-11T16:53:37.7654446Z [1m[92m  Downloaded[0m crypto-common v0.1.7
+2026-11-11T16:53:37.7733823Z [1m[92m  Downloaded[0m cpufeatures v0.2.17
+2026-11-11T16:53:37.7844199Z [1m[92m  Downloaded[0m signature v2.2.0
+2026-11-11T16:53:37.7984651Z [1m[92m  Downloaded[0m itoa v1.0.18
+2026-11-11T16:53:38.1944695Z [1m[92m  Downloaded[0m errno v0.3.14
+2026-11-11T16:53:38.2114378Z [1m[92m  Downloaded[0m dunce v1.0.5
+2026-11-11T16:53:38.2199777Z [1m[92m  Downloaded[0m cfg-if v1.0.5
+2026-11-11T16:53:38.2333764Z [1m[92m  Downloaded[0m dirs v6.0.0
+2026-11-11T16:53:38.2499329Z [1m[92m  Downloaded[0m curve25519-dalek-derive v0.1.1
+2026-11-11T16:53:38.2586110Z [1m[92m  Downloaded[0m block-buffer v0.10.4
+2026-11-11T16:53:38.2676416Z [1m[92m  Downloaded[0m bitflags v2.13.2
+2026-11-11T16:53:38.3188179Z [1m[92m  Downloaded[0m windows-sys v0.61.2
+2026-11-11T16:53:38.6218780Z [1m[92m  Downloaded[0m windows-sys v0.52.0
+2026-11-11T16:53:40.2351171Z [1m[92m   Compiling[0m proc-macro2 v1.0.107
+2026-11-11T16:53:40.2351916Z [1m[92m   Compiling[0m unicode-ident v1.0.27
+2026-11-11T16:53:40.2362529Z [1m[92m   Compiling[0m quote v1.0.47
+2026-11-11T16:53:40.2364912Z [1m[92m   Compiling[0m windows-link v0.2.1
+2026-11-11T16:53:40.2963510Z [1m[92m   Compiling[0m version_check v0.9.5
+2026-11-11T16:53:40.3566382Z [1m[92m   Compiling[0m windows-sys v0.61.2
+2026-11-11T16:53:40.6567289Z [1m[92m   Compiling[0m generic-array v0.14.7
+2026-11-11T16:53:43.4232855Z [1m[92m   Compiling[0m serde_core v1.0.229
+2026-11-11T16:53:43.9078522Z [1m[92m   Compiling[0m typenum v1.20.1
+2026-11-11T16:53:43.9108007Z [1m[92m   Compiling[0m zmij v1.0.23
+2026-11-11T16:53:45.6475356Z [1m[92m   Compiling[0m syn v2.0.119
+2026-11-11T16:53:46.2043194Z [1m[92m   Compiling[0m syn v3.0.9
+2026-11-11T16:53:46.2060849Z [1m[92m   Compiling[0m cfg-if v1.0.5
+2026-11-11T16:53:46.2578236Z [1m[92m   Compiling[0m zeroize v1.9.1
+2026-11-11T16:53:46.4512425Z [1m[92m   Compiling[0m serde_json v1.0.154
+2026-11-11T16:53:46.8314054Z [1m[92m   Compiling[0m winapi-util v0.1.11
+2026-11-11T16:53:47.5375715Z [1m[92m   Compiling[0m serde v1.0.229
+2026-11-11T16:53:47.6399179Z [1m[92m   Compiling[0m thiserror v2.0.21
+2026-11-11T16:53:48.0614027Z [1m[92m   Compiling[0m semver v1.0.28
+2026-11-11T16:53:48.1753633Z [1m[92m   Compiling[0m itoa v1.0.18
+2026-11-11T16:53:48.4178808Z [1m[92m   Compiling[0m memchr v2.8.3
+2026-11-11T16:53:48.4974750Z [1m[92m   Compiling[0m const-oid v0.9.6
+2026-11-11T16:53:48.7122503Z [1m[92m   Compiling[0m windows_x86_64_msvc v0.52.6
+2026-11-11T16:53:49.6398789Z [1m[92m   Compiling[0m der v0.7.10
+2026-11-11T16:53:50.2057831Z [1m[92m   Compiling[0m thiserror-impl v2.0.21
+2026-11-11T16:53:51.0866900Z [1m[92m   Compiling[0m serde_derive v1.0.229
+2026-11-11T16:53:51.7672260Z [1m[92m   Compiling[0m serde_derive_internals v0.29.1
+2026-11-11T16:53:52.2757751Z [1m[92m   Compiling[0m rustc_version v0.4.1
+2026-11-11T16:53:52.7988537Z [1m[92m   Compiling[0m termcolor v1.4.1
+2026-11-11T16:53:53.2563445Z [1m[92m   Compiling[0m crypto-common v0.1.7
+2026-11-11T16:53:53.2696944Z [1m[92m   Compiling[0m block-buffer v0.10.4
+2026-11-11T16:53:53.3285399Z [1m[92m   Compiling[0m option-ext v0.2.0
+2026-11-11T16:53:53.3645764Z [1m[92m   Compiling[0m getrandom v0.4.3
+2026-11-11T16:53:53.3957130Z [1m[92m   Compiling[0m schemars v0.8.22
+2026-11-11T16:53:53.3977739Z [1m[92m   Compiling[0m dirs-sys v0.5.0
+2026-11-11T16:53:53.5226613Z [1m[92m   Compiling[0m digest v0.10.7
+2026-11-11T16:53:53.7900974Z [1m[92m   Compiling[0m ts-rs-macros v11.1.0
+2026-11-11T16:53:53.8009971Z [1m[92m   Compiling[0m schemars_derive v0.8.22
+2026-11-11T16:53:53.9194594Z [1m[92m   Compiling[0m curve25519-dalek v4.1.3
+2026-11-11T16:53:54.3460964Z [1m[92m   Compiling[0m spki v0.7.3
+2026-11-11T16:53:54.6319337Z [1m[92m   Compiling[0m dyn-clone v1.0.20
+2026-11-11T16:53:54.7684940Z [1m[92m   Compiling[0m cpufeatures v0.2.17
+2026-11-11T16:53:54.8264222Z [1m[92m   Compiling[0m windows-targets v0.52.6
+2026-11-11T16:53:54.9129099Z [1m[92m   Compiling[0m pkcs8 v0.10.2
+2026-11-11T16:53:55.4789232Z [1m[92m   Compiling[0m dirs v6.0.0
+2026-11-11T16:53:55.6084349Z [1m[92m   Compiling[0m curve25519-dalek-derive v0.1.1
+2026-11-11T16:53:55.7853079Z [1m[92m   Compiling[0m once_cell v1.21.4
+2026-11-11T16:53:56.1184201Z [1m[92m   Compiling[0m dunce v1.0.5
+2026-11-11T16:53:56.3564256Z [1m[92m   Compiling[0m rustix v1.1.5
+2026-11-11T16:53:56.5393656Z [1m[92m   Compiling[0m ts-rs v11.1.0
+2026-11-11T16:53:56.6362219Z [1m[92m   Compiling[0m subtle v2.6.1
+2026-11-11T16:53:56.8300105Z [1m[92m   Compiling[0m fastrand v2.5.0
+2026-11-11T16:53:56.9459908Z [1m[92m   Compiling[0m signature v2.2.0
+2026-11-11T16:53:57.0894831Z [1m[92m   Compiling[0m ed25519 v2.2.3
+2026-11-11T16:53:57.1286649Z [1m[92m   Compiling[0m tempfile v3.27.0
+2026-11-11T16:53:57.7707380Z [1m[92m   Compiling[0m windows-sys v0.52.0
+2026-11-11T16:53:57.8713352Z [1m[92m   Compiling[0m sha2 v0.10.9
+2026-11-11T16:53:58.4415981Z [1m[92m   Compiling[0m errno v0.3.14
+2026-11-11T16:53:58.6559724Z [1m[92m   Compiling[0m codex-utils-absolute-path v0.0.0 (D:\a\hepta-private-ci\hepta-private-ci\codex-rs\utils\absolute-path)
+2026-11-11T16:53:59.3893726Z [1m[92m   Compiling[0m anyhow v1.0.104
+2026-11-11T16:53:59.5657584Z [1m[92m   Compiling[0m bitflags v2.13.2
+2026-11-11T16:53:59.6669897Z [1m[92m   Compiling[0m codex-utils-path v0.0.0 (D:\a\hepta-private-ci\hepta-private-ci\codex-rs\utils\path-utils)
+2026-11-11T16:53:59.9200273Z [1m[92m   Compiling[0m ed25519-dalek v2.2.0
+2026-11-11T16:53:59.9591710Z [1m[92m   Compiling[0m diff v0.1.13
+2026-11-11T16:54:00.2887915Z [1m[92m   Compiling[0m yansi v1.0.1
+2026-11-11T16:54:00.6207317Z [1m[92m   Compiling[0m codex-hepta-contracts v0.0.0 (D:\a\hepta-private-ci\hepta-private-ci\codex-rs\hepta-contracts)
+2026-11-11T16:54:00.7492326Z [1m[92m   Compiling[0m pretty_assertions v1.4.1
+2026-11-11T16:54:07.0590343Z [1m[92m   Compiling[0m codex-hepta-paths v0.0.0 (D:\a\hepta-private-ci\hepta-private-ci\codex-rs\hepta-paths)
+2026-11-11T16:54:07.7523829Z [1m[92m    Finished[0m `test` profile [unoptimized + debuginfo] target(s) in 50.95s
+2026-11-11T16:54:07.9417663Z [33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_core@1.0.229` which wasn't produced by cargo metadata
+2026-11-11T16:54:07.9419903Z [33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#generic-array@0.14.7` which wasn't produced by cargo metadata
+2026-11-11T16:54:07.9422225Z [33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#quote@1.0.47` which wasn't produced by cargo metadata
+2026-11-11T16:54:07.9423948Z [33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#proc-macro2@1.0.107` which wasn't produced by cargo metadata
+2026-11-11T16:54:07.9425689Z [33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zmij@1.0.23` which wasn't produced by cargo metadata
+2026-11-11T16:54:07.9427375Z [33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_json@1.0.154` which wasn't produced by cargo metadata
+2026-11-11T16:54:07.9429124Z [33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#windows_x86_64_msvc@0.52.6` which wasn't produced by cargo metadata
+2026-11-11T16:54:07.9431596Z [33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#thiserror@2.0.21` which wasn't produced by cargo metadata
+2026-11-11T16:54:07.9432952Z [33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde@1.0.229` which wasn't produced by cargo metadata
+2026-11-11T16:54:07.9434060Z [33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#getrandom@0.4.3` which wasn't produced by cargo metadata
+2026-11-11T16:54:07.9435086Z [33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#schemars@0.8.22` which wasn't produced by cargo metadata
+2026-11-11T16:54:07.9436132Z [33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#curve25519-dalek@4.1.3` which wasn't produced by cargo metadata
+2026-11-11T16:54:07.9437146Z [33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustix@1.1.5` which wasn't produced by cargo metadata
+2026-11-11T16:54:07.9438803Z [33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#anyhow@1.0.104` which wasn't produced by cargo metadata
+2026-11-11T16:54:07.9579749Z ────────────
+2026-11-11T16:54:07.9580553Z [32;1m Nextest run[0m ID [1m428d8670-9da0-434b-b35e-f8dfc344ac9e[0m with nextest profile: [1mlocal[0m
+2026-11-11T16:54:07.9581178Z [32;1m    Starting[0m [1m9[0m tests across [1m1[0m binary
+2026-11-11T16:54:07.9698095Z [32;1m        PASS[0m [   0.010s] [35;1mcodex-hepta-paths[0m [36mfleet::tests[0m[36m::[0m[34;1mfleet_root_rejects_relative_root_and_dot_segments[0m
+2026-11-11T16:54:07.9713859Z [32;1m        PASS[0m [   0.012s] [35;1mcodex-hepta-paths[0m [36mfleet::tests[0m[36m::[0m[34;1magent_layout_uses_safe_id_component_and_disjoint_owned_roots[0m
+2026-11-11T16:54:07.9730585Z [32;1m        PASS[0m [   0.014s] [35;1mcodex-hepta-paths[0m [36mfleet::tests[0m[36m::[0m[34;1mdistinct_agent_ids_cannot_alias_one_agent_root[0m
+2026-11-11T16:54:07.9742206Z [32;1m        PASS[0m [   0.016s] [35;1mcodex-hepta-paths[0m [36mfleet::tests[0m[36m::[0m[34;1mproduction_layout_is_stable_and_fleet_scoped[0m
+2026-11-11T16:54:07.9806249Z [32;1m        PASS[0m [   0.011s] [35;1mcodex-hepta-paths[0m [36mnative_root_tests[0m[36m::[0m[34;1maccepted_runtime_roots_remain_absolute_on_the_executing_host[0m
+2026-11-11T16:54:07.9820759Z [32;1m        PASS[0m [   0.011s] [35;1mcodex-hepta-paths[0m [36mnative_root_tests[0m[36m::[0m[34;1mforeign_or_drive_relative_roots_cannot_select_local_state[0m
+2026-11-11T16:54:07.9836746Z [32;1m        PASS[0m [   0.011s] [35;1mcodex-hepta-paths[0m [36mnative_root_tests[0m[36m::[0m[34;1mnative_filesystem_roots_and_traversal_are_rejected[0m
+2026-11-11T16:54:07.9855778Z [32;1m        PASS[0m [   0.011s] [35;1mcodex-hepta-paths[0m [36mtests[0m[36m::[0m[34;1mproduction_layout_accepts_a_windows_absolute_home[0m
+2026-11-11T16:54:07.9889148Z [32;1m        PASS[0m [   0.008s] [35;1mcodex-hepta-paths[0m [36mtests[0m[36m::[0m[34;1mstate_root_rejects_relative_root_and_parent_traversal[0m
+2026-11-11T16:54:07.9890451Z ────────────
+2026-11-11T16:54:07.9890940Z [32;1m     Summary[0m [   0.031s] [1m9[0m tests run: [1m9[0m [32;1mpassed[0m, [1m0[0m [33;1mskipped[0m
+2026-11-11T16:54:08.1487337Z Prepare all required actions
+2026-11-11T16:54:08.1520034Z ##[group]Run ./.github/actions/check-clean-worktree
+2026-11-11T16:54:08.1520323Z env:
+2026-11-11T16:54:08.1520504Z   CI_BUILD_ROOT: D:
+2026-11-11T16:54:08.1520750Z   CODEX_REPO_ROOT: D:\a\hepta-private-ci\hepta-private-ci
+2026-11-11T16:54:08.1521053Z   BAZEL_OUTPUT_BASE: D:/o
+2026-11-11T16:54:08.1521257Z   BAZEL_OUTPUT_USER_ROOT: D:/b
+2026-11-11T16:54:08.1521509Z   BAZEL_REPOSITORY_CACHE: D:/bazel-repository-cache
+2026-11-11T16:54:08.1521917Z   BAZEL_REPO_CONTENTS_CACHE: D:/bazel-repo-contents-cache-43062473474-native-paths
+2026-11-11T16:54:08.1522325Z   CARGO_TARGET_DIR: D:/cargo-target
+2026-11-11T16:54:08.1522543Z   TEMP: D:/tmp
+2026-11-11T16:54:08.1522712Z   TMP: D:/tmp
+2026-11-11T16:54:08.1523365Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-11T16:54:08.1523613Z   CARGO_HOME: C:\Users\runneradmin\.cargo
+2026-11-11T16:54:08.1523858Z   CARGO_INCREMENTAL: 0
+2026-11-11T16:54:08.1524081Z   CARGO_TERM_COLOR: always
+2026-11-11T16:54:08.1524277Z ##[endgroup]
+2026-11-11T16:54:08.1527406Z ##[start-action display=Check for a clean worktree;id=__self_2.__run]
+2026-11-11T16:54:08.1643948Z ##[group]Run set -euo pipefail
+2026-11-11T16:54:08.1644214Z [36;1mset -euo pipefail[0m
+2026-11-11T16:54:08.1644415Z [36;1m[0m
+2026-11-11T16:54:08.1644848Z [36;1mstatus="$(git -C "${GITHUB_WORKSPACE}" status --porcelain=v1 --untracked-files=normal --ignore-submodules=none)"[0m
+2026-11-11T16:54:08.1645342Z [36;1mif [[ -z "${status}" ]]; then[0m
+2026-11-11T16:54:08.1645570Z [36;1m  exit 0[0m
+2026-11-11T16:54:08.1645742Z [36;1mfi[0m
+2026-11-11T16:54:08.1645923Z [36;1m[0m
+2026-11-11T16:54:08.1646264Z [36;1mecho "::error::CI job left tracked changes or untracked files in the repository worktree"[0m
+2026-11-11T16:54:08.1646678Z [36;1mprintf '%s\n' "${status}"[0m
+2026-11-11T16:54:08.1646899Z [36;1mexit 1[0m
+2026-11-11T16:54:08.1658551Z shell: C:\Program Files\Git\bin\bash.EXE --noprofile --norc -e -o pipefail {0}
+2026-11-11T16:54:08.1658914Z env:
+2026-11-11T16:54:08.1659081Z   CI_BUILD_ROOT: D:
+2026-11-11T16:54:08.1659340Z   CODEX_REPO_ROOT: D:\a\hepta-private-ci\hepta-private-ci
+2026-11-11T16:54:08.1659655Z   BAZEL_OUTPUT_BASE: D:/o
+2026-11-11T16:54:08.1659863Z   BAZEL_OUTPUT_USER_ROOT: D:/b
+2026-11-11T16:54:08.1660125Z   BAZEL_REPOSITORY_CACHE: D:/bazel-repository-cache
+2026-11-11T16:54:08.1660541Z   BAZEL_REPO_CONTENTS_CACHE: D:/bazel-repo-contents-cache-43062473474-native-paths
+2026-11-11T16:54:08.1661196Z   CARGO_TARGET_DIR: D:/cargo-target
+2026-11-11T16:54:08.1661426Z   TEMP: D:/tmp
+2026-11-11T16:54:08.1661790Z   TMP: D:/tmp
+2026-11-11T16:54:08.1661974Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-11T16:54:08.1662221Z   CARGO_HOME: C:\Users\runneradmin\.cargo
+2026-11-11T16:54:08.1662463Z   CARGO_INCREMENTAL: 0
+2026-11-11T16:54:08.1662661Z   CARGO_TERM_COLOR: always
+2026-11-11T16:54:08.1662857Z ##[endgroup]
+2026-11-11T16:54:08.4797129Z ##[end-action id=__self_2.__run;outcome=success;conclusion=success;duration_ms=326]
+2026-11-11T16:54:08.5047808Z Post job cleanup.
+2026-11-11T16:54:08.6840858Z [command]"C:\Program Files\Git\bin\git.exe" version
+2026-11-11T16:54:08.7295973Z git version 2.56.0.windows.4
+2026-11-11T16:54:08.7358993Z Copying 'C:\Users\runneradmin\.gitconfig' to 'D:\a\_temp\9628174e-3197-4a20-8abe-0adaeaf41912\.gitconfig'
+2026-11-11T16:54:08.7379333Z Temporarily overriding HOME='D:\a\_temp\9628174e-3197-4a20-8abe-0adaeaf41912' before making global git config changes
+2026-11-11T16:54:08.7380393Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-11T16:54:08.7390806Z [command]"C:\Program Files\Git\bin\git.exe" config --global --add safe.directory D:\a\hepta-private-ci\hepta-private-ci
+2026-11-11T16:54:08.7763168Z Removing SSH command configuration
+2026-11-11T16:54:08.7774236Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+2026-11-11T16:54:08.8150317Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+2026-11-11T16:54:09.4396389Z Removing HTTP extra header
+2026-11-11T16:54:09.4407697Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-11T16:54:09.4785773Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+2026-11-11T16:54:10.0418094Z Removing includeIf entries pointing to credentials config files
+2026-11-11T16:54:10.0431116Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-11T16:54:10.0761167Z includeif.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git.path
+2026-11-11T16:54:10.0762687Z includeif.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path
+2026-11-11T16:54:10.0803108Z [command]"C:\Program Files\Git\bin\git.exe" config --local --get-all includeif.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git.path
+2026-11-11T16:54:10.1129340Z D:\a\_temp\git-credentials-c0a6de44-0581-4dcd-9500-11cd77dcf7aa.config
+2026-11-11T16:54:10.1171840Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset includeif.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git.path D:\a\_temp\git-credentials-c0a6de44-0581-4dcd-9500-11cd77dcf7aa.config
+2026-11-11T16:54:10.1536317Z [command]"C:\Program Files\Git\bin\git.exe" config --local --get-all includeif.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path
+2026-11-11T16:54:10.1863623Z D:\a\_temp\git-credentials-c0a6de44-0581-4dcd-9500-11cd77dcf7aa.config
+2026-11-11T16:54:10.1904518Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset includeif.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path D:\a\_temp\git-credentials-c0a6de44-0581-4dcd-9500-11cd77dcf7aa.config
+2026-11-11T16:54:10.2279983Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+2026-11-11T16:54:10.7580121Z Removing credentials config 'D:\a\_temp\git-credentials-c0a6de44-0581-4dcd-9500-11cd77dcf7aa.config'
+2026-11-11T16:54:10.7777733Z Cleaning up orphan processes
+2026-11-11T16:54:10.7977528Z Terminate orphan process: pid (7068) (vctip)

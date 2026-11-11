@@ -1,0 +1,340 @@
+﻿2026-11-11T16:52:17.0339571Z Current runner version: '2.338.2'
+2026-11-11T16:52:17.0362421Z ##[group]Runner Image Provisioner
+2026-11-11T16:52:17.0363347Z Hosted Compute Agent
+2026-11-11T16:52:17.0363888Z Version: 20261028.624
+2026-11-11T16:52:17.0364489Z Commit: 54898b74c23fde5556c9b3c3a2290865feef0dfe
+2026-11-11T16:52:17.0365205Z Build Date: 2026-10-28T21:51:42Z
+2026-11-11T16:52:17.0365832Z Worker ID: {97a0fc77-a7d7-4c14-b811-325c07f98f41}
+2026-11-11T16:52:17.0366482Z Region: westus3
+2026-11-11T16:52:17.0366995Z Cloud: Azure
+2026-11-11T16:52:17.0367514Z ##[endgroup]
+2026-11-11T16:52:17.0369039Z ##[group]Operating System
+2026-11-11T16:52:17.0369717Z Ubuntu
+2026-11-11T16:52:17.0370233Z 24.04.5
+2026-11-11T16:52:17.0370713Z LTS
+2026-11-11T16:52:17.0371213Z ##[endgroup]
+2026-11-11T16:52:17.0371742Z ##[group]Runner Image
+2026-11-11T16:52:17.0372294Z Image: ubuntu-24.04
+2026-11-11T16:52:17.0372796Z Version: 20261101.360.1
+2026-11-11T16:52:17.0373998Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261101.360/images/ubuntu/Ubuntu2404-Readme.md
+2026-11-11T16:52:17.0375397Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261101.360
+2026-11-11T16:52:17.0376266Z ##[endgroup]
+2026-11-11T16:52:17.0377308Z ##[group]GITHUB_TOKEN Permissions
+2026-11-11T16:52:17.0379551Z Contents: read
+2026-11-11T16:52:17.0380072Z Metadata: read
+2026-11-11T16:52:17.0380631Z ##[endgroup]
+2026-11-11T16:52:17.0382586Z Secret source: Actions
+2026-11-11T16:52:17.0383461Z Cache mode: write
+2026-11-11T16:52:17.0384069Z Prepare workflow directory
+2026-11-11T16:52:17.0674684Z Prepare all required actions
+2026-11-11T16:52:17.0735890Z Getting action download info
+2026-11-11T16:52:17.3694512Z Download action repository 'actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd' (SHA:de0fac2e4500dabe0009e67214ff5f5447ce83dd)
+2026-11-11T16:52:17.5864353Z Uses: TrillionniumFoundation/hepta-private-ci/.github/workflows/rust-ci.yml@refs/pull/5935/merge (a49776ffdea3547ed407a710bb19e93377b29535)
+2026-11-11T16:52:17.5868325Z Complete job name: rust-ci / Detect changed areas
+2026-11-11T16:52:17.6546947Z ##[group]Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+2026-11-11T16:52:17.6547847Z with:
+2026-11-11T16:52:17.6548299Z   fetch-depth: 2
+2026-11-11T16:52:17.6548951Z   persist-credentials: false
+2026-11-11T16:52:17.6549554Z   repository: TrillionniumFoundation/hepta-private-ci
+2026-11-11T16:52:17.6552751Z   token: ***
+2026-11-11T16:52:17.6553202Z   ssh-strict: true
+2026-11-11T16:52:17.6553662Z   ssh-user: git
+2026-11-11T16:52:17.6554079Z   clean: true
+2026-11-11T16:52:17.6554535Z   sparse-checkout-cone-mode: true
+2026-11-11T16:52:17.6555030Z   fetch-tags: false
+2026-11-11T16:52:17.6555509Z   show-progress: true
+2026-11-11T16:52:17.6555967Z   lfs: false
+2026-11-11T16:52:17.6556381Z   submodules: false
+2026-11-11T16:52:17.6556836Z   set-safe-directory: true
+2026-11-11T16:52:17.6557440Z ##[endgroup]
+2026-11-11T16:52:17.8908562Z Syncing repository: TrillionniumFoundation/hepta-private-ci
+2026-11-11T16:52:17.8910860Z ##[group]Getting Git version info
+2026-11-11T16:52:17.8911764Z Working directory is '/home/runner/work/hepta-private-ci/hepta-private-ci'
+2026-11-11T16:52:17.8912792Z [command]/usr/bin/git version
+2026-11-11T16:52:17.8979664Z git version 2.56.0
+2026-11-11T16:52:17.9002728Z ##[endgroup]
+2026-11-11T16:52:17.9027590Z Temporarily overriding HOME='/home/runner/work/_temp/431e7fcb-c73b-439c-ac27-59b2dbc431e4' before making global git config changes
+2026-11-11T16:52:17.9029594Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-11T16:52:17.9036232Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-11T16:52:17.9077987Z Deleting the contents of '/home/runner/work/hepta-private-ci/hepta-private-ci'
+2026-11-11T16:52:17.9082695Z ##[group]Initializing the repository
+2026-11-11T16:52:17.9087384Z [command]/usr/bin/git init /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-11T16:52:17.9192802Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-11-11T16:52:17.9194560Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-11-11T16:52:17.9196016Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-11-11T16:52:17.9197136Z hint: call:
+2026-11-11T16:52:17.9197896Z hint:
+2026-11-11T16:52:17.9198893Z hint: 	git config --global init.defaultBranch <name>
+2026-11-11T16:52:17.9200043Z hint:
+2026-11-11T16:52:17.9201061Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-11-11T16:52:17.9202420Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-11-11T16:52:17.9203559Z hint:
+2026-11-11T16:52:17.9204316Z hint: 	git branch -m <name>
+2026-11-11T16:52:17.9205187Z hint:
+2026-11-11T16:52:17.9206175Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-11-11T16:52:17.9207882Z Initialized empty Git repository in /home/runner/work/hepta-private-ci/hepta-private-ci/.git/
+2026-11-11T16:52:17.9211096Z [command]/usr/bin/git remote add origin https://github.com/TrillionniumFoundation/hepta-private-ci
+2026-11-11T16:52:17.9249305Z ##[endgroup]
+2026-11-11T16:52:17.9250425Z ##[group]Disabling automatic garbage collection
+2026-11-11T16:52:17.9252503Z [command]/usr/bin/git config --local gc.auto 0
+2026-11-11T16:52:17.9278986Z ##[endgroup]
+2026-11-11T16:52:17.9280029Z ##[group]Setting up auth
+2026-11-11T16:52:17.9280757Z Removing SSH command configuration
+2026-11-11T16:52:17.9285945Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-11T16:52:17.9314462Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-11T16:52:17.9618064Z Removing HTTP extra header
+2026-11-11T16:52:17.9626044Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-11T16:52:17.9656932Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-11T16:52:17.9830831Z Removing includeIf entries pointing to credentials config files
+2026-11-11T16:52:17.9836393Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-11T16:52:17.9863696Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-11T16:52:18.0048277Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-01e98343-0d88-4df5-ba0c-70752120b3da.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-11-11T16:52:18.0077294Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path /home/runner/work/_temp/git-credentials-01e98343-0d88-4df5-ba0c-70752120b3da.config
+2026-11-11T16:52:18.0108498Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-01e98343-0d88-4df5-ba0c-70752120b3da.config
+2026-11-11T16:52:18.0150327Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-01e98343-0d88-4df5-ba0c-70752120b3da.config
+2026-11-11T16:52:18.0177685Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-01e98343-0d88-4df5-ba0c-70752120b3da.config
+2026-11-11T16:52:18.0201827Z ##[endgroup]
+2026-11-11T16:52:18.0203069Z ##[group]Fetching the repository
+2026-11-11T16:52:18.0209555Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=2 origin +a49776ffdea3547ed407a710bb19e93377b29535:refs/remotes/pull/5935/merge
+2026-11-11T16:52:24.8067372Z From https://github.com/TrillionniumFoundation/hepta-private-ci
+2026-11-11T16:52:24.8070254Z  * [new ref]         a49776ffdea3547ed407a710bb19e93377b29535 -> pull/5935/merge
+2026-11-11T16:52:24.8073715Z ##[endgroup]
+2026-11-11T16:52:24.8075198Z ##[group]Determining the checkout info
+2026-11-11T16:52:24.8076690Z ##[endgroup]
+2026-11-11T16:52:24.8079152Z [command]/usr/bin/git sparse-checkout disable
+2026-11-11T16:52:24.8138405Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-11-11T16:52:24.8168576Z ##[group]Checking out the ref
+2026-11-11T16:52:24.8170483Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/5935/merge
+2026-11-11T16:52:25.6378301Z Note: switching to 'refs/remotes/pull/5935/merge'.
+2026-11-11T16:52:25.6379454Z 
+2026-11-11T16:52:25.6380092Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-11-11T16:52:25.6380986Z changes and commit them, and you can discard any commits you make in this
+2026-11-11T16:52:25.6381642Z state without impacting any branches by switching back to a branch.
+2026-11-11T16:52:25.6382090Z 
+2026-11-11T16:52:25.6382449Z If you want to create a new branch to retain commits you create, you may
+2026-11-11T16:52:25.6383023Z do so (now or later) by using -c with the switch command. Example:
+2026-11-11T16:52:25.6383339Z 
+2026-11-11T16:52:25.6383561Z   git switch -c <new-branch-name>
+2026-11-11T16:52:25.6383794Z 
+2026-11-11T16:52:25.6384018Z Or undo this operation with:
+2026-11-11T16:52:25.6384248Z 
+2026-11-11T16:52:25.6384426Z   git switch -
+2026-11-11T16:52:25.6384703Z 
+2026-11-11T16:52:25.6384986Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-11-11T16:52:25.6385380Z 
+2026-11-11T16:52:25.6385802Z HEAD is now at a49776f Merge d0f6507e08f7f5c5855f5164d07c049a34d1a6d9 into 96038ccf0660154fac143ba6cbe4be81e00813e8
+2026-11-11T16:52:25.6401678Z ##[endgroup]
+2026-11-11T16:52:25.6442749Z [command]/usr/bin/git log -1 --format=%H
+2026-11-11T16:52:25.6465514Z a49776ffdea3547ed407a710bb19e93377b29535
+2026-11-11T16:52:25.6478814Z ##[group]Removing auth
+2026-11-11T16:52:25.6479648Z Removing SSH command configuration
+2026-11-11T16:52:25.6480267Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-11T16:52:25.6507574Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-11T16:52:25.6693702Z Removing HTTP extra header
+2026-11-11T16:52:25.6697303Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-11T16:52:25.6724662Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-11T16:52:25.6912695Z Removing includeIf entries pointing to credentials config files
+2026-11-11T16:52:25.6916635Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-11T16:52:25.6940280Z includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path
+2026-11-11T16:52:25.6941704Z includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path
+2026-11-11T16:52:25.6942807Z includeif.gitdir:/github/workspace/.git.path
+2026-11-11T16:52:25.6943806Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-11T16:52:25.6949898Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path
+2026-11-11T16:52:25.6970712Z /home/runner/work/_temp/git-credentials-01e98343-0d88-4df5-ba0c-70752120b3da.config
+2026-11-11T16:52:25.6981466Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path /home/runner/work/_temp/git-credentials-01e98343-0d88-4df5-ba0c-70752120b3da.config
+2026-11-11T16:52:25.7017817Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path
+2026-11-11T16:52:25.7037972Z /home/runner/work/_temp/git-credentials-01e98343-0d88-4df5-ba0c-70752120b3da.config
+2026-11-11T16:52:25.7045597Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-01e98343-0d88-4df5-ba0c-70752120b3da.config
+2026-11-11T16:52:25.7077358Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git.path
+2026-11-11T16:52:25.7101469Z /github/runner_temp/git-credentials-01e98343-0d88-4df5-ba0c-70752120b3da.config
+2026-11-11T16:52:25.7108551Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-01e98343-0d88-4df5-ba0c-70752120b3da.config
+2026-11-11T16:52:25.7140217Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-11T16:52:25.7159740Z /github/runner_temp/git-credentials-01e98343-0d88-4df5-ba0c-70752120b3da.config
+2026-11-11T16:52:25.7170091Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-01e98343-0d88-4df5-ba0c-70752120b3da.config
+2026-11-11T16:52:25.7197670Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-11T16:52:25.7375142Z Removing credentials config '/home/runner/work/_temp/git-credentials-01e98343-0d88-4df5-ba0c-70752120b3da.config'
+2026-11-11T16:52:25.7383470Z ##[endgroup]
+2026-11-11T16:52:25.7592669Z ##[group]Run set -euo pipefail
+2026-11-11T16:52:25.7593272Z [36;1mset -euo pipefail[0m
+2026-11-11T16:52:25.7593909Z [36;1mpython3 scripts/hepta_ci_history.py --commit "$BASE_SHA" --commit "$HEAD_SHA"[0m
+2026-11-11T16:52:25.7610568Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-11T16:52:25.7611075Z env:
+2026-11-11T16:52:25.7613659Z   GH_TOKEN: ***
+2026-11-11T16:52:25.7614112Z   BASE_SHA: 96038ccf0660154fac143ba6cbe4be81e00813e8
+2026-11-11T16:52:25.7614567Z   HEAD_SHA: d0f6507e08f7f5c5855f5164d07c049a34d1a6d9
+2026-11-11T16:52:25.7615062Z ##[endgroup]
+2026-11-11T16:52:25.8063445Z ##[group]Run python3 -m unittest discover -s scripts -p 'test_hepta_rust_ci_feedback.py' -v
+2026-11-11T16:52:25.8064209Z [36;1mpython3 -m unittest discover -s scripts -p 'test_hepta_rust_ci_feedback.py' -v[0m
+2026-11-11T16:52:25.8076018Z shell: /usr/bin/bash -e {0}
+2026-11-11T16:52:25.8076448Z ##[endgroup]
+2026-11-11T16:52:25.8821982Z test_absent_or_invalid_flags_cannot_pass (test_hepta_rust_ci_feedback.FastFeedbackTests.test_absent_or_invalid_flags_cannot_pass) ... ok
+2026-11-11T16:52:25.8913530Z test_benchmark_is_preserved_but_does_not_delay_format_result (test_hepta_rust_ci_feedback.FastFeedbackTests.test_benchmark_is_preserved_but_does_not_delay_format_result) ... ok
+2026-11-11T16:52:25.9018163Z test_confirmed_prose_only_change_can_pass (test_hepta_rust_ci_feedback.FastFeedbackTests.test_confirmed_prose_only_change_can_pass) ... ok
+2026-11-11T16:52:25.9375322Z test_deleted_source_selects_rust (test_hepta_rust_ci_feedback.FastFeedbackTests.test_deleted_source_selects_rust) ... ok
+2026-11-11T16:52:25.9526111Z test_detector_cleans_temporary_path_file (test_hepta_rust_ci_feedback.FastFeedbackTests.test_detector_cleans_temporary_path_file) ... ok
+2026-11-11T16:52:25.9647764Z test_failed_cancelled_skipped_detection_cannot_pass (test_hepta_rust_ci_feedback.FastFeedbackTests.test_failed_cancelled_skipped_detection_cannot_pass) ... ok
+2026-11-11T16:52:25.9764246Z test_gate_shell_syntax (test_hepta_rust_ci_feedback.FastFeedbackTests.test_gate_shell_syntax) ... ok
+2026-11-11T16:52:25.9896371Z test_invalid_base_fails_without_skip_outputs (test_hepta_rust_ci_feedback.FastFeedbackTests.test_invalid_base_fails_without_skip_outputs) ... ok
+2026-11-11T16:52:26.0013640Z test_invalid_head_fails_without_skip_outputs (test_hepta_rust_ci_feedback.FastFeedbackTests.test_invalid_head_fails_without_skip_outputs) ... ok
+2026-11-11T16:52:26.0104420Z test_isolated_lint_package_flag_is_not_no_changes (test_hepta_rust_ci_feedback.FastFeedbackTests.test_isolated_lint_package_flag_is_not_no_changes) ... ok
+2026-11-11T16:52:26.0191535Z test_manifest_preflight_precedes_toolchain_and_does_not_compile (test_hepta_rust_ci_feedback.FastFeedbackTests.test_manifest_preflight_precedes_toolchain_and_does_not_compile) ... ok
+2026-11-11T16:52:26.0281872Z test_manual_run_still_selects_full_bundle (test_hepta_rust_ci_feedback.FastFeedbackTests.test_manual_run_still_selects_full_bundle) ... ok
+2026-11-11T16:52:26.0365876Z test_parameter_comment_diagnostics_do_not_compile_every_pr_three_times (test_hepta_rust_ci_feedback.FastFeedbackTests.test_parameter_comment_diagnostics_do_not_compile_every_pr_three_times) ... ok
+2026-11-11T16:52:26.0551665Z test_paths_with_newlines_are_literal_and_select_rust (test_hepta_rust_ci_feedback.FastFeedbackTests.test_paths_with_newlines_are_literal_and_select_rust) ... ok
+2026-11-11T16:52:26.0876088Z test_prose_only_change_keeps_scoped_skip (test_hepta_rust_ci_feedback.FastFeedbackTests.test_prose_only_change_keeps_scoped_skip) ... ok
+2026-11-11T16:52:26.0957432Z test_result_bindings_cover_new_required_jobs (test_hepta_rust_ci_feedback.FastFeedbackTests.test_result_bindings_cover_new_required_jobs) ... ok
+2026-11-11T16:52:26.1250239Z test_selected_rust_requires_all_four_results (test_hepta_rust_ci_feedback.FastFeedbackTests.test_selected_rust_requires_all_four_results) ... ok
+2026-11-11T16:52:26.1361438Z test_selected_workflows_still_require_native_rust_checks (test_hepta_rust_ci_feedback.FastFeedbackTests.test_selected_workflows_still_require_native_rust_checks) ... ok
+2026-11-11T16:52:26.2428144Z test_shared_build_inputs_select_manifest_checks (test_hepta_rust_ci_feedback.FastFeedbackTests.test_shared_build_inputs_select_manifest_checks) ... ok
+2026-11-11T16:52:26.2553073Z test_valid_empty_diff_is_not_an_error (test_hepta_rust_ci_feedback.FastFeedbackTests.test_valid_empty_diff_is_not_an_error) ... ok
+2026-11-11T16:52:26.2554416Z 
+2026-11-11T16:52:26.2554744Z ----------------------------------------------------------------------
+2026-11-11T16:52:26.2555697Z Ran 20 tests in 0.397s
+2026-11-11T16:52:26.2556475Z 
+2026-11-11T16:52:26.2556686Z OK
+2026-11-11T16:52:26.2681684Z ##[group]Run python3 -m unittest discover -s scripts -p 'test_hepta_ci_chef.py' -v
+2026-11-11T16:52:26.2682283Z [36;1mpython3 -m unittest discover -s scripts -p 'test_hepta_ci_chef.py' -v[0m
+2026-11-11T16:52:26.2695969Z shell: /usr/bin/bash -e {0}
+2026-11-11T16:52:26.2696295Z ##[endgroup]
+2026-11-11T16:52:26.3554063Z {"argv": ["git", "--no-replace-objects", "-C", "/tmp/chef fixture r_qkdo9w/repository with spaces", "worktree", "add", "--detach", "/tmp/chef fixture r_qkdo9w/runner temp/chef-ah0vy9dr/source", "262f105f240c12b5451942ba8ef9c0387c5b1da0"], "cwd": "/tmp/chef fixture r_qkdo9w/repository with spaces"}
+2026-11-11T16:52:26.3565049Z test_destructive_cook_cannot_hide_actual_source_error (test_hepta_ci_chef.ChefSourceCustodyTests.test_destructive_cook_cannot_hide_actual_source_error) ... Preparing worktree (detached HEAD 262f105)
+2026-11-11T16:52:26.3695433Z HEAD is now at 262f105 original source
+2026-11-11T16:52:26.3745876Z {"argv": ["/usr/bin/python3", "/tmp/chef fixture r_qkdo9w/destructive_cargo.py", "/tmp/chef fixture r_qkdo9w/cargo-calls.jsonl", "0", "chef", "prepare", "--recipe-path", "/tmp/chef fixture r_qkdo9w/runner temp/chef-ah0vy9dr/recipe.json"], "cwd": "/tmp/chef fixture r_qkdo9w/runner temp/chef-ah0vy9dr/source/codex-rs"}
+2026-11-11T16:52:26.3994157Z {"argv": ["/usr/bin/python3", "/tmp/chef fixture r_qkdo9w/destructive_cargo.py", "/tmp/chef fixture r_qkdo9w/cargo-calls.jsonl", "0", "chef", "cook", "--recipe-path", "/tmp/chef fixture r_qkdo9w/runner temp/chef-ah0vy9dr/recipe.json", "--target", "fixture-target", "--release", "--target-dir", "/tmp/chef fixture r_qkdo9w/shared target"], "cwd": "/tmp/chef fixture r_qkdo9w/runner temp/chef-ah0vy9dr/source/codex-rs"}
+2026-11-11T16:52:26.4246417Z {"argv": ["git", "--no-replace-objects", "-C", "/tmp/chef fixture r_qkdo9w/repository with spaces", "worktree", "remove", "--force", "/tmp/chef fixture r_qkdo9w/runner temp/chef-ah0vy9dr/source"], "cwd": "/tmp/chef fixture r_qkdo9w/repository with spaces"}
+2026-11-11T16:52:26.4305866Z {
+2026-11-11T16:52:26.4308881Z   "before": {
+2026-11-11T16:52:26.4309386Z     "head": "262f105f240c12b5451942ba8ef9c0387c5b1da0",
+2026-11-11T16:52:26.4310019Z     "tree": "7746a429299ffeb9b86c98facf2da1d75cc23ab8"
+2026-11-11T16:52:26.4310545Z   },
+2026-11-11T16:52:26.4310966Z   "target": "fixture-target",
+2026-11-11T16:52:26.4311494Z   "target_dir": "/tmp/chef fixture r_qkdo9w/shared target",
+2026-11-11T16:52:26.4311975Z   "cargo_chef_version": "cargo-chef-chef 0.1.78",
+2026-11-11T16:52:26.4312363Z   "prewarm_checkout": {
+2026-11-11T16:52:26.4312692Z     "head": "262f105f240c12b5451942ba8ef9c0387c5b1da0",
+2026-11-11T16:52:26.4313114Z     "tree": "7746a429299ffeb9b86c98facf2da1d75cc23ab8"
+2026-11-11T16:52:26.4313452Z   },
+2026-11-11T16:52:26.4313858Z   "recipe_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+2026-11-11T16:52:26.4314424Z   "prewarm_source_changes": [
+2026-11-11T16:52:26.4314792Z     "codex-rs/Cargo.toml",
+2026-11-11T16:52:26.4315170Z     "codex-rs/src/lib.rs"
+2026-11-11T16:52:26.4315609Z   ],
+2026-11-11T16:52:26.4315848Z   "after": {
+2026-11-11T16:52:26.4316345Z     "head": "262f105f240c12b5451942ba8ef9c0387c5b1da0",
+2026-11-11T16:52:26.4316938Z     "tree": "7746a429299ffeb9b86c98facf2da1d75cc23ab8"
+2026-11-11T16:52:26.4317462Z   }
+2026-11-11T16:52:26.4317870Z }
+2026-11-11T16:52:26.4318099Z 
+2026-11-11T16:52:26.4374101Z ok
+2026-11-11T16:52:26.4478357Z test_different_head_is_rejected_before_any_prewarm (test_hepta_ci_chef.ChefSourceCustodyTests.test_different_head_is_rejected_before_any_prewarm) ... ok
+2026-11-11T16:52:26.4591901Z test_dirty_checkout_is_rejected_before_any_prewarm (test_hepta_ci_chef.ChefSourceCustodyTests.test_dirty_checkout_is_rejected_before_any_prewarm) ... ok
+2026-11-11T16:52:26.4963030Z {"argv": ["git", "--no-replace-objects", "-C", "/tmp/chef fixture xeb89sct/repository with spaces", "worktree", "add", "--detach", "/tmp/chef fixture xeb89sct/runner temp/chef-8kvtls72/source", "262f105f240c12b5451942ba8ef9c0387c5b1da0"], "cwd": "/tmp/chef fixture xeb89sct/repository with spaces"}
+2026-11-11T16:52:26.4973219Z test_failed_cook_propagates_and_keeps_original_source (test_hepta_ci_chef.ChefSourceCustodyTests.test_failed_cook_propagates_and_keeps_original_source) ... Preparing worktree (detached HEAD 262f105)
+2026-11-11T16:52:26.4994856Z HEAD is now at 262f105 original source
+2026-11-11T16:52:26.5045048Z {"argv": ["/usr/bin/python3", "/tmp/chef fixture xeb89sct/destructive_cargo.py", "/tmp/chef fixture xeb89sct/cargo-calls.jsonl", "23", "chef", "prepare", "--recipe-path", "/tmp/chef fixture xeb89sct/runner temp/chef-8kvtls72/recipe.json"], "cwd": "/tmp/chef fixture xeb89sct/runner temp/chef-8kvtls72/source/codex-rs"}
+2026-11-11T16:52:26.5282267Z {"argv": ["/usr/bin/python3", "/tmp/chef fixture xeb89sct/destructive_cargo.py", "/tmp/chef fixture xeb89sct/cargo-calls.jsonl", "23", "chef", "cook", "--recipe-path", "/tmp/chef fixture xeb89sct/runner temp/chef-8kvtls72/recipe.json", "--target", "fixture-target", "--release", "--target-dir", "/tmp/chef fixture xeb89sct/shared target"], "cwd": "/tmp/chef fixture xeb89sct/runner temp/chef-8kvtls72/source/codex-rs"}
+2026-11-11T16:52:26.5522785Z {"argv": ["git", "--no-replace-objects", "-C", "/tmp/chef fixture xeb89sct/repository with spaces", "worktree", "remove", "--force", "/tmp/chef fixture xeb89sct/runner temp/chef-8kvtls72/source"], "cwd": "/tmp/chef fixture xeb89sct/repository with spaces"}
+2026-11-11T16:52:26.5575830Z {
+2026-11-11T16:52:26.5576295Z   "before": {
+2026-11-11T16:52:26.5576707Z     "head": "262f105f240c12b5451942ba8ef9c0387c5b1da0",
+2026-11-11T16:52:26.5577216Z     "tree": "7746a429299ffeb9b86c98facf2da1d75cc23ab8"
+2026-11-11T16:52:26.5577691Z   },
+2026-11-11T16:52:26.5577979Z   "target": "fixture-target",
+2026-11-11T16:52:26.5578307Z   "target_dir": "/tmp/chef fixture xeb89sct/shared target",
+2026-11-11T16:52:26.5579076Z   "cargo_chef_version": "cargo-chef-chef 0.1.78",
+2026-11-11T16:52:26.5579403Z   "prewarm_checkout": {
+2026-11-11T16:52:26.5579749Z     "head": "262f105f240c12b5451942ba8ef9c0387c5b1da0",
+2026-11-11T16:52:26.5580089Z     "tree": "7746a429299ffeb9b86c98facf2da1d75cc23ab8"
+2026-11-11T16:52:26.5580379Z   },
+2026-11-11T16:52:26.5580766Z   "recipe_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+2026-11-11T16:52:26.5581239Z   "prewarm_source_changes": [
+2026-11-11T16:52:26.5581569Z     "codex-rs/Cargo.toml",
+2026-11-11T16:52:26.5581855Z     "codex-rs/src/lib.rs"
+2026-11-11T16:52:26.5582107Z   ],
+2026-11-11T16:52:26.5582376Z   "after": {
+2026-11-11T16:52:26.5582657Z     "head": "262f105f240c12b5451942ba8ef9c0387c5b1da0",
+2026-11-11T16:52:26.5583012Z     "tree": "7746a429299ffeb9b86c98facf2da1d75cc23ab8"
+2026-11-11T16:52:26.5583364Z   }
+2026-11-11T16:52:26.5583603Z }
+2026-11-11T16:52:26.5583752Z 
+2026-11-11T16:52:26.5639153Z ok
+2026-11-11T16:52:26.5639418Z 
+2026-11-11T16:52:26.5639601Z ----------------------------------------------------------------------
+2026-11-11T16:52:26.5639991Z Ran 4 tests in 0.244s
+2026-11-11T16:52:26.5640189Z 
+2026-11-11T16:52:26.5640348Z OK
+2026-11-11T16:52:26.5846184Z ##[group]Run set -euo pipefail
+2026-11-11T16:52:26.5846635Z [36;1mset -euo pipefail[0m
+2026-11-11T16:52:26.5846949Z [36;1m[0m
+2026-11-11T16:52:26.5847302Z [36;1mif [[ "$EVENT_NAME" == "pull_request" ]]; then[0m
+2026-11-11T16:52:26.5847701Z [36;1m  echo "Base SHA: $BASE_SHA"[0m
+2026-11-11T16:52:26.5848026Z [36;1m  echo "Head SHA: $HEAD_SHA"[0m
+2026-11-11T16:52:26.5848439Z [36;1m  # Process substitution hides a failed git command from errexit.[0m
+2026-11-11T16:52:26.5849364Z [36;1m  # Write NUL-delimited paths first: errors are fatal and names stay literal.[0m
+2026-11-11T16:52:26.5849910Z [36;1m  changed_paths="$(mktemp "${RUNNER_TEMP}/rust-ci-paths.XXXXXX")"[0m
+2026-11-11T16:52:26.5850370Z [36;1m  trap 'rm -f "$changed_paths"' EXIT[0m
+2026-11-11T16:52:26.5850968Z [36;1m  git --no-replace-objects diff --name-only --no-renames -z "$BASE_SHA" "$HEAD_SHA" > "$changed_paths"[0m
+2026-11-11T16:52:26.5851524Z [36;1m  mapfile -d '' -t files < "$changed_paths"[0m
+2026-11-11T16:52:26.5851990Z [36;1melse[0m
+2026-11-11T16:52:26.5852330Z [36;1m  # On manual runs, default to the full fast-PR bundle.[0m
+2026-11-11T16:52:26.5852838Z [36;1m  files=("codex-rs/force" "tools/argument-comment-lint/force" ".github/force")[0m
+2026-11-11T16:52:26.5853276Z [36;1mfi[0m
+2026-11-11T16:52:26.5853547Z [36;1m[0m
+2026-11-11T16:52:26.5853833Z [36;1mcodex=false[0m
+2026-11-11T16:52:26.5854124Z [36;1margument_comment_lint_package=false[0m
+2026-11-11T16:52:26.5854497Z [36;1mworkflows=false[0m
+2026-11-11T16:52:26.5854829Z [36;1mfor f in "${files[@]}"; do[0m
+2026-11-11T16:52:26.5855838Z [36;1m  [[ $f == codex-rs/* || $f == .cargo/* || $f == justfile || $f == rust-toolchain || $f == rust-toolchain.toml || $f == scripts/hepta_workspace.py || $f == scripts/test_hepta_workspace.py || $f == scripts/test_hepta_rust_ci_feedback.py || $f == scripts/hepta_ci_chef.py || $f == scripts/test_hepta_ci_chef.py ]] && codex=true[0m
+2026-11-11T16:52:26.5857205Z [36;1m  [[ $f == tools/argument-comment-lint/* || $f == .github/workflows/rust-ci.yml || $f == .github/workflows/rust-ci-full.yml ]] && argument_comment_lint_package=true[0m
+2026-11-11T16:52:26.5857874Z [36;1m  [[ $f == .github/* ]] && workflows=true[0m
+2026-11-11T16:52:26.5858237Z [36;1mdone[0m
+2026-11-11T16:52:26.5858533Z [36;1m[0m
+2026-11-11T16:52:26.5859108Z [36;1mecho "argument_comment_lint_package=$argument_comment_lint_package" >> "$GITHUB_OUTPUT"[0m
+2026-11-11T16:52:26.5859633Z [36;1mecho "codex=$codex" >> "$GITHUB_OUTPUT"[0m
+2026-11-11T16:52:26.5860021Z [36;1mecho "workflows=$workflows" >> "$GITHUB_OUTPUT"[0m
+2026-11-11T16:52:26.5874759Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-11T16:52:26.5875605Z env:
+2026-11-11T16:52:26.5875909Z   EVENT_NAME: pull_request
+2026-11-11T16:52:26.5876398Z   BASE_SHA: 96038ccf0660154fac143ba6cbe4be81e00813e8
+2026-11-11T16:52:26.5876820Z   HEAD_SHA: d0f6507e08f7f5c5855f5164d07c049a34d1a6d9
+2026-11-11T16:52:26.5877194Z ##[endgroup]
+2026-11-11T16:52:26.5910860Z Base SHA: 96038ccf0660154fac143ba6cbe4be81e00813e8
+2026-11-11T16:52:26.5911737Z Head SHA: d0f6507e08f7f5c5855f5164d07c049a34d1a6d9
+2026-11-11T16:52:26.6111765Z Prepare all required actions
+2026-11-11T16:52:26.6160840Z ##[group]Run ./.github/actions/check-clean-worktree
+2026-11-11T16:52:26.6161198Z ##[endgroup]
+2026-11-11T16:52:26.6212930Z ##[start-action display=Check for a clean worktree;id=__self.__run]
+2026-11-11T16:52:26.6253683Z ##[group]Run set -euo pipefail
+2026-11-11T16:52:26.6254023Z [36;1mset -euo pipefail[0m
+2026-11-11T16:52:26.6254315Z [36;1m[0m
+2026-11-11T16:52:26.6254801Z [36;1mstatus="$(git -C "${GITHUB_WORKSPACE}" status --porcelain=v1 --untracked-files=normal --ignore-submodules=none)"[0m
+2026-11-11T16:52:26.6255300Z [36;1mif [[ -z "${status}" ]]; then[0m
+2026-11-11T16:52:26.6255640Z [36;1m  exit 0[0m
+2026-11-11T16:52:26.6255919Z [36;1mfi[0m
+2026-11-11T16:52:26.6256519Z [36;1m[0m
+2026-11-11T16:52:26.6256929Z [36;1mecho "::error::CI job left tracked changes or untracked files in the repository worktree"[0m
+2026-11-11T16:52:26.6257357Z [36;1mprintf '%s\n' "${status}"[0m
+2026-11-11T16:52:26.6257780Z [36;1mexit 1[0m
+2026-11-11T16:52:26.6270306Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-11T16:52:26.6270662Z ##[endgroup]
+2026-11-11T16:52:27.1762308Z ##[end-action id=__self.__run;outcome=success;conclusion=success;duration_ms=554]
+2026-11-11T16:52:27.1871631Z Post job cleanup.
+2026-11-11T16:52:27.2650425Z [command]/usr/bin/git version
+2026-11-11T16:52:27.2685678Z git version 2.56.0
+2026-11-11T16:52:27.2721666Z Temporarily overriding HOME='/home/runner/work/_temp/7975edbb-f62d-4bd2-9ef0-2a7b426ff8c2' before making global git config changes
+2026-11-11T16:52:27.2723476Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-11T16:52:27.2727164Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-11T16:52:27.2759586Z Removing SSH command configuration
+2026-11-11T16:52:27.2763274Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-11T16:52:27.2791668Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-11T16:52:27.2994142Z Removing HTTP extra header
+2026-11-11T16:52:27.2999367Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-11T16:52:27.3027529Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-11T16:52:27.3232938Z Removing includeIf entries pointing to credentials config files
+2026-11-11T16:52:27.3239753Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-11T16:52:27.3265929Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-11T16:52:27.3722771Z Evaluate and set job outputs
+2026-11-11T16:52:27.3730106Z Set output 'argument_comment_lint_package'
+2026-11-11T16:52:27.3731968Z Set output 'codex'
+2026-11-11T16:52:27.3732766Z Set output 'workflows'
+2026-11-11T16:52:27.3733450Z Cleaning up orphan processes
