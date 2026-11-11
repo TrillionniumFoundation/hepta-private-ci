@@ -9,6 +9,13 @@ ordinary Q24 branch `f97f3c90ac1ac3d5171fd9f25b3e34431f44a367`, original recover
 branch `0c99a30dbe9307d48aa50ffc63404235ade8ae9c`, and maintained native source
 `c7633658aef42077f51fa71a1b727b4653ddb76b`.
 
+Before published-head validation, the candidate also incorporates the published
+compile repair `a15acbf4db6178523a9297033c86e3be0b2725a3`: the new
+`TrainingNoUpdateV2` observation is exhaustively rejected as a completed
+generation use. It cannot become NextUse or FinalUse merely because training
+returned no candidate. The existing rejection semantics and owner boundaries
+remain in force.
+
 Two published changes are merged with their histories:
 
 - PR #5867, `fbec51e7177892782d3874fc5547771d9728a17d`: incomplete cost coverage

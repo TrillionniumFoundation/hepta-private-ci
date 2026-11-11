@@ -60,8 +60,8 @@
     },
     {
       "path": "README.md",
-      "bytes": 6989,
-      "sha256": "1c56c405787b3691b4152e4a623fe5953d1040484e77d32b7ccea1a72e96e440"
+      "bytes": 7381,
+      "sha256": "c90413906d691f3e9c9dffb4f5e85e2c845de99cf5dbd38d6bd2cf77c9ec1636"
     },
     {
       "path": "RMCP_5875_BASE_RECONCILIATION.json",
@@ -93,5 +93,11 @@
       "bytes": 30009,
       "sha256": "21e164a4b088eb7d1395ea6f63a15915e054cfd8bf6523169632647ca718ddb3"
     }
-  ]
+  ],
+  "additional_before_validation_fix": {
+    "commit": "a15acbf4db6178523a9297033c86e3be0b2725a3",
+    "file": "codex-rs/hepta-agentd/src/neuron_generation_learning_readback.rs",
+    "blob": "1064800d8296f1f2efe2ae816af2703b78c49dd2",
+    "reason": "exhaustive rejection of TrainingNoUpdateV2 as completed generation use; no new authority"
+  }
 }
