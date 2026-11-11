@@ -22,8 +22,8 @@ SOURCES = AGENT + "circuit_model_selection_receipt_sources.rs"
 BINDING = AGENT + "circuit_model_selection_receipt_binding.rs"
 FUNCTIONS = {
     OWNER: {
-        "fn create(", "fn recover(", "fn attest_original_selection<", "fn readback<",
-        "fn read_original<", "fn authenticate_completed<",
+        "fn create(", "fn recover(", "fn attest_original_selection(", "fn readback(",
+        "fn read_original(", "fn authenticate_completed(",
     },
     SOURCES: {
         "fn prepare(", "fn predecessors(", "fn read_original(", "fn require_current(",
@@ -71,6 +71,17 @@ class OriginalModelSelectionClosureTests(unittest.TestCase):
                 for marker in function["sequence"]:
                     with self.subTest(path=path, function=function["function"], marker=marker):
                         self.rejects(path, function["function"], marker)
+
+    def test_selection_binds_original_completed_task_before_version_readback(self):
+        path = AGENT + "circuit_feature_current_learning.rs"
+        for marker in (
+            "self.task.require_current()?",
+            "if previous.source.history_digest().as_str()",
+            "!= coordinator.snapshot().request.completed_task_receipt.to_string()",
+            "return Err(invalid(\n                \"learning selection differs from original completed source\",",
+        ):
+            with self.subTest(marker=marker):
+                self.rejects(path, "fn read_learning_selection(", marker)
 
     def test_actual_model_execution_and_publication_edges_are_exact(self):
         expected = {

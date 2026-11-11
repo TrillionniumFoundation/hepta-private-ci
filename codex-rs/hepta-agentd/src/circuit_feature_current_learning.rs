@@ -18,6 +18,13 @@ impl<W: AnchorWitnessStore> PublishedCircuitCellOwnerV1<W> {
         let Publication::Update { original, previous } = &self.task.0.publication else {
             return Err(invalid("initial Feature task is not a learning selection"));
         };
+        if previous.source.history_digest().as_str()
+            != coordinator.snapshot().request.completed_task_receipt.to_string()
+        {
+            return Err(invalid(
+                "learning selection differs from original completed source",
+            ));
+        }
         let result = self.task.0.original.lock().map_err(invalid)?.selection(
             original,
             coordinator,

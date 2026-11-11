@@ -159,18 +159,19 @@ impl<W: AnchorWitnessStore> OriginalCircuitModelSelectionReceiptOwnerV1<W> {
     /// Observe and attest an already committed positive Model publication.
     /// Call only in the host's bounded blocking lane, never an async worker.
     /// A missing result may claim once. NoUpdate has a different concrete owner.
-    pub fn attest_original_selection<
-        C: AnchorWitnessStore,
-        TW: AnchorWitnessStore + Send + 'static,
-        RW: AnchorWitnessStore + Send + 'static,
-        MW: AnchorWitnessStore,
-        S: codex_hepta_intelligence_eval::FinalHoldoutCasStoreV1,
-        EC: AnchorWitnessStore,
-        EF: AnchorWitnessStore,
-        EW: AnchorWitnessStore,
-    >(
+    pub fn attest_original_selection(
         &mut self,
-        mut source: OriginalCircuitModelSelectionReceiptSourcesV1<'_, C, TW, RW, MW, S, EC, EF, EW>,
+        mut source: OriginalCircuitModelSelectionReceiptSourcesV1<
+            '_,
+            impl AnchorWitnessStore,
+            impl AnchorWitnessStore + Send + 'static,
+            impl AnchorWitnessStore + Send + 'static,
+            impl AnchorWitnessStore,
+            impl codex_hepta_intelligence_eval::FinalHoldoutCasStoreV1,
+            impl AnchorWitnessStore,
+            impl AnchorWitnessStore,
+            impl AnchorWitnessStore,
+        >,
     ) -> Result<(LearningIterationReceiptV1, SignedLearningEvidenceV1), Error> {
         let started_at = binding::now()?;
         if self.fenced {
@@ -241,18 +242,19 @@ impl<W: AnchorWitnessStore> OriginalCircuitModelSelectionReceiptOwnerV1<W> {
     /// Read the original result after live Model, execution, evidence and
     /// publication checks. This cannot claim, sign, select, fit or publish.
     /// An expired work deadline allows only an already completed original result.
-    pub fn readback<
-        C: AnchorWitnessStore,
-        TW: AnchorWitnessStore + Send + 'static,
-        RW: AnchorWitnessStore + Send + 'static,
-        MW: AnchorWitnessStore,
-        S: codex_hepta_intelligence_eval::FinalHoldoutCasStoreV1,
-        EC: AnchorWitnessStore,
-        EF: AnchorWitnessStore,
-        EW: AnchorWitnessStore,
-    >(
+    pub fn readback(
         &mut self,
-        mut source: OriginalCircuitModelSelectionReceiptSourcesV1<'_, C, TW, RW, MW, S, EC, EF, EW>,
+        mut source: OriginalCircuitModelSelectionReceiptSourcesV1<
+            '_,
+            impl AnchorWitnessStore,
+            impl AnchorWitnessStore + Send + 'static,
+            impl AnchorWitnessStore + Send + 'static,
+            impl AnchorWitnessStore,
+            impl codex_hepta_intelligence_eval::FinalHoldoutCasStoreV1,
+            impl AnchorWitnessStore,
+            impl AnchorWitnessStore,
+            impl AnchorWitnessStore,
+        >,
     ) -> Result<(LearningIterationReceiptV1, SignedLearningEvidenceV1), Error> {
         let started_at = binding::now()?;
         if self.fenced {
@@ -261,27 +263,18 @@ impl<W: AnchorWitnessStore> OriginalCircuitModelSelectionReceiptOwnerV1<W> {
         self.read_original(&mut source, started_at)
     }
 
-    fn read_original<
-        C: AnchorWitnessStore,
-        TW: AnchorWitnessStore + Send + 'static,
-        RW: AnchorWitnessStore + Send + 'static,
-        MW: AnchorWitnessStore,
-        S: codex_hepta_intelligence_eval::FinalHoldoutCasStoreV1,
-        EC: AnchorWitnessStore,
-        EF: AnchorWitnessStore,
-        EW: AnchorWitnessStore,
-    >(
+    fn read_original(
         &mut self,
         source: &mut OriginalCircuitModelSelectionReceiptSourcesV1<
             '_,
-            C,
-            TW,
-            RW,
-            MW,
-            S,
-            EC,
-            EF,
-            EW,
+            impl AnchorWitnessStore,
+            impl AnchorWitnessStore + Send + 'static,
+            impl AnchorWitnessStore + Send + 'static,
+            impl AnchorWitnessStore,
+            impl codex_hepta_intelligence_eval::FinalHoldoutCasStoreV1,
+            impl AnchorWitnessStore,
+            impl AnchorWitnessStore,
+            impl AnchorWitnessStore,
         >,
         started_at: u64,
     ) -> Result<(LearningIterationReceiptV1, SignedLearningEvidenceV1), Error> {
@@ -290,27 +283,18 @@ impl<W: AnchorWitnessStore> OriginalCircuitModelSelectionReceiptOwnerV1<W> {
         self.authenticate_completed(source, &prepared, &bytes, started_at, Use::Readback)
     }
 
-    fn authenticate_completed<
-        C: AnchorWitnessStore,
-        TW: AnchorWitnessStore + Send + 'static,
-        RW: AnchorWitnessStore + Send + 'static,
-        MW: AnchorWitnessStore,
-        S: codex_hepta_intelligence_eval::FinalHoldoutCasStoreV1,
-        EC: AnchorWitnessStore,
-        EF: AnchorWitnessStore,
-        EW: AnchorWitnessStore,
-    >(
+    fn authenticate_completed(
         &mut self,
         source: &mut OriginalCircuitModelSelectionReceiptSourcesV1<
             '_,
-            C,
-            TW,
-            RW,
-            MW,
-            S,
-            EC,
-            EF,
-            EW,
+            impl AnchorWitnessStore,
+            impl AnchorWitnessStore + Send + 'static,
+            impl AnchorWitnessStore + Send + 'static,
+            impl AnchorWitnessStore,
+            impl codex_hepta_intelligence_eval::FinalHoldoutCasStoreV1,
+            impl AnchorWitnessStore,
+            impl AnchorWitnessStore,
+            impl AnchorWitnessStore,
         >,
         prepared: &Prepared,
         bytes: &[u8],
