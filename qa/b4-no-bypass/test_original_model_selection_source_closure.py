@@ -77,7 +77,7 @@ class OriginalModelSelectionClosureTests(unittest.TestCase):
         for marker in (
             "self.task.require_current()?",
             "if previous.source.history_digest().as_str()",
-            "!= coordinator.snapshot().request.completed_task_receipt.to_string()",
+            "!= coordinator\n                .snapshot()\n                .request\n                .completed_task_receipt\n                .to_string()",
             "return Err(invalid(\n                \"learning selection differs from original completed source\",",
         ):
             with self.subTest(marker=marker):
