@@ -40,14 +40,27 @@
 | `git diff --check` | exit 0 | 九文件源码补丁 |
 | 标准 `just bazel-lock-check` | exit 0，105.212 秒 | `mod deps --lockfile_mode=error`；锁文件未改 |
 | 四项独立源码复核 | 未发现复核范围内阻塞项 | 不是 native 执行或科研独立性证明 |
-| `30a697c…` 完整 caller scan | 已启动，待原始终态 | 不移植 `cb0598a…` 的 PASS |
-| `30a697c…` native / 全仓库 CI | 已创建，待实际结果 | 不移植旧源码的通过数 |
+| `30a697c…` 完整 caller scan | 本次实际 exit 0 / PASS | 6,302 Rust、223 边界、218 protected records；不授予权限 |
+| `30a697c…` Windows 选定原生范围 | 34 个唯一原测试 PASS | Python 与重复/变异探针单列；未选六个 Training stage 测试 |
+| `30a697c…` daemon / shared / 全仓库 CI | daemon 首次下载失败；单次重试及其它关键 lane 待终态 | 不移植旧源码的通过数 |
+
+[新候选的完整 caller 原始记录](caller-30a/RESULTS.md)已由 root 逐项复核：唯一一次完整 verifier 调用，707.986497 秒 wall、692.379395 秒 child CPU；9 个变更文件、CALLERS、verifier、HEAD/tree 与 clean 前后相同。218 个 protected records 对应 173 个去重路径，另有 223 个 privileged inventory records。原 stdout 与旧 cb 恰好字节相同，但新 before/after/执行记录绑定实际 30a 调用，未移植旧结果。CALLERS 的 codex-rs 范围完整包含 6,302 个 tracked/worktree Rust 文件；原 sparse 文档元数据预检失败发生在 verifier 启动前，已独立留档。
 
 [标准锁检查原记录](engineering/bazel-lock/RESULTS.json)保留更早的资源保护中止和 PKIX 失败。后一次通过采用 Bazel 支持的显式 JVM startup 参数，使用系统受信 CA；TLS 和继承代理保持启用。检查未修改依赖声明，没有运行 native build/test。原 direct-dependency/annotation 警告保留，Bazel server CPU 和峰值内存未知；客户端开销不冒充完整服务器成本。
 
 前一 `cb0598a…` 的 [daemon 完整失败归档](daemon-cb-failure/SUMMARY.json)与 [shared 完整失败归档](shared-cb-failure/RESULTS.json)分别确认 **0 个 native testcase**，不是 22 个测试失败。daemon helper 构建实际成功，随后编译失败；Root、维护及 post-test helper 验证没有到达。shared 的 15 项 Python execution-gate 测试通过，fresh JUnit 缺失是编译失败的后果。两份完整原日志和原始成员均保留；daemon 仅三个大源码 inventory 从交付压缩包中省略，但已完整解压逐字比较并记录哈希，未截断原日志。
 
 [旧 blocking 原日志](blocking-6ec/RESULTS.json)还记录 Windows bindgen 下载 transport failure，不能归为 Rust 源码错误；Matrix migration 测试实际 1 项失败、2 项 ignored，重开报告 17.460891417 秒和泛化 Initialization，原因尚未判定。run head `6ecfa504…` 与实际测试 checkout `3fc1acb…` 不混用；二者 tree 相同的 API 证据另存。
+
+### 30a 的新增实际读回与仍可推进的代码
+
+[当前 Windows 原始归档](windows-30a/SUMMARY.json)包含本次 34 个唯一原始 native PASS（15+2+3+2+12）、6 个独立列出的 Python harness 检查、原始两例正向复跑和两个变异负控共 4 次执行。原 artifact 全 9 成员和完整 259,732 字节 job log 均保留；root 对源码、原日志行、哈希与恢复状态逐项复核。派生摘要中一处旧源码标签已更正并保存前后哈希，原 CI 证据未改。这里没有执行六个 Training stage 用例。
+
+[当前 daemon attempt 1](daemon-30a-attempt1/SUMMARY.json)在 `cargo fetch --locked` 时因 thiserror-impl 的 crates.io index 连接出现 curl55/TLS unexpected EOF 而失败；helper 构建、ordinary、Root 和维护均未开始，native testcase 为 0。仅有原 checkout 快照，不能声明六阶段源码一致。原始失败归档后，[只对该失败 job 发起一次重试](current-30a/DAEMON_RETRY_REQUEST.json)，同一 source 的 attempt 2 为 job `130304826142`，与 attempt 1 独立记录。没有修改依赖版本、TLS 或断言。
+
+[固定 30a 的接线核查](current-30a/wiring-handoff/HANDOFF.json)把源码缺口与真实材料依赖分开：生产 StageOwner composition、Dataset→Q24 来源/回执桥、Q24 训练结果的 governed Model 提案协议都是实际源码缺口。Model 作为基线已被允许；问题在于原 SGD 结果不满足 Parameter V3 的完整确定性重生成协议，不能强行转换。
+
+一个更小且已有规则足以定义的源码动作已单独启动：将完整 CURRENT snapshot 适配到原 Training owner 的 exact Dataset prefix，读取并比较原签名回执。它不在冻结 30a 中，也不代替完整 StageOwner。真实 Dataset 特征/目标转换仍需要原持有人预先冻结的规则和源记录；这里不选择默认目标或从所需结果反推标签。原 key、journal/CURRENT、独立 anchors、B qualification 和 C use 仍必须由真实持有人交付并认证。本审查没有断言这些材料在所有外部系统中不存在。
 
 ### 历史源码的实际原生通过
 

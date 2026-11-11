@@ -1,0 +1,125 @@
+{
+  "schema": "hepta_exact_published_source_full_caller_summary_v1",
+  "created_at_utc": "2026-11-11T03:29:01.160352+00:00",
+  "result": "PASS_HEPTA_CALLER_CLOSED_SET",
+  "exit_code": 0,
+  "authority_granted": false,
+  "source": "30a697c50e10abd56e61b6b84f28ac9ae9f32f5d",
+  "tree": "b2a21d98380340b1c091006f4130aafdbeabca50",
+  "parent": "cb0598a9099a0d828ce73aedb51e397e600e49d1",
+  "audit_branch": "codex/cell-p0-final-caller-30a697-f7c0",
+  "source_commit_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/30a697c50e10abd56e61b6b84f28ac9ae9f32f5d",
+  "invocation_id": "p0-30a697c-full-caller-scan-20261111-v1",
+  "actual_verifier_invocations": 1,
+  "command": [
+    "python3",
+    "scripts/verify_hepta_callers.py",
+    "verify",
+    "--root",
+    "/workspace/scratch/f7c0ded86bcc/hepta-p0-learn-merge"
+  ],
+  "cwd": "/workspace/scratch/f7c0ded86bcc/hepta-p0-learn-merge",
+  "counts_from_this_raw_stdout": {
+    "rust_files_scanned": 6302,
+    "boundaries": 223,
+    "privileged_inventory": 223,
+    "protected_records": 218,
+    "unique_protected_paths": 173
+  },
+  "started_at_utc": "2026-11-11T03:15:00.059278+00:00",
+  "ended_at_utc": "2026-11-11T03:26:48.045787+00:00",
+  "costs": {
+    "wall_seconds": 707.9864971160005,
+    "child_user_cpu_seconds": 688.9000550000001,
+    "child_system_cpu_seconds": 3.47934,
+    "child_cpu_seconds_total": 692.379395,
+    "measurement": "monotonic wall time and RUSAGE_CHILDREN deltas surrounding the one verifier subprocess, before post-run Git reads",
+    "excluded": [
+      "preparation/fetch/switch",
+      "before/after source snapshots",
+      "assistant orchestration and communication",
+      "other agents/CI",
+      "archive construction"
+    ],
+    "unmeasured": [
+      "monetary cost",
+      "energy",
+      "whole-session resource cost"
+    ]
+  },
+  "source_bindings": {
+    "before": "BEFORE.json",
+    "after": "AFTER.json",
+    "execution": "EXECUTION.json",
+    "all_identity_checks_passed": true,
+    "callers": {
+      "path": "CALLERS.toml",
+      "bytes": 345198,
+      "sha256": "e24624826d94bd7726e55c5ffb3ffc55f182819949dbe7b66c92879441e38b19"
+    },
+    "verifier": {
+      "path": "scripts/verify_hepta_callers.py",
+      "bytes": 31701,
+      "sha256": "8899ec2b328125b2049b808cac0eeda3f57bfc6db89348512a58777101ae6dfa"
+    },
+    "nine_reviewed_source_files_match": true,
+    "caller_source_scope": {
+      "source_roots": [
+        "codex-rs"
+      ],
+      "tracked_rust_count": 6302,
+      "worktree_rust_count": 6302,
+      "missing_or_additional_rust_files": [],
+      "ordered_rust_paths_sha256": "8883d02a1973bbe9072b72a7c960aec24a397ed5d9e77c0278ff97ab7bcfe634",
+      "sparse_patterns": [
+        "/*",
+        "!/qualification/",
+        "!/archive/",
+        "!/docs/",
+        "!/assets/"
+      ]
+    }
+  },
+  "raw_outputs": {
+    "stdout": {
+      "file": "stdout.raw",
+      "bytes": 103063,
+      "sha256": "83201a799a7be1e04116ad1b089b32761ae6d37ed77de35885e12d441f825c7c"
+    },
+    "stderr": {
+      "file": "stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "original_bytes_unchanged": true
+  },
+  "prior_cb_preserved": {
+    "branch": {
+      "name": "codex/cell-p0-final-caller-audit-f7c0",
+      "head": "cb0598a9099a0d828ce73aedb51e397e600e49d1"
+    },
+    "receipt_path": "/workspace/scratch/f7c0ded86bcc/p0_final_caller_audit_cb0598_20261111",
+    "file_count": 19,
+    "all_file_hashes_unchanged": true
+  },
+  "prior_stdout_byte_equality": {
+    "equal": true,
+    "prior_file": "/workspace/scratch/f7c0ded86bcc/p0_final_caller_audit_cb0598_20261111/SCAN.stdout.json",
+    "interpretation": "The verifier receipt lists unchanged static boundaries and does not embed a source commit. This is a distinct actual invocation, with exact new source binding in BEFORE/AFTER/ATTEMPT/EXECUTION; prior success is not transferred."
+  },
+  "preflight_note": {
+    "file": "PREFLIGHT_NOTE.json",
+    "failed_metadata_collection_attempts": 1,
+    "verifier_started_during_failed_preflight": false,
+    "cause": "preexisting sparse docs exclusion",
+    "resolution": "Read only the excluded Markdown from the exact pinned Git blob; all 6302 Rust files under CALLERS source_roots were materialized before the only verifier invocation."
+  },
+  "scope_limits": [
+    "Complete verifier over CALLERS.source_roots=[codex-rs], including all 6302 tracked Rust files there; not inventory-only.",
+    "The existing sparse exclusions outside caller source roots were preserved and recorded; this is not a claim to scan every Rust file elsewhere in the repository.",
+    "No native build/test was started.",
+    "No production authority or complete ordinary StageOwner runtime chain is granted by this source scan.",
+    "No independent scientific task, sample, benefit or adoption evidence is added.",
+    "Cost fields cover only the verifier child; preflight/setup, communication, other work and whole-session costs are excluded or unmeasured."
+  ]
+}

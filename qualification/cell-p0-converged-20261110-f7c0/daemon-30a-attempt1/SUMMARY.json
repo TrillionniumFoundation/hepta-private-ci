@@ -1,0 +1,132 @@
+{
+  "schema": "hepta.p0.daemon-readback.v1",
+  "source_sha": "30a697c50e10abd56e61b6b84f28ac9ae9f32f5d",
+  "source_tree": "b2a21d98380340b1c091006f4130aafdbeabca50",
+  "run_id": 42951157619,
+  "run_attempt": 1,
+  "job_id": 130295510605,
+  "conclusion": "failure-before-native-build-and-test",
+  "failure": {
+    "step": "Record toolchain and fetch locked native dependencies",
+    "workflow_source_location": ".github/workflows/hepta-daemon-learning-native.yml:300",
+    "command": "cargo fetch --locked --target x86_64-unknown-linux-gnu",
+    "working_directory": "codex-rs",
+    "exit_code": 101,
+    "dependency": "thiserror-impl, via thiserror 2.0.21",
+    "registry_path": "th/is/thiserror-impl",
+    "diagnosis": "crates.io registry download failed with curl 55 and OpenSSL unexpected EOF while reading",
+    "raw_diagnostic_log_lines_one_based": [
+      9602,
+      9619
+    ],
+    "raw_diagnostic": [
+      "2026-11-11T03:35:50.2540235Z error: failed to get `thiserror-impl` as a dependency of package `thiserror v2.0.21`",
+      "2026-11-11T03:35:50.2541002Z     ... which satisfies dependency `thiserror = \"^2.0.17\"` (locked to 2.0.21) of package `codex-aws-auth v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/aws-auth)`",
+      "2026-11-11T03:35:50.2542171Z ",
+      "2026-11-11T03:35:50.2542249Z Caused by:",
+      "2026-11-11T03:35:50.2542537Z   failed to load source for dependency `thiserror-impl`",
+      "2026-11-11T03:35:50.2542785Z ",
+      "2026-11-11T03:35:50.2542870Z Caused by:",
+      "2026-11-11T03:35:50.2543110Z   unable to update registry `crates-io`",
+      "2026-11-11T03:35:50.2543303Z ",
+      "2026-11-11T03:35:50.2543390Z Caused by:",
+      "2026-11-11T03:35:50.2543608Z   download of th/is/thiserror-impl failed",
+      "2026-11-11T03:35:50.2543797Z ",
+      "2026-11-11T03:35:50.2543889Z Caused by:",
+      "2026-11-11T03:35:50.2544086Z   curl failed",
+      "2026-11-11T03:35:50.2544214Z ",
+      "2026-11-11T03:35:50.2544303Z Caused by:",
+      "2026-11-11T03:35:50.2544911Z   [55] Failed sending data to the peer (OpenSSL SSL_read: OpenSSL/3.5.4: error:0A000126:SSL routines::unexpected eof while reading, errno 0)",
+      "2026-11-11T03:35:50.2697441Z ##[error]Process completed with exit code 101."
+    ],
+    "code_or_test_failure_established": false
+  },
+  "native_execution": {
+    "helper_build": "skipped",
+    "ordinary_suite": "skipped",
+    "root_suite": "skipped",
+    "maintenance_fmt_fix_bins": "skipped",
+    "executed_test_cases": 0,
+    "junit_members": [],
+    "training_stage_cases": [
+      {
+        "name": "original_training_stage_runs_both_outcomes_and_reopens_exactly",
+        "status": "not-executed"
+      },
+      {
+        "name": "original_training_stage_rejects_wrong_pair_and_pending_without_work",
+        "status": "not-executed"
+      },
+      {
+        "name": "original_training_stage_distinguishes_missing_receipt_from_missing_native",
+        "status": "not-executed"
+      },
+      {
+        "name": "original_training_stage_expired_missing_never_claims_or_attests",
+        "status": "not-executed"
+      },
+      {
+        "name": "original_training_stage_request_expiry_preserves_only_original_completed_receipts",
+        "status": "not-executed"
+      },
+      {
+        "name": "original_training_stage_keeps_lane_until_cancelled_waiter_worker_exits",
+        "status": "not-executed"
+      }
+    ]
+  },
+  "source_observation": {
+    "checkout": {
+      "commit": "30a697c50e10abd56e61b6b84f28ac9ae9f32f5d",
+      "files": 14401,
+      "inventory_sha256": "d151501d5916dc30c30e419627132c30bb67d64b864db30c8ed2fa1f645cdbae",
+      "status": "",
+      "tree": "b2a21d98380340b1c091006f4130aafdbeabca50"
+    },
+    "only_checkout_snapshot_present": true,
+    "post_test_or_post_maintenance_source_snapshot": "not-produced",
+    "source_unchanged_through_full_validation_established": false,
+    "inventory_compressed": {
+      "bytes": 1109051,
+      "sha256": "96dfe7861d38c96781b05829f1e8894b4ce547f434640893cc72baad323697ce"
+    },
+    "inventory_expanded": {
+      "bytes": 3333188,
+      "sha256": "d151501d5916dc30c30e419627132c30bb67d64b864db30c8ed2fa1f645cdbae"
+    },
+    "inventory_expansion_hash_and_entry_count_checked": true,
+    "inventory_in_delivery": false,
+    "inventory_omission_reason": "Original compressed inventory exceeds the 512000-byte per-blob cap; complete original artifact remains in scratch."
+  },
+  "raw_records": {
+    "original_artifact": {
+      "path": "/workspace/scratch/f7c0ded86bcc/p0-ci-audit/daemon-30a697c-readback/original-artifact-13825853320.zip",
+      "bytes": 1110544,
+      "sha256": "56147b7627cf2377a4be4fbc3866678e647211b97fccb4bb6d7901b0db576a5e"
+    },
+    "complete_decoded_joblog": {
+      "bytes": 1656075,
+      "sha256": "c278dec075e61d9e391339d43bd5ebdd4dfa52c9cb6908326ef6bf7e6b0d0e24"
+    },
+    "api_capture": {
+      "bytes": 21779,
+      "sha256": "67869e444c89f6cd4eb580910ab6c912a8436d1f71922a9cb2db6da9a9e29541"
+    },
+    "all_original_members_indexed": true,
+    "selected_original_members_byte_equal": true,
+    "full_decoded_joblog_gzip_roundtrip_equal": true
+  },
+  "cost_limits": {
+    "native_test_count": 0,
+    "cpu_seconds": null,
+    "network_fetch_bytes": null,
+    "failure_cost_is_not_zero": true,
+    "unknown_costs_remain_unknown": true
+  },
+  "scope_limits": [
+    "This evidence records daemon attempt 1 on 30a697c50e10abd56e61b6b84f28ac9ae9f32f5d; it does not describe a later rerun.",
+    "The dependency download failure does not establish a Rust compile failure or a failed test case.",
+    "None of the six Training stage cases executed in this attempt.",
+    "No full-chain qualification, scientific adoption, maintenance success, or cross-source result is inferred."
+  ]
+}

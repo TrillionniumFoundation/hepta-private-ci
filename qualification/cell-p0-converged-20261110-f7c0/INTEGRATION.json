@@ -1,6 +1,6 @@
 {
   "schema": "hepta.cell-p0-converged-implementation-and-evidence.v1",
-  "observed_at_utc": "2026-11-11T03:21:24.905475+00:00",
+  "observed_at_utc": "2026-11-11T03:44:18.827037+00:00",
   "candidate": {
     "source_sha": "30a697c50e10abd56e61b6b84f28ac9ae9f32f5d",
     "source_tree": "b2a21d98380340b1c091006f4130aafdbeabca50",
@@ -460,7 +460,7 @@
     },
     {
       "name": "current candidate native and whole repository qualification",
-      "status": "PENDING_FRESH_SOURCE_HEAD_CI",
+      "status": "PARTIAL_WINDOWS_PASS_OTHER_NATIVE_AND_FULL_CI_PENDING",
       "source_sha": "30a697c50e10abd56e61b6b84f28ac9ae9f32f5d",
       "source_tree": "b2a21d98380340b1c091006f4130aafdbeabca50",
       "previous_head_results_transferred": false,
@@ -473,15 +473,89 @@
       "local_update_run_id": 42951157664,
       "bazel_lock_proposal_run_id": 42951157657,
       "static_coverage_evidence": "current-30a/STATIC_GATE_COVERAGE.json",
-      "dependency_test_result_scope": "Matrix/RMCP/core targets need actual result readback; owner-library selected tests do not prove dependency test execution. Cached PASS is not fresh case execution."
+      "dependency_test_result_scope": "Matrix/RMCP/core targets need actual result readback; owner-library selected tests do not prove dependency test execution. Cached PASS is not fresh case execution.",
+      "daemon_attempt1": "FETCH_TRANSPORT_FAILURE_BEFORE_NATIVE",
+      "daemon_attempt2_job_id": 130304826142,
+      "daemon_attempt2": "ONE_BOUNDED_RERUN_ACCEPTED_PENDING_NATIVE",
+      "daemon_retry_evidence": "current-30a/DAEMON_RETRY_REQUEST.json"
     },
     {
       "name": "full caller scan on current immutable candidate",
-      "status": "PENDING_ACTUAL_FULL_SCAN",
+      "status": "PASS_HEPTA_CALLER_CLOSED_SET",
       "source_sha": "30a697c50e10abd56e61b6b84f28ac9ae9f32f5d",
       "source_tree": "b2a21d98380340b1c091006f4130aafdbeabca50",
       "authority_granted": false,
-      "previous_head_result_transferred": false
+      "previous_head_result_transferred": false,
+      "rust_files_scanned": 6302,
+      "boundary_records": 223,
+      "privileged_inventory_entries": 223,
+      "protected_file_records": 218,
+      "distinct_protected_paths": 173,
+      "full_scan_pass": true,
+      "source_identity_unchanged": true,
+      "execution_key": "p0-30a697c-full-caller-scan-20261111-v1",
+      "wall_seconds": 707.9864971160005,
+      "child_user_cpu_seconds": 688.9000550000001,
+      "child_system_cpu_seconds": 3.47934,
+      "evidence": "caller-30a/RESULT_SUMMARY.json",
+      "root_verification": "engineering/CALLER_30A_ROOT_VERIFICATION.json"
+    },
+    {
+      "name": "current 30a selected Windows native qualification",
+      "status": "PASS_EXACT_SOURCE_SCOPED",
+      "source_sha": "30a697c50e10abd56e61b6b84f28ac9ae9f32f5d",
+      "source_tree": "b2a21d98380340b1c091006f4130aafdbeabca50",
+      "run_id": 42951157630,
+      "run_attempt": 1,
+      "job_id": 130295511276,
+      "actual_unique_original_native_cases": 34,
+      "native_case_source": "Full original nextest PASS lines and five corresponding summaries; no JUnit in original artifact.",
+      "selected_suite_passes": [
+        15,
+        2,
+        3,
+        2,
+        12
+      ],
+      "python_acquisition_harness_cases": 6,
+      "positive_probes_repeat_original_cases": 2,
+      "mutant_case_executions": 4,
+      "expected_mutant_failures": 2,
+      "source_restored_and_tracked_clean": true,
+      "cargo_fmt_check_four_packages": "PASS",
+      "new_training_stage_native_cases_executed": 0,
+      "evidence": "windows-30a/SUMMARY.json",
+      "root_verification": "windows-30a/ROOT_VERIFICATION.json"
+    },
+    {
+      "name": "current 30a daemon original attempt dependency fetch",
+      "status": "FAILED_DEPENDENCY_DOWNLOAD_BEFORE_NATIVE",
+      "source_sha": "30a697c50e10abd56e61b6b84f28ac9ae9f32f5d",
+      "source_tree": "b2a21d98380340b1c091006f4130aafdbeabca50",
+      "run_id": 42951157619,
+      "run_attempt": 1,
+      "job_id": 130295510605,
+      "native_cases_executed": 0,
+      "helper_build": "NOT_REACHED",
+      "new_training_stage_cases_executed": 0,
+      "reason": "thiserror-impl crates.io index fetch curl55 / OpenSSL unexpected EOF",
+      "rust_compile_or_test_failure_established": false,
+      "only_checkout_source_snapshot_present": true,
+      "evidence": "daemon-30a-attempt1/SUMMARY.json",
+      "root_verification": "daemon-30a-attempt1/ROOT_VERIFICATION.json"
+    },
+    {
+      "name": "current-source original owner wiring gap audit",
+      "status": "SOURCE_GAPS_AND_MATERIAL_BOUNDARIES_EXPLICIT",
+      "source_sha": "30a697c50e10abd56e61b6b84f28ac9ae9f32f5d",
+      "source_tree": "b2a21d98380340b1c091006f4130aafdbeabca50",
+      "source_files_pinned": 27,
+      "actual_native_or_ci_or_caller_runs": 0,
+      "small_existing_protocol_code_step": "Snapshot-aware Training original receipt readback/attestation; being implemented separately and not part of 30a.",
+      "data_extraction_semantics_provided": false,
+      "model_baseline_allowed": true,
+      "native_trained_model_governed_candidate_protocol_present": false,
+      "evidence": "current-30a/wiring-handoff/HANDOFF.json"
     }
   ],
   "remaining_p0": [
@@ -489,7 +563,7 @@
     "Original Dataset/experience custody and one actual frozen model/data/configuration/Circuit/evaluator tuple.",
     "Exact original Dataset bridge from DurableLedger/CURRENT, source_record_digests, fixed Q24 extraction/target rule and original Observer Dataset receipt to CellQ24TrainingBatchV1 and an exact Dataset cut; a batch constructor alone is not provenance.",
     "Original enrolled Generator authority and existing native/receipt file+witness pairs must come from the production custodian; no new keys, forged original receipts or self-declared custody.",
-    "Production governed Model proposal path for the Q24 trained Model; current ordinary proposal payload exposes Parameter/Topology and test-only research external material is not a production substitute.",
+    "A versioned governed native-Q24 trained-Model candidate and durable admission/recovery path. A Model baseline is already allowed, but the production Parameter/Topology payload and Parameter V3 deterministic-regeneration contract do not admit arbitrary native SGD results; test-only external material is not a production substitute.",
     "Independent B/retention/new-C task custody, original evaluator and selector receipts, and committed distinct-task use.",
     "Full original owner/daemon/Root process cold restoration in an independent rollback domain, with both Adopt and correct NoUpdate branches.",
     "Fresh same-source native and full CI gates; the Matrix restart and git-attribution auth-refresh failures still require actual diagnosis/results.",
@@ -520,7 +594,10 @@
       "scope": "Distinct commands; no independent task sample count is implied."
     },
     "bazel_metadata_check": "engineering/bazel-lock/PASS_ATTEMPT.json; 105.21175995399972 s wall. Detached server CPU and peak RSS are unmeasured; client child values do not cover server.",
-    "final_format_checks": "engineering/ci-fixes/VALIDATION.json; wall and child CPU are separately scoped to each command."
+    "final_format_checks": "engineering/ci-fixes/VALIDATION.json; wall and child CPU are separately scoped to each command.",
+    "current_source_full_caller_scan": "caller-30a/EXECUTION.json; measured verifier-only wall/child CPU, no preparation/communication/whole-session cost claim.",
+    "current_windows": "windows-30a/SUMMARY.json: original nextest timings are recorded; full build CPU/RSS and whole-command cost remain unknown.",
+    "current_daemon_fetch_failure": "daemon-30a-attempt1/SUMMARY.json; native cases zero, failure/network/CPU cost not inferred as zero. One bounded same-source rerun is separately recorded."
   },
   "research_status": "RESEARCH_STATUS.json",
   "new_frozen_diagnostic": "ctrl-gap/RESULTS.md",
@@ -537,5 +614,6 @@
     "reviewed_diagnostic_and_profile_changes": "engineering/ci-fixes/REVIEW_AND_SCOPE.json",
     "old_matrix_reopen_cause_established": false,
     "auth_refresh_fresh_case_observed": false
-  }
+  },
+  "wiring_handoff": "current-30a/wiring-handoff/HANDOFF.json"
 }

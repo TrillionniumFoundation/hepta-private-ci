@@ -1,0 +1,207 @@
+{
+  "schema": "hepta_exact_source_scan_identity_v1",
+  "observed_at_utc": "2026-11-11T03:15:00.030192+00:00",
+  "checkout": "/workspace/scratch/f7c0ded86bcc/hepta-p0-learn-merge",
+  "head": "30a697c50e10abd56e61b6b84f28ac9ae9f32f5d",
+  "tree": "b2a21d98380340b1c091006f4130aafdbeabca50",
+  "parent": "cb0598a9099a0d828ce73aedb51e397e600e49d1",
+  "branch": "codex/cell-p0-final-caller-30a697-f7c0",
+  "clean": true,
+  "status_raw_file": "before-status.raw",
+  "status_bytes": 0,
+  "status_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "tracked_tree_records": {
+    "command": [
+      "git",
+      "ls-tree",
+      "-r",
+      "-z",
+      "--full-tree",
+      "30a697c50e10abd56e61b6b84f28ac9ae9f32f5d"
+    ],
+    "count": 14401,
+    "bytes": 1706422,
+    "sha256": "7bbd8492e065cae386056a112ff51efddd379b78dcd85185eff93ffd75ff25dd"
+  },
+  "source_files": {
+    ".github/workflows/hcsn-differentiable.yml": {
+      "bytes": 6820,
+      "sha256": "f6d6906c6a6b4602d8358b9c324f57e1e7fbbb6aa7e75f68500bfc8b7bb48e65"
+    },
+    ".github/workflows/hepta-daemon-learning-native.yml": {
+      "bytes": 18827,
+      "sha256": "278f90e1b14afd235106c84efe2d14dd7458ff4eb36ed71f4c823bc8392b885d"
+    },
+    "MODULE.bazel": {
+      "bytes": 24766,
+      "sha256": "3be346c68d608527936a029ca5685e5cb44d3c55d98ee1ff3b210d740318800e"
+    },
+    "codex-rs/core/src/unified_exec/async_watcher_tests.rs": {
+      "bytes": 15270,
+      "sha256": "f5073ba560a08f5c496e1f13272498b28fd1652eddbd90a18c254dacca5b468e"
+    },
+    "codex-rs/hepta-agentd/src/cell_q24_training_stage_tests.rs": {
+      "bytes": 13770,
+      "sha256": "c8be41a31e4dc3cd7d70508fcc5b200de2ec438df75e197240cc8c20eb80b65e"
+    },
+    "codex-rs/hepta-matrix-sdk/src/sdk.rs": {
+      "bytes": 28154,
+      "sha256": "737a92f3af84b4ba1356f36307c6b2c3ca81a0fe22bc24829fe620ff1d656e09"
+    },
+    "codex-rs/hepta-matrix-sdk/src/sync_tests.rs": {
+      "bytes": 23061,
+      "sha256": "aa42e1eebd256f356089e00857718310deb5aa93721bad161b0252ad18156acd"
+    },
+    "codex-rs/hepta-matrix-sdk/tests/store_version_migration.rs": {
+      "bytes": 12465,
+      "sha256": "0db33a2e8505870351f54fb53c4b0d11b698ee162c88167af54499dd379e4fae"
+    },
+    "docs/hepta-generation-learning-readback.md": {
+      "bytes": 8285,
+      "sha256": "11581f969668abd0b8b3e131cbcdb76254955db9da9f7d3b0ba2cee193f3f62b"
+    }
+  },
+  "source_read_origins": {
+    ".github/workflows/hcsn-differentiable.yml": "materialized worktree bytes",
+    ".github/workflows/hepta-daemon-learning-native.yml": "materialized worktree bytes",
+    "MODULE.bazel": "materialized worktree bytes",
+    "codex-rs/core/src/unified_exec/async_watcher_tests.rs": "materialized worktree bytes",
+    "codex-rs/hepta-agentd/src/cell_q24_training_stage_tests.rs": "materialized worktree bytes",
+    "codex-rs/hepta-matrix-sdk/src/sdk.rs": "materialized worktree bytes",
+    "codex-rs/hepta-matrix-sdk/src/sync_tests.rs": "materialized worktree bytes",
+    "codex-rs/hepta-matrix-sdk/tests/store_version_migration.rs": "materialized worktree bytes",
+    "docs/hepta-generation-learning-readback.md": "exact pinned Git blob; preexisting sparse exclusion; not a caller source root"
+  },
+  "caller_source_scope": {
+    "source_roots": [
+      "codex-rs"
+    ],
+    "tracked_rust_count": 6302,
+    "worktree_rust_count": 6302,
+    "missing_or_additional_rust_files": [],
+    "ordered_rust_paths_sha256": "8883d02a1973bbe9072b72a7c960aec24a397ed5d9e77c0278ff97ab7bcfe634",
+    "sparse_patterns": [
+      "/*",
+      "!/qualification/",
+      "!/archive/",
+      "!/docs/",
+      "!/assets/"
+    ]
+  },
+  "matches_prior_nine_file_reviews": true,
+  "callers": {
+    "path": "CALLERS.toml",
+    "bytes": 345198,
+    "sha256": "e24624826d94bd7726e55c5ffb3ffc55f182819949dbe7b66c92879441e38b19"
+  },
+  "verifier": {
+    "path": "scripts/verify_hepta_callers.py",
+    "bytes": 31701,
+    "sha256": "8899ec2b328125b2049b808cac0eeda3f57bfc6db89348512a58777101ae6dfa"
+  },
+  "preserved_cb_branch": {
+    "name": "codex/cell-p0-final-caller-audit-f7c0",
+    "head": "cb0598a9099a0d828ce73aedb51e397e600e49d1"
+  },
+  "preserved_prior_receipt": {
+    "path": "/workspace/scratch/f7c0ded86bcc/p0_final_caller_audit_cb0598_20261111",
+    "file_count": 19,
+    "files": [
+      {
+        "file": "AFTER.json",
+        "bytes": 721,
+        "sha256": "12a91e00dc690ec84f5cab7cbc2b8c1437c4e134b5a80ab5a66ff43cae9bca59"
+      },
+      {
+        "file": "AFTER_STATUS.porcelain.z",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "file": "BEFORE.json",
+        "bytes": 721,
+        "sha256": "1908436c277cbbd126ed04c68b3558cdec3fa702fc0e0f1d404d1d70b53cb0e6"
+      },
+      {
+        "file": "BEFORE_STATUS.porcelain.z",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "file": "EXECUTION.json",
+        "bytes": 2862,
+        "sha256": "0baf115da2756e63d082d9b1cfb3920b225a67effd036eff1dfc1ac3103328ad"
+      },
+      {
+        "file": "FETCH.stderr",
+        "bytes": 140,
+        "sha256": "cce34d63d019e2a2a38586ef98f7cef41e43b63154288a16fdf3ec699ef7f92d"
+      },
+      {
+        "file": "FETCH.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "file": "HEARTBEATS.jsonl",
+        "bytes": 3376,
+        "sha256": "68c47150a16fbc6caa1b100ac2ec86bf33d894aeaad2190737ff29acfbc72043"
+      },
+      {
+        "file": "INVOCATION.json",
+        "bytes": 1409,
+        "sha256": "8d2e2aeb72276e9880e135e5cf05f3132c4fda30ae5872a58513d47057a00bce"
+      },
+      {
+        "file": "MANIFEST.json",
+        "bytes": 3348,
+        "sha256": "232ca1beb2f236ea04875040821a47ccc3cfdb1584a57596db9ea79a8b8111df"
+      },
+      {
+        "file": "ORIGINAL_CHECKOUT.json",
+        "bytes": 605,
+        "sha256": "3ca22f13a1499dfa1b56dfc887b8334d04501452be7b03866e09d31ff398ec3f"
+      },
+      {
+        "file": "ORIGINAL_STATUS.porcelain.z",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "file": "PREPARATION.json",
+        "bytes": 688,
+        "sha256": "f7efcfed1e9c90d0c22933367acc9892ce867c1243413bcdc8c0d07df18c86d9"
+      },
+      {
+        "file": "RESULTS.md",
+        "bytes": 4670,
+        "sha256": "b6f322acc330eafc9a679108124d04d83ca6e1491d74854c512a1181aef3606b"
+      },
+      {
+        "file": "SCAN.stderr.txt",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "file": "SCAN.stdout.json",
+        "bytes": 103063,
+        "sha256": "83201a799a7be1e04116ad1b089b32761ae6d37ed77de35885e12d441f825c7c"
+      },
+      {
+        "file": "SWITCH.stderr",
+        "bytes": 65,
+        "sha256": "312a86c8457fb942d55a080f17832878ec9e138949f47f2b07c5176d6ed8e75a"
+      },
+      {
+        "file": "SWITCH.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "file": "run_full_scan.py",
+        "bytes": 6782,
+        "sha256": "0fa94dfca8877df1dca3507337fcb2867026c7e60914f49e8519697175d32d3e"
+      }
+    ]
+  }
+}

@@ -1,0 +1,71 @@
+{
+  "schema": "hepta_single_caller_invocation_v1",
+  "invocation_id": "p0-30a697c-full-caller-scan-20261111-v1",
+  "source": "30a697c50e10abd56e61b6b84f28ac9ae9f32f5d",
+  "tree": "b2a21d98380340b1c091006f4130aafdbeabca50",
+  "cwd": "/workspace/scratch/f7c0ded86bcc/hepta-p0-learn-merge",
+  "argv": [
+    "python3",
+    "scripts/verify_hepta_callers.py",
+    "verify",
+    "--root",
+    "/workspace/scratch/f7c0ded86bcc/hepta-p0-learn-merge"
+  ],
+  "python_command_resolves_to": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+  "runner_python": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+  "runner_python_version": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "runner_pid": 2,
+  "created_at_utc": "2026-11-11T03:15:00.059138+00:00",
+  "scope": "Complete verify command, not inventory-only. No native build/test or production authorization.",
+  "verifier_pid": 36,
+  "started_at_utc": "2026-11-11T03:15:00.059278+00:00",
+  "ended_at_utc": "2026-11-11T03:26:48.045787+00:00",
+  "exit_code": 0,
+  "costs": {
+    "wall_seconds": 707.9864971160005,
+    "child_user_cpu_seconds": 688.9000550000001,
+    "child_system_cpu_seconds": 3.47934,
+    "child_cpu_seconds_total": 692.379395,
+    "measurement": "monotonic wall time and RUSAGE_CHILDREN deltas surrounding the one verifier subprocess, before post-run Git reads",
+    "excluded": [
+      "preparation/fetch/switch",
+      "before/after source snapshots",
+      "assistant orchestration and communication",
+      "other agents/CI",
+      "archive construction"
+    ],
+    "unmeasured": [
+      "monetary cost",
+      "energy",
+      "whole-session resource cost"
+    ]
+  },
+  "stdout": {
+    "file": "stdout.raw",
+    "bytes": 103063,
+    "sha256": "83201a799a7be1e04116ad1b089b32761ae6d37ed77de35885e12d441f825c7c"
+  },
+  "stderr": {
+    "file": "stderr.raw",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "identity_verification": "PASS_EXACT_SOURCE_AND_PRESERVED_PRIOR_RECEIPT",
+  "unchanged_before_after": {
+    "head": true,
+    "tree": true,
+    "parent": true,
+    "branch": true,
+    "clean": true,
+    "status_bytes": true,
+    "status_sha256": true,
+    "tracked_tree_records": true,
+    "source_files": true,
+    "source_read_origins": true,
+    "caller_source_scope": true,
+    "callers": true,
+    "verifier": true,
+    "preserved_cb_branch": true,
+    "preserved_prior_receipt": true
+  }
+}
