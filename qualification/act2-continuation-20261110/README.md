@@ -1,6 +1,15 @@
 # ACT continuation: bounded closures and open gates
 
 
+## Current common learning candidate supersedes component heads
+
+#5865 has independently advanced to source `cb0598a9099a0d828ce73aedb51e397e600e49d1` / tree `59a019b79a6b879bbc27f6a614e1222fe87581ca`. This common candidate incorporates the fail-closed `TrainingNoUpdateV2` repair and restores the original single durable claim, while also joining full-CURRENT recovery, ordinary Q24 learning, the original Generator training-receipt owner, and a bounded non-queuing Training stage. #5884 and #5900 remain exact component evidence; their results do not qualify or transfer to this new source.
+
+Its Windows run `42942991263` is terminal success for the selected private-state scope: 34 declared tests passed, including 12 agentd `prompt_runtime` cases. Artifact `13822696815` is 13,540 bytes with SHA-256 `95539f80…f42a`. This establishes compilation and the workflow's selected Windows scope only. It did not execute the six new native Training-stage behavior cases or the repaired recovery assertion. Fresh daemon `42942991526`, shared `42942991327`, cell-research `42942991296`, local-update `42942991273`, architecture `42942991572`, and blocking `42942991404` runs remain queued/pending.
+
+The public host entry points, receipt-owner create/recover, complete `LearningIterationStageOwnerPortsV1` assembly, one real frozen model/data/configuration/Circuit/evaluator tuple, independent B/retention/new-C evidence and full cold recovery remain open. Complete ordinary Adopt and correct NoUpdate end-to-end counts remain zero.
+
+
 ## 2026-11-11 exact-source compile classifications and successors
 
 #5880 source `073b91e166c98340a505f747577a90ed080beb1b` / tree `03ec3fc9e6998a2094f2626dff10180fce792806` is terminal failure outside its v8 metadata lane. Windows run `42933099348` (job `130236434605`), architecture source-head run `42933099340`, and blocking run `42933099432` (job `130238994409`) all stopped before semantic tests on E0425: `LedgerSnapshot` and `LedgerWitnessFrontier` were used without imports at `neuron_generation_episode_test_support.rs:344`. Architecture base-merge success does not qualify that source. The two-import test-only successor is `b727c49bdd13d7774b7a041f7de148c8b15d79fe` / tree `9ca6c011d44067f5effec2d7eaba32cd5ccffafd`; its Windows `42941333490`, architecture `42941333761`, blocking `42941333585`, and v8 `42941333582` runs were freshly queued and must be read at their own terminal state. Windows run `42941333490` is now terminal success at the exact successor: 33 declared-scope tests passed, including 11 `prompt_runtime` tests; artifact `13820584991` is 13,513 bytes with SHA-256 `6da2a3de…1a72`. This proves Windows compilation and that workflow's selected private-state/prompt-runtime scope only. It did **not** execute the 17 generation/evaluation/credit fixtures changed by #5880; architecture and blocking native remain queued and required.
