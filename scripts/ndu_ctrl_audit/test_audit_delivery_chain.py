@@ -92,6 +92,7 @@ def observed():
         "exit_code": 0,
         "enforced_before_actor_exec": True,
         "run_id": "run-1",
+        "task_id": "task-1",
         "episode_id": "episode-1",
         "wire_sha256": "b" * 64,
     }
@@ -118,6 +119,34 @@ class ObservedAuditTest(unittest.TestCase):
                 x = observed()
                 x["launch"][field] = value
                 self.assertIn("ISOLATED_ACTOR_NOT_COMPLETED", audit_observed(x)[1])
+
+    def test_actor_reported_failures_reject_zero_exit_claim(self):
+        for field, value in (
+            ("callback_error", {"type": "interrupted"}),
+            ("callback_error", {}),
+            ("protocol_error", "malformed_response"),
+            ("protocol_error", ""),
+            ("limit_reason", "output_limit"),
+            ("limit_reason", False),
+        ):
+            with self.subTest(field=field, value=value):
+                x = observed()
+                x["launch"][field] = value
+                passed, errors = audit_observed(x)
+                self.assertFalse(passed)
+                self.assertIn("ISOLATED_ACTOR_NOT_COMPLETED", errors)
+
+    def test_launch_task_binding_cannot_be_omitted_or_reassigned(self):
+        for task_id in (None, "other-task", False, ""):
+            with self.subTest(task_id=task_id):
+                x = observed()
+                x["launch"]["task_id"] = task_id
+                passed, errors = audit_observed(x)
+                self.assertFalse(passed)
+                self.assertIn("LAUNCH_IDENTITY_DRIFT", errors)
+        x = observed()
+        del x["launch"]["task_id"]
+        self.assertIn("LAUNCH_IDENTITY_DRIFT", audit_observed(x)[1])
 
     def test_wrong_actor_wire(self):
         x = observed()
