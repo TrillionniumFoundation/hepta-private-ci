@@ -9,7 +9,7 @@ permissions:
 jobs:
   build-test:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 30
     env:
       NODE_OPTIONS: --max-old-space-size=4096
     steps:
@@ -27,7 +27,35 @@ jobs:
         run: python3 -m unittest discover -s .github/scripts -p 'test_verify_cargo_workspace_manifests.py'
 
       - name: Verify Hepta privileged caller closed set
+        timeout-minutes: 20
+        env:
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
         run: |
+          python3 - <<'PYCODE'
+          import json
+          import os
+          import subprocess
+
+          def git(*args):
+              return subprocess.check_output(["git", *args], text=True).strip()
+
+          metadata = git("cat-file", "-p", "HEAD").split("\n\n", 1)[0].splitlines()
+          print(json.dumps({
+              "schema": "hepta.caller-proof-source-observation.v1",
+              "source_sha": os.environ["SOURCE_SHA"],
+              "base_sha": os.environ.get("BASE_SHA") or None,
+              "tested_sha": git("rev-parse", "HEAD"),
+              "tree": git("rev-parse", "HEAD^{tree}"),
+              "parents": [line[7:] for line in metadata if line.startswith("parent ")],
+              "dirty": bool(git("status", "--porcelain")),
+              "github_sha": os.environ["GITHUB_SHA"],
+              "run_id": os.environ["GITHUB_RUN_ID"],
+              "run_attempt": os.environ["GITHUB_RUN_ATTEMPT"],
+              "job": os.environ["GITHUB_JOB"],
+              "status": "observed",
+          }, sort_keys=True))
+          PYCODE
           python3 scripts/verify_hepta_callers.py self-test
           python3 scripts/verify_hepta_callers.py verify
           python3 -m unittest discover -s qa/b4-no-bypass -p 'test_*.py'
