@@ -1,0 +1,72 @@
+{
+  "after": {
+    "commit": "c7788fcb70e90ee887410df5abc4e840664ba088",
+    "dirty": false,
+    "parents": [
+      "9897b9ab2301ce892822cd819ba07babe01dc926",
+      "e81533335c68ea49ccfce37e5db8e865bedb49c9"
+    ],
+    "tree": "d71f3ac45d14879b65962c3b4c6065c20a6a9df5"
+  },
+  "base_sha": "73f20ed9a09bc5716484f497654640aedcec268d",
+  "before": {
+    "commit": "c7788fcb70e90ee887410df5abc4e840664ba088",
+    "dirty": false,
+    "parents": [
+      "9897b9ab2301ce892822cd819ba07babe01dc926",
+      "e81533335c68ea49ccfce37e5db8e865bedb49c9"
+    ],
+    "tree": "d71f3ac45d14879b65962c3b4c6065c20a6a9df5"
+  },
+  "command": [
+    "just",
+    "test",
+    "--locked",
+    "--offline",
+    "-p",
+    "codex-hepta-agentd",
+    "-p",
+    "codex-hepta-learning-ledger",
+    "-p",
+    "codex-hepta-learning-artifacts",
+    "-p",
+    "codex-hepta-intelligence-eval",
+    "--lib",
+    "--test-threads",
+    "2",
+    "--retries",
+    "0",
+    "--no-tests",
+    "fail",
+    "--status-level",
+    "pass",
+    "--success-output",
+    "final",
+    "--failure-output",
+    "final"
+  ],
+  "command_exit_code": 101,
+  "elapsed_seconds": 287.0155538879335,
+  "error": "required tests were not observed passing",
+  "exit_code": 101,
+  "finished_at": "2026-11-11T16:56:15.985351+00:00",
+  "job": null,
+  "lane": "source-head",
+  "log_bytes": 54629,
+  "log_file": "full-native.json.cb27301a82904a559e0a7b0144ea2052.log",
+  "log_sha256": "b39648e600e17ca635d78af1d075b533fe142fe680b80ab53cc1e7662ae9148a",
+  "minimum_tests": 1326,
+  "observed_failed_tests": 0,
+  "observed_passed_tests": 0,
+  "output_limit_exceeded": false,
+  "returncode": 101,
+  "run_attempt": null,
+  "run_id": null,
+  "schema_version": 1,
+  "source_sha": "c7788fcb70e90ee887410df5abc4e840664ba088",
+  "started_at": "2026-11-11T16:51:28.968228+00:00",
+  "status": "failed",
+  "tested_sha": "c7788fcb70e90ee887410df5abc4e840664ba088",
+  "timed_out": false,
+  "working_directory": "/home/qian-qi/hepta-learn-all-owners-ce434-20261111-v1/codex-rs"
+}
