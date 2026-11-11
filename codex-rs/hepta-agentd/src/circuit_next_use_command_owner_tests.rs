@@ -6,21 +6,21 @@ use super::*;
 use pretty_assertions::assert_eq;
 use pretty_assertions::assert_ne;
 
-use crate::OriginalCircuitNextUseCommandClientV1 as NextClient;
-use crate::OriginalCircuitNextUseCommandContextV1 as NextContext;
-use crate::OriginalCircuitNextUseCommandErrorV1 as NextError;
-use crate::OriginalCircuitNextUseCommandOwnerV1 as NextOwner;
-use crate::OriginalCircuitSelectionCommandReceiptV1 as SelectionRecord;
+use crate::OriginalCircuitNextUseCommandClientV1;
+use crate::OriginalCircuitNextUseCommandContextV1;
+use crate::OriginalCircuitNextUseCommandErrorV1;
+use crate::OriginalCircuitNextUseCommandOwnerV1;
+use crate::OriginalCircuitSelectionCommandReceiptV1;
 use crate::learning_iteration_evidence_client::next_use_command_test_support as next;
 
-type ObserverHost = NextOwner<FileAnchorWitnessStore>;
-type ObserverThread = std::thread::JoinHandle<Result<u64, NextError>>;
+type ObserverHost = OriginalCircuitNextUseCommandOwnerV1<FileAnchorWitnessStore>;
+type ObserverThread = std::thread::JoinHandle<Result<u64, OriginalCircuitNextUseCommandErrorV1>>;
 
 struct CompletionFixture {
     f: SelectionFixture,
     selector: OriginalService,
-    selection_context: CommandContext,
-    selected: SelectionRecord,
+    selection_context: OriginalCircuitSelectionCommandContextV1,
+    selected: OriginalCircuitSelectionCommandReceiptV1,
 }
 
 impl CompletionFixture {
@@ -49,8 +49,8 @@ impl CompletionFixture {
         })
     }
 
-    fn context(&self) -> anyhow::Result<NextContext> {
-        Ok(NextContext::from_original_selection(
+    fn context(&self) -> anyhow::Result<OriginalCircuitNextUseCommandContextV1> {
+        Ok(OriginalCircuitNextUseCommandContextV1::from_original_selection(
             self.f.original.config.scope.clone(),
             self.f.original.config.verifier.clone(),
             &self.selected,
@@ -141,7 +141,7 @@ impl ObserverService {
     }
 }
 
-fn finish_observer(client: NextClient, server: ObserverThread) -> anyhow::Result<u64> {
+fn finish_observer(client: OriginalCircuitNextUseCommandClientV1, server: ObserverThread) -> anyhow::Result<u64> {
     drop(client);
     Ok(server
         .join()
@@ -159,7 +159,7 @@ async fn q24_next_use_command_attests_actual_different_c_and_shares_dispatch() -
     let server = next::serve(Arc::clone(&service.owner), channel);
     let before = f.f.original.bytes()?;
     let task_before = owner_bytes(&f.f.original.session)?;
-    assert!(matches!(client.readback().await, Err(NextError::Missing)));
+    assert!(matches!(client.readback().await, Err(OriginalCircuitNextUseCommandErrorV1::Missing)));
     assert_eq!(f.f.original.bytes()?, before);
     let completed = client.attest_completed_task().await?;
     let selected = LearningIterationCoordinatorV1::from_snapshot(f.selected.snapshot().clone())?;
@@ -180,14 +180,14 @@ async fn q24_next_use_command_attests_actual_different_c_and_shares_dispatch() -
     let bytes = f.f.original.bytes()?;
     assert!(matches!(
         client.attest_completed_task().await,
-        Err(NextError::ReadbackRequired),
+        Err(OriginalCircuitNextUseCommandErrorV1::ReadbackRequired),
     ));
     assert_eq!(client.readback().await?, completed);
     let (second, channel) = next::client(context, false, None)?;
     let second_server = next::serve(Arc::clone(&service.owner), channel);
     assert!(matches!(
         second.attest_completed_task().await,
-        Err(NextError::ReadbackRequired),
+        Err(OriginalCircuitNextUseCommandErrorV1::ReadbackRequired),
     ));
     assert_eq!(second.readback().await?, completed);
     assert_eq!(f.f.original.bytes()?, bytes);
@@ -210,11 +210,11 @@ async fn q24_next_use_command_lost_ack_recovers_exact_original_signature_readonl
     let server = next::lose_ack(Arc::clone(&service.owner), channel);
     assert!(matches!(
         client.attest_completed_task().await,
-        Err(NextError::CommitUncertain)
+        Err(OriginalCircuitNextUseCommandErrorV1::CommitUncertain)
     ));
     assert!(matches!(
         client.readback().await,
-        Err(NextError::Unavailable)
+        Err(OriginalCircuitNextUseCommandErrorV1::Unavailable)
     ));
     drop(client);
     let original = server
@@ -228,7 +228,7 @@ async fn q24_next_use_command_lost_ack_recovers_exact_original_signature_readonl
     let fresh_server = next::serve(Arc::clone(&recovered.owner), channel);
     assert!(matches!(
         fresh.attest_completed_task().await,
-        Err(NextError::ReadbackRequired)
+        Err(OriginalCircuitNextUseCommandErrorV1::ReadbackRequired)
     ));
     assert_eq!(fresh.readback().await?, original);
     let (cold, channel) = next::recover_client(
@@ -242,7 +242,7 @@ async fn q24_next_use_command_lost_ack_recovers_exact_original_signature_readonl
     let cold_server = next::serve(Arc::clone(&recovered.owner), channel);
     assert!(matches!(
         cold.attest_completed_task().await,
-        Err(NextError::ReadbackRequired)
+        Err(OriginalCircuitNextUseCommandErrorV1::ReadbackRequired)
     ));
     assert_eq!(cold.readback().await?, original);
     assert_eq!(
@@ -269,11 +269,11 @@ async fn q24_next_use_command_early_dispatch_never_runs_c_or_resets_admission() 
     let task_before = owner_bytes(&f.f.original.session)?;
     assert!(matches!(
         client.attest_completed_task().await,
-        Err(NextError::CommitUncertain)
+        Err(OriginalCircuitNextUseCommandErrorV1::CommitUncertain)
     ));
     assert!(matches!(
         client.readback().await,
-        Err(NextError::Unavailable)
+        Err(OriginalCircuitNextUseCommandErrorV1::Unavailable)
     ));
     assert_eq!(f.f.original.bytes()?, before);
     assert_eq!(owner_bytes(&f.f.original.session)?, task_before);
@@ -289,9 +289,9 @@ async fn q24_next_use_command_early_dispatch_never_runs_c_or_resets_admission() 
     let server = next::serve(Arc::clone(&recovered.owner), channel);
     assert!(matches!(
         client.attest_completed_task().await,
-        Err(NextError::ReadbackRequired)
+        Err(OriginalCircuitNextUseCommandErrorV1::ReadbackRequired)
     ));
-    assert!(matches!(client.readback().await, Err(NextError::Missing)));
+    assert!(matches!(client.readback().await, Err(OriginalCircuitNextUseCommandErrorV1::Missing)));
     assert_eq!(f.f.original.bytes()?, before);
     assert_eq!(finish_observer(client, server)?, 2);
     recovered.finish(false, false)?;
@@ -346,7 +346,7 @@ async fn q24_next_use_command_pins_both_original_signatures_before_dispatch() ->
         let wrong_server = next::serve(Arc::clone(&service.owner), channel);
         assert!(matches!(
             wrong.readback().await,
-            Err(NextError::CommitUncertain)
+            Err(OriginalCircuitNextUseCommandErrorV1::CommitUncertain)
         ));
         drop(wrong);
         assert!(
@@ -402,7 +402,7 @@ async fn q24_next_use_command_readback_refuses_actual_publication_withdrawal() -
     );
     assert!(matches!(
         client.readback().await,
-        Err(NextError::CommitUncertain)
+        Err(OriginalCircuitNextUseCommandErrorV1::CommitUncertain)
     ));
     assert_eq!(f.f.original.bytes()?, bytes);
     assert_eq!(finish_observer(client, server)?, 2);
@@ -424,7 +424,7 @@ async fn q24_next_use_command_preserves_original_expiry_and_external_custody() -
     // SAFETY: observe only this test process, which production must reject.
     let uid = unsafe { libc::geteuid() };
     assert!(
-        NextClient::from_original_stream(
+        OriginalCircuitNextUseCommandClientV1::from_original_stream(
             stream,
             crate::LearningIterationEvidencePeerV1 {
                 pid: peer.pid,
@@ -450,7 +450,7 @@ async fn q24_next_use_command_preserves_original_expiry_and_external_custody() -
     drop(unused);
     let (stream, unused) = UnixStream::pair()?;
     assert!(
-        NextClient::recover_from_original_stream(
+        OriginalCircuitNextUseCommandClientV1::recover_from_original_stream(
             stream,
             crate::LearningIterationEvidencePeerV1 {
                 pid: peer.pid,
@@ -482,7 +482,7 @@ async fn q24_next_use_command_preserves_original_expiry_and_external_custody() -
     let service = ObserverService::start(&f, f.f.original.create_owner()?)?;
     let (client, channel) = next::client(context, false, None)?;
     let server = next::serve(Arc::clone(&service.owner), channel);
-    assert!(matches!(client.readback().await, Err(NextError::Missing)));
+    assert!(matches!(client.readback().await, Err(OriginalCircuitNextUseCommandErrorV1::Missing)));
     let bytes = f.f.original.bytes()?;
     let expires = f.selected.attestation().expires_at;
     tokio::time::sleep(
@@ -492,7 +492,7 @@ async fn q24_next_use_command_preserves_original_expiry_and_external_custody() -
     assert!(client.attest_completed_task().await.is_err());
     assert!(matches!(
         client.readback().await,
-        Err(NextError::Unavailable)
+        Err(OriginalCircuitNextUseCommandErrorV1::Unavailable)
     ));
     assert_eq!(f.f.original.bytes()?, bytes);
     assert_eq!(finish_observer(client, server)?, 1);

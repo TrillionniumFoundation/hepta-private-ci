@@ -8,19 +8,19 @@ use std::time::Duration;
 
 use pretty_assertions::assert_eq;
 
-use crate::OriginalCircuitLearningReadClientV1 as ReadClient;
-use crate::OriginalCircuitLearningReadContextV1 as ReadContext;
-use crate::OriginalCircuitLearningReadErrorV1 as ReadError;
-use crate::OriginalCircuitLearningReadOwnerV1 as ReadOwner;
+use crate::OriginalCircuitLearningReadClientV1;
+use crate::OriginalCircuitLearningReadContextV1;
+use crate::OriginalCircuitLearningReadErrorV1;
+use crate::OriginalCircuitLearningReadOwnerV1;
 use crate::OriginalCircuitNextUseRemoteSourcesV1;
 use crate::OriginalCircuitSelectionRemoteSourcesV1;
 use crate::circuit_feature_current::original_learning_read_fixture as transport;
 
-type OriginalReadOwner = ReadOwner<FileAnchorWitnessStore, FileAnchorWitnessStore>;
-type ReadThread = std::thread::JoinHandle<Result<u64, ReadError>>;
+type OriginalReadOwner = OriginalCircuitLearningReadOwnerV1<FileAnchorWitnessStore, FileAnchorWitnessStore>;
+type ReadThread = std::thread::JoinHandle<Result<u64, OriginalCircuitLearningReadErrorV1>>;
 
-fn selection_context(config: &OriginalCircuitSelectionReceiptConfigV1) -> ReadContext {
-    ReadContext {
+fn selection_context(config: &OriginalCircuitSelectionReceiptConfigV1) -> OriginalCircuitLearningReadContextV1 {
+    OriginalCircuitLearningReadContextV1 {
         prefix: config.decision.clone(),
         scope: config.scope.clone(),
         verifier: config.verifier.clone(),
@@ -29,8 +29,8 @@ fn selection_context(config: &OriginalCircuitSelectionReceiptConfigV1) -> ReadCo
     }
 }
 
-fn next_use_context(config: &OriginalCircuitNextUseReceiptConfigV1) -> ReadContext {
-    ReadContext {
+fn next_use_context(config: &OriginalCircuitNextUseReceiptConfigV1) -> OriginalCircuitLearningReadContextV1 {
+    OriginalCircuitLearningReadContextV1 {
         prefix: config.selection.clone(),
         scope: config.scope.clone(),
         verifier: config.verifier.clone(),
@@ -39,8 +39,8 @@ fn next_use_context(config: &OriginalCircuitNextUseReceiptConfigV1) -> ReadConte
     }
 }
 
-fn original(f: &ObserverFixture, context: ReadContext) -> anyhow::Result<Arc<OriginalReadOwner>> {
-    Ok(Arc::new(ReadOwner::from_original_owners(
+fn original(f: &ObserverFixture, context: OriginalCircuitLearningReadContextV1) -> anyhow::Result<Arc<OriginalReadOwner>> {
+    Ok(Arc::new(OriginalCircuitLearningReadOwnerV1::from_original_owners(
         f.session.cell.clone(),
         f.session.source.as_ref().clone(),
         f.session.runtime.identity.clone(),
@@ -50,7 +50,7 @@ fn original(f: &ObserverFixture, context: ReadContext) -> anyhow::Result<Arc<Ori
 
 fn remote_selection<'a>(
     snapshot: &'a LearningIterationSnapshotV1,
-    live: &'a ReadClient,
+    live: &'a OriginalCircuitLearningReadClientV1,
     trainer: &'a LearningIterationEvidenceClientV1,
 ) -> OriginalCircuitSelectionRemoteSourcesV1<'a> {
     OriginalCircuitSelectionRemoteSourcesV1 {
@@ -62,7 +62,7 @@ fn remote_selection<'a>(
 
 fn remote_c<'a>(
     snapshot: &'a LearningIterationSnapshotV1,
-    live: &'a ReadClient,
+    live: &'a OriginalCircuitLearningReadClientV1,
     peers: &'a Peers,
 ) -> OriginalCircuitNextUseRemoteSourcesV1<'a> {
     OriginalCircuitNextUseRemoteSourcesV1 {
@@ -73,7 +73,7 @@ fn remote_c<'a>(
     }
 }
 
-fn finish_read(client: ReadClient, thread: ReadThread, reads: u64) -> anyhow::Result<()> {
+fn finish_read(client: OriginalCircuitLearningReadClientV1, thread: ReadThread, reads: u64) -> anyhow::Result<()> {
     drop(client);
     let actual = thread
         .join()
@@ -180,7 +180,7 @@ async fn q24_remote_c_requires_actual_completion_and_original_selector_signature
     assert!(early.read_current().await.is_err());
     assert!(matches!(
         early.read_current().await,
-        Err(ReadError::Unavailable)
+        Err(OriginalCircuitLearningReadErrorV1::Unavailable)
     ));
     drop(early);
     assert!(
@@ -259,7 +259,7 @@ async fn q24_remote_current_refuses_withdrawal_after_a_successful_read() -> anyh
     assert_eq!(f.bytes()?, before);
     assert!(matches!(
         live.read_current().await,
-        Err(ReadError::Unavailable)
+        Err(OriginalCircuitLearningReadErrorV1::Unavailable)
     ));
     drop(selector);
     drop(live);
@@ -303,7 +303,7 @@ async fn q24_remote_context_pins_full_signatures_and_refuses_uploaded_observatio
             .attest_original_remote_selection(remote_selection(&f.config.decision, &live, &trainer))
             .await,
         Err(OriginalCircuitSelectionReceiptErrorV1::PublishedRead(
-            ReadError::Binding(_)
+            OriginalCircuitLearningReadErrorV1::Binding(_)
         ))
     ));
     assert_eq!(f.bytes()?, before);
@@ -329,7 +329,7 @@ async fn q24_remote_read_consumes_late_and_wrong_nonce_responses_without_effects
     assert!(late.read_current().await.is_err());
     assert!(matches!(
         late.read_current().await,
-        Err(ReadError::Unavailable)
+        Err(OriginalCircuitLearningReadErrorV1::Unavailable)
     ));
     drop(late);
     server
@@ -340,7 +340,7 @@ async fn q24_remote_read_consumes_late_and_wrong_nonce_responses_without_effects
     assert!(wrong.read_current().await.is_err());
     assert!(matches!(
         wrong.read_current().await,
-        Err(ReadError::Unavailable)
+        Err(OriginalCircuitLearningReadErrorV1::Unavailable)
     ));
     drop(wrong);
     server
@@ -362,7 +362,7 @@ async fn q24_remote_read_refuses_expired_original_window_and_same_process_bootst
     // SAFETY: observe test credentials, which production must reject.
     let uid = unsafe { libc::geteuid() };
     assert!(
-        ReadClient::from_original_stream(
+        OriginalCircuitLearningReadClientV1::from_original_stream(
             stream,
             transport::identity()?,
             uid,
@@ -380,7 +380,7 @@ async fn q24_remote_read_refuses_expired_original_window_and_same_process_bootst
     ] {
         let (stream, unused) = UnixStream::pair()?;
         assert!(matches!(
-            ReadClient::from_original_stream(
+            OriginalCircuitLearningReadClientV1::from_original_stream(
                 stream,
                 transport::identity()?,
                 uid,
@@ -389,7 +389,7 @@ async fn q24_remote_read_refuses_expired_original_window_and_same_process_bootst
                 timeout,
                 lifetime,
             ),
-            Err(ReadError::Binding("bounded original read timing"))
+            Err(OriginalCircuitLearningReadErrorV1::Binding("bounded original read timing"))
         ));
         drop(unused);
     }
@@ -412,7 +412,7 @@ async fn q24_remote_read_refuses_expired_original_window_and_same_process_bootst
     assert!(live.read_current().await.is_err());
     assert!(matches!(
         live.read_current().await,
-        Err(ReadError::Unavailable)
+        Err(OriginalCircuitLearningReadErrorV1::Unavailable)
     ));
     assert_eq!(f.bytes()?, before);
     drop(selector);

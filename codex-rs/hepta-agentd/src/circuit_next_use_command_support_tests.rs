@@ -21,9 +21,9 @@ use super::super::super::Channel as EvidenceChannel;
 use super::super::super::LearningIterationEvidenceClientV1;
 use super::super::Channel;
 use super::super::Error;
-use super::super::OriginalCircuitNextUseCommandClientV1 as Client;
-use super::super::OriginalCircuitNextUseCommandContextV1 as Context;
-use super::super::OriginalCircuitNextUseCommandReceiptV1 as Receipt;
+use super::super::OriginalCircuitNextUseCommandClientV1;
+use super::super::OriginalCircuitNextUseCommandContextV1;
+use super::super::OriginalCircuitNextUseCommandReceiptV1;
 use super::super::evidence_wire;
 use super::super::now;
 use super::super::wire;
@@ -53,10 +53,10 @@ fn channel(stream: UnixStream, timeout: Duration) -> anyhow::Result<HostAuthorit
 }
 
 pub(crate) fn client(
-    context: Context,
+    context: OriginalCircuitNextUseCommandContextV1,
     readback_only: bool,
-    retained: Option<Receipt>,
-) -> anyhow::Result<(Client, HostAuthorityPeerChannel)> {
+    retained: Option<OriginalCircuitNextUseCommandReceiptV1>,
+) -> anyhow::Result<(OriginalCircuitNextUseCommandClientV1, HostAuthorityPeerChannel)> {
     let (stream, server) = UnixStream::pair()?;
     let binding = context.binding(now()?)?;
     if let Some(expected) = &retained {
@@ -71,7 +71,7 @@ pub(crate) fn client(
         );
     }
     Ok((
-        Client {
+        OriginalCircuitNextUseCommandClientV1 {
             channel: Mutex::new(Some(Channel {
                 peer: channel(stream, Duration::from_secs(30))?,
                 next_request_id: 1,
@@ -92,8 +92,8 @@ pub(crate) fn recover_client(
     training_evidence: SignedLearningEvidenceV1,
     selection_evidence: SignedLearningEvidenceV1,
     expected: Option<(LearningIterationSnapshotV1, SignedLearningEvidenceV1)>,
-) -> anyhow::Result<(Client, HostAuthorityPeerChannel)> {
-    let context = Context::from_checkpoint(
+) -> anyhow::Result<(OriginalCircuitNextUseCommandClientV1, HostAuthorityPeerChannel)> {
+    let context = OriginalCircuitNextUseCommandContextV1::from_checkpoint(
         selection,
         scope,
         verifier,
@@ -107,7 +107,7 @@ pub(crate) fn recover_client(
 }
 
 pub(crate) fn evidence_client(
-    context: &Context,
+    context: &OriginalCircuitNextUseCommandContextV1,
 ) -> anyhow::Result<(LearningIterationEvidenceClientV1, HostAuthorityPeerChannel)> {
     let (stream, server) = UnixStream::pair()?;
     // SAFETY: the public custody constructors still refuse this same process.
@@ -150,7 +150,7 @@ pub(crate) fn serve_evidence<W: AnchorWitnessStore + Send + 'static>(
 pub(crate) fn lose_ack<W: AnchorWitnessStore + Send + 'static>(
     owner: Arc<OriginalCircuitNextUseCommandOwnerV1<W>>,
     mut channel: HostAuthorityPeerChannel,
-) -> std::thread::JoinHandle<anyhow::Result<Receipt>> {
+) -> std::thread::JoinHandle<anyhow::Result<OriginalCircuitNextUseCommandReceiptV1>> {
     std::thread::spawn(move || {
         let mut completed = None;
         let result = channel.exchange(|bytes| {
