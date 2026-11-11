@@ -229,12 +229,15 @@ def content_identity_report(
     exchanges = launch["host_exchanges"]
     if len(lines) != len(exchanges):
         raise ValueError("Actor wire/exchange count differs")
-    wires, require_selection = {}, False
+    wires, observed_order, require_selection, ready_seen = {}, [], False, False
     for raw, exchange in zip(lines, exchanges):
         if hashlib.sha256(raw).hexdigest() != exchange["event_sha256"]:
             raise ValueError("Actor wire digest differs from its host exchange")
         value = strict_json(raw)
         if value.get("schema") == "ndu.real.actor-ready.v1":
+            if ready_seen or observed_order:
+                raise ValueError("Actor readiness chronology differs")
+            ready_seen = True
             require_selection = (
                 value.get("content_identity_profile") == SELECTION_SCHEMA
             )
@@ -243,6 +246,23 @@ def content_identity_report(
             if key in wires:
                 raise ValueError("Duplicate actor content step")
             wires[key] = (raw, exchange["event_sha256"])
+            observed_order.append(key)
+    # Snapshot indexing must agree with actor emission order; matching bytes
+    # cannot repair swapped or extra actor steps (especially repeated writes).
+    if len(observed_order) != len(steps):
+        raise ValueError("Actor observation chronology differs from snapshots")
+    for index, step in enumerate(steps):
+        if (
+            not isinstance(step, dict)
+            or step.get("schema") != "ndu.real.actor-observation.v1"
+            or not isinstance(step.get("case_id"), str)
+            or not step["case_id"]
+            or type(step.get("step")) is not int
+            or step["step"] != index
+            or observed_order[index] != (step["case_id"], index)
+            or (index > 0 and step["case_id"] != steps[0]["case_id"])
+        ):
+            raise ValueError("Actor observation chronology differs from snapshots")
     # score() evaluates either EVERY snapshot (training) or ONLY the final
     # snapshot (inference). A shared delivery digest is not a snapshot ID:
     # identical repeat writes must never borrow a later evaluation, nor may
