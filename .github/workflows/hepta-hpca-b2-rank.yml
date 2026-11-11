@@ -2,9 +2,9 @@ name: Hepta HPCA retained B2 rank diagnostic (HOLD)
 on:
   pull_request:
     paths:
-      - 'qualification/hpca-neuroscience-20261110/posttrain_b2_*'
-      - 'qualification/hpca-neuroscience-20261110/POSTTRAIN_B2_*'
-      - '.github/workflows/hepta-hpca-b2-rank.yml'
+      - "qualification/hpca-neuroscience-20261110/posttrain_b2_*"
+      - "qualification/hpca-neuroscience-20261110/POSTTRAIN_B2_*"
+      - ".github/workflows/hepta-hpca-b2-rank.yml"
   workflow_dispatch:
 permissions:
   contents: read
