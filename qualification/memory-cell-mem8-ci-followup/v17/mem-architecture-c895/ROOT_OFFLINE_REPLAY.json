@@ -1,0 +1,69 @@
+{
+  "Architecture_native_tests_executed": 0,
+  "Architecture_python_executions": 288,
+  "Architecture_required_conclusion": "failure",
+  "Architecture_unique_python_case_ids": 144,
+  "MEM_CPU_contract_tests_executed": 0,
+  "MEM_integrity_python_passed": 35,
+  "MEM_native_tests_executed": 0,
+  "both_original_workflows_failed": true,
+  "complete_original_ZIPs_replayed": [
+    {
+      "archive": {
+        "bytes": 51493,
+        "git_blob": "207c11e23d35dcd2f789b0b0dae6d200e592e42b",
+        "sha256": "a70d984f63759306ecf82ded62ca8fff9ef1ba936d8f21a7de6463903e6cbad2"
+      },
+      "artifact_id": 13868481966,
+      "members": 78
+    },
+    {
+      "archive": {
+        "bytes": 50552,
+        "git_blob": "81417a36c23faab4a573901f85a35ab5cc5e2503",
+        "sha256": "35cc62eae4696ef4a8c6fc5aff7cf5df06ed972717ce00c62e7f7dd3e525a4d1"
+      },
+      "artifact_id": 13868718108,
+      "members": 6
+    },
+    {
+      "archive": {
+        "bytes": 1327581,
+        "git_blob": "cbb6c2a3675e4182fb1fd9e780c9ff84a53d22fd",
+        "sha256": "e1480b1d28421403c9aecc5041cd0c47b75211f5967dee8cb92cf63768013374"
+      },
+      "artifact_id": 13867409972,
+      "members": 19
+    },
+    {
+      "archive": {
+        "bytes": 14049,
+        "git_blob": "acd77e9ee02d06ed76dd05f0eb1cfd3f10614982",
+        "sha256": "def7aa107b643e9cc9f8f6063f09e3ed744fb5d48453e59fe05e0031cd0b0027"
+      },
+      "artifact_id": 13867373162,
+      "members": 20
+    }
+  ],
+  "files": 183,
+  "large_Architecture_ZIP_small_members_replayed": [
+    "candidate-transport.json",
+    "candidate-tree.json",
+    "repository-controls.json",
+    "repository-controls.json.562631b677ca4c9a96eb60a7f2c1b018.log",
+    "runner-tests.json",
+    "runner-tests.json.62fb603d4f544c21abb7329dcdc81cb0.log",
+    "scope-tests.json",
+    "scope-tests.json.d2be2893a74048f799f4ff4e663d9be9.log",
+    "scope.json"
+  ],
+  "large_original_ZIP_and_source_tar_present_in_this_package": false,
+  "source_commit": "c89540598693697577cda8cba31cb07f6ce65317",
+  "source_index_entries_bound_to_complete_Git_tree": 14053,
+  "source_tree": "5a7c897a33e4eef48ea8f4bf52eaf48ea7c866ae",
+  "status": "PASS_RETAINED_EVIDENCE_SCOPE",
+  "synthetic_readers": 14,
+  "synthetic_writers": 3,
+  "tests_builds_models_or_network_operations_executed_by_this_verifier": 0,
+  "wrapper_boundary": "The original 125 MB ZIP and source tar were fully read locally. This packet retains the byte identities, complete source index, exact Git tree, and small diagnostics; it does not contain that compressed wrapper."
+}

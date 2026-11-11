@@ -1,0 +1,37 @@
+{
+  "schema": "mem8.fence013.actual-original-admission.v1",
+  "observed_utc": "2026-11-11 16:07:08 UTC",
+  "branch": "codex/mem8-fence013-qualification-20261111-ed353817",
+  "source_anchor": "c89540598693697577cda8cba31cb07f6ce65317",
+  "source_tree": "5a7c897a33e4eef48ea8f4bf52eaf48ea7c866ae",
+  "harness_head": "0e92c37a012733882ce4c120afc38b6757edb7cb",
+  "harness_tree": "60f86e9520355850e289769a83dc2bcca2f26811",
+  "complete_harness_entries": 14054,
+  "one_added_workflow": ".github/workflows/hepta-mem-fence013-qualification.yml",
+  "workflow": {
+    "bytes": 17930,
+    "sha256": "7174a2c51e265731df14838bc52ddde4986bbbcf8a1290fa769ba1eb6a68b91c",
+    "git_blob": "3e302bd517fcf58eafd314c65afdb864a7d82b06"
+  },
+  "full_remote_workflow_equal": true,
+  "actual_branch_absence": true,
+  "actual_anchor_create_and_readback": true,
+  "expected_head_update_result": {
+    "success": true
+  },
+  "actual_after_head": "0e92c37a012733882ce4c120afc38b6757edb7cb",
+  "action_pin": "c7675fea986c29f1d655753a7a61fd6b4141be8f",
+  "reviewed_action_source": "64acdc94f531728494efbdf2d8f05faa26e90f7a",
+  "original_job_budget_minutes": 30,
+  "mode": "audit",
+  "new_allowlist_entries": 0,
+  "original_six_steps_preserved_except_pin_and_observation_IDs": true,
+  "comparison_scope": "Original push range c895 to its single-new-workflow child; not the entire source PR diff.",
+  "source_PR_ref_changed": false,
+  "current_c895_runs_restarted_or_cancelled": false,
+  "real_model_requests": 0,
+  "prior_v010_failure_subreason": "UNKNOWN_UNCHANGED",
+  "actual_runtime_binary_complete_read": "AWAIT_ORIGINAL_RUN_PREFLIGHT",
+  "post_result": "AWAIT_ORIGINAL_FULL_TERMINAL_JOB_LOG",
+  "qualification_result": "PENDING"
+}
