@@ -298,17 +298,17 @@
           "preserves": "Hepta source/tree, both locks, pinned desktop source, Session/App binary hashes, native/real-App outputs and always-uploaded raw records",
           "result": "EXACT_HEAD_SCOPED_PASS",
           "exact_results": {
-          "automation": "172 passed, 0 failed; 275.140 seconds; log sha256 7254f33a5a535b22fcfa487c3b336c79aafdcfc468dcfac0592d955d1649b9cd",
-          "native_wait_adapter": {
-            "status": "3/3 PASS in the hosted Linux original Automation runner at this exact source",
-            "tests": [
-              "native_process_wait::tests::actual_pidfd_and_pipe_identify_only_the_original_blocked_reader",
-              "native_process_wait::tests::compute_and_network_sleep_never_become_input_wait",
-              "native_process_wait::tests::wrong_reader_descriptor_is_refused_before_observation"
-            ],
-            "semantics": "the observer borrows the original owner's pidfd and reader/writer identity; observer drop cannot close the retained writer or manufacture EOF; only stable read(2) on the exact inherited reader becomes waiting-input",
-            "limits": "test-owned process capability rather than product-authorized ingress; no input delivery, retry, cancel, settlement, goal-success, network wait or FinalUse"
-          },
+            "automation": "172 passed, 0 failed; 275.140 seconds; log sha256 7254f33a5a535b22fcfa487c3b336c79aafdcfc468dcfac0592d955d1649b9cd",
+            "native_wait_adapter": {
+              "status": "3/3 PASS in the hosted Linux original Automation runner at this exact source",
+              "tests": [
+                "native_process_wait::tests::actual_pidfd_and_pipe_identify_only_the_original_blocked_reader",
+                "native_process_wait::tests::compute_and_network_sleep_never_become_input_wait",
+                "native_process_wait::tests::wrong_reader_descriptor_is_refused_before_observation"
+              ],
+              "semantics": "the observer borrows the original owner's pidfd and reader/writer identity; observer drop cannot close the retained writer or manufacture EOF; only stable read(2) on the exact inherited reader becomes waiting-input",
+              "limits": "test-owned process capability rather than product-authorized ingress; no input delivery, retry, cancel, settlement, goal-success, network wait or FinalUse"
+            },
             "memory": "417 passed, 0 failed; 128.617 seconds; log sha256 b224001b4a8ee90b490c36c1d43a78b4d3786c359e85827b68f1e95720feaecb",
             "capacity": "1 passed, 0 failed; 20.689 seconds; log sha256 0a02c2058f9b83047570cde818c59dc833b3b293f88a8c81a520e1e60417fc95",
             "notes_owner_and_readback": "12 passed, 0 failed; 475.430 seconds; log sha256 67d297d71121ae97a4b51a2eace3282ed8e82f24fe71f0fe367335e3c10c964c",
@@ -1013,13 +1013,69 @@
             }
           },
           "scope_limit": "does not repair or relabel the Hepta journal lock/PermissionDenied failures, the generation-control race, or any fail-closed Windows sandbox result; no result transfers"
+        },
+        {
+          "pr": 5880,
+          "source": "073b91e166c98340a505f747577a90ed080beb1b",
+          "tree": "03ec3fc9e6998a2094f2626dff10180fce792806",
+          "parent": "80419fb63f00d1ce6c4a9796b399b6d9d2fec519",
+          "change": "nine test-only Windows fixtures observe durable state through the original lock owner or after the owner is deliberately dropped; no production lock, CALLERS, operation, authority, FinalUse, readback, receipt, tombstone or promotion change",
+          "local_result": "git diff --check passed; Rust/just/Bazel native execution NOT_RUN because this environment has no toolchain",
+          "hosted_runs": {
+            "v8": 42933099445,
+            "v8_status": "SUCCESS_METADATA_ONLY",
+            "windows_private": 42933099348,
+            "windows_private_status": "IN_PROGRESS",
+            "architecture": 42933099340,
+            "architecture_status": "QUEUED",
+            "blocking": 42933099432,
+            "blocking_status": "QUEUED"
+          },
+          "required": "read the exact Windows/Bazel/native terminal results; no source inference or predecessor result transfer"
         }
       ]
     },
     {
       "id": "PRODUCT_LEARNING_AND_FIELD",
       "status": "OPEN",
-      "required": "original provider/authority, independent grouped confirmation, complete costs and demonstrated quality-cost benefit"
+      "required": "original provider/authority, independent grouped confirmation, complete costs and demonstrated quality-cost benefit",
+      "ordinary_handler_candidate": {
+        "parent_pr": 5865,
+        "parent_source": "4073268ead64aa1f8303973d37c5c6d73c951061",
+        "parent_tree": "baf7b8d3f189212cc3ed445daf502f8bd5bd645d",
+        "original_failure": {
+          "run": 42930978517,
+          "status": "FAILURE_BEFORE_TESTS",
+          "artifact_id": 13816283336,
+          "artifact_size_bytes": 1205983,
+          "artifact_sha256": "aec3bd0fc04dafb5281ceb30d4c4276e1e51ddac719e4eb81318dec308a74b0d",
+          "retained_helper_stderr_bytes": 63228,
+          "exact_cause": "E0004: LearningIterationObservationV1::TrainingNoUpdateV2(_) not covered in neuron_generation_learning_readback.rs",
+          "observed_tests": 0
+        },
+        "compile_fix": {
+          "pr": 5884,
+          "source": "ce0d19985a6fe64fde34a2f3e2085f82ef74cdda",
+          "tree": "87cd9d22c9f327d0ecd61fbae4d6ec30e9cf61ac",
+          "change": "classify the versioned trainer no-update observation with the existing nonterminal fail-closed group; it cannot be exported as committed learning use",
+          "local_result": "git diff --check passed; native build/tests NOT_RUN locally because no Rust toolchain is present",
+          "hosted_runs": {
+            "daemon_learning": 42933830839,
+            "daemon_learning_status": "QUEUED",
+            "shared_framework": 42933830734,
+            "shared_framework_status": "QUEUED",
+            "windows_private": 42933830774,
+            "windows_private_status": "QUEUED",
+            "architecture": 42933830817,
+            "architecture_status": "QUEUED",
+            "blocking": 42933830956,
+            "blocking_status": "QUEUED",
+            "v8": 42933830818,
+            "v8_status": "QUEUED"
+          },
+          "limits": "does not establish StageOwner assembly, independent B/retention/new-C custody, complete Adopt/NoUpdate A-to-B-to-C-to-cold-recovery, DynamicToolCall, product FinalUse or benefit"
+        }
+      }
     }
   ],
   "retained_failures": [
