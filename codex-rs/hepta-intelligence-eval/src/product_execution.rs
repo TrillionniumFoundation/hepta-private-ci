@@ -17,17 +17,28 @@ use super::ProductEvaluationError;
 use super::ProductEvaluationRunnerV1;
 use super::ProductFrozenEvaluationPlanV1;
 use super::ProductProviderErrorV1;
+use super::ProductQualificationContextV1;
 use super::ProductTemporalEvaluationReceiptV1;
 use super::TemporalEvaluationPlan;
 use super::execution_codec;
+use crate::EvaluationClaimScopeV1;
+use crate::FinalHoldoutCasAnchorV1;
 use crate::FinalHoldoutProviderV1;
+use crate::LockedFileFinalHoldoutCasStoreV1;
+use crate::LockedFileProductEvaluationExecutionStoreV1;
+use crate::SignedEvaluationDecisionV1;
 use crate::SignedEvaluationError;
+use crate::SignedEvaluationEvidenceV1;
 
 use crate::ProductEvaluationExecutionClaimV1;
 use crate::ProductEvaluationExecutionKeyV1;
 use crate::ProductEvaluationExecutionStateV1;
 use crate::ProductEvaluationExecutionStoreErrorV1;
 use crate::ProductEvaluationExecutionStoreV1;
+
+#[path = "product_qualification_material.rs"]
+mod qualification_material;
+pub use qualification_material::ProductQualificationPublicationMaterialV1;
 
 /// Host-pinned original evaluator, current trust and clock; never read these from
 /// the execution blob. Restoring a signed execution is not a new validity window.
@@ -38,6 +49,33 @@ pub struct ProductEvaluationExecutionRequestV1<'a> {
     pub evaluator: &'a AuthenticatedPrincipalV1,
     pub verifier: &'a LearningEvidenceVerifierV1,
     pub clock: &'a dyn Fn() -> Result<u64, ProductProviderErrorV1>,
+}
+
+/// Full original execution bytes, released only by authenticated owner readback.
+/// The current anchor is a freshness pin for this read, not a new execution ID.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ProductEvaluationExecutionMaterialV1 {
+    key: ProductEvaluationExecutionKeyV1,
+    envelope: Vec<u8>,
+    execution: ProductTemporalEvaluationReceiptV1,
+    anchor: FinalHoldoutCasAnchorV1,
+}
+
+impl ProductEvaluationExecutionMaterialV1 {
+    #[must_use]
+    pub fn key(&self) -> &ProductEvaluationExecutionKeyV1 {
+        &self.key
+    }
+
+    #[must_use]
+    pub fn envelope(&self) -> &[u8] {
+        &self.envelope
+    }
+
+    #[must_use]
+    pub fn execution(&self) -> &ProductTemporalEvaluationReceiptV1 {
+        &self.execution
+    }
 }
 
 /// Constructed only after the original runner produces the sealed execution.
@@ -213,7 +251,97 @@ impl<S: FinalHoldoutCasStoreV1> ProductEvaluationRunnerV1<S> {
         };
         self.authenticate_completed_execution(request, key, &bytes)
     }
+}
 
+impl ProductEvaluationRunnerV1<LockedFileFinalHoldoutCasStoreV1> {
+    /// Read the original signed envelope and sealed result without claiming,
+    /// consuming, estimating, or signing. Public receipt fields are not input.
+    pub fn readback_temporal_comparison_material(
+        &mut self,
+        request: &ProductEvaluationExecutionRequestV1<'_>,
+        executions: &mut LockedFileProductEvaluationExecutionStoreV1,
+    ) -> Result<ProductEvaluationExecutionMaterialV1, ProductEvaluationExecutionErrorV1> {
+        let (key, _) = self.execution_context(request)?;
+        let envelope = match executions.readback(&key)? {
+            ProductEvaluationExecutionStateV1::Pending => {
+                return Err(ProductEvaluationExecutionErrorV1::Pending);
+            }
+            ProductEvaluationExecutionStateV1::Completed(bytes) => bytes,
+        };
+        let execution = self.authenticate_completed_execution(request, key.clone(), &envelope)?;
+        match executions.readback(&key)? {
+            ProductEvaluationExecutionStateV1::Completed(bytes) if bytes == envelope => {}
+            ProductEvaluationExecutionStateV1::Pending => {
+                return Err(ProductEvaluationExecutionErrorV1::Pending);
+            }
+            ProductEvaluationExecutionStateV1::Completed(_) => {
+                return Err(ProductEvaluationExecutionStoreErrorV1::Corrupt.into());
+            }
+        }
+        let (_, current) = self
+            .holdout
+            .read_consumption(&request.plan.frozen_plan)
+            .map_err(ProductEvaluationError::from)?;
+        if current.as_ref() != Some(&execution.holdout) {
+            return Err(ProductEvaluationError::Binding("current original material").into());
+        }
+        Ok(ProductEvaluationExecutionMaterialV1 {
+            key,
+            envelope,
+            execution,
+            anchor: self.holdout.anchor(),
+        })
+    }
+
+    /// Re-derive a Qualification decision from original readback and signatures.
+    /// The caller must keep the original owner borrowed and its storage custody
+    /// exclusive. This does not create or acknowledge a publication.
+    pub fn original_qualification_decision(
+        &self,
+        material: &ProductEvaluationExecutionMaterialV1,
+        context: &ProductQualificationContextV1,
+        evidence: &SignedEvaluationEvidenceV1,
+        verifier: &LearningEvidenceVerifierV1,
+        now: u64,
+    ) -> Result<SignedEvaluationDecisionV1, ProductEvaluationError> {
+        if self.holdout.is_poisoned()
+            || material.anchor != self.holdout.anchor()
+            || material.execution.product_plan.frozen_plan.claim_scope
+                != EvaluationClaimScopeV1::Qualification
+        {
+            return Err(ProductEvaluationError::Binding(
+                "original qualification source",
+            ));
+        }
+        let (signed, body) = execution_codec::decode_envelope(&material.envelope)?;
+        let verified = verifier
+            .verify(
+                LearningEvidenceRoleV1::Evaluator,
+                &signed,
+                &signing_payload(&material.key, body),
+                now,
+            )
+            .map_err(SignedEvaluationError::from)?;
+        if verified.principal() != &context.evaluator
+            || verified.objective_digest()
+                != material.execution.product_plan.frozen_plan.objective_digest
+        {
+            return Err(ProductEvaluationError::Binding(
+                "original qualification evaluator",
+            ));
+        }
+        let bundle = self.qualification_bundle(&material.execution, context)?;
+        Ok(crate::decide_with_signed_evidence_v2(
+            bundle,
+            material.execution.product_plan.metric_roles.clone(),
+            evidence,
+            verifier,
+            now,
+        )?)
+    }
+}
+
+impl<S: FinalHoldoutCasStoreV1> ProductEvaluationRunnerV1<S> {
     fn execution_context(
         &mut self,
         request: &ProductEvaluationExecutionRequestV1<'_>,

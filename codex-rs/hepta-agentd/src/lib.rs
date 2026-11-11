@@ -376,6 +376,7 @@ mod neuron_cell_evaluation_owner;
 #[cfg(target_os = "linux")]
 mod neuron_cell_evaluation_receipt_owner;
 mod neuron_cell_learning_evaluation;
+mod product_qualification_owner;
 pub use cell_composed_q24::CellQ24FeatureEncoderV1;
 pub use cell_composed_q24::CellQ24FeatureWorkerV1;
 pub use cell_composed_q24::CellQ24GenerationWorkerV1;
@@ -401,6 +402,10 @@ pub use cell_q24_dataset::CellQ24DatasetEpisodeV1;
 pub use cell_q24_dataset::CellQ24DatasetProfileV1;
 pub use cell_q24_dataset::OriginalCellQ24DatasetErrorV1;
 pub use cell_q24_dataset::OriginalCellQ24DatasetV1;
+pub use cell_q24_dataset::receipts::OriginalCellQ24SourcePredecessorV1;
+pub use cell_q24_dataset::receipts::OriginalCellQ24SourceReceiptErrorV1;
+pub use cell_q24_dataset::receipts::OriginalCellQ24SourceReceiptOwnerV1;
+pub use cell_q24_dataset::receipts::OriginalCellQ24SourceSigningConfigV1;
 pub use cell_q24_dataset::recovery::OriginalCellQ24DatasetRecoveryErrorV1;
 pub use cell_q24_dataset::recovery::OriginalCellQ24DatasetRecoveryOwnerV1;
 pub use cell_q24_model_proposal::CellQ24ModelProposalErrorV1;
@@ -442,6 +447,9 @@ pub use neuron_cell_evaluation_receipt_owner::OriginalCellEvaluationReceiptError
 pub use neuron_cell_evaluation_receipt_owner::OriginalCellEvaluationReceiptOwnerV1;
 #[cfg(target_os = "linux")]
 pub use neuron_cell_evaluation_receipt_owner::OriginalCellEvaluationReceiptSourcesV1;
+pub use product_qualification_owner::OriginalProductQualificationErrorV1;
+pub use product_qualification_owner::OriginalProductQualificationOwnerV1;
+pub use product_qualification_owner::OriginalProductQualificationSourceV1;
 mod neuron_generation;
 #[cfg(unix)]
 mod neuron_generation_current;
@@ -863,6 +871,8 @@ pub use neuron_cell_evaluation::CellRequiredCostMetricV1;
 pub use neuron_cell_evaluation::CellSelectiveUpdateV1;
 pub use neuron_cell_evaluation::CellTrainingBudgetV1;
 pub use neuron_cell_evaluation::CellTrainingObservationV1;
+pub use neuron_cell_evaluation::OriginalCellQualificationErrorV1;
+pub use neuron_cell_evaluation::OriginalCellQualificationSourceV1;
 pub use neuron_cell_evaluation::freeze_cell_evaluation_plan_v1;
 pub use neuron_cell_evaluation::freeze_cell_learning_evaluation_plan_v1;
 pub use neuron_cell_learning_evaluation::CellLearningEvaluationErrorV1;

@@ -39,7 +39,7 @@ class OriginalQ24DatasetRecoverySourceClosureTests(unittest.TestCase):
     def test_recovery_apis_are_closed_and_only_internal_revalidation_is_added(self):
         sources = {
             path: PROOF._strip_cfg_test_items(PROOF._strip_rust_non_code((ROOT / path).read_text()))
-            for path in (OWNER, CODEC, original.DATASET, original.STAGE)
+            for path in (OWNER, CODEC, original.DATASET, original.STAGE, original.RECEIPTS)
         }
         for method in ("create", "recover", "retain", "restore"):
             row = self.boundaries[PREFIX + method]
@@ -53,7 +53,7 @@ class OriginalQ24DatasetRecoverySourceClosureTests(unittest.TestCase):
             with self.assertRaisesRegex(PROOF.VerificationFailure, "unexpected"):
                 PROOF._verify_boundary(ROOT, row, changed, ())
         row = self.boundaries["cell_q24_original_dataset_revalidate"]
-        self.assertEqual(set(row.product_callers), {original.STAGE, OWNER})
+        self.assertEqual(set(row.product_callers), {original.STAGE, OWNER, original.RECEIPTS})
         PROOF._verify_boundary(ROOT, row, sources, ())
         self.assertEqual(self.boundaries["root_learning_original_stage_assembly"].product_callers, ())
         self.assertTrue(all(value is False for value in self.manifest["authority"].values()))

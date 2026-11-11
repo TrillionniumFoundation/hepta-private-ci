@@ -28,6 +28,13 @@ pub(super) struct OriginalQ24DatasetIngressFixture {
 
 impl OriginalQ24DatasetIngressFixture {
     pub(super) async fn new(target_q32: i64) -> anyhow::Result<Self> {
+        Self::with_additional_signers(target_q32, Vec::new()).await
+    }
+
+    pub(super) async fn with_additional_signers(
+        target_q32: i64,
+        additional: Vec<TrustedLearningSignerV1>,
+    ) -> anyhow::Result<Self> {
         let models = tempfile::tempdir()?;
         let ledger_files = tempfile::tempdir()?;
         let (model, bundle, definition) = ingress::support::model(models.path())?;
@@ -38,7 +45,11 @@ impl OriginalQ24DatasetIngressFixture {
         let at = std::time::SystemTime::now()
             .duration_since(std::time::UNIX_EPOCH)?
             .as_secs();
-        let mut ledger = signed::ledger(ledger_files.path(), at, objective)?;
+        let mut ledger = if additional.is_empty() {
+            signed::ledger(ledger_files.path(), at, objective)?
+        } else {
+            signed::ledger_with_additional_signers(ledger_files.path(), at, objective, &additional)?
+        };
         let run = crate::circuit_learning_run_id_v1(
             &ledger,
             &admission.runtime.identity.agent_id,

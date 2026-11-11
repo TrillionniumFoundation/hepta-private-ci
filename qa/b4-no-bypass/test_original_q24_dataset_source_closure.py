@@ -20,6 +20,7 @@ SPEC.loader.exec_module(PROOF)
 AGENT = "codex-rs/hepta-agentd/src/"
 DATASET = AGENT + "cell_q24_dataset.rs"
 RECOVERY = AGENT + "cell_q24_dataset_recovery.rs"
+RECEIPTS = AGENT + "cell_q24_source_receipt_derivation.rs"
 STAGE = AGENT + "cell_q24_training_stage.rs"
 NATIVE = AGENT + "cell_composed_q24_training_owner.rs"
 SOURCE = AGENT + "circuit_task_source.rs"
@@ -28,7 +29,7 @@ LEDGER = "codex-rs/hepta-learning-ledger/src/production.rs"
 CURRENT = "source.require_current(&owners.receipts.config.dataset)?;"
 CALLERS = {
     "cell_q24_original_dataset_freeze": (),
-    "cell_q24_original_dataset_revalidate": (STAGE, RECOVERY),
+    "cell_q24_original_dataset_revalidate": (STAGE, RECOVERY, RECEIPTS),
     "cell_q24_original_training_batch_binding": (STAGE,),
     "learning_original_training_stage_source_execute": (),
     "learning_original_training_stage_source_readback": (),
@@ -41,6 +42,7 @@ CALLERS = {
         AGENT + "shared_terminal_cell.rs",
         "codex-rs/hepta-bellman-operator/src/owner_terminal.rs",
         DATASET,
+        RECEIPTS,
     ),
     "circuit_original_source_run_readback": (READER,),
     "circuit_original_source_observer_run_readback": (
@@ -48,6 +50,7 @@ CALLERS = {
         AGENT + "circuit_feature_current_recovery.rs",
         AGENT + "circuit_feature_current_retirement.rs",
         DATASET,
+        RECEIPTS,
     ),
 }
 

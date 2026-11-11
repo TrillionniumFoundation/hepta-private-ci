@@ -187,7 +187,21 @@ fn owner_binding(profile: &CellQ24DatasetProfileV1) -> Result<Digest32, Recovery
     ]))
 }
 
-fn original_prefix(ledger: &LedgerWriter, head: Digest32) -> Result<LedgerSnapshot, RecoveryError> {
+pub(super) fn original_material_bytes(
+    material: &OriginalCellQ24DatasetV1,
+) -> Result<Vec<u8>, RecoveryError> {
+    let plan = DatasetFreezePlanV2 {
+        snapshot_id: material.dataset.snapshot.snapshot_id.clone(),
+        objective_digest: material.dataset.snapshot.objective_digest,
+        inclusion_policy_digest: material.dataset.inclusion_policy_digest,
+    };
+    codec::encode(&codec::SavedMaterial::from_original(&plan, material)?)
+}
+
+pub(super) fn original_prefix(
+    ledger: &LedgerWriter,
+    head: Digest32,
+) -> Result<LedgerSnapshot, RecoveryError> {
     // Only original owner records are replayed. The caller cannot submit a
     // snapshot or reconstruct a convenient history from receipt digests.
     let actual = ledger.snapshot()?;

@@ -108,7 +108,17 @@ pub(crate) fn sign(
     evidence
 }
 pub(crate) fn ledger(root: &Path, at: u64, objective: Digest32) -> anyhow::Result<LedgerWriter> {
-    Ok(ledger_with_inputs(root, at, objective, d("q24-ledger"), 64)?.0)
+    Ok(ledger_with_inputs(root, at, objective, d("q24-ledger"), 64, &[])?.0)
+}
+
+/// Explicit test-only enrollment in the same originally signed fixture trust.
+pub(crate) fn ledger_with_additional_signers(
+    root: &Path,
+    at: u64,
+    objective: Digest32,
+    additional: &[TrustedLearningSignerV1],
+) -> anyhow::Result<LedgerWriter> {
+    Ok(ledger_with_inputs(root, at, objective, d("q24-ledger"), 64, additional)?.0)
 }
 
 fn ledger_with_inputs(
@@ -117,6 +127,7 @@ fn ledger_with_inputs(
     objective: Digest32,
     binding: Digest32,
     max_records: usize,
+    additional: &[TrustedLearningSignerV1],
 ) -> anyhow::Result<(
     LedgerWriter,
     LearningTrustRootV1,
@@ -147,6 +158,7 @@ fn ledger_with_inputs(
                 ]
                 .into_iter()
                 .map(|role| signer(role, at))
+                .chain(additional.iter().cloned())
                 .collect(),
             },
         },
@@ -175,7 +187,7 @@ impl Fixture {
         let ledger_binding = d("q24-ledger");
         let ledger_limit = 64;
         let (mut writer, trust_root, signed_distribution) =
-            ledger_with_inputs(root, at, d("objective"), ledger_binding, ledger_limit)?;
+            ledger_with_inputs(root, at, d("objective"), ledger_binding, ledger_limit, &[])?;
         let identity = original::identity(root)?;
         let run = circuit_learning_run_id_v1(&writer, &identity.agent_id, &id("train-A"))?;
         let input = cell::input(run.as_str());

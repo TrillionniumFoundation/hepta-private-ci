@@ -40,6 +40,11 @@ use serde::Serialize;
 mod contract;
 pub use contract::*;
 
+#[path = "neuron_cell_qualification_owner.rs"]
+mod original_qualification;
+pub use original_qualification::OriginalCellQualificationErrorV1;
+pub use original_qualification::OriginalCellQualificationSourceV1;
+
 pub struct CellEvaluationJournalsV1<'a, C: AnchorWitnessStore, F: AnchorWitnessStore> {
     pub candidate: &'a CellGenerationJournalV2<C>,
     pub fixed_expert: &'a CellGenerationJournalV2<F>,
