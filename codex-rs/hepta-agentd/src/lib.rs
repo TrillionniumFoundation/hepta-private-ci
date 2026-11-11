@@ -441,13 +441,13 @@ pub use cell_q24_training_receipt_owner::SourceBoundCellQ24TrainingStageV1;
 pub use cell_q24_training_snapshot_readback::OriginalCellQ24TrainingReadbackErrorV1;
 pub use cell_q24_training_snapshot_readback::read_cell_q24_training_snapshot_v1;
 #[cfg(target_os = "linux")]
+pub use cell_q24_training_source::OriginalCellQ24RemoteTrainingSourceOwnersV1;
+#[cfg(target_os = "linux")]
 pub use cell_q24_training_source::OriginalCellQ24TrainingSourceConfigV1;
 #[cfg(target_os = "linux")]
 pub use cell_q24_training_source::OriginalCellQ24TrainingSourceErrorV1;
 #[cfg(target_os = "linux")]
 pub use cell_q24_training_source::OriginalCellQ24TrainingSourceOwnersV1;
-#[cfg(target_os = "linux")]
-pub use cell_q24_training_source::OriginalCellQ24RemoteTrainingSourceOwnersV1;
 #[cfg(target_os = "linux")]
 pub use cell_q24_training_source::OriginalCellQ24TrainingSourceV1;
 #[cfg(target_os = "linux")]

@@ -91,6 +91,7 @@ class OriginalMaterialSourcePeerClosureTests(unittest.TestCase):
     def test_decoder_cannot_detach_signatures_provenance_batch_or_frozen_scope(self):
         checks = (
             ("fn from_original_material_peer(", "require_original_material_signatures(config, experience, dataset, started_at)?"),
+            ("fn from_original_material_peer(", "config.freeze_plan.objective_digest\n                != config.dataset.request.envelope.objective_digest"),
             ("fn from_original_material_peer(", "let ledger_binding = digest(&wire.ledger_binding)?;"),
             ("fn from_original_material_peer(", "let trust_distribution = digest(&wire.trust_distribution)?;"),
             ("fn from_original_material_peer(", "let source_publication = digest(&wire.source_publication)?;"),

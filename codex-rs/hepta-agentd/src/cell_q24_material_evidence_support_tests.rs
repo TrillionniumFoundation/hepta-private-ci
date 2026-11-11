@@ -77,7 +77,10 @@ impl ReadbackServiceFixture {
     pub(crate) fn source_config(
         &self,
     ) -> anyhow::Result<crate::OriginalCellQ24TrainingSourceConfigV1> {
-        anyhow::ensure!(self.dataset.receipts.len() == 2, "original Dataset is completed");
+        anyhow::ensure!(
+            self.dataset.receipts.len() == 2,
+            "original Dataset is completed"
+        );
         Ok(crate::OriginalCellQ24TrainingSourceConfigV1 {
             dataset: self.dataset.clone(),
             scope: self.config.scope.clone(),
@@ -86,7 +89,9 @@ impl ReadbackServiceFixture {
             freeze_plan: self.config.freeze_plan.clone(),
             freeze_evidence: self.config.freeze_evidence.clone(),
             experience_evidence: self.experience_attestation.clone(),
-            dataset_evidence: self.dataset_attestation.clone()
+            dataset_evidence: self
+                .dataset_attestation
+                .clone()
                 .ok_or_else(|| anyhow::anyhow!("original Dataset signature is completed"))?,
             verifier: self.config.verifier.clone(),
         })

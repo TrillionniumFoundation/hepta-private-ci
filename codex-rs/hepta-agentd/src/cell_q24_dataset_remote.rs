@@ -69,7 +69,11 @@ impl OriginalCellQ24DatasetV1 {
             objective: snapshot.objective_digest.to_string(),
             eligible_frontier: snapshot.eligible_frontier,
             outcome_watermark: snapshot.outcome_watermark,
-            source_records: snapshot.source_record_digests.iter().map(ToString::to_string).collect(),
+            source_records: snapshot
+                .source_record_digests
+                .iter()
+                .map(ToString::to_string)
+                .collect(),
             pending_outcomes: snapshot.pending_outcomes,
             censored_outcomes: snapshot.censored_outcomes,
             dataset_digest: snapshot.dataset_digest.to_string(),
@@ -93,12 +97,14 @@ impl OriginalCellQ24DatasetV1 {
         let started_at = now()?;
         require_original_material_signatures(config, experience, dataset, started_at)?;
         let initial = LearningIterationCoordinatorV1::new(
-            config.dataset.request.clone(), config.dataset.owners.clone(),
+            config.dataset.request.clone(),
+            config.dataset.owners.clone(),
         )?;
         let policy = config.rule.inclusion_policy_digest(initial.snapshot())?;
         if wire.snapshot_id != config.freeze_plan.snapshot_id.as_str()
             || digest(&wire.objective)? != config.freeze_plan.objective_digest
-            || config.freeze_plan.objective_digest != config.dataset.request.envelope.objective_digest
+            || config.freeze_plan.objective_digest
+                != config.dataset.request.envelope.objective_digest
             || digest(&wire.inclusion_policy)? != policy
             || config.freeze_plan.inclusion_policy_digest != policy
             || !(2..=3).contains(&wire.source_records.len())
@@ -114,18 +120,28 @@ impl OriginalCellQ24DatasetV1 {
         let ledger_head = digest(&wire.ledger_head)?;
         let correction_cut = digest(&wire.correction_cut)?;
         let revocation_cut = digest(&wire.revocation_cut)?;
-        let source_records = wire.source_records.iter()
-            .map(|value| digest(value)).collect::<Result<Vec<_>, _>>()?;
+        let source_records = wire
+            .source_records
+            .iter()
+            .map(|value| digest(value))
+            .collect::<Result<Vec<_>, _>>()?;
         // This is the exact existing dataset_freeze_signing_payload_v2 byte
         // encoding, recomputed from the received canonical receipt fields.
         // The live original Ledger remains responsible for source-set truth.
         let freeze_payload = freeze_payload(
-            config, ledger_head, wire.eligible_frontier, wire.outcome_watermark,
-            correction_cut, revocation_cut, &source_records,
+            config,
+            ledger_head,
+            wire.eligible_frontier,
+            wire.outcome_watermark,
+            correction_cut,
+            revocation_cut,
+            &source_records,
         );
         let producer = config.verifier.verify(
-            LearningEvidenceRoleV1::Evaluator, &config.freeze_evidence,
-            &freeze_payload, started_at,
+            LearningEvidenceRoleV1::Evaluator,
+            &config.freeze_evidence,
+            &freeze_payload,
+            started_at,
         )?;
         let receipt = DatasetSnapshotReceiptV3 {
             snapshot: DatasetSnapshotV2 {
@@ -146,15 +162,21 @@ impl OriginalCellQ24DatasetV1 {
             inclusion_policy_digest: policy,
         };
         verify_dataset_snapshot_receipt_v3(&receipt, started_at)?;
-        let batch = decode_batch(&wire.batch, receipt.snapshot.dataset_digest, baseline.input_width())?;
+        let batch = decode_batch(
+            &wire.batch,
+            receipt.snapshot.dataset_digest,
+            baseline.input_width(),
+        )?;
         if batch.rows() > config.dataset.request.budget.maximum_dataset_rows
             || batch.encoded().len() as u64 > config.dataset.request.budget.maximum_dataset_bytes
         {
             return Err(Error::Binding("original Material batch budget"));
         }
         let LearningIterationObservationV1::Experience {
-            episode_digest, completed_task_receipt,
-        } = &config.dataset.receipts[0].observation else {
+            episode_digest,
+            completed_task_receipt,
+        } = &config.dataset.receipts[0].observation
+        else {
             return Err(Error::Binding("original Experience observation"));
         };
         if *completed_task_receipt != config.dataset.request.completed_task_receipt {
@@ -194,13 +216,18 @@ impl OriginalCellQ24DatasetV1 {
             || config.dataset.receipts[0].evidence_digest != material.provenance_digest()
             || config.dataset.receipts[1].evidence_digest != material.provenance_digest()
         {
-            return Err(Error::Binding("original signatures bind recomputed material"));
+            return Err(Error::Binding(
+                "original signatures bind recomputed material",
+            ));
         }
         // training_plan recomputes batch -> optimizer -> row update rule and
         // compares the resulting constraint to the already held frozen scope.
         // A response cannot install a new scope or choose another optimizer.
         let _ = material.training_plan(
-            config.dataset.clone(), config.scope.clone(), baseline, config.optimizer,
+            config.dataset.clone(),
+            config.scope.clone(),
+            baseline,
+            config.optimizer,
         )?;
         let fresh_now = now()?;
         if fresh_now < started_at {
@@ -208,8 +235,10 @@ impl OriginalCellQ24DatasetV1 {
         }
         require_original_material_signatures(config, experience, dataset, fresh_now)?;
         config.verifier.verify(
-            LearningEvidenceRoleV1::Evaluator, &config.freeze_evidence,
-            &freeze_payload, fresh_now,
+            LearningEvidenceRoleV1::Evaluator,
+            &config.freeze_evidence,
+            &freeze_payload,
+            fresh_now,
         )?;
         verify_dataset_snapshot_receipt_v3(material.receipt(), fresh_now)?;
         Ok(material)
@@ -233,13 +262,16 @@ fn require_original_material_signatures(
         || at < config.freeze_evidence.issued_at
         || at >= config.freeze_evidence.expires_at
     {
-        return Err(Error::Binding("fixed original Material signatures and scope"));
+        return Err(Error::Binding(
+            "fixed original Material signatures and scope",
+        ));
     }
     for (receipt, evidence) in config.dataset.receipts.iter().zip([experience, dataset]) {
         let payload = learning_iteration_receipt_signing_bytes_v1(receipt)?;
-        let verified = config.verifier.verify(
-            LearningEvidenceRoleV1::Observer, evidence, &payload, at,
-        )?;
+        let verified =
+            config
+                .verifier
+                .verify(LearningEvidenceRoleV1::Observer, evidence, &payload, at)?;
         if verified.principal().principal_id != receipt.actor_id
             || receipt.observed_unix_seconds != evidence.issued_at
             || receipt.observed_unix_seconds > at
@@ -258,7 +290,9 @@ fn decode_batch(
     if text.is_empty() || text.len() > 1_024 {
         return Err(Error::Binding("bounded canonical original batch"));
     }
-    let bytes = STANDARD_NO_PAD.decode(text).map_err(|_| Error::Binding("batch base64"))?;
+    let bytes = STANDARD_NO_PAD
+        .decode(text)
+        .map_err(|_| Error::Binding("batch base64"))?;
     if STANDARD_NO_PAD.encode(&bytes) != text || bytes.len() < 44 || &bytes[..8] != b"HQ24T001" {
         return Err(Error::Binding("canonical HQ24T001 batch"));
     }
@@ -270,20 +304,32 @@ fn decode_batch(
     if width != expected_width || !(1..=64).contains(&width) || rows != 1 {
         return Err(Error::Binding("one original row and loaded input width"));
     }
-    let length = 44_usize.checked_add(
-        width.checked_add(1).and_then(|n| n.checked_mul(8))
-            .ok_or(Error::Binding("batch length overflow"))?,
-    ).ok_or(Error::Binding("batch length overflow"))?;
+    let length = 44_usize
+        .checked_add(
+            width
+                .checked_add(1)
+                .and_then(|n| n.checked_mul(8))
+                .ok_or(Error::Binding("batch length overflow"))?,
+        )
+        .ok_or(Error::Binding("batch length overflow"))?;
     if bytes.len() != length {
         return Err(Error::Binding("exact original batch length"));
     }
-    let values = bytes[44..].chunks_exact(8).map(|chunk| {
-        let raw: [u8; 8] = chunk.try_into().map_err(|_| Error::Binding("batch integer"))?;
-        Ok(i64::from_le_bytes(raw))
-    }).collect::<Result<Vec<_>, Error>>()?;
+    let values = bytes[44..]
+        .chunks_exact(8)
+        .map(|chunk| {
+            let raw: [u8; 8] = chunk
+                .try_into()
+                .map_err(|_| Error::Binding("batch integer"))?;
+            Ok(i64::from_le_bytes(raw))
+        })
+        .collect::<Result<Vec<_>, Error>>()?;
     let batch = CellQ24TrainingBatchV1::new(
         dataset,
-        vec![CellQ24TrainingSampleV1 { input: values[..width].to_vec(), target: values[width] }],
+        vec![CellQ24TrainingSampleV1 {
+            input: values[..width].to_vec(),
+            target: values[width],
+        }],
     )?;
     if batch.encoded() != bytes.as_slice() {
         return Err(Error::Binding("reencoded canonical original batch"));
@@ -319,7 +365,9 @@ fn freeze_payload(
 }
 
 fn digest(text: &str) -> Result<Digest32, Error> {
-    let value: Digest32 = text.parse().map_err(|_| Error::Binding("material digest"))?;
+    let value: Digest32 = text
+        .parse()
+        .map_err(|_| Error::Binding("material digest"))?;
     if value.is_zero() || value.to_string() != text {
         return Err(Error::Binding("canonical nonzero material digest"));
     }
@@ -327,6 +375,8 @@ fn digest(text: &str) -> Result<Digest32, Error> {
 }
 
 fn now() -> Result<u64, Error> {
-    SystemTime::now().duration_since(UNIX_EPOCH).map(|value| value.as_secs())
+    SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map(|value| value.as_secs())
         .map_err(|_| Error::Binding("Material clock before Unix epoch"))
 }

@@ -15,12 +15,12 @@ use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
 use codex_hepta_neuron::AnchorWitnessStore;
 use codex_hepta_types::Digest32;
 
+use super::super::OriginalCellQ24MaterialEvidenceOwnerV1;
+use super::super::OriginalCellQ24MaterialEvidenceRoleV1 as Role;
 use super::Error;
 use super::evidence_wire;
 use super::now;
 use super::wire;
-use super::super::OriginalCellQ24MaterialEvidenceOwnerV1;
-use super::super::OriginalCellQ24MaterialEvidenceRoleV1 as Role;
 use crate::OriginalCellQ24DatasetV1;
 
 impl<EW: AnchorWitnessStore, DW: AnchorWitnessStore, SW: AnchorWitnessStore>
@@ -55,18 +55,21 @@ impl<EW: AnchorWitnessStore, DW: AnchorWitnessStore, SW: AnchorWitnessStore>
         loop {
             let mut failure = None;
             let exchanged = channel.exchange(|bytes| {
-                self.respond_material(&mut next_request_id, bytes).map_err(|error| {
-                    failure = Some(error);
-                    HostIssuerTransportError::Unavailable
-                })
+                self.respond_material(&mut next_request_id, bytes)
+                    .map_err(|error| {
+                        failure = Some(error);
+                        HostIssuerTransportError::Unavailable
+                    })
             });
             match exchanged {
                 Ok(true) => {}
                 Ok(false) => return Ok(()),
-                Err(error) => return Err(match failure {
-                    Some(failure) => failure,
-                    None => Error::Transport(error),
-                }),
+                Err(error) => {
+                    return Err(match failure {
+                        Some(failure) => failure,
+                        None => Error::Transport(error),
+                    });
+                }
             }
         }
     }
@@ -87,9 +90,12 @@ impl<EW: AnchorWitnessStore, DW: AnchorWitnessStore, SW: AnchorWitnessStore>
         {
             return Err(Error::Binding("fixed original Material source request"));
         }
-        let next = (*next_request_id).checked_add(1)
+        let next = (*next_request_id)
+            .checked_add(1)
             .ok_or(Error::Binding("Material request id overflow"))?;
-        let requested_head: Digest32 = request.dataset_head.parse()
+        let requested_head: Digest32 = request
+            .dataset_head
+            .parse()
             .map_err(|_| Error::Binding("Material Dataset head"))?;
         if requested_head.to_string() != request.dataset_head {
             return Err(Error::Binding("canonical Material Dataset head"));
@@ -97,11 +103,25 @@ impl<EW: AnchorWitnessStore, DW: AnchorWitnessStore, SW: AnchorWitnessStore>
         // Each call takes owner then Ledger locks, performs physical original
         // reads and releases both locks before returning. No socket I/O occurs
         // under either lock. A missing Dataset is refused, never completed here.
-        let experience = OriginalCellQ24MaterialEvidenceOwnerV1::read_original(self, Role::Experience, requested_head)?;
-        let dataset = OriginalCellQ24MaterialEvidenceOwnerV1::read_original(self, Role::Dataset, requested_head)?;
+        let experience = OriginalCellQ24MaterialEvidenceOwnerV1::read_original(
+            self,
+            Role::Experience,
+            requested_head,
+        )?;
+        let dataset = OriginalCellQ24MaterialEvidenceOwnerV1::read_original(
+            self,
+            Role::Dataset,
+            requested_head,
+        )?;
         let mut cut = LearningIterationCoordinatorV1::from_snapshot(self.config.initial.clone())?;
-        cut.record(experience.receipt.clone(), experience.receipt.observed_unix_seconds)?;
-        cut.record(dataset.receipt.clone(), dataset.receipt.observed_unix_seconds)?;
+        cut.record(
+            experience.receipt.clone(),
+            experience.receipt.observed_unix_seconds,
+        )?;
+        cut.record(
+            dataset.receipt.clone(),
+            dataset.receipt.observed_unix_seconds,
+        )?;
         let experience_payload = learning_iteration_receipt_signing_bytes_v1(&experience.receipt)?;
         let dataset_payload = learning_iteration_receipt_signing_bytes_v1(&dataset.receipt)?;
         if cut.snapshot().head_digest != requested_head
@@ -123,11 +143,18 @@ impl<EW: AnchorWitnessStore, DW: AnchorWitnessStore, SW: AnchorWitnessStore>
             return Err(Error::Binding("fresh original Material source window"));
         }
         for (completed, payload, signer) in [
-            (&experience, &experience_payload, &self.config.experience_signer),
+            (
+                &experience,
+                &experience_payload,
+                &self.config.experience_signer,
+            ),
             (&dataset, &dataset_payload, &self.config.dataset_signer),
         ] {
             let verified = self.config.verifier.verify(
-                LearningEvidenceRoleV1::Observer, &completed.attestation, payload, fresh_now,
+                LearningEvidenceRoleV1::Observer,
+                &completed.attestation,
+                payload,
+                fresh_now,
             )?;
             if verified.principal() != &signer.principal
                 || verified.controller_id() != &signer.controller_id

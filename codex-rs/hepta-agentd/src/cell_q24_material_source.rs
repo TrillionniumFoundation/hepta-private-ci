@@ -20,8 +20,8 @@ use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
 use codex_hepta_learning_ledger::SignedEvidenceError;
 use codex_hepta_types::Digest32;
 
-use super::OriginalCellQ24MaterialEvidenceErrorV1;
 use super::super::wire as evidence_wire;
+use super::OriginalCellQ24MaterialEvidenceErrorV1;
 use crate::AgentdRootAuthorityPeer;
 use crate::CellQ24DatasetErrorV1;
 use crate::CellQ24TrainingErrorV1;
@@ -32,10 +32,10 @@ use crate::OriginalCellQ24DatasetV1;
 use crate::OriginalCellQ24TrainingSourceConfigV1;
 use crate::root_observation_stream::RootObservationStream;
 
-#[path = "cell_q24_material_source_wire.rs"]
-mod wire;
 #[path = "cell_q24_material_source_service.rs"]
 mod serving;
+#[path = "cell_q24_material_source_wire.rs"]
+mod wire;
 
 #[derive(Debug, thiserror::Error)]
 pub enum OriginalCellQ24MaterialSourceErrorV1 {
@@ -92,14 +92,16 @@ impl OriginalCellQ24RemoteMaterialClientV1 {
         let started_at = now()?;
         verify_context(&config, started_at)?;
         // SAFETY: observe only this process's original credentials.
-        let same_uid = peer.uid == unsafe { libc::getuid() }
-            || peer.uid == unsafe { libc::geteuid() };
+        let same_uid =
+            peer.uid == unsafe { libc::getuid() } || peer.uid == unsafe { libc::geteuid() };
         if same_uid
             || peer.pid == std::process::id()
             || peer.actor_id != config.dataset.owners.dataset
             || baseline.components() != &config.dataset.request.selected_bundle.components
         {
-            return Err(Error::Binding("original distinct Material host and loaded baseline"));
+            return Err(Error::Binding(
+                "original distinct Material host and loaded baseline",
+            ));
         }
         let transport = RootObservationStream::from_stream_for_uid(
             stream,
@@ -112,14 +114,18 @@ impl OriginalCellQ24RemoteMaterialClientV1 {
             timeout,
             lifetime,
             peer.uid,
-        ).map_err(|_| Error::Unavailable)?;
+        )
+        .map_err(|_| Error::Unavailable)?;
         let fresh_now = now()?;
         if fresh_now < started_at {
             return Err(Error::Binding("Material channel clock moved backwards"));
         }
         verify_context(&config, fresh_now)?;
         Ok(Self {
-            channel: Mutex::new(Some(Channel { transport, next_request_id: 1 })),
+            channel: Mutex::new(Some(Channel {
+                transport,
+                next_request_id: 1,
+            })),
             config,
             baseline,
         })
@@ -130,14 +136,20 @@ impl OriginalCellQ24RemoteMaterialClientV1 {
     /// failure after taking the channel consumes it; there is no reconnect.
     pub async fn read_current(&self) -> Result<OriginalCellQ24DatasetV1, Error> {
         let started_at = now()?;
-        let mut channel = self.channel.try_lock().map_err(|_| Error::Unavailable)?
-            .take().ok_or(Error::Unavailable)?;
+        let mut channel = self
+            .channel
+            .try_lock()
+            .map_err(|_| Error::Unavailable)?
+            .take()
+            .ok_or(Error::Unavailable)?;
         verify_context(&self.config, started_at)?;
         let initial = LearningIterationCoordinatorV1::new(
-            self.config.dataset.request.clone(), self.config.dataset.owners.clone(),
+            self.config.dataset.request.clone(),
+            self.config.dataset.owners.clone(),
         )?;
         let request_id = channel.next_request_id;
-        let next_request_id = request_id.checked_add(1)
+        let next_request_id = request_id
+            .checked_add(1)
             .ok_or(Error::Binding("Material request id overflow"))?;
         let request = wire::Request {
             schema: 1,
@@ -150,7 +162,10 @@ impl OriginalCellQ24RemoteMaterialClientV1 {
             experience_receipt: receipt_digest(&self.config, 0)?.to_string(),
             dataset_receipt: receipt_digest(&self.config, 1)?.to_string(),
         };
-        let response: wire::Response = channel.transport.read(&request).await
+        let response: wire::Response = channel
+            .transport
+            .read(&request)
+            .await
             .map_err(|_| Error::Unavailable)?;
         if response.schema != request.schema
             || response.operation != request.operation
@@ -166,23 +181,24 @@ impl OriginalCellQ24RemoteMaterialClientV1 {
         }
         let experience = response.experience.decode()?;
         let dataset = response.dataset.decode()?;
-        if experience != self.config.experience_evidence
-            || dataset != self.config.dataset_evidence
+        if experience != self.config.experience_evidence || dataset != self.config.dataset_evidence
         {
             return Err(Error::Binding("complete original Material signature bytes"));
         }
         let material = OriginalCellQ24DatasetV1::from_original_material_peer(
-            response.material, &self.config, Arc::clone(&self.baseline),
-            &experience, &dataset,
+            response.material,
+            &self.config,
+            Arc::clone(&self.baseline),
+            &experience,
+            &dataset,
         )?;
         let fresh_now = now()?;
         if fresh_now < started_at {
             return Err(Error::Binding("Material read clock moved backwards"));
         }
         verify_context(&self.config, fresh_now)?;
-        crate::root_observation_stream::check_lifetime(
-            channel.transport.root_lifetime().get_ref(),
-        ).map_err(|_| Error::Unavailable)?;
+        crate::root_observation_stream::check_lifetime(channel.transport.root_lifetime().get_ref())
+            .map_err(|_| Error::Unavailable)?;
         channel.next_request_id = next_request_id;
         *self.channel.try_lock().map_err(|_| Error::Unavailable)? = Some(channel);
         Ok(material)
@@ -208,7 +224,9 @@ impl OriginalCellQ24RemoteMaterialClientV1 {
             || self.config.verifier.objective_digest() != config.verifier.objective_digest()
             || !Arc::ptr_eq(&self.baseline, baseline)
         {
-            return Err(Error::Binding("same original Material source capture context"));
+            return Err(Error::Binding(
+                "same original Material source capture context",
+            ));
         }
         verify_context(config, now()?)?;
         Ok(())
@@ -227,13 +245,17 @@ fn verify_context(config: &OriginalCellQ24TrainingSourceConfigV1, at: u64) -> Re
     {
         return Err(Error::Binding("original signed Dataset cut"));
     }
-    for (receipt, evidence) in config.dataset.receipts.iter().zip([
-        &config.experience_evidence, &config.dataset_evidence,
-    ]) {
+    for (receipt, evidence) in config
+        .dataset
+        .receipts
+        .iter()
+        .zip([&config.experience_evidence, &config.dataset_evidence])
+    {
         let payload = learning_iteration_receipt_signing_bytes_v1(receipt)?;
-        let verified = config.verifier.verify(
-            LearningEvidenceRoleV1::Observer, evidence, &payload, at,
-        )?;
+        let verified =
+            config
+                .verifier
+                .verify(LearningEvidenceRoleV1::Observer, evidence, &payload, at)?;
         if verified.principal().principal_id != receipt.actor_id
             || evidence.issued_at != receipt.observed_unix_seconds
             || evidence.issued_at > at
@@ -244,14 +266,24 @@ fn verify_context(config: &OriginalCellQ24TrainingSourceConfigV1, at: u64) -> Re
     Ok(())
 }
 
-fn receipt_digest(config: &OriginalCellQ24TrainingSourceConfigV1, index: usize) -> Result<Digest32, Error> {
-    let receipt = config.dataset.receipts.get(index)
+fn receipt_digest(
+    config: &OriginalCellQ24TrainingSourceConfigV1,
+    index: usize,
+) -> Result<Digest32, Error> {
+    let receipt = config
+        .dataset
+        .receipts
+        .get(index)
         .ok_or(Error::Binding("complete original Material cut"))?;
-    Ok(Digest32::of_bytes(&learning_iteration_receipt_signing_bytes_v1(receipt)?))
+    Ok(Digest32::of_bytes(
+        &learning_iteration_receipt_signing_bytes_v1(receipt)?,
+    ))
 }
 
 fn now() -> Result<u64, Error> {
-    SystemTime::now().duration_since(UNIX_EPOCH).map(|value| value.as_secs())
+    SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map(|value| value.as_secs())
         .map_err(|_| Error::Binding("Material clock before Unix epoch"))
 }
 

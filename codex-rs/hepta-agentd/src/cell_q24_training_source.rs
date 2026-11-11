@@ -302,10 +302,16 @@ impl LiveOwners {
         let started_at = now()?;
         verify_original_evidence(config, started_at)?;
         self.read_original_evidence(config).await?;
-        let before = self.original.read_current_material(config, &self.baseline).await?;
+        let before = self
+            .original
+            .read_current_material(config, &self.baseline)
+            .await?;
         require_observations(config, &before)?;
         self.read_original_evidence(config).await?;
-        let after = self.original.read_current_material(config, &self.baseline).await?;
+        let after = self
+            .original
+            .read_current_material(config, &self.baseline)
+            .await?;
         require_same_material(&before, &after)?;
         let fresh_now = now()?;
         if fresh_now < started_at {

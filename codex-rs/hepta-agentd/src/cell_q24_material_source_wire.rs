@@ -1,9 +1,9 @@
 //! Private purpose-specific wire. The request has no material or signing body.
 
+use super::evidence_wire;
+use crate::cell_q24_dataset::OriginalCellQ24MaterialWireV1;
 use serde::Deserialize;
 use serde::Serialize;
-use crate::cell_q24_dataset::OriginalCellQ24MaterialWireV1;
-use super::evidence_wire;
 
 pub(super) const OPERATION: &str = "runtime.learning.material.readback.v1";
 
