@@ -327,6 +327,11 @@ impl ConfigManager {
                         ),
                     )
                 })?;
+            if feature == Feature::TokenBudget && !enabled {
+                // ConfigBuilder resolves this before embedding constraints. Clear
+                // the derived state as well so history/notes cannot stay enabled.
+                config.token_budget = None;
+            }
         }
         Ok(())
     }
@@ -406,3 +411,7 @@ pub(crate) fn apply_runtime_feature_enablement(
         }
     }
 }
+
+#[cfg(test)]
+#[path = "config_manager_feature_constraints_tests.rs"]
+mod feature_constraints_tests;
