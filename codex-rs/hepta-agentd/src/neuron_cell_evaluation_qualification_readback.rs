@@ -4,6 +4,7 @@
 use codex_hepta_intelligence_eval::ProductEvidenceSinkErrorV1;
 use codex_hepta_intelligence_eval::ProductQualificationEvidenceSinkV1;
 use codex_hepta_intelligence_eval::SignedEvaluationDecisionV1;
+use codex_hepta_intelligence_eval::revalidate_product_qualification_v1;
 use codex_hepta_types::Digest32;
 
 use super::*;
@@ -85,7 +86,16 @@ impl<W: AnchorWitnessStore> OriginalCellEvaluationQualificationOwnerV1<W> {
         if new_publication {
             binding::new_work_time(&self.config, started_at, current)?;
         }
-        let decision = binding::authenticate(&self.config, prepared, current)?;
+        binding::authenticate(&self.config, prepared, current)?;
+        let decision = revalidate_product_qualification_v1(
+            qualification.product(),
+            prepared.bundle.clone(),
+            self.config.plan.product_plan().metric_roles.clone(),
+            &self.config.product_evidence,
+            ProductTimingEvidenceV1::Qualification,
+            &self.config.verifier,
+            current,
+        )?;
         if qualification.product().decision != decision {
             return Err(Error::CommitUncertain);
         }

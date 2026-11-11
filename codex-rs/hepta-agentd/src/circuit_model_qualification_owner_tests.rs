@@ -3,6 +3,7 @@
 //! empty retention evidence does not establish B or an old-capability panel.
 use codex_hepta_intelligence_eval::ProductEvaluationExecutionStoreErrorV1;
 use codex_hepta_types::AuthorityPosture;
+use codex_hepta_types::Digest32;
 use pretty_assertions::assert_eq;
 
 use super::*;

@@ -6,7 +6,6 @@ use codex_hepta_intelligence_eval::EvaluationClaimScopeV1;
 use codex_hepta_intelligence_eval::IndependentEvaluationDispositionV1;
 use codex_hepta_intelligence_eval::MAX_PRODUCT_EVALUATION_EXECUTION_BYTES_V1;
 use codex_hepta_intelligence_eval::SignedEvaluationDecisionV1;
-use codex_hepta_intelligence_eval::decide_with_signed_evidence_v2;
 use codex_hepta_intelligence_eval::evaluation_signing_payload_v2;
 use codex_hepta_intelligence_eval::product_evaluation_execution_key_v1;
 use codex_hepta_learning_artifacts::LearningIterationCoordinatorV1;
@@ -149,7 +148,7 @@ pub(super) fn authenticate(
     config: &OriginalCellEvaluationQualificationConfigV1,
     prepared: &Prepared,
     current: u64,
-) -> Result<SignedEvaluationDecisionV1, Error> {
+) -> Result<(), Error> {
     let (training, execution) = authenticate_fixed(config, current)?;
     let payload = evaluation_signing_payload_v2(
         &prepared.bundle, &config.plan.product_plan().metric_roles,
@@ -169,13 +168,7 @@ pub(super) fn authenticate(
         return Err(Error::Binding("original Qualification Product and execution custody"));
     }
     verify_signed_actor_separation(&training, &evaluator, current)?;
-    Ok(decide_with_signed_evidence_v2(
-        prepared.bundle.clone(),
-        config.plan.product_plan().metric_roles.clone(),
-        &config.product_evidence,
-        &config.verifier,
-        current,
-    ).map_err(ProductEvaluationError::from)?)
+    Ok(())
 }
 
 /// Canonical full public decision bytes; no seal is decoded or constructed here.

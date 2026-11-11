@@ -33,9 +33,7 @@ impl<W: AnchorWitnessStore> PersistPort<'_, W> {
         }
         let current = binding::now()?;
         binding::new_work_time(self.config, self.started_at, current)?;
-        if binding::authenticate(self.config, self.prepared, current)? != *decision {
-            return Err(Error::Binding("original Qualification decision changed"));
-        }
+        binding::authenticate(self.config, self.prepared, current)?;
         let bytes = binding::decision_bytes(self.key, execution_digest, decision)?;
         match ProductEvaluationExecutionStoreV1::claim(self.journal, self.key)? {
             ProductEvaluationExecutionClaimV1::Claimed => {}
@@ -48,9 +46,7 @@ impl<W: AnchorWitnessStore> PersistPort<'_, W> {
         }
         let current = binding::now()?;
         binding::new_work_time(self.config, self.started_at, current)?;
-        if binding::authenticate(self.config, self.prepared, current)? != *decision {
-            return Err(Error::CommitUncertain);
-        }
+        binding::authenticate(self.config, self.prepared, current)?;
         ProductEvaluationExecutionStoreV1::complete(self.journal, self.key, &bytes)?;
         match ProductEvaluationExecutionStoreV1::readback(self.journal, self.key)? {
             State::Completed(original) if original == bytes => {}
