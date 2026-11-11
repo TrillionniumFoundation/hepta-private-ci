@@ -6,14 +6,15 @@ use pretty_assertions::assert_eq;
 use pretty_assertions::assert_ne;
 
 use super::*;
+use crate::LearningIterationEvidencePeerV1;
 use crate::OriginalCellQ24TrainingCommandClientV1;
 use crate::OriginalCellQ24TrainingCommandContextV1;
 use crate::OriginalCellQ24TrainingCommandErrorV1 as CommandError;
 use crate::OriginalCellQ24TrainingCommandOwnerV1;
-use crate::LearningIterationEvidencePeerV1;
 use crate::learning_iteration_evidence_client::command_test_support as transport;
 
-type CommandOwner = OriginalCellQ24TrainingCommandOwnerV1<FileAnchorWitnessStore, FileAnchorWitnessStore>;
+type CommandOwner =
+    OriginalCellQ24TrainingCommandOwnerV1<FileAnchorWitnessStore, FileAnchorWitnessStore>;
 
 fn context(fixture: &Harness) -> OriginalCellQ24TrainingCommandContextV1 {
     OriginalCellQ24TrainingCommandContextV1 {
@@ -27,53 +28,95 @@ async fn owner(fixture: &Harness, create: bool) -> anyhow::Result<(Arc<CommandOw
     let (capture, peers) = fixture.capture().await?;
     let training = if create {
         CellQ24TrainingOwnerV1::create_from_original_source(
-            fixture.file("native-training", true)?, fixture.witness("native-witness", true)?, capture,
+            fixture.file("native-training", true)?,
+            fixture.witness("native-witness", true)?,
+            capture,
         )?
     } else {
         CellQ24TrainingOwnerV1::recover_from_original_source(
-            fixture.file("native-training", false)?, fixture.witness("native-witness", false)?, capture,
+            fixture.file("native-training", false)?,
+            fixture.witness("native-witness", false)?,
+            capture,
         )?
     };
-    let original = OriginalCellQ24TrainingStageV1::from_original_owners(
-        training, fixture.receipts(create)?,
-    ).await?;
+    let original =
+        OriginalCellQ24TrainingStageV1::from_original_owners(training, fixture.receipts(create)?)
+            .await?;
     let stage = SourceBoundCellQ24TrainingStageV1::from_original_stage(original).await?;
     let cancellation = Arc::new(AtomicBool::new(false));
     let owner = if create {
-        OriginalCellQ24TrainingCommandOwnerV1::from_original_stage(stage, context(fixture), cancellation).await?
+        OriginalCellQ24TrainingCommandOwnerV1::from_original_stage(
+            stage,
+            context(fixture),
+            cancellation,
+        )
+        .await?
     } else {
-        OriginalCellQ24TrainingCommandOwnerV1::recover_original_stage(stage, context(fixture), cancellation).await?
+        OriginalCellQ24TrainingCommandOwnerV1::recover_original_stage(
+            stage,
+            context(fixture),
+            cancellation,
+        )
+        .await?
     };
     Ok((Arc::new(owner), peers))
 }
 
 #[tokio::test]
-async fn original_training_command_executes_and_produces_actual_evidence_readback() -> anyhow::Result<()> {
+async fn original_training_command_executes_and_produces_actual_evidence_readback()
+-> anyhow::Result<()> {
     let fixture = Harness::new().await?;
     let (owner, peers) = owner(&fixture, true).await?;
     let (client, channel) = transport::client(context(&fixture), false, None)?;
     let server = transport::serve(Arc::clone(&owner), channel);
-    assert!(matches!(client.readback().await, Err(CommandError::Missing)));
-    let before = fixture.bytes()?;
-    let completed = client.execute_training(Arc::new(AtomicBool::new(false))).await?;
-    assert!(matches!(completed.receipt().observation, LearningIterationObservationV1::TrainingNoUpdateV2(_)));
-    let after = fixture.bytes()?;
-    assert_ne!(before, after, "actual native and Generator durable completion");
-    assert_eq!(client.readback().await?, completed);
-    assert_eq!(client.receipt_attestation(completed.receipt()).await?, *completed.attestation());
     assert!(matches!(
-        client.execute_training(Arc::new(AtomicBool::new(false))).await,
+        client.readback().await,
+        Err(CommandError::Missing)
+    ));
+    let before = fixture.bytes()?;
+    let completed = client
+        .execute_training(Arc::new(AtomicBool::new(false)))
+        .await?;
+    assert!(matches!(
+        completed.receipt().observation,
+        LearningIterationObservationV1::TrainingNoUpdateV2(_)
+    ));
+    let after = fixture.bytes()?;
+    assert_ne!(
+        before, after,
+        "actual native and Generator durable completion"
+    );
+    assert_eq!(client.readback().await?, completed);
+    assert_eq!(
+        client.receipt_attestation(completed.receipt()).await?,
+        *completed.attestation()
+    );
+    assert!(matches!(
+        client
+            .execute_training(Arc::new(AtomicBool::new(false)))
+            .await,
         Err(CommandError::ReadbackRequired)
     ));
     let (evidence, channel) = transport::evidence_client(&context(&fixture))?;
     let evidence_server = transport::serve_evidence(Arc::clone(&owner), channel);
     assert_eq!(
-        evidence.readback(&fixture.config.dataset, completed.receipt()).await?,
+        evidence
+            .readback(&fixture.config.dataset, completed.receipt())
+            .await?,
         *completed.attestation()
     );
     drop(evidence);
-    assert_eq!(evidence_server.join().expect("original evidence producer")?, 1);
-    assert_eq!(fixture.bytes()?, after, "reads and duplicate execute never re-sign");
+    assert_eq!(
+        evidence_server
+            .join()
+            .expect("original evidence producer")?,
+        1
+    );
+    assert_eq!(
+        fixture.bytes()?,
+        after,
+        "reads and duplicate execute never re-sign"
+    );
     drop(client);
     assert_eq!(server.join().expect("original command producer")?, 4);
     drop(owner);
@@ -82,12 +125,15 @@ async fn original_training_command_executes_and_produces_actual_evidence_readbac
 }
 
 #[tokio::test]
-async fn original_training_command_recovers_same_job_and_full_signature_read_only() -> anyhow::Result<()> {
+async fn original_training_command_recovers_same_job_and_full_signature_read_only()
+-> anyhow::Result<()> {
     let fixture = Harness::new().await?;
     let (original, peers) = owner(&fixture, true).await?;
     let (client, channel) = transport::client(context(&fixture), false, None)?;
     let server = transport::serve(Arc::clone(&original), channel);
-    let completed = client.execute_training(Arc::new(AtomicBool::new(false))).await?;
+    let completed = client
+        .execute_training(Arc::new(AtomicBool::new(false)))
+        .await?;
     drop(client);
     server.join().expect("original command producer")?;
     drop(original);
@@ -99,7 +145,9 @@ async fn original_training_command_recovers_same_job_and_full_signature_read_onl
     let (client, channel) = transport::client(context(&fixture), false, Some(completed.clone()))?;
     let server = transport::serve(Arc::clone(&recovered), channel);
     assert!(matches!(
-        client.execute_training(Arc::new(AtomicBool::new(false))).await,
+        client
+            .execute_training(Arc::new(AtomicBool::new(false)))
+            .await,
         Err(CommandError::ReadbackRequired)
     ));
     assert_eq!(client.readback().await?, completed);
@@ -112,38 +160,54 @@ async fn original_training_command_recovers_same_job_and_full_signature_read_onl
 }
 
 #[tokio::test]
-async fn original_training_command_lost_ack_reads_existing_completion_without_reexecution() -> anyhow::Result<()> {
+async fn original_training_command_lost_ack_reads_existing_completion_without_reexecution()
+-> anyhow::Result<()> {
     let fixture = Harness::new().await?;
     let (owner, peers) = owner(&fixture, true).await?;
     let (client, channel) = transport::client(context(&fixture), false, None)?;
     let server = transport::lose_ack(Arc::clone(&owner), channel);
     assert!(matches!(
-        client.execute_training(Arc::new(AtomicBool::new(false))).await,
+        client
+            .execute_training(Arc::new(AtomicBool::new(false)))
+            .await,
         Err(CommandError::CommitUncertain)
     ));
     server.join().expect("lost original ACK")?;
-    assert!(matches!(client.readback().await, Err(CommandError::Unavailable)));
+    assert!(matches!(
+        client.readback().await,
+        Err(CommandError::Unavailable)
+    ));
     drop(client);
     let before = fixture.bytes()?;
     let (client, channel) = transport::client(context(&fixture), true, None)?;
     let server = transport::serve(Arc::clone(&owner), channel);
     let completed = client.readback().await?;
-    assert!(matches!(completed.receipt().observation, LearningIterationObservationV1::TrainingNoUpdateV2(_)));
+    assert!(matches!(
+        completed.receipt().observation,
+        LearningIterationObservationV1::TrainingNoUpdateV2(_)
+    ));
     assert_eq!(client.readback().await?, completed);
     assert!(matches!(
-        client.execute_training(Arc::new(AtomicBool::new(false))).await,
+        client
+            .execute_training(Arc::new(AtomicBool::new(false)))
+            .await,
         Err(CommandError::ReadbackRequired)
     ));
     drop(client);
     assert_eq!(server.join().expect("original same-job readback")?, 2);
     drop(owner);
     finish(peers)?;
-    assert_eq!(fixture.bytes()?, before, "no second native or signature claim");
+    assert_eq!(
+        fixture.bytes()?,
+        before,
+        "no second native or signature claim"
+    );
     Ok(())
 }
 
 #[tokio::test]
-async fn original_training_command_withdrawal_after_claim_preserves_pending_without_signature() -> anyhow::Result<()> {
+async fn original_training_command_withdrawal_after_claim_preserves_pending_without_signature()
+-> anyhow::Result<()> {
     let fixture = Harness::new().await?;
     let (capture, peers) = fixture.capture().await?;
     let training = CellQ24TrainingOwnerV1::create_from_original_source(
@@ -155,17 +219,26 @@ async fn original_training_command_withdrawal_after_claim_preserves_pending_with
         },
         capture,
     )?;
-    let original = OriginalCellQ24TrainingStageV1::from_original_owners(training, fixture.receipts(true)?).await?;
+    let original =
+        OriginalCellQ24TrainingStageV1::from_original_owners(training, fixture.receipts(true)?)
+            .await?;
     let stage = SourceBoundCellQ24TrainingStageV1::from_original_stage(original).await?;
-    let owner = Arc::new(OriginalCellQ24TrainingCommandOwnerV1::from_original_stage(
-        stage, context(&fixture), Arc::new(AtomicBool::new(false)),
-    ).await?);
+    let owner = Arc::new(
+        OriginalCellQ24TrainingCommandOwnerV1::from_original_stage(
+            stage,
+            context(&fixture),
+            Arc::new(AtomicBool::new(false)),
+        )
+        .await?,
+    );
     let (recovery_capture, recovery_peers) = fixture.capture().await?;
     let before = fixture.bytes()?;
     let (client, channel) = transport::client(context(&fixture), false, None)?;
     let server = transport::serve(Arc::clone(&owner), channel);
     assert!(matches!(
-        client.execute_training(Arc::new(AtomicBool::new(false))).await,
+        client
+            .execute_training(Arc::new(AtomicBool::new(false)))
+            .await,
         Err(CommandError::CommitUncertain)
     ));
     drop(client);
@@ -181,7 +254,10 @@ async fn original_training_command_withdrawal_after_claim_preserves_pending_with
         fixture.witness("native-witness", false)?,
         recovery_capture,
     )?;
-    assert!(matches!(recovered.readback(), Err(CellQ24TrainingOwnerErrorV1::Pending)));
+    assert!(matches!(
+        recovered.readback(),
+        Err(CellQ24TrainingOwnerErrorV1::Pending)
+    ));
     drop(recovered);
     finish(recovery_peers)?;
     assert_eq!(fixture.bytes()?, after);
@@ -189,25 +265,39 @@ async fn original_training_command_withdrawal_after_claim_preserves_pending_with
 }
 
 #[tokio::test]
-async fn original_training_command_wrong_context_cannot_claim_or_consume_admission() -> anyhow::Result<()> {
+async fn original_training_command_wrong_context_cannot_claim_or_consume_admission()
+-> anyhow::Result<()> {
     let fixture = Harness::new().await?;
     let (owner, peers) = owner(&fixture, true).await?;
     let before = fixture.bytes()?;
-    transport::reject_wrong_actor(Arc::clone(&owner)).join().expect("wrong original actor")?;
+    transport::reject_wrong_actor(Arc::clone(&owner))
+        .join()
+        .expect("wrong original actor")?;
     assert_eq!(fixture.bytes()?, before);
     let (client, channel) = transport::client(context(&fixture), false, None)?;
     let server = transport::serve(Arc::clone(&owner), channel);
-    let completed = client.execute_training(Arc::new(AtomicBool::new(false))).await?;
-    assert!(matches!(completed.receipt().observation, LearningIterationObservationV1::TrainingNoUpdateV2(_)));
+    let completed = client
+        .execute_training(Arc::new(AtomicBool::new(false)))
+        .await?;
+    assert!(matches!(
+        completed.receipt().observation,
+        LearningIterationObservationV1::TrainingNoUpdateV2(_)
+    ));
     drop(client);
-    assert_eq!(server.join().expect("original producer after refused context")?, 1);
+    assert_eq!(
+        server
+            .join()
+            .expect("original producer after refused context")?,
+        1
+    );
     drop(owner);
     finish(peers)?;
     Ok(())
 }
 
 #[tokio::test]
-async fn original_training_command_public_bootstrap_refuses_same_process_custody() -> anyhow::Result<()> {
+async fn original_training_command_public_bootstrap_refuses_same_process_custody()
+-> anyhow::Result<()> {
     let fixture = Harness::new().await?;
     let identity = transport::identity()?;
     let (stream, _server) = std::os::unix::net::UnixStream::pair()?;
@@ -226,7 +316,12 @@ async fn original_training_command_public_bootstrap_refuses_same_process_custody
         std::time::Duration::from_secs(30),
         std::time::Duration::from_secs(300),
     );
-    assert!(matches!(result, Err(CommandError::Transport(codex_hepta_contracts::HostIssuerTransportError::PeerDenied))));
+    assert!(matches!(
+        result,
+        Err(CommandError::Transport(
+            codex_hepta_contracts::HostIssuerTransportError::PeerDenied
+        ))
+    ));
     assert!(!fixture.root.join("native-training").exists());
     assert!(!fixture.root.join("training-receipt").exists());
     Ok(())

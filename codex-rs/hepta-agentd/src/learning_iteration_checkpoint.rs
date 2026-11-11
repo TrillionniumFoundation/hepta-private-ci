@@ -399,7 +399,6 @@ mod ports_tests;
 #[path = "learning_iteration_checkpoint_profile_tests.rs"]
 mod profile_tests;
 
-
 /// Reuse the bounded canonical snapshot codec for an original role's readback
 /// response. These pure functions neither open nor mutate a Root checkpoint.
 #[cfg(target_os = "linux")]
@@ -421,4 +420,3 @@ pub(crate) fn decode_original_owner_snapshot_v1(
     }
     Ok(snapshot)
 }
-

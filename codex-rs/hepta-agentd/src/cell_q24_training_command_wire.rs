@@ -160,7 +160,10 @@ pub(super) fn encode_completed(
 ) -> Result<CommandResult, Error> {
     let completed = authenticate_receipt(context, receipt, attestation, at)?;
     let mut coordinator = LearningIterationCoordinatorV1::from_snapshot(context.dataset.clone())?;
-    coordinator.record(completed.receipt.clone(), completed.receipt.observed_unix_seconds)?;
+    coordinator.record(
+        completed.receipt.clone(),
+        completed.receipt.observed_unix_seconds,
+    )?;
     let bytes = encode_original_owner_snapshot_v1(coordinator.snapshot())?;
     Ok(CommandResult::Completed {
         snapshot: STANDARD_NO_PAD.encode(bytes),
@@ -185,8 +188,13 @@ pub(super) fn decode_completed(
     }
     let completed = decode_original_owner_snapshot_v1(&bytes)?;
     require_exact_extension(context, &completed)?;
-    let receipt = completed.receipts.last().ok_or(Error::Binding("original Training receipt"))?;
-    let attestation = evidence.decode().map_err(|_| Error::Binding("original Generator encoding"))?;
+    let receipt = completed
+        .receipts
+        .last()
+        .ok_or(Error::Binding("original Training receipt"))?;
+    let attestation = evidence
+        .decode()
+        .map_err(|_| Error::Binding("original Generator encoding"))?;
     authenticate_receipt(context, receipt.clone(), attestation, at)
 }
 
@@ -234,5 +242,8 @@ pub(super) fn authenticate_receipt(
     if verified.principal().principal_id != context.dataset.owners.trainer {
         return Err(Error::Binding("original enrolled Generator"));
     }
-    Ok(OriginalCellQ24TrainingCommandReceiptV1 { receipt, attestation })
+    Ok(OriginalCellQ24TrainingCommandReceiptV1 {
+        receipt,
+        attestation,
+    })
 }

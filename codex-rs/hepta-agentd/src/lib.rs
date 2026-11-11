@@ -345,6 +345,12 @@ pub use learning_iteration_evidence_client::LearningIterationEvidenceClientV1;
 #[cfg(target_os = "linux")]
 pub use learning_iteration_evidence_client::LearningIterationEvidencePeerV1;
 #[cfg(target_os = "linux")]
+pub use learning_iteration_evidence_client::OriginalCellQ24MaterialEvidenceErrorV1;
+#[cfg(target_os = "linux")]
+pub use learning_iteration_evidence_client::OriginalCellQ24MaterialEvidenceOwnerV1;
+#[cfg(target_os = "linux")]
+pub use learning_iteration_evidence_client::OriginalCellQ24MaterialEvidenceRoleV1;
+#[cfg(target_os = "linux")]
 pub use learning_iteration_evidence_client::OriginalCellQ24TrainingCommandClientV1;
 #[cfg(target_os = "linux")]
 pub use learning_iteration_evidence_client::OriginalCellQ24TrainingCommandContextV1;
@@ -354,12 +360,6 @@ pub use learning_iteration_evidence_client::OriginalCellQ24TrainingCommandErrorV
 pub use learning_iteration_evidence_client::OriginalCellQ24TrainingCommandOwnerV1;
 #[cfg(target_os = "linux")]
 pub use learning_iteration_evidence_client::OriginalCellQ24TrainingCommandReceiptV1;
-#[cfg(target_os = "linux")]
-pub use learning_iteration_evidence_client::OriginalCellQ24MaterialEvidenceErrorV1;
-#[cfg(target_os = "linux")]
-pub use learning_iteration_evidence_client::OriginalCellQ24MaterialEvidenceOwnerV1;
-#[cfg(target_os = "linux")]
-pub use learning_iteration_evidence_client::OriginalCellQ24MaterialEvidenceRoleV1;
 #[cfg(target_os = "linux")]
 pub use learning_iteration_evidence_client::read_cell_learning_evaluation_v1;
 #[cfg(target_os = "linux")]
@@ -394,10 +394,10 @@ mod learning_iteration_proposal;
 mod learning_iteration_research_external;
 #[cfg(all(test, unix))]
 mod learning_iteration_research_external_material;
-mod learning_owner_evidence;
-mod learning_owner_journal;
 #[cfg(target_os = "linux")]
 mod learning_owner_command_channel;
+mod learning_owner_evidence;
+mod learning_owner_journal;
 mod neuron_cell_evaluation;
 mod neuron_cell_evaluation_owner;
 #[cfg(target_os = "linux")]

@@ -14,14 +14,14 @@ use codex_hepta_contracts::HostIssuerPeer;
 use codex_hepta_contracts::HostIssuerTransportError;
 use codex_hepta_neuron::AnchorWitnessStore;
 
-use super::OriginalCellQ24TrainingCommandOwnerV1;
+use super::super::super::Channel as EvidenceChannel;
+use super::super::super::LearningIterationEvidenceClientV1;
 use super::super::Channel;
 use super::super::OriginalCellQ24TrainingCommandClientV1;
 use super::super::OriginalCellQ24TrainingCommandContextV1;
 use super::super::OriginalCellQ24TrainingCommandReceiptV1;
 use super::super::wire;
-use super::super::super::Channel as EvidenceChannel;
-use super::super::super::LearningIterationEvidenceClientV1;
+use super::OriginalCellQ24TrainingCommandOwnerV1;
 use crate::AgentdRootAuthorityPeer;
 use crate::root_observation_stream::RootObservationStream;
 
@@ -38,11 +38,17 @@ pub(crate) fn identity() -> anyhow::Result<AgentdRootAuthorityPeer> {
     let stat = std::fs::read_to_string(format!("/proc/{pid}/stat"))?;
     Ok(AgentdRootAuthorityPeer {
         pid,
-        boot_id: std::fs::read_to_string("/proc/sys/kernel/random/boot_id")?.trim().into(),
-        process_start_ticks: stat.rsplit_once(") ")
-            .ok_or_else(|| anyhow::anyhow!("fixture process stat"))?.1
-            .split_whitespace().nth(19)
-            .ok_or_else(|| anyhow::anyhow!("fixture start ticks"))?.parse()?,
+        boot_id: std::fs::read_to_string("/proc/sys/kernel/random/boot_id")?
+            .trim()
+            .into(),
+        process_start_ticks: stat
+            .rsplit_once(") ")
+            .ok_or_else(|| anyhow::anyhow!("fixture process stat"))?
+            .1
+            .split_whitespace()
+            .nth(19)
+            .ok_or_else(|| anyhow::anyhow!("fixture start ticks"))?
+            .parse()?,
     })
 }
 
@@ -51,7 +57,10 @@ fn channel(stream: UnixStream, timeout: Duration) -> anyhow::Result<HostAuthorit
         stream,
         HostAuthorityPeerPolicy {
             // SAFETY: observe the fixture process's credentials.
-            peer: HostIssuerPeer { uid: unsafe { libc::geteuid() }, pid: std::process::id() },
+            peer: HostIssuerPeer {
+                uid: unsafe { libc::geteuid() },
+                pid: std::process::id(),
+            },
             timeout,
             lifetime: Duration::from_secs(300),
             request_bound: 16_384,
@@ -65,7 +74,10 @@ pub(crate) fn client(
     context: OriginalCellQ24TrainingCommandContextV1,
     readback_only: bool,
     retained: Option<OriginalCellQ24TrainingCommandReceiptV1>,
-) -> anyhow::Result<(OriginalCellQ24TrainingCommandClientV1, HostAuthorityPeerChannel)> {
+) -> anyhow::Result<(
+    OriginalCellQ24TrainingCommandClientV1,
+    HostAuthorityPeerChannel,
+)> {
     let (stream, server) = UnixStream::pair()?;
     let binding = context.binding()?;
     Ok((
@@ -90,11 +102,19 @@ pub(crate) fn evidence_client(
     // SAFETY: this private fixture alone admits its own UID and process.
     let uid = unsafe { libc::geteuid() };
     let transport = RootObservationStream::from_stream_for_uid(
-        stream, identity()?, pidfd()?, Duration::from_millis(500), Duration::from_secs(300), uid,
+        stream,
+        identity()?,
+        pidfd()?,
+        Duration::from_millis(500),
+        Duration::from_secs(300),
+        uid,
     )?;
     Ok((
         LearningIterationEvidenceClientV1 {
-            channel: Mutex::new(Some(EvidenceChannel { transport, next_request_id: 1 })),
+            channel: Mutex::new(Some(EvidenceChannel {
+                transport,
+                next_request_id: 1,
+            })),
             initial: context.validate()?,
             actor_id: context.dataset.owners.trainer.clone(),
             verifier: context.verifier.clone(),
@@ -103,28 +123,38 @@ pub(crate) fn evidence_client(
     ))
 }
 
-pub(crate) fn serve<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 'static>(
+pub(crate) fn serve<
+    TW: AnchorWitnessStore + Send + 'static,
+    RW: AnchorWitnessStore + Send + 'static,
+>(
     owner: Arc<OriginalCellQ24TrainingCommandOwnerV1<TW, RW>>,
     mut channel: HostAuthorityPeerChannel,
 ) -> std::thread::JoinHandle<Result<u64, super::Error>> {
     std::thread::spawn(move || owner.serve_command_channel(&mut channel))
 }
 
-pub(crate) fn serve_evidence<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 'static>(
+pub(crate) fn serve_evidence<
+    TW: AnchorWitnessStore + Send + 'static,
+    RW: AnchorWitnessStore + Send + 'static,
+>(
     owner: Arc<OriginalCellQ24TrainingCommandOwnerV1<TW, RW>>,
     mut channel: HostAuthorityPeerChannel,
 ) -> std::thread::JoinHandle<Result<u64, super::Error>> {
     std::thread::spawn(move || owner.serve_evidence_channel(&mut channel))
 }
 
-pub(crate) fn lose_ack<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 'static>(
+pub(crate) fn lose_ack<
+    TW: AnchorWitnessStore + Send + 'static,
+    RW: AnchorWitnessStore + Send + 'static,
+>(
     owner: Arc<OriginalCellQ24TrainingCommandOwnerV1<TW, RW>>,
     mut channel: HostAuthorityPeerChannel,
 ) -> std::thread::JoinHandle<anyhow::Result<()>> {
     std::thread::spawn(move || {
         let mut completed_before_ack = false;
         let result = channel.exchange(|bytes| {
-            let response = owner.command_response(bytes, 1)
+            let response = owner
+                .command_response(bytes, 1)
                 .map_err(|_| HostIssuerTransportError::InvalidRequest)?;
             let response: wire::Response = serde_json::from_slice(&response)
                 .map_err(|_| HostIssuerTransportError::InvalidRequest)?;
@@ -136,19 +166,35 @@ pub(crate) fn lose_ack<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnes
             // is lost here; this injects no completion bytes or signature.
             Err(HostIssuerTransportError::Unavailable)
         });
-        anyhow::ensure!(completed_before_ack, "actual original completion before lost ACK");
+        anyhow::ensure!(
+            completed_before_ack,
+            "actual original completion before lost ACK"
+        );
         anyhow::ensure!(result.is_err(), "lost ACK closes the original channel");
         Ok(())
     })
 }
 
-pub(crate) fn reject_wrong_actor<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 'static>(
+pub(crate) fn reject_wrong_actor<
+    TW: AnchorWitnessStore + Send + 'static,
+    RW: AnchorWitnessStore + Send + 'static,
+>(
     owner: Arc<OriginalCellQ24TrainingCommandOwnerV1<TW, RW>>,
 ) -> std::thread::JoinHandle<anyhow::Result<()>> {
     std::thread::spawn(move || {
-        let mut request = wire::Request::new(&owner.context, owner.binding, 1, wire::Action::Execute, false);
+        let mut request = wire::Request::new(
+            &owner.context,
+            owner.binding,
+            1,
+            wire::Action::Execute,
+            false,
+        );
         request.actor_id = "unregistered-command-actor".into();
-        anyhow::ensure!(owner.command_response(&serde_json::to_vec(&request)?, 1).is_err());
+        anyhow::ensure!(
+            owner
+                .command_response(&serde_json::to_vec(&request)?, 1)
+                .is_err()
+        );
         Ok(())
     })
 }

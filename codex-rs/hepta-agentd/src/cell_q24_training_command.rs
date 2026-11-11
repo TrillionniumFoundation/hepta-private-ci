@@ -32,10 +32,10 @@ use crate::LearningIterationCheckpointErrorV1;
 use crate::OriginalCellQ24TrainingStageErrorV1;
 use crate::learning_owner_command_channel::original_owner_command_channel_v1;
 
-#[path = "cell_q24_training_command_wire.rs"]
-mod wire;
 #[path = "cell_q24_training_command_service.rs"]
 mod serving;
+#[path = "cell_q24_training_command_wire.rs"]
+mod wire;
 pub use serving::OriginalCellQ24TrainingCommandOwnerV1;
 
 #[derive(Debug, thiserror::Error)]
@@ -159,7 +159,14 @@ impl OriginalCellQ24TrainingCommandClientV1 {
         lifetime: Duration,
     ) -> Result<Self, Error> {
         Self::bind_original_stream(
-            stream, peer, original_owner_pidfd, context, timeout, lifetime, false, None,
+            stream,
+            peer,
+            original_owner_pidfd,
+            context,
+            timeout,
+            lifetime,
+            false,
+            None,
         )
     }
 
@@ -181,7 +188,14 @@ impl OriginalCellQ24TrainingCommandClientV1 {
             })
             .transpose()?;
         Self::bind_original_stream(
-            stream, peer, original_owner_pidfd, context, timeout, lifetime, true, retained,
+            stream,
+            peer,
+            original_owner_pidfd,
+            context,
+            timeout,
+            lifetime,
+            true,
+            retained,
         )
     }
 
@@ -267,7 +281,9 @@ impl OriginalCellQ24TrainingCommandClientV1 {
         let mut channel = {
             let mut slot = self.channel.try_lock().map_err(|_| Error::Unavailable)?;
             if action == wire::Action::Execute
-                && slot.as_ref().is_some_and(|channel| channel.execution_requested)
+                && slot
+                    .as_ref()
+                    .is_some_and(|channel| channel.execution_requested)
             {
                 return Err(Error::ReadbackRequired);
             }
@@ -279,13 +295,16 @@ impl OriginalCellQ24TrainingCommandClientV1 {
         };
         let request_id = channel.next_request_id;
         channel.next_request_id = request_id.checked_add(1).ok_or(Error::Unavailable)?;
-        let request = wire::Request::new(&self.context, self.binding, request_id, action, cancelled);
+        let request =
+            wire::Request::new(&self.context, self.binding, request_id, action, cancelled);
         let encoded = serde_json::to_vec(&request)?;
         // Restoring the original channel happens only in this caller after
         // complete validation. Cancellation of the await drops the task result,
         // including its channel, and cannot consume a delayed reply later.
         let (channel, bytes) = tokio::task::spawn_blocking(move || {
-            let bytes = channel.peer.request(&encoded)
+            let bytes = channel
+                .peer
+                .request(&encoded)
                 .map_err(|_| Error::CommitUncertain)?;
             Ok::<_, Error>((channel, bytes))
         })
@@ -299,9 +318,13 @@ impl OriginalCellQ24TrainingCommandClientV1 {
         }
         let result = match response.result {
             wire::CommandResult::Completed { snapshot, evidence } => {
-                let completed = wire::decode_completed(&self.context, snapshot, evidence, fresh_now)?;
+                let completed =
+                    wire::decode_completed(&self.context, snapshot, evidence, fresh_now)?;
                 let mut retained = self.retained.try_lock().map_err(|_| Error::Unavailable)?;
-                if retained.as_ref().is_some_and(|original| original != &completed) {
+                if retained
+                    .as_ref()
+                    .is_some_and(|original| original != &completed)
+                {
                     return Err(Error::Binding("unchanged original Training attestation"));
                 }
                 *retained = Some(completed.clone());

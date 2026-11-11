@@ -78,8 +78,11 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
         let initial = context.validate()?;
         let binding = context.binding()?;
         SourceBoundCellQ24TrainingStageV1::require_original_command_context(
-            &stage, &context.dataset, &context.scope,
-        ).await?;
+            &stage,
+            &context.dataset,
+            &context.scope,
+        )
+        .await?;
         Ok(Self {
             stage,
             context,
@@ -110,10 +113,17 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
         tokio::task::spawn_blocking(move || {
             let _permit = permit;
             let mut channel = original_owner_command_channel_v1(
-                stream, consumer, consumer_uid, original_consumer_pidfd, timeout, lifetime,
+                stream,
+                consumer,
+                consumer_uid,
+                original_consumer_pidfd,
+                timeout,
+                lifetime,
             )?;
             self.serve_command_channel(&mut channel)
-        }).await.map_err(|_| Error::CommitUncertain)?
+        })
+        .await
+        .map_err(|_| Error::CommitUncertain)?
     }
 
     /// Preserve the old readback-only purpose and its 500 ms exchange limit.
@@ -137,10 +147,17 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
         tokio::task::spawn_blocking(move || {
             let _permit = permit;
             let mut channel = original_owner_command_channel_v1(
-                stream, consumer, consumer_uid, original_consumer_pidfd, timeout, lifetime,
+                stream,
+                consumer,
+                consumer_uid,
+                original_consumer_pidfd,
+                timeout,
+                lifetime,
             )?;
             self.serve_evidence_channel(&mut channel)
-        }).await.map_err(|_| Error::CommitUncertain)?
+        })
+        .await
+        .map_err(|_| Error::CommitUncertain)?
     }
 
     fn serve_command_channel(&self, channel: &mut HostAuthorityPeerChannel) -> Result<u64, Error> {
@@ -153,7 +170,8 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
             if !exchanged {
                 return Ok(count);
             }
-            next_request_id = next_request_id.checked_add(1)
+            next_request_id = next_request_id
+                .checked_add(1)
                 .ok_or(Error::Binding("Trainer request id overflow"))?;
         }
         Err(Error::Unavailable)
@@ -172,33 +190,44 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
                     if request.cancelled {
                         self.cancellation.store(true, Ordering::Release);
                     }
-                    let completed = self.runtime.block_on(
-                        SourceBoundCellQ24TrainingStageV1::execute_training(
-                            &self.stage,
-                            &self.context.dataset,
-                            Arc::clone(&self.cancellation),
-                        ),
-                    );
+                    let completed =
+                        self.runtime
+                            .block_on(SourceBoundCellQ24TrainingStageV1::execute_training(
+                                &self.stage,
+                                &self.context.dataset,
+                                Arc::clone(&self.cancellation),
+                            ));
                     self.completed_response(completed)?
                 }
             }
             wire::Action::Readback => {
-                let completed = self.runtime.block_on(
-                    SourceBoundCellQ24TrainingStageV1::readback(&self.stage, &self.context.dataset),
-                );
+                let completed = self
+                    .runtime
+                    .block_on(SourceBoundCellQ24TrainingStageV1::readback(
+                        &self.stage,
+                        &self.context.dataset,
+                    ));
                 self.completed_response(completed)?
             }
         };
-        Ok(serde_json::to_vec(&wire::Response::from_request(&request, result))?)
+        Ok(serde_json::to_vec(&wire::Response::from_request(
+            &request, result,
+        ))?)
     }
 
     fn completed_response(
         &self,
-        completed: Result<crate::OriginalCellQ24TrainingCompletionV1, OriginalCellQ24TrainingStageErrorV1>,
+        completed: Result<
+            crate::OriginalCellQ24TrainingCompletionV1,
+            OriginalCellQ24TrainingStageErrorV1,
+        >,
     ) -> Result<wire::CommandResult, Error> {
         match completed {
             Ok(completed) => wire::encode_completed(
-                &self.context, completed.receipt, completed.attestation, now()?,
+                &self.context,
+                completed.receipt,
+                completed.attestation,
+                now()?,
             ),
             Err(error) => Ok(original_state(error)),
         }
@@ -214,7 +243,8 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
             if !exchanged {
                 return Ok(count);
             }
-            next_request_id = next_request_id.checked_add(1)
+            next_request_id = next_request_id
+                .checked_add(1)
                 .ok_or(Error::Binding("Trainer evidence request id overflow"))?;
         }
         Err(Error::Unavailable)
@@ -222,7 +252,9 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
 
     fn evidence_response(&self, bytes: &[u8], next_request_id: u64) -> Result<Vec<u8>, Error> {
         let request: evidence_wire::Request = serde_json::from_slice(bytes)?;
-        let snapshot_head: Digest32 = request.snapshot_head.parse()
+        let snapshot_head: Digest32 = request
+            .snapshot_head
+            .parse()
             .map_err(|_| Error::Binding("original evidence correlation head"))?;
         if request.schema != 1
             || request.operation != evidence_wire::OPERATION
@@ -236,11 +268,17 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
         {
             return Err(Error::Binding("original Trainer evidence request"));
         }
-        let completed = self.runtime.block_on(
-            SourceBoundCellQ24TrainingStageV1::readback(&self.stage, &self.context.dataset),
-        )?;
+        let completed = self
+            .runtime
+            .block_on(SourceBoundCellQ24TrainingStageV1::readback(
+                &self.stage,
+                &self.context.dataset,
+            ))?;
         let original = wire::authenticate_receipt(
-            &self.context, completed.receipt, completed.attestation, now()?,
+            &self.context,
+            completed.receipt,
+            completed.attestation,
+            now()?,
         )?;
         if request.receipt_digest != original.attestation.payload_digest.to_string() {
             return Err(Error::Binding("exact original Training receipt digest"));
@@ -261,10 +299,10 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
 }
 
 fn original_state(error: OriginalCellQ24TrainingStageErrorV1) -> wire::CommandResult {
-    use OriginalCellQ24TrainingStageErrorV1 as Stage;
-    use OriginalCellQ24TrainingReceiptErrorV1 as Receipt;
     use CellQ24TrainingOwnerErrorV1 as Native;
     use LearningOriginalOwnerErrorV1 as Owner;
+    use OriginalCellQ24TrainingReceiptErrorV1 as Receipt;
+    use OriginalCellQ24TrainingStageErrorV1 as Stage;
     use ProductEvaluationExecutionStoreErrorV1 as Store;
     match error {
         Stage::Busy => wire::CommandResult::Busy,
@@ -273,7 +311,9 @@ fn original_state(error: OriginalCellQ24TrainingStageErrorV1) -> wire::CommandRe
         | Stage::Receipt(Receipt::Owner(Owner::Pending)) => wire::CommandResult::Pending,
         Stage::Training(Native::Store(Store::Missing))
         | Stage::Receipt(Receipt::Training(Native::Store(Store::Missing)))
-        | Stage::Receipt(Receipt::Owner(Owner::Store(Store::Missing))) => wire::CommandResult::Missing,
+        | Stage::Receipt(Receipt::Owner(Owner::Store(Store::Missing))) => {
+            wire::CommandResult::Missing
+        }
         // A failure during fit, signature creation or tail CURRENT can follow
         // durable admission. Never call it Missing or infer a fresh NoUpdate.
         _ => wire::CommandResult::Uncertain,
