@@ -70,6 +70,11 @@ jobs:
               "authority_host_service::writer::learning_registration::tests::root_learning_scoped_sealed_pin_preserves_scope_on_cold_reopen",
               "root_production_handoff::learning::tests::root_learning_handoff_reaches_dedicated_uid_with_original_root_pin",
               "authority_host_learning_service_root_tests::root_learning_public_registration_serves_retained_writer_and_recovers_history",
+              "authority_host_service::q24_model::registration::tests::root_factory_record_reopens_bound_without_replacing_original_files",
+              "authority_host_service::q24_model::registration::tests::root_factory_file_pins_reject_alias_replacement_wrong_access_and_missing_witness",
+              "root_production_handoff::q24_model::tests::root_model_handoff_preserves_four_original_rights_and_cloexec",
+              "root_production_handoff::q24_model::tests::root_model_handoff_rejects_learning_purpose_and_reordered_rights",
+              "authority_host_q24_model_service_root_tests::root_q24_factory_registers_transfers_binds_and_recovers_original_custody",
               "learning_iteration_evidence_client::tests::root::original_external_uid_returns_a_verified_receipt_through_held_pidfd",
           ]
           packages = ["-p", "codex-hepta-agentd", "-p", "codex-hepta-learning-artifacts",
@@ -144,7 +149,9 @@ jobs:
                                      GIT_CONFIG_VALUE_0=str(repo),
                                      HEPTA_HOST_AUTHORITY_QUALIFICATION_STATE_PARENT=str(root_dir / "bind"),
                                      HEPTA_HOST_AUTHORITY_QUALIFICATION_SOURCE=str(root_dir / "source"),
-                                     HEPTA_CHECKPOINT_TEST_ROOT=str(root_dir / "checkpoints"))
+                                     HEPTA_CHECKPOINT_TEST_ROOT=str(root_dir / "checkpoints"),
+                                     HEPTA_Q24_FACTORY_WITNESS_BIND=str(root_dir / "witness-bind"),
+                                     HEPTA_Q24_FACTORY_WITNESS_SOURCE=str(root_dir / "witness-source"))
                   environment.update(json.loads((records / "helpers/env.json").read_text()))
                   # sudo is outside the recorder: its observed command remains real just test.
                   check_uid = "import os,runpy,sys; assert os.geteuid()==0; print('Root test uid=0',flush=True); runpy.run_path(sys.argv.pop(1),run_name='__main__')"
@@ -222,8 +229,9 @@ jobs:
               test("ordinary", [*packages, "--lib", "--test-threads", "2"])
               setup = ("import os,subprocess,sys; from pathlib import Path; "
                        "p=Path(sys.argv[1]); p.mkdir(mode=0o700); "
-                       "[ (p/n).mkdir(mode=0o700) for n in ('source','bind','checkpoints') ]; "
+                       "[ (p/n).mkdir(mode=0o700) for n in ('source','bind','checkpoints','witness-source','witness-bind') ]; "
                        "subprocess.run(['mount','--bind',str(p/'source'),str(p/'bind')],check=True); "
+                       "subprocess.run(['mount','--bind',str(p/'witness-source'),str(p/'witness-bind')],check=True); "
                        "print('Root fixture uid='+str(os.geteuid())+' path='+str(p),flush=True)")
               stage("root-setup", ["sudo", "-n", "python3", "-c", setup, str(root_dir)], 60)
               test("root", ["-p", "codex-hepta-agentd", "--lib", "--run-ignored", "only",
@@ -250,8 +258,9 @@ jobs:
               os.chdir(repo)
               try:
                   restore_ownership()
-                  if subprocess.run(["sudo", "-n", "mountpoint", "-q", str(root_dir / "bind")]).returncode == 0:
-                      stage("root-unmount", ["sudo", "-n", "umount", str(root_dir / "bind")], 60)
+                  for name in ("witness-bind", "bind"):
+                      if subprocess.run(["sudo", "-n", "mountpoint", "-q", str(root_dir / name)]).returncode == 0:
+                          stage("root-unmount-" + name, ["sudo", "-n", "umount", str(root_dir / name)], 60)
                   snapshot("final")
                   if maintenance_started:
                       postimages(maintenance_complete)

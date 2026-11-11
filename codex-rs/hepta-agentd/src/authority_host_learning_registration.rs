@@ -28,8 +28,10 @@ const OWNER: &str = "root-learning-checkpoint-v1";
 
 pub(crate) struct RegisteredHostLearningCheckpointV1 {
     pub(crate) backend: LearningIterationCheckpointOwnerV1,
-    profile: HostAuthorityLearningProfileV1,
+    pub(crate) profile: HostAuthorityLearningProfileV1,
     pub(crate) socket_path: PathBuf,
+    pub(crate) q24_model:
+        Option<crate::authority_host_service::q24_model::RegisteredQ24ModelFactory>,
 }
 
 #[derive(Serialize)]
@@ -114,6 +116,7 @@ impl HostAuthorityService {
             backend,
             profile,
             socket_path,
+            q24_model: None,
         })
     }
 
@@ -191,7 +194,7 @@ impl HostAuthorityService {
         )
     }
 
-    fn with_learning_profile<T>(
+    pub(crate) fn with_learning_profile<T>(
         &self,
         config: &HostAuthorityServiceConfig,
         registration: &HostAuthorityRegistration,

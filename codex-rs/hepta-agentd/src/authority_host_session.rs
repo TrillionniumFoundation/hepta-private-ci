@@ -18,6 +18,9 @@ mod material;
 #[path = "authority_host_learning_session.rs"]
 mod learning;
 
+#[path = "authority_host_q24_model_session.rs"]
+mod q24_model;
+
 /// One Root session's immutable registration, retained actual process handle
 /// and original service. This wrapper is not Clone and creates no additional
 /// issuer, clock, checkpoint or consumer owner during bootstrap capture.
@@ -353,7 +356,7 @@ impl PreparedHostAuthoritySession {
             .any(|path| path == &text.socket_path)
                 || learning
                     .as_ref()
-                    .is_some_and(|lane| lane.path() == text.socket_path)
+                    .is_some_and(|lane| lane.contains_path(&text.socket_path))
             {
                 return Err(io::Error::other("text UI requires a distinct private lane"));
             }
