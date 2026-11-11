@@ -49,6 +49,19 @@ def _strict_resource_bytes(path):
                       parse_float=_finite_json_float)
 
 
+def _strict_result_bytes(path):
+    # A matching producer SHA is insufficient if result.json is malformed or
+    # ambiguous. This is only a structural gate, not an independent replay.
+    if path.stat().st_size > MAX_RESULT_BYTES:
+        raise EvidenceError("result evidence exceeds byte cap")
+    result = json.loads(path.read_bytes(), object_pairs_hook=_unique_json_object,
+                        parse_constant=_reject_json_constant,
+                        parse_float=_finite_json_float)
+    if type(result) is not dict:
+        raise EvidenceError("result evidence must be a JSON object")
+    return result
+
+
 def _nonnegative_number(value):
     return type(value) in (int, float) and 0 <= value < float("inf")
 
@@ -152,6 +165,7 @@ def inspect_exported_observations(receipts_root: Path, *, owner_start_id: str,
                 raise EvidenceError("resource evidence exceeds byte cap")
             if identity(result)["sha256"] != receipt["result_sha256"]:
                 raise EvidenceError("result bytes differ from receipt")
+            _strict_result_bytes(result)
             if identity(resource)["sha256"] != receipt["resource_sha256"]:
                 raise EvidenceError("resource bytes differ from receipt")
             _resource(_strict_resource_bytes(resource), job_id)
