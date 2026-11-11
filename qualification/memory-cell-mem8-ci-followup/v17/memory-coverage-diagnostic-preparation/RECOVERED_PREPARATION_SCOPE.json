@@ -1,0 +1,109 @@
+{
+  "schema": "hepta.mem8.coverage-failure-diagnostic.prepared-recovery.v1",
+  "status": "PREPARED_DIAGNOSTIC_ONLY",
+  "path": "codex-rs/hepta-memory/src/cognitive_runtime_tests.rs",
+  "source_parent": {
+    "head": "ceadcb3b11dbd94a9d07afb7e6301555e4ff3f80",
+    "tree": "27651abb15e269c427c75f28f92a3bd1cd9d191f"
+  },
+  "historical_failure_source": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+  "test": "product_v2_reports_peer_truncation_before_aggregation",
+  "preimage": {
+    "bytes": 17808,
+    "sha256": "e9f92be64d7a4b4b5521a1b6c98ab678ca50291f2f32ae681b4634b606c1a810",
+    "git_blob": "7f397fe3e35205bae51ef95c4475315559c2b0ea"
+  },
+  "postimage": {
+    "bytes": 17873,
+    "sha256": "5ecb8bce0adb6d0151eb1ed23405489757354482f70b1b33d1232b35afc85d3c",
+    "git_blob": "9e40f57c40be855653f1cc7a716740a89bf60cf5",
+    "actual_created": true,
+    "full_remote_readback_equal": true
+  },
+  "unified_diff": {
+    "bytes": 581,
+    "sha256": "1ccf096ac8bfeaa273dda303644b4a3de2026e2d5161de871181075c848aef34",
+    "git_blob": "06fb66322c85706289fb5602948f1ad499450ebe",
+    "actual_created_by_independent_peer": true,
+    "full_remote_readback_equal": true
+  },
+  "old_statement": "    assert_eq!(coverage.completed_peers, 16);",
+  "new_statement": "    assert_eq!(\n        coverage.completed_peers, 16,\n        \"typed federation coverage: {coverage:?}\"\n    );",
+  "inverse": {
+    "old_occurrences": 1,
+    "new_occurrences": 1,
+    "whole_post_replace_new_with_old_equal_preimage": true,
+    "all_other_bytes_equal": true,
+    "bytes_added": 65
+  },
+  "debug_type_source": {
+    "path": "codex-rs/hepta-memory-federation/src/v2.rs",
+    "bytes": 37849,
+    "sha256": "4fb02e14794c11469fc8a47159345af7f9b0cf42ad61fd1010d42e3d8995a2aa",
+    "git_blob": "760d972ef2adec706a2cbeada5727a1c379f2e4d",
+    "first_line": 416,
+    "last_line": 445,
+    "excerpt": "#[derive(Clone, Debug, Default, Eq, PartialEq)]\npub struct FederatedFailureCoverageV2 {\n    pub discovery_unavailable: u32,\n    pub deadline_or_cancelled: u32,\n    pub authority_rejected: u32,\n    pub integrity_rejected: u32,\n    pub transport_unavailable: u32,\n}\n\nimpl FederatedFailureCoverageV2 {\n    #[must_use]\n    pub fn total(&self) -> u64 {\n        u64::from(self.discovery_unavailable)\n            + u64::from(self.deadline_or_cancelled)\n            + u64::from(self.authority_rejected)\n            + u64::from(self.integrity_rejected)\n            + u64::from(self.transport_unavailable)\n    }\n}\n\n#[derive(Clone, Debug, Eq, PartialEq)]\npub struct FederatedCoverageV2 {\n    pub requested_peers: u32,\n    pub completed_peers: u32,\n    pub failed_peers: u32,\n    pub truncated_peers: u32,\n    pub omitted_peer_candidates: u32,\n    pub truncated_items: u32,\n    pub failures: FederatedFailureCoverageV2,\n}\n"
+  },
+  "observable_values": {
+    "top_level_u32": [
+      "requested_peers",
+      "completed_peers",
+      "failed_peers",
+      "truncated_peers",
+      "omitted_peer_candidates",
+      "truncated_items"
+    ],
+    "failure_u32": [
+      "discovery_unavailable",
+      "deadline_or_cancelled",
+      "authority_rejected",
+      "integrity_rejected",
+      "transport_unavailable"
+    ],
+    "text_payloads_exposed": 0,
+    "deadline_or_cancelled_does_not_disambiguate_each_subcause": true
+  },
+  "independent_static_peer": {
+    "git_blob": "5390d57f808ab2b192fa3d28f5ffd2c82a0a4d42",
+    "bytes": 6480,
+    "description": "Independent whole-file pre/post/inverse and Debug-source review; no execution."
+  },
+  "original_scratch_state": {
+    "candidate_and_patch_previously_written": true,
+    "original_manifest": {
+      "bytes": 1429,
+      "sha256": "4088723590acdbed0b598ae2937ab8b70bdfa3801800713ee2a74e549242542c",
+      "git_blob": "e41304764867255ef8a200fa7967ba76b50c10c8",
+      "not_created_or_recovered": true
+    },
+    "new_v12_assembler_file_written": true,
+    "new_v12_assembler_ast_checked": false,
+    "new_v12_assembler_executed": false,
+    "new_v12_input_produced": false,
+    "new_v12_candidate_tree_produced": false
+  },
+  "source_input_proposal": {
+    "base_overlay_count": 118,
+    "diagnostic_target_in_existing_overlay": false,
+    "proposed_overlay_count": 119,
+    "full_leaf_count_unchanged": 14053,
+    "rust_caller_count_unchanged": 6204,
+    "python_regressions_unchanged": 18,
+    "old_renames_unchanged": 13,
+    "source_gate_budget_seconds_unchanged": 600,
+    "not_executed": true,
+    "counts_are_proposal_not_qualification": true
+  },
+  "boundaries": {
+    "assertion_expected_16_unchanged": true,
+    "assertion_sequence_unchanged": true,
+    "other_assertions_unchanged": true,
+    "deadline_retry_and_production_logic_unchanged": true,
+    "no_rustfmt_or_native_executed": true,
+    "no_ci_or_ref_admission": true,
+    "root_cause_of_prior_completed_zero_of_sixteen_unknown": true,
+    "no_new_model_request": true
+  },
+  "restoration_note": "This is a new recovery record derived from the exact Git preimage and the already frozen unique replacement. It does not claim to reproduce the unavailable original scratch manifest or the unexecuted V12 producer."
+}

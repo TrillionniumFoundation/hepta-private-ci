@@ -1,0 +1,22 @@
+{
+  "schema": "mem8.v17.root-static-diagnostic-inverse.v1",
+  "source": "ceadcb3b11dbd94a9d07afb7e6301555e4ff3f80",
+  "path": "codex-rs/hepta-memory/src/cognitive_runtime_tests.rs",
+  "preimage": {
+    "bytes": 17808,
+    "sha256": "e9f92be64d7a4b4b5521a1b6c98ab678ca50291f2f32ae681b4634b606c1a810",
+    "git_blob": "7f397fe3e35205bae51ef95c4475315559c2b0ea"
+  },
+  "postimage": {
+    "bytes": 17873,
+    "sha256": "5ecb8bce0adb6d0151eb1ed23405489757354482f70b1b33d1232b35afc85d3c",
+    "git_blob": "9e40f57c40be855653f1cc7a716740a89bf60cf5"
+  },
+  "whole_inverse_byte_equal": true,
+  "only_statement": "    assert_eq!(coverage.completed_peers, 16);",
+  "only_replacement": "    assert_eq!(\n        coverage.completed_peers, 16,\n        \"typed federation coverage: {coverage:?}\"\n    );",
+  "production_source_changes": 0,
+  "source_or_harness_commits_created": 0,
+  "native_or_source_gate_runs": 0,
+  "status": "PREPARED_ONLY_ROOT_CAUSE_UNRESOLVED"
+}

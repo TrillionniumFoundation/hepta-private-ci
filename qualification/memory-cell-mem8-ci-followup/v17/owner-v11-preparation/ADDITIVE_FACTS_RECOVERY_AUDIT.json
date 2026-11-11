@@ -1,0 +1,51 @@
+{
+  "schema": "mem8.owner-v11.additive-facts-recovery.v1",
+  "status": "PREPARED_ONLY_NO_LEDGER_RENDER_OR_PUBLICATION",
+  "original": {
+    "bytes": 26965,
+    "sha256": "be3743b60d7486d3dff8011aa0ccc56ee6af55dddbf174aa7073480ae599358e",
+    "git_blob": "6a2fc7ba242b946906b86e6d47fc57ac390b161b"
+  },
+  "updated": {
+    "path": "FROZEN_REPORT_SELECTIONS_01834.json",
+    "bytes": 32924,
+    "sha256": "ed0a318ff1ed59e9a4f484a821dd5c044240319771faea20d4aaa6883276bf2a",
+    "git_blob": "584778fe1b5a9b1c8126d649285b4b674fa26ab3",
+    "actual_created": true,
+    "full_utf8_readback_equal": true
+  },
+  "original_records_preserved_count": 16,
+  "new_record_count": 18,
+  "raw_original_prefix_preserved_except_array_terminator": true,
+  "original_file_not_modified": true,
+  "added_fact_ids": [
+    "windows_current_d0f_completed_original",
+    "windows_lint_v11_clean_original"
+  ],
+  "all_added_projection_paths_exist": true,
+  "all_added_expected_values_equal_original_reports": true,
+  "source_reports": [
+    {
+      "bytes": 48687,
+      "sha256": "1feff6e424c630d6fcc9e248f06b63724c9a54a7eb119df4265b12d68b855552",
+      "git_blob": "89eb7269f3c3e5e8b3efcb90502b4f6946374f86",
+      "actual_full_git_readback": true
+    },
+    {
+      "bytes": 3312,
+      "sha256": "6aae65dfa1d6c97e135f86adcd443fe7498c08e7e03e37c73d1e1fa1b721d144",
+      "git_blob": "962e0681b1ff010b0c8c51ebea1c3644214cee41",
+      "actual_full_git_readback": true
+    }
+  ],
+  "windows_root_full_replay": {
+    "bytes": 7901,
+    "sha256": "72fcd8ebacaba8188e6820ec6be3669795aaac6cee9bd07630a3e6c5e7dad312",
+    "git_blob": "81b0d53586674936577310e277533b1906009e8a",
+    "actual_full_git_readback": true
+  },
+  "source_or_evidence_publication_bindings_not_supplied": true,
+  "owner_generator_not_executed": true,
+  "no_new_native_model_host_ci_action": true,
+  "old_snapshot_record_preserved_as_historical_not_current": true
+}
