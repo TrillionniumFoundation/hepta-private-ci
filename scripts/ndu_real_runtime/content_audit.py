@@ -30,6 +30,19 @@ def _read(root, binding, total, limit=8 * 1024 * 1024):
         raise ValueError("AUDIT_PINNED_ARTIFACT_ADMISSION_FAILED") from None
 
 
+
+def _completed_isolated_launch(launch):
+    """A zero exit alone is insufficient if actor callbacks or limits failed."""
+    return (
+        type(launch.get("exit_code")) is int
+        and launch["exit_code"] == 0
+        and launch.get("enforced_before_actor_exec") is True
+        and launch.get("callback_error") is None
+        and launch.get("protocol_error") is None
+        and launch.get("limit_reason") is None
+    )
+
+
 def _episode(root, entry, manifest, total):
     case_id = entry["case_id"]
     _, trajectory = _read(root, entry["trajectory"], total)
@@ -38,6 +51,7 @@ def _episode(root, entry, manifest, total):
         launch.get("stdout"), str
     ):
         raise ValueError("AUDIT_LAUNCH_SCHEMA")
+    isolated_actor_completed = _completed_isolated_launch(launch)
     steps = trajectory["steps"]
     if not isinstance(steps, list) or not 0 <= len(steps) <= 8:
         raise ValueError("AUDIT_ACTION_BOUND")
@@ -149,11 +163,7 @@ def _episode(root, entry, manifest, total):
                 except (ValueError, KeyError, TypeError):
                     evaluation_binding = False
         checks = {
-            "isolated_actor_completed": (
-                type(launch.get("exit_code")) is int
-                and launch["exit_code"] == 0
-                and launch.get("enforced_before_actor_exec") is True
-            ),
+            "isolated_actor_completed": isolated_actor_completed,
             "candidate_selection": selection_check,
             "raw_actor_wire_receipt": wire_receipts,
             "wire_to_trajectory": wire_binding,
@@ -235,9 +245,7 @@ def _episode(root, entry, manifest, total):
         "case_id_sha256": canonical_sha(case_id),
         "trajectory_sha256": entry["trajectory"]["sha256"],
         "launch_sha256": entry["launch"]["sha256"],
-        "launch_completed": type(launch.get("exit_code")) is int
-        and launch["exit_code"] == 0
-        and launch.get("enforced_before_actor_exec") is True,
+        "launch_completed": isolated_actor_completed,
         "rows": rows,
     }
 

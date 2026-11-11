@@ -50,6 +50,15 @@ class ContentAuditTests(unittest.TestCase):
                 "stdout": wire + "\n",
                 "exit_code": {"exit": 1, "boolean": False}.get(launch_fault, 0),
                 "enforced_before_actor_exec": launch_fault != "isolation",
+                "callback_error": {"type": "synthetic_callback_error"}
+                if launch_fault == "callback"
+                else None,
+                "protocol_error": "synthetic_protocol_error"
+                if launch_fault == "protocol"
+                else None,
+                "limit_reason": "synthetic_limit_reason"
+                if launch_fault == "limit"
+                else None,
                 "host_exchanges": [
                     {
                         "event_sha256": hashlib.sha256(wire.encode()).hexdigest()
@@ -245,7 +254,7 @@ class ContentAuditTests(unittest.TestCase):
                     )
 
     def test_failed_or_unisolated_launch_cannot_prove_selected_used(self):
-        for fault in ("exit", "isolation", "boolean"):
+        for fault in ("exit", "isolation", "boolean", "callback", "protocol", "limit"):
             with self.subTest(fault=fault), tempfile.TemporaryDirectory() as directory:
                 root = Path(directory)
                 raw, pin = self.fixture(root, selected=True, launch_fault=fault)
