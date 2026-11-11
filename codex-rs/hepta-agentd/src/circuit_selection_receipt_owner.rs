@@ -151,14 +151,41 @@ async fn read_remote_selection(
         None,
     )?;
     let trainer: &LearningIterationEvidenceClientV1 = source.trainer;
+    #[cfg(test)]
+    let before_started = std::time::Instant::now();
     let before = trainer
         .readback(source.snapshot, training_receipt(config)?)
-        .await?;
+        .await;
+    #[cfg(test)]
+    eprintln!(
+        "HEPTA_SELECTOR_REMOTE_TRAINER_BEFORE elapsed_us={} result={:?}",
+        before_started.elapsed().as_micros(),
+        before.as_ref().map(|_| ())
+    );
+    let before = before?;
     authenticate_training(config, &before, now()?)?;
-    let original = live.read_current().await?;
+    #[cfg(test)]
+    let published_started = std::time::Instant::now();
+    let original = live.read_current().await;
+    #[cfg(test)]
+    eprintln!(
+        "HEPTA_SELECTOR_REMOTE_PUBLISHED elapsed_us={} result={:?}",
+        published_started.elapsed().as_micros(),
+        original.as_ref().map(|_| ())
+    );
+    let original = original?;
+    #[cfg(test)]
+    let after_started = std::time::Instant::now();
     let after = trainer
         .readback(source.snapshot, training_receipt(config)?)
-        .await?;
+        .await;
+    #[cfg(test)]
+    eprintln!(
+        "HEPTA_SELECTOR_REMOTE_TRAINER_AFTER elapsed_us={} result={:?}",
+        after_started.elapsed().as_micros(),
+        after.as_ref().map(|_| ())
+    );
+    let after = after?;
     authenticate_training(config, &after, now()?)?;
     Ok(original.observation().clone())
 }
@@ -240,7 +267,16 @@ impl<W: AnchorWitnessStore> OriginalCircuitSelectionReceiptOwnerV1<W> {
         &mut self,
         source: OriginalCircuitSelectionRemoteSourcesV1<'_>,
     ) -> Result<(LearningIterationReceiptV1, SignedLearningEvidenceV1), Error> {
-        self.attest_source(source).await
+        #[cfg(test)]
+        let started = std::time::Instant::now();
+        let result = self.attest_source(source).await;
+        #[cfg(test)]
+        eprintln!(
+            "HEPTA_SELECTOR_REMOTE_ATTEST elapsed_us={} result={:?}",
+            started.elapsed().as_micros(),
+            result.as_ref().map(|_| ())
+        );
+        result
     }
 
     async fn attest_source(
@@ -306,7 +342,16 @@ impl<W: AnchorWitnessStore> OriginalCircuitSelectionReceiptOwnerV1<W> {
         &mut self,
         source: OriginalCircuitSelectionRemoteSourcesV1<'_>,
     ) -> Result<(LearningIterationReceiptV1, SignedLearningEvidenceV1), Error> {
-        self.readback_source(source).await
+        #[cfg(test)]
+        let started = std::time::Instant::now();
+        let result = self.readback_source(source).await;
+        #[cfg(test)]
+        eprintln!(
+            "HEPTA_SELECTOR_REMOTE_READBACK elapsed_us={} result={:?}",
+            started.elapsed().as_micros(),
+            result.as_ref().map(|_| ())
+        );
+        result
     }
 
     async fn readback_source(
