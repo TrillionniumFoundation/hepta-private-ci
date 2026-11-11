@@ -14,7 +14,10 @@ impl AgentdConfig {
     /// The verifier must bound blocking I/O and reject stale or revoked input.
     /// Explicit cognitive-context reads recheck that source before and after
     /// reading the owner. Restart requires a current snapshot reconciliation.
-    /// Automatic attachments and recall tools need a separate source binding.
+    /// The host selects an explicit-context-only App Server memory profile:
+    /// automatic Hepta attachments, independent memory/history inputs, and model
+    /// cognitive writes are disabled after request overrides. Other prompt or
+    /// direct-store callers still require their own source binding.
     pub fn with_episodic_snapshot_import(
         mut self,
         namespace: String,

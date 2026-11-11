@@ -114,6 +114,30 @@ async fn episodic_control_replays_original_commit_then_rejects_revoked_context()
     state.refresh_generation()?;
     state.mark_runtime_prerequisites_ready()?;
     state.mark_app_server_ready()?;
+    // The model profile drops its mutation handle while the original control
+    // owner below still commits, reconciles, reads, and withdraws real rows.
+    assert!(host.production_mutation().is_some());
+    let options = crate::app_runtime::app_server_runtime_options_for_agent(
+        &identity,
+        state.clone(),
+        host.cognitive_runtime(),
+        host.production_mutation(),
+        crate::app_runtime::AppServerModelToolProfile::ExplicitContextOnly,
+    )?;
+    assert!(options.hepta_cognitive_production_mutation.is_none());
+    assert!(Arc::ptr_eq(
+        options.hepta_cognitive_runtime.available_store().unwrap(),
+        host.cognitive_runtime().available_store().unwrap(),
+    ));
+    assert_eq!(
+        options.required_feature_states,
+        BTreeMap::from([
+            (codex_features::Feature::HeptaCognitiveWrite, false),
+            (codex_features::Feature::HeptaMemory, false),
+            (codex_features::Feature::MemoryTool, false),
+            (codex_features::Feature::TokenBudget, false),
+        ]),
+    );
     let cancellation = CancellationToken::new();
     let server = crate::AgentdControlServer::bind(
         identity.control_socket.clone(),
