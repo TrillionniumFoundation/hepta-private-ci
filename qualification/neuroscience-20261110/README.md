@@ -180,6 +180,17 @@ independently reverified source evidence by this qualification:
 - https://pmc.ncbi.nlm.nih.gov/articles/PMC13598169/
 - https://arxiv.org/abs/2610.25858
 
+### Frozen shadow-credit input boundary
+
+`frozen_credit_view(time_aligned_credit(...))` only redacts **output** fields.
+A future malformed/orphan feedback receipt can still make full forensic
+validation fail before projection. For shadow candidate evaluation use
+`frozen_credit_from_prefix(...)` instead: it filters records with
+`available_sequence > cutoff_sequence` **before** validation. In-prefix
+invalid observations remain hard failures. All timestamps are still
+self-declared here, and neither API is an owner-attested source or a
+production selector.
+
 ## Promotion blockers (all OPEN by default)
 
 - Native owner-bounded, version/receipt-attested time-aligned training (no fake
