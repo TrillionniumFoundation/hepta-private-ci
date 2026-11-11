@@ -185,11 +185,20 @@ class ContentIdentityTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             (root / "delivery.json").write_bytes(raw)
+            ready = json.dumps(
+                {
+                    "schema": "ndu.real.actor-ready.v1",
+                    "content_identity_profile": SELECTION_SCHEMA,
+                }
+            ).encode()
             launch = {
                 "exit_code": 0,
                 "enforced_before_actor_exec": True,
-                "stdout": wire.decode() + "\n",
-                "host_exchanges": [{"event_sha256": hashlib.sha256(wire).hexdigest()}],
+                "stdout": (ready + b"\n" + wire + b"\n").decode(),
+                "host_exchanges": [
+                    {"event_sha256": hashlib.sha256(x).hexdigest()}
+                    for x in (ready, wire)
+                ],
             }
 
             def report(candidate):
@@ -316,7 +325,6 @@ class ContentIdentityTests(unittest.TestCase):
                     rubric_sha256="e" * 64,
                 )
 
-
     def test_reordered_identical_writes_are_not_attached_to_wrong_snapshots(self):
         with tempfile.TemporaryDirectory() as directory:
             steps, snapshots, score, launch = self.repeated_identical_delivery(
@@ -437,6 +445,40 @@ class ContentIdentityTests(unittest.TestCase):
                     ),
                     (status, None, None),
                 )
+
+    def test_missing_ready_or_unexpected_wire_event_is_rejected(self):
+        with tempfile.TemporaryDirectory() as directory:
+            steps, snapshots, score, launch = self.repeated_identical_delivery(
+                Path(directory)
+            )
+            lines = launch["stdout"].splitlines()
+            cases = {
+                "missing_ready": lines[1:],
+                "unknown_event": [
+                    lines[0],
+                    json.dumps({"schema": "ndu.real.unknown-event.v1"}),
+                    *lines[1:],
+                ],
+            }
+            for kind, events in cases.items():
+                with self.subTest(kind=kind):
+                    altered = {
+                        **launch,
+                        "stdout": "\n".join(events) + "\n",
+                        "host_exchanges": [
+                            {"event_sha256": hashlib.sha256(x.encode()).hexdigest()}
+                            for x in events
+                        ],
+                    }
+                    with self.assertRaisesRegex(ValueError, "readiness chronology"):
+                        content_identity_report(
+                            steps,
+                            snapshots,
+                            [score],
+                            altered,
+                            evaluator_sha256="d" * 64,
+                            rubric_sha256="e" * 64,
+                        )
 
 
 if __name__ == "__main__":
