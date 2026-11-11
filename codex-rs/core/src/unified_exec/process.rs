@@ -65,9 +65,6 @@ impl SpawnLifecycle for NoopSpawnLifecycle {}
 #[derive(Clone)]
 pub(crate) struct OutputHandles<const MAX_BYTES: usize = UNIFIED_EXEC_OUTPUT_MAX_BYTES> {
     pub(crate) output_buffer: Arc<Mutex<HeadTailBuffer<MAX_BYTES>>>,
-    // Recorded at ingress, before optional streaming subscribers can miss or lag
-    // broadcasts. Polling drains output_buffer but never drains this transcript.
-    pub(crate) transcript: Arc<Mutex<HeadTailBuffer<MAX_BYTES>>>,
     pub(crate) output_notify: Arc<Notify>,
     pub(crate) output_closed: Arc<AtomicBool>,
     pub(crate) output_closed_notify: Arc<Notify>,
@@ -98,6 +95,7 @@ pub(crate) struct UnifiedExecProcess {
     process_handle: ProcessHandle,
     output_tx: broadcast::Sender<Vec<u8>>,
     output: OutputHandles,
+    transcript: Arc<Mutex<HeadTailBuffer>>,
     output_drained: Arc<Notify>,
     interaction_lock: Arc<Mutex<()>>,
     state_tx: watch::Sender<ProcessState>,
@@ -125,7 +123,6 @@ impl UnifiedExecProcess {
     ) -> Self {
         let output = OutputHandles {
             output_buffer: Arc::new(Mutex::new(HeadTailBuffer::default())),
-            transcript: Arc::new(Mutex::new(HeadTailBuffer::default())),
             output_notify: Arc::new(Notify::new()),
             output_closed: Arc::new(AtomicBool::new(false)),
             output_closed_notify: Arc::new(Notify::new()),
@@ -139,6 +136,7 @@ impl UnifiedExecProcess {
             process_handle,
             output_tx,
             output,
+            transcript: Arc::new(Mutex::new(HeadTailBuffer::default())),
             output_drained,
             interaction_lock: Arc::new(Mutex::new(())),
             state_tx,
@@ -188,6 +186,11 @@ impl UnifiedExecProcess {
 
     pub(super) fn output_receiver(&self) -> tokio::sync::broadcast::Receiver<Vec<u8>> {
         self.output_tx.subscribe()
+    }
+
+    /// Bounded process history, retained independently of polling and live deltas.
+    pub(super) fn transcript(&self) -> Arc<Mutex<HeadTailBuffer>> {
+        Arc::clone(&self.transcript)
     }
 
     pub(super) fn cancellation_token(&self) -> CancellationToken {
@@ -383,16 +386,17 @@ impl UnifiedExecProcess {
             stderr_rx,
             mut exit_rx,
         } = spawned;
-        let output_rx = codex_utils_pty::combine_output_receivers(stdout_rx, stderr_rx);
         let mut managed = Self::new(
             ProcessHandle::Local(Box::new(process_handle)),
             sandbox_type,
             Some(spawn_lifecycle),
         );
         managed.output_task = Some(Self::spawn_local_output_task(
-            output_rx,
+            stdout_rx,
+            stderr_rx,
             managed.output_handles().clone(),
             managed.output_tx.clone(),
+            managed.transcript(),
         ));
 
         match exit_rx.try_recv() {
@@ -456,6 +460,7 @@ impl UnifiedExecProcess {
             output_handles,
             managed.output_tx.clone(),
             managed.state_tx.clone(),
+            managed.transcript(),
         ));
 
         let mut state_rx = managed.state_rx.clone();
@@ -484,10 +489,10 @@ impl UnifiedExecProcess {
         output_handles: OutputHandles,
         output_tx: broadcast::Sender<Vec<u8>>,
         state_tx: watch::Sender<ProcessState>,
+        transcript: Arc<Mutex<HeadTailBuffer>>,
     ) -> JoinHandle<()> {
         let OutputHandles {
             output_buffer,
-            transcript,
             output_notify,
             output_closed,
             output_closed_notify,
@@ -653,13 +658,14 @@ impl UnifiedExecProcess {
     }
 
     fn spawn_local_output_task(
-        mut receiver: tokio::sync::broadcast::Receiver<Vec<u8>>,
+        mut stdout_rx: tokio::sync::mpsc::Receiver<Vec<u8>>,
+        mut stderr_rx: tokio::sync::mpsc::Receiver<Vec<u8>>,
         output_handles: OutputHandles,
         output_tx: broadcast::Sender<Vec<u8>>,
+        transcript: Arc<Mutex<HeadTailBuffer>>,
     ) -> JoinHandle<()> {
         let OutputHandles {
             output_buffer,
-            transcript,
             output_notify,
             output_closed,
             output_closed_notify,
@@ -670,24 +676,37 @@ impl UnifiedExecProcess {
                 output_closed: Arc::clone(&output_closed),
                 output_closed_notify: Arc::clone(&output_closed_notify),
             };
-            loop {
-                match receiver.recv().await {
-                    Ok(chunk) => {
-                        transcript.lock().await.push_chunk(&chunk);
-                        let mut guard = output_buffer.lock().await;
-                        guard.push_chunk(&chunk);
-                        drop(guard);
-                        let _ = output_tx.send(chunk);
-                        output_notify.notify_waiters();
-                    }
-                    Err(tokio::sync::broadcast::error::RecvError::Lagged(_)) => continue,
-                    Err(tokio::sync::broadcast::error::RecvError::Closed) => {
-                        output_closed.store(true, Ordering::Release);
-                        output_closed_notify.notify_waiters();
-                        break;
-                    }
+            let mut stdout_open = true;
+            let mut stderr_open = true;
+            while stdout_open || stderr_open {
+                // Consume the reliable process streams before broadcasting live
+                // deltas. A lagging delta subscriber must not lose retained output.
+                let chunk = tokio::select! {
+                    chunk = stdout_rx.recv(), if stdout_open => match chunk {
+                        Some(chunk) => chunk,
+                        None => {
+                            stdout_open = false;
+                            continue;
+                        }
+                    },
+                    chunk = stderr_rx.recv(), if stderr_open => match chunk {
+                        Some(chunk) => chunk,
+                        None => {
+                            stderr_open = false;
+                            continue;
+                        }
+                    },
                 };
+
+                transcript.lock().await.push_chunk(&chunk);
+                let mut guard = output_buffer.lock().await;
+                guard.push_chunk(&chunk);
+                drop(guard);
+                let _ = output_tx.send(chunk);
+                output_notify.notify_waiters();
             }
+            output_closed.store(true, Ordering::Release);
+            output_closed_notify.notify_waiters();
         })
     }
 

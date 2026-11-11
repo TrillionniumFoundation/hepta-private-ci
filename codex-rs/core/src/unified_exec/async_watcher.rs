@@ -52,9 +52,8 @@ struct Buffer<const MAX_BYTES: usize = UNIFIED_EXEC_OUTPUT_DELTA_MAX_BYTES> {
     emitter: Emitter,
 }
 
-/// Emit best-effort output deltas on UTF-8 boundaries. The process records the
-/// authoritative bounded transcript before publishing these broadcasts, so a
-/// late or lagging event consumer cannot truncate the final command output.
+/// Spawn a background task that emits live ExecCommandOutputDelta events on
+/// UTF‑8 boundaries. The process owner retains the complete bounded transcript.
 pub(crate) fn start_streaming_output(process: &UnifiedExecProcess, context: &UnifiedExecContext) {
     let mut receiver = process.output_receiver();
     let output_drained = process.output_drained_notify();

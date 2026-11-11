@@ -200,7 +200,7 @@ async fn transcript_survives_late_subscriber_lag_and_repeated_poll_drains() -> R
         }
     })
     .await?;
-    assert_eq!(*process.output.transcript.lock().await, expected);
+    assert_eq!(*process.transcript().lock().await, expected);
     assert_eq!(process.output.output_buffer.lock().await.total_bytes(), 0);
     assert!(expected.omitted_bytes() > 0);
     Ok(())

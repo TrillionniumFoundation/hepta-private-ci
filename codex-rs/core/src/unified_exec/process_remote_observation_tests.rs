@@ -367,7 +367,7 @@ async fn remote_transcript_records_recovered_sequences_once_after_poll_drain() -
         .send(ExecProcessEvent::Closed { seq: 5 })?;
     fixture.wait_for_state(|state| state.has_exited).await?;
     assert_eq!(
-        fixture.process.output.transcript.lock().await.to_bytes(),
+        fixture.process.transcript().lock().await.to_bytes(),
         b"HEAD\nmiddle\nTAIL\n"
     );
     assert_eq!(

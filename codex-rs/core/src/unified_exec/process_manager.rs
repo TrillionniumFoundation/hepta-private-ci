@@ -495,7 +495,7 @@ impl UnifiedExecProcessManager {
             )
         });
 
-        let transcript = Arc::clone(&process.output_handles().transcript);
+        let transcript = process.transcript();
         let event_ctx = ToolEventCtx::new(
             context.session.as_ref(),
             context.step_context.turn.as_ref(),
@@ -1345,7 +1345,6 @@ impl UnifiedExecProcessManager {
             output_closed,
             output_closed_notify,
             cancellation_token,
-            ..
         } = output;
         let mut collected = HeadTailBuffer::default();
         let mut exit_signal_received = cancellation_token.is_cancelled();

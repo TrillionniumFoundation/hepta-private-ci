@@ -120,12 +120,7 @@ async fn policy_resolution_retries_after_auth_refresh() {
     let resolve = tokio::spawn({
         let auth_manager = auth_manager.clone();
         let base_url = format!("{}/backend-api", server.uri());
-        async move {
-            resolve_attribution_policy(&auth_manager, &base_url, &http_client_factory())
-                .await
-                .ok()
-                .flatten()
-        }
+        async move { resolve_attribution_policy(&auth_manager, &base_url, &http_client_factory()).await }
     });
 
     tokio::time::timeout(Duration::from_secs(5), request_started.notified())
@@ -137,6 +132,7 @@ async fn policy_resolution_retries_after_auth_refresh() {
         resolve
             .await
             .expect("policy task should complete")
+            .expect("policy resolution should not time out after auth refresh")
             .expect("policy should resolve after refresh")
             .enabled
     );
