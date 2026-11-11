@@ -116,6 +116,15 @@ impl AgentdState {
                         .map_err(AgentdError::Protocol)?,
                     );
                 }
+                if self.episodic_snapshot_import.get().is_some() {
+                    capabilities.push(
+                        crate::AgentdCapability::new(
+                            codex_hepta_agent_protocol::EPISODIC_SNAPSHOT_IMPORT_CAPABILITY,
+                            /*major*/ 1,
+                            /*minor*/ 0,
+                        ).map_err(AgentdError::Protocol)?,
+                    );
+                }
                 if self.evidence.get().is_some() {
                     capabilities.push(
                         crate::AgentdCapability::new("kernel.evidence", 1, 0)
@@ -287,8 +296,8 @@ impl AgentdState {
                     crate::evidence_host::verify(self, request).await?,
                 )
             }
-            crate::AgentdMethod::EpisodicSnapshotImport { .. } => {
-                return Err(AgentdError::CognitiveWriteRuntimeUnavailable);
+            crate::AgentdMethod::EpisodicSnapshotImport { snapshot_json } => {
+                self.import_episodic_snapshot(&snapshot_json).await?
             }
             crate::AgentdMethod::CognitiveContext { query, limit } => {
                 require_cognitive_control_ready(
@@ -1165,7 +1174,7 @@ fn cognitive_control_unavailable() -> AgentdPayload {
     }
 }
 
-fn require_cognitive_control_ready(
+pub(super) fn require_cognitive_control_ready(
     lifecycle: AgentLifecycle,
     app_server_ready: bool,
     critical_stores_ready: bool,

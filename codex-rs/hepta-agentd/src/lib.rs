@@ -223,6 +223,7 @@ mod client;
 #[cfg(target_os = "linux")]
 mod cognitive_checkpoint_unix;
 mod cognitive_context;
+mod episodic_import;
 mod cognitive_ranker;
 mod cognitive_retrieval_context;
 mod cognitive_retrieval_learning;
