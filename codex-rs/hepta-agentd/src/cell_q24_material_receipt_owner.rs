@@ -70,8 +70,11 @@ pub struct OriginalCellQ24MaterialReceiptConfigV1 {
 }
 
 /// Original descriptors, not paths or authority to create/enroll replacements.
-/// Creation of the pair is not atomic. If either owner becomes uncertain, retain
-/// both original files and witnesses for recovery; do not invent a fresh pair.
+/// Creation is not atomic: Experience may initialize before Dataset fails.
+/// Retain both original files and witnesses for the host to reconcile that
+/// partial state. This API does not finish partial initialization. recover
+/// requires both original owners already initialized; it never creates a
+/// missing Dataset journal/witness or substitutes new custody.
 pub struct OriginalCellQ24MaterialReceiptFilesV1<EW: AnchorWitnessStore, DW: AnchorWitnessStore> {
     pub experience: File,
     pub experience_witness: EW,
@@ -130,8 +133,10 @@ impl<EW: AnchorWitnessStore, DW: AnchorWitnessStore>
         })
     }
 
-    /// Reopen these same journals and witnesses. Pending never signs, and the
-    /// original freeze/signers/validity policy remain part of both bindings.
+    /// Reopen these same already initialized journals and witnesses. Pending
+    /// never signs. A partially initialized pair is rejected, without creating
+    /// or finishing the missing owner. The original freeze/signers/validity
+    /// policy remain part of both bindings.
     pub fn recover(
         files: OriginalCellQ24MaterialReceiptFilesV1<EW, DW>,
         config: OriginalCellQ24MaterialReceiptConfigV1,

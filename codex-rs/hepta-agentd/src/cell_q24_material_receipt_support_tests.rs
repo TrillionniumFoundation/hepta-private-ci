@@ -83,7 +83,6 @@ pub(super) fn sign(
 }
 
 pub(super) struct Fixture {
-    _directory: tempfile::TempDir,
     root: PathBuf,
     pub(super) at: u64,
     pub(super) baseline: Arc<LoadedCellQ24ModelV1>,
@@ -95,6 +94,8 @@ pub(super) struct Fixture {
     pub(super) optimizer: CellQ24SgdRuleV1,
     pub(super) generator: TrustedLearningSignerV1,
     evaluator: TrustedLearningSignerV1,
+    // Drop all live original handles before removing their fixture directory.
+    _directory: tempfile::TempDir,
 }
 
 impl Fixture {
@@ -270,6 +271,10 @@ impl Fixture {
 
     pub(super) fn file(&self, name: &str, create: bool) -> anyhow::Result<File> {
         opened(&self.root, name, create)
+    }
+
+    pub(super) fn read_only_file(&self, name: &str) -> anyhow::Result<File> {
+        Ok(File::open(self.root.join(name))?)
     }
 
     pub(super) fn witness(&self, name: &str, create: bool) -> anyhow::Result<FileAnchorWitnessStore> {

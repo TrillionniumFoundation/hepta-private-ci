@@ -258,3 +258,51 @@ async fn original_material_pair_expired_work_only_reads_original_completed_windo
     assert_eq!(fixture.disk_bytes_after_drop()?, disk_before);
     Ok(())
 }
+
+#[tokio::test]
+async fn original_material_pair_partial_creation_never_finishes_missing_dataset_during_recovery() -> anyhow::Result<()> {
+    let fixture = Fixture::new(false).await?;
+    let config = fixture.config.clone();
+    // The host accidentally supplies a read-only second descriptor. Experience
+    // initialization succeeds before the actual Dataset file rejects writing.
+    drop(fixture.file("dataset-journal", true)?);
+    let files = OriginalCellQ24MaterialReceiptFilesV1 {
+        experience: fixture.file("experience-journal", true)?,
+        experience_witness: fixture.witness("experience-witness", true)?,
+        dataset: fixture.read_only_file("dataset-journal")?,
+        dataset_witness: fixture.witness("dataset-witness", true)?,
+    };
+    assert!(support::Owners::create(
+        files, config.clone(), SigningKey::from_bytes(&[4; 32]),
+        SigningKey::from_bytes(&[5; 32]),
+    ).is_err());
+    let partial = fixture.disk_bytes_after_drop()?;
+    assert!(!partial[0].is_empty(), "the first original journal did initialize");
+    assert!(!partial[1].is_empty(), "the first independent witness is retained");
+    assert!(partial[2].is_empty(), "the read-only second journal was never initialized");
+    let mut dataset_witness = fixture.witness("dataset-witness", false)?;
+    assert_eq!(dataset_witness.current()?, None);
+    drop(dataset_witness);
+
+    // Even with the original second file now opened read/write, recover is
+    // open-only. It cannot take absence as permission to continue creation.
+    for _ in 0..2 {
+        assert!(fixture.recover(config.clone()).is_err());
+        assert_eq!(fixture.disk_bytes_after_drop()?, partial);
+    }
+    let (saved, _) = binding::validate_config(
+        &config, &SigningKey::from_bytes(&[4; 32]), &SigningKey::from_bytes(&[5; 32]),
+    )?;
+    let mut experience = LearningOwnerJournalV1::recover(
+        fixture.file("experience-journal", false)?,
+        fixture.witness("experience-witness", false)?,
+        saved.binding_digest,
+    )?;
+    assert!(matches!(
+        experience.read(&saved),
+        Err(LearningOriginalOwnerErrorV1::Store(ProductEvaluationExecutionStoreErrorV1::Missing))
+    ));
+    drop(experience);
+    assert_eq!(fixture.disk_bytes_after_drop()?, partial);
+    Ok(())
+}
