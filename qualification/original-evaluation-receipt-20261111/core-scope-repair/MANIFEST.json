@@ -1,0 +1,112 @@
+{
+  "schema_version": 1,
+  "recorded_utc": "2026-11-11T03:09:44.843071+00:00",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "target_pr": 5875,
+  "parent": "b5019ee98bc7b7b99eb689378f41e66691c2d257",
+  "parent_tree": "5164d68c23ffa071a80d4aa9a7f033f068a82dfd",
+  "candidate_tree": "d6bec884bb7eccde708063b93f05ea4280b2408b",
+  "checkout": "/workspace/scratch/b4d6d3702e3a/hepta-core-lock-scope-fix",
+  "candidate_status": "single staged file; no unstaged modifications; no remote write",
+  "files_to_publish": [
+    {
+      "path": "codex-rs/core/src/unified_exec/async_watcher_tests.rs",
+      "mode": "100644",
+      "parent_blob": "0992e0fd217b7c38ee7327b48e9d3b5cce4ea4fb",
+      "candidate_blob": "278bf63d343b4615e34179d85e2ad98cc3ea0fce",
+      "content_file": "/workspace/scratch/b4d6d3702e3a/core-lock-scope-fix-delivery/async_watcher_tests.rs",
+      "bytes": 15270,
+      "sha256": "f5073ba560a08f5c496e1f13272498b28fd1652eddbd90a18c254dacca5b468e"
+    }
+  ],
+  "change": "Wrap the existing retained transcript lock and complete tuple assert_eq in one lexical block; remove drop(retained). No assertion, timeout, limit, lint configuration or product code changes.",
+  "reason": {
+    "observed": "macOS Bazel Clippy rejected tokio::sync::MutexGuard held across an await point at async_watcher_tests.rs:162 despite explicit drop(retained).",
+    "job_id": 130289659026,
+    "original_log": {
+      "path": "/workspace/scratch/b4d6d3702e3a/core-b501-clippy-macos-130289659026.log",
+      "bytes": 876168,
+      "sha256": "ce1018d18b150d6344d9759860c8400fe4f239cb061ca037134d8dbc0b7bcd0f"
+    },
+    "lint": "clippy::await_holding_invalid_type",
+    "reported_target": "//codex-rs/core:core-unit-tests-bin"
+  },
+  "validation": {
+    "original_just_fmt": {
+      "command": [
+        "just",
+        "fmt"
+      ],
+      "cwd": "/workspace/scratch/b4d6d3702e3a/hepta-core-lock-scope-fix/codex-rs",
+      "exit_code": 0,
+      "log": {
+        "path": "/workspace/scratch/b4d6d3702e3a/core-lock-scope-fix-delivery/just-fmt.log",
+        "bytes": 46,
+        "sha256": "36b2b73073e0eac15f54befcc4046f180f3a60e2c24fbcb50d95f4f8f4bbcfa0"
+      }
+    },
+    "static_transform": {
+      "exact_scope_wrap_and_drop_removal": true,
+      "all_assertions_and_durations_preserved": true,
+      "whole_tree_diff_only_target_file": true,
+      "git_diff_cached_check_exit": 0,
+      "details": {
+        "path": "/workspace/scratch/b4d6d3702e3a/core-lock-scope-fix-delivery/static-check.json",
+        "bytes": 1101,
+        "sha256": "9f241e842bab5de6e99280f4a04500dd5f991deff1403fb01436b4cbe9dba5e2"
+      }
+    },
+    "native_tests": {
+      "run": false,
+      "count": 0,
+      "reason": "Parent explicitly prohibited cold long-running Cargo builds after local target cache release and disk exhaustion; existing hosted gates remain required."
+    },
+    "just_fix": {
+      "run": false,
+      "reason": "AGENTS.md mandates scoped just fix before a large Rust change; this is one minimal test-only scope edit. No cold Cargo/Clippy build was launched. Not claimed PASS."
+    },
+    "remaining_hosted_gates": [
+      "Exact published commit macOS Bazel Clippy for //codex-rs/core:core-unit-tests-bin.",
+      "Existing Core native tests, including the transcript regression and the two b501 transcript tests; no local execution claimed.",
+      "Existing repository CI for the resulting exact commit."
+    ]
+  },
+  "instructions": {
+    "agents_file": "AGENTS.md at parent",
+    "format_requirement": "Original just fmt after code changes executed.",
+    "test_requirement": "AGENTS.md requires just test for the affected project and broader suite following qualifying Core changes; local execution deferred by explicit parent resource instruction, no tests falsely reported.",
+    "no_retest_after_maintenance": "No tests run or rerun after formatting."
+  },
+  "base_object_recovery": {
+    "why": "Shared local object store initially lacked two unmodified b501 blobs required by normal git write-tree.",
+    "method": "Read-only GitHub fetch_blob by exact SHA; independently computed Git blob SHA before hash-object -w into isolated clone only; normal write-tree subsequently passed.",
+    "unchanged_objects": [
+      {
+        "path": "codex-rs/core/src/unified_exec/process_observation_tests.rs",
+        "blob": "29a9bfe7b7cbadf407a437af48f325d477973a9f",
+        "copy": {
+          "path": "/workspace/scratch/b4d6d3702e3a/core-lock-scope-fix-delivery/base-process_observation_tests.rs",
+          "bytes": 6676,
+          "sha256": "c50661aa1499e248ebdbe02a59ee1ae3b79012ff29e8c47d395be492ac0fc4df"
+        }
+      },
+      {
+        "path": "codex-rs/core/src/unified_exec/process_remote_observation_tests.rs",
+        "blob": "46d1874128b54ebaefc7678ef8833df7b2343490",
+        "copy": {
+          "path": "/workspace/scratch/b4d6d3702e3a/core-lock-scope-fix-delivery/base-process_remote_observation_tests.rs",
+          "bytes": 12373,
+          "sha256": "65f217b4bad10f7448a57f74fe0447394a7473f232b29e8937c5cd29fa286649"
+        }
+      }
+    ],
+    "not_new_source_changes": true
+  },
+  "patch": {
+    "path": "/workspace/scratch/b4d6d3702e3a/core-lock-scope-fix-delivery/change.patch",
+    "bytes": 1672,
+    "sha256": "216ccc736819aea6be4e2721e6dbcdbc2524f4352266086b5b1215192471d208"
+  },
+  "ordinary_acceptance_delta": 0,
+  "source_edits_outside_target_file": 0
+}

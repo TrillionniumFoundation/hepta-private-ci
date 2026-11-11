@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "source_commit": "c1d6537f7d979e1ad792eee796c6709d23a86697",
+  "source_tree": "e7762b742e6baff12e447a89f40ae1cfb68aa7e1",
+  "verification": "Computed SHA-256 of both downloaded original ZIP files and matched GitHub's published artifact digest and size. Original ZIP CRC checks passed while reading every entry. No temporary download URLs or keys are retained.",
+  "files": [
+    {
+      "lane": "daemon",
+      "expected_zip_sha256": "6c0b5605593bf82e8589f6bf5371c2cd55e251d2c3bbbcfe2849392c5b0fadf2",
+      "downloaded_zip_matches": true,
+      "published_artifact_metadata": {
+        "id": 13826017003,
+        "name": "daemon-learning-native-c1d6537f7d979e1ad792eee796c6709d23a86697-1",
+        "size_in_bytes": 6960939,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/13826017003",
+        "archive_download_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/13826017003/zip",
+        "expired": false,
+        "created_at": "2026-11-11T03:30:19Z",
+        "expires_at": "2026-11-25T03:30:17Z",
+        "updated_at": "2026-11-11T03:30:19Z",
+        "digest": "sha256:6c0b5605593bf82e8589f6bf5371c2cd55e251d2c3bbbcfe2849392c5b0fadf2",
+        "workflow_run": {
+          "id": 42946454461,
+          "repository_id": 1320694176,
+          "head_repository_id": 1320694176,
+          "head_branch": "codex/original-evaluation-receipt-20261111-b4d6",
+          "head_sha": "c1d6537f7d979e1ad792eee796c6709d23a86697"
+        }
+      }
+    },
+    {
+      "lane": "shared",
+      "expected_zip_sha256": "2bc6b3973ffea7474409c009868d6b3208d7f573ade41110e6bb05ad5d1e0e8b",
+      "downloaded_zip_matches": true,
+      "published_artifact_metadata": {
+        "id": 13825652704,
+        "name": "shared-framework-c1d6537f7d979e1ad792eee796c6709d23a86697-1",
+        "size_in_bytes": 175321,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/13825652704",
+        "archive_download_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/13825652704/zip",
+        "expired": false,
+        "created_at": "2026-11-11T03:29:49Z",
+        "expires_at": "2026-11-25T03:29:49Z",
+        "updated_at": "2026-11-11T03:29:49Z",
+        "digest": "sha256:2bc6b3973ffea7474409c009868d6b3208d7f573ade41110e6bb05ad5d1e0e8b",
+        "workflow_run": {
+          "id": 42946454356,
+          "repository_id": 1320694176,
+          "head_repository_id": 1320694176,
+          "head_branch": "codex/original-evaluation-receipt-20261111-b4d6",
+          "head_sha": "c1d6537f7d979e1ad792eee796c6709d23a86697"
+        }
+      }
+    }
+  ]
+}
