@@ -19,6 +19,7 @@ AGENT = "codex-rs/hepta-agentd/src/"
 OWNER = AGENT + "cell_q24_material_receipt_owner.rs"
 BINDING = AGENT + "cell_q24_material_receipt_binding.rs"
 READER = AGENT + "cell_q24_dataset.rs"
+CAPTURE = AGENT + "cell_q24_training_source.rs"
 
 
 class OriginalMaterialOwnerClosureTests(unittest.TestCase):
@@ -126,11 +127,11 @@ class OriginalMaterialOwnerClosureTests(unittest.TestCase):
             with self.subTest(marker=marker):
                 self.rejects(BINDING, "fn verify_original(", marker)
 
-    def test_completed_reader_has_one_explicit_product_caller_and_fixed_system_clock(self):
+    def test_completed_reader_has_exact_original_owner_callers_and_fixed_system_clock(self):
         rows = [row for row in self.manifest["boundary"]
                 if row["id"] == "learning_original_material_completed_dataset_read"]
         self.assertEqual(len(rows), 1)
-        self.assertEqual(rows[0]["product_callers"], [BINDING])
+        self.assertEqual(rows[0]["product_callers"], [BINDING, CAPTURE])
         for marker in ("self.read_current_at_clock(", "false,", "SystemTime::now()"):
             with self.subTest(marker=marker):
                 self.rejects(READER, "fn read_current_for_original_receipt(", marker)

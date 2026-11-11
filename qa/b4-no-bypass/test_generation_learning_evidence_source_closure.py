@@ -28,6 +28,7 @@ CALLERS = {
         AGENT + "neuron_cell_evaluation_receipt_owner.rs",
         AGENT + "circuit_next_use_receipt_owner.rs",
         AGENT + "circuit_selection_receipt_owner.rs",
+        AGENT + "cell_q24_training_source.rs",
     ),
 }
 

@@ -21,12 +21,13 @@ OWNER = AGENT + "cell_q24_model_proposal.rs"
 ADMISSION = AGENT + "cell_q24_model_proposal_admission.rs"
 LANE = AGENT + "cell_q24_training_model_lane.rs"
 TRAINER = AGENT + "cell_composed_q24_training_owner.rs"
+BOUND = AGENT + "cell_q24_source_bound_stage.rs"
 BOUNDARIES = {
     "cell_q24_model_material_owner_" + method: (LANE,)
     for method in ("create", "recover", "commit", "readback")
 }
 BOUNDARIES.update({
-    "learning_original_training_model_" + method: ()
+    "learning_original_training_model_" + method: (BOUND,)
     for method in ("create", "recover", "commit", "readback")
 })
 
@@ -42,7 +43,7 @@ class Q24ModelProposalSourceClosureTests(unittest.TestCase):
             path: PROOF._strip_cfg_test_items(
                 PROOF._strip_rust_non_code((ROOT / path).read_text())
             )
-            for path in (OWNER, ADMISSION, LANE, TRAINER)
+            for path in (OWNER, ADMISSION, LANE, TRAINER, BOUND)
         }
 
     def rejects(self, path, function, marker):

@@ -35,6 +35,7 @@ CALLERS = {
         OWNER,
         AGENT + "circuit_next_use_receipt_owner.rs",
         AGENT + "circuit_selection_receipt_owner.rs",
+        AGENT + "cell_q24_training_source.rs",
     ),
     "cell_completed_evaluation_readback": (OWNER,),
     "learning_original_evaluation_key": (

@@ -245,3 +245,46 @@ async fn original_receipt_fixture_retains_peer_during_owner_work_between_frames(
     peer.join().expect("original receipt peer")?;
     Ok(())
 }
+
+/// An explicit same-UID test transport that returns original retained signatures
+/// until its client is dropped. No production constructor or signer is exposed.
+pub(crate) fn fixture_original_receipt_client_until_close(
+    initial: LearningIterationSnapshotV1,
+    receipt: LearningIterationReceiptV1,
+    verifier: LearningEvidenceVerifierV1,
+    signature: SignedLearningEvidenceV1,
+) -> anyhow::Result<(
+    LearningIterationEvidenceClientV1,
+    std::thread::JoinHandle<anyhow::Result<usize>>,
+)> {
+    let fixture = Fixture {
+        initial,
+        receipt,
+        verifier,
+        signature,
+    };
+    let (client, mut channel) = fixture.original_owner_client()?;
+    let expected = fixture.signature.payload_digest.to_string();
+    let peer = std::thread::spawn(move || -> anyhow::Result<usize> {
+        for index in 0..128 {
+            let exchanged = channel.exchange(|bytes| {
+                let request: wire::Request = serde_json::from_slice(bytes)
+                    .map_err(|_| codex_hepta_contracts::HostIssuerTransportError::InvalidRequest)?;
+                assert_eq!(request.request_id, index as u64 + 1);
+                assert_eq!(request.operation, wire::OPERATION);
+                assert_eq!(request.receipt_digest, expected);
+                let encoded = serde_json::to_value(&request)
+                    .map_err(|_| codex_hepta_contracts::HostIssuerTransportError::InvalidRequest)?;
+                assert!(encoded.get("payload").is_none());
+                assert!(encoded.get("signature").is_none());
+                serde_json::to_vec(&response(request, fixture.evidence()))
+                    .map_err(|_| codex_hepta_contracts::HostIssuerTransportError::Unavailable)
+            })?;
+            if !exchanged {
+                return Ok(index);
+            }
+        }
+        anyhow::bail!("bounded original evidence fixture exceeded its request budget")
+    });
+    Ok((client, peer))
+}

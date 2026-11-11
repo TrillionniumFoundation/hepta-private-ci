@@ -512,3 +512,7 @@ fn initial(
     .snapshot()
     .clone())
 }
+
+#[cfg(target_os = "linux")]
+#[path = "cell_q24_training_source_tests.rs"]
+mod training_source;

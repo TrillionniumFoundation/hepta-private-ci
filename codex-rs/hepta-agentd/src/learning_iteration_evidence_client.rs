@@ -221,3 +221,6 @@ mod tests;
 
 #[cfg(test)]
 pub(crate) use tests::fixture_original_receipt_client;
+
+#[cfg(test)]
+pub(crate) use tests::fixture_original_receipt_client_until_close;
