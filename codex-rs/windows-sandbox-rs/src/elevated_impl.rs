@@ -194,7 +194,7 @@ mod windows_impl {
                 let msg = match runner_process.read_frame(&mut pipe_read, || {
                     cancellation
                         .as_ref()
-                        .is_some_and(|token| token.is_cancelled())
+                        .is_some_and(super::super::WindowsSandboxCancellationToken::is_cancelled)
                 }) {
                     Ok(Some(msg)) => msg,
                     Ok(None) => break Err(anyhow::anyhow!("runner pipe closed before exit")),
@@ -227,7 +227,7 @@ mod windows_impl {
                     runner_process.wait_for_exit(exit_code, || {
                         cancellation
                             .as_ref()
-                            .is_some_and(|token| token.is_cancelled())
+                            .is_some_and(super::super::WindowsSandboxCancellationToken::is_cancelled)
                     })?;
                     Ok((exit_code, timed_out))
                 })
