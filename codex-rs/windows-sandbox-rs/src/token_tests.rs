@@ -429,16 +429,7 @@ fn legacy_workspace_capability_refuses_all_four_native_delete_routes() -> Result
     let restricted = DeleteMatrix::new(&fixture.path().join("restricted"))?;
     host.assert_same_acls(&restricted);
     let host_access_context = host.access_diagnostics();
-    let host_errors: Vec<_> = host
-        .paths()
-        .map(|(file, directory)| {
-            [std::fs::remove_file(file), std::fs::remove_dir(directory)].map(|result| {
-                result
-                    .err()
-                    .map(|error| (error.kind(), error.raw_os_error()))
-            })
-        })
-        .collect();
+    let host_errors = crate::delete_permission_control::native(&host)?;
     let host_outcomes = host.finish("ordinary-host")?;
     eprintln!("delete_matrix host_native_errors={host_errors:?}");
     assert_eq!(

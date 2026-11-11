@@ -118,6 +118,7 @@ enum WorkerMode {
     Cooperative,
     Held,
     Unknown,
+    PersistentUncertain,
     WrongIdentity,
     Oversized,
 }
@@ -149,6 +150,9 @@ impl CellGenerationWorkerV2 for FixtureWorker {
         self.calls.fetch_add(1, Ordering::SeqCst);
         if matches!(self.mode, WorkerMode::Unknown) {
             return Err(CellGenerationErrorV2::Unavailable);
+        }
+        if matches!(self.mode, WorkerMode::PersistentUncertain) {
+            return Err(CellGenerationErrorV2::CommitUncertain);
         }
         while !self.release.load(Ordering::Acquire)
             && (matches!(self.mode, WorkerMode::Held) || !cancellation.load(Ordering::Acquire))
@@ -216,7 +220,11 @@ fn terminal(
             result = Some(proposal);
             true
         }
-        Ok(None) | Err(CellGenerationErrorV2::Capacity) => false,
+        // An uncertain read does not settle this request. Keep observing only
+        // its original identity within the existing wait_until budget.
+        Ok(None)
+        | Err(CellGenerationErrorV2::Capacity)
+        | Err(CellGenerationErrorV2::CommitUncertain) => false,
         Err(error) => panic!("unexpected readback failure: {error:?}"),
     });
     checked(result.ok_or("terminal proposal"))
@@ -393,6 +401,37 @@ fn lost_rpc_reply_and_queue_capacity_cannot_duplicate_original_dispatch() {
     assert_eq!(worker.calls.load(Ordering::Acquire), 1);
     checked(port.shutdown());
     assert_eq!(checked(fs::read(fixture.path())), bytes);
+}
+
+#[test]
+fn terminal_readback_does_not_promote_persistent_uncertainty_to_success() {
+    let mut fixture = Fixture::new();
+    fixture.config.rpc_timeout = Duration::from_millis(30);
+    let worker = FixtureWorker::new(WorkerMode::PersistentUncertain);
+    let mut port = fixture.port(Arc::clone(&worker), Arc::new(|| 20));
+    assert!(matches!(
+        port.execute_generation(&fixture.config.manifest, &fixture.request),
+        Err(CellGenerationErrorV2::Pending | CellGenerationErrorV2::CommitUncertain)
+    ));
+
+    // This uses terminal's original five-second wait. The caught panic must
+    // come from that bound, not an unrelated error or an accepted proposal.
+    let failure = std::panic::catch_unwind(AssertUnwindSafe(|| {
+        terminal(&mut port, &fixture.request)
+    }))
+    .expect_err("persistent uncertainty must not produce a terminal proposal");
+    let message = failure
+        .downcast_ref::<String>()
+        .map(String::as_str)
+        .or_else(|| failure.downcast_ref::<&str>().copied());
+    assert_eq!(message, Some("fixture condition did not complete"));
+    assert_eq!(worker.calls.load(Ordering::Acquire), 1);
+    assert_eq!(
+        port.read_generation(&fixture.request),
+        Err(CellGenerationErrorV2::CommitUncertain)
+    );
+    checked(port.shutdown());
+    assert!(port.is_closed());
 }
 
 #[test]

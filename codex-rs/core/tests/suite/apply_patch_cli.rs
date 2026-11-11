@@ -1215,12 +1215,14 @@ async fn apply_patch_cli_preserves_existing_hard_link_outside_workspace() -> Res
 
     let out = harness.apply_patch_output(call_id).await;
     if cfg!(windows) {
+        let expected_error = format!(
+            "Failed to write file {}",
+            executor_path_uri(&link_path)?.inferred_native_path_string()
+        );
         assert!(
-            out.contains("Exit code: 1")
-                && out.contains(
-                    "restricted filesystem write requires a file with exactly one hard link",
-                ),
-            "the restricted Windows filesystem helper must reject an existing multi-link target; tool output: {out}"
+            out.lines().any(|line| line == "Exit code: 1")
+                && out.lines().any(|line| line == expected_error.as_str()),
+            "the restricted Windows write must fail for the requested path at the public apply-patch boundary; tool output: {out}"
         );
         assert_eq!(
             std::fs::read_to_string(&outside_file)?,

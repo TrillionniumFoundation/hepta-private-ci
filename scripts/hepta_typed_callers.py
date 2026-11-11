@@ -186,15 +186,19 @@ def has_authority_call(
     code: str, target: str, method: str, fields: AuthorityFields
 ) -> bool:
     code = _normalize_aliases(code, target, fields.aliases)
+    qualified = rf"\b{re.escape(target)}\s*::\s*{re.escape(method)}\s*\("
+    found = bool(re.search(qualified, code))
+    potential = re.compile(rf"\.\s*{re.escape(method)}\s*\(")
+    # No receiver parsing can occur without one of these calls. Check after
+    # alias normalization, using the same patterns as the original matcher.
+    if not found and potential.search(code) is None:
+        return False
     # The field index is derived from type declarations, including declarations
     # in a parent module. A typed variable/impl must name either the authority
     # or an indexed field owner. Avoid parsing unrelated crates' homonyms.
     type_names = {target, *(owner for owner, _ in fields)}
     if not any(re.search(rf"\b{re.escape(name)}\b", code) for name in type_names):
         return False
-    qualified = rf"\b{re.escape(target)}\s*::\s*{re.escape(method)}\s*\("
-    found = bool(re.search(qualified, code))
-    potential = re.compile(rf"\.\s*{re.escape(method)}\s*\(")
     for call in potential.finditer(code):
         owner = _impl_owner(code, call.start())
         bindings = _bindings(code, call.start(), target, owner, fields)

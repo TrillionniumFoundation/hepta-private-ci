@@ -45,26 +45,11 @@ fn legacy_refuses_before_elevated_four_cell_delete_boundary() {
         let (script, env) = matrix_script(&host);
         let host_script = workspace.join("host-matrix.cmd");
         fs::write(&host_script, script).expect("write host script");
-        let host_log_path = fixture.path().join("host-output.txt");
-        let host_log = fs::File::create(&host_log_path).expect("create owned host output");
-        let mut child = std::process::Command::new("C:\\Windows\\System32\\cmd.exe")
-            .args(["/d", "/c"]).arg(&host_script).envs(env)
-            .stdout(host_log.try_clone().expect("clone host output")).stderr(host_log)
-            .spawn().expect("spawn ordinary host cmd control");
-        // Keep the host comparison bounded to the same five-second child budget.
-        // SAFETY: Child owns this process handle until kill/wait below completes.
-        let waited = unsafe { WaitForSingleObject(child.as_raw_handle() as _, /*dwmilliseconds*/ 5_000) };
-        if waited != WAIT_OBJECT_0 {
-            let wait_error = (waited == WAIT_FAILED).then(std::io::Error::last_os_error);
-            let killed = child.kill();
-            let reaped = child.wait();
-            panic!("ordinary host cmd did not finish: wait={waited} error={wait_error:?} kill={killed:?} reap={reaped:?}");
-        }
-        let status = child.wait().expect("reap ordinary host cmd");
-        let host_log = fs::read_to_string(&host_log_path).expect("read owned host output");
+        let (status, host_log) = crate::delete_permission_control::cmd(&host_script, env)
+            .expect("run the ordinary cmd control without Backup/Restore privileges");
         let host_outcomes = host.finish("ordinary-host-cmd-done").expect("host physical readback");
-        eprintln!("delete_matrix host_cmd_status={status} output={host_log:?}");
-        assert_eq!(status.code(), Some(0), "{host_access_context}");
+        eprintln!("delete_matrix host_cmd_status={status:?} output={host_log:?}");
+        assert_eq!(status, Some(0), "{host_access_context}");
         assert_eq!(host_log.lines().filter(|line| line.starts_with("MATRIX_")).collect::<Vec<_>>(),
             ["MATRIX_ATTEMPT_0", "MATRIX_ATTEMPT_1", "MATRIX_ATTEMPT_2", "MATRIX_ATTEMPT_3", "MATRIX_DONE"],
             "{host_access_context}");
