@@ -1,0 +1,36 @@
+{
+  "schema": "hepta.common-candidate.maintenance.v1",
+  "command": [
+    "just",
+    "fmt",
+    "--base",
+    "a15acbf4db6178523a9297033c86e3be0b2725a3"
+  ],
+  "cwd": "/workspace/scratch/c2fccbdb195e/final-candidate/codex-rs",
+  "started_utc": "2026-11-11T01:32:37.942409+00:00",
+  "finished_utc": "2026-11-11T01:32:38.455736+00:00",
+  "exit_code": 0,
+  "wall_seconds": 0.39879858099993726,
+  "cpu_user_seconds": 0.298189,
+  "cpu_system_seconds": 0.13956,
+  "maximum_rss_kib": 39088,
+  "rss_scope": "wait4 child high-water metric; not summed concurrent memory",
+  "before": {
+    "source_sha": "1e822b3aeac79d9e9fc169f7fc6a48821baa6654",
+    "tree": "80f33dcd59cf3721dbec3a9cb2ee695db5187cd5",
+    "status": "",
+    "index_sha256": "05af2eef6bad63821c0f79a08664cce8b51a149f987b84488063881d47f0383d",
+    "tree_inventory_sha256": "eed016882ab366df422166fbca691cd756f8c2d210472be6491ce61f88d2c706"
+  },
+  "after": {
+    "source_sha": "1e822b3aeac79d9e9fc169f7fc6a48821baa6654",
+    "tree": "80f33dcd59cf3721dbec3a9cb2ee695db5187cd5",
+    "status": "",
+    "index_sha256": "05af2eef6bad63821c0f79a08664cce8b51a149f987b84488063881d47f0383d",
+    "tree_inventory_sha256": "eed016882ab366df422166fbca691cd756f8c2d210472be6491ce61f88d2c706"
+  },
+  "tracked_diff_bytes": 0,
+  "identity_unchanged": true,
+  "status": "PASS_FORMAT_NO_CHANGE",
+  "behavior_tests_repeated_after_maintenance": false
+}

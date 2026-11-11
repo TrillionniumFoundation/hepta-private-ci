@@ -1,0 +1,143 @@
+{
+  "before_after_clean": true,
+  "before_after_source_and_git_inventory_unchanged": true,
+  "callers_scan": {
+    "authority_granted": false,
+    "boundary_rows": 213,
+    "privileged_inventory_entries": 213,
+    "protected_rows": 215,
+    "rust_files": 6298,
+    "status": "PASS_HEPTA_CALLER_CLOSED_SET",
+    "unique_protected_paths": 171
+  },
+  "case_set_comparison": "case-set-comparison.json",
+  "cases_by_module": {
+    "research-unittest": {
+      "test_hepta_cell_joint_config": 23,
+      "test_hepta_cell_research_gate": 19,
+      "test_hepta_cell_research_successor": 8,
+      "test_hepta_cell_research_units": 20,
+      "test_hepta_prospective_comparison": 6
+    },
+    "source-unittest": {
+      "test_cell_learning_evaluation_source_closure": 8,
+      "test_generation_learning_evidence_source_closure": 6,
+      "test_learning_checkpoint_source_closure": 6,
+      "test_learning_evaluation_recovery_source_closure": 7,
+      "test_original_learning_owner_source_closure": 13,
+      "test_q24_training_plan_source_closure": 6,
+      "test_root_learning_bootstrap_source_closure": 12,
+      "test_root_learning_scope_source_closure": 8,
+      "test_training_no_update_source_closure": 3,
+      "test_verify_hepta_callers": 65
+    }
+  },
+  "cross_batch_duplicate_case_ids": [],
+  "driver_exit_code": 0,
+  "full_checkout": true,
+  "head": "1e822b3aeac79d9e9fc169f7fc6a48821baa6654",
+  "index_inventory_sha256_before_and_after": "05af2eef6bad63821c0f79a08664cce8b51a149f987b84488063881d47f0383d",
+  "input_coverage": "input-coverage.json",
+  "known_limits": [
+    "Python source/manifest and research-contract checks are engineering gates, not native qualification.",
+    "Synthetic engineering test cases do not add independent task-family research confirmations.",
+    "Full tracked Git identity inventory is retained; physical byte hashing covers all scanned/imported repository source inputs, not a redundant archive/qualification byte sweep.",
+    "The old 9821 source run retains its original 1 failure event and 14 error events across 5 unique affected cases; its cancelled full scan is not a PASS.",
+    "The c36 local precheck remains cancelled before tests, with NOT_RUN test status."
+  ],
+  "native_validation": false,
+  "production_authority_granted": false,
+  "pull_request": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5890",
+  "raw_validation_result": "validation-result.json",
+  "research_independent_confirmations_added": 0,
+  "runs": [
+    {
+      "actual_test_count": 134,
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-m",
+        "unittest",
+        "-v",
+        "test_cell_learning_evaluation_source_closure",
+        "test_generation_learning_evidence_source_closure",
+        "test_learning_checkpoint_source_closure",
+        "test_learning_evaluation_recovery_source_closure",
+        "test_original_learning_owner_source_closure",
+        "test_q24_training_plan_source_closure",
+        "test_root_learning_bootstrap_source_closure",
+        "test_root_learning_scope_source_closure",
+        "test_training_no_update_source_closure",
+        "test_verify_hepta_callers"
+      ],
+      "cpu_measurement": "POSIX wait4 rusage for this subprocess",
+      "cpu_system_seconds": 2.378711,
+      "cpu_user_seconds": 12.841798,
+      "cwd": "/workspace/scratch/c2fccbdb195e/final-candidate/qa/b4-no-bypass",
+      "exit_code": 0,
+      "individual_failures_or_errors": [],
+      "max_rss_kib": 49328,
+      "name": "source-unittest",
+      "result_line": "OK",
+      "skipped_case_lines": [],
+      "unique_test_case_count": 134,
+      "wall_seconds": 28.52482241100006
+    },
+    {
+      "actual_test_count": 76,
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-m",
+        "unittest",
+        "-v",
+        "test_hepta_cell_research_gate",
+        "test_hepta_cell_research_units",
+        "test_hepta_cell_research_successor",
+        "test_hepta_cell_joint_config",
+        "test_hepta_prospective_comparison"
+      ],
+      "cpu_measurement": "POSIX wait4 rusage for this subprocess",
+      "cpu_system_seconds": 15.701532,
+      "cpu_user_seconds": 11.265446,
+      "cwd": "/workspace/scratch/c2fccbdb195e/final-candidate/scripts",
+      "exit_code": 0,
+      "individual_failures_or_errors": [],
+      "max_rss_kib": 49328,
+      "name": "research-unittest",
+      "result_line": "OK",
+      "skipped_case_lines": [],
+      "unique_test_case_count": 76,
+      "wall_seconds": 57.18344726400028
+    },
+    {
+      "actual_test_count": null,
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "scripts/verify_hepta_callers.py",
+        "verify"
+      ],
+      "cpu_measurement": "POSIX wait4 rusage for this subprocess",
+      "cpu_system_seconds": 13.284968,
+      "cpu_user_seconds": 665.248045,
+      "cwd": "/workspace/scratch/c2fccbdb195e/final-candidate",
+      "exit_code": 0,
+      "individual_failures_or_errors": null,
+      "max_rss_kib": 113356,
+      "name": "callers-verify",
+      "result_line": null,
+      "skipped_case_lines": null,
+      "unique_test_case_count": null,
+      "wall_seconds": 781.5806294040003
+    }
+  ],
+  "source_byte_inventory_bytes": 95341646,
+  "source_byte_inventory_file_count": 6683,
+  "source_byte_inventory_hash_encoding": "SHA256 of UTF-8 json.dumps(snapshot.source_files, sort_keys=True, separators=(comma, colon))",
+  "source_byte_inventory_sha256_before_and_after": "09d04ddb56871b5df9d5d7f96fe147e24ae0c24b55d7b885c380fbf0b0495fe9",
+  "source_mismatches": [],
+  "status": "PASS_REQUESTED_SOURCE_AND_RESEARCH_GATES",
+  "tracked_index_entries": 14431,
+  "tracked_tree_entries": 14431,
+  "tree": "80f33dcd59cf3721dbec3a9cb2ee695db5187cd5",
+  "tree_inventory_sha256_before_and_after": "eed016882ab366df422166fbca691cd756f8c2d210472be6491ce61f88d2c706",
+  "unique_engineering_unittest_case_union": 210
+}
