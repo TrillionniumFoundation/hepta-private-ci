@@ -107,7 +107,14 @@ class OriginalCircuitObserverSourceClosureTests(unittest.TestCase):
 
     def test_each_source_role_and_clock_constraint_remains_present_in_order(self):
         self.assertEqual(len(self.rows), 1)
-        functions = self.rows[0]["required_function_order"]
+        functions = list(self.rows[0]["required_function_order"])
+        # The scanner accepts exact nongeneric function markers. Generic
+        # functions use ordered code bounded by their own and the next fn.
+        for sequence in self.rows[0]["required_order"]:
+            if sequence[0] in FUNCTIONS:
+                self.assertTrue(sequence[0].endswith("<"))
+                self.assertTrue(sequence[-1].startswith("fn "))
+                functions.append({"function": sequence[0], "sequence": sequence[1:-1]})
         self.assertEqual({row["function"] for row in functions}, FUNCTIONS)
         self.assertGreater(sum(len(row["sequence"]) for row in functions), 100)
         for row in functions:
