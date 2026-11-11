@@ -28,9 +28,9 @@ READERS = (
     OWNER,
 )
 FUNCTIONS = {
-    "fn create(", "fn recover(", "fn validate_config(", "fn prepare<",
-    "fn attest_original_completion<", "fn readback<", "fn predecessors<",
-    "fn authenticate_completed<", "fn authenticate_predecessors(",
+    "fn create(", "fn recover(", "fn validate_config(", "fn prepare(",
+    "fn attest_original_completion(", "fn readback(", "fn predecessors(",
+    "fn authenticate_completed(", "fn authenticate_predecessors(",
     "fn receipt(", "fn require_new_attestation(", "fn sign_original(", "fn now(",
 }
 
@@ -107,14 +107,7 @@ class OriginalCircuitObserverSourceClosureTests(unittest.TestCase):
 
     def test_each_source_role_and_clock_constraint_remains_present_in_order(self):
         self.assertEqual(len(self.rows), 1)
-        functions = list(self.rows[0]["required_function_order"])
-        # The scanner accepts exact nongeneric function markers. Generic
-        # functions use ordered code bounded by their own and the next fn.
-        for sequence in self.rows[0]["required_order"]:
-            if sequence[0] in FUNCTIONS:
-                self.assertTrue(sequence[0].endswith("<"))
-                self.assertTrue(sequence[-1].startswith("fn "))
-                functions.append({"function": sequence[0], "sequence": sequence[1:-1]})
+        functions = self.rows[0]["required_function_order"]
         self.assertEqual({row["function"] for row in functions}, FUNCTIONS)
         self.assertGreater(sum(len(row["sequence"]) for row in functions), 100)
         for row in functions:
@@ -127,8 +120,8 @@ class OriginalCircuitObserverSourceClosureTests(unittest.TestCase):
             statement = "let saved = validate_config(&config, &key)?;"
             self.mutate_function(function, statement, "if false { " + statement + " }")
         for function, marker in (
-            ("fn prepare<", "self.config.scope.validate_snapshot(source.snapshot)?;"),
-            ("fn authenticate_completed<", "let current = now()?;"),
+            ("fn prepare(", "self.config.scope.validate_snapshot(source.snapshot)?;"),
+            ("fn authenticate_completed(", "let current = now()?;"),
         ):
             self.mutate_function(function, marker, "if false { " + marker + " }")
 
@@ -149,7 +142,7 @@ class OriginalCircuitObserverSourceClosureTests(unittest.TestCase):
 
     def test_new_attestation_deadline_and_readback_window_are_distinct(self):
         self.mutate_function(
-            "fn attest_original_completion<",
+            "fn attest_original_completion(",
             "self.authenticate_completed(&source, &observed, &bytes, started_at, true)",
             "self.authenticate_completed(&source, &observed, &bytes, started_at, false)",
         )
@@ -158,7 +151,7 @@ class OriginalCircuitObserverSourceClosureTests(unittest.TestCase):
             "require_new_attestation(&self.config, started_at, current)?",
             "receipt(&self.config, observed, signed.issued_at)?",
         ):
-            self.mutate_function("fn authenticate_completed<", marker)
+            self.mutate_function("fn authenticate_completed(", marker)
         marker = "current >= config.selection.request.envelope.expiry_unix_seconds"
         self.mutate_function("fn require_new_attestation(", marker, marker.replace(">=", ">"))
         self.mutate_function("fn now(", "SystemTime::now()")

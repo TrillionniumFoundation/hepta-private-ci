@@ -118,9 +118,9 @@ impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W> {
     /// Claim once, then sign only an actual original C completion. The original
     /// Trainer and Selector are read on both sides of the claim/completion.
     /// Missing, uncertain or withdrawn material is an error, never NoUpdate.
-    pub async fn attest_original_completion<C: AnchorWitnessStore, S: AnchorWitnessStore>(
+    pub async fn attest_original_completion(
         &mut self,
-        source: OriginalCircuitNextUseReceiptSourcesV1<'_, C, S>,
+        source: OriginalCircuitNextUseReceiptSourcesV1<'_, impl AnchorWitnessStore, impl AnchorWitnessStore>,
     ) -> Result<(LearningIterationReceiptV1, SignedLearningEvidenceV1), Error> {
         let started_at = now()?;
         require_new_attestation(&self.config, started_at, started_at)?;
@@ -164,9 +164,9 @@ impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W> {
     /// Read the same signature against current original C and predecessor
     /// evidence, including after the work deadline while evidence remains valid.
     /// No claim, signature, private step, publication or clock renewal occurs.
-    pub async fn readback<C: AnchorWitnessStore, S: AnchorWitnessStore>(
+    pub async fn readback(
         &mut self,
-        source: OriginalCircuitNextUseReceiptSourcesV1<'_, C, S>,
+        source: OriginalCircuitNextUseReceiptSourcesV1<'_, impl AnchorWitnessStore, impl AnchorWitnessStore>,
     ) -> Result<(LearningIterationReceiptV1, SignedLearningEvidenceV1), Error> {
         let started_at = now()?;
         let observed = self.prepare(&source)?;
@@ -174,9 +174,9 @@ impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W> {
         self.authenticate_completed(&source, &observed, &bytes, started_at, false).await
     }
 
-    fn prepare<C: AnchorWitnessStore, S: AnchorWitnessStore>(
+    fn prepare(
         &self,
-        source: &OriginalCircuitNextUseReceiptSourcesV1<'_, C, S>,
+        source: &OriginalCircuitNextUseReceiptSourcesV1<'_, impl AnchorWitnessStore, impl AnchorWitnessStore>,
     ) -> Result<LearningIterationObservationV1, Error> {
         LearningIterationCoordinatorV1::from_snapshot(source.snapshot.clone())?;
         self.config.scope.validate_snapshot(source.snapshot)?;
@@ -188,16 +188,16 @@ impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W> {
         }
         let coordinator =
             LearningIterationCoordinatorV1::from_snapshot(self.config.selection.clone())?;
-        let cell: &PublishedCircuitCellOwnerV1<C> = source.cell;
+        let cell: &PublishedCircuitCellOwnerV1<_> = source.cell;
         let observation =
             cell.read_learning_next_use(&coordinator, source.source, source.identity)?;
         self.config.scope.validate_observation(&observation)?;
         Ok(observation)
     }
 
-    async fn predecessors<C: AnchorWitnessStore, S: AnchorWitnessStore>(
+    async fn predecessors(
         &self,
-        source: &OriginalCircuitNextUseReceiptSourcesV1<'_, C, S>,
+        source: &OriginalCircuitNextUseReceiptSourcesV1<'_, impl AnchorWitnessStore, impl AnchorWitnessStore>,
     ) -> Result<[SignedLearningEvidenceV1; 2], Error> {
         let trainer: &LearningIterationEvidenceClientV1 = source.trainer;
         let selector: &LearningIterationEvidenceClientV1 = source.selector;
@@ -213,9 +213,9 @@ impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W> {
         ])
     }
 
-    async fn authenticate_completed<C: AnchorWitnessStore, S: AnchorWitnessStore>(
+    async fn authenticate_completed(
         &mut self,
-        source: &OriginalCircuitNextUseReceiptSourcesV1<'_, C, S>,
+        source: &OriginalCircuitNextUseReceiptSourcesV1<'_, impl AnchorWitnessStore, impl AnchorWitnessStore>,
         observed: &LearningIterationObservationV1,
         bytes: &[u8],
         started_at: u64,
