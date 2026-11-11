@@ -1,0 +1,161 @@
+name: MEM8 V5 exact-source Bazel lock
+
+"on":
+  push:
+    branches:
+      - codex/mem8-bazel-lock-v5-20261111-ed353817
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mem8-bazel-lock-v5-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  bazel-lock:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/codex/mem8-bazel-lock-v5-20261111-ed353817'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      RUSTUP_TOOLCHAIN: "1.96.0"
+      PYTHONDONTWRITEBYTECODE: "1"
+      USE_BAZEL_VERSION: "9.3.0"
+      MEM_SOURCE_COMMIT: 9bd2f589debdba4a93baa363817c3669cb103721
+      MEM_SOURCE_TREE: c77785ecb368c44ea699769001a47402c9f50591
+      MEM_SOURCE_BASE: 2ae5215beaf8d7b7df111a090b82134beae2683d
+      MEM_DRIVER_SHA256: 9369195f863fd1e1df02215b1db4d08f30c89c5386fc7a81d4a50b7ed57411d3
+      CODEX_REPO_ROOT: ${{ github.workspace }}/source
+    steps:
+      - name: Retain this independent lock-check invocation
+        shell: bash
+        env:
+          MEM_GATE_OUTPUT: ${{ runner.temp }}/mem8-bazel-lock-v5
+          MEM_LAUNCH_OUTPUT: ${{ runner.temp }}/mem8-bazel-lock-v5-launcher
+          MEM_CACHE_ROOT: ${{ runner.temp }}/mem8-bazel-lock-v5-caches
+          BAZELISK_HOME: ${{ runner.temp }}/mem8-bazel-lock-v5-caches/bazelisk
+          CARGO_TARGET_DIR: ${{ runner.temp }}/mem8-bazel-lock-v5-caches/cargo-target
+        run: |
+          set -euo pipefail
+          printf '%s\n' \
+            "MEM_GATE_OUTPUT=$MEM_GATE_OUTPUT" \
+            "MEM_LAUNCH_OUTPUT=$MEM_LAUNCH_OUTPUT" \
+            "MEM_CACHE_ROOT=$MEM_CACHE_ROOT" \
+            "BAZELISK_HOME=$BAZELISK_HOME" \
+            "CARGO_TARGET_DIR=$CARGO_TARGET_DIR" >> "$GITHUB_ENV"
+          mkdir "$MEM_LAUNCH_OUTPUT"
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          record = {key: os.environ[key] for key in (
+              "GITHUB_SHA", "GITHUB_REF", "GITHUB_RUN_ID", "GITHUB_RUN_ATTEMPT",
+              "MEM_SOURCE_COMMIT", "MEM_SOURCE_TREE", "MEM_SOURCE_BASE", "MEM_DRIVER_SHA256",
+          )}
+          record.update(state="before_checkout", lock_command_started=False,
+                        native_project_tests=0, model_requests=0,
+                        lock_command_budget_seconds=1200, maximum_lock_command_phases=1)
+          (Path(os.environ["MEM_LAUNCH_OUTPUT"]) / "WORKFLOW_INVOCATION.json").write_text(
+              json.dumps(record, indent=2) + "\n"
+          )
+          PY
+
+      - name: Checkout the workflow and its separate evidence harness
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          path: harness
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Checkout the exact formatted source and its comparison base
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: 9bd2f589debdba4a93baa363817c3669cb103721
+          path: source
+          fetch-depth: 5
+          persist-credentials: false
+
+      - name: Bind the source and retain the exact gate harness
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C harness rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git -C source rev-parse HEAD)" = "$MEM_SOURCE_COMMIT"
+          test "$(git -C source rev-parse HEAD^{tree})" = "$MEM_SOURCE_TREE"
+          git -C harness status --porcelain=v1 --untracked-files=all > "$MEM_LAUNCH_OUTPUT/harness-before.txt"
+          git -C source status --porcelain=v1 --untracked-files=all > "$MEM_LAUNCH_OUTPUT/source-before.txt"
+          test ! -s "$MEM_LAUNCH_OUTPUT/harness-before.txt"
+          test ! -s "$MEM_LAUNCH_OUTPUT/source-before.txt"
+          python3 - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          root = Path(os.environ["GITHUB_WORKSPACE"]) / "harness"
+          out = Path(os.environ["MEM_LAUNCH_OUTPUT"])
+          records = []
+          for relative in (
+              ".github/scripts/mem8_bazel_lock_v5.py",
+              ".github/workflows/hepta-mem8-bazel-lock-v5.yml",
+          ):
+              data = (root / relative).read_bytes()
+              sha = hashlib.sha256(data).hexdigest()
+              if relative.endswith(".py") and sha != os.environ["MEM_DRIVER_SHA256"]:
+                  raise RuntimeError("gate driver differs from its frozen reviewed bytes")
+              (out / Path(relative).name).write_bytes(data)
+              records.append({"path": relative, "bytes": len(data), "sha256": sha,
+                              "git_blob": hashlib.sha1(b"blob " + str(len(data)).encode() + b"\0" + data).hexdigest()})
+          (out / "HARNESS_FILES.json").write_text(json.dumps(records, indent=2) + "\n")
+          PY
+
+      - name: Install the pinned repository Rust toolchain
+        uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489
+        with:
+          toolchain: "1.96.0"
+
+      - name: Install pinned just
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0
+
+      - name: Install pinned Bazelisk with only this run's output directory
+        uses: bazel-contrib/setup-bazel@c5acdfb288317d0b5c0bbd7a396a3dc868bb0f86
+        with:
+          bazelisk-version: "1.28.1"
+          module-root: source
+          output-base: ${{ runner.temp }}/mem8-bazel-lock-v5-caches/output-base
+          bazelisk-cache: false
+          disk-cache: false
+          repository-cache: false
+          external-cache: ""
+          cache-save: false
+
+      - name: Run one exact-source 1200-second Bazel lock command
+        shell: bash
+        working-directory: source
+        run: |
+          set -euo pipefail
+          python3 "$GITHUB_WORKSPACE/harness/.github/scripts/mem8_bazel_lock_v5.py" \
+            --source "$GITHUB_WORKSPACE/source" \
+            --output "$MEM_GATE_OUTPUT" \
+            --cache-root "$MEM_CACHE_ROOT" \
+            --expected-head "$MEM_SOURCE_COMMIT" \
+            --expected-tree "$MEM_SOURCE_TREE" \
+            --base "$MEM_SOURCE_BASE" \
+            --timeout-seconds 1200 \
+            2>&1 | tee "$MEM_LAUNCH_OUTPUT/driver-console.log"
+
+      - name: Retain the original lock records and any generated lock
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: mem8-bazel-lock-v5-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/mem8-bazel-lock-v5/
+            ${{ runner.temp }}/mem8-bazel-lock-v5-launcher/
+          if-no-files-found: error
+          retention-days: 14
+          compression-level: 6
+          overwrite: false
+          include-hidden-files: false
