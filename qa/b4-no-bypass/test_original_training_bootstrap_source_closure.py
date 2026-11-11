@@ -64,6 +64,7 @@ EXPECTED = {
         AGENT + "cell_q24_material_command.rs",
         AGENT + "cell_q24_material_command_service.rs",
         SERVICE,
+        AGENT + "cell_q24_training_command_connection.rs",
     ),
 }
 
