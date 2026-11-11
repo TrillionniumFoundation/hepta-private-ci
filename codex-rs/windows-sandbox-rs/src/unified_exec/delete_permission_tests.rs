@@ -41,6 +41,7 @@ fn legacy_refuses_before_elevated_four_cell_delete_boundary() {
         let host = DeleteMatrix::new(&fixture.path().join("host")).expect("host matrix");
         let restricted = DeleteMatrix::new(&fixture.path().join("outside")).expect("outside matrix");
         host.assert_same_acls(&restricted);
+        let host_access_context = host.access_diagnostics();
         let (script, env) = matrix_script(&host);
         let host_script = workspace.join("host-matrix.cmd");
         fs::write(&host_script, script).expect("write host script");
@@ -63,12 +64,13 @@ fn legacy_refuses_before_elevated_four_cell_delete_boundary() {
         let host_log = fs::read_to_string(&host_log_path).expect("read owned host output");
         let host_outcomes = host.finish("ordinary-host-cmd-done").expect("host physical readback");
         eprintln!("delete_matrix host_cmd_status={status} output={host_log:?}");
-        assert_eq!(status.code(), Some(0));
+        assert_eq!(status.code(), Some(0), "{host_access_context}");
         assert_eq!(host_log.lines().filter(|line| line.starts_with("MATRIX_")).collect::<Vec<_>>(),
-            ["MATRIX_ATTEMPT_0", "MATRIX_ATTEMPT_1", "MATRIX_ATTEMPT_2", "MATRIX_ATTEMPT_3", "MATRIX_DONE"]);
+            ["MATRIX_ATTEMPT_0", "MATRIX_ATTEMPT_1", "MATRIX_ATTEMPT_2", "MATRIX_ATTEMPT_3", "MATRIX_DONE"],
+            "{host_access_context}");
         assert_eq!(host_outcomes, [DeleteRoute::Neither, DeleteRoute::TargetOnly, DeleteRoute::ParentOnly, DeleteRoute::Both]
             .map(|route| DeleteOutcome { route, file_deleted: route != DeleteRoute::Neither,
-                directory_deleted: route != DeleteRoute::Neither }));
+                directory_deleted: route != DeleteRoute::Neither }), "{host_access_context}");
 
         let allowed_file = workspace.join("allowed-file");
         let allowed_directory = workspace.join("allowed-directory");

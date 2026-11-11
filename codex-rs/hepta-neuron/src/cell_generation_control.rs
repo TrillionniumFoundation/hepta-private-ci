@@ -4,6 +4,8 @@
 use std::panic::AssertUnwindSafe;
 use std::sync::Arc;
 use std::sync::atomic::AtomicBool;
+#[cfg(test)]
+use std::sync::atomic::AtomicUsize;
 use std::sync::atomic::Ordering;
 use std::sync::mpsc;
 use std::thread;
@@ -59,6 +61,14 @@ pub struct ControlledCellGenerationConfigV2 {
     pub rpc_timeout: Duration,
 }
 
+#[cfg(test)]
+#[derive(Default)]
+struct QualificationRpcProgress {
+    actor_entered: AtomicBool,
+    operations_received: AtomicUsize,
+    operation_replies_ready: AtomicUsize,
+}
+
 /// One control actor and at most one independently running computation. A
 /// timed-out RPC does not revoke its durable admission. Reopen uses the same
 /// binding and clock epoch, and never recreates a dispatch token.
@@ -69,6 +79,8 @@ pub struct ControlledCellGenerationPortV2 {
     closed: Arc<AtomicBool>,
     completion: mpsc::Receiver<Result<(), CellGenerationErrorV2>>,
     terminal: Option<Result<(), CellGenerationErrorV2>>,
+    #[cfg(test)]
+    qualification_progress: Arc<QualificationRpcProgress>,
 }
 
 impl ControlledCellGenerationPortV2 {
@@ -104,6 +116,8 @@ impl ControlledCellGenerationPortV2 {
         let closed = Arc::new(AtomicBool::new(false));
         let (sender, commands) = mpsc::sync_channel(config.queue_capacity);
         let (finished, completion) = mpsc::sync_channel(1);
+        #[cfg(test)]
+        let qualification_progress = Arc::new(QualificationRpcProgress::default());
         let mut actor = Actor {
             control,
             config: Arc::clone(&config),
@@ -112,6 +126,8 @@ impl ControlledCellGenerationPortV2 {
             commands,
             stopping: Arc::clone(&stopping),
             active: None,
+            #[cfg(test)]
+            qualification_progress: Arc::clone(&qualification_progress),
         };
         let actor_closed = Arc::clone(&closed);
         drop(
@@ -134,6 +150,8 @@ impl ControlledCellGenerationPortV2 {
             closed,
             completion,
             terminal: None,
+            #[cfg(test)]
+            qualification_progress,
         })
     }
 
@@ -155,6 +173,17 @@ impl ControlledCellGenerationPortV2 {
         };
         self.terminal = Some(result.clone());
         result
+    }
+
+    // Independent atomic observations, not a coherent actor snapshot or a reply.
+    // This has no command, journal, file, or owner access.
+    #[cfg(test)]
+    fn qualification_rpc_progress(&self) -> (bool, usize, usize) {
+        (
+            self.qualification_progress.actor_entered.load(Ordering::Acquire),
+            self.qualification_progress.operations_received.load(Ordering::Acquire),
+            self.qualification_progress.operation_replies_ready.load(Ordering::Acquire),
+        )
     }
 
     pub fn is_closed(&self) -> bool {
@@ -309,10 +338,14 @@ struct Actor {
     commands: mpsc::Receiver<ActorCommand>,
     stopping: Arc<AtomicBool>,
     active: Option<Running>,
+    #[cfg(test)]
+    qualification_progress: Arc<QualificationRpcProgress>,
 }
 
 impl Actor {
     fn run(&mut self) {
+        #[cfg(test)]
+        self.qualification_progress.actor_entered.store(true, Ordering::Release);
         loop {
             self.collect();
             if self.stopping.load(Ordering::Acquire) {
@@ -330,6 +363,8 @@ impl Actor {
             }
             match self.commands.recv_timeout(Duration::from_millis(5)) {
                 Ok(ActorCommand::Operation(command)) => {
+                    #[cfg(test)]
+                    self.qualification_progress.operations_received.fetch_add(1, Ordering::AcqRel);
                     let result = if self.stopping.load(Ordering::Acquire) {
                         Err(CellGenerationErrorV2::Unavailable)
                     } else {
@@ -339,6 +374,8 @@ impl Actor {
                             CommandKind::Cancel => self.cancel(&command),
                         }
                     };
+                    #[cfg(test)]
+                    self.qualification_progress.operation_replies_ready.fetch_add(1, Ordering::AcqRel);
                     let _ = command.reply.try_send(result);
                 }
                 #[cfg(feature = "qualification-owned-file-read")]

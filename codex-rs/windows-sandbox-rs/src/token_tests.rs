@@ -428,6 +428,7 @@ fn legacy_workspace_capability_refuses_all_four_native_delete_routes() -> Result
     let host = DeleteMatrix::new(&fixture.path().join("host"))?;
     let restricted = DeleteMatrix::new(&fixture.path().join("restricted"))?;
     host.assert_same_acls(&restricted);
+    let host_access_context = host.access_diagnostics();
     let host_errors: Vec<_> = host
         .paths()
         .map(|(file, directory)| {
@@ -447,7 +448,8 @@ fn legacy_workspace_capability_refuses_all_four_native_delete_routes() -> Result
             [None; 2],
             [None; 2],
             [None; 2],
-        ]
+        ],
+        "{host_access_context}"
     );
     assert_eq!(
         host_outcomes,
@@ -461,7 +463,8 @@ fn legacy_workspace_capability_refuses_all_four_native_delete_routes() -> Result
             route,
             file_deleted: route != DeleteRoute::Neither,
             directory_deleted: route != DeleteRoute::Neither
-        })
+        }),
+        "{host_access_context}"
     );
 
     let base = OwnedToken(unsafe { get_current_token_for_restriction()? });

@@ -138,9 +138,11 @@ pub(crate) fn write_cached_directory_plugins(
     }) else {
         return;
     };
-    if let Err(err) = codex_utils_path::write_atomically(&cache_path, &contents) {
+    if let Err(failure) = codex_utils_path::write_atomically_with_error_stage(&cache_path, &contents) {
+        let err = &failure.error;
         warn!(
             stage = "remote_plugin_catalog_cache_write",
+            atomic_write_stage = ?failure.stage,
             raw_os_error = ?err.raw_os_error(),
             error_kind = ?err.kind(),
             cache_file = ?cache_path.file_name(),

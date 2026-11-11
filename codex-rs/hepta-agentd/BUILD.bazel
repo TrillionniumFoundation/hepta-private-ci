@@ -1,4 +1,4 @@
-load("@crates//:defs.bzl", "all_crate_deps")
+load("//bazel/rules/testing:qualification_lease_clock.bzl", "LEASE_CLOCK_TEST_DEPENDENCIES", "qualification_lease_clock_library")
 load("@rules_rust//rust:defs.bzl", "rust_binary", "rust_library", "rust_test")
 load("//:defs.bzl", "WINDOWS_RUSTC_LINK_FLAGS", "codex_rust_crate", "workspace_root_test")
 load("//bazel/rules/testing:rust_test_dependencies.bzl", "rust_test_dependencies")
@@ -14,6 +14,8 @@ _UNIT_TEST_DEPENDENCIES = {
     "//codex-rs/hepta-neuron": "//codex-rs/hepta-neuron:hepta-neuron-test-lib",
     "//codex-rs/hepta-prompt-optimizer": "//codex-rs/hepta-prompt-optimizer:hepta-prompt-optimizer-test-lib",
 }
+
+_QUALIFICATION_CLOCK_DEPENDENCIES = _UNIT_TEST_DEPENDENCIES | LEASE_CLOCK_TEST_DEPENDENCIES
 
 _GENERATION_TEST_FIXTURE = [
     "tests/support/neuron_generation.rs",
@@ -83,7 +85,7 @@ rust_library(
     crate_root = "src/lib.rs",
     edition = "2024",
     visibility = ["//visibility:private"],
-    deps = rust_test_dependencies(_UNIT_TEST_DEPENDENCIES),
+    deps = rust_test_dependencies(_QUALIFICATION_CLOCK_DEPENDENCIES),
 )
 
 rust_test(
@@ -109,7 +111,7 @@ rust_test(
     tags = ["manual"],
     visibility = ["//visibility:private"],
     deps = rust_test_dependencies(
-        _UNIT_TEST_DEPENDENCIES,
+        _QUALIFICATION_CLOCK_DEPENDENCIES,
         normal_dev = True,
     ),
 )
@@ -150,7 +152,7 @@ rust_binary(
     tags = ["manual"],
     target_compatible_with = _COGNITIVE_E2E_COMPATIBILITY,
     visibility = ["//visibility:private"],
-    deps = [":hepta-agentd-cognitive-write-qualification-lib"] + all_crate_deps(),
+    deps = [":hepta-agentd-cognitive-write-qualification-lib"] + rust_test_dependencies(_QUALIFICATION_CLOCK_DEPENDENCIES),
 )
 
 rust_test(
@@ -171,8 +173,8 @@ rust_test(
     tags = ["manual"],
     target_compatible_with = _COGNITIVE_E2E_COMPATIBILITY,
     visibility = ["//visibility:private"],
-    deps = [":hepta-agentd-cognitive-write-qualification-lib"] + all_crate_deps(
-        normal = True,
+    deps = [":hepta-agentd-cognitive-write-qualification-lib"] + rust_test_dependencies(
+        _QUALIFICATION_CLOCK_DEPENDENCIES,
         normal_dev = True,
     ),
 )
@@ -202,4 +204,21 @@ exports_files(
         "tests/supervisord_product_e2e.rs",
     ],
     visibility = ["//codex-rs/hepta-contracts:__pkg__"],
+)
+
+qualification_lease_clock_library(
+    name = "hepta-agentd",
+    crate_name = "codex_hepta_agentd",
+    compile_data = [
+        "tests/fixtures/android-bound-text-v1.json",
+        "tests/fixtures/hos2_production_owner.json",
+        "tests/fixtures/notes-bootstrap-v2.json",
+        "tests/fixtures/notes-document-observation-v1.json",
+        "tests/fixtures/notes-objective-literal-v1.json",
+        "tests/fixtures/notes-target-v1.json",
+        "tests/fixtures/notes-model-v1.json",
+    ] + _GENERATION_TEST_FIXTURE,
+    crate_features = ["production-cognitive-write"],
+    extra_srcs = ["tests/support/terminal_cell_owner.rs"],
+    base_replacements = _UNIT_TEST_DEPENDENCIES,
 )

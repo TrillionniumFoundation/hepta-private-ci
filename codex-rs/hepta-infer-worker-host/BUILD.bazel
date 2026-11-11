@@ -1,3 +1,4 @@
+load("//bazel/rules/testing:qualification_lease_clock.bzl", "qualification_lease_clock_library")
 load("//:defs.bzl", "codex_rust_crate")
 load(":joint_generation.bzl", "joint_generation_binary")
 
@@ -12,3 +13,11 @@ codex_rust_crate(
 )
 
 joint_generation_binary()
+
+qualification_lease_clock_library(
+    name = "hepta-infer-worker-host",
+    crate_name = "codex_hepta_infer_worker_host",
+    base_replacements = {
+        "//codex-rs/hepta-infer-core": "//codex-rs/hepta-infer-core:hepta-infer-core-test-lib",
+    },
+)

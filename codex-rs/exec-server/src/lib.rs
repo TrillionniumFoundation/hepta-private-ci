@@ -44,6 +44,8 @@ mod shell_snapshot;
 mod telemetry;
 mod trace_context;
 mod websocket_pong_watchdog;
+#[cfg(windows)]
+mod windows_restricted_write;
 
 use codex_exec_server_protocol as protocol;
 

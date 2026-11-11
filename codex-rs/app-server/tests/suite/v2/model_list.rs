@@ -200,6 +200,15 @@ async fn list_models_uses_chatgpt_remote_catalog_as_source_of_truth() -> Result<
             }))
         })
         .collect::<Result<Vec<_>, _>>()?;
+    // The endpoint decodes ModelsResponse's legacy base instructions into
+    // model_messages before the manager writes its cache. Compare that wire
+    // round trip, while keeping the original raw catalog for response assertions.
+    let expected_cache_models = serde_json::from_value::<ModelsResponse>(serde_json::to_value(
+        ModelsResponse {
+            models: remote_models.clone(),
+        },
+    )?)?
+    .models;
     let models_mock = mount_models_once(
         &server,
         ModelsResponse {
@@ -247,7 +256,7 @@ openai_base_url = "{server_uri}/v1"
                     // The writer uses fs::write; presence alone can expose partial JSON.
                     if let Ok(cache) = serde_json::from_slice::<ModelsCacheEntry>(&contents)
                         && cache.client_version.as_deref() == Some(client_version.as_str())
-                        && cache.models == remote_models
+                        && cache.models == expected_cache_models
                         && cache.fetched_at >= models_refresh_started_at
                         && cache.fetched_at <= chrono::Utc::now()
                     {

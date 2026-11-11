@@ -243,6 +243,8 @@ pub use cognitive_store::CognitiveRecoveryError;
 pub use cognitive_store::CognitiveRecoveryRequirement;
 pub use cognitive_store::CognitiveStore;
 pub use cognitive_store::CognitiveStoreError;
+#[cfg(any(test, feature = "qualification-lease-clock"))]
+pub use cognitive_store::QualificationLeaseClock;
 #[cfg(target_os = "linux")]
 pub use cognitive_store::InstalledRootCheckpointImage;
 pub use cognitive_store::RecoveredCognitiveReadOnly;

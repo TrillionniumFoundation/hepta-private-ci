@@ -1216,8 +1216,11 @@ async fn apply_patch_cli_preserves_existing_hard_link_outside_workspace() -> Res
     let out = harness.apply_patch_output(call_id).await;
     if cfg!(windows) {
         assert!(
-            out.contains("patch rejected: writing outside of the project"),
-            "Windows sandboxing intentionally rejects writes through existing hard links to files outside the workspace; tool output: {out}"
+            out.contains("Exit code: 1")
+                && out.contains(
+                    "restricted filesystem write requires a file with exactly one hard link",
+                ),
+            "the restricted Windows filesystem helper must reject an existing multi-link target; tool output: {out}"
         );
         assert_eq!(
             std::fs::read_to_string(&outside_file)?,

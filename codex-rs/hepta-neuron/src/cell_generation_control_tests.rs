@@ -380,11 +380,15 @@ fn lost_rpc_reply_and_queue_capacity_cannot_duplicate_original_dispatch() {
     changed.input.push(8);
     assert_eq!(
         port.execute_generation(&fixture.config.manifest, &changed),
-        Err(CellGenerationErrorV2::Conflict)
+        Err(CellGenerationErrorV2::Conflict),
+        "reopened execute: (actor entered, operations received, replies ready) = {:?}",
+        port.qualification_rpc_progress()
     );
     assert_eq!(
         port.cancel_generation(&changed),
-        Err(CellGenerationErrorV2::Conflict)
+        Err(CellGenerationErrorV2::Conflict),
+        "reopened cancel: (actor entered, operations received, replies ready) = {:?}",
+        port.qualification_rpc_progress()
     );
     assert_eq!(worker.calls.load(Ordering::Acquire), 1);
     checked(port.shutdown());

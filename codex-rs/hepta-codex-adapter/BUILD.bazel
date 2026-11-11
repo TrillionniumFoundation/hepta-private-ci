@@ -1,3 +1,4 @@
+load("//bazel/rules/testing:qualification_lease_clock.bzl", "qualification_lease_clock_library")
 load("//:defs.bzl", "codex_rust_crate")
 
 codex_rust_crate(
@@ -6,4 +7,9 @@ codex_rust_crate(
     unit_test_dependency_replacements = {
         "//codex-rs/app-server-client": "//codex-rs/app-server-client:app-server-client-test-lib",
     },
+)
+
+qualification_lease_clock_library(
+    name = "hepta-codex-adapter",
+    crate_name = "codex_hepta_codex_adapter",
 )

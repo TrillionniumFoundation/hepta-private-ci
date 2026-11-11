@@ -205,7 +205,18 @@ fn owner_drop_releases_lock_with_duplicate_descriptor() {
 #[test]
 fn qualification_observes_physical_same_length_changes_and_retains_the_lock_and_cursor() {
     let path = path("physical-observation");
-    let mut control = DurableInferenceControl::open(&path, /*capacity*/ 32).expect("owner");
+    // This negative-control fixture needs in-place write access. Production
+    // append-only descriptors intentionally cannot perform that mutation on Windows.
+    let mut options = OpenOptions::new();
+    options.create_new(true).read(true).write(true);
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::OpenOptionsExt;
+        options.mode(0o600);
+    }
+    let file = options.open(&path).expect("read/write fixture");
+    let mut control =
+        DurableInferenceControl::replay_file(file, &path, /*capacity*/ 32).expect("owner");
     control.submit(/*now_ms*/ 100, request()).expect("submit");
     let cached = control.get("request.1").cloned();
     let original = control
@@ -217,10 +228,9 @@ fn qualification_observes_physical_same_length_changes_and_retains_the_lock_and_
     ));
     let mut changed = original.clone();
     changed[0] ^= 1;
-    // This owner has an append-mode descriptor. A same-length replacement
-    // through that original descriptor demonstrates that cached state or file
-    // length cannot stand in for the byte observation.
-    control.file.set_len(0).expect("truncate fixture");
+    // Mutate the same locked descriptor without reopening or changing its length.
+    // Cached state or file length cannot stand in for the byte observation.
+    control.file.rewind().expect("rewind fixture");
     control
         .file
         .write_all(&changed)

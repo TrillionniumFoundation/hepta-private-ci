@@ -52,6 +52,26 @@ use windows_sys::Win32::Storage::FileSystem::GetFileInformationByHandle;
 use windows_sys::Win32::Storage::FileSystem::GetFileInformationByHandleEx;
 use windows_sys::Win32::Storage::FileSystem::WRITE_DAC;
 
+use std::os::windows::io::FromRawHandle;
+use std::os::windows::io::OwnedHandle;
+use windows_sys::Win32::Foundation::ERROR_NO_TOKEN;
+use windows_sys::Win32::Foundation::GetLastError;
+use windows_sys::Win32::Foundation::LUID;
+use windows_sys::Win32::Security::GetTokenInformation;
+use windows_sys::Win32::Security::LookupPrivilegeValueW;
+use windows_sys::Win32::Security::LUID_AND_ATTRIBUTES;
+use windows_sys::Win32::Security::SE_PRIVILEGE_ENABLED;
+use windows_sys::Win32::Security::TOKEN_PRIVILEGES;
+use windows_sys::Win32::Security::TOKEN_QUERY;
+use windows_sys::Win32::Security::TokenPrivileges;
+use windows_sys::Win32::Storage::FileSystem::FILE_FLAG_OPEN_REPARSE_POINT;
+use windows_sys::Win32::System::SystemServices::FILE_PERSISTENT_ACLS;
+use windows_sys::Win32::Storage::FileSystem::GetVolumeInformationByHandleW;
+use windows_sys::Win32::System::Threading::GetCurrentProcess;
+use windows_sys::Win32::System::Threading::GetCurrentThread;
+use windows_sys::Win32::System::Threading::OpenProcessToken;
+use windows_sys::Win32::System::Threading::OpenThreadToken;
+
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub(crate) enum DeleteRoute {
     Neither,
@@ -279,6 +299,60 @@ impl HeldObject {
         Ok(())
     }
 
+    fn access_diagnostic(&self, access: u32, flags: u32) -> String {
+        let mut volume_flags = 0;
+        // SAFETY: the original owned fixture handle stays live. No volume name,
+        // label, serial, filesystem name, or unrelated path is requested.
+        let volume = if unsafe {
+            GetVolumeInformationByHandleW(
+                self.file.as_raw_handle() as HANDLE,
+                std::ptr::null_mut(),
+                /*nvolumenamesize*/ 0,
+                std::ptr::null_mut(),
+                std::ptr::null_mut(),
+                &mut volume_flags,
+                std::ptr::null_mut(),
+                /*nfilesystemnamesize*/ 0,
+            )
+        } != 0
+        {
+            format!("persistent_acls={}", volume_flags & FILE_PERSISTENT_ACLS != 0)
+        } else {
+            format!("volume_query_errno={}", unsafe { GetLastError() })
+        };
+        // Existing-object access checks only: no creation, write, disposition,
+        // ACL/token adjustment, or inherited handle. Drop before the real delete.
+        let opened = OpenOptions::new()
+            .access_mode(access)
+            .share_mode(FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE)
+            .custom_flags(flags | FILE_FLAG_OPEN_REPARSE_POINT)
+            .open(&self.path);
+        match opened {
+            Ok(file) => {
+                // SAFETY: the complete native output is initialized by success.
+                let mut info: BY_HANDLE_FILE_INFORMATION = unsafe { std::mem::zeroed() };
+                if unsafe {
+                    GetFileInformationByHandle(file.as_raw_handle() as HANDLE, &mut info)
+                } == 0
+                {
+                    let errno = unsafe { GetLastError() };
+                    format!("{volume} open_success=true identity_query_errno={errno}")
+                } else {
+                    let same_object = (
+                        info.dwVolumeSerialNumber,
+                        info.nFileIndexHigh,
+                        info.nFileIndexLow,
+                    ) == self.identity;
+                    format!("{volume} open_success=true same_object={same_object}")
+                }
+            }
+            Err(error) => {
+                let errno = error.raw_os_error();
+                format!("{volume} open_success=false open_errno={errno:?}")
+            }
+        }
+    }
+
     fn release(mut self, label: &str) -> Result<(PathBuf, (u32, u32, u32))> {
         ensure!(
             identity(&self.file)? == self.identity,
@@ -395,6 +469,121 @@ impl DeleteMatrix {
         self.0
             .iter()
             .map(|row| (row.file.path.as_path(), row.directory.path.as_path()))
+    }
+
+    /// Capture bounded, read-only context before the original delete. Callers
+    /// attach it only to failed assertions; a cmd child's token is not observed.
+    pub(crate) fn access_diagnostics(&self) -> String {
+        let mut context = String::from("delete_matrix_predelete_parent_context");
+        let mut raw = 0;
+        // SAFETY: only TOKEN_QUERY is requested for the current thread token.
+        let token = if unsafe {
+            OpenThreadToken(
+                GetCurrentThread(),
+                TOKEN_QUERY,
+                /*openasself*/ 1,
+                &mut raw,
+            )
+        } != 0
+        {
+            // SAFETY: successful OpenThreadToken transfers this owned handle.
+            Some((unsafe { OwnedHandle::from_raw_handle(raw as _) }, "thread"))
+        } else {
+            let errno = unsafe { GetLastError() };
+            if errno != ERROR_NO_TOKEN {
+                context.push_str(&format!(" token_query_errno={errno}"));
+                None
+            // SAFETY: fallback is limited to no thread token, and still QUERY only.
+            } else if unsafe { OpenProcessToken(GetCurrentProcess(), TOKEN_QUERY, &mut raw) } != 0 {
+                // SAFETY: successful OpenProcessToken transfers this owned handle.
+                Some((unsafe { OwnedHandle::from_raw_handle(raw as _) }, "process"))
+            } else {
+                context.push_str(&format!(" token_query_errno={}", unsafe { GetLastError() }));
+                None
+            }
+        };
+        if let Some((token, source)) = token {
+            context.push_str(&format!(" effective_token_source={source}"));
+            // The fixed 16 KiB buffer bounds the entire native query. No SID,
+            // token identifier, unselected privilege, or arbitrary text is emitted.
+            let mut words = [0_u64; 2048];
+            let mut returned = 0;
+            let capacity = std::mem::size_of_val(&words);
+            // SAFETY: the initialized aligned buffer covers the supplied capacity.
+            if unsafe {
+                GetTokenInformation(
+                    token.as_raw_handle() as HANDLE,
+                    TokenPrivileges,
+                    words.as_mut_ptr().cast(),
+                    capacity as u32,
+                    &mut returned,
+                )
+            } == 0
+            {
+                context.push_str(&format!(" privileges_query_errno={}", unsafe { GetLastError() }));
+            } else {
+                let offset = std::mem::offset_of!(TOKEN_PRIVILEGES, Privileges);
+                let stride = std::mem::size_of::<LUID_AND_ATTRIBUTES>();
+                if (returned as usize) < offset || returned as usize > capacity {
+                    context.push_str(" privileges_query_size_valid=false");
+                } else {
+                    // SAFETY: the complete count field lies inside the returned buffer.
+                    let count = unsafe { std::ptr::read_unaligned(words.as_ptr().cast::<u32>()) } as usize;
+                    if count > (returned as usize - offset) / stride {
+                        context.push_str(" privileges_query_size_valid=false");
+                    } else {
+                        for name in ["SeBackupPrivilege", "SeRestorePrivilege", "SeTakeOwnershipPrivilege"] {
+                            // SAFETY: the fixed privilege name and output LUID are valid.
+                            let mut luid: LUID = unsafe { std::mem::zeroed() };
+                            if unsafe {
+                                LookupPrivilegeValueW(
+                                    std::ptr::null(),
+                                    crate::winutil::to_wide(name).as_ptr(),
+                                    &mut luid,
+                                )
+                            } == 0
+                            {
+                                let errno = unsafe { GetLastError() };
+                                context.push_str(&format!(" {name}_lookup_errno={errno}"));
+                                continue;
+                            }
+                            let mut attributes = None;
+                            for index in 0..count {
+                                // SAFETY: the complete native entry is bounded by
+                                // returned, offset and count validated above.
+                                let entry = unsafe {
+                                    std::ptr::read_unaligned(
+                                        words.as_ptr().cast::<u8>()
+                                            .add(offset + index * stride)
+                                            .cast::<LUID_AND_ATTRIBUTES>(),
+                                    )
+                                };
+                                if entry.Luid.LowPart == luid.LowPart && entry.Luid.HighPart == luid.HighPart {
+                                    attributes = Some(entry.Attributes);
+                                    break;
+                                }
+                            }
+                            let present = attributes.is_some();
+                            let enabled = attributes.is_some_and(|value| value & SE_PRIVILEGE_ENABLED != 0);
+                            context.push_str(&format!(" {name}_present={present} {name}_enabled={enabled}"));
+                        }
+                    }
+                }
+            }
+        }
+        for row in &self.0 {
+            let route = row.route;
+            for (object, held, access, flags) in [
+                ("file_delete", &row.file, DELETE, 0),
+                ("file_delete_backup", &row.file, DELETE, FILE_FLAG_BACKUP_SEMANTICS),
+                ("directory_delete_backup", &row.directory, DELETE, FILE_FLAG_BACKUP_SEMANTICS),
+                ("parent_delete_child_backup", &row.parent, FILE_DELETE_CHILD, FILE_FLAG_BACKUP_SEMANTICS),
+            ] {
+                let observation = held.access_diagnostic(access, flags);
+                context.push_str(&format!("\nroute={route:?} object={object} {observation}"));
+            }
+        }
+        context
     }
 
     pub(crate) fn assert_same_acls(&self, other: &Self) {

@@ -316,6 +316,7 @@ impl CognitiveStore {
                 path: candidate.clone(),
                 commit_gate,
                 _open_guard: Some(std::sync::Arc::new(exclusive_guard)),
+                local_lease_clock: super::lease_clock::LocalLeaseClock::default(),
             })
         }
         .await;
