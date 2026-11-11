@@ -213,6 +213,18 @@ def verify_content_identity(
 def content_identity_report(
     steps, snapshots, scores, launch, *, evaluator_sha256, rubric_sha256
 ):
+    # Complete wire/score consistency cannot certify an aborted or unisolated
+    # actor. Incomplete historical attempts are inspected by content_audit,
+    # where selected_used remains unknown rather than being promoted.
+    if (
+        type(launch.get("exit_code")) is not int
+        or launch["exit_code"] != 0
+        or launch.get("enforced_before_actor_exec") is not True
+        or launch.get("callback_error") is not None
+        or launch.get("protocol_error") is not None
+        or launch.get("limit_reason") is not None
+    ):
+        raise ValueError("Content identity requires a completed isolated actor")
     lines = [line.encode() for line in launch["stdout"].split("\n") if line.strip()]
     exchanges = launch["host_exchanges"]
     if len(lines) != len(exchanges):
