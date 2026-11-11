@@ -519,6 +519,7 @@ pub use codex_hepta_agent_protocol::CognitiveContextItem;
 pub use codex_hepta_agent_protocol::CognitiveContextPlan;
 pub use codex_hepta_agent_protocol::CognitiveContextRevalidation;
 pub use codex_hepta_agent_protocol::CognitiveContextSnapshot;
+pub use codex_hepta_agent_protocol::EpisodicSnapshotImportResult;
 pub use codex_hepta_agent_protocol::EventBatch;
 pub use codex_hepta_agent_protocol::HealthSnapshot;
 pub use codex_hepta_agent_protocol::KernelEvidenceAppendIngress;

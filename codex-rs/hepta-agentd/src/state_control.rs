@@ -287,6 +287,9 @@ impl AgentdState {
                     crate::evidence_host::verify(self, request).await?,
                 )
             }
+            crate::AgentdMethod::EpisodicSnapshotImport { .. } => {
+                return Err(AgentdError::CognitiveWriteRuntimeUnavailable);
+            }
             crate::AgentdMethod::CognitiveContext { query, limit } => {
                 require_cognitive_control_ready(
                     lifecycle,

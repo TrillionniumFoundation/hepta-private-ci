@@ -442,6 +442,21 @@ impl AgentdProductionWriterHost {
         })
     }
 
+    /// Import only through the retained production writer and the original
+    /// host's independently supplied source admission. No default verifier exists.
+    pub async fn import_episodic_snapshot(
+        &self,
+        access: &CognitiveAccess,
+        scope: &codex_hepta_cognitive_store::CognitiveScope,
+        snapshot_json: &str,
+        admission: &dyn codex_hepta_memory::EpisodicSnapshotVerifier,
+    ) -> Result<codex_hepta_memory::EpisodicImportReceipt, AgentdError> {
+        let mutation = self.mutation.as_ref().ok_or_else(|| {
+            AgentdError::Protocol("production cognitive mutation capability is not attached".to_string())
+        })?;
+        Ok(mutation.import_episodic_snapshot(access, scope, snapshot_json, admission).await?)
+    }
+
     pub async fn remember_with_kg(
         &self,
         access: &CognitiveAccess,
