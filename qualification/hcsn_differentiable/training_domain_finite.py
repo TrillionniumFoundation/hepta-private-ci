@@ -22,7 +22,6 @@ from .operator import DifferentiableDistributionOperator
 from .value import finite_basis_value
 
 
-
 def _fixed_gap_schedule(durations):
     """Admit bounded, explicitly fixed real intervals without coercing tensors.
 
