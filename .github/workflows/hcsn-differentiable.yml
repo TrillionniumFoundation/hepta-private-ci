@@ -125,6 +125,8 @@ jobs:
             | tee "$RUNNER_TEMP/hcsn-differentiable/c2-program-manifest-freeze-tests.log"
           python -m unittest discover -s qualification/hcsn_differentiable/c2_successor_v1 -p 'test_execution_decision_freeze.py' -v 2>&1 \
             | tee "$RUNNER_TEMP/hcsn-differentiable/c2-execution-decision-tests.log"
+          python -m unittest discover -s qualification/hcsn_differentiable/c2_successor_v1 -p 'test_terminal_result_json_admission.py' -v 2>&1 \
+            | tee "$RUNNER_TEMP/hcsn-differentiable/c2-terminal-result-json-tests.log"
 
       - name: Enforce the predeclared numerical error budget
         id: budget
