@@ -53,6 +53,20 @@ SELECTION_CASES = tuple(
         "q24_original_selector_rejects_another_real_completion_with_same_run_and_manifest",
     )
 )
+MODEL_SELECTION_PREFIX = (
+    "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::"
+)
+MODEL_SELECTION_CASES = tuple(
+    MODEL_SELECTION_PREFIX + name
+    for name in (
+        "q24_source_bound_model_selector_attests_and_recovers_exact_adoption",
+        "q24_source_bound_model_selector_refuses_withdrawn_training_source",
+        "q24_source_bound_model_selector_refuses_withdrawn_version_publication",
+        "q24_source_bound_model_selector_refuses_valid_predecessor_resigning",
+        "q24_source_bound_model_selector_pending_claim_survives_recovery",
+        "q24_source_bound_model_selector_fences_changed_execution_bytes",
+    )
+)
 TRAINING_LANE_PREFIX = (
     "neuron_generation_update_bootstrap::adopted_learning::composed_tests::"
     "training::owner::model_proposal::training_lane::"
@@ -132,6 +146,7 @@ OWNER_GROUPS = (
     ("next_use_observer", PACKAGE, NEXT_USE_CASES),
     ("material_observers", PACKAGE, MATERIAL_CASES),
     ("original_selector", PACKAGE, SELECTION_CASES),
+    ("original_model_selector", PACKAGE, MODEL_SELECTION_CASES),
     ("training_model_lane", PACKAGE, TRAINING_LANE_CASES),
     ("original_training_source", PACKAGE, SOURCE_CASES),
     ("original_training_command", PACKAGE, TRAINING_COMMAND_CASES),

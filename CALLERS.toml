@@ -4945,4 +4945,3 @@ top_level = []
 function = "fn decode_original_owner_snapshot_v1("
 sequence = ["let snapshot = codec::decode(bytes)?","if codec::encode(&snapshot)? != bytes","return Err(LearningIterationCheckpointErrorV1::InvalidRecord)","Ok(snapshot)"]
 top_level = []
-
