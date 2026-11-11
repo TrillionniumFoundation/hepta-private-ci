@@ -1,0 +1,99 @@
+{
+  "schema": "hepta.mem.native-followup.root-delivery-legacy-audit.v1",
+  "status": "PASS_DECLARED_NATIVE_SCOPE_ONLY",
+  "archive": {
+    "path": "delivery-legacy.tar.xz",
+    "git_blob": "f6db1fec837d5abb3f9f77c0a78693a70f14e9a6",
+    "bytes": 12236,
+    "sha256": "3857e409a3d2f6b55036448af93be50f36822b08cd6bc2207d57a98af9cb6ed8",
+    "regular_members": 18,
+    "member_manifest_verified": 17
+  },
+  "full_github_readback_commit": "58fa2af994cd496330aa3f12ecf515ca40f1bcb0",
+  "source": {
+    "commit": "542443191af06facb891f58fecb8bfe7a925c893",
+    "tree": "adcc19bcdd31c10781e57296730d9c81869c3d98",
+    "status": "",
+    "cargo_lock_sha256": "98b3767c6e74bf6eeb5894db760259dbc400cbfd0685af8ad915c92d25408d69",
+    "bazel_lock_sha256": "783b3ad329fa53bd4a0e48be6907d38259fa2880d61bd1994b863d7f78bbca57"
+  },
+  "source_unchanged": true,
+  "fixture": {
+    "path": "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
+    "blob": "d4febb0e80cd39554370de03af686fa1839aa6ed",
+    "sha256": "3e256948d7ec0f3f949c35d4ec1a87e52f2999ef60932ae0356fc8a136932919",
+    "bytes": 29083
+  },
+  "published_commit": "b03214c5c2e2bf4499c211227e43cc22f8663d95",
+  "published_tree_equals_tested_tree": true,
+  "command": [
+    "/home/qian-qi/.cargo/bin/just",
+    "test",
+    "--locked",
+    "-p",
+    "codex-hepta-infer-worker-host",
+    "--lib",
+    "-E",
+    "test(=native_app_server::tests::real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone)",
+    "--no-capture",
+    "--retries",
+    "0"
+  ],
+  "command_exit": 0,
+  "command_seconds": 22.666905282996595,
+  "wrapper_seconds": 22.941958943149075,
+  "raw_bytes": 31116,
+  "raw_sha256": "a319e7ee8976c9c739ef15af5f7c22f7accc88c73d184adc23f1251a3d337611",
+  "passed": 1,
+  "failed": 0,
+  "unselected": 51,
+  "unique_case_ids": [
+    "codex-hepta-infer-worker-host::native_app_server::tests::real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone"
+  ],
+  "nextest_uuid": "6dc5d5c9-4f10-472a-9d28-520654d27e89",
+  "retries": 0,
+  "first_execution_of_this_case_in_task": true,
+  "prior_six_case_junit_retained_distinct": true,
+  "prior_six_cases_repeated": false,
+  "same_native_test_artifact_sha256_as_six_case_stage": "4f00cf4712416dd197bf058e362e628bcb62d3637bb9365c1f03410280e0929c",
+  "separate_cli_consumption_claimed": false,
+  "runtime_terminal": {
+    "at_unix_ms": 1794403860368,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a1cacd57f0-2564-878",
+    "launch_nonce": "4940af9271bed0710a09e3eb5b8c4667",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 544,
+        "stored": 544
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "scientific_adoption": "HOLD",
+  "new_scored_actor_episodes": 0
+}
