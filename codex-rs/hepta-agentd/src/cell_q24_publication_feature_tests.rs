@@ -243,12 +243,21 @@ fn prepublication_rejects_candidate_mask_truncation_injection_and_reordering() -
             }
             _ => unreachable!(),
         }
-        // The altered task hash is valid: only the native structural check
-        // may reject the mismatched input. No publication file may change.
-        p.rehash()?;
+        // Full task-ingress binding already rejects malformed masks. The
+        // late, directly callable worker preflight must reject independently.
+        assert!(
+            crate::circuit_feature_task_digest_v1(&p.definition, &p.source).is_err(),
+            "{field}"
+        );
         assert!(
             matches!(
-                p.validate(),
+                validation::require_executable_feature(
+                    &p.decision.bundle,
+                    &p.target.config.manifest,
+                    &p.model,
+                    &p.definition,
+                    &p.source,
+                ),
                 Err(Error::Binding("C candidate mask differs from definition"))
             ),
             "{field}"
