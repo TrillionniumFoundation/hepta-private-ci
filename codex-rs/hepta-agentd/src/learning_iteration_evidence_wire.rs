@@ -56,6 +56,27 @@ pub(super) struct Evidence {
 }
 
 impl Evidence {
+    pub(super) fn from_original(signed: &SignedLearningEvidenceV1) -> Self {
+        Self {
+            evidence_id: signed.evidence_id.to_string(),
+            principal_id: signed.principal_id.to_string(),
+            role: match signed.role {
+                LearningEvidenceRoleV1::Generator => "generator",
+                LearningEvidenceRoleV1::Observer => "observer",
+                LearningEvidenceRoleV1::Evaluator => "evaluator",
+                LearningEvidenceRoleV1::Selector => "selector",
+            }.into(),
+            trust_digest: signed.trust_digest.to_string(),
+            scope_digest: signed.scope_digest.to_string(),
+            objective_digest: signed.objective_digest.to_string(),
+            authority_epoch: signed.authority_epoch,
+            issued_at: signed.issued_at,
+            expires_at: signed.expires_at,
+            payload_digest: signed.payload_digest.to_string(),
+            signature: STANDARD_NO_PAD.encode(signed.signature),
+        }
+    }
+
     pub(super) fn decode(self) -> Result<SignedLearningEvidenceV1, Error> {
         let invalid = || Error::Evidence(SignedEvidenceError::ContextMismatch);
         let signature = STANDARD_NO_PAD

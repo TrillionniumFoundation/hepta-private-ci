@@ -169,6 +169,25 @@ impl<EW: AnchorWitnessStore, DW: AnchorWitnessStore>
         })
     }
 
+    /// Move this pair into its original role host's readback-only producer.
+    /// No key or source capability is serialized or transferred to Agentd.
+    #[cfg(target_os = "linux")]
+    pub fn into_evidence_readback_owner<SW: AnchorWitnessStore>(
+        self,
+        source: CircuitTaskSourceReadbackV1<SW>,
+        identity: AgentdIdentity,
+        ledger: std::sync::Arc<std::sync::Mutex<LedgerWriter>>,
+        baseline: std::sync::Arc<LoadedCellQ24ModelV1>,
+    ) -> Result<
+        crate::OriginalCellQ24MaterialEvidenceOwnerV1<EW, DW, SW>,
+        crate::OriginalCellQ24MaterialEvidenceErrorV1,
+    > {
+        let config = self.config.clone();
+        crate::learning_iteration_evidence_client::OriginalCellQ24MaterialEvidenceOwnerV1::from_original_owners(
+            self, config, source, identity, ledger, baseline,
+        )
+    }
+
     /// Claim only a genuinely missing Experience. The observation comes from a
     /// fresh original Dataset read, never from caller-supplied evidence bytes.
     pub fn attest_experience(
@@ -417,3 +436,6 @@ impl<EW: AnchorWitnessStore, DW: AnchorWitnessStore>
 #[cfg(test)]
 #[path = "cell_q24_material_receipt_owner_tests.rs"]
 mod tests;
+
+#[cfg(all(test, target_os = "linux"))]
+pub(crate) use tests::ReadbackServiceFixture;

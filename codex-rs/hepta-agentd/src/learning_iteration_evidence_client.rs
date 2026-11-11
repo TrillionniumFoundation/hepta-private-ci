@@ -28,6 +28,12 @@ use crate::root_observation_stream::RootObservationStream;
 #[path = "learning_iteration_evidence_wire.rs"]
 mod wire;
 
+#[path = "cell_q24_material_evidence_service.rs"]
+mod material;
+pub use material::OriginalCellQ24MaterialEvidenceErrorV1;
+pub use material::OriginalCellQ24MaterialEvidenceOwnerV1;
+pub use material::OriginalCellQ24MaterialEvidenceRoleV1;
+
 #[path = "learning_iteration_evaluation_evidence.rs"]
 mod evaluation;
 pub use evaluation::AuthenticatedCellLearningEvaluationV1;

@@ -440,3 +440,6 @@ async fn original_material_pair_partial_creation_never_finishes_missing_dataset_
     assert_eq!(fixture.disk_bytes_after_drop()?, partial);
     Ok(())
 }
+
+#[cfg(target_os = "linux")]
+pub(crate) use support::ReadbackServiceFixture;
