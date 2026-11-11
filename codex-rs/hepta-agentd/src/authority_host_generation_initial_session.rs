@@ -10,8 +10,8 @@ use std::sync::mpsc;
 use std::time::Duration;
 
 use super::*;
-use crate::authority_host_service::generation_initial::PURPOSE;
 use crate::authority_host_service::generation_initial::InitialBootstrap;
+use crate::authority_host_service::generation_initial::PURPOSE;
 use crate::authority_host_service::generation_initial::SOCKET;
 
 #[path = "authority_host_initial_deployment.rs"]
@@ -125,30 +125,47 @@ impl PreparedHostAuthoritySession {
         }
         let mut captured = None;
         self.service.with_initial_publication_context(
-            &self.config, &self.registration, &self.owner_pidfd, |proof| {
-                codex_hepta_types::StableId::new(&deployment.operation).map_err(io::Error::other)?;
+            &self.config,
+            &self.registration,
+            &self.owner_pidfd,
+            |proof| {
+                codex_hepta_types::StableId::new(&deployment.operation)
+                    .map_err(io::Error::other)?;
                 deployment.target.digest().map_err(io::Error::other)?;
                 if deployment.target.scope().agent_id
-                    != self.registration.registered_identity.identity()?.agent_id.as_str()
+                    != self
+                        .registration
+                        .registered_identity
+                        .identity()?
+                        .agent_id
+                        .as_str()
                 {
-                    return Err(io::Error::other("initial deployment differs from original agent"));
+                    return Err(io::Error::other(
+                        "initial deployment differs from original agent",
+                    ));
                 }
                 let bundle = InitialBootstrap {
                     purpose: PURPOSE.into(),
                     deployment,
                     root: codex_hepta_memory::CognitiveCheckpointPeerLifetime {
-                        uid: 0, pid: std::process::id(),
+                        uid: 0,
+                        pid: std::process::id(),
                         boot_id: self.registration.boot_id.clone(),
                         process_start_ticks: root_start()?,
                     },
                     consumer: codex_hepta_memory::CognitiveCheckpointPeerLifetime {
-                        uid: self.config.peer_uid, pid: self.registration.peer_pid,
+                        uid: self.config.peer_uid,
+                        pid: self.registration.peer_pid,
                         boot_id: self.registration.boot_id.clone(),
                         process_start_ticks: self.registration.process_start_ticks,
                     },
                     identity: self.registration.registered_identity.clone(),
                     writer: proof,
-                    socket: self.config.sockets.observation.parent()
+                    socket: self
+                        .config
+                        .sockets
+                        .observation
+                        .parent()
                         .ok_or_else(|| io::Error::other("original Root listener parent missing"))?
                         .join(SOCKET),
                 };
@@ -159,8 +176,8 @@ impl PreparedHostAuthoritySession {
                 Ok(())
             },
         )?;
-        let (bundle, bootstrap) = captured
-            .ok_or_else(|| io::Error::other("original initial route capture missing"))?;
+        let (bundle, bootstrap) =
+            captured.ok_or_else(|| io::Error::other("original initial route capture missing"))?;
         let (sender, receiver) = mpsc::sync_channel(1);
         let phase = Arc::new(AtomicU8::new(PREPARED));
         self.initial_publication = Some(InitialRuntime {
@@ -171,7 +188,10 @@ impl PreparedHostAuthoritySession {
         });
         Ok((
             RootGenerationInitialEnrollmentCapabilityV1 {
-                sender, phase, root_pid: bundle.root.pid, consumer_uid: self.config.peer_uid,
+                sender,
+                phase,
+                root_pid: bundle.root.pid,
+                consumer_uid: self.config.peer_uid,
                 boot_id: bundle.root.boot_id,
                 process_start_ticks: bundle.root.process_start_ticks,
                 lifetime: Duration::from_millis(self.config.lifetime_ms),
@@ -182,7 +202,9 @@ impl PreparedHostAuthoritySession {
 }
 
 impl InitialRuntime {
-    pub(super) fn path(&self) -> &Path { &self.socket }
+    pub(super) fn path(&self) -> &Path {
+        &self.socket
+    }
 }
 
 fn root_start() -> io::Result<u64> {

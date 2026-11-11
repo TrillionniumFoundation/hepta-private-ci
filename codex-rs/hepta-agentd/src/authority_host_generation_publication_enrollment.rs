@@ -408,7 +408,7 @@ impl HostAuthorityService {
                 let consumer = RootFinalUseObserverV1::open_original(
                     &local_consumer,
                     config.peer_uid,
-                    key.key_id.clone(),
+                    key.key_id,
                     inputs.issuer_keys,
                     frontier,
                 )

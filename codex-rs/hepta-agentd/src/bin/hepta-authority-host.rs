@@ -153,11 +153,14 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         let publication_deployment = options
             .remove(std::ffi::OsStr::new("--generation-publication-deployment"))
             .map(PathBuf::from);
-        let publication_handoff = options.remove(std::ffi::OsStr::new("--root-generation-publication-handoff-fd"));
+        let publication_handoff = options.remove(std::ffi::OsStr::new(
+            "--root-generation-publication-handoff-fd",
+        ));
         let initial_deployment = options
             .remove(std::ffi::OsStr::new("--generation-initial-deployment"))
             .map(PathBuf::from);
-        let initial_handoff = options.remove(std::ffi::OsStr::new("--root-generation-initial-handoff-fd"));
+        let initial_handoff =
+            options.remove(std::ffi::OsStr::new("--root-generation-initial-handoff-fd"));
         let notes_profile = options
             .remove(std::ffi::OsStr::new("--notes-launch-profile"))
             .map(PathBuf::from);
@@ -170,7 +173,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         if (initial_deployment.is_some() || initial_handoff.is_some())
             && (publication_deployment.is_some() || publication_handoff.is_some())
         {
-            return Err("initial and learned publication require separate original Root sessions".into());
+            return Err(
+                "initial and learned publication require separate original Root sessions".into(),
+            );
         }
         if initial_deployment.is_some() != initial_handoff.is_some()
             || initial_deployment.is_some() && root_fd.is_none()
@@ -294,7 +299,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             (Some(path), Some(handoff)) => {
                 let (capability, offer) = prepared.enable_generation_publication()?;
                 let capability: codex_hepta_agentd::RootGenerationPublicationEnrollmentCapabilityV1 = capability;
-                (Some(capability.with_original_deployment(&path)?), Some((handoff, offer)))
+                (
+                    Some(capability.with_original_deployment(&path)?),
+                    Some((handoff, offer)),
+                )
             }
             (None, None) => (None, None),
             _ => return Err("publication deployment and inherited offer must be paired".into()),
@@ -302,17 +310,24 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         let (initial_deployment, initial_offer) = match (initial_deployment, initial_handoff) {
             (Some(path), Some(handoff)) => {
                 let files = codex_hepta_agentd::RootGenerationInitialDeploymentFilesV1::open_original_initial_deployment(&path)?;
-                let (capability, offer) = prepared.enable_generation_initial(files.deployment().clone())?;
-                let capability: codex_hepta_agentd::RootGenerationInitialEnrollmentCapabilityV1 = capability;
-                (Some(capability.with_original_initial_deployment(files)?), Some((handoff, offer)))
+                let (capability, offer) =
+                    prepared.enable_generation_initial(files.deployment().clone())?;
+                let capability: codex_hepta_agentd::RootGenerationInitialEnrollmentCapabilityV1 =
+                    capability;
+                (
+                    Some(capability.with_original_initial_deployment(files)?),
+                    Some((handoff, offer)),
+                )
             }
             (None, None) => (None, None),
             _ => return Err("initial deployment and inherited offer must be paired".into()),
         };
-        let initial_ready = initial_deployment.as_ref()
+        let initial_ready = initial_deployment
+            .as_ref()
             .map(|deployment| serde_json::to_string(deployment.session()))
             .transpose()?;
-        let deployment_ready = deployment.as_ref()
+        let deployment_ready = deployment
+            .as_ref()
             .map(|deployment| serde_json::to_string(deployment.session()))
             .transpose()?;
         let model_offer = model_handoff
@@ -348,15 +363,21 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             }
             if let (Some((handoff, offer)), Some(root)) = (publication_offer, root_fd.as_ref()) {
                 codex_hepta_agentd::send_root_generation_publication_handoff(
-                    std::os::unix::net::UnixDatagram::from(handoff), offer, root,
+                    std::os::unix::net::UnixDatagram::from(handoff),
+                    offer,
+                    root,
                     std::time::Duration::from_secs(30),
-                ).map_err(std::io::Error::other)?;
+                )
+                .map_err(std::io::Error::other)?;
             }
             if let (Some((handoff, offer)), Some(root)) = (initial_offer, root_fd.as_ref()) {
                 codex_hepta_agentd::send_root_generation_initial_handoff(
-                    std::os::unix::net::UnixDatagram::from(handoff), offer, root,
+                    std::os::unix::net::UnixDatagram::from(handoff),
+                    offer,
+                    root,
                     std::time::Duration::from_secs(30),
-                ).map_err(std::io::Error::other)?;
+                )
+                .map_err(std::io::Error::other)?;
             }
             if let Some(session) = initial_ready {
                 println!("{{\"initial_deployment_session\":{session}}}");
@@ -388,7 +409,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     )))?;
                 Ok::<_, std::io::Error>(registered)
             }));
-            let initial_worker = initial_deployment.map(|deployment| scope.spawn(move || {
+            let initial_worker = initial_deployment.map(|deployment| {
+                scope.spawn(move || {
                 let deployment: codex_hepta_agentd::RootGenerationInitialDeploymentV1 = deployment;
                 let registered = deployment.wait_and_register_initial(stop_ref)?;
                 let stdout = std::io::stdout();
@@ -399,20 +421,33 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                         "original Initial registered; acknowledgement output uncertain: {error}",
                     )))?;
                 Ok::<_, std::io::Error>(registered)
-            }));
+            })
+            });
             let served = match (native_profile, text) {
-                (Some(profile), None) => prepared.launch_native_with_ready(&config, &registration, &profile, ready),
-                (None, Some((file, pidfd))) => prepared.serve_with_text_and_ready(file, pidfd, ready),
+                (Some(profile), None) => {
+                    prepared.launch_native_with_ready(&config, &registration, &profile, ready)
+                }
+                (None, Some((file, pidfd))) => {
+                    prepared.serve_with_text_and_ready(file, pidfd, ready)
+                }
                 (None, None) => prepared.serve_with_ready(ready),
-                (Some(_), Some(_)) => Err(std::io::Error::other("exclusive native/text UI options")),
+                (Some(_), Some(_)) => {
+                    Err(std::io::Error::other("exclusive native/text UI options"))
+                }
             };
             drop(stop);
             let registered = match worker {
-                Some(worker) => Some(worker.join().map_err(|_| std::io::Error::other("Root deployment worker panicked"))?),
+                Some(worker) => Some(
+                    worker
+                        .join()
+                        .map_err(|_| std::io::Error::other("Root deployment worker panicked"))?,
+                ),
                 None => None,
             };
             let initial_registered = match initial_worker {
-                Some(worker) => Some(worker.join().map_err(|_| std::io::Error::other("Root Initial deployment worker panicked"))?),
+                Some(worker) => Some(worker.join().map_err(|_| {
+                    std::io::Error::other("Root Initial deployment worker panicked")
+                })?),
                 None => None,
             };
             served?;
@@ -435,7 +470,10 @@ struct PublicationDeploymentStop<'a>(&'a std::sync::atomic::AtomicBool);
 
 #[cfg(target_os = "linux")]
 impl Drop for PublicationDeploymentStop<'_> {
-    fn drop(&mut self) { self.0.store(/*val*/ true, std::sync::atomic::Ordering::Release); }
+    fn drop(&mut self) {
+        self.0
+            .store(/*val*/ true, std::sync::atomic::Ordering::Release);
+    }
 }
 
 #[cfg(target_os = "linux")]

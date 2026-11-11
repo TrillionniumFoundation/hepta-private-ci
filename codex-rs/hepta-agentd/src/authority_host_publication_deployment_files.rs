@@ -71,7 +71,9 @@ pub(in crate::authority_host_runtime::session) struct DirectoryPin {
 }
 
 impl DirectoryPin {
-    pub(in crate::authority_host_runtime::session) fn capture_root(path: &Path) -> io::Result<Self> {
+    pub(in crate::authority_host_runtime::session) fn capture_root(
+        path: &Path,
+    ) -> io::Result<Self> {
         RootAuthorityDirectory::open(path).map_err(io::Error::other)?;
         let mut pin = Self::capture_private(path)?;
         if pin.identity.uid != 0 || pin.identity.mode & 0o077 != 0 {
@@ -83,7 +85,9 @@ impl DirectoryPin {
         Ok(pin)
     }
 
-    pub(in crate::authority_host_runtime::session) fn capture_private(path: &Path) -> io::Result<Self> {
+    pub(in crate::authority_host_runtime::session) fn capture_private(
+        path: &Path,
+    ) -> io::Result<Self> {
         require_absolute(path)?;
         let metadata = std::fs::symlink_metadata(path)?;
         if !metadata.is_dir()
@@ -137,7 +141,9 @@ pub(in crate::authority_host_runtime::session) struct MetadataFile {
 }
 
 impl MetadataFile {
-    pub(in crate::authority_host_runtime::session) fn open_metadata(path: &Path) -> io::Result<(Self, Vec<u8>)> {
+    pub(in crate::authority_host_runtime::session) fn open_metadata(
+        path: &Path,
+    ) -> io::Result<(Self, Vec<u8>)> {
         require_absolute(path)?;
         let parent = DirectoryPin::capture_root(parent(path)?)?;
         let file = open_readonly(path)?;
@@ -171,7 +177,9 @@ impl MetadataFile {
         self.digest
     }
 
-    pub(in crate::authority_host_runtime::session) fn require_metadata_unchanged(&self) -> io::Result<()> {
+    pub(in crate::authority_host_runtime::session) fn require_metadata_unchanged(
+        &self,
+    ) -> io::Result<()> {
         self.parent.require_directory()?;
         let path = std::fs::symlink_metadata(&self.path)?;
         if !path.is_file()
@@ -207,7 +215,9 @@ pub(in crate::authority_host_runtime::session) struct OriginalFile {
 }
 
 impl OriginalFile {
-    pub(in crate::authority_host_runtime::session) fn open_original(path: &Path) -> io::Result<Self> {
+    pub(in crate::authority_host_runtime::session) fn open_original(
+        path: &Path,
+    ) -> io::Result<Self> {
         require_absolute(path)?;
         let parent = DirectoryPin::capture_private(parent(path)?)?;
         let file = open_readonly(path)?;
@@ -227,12 +237,16 @@ impl OriginalFile {
         Ok(held)
     }
 
-    pub(in crate::authority_host_runtime::session) fn original_descriptor(&self) -> io::Result<File> {
+    pub(in crate::authority_host_runtime::session) fn original_descriptor(
+        &self,
+    ) -> io::Result<File> {
         self.require_original_file()?;
         self.file.try_clone()
     }
 
-    pub(in crate::authority_host_runtime::session) fn require_original_file(&self) -> io::Result<()> {
+    pub(in crate::authority_host_runtime::session) fn require_original_file(
+        &self,
+    ) -> io::Result<()> {
         self.parent.require_directory()?;
         let path = std::fs::symlink_metadata(&self.path)?;
         if !path.is_file()

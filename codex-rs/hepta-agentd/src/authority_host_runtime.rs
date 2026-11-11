@@ -41,14 +41,14 @@ pub(crate) use listeners::validate_runtime_lanes;
 #[path = "authority_host_session.rs"]
 mod session;
 pub use session::PreparedHostAuthoritySession;
-pub use session::RootGenerationInitialEnrollmentCapabilityV1;
 pub use session::RootGenerationInitialDeploymentFilesV1;
 pub use session::RootGenerationInitialDeploymentSessionV1;
 pub use session::RootGenerationInitialDeploymentV1;
+pub use session::RootGenerationInitialEnrollmentCapabilityV1;
 pub use session::RootGenerationInitialRegistrationV1;
-pub use session::RootGenerationPublicationEnrollmentCapabilityV1;
-pub use session::RootGenerationPublicationDeploymentV1;
 pub use session::RootGenerationPublicationDeploymentSessionV1;
+pub use session::RootGenerationPublicationDeploymentV1;
+pub use session::RootGenerationPublicationEnrollmentCapabilityV1;
 pub use session::RootGenerationPublicationRegistrationV1;
 pub use session::RootNotesPolicyPredecessor;
 

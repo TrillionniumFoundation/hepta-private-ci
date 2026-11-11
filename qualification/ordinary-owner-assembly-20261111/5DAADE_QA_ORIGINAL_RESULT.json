@@ -1,0 +1,146 @@
+{
+  "after": {
+    "head": "5daade9e4ce374ac169702d6b59490149ccefd34",
+    "status": "",
+    "tree": "3f2b83f45257cef95ad04626efe1d881203781ff"
+  },
+  "before": {
+    "head": "5daade9e4ce374ac169702d6b59490149ccefd34",
+    "status": "",
+    "tree": "3f2b83f45257cef95ad04626efe1d881203781ff"
+  },
+  "native_behavior_executed": false,
+  "official_full_verifier_executed": false,
+  "ordinary_counts": [
+    0,
+    0,
+    0
+  ],
+  "protected_diagnostic": {
+    "entries": 335,
+    "failures": []
+  },
+  "source_sha": "5daade9e4ce374ac169702d6b59490149ccefd34",
+  "source_tree": "3f2b83f45257cef95ad04626efe1d881203781ff",
+  "status": "passed-qa-and-protected-diagnostic",
+  "steps": [
+    {
+      "bytes": 112,
+      "command": [
+        "git",
+        "clone",
+        "--shared",
+        "--no-checkout",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-control-completion-maintenance-v2/source",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-5daade-qa-caller-diagnostic-v2/source"
+      ],
+      "exit": 0,
+      "log": "/home/qq/af52-learning-local-decision-20261111/ordinary-5daade-qa-caller-diagnostic-v2/records/clone.log",
+      "name": "clone",
+      "sha256": "67f4a1e6bd5e680a14a06636fbf71fef065962507eb162bfb92511b6f9aceb4e"
+    },
+    {
+      "bytes": 142,
+      "command": [
+        "git",
+        "fetch",
+        "--no-tags",
+        "https://github.com/TrillionniumFoundation/hepta-private-ci.git",
+        "5daade9e4ce374ac169702d6b59490149ccefd34"
+      ],
+      "exit": 0,
+      "log": "/home/qq/af52-learning-local-decision-20261111/ordinary-5daade-qa-caller-diagnostic-v2/records/fetch.log",
+      "name": "fetch",
+      "sha256": "232554510082247a548105ead357647a7bbb24298374f8e611ab3648870864ee"
+    },
+    {
+      "bytes": 224,
+      "command": [
+        "git",
+        "checkout",
+        "--detach",
+        "5daade9e4ce374ac169702d6b59490149ccefd34"
+      ],
+      "exit": 0,
+      "log": "/home/qq/af52-learning-local-decision-20261111/ordinary-5daade-qa-caller-diagnostic-v2/records/checkout.log",
+      "name": "checkout",
+      "sha256": "97689fd825cde7625b0cc7fa8f6b170944e3a44d585ad37e13912d9cf9b01f57"
+    },
+    {
+      "bytes": 41867,
+      "command": [
+        "python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "qa/b4-no-bypass",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "exit": 0,
+      "log": "/home/qq/af52-learning-local-decision-20261111/ordinary-5daade-qa-caller-diagnostic-v2/records/b4-no-bypass.log",
+      "name": "b4-no-bypass",
+      "sha256": "c05eb2d738c6689ca94ce9cd6bd6d77f7f946909027e05202990d44e37f61103"
+    },
+    {
+      "bytes": 808,
+      "command": [
+        "python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "qa/fault-matrix",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "exit": 0,
+      "log": "/home/qq/af52-learning-local-decision-20261111/ordinary-5daade-qa-caller-diagnostic-v2/records/fault-matrix.log",
+      "name": "fault-matrix",
+      "sha256": "cdaac012b1e66926aec5bfc03b760a186f6caaddd9e27e64378f28dffafd5d81"
+    },
+    {
+      "bytes": 798,
+      "command": [
+        "python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "qa/performance",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "exit": 0,
+      "log": "/home/qq/af52-learning-local-decision-20261111/ordinary-5daade-qa-caller-diagnostic-v2/records/performance.log",
+      "name": "performance",
+      "sha256": "d2e2593ee77736f956cca3f549cbae73da9b7113276c4db68ce1e54e82bd594f"
+    },
+    {
+      "bytes": 806,
+      "command": [
+        "python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "qa/vertical-slice",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "exit": 0,
+      "log": "/home/qq/af52-learning-local-decision-20261111/ordinary-5daade-qa-caller-diagnostic-v2/records/vertical-slice.log",
+      "name": "vertical-slice",
+      "sha256": "0d46a2574bff0a38b57da271f9c648090d3d6b2e9bce9c78b59e37c679694fe6"
+    }
+  ]
+}

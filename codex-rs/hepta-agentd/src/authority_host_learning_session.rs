@@ -80,7 +80,7 @@ impl BoundLearning {
                     runtime,
                     config,
                     &learning.socket_path,
-                    model.as_ref().map(|factory| factory.path()),
+                    model.as_ref().map(super::q24_model::BoundFactory::path),
                 )
             })
             .transpose()?;

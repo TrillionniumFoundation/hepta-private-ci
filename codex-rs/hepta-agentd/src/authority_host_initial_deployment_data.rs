@@ -1,12 +1,12 @@
 //! Root-owned initial deployment data. It locates actual original inputs;
 //! it cannot certify genesis, create a nonce owner or replace Initial authority.
 
-use std::path::PathBuf;
-use serde::Deserialize;
-use serde::Serialize;
 use super::shared_data::*;
 use crate::RootGenerationInitialModeV1;
 use crate::RootPublicationFinalUseConsumerV1;
+use serde::Deserialize;
+use serde::Serialize;
+use std::path::PathBuf;
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]

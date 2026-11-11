@@ -67,7 +67,9 @@ pub(in crate::authority_host_runtime::session) struct ObserverData {
 }
 
 impl ObserverData {
-    pub(in crate::authority_host_runtime::session) fn original_observer_config(&self) -> io::Result<CellGenerationObserverConfigV1> {
+    pub(in crate::authority_host_runtime::session) fn original_observer_config(
+        &self,
+    ) -> io::Result<CellGenerationObserverConfigV1> {
         Ok(CellGenerationObserverConfigV1 {
             generation: self.generation.clone(),
             journal_records: self.journal_records,
@@ -134,7 +136,9 @@ pub(in crate::authority_host_runtime::session) struct OwnerTrustData {
 }
 
 impl OwnerTrustData {
-    pub(in crate::authority_host_runtime::session) fn original_owner_trust(&self) -> io::Result<ArtifactOwnerTrustV1> {
+    pub(in crate::authority_host_runtime::session) fn original_owner_trust(
+        &self,
+    ) -> io::Result<ArtifactOwnerTrustV1> {
         Ok(ArtifactOwnerTrustV1 {
             registry_id: StableId::new(&self.registry_id).map_err(io::Error::other)?,
             withdrawal_scope_digest: Digest32::from_array(self.withdrawal_scope),
@@ -205,7 +209,9 @@ pub(in crate::authority_host_runtime::session) struct CurrentData {
 }
 
 impl CurrentData {
-    pub(in crate::authority_host_runtime::session) fn original_current(&self) -> io::Result<SignedCurrentArtifactHeadV1> {
+    pub(in crate::authority_host_runtime::session) fn original_current(
+        &self,
+    ) -> io::Result<SignedCurrentArtifactHeadV1> {
         Ok(SignedCurrentArtifactHeadV1 {
             withdrawal_scope_digest: Digest32::from_array(self.withdrawal_scope),
             binding: Digest32::from_array(self.binding),
@@ -284,7 +290,9 @@ pub(in crate::authority_host_runtime::session) enum ModelKind {
 }
 
 impl SelectionData {
-    pub(in crate::authority_host_runtime::session) fn original_selection(&self) -> io::Result<SignedArtifactSelectionV1> {
+    pub(in crate::authority_host_runtime::session) fn original_selection(
+        &self,
+    ) -> io::Result<SignedArtifactSelectionV1> {
         Ok(SignedArtifactSelectionV1 {
             selection_id: StableId::new(&self.selection_id).map_err(io::Error::other)?,
             artifact_id: StableId::new(&self.artifact_id).map_err(io::Error::other)?,
@@ -331,7 +339,9 @@ where
 }
 
 impl ObserverData {
-    pub(in crate::authority_host_runtime::session) fn from_original_observer(original: &CellGenerationObserverConfigV1) -> Self {
+    pub(in crate::authority_host_runtime::session) fn from_original_observer(
+        original: &CellGenerationObserverConfigV1,
+    ) -> Self {
         Self {
             generation: original.generation.clone(),
             journal_records: original.journal_records,

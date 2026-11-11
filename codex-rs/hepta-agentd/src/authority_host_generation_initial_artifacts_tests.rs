@@ -16,10 +16,10 @@ use codex_hepta_types::StableId;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
 
+use super::data;
 use crate::AgentdGenerationSelectionFilesV1;
 use crate::AgentdSelectedGenerationV1;
 use crate::RootArtifactPublicationInputsV1;
-use super::data;
 
 pub(super) struct Artifacts {
     owner: Arc<Mutex<LearningArtifactOwnerService>>,
@@ -41,11 +41,20 @@ struct ArtifactTimes {
 }
 
 impl Artifacts {
-    pub(super) fn new(root: &Path, manifest: &CellBackendManifestV2, now: u64) -> anyhow::Result<Self> {
+    pub(super) fn new(
+        root: &Path,
+        manifest: &CellBackendManifestV2,
+        now: u64,
+    ) -> anyhow::Result<Self> {
         let times = ArtifactTimes {
-            created: now, observed: now,
-            expires: now.checked_add(600_000).ok_or_else(|| anyhow::anyhow!("expiry overflow"))?,
-            selection_expires: now.checked_add(600_000).ok_or_else(|| anyhow::anyhow!("expiry overflow"))?,
+            created: now,
+            observed: now,
+            expires: now
+                .checked_add(600_000)
+                .ok_or_else(|| anyhow::anyhow!("expiry overflow"))?,
+            selection_expires: now
+                .checked_add(600_000)
+                .ok_or_else(|| anyhow::anyhow!("expiry overflow"))?,
         };
         let key = SigningKey::from_bytes(&[61; 32]);
         let selector = SigningKey::from_bytes(&[62; 32]);
@@ -98,22 +107,23 @@ impl Artifacts {
             storage_binding: Digest32::of_bytes(b"test-artifact-storage"),
             now: times.observed,
         })?;
-        let (candidate, retained_current) = publish_candidate(&mut owner, manifest, &key, "selected-candidate", times)?;
+        let (candidate, retained_current) =
+            publish_candidate(&mut owner, manifest, &key, "selected-candidate", times)?;
         let current = owner.current_registry_view(times.observed)?;
         let selector_trust = ArtifactSelectionTrustV1 {
-                registry_id: trust.registry_id.clone(),
-                withdrawal_scope_digest: scope,
+            registry_id: trust.registry_id.clone(),
+            withdrawal_scope_digest: scope,
+            minimum_authority_epoch: 1,
+            selectors: vec![TrustedArtifactSelectorV1 {
+                selector_id: id("test-independent-selector")?,
+                verifying_key: selector.verifying_key().to_bytes(),
                 minimum_authority_epoch: 1,
-                selectors: vec![TrustedArtifactSelectorV1 {
-                    selector_id: id("test-independent-selector")?,
-                    verifying_key: selector.verifying_key().to_bytes(),
-                    minimum_authority_epoch: 1,
-                    maximum_authority_epoch: 1,
-                    valid_from: times.created,
-                    expires_at: times.expires,
-                    revoked_at: None,
-                }],
-            };
+                maximum_authority_epoch: 1,
+                valid_from: times.created,
+                expires_at: times.expires,
+                revoked_at: None,
+            }],
+        };
         let verifier = ArtifactSelectionVerifierV1::new(selector_trust.clone(), &trust)?;
         let mut selected = SignedArtifactSelectionV1 {
             selection_id: id("test-generation-selection")?,
@@ -152,22 +162,28 @@ impl Artifacts {
         })
     }
 
-
     pub(super) fn inputs(&self, now: u64) -> anyhow::Result<RootArtifactPublicationInputsV1> {
-        let owner = self.owner.lock().map_err(|_| anyhow::anyhow!("original artifact owner poisoned"))?;
+        let owner = self
+            .owner
+            .lock()
+            .map_err(|_| anyhow::anyhow!("original artifact owner poisoned"))?;
         let receipt = owner.current_registry_view(now)?.receipt();
         Ok(RootArtifactPublicationInputsV1 {
-            root: self.root.clone(), trust: self.trust.clone(),
+            root: self.root.clone(),
+            trust: self.trust.clone(),
             retained_current: self.retained_current.clone(),
             storage_binding: Digest32::of_bytes(b"test-artifact-storage"),
             withdrawal_floor: owner.withdrawal_registry().clone(),
-            selector: self.verifier.clone(), signed_selection: self.selected.clone(),
+            selector: self.verifier.clone(),
+            signed_selection: self.selected.clone(),
             files: AgentdGenerationSelectionFilesV1 {
                 registry_snapshot: File::open(self.root.join("registries").join(format!(
-                    "{}-{}.snapshot", receipt.head_digest, receipt.file_digest,
+                    "{}-{}.snapshot",
+                    receipt.head_digest, receipt.file_digest,
                 )))?,
                 payload: File::open(self.root.join("payloads").join(format!(
-                    "{}-{}.bin", self.selected.artifact_id, self.selected.content_digest,
+                    "{}-{}.bin",
+                    self.selected.artifact_id, self.selected.content_digest,
                 )))?,
             },
         })
@@ -175,9 +191,16 @@ impl Artifacts {
 
     pub(super) fn selection(&self, now: u64) -> anyhow::Result<AgentdSelectedGenerationV1> {
         let input = self.inputs(now)?;
-        let owner = self.owner.lock().map_err(|_| anyhow::anyhow!("original artifact owner poisoned"))?;
+        let owner = self
+            .owner
+            .lock()
+            .map_err(|_| anyhow::anyhow!("original artifact owner poisoned"))?;
         Ok(AgentdSelectedGenerationV1::load(
-            &owner, input.selector, input.signed_selection, input.files, now,
+            &owner,
+            input.selector,
+            input.signed_selection,
+            input.files,
+            now,
         )?)
     }
 }
@@ -281,8 +304,9 @@ fn publish_candidate(
     Ok((candidate, signed))
 }
 
-
-fn id(value: &str) -> anyhow::Result<StableId> { Ok(StableId::new(value)?) }
+fn id(value: &str) -> anyhow::Result<StableId> {
+    Ok(StableId::new(value)?)
+}
 
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -302,21 +326,29 @@ impl Artifacts {
     /// Release the actual writer before the actual other process opens it.
     /// Only original signed configuration crosses this test's control channel.
     pub(super) fn into_transfer(self, now: u64) -> anyhow::Result<Transfer> {
-        let owner = self.owner.lock().map_err(|_| anyhow::anyhow!("original artifact lock"))?;
+        let owner = self
+            .owner
+            .lock()
+            .map_err(|_| anyhow::anyhow!("original artifact lock"))?;
         let receipt = owner.current_registry_view(now)?.receipt();
-        anyhow::ensure!(owner.withdrawal_registry().head_digest() == empty_floor()?.head_digest(),
-            "this fixture transfers its actual empty withdrawal floor");
+        anyhow::ensure!(
+            owner.withdrawal_registry().head_digest() == empty_floor()?.head_digest(),
+            "this fixture transfers its actual empty withdrawal floor"
+        );
         let transfer = Transfer {
-            root: self.root.clone(), owner: data::OwnerTrustData::capture(&self.trust)?,
+            root: self.root.clone(),
+            owner: data::OwnerTrustData::capture(&self.trust)?,
             current: data::CurrentData::capture(&self.retained_current)?,
             lease: data::LeaseData::capture(&self.original_lease)?,
             selector: data::SelectorTrustData::capture(&self.selector_trust),
             selected: data::SelectionData::from_original_selection(&self.selected)?,
             snapshot: self.root.join("registries").join(format!(
-                "{}-{}.snapshot", receipt.head_digest, receipt.file_digest,
+                "{}-{}.snapshot",
+                receipt.head_digest, receipt.file_digest,
             )),
             payload: self.root.join("payloads").join(format!(
-                "{}-{}.bin", self.selected.artifact_id, self.selected.content_digest,
+                "{}-{}.bin",
+                self.selected.artifact_id, self.selected.content_digest,
             )),
             withdrawal_head: owner.withdrawal_registry().head_digest().into_array(),
         };
@@ -335,15 +367,21 @@ impl Transfer {
     pub(super) fn inputs(&self) -> anyhow::Result<RootArtifactPublicationInputsV1> {
         let trust = self.owner.original_owner_trust()?;
         let floor = empty_floor()?;
-        anyhow::ensure!(floor.head_digest().into_array() == self.withdrawal_head,
-            "original fixture withdrawal floor");
+        anyhow::ensure!(
+            floor.head_digest().into_array() == self.withdrawal_head,
+            "original fixture withdrawal floor"
+        );
         Ok(RootArtifactPublicationInputsV1 {
-            root: self.root.clone(), selector: self.selector.original_selector(&trust)?,
-            trust, retained_current: self.current.original_current()?,
+            root: self.root.clone(),
+            selector: self.selector.original_selector(&trust)?,
+            trust,
+            retained_current: self.current.original_current()?,
             storage_binding: Digest32::of_bytes(b"test-artifact-storage"),
-            withdrawal_floor: floor, signed_selection: self.selected.original_selection()?,
+            withdrawal_floor: floor,
+            signed_selection: self.selected.original_selection()?,
             files: AgentdGenerationSelectionFilesV1 {
-                registry_snapshot: File::open(&self.snapshot)?, payload: File::open(&self.payload)?,
+                registry_snapshot: File::open(&self.snapshot)?,
+                payload: File::open(&self.payload)?,
             },
         })
     }
@@ -351,25 +389,37 @@ impl Transfer {
     pub(super) fn reopen(
         &self,
         now: u64,
-    ) -> anyhow::Result<(Arc<Mutex<LearningArtifactOwnerService>>, AgentdSelectedGenerationV1)> {
+    ) -> anyhow::Result<(
+        Arc<Mutex<LearningArtifactOwnerService>>,
+        AgentdSelectedGenerationV1,
+    )> {
         let inputs = self.inputs()?;
         let owner = LearningArtifactOwnerService::open(LearningArtifactOwnerServiceConfigV1 {
-            root: self.root.clone(), trust: inputs.trust.clone(),
+            root: self.root.clone(),
+            trust: inputs.trust.clone(),
             writer_lease: self.lease.original()?,
             required_current_head: Some(inputs.retained_current),
             withdrawal_registry: inputs.withdrawal_floor,
-            storage_binding: inputs.storage_binding, now,
+            storage_binding: inputs.storage_binding,
+            now,
         })?;
         let selected = AgentdSelectedGenerationV1::load(
-            &owner, inputs.selector, inputs.signed_selection, inputs.files, now,
+            &owner,
+            inputs.selector,
+            inputs.signed_selection,
+            inputs.files,
+            now,
         )?;
         Ok((Arc::new(Mutex::new(owner)), selected))
     }
 }
 
 fn empty_floor() -> anyhow::Result<DatasetWithdrawalRegistry> {
-    Ok(DatasetWithdrawalRegistry::new_scoped(DatasetWithdrawalScopeV1 {
-        authority_domain_id: id("test-dataset-authority")?,
-        registry_id: id("test-withdrawals")?, scope_id: id("test-cell-sources")?,
-    }))
+    Ok(DatasetWithdrawalRegistry::new_scoped(
+        DatasetWithdrawalScopeV1 {
+            authority_domain_id: id("test-dataset-authority")?,
+            registry_id: id("test-withdrawals")?,
+            scope_id: id("test-cell-sources")?,
+        },
+    ))
 }
