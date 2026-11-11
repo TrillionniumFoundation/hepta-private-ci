@@ -110,6 +110,129 @@
       "source_status_after": "",
       "correction_source": "7a6c00b8201f685db97ff52bc0b41094b9af1ed2",
       "correction": "Delete exactly one trailing LF from CALLERS.toml; parsed manifest and all other blobs unchanged."
+    },
+    {
+      "sha": "7a6c00b8201f685db97ff52bc0b41094b9af1ed2",
+      "tree": "2aa9a592262d5197cdd96e79128dc18a30332ebd",
+      "job_id": "1a1cccec57a-2564-1088",
+      "request_digest": "8c7a0a9a2acda20d7db3c5cf985e3e22d9a1293e66a681ec08929bfe7378c754",
+      "outer_terminal": null,
+      "outer_last_observed_state": "running",
+      "source_checks": {
+        "executed": 230,
+        "passed": 230,
+        "failed": 0
+      },
+      "parser_checks": {
+        "executed": 16,
+        "passed": 16,
+        "failed": 0
+      },
+      "helper_build_exit_code": 0,
+      "helper_verification_exit_code": 0,
+      "native_command_exit_code": 100,
+      "native_tests_executed": 109,
+      "native_test_results": {
+        "passed": 89,
+        "failed": 20,
+        "skipped_selected": 0,
+        "unselected_filtered": 1132
+      },
+      "native_command_timed_out": false,
+      "junit_collection_exit_code": 1,
+      "native_elapsed_seconds": 994.2581491749734,
+      "test_execution_seconds": 659.498,
+      "failed_test_names": [
+        {
+          "package": "codex-hepta-agentd",
+          "name": "learning_iteration_evidence_client::training_command::bootstrap::tests::deferred_training_uses_actual_material_cut_and_original_source_without_precreation"
+        },
+        {
+          "package": "codex-hepta-agentd",
+          "name": "neuron_cell_evaluation_execution_store::tests::original_execution_owner_physical_corruption_fences_even_after_restore"
+        },
+        {
+          "package": "codex-hepta-agentd",
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_attests_actual_different_c_and_shares_dispatch"
+        },
+        {
+          "package": "codex-hepta-agentd",
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_early_dispatch_never_runs_c_or_resets_admission"
+        },
+        {
+          "package": "codex-hepta-agentd",
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_lost_ack_recovers_exact_original_signature_readonly"
+        },
+        {
+          "package": "codex-hepta-agentd",
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_pins_both_original_signatures_before_dispatch"
+        },
+        {
+          "package": "codex-hepta-agentd",
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_preserves_original_expiry_and_external_custody"
+        },
+        {
+          "package": "codex-hepta-agentd",
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_readback_refuses_actual_publication_withdrawal"
+        },
+        {
+          "package": "codex-hepta-agentd",
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_binds_opaque_training_result_and_shared_dispatch"
+        },
+        {
+          "package": "codex-hepta-agentd",
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_evidence_readback_detects_live_withdrawal"
+        },
+        {
+          "package": "codex-hepta-agentd",
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_keeps_original_expiry_and_external_custody"
+        },
+        {
+          "package": "codex-hepta-agentd",
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_lost_ack_recovers_original_signature_readonly"
+        },
+        {
+          "package": "codex-hepta-agentd",
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_recovered_missing_never_dispatches"
+        },
+        {
+          "package": "codex-hepta-agentd",
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_rejects_wrong_context_and_valid_renewal_before_dispatch"
+        },
+        {
+          "package": "codex-hepta-agentd",
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_c_requires_actual_completion_and_original_selector_signature"
+        },
+        {
+          "package": "codex-hepta-agentd",
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_current_refuses_withdrawal_after_a_successful_read"
+        },
+        {
+          "package": "codex-hepta-agentd",
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_read_consumes_late_and_wrong_nonce_responses_without_effects"
+        },
+        {
+          "package": "codex-hepta-agentd",
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_read_refuses_expired_original_window_and_same_process_bootstrap"
+        },
+        {
+          "package": "codex-hepta-agentd",
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_selection_reads_original_publication_before_c_and_recovers_signature"
+        },
+        {
+          "package": "codex-hepta-intelligence-eval",
+          "name": "product_runner::tests::execution_tests::holdout_current::holdout_current_completed_execution_readback_requires_physical_original"
+        }
+      ],
+      "full_caller_proof": {
+        "state": "pending",
+        "latest_log_bytes_observed": 0,
+        "meaning": "The original full proof is running; an empty interim log is not a passing result."
+      },
+      "source_after": "7a6c00b8201f685db97ff52bc0b41094b9af1ed2",
+      "source_status_after": "",
+      "outer_process_observation": "qualification/learn-ordinary-ce434/integrated-failures/7a6c00b8201f-native-failure/outer-process-observation-during-proof.json",
+      "exact_request_blob": "f920d23cba04fd79d9cb991c0ea2ab8d69488ff0"
     }
   ],
   "full_chain_acceptance": {
@@ -236,6 +359,62 @@
       "bytes": 20922,
       "sha256": "8e752899d9b6d4f8fd95433350c0b194a8305cfafdae6ab8f095355fda10b55d",
       "original_version": "2050:55117470:20922:1794437153861910580:1794437153861910580"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/7a6c00b8201f-native-failure/preparation/source-closure.log",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/integrated-owners-v8-preparation-v1/source-closure.log",
+      "bytes": 51665,
+      "sha256": "c1c3339c56efb8d49652777739f4452bd262cf214192d14c1776abf099ec6263",
+      "original_version": "2050:58132162:51665:1794437578232753235:1794437578232753235"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/7a6c00b8201f-native-failure/preparation/parser-controls.log",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/integrated-owners-v8-preparation-v1/parser-controls.log",
+      "bytes": 3123,
+      "sha256": "db36f5aa654a3da1e42aa866715c6015df437bd835713a05597c8eae241cc0b4",
+      "original_version": "2050:58132161:3123:1794437578778736309:1794437578778736309"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/7a6c00b8201f-native-failure/preparation/merge-canonical.json",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/integrated-owners-v8-preparation-v1/merge-canonical.json",
+      "bytes": 20922,
+      "sha256": "99ba957eba3095900b6d131371a752ea31e2f8911355c9f6a487d5146ce11ec6",
+      "original_version": "2050:58132160:20922:1794437483814683890:1794437483814683890"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/7a6c00b8201f-native-failure/preparation/result-during-full-proof.json",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/integrated-owners-v8-preparation-v1/result.json",
+      "bytes": 3239,
+      "sha256": "1f6939ebf2f76f1bd12f2818186b551c43c0d1b96b87d61626ea40d9398469cc",
+      "original_version": "2050:58132167:3239:1794437589513675528:1794437589513675528"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/7a6c00b8201f-native-failure/native/focused-native.json",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/live-owners-focus-7a6c00b8201f-v8/focused-native.json",
+      "bytes": 22857,
+      "sha256": "5a09a4d98814bf65b376f57bf618fb462204c6014db6663a61862d12e6dfdf18",
+      "original_version": "2050:591436:22857:1794438856137323737:1794438856155452056"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/7a6c00b8201f-native-failure/native/focused-native.junit.xml",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/live-owners-focus-7a6c00b8201f-v8/focused-native.junit.xml",
+      "bytes": 57899,
+      "sha256": "75d563cd4e8bf55eed20cf400f090368452c13022a49939edafe1729556dfbc4",
+      "original_version": "2050:591438:57899:1794438856252107012:1794438856252107012"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/7a6c00b8201f-native-failure/native/result.json",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/live-owners-focus-7a6c00b8201f-v8/result.json",
+      "bytes": 12945,
+      "sha256": "989e8a8524396643b07f5f4173527c4214e17acc14ac1e7bbca73073cc6ddb2a",
+      "original_version": "2050:590234:12945:1794438856318038786:1794438856318038786"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/7a6c00b8201f-native-failure/native/focused-native.json.da15b6fdd1884a32a9f4d301dc06dd29.log",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/live-owners-focus-7a6c00b8201f-v8/focused-native.json.da15b6fdd1884a32a9f4d301dc06dd29.log",
+      "bytes": 129513,
+      "sha256": "971795ce0588c93d53a3346bd699269214c132c3a1f9ac34bfd0c7c8855a6910",
+      "original_version": "2050:590237:129513:1794438856032455825:1794438856032455825"
     }
   ],
   "normalized_observations": [
@@ -258,6 +437,16 @@
       "job_id": "1a1ccc9b900-2564-1075",
       "representation": "normalized_process_status_observation",
       "normalization": "Parsed the original h_process_status JSON and serialized it with two-space indentation. This is not a raw host file or the original MCP response envelope."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/7a6c00b8201f-native-failure/outer-process-observation-during-proof.json",
+      "bytes": 472,
+      "sha256": "c66304b934b4e7d34c98b3fe512f4260e575526268cb6a22d36e8586af70aedc",
+      "source_tool": "h_process_status",
+      "host": "desktop",
+      "job_id": "1a1cccec57a-2564-1088",
+      "representation": "normalized_running_process_status_observation",
+      "normalization": "Parsed h_process_status JSON and serialized it with two-space indentation. This is a running observation during complete caller proof, not terminal evidence or the original MCP response envelope."
     }
   ]
 }

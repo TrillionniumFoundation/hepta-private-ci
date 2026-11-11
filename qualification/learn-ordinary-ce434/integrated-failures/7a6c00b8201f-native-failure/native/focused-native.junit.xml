@@ -1,0 +1,689 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="nextest-run" tests="109" failures="20" errors="0" uuid="c0c3b8ce-1188-47bc-ae15-7d51588ff97c" timestamp="2026-11-11T18:03:16.439-05:00" time="659.498">
+    <testsuite name="codex-hepta-agentd" tests="99" disabled="0" errors="0" failures="19">
+        <testcase name="cell_q24_material_receipt_owner::tests::original_material_pair_partial_creation_never_finishes_missing_dataset_during_recovery" classname="codex-hepta-agentd" timestamp="2026-11-11T18:03:16.453-05:00" time="0.608">
+        </testcase>
+        <testcase name="cell_q24_material_receipt_owner::tests::original_material_pair_expired_work_only_reads_original_completed_windows" classname="codex-hepta-agentd" timestamp="2026-11-11T18:03:16.453-05:00" time="1.301">
+        </testcase>
+        <testcase name="cell_q24_material_receipt_owner::tests::original_material_pair_pending_claim_reopens_without_signing_or_replacing_bytes" classname="codex-hepta-agentd" timestamp="2026-11-11T18:03:17.062-05:00" time="0.852">
+        </testcase>
+        <testcase name="cell_q24_material_receipt_owner::tests::original_material_pair_rejects_changed_custody_prefix_and_valid_freeze_resigning" classname="codex-hepta-agentd" timestamp="2026-11-11T18:03:17.754-05:00" time="1.290">
+        </testcase>
+        <testcase name="cell_q24_material_receipt_owner::tests::original_material_pair_signs_recovers_and_feeds_actual_no_update_training" classname="codex-hepta-agentd" timestamp="2026-11-11T18:03:17.914-05:00" time="1.372">
+        </testcase>
+        <testcase name="cell_q24_material_receipt_owner::tests::original_material_pair_withdrawal_refuses_cached_material_without_dataset_claim" classname="codex-hepta-agentd" timestamp="2026-11-11T18:03:19.044-05:00" time="0.718">
+        </testcase>
+        <testcase name="cell_q24_material_receipt_owner::tests::support::training_source::command::original_training_command_lost_ack_reads_existing_completion_without_reexecution" classname="codex-hepta-agentd" timestamp="2026-11-11T18:03:19.762-05:00" time="4.339">
+        </testcase>
+        <testcase name="cell_q24_material_receipt_owner::tests::support::training_source::command::original_training_command_executes_and_produces_actual_evidence_readback" classname="codex-hepta-agentd" timestamp="2026-11-11T18:03:19.286-05:00" time="5.687">
+        </testcase>
+        <testcase name="cell_q24_material_receipt_owner::tests::support::training_source::command::original_training_command_public_bootstrap_refuses_same_process_custody" classname="codex-hepta-agentd" timestamp="2026-11-11T18:03:24.102-05:00" time="0.939">
+        </testcase>
+        <testcase name="cell_q24_material_receipt_owner::tests::support::training_source::command::original_training_command_withdrawal_after_claim_preserves_pending_without_signature" classname="codex-hepta-agentd" timestamp="2026-11-11T18:03:25.040-05:00" time="3.083">
+        </testcase>
+        <testcase name="cell_q24_material_receipt_owner::tests::support::training_source::command::original_training_command_recovers_same_job_and_full_signature_read_only" classname="codex-hepta-agentd" timestamp="2026-11-11T18:03:24.973-05:00" time="5.575">
+        </testcase>
+        <testcase name="cell_q24_material_receipt_owner::tests::support::training_source::command::original_training_command_wrong_context_cannot_claim_or_consume_admission" classname="codex-hepta-agentd" timestamp="2026-11-11T18:03:28.124-05:00" time="3.495">
+        </testcase>
+        <testcase name="cell_q24_material_receipt_owner::tests::support::training_source::source_bound_capture_rejects_valid_freeze_resigning_with_identical_training_bytes" classname="codex-hepta-agentd" timestamp="2026-11-11T18:03:30.549-05:00" time="1.121">
+        </testcase>
+        <testcase name="cell_q24_material_receipt_owner::tests::support::training_source::source_bound_training_cold_identity_rejects_valid_material_signature_renewal" classname="codex-hepta-agentd" timestamp="2026-11-11T18:03:31.619-05:00" time="1.687">
+        </testcase>
+        <testcase name="cell_q24_material_receipt_owner::tests::support::training_source::source_bound_training_rejects_identical_legacy_batch_before_admission" classname="codex-hepta-agentd" timestamp="2026-11-11T18:03:33.306-05:00" time="0.971">
+        </testcase>
+        <testcase name="cell_q24_material_receipt_owner::tests::support::training_source::source_bound_training_preserves_frozen_rule_and_recovers_exact_no_update" classname="codex-hepta-agentd" timestamp="2026-11-11T18:03:31.670-05:00" time="5.032">
+        </testcase>
+        <testcase name="cell_q24_material_receipt_owner::tests::support::training_source::source_bound_training_withdrawal_after_claim_preserves_pending_without_signature" classname="codex-hepta-agentd" timestamp="2026-11-11T18:03:34.278-05:00" time="2.787">
+        </testcase>
+        <testcase name="circuit_next_use_receipt_owner::tests::original_observer_configuration_rejects_substituted_custody_before_journal_creation" classname="codex-hepta-agentd" timestamp="2026-11-11T18:03:37.064-05:00" time="0.060">
+        </testcase>
+        <testcase name="circuit_next_use_receipt_owner::tests::original_observer_deadline_and_saved_signature_window_never_renew" classname="codex-hepta-agentd" timestamp="2026-11-11T18:03:37.125-05:00" time="0.039">
+        </testcase>
+        <testcase name="circuit_next_use_receipt_owner::tests::original_observer_pending_claim_reopens_without_signing_or_rewriting" classname="codex-hepta-agentd" timestamp="2026-11-11T18:03:37.164-05:00" time="0.184">
+        </testcase>
+        <testcase name="circuit_next_use_receipt_owner::tests::original_observer_predecessors_require_bound_signed_roles_and_independent_custody" classname="codex-hepta-agentd" timestamp="2026-11-11T18:03:37.348-05:00" time="0.119">
+        </testcase>
+        <testcase name="circuit_task::source::tests::physical_current::original_source_current_fences_same_length_mutation_after_restore" classname="codex-hepta-agentd" timestamp="2026-11-11T18:03:37.468-05:00" time="0.027">
+        </testcase>
+        <testcase name="circuit_task::source::tests::physical_current::original_source_current_fences_truncation_and_extra_tail_without_repair" classname="codex-hepta-agentd" timestamp="2026-11-11T18:03:37.495-05:00" time="0.036">
+        </testcase>
+        <testcase name="circuit_task::source::tests::physical_current::original_source_input_read_is_readonly_and_requires_live_original_configuration" classname="codex-hepta-agentd" timestamp="2026-11-11T18:03:37.532-05:00" time="0.034">
+        </testcase>
+        <testcase name="cell_q24_material_receipt_owner::tests::support::training_source::source_bound_training_withdrawal_before_claim_fences_without_no_update" classname="codex-hepta-agentd" timestamp="2026-11-11T18:03:36.703-05:00" time="2.114">
+        </testcase>
+        <testcase name="learning_iteration_evidence_client::material::command::serving::tests::material_command_executes_original_experience_then_dataset_without_uploads" classname="codex-hepta-agentd" timestamp="2026-11-11T18:03:37.566-05:00" time="3.137">
+        </testcase>
+        <testcase name="learning_iteration_evidence_client::material::command::serving::tests::material_command_lost_ack_recovers_original_signatures_and_shared_admission" classname="codex-hepta-agentd" timestamp="2026-11-11T18:03:38.816-05:00" time="3.347">
+        </testcase>
+        <testcase name="learning_iteration_evidence_client::material::command::serving::tests::material_command_missing_predecessor_and_cold_missing_never_execute" classname="codex-hepta-agentd" timestamp="2026-11-11T18:03:40.703-05:00" time="1.683">
+        </testcase>
+        <testcase name="learning_iteration_evidence_client::material::command::serving::tests::material_command_pending_claim_and_withdrawal_never_complete_or_rearm" classname="codex-hepta-agentd" timestamp="2026-11-11T18:03:42.163-05:00" time="1.254">
+        </testcase>
+        <testcase name="learning_iteration_evidence_client::material::command::serving::tests::material_command_pins_original_signatures_and_consumes_invalid_replies" classname="codex-hepta-agentd" timestamp="2026-11-11T18:03:42.386-05:00" time="1.354">
+        </testcase>
+        <testcase name="learning_iteration_evidence_client::material::command::serving::tests::material_command_wrong_context_role_or_custody_never_claims" classname="codex-hepta-agentd" timestamp="2026-11-11T18:03:43.418-05:00" time="0.797">
+        </testcase>
+        <testcase name="learning_iteration_evidence_client::material::source::tests::material_source_peer_pins_complete_material_and_freeze_signatures" classname="codex-hepta-agentd" timestamp="2026-11-11T18:03:44.215-05:00" time="1.839">
+        </testcase>
+        <testcase name="learning_iteration_evidence_client::material::source::tests::material_source_peer_consumes_wrong_purpose_or_failed_frames" classname="codex-hepta-agentd" timestamp="2026-11-11T18:03:43.741-05:00" time="3.189">
+        </testcase>
+        <testcase name="learning_iteration_evidence_client::material::source::tests::material_source_peer_rejects_raw_batch_provenance_and_frozen_optimizer_rebinding" classname="codex-hepta-agentd" timestamp="2026-11-11T18:03:46.930-05:00" time="3.290">
+        </testcase>
+        <testcase name="learning_iteration_evidence_client::material::source::tests::material_source_service_refuses_request_payload_rebinding_and_public_custody_bypass" classname="codex-hepta-agentd" timestamp="2026-11-11T18:03:50.221-05:00" time="1.620">
+        </testcase>
+        <testcase name="learning_iteration_evidence_client::material::source::tests::material_source_service_refuses_withdrawn_missing_or_busy_originals" classname="codex-hepta-agentd" timestamp="2026-11-11T18:03:51.841-05:00" time="1.834">
+        </testcase>
+        <testcase name="learning_iteration_evidence_client::material::tests::material_readback_service_failed_frame_permanently_consumes_channel" classname="codex-hepta-agentd" timestamp="2026-11-11T18:03:53.675-05:00" time="0.907">
+        </testcase>
+        <testcase name="learning_iteration_evidence_client::material::tests::material_readback_service_never_finishes_missing_dataset" classname="codex-hepta-agentd" timestamp="2026-11-11T18:03:54.582-05:00" time="0.987">
+        </testcase>
+        <testcase name="learning_iteration_evidence_client::material::source::tests::material_source_peer_reconstructs_exact_sealed_material_and_cold_rereads" classname="codex-hepta-agentd" timestamp="2026-11-11T18:03:46.054-05:00" time="10.769">
+        </testcase>
+        <testcase name="learning_iteration_evidence_client::material::tests::material_readback_service_refuses_request_rebinding_and_replay_without_writes" classname="codex-hepta-agentd" timestamp="2026-11-11T18:03:55.569-05:00" time="1.984">
+        </testcase>
+        <testcase name="learning_iteration_evidence_client::material::tests::material_readback_service_refuses_withdrawn_source_and_busy_ledger" classname="codex-hepta-agentd" timestamp="2026-11-11T18:03:56.823-05:00" time="1.226">
+        </testcase>
+        <testcase name="learning_iteration_evidence_client::material::tests::material_readback_service_rejects_same_uid_peer_and_widened_transport" classname="codex-hepta-agentd" timestamp="2026-11-11T18:03:57.553-05:00" time="0.913">
+        </testcase>
+        <testcase name="learning_iteration_evidence_client::material::tests::material_readback_service_returns_original_signatures_and_cold_rereads" classname="codex-hepta-agentd" timestamp="2026-11-11T18:03:58.049-05:00" time="2.787">
+        </testcase>
+        <testcase name="learning_iteration_evidence_client::tests::original_receipt_fixture_retains_peer_during_owner_work_between_frames" classname="codex-hepta-agentd" timestamp="2026-11-11T18:03:58.467-05:00" time="5.165">
+        </testcase>
+        <testcase name="learning_iteration_evidence_client::training_command::bootstrap::tests::command_connection::deferred_training_connection_rejects_experience_and_valid_other_freeze_context" classname="codex-hepta-agentd" timestamp="2026-11-11T18:04:03.632-05:00" time="1.672">
+        </testcase>
+        <testcase name="learning_iteration_evidence_client::training_command::bootstrap::tests::deferred_training_attenuation_and_prebound_transport_preserve_original_custody" classname="codex-hepta-agentd" timestamp="2026-11-11T18:04:05.305-05:00" time="2.065">
+        </testcase>
+        <testcase name="learning_iteration_evidence_client::training_command::bootstrap::tests::command_connection::deferred_training_connection_preserves_expiry_and_readonly_cold_original_signature" classname="codex-hepta-agentd" timestamp="2026-11-11T18:04:00.836-05:00" time="51.720">
+        </testcase>
+        <testcase name="learning_iteration_evidence_client::training_command::bootstrap::tests::deferred_training_failed_source_or_pending_claim_never_rearms" classname="codex-hepta-agentd" timestamp="2026-11-11T18:04:07.370-05:00" time="50.326">
+        </testcase>
+        <testcase name="learning_iteration_evidence_client::training_command::bootstrap::tests::deferred_training_missing_dataset_or_partial_owners_never_bootstrap_replacements" classname="codex-hepta-agentd" timestamp="2026-11-11T18:04:57.695-05:00" time="19.616">
+        </testcase>
+        <testcase name="learning_iteration_evidence_client::training_command::bootstrap::tests::deferred_training_lost_ack_recovers_same_job_and_original_signature" classname="codex-hepta-agentd" timestamp="2026-11-11T18:04:52.557-05:00" time="59.566">
+        </testcase>
+        <testcase name="learning_iteration_evidence_client::training_command::bootstrap::tests::deferred_training_uses_actual_material_cut_and_original_source_without_precreation" classname="codex-hepta-agentd" timestamp="2026-11-11T18:05:17.311-05:00" time="41.887">
+            <failure message="Error: OwnerUnavailable(&quot;original learning evidence owner&quot;)" type="test failure with exit code 101">Error: OwnerUnavailable(&quot;original learning evidence owner&quot;)</failure>
+            <system-out>
+running 1 test
+test learning_iteration_evidence_client::training_command::bootstrap::tests::deferred_training_uses_actual_material_cut_and_original_source_without_precreation ... FAILED
+
+failures:
+
+failures:
+    learning_iteration_evidence_client::training_command::bootstrap::tests::deferred_training_uses_actual_material_cut_and_original_source_without_precreation
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1081 filtered out; finished in 41.87s
+
+</system-out>
+            <system-err>HEPTA_DEFERRED_TRAINING_EXECUTE elapsed_us=28466938 result=Ok(())
+HEPTA_DEFERRED_TRAINING_EVIDENCE client_us=502137 total_us=3822709 client=Err(&quot;OwnerUnavailable(\&quot;original learning evidence owner\&quot;)&quot;) server=Err(&quot;original Trainer transport: DeadlineElapsed&quot;)
+Error: OwnerUnavailable(&quot;original learning evidence owner&quot;)
+</system-err>
+        </testcase>
+        <testcase name="neuron_cell_evaluation_execution_store::tests::original_execution_owner_creation_and_recovery_never_repair_partial_anchors" classname="codex-hepta-agentd" timestamp="2026-11-11T18:05:59.213-05:00" time="0.247">
+        </testcase>
+        <testcase name="neuron_cell_evaluation_execution_store::tests::original_execution_owner_lost_claim_ack_preserves_pending_or_uncertainty" classname="codex-hepta-agentd" timestamp="2026-11-11T18:05:59.460-05:00" time="0.038">
+        </testcase>
+        <testcase name="neuron_cell_evaluation_execution_store::tests::original_execution_owner_lost_completion_ack_preserves_completed_or_uncertainty" classname="codex-hepta-agentd" timestamp="2026-11-11T18:05:59.498-05:00" time="0.041">
+        </testcase>
+        <testcase name="neuron_cell_evaluation_execution_store::tests::original_execution_owner_physical_corruption_fences_even_after_restore" classname="codex-hepta-agentd" timestamp="2026-11-11T18:05:59.539-05:00" time="0.047">
+            <failure message="thread &apos;neuron_cell_evaluation_execution_store::tests::original_execution_owner_physical_corruption_fences_even_after_restore&apos; (2004188) panicked at hepta-agentd/src/neuron_cell_evaluation_execution_store_tests.rs:376:9" type="test failure with exit code 101">thread &apos;neuron_cell_evaluation_execution_store::tests::original_execution_owner_physical_corruption_fences_even_after_restore&apos; (2004188) panicked at hepta-agentd/src/neuron_cell_evaluation_execution_store_tests.rs:376:9:
+assertion failed: `(left == right)`
+
+Diff &lt; left / right &gt; :
+&lt;Ok(
+&lt;    Completed(
+&lt;        [
+&lt;            97,
+&lt;            99,
+&lt;            116,
+&lt;            117,
+&lt;            97,
+&lt;            108,
+&lt;            45,
+&lt;            114,
+&lt;            101,
+&lt;            116,
+&lt;            97,
+&lt;            105,
+&lt;            110,
+&lt;            101,
+&lt;            100,
+&lt;            45,
+&lt;            101,
+&lt;            120,
+&lt;            101,
+&lt;            99,
+&lt;            117,
+&lt;            116,
+&lt;            105,
+&lt;            111,
+&lt;            110,
+&lt;        ],
+&lt;    ),
+&gt;Err(
+&gt;    Indeterminate,
+ )
+
+
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace</failure>
+            <system-out>
+running 1 test
+test neuron_cell_evaluation_execution_store::tests::original_execution_owner_physical_corruption_fences_even_after_restore ... FAILED
+
+failures:
+
+failures:
+    neuron_cell_evaluation_execution_store::tests::original_execution_owner_physical_corruption_fences_even_after_restore
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1081 filtered out; finished in 0.03s
+
+</system-out>
+            <system-err>
+thread &apos;neuron_cell_evaluation_execution_store::tests::original_execution_owner_physical_corruption_fences_even_after_restore&apos; (2004188) panicked at hepta-agentd/src/neuron_cell_evaluation_execution_store_tests.rs:376:9:
+assertion failed: `(left == right)`
+
+Diff &lt; left / right &gt; :
+&lt;Ok(
+&lt;    Completed(
+&lt;        [
+&lt;            97,
+&lt;            99,
+&lt;            116,
+&lt;            117,
+&lt;            97,
+&lt;            108,
+&lt;            45,
+&lt;            114,
+&lt;            101,
+&lt;            116,
+&lt;            97,
+&lt;            105,
+&lt;            110,
+&lt;            101,
+&lt;            100,
+&lt;            45,
+&lt;            101,
+&lt;            120,
+&lt;            101,
+&lt;            99,
+&lt;            117,
+&lt;            116,
+&lt;            105,
+&lt;            111,
+&lt;            110,
+&lt;        ],
+&lt;    ),
+&gt;Err(
+&gt;    Indeterminate,
+ )
+
+
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+</system-err>
+        </testcase>
+        <testcase name="neuron_cell_evaluation_execution_store::tests::original_execution_owner_preserves_missing_pending_and_completed_after_recovery" classname="codex-hepta-agentd" timestamp="2026-11-11T18:05:59.587-05:00" time="0.034">
+        </testcase>
+        <testcase name="neuron_cell_evaluation_execution_store::tests::original_execution_owner_readback_port_rejects_writes_keys_and_unwitnessed_tail" classname="codex-hepta-agentd" timestamp="2026-11-11T18:05:59.622-05:00" time="0.030">
+        </testcase>
+        <testcase name="neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::training_lane::original_training_model_lane_fences_physical_mutation_after_bytes_restore" classname="codex-hepta-agentd" timestamp="2026-11-11T18:05:59.652-05:00" time="10.465">
+        </testcase>
+        <testcase name="neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::training_lane::original_training_model_lane_preserves_pending_and_lost_ack" classname="codex-hepta-agentd" timestamp="2026-11-11T18:06:10.116-05:00" time="7.862">
+        </testcase>
+        <testcase name="learning_iteration_evidence_client::training_command::bootstrap::tests::deferred_training_wrong_context_does_not_consume_original_custody" classname="codex-hepta-agentd" timestamp="2026-11-11T18:05:52.123-05:00" time="30.029">
+        </testcase>
+        <testcase name="neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::training_lane::original_training_model_lane_retains_custody_and_exact_generator_evidence" classname="codex-hepta-agentd" timestamp="2026-11-11T18:06:17.979-05:00" time="7.128">
+        </testcase>
+        <testcase name="runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::q24_source_bound_model_selector_fences_changed_execution_bytes" classname="codex-hepta-agentd" timestamp="2026-11-11T18:06:25.108-05:00" time="21.891">
+        </testcase>
+        <testcase name="runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::q24_source_bound_model_selector_attests_and_recovers_exact_adoption" classname="codex-hepta-agentd" timestamp="2026-11-11T18:06:22.153-05:00" time="40.593">
+        </testcase>
+        <testcase name="runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::q24_source_bound_model_selector_pending_claim_survives_recovery" classname="codex-hepta-agentd" timestamp="2026-11-11T18:06:46.999-05:00" time="31.932">
+        </testcase>
+        <testcase name="runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::q24_source_bound_model_selector_refuses_valid_predecessor_resigning" classname="codex-hepta-agentd" timestamp="2026-11-11T18:07:02.745-05:00" time="35.642">
+        </testcase>
+        <testcase name="runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::q24_source_bound_model_selector_refuses_withdrawn_training_source" classname="codex-hepta-agentd" timestamp="2026-11-11T18:07:18.932-05:00" time="21.894">
+        </testcase>
+        <testcase name="runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::q24_source_bound_model_selector_refuses_withdrawn_version_publication" classname="codex-hepta-agentd" timestamp="2026-11-11T18:07:38.388-05:00" time="22.723">
+        </testcase>
+        <testcase name="runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::qualification_owner::original_qualification_current_corruption_stays_fenced_after_restore" classname="codex-hepta-agentd" timestamp="2026-11-11T18:07:40.826-05:00" time="22.156">
+        </testcase>
+        <testcase name="runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::qualification_owner::original_qualification_missing_and_pending_never_publish_during_recovery" classname="codex-hepta-agentd" timestamp="2026-11-11T18:08:02.982-05:00" time="24.584">
+        </testcase>
+        <testcase name="runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::qualification_owner::original_qualification_lost_completion_ack_preserves_uncertainty_and_exact_recovery" classname="codex-hepta-agentd" timestamp="2026-11-11T18:08:01.111-05:00" time="26.639">
+        </testcase>
+        <testcase name="runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::qualification_owner::original_qualification_publishes_and_recovers_exact_completed_decision" classname="codex-hepta-agentd" timestamp="2026-11-11T18:08:27.566-05:00" time="31.251">
+        </testcase>
+        <testcase name="runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::qualification_owner::original_qualification_rejects_context_and_valid_signature_renewal" classname="codex-hepta-agentd" timestamp="2026-11-11T18:08:27.749-05:00" time="31.098">
+        </testcase>
+        <testcase name="runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_attests_actual_different_c_and_shares_dispatch" classname="codex-hepta-agentd" timestamp="2026-11-11T18:08:58.847-05:00" time="19.629">
+            <failure message="Error: original Selector completion is uncertain; read the same operation" type="test failure with exit code 101">Error: original Selector completion is uncertain; read the same operation</failure>
+            <system-out>
+running 1 test
+test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_attests_actual_different_c_and_shares_dispatch ... FAILED
+
+failures:
+
+failures:
+    runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_attests_actual_different_c_and_shares_dispatch
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1081 filtered out; finished in 19.60s
+
+</system-out>
+            <system-err>Error: original Selector completion is uncertain; read the same operation
+</system-err>
+        </testcase>
+        <testcase name="runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_early_dispatch_never_runs_c_or_resets_admission" classname="codex-hepta-agentd" timestamp="2026-11-11T18:09:18.477-05:00" time="19.854">
+            <failure message="Error: original Selector completion is uncertain; read the same operation" type="test failure with exit code 101">Error: original Selector completion is uncertain; read the same operation</failure>
+            <system-out>
+running 1 test
+test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_early_dispatch_never_runs_c_or_resets_admission ... FAILED
+
+failures:
+
+failures:
+    runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_early_dispatch_never_runs_c_or_resets_admission
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1081 filtered out; finished in 19.83s
+
+</system-out>
+            <system-err>Error: original Selector completion is uncertain; read the same operation
+</system-err>
+        </testcase>
+        <testcase name="runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::qualification_owner::original_qualification_requires_physical_execution_and_holdout_before_claim" classname="codex-hepta-agentd" timestamp="2026-11-11T18:08:58.817-05:00" time="52.909">
+        </testcase>
+        <testcase name="runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_lost_ack_recovers_exact_original_signature_readonly" classname="codex-hepta-agentd" timestamp="2026-11-11T18:09:38.332-05:00" time="18.241">
+            <failure message="Error: original Selector completion is uncertain; read the same operation" type="test failure with exit code 101">Error: original Selector completion is uncertain; read the same operation</failure>
+            <system-out>
+running 1 test
+test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_lost_ack_recovers_exact_original_signature_readonly ... FAILED
+
+failures:
+
+failures:
+    runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_lost_ack_recovers_exact_original_signature_readonly
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1081 filtered out; finished in 18.22s
+
+</system-out>
+            <system-err>Error: original Selector completion is uncertain; read the same operation
+</system-err>
+        </testcase>
+        <testcase name="runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_pins_both_original_signatures_before_dispatch" classname="codex-hepta-agentd" timestamp="2026-11-11T18:09:51.726-05:00" time="16.087">
+            <failure message="Error: original Selector completion is uncertain; read the same operation" type="test failure with exit code 101">Error: original Selector completion is uncertain; read the same operation</failure>
+            <system-out>
+running 1 test
+test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_pins_both_original_signatures_before_dispatch ... FAILED
+
+failures:
+
+failures:
+    runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_pins_both_original_signatures_before_dispatch
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1081 filtered out; finished in 16.06s
+
+</system-out>
+            <system-err>Error: original Selector completion is uncertain; read the same operation
+</system-err>
+        </testcase>
+        <testcase name="runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_preserves_original_expiry_and_external_custody" classname="codex-hepta-agentd" timestamp="2026-11-11T18:09:56.573-05:00" time="15.724">
+            <failure message="Error: original Selector completion is uncertain; read the same operation" type="test failure with exit code 101">Error: original Selector completion is uncertain; read the same operation</failure>
+            <system-out>
+running 1 test
+test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_preserves_original_expiry_and_external_custody ... FAILED
+
+failures:
+
+failures:
+    runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_preserves_original_expiry_and_external_custody
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1081 filtered out; finished in 15.70s
+
+</system-out>
+            <system-err>Error: original Selector completion is uncertain; read the same operation
+</system-err>
+        </testcase>
+        <testcase name="runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_readback_refuses_actual_publication_withdrawal" classname="codex-hepta-agentd" timestamp="2026-11-11T18:10:07.813-05:00" time="16.119">
+            <failure message="Error: original Selector completion is uncertain; read the same operation" type="test failure with exit code 101">Error: original Selector completion is uncertain; read the same operation</failure>
+            <system-out>
+running 1 test
+test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_readback_refuses_actual_publication_withdrawal ... FAILED
+
+failures:
+
+failures:
+    runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_readback_refuses_actual_publication_withdrawal
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1081 filtered out; finished in 16.09s
+
+</system-out>
+            <system-err>Error: original Selector completion is uncertain; read the same operation
+</system-err>
+        </testcase>
+        <testcase name="runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_binds_opaque_training_result_and_shared_dispatch" classname="codex-hepta-agentd" timestamp="2026-11-11T18:10:12.298-05:00" time="15.641">
+            <failure message="thread &apos;runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_binds_opaque_training_result_and_shared_dispatch&apos; (2010650) panicked at hepta-agentd/src/circuit_selection_command_owner_tests.rs:105:5" type="test failure with exit code 101">thread &apos;runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_binds_opaque_training_result_and_shared_dispatch&apos; (2010650) panicked at hepta-agentd/src/circuit_selection_command_owner_tests.rs:105:5:
+assertion failed: matches!(client.readback().await,
+    Err(OriginalCircuitSelectionCommandErrorV1::Missing))
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace</failure>
+            <system-out>
+running 1 test
+test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_binds_opaque_training_result_and_shared_dispatch ... FAILED
+
+failures:
+
+failures:
+    runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_binds_opaque_training_result_and_shared_dispatch
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1081 filtered out; finished in 15.62s
+
+</system-out>
+            <system-err>
+thread &apos;runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_binds_opaque_training_result_and_shared_dispatch&apos; (2010650) panicked at hepta-agentd/src/circuit_selection_command_owner_tests.rs:105:5:
+assertion failed: matches!(client.readback().await,
+    Err(OriginalCircuitSelectionCommandErrorV1::Missing))
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+</system-err>
+        </testcase>
+        <testcase name="runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_evidence_readback_detects_live_withdrawal" classname="codex-hepta-agentd" timestamp="2026-11-11T18:10:23.933-05:00" time="21.247">
+            <failure message="Error: original Selector completion is uncertain; read the same operation" type="test failure with exit code 101">Error: original Selector completion is uncertain; read the same operation</failure>
+            <system-out>
+running 1 test
+test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_evidence_readback_detects_live_withdrawal ... FAILED
+
+failures:
+
+failures:
+    runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_evidence_readback_detects_live_withdrawal
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1081 filtered out; finished in 21.22s
+
+</system-out>
+            <system-err>Error: original Selector completion is uncertain; read the same operation
+</system-err>
+        </testcase>
+        <testcase name="runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_keeps_original_expiry_and_external_custody" classname="codex-hepta-agentd" timestamp="2026-11-11T18:10:27.939-05:00" time="26.937">
+            <failure message="thread &apos;runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_keeps_original_expiry_and_external_custody&apos; (2011141) panicked at hepta-agentd/src/circuit_selection_command_owner_tests.rs:399:5" type="test failure with exit code 101">thread &apos;runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_keeps_original_expiry_and_external_custody&apos; (2011141) panicked at hepta-agentd/src/circuit_selection_command_owner_tests.rs:399:5:
+assertion failed: matches!(client.readback().await,
+    Err(OriginalCircuitSelectionCommandErrorV1::Missing))
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace</failure>
+            <system-out>
+running 1 test
+test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_keeps_original_expiry_and_external_custody ... FAILED
+
+failures:
+
+failures:
+    runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_keeps_original_expiry_and_external_custody
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1081 filtered out; finished in 26.91s
+
+</system-out>
+            <system-err>
+thread &apos;runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_keeps_original_expiry_and_external_custody&apos; (2011141) panicked at hepta-agentd/src/circuit_selection_command_owner_tests.rs:399:5:
+assertion failed: matches!(client.readback().await,
+    Err(OriginalCircuitSelectionCommandErrorV1::Missing))
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+</system-err>
+        </testcase>
+        <testcase name="runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_lost_ack_recovers_original_signature_readonly" classname="codex-hepta-agentd" timestamp="2026-11-11T18:10:45.180-05:00" time="24.866">
+            <failure message="Error: actual Selection before lost ACK" type="test failure with exit code 101">Error: actual Selection before lost ACK</failure>
+            <system-out>
+running 1 test
+test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_lost_ack_recovers_original_signature_readonly ... FAILED
+
+failures:
+
+failures:
+    runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_lost_ack_recovers_original_signature_readonly
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1081 filtered out; finished in 24.84s
+
+</system-out>
+            <system-err>Error: actual Selection before lost ACK
+</system-err>
+        </testcase>
+        <testcase name="runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_recovered_missing_never_dispatches" classname="codex-hepta-agentd" timestamp="2026-11-11T18:10:54.876-05:00" time="17.722">
+            <failure message="thread &apos;runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_recovered_missing_never_dispatches&apos; (2011837) panicked at hepta-agentd/src/circuit_selection_command_owner_tests.rs:225:5" type="test failure with exit code 101">thread &apos;runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_recovered_missing_never_dispatches&apos; (2011837) panicked at hepta-agentd/src/circuit_selection_command_owner_tests.rs:225:5:
+assertion failed: matches!(client.readback().await,
+    Err(OriginalCircuitSelectionCommandErrorV1::Missing))
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace</failure>
+            <system-out>
+running 1 test
+test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_recovered_missing_never_dispatches ... FAILED
+
+failures:
+
+failures:
+    runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_recovered_missing_never_dispatches
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1081 filtered out; finished in 17.70s
+
+</system-out>
+            <system-err>
+thread &apos;runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_recovered_missing_never_dispatches&apos; (2011837) panicked at hepta-agentd/src/circuit_selection_command_owner_tests.rs:225:5:
+assertion failed: matches!(client.readback().await,
+    Err(OriginalCircuitSelectionCommandErrorV1::Missing))
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+</system-err>
+        </testcase>
+        <testcase name="runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_rejects_wrong_context_and_valid_renewal_before_dispatch" classname="codex-hepta-agentd" timestamp="2026-11-11T18:11:10.047-05:00" time="16.575">
+            <failure message="Error: original Selector completion is uncertain; read the same operation" type="test failure with exit code 101">Error: original Selector completion is uncertain; read the same operation</failure>
+            <system-out>
+running 1 test
+test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_rejects_wrong_context_and_valid_renewal_before_dispatch ... FAILED
+
+failures:
+
+failures:
+    runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_rejects_wrong_context_and_valid_renewal_before_dispatch
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1081 filtered out; finished in 16.55s
+
+</system-out>
+            <system-err>Error: original Selector completion is uncertain; read the same operation
+</system-err>
+        </testcase>
+        <testcase name="runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_c_requires_actual_completion_and_original_selector_signature" classname="codex-hepta-agentd" timestamp="2026-11-11T18:11:12.599-05:00" time="29.723">
+            <failure message="Error: original published Circuit read capability: original read transport: DeadlineElapsed" type="test failure with exit code 101">Error: original published Circuit read capability: original read transport: DeadlineElapsed
+
+Caused by:
+    0: original read transport: DeadlineElapsed
+    1: DeadlineElapsed</failure>
+            <system-out>
+running 1 test
+test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_c_requires_actual_completion_and_original_selector_signature ... FAILED
+
+failures:
+
+failures:
+    runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_c_requires_actual_completion_and_original_selector_signature
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1081 filtered out; finished in 29.69s
+
+</system-out>
+            <system-err>Error: original published Circuit read capability: original read transport: DeadlineElapsed
+
+Caused by:
+    0: original read transport: DeadlineElapsed
+    1: DeadlineElapsed
+</system-err>
+        </testcase>
+        <testcase name="runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_context_pins_full_signatures_and_refuses_uploaded_observations" classname="codex-hepta-agentd" timestamp="2026-11-11T18:11:26.622-05:00" time="24.578">
+        </testcase>
+        <testcase name="runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_current_refuses_withdrawal_after_a_successful_read" classname="codex-hepta-agentd" timestamp="2026-11-11T18:11:42.323-05:00" time="23.753">
+            <failure message="Error: original read transport: DeadlineElapsed" type="test failure with exit code 101">Error: original read transport: DeadlineElapsed
+
+Caused by:
+    DeadlineElapsed</failure>
+            <system-out>
+running 1 test
+test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_current_refuses_withdrawal_after_a_successful_read ... FAILED
+
+failures:
+
+failures:
+    runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_current_refuses_withdrawal_after_a_successful_read
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1081 filtered out; finished in 23.73s
+
+</system-out>
+            <system-err>Error: original read transport: DeadlineElapsed
+
+Caused by:
+    DeadlineElapsed
+</system-err>
+        </testcase>
+        <testcase name="runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_read_consumes_late_and_wrong_nonce_responses_without_effects" classname="codex-hepta-agentd" timestamp="2026-11-11T18:11:51.200-05:00" time="24.867">
+            <failure message="Error: the malformed response was actually sent" type="test failure with exit code 101">Error: the malformed response was actually sent</failure>
+            <system-out>
+running 1 test
+test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_read_consumes_late_and_wrong_nonce_responses_without_effects ... FAILED
+
+failures:
+
+failures:
+    runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_read_consumes_late_and_wrong_nonce_responses_without_effects
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1081 filtered out; finished in 24.84s
+
+</system-out>
+            <system-err>Error: the malformed response was actually sent
+</system-err>
+        </testcase>
+        <testcase name="runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_read_refuses_expired_original_window_and_same_process_bootstrap" classname="codex-hepta-agentd" timestamp="2026-11-11T18:12:06.076-05:00" time="15.915">
+            <failure message="Error: original read transport: DeadlineElapsed" type="test failure with exit code 101">Error: original read transport: DeadlineElapsed
+
+Caused by:
+    DeadlineElapsed</failure>
+            <system-out>
+running 1 test
+test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_read_refuses_expired_original_window_and_same_process_bootstrap ... FAILED
+
+failures:
+
+failures:
+    runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_read_refuses_expired_original_window_and_same_process_bootstrap
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1081 filtered out; finished in 15.89s
+
+</system-out>
+            <system-err>Error: original read transport: DeadlineElapsed
+
+Caused by:
+    DeadlineElapsed
+</system-err>
+        </testcase>
+        <testcase name="runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_selection_reads_original_publication_before_c_and_recovers_signature" classname="codex-hepta-agentd" timestamp="2026-11-11T18:12:16.067-05:00" time="16.296">
+            <failure message="thread &apos;runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_selection_reads_original_publication_before_c_and_recovers_signature&apos; (2014324) panicked at hepta-agentd/src/circuit_learning_read_owner_tests.rs:111:5" type="test failure with exit code 101">thread &apos;runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_selection_reads_original_publication_before_c_and_recovers_signature&apos; (2014324) panicked at hepta-agentd/src/circuit_learning_read_owner_tests.rs:111:5:
+assertion failed: matches!(selector.readback_remote(remote_selection(&amp;f.config.decision, &amp;live,
+    &amp;trainer)).await,
+    Err(OriginalCircuitSelectionReceiptErrorV1::Owner(OwnerError::Store(ProductEvaluationExecutionStoreErrorV1::Missing))))
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace</failure>
+            <system-out>
+running 1 test
+test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_selection_reads_original_publication_before_c_and_recovers_signature ... FAILED
+
+failures:
+
+failures:
+    runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_selection_reads_original_publication_before_c_and_recovers_signature
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1081 filtered out; finished in 16.27s
+
+</system-out>
+            <system-err>
+thread &apos;runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_selection_reads_original_publication_before_c_and_recovers_signature&apos; (2014324) panicked at hepta-agentd/src/circuit_learning_read_owner_tests.rs:111:5:
+assertion failed: matches!(selector.readback_remote(remote_selection(&amp;f.config.decision, &amp;live,
+    &amp;trainer)).await,
+    Err(OriginalCircuitSelectionReceiptErrorV1::Owner(OwnerError::Store(ProductEvaluationExecutionStoreErrorV1::Missing))))
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+</system-err>
+        </testcase>
+        <testcase name="runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::q24_original_selector_attests_actual_publication_and_recovers_exact_signature" classname="codex-hepta-agentd" timestamp="2026-11-11T18:12:21.991-05:00" time="28.634">
+        </testcase>
+        <testcase name="runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::q24_original_selector_refuses_valid_training_renewal_live_and_cold" classname="codex-hepta-agentd" timestamp="2026-11-11T18:12:50.625-05:00" time="16.795">
+        </testcase>
+        <testcase name="runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::q24_original_selector_preserves_pending_and_recovers_completed_lost_ack" classname="codex-hepta-agentd" timestamp="2026-11-11T18:12:32.364-05:00" time="35.409">
+        </testcase>
+        <testcase name="runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::q24_original_selector_refuses_withdrawn_publication_before_claim" classname="codex-hepta-agentd" timestamp="2026-11-11T18:13:07.421-05:00" time="14.993">
+        </testcase>
+        <testcase name="runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::q24_original_selector_rejects_substituted_custody_before_store_creation" classname="codex-hepta-agentd" timestamp="2026-11-11T18:13:22.414-05:00" time="14.884">
+        </testcase>
+        <testcase name="runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::q24_original_selector_rejects_another_real_completion_with_same_run_and_manifest" classname="codex-hepta-agentd" timestamp="2026-11-11T18:13:07.773-05:00" time="29.652">
+        </testcase>
+        <testcase name="runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::q24_ordinary_original_observer_attests_and_recovers_exact_completed_next_use" classname="codex-hepta-agentd" timestamp="2026-11-11T18:13:37.299-05:00" time="30.695">
+        </testcase>
+        <testcase name="runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::q24_ordinary_original_observer_refuses_uncommitted_or_withdrawn_next_use" classname="codex-hepta-agentd" timestamp="2026-11-11T18:13:37.425-05:00" time="38.512">
+        </testcase>
+    </testsuite>
+    <testsuite name="codex-hepta-intelligence-eval" tests="10" disabled="0" errors="0" failures="1">
+        <testcase name="fenced_holdout_file::tests::physical_current::holdout_current_cold_recovery_and_non_target_calls_preserve_original_bytes" classname="codex-hepta-intelligence-eval" timestamp="2026-11-11T18:14:07.994-05:00" time="0.041">
+        </testcase>
+        <testcase name="fenced_holdout_file::tests::physical_current::holdout_current_preserves_cursor_lock_and_fences_read_errors" classname="codex-hepta-intelligence-eval" timestamp="2026-11-11T18:14:08.035-05:00" time="0.014">
+        </testcase>
+        <testcase name="fenced_holdout_file::tests::physical_current::holdout_current_rehashed_history_cannot_preserve_cached_frontier" classname="codex-hepta-intelligence-eval" timestamp="2026-11-11T18:14:08.050-05:00" time="0.018">
+        </testcase>
+        <testcase name="fenced_holdout_file::tests::physical_current::holdout_current_same_length_mutation_fences_after_restore" classname="codex-hepta-intelligence-eval" timestamp="2026-11-11T18:14:08.068-05:00" time="0.021">
+        </testcase>
+        <testcase name="product_runner::tests::execution_tests::holdout_current::holdout_current_completed_execution_readback_requires_physical_original" classname="codex-hepta-intelligence-eval" timestamp="2026-11-11T18:14:08.089-05:00" time="0.099">
+            <failure message="thread &apos;product_runner::tests::execution_tests::holdout_current::holdout_current_completed_execution_readback_requires_physical_original&apos; (2018529) panicked at hepta-intelligence-eval/src/product_execution_holdout_current_tests.rs:313:5" type="test failure with exit code 101">thread &apos;product_runner::tests::execution_tests::holdout_current::holdout_current_completed_execution_readback_requires_physical_original&apos; (2018529) panicked at hepta-intelligence-eval/src/product_execution_holdout_current_tests.rs:313:5:
+assertion failed: `(left == right)`
+
+Diff &lt; left / right &gt; :
+ Err(
+     Evaluation(
+         Holdout(
+&lt;            Store(
+&lt;                Indeterminate,
+&lt;            ),
+&gt;            Indeterminate,
+         ),
+     ),
+ )
+
+
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace</failure>
+            <system-out>
+running 1 test
+test product_runner::tests::execution_tests::holdout_current::holdout_current_completed_execution_readback_requires_physical_original ... FAILED
+
+failures:
+
+failures:
+    product_runner::tests::execution_tests::holdout_current::holdout_current_completed_execution_readback_requires_physical_original
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 158 filtered out; finished in 0.09s
+
+</system-out>
+            <system-err>
+thread &apos;product_runner::tests::execution_tests::holdout_current::holdout_current_completed_execution_readback_requires_physical_original&apos; (2018529) panicked at hepta-intelligence-eval/src/product_execution_holdout_current_tests.rs:313:5:
+assertion failed: `(left == right)`
+
+Diff &lt; left / right &gt; :
+ Err(
+     Evaluation(
+         Holdout(
+&lt;            Store(
+&lt;                Indeterminate,
+&lt;            ),
+&gt;            Indeterminate,
+         ),
+     ),
+ )
+
+
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+</system-err>
+        </testcase>
+        <testcase name="product_runner::tests::execution_tests::holdout_current::holdout_current_lost_cas_ack_preserves_pending_without_provider_replay" classname="codex-hepta-intelligence-eval" timestamp="2026-11-11T18:14:08.188-05:00" time="0.045">
+        </testcase>
+        <testcase name="product_runner::tests::execution_tests::original_evidence::equal_execution_with_validly_renewed_signature_has_different_original_evidence" classname="codex-hepta-intelligence-eval" timestamp="2026-11-11T18:14:08.232-05:00" time="0.132">
+        </testcase>
+        <testcase name="product_runner::tests::execution_tests::original_evidence::original_execution_evidence_missing_and_pending_never_claim" classname="codex-hepta-intelligence-eval" timestamp="2026-11-11T18:14:08.365-05:00" time="0.023">
+        </testcase>
+        <testcase name="product_runner::tests::execution_tests::original_evidence::original_execution_evidence_rechecks_expiry_after_owner_reads" classname="codex-hepta-intelligence-eval" timestamp="2026-11-11T18:14:08.388-05:00" time="0.083">
+        </testcase>
+        <testcase name="product_runner::tests::execution_tests::original_evidence::original_execution_evidence_survives_recovery_without_work_or_renewal" classname="codex-hepta-intelligence-eval" timestamp="2026-11-11T18:14:08.471-05:00" time="0.122">
+        </testcase>
+    </testsuite>
+</testsuites>

@@ -31,3 +31,15 @@ The next committed-source whitespace gate failed with exit 2. The original 42-by
 The separate exact child `7a6c00b8201f685db97ff52bc0b41094b9af1ed2` removes one final LF only; all parsed CALLERS semantics and every other file blob remain unchanged. It requires its own qualification and does not inherit a test pass from v7.
 
 These qualifications do not establish an ordinary positive adoption, ordinary NoUpdate/fallback, or genuine daemon plus Root cold restart. Test custody, fixtures, distinct commit results and incomplete/uncertain control-plane actions remain separate.
+
+## Exact 7a6c native failure, original full proof still running
+
+Source `7a6c00b8201f685db97ff52bc0b41094b9af1ed2`, tree `2aa9a592262d5197cdd96e79128dc18a30332ebd`, job `1a1cccec57a-2564-1088`.
+
+The unchanged source passed 230 source controls and 16 parser controls; the original helper build and verification also passed. The actual native command then exited 100. Its raw log and fresh JUnit agree: **109 selected tests executed, 89 passed, 20 failed; no selected test was skipped and the native command did not time out**. The 1,132 cases filtered out by the exact selection were not executed.
+
+The complete original execution JSON, 129,513-byte raw log, 57,899-byte fresh JUnit, final native result, source/parser logs and canonical graph evidence are retained below `7a6c00b8201f-native-failure/`. Each file was verified against its original byte count and SHA256 before publication. Binary log pagination remained pinned to the same original file version and complete SHA256.
+
+The preparation snapshot and normalized outer-process observation are explicitly interim: the original complete caller proof was still running with an empty log at observation. Neither a terminal overall result nor a full-proof pass is established here. Later evidence must be appended separately. All earlier failure evidence remains unchanged.
+
+A later diagnostic candidate or repair must obtain its own executed results; these failures are not replaced or reclassified. Complete ordinary positive adoption, ordinary NoUpdate/fallback and daemon plus Root cold restart remain **0**.
