@@ -340,12 +340,27 @@ def _contrast(rows, left, right):
             for _ in range(2000)
         ]
         interval = np.quantile(boot, (0.025, 0.975)).tolist()
+    paired_contexts = sum(map(len, by_source.values()))
+    complete = bool(rows) and paired_contexts == len(rows)
+    subset_mean = float(values.mean()) if len(values) else None
     return {
+        "cohort_contexts": len(rows),
+        "cohort_source_groups": len({row["source_group"] for row in rows}),
+        "cohort_complete": complete,
+        "unpaired_contexts": len(rows) - paired_contexts,
         "paired_source_groups": len(values),
-        "mean": float(values.mean()) if len(values) else None,
-        "interval": interval,
+        "mean": subset_mean if complete else None,
+        "interval": interval if complete else None,
         "interval_scope": "descriptive_source_bootstrap_not_confirmatory",
-        "paired_contexts": sum(map(len, by_source.values())),
+        "paired_contexts": paired_contexts,
+        "observed_subset": {
+            "contexts": paired_contexts,
+            "source_groups": len(values),
+            "mean": subset_mean,
+            "interval": interval,
+            "interval_scope": "descriptive_source_bootstrap_not_confirmatory",
+            "scope": "supported_paired_contexts_only",
+        },
     }
 
 
@@ -533,13 +548,25 @@ def _run_study(
             for row in outcomes
             if row["policies"][method]["net_gain_after_planning"] is not None
         ]
+        complete = bool(outcomes) and len(observed) == len(outcomes)
+        subset_gain = _source_mean(observed)
+        # A supported subset can exclude every difficult context while still
+        # containing every source. Keep that descriptive value separate from
+        # the full input cohort; do not impute the unobserved returns.
         summaries[method] = {
             "contexts": len(outcomes),
             "observed_contexts": len(observed),
             "unknown_contexts": len(outcomes) - len(observed),
             "source_groups": len(phases["future"]["groups"]),
             "observed_source_groups": len({source for source, _ in observed}),
-            "source_balanced_net_gain": _source_mean(observed),
+            "source_balanced_net_gain": subset_gain if complete else None,
+            "cohort_complete": complete,
+            "observed_subset": {
+                "contexts": len(observed),
+                "source_groups": len({source for source, _ in observed}),
+                "source_balanced_net_gain": subset_gain,
+                "scope": "supported_observed_contexts_only",
+            },
             "planning_seconds": sum(
                 row["policies"][method]["planning_seconds"] for row in outcomes
             ),
@@ -552,13 +579,14 @@ def _run_study(
             "Frozen candidate or study source changed during future evaluation"
         )
     report = {
-        "schema": "ndu.real.metacontrol-study-report.v2",
+        "schema": "ndu.real.metacontrol-study-report.v3",
         "registration": registration,
         "evidence_kind": next(iter(kinds)),
         "policy_evaluation_performed": False,
         "native_prospective_execution": False,
         "future_opened_after_freeze": True,
         "replay_scope": "frozen_same_state_observed_action_replay",
+        "cohort_scope": "all_contexts_in_pinned_future_input",
         "counterfactual_replay_performed": any(
             t["complete"] for t in future_tables.values()
         ),
