@@ -1,0 +1,2259 @@
+{
+  "conclusion": "OBSERVED_APT_RESOLUTION_FAILURE_ROOT_CAUSE_UNKNOWN",
+  "findings": [
+    "MEM CPU and native jobs select the runner-default mirror+file:/etc/apt/apt-mirrors.txt; original apt output identifies a 144-byte mirror list, an initial azure.archive.ubuntu.com source and later archive.ubuntu.com/security.ubuntu.com fallback display. The actual mirror-list contents and apt resolver configuration were not retained.",
+    "Architecture source-head is Ubuntu 24.04 ARM and its original apt output targets ports.ubuntu.com/ubuntu-ports. This is a distinct platform/source route from the two x86 jobs.",
+    "All three update commands downloaded packages.microsoft.com indexes; CPU pip also installed the pinned numpy/Pillow before apt. This excludes a claim that every observed outbound operation failed, but does not identify the Ubuntu hostname resolver failure cause.",
+    "apt update reported warning-only index failures and continued to the install command with old indexes. Each install then ended exit 100 with the observed hostname resolution error. No package/test result should be inferred from the prior successful downloads.",
+    "Neither exact workflow installs Fence; the native local setup-ci composite also has no Fence or DNS/apt-source override. The architecture raw fence mention is a Python rejection-test name, not a Fence execution. These records cannot attribute the three errors to Fence."
+  ],
+  "native_local_setup_ci": {
+    "apt_source_or_dns_configuration_write": false,
+    "bytes": 4141,
+    "fence_action": false,
+    "git_blob": "8abd2dbd5f09585734f8213011a9ed540a2ee88e",
+    "path": ".github/actions/setup-ci/action.yml",
+    "sha256": "6d29a131641a739983b3aea22c0febbf20d1d0ee21b356570f3763ddafced9ba"
+  },
+  "native_or_model_executions_by_review": 0,
+  "original_jobs": [
+    {
+      "actual_apt_lines": [
+        {
+          "line": 206,
+          "original_line_including_newline": {
+            "bytes": 60,
+            "git_blob": "23427f76a1b05ef84dd68845bc2ac8018a2ae69f",
+            "sha256": "0e7bff7c2d329bfa3bf0b3b5f1fcade2c564bdde2885071873e94c4b0f5ffa27"
+          },
+          "text": "2026-11-11T15:27:55.6367551Z \u001b[36;1msudo apt-get update\u001b[0m"
+        },
+        {
+          "line": 207,
+          "original_line_including_newline": {
+            "bytes": 123,
+            "git_blob": "9486260a658f4f1d2134a569fe6ac8c308f21e9c",
+            "sha256": "60bd83e05ffa55ff4fab3410619bc50d814f8e2906e007c375d1fae56b8517e1"
+          },
+          "text": "2026-11-11T15:27:55.6367954Z \u001b[36;1msudo apt-get install --yes --no-install-recommends tesseract-ocr tesseract-ocr-eng\u001b[0m"
+        },
+        {
+          "line": 278,
+          "original_line_including_newline": {
+            "bytes": 79,
+            "git_blob": "4c26b72b1c3df6718811132f908b2211ee5872b9",
+            "sha256": "316c07a1593c5cff00d566ed7b4eebb075459f6e7b984e637a879eef5bc9a3a1"
+          },
+          "text": "2026-11-11T15:28:16.6755780Z Successfully installed Pillow-12.0.0 numpy-1.26.4"
+        },
+        {
+          "line": 279,
+          "original_line_including_newline": {
+            "bytes": 84,
+            "git_blob": "655c1f6c52a945a9ae7d9353390214bb107e9473",
+            "sha256": "7d885702e6f289f0cf118a7aa8f4c2bdcc4301122b7b24f5c2ba4b6e3bdd3468"
+          },
+          "text": "2026-11-11T15:28:16.7926824Z Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]"
+        },
+        {
+          "line": 280,
+          "original_line_including_newline": {
+            "bytes": 109,
+            "git_blob": "a2535a45555dcc6e7666ba86329316c4939a080c",
+            "sha256": "7ce563312f521c8e0f0a8a315265ed293e39718882374636bac931298f79bb0b"
+          },
+          "text": "2026-11-11T15:28:16.8256942Z Get:6 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease [3600 B]"
+        },
+        {
+          "line": 281,
+          "original_line_including_newline": {
+            "bytes": 120,
+            "git_blob": "518bef37dea15f4fbb5cb2b2a3cefa822a1b1957",
+            "sha256": "28dd0446a5c6351a079009d27f44fa717e5118b7cb04380d2b3aa626696801d1"
+          },
+          "text": "2026-11-11T15:28:16.9497629Z Get:7 https://packages.microsoft.com/ubuntu/24.04/prod noble/main armhf Packages [12.6 kB]"
+        },
+        {
+          "line": 282,
+          "original_line_including_newline": {
+            "bytes": 119,
+            "git_blob": "e7902f95140ca134f5ed691e14073708aff8b041",
+            "sha256": "5d34d9d09157e97f0bbb6539d3435648262ca443270fd1ffe25dcce16bf15c5b"
+          },
+          "text": "2026-11-11T15:28:16.9600054Z Get:8 https://packages.microsoft.com/ubuntu/24.04/prod noble/main arm64 Packages [690 kB]"
+        },
+        {
+          "line": 283,
+          "original_line_including_newline": {
+            "bytes": 119,
+            "git_blob": "751f0327e89b6ddc0b3e672cc0008cfc27fa9bd2",
+            "sha256": "a281c83beb9b6958912a8fdc3dd24a7b3b17f6ec4361344715c6339ba2ac8e19"
+          },
+          "text": "2026-11-11T15:28:16.9677967Z Get:9 https://packages.microsoft.com/ubuntu/24.04/prod noble/main amd64 Packages [760 kB]"
+        },
+        {
+          "line": 284,
+          "original_line_including_newline": {
+            "bytes": 90,
+            "git_blob": "4068cbf2e434e679516493b2b129063a9d0e3938",
+            "sha256": "cb9ddc6e7e79cde6e4b8bd0bfc220554fd76f34334609ad3bdfd1815ee0b9930"
+          },
+          "text": "2026-11-11T15:28:36.8212835Z Ign:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease"
+        },
+        {
+          "line": 285,
+          "original_line_including_newline": {
+            "bytes": 98,
+            "git_blob": "3e46aa520a80887b0aeada09d6a4720061e936f8",
+            "sha256": "47c3dcb3e68e9bde291d33c2e8b7d747f84c747e52edab978e1331c2f7160103"
+          },
+          "text": "2026-11-11T15:28:56.8506519Z Ign:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease"
+        },
+        {
+          "line": 286,
+          "original_line_including_newline": {
+            "bytes": 100,
+            "git_blob": "29a08e6a6dd2a3e7c34fc86abb8a3c368f16ac54",
+            "sha256": "f4fc8d3929863369dbff0f688f791661d233d00b4ed14498bb621faaf70a01dc"
+          },
+          "text": "2026-11-11T15:29:16.8784732Z Ign:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease"
+        },
+        {
+          "line": 287,
+          "original_line_including_newline": {
+            "bytes": 99,
+            "git_blob": "cee8b26ade00207aa306ff815cd02de56e79d3ba",
+            "sha256": "b5abde949d19a3f7276100965f427659c4a20e69a3821b26491a640560f1b47e"
+          },
+          "text": "2026-11-11T15:29:36.8912455Z Ign:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease"
+        },
+        {
+          "line": 288,
+          "original_line_including_newline": {
+            "bytes": 90,
+            "git_blob": "fbf66aca8dfb1394bd7ee1bdfca7651e1258ac3f",
+            "sha256": "11e5f560d9fd9c03f6c7d09986b2833a90129a30ac2e316632ac6144cc501fdd"
+          },
+          "text": "2026-11-11T15:29:56.9266616Z Ign:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease"
+        },
+        {
+          "line": 289,
+          "original_line_including_newline": {
+            "bytes": 98,
+            "git_blob": "78822e2321b62f3547375202887a60dbb1d25ba9",
+            "sha256": "38259ef04268501d668a5c38601df8bdcc9202d44e09b053ac31463b1da46dd8"
+          },
+          "text": "2026-11-11T15:30:16.9491453Z Ign:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease"
+        },
+        {
+          "line": 290,
+          "original_line_including_newline": {
+            "bytes": 85,
+            "git_blob": "41a431cfbf7e9729a207c981d4ba49d27c572e47",
+            "sha256": "9ed9908cdef4fc7b2bfdb21b9c6c3c2efb4063649c1bcd49cd109b67fa97011e"
+          },
+          "text": "2026-11-11T15:30:16.9583685Z Ign:2 https://archive.ubuntu.com/ubuntu noble InRelease"
+        },
+        {
+          "line": 291,
+          "original_line_including_newline": {
+            "bytes": 100,
+            "git_blob": "8cb821b649551cdda9e49d8f90a76a85949791c3",
+            "sha256": "69b0f2255360e1a040020a89ed3ee84acf9875f53e772431cedfe35dc3a1ebd3"
+          },
+          "text": "2026-11-11T15:30:36.9710372Z Ign:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease"
+        },
+        {
+          "line": 292,
+          "original_line_including_newline": {
+            "bytes": 86,
+            "git_blob": "943f8ba308d3c14b86ac90ee108b4dac17303b34",
+            "sha256": "e575bbe9af15b3f0d03e7940074ecf1e9c574fa9e6b129e241ff3a7ede25b988"
+          },
+          "text": "2026-11-11T15:30:37.0247236Z Err:2 https://security.ubuntu.com/ubuntu noble InRelease"
+        },
+        {
+          "line": 293,
+          "original_line_including_newline": {
+            "bytes": 86,
+            "git_blob": "58710d1abbba96e156404c68adce477e4ba66751",
+            "sha256": "d789eaabcca927026e9f142bceb76cdfe09e19f6085fab0eeb686f9772820ff8"
+          },
+          "text": "2026-11-11T15:30:37.0247637Z   Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 294,
+          "original_line_including_newline": {
+            "bytes": 93,
+            "git_blob": "e9f014bc8c42e39073942be6717a07b19f88fcc9",
+            "sha256": "a630117def5a766a60929dac036b7cbf8c70de035f0e771597a25bcfa4072b59"
+          },
+          "text": "2026-11-11T15:30:37.0248113Z Ign:3 https://archive.ubuntu.com/ubuntu noble-updates InRelease"
+        },
+        {
+          "line": 295,
+          "original_line_including_newline": {
+            "bytes": 99,
+            "git_blob": "99ba95158188764255e7b2a600653c7857662de5",
+            "sha256": "80ae4456f61f39875100793d5fd3ee85f4aef20dd728fa7122793e88551499de"
+          },
+          "text": "2026-11-11T15:30:57.0024552Z Ign:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease"
+        },
+        {
+          "line": 296,
+          "original_line_including_newline": {
+            "bytes": 94,
+            "git_blob": "9f1eae0ca12b896c536aefa155763e17a2679679",
+            "sha256": "b9dcbe6c3131af79637dfd3066e0125cb0650f76005c37a35c998c055ea94bf4"
+          },
+          "text": "2026-11-11T15:30:57.0512730Z Err:3 https://security.ubuntu.com/ubuntu noble-updates InRelease"
+        },
+        {
+          "line": 297,
+          "original_line_including_newline": {
+            "bytes": 86,
+            "git_blob": "9e9412ae5d51c2f81273a4db2dc85e42a2f41f39",
+            "sha256": "a5cbcc8f17bacd7a86e1efd89d7225af779c4a1cb2f912c61a9f3a36d0eb5f8c"
+          },
+          "text": "2026-11-11T15:30:57.0513035Z   Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 298,
+          "original_line_including_newline": {
+            "bytes": 95,
+            "git_blob": "a96d99ce056a2eecee9ec7d98e01f12f8e24846a",
+            "sha256": "668e156e60cd0e6b3e6104f9c8139348221c94b9eee06bcee6a5bd67dc143991"
+          },
+          "text": "2026-11-11T15:30:57.0515572Z Ign:4 https://archive.ubuntu.com/ubuntu noble-backports InRelease"
+        },
+        {
+          "line": 299,
+          "original_line_including_newline": {
+            "bytes": 94,
+            "git_blob": "d8a411444045e053d81dcae46f7d1481830067dc",
+            "sha256": "8a8a9ba1716b447e26432359915dd65e34c10fd2436228e58d7b2bf768d3597a"
+          },
+          "text": "2026-11-11T15:31:17.0785995Z Ign:5 https://archive.ubuntu.com/ubuntu noble-security InRelease"
+        },
+        {
+          "line": 300,
+          "original_line_including_newline": {
+            "bytes": 96,
+            "git_blob": "ac3088d6e72e28dac89c9d9bb1b48e7292a392eb",
+            "sha256": "f8b3594c39f63f81b65d74c90437f86ad060f247578c92651cac172fc233f1b7"
+          },
+          "text": "2026-11-11T15:31:17.0870950Z Err:4 https://security.ubuntu.com/ubuntu noble-backports InRelease"
+        },
+        {
+          "line": 301,
+          "original_line_including_newline": {
+            "bytes": 86,
+            "git_blob": "5799f20b64293cd36f78ae76e1fc269b565bd51e",
+            "sha256": "495d80f6bd555ed5a53d6665dd188878f7af90cae5fbadd59b831e17938b0d64"
+          },
+          "text": "2026-11-11T15:31:17.0872888Z   Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 302,
+          "original_line_including_newline": {
+            "bytes": 95,
+            "git_blob": "e1e05716215bb4d0e6084f88088275f8ee6a314f",
+            "sha256": "34b16d266176912fb50bdf4b5023e3bb9372c6f9a33caeb6cad016a9f370ca90"
+          },
+          "text": "2026-11-11T15:31:37.1177371Z Err:5 https://security.ubuntu.com/ubuntu noble-security InRelease"
+        },
+        {
+          "line": 303,
+          "original_line_including_newline": {
+            "bytes": 86,
+            "git_blob": "7d86ea3bfb6082d2b5d0c569098b031da6c595b0",
+            "sha256": "e3669beb038ac1c8104317d67942368fa93b80a567116950bd8c16811d066fb5"
+          },
+          "text": "2026-11-11T15:31:37.1177681Z   Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 304,
+          "original_line_including_newline": {
+            "bytes": 68,
+            "git_blob": "5ee02e95cc3ee5453e0d1383fafa5697b0e245e8",
+            "sha256": "808e4dd1781f98eea71e1a6d66d1526b57788d5f1b11969ac6249776364ec452"
+          },
+          "text": "2026-11-11T15:31:42.9925715Z Fetched 1467 kB in 3min 20s (7321 B/s)"
+        },
+        {
+          "line": 306,
+          "original_line_including_newline": {
+            "bytes": 163,
+            "git_blob": "2bf452660fe212948d500081038ddf868aacd4c5",
+            "sha256": "03873be75606ff4509e40e104cd4acc6b05ee998d5ea5841200b0db59cb352c2"
+          },
+          "text": "2026-11-11T15:31:43.7073476Z W: Failed to fetch mirror+file:/etc/apt/apt-mirrors.txt/dists/noble/InRelease  Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 307,
+          "original_line_including_newline": {
+            "bytes": 171,
+            "git_blob": "31a16332e1852eff42545fa4f2daeeaa39caf5f0",
+            "sha256": "a4fd769ea1b28ffebf6daa8eab2eb3980abc360310ec5f8a1f3f35dd19d63071"
+          },
+          "text": "2026-11-11T15:31:43.7075313Z W: Failed to fetch mirror+file:/etc/apt/apt-mirrors.txt/dists/noble-updates/InRelease  Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 308,
+          "original_line_including_newline": {
+            "bytes": 173,
+            "git_blob": "5538037efc46cbb723869ddefcd2790d40b75c81",
+            "sha256": "740cc9200903bb31cbd7f34f31231def3cef63288a5244c7de1632f5abe819b2"
+          },
+          "text": "2026-11-11T15:31:43.7076290Z W: Failed to fetch mirror+file:/etc/apt/apt-mirrors.txt/dists/noble-backports/InRelease  Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 309,
+          "original_line_including_newline": {
+            "bytes": 172,
+            "git_blob": "f5e9c8f4ad2d4ee240e8ed28685325bbeac78904",
+            "sha256": "f8a3634a664ea5210da3ec31bc930d086b883f87ac747d1794a19ef5457025c9"
+          },
+          "text": "2026-11-11T15:31:43.7077282Z W: Failed to fetch mirror+file:/etc/apt/apt-mirrors.txt/dists/noble-security/InRelease  Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 310,
+          "original_line_including_newline": {
+            "bytes": 119,
+            "git_blob": "72ebfd0be9c942eb6e66bbb522a88ea540f8e273",
+            "sha256": "cc84950cd791b946155ab26d144db5a8bb37d3b8bf1082dacb7ab4a234d58bba"
+          },
+          "text": "2026-11-11T15:31:43.7077923Z W: Some index files failed to download. They have been ignored, or old ones used instead."
+        },
+        {
+          "line": 322,
+          "original_line_including_newline": {
+            "bytes": 84,
+            "git_blob": "139eb750125afbd9cc80a31b7738c0135890b828",
+            "sha256": "ee229488cf04414e1644ea8a69b514e0032ec18ec2107284d334d3091ae88c32"
+          },
+          "text": "2026-11-11T15:31:44.0417431Z Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]"
+        },
+        {
+          "line": 323,
+          "original_line_including_newline": {
+            "bytes": 130,
+            "git_blob": "35f7f7e6a8580df877970fadbf9af61f1a9c4452",
+            "sha256": "af31dee7c3889ec09f88ee941025ff23d475a088485ac51d8719cedf2cc351f9"
+          },
+          "text": "2026-11-11T15:32:04.0800658Z Ign:2 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 libgif7 amd64 5.2.2-1ubuntu1.2"
+        },
+        {
+          "line": 324,
+          "original_line_including_newline": {
+            "bytes": 125,
+            "git_blob": "06c8b44b3a1d31745464e71dac8e8f9832ceaa6a",
+            "sha256": "d82f5ddfa21818b03bf36d2360f7295868f4cb7e8500648a34b6ad8aea6f7a7e"
+          },
+          "text": "2026-11-11T15:32:24.1130308Z Ign:3 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 liblept5 amd64 1.82.0-3build4"
+        },
+        {
+          "line": 325,
+          "original_line_including_newline": {
+            "bytes": 129,
+            "git_blob": "1f3b0fb14652bacac639df899802ebaf6183acb4",
+            "sha256": "02132ab855156eba494850f24c1e6a8dc6990b2443949b518838a365327714ae"
+          },
+          "text": "2026-11-11T15:32:44.1429760Z Ign:4 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 libtesseract5 amd64 5.3.4-1build5"
+        },
+        {
+          "line": 326,
+          "original_line_including_newline": {
+            "bytes": 127,
+            "git_blob": "c0cd83a5a5eabfb635f7c892ef19040958637569",
+            "sha256": "a63f8df7d824fa0505ac465bfac59046cbae0fed08d228fb0da104b1383c7544"
+          },
+          "text": "2026-11-11T15:33:04.1757018Z Ign:5 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 tesseract-ocr-eng all 1:4.1.0-2"
+        },
+        {
+          "line": 327,
+          "original_line_including_newline": {
+            "bytes": 127,
+            "git_blob": "2c381ecd8619b07cb35835715f97428ec42d9ba8",
+            "sha256": "36dd0663b411cc0573056775745d33693499338a2150858909c6ac109ce815bf"
+          },
+          "text": "2026-11-11T15:33:24.2170836Z Ign:6 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 tesseract-ocr-osd all 1:4.1.0-2"
+        },
+        {
+          "line": 328,
+          "original_line_including_newline": {
+            "bytes": 129,
+            "git_blob": "660846047800c22b48f118d63ea4d58a189abef3",
+            "sha256": "a350f855889a6e653991da69dff54697bb71f2b30facd7e5d430317da3819453"
+          },
+          "text": "2026-11-11T15:33:44.2517168Z Ign:7 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 tesseract-ocr amd64 5.3.4-1build5"
+        },
+        {
+          "line": 329,
+          "original_line_including_newline": {
+            "bytes": 130,
+            "git_blob": "bc88f82d945e384fb45290ac03d1e68dfa7b8f97",
+            "sha256": "3729611a5a078f078f61d8cc28209015c5fef331fcf75a24a3364b8e973ffe2e"
+          },
+          "text": "2026-11-11T15:34:04.2835166Z Ign:2 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 libgif7 amd64 5.2.2-1ubuntu1.2"
+        },
+        {
+          "line": 330,
+          "original_line_including_newline": {
+            "bytes": 125,
+            "git_blob": "33f75c5ba6ebba8c861aa6f98dacbf125d1efe59",
+            "sha256": "f9c019d2c0e3d62e8644775186e606f93153d00bc0dfe71e7b94be3cb75d6321"
+          },
+          "text": "2026-11-11T15:34:24.3097342Z Ign:2 https://archive.ubuntu.com/ubuntu noble-updates/main amd64 libgif7 amd64 5.2.2-1ubuntu1.2"
+        },
+        {
+          "line": 331,
+          "original_line_including_newline": {
+            "bytes": 125,
+            "git_blob": "301fe48f3766d429fc41ee7ef352452c8e4ff85e",
+            "sha256": "bb1ad5a8b5f3c7848ff7dc6dfdc38e8e930945197b9667c164162f5ab556dee7"
+          },
+          "text": "2026-11-11T15:34:24.3147768Z Ign:3 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 liblept5 amd64 1.82.0-3build4"
+        },
+        {
+          "line": 332,
+          "original_line_including_newline": {
+            "bytes": 129,
+            "git_blob": "09a764ef6ad3d491f8ab8111515dab37edd18075",
+            "sha256": "c69be917c2c893ff684e4ca99726f31037b993728dab50814853e586db3218c8"
+          },
+          "text": "2026-11-11T15:34:44.3131873Z Ign:4 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 libtesseract5 amd64 5.3.4-1build5"
+        },
+        {
+          "line": 333,
+          "original_line_including_newline": {
+            "bytes": 126,
+            "git_blob": "ca89dcadc07847aff0776e9c6f8bb9de2f5066cd",
+            "sha256": "68314ce8bfa4ab026ebf4d0c2bd6537bda83ac57c1d6b08705b8e72b5e6122d3"
+          },
+          "text": "2026-11-11T15:34:44.3411223Z Ign:2 https://security.ubuntu.com/ubuntu noble-updates/main amd64 libgif7 amd64 5.2.2-1ubuntu1.2"
+        },
+        {
+          "line": 334,
+          "original_line_including_newline": {
+            "bytes": 128,
+            "git_blob": "41abf596599568898f31483c53a250b0da86540e",
+            "sha256": "fa36dc9af60f28350146660a4986aa51333c96a3236291fa424f771b7ba79adc"
+          },
+          "text": "2026-11-11T15:34:44.3411774Z Err:2 mirror+file:/etc/apt/apt-mirrors.txt noble-updates/main amd64 libgif7 amd64 5.2.2-1ubuntu1.2"
+        },
+        {
+          "line": 335,
+          "original_line_including_newline": {
+            "bytes": 86,
+            "git_blob": "b829c2f81a5f782c9ad194fd97a9e299ec1fc917",
+            "sha256": "4ad0a68766bd7913b6bf9d623976540c7563f384280a7f7bf3014530cbd35a5f"
+          },
+          "text": "2026-11-11T15:34:44.3412212Z   Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 336,
+          "original_line_including_newline": {
+            "bytes": 120,
+            "git_blob": "9658faa6150f06069377867a32d239d52cfc0718",
+            "sha256": "dc1c4658e1a1d02b8d9ff79b6f5ac1d06aa771bdf8c848a11616fa72dcafae24"
+          },
+          "text": "2026-11-11T15:34:44.3412778Z Ign:3 https://archive.ubuntu.com/ubuntu noble/universe amd64 liblept5 amd64 1.82.0-3build4"
+        },
+        {
+          "line": 337,
+          "original_line_including_newline": {
+            "bytes": 127,
+            "git_blob": "44c654cadbeb6abc1b8981ed5a368361b347144a",
+            "sha256": "dc33f02692330e970b020d93b0a88bf6568db2668dc9cedba39dd5d73dca77f6"
+          },
+          "text": "2026-11-11T15:35:04.3445597Z Ign:5 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 tesseract-ocr-eng all 1:4.1.0-2"
+        },
+        {
+          "line": 338,
+          "original_line_including_newline": {
+            "bytes": 124,
+            "git_blob": "ac18950a0f35ce5007d8c3d12e6465af9bc9139d",
+            "sha256": "77fef01f246ccce7a8dbf23747285cd7e4573b9c2ab8ee7cb078a68c5da97ef6"
+          },
+          "text": "2026-11-11T15:35:04.3673915Z Ign:4 https://archive.ubuntu.com/ubuntu noble/universe amd64 libtesseract5 amd64 5.3.4-1build5"
+        },
+        {
+          "line": 339,
+          "original_line_including_newline": {
+            "bytes": 121,
+            "git_blob": "26c1c66c8ade444aeaea1c0fae2c3f8043e5310b",
+            "sha256": "351b1dde0ebd9e4af6b25b6c6b9959129a9a47c3bf9775d9e71ae1467f633b09"
+          },
+          "text": "2026-11-11T15:35:04.3718843Z Err:3 https://security.ubuntu.com/ubuntu noble/universe amd64 liblept5 amd64 1.82.0-3build4"
+        },
+        {
+          "line": 340,
+          "original_line_including_newline": {
+            "bytes": 86,
+            "git_blob": "17a6080f5b373e071e2d5a7d610e31388dd264fb",
+            "sha256": "8f0ce2e9c11ac14d8b1f52140f5033d18fcf8f3966cdca6b6fc393166f7bce9d"
+          },
+          "text": "2026-11-11T15:35:04.3719150Z   Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 341,
+          "original_line_including_newline": {
+            "bytes": 127,
+            "git_blob": "a06f9a03e25f8bdf07839d2ec36aa620808c9e8a",
+            "sha256": "8bb2a7c27182f663534454c37003e9558acbc49ab002c540b9cb305dcd1801a2"
+          },
+          "text": "2026-11-11T15:35:24.3843244Z Ign:6 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 tesseract-ocr-osd all 1:4.1.0-2"
+        },
+        {
+          "line": 342,
+          "original_line_including_newline": {
+            "bytes": 122,
+            "git_blob": "58704450964bc15c2bccb9ff6166540d1cce41be",
+            "sha256": "fe9ece4ffcf0aa354271ac206f0920df950d29135527c53eddcbe3b33872b7a0"
+          },
+          "text": "2026-11-11T15:35:24.3930419Z Ign:5 https://archive.ubuntu.com/ubuntu noble/universe amd64 tesseract-ocr-eng all 1:4.1.0-2"
+        },
+        {
+          "line": 343,
+          "original_line_including_newline": {
+            "bytes": 125,
+            "git_blob": "2f6cc2bec10164ef9c7eddf9cc6978f4b7c6fc40",
+            "sha256": "0226b036bddccbc0e9942328b13d9cdbf8e8bf721a8aa4a6648f6dd6c91c5d6f"
+          },
+          "text": "2026-11-11T15:35:24.4061930Z Err:4 https://security.ubuntu.com/ubuntu noble/universe amd64 libtesseract5 amd64 5.3.4-1build5"
+        },
+        {
+          "line": 344,
+          "original_line_including_newline": {
+            "bytes": 86,
+            "git_blob": "c3dd8e1f55125986b252b4c97b6472f84106440d",
+            "sha256": "b6c0ca690dfb9724cd6315bb515658854f7ea2b6ce75752a08d1a7b59f0767f1"
+          },
+          "text": "2026-11-11T15:35:24.4062421Z   Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 345,
+          "original_line_including_newline": {
+            "bytes": 129,
+            "git_blob": "5abc08ee4fc6d92e369f9fea9e999671553e48b2",
+            "sha256": "a5e7599fe90bd5e8029e79aad93cbc0b56bae4d1dd560f0d7e2fddf0f77f25d1"
+          },
+          "text": "2026-11-11T15:35:44.4048716Z Ign:7 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 tesseract-ocr amd64 5.3.4-1build5"
+        },
+        {
+          "line": 346,
+          "original_line_including_newline": {
+            "bytes": 122,
+            "git_blob": "f8fc791cbfb7c2895b86c8259253287a79946c4e",
+            "sha256": "5940fc504b1146f546d35de22355e91ec5fd37325781635b865f8e49ce4ea309"
+          },
+          "text": "2026-11-11T15:35:44.4185857Z Ign:6 https://archive.ubuntu.com/ubuntu noble/universe amd64 tesseract-ocr-osd all 1:4.1.0-2"
+        },
+        {
+          "line": 347,
+          "original_line_including_newline": {
+            "bytes": 123,
+            "git_blob": "0860b00355027dfe7bbf8291549fc2e9bbdf31a3",
+            "sha256": "fc4fd9f55edab255fdc86579b3d583f5f1fe667414f86045eb3e6c1c2b8df754"
+          },
+          "text": "2026-11-11T15:35:44.4331406Z Err:5 https://security.ubuntu.com/ubuntu noble/universe amd64 tesseract-ocr-eng all 1:4.1.0-2"
+        },
+        {
+          "line": 348,
+          "original_line_including_newline": {
+            "bytes": 86,
+            "git_blob": "3850d1110ff56ff5a300f8e3b28ce6398bbd1bfe",
+            "sha256": "47841b3ec4d78914d4d1a0581607c732b52a09aebc52fa103f35dd0d95eace91"
+          },
+          "text": "2026-11-11T15:35:44.4331705Z   Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 349,
+          "original_line_including_newline": {
+            "bytes": 124,
+            "git_blob": "b1b490b3321821abc68af5125168f0d92d0d07d8",
+            "sha256": "5aa05745d830ea0264aa2c0851c90e8b278378d0deeae47904ed522dcf92acf2"
+          },
+          "text": "2026-11-11T15:36:04.4498080Z Ign:7 https://archive.ubuntu.com/ubuntu noble/universe amd64 tesseract-ocr amd64 5.3.4-1build5"
+        },
+        {
+          "line": 350,
+          "original_line_including_newline": {
+            "bytes": 123,
+            "git_blob": "c2646729382963d268299551915ca72cf92f0343",
+            "sha256": "907a1aae56b29557e86229835e2b63b54576dc4258f348b85c54b96df8654fa8"
+          },
+          "text": "2026-11-11T15:36:04.4557536Z Err:6 https://security.ubuntu.com/ubuntu noble/universe amd64 tesseract-ocr-osd all 1:4.1.0-2"
+        },
+        {
+          "line": 351,
+          "original_line_including_newline": {
+            "bytes": 86,
+            "git_blob": "eab2ea92ec148df84769470e06d45d4eb639d85e",
+            "sha256": "40739891c4eadcd9bf70cabaf19d2b06abab39715cd92b19048b1a66ea513829"
+          },
+          "text": "2026-11-11T15:36:04.4557868Z   Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 352,
+          "original_line_including_newline": {
+            "bytes": 125,
+            "git_blob": "f2b1f38f16eceac390315b0a51215081796f987d",
+            "sha256": "cb8bcfb182c65516d447ccf0ee5dc77f6ae354e900e5acd53e4bda3b440280ef"
+          },
+          "text": "2026-11-11T15:36:24.4857963Z Err:7 https://security.ubuntu.com/ubuntu noble/universe amd64 tesseract-ocr amd64 5.3.4-1build5"
+        },
+        {
+          "line": 353,
+          "original_line_including_newline": {
+            "bytes": 86,
+            "git_blob": "f8bd29c4e5bed7f95049a39c8fa1d7eef7d508c2",
+            "sha256": "f97a2936346904404a825a6df6cc89def7b57890a7c07b0ce9e0154e7d41707a"
+          },
+          "text": "2026-11-11T15:36:24.4858476Z   Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 354,
+          "original_line_including_newline": {
+            "bytes": 195,
+            "git_blob": "fa8902a79107c2efebee269186d7fac4a41ebfab",
+            "sha256": "a25edf79bb5b62f871113eb42aeb2dcdf41d87558c167b8417675d540a687e5e"
+          },
+          "text": "2026-11-11T15:36:24.4908852Z E: Failed to fetch mirror+file:/etc/apt/apt-mirrors.txt/pool/main/g/giflib/libgif7_5.2.2-1ubuntu1.2_amd64.deb  Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 355,
+          "original_line_including_newline": {
+            "bytes": 199,
+            "git_blob": "35f575cad184f1cda55c6a20848c4821fd41be1e",
+            "sha256": "95587fac1d5e1f219fe5bb4570ab7bca93760d17e2f134905637b352d10f1ef6"
+          },
+          "text": "2026-11-11T15:36:24.4909891Z E: Failed to fetch https://security.ubuntu.com/ubuntu/pool/universe/l/leptonlib/liblept5_1.82.0-3build4_amd64.deb  Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 356,
+          "original_line_including_newline": {
+            "bytes": 203,
+            "git_blob": "bf3365836c614c522cb8505bb87f2c9fc8395d08",
+            "sha256": "c47a548c79d29823a31e981bed25a2df1b75c699d412997bbb31b90bd6019c50"
+          },
+          "text": "2026-11-11T15:36:24.4910854Z E: Failed to fetch https://security.ubuntu.com/ubuntu/pool/universe/t/tesseract/libtesseract5_5.3.4-1build5_amd64.deb  Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 357,
+          "original_line_including_newline": {
+            "bytes": 204,
+            "git_blob": "f30ab1a9fcf24fd491c8d73339471feaa7072e67",
+            "sha256": "650b7613d7ba09a78d8a822c807fb34b9013bb05249ffabcb313f80a9c9587c0"
+          },
+          "text": "2026-11-11T15:36:24.4911839Z E: Failed to fetch https://security.ubuntu.com/ubuntu/pool/universe/t/tesseract-lang/tesseract-ocr-eng_4.1.0-2_all.deb  Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 358,
+          "original_line_including_newline": {
+            "bytes": 204,
+            "git_blob": "622d6bd0f8979aec3d5ffd15700d43905ec24f05",
+            "sha256": "b79fd34415133d69265981539fd8139cf93df3af76f32647f09657c4f0450c51"
+          },
+          "text": "2026-11-11T15:36:24.4913330Z E: Failed to fetch https://security.ubuntu.com/ubuntu/pool/universe/t/tesseract-lang/tesseract-ocr-osd_4.1.0-2_all.deb  Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 359,
+          "original_line_including_newline": {
+            "bytes": 203,
+            "git_blob": "d970cb97224d1a4cd7853a8c5ab4872ec4c047a2",
+            "sha256": "c6eddac82d7ed77fee334bf991760beda5e7bec69bbf8e790675b652b5e428ee"
+          },
+          "text": "2026-11-11T15:36:24.4914479Z E: Failed to fetch https://security.ubuntu.com/ubuntu/pool/universe/t/tesseract/tesseract-ocr_5.3.4-1build5_amd64.deb  Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 360,
+          "original_line_including_newline": {
+            "bytes": 115,
+            "git_blob": "70a0aeae123b5a2d0092c5292e335d702a3450b9",
+            "sha256": "7f512d1d7dc73c960b9ab4a94f829387d8cd915dac7dff9ce9c74f661ca403c3"
+          },
+          "text": "2026-11-11T15:36:24.4915241Z E: Unable to fetch some archives, maybe run apt-get update or try with --fix-missing?"
+        },
+        {
+          "line": 361,
+          "original_line_including_newline": {
+            "bytes": 76,
+            "git_blob": "82714b8ad83db56f47c85eddf97509f6603bd028",
+            "sha256": "5b4921488e07ad72d7a8b25d038986a7795f83aa46a2877b79fc1bafd32e8eb6"
+          },
+          "text": "2026-11-11T15:36:24.4940283Z ##[error]Process completed with exit code 100."
+        }
+      ],
+      "bytes": 41095,
+      "dns_error_hosts": [
+        "azure.archive.ubuntu.com"
+      ],
+      "fence_mentions": [],
+      "git_blob": "9702473006ec93e8e2a373bad1128de3a15b0f73",
+      "job": "python",
+      "job_id": 130619113256,
+      "original_raw_path": "mem-ci-c895-original/original/job-130619113256.log",
+      "resolver_configuration_dump_present": false,
+      "runner": "ubuntu-24.04",
+      "sha256": "cb514355a6f7b1250a4831774a4334b8d36bc67a9c4690b3e836a6394d991633"
+    },
+    {
+      "actual_apt_lines": [
+        {
+          "line": 1559,
+          "original_line_including_newline": {
+            "bytes": 250,
+            "git_blob": "b9851589d7135fd440ad5a38250402e2cee729fe",
+            "sha256": "e5e6b3eeddaeb09f3a4db53f9fe424a4ea1b0413345a3be297e46f961f9e8a0d"
+          },
+          "text": "2026-11-11T15:28:21.6793035Z \u001b[36;1m{ sudo apt-get update; sudo apt-get install -y build-essential clang cmake protobuf-compiler libssl-dev libcap-dev pkg-config bubblewrap; } 2>&1 | tee \"$RUNNER_TEMP/mem-native-records/native-prerequisites.log\"\u001b[0m"
+        },
+        {
+          "line": 1591,
+          "original_line_including_newline": {
+            "bytes": 84,
+            "git_blob": "4a8647f91e763f40d74b59e97124e62fc3bbd5d3",
+            "sha256": "8805cf476a62c3e1c6ae53a02c78479775765e6db6e33055213c40d251bb2ee6"
+          },
+          "text": "2026-11-11T15:28:21.7830138Z Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]"
+        },
+        {
+          "line": 1592,
+          "original_line_including_newline": {
+            "bytes": 109,
+            "git_blob": "2952e39720898f42775f3589817049e75402df2e",
+            "sha256": "d3f09bfba8f5b06fa6257139046c2cb5ff332970c57d56cd8c89e8b6855b0066"
+          },
+          "text": "2026-11-11T15:28:21.8082763Z Get:6 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease [3600 B]"
+        },
+        {
+          "line": 1593,
+          "original_line_including_newline": {
+            "bytes": 119,
+            "git_blob": "0de8370ba362e51a1e5a201e1e56d5cc87d756a2",
+            "sha256": "8874905d73177ed968f5bb6804d9ee49123c87a2f923a5d52be58edb4f0577af"
+          },
+          "text": "2026-11-11T15:28:21.9565069Z Get:7 https://packages.microsoft.com/ubuntu/24.04/prod noble/main arm64 Packages [690 kB]"
+        },
+        {
+          "line": 1594,
+          "original_line_including_newline": {
+            "bytes": 119,
+            "git_blob": "23a104d3f908cf458ecdbcbcf5d115ec73abc4f5",
+            "sha256": "a0341f9d626f44abf2e4118059990af5abe236b1b07a0c6fe680093d2be947f0"
+          },
+          "text": "2026-11-11T15:28:21.9730158Z Get:8 https://packages.microsoft.com/ubuntu/24.04/prod noble/main amd64 Packages [760 kB]"
+        },
+        {
+          "line": 1595,
+          "original_line_including_newline": {
+            "bytes": 120,
+            "git_blob": "dc6fd6c3c10d71f393e1284c615e722f3d446a1e",
+            "sha256": "f2534e8bffa843973b41efa8430f8155f8c975e8f345eebbdf56236571756f41"
+          },
+          "text": "2026-11-11T15:28:22.1882532Z Get:9 https://packages.microsoft.com/ubuntu/24.04/prod noble/main armhf Packages [12.6 kB]"
+        },
+        {
+          "line": 1596,
+          "original_line_including_newline": {
+            "bytes": 90,
+            "git_blob": "c5820118785752b40f8a664a64583bdbfb00f64c",
+            "sha256": "12aa140c0d86873416209d7300098fbbdc908702a73c6a56ddb2252d9bd30b51"
+          },
+          "text": "2026-11-11T15:28:41.8343773Z Ign:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease"
+        },
+        {
+          "line": 1597,
+          "original_line_including_newline": {
+            "bytes": 98,
+            "git_blob": "14952f0a9184fc80aed3fa8aca5113531e7db0ba",
+            "sha256": "36d896e12675fc0d4fbd205074f24fd7d0c8146ad3815b21d5b79c36260a776c"
+          },
+          "text": "2026-11-11T15:29:01.8596817Z Ign:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease"
+        },
+        {
+          "line": 1598,
+          "original_line_including_newline": {
+            "bytes": 100,
+            "git_blob": "5ee36ef0ed92f7470ebb43f5d3664ec727d510d0",
+            "sha256": "bd17db7d46a3cc24a309e1a09116341f3ac1f693bd64f174539dfc116cf5b104"
+          },
+          "text": "2026-11-11T15:29:21.8856563Z Ign:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease"
+        },
+        {
+          "line": 1599,
+          "original_line_including_newline": {
+            "bytes": 99,
+            "git_blob": "2568bece70078b2dea5ab305096db6e829b60bee",
+            "sha256": "1836acdde2d2f234ecd1f720e5258e349a9a7308b7826ea9384cb82491e76de1"
+          },
+          "text": "2026-11-11T15:29:41.7357422Z Ign:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease"
+        },
+        {
+          "line": 1600,
+          "original_line_including_newline": {
+            "bytes": 90,
+            "git_blob": "1438cdffe73560adf6aa570da79ea2b487d4ad42",
+            "sha256": "729e4fafb03b2689e1ba3dd2ae170bb4fd4a82562cfa97861646d24124be1914"
+          },
+          "text": "2026-11-11T15:30:01.7611938Z Ign:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease"
+        },
+        {
+          "line": 1601,
+          "original_line_including_newline": {
+            "bytes": 98,
+            "git_blob": "0602cbc96a085e912c049410b033984a3a11ec6f",
+            "sha256": "b7326e52fdece1b9e85e302cc5ad53ee49da2d13aaa3ac58608c4ac455b7e187"
+          },
+          "text": "2026-11-11T15:30:21.7848713Z Ign:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease"
+        },
+        {
+          "line": 1602,
+          "original_line_including_newline": {
+            "bytes": 85,
+            "git_blob": "d63bf54f97a4e84d80bf55290f5a0264cbf8ecbb",
+            "sha256": "66f7304642358bb3379ee66655e1990b2e6af838b4607cd28d0faee56c9f8e98"
+          },
+          "text": "2026-11-11T15:30:21.7911464Z Ign:2 https://archive.ubuntu.com/ubuntu noble InRelease"
+        },
+        {
+          "line": 1603,
+          "original_line_including_newline": {
+            "bytes": 100,
+            "git_blob": "1111f7c93eb5eb25366c58bc98fbbd5365a8fbd6",
+            "sha256": "145b4905ef950f98bfa8bf26521b4c1a5eac477c2840a4e253d5f9b740f89bff"
+          },
+          "text": "2026-11-11T15:30:41.8099987Z Ign:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease"
+        },
+        {
+          "line": 1604,
+          "original_line_including_newline": {
+            "bytes": 86,
+            "git_blob": "f517303d134b39780d7915bf40f7be2bd9a392f7",
+            "sha256": "c4cc8df571d3df0de6bdf48af038fbe6ac09700f922f55ea6fb41c5d298d3597"
+          },
+          "text": "2026-11-11T15:30:41.8216874Z Err:2 https://security.ubuntu.com/ubuntu noble InRelease"
+        },
+        {
+          "line": 1605,
+          "original_line_including_newline": {
+            "bytes": 86,
+            "git_blob": "52f260396b39c104ad9084e1d628cea65329c8dd",
+            "sha256": "bffee2e2d25f9378d714ea408eca310a620105bbde2617d4db648c1f2e5f92eb"
+          },
+          "text": "2026-11-11T15:30:41.8217427Z   Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 1606,
+          "original_line_including_newline": {
+            "bytes": 93,
+            "git_blob": "189d45333535e37c397bc5ff895f585b215245ea",
+            "sha256": "2bbcca1ea8ee9585a91b1a2c067b63a71a47028c62f99182722d25c0780b1094"
+          },
+          "text": "2026-11-11T15:30:41.8263396Z Ign:3 https://archive.ubuntu.com/ubuntu noble-updates InRelease"
+        },
+        {
+          "line": 1607,
+          "original_line_including_newline": {
+            "bytes": 99,
+            "git_blob": "bdc9489a05fc183902bc0f3bdffd9be1dca2c33a",
+            "sha256": "2b10566222351284f0fab5124e84a77b4664fdc58bc2e0c389be03eeb5bbe9a0"
+          },
+          "text": "2026-11-11T15:31:01.8324084Z Ign:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease"
+        },
+        {
+          "line": 1608,
+          "original_line_including_newline": {
+            "bytes": 94,
+            "git_blob": "3550b9f714b15f5fb71e7f94eee57c675b671e34",
+            "sha256": "ea17039741116cec261eb5ebe9768b6deea5304e00a82f7f30a9828fae59ee13"
+          },
+          "text": "2026-11-11T15:31:01.8420664Z Err:3 https://security.ubuntu.com/ubuntu noble-updates InRelease"
+        },
+        {
+          "line": 1609,
+          "original_line_including_newline": {
+            "bytes": 86,
+            "git_blob": "efd9bed5c037d5b60b33e140bee819216fd56d4d",
+            "sha256": "94af2fa6bea4ba24c2ee1fa8cf9055d221d0543a0c2401204b860d49ee71214c"
+          },
+          "text": "2026-11-11T15:31:01.8421311Z   Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 1610,
+          "original_line_including_newline": {
+            "bytes": 95,
+            "git_blob": "7d0480998d0c41f1b53748724c4a255282eda5aa",
+            "sha256": "edbdd341c33072e455a3567c30a9ea2e98030997efd9679c9494213e9b3dcfb5"
+          },
+          "text": "2026-11-11T15:31:01.8504650Z Ign:4 https://archive.ubuntu.com/ubuntu noble-backports InRelease"
+        },
+        {
+          "line": 1611,
+          "original_line_including_newline": {
+            "bytes": 96,
+            "git_blob": "7c04dcd512faef3cfaa4eef200fc227f90aa141a",
+            "sha256": "480224374368132ceabbeba8b0ad270890debe23de14f61af6032c2d2c2562aa"
+          },
+          "text": "2026-11-11T15:31:21.8759654Z Err:4 https://security.ubuntu.com/ubuntu noble-backports InRelease"
+        },
+        {
+          "line": 1612,
+          "original_line_including_newline": {
+            "bytes": 86,
+            "git_blob": "00dc101f651bb70830a8f75472a404415db1c7ff",
+            "sha256": "dcfd1662c683337bf19e4977dabd70bbf305e8e0c06ad1f39202d32a39a1a9b2"
+          },
+          "text": "2026-11-11T15:31:21.8760908Z   Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 1613,
+          "original_line_including_newline": {
+            "bytes": 94,
+            "git_blob": "4483dacabbe335b372695964728e656715cec546",
+            "sha256": "aaeecefdb9badbe992519e1bd9d51f715e880701387f6f740a90b84db3b3c5c7"
+          },
+          "text": "2026-11-11T15:31:21.8761951Z Ign:5 https://archive.ubuntu.com/ubuntu noble-security InRelease"
+        },
+        {
+          "line": 1614,
+          "original_line_including_newline": {
+            "bytes": 95,
+            "git_blob": "16e4f4de6c9b4c89fb5628b2442848cb0686273b",
+            "sha256": "e1d70b1e0b2b10117677c763c701e78aa6783c28225d7e5ef055c9fd6ea381d8"
+          },
+          "text": "2026-11-11T15:31:41.9018406Z Err:5 https://security.ubuntu.com/ubuntu noble-security InRelease"
+        },
+        {
+          "line": 1615,
+          "original_line_including_newline": {
+            "bytes": 86,
+            "git_blob": "8652204f5045d41f9c71368e90aca095e2558b8d",
+            "sha256": "1a1a3b4c8332ccc09e0162113f578bbf458ed7e34c72922e924ab76621665167"
+          },
+          "text": "2026-11-11T15:31:41.9019569Z   Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 1616,
+          "original_line_including_newline": {
+            "bytes": 68,
+            "git_blob": "b2251ecefab9f15e94a77d9cffec62c3394ba48a",
+            "sha256": "a8041b8181c1d7fdad88f792a105bc2380fae7469830dc124161d529f12b13bd"
+          },
+          "text": "2026-11-11T15:31:49.3161118Z Fetched 1467 kB in 3min 20s (7328 B/s)"
+        },
+        {
+          "line": 1618,
+          "original_line_including_newline": {
+            "bytes": 163,
+            "git_blob": "c2183e339af07ee0f584d4e7a641244b1ba9c6f3",
+            "sha256": "6f0be224190a674aa66f0442462df7c67719777aa3b65d7f7d5f997b21ced561"
+          },
+          "text": "2026-11-11T15:31:50.4836877Z W: Failed to fetch mirror+file:/etc/apt/apt-mirrors.txt/dists/noble/InRelease  Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 1619,
+          "original_line_including_newline": {
+            "bytes": 171,
+            "git_blob": "e60215ccc960b63b8aa6a2eb785d68c50829a38f",
+            "sha256": "6558def3c581405537b48aacb1a01481e9d4fd0f697eb80537c03df3a66f2b99"
+          },
+          "text": "2026-11-11T15:31:50.4839196Z W: Failed to fetch mirror+file:/etc/apt/apt-mirrors.txt/dists/noble-updates/InRelease  Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 1620,
+          "original_line_including_newline": {
+            "bytes": 173,
+            "git_blob": "4bcf68dbd608950281d038d2fe7f8ef03a0f1654",
+            "sha256": "689958a141f9b16dea67369dab517bdeda69adefc3c872207d07b37c55b08389"
+          },
+          "text": "2026-11-11T15:31:50.4840860Z W: Failed to fetch mirror+file:/etc/apt/apt-mirrors.txt/dists/noble-backports/InRelease  Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 1621,
+          "original_line_including_newline": {
+            "bytes": 172,
+            "git_blob": "596e6423934342bbb1dd0ea41e39e84f6ef268cd",
+            "sha256": "ded0ddb4eeaf3a6f300996a407086f33d726100e3f40c423fa3b20d2287d9854"
+          },
+          "text": "2026-11-11T15:31:50.4842250Z W: Failed to fetch mirror+file:/etc/apt/apt-mirrors.txt/dists/noble-security/InRelease  Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 1622,
+          "original_line_including_newline": {
+            "bytes": 119,
+            "git_blob": "363740e7073cd9f3aeafab5962c07509464428c5",
+            "sha256": "56aaccde91a5d1e1451386646e7eff389caf7404b998a27243a4f709573def7a"
+          },
+          "text": "2026-11-11T15:31:50.4843320Z W: Some index files failed to download. They have been ignored, or old ones used instead."
+        },
+        {
+          "line": 1640,
+          "original_line_including_newline": {
+            "bytes": 84,
+            "git_blob": "b79df595ba5c1596cc936584462a6014c435fad1",
+            "sha256": "b7f142c0def1e73bade396e5bbdb1983690ce4f8632c81d032e3e22b1a9a32c2"
+          },
+          "text": "2026-11-11T15:31:50.9111697Z Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]"
+        },
+        {
+          "line": 1641,
+          "original_line_including_newline": {
+            "bytes": 133,
+            "git_blob": "85dd257361630a5ffc663bc1d430d3410306ace4",
+            "sha256": "84ebaf2f2fa2599692e5e537bd438c668b3791920571818927bbf8ca1d88ac60"
+          },
+          "text": "2026-11-11T15:32:10.2295260Z Ign:2 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 bubblewrap amd64 0.9.0-1ubuntu0.3"
+        },
+        {
+          "line": 1642,
+          "original_line_including_newline": {
+            "bytes": 126,
+            "git_blob": "2b648c48b270c1a3ec0eec18a696ec1fb0d87290",
+            "sha256": "394f6ac956ca4a9923e95e37fcc0afde6b4140411cfb0009cbfc4550dbc53c05"
+          },
+          "text": "2026-11-11T15:32:30.2557226Z Ign:3 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 build-essential amd64 12.10ubuntu1"
+        },
+        {
+          "line": 1643,
+          "original_line_including_newline": {
+            "bytes": 122,
+            "git_blob": "a5d1a937c2a687d75890c551df945456affe4d7e",
+            "sha256": "e6eadc6d4f628fe0c76e5b5b9e30b02240c9d0141fbb88471be23a50f1924540"
+          },
+          "text": "2026-11-11T15:32:50.2781964Z Ign:4 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 clang amd64 1:18.0-59~exp2"
+        },
+        {
+          "line": 1644,
+          "original_line_including_newline": {
+            "bytes": 124,
+            "git_blob": "f1d90cfda337942eb08db2a081c74b251e19f3cb",
+            "sha256": "2ddd54dbe2686660a9fac175a0fb0bec69f599c923523da2b79645157b7b34c8"
+          },
+          "text": "2026-11-11T15:33:10.3042336Z Ign:5 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libjsoncpp25 amd64 1.9.5-6build1"
+        },
+        {
+          "line": 1645,
+          "original_line_including_newline": {
+            "bytes": 121,
+            "git_blob": "d4ee75602b464a4562a2dcd77aa732fd9e319258",
+            "sha256": "d09007c1a51937b09cf2974f2f72b653d513ff50e808bb72a59358f6bbd784ad"
+          },
+          "text": "2026-11-11T15:33:30.3274643Z Ign:6 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 librhash0 amd64 1.4.3-3build1"
+        },
+        {
+          "line": 1646,
+          "original_line_including_newline": {
+            "bytes": 121,
+            "git_blob": "1ab7e41b08cd8839cc1880b07eaa165afe16d356",
+            "sha256": "e3f8499837408af346a128da83a9a9801f8392a7aa1aeaa34481260875749140"
+          },
+          "text": "2026-11-11T15:33:50.3557097Z Ign:7 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 cmake-data all 3.28.3-1build7"
+        },
+        {
+          "line": 1647,
+          "original_line_including_newline": {
+            "bytes": 118,
+            "git_blob": "167c825dc367476ecaa091a846fa176365a2046c",
+            "sha256": "eb4fa1c5e73a3d6a5dae32d7c4a95e0b749228f3223b0a9557738eff6990852a"
+          },
+          "text": "2026-11-11T15:34:10.3816830Z Ign:8 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 cmake amd64 3.28.3-1build7"
+        },
+        {
+          "line": 1648,
+          "original_line_including_newline": {
+            "bytes": 134,
+            "git_blob": "80e7836c040f203b0e8e65e4375f824de03cfe1e",
+            "sha256": "f84d9ad41de98c25d1e4b77a90198ff523fa047bd02fbacf9e2ab9a7060d738a"
+          },
+          "text": "2026-11-11T15:34:30.4021803Z Ign:9 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 libcap-dev amd64 1:2.66-5ubuntu2.4"
+        },
+        {
+          "line": 1649,
+          "original_line_including_newline": {
+            "bytes": 144,
+            "git_blob": "20e8fe7df2890588656373f923cff75cbe162b91",
+            "sha256": "7af0f1799e855d7c6c6862738b73dfe476f2d2fe365544ed13943d89a0f06ed5"
+          },
+          "text": "2026-11-11T15:34:50.4300425Z Ign:10 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 libprotobuf32t64 amd64 3.21.12-8.2ubuntu0.4"
+        },
+        {
+          "line": 1650,
+          "original_line_including_newline": {
+            "bytes": 142,
+            "git_blob": "c9452227066b5d34005dd79e3354b2dc2a97e093",
+            "sha256": "c40cb298e3cd5d084c4cd60bc909be99f8a448bf256193d0da293ba123a6bb4c"
+          },
+          "text": "2026-11-11T15:35:10.4589081Z Ign:11 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 libprotoc32t64 amd64 3.21.12-8.2ubuntu0.4"
+        },
+        {
+          "line": 1651,
+          "original_line_including_newline": {
+            "bytes": 143,
+            "git_blob": "8c9edc0dd346c025a7940196b32faffdab1a6820",
+            "sha256": "a020ddb729a58b12437211f71cb431b4f00f75b3dd2f64cea7b2b308b4108579"
+          },
+          "text": "2026-11-11T15:35:30.4840963Z Ign:12 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 libprotobuf-dev amd64 3.21.12-8.2ubuntu0.4"
+        },
+        {
+          "line": 1652,
+          "original_line_including_newline": {
+            "bytes": 149,
+            "git_blob": "a67de23d1c60a1228abe0cde9af436d529f7088d",
+            "sha256": "590026d994fb4056950dbd1477e87f0a79b6f0dfa5cb3a84034eeb51c2281c63"
+          },
+          "text": "2026-11-11T15:35:50.5078465Z Ign:13 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 protobuf-compiler amd64 3.21.12-8.2ubuntu0.4"
+        },
+        {
+          "line": 1653,
+          "original_line_including_newline": {
+            "bytes": 133,
+            "git_blob": "752f190db403e596f43852a45d88ba444adbf9e9",
+            "sha256": "1fd0f4506843be330863ba91924eeb0d380bdf12dcf56b512877c2d345998287"
+          },
+          "text": "2026-11-11T15:36:10.5379851Z Ign:2 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 bubblewrap amd64 0.9.0-1ubuntu0.3"
+        },
+        {
+          "line": 1654,
+          "original_line_including_newline": {
+            "bytes": 126,
+            "git_blob": "5c8b452e98ed259663e0fe8849a266b77deafad3",
+            "sha256": "aed5f4d968827774914855f1e892060ef86e4c84f05c5631ae927a836f1276df"
+          },
+          "text": "2026-11-11T15:36:30.3628101Z Ign:3 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 build-essential amd64 12.10ubuntu1"
+        },
+        {
+          "line": 1655,
+          "original_line_including_newline": {
+            "bytes": 128,
+            "git_blob": "0eacb34493e36112ffd0fc5695eedcc6f056242d",
+            "sha256": "915f5c8f66a2605b3d0440edbb78b230f003c07a60672a50f66a5c2a01c63236"
+          },
+          "text": "2026-11-11T15:36:30.5707363Z Ign:2 https://archive.ubuntu.com/ubuntu noble-updates/main amd64 bubblewrap amd64 0.9.0-1ubuntu0.3"
+        },
+        {
+          "line": 1656,
+          "original_line_including_newline": {
+            "bytes": 122,
+            "git_blob": "f8a807f1d00d72bceb48cd931bd190637da5886f",
+            "sha256": "45fd1503520ab52b57f7a4a5186689a6e79a08c02260759737cc4c98b2403c91"
+          },
+          "text": "2026-11-11T15:36:50.3844597Z Ign:4 http://azure.archive.ubuntu.com/ubuntu noble/universe amd64 clang amd64 1:18.0-59~exp2"
+        },
+        {
+          "line": 1657,
+          "original_line_including_newline": {
+            "bytes": 121,
+            "git_blob": "7044262b27ffcfd3c616c64a6502af611620d204",
+            "sha256": "eafd3b4f254fbf76012506b6a58e4f77442b0bb47f038ad35391c5b03dcdc500"
+          },
+          "text": "2026-11-11T15:36:50.6006652Z Ign:3 https://archive.ubuntu.com/ubuntu noble/main amd64 build-essential amd64 12.10ubuntu1"
+        },
+        {
+          "line": 1658,
+          "original_line_including_newline": {
+            "bytes": 129,
+            "git_blob": "836dedeb7e2e064e63f50ad318667c83cf8dfffb",
+            "sha256": "9830ad6b7011079005d0e2b24422b0bb6c71effbdda44086a52cf6adf8e6bf8a"
+          },
+          "text": "2026-11-11T15:36:50.6110950Z Ign:2 https://security.ubuntu.com/ubuntu noble-updates/main amd64 bubblewrap amd64 0.9.0-1ubuntu0.3"
+        },
+        {
+          "line": 1659,
+          "original_line_including_newline": {
+            "bytes": 131,
+            "git_blob": "561c42072a5a9a9d342ed83fd50c48fc1c0c166e",
+            "sha256": "acb3197bcf3632faf3a6415dcba430fe33927495512c6b7815ba7c33aa44405a"
+          },
+          "text": "2026-11-11T15:36:50.6112191Z Err:2 mirror+file:/etc/apt/apt-mirrors.txt noble-updates/main amd64 bubblewrap amd64 0.9.0-1ubuntu0.3"
+        },
+        {
+          "line": 1660,
+          "original_line_including_newline": {
+            "bytes": 86,
+            "git_blob": "096e380854dde64047e813108d39a3daf55c1f94",
+            "sha256": "600eede9f58c07b37128e802231e3cfc5f240cf889bfa781403e08e7c6706148"
+          },
+          "text": "2026-11-11T15:36:50.6113050Z   Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 1661,
+          "original_line_including_newline": {
+            "bytes": 124,
+            "git_blob": "217e0b281a1983430e216441e07e197578e69d22",
+            "sha256": "baef3c8aceca6e6d6cf1c898f28e2b7c272efcf7e019539f38304756c6637d77"
+          },
+          "text": "2026-11-11T15:37:10.2724502Z Ign:5 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 libjsoncpp25 amd64 1.9.5-6build1"
+        },
+        {
+          "line": 1662,
+          "original_line_including_newline": {
+            "bytes": 117,
+            "git_blob": "bf0566b5c5a7c08e1fd05786a6a44445412bf10c",
+            "sha256": "3efdedd958b2d98ba50d8f0a8160e54b6560f000a24407431608824ecaca23ac"
+          },
+          "text": "2026-11-11T15:37:10.6366953Z Ign:4 https://archive.ubuntu.com/ubuntu noble/universe amd64 clang amd64 1:18.0-59~exp2"
+        },
+        {
+          "line": 1663,
+          "original_line_including_newline": {
+            "bytes": 122,
+            "git_blob": "66be1873bb3de0046545df362c90b4bd78a2f058",
+            "sha256": "2dbab8c03f60de88d3d66a59f7c9f01704b6a76f51c450b1fc351e4fc8dbc61f"
+          },
+          "text": "2026-11-11T15:37:10.6368329Z Err:3 https://security.ubuntu.com/ubuntu noble/main amd64 build-essential amd64 12.10ubuntu1"
+        },
+        {
+          "line": 1664,
+          "original_line_including_newline": {
+            "bytes": 86,
+            "git_blob": "6c9abb8e7a9674095258800fb8effc280270fb16",
+            "sha256": "998ac1c1e491d3f4fa03031d92d8e506ecc5b74e24905e5a061d157fdf5c7e4b"
+          },
+          "text": "2026-11-11T15:37:10.6371100Z   Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 1665,
+          "original_line_including_newline": {
+            "bytes": 121,
+            "git_blob": "8fbdc01358aff30ef6f9d426796e0423c85e4a2b",
+            "sha256": "58d018fb7548b16f646da437fdde5f8e2085ee49d11b589eb8dc28835551d6e1"
+          },
+          "text": "2026-11-11T15:37:30.2934180Z Ign:6 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 librhash0 amd64 1.4.3-3build1"
+        },
+        {
+          "line": 1666,
+          "original_line_including_newline": {
+            "bytes": 118,
+            "git_blob": "136eac4a055d7016bac45582eba0706f0d5e9a78",
+            "sha256": "d7b2dde779ab0c9ac06a97a5e6202b518c6e28f5d96c2ae925cd50e4480bbeb6"
+          },
+          "text": "2026-11-11T15:37:30.6613231Z Err:4 https://security.ubuntu.com/ubuntu noble/universe amd64 clang amd64 1:18.0-59~exp2"
+        },
+        {
+          "line": 1667,
+          "original_line_including_newline": {
+            "bytes": 86,
+            "git_blob": "21ebacc4fe3f011670ea2ef4bf0d983d96df6e32",
+            "sha256": "4cc5029ba87785801b364833ce30fa5e7e2a40ce032a1e7e8c985f3358794ab8"
+          },
+          "text": "2026-11-11T15:37:30.6614154Z   Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 1668,
+          "original_line_including_newline": {
+            "bytes": 119,
+            "git_blob": "8a5198d522aeaa64c5bff56b44ace729d38233b9",
+            "sha256": "32776338645db2fc49dea0155051c446900f95d47bd5e491b60e644dfb7f6418"
+          },
+          "text": "2026-11-11T15:37:30.6617552Z Ign:5 https://archive.ubuntu.com/ubuntu noble/main amd64 libjsoncpp25 amd64 1.9.5-6build1"
+        },
+        {
+          "line": 1669,
+          "original_line_including_newline": {
+            "bytes": 121,
+            "git_blob": "7e3b1f02750f401d79e0cbdfdc72accc57e89116",
+            "sha256": "3301e98b0ab2999a78530d97dbf86d1c23477a64bc8318bd82c1a7decd450b60"
+          },
+          "text": "2026-11-11T15:37:50.3186492Z Ign:7 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 cmake-data all 3.28.3-1build7"
+        },
+        {
+          "line": 1670,
+          "original_line_including_newline": {
+            "bytes": 120,
+            "git_blob": "c455c0fdb37bad9ae773ff6a83368ce1a19bd5aa",
+            "sha256": "c7c75f49514e21f09e15fa8725704c6c516b966eb6029edd0169d2ebe51e0596"
+          },
+          "text": "2026-11-11T15:37:50.6768035Z Err:5 https://security.ubuntu.com/ubuntu noble/main amd64 libjsoncpp25 amd64 1.9.5-6build1"
+        },
+        {
+          "line": 1671,
+          "original_line_including_newline": {
+            "bytes": 86,
+            "git_blob": "b8a3883ca42de00e578e035a5073554868060a7c",
+            "sha256": "86006d12e97426077f4d1321510b9d959ea60779cbfc3bdf2c4d483ebe5b1639"
+          },
+          "text": "2026-11-11T15:37:50.6768774Z   Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 1672,
+          "original_line_including_newline": {
+            "bytes": 116,
+            "git_blob": "e364be28cda931c5f79883d224bdef4052836b55",
+            "sha256": "8c06250ea7aebeafd70dc7b449f43c4ebd83574877e0250d49dc8dd616895d21"
+          },
+          "text": "2026-11-11T15:37:50.6860644Z Ign:6 https://archive.ubuntu.com/ubuntu noble/main amd64 librhash0 amd64 1.4.3-3build1"
+        },
+        {
+          "line": 1673,
+          "original_line_including_newline": {
+            "bytes": 118,
+            "git_blob": "999a141cbe2301545ee448918c743d47e89b06c7",
+            "sha256": "2f1924f60e1e71812be9039387247b27c731630c57a14304039c739060f229a2"
+          },
+          "text": "2026-11-11T15:38:10.3439055Z Ign:8 http://azure.archive.ubuntu.com/ubuntu noble/main amd64 cmake amd64 3.28.3-1build7"
+        },
+        {
+          "line": 1674,
+          "original_line_including_newline": {
+            "bytes": 116,
+            "git_blob": "bac022c1905c23af299bf784a175f06b80baf29e",
+            "sha256": "ac76b7fa5654af02dc8527053ab4260b2ac647559f094dbff1b88764aa3725ce"
+          },
+          "text": "2026-11-11T15:38:10.7116575Z Ign:7 https://archive.ubuntu.com/ubuntu noble/main amd64 cmake-data all 3.28.3-1build7"
+        },
+        {
+          "line": 1675,
+          "original_line_including_newline": {
+            "bytes": 117,
+            "git_blob": "2fccd5e8c6f118634d4459360996ab6d7dfd5c59",
+            "sha256": "110c4468f8a6c2d08049bcd54310f759b5187e446e2983b7ebcd461d0cadb79f"
+          },
+          "text": "2026-11-11T15:38:10.7118522Z Err:6 https://security.ubuntu.com/ubuntu noble/main amd64 librhash0 amd64 1.4.3-3build1"
+        },
+        {
+          "line": 1676,
+          "original_line_including_newline": {
+            "bytes": 86,
+            "git_blob": "ddc0eacfd53c284ab29c56761024b090ea171e52",
+            "sha256": "efce379dd962c53083fcf50747ec872d3250e80739f2d9bc8f885eaad0b18585"
+          },
+          "text": "2026-11-11T15:38:10.7120995Z   Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 1677,
+          "original_line_including_newline": {
+            "bytes": 134,
+            "git_blob": "7e894d85349cecdaf7556d1405c38ae11d0cf476",
+            "sha256": "43427e1c0f93dd8e57d9a7a1a419dc9ff4f2a10515597313586a17e87b112586"
+          },
+          "text": "2026-11-11T15:38:30.3690444Z Ign:9 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 libcap-dev amd64 1:2.66-5ubuntu2.4"
+        },
+        {
+          "line": 1678,
+          "original_line_including_newline": {
+            "bytes": 117,
+            "git_blob": "5f843b3ce4e6e363393a92a235598e6ef9dc7f1c",
+            "sha256": "bc04f958a32829730a3b1844b8754c260be23f700765f9e4ef5146980e3928b4"
+          },
+          "text": "2026-11-11T15:38:30.7357072Z Err:7 https://security.ubuntu.com/ubuntu noble/main amd64 cmake-data all 3.28.3-1build7"
+        },
+        {
+          "line": 1679,
+          "original_line_including_newline": {
+            "bytes": 86,
+            "git_blob": "2a27f963fa7d569b868325777c8b1abe99078069",
+            "sha256": "7bd4a4ae327623c7ec78ccebb4442374389dc40bedb5cc039178fe642402715f"
+          },
+          "text": "2026-11-11T15:38:30.7358223Z   Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 1680,
+          "original_line_including_newline": {
+            "bytes": 113,
+            "git_blob": "1441031cb800ab50367155d64054e560db0c5557",
+            "sha256": "806dc4989cad3e834d5f35c33198b981265cb4bac610698e6f2ff8c345ee222a"
+          },
+          "text": "2026-11-11T15:38:30.7359481Z Ign:8 https://archive.ubuntu.com/ubuntu noble/main amd64 cmake amd64 3.28.3-1build7"
+        },
+        {
+          "line": 1681,
+          "original_line_including_newline": {
+            "bytes": 144,
+            "git_blob": "007c7436a26b9a5669ef7d50b455f7238ab9f9ce",
+            "sha256": "dc820ef97fee598f233bd79a44570bd8bbeb462c510393abbe22e310457540cc"
+          },
+          "text": "2026-11-11T15:38:49.6092086Z Ign:10 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 libprotobuf32t64 amd64 3.21.12-8.2ubuntu0.4"
+        },
+        {
+          "line": 1682,
+          "original_line_including_newline": {
+            "bytes": 129,
+            "git_blob": "61bd9cec6fb2885b27f575ff45ac42b532ae77a8",
+            "sha256": "86f132c8a260a293f32983cb5bf8490ee616c40779e83dab3d73ba7142ce2318"
+          },
+          "text": "2026-11-11T15:38:50.7602080Z Ign:9 https://archive.ubuntu.com/ubuntu noble-updates/main amd64 libcap-dev amd64 1:2.66-5ubuntu2.4"
+        },
+        {
+          "line": 1683,
+          "original_line_including_newline": {
+            "bytes": 114,
+            "git_blob": "8702eeb5bf4d3ca20446aa8d350e438c71e8b5a1",
+            "sha256": "6e89899e8fa306e8028f270376ef1c6110da09187f118fbce0590370b9922e19"
+          },
+          "text": "2026-11-11T15:38:50.7611182Z Err:8 https://security.ubuntu.com/ubuntu noble/main amd64 cmake amd64 3.28.3-1build7"
+        },
+        {
+          "line": 1684,
+          "original_line_including_newline": {
+            "bytes": 86,
+            "git_blob": "045d7040f3c73a76553e890d0c42b92f9b003f95",
+            "sha256": "408beb5f30eb32083e4e06b42c97ccbd486d4dbf97ff6e3f658fedd4fe2d4c78"
+          },
+          "text": "2026-11-11T15:38:50.7612528Z   Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 1685,
+          "original_line_including_newline": {
+            "bytes": 142,
+            "git_blob": "ee0bf337bdf8a9da67c43b6e843ca2edb880df8b",
+            "sha256": "87d341755b103fc841fca1a2abcad8f4de8d37d1ab1eea3d8fc4b4061a228f1d"
+          },
+          "text": "2026-11-11T15:39:09.6336961Z Ign:11 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 libprotoc32t64 amd64 3.21.12-8.2ubuntu0.4"
+        },
+        {
+          "line": 1686,
+          "original_line_including_newline": {
+            "bytes": 139,
+            "git_blob": "9654d8ff14b5993e27b9fde8855852c997334e71",
+            "sha256": "2d3f4e2ed6509a4a84b1522964e0596da5bdd6c15d019ae7670fcca5f8b83a02"
+          },
+          "text": "2026-11-11T15:39:10.7840190Z Ign:10 https://archive.ubuntu.com/ubuntu noble-updates/main amd64 libprotobuf32t64 amd64 3.21.12-8.2ubuntu0.4"
+        },
+        {
+          "line": 1687,
+          "original_line_including_newline": {
+            "bytes": 130,
+            "git_blob": "1a084b3ed3203d87094335b31918873ad35e2a2f",
+            "sha256": "8f01aa86e0c00001d55f76599bbfa268cf04502f28a78cb7b7a53fa1dcfb0cb1"
+          },
+          "text": "2026-11-11T15:39:10.7841934Z Ign:9 https://security.ubuntu.com/ubuntu noble-updates/main amd64 libcap-dev amd64 1:2.66-5ubuntu2.4"
+        },
+        {
+          "line": 1688,
+          "original_line_including_newline": {
+            "bytes": 132,
+            "git_blob": "896ded239355c916fe73fcf8da53e2e321b61a61",
+            "sha256": "bf7a41e9f3011b24bc008e6b9e4e58cb5f42e23df292c5e5d6fb8a0fa0a4e8f3"
+          },
+          "text": "2026-11-11T15:39:10.7843649Z Err:9 mirror+file:/etc/apt/apt-mirrors.txt noble-updates/main amd64 libcap-dev amd64 1:2.66-5ubuntu2.4"
+        },
+        {
+          "line": 1689,
+          "original_line_including_newline": {
+            "bytes": 86,
+            "git_blob": "52f34c33834e694196831f280484bcd1d7d56c52",
+            "sha256": "6d503cefa75ec96bf4be2473aa0176ad81675846c59b64376258f552b5031689"
+          },
+          "text": "2026-11-11T15:39:10.7845039Z   Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 1690,
+          "original_line_including_newline": {
+            "bytes": 143,
+            "git_blob": "5beb0186fc10db98ba07f7c766a3e718920a7a86",
+            "sha256": "de0b1e0af48a1f9393fc496eeb45cfd62ae188d062629b8f4f3056f2ae869001"
+          },
+          "text": "2026-11-11T15:39:29.6622010Z Ign:12 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 libprotobuf-dev amd64 3.21.12-8.2ubuntu0.4"
+        },
+        {
+          "line": 1691,
+          "original_line_including_newline": {
+            "bytes": 137,
+            "git_blob": "decbb1d4ea6d0e53bcf136659b3a723c1b80e4bc",
+            "sha256": "b7f225403a648a7ef3011e67ec7f73b5ff98bc66d42e0ca2734255d086c60998"
+          },
+          "text": "2026-11-11T15:39:30.8098615Z Ign:11 https://archive.ubuntu.com/ubuntu noble-updates/main amd64 libprotoc32t64 amd64 3.21.12-8.2ubuntu0.4"
+        },
+        {
+          "line": 1692,
+          "original_line_including_newline": {
+            "bytes": 140,
+            "git_blob": "d3c28f543053c96eef6e10eabc8ee39947a7bc33",
+            "sha256": "db12ac8cbb688c7fcf7a2bd35d4de558de0779a9f7dd7cb72acdac8599eeb22c"
+          },
+          "text": "2026-11-11T15:39:30.8100500Z Ign:10 https://security.ubuntu.com/ubuntu noble-updates/main amd64 libprotobuf32t64 amd64 3.21.12-8.2ubuntu0.4"
+        },
+        {
+          "line": 1693,
+          "original_line_including_newline": {
+            "bytes": 142,
+            "git_blob": "be55b994fe1f00b9d1050a76c9cb445079e5da9b",
+            "sha256": "58537bc4ff7ab5c07a251c29263264aa6dd447076b2383160f49add42bbfa303"
+          },
+          "text": "2026-11-11T15:39:30.8102143Z Err:10 mirror+file:/etc/apt/apt-mirrors.txt noble-updates/main amd64 libprotobuf32t64 amd64 3.21.12-8.2ubuntu0.4"
+        },
+        {
+          "line": 1694,
+          "original_line_including_newline": {
+            "bytes": 86,
+            "git_blob": "da2993ded8d87549f7edd5df0345932d6cc6afde",
+            "sha256": "5829913d09e7f5ad56925bc795017d46ece20b87e2a1e50a2f21d75e35f206c4"
+          },
+          "text": "2026-11-11T15:39:30.8119172Z   Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 1695,
+          "original_line_including_newline": {
+            "bytes": 149,
+            "git_blob": "829d085234cf192ff25ec08b8ee8af121ec918d7",
+            "sha256": "9a3d0fddf0957d227dc6d66b479bb90352d9aa0382d6563b817f0089e93a9e08"
+          },
+          "text": "2026-11-11T15:39:49.6869632Z Ign:13 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 protobuf-compiler amd64 3.21.12-8.2ubuntu0.4"
+        },
+        {
+          "line": 1696,
+          "original_line_including_newline": {
+            "bytes": 138,
+            "git_blob": "2127d8bf73479cb905cd1af7d2189d5be1a5fb2b",
+            "sha256": "049ad8a3d6f1a47614cb9dac412c67ec09a311ea33e6717731c2f96c40e350e6"
+          },
+          "text": "2026-11-11T15:39:50.8343364Z Ign:12 https://archive.ubuntu.com/ubuntu noble-updates/main amd64 libprotobuf-dev amd64 3.21.12-8.2ubuntu0.4"
+        },
+        {
+          "line": 1697,
+          "original_line_including_newline": {
+            "bytes": 138,
+            "git_blob": "08613bb485939c33bdeb1ea49b29eea79ee28310",
+            "sha256": "175fc816786cb06e320952b8710efa2a90e9d6b87eba37ecdb3f846d5d4bc953"
+          },
+          "text": "2026-11-11T15:39:50.8344539Z Ign:11 https://security.ubuntu.com/ubuntu noble-updates/main amd64 libprotoc32t64 amd64 3.21.12-8.2ubuntu0.4"
+        },
+        {
+          "line": 1698,
+          "original_line_including_newline": {
+            "bytes": 140,
+            "git_blob": "f0d4ebe78ef0945a174c4f033ab976415d67f224",
+            "sha256": "e26a29a9de4800bd684994388bd19948067003566953959a175b1edba10ba76d"
+          },
+          "text": "2026-11-11T15:39:50.8345587Z Err:11 mirror+file:/etc/apt/apt-mirrors.txt noble-updates/main amd64 libprotoc32t64 amd64 3.21.12-8.2ubuntu0.4"
+        },
+        {
+          "line": 1699,
+          "original_line_including_newline": {
+            "bytes": 86,
+            "git_blob": "386ea9dc42c5e6a78417607c5ca17b5f2a5e6d59",
+            "sha256": "b80c1d8cce4e0a66076249173e2dc3c4707257f6fa2254d5dd5ccc8478fbfaae"
+          },
+          "text": "2026-11-11T15:39:50.8346279Z   Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 1700,
+          "original_line_including_newline": {
+            "bytes": 144,
+            "git_blob": "d874031e576c65e4934968131a64d0e1d97e0ae2",
+            "sha256": "31e7b8ad0e05dd2464030a9359dc4c7985642771bcdb4c05cbabc94bf94ddea4"
+          },
+          "text": "2026-11-11T15:40:10.8575728Z Ign:13 https://archive.ubuntu.com/ubuntu noble-updates/universe amd64 protobuf-compiler amd64 3.21.12-8.2ubuntu0.4"
+        },
+        {
+          "line": 1701,
+          "original_line_including_newline": {
+            "bytes": 139,
+            "git_blob": "b241a928fea87746dc40b4d77ca05a00544bab27",
+            "sha256": "42d2775a67f4b899cdbf54f839f1b28f5aae24ea4d902e43c7317f0a3d9b0aef"
+          },
+          "text": "2026-11-11T15:40:10.8577521Z Ign:12 https://security.ubuntu.com/ubuntu noble-updates/main amd64 libprotobuf-dev amd64 3.21.12-8.2ubuntu0.4"
+        },
+        {
+          "line": 1702,
+          "original_line_including_newline": {
+            "bytes": 141,
+            "git_blob": "30e8169c44c7dda129bc906cfa1730a6bbf0baf3",
+            "sha256": "e31552e2a5eed5139d456397ffb273ae58e04cc75a327ecb525b52f93472f33d"
+          },
+          "text": "2026-11-11T15:40:10.8579824Z Err:12 mirror+file:/etc/apt/apt-mirrors.txt noble-updates/main amd64 libprotobuf-dev amd64 3.21.12-8.2ubuntu0.4"
+        },
+        {
+          "line": 1703,
+          "original_line_including_newline": {
+            "bytes": 86,
+            "git_blob": "e5228ff2346de879deb704a8505bc3cdb1ddd154",
+            "sha256": "f110d9c09d84c44e9727e3187fbd228d057ac94073315d9bb2bfe18811bc5dc4"
+          },
+          "text": "2026-11-11T15:40:10.8580908Z   Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 1704,
+          "original_line_including_newline": {
+            "bytes": 145,
+            "git_blob": "125a6af8eb72b1092f3473337a632fd2119039e7",
+            "sha256": "5f92cc6a66898615c874a3dcf71af9954c619e4de07cd7f17e15ace28ca1866a"
+          },
+          "text": "2026-11-11T15:40:30.8787180Z Ign:13 https://security.ubuntu.com/ubuntu noble-updates/universe amd64 protobuf-compiler amd64 3.21.12-8.2ubuntu0.4"
+        },
+        {
+          "line": 1705,
+          "original_line_including_newline": {
+            "bytes": 147,
+            "git_blob": "3138899df6c284987bef7b7803b826eb1bf882ba",
+            "sha256": "8941ad00adba2a3d94ed65eb36ecd6a4b0447d1f332de3aaf64a314fc2ac1cf3"
+          },
+          "text": "2026-11-11T15:40:30.8788311Z Err:13 mirror+file:/etc/apt/apt-mirrors.txt noble-updates/universe amd64 protobuf-compiler amd64 3.21.12-8.2ubuntu0.4"
+        },
+        {
+          "line": 1706,
+          "original_line_including_newline": {
+            "bytes": 86,
+            "git_blob": "6f15dd8386275b96c7a2b0a5b237191afad181f3",
+            "sha256": "642615a189c9744510a3dc2bb4652c98e48b404bb55236aaf591083976c16bd9"
+          },
+          "text": "2026-11-11T15:40:30.8789595Z   Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 1707,
+          "original_line_including_newline": {
+            "bytes": 202,
+            "git_blob": "9f79c862083679f914bd9fd4822f1f9174f9973e",
+            "sha256": "37bb3297d3f670c3c114a4382e8c4b5dbdf1ee4003dc3845cdc2b9b93bde1387"
+          },
+          "text": "2026-11-11T15:40:30.8851262Z E: Failed to fetch mirror+file:/etc/apt/apt-mirrors.txt/pool/main/b/bubblewrap/bubblewrap_0.9.0-1ubuntu0.3_amd64.deb  Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 1708,
+          "original_line_including_newline": {
+            "bytes": 206,
+            "git_blob": "ace624da840d80d5beac3d72e2a803d6940f1936",
+            "sha256": "65f679ea07ad6f49b0f62305b5a274e8dbc4670ede669c21512bcf9b317ec1cc"
+          },
+          "text": "2026-11-11T15:40:30.8852845Z E: Failed to fetch https://security.ubuntu.com/ubuntu/pool/main/b/build-essential/build-essential_12.10ubuntu1_amd64.deb  Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 1709,
+          "original_line_including_newline": {
+            "bytes": 200,
+            "git_blob": "0a30e30bd687d0c945c5cc9bc7162627a76a939a",
+            "sha256": "1a2b1883555b7b9482aeeae4c83a7b95eabcd7c1ea2482cb611d46ec590f45ad"
+          },
+          "text": "2026-11-11T15:40:30.8854399Z E: Failed to fetch https://security.ubuntu.com/ubuntu/pool/universe/l/llvm-defaults/clang_18.0-59%7eexp2_amd64.deb  Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 1710,
+          "original_line_including_newline": {
+            "bytes": 202,
+            "git_blob": "991269385322cb4e37f35e1ef93438d353205698",
+            "sha256": "85efea3746f9e819584a4ea1cf74ef438aa8b5d1f6fa3e93623e44efd8960474"
+          },
+          "text": "2026-11-11T15:40:30.8856135Z E: Failed to fetch https://security.ubuntu.com/ubuntu/pool/main/libj/libjsoncpp/libjsoncpp25_1.9.5-6build1_amd64.deb  Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 1711,
+          "original_line_including_newline": {
+            "bytes": 191,
+            "git_blob": "cf97b3dc03cca2346ac1779a6e3b8487ef04a8ae",
+            "sha256": "d2406a230233ff83ce0480b4b3d63263628f6a6f22a30fc95f95775b50fb97b2"
+          },
+          "text": "2026-11-11T15:40:30.8857749Z E: Failed to fetch https://security.ubuntu.com/ubuntu/pool/main/r/rhash/librhash0_1.4.3-3build1_amd64.deb  Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 1712,
+          "original_line_including_newline": {
+            "bytes": 191,
+            "git_blob": "cc904b5b6750598d1a3e34a4117034321928dda3",
+            "sha256": "b0727d72933fd73952d6ee9f7d95676ac5b05096ce5abdce5056acd4f26edc1d"
+          },
+          "text": "2026-11-11T15:40:30.8860010Z E: Failed to fetch https://security.ubuntu.com/ubuntu/pool/main/c/cmake/cmake-data_3.28.3-1build7_all.deb  Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 1713,
+          "original_line_including_newline": {
+            "bytes": 188,
+            "git_blob": "88608f29871db9e4dac2de59cdd1077c54dbb564",
+            "sha256": "0ab3e1a5b773bd225888b7676e150be25f9f9ca5fb148488548b3f431447d72e"
+          },
+          "text": "2026-11-11T15:40:30.8861905Z E: Failed to fetch https://security.ubuntu.com/ubuntu/pool/main/c/cmake/cmake_3.28.3-1build7_amd64.deb  Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 1714,
+          "original_line_including_newline": {
+            "bytes": 201,
+            "git_blob": "ebd5c7aeea43c052b73cf7d2d215899d1434ba5f",
+            "sha256": "00a137b21cec27458637a06d0279a164d1506662803841aa216f98274123dd7f"
+          },
+          "text": "2026-11-11T15:40:30.8864235Z E: Failed to fetch mirror+file:/etc/apt/apt-mirrors.txt/pool/main/libc/libcap2/libcap-dev_2.66-5ubuntu2.4_amd64.deb  Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 1715,
+          "original_line_including_newline": {
+            "bytes": 210,
+            "git_blob": "ea3b79f3a32959833386b6d6b7212253516a3fc1",
+            "sha256": "9e366e67aee988eb739a53a9b73260d1454d683039652aed9363d09b3d1421c4"
+          },
+          "text": "2026-11-11T15:40:30.8866664Z E: Failed to fetch mirror+file:/etc/apt/apt-mirrors.txt/pool/main/p/protobuf/libprotobuf32t64_3.21.12-8.2ubuntu0.4_amd64.deb  Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 1716,
+          "original_line_including_newline": {
+            "bytes": 208,
+            "git_blob": "435d49e2c8349f77074d9c003f13237ace7085b0",
+            "sha256": "0222ce7284e1c2f332550b38ab146c1e6b2cbd2332dfcad3a3f4b10d08ed9987"
+          },
+          "text": "2026-11-11T15:40:30.8869329Z E: Failed to fetch mirror+file:/etc/apt/apt-mirrors.txt/pool/main/p/protobuf/libprotoc32t64_3.21.12-8.2ubuntu0.4_amd64.deb  Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 1717,
+          "original_line_including_newline": {
+            "bytes": 209,
+            "git_blob": "4aed6eedb8c64116563fe84f38020f9cb445f49b",
+            "sha256": "aa00f50f2ba5d3224e41cf9a410e916f174aab22fbc31bd15c2fada257787d9d"
+          },
+          "text": "2026-11-11T15:40:30.8871483Z E: Failed to fetch mirror+file:/etc/apt/apt-mirrors.txt/pool/main/p/protobuf/libprotobuf-dev_3.21.12-8.2ubuntu0.4_amd64.deb  Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 1718,
+          "original_line_including_newline": {
+            "bytes": 215,
+            "git_blob": "c8ce40b3976c18fbdd82c24961d78d96f7c95209",
+            "sha256": "2681d5eb1352368314faae14b7dc5c9d0ca159e4b12f43831e72c26f28db6ee7"
+          },
+          "text": "2026-11-11T15:40:30.8873441Z E: Failed to fetch mirror+file:/etc/apt/apt-mirrors.txt/pool/universe/p/protobuf/protobuf-compiler_3.21.12-8.2ubuntu0.4_amd64.deb  Temporary failure resolving 'azure.archive.ubuntu.com'"
+        },
+        {
+          "line": 1719,
+          "original_line_including_newline": {
+            "bytes": 115,
+            "git_blob": "a210dd9a377109cef94dc603f938b2e55b491f14",
+            "sha256": "00e2f550121a6bc2ea709afad26bb4cf8ad048b26014fa5d5d17f2353153c99c"
+          },
+          "text": "2026-11-11T15:40:30.8874394Z E: Unable to fetch some archives, maybe run apt-get update or try with --fix-missing?"
+        },
+        {
+          "line": 1720,
+          "original_line_including_newline": {
+            "bytes": 76,
+            "git_blob": "6f16e75f2ffdff23cf3eeeaa25a4ff9aa2870610",
+            "sha256": "6101351e8d552958919471e1071a473f8fd1c9e3b158371cfe5e72b8337a9fc1"
+          },
+          "text": "2026-11-11T15:40:30.8887241Z ##[error]Process completed with exit code 100."
+        }
+      ],
+      "bytes": 152880,
+      "dns_error_hosts": [
+        "azure.archive.ubuntu.com"
+      ],
+      "fence_mentions": [],
+      "git_blob": "aa0c5befb13929d5cff230b51e4450bf8bbcd615",
+      "job": "native-owner",
+      "job_id": 130619113264,
+      "original_raw_path": "mem-ci-c895-original/original/job-130619113264.log",
+      "resolver_configuration_dump_present": false,
+      "runner": "ubuntu-24.04",
+      "sha256": "3e447527b0d24a73231fe34f0f62e34257e751c52f9c59c6f75b30b588ad761a"
+    },
+    {
+      "actual_apt_lines": [
+        {
+          "line": 449,
+          "original_line_including_newline": {
+            "bytes": 60,
+            "git_blob": "b0060fcc7c0358d0e4f1390b23b13428e1e50c9e",
+            "sha256": "87f59ca53a24dd29b19b915aa5b468886f62993bb995ef54b35e3d966532cfe2"
+          },
+          "text": "2026-11-11T15:28:15.0500909Z \u001b[36;1msudo apt-get update\u001b[0m"
+        },
+        {
+          "line": 450,
+          "original_line_including_newline": {
+            "bytes": 113,
+            "git_blob": "90cab36c8f52f359d00c87f89d87efd19f7686ef",
+            "sha256": "f2fb336242c0953207a3549c0292ef8699f5ac19ec5c8e6e99fa866dda6ddd28"
+          },
+          "text": "2026-11-11T15:28:15.0501256Z \u001b[36;1msudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config\u001b[0m"
+        },
+        {
+          "line": 467,
+          "original_line_including_newline": {
+            "bytes": 109,
+            "git_blob": "ace1c451a2369bfab2203b59ce65a65225f32824",
+            "sha256": "26b594b9139989a417dc725ffab37d39bfffeb1a557cf1afccb6dfac4c151074"
+          },
+          "text": "2026-11-11T15:28:15.1689237Z Get:1 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease [3600 B]"
+        },
+        {
+          "line": 468,
+          "original_line_including_newline": {
+            "bytes": 119,
+            "git_blob": "38dc231d6e8740936b668345c8c24b08bf126a9d",
+            "sha256": "8d502cc91edbab12500b06a1262d83766b0831c4c4566b2fe42e668e49fb1de7"
+          },
+          "text": "2026-11-11T15:28:15.2348556Z Get:2 https://packages.microsoft.com/ubuntu/24.04/prod noble/main arm64 Packages [690 kB]"
+        },
+        {
+          "line": 469,
+          "original_line_including_newline": {
+            "bytes": 120,
+            "git_blob": "bdeb4004dcc00ea56148f7d7dc02e65b3bfb998d",
+            "sha256": "61486dcadffccce7d40510f2fa2d03028bd95129b5dfdfe8d3b078c0b9be2d91"
+          },
+          "text": "2026-11-11T15:28:15.2723084Z Get:3 https://packages.microsoft.com/ubuntu/24.04/prod noble/main armhf Packages [12.6 kB]"
+        },
+        {
+          "line": 470,
+          "original_line_including_newline": {
+            "bytes": 119,
+            "git_blob": "4173807270b4bead45bd43e9bc12f00e273b6684",
+            "sha256": "eb1857e8334278ebb3c83c3ee9e99f0994e37a8a1b1e314777085b3e29d1b6af"
+          },
+          "text": "2026-11-11T15:28:15.2756102Z Get:4 https://packages.microsoft.com/ubuntu/24.04/prod noble/main amd64 Packages [760 kB]"
+        },
+        {
+          "line": 471,
+          "original_line_including_newline": {
+            "bytes": 88,
+            "git_blob": "5905589f362049cd843aa87b606050066745a47c",
+            "sha256": "d7c93e354ce009051d5b849c48af6e3dab6b841ec2fe14b3f93fcc907846442c"
+          },
+          "text": "2026-11-11T15:28:35.1571545Z Ign:5 http://ports.ubuntu.com/ubuntu-ports noble InRelease"
+        },
+        {
+          "line": 472,
+          "original_line_including_newline": {
+            "bytes": 96,
+            "git_blob": "997605fa056277ee337afc13cbe9a8d95cfa3e83",
+            "sha256": "2228ad316fef457207652e4a4b50912c5e85506c616b7c2614efc5b43eb090f1"
+          },
+          "text": "2026-11-11T15:28:55.1562141Z Ign:6 http://ports.ubuntu.com/ubuntu-ports noble-updates InRelease"
+        },
+        {
+          "line": 473,
+          "original_line_including_newline": {
+            "bytes": 98,
+            "git_blob": "43c8df1f68e488b777f0e27a1e5fa75211c2c620",
+            "sha256": "d132436e60e8cc230ad2647e188062aee6003ade00bc0fc22a79f05c09daaaa9"
+          },
+          "text": "2026-11-11T15:29:15.1888300Z Ign:7 http://ports.ubuntu.com/ubuntu-ports noble-backports InRelease"
+        },
+        {
+          "line": 474,
+          "original_line_including_newline": {
+            "bytes": 97,
+            "git_blob": "d0af4ec71fc1ed9679204fdbd01c68e169158174",
+            "sha256": "8e564a02a47a9fdd056195909ed865bd7e0323891b9baa64ac20f2663c202dd0"
+          },
+          "text": "2026-11-11T15:29:35.0775073Z Ign:8 http://ports.ubuntu.com/ubuntu-ports noble-security InRelease"
+        },
+        {
+          "line": 475,
+          "original_line_including_newline": {
+            "bytes": 88,
+            "git_blob": "26c5c83554493f93bacb7120649d0af260aa1363",
+            "sha256": "aec6fd47bdc60372caa37b14650bf08018f91ea33284d433e769825f62807763"
+          },
+          "text": "2026-11-11T15:29:55.1170298Z Ign:5 http://ports.ubuntu.com/ubuntu-ports noble InRelease"
+        },
+        {
+          "line": 476,
+          "original_line_including_newline": {
+            "bytes": 96,
+            "git_blob": "dd7ddf132b4841c6f238474ee682431af396b1cb",
+            "sha256": "150880ae21c9497aaf1dd35504491cba67d1ae173544a38989868a6a763ed782"
+          },
+          "text": "2026-11-11T15:30:15.1461180Z Ign:6 http://ports.ubuntu.com/ubuntu-ports noble-updates InRelease"
+        },
+        {
+          "line": 477,
+          "original_line_including_newline": {
+            "bytes": 98,
+            "git_blob": "1e07d12e53f2ac25f53a3e2030762ce94d287b7b",
+            "sha256": "d0aa397cd06698dde20aba49c91cef7f21f42fa86d9bdb07a3ef653ee7791011"
+          },
+          "text": "2026-11-11T15:30:35.1727082Z Ign:7 http://ports.ubuntu.com/ubuntu-ports noble-backports InRelease"
+        },
+        {
+          "line": 478,
+          "original_line_including_newline": {
+            "bytes": 97,
+            "git_blob": "5d26647e0d01ead99ec31afa3b0eb434ff8230a8",
+            "sha256": "3e9cc0f0e4bdee468129839dea82f509405a9c016a9b808555f1d69e582072cc"
+          },
+          "text": "2026-11-11T15:30:55.2087509Z Ign:8 http://ports.ubuntu.com/ubuntu-ports noble-security InRelease"
+        },
+        {
+          "line": 479,
+          "original_line_including_newline": {
+            "bytes": 88,
+            "git_blob": "e3b5bb70eab74b65ccfede53263a4be42aac4a1d",
+            "sha256": "f94e601a4c1e4e843da0f42a7010b06558c6c76841b4ab44ba74f0be002420d5"
+          },
+          "text": "2026-11-11T15:31:15.2398687Z Ign:5 http://ports.ubuntu.com/ubuntu-ports noble InRelease"
+        },
+        {
+          "line": 480,
+          "original_line_including_newline": {
+            "bytes": 96,
+            "git_blob": "43dfe2092ff9afb8aaa9129c67ca9fcf91db54e6",
+            "sha256": "49c9df61eabeb7b603ccc2d960400b5057e01ec83e761060cd08222aa00e2fc9"
+          },
+          "text": "2026-11-11T15:31:35.2816640Z Ign:6 http://ports.ubuntu.com/ubuntu-ports noble-updates InRelease"
+        },
+        {
+          "line": 481,
+          "original_line_including_newline": {
+            "bytes": 98,
+            "git_blob": "62d8e629c23f6a6d3b65520c3f5104e281d560e3",
+            "sha256": "2171a5eb90b63a7a05b14fd620bb73416e90d07e77b3db6f226ba6aa77d12354"
+          },
+          "text": "2026-11-11T15:31:55.3136456Z Ign:7 http://ports.ubuntu.com/ubuntu-ports noble-backports InRelease"
+        },
+        {
+          "line": 482,
+          "original_line_including_newline": {
+            "bytes": 97,
+            "git_blob": "fdf84ec3fda6e7ebf17d59262b4f828eeb0e432e",
+            "sha256": "8cc808d388bbc8a9303b00686d9f023f352c25a14aeabfa68391c4606a746f25"
+          },
+          "text": "2026-11-11T15:32:15.3507174Z Ign:8 http://ports.ubuntu.com/ubuntu-ports noble-security InRelease"
+        },
+        {
+          "line": 483,
+          "original_line_including_newline": {
+            "bytes": 88,
+            "git_blob": "110ffca93991ccf61cb334ef376119107bc81e99",
+            "sha256": "06f2d5abe3e1a078ae6f5e55a8df5f1e3ad28cadab1a07a2d172e373f540c63a"
+          },
+          "text": "2026-11-11T15:32:35.3833051Z Err:5 http://ports.ubuntu.com/ubuntu-ports noble InRelease"
+        },
+        {
+          "line": 484,
+          "original_line_including_newline": {
+            "bytes": 78,
+            "git_blob": "008775af67f56f1b97c173bc413d8593e0f63e8c",
+            "sha256": "d69ee593a812a7134a097a482b78c641eeaafbdd941ee10a39e789eb71399dd4"
+          },
+          "text": "2026-11-11T15:32:35.3833751Z   Temporary failure resolving 'ports.ubuntu.com'"
+        },
+        {
+          "line": 485,
+          "original_line_including_newline": {
+            "bytes": 96,
+            "git_blob": "9c7b284c83bc0c4ef23bddd1f00e25e89f45d7ed",
+            "sha256": "766bec1b13c8183c62720fd1ba84f86d472ba6f69bef9b28138bceb4b9a28eba"
+          },
+          "text": "2026-11-11T15:32:55.4105481Z Err:6 http://ports.ubuntu.com/ubuntu-ports noble-updates InRelease"
+        },
+        {
+          "line": 486,
+          "original_line_including_newline": {
+            "bytes": 78,
+            "git_blob": "d25bd72108970f446036aa29c6f55c111b4a7800",
+            "sha256": "baa122fbab0c6a9ea9f3cb5c27298fba44dbd79d1e3710cce0feff8c7c0e229d"
+          },
+          "text": "2026-11-11T15:32:55.4105928Z   Temporary failure resolving 'ports.ubuntu.com'"
+        },
+        {
+          "line": 487,
+          "original_line_including_newline": {
+            "bytes": 98,
+            "git_blob": "74693a583dabb55792111c4ff7c7253f504622f6",
+            "sha256": "e3a8622330ac63572951d7078a752f58213f7bf04ef49c2d6d6d42f0a2a675b7"
+          },
+          "text": "2026-11-11T15:33:15.4363395Z Err:7 http://ports.ubuntu.com/ubuntu-ports noble-backports InRelease"
+        },
+        {
+          "line": 488,
+          "original_line_including_newline": {
+            "bytes": 78,
+            "git_blob": "66bdc3f3b24c3453369cb23ac371fcbb90a56318",
+            "sha256": "cda9ac3beaab8ce978f4b60a6ab96ce659fbd6083422b6a5f66996124e8441ca"
+          },
+          "text": "2026-11-11T15:33:15.4363869Z   Temporary failure resolving 'ports.ubuntu.com'"
+        },
+        {
+          "line": 489,
+          "original_line_including_newline": {
+            "bytes": 97,
+            "git_blob": "9bbf6f0a9b4dba1f376b03acdfc93caed5a22c64",
+            "sha256": "bb8940f75603cdd6cc41fd9aeac0846e11cc526911826225c2d029a94b4fedb8"
+          },
+          "text": "2026-11-11T15:33:35.4691273Z Err:8 http://ports.ubuntu.com/ubuntu-ports noble-security InRelease"
+        },
+        {
+          "line": 490,
+          "original_line_including_newline": {
+            "bytes": 78,
+            "git_blob": "9a291215811043785f41619bbcef4a6286207244",
+            "sha256": "f3a3b0fccab8fe97bb571a849a7b7f57fa0b9d7bc39081a9cc79622e88eab0cf"
+          },
+          "text": "2026-11-11T15:33:35.4691731Z   Temporary failure resolving 'ports.ubuntu.com'"
+        },
+        {
+          "line": 491,
+          "original_line_including_newline": {
+            "bytes": 68,
+            "git_blob": "f801a233b316f26a92867c197d24ca30f08b3fec",
+            "sha256": "5dcb5332a5cf2c9f6a21a7ef4d3714b3bbc0bac2abad3cf4455327153a306c42"
+          },
+          "text": "2026-11-11T15:33:38.7701396Z Fetched 1467 kB in 5min 20s (4578 B/s)"
+        },
+        {
+          "line": 493,
+          "original_line_including_newline": {
+            "bytes": 155,
+            "git_blob": "57a94280a2b901d787a1514aba14d94d94f9c422",
+            "sha256": "ebfaa24c5ba6931ce51fa6a6fbc7a4e9a9f9df3a28a1e299dd4c151d52fddcb6"
+          },
+          "text": "2026-11-11T15:33:40.2276175Z W: Failed to fetch http://ports.ubuntu.com/ubuntu-ports/dists/noble/InRelease  Temporary failure resolving 'ports.ubuntu.com'"
+        },
+        {
+          "line": 494,
+          "original_line_including_newline": {
+            "bytes": 163,
+            "git_blob": "4fc5f079a60aefc87c759976aabb6a07a4c1fb65",
+            "sha256": "545e96656b4f954e6536859d876e5b66b60effbd2870ec45a8d8ea052b9b1d1b"
+          },
+          "text": "2026-11-11T15:33:40.2277709Z W: Failed to fetch http://ports.ubuntu.com/ubuntu-ports/dists/noble-updates/InRelease  Temporary failure resolving 'ports.ubuntu.com'"
+        },
+        {
+          "line": 495,
+          "original_line_including_newline": {
+            "bytes": 165,
+            "git_blob": "2b4f6bac08aa3b5b5e1ca54ba4c22d15b6af7472",
+            "sha256": "0ac331593debb8979fe94c6fe928bca3b3fe22ea5cbb0505a71b08728213629c"
+          },
+          "text": "2026-11-11T15:33:40.2278812Z W: Failed to fetch http://ports.ubuntu.com/ubuntu-ports/dists/noble-backports/InRelease  Temporary failure resolving 'ports.ubuntu.com'"
+        },
+        {
+          "line": 496,
+          "original_line_including_newline": {
+            "bytes": 164,
+            "git_blob": "0be312387617d374d2fd8f8a4951c3d982244650",
+            "sha256": "315e93c803eacf65511eb00d00498b3d4613e011d926146280cb36273055877b"
+          },
+          "text": "2026-11-11T15:33:40.2279692Z W: Failed to fetch http://ports.ubuntu.com/ubuntu-ports/dists/noble-security/InRelease  Temporary failure resolving 'ports.ubuntu.com'"
+        },
+        {
+          "line": 497,
+          "original_line_including_newline": {
+            "bytes": 119,
+            "git_blob": "fd7534cb76a317d99ac95b053c9a2e4e96f28a30",
+            "sha256": "ed2670ae37c318e4a360940a68bb5ae6aad9b24b14a7654da0134fa33557c823"
+          },
+          "text": "2026-11-11T15:33:40.2280391Z W: Some index files failed to download. They have been ignored, or old ones used instead."
+        },
+        {
+          "line": 509,
+          "original_line_including_newline": {
+            "bytes": 132,
+            "git_blob": "39bfae9d0c9bfa1267f6df69f96e42a89055c187",
+            "sha256": "06cd2580ff78b9b8d46cb004ab8cd0829b6af53fc9357797af59df7a9522cc42"
+          },
+          "text": "2026-11-11T15:34:00.8954010Z Ign:1 http://ports.ubuntu.com/ubuntu-ports noble-security/main arm64 bubblewrap arm64 0.9.0-1ubuntu0.3"
+        },
+        {
+          "line": 510,
+          "original_line_including_newline": {
+            "bytes": 124,
+            "git_blob": "fd900d916916a347b9d0ff201440ee7199749052",
+            "sha256": "1cb9f293b70c1d2127a4d8b95f0e4e7bcce51ca558e1ab564cfe8c7b837194c6"
+          },
+          "text": "2026-11-11T15:34:20.9317349Z Ign:2 http://ports.ubuntu.com/ubuntu-ports noble/main arm64 build-essential arm64 12.10ubuntu1"
+        },
+        {
+          "line": 511,
+          "original_line_including_newline": {
+            "bytes": 132,
+            "git_blob": "c24068aa4dcb754b3adc51cc329045de60fc7a28",
+            "sha256": "c50c0c7300dbc7f86f91308b06e3b558a1bab7d7fd61979d54cbdaeea84a5694"
+          },
+          "text": "2026-11-11T15:34:40.9649145Z Ign:3 http://ports.ubuntu.com/ubuntu-ports noble-updates/main arm64 libcap-dev arm64 1:2.66-5ubuntu2.4"
+        },
+        {
+          "line": 512,
+          "original_line_including_newline": {
+            "bytes": 132,
+            "git_blob": "b5b33d50c029bf16e375781aac3cda3482735ae0",
+            "sha256": "856949036bd7f74a82dc1263536293b8b614b19a5c2c8d91b3abd22e65cc6bee"
+          },
+          "text": "2026-11-11T15:35:00.9943577Z Ign:1 http://ports.ubuntu.com/ubuntu-ports noble-security/main arm64 bubblewrap arm64 0.9.0-1ubuntu0.3"
+        },
+        {
+          "line": 513,
+          "original_line_including_newline": {
+            "bytes": 124,
+            "git_blob": "178fa68d140400066e6fc30b696d87e24eee1f1d",
+            "sha256": "8df9d31f3d556b7f5fe38da0f4d29b5a12b3cd0557b37d93efc78791b081d4ba"
+          },
+          "text": "2026-11-11T15:35:21.0223935Z Ign:2 http://ports.ubuntu.com/ubuntu-ports noble/main arm64 build-essential arm64 12.10ubuntu1"
+        },
+        {
+          "line": 514,
+          "original_line_including_newline": {
+            "bytes": 132,
+            "git_blob": "112c38f60800c666164f707c58644444f06787ba",
+            "sha256": "4dfd223ae95ba41b7d78fc1e947b973449a5332a422d0ebfce4d7d7d8fc8ec4d"
+          },
+          "text": "2026-11-11T15:35:41.0575690Z Ign:3 http://ports.ubuntu.com/ubuntu-ports noble-updates/main arm64 libcap-dev arm64 1:2.66-5ubuntu2.4"
+        },
+        {
+          "line": 515,
+          "original_line_including_newline": {
+            "bytes": 132,
+            "git_blob": "0dbc4907b1030dd4cd166037933c0676ddf20f47",
+            "sha256": "f2db07e6024f1da6aa17e3e6893e0ea4b88c3233ff70e2df9c6869abb76e4e2e"
+          },
+          "text": "2026-11-11T15:35:56.9222437Z Ign:1 http://ports.ubuntu.com/ubuntu-ports noble-security/main arm64 bubblewrap arm64 0.9.0-1ubuntu0.3"
+        },
+        {
+          "line": 516,
+          "original_line_including_newline": {
+            "bytes": 124,
+            "git_blob": "31cbccfc3401839c7443ecac264adc50197b5112",
+            "sha256": "6f979b2587d057488c99ac897c61ac70915db72e36bdd481bba980530feb8f19"
+          },
+          "text": "2026-11-11T15:36:16.9561808Z Ign:2 http://ports.ubuntu.com/ubuntu-ports noble/main arm64 build-essential arm64 12.10ubuntu1"
+        },
+        {
+          "line": 517,
+          "original_line_including_newline": {
+            "bytes": 132,
+            "git_blob": "c65562172c8534f5d33eb4d773f91244ee424225",
+            "sha256": "3a3fc3f9842d10b598d2826bdc9d3c33d8f6e0d503cdd279a96633a15760ccc9"
+          },
+          "text": "2026-11-11T15:36:36.9865112Z Ign:3 http://ports.ubuntu.com/ubuntu-ports noble-updates/main arm64 libcap-dev arm64 1:2.66-5ubuntu2.4"
+        },
+        {
+          "line": 518,
+          "original_line_including_newline": {
+            "bytes": 132,
+            "git_blob": "cd095b928caadd0804eb48a460d1c2f6a295652c",
+            "sha256": "920a0b2f4f673f1ad0c7fe433451dee5500c641700f65e0524c4bf5be7a280fa"
+          },
+          "text": "2026-11-11T15:36:57.0186055Z Err:1 http://ports.ubuntu.com/ubuntu-ports noble-security/main arm64 bubblewrap arm64 0.9.0-1ubuntu0.3"
+        },
+        {
+          "line": 519,
+          "original_line_including_newline": {
+            "bytes": 78,
+            "git_blob": "8d3ee76784bf46be336ff650a3d28ba7ce3024ef",
+            "sha256": "07b1b56bf0bacc0dbf7f2a7d4a857866b043a8b59687b0b9022967e5cbe0d64f"
+          },
+          "text": "2026-11-11T15:36:57.0187077Z   Temporary failure resolving 'ports.ubuntu.com'"
+        },
+        {
+          "line": 520,
+          "original_line_including_newline": {
+            "bytes": 124,
+            "git_blob": "b5d0e53ad27b83e1ef3155d5e3ca500f19684bca",
+            "sha256": "af35137592ef3eb0ca058b3b575202c6a3abc2bea7bf453d8bceb38db6d1f255"
+          },
+          "text": "2026-11-11T15:37:17.0562852Z Err:2 http://ports.ubuntu.com/ubuntu-ports noble/main arm64 build-essential arm64 12.10ubuntu1"
+        },
+        {
+          "line": 521,
+          "original_line_including_newline": {
+            "bytes": 78,
+            "git_blob": "87bd00a603766d48752d178bd95a4d78a778023b",
+            "sha256": "9fca4a2e21d1b791c4c1e7975ed37714e4db6ff98300365141b7828737521bb8"
+          },
+          "text": "2026-11-11T15:37:17.0563389Z   Temporary failure resolving 'ports.ubuntu.com'"
+        },
+        {
+          "line": 522,
+          "original_line_including_newline": {
+            "bytes": 132,
+            "git_blob": "c9cf5be9627a1fbcab3da266c323b1937475f90e",
+            "sha256": "a30872cc7071f4c020f6c885719b04628daad81fdea0d0c8732feacc3510c51d"
+          },
+          "text": "2026-11-11T15:37:37.0926539Z Ign:3 http://ports.ubuntu.com/ubuntu-ports noble-updates/main arm64 libcap-dev arm64 1:2.66-5ubuntu2.4"
+        },
+        {
+          "line": 523,
+          "original_line_including_newline": {
+            "bytes": 132,
+            "git_blob": "f45f3809f004fe0461c6dad12170abccbb2d89ff",
+            "sha256": "dc1383c1d32eb6aed0eaea28f7c5832f20cd65bc8754e322f61e6f6495ad2fb2"
+          },
+          "text": "2026-11-11T15:37:57.1142947Z Err:3 http://ports.ubuntu.com/ubuntu-ports noble-updates/main arm64 libcap-dev arm64 1:2.66-5ubuntu2.4"
+        },
+        {
+          "line": 524,
+          "original_line_including_newline": {
+            "bytes": 78,
+            "git_blob": "040f009786d14cc7aacdda877a5352e9d8b4ec5d",
+            "sha256": "9261c5160fbc92c863fd95e4ece9e6051e46b4b7f41595ccbf6a4057dde34484"
+          },
+          "text": "2026-11-11T15:37:57.1143553Z   Temporary failure resolving 'ports.ubuntu.com'"
+        },
+        {
+          "line": 525,
+          "original_line_including_newline": {
+            "bytes": 194,
+            "git_blob": "f2d72677c28dca6c5a3aabd38dc5123f2859f121",
+            "sha256": "dbfef4710a0b60d4649be0cef039d57ea3dc3a2e065d669fc702a52c44bd77fb"
+          },
+          "text": "2026-11-11T15:37:57.1178050Z E: Failed to fetch http://ports.ubuntu.com/ubuntu-ports/pool/main/b/bubblewrap/bubblewrap_0.9.0-1ubuntu0.3_arm64.deb  Temporary failure resolving 'ports.ubuntu.com'"
+        },
+        {
+          "line": 526,
+          "original_line_including_newline": {
+            "bytes": 200,
+            "git_blob": "c1689d8b866dce6de445ba6b8ac02ac54361c81c",
+            "sha256": "a9f083019a0135d4fc13c49073594b26a7980d67e2489f4d2041ad9669ed8671"
+          },
+          "text": "2026-11-11T15:37:57.1179204Z E: Failed to fetch http://ports.ubuntu.com/ubuntu-ports/pool/main/b/build-essential/build-essential_12.10ubuntu1_arm64.deb  Temporary failure resolving 'ports.ubuntu.com'"
+        },
+        {
+          "line": 527,
+          "original_line_including_newline": {
+            "bytes": 193,
+            "git_blob": "793b967f9c1ff14f878f30b6829a5394968d8be5",
+            "sha256": "8455c7e240c614f437201e481eea0b81ef4a5d60731ea7d3869a46a80169f23c"
+          },
+          "text": "2026-11-11T15:37:57.1180323Z E: Failed to fetch http://ports.ubuntu.com/ubuntu-ports/pool/main/libc/libcap2/libcap-dev_2.66-5ubuntu2.4_arm64.deb  Temporary failure resolving 'ports.ubuntu.com'"
+        },
+        {
+          "line": 528,
+          "original_line_including_newline": {
+            "bytes": 115,
+            "git_blob": "19ddad3295fe8b78c901fd322bbc78977dd40b7d",
+            "sha256": "36887e4c3a03cbcd428e928b02cfb173f5a9ad2707724b037c48f2eee0032fa8"
+          },
+          "text": "2026-11-11T15:37:57.1181133Z E: Unable to fetch some archives, maybe run apt-get update or try with --fix-missing?"
+        },
+        {
+          "line": 529,
+          "original_line_including_newline": {
+            "bytes": 76,
+            "git_blob": "dca50c1dcf599a5e3da22d95e4b83cab19473734",
+            "sha256": "a55c17e394c88911ca48c869e8910507bfd60c3de12e56e2a100ee2c2f3b9964"
+          },
+          "text": "2026-11-11T15:37:57.1213027Z ##[error]Process completed with exit code 100."
+        }
+      ],
+      "bytes": 85755,
+      "dns_error_hosts": [
+        "ports.ubuntu.com"
+      ],
+      "fence_mentions": [
+        {
+          "line": 286,
+          "text": "2026-11-11T15:28:04.6718521Z {\"base\": \"96038ccf0660154fac143ba6cbe4be81e00813e8\", \"paths\": [\".github/fixtures/windows-current-ci-scope.json\", \".github/workflows/hepta-mem-python.yml\", \".github/workflows/hepta-windows-private-state-native.yml\", \"MODULE.bazel\", \"MODULE.bazel.lock\", \"bazel/rules/testing/qualification_lease_clock.bzl\", \"codex-rs/Cargo.lock\", \"codex-rs/Cargo.toml\", \"codex-rs/app-server-client/BUILD.bazel\", \"codex-rs/app-server/BUILD.bazel\", \"codex-rs/app-server/src/config_manager.rs\", \"codex-rs/app-server/src/config_manager_feature_constraints_tests.rs\", \"codex-rs/app-server/tests/common/test_app_server.rs\", \"codex-rs/app-server/tests/suite/v2/executor_skills.rs\", \"codex-rs/app-server/tests/suite/v2/imagegen_extension.rs\", \"codex-rs/app-server/tests/suite/v2/model_list.rs\", \"codex-rs/app-server/tests/suite/v2/remote_control.rs\", \"codex-rs/app-server/tests/suite/v2/turn_start.rs\", \"codex-rs/cli/tests/sandbox_cloud_config.rs\", \"codex-rs/code-mode-host/tests/grpc_tcp.rs\", \"codex-rs/code-mode-host/tests/stdio.rs\", \"codex-rs/code-mode-host/tests/support/host.rs\", \"codex-rs/core-plugins/src/remote/catalog_cache.rs\", \"codex-rs/core/tests/common/responses.rs\", \"codex-rs/core/tests/common/responses_matcher_tests.rs\", \"codex-rs/core/tests/suite/apply_patch_cli.rs\", \"codex-rs/core/tests/suite/user_shell_cmd.rs\", \"codex-rs/core/tests/suite/workspace_roots.rs\", \"codex-rs/exec-server/src/fs_helper.rs\", \"codex-rs/exec-server/src/lib.rs\", \"codex-rs/exec-server/src/no_follow/mod.rs\", \"codex-rs/exec-server/src/no_follow/windows.rs\", \"codex-rs/exec-server/src/windows_restricted_write.rs\", \"codex-rs/exec-server/src/windows_restricted_write_tests.rs\", \"codex-rs/exec-server/tests/exec_process.rs\", \"codex-rs/exec-server/tests/file_system/support.rs\", \"codex-rs/exec-server/tests/file_system_windows.rs\", \"codex-rs/ext/hepta-memory/BUILD.bazel\", \"codex-rs/ext/hepta-memory/Cargo.toml\", \"codex-rs/ext/hepta-memory/src/cognitive/tools.rs\", \"codex-rs/ext/hepta-memory/src/local_development_owner_tests.rs\", \"codex-rs/hepta-agent-protocol/src/episodic.rs\", \"codex-rs/hepta-agent-protocol/src/lib.rs\", \"codex-rs/hepta-agentd/BUILD.bazel\", \"codex-rs/hepta-agentd/Cargo.toml\", \"codex-rs/hepta-agentd/src/app_runtime.rs\", \"codex-rs/hepta-agentd/src/circuit_credit_ledger_test_support.rs\", \"codex-rs/hepta-agentd/src/client.rs\", \"codex-rs/hepta-agentd/src/config.rs\", \"codex-rs/hepta-agentd/src/config_circuit_task.rs\", \"codex-rs/hepta-agentd/src/config_episodic.rs\", \"codex-rs/hepta-agentd/src/episodic_import.rs\", \"codex-rs/hepta-agentd/src/episodic_source_read.rs\", \"codex-rs/hepta-agentd/src/episodic_source_read_tests.rs\", \"codex-rs/hepta-agentd/src/lib.rs\", \"codex-rs/hepta-agentd/src/neuron_cell_evaluation_test_support.rs\", \"codex-rs/hepta-agentd/src/neuron_cell_evaluation_tests.rs\", \"codex-rs/hepta-agentd/src/neuron_generation_control_tests.rs\", \"codex-rs/hepta-agentd/src/neuron_generation_episode_test_support.rs\", \"codex-rs/hepta-agentd/src/neuron_generation_episode_tests.rs\", \"codex-rs/hepta-agentd/src/neuron_generation_no_contact_tests.rs\", \"codex-rs/hepta-agentd/src/neuron_generation_runtime.rs\", \"codex-rs/hepta-agentd/src/neuron_generation_service.rs\", \"codex-rs/hepta-agentd/src/neuron_generation_tests.rs\", \"codex-rs/hepta-agentd/src/production_composition_fixture.rs\", \"codex-rs/hepta-agentd/src/production_composition_tests.rs\", \"codex-rs/hepta-agentd/src/production_episodic_control_tests.rs\", \"codex-rs/hepta-agentd/src/production_episodic_drain_tests.rs\", \"codex-rs/hepta-agentd/src/production_episodic_provider_authority.rs\", \"codex-rs/hepta-agentd/src/production_episodic_provider_tests.rs\", \"codex-rs/hepta-agentd/src/production_writer_host.rs\", \"codex-rs/hepta-agentd/src/runtime.rs\", \"codex-rs/hepta-agentd/src/runtime_tests.rs\", \"codex-rs/hepta-agentd/src/state.rs\", \"codex-rs/hepta-agentd/src/state_control.rs\", \"codex-rs/hepta-agentd/src/state_episodic.rs\", \"codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs\", \"codex-rs/hepta-agentd/tests/support/fleet.rs\", \"codex-rs/hepta-automation/src/automation_taskflow.rs\", \"codex-rs/hepta-automation/src/taskflow.rs\", \"codex-rs/hepta-automation/src/taskflow_diagnostics.rs\", \"codex-rs/hepta-automation/src/taskflow_step.rs\", \"codex-rs/hepta-codex-adapter/BUILD.bazel\", \"codex-rs/hepta-cognitive-store/BUILD.bazel\", \"codex-rs/hepta-infer-core/BUILD.bazel\", \"codex-rs/hepta-infer-core/Cargo.toml\", \"codex-rs/hepta-infer-core/src/durable_control.rs\", \"codex-rs/hepta-infer-core/src/durable_control_observation.rs\", \"codex-rs/hepta-infer-core/src/durable_control_tests.rs\", \"codex-rs/hepta-infer-worker-host/BUILD.bazel\", \"codex-rs/hepta-intelligence-eval/BUILD.bazel\", \"codex-rs/hepta-intelligence-eval/Cargo.toml\", \"codex-rs/hepta-intelligence-eval/src/durable_holdout.rs\", \"codex-rs/hepta-intelligence-eval/src/durable_holdout_tests.rs\", \"codex-rs/hepta-intelligence-eval/src/fenced_holdout.rs\", \"codex-rs/hepta-intelligence-eval/src/fenced_holdout_file.rs\", \"codex-rs/hepta-intelligence-eval/src/fenced_holdout_file_observation.rs\", \"codex-rs/hepta-intelligence-eval/src/fenced_holdout_file_tests.rs\", \"codex-rs/hepta-intelligence-eval/src/product_runner.rs\", \"codex-rs/hepta-intelligence-eval/src/product_runner_file_observation.rs\", \"codex-rs/hepta-intelligence/BUILD.bazel\", \"codex-rs/hepta-learning-ledger/src/durable.rs\", \"codex-rs/hepta-learning-ledger/src/durable_lock.rs\", \"codex-rs/hepta-learning-ledger/src/durable_lock_qualification_tests.rs\", \"codex-rs/hepta-learning-ledger/src/production.rs\", \"codex-rs/hepta-learning-ledger/src/witness.rs\", \"codex-rs/hepta-matrix-store/tests/sync_mutation_v2.rs\", \"codex-rs/hepta-memory/BUILD.bazel\", \"codex-rs/hepta-memory/Cargo.toml\", \"codex-rs/hepta-memory/src/cognitive_lease_clock.rs\", \"codex-rs/hepta-memory/src/cognitive_lease_clock_tests.rs\", \"codex-rs/hepta-memory/src/cognitive_store.rs\", \"codex-rs/hepta-memory/src/cognitive_store_recovery.rs\", \"codex-rs/hepta-memory/src/episodic_source.rs\", \"codex-rs/hepta-memory/src/episodic_source_tests.rs\", \"codex-rs/hepta-memory/src/episodic_test_support.rs\", \"codex-rs/hepta-memory/src/h7_trajectory_store.rs\", \"codex-rs/hepta-memory/src/lib.rs\", \"codex-rs/hepta-memory/src/local_lease_outbox.rs\", \"codex-rs/hepta-memory/src/logical_turn_registry.rs\", \"codex-rs/hepta-memory/src/production_episodic.rs\", \"codex-rs/hepta-memory/src/production_episodic_regression_tests.rs\", \"codex-rs/hepta-memory/src/production_episodic_snapshot.rs\", \"codex-rs/hepta-memory/src/production_episodic_test_support.rs\", \"codex-rs/hepta-memory/src/production_episodic_tests.rs\", \"codex-rs/hepta-memory/src/production_episodic_write.rs\", \"codex-rs/hepta-memory/src/production_writer.rs\", \"codex-rs/hepta-neuron/BUILD.bazel\", \"codex-rs/hepta-neuron/Cargo.toml\", \"codex-rs/hepta-neuron/src/cell_generation_control.rs\", \"codex-rs/hepta-neuron/src/cell_generation_control_tests.rs\", \"codex-rs/hepta-neuron/src/cell_generation_journal.rs\", \"codex-rs/hepta-neuron/src/journal_lock.rs\", \"codex-rs/hepta-neuron/src/journal_lock_qualification_tests.rs\", \"codex-rs/hepta-neuron/src/runtime_types.rs\", \"codex-rs/hepta-neuron/src/witness.rs\", \"codex-rs/hepta-supervisor/BUILD.bazel\", \"codex-rs/rmcp-client/src/auth_status.rs\", \"codex-rs/rmcp-client/tests/mcp_2026_oauth_discovery.rs\", \"codex-rs/third_party/matrix-sdk-sqlite-0.19.1/Cargo.toml\", \"codex-rs/third_party/matrix-sdk-sqlite-0.19.1/Cargo.toml.orig\", \"codex-rs/third_party/sqlx-sqlite-0.9.0/.cargo_vcs_info.json\", \"codex-rs/third_party/sqlx-sqlite-0.9.0/Cargo.lock\", \"codex-rs/third_party/sqlx-sqlite-0.9.0/Cargo.toml\", \"codex-rs/third_party/sqlx-sqlite-0.9.0/Cargo.toml.orig\", \"codex-rs/third_party/sqlx-sqlite-0.9.0/LICENSE-APACHE\", \"codex-rs/third_party/sqlx-sqlite-0.9.0/LICENSE-MIT\", \"codex-rs/third_party/sqlx-sqlite-0.9.0/src/any.rs\", \"codex-rs/third_party/sqlx-sqlite-0.9.0/src/arguments.rs\", \"codex-rs/third_party/sqlx-sqlite-0.9.0/src/column.rs\", \"codex-rs/third_party/sqlx-sqlite-0.9.0/src/connection/collation.rs\", \"codex-rs/third_party/sqlx-sqlite-0.9.0/src/connection/describe.rs\", \"codex-rs/third_party/sqlx-sqlite-0.9.0/src/connection/deserialize.rs\", \"codex-rs/third_party/sqlx-sqlite-0.9.0/src/connection/establish.rs\", \"codex-rs/third_party/sqlx-sqlite-0.9.0/src/connection/execute.rs\", \"codex-rs/third_party/sqlx-sqlite-0.9.0/src/connection/executor.rs\", \"codex-rs/third_party/sqlx-sqlite-0.9.0/src/connection/explain.rs\", \"codex-rs/third_party/sqlx-sqlite-0.9.0/src/connection/handle.rs\", \"codex-rs/third_party/sqlx-sqlite-0.9.0/src/connection/intmap.rs\", \"codex-rs/third_party/sqlx-sqlite-0.9.0/src/connection/mod.rs\", \"codex-rs/third_party/sqlx-sqlite-0.9.0/src/connection/preupdate_hook.rs\", \"codex-rs/third_party/sqlx-sqlite-0.9.0/src/connection/worker.rs\", \"codex-rs/third_party/sqlx-sqlite-0.9.0/src/database.rs\", \"codex-rs/third_party/sqlx-sqlite-0.9.0/src/error.rs\", \"codex-rs/third_party/sqlx-sqlite-0.9.0/src/lib.rs\", \"codex-rs/third_party/sqlx-sqlite-0.9.0/src/logger.rs\", \"codex-rs/third_party/sqlx-sqlite-0.9.0/src/migrate.rs\", \"codex-rs/third_party/sqlx-sqlite-0.9.0/src/options/auto_vacuum.rs\", \"codex-rs/third_party/sqlx-sqlite-0.9.0/src/options/connect.rs\", \"codex-rs/third_party/sqlx-sqlite-0.9.0/src/options/journal_mode.rs\", \"codex-rs/third_party/sqlx-sqlite-0.9.0/src/options/locking_mode.rs\", \"codex-rs/third_party/sqlx-sqlite-0.9.0/src/options/mod.rs\", \"codex-rs/third_party/sqlx-sqlite-0.9.0/src/options/parse.rs\", \"codex-rs/third_party/sqlx-sqlite-0.9.0/src/options/synchronous.rs\", \"codex-rs/third_party/sqlx-sqlite-0.9.0/src/query_result.rs\", \"codex-rs/third_party/sqlx-sqlite-0.9.0/src/regexp.rs\", \"codex-rs/third_party/sqlx-sqlite-0.9.0/src/row.rs\", \"codex-rs/third_party/sqlx-sqlite-0.9.0/src/statement/handle.rs\", \"codex-rs/third_party/sqlx-sqlite-0.9.0/src/statement/mod.rs\", \"codex-rs/third_party/sqlx-sqlite-0.9.0/src/statement/unlock_notify.rs\", \"codex-rs/third_party/sqlx-sqlite-0.9.0/src/statement/virtual.rs\", \"codex-rs/third_party/sqlx-sqlite-0.9.0/src/testing/mod.rs\", \"codex-rs/third_party/sqlx-sqlite-0.9.0/src/transaction.rs\", \"codex-rs/third_party/sqlx-sqlite-0.9.0/src/type_checking.rs\", \"codex-rs/third_party/sqlx-sqlite-0.9.0/src/type_info.rs\", \"codex-rs/third_party/sqlx-sqlite-0.9.0/src/types/bool.rs\", \"codex-rs/third_party/sqlx-sqlite-0.9.0/src/types/bytes.rs\", \"codex-rs/third_party/sqlx-sqlite-0.9.0/src/types/chrono.rs\", \"codex-rs/third_party/sqlx-sqlite-0.9.0/src/types/float.rs\", \"codex-rs/third_party/sqlx-sqlite-0.9.0/src/types/int.rs\", \"codex-rs/third_party/sqlx-sqlite-0.9.0/src/types/json.rs\", \"codex-rs/third_party/sqlx-sqlite-0.9.0/src/types/mod.rs\", \"codex-rs/third_party/sqlx-sqlite-0.9.0/src/types/str.rs\", \"codex-rs/third_party/sqlx-sqlite-0.9.0/src/types/text.rs\", \"codex-rs/third_party/sqlx-sqlite-0.9.0/src/types/time.rs\", \"codex-rs/third_party/sqlx-sqlite-0.9.0/src/types/uint.rs\", \"codex-rs/third_party/sqlx-sqlite-0.9.0/src/types/uuid.rs\", \"codex-rs/third_party/sqlx-sqlite-0.9.0/src/value.rs\", \"codex-rs/utils/path-utils/src/lib.rs\", \"codex-rs/windows-sandbox-rs/src/delete_permission_control_tests.rs\", \"codex-rs/windows-sandbox-rs/src/delete_permission_matrix_tests.rs\", \"codex-rs/windows-sandbox-rs/src/desktop_tests.rs\", \"codex-rs/windows-sandbox-rs/src/elevated_impl.rs\", \"codex-rs/windows-sandbox-rs/src/legacy_admission_tests.rs\", \"codex-rs/windows-sandbox-rs/src/lib.rs\", \"codex-rs/windows-sandbox-rs/src/setup.rs\", \"codex-rs/windows-sandbox-rs/src/setup_process.rs\", \"codex-rs/windows-sandbox-rs/src/setup_process_tests.rs\", \"codex-rs/windows-sandbox-rs/src/spawn_prep.rs\", \"codex-rs/windows-sandbox-rs/src/token.rs\", \"codex-rs/windows-sandbox-rs/src/token_mechanism_fixture.rs\", \"codex-rs/windows-sandbox-rs/src/token_tests.rs\", \"codex-rs/windows-sandbox-rs/src/unified_exec/acl_setup_tests.rs\", \"codex-rs/windows-sandbox-rs/src/unified_exec/delete_permission_tests.rs\", \"codex-rs/windows-sandbox-rs/src/unified_exec/tests.rs\", \"codex-rs/windows-sandbox-rs/tests/helper_manifest.rs\", \"defs.bzl\", \"scripts/hepta_typed_callers.py\", \"scripts/test_hepta_caller_cache.py\", \"scripts/test_hepta_typed_callers.py\", \"scripts/verify_hepta_callers.py\", \"workspace_root_test_launcher.bat.tpl\"], \"scope\": {\"derived\": true, \"effects\": true, \"full_repo\": true, \"inference\": true, \"learning\": true, \"lifecycle\": true, \"native\": true, \"objective\": true}, \"source_head\": \"c89540598693697577cda8cba31cb07f6ce65317\"}"
+        }
+      ],
+      "git_blob": "c7c828bcdc4f507652f0cf0d144a0a631f250bdd",
+      "job": "qualification/source-head",
+      "job_id": 130619111897,
+      "original_raw_path": "mem-ci-c895-original/original/job-130619111897.log",
+      "resolver_configuration_dump_present": false,
+      "runner": "ubuntu-24.04-arm",
+      "sha256": "02abd9d018cc833a337a89dd4bbdf352dbbe97982fe6c6a85da31a411eb750ac"
+    }
+  ],
+  "refs_changed": false,
+  "schema": "mem.c895.apt-dns.original-mechanism-review.v1",
+  "source": "c89540598693697577cda8cba31cb07f6ce65317",
+  "tree": "5a7c897a33e4eef48ea8f4bf52eaf48ea7c866ae",
+  "unknown": [
+    "Original resolver nameserver/NSS configuration, DNS response/status, apt proxy environment and actual mirror-list bytes were not recorded.",
+    "Mirror fallback display plus an azure resolution error is not evidence that each printed fallback hostname independently failed resolution.",
+    "Domain-specific DNS failure versus runner/network/upstream policy or transient state cannot be discriminated by the retained logs. A later fresh runner is not the same original execution."
+  ],
+  "workflows": [
+    {
+      "bytes": 23608,
+      "fence_step_in_yaml": false,
+      "git_blob": "f6926400461f7fefa503df46299a91c2795e1999",
+      "path": ".github/workflows/hepta-mem-python.yml",
+      "sha256": "e0e94ceaf14e373a7df7b7cf00ac1bab337e694eb90411ff6bab3e3aeb1c77ad"
+    },
+    {
+      "bytes": 21212,
+      "fence_step_in_yaml": false,
+      "git_blob": "c1490cedf609e35ab0b2115f5e01c5987583c353",
+      "path": ".github/workflows/hepta-architecture-convergence.yml",
+      "sha256": "f716b0941f6e47aa72b94d97f80d157e24273c38652d45eb9c1eb3ff1e39b6ac"
+    }
+  ]
+}

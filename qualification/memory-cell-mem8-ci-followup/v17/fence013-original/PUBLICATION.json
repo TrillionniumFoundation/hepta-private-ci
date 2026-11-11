@@ -1,0 +1,247 @@
+{
+  "schema": "mem-fence013-original-actual-publication-v1",
+  "archive": {
+    "bytes": 1417024,
+    "git_blob": "839c042bebe1029c4b8a0393b1be1ecaca27502f",
+    "path": "MEM_FENCE013_ORIGINAL_QUALIFICATION.tar.xz",
+    "regular_members": 28,
+    "sha256": "b7a7aab4db3cd8f99d0872a1a2530c47cdd379291cc50c31937c3ba979624334"
+  },
+  "parts": [
+    {
+      "bytes": 450000,
+      "git_blob": "b99cf4ce3de95b724db1157b0930d1544899c316",
+      "path": "MEM_FENCE013_ORIGINAL_QUALIFICATION.tar.xz.part-01",
+      "sha256": "c8ae5f442fa7f5022c93a9428ee1f80f9274fe525730b21bf28cdc15fef8399f"
+    },
+    {
+      "bytes": 450000,
+      "git_blob": "e78ba7b98ae05ce25fff2cc48ec0427d4011131b",
+      "path": "MEM_FENCE013_ORIGINAL_QUALIFICATION.tar.xz.part-02",
+      "sha256": "4637ac2d53266c4c8d3adf7b566d63f6fa165efe90bb1de4e9d62e2a6f97577a"
+    },
+    {
+      "bytes": 450000,
+      "git_blob": "cbbaed3275a030ddf48ac552e7cbe616f98b4a0d",
+      "path": "MEM_FENCE013_ORIGINAL_QUALIFICATION.tar.xz.part-03",
+      "sha256": "d61f136a332dc478a89373e0ca8512a32a6dc45930a2e1464687ad7b598ed2f4"
+    },
+    {
+      "bytes": 67024,
+      "git_blob": "f82588e714052e26817c94b87328c8d5a96c9eaf",
+      "path": "MEM_FENCE013_ORIGINAL_QUALIFICATION.tar.xz.part-04",
+      "sha256": "f87cccbe81506f350f74ad5ab5fd3d8479f515451066e065f89319f3ec04616c"
+    }
+  ],
+  "texts": [
+    {
+      "bytes": 6465,
+      "git_blob": "99457333ea45f06036eed285cef5c7e9b85ccfd7",
+      "path": "MANIFEST.json",
+      "sha256": "c5465fd620ab3a3cc536a8ab82916644dc18ad0330a8fd4ab0dd7e48eb68e46f"
+    },
+    {
+      "bytes": 6423,
+      "git_blob": "d65e88b8633cf19f9beff56abb083eccdcbe91ef",
+      "path": "AUDIT.json",
+      "sha256": "851994529f9502095c80c4c83e87bba99ba6227e55169205105f83cda648cd8e"
+    },
+    {
+      "bytes": 21445,
+      "git_blob": "42b707e3b99032c91335f6decf38045a07f6fe09",
+      "path": "verify_fence013.py",
+      "sha256": "e6d27cb4ed7385d08c8e679ef9d93a0da9dba42ccbecb832cb74371961104e6f"
+    },
+    {
+      "bytes": 4913,
+      "git_blob": "55dfa8311a46b017fff404efc85e5cd9c7e4cd05",
+      "path": "README.md",
+      "sha256": "d9b2839f196efa75983ec2475efba15e9b375f9a6e7ed18fbb10b8c9be30c493"
+    }
+  ],
+  "actual_created": [
+    {
+      "path": "MEM_FENCE013_ORIGINAL_QUALIFICATION.tar.xz.part-01",
+      "expected": "b99cf4ce3de95b724db1157b0930d1544899c316",
+      "actual": "b99cf4ce3de95b724db1157b0930d1544899c316",
+      "receipt": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "b99cf4ce3de95b724db1157b0930d1544899c316"
+        },
+        "isError": false
+      }
+    },
+    {
+      "path": "MEM_FENCE013_ORIGINAL_QUALIFICATION.tar.xz.part-02",
+      "expected": "e78ba7b98ae05ce25fff2cc48ec0427d4011131b",
+      "actual": "e78ba7b98ae05ce25fff2cc48ec0427d4011131b",
+      "receipt": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "e78ba7b98ae05ce25fff2cc48ec0427d4011131b"
+        },
+        "isError": false
+      }
+    },
+    {
+      "path": "MEM_FENCE013_ORIGINAL_QUALIFICATION.tar.xz.part-03",
+      "expected": "cbbaed3275a030ddf48ac552e7cbe616f98b4a0d",
+      "actual": "cbbaed3275a030ddf48ac552e7cbe616f98b4a0d",
+      "receipt": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "cbbaed3275a030ddf48ac552e7cbe616f98b4a0d"
+        },
+        "isError": false
+      }
+    },
+    {
+      "path": "MEM_FENCE013_ORIGINAL_QUALIFICATION.tar.xz.part-04",
+      "expected": "f82588e714052e26817c94b87328c8d5a96c9eaf",
+      "actual": "f82588e714052e26817c94b87328c8d5a96c9eaf",
+      "receipt": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "f82588e714052e26817c94b87328c8d5a96c9eaf"
+        },
+        "isError": false
+      }
+    },
+    {
+      "path": "MANIFEST.json",
+      "expected": "99457333ea45f06036eed285cef5c7e9b85ccfd7",
+      "actual": "99457333ea45f06036eed285cef5c7e9b85ccfd7",
+      "receipt": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "99457333ea45f06036eed285cef5c7e9b85ccfd7"
+        },
+        "isError": false
+      }
+    },
+    {
+      "path": "AUDIT.json",
+      "expected": "d65e88b8633cf19f9beff56abb083eccdcbe91ef",
+      "actual": "d65e88b8633cf19f9beff56abb083eccdcbe91ef",
+      "receipt": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "d65e88b8633cf19f9beff56abb083eccdcbe91ef"
+        },
+        "isError": false
+      }
+    },
+    {
+      "path": "verify_fence013.py",
+      "expected": "42b707e3b99032c91335f6decf38045a07f6fe09",
+      "actual": "42b707e3b99032c91335f6decf38045a07f6fe09",
+      "receipt": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "42b707e3b99032c91335f6decf38045a07f6fe09"
+        },
+        "isError": false
+      }
+    },
+    {
+      "path": "README.md",
+      "expected": "55dfa8311a46b017fff404efc85e5cd9c7e4cd05",
+      "actual": "55dfa8311a46b017fff404efc85e5cd9c7e4cd05",
+      "receipt": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "55dfa8311a46b017fff404efc85e5cd9c7e4cd05"
+        },
+        "isError": false
+      }
+    }
+  ],
+  "text_readbacks": [
+    {
+      "path": "MANIFEST.json",
+      "git_blob": "99457333ea45f06036eed285cef5c7e9b85ccfd7",
+      "full_utf8_equal": true,
+      "bytes": 6465,
+      "sha256": "c5465fd620ab3a3cc536a8ab82916644dc18ad0330a8fd4ab0dd7e48eb68e46f"
+    },
+    {
+      "path": "AUDIT.json",
+      "git_blob": "d65e88b8633cf19f9beff56abb083eccdcbe91ef",
+      "full_utf8_equal": true,
+      "bytes": 6423,
+      "sha256": "851994529f9502095c80c4c83e87bba99ba6227e55169205105f83cda648cd8e"
+    },
+    {
+      "path": "verify_fence013.py",
+      "git_blob": "42b707e3b99032c91335f6decf38045a07f6fe09",
+      "full_utf8_equal": true,
+      "bytes": 21445,
+      "sha256": "e6d27cb4ed7385d08c8e679ef9d93a0da9dba42ccbecb832cb74371961104e6f"
+    },
+    {
+      "path": "README.md",
+      "git_blob": "55dfa8311a46b017fff404efc85e5cd9c7e4cd05",
+      "full_utf8_equal": true,
+      "bytes": 4913,
+      "sha256": "d9b2839f196efa75983ec2475efba15e9b375f9a6e7ed18fbb10b8c9be30c493"
+    }
+  ],
+  "ref_changed": false,
+  "archive_info": {
+    "actual_git_blob": "326aa94642017b28c344bcda2ba9b7c06022c6c6",
+    "receipt": {
+      "content": [
+        {
+          "type": "text",
+          "text": "Action completed."
+        }
+      ],
+      "structuredContent": {
+        "sha": "326aa94642017b28c344bcda2ba9b7c06022c6c6"
+      },
+      "isError": false
+    },
+    "full_readback_equal": true
+  }
+}
