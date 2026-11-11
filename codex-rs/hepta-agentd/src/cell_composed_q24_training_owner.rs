@@ -152,7 +152,8 @@ impl<W: AnchorWitnessStore> CellQ24TrainingOwnerV1<W> {
     /// The durable claim and its independent witness precede all computation.
     /// Existing Pending is never permission to retry, even if cancellation or
     /// a crash may have happened before the first optimizer step. Completed
-    /// reads preserve original metrics and bytes, including after expiry.
+    /// reads preserve original metrics and bytes after the compute deadline;
+    /// provenance batches still require current Dataset/source authorization.
     pub fn fit_or_readback(
         &mut self,
         cancellation: &AtomicBool,
@@ -187,6 +188,7 @@ impl<W: AnchorWitnessStore> CellQ24TrainingOwnerV1<W> {
         if self.fenced || self.witness.current()? != Some(anchor(self.journal.anchor())) {
             return Err(Error::CommitUncertain);
         }
+        self.batch.revalidate_source()?;
         Ok(())
     }
 

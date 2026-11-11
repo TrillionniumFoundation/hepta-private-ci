@@ -375,6 +375,9 @@ mod neuron_cell_evaluation_owner;
 #[cfg(target_os = "linux")]
 mod neuron_cell_evaluation_receipt_owner;
 mod neuron_cell_learning_evaluation;
+pub use cell_composed_q24::CellQ24DatasetErrorV1;
+pub use cell_composed_q24::CellQ24DatasetProjectionV1;
+pub use cell_composed_q24::CellQ24DatasetTaskV1;
 pub use cell_composed_q24::CellQ24FeatureEncoderV1;
 pub use cell_composed_q24::CellQ24FeatureWorkerV1;
 pub use cell_composed_q24::CellQ24GenerationWorkerV1;
@@ -393,6 +396,7 @@ pub use cell_composed_q24::CellQ24TrainingOwnerV1;
 pub use cell_composed_q24::CellQ24TrainingPlanErrorV1;
 pub use cell_composed_q24::CellQ24TrainingSampleV1;
 pub use cell_composed_q24::LoadedCellQ24ModelV1;
+pub use cell_composed_q24::cell_q24_dataset_run_snapshot_digest_v1;
 pub use cell_composed_q24::cell_q24_single_head_update_rule_v1;
 pub use cell_q24_backend::CellQ24BackendFilesV1;
 pub use cell_q24_backend::load_cell_q24_backend_v1;

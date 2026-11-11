@@ -25,6 +25,9 @@ mod training;
 pub use owner::CellQ24TrainingObservationV2;
 pub use owner::CellQ24TrainingOwnerErrorV1;
 pub use owner::CellQ24TrainingOwnerV1;
+pub use training::CellQ24DatasetErrorV1;
+pub use training::CellQ24DatasetProjectionV1;
+pub use training::CellQ24DatasetTaskV1;
 pub use training::CellQ24SgdRuleV1;
 pub use training::CellQ24TrainedCandidateV1;
 pub use training::CellQ24TrainingBatchV1;
@@ -32,6 +35,7 @@ pub use training::CellQ24TrainingErrorV1;
 pub use training::CellQ24TrainingMetricsV1;
 pub use training::CellQ24TrainingOutcomeV1;
 pub use training::CellQ24TrainingSampleV1;
+pub use training::cell_q24_dataset_run_snapshot_digest_v1;
 
 #[derive(Debug, thiserror::Error)]
 pub enum CellQ24TrainingPlanErrorV1 {

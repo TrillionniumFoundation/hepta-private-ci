@@ -51,3 +51,7 @@ impl<W: AnchorWitnessStore> CircuitTaskSourceReadbackV1<W> {
         self.original.read_run_publication(identity, run_id)
     }
 }
+
+#[cfg(test)]
+#[path = "cell_q24_dataset_source_tests.rs"]
+mod dataset_test_access;

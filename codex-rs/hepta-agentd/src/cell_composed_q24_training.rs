@@ -2,6 +2,7 @@
 //! The host owns source authentication, durable job claims and attestation.
 //! Training metrics are development observations, not independent evaluation.
 
+use std::sync::Arc;
 use std::sync::atomic::AtomicBool;
 use std::sync::atomic::Ordering;
 use std::time::Duration;
@@ -22,10 +23,19 @@ use super::CellQ24TrainingPlanErrorV1;
 use super::LoadedCellQ24ModelV1;
 use super::cell_q24_single_head_update_rule_v1;
 
+#[path = "cell_q24_dataset_materializer.rs"]
+mod dataset;
+pub use dataset::CellQ24DatasetErrorV1;
+pub use dataset::CellQ24DatasetProjectionV1;
+pub use dataset::CellQ24DatasetTaskV1;
+pub use dataset::cell_q24_dataset_run_snapshot_digest_v1;
+
 const LIMIT: i64 = 8 * codec::Q;
 
 #[derive(Debug, thiserror::Error)]
 pub enum CellQ24TrainingErrorV1 {
+    #[error("original Dataset projection: {0}")]
+    Dataset(#[from] CellQ24DatasetErrorV1),
     #[error("Q24 training binding or budget: {0}")]
     Binding(&'static str),
     #[error("original Q24 training plan: {0}")]
@@ -52,6 +62,7 @@ pub struct CellQ24TrainingBatchV1 {
     samples: Vec<CellQ24TrainingSampleV1>,
     encoded: Vec<u8>,
     digest: Digest32,
+    source: Option<Arc<dataset::OriginalDataset>>,
 }
 
 impl CellQ24TrainingBatchV1 {
@@ -89,7 +100,15 @@ impl CellQ24TrainingBatchV1 {
             digest: Digest32::of_bytes(&encoded),
             samples,
             encoded,
+            source: None,
         })
+    }
+
+    pub(super) fn revalidate_source(&self) -> Result<(), CellQ24TrainingErrorV1> {
+        if let Some(source) = &self.source {
+            source.require_batch(self)?;
+        }
+        Ok(())
     }
 
     pub fn digest(&self) -> Digest32 {
@@ -249,6 +268,7 @@ impl CellQ24SingleHeadTrainingPlanV1 {
             .digest()
             .map_err(|_| Binding("baseline bundle"))?;
         if heads == plan.baseline.heads {
+            batch.revalidate_source()?;
             check()?;
             return Ok(CellQ24TrainingOutcomeV1::NoUpdate {
                 retained_bundle: source_bundle,
@@ -258,6 +278,7 @@ impl CellQ24SingleHeadTrainingPlanV1 {
         let mut candidate = plan.rebuild_candidate(heads.encode(), metrics)?;
         candidate.metrics.elapsed_microseconds = u64::try_from(started.elapsed().as_micros())
             .map_err(|_| Binding("elapsed cost overflow"))?;
+        batch.revalidate_source()?;
         check()?;
         Ok(CellQ24TrainingOutcomeV1::Candidate(Box::new(candidate)))
     }
@@ -270,6 +291,16 @@ impl CellQ24SingleHeadTrainingPlanV1 {
         rule: CellQ24SgdRuleV1,
     ) -> Result<Digest32, CellQ24TrainingErrorV1> {
         use CellQ24TrainingErrorV1::Binding;
+        batch.revalidate_source()?;
+        if let Some(source) = &batch.source {
+            source.require_baseline(
+                self.prefix
+                    .request
+                    .selected_bundle
+                    .digest()
+                    .map_err(|_| Binding("baseline bundle"))?,
+            )?;
+        }
         let optimizer = rule.digest(batch)?;
         let plan = CellQ24SingleHeadTrainingPlanV1::from_dataset_cut(
             self.prefix.clone(),

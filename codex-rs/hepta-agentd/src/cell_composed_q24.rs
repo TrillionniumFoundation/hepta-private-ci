@@ -44,6 +44,9 @@ pub use feature::CellQ24FeatureWorkerV1;
 
 #[path = "cell_composed_q24_training_plan.rs"]
 mod training_plan;
+pub use training_plan::CellQ24DatasetErrorV1;
+pub use training_plan::CellQ24DatasetProjectionV1;
+pub use training_plan::CellQ24DatasetTaskV1;
 pub use training_plan::CellQ24SgdRuleV1;
 pub use training_plan::CellQ24SingleHeadTrainingPlanV1;
 pub use training_plan::CellQ24TrainedCandidateV1;
@@ -56,6 +59,7 @@ pub use training_plan::CellQ24TrainingOwnerErrorV1;
 pub use training_plan::CellQ24TrainingOwnerV1;
 pub use training_plan::CellQ24TrainingPlanErrorV1;
 pub use training_plan::CellQ24TrainingSampleV1;
+pub use training_plan::cell_q24_dataset_run_snapshot_digest_v1;
 pub use training_plan::cell_q24_single_head_update_rule_v1;
 
 pub struct CellQ24ModelFilesV1 {
