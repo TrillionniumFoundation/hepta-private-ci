@@ -182,6 +182,43 @@ class LineagePolicyTests(unittest.TestCase):
         with self.assertRaisesRegex(LineagePolicyError, "roster"):
             CellRoster(mixed, max_trainable_instances=4)
 
+    def test_update_partition_requires_canonical_native_id_values(self):
+        r = roster()
+
+        class SpoofedId(str):
+            def __eq__(self, other):
+                return True
+
+            __hash__ = str.__hash__
+
+        for lineage in ("PRED", "VERIFY"):
+            with self.subTest(lineage=lineage):
+                cell = next(c for c in r.cells if c.lineage == lineage)
+                spoof = cell.partition[:3] + (SpoofedId("foreign-run"),)
+                # Python tuple equality delegates to an overriding subclass.
+                self.assertEqual(cell.partition, spoof)
+                self.assertNotEqual(tuple(map(str, spoof)), cell.partition)
+                with self.assertRaisesRegex(
+                    LineagePolicyError, "run_id stable identifier"
+                ):
+                    review_update(r, evidence(cell, partition=spoof))
+                with self.assertRaisesRegex(LineagePolicyError, "unknown or ambiguous"):
+                    review_update(
+                        r,
+                        evidence(
+                            cell,
+                            partition=cell.partition[:3] + ("foreign-run",),
+                        ),
+                    )
+                self.assertEqual(review_update(r, evidence(cell)).status, "REVIEW_ONLY")
+
+        class TupleSubclass(tuple):
+            pass
+
+        pred = next(c for c in r.cells if c.lineage == "PRED")
+        with self.assertRaisesRegex(LineagePolicyError, "CellStatePartition"):
+            review_update(r, evidence(pred, partition=TupleSubclass(pred.partition)))
+
     def test_semantic_pool_requires_same_real_frozen_bindings(self):
         base = roster().cells
         mem = next(c for c in base if c.lineage == "MEM")
