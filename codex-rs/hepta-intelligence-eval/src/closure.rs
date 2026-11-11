@@ -33,6 +33,7 @@ pub use metric_roles::freeze_cross_fold_plan_v2;
 mod holdout_codec;
 pub(crate) use holdout_codec::decode as decode_holdout_plan;
 pub(crate) use holdout_codec::encode as encode_holdout_plan;
+pub(crate) use holdout_codec::encode_use as encode_holdout_use;
 
 const MAX_FOLDS: usize = 32;
 const MAX_METRICS: usize = 128;

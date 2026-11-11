@@ -1,6 +1,35 @@
 //! Owner-local journal encoding; not a canonical cross-owner protocol.
 use super::*;
 
+pub(crate) fn encode_use(receipt: &HoldoutUseReceiptV1) -> Result<Vec<u8>, EvaluationClosureError> {
+    validate_holdout_use_receipt_integrity(receipt)?;
+    let mut bytes = vec![receipt.disposition.tag(), receipt.claim_scope.tag()];
+    for id in [
+        &receipt.plan_id,
+        &receipt.candidate_id,
+        &receipt.baseline_id,
+        &receipt.final_holdout_window_id,
+    ] {
+        bytes.extend_from_slice(&(id.as_str().len() as u16).to_be_bytes());
+        bytes.extend_from_slice(id.as_str().as_bytes());
+    }
+    for digest in [
+        receipt.holdout_digest,
+        receipt.plan_digest,
+        receipt.objective_digest,
+        receipt.dataset_digest,
+        receipt.estimand_digest,
+        receipt.metric_contract_digest,
+        receipt.registry_digest,
+        receipt.use_digest,
+        receipt.receipt_seal,
+    ] {
+        bytes.extend_from_slice(digest.as_array());
+    }
+    bytes.push(0); // AuthorityPosture has only the admitted DENY_ALL value.
+    Ok(bytes)
+}
+
 pub(crate) fn encode(plan: &CrossFoldPlanReceiptV1) -> Result<Vec<u8>, EvaluationClosureError> {
     validate_frozen_plan_receipt_integrity(plan)?;
     let mut bytes = Vec::new();
