@@ -1,6 +1,6 @@
 # HCSN research: current evidence and qualified scope
 
-Updated 2026-11-10. HCSN is a **regenerative probability flow and content memory
+Updated 2026-11-11. HCSN is a **regenerative probability flow and content memory
 network constrained by a shared generator**. Its numerical operators, learned
 observation updates and content memory have separate evidence requirements.
 The legacy He--Xiong equity kernel already exists and is not being reinvented.
@@ -29,8 +29,14 @@ The [C2 progress appendix](evidence/p0p5-c2-progress-20261110/README.md) and
 [terminal numerical appendix](evidence/p0p5-terminal-numerics-20261110/README.md)
 preserve later outcomes. The original numerical job ended at its unchanged
 three-hour limit with 49/60 finite fixtures completed; its postmortem collector
-completed separately. At the latest archived C2 observation, 22:45:40 UTC,
-five fits remained active and one had a producer terminal report. No all-six
+completed separately. The [recovery appendix](evidence/p0p5-recovery-20261111/README.md)
+restores the later original observation bytes after unavailable scratch contents
+and explicitly inventories missing local preparation records. Its
+[append-only link correction](evidence/p0p5-recovery-20261111/link-closure/CLOSURE.json)
+retains the first failed check and restores two omitted context files under
+their exact original names. At the latest
+archived C2 observation, 2026-11-10 23:49:03 UTC, three fits remained active
+and three had producer terminal reports. No all-six
 independent C2 adequacy, new common-rate selection or scientific benefit is
 inferred from those intermediate records. The subject-E exposure clarification
 below supersedes the older progress appendix's phrase "E remains unread".
@@ -42,7 +48,7 @@ below supersedes the older progress appendix's phrase "E remains unread".
 | Mathematical/API contract | Versioned definitions, drift regimes, reset and repeated-readout semantics | Defined and tested |
 | Local numerical regression | 92 tests and four unchanged error-budget fixtures on the archived source | Passed within those fixtures |
 | Actual training-domain accuracy | 49/60 terminal finite fixtures pass the original scaled gate; 12 tiny-gap pressure failures and six log-risk ordinary-FD holds remain | Selected fixtures pass; full training domain HOLD |
-| Recorded quality and resource comparison | Original42/C1 results reproduced; C2 has one producer terminal and five active fits at22:45:40 | All-six independent C2 adequacy and later resource view pending |
+| Recorded quality and resource comparison | Original42/C1 results reproduced; C2 has three producer terminals and three active fits at the archived 23:49:03 UTC observation | All-six independent C2 adequacy and later resource view pending |
 | Fair, sufficiently trained real-task benefit | Full-data development attempts and independent replay; output-interface diagnosis | HOLD |
 | Endogenous optimal boundary | Independent finite DP/QVI fixture, three boundary groups | Finite fixture only; neural/continuum benefit HOLD |
 | Real asynchronous multimodal benefit | Existing real localization data; new non-diffusion controls | HOLD |
@@ -221,6 +227,18 @@ none of these scalars attributes a fraction of the12 actual perpetual-value
 failures. Underflows and engineering-resolution inconclusives remain explicit.
 The initial infrastructure launch failed before Python; its replacement ran
 the unchanged48-case program once. No qualification threshold was relaxed.
+
+The new [finite-generator and rare-tail note](evidence/p0p5-recovery-20261111/math-recovery/rare-tail-review/NOTE-REVIEWED.md)
+and [independent mathematical review](evidence/p0p5-recovery-20261111/math-recovery/rare-tail-review/REVIEW.json)
+explain a further limit of a proposed finite-generator repair. A fixed finite
+chain with finite rates has a polynomial small-time hit onset, whereas a
+diffusion started a positive distance from its boundary has a negative
+small-time logarithmic rate. Boundary densities with positive constant and
+linearly vanishing limits give different leading powers. A fixed finite phase
+chain also cannot exactly encode a strictly positive deterministic wait.
+An exact discrete semigroup therefore does not itself qualify continuum rare
+tails, reconstructed boundary laws or age transport. This new deduction does
+not execute a replacement model or attribute the existing production errors.
 
 The new stable log-first-hit primitive retains finite log F/log G when FP64
 probability underflows. Twenty-one sampled cases include near-boundary,
@@ -468,40 +486,57 @@ The original 300/900/1,800-second quality curves remain unchanged. C2 is a
 separate longer-resource/calendar phase, with no adequacy or benefit credit
 before terminal evidence and independent confirmation.
 
-The [22:45:40 UTC observation](evidence/p0p5-terminal-numerics-20261110/c2-at-224540/HANDOFF.json)
-binds a preceding complete snapshot and new epoch records. It observed five
-active fits and one producer terminal; model/probability arrays were not read.
+The [23:49:03 UTC metadata index](evidence/p0p5-recovery-20261111/training/V8-METADATA-INDEX.json)
+binds the exactly recovered v8 observation and its preceding archive chain.
+It observed three active fits and three producer terminals; model/probability
+arrays were not read. The separate retained native status response ending at
+2026-11-11 00:08:14 UTC still reports the same original C2 job running. Neither
+dated observation establishes its subsequent state.
 The following individual best scores are intermediate D-selected values,
 not a new common-LR comparison or confirmation result.
 
 | Seed | LR | Complete epoch | Strict best D macro-F1 | Observed state |
 | --- | --- | ---: | ---: | --- |
-| 101 | .001 | 64 | .2517440582 | Active |
-| 101 | .003 | 65 | .3793301616 | Active |
-| 211 | .001 | 64 | .2797005468 | Active |
+| 101 | .001 | 77 | .2793821424 | Active |
+| 101 | .003 | 76 | .3878342597 | Producer plateau; independent C2 audit pending |
+| 211 | .001 | 77 | .3005516559 | Active |
 | 211 | .003 | 50 | .3910932361 | Producer plateau; independent C2 audit pending |
-| 307 | .001 | 64 | .2367156632 | Active |
-| 307 | .003 | 64 | .3498305889 | Active |
+| 307 | .001 | 78 | .2708893398 | Active |
+| 307 | .003 | 72 | .3498305889 | Producer plateau; independent C2 audit pending |
 
 The [first actual terminal report](evidence/p0p5-c2-progress-20261110/first-terminal/payload/fit/result.json)
-records three added complete epochs and36 new updates for seed211/rate.003.
-Its selected epoch40 checkpoint and D metrics are unchanged from the original
+records three added complete epochs and 36 new updates for seed 211/rate .003.
+Its selected epoch 40 checkpoint and D metrics are unchanged from the original
 run, so this continuation yields no selected-quality improvement. Producer
 adequacy is not yet independent C2 admission. Its
 [complete-attempt ledger](evidence/p0p5-c2-progress-20261110/first-terminal/COST-SCOPE-ADDENDUM.json)
-charges1266.1814752598293 seconds of C2 wrapper time, including the post-child
-verification tail, for a cumulative15643.131377664628 seconds. Exact cumulative
-CPU remains unknown; the new child's measured wait4 CPU is1263.453444 seconds.
+charges 1266.1814752598293 seconds of C2 wrapper time, including the post-child
+verification tail, for a cumulative 15643.131377664628 seconds. Exact cumulative
+CPU remains unknown; the new child's measured wait4 CPU is 1263.453444 seconds.
+
+The [two later terminal records and costs](evidence/p0p5-recovery-20261111/training/V8-METADATA-INDEX.json)
+add seed 101/rate .003 at 76 complete epochs and seed 307/rate .003 at 72.
+Their original-plus-C2 complete-wrapper wall bills are 23128.517257251777 and
+22286.68389489292 seconds, respectively. Their strict-best epochs are 74 and
+62. Strict best and the .002 significant-improvement anchor remain separate;
+a small strict improvement need not reset the plateau counter. These are
+producer development results, not independent terminal admission or a new
+common-rate comparison. Final wrapper overhead is not assigned to earlier
+quality-crossing timestamps, and missing historical CPU is not zero-filled.
 
 The [terminal auditor](evidence/p0p5-c2-progress-20261110/terminal-auditor/PLAN.json)
-is frozen and has28 synthetic tests, but has not audited actual C2 outputs.
-Its1800-second core envelope requires all six real terminals, durable native
+is frozen and has 28 synthetic tests, but has not audited actual C2 outputs.
+Its 1800-second core envelope requires all six real terminals, durable native
 receipts, absent/zombie workers, immutable controller inputs and a new bound
 execution decision. The [later resource plan](evidence/p0p5-c2-progress-20261110/resource-plan/PLAN.json)
 preserves historical curves and charges every original/C2 attempt. Final
 wrapper tails belong in the bill, not retroactively in earlier quality-event
 timestamps. Neither preparation grants a new selection or an adequately
-trained comparison while the original C2 roster is incomplete.
+trained comparison while the original C2 roster is incomplete. The
+[recovery inventory](evidence/p0p5-recovery-20261111/recovery/SCOPE.md) preserves
+the uncommitted preparation gaps. Partial source recovery does not authorize
+the old resource program. Replacement preparation needs its own complete
+source, validation and binding under the unchanged 120-second analysis limit.
 
 ### Development outcomes and HCSN censoring
 
@@ -772,6 +807,21 @@ The new collector's exact `git-response.json` likewise contains an original
 Base64 ZIP payload. Its decoded35,529 bytes match the frozen collector capsule;
 one spelling finding inside that payload is excluded by its exact file path,
 while the original bytes and integrity checks remain unchanged.
+
+The [exact recovered artifact](evidence/p0p5-recovery-20261111/ci-science/ORIGINAL.zip)
+for science run **42922677682**, attempt 1, binds source
+`b908827abcf60b7ce22fe1b8b299206a31484550` and tested merge
+`00a2b987e812636437ac6b42b3afc712c1c4207a` to equal tree
+`573c6399fcc2c2b9ef4197f4f503520cde3cad51`. All its declared steps pass,
+including 92 fixtures and ten-manifest evidence integrity. The new recovery
+checks the same 121491-byte ZIP by its original full SHA256; it is a new
+readback receipt, not the missing earlier local verifier record and not a
+test rerun. The [separate blocking-CI readback](evidence/p0p5-recovery-20261111/ci-blocking/DIAGNOSIS.json)
+still records failed jobs in run 42922677728, including the existing root
+README discovery-link failure. Six implicated file blobs are unchanged
+between the previous published source and this head. An unavailable cargo
+log leaves its underlying cause unknown. These observations do not certify
+this later recovery/CURRENT edit or establish repository-wide success.
 
 At the retained later observation, source
 `fdbc954bb259a709275771fe151b4f0c8d245b48` had successful science run42902660902
