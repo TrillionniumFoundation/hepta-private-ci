@@ -39,11 +39,11 @@ jobs:
       PYTHONHASHSEED: "0"
       SOURCE_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
     steps:
-      - name: Check out the event commit
+      - name: Check out the exact source commit (not the PR merge commit)
         id: checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
-          ref: ${{ github.sha }}
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 2
           persist-credentials: false
 
@@ -65,12 +65,14 @@ jobs:
           record = {"schema": "hcsn-ci-identity-v1", "recorded_utc": datetime.now(timezone.utc).isoformat(),
                     "source_head": source, "source_tree": source_tree, "tested_commit": tested,
                     "tested_tree": tested_tree, "trees_equal": source_tree == tested_tree,
+                    "head_equals_source": tested == source,
                     "event_sha": os.environ["GITHUB_SHA"], "event": os.environ["GITHUB_EVENT_NAME"],
                     "run_id": os.environ["GITHUB_RUN_ID"], "run_attempt": os.environ["GITHUB_RUN_ATTEMPT"],
-                    "evidence_scope": "tested_commit_tree_only"}
+                    "evidence_scope": "exact_source_head_tree_only; merge integration and benefit not asserted"}
           with (out / "identity.json").open("x") as stream:
               json.dump(record, stream, indent=2)
-          assert tested == os.environ["GITHUB_SHA"], "checkout differs from the event commit"
+          assert tested == source, "checkout differs from exact source head (event SHA may be a merge)"
+          assert source_tree == tested_tree, "tested tree differs from exact source head tree"
           PY
 
       - name: Set up pinned Python
