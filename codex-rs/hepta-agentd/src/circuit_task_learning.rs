@@ -138,7 +138,7 @@ impl AgentdState {
                 let objective = codex_hepta_contracts::Sha256Digest::parse(
                     record.snapshot.objective_digest.to_string(),
                 )
-                .map_err(|error| AgentdError::Protocol(error))?;
+                .map_err(AgentdError::Protocol)?;
                 let intent = store
                     .enqueue_circuit_learning(trace, objective)
                     .await

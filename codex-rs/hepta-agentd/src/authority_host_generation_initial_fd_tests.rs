@@ -39,7 +39,11 @@ pub(super) fn send_target_files(
             mem::size_of_val(&rights),
         );
         let sent = libc::sendmsg(socket.as_raw_fd(), &message, libc::MSG_NOSIGNAL);
-        anyhow::ensure!(sent == FRAME.len() as libc::ssize_t, "{}", io::Error::last_os_error());
+        anyhow::ensure!(
+            sent == FRAME.len() as libc::ssize_t,
+            "{}",
+            io::Error::last_os_error()
+        );
     }
     drop((journal, witness));
     Ok(())

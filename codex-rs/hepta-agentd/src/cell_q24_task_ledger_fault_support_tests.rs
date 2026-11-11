@@ -147,7 +147,7 @@ pub(crate) fn append_unrelated_decision(
         .lock()
         .map_err(|_| Error::Binding("test owner lock"))?;
     let captured = producer.capture(&mut state)?;
-    let mut decision = captured.decision.clone();
+    let mut decision = captured.decision;
     decision.record_id =
         StableId::new("fixture-unrelated-decision").map_err(|_| Error::Binding("test id"))?;
     decision.episode_id =

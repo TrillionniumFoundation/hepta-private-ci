@@ -342,7 +342,7 @@ impl Fixture {
             &identity,
             proof.into_array(),
             initial.request.clone(),
-            initial.owners.clone(),
+            initial.owners,
             LearningUpdateScopeV2::Cell,
             digest("component-update-rule"),
         )?;

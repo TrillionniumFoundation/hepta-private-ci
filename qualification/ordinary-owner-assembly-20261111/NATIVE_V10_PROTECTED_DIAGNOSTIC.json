@@ -1,0 +1,20 @@
+{
+  "candidate_tree": "375adae62644bbcfa5587c0977b5b02ce74a68f7",
+  "checker_blob": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+  "entries": 335,
+  "failures": [
+    {
+      "error": "codex-rs/hepta-contracts/src/final_use_store.rs:fn decode_claims(: required code order missing: ['bytes.len() % CLAIM_FRAME_BYTES != 0', 'bytes.chunks_exact(CLAIM_FRAME_BYTES)', 'u64::from_be_bytes(epoch_bytes)', 'epoch == 0 || epoch > authority_epoch', 'epoch == authority_epoch', 'nonce == [0; 32] || !claims.insert(nonce)', 'claims.len() > MAX_CLAIMS', 'Ok(claims)']",
+      "index": 283,
+      "path": "codex-rs/hepta-contracts/src/final_use_store.rs"
+    },
+    {
+      "error": "codex-rs/hepta-agentd/src/authority_host_publication_deployment.rs:fn wait_and_register(: required code order missing: ['self.require_deployment_files()?', 'self.require_waiting_session(', 'self.capability.phase.load', 'MetadataFile::open_metadata(&self.data.trigger)', 'self.require_original_trigger(&trigger)?', 'MetadataFile::open_metadata(&self.data.late_material)', 'serde_json::to_vec(&material)', 'material_file.digest().to_string() != trigger.material_digest', 'enrollment_inputs(', 'self.require_deployment_files()?', 'trigger_file.require_metadata_unchanged()?', 'material_file.require_metadata_unchanged()?', 'self.require_waiting_session(', 'capability.register(inputs)?', 'self.descriptor.require_metadata_unchanged()', 'self.inputs.require_original_inputs()', 'trigger_file.require_metadata_unchanged()', 'material_file.require_metadata_unchanged()', 'stopping.load(Ordering::Acquire)', 'Ok(result)']",
+      "index": 311,
+      "path": "codex-rs/hepta-agentd/src/authority_host_publication_deployment.rs"
+    }
+  ],
+  "native_behavior_executed": false,
+  "official_full_verifier_executed": false,
+  "source_sha": "ead730ae96f97f0507f2319a4f7e58c1dac9d940"
+}

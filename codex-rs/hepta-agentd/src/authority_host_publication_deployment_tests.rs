@@ -211,7 +211,7 @@ impl RootGenerationPublicationEnrollmentCapabilityV1 {
                 })
                 .is_err()
         );
-        let mut previous = trigger.session.clone();
+        let mut previous = trigger.session;
         previous.root_start_ticks = previous
             .root_start_ticks
             .checked_add(1)

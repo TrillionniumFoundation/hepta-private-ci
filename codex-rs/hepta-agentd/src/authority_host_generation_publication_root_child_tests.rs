@@ -203,7 +203,7 @@ fn original_publication_dedicated_uid_child() -> anyhow::Result<()> {
 fn require_uncertain(error: crate::AgentdError) {
     assert!(
         matches!(error, crate::AgentdError::Io(ref error)
-        if error.get_ref().is_some_and(|source| source.is::<crate::root_generation_current_client::RootGenerationPublicationUncertain>())),
+        if error.get_ref().is_some_and(<(dyn std::error::Error + std::marker::Send + std::marker::Sync + 'static)>::is::<crate::root_generation_current_client::RootGenerationPublicationUncertain>)),
         "original closed client must keep typed uncertainty: {error}"
     );
 }

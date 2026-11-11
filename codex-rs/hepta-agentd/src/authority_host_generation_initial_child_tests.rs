@@ -143,8 +143,7 @@ fn original_initial_dedicated_uid_child() -> anyhow::Result<()> {
 fn require_uncertain(error: crate::AgentdError) {
     assert!(
         matches!(error, crate::AgentdError::Io(ref error)
-        if error.get_ref().is_some_and(|source|
-            source.is::<crate::root_generation_initial_client::RootGenerationInitialUncertain>())),
+        if error.get_ref().is_some_and(<(dyn std::error::Error + std::marker::Send + std::marker::Sync + 'static)>::is::<crate::root_generation_initial_client::RootGenerationInitialUncertain>)),
         "original Initial acknowledgement remains typed uncertain: {error}"
     );
 }

@@ -190,7 +190,7 @@ fn initial_feature_preflight_rejects_inexecutable_target_before_current() -> any
         width.observation.extend_from_slice(&value.to_le_bytes());
     }
     assert!(check(&definition, &width)?);
-    let mut device = config.clone();
+    let mut device = config;
     device.manifest.device_digest = [99; 32];
     device.initial.manifest_digest = device.manifest.digest()?;
     assert!(

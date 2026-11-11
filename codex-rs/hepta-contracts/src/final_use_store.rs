@@ -470,7 +470,7 @@ impl Store {
 }
 
 fn decode_claims(bytes: &[u8], authority_epoch: u64) -> Result<BTreeSet<[u8; 32]>, FinalUseError> {
-    if bytes.len() % CLAIM_FRAME_BYTES != 0 {
+    if !bytes.len().is_multiple_of(CLAIM_FRAME_BYTES) {
         return Err(FinalUseError::InvalidTrust);
     }
     let mut claims = BTreeSet::new();
