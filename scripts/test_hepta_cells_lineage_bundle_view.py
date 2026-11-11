@@ -133,7 +133,8 @@ class NativeBundleClaimReviewTests(unittest.TestCase):
                     )
                     with self.assertRaisesRegex(LineagePolicyError, "Bundle bytes"):
                         review_native_bundle_claims(
-                            r, e,
+                            r,
+                            e,
                             forged if side == "source" else source,
                             forged if side == "candidate" else candidate,
                             partition,
