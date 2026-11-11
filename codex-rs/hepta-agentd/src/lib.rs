@@ -357,6 +357,7 @@ pub use learning_iteration_generation_evidence::GenerationLearningStageReadbackR
 pub use learning_iteration_generation_evidence::read_generation_learning_stage_v1;
 
 mod cell_q24_training_receipt_owner;
+mod cell_q24_training_snapshot_readback;
 mod learning_iteration_auth;
 #[cfg(unix)]
 mod learning_iteration_checkpoint;
@@ -398,6 +399,8 @@ pub use cell_q24_training_receipt_owner::OriginalCellQ24TrainingReceiptOwnerV1;
 pub use cell_q24_training_receipt_owner::OriginalCellQ24TrainingSigningConfigV1;
 pub use cell_q24_training_receipt_owner::OriginalCellQ24TrainingStageErrorV1;
 pub use cell_q24_training_receipt_owner::OriginalCellQ24TrainingStageV1;
+pub use cell_q24_training_snapshot_readback::OriginalCellQ24TrainingReadbackErrorV1;
+pub use cell_q24_training_snapshot_readback::read_cell_q24_training_snapshot_v1;
 pub use cell_temporal_q24::CellTemporalQ24GenerationWorkerV1;
 pub use cell_temporal_q24::CellTemporalQ24ModelFilesV1;
 pub use cell_temporal_q24::LoadedCellTemporalQ24ModelV1;
