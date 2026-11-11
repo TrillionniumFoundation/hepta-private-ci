@@ -9,6 +9,7 @@ use std::sync::atomic::Ordering;
 
 use codex_hepta_neuron::JournalAnchor;
 use codex_hepta_neuron::WitnessStoreError;
+use pretty_assertions::assert_eq;
 
 use super::*;
 
