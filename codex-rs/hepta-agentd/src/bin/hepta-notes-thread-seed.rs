@@ -44,10 +44,8 @@ fn take(
         .ok_or_else(|| format!("missing required option {key}").into())
 }
 
-fn parse_options() -> Result<
-    (PathBuf, AgentId, u64, PathBuf, PathBuf),
-    Box<dyn std::error::Error>,
-> {
+fn parse_options() -> Result<(PathBuf, AgentId, u64, PathBuf, PathBuf), Box<dyn std::error::Error>>
+{
     let mut args = std::env::args_os().skip(1);
     let mut options = BTreeMap::new();
     while let Some(option) = args.next() {
@@ -70,13 +68,7 @@ fn parse_options() -> Result<
     if !options.is_empty() {
         return Err("unknown option".into());
     }
-    Ok((
-        control_socket,
-        agent_id,
-        spawn_generation,
-        codex_home,
-        cwd,
-    ))
+    Ok((control_socket, agent_id, spawn_generation, codex_home, cwd))
 }
 
 #[tokio::main(flavor = "current_thread")]
