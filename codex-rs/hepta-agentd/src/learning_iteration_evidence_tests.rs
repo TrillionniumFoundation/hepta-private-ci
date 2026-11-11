@@ -187,12 +187,12 @@ pub(crate) fn fixture_original_receipt_client(
         verifier,
         signature,
     };
-    let (client, mut server) = fixture.client()?;
+    let (client, mut server) = fixture.original_owner_client()?;
     let expected = fixture.signature.payload_digest.to_string();
     let evidence: Vec<_> = (0..expected_reads).map(|_| fixture.evidence()).collect();
     let peer = std::thread::spawn(move || -> anyhow::Result<()> {
         for (index, evidence) in evidence.into_iter().enumerate() {
-            let request = read_request(&mut server)?;
+            let request = read_original_owner_request(&mut server)?;
             assert_eq!(request.request_id, index as u64 + 1);
             assert_eq!(request.operation, wire::OPERATION);
             assert_eq!(request.receipt_digest, expected);
@@ -204,4 +204,32 @@ pub(crate) fn fixture_original_receipt_client(
         Ok(())
     });
     Ok((client, peer))
+}
+
+#[tokio::test]
+async fn original_receipt_fixture_retains_peer_during_owner_work_between_frames()
+-> anyhow::Result<()> {
+    let fixture = Fixture::new()?;
+    let (client, peer) = fixture_original_receipt_client(
+        fixture.initial.clone(),
+        fixture.receipt.clone(),
+        fixture.verifier.clone(),
+        fixture.signature.clone(),
+        2,
+    )?;
+    assert_eq!(
+        client.readback(&fixture.initial, &fixture.receipt).await?,
+        fixture.signature
+    );
+    // No frame is in flight while the original owner reads its CURRENTs.
+    // This crosses both former fixture limits (2-second idle, 5-second life)
+    // without changing the real client's 500-millisecond frame deadline.
+    tokio::time::sleep(Duration::from_millis(5_100)).await;
+    assert_eq!(
+        client.readback(&fixture.initial, &fixture.receipt).await?,
+        fixture.signature
+    );
+    drop(client);
+    peer.join().expect("original receipt peer")?;
+    Ok(())
 }
