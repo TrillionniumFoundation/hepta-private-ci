@@ -355,6 +355,16 @@ pub use learning_iteration_evidence_client::OriginalCellQ24MaterialSourceErrorV1
 #[cfg(target_os = "linux")]
 pub use learning_iteration_evidence_client::OriginalCellQ24RemoteMaterialClientV1;
 #[cfg(target_os = "linux")]
+pub use learning_iteration_evidence_client::OriginalCellQ24TrainingCommandClientV1;
+#[cfg(target_os = "linux")]
+pub use learning_iteration_evidence_client::OriginalCellQ24TrainingCommandContextV1;
+#[cfg(target_os = "linux")]
+pub use learning_iteration_evidence_client::OriginalCellQ24TrainingCommandErrorV1;
+#[cfg(target_os = "linux")]
+pub use learning_iteration_evidence_client::OriginalCellQ24TrainingCommandOwnerV1;
+#[cfg(target_os = "linux")]
+pub use learning_iteration_evidence_client::OriginalCellQ24TrainingCommandReceiptV1;
+#[cfg(target_os = "linux")]
 pub use learning_iteration_evidence_client::read_cell_learning_evaluation_v1;
 #[cfg(target_os = "linux")]
 pub use learning_iteration_generation_evidence::AuthenticatedGenerationLearningStageV1;
@@ -388,6 +398,8 @@ mod learning_iteration_proposal;
 mod learning_iteration_research_external;
 #[cfg(all(test, unix))]
 mod learning_iteration_research_external_material;
+#[cfg(target_os = "linux")]
+mod learning_owner_command_channel;
 mod learning_owner_evidence;
 mod learning_owner_journal;
 mod neuron_cell_evaluation;

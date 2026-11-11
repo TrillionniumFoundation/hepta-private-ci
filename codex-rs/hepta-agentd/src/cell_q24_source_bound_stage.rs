@@ -7,6 +7,7 @@ use std::sync::Arc;
 use std::sync::atomic::AtomicBool;
 
 use codex_hepta_intelligence_eval::FinalHoldoutCasStoreV1;
+use codex_hepta_learning_artifacts::FrozenLearningScopeV2;
 use codex_hepta_learning_artifacts::LearningIterationReceiptV1;
 use codex_hepta_learning_artifacts::LearningIterationSnapshotV1;
 use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
@@ -40,6 +41,26 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
             })
             .await?;
         Ok(Self { original })
+    }
+
+    /// Pin the host command to the actual original Dataset and frozen scope.
+    /// The occupied original lane performs live source and owner CURRENT reads
+    /// before and after this comparison; no caller assertion grants admission.
+    pub(crate) async fn require_original_command_context(
+        &self,
+        dataset: &LearningIterationSnapshotV1,
+        scope: &FrozenLearningScopeV2,
+    ) -> Result<(), Error> {
+        self.original.require_dataset(dataset)?;
+        let scope = scope.clone();
+        self.original
+            .in_lane(move |owners| {
+                if owners.receipts.config.scope != scope {
+                    return Err(Error::Binding("original command frozen scope"));
+                }
+                Ok(())
+            })
+            .await
     }
 
     pub async fn execute_training(
