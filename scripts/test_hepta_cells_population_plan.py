@@ -7,6 +7,21 @@ from hepta_cells.component_types import Budget, CellError, Partition, digest
 from hepta_cells.population import CellSpec, LINEAGES, PopulationPlan
 
 
+class _SpoofedString(str):
+    """Hostile string value with a wire spelling different from its equality."""
+
+    def __new__(cls, actual, impersonated):
+        value = str.__new__(cls, actual)
+        value.impersonated = impersonated
+        return value
+
+    def __eq__(self, other):
+        return other == self.impersonated
+
+    def __hash__(self):
+        return hash(self.impersonated)
+
+
 def population_cells():
     cells = []
     for lineage in LINEAGES:
@@ -190,6 +205,69 @@ class PopulationPlanTests(unittest.TestCase):
             alter(record)
             with self.subTest(record=record), self.assertRaises(CellError):
                 PopulationPlan.from_record(record)
+
+
+    def test_reject_python_string_subclasses_in_stable_cell_identity(self):
+        # A subclass can compare equal to a legal lineage while encoding other bytes.
+        source = self.cells[0]
+        cases = (
+            ("lineage", _SpoofedString("UNLISTED", "PERC")),
+            ("kernel", _SpoofedString("UNLISTED", "shared_head")),
+            ("family", _SpoofedString("UNLISTED", "shared_semantic")),
+            ("trainable", _SpoofedString("UNLISTED", "frozen")),
+            ("cell_id", _SpoofedString("other-cell", source.cell_id)),
+            ("initial_identity", _SpoofedString(source.initial_identity, source.initial_identity)),
+            ("objective", _SpoofedString(source.objective, source.objective)),
+        )
+        for field, value in cases:
+            with self.subTest(field=field), self.assertRaises(CellError):
+                replace(source, **{field: value})
+        plastic = next(cell for cell in self.cells if cell.plastic)
+        for field in ("update_rule", "evaluation_profile"):
+            # A real plastic cell must reject inherited subclasses too.
+            canonical = getattr(plastic, field)
+            with self.subTest(field=field), self.assertRaises(CellError):
+                replace(plastic, **{field: _SpoofedString(canonical, canonical)})
+
+    def test_reject_spoofed_population_owner_and_wire_record_keys(self):
+        for field in ("principal_id", "agent_id"):
+            canonical = getattr(self.plan, field)
+            with self.subTest(field=field), self.assertRaises(CellError):
+                replace(self.plan, **{field: _SpoofedString("other-owner", canonical)})
+        outer = self.plan.record()
+        outer.pop("schema")
+        outer[_SpoofedString("fake-schema-key", "schema")] = (
+            "hepta.cell.population-plan.v1"
+        )
+        with self.assertRaises(CellError):
+            PopulationPlan.from_record(outer)
+        nested = self.cells[0].record()
+        nested[_SpoofedString("fake-cell-key", "lineage")] = nested.pop("lineage")
+        with self.assertRaises(CellError):
+            type(self.cells[0]).from_record(nested)
+        budget = self.cells[0].record()
+        detail = budget["budget"]
+        detail[_SpoofedString("fake-budget-key", "max_work_units")] = detail.pop(
+            "max_work_units"
+        )
+        with self.assertRaises(CellError):
+            type(self.cells[0]).from_record(budget)
+
+    def test_population_policy_refuses_subclassed_plan(self):
+        import sqlite3
+        from hepta_cells.population_owner import PopulationPolicy
+
+        class DerivedPlan(PopulationPlan):
+            pass
+
+        with sqlite3.connect(":memory:") as database:
+            database.row_factory = sqlite3.Row
+            database.execute("CREATE TABLE cells(partition TEXT PRIMARY KEY)")
+            with self.assertRaises(CellError):
+                PopulationPolicy(
+                    database,
+                    DerivedPlan(self.plan.principal_id, self.plan.agent_id, self.plan.cells),
+                )
 
 
 if __name__ == "__main__":

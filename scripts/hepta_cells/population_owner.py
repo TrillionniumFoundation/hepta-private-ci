@@ -23,8 +23,8 @@ class PopulationPolicy:
             "CREATE TABLE IF NOT EXISTS population_consumed(partition TEXT NOT NULL, request TEXT NOT NULL, PRIMARY KEY(partition,request))",
         ):
             db.execute(statement)
-        if plan is not None and not isinstance(plan, PopulationPlan):
-            raise CellError("population must be a PopulationPlan")
+        if plan is not None and type(plan) is not PopulationPlan:
+            raise CellError("population must be an exact PopulationPlan")
         saved = db.execute("SELECT * FROM population_plan WHERE singleton=1").fetchone()
         if saved:
             retained = PopulationPlan.from_record(json.loads(saved["record"]))
