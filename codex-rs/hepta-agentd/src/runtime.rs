@@ -101,6 +101,7 @@ pub async fn run_with_shutdown(
         .map(std::path::Path::to_path_buf);
     let ranker = config.cognitive_ranker();
     let mut production_writer_host = config.production_writer_host();
+    let episodic_snapshot_import = config.take_episodic_snapshot_import();
     if production_operations.is_some() && production_writer_host.is_none() {
         return Err(AgentdError::Invalid(
             "production operations require an independently recovered production writer host"
@@ -129,6 +130,13 @@ pub async fn run_with_shutdown(
     {
         return Err(AgentdError::Invalid(
             "Notes Objective requires original operations and a dedicated finite profile".into(),
+        ));
+    }
+    if episodic_snapshot_import.is_some()
+        && (notes_objective.is_some() || desktop_objective.is_some() || neuron_generation.is_some())
+    {
+        return Err(AgentdError::Invalid(
+            "episodic import requires the ordinary Agentd execution profile".into(),
         ));
     }
     let (identity, registry, writer_lock) = config.into_parts();
@@ -195,6 +203,12 @@ pub async fn run_with_shutdown(
         state.intelligence_invocation.set(provider).map_err(|_| {
             AgentdError::Invalid("intelligence invocation provider already attached".to_string())
         })?;
+    }
+    if let Some(ingress) = episodic_snapshot_import {
+        state
+            .episodic_snapshot_import
+            .set(ingress)
+            .map_err(|_| AgentdError::Invalid("episodic import owner already attached".into()))?;
     }
     if let Some(current) = retrieval_context {
         state

@@ -38,6 +38,9 @@ pub use desktop_objective::AgentdDesktopObjectiveConfig;
 #[path = "state_control.rs"]
 mod control;
 
+#[path = "state_episodic.rs"]
+mod episodic;
+
 #[path = "state_circuit_task.rs"]
 mod circuit_task;
 pub use circuit_task::AgentdCircuitTaskInvocationProviderV1;
@@ -62,6 +65,10 @@ pub(crate) struct AgentdState {
         std::sync::OnceLock<Arc<dyn AgentdCircuitTaskInvocationProviderV1>>,
     circuit_task_admissions: Arc<std::sync::atomic::AtomicUsize>,
     pub(crate) cognitive_ranker: std::sync::OnceLock<Arc<crate::PinnedCognitiveRanker>>,
+    pub(crate) episodic_snapshot_import:
+        std::sync::OnceLock<Arc<crate::episodic_import::EpisodicImportIngress>>,
+    episodic_imports: Arc<std::sync::atomic::AtomicUsize>,
+    episodic_import_unresolved: Arc<std::sync::atomic::AtomicBool>,
     pub(crate) cognitive_retrieval_context:
         std::sync::OnceLock<Arc<dyn crate::CurrentMemoryRetrievalContext>>,
     pub(crate) cognitive_retrieval_learning:
@@ -172,6 +179,9 @@ impl AgentdState {
             automation_effect: std::sync::OnceLock::new(),
             objective_runtime: std::sync::OnceLock::new(),
             cognitive_ranker: std::sync::OnceLock::new(),
+            episodic_snapshot_import: std::sync::OnceLock::new(),
+            episodic_imports: Arc::new(std::sync::atomic::AtomicUsize::new(0)),
+            episodic_import_unresolved: Arc::new(std::sync::atomic::AtomicBool::new(false)),
             production_operations: std::sync::OnceLock::new(),
             cognitive_retrieval_context: std::sync::OnceLock::new(),
             cognitive_retrieval_learning: std::sync::OnceLock::new(),
@@ -352,6 +362,15 @@ impl AgentdState {
     }
 
     pub(crate) fn refresh_generation(&self) -> Result<(), AgentdError> {
+        // Retained imports may outlive the response future. Publish their
+        // unresolved owner state through the ordinary readiness/read fence,
+        // even when no caller remains to observe the task's JoinError.
+        if self
+            .episodic_import_unresolved
+            .load(std::sync::atomic::Ordering::Acquire)
+        {
+            self.mark_fenced();
+        }
         // Registration/startup retains fleet-wide validation. Serving an
         // already admitted generation must not scan or depend on peer stores.
         let record = self
@@ -601,6 +620,7 @@ impl AgentdState {
                 && running_turns == 0
                 && automation_blockers == 0
                 && self.circuit_task_pending_count() == 0
+                && self.episodic_import_drain_clear()
                 && generation_blockers == 0,
             lifecycle: runtime.lifecycle,
             fenced: runtime.fenced,

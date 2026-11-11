@@ -52,6 +52,7 @@ impl AgentdConfig {
             || self.desktop_objective.is_some()
             || self.intelligence_product_runner.is_some()
             || self.intelligence_invocation_provider.is_some()
+            || self.episodic_snapshot_import.is_some()
         {
             return Err(AgentdError::Invalid(
                 "Circuit tasks require one explicit ordinary execution profile".into(),

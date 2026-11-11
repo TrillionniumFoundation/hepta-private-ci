@@ -16,6 +16,9 @@ use crate::AgentdError;
 #[path = "config_desktop.rs"]
 mod desktop;
 
+#[path = "config_episodic.rs"]
+mod episodic;
+
 #[path = "config_circuit_task.rs"]
 mod circuit_task;
 
@@ -107,6 +110,7 @@ pub struct AgentdConfig {
     objective_profile_file: Option<PathBuf>,
     authbus_checkpoint_file: Option<PathBuf>,
     cognitive_ranker: Option<std::sync::Arc<crate::PinnedCognitiveRanker>>,
+    episodic_snapshot_import: Option<std::sync::Arc<crate::episodic_import::EpisodicImportIngress>>,
     production_operations: Option<crate::AgentdProductionOperationRuntimeConfig>,
     production_writer_host: Option<std::sync::Arc<crate::AgentdProductionWriterHost>>,
     notes_objective: Option<crate::AgentdNotesObjectiveConfig>,
@@ -274,6 +278,7 @@ impl AgentdConfig {
             objective_profile_file: None,
             authbus_checkpoint_file: None,
             cognitive_ranker: None,
+            episodic_snapshot_import: None,
             production_operations: None,
             production_writer_host: None,
             notes_objective: None,
@@ -906,6 +911,7 @@ impl AgentdConfig {
             || self.evidence_recovery_frontier_trust_file.is_some()
             || self.automation_effect_host_file.is_some()
             || self.cognitive_ranker.is_some()
+            || self.episodic_snapshot_import.is_some()
             || self.cognitive_retrieval_mode != CognitiveRetrievalMode::Compatibility
             || self.cognitive_retrieval_context.is_some()
             || self.cognitive_retrieval_learning.is_some()
