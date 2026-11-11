@@ -19,10 +19,11 @@ sys.modules[SPEC.name] = PROOF
 SPEC.loader.exec_module(PROOF)
 CELL = "codex-rs/hepta-agentd/src/neuron_cell_evaluation.rs"
 PRODUCT = "codex-rs/hepta-intelligence-eval/src/product_execution.rs"
+OWNER = "codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs"
 CALLERS = {
     "cell_original_evaluation_execution": (),
     "product_original_evaluation_execution": (CELL,),
-    "cell_completed_evaluation_readback": (),
+    "cell_completed_evaluation_readback": (OWNER,),
     "product_completed_evaluation_readback": (CELL,),
 }
 
@@ -36,7 +37,7 @@ class LearningEvaluationRecoverySourceClosureTests(unittest.TestCase):
             path: PROOF._strip_cfg_test_items(
                 PROOF._strip_rust_non_code((ROOT / path).read_text())
             )
-            for path in (CELL, PRODUCT)
+            for path in (CELL, PRODUCT, OWNER)
         }
 
     def rejects(self, path, changed):

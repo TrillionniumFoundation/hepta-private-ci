@@ -75,7 +75,8 @@ async fn causal_readback_joins_original_clocks_and_survives_circuit_reopen_witho
         expected
     );
     store.close().await;
-    let layout = checked(HeptaFleetRoot::parse(directory.path().join("fleet")))
+    let canonical_directory = checked(directory.path().canonicalize());
+    let layout = checked(HeptaFleetRoot::parse(canonical_directory.join("fleet")))
         .layout()
         .agent(&fence().owner_agent_id);
     let reopened = checked(AutomationStore::open(&layout).await);

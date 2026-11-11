@@ -10,7 +10,7 @@ use std::io::Write;
 use super::*;
 
 #[path = "circuit_q24_task_cold_test_support.rs"]
-mod reopen;
+pub(super) mod reopen;
 
 fn bytes(identity: &AgentdIdentity) -> anyhow::Result<Vec<Vec<u8>>> {
     [

@@ -50,6 +50,7 @@ type Error = OriginalCellQ24TrainingReceiptErrorV1;
 #[path = "cell_q24_training_stage.rs"]
 mod stage;
 pub use stage::OriginalCellQ24TrainingCompletionV1;
+pub use stage::OriginalCellQ24TrainingSourceV1;
 pub use stage::OriginalCellQ24TrainingStageErrorV1;
 pub use stage::OriginalCellQ24TrainingStageV1;
 

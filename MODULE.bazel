@@ -392,6 +392,13 @@ crate.annotation(
     version = "0.19.1",
 )
 crate.annotation(
+    # Match Cargo's locked SHA-256 compression backend optimization.
+    crate = "sha2",
+    repositories = ["crates"],
+    rustc_flags = ["-Copt-level=3"],
+    version = "0.11.1",
+)
+crate.annotation(
     # The build script only validates embedded source/version metadata.
     crate = "rustc_apfloat",
     gen_build_script = "off",

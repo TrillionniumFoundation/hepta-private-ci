@@ -48,11 +48,32 @@ fn training_cut(
             target: 2 * Q,
         }],
     )?;
+    let principal = StableId::new(input.scope.principal_digest.to_string())?;
+    let prefix = training_prefix(
+        publication,
+        bundle,
+        &batch,
+        dataset,
+        publication.publication_digest(),
+        principal,
+    )?;
+    Ok((prefix, batch))
+}
+
+pub(super) fn training_prefix(
+    publication: &CircuitTaskSourcePublicationV1,
+    bundle: CellCompatibilityBundleV1,
+    batch: &CellQ24TrainingBatchV1,
+    dataset: Digest32,
+    withdrawal_frontier: Digest32,
+    principal_id: StableId,
+) -> anyhow::Result<LearningIterationSnapshotV1> {
+    let input = publication.input();
     let episode = publication.publication_digest();
     let completed = publication.history_digest().as_str().parse::<Digest32>()?;
     let request = LearningIterationRequestV1 {
         operation_id: cell::id("ordinary-q24-original-training"),
-        principal_id: StableId::new(input.scope.principal_digest.to_string())?,
+        principal_id,
         agent_id: input.scope.agent_id.clone(),
         cell_id: input.scope.cell_id.clone(),
         source_run_id: input.scope.run_id.clone(),
@@ -99,7 +120,7 @@ fn training_cut(
         LearningIterationObservationV1::Dataset {
             snapshot_digest: dataset,
             episode_digest: episode,
-            withdrawal_frontier: publication.publication_digest(),
+            withdrawal_frontier,
             rows: batch.rows(),
             bytes: batch.encoded().len() as u64,
         },
@@ -114,10 +135,10 @@ fn training_cut(
         Some(LearningIterationStageV1::Training)
     );
     assert_eq!(coordinator.snapshot().receipts.len(), 2);
-    Ok((coordinator.snapshot().clone(), batch))
+    Ok(coordinator.snapshot().clone())
 }
 
-fn plan(
+pub(super) fn plan(
     baseline: Arc<LoadedCellQ24ModelV1>,
     prefix: &LearningIterationSnapshotV1,
     batch: &CellQ24TrainingBatchV1,
@@ -140,7 +161,7 @@ fn plan(
     )?)
 }
 
-fn file(root: &Path, name: &str) -> anyhow::Result<File> {
+pub(super) fn file(root: &Path, name: &str) -> anyhow::Result<File> {
     Ok(OpenOptions::new()
         .read(true)
         .write(true)
@@ -149,7 +170,7 @@ fn file(root: &Path, name: &str) -> anyhow::Result<File> {
         .open(root.join(name))?)
 }
 
-fn witness(
+pub(super) fn witness(
     root: &Path,
     prefix: &LearningIterationSnapshotV1,
 ) -> anyhow::Result<FileAnchorWitnessStore> {

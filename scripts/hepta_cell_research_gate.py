@@ -335,6 +335,7 @@ def experiment_review(
         defaultdict(list),
         set(),
     )
+    recorded_costs = defaultdict(list)
     arms = {"candidate", *spec["baselines"]} if spec is not None else None
     for row in rows:
         shape(
@@ -389,6 +390,7 @@ def experiment_review(
         values = [row["costs"].get(key) for key in COST_CATEGORIES]
         if any(number(value) < 0 for value in values if value is not None):
             raise ValueError("costs must be nonnegative")
+        recorded_costs[arm].extend(value for value in values if value is not None)
         if any(value is None for value in values):
             blockers.add("UNMEASURED_COST")
             costs[arm].append(None)
@@ -427,6 +429,19 @@ def experiment_review(
         arm: None if None in values else math.fsum(values)
         for arm, values in costs.items()
     }
+    partial_cost_report = {}
+    if grouped:
+        # Numeric records can cover only part of an unknown category. Likewise,
+        # an unobserved registered attempt has unknown cost, not zero expense.
+        # Preserve the supplied numbers separately without calling them totals.
+        totals.update({arm: None for arm in unit_review["incomplete_cost_arms"]})
+        recorded_subtotals = {
+            arm: math.fsum(recorded_costs[arm]) for arm in sorted(totals)
+        }
+        partial_cost_report = {
+            "recorded_cost_subtotals": recorded_subtotals,
+            "recorded_campaign_subtotal": math.fsum(recorded_subtotals.values()),
+        }
     campaign_total = None if None in totals.values() else math.fsum(totals.values())
     if document["evidence_kind"] != "real":
         blockers.add("NON_REAL_EVIDENCE")
@@ -545,6 +560,7 @@ def experiment_review(
         "distinct_candidate_artifacts": len(candidate_artifacts),
         "observed_cost_totals": totals,
         "observed_campaign_total": campaign_total,
+        **partial_cost_report,
         "comparisons": comparisons,
         "blockers": sorted(
             blockers
