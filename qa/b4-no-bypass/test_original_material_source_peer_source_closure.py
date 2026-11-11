@@ -32,7 +32,7 @@ EXPECTED = {
     "learning_original_material_source_projection": (SERVE,),
     "learning_original_material_source_decode": (CLIENT,),
     "learning_original_material_completed_source_read": (SERVE,),
-    "learning_original_material_source_serve": (),
+    "learning_original_material_source_serve": (AGENT + "cell_q24_material_command_service.rs",),
     "learning_original_material_source_client": (),
     "learning_original_material_source_current": (CAPTURE,),
     "learning_original_material_source_binding": (CAPTURE,),

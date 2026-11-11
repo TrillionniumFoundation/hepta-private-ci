@@ -38,6 +38,10 @@ pub use training_command::OriginalCellQ24TrainingCommandReceiptV1;
 
 #[path = "cell_q24_material_evidence_service.rs"]
 mod material;
+pub use material::OriginalCellQ24MaterialCommandClientV1;
+pub use material::OriginalCellQ24MaterialCommandErrorV1;
+pub use material::OriginalCellQ24MaterialCommandOwnerV1;
+pub use material::OriginalCellQ24MaterialCommandReceiptV1;
 pub use material::OriginalCellQ24MaterialEvidenceErrorV1;
 pub use material::OriginalCellQ24MaterialEvidenceOwnerV1;
 pub use material::OriginalCellQ24MaterialEvidenceRoleV1;

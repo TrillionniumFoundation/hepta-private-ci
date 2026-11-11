@@ -345,6 +345,14 @@ pub use learning_iteration_evidence_client::LearningIterationEvidenceClientV1;
 #[cfg(target_os = "linux")]
 pub use learning_iteration_evidence_client::LearningIterationEvidencePeerV1;
 #[cfg(target_os = "linux")]
+pub use learning_iteration_evidence_client::OriginalCellQ24MaterialCommandClientV1;
+#[cfg(target_os = "linux")]
+pub use learning_iteration_evidence_client::OriginalCellQ24MaterialCommandErrorV1;
+#[cfg(target_os = "linux")]
+pub use learning_iteration_evidence_client::OriginalCellQ24MaterialCommandOwnerV1;
+#[cfg(target_os = "linux")]
+pub use learning_iteration_evidence_client::OriginalCellQ24MaterialCommandReceiptV1;
+#[cfg(target_os = "linux")]
 pub use learning_iteration_evidence_client::OriginalCellQ24MaterialEvidenceErrorV1;
 #[cfg(target_os = "linux")]
 pub use learning_iteration_evidence_client::OriginalCellQ24MaterialEvidenceOwnerV1;

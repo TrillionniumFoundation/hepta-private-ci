@@ -18,6 +18,7 @@ SPEC.loader.exec_module(PROOF)
 AGENT = "codex-rs/hepta-agentd/src/"
 SERVICE = AGENT + "cell_q24_material_evidence_service.rs"
 OWNER = AGENT + "cell_q24_material_receipt_owner.rs"
+COMMAND = AGENT + "cell_q24_material_command_service.rs"
 WIRE = AGENT + "learning_iteration_evidence_wire.rs"
 
 
@@ -54,8 +55,8 @@ class OriginalMaterialEvidenceClosureTests(unittest.TestCase):
     def test_consuming_custody_factory_and_uninstalled_service_stay_closed(self):
         expected = {
             "learning_original_material_readback_host": (),
-            "learning_original_material_readback_custody": (OWNER,),
-            "learning_original_material_evidence_serve": (),
+            "learning_original_material_readback_custody": (OWNER, COMMAND),
+            "learning_original_material_evidence_serve": (COMMAND,),
         }
         for identifier, callers in expected.items():
             with self.subTest(identifier=identifier):
@@ -80,7 +81,7 @@ class OriginalMaterialEvidenceClosureTests(unittest.TestCase):
 
     def test_exact_readback_callers_reject_an_additional_product_consumer(self):
         source_index = {}
-        for path in (OWNER, SERVICE):
+        for path in (OWNER, SERVICE, COMMAND):
             source_index[path] = PROOF._strip_cfg_test_items(
                 PROOF._strip_rust_non_code((ROOT / path).read_text())
             )
@@ -89,7 +90,7 @@ class OriginalMaterialEvidenceClosureTests(unittest.TestCase):
             ("learning_original_material_dataset_readback", "readback_dataset"),
         ):
             boundary = self.boundaries[identifier]
-            self.assertEqual(boundary.product_callers, (SERVICE,))
+            self.assertEqual(boundary.product_callers, (SERVICE, COMMAND))
             PROOF._verify_boundary(ROOT, boundary, source_index, ("_tests.rs",))
             changed = dict(source_index)
             changed[AGENT + "unregistered_material_host.rs"] = (
@@ -102,10 +103,11 @@ class OriginalMaterialEvidenceClosureTests(unittest.TestCase):
         for identifier in (
             "learning_original_material_create",
             "learning_original_material_recover",
-            "learning_original_material_experience_attest",
-            "learning_original_material_dataset_attest",
         ):
             self.assertEqual(self.boundaries[identifier].product_callers, ())
+        for identifier in ("learning_original_material_experience_attest",
+                           "learning_original_material_dataset_attest"):
+            self.assertEqual(self.boundaries[identifier].product_callers, (COMMAND,))
 
     def test_fixed_peer_limits_and_failed_exchange_cannot_be_bypassed(self):
         for marker in (

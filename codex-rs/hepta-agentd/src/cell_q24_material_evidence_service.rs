@@ -34,6 +34,13 @@ use crate::OriginalCellQ24MaterialReceiptErrorV1;
 use crate::OriginalCellQ24MaterialReceiptOwnersV1;
 use crate::OriginalCellQ24MaterialReceiptSourcesV1;
 
+#[path = "cell_q24_material_command.rs"]
+mod command;
+pub use command::OriginalCellQ24MaterialCommandClientV1;
+pub use command::OriginalCellQ24MaterialCommandErrorV1;
+pub use command::OriginalCellQ24MaterialCommandOwnerV1;
+pub use command::OriginalCellQ24MaterialCommandReceiptV1;
+
 #[path = "cell_q24_material_source.rs"]
 mod source;
 pub use source::OriginalCellQ24MaterialSourceErrorV1;

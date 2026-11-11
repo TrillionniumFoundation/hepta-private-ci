@@ -37,9 +37,9 @@ EXPECTED = {
     "learning_original_training_command_owner_serve": (),
     "learning_original_training_command_owner_evidence": (),
     "learning_source_bound_training_command_context": ("codex-rs/hepta-agentd/src/cell_q24_training_command_service.rs",),
-    "learning_original_owner_command_channel": ("codex-rs/hepta-agentd/src/cell_q24_training_command.rs", "codex-rs/hepta-agentd/src/cell_q24_training_command_service.rs",),
-    "learning_original_owner_snapshot_encode": ("codex-rs/hepta-agentd/src/cell_q24_training_command_wire.rs",),
-    "learning_original_owner_snapshot_decode": ("codex-rs/hepta-agentd/src/cell_q24_training_command_wire.rs",),
+    "learning_original_owner_command_channel": (MAIN, SERVICE, AGENT + "cell_q24_material_command.rs", AGENT + "cell_q24_material_command_service.rs"),
+    "learning_original_owner_snapshot_encode": (WIRE, AGENT + "cell_q24_material_command_wire.rs"),
+    "learning_original_owner_snapshot_decode": (WIRE, AGENT + "cell_q24_material_command_wire.rs"),
 }
 
 
