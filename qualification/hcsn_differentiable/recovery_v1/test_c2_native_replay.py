@@ -201,5 +201,36 @@ class NativeObservationTests(unittest.TestCase):
 
 
 
+
+    def _rebound_result_payload(self, raw):
+        # The receipt intentionally commits to the malicious producer's exact bytes.
+        name = NAMES[0]
+        self.add(name)
+        directory = self.root / "artifacts" / name
+        result_path = directory / "result.json"
+        result_path.write_bytes(raw)
+        receipts = self.root / "result-rebound-receipts"
+        append_receipt(receipts, owner_start_id=OWNER, attempt_id=name,
+                       event_type="terminal", payload={
+                           "status": "completed", "native_job_id": "job-" + name,
+                           "result_sha256": digest(result_path),
+                           "resource_sha256": digest(directory / "resource.json")})
+        return inspect_exported_observations(
+            receipts, owner_start_id=OWNER, expected_attempts=NAMES,
+            native_observations=self.native, artifacts_root=self.root / "artifacts")
+
+    def test_duplicate_result_key_with_matching_receipt_rejected(self):
+        report = self._rebound_result_payload(b'{"schema":"fixture","schema":"spoof"}\\n')
+        self.assertIn(NAMES[0], report["rejected"])
+
+    def test_nonfinite_result_with_matching_receipt_rejected(self):
+        report = self._rebound_result_payload(b'{"schema":"fixture","score":NaN}\\n')
+        self.assertIn(NAMES[0], report["rejected"])
+
+    def test_scalar_result_with_matching_receipt_rejected(self):
+        report = self._rebound_result_payload(b'[1,2,3]\\n')
+        self.assertIn(NAMES[0], report["rejected"])
+
+
 if __name__ == "__main__":
     unittest.main()
