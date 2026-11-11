@@ -1,0 +1,42 @@
+{
+  "schema": "mem8.v16.evidence.actual-publication.v1",
+  "observed_utc": "2026-11-11 15:51:11 UTC",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "pr": 5889,
+  "branch": "codex/mem8-ci-evidence-20261111-ed353817",
+  "expected_previous_head": "3cfe2ba630123c8d29da92fe2292f33ce88c7d6d",
+  "before": {
+    "ref": "refs/heads/codex/mem8-ci-evidence-20261111-ed353817",
+    "head": "3cfe2ba630123c8d29da92fe2292f33ce88c7d6d",
+    "pr_head": "3cfe2ba630123c8d29da92fe2292f33ce88c7d6d",
+    "pr_base": "96038ccf0660154fac143ba6cbe4be81e00813e8",
+    "draft": true
+  },
+  "ref_update_result": {
+    "success": true
+  },
+  "after": {
+    "ref": "refs/heads/codex/mem8-ci-evidence-20261111-ed353817",
+    "head": "3a30ff5e95a74ee870799756b384ea9ac8c03b2e",
+    "pr_head": "3a30ff5e95a74ee870799756b384ea9ac8c03b2e",
+    "pr_base": "96038ccf0660154fac143ba6cbe4be81e00813e8",
+    "tree": "68813fa680a583be6db6c57cf8047d6a80a78d34",
+    "draft": true,
+    "state": "open",
+    "full_body": "## Why this follow-up is needed\n\nThe original b054 CI contains real product, prerequisite and lifecycle failures. Later source-only checks and recoverable evidence cannot be used as native or memory-adoption acceptance.\n\n## V16 evidence and source result\n\n- Preserve all original b054 scopes and their distinct source identities: Private 34 distinct selected passes; MEM 35 integrity passes and zero CPU/native execution; Architecture 144 Python cases per lane (136 qualification-receipted plus 8 raw-only preflight), 288 executions and 144 distinct IDs; blocking 37 terminal jobs (23 success, 6 failure, 4 cancelled, 4 skipped); Windows-current 122 strict passes, 1 LEAK, 1 failure and 43 unfinished cases out of 167.\n- Retain the original scoped-fix failure: all three command exits were zero, but Windows Clippy wrote two source files. The strict clean gate failed.\n- Bind the actual V7/V8 source-only runs, full original artifacts, exact formatter postimages, complete Git trees, unchanged locks and unchanged 600-second limits. Each source-only run passed 18 Python regressions and issued zero model requests.\n- Record actual source PR #5935 publication at pure c89540598693697577cda8cba31cb07f6ce65317, tree 5a7c897a33e4eef48ea8f4bf52eaf48ea7c866ae. Qualification harness commits are outside the pure-source ancestry.\n- Preserve the separate original five-case Windows admission (run 43047914262, attempt 1) with its original 65-minute envelope. Its preparation package was fully read back and replayed; this checkpoint does not claim completed native acceptance.\n- Add an exact-line Architecture accounting correction while retaining the old 136-case receipt-scope audit and unchanged original logs.\n\n## Validation and limits\n\nAll changed evidence objects were created and fully read back; complete archived parts were reconstructed and their original offline verifiers replayed. The final checkpoint's 34 relative evidence links are bound to fully read immutable objects.\n\nThe 125 MB Architecture wrapper was completely checked locally but is not duplicated in Git; its full source index and retained smaller originals are archived. Eleven Bazel artifact ZIPs remain metadata-only. Original failures, flakes, cancelled/unexecuted scopes, unknown cancellation causes and missing final source receipts remain explicit.\n\nAll ten adoption gates remain open. Original provider and H admission/write UNKNOWN states remain unresolved. No new real model request, merge or deployment was performed.\n\n[Review V16 checkpoint](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/3a30ff5e95a74ee870799756b384ea9ac8c03b2e/qualification/memory-cell-mem8-ci-followup/CHECKPOINT_REPAIR_V16.md)\n\nDraft evidence PR; owner/adoption ledger remains separately reviewable in #5897.\n",
+    "merge_commit_sha_observed": "f3927e217739039a778dcb133810d6ff23cc16cd"
+  },
+  "full_raw_ref_and_PR_read": true,
+  "full_PR_body_equal_to_submitted": true,
+  "checkpoint": {
+    "path": "qualification/memory-cell-mem8-ci-followup/CHECKPOINT_REPAIR_V16.md",
+    "blob": "50cfd4e018ba392052a546595f6bb55643a997a3",
+    "sha256": "2338c30ef9f8cb4d1b78aef5078ff4f78ba8fae50ff602592c6fe5314be5815d",
+    "bytes": 22847
+  },
+  "relative_evidence_links_verified": 34,
+  "all_adoption_gates_still_open": 10,
+  "new_real_model_requests": 0,
+  "merged": false,
+  "deployed": false
+}

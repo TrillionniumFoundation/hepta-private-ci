@@ -38,7 +38,7 @@
     "W source minima and the historical W allocation do not become an invented E threshold.",
     "A healthy later GET or empty bounded gateway journal cannot settle the original admitted model turn."
   ],
-  "checkpoint_utc": "2026-11-11T12:53:00Z",
+  "checkpoint_utc": "2026-11-11T15:55:15.250136+00:00",
   "ci_fixture_followup": {
     "actual_failed": 1,
     "actual_passed": 0,
@@ -188,6 +188,30 @@
       "id": "V5-EXACT-SOURCE-BAZEL-MODULE-LOCK",
       "status": "PASS_EXACT_SOURCE_BAZEL_MODULE_LOCK",
       "scope": "Original R2 43020939762/130523679401, 9bd2/c777: one just bazel-lock-update phase, 26.462319s within 1200s, source/tree clean and equal, Cargo/MODULE locks and tool/Bazel bytes unchanged; warnings retained. Zero native tests and zero models. The first zero-phase version-probe failure remains historical."
+    },
+    {
+      "id": "MEM8-V6-SOURCE-GATES",
+      "status": "CLOSED_SOURCE_ONLY",
+      "original_run": 43032289667,
+      "original_job": 130562136934,
+      "scope": "Full original source-only gate and exact postimages verified. No native or adoption gate closes.",
+      "evidence_commit": "3cfe2ba630123c8d29da92fe2292f33ce88c7d6d"
+    },
+    {
+      "id": "MEM8-V7-SOURCE-GATES",
+      "status": "CLOSED_SOURCE_ONLY",
+      "original_run": 43042186271,
+      "original_job": 130596614396,
+      "scope": "Full original source-only gate and exact postimages verified. No native or adoption gate closes.",
+      "evidence_commit": "3a30ff5e95a74ee870799756b384ea9ac8c03b2e"
+    },
+    {
+      "id": "MEM8-V8-SOURCE-GATES",
+      "status": "CLOSED_SOURCE_ONLY",
+      "original_run": 43046107709,
+      "original_job": 130610340916,
+      "scope": "Full original source-only gate and exact postimages verified. No native or adoption gate closes.",
+      "evidence_commit": "3a30ff5e95a74ee870799756b384ea9ac8c03b2e"
     }
   ],
   "common_source": {
@@ -1030,9 +1054,9 @@
       "status": "NOT_QUALIFIED"
     },
     {
-      "finding": "Previously qualified common, source-admission, complete 66f, F2, G, cb0b and f1fd scopes remain tied to their original exact heads. Original 189711 integrated CI has native failures and a failed required aggregate; its Architecture lanes passed 664 source-head executions and 136 base-merge executions separately. Its MEM run passed 11 memory plus 6 Agentd cases before a qualification guard failure, with protocol and scoped fixes skipped. Windows-current ended cancelled with 137 PASS, 1 LEAK, 1 FAIL and 28 expected cases without terminals. New V5 source-only gates passed on c842/e9ba; reviewed formatter output 9bd2/c777 then passed a separately pinned single Bazel module-lock command in 26.462319 seconds with clean unchanged source and both locks unchanged. These two operations ran zero native tests and zero models. At 2026-11-11T12:36:36Z the source PR was advanced from 189711 to 9bd2 and remains draft. Its original blocking-ci Blob size policy job 130526677869 failed at Fence setup with local_control_inventory_unavailable before checkout; blob checks were skipped, so this is not evidence of an oversized file or failed native test. Other new required/native jobs are still being observed on that exact head. New MEM/Architecture case counts remain in a separate original-run audit and are not credited by this checkpoint before its complete evidence publication. Published evidence V14 is e9c8d26d159edfb72eb9c2b8f4580478b4b37a2d. The original Bazel version-probe failure and all older failures remain recorded. No component, formatting or module-resolution result is transferred to unobserved native cases, original-owner recovery or scientific adoption.",
+      "finding": "The V6, V7 and V8 original source-only checks passed their unchanged 600-second gates, with full caller/tree/lock checks and 18 Python regressions each. The exact V8 formatter postimages are published as pure c895/tree5a7 in draft PR5935, with qualification harnesses outside its ancestry. Published V16 evidence retains all b054 final scopes: Private34 selected passes; MEM35 integrity passes and zero CPU/native execution; Architecture144 Python cases per lane (136 receipted plus8 raw-only),288 executions/144 distinct; blocking37 terminal jobs with23 success/6 failure/4 cancelled/4 skipped; Windows-current122 strict PASS,1 LEAK, 1 FAIL and43 unfinished of167, with no final source-after. Its original scoped-fix commands all exited0 but two source rewrites failed the strict clean gate. Original elevated delete, captured-pipe, Mac and prerequisite failures remain. The separately admitted c895 five-case Windows run43047914262 and regular c895 runs must be judged from their own actual outcomes. No older native pass, synthetic read, source gate or restored archive closes required CI, scientific benefit, original owner, provider settlement, deletion or independent trust gates.",
       "id": "HOSTED-CI",
-      "status": "EXACT_9BD2_SOURCE_AND_MODULE_LOCK_PASSED_NEW_HOSTED_FENCE_FAILED_OTHER_NATIVE_CI_PENDING",
+      "status": "EXACT_C895_SOURCE_GATES_PASSED_ORIGINAL_NATIVE_FAILURES_RETAINED_CURRENT_CI_NOT_ACCEPTED",
       "closure": "Adjudicate the existing CI required and Architecture required checks and their actual dependencies on the final composition, retaining exact tested source, original logs and any failed or excluded scope. No new all-platform requirement is inferred from a package-level pass."
     }
   ],
@@ -1604,7 +1628,7 @@
     "new_owner_starts_or_model_replays": 0,
     "new_database_reads_for_redaction": 0
   },
-  "checkpoint_revision": 9,
+  "checkpoint_revision": 10,
   "publication_state": "PUBLISHED_DRAFT_CHECKPOINT",
   "hosted_ci_followup_189": {
     "scope": "Original runs on 189711; separate from V5 source-only and any subsequent candidate native jobs.",
@@ -2249,8 +2273,8 @@
       {
         "gate_id": "HOSTED-CI",
         "missing_inputs": [
-          "Successful exact-source required CI and actual dependent scopes for published9bd2; the new Fence setup failure and original189 native failures remain recorded.",
-          "Terminal/receipt/case evidence from the already admitted original9bd2 automatic runs, retaining platform/feature scope, failed attempts and missing terminals."
+          "Accepted required CI and actual dependent scopes on the final source composition; current pure source is c895/tree5a7, not an older head.",
+          "Original terminal/source/case/raw/JUnit records for the admitted c895 jobs, including run43047914262; all failures, unexecuted scopes and unknowns remain explicit."
         ],
         "custodian_role": "Repository maintainer and the existing CI runners/check infrastructure; no new production owner is required for these zero-model checks.",
         "existing_entrypoints": [
@@ -2271,7 +2295,7 @@
             "scope": "Separately pinned 1200-second source-only lock workflow, not a native test."
           }
         ],
-        "next_step": "Monitor and adjudicate the already admitted exact9bd2 original jobs. Diagnose the observed Fence resident startup failure through supported logs without bypassing Fence or changing security controls. Preserve original native failures, inspect their specific source paths and publish only separately reviewed repairs. Source-only and module-lock checks are complete; do not rerun them without a concrete new requirement.",
+        "next_step": "Adjudicate the already admitted c895 original jobs without replay or replacing their identities. Review concrete matcher-fixture, setup-handle, elevated-delete and Fence/prerequisite causes; qualify each changed source separately with the existing assertions, security checks, deadlines and retry limits. Do not transfer older source-only or native passes to a new head.",
         "closure_evidence": "Exact head/tree/clean source and actual selected-case/UUID/timestamp/raw-log receipts, required aggregate terminals, explicit skipped/missing cases, and retained original failures; no cross-head transfer of old component passes."
       }
     ]
@@ -2345,12 +2369,235 @@
     }
   },
   "publication": {
-    "scope": "Owner PR5897 draft checkpoint after root expected-head CAS from immutable v7.",
+    "scope": "Owner PR5897 V10 draft, based on immutable V9 and actually published V16 evidence.",
     "activation": "ROOT_EXPECTED_HEAD_CAS_SUCCESS_ONLY",
-    "expected_previous_head": "cb54f618f0408c314b1c367a5256ea185165c354",
+    "expected_previous_head": "fb533298874d85b6d6ec3d0d1352cd847e54ac4f",
     "owner_pr": 5897,
     "draft": true,
-    "refs_changed": true,
-    "actual_new_head": "Recorded in the separate root publication receipt after CAS; no self-referential commit ID is invented here."
+    "actual_new_head": "Recorded separately after successful publication; no ledger self-hash."
+  },
+  "source_ci_followup_v6_v8": {
+    "scope": "Actual source-only qualifications and published original evidence. No adoption gate closes.",
+    "current_source": {
+      "head": "c89540598693697577cda8cba31cb07f6ce65317",
+      "tree": "5a7c897a33e4eef48ea8f4bf52eaf48ea7c866ae",
+      "parent": "1c063ba9e934f060181d4fc17d724361ba2a37fd",
+      "pr": 5935,
+      "draft": true,
+      "actual_expected_head_update_and_full_raw_PR_readback_verified": true,
+      "qualification_harness_commits_outside_pure_source_ancestry": true
+    },
+    "source_only_operations": [
+      {
+        "version": 6,
+        "run": 43032289667,
+        "job": 130562136934,
+        "python_pass": 18,
+        "cumulative_reviewed_paths": 109,
+        "rust_inventory": 6201,
+        "actual_formatted_source": "b0547d2f874c0aeb54dabd3491caa2bee49fcb0b",
+        "evidence_commit": "3cfe2ba630123c8d29da92fe2292f33ce88c7d6d"
+      },
+      {
+        "version": 7,
+        "run": 43042186271,
+        "job": 130596614396,
+        "python_pass": 18,
+        "cumulative_reviewed_paths": 114,
+        "rust_inventory": 6204,
+        "actual_gate_seconds": 156.902353,
+        "actual_formatted_source": "c7c02cb425646adc6c85c763672cc6fa37e9c53d"
+      },
+      {
+        "version": 8,
+        "run": 43046107709,
+        "job": 130610340916,
+        "python_pass": 18,
+        "cumulative_reviewed_paths": 116,
+        "rust_inventory": 6204,
+        "actual_gate_seconds": 212.521569,
+        "actual_formatted_source": "c89540598693697577cda8cba31cb07f6ce65317"
+      }
+    ],
+    "source_only_limits": {
+      "each_original_budget_seconds": 600,
+      "full_caller_golden_equal_except_complete_tree_derived_file_count": true,
+      "authorityGranted_remains_false": true,
+      "both_lock_bytes_unchanged": true,
+      "native_tests_executed_by_source_gates": 0,
+      "model_requests": 0,
+      "no_historical_native_pass_transferred_to_current_source": true
+    },
+    "source_publication": {
+      "commit": "3a30ff5e95a74ee870799756b384ea9ac8c03b2e",
+      "path": "qualification/memory-cell-mem8-ci-followup/v16/source-v8/SOURCE_PR_PUBLICATION.json",
+      "bytes": 126088,
+      "sha256": "45a91b28b6d49d182434adb602e96ea02a39fb2b9ad3433194081dedbe6ff37a",
+      "git_blob": "2f47208667767fa6bc654781a91e962f44bb8138",
+      "full_remote_readback_verified": true
+    },
+    "source_gate_root_audit": {
+      "commit": "3a30ff5e95a74ee870799756b384ea9ac8c03b2e",
+      "path": "qualification/memory-cell-mem8-ci-followup/v16/source-v8/ROOT_SOURCE_GATE_AUDIT.json",
+      "bytes": 2970,
+      "sha256": "5ae3f320a922d62b526f23e027540950f8bcb96f2a701284379fd98626de48c7",
+      "git_blob": "c6128cda8198aeaaa4800d1ef49b1da73f882fe5",
+      "full_remote_readback_verified": true
+    },
+    "original_b054": {
+      "head": "b0547d2f874c0aeb54dabd3491caa2bee49fcb0b",
+      "tree": "3f89ddeff13d0af85f4abe2690699107357f1038",
+      "private": {
+        "run": 43035589916,
+        "distinct_selected_pass": 34,
+        "additional_unmutated_positive_executions": 2,
+        "mutant_executions": 4,
+        "expected_mutant_failures": 2
+      },
+      "mem": {
+        "run": 43035589682,
+        "integrity_python_pass": 35,
+        "synthetic_readers": 14,
+        "synthetic_writers": 3,
+        "cpu_tests_executed": 0,
+        "native_tests_executed": 0,
+        "model_calls": 0
+      },
+      "architecture": {
+        "run": 43035589987,
+        "per_lane_qualification_receipted_python": 136,
+        "per_lane_additional_raw_only_preflight_python": 8,
+        "per_lane_total_python": 144,
+        "total_python_executions": 288,
+        "distinct_python_cases": 144,
+        "native_tests_executed": 0,
+        "historical_136_case_receipt_scope_audit_preserved": true
+      },
+      "blocking": {
+        "run": 43035589938,
+        "terminal_jobs": 37,
+        "success": 23,
+        "failure": 6,
+        "cancelled": 4,
+        "skipped": 4,
+        "full_blocking_logs_retained": 16,
+        "bazel_artifact_zip_bodies_retained": false
+      },
+      "windows_current": {
+        "run": 43035590081,
+        "job": 130573423888,
+        "conclusion": "cancelled",
+        "declared_cases": 167,
+        "completed_cases": 124,
+        "strict_pass": 122,
+        "leak": 1,
+        "fail": 1,
+        "unfinished": 43,
+        "scheduler_cancellation_reason": "UNKNOWN",
+        "final_source_after": "NOT_RECORDED"
+      },
+      "scoped_fix": {
+        "run": 43038376307,
+        "job": 130583219316,
+        "command_exits": [
+          0,
+          0,
+          0
+        ],
+        "strict_result": "FAILED",
+        "third_command_source_rewrites": 2,
+        "timeout_not_inferred_from_partial_collector": true
+      }
+    },
+    "architecture_count_addendum": {
+      "commit": "3a30ff5e95a74ee870799756b384ea9ac8c03b2e",
+      "path": "qualification/memory-cell-mem8-ci-followup/v16/architecture-count-addendum/ROOT_ARCH_PREFLIGHT_ADDENDUM_AUDIT.json",
+      "bytes": 2945,
+      "sha256": "5ead848a31ee3087d6bc953218e5fbfb8580970037b4abaad8acde1ce6611a2a",
+      "git_blob": "c4a3a6ccc04c083845924db23cfb051729dcfa22",
+      "full_remote_readback_verified": true
+    },
+    "current_native_original_admission": {
+      "run": 43047914262,
+      "job": 130616746852,
+      "attempt": 1,
+      "harness": "5529aeaace80458fb0b1ecae776f95de78c5f9c3",
+      "source": "c89540598693697577cda8cba31cb07f6ce65317",
+      "original_job_envelope_minutes": 65,
+      "admitted_case_count": 5,
+      "retries": 0,
+      "scope": "Separate original Windows qualification; completed acceptance is not established by this checkpoint.",
+      "preparation_replay": {
+        "commit": "3a30ff5e95a74ee870799756b384ea9ac8c03b2e",
+        "path": "qualification/memory-cell-mem8-ci-followup/v16/native-five-preparation/ROOT_REMOTE_ARCHIVE_AUDIT.json",
+        "bytes": 818,
+        "sha256": "2e4a4380850796f72684c58e11209c8e7a4c2d3ab1be01902a20d45d86870aca",
+        "git_blob": "f66fcb007abda8fdbe82c4e31c1be2c4b88e8230",
+        "full_remote_readback_verified": true
+      }
+    },
+    "regular_current_source_runs": {
+      "blocking": 43048568477,
+      "private": 43048568252,
+      "mem": 43048568457,
+      "architecture": 43048568183,
+      "windows_current": 43048569129
+    },
+    "current_source_required_CI_accepted": false,
+    "published_evidence": {
+      "commit": "3a30ff5e95a74ee870799756b384ea9ac8c03b2e",
+      "tree": "68813fa680a583be6db6c57cf8047d6a80a78d34",
+      "pr": 5889,
+      "draft": true,
+      "actual_ref_and_full_raw_PR_body_verified": true,
+      "checkpoint": {
+        "commit": "3a30ff5e95a74ee870799756b384ea9ac8c03b2e",
+        "path": "qualification/memory-cell-mem8-ci-followup/CHECKPOINT_REPAIR_V16.md",
+        "bytes": 22847,
+        "sha256": "2338c30ef9f8cb4d1b78aef5078ff4f78ba8fae50ff602592c6fe5314be5815d",
+        "git_blob": "50cfd4e018ba392052a546595f6bb55643a997a3",
+        "full_remote_readback_verified": true
+      },
+      "relative_links_bound_to_full_remote_read_objects": 34,
+      "publication_receipt": {
+        "path_in_this_owner_commit": "qualification/memory-cell-mem8-owner/run-001/v10/V16_ACTUAL_PUBLICATION.json",
+        "bytes": 4380,
+        "sha256": "1e6aa033ff63f83a5d95afd5605d65f9f04a72f4aa52cd0a235016a4b7f2d9d3",
+        "git_blob": "643213ab4fd1cb35dd167928a163f5dcf6d66b26"
+      }
+    },
+    "recovery_limits": {
+      "complete_v8_evidence_reconstructed_and_original_verifier_replayed": true,
+      "complete_native_preparation_reconstructed_and_original_verifier_replayed": true,
+      "architecture_125MB_original_wrapper_verified_locally_but_not_duplicated_in_Git": true,
+      "original_H_v3_process_and_H_v4_write_states": "UNKNOWN_UNCHANGED",
+      "original_provider_terminal_and_physical_requests": "UNKNOWN_UNCHANGED",
+      "archive_byte_custody_does_not_prove_owner_effect_cold_recovery": true
+    },
+    "unresolved_product_limits": [
+      "Original elevated outside-root delete assertions remain failed; ordinary-token controls do not qualify elevated behavior.",
+      "Setup-handle and matched-recorder source changes require exact-source native results. The original leaked-writer owner remains unidentified.",
+      "Fence inventory failure lacks its original unavailable-input subreason; DNS/apt prerequisite failures leave native scopes unexecuted.",
+      "Mac assertion failures, timeouts, flakes, cached results and cancelled/unexecuted scopes retain their original identities."
+    ],
+    "new_scored_actor_episodes": 0,
+    "new_real_model_requests": 0,
+    "adoption_gate_closed_by_source_checks_or_archives": false
+  },
+  "v10_update_provenance": {
+    "base_checkpoint_commit": "fb533298874d85b6d6ec3d0d1352cd847e54ac4f",
+    "base_blockers": {
+      "bytes": 124699,
+      "sha256": "9e7598040fcedd533b14bcfdbcc28ad3cd44c465f699facd17814351d23d1800",
+      "git_blob": "6030c1c917dbb0dcc6a6ff2ed5259e35a243a925"
+    },
+    "nine_non_CI_gate_objects_unchanged": true,
+    "HOSTED_CI_closure_requirement_unchanged": true,
+    "nine_non_CI_actionable_intake_objects_unchanged": true,
+    "all_prior_closed_entries_unchanged": true,
+    "scientific_results_and_acceptance_thresholds_unchanged": true,
+    "original_provider_and_H_unknown_states_unchanged": true,
+    "publication_activation": "Only successful expected-head CAS publishes this postimage; the resulting commit is recorded separately.",
+    "new_real_model_requests": 0
   }
 }
