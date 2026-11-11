@@ -270,7 +270,10 @@ impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W> {
     pub(crate) fn original_command_profile(
         &self,
     ) -> (&OriginalCircuitNextUseReceiptConfigV1, bool) {
-        (&self.config, matches!(self.command_origin, CommandOrigin::Recovered))
+        (
+            &self.config,
+            matches!(self.command_origin, CommandOrigin::Recovered),
+        )
     }
 
     /// Claim once, then sign only an actual original C completion. The original

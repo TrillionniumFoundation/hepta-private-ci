@@ -52,7 +52,6 @@ pub use next_use_command::OriginalCircuitNextUseCommandErrorV1;
 pub use next_use_command::OriginalCircuitNextUseCommandOwnerV1;
 pub use next_use_command::OriginalCircuitNextUseCommandReceiptV1;
 
-
 #[path = "cell_q24_material_evidence_service.rs"]
 mod material;
 pub use material::OriginalCellQ24MaterialEvidenceErrorV1;

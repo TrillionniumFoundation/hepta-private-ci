@@ -30,11 +30,11 @@ use super::LearningIterationEvidencePeerV1;
 use super::wire as evidence_wire;
 use crate::AgentdRootAuthorityPeer;
 use crate::LearningIterationCheckpointErrorV1;
-use crate::OriginalCircuitSelectionCommandReceiptV1;
-use codex_hepta_learning_ledger::verify_signed_actor_separation;
 use crate::OriginalCircuitNextUseReceiptErrorV1;
+use crate::OriginalCircuitSelectionCommandReceiptV1;
 use crate::learning_iteration_checkpoint::encode_original_owner_snapshot_v1;
 use crate::learning_owner_command_channel::original_owner_command_channel_v1;
+use codex_hepta_learning_ledger::verify_signed_actor_separation;
 
 #[path = "circuit_next_use_command_service.rs"]
 mod serving;
@@ -110,7 +110,11 @@ impl OriginalCircuitNextUseCommandContextV1 {
         selection_evidence: SignedLearningEvidenceV1,
     ) -> Result<Self, Error> {
         let context = Self {
-            selection, scope, verifier, training_evidence, selection_evidence,
+            selection,
+            scope,
+            verifier,
+            training_evidence,
+            selection_evidence,
         };
         context.authenticate(now()?)?;
         Ok(context)
@@ -129,10 +133,16 @@ impl OriginalCircuitNextUseCommandContextV1 {
         }
         let training = &self.selection.receipts[2];
         let selection = &self.selection.receipts[3];
-        let baseline = self.selection.request.selected_bundle.digest()
+        let baseline = self
+            .selection
+            .request
+            .selected_bundle
+            .digest()
             .map_err(LearningIterationError::from)?;
-        if !matches!(&training.observation, LearningIterationObservationV1::TrainingNoUpdateV2(_))
-            || !matches!(&selection.observation,
+        if !matches!(
+            &training.observation,
+            LearningIterationObservationV1::TrainingNoUpdateV2(_)
+        ) || !matches!(&selection.observation,
                 LearningIterationObservationV1::Selection { candidate_bundle, selection_digest }
                 if *candidate_bundle == baseline && !selection_digest.is_zero())
             || training.actor_id != self.selection.owners.trainer
@@ -142,15 +152,21 @@ impl OriginalCircuitNextUseCommandContextV1 {
             || training.observed_unix_seconds > current
             || selection.observed_unix_seconds > current
         {
-            return Err(Error::Binding("original completed Training and retained Selection"));
+            return Err(Error::Binding(
+                "original completed Training and retained Selection",
+            ));
         }
         let trainer = self.verifier.verify(
-            LearningEvidenceRoleV1::Generator, &self.training_evidence,
-            &learning_iteration_receipt_signing_bytes_v1(training)?, current,
+            LearningEvidenceRoleV1::Generator,
+            &self.training_evidence,
+            &learning_iteration_receipt_signing_bytes_v1(training)?,
+            current,
         )?;
         let selector = self.verifier.verify(
-            LearningEvidenceRoleV1::Selector, &self.selection_evidence,
-            &learning_iteration_receipt_signing_bytes_v1(selection)?, current,
+            LearningEvidenceRoleV1::Selector,
+            &self.selection_evidence,
+            &learning_iteration_receipt_signing_bytes_v1(selection)?,
+            current,
         )?;
         if trainer.principal().principal_id != self.selection.owners.trainer
             || selector.principal().principal_id != self.selection.owners.selector
@@ -163,8 +179,11 @@ impl OriginalCircuitNextUseCommandContextV1 {
 
     fn initial(&self) -> Result<LearningIterationSnapshotV1, Error> {
         Ok(LearningIterationCoordinatorV1::new(
-            self.selection.request.clone(), self.selection.owners.clone(),
-        )?.snapshot().clone())
+            self.selection.request.clone(),
+            self.selection.owners.clone(),
+        )?
+        .snapshot()
+        .clone())
     }
 
     fn binding(&self, current: u64) -> Result<Digest32, Error> {
@@ -196,11 +215,21 @@ pub struct OriginalCircuitNextUseCommandReceiptV1 {
     selection_evidence: SignedLearningEvidenceV1,
 }
 impl OriginalCircuitNextUseCommandReceiptV1 {
-    pub fn snapshot(&self) -> &LearningIterationSnapshotV1 { &self.snapshot }
-    pub fn receipt(&self) -> &LearningIterationReceiptV1 { &self.receipt }
-    pub fn attestation(&self) -> &SignedLearningEvidenceV1 { &self.attestation }
-    pub fn training_attestation(&self) -> &SignedLearningEvidenceV1 { &self.training_evidence }
-    pub fn selection_attestation(&self) -> &SignedLearningEvidenceV1 { &self.selection_evidence }
+    pub fn snapshot(&self) -> &LearningIterationSnapshotV1 {
+        &self.snapshot
+    }
+    pub fn receipt(&self) -> &LearningIterationReceiptV1 {
+        &self.receipt
+    }
+    pub fn attestation(&self) -> &SignedLearningEvidenceV1 {
+        &self.attestation
+    }
+    pub fn training_attestation(&self) -> &SignedLearningEvidenceV1 {
+        &self.training_evidence
+    }
+    pub fn selection_attestation(&self) -> &SignedLearningEvidenceV1 {
+        &self.selection_evidence
+    }
 }
 
 struct Channel {
@@ -227,7 +256,14 @@ impl OriginalCircuitNextUseCommandClientV1 {
         lifetime: Duration,
     ) -> Result<Self, Error> {
         Self::bind_original_stream(
-            stream, peer, original_owner_pidfd, context, timeout, lifetime, false, None,
+            stream,
+            peer,
+            original_owner_pidfd,
+            context,
+            timeout,
+            lifetime,
+            false,
+            None,
         )
     }
 
@@ -248,13 +284,26 @@ impl OriginalCircuitNextUseCommandClientV1 {
         lifetime: Duration,
     ) -> Result<Self, Error> {
         let context = OriginalCircuitNextUseCommandContextV1::from_checkpoint(
-            selection, scope, verifier, training_evidence, selection_evidence,
+            selection,
+            scope,
+            verifier,
+            training_evidence,
+            selection_evidence,
         )?;
-        let retained = expected.map(|(snapshot, signed)| {
-            wire::authenticate_completed(&context, snapshot, signed, now()?)
-        }).transpose()?;
+        let retained = expected
+            .map(|(snapshot, signed)| {
+                wire::authenticate_completed(&context, snapshot, signed, now()?)
+            })
+            .transpose()?;
         Self::bind_original_stream(
-            stream, peer, original_owner_pidfd, context, timeout, lifetime, true, retained,
+            stream,
+            peer,
+            original_owner_pidfd,
+            context,
+            timeout,
+            lifetime,
+            true,
+            retained,
         )
     }
 
@@ -274,30 +323,49 @@ impl OriginalCircuitNextUseCommandClientV1 {
             return Err(Error::Binding("original C Observer process"));
         }
         let channel = original_owner_command_channel_v1(
-            stream, AgentdRootAuthorityPeer {
-                pid: peer.pid, boot_id: peer.boot_id, process_start_ticks: peer.process_start_ticks,
-            }, peer.uid, original_owner_pidfd, timeout, lifetime,
+            stream,
+            AgentdRootAuthorityPeer {
+                pid: peer.pid,
+                boot_id: peer.boot_id,
+                process_start_ticks: peer.process_start_ticks,
+            },
+            peer.uid,
+            original_owner_pidfd,
+            timeout,
+            lifetime,
         )?;
         let current = now()?;
         require_clock(started_at, current)?;
         context.authenticate(current)?;
         if let Some(expected) = &retained {
             if wire::authenticate_completed(
-                &context, expected.snapshot.clone(), expected.attestation.clone(), current,
-            )? != *expected {
+                &context,
+                expected.snapshot.clone(),
+                expected.attestation.clone(),
+                current,
+            )? != *expected
+            {
                 return Err(Error::Binding("exact cold original NextUse"));
             }
         }
         Ok(Self {
-            channel: Mutex::new(Some(Channel { peer: channel, next_request_id: 1, execution_requested })),
-            context, binding, retained: Mutex::new(retained),
+            channel: Mutex::new(Some(Channel {
+                peer: channel,
+                next_request_id: 1,
+                execution_requested,
+            })),
+            context,
+            binding,
+            retained: Mutex::new(retained),
         })
     }
 
     /// Ask the original Observer once to attest C that has already completed.
     /// This does not publish, start, run, retry or wait for C. An early request,
     /// timeout, cancellation, Busy or unknown ACK cannot reset the dispatch.
-    pub async fn attest_completed_task(&self) -> Result<OriginalCircuitNextUseCommandReceiptV1, Error> {
+    pub async fn attest_completed_task(
+        &self,
+    ) -> Result<OriginalCircuitNextUseCommandReceiptV1, Error> {
         if now()? >= self.context.selection.request.envelope.expiry_unix_seconds {
             return Err(Error::DeadlineExceeded);
         }
@@ -309,7 +377,8 @@ impl OriginalCircuitNextUseCommandClientV1 {
     }
 
     pub async fn receipt_attestation(
-        &self, expected: &LearningIterationReceiptV1,
+        &self,
+        expected: &LearningIterationReceiptV1,
     ) -> Result<SignedLearningEvidenceV1, Error> {
         let original = OriginalCircuitNextUseCommandClientV1::readback(self).await?;
         if &original.receipt != expected {
@@ -319,13 +388,16 @@ impl OriginalCircuitNextUseCommandClientV1 {
     }
 
     async fn exchange(
-        &self, action: wire::Action,
+        &self,
+        action: wire::Action,
     ) -> Result<OriginalCircuitNextUseCommandReceiptV1, Error> {
         let started_at = now()?;
         let mut channel = {
             let mut slot = self.channel.try_lock().map_err(|_| Error::Unavailable)?;
             if action == wire::Action::Execute
-                && slot.as_ref().is_some_and(|channel| channel.execution_requested)
+                && slot
+                    .as_ref()
+                    .is_some_and(|channel| channel.execution_requested)
             {
                 return Err(Error::ReadbackRequired);
             }
@@ -344,9 +416,14 @@ impl OriginalCircuitNextUseCommandClientV1 {
         let request = wire::Request::new(&self.context, self.binding, request_id, action);
         let encoded = serde_json::to_vec(&request)?;
         let (channel, bytes) = tokio::task::spawn_blocking(move || {
-            let bytes = channel.peer.request(&encoded).map_err(|_| Error::CommitUncertain)?;
+            let bytes = channel
+                .peer
+                .request(&encoded)
+                .map_err(|_| Error::CommitUncertain)?;
             Ok::<_, Error>((channel, bytes))
-        }).await.map_err(|_| Error::CommitUncertain)??;
+        })
+        .await
+        .map_err(|_| Error::CommitUncertain)??;
         let response: wire::Response = serde_json::from_slice(&bytes)?;
         response.require_request(&request)?;
         channel.peer.check_peer_lifetime()?;
@@ -357,7 +434,10 @@ impl OriginalCircuitNextUseCommandClientV1 {
             wire::CommandResult::Completed { snapshot, evidence } => {
                 let original = wire::decode_completed(&self.context, snapshot, evidence, current)?;
                 let mut retained = self.retained.try_lock().map_err(|_| Error::Unavailable)?;
-                if retained.as_ref().is_some_and(|previous| previous != &original) {
+                if retained
+                    .as_ref()
+                    .is_some_and(|previous| previous != &original)
+                {
                     return Err(Error::Binding("unchanged original NextUse attestation"));
                 }
                 *retained = Some(original.clone());
@@ -378,12 +458,16 @@ impl OriginalCircuitNextUseCommandClientV1 {
 
 fn require_clock(started_at: u64, current: u64) -> Result<(), Error> {
     if current < started_at {
-        return Err(Error::Binding("original C Observer command clock moved backwards"));
+        return Err(Error::Binding(
+            "original C Observer command clock moved backwards",
+        ));
     }
     Ok(())
 }
 fn now() -> Result<u64, Error> {
-    SystemTime::now().duration_since(UNIX_EPOCH).map(|value| value.as_secs())
+    SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map(|value| value.as_secs())
         .map_err(|_| Error::Binding("original C Observer system clock"))
 }
 
