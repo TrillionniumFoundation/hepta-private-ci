@@ -196,13 +196,13 @@ impl OriginalCellQ24RemoteMaterialClientV1 {
             &experience,
             &dataset,
         )?;
+        crate::root_observation_stream::check_lifetime(channel.transport.root_lifetime().get_ref())
+            .map_err(|_| Error::Unavailable)?;
         let fresh_now = now()?;
         if fresh_now < started_at {
             return Err(Error::Binding("Material read clock moved backwards"));
         }
         verify_context(&self.config, fresh_now)?;
-        crate::root_observation_stream::check_lifetime(channel.transport.root_lifetime().get_ref())
-            .map_err(|_| Error::Unavailable)?;
         channel.next_request_id = next_request_id;
         *self.channel.try_lock().map_err(|_| Error::Unavailable)? = Some(channel);
         Ok(material)
