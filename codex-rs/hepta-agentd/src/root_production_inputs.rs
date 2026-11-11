@@ -37,9 +37,9 @@ use crate::authority_host_config::HostAuthorityRegistration;
 
 #[path = "root_generation_publication_connection.rs"]
 mod publication_connection;
+pub(crate) use publication_connection::OriginalQ24SuccessorSession;
 pub use publication_connection::RootGenerationPublicationConnectionV1;
 pub(crate) use publication_connection::RootGenerationPublicationSlot;
-pub(crate) use publication_connection::OriginalQ24SuccessorSession;
 
 /// Retain `session` until the original runtime and recovered writer stop.
 /// Device and Notes are the actual two journal owners installed in that same

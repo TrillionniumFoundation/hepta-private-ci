@@ -517,7 +517,8 @@ impl LearningIterationRuntimeBootstrapV1 {
                 return Err(LearningIterationRuntimeErrorV1::DeadlineExceeded);
             }
             #[cfg(target_os = "linux")]
-            self.wait_original_successor_stage(state, coordinator.snapshot(), stage).await?;
+            self.wait_original_successor_stage(state, coordinator.snapshot(), stage)
+                .await?;
             // Check the current local authorization before asking an original
             // owner to publish or use its selected generation, not only after
             // that owner returns an observation of the side effect.

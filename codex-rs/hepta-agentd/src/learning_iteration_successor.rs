@@ -13,9 +13,15 @@ pub(crate) struct OriginalQ24SuccessorContext {
 }
 
 impl OriginalQ24SuccessorContext {
-    pub(crate) fn identity(&self) -> &AgentdIdentity { &self.identity }
-    pub(crate) fn owners(&self) -> &Arc<crate::OriginalCellQ24LearningStageOwnersV1> { &self.owners }
-    pub(crate) fn session(&self) -> &OriginalQ24SuccessorSession { &self.session }
+    pub(crate) fn identity(&self) -> &AgentdIdentity {
+        &self.identity
+    }
+    pub(crate) fn owners(&self) -> &Arc<crate::OriginalCellQ24LearningStageOwnersV1> {
+        &self.owners
+    }
+    pub(crate) fn session(&self) -> &OriginalQ24SuccessorSession {
+        &self.session
+    }
     pub(crate) fn initial(&self) -> &LearningIterationSnapshotV1 {
         let owners: &crate::OriginalCellQ24LearningStageOwnersV1 = self.owners.as_ref();
         owners.prepared().initial()
@@ -27,10 +33,14 @@ impl OriginalQ24SuccessorContext {
 
     pub(crate) async fn require_current_successor_context(&self) -> Result<(), AgentdError> {
         self.session.require_current_successor_session()?;
-        let retained: &Arc<crate::cell_q24_task_ledger::RegisteredCellQ24RetainedSourceV1> = &self.retained;
+        let retained: &Arc<crate::cell_q24_task_ledger::RegisteredCellQ24RetainedSourceV1> =
+            &self.retained;
         retained.observe_retained_learning(&self.identity).await?;
         let owners: &crate::OriginalCellQ24LearningStageOwnersV1 = self.owners.as_ref();
-        owners.require_current().await.map_err(|error| AgentdError::GenerationFenced(error.to_string()))?;
+        owners
+            .require_current()
+            .await
+            .map_err(|error| AgentdError::GenerationFenced(error.to_string()))?;
         self.session.require_current_successor_session()
     }
 }
@@ -43,27 +53,45 @@ impl LearningIterationRuntimeBootstrapV1 {
         slot: &Arc<SuccessorSlot>,
     ) -> Result<Arc<OriginalQ24SuccessorContext>, AgentdError> {
         self.require_identity(identity)?;
-        let original: &Arc<crate::OriginalCellQ24LearningStageOwnersV1> = self.original_q24.as_ref().ok_or_else(|| successor_refused("original Root Q24 owners required"))?;
+        let original: &Arc<crate::OriginalCellQ24LearningStageOwnersV1> = self
+            .original_q24
+            .as_ref()
+            .ok_or_else(|| successor_refused("original Root Q24 owners required"))?;
         let prepared = original.prepared();
-        let retained = self.retained_source.as_ref().ok_or_else(|| successor_refused("registered retained A source required"))?;
-        let registry = self.circuit_delivery_registry.as_ref().ok_or_else(|| successor_refused("original Root delivery registry required"))?;
+        let retained = self
+            .retained_source
+            .as_ref()
+            .ok_or_else(|| successor_refused("registered retained A source required"))?;
+        let registry = self
+            .circuit_delivery_registry
+            .as_ref()
+            .ok_or_else(|| successor_refused("original Root delivery registry required"))?;
         if self.successor.is_some()
             || !self.enforce_circuit_admission
-            || !matches!(self.circuit_delivery_source, CircuitLearningSourceV1::OriginalQ24)
+            || !matches!(
+                self.circuit_delivery_source,
+                CircuitLearningSourceV1::OriginalQ24
+            )
             || session.identity() != identity
             || self.scope.as_ref() != Some(prepared.scope())
             || self.owners != prepared.initial().owners
             || registry.requests.as_slice() != std::slice::from_ref(&prepared.initial().request)
             || retained.request() != &prepared.initial().request
         {
-            return Err(successor_refused("successor differs from assembled Root and retained source"));
+            return Err(successor_refused(
+                "successor differs from assembled Root and retained source",
+            ));
         }
         let context = Arc::new(OriginalQ24SuccessorContext {
-            identity: identity.clone(), owners: Arc::clone(original),
-            retained: Arc::clone(retained), session,
+            identity: identity.clone(),
+            owners: Arc::clone(original),
+            retained: Arc::clone(retained),
+            session,
         });
         context.require_current_successor_context().await?;
-        original.register_original_successor(Arc::clone(&context.session), slot).await
+        original
+            .register_original_successor(Arc::clone(&context.session), slot)
+            .await
             .map_err(|error| successor_refused(&error.to_string()))?;
         self.successor = Some(Arc::clone(slot));
         Ok(context)
@@ -75,11 +103,17 @@ impl LearningIterationRuntimeBootstrapV1 {
         snapshot: &LearningIterationSnapshotV1,
         stage: LearningIterationStageV1,
     ) -> Result<(), LearningIterationRuntimeErrorV1> {
-        let Some(slot) = &self.successor else { return Ok(()); };
+        let Some(slot) = &self.successor else {
+            return Ok(());
+        };
         let needs_publication = stage == LearningIterationStageV1::NextUse
             || (stage == LearningIterationStageV1::Selection
-                && !snapshot.receipts.last().is_some_and(|receipt| receipt.observation.stage() == LearningIterationStageV1::Proposal));
-        if !needs_publication { return Ok(()); }
+                && !snapshot.receipts.last().is_some_and(|receipt| {
+                    receipt.observation.stage() == LearningIterationStageV1::Proposal
+                }));
+        if !needs_publication {
+            return Ok(());
+        }
         self.require_stage_admission(state)?;
         self.require_frozen_scope(&snapshot.request)?;
         // The preceding original checkpoint has completed. No aggregate lane,

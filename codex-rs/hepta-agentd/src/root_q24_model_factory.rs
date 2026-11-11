@@ -105,12 +105,14 @@ impl AgentdRootQ24ModelFactoryV1 {
         original: &crate::root_production_inputs::OriginalQ24SuccessorSession,
     ) -> Result<(), AgentdError> {
         original.require_current_successor_session()?;
-        self.profile.require_context(
-            original.identity(),
-            &original.writer_proof()?,
-            &self.initial,
-            &self.scope,
-        ).map_err(refused)
+        self.profile
+            .require_context(
+                original.identity(),
+                &original.writer_proof()?,
+                &self.initial,
+                &self.scope,
+            )
+            .map_err(refused)
     }
 
     pub(crate) fn require_local_policy(&self, policy: Digest32) -> Result<(), AgentdError> {

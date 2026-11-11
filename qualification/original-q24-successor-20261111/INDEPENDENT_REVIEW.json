@@ -1,0 +1,329 @@
+{
+  "schema_version": 1,
+  "title": "Independent static review of frozen original Root Q24 successor v3",
+  "scope": "source and metadata review only; no executed Rust, original checker, deployment or behavioral result",
+  "review_base": "5daade9e4ce374ac169702d6b59490149ccefd34",
+  "frozen_manifest": "f5cacf02e1008315062d55e91926e76d24c4eba9",
+  "exact_operations": "5ef6999b609b5c4a75ccd2ad1fa9ae9b77e495fa",
+  "callers_postimage": "0c2236f09522f4c8eeda87103151d9f27a12b517",
+  "historical_first_review": "ff2930ed3c02805205a2b0a98803ce57af2261b3",
+  "status": "NO_REMAINING_CONFIRMED_BLOCKER_IN_REVIEWED_FROZEN_BYTES; INTEGRATED_COMPILER_AND_OFFICIAL_GUARD_PENDING",
+  "identity_checks": {
+    "rust_postimages": 32,
+    "all_manifest_sizes_and_sha256_match": true,
+    "exact_CALLERS_operations_replay_to_published_postimage": true
+  },
+  "source_checks": [
+    {
+      "area": "Construction",
+      "finding": "Only a real Launch retains the private five-lane Root session. Config requires its actual original Q24 bootstrap, scoped Prepared, same original aggregate and explicitly registered retained source. No public Task/receipt/ID can construct pending authority."
+    },
+    {
+      "area": "Root/custody",
+      "finding": "Session and connection compare the same original verifier Arc, bootstrap/full identity and writer proof. Root CURRENT checks original learning initial/scope/operation and actual bound Selection. CurrentStore admits only its Root update variant, rejecting Host, RootInitial and Test."
+    },
+    {
+      "area": "Actual installation",
+      "finding": "The required original CircuitTask worker owns preparation, independent issuer response and FinalUse publication. It alone opens the existing circuit_q24_task_channel_v1 using the actual Root-published task and bound model. Pending requests reject before request queuing; no placeholder task executes later."
+    },
+    {
+      "area": "Cancellation before effect",
+      "finding": "The same original SuccessorSlot Arc reaches both original aggregate-lane adapters. Actual State full identity, Running automation/plasticity admission and slot Installing/open status are checked immediately before and after real prepare and publish. Closing while waiting for lane prevents a not-yet-started effect."
+    },
+    {
+      "area": "Already started work and drain",
+      "finding": "Cancellation closes one-shot state but does not abort original effects. Required worker awaits completion; installation active count remains through actual completion. Closed state retains original handle for its pending-count drain. A handle already resolved under Ready keeps original accepted in-flight admission semantics rather than acquiring a newly invented cancellation policy."
+    },
+    {
+      "area": "Wakeup/learning order",
+      "finding": "watch subscription precedes state checks. Progress notification follows actual install_generation and observed original Selection, after the aggregate lane returns. Wait follows the preceding durable Root checkpoint and stays outside owner/checkpoint locks; original LocalDecision current authentication follows the wait. NextUse still consumes original owner readback."
+    },
+    {
+      "area": "Uncertainty",
+      "finding": "Quote/post-prepare failures preserve typed original cause and say CURRENT may already be prepared. No nonce reissue, retry, reset or automatic rearm is introduced."
+    },
+    {
+      "area": "Platform/module accessibility",
+      "finding": "New context/slot/worker declarations and exports are Linux-scoped under actual parent modules. Proof and effect adapters are private children of Root stage, and Config/Launch bridges are true child modules. No test-only authority constructor is exposed."
+    }
+  ],
+  "resolved_findings": [
+    {
+      "finding": "Root/session validity alone allowed new work during Agentd Draining",
+      "resolution": "Actual Agentd State and full identity now checked in worker and immediately inside both original effect lanes.",
+      "source": "85fe9fc433aba1fb6d0356a56bc63f51055c7673"
+    },
+    {
+      "finding": "Caller drop while worker waited for aggregate lane could still begin effect",
+      "resolution": "Same original slot is passed into both closures and require_installation_open is checked immediately before effects.",
+      "sources": [
+        "bc33bab828c4d8ea08efbfdbf1023394d43033c0",
+        "5d245df187cea2e32672110b8aea15a9b5179acc",
+        "85fe9fc433aba1fb6d0356a56bc63f51055c7673"
+      ]
+    },
+    {
+      "finding": "Long wait could follow already-completed LocalDecision current authorization check",
+      "resolution": "Wait now precedes the existing original LocalDecision live-authentication block.",
+      "source": "8abac8784438b7d265777e135628b108ded161c0"
+    }
+  ],
+  "metadata": {
+    "old_boundaries": 457,
+    "new_boundaries": 34,
+    "total": 491,
+    "extended_existing": 9,
+    "new_protected_blocks": 20,
+    "original_protected_blocks": 335,
+    "original_protected_effective_conditions_unchanged": true,
+    "note": "One original last block gains only an outside trailing comment; its effective fields are identical. No checker, source roots, ignored paths, authority flags or old boundary definitions were changed.",
+    "function_order_blocks": 50,
+    "static_function_bounded_order_failures": [],
+    "marker_scope": "The existing circuit_q24_ordinary_profile_assembly caller_markers are commoned to the shared channel invocation because the new caller is a concrete worker constructor. All four old exact admission/install markers remain unchanged and ordered in config_q24_circuit_task.rs protected_file. The new execution/Config paths receive their own full ordered guards; no safety condition is removed.",
+    "closed_callers": "All nine old caller sets retain every existing path and add only reviewed real source calls. New pending_handle has its actual construction in the same definition file, which the original checker excludes from external caller sets. Empty public host-entry caller sets are not claimed as deployed CLI orchestration."
+  },
+  "tests": {
+    "declared_component_methods": 8,
+    "executed": false,
+    "scope": "Six slot/wakeup/fence state tests plus two actual original Direct fixture refusal/admission tests; no claim of Root nonce/CURRENT positive evidence.",
+    "positive_root_successor_component": "not executed and not established by these eight tests",
+    "original_checker_executed": false,
+    "native_executed": false
+  },
+  "limits": [
+    "Fresh one-shot use under the same original live Root session only.",
+    "Lost CURRENT ACK consumes the original client lane; closed Pending has no automatic retry or rearm.",
+    "Session Drop fences the actual shared live verifier, and a retained verifier/current/task cannot extend authority.",
+    "A subsequent Supervisor Starting is a real new process lifetime; original source/run identity, writer, Root profile and Cell generation cannot be recreated from serialized summaries.",
+    "Installed invocation remains explicit NonLearning until separately installed real C Generator/Outcome/Dataset capability; no automatic I-to-next-A Ready.",
+    "Actual independent roles, signatures, business outcomes and holdout data remain external inputs; component builders do not supply production enrollment.",
+    "Default main remains insufficient to orchestrate all actual host entries; this slice is concrete callable product composition, not completed ordinary deployment."
+  ],
+  "two_phase_first_gap": {
+    "status": "CONFIRMED_SOURCE_BOUNDARY, NOT A FAILED EXECUTED POSITIVE TEST",
+    "finding": "A same child retaining A's in-memory capabilities cannot simultaneously satisfy real Supervisor exit/new Starting and Root predecessor peer retirement. Root parent itself may remain the same PID; the original daemon peer lifetime must actually end. Releasing Rust owners/service locks or waiting for lease expiry is not process retirement.",
+    "supervisor": {
+      "api": [
+        "Supervisor::drain",
+        "Supervisor::restart",
+        "Supervisor::tick",
+        "Supervisor::start",
+        "Supervisor::start_release"
+      ],
+      "pins": {
+        "supervisor": "bc38be8d1b3a9e85a42bb92c5279db40b9e0e404",
+        "control": "97faf9d3ee33b31808aedfa47bf650fd17938e60",
+        "tick": "f33f7ea8141a65a8efbd1ee14fcae49833da6252",
+        "recovery": "81bad8ba5840b72d1bd5fc8ab1e1172bb034b379"
+      }
+    },
+    "root": {
+      "publisher": "05cc0eb3422a208b58b8c86589cb82f451949f22",
+      "adoption": "8aafbdb35ef4205b3da3d831014b6cba9e54af2f",
+      "material_recovery": "c2afc2f93070dddfd1145b3a2ab8f219742e3b69",
+      "material_preparation": "9c6cd4beb9a0d3169dcbac9e1364917eec3cf84b"
+    },
+    "needed": "Original read capabilities must be legitimately reacquired across a genuine new daemon process, or a separately reviewed same-live-lifetime reconfiguration protocol is required; neither is manufactured by this pending slot."
+  },
+  "acceptance": {
+    "ordinary_full_chains": 0,
+    "ordinary_positive_adoption": 0,
+    "ordinary_no_update_or_rollback_chains": 0,
+    "independent_deployed_C": false,
+    "physical_restart_verified": false
+  },
+  "source_inventory": [
+    {
+      "path": "codex-rs/hepta-agentd/src/root_q24_successor_session.rs",
+      "sha256": "66b5f5d6d8b07a1bad6b411345f59120511dd9ec5f7a72008c54328f9c7e8134",
+      "match": true,
+      "bytes": 3090
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_generation_publication_connection.rs",
+      "sha256": "0beba1e9cc469d86b4c3c8ee59619b1db226f8251191531a28ab26fd59a412c0",
+      "match": true,
+      "bytes": 4477
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_production_inputs.rs",
+      "sha256": "e5c6e3f16acdbc9835d0f83952e8bec54e4ccb17630c904a4a407fc473580ecb",
+      "match": true,
+      "bytes": 13853
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_q24_model_factory.rs",
+      "sha256": "a18deaa89f7d8c1fb0b0e07217bc5e75a10beb0da7d8db9a430015c798decc2d",
+      "match": true,
+      "bytes": 14275
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_successor.rs",
+      "sha256": "692c06f4a769782086eb19b9007445b98e8a45a83c4b887ea087bfd418ea42b8",
+      "match": true,
+      "bytes": 5044
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration.rs",
+      "sha256": "ccf7c44f8b72b092bb17a8e78914e54386663745faa8b94384b20dd683a06b22",
+      "match": true,
+      "bytes": 23956
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_learning_successor.rs",
+      "sha256": "2be68cb721df630913aa2e1fd9798ddb5a2ba52bbc7a0a3a5c3ed20a2fccc877",
+      "match": true,
+      "bytes": 1391
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_learning_stage_owners.rs",
+      "sha256": "e8d3af696d6ba57036625ef2de5c70c478aee76d2a9e72e2744bb0f81203f204",
+      "match": true,
+      "bytes": 29281
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_state.rs",
+      "sha256": "d1d6115f8da3f36a1cf7eb09e785fe431f04bbce817c6260a0508c4272e17ae9",
+      "match": true,
+      "bytes": 9446
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor.rs",
+      "sha256": "9d217f5a8c9e187a37897553bf4f51dda7194683e678a623c75922c45184c979",
+      "match": true,
+      "bytes": 7259
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_invocation.rs",
+      "sha256": "0c91e8e22f714f0cb5de09fd594fd1826cdcd2288a96965a72c4dfe3f4fbd9f4",
+      "match": true,
+      "bytes": 2172
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_runtime.rs",
+      "sha256": "9c87ee2725f0715d61d57bc7afb293175177761b2db0a76cc0798580b760ce0f",
+      "match": true,
+      "bytes": 11395
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_successor_runtime.rs",
+      "sha256": "15a3648b0e08e13b9514ff8f5ffc02092962a2cf639cac7ce0c172ebf35c9e3d",
+      "match": true,
+      "bytes": 1744
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_generation_current_client.rs",
+      "sha256": "57686f4322ac9816c2733f4af7fced7ef6c24de66ba197135f4fdac88e3a99c6",
+      "match": true,
+      "bytes": 10981
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_current_store.rs",
+      "sha256": "21a4aff2b1c48398b92bd2b951aeed83b1999cd2158d6172ded1215206566263",
+      "match": true,
+      "bytes": 5748
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_current_root.rs",
+      "sha256": "209a66952e2924ca4a5b6f8762816aa746e4e4df02e87387dc683a68bb705c77",
+      "match": true,
+      "bytes": 3719
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_publication_successor.rs",
+      "sha256": "b89b30c713c4453d3391a74d2e4b201e8a84f02b87cd885d53a9439771c2250a",
+      "match": true,
+      "bytes": 4135
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_publication_root_stage.rs",
+      "sha256": "eddc286020073b0b2513e1b8c5f5f776fb45f407d448e1fd5ff47bd06a3a874f",
+      "match": true,
+      "bytes": 14405
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_publication_driver.rs",
+      "sha256": "b2d2e8e2b10e543f27a63666060f4602bc95626da02b4fe5182ce18dcbc99c5b",
+      "match": true,
+      "bytes": 12393
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_execution.rs",
+      "sha256": "6978dc5af0deb0b13844413cf42e263e76592b75352a1b259c31324243594faa",
+      "match": true,
+      "bytes": 4095
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_task_profile.rs",
+      "sha256": "c05b2f942862025e7383e6105833f656f00bdf452169122162e579f4c6138182",
+      "match": true,
+      "bytes": 7837
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_worker.rs",
+      "sha256": "72c6f3cb9a707880d1d99d3c2cd7c466f04d111220dd22a22b05b9df904ce394",
+      "match": true,
+      "bytes": 7183
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_q24_successor.rs",
+      "sha256": "bc1aa840d5fb84a753bd30c0eee689713c6664b0f62c32e60c73948b58526985",
+      "match": true,
+      "bytes": 1066
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher.rs",
+      "sha256": "c1d1e507e0b609980abca78d55dc8b2ed6fcea19cac971817b2f6014a81ca395",
+      "match": true,
+      "bytes": 26061
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config_q24_successor.rs",
+      "sha256": "0508a0cb553ef6e4ad879f75b09eb7ce1bdbb4cab958a4df5aba65e939e20600",
+      "match": true,
+      "bytes": 1445
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config.rs",
+      "sha256": "c36dcc8501a1fa57691bbf2c4537e699e419e049f2937e3b58ecfbc5d42f957a",
+      "match": true,
+      "bytes": 38990
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "sha256": "2508844415c1f9e9acf4ff4e3f65195f1c0223035512d8296c5ac079bec33a61",
+      "match": true,
+      "bytes": 63461
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_learning_source.rs",
+      "sha256": "841f45aa590162a43e7e35def72f2ef4b574ecf73e84a5adcde5021309b08a69",
+      "match": true,
+      "bytes": 13472
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_publication_successor_current.rs",
+      "sha256": "acca59eb03b1aa32cd211a63b6574e423ff278a56d2ed20320aa805278190091",
+      "match": true,
+      "bytes": 4529
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_state_tests.rs",
+      "sha256": "0ade20e22e128552e1f4c9a3622a5d4bd3d6d228e5aa56398237aa7316e2aefd",
+      "match": true,
+      "bytes": 5242
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_ingress_tests.rs",
+      "sha256": "e10baa04b2dbbfb19328f84e957443cf2ea393ba24414587a1f79236ff123c5e",
+      "match": true,
+      "bytes": 23312
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_runtime_tests.rs",
+      "sha256": "af8a4abd18cf87e61ab290be2e53345abad7a05303a21ceecd2bc95aaf10d493",
+      "match": true,
+      "bytes": 3380
+    }
+  ]
+}

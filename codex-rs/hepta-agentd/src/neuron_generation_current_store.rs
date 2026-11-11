@@ -102,7 +102,9 @@ impl CurrentStore {
     ) -> Result<(), AgentdError> {
         match &self.store {
             Store::Root(original) => original.require_successor_context(session, initial, scope),
-            _ => Err(invalid("successor requires the same actual Root update client")),
+            _ => Err(invalid(
+                "successor requires the same actual Root update client",
+            )),
         }
     }
 

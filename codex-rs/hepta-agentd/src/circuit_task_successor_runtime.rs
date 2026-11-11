@@ -7,7 +7,9 @@ use crate::circuit_q24_successor::SuccessorSlot;
 
 impl CircuitTaskHandleV1 {
     pub(crate) fn original_pending_successor_handle(slot: Arc<SuccessorSlot>) -> Self {
-        Self { route: TaskHandleRoute::OriginalQ24 { slot } }
+        Self {
+            route: TaskHandleRoute::OriginalQ24 { slot },
+        }
     }
 }
 
@@ -33,9 +35,13 @@ impl CircuitTaskRuntimeBootstrapV1 {
         cancellation: CancellationToken,
     ) -> Result<(), AgentdError> {
         self.require_identity(state.identity())?;
-        self.handle.require_direct_original_handle().map_err(|error| AgentdError::GenerationFenced(error.to_string()))?;
+        self.handle
+            .require_direct_original_handle()
+            .map_err(|error| AgentdError::GenerationFenced(error.to_string()))?;
         if store.owner_agent_id() != &self.identity.agent_id {
-            return Err(AgentdError::GenerationFenced("successor Automation owner differs".into()));
+            return Err(AgentdError::GenerationFenced(
+                "successor Automation owner differs".into(),
+            ));
         }
         // Already inside the same required spawn_blocking worker. This is the
         // actual channel loop, not another detached task or substitute driver.

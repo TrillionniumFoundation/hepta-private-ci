@@ -48,13 +48,13 @@ pub(crate) mod validation;
 use validation::Decision;
 #[path = "cell_q24_publication_root_stage.rs"]
 mod root_stage;
-pub(crate) use root_stage::OriginalSuccessorPublication;
-pub(crate) use root_stage::require_successor_admission;
 pub use root_stage::OriginalCellQ24ArtifactPublicationDriverV1;
 pub use root_stage::OriginalCellQ24PublishedArtifactForRootV1;
 pub use root_stage::OriginalCellQ24RetainedArtifactForRootV1;
 pub use root_stage::OriginalCellQ24RootPublicationDriverV1;
 pub use root_stage::OriginalCellQ24SelectedArtifactForRootV1;
+pub(crate) use root_stage::OriginalSuccessorPublication;
+pub(crate) use root_stage::require_successor_admission;
 
 #[derive(Debug, thiserror::Error)]
 pub enum OriginalCellQ24PublicationErrorV1 {

@@ -13,14 +13,21 @@ impl OriginalCellQ24LearningStageOwnersV1 {
     ) -> Result<(), Error> {
         let inner = Arc::clone(&self.inner);
         let weak = Arc::downgrade(slot);
-        self.inner.in_lane(move |owners, _training, _runtime| {
-            session.require_current_successor_session().map_err(unavailable)?;
-            owners.factory.require_successor_session(&session).map_err(unavailable)?;
-            if owners.generation.is_some() || inner.successor.set(weak).is_err() {
-                return Err(Error::WrongScope);
-            }
-            Ok(())
-        }).await
+        self.inner
+            .in_lane(move |owners, _training, _runtime| {
+                session
+                    .require_current_successor_session()
+                    .map_err(unavailable)?;
+                owners
+                    .factory
+                    .require_successor_session(&session)
+                    .map_err(unavailable)?;
+                if owners.generation.is_some() || inner.successor.set(weak).is_err() {
+                    return Err(Error::WrongScope);
+                }
+                Ok(())
+            })
+            .await
     }
 
     pub(super) fn notify_original_successor_generation(

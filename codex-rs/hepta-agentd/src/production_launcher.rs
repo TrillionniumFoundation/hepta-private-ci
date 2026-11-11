@@ -28,6 +28,9 @@ mod successor;
 #[path = "production_launcher_inputs.rs"]
 mod inputs;
 
+#[path = "production_launcher_late_writer.rs"]
+mod late_writer;
+
 use inputs::LaunchInputs;
 use inputs::NotesUiInputs;
 use inputs::PrimaryInputs;

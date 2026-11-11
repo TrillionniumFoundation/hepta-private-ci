@@ -36,26 +36,29 @@ impl OriginalQ24SuccessorSession {
     }
 
     pub(crate) fn writer_proof(&self) -> Result<String, AgentdError> {
-        Ok(self.original.writer_proof.sha256()?.to_string())
+        Ok(self.original.writer_proof.sha256()?.as_str().to_owned())
     }
 
     pub(crate) fn require_current_successor_session(&self) -> Result<(), AgentdError> {
         // SAFETY: only reads the current process's kernel credentials.
         let (uid, effective_uid) = unsafe { (libc::getuid(), libc::geteuid()) };
-        if uid == 0 || effective_uid == 0
+        if uid == 0
+            || effective_uid == 0
             || uid != self.original.consumer.uid
             || effective_uid != self.original.consumer.uid
             || std::process::id() != self.original.consumer.pid
         {
             return Err(refused("successor left the original Root consumer"));
         }
-        self.verifier.verify_sender_process_binding(
-            &self.authority,
-            &self.identity.agent_id,
-            &self.original.writer.local_lease_id,
-            self.original.writer.local_lease_generation,
-            self.identity.spawn_generation,
-        ).map_err(AgentdError::GenerationFenced)
+        self.verifier
+            .verify_sender_process_binding(
+                &self.authority,
+                &self.identity.agent_id,
+                &self.original.writer.local_lease_id,
+                self.original.writer.local_lease_generation,
+                self.identity.spawn_generation,
+            )
+            .map_err(AgentdError::GenerationFenced)
     }
 }
 

@@ -89,7 +89,8 @@ impl NeuronGenerationCurrentOwnerV1 {
         initial: &codex_hepta_learning_artifacts::LearningIterationSnapshotV1,
         scope: &codex_hepta_learning_artifacts::FrozenLearningScopeV2,
     ) -> Result<(), AgentdError> {
-        self.store.require_original_root_successor(session, initial, scope)
+        self.store
+            .require_original_root_successor(session, initial, scope)
     }
 
     pub(crate) fn from_original_root_publication(

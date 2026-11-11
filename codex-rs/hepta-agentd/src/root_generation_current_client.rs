@@ -132,7 +132,9 @@ impl RootGenerationCurrentClient {
         if self.profile.initial != initial.head_digest.to_string()
             || self.profile.scope != scope.binding().to_string()
             || self.profile.writer != session.writer_proof()?
-            || self.profile.identity != crate::neuron_generation_process_identity_digest_v1(session.identity())?.to_string()
+            || self.profile.identity
+                != crate::neuron_generation_process_identity_digest_v1(session.identity())?
+                    .to_string()
             || self.profile.learning_operation != initial.request.operation_id.as_str()
         {
             self.fence();

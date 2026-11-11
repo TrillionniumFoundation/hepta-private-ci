@@ -12,12 +12,20 @@ impl AgentdProductionLaunch {
     ) -> Result<(Self, AgentdConfig, crate::OriginalQ24SuccessorHandoffV1), AgentdError> {
         config.require_root_learning_assembled()?;
         if self.q24_model.is_some() || self.initial_publication.is_some() {
-            return Err(AgentdError::Invalid("successor requires assembled learning and the update purpose".into()));
+            return Err(AgentdError::Invalid(
+                "successor requires assembled learning and the update purpose".into(),
+            ));
         }
-        let session = Arc::new(OriginalQ24SuccessorSession::capture_original_successor_session(
-            &self.root.session, &self.root.bootstrap, config.identity(),
-        )?);
-        let (config, handoff) = config.with_original_pending_successor(session, queue_capacity).await?;
+        let session = Arc::new(
+            OriginalQ24SuccessorSession::capture_original_successor_session(
+                &self.root.session,
+                &self.root.bootstrap,
+                config.identity(),
+            )?,
+        );
+        let (config, handoff) = config
+            .with_original_pending_successor(session, queue_capacity)
+            .await?;
         Ok((self, config, handoff))
     }
 }

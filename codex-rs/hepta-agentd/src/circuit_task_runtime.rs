@@ -58,9 +58,13 @@ struct DirectTaskHandle {
 
 #[derive(Clone)]
 enum TaskHandleRoute {
-    Direct { original: Arc<DirectTaskHandle> },
+    Direct {
+        original: Arc<DirectTaskHandle>,
+    },
     #[cfg(target_os = "linux")]
-    OriginalQ24 { slot: Arc<crate::circuit_q24_successor::SuccessorSlot> },
+    OriginalQ24 {
+        slot: Arc<crate::circuit_q24_successor::SuccessorSlot>,
+    },
 }
 
 /// Submission is crate-private: the ordinary signed ingress supplies the
@@ -132,7 +136,8 @@ impl CircuitTaskHandleV1 {
         request.validate_record(&record, original.generation)?;
         let (response, receive) = oneshot::channel();
         original.pending.fetch_add(1, Ordering::AcqRel);
-        original.sender
+        original
+            .sender
             .try_send(Command {
                 request,
                 record,
