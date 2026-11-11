@@ -181,7 +181,7 @@ async fn signed_credit_rejects_cross_owner_ledger_episode_before_any_append() {
             .terminal_credit_support(&foreign.store, run.as_str(), &foreign.inputs)
             .await,
     );
-    let before = ledger.bytes();
+    let before = ledger.state();
     let signed = closure(&ledger.writer, &run, &episode, &foreign_support);
     assert!(matches!(
         foreign
@@ -198,13 +198,13 @@ async fn signed_credit_rejects_cross_owner_ledger_episode_before_any_append() {
             "ledger/owner/episode execution identity"
         ))
     ));
-    assert_eq!(ledger.bytes(), before);
+    assert_eq!(ledger.state(), before);
 
     let mut other_ledger = LedgerFixture::new("ledger-B");
     // This is a valid independently signed Decision with the same run and
     // episode bytes in a different authorized ledger domain.
     append_decision(&mut other_ledger.writer, &run, &episode);
-    let before = other_ledger.bytes();
+    let before = other_ledger.state();
     let signed = closure(&other_ledger.writer, &run, &episode, &support);
     assert!(matches!(
         original
@@ -221,9 +221,9 @@ async fn signed_credit_rejects_cross_owner_ledger_episode_before_any_append() {
             "ledger/owner/episode execution identity"
         ))
     ));
-    assert_eq!(other_ledger.bytes(), before);
+    assert_eq!(other_ledger.state(), before);
 
-    let before = ledger.bytes();
+    let before = ledger.state();
     let signed = closure(&ledger.writer, &run, &id("episode-B"), &support);
     assert!(matches!(
         original
@@ -240,7 +240,7 @@ async fn signed_credit_rejects_cross_owner_ledger_episode_before_any_append() {
             "ledger/owner/episode execution identity"
         ))
     ));
-    assert_eq!(ledger.bytes(), before);
+    assert_eq!(ledger.state(), before);
 
     let mut legacy_ledger = LedgerFixture::new("legacy-ledger");
     let legacy_run = id("run-1");
@@ -252,7 +252,7 @@ async fn signed_credit_rejects_cross_owner_ledger_episode_before_any_append() {
             .terminal_credit_support(&legacy.store, legacy_run.as_str(), &legacy.inputs)
             .await,
     );
-    let before_legacy = legacy_ledger.bytes();
+    let before_legacy = legacy_ledger.state();
     let legacy_signed = closure(
         &legacy_ledger.writer,
         &legacy_run,
@@ -274,7 +274,7 @@ async fn signed_credit_rejects_cross_owner_ledger_episode_before_any_append() {
             "ledger/owner/episode execution identity"
         ))
     ));
-    assert_eq!(legacy_ledger.bytes(), before_legacy);
+    assert_eq!(legacy_ledger.state(), before_legacy);
 
     let wrong_objective = execute(owner, &run, d("unrelated-objective")).await;
     let wrong_support = checked(
@@ -303,7 +303,7 @@ async fn signed_credit_rejects_cross_owner_ledger_episode_before_any_append() {
             "executed objective differs from ledger"
         ))
     ));
-    assert_eq!(ledger.bytes(), before);
+    assert_eq!(ledger.state(), before);
 
     let signed = closure(&ledger.writer, &run, &episode, &support);
     let mut bad = signed.clone();
@@ -336,7 +336,7 @@ async fn signed_credit_rejects_cross_owner_ledger_episode_before_any_append() {
             )
             .await,
     );
-    let before = ledger.bytes();
+    let before = ledger.state();
     let replay = checked(
         original
             .runtime
@@ -353,7 +353,7 @@ async fn signed_credit_rejects_cross_owner_ledger_episode_before_any_append() {
     expected.outcome.disposition = AppendDisposition::IdempotentReplay;
     expected.credit.disposition = AppendDisposition::IdempotentReplay;
     assert_eq!(replay, expected);
-    assert_eq!(ledger.bytes(), before);
+    assert_eq!(ledger.state(), before);
     assert_eq!(
         (
             checked(ledger.writer.records()).len(),

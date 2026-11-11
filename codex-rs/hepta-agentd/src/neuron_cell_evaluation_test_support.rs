@@ -334,7 +334,10 @@ impl Fixture {
             &mut self.provider,
         )
     }
-    pub(super) fn holdout_bytes(&self) -> Vec<u8> {
-        checked(fs::read(self.directory.path().join("holdout")))
+    pub(super) fn holdout_state(&self) -> (FinalHoldoutCasAnchorV1, u64) {
+        (
+            self.runner.product.holdout_anchor(),
+            checked(fs::metadata(self.directory.path().join("holdout"))).len(),
+        )
     }
 }

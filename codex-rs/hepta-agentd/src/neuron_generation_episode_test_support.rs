@@ -25,6 +25,8 @@ use codex_hepta_learning_ledger::LearningEvidenceTrustV1;
 use codex_hepta_learning_ledger::LearningTrustDistributionV1;
 use codex_hepta_learning_ledger::LearningTrustRootV1;
 use codex_hepta_learning_ledger::LedgerRecovery;
+use codex_hepta_learning_ledger::LedgerSnapshot;
+use codex_hepta_learning_ledger::LedgerWitnessFrontier;
 use codex_hepta_learning_ledger::LedgerWitnessStore;
 use codex_hepta_learning_ledger::LedgerWriter;
 use codex_hepta_learning_ledger::OutcomeTerminalityV1;
@@ -341,11 +343,11 @@ impl LedgerFixture {
         ))
     }
 
-    pub(super) fn bytes(&self) -> [Vec<u8>; 2] {
-        [
-            checked(fs::read(self.directory.path().join("ledger"))),
-            checked(fs::read(self.directory.path().join("witness"))),
-        ]
+    pub(super) fn state(&self, writer: &LedgerWriter) -> (LedgerSnapshot, LedgerWitnessFrontier) {
+        (
+            checked(writer.snapshot()),
+            checked(writer.witness_frontier()),
+        )
     }
 }
 
