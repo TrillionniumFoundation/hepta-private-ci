@@ -1,0 +1,97 @@
+{
+  "actor_installed": false,
+  "actual_native_job_count_observed": null,
+  "baseline_comparison": {
+    "before_after_and_prior_all_other_json_values_equal": true,
+    "before_after_bytes_match_result_pins": true,
+    "historical_rows": 200,
+    "only_changed_fields": [
+      "execution.cpu_seconds",
+      "execution.wall_seconds"
+    ],
+    "prior_artifact": "FIT40_COVERAGE_RESULT.json",
+    "prior_artifact_sha256": "4b7762ee4f43c6bd15558cf94fee785956ecb60fd7337c14b1aab21840a75c3c",
+    "registered_sources": 40,
+    "source_equal_original_coverage": 0.5375,
+    "states_per_source": 4,
+    "unique_states": 160
+  },
+  "baselines_zip": {
+    "bytes": 7630,
+    "file": "FIT40_GAP_BASELINES_20261111.zip",
+    "members": {
+      "BASELINE_AFTER/RESULT.json": {
+        "bytes": 29594,
+        "sha256": "983a55e9e74ab899741601e8f6cc16ac1be4349b536ce89a6cb41ad86cb2c2ff"
+      },
+      "BASELINE_BEFORE/RESULT.json": {
+        "bytes": 29593,
+        "sha256": "bfbe3d573f224ee9440b43a85b2420fd043695044737b26036b71290dd7f23e6"
+      }
+    },
+    "metadata": "fixed BEFORE/AFTER order; 1980-01-01 00:00:00; Unix regular file 0644; empty comments and extra; DEFLATE level 9",
+    "sha256": "aa0d147b287e0856223b2262cffb073e1f4ff2e7cd42137f536e15f9a0e2b44e"
+  },
+  "complete_pins": {
+    "all_input_pins_equal_prior_coverage_execution": true,
+    "artifact": "FIT40_GAP_RESULT_20261111.json",
+    "artifact_sha256": "b4f7645170cd721b1687b0de869e84cdbf92793a4da46753e092b44a2ed673d1",
+    "canonical_rules_digest_verified": true,
+    "diagnostic_coverage_legacy_pins_equal_frozen_gap_status": true,
+    "json_sections": [
+      "input_pins",
+      "sources",
+      "rules",
+      "rules_sha256"
+    ],
+    "rules_sha256": "506edb39b46c20fb285e29962e65adf051f692f5d570f6b7046a791f6ad0b3e7",
+    "source_files_matching_inspected_checkout": 5
+  },
+  "decision": "HOLD_NO_GO",
+  "diagnostic_resubmitted": false,
+  "full_physical_cost_observed": false,
+  "full_source_validation": {
+    "basis": "recovered baseline receipts and frozen legacy implementation",
+    "full_inventory_passes": 4,
+    "full_inventory_verified_before_and_after_each_round": true,
+    "legacy_validation_rounds": 2,
+    "original_source_files_per_round": 60,
+    "source_file_validations_in_full_inventory_passes": 240
+  },
+  "future_labels_opened": false,
+  "historical_producer_identity_authenticated": false,
+  "latest_reconciliation": {
+    "error_code": -32603,
+    "new_business_key_used": false,
+    "outcome": "MCP request timed out; no job ID or terminal receipt returned",
+    "private_response_pin": {
+      "bytes": 178,
+      "sha256": "f046bc8f84b5d592a90f3e2ed3f2d73a0cf8feb29d25221d35ad80ac586b4a1a"
+    }
+  },
+  "local_raw_data_replay_completed": false,
+  "local_verification_scope": "recovered output byte integrity, complete pin consistency, baseline JSON comparison, category and proposal arithmetic; original training rows not locally replayed",
+  "logical_business_request_identity_count": 1,
+  "model_inference_calls": 0,
+  "native_job_id": null,
+  "new_independent_tasks": 0,
+  "new_observations": 0,
+  "ocr_calls": 0,
+  "original_dispatch_private_json_sha256": "cafb9d55e02816687ff3e559ed066b87a3691f8a0084b98cbb9251a33c3916e3",
+  "policy_efficacy_evaluated": false,
+  "production_admission": false,
+  "production_update": "no-update",
+  "recovery_source": "exact native output bytes; result copied without JSON reserialization; baseline bytes preserved inside ZIP",
+  "result": {
+    "bytes": 7924,
+    "file": "FIT40_GAP_RESULT_20261111.json",
+    "sha256": "b4f7645170cd721b1687b0de869e84cdbf92793a4da46753e092b44a2ed673d1"
+  },
+  "same_key_reconciliation_attempted": true,
+  "schema": "ctrl.fit40.retained-gap-execution.v1",
+  "scope": "exact native frozen train40 retained-text diagnostic outputs; zero new independent tasks",
+  "state": "ARTIFACTS_RECOVERED_TERMINAL_UNKNOWN",
+  "terminal_publication_confirmed": null,
+  "terminal_state": "UNKNOWN",
+  "training_steps": 0
+}

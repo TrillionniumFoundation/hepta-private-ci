@@ -94,3 +94,12 @@ no private source names or paths, candidate/reference text, or operation keys.
 These identifiers support consistency checks, not identity authentication or
 anonymity guarantees. The separate execution receipt records the native terminal
 evidence. The scientific disposition remains **HOLD_NO_GO / NoUpdate**.
+
+## Frozen gap follow-up — 2026-11-11
+
+The frozen retained-text diagnostic has now been executed and its exact output
+and both baselines recovered: **A = 0, B = 1, C = 73, D = 0** across the 74 gaps.
+Current-state candidate availability is 87/160; C is a match elsewhere in the
+recorded source, not measured READ benefit. See [the complete findings](GAP_FINDINGS_20261111.md)
+and [execution status](FIT40_GAP_EXECUTION_20261111.json). The original job
+terminal remains unknown despite recovered artifacts.

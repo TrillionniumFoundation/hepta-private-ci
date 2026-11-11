@@ -1,0 +1,208 @@
+{
+  "actor_installed": false,
+  "baseline_results_sha256": {
+    "BASELINE_AFTER": "983a55e9e74ab899741601e8f6cc16ac1be4349b536ce89a6cb41ad86cb2c2ff",
+    "BASELINE_BEFORE": "bfbe3d573f224ee9440b43a85b2420fd043695044737b26036b71290dd7f23e6"
+  },
+  "by_reference_field": {
+    "date": {
+      "A_and_B_retained_match_states": 0,
+      "D_with_budget_censoring": 0,
+      "budget_censored_states": 0,
+      "categories": {
+        "A_frozen_regex": 0,
+        "B_numeric_format": 0,
+        "C_other_recorded_state": 34,
+        "D_evidence_insufficient": 0,
+        "covered": 34,
+        "out_of_scope": 0,
+        "unknown_reference": 0
+      },
+      "missing_sources": 23,
+      "observed_sources": 17,
+      "proposal_counts": {
+        "retained_proposals": 6,
+        "scanned_matches": 242,
+        "unique_proposals_seen": 6
+      },
+      "registered_sources": 40,
+      "selected_accuracy": null,
+      "selection_gap": null,
+      "source_equal_category_rates": {
+        "A_frozen_regex": null,
+        "B_numeric_format": null,
+        "C_other_recorded_state": null,
+        "D_evidence_insufficient": null,
+        "covered": null,
+        "out_of_scope": null,
+        "unknown_reference": null
+      },
+      "source_equal_original_coverage": null,
+      "source_equal_probe_candidate_availability": null,
+      "unavailable_observation_states": null,
+      "unique_states": 68
+    },
+    "total": {
+      "A_and_B_retained_match_states": 0,
+      "D_with_budget_censoring": 0,
+      "budget_censored_states": 13,
+      "categories": {
+        "A_frozen_regex": 0,
+        "B_numeric_format": 1,
+        "C_other_recorded_state": 39,
+        "D_evidence_insufficient": 0,
+        "covered": 52,
+        "out_of_scope": 0,
+        "unknown_reference": 0
+      },
+      "missing_sources": 17,
+      "observed_sources": 23,
+      "proposal_counts": {
+        "known_dropped_by_candidate_cap": 150,
+        "known_dropped_by_proposal_limit": 356,
+        "retained_proposals": 1807,
+        "scanned_matches": 6559,
+        "unique_proposals_seen": 2313
+      },
+      "registered_sources": 40,
+      "selected_accuracy": null,
+      "selection_gap": null,
+      "source_equal_category_rates": {
+        "A_frozen_regex": null,
+        "B_numeric_format": null,
+        "C_other_recorded_state": null,
+        "D_evidence_insufficient": null,
+        "covered": null,
+        "out_of_scope": null,
+        "unknown_reference": null
+      },
+      "source_equal_original_coverage": null,
+      "source_equal_probe_candidate_availability": null,
+      "unavailable_observation_states": null,
+      "unique_states": 92
+    }
+  },
+  "execution": {
+    "cpu_seconds": 0.862240009,
+    "duration_scope": "entry only; imports, launcher, final serialization and transport excluded",
+    "full_physical_cost_observed": false,
+    "future_labels_opened": false,
+    "legacy_validation_rounds": 2,
+    "model_inference_calls": 0,
+    "new_observations": 0,
+    "ocr_calls": 0,
+    "original_source_files_per_round": 60,
+    "python": "3.12.16 (main, Oct 26 2026, 14:08:45) [Clang 23.1.3 ]",
+    "training_steps": 0,
+    "wall_seconds": 0.8894528420642018
+  },
+  "historical_generator_identity": null,
+  "historical_producer_identity_authenticated": false,
+  "input_pins": {
+    "collection": {
+      "bytes": 39942,
+      "sha256": "7be396821d6a16352b5e71b66f0a374962153c269063134ced06b4ce924d9ee6"
+    },
+    "embedded_plan_sha256": "08c516e1257d92ebd05025b83c992094bff6103bae5653de73677b1652354902",
+    "records": {
+      "bytes": 9496351,
+      "sha256": "43f1c63fe378a783cc57d475ad1841c4235b7d1eaa335c2e0fdd2126f73d1a85"
+    },
+    "request": {
+      "bytes": 7550,
+      "sha256": "3ea9d00f6dc1be41427272a1f79169d3b2bd4b56d8b1b97ec7693be9c9b4824e"
+    },
+    "source_inventory_sha256": "cf4755ec548ba08f8060cb28c85f65c76ba8dca11ec0afdf1680d85b83caa3d1"
+  },
+  "interpretation": {
+    "A": "retained text contains a frozen-lexer match; historical extraction attribution unverified",
+    "B": "fixed target-free numeric projection contains a scorer match; semantic correctness and selection unmeasured",
+    "C": "another recorded same-source same-field state contains the scorer match; no reachability or READ causal claim",
+    "D": "fixed probes did not retain a scorer match; original pixels, full OCR inventory and availability unknown",
+    "candidate_budget": "proposals preserve the original prefix; 64 proposal and 128 total limits; scan/drop censorship explicit",
+    "priority": "A before B before C; overlaps reported; categories are diagnostic attribution, not causal effects"
+  },
+  "new_independent_tasks": 0,
+  "original_rows": 200,
+  "overall": {
+    "A_and_B_retained_match_states": 0,
+    "D_with_budget_censoring": 0,
+    "budget_censored_states": 13,
+    "categories": {
+      "A_frozen_regex": 0,
+      "B_numeric_format": 1,
+      "C_other_recorded_state": 73,
+      "D_evidence_insufficient": 0,
+      "covered": 86,
+      "out_of_scope": 0,
+      "unknown_reference": 0
+    },
+    "missing_sources": 0,
+    "observed_sources": 40,
+    "proposal_counts": {
+      "known_dropped_by_candidate_cap": 150,
+      "known_dropped_by_proposal_limit": 356,
+      "retained_proposals": 1813,
+      "scanned_matches": 6801,
+      "unique_proposals_seen": 2319
+    },
+    "registered_sources": 40,
+    "selected_accuracy": null,
+    "selection_gap": null,
+    "source_equal_category_rates": {
+      "A_frozen_regex": 0.0,
+      "B_numeric_format": 0.00625,
+      "C_other_recorded_state": 0.45625,
+      "D_evidence_insufficient": 0.0,
+      "covered": 0.5375,
+      "out_of_scope": 0.0,
+      "unknown_reference": 0.0
+    },
+    "source_equal_original_coverage": 0.5375,
+    "source_equal_probe_candidate_availability": 0.54375,
+    "unavailable_observation_states": null,
+    "unique_states": 160
+  },
+  "policy_efficacy_evaluated": false,
+  "production_admission": false,
+  "rules": {
+    "amount_policy": "NFKC; dot decimal and grouped thousands comma; integer or any positive fractional width; no decimal-comma or OCR-character repair",
+    "candidate_cap": 128,
+    "category_priority": [
+      "covered",
+      "A_frozen_regex",
+      "B_numeric_format",
+      "C_other_recorded_state",
+      "D_evidence_insufficient",
+      "unknown_reference",
+      "out_of_scope"
+    ],
+    "date_policy": "NFKC; remove separator whitespace; four-digit year-first to day/month/year; no day/month swap or month names",
+    "deduplication": "text, source bbox, origin; preserve original candidates",
+    "families": [
+      "A_frozen_regex",
+      "B_numeric_format"
+    ],
+    "frozen_date": "\\b\\d{1,4}[-/.]\\d{1,2}[-/.]\\d{1,4}\\b",
+    "frozen_money": "(?<!\\w)(?:RM\\s*)?[-+]?\\d[\\d,]*\\.\\d{2}(?!\\d)",
+    "max_input_text_chars": 8192,
+    "max_proposals": 64,
+    "max_scanned_matches": 4096,
+    "numeric_amount": "(?<![\\w.,])(?:RM\\s*|MYR\\s*)?([-+]?(?:\\d{1,3}(?:,\\d{3})+|\\d+)(?:\\.\\d+)?)(?![\\w.,])",
+    "numeric_date": "(?<!\\w)(\\d{1,4})\\s*[./-]\\s*(\\d{1,2})\\s*[./-]\\s*(\\d{1,4})(?!\\w)",
+    "proposal_order": "family, original candidate index, regex match order",
+    "schema": "ndu.ctrl.retained-text-gap-rules.v1"
+  },
+  "rules_sha256": "506edb39b46c20fb285e29962e65adf051f692f5d570f6b7046a791f6ad0b3e7",
+  "schema": "ndu.ctrl.retained-text-gap-report.v1",
+  "scope": "fixed_train40_historical_retained_candidate_text_only",
+  "sources": {
+    "coverage_sha256": "3d44b74354a3a56b69467e1c019606de7f360666d7fa09a8cee4fe2f71c5872b",
+    "diagnostic_sha256": "1da02aea4aabb7e21486110fc0ec545fe9d683e5e0383311df568e33f649753e",
+    "frozen_ocr_sha256": "5cbcaca04a4843b51379bbcc3911ae4453c25b3f0585970ae4d9d414624a47f1",
+    "legacy_sha256": "daba119e74d2f306731c063c30da9a6fb1a8717636ab4061d20e71e138632799",
+    "normalizer_sha256": "7988cb2eaaf8e3aad6f943fd762a1fd8847b5d44dbdc6eb5330ca2e45fc6ff45"
+  },
+  "state_inventory_independently_preregistered": false,
+  "unique_states": 160
+}

@@ -1,31 +1,54 @@
 {
-  "actual_gap_categories": null,
+  "actual_gap_categories": {
+    "A_frozen_regex": 0,
+    "B_numeric_format": 1,
+    "C_other_recorded_state": 73,
+    "D_evidence_insufficient": 0,
+    "covered": 86,
+    "out_of_scope": 0,
+    "unknown_reference": 0
+  },
+  "actual_native_job_count_observed": null,
   "blocker": {
-    "last_host_inventory_observed_at_utc": "2026-11-10T13:52:38Z",
-    "local_exact_training_copy_found": false,
-    "local_fallback_executed": false,
-    "native_health_not_established": true,
-    "observed_error": "MCP -32603 Internal error",
-    "other_dataset_substituted": false,
-    "raw_error_sha256": "1d9ce63057d17b071322824f98648d9b5710de5f2bb2a6ee85b8f91084fab42d",
-    "read_only_host_inventory_failed": true
+    "local_exact_training_copy_verified": false,
+    "local_raw_data_replay_completed": false,
+    "observed_error": "MCP -32603 request timed out on same-key reconciliation",
+    "original_business_job_id_recovered": false,
+    "private_response_pin": {
+      "bytes": 178,
+      "sha256": "f046bc8f84b5d592a90f3e2ed3f2d73a0cf8feb29d25221d35ad80ac586b4a1a"
+    },
+    "terminal_publication_confirmed": null
   },
   "business_job_id": null,
-  "business_submission_count": 0,
   "decision": "HOLD_NO_GO",
+  "execution_record": "FIT40_GAP_EXECUTION_20261111.json",
+  "findings": "GAP_FINDINGS_20261111.md",
   "implementation_commit": "13de10b55b0f16cf1548dab193fbb8ac11d3b4cd",
-  "native_dispatch_attempted": false,
-  "native_upload_attempted": false,
-  "next_step": "Once native read access works, verify exact source/input pins and run this frozen diagnostic once; no category counts are inferred before an actual result.",
+  "logical_business_request_identity_count": 1,
+  "native_dispatch_attempted": true,
+  "native_upload_attempted": true,
+  "next_step": "Reconcile the retained original dispatch terminal without a new business key. Investigate recorded-state differences with a versioned real macro-pair protocol; no READ causal benefit or policy promotion is established.",
   "original_records": {
     "bytes": 9496351,
     "sha256": "43f1c63fe378a783cc57d475ad1841c4235b7d1eaa335c2e0fdd2126f73d1a85"
   },
   "physical_full_cost_observed": false,
   "policy_benefit_qualified": false,
+  "previous_observation": {
+    "business_submission_count": 0,
+    "retained_in_parent_commit": "3f0766c2fce7c7870a2d9c9b75a2d0af1fbeed54",
+    "state": "NOT_SUBMITTED",
+    "status_sha256": "4eb8118dabfe1de830167d9c414d74de1c3e3475e3e71e992954a90a56fc8695"
+  },
   "production_update": "no-update",
   "request_sha256": "3ea9d00f6dc1be41427272a1f79169d3b2bd4b56d8b1b97ec7693be9c9b4824e",
-  "schema": "ctrl.fit40.retained-gap-native-status.v1",
+  "result": {
+    "bytes": 7924,
+    "file": "FIT40_GAP_RESULT_20261111.json",
+    "sha256": "b4f7645170cd721b1687b0de869e84cdbf92793a4da46753e092b44a2ed673d1"
+  },
+  "schema": "ctrl.fit40.retained-gap-native-status.v2",
   "scope": {
     "future_collection_allowed": false,
     "historical_rows": 200,
@@ -33,6 +56,8 @@
     "new_independent_tasks": 0,
     "original_fit_sources": 40
   },
+  "source_equal_original_coverage": 0.5375,
+  "source_equal_probe_candidate_availability": 0.54375,
   "source_pins": {
     "candidate_coverage.py": {
       "bytes": 14398,
@@ -47,5 +72,5 @@
       "sha256": "1da02aea4aabb7e21486110fc0ec545fe9d683e5e0383311df568e33f649753e"
     }
   },
-  "state": "NOT_SUBMITTED"
+  "state": "ARTIFACTS_RECOVERED_TERMINAL_UNKNOWN"
 }
