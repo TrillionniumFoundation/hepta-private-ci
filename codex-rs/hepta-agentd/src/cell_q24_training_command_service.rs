@@ -180,7 +180,7 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
         Err(Error::Unavailable)
     }
 
-    fn command_response(&self, bytes: &[u8], next_request_id: u64) -> Result<Vec<u8>, Error> {
+    pub(super) fn command_response(&self, bytes: &[u8], next_request_id: u64) -> Result<Vec<u8>, Error> {
         let request: wire::Request = serde_json::from_slice(bytes)?;
         request.require_context(&self.context, self.binding, next_request_id)?;
         let result = match request.action {

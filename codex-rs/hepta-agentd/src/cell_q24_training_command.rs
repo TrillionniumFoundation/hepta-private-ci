@@ -32,6 +32,13 @@ use crate::LearningIterationCheckpointErrorV1;
 use crate::OriginalCellQ24TrainingStageErrorV1;
 use crate::learning_owner_command_channel::original_owner_command_channel_v1;
 
+#[path = "cell_q24_training_bootstrap.rs"]
+mod bootstrap;
+pub use bootstrap::OriginalCellQ24TrainingBootstrapConfigV1;
+pub use bootstrap::OriginalCellQ24TrainingBootstrapCustodyV1;
+pub use bootstrap::OriginalCellQ24TrainingBootstrapErrorV1;
+pub use bootstrap::OriginalCellQ24TrainingBootstrapOwnerV1;
+
 #[path = "cell_q24_training_command_service.rs"]
 mod serving;
 #[path = "cell_q24_training_command_wire.rs"]

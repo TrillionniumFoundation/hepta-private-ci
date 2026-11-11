@@ -30,6 +30,10 @@ mod wire;
 
 #[path = "cell_q24_training_command.rs"]
 mod training_command;
+pub use training_command::OriginalCellQ24TrainingBootstrapConfigV1;
+pub use training_command::OriginalCellQ24TrainingBootstrapCustodyV1;
+pub use training_command::OriginalCellQ24TrainingBootstrapErrorV1;
+pub use training_command::OriginalCellQ24TrainingBootstrapOwnerV1;
 pub use training_command::OriginalCellQ24TrainingCommandClientV1;
 pub use training_command::OriginalCellQ24TrainingCommandContextV1;
 pub use training_command::OriginalCellQ24TrainingCommandErrorV1;
@@ -38,6 +42,7 @@ pub use training_command::OriginalCellQ24TrainingCommandReceiptV1;
 
 #[path = "cell_q24_material_evidence_service.rs"]
 mod material;
+pub use material::OriginalCellQ24DatasetCommandReadbackV1;
 pub use material::OriginalCellQ24MaterialCommandClientV1;
 pub use material::OriginalCellQ24MaterialCommandErrorV1;
 pub use material::OriginalCellQ24MaterialCommandOwnerV1;
@@ -45,6 +50,7 @@ pub use material::OriginalCellQ24MaterialCommandReceiptV1;
 pub use material::OriginalCellQ24MaterialEvidenceErrorV1;
 pub use material::OriginalCellQ24MaterialEvidenceOwnerV1;
 pub use material::OriginalCellQ24MaterialEvidenceRoleV1;
+pub use material::OriginalCellQ24MaterialSourceConnectionV1;
 pub use material::OriginalCellQ24MaterialSourceErrorV1;
 pub use material::OriginalCellQ24RemoteMaterialClientV1;
 

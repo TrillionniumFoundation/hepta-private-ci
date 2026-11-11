@@ -26,6 +26,10 @@ use crate::OriginalCellQ24MaterialReceiptConfigV1;
 use crate::OriginalCellQ24MaterialReceiptErrorV1;
 use crate::learning_owner_command_channel::original_owner_command_channel_v1;
 
+#[path = "cell_q24_material_dataset_readback.rs"]
+mod dataset_readback;
+pub use dataset_readback::OriginalCellQ24DatasetCommandReadbackV1;
+
 #[path = "cell_q24_material_command_service.rs"]
 mod serving;
 #[path = "cell_q24_material_command_wire.rs"]
