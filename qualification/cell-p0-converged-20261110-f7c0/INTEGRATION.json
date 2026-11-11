@@ -1,6 +1,6 @@
 {
   "schema": "hepta.cell-p0-converged-implementation-and-evidence.v1",
-  "observed_at_utc": "2026-11-11T01:16:11.827708+00:00",
+  "observed_at_utc": "2026-11-11T01:34:01.764610+00:00",
   "candidate": {
     "source_sha": "6ecfa504d2132f3682ffb01f8c9d65346b26cf5b",
     "source_tree": "9184583f3842d90a560436f279c753f15792e3ab",
@@ -191,6 +191,23 @@
       "exit_code": 101,
       "final_common_source_qualified": false,
       "evidence": "p0-core-terminal-20261111-v1.zip"
+    },
+    {
+      "name": "original training receipt local native attempt",
+      "status": "FAILED_BUILD_WITHOUT_CAPTURED_INNER_DIAGNOSTIC",
+      "source_immutable_during_invocation": false,
+      "native_tests_executed": 0,
+      "exit_code": 101,
+      "reason": "nextest reports cargo test --no-run exited; captured log does not establish compiler error or resource/kill cause",
+      "evidence": "engineering/p0-training-owner-native-attempt1.json",
+      "final_candidate_qualified": false
+    },
+    {
+      "name": "independent output-retention code review",
+      "status": "NO_NEW_BLOCKER_FOUND",
+      "source_sha": "6ecfa504d2132f3682ffb01f8c9d65346b26cf5b",
+      "evidence": "engineering/output-retention-review.json",
+      "native_tests_executed": 0
     }
   ],
   "remaining_p0": [
@@ -224,5 +241,6 @@
     "bytes": 19061,
     "sha256": "fc81c386d45811dee2897292caaad829e4000b7aacf16f7cde8f8f7787fecf1f",
     "scope": "RMCP attempts and the original output-helper counterexample only; no 722516 whole-candidate native pass."
-  }
+  },
+  "unresolved_dependency_diagnosis": "engineering/remaining-failures-static-20261111-v1.json"
 }

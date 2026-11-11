@@ -1,0 +1,17 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+    Blocking waiting for file lock on build directory
+   Compiling bindgen v0.73.2
+   Compiling rustix v1.1.5
+   Compiling tracing-serde v0.2.0
+   Compiling bindgen v0.72.1
+   Compiling sorted_vector_map v0.2.1
+   Compiling starlark v0.14.2 (/workspace/scratch/f7c0ded86bcc/hepta-p0-training-owner/codex-rs/third_party/starlark-0.14.2-blake3-backport)
+   Compiling strum v0.27.2
+   Compiling codex-utils-image v0.0.0 (/workspace/scratch/f7c0ded86bcc/hepta-p0-training-owner/codex-rs/utils/image)
+   Compiling tracing-subscriber v0.3.23
+   Compiling codex-utils-path-uri v0.0.0 (/workspace/scratch/f7c0ded86bcc/hepta-p0-training-owner/codex-rs/utils/path-uri)
+   Compiling codex-extension-items v0.0.0 (/workspace/scratch/f7c0ded86bcc/hepta-p0-training-owner/codex-rs/ext/items)
+   Compiling pagable v0.4.2
+   Compiling codex-async-utils v0.0.0 (/workspace/scratch/f7c0ded86bcc/hepta-p0-training-owner/codex-rs/async-utils)
+error: command `/workspace/scratch/f7c0ded86bcc/toolchain/installed/bin/cargo test --no-run --message-format json-render-diagnostics --package codex-hepta-agentd --lib` exited
+error: recipe `test` failed on line 89 with exit code 101
