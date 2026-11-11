@@ -173,3 +173,6 @@ async fn episodic_wire_without_configured_source_cannot_mutate_original_owner()
     server_task.await??;
     Ok(())
 }
+
+#[path = "production_episodic_drain_tests.rs"]
+mod drain;
