@@ -68,14 +68,21 @@ class Q24DatasetSourceClosureTests(unittest.TestCase):
             )
         )
         for marker in (
-            "SystemTime::now()",
             "let fresh_now = clock()?;",
             "if fresh_now < started_at",
-            "if fresh_now >= request.envelope.expiry_unix_seconds",
+            "if require_work_deadline && fresh_now >= request.envelope.expiry_unix_seconds",
         ):
             with self.subTest(marker=marker):
                 self.assertEqual(self.source.count(marker), 1)
                 self.rejects(self.source.replace(marker, "", 1))
+        clock = "SystemTime::now()"
+        self.assertEqual(self.source.count(clock), 2)
+        self.rejects(self.source.replace(clock, "", 1))
+        before, _, after = self.source.rpartition(clock)
+        self.rejects(before + after)
+        # The public new-material path always enforces its work deadline; the
+        # separate closed receipt path can only re-read original completed work.
+        self.rejects(self.source.replace("            true,\n            clock,", "            false,\n            clock,", 1))
         guard = "if fresh_now < started_at"
         self.rejects(self.source.replace(guard, "if false && fresh_now < started_at", 1))
 

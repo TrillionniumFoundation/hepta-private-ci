@@ -357,6 +357,7 @@ pub use learning_iteration_generation_evidence::GenerationLearningStageReadbackR
 #[cfg(target_os = "linux")]
 pub use learning_iteration_generation_evidence::read_generation_learning_stage_v1;
 
+mod cell_q24_material_receipt_owner;
 mod cell_q24_model_proposal;
 mod cell_q24_training_receipt_owner;
 mod cell_q24_training_snapshot_readback;
@@ -401,6 +402,12 @@ pub use cell_q24_dataset::CellQ24DatasetErrorV1;
 pub use cell_q24_dataset::CellQ24DatasetReaderV1;
 pub use cell_q24_dataset::CellQ24DatasetRuleV1;
 pub use cell_q24_dataset::OriginalCellQ24DatasetV1;
+pub use cell_q24_material_receipt_owner::OriginalCellQ24MaterialCompletionV1;
+pub use cell_q24_material_receipt_owner::OriginalCellQ24MaterialReceiptConfigV1;
+pub use cell_q24_material_receipt_owner::OriginalCellQ24MaterialReceiptErrorV1;
+pub use cell_q24_material_receipt_owner::OriginalCellQ24MaterialReceiptFilesV1;
+pub use cell_q24_material_receipt_owner::OriginalCellQ24MaterialReceiptOwnersV1;
+pub use cell_q24_material_receipt_owner::OriginalCellQ24MaterialReceiptSourcesV1;
 pub use cell_q24_model_proposal::CellQ24ModelProposalErrorV1;
 pub use cell_q24_model_proposal::CellQ24ModelProposalInputsV1;
 pub use cell_q24_model_proposal::CellQ24ModelProposalOwnerV1;
