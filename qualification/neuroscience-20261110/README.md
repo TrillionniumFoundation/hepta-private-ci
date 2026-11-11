@@ -72,6 +72,18 @@ steps. It prevents duplicated feedback, updates based on feedback arriving
 after the training cutoff, and feedback occurring before an action. It clips
 per-group and global L1 proposal deltas. Numerical representation is Python
 float for reference testing, **not** the production Q24 bit-exact contract.
+**Frozen-selection view vs forensic audit.** `time_aligned_credit` returns a
+full-audit receipt whose `future_withheld`, `unobserved_action_count`, and
+`transcript_digest` fields can depend on feedback that arrived after the
+training cutoff. These are post-hoc **forensic only**, never candidate or
+controller features. `frozen_credit_view(receipt)` produces a typed frozen
+shadow projection containing only the arm, clipped deltas, matched/expired
+counts observed by cutoff, causal training digest, and `DENY_ALL` status.
+Its payload is invariant to valid future-only receipt additions and label
+changes, unlike the full-audit payload. The projection is not a native
+Owner-authenticated receipt, does not replace correct event-availability
+checking, and is not a production admission or adoption interface.
+
 The action's `source_digest` and outcome's `receipt_digest` are syntax-checked
 SHA-256 strings: **no signer, root authority, source provenance or real effect
 is verified here**. Owner authentication and true outcome attestation remain

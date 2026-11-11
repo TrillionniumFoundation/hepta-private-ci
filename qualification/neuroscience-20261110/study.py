@@ -80,6 +80,40 @@ class CreditReceipt:
     qualification: str = "SHADOW_ONLY"
 
 
+@dataclass(frozen=True)
+class FrozenCreditView:
+    """Candidate-facing, shadow-only projection of a full forensic receipt.
+
+    Never exports fields that depend on feedback unavailable at the cutoff:
+    future_withheld, unobserved_action_count, or transcript_digest. This
+    cannot authenticate source, feedback, model ownership or actual effects.
+    """
+    arm: str
+    deltas: tuple[float, ...]
+    matched: int
+    expired: int
+    causal_training_digest: str
+    authority: str = "DENY_ALL"
+    qualification: str = "SHADOW_ONLY"
+
+
+def frozen_credit_view(full_audit: CreditReceipt) -> FrozenCreditView:
+    """Redact hindsight-bearing forensic metadata before frozen selection.
+
+    Only receipts produced by the separate time-aligned shadow audit should
+    be passed here. The type guard is not cryptographic attestation.
+    """
+    if type(full_audit) is not CreditReceipt:
+        raise ContractError("invalid shadow credit audit receipt")
+    return FrozenCreditView(
+        arm=full_audit.arm,
+        deltas=full_audit.deltas,
+        matched=full_audit.matched,
+        expired=full_audit.expired,
+        causal_training_digest=full_audit.causal_training_digest,
+    )
+
+
 def time_aligned_credit(
     actions: Iterable[Eligibility],
     feedback: Iterable[Feedback],
