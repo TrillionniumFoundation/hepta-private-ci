@@ -14,6 +14,7 @@ use super::Error;
 use super::OriginalCellQ24TrainingCompletionV1;
 use super::OriginalCellQ24TrainingStageV1;
 use super::Owners;
+use super::SourceLaneProof;
 use crate::CellQ24ModelProposalInputsV1;
 use crate::CellQ24ModelProposalOwnerV1;
 use crate::CellQ24ModelProposalReceiptV1;
@@ -30,7 +31,7 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
         file: File,
         witness: MW,
     ) -> Result<CellQ24ModelProposalOwnerV1<MW>, Error> {
-        self.in_model_lane(|training, _| {
+        self.in_model_lane(|training, _, _source| {
             CellQ24ModelProposalOwnerV1::create(file, witness, training, self.dataset.clone())
                 .map_err(Error::from)
         })
@@ -44,7 +45,7 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
         file: File,
         witness: MW,
     ) -> Result<CellQ24ModelProposalOwnerV1<MW>, Error> {
-        self.in_model_lane(|training, _| {
+        self.in_model_lane(|training, _, _source| {
             CellQ24ModelProposalOwnerV1::recover(file, witness, training, self.dataset.clone())
                 .map_err(Error::from)
         })
@@ -58,7 +59,7 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
         model: &mut CellQ24ModelProposalOwnerV1<MW>,
         inputs: &CellQ24ModelProposalInputsV1<'_, S>,
     ) -> Result<CellQ24ModelProposalReceiptV1, Error> {
-        self.in_model_lane(|training, completed| {
+        self.in_model_lane(|training, completed, _source| {
             require_original_training(inputs, completed)?;
             CellQ24ModelProposalOwnerV1::commit_or_readback(model, training, inputs)
                 .map_err(Error::from)
@@ -73,7 +74,7 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
         model: &mut CellQ24ModelProposalOwnerV1<MW>,
         inputs: &CellQ24ModelProposalInputsV1<'_, S>,
     ) -> Result<CellQ24ModelProposalReceiptV1, Error> {
-        self.in_model_lane(|training, completed| {
+        self.in_model_lane(|training, completed, _source| {
             require_original_training(inputs, completed)?;
             CellQ24ModelProposalOwnerV1::readback(model, training, inputs).map_err(Error::from)
         })
@@ -85,8 +86,8 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
     pub(crate) fn read_candidate_material(
         &self,
     ) -> Result<crate::OriginalCellQ24CandidateMaterialV1, Error> {
-        self.in_model_lane(|training, completed| {
-            CellQ24TrainingOwnerV1::require_original_source_capture(training)?;
+        self.in_model_lane(|training, completed, source| {
+            SourceLaneProof::require_original(source, training)?;
             let candidate = match CellQ24TrainingOwnerV1::readback(training)? {
                 crate::CellQ24TrainingOutcomeV1::Candidate(candidate) => *candidate,
                 crate::CellQ24TrainingOutcomeV1::NoUpdate { .. } => {
@@ -115,7 +116,7 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
         training_attestation: &codex_hepta_learning_ledger::SignedLearningEvidenceV1,
         material: &crate::OriginalCellEvaluationModelMaterialV1,
     ) -> Result<CellQ24ModelProposalOwnerV1<MW>, Error> {
-        self.in_model_lane(|training, completed| {
+        self.in_model_lane(|training, completed, _source| {
             require_current_training(training_cut, training_attestation, completed)?;
             CellQ24ModelProposalOwnerV1::create_from_current_material(
                 file,
@@ -141,7 +142,7 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
         training_attestation: &codex_hepta_learning_ledger::SignedLearningEvidenceV1,
         material: &crate::OriginalCellEvaluationModelMaterialV1,
     ) -> Result<CellQ24ModelProposalOwnerV1<MW>, Error> {
-        self.in_model_lane(|training, completed| {
+        self.in_model_lane(|training, completed, _source| {
             require_current_training(training_cut, training_attestation, completed)?;
             CellQ24ModelProposalOwnerV1::recover_from_current_material(
                 file,
@@ -166,7 +167,7 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
         training_attestation: &codex_hepta_learning_ledger::SignedLearningEvidenceV1,
         material: &crate::OriginalCellEvaluationModelMaterialV1,
     ) -> Result<CellQ24ModelProposalReceiptV1, Error> {
-        self.in_model_lane(|training, completed| {
+        self.in_model_lane(|training, completed, _source| {
             require_current_training(training_cut, training_attestation, completed)?;
             CellQ24ModelProposalOwnerV1::commit_current_material_or_readback(
                 model,
@@ -189,7 +190,7 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
         training_attestation: &codex_hepta_learning_ledger::SignedLearningEvidenceV1,
         material: &crate::OriginalCellEvaluationModelMaterialV1,
     ) -> Result<CellQ24ModelProposalReceiptV1, Error> {
-        self.in_model_lane(|training, completed| {
+        self.in_model_lane(|training, completed, _source| {
             require_current_training(training_cut, training_attestation, completed)?;
             CellQ24ModelProposalOwnerV1::read_current_material(
                 model,
@@ -207,6 +208,7 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
         work: impl FnOnce(
             &mut CellQ24TrainingOwnerV1<TW>,
             &OriginalCellQ24TrainingCompletionV1,
+            &SourceLaneProof<'_>,
         ) -> Result<T, Error>,
     ) -> Result<T, Error> {
         let _permit = Arc::clone(&self.lane)
@@ -214,7 +216,11 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
             .map_err(|_| Error::Busy)?;
         let mut owners = self.owners.try_lock().map_err(|_| Error::CommitUncertain)?;
         #[cfg(target_os = "linux")]
-        if owners.source_fenced {
+        if owners.source_fenced
+            || self
+                .source_abandoned
+                .load(std::sync::atomic::Ordering::Acquire)
+        {
             return Err(Error::CommitUncertain);
         }
         let Owners {
@@ -224,15 +230,32 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
         training
             .require_original_dataset_scope(&receipts.config.dataset, &receipts.config.scope)?;
         #[cfg(target_os = "linux")]
-        training.require_live_source_if_captured()?;
-        let original = owners.read_original_completion()?;
-        let result = work(&mut owners.training, &original);
-        // The Model operation can block. Re-read both original owners before
-        // returning even an error; never renew a signature or retry a claim.
+        let source = training.original_source_for_operation()?;
         #[cfg(target_os = "linux")]
-        let source_bound =
-            CellQ24TrainingOwnerV1::require_live_source_if_captured(&mut owners.training)
-                .map_err(|_| Error::CommitUncertain)?;
+        let mut operation = source
+            .as_ref()
+            .map(|source| crate::OriginalCellQ24TrainingSourceV1::begin_source_operation(source))
+            .transpose()
+            .map_err(crate::CellQ24TrainingOwnerErrorV1::from)?;
+        let original = owners.read_original_completion()?;
+        let result = {
+            #[cfg(target_os = "linux")]
+            let proof = SourceLaneProof::from_operation(operation.as_ref());
+            #[cfg(not(target_os = "linux"))]
+            let proof = SourceLaneProof::legacy();
+            work(&mut owners.training, &original, &proof)
+        };
+        // The actual Model effect remains inside the same original lane.
+        // Source after reads cannot return a cached completion or a new lease.
+        #[cfg(target_os = "linux")]
+        let source_bound = source.is_some();
+        #[cfg(target_os = "linux")]
+        if let (Some(source), Some(operation)) = (source.as_ref(), operation.as_mut()) {
+            if operation.read_after_native(source).is_err() {
+                owners.source_fenced = true;
+                return Err(Error::CommitUncertain);
+            }
+        }
         let current = owners.read_original_completion().map_err(|_| {
             #[cfg(target_os = "linux")]
             if source_bound {
@@ -256,6 +279,20 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
                 owners.source_fenced = true;
             }
             return Err(Error::CommitUncertain);
+        }
+        #[cfg(target_os = "linux")]
+        if let (Some(source), Some(operation)) = (source.as_ref(), operation) {
+            if self
+                .source_abandoned
+                .load(std::sync::atomic::Ordering::Acquire)
+            {
+                owners.source_fenced = true;
+                return Err(Error::CommitUncertain);
+            }
+            operation.finish(source).map_err(|_| {
+                owners.source_fenced = true;
+                Error::CommitUncertain
+            })?;
         }
         result
     }

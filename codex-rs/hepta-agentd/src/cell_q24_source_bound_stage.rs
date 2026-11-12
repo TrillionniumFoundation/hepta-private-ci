@@ -16,10 +16,10 @@ use codex_hepta_neuron::AnchorWitnessStore;
 use super::Error;
 use super::OriginalCellQ24TrainingCompletionV1;
 use super::OriginalCellQ24TrainingStageV1;
+use super::SourceLaneProof;
 use crate::CellQ24ModelProposalInputsV1;
 use crate::CellQ24ModelProposalOwnerV1;
 use crate::CellQ24ModelProposalReceiptV1;
-use crate::CellQ24TrainingOwnerV1;
 
 pub struct SourceBoundCellQ24TrainingStageV1<TW: AnchorWitnessStore, RW: AnchorWitnessStore> {
     original: OriginalCellQ24TrainingStageV1<TW, RW>,
@@ -35,8 +35,8 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
         original: OriginalCellQ24TrainingStageV1<TW, RW>,
     ) -> Result<Self, Error> {
         original
-            .in_lane(|owners| {
-                CellQ24TrainingOwnerV1::require_original_source_capture(&mut owners.training)?;
+            .in_lane(|owners, source| {
+                SourceLaneProof::require_original(source, &mut owners.training)?;
                 Ok(())
             })
             .await?;
@@ -54,7 +54,7 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
         self.original.require_dataset(dataset)?;
         let scope = scope.clone();
         self.original
-            .in_lane(move |owners| {
+            .in_lane(move |owners, _source| {
                 if owners.receipts.config.scope != scope {
                     return Err(Error::Binding("original command frozen scope"));
                 }

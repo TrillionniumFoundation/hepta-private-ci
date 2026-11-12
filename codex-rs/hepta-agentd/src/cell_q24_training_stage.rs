@@ -24,6 +24,11 @@ use crate::learning_owner_journal::LearningOriginalOwnerErrorV1;
 
 #[path = "cell_q24_training_model_lane.rs"]
 mod model_lane;
+#[path = "cell_q24_training_source_lane.rs"]
+mod source_lane;
+use source_lane::SourceLaneProof;
+#[cfg(target_os = "linux")]
+use source_lane::SourceLaneCancellation;
 
 #[cfg(target_os = "linux")]
 #[path = "cell_q24_source_bound_stage.rs"]
@@ -72,6 +77,8 @@ pub struct OriginalCellQ24TrainingStageV1<TW: AnchorWitnessStore, RW: AnchorWitn
     dataset: LearningIterationSnapshotV1,
     owners: Arc<Mutex<Owners<TW, RW>>>,
     lane: Arc<Semaphore>,
+    #[cfg(target_os = "linux")]
+    source_abandoned: Arc<AtomicBool>,
 }
 
 impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 'static>
@@ -91,9 +98,11 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
                 source_fenced: false,
             })),
             lane: Arc::new(Semaphore::new(/*permits*/ 1)),
+            #[cfg(target_os = "linux")]
+            source_abandoned: Arc::new(AtomicBool::new(false)),
         };
         stage
-            .in_lane(|owners| {
+            .in_lane(|owners, _source| {
                 super::validate_config(&owners.receipts.config, &owners.receipts.key)?;
                 match owners.receipts.journal.read(&owners.receipts.saved) {
                     Ok(_) => owners.read_original_completion().map(|_| ()),
@@ -121,7 +130,7 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
             super::now().map_err(OriginalCellQ24TrainingReceiptErrorV1::from)?;
         let (completed, new_work_started_at) = self
             .in_lane(
-                move |owners| match owners.receipts.journal.read(&owners.receipts.saved) {
+                move |owners, _source| match owners.receipts.journal.read(&owners.receipts.saved) {
                     Ok(_) => owners
                         .read_original_completion()
                         .map(|completed| (completed, None)),
@@ -202,7 +211,8 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
         dataset: &LearningIterationSnapshotV1,
     ) -> Result<OriginalCellQ24TrainingCompletionV1, Error> {
         self.require_dataset(dataset)?;
-        self.in_lane(Owners::read_original_completion).await
+        self.in_lane(|owners, _source| owners.read_original_completion())
+            .await
     }
 
     /// The caller supplies only an equality check, never bytes to be signed.
@@ -227,17 +237,23 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
 
     async fn in_lane<T: Send + 'static>(
         &self,
-        work: impl FnOnce(&mut Owners<TW, RW>) -> Result<T, Error> + Send + 'static,
+        work: impl FnOnce(&mut Owners<TW, RW>, &SourceLaneProof<'_>) -> Result<T, Error>
+        + Send
+        + 'static,
     ) -> Result<T, Error> {
         let permit = Arc::clone(&self.lane)
             .try_acquire_owned()
             .map_err(|_| Error::Busy)?;
         let owners = Arc::clone(&self.owners);
-        tokio::task::spawn_blocking(move || {
+        #[cfg(target_os = "linux")]
+        let mut cancellation = SourceLaneCancellation::new(Arc::clone(&self.source_abandoned));
+        #[cfg(target_os = "linux")]
+        let worker_cancellation = cancellation.worker();
+        let completed = tokio::task::spawn_blocking(move || {
             let _permit = permit;
             let mut owners = owners.try_lock().map_err(|_| Error::CommitUncertain)?;
             #[cfg(target_os = "linux")]
-            if owners.source_fenced {
+            if owners.source_fenced || worker_cancellation.stage_is_fenced() {
                 return Err(Error::CommitUncertain);
             }
             let Owners {
@@ -247,23 +263,51 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
             training
                 .require_original_dataset_scope(&receipts.config.dataset, &receipts.config.scope)?;
             #[cfg(target_os = "linux")]
-            training.require_live_source_if_captured()?;
-            let result = work(&mut owners);
-            // Work or its acknowledgement may already have happened. A failed
-            // tail read cannot return a candidate, NoUpdate, or fresh signature.
+            let source = training.original_source_for_operation()?;
             #[cfg(target_os = "linux")]
-            if CellQ24TrainingOwnerV1::require_live_source_if_captured(&mut owners.training)
-                .map_err(|_| Error::CommitUncertain)?
-            {
-                if owners.require_captured_tail_current().is_err() {
+            if source.is_some() {
+                worker_cancellation.bind_source()?;
+            }
+            #[cfg(target_os = "linux")]
+            let operation = source
+                .as_ref()
+                .map(|source| crate::OriginalCellQ24TrainingSourceV1::begin_source_operation(source))
+                .transpose()
+                .map_err(CellQ24TrainingOwnerErrorV1::from)?;
+            let result = {
+                #[cfg(target_os = "linux")]
+                let proof = SourceLaneProof::from_operation(operation.as_ref());
+                #[cfg(not(target_os = "linux"))]
+                let proof = SourceLaneProof::legacy();
+                work(&mut owners, &proof)
+            };
+            // Work or its acknowledgement may already have happened. Read each
+            // original Source channel once after work, then physically reread
+            // Native and Generator before consuming the borrowed operation.
+            #[cfg(target_os = "linux")]
+            if let (Some(source), Some(mut operation)) = (source.as_ref(), operation) {
+                if operation.read_after_native(source).is_err() {
                     owners.source_fenced = true;
                     return Err(Error::CommitUncertain);
                 }
+                if owners.require_captured_tail_current().is_err()
+                    || worker_cancellation.require_live().is_err()
+                {
+                    owners.source_fenced = true;
+                    return Err(Error::CommitUncertain);
+                }
+                operation.finish(source).map_err(|_| {
+                    owners.source_fenced = true;
+                    Error::CommitUncertain
+                })?;
             }
             result
         })
         .await
-        .map_err(|_| Error::CommitUncertain)?
+        .map_err(|_| Error::CommitUncertain);
+        #[cfg(target_os = "linux")]
+        cancellation.joined();
+        completed?
     }
 }
 
