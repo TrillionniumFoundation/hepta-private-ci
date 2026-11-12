@@ -1,0 +1,20 @@
+commit cf73d06e1a20664f428980efe23e299d7b52a78d
+Author:     Codex <codex@openai.com>
+AuthorDate: Thu Nov 12 03:26:43 2026 -0500
+Commit:     Codex <codex@openai.com>
+CommitDate: Thu Nov 12 03:26:43 2026 -0500
+
+    fix(neuron): import extracted journal codec in legacy fixture
+
+diff --git a/codex-rs/hepta-neuron/src/cell_queue_cost_journal_tests.rs b/codex-rs/hepta-neuron/src/cell_queue_cost_journal_tests.rs
+index 801d81a5..837d7005 100644
+--- a/codex-rs/hepta-neuron/src/cell_queue_cost_journal_tests.rs
++++ b/codex-rs/hepta-neuron/src/cell_queue_cost_journal_tests.rs
+@@ -3,6 +3,7 @@ use pretty_assertions::assert_eq;
+ use super::*;
+ use crate::cell_inference::admission_for_step;
+ use crate::cell_inference::feature_request;
++use crate::cell_journal_codec::apply_record;
+ use codex_hepta_infer_core::neuron_feature_request_digest_v1;
+ 
+ #[test]
