@@ -188,7 +188,15 @@ pub(crate) struct RegisteredGenerationInitial {
 }
 
 impl RegisteredGenerationInitial {
-    pub(crate) fn require_profile(&self) -> io::Result<()> {
+    pub(crate) fn require_original_enrollment_profile(&self) -> io::Result<()> {
+        self.require_profile()
+    }
+
+    pub(crate) fn refuse_original_enrollment(&self) -> io::Result<()> {
+        self.fence()
+    }
+
+    fn require_profile(&self) -> io::Result<()> {
         if self
             .profile_store
             .load(&self.profile_owner)
@@ -299,7 +307,7 @@ impl RegisteredGenerationInitial {
             .map_err(io::Error::other)
     }
 
-    pub(crate) fn fence(&self) -> io::Result<()> {
+    fn fence(&self) -> io::Result<()> {
         fence_initial_record(&self.profile_store, &self.profile_owner)
     }
 }

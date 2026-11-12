@@ -53,9 +53,9 @@ impl InitialEnrollmentContext<'_> {
             inputs,
         );
         let enrollment_post = self.require_original_context(end);
-        let slot = enrolled?;
+        let slot: RegisteredGenerationInitial = enrolled?;
         if let Err(error) = enrollment_post {
-            slot.fence()?;
+            RegisteredGenerationInitial::refuse_original_enrollment(&slot)?;
             return Err(error);
         }
         let result = (|| {
@@ -88,7 +88,7 @@ impl InitialEnrollmentContext<'_> {
                 source.register_original_source_cell(context)?;
                 source.register_original_source_ledger(context)?;
             }
-            slot.require_profile()?;
+            RegisteredGenerationInitial::require_original_enrollment_profile(&slot)?;
             Ok(run_start)
         })();
         // A failed baseline still receives the original writer/pidfd/end
@@ -97,7 +97,7 @@ impl InitialEnrollmentContext<'_> {
         match result.and_then(|run_start| post.map(|()| run_start)) {
             Ok(run_start) => Ok((slot, run_start)),
             Err(error) => {
-                slot.fence()?;
+                RegisteredGenerationInitial::refuse_original_enrollment(&slot)?;
                 Err(error)
             }
         }

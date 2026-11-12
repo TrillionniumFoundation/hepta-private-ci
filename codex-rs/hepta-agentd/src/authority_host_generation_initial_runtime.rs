@@ -7,6 +7,7 @@ use std::os::unix::net::UnixStream;
 use std::sync::atomic::AtomicBool;
 
 use super::*;
+use crate::authority_host_service::generation_initial::RegisteredGenerationInitial;
 
 #[path = "authority_host_initial_enrollment_runtime.rs"]
 mod enrollment;
@@ -104,7 +105,7 @@ pub(in super::super) fn serve_optional(
         .map_err(|_| io::Error::other("original initial runtime already consumed"))?;
     std::thread::scope(|scope| {
         let worker = scope.spawn(|| {
-            let context = InitialEnrollmentContext {
+            let context: InitialEnrollmentContext<'_> = InitialEnrollmentContext {
                 initial,
                 service,
                 config,
@@ -148,7 +149,7 @@ pub(in super::super) fn serve_optional(
                                     .try_send(Ok(slot.profile.binding.clone()))
                                     .is_err()
                             {
-                                slot.fence()?;
+                                RegisteredGenerationInitial::refuse_original_enrollment(&slot)?;
                                 return Err(io::Error::other(
                                     "original initial enrollment acknowledgement lost",
                                 ));
