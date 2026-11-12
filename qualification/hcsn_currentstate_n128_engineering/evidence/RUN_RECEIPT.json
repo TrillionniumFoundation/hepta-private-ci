@@ -1,6 +1,6 @@
 {
   "schema": "hcsn-n128-engineering-run-receipt-v1",
-  "source_commit": "76e1f5ab353106a83a4d161c2a1d6ee838c78b37",
+  "source_commit": "3653fd89031df3e84f82bd9b6e146b82591b3391",
   "small_fixture": {
     "command": "python -m unittest -v qualification.hcsn_currentstate_n128_engineering.test_engineering",
     "tests": 6,
@@ -17,10 +17,10 @@
   },
   "frozen_source_static_audit": {
     "status": "PASS_SOURCE_BOUND_HOLD",
-    "wall_seconds_shell_builtin": 0.128,
-    "user_cpu_seconds": 0.113,
-    "system_cpu_seconds": 0.012,
-    "output_sha256": "719ed0ec0e8141a9e4792e3e8c166c6d0845b34a252c7f580f183639da2ca763"
+    "wall_seconds_shell_builtin": 0.104,
+    "user_cpu_seconds": 0.086,
+    "system_cpu_seconds": 0.017,
+    "output_sha256": "d28d16b2ba88c509371ac464c9139471e13be7790ea42e5696698df7f3928b22"
   },
   "dynamic_runs": 0,
   "matrix_exponentials": 0,
