@@ -1,0 +1,120 @@
+{
+  "source": "fca4c23fd9e01e13c84f62a263659e9cda1d2af9",
+  "tree": "e05ad391e88f16c92905eaefd0cc57b96fd478ed",
+  "base": "9ce3dbaa6433848f35540fcf9ff7ebd62857dc83",
+  "base_tree": "217862903fa5d093cc219949db9f3e49678db0d7",
+  "clean": true,
+  "commits": [
+    {
+      "sha": "868546bb4181e42ce8a90d7804a071ebba03e9df",
+      "tree": "0ba2539ffafe4344a239ec63436815931e935cfe",
+      "parents": [
+        "9ce3dbaa6433848f35540fcf9ff7ebd62857dc83"
+      ],
+      "subject": "Fix evaluation closure fixtures for actual model projection caller",
+      "numstat": "1\t1\tqa/b4-no-bypass/test_cell_learning_evaluation_source_closure.py\n1\t1\tqa/b4-no-bypass/test_original_evaluation_receipt_owner_source_closure.py"
+    },
+    {
+      "sha": "314d80054cada728aa784294a589bb4b4718cbb6",
+      "tree": "4727e57535abec0de23aa8fcb39cb6ce2eacad33",
+      "parents": [
+        "868546bb4181e42ce8a90d7804a071ebba03e9df"
+      ],
+      "subject": "Bind independent B source ingress to original peer and absolute end",
+      "numstat": "3\t0\tcodex-rs/hepta-agentd/src/authority_host_q24_evaluation.rs\n6\t3\tcodex-rs/hepta-agentd/src/authority_host_q24_evaluation_deployment.rs\n101\t0\tcodex-rs/hepta-agentd/src/authority_host_q24_evaluation_source_peer.rs\n2\t0\tcodex-rs/hepta-agentd/src/lib.rs\n104\t0\tcodex-rs/hepta-agentd/src/root_independent_b_source_protocol.rs"
+    },
+    {
+      "sha": "b68b787c14d97decc8cf6bf60bedf19c681b8cb0",
+      "tree": "07440d1e9ed1332fcb1b66ffad722525967cc34f",
+      "parents": [
+        "314d80054cada728aa784294a589bb4b4718cbb6"
+      ],
+      "subject": "Retain original signed B source before one-time holdout release",
+      "numstat": "5\t0\tcodex-rs/hepta-agentd/src/authority_host_q24_evaluation_execute.rs\n6\t0\tcodex-rs/hepta-agentd/src/authority_host_q24_evaluation_files.rs\n2\t0\tcodex-rs/hepta-agentd/src/authority_host_q24_evaluation_host.rs\n200\t0\tcodex-rs/hepta-agentd/src/authority_host_q24_evaluation_ingress.rs\n22\t0\tcodex-rs/hepta-agentd/src/authority_host_q24_evaluation_provider.rs\n7\t0\tcodex-rs/hepta-agentd/src/authority_host_q24_evaluation_record.rs\n1\t0\tcodex-rs/hepta-agentd/src/authority_host_q24_evaluation_registration.rs\n9\t0\tcodex-rs/hepta-agentd/src/root_independent_b_source_protocol.rs"
+    },
+    {
+      "sha": "83f0e8b0717a63dda861a6f258102b38498cde87",
+      "tree": "777927367f563fc41b27d096af897a7d14378b72",
+      "parents": [
+        "b68b787c14d97decc8cf6bf60bedf19c681b8cb0"
+      ],
+      "subject": "Hand off and join the separate original B source ingress lane",
+      "numstat": "1\t0\tcodex-rs/hepta-agentd/src/authority_host_q24_evaluation.rs\n3\t2\tcodex-rs/hepta-agentd/src/authority_host_q24_evaluation_host.rs\n130\t84\tcodex-rs/hepta-agentd/src/authority_host_q24_evaluation_route.rs\n17\t0\tcodex-rs/hepta-agentd/src/authority_host_q24_evaluation_serve.rs\n119\t0\tcodex-rs/hepta-agentd/src/authority_host_q24_evaluation_source_route.rs\n122\t0\tcodex-rs/hepta-agentd/src/authority_host_q24_evaluation_source_serve.rs\n1\t0\tcodex-rs/hepta-agentd/src/authority_host_runtime.rs\n1\t0\tcodex-rs/hepta-agentd/src/authority_host_session.rs\n8\t0\tcodex-rs/hepta-agentd/src/lib.rs\n97\t0\tcodex-rs/hepta-agentd/src/root_independent_b_source_handoff.rs\n6\t0\tcodex-rs/hepta-agentd/src/root_production_handoff.rs"
+    },
+    {
+      "sha": "8aa286539b571bfe6a57cbacd55c9ca13ace3a52",
+      "tree": "86fb28731acb5dffd67af276d5ecb661e2d28b8f",
+      "parents": [
+        "83f0e8b0717a63dda861a6f258102b38498cde87"
+      ],
+      "subject": "Consume the original B source handoff without exposing authority",
+      "numstat": "8\t0\tcodex-rs/hepta-agentd/src/lib.rs\n217\t0\tcodex-rs/hepta-agentd/src/root_independent_b_source_client.rs\n86\t0\tcodex-rs/hepta-agentd/src/root_independent_b_source_data.rs"
+    },
+    {
+      "sha": "fca4c23fd9e01e13c84f62a263659e9cda1d2af9",
+      "tree": "e05ad391e88f16c92905eaefd0cc57b96fd478ed",
+      "parents": [
+        "8aa286539b571bfe6a57cbacd55c9ca13ace3a52"
+      ],
+      "subject": "Add the independent signed B source product command",
+      "numstat": "4\t0\tcodex-rs/hepta-agentd/src/lib.rs\n159\t0\tcodex-rs/hepta-agentd/src/root_independent_b_source_cli.rs"
+    }
+  ],
+  "bundle_bytes": 26200,
+  "bundle_sha256": "f4a24bf7a226d2ab403546116dba991d9b6f7608728d0e8bff661af6f2185eaa",
+  "native": {
+    "compiled": false,
+    "tests": 0,
+    "whole_positive": 0,
+    "whole_no_update": 0,
+    "whole_daemon_root_cold_restart": 0
+  },
+  "source_checks": {
+    "rustfmt": "actual just fmt after each Rust stage exit 0",
+    "git_diff_check": "actual exit 0",
+    "fixture_scoped_tests": {
+      "source": "868546bb4181e42ce8a90d7804a071ebba03e9df",
+      "tests": 17,
+      "passed": 17,
+      "scope": "two unchanged semantic assertion suites, model projection caller fixture only",
+      "raw_stdout_in_archive": false
+    },
+    "new_ingress_source_qa": "not yet executed",
+    "fullcaller": "not yet executed"
+  },
+  "bundle_attempts": [
+    {
+      "command": "git bundle create original-source.bundle 9ce3dbaa6433848f35540fcf9ff7ebd62857dc83..fca4c23fd9e01e13c84f62a263659e9cda1d2af9",
+      "exit": 128,
+      "observed_diagnostic": "Refusing to create empty bundle.",
+      "raw_stderr_in_archive": false
+    },
+    {
+      "command": "git bundle create original-source.bundle HEAD ^9ce3dbaa6433848f35540fcf9ff7ebd62857dc83",
+      "exit": 0
+    }
+  ],
+  "archive": {
+    "path": "original-records.tar.gz",
+    "bytes": 28108,
+    "sha256": "6cd4a0be9c89802bf06026e57c944937f9eaf24c694a717bdc22d733cb898852",
+    "roundtrip_verified": true
+  },
+  "members": [
+    {
+      "path": "bundle-verify.log",
+      "bytes": 296,
+      "sha256": "04bf6856b627d47d5522a1c6bac921a25d51039afc4cd95519e1b34edfe76714"
+    },
+    {
+      "path": "original-source.bundle",
+      "bytes": 26200,
+      "sha256": "f4a24bf7a226d2ab403546116dba991d9b6f7608728d0e8bff661af6f2185eaa"
+    },
+    {
+      "path": "source-manifest.json",
+      "bytes": 5398,
+      "sha256": "6da2baa369db25bee7b87c57ff8a6a836d2aeb15100917ec4a89367f43991b33"
+    }
+  ]
+}

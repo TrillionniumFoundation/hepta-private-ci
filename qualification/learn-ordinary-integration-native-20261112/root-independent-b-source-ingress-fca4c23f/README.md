@@ -1,0 +1,7 @@
+# Independent signed B source ingress candidate
+
+This archive preserves six small commits after exact integrated base 9ce3dbaa. The original Git bundle and every commit/tree identity are retained and its prerequisite verified. It contains a two-line caller-fixture correction, Root-fixed process and deadline data, original signed input retention, a separate sealed source handoff and owned serving scope, a data-only receiver, and the independent source product command implementation.
+
+Fresh ingress requires the protected original non-Root peer and actual pidfd, independent fixed Generator/Observer controllers and current Root trust. The learner receives no source FD. Root retains the original encoded signatures and physical source digest within its durable attempt; label decoding remains behind the actual holdout-consumption provider. Retained and actual checkpoint NoUpdate routes transfer no source writer and do not require the old source process alive. The Root worker and CLI dispatcher are owned and integrated by the parent on a separate source snapshot; they are not falsely included in this archive.
+
+Every Rust stage was actually formatted and passed diff checks. Two old caller fixtures passed 17 source tests; their console output was observed but not captured as an original artifact, and it is not recreated here. New ingress guards, native tests, compilation and full-caller validation are still pending. These input-delivery observations grant no evaluation result. Full positive, NoUpdate and daemon plus Root cold restart counts remain 0/0/0.
