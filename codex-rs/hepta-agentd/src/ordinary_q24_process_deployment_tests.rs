@@ -4,6 +4,7 @@
 use std::path::Path;
 use std::path::PathBuf;
 
+use codex_hepta_automation::CircuitNodeKindV2;
 use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_neuron::CellCandidateKindV1;
 use codex_hepta_neuron::CellDefinitionV1;
@@ -99,6 +100,30 @@ pub(super) fn source_data_for_original_files(
         .first_mut()
         .ok_or_else(|| anyhow::anyhow!("original finite route absent"))?;
     original.cell = definition.clone();
+    // Preserve the actual declared Cell work before hashing or starting either
+    // process. The reused route's 2,000-unit toy-model bound is not this model's
+    // resource envelope; no running deadline or validator is adjusted here.
+    let maximum_work = definition.runtime.resource_envelope.p99_latency_micros;
+    let node = circuit
+        .programs
+        .iter_mut()
+        .find(|program| program.program_id == original.program_id)
+        .and_then(|program| {
+            program
+                .nodes
+                .iter_mut()
+                .find(|node| node.node_id == original.node_id)
+        })
+        .ok_or_else(|| anyhow::anyhow!("original finite computation absent"))?;
+    match &mut node.kind {
+        CircuitNodeKindV2::Compute { max_work } | CircuitNodeKindV2::Decide { max_work } => {
+            *max_work = maximum_work;
+        }
+        _ => anyhow::bail!("original Cell route is not a computation"),
+    }
+    circuit.limits.work_budget = maximum_work
+        .checked_mul(2)
+        .ok_or_else(|| anyhow::anyhow!("original Circuit work budget overflow"))?;
     circuit.parameter_bundle_digest =
         Sha256Digest::parse(definition.bundle_digest.to_string()).map_err(anyhow::Error::msg)?;
     circuit.route_policy_digest = crate::circuit_cell_route_policy_digest_v1(&bindings)?;
@@ -259,14 +284,17 @@ fn ordinary_q24_public_source_preimage_preserves_actual_definition_and_task() ->
         &source,
         &directory.path().join("ledger.json"),
     )?;
-    let decoded = crate::OriginalSingleQ24SourceConfigurationV1::from_original_deployment_bytes(
-        &serde_json::to_vec(&value)?,
-        &identity,
-    )?;
+    let mut decoded =
+        crate::OriginalSingleQ24SourceConfigurationV1::from_original_deployment_bytes(
+            &serde_json::to_vec(&value)?,
+            &identity,
+        )?;
     pretty_assertions::assert_eq!(decoded.definition, definition);
     pretty_assertions::assert_eq!(decoded.source, source);
     pretty_assertions::assert_eq!(decoded.source_journal, paths.source);
     pretty_assertions::assert_eq!(decoded.source_witness, paths.source_witness);
     decoded.registry()?;
+    decoded.circuit.programs[0].nodes[0].kind = CircuitNodeKindV2::Decide { max_work: 2_000 };
+    assert!(decoded.registry().is_err());
     Ok(())
 }
