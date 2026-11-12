@@ -1,0 +1,24 @@
+name: HCSN N256 new export retained evidence
+on:
+  pull_request:
+    paths:
+      - 'qualification/hcsn_n256_new_export/**'
+      - 'scripts/verify_hcsn_n256_new_export_retained.py'
+      - '.github/workflows/hcsn-n256-new-export-retained.yml'
+permissions:
+  contents: read
+jobs:
+  retained-evidence:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify retained bytes and scope
+        run: python scripts/verify_hcsn_n256_new_export_retained.py
+      - name: Check clean retained verifier
+        run: git diff --exit-code
