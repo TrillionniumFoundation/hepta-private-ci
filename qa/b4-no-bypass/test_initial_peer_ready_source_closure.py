@@ -44,6 +44,18 @@ CALLERS["root_initial_profile_refusal"] = (ROOT_RUNTIME, ENROLLMENT, PEER)
 
 def structure(path, source):
     code = PROOF._strip_cfg_test_items(PROOF._strip_rust_non_code(source))
+    if path == ROOT_RUNTIME:
+        body, raw = route.function(source, "fn serve_optional(")
+        diagnostic = re.compile(
+            r'peer_ready::register_original_peer\(\s*&context,\s*deployment,\s*&stream\s*\)'
+            r'\s*\.inspect_err\(\|error\|\s*\{\s*'
+            r'eprintln!\("original Initial readiness worker failed: \{error\}"\);'
+            r'\s*\}\)\?;'
+        )
+        matches = [m for m in diagnostic.finditer(raw)
+                   if PROOF._strip_rust_non_code(m.group()) == body[m.start():m.end()]]
+        if len(matches) != 1 or body.count("eprintln!") != 1:
+            raise PROOF.VerificationFailure("only the unchanged readiness error may be logged immediately")
     if path == WIRE:
         for name in ("ReadyRequest", "ReadyResponse"):
             if not re.search(r"#\[serde\(deny_unknown_fields\)\]\s*struct " + name, code):
@@ -209,11 +221,30 @@ class InitialPeerReadySourceTests(unittest.TestCase):
         self.check(ROOT_RUNTIME, "bind", ("Instant::now() >= end", "runtime.original_end.set(end)", "UnixListener::bind("))
         self.check(ROOT_RUNTIME, "serve_optional", (
             "original_end.get()", "compare_exchange(PREPARED, ACTIVE", "context.accept_original(&active)?",
-            "peer_ready::register_original_peer(&context, deployment, &stream)?", "Some(stream) => stream",
+            "peer_ready::register_original_peer(&context, deployment, &stream)",
+            ".inspect_err(|error| {", "eprintln!(", "})?;", "Some(stream) => stream",
             "context.accept_original(&active)?", "serve_generation_initial(",
             "stopping.store(true, Ordering::Release)", "worker.join()",
         ))
         self.check(SESSION, "register", ("self.original_end.get()", "checked_duration_since(Instant::now())", "Instant::now() >= end"))
+
+    def test_readiness_diagnostic_preserves_the_original_error_and_failure_only_path(self):
+        for replacement in (".map_err(|error| {", ".inspect(|error| {"):
+            with self.subTest(replacement=replacement):
+                self.mutate(ROOT_RUNTIME, lambda s, r=replacement: s.replace(
+                    ".inspect_err(|error| {", r, 1))
+        self.mutate(ROOT_RUNTIME, lambda s: s.replace(
+            'eprintln!("original Initial readiness worker failed: {error}");',
+            'eprintln!("original Initial readiness worker failed: {stream:?}");', 1))
+        self.mutate(ROOT_RUNTIME, lambda s: s.replace(
+            'eprintln!("original Initial readiness worker failed: {error}");',
+            '/* eprintln!("original Initial readiness worker failed: {error}"); */', 1))
+        self.mutate(ROOT_RUNTIME, lambda s: s.replace(
+            "                            })?;\n                    (slot, run_start, Some(stream))",
+            "                            }).unwrap();\n                    (slot, run_start, Some(stream))", 1))
+        self.mutate(ROOT_RUNTIME, lambda s: s.replace(
+            "        let result = original();",
+            '        eprintln!("readiness success");\n        let result = original();', 1))
 
     def test_peer_and_framing_keep_original_custody_and_bounds(self):
         self.check(ENROLLMENT, "accept_original", ("owner_alive(self.owner, self.end)?", "verify_pinned_process(", "self.owner, self.end,", "stream.try_clone()?"))
