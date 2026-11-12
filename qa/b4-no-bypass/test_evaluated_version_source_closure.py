@@ -244,6 +244,7 @@ FUNCTIONS={'codex-rs/hepta-agentd/src/circuit_evaluated_completion_readiness.rs'
                                                                 'read_original': 1,
                                                                 'require_original_selection': 1,
                                                                 'require_task_input_current': 1,
+                                                                'require_task_input_current_with_current': 1,
                                                                 'response': 1,
                                                                 'serve_channel': 1,
                                                                 'serve_original_evaluated_retained_channel': 1,

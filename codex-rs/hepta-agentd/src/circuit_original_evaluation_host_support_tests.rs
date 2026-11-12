@@ -31,6 +31,15 @@ pub(super) struct HostFixture {
 }
 pub(super) type Peer = std::thread::JoinHandle<anyhow::Result<u64>>;
 
+enum TrainingComposition {
+    Fixture,
+    Original {
+        connection: crate::OriginalCellQ24TrainingReadbackConnectionV1,
+        dataset: crate::OriginalCellQ24MaterialCommandReceiptV1,
+        training: crate::OriginalCellQ24TrainingCommandReceiptV1,
+    },
+}
+
 impl HostFixture {
     pub(super) async fn new(pending_claim: bool) -> anyhow::Result<Self> {
         let panel = Box::pin(PanelFixture::completed(TrainingPeer::Original)).await?;
@@ -51,6 +60,14 @@ impl HostFixture {
     }
 
     fn from_panel(panel: PanelFixture, pending_claim: bool) -> anyhow::Result<Self> {
+        Self::from_panel_with_training(panel, pending_claim, TrainingComposition::Fixture)
+    }
+
+    fn from_panel_with_training(
+        panel: PanelFixture,
+        pending_claim: bool,
+        training: TrainingComposition,
+    ) -> anyhow::Result<Self> {
         let PanelFixture {
             panel,
             original,
@@ -95,7 +112,15 @@ impl HostFixture {
         if pending_claim {
             evaluator.fixture_pending_original_host()?;
         }
-        let mut host = evaluator.into_original_evaluation_host(panel)?;
+        let mut host = match training {
+            TrainingComposition::Fixture => evaluator.into_original_evaluation_host(panel)?,
+            TrainingComposition::Original {
+                connection,
+                dataset,
+                training,
+            } => evaluator
+                .into_host_from_original_training_readback(panel, connection, dataset, training)?,
+        };
         host.fixture_original_clock(at)?;
         fixture.host = Some(Arc::new(host));
         Ok(fixture)
@@ -192,3 +217,6 @@ pub(super) fn finish(
     peer.join()
         .map_err(|_| anyhow::anyhow!("original Evaluation command peer panicked"))?
 }
+
+#[path = "circuit_original_evaluation_training_read_support_tests.rs"]
+mod training_read_support;

@@ -35,6 +35,8 @@ use crate::neuron_generation_update_live::LiveGenerationCurrent;
 
 #[path = "circuit_feature_current_control.rs"]
 mod control;
+#[path = "circuit_feature_current_read.rs"]
+mod current_read;
 #[path = "circuit_feature_current_learning.rs"]
 mod learning;
 #[path = "circuit_learning_read_capability.rs"]

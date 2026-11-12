@@ -442,3 +442,6 @@ async fn q24_remote_read_refuses_expired_original_window_and_same_process_bootst
 
 #[path = "circuit_selection_command_owner_tests.rs"]
 mod command_owner;
+
+#[path = "circuit_feature_current_read_tests.rs"]
+mod current_slots;

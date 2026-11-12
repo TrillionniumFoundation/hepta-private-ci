@@ -2,6 +2,9 @@
 //! provide every successful response. Public custody constructors reject this
 //! process/UID, and no production constructor accepts a response fixture.
 
+#[path = "circuit_feature_current_read_support_tests.rs"]
+pub(crate) mod current_slots;
+
 use std::os::fd::FromRawFd;
 use std::os::fd::OwnedFd;
 use std::os::unix::net::UnixStream;

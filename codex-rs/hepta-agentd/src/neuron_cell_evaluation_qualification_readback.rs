@@ -7,6 +7,7 @@ use codex_hepta_intelligence_eval::SignedEvaluationDecisionV1;
 use codex_hepta_intelligence_eval::revalidate_product_qualification_v1;
 use codex_hepta_types::Digest32;
 
+use super::training_read_proof::OriginalPanelTrainingReadV1;
 use super::*;
 
 impl<W: AnchorWitnessStore> OriginalCellEvaluationQualificationOwnerV1<W> {
@@ -63,6 +64,31 @@ impl<W: AnchorWitnessStore> OriginalCellEvaluationQualificationOwnerV1<W> {
         started_at: u64,
         new_publication: bool,
     ) -> Result<CellEvaluationQualificationV1, Error> {
+        self.finish_readback_with_training(
+            source,
+            prepared,
+            bytes,
+            started_at,
+            new_publication,
+            &mut OriginalPanelTrainingReadV1::Individual,
+        )
+        .await
+    }
+
+    pub(super) async fn finish_readback_with_training(
+        &mut self,
+        source: &mut OriginalCellEvaluationQualificationSourcesV1<
+            '_,
+            impl AnchorWitnessStore,
+            impl AnchorWitnessStore,
+            impl AnchorWitnessStore,
+        >,
+        prepared: &Prepared,
+        bytes: &[u8],
+        started_at: u64,
+        new_publication: bool,
+        training: &mut OriginalPanelTrainingReadV1<'_>,
+    ) -> Result<CellEvaluationQualificationV1, Error> {
         let current = binding::now()?;
         binding::clock_time(started_at, current)?;
         binding::authenticate(&self.config, prepared, current)?;
@@ -90,7 +116,7 @@ impl<W: AnchorWitnessStore> OriginalCellEvaluationQualificationOwnerV1<W> {
         }
         let qualification = result?;
         drop(sink);
-        source.read_trainer(&self.config).await?;
+        OriginalPanelTrainingReadV1::read(training, source, &self.config).await?;
         source.verify_current(&self.config, prepared)?;
         if self.completed_bytes()? != bytes {
             return Err(Error::CommitUncertain);

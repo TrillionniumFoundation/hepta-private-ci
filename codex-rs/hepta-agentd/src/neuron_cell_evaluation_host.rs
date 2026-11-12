@@ -13,6 +13,9 @@ use codex_hepta_types::Digest32;
 use tokio::runtime::Handle;
 use tokio::sync::Semaphore;
 
+use super::super::training_read_proof::OriginalPanelTrainingCallV1;
+use super::super::training_read_proof::OriginalPanelTrainingReadV1;
+use super::super::training_read_proof::OriginalPanelTrainingSourceV1;
 use super::OriginalCellEvaluationPanelOwnerV1;
 use super::OriginalCellEvaluationPanelReadbackV1;
 use crate::CellEvaluationJournalsV1;
@@ -59,6 +62,7 @@ pub struct OriginalCellEvaluationHostV1 {
 struct Owners {
     panel: Panel,
     evaluator: OriginalCellEvaluationReceiptOwnerV1<FileAnchorWitnessStore>,
+    training_source: OriginalPanelTrainingSourceV1,
     retained: Option<Receipt>,
     fenced: bool,
     #[cfg(test)]
@@ -102,6 +106,7 @@ impl OriginalCellEvaluationHostV1 {
             owners: Mutex::new(Owners {
                 panel,
                 evaluator,
+                training_source: OriginalPanelTrainingSourceV1::Individual,
                 retained: None,
                 fenced: false,
                 #[cfg(test)]
@@ -147,7 +152,12 @@ impl Owners {
     ) -> Result<Receipt, Error> {
         let started_at = self.current_time()?;
         context.authenticate(started_at)?;
-        let before = self.read_panel().await?;
+        let call = OriginalPanelTrainingSourceV1::call(
+            &self.training_source,
+            self.panel.retention.len() + 1,
+        )?;
+        let mut training = OriginalPanelTrainingCallV1::begin(&call)?;
+        let before = self.read_panel_with_training(&mut training).await?;
         if before.training() != &context.training
             || before.training_evidence() != &context.training_evidence
             || before.registration() != &context.registration
@@ -196,7 +206,7 @@ impl Owners {
                 }
             }
         };
-        let after = self.read_panel().await?;
+        let after = self.read_panel_with_training(&mut training).await?;
         if before != after {
             return Err(Error::CommitUncertain);
         }
@@ -214,6 +224,7 @@ impl Owners {
             // A durable signature may exist; never report a known no-effect expiry.
             return Err(Error::CommitUncertain);
         }
+        OriginalPanelTrainingReadV1::finish(training, &call, current)?;
         self.authenticate_panel(&after, current)?;
         let (config, _) =
             OriginalCellEvaluationReceiptOwnerV1::original_host_profile(&self.evaluator);
@@ -233,6 +244,30 @@ impl Owners {
         self.retained = Some(original.clone());
         // No Source, Cell, witness, file or peer I/O follows fresh authentication.
         Ok(original)
+    }
+
+    async fn read_panel_with_training(
+        &mut self,
+        training: &mut OriginalPanelTrainingReadV1<'_>,
+    ) -> Result<OriginalCellEvaluationPanelReadbackV1, Error> {
+        if matches!(training, OriginalPanelTrainingReadV1::Individual) {
+            return self.read_panel().await;
+        }
+        #[cfg(test)]
+        if let Some(current) = self.fixture_clock {
+            return self
+                .panel
+                .read_current_with_training(|| Ok(current), training)
+                .await
+                .map_err(Error::from);
+        }
+        OriginalCellEvaluationPanelOwnerV1::read_current_with_training(
+            &mut self.panel,
+            super::original::now,
+            training,
+        )
+        .await
+        .map_err(Error::from)
     }
 
     async fn read_panel(&mut self) -> Result<OriginalCellEvaluationPanelReadbackV1, Error> {
@@ -293,3 +328,7 @@ mod model_material;
 pub use model_material::OriginalCellEvaluationModelMaterialClientV1;
 pub use model_material::OriginalCellEvaluationModelMaterialConnectionV1;
 pub use model_material::OriginalCellEvaluationModelMaterialV1;
+
+#[cfg(test)]
+#[path = "neuron_cell_evaluation_training_read_access_tests.rs"]
+mod training_read_tests;

@@ -182,17 +182,20 @@ class OriginalPublishedReadClosureTests(unittest.TestCase):
             "input.scope.principal_digest.to_string() != request.principal_id.as_str()",
             "source.require_original_input(&self.identity, input)?",
         ):
-            self.rejects(SERVICE, "fn require_task_input_current(", marker)
+            self.rejects(SERVICE, "fn require_task_input_current_with_current(", marker)
         for marker in (
-            "cell.read_learning_selection(&coordinator)?",
+            "cell.read_learning_selection_with_current(&coordinator, &mut current)?",
             "self.require_original_selection(&selection)?",
             "wire::Mode::Selection => (selection.clone(), None)",
             "wire::Mode::NextUse",
-            "cell.read_learning_next_use(",
+            "cell.read_learning_next_use_with_current(",
             "before.publication_digest()",
-            "cell.read_learning_selection(&coordinator)? != selection",
+            "cell.read_learning_selection_with_current(&coordinator, &mut current)? != selection",
         ):
             self.rejects(SERVICE, "fn read_original(", marker)
+        self.rejects(SERVICE, "fn require_task_input_current(", "OriginalPublishedReadCurrent::individual(&self.cell)")
+        self.rejects(SERVICE, "fn require_task_input_current(", "self.require_task_input_current_with_current(&mut current)")
+        self.rejects(SERVICE, "fn read_original(", "OriginalPublishedReadCurrent::finish(current)?")
         for marker in (
             "self.context\n            .require_request(&request, self.binding, request_id)?",
             "let read = self.read_original()?;",

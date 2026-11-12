@@ -11,7 +11,6 @@ use crate::OriginalCircuitRetainedVersionErrorV1 as VersionError;
 use crate::OriginalCircuitRetainedVersionHostV1 as VersionHost;
 use crate::circuit_feature_current::evaluated_readiness_fixture as readiness;
 use pretty_assertions::assert_eq;
-use pretty_assertions::assert_ne;
 use std::time::Duration;
 
 type ReadOwner = OriginalCircuitLearningReadOwnerV1<FileAnchorWitnessStore, FileAnchorWitnessStore>;
