@@ -144,7 +144,7 @@
 +    pending=out/"result.pending.json"
 +    with pending.open("w") as stream:json.dump(report,stream,indent=2);stream.write("\n");stream.flush();os.fsync(stream.fileno())
 +    pending.replace(out/"result.json")
-@@ -43,28 +121,62 @@
+@@ -43,28 +121,64 @@
 - save()
 - runtime.mkdir(mode=0o700)
 - private=runtime/"v8-private-pins";private.mkdir(mode=0o700)
@@ -195,6 +195,7 @@
 +    require(directory(out,True)==out_identity and original_directories()==dirs_before and directory(data)==data_before,"original directory identity changed")
 +    require(original_binding()==binding_before and clean()==sources_before,"original binding or source changed before install")
 +    require_absent(archive,"private archive appeared during download; never overwrite it")
++    require_absent(pinroot/archive_name,"home archive reappeared; preserve it and reassess original local copy")
 +    private_fd=os.open(private,os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW|os.O_CLOEXEC)
 +    try:
 +        ps=os.fstat(private_fd)
@@ -233,9 +234,10 @@
 +    require(sources_after==sources_before,"fixed original sources changed")
 +    for path in (runtime/"target",Path("/data/hepta-learn-ce434-runtime-20261112-v2/target")):
 +        require_absent(path,"original target appeared; preserve and reassess")
++    require_absent(pinroot/archive_name,"home archive reappeared; preserve it and reassess original local copy")
 +    report.update(state="original-archive-restored-binding-preserved-and-full-hash-verified",archive={"path":str(archive),"bytes":29366352,"sha256":final_hash,"metadata":final_meta},binding_after=binding_after,binding_preserved=True,existing_private_directories_after=original_directories(),source_after=sources_after,finished_unix_ms=int(time.time()*1000))
 +    save()
-@@ -72,2 +184,7 @@
+@@ -72,2 +186,7 @@
 - report.update(state="failed",error_type=type(error).__name__,error=str(error));save();raise
 -print(json.dumps(report,indent=2),flush=True)
 +    report.update(state="failed",error_type=type(error).__name__,error=str(error))

@@ -7,9 +7,9 @@
     "sha256": "5df3243e4c4909eead3e574f893e29098e2e09a1c8e8b79a3dc4f64a4a0e4aeb"
   },
   "source_after": {
-    "sha": "1c5cc24a2009a760be528e3f7d2e840e6a9beddc",
-    "bytes": 14959,
-    "sha256": "d70e488d4458a1008829e754615c7af8186e33823f4d8ec2254c82acfb45e740"
+    "sha": "cd5a0242cd76a9c4bd24719469c83ad311cf7017",
+    "bytes": 15185,
+    "sha256": "26fff0bc29d2e89f22fa27f9103ffd8ad31345458200c133302f3239c150da2b"
   },
   "hunks": [
     {
@@ -229,7 +229,7 @@
       "old_start": 43,
       "old_count": 28,
       "new_start": 121,
-      "new_count": 62,
+      "new_count": 64,
       "before_lines": [
         " save()",
         " runtime.mkdir(mode=0o700)",
@@ -283,6 +283,7 @@
         "    require(directory(out,True)==out_identity and original_directories()==dirs_before and directory(data)==data_before,\"original directory identity changed\")",
         "    require(original_binding()==binding_before and clean()==sources_before,\"original binding or source changed before install\")",
         "    require_absent(archive,\"private archive appeared during download; never overwrite it\")",
+        "    require_absent(pinroot/archive_name,\"home archive reappeared; preserve it and reassess original local copy\")",
         "    private_fd=os.open(private,os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW|os.O_CLOEXEC)",
         "    try:",
         "        ps=os.fstat(private_fd)",
@@ -321,6 +322,7 @@
         "    require(sources_after==sources_before,\"fixed original sources changed\")",
         "    for path in (runtime/\"target\",Path(\"/data/hepta-learn-ce434-runtime-20261112-v2/target\")):",
         "        require_absent(path,\"original target appeared; preserve and reassess\")",
+        "    require_absent(pinroot/archive_name,\"home archive reappeared; preserve it and reassess original local copy\")",
         "    report.update(state=\"original-archive-restored-binding-preserved-and-full-hash-verified\",archive={\"path\":str(archive),\"bytes\":29366352,\"sha256\":final_hash,\"metadata\":final_meta},binding_after=binding_after,binding_preserved=True,existing_private_directories_after=original_directories(),source_after=sources_after,finished_unix_ms=int(time.time()*1000))",
         "    save()"
       ]
@@ -328,7 +330,7 @@
     {
       "old_start": 72,
       "old_count": 2,
-      "new_start": 184,
+      "new_start": 186,
       "new_count": 7,
       "before_lines": [
         " report.update(state=\"failed\",error_type=type(error).__name__,error=str(error));save();raise",
@@ -348,7 +350,7 @@
   "counts": {
     "hunks": 10,
     "removed_lines": 59,
-    "added_lines": 176
+    "added_lines": 178
   },
   "forward_replay_complete_equal": true,
   "inverse_replay_complete_equal": true,
@@ -365,7 +367,7 @@
   "curl_effective_output_change": "partial now lies only in the new exclusive archive-only evidence directory; every original curl argument token and original URL expression is unchanged",
   "request_envelope": {
     "before_blob": "8c6d6935cbd1d78cb9b711889bd33dbfc30e1f38",
-    "after_blob": "3d192cd51f409dc3d4e86133ea16e7e2644e8078",
+    "after_blob": "e7a3e64784c844e8815d1038f3f3754a25c0abdf",
     "keys": [
       "host",
       "executable",

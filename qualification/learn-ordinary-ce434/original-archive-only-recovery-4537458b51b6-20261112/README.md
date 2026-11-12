@@ -12,7 +12,7 @@ The four SDK records in this directory are preserved byte for byte. They establi
 
 ## Narrow recovery
 
-The script requires both worktrees to be clean and fixed, the existing v1 root and private-pins directory to be canonical owned mode 0700, the original /data identity and 64 GiB headroom, and the complete original manifest and history hashes. It refuses a reappearing private archive, home archive, v1 target, or v2 target.
+The script requires both worktrees to be clean and fixed, the existing v1 root and private-pins directory to be canonical owned mode 0700, the original /data identity and 64 GiB headroom, and the complete original manifest and history hashes. It refuses a reappearing private archive, home archive, v1 target, or v2 target. The home archive check occurs at initial preflight, immediately before installation, and at final completion.
 
 It preserves the original official release URL, existing SOCKS address, curl argument assignment, 20 second connect timeout, 300 second maximum time, five redirects, 29,366,352 byte limit, and SHA256. The only effective download destination change is a partial file within the new exclusive evidence directory.
 
@@ -25,7 +25,7 @@ No existing binding or archive is overwritten. No runtime root, private-pins dir
 - `restore-original-archive-only.py`: exact script embedded by the six-field typed request.
 - `frozen-request.json`: a new archive-only idempotency key, with the original host, executable, cwd, environment, and `-B -c` prefix.
 - `request-contract.json`: fixed inputs, original observed failures, permitted mutation scope, and completion requirements.
-- `exact-edits.json` and `recovery.patch`: complete original-299 to new-script differences. Ten hunks remove 59 lines and add 176 lines; forward and inverse reconstruction recover both complete files exactly.
+- `exact-edits.json` and `recovery.patch`: complete original-299 to new-script differences. Ten hunks remove 59 lines and add 178 lines; forward and inverse reconstruction recover both complete files exactly.
 - `observed-*-sdk.json`: the four original SDK responses, without re-encoding their version strings.
 
 The original 441 script is Git blob `29961b07486dcf1cfd2a4875a7b17733ed06547a`. It is historical input, not a request to recreate the whole v1 root or binding.

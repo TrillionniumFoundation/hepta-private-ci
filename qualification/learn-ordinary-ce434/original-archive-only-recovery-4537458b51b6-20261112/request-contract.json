@@ -13,24 +13,34 @@
   },
   "artifacts": {
     "script": {
-      "sha": "1c5cc24a2009a760be528e3f7d2e840e6a9beddc",
-      "bytes": 14959,
-      "sha256": "d70e488d4458a1008829e754615c7af8186e33823f4d8ec2254c82acfb45e740"
+      "sha": "cd5a0242cd76a9c4bd24719469c83ad311cf7017",
+      "bytes": 15185,
+      "sha256": "26fff0bc29d2e89f22fa27f9103ffd8ad31345458200c133302f3239c150da2b"
     },
     "request": {
-      "sha": "3d192cd51f409dc3d4e86133ea16e7e2644e8078",
-      "bytes": 15920,
-      "sha256": "d6d37158f1340b45e57f2931f0c94092ef9fe5fe71265ad864f4082031a0ca91"
+      "sha": "e7a3e64784c844e8815d1038f3f3754a25c0abdf",
+      "bytes": 16152,
+      "sha256": "49959defb9bafc8ef49b4de710f67013093f981d16585298fb06401a3cd20416"
     },
     "exact_edits": {
-      "sha": "62cbac6be6221b79d4919dc763ef124faa3a9c3d",
-      "bytes": 27190,
-      "sha256": "2dc521b69959c30fe201daa4fff4bf20d3778cff0c5defaa882fbe70f2c583a4"
+      "sha": "8e562d5a9febf878ac2e1a66b9559e8ee389c977",
+      "bytes": 27442,
+      "sha256": "5257bf7efc696e19d65d075c1479b175b5254187ac69c3b6bbbddaa44cb2695f"
     },
     "patch": {
-      "sha": "aa95bf3aec216e8c44cdf74d9970e539d90323c7",
-      "bytes": 20795,
-      "sha256": "c78aea352aae389054c348fb8c0912e184f0848381645dab30985e16cf15e830"
+      "sha": "c1b5c46ab03de8f2facc65128f1b33010294bc69",
+      "bytes": 21023,
+      "sha256": "e853c771c07073a0c2e2ad4f7db58e65cb111a12f3f604183512c9b745af9f05"
+    },
+    "home_archive_review_delta": {
+      "sha": "46ffa8341913e0792c05891d25e5e0ebc4bb0fe2",
+      "bytes": 1413,
+      "sha256": "45bcfbbaab76ea307f9d3c556281ed94ccb10cbebce2a3f8b21220f1b2ee7d5a"
+    },
+    "home_archive_review_patch": {
+      "sha": "6d0ae83e4375a9b80b2557b36acbc3598fe481cc",
+      "bytes": 346,
+      "sha256": "b240fa4087d5e84d66c15b70364f47c72537fffab68394efda195e2bfb52ba7f"
     }
   },
   "original_protocol": {
@@ -187,7 +197,8 @@
       "Both fixed clean sources checked again",
       "Full installed archive hash/size and actual new descriptor/path identity",
       "Original history and manifest full hashes checked again",
-      "v1/v2 target remain absent"
+      "v1/v2 target remain absent",
+      "Home archive remains absent after download/before exclusive install and at final completion; reappearance rejects without deleting or overwriting it"
     ],
     "failure": "Keep the new evidence, download partial and any actually-created archive, record failed where the output exists, and rethrow. No removal or overwrite. A partial destination must be reconciled as a failed attempt, not silently reused.",
     "does_not_establish": [
@@ -224,12 +235,28 @@
   "verification": {
     "original_to_new_hunks": 10,
     "removed_lines": 59,
-    "added_lines": 176,
+    "added_lines": 178,
     "forward_and_inverse_complete_byte_replay": true,
     "source_artifacts_and_probes_full_api_readback_and_git_hash": true,
     "python_parse_or_execution": false,
     "H_execution": false,
     "Rust_or_native_execution": false
   },
-  "followup": "Only after a genuine successful archive-only receipt may Root prepare a new separately keyed v3 creation attempt/output preserving the original failed attempt. Native-only remains unbound until an actual successful v3 receipt is fully read and hashed. No CARGO_BUILD_JOBS or other build budget changes are proposed."
+  "followup": "Only after a genuine successful archive-only receipt may Root prepare a new separately keyed v3 creation attempt/output preserving the original failed attempt. Native-only remains unbound until an actual successful v3 receipt is fully read and hashed. No CARGO_BUILD_JOBS or other build budget changes are proposed.",
+  "review_revision": {
+    "original_script": {
+      "sha": "1c5cc24a2009a760be528e3f7d2e840e6a9beddc",
+      "bytes": 14959,
+      "sha256": "d70e488d4458a1008829e754615c7af8186e33823f4d8ec2254c82acfb45e740"
+    },
+    "revised_script": {
+      "sha": "cd5a0242cd76a9c4bd24719469c83ad311cf7017",
+      "bytes": 15185,
+      "sha256": "26fff0bc29d2e89f22fa27f9103ffd8ad31345458200c133302f3239c150da2b"
+    },
+    "reason": "Root requested that the already-declared home-archive reappearance refusal also hold immediately before installation and at final success.",
+    "new_line_insertions": 2,
+    "total_home_archive_absence_checks": 3,
+    "all_other_script_bytes_identical": true
+  }
 }

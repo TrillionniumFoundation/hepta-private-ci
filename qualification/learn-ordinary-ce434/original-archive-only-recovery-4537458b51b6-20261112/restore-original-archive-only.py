@@ -140,6 +140,7 @@ try:
     require(directory(out,True)==out_identity and original_directories()==dirs_before and directory(data)==data_before,"original directory identity changed")
     require(original_binding()==binding_before and clean()==sources_before,"original binding or source changed before install")
     require_absent(archive,"private archive appeared during download; never overwrite it")
+    require_absent(pinroot/archive_name,"home archive reappeared; preserve it and reassess original local copy")
     private_fd=os.open(private,os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW|os.O_CLOEXEC)
     try:
         ps=os.fstat(private_fd)
@@ -178,6 +179,7 @@ try:
     require(sources_after==sources_before,"fixed original sources changed")
     for path in (runtime/"target",Path("/data/hepta-learn-ce434-runtime-20261112-v2/target")):
         require_absent(path,"original target appeared; preserve and reassess")
+    require_absent(pinroot/archive_name,"home archive reappeared; preserve it and reassess original local copy")
     report.update(state="original-archive-restored-binding-preserved-and-full-hash-verified",archive={"path":str(archive),"bytes":29366352,"sha256":final_hash,"metadata":final_meta},binding_after=binding_after,binding_preserved=True,existing_private_directories_after=original_directories(),source_after=sources_after,finished_unix_ms=int(time.time()*1000))
     save()
 except BaseException as error:
