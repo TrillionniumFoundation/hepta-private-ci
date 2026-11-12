@@ -398,7 +398,18 @@ ORIGINAL_EVALUATION_MODEL_MATERIAL_CASES = tuple(
     )
 )
 
+ORIGINAL_EVALUATION_OPERATION_CASES = tuple(
+    ORIGINAL_EVALUATION_PANEL_MEMBER_PREFIX + "evaluation_host::training_operation::" + name
+    for name in (
+        "original_evaluation_operation_reads_two_trainers_per_call_and_whole_export",
+        "original_evaluation_operation_rejects_equal_evidence_on_another_connection",
+        "original_evaluation_operation_changed_tail_preserves_effect_and_fences_retry",
+        "original_evaluation_staged_material_drop_and_withdrawal_never_restore_channel",
+    )
+)
+
 OWNER_GROUPS = (
+    ("original_evaluation_operation", PACKAGE, ORIGINAL_EVALUATION_OPERATION_CASES),
     ("original_retained_publication", PACKAGE, RETAINED_PUBLICATION_CASES),
     (
         "original_evaluation_model_material",

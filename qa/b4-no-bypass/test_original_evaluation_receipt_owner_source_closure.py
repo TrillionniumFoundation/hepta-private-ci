@@ -24,6 +24,8 @@ SPEC.loader.exec_module(PROOF)
 AGENT = "codex-rs/hepta-agentd/src/"
 OWNER = AGENT + "neuron_cell_evaluation_receipt_owner.rs"
 HOST = AGENT + "neuron_cell_evaluation_host.rs"
+OPERATION = AGENT + "neuron_cell_evaluation_receipt_operation.rs"
+TRAINING = AGENT + "neuron_cell_evaluation_training_operation.rs"
 CALLERS = {
     "cell_learning_evaluation_receipt_prepare": (
         AGENT + "learning_iteration_evaluation_evidence.rs",
@@ -33,7 +35,7 @@ CALLERS = {
     "learning_evidence_original_owner_readback": (
         AGENT + "learning_iteration_evaluation_evidence.rs",
         AGENT + "learning_iteration_generation_evidence.rs",
-        OWNER,
+        TRAINING,
         AGENT + "circuit_next_use_receipt_owner.rs",
         AGENT + "circuit_selection_receipt_owner.rs",
         AGENT + "cell_q24_training_source.rs",
@@ -64,7 +66,7 @@ class OriginalEvaluationReceiptOwnerSourceClosureTests(unittest.TestCase):
                 *cls.boundaries[identifier].product_callers,
             )
         }
-        paths.add(HOST)
+        paths.update((HOST, OPERATION, TRAINING))
         cls.sources = {
             path: PROOF._strip_cfg_test_items(
                 PROOF._strip_rust_non_code((ROOT / path).read_text())
@@ -72,31 +74,34 @@ class OriginalEvaluationReceiptOwnerSourceClosureTests(unittest.TestCase):
             for path in paths
         }
 
-    def rejects_source(self, changed):
-        self.assertTrue(self.rows)
-        self.assertNotEqual(self.source, changed)
+    def rejects_source(self, changed, path=OWNER):
+        rows = [row for row in self.manifest["protected_file"] if row["path"] == path]
+        source = (ROOT / path).read_text()
+        self.assertTrue(rows)
+        self.assertNotEqual(source, changed)
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            target = root / OWNER
+            target = root / path
             target.parent.mkdir(parents=True)
-            target.write_text(self.source)
-            manifest = {"protected_file": self.rows}
+            target.write_text(source)
+            manifest = {"protected_file": rows}
             PROOF._verify_protected_files(root, manifest)
             target.write_text(changed)
             with self.assertRaises(PROOF.VerificationFailure):
                 PROOF._verify_protected_files(root, manifest)
 
-    def rejects(self, function, marker, replacement=""):
-        code = PROOF._strip_rust_non_code(self.source)
+    def rejects(self, function, marker, replacement="", path=OWNER):
+        source = (ROOT / path).read_text()
+        code = PROOF._strip_rust_non_code(source)
         self.assertEqual(code.count(function), 1, function)
         start = code.index(function)
         end = PROOF._rust_item_end(code, start)
         self.assertIsNotNone(end)
         assert end is not None
-        body = self.source[start : end + 1]
+        body = source[start : end + 1]
         self.assertEqual(body.count(marker), 1, (function, marker))
         offset = start + body.index(marker)
-        self.rejects_source(self.source[:offset] + replacement + self.source[offset + len(marker) :])
+        self.rejects_source(source[:offset] + replacement + source[offset + len(marker) :], path)
 
     def reject_unregistered_caller(self, row):
         method = row.symbol.rsplit("::", 1)[-1]
@@ -118,7 +123,8 @@ class OriginalEvaluationReceiptOwnerSourceClosureTests(unittest.TestCase):
                 row = self.boundaries[identifier]
                 self.assertEqual(row.product_callers, callers)
                 PROOF._verify_boundary(ROOT, row, self.sources, ())
-                without_owner = tuple(path for path in callers if path != OWNER)
+                original_path = TRAINING if identifier == "learning_evidence_original_owner_readback" else OWNER
+                without_owner = tuple(path for path in callers if path != original_path)
                 with self.assertRaises(PROOF.VerificationFailure):
                     PROOF._verify_boundary(
                         ROOT, replace(row, product_callers=without_owner), self.sources, ()
@@ -132,7 +138,7 @@ class OriginalEvaluationReceiptOwnerSourceClosureTests(unittest.TestCase):
             with self.subTest(boundary=identifier):
                 self.assertIn(identifier, inventory)
                 row = self.boundaries[identifier]
-                expected = (HOST,) if suffix in ("attest", "readback") else ()
+                expected = ()
                 self.assertEqual(row.product_callers, expected)
                 PROOF._verify_boundary(ROOT, row, self.sources, ())
                 self.reject_unregistered_caller(row)
@@ -192,8 +198,8 @@ class OriginalEvaluationReceiptOwnerSourceClosureTests(unittest.TestCase):
         for marker in (
             "if now()? >= self.config.training.request.envelope.expiry_unix_seconds",
             "let prepared = self.prepare(&mut source)?",
-            "readback(source.snapshot, self.training()?)",
-            "self.authenticate_roles(&source, &prepared.1, &training)?",
+            ".receipt_evidence(source.trainer, source.snapshot, &self.config)",
+            "self.authenticate_roles(&source, &prepared.1, &observed_training)?",
             "if self.prepare(&mut source)? != prepared",
             "learning_iteration_receipt_signing_bytes_v1(&prepared.0)?",
             "self.journal.commit_once(&self.saved, ||",
@@ -202,16 +208,16 @@ class OriginalEvaluationReceiptOwnerSourceClosureTests(unittest.TestCase):
             "key.sign(&signed.signing_bytes()).to_bytes()",
             "config.verifier.verify(",
             "learning_owner_evidence::encode(&payload, &signed)",
-            "self.authenticate_completed(&mut source, prepared, &bytes)",
+            "self.authenticate_completed(&mut source, prepared, &bytes, training)",
         ):
             with self.subTest(marker=marker):
-                self.rejects("fn attest_original_completion<", marker)
+                self.rejects("fn attest_with_training<", marker, path=OPERATION)
         for marker in (
             "if now()? >= self.config.training.request.envelope.expiry_unix_seconds",
             "if issued_at >= self.config.training.request.envelope.expiry_unix_seconds",
         ):
             with self.subTest(deadline=marker):
-                self.rejects("fn attest_original_completion<", marker, marker.replace(">=", ">"))
+                self.rejects("fn attest_with_training<", marker, marker.replace(">=", ">"), path=OPERATION)
 
     def test_actual_time_full_principals_and_controller_separation_remain_required(self):
         for marker in (
@@ -241,16 +247,16 @@ class OriginalEvaluationReceiptOwnerSourceClosureTests(unittest.TestCase):
         for marker in (
             "let prepared = self.prepare(&mut source)?",
             "let bytes = self.journal.read(&self.saved)?",
-            "self.authenticate_completed(&mut source, prepared, &bytes)",
+            "self.authenticate_completed(&mut source, prepared, &bytes, training)",
         ):
             with self.subTest(marker=marker):
-                self.rejects("fn readback<", marker)
+                self.rejects("fn readback_with_training<", marker, path=OPERATION)
         for marker in (
             "learning_owner_evidence::decode(bytes)?",
             "if payload != learning_iteration_receipt_signing_bytes_v1(&prepared.0)?",
-            "readback(source.snapshot, self.training()?)",
+            ".receipt_evidence(source.trainer, source.snapshot, &self.config)",
             "if self.prepare(source)? != prepared",
-            "self.authenticate_roles(source, &prepared.1, &training)?",
+            "self.authenticate_roles(source, &prepared.1, &observed_training)?",
             ".verify(LearningEvidenceRoleV1::Evaluator, &signed, &payload, now()?)?",
             "verified.principal() != &config.signer.principal",
             "verified.controller_id() != &config.signer.controller_id",
@@ -258,7 +264,7 @@ class OriginalEvaluationReceiptOwnerSourceClosureTests(unittest.TestCase):
             "if self.journal.read(&self.saved)? != bytes",
         ):
             with self.subTest(marker=marker):
-                self.rejects("fn authenticate_completed<", marker)
+                self.rejects("fn authenticate_completed<", marker, path=OPERATION)
 
     def test_original_execution_adapter_rejects_writes_and_substituted_namespace(self):
         for function in ("fn claim(", "fn complete("):
