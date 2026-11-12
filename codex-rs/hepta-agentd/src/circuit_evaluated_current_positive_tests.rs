@@ -73,17 +73,18 @@ async fn evaluated_retained_current_reads_fresh_and_cold_original_owners() -> an
         .collect::<std::io::Result<Vec<_>>>()?;
     let mut previous_read = None;
     for readback in [false, true] {
-        let context =
-            || -> anyhow::Result<crate::OriginalCircuitEvaluatedLearningReadContextV1> {
-                let original = if readback {
-                    f.readback_context()?
-                } else {
-                    f.context()?
-                };
-                Ok(crate::OriginalCircuitEvaluatedLearningReadContextV1::for_original_selection(
-                    original,
-                )?)
+        let context = || -> anyhow::Result<crate::OriginalCircuitEvaluatedLearningReadContextV1> {
+            let original = if readback {
+                f.readback_context()?
+            } else {
+                f.context()?
             };
+            Ok(
+                crate::OriginalCircuitEvaluatedLearningReadContextV1::for_original_selection(
+                    original,
+                )?,
+            )
+        };
         let owner = Arc::new(
             OriginalCircuitLearningReadOwnerV1::from_original_evaluated_owners(
                 c.cell.clone(),

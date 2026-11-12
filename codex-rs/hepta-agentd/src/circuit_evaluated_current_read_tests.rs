@@ -76,10 +76,7 @@ pub(crate) fn check_evaluated_profiles(
             "prefix_head",
             serde_json::json!(Digest32::of_bytes(b"other-cut").to_string()),
         ),
-        (
-            "operation_id",
-            serde_json::json!("other-source-operation"),
-        ),
+        ("operation_id", serde_json::json!("other-source-operation")),
         ("mode", serde_json::json!("next_use")),
     ] {
         let mut changed = value.clone();
