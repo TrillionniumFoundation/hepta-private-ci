@@ -602,6 +602,12 @@ pub use circuit_model_selection_receipt_owner::OriginalCircuitModelSelectionRece
 #[cfg(target_os = "linux")]
 pub use circuit_model_selection_receipt_owner::OriginalCircuitModelSelectionReceiptSourcesV1;
 #[cfg(target_os = "linux")]
+pub use circuit_next_use_receipt_owner::OriginalCircuitEvaluatedNextUseReceiptConfigV1;
+#[cfg(target_os = "linux")]
+pub use circuit_next_use_receipt_owner::OriginalCircuitEvaluatedNextUseReceiptSourcesV1;
+#[cfg(target_os = "linux")]
+pub use circuit_next_use_receipt_owner::OriginalCircuitEvaluatedNextUseReceiptV1;
+#[cfg(target_os = "linux")]
 pub use circuit_next_use_receipt_owner::OriginalCircuitNextUseReceiptConfigV1;
 #[cfg(target_os = "linux")]
 pub use circuit_next_use_receipt_owner::OriginalCircuitNextUseReceiptErrorV1;
