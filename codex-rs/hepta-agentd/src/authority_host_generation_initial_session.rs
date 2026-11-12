@@ -46,6 +46,7 @@ pub(super) struct InitialRuntime {
     socket: PathBuf,
     deployment: crate::HostGenerationInitialDeploymentV1,
     source_capture: Option<source_capture::HistoricalSourceRuntime>,
+    peer_source_capture: Mutex<Option<RootHistoricalSourceCaptureCapabilityV1>>,
 }
 
 /// A consumed original Root registration acknowledgement. The digest is a
@@ -192,6 +193,7 @@ impl PreparedHostAuthoritySession {
             socket: bundle.socket,
             deployment: bundle.deployment,
             source_capture: None,
+            peer_source_capture: Mutex::new(None),
         });
         Ok((
             RootGenerationInitialEnrollmentCapabilityV1 {

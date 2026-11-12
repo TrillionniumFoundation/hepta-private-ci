@@ -187,7 +187,14 @@ pub(in super::super) fn serve_optional(
                         stream,
                         policy,
                         owner.try_clone()?,
+                        Some(&initial.runtime.peer_source_capture),
                     );
+                    // The terminal client keeps its lifetime until Root closes.
+                    // Releasing this cancellation clone lets it observe EOF.
+                    active
+                        .lock()
+                        .map_err(|_| io::Error::other("initial lane poisoned"))?
+                        .take();
                     if stopping.load(Ordering::Acquire) {
                         Ok(())
                     } else {
