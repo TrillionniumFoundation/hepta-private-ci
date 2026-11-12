@@ -117,6 +117,15 @@ class HistoricalQ24StageSourceClosureTests(unittest.TestCase):
             with self.subTest(marker=marker):
                 self.rejects(OPERATION, "fn execute(", marker)
 
+    def test_root_b_execution_borrows_the_actual_mutable_trainer(self):
+        for marker in (
+            "OriginalQ24TrainingOperationV1::read_original_training_evidence(self.training)?",
+            "original.snapshot() != snapshot",
+            ".execute_original_root_evaluation(\n                        self.training,\n                        &original,",
+        ):
+            with self.subTest(marker=marker):
+                self.rejects(OPERATION, "fn execute_stage(", marker)
+
     def test_cold_recovery_waits_only_after_authenticated_checkpoint_prefix(self):
         for path, function, marker in (
             (OPERATION, "fn restore(", "OriginalHistoricalRestoreModeV1::Readback"),
