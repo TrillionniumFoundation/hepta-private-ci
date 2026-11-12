@@ -18,30 +18,35 @@ use crate::HoldoutUseDispositionV1;
 /// Type erasure keeps the original mutable owner borrowed through a provider
 /// call without exposing its store, writer or a constructor to the provider.
 trait OriginalHoldoutReadV1 {
-    fn require_recorded(
+    fn observe_consumption(
         &mut self,
-        namespace: Digest32,
         plan: &CrossFoldPlanReceiptV1,
-        receipt: &FinalHoldoutJournalReceiptV1,
-    ) -> Result<(), FencedHoldoutError>;
+    ) -> Result<(Digest32, Option<FinalHoldoutJournalReceiptV1>), FencedHoldoutError>;
 }
 
 impl<S: FinalHoldoutCasStoreV1> OriginalHoldoutReadV1 for FencedFinalHoldoutOwnerV1<S> {
-    fn require_recorded(
+    fn observe_consumption(
         &mut self,
-        namespace: Digest32,
         plan: &CrossFoldPlanReceiptV1,
-        receipt: &FinalHoldoutJournalReceiptV1,
-    ) -> Result<(), FencedHoldoutError> {
-        let (actual_namespace, actual) = FencedFinalHoldoutOwnerV1::read_consumption(self, plan)?;
-        if namespace != actual_namespace
-            || receipt.disposition != HoldoutUseDispositionV1::Recorded
-            || actual.as_ref() != Some(receipt)
-        {
-            return Err(FencedHoldoutError::Binding);
-        }
-        Ok(())
+    ) -> Result<(Digest32, Option<FinalHoldoutJournalReceiptV1>), FencedHoldoutError> {
+        FencedFinalHoldoutOwnerV1::read_consumption(self, plan)
     }
+}
+
+fn require_recorded(
+    original: &mut dyn OriginalHoldoutReadV1,
+    namespace: Digest32,
+    plan: &CrossFoldPlanReceiptV1,
+    receipt: &FinalHoldoutJournalReceiptV1,
+) -> Result<(), FencedHoldoutError> {
+    let (actual_namespace, actual) = original.observe_consumption(plan)?;
+    if namespace != actual_namespace
+        || receipt.disposition != HoldoutUseDispositionV1::Recorded
+        || actual.as_ref() != Some(receipt)
+    {
+        return Err(FencedHoldoutError::Binding);
+    }
+    Ok(())
 }
 
 /// Non-cloneable, non-serializable borrow supplied only by the runner after a
@@ -66,12 +71,10 @@ impl OriginalFinalHoldoutConsumptionV1<'_> {
             &FinalHoldoutJournalReceiptV1,
         ) -> Result<TemporalComparisonInputsV1, ProductProviderErrorV1>,
     ) -> Result<TemporalComparisonInputsV1, ProductProviderErrorV1> {
-        self.original
-            .require_recorded(self.namespace, self.plan, self.receipt)
+        require_recorded(self.original, self.namespace, self.plan, self.receipt)
             .map_err(|_| ProductProviderErrorV1::Indeterminate)?;
         let released = release(self.namespace, self.plan, self.receipt);
-        self.original
-            .require_recorded(self.namespace, self.plan, self.receipt)
+        require_recorded(self.original, self.namespace, self.plan, self.receipt)
             .map_err(|_| ProductProviderErrorV1::Indeterminate)?;
         released
     }
@@ -99,6 +102,6 @@ pub(super) fn release_original_holdout<S: FinalHoldoutCasStoreV1, P: FinalHoldou
     });
     // Check even a provider that returned without using its borrow. No inputs
     // reach fitting/OPE if the physical owner changed or became uncertain.
-    original.require_recorded(namespace, plan, receipt)?;
+    require_recorded(original, namespace, plan, receipt)?;
     released.map_err(ProductEvaluationError::Provider)
 }
