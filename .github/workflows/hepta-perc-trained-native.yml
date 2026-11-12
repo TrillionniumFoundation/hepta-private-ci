@@ -1,0 +1,282 @@
+name: Hepta PERC trained-native historical replay
+
+on:
+  push:
+    branches: [codex/perc-trained-native-20261112-1c26]
+    paths:
+      - scripts/perc1/**
+      - scripts/perc1_*native*
+      - scripts/test_perc_semantic_native.py
+      - codex-rs/hepta-types/**
+      - codex-rs/hepta-infer-core/**
+      - codex-rs/hepta-neuron/**
+      - qualification/perc-semantic-owner-20261110/**
+      - .github/workflows/hepta-perc-trained-native.yml
+  pull_request:
+    paths:
+      - scripts/perc1/**
+      - scripts/perc1_*native*
+      - scripts/test_perc_semantic_native.py
+      - codex-rs/hepta-types/**
+      - codex-rs/hepta-infer-core/**
+      - codex-rs/hepta-neuron/**
+      - qualification/perc-semantic-owner-20261110/**
+      - .github/workflows/hepta-perc-trained-native.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: perc-trained-native-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  historical-replay:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    defaults:
+      run:
+        shell: bash
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      PYTHONDONTWRITEBYTECODE: "1"
+      PYTHONPATH: ${{ github.workspace }}/scripts
+      OMP_NUM_THREADS: "1"
+      OPENBLAS_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+      RUSTUP_TOOLCHAIN: "1.96.0"
+      CARGO_INCREMENTAL: "0"
+      CARGO_BUILD_JOBS: "2"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+    steps:
+      - name: Check out the exact candidate source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Set up Python 3.12
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12"
+      - name: Bind exact source and isolated output directories
+        id: bind
+        env:
+          PERC_NATIVE_PRIVATE: ${{ runner.temp }}/perc-trained-native-private
+          PERC_NATIVE_PUBLIC: ${{ runner.temp }}/perc-trained-native-public
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test -z "$(git status --porcelain)"
+          git diff --check
+          python - <<'PY'
+          import hashlib, json, os, subprocess
+          from pathlib import Path
+          private, public = Path(os.environ["PERC_NATIVE_PRIVATE"]), Path(os.environ["PERC_NATIVE_PUBLIC"])
+          private.mkdir(mode=0o700)
+          public.mkdir()
+          with Path(os.environ["GITHUB_ENV"]).open("a") as stream:
+              for key in ("PERC_NATIVE_PRIVATE", "PERC_NATIVE_PUBLIC"):
+                  stream.write(key + "=" + os.environ[key] + "\n")
+              stream.write("PERC1_SEMANTIC_NATIVE_BINARY=" + str(private / "native-build/target/debug/perc1-native-cell-probe") + "\n")
+          paths = subprocess.check_output([
+              "git", "ls-files", "-z", "--", "scripts/perc1", "scripts/perc1_*native*",
+              "scripts/test_perc_semantic_native.py", "codex-rs/hepta-types",
+              "codex-rs/hepta-infer-core", "codex-rs/hepta-neuron",
+              "qualification/perc-semantic-owner-20261110",
+              ".github/workflows/hepta-perc-trained-native.yml",
+          ]).decode().split("\0")
+          pins = {p: hashlib.sha256(Path(p).read_bytes()).hexdigest() for p in paths if p}
+          assert pins
+          (public / "SOURCE_BEFORE.json").write_text(json.dumps({
+              "commit": os.environ["SOURCE_SHA"],
+              "tree": subprocess.check_output(["git", "rev-parse", "HEAD^{tree}"], text=True).strip(),
+              "source_sha256": pins,
+          }, indent=2) + "\n")
+          PY
+      - name: Install pinned numerical runtime and native toolchain
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check --no-cache-dir numpy==1.26.4 Pillow==10.2.0
+          rustup toolchain install 1.96.0 --profile minimal --no-self-update
+          rustc --version --verbose > "$PERC_NATIVE_PUBLIC/toolchain.txt"
+          cargo --version >> "$PERC_NATIVE_PUBLIC/toolchain.txt"
+          python - <<'PY'
+          import importlib.metadata, json, os, platform
+          from pathlib import Path
+          versions = {name: importlib.metadata.version(name) for name in ("numpy", "Pillow")}
+          assert versions == {"numpy": "1.26.4", "Pillow": "10.2.0"}
+          Path(os.environ["PERC_NATIVE_PUBLIC"], "RUNTIME.json").write_text(json.dumps({
+              "python": platform.python_version(), "versions": versions,
+              "torch_required": False, "new_backbone_execution": False,
+          }, indent=2) + "\n")
+          PY
+      - name: Build trained-head probe against exact unchanged native libraries
+        id: native
+        run: |
+          set -euo pipefail
+          python - <<'PY' > "$PERC_NATIVE_PRIVATE/native-driver.stdout.log" 2> "$PERC_NATIVE_PRIVATE/native-driver.stderr.log"
+          import os, subprocess
+          from pathlib import Path
+          from perc1_native_cell_probe import build
+          probe = Path("scripts/perc1_semantic_native_probe.rs").read_text()
+          model = Path("scripts/perc1_semantic_native_model.rs").read_text()
+          marker = 'include!("perc1_semantic_native_model.rs");'
+          assert probe.count(marker) == 1, "native model include marker changed"
+          source = probe.replace(marker, model)
+          binary = build(
+              Path(os.environ["GITHUB_WORKSPACE"]),
+              Path(os.environ["PERC_NATIVE_PRIVATE"], "native-build"),
+              os.environ["SOURCE_SHA"],
+              subprocess.check_output(["rustup", "which", "--toolchain", "1.96.0", "cargo"], text=True).strip(),
+              subprocess.check_output(["rustup", "which", "--toolchain", "1.96.0", "rustc"], text=True).strip(),
+              source=source,
+              offline=False,
+          )
+          assert binary == Path(os.environ["PERC1_SEMANTIC_NATIVE_BINARY"])
+          print(binary)
+          PY
+      - name: Require actual trained-native regression cases without skips
+        id: tests
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import contextlib, json, os, sys, time, unittest
+          from pathlib import Path
+          private, public = Path(os.environ["PERC_NATIVE_PRIVATE"]), Path(os.environ["PERC_NATIVE_PUBLIC"])
+          cases = {}
+          class Recorded(unittest.TextTestResult):
+              def startTest(self, test):
+                  cases[test.id()] = "started"
+                  super().startTest(test)
+              def addSuccess(self, test):
+                  cases[test.id()] = "passed"
+                  super().addSuccess(test)
+              def addError(self, test, err):
+                  cases[test.id()] = "error"
+                  super().addError(test, err)
+              def addFailure(self, test, err):
+                  cases[test.id()] = "failed"
+                  super().addFailure(test, err)
+              def addSkip(self, test, reason):
+                  cases[test.id()] = "skipped"
+                  super().addSkip(test, reason)
+          started = time.perf_counter_ns()
+          with (private / "tests.stdout.log").open("x") as stdout, (private / "tests.stderr.log").open("x") as stderr:
+              with contextlib.redirect_stdout(stdout), contextlib.redirect_stderr(stderr):
+                  suite = unittest.defaultTestLoader.discover("scripts", pattern="test_perc_semantic_native.py")
+                  result = unittest.TextTestRunner(stream=stderr, verbosity=2, resultclass=Recorded).run(suite)
+          complete = bool(result.wasSuccessful() and result.testsRun >= 8 and cases
+                          and not result.skipped and not result.expectedFailures
+                          and not result.unexpectedSuccesses and all(s == "passed" for s in cases.values()))
+          report = {
+              "status": "PASS" if complete else "FAIL", "tests_run": result.testsRun,
+              "passed": sum(s == "passed" for s in cases.values()), "cases": cases,
+              "failures": len(result.failures), "errors": len(result.errors),
+              "skipped": len(result.skipped), "wall_ns": time.perf_counter_ns() - started,
+          }
+          (public / "TESTS.json").write_text(json.dumps(report, indent=2) + "\n")
+          print(json.dumps(report, indent=2))
+          sys.exit(0 if complete else 1)
+          PY
+      - name: Execute all frozen historical heads and owner recovery cases
+        id: qualification
+        run: |
+          set -euo pipefail
+          python -m perc1.semantic_native_qualification \
+            --native-binary "$PERC1_SEMANTIC_NATIVE_BINARY" \
+            --archive qualification/perc-semantic-owner-20261110/raw-evidence-v1.tar.xz \
+            --output "$PERC_NATIVE_PRIVATE/qualification" \
+            > "$PERC_NATIVE_PRIVATE/qualification.stdout.log" 2> "$PERC_NATIVE_PRIVATE/qualification.stderr.log"
+      - name: Check evidence counts and retain bounded summaries on every outcome
+        if: always()
+        env:
+          PRIOR_JOB_STATUS: ${{ job.status }}
+          PERC_NATIVE_PRIVATE: ${{ runner.temp }}/perc-trained-native-private
+          PERC_NATIVE_PUBLIC: ${{ runner.temp }}/perc-trained-native-public
+        run: |
+          python - <<'PY'
+          import hashlib, json, math, os, shutil, subprocess, sys
+          from pathlib import Path
+          private, public = Path(os.environ["PERC_NATIVE_PRIVATE"]), Path(os.environ["PERC_NATIVE_PUBLIC"])
+          public.mkdir(exist_ok=True)
+          def read(path):
+              return json.loads(path.read_text()) if path.is_file() else None
+          before = read(public / "SOURCE_BEFORE.json")
+          after = {p: hashlib.sha256(Path(p).read_bytes()).hexdigest()
+                   for p in before["source_sha256"] if Path(p).is_file()} if before else {}
+          unchanged = bool(before and before["source_sha256"] == after
+                           and subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip() == os.environ["SOURCE_SHA"])
+          build = read(private / "native-build/build.json")
+          tests = read(public / "TESTS.json")
+          report = read(private / "qualification/REPORT.json")
+          required = {
+              "engineering_status": "PASS_HISTORICAL_HEAD_AND_OWNER_REPLAY_ONLY",
+              "scientific_status": "HOLD", "adoption": "NoUpdate",
+              "historical_cases": 180, "unique_historical_tasks": 30, "models": 6,
+              "new_confirmation_sources": 0, "ranking_matches": 180,
+              "cold_process_replays_without_new_inference": 180,
+              "lost_ack_recoveries_without_new_inference": 6, "expected_refusals": 2,
+              "source_unchanged": True, "candidate_identity_mapping_validated": True,
+          }
+          cell_fields = ("cell_abstentions", "sparse_cell_choice_matches_raw_mlp_top",
+                         "sparse_cell_choice_differs_from_raw_mlp_top")
+          cell_metrics_ok = bool(report and all(type(report.get(k)) is int and 0 <= report[k] <= 180 for k in cell_fields)
+                                 and report["sparse_cell_choice_matches_raw_mlp_top"]
+                                 + report["sparse_cell_choice_differs_from_raw_mlp_top"] == 180
+                                 and report["cell_abstentions"] <= report["sparse_cell_choice_differs_from_raw_mlp_top"])
+          evidence_ok = bool(report and cell_metrics_ok
+                             and all(type(report.get(k)) is type(v) and report.get(k) == v for k, v in required.items())
+                             and isinstance(report.get("max_abs_logit_error"), (float, int))
+                             and math.isfinite(report["max_abs_logit_error"]))
+          complete = bool(os.environ["PRIOR_JOB_STATUS"] == "success" and unchanged
+                          and build and build["returncode"] == 0 and build["sources_unchanged"]
+                          and build["source_ref"] == os.environ["SOURCE_SHA"]
+                          and tests and tests["status"] == "PASS" and evidence_ok)
+          for name, original in (
+              ("NATIVE_BUILD.json", private / "native-build/build.json"),
+              ("REPORT.json", private / "qualification/REPORT.json"),
+              ("native-build.stdout.log", private / "native-build/build.stdout.log"),
+              ("native-build.stderr.log", private / "native-build/build.stderr.log"),
+          ):
+              if original.is_file() and original.stat().st_size <= 1024 * 1024:
+                  shutil.copyfile(original, public / name)
+          provenance = {}
+          for folder in ("qualification", "native-build"):
+              for path in sorted((private / folder).rglob("*")):
+                  if path.is_file() and not path.is_symlink() and "target" not in path.parts:
+                      provenance[str(path.relative_to(private))] = {
+                          "bytes": path.stat().st_size,
+                          "sha256": hashlib.file_digest(path.open("rb"), "sha256").hexdigest(),
+                      }
+          for path in sorted(private.glob("*.log")):
+              provenance[path.name] = {"bytes": path.stat().st_size, "sha256": hashlib.sha256(path.read_bytes()).hexdigest()}
+          (public / "PROVENANCE.json").write_text(json.dumps(provenance, indent=2) + "\n")
+          summary = {
+              "schema": "perc1.trained-native-hosted-ci.v1", "source_sha": os.environ["SOURCE_SHA"],
+              "source_unchanged": unchanged, "prior_job_status": os.environ["PRIOR_JOB_STATUS"],
+              "status": "PASS_TRAINED_NATIVE_ENGINEERING_ONLY" if complete else "INCOMPLETE_OR_FAILED",
+              "tests_status": tests["status"] if tests else "NOT_COMPLETED", "evidence_counts_verified": evidence_ok,
+              "cell_catalog_metrics_verified": cell_metrics_ok,
+              "candidate_identity_mapping_validated": bool(report and report.get("candidate_identity_mapping_validated") is True),
+              "cell_abstentions": report.get("cell_abstentions") if report else None,
+              "scientific_status": "HOLD", "adoption": "NoUpdate", "production_daemon_integrated": False,
+              "independent_real_task_benefit_established": False,
+              "publication_scope": "bounded summaries, case statuses, compiler output and SHA/size provenance",
+              "raw_retention": "runner-local logs and owner journals are ephemeral; summaries are not raw evidence",
+          }
+          (public / "SUMMARY.json").write_text(json.dumps(summary, indent=2) + "\n")
+          print(json.dumps(summary, indent=2))
+          sys.exit(0 if complete else 1)
+          PY
+      - name: Upload isolated engineering summaries
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: perc-trained-native-${{ env.SOURCE_SHA }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/perc-trained-native-public
+          if-no-files-found: error
+          retention-days: 14
+          compression-level: 9
