@@ -8,6 +8,7 @@ mod evidence;
 mod generation;
 mod objective_history;
 mod q24_outcome;
+mod q24_task_observation;
 pub use authbus::AuthBusObjectiveBody;
 pub use authbus::AuthBusObjectiveIngress;
 pub use authbus::AuthBusTextBody;
@@ -55,6 +56,9 @@ pub use q24_outcome::MAX_Q24_OUTCOME_PREIMAGE_BYTES;
 pub use q24_outcome::Q24OriginalObserverEvidenceV1;
 pub use q24_outcome::Q24OriginalTerminalOutcomeReceiptV1;
 pub use q24_outcome::Q24OriginalTerminalOutcomeRequestV1;
+pub use q24_task_observation::AGENTD_Q24_ORIGINAL_TASK_OBSERVATION_CAPABILITY;
+pub use q24_task_observation::MAX_Q24_DECISION_PREIMAGE_BYTES;
+pub use q24_task_observation::Q24OriginalTaskObservationV1;
 
 use std::path::PathBuf;
 
@@ -605,6 +609,7 @@ pub enum AgentdMethod {
     Q24OriginalTerminalOutcome {
         request: Box<Q24OriginalTerminalOutcomeRequestV1>,
     },
+    Q24OriginalTaskObservation {},
     Health,
     Lifecycle,
     Readiness,
@@ -776,6 +781,7 @@ pub enum AgentdPayload {
     Capabilities(AgentdCapabilitySet),
     Generation(GenerationControlResponseV1),
     Q24OriginalTerminalOutcome(Q24OriginalTerminalOutcomeReceiptV1),
+    Q24OriginalTaskObservation(Q24OriginalTaskObservationV1),
     Health(HealthSnapshot),
     Lifecycle(LifecycleSnapshot),
     Readiness(ReadinessSnapshot),

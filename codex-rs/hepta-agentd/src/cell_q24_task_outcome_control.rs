@@ -133,7 +133,7 @@ fn unhex(value: &str, maximum: usize) -> Result<Vec<u8>, AgentdError> {
         .collect()
 }
 
-fn hex(bytes: &[u8]) -> String {
+pub(super) fn hex(bytes: &[u8]) -> String {
     const DIGITS: &[u8; 16] = b"0123456789abcdef";
     let mut output = String::with_capacity(bytes.len() * 2);
     for byte in bytes {
