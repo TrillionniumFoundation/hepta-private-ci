@@ -11,6 +11,7 @@ import hashlib
 import json
 from pathlib import Path
 
+from .model_readbacks import _report
 from .observation_diagnostics import analyze_observations
 
 
@@ -283,6 +284,13 @@ def audit(directory):
             all(type(t) is int and t >= 0 for t in times) and times == sorted(times),
             "relative event clock changed",
         )
+        metered_wall = 0
+        for charge, event in zip(by_cost[key], stream):
+            metered_wall += charge["wall_ns"]
+            _require(
+                event["available_monotonic_ns"] >= metered_wall,
+                "event clock shorter than its preceding metered operations",
+            )
         _require(
             all(
                 e["clock_domain"] == "calling_process_monotonic_relative_to_trajectory"
@@ -307,6 +315,23 @@ def audit(directory):
             {"ack": _digest({"constant_train_prior": prior if trained else None})},
         )
         goal = {"task_id": key, "left": case["left"], "right": case["right"]}
+        for kind, tick, mandatory in (
+            ("optional_property_check", 3, False),
+            ("mandatory_terminal_check", 4, True),
+            ("mandatory_terminal_readback", 4, True),
+        ):
+            if kind in lookup:
+                _report(lookup[kind], goal, tick, mandatory)
+        if "mandatory_reconciliation" in lookup:
+            _same(
+                lookup["mandatory_reconciliation"],
+                {
+                    "resolved": True,
+                    "effects_replayed": 0,
+                    "reason": "actual_snapshot_readback",
+                },
+                "reconciliation must resolve without replay",
+            )
         if views:
             public = lookup["partial_readback"]
             _require(
@@ -492,6 +517,26 @@ def audit(directory):
         "invalid overall wall time",
     )
     _same(
+        result["overall_wall_scope"],
+        "phase_execution_and_reporting_after_PLAN_write",
+        "unsupported overall wall scope",
+    )
+    # The v1 collector meters sequential, non-nested operations inside its phase
+    # clock. Their elapsed sums are lower bounds, not complete physical costs.
+    _require(
+        result["overall_wall_ns"] >= sum(c["wall_ns"] for c in costs),
+        "overall wall shorter than sequential metered operations",
+    )
+    phase_by_trajectory = {r["trajectory_id"]: r["phase"] for r in rows}
+    phase_wall = Counter()
+    for cost in costs:
+        phase = (
+            "train"
+            if cost["kind"] == "frequency_fit"
+            else phase_by_trajectory[cost["trajectory_id"]]
+        )
+        phase_wall[phase] += cost["wall_ns"]
+    _same(
         [t["phase"] for t in result["phase_timings"]],
         PHASES,
         "phase timing roster changed",
@@ -504,6 +549,10 @@ def audit(directory):
             and type(end) is int
             and previous <= start <= end <= result["overall_wall_ns"],
             "invalid relative phase time",
+        )
+        _require(
+            end - start >= phase_wall[phase["phase"]],
+            "phase wall shorter than its sequential metered operations",
         )
         previous = end
     return dict(

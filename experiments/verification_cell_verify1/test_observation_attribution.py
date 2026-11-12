@@ -3,7 +3,7 @@
 import unittest
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from unittest.mock import patch
+from unittest.mock import mock_open, patch
 
 from .observation_attribution import attribute_rows, attribute_run
 
@@ -28,6 +28,67 @@ def row(
 
 
 class ObservationAttributionTests(unittest.TestCase):
+    def test_row_generator_stops_before_unbounded_materialization(self):
+        consumed = 0
+
+        def rows():
+            nonlocal consumed
+            while True:
+                consumed += 1
+                if consumed > 100001:
+                    raise AssertionError("attribution consumed beyond its row bound")
+                yield row("a")
+
+        with self.assertRaisesRegex(ValueError, "bounded nonempty"):
+            attribute_rows(rows())
+        self.assertEqual(consumed, 100001)
+
+    def test_post_audit_read_is_bounded_before_hash_or_allocation(self):
+        class OversizedRead:
+            def __len__(self):
+                return 16_000_001
+
+        with TemporaryDirectory() as directory:
+            path = Path(directory)
+            (path / "trajectories.jsonl").write_bytes(b"small original")
+            opener = mock_open()
+            opener.return_value.read.return_value = OversizedRead()
+            with (
+                patch(
+                    "experiments.verification_cell_verify1.observation_audit.audit",
+                    return_value={},
+                ),
+                patch.object(Path, "open", opener),
+                patch(
+                    "experiments.verification_cell_verify1.observation_attribution.hashlib.sha256",
+                    side_effect=AssertionError("oversized bytes reached hashing"),
+                ),
+            ):
+                with self.assertRaisesRegex(ValueError, "byte bound after audit"):
+                    attribute_run(path)
+            opener.return_value.read.assert_called_once_with(16_000_001)
+
+    def test_post_audit_symlink_is_not_read(self):
+        with TemporaryDirectory() as directory:
+            path = Path(directory)
+            target = path / "other"
+            target.write_bytes(b"unselected content")
+            try:
+                (path / "trajectories.jsonl").symlink_to(target)
+            except (OSError, NotImplementedError):
+                self.skipTest("creating symlinks is unavailable on this platform")
+            with (
+                patch(
+                    "experiments.verification_cell_verify1.observation_audit.audit",
+                    return_value={},
+                ),
+                patch.object(
+                    Path, "open", side_effect=AssertionError("symlink was opened")
+                ),
+            ):
+                with self.assertRaisesRegex(ValueError, "indirect after audit"):
+                    attribute_run(path)
+
     def test_refuse_saved_records_changed_after_audit(self):
         with TemporaryDirectory() as directory:
             path = Path(directory)
