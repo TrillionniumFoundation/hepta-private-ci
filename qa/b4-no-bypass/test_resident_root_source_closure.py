@@ -204,11 +204,11 @@ class ResidentRootSourceClosureTests(unittest.TestCase):
             "self.root_pid != std::process::id()",
             "cancellation.is_cancelled()",
             "matches!(access, ResidentAccessV3::Work) && self.readonly()",
-            "verifier.read_lease(&lease.lease_id)",
+            "verifier\n            .read_lease(&lease.lease_id)",
             "current.lease != *lease || intent.grant.binding != expected",
-            "verifier.verify_use(&lease.lease_id, lease.revision, &binding)",
-            "verifier.with_dispatch_boundary(token, &binding, ||",
-            "self.issuer.hold_original_resident_intent_v3(",
+            "verifier\n            .verify_use(&lease.lease_id, lease.revision, &binding)",
+            "verifier\n            .with_dispatch_boundary(token, &binding, ||",
+            "self\n                    .issuer\n                    .hold_original_resident_intent_v3(",
             "let now_ms = issuer.require_current()?",
             "now_ms < started || cancellation.is_cancelled()",
         ):
@@ -249,7 +249,7 @@ class ResidentRootSourceClosureTests(unittest.TestCase):
     def test_coordinator_installs_only_the_actual_fresh_token_and_never_replays_candidate(self):
         filename = "authority_host_learning_resident_runtime.rs"
         for function, marker in (
-            ("fn compose(", "stages.require_initial(&profile.initial, &profile.scope, &verifier)"),
+            ("fn compose(", "stages\n        .require_initial(&profile.initial, &profile.scope, &verifier)"),
             ("fn run(", "self.admission_requested = true"),
             ("fn run(", "if result.is_err()"),
             ("fn admit(", "ResidentRegisteredStateV3::admit(&self.owner, cancellation).await?"),
@@ -259,7 +259,7 @@ class ResidentRootSourceClosureTests(unittest.TestCase):
             ("fn continue_original(", "gate.begin(&predecessor, stage).await?"),
             ("fn continue_original(", "watchdog.tick()"),
             ("fn continue_original(", "authentication::original_attestations("),
-            ("fn continue_original(", "gate.checkpoint(&predecessor, coordinator.snapshot().clone()).await?"),
+            ("fn continue_original(", "gate.checkpoint(&predecessor, coordinator.snapshot().clone())\n            .await?"),
         ):
             with self.subTest(function=function, marker=marker):
                 self.rejects(filename, function, marker)

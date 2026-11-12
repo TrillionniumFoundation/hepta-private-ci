@@ -78,7 +78,9 @@ pub async fn run_with_shutdown(
     let resident_learning = config.take_root_resident_learning_delivery();
     #[cfg(target_os = "linux")]
     if resident_learning.is_some() && (learning_iteration.is_some() || circuit_task.is_none()) {
-        return Err(AgentdError::Invalid("resident learning requires exclusive ordinary delivery".into()));
+        return Err(AgentdError::Invalid(
+            "resident learning requires exclusive ordinary delivery".into(),
+        ));
     }
     let terminal_learning = config.take_terminal_learning_bootstrap();
     let neuron_generation = config.take_neuron_generation_bootstrap();
@@ -491,10 +493,14 @@ pub async fn run_with_shutdown(
         if let Some(delivery) = resident_learning {
             let delivery: crate::AgentdRootResidentDeliveryV3 = delivery;
             if state.objective_runtime.get().is_none() {
-                return Err(AgentdError::Invalid("resident learning requires its original Objective owner".into()));
+                return Err(AgentdError::Invalid(
+                    "resident learning requires its original Objective owner".into(),
+                ));
             }
             let store = automation_store.clone().ok_or_else(|| {
-                AgentdError::Invalid("resident learning requires its original AutomationStore".into())
+                AgentdError::Invalid(
+                    "resident learning requires its original AutomationStore".into(),
+                )
             })?;
             tasks.spawn_required(
                 "root-resident-learning-delivery",
