@@ -1,0 +1,66 @@
+{
+  "schema": "hpca-base-ci-readback-v1",
+  "source_head": "55df4b4fe380fbdfe85ba70a56fe56c25aa2e63b",
+  "run_id": 43128410584,
+  "job_id": 130886238191,
+  "run_attempt": 1,
+  "ci_conclusion": "success",
+  "raw_archive": {
+    "artifact_id": 13905243024,
+    "bytes": 22204,
+    "sha256": "86063f817ca7bbbd6ecab307fa563e795e2448cf560c43bcc52feb6fabfaf1bc"
+  },
+  "log_derived_files": {
+    "result_git_blob": "72050415f0b3ba027fe7bee4694ef616db7f7180",
+    "preexecution_git_blob": "36aaf7c2c7dbe7389b31d299f4eeaea325cf60c8",
+    "serialization": "literal JSON payload extracted from complete original CI job log; one trailing newline"
+  },
+  "original_file_sha256": {
+    "preexecution": "ad4734c2903321f397728665c0411afd013223cb2f025dc61a6d0674acc6c559",
+    "rows": "adf8b381b77ad465493dfbdd188a78fd90318888a560cabaa8ca7b9b48b3afec",
+    "attempts": "62ec2252eee4726ba4c4045a8d9a0cd100cf9fa68be9d5ccb6cba7e4b7bf63c3"
+  },
+  "summary": {
+    "adapters_loaded": 0,
+    "agreement": 0,
+    "generated_tokens": 24,
+    "greedy_correct_including_invalid": 0,
+    "greedy_valid": 0,
+    "independently_held_future_tasks": 0,
+    "max_label_vocabulary_mass": 0.033248689399975426,
+    "max_prior_p_yes_absolute_drift": 0.00000217591203305334,
+    "min_label_vocabulary_mass": 0.0005248111289068323,
+    "n": 24,
+    "two_choice_correct": 11,
+    "unique_public_tasks": 24
+  },
+  "cost": {
+    "download_bytes": 272437573,
+    "download_wall_seconds": 2.9920064989999986,
+    "excluded": [
+      "interpreter startup before main",
+      "CI queue and setup",
+      "energy",
+      "owner costs"
+    ],
+    "imports_wall_seconds": 3.3201250980000054,
+    "main_entry_to_report_cpu_seconds": 21.796658913999998,
+    "main_entry_to_report_wall_seconds": 11.212510703000007,
+    "maxrss_kib_process_lifetime_peak": 1194880,
+    "tokenizer_model_load_and_contract_wall_seconds": 0.3983122810000026
+  },
+  "independent_review": {
+    "raw_rows_checked": 24,
+    "unique_task_ids": 24,
+    "all_top_next_token_id": 2,
+    "all_emitted_token_ids": [
+      2
+    ],
+    "all_generated_text": "",
+    "original_two_choice_decisions_unchanged": 24,
+    "minimum_label_token_rank": 6,
+    "maximum_label_token_rank": 65,
+    "scope": "source identities, row population, exact old prompt/truth/family/input IDs, arithmetic and parser recomputed from raw log payload; journal bytes pending original artifact readback"
+  },
+  "scientific_admission": "HOLD_NO_GO"
+}
