@@ -35,7 +35,7 @@ async fn original_candidate_material_reconstructs_actual_pages_and_cold_original
     )?;
     let cut = complete_material(&fixture).await?;
     let trainer = training_connection.bind_original_dataset(cut.clone())?;
-    let training = trainer.execute_training(Arc::new(AtomicBool::new(false))).await?;
+    let training = trainer.execute_training(Arc::new(AtomicBool::new(/*v*/ false))).await?;
     let LearningIterationObservationV1::Training { candidate, artifact_bytes, .. } =
         &training.receipt().observation else {
             anyhow::bail!("actual original SGD must produce a Candidate");
@@ -103,7 +103,7 @@ async fn original_candidate_material_readonly_preserves_no_update_missing_and_pe
     let (trainer, server) = connected(
         Arc::clone(&owner), context.clone(), Origin::Fresh, /*expected*/ None,
     )?;
-    let no_update = trainer.execute_training(Arc::new(AtomicBool::new(false))).await?;
+    let no_update = trainer.execute_training(Arc::new(AtomicBool::new(/*v*/ false))).await?;
     assert!(matches!(no_update.receipt().observation, LearningIterationObservationV1::TrainingNoUpdateV2(_)));
     assert_eq!(finish(trainer, server)?, 1);
     let originals = (fixture.training_bytes()?, fixture.bytes()?);
@@ -194,7 +194,7 @@ async fn original_candidate_material_readonly_preserves_no_update_missing_and_pe
             receipt_file, receipt_witness, generator_key, baseline, material_source,
             experience, dataset: data_evidence,
         },
-        fixture.training_configuration(), dataset, Arc::new(AtomicBool::new(false)),
+        fixture.training_configuration(), dataset, Arc::new(AtomicBool::new(/*v*/ false)),
     )?);
     let cut = complete_material(&fixture).await?;
     let context = support::context(&fixture, &cut);
@@ -202,7 +202,7 @@ async fn original_candidate_material_readonly_preserves_no_update_missing_and_pe
         Arc::clone(&owner), context.clone(), Origin::Fresh, /*expected*/ None,
     )?;
     assert!(matches!(
-        trainer.execute_training(Arc::new(AtomicBool::new(false))).await,
+        trainer.execute_training(Arc::new(AtomicBool::new(/*v*/ false))).await,
         Err(CommandError::CommitUncertain)
     ));
     assert_eq!(finish(trainer, server)?, 1);

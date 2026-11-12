@@ -15,6 +15,7 @@ use super::OriginalCellQ24TrainingBootstrapOwnerV1;
 use super::super::super::candidate_wire;
 use crate::AgentdRootAuthorityPeer;
 use crate::OriginalCellQ24TrainingCommandErrorV1;
+use crate::OriginalCellQ24TrainingCommandOwnerV1;
 use crate::learning_owner_command_channel::original_owner_command_channel_v1;
 
 impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 'static>
@@ -76,7 +77,9 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
         request.require_initial(&self.config.material, request_id)?;
         session.require_request(&request)?;
         if let Some(original) = self.ready()? {
-            return Ok(original.candidate_material_response(bytes, request_id, session)?);
+            return Ok(OriginalCellQ24TrainingCommandOwnerV1::candidate_material_response(
+                original.as_ref(), bytes, request_id, session,
+            )?);
         }
         // No Material read, writer recovery or initialization is reachable.
         // This does not pretend to have read a Missing native journal.

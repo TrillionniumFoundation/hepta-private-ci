@@ -24,7 +24,7 @@ pub(super) async fn completed_candidate() -> anyhow::Result<Completed> {
     let (client, server) = connected(
         Arc::clone(&owner), context(&fixture, &dataset), Origin::Fresh, /*expected*/ None,
     )?;
-    let training = client.execute_training(Arc::new(AtomicBool::new(false))).await?;
+    let training = client.execute_training(Arc::new(AtomicBool::new(/*v*/ false))).await?;
     assert!(matches!(
         training.receipt().observation,
         LearningIterationObservationV1::Training { artifact_bytes: 4_108, .. }
