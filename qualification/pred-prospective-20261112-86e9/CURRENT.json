@@ -1,0 +1,242 @@
+{
+  "adoption": "NoUpdate",
+  "all_member_bytes_readback_verified_locally": true,
+  "archive": {
+    "bytes": 82674,
+    "path": "hosted-logs.tar.gz",
+    "sha256": "2a9c5c247b664142efaf9f63afcb251328e209e31aaee6321079ad6318147187",
+    "verified_members": [
+      {
+        "bytes": 8265,
+        "path": "RECEIPTS.json",
+        "sha256": "996388ae2021d46211f8d074b010b0df18c46f8d60e5b7dc3dbbdb4491e7c395"
+      },
+      {
+        "bytes": 66989,
+        "path": "job-130989580928.log",
+        "sha256": "8a7b1147977ee89c6dcade0fdab764b1ea1aea95f1a3ad91353d67c024980d96"
+      },
+      {
+        "bytes": 70951,
+        "path": "job-130989581224.log",
+        "sha256": "235f592b739e145283f9f3ab424dcc35e3c72555cd9dee0c49b08a5068cbdeaa"
+      },
+      {
+        "bytes": 64255,
+        "path": "job-130989581303.log",
+        "sha256": "569e7de7c854105c972eb66502129ef3cd088113a768df1082056bba7d87a79c"
+      },
+      {
+        "bytes": 69552,
+        "path": "job-130989710534.log",
+        "sha256": "02e9c87095a11a23827c0a71e54461639fb1897d10264389ff47bd035df16b8c"
+      },
+      {
+        "bytes": 71812,
+        "path": "job-130989710760.log",
+        "sha256": "efc83e6dd374a10d1fc171ca31cfd3a19684934b375aa7e31e9dc4b0a1eee0b2"
+      },
+      {
+        "bytes": 65691,
+        "path": "job-130989710797.log",
+        "sha256": "aff4ae6d4fa074947924b4aaf284fa38f66a1df7f416091df2b398362ca7fbcc"
+      },
+      {
+        "bytes": 4384,
+        "path": "run-43160296377-jobs.json",
+        "sha256": "d17620eacf2aa11f0f4e4bcdb0af6ccf3c9fed81103f11680fcc040962c47ed2"
+      },
+      {
+        "bytes": 4384,
+        "path": "run-43160334700-jobs.json",
+        "sha256": "d41a2e2bd1c4f144679d732ac4568a359d02a3323174e3768025ed4793932c5c"
+      }
+    ]
+  },
+  "causal_policy_value_identified": false,
+  "default_root_discovery": {
+    "database_connections": 0,
+    "live_owner_records_collected": 0,
+    "original_ai395_unknown": "not touched or replayed",
+    "path": "DEFAULT_ROOT_SUMMARY.json",
+    "scope": "rog/mac/x230 current operator default roots only; all 3 distinct read-only jobs exited 0; no default root or database clue; actual FleetRoot/deployment remains unverified",
+    "sha256": "ded61d1419b8ae34505e8fd10f3bc1727fd59d8c9a414c5fde6885b2557b4811"
+  },
+  "full_repository_ci": "not claimed green; queued/in-progress at observation",
+  "hosted_receipts": {
+    "full_repository_ci_green": null,
+    "jobs": [
+      {
+        "actual_checkout_sha_verified": true,
+        "bytes": 66989,
+        "checkout_evidence": [
+          "2026-11-12T05:17:08.6637730Z   ref: c5a0f92b8d6cd065396d95f31b1b33f4277e3b59",
+          "2026-11-12T05:17:09.5150810Z [command]/opt/homebrew/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin c5a0f92b8d6cd065396d95f31b1b33f4277e3b59",
+          "2026-11-12T05:17:14.6102900Z c5a0f92b8d6cd065396d95f31b1b33f4277e3b59",
+          "2026-11-12T05:17:14.6310480Z [command]/opt/homebrew/bin/git checkout --progress --force c5a0f92b8d6cd065396d95f31b1b33f4277e3b59",
+          "2026-11-12T05:17:16.8551180Z c5a0f92b8d6cd065396d95f31b1b33f4277e3b59"
+        ],
+        "conclusion": "success",
+        "executed_tests": 182,
+        "expected_source_sha": "c5a0f92b8d6cd065396d95f31b1b33f4277e3b59",
+        "individual_ok_lines": 182,
+        "individual_skip_lines": 6,
+        "job_id": 130989580928,
+        "job_name": "PRED-1 (macos-latest)",
+        "log_format": "exact UTF-8 encoding of connector-decoded log text; not original archive bytes",
+        "path": "job-130989580928.log",
+        "pr_number": 6100,
+        "reported_tests": 188,
+        "run_id": 43160296377,
+        "sha256": "8a7b1147977ee89c6dcade0fdab764b1ea1aea95f1a3ad91353d67c024980d96",
+        "skipped_tests": 6,
+        "test_seconds": 9.959
+      },
+      {
+        "actual_checkout_sha_verified": true,
+        "bytes": 70951,
+        "checkout_evidence": [
+          "2026-11-12T05:17:45.4255091Z   ref: c5a0f92b8d6cd065396d95f31b1b33f4277e3b59",
+          "2026-11-12T05:17:49.5142292Z [command]\"C:\\Program Files\\Git\\bin\\git.exe\" -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin c5a0f92b8d6cd065396d95f31b1b33f4277e3b59",
+          "2026-11-12T05:17:55.7314846Z c5a0f92b8d6cd065396d95f31b1b33f4277e3b59",
+          "2026-11-12T05:17:55.8424287Z [command]\"C:\\Program Files\\Git\\bin\\git.exe\" checkout --progress --force c5a0f92b8d6cd065396d95f31b1b33f4277e3b59",
+          "2026-11-12T05:18:00.7906166Z c5a0f92b8d6cd065396d95f31b1b33f4277e3b59"
+        ],
+        "conclusion": "success",
+        "executed_tests": 182,
+        "expected_source_sha": "c5a0f92b8d6cd065396d95f31b1b33f4277e3b59",
+        "individual_ok_lines": 182,
+        "individual_skip_lines": 6,
+        "job_id": 130989581224,
+        "job_name": "PRED-1 (windows-latest)",
+        "log_format": "exact UTF-8 encoding of connector-decoded log text; not original archive bytes",
+        "path": "job-130989581224.log",
+        "pr_number": 6100,
+        "reported_tests": 188,
+        "run_id": 43160296377,
+        "sha256": "235f592b739e145283f9f3ab424dcc35e3c72555cd9dee0c49b08a5068cbdeaa",
+        "skipped_tests": 6,
+        "test_seconds": 45.349
+      },
+      {
+        "actual_checkout_sha_verified": true,
+        "bytes": 64255,
+        "checkout_evidence": [
+          "2026-11-12T05:19:15.5623548Z   ref: c5a0f92b8d6cd065396d95f31b1b33f4277e3b59",
+          "2026-11-12T05:19:16.0526056Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin c5a0f92b8d6cd065396d95f31b1b33f4277e3b59",
+          "2026-11-12T05:19:21.1826353Z c5a0f92b8d6cd065396d95f31b1b33f4277e3b59",
+          "2026-11-12T05:19:21.1972764Z [command]/usr/bin/git checkout --progress --force c5a0f92b8d6cd065396d95f31b1b33f4277e3b59",
+          "2026-11-12T05:19:22.3011966Z c5a0f92b8d6cd065396d95f31b1b33f4277e3b59"
+        ],
+        "conclusion": "success",
+        "executed_tests": 188,
+        "expected_source_sha": "c5a0f92b8d6cd065396d95f31b1b33f4277e3b59",
+        "individual_ok_lines": 188,
+        "individual_skip_lines": 0,
+        "job_id": 130989581303,
+        "job_name": "PRED-1 (ubuntu-latest)",
+        "log_format": "exact UTF-8 encoding of connector-decoded log text; not original archive bytes",
+        "path": "job-130989581303.log",
+        "pr_number": 6100,
+        "reported_tests": 188,
+        "run_id": 43160296377,
+        "sha256": "569e7de7c854105c972eb66502129ef3cd088113a768df1082056bba7d87a79c",
+        "skipped_tests": 0,
+        "test_seconds": 11.234
+      },
+      {
+        "actual_checkout_sha_verified": true,
+        "bytes": 69552,
+        "checkout_evidence": [
+          "2026-11-12T05:19:13.0340160Z   ref: d009863ad844c354ebfe288cefc3c9996b5e1d77",
+          "2026-11-12T05:19:14.3958170Z [command]/opt/homebrew/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin d009863ad844c354ebfe288cefc3c9996b5e1d77",
+          "2026-11-12T05:19:20.3584540Z d009863ad844c354ebfe288cefc3c9996b5e1d77",
+          "2026-11-12T05:19:20.3907080Z [command]/opt/homebrew/bin/git checkout --progress --force d009863ad844c354ebfe288cefc3c9996b5e1d77",
+          "2026-11-12T05:19:23.9139540Z d009863ad844c354ebfe288cefc3c9996b5e1d77"
+        ],
+        "conclusion": "success",
+        "executed_tests": 188,
+        "expected_source_sha": "d009863ad844c354ebfe288cefc3c9996b5e1d77",
+        "individual_ok_lines": 188,
+        "individual_skip_lines": 6,
+        "job_id": 130989710534,
+        "job_name": "PRED-1 (macos-latest)",
+        "log_format": "exact UTF-8 encoding of connector-decoded log text; not original archive bytes",
+        "path": "job-130989710534.log",
+        "pr_number": 6101,
+        "reported_tests": 194,
+        "run_id": 43160334700,
+        "sha256": "02e9c87095a11a23827c0a71e54461639fb1897d10264389ff47bd035df16b8c",
+        "skipped_tests": 6,
+        "test_seconds": 11.556
+      },
+      {
+        "actual_checkout_sha_verified": true,
+        "bytes": 71812,
+        "checkout_evidence": [
+          "2026-11-12T05:17:40.9290895Z   ref: d009863ad844c354ebfe288cefc3c9996b5e1d77",
+          "2026-11-12T05:17:43.9349413Z [command]\"C:\\Program Files\\Git\\bin\\git.exe\" -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin d009863ad844c354ebfe288cefc3c9996b5e1d77",
+          "2026-11-12T05:17:50.0222443Z d009863ad844c354ebfe288cefc3c9996b5e1d77",
+          "2026-11-12T05:17:50.0975143Z [command]\"C:\\Program Files\\Git\\bin\\git.exe\" checkout --progress --force d009863ad844c354ebfe288cefc3c9996b5e1d77",
+          "2026-11-12T05:17:53.4971253Z d009863ad844c354ebfe288cefc3c9996b5e1d77"
+        ],
+        "conclusion": "success",
+        "executed_tests": 188,
+        "expected_source_sha": "d009863ad844c354ebfe288cefc3c9996b5e1d77",
+        "individual_ok_lines": 188,
+        "individual_skip_lines": 6,
+        "job_id": 130989710760,
+        "job_name": "PRED-1 (windows-latest)",
+        "log_format": "exact UTF-8 encoding of connector-decoded log text; not original archive bytes",
+        "path": "job-130989710760.log",
+        "pr_number": 6101,
+        "reported_tests": 194,
+        "run_id": 43160334700,
+        "sha256": "efc83e6dd374a10d1fc171ca31cfd3a19684934b375aa7e31e9dc4b0a1eee0b2",
+        "skipped_tests": 6,
+        "test_seconds": 32.584
+      },
+      {
+        "actual_checkout_sha_verified": true,
+        "bytes": 65691,
+        "checkout_evidence": [
+          "2026-11-12T05:19:58.6638815Z   ref: d009863ad844c354ebfe288cefc3c9996b5e1d77",
+          "2026-11-12T05:19:59.0482942Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin d009863ad844c354ebfe288cefc3c9996b5e1d77",
+          "2026-11-12T05:20:04.2791833Z d009863ad844c354ebfe288cefc3c9996b5e1d77",
+          "2026-11-12T05:20:04.2912355Z [command]/usr/bin/git checkout --progress --force d009863ad844c354ebfe288cefc3c9996b5e1d77",
+          "2026-11-12T05:20:05.3899822Z d009863ad844c354ebfe288cefc3c9996b5e1d77"
+        ],
+        "conclusion": "success",
+        "executed_tests": 194,
+        "expected_source_sha": "d009863ad844c354ebfe288cefc3c9996b5e1d77",
+        "individual_ok_lines": 194,
+        "individual_skip_lines": 0,
+        "job_id": 130989710797,
+        "job_name": "PRED-1 (ubuntu-latest)",
+        "log_format": "exact UTF-8 encoding of connector-decoded log text; not original archive bytes",
+        "path": "job-130989710797.log",
+        "pr_number": 6101,
+        "reported_tests": 194,
+        "run_id": 43160334700,
+        "sha256": "aff4ae6d4fa074947924b4aaf284fa38f66a1df7f416091df2b398362ca7fbcc",
+        "skipped_tests": 0,
+        "test_seconds": 10.695
+      }
+    ],
+    "schema": "pred-hosted-source-checks-v1",
+    "scope": "PRED workflow only; other required repository CI is separate"
+  },
+  "implementation_sha": "d009863ad844c354ebfe288cefc3c9996b5e1d77",
+  "independent_effect_labels_added": 0,
+  "live_owner_records_added": 0,
+  "log_format": "connector-decoded UTF-8 logs; not original GitHub ZIP bytes",
+  "native_provenance_authenticated": false,
+  "new_confirmation_units": 0,
+  "physical_cost_complete": false,
+  "prediction_deployed": false,
+  "preflight_sha": "c5a0f92b8d6cd065396d95f31b1b33f4277e3b59",
+  "qualification": "HOLD",
+  "real_policy_comparisons_added": 0,
+  "schema": "pred1-prospective-history-evidence-v1",
+  "scope": "evidence-only successor; source commits and their CI remain separate"
+}
