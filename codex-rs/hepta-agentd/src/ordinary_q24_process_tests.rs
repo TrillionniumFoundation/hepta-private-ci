@@ -31,6 +31,8 @@ mod recovery;
 mod root;
 #[path = "ordinary_q24_root_pair_tests.rs"]
 mod root_pair;
+#[path = "ordinary_q24_source_keeper_tests.rs"]
+mod source_keeper;
 
 use std::path::PathBuf;
 use std::process::Command;
