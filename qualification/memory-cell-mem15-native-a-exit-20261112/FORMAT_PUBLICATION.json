@@ -1,0 +1,100 @@
+{
+  "schema": "hepta.mem15.published-native-format.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "pr": 6239,
+  "branch": "codex/mem15-native-a-exit-20261112-ef0c",
+  "parent_commit": "b0e4ba507aa3e1d7dee8158b54a61453035d75e6",
+  "published_commit": "c828f8546b85f11e81b827e5a6de4d41e239e2b4",
+  "root_tree": "1450dbd43d2e7674dc5d7ab6814af605cb79c030",
+  "codex_rs_tree": "ed240f298fa2cbb104c65054596e64e7d1e9bca8",
+  "preimages_verified": 9,
+  "postimages_verified": 9,
+  "github_postimages_verified": 9,
+  "formatted_paths": [
+    "codex-rs/hepta-agentd/BUILD.bazel",
+    "codex-rs/hepta-agentd/src/production_episodic_process.rs",
+    "codex-rs/hepta-agentd/src/production_episodic_process_child.rs",
+    "codex-rs/hepta-agentd/src/production_episodic_provider_tests.rs"
+  ],
+  "postimages": {
+    "codex-rs/hepta-agentd/BUILD.bazel": {
+      "bytes": 9281,
+      "sha256": "54c2c6607501b48713493b0a25322e7f594efece1f7ea17da43dc3c28a575e9b",
+      "git_blob": "f88ce36fc2765ac6bb755c4617e22df1d16b83ec"
+    },
+    "codex-rs/hepta-agentd/src/production_episodic_process.rs": {
+      "bytes": 10580,
+      "sha256": "56a13536ac49c6a9b55a0b18eefee849de7892531310971d5b52a1082aa23261",
+      "git_blob": "b64754a0129f930655941a9aeee5b817b1fe2ae2"
+    },
+    "codex-rs/hepta-agentd/src/production_episodic_process_child.rs": {
+      "bytes": 9547,
+      "sha256": "0cf402e5c461f1e47c2ce5c8a150f1a785febf3da7e78bfa692b45b0de19118b",
+      "git_blob": "2833ffab057c33473071c87fdf8f8ea598bf50f5"
+    },
+    "codex-rs/hepta-agentd/src/production_episodic_process_child_tests.rs": {
+      "bytes": 2504,
+      "sha256": "c29c43559bdbea4f18a757669030dfa7a4d36424ebb9e6d8a851bd4cece29f4e",
+      "git_blob": "931a9dd060d1c2f991f3cbd63bcadd0ecfaf8bb1"
+    },
+    "codex-rs/hepta-agentd/src/production_episodic_provider_authority.rs": {
+      "bytes": 6849,
+      "sha256": "1acfbf6310fed1eec50faa1ecf371a85116ad09083cf26c8f2a08d122deba230",
+      "git_blob": "947289cce8cbbc4dfcd8c8af1e86eaeb23273d4b"
+    },
+    "codex-rs/hepta-agentd/src/production_episodic_provider_tests.rs": {
+      "bytes": 25756,
+      "sha256": "f11e97e93b01c26fadcd9051b657684efdf08e76fcbec663d7d44fd398cb286d",
+      "git_blob": "60f2bcd0df16f740b6aa083e1e095651b17ea436"
+    },
+    "codex-rs/hepta-infer-worker-host/src/bin/hepta-infer-worker.rs": {
+      "bytes": 8340,
+      "sha256": "1382fb9ec9aadc9ba16a39bc95258f5fd1a8532ec502815a5272f9a35a1b892a",
+      "git_blob": "ce8ec9e341672d71acbfd19c1e549dee0059dcd9"
+    },
+    "codex-rs/hepta-infer-worker-host/src/bin/hepta-infer-worker/context_delivery_tests.rs": {
+      "bytes": 736,
+      "sha256": "4ad65c8768d26210f221539208a1e887bd78c0e1a303e0caf39f56b09173b4f9",
+      "git_blob": "3cd1b46cdae1d5a9b3a844de8812750801355e19"
+    },
+    "qualification/memory-cell-mem15-native-a-exit-20261112/PROTOCOL.md": {
+      "bytes": 8839,
+      "sha256": "185cb14910570b34870b2029ff28d583d0e9cc62806a21dc7d56cfcab12996f5",
+      "git_blob": "fed4cd99a8be99bfb401d83eb9cc8b6732d3dfce"
+    }
+  },
+  "format_patch": {
+    "bytes": 23961,
+    "sha256": "cfccf8888aec1ab51ae70fe0a2526ba4c3c4182b20fc7a576182d25fff0878d8",
+    "git_blob": "4a4ed271f3d2e263186cd3ce032db83667225798"
+  },
+  "first_format": {
+    "status": "failed",
+    "just_format_exit_code": 1,
+    "result": {
+      "bytes": 5399,
+      "sha256": "21c99d2e25875d661fe97314eb19ab014132b89c3c7b667987dc72d498b3831b",
+      "git_blob": "eed49f04381c5ae81b4b71d3bf91f679d4cfa529"
+    },
+    "partial_patch": {
+      "bytes": 23606,
+      "sha256": "4d127d7377ac3c162b217a9a43d534fb872758a89d2c81c38d7aac4aedb3a0ae",
+      "git_blob": "d60b9de5012864f1a08dbd1dc7bc603f7e39edf3"
+    }
+  },
+  "recovery_format": {
+    "status": "formatted_pending_publication",
+    "just_format_exit_code": 0,
+    "started_unix_ns": 1794474264147992000,
+    "finished_unix_ns": 1794474280135747000
+  },
+  "tests_executed": 0,
+  "model_calls": 0,
+  "native_compilation": "pending",
+  "capture": "pending",
+  "notes": [
+    "Only formatting changes published; original first failure and successful recovery evidence preserved.",
+    "PR #6211 and MEM14 frozen source/plan/scores untouched.",
+    "Final native execution must bind this commit/tree or a verified identical codex-rs subtree."
+  ]
+}

@@ -7,6 +7,7 @@ use codex_hepta_infer_core::durable_control::DurableInferenceControl;
 use codex_hepta_infer_worker_host::final_use_authorizer::UnixFinalUseAuthorizer;
 use codex_hepta_infer_worker_host::native_app_server::AppServerModelDriver;
 use codex_hepta_infer_worker_host::native_app_server::NativeAdmission;
+use codex_hepta_infer_worker_host::native_app_server::NativeContextDelivery;
 use codex_hepta_infer_worker_host::native_app_server::NativeIntelligenceRunBinding;
 use codex_hepta_infer_worker_host::native_app_server::NativeWorkerConfig;
 use tokio::io::AsyncReadExt;
@@ -22,6 +23,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     let mut request_id = None;
     let mut maximum_in_flight = None;
     let mut context_query = None;
+    let mut context_delivery = "attach".to_string();
     let mut final_use_authority_config = None;
     let mut intelligence_run_id = None;
     let mut intelligence_revision = None;
@@ -33,7 +35,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     while let Some(flag) = args.next() {
         if flag == "--help" {
             println!(
-                "hepta-infer-worker --profile native-app-server --agentd-socket PATH --agent-id ID --generation N --model MODEL --journal PATH --request-id ID --maximum-in-flight N --final-use-authority-config ABSOLUTE_JSON [--intelligence-run-id ID --intelligence-revision N --intelligence-context-digest HEX --intelligence-envelope-digest HEX] [--context-query TEXT] [--timeout-ms N]\nReads one prompt from stdin; an independent final-use authority must sign the exact turn/start binding before model dispatch."
+                "hepta-infer-worker --profile native-app-server --agentd-socket PATH --agent-id ID --generation N --model MODEL --journal PATH --request-id ID --maximum-in-flight N --final-use-authority-config ABSOLUTE_JSON [--intelligence-run-id ID --intelligence-revision N --intelligence-context-digest HEX --intelligence-envelope-digest HEX] [--context-query TEXT] [--context-delivery attach|withhold] [--timeout-ms N]\nReads one prompt from stdin; an independent final-use authority must sign the exact turn/start binding before model dispatch. Withhold requires a context query and cannot be combined with intelligence binding."
             );
             return Ok(());
         }
@@ -49,6 +51,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
             "--request-id" => request_id = Some(value),
             "--maximum-in-flight" => maximum_in_flight = Some(value.parse()?),
             "--context-query" => context_query = Some(value),
+            "--context-delivery" => context_delivery = value,
             "--final-use-authority-config" => {
                 final_use_authority_config = Some(PathBuf::from(value))
             }
@@ -63,6 +66,14 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     if !native_profile_selected {
         return Err("--profile native-app-server must be selected explicitly".into());
     }
+    let context_delivery = validate_context_delivery(
+        &context_delivery,
+        context_query.as_deref(),
+        intelligence_run_id.is_some()
+            || intelligence_revision.is_some()
+            || intelligence_context_digest.is_some()
+            || intelligence_envelope_digest.is_some(),
+    )?;
     let final_use_authorizer = UnixFinalUseAuthorizer::open(
         &final_use_authority_config.ok_or("--final-use-authority-config is required")?,
     )?;
@@ -127,6 +138,18 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
                 )
                 .await
         }
+        None if context_delivery == NativeContextDelivery::Withhold => {
+            driver
+                .run_with_context_delivery(
+                    &mut control,
+                    admission,
+                    prompt,
+                    context_query.ok_or("withhold requires --context-query")?,
+                    context_delivery,
+                    &cancellation,
+                )
+                .await
+        }
         None => {
             driver
                 .run(
@@ -150,3 +173,23 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     }
     Ok(())
 }
+
+fn validate_context_delivery(
+    value: &str,
+    query: Option<&str>,
+    intelligence: bool,
+) -> Result<NativeContextDelivery, &'static str> {
+    match value {
+        "attach" => Ok(NativeContextDelivery::Attach),
+        "withhold" if query.is_none_or(str::is_empty) => {
+            Err("withhold requires a nonempty --context-query")
+        }
+        "withhold" if intelligence => Err("withhold cannot be combined with --intelligence-*"),
+        "withhold" => Ok(NativeContextDelivery::Withhold),
+        _ => Err("--context-delivery must be attach or withhold"),
+    }
+}
+
+#[cfg(test)]
+#[path = "hepta-infer-worker/context_delivery_tests.rs"]
+mod context_delivery_tests;
