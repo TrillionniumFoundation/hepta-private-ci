@@ -1,0 +1,112 @@
+{
+  "schema": 1,
+  "base": "4f8b1397cb1866e2e9e6aee4e2de53f99d83f0f2",
+  "head": "c13ceeb3f7d32bc4211560840efef7e42632d718",
+  "tree": "f0e1fcad8550ba1c08c57e5b4715f7e6b3172005",
+  "commits": [
+    {
+      "sha": "24a3529523f9700dd0ef3119c3a85acac7a03801",
+      "tree": "c00a5397c4e3f6267138bc0c923e6882b2069362",
+      "subject": "Keep completed data reply rejection separate from authority construction"
+    },
+    {
+      "sha": "c13ceeb3f7d32bc4211560840efef7e42632d718",
+      "tree": "f0e1fcad8550ba1c08c57e5b4715f7e6b3172005",
+      "subject": "Close completed learning client construction and original-lane verification"
+    }
+  ],
+  "verification": {
+    "source_qa_exact": {
+      "tests": 44,
+      "passed": 44,
+      "failed": 0,
+      "errors": 0,
+      "raw": "completed-client-c13ceeb3-exact"
+    },
+    "native": "not run",
+    "full_repository_caller": "not run",
+    "first_failures_retained": true
+  },
+  "files": [
+    {
+      "name": "source.bundle",
+      "bytes": 15263,
+      "sha256": "3cafc23369866eae98e14dd3f2183ba19ba9f053abd2bae19f621437634662d8",
+      "git_blob": "8c14729768b49b3f46260aa44ce258fe5710b875"
+    },
+    {
+      "name": "qa-raw.tar.gz",
+      "bytes": 14312,
+      "sha256": "c797a24ee1cca7337ba1e0e46d80c90097894bfc67a79d3bcf54cfcb18aab3dd",
+      "git_blob": "73a5c47f143333e40ed95d7ecb390c06cc2d9431"
+    },
+    {
+      "name": "bundle-verify.log",
+      "bytes": 323,
+      "sha256": "cd19b52176bd0ea66cf8877303986cc702c787035e850aca1cd1984bb5062506",
+      "git_blob": "22c7161485065cec7b5d342bac8bff58a3345897"
+    }
+  ],
+  "raw_files": [
+    {
+      "path": "completed-client-4f8-first/result.json",
+      "bytes": 1541,
+      "sha256": "a4eaeb1d11d85fe484f1db089c9d43d5ba01092179c942605800a3ac5e7eeaf6"
+    },
+    {
+      "path": "completed-client-4f8-first/source-qa.log",
+      "bytes": 181837,
+      "sha256": "6d4182193666f73f7246142135ea3127d18c32fbb75bdeb0999ef75c9066ccc1"
+    },
+    {
+      "path": "completed-client-4f8-fourth-successor/result.json",
+      "bytes": 521,
+      "sha256": "8ca430cc9011afa3454f4cf6f86e3f7e75e076e02d3396cfc71feb8dc89f08ce"
+    },
+    {
+      "path": "completed-client-4f8-fourth-successor/source-qa.log",
+      "bytes": 9585,
+      "sha256": "b067159f5ad508f157f1b3da10fb65c1658448e71ad49df94ec0bb1ea2b92865"
+    },
+    {
+      "path": "completed-client-4f8-second-successor/result.json",
+      "bytes": 521,
+      "sha256": "530eeef86b64b96979d8553ca15d907bff01807e8509bce64955617a2d121cf1"
+    },
+    {
+      "path": "completed-client-4f8-second-successor/source-qa.log",
+      "bytes": 12981,
+      "sha256": "d68ae4c76abdb71d3894573882a070cc054fcb42680f263e398ae93919e17e12"
+    },
+    {
+      "path": "completed-client-4f8-successor/result.json",
+      "bytes": 473,
+      "sha256": "d59e30f7e11416a03bb14d053cd24511364dde8d556c71405fed9dc66bfce778"
+    },
+    {
+      "path": "completed-client-4f8-successor/source-qa.log",
+      "bytes": 95412,
+      "sha256": "ccd3b9409c7c101ed7a7fe05a368035f8a418541adb4350bd5f9f69058aee8cc"
+    },
+    {
+      "path": "completed-client-4f8-third-successor/result.json",
+      "bytes": 521,
+      "sha256": "7493e11729696e4c34a75872d023acb80fa317c3486625deb3ed43734189d45f"
+    },
+    {
+      "path": "completed-client-4f8-third-successor/source-qa.log",
+      "bytes": 9668,
+      "sha256": "76a3cd17bb4163a586f0f3719e67069a35b7b0b7f0ef9640d482b6f9defac765"
+    },
+    {
+      "path": "completed-client-c13ceeb3-exact/result.json",
+      "bytes": 3634,
+      "sha256": "b4b0408beac99cd37daca0ad218ea534c9f6eb976006c2dc972a9039d8c2c055"
+    },
+    {
+      "path": "completed-client-c13ceeb3-exact/source-qa.log",
+      "bytes": 9585,
+      "sha256": "215a6524afdcf0d2c649ea2effac2cefefe0527608a0dad224626e76c66afdda"
+    }
+  ]
+}
