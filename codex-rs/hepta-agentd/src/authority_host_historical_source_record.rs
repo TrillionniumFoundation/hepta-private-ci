@@ -117,7 +117,7 @@ impl RootHistoricalSourcePinV1 {
         })
     }
 
-    fn inspect_exact<T>(&self, action: impl FnOnce() -> io::Result<T>) -> io::Result<T> {
+    pub(super) fn inspect_exact<T>(&self, action: impl FnOnce() -> io::Result<T>) -> io::Result<T> {
         original_root()?;
         let mut poisoned = self
             .poisoned

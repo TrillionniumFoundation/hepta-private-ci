@@ -227,7 +227,7 @@ class HistoricalTaskReadSourceTests(unittest.TestCase):
             "connection.original_end().min(launch_end)", "timeout > Duration::from_millis(500)",
             "bytes.len() as u64 != size", "bundle.root != original.root", "bundle.consumer != original.consumer",
             "bundle.root.pid != self.root_pid", "bundle.root.uid != 0", "bundle.socket != socket",
-            "bundle.profile.require_original_context(", "&original.writer_proof.sha256()?",
+            "bundle.profile.require_original_context(", "original.writer_proof.sha256()?.as_str()",
             "validate_lane_paths(", "timeout.min(remaining(end)?)", "OriginalPublicationStream::from_stream_until(",
             "self.root_pidfd", "process_start_ticks: bundle.root.process_start_ticks",
         ))

@@ -2,6 +2,7 @@
 //! The expected prefix comes from original registration, never peer metadata.
 
 use std::fs::File;
+use std::os::fd::AsRawFd;
 use std::os::unix::fs::FileExt;
 use std::os::unix::fs::MetadataExt;
 
@@ -11,8 +12,6 @@ use codex_hepta_learning_ledger::RunStartReadOnlyFrameV1;
 use codex_hepta_learning_ledger::observe_original_run_start_prefix_v1;
 use codex_hepta_objective::ObjectiveAdmissionProfileV1;
 use codex_hepta_objective::decode_admission_profile_json_v1;
-use rustix::fs::OFlags;
-use rustix::fs::fcntl_getfl;
 
 use super::*;
 use crate::AgentdIdentity;
@@ -32,7 +31,12 @@ pub(super) struct FilePin {
 
 impl FilePin {
     fn read(file: &File, uid: u32, gid: u32) -> io::Result<Self> {
-        if fcntl_getfl(file).map_err(io::Error::from)? & OFlags::ACCMODE != OFlags::RDONLY {
+        // SAFETY: F_GETFL only observes flags of this retained live File.
+        let flags = unsafe { libc::fcntl(file.as_raw_fd(), libc::F_GETFL) };
+        if flags < 0 {
+            return Err(io::Error::last_os_error());
+        }
+        if flags & libc::O_ACCMODE != libc::O_RDONLY || flags & libc::O_PATH != 0 {
             return Err(io::Error::other(
                 "original O_RDONLY RunStart input required",
             ));

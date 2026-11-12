@@ -232,7 +232,7 @@ class OriginalRunStartRetentionSourceTests(unittest.TestCase):
             "self.trust.require_original_file()?",
         ))
         self.remove(INPUTS, "read", (
-            "fcntl_getfl(file).map_err(io::Error::from)? & OFlags::ACCMODE != OFlags::RDONLY",
+            "libc::fcntl(file.as_raw_fd(), libc::F_GETFL)", "flags < 0", "io::Error::last_os_error()", "flags & libc::O_ACCMODE != libc::O_RDONLY || flags & libc::O_PATH != 0",
             "metadata.nlink() != 1", "metadata.mode() & 0o7777 != 0o600",
             "![(0, 0), (uid, gid)].contains(&(metadata.uid(), metadata.gid()))",
         ))

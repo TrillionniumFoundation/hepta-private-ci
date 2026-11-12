@@ -64,7 +64,7 @@ impl RootHistoricalTaskReadHandoffV1 {
         }
         let initial = bundle.profile.require_original_context(
             identity,
-            &original.writer_proof.sha256()?,
+            original.writer_proof.sha256()?.as_str(),
             &bundle.initial,
         )?;
         let paths = &original.sockets;
