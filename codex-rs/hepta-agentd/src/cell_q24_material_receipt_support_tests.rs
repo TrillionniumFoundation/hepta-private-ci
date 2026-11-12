@@ -112,16 +112,24 @@ enum MaterialFixtureProfile {
 
 impl Fixture {
     pub(super) async fn new(expired_work: bool) -> anyhow::Result<Self> {
-        Self::with_profile(expired_work, MaterialFixtureProfile::NoUpdate).await
+        Self::with_profile(expired_work, MaterialFixtureProfile::NoUpdate,
+            d("explicit-independent-evaluation-profile")).await
     }
 
     async fn candidate_pages() -> anyhow::Result<Self> {
-        Self::with_profile(/*expired_work*/ false, MaterialFixtureProfile::CandidatePages).await
+        Self::candidate_pages_for_evaluation_profile(d("explicit-independent-evaluation-profile")).await
+    }
+
+    async fn candidate_pages_for_evaluation_profile(evaluation_profile: Digest32) -> anyhow::Result<Self> {
+        Self::with_profile(
+            /*expired_work*/ false, MaterialFixtureProfile::CandidatePages, evaluation_profile,
+        ).await
     }
 
     async fn with_profile(
         expired_work: bool,
         profile: MaterialFixtureProfile,
+        evaluation_profile: Digest32,
     ) -> anyhow::Result<Self> {
         let directory = tempfile::tempdir()?;
         let root = directory.path().canonicalize()?;
@@ -284,6 +292,7 @@ impl Fixture {
                 MaterialFixtureProfile::NoUpdate => 1_024,
                 MaterialFixtureProfile::CandidatePages => 4_108,
             },
+            evaluation_profile,
         )?;
         let rule = CellQ24DatasetRuleV1 {
             head: CellQ24PrivateHeadV1::Prediction { index: 0 },
@@ -496,6 +505,7 @@ fn initial(
     trust: Digest32,
     deadline: u64,
     maximum_artifact_bytes: u64,
+    evaluation_profile: Digest32,
 ) -> anyhow::Result<LearningIterationSnapshotV1> {
     let input = publication.input();
     Ok(LearningIterationCoordinatorV1::new(
@@ -507,7 +517,7 @@ fn initial(
             source_run_id: input.scope.run_id.clone(),
             completed_task_receipt: publication.history_digest().as_str().parse()?,
             selected_artifact_digest: bundle.components.base,
-            evaluation_profile: d("explicit-independent-evaluation-profile"),
+            evaluation_profile,
             selected_bundle: bundle.clone(),
             envelope: IterationEnvelopeV1 {
                 envelope_id: id("original-material-envelope"),

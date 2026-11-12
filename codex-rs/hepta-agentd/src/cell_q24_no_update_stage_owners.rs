@@ -30,6 +30,11 @@ mod execution;
 #[path = "cell_q24_no_update_stage_auth.rs"]
 mod auth;
 
+#[path = "cell_q24_candidate_stage_owners.rs"]
+mod candidate;
+pub use candidate::OriginalCellQ24CandidateStageOwnersV1;
+pub use candidate::OriginalCellQ24CandidateStageStreamsV1;
+
 pub use inputs::OriginalCellQ24NoUpdatePeerStreamV1;
 pub use inputs::OriginalCellQ24NoUpdateStageStreamsV1;
 pub use inputs::OriginalCellQ24NoUpdateTaskStreamV1;
@@ -170,3 +175,8 @@ impl LearningIterationStageOwnerPortsV1 for OriginalCellQ24NoUpdateStageOwnersV1
 pub(crate) use state::fixture::fresh_material_only;
 #[cfg(test)]
 pub(crate) use state::fixture::recovered_material_only;
+
+#[cfg(test)]
+pub(crate) use state::fixture::recovered_candidate_clients;
+#[cfg(test)]
+pub(crate) use candidate::fixture_from_original_clients;

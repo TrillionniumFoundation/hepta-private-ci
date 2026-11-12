@@ -387,3 +387,6 @@ async fn original_candidate_material_refuses_pages_renewal_window_withdrawal_and
     run.close()?;
     Ok(())
 }
+
+#[path = "cell_q24_candidate_stage_tests.rs"]
+mod ordinary_stages;

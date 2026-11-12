@@ -409,6 +409,10 @@ pub use learning_iteration_evidence_client::OriginalCellQ24CandidateReadbackErro
 #[cfg(target_os = "linux")]
 pub use learning_iteration_evidence_client::OriginalCellQ24NoUpdateStageOwnersV1;
 #[cfg(target_os = "linux")]
+pub use learning_iteration_evidence_client::OriginalCellQ24CandidateStageOwnersV1;
+#[cfg(target_os = "linux")]
+pub use learning_iteration_evidence_client::OriginalCellQ24CandidateStageStreamsV1;
+#[cfg(target_os = "linux")]
 pub use learning_iteration_evidence_client::OriginalCellQ24NoUpdateStageStreamsV1;
 #[cfg(target_os = "linux")]
 pub use learning_iteration_evidence_client::OriginalCellQ24NoUpdatePeerStreamV1;

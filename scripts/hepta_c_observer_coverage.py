@@ -304,7 +304,16 @@ EVALUATION_PANEL_CASES = tuple(
     )
 )
 
+CANDIDATE_STAGE_CASES = tuple(
+    CANDIDATE_MATERIAL_PREFIX + "ordinary_stages::" + name
+    for name in (
+        "candidate_stage_reads_actual_candidate_from_same_three_original_owners",
+        "candidate_stage_rejects_rebound_profile_and_absent_root_gate_without_dispatch",
+    )
+)
+
 OWNER_GROUPS = (
+    ("ordinary_candidate_material_route", PACKAGE, CANDIDATE_STAGE_CASES),
     ("original_evaluation_panel_registration", PACKAGE, EVALUATION_PANEL_CASES),
     ("original_cell_physical_current", PHYSICAL_CELL_PACKAGE, PHYSICAL_CELL_CASES),
     ("next_use_observer", PACKAGE, NEXT_USE_CASES),

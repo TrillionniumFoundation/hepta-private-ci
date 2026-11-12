@@ -1,6 +1,6 @@
 //! Test-only adapter with actual Material clients and no Root effect gate.
 //! Future-stage channels are absent because these cases exercise only the
-//! initial Experience edge. No helper can install or construct a Root gate.
+//! Material/Training readback edges. No helper can install or construct a Root gate.
 
 use std::time::Duration;
 use std::time::Instant;
@@ -60,4 +60,15 @@ pub(crate) fn recovered_material_only(
     dataset: OriginalCellQ24MaterialCommandClientV1,
 ) -> Result<OriginalCellQ24NoUpdateStageOwnersV1, Error> {
     material_only(material, experience, dataset, Origin::Recovered)
+}
+
+pub(crate) fn recovered_candidate_clients(
+    material: OriginalCellQ24MaterialReceiptConfigV1,
+    experience: OriginalCellQ24MaterialCommandClientV1,
+    dataset: OriginalCellQ24MaterialCommandClientV1,
+    trainer: crate::OriginalCellQ24TrainingCommandClientV1,
+) -> Result<OriginalCellQ24NoUpdateStageOwnersV1, Error> {
+    let mut owners = material_only(material, experience, dataset, Origin::Recovered)?;
+    owners.continuation.get_mut().trainer = Some(trainer);
+    Ok(owners)
 }

@@ -31,6 +31,8 @@ mod wire;
 #[path = "cell_q24_no_update_stage_owners.rs"]
 mod ordinary_stage_owners;
 pub use ordinary_stage_owners::OriginalCellQ24NoUpdateStageOwnersV1;
+pub use ordinary_stage_owners::OriginalCellQ24CandidateStageOwnersV1;
+pub use ordinary_stage_owners::OriginalCellQ24CandidateStageStreamsV1;
 pub use ordinary_stage_owners::OriginalCellQ24NoUpdateStageStreamsV1;
 pub use ordinary_stage_owners::OriginalCellQ24NoUpdatePeerStreamV1;
 pub use ordinary_stage_owners::OriginalCellQ24NoUpdateTaskStreamV1;
@@ -290,3 +292,8 @@ pub(crate) use next_use_command::command_test_support as next_use_command_test_s
 pub(crate) use ordinary_stage_owners::fresh_material_only;
 #[cfg(test)]
 pub(crate) use ordinary_stage_owners::recovered_material_only;
+
+#[cfg(test)]
+pub(crate) use ordinary_stage_owners::recovered_candidate_clients;
+#[cfg(test)]
+pub(crate) use ordinary_stage_owners::fixture_from_original_clients;
