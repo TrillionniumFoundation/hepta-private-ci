@@ -46,7 +46,7 @@ impl OriginalCellQ24TaskLedgerProducerV1 {
         let observation = Q24OriginalTaskObservationV1 {
             run_id: captured.decision.record_id.to_string(),
             source_publication_digest: captured.publication.publication_digest().to_string(),
-            source_history_digest: captured.publication.history_digest().to_string(),
+            source_history_digest: captured.publication.history_digest().as_str().to_owned(),
             decision_preimage_hex: control::hex(&payload),
             decision_sequence: decision.sequence.get(),
             decision_chain_digest: decision.chain_digest.to_string(),
