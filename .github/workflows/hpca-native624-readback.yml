@@ -1,0 +1,33 @@
+name: HPCA native624 retained evidence readback
+
+on:
+  push:
+    branches:
+      - research/hpca-native624-evidence-20261112-c06d
+  pull_request:
+    paths:
+      - '.github/workflows/hpca-native624-readback.yml'
+      - 'qualification/hpca-neuroscience-20261110/evidence/prospective-native624-20261112/**'
+
+permissions:
+  contents: read
+
+jobs:
+  readback:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - name: Checkout exact evidence source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          sparse-checkout: qualification/hpca-neuroscience-20261110
+      - name: Recount immutable native outputs with zero model calls
+        run: |
+          cd qualification/hpca-neuroscience-20261110/evidence/prospective-native624-20261112
+          python3 review_raw.py NATIVE624-v2.zip > "$RUNNER_TEMP/native624-review.json"
+          cmp RAW_REVIEW.json "$RUNNER_TEMP/native624-review.json"
+          git diff --exit-code

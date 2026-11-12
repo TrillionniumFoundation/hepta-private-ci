@@ -1,0 +1,32 @@
+{
+  "schema": "hpca-native624-attempt-accounting-v1",
+  "source": "5fe8da68b1c6488957e49b8d874946b2d6b6604f",
+  "attempts": [
+    {
+      "key": "hpca-c06d-native624-source-5fe8da68-v1",
+      "status": "TOOL_ARGUMENT_REJECTED",
+      "command_bytes": 95403,
+      "reason": "shell source must not contain NUL and is limited to 64 KiB",
+      "process_created": false,
+      "model_generations": 0
+    },
+    {
+      "key": "hpca-c06d-native624-source-5fe8da68-v2",
+      "status": "SUCCEEDED",
+      "job": "1a1ce7469c5-2564-1687",
+      "command_bytes": 42212,
+      "exit": 0,
+      "model_generations": 624,
+      "source_directory": "/home/qq/work/hpca-prospective-devel-20261112-c06d/source-v2",
+      "output_directory": "/home/qq/work/hpca-prospective-devel-20261112-c06d/execution-v2"
+    }
+  ],
+  "preparatory_non_model_operations": [
+    "PUBLICATION create acknowledgement was delayed; actual execution uses separate source-v2",
+    "hpca-c06d-materialize-scripts-v1 only writes three source files; no model invocation",
+    "hpca-runtime-version-preflight-20261112-c06d-v1 imports runtime packages only; no model invocation"
+  ],
+  "independent_forward_replays": 0,
+  "external_independent_evaluator": false,
+  "decision": "HOLD_NO_GO"
+}
