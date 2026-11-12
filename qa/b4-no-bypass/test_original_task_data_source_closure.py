@@ -23,12 +23,13 @@ TASK = A + "cell_q24_dataset_historical_task.rs"
 MATERIALIZER = A + "cell_q24_dataset_materializer.rs"
 CLIENT = route.CLIENT
 ROOT_TASK = A + "authority_host_historical_task.rs"
+DERIVE = A + "authority_host_post_a_derive.rs"
 CALLERS = {
     "original_task_data_observation": (ROOT_TASK,),
-    "original_task_data_validate": (ROOT_TASK, route.PROTOCOL, CLIENT),
+    "original_task_data_validate": (ROOT_TASK, route.PROTOCOL, CLIENT, DERIVE),
     "original_task_data_decode": (),
     "original_task_data_decision": (DATA,),
-    "root_historical_task_publication_data": (route.PROVIDER,),
+    "root_historical_task_publication_data": (route.PROVIDER, DERIVE),
     "root_historical_task_publication_read": (TASK,),
     "cell_q24_historical_dataset_task_capture": (),
     "cell_q24_historical_dataset_task_receipt": (),
@@ -101,7 +102,7 @@ class OriginalTaskDataSourceTests(unittest.TestCase):
         cls.manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text())
         cls.boundaries = {r.identifier: r for r in PROOF._boundary_rows(cls.manifest)}
         paths = {DATA, DECISION, TASK, MATERIALIZER, CLIENT, ROOT_TASK,
-                 route.PROTOCOL, route.PROVIDER}
+                 route.PROTOCOL, route.PROVIDER, DERIVE}
         cls.sources = {
             path: PROOF._strip_cfg_test_items(PROOF._strip_rust_non_code((ROOT / path).read_text()))
             for path in paths
