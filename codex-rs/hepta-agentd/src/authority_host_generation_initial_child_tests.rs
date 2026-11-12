@@ -190,15 +190,19 @@ fn original_initial_dedicated_uid_child() -> anyhow::Result<()> {
                     assert_eq!(socket.send(b"RETIRE_READY")?, 12);
                     control(&socket, b"RETIRE")
                         .with_context(|| format!("initial child {phase:?}: awaiting parent RETIRE"))?;
-                    // Validate the retained task under the original serial
-                    // permit, then let actual inputs/session Drop fence it.
+                    // Finish the real synchronous task check while its feed
+                    // runs. Its original Root frame/session bounds still apply.
+                    // Only then start the unchanged 500ms retirement barrier.
+                    let task_check_started = Instant::now();
+                    task.require_bundle(&bundle)
+                        .with_context(|| format!("initial child {phase:?}: validating retained task before retirement"))?;
+                    eprintln!(
+                        "ROOT_INITIAL_CHILD phase={phase:?} stage=retained_task_checked elapsed_ms={}",
+                        task_check_started.elapsed().as_millis()
+                    );
                     crate::root_authority_session::tests::drop_original_production_after_idle(
                         production,
                         TIMEOUT,
-                        || {
-                            task.require_bundle(&bundle).map_err(io::Error::other)?;
-                            Ok(())
-                        },
                     ).await.with_context(|| format!("initial child {phase:?}: retiring original idle session"))?;
                     assert!(task.require_bundle(&bundle).is_err());
                     assert_eq!(std::fs::read(&claims)?, before);
@@ -232,7 +236,6 @@ fn original_initial_dedicated_uid_child() -> anyhow::Result<()> {
                 crate::root_authority_session::tests::drop_original_production_after_idle(
                     production,
                     TIMEOUT,
-                    || Ok(()),
                 ).await.with_context(|| format!("initial child {phase:?}: closing original idle session"))?;
             }
             assert_eq!(socket.send(b"CLOSED")?, 6);

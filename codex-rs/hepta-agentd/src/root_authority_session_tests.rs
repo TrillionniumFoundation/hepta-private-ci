@@ -447,23 +447,19 @@ impl Drop for RefreshCompletion<'_> {
     }
 }
 
-/// Finish the retained task's original read while its observation feed can
-/// still run. Then acquire the completed refresh/consumer barrier and Drop
-/// under that permit. This helper never refreshes or pre-aborts the worker.
+/// Acquire the completed refresh/consumer barrier and Drop under that permit.
+/// The caller first finishes any retained task read under its original product
+/// deadlines. This unchanged retirement budget covers the barrier, actual Drop
+/// and worker completion; no synchronous task I/O runs inside its first poll.
+/// This helper never refreshes or pre-aborts the worker.
 pub(crate) async fn drop_original_production_after_idle(
     inputs: crate::AgentdRootProductionInputs,
     timeout: Duration,
-    before_drop: impl FnOnce() -> std::io::Result<()>,
 ) -> std::io::Result<()> {
     let live = Arc::clone(&inputs.session.live);
     let worker = inputs.session.worker.abort_handle();
-    let phase = std::cell::Cell::new("original task check");
+    let phase = std::cell::Cell::new("original refresh barrier");
     tokio::time::timeout(timeout, async {
-        // A task check can perform synchronous original Root reads. Holding
-        // the feed permit across them would prevent the real background feed
-        // from refreshing its unchanged 500ms cache while the task is live.
-        before_drop()?;
-        phase.set("original refresh barrier");
         let _serial = live.serial.acquire().await.map_err(std::io::Error::other)?;
         phase.set("original current observation");
         if live.refresh_failed.load(Ordering::Acquire) || worker.is_finished() {
