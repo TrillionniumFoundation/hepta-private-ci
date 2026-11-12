@@ -111,6 +111,11 @@ impl PreparedRootInitialFeatureV1 {
         original
             .publish(signed)?
             .into_circuit_feature_task(self.definition, self.source)
+            .inspect_err(|error| {
+                let _ = error;
+                #[cfg(test)]
+                eprintln!("ROOT_INITIAL_FAILURE stage=actual-feature-construction error={error:?}");
+            })
     }
 }
 

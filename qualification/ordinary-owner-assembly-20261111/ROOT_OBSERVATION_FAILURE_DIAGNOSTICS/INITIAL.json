@@ -1,0 +1,142 @@
+{
+  "schema": "hepta.initial-publication.original-failure-stage-diagnostics.v1",
+  "status": "static-candidate-unexecuted",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "base": {
+    "commit": "903b6fbae86acff2db2ab0422b9852421d938032",
+    "tree": "b5b82d4e1fb422f8e1986e939764b79fd1be115f"
+  },
+  "observed_failure": {
+    "junit_git_blob": "4641d85d6d54c41c3b31621d545937b2985226f0",
+    "junit_bytes": 9203,
+    "junit_sha256": "9cfad38d30ffcc18759c9cc3c5ace21361c727312d178133f6aa4d68950f2274",
+    "execution_git_blob": "b5e89ca3bf9889569a9b4e34539234131b219152",
+    "actual_uid": 0,
+    "root_parent_tests": {
+      "executed": 17,
+      "passed": 15,
+      "failed": 2
+    },
+    "source_clean": true,
+    "initial_progress": [
+      "awaiting_original_handoffs",
+      "original_five_lane_inputs_open",
+      "original_inputs_ready_sent"
+    ],
+    "first_child_error": "initial child Publish: publishing original Feature CURRENT: invalid agentd configuration: Unavailable",
+    "subsequent_root_error": "PeerDenied",
+    "classification": "Initial advanced beyond the prior filesystem identity refusal. The retained child message does not identify which existing FinalUse/frontier/clock/publication/readback check returned Unavailable. PeerDenied can also arise after that child exits; it is not evidence by itself of a wrong original peer."
+  },
+  "purpose": "On an existing failed Result only, print its precise stage and original Debug error in cfg(test), then pass through the same Result unchanged. The original guard, mapping, order, arguments and return behavior remain.",
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_current_initial.rs",
+      "before_blob": "07092ccebbb5642fc42121187f57e842a9073b2a",
+      "before_bytes": 11102,
+      "before_sha256": "834a70cca0d4a7c7487c94371e921cd6738f8e8a972cca192f92f9a2d048877e",
+      "after_blob": "01ea7514ea9b743dcd7b9729cf1c8832a33ce28c",
+      "after_bytes": 14342,
+      "after_sha256": "daa4fc02cc7e317ed35be72368c8dff84dc68c9fa47011f9670e64758e342b7e",
+      "edits": [
+        {
+          "before": "    pub fn publish_initial<W: AnchorWitnessStore>(\n        &self,\n        prepared: &PreparedNeuronGenerationInitialV1,\n        new: &CellGenerationJournalV2<W>,\n        selected: &mut AgentdSelectedGenerationV1,\n        publication: NeuronGenerationUpdatePublicationV1<'_>,\n    ) -> Result<PublishedNeuronGenerationInitialV1, AgentdError> {\n        publication\n            .authority\n            .current_external_frontier()\n            .map_err(invalid)?;\n        selected.revalidate(\n            publication.artifacts,\n            publication.clock.now_unix_ms().map_err(invalid)?,\n        )?;\n        if selected.observation().digest().as_array() != &prepared.intent.selection\n            || selected.manifest().digest().map_err(invalid)?\n                != prepared.intent.target.manifest_digest()\n        {\n            return Err(invalid(\"initial selection differs from prepared operation\"));\n        }\n        if let NeuronGenerationInitialReadbackV1::Published(published) =\n            self.read_initial_operation(prepared)?\n        {\n            if new.owner_binding() != Some(published.target()) {\n                return Err(invalid(\"published initial generation readback differs\"));\n            }\n            new.require_current().map_err(invalid)?;\n            return Ok(published);\n        }\n        self.require_initial_genesis(prepared, new)?;\n        let token = claim_final_use(publication.authority, publication.signed, &prepared.binding)\n            .map_err(invalid)?;\n        let (result, _) = dispatch_final_use_with_witness(\n            publication.authority,\n            token,\n            &prepared.binding,\n            |witness| {\n                selected.revalidate(\n                    publication.artifacts,\n                    publication.clock.now_unix_ms().map_err(invalid)?,\n                )?;\n                self.require_initial_genesis(prepared, new)?;\n                let next = CurrentHead {\n                    schema_version: 1,\n                    current: prepared.intent.target.clone(),\n                    prepared: None,\n                    published: None,\n                    initial: Some(InitialState::Published(Box::new(InitialPublished {\n                        intent: prepared.intent.clone(),\n                        witness: witness.clone(),\n                        signed: publication.signed.clone(),\n                        signed_grant_digest: signed_grant_digest(publication.signed)?.into_array(),\n                    }))),\n                };\n                let expected = prepared\n                    .head\n                    .as_ref()\n                    .ok_or_else(|| invalid(\"published initial operation cannot dispatch again\"))?;\n                self.store.replace(expected, &next)?;\n                match self.read_initial_operation(prepared)? {\n                    NeuronGenerationInitialReadbackV1::Published(published) => Ok(published),\n                    NeuronGenerationInitialReadbackV1::Prepared => {\n                        Err(invalid(\"initial generation publication remains uncertain\"))\n                    }\n                }\n            },\n        )\n        .map_err(invalid)?;\n        result\n    }\n\n",
+          "after": "    pub fn publish_initial<W: AnchorWitnessStore>(\n        &self,\n        prepared: &PreparedNeuronGenerationInitialV1,\n        new: &CellGenerationJournalV2<W>,\n        selected: &mut AgentdSelectedGenerationV1,\n        publication: NeuronGenerationUpdatePublicationV1<'_>,\n    ) -> Result<PublishedNeuronGenerationInitialV1, AgentdError> {\n        publication\n            .authority\n            .current_external_frontier()\n            .inspect_err(|error| {\n                let _ = error;\n                #[cfg(test)]\n                eprintln!(\"ROOT_INITIAL_FAILURE stage=external-frontier error={error:?}\");\n            })\n            .map_err(invalid)?;\n        selected.revalidate(\n            publication.artifacts,\n            publication\n                .clock\n                .now_unix_ms()\n                .inspect_err(|error| {\n                    let _ = error;\n                    #[cfg(test)]\n                    eprintln!(\"ROOT_INITIAL_FAILURE stage=selection-clock error={error:?}\");\n                })\n                .map_err(invalid)?,\n        )\n        .inspect_err(|error| {\n            let _ = error;\n            #[cfg(test)]\n            eprintln!(\"ROOT_INITIAL_FAILURE stage=selection-revalidate error={error:?}\");\n        })?;\n        if selected.observation().digest().as_array() != &prepared.intent.selection\n            || selected.manifest().digest().map_err(invalid)?\n                != prepared.intent.target.manifest_digest()\n        {\n            return Err(invalid(\"initial selection differs from prepared operation\"));\n        }\n        if let NeuronGenerationInitialReadbackV1::Published(published) =\n            self.read_initial_operation(prepared)\n                .inspect_err(|error| {\n                    let _ = error;\n                    #[cfg(test)]\n                    eprintln!(\"ROOT_INITIAL_FAILURE stage=prepared-current-readback error={error:?}\");\n                })?\n        {\n            if new.owner_binding() != Some(published.target()) {\n                return Err(invalid(\"published initial generation readback differs\"));\n            }\n            new.require_current()\n                .inspect_err(|error| {\n                    let _ = error;\n                    #[cfg(test)]\n                    eprintln!(\"ROOT_INITIAL_FAILURE stage=published-generation-readback error={error:?}\");\n                })\n                .map_err(invalid)?;\n            return Ok(published);\n        }\n        self.require_initial_genesis(prepared, new)\n            .inspect_err(|error| {\n                let _ = error;\n                #[cfg(test)]\n                eprintln!(\"ROOT_INITIAL_FAILURE stage=genesis-before-claim error={error:?}\");\n            })?;\n        let token = claim_final_use(publication.authority, publication.signed, &prepared.binding)\n            .inspect_err(|error| {\n                let _ = error;\n                #[cfg(test)]\n                eprintln!(\"ROOT_INITIAL_FAILURE stage=claim-final-use error={error:?}\");\n            })\n            .map_err(invalid)?;\n        let (result, _) = dispatch_final_use_with_witness(\n            publication.authority,\n            token,\n            &prepared.binding,\n            |witness| {\n                selected.revalidate(\n                    publication.artifacts,\n                    publication\n                        .clock\n                        .now_unix_ms()\n                        .inspect_err(|error| {\n                            let _ = error;\n                            #[cfg(test)]\n                            eprintln!(\"ROOT_INITIAL_FAILURE stage=dispatch-selection-clock error={error:?}\");\n                        })\n                        .map_err(invalid)?,\n                )\n                .inspect_err(|error| {\n                    let _ = error;\n                    #[cfg(test)]\n                    eprintln!(\"ROOT_INITIAL_FAILURE stage=dispatch-selection-revalidate error={error:?}\");\n                })?;\n                self.require_initial_genesis(prepared, new)\n                    .inspect_err(|error| {\n                        let _ = error;\n                        #[cfg(test)]\n                        eprintln!(\"ROOT_INITIAL_FAILURE stage=genesis-before-current-cas error={error:?}\");\n                    })?;\n                let next = CurrentHead {\n                    schema_version: 1,\n                    current: prepared.intent.target.clone(),\n                    prepared: None,\n                    published: None,\n                    initial: Some(InitialState::Published(Box::new(InitialPublished {\n                        intent: prepared.intent.clone(),\n                        witness: witness.clone(),\n                        signed: publication.signed.clone(),\n                        signed_grant_digest: signed_grant_digest(publication.signed)?.into_array(),\n                    }))),\n                };\n                let expected = prepared\n                    .head\n                    .as_ref()\n                    .ok_or_else(|| invalid(\"published initial operation cannot dispatch again\"))?;\n                self.store.replace(expected, &next)\n                    .inspect_err(|error| {\n                        let _ = error;\n                        #[cfg(test)]\n                        eprintln!(\"ROOT_INITIAL_FAILURE stage=current-cas error={error:?}\");\n                    })?;\n                match self.read_initial_operation(prepared)\n                    .inspect_err(|error| {\n                        let _ = error;\n                        #[cfg(test)]\n                        eprintln!(\"ROOT_INITIAL_FAILURE stage=current-after-cas-readback error={error:?}\");\n                    })? {\n                    NeuronGenerationInitialReadbackV1::Published(published) => Ok(published),\n                    NeuronGenerationInitialReadbackV1::Prepared => {\n                        Err(invalid(\"initial generation publication remains uncertain\"))\n                    }\n                }\n            },\n        )\n        .inspect_err(|error| {\n            let _ = error;\n            #[cfg(test)]\n            eprintln!(\"ROOT_INITIAL_FAILURE stage=dispatch-final-use-boundary error={error:?}\");\n        })\n        .map_err(invalid)?;\n        result\n            .inspect_err(|error| {\n                let _ = error;\n                #[cfg(test)]\n                eprintln!(\"ROOT_INITIAL_FAILURE stage=dispatch-callback error={error:?}\");\n            })\n    }\n\n",
+          "expected_count": 1
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial.rs",
+      "before_blob": "fbf58a056a9c3f47bb521a4133eba93d5e2bcdef",
+      "before_bytes": 9161,
+      "before_sha256": "cab4c26c8d5893cc0821bca2a2f5eb68437cbdef9d95570082ec29027c120408",
+      "after_blob": "a01cf875af9ff78945e13d73d8c5e519aa9168dc",
+      "after_bytes": 9553,
+      "after_sha256": "7fc6523ff1fabe0815a3d1a01221ba1be5a4473a9d008eaee30fa90b1bf0d1d5",
+      "edits": [
+        {
+          "before": "        let guard = LiveGenerationCurrent::new_initial(\n            self.current,\n            self.authorities,\n            self.selected,\n            receipt.clone(),\n            expected,\n        )?;\n        ReadyAgentdGenerationInitialV1::new(self.journal, receipt, guard)",
+          "after": "        let guard = LiveGenerationCurrent::new_initial(\n            self.current,\n            self.authorities,\n            self.selected,\n            receipt.clone(),\n            expected,\n        )\n        .inspect_err(|error| {\n            let _ = error;\n            #[cfg(test)]\n            eprintln!(\"ROOT_INITIAL_FAILURE stage=live-current-guard error={error:?}\");\n        })?;\n        ReadyAgentdGenerationInitialV1::new(self.journal, receipt, guard)\n            .inspect_err(|error| {\n                let _ = error;\n                #[cfg(test)]\n                eprintln!(\"ROOT_INITIAL_FAILURE stage=ready-initial-construction error={error:?}\");\n            })",
+          "expected_count": 1
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_initial_root.rs",
+      "before_blob": "24b615a3b5be95c469d18ce80446032bede27438",
+      "before_bytes": 5742,
+      "before_sha256": "c5a5b554c790ec1734d275569a718fdc9c1fe68b9ea10d71741857ec8a298f86",
+      "after_blob": "69f1c5256c39c3831fa0ade24eb59f35a413ebd7",
+      "after_bytes": 5953,
+      "after_sha256": "06d4f55af69f6ed1fea65e7c62de7b251be59ab927eea250b2f7b3cda11f1ca1",
+      "edits": [
+        {
+          "before": "        original\n            .publish(signed)?\n            .into_circuit_feature_task(self.definition, self.source)",
+          "after": "        original\n            .publish(signed)?\n            .into_circuit_feature_task(self.definition, self.source)\n            .inspect_err(|error| {\n                let _ = error;\n                #[cfg(test)]\n                eprintln!(\"ROOT_INITIAL_FAILURE stage=actual-feature-construction error={error:?}\");\n            })",
+          "expected_count": 1
+        }
+      ]
+    }
+  ],
+  "diagnostics": {
+    "prefix": "ROOT_INITIAL_FAILURE",
+    "counts_are_log_sites_not_tests": {
+      "core_initial_publication": 14,
+      "original_generation_wrapper": 2,
+      "feature_wrapper": 1
+    },
+    "no_success_path_output": true,
+    "each_result_evaluated_once": true,
+    "errors_not_remapped_or_swallowed": true,
+    "existing_map_err_invalid_retained": true,
+    "no_refresh_warmup_retry_sleep_or_new_deadline": true,
+    "no_peer_guard_or_current_policy_change": true,
+    "production_effect": "inspect_err closures have only a discarded shared reference when cfg(test) is absent; they return the original error unchanged.",
+    "authority_diagnostics_forbidden": "No token/grant generation, replacement owner, new nonce, extra readback, new network call or recovery action is added."
+  },
+  "static_verification": {
+    "exact_forward_reverse_edit_replay": true,
+    "diagnostic_erasure_checks": [
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_generation_current_initial.rs",
+        "diagnostic_wrappers": 14,
+        "only_wrappers_and_whitespace_changed": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_generation_initial.rs",
+        "diagnostic_wrappers": 2,
+        "only_wrappers_and_whitespace_changed": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_feature_initial_root.rs",
+        "diagnostic_wrappers": 1,
+        "only_wrappers_and_whitespace_changed": true
+      }
+    ],
+    "git_blob_readback_equal": true,
+    "static_record": {
+      "git_blob": "3b9f9d96a063584773e15d965db09d53b9c0821a",
+      "bytes": 755,
+      "sha256": "76136857f148cd181582bcf20e8f1cb052a6024f2acde34a714d60390eefcdb8"
+    },
+    "partial_protected_scope": "One covered protected row from the retained current-V16 registry satisfied the unchanged original checker; 357 rows not checked. Four applicable definition-marker sets remain present. This is not a full fixed-903b or new-candidate caller scan.",
+    "callers_modified": false,
+    "cargo_or_native_run": false,
+    "rustfmt_run": false,
+    "root_parents_added": 0,
+    "tests_added": 0,
+    "refs_changed": false
+  },
+  "fixed_source_findings": [
+    "The Initial child already uses a multi-thread Tokio runtime with two observation workers.",
+    "The original Root authority session starts its real read feed in connect; the child retains that same session for the phase.",
+    "The actual publication authorities keep the original device consumer and the same original Root session clock.",
+    "The original initial CURRENT client has a typed uncertain-I/O error; the observed Invalid(Unavailable) can instead arise from the original FinalUse/frontier/clock boundaries. The diagnostic does not claim a uniquely established root cause."
+  ],
+  "qualification": {
+    "ordinary_complete_chains": 0,
+    "positive_adoption_chains": 0,
+    "ordinary_no_update_rollback_chains": 0,
+    "authorityGranted": false
+  }
+}

@@ -104,22 +104,61 @@ impl LiveRoot {
     fn current(
         &self,
     ) -> Result<(Arc<HostAuthorityObservationResponseV2>, u64), AgentdRootAuthorityError> {
-        if check_lifetime(self.root.get_ref()).is_err()
-            || boottime_ns().map_or(true, |now| now >= self.end_boottime_ns)
+        if check_lifetime(self.root.get_ref())
+            .inspect_err(|_error| {
+                #[cfg(test)]
+                eprintln!("ROOT_SESSION_DIAGNOSTIC phase=current-pre-lifetime error={_error:?}");
+            })
+            .is_err()
+            || boottime_ns()
+                .inspect_err(|_error| {
+                    #[cfg(test)]
+                    eprintln!("ROOT_SESSION_DIAGNOSTIC phase=current-boottime error={_error:?}");
+                })
+                .inspect(|_now| {
+                    #[cfg(test)]
+                    if *_now >= self.end_boottime_ns {
+                        eprintln!(
+                            "ROOT_SESSION_DIAGNOSTIC phase=current-session-expired now_ns={} end_ns={}",
+                            _now, self.end_boottime_ns,
+                        );
+                    }
+                })
+                .map_or(true, |now| now >= self.end_boottime_ns)
         {
             self.cache.fence();
             return Err(AgentdRootAuthorityError::Unavailable);
         }
-        let (observation, now) = self.cache.current()?;
-        if self.proof.matches_observation(&observation).is_err()
+        let (observation, now) = self.cache.current().inspect_err(|_error| {
+            #[cfg(test)]
+            eprintln!("ROOT_SESSION_DIAGNOSTIC phase=current-cache error={_error:?}");
+        })?;
+        if self
+            .proof
+            .matches_observation(&observation)
+            .inspect_err(|_error| {
+                #[cfg(test)]
+                eprintln!("ROOT_SESSION_DIAGNOSTIC phase=current-proof error={_error:?}");
+            })
+            .is_err()
             || now
                 >= self
                     .proof
                     .authority()
                     .lease_expires_at_unix_seconds
                     .saturating_mul(1000)
-            || check_lifetime(self.root.get_ref()).is_err()
+            || check_lifetime(self.root.get_ref())
+                .inspect_err(|_error| {
+                    #[cfg(test)]
+                    eprintln!("ROOT_SESSION_DIAGNOSTIC phase=current-post-lifetime error={_error:?}");
+                })
+                .is_err()
         {
+            #[cfg(test)]
+            eprintln!(
+                "ROOT_SESSION_DIAGNOSTIC phase=current-final-check now_unix_ms={} lease_expiry_seconds={}",
+                now, self.proof.authority().lease_expires_at_unix_seconds,
+            );
             self.cache.fence();
             return Err(AgentdRootAuthorityError::Unavailable);
         }
@@ -241,6 +280,10 @@ impl AgentdRootAuthoritySession {
                     tokio::time::sleep(Duration::from_millis(100)).await;
                     if refresh(&background, &stream, &background_file)
                         .await
+                        .inspect_err(|_error| {
+                            #[cfg(test)]
+                            eprintln!("ROOT_SESSION_DIAGNOSTIC phase=worker-refresh error={_error:?}");
+                        })
                         .is_err()
                     {
                         return;
@@ -346,6 +389,8 @@ impl AgentdRootAuthoritySession {
 }
 impl Drop for AgentdRootAuthoritySession {
     fn drop(&mut self) {
+        #[cfg(test)]
+        eprintln!("ROOT_SESSION_DIAGNOSTIC phase=session-drop");
         self.live.cache.fence();
         self.worker.abort();
         // Each original consumer holds this SAME LiveRoot as its clock. Break
@@ -361,6 +406,8 @@ impl Drop for AgentdRootAuthoritySession {
 struct FenceOnDrop(Arc<LiveRoot>);
 impl Drop for FenceOnDrop {
     fn drop(&mut self) {
+        #[cfg(test)]
+        eprintln!("ROOT_SESSION_DIAGNOSTIC phase=worker-drop");
         self.0.cache.fence();
     }
 }
@@ -385,16 +432,37 @@ async fn refresh(
         .serial
         .acquire()
         .await
-        .map_err(|_| AgentdRootAuthorityError::Unavailable)?;
-    let started = boottime_ns()?;
+        .map_err(|_| AgentdRootAuthorityError::Unavailable)
+        .inspect_err(|_error| {
+            #[cfg(test)]
+            eprintln!("ROOT_SESSION_DIAGNOSTIC phase=refresh-serial error={_error:?}");
+        })?;
+    let started = boottime_ns().inspect_err(|_error| {
+        #[cfg(test)]
+        eprintln!("ROOT_SESSION_DIAGNOSTIC phase=refresh-start-boottime error={_error:?}");
+    })?;
     let observation: HostAuthorityObservationResponseV2 = stream
         .read(&HostAuthorityObservationRequestV2 {
             schema_version: 2,
             operation: HOST_AUTHORITY_OBSERVATION_V2.into(),
         })
-        .await?;
-    let ended = boottime_ns()?;
-    live.proof.matches_observation(&observation)?;
+        .await
+        .inspect_err(|_error| {
+            #[cfg(test)]
+            eprintln!(
+                "ROOT_SESSION_DIAGNOSTIC phase=refresh-stream started_ns={started} error={_error:?}"
+            );
+        })?;
+    let ended = boottime_ns().inspect_err(|_error| {
+        #[cfg(test)]
+        eprintln!("ROOT_SESSION_DIAGNOSTIC phase=refresh-end-boottime error={_error:?}");
+    })?;
+    live.proof.matches_observation(&observation).inspect_err(|_error| {
+        #[cfg(test)]
+        eprintln!(
+            "ROOT_SESSION_DIAGNOSTIC phase=refresh-proof started_ns={started} ended_ns={ended} error={_error:?}"
+        );
+    })?;
     let head = observation.revocations.clone();
     let changed = !live.cache.revocations_match(&head);
     if changed {
@@ -402,17 +470,38 @@ async fn refresh(
     }
     // Validate and stage the complete response while the public cache is
     // paused, then advance each original consumer before releasing the barrier.
-    live.cache.accept(observation, started, ended)?;
+    live.cache.accept(observation, started, ended).inspect_err(|_error| {
+        #[cfg(test)]
+        eprintln!(
+            "ROOT_SESSION_DIAGNOSTIC phase=refresh-accept started_ns={started} ended_ns={ended} error={_error:?}"
+        );
+    })?;
     if changed {
         let consumers = live
             .consumers
             .lock()
-            .map_err(|_| AgentdRootAuthorityError::Unavailable)?
+            .map_err(|_| AgentdRootAuthorityError::Unavailable)
+            .inspect_err(|_error| {
+                #[cfg(test)]
+                eprintln!("ROOT_SESSION_DIAGNOSTIC phase=refresh-consumers-lock error={_error:?}");
+            })?
             .clone();
-        synchronize_consumers(consumers, head, started, writer_file).await?;
+        synchronize_consumers(consumers, head, started, writer_file)
+            .await
+            .inspect_err(|_error| {
+                #[cfg(test)]
+                eprintln!(
+                    "ROOT_SESSION_DIAGNOSTIC phase=refresh-consumer-sync started_ns={started} ended_ns={ended} error={_error:?}"
+                );
+            })?;
         live.cache.end_update();
     }
-    live.current()?;
+    live.current().inspect_err(|_error| {
+        #[cfg(test)]
+        eprintln!(
+            "ROOT_SESSION_DIAGNOSTIC phase=refresh-final-current started_ns={started} ended_ns={ended} error={_error:?}"
+        );
+    })?;
     Ok(())
 }
 async fn synchronize_consumers(
