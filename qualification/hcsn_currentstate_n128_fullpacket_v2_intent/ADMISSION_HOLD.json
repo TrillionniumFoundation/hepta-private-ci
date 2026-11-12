@@ -1,0 +1,46 @@
+{
+  "schema": "hcsn-currentstate-n128-fullpacket-v2-hold-v1",
+  "overall": "HOLD_NO_EXECUTION",
+  "all_closed": false,
+  "largegrid_qualification": false,
+  "reason": "The exact full-state denominator is now frozen, but candidate v2, canonical serializer, independent oracle, comparator, and durable resource allocation are not frozen. Existing 128MiB proposal does not prove simultaneous candidate/oracle/cold/log capacity.",
+  "resource_observation_dependency": {
+    "pr": 6255,
+    "head": "62b7773739eb061531a02ebc76f76539b46931ed",
+    "point_in_time_only": true,
+    "observed_memory_limits": "memory.max=max and memory.high=max through user.slice",
+    "observed_swap_free_kb": 252,
+    "durable_allocation": false,
+    "interpretation": "does not admit this stage"
+  },
+  "missing": [
+    "lossless structured DAG/CSR candidate implementation",
+    "fixed-width canonical binary serializer with coefficient/support/generation/target/origin identities",
+    "independent unreduced dense oracle that imports no candidate",
+    "complete packet-coordinate comparator",
+    "reserved host/cgroup memory and CPU allocation plus calendar/concurrency",
+    "static admission of one frozen execution key"
+  ],
+  "forbidden": [
+    "dense-hex generator persistence",
+    "epsilon pruning",
+    "totals-to-state reconstruction",
+    "returning upper escape",
+    "dropping or merging any signed channel",
+    "using N256 or N512 results to qualify N128",
+    "starting dynamic work before all missing items close"
+  ],
+  "execution_counts": {
+    "dynamic_runs": 0,
+    "candidate_expm": 0,
+    "oracle_expm": 0,
+    "optimizer_steps": 0,
+    "training_calls": 0
+  },
+  "preserved_unknowns": [
+    "below-floor rare-tail relative accuracy",
+    "third and later excursion behavior",
+    "continuum domain qualification",
+    "arbitrary history and full checkpoint qualification"
+  ]
+}
