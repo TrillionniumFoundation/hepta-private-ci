@@ -5,6 +5,29 @@ This research candidate extends VERIFY-4 at
 checking, risk prediction and actual host acceptance as different operations.
 Scientific admission remains **HOLD** and production authority **NONE**.
 
+## Incremental paid-information attribution
+
+The initial ACK and later readback comparison changes both observation time
+and available ACKs. `all_effect_acks` is derived from acknowledgements already
+held after effect 3; it is not information bought by the SQL query. Therefore
+the original Brier difference is not an isolated paid-readback effect.
+
+After the consistency gate, analyze the original saved probe events with:
+
+```sh
+python -B -m experiments.verification_cell_verify1.observation_attribution --input RUN_DIRECTORY --output NEW_ATTRIBUTION.json
+```
+
+The nested views are first ACK, all three individually retained ACKs, and those
+same ACKs plus paid resource presence. Exact rational arithmetic decomposes
+sample conditional-probability variance, with per-source and task-weighted
+summaries. In the original train/cal/confirm cohorts, resolutions are 0,
+4/45 and 7/72; the paid conditional increment is 1/120. All are zero in shift.
+This retrospective sample description fits/predicts nothing and adds no tasks.
+It establishes neither a held-out predictive gain nor causal policy/net benefit.
+The full ACK tuple is a richer free control than its `all_effect_acks` aggregate.
+Unknown labels refuse attribution; repeated policy arms are not extra samples.
+
 ## Claims and available information
 
 | Claim or input | Observable facts | First available point | Cost / wrong-verdict treatment |
