@@ -1,0 +1,222 @@
+[
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_learning_retained_publication.rs",
+    "function": "fn publish_original_retained_task(",
+    "before": "self.publish_and_retain_original_trainer(signed).await.map(|(task, _trainer)| task)",
+    "after": "self.publish_and_retain_original_trainer(signed)\n            .await\n            .map(|(task, _trainer)| task)"
+  },
+  {
+    "path": "codex-rs/hepta-learning-artifacts/src/owner_host_readback.rs",
+    "function": "fn read_original_publication_current(",
+    "before": "let before = self.recover_publication(operation_id)?",
+    "after": "let before = self\n            .recover_publication(operation_id)?"
+  },
+  {
+    "path": "codex-rs/hepta-learning-artifacts/src/owner_host_readback.rs",
+    "function": "fn read_original_publication_current(",
+    "before": "let head_before = self.discover_current_head(started)?",
+    "after": "let head_before = self\n            .discover_current_head(started)?"
+  },
+  {
+    "path": "codex-rs/hepta-learning-artifacts/src/owner_host_readback.rs",
+    "function": "fn read_original_publication_current(",
+    "before": "let head_after = self.discover_current_head(started)?",
+    "after": "let head_after = self\n            .discover_current_head(started)?"
+  },
+  {
+    "path": "codex-rs/hepta-learning-artifacts/src/owner_host_readback.rs",
+    "function": "fn read_original_publication_current(",
+    "before": "let after = self.recover_publication(operation_id)?",
+    "after": "let after = self\n            .recover_publication(operation_id)?"
+  },
+  {
+    "path": "codex-rs/hepta-learning-artifacts/src/owner_host_readback.rs",
+    "function": "fn read_original_publication_current(",
+    "before": "let before = self.recover_publication(operation_id)?",
+    "after": "let before = self\n            .recover_publication(operation_id)?"
+  },
+  {
+    "path": "codex-rs/hepta-learning-artifacts/src/owner_host_readback.rs",
+    "function": "fn read_original_publication_current(",
+    "before": "let after = self.recover_publication(operation_id)?",
+    "after": "let after = self\n            .recover_publication(operation_id)?"
+  },
+  {
+    "path": "codex-rs/hepta-learning-artifacts/src/owner_host_readback.rs",
+    "function": "fn now_unix_millis(",
+    "before": "SystemTime::now().duration_since(UNIX_EPOCH)",
+    "after": "SystemTime::now()\n        .duration_since(UNIX_EPOCH)"
+  },
+  {
+    "path": "codex-rs/hepta-learning-artifacts/src/owner_host_readback.rs",
+    "function": "fn current_registry_view_bounded(",
+    "before": "let current = self.discover_current_head(at)?",
+    "after": "let current = self\n            .discover_current_head(at)?"
+  },
+  {
+    "path": "codex-rs/hepta-learning-artifacts/src/owner_host_readback.rs",
+    "function": "fn current_registry_view_bounded(",
+    "before": "let registry = read_registry_snapshot(",
+    "after": "let registry =\n            read_registry_snapshot("
+  },
+  {
+    "path": "codex-rs/hepta-learning-artifacts/src/owner_host_readback.rs",
+    "function": "fn current_registry_view_bounded(",
+    "before": "receipt, registry, current.witness_digest, current.trust_digest",
+    "after": "receipt,\n            registry,\n            current.witness_digest,\n            current.trust_digest"
+  },
+  {
+    "path": "codex-rs/hepta-learning-artifacts/src/owner_host_readback.rs",
+    "function": "fn current_registry_view_bounded(",
+    "before": "let current = self.discover_current_head(at)?",
+    "after": "let current = self\n            .discover_current_head(at)?"
+  },
+  {
+    "path": "codex-rs/hepta-learning-artifacts/src/owner_host_readback.rs",
+    "function": "fn current_registry_view_bounded(",
+    "before": "let registry = read_registry_snapshot(",
+    "after": "let registry =\n            read_registry_snapshot("
+  },
+  {
+    "path": "codex-rs/hepta-learning-artifacts/src/owner_host_readback.rs",
+    "function": "fn current_registry_receipt_bounded(",
+    "before": "let checkpoint = decode_checkpoint(",
+    "after": "let checkpoint =\n                decode_checkpoint("
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_retained_version_context.rs",
+    "function": "fn from_original(",
+    "before": "prefix.record(training.receipt().clone()",
+    "after": "prefix.record(\n                    training.receipt().clone()"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_retained_version_context.rs",
+    "function": "fn require_fresh(",
+    "before": "require_original_command_initial(&self.material)",
+    "after": "require_original_command_initial(\n                &self.material,\n            )"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_retained_version_client.rs",
+    "function": "fn bind_original_stage_channel(",
+    "before": "Self::bind(peer, material, dataset, training, RetainedVersionOriginV1::Fresh)",
+    "after": "Self::bind(\n            peer,\n            material,\n            dataset,\n            training,\n            RetainedVersionOriginV1::Fresh,\n        )"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_retained_version_client.rs",
+    "function": "fn recover_original_stage_channel(",
+    "before": "Self::bind(peer, material, dataset, training, RetainedVersionOriginV1::Recovered)",
+    "after": "Self::bind(\n            peer,\n            material,\n            dataset,\n            training,\n            RetainedVersionOriginV1::Recovered,\n        )"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_retained_version_client.rs",
+    "function": "fn exchange(",
+    "before": "self.cut.require_fresh(started, access).map_err(|_| Error::CommitUncertain)?",
+    "after": "self.cut\n            .require_fresh(started, access)\n            .map_err(|_| Error::CommitUncertain)?"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_retained_version_wire.rs",
+    "function": null,
+    "before": "pub(super) enum Action { Prepare, Readback }",
+    "after": "pub(super) enum Action {\n    Prepare,\n    Readback,\n}"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_retained_version_wire.rs",
+    "function": "fn decode(",
+    "before": "selected_bundle.digest()",
+    "after": "selected_bundle\n                    .digest()"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_retained_version_artifact.rs",
+    "function": "fn new(",
+    "before": "withdrawal.scope_digest()",
+    "after": "withdrawal\n                    .scope_digest()"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_retained_version_artifact.rs",
+    "function": "fn read_current(",
+    "before": "self.verifier.verify(&self.selection, read.current(), read.observed_unix_millis())",
+    "after": "self.verifier\n            .verify(&self.selection, read.current(), read.observed_unix_millis())"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_retained_version_state.rs",
+    "function": "fn bind_original_predecessor(",
+    "before": "OriginalCellQ24DatasetCommandReadbackV1::readback(&state.dataset)",
+    "after": "OriginalCellQ24DatasetCommandReadbackV1::readback(\n                &state.dataset,\n            )"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_retained_version_state.rs",
+    "function": "fn bind_original_predecessor(",
+    "before": "state.initial_trainer.take()",
+    "after": "state\n            .initial_trainer\n            .take()"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_retained_version_state.rs",
+    "function": "fn require_cut_current(",
+    "before": "OriginalCellQ24DatasetCommandReadbackV1::readback(&self.dataset)",
+    "after": "OriginalCellQ24DatasetCommandReadbackV1::readback(\n            &self.dataset,\n        )"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_retained_version_state.rs",
+    "function": "fn require_cut_current(",
+    "before": "cut.training.require_training_current(",
+    "after": "cut.training\n                .require_training_current("
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_retained_version_effect.rs",
+    "function": "fn prepare_original(",
+    "before": "self.read_original(state)",
+    "after": "self\n            .read_original(state)"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_retained_version_effect.rs",
+    "function": "fn publish_original_final_use(",
+    "before": "task.install_original(published, cut, intent)",
+    "after": "task\n                .install_original(published, cut, intent)"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_retained_version_effect.rs",
+    "function": "fn publish_original_final_use(",
+    "before": "state.install_original_selection_reader()",
+    "after": "state\n                .install_original_selection_reader()"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs",
+    "function": "fn command_response(",
+    "before": "request.schema != 1 || request.purpose != wire::OPERATION",
+    "after": "request.schema != 1\n            || request.purpose != wire::OPERATION"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs",
+    "function": "fn command_response(",
+    "before": "require_original_command_initial(&self.material)",
+    "after": "require_original_command_initial(\n                &self.material,\n            )"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs",
+    "function": "fn encode_response(",
+    "before": "require_original_command_initial(&self.material)",
+    "after": "require_original_command_initial(\n                &self.material,\n            )"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_retained_version_c_task.rs",
+    "function": "fn observe(",
+    "before": "cut.training.authenticate(",
+    "after": "cut\n            .training\n            .authenticate("
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_retained_version_c_task.rs",
+    "function": "fn observe(",
+    "before": "if after !=",
+    "after": "if after\n            !="
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_retained_version_effect.rs",
+    "before": "self.read_original(&state)",
+    "after": "self\n                .read_original(&state)"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_retained_version_c_task.rs",
+    "before": "self.original_a.read_run_publication(",
+    "after": "self\n            .original_a\n            .read_run_publication("
+  }
+]

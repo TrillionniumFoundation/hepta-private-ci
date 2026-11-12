@@ -1,0 +1,25 @@
+{
+  "protected_rows": 16,
+  "protected_failures": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_effect.rs",
+      "error": "codex-rs/hepta-agentd/src/circuit_retained_version_effect.rs:fn publish_original_final_use(: required code order missing: ['self.origin != RetainedVersionOriginV1::Fresh', 'signed.grant.binding != original.final_use_binding()', 'self.publication_requested.swap(true, Ordering::AcqRel)', 'QueuedFinalUseFence::new()', 'spawn_blocking(', 'require_not_cancelled(&cancellation)?', 'self.bind_original_predecessor(&mut state)?', 'self.read_original(&state)?', 'signed.grant.binding != original.final_use_binding()', 'PublicationAccess::NewWork', 'require_not_cancelled(&cancellation)?', 'state.phase.take()', 'task.require_completed_a(&original.completed)?', 'require_not_cancelled(&cancellation)?', 'publish_and_retain_original_trainer(', 'task\\n                .install_original(published, cut, intent)', 'state.trainer = Some(trainer)', 'RetainedVersionHostPhaseV1::Installed', 'state\\n                .install_original_selection_reader()', 'self.read_original(&state)', 'PublicationAccess::NewWork', 'self.installed.notify_waiters()', 'drop(queued)', 'result']"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_c_task.rs",
+      "error": "codex-rs/hepta-agentd/src/circuit_retained_version_c_task.rs:fn require_completed_a(: required code order missing: ['completed.source_publication()', 'self.original_a.read_run_publication(', '&before != expected', 'c.agent_id != a.agent_id', 'c.spawn_generation == 0', 'c.spawn_generation <= a.spawn_generation', 'c.run_root == a.run_root || c.home_root == a.home_root', 'self.original_a.read_run_publication(a, run)? != before']"
+    }
+  ],
+  "tests": 19,
+  "failures": 0,
+  "errors": 0,
+  "skips": 0,
+  "failed_names": [],
+  "source_parent": "514fe5f53cfdc254477667f8862d652ea756c807",
+  "scope": "owned Artifact and retained/Version rows and two source QA modules only",
+  "working_diff_sha256": "6b8521fbb26faf18d600d0f7bde8aaf6cf57b702b2377a4b9b59aa9bedf1c05a",
+  "seconds": 3.68818727200005,
+  "exit_code": 1,
+  "raw_bytes": 7053,
+  "raw_sha256": "4801f11915dd1a2acfb867fb6877d23701d0d734ae780d73981513d45510e651"
+}
