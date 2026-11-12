@@ -93,6 +93,7 @@ CALLERS = {
         "codex-rs/hepta-agentd/src/authority_host_historical_source_pin.rs",
         "codex-rs/hepta-agentd/src/authority_host_run_start_context.rs",
         "codex-rs/hepta-agentd/src/authority_host_publication_grant.rs",
+        "codex-rs/hepta-agentd/src/authority_host_publication_successor.rs",
     ),
     "root_initial_exact_retained_record": (
         AGENT + "authority_host_generation_initial_enrollment.rs",

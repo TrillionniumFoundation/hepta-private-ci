@@ -4792,7 +4792,7 @@ id = "root_generation_current_original_broker_head"
 symbol = "NeuronGenerationCurrentOwnerV1::original_broker_head"
 definition_path = "codex-rs/hepta-agentd/src/neuron_generation_current_root.rs"
 definition_markers = ["fn original_broker_head(", "self.store.is_original_host()", "self.store.load()"]
-product_callers = ["codex-rs/hepta-agentd/src/authority_host_generation_publication_enrollment.rs", "codex-rs/hepta-agentd/src/authority_host_generation_publication_transport.rs", "codex-rs/hepta-agentd/src/authority_host_generation_initial_enrollment.rs", "codex-rs/hepta-agentd/src/authority_host_generation_initial_transport.rs", "codex-rs/hepta-agentd/src/authority_host_historical_source_pin.rs", "codex-rs/hepta-agentd/src/authority_host_run_start_context.rs", "codex-rs/hepta-agentd/src/authority_host_publication_grant.rs"]
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_generation_publication_enrollment.rs", "codex-rs/hepta-agentd/src/authority_host_generation_publication_transport.rs", "codex-rs/hepta-agentd/src/authority_host_generation_initial_enrollment.rs", "codex-rs/hepta-agentd/src/authority_host_generation_initial_transport.rs", "codex-rs/hepta-agentd/src/authority_host_historical_source_pin.rs", "codex-rs/hepta-agentd/src/authority_host_run_start_context.rs", "codex-rs/hepta-agentd/src/authority_host_publication_grant.rs", "codex-rs/hepta-agentd/src/authority_host_publication_successor.rs"]
 caller_markers = []
 call_pattern = "(?:\\.\\s*|[A-Za-z_]\\w*\\s*::\\s*)original_broker_head\\s*\\("
 
@@ -5501,7 +5501,7 @@ symbol = "RootGenerationPublicationConnectionV1::require_original_publication_se
 receiver_type = "RootGenerationPublicationConnectionV1"
 definition_path = "codex-rs/hepta-agentd/src/root_generation_publication_connection.rs"
 definition_markers = ["pub(crate) fn require_original_publication_session(", "libc::getuid()", "libc::geteuid()", "std::process::id() != self.original.consumer.pid", "verify_sender_process_binding("]
-product_callers = ["codex-rs/hepta-agentd/src/root_generation_current_client.rs", "codex-rs/hepta-agentd/src/root_generation_publication_inputs.rs", "codex-rs/hepta-agentd/src/root_generation_initial_client.rs", "codex-rs/hepta-agentd/src/root_generation_initial_inputs.rs", "codex-rs/hepta-agentd/src/root_q24_successor_session.rs", "codex-rs/hepta-agentd/src/root_generation_initial_artifacts.rs", "codex-rs/hepta-agentd/src/root_generation_initial_source_capture.rs", "codex-rs/hepta-agentd/src/root_generation_initial_peer_ready.rs", "codex-rs/hepta-agentd/src/root_independent_b_connection.rs", "codex-rs/hepta-agentd/src/root_generation_current_grant.rs"]
+product_callers = ["codex-rs/hepta-agentd/src/root_generation_current_client.rs", "codex-rs/hepta-agentd/src/root_generation_publication_inputs.rs", "codex-rs/hepta-agentd/src/root_generation_initial_client.rs", "codex-rs/hepta-agentd/src/root_generation_initial_inputs.rs", "codex-rs/hepta-agentd/src/root_q24_successor_session.rs", "codex-rs/hepta-agentd/src/root_generation_initial_artifacts.rs", "codex-rs/hepta-agentd/src/root_generation_initial_source_capture.rs", "codex-rs/hepta-agentd/src/root_generation_initial_peer_ready.rs", "codex-rs/hepta-agentd/src/root_independent_b_connection.rs", "codex-rs/hepta-agentd/src/root_generation_current_grant.rs", "codex-rs/hepta-agentd/src/root_generation_initial_run_start.rs", "codex-rs/hepta-agentd/src/root_publication_preparation.rs"]
 caller_markers = []
 
 [[boundary]]
