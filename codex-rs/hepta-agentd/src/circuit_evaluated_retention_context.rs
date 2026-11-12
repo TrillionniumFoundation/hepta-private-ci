@@ -11,6 +11,7 @@ use codex_hepta_learning_artifacts::LearningIterationStageV1;
 use codex_hepta_learning_artifacts::learning_iteration_receipt_signing_bytes_v1;
 use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
 use codex_hepta_learning_ledger::LearningEvidenceVerifierV1;
+use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
 use codex_hepta_learning_ledger::verify_signed_actor_separation;
 
 use super::OriginalCircuitRetainedPublicationErrorV1 as Error;
@@ -36,6 +37,16 @@ pub struct OriginalCircuitEvaluatedRetentionContextV1 {
 enum Origin {
     Fresh,
     Readback,
+}
+
+/// Borrowed authenticated facts for a read purpose; no publication or signing
+/// capability is returned, and the original fresh/cold origin remains bound.
+pub(crate) struct EvaluatedRetentionReadProofV1<'a> {
+    pub(crate) scope: &'a FrozenLearningScopeV2,
+    pub(crate) verifier: &'a LearningEvidenceVerifierV1,
+    pub(crate) training: &'a SignedLearningEvidenceV1,
+    pub(crate) evaluation: &'a SignedLearningEvidenceV1,
+    pub(crate) origin: &'static [u8],
 }
 
 impl OriginalCircuitEvaluatedRetentionContextV1 {
@@ -79,6 +90,23 @@ impl OriginalCircuitEvaluatedRetentionContextV1 {
     /// Selector, CURRENT, FinalUse or task-execution capability.
     pub fn snapshot(&self) -> &LearningIterationSnapshotV1 {
         self.evaluation.snapshot()
+    }
+
+    pub(crate) fn original_read_proof(
+        &self,
+        at: u64,
+    ) -> Result<EvaluatedRetentionReadProofV1<'_>, Error> {
+        self.authenticate(at, PublicationAccess::Readback)?;
+        Ok(EvaluatedRetentionReadProofV1 {
+            scope: &self.scope,
+            verifier: &self.verifier,
+            training: self.training.attestation(),
+            evaluation: self.evaluation.attestation(),
+            origin: match self.origin {
+                Origin::Fresh => b"fresh",
+                Origin::Readback => b"readback",
+            },
+        })
     }
 
     pub(super) fn authenticate(

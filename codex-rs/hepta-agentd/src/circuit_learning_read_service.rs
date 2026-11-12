@@ -14,14 +14,16 @@ use tokio::sync::Semaphore;
 
 use super::super::Publication;
 use super::Error;
-use super::OriginalCircuitLearningReadContextV1 as Context;
+use super::OriginalCircuitLearningReadContextV1;
 use super::OriginalCircuitLearningReadbackV1 as Readback;
+use super::ReadContext as Context;
 use super::now;
 use super::require_timing;
 use super::wire;
 use crate::AgentdIdentity;
 use crate::AgentdRootAuthorityPeer;
 use crate::CircuitTaskSourceReadbackV1;
+use crate::OriginalCircuitEvaluatedRetentionContextV1;
 use crate::PublishedCircuitCellOwnerV1;
 use crate::circuit_feature_task_digest_v1;
 use crate::learning_owner_command_channel::original_owner_command_channel_v1;
@@ -40,6 +42,26 @@ pub struct OriginalCircuitLearningReadOwnerV1<C: AnchorWitnessStore, S: AnchorWi
 
 impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOwnerV1<C, S> {
     pub fn from_original_owners(
+        cell: PublishedCircuitCellOwnerV1<C>,
+        source: CircuitTaskSourceReadbackV1<S>,
+        identity: AgentdIdentity,
+        context: OriginalCircuitLearningReadContextV1,
+    ) -> Result<Self, Error> {
+        Self::bind_original_owners(cell, source, identity, context.into())
+    }
+
+    /// Preserve the evaluated four-cut decision while reading the actual
+    /// unchanged-model successor publication. Cold proofs remain read-only.
+    pub fn from_original_evaluated_owners(
+        cell: PublishedCircuitCellOwnerV1<C>,
+        source: CircuitTaskSourceReadbackV1<S>,
+        identity: AgentdIdentity,
+        context: OriginalCircuitEvaluatedRetentionContextV1,
+    ) -> Result<Self, Error> {
+        Self::bind_original_owners(cell, source, identity, Context::from_evaluated(context)?)
+    }
+
+    fn bind_original_owners(
         cell: PublishedCircuitCellOwnerV1<C>,
         source: CircuitTaskSourceReadbackV1<S>,
         identity: AgentdIdentity,

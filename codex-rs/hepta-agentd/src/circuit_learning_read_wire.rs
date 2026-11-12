@@ -13,8 +13,9 @@ use serde::Deserialize;
 use serde::Serialize;
 
 use super::Error;
-use super::OriginalCircuitLearningReadContextV1 as Context;
 use super::OriginalCircuitLearningReadbackV1 as Readback;
+use super::ReadContext as Context;
+use crate::OriginalCircuitEvaluatedRetentionContextV1;
 use crate::learning_iteration_checkpoint::encode_original_owner_snapshot_v1;
 
 pub(super) const OPERATION: &str = "runtime.learning.original-circuit.current-read.v1";
@@ -38,6 +39,19 @@ impl Mode {
 pub(super) fn mode(context: &Context) -> Result<Mode, Error> {
     let coordinator = LearningIterationCoordinatorV1::from_snapshot(context.prefix.clone())?;
     context.scope.validate_snapshot(&context.prefix)?;
+    if let Some(original) = &context.evaluated {
+        if &context.prefix != original.snapshot()
+            || context.prefix.receipts.len() != 4
+            || context.selection_evidence.is_some()
+            || coordinator.next_stage() != Some(LearningIterationStageV1::Selection)
+            || coordinator.next_task_bundle() != Some(&context.prefix.request.selected_bundle)
+        {
+            return Err(Error::Binding(
+                "exact original evaluated Selection read prefix",
+            ));
+        }
+        return Ok(Mode::Selection);
+    }
     if context.prefix.receipts.len() < 3
         || !matches!(
             context.prefix.receipts[2].observation,
@@ -99,7 +113,7 @@ pub(super) fn context_binding(context: &Context, at: u64) -> Result<Digest32, Er
     // full canonical predecessor and full original signature bytes are separate
     // inputs. No new update rule, signature window or role authority is minted.
     let prefix = encode_original_owner_snapshot_v1(snapshot)?;
-    Ok(Digest32::of_parts(&[
+    let binding = Digest32::of_parts(&[
         b"hepta.agentd.original-circuit-current-read.v1\0",
         mode.name(),
         &prefix,
@@ -108,7 +122,27 @@ pub(super) fn context_binding(context: &Context, at: u64) -> Result<Digest32, Er
         context.verifier.scope_digest().as_array(),
         context.verifier.objective_digest().as_array(),
         &signatures,
-    ]))
+    ]);
+    if let Some(original) = &context.evaluated {
+        let proof = OriginalCircuitEvaluatedRetentionContextV1::original_read_proof(original, at)
+            .map_err(|_| Error::Binding("original evaluated retention read proof"))?;
+        if proof.scope.binding() != context.scope.binding()
+            || proof.verifier.trust_digest() != context.verifier.trust_digest()
+            || proof.verifier.scope_digest() != context.verifier.scope_digest()
+            || proof.verifier.objective_digest() != context.verifier.objective_digest()
+            || proof.training != &context.training_evidence
+        {
+            return Err(Error::Binding("unchanged original evaluated read context"));
+        }
+        return Ok(Digest32::of_parts(&[
+            b"hepta.agentd.original-circuit-evaluated-current-read.v1\0",
+            binding.as_array(),
+            proof.origin,
+            &proof.evaluation.signing_bytes(),
+            &proof.evaluation.signature,
+        ]));
+    }
+    Ok(binding)
 }
 
 pub(super) fn decision(context: &Context) -> Result<LearningIterationCoordinatorV1, Error> {

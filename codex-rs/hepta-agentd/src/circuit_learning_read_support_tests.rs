@@ -75,6 +75,24 @@ pub(crate) fn client(
     OriginalCircuitLearningReadClientV1,
     HostAuthorityPeerChannel,
 )> {
+    bound_client(context.into())
+}
+
+pub(crate) fn evaluated_client(
+    context: crate::OriginalCircuitEvaluatedRetentionContextV1,
+) -> anyhow::Result<(
+    OriginalCircuitLearningReadClientV1,
+    HostAuthorityPeerChannel,
+)> {
+    bound_client(super::ReadContext::from_evaluated(context)?)
+}
+
+fn bound_client(
+    context: super::ReadContext,
+) -> anyhow::Result<(
+    OriginalCircuitLearningReadClientV1,
+    HostAuthorityPeerChannel,
+)> {
     let (stream, server) = UnixStream::pair()?;
     let binding = wire::context_binding(&context, now()?)?;
     Ok((
@@ -164,6 +182,7 @@ pub(crate) fn reject_wrong_context<C: AnchorWitnessStore, S: AnchorWitnessStore>
     owner: &OriginalCircuitLearningReadOwnerV1<C, S>,
     context: &OriginalCircuitLearningReadContextV1,
 ) -> anyhow::Result<()> {
+    let context = &context.clone().into();
     let binding = wire::context_binding(context, now()?)?;
     let mut request = wire::Request::new(context, binding, 1)?;
     request.operation_id.push_str("-changed");

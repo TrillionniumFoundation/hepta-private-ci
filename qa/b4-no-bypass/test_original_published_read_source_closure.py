@@ -29,6 +29,9 @@ JOURNAL = AGENT + "circuit_task_source_journal.rs"
 SELECTOR = AGENT + "circuit_selection_receipt_owner.rs"
 OBSERVER = AGENT + "circuit_next_use_receipt_owner.rs"
 EXPECTED = {
+    "learning_evaluated_current_read_client": (),
+    "learning_evaluated_current_read_owner": (),
+    "learning_evaluated_retention_read_proof": (MAIN, WIRE),
     "learning_original_published_read_client_create": (),
     "learning_original_published_read_client_current": (SELECTOR, OBSERVER),
     "learning_original_published_read_client_context": ("codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs", "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs", "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs", "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs"),
@@ -113,6 +116,40 @@ class OriginalPublishedReadClosureTests(unittest.TestCase):
             (),
         )
         self.assertTrue(all(value is False for value in self.manifest["authority"].values()))
+
+    def test_evaluated_current_read_keeps_opaque_four_cut_proof_and_cold_origin(self):
+        context = AGENT + "circuit_evaluated_retention_context.rs"
+        for path, function, markers in (
+            (context, "fn original_read_proof(", (
+                "self.authenticate(at, PublicationAccess::Readback)?",
+                "training: self.training.attestation()",
+                "evaluation: self.evaluation.attestation()",
+                "origin: match self.origin",
+                "Origin::Fresh =>",
+                "Origin::Readback =>",
+            )),
+            (MAIN, "fn from_evaluated(", (
+                "OriginalCircuitEvaluatedRetentionContextV1::original_read_proof(&original, now()?)",
+                "prefix: original.snapshot().clone()",
+                "evaluated: Some(original)",
+            )),
+            (MAIN, "fn require_original_context(", ("self.context.evaluated.is_some()",)),
+            (WIRE, "fn mode(", (
+                "&context.prefix != original.snapshot()",
+                "context.prefix.receipts.len() != 4",
+                "context.selection_evidence.is_some()",
+            )),
+            (WIRE, "fn context_binding(", (
+                "OriginalCircuitEvaluatedRetentionContextV1::original_read_proof(original, at)",
+                "proof.training != &context.training_evidence",
+                "proof.origin",
+                "&proof.evaluation.signing_bytes()",
+                "&proof.evaluation.signature",
+            )),
+        ):
+            for marker in markers:
+                with self.subTest(path=path, marker=marker):
+                    self.rejects(path, function, marker)
 
     def test_source_current_keeps_original_handle_two_witnesses_and_permanent_fence(self):
         for marker in (

@@ -56,6 +56,8 @@ pub use learning_read::OriginalCircuitLearningReadErrorV1;
 pub use learning_read::OriginalCircuitLearningReadOwnerV1;
 pub use learning_read::OriginalCircuitLearningReadbackV1;
 #[cfg(test)]
+pub(crate) use learning_read::check_evaluated_profiles;
+#[cfg(test)]
 pub(crate) use learning_read::fixture as original_learning_read_fixture;
 pub use owner::PublishedCircuitCellOwnerV1;
 pub use recovery::CircuitFeaturePredecessorFilesV1;

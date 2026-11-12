@@ -11,8 +11,9 @@ use serde::Serialize;
 
 use super::Channel;
 use super::Error;
-use super::OriginalCircuitLearningReadContextV1 as Context;
+use super::OriginalCircuitLearningReadContextV1;
 use super::OriginalCircuitLearningReadbackV1 as Readback;
+use super::ReadContext as Context;
 use super::now;
 use super::wire as original;
 use crate::OriginalCellQ24MaterialCommandReceiptV1;
@@ -87,13 +88,14 @@ impl OriginalCircuitCompletionReadinessClientV1 {
         selection: &OriginalCircuitSelectionCommandReceiptV1,
     ) -> Result<Self, Error> {
         let started_at = now()?;
-        let context = Context {
+        let context: Context = OriginalCircuitLearningReadContextV1 {
             prefix: selection.snapshot().clone(),
             scope: material.scope.clone(),
             verifier: material.verifier.clone(),
             training_evidence: selection.training_attestation().clone(),
             selection_evidence: Some(selection.attestation().clone()),
-        };
+        }
+        .into();
         let binding = original::context_binding(&context, started_at)?;
         let initial = LearningIterationCoordinatorV1::new(
             context.prefix.request.clone(),

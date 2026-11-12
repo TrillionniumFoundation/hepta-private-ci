@@ -24,6 +24,7 @@ use crate::AgentdError;
 use crate::AgentdRootAuthorityPeer;
 use crate::CircuitTaskErrorV1;
 use crate::LearningIterationCheckpointErrorV1;
+use crate::OriginalCircuitEvaluatedRetentionContextV1;
 use crate::learning_owner_command_channel::original_owner_command_channel_v1;
 
 #[path = "circuit_learning_completion_readiness.rs"]
@@ -47,6 +48,46 @@ pub struct OriginalCircuitLearningReadContextV1 {
     pub verifier: LearningEvidenceVerifierV1,
     pub training_evidence: SignedLearningEvidenceV1,
     pub selection_evidence: Option<SignedLearningEvidenceV1>,
+}
+
+// The legacy public input remains strict TrainingNoUpdate. Evaluated retention
+// enters only through its opaque original proof, never through that input DTO.
+struct ReadContext {
+    prefix: LearningIterationSnapshotV1,
+    scope: FrozenLearningScopeV2,
+    verifier: LearningEvidenceVerifierV1,
+    training_evidence: SignedLearningEvidenceV1,
+    selection_evidence: Option<SignedLearningEvidenceV1>,
+    evaluated: Option<OriginalCircuitEvaluatedRetentionContextV1>,
+}
+
+impl From<OriginalCircuitLearningReadContextV1> for ReadContext {
+    fn from(value: OriginalCircuitLearningReadContextV1) -> Self {
+        Self {
+            prefix: value.prefix,
+            scope: value.scope,
+            verifier: value.verifier,
+            training_evidence: value.training_evidence,
+            selection_evidence: value.selection_evidence,
+            evaluated: None,
+        }
+    }
+}
+
+impl ReadContext {
+    fn from_evaluated(original: OriginalCircuitEvaluatedRetentionContextV1) -> Result<Self, Error> {
+        let proof =
+            OriginalCircuitEvaluatedRetentionContextV1::original_read_proof(&original, now()?)
+                .map_err(|_| Error::Binding("original evaluated retention read proof"))?;
+        Ok(Self {
+            prefix: original.snapshot().clone(),
+            scope: proof.scope.clone(),
+            verifier: proof.verifier.clone(),
+            training_evidence: proof.training.clone(),
+            selection_evidence: None,
+            evaluated: Some(original),
+        })
+    }
 }
 
 #[derive(Debug, thiserror::Error)]
@@ -97,7 +138,7 @@ struct Channel {
 /// pidfd. This constructor cannot discover/reconnect an owner, deserialize a
 /// capability from a receipt, or upgrade a read to a command.
 pub struct OriginalCircuitLearningReadClientV1 {
-    context: OriginalCircuitLearningReadContextV1,
+    context: ReadContext,
     binding: Digest32,
     channel: Mutex<Option<Channel>>,
     retained: Mutex<Option<OriginalCircuitLearningReadbackV1>>,
@@ -110,6 +151,48 @@ impl OriginalCircuitLearningReadClientV1 {
         original_task_uid: u32,
         original_task_pidfd: OwnedFd,
         context: OriginalCircuitLearningReadContextV1,
+        timeout: Duration,
+        lifetime: Duration,
+    ) -> Result<Self, Error> {
+        Self::bind_original_stream(
+            stream,
+            original_task_process,
+            original_task_uid,
+            original_task_pidfd,
+            context.into(),
+            timeout,
+            lifetime,
+        )
+    }
+
+    /// Read Selection CURRENT for a real four-cut negative evaluation. The
+    /// consumed proof grants no publication, Selector or C execution right.
+    pub fn from_original_evaluated_stream(
+        stream: UnixStream,
+        original_task_process: AgentdRootAuthorityPeer,
+        original_task_uid: u32,
+        original_task_pidfd: OwnedFd,
+        context: OriginalCircuitEvaluatedRetentionContextV1,
+        timeout: Duration,
+        lifetime: Duration,
+    ) -> Result<Self, Error> {
+        Self::bind_original_stream(
+            stream,
+            original_task_process,
+            original_task_uid,
+            original_task_pidfd,
+            ReadContext::from_evaluated(context)?,
+            timeout,
+            lifetime,
+        )
+    }
+
+    fn bind_original_stream(
+        stream: UnixStream,
+        original_task_process: AgentdRootAuthorityPeer,
+        original_task_uid: u32,
+        original_task_pidfd: OwnedFd,
+        context: ReadContext,
         timeout: Duration,
         lifetime: Duration,
     ) -> Result<Self, Error> {
@@ -197,7 +280,8 @@ impl OriginalCircuitLearningReadClientV1 {
         training: &SignedLearningEvidenceV1,
         selection: Option<&SignedLearningEvidenceV1>,
     ) -> Result<(), Error> {
-        if &self.context.prefix != prefix
+        if self.context.evaluated.is_some()
+            || &self.context.prefix != prefix
             || self.context.scope.binding() != scope.binding()
             || self.context.verifier.trust_digest() != verifier.trust_digest()
             || self.context.verifier.scope_digest() != verifier.scope_digest()
@@ -235,3 +319,9 @@ pub(crate) mod fixture;
 
 #[cfg(test)]
 pub(crate) use readiness::fixture as readiness_fixture;
+
+#[cfg(test)]
+#[path = "circuit_evaluated_current_read_tests.rs"]
+mod evaluated_tests;
+#[cfg(test)]
+pub(crate) use evaluated_tests::check_evaluated_profiles;

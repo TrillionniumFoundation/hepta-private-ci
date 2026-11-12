@@ -12,6 +12,9 @@ use codex_hepta_learning_artifacts::LearningEvaluationDispositionV1;
 mod publication_fixture;
 use publication_fixture::PublicationFixture;
 
+#[path = "circuit_evaluated_current_positive_tests.rs"]
+mod current_read_positive;
+
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn evaluated_retention_publishes_baseline_from_same_a_training_and_independent_b()
 -> anyhow::Result<()> {
