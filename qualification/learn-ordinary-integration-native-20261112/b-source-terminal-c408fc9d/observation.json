@@ -1,0 +1,97 @@
+{
+  "head": "c408fc9df1abb9a535bdaa399f3accfea68c1c58",
+  "tree": "6ad628d2954eb2f7c3187f374c367db2b3ab81bd",
+  "prerequisite": "11cb282e0f7a969e197e055a75bd1049859347d7",
+  "source_clean": true,
+  "commits": [
+    "4ac60e55afa1490c67eed5af7586a6bb1ed6502e",
+    "102be1b6c3680b5f1edc0bb469abdfb39be9b668",
+    "51407ef5a71d05e7c9ce407690a35f7c3e9dbfef",
+    "c408fc9df1abb9a535bdaa399f3accfea68c1c58"
+  ],
+  "files": {
+    "source.bundle": {
+      "bytes": 14810,
+      "sha256": "736357e930cd5ef36c7cf6c546bd14c469190637b06732d255d562add16488c8"
+    },
+    "source-qa-originals.tar.xz": {
+      "bytes": 5904,
+      "sha256": "325dd8f5251f66e0df355118a378780d5bc609d4386075438112b0a293b6c9bd"
+    },
+    "bundle-verify.log": {
+      "bytes": 366,
+      "sha256": "84aa3f312f547485061f708b8e7e549564078380857db5a2d9278382761c037c"
+    }
+  },
+  "members": [
+    {
+      "path": "b-source-temporal-11cb282e-old-guards/result.json",
+      "bytes": 760,
+      "sha256": "b1a03889b6f7dc9c9b850d07e19eb568d78693ca0fad424047cda3ff91b9d255"
+    },
+    {
+      "path": "b-source-temporal-11cb282e-old-guards/source-qa.log",
+      "bytes": 6195,
+      "sha256": "8be192edf6514440c4a2687fd29a20cf473c7bdd86783b47c3050f44d34fef23"
+    },
+    {
+      "path": "b-source-temporal-4ac60e55-migrated-guards/result.json",
+      "bytes": 771,
+      "sha256": "e7a9b4ff73038115f1f906834a9ec9e90078b2fb1a67a051078b5e2a2e16d951"
+    },
+    {
+      "path": "b-source-temporal-4ac60e55-migrated-guards/source-qa.log",
+      "bytes": 3653,
+      "sha256": "f682a7117d18232586f63b5e672493b3d62e7e228c82ac97f9a8dc4caf63aaa7"
+    },
+    {
+      "path": "b-source-terminal-51407ef5-guards/result.json",
+      "bytes": 419,
+      "sha256": "8f78e5fda1bb6788d8e7b20238dd364f9f3127e39fa33a87343e929fde5f8ca6"
+    },
+    {
+      "path": "b-source-terminal-51407ef5-guards/source-qa.log",
+      "bytes": 3653,
+      "sha256": "96245740f12550fb0a52e1ad2eb64eb4bd8e4e57c39f6a4bc97454d92333d978"
+    },
+    {
+      "path": "b-source-terminal-51407ef5-guards/source.patch",
+      "bytes": 16270,
+      "sha256": "ce0e9415d205f90e7ec970fc0dcfc6d5534e9fdcaaaa47931441758700e3e148"
+    },
+    {
+      "path": "b-source-terminal-51407ef5-guards-final/result.json",
+      "bytes": 417,
+      "sha256": "0e958052a7c305304e831750d9a99aa7106844911b4d1e45fa9c76f01460b816"
+    },
+    {
+      "path": "b-source-terminal-51407ef5-guards-final/source-qa.log",
+      "bytes": 970,
+      "sha256": "71d3e63a849b695f601b0c9fd60e6ce4505abdb63d7265873db331bc9324cfeb"
+    },
+    {
+      "path": "b-source-terminal-51407ef5-guards-final/source.patch",
+      "bytes": 18302,
+      "sha256": "874e3e37601afa679328cfba710f6c2b94249a2072e8fb172e565f31a0fce48e"
+    }
+  ],
+  "final_scoped_source_qa": {
+    "head": "51407ef5a71d05e7c9ce407690a35f7c3e9dbfef",
+    "base_tree": "ed6a1aab2598ff52c3cb2ec9cead9fceccf477fa",
+    "dirty": true,
+    "patch_sha256": "874e3e37601afa679328cfba710f6c2b94249a2072e8fb172e565f31a0fce48e",
+    "unchanged": true,
+    "duration": 5.80682316399907,
+    "exit": 0,
+    "log_sha256": "71d3e63a849b695f601b0c9fd60e6ce4505abdb63d7265873db331bc9324cfeb",
+    "log_bytes": 970,
+    "native_executed": false
+  },
+  "native_tests_executed": 0,
+  "whole_counts": {
+    "positive": 0,
+    "evaluated_no_update": 0,
+    "daemon_root_cold": 0
+  },
+  "scope": "Source candidate causality and terminal notification; first-byte generic idle remains original absolute session end, frame timeout unchanged."
+}
