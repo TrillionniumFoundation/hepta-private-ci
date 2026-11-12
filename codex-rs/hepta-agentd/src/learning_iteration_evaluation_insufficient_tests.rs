@@ -58,8 +58,8 @@ async fn insufficient_evidence_never_reads_original_stage_attestations() -> anyh
 }
 
 #[tokio::test]
-async fn insufficient_evidence_never_claims_or_recovers_an_evaluation_receipt()
--> anyhow::Result<()> {
+async fn insufficient_evidence_never_claims_or_recovers_an_evaluation_receipt() -> anyhow::Result<()>
+{
     let now = SystemTime::now().duration_since(UNIX_EPOCH)?.as_secs();
     let mut fixture = LearningFixture::new_at(
         IndependentEvaluationDispositionV1::InsufficientEvidence,
@@ -99,7 +99,9 @@ async fn insufficient_evidence_never_claims_or_recovers_an_evaluation_receipt()
     assert!(owner.original_host_profile().1);
     assert_eq!(bytes()?, genesis);
     assert!(matches!(
-        owner.readback(fixture.receipt_owner_sources(&trainer)).await,
+        owner
+            .readback(fixture.receipt_owner_sources(&trainer))
+            .await,
         Err(OriginalCellEvaluationReceiptErrorV1::Preparation(
             CellLearningEvaluationErrorV1::InsufficientEvidence
         ))
@@ -112,7 +114,9 @@ async fn insufficient_evidence_never_claims_or_recovers_an_evaluation_receipt()
         SigningKey::from_bytes(&[42; 32]),
     )?;
     assert!(matches!(
-        recovered.readback(fixture.receipt_owner_sources(&trainer)).await,
+        recovered
+            .readback(fixture.receipt_owner_sources(&trainer))
+            .await,
         Err(OriginalCellEvaluationReceiptErrorV1::Preparation(
             CellLearningEvaluationErrorV1::InsufficientEvidence
         ))

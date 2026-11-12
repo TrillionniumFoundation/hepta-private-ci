@@ -771,11 +771,12 @@ async fn qualification_prepare_quarantines_expired_registry_attempt_with_h7_evid
     drop(lease);
     timeout(Duration::from_secs(15), async {
         loop {
-            let observed_at = SystemTime::now()
-                .duration_since(UNIX_EPOCH)
-                .unwrap_or_else(|error| {
-                    panic!("{}: {error:?}", expiry_stage("observe seeded lease expiry"))
-                });
+            let observed_at =
+                SystemTime::now()
+                    .duration_since(UNIX_EPOCH)
+                    .unwrap_or_else(|error| {
+                        panic!("{}: {error:?}", expiry_stage("observe seeded lease expiry"))
+                    });
             if observed_at.as_secs() >= expires_at {
                 break;
             }
@@ -784,7 +785,10 @@ async fn qualification_prepare_quarantines_expired_registry_attempt_with_h7_evid
     })
     .await
     .unwrap_or_else(|error| {
-        panic!("{}: {error:?}", expiry_stage("wait for seeded lease expiry"))
+        panic!(
+            "{}: {error:?}",
+            expiry_stage("wait for seeded lease expiry")
+        )
     });
 
     let result = prepare_qualification_turn_writer_input(
