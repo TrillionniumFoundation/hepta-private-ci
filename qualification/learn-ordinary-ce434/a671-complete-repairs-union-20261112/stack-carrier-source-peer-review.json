@@ -1,0 +1,165 @@
+{
+  "schema": "hepta.learn.boxed-fixture-carriers-narrow-peer.v1",
+  "status": "no_blocking_finding_static_review_only",
+  "commit": "6e7f8bf879afb1b6b3de88089d7103c252c68a5c",
+  "tree": "5a91c32026674dc2536bbe43f5e4e0cc9a9086e1",
+  "sole_parent": "a6717d7228045e6cb60532966f06e6e02c4a6abe",
+  "canonical_commit_and_exact_five_path_parent_compare_verified": true,
+  "reviewed_source_pairs": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_tests.rs",
+      "before": "a3d0236846992a2115fadad63fadbfb0d1f54c6b",
+      "after": "a170dd97b062dbc0838afc92c1ac93042ae3b64d"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_host_support_tests.rs",
+      "before": "4afd556d729875e5e9e1a415535118ce26714266",
+      "after": "4ca274451d2b6b778c186f4402576ec256d590af"
+    }
+  ],
+  "fixed_author_records": {
+    "audit": "fd1a37c96a34f1a355cfd0bcf9fa113d4577dd09",
+    "patch": "e0571e476d4adb1b640eb0271a5290bcdcbd4d21",
+    "frame_analysis": "8d091331a6aa2b25fc5dfe08e3d78ba249e732f5"
+  },
+  "independent_byte_checks": {
+    "all_source_preimages_and_postimages_complete_api_reads_and_git_sha_equal": true,
+    "exact_source_checks": [
+      {
+        "label": "panel",
+        "edits": 2,
+        "forward_inverse": true,
+        "finish_raw_body_equal": true,
+        "await_before": 20,
+        "await_after": 20,
+        "clone_before": 3,
+        "clone_after": 3
+      },
+      {
+        "label": "host",
+        "edits": 2,
+        "forward_inverse": true,
+        "finish_raw_body_equal": true,
+        "await_before": 2,
+        "await_after": 2,
+        "clone_before": 8,
+        "clone_after": 8
+      }
+    ],
+    "all_thirteen_original_case_functions_byte_identical": true,
+    "thirteen_case_function_projection_sha256": "6d197441476a2edaf65f241c66398b259367c4be8313754db8b1ceda7aa0da58",
+    "caller_files": [
+      {
+        "path": "circuit_original_evaluation_host_tests.rs",
+        "blob": "3fceb43cdf0f153c7ab87661463b062efb540c5e"
+      },
+      {
+        "path": "circuit_original_evaluation_operation_tests.rs",
+        "blob": "9f7ce3293e9e50b4128e8c312f88c95961b11ddb"
+      },
+      {
+        "path": "circuit_original_evaluation_model_material_tests.rs",
+        "blob": "d1a24c7351d25c9c0728541b011a6608b451b9dc"
+      }
+    ],
+    "caller_contract": "All inspected Host construction bindings infer their type; helper parameters only borrow &HostFixture or &mut HostFixture. Existing field access and these borrowed helper calls admit Box dereference coercion; no owned HostFixture field or explicit by-value caller annotation was found in these three files."
+  },
+  "ownership_review": [
+    "Both private constructors are ordinary functions returning impl Future with concrete Pin<Box<async move body>>, and Result<Box<Self>> output. They do not add spawn, runtime, await, I/O, owner clone or a borrowed substitute for original owned custody.",
+    "The Host pattern *PanelFixture::completed(...).await? consumes the owned Box and moves the same seven fields once into the same local bindings. It does not borrow the Box, clone a field or run a new fixture Drop implementation. The old temporary allocation is freed after moving out.",
+    "The existing input=&primary.config borrow is used for the same original config clones and ends before primary is moved into the Host struct. The remaining fields, construction order, original file/evaluator creation and host attachment retain their old order.",
+    "finish(self: Box<Self>) and finish(mut self: Box<Self>) still consume the fixture. Their entire brace bodies are byte-identical: panel/host first, primary.finish, retention.finish, primary_b, retention_b, then original.finish().await. Box supports owned field moves; remaining initialized fields retain their declaration-order drop behavior on early return, with added Box storage deallocation.",
+    "Both structs retain their exact original field declarations. No custom Drop implementation is introduced. The retained originals remain live through the same awaited business operations; there is no new borrow or clone to extend owner lifetimes.",
+    "The new allocation of the future occurs at helper call time, while the original business body still starts on polling. This is a deliberate private test representation change, not a claim that allocation failure or every memory behavior is identical."
+  ],
+  "actual_original_frame_evidence": {
+    "commit": "5ad5f7ad54a9a34e3a9b0c2c4e4110ef3a578ea1",
+    "tree": "f5b705baca274d2b5f20e8a8dd2725a18b5bb93f",
+    "sole_parent_a671_verified": true,
+    "manifest": "21b97a17511e168954f69941a2f2a2240ef51158",
+    "manifest_fixed_commit_path_and_blob_verified": true,
+    "result": "7175893c9664da9c991842bf3a269004db7ebd73",
+    "symbols": "21679dae1f0bd42ae8a7d346b1544bc15f5037c5",
+    "selected_raw_scope": "Full result, symbols and six listed prologue files, each checked against the complete original export-manifest bytes/hash/blob pin; this peer did not independently retrieve the other 30 exported raw files.",
+    "complete_result_symbol_projection_equal": true,
+    "old_observed_elf_sha256": "6be8aa9483e58df56f8cac926f0c76bda85a17ecc1675605cf749efee41e46c2",
+    "source_before_after_clean": true,
+    "original_entry_displacements": [
+      {
+        "index": 1,
+        "blob": "0dd2f3ab1b070364c6f3d2c2f2128d415422b515",
+        "family": "PanelFixture.completed",
+        "probe_target_delta": 2420736,
+        "tail": 2856,
+        "preceding_push_bytes": 0,
+        "entry_rsp_displacement": 2423592
+      },
+      {
+        "index": 3,
+        "blob": "643773069904998675dcc2102b538eb629296f31",
+        "family": "completed_member",
+        "probe_target_delta": 491520,
+        "tail": 2024,
+        "preceding_push_bytes": 0,
+        "entry_rsp_displacement": 493544
+      },
+      {
+        "index": 4,
+        "blob": "08700dbc476b6a63ae6fbe405c42ccc111e711d7",
+        "family": "original_panel_test",
+        "probe_target_delta": 1654784,
+        "tail": 1448,
+        "preceding_push_bytes": 0,
+        "entry_rsp_displacement": 1656232
+      },
+      {
+        "index": 5,
+        "blob": "27dd91436769f4a6a15ac3a5aaab5e64a2e66cae",
+        "family": "original_panel_test",
+        "probe_target_delta": 3239936,
+        "tail": 3048,
+        "preceding_push_bytes": 0,
+        "entry_rsp_displacement": 3242984
+      },
+      {
+        "index": 8,
+        "blob": "33d7776646fb29c2146df00991dad59a488c78b5",
+        "family": "preregistered",
+        "probe_target_delta": 1425408,
+        "tail": 2120,
+        "preceding_push_bytes": 0,
+        "entry_rsp_displacement": 1427528
+      },
+      {
+        "index": 12,
+        "blob": "fca06efa85acf6fc139d94ac44a0fdd4c0a3d161",
+        "family": "PositiveFixture.ready_with_admission",
+        "probe_target_delta": 1978368,
+        "tail": 2280,
+        "preceding_push_bytes": 16,
+        "entry_rsp_displacement": 1980664
+      }
+    ],
+    "host_frame": "HostFixture.new is missing from the original selected symbols. No frame size or absence-of-frame inference is assigned to it.",
+    "interpretation": "The observed entry loops reserve these exact static rsp displacements if they complete, excluding return-address and simultaneous caller frames. They are not measured peak stack or proof that the same frames are concurrently live. No old or predicted new displacements are added into an asserted runtime peak.",
+    "repair_relation": "Moving the complete future and fixture output across these two common caller boundaries behind owning boxes directly addresses large inline aggregate propagation in the observed test/fixture chain. Box::new/Box::pin and Host's owned destructure may still materialize temporaries; the new code's actual frames and whether all 13 tests pass remain unmeasured."
+  },
+  "unchanged_scope": {
+    "production_files": 0,
+    "source_guard_changes": 0,
+    "test_body_changes": 0,
+    "new_tests": 0,
+    "stack_limit_bytes": 8388608,
+    "per_case_timeout_seconds": 60,
+    "existing_budgets_unchanged": true
+  },
+  "limits": {
+    "rust_compilation": false,
+    "python_execution": false,
+    "h_operation": false,
+    "new_native_pass": false,
+    "git_publication_is_not_h_process_terminal_receipt": true,
+    "source_to_binary_attestation": false
+  },
+  "ordinary_acceptance": 0
+}
