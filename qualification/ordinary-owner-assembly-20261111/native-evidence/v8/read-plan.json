@@ -1,0 +1,203 @@
+{
+  "schema": "hepta.v8-original-archive-read-plan.v1",
+  "source": {
+    "head": "f9131ee6bfc514812096b3b72b7c3c70ff77278c",
+    "tree": "850c7e73f936b74c0c82e30c0907de11769d8cf1",
+    "status": ""
+  },
+  "archive": {
+    "bytes": 1312528,
+    "sha256": "3c7dd2c0e690f019a1a8fd3bb4a9c7bd9ed7c41de01d01d2c74021f6d68fa05e",
+    "git_blob": "54018241b0f6b38e1c1d5f24ee95b940f319dc98",
+    "members": 89,
+    "payload_files": 88,
+    "manifest_sha256": "48f50f113d0e75ae9a1b60cce94660e7aff8fe62fc06a5a2d468c72b4debb6e4"
+  },
+  "rules": {
+    "max_one_original_read_batch_in_flight": true,
+    "max_original_files_per_batch": 4,
+    "immutable_result_page_limit": 16384,
+    "no_commands_or_remote_mutations": true,
+    "same_idempotency_key_and_arguments_on_unknown_admission": true
+  },
+  "batches": [
+    {
+      "index": 0,
+      "idempotency_key": "af52-v8-f913-original-parts-000-v1",
+      "operation": {
+        "tool": "read_multiple_files",
+        "arguments": {
+          "host": "ai395",
+          "paths": [
+            "/home/qq/af52-learning-local-decision-20261111/ordinary-f913-root17-original-records-export-v8-20261112/export.json",
+            "/home/qq/af52-learning-local-decision-20261111/ordinary-f913-root17-original-records-export-v8-20261112/part-000.txt",
+            "/home/qq/af52-learning-local-decision-20261111/ordinary-f913-root17-original-records-export-v8-20261112/part-001.txt",
+            "/home/qq/af52-learning-local-decision-20261111/ordinary-f913-root17-original-records-export-v8-20261112/part-002.txt"
+          ],
+          "max_file_bytes": 65536,
+          "max_response_bytes": 262144
+        }
+      }
+    },
+    {
+      "index": 1,
+      "idempotency_key": "af52-v8-f913-original-parts-001-v1",
+      "operation": {
+        "tool": "read_multiple_files",
+        "arguments": {
+          "host": "ai395",
+          "paths": [
+            "/home/qq/af52-learning-local-decision-20261111/ordinary-f913-root17-original-records-export-v8-20261112/part-003.txt",
+            "/home/qq/af52-learning-local-decision-20261111/ordinary-f913-root17-original-records-export-v8-20261112/part-004.txt",
+            "/home/qq/af52-learning-local-decision-20261111/ordinary-f913-root17-original-records-export-v8-20261112/part-005.txt",
+            "/home/qq/af52-learning-local-decision-20261111/ordinary-f913-root17-original-records-export-v8-20261112/part-006.txt"
+          ],
+          "max_file_bytes": 65536,
+          "max_response_bytes": 262144
+        }
+      }
+    },
+    {
+      "index": 2,
+      "idempotency_key": "af52-v8-f913-original-parts-002-v1",
+      "operation": {
+        "tool": "read_multiple_files",
+        "arguments": {
+          "host": "ai395",
+          "paths": [
+            "/home/qq/af52-learning-local-decision-20261111/ordinary-f913-root17-original-records-export-v8-20261112/part-007.txt",
+            "/home/qq/af52-learning-local-decision-20261111/ordinary-f913-root17-original-records-export-v8-20261112/part-008.txt",
+            "/home/qq/af52-learning-local-decision-20261111/ordinary-f913-root17-original-records-export-v8-20261112/part-009.txt",
+            "/home/qq/af52-learning-local-decision-20261111/ordinary-f913-root17-original-records-export-v8-20261112/part-010.txt"
+          ],
+          "max_file_bytes": 65536,
+          "max_response_bytes": 262144
+        }
+      }
+    },
+    {
+      "index": 3,
+      "idempotency_key": "af52-v8-f913-original-parts-003-v1",
+      "operation": {
+        "tool": "read_multiple_files",
+        "arguments": {
+          "host": "ai395",
+          "paths": [
+            "/home/qq/af52-learning-local-decision-20261111/ordinary-f913-root17-original-records-export-v8-20261112/part-011.txt",
+            "/home/qq/af52-learning-local-decision-20261111/ordinary-f913-root17-original-records-export-v8-20261112/part-012.txt",
+            "/home/qq/af52-learning-local-decision-20261111/ordinary-f913-root17-original-records-export-v8-20261112/part-013.txt",
+            "/home/qq/af52-learning-local-decision-20261111/ordinary-f913-root17-original-records-export-v8-20261112/part-014.txt"
+          ],
+          "max_file_bytes": 65536,
+          "max_response_bytes": 262144
+        }
+      }
+    },
+    {
+      "index": 4,
+      "idempotency_key": "af52-v8-f913-original-parts-004-v1",
+      "operation": {
+        "tool": "read_multiple_files",
+        "arguments": {
+          "host": "ai395",
+          "paths": [
+            "/home/qq/af52-learning-local-decision-20261111/ordinary-f913-root17-original-records-export-v8-20261112/part-015.txt",
+            "/home/qq/af52-learning-local-decision-20261111/ordinary-f913-root17-original-records-export-v8-20261112/part-016.txt",
+            "/home/qq/af52-learning-local-decision-20261111/ordinary-f913-root17-original-records-export-v8-20261112/part-017.txt",
+            "/home/qq/af52-learning-local-decision-20261111/ordinary-f913-root17-original-records-export-v8-20261112/part-018.txt"
+          ],
+          "max_file_bytes": 65536,
+          "max_response_bytes": 262144
+        }
+      }
+    },
+    {
+      "index": 5,
+      "idempotency_key": "af52-v8-f913-original-parts-005-v1",
+      "operation": {
+        "tool": "read_multiple_files",
+        "arguments": {
+          "host": "ai395",
+          "paths": [
+            "/home/qq/af52-learning-local-decision-20261111/ordinary-f913-root17-original-records-export-v8-20261112/part-019.txt",
+            "/home/qq/af52-learning-local-decision-20261111/ordinary-f913-root17-original-records-export-v8-20261112/part-020.txt",
+            "/home/qq/af52-learning-local-decision-20261111/ordinary-f913-root17-original-records-export-v8-20261112/part-021.txt",
+            "/home/qq/af52-learning-local-decision-20261111/ordinary-f913-root17-original-records-export-v8-20261112/part-022.txt"
+          ],
+          "max_file_bytes": 65536,
+          "max_response_bytes": 262144
+        }
+      }
+    },
+    {
+      "index": 6,
+      "idempotency_key": "af52-v8-f913-original-parts-006-v1",
+      "operation": {
+        "tool": "read_multiple_files",
+        "arguments": {
+          "host": "ai395",
+          "paths": [
+            "/home/qq/af52-learning-local-decision-20261111/ordinary-f913-root17-original-records-export-v8-20261112/part-023.txt",
+            "/home/qq/af52-learning-local-decision-20261111/ordinary-f913-root17-original-records-export-v8-20261112/part-024.txt",
+            "/home/qq/af52-learning-local-decision-20261111/ordinary-f913-root17-original-records-export-v8-20261112/part-025.txt",
+            "/home/qq/af52-learning-local-decision-20261111/ordinary-f913-root17-original-records-export-v8-20261112/part-026.txt"
+          ],
+          "max_file_bytes": 65536,
+          "max_response_bytes": 262144
+        }
+      }
+    },
+    {
+      "index": 7,
+      "idempotency_key": "af52-v8-f913-original-parts-007-v1",
+      "operation": {
+        "tool": "read_multiple_files",
+        "arguments": {
+          "host": "ai395",
+          "paths": [
+            "/home/qq/af52-learning-local-decision-20261111/ordinary-f913-root17-original-records-export-v8-20261112/part-027.txt",
+            "/home/qq/af52-learning-local-decision-20261111/ordinary-f913-root17-original-records-export-v8-20261112/part-028.txt",
+            "/home/qq/af52-learning-local-decision-20261111/ordinary-f913-root17-original-records-export-v8-20261112/part-029.txt",
+            "/home/qq/af52-learning-local-decision-20261111/ordinary-f913-root17-original-records-export-v8-20261112/part-030.txt"
+          ],
+          "max_file_bytes": 65536,
+          "max_response_bytes": 262144
+        }
+      }
+    },
+    {
+      "index": 8,
+      "idempotency_key": "af52-v8-f913-original-parts-008-v1",
+      "operation": {
+        "tool": "read_multiple_files",
+        "arguments": {
+          "host": "ai395",
+          "paths": [
+            "/home/qq/af52-learning-local-decision-20261111/ordinary-f913-root17-original-records-export-v8-20261112/part-031.txt",
+            "/home/qq/af52-learning-local-decision-20261111/ordinary-f913-root17-original-records-export-v8-20261112/part-032.txt",
+            "/home/qq/af52-learning-local-decision-20261111/ordinary-f913-root17-original-records-export-v8-20261112/part-033.txt",
+            "/home/qq/af52-learning-local-decision-20261111/ordinary-f913-root17-original-records-export-v8-20261112/part-034.txt"
+          ],
+          "max_file_bytes": 65536,
+          "max_response_bytes": 262144
+        }
+      }
+    },
+    {
+      "index": 9,
+      "idempotency_key": "af52-v8-f913-original-parts-009-v1",
+      "operation": {
+        "tool": "read_multiple_files",
+        "arguments": {
+          "host": "ai395",
+          "paths": [
+            "/home/qq/af52-learning-local-decision-20261111/ordinary-f913-root17-original-records-export-v8-20261112/part-035.txt",
+            "/home/qq/af52-learning-local-decision-20261111/ordinary-f913-root17-original-records-export-v8-20261112/part-036.txt"
+          ],
+          "max_file_bytes": 65536,
+          "max_response_bytes": 262144
+        }
+      }
+    }
+  ]
+}

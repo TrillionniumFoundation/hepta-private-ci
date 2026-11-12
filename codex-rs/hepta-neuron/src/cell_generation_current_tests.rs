@@ -272,3 +272,7 @@ fn preparing_identity_cannot_import_a_nonempty_history() {
     );
     assert_eq!(files.bytes(), bytes);
 }
+
+#[cfg(target_os = "linux")]
+#[path = "cell_generation_observer_tests.rs"]
+mod original_observer;

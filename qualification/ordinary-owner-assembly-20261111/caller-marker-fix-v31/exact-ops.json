@@ -1,0 +1,42 @@
+{
+  "schema": "hepta.source-definition-marker-reconciliation.v1",
+  "base": {
+    "commit": "80871cc70dbde29e61aa655b18957bfcc36056d3",
+    "tree": "dd0234485d40f9109e46394c94d505952a07cb08"
+  },
+  "operations": [
+    {
+      "path": "CALLERS.toml",
+      "boundary": "root_live_admin_original_bounded_lease_revoke",
+      "before": "definition_markers = [\"pub fn revoke_before(\", \"Deadline::Before(before)\", \".try_lock()\", \"registry.persist_or_fence(&mut state, next)?\"]",
+      "after": "definition_markers = [\"pub fn revoke_before(\", \"Deadline::Before(before)\", \"registry.try_lock_state()?\", \"registry.persist_or_fence(&mut state, next)?\"]"
+    },
+    {
+      "path": "CALLERS.toml",
+      "boundary": "q24_root_current_connect",
+      "before": "definition_markers = [\"fn connect_current(\", \"current.require_original_root_selection(\", \"self.original.require_current().await?\"]",
+      "after": "definition_markers = [\"fn connect_current(\", \"current.require_original_root_selection(\", \"OriginalDecision::require_current(&self.original).await?\"]"
+    }
+  ],
+  "preimage": {
+    "git_blob": "e6dcf7d4a71061772c720c9ba355ed646d1cc88e",
+    "bytes": 669111,
+    "sha256": "1b222ab62ddf5f3a808a18a922f5f0b9d804c49ff606956bfd8e2b1d1a9233e9"
+  },
+  "postimage": {
+    "git_blob": "726a238d13e8d35771230ac24c6cee950a910674",
+    "bytes": 669144,
+    "sha256": "eb85a283658801cdb967e61a4fdbdbc062c654130f25b81f6b69b9fba38e37f3"
+  },
+  "allowlist": {
+    "before": "504fe528aa7f2e879752d4e888f050c52fcd4fca",
+    "after": "cb427bb2161d67b87068beadb4c3dfed385612c6",
+    "only_exact_digest_replaced": true
+  },
+  "no_production_rust_change": true,
+  "no_checker_change": true,
+  "no_caller_set_or_pattern_or_receiver_change": true,
+  "protected_rows_byte_identical": true,
+  "forward_reverse_exact": true,
+  "execution": "Unexecuted candidate; original full verification still required."
+}

@@ -46,20 +46,67 @@ struct Command {
     _pending: PendingWork,
 }
 
+#[cfg(target_os = "linux")]
+#[path = "circuit_task_successor_runtime.rs"]
+mod successor;
+
+struct DirectTaskHandle {
+    sender: mpsc::Sender<Command>,
+    generation: u64,
+    pending: Arc<AtomicUsize>,
+}
+
+#[derive(Clone)]
+enum TaskHandleRoute {
+    Direct {
+        original: Arc<DirectTaskHandle>,
+    },
+    #[cfg(target_os = "linux")]
+    OriginalQ24 {
+        slot: Arc<crate::circuit_q24_successor::SuccessorSlot>,
+    },
+}
+
 /// Submission is crate-private: the ordinary signed ingress supplies the
 /// retained RunStart. This handle exposes no writer, inference port or fence.
 #[derive(Clone)]
 pub struct CircuitTaskHandleV1 {
-    sender: mpsc::Sender<Command>,
-    generation: u64,
-    pending: Arc<AtomicUsize>,
+    route: TaskHandleRoute,
 }
 
 impl CircuitTaskHandleV1 {
     /// Queue and active lane work, including work whose caller lost its ACK.
     /// Durable unresolved Circuit runs are additional AutomationStore blockers.
     pub fn pending_count(&self) -> usize {
-        self.pending.load(Ordering::Acquire)
+        match &self.route {
+            TaskHandleRoute::Direct { original } => original.pending.load(Ordering::Acquire),
+            #[cfg(target_os = "linux")]
+            TaskHandleRoute::OriginalQ24 { slot } => slot.pending_count(),
+        }
+    }
+
+    fn original_direct_handle(&self) -> Result<Arc<DirectTaskHandle>, Error> {
+        match &self.route {
+            TaskHandleRoute::Direct { original } => Ok(Arc::clone(original)),
+            #[cfg(target_os = "linux")]
+            TaskHandleRoute::OriginalQ24 { slot } => {
+                // Resolve before validating or queuing any request. Pending is
+                // never a queue which later executes old pre-install admission.
+                let installed = slot.actual_handle()?;
+                match installed.route {
+                    TaskHandleRoute::Direct { original } => Ok(original),
+                    TaskHandleRoute::OriginalQ24 { .. } => Err(Error::Unavailable),
+                }
+            }
+        }
+    }
+
+    #[cfg(target_os = "linux")]
+    pub(crate) fn require_direct_original_handle(&self) -> Result<(), Error> {
+        match &self.route {
+            TaskHandleRoute::Direct { .. } => Ok(()),
+            TaskHandleRoute::OriginalQ24 { .. } => Err(Error::Unavailable),
+        }
     }
 
     pub(crate) async fn submit(
@@ -85,16 +132,18 @@ impl CircuitTaskHandleV1 {
         record: RunStartRecordV1,
         mode: CircuitTaskModeV1,
     ) -> Result<CircuitTaskReceiptV1, Error> {
-        request.validate_record(&record, self.generation)?;
+        let original = self.original_direct_handle()?;
+        request.validate_record(&record, original.generation)?;
         let (response, receive) = oneshot::channel();
-        self.pending.fetch_add(1, Ordering::AcqRel);
-        self.sender
+        original.pending.fetch_add(1, Ordering::AcqRel);
+        original
+            .sender
             .try_send(Command {
                 request,
                 record,
                 mode,
                 response,
-                _pending: PendingWork(Arc::clone(&self.pending)),
+                _pending: PendingWork(Arc::clone(&original.pending)),
             })
             .map_err(|error| match error {
                 mpsc::error::TrySendError::Full(_) => Error::QueueFull,
@@ -156,9 +205,13 @@ where
     }
     let (sender, mut receiver) = mpsc::channel::<Command>(capacity);
     let handle = CircuitTaskHandleV1 {
-        sender,
-        generation: fence.generation,
-        pending: Arc::new(AtomicUsize::new(0)),
+        route: TaskHandleRoute::Direct {
+            original: Arc::new(DirectTaskHandle {
+                sender,
+                generation: fence.generation,
+                pending: Arc::new(AtomicUsize::new(/*value*/ 0)),
+            }),
+        },
     };
     let bootstrap = CircuitTaskRuntimeBootstrapV1 {
         identity: identity.clone(),

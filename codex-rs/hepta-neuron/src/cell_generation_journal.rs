@@ -32,6 +32,16 @@ use crate::journal_lock::LockedFile;
 mod context;
 pub use context::CellGenerationExpectedContextV1;
 
+#[cfg(target_os = "linux")]
+#[path = "cell_generation_observer.rs"]
+mod observer;
+#[cfg(target_os = "linux")]
+pub use observer::CellGenerationJournalObservedV1;
+#[cfg(target_os = "linux")]
+pub use observer::CellGenerationJournalObserverV1;
+#[cfg(target_os = "linux")]
+pub use observer::CellGenerationObserverConfigV1;
+
 const MAGIC: &[u8; 8] = b"HPTACG02";
 const HEADER_BYTES: usize = 40;
 const MAX_FRAME: usize = 2 * 1024 * 1024;

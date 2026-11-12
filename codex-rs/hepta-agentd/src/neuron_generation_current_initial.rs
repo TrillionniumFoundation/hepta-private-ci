@@ -56,11 +56,30 @@ impl NeuronGenerationCurrentOwnerV1 {
         publication
             .authority
             .current_external_frontier()
+            .inspect_err(|error| {
+                let _ = error;
+                #[cfg(test)]
+                eprintln!("ROOT_INITIAL_FAILURE stage=external-frontier error={error:?}");
+            })
             .map_err(invalid)?;
-        selected.revalidate(
-            publication.artifacts,
-            publication.clock.now_unix_ms().map_err(invalid)?,
-        )?;
+        selected
+            .revalidate(
+                publication.artifacts,
+                publication
+                    .clock
+                    .now_unix_ms()
+                    .inspect_err(|error| {
+                        let _ = error;
+                        #[cfg(test)]
+                        eprintln!("ROOT_INITIAL_FAILURE stage=selection-clock error={error:?}");
+                    })
+                    .map_err(invalid)?,
+            )
+            .inspect_err(|error| {
+                let _ = error;
+                #[cfg(test)]
+                eprintln!("ROOT_INITIAL_FAILURE stage=selection-revalidate error={error:?}");
+            })?;
         if selected.observation().digest().as_array() != &prepared.intent.selection
             || selected.manifest().digest().map_err(invalid)?
                 != prepared.intent.target.manifest_digest()
@@ -68,16 +87,38 @@ impl NeuronGenerationCurrentOwnerV1 {
             return Err(invalid("initial selection differs from prepared operation"));
         }
         if let NeuronGenerationInitialReadbackV1::Published(published) =
-            self.read_initial_operation(prepared)?
+            self.read_initial_operation(prepared).inspect_err(|error| {
+                let _ = error;
+                #[cfg(test)]
+                eprintln!("ROOT_INITIAL_FAILURE stage=prepared-current-readback error={error:?}");
+            })?
         {
             if new.owner_binding() != Some(published.target()) {
                 return Err(invalid("published initial generation readback differs"));
             }
-            new.require_current().map_err(invalid)?;
+            new.require_current()
+                .inspect_err(|error| {
+                    let _ = error;
+                    #[cfg(test)]
+                    eprintln!(
+                        "ROOT_INITIAL_FAILURE stage=published-generation-readback error={error:?}"
+                    );
+                })
+                .map_err(invalid)?;
             return Ok(published);
         }
-        self.require_initial_genesis(prepared, new)?;
+        self.require_initial_genesis(prepared, new)
+            .inspect_err(|error| {
+                let _ = error;
+                #[cfg(test)]
+                eprintln!("ROOT_INITIAL_FAILURE stage=genesis-before-claim error={error:?}");
+            })?;
         let token = claim_final_use(publication.authority, publication.signed, &prepared.binding)
+            .inspect_err(|error| {
+                let _ = error;
+                #[cfg(test)]
+                eprintln!("ROOT_INITIAL_FAILURE stage=claim-final-use error={error:?}");
+            })
             .map_err(invalid)?;
         let (result, _) = dispatch_final_use_with_witness(
             publication.authority,
@@ -86,9 +127,27 @@ impl NeuronGenerationCurrentOwnerV1 {
             |witness| {
                 selected.revalidate(
                     publication.artifacts,
-                    publication.clock.now_unix_ms().map_err(invalid)?,
-                )?;
-                self.require_initial_genesis(prepared, new)?;
+                    publication
+                        .clock
+                        .now_unix_ms()
+                        .inspect_err(|error| {
+                            let _ = error;
+                            #[cfg(test)]
+                            eprintln!("ROOT_INITIAL_FAILURE stage=dispatch-selection-clock error={error:?}");
+                        })
+                        .map_err(invalid)?,
+                )
+                .inspect_err(|error| {
+                    let _ = error;
+                    #[cfg(test)]
+                    eprintln!("ROOT_INITIAL_FAILURE stage=dispatch-selection-revalidate error={error:?}");
+                })?;
+                self.require_initial_genesis(prepared, new)
+                    .inspect_err(|error| {
+                        let _ = error;
+                        #[cfg(test)]
+                        eprintln!("ROOT_INITIAL_FAILURE stage=genesis-before-current-cas error={error:?}");
+                    })?;
                 let next = CurrentHead {
                     schema_version: 1,
                     current: prepared.intent.target.clone(),
@@ -105,8 +164,18 @@ impl NeuronGenerationCurrentOwnerV1 {
                     .head
                     .as_ref()
                     .ok_or_else(|| invalid("published initial operation cannot dispatch again"))?;
-                self.store.replace(expected, &next)?;
-                match self.read_initial_operation(prepared)? {
+                self.store.replace(expected, &next)
+                    .inspect_err(|error| {
+                        let _ = error;
+                        #[cfg(test)]
+                        eprintln!("ROOT_INITIAL_FAILURE stage=current-cas error={error:?}");
+                    })?;
+                match self.read_initial_operation(prepared)
+                    .inspect_err(|error| {
+                        let _ = error;
+                        #[cfg(test)]
+                        eprintln!("ROOT_INITIAL_FAILURE stage=current-after-cas-readback error={error:?}");
+                    })? {
                     NeuronGenerationInitialReadbackV1::Published(published) => Ok(published),
                     NeuronGenerationInitialReadbackV1::Prepared => {
                         Err(invalid("initial generation publication remains uncertain"))
@@ -114,8 +183,17 @@ impl NeuronGenerationCurrentOwnerV1 {
                 }
             },
         )
+        .inspect_err(|error| {
+            let _ = error;
+            #[cfg(test)]
+            eprintln!("ROOT_INITIAL_FAILURE stage=dispatch-final-use-boundary error={error:?}");
+        })
         .map_err(invalid)?;
-        result
+        result.inspect_err(|error| {
+            let _ = error;
+            #[cfg(test)]
+            eprintln!("ROOT_INITIAL_FAILURE stage=dispatch-callback error={error:?}");
+        })
     }
 
     /// Inspect only the retained original operation, without claiming or

@@ -1,8 +1,7 @@
-//! Original Q24 material proposal owner; no Root profile or adoption authority.
+//! Original Q24 material proposal owner; no adoption authority.
 //!
-//! This first owner layer deliberately is not an ordinary Proposal payload.
-//! A future versioned Root registration must bind this profile and revalidate
-//! live Dataset/withdrawal and artifact frontiers before enabling that route.
+//! The ordinary factory separately enrolls the exact Root scope and owner
+//! files, then revalidates live Dataset and material before calling this owner.
 //! A record here authenticates the supplied original training/evaluation chain,
 //! not source-label truth, independent custody or a production publication.
 
@@ -40,6 +39,34 @@ use crate::CellQ24TrainingOwnerV1;
 #[path = "cell_q24_model_proposal_admission.rs"]
 mod admission;
 use admission::Admission;
+
+/// Derive the factory's one-time material from the original owners, including
+/// full manifests and qualified Evaluation. This is data, never a Root permit.
+#[cfg(target_os = "linux")]
+pub(crate) fn prepare_original_q24_model_material<
+    T: AnchorWitnessStore,
+    S: FinalHoldoutCasStoreV1,
+>(
+    training: &mut CellQ24TrainingOwnerV1<T>,
+    dataset_cut: &LearningIterationSnapshotV1,
+    inputs: &CellQ24ModelProposalInputsV1<'_, S>,
+    scope: &codex_hepta_learning_artifacts::FrozenLearningScopeV2,
+) -> Result<Digest32, Error> {
+    training.require_original_dataset_provenance()?;
+    training.require_original_dataset_scope(dataset_cut, scope)?;
+    let (original_scope, binding) = admission::owner_binding(training, dataset_cut)?;
+    if original_scope != scope.binding() {
+        return Err(Error::Binding("original factory scope"));
+    }
+    let now = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map_err(|_| Error::Binding("host clock before Unix epoch"))?
+        .as_secs();
+    let admission =
+        admission::validate(training, dataset_cut, original_scope, binding, inputs, now)?;
+    training.require_original_dataset_provenance()?;
+    Ok(admission.key(binding).binding_digest)
+}
 
 #[derive(Debug, thiserror::Error)]
 pub enum CellQ24ModelProposalErrorV1 {
@@ -80,7 +107,8 @@ pub struct CellQ24ModelProposalInputsV1<'a, S> {
 }
 
 /// Original journal result. There is no public receipt constructor or
-/// deserializer, no selector grant, and no production Proposal routing.
+/// deserializer or selector grant. Ordinary routing requires its separate
+/// original Root factory capability.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct CellQ24ModelProposalReceiptV1 {
     receipt: LearningIterationReceiptV1,

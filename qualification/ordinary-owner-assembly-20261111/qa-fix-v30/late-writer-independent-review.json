@@ -1,0 +1,373 @@
+{
+  "schema": "hepta.b4-late-writer-literal-guards-independent-review.v1",
+  "reviewer": "runtime_access",
+  "source": {
+    "commit": "0081b6b78fa1f0fb238a12aec814c93bdf2343a0",
+    "tree": "87e7ef749329b0f41481873a414cdd924d5971bf"
+  },
+  "verdict": "No confirmed static blocker in the frozen two-path correction. The patch uses the original checker's literal-call facility for the two sensitive values, preserves actual path/operand/propagation checks, and adds source mutations invoking the original verifier. None of those tests or the original checker was executed by this review.",
+  "artifacts": {
+    "manifest": {
+      "git_blob": "c3e5d11692cad36a3931efffcf2738adffce54c4",
+      "bytes": 10481,
+      "sha256": "4fd2af013f59f70c278e32243d8f38b39425e7889ecd54e543719a2668ccfd72"
+    },
+    "exact_operations": {
+      "git_blob": "4945829d980f453381ae876e288880f78acb54e1",
+      "bytes": 14787,
+      "sha256": "880ab9861719929d7fe596741df26cfe60a98a871dd2585c06dc3ca23b7da1ed"
+    },
+    "author_notes": {
+      "git_blob": "37e3df3eb75065e6c735e9c16643c08f132f0d08",
+      "bytes": 4552,
+      "sha256": "0d82dd5dd4af5389ed4830ff8f40b10d5947938ffca77eb302889478cd10a946"
+    },
+    "registry_before": {
+      "git_blob": "7ec4df7edcb28c8ebef0037711d6c8f404eef014",
+      "bytes": 668746,
+      "sha256": "7bd6fae682b170dd268279d28f8cf3046289511c79d609c2c26b0eec8e5e7152"
+    },
+    "registry_after": {
+      "git_blob": "e6dcf7d4a71061772c720c9ba355ed646d1cc88e",
+      "bytes": 669111,
+      "sha256": "1b222ab62ddf5f3a808a18a922f5f0b9d804c49ff606956bfd8e2b1d1a9233e9"
+    },
+    "added_qa": {
+      "git_blob": "a09ec96ea064b35216e43b17dd4726d3a36afc7e",
+      "bytes": 6674,
+      "sha256": "4b7a1453784b1304bba8062e4854e8fcf4de9b99cd35c55eb2d701517462f7ef"
+    }
+  },
+  "original_evidence": {
+    "log": {
+      "git_blob": "15f19a1c30f69cfb595732292bbc17754daf1dd1",
+      "bytes": 67215,
+      "sha256": "3154d7e5e0ccf8d4f06b5cb9bdc918d8f92020adc650b96b86f1649b428abbe3"
+    },
+    "observed": "211 tests, 199 '... ok' lines, 12 errors. Eleven RootAdmin test methods fail in setUp's original global protected-file baseline at select_original_startup_entry; the other readback-marker error is a separate patch.",
+    "unchanged_root_admin_qa": {
+      "git_blob": "fdcabf49eb7aa7ac9827ce8ad5ace4ea62342982",
+      "bytes": 4867,
+      "sha256": "aa5036a5498383d8c4968f7fc546d1e93c15e10b7bb76cd288804100273a8b7e"
+    },
+    "checker": {
+      "git_blob": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+      "bytes": 31701,
+      "sha256": "8899ec2b328125b2049b808cac0eeda3f57bfc6db89348512a58777101ae6dfa"
+    },
+    "startup": {
+      "git_blob": "db398aa05e688dc9c455bacb8c7e065184fdbaf9",
+      "bytes": 3013,
+      "sha256": "717ced5a05fbd931822528fcd103891060ed86dcb21bf98fbf7519b2c06b1e31"
+    },
+    "identity": {
+      "git_blob": "2e28f98f7e9b952f0577cfed3d62b5aa0b3eb6b7",
+      "bytes": 4059,
+      "sha256": "9de575c8ca63823dccfc2074456a84f2db48b35557209a12bed936fc9709a999"
+    },
+    "original_path_helpers": {
+      "git_blob": "6142284d17c3e9808a2af0ae6f105c829d7e0d59",
+      "bytes": 39198,
+      "sha256": "9fff4256e5275a652cc4eec07bd8f704bbc748fed0f33f80d4684a33c9b94b19"
+    },
+    "separate_marker_review": {
+      "git_blob": "b1be9e8f74771b864871b64e9f2f288d67994bf7",
+      "bytes": 7252,
+      "sha256": "f09d55d57ffff0b54d1f79d9d2454b06770d62b635755e2ad529153a4e398d55"
+    }
+  },
+  "independent_replay": {
+    "operations": {
+      "operations": [
+        {
+          "index": 0,
+          "kind": "replace_exact",
+          "path": "CALLERS.toml",
+          "unique": true
+        },
+        {
+          "index": 1,
+          "kind": "replace_exact",
+          "path": "CALLERS.toml",
+          "unique": true
+        },
+        {
+          "index": 2,
+          "kind": "replace_exact",
+          "path": "CALLERS.toml",
+          "unique": true
+        },
+        {
+          "index": 3,
+          "kind": "replace_exact",
+          "path": "CALLERS.toml",
+          "unique": true
+        },
+        {
+          "index": 4,
+          "kind": "add_file",
+          "path": "qa/b4-no-bypass/test_original_late_writer_entry_source_closure.py",
+          "original_get_404": true
+        }
+      ],
+      "forward_exact": true,
+      "reverse_exact": true
+    },
+    "new_path_absent": "The exact new QA path returned GitHub NOT_FOUND at the fixed 0081 ref; the add_file has before=null and expected_absent=true.",
+    "changed_registry_lines": 4,
+    "changed_protected_rows": 2,
+    "boundary_count_before_after": [
+      504,
+      504
+    ],
+    "protected_count_before_after": [
+      366,
+      366
+    ],
+    "all_boundary_and_caller_blocks_byte_identical": true,
+    "registry_outside_two_rows_byte_identical": true,
+    "production_rust_changes": 0,
+    "checker_changes": 0,
+    "existing_test_changes": 0,
+    "ignore_skip_permission_changes": 0
+  },
+  "exact_checker_contract": {
+    "source": "scripts/verify_hepta_callers.py at 7a6709691c372504ca11b5d2a74e14ba819fca8f was fetched at the exact source ref and read.",
+    "raw_required": "_verify_protected_files checks required markers against raw text, then masks comments/literals/test-only items for code guards.",
+    "function_scope": "_verify_function_order requires a unique exact fn NAME(, slices its actual body, masks nested functions, and locates declared literal_calls only where the original source span equals the authoritative masked code span.",
+    "literals": "Both Some(\"late-writer\") and required_path(\"CODEX_HOME\") match the original exact single-literal-call grammar. A matching comment does not match the call's code-bearing masked span.",
+    "unchanged_failure": "The original VerificationFailure branches and cursor-based required-order algorithm are unchanged; no alternate verifier is supplied."
+  },
+  "gate_by_gate": [
+    {
+      "gate": "entry value",
+      "preserved": "Original selection loop, ENTRY_FLAG comparison, duplicate selected.is_some rejection, actual != prefix, exact Some(\"late-writer\"), wrong-value rejection, selected assignment, Existing return and argument drain/LateWriter return.",
+      "representation": "Split the original code-plus-string condition into the same exact code prefix and declared literal_call. The two return Err( markers retain their original relative order.",
+      "rejection_reason": "Changing the literal or supplying the old literal only in a comment leaves zero valid actual literal matches; reversing != removes the required comparison prefix."
+    },
+    {
+      "gate": "CODEX_HOME",
+      "preserved": "Exact environment key, original required_path call, ? propagation/comma before current_dir, and the final actual identity read.",
+      "representation": "Declare required_path(\"CODEX_HOME\") as literal_call, followed by ?, and the existing std::env::current_dir()? marker.",
+      "rejection_reason": "A wrong key/comment spoof fails exact literal matching. Removing its ? makes a later ?, occur only after the current_dir marker begins, so the next required guard cannot be matched after that cursor."
+    },
+    {
+      "gate": "canonical fleet and three exact paths",
+      "preserved": "Original actual/expected operand prefixes, original )?; propagation, next real guard in the same actual function, lifecycle Starting/generation and workspace checks.",
+      "representation": "Keep four complete original diagnostic-label calls as raw required text; use their code-bearing operand prefixes and suffix/next-guard order for actual-code checks.",
+      "diagnostic_label_limit": "Raw required text does NOT prove the actual label's literal span. Changing a diagnostic label and retaining the old call text in a comment is not claimed to be rejected. This is deliberately distinct from sensitive entry/key literal checks.",
+      "original_helper_fact": "In config.rs, require_canonical uses path.canonicalize and canonical != path; require_exact_path invokes original require_canonical and compares actual != expected. label is used only for format! error diagnostics."
+    }
+  ],
+  "propagation_cross_call_analysis": [
+    {
+      "call": "require_canonical(&self.fleet_root, ...)?;",
+      "next_guard": "FleetRegistry::read_existing_snapshot(typed_root)?",
+      "reason": "If the canonical call loses ?, the next )?; is at the snapshot call's end; its required next-guard start is already before the cursor, so it cannot substitute."
+    },
+    {
+      "call": "require_exact_path(&self.home_root, record.layout.home_root(), ...)?;",
+      "next_guard": "require_exact_path(&self.run_root, record.layout.run_root(), ",
+      "reason": "Borrowing the run-root call's suffix moves the cursor past the required run-root prefix and fails order."
+    },
+    {
+      "call": "require_exact_path(&self.run_root, record.layout.run_root(), ...)?;",
+      "next_guard": "require_exact_path(&self.codex_home, record.layout.home_root(), ",
+      "reason": "Borrowing the Codex-home suffix moves the cursor past its required prefix and fails order."
+    },
+    {
+      "call": "require_exact_path(&self.codex_home, record.layout.home_root(), ...)?;",
+      "next_guard": "self.current_dir.canonicalize()?",
+      "reason": "Borrowing canonicalize's suffix moves the cursor past that required next guard and fails order."
+    }
+  ],
+  "mutation_review": {
+    "test_methods": [
+      "test_entry_value_cannot_change",
+      "test_entry_value_cannot_be_supplied_by_comment",
+      "test_entry_value_comparison_cannot_reverse",
+      "test_duplicate_entry_cannot_drop_its_rejection",
+      "test_codex_home_key_cannot_change_or_hide_in_comment",
+      "test_codex_home_read_cannot_drop_error_propagation",
+      "test_path_guards_cannot_be_replaced_by_comments",
+      "test_path_guards_cannot_change_the_checked_actual_path",
+      "test_path_guards_cannot_change_the_expected_path",
+      "test_path_guards_cannot_drop_error_propagation"
+    ],
+    "method_count": 10,
+    "case_count": 22,
+    "every_original_mutation_target_occurs_once_in_fixed_source": true,
+    "source_precondition_checks": [
+      {
+        "case": 1,
+        "group": "entry-value",
+        "source": "late_startup",
+        "original_occurrences": 1,
+        "asserted_original_error": "unique actual literal call required"
+      },
+      {
+        "case": 2,
+        "group": "entry-comment-spoof",
+        "source": "late_startup",
+        "original_occurrences": 1,
+        "asserted_original_error": "unique actual literal call required"
+      },
+      {
+        "case": 3,
+        "group": "entry-comparison",
+        "source": "late_startup",
+        "original_occurrences": 1,
+        "asserted_original_error": "required code order missing"
+      },
+      {
+        "case": 4,
+        "group": "duplicate-rejection",
+        "source": "late_startup",
+        "original_occurrences": 1,
+        "asserted_original_error": "required code order missing"
+      },
+      {
+        "case": 5,
+        "group": "codex-key",
+        "source": "identity",
+        "original_occurrences": 1,
+        "asserted_original_error": "unique actual literal call required"
+      },
+      {
+        "case": 6,
+        "group": "codex-key",
+        "source": "identity",
+        "original_occurrences": 1,
+        "asserted_original_error": "unique actual literal call required"
+      },
+      {
+        "case": 7,
+        "group": "codex-propagation",
+        "source": "identity",
+        "original_occurrences": 1,
+        "asserted_original_error": "required code order missing"
+      },
+      {
+        "case": 8,
+        "group": "path-removal-comment",
+        "source": "identity",
+        "original_occurrences": 1,
+        "asserted_original_error": "required code order missing"
+      },
+      {
+        "case": 9,
+        "group": "path-removal-comment",
+        "source": "identity",
+        "original_occurrences": 1,
+        "asserted_original_error": "required code order missing"
+      },
+      {
+        "case": 10,
+        "group": "path-removal-comment",
+        "source": "identity",
+        "original_occurrences": 1,
+        "asserted_original_error": "required code order missing"
+      },
+      {
+        "case": 11,
+        "group": "path-removal-comment",
+        "source": "identity",
+        "original_occurrences": 1,
+        "asserted_original_error": "required code order missing"
+      },
+      {
+        "case": 12,
+        "group": "actual-path",
+        "source": "identity",
+        "original_occurrences": 1,
+        "asserted_original_error": "required code order missing"
+      },
+      {
+        "case": 13,
+        "group": "actual-path",
+        "source": "identity",
+        "original_occurrences": 1,
+        "asserted_original_error": "required code order missing"
+      },
+      {
+        "case": 14,
+        "group": "actual-path",
+        "source": "identity",
+        "original_occurrences": 1,
+        "asserted_original_error": "required code order missing"
+      },
+      {
+        "case": 15,
+        "group": "actual-path",
+        "source": "identity",
+        "original_occurrences": 1,
+        "asserted_original_error": "required code order missing"
+      },
+      {
+        "case": 16,
+        "group": "expected-path",
+        "source": "identity",
+        "original_occurrences": 1,
+        "asserted_original_error": "required code order missing"
+      },
+      {
+        "case": 17,
+        "group": "expected-path",
+        "source": "identity",
+        "original_occurrences": 1,
+        "asserted_original_error": "required code order missing"
+      },
+      {
+        "case": 18,
+        "group": "expected-path",
+        "source": "identity",
+        "original_occurrences": 1,
+        "asserted_original_error": "required code order missing"
+      },
+      {
+        "case": 19,
+        "group": "path-propagation",
+        "source": "identity",
+        "original_occurrences": 1,
+        "asserted_original_error": "required code order missing"
+      },
+      {
+        "case": 20,
+        "group": "path-propagation",
+        "source": "identity",
+        "original_occurrences": 1,
+        "asserted_original_error": "required code order missing"
+      },
+      {
+        "case": 21,
+        "group": "path-propagation",
+        "source": "identity",
+        "original_occurrences": 1,
+        "asserted_original_error": "required code order missing"
+      },
+      {
+        "case": 22,
+        "group": "path-propagation",
+        "source": "identity",
+        "original_occurrences": 1,
+        "asserted_original_error": "required code order missing"
+      }
+    ],
+    "setup": "Each test setUp copies the two actual fixed source files into a TemporaryDirectory, requires exactly those two protected rows in their original order, and calls the original _verify_protected_files for the unmodified baseline.",
+    "mutation_calls": "Every case calls rejects, asserts exactly one original occurrence, writes that exact mutation to the copied source, and asserts the specified original MODULE.VerificationFailure message through the original _verify_protected_files. finally restores the original bytes, including between subtests.",
+    "no_mirror_verifier": "The new QA imports the repository's original checker; it defines no replacement checker or authority implementation.",
+    "literal_cases": "Four literal value/comment cases exercise original unique-actual-literal rejection; != reversal and duplicate rejection deletion exercise code order.",
+    "path_cases": "Four comment-removal, four actual-operand, three expected-operand and four propagation mutations retain the original full call in a comment. Thus raw required text remains satisfied while actual-code guard failure is required.",
+    "counted_separately": "CODEX_HOME propagation removal is the seventh non-path mutation; total 7 + 4 + 4 + 3 + 4 = 22.",
+    "static_vs_execution": "The expected rejection branch for each case was reviewed against the original implementation and fixed source. No result here claims that Python actually executed these 22 mutations."
+  },
+  "limits": {
+    "no_ast_or_python_verifier_or_tests": true,
+    "no_h_pty_native_cargo_or_refs": true,
+    "no_current_candidate_gate_pass_claim": true,
+    "original_root_parents_unchanged": 17,
+    "original_211_test_failure_preserved": true,
+    "broader_source_proof": "This review is limited to the concrete frozen markers/mutations. It does not claim a complete semantic proof against arbitrary Rust rewrites or prove diagnostic label spans.",
+    "execution_required": "Root must still run the original B4 and complete caller/native gates on the new fixed integrated source; old results are not inherited."
+  }
+}

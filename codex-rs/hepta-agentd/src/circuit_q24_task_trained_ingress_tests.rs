@@ -27,7 +27,7 @@ use crate::LoadedCellQ24ModelV1;
 use crate::cell_q24_single_head_update_rule_v1;
 use crate::neuron_generation_update_bootstrap::learning_test_receipt;
 
-fn training_cut(
+pub(super) fn training_cut(
     publication: &CircuitTaskSourcePublicationV1,
     bundle: CellCompatibilityBundleV1,
 ) -> anyhow::Result<(LearningIterationSnapshotV1, CellQ24TrainingBatchV1)> {

@@ -48,6 +48,8 @@ impl PreparedHostAuthoritySession {
 
 pub(super) struct BoundLearning {
     learning: RegisteredHostLearningCheckpointV1,
+    model: Option<super::q24_model::BoundFactory>,
+    publication: Option<super::generation_publication::BoundPublication>,
     listener: UnixListener,
     device: u64,
     inode: u64,
@@ -55,8 +57,9 @@ pub(super) struct BoundLearning {
 
 impl BoundLearning {
     pub(super) fn bind(
-        learning: RegisteredHostLearningCheckpointV1,
+        mut learning: RegisteredHostLearningCheckpointV1,
         config: &HostAuthorityServiceConfig,
+        publication: Option<super::generation_publication::PublicationRuntime>,
     ) -> io::Result<Self> {
         let mut paths: Vec<_> = validate_runtime_lanes(config)?
             .into_iter()
@@ -64,10 +67,29 @@ impl BoundLearning {
             .collect();
         paths.push(&learning.socket_path);
         validate_lane_paths(&paths, config.peer_gid)?;
+        let model = learning
+            .q24_model
+            .take()
+            .map(|factory| {
+                super::q24_model::BoundFactory::bind(factory, config, &learning.socket_path)
+            })
+            .transpose()?;
+        let publication = publication
+            .map(|runtime| {
+                super::generation_publication::BoundPublication::bind(
+                    runtime,
+                    config,
+                    &learning.socket_path,
+                    model.as_ref().map(super::q24_model::BoundFactory::path),
+                )
+            })
+            .transpose()?;
         let listener = UnixListener::bind(&learning.socket_path)?;
         let metadata = std::fs::symlink_metadata(&learning.socket_path)?;
         let bound = Self {
             learning,
+            model,
+            publication,
             listener,
             device: metadata.dev(),
             inode: metadata.ino(),
@@ -83,8 +105,15 @@ impl BoundLearning {
         Ok(bound)
     }
 
-    pub(super) fn path(&self) -> &Path {
-        &self.learning.socket_path
+    pub(super) fn contains_path(&self, path: &Path) -> bool {
+        self.publication
+            .as_ref()
+            .is_some_and(|lane| lane.path() == path)
+            || self.learning.socket_path == path
+            || self
+                .model
+                .as_ref()
+                .is_some_and(|model| model.path() == path)
     }
 }
 
@@ -163,7 +192,24 @@ pub(super) fn serve_optional(
                 result
             }
         });
-        let result = original();
+        let result = super::generation_publication::serve_optional(
+            learning.publication.as_ref(),
+            &learning.learning,
+            service,
+            config,
+            registration,
+            owner,
+            || {
+                super::q24_model::serve_optional(
+                    learning.model.as_ref(),
+                    service,
+                    config,
+                    registration,
+                    owner,
+                    original,
+                )
+            },
+        );
         stopping.store(true, Ordering::Release);
         if let Some(stream) = active
             .lock()

@@ -4,7 +4,11 @@ on:
   pull_request:
     paths:
       - "codex-rs/hepta-agentd/**"
+      - "codex-rs/hepta-fleet/**"
+      - "codex-rs/hepta-contracts/**"
+      - "codex-rs/hepta-neuron/**"
       - "codex-rs/hepta-learning-artifacts/**"
+      - "codex-rs/hepta-learning-ledger/**"
       - "codex-rs/hepta-intelligence-eval/**"
       - "scripts/test_hepta_cell_research_units.py"
       - ".github/workflows/hepta-daemon-learning-native.yml"
@@ -70,10 +74,22 @@ jobs:
               "authority_host_service::writer::learning_registration::tests::root_learning_scoped_sealed_pin_preserves_scope_on_cold_reopen",
               "root_production_handoff::learning::tests::root_learning_handoff_reaches_dedicated_uid_with_original_root_pin",
               "authority_host_learning_service_root_tests::root_learning_public_registration_serves_retained_writer_and_recovers_history",
+              "authority_host_service::q24_model::registration::tests::root_factory_record_reopens_bound_without_replacing_original_files",
+              "authority_host_service::q24_model::registration::tests::root_factory_file_pins_reject_alias_replacement_wrong_access_and_missing_witness",
+              "root_production_handoff::q24_model::tests::root_model_handoff_preserves_four_original_rights_and_cloexec",
+              "root_production_handoff::q24_model::tests::root_model_handoff_rejects_learning_purpose_and_reordered_rights",
+              "authority_host_q24_model_service_root_tests::root_q24_factory_registers_transfers_binds_and_recovers_original_custody",
               "learning_iteration_evidence_client::tests::root::original_external_uid_returns_a_verified_receipt_through_held_pidfd",
+              "root_production_handoff::generation_publication::tests::root_publication_handoff_reaches_dedicated_uid_and_refuses_confused_rights",
+              "final_use::store::root_observer::tests::root_observer_reads_live_original_and_rejects_revocation_without_claiming",
+              "final_use::store::root_observer::tests::root_observer_fences_partial_rollback_schema_and_replaced_original_files",
+              "neuron_generation_current::publication_root_tests::root_broker_late_enrolls_publishes_and_recovers_original_current",
+              "neuron_generation_current::initial_root_tests::root_initial_publication_uses_original_consumer_and_readonly_recovery",
           ]
           packages = ["-p", "codex-hepta-agentd", "-p", "codex-hepta-learning-artifacts",
-                      "-p", "codex-hepta-intelligence-eval"]
+                      "-p", "codex-hepta-intelligence-eval", "-p", "codex-hepta-contracts",
+                      "-p", "codex-hepta-neuron", "-p", "codex-hepta-learning-ledger",
+                      "-p", "codex-hepta-fleet"]
           helpers = ["python3", "scripts/hepta_cell_test_helpers.py", "--package",
                      "codex-hepta-infer-worker-host", "--output-dir", str(records / "helpers")]
           root_dir = Path("/run") / ("hepta-daemon-learning-" + os.environ["GITHUB_RUN_ID"]
@@ -144,7 +160,9 @@ jobs:
                                      GIT_CONFIG_VALUE_0=str(repo),
                                      HEPTA_HOST_AUTHORITY_QUALIFICATION_STATE_PARENT=str(root_dir / "bind"),
                                      HEPTA_HOST_AUTHORITY_QUALIFICATION_SOURCE=str(root_dir / "source"),
-                                     HEPTA_CHECKPOINT_TEST_ROOT=str(root_dir / "checkpoints"))
+                                     HEPTA_CHECKPOINT_TEST_ROOT=str(root_dir / "checkpoints"),
+                                     HEPTA_Q24_FACTORY_WITNESS_BIND=str(root_dir / "witness-bind"),
+                                     HEPTA_Q24_FACTORY_WITNESS_SOURCE=str(root_dir / "witness-source"))
                   environment.update(json.loads((records / "helpers/env.json").read_text()))
                   # sudo is outside the recorder: its observed command remains real just test.
                   check_uid = "import os,runpy,sys; assert os.geteuid()==0; print('Root test uid=0',flush=True); runpy.run_path(sys.argv.pop(1),run_name='__main__')"
@@ -177,7 +195,9 @@ jobs:
                   path = os.fsdecode(raw)
                   if not path.endswith(".rs") or not path.startswith(
                       ("codex-rs/hepta-agentd/", "codex-rs/hepta-learning-artifacts/",
-                           "codex-rs/hepta-intelligence-eval/")):
+                           "codex-rs/hepta-intelligence-eval/", "codex-rs/hepta-contracts/",
+                           "codex-rs/hepta-neuron/", "codex-rs/hepta-learning-ledger/",
+                           "codex-rs/hepta-fleet/")):
                       raise RuntimeError("maintenance changed a path outside its Rust owners: " + path)
                   source = repo / path
                   if source.is_symlink() or not source.is_file():
@@ -222,11 +242,13 @@ jobs:
               test("ordinary", [*packages, "--lib", "--test-threads", "2"])
               setup = ("import os,subprocess,sys; from pathlib import Path; "
                        "p=Path(sys.argv[1]); p.mkdir(mode=0o700); "
-                       "[ (p/n).mkdir(mode=0o700) for n in ('source','bind','checkpoints') ]; "
+                       "[ (p/n).mkdir(mode=0o700) for n in ('source','bind','checkpoints','witness-source','witness-bind') ]; "
                        "subprocess.run(['mount','--bind',str(p/'source'),str(p/'bind')],check=True); "
+                       "subprocess.run(['mount','--bind',str(p/'witness-source'),str(p/'witness-bind')],check=True); "
                        "print('Root fixture uid='+str(os.geteuid())+' path='+str(p),flush=True)")
               stage("root-setup", ["sudo", "-n", "python3", "-c", setup, str(root_dir)], 60)
-              test("root", ["-p", "codex-hepta-agentd", "--lib", "--run-ignored", "only",
+              test("root", ["-p", "codex-hepta-agentd", "-p", "codex-hepta-contracts",
+                           "--lib", "--run-ignored", "only",
                            "-E", " | ".join("test(=" + name + ")" for name in parents),
                            "--test-threads", "1"], root=True)
               stage("helper-verification", [*helpers, "--verify-only"], 120)
@@ -250,8 +272,9 @@ jobs:
               os.chdir(repo)
               try:
                   restore_ownership()
-                  if subprocess.run(["sudo", "-n", "mountpoint", "-q", str(root_dir / "bind")]).returncode == 0:
-                      stage("root-unmount", ["sudo", "-n", "umount", str(root_dir / "bind")], 60)
+                  for name in ("witness-bind", "bind"):
+                      if subprocess.run(["sudo", "-n", "mountpoint", "-q", str(root_dir / name)]).returncode == 0:
+                          stage("root-unmount-" + name, ["sudo", "-n", "umount", str(root_dir / name)], 60)
                   snapshot("final")
                   if maintenance_started:
                       postimages(maintenance_complete)

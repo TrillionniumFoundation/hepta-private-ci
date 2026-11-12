@@ -8,6 +8,10 @@ use codex_hepta_learning_ledger::RunStartPublication;
 
 use super::*;
 
+#[cfg(target_os = "linux")]
+#[path = "objective_retained_learning_source.rs"]
+mod retained;
+
 impl AgentdState {
     pub(crate) async fn require_circuit_learning_source(
         &self,
@@ -21,6 +25,12 @@ impl AgentdState {
             return Err(invalid(
                 "learning source differs from the original daemon scope",
             ));
+        }
+        #[cfg(target_os = "linux")]
+        if let Some(source) = self.retained_circuit_learning_source(&request.source_run_id) {
+            return self
+                .require_registered_retained_source(request, source)
+                .await;
         }
         let host = self
             .objective_runtime

@@ -1,0 +1,260 @@
+{
+  "schema": "hepta-v33-original-seven-package-native-request-v1",
+  "status": "Frozen for Root review; not dispatched; no native result exists for this source.",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source": {
+    "commit": "3c5c0d8e8323dc90709a0efb2f3bcafaac256439",
+    "tree": "55d558880526306893bc21a9ac64c32d3c6f6f60",
+    "sole_parent": "5a2e9371814e9ee0ec55781a81844ef03434874b",
+    "commit_tree_and_parent_actual_Git_GET_verified": true,
+    "commit_metadata_raw": "{\"sha\":\"3c5c0d8e8323dc90709a0efb2f3bcafaac256439\",\"node_id\":\"C_kwDOTrgxoNoAKDNjNWMwZDhlODMyM2RjOTA3MDlhMGVmYjJmM2JjYWZhYWMyNTY0Mzk\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/3c5c0d8e8323dc90709a0efb2f3bcafaac256439\",\"html_url\":\"https://github.com/TrillionniumFoundation/hepta-private-ci/commit/3c5c0d8e8323dc90709a0efb2f3bcafaac256439\",\"author\":{\"name\":\"Qian QI\",\"email\":\"102159240+ProfHepta@users.noreply.github.com\",\"date\":\"2026-11-12T08:33:18Z\"},\"committer\":{\"name\":\"Qian QI\",\"email\":\"102159240+ProfHepta@users.noreply.github.com\",\"date\":\"2026-11-12T08:33:18Z\"},\"tree\":{\"sha\":\"55d558880526306893bc21a9ac64c32d3c6f6f60\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/55d558880526306893bc21a9ac64c32d3c6f6f60\"},\"message\":\"Bound first Root cache admission to original deadlines and retain exact failure diagnostics\",\"parents\":[{\"sha\":\"5a2e9371814e9ee0ec55781a81844ef03434874b\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/5a2e9371814e9ee0ec55781a81844ef03434874b\",\"html_url\":\"https://github.com/TrillionniumFoundation/hepta-private-ci/commit/5a2e9371814e9ee0ec55781a81844ef03434874b\"}],\"verification\":{\"verified\":false,\"reason\":\"unsigned\",\"signature\":null,\"payload\":null,\"verified_at\":null}}",
+    "commit_metadata_identity": {
+      "git_blob": "f5041ede6b7aee2ad529afdf0f78d3ad6b7a98b8",
+      "bytes": 1319,
+      "sha256": "6c308e198d1c33ce58716019a71b37f6a86bc9f1bcadf24708e049c55cdc55c5"
+    }
+  },
+  "artifacts": [
+    {
+      "name": "CONFIG.json",
+      "git_blob": "1cff1b2e2da8d282db64007e3ded3e465f2d0ecc",
+      "bytes": 3305,
+      "sha256": "e3f2d7fbfb594be4017271822a40c7e8173e68c976e186e42c8128d57afc940f"
+    },
+    {
+      "name": "exact-request.json",
+      "git_blob": "0c76669c1557d9ec40352dc00a91e54b69bdcc7d",
+      "bytes": 56726,
+      "sha256": "3cbab0c6381f7e8aa37af43423e45f76d8f65a3ae81708a83bfaa9123f25e688"
+    },
+    {
+      "name": "EXACT_OPS.json",
+      "git_blob": "10c8378b3ebb7b8bfe966d94faba59a586b2fa8f",
+      "bytes": 10357,
+      "sha256": "eeb0aa85b11f9dd984e6a54264560d4c44ba204faa3a4f918b3d6e9dfb9e2dcf"
+    }
+  ],
+  "allowed_replacements_plan": {
+    "git_blob": "e7a5fec1e38bd4278e03e572bb5885c1bea3c0d5",
+    "bytes": 15101,
+    "sha256": "469c9b0b41546e5f16bfff8396ee336509eda7cdeaf9a0a2f2be1013c3bdffa4"
+  },
+  "baseline": {
+    "native_request": {
+      "git_blob": "ef0da4aaf894a87fedd2ab6771ae74bcc615c76f",
+      "bytes": 56726,
+      "sha256": "2dd94271c26baa2c8e2b1c5b95a1b496914e64d896f7c804c1a2d565845129d9"
+    },
+    "config": {
+      "git_blob": "bbb6735aab3583171209f14cb3298ece2f9863b3",
+      "bytes": 3305,
+      "sha256": "b8c6fe211a1347310aca8b1c94202cb35f73211bcf5f5c16a2e236da41c8c6b2"
+    },
+    "harness": {
+      "git_blob": "096b5b69c1295560f3a6c9e0da51e2708a0c996c",
+      "bytes": 50167,
+      "sha256": "1c9990189dde8cbf06ef4b234ada73376f8032d2f5dc40584ec2f3e53cd6e8a2"
+    },
+    "source_commit": "5a2e9371814e9ee0ec55781a81844ef03434874b",
+    "source_tree": "22d55a327460ab4a835387a4a61332dbece6866d",
+    "previous_terminal_result": {
+      "git_blob": "dd1e9fca1cfaa639fb05ce6996ce3be0cbbbc6fe",
+      "bytes": 34254,
+      "sha256": "e793f0fde35cf9f39d9d62013c5ba0954f9d5938b47ea060c27fcad4cd5d3211"
+    },
+    "previous_status": "failed-native-components",
+    "previous_counts": {
+      "ordinary": {
+        "executed": 1944,
+        "passed": 1943,
+        "failed": 1
+      },
+      "root": {
+        "executed": 17,
+        "passed": 15,
+        "failed": 2
+      }
+    },
+    "no_predecessor_result_inheritance": true
+  },
+  "exact_change_set": {
+    "semantic_value_count": 5,
+    "config_fields": [
+      "head",
+      "tree",
+      "work_name",
+      "attempt"
+    ],
+    "outer_request_fields": [
+      "args[3]",
+      "idempotency_key"
+    ],
+    "note": "args[3] contains the four CONFIG replacements; only the key is an additional semantic value.",
+    "textual_operations": 6,
+    "unique_forward_and_reverse_byte_equal": true,
+    "original_harness_unchanged": true,
+    "all_other_15_CONFIG_fields_unchanged": true,
+    "original_19_key_order_and_compact_encoding_unchanged": true,
+    "all_other_outer_request_bytes_unchanged": true
+  },
+  "invocation": {
+    "host": "ai395",
+    "executable": "/usr/bin/python3",
+    "cwd": "/home/qq/af52-learning-local-decision-20261111",
+    "idempotency_key": "af52-ordinary-3c5c0d8-seven-final-v7-20261112",
+    "rows": 24,
+    "cols": 200,
+    "args_count": 4,
+    "args_utf8_bytes": [
+      2,
+      2,
+      50167,
+      3305
+    ],
+    "flags": [
+      "-B",
+      "-c"
+    ],
+    "harness_pin": {
+      "git_blob": "096b5b69c1295560f3a6c9e0da51e2708a0c996c",
+      "bytes": 50167,
+      "sha256": "1c9990189dde8cbf06ef4b234ada73376f8032d2f5dc40584ec2f3e53cd6e8a2"
+    },
+    "new_work_name": "ordinary-3c5c0d8-seven-final-v7",
+    "new_attempt": "ordinary-3c5c0d8-seven-final-v7",
+    "unused_key_by_this_agent": true,
+    "no_shell": true
+  },
+  "paths": {
+    "unchanged_parent": "/home/qq/af52-learning-local-decision-20261111",
+    "fresh_work": "/home/qq/af52-learning-local-decision-20261111/ordinary-3c5c0d8-seven-final-v7",
+    "fresh_source": "/home/qq/af52-learning-local-decision-20261111/ordinary-3c5c0d8-seven-final-v7/source",
+    "fresh_records": "/home/qq/af52-learning-local-decision-20261111/ordinary-3c5c0d8-seven-final-v7/records",
+    "fresh_helper_output": "/home/qq/af52-learning-local-decision-20261111/ordinary-3c5c0d8-seven-final-v7/records/helpers",
+    "fresh_Root_fixture": "/run/hepta-af52-final-3c5c0d8e8323-ordinary-3c5c0d8-seven-final-v7",
+    "read_only_reference": "/home/qq/af52-learning-local-decision-20261111/ordinary-control-completion-maintenance-v2/source",
+    "operator_target": "/home/qq/af52-learning-20261111/target",
+    "Root_target": "/var/tmp/hepta-af52-root-component-target-20261111",
+    "explanation": "Outer cwd stays the existing parent. Original mkdir creates a unique new WORK and refuses reuse. Original per-step file names stay unchanged inside new RECORDS. Separate original operator/Root build targets remain the same."
+  },
+  "gate_configuration": {
+    "ordinary_packages": [
+      "codex-hepta-agentd",
+      "codex-hepta-learning-artifacts",
+      "codex-hepta-intelligence-eval",
+      "codex-hepta-contracts",
+      "codex-hepta-neuron",
+      "codex-hepta-learning-ledger",
+      "codex-hepta-fleet"
+    ],
+    "root_packages": [
+      "codex-hepta-agentd",
+      "codex-hepta-contracts"
+    ],
+    "exact_root_parents": [
+      "authority_host_service::writer::learning_registration::tests::root_learning_registration_reopens_without_replacing_original_history",
+      "authority_host_service::writer::learning_registration::tests::root_learning_sealed_pin_and_dedicated_uds_recover_original_checkpoint",
+      "authority_host_service::writer::learning_registration::tests::root_scoped_learning_reopens_exact_scope_and_refuses_legacy_client",
+      "authority_host_service::writer::learning_registration::tests::root_learning_scoped_sealed_pin_preserves_scope_on_cold_reopen",
+      "root_production_handoff::learning::tests::root_learning_handoff_reaches_dedicated_uid_with_original_root_pin",
+      "authority_host_learning_service_root_tests::root_learning_public_registration_serves_retained_writer_and_recovers_history",
+      "authority_host_service::q24_model::registration::tests::root_factory_record_reopens_bound_without_replacing_original_files",
+      "authority_host_service::q24_model::registration::tests::root_factory_file_pins_reject_alias_replacement_wrong_access_and_missing_witness",
+      "root_production_handoff::q24_model::tests::root_model_handoff_preserves_four_original_rights_and_cloexec",
+      "root_production_handoff::q24_model::tests::root_model_handoff_rejects_learning_purpose_and_reordered_rights",
+      "authority_host_q24_model_service_root_tests::root_q24_factory_registers_transfers_binds_and_recovers_original_custody",
+      "learning_iteration_evidence_client::tests::root::original_external_uid_returns_a_verified_receipt_through_held_pidfd",
+      "root_production_handoff::generation_publication::tests::root_publication_handoff_reaches_dedicated_uid_and_refuses_confused_rights",
+      "final_use::store::root_observer::tests::root_observer_reads_live_original_and_rejects_revocation_without_claiming",
+      "final_use::store::root_observer::tests::root_observer_fences_partial_rollback_schema_and_replaced_original_files",
+      "neuron_generation_current::publication_root_tests::root_broker_late_enrolls_publishes_and_recovers_original_current",
+      "neuron_generation_current::initial_root_tests::root_initial_publication_uses_original_consumer_and_readonly_recovery"
+    ],
+    "root_parent_count": 17,
+    "retries": 0,
+    "ordinary_lib_test_threads": 2,
+    "Root_ignored_only_exact_equality_filter": true,
+    "Root_test_threads": 1,
+    "expected_ordinary_count": "Determined only by the new actual source execution; not inherited or prefilled.",
+    "locked_offline": true,
+    "Rust_toolchain": "1.96.0",
+    "format_base": "5edc50004a25cc585851f4aa6009ccc0d8f87705",
+    "overall_timeout_seconds": 27000,
+    "full_caller_timeout_seconds": 3600,
+    "other_harness_timeouts_and_cleanup_reserve": "All original constants unchanged because the complete harness is byte-identical.",
+    "original_executor_collector_and_actual_UID0_custody": "Unchanged source-bound commands and proof checks; actual outputs remain pending execution."
+  },
+  "new_source_gate_pin_verification": [
+    {
+      "path": "scripts/verify_hepta_callers.py",
+      "git_blob": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+      "bytes": 31701,
+      "sha256": "8899ec2b328125b2049b808cac0eeda3f57bfc6db89348512a58777101ae6dfa",
+      "source": "3c5c0d8e8323dc90709a0efb2f3bcafaac256439",
+      "unchanged_from_fixed_V32": true,
+      "actual_GET_verified": true
+    },
+    {
+      "path": "scripts/hepta_typed_callers.py",
+      "git_blob": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f",
+      "bytes": 7672,
+      "sha256": "3740bc9c17796686f1d6b282675d275d1b07c70a4b22c67945072c7b61a40d38",
+      "source": "3c5c0d8e8323dc90709a0efb2f3bcafaac256439",
+      "unchanged_from_fixed_V32": true,
+      "actual_GET_verified": true
+    },
+    {
+      "path": "scripts/hepta_cell_test_helpers.py",
+      "git_blob": "f5b702a55b44c081c6d8f5556da3a2152a33eec3",
+      "bytes": 18658,
+      "sha256": "43802e867f91225efcef9ea4763567c0aeabd5a07b6c03000eb033501b4eb9ae",
+      "source": "3c5c0d8e8323dc90709a0efb2f3bcafaac256439",
+      "unchanged_from_fixed_V32": true,
+      "actual_GET_verified": true
+    }
+  ],
+  "execution_order": "Original toolchain/physical-source/committed-workflow checks; fmt/fix-seven/fmt/bins; four QA groups; caller self-test/full verification; same-source helper build/preverify; full ordinary seven packages; actual Root toolchain/metadata/list/exact seventeen parents; helper postverify; original source/binaries/tool/custody/cleanup checks.",
+  "refusal_and_retention": {
+    "dirty_source": "Original checks stop on drift; preserve checkout, maintenance.patch and bounded postimages. Do not reset, amend, auto-fix or use prior qualification.",
+    "stale_existing_work": "Original WORK.mkdir refuses an existing attempt. No pre-delete or renamed-key retry is added.",
+    "unknown_completion": "Original request/PID is reconciled; no subsequent Cargo/collector or mutating cleanup while completion is unknown. No external cancellation of the original executor or automatic new-key retry.",
+    "failed_tests": "Keep failed execution, JUnit and raw log records. A component failure is not a waiver or ordinary NoUpdate.",
+    "failure_history": "V32 remains failed-native-components; none of its successful subgates is transferred as this candidate's result.",
+    "actual_business_acceptance": "All ordinary complete/adoption/ordinary NoUpdate rollback counters and independent-consumer/OS-restart acceptance remain zero/false in the unchanged harness."
+  },
+  "source_delta_scope": {
+    "Root_supplied_combination_review": "477cb55bd729dc48883321764f33452ff4e684e8",
+    "Root_reported_changed_entries": {
+      "Rust": 8,
+      "evidence": 41,
+      "total": 49
+    },
+    "independent_preparation_scope": "This task independently GET-verified exact commit/tree/sole parent and the three original gate/helper source files. It did not repeat Root's entire 49-entry tree comparison or review other candidate code."
+  },
+  "static_validation": {
+    "complete_original_harness_958_lines_read": true,
+    "exact_args2_same_50167_bytes": true,
+    "actual_full_SHA_and_Git_checks": true,
+    "original_compact_CONFIG_19_keys": true,
+    "only_five_allowed_semantic_values_changed": true,
+    "both_config_and_request_unique_forward_reverse": true,
+    "unchanged_package_and_parent_order": true,
+    "unchanged_all_timeout_fields": true,
+    "unchanged_host_cwd_rows_cols_flags": true,
+    "all_arguments_below_128KiB_and_no_NUL": true,
+    "new_Root_fixture_path_length": 66,
+    "original_new_directory_name_regex_and_Root_fixture_bound_satisfied": true,
+    "history_not_added_to_executable_CONFIG": true
+  },
+  "execution": {
+    "Git_and_pure_V8_static_checks_only": true,
+    "h_or_PTY": false,
+    "Cargo_or_native": false,
+    "formatter_or_checker": false,
+    "branch_or_PR_change": false,
+    "source_mutation": false,
+    "dispatch_authority": "Root only after reviewing these fixed artifacts.",
+    "new_native_status": "not-dispatched"
+  },
+  "supersession": "This final request replaces only the earlier V33 source-pending preparation; the original V32 request/result remain historical immutable evidence."
+}

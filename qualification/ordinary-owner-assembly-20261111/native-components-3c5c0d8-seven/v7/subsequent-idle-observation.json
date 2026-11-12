@@ -1,0 +1,84 @@
+{
+  "schema": "hepta-original-rust-readonly-observation-proof-v1",
+  "plan": "ed0cc107b2c0a0459551b35d2eb2da16f4222f3a",
+  "request": {
+    "host": "ai395",
+    "executable": "/usr/bin/sudo",
+    "args": [
+      "-n",
+      "python3",
+      "-c",
+      "\nimport json,os,sys\nfrom pathlib import Path\nassert os.getuid()==os.geteuid()==0\nnames={'cargo','rustc','rustdoc','rustfmt','clippy-driver','cargo-clippy','cargo-nextest'}\nactive=[]\nfor p in Path('/proc').iterdir():\n    if not p.name.isdigit():\n        continue\n    try:\n        comm=(p/'comm').read_text().strip()\n        if comm in names:\n            try:\n                cwd=os.readlink(p/'cwd')\n            except OSError:\n                cwd=None\n            active.append({'pid':int(p.name),'comm':comm,'cwd':cwd})\n    except FileNotFoundError:\n        continue\nprint(json.dumps({'actual_preflight_uid':os.getuid(),'active_rust':active}),flush=True)\nraise SystemExit(1 if active else 0)\n"
+    ],
+    "cwd": "/home/qq/af52-learning-local-decision-20261111",
+    "idempotency_key": "af52-original-rust-readonly-20261112-0845",
+    "rows": 24,
+    "cols": 200
+  },
+  "original_start_response": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"audit_recorded\":true,\"automatic_retry\":false,\"host\":\"ai395\",\"persistent_across_runtime_restart\":true,\"reused\":false,\"session_id\":\"dpty-7b731a3a0785a485ed1890ea196c79554a79442eed745960002cfe6009545010\",\"status\":{\"boot\":\"b1620269-aaef-43e7-bf47-bc6eb1c1a447\",\"bytes_seen\":0,\"bytes_stored\":0,\"capture_error\":null,\"created_unix_ms\":1794473211845,\"output_complete\":false,\"owner_pid\":26664,\"pid\":26665,\"state\":\"running\"}}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  },
+  "first_read": {
+    "request": {
+      "host": "ai395",
+      "session_id": "dpty-7b731a3a0785a485ed1890ea196c79554a79442eed745960002cfe6009545010",
+      "offset": 0,
+      "limit": 16384,
+      "raw_bytes": true
+    },
+    "response": {
+      "content": [
+        {
+          "type": "text",
+          "text": "tool call error: tool call failed for `codex_apps/h.pty_read`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out"
+        }
+      ],
+      "isError": true
+    }
+  },
+  "second_read": {
+    "request": {
+      "host": "ai395",
+      "session_id": "dpty-7b731a3a0785a485ed1890ea196c79554a79442eed745960002cfe6009545010",
+      "offset": 0,
+      "limit": 16384,
+      "raw_bytes": true
+    },
+    "response": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\"archive_path\":\"/home/qq/.local/state/hepta-runtime-mac-worker/terminals/dpty-7b731a3a0785a485ed1890ea196c79554a79442eed745960002cfe6009545010/output.log\",\"available_end\":48,\"bytes_hex\":\"7b2261637475616c5f707265666c696768745f756964223a20302c20226163746976655f72757374223a205b5d7d0d0a\",\"chunk_sha256\":\"6b4c45c4e30a159caa0f73b8227a521c56528820b3771f5aa4067fcac5117e03\",\"host\":\"ai395\",\"next_offset\":48,\"offset\":0,\"output_complete\":true,\"persistent_across_runtime_restart\":true,\"session_id\":\"dpty-7b731a3a0785a485ed1890ea196c79554a79442eed745960002cfe6009545010\",\"status\":{\"boot\":\"b1620269-aaef-43e7-bf47-bc6eb1c1a447\",\"bytes_seen\":48,\"bytes_stored\":48,\"capture_error\":null,\"closed\":false,\"created_unix_ms\":1794473211845,\"exit_code\":0,\"output_complete\":true,\"owner_pid\":26664,\"pid\":26665,\"state\":\"exited\"},\"storage\":\"target_archive\",\"text\":\"{\\\"actual_preflight_uid\\\": 0, \\\"active_rust\\\": []}\\r\\n\",\"text_is_lossy\":false,\"truncated_before_offset\":false,\"utf8_pending\":false}"
+        }
+      ],
+      "structuredContent": null,
+      "isError": false
+    }
+  },
+  "terminal": {
+    "boot": "b1620269-aaef-43e7-bf47-bc6eb1c1a447",
+    "bytes_seen": 48,
+    "bytes_stored": 48,
+    "capture_error": null,
+    "closed": false,
+    "created_unix_ms": 1794473211845,
+    "exit_code": 0,
+    "output_complete": true,
+    "owner_pid": 26664,
+    "pid": 26665,
+    "state": "exited",
+    "bytes": 48,
+    "sha256": "6b4c45c4e30a159caa0f73b8227a521c56528820b3771f5aa4067fcac5117e03"
+  },
+  "meaning": "At this already-created read-only observation, the unchanged original preflight script saw no active Rust processes and exited0. This is not a current global lock, a native test or permission to skip a new original preflight.",
+  "actual_created_utc": "2026-11-12T08:46:51.845Z",
+  "new_native_preflight_required": true,
+  "previous_failed_attempt_unchanged": true
+}

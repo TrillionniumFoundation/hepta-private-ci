@@ -1,0 +1,66 @@
+{
+  "after": {
+    "commit": "f9131ee6bfc514812096b3b72b7c3c70ff77278c",
+    "dirty": false,
+    "parents": [
+      "d50474f93da462e278cf3ec95acef88701d16799"
+    ],
+    "tree": "850c7e73f936b74c0c82e30c0907de11769d8cf1"
+  },
+  "base_sha": "",
+  "before": {
+    "commit": "f9131ee6bfc514812096b3b72b7c3c70ff77278c",
+    "dirty": false,
+    "parents": [
+      "d50474f93da462e278cf3ec95acef88701d16799"
+    ],
+    "tree": "850c7e73f936b74c0c82e30c0907de11769d8cf1"
+  },
+  "command": [
+    "just",
+    "test",
+    "--locked",
+    "--offline",
+    "-p",
+    "codex-hepta-agentd",
+    "-p",
+    "codex-hepta-contracts",
+    "--lib",
+    "--run-ignored",
+    "only",
+    "-E",
+    "test(=authority_host_service::writer::learning_registration::tests::root_learning_registration_reopens_without_replacing_original_history) | test(=authority_host_service::writer::learning_registration::tests::root_learning_sealed_pin_and_dedicated_uds_recover_original_checkpoint) | test(=authority_host_service::writer::learning_registration::tests::root_scoped_learning_reopens_exact_scope_and_refuses_legacy_client) | test(=authority_host_service::writer::learning_registration::tests::root_learning_scoped_sealed_pin_preserves_scope_on_cold_reopen) | test(=root_production_handoff::learning::tests::root_learning_handoff_reaches_dedicated_uid_with_original_root_pin) | test(=authority_host_learning_service_root_tests::root_learning_public_registration_serves_retained_writer_and_recovers_history) | test(=authority_host_service::q24_model::registration::tests::root_factory_record_reopens_bound_without_replacing_original_files) | test(=authority_host_service::q24_model::registration::tests::root_factory_file_pins_reject_alias_replacement_wrong_access_and_missing_witness) | test(=root_production_handoff::q24_model::tests::root_model_handoff_preserves_four_original_rights_and_cloexec) | test(=root_production_handoff::q24_model::tests::root_model_handoff_rejects_learning_purpose_and_reordered_rights) | test(=authority_host_q24_model_service_root_tests::root_q24_factory_registers_transfers_binds_and_recovers_original_custody) | test(=learning_iteration_evidence_client::tests::root::original_external_uid_returns_a_verified_receipt_through_held_pidfd) | test(=root_production_handoff::generation_publication::tests::root_publication_handoff_reaches_dedicated_uid_and_refuses_confused_rights) | test(=final_use::store::root_observer::tests::root_observer_reads_live_original_and_rejects_revocation_without_claiming) | test(=final_use::store::root_observer::tests::root_observer_fences_partial_rollback_schema_and_replaced_original_files) | test(=neuron_generation_current::publication_root_tests::root_broker_late_enrolls_publishes_and_recovers_original_current) | test(=neuron_generation_current::initial_root_tests::root_initial_publication_uses_original_consumer_and_readonly_recovery)",
+    "--test-threads",
+    "1",
+    "--retries",
+    "0",
+    "--success-output",
+    "final",
+    "--failure-output",
+    "final"
+  ],
+  "command_exit_code": 100,
+  "elapsed_seconds": 35.036556012928486,
+  "error": "required tests were not observed passing",
+  "exit_code": 100,
+  "finished_at": "2026-11-12T02:44:28.186170+00:00",
+  "job": null,
+  "lane": "source-head",
+  "log_bytes": 47835,
+  "log_file": "root.execution.json.834480fab712431c9fdf7acd0eb8675b.log",
+  "log_sha256": "85304302826b1b2147caf41328393d7d87c6232b85db26cc818b10661893afb9",
+  "minimum_tests": 17,
+  "observed_failed_tests": 2,
+  "observed_passed_tests": 15,
+  "output_limit_exceeded": false,
+  "returncode": 100,
+  "run_attempt": null,
+  "run_id": null,
+  "schema_version": 1,
+  "source_sha": "f9131ee6bfc514812096b3b72b7c3c70ff77278c",
+  "started_at": "2026-11-12T02:43:53.148723+00:00",
+  "status": "failed",
+  "tested_sha": "f9131ee6bfc514812096b3b72b7c3c70ff77278c",
+  "timed_out": false,
+  "working_directory": "/home/qq/af52-learning-local-decision-20261111/ordinary-f9131ee-root17-diagnostic-v7/source"
+}

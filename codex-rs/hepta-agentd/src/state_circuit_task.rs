@@ -44,6 +44,18 @@ pub trait AgentdCircuitTaskInvocationProviderV1: Send + Sync {
         record: &RunStartRecordV1,
         receipt: &CircuitTaskReceiptV1,
     ) -> Result<(), AgentdError>;
+
+    /// Learning is separate from durable task completion. Ordinary providers
+    /// explicitly have no Q24 ledger capability. The selected original
+    /// learning profile decides whether its own older stage contract applies.
+    fn observe_learning(
+        &self,
+        _identity: &AgentdIdentity,
+        _record: &RunStartRecordV1,
+        _trace: &codex_hepta_automation::CircuitCommittedTraceV2,
+    ) -> crate::CircuitTaskLearningReadinessV1 {
+        crate::CircuitTaskLearningReadinessV1::NonLearning
+    }
 }
 
 impl AgentdState {
@@ -57,9 +69,21 @@ impl AgentdState {
         self.attach_circuit_learning_sources(vec![source_run_id])
     }
 
+    #[cfg(test)]
     pub(crate) fn attach_circuit_learning_sources(
         &self,
         sources: Vec<StableId>,
+    ) -> Result<(), AgentdError> {
+        self.attach_circuit_learning_delivery(
+            sources,
+            crate::learning_iteration::CircuitLearningSourceV1::HostStageOwners,
+        )
+    }
+
+    pub(crate) fn attach_circuit_learning_delivery(
+        &self,
+        sources: Vec<StableId>,
+        origin: crate::learning_iteration::CircuitLearningSourceV1,
     ) -> Result<(), AgentdError> {
         if sources.is_empty()
             || sources.len() > crate::learning_iteration::MAX_REGISTERED_CIRCUIT_LEARNING
@@ -73,7 +97,14 @@ impl AgentdState {
             ));
         }
         self.circuit_learning_source
-            .set(sources)
+            .set(
+                crate::circuit_task_learning::RegisteredCircuitLearningSourcesV1 {
+                    sources,
+                    origin,
+                    #[cfg(target_os = "linux")]
+                    retained_source: None,
+                },
+            )
             .map_err(|_| AgentdError::Invalid("Circuit learning source already attached".into()))
     }
 
@@ -85,8 +116,16 @@ impl AgentdState {
     pub(crate) fn circuit_learning_sources(&self) -> &[StableId] {
         self.circuit_learning_source
             .get()
-            .map(Vec::as_slice)
+            .map(|registry| registry.sources.as_slice())
             .unwrap_or_default()
+    }
+
+    pub(crate) fn circuit_learning_origin(
+        &self,
+        source: &StableId,
+    ) -> Option<crate::learning_iteration::CircuitLearningSourceV1> {
+        let registry = self.circuit_learning_source.get()?;
+        registry.sources.contains(source).then_some(registry.origin)
     }
 
     pub(crate) fn circuit_task_enabled(&self) -> bool {
@@ -197,25 +236,18 @@ impl AgentdState {
         self.require_current_run_start(record)?;
         provider.publish_result(self.identity(), record, &receipt)?;
         self.require_current_run_start(record)?;
-        // Only explicitly registered iteration sources enter the outbox.
-        // This also runs on its completed-task readback path after ACK loss.
-        if self
-            .circuit_learning_sources()
-            .iter()
-            .any(|source| source.as_str() == record.snapshot.run_id.as_str())
+        // Task/source publication is already committed. Learning may await
+        // independent business observation or original-owner reconciliation.
+        // Never turn that state into another task execution or a reward label.
+        let readiness = self.observe_circuit_learning(record, receipt.trace()).await;
+        if let Err(error) = self
+            .enqueue_original_circuit_learning(record, receipt.trace(), readiness)
+            .await
         {
-            let objective = codex_hepta_contracts::Sha256Digest::parse(
-                record.snapshot.objective_digest.to_string(),
-            )
-            .map_err(|error| {
-                AgentdError::Protocol(format!("Circuit learning objective: {error}"))
-            })?;
-            self.circuit_task_store()?
-                .enqueue_circuit_learning(receipt.trace(), objective)
-                .await
-                .map_err(|error| {
-                    AgentdError::Protocol(format!("Circuit learning outbox: {error:?}"))
-                })?;
+            eprintln!(
+                "committed task learning publication remains pending (run_id={}, task_committed=true, learning_error={error})",
+                record.snapshot.run_id
+            );
         }
         self.require_current_run_start(record)?;
         Ok(Some(receipt))

@@ -11,6 +11,9 @@ use std::sync::atomic::Ordering;
 #[path = "deployment_writer_rotate_tests.rs"]
 mod rotation;
 
+#[path = "deployment_writer_observation_tests.rs"]
+mod observation;
+
 struct Clock {
     calls: AtomicUsize,
     expire_on: AtomicUsize,

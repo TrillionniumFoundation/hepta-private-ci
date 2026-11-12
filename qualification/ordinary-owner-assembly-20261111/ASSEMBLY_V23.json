@@ -1,0 +1,64 @@
+{
+  "schema": "hepta.ordinary-owner-assembly.candidate.v23",
+  "parent": "f9131ee6bfc514812096b3b72b7c3c70ff77278c",
+  "parent_tree": "850c7e73f936b74c0c82e30c0907de11769d8cf1",
+  "status": "evidence-only; current source-specific Root diagnostic still separate",
+  "rust_files_changed": 0,
+  "registry_changed": false,
+  "root_roster_changed": false,
+  "source_logic_unchanged_from": "d50474f93da462e278cf3ec95acef88701d16799",
+  "original_archive_v7": {
+    "git_blob": "ae30082e8132df598c6f1c4b2b66a788bd21ecd3",
+    "bytes": 1987064,
+    "sha256": "2a42b2f2980b8c99d5d7b7b102334e2b51d95e29f1343559b67a1ccb42526d96",
+    "export_metadata": "2396211a6aa2eab5d241626305fd4ad25d136d50",
+    "transfer_receipt": "d5fa98bf9ad3c1326933ab3a2979d25ef16ded78",
+    "native_exporter_members_verified": 174,
+    "native_exporter_payload_files_verified": 173,
+    "independent_transfer_verification": "All 56 original parts and reconstructed original archive length/SHA256/Git blob verified. No byte changes.",
+    "independent_second_tar_parse": "Not completed after local workspace became unavailable. No second tar/iteration/JUnit parser pass claimed.",
+    "original_sources": [
+      {
+        "source": "903b6fbae86acff2db2ab0422b9852421d938032",
+        "tree": "b5b82d4e1fb422f8e1986e939764b79fd1be115f",
+        "executed": 17,
+        "passed": 15,
+        "failed": 2
+      },
+      {
+        "source": "0c896bdf941f4174797ff45378bc7439075c11e4",
+        "tree": "fc41816656e41af926c868e6cc327f88e7ae1001",
+        "executed": 17,
+        "passed": 15,
+        "failed": 2
+      }
+    ],
+    "counts_not_added_or_inherited": true
+  },
+  "v5_original_log": {
+    "git_blob": "123f52c4d63a2d82a71bbcd052c518d2fe4f3a03",
+    "bytes": 48616,
+    "sha256": "3bee9168c4b56996a447642c9bf3e35d6b285f2b26664bd07d72f98b0717df40",
+    "origin": "Actual closed original file through one retained read-only operation; not a fabricated summary or claimed local tar extraction.",
+    "read_receipt": "469bb7ac69c6d627c58d6eee7d055e1b5af99a8a",
+    "root_retrieved_and_verified_original_sdk_file_equals_git_bytes": true
+  },
+  "current_root_attempt": {
+    "requested_source": "f9131ee6bfc514812096b3b72b7c3c70ff77278c",
+    "requested_tree": "850c7e73f936b74c0c82e30c0907de11769d8cf1",
+    "exact_request": "cde29911abdedfea73c5b53a47b29770942a5e25",
+    "session": "dpty-774f0d1e01fa6df9f6965984a6058d77df17ce9ef8ca7c1008135ab474ebc1ff",
+    "last_observed_stage": "root-binary-list",
+    "outcome_not_yet_received": true,
+    "not_rebased_or_restarted_by_this_evidence_commit": true
+  },
+  "no_qualification_inheritance": true,
+  "no_main_merge": true,
+  "business_acceptance": {
+    "ordinary_complete_chains": 0,
+    "positive_adoption_chains": 0,
+    "ordinary_no_update_rollback_chains": 0,
+    "independent_consumer_accepted": false,
+    "daemon_and_root_os_restart_accepted": false
+  }
+}

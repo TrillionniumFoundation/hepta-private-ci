@@ -1,0 +1,287 @@
+{
+  "schema": "hepta.original-successor-nonlearning-receiver-explicit.v1",
+  "status": "Frozen source/metadata candidate, unexecuted. Original failing full-caller attempt remains failed.",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "base": {
+    "commit": "894138ff2c34dc54b0f31d3883a840639d076ea5",
+    "tree": "3c7e0963f8c32701066071f354c626aa5283687d"
+  },
+  "original_failure": {
+    "attribution": "Root supplied actual V31 full-caller failure; not rerun here.",
+    "boundary": "q24_task_original_ready_observe",
+    "file": "codex-rs/hepta-agentd/src/circuit_q24_successor_execution.rs",
+    "message": "unresolved possible OriginalCellQ24TaskLedgerProducerV1::observe_learning receiver",
+    "elapsed_seconds": 1163.667592,
+    "exit_code": 1,
+    "timed_out": false,
+    "context": "Source remained clean. Root reports 236 QA tests and caller self-test passing on that exact source; helpers, ordinary seven-package tests and Root17 were not reached. Those results are not inherited by this candidate."
+  },
+  "diagnosis": {
+    "exact_cause": "The existing Some(producer) branch already declares &Arc<OriginalCellQ24TaskLedgerProducerV1>. The unresolved possible authority receiver is the unrelated None branch's self.source.observe_learning(...).",
+    "original_scanner": "authority_fields records fields only when their parsed type equals the target authority; therefore it indexes the producer ledger field but not the Durable source field. _receiver_type(self.source) cannot resolve the absent unrelated field entry and has_authority_call raises rather than assuming it is harmless.",
+    "source_fix": "Only the None arm is expanded to borrow the existing Arc target as &DurableCircuitTaskSourceV1<FileAnchorWitnessStore>, followed by the same observe_learning(identity, record, trace). No cloned Arc, new owner, replacement data or method result is introduced.",
+    "scanner_effect": "The existing _bindings annotation branch now gives the local source a definite non-Producer type. The Some producer call still positively establishes this file as an actual Producer caller; the new annotation does not hide or remove it.",
+    "original_types": "The actual Durable source implements AgentdCircuitTaskInvocationProviderV1 with observe_learning(&self, ...) returning the existing NonLearning result. The actual Producer method takes self: &Arc<Self>; that Some branch remains byte-identical.",
+    "remaining_same_file": "The target Producer method intersection is exactly two .observe_learning sites and the actual qualified OriginalCellQ24TaskLedgerProducerV1::open_original call. open_original already has explicit authority qualification. Other Producer methods are not called in this file; no additional edits are needed for them."
+  },
+  "artifacts": {
+    "exact_operations": {
+      "git_blob": "87cf6c044ea8a98a8ad53961a971ce7a818da122",
+      "bytes": 1787,
+      "sha256": "8c1f3d55d8d0c3ce1c49a988f2769c4f37dea36b03a3453372a49db738c48166"
+    },
+    "files": [
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_execution.rs",
+        "preimage": {
+          "git_blob": "3263eb485459626f3cca29e5d90d58032121ae16",
+          "bytes": 8224,
+          "sha256": "91f12d9f1dbd0bcd478713768df227aef2e73bdcc1cad41c48b3b35d18603e9e"
+        },
+        "postimage": {
+          "git_blob": "379439c76b0d8ea1cb123b92bc199b162d8676e5",
+          "bytes": 8346,
+          "sha256": "6751cd2e952bbd9a6c48aba92e9a082d3158a514cf6076bd20246970ee0391c5"
+        },
+        "edit": "One exact None-arm replacement."
+      },
+      {
+        "path": "CALLERS.toml",
+        "preimage": {
+          "git_blob": "726a238d13e8d35771230ac24c6cee950a910674",
+          "bytes": 669144,
+          "sha256": "eb85a283658801cdb967e61a4fdbdbc062c654130f25b81f6b69b9fba38e37f3"
+        },
+        "postimage": {
+          "git_blob": "d9478557509a1e70b7b32b02b86cfd2aa2babbd5",
+          "bytes": 669225,
+          "sha256": "f9a911c62f591f93f92833494bb83af828f31ac55d17a2b6b784c480424148fd"
+        },
+        "edit": "One exact protected sequence item expanded to require the actual None arm, complete explicit local type and original call."
+      }
+    ]
+  },
+  "exact_fragments": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_execution.rs",
+      "before": "            None => self.source.observe_learning(identity, record, trace),",
+      "after": "            None => {\n                let source: &DurableCircuitTaskSourceV1<FileAnchorWitnessStore> = &self.source;\n                source.observe_learning(identity, record, trace)\n            }"
+    },
+    {
+      "path": "CALLERS.toml",
+      "before": "\"None => self.source.observe_learning(identity, record, trace)\"",
+      "after": "\"None => {\",\"let source: &DurableCircuitTaskSourceV1<FileAnchorWitnessStore> = &self.source;\",\"source.observe_learning(identity, record, trace)\""
+    }
+  ],
+  "preservation": {
+    "boundary_count": 504,
+    "all_boundaries_byte_identical": true,
+    "protected_count": 366,
+    "changed_protected": [
+      {
+        "index": 351,
+        "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_execution.rs"
+      }
+    ],
+    "all_other_source_bytes": "Reverse substitution reproduces the complete 8224-byte original source exactly. The Some arm, trait implementation header, validation, installed/source/ledger owners, open_original arguments and runtime installation order are unchanged.",
+    "no_new_effect": "Borrow coercion replaces the implicit method-receiver dereference only. The call, arguments and return remain the same; no live check, publication, ledger operation, refresh, lock, clock, timeout, assertion or error conversion is added or removed.",
+    "method_token_inventory": [
+      {
+        "token": ".observe_learning(",
+        "before": 2,
+        "after": 2
+      },
+      {
+        "token": "::open_original(",
+        "before": 1,
+        "after": 1
+      },
+      {
+        "token": "Arc::clone",
+        "before": 4,
+        "after": 4
+      },
+      {
+        "token": "Arc::new(",
+        "before": 2,
+        "after": 2
+      },
+      {
+        "token": ".clone()",
+        "before": 13,
+        "after": 13
+      },
+      {
+        "token": "TaskFlowFence::new(",
+        "before": 1,
+        "after": 1
+      },
+      {
+        "token": "CircuitCellRegistryV1::new(",
+        "before": 1,
+        "after": 1
+      },
+      {
+        "token": "circuit_q24_task_channel_v1(",
+        "before": 1,
+        "after": 1
+      }
+    ],
+    "caller_and_checker": "All 504 boundary blocks are byte-identical, including receiver_type, product_callers, ignored paths and inventories. The original checker and typed helper are unchanged.",
+    "protected": "Exactly the existing execution file's protected row changes. Its complete Some branch sequence, forbidden values and other function orders remain byte-identical; the new None sequence requires the real type declaration and call. Total protected count stays 366.",
+    "integration": "Root should update only the existing exact CALLERS digest entry in its integration allowlist to f9a911c62f591f93f92833494bb83af828f31ac55d17a2b6b784c480424148fd. This two-operation delivery does not overwrite that separate file or current evidence."
+  },
+  "source_pins": {
+    "checker": {
+      "git_blob": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+      "bytes": 31701,
+      "sha256": "8899ec2b328125b2049b808cac0eeda3f57bfc6db89348512a58777101ae6dfa"
+    },
+    "typed_helper": {
+      "git_blob": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f",
+      "bytes": 7672,
+      "sha256": "3740bc9c17796686f1d6b282675d275d1b07c70a4b22c67945072c7b61a40d38"
+    },
+    "related": [
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_task_source.rs",
+        "git_blob": "cc92df568f1438eebe4eee8f3660b3439ef5bd22",
+        "bytes": 15923,
+        "sha256": "46267e23a4e60456d3bf666f5b6e68ab50fee4cacc24e3f912b2063bd95b81f9"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_task_learning_ready.rs",
+        "git_blob": "823485ded1966dd9f8a65d3b5197e9889c7eca71",
+        "bytes": 6874,
+        "sha256": "4836c7bb54730c576d2d54a1635455a3a411b4a2637201754acb4707ce71d981"
+      }
+    ]
+  },
+  "static_checks": {
+    "unique_forward_reverse": "Both exact operations match once, forward and reverse reproduce whole before/after images. All three created blobs were GET back-read, compared byte-for-byte and independently rehashed with the reviewed V8 helper bundle.",
+    "helper_bundle": {
+      "git_blob": "e818c11b3d0a53c5ab5582786d89a7f3aa0c6e16",
+      "validation": "Read whole functions, checked SHA1/SHA256 abc and empty Git blob vectors, and matched all four supplied original source/checker/typed/registry pins."
+    },
+    "qa_inspection": {
+      "scope": "All 19 .py files in fixed V31 qa/b4-no-bypass, immutable Git reads plus raw-reference search only.",
+      "result": "None references circuit_q24_successor_execution or either old source/producer observe_learning fragment. No existing QA mutation literal requires an edit for this change.",
+      "files": [
+        {
+          "path": "qa/b4-no-bypass/test_cell_learning_evaluation_source_closure.py",
+          "git_blob": "2aad87cdd5ad46a8b0ec91ea7936d7ccf374bdc7",
+          "matching_references": 0
+        },
+        {
+          "path": "qa/b4-no-bypass/test_current_caller_migrations.py",
+          "git_blob": "2572859b4f67298235d6573851d0ca6c6ffc5632",
+          "matching_references": 0
+        },
+        {
+          "path": "qa/b4-no-bypass/test_generation_learning_evidence_source_closure.py",
+          "git_blob": "d0f9e0cfac21f64bd2d2998c99fc094eee7493d5",
+          "matching_references": 0
+        },
+        {
+          "path": "qa/b4-no-bypass/test_kernel_authority_closed_world.py",
+          "git_blob": "b94fb21327b38015cd3bc7a973a100916397ba3d",
+          "matching_references": 0
+        },
+        {
+          "path": "qa/b4-no-bypass/test_learning_checkpoint_source_closure.py",
+          "git_blob": "db2df6e8a3396effb6eae9a2f3f3229186d7f16f",
+          "matching_references": 0
+        },
+        {
+          "path": "qa/b4-no-bypass/test_learning_evaluation_recovery_source_closure.py",
+          "git_blob": "8d607e733cf950165475cd80b9e3a080b13ed949",
+          "matching_references": 0
+        },
+        {
+          "path": "qa/b4-no-bypass/test_original_evaluation_receipt_owner_source_closure.py",
+          "git_blob": "ee0f5225031f82edf413a7f4bed12f77ff479a7b",
+          "matching_references": 0
+        },
+        {
+          "path": "qa/b4-no-bypass/test_original_late_writer_entry_source_closure.py",
+          "git_blob": "a09ec96ea064b35216e43b17dd4726d3a36afc7e",
+          "matching_references": 0
+        },
+        {
+          "path": "qa/b4-no-bypass/test_original_learning_owner_source_closure.py",
+          "git_blob": "85d46d3db23663d4b1ebe54980ea3ffe0e60b212",
+          "matching_references": 0
+        },
+        {
+          "path": "qa/b4-no-bypass/test_original_training_owner_source_closure.py",
+          "git_blob": "f6019ed2f5b9c2ae5924348fe7429aebaed12356",
+          "matching_references": 0
+        },
+        {
+          "path": "qa/b4-no-bypass/test_original_training_snapshot_source_closure.py",
+          "git_blob": "b422159a6afc6524387f7442f116c0bf46d0ce70",
+          "matching_references": 0
+        },
+        {
+          "path": "qa/b4-no-bypass/test_q24_model_proposal_source_closure.py",
+          "git_blob": "dd376c477770afae84963baf4a6f3b84b5deedf9",
+          "matching_references": 0
+        },
+        {
+          "path": "qa/b4-no-bypass/test_q24_training_plan_source_closure.py",
+          "git_blob": "bfe51bdf1c0d1b25adc741ecf4a8bb3d7bb7ec93",
+          "matching_references": 0
+        },
+        {
+          "path": "qa/b4-no-bypass/test_root_admin_source_closure.py",
+          "git_blob": "fdcabf49eb7aa7ac9827ce8ad5ace4ea62342982",
+          "matching_references": 0
+        },
+        {
+          "path": "qa/b4-no-bypass/test_root_learning_bootstrap_source_closure.py",
+          "git_blob": "943e58340c85c52841d3451c2c19d0e0b7c4fec3",
+          "matching_references": 0
+        },
+        {
+          "path": "qa/b4-no-bypass/test_root_learning_scope_source_closure.py",
+          "git_blob": "8d0de4f77b939c477376927021ded17e6e526dd8",
+          "matching_references": 0
+        },
+        {
+          "path": "qa/b4-no-bypass/test_root_publication_existing_owner_source_closure.py",
+          "git_blob": "77d75cddf264cceaa7374dbbaa7b3f7f91654e43",
+          "matching_references": 0
+        },
+        {
+          "path": "qa/b4-no-bypass/test_training_no_update_source_closure.py",
+          "git_blob": "83bb92cfca3d4724cb498730046bcfda3831631e",
+          "matching_references": 0
+        },
+        {
+          "path": "qa/b4-no-bypass/test_verify_hepta_callers.py",
+          "git_blob": "a8a52d5ca4ba00d510eb24c763a32bc7c4771593",
+          "matching_references": 0
+        }
+      ],
+      "new_tests": 0,
+      "changed_tests": 0,
+      "tests_executed": 0,
+      "limit": "This is not a QA run, original lexical/typed verification, compilation or native result. No substitute checker was introduced."
+    }
+  },
+  "review_and_next_gate": {
+    "independent_review": "Root and hepta_audit have the fixed source/registry/ops for separate review; final review receipt may be appended without changing these source bytes.",
+    "required": "Root's original formatting/compilation/QA and complete caller proof must validate the integrated fixed source. Do not infer a full scan pass from this local static explanation.",
+    "permissions": "No permission, UID/PID, Root/custody, deadline, witness, budget or business branch changes.",
+    "acceptance": "No ordinary-business, independent C or physical daemon/Root restart acceptance is claimed."
+  },
+  "performed": {
+    "git_reads": true,
+    "unreferenced_blobs_created": true,
+    "product_checkout_written": false,
+    "refs_changed": 0,
+    "h_or_pty_calls": 0,
+    "cargo_or_native_runs": 0,
+    "python_or_checker_runs": 0
+  }
+}

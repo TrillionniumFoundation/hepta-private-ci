@@ -1,0 +1,549 @@
+{
+  "schema": "hepta.actual-native-format-patch-reconstruction-review.v1",
+  "status": "STATIC_FORMAT_ONLY_RECONSTRUCTION_VERIFIED_NOT_NATIVE_QUALIFICATION",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "reviewer": "hepta_audit",
+  "fixed_source": {
+    "commit": "3c5c0d8e8323dc90709a0efb2f3bcafaac256439",
+    "tree": "55d558880526306893bc21a9ac64c32d3c6f6f60"
+  },
+  "original_evidence": {
+    "patch": {
+      "git_blob": "3af3e8c2bfe256e780a2ae870c8aefc2198f795a",
+      "bytes": 15403,
+      "sha256": "14788c96c5e98584561b0aa4d64aadf9b4b046738b36ef9be876cfc8e793c02f"
+    },
+    "progress": {
+      "git_blob": "4e8cc653a86afff3c801fce89ab28dd8daa51e51",
+      "bytes": 17638,
+      "sha256": "e8dda8ceba351535238a14e0680b6cb149957e94ecafe490a48343392da18abc"
+    },
+    "progress_status": "failed",
+    "failure": "RuntimeError: original executor did not retain equal clean source identity",
+    "fmt_executor_launch_exit": 1,
+    "fmt_executor_launch_timed_out": false,
+    "maintenance_patch_matches_progress": true,
+    "tests_reached": 0
+  },
+  "provenance": {
+    "preimages": "All six old files were fetched by exact path at the fixed commit and independently matched the full old Git object names in the actual patch.",
+    "postimages": "Reconstructed exclusively from those fixed preimages and the original full-index patch, with no fuzzy matching. These are not a second read of complete runtime postimage files.",
+    "static_checks": "Each hunk's old/new line count and coordinates, every context/removal line, original LF ending, forward full file and reverse full file were checked; each output matched the patch's complete 40-digit new Git hash.",
+    "upload": "All six exact reconstructed UTF-8 postimages were created as unreferenced Git blobs, then GET compared byte-for-byte to the reconstruction.",
+    "not_done": [
+      "No h or PTY reads/writes",
+      "No formatter, Cargo, compiler, checker or tests executed",
+      "No ref, source checkout, runtime record, permission or native process modified"
+    ]
+  },
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_update_live.rs",
+      "mode": "100644",
+      "pre_git": "6072a6cf1560a0d2ddb26abe1483a4adfa2b7f1a",
+      "post_git": "23b86bf6aafc8fea35cc220fb987dbe2592b6f59",
+      "bytes": 8890,
+      "sha256": "62a1fd55f3be9d3b447f1ca4acfcac3826d87822ac0a6484972cd9b7f577fdfe",
+      "hunks": [
+        {
+          "old_start": 230,
+          "old_count": 24,
+          "new_start": 230,
+          "new_count": 20,
+          "context_lines": 8,
+          "removed_lines": 16,
+          "added_lines": 12
+        }
+      ],
+      "all_hunk_counts_and_old_new_coordinates_exact": true,
+      "all_context_removed_lines_exact": true,
+      "full_40_digit_git_match": true,
+      "reverse_entire_file_equal": true,
+      "preimage": {
+        "path": "codex-rs/hepta-agentd/src/neuron_generation_update_live.rs",
+        "git_blob": "6072a6cf1560a0d2ddb26abe1483a4adfa2b7f1a",
+        "bytes": 8982,
+        "sha256": "64f7e0b2884b16ea2691b1d24e4ad930a931fc9afcd95e28ef550c83888a7964"
+      },
+      "post_create_and_get_exact": true,
+      "format_review": {
+        "path": "codex-rs/hepta-agentd/src/neuron_generation_update_live.rs",
+        "nonwhitespace_token_count_before": 1113,
+        "nonwhitespace_token_count_after": 1113,
+        "exact_nonwhitespace_tokens": true,
+        "equal_except_optional_trailing_comma": true,
+        "string_and_character_literal_count": 8,
+        "literals_exact": true,
+        "comments_exact": true,
+        "comment_count": 14
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session.rs",
+      "mode": "100644",
+      "pre_git": "51035c1d84f831d0665581a2faf2c0a0bb1b96b7",
+      "post_git": "13ef7d0943f056527f45a7805e07a3f89b302985",
+      "bytes": 21608,
+      "sha256": "56ea30f1ee4d1e529dc7abb0f5b800afb351fa8dc481ff67b0def5de010c146f",
+      "hunks": [
+        {
+          "old_start": 140,
+          "old_count": 7,
+          "new_start": 140,
+          "new_count": 9,
+          "context_lines": 6,
+          "removed_lines": 1,
+          "added_lines": 3
+        }
+      ],
+      "all_hunk_counts_and_old_new_coordinates_exact": true,
+      "all_context_removed_lines_exact": true,
+      "full_40_digit_git_match": true,
+      "reverse_entire_file_equal": true,
+      "preimage": {
+        "path": "codex-rs/hepta-agentd/src/root_authority_session.rs",
+        "git_blob": "51035c1d84f831d0665581a2faf2c0a0bb1b96b7",
+        "bytes": 21570,
+        "sha256": "f18d97e08ab796d6566e09e2323f8189d6a3b3b21f45a17de2ae832b480140ba"
+      },
+      "post_create_and_get_exact": true,
+      "format_review": {
+        "path": "codex-rs/hepta-agentd/src/root_authority_session.rs",
+        "nonwhitespace_token_count_before": 3247,
+        "nonwhitespace_token_count_after": 3247,
+        "exact_nonwhitespace_tokens": true,
+        "equal_except_optional_trailing_comma": true,
+        "string_and_character_literal_count": 33,
+        "literals_exact": true,
+        "comments_exact": true,
+        "comment_count": 31
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_tests.rs",
+      "mode": "100644",
+      "pre_git": "b9b8db0658a372c8bcbeaef7d6effb58f701957e",
+      "post_git": "a0e27f8c747f8ef9f41bb0701caa77babd32950e",
+      "bytes": 26968,
+      "sha256": "1d7c228977479b79a97226d71e85a752e3539884aa3c09260d663fb5a3e02dc7",
+      "hunks": [
+        {
+          "old_start": 720,
+          "old_count": 11,
+          "new_start": 720,
+          "new_count": 16,
+          "context_lines": 7,
+          "removed_lines": 4,
+          "added_lines": 9
+        }
+      ],
+      "all_hunk_counts_and_old_new_coordinates_exact": true,
+      "all_context_removed_lines_exact": true,
+      "full_40_digit_git_match": true,
+      "reverse_entire_file_equal": true,
+      "preimage": {
+        "path": "codex-rs/hepta-agentd/src/root_authority_session_tests.rs",
+        "git_blob": "b9b8db0658a372c8bcbeaef7d6effb58f701957e",
+        "bytes": 26931,
+        "sha256": "951763353c7b8e5eccab7a9ae09bcfb9687ff8f868905071865661b366292c01"
+      },
+      "post_create_and_get_exact": true,
+      "format_review": {
+        "path": "codex-rs/hepta-agentd/src/root_authority_session_tests.rs",
+        "nonwhitespace_token_count_before": 4877,
+        "nonwhitespace_token_count_after": 4876,
+        "exact_nonwhitespace_tokens": false,
+        "equal_except_optional_trailing_comma": true,
+        "string_and_character_literal_count": 41,
+        "literals_exact": true,
+        "comments_exact": true,
+        "comment_count": 32,
+        "optional_commas": [
+          {
+            "removed": ",",
+            "before_context": [
+              "tests",
+              "::",
+              "component_last_validated_read",
+              "(",
+              "&",
+              "live",
+              ".",
+              "cache",
+              ",",
+              ")",
+              ";",
+              "assert",
+              "!"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_observation_cache.rs",
+      "mode": "100644",
+      "pre_git": "168fcbd0233e19d536bd4e86f21401cc504d1ec6",
+      "post_git": "8bd1f6251b9fdbffc443155cdf5e88cec1daaf88",
+      "bytes": 23863,
+      "sha256": "4f733f028622d8944678350c59a505bb14a685ffa6651cd8c92bd2f87ec9737c",
+      "hunks": [
+        {
+          "old_start": 227,
+          "old_count": 14,
+          "new_start": 227,
+          "new_count": 12,
+          "context_lines": 10,
+          "removed_lines": 4,
+          "added_lines": 2
+        },
+        {
+          "old_start": 255,
+          "old_count": 14,
+          "new_start": 253,
+          "new_count": 12,
+          "context_lines": 10,
+          "removed_lines": 4,
+          "added_lines": 2
+        },
+        {
+          "old_start": 329,
+          "old_count": 7,
+          "new_start": 325,
+          "new_count": 10,
+          "context_lines": 6,
+          "removed_lines": 1,
+          "added_lines": 4
+        },
+        {
+          "old_start": 344,
+          "old_count": 7,
+          "new_start": 343,
+          "new_count": 10,
+          "context_lines": 6,
+          "removed_lines": 1,
+          "added_lines": 4
+        },
+        {
+          "old_start": 410,
+          "old_count": 7,
+          "new_start": 412,
+          "new_count": 8,
+          "context_lines": 6,
+          "removed_lines": 1,
+          "added_lines": 2
+        },
+        {
+          "old_start": 467,
+          "old_count": 7,
+          "new_start": 470,
+          "new_count": 8,
+          "context_lines": 6,
+          "removed_lines": 1,
+          "added_lines": 2
+        }
+      ],
+      "all_hunk_counts_and_old_new_coordinates_exact": true,
+      "all_context_removed_lines_exact": true,
+      "full_40_digit_git_match": true,
+      "reverse_entire_file_equal": true,
+      "preimage": {
+        "path": "codex-rs/hepta-agentd/src/root_observation_cache.rs",
+        "git_blob": "168fcbd0233e19d536bd4e86f21401cc504d1ec6",
+        "bytes": 23838,
+        "sha256": "9a3d4f9a47671ce5548bf78c669e3791e89ddb6348e7d693137a9be3edf8672f"
+      },
+      "post_create_and_get_exact": true,
+      "format_review": {
+        "path": "codex-rs/hepta-agentd/src/root_observation_cache.rs",
+        "nonwhitespace_token_count_before": 3249,
+        "nonwhitespace_token_count_after": 3250,
+        "exact_nonwhitespace_tokens": false,
+        "equal_except_optional_trailing_comma": true,
+        "string_and_character_literal_count": 18,
+        "literals_exact": true,
+        "comments_exact": true,
+        "comment_count": 21,
+        "optional_commas": [
+          {
+            "added": ",",
+            "after_context": [
+              ";",
+              "Ok",
+              "(",
+              "ReadAdmission",
+              "{",
+              "deadline_ns",
+              ",",
+              "generation",
+              ",",
+              "}",
+              ")",
+              "}",
+              "fn"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_observation_cache_tests.rs",
+      "mode": "100644",
+      "pre_git": "711c7195a63b8a7bdb9dfa3d70fcbccfc9a88d5f",
+      "post_git": "d682858cef827fef34c982c8bb044506c30b6e94",
+      "bytes": 11186,
+      "sha256": "cd1062d6c84f902a74c0a709c16886096f658acd63d0e7c0a89294381bd038f8",
+      "hunks": [
+        {
+          "old_start": 161,
+          "old_count": 14,
+          "new_start": 161,
+          "new_count": 19,
+          "context_lines": 12,
+          "removed_lines": 2,
+          "added_lines": 7
+        },
+        {
+          "old_start": 183,
+          "old_count": 11,
+          "new_start": 188,
+          "new_count": 13,
+          "context_lines": 6,
+          "removed_lines": 5,
+          "added_lines": 7
+        },
+        {
+          "old_start": 207,
+          "old_count": 13,
+          "new_start": 214,
+          "new_count": 15,
+          "context_lines": 6,
+          "removed_lines": 7,
+          "added_lines": 9
+        },
+        {
+          "old_start": 235,
+          "old_count": 17,
+          "new_start": 244,
+          "new_count": 27,
+          "context_lines": 11,
+          "removed_lines": 6,
+          "added_lines": 16
+        },
+        {
+          "old_start": 287,
+          "old_count": 11,
+          "new_start": 306,
+          "new_count": 16,
+          "context_lines": 9,
+          "removed_lines": 2,
+          "added_lines": 7
+        },
+        {
+          "old_start": 307,
+          "old_count": 5,
+          "new_start": 331,
+          "new_count": 11,
+          "context_lines": 4,
+          "removed_lines": 1,
+          "added_lines": 7
+        }
+      ],
+      "all_hunk_counts_and_old_new_coordinates_exact": true,
+      "all_context_removed_lines_exact": true,
+      "full_40_digit_git_match": true,
+      "reverse_entire_file_equal": true,
+      "preimage": {
+        "path": "codex-rs/hepta-agentd/src/root_observation_cache_tests.rs",
+        "git_blob": "711c7195a63b8a7bdb9dfa3d70fcbccfc9a88d5f",
+        "bytes": 10876,
+        "sha256": "5018aedd890ca47152df3bd441baa0f58eeae0540ed4f095132bfa486f3fb652"
+      },
+      "post_create_and_get_exact": true,
+      "format_review": {
+        "path": "codex-rs/hepta-agentd/src/root_observation_cache_tests.rs",
+        "nonwhitespace_token_count_before": 2098,
+        "nonwhitespace_token_count_after": 2098,
+        "exact_nonwhitespace_tokens": true,
+        "equal_except_optional_trailing_comma": true,
+        "string_and_character_literal_count": 7,
+        "literals_exact": true,
+        "comments_exact": true,
+        "comment_count": 9
+      }
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_lease_observation_tests.rs",
+      "mode": "100644",
+      "pre_git": "289fe030947ad2adc72d4fb5b8e88a4b466b7d4e",
+      "post_git": "1906c14c52bb2996db67681cfeb1bff03bb9c805",
+      "bytes": 14263,
+      "sha256": "f12853ae44e36ef7937cbf731583943135d86487e0028d8d927520f2d5cd9984",
+      "hunks": [
+        {
+          "old_start": 133,
+          "old_count": 7,
+          "new_start": 133,
+          "new_count": 10,
+          "context_lines": 6,
+          "removed_lines": 1,
+          "added_lines": 4
+        },
+        {
+          "old_start": 144,
+          "old_count": 7,
+          "new_start": 147,
+          "new_count": 11,
+          "context_lines": 6,
+          "removed_lines": 1,
+          "added_lines": 5
+        }
+      ],
+      "all_hunk_counts_and_old_new_coordinates_exact": true,
+      "all_context_removed_lines_exact": true,
+      "full_40_digit_git_match": true,
+      "reverse_entire_file_equal": true,
+      "preimage": {
+        "path": "codex-rs/hepta-contracts/src/authority_lease_observation_tests.rs",
+        "git_blob": "289fe030947ad2adc72d4fb5b8e88a4b466b7d4e",
+        "bytes": 14195,
+        "sha256": "00a3e413e5d194e9209caca11515e3392a35811062f41f952c471b705977e89b"
+      },
+      "post_create_and_get_exact": true,
+      "format_review": {
+        "path": "codex-rs/hepta-contracts/src/authority_lease_observation_tests.rs",
+        "nonwhitespace_token_count_before": 2877,
+        "nonwhitespace_token_count_after": 2877,
+        "exact_nonwhitespace_tokens": true,
+        "equal_except_optional_trailing_comma": true,
+        "string_and_character_literal_count": 15,
+        "literals_exact": true,
+        "comments_exact": true,
+        "comment_count": 1
+      }
+    }
+  ],
+  "totals": {
+    "files": 6,
+    "hunks": 17,
+    "all_pre_post_full_git_verified": true,
+    "all_complete_file_reverse_equal": true,
+    "all_hunk_counts_and_contexts_exact": true,
+    "string_and_character_literals": 122,
+    "comments": 108,
+    "all_literals_and_comments_identical": true,
+    "optional_trailing_comma_edits": 2
+  },
+  "only_nonwhitespace_edits": [
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_tests.rs",
+      "change": "Removed the optional trailing comma in the single argument function call component_last_validated_read(&live.cache,). Argument, borrow and call position unchanged."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_observation_cache.rs",
+      "change": "Added the optional trailing comma after generation in ReadAdmission { deadline_ns, generation }. Fields, values and construction order unchanged."
+    }
+  ],
+  "semantic_review": [
+    "All 17 actual patch hunks were read. The remaining changes are indentation, line breaks and chain layout; no literal, identifier, operator, branch, assertion or call was altered.",
+    "Original live CURRENT before/after checks and diagnostic inspect_err positions are unchanged.",
+    "The original post-cache BOOTTIME check, fail-closed handling and fixed session end are unchanged; only the diagnostic macro layout changed.",
+    "Cache admission generation/deadline captures, retained-lock acquisition and release, update/poison/fence decisions, real samples, comparisons and the 500 ms freshness contract retain their original tokens and order.",
+    "All tests retain their exact conditions and expected errors, including original revision -> RevisionMismatch and current revoked revision -> Revoked. No assertion or timing threshold was removed or relaxed.",
+    "This review is limited to formatter equivalence and does not reopen the previously reviewed cache protocol or infer a native success."
+  ],
+  "callers": {
+    "unchanged_blob": {
+      "git_blob": "d9478557509a1e70b7b32b02b86cfd2aa2babbd5",
+      "bytes": 669225,
+      "sha256": "f9a911c62f591f93f92833494bb83af828f31ac55d17a2b6b784c480424148fd"
+    },
+    "changes_required": 0,
+    "path_scoped_inventory_review": [
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_generation_update_live.rs",
+        "rows": []
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_authority_session.rs",
+        "rows": [
+          {
+            "kind": "boundary",
+            "id": "final_use_revocation_update",
+            "startLine": 242,
+            "definition": false,
+            "protected": false,
+            "changed_raw_markers": []
+          },
+          {
+            "kind": "protected_file",
+            "id": null,
+            "startLine": 612,
+            "definition": false,
+            "protected": true,
+            "changed_raw_markers": []
+          },
+          {
+            "kind": "protected_file",
+            "id": null,
+            "startLine": 1800,
+            "definition": false,
+            "protected": true,
+            "changed_raw_markers": []
+          }
+        ]
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_authority_session_tests.rs",
+        "rows": []
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_observation_cache.rs",
+        "rows": []
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_observation_cache_tests.rs",
+        "rows": []
+      },
+      {
+        "path": "codex-rs/hepta-contracts/src/authority_lease_observation_tests.rs",
+        "rows": []
+      }
+    ],
+    "exact_rows": [
+      {
+        "path": "codex-rs/hepta-agentd/src/root_authority_session.rs",
+        "callers_header_line": 612,
+        "required": [
+          "synchronize_consumers",
+          "live.cache.begin_update()",
+          "live.cache.end_update()",
+          "update_revocations(head.clone())"
+        ],
+        "changed_markers": []
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_authority_session.rs",
+        "callers_header_line": 1800,
+        "required_order": [
+          "impl Drop for AgentdRootAuthoritySession",
+          "self.live.cache.fence()",
+          "self.worker.abort()",
+          "self.live.consumers.lock()",
+          "consumers.clear()"
+        ],
+        "changed_markers": []
+      }
+    ],
+    "note": "The two existing session protected rows contain no content hash. Their raw required markers and original Drop order survive exactly. The existing final_use_revocation_update caller metadata is unchanged; no other touched file is named by an existing metadata row. No checker execution is claimed."
+  },
+  "acceptance": {
+    "ordinary_complete_chains": 0,
+    "positive_adoption_chains": 0,
+    "ordinary_no_update_rollback_chains": 0,
+    "independent_consumer_accepted": false,
+    "physical_daemon_root_restart_accepted": false,
+    "qualification_inherited": false
+  },
+  "conclusion": "No formatting-equivalence blocker found. Root can assemble these six exact patch-derived postimages into a new fixed candidate. The original formatter-dirty attempt remains failed and contributes no behavioral or full-pipeline qualification."
+}

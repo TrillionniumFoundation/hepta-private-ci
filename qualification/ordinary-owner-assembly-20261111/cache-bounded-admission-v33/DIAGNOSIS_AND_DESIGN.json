@@ -1,0 +1,213 @@
+{
+  "schema": "hepta.v32.foreground-root-cache-contention.static-diagnosis.v1",
+  "status": "Confirmed foreground cache acquisition failure; implementation proposal only, no product mutation.",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source": {
+    "commit": "5a2e9371814e9ee0ec55781a81844ef03434874b",
+    "tree": "22d55a327460ab4a835387a4a61332dbece6866d",
+    "native_request": "ef0da4aaf894a87fedd2ab6771ae74bcc615c76f"
+  },
+  "evidence": {
+    "container": {
+      "git_blob": "8093f7e43062e7a3c09f4e728f68f7ff3dd3864f",
+      "bytes": 320500,
+      "sha256": "06580387d9752d01f43b67d96192598300db27fab55d191bfecb865e3ec8b4cc"
+    },
+    "decoded_log": {
+      "git_blob": "154766583a04f3a93f4d4cd12f9b4ee6bc3e8f7b",
+      "bytes": 118773,
+      "sha256": "561db3f2230a74066d7c6ff8a987bcde2dcf773ab2cff5391a9a3086dd9b72b8",
+      "raw_blob_uploaded": false,
+      "raw_git_is_independently_computed_identity": true
+    },
+    "base64_and_utf8_roundtrip_verified": true,
+    "selected_root_roster": {
+      "executed": 17,
+      "passed": 15,
+      "failed": 2,
+      "selected_junit_skipped": 0
+    },
+    "unselected_nextest_filter_exclusions": 1367,
+    "failures": [
+      "neuron_generation_current::initial_root_tests::root_initial_publication_uses_original_consumer_and_readonly_recovery",
+      "neuron_generation_current::publication_root_tests::root_broker_late_enrolls_publishes_and_recovers_original_current"
+    ],
+    "trace": {
+      "child_pid": 3950370,
+      "root_pid": 3950366,
+      "phase": "Publication Publish",
+      "refresh_sequence": 10,
+      "request_started_ns": 1493899366560816,
+      "response_ended_ns": 1493899373239585,
+      "request_response_ns": 6678769,
+      "foreground_contention_sample_ns": 1493899373243375,
+      "accept_same_head_ns": 1493899373244595,
+      "cache_accepted_ns": 1493899373255295,
+      "consumer_barrier_finished_ns": 1493899373255345,
+      "refresh_complete_ns": 1493899373257645,
+      "refresh_reported_outcome": "Ok",
+      "prepare_begin_ns": 1493899372989474,
+      "prepare_end_ns": 1493899373291303,
+      "prepare_elapsed_ns": 301829,
+      "final_error": "publication Publish: prepare original CURRENT -> original Root generation publication outcome is uncertain",
+      "root_service_result": "Ok(())",
+      "log_excerpt_lines": [
+        878,
+        903
+      ],
+      "log_excerpt": "    ROOT_COMPONENT_TIMING pid=3950370 label=session.refresh phase=\"original-feed\" sequence=8 begin_ns=Some(1493899150417366) end_ns=Some(1493899157253550) elapsed_ns=Some(6836184) reported_outcome=Some(\"Ok\") marks=[(\"request-started\", Some(1493899150428776)), (\"response-ended\", Some(1493899157235610)), (\"accept-same-head\", Some(1493899157239740)), (\"cache-accepted\", Some(1493899157250120)), (\"consumer-barrier-finished\", Some(1493899157250170)), (\"complete\", Some(1493899157252670))] record_cap=64\n    ROOT_COMPONENT_TIMING pid=3950370 label=publication.child.current-connect phase=Publish sequence=7 begin_ns=Some(1493899079700858) end_ns=Some(1493899229719105) elapsed_ns=Some(150018247) reported_outcome=None marks=[] record_cap=64\n    ROOT_PUBLICATION_CHILD phase=Publish step=current-connected\n    ROOT_COMPONENT_TIMING pid=3950370 label=session.refresh phase=\"original-feed\" sequence=9 begin_ns=Some(1493899258530965) end_ns=Some(1493899265247992) elapsed_ns=Some(6717027) reported_outcome=Some(\"Ok\") marks=[(\"request-started\", Some(1493899258538815)), (\"response-ended\", Some(1493899265227663)), (\"accept-same-head\", Some(1493899265233473)), (\"cache-accepted\", Some(1493899265243863)), (\"consumer-barrier-finished\", Some(1493899265243943)), (\"complete\", Some(1493899265247172))] record_cap=64\n    ROOT_OBSERVATION_CACHE phase=current reason=retained-lock-contention now=1493899373243375\n    ROOT_SESSION_DIAGNOSTIC phase=current-cache error=Unavailable\n    ROOT_COMPONENT_TIMING pid=3950370 label=session.refresh phase=\"original-feed\" sequence=10 begin_ns=Some(1493899366552877) end_ns=Some(1493899373258464) elapsed_ns=Some(6705587) reported_outcome=Some(\"Ok\") marks=[(\"request-started\", Some(1493899366560816)), (\"response-ended\", Some(1493899373239585)), (\"accept-same-head\", Some(1493899373244595)), (\"cache-accepted\", Some(1493899373255295)), (\"consumer-barrier-finished\", Some(1493899373255345)), (\"complete\", Some(1493899373257645))] record_cap=64\n    ROOT_COMPONENT_TIMING pid=3950370 label=publication.child.prepare-current phase=Publish sequence=11 begin_ns=Some(1493899372989474) end_ns=Some(1493899373291303) elapsed_ns=Some(301829) reported_outcome=None marks=[] record_cap=64\n    ROOT_SESSION_DIAGNOSTIC phase=session-drop\n    ROOT_SESSION_DIAGNOSTIC phase=worker-drop\n    Error: publication Publish: prepare original CURRENT\n\n    Caused by:\n        original Root generation publication outcome is uncertain\n\n    ROOT_COMPONENT_CHILD_OUTPUT_END\n    Error: publication component Publish phase\n\n    Caused by:\n        0: publication Publish: control worker failed; service=Ok(())\n        1: publication component control awaiting PREPARED\n        2: Resource temporarily unavailable (os error 11)\n\nerror: test run failed\nerror: recipe `test` failed on line 89 with exit code 100\n"
+    },
+    "initial_failure_not_assigned_to_this_cause": "Initial Recover has no matching current-cache/retained-contention diagnostic in its section. Its Invalid(Unavailable) leaf is being investigated independently by chain_nextuse."
+  },
+  "confirmed_cause": [
+    "RootObservationCache.retained is Mutex<Option<Retained>>. Even current is an exclusive reader because it updates last_checked_ns.",
+    "current_at maps try_lock WouldBlock to Unavailable before any cached-evidence validation. The mutex is not poisoned in the observed log.",
+    "revocations_match, accept_at, and current_at are the only local retained mutex holders in the inspected cache implementation. Their held bodies contain memory validation/projection/cloning; no external authority callback, owner invocation, await, network or durable I/O is called there.",
+    "The parallel refresh completed with Ok and accepted the same revocation head. This is not a worker-final-current failure that first killed the feed.",
+    "RootGenerationPublicationConnectionV1 invokes the original LiveRoot sender verifier. CURRENT exchange deliberately converts a pre/post verifier error into permanent client fencing and typed publication uncertainty.",
+    "The 6.68ms successful observation round trip is far below the original 500ms request-age bound. The first displayed error is local mutex contention, not expiry or time regression.",
+    "No inspected held-cache path re-enters current. The evidence supports genuine concurrent cache access, not a demonstrated same-thread recursive lock."
+  ],
+  "limits": [
+    "The logged now value is sampled before try_lock. It does not identify the exact lock acquisition instant or distinguish the concurrent refresh's revocations_match, accept_at, or final-current critical section.",
+    "The foreground replace error does not prove whether its request reached Root or whether the CURRENT mutation occurred. Preserve the existing typed uncertainty and no automatic retry.",
+    "Do not treat Root service Ok as child success or reclassify either of the two actual failed tests.",
+    "This report does not run a checker, Rust compiler, tests, h, PTY, native process, or dependency resolver."
+  ],
+  "rejected_shortcuts": [
+    "Ignoring WouldBlock in the background final read does not repair this foreground failure.",
+    "A blocking Mutex::lock introduces an unbounded synchronous wait and contradicts the current explicit non-waiting read contract.",
+    "A plain RwLock replacement cannot remove accept-versus-reader contention and current still mutates the last_checked watermark.",
+    "Reducing critical-section duration or adding finite opportunistic try attempts only lowers failure probability; it is not a demonstrated elimination.",
+    "Retrying current/exchange/publication after an Authority Unavailable or typed uncertainty would revive/repurpose a consumed client and is forbidden.",
+    "No manual refresh, new freshness timestamp, raised 500ms bound, guard bypass, shortened authority checks, or changed fixture assertion is proposed."
+  ],
+  "existing_snapshot_primitive": {
+    "workspace_declared": "arc-swap = \"1.9.0\"",
+    "lock_resolved": {
+      "name": "arc-swap",
+      "version": "1.9.2",
+      "checksum": "c049c0be4daef0b145cb3555416b3b8ef5b7888a38aea1a3a155801fe7b0810b"
+    },
+    "actual_usage": "fixed-source exec-server/client.rs uses ArcSwap/ArcSwapOption and separate writer serialization; this is an existing safe Rust snapshot primitive, not evidence that authority-cache semantics are automatically preserved.",
+    "agentd_direct_dependency": false,
+    "integration_cost": "Using it from agentd would require an explicit direct dependency/package-graph update even though the version is already locked. No dependency or lockfile has been changed."
+  },
+  "immutable_snapshot_proof_obligations": {
+    "state": "Feasible storage mechanism, not yet a proven drop-in semantic fix.",
+    "reader": "A read would retain one immutable original response plus its ORIGINAL request_started_ns; all proof, ceiling, 500ms, boot/identity, session lifetime and sticky-fence checks must remain.",
+    "writer": "Only validated original feed responses may publish a snapshot. Keep real original consumer synchronization and its update barrier. No refresh or renewed request timestamp may be manufactured by a reader.",
+    "barrier_aba": "Boolean begin_update/end_update checks alone are insufficient for immutable readers: an old retained Arc can span a complete revocation update. A bounded generation/admission proof must reject that read without treating it as authorization or retrying an already failed call.",
+    "monotonicity": "A bare atomic fetch_max is insufficient: it can hide a real regression. Comparing every earlier sample against a later concurrently published watermark can instead misclassify a valid sampling interleaving as regression. A coherent causal sampling/commit rule would need an explicit proof and tests; it is not silently accepted here.",
+    "poison": "Replacing Mutex poisoning requires an equally sticky invalid/panic fence before any invalid state is made readable.",
+    "conclusion": "Do not submit a one-field ArcSwap/RwLock patch or claim that reduced contention probability solves the current failure."
+  },
+  "smallest_guard_preserving_implementation_option": {
+    "status": "Concrete conditional proposal; requires explicit approval of bounded first-acquisition waiting in place of the current zero-wait local contract.",
+    "dependency_changes": 0,
+    "original_authority_checks": "Keep every existing validation predicate and fatal error. This changes acquisition scheduling, not the signed evidence, expiry, nonce owner, CURRENT protocol, or returned-failure recovery rules.",
+    "algorithm": [
+      "Publish the accepted request_started_ns as an atomic admission bound only after a fully validated original accept. This integer is not authority; the held full Retained object remains the validation source.",
+      "At the FIRST current invocation, freeze the existing original request deadline request_started_ns + MAX_AGE_NS with checked arithmetic. Missing, invalid, expired, fenced or updating state is still refused. Never reset this deadline from a newer observation during acquisition.",
+      "Acquire the existing retained Mutex with a bounded in-memory admission loop that handles only std::sync::TryLockError::WouldBlock before an Authority result is produced. Poison, time-read failure, update/fence, or exhaustion of that original deadline fails; it is not retried. Do not invoke current, refresh, a verifier, an owner, or a transport from this loop.",
+      "Once the original guard is obtained, sample real BOOTTIME under that guard and run the original current validation/projection/watermark update and final fence/update checks. This avoids comparing a pre-lock sample with a later reader's watermark.",
+      "The accept production path likewise needs its actual now sampled after acquiring its existing writer guard; keep request started/ended unchanged and keep all old-age/non-revival/monotonic checks. Existing explicit-time test entry points remain test-only, not a runtime clock substitute.",
+      "Keep the public LiveRoot/CURRENT/FinalUse error behavior unchanged. In particular, an already returned Unavailable, expired cache or fenced client is never restarted or retried."
+    ],
+    "precise_contract_difference": "This is finite first-call memory acquisition waiting, not the current literal promise 'never a wait behind a writer'. It cannot be implemented under a strict requirement that this zero-wait promise itself remain unchanged. Root must explicitly decide this local scheduling contract before implementation.",
+    "boundedness": "The authorization deadline remains the same original request age, including time spent acquiring. No hard-real-time scheduling guarantee is claimed; if the thread resumes after the deadline, it must reject before authorizing.",
+    "existing_guard_coverage_to_preserve": [
+      "original expired-cache non-revival",
+      "clock ceiling and conservative rounding",
+      "rollback/equivocation/boot/epoch/binding rejection",
+      "revocation update barrier",
+      "panic/poison/fence failure",
+      "session Drop invalidation",
+      "original CURRENT uncertainty and no replay"
+    ],
+    "verification_required": "Meaningful concurrent admission/expiry/clock-order tests and the unchanged exact Root parents on the next fixed source. No mirror assertions or altered success expectations."
+  },
+  "recommendation": "Root may authorize the explicit bounded first-acquisition contract as the smallest dependency-free implementation cut. If zero-wait is non-negotiable, stop at the immutable-snapshot proof obligations rather than weakening guards or pretending an unproved storage swap is complete.",
+  "source_pins": [
+    {
+      "path": "codex-rs/hepta-agentd/src/root_observation_cache.rs",
+      "git_blob": "047c616692f9288077d7e289b8c2aeecc926e937",
+      "bytes": 16596,
+      "sha256": "3f9ab8536bd153c64a2ebab1b7f89a68fa76a7bc0df47f91844054d57cf9e387"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_observation_cache_tests.rs",
+      "git_blob": "7573cc6064186aab16e4dab5c12dd0eb97b71a1d",
+      "bytes": 4883,
+      "sha256": "e2b6c9e6c255a310136a2e80c3aace6f4b0094a27821f869454ac3fdd20482f8"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session.rs",
+      "git_blob": "bd11492035b4d508201d1e5a9f0a999ea177daed",
+      "bytes": 21031,
+      "sha256": "3b3b1d7d358c38545ee12dbaea5d5e23f64019cc60857b2cecf772e564569d94"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_generation_publication_connection.rs",
+      "git_blob": "c55807fe3cfe826a69389b27ad4d7fe025fe9011",
+      "bytes": 4477,
+      "sha256": "0beba1e9cc469d86b4c3c8ee59619b1db226f8251191531a28ab26fd59a412c0"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_generation_current_client.rs",
+      "git_blob": "c868a7eca4117f79f5f3e35ef1ecd3f0863184d9",
+      "bytes": 11018,
+      "sha256": "2ae54af7f5f5e63f6fbafb04b192e5f02e8b22954df7917f54047621eaca8b03"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_current_store.rs",
+      "git_blob": "16a9f0c60c56648a94ebc8ff8a7cdca5be1af1ea",
+      "bytes": 5779,
+      "sha256": "12cd56df56fedf2a12a36dca8bb54e0981c90333fd34eeeaebfd738a6a6de8b9"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_root_child_tests.rs",
+      "git_blob": "eaf9a9e313755e218e257dc32d58f818abaead77",
+      "bytes": 17429,
+      "sha256": "2349d5a8483ed1a3feda4e2897167c9ffc7990643dfb5b577ec0cbb5593ad761"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/Cargo.toml",
+      "git_blob": "a32f7eb893fd529692fd2005ca02ac9e8f853b95",
+      "bytes": 4905,
+      "sha256": "3641050d95ed757d30d0848ed7b04584f8bafdbf664341fbc462f0b44966c417"
+    },
+    {
+      "path": "codex-rs/Cargo.toml",
+      "git_blob": "79862bd7edcd982bedb55897a6246b926fa54959",
+      "bytes": 23110,
+      "sha256": "722f70c04e70174e8c9a7c80da055739607d8b69249fc08e629c8adb1a8a45bd"
+    },
+    {
+      "path": "codex-rs/Cargo.lock",
+      "git_blob": "025813e20504f31d12dae2092a0807a1a4066419",
+      "bytes": 421005,
+      "sha256": "98b3767c6e74bf6eeb5894db760259dbc400cbfd0685af8ad915c92d25408d69"
+    },
+    {
+      "path": "codex-rs/exec-server/src/client.rs",
+      "git_blob": "7900337285e21617cc483a3ff4560b9ed74b8ab6",
+      "bytes": 123583,
+      "sha256": "c8cced7661b0c2061dd97c46d20f608ee64f6ca40d9382214f28e74d6faf4c6e"
+    }
+  ],
+  "changes_made": {
+    "product_source": 0,
+    "tests": 0,
+    "metadata": 0,
+    "dependencies": 0,
+    "refs": 0
+  },
+  "author_execution": "Git retrieval and pure V8 decoding/hash/static inspection only.",
+  "ordinary_test_fix_separate": {
+    "manifest": "58b31b40d3e0e437f5931b82695bd05f4f950e2a",
+    "test_postimage": "289fe030947ad2adc72d4fb5b8e88a4b466b7d4e",
+    "independent_review": "2227eca24ad152e66f9eaaf999d1fdf6113c1af0",
+    "status": "remains frozen separately; original ordinary 1943 passed / 1 failed remains an actual failure"
+  }
+}

@@ -1,0 +1,109 @@
+{
+  "schema": "hepta.native-seven-package-format-attempt.v1",
+  "source": {
+    "commit": "f1c9170c891b58d9f059302e80be5d50265798d5",
+    "tree": "2ca384f8cc81f9bf934939060fefc31c6f237aa8"
+  },
+  "status": "failed-source-drift",
+  "request": "3decc946d333a80ea9999b255756010a704839fa",
+  "harness": "096b5b69c1295560f3a6c9e0da51e2708a0c996c",
+  "session": "dpty-55d633cebb9f058bb26f6c320761030d48db4c6cdf19018d16af8933d31025a7",
+  "format": {
+    "command": [
+      "just",
+      "fmt",
+      "--base",
+      "5edc50004a25cc585851f4aa6009ccc0d8f87705"
+    ],
+    "started_at": "2026-11-12T04:22:12.978301+00:00",
+    "finished_at": "2026-11-12T04:22:15.718511+00:00",
+    "elapsed_seconds": 2.7389316568151116,
+    "command_exit_code": 0,
+    "executor_exit_code": 1,
+    "error": "source identity or bytes changed during execution",
+    "dirty_postimages": 12,
+    "log_bytes": 0,
+    "log_directly_read": true,
+    "timeout": false,
+    "output_limit_exceeded": false
+  },
+  "stages_completed": [
+    {
+      "name": "original-rust-idle-preflight",
+      "exit_code": 0,
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "name": "isolated-clone",
+      "exit_code": 0,
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "name": "fetch-exact-source",
+      "exit_code": 0,
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "name": "checkout-exact-source",
+      "exit_code": 0,
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "name": "format-base-ancestry",
+      "exit_code": 0,
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "name": "operator-toolchain",
+      "exit_code": 0,
+      "state": "completed",
+      "timed_out": false
+    },
+    {
+      "name": "fmt-before",
+      "exit_code": 1,
+      "state": "completed",
+      "timed_out": false
+    }
+  ],
+  "cleanup": [
+    {
+      "name": "retain-source-and-drift",
+      "status": "passed"
+    },
+    {
+      "name": "original-tool-sources",
+      "status": "passed"
+    },
+    {
+      "error": "RuntimeError('fixed source is not clean: {\"head\": \"f1c9170c891b58d9f059302e80be5d50265798d5\", \"status\": \" M codex-rs/hepta-agentd/src/cell_q24_task_ledger_test_support.rs\\\\n M codex-rs/hepta-agentd/src/circuit_q24_successor_feedback_tests.rs\\\\n M codex-rs/hepta-agentd/src/circuit_q24_successor_state.rs\\\\n M codex-rs/hepta-agentd/src/config_late_writer_identity.rs\\\\n M codex-rs/hepta-agentd/src/config_late_writer_identity_tests.rs\\\\n M codex-rs/hepta-agentd/src/deployment_writer_observation_tests.rs\\\\n M codex-rs/hepta-agentd/src/production_launcher_late_startup.rs\\\\n M codex-rs/hepta-agentd/src/production_launcher_late_writer.rs\\\\n M codex-rs/hepta-agentd/src/production_launcher_late_writer_tests.rs\\\\n M codex-rs/hepta-contracts/src/authority_lease_observation.rs\\\\n M codex-rs/hepta-contracts/src/authority_lease_observation_tests.rs\\\\n M codex-rs/hepta-fleet/src/registry_readonly_tests.rs\\\\n\", \"tree\": \"2ca384f8cc81f9bf934939060fefc31c6f237aa8\"}')",
+      "name": "final-physical-source",
+      "status": "failed"
+    },
+    {
+      "name": "read-only-reference",
+      "status": "passed"
+    },
+    {
+      "name": "external-tools",
+      "status": "passed"
+    }
+  ],
+  "tests_executed": 0,
+  "compile_or_clippy_reached": false,
+  "full_caller_or_qa_reached": false,
+  "source_retained_dirty": true,
+  "next_step": "Review and commit exactly the original formatter postimages and exact whitespace marker alignment; qualify a new immutable source from the beginning.",
+  "ordinary_acceptance": {
+    "complete": 0,
+    "positive_adoption": 0,
+    "no_update_or_rollback": 0,
+    "independent_consumer": false,
+    "physical_daemon_root_restart": false
+  }
+}

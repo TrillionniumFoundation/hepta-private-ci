@@ -1,0 +1,363 @@
+{
+  "schema": "hepta.initial-recover-v32-causal-review.v1",
+  "status": "fixed-source-and-original-log-review; outer failing call isolated by source/error-chain inference; inner cause unresolved",
+  "scope": {
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "source_head": "5a2e9371814e9ee0ec55781a81844ef03434874b",
+    "source_tree": "22d55a327460ab4a835387a4a61332dbece6866d",
+    "test": "neuron_generation_current::initial_root_tests::root_initial_publication_uses_original_consumer_and_readonly_recovery",
+    "phase": "Recover",
+    "controlled_ack_loss": false,
+    "actions": "Git reads and pure in-memory byte/hash/source analysis only. No h, PTY, Cargo, test execution, source edit, ref edit, retries, cache refresh, or authority change."
+  },
+  "original_evidence": {
+    "container": {
+      "git_blob": "8093f7e43062e7a3c09f4e728f68f7ff3dd3864f",
+      "bytes": 320500,
+      "sha256": "06580387d9752d01f43b67d96192598300db27fab55d191bfecb865e3ec8b4cc"
+    },
+    "raw_log": {
+      "bytes": 118773,
+      "sha256": "561db3f2230a74066d7c6ff8a987bcde2dcf773ab2cff5391a9a3086dd9b72b8",
+      "git_blob": "154766583a04f3a93f4d4cd12f9b4ee6bc3e8f7b",
+      "container": "8093f7e43062e7a3c09f4e728f68f7ff3dd3864f"
+    },
+    "verification": "Decoded main data_base64, verified full byte length/SHA256/Git blob hash and strict UTF-8 round trip; retained the original container, including its three fixed-version read responses. No trim or reconstruction of raw log.",
+    "original_summary": "17 tests run: 15 passed, 2 failed, 1367 skipped",
+    "original_initial_test_elapsed_seconds": 20.987,
+    "excerpt": {
+      "one_based_lines": [
+        812,
+        829
+      ],
+      "bytes": 2094,
+      "sha256": "579954c578546802ad5f3e97242807b8bc9c1e24277706aaa433edbadaec1547",
+      "git_blob": "313f5cdeb0d74f5566d1138ccde4ef28cb216b90",
+      "text": "    ROOT_INITIAL_CHILD phase=Recover stage=awaiting_original_handoffs\n    ROOT_COMPONENT_TIMING pid=3950094 label=session.refresh phase=\"original-feed\" sequence=60 begin_ns=Some(1493882804723399) end_ns=Some(1493882810739862) elapsed_ns=Some(6016463) reported_outcome=Some(\"Ok\") marks=[(\"request-started\", Some(1493882804728269)), (\"response-ended\", Some(1493882810721373)), (\"accept-changed-head\", Some(1493882810725342)), (\"cache-accepted\", Some(1493882810730342)), (\"consumer-barrier-finished\", Some(1493882810735232)), (\"complete\", Some(1493882810739412))] record_cap=64\n    ROOT_COMPONENT_TIMING pid=3950094 label=initial.child.five-lane-open phase=Recover sequence=59 begin_ns=Some(1493882786891273) end_ns=Some(1493882843415592) elapsed_ns=Some(56524319) reported_outcome=None marks=[] record_cap=64\n    ROOT_INITIAL_CHILD phase=Recover stage=original_five_lane_inputs_open\n    ROOT_COMPONENT_TIMING pid=3950094 label=initial.child.artifact-reopen phase=Recover sequence=61 begin_ns=Some(1493882843433532) end_ns=Some(1493882888649970) elapsed_ns=Some(45216438) reported_outcome=None marks=[] record_cap=64\n    ROOT_COMPONENT_TIMING pid=3950094 label=initial.child.model-load phase=Recover sequence=62 begin_ns=Some(1493882888660269) end_ns=Some(1493882888867022) elapsed_ns=Some(206753) reported_outcome=None marks=[] record_cap=64\n    ROOT_INITIAL_CHILD phase=Recover stage=original_inputs_ready_sent\n    ROOT_COMPONENT_TIMING pid=3950094 label=initial.child.root-enrollment-wait phase=Recover sequence=63 begin_ns=Some(1493882895067788) end_ns=Some(1493883175717498) elapsed_ns=Some(280649710) reported_outcome=None marks=[] record_cap=64\n    ROOT_SESSION_DIAGNOSTIC phase=session-drop\n    ROOT_SESSION_DIAGNOSTIC phase=worker-drop\n    Error: invalid agentd configuration: Unavailable\n\n    ROOT_COMPONENT_CHILD_OUTPUT_END\n    Error: initial parent Recover, controlled_ack_loss=false: original Root serve result: Err(Custom { kind: Other, error: PeerDenied })\n\n    Caused by:\n        0: initial parent Recover: awaiting STABLE\n        1: Resource temporarily unavailable (os error 11)\n"
+    }
+  },
+  "findings": [
+    {
+      "id": "initial-stage-progress",
+      "kind": "observed-plus-fixed-control-flow",
+      "statement": "The original false-ACK-loss fixture completed Publish and ReserveExisting far enough to enter Recover in the same actual UID60001 child. Recover opened original five-lane inputs, reopened the original Artifact owner, loaded the actual model, sent ORIGINAL_INPUTS_READY, and received the enrollment result. The parent deployment registration returned through the successful original with_live callback.",
+      "original_timings_ns": {
+        "five_lane_open": 56524319,
+        "artifact_reopen": 45216438,
+        "model_load": 206753,
+        "child_enrollment_wait": 280649710,
+        "parent_deployment_register": 280527165
+      },
+      "qualification": "This is partial progress inside a failed parent, not a passed recovery component or an ordinary task/independent consumer/OS restart."
+    },
+    {
+      "id": "first-error-is-child",
+      "kind": "observed",
+      "statement": "The child prints session-drop/worker-drop followed by the bare `Error: invalid agentd configuration: Unavailable`. Parent output then records Root serve PeerDenied and its own STABLE wait EAGAIN. The child never reaches the phase STABLE signal."
+    },
+    {
+      "id": "outer-call-isolation",
+      "kind": "source-derived inference; not a new runtime probe",
+      "statement": "In the fixed child, initial.connect carries `connecting original initial lane` Context and recover_feature carries `reading original published Feature` Context. Neither appears in the preserved anyhow error chain. In the Recover branch, the only subsequent bare fallible operation producing the observed Agentd Invalid prefix before STABLE is task.require_bundle(&bundle). Its immediately following capacity() returns FinalUseError directly, whose Display prints the enum name alone, so that call cannot produce this prefix.",
+      "references": [
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_child_tests.rs",
+          "lines": [
+            119,
+            171
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-contracts/src/final_use.rs",
+          "lines": [
+            488,
+            507
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-contracts/src/final_use.rs",
+          "lines": [
+            981,
+            1006
+          ]
+        }
+      ],
+      "limit": "This isolates the child call using fixed control flow and error formatting. It does not observe which internal require_bundle subcheck failed."
+    },
+    {
+      "id": "inner-error-information-is-lost",
+      "kind": "source-confirmed",
+      "statement": "require_bundle revalidates the real live task before and after immutable bundle checks. That traverses original CURRENT, the retained guarded Generation journal, actual artifact selection and original consumed FinalUse. CurrentOwner::check_open converts every store.load error to CellGenerationErrorV2::Unavailable. LiveGenerationCurrent::check_live similarly converts clock/selection/retained-FinalUse errors to Unavailable. The outer Invalid display therefore cannot distinguish these branches.",
+      "references": [
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_feature_current.rs",
+          "lines": [
+            286,
+            293
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_feature_current.rs",
+          "lines": [
+            325,
+            334
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/neuron_generation_current.rs",
+          "lines": [
+            324,
+            358
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/neuron_generation_current_store.rs",
+          "lines": [
+            111,
+            126
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/neuron_generation_update_live.rs",
+          "lines": [
+            153,
+            206
+          ]
+        }
+      ]
+    },
+    {
+      "id": "not-proved-same-as-publication",
+      "kind": "observed absence with explicit limits",
+      "statement": "The entire preserved Initial failure block has no ROOT_OBSERVATION_CACHE failure, ROOT_SESSION_DIAGNOSTIC current/refresh failure, or ROOT_INITIAL_FAILURE line. Its last timing record has sequence63; timing records after that may be suppressed by record_cap64. The cache/session error eprintln sites are cfg(test) statements independent of the timing cap. Therefore the lack of later timing does not place failure at connect/enrollment, and Publication's separately observed retained-lock contention is not proof of Initial's leaf cause.",
+      "references": [
+        {
+          "path": "codex-rs/hepta-agentd/src/root_authority_session.rs",
+          "lines": [
+            105,
+            178
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/root_observation_cache.rs",
+          "lines": [
+            221,
+            294
+          ]
+        }
+      ]
+    },
+    {
+      "id": "recovery-does-not-reclaim",
+      "kind": "source-confirmed",
+      "statement": "Recover enrollment opens the retained profile/current/target and verifies recorded use; recover_feature reads the completed original initial operation and reopens its guarded original journal. It does not call a fresh grant claim or publication CAS. FinalUse::verify_retained_use checks the old grant window at the recorded DispatchEntry witness and checks the current original state/frontier. Current expiry must not be 'fixed' by reissuing the old grant.",
+      "references": [
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_enrollment.rs",
+          "lines": [
+            110,
+            207
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/root_generation_initial_prepare.rs",
+          "symbol": "recover_original_initial"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/neuron_generation_initial.rs",
+          "symbol": "recover_agentd_generation_initial_v1"
+        },
+        {
+          "path": "codex-rs/hepta-contracts/src/final_use_retained.rs",
+          "lines": [
+            38,
+            65
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-contracts/src/final_use_retained.rs",
+          "lines": [
+            98,
+            138
+          ]
+        }
+      ]
+    },
+    {
+      "id": "peerdenied-is-not-proven-admission-failure",
+      "kind": "observed ordering plus source-supported consequence",
+      "statement": "The original OwnerChannel check/wait returns PeerDenied when the original peer pidfd becomes readable; wait explicitly gives owner exit precedence. The five-lane/Initial recovery progress and subsequent child exit make the parent's PeerDenied compatible with that teardown consequence. The log does not identify a bad original SO_PEERCRED/UID check as the first failure.",
+      "references": [
+        {
+          "path": "codex-rs/hepta-contracts/src/authority_host_channel.rs",
+          "lines": [
+            67,
+            115
+          ]
+        }
+      ],
+      "limit": "The exact parent PeerDenied branch is not instrumented here; no peer guard is proposed for relaxation."
+    }
+  ],
+  "minimum_next_diagnostic": {
+    "status": "proposal only; no product or test postimage applied or executed",
+    "child_context": {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_child_tests.rs",
+      "unique_before": "                drop(timing);\n                task.require_bundle(&bundle)?;\n                assert_eq!(production.device.capacity()?.used_nonces, 1);\n",
+      "proposed_after": "                drop(timing);\n                task.require_bundle(&bundle)\n                    .with_context(|| format!(\"initial child {phase:?}: checking recovered published Feature bundle\"))?;\n                assert_eq!(production.device.capacity()?.used_nonces, 1);\n",
+      "purpose": "Print the failing outer call without changing its call count, order, error propagation, authority, or assertion."
+    },
+    "leaf_classification": "If the next fixed candidate includes diagnostics, inspect only existing Err results immediately before they are collapsed: CurrentOwner store.load; LiveGenerationCurrent current-before/current-after; actual clock now_unix_ms; selected.revalidate; original final_use.verify_retained_use. cfg(test) output must print stage plus the original error, with no new read/refresh/clock sample, retry, sleep, permit, or fallback. This classifies the inner branch without altering its original returned error. Raw RootInitial stream errors may need a further existing-Err diagnostic only if the CURRENT branch is identified.",
+    "invariants": [
+      "All assertions, waits, request ordering, lifetimes and the 500ms cache bound remain unchanged.",
+      "No eager refresh, warm-up, rearm, new nonce, or retry after a purpose/client fence.",
+      "No passing claim for existing source or inheritance to any later candidate."
+    ]
+  },
+  "execution_and_acceptance": {
+    "new_native_or_checker_runs": 0,
+    "product_source_changes": 0,
+    "test_source_changes": 0,
+    "refs_changed": 0,
+    "current_native_status_preserved": "failed-native-components",
+    "root_parent_result_preserved": "17 executed / 15 passed / 2 failed",
+    "ordinary_result_as_reported_by_root": "1944 executed / 1943 passed / 1 failed",
+    "ordinary_completed_loop": 0,
+    "independent_consumer": 0,
+    "actual_daemon_and_root_os_restart": 0
+  },
+  "source_pins": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_child_tests.rs",
+      "git_blob": "01b5cd8e5c30ded50eb3b97f67c3e94c308697a0",
+      "bytes": 14759,
+      "sha256": "bbf718ced03553b902887631d33ff8f6454ff37de84fa81e88e07c5af911eccc"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_fixture_tests.rs",
+      "git_blob": "fd70cfc012684f66b6a14660d06a738c9904b5c9",
+      "bytes": 24933,
+      "sha256": "90dcc5f3e5c6284bec14f1e1f5f1229a4d1a5d10daf5aa4fc095327f70f123ca"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_root_tests.rs",
+      "git_blob": "ec7f167f001c878fff0329a72691a6996fe591a0",
+      "bytes": 10037,
+      "sha256": "694967d4d378b8dd3c4bb0e92905a933d36ef240f6e6c3139a29bf3c2eab5106"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_enrollment.rs",
+      "git_blob": "1b25f9ea01b847b9d88bf23e4ffb171865da7fb5",
+      "bytes": 9897,
+      "sha256": "9f8613d8a78e7ad0567de8c6adf02410a93e668db5ef19a2a8a20b42b0eaa071"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_generation_initial_inputs.rs",
+      "git_blob": "d3c5da3501fe4395f8aa8e0ce159a62e9bbc6c34",
+      "bytes": 6090,
+      "sha256": "94382ddb43fb1c0de04643e2a28f1c3dfa462ad8539ad488b67a2d96f5ab3e3f"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_generation_initial_client.rs",
+      "git_blob": "d970542fd254c994ae12510ad3a8c463cacf22c1",
+      "bytes": 8612,
+      "sha256": "b02b68f6b8881befe6baf699d11bb65c258d457407d2d1aae5237fbc7101d168"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_generation_initial_prepare.rs",
+      "git_blob": "d0b37d73d5720a1d66c6915827eec0b1bcba42c2",
+      "bytes": 7740,
+      "sha256": "b408f82d269068c523c1f92aaf84a9fb296bb67ab1579a3206c10c732e9f9202"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_initial_root.rs",
+      "git_blob": "69f1c5256c39c3831fa0ade24eb59f35a413ebd7",
+      "bytes": 5953,
+      "sha256": "06d4f55af69f6ed1fea65e7c62de7b251be59ab927eea250b2f7b3cda11f1ca1"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial.rs",
+      "git_blob": "cdce3889936f83e06d733124b1a840d2a265c4cf",
+      "bytes": 9524,
+      "sha256": "5268171d28a80c2953f03e6acd84f83f70164caa66b144eee6c2b2ad9255c676"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current.rs",
+      "git_blob": "5606bc5a46d1453e14ca55409713c8d61acfed70",
+      "bytes": 14061,
+      "sha256": "a2c552421260e73979c3faa0628b31ddb1e38d4a9cae786bebe8f986a9a88163"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_current.rs",
+      "git_blob": "b73ed61ee4c611d7568276a092c1ba594ceb577f",
+      "bytes": 15239,
+      "sha256": "5a34eadea61f66573097f0a0cc6f3f5b5fdf84476e7fb2c084c5b675516c4106"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_current_store.rs",
+      "git_blob": "16a9f0c60c56648a94ebc8ff8a7cdca5be1af1ea",
+      "bytes": 5779,
+      "sha256": "12cd56df56fedf2a12a36dca8bb54e0981c90333fd34eeeaebfd738a6a6de8b9"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_update_live.rs",
+      "git_blob": "3f83777f4f4a04ffc800d2be4eb5c8b4618bdc75",
+      "bytes": 7338,
+      "sha256": "094a50bcfc6c1e087ca1bc57213cad25e39fc0975cbd30ed077be8052d173cef"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_update_selection.rs",
+      "git_blob": "930fb5bbb0d468170833218f3dd8e330805a003a",
+      "bytes": 9008,
+      "sha256": "c352bba5a52e4885f3c4d1d90c054776d89ed16a0a435778e8b532189e8ecdca"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_transport.rs",
+      "git_blob": "7d3d9a13db15464078f78efec7178b20f3b1b61e",
+      "bytes": 15598,
+      "sha256": "aef7970e5a5e37375e63c15a10ed853e0760c01f4121a3a3fd2986385ddb5c8c"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_composed_q24.rs",
+      "git_blob": "e57eff1fbfd80da0250d04b14be2c659869e0f02",
+      "bytes": 18787,
+      "sha256": "26e5d4fea0a5c79a6c32ceae56b80e9e36861c4bf1f4f4ea8d0d05efce175836"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session.rs",
+      "git_blob": "bd11492035b4d508201d1e5a9f0a999ea177daed",
+      "bytes": 21031,
+      "sha256": "3b3b1d7d358c38545ee12dbaea5d5e23f64019cc60857b2cecf772e564569d94"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_observation_cache.rs",
+      "git_blob": "047c616692f9288077d7e289b8c2aeecc926e937",
+      "bytes": 16596,
+      "sha256": "3f9ab8536bd153c64a2ebab1b7f89a68fa76a7bc0df47f91844054d57cf9e387"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use.rs",
+      "git_blob": "ebbf7799623fd8993a6135f5ede63d00a8012b06",
+      "bytes": 37740,
+      "sha256": "ced4c5ba23310633726f254a1cef1ea239eb5694adfe54c837d05ae89f34bc62"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use_retained.rs",
+      "git_blob": "9bd9466142c8575a9cf875cc83c9cfd0fc3587bb",
+      "bytes": 5560,
+      "sha256": "c90e1bd0263dbac80dcefaa4e745b3f25e18e80352f5828adb71648ec6f4f35e"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use_live_owner.rs",
+      "git_blob": "ed96ac3966a20a7aab1c5138c7493464b6d8b2a8",
+      "bytes": 3225,
+      "sha256": "f5b087e6705416770624bf640316526eebd23ebedb3d7930e9cb945a83fdd754"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_host_channel.rs",
+      "git_blob": "867822ffc4de4aa548771108853f1a4d9fd4ef63",
+      "bytes": 6221,
+      "sha256": "cdb79e489fd1759eba1118fa31daa42d06ab77ca816d1f1194d5f9a7a7beda78"
+    }
+  ]
+}

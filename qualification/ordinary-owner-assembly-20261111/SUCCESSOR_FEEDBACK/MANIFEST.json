@@ -1,0 +1,381 @@
+{
+  "schema": "hepta.original-q24-successor-feedback-slice.v2",
+  "status": "fixed-unreferenced-source-static-only-awaiting-independent-review-and-native",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "base": {
+    "commit": "7666bcc2c650298f2e1d47e615a25864fe792fa1",
+    "tree": "7495444ffe639ad28ac64aad5cc68e70c097c4aa"
+  },
+  "exact_ops": {
+    "git_blob": "e36a44dbb8b97a5ce2bcf6594190acb425c956a5",
+    "bytes": 38566,
+    "sha256": "d3759f9c6fce9b08940ade123b478b57fbe36a9b41a526a07faa61ee7e6f492d",
+    "operations": 39
+  },
+  "superseded_drafts": [
+    "d0643e8d7669c245fc0cf4b383175593a4d0bc69"
+  ],
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_execution.rs",
+      "preimage": {
+        "git_blob": "afa37c4b1ca4c7108e72f77cf1bc3484a7b9ebab",
+        "bytes": 4766,
+        "sha256": "7809c4312ba2b1dc5f85e14fce8f6470776feaf1181132fd0cc2cddc2aa963d4"
+      },
+      "postimage": {
+        "git_blob": "3263eb485459626f3cca29e5d90d58032121ae16",
+        "bytes": 8224,
+        "sha256": "91f12d9f1dbd0bcd478713768df227aef2e73bdcc1cad41c48b3b35d18603e9e"
+      },
+      "kind": "modify"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor.rs",
+      "preimage": {
+        "git_blob": "e75cf848c0bd7c0a2ba16c4469f3a775c65df441",
+        "bytes": 8013,
+        "sha256": "f31eccead5ef5ad665459e0340dcb0f3a55e1b01ebca58f1a7cbe1b00d3cc035"
+      },
+      "postimage": {
+        "git_blob": "b16d0fd8d9ec24ab3603deae1e75bdaf5fa4241e",
+        "bytes": 8190,
+        "sha256": "77e815730b1db392738095cfb18b6e6c9d68afdfe3224652c1e133dcbe60f066"
+      },
+      "kind": "modify"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_state.rs",
+      "preimage": {
+        "git_blob": "35b702c52e89f1d38ad7ef9da6f0274fe62b62f2",
+        "bytes": 10711,
+        "sha256": "67a9c8e0859c77ea0ec8875c056a8b6572f57f5f815d4facd98c3d6977aa4680"
+      },
+      "postimage": {
+        "git_blob": "d89d8ca0592089593c6ce6f870639e9b454435b6",
+        "bytes": 10615,
+        "sha256": "330c38dce7b9cc232f54308f400c923e8c6b923d0916a1b63b49dcca418d7f6f"
+      },
+      "kind": "modify"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_worker.rs",
+      "preimage": {
+        "git_blob": "0f71072a2ca33ab137d492d5ecc66a85ca62b91d",
+        "bytes": 8445,
+        "sha256": "4afa8b3ccfd2fbbc85b0e72f87d0adf194be33689dae4b2b362918bfd7597c12"
+      },
+      "postimage": {
+        "git_blob": "00b0e2235e00c67086d7a9618223766ef1ff1cc7",
+        "bytes": 8420,
+        "sha256": "a4b394bc140cd1cb2020b03bafec387375823964bb0de8ab14e5c478ccb00d68"
+      },
+      "kind": "modify"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_invocation.rs",
+      "preimage": {
+        "git_blob": "a89adc2c612699b23363aebd6f1dcb5bd8d489f7",
+        "bytes": 2340,
+        "sha256": "6f0a954dde6c1220c61b5b52c6d5876465bb07d208d06214eef1adb5bf33b671"
+      },
+      "postimage": {
+        "git_blob": "235e6b1ce07063f854b54c202ee39c7cb54f514a",
+        "bytes": 2659,
+        "sha256": "1e2a2b6df6f534914a2a233f4106b4dbf78ec78776b0556cece935de4a4c061e"
+      },
+      "kind": "modify"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "preimage": {
+        "git_blob": "2cbcceb440a7c39313e687a4b0baa1f172defcd3",
+        "bytes": 63695,
+        "sha256": "770d9b5df542c36a1a055d4892d4ed7fa2da8640ca9c58261b2621031fa9178b"
+      },
+      "postimage": {
+        "git_blob": "ed0c326180e2c32f59e8198cb230312015022b70",
+        "bytes": 63786,
+        "sha256": "c24981b60e7ec928e75e9634929d5829327bb9251f8f7eab72b2e228e67a2600"
+      },
+      "kind": "modify"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_task_test_support.rs",
+      "preimage": {
+        "git_blob": "fc4740b284785c41c846baf55ed041fe981683be",
+        "bytes": 17203,
+        "sha256": "24841c46676511ab19c1dd00ad0f0debc73b2ac334e28ee78c58539c14e34681"
+      },
+      "postimage": {
+        "git_blob": "dd802810439ed1e72f77f6d2126a0da48fd499b8",
+        "bytes": 19349,
+        "sha256": "b7f18e610a20a928b0c4c135888b2307a777330b5d4261be4086b928d216b709"
+      },
+      "kind": "modify"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_task_ledger_test_support.rs",
+      "preimage": {
+        "git_blob": "cbf672f8eba72bdfc2117bbfd6f64927655be687",
+        "bytes": 14992,
+        "sha256": "484b1b0061123c8ed39084fbb1f4a2e90ef355329dd644b5fbfdf5d031642ba0"
+      },
+      "postimage": {
+        "git_blob": "870305af6dddfc322271a2449d3d5e5c3b7d1488",
+        "bytes": 16164,
+        "sha256": "41ba3ce24150c842ff528a97922afdf0cb48de1467c8ad1b53b10e2bad84261a"
+      },
+      "kind": "modify"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_task_ledger_tests.rs",
+      "preimage": {
+        "git_blob": "60b21e405e66f62f775ad3c5129db992af12580c",
+        "bytes": 15574,
+        "sha256": "a4c79d06bb8951a077396f2c028089b07d8f4c3cb2e8a084d30e7629380763b0"
+      },
+      "postimage": {
+        "git_blob": "c5b9267eaa8144e82a21f2059b1a249b7884a38d",
+        "bytes": 15650,
+        "sha256": "4e1a285e565fded976a2079d6aac30eb2023a7ff0df4297707114c2fe3eef76b"
+      },
+      "kind": "modify"
+    },
+    {
+      "path": "CALLERS.toml",
+      "preimage": {
+        "git_blob": "f90e0cf6fe2f024961104821a0f3c1be6256995d",
+        "bytes": 649761,
+        "sha256": "ba5227700100722f935b710674225c0880a6a771dec418ad6a72c62100065e72"
+      },
+      "postimage": {
+        "git_blob": "5c424d0b9dbc460725d13361972fc5628941f080",
+        "bytes": 652225,
+        "sha256": "6b1199a471db4e24bab17564150bfd12f8a6f5806de60110831c1e9fc4e3375f"
+      },
+      "kind": "modify"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_feedback_tests.rs",
+      "preimage": null,
+      "postimage": {
+        "git_blob": "959b773736e88a272bd61e23b420f8832c928358",
+        "bytes": 4348,
+        "sha256": "651a38f5ecd10025c43e7f7345394243566b4b1a8eba8ce9f37755c89db1f976"
+      },
+      "kind": "add"
+    }
+  ],
+  "change_summary": [
+    "At the existing original successor channel construction, the actual host explicitly chooses NonLearning or supplies existing OriginalCellQ24TaskLedgerInputsV1.",
+    "The supervised original worker still publishes through actual Root CURRENT/FinalUse and all existing context, admission, cancellation and postcondition gates.",
+    "The exact newly produced Task/source/Cell/full identity feed the existing producer.open_original before the one-shot slot can become Ready.",
+    "The slot holds only a private concrete OriginalQ24SuccessorInvocationV1, never a caller-supplied provider, receipt or arbitrary callback. Build/publish delegate to the original durable source; original learning observation delegates only to the actual producer.",
+    "A positive Ready observation is refused after a concurrent slot close. Already started durable Ledger work is not claimed cancelled or rolled back.",
+    "The installed result exposes that same opaque producer for its existing independently signed Terminal Outcome / Dataset preparation methods."
+  ],
+  "invariant_matrix": [
+    {
+      "boundary": "Original publication and task authority",
+      "preserved": "No new FinalUse issuance/claim/CAS logic, no task substitution, no new Root/role identity; exact source/Cell/Task derived only from actual original worker output."
+    },
+    {
+      "boundary": "Mode and original producer failure",
+      "preserved": "NonLearning is explicit; invalid OriginalLedger inputs propagate the original typed owner error and cannot downgrade. Postpublication failure remains original prepared_uncertain with permanent one-shot closure."
+    },
+    {
+      "boundary": "Task versus business outcome",
+      "preserved": "Original task/source success returns its actual receipt; absent/invalid Outcome leaves learning pending. No label, Observer signature or outcome from ACK/selection/task success."
+    },
+    {
+      "boundary": "Source and identity",
+      "preserved": "Original producer checks exact full identity, original authenticated RunStart, committed trace, publication, active Cell and current source. No historical-A or cross-spawn relaxation."
+    },
+    {
+      "boundary": "History/recovery",
+      "preserved": "Existing witnessed once journal, original signing windows, current revocation/scope and explicit Create/Recover remain unchanged; no re-signing, refreeze, redispatch, or cold recovery token."
+    },
+    {
+      "boundary": "Cancellation",
+      "preserved": "Existing worker join, installation-work accounting, closed-slot checks and original publication cancellation guards unchanged. Added post-observation slot check only suppresses returned readiness after close."
+    },
+    {
+      "boundary": "Dataset/training",
+      "preserved": "Existing external Evaluator freeze, true HQ24T002 provenance, row-rule derivation, actual Observer E/D receipts and exact Dataset cut remain required. No synthetic sample or Stage receipt."
+    }
+  ],
+  "remaining_requirements": [
+    {
+      "item": "Real C feedback inputs",
+      "status": "external actual owner prerequisite",
+      "detail": "Ledger/trust for C's objective/scope, enrolled Generator signing key and original signature journal/witness, explicit lifecycle, distinct episode/outcome identifiers and frozen independent Observer/unit/delay contract. Old A role/data are not silently reused."
+    },
+    {
+      "item": "Business outcome",
+      "status": "external actual business Observer prerequisite",
+      "detail": "submit_original_terminal_outcome still has no ordinary in-repository caller. Real independently authenticated terminal value, observed/finalized times, unit/delay/support binding and original signature must be supplied; the new code emits no such fact."
+    },
+    {
+      "item": "Dataset preparation",
+      "status": "existing real owner API, external host entry",
+      "detail": "The same producer can call existing prepare_learning only after witnessed Complete, with original history caps and separately enrolled Evaluator freeze files/key. Scope and empty initial are derived from the real source/batch."
+    },
+    {
+      "item": "Experience/Dataset/trainer assembly",
+      "status": "existing actual owner chain",
+      "detail": "Prepared -> actual Source Observer journal pair -> exact signed Dataset cut -> prepared.training_material -> original durable trainer/Generator receipt pair already exists, gated by original Root factory and scope."
+    },
+    {
+      "item": "Next Root source admission and outbox",
+      "status": "not solved by this slice",
+      "detail": "Ready with no registered origin deliberately does not enqueue. The next operation requires actual Prepared/frozen scope and original Root Learning/Factory/source registration; no automatic new request is installed."
+    },
+    {
+      "item": "Fresh Launch / old A across process exit",
+      "status": "separate existing blocker; chain_nextuse ownership",
+      "detail": "No retained-A reconstruction, new Starting, same-process retirement exception or public late-writer caller is introduced."
+    },
+    {
+      "item": "Independent C / cold restart / accepted ordinary loops",
+      "status": "unaccepted",
+      "detail": "No ordinary A→learning/adoption→C or independent-consumer/cold-restart acceptance is claimed. Counters remain 0/0/0."
+    }
+  ],
+  "tests": {
+    "added": 2,
+    "names": [
+      "successor_feedback_requires_original_outcome_before_real_dataset",
+      "successor_feedback_refusal_never_installs_a_nonlearning_fallback"
+    ],
+    "scope": "Component fixtures with explicitly synthetic role custody and preexisting published Task. The actual production successor channel/invocation and ordinary ObjectiveStart dispatch produce the original source/Cell/Decision. Valid external fixture Observer -> witnessed Complete -> real HQ2/Prepared; bad support/key and withdrawal refuse. No fake Ready slot, Root success, ordinary loop or independent business deployment.",
+    "extra_assertion": "The positive component invokes the real enqueue gate with actual Ready and no Root source origin; no outbox entry is invented.",
+    "unchanged": "All existing tests and original state/cancellation tests remain; no timeout/ignore/allowlist changes.",
+    "execution": "not run"
+  },
+  "callers": {
+    "original_boundary_count": 492,
+    "new_boundary_count": 493,
+    "protected_rows": 358,
+    "actual_old_caller_additions": [
+      {
+        "id": "q24_task_original_ledger_open",
+        "add": "codex-rs/hepta-agentd/src/circuit_q24_successor_execution.rs"
+      },
+      {
+        "id": "q24_task_original_ready_observe",
+        "add": "codex-rs/hepta-agentd/src/circuit_q24_successor_execution.rs"
+      }
+    ],
+    "new_boundary": {
+      "id": "q24_successor_original_feedback_ledger",
+      "product_callers": [],
+      "reason": "Only component tests/embedded host entry consume the exported real owner; no ordinary caller invented."
+    },
+    "protected": "Original forbidden and one-shot/admission/cancellation/task guards retained. Exact return marker now names the closed invocation; new actual producer binding and post-close readiness guard are pinned.",
+    "checker_modified": false,
+    "ignored_paths_modified": false,
+    "qa_expected_tuples_to_sync": [],
+    "integration_note": "Apply eight unique CALLERS ops to the final integrated registry; root must update only its exact allowlist digest if needed, never overwrite another agent's changes.",
+    "qa_note": "No exact existing QA tuple was located by this slice. Required metadata changes are the actual CALLERS additions and guards in the frozen eight ops. Preserve QA as-is; only a later concrete failure can justify a source-bound expectation update."
+  },
+  "static_verification": {
+    "baseline_git_blobs_hashed": true,
+    "unique_forward_and_reverse_replay": true,
+    "postimage_bytes_sha256_git_sha1_verified": true,
+    "original_state_tests_read_no_execution_input_literal": true,
+    "full_repository_constructor_scan": false,
+    "full_original_caller_guard": false,
+    "native_format": false,
+    "native_compile": false,
+    "native_tests": false,
+    "branch_ref_mutation": false
+  },
+  "source_pins": [
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_task_ledger.rs",
+      "git_blob": "a05394ff45a40024c1321368bedf3f1516818202",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/7666bcc2c650298f2e1d47e615a25864fe792fa1/codex-rs/hepta-agentd/src/cell_q24_task_ledger.rs",
+      "purpose": "Original generator journal, actual source capture, original Ledger append, prepare_learning and explicit retained-cut recovery."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_task_ledger_binding.rs",
+      "git_blob": "cc8241c10d4edec4171f468d372b362aea0ca1c1",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/7666bcc2c650298f2e1d47e615a25864fe792fa1/codex-rs/hepta-agentd/src/cell_q24_task_ledger_binding.rs",
+      "purpose": "Actual Task/source/Cell scope and complete decision binding; original Generator key/enrollment and namespace."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_task_ledger_outcome.rs",
+      "git_blob": "bedfe99c27719d2198cf7f8bbc24a863ce70dd6e",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/7666bcc2c650298f2e1d47e615a25864fe792fa1/codex-rs/hepta-agentd/src/cell_q24_task_ledger_outcome.rs",
+      "purpose": "Independent signed Terminal business observation and witnessed once-only history; no label from task success."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_task_learning_ready.rs",
+      "git_blob": "823485ded1966dd9f8a65d3b5197e9889c7eca71",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/7666bcc2c650298f2e1d47e615a25864fe792fa1/codex-rs/hepta-agentd/src/cell_q24_task_learning_ready.rs",
+      "purpose": "Full original identity, RunStart, authentication/history, publication and witnessed Decision+Outcome revalidation."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_learning_preparation.rs",
+      "git_blob": "7388e80da7f99c20e2189a05379190fbae987111",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/7666bcc2c650298f2e1d47e615a25864fe792fa1/codex-rs/hepta-agentd/src/cell_q24_learning_preparation.rs",
+      "purpose": "Actual source/baseline/objective/request budget and row scope; no caller-authored sample vector."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_prepared_learning.rs",
+      "git_blob": "00ef67ff163336eb582c72d40750e32af03e470e",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/7666bcc2c650298f2e1d47e615a25864fe792fa1/codex-rs/hepta-agentd/src/cell_q24_prepared_learning.rs",
+      "purpose": "HQ2 original provenance, actual facts, empty initial Root profile, exact E/D material before training."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_learning_owner_inputs.rs",
+      "git_blob": "1af60879f8ae2001eaa7d06b01a05016663f831d",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/7666bcc2c650298f2e1d47e615a25864fe792fa1/codex-rs/hepta-agentd/src/cell_q24_learning_owner_inputs.rs",
+      "purpose": "Actual Source E/D owner inputs, original trained pair and explicit Create/Recover."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_learning_stage_owners.rs",
+      "git_blob": "7bbeae1f64c573f2cbf27376b77ad80651c4f9db",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/7666bcc2c650298f2e1d47e615a25864fe792fa1/codex-rs/hepta-agentd/src/cell_q24_learning_stage_owners.rs",
+      "purpose": "Root/source validation -> actual signed E/D -> exact Dataset cut -> original trainer owner."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_learning.rs",
+      "git_blob": "6003965bbaab608b98719672b995eb5c33f8da70",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/7666bcc2c650298f2e1d47e615a25864fe792fa1/codex-rs/hepta-agentd/src/circuit_task_learning.rs",
+      "purpose": "Only source explicitly registered by original bootstrap may enqueue; origin=None remains no delivery."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/objective_learning_outbox.rs",
+      "git_blob": "f3e3b8e986e3bd9a73f164a4ca952420fb59f9cd",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/7666bcc2c650298f2e1d47e615a25864fe792fa1/codex-rs/hepta-agentd/src/objective_learning_outbox.rs",
+      "purpose": "Only the actual registered source RunStart and committed trace reconcile; no new task."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/state_circuit_task.rs",
+      "git_blob": "0ef46c3138832f28ec0f1ef4269c5d4c8677798e",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/7666bcc2c650298f2e1d47e615a25864fe792fa1/codex-rs/hepta-agentd/src/state_circuit_task.rs",
+      "purpose": "Actual signed ingress executes once, publishes source, then independent learning readiness without changing task success."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_state_tests.rs",
+      "git_blob": "1f28d093df3b8479debeeafecaa3d3477a3e920f",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/7666bcc2c650298f2e1d47e615a25864fe792fa1/codex-rs/hepta-agentd/src/circuit_q24_successor_state_tests.rs",
+      "purpose": "Original six state tests construct no actual execution inputs/installed owner; unchanged."
+    }
+  ],
+  "acceptance": {
+    "ordinary_complete": 0,
+    "positive_adoption": 0,
+    "ordinary_noupdate_or_rollback": 0,
+    "independent_C": "unaccepted",
+    "daemon_and_root_cold_restart": "unaccepted"
+  },
+  "metadata_correction": {
+    "supersedes_manifest_only": "bcfbdf12482122cff129e7b914c5c7e5e28eb1ec",
+    "reason": "The previous QA expected-tuples field was an unverified follow-up suggestion incorrectly expressed as required edits. No exact QA source tuple was identified. It is removed as an implementation requirement; no QA/checker/assertion changes are authorized by this correction.",
+    "source_and_exact_ops_unchanged": true,
+    "peer_review": "6c3a334a6b356000a5664d73e69631d4d81b1983"
+  }
+}

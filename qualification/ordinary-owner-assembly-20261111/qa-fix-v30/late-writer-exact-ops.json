@@ -1,0 +1,84 @@
+{
+  "schema": "hepta-exact-source-operations.v1",
+  "base": {
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "commit": "0081b6b78fa1f0fb238a12aec814c93bdf2343a0",
+    "tree": "87e7ef749329b0f41481873a414cdd924d5971bf"
+  },
+  "instructions": [
+    "Require each named fixed preimage blob before applying.",
+    "Each replace_exact operation must match exactly once, in listed order.",
+    "The add_file path must not exist at the fixed base; create mode 100644 with exact after bytes.",
+    "Verify postimage Git blob, SHA256 and byte length. Reverse operations in reverse order; remove only the exact added postimage.",
+    "Do not replace the entire CALLERS.toml in a newer integration tree: merge these four exact non-overlapping operations while preserving other agents' changes."
+  ],
+  "files": [
+    {
+      "path": "CALLERS.toml",
+      "mode": "100644",
+      "before": {
+        "git_blob": "7ec4df7edcb28c8ebef0037711d6c8f404eef014",
+        "bytes": 668746,
+        "sha256": "7bd6fae682b170dd268279d28f8cf3046289511c79d609c2c26b0eec8e5e7152",
+        "reported_sha": "7ec4df7edcb28c8ebef0037711d6c8f404eef014"
+      },
+      "after": {
+        "git_blob": "e6dcf7d4a71061772c720c9ba355ed646d1cc88e",
+        "bytes": 669111,
+        "sha256": "1b222ab62ddf5f3a808a18a922f5f0b9d804c49ff606956bfd8e2b1d1a9233e9"
+      }
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_late_writer_entry_source_closure.py",
+      "mode": "100644",
+      "before": null,
+      "after": {
+        "git_blob": "a09ec96ea064b35216e43b17dd4726d3a36afc7e",
+        "bytes": 6674,
+        "sha256": "4b7a1453784b1304bba8062e4854e8fcf4de9b99cd35c55eb2d701517462f7ef"
+      }
+    }
+  ],
+  "operations": [
+    {
+      "path": "CALLERS.toml",
+      "kind": "replace_exact",
+      "label": "protect exact late-writer literal at its original code span",
+      "before": "  {function = \"fn select_original_startup_entry(\", sequence = [\"for index in (0..arguments.len()).step_by(2)\",\"arguments[index] != ENTRY_FLAG\",\"selected.is_some()\",\"return Err(\",\"arguments.get(index + 1).and_then(|value| value.to_str()) != Some(\\\"late-writer\\\")\",\"return Err(\",\"selected = Some(index)\",\"OriginalStartupSelection::Existing(arguments)\",\"arguments.drain(index..index + 2)\",\"OriginalStartupSelection::LateWriter(arguments)\"]},",
+      "after": "  {function = \"fn select_original_startup_entry(\", literal_calls = [\"Some(\\\"late-writer\\\")\"], sequence = [\"for index in (0..arguments.len()).step_by(2)\",\"arguments[index] != ENTRY_FLAG\",\"selected.is_some()\",\"return Err(\",\"arguments.get(index + 1).and_then(|value| value.to_str()) != \",\"Some(\\\"late-writer\\\")\",\"return Err(\",\"selected = Some(index)\",\"OriginalStartupSelection::Existing(arguments)\",\"arguments.drain(index..index + 2)\",\"OriginalStartupSelection::LateWriter(arguments)\"]},",
+      "expected_occurrences": 1
+    },
+    {
+      "path": "CALLERS.toml",
+      "kind": "replace_exact",
+      "label": "retain exact diagnostic-label call text as raw requirements",
+      "before": "required = [\"struct OriginalStartingIdentityInput\",\"FleetRegistry::read_existing_snapshot(typed_root)?\",\"record.manifest.resources\",\"layout.agentd_control_socket()\",\"layout.app_server_socket()\"]",
+      "after": "required = [\"struct OriginalStartingIdentityInput\",\"FleetRegistry::read_existing_snapshot(typed_root)?\",\"record.manifest.resources\",\"layout.agentd_control_socket()\",\"layout.app_server_socket()\",\"require_canonical(&self.fleet_root, \\\"fleet root\\\")?;\",\"require_exact_path(&self.home_root, record.layout.home_root(), \\\"agent home\\\")?;\",\"require_exact_path(&self.run_root, record.layout.run_root(), \\\"agent run root\\\")?;\",\"require_exact_path(&self.codex_home, record.layout.home_root(), \\\"Codex home\\\")?;\"]",
+      "expected_occurrences": 1
+    },
+    {
+      "path": "CALLERS.toml",
+      "kind": "replace_exact",
+      "label": "protect exact CODEX_HOME literal and its error propagation",
+      "before": "  {function = \"fn read_original_late_writer_starting_identity(\", sequence = [\"cognitive_retrieval_mode_from_process_environment()?\",\"required_path(codex_hepta_paths::HEPTA_FLEET_ROOT_ENV)?\",\"required_utf8(HEPTA_AGENT_ID_ENV)?\",\"required_utf8(HEPTA_AGENT_GENERATION_ENV)?\",\"required_path(HEPTA_AGENT_HOME_ENV)?\",\"required_path(HEPTA_AGENT_RUN_ROOT_ENV)?\",\"required_path(\\\"CODEX_HOME\\\")?\",\"std::env::current_dir()?\",\"input.read_expected_starting_identity()?\"]},",
+      "after": "  {function = \"fn read_original_late_writer_starting_identity(\", literal_calls = [\"required_path(\\\"CODEX_HOME\\\")\"], sequence = [\"cognitive_retrieval_mode_from_process_environment()?\",\"required_path(codex_hepta_paths::HEPTA_FLEET_ROOT_ENV)?\",\"required_utf8(HEPTA_AGENT_ID_ENV)?\",\"required_utf8(HEPTA_AGENT_GENERATION_ENV)?\",\"required_path(HEPTA_AGENT_HOME_ENV)?\",\"required_path(HEPTA_AGENT_RUN_ROOT_ENV)?\",\"required_path(\\\"CODEX_HOME\\\")\",\"?,\",\"std::env::current_dir()?\",\"input.read_expected_starting_identity()?\"]},",
+      "expected_occurrences": 1
+    },
+    {
+      "path": "CALLERS.toml",
+      "kind": "replace_exact",
+      "label": "protect real path and expected operands plus propagation before each next guard",
+      "before": "  {function = \"fn read_expected_starting_identity(\", sequence = [\"self.spawn_generation == 0\",\"HeptaFleetRoot::parse(self.fleet_root.clone())\",\"require_canonical(&self.fleet_root, \\\"fleet root\\\")?\",\"FleetRegistry::read_existing_snapshot(typed_root)?\",\".agent(&self.agent_id)\",\"record.lifecycle.lifecycle != AgentLifecycle::Starting\",\"record.lifecycle.generation != self.spawn_generation\",\"AgentdError::GenerationFenced(\",\"require_exact_path(&self.home_root, record.layout.home_root(), \\\"agent home\\\")?\",\"require_exact_path(&self.run_root, record.layout.run_root(), \\\"agent run root\\\")?\",\"require_exact_path(&self.codex_home, record.layout.home_root(), \\\"Codex home\\\")?\",\"self.current_dir.canonicalize()?\",\"workspace != record.manifest.workspace.as_path()\",\"Ok(AgentdIdentity {\",\"agent_id: self.agent_id.clone()\",\"layout,\",\"spawn_generation: self.spawn_generation\",\"fleet_root: self.fleet_root.clone()\",\"workspace,\",\"resources: record.manifest.resources\",\"home_root: self.home_root.clone()\",\"run_root: self.run_root.clone()\",\"control_socket,\",\"app_server_socket,\"]}",
+      "after": "  {function = \"fn read_expected_starting_identity(\", sequence = [\"self.spawn_generation == 0\",\"HeptaFleetRoot::parse(self.fleet_root.clone())\",\"require_canonical(&self.fleet_root, \",\")?;\",\"FleetRegistry::read_existing_snapshot(typed_root)?\",\".agent(&self.agent_id)\",\"record.lifecycle.lifecycle != AgentLifecycle::Starting\",\"record.lifecycle.generation != self.spawn_generation\",\"AgentdError::GenerationFenced(\",\"require_exact_path(&self.home_root, record.layout.home_root(), \",\")?;\",\"require_exact_path(&self.run_root, record.layout.run_root(), \",\")?;\",\"require_exact_path(&self.codex_home, record.layout.home_root(), \",\")?;\",\"self.current_dir.canonicalize()?\",\"workspace != record.manifest.workspace.as_path()\",\"Ok(AgentdIdentity {\",\"agent_id: self.agent_id.clone()\",\"layout,\",\"spawn_generation: self.spawn_generation\",\"fleet_root: self.fleet_root.clone()\",\"workspace,\",\"resources: record.manifest.resources\",\"home_root: self.home_root.clone()\",\"run_root: self.run_root.clone()\",\"control_socket,\",\"app_server_socket,\"]}",
+      "expected_occurrences": 1
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_late_writer_entry_source_closure.py",
+      "kind": "add_file",
+      "mode": "100644",
+      "expected_absent": true,
+      "before": null,
+      "after": "\"\"\"Mutate real late-writer source copies and require the original B4 verifier to reject them.\n\nThese source-proof tests create no Root owner and perform no handoff. Diagnostic\npath labels remain raw text requirements; only the entry value and CODEX_HOME\nkey have exact literal-span requirements.\n\"\"\"\n\nimport importlib.util\nfrom pathlib import Path\nimport shutil\nimport sys\nimport tempfile\nimport tomllib\nimport unittest\n\nROOT = Path(__file__).resolve().parents[2]\nSPEC = importlib.util.spec_from_file_location(\n    \"original_late_writer_entry_verifier\", ROOT / \"scripts/verify_hepta_callers.py\"\n)\nassert SPEC is not None and SPEC.loader is not None\nMODULE = importlib.util.module_from_spec(SPEC)\nsys.modules[SPEC.name] = MODULE\nSPEC.loader.exec_module(MODULE)\n\nSTARTUP = \"codex-rs/hepta-agentd/src/production_launcher_late_startup.rs\"\nIDENTITY = \"codex-rs/hepta-agentd/src/config_late_writer_identity.rs\"\nPATH_CALLS = (\n    'require_canonical(&self.fleet_root, \"fleet root\")?;',\n    'require_exact_path(&self.home_root, record.layout.home_root(), \"agent home\")?;',\n    'require_exact_path(&self.run_root, record.layout.run_root(), \"agent run root\")?;',\n    'require_exact_path(&self.codex_home, record.layout.home_root(), \"Codex home\")?;',\n)\n\n\nclass OriginalLateWriterEntrySourceClosureTests(unittest.TestCase):\n    def setUp(self):\n        temporary = tempfile.TemporaryDirectory()\n        self.addCleanup(temporary.cleanup)\n        self.root = Path(temporary.name)\n        manifest = tomllib.loads((ROOT / \"CALLERS.toml\").read_text(encoding=\"utf-8\"))\n        rows = [\n            row for row in manifest[\"protected_file\"]\n            if row[\"path\"] in (STARTUP, IDENTITY)\n        ]\n        self.assertEqual(tuple(row[\"path\"] for row in rows), (STARTUP, IDENTITY))\n        self.manifest = {\"protected_file\": rows}\n        for relative in (STARTUP, IDENTITY):\n            target = self.root / relative\n            target.parent.mkdir(parents=True, exist_ok=True)\n            shutil.copyfile(ROOT / relative, target)\n        self.assertEqual(\n            MODULE._verify_protected_files(self.root, self.manifest),\n            [STARTUP, IDENTITY],\n        )\n\n    def rejects(self, relative, original, replacement, reason):\n        path = self.root / relative\n        source = path.read_text(encoding=\"utf-8\")\n        self.assertEqual(source.count(original), 1)\n        path.write_text(source.replace(original, replacement, 1), encoding=\"utf-8\")\n        try:\n            with self.assertRaisesRegex(MODULE.VerificationFailure, reason):\n                MODULE._verify_protected_files(self.root, self.manifest)\n        finally:\n            path.write_text(source, encoding=\"utf-8\")\n\n    def test_entry_value_cannot_change(self):\n        self.rejects(\n            STARTUP,\n            'Some(\"late-writer\")',\n            'Some(\"late-writeX\")',\n            \"unique actual literal call required\",\n        )\n\n    def test_entry_value_cannot_be_supplied_by_comment(self):\n        self.rejects(\n            STARTUP,\n            'Some(\"late-writer\")',\n            '/* Some(\"late-writer\") */ Some(\"late-writeX\")',\n            \"unique actual literal call required\",\n        )\n\n    def test_entry_value_comparison_cannot_reverse(self):\n        self.rejects(\n            STARTUP,\n            '!= Some(\"late-writer\")',\n            '== Some(\"late-writer\")',\n            \"required code order missing\",\n        )\n\n    def test_duplicate_entry_cannot_drop_its_rejection(self):\n        self.rejects(\n            STARTUP,\n            'if selected.is_some() {\\n'\n            '            return Err(AgentdError::Invalid(\\n'\n            '                \"duplicate --root-production-entry\".into(),\\n'\n            '            ));\\n'\n            '        }',\n            \"if selected.is_some() {}\",\n            \"required code order missing\",\n        )\n\n    def test_codex_home_key_cannot_change_or_hide_in_comment(self):\n        original = 'required_path(\"CODEX_HOME\")'\n        for replacement in (\n            'required_path(\"CODEX_H0ME\")',\n            '/* required_path(\"CODEX_HOME\") */ required_path(\"CODEX_H0ME\")',\n        ):\n            with self.subTest(replacement=replacement):\n                self.rejects(\n                    IDENTITY, original, replacement,\n                    \"unique actual literal call required\",\n                )\n\n    def test_codex_home_read_cannot_drop_error_propagation(self):\n        self.rejects(\n            IDENTITY,\n            'required_path(\"CODEX_HOME\")?,',\n            'required_path(\"CODEX_HOME\"),',\n            \"required code order missing\",\n        )\n\n    def test_path_guards_cannot_be_replaced_by_comments(self):\n        for original in PATH_CALLS:\n            with self.subTest(call=original):\n                self.rejects(\n                    IDENTITY, original, f\"/* {original} */\",\n                    \"required code order missing\",\n                )\n\n    def test_path_guards_cannot_change_the_checked_actual_path(self):\n        wrong_actual = (\n            PATH_CALLS[0].replace(\"self.fleet_root\", \"self.home_root\"),\n            PATH_CALLS[1].replace(\"self.home_root\", \"self.run_root\"),\n            PATH_CALLS[2].replace(\"self.run_root\", \"self.home_root\"),\n            PATH_CALLS[3].replace(\"self.codex_home\", \"self.run_root\"),\n        )\n        for original, replacement in zip(PATH_CALLS, wrong_actual, strict=True):\n            with self.subTest(call=original):\n                self.rejects(\n                    IDENTITY, original, f\"/* {original} */ {replacement}\",\n                    \"required code order missing\",\n                )\n\n    def test_path_guards_cannot_change_the_expected_path(self):\n        wrong_expected = (\n            PATH_CALLS[1].replace(\"record.layout.home_root()\", \"record.layout.run_root()\"),\n            PATH_CALLS[2].replace(\"record.layout.run_root()\", \"record.layout.home_root()\"),\n            PATH_CALLS[3].replace(\"record.layout.home_root()\", \"record.layout.run_root()\"),\n        )\n        for original, replacement in zip(PATH_CALLS[1:], wrong_expected, strict=True):\n            with self.subTest(call=original):\n                self.rejects(\n                    IDENTITY, original, f\"/* {original} */ {replacement}\",\n                    \"required code order missing\",\n                )\n\n    def test_path_guards_cannot_drop_error_propagation(self):\n        for original in PATH_CALLS:\n            replacement = original.replace(\"?;\", \";\")\n            with self.subTest(call=original):\n                self.rejects(\n                    IDENTITY, original, f\"/* {original} */ {replacement}\",\n                    \"required code order missing\",\n                )\n\n\nif __name__ == \"__main__\":\n    unittest.main()\n"
+    }
+  ]
+}

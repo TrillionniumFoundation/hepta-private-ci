@@ -307,6 +307,6 @@ fn temporal_control_stop_preserves_state_and_never_claims_numerical_use_after_re
     assert_eq!(observed.snapshot().state, req.predecessor.state);
     assert!(observed.snapshot().stopped);
     drop(owner);
-    let mut reopened = fixture.open_with(configuration, /*max_records*/ 128);
+    let reopened = fixture.open_with(configuration, /*max_records*/ 128);
     assert_eq!(reopened.observe_generation(), Ok(observed));
 }

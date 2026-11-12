@@ -1,0 +1,975 @@
+diff --git a/codex-rs/hepta-agentd/src/cell_q24_task_ledger_test_support.rs b/codex-rs/hepta-agentd/src/cell_q24_task_ledger_test_support.rs
+index 870305af6dddfc322271a2449d3d5e5c3b7d1488..360e99732ef2aa8a12abd01851960fe9e3d59658 100644
+--- a/codex-rs/hepta-agentd/src/cell_q24_task_ledger_test_support.rs
++++ b/codex-rs/hepta-agentd/src/cell_q24_task_ledger_test_support.rs
+@@ -185,10 +185,14 @@ impl Fixture {
+             signature_witness: witness(root.path(), "signatures.witness", source.objective_digest)?,
+             open_mode: crate::CircuitQ24TaskOpenModeV1::Create,
+             config: config.clone(),
+-            generator_key: SigningKey::from_bytes(&[match profile {
+-                TaskProfile::SuccessorRefusedGenerator => 4,
+-                TaskProfile::NonLearning | TaskProfile::Original | TaskProfile::SuccessorFeedback => 1,
+-            }; 32]),
++            generator_key: SigningKey::from_bytes(
++                &[match profile {
++                    TaskProfile::SuccessorRefusedGenerator => 4,
++                    TaskProfile::NonLearning
++                    | TaskProfile::Original
++                    | TaskProfile::SuccessorFeedback => 1,
++                }; 32],
++            ),
+         };
+         let session = match profile {
+             TaskProfile::Original => {
+diff --git a/codex-rs/hepta-agentd/src/circuit_q24_successor_feedback_tests.rs b/codex-rs/hepta-agentd/src/circuit_q24_successor_feedback_tests.rs
+index 959b773736e88a272bd61e23b420f8832c928358..2322c42eb7024b21a568afe550156339d720bc28 100644
+--- a/codex-rs/hepta-agentd/src/circuit_q24_successor_feedback_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_q24_successor_feedback_tests.rs
+@@ -3,10 +3,10 @@
+ //! and current-generation setup remain explicit component fixtures.
+ 
+ use super::*;
+-use std::sync::Arc;
+ use crate::CircuitTaskLearningPendingV1;
+ use crate::CircuitTaskLearningReadinessV1;
+ use pretty_assertions::assert_eq;
++use std::sync::Arc;
+ 
+ #[tokio::test]
+ async fn successor_feedback_requires_original_outcome_before_real_dataset() -> anyhow::Result<()> {
+@@ -18,7 +18,10 @@ async fn successor_feedback_requires_original_outcome_before_real_dataset() -> a
+     .await?;
+     let task_bytes = f.task_bytes()?;
+     assert!(Arc::ptr_eq(
+-        f.session.ledger.as_ref().expect("original successor producer"),
++        f.session
++            .ledger
++            .as_ref()
++            .expect("original successor producer"),
+         &f.producer,
+     ));
+     let trace = f
+@@ -31,9 +34,16 @@ async fn successor_feedback_requires_original_outcome_before_real_dataset() -> a
+         .map_err(|error| anyhow::anyhow!("original successor trace: {error:?}"))?
+         .expect("actual committed successor trace");
+     let record = f.publication.original_record();
+-    assert!(matches!(f.producer.readback()?, Status::AwaitingOutcome { .. }));
+     assert!(matches!(
+-        f.session.runtime.state.observe_circuit_learning(record, &trace).await,
++        f.producer.readback()?,
++        Status::AwaitingOutcome { .. }
++    ));
++    assert!(matches!(
++        f.session
++            .runtime
++            .state
++            .observe_circuit_learning(record, &trace)
++            .await,
+         CircuitTaskLearningReadinessV1::Pending(CircuitTaskLearningPendingV1::TerminalOutcome)
+     ));
+     assert!(matches!(
+@@ -44,23 +54,47 @@ async fn successor_feedback_requires_original_outcome_before_real_dataset() -> a
+     let mut wrong = f.outcome();
+     wrong.support_digest = cell::d("another-consumer-publication");
+     let signed_wrong = f.sign_outcome(&wrong, /*lifetime*/ 300);
+-    assert!(f.producer.submit_original_terminal_outcome(wrong, &signed_wrong).is_err());
++    assert!(
++        f.producer
++            .submit_original_terminal_outcome(wrong, &signed_wrong)
++            .is_err()
++    );
+     assert_eq!(f.learning_bytes()?, before);
+ 
+     let outcome = f.outcome();
+     let signed = f.sign_outcome(&outcome, /*lifetime*/ 300);
+-    let completed = f.producer.submit_original_terminal_outcome(outcome.clone(), &signed)?;
++    let completed = f
++        .producer
++        .submit_original_terminal_outcome(outcome.clone(), &signed)?;
+     assert!(matches!(completed, Status::Complete { .. }));
+     let accepted_bytes = f.learning_bytes()?;
+-    let readiness = f.session.runtime.state.observe_circuit_learning(record, &trace).await;
+-    assert!(matches!(&readiness, CircuitTaskLearningReadinessV1::Ready(_)));
+-    f.session.runtime.state.enqueue_original_circuit_learning(record, &trace, readiness).await?;
+-    assert_eq!(f.producer.submit_original_terminal_outcome(outcome, &signed)?, completed);
++    let readiness = f
++        .session
++        .runtime
++        .state
++        .observe_circuit_learning(record, &trace)
++        .await;
++    assert!(matches!(
++        &readiness,
++        CircuitTaskLearningReadinessV1::Ready(_)
++    ));
++    f.session
++        .runtime
++        .state
++        .enqueue_original_circuit_learning(record, &trace, readiness)
++        .await?;
++    assert_eq!(
++        f.producer
++            .submit_original_terminal_outcome(outcome, &signed)?,
++        completed
++    );
+     assert_eq!(f.learning_bytes()?, accepted_bytes);
+     // This component has not registered another Root source. Feedback does not
+     // infer that enrollment or manufacture a new outbox request.
+     f.no_outbox().await?;
+-    let prepared = f.producer.prepare_learning(f.preparation()?, Vec::new(), f.freeze_inputs()?)?;
++    let prepared = f
++        .producer
++        .prepare_learning(f.preparation()?, Vec::new(), f.freeze_inputs()?)?;
+     let facts = prepared.read_validated_facts()?;
+     assert_eq!(
+         facts.experience(),
+@@ -72,7 +106,9 @@ async fn successor_feedback_requires_original_outcome_before_real_dataset() -> a
+     assert!(prepared.initial().receipts.is_empty());
+     prepared.revalidate_source()?;
+     f.require_task_unchanged(&task_bytes)?;
+-    f.session.source.withdraw_for_dataset_test(&record.snapshot.run_id)?;
++    f.session
++        .source
++        .withdraw_for_dataset_test(&record.snapshot.run_id)?;
+     assert!(prepared.revalidate_source().is_err());
+     assert!(f.producer.readback().is_err());
+     f.session.stop().await
+@@ -89,7 +125,8 @@ async fn successor_feedback_refusal_never_installs_a_nonlearning_fallback() -> a
+     {
+         Err(error) => {
+             anyhow::ensure!(
+-                format!("{error:#}").contains("original Generator, outcome or source configuration"),
++                format!("{error:#}")
++                    .contains("original Generator, outcome or source configuration"),
+                 "expected the original Generator binding rejection: {error:#}"
+             );
+         }
+diff --git a/codex-rs/hepta-agentd/src/circuit_q24_successor_state.rs b/codex-rs/hepta-agentd/src/circuit_q24_successor_state.rs
+index d89d8ca0592089593c6ce6f870639e9b454435b6..58232d6e10de477c7a66da516a1607a2aab788fe 100644
+--- a/codex-rs/hepta-agentd/src/circuit_q24_successor_state.rs
++++ b/codex-rs/hepta-agentd/src/circuit_q24_successor_state.rs
+@@ -13,9 +13,9 @@ use codex_hepta_learning_artifacts::LearningIterationSnapshotV1;
+ use tokio::sync::watch;
+ use tokio_util::sync::CancellationToken;
+ 
++use super::OriginalQ24SuccessorInvocationV1;
+ use crate::CircuitTaskErrorV1;
+ use crate::CircuitTaskHandleV1;
+-use super::OriginalQ24SuccessorInvocationV1;
+ use crate::LearningIterationRuntimeErrorV1 as LearningError;
+ 
+ #[derive(Clone, Copy, Debug, Eq, PartialEq)]
+diff --git a/codex-rs/hepta-agentd/src/config_late_writer_identity.rs b/codex-rs/hepta-agentd/src/config_late_writer_identity.rs
+index 8bbd85bf8af4f18635aff1a092a749a4cc4fc23d..2e28f98f7e9b952f0577cfed3d62b5aa0b3eb6b7 100644
+--- a/codex-rs/hepta-agentd/src/config_late_writer_identity.rs
++++ b/codex-rs/hepta-agentd/src/config_late_writer_identity.rs
+@@ -24,9 +24,11 @@ pub(crate) fn read_original_late_writer_starting_identity()
+             .map_err(|error| AgentdError::Invalid(error.to_string()))?,
+         spawn_generation: required_utf8(HEPTA_AGENT_GENERATION_ENV)?
+             .parse::<u64>()
+-            .map_err(|_| AgentdError::Invalid(format!(
+-                "{HEPTA_AGENT_GENERATION_ENV} must be an unsigned integer"
+-            )))?,
++            .map_err(|_| {
++                AgentdError::Invalid(format!(
++                    "{HEPTA_AGENT_GENERATION_ENV} must be an unsigned integer"
++                ))
++            })?,
+         home_root: required_path(HEPTA_AGENT_HOME_ENV)?,
+         run_root: required_path(HEPTA_AGENT_RUN_ROOT_ENV)?,
+         codex_home: required_path("CODEX_HOME")?,
+@@ -38,23 +40,26 @@ pub(crate) fn read_original_late_writer_starting_identity()
+ impl OriginalStartingIdentityInput {
+     fn read_expected_starting_identity(&self) -> Result<AgentdIdentity, AgentdError> {
+         if self.spawn_generation == 0 {
+-            return Err(AgentdError::Invalid("spawn generation must be non-zero".into()));
++            return Err(AgentdError::Invalid(
++                "spawn generation must be non-zero".into(),
++            ));
+         }
+         let typed_root = HeptaFleetRoot::parse(self.fleet_root.clone())
+             .map_err(|error| AgentdError::Invalid(error.to_string()))?;
+         require_canonical(&self.fleet_root, "fleet root")?;
+         let snapshot = FleetRegistry::read_existing_snapshot(typed_root)?;
+-        let record = snapshot
+-            .agent(&self.agent_id)
+-            .cloned()
+-            .ok_or_else(|| AgentdError::Invalid(format!("unknown fleet agent {}", self.agent_id)))?;
++        let record = snapshot.agent(&self.agent_id).cloned().ok_or_else(|| {
++            AgentdError::Invalid(format!("unknown fleet agent {}", self.agent_id))
++        })?;
+         if record.lifecycle.lifecycle != AgentLifecycle::Starting
+             || record.lifecycle.generation != self.spawn_generation
+         {
+             return Err(AgentdError::GenerationFenced(format!(
+                 "agent {} expected Starting generation {}, found {:?} generation {}",
+-                self.agent_id, self.spawn_generation,
+-                record.lifecycle.lifecycle, record.lifecycle.generation
++                self.agent_id,
++                self.spawn_generation,
++                record.lifecycle.lifecycle,
++                record.lifecycle.generation
+             )));
+         }
+         require_exact_path(&self.home_root, record.layout.home_root(), "agent home")?;
+@@ -64,7 +69,8 @@ impl OriginalStartingIdentityInput {
+         if workspace != record.manifest.workspace.as_path() {
+             return Err(AgentdError::Invalid(format!(
+                 "process workspace {} does not match manifest {}",
+-                workspace.display(), record.manifest.workspace.as_path().display()
++                workspace.display(),
++                record.manifest.workspace.as_path().display()
+             )));
+         }
+         let layout = record.layout;
+diff --git a/codex-rs/hepta-agentd/src/config_late_writer_identity_tests.rs b/codex-rs/hepta-agentd/src/config_late_writer_identity_tests.rs
+index 2816318bc469ce14cae03a744670b9531fa6f95f..0201372436dbb6a4399eb8702fac15254037edb1 100644
+--- a/codex-rs/hepta-agentd/src/config_late_writer_identity_tests.rs
++++ b/codex-rs/hepta-agentd/src/config_late_writer_identity_tests.rs
+@@ -30,7 +30,11 @@ fn fixture() -> anyhow::Result<IdentityFixture> {
+         WorkspaceBinding::new(workspace.clone(), &typed)?,
+         resources.clone(),
+     )?)?;
+-    registry.compare_and_transition(&agent_id, /*expected_generation*/ 0, AgentLifecycle::Starting)?;
++    registry.compare_and_transition(
++        &agent_id,
++        /*expected_generation*/ 0,
++        AgentLifecycle::Starting,
++    )?;
+     let input = OriginalStartingIdentityInput {
+         fleet_root: fleet_root.clone(),
+         agent_id: agent_id.clone(),
+@@ -52,11 +56,17 @@ fn fixture() -> anyhow::Result<IdentityFixture> {
+         control_socket: record.layout.agentd_control_socket().to_path_buf(),
+         app_server_socket: record.layout.app_server_socket().to_path_buf(),
+     };
+-    Ok(IdentityFixture { _directory: directory, registry, input, expected })
++    Ok(IdentityFixture {
++        _directory: directory,
++        registry,
++        input,
++        expected,
++    })
+ }
+ 
+ #[test]
+-fn late_cli_expected_identity_reads_original_registry_without_acquiring_writer() -> anyhow::Result<()> {
++fn late_cli_expected_identity_reads_original_registry_without_acquiring_writer()
++-> anyhow::Result<()> {
+     let fixture = fixture()?;
+     let mut options: std::fs::OpenOptions = std::fs::OpenOptions::new();
+     options.create(true).truncate(false).read(true).write(true);
+@@ -65,16 +75,29 @@ fn late_cli_expected_identity_reads_original_registry_without_acquiring_writer()
+     writer.sync_all()?;
+     writer.try_lock()?;
+     let before = std::fs::read(fixture.expected.layout.writer_lock())?;
+-    assert_eq!(fixture.input.read_expected_starting_identity()?, fixture.expected);
+-    assert_eq!(std::fs::read(fixture.expected.layout.writer_lock())?, before);
++    assert_eq!(
++        fixture.input.read_expected_starting_identity()?,
++        fixture.expected
++    );
++    assert_eq!(
++        std::fs::read(fixture.expected.layout.writer_lock())?,
++        before
++    );
+     // The comparison read does not claim Config authority; the old writer is
+     // still held and the original Config loader must continue to reject it.
+     let input = &fixture.input;
+-    assert!(AgentdConfig::load(
+-        input.fleet_root.clone(), input.agent_id.clone(), input.spawn_generation,
+-        input.home_root.clone(), input.run_root.clone(), input.codex_home.clone(),
+-        input.current_dir.clone(),
+-    ).is_err());
++    assert!(
++        AgentdConfig::load(
++            input.fleet_root.clone(),
++            input.agent_id.clone(),
++            input.spawn_generation,
++            input.home_root.clone(),
++            input.run_root.clone(),
++            input.codex_home.clone(),
++            input.current_dir.clone(),
++        )
++        .is_err()
++    );
+     Ok(())
+ }
+ 
+@@ -88,7 +111,9 @@ fn late_cli_expected_identity_refuses_old_or_running_generation() -> anyhow::Res
+         Err(AgentdError::GenerationFenced(_))
+     ));
+     fixture.registry.compare_and_transition(
+-        &fixture.input.agent_id, /*expected_generation*/ 1, AgentLifecycle::Running,
++        &fixture.input.agent_id,
++        /*expected_generation*/ 1,
++        AgentLifecycle::Running,
+     )?;
+     assert!(matches!(
+         fixture.input.read_expected_starting_identity(),
+@@ -114,7 +139,13 @@ fn late_cli_expected_identity_refuses_unregistered_roots_and_aliases() -> anyhow
+     wrong_workspace.current_dir = other;
+     let mut aliased_home = fixture.input.clone();
+     aliased_home.home_root = alias;
+-    for changed in [wrong_home, wrong_run, wrong_codex_home, wrong_workspace, aliased_home] {
++    for changed in [
++        wrong_home,
++        wrong_run,
++        wrong_codex_home,
++        wrong_workspace,
++        aliased_home,
++    ] {
+         assert!(changed.read_expected_starting_identity().is_err());
+     }
+     Ok(())
+diff --git a/codex-rs/hepta-agentd/src/deployment_writer_observation_tests.rs b/codex-rs/hepta-agentd/src/deployment_writer_observation_tests.rs
+index 79068ad0bf00068c8ed1fc778ad0895840aaf19f..fbf038e27c7df8bafdb535f1d098731835330117 100644
+--- a/codex-rs/hepta-agentd/src/deployment_writer_observation_tests.rs
++++ b/codex-rs/hepta-agentd/src/deployment_writer_observation_tests.rs
+@@ -8,12 +8,20 @@ use std::time::Duration;
+ #[test]
+ fn metadata_keeps_one_actual_proof_and_head_until_same_issuer_revoke_can_commit() {
+     let fixture = Fixture::new();
+-    let proof = fixture.issuer.register_writer_authorization(&fixture.writer, &fixture.registry.verifier()).unwrap();
++    let proof = fixture
++        .issuer
++        .register_writer_authorization(&fixture.writer, &fixture.registry.verifier())
++        .unwrap();
+     let grant = fixture.issuer.issue(&fixture.binding).unwrap().unwrap();
+     let before = fixture.issuer.revocations().unwrap();
+     let verifier = fixture.registry.verifier();
+-    let lease = verifier.observe_original_lease(&fixture.writer.authority_lease).unwrap();
+-    let retained = fixture.issuer.observe_original_writer_state(&fixture.writer).unwrap();
++    let lease = verifier
++        .observe_original_lease(&fixture.writer.authority_lease)
++        .unwrap();
++    let retained = fixture
++        .issuer
++        .observe_original_writer_state(&fixture.writer)
++        .unwrap();
+     let (attempt_tx, attempt_rx) = mpsc::channel();
+     let (committed_tx, committed_rx) = mpsc::channel();
+     std::thread::scope(|scope| {
+@@ -40,8 +48,13 @@ fn metadata_keeps_one_actual_proof_and_head_until_same_issuer_revoke_can_commit(
+         assert_eq!(actual.authority_epoch, before.authority_epoch);
+         assert_eq!(actual.revision, before.revision + 1);
+         assert!(actual.revoked_grant_ids.contains(&grant.grant.grant_id));
+-        let lease = verifier.observe_original_lease(&fixture.writer.authority_lease).unwrap();
+-        let retained = fixture.issuer.observe_original_writer_state(&fixture.writer).unwrap();
++        let lease = verifier
++            .observe_original_lease(&fixture.writer.authority_lease)
++            .unwrap();
++        let retained = fixture
++            .issuer
++            .observe_original_writer_state(&fixture.writer)
++            .unwrap();
+         assert_eq!(retained.original_writer_proof(), &proof);
+         assert_eq!(retained.original_writer_revocations(), &actual);
+         drop(retained);
+@@ -50,21 +63,46 @@ fn metadata_keeps_one_actual_proof_and_head_until_same_issuer_revoke_can_commit(
+ }
+ 
+ #[test]
+-fn original_metadata_refuses_wrong_registration_and_original_clock_expiry_without_a_new_signature() {
++fn original_metadata_refuses_wrong_registration_and_original_clock_expiry_without_a_new_signature()
++{
+     let fixture = Fixture::new();
+-    let proof = fixture.issuer.register_writer_authorization(&fixture.writer, &fixture.registry.verifier()).unwrap();
++    let proof = fixture
++        .issuer
++        .register_writer_authorization(&fixture.writer, &fixture.registry.verifier())
++        .unwrap();
+     let sequence = fixture.sequence();
+     let before = fixture.issuer.revocations().unwrap();
+     let verifier = fixture.registry.verifier();
+-    let lease = verifier.observe_original_lease(&fixture.writer.authority_lease).unwrap();
++    let lease = verifier
++        .observe_original_lease(&fixture.writer.authority_lease)
++        .unwrap();
+     let mut wrong = fixture.writer.clone();
+     wrong.owner_epoch += 1;
+-    assert!(fixture.issuer.observe_original_writer_state(&wrong).is_err());
++    assert!(
++        fixture
++            .issuer
++            .observe_original_writer_state(&wrong)
++            .is_err()
++    );
+     assert_eq!(fixture.sequence(), sequence);
+     assert_eq!(fixture.issuer.revocations().unwrap(), before);
+     fixture.clock.expire_on.store(0, Ordering::SeqCst);
+-    assert!(fixture.issuer.observe_original_writer_state(&fixture.writer).is_err());
++    assert!(
++        fixture
++            .issuer
++            .observe_original_writer_state(&fixture.writer)
++            .is_err()
++    );
+     assert_eq!(fixture.sequence(), sequence);
+-    assert_eq!(fixture.issuer.store.load(STATE_OWNER).unwrap().writer_authorization.as_ref(), Some(&proof));
++    assert_eq!(
++        fixture
++            .issuer
++            .store
++            .load(STATE_OWNER)
++            .unwrap()
++            .writer_authorization
++            .as_ref(),
++        Some(&proof)
++    );
+     lease.finish_original_observation().unwrap();
+ }
+diff --git a/codex-rs/hepta-agentd/src/production_launcher_late_startup.rs b/codex-rs/hepta-agentd/src/production_launcher_late_startup.rs
+index 4581a2604b7a34dcc75c852d34406bbc8f87076c..db398aa05e688dc9c455bacb8c7e065184fdbaf9 100644
+--- a/codex-rs/hepta-agentd/src/production_launcher_late_startup.rs
++++ b/codex-rs/hepta-agentd/src/production_launcher_late_startup.rs
+@@ -2,8 +2,8 @@
+ //! Parsing takes the real inherited rights in single-thread arg0 preflight;
+ //! the first runtime only consumes that same pending receive and its deadline.
+ 
+-use super::*;
+ use super::late_writer::OriginalLateWriterInputs;
++use super::*;
+ 
+ const ENTRY_FLAG: &str = "--root-production-entry";
+ 
+@@ -77,7 +77,9 @@ impl OriginalLateWriterStartup {
+             cognitive_mode,
+         } = self;
+         let original: OriginalLateWriterInputs = original;
+-        let (config, launch) = original.consume_original_late_writer_inputs(&identity).await?;
++        let (config, launch) = original
++            .consume_original_late_writer_inputs(&identity)
++            .await?;
+         Ok((config.with_cognitive_retrieval_mode(cognitive_mode), launch))
+     }
+ }
+diff --git a/codex-rs/hepta-agentd/src/production_launcher_late_writer.rs b/codex-rs/hepta-agentd/src/production_launcher_late_writer.rs
+index 8a4932c42201071baf5940d6cb1878539fddc142..764a69f9b9f95a1971e42a2f9fe8dd75f64ebfad 100644
+--- a/codex-rs/hepta-agentd/src/production_launcher_late_writer.rs
++++ b/codex-rs/hepta-agentd/src/production_launcher_late_writer.rs
+@@ -21,7 +21,8 @@ impl AgentdProductionLaunch {
+         arguments: Vec<OsString>,
+         expected: &AgentdIdentity,
+     ) -> Result<(AgentdConfig, Self, Vec<OsString>), AgentdError> {
+-        let (inputs, ordinary) = OriginalLateWriterInputs::prepare_original_late_writer_inputs(arguments)?;
++        let (inputs, ordinary) =
++            OriginalLateWriterInputs::prepare_original_late_writer_inputs(arguments)?;
+         let (config, launch) = inputs.consume_original_late_writer_inputs(expected).await?;
+         Ok((config, launch, ordinary))
+     }
+@@ -46,7 +47,13 @@ impl OriginalLateWriterInputs {
+         })?;
+         require_late_owner(inputs.uid, inputs.gid)?;
+         let session_end = Instant::now() + inputs.lifetime;
+-        Ok((Self { inputs, session_end }, ordinary))
++        Ok((
++            Self {
++                inputs,
++                session_end,
++            },
++            ordinary,
++        ))
+     }
+ 
+     pub(super) async fn consume_original_late_writer_inputs(
+diff --git a/codex-rs/hepta-agentd/src/production_launcher_late_writer_tests.rs b/codex-rs/hepta-agentd/src/production_launcher_late_writer_tests.rs
+index 5260b0e129476365f896979053c14d1a34779004..934ea8a9a7fa0875db437b46b6c674689e03a597 100644
+--- a/codex-rs/hepta-agentd/src/production_launcher_late_writer_tests.rs
++++ b/codex-rs/hepta-agentd/src/production_launcher_late_writer_tests.rs
+@@ -168,7 +168,10 @@ fn late_writer_cli_entry_is_explicit_and_preserves_ordinary_bytes() -> anyhow::R
+         select_original_startup_entry(ordinary.clone())?,
+         OriginalStartupSelection::Existing(ordinary.clone()),
+     );
+-    let mut explicit = vec![OsString::from("--root-production-entry"), OsString::from("late-writer")];
++    let mut explicit = vec![
++        OsString::from("--root-production-entry"),
++        OsString::from("late-writer"),
++    ];
+     explicit.extend(ordinary.clone());
+     assert_eq!(
+         select_original_startup_entry(explicit)?,
+@@ -185,7 +188,12 @@ fn late_writer_cli_entry_refuses_duplicate_or_unknown_modes_before_rights() -> a
+     for values in [
+         vec!["--root-production-entry"],
+         vec!["--root-production-entry", "fresh"],
+-        vec!["--root-production-entry", "late-writer", "--root-production-entry", "late-writer"],
++        vec![
++            "--root-production-entry",
++            "late-writer",
++            "--root-production-entry",
++            "late-writer",
++        ],
+     ] {
+         let arguments = values.into_iter().map(OsString::from).collect();
+         assert!(select_original_startup_entry(arguments).is_err());
+@@ -201,7 +209,10 @@ fn late_writer_cli_entry_refuses_duplicate_or_unknown_modes_before_rights() -> a
+ fn late_writer_cli_preflight_consumes_failed_owner_attempt_without_default_fallback()
+ -> anyhow::Result<()> {
+     let mut fixture = DescriptorInputs::new()?;
+-    let mut arguments = vec![OsString::from("--root-production-entry"), OsString::from("late-writer")];
++    let mut arguments = vec![
++        OsString::from("--root-production-entry"),
++        OsString::from("late-writer"),
++    ];
+     arguments.extend(fixture.arguments()?);
+     for descriptor in fixture.descriptors.drain(..) {
+         let _ = descriptor.into_raw_fd();
+@@ -210,7 +221,10 @@ fn late_writer_cli_preflight_consumes_failed_owner_attempt_without_default_fallb
+     let Err(AgentdError::Invalid(reason)) = result else {
+         anyhow::bail!("explicit late-writer owner refusal changed phase or fell back");
+     };
+-    assert_eq!(reason, "late writer requires its already dedicated actual non-Root owner");
++    assert_eq!(
++        reason,
++        "late writer requires its already dedicated actual non-Root owner"
++    );
+     // Observe the retained kernel socket, not a possibly reused numeric FD.
+     assert!(fixture._root_peer.send(b"original-offer").is_err());
+     Ok(())
+diff --git a/codex-rs/hepta-contracts/src/authority_lease_observation.rs b/codex-rs/hepta-contracts/src/authority_lease_observation.rs
+index 2b7454e9257f0716ecfa62d0bfe5113adaf6f527..86021913605baf2555ec89acaf869ca774e2b437 100644
+--- a/codex-rs/hepta-contracts/src/authority_lease_observation.rs
++++ b/codex-rs/hepta-contracts/src/authority_lease_observation.rs
+@@ -81,28 +81,55 @@ impl Inner {
+     pub(super) fn lock_dispatch_state(
+         &self,
+     ) -> Result<DispatchStateGuard<'_>, AuthorityLeaseError> {
+-        let serial = self.serial.lock().map_err(|_| AuthorityLeaseError::Unavailable)?;
+-        let state = self.state.read().map_err(|_| AuthorityLeaseError::Unavailable)?;
++        let serial = self
++            .serial
++            .lock()
++            .map_err(|_| AuthorityLeaseError::Unavailable)?;
++        let state = self
++            .state
++            .read()
++            .map_err(|_| AuthorityLeaseError::Unavailable)?;
+         self.require_available(&state)?;
+-        Ok(DispatchStateGuard { _serial: serial, state })
++        Ok(DispatchStateGuard {
++            _serial: serial,
++            state,
++        })
+     }
+ 
+     pub(super) fn lock_mutation_state(
+         &self,
+     ) -> Result<MutationStateGuard<'_>, AuthorityLeaseError> {
+-        let serial = self.serial.lock().map_err(|_| AuthorityLeaseError::Unavailable)?;
+-        let state = self.state.write().map_err(|_| AuthorityLeaseError::Unavailable)?;
++        let serial = self
++            .serial
++            .lock()
++            .map_err(|_| AuthorityLeaseError::Unavailable)?;
++        let state = self
++            .state
++            .write()
++            .map_err(|_| AuthorityLeaseError::Unavailable)?;
+         self.require_available(&state)?;
+-        Ok(MutationStateGuard { _serial: serial, state })
++        Ok(MutationStateGuard {
++            _serial: serial,
++            state,
++        })
+     }
+ 
+     pub(super) fn try_lock_mutation_state(
+         &self,
+     ) -> Result<MutationStateGuard<'_>, AuthorityLeaseError> {
+-        let serial = self.serial.try_lock().map_err(|_| AuthorityLeaseError::Unavailable)?;
+-        let state = self.state.try_write().map_err(|_| AuthorityLeaseError::Unavailable)?;
++        let serial = self
++            .serial
++            .try_lock()
++            .map_err(|_| AuthorityLeaseError::Unavailable)?;
++        let state = self
++            .state
++            .try_write()
++            .map_err(|_| AuthorityLeaseError::Unavailable)?;
+         self.require_available(&state)?;
+-        Ok(MutationStateGuard { _serial: serial, state })
++        Ok(MutationStateGuard {
++            _serial: serial,
++            state,
++        })
+     }
+ }
+ 
+@@ -116,8 +143,16 @@ impl AuthorityLeaseVerifier {
+         original: &AuthorityLease,
+     ) -> Result<AuthorityLeaseObservationV1<'_>, AuthorityLeaseError> {
+         original.validate()?;
+-        let serial = self.0.observations.lock().map_err(|_| AuthorityLeaseError::Unavailable)?;
+-        let state = self.0.state.read().map_err(|_| AuthorityLeaseError::Unavailable)?;
++        let serial = self
++            .0
++            .observations
++            .lock()
++            .map_err(|_| AuthorityLeaseError::Unavailable)?;
++        let state = self
++            .0
++            .state
++            .read()
++            .map_err(|_| AuthorityLeaseError::Unavailable)?;
+         // Construct before any fallible clock callback so panic poisoning is
+         // visible before this original state fence can be released.
+         let observation = AuthorityLeaseObservationV1 {
+diff --git a/codex-rs/hepta-contracts/src/authority_lease_observation_tests.rs b/codex-rs/hepta-contracts/src/authority_lease_observation_tests.rs
+index 4b11ddb4433c4f0b8ed82c96091ffa8a12bdd7fb..8b9a140054028e8246677ac0959064a59f81c51f 100644
+--- a/codex-rs/hepta-contracts/src/authority_lease_observation_tests.rs
++++ b/codex-rs/hepta-contracts/src/authority_lease_observation_tests.rs
+@@ -54,7 +54,8 @@ fn fixture() -> (AuthorityLeaseRegistry, tempfile::TempDir, Arc<Clock>) {
+         "original-observation-owner".into(),
+         AuthorityLeaseFrontier::for_empty_epoch(7).unwrap(),
+         clock.clone(),
+-    ).unwrap();
++    )
++    .unwrap();
+     registry.put_lease(lease(), 0).unwrap();
+     (registry, directory, clock)
+ }
+@@ -64,8 +65,12 @@ fn metadata_progresses_during_dispatch_but_original_dispatch_remains_serial() {
+     let (registry, _directory, _clock) = fixture();
+     let verifier = registry.verifier();
+     let original = lease();
+-    let first = verifier.verify_use(&original.lease_id, original.revision, &original.binding).unwrap();
+-    let second = verifier.verify_use(&original.lease_id, original.revision, &original.binding).unwrap();
++    let first = verifier
++        .verify_use(&original.lease_id, original.revision, &original.binding)
++        .unwrap();
++    let second = verifier
++        .verify_use(&original.lease_id, original.revision, &original.binding)
++        .unwrap();
+     let (entered_tx, entered_rx) = mpsc::channel();
+     let (release_tx, release_rx) = mpsc::channel();
+     let (attempt_tx, attempt_rx) = mpsc::channel();
+@@ -78,7 +83,8 @@ fn metadata_progresses_during_dispatch_but_original_dispatch_remains_serial() {
+                 entered_tx.send(()).unwrap();
+                 release_rx.recv_timeout(WAIT).unwrap();
+                 41
+-            }).unwrap()
++            })
++            .unwrap()
+         });
+         entered_rx.recv_timeout(WAIT).unwrap();
+         let observation = verifier.observe_original_lease(&original).unwrap();
+@@ -87,10 +93,12 @@ fn metadata_progresses_during_dispatch_but_original_dispatch_remains_serial() {
+         let second_binding = &original.binding;
+         let second_thread = scope.spawn(move || {
+             attempt_tx.send(()).unwrap();
+-            second_verifier.with_dispatch_boundary(second, second_binding, || {
+-                second_tx.send(()).unwrap();
+-                42
+-            }).unwrap()
++            second_verifier
++                .with_dispatch_boundary(second, second_binding, || {
++                    second_tx.send(()).unwrap();
++                    42
++                })
++                .unwrap()
+         });
+         attempt_rx.recv_timeout(WAIT).unwrap();
+         assert!(matches!(
+@@ -116,9 +124,14 @@ fn original_observation_excludes_deadline_revoke_and_cannot_survive_revocation()
+         registry.revoke_exact_before(&original, [9; 32], Instant::now() + WAIT),
+         Err(AuthorityLeaseError::Unavailable)
+     ));
+-    assert_eq!(std::fs::read(directory.path().join("authority-leases.json")).unwrap(), before);
++    assert_eq!(
++        std::fs::read(directory.path().join("authority-leases.json")).unwrap(),
++        before
++    );
+     observation.finish_original_observation().unwrap();
+-    registry.revoke_exact_before(&original, [9; 32], Instant::now() + WAIT).unwrap();
++    registry
++        .revoke_exact_before(&original, [9; 32], Instant::now() + WAIT)
++        .unwrap();
+     assert!(matches!(
+         verifier.observe_original_lease(&original),
+         Err(AuthorityLeaseError::Revoked)
+@@ -134,19 +147,28 @@ fn observation_panic_fences_new_entries_without_discarding_an_entered_dispatch_r
+     let (registry, _directory, _clock) = fixture();
+     let verifier = registry.verifier();
+     let original = lease();
+-    let token = verifier.verify_use(&original.lease_id, original.revision, &original.binding).unwrap();
+-    let later_token = verifier.verify_use(&original.lease_id, original.revision, &original.binding).unwrap();
++    let token = verifier
++        .verify_use(&original.lease_id, original.revision, &original.binding)
++        .unwrap();
++    let later_token = verifier
++        .verify_use(&original.lease_id, original.revision, &original.binding)
++        .unwrap();
+     let (entered_tx, entered_rx) = mpsc::channel();
+     let (release_tx, release_rx) = mpsc::channel();
+     std::thread::scope(|scope| {
+         let original_verifier = &verifier;
+         let original_binding = &original.binding;
+         let worker = scope.spawn(move || {
+-            dispatch_authority_lease_with_witness(original_verifier, token, original_binding, |_| {
+-                entered_tx.send(()).unwrap();
+-                release_rx.recv_timeout(WAIT).unwrap();
+-                "actual-entered-result"
+-            })
++            dispatch_authority_lease_with_witness(
++                original_verifier,
++                token,
++                original_binding,
++                |_| {
++                    entered_tx.send(()).unwrap();
++                    release_rx.recv_timeout(WAIT).unwrap();
++                    "actual-entered-result"
++                },
++            )
+         });
+         entered_rx.recv_timeout(WAIT).unwrap();
+         let panic = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+@@ -165,12 +187,26 @@ fn observation_panic_fences_new_entries_without_discarding_an_entered_dispatch_r
+                     && reference.store_revision == 2
+         ));
+     });
+-    assert!(matches!(verifier.observe_original_lease(&original), Err(AuthorityLeaseError::Unavailable)));
+-    assert!(matches!(verifier.verify_use(&original.lease_id, original.revision, &original.binding), Err(AuthorityLeaseError::Unavailable)));
+-    assert!(matches!(registry.revoke(&original.lease_id, original.revision, [8; 32]), Err(AuthorityLeaseError::Unavailable)));
+-    assert!(matches!(registry.put_lease(original.clone(), original.revision), Err(AuthorityLeaseError::Unavailable)));
+     assert!(matches!(
+-        verifier.with_dispatch_boundary::<()>(later_token, &original.binding, || panic!("fenced dispatch entered")),
++        verifier.observe_original_lease(&original),
++        Err(AuthorityLeaseError::Unavailable)
++    ));
++    assert!(matches!(
++        verifier.verify_use(&original.lease_id, original.revision, &original.binding),
++        Err(AuthorityLeaseError::Unavailable)
++    ));
++    assert!(matches!(
++        registry.revoke(&original.lease_id, original.revision, [8; 32]),
++        Err(AuthorityLeaseError::Unavailable)
++    ));
++    assert!(matches!(
++        registry.put_lease(original.clone(), original.revision),
++        Err(AuthorityLeaseError::Unavailable)
++    ));
++    assert!(matches!(
++        verifier.with_dispatch_boundary::<()>(later_token, &original.binding, || panic!(
++            "fenced dispatch entered"
++        )),
+         Err(AuthorityLeaseError::Unavailable)
+     ));
+ }
+@@ -180,7 +216,9 @@ fn original_dispatch_panic_prevents_pending_metadata_publication() {
+     let (registry, _directory, _clock) = fixture();
+     let verifier = registry.verifier();
+     let original = lease();
+-    let token = verifier.verify_use(&original.lease_id, original.revision, &original.binding).unwrap();
++    let token = verifier
++        .verify_use(&original.lease_id, original.revision, &original.binding)
++        .unwrap();
+     let (entered_tx, entered_rx) = mpsc::channel();
+     let (panic_tx, panic_rx) = mpsc::channel();
+     std::thread::scope(|scope| {
+@@ -202,7 +240,10 @@ fn original_dispatch_panic_prevents_pending_metadata_publication() {
+             Err(AuthorityLeaseError::Unavailable)
+         ));
+     });
+-    assert!(matches!(verifier.read_lease(&original.lease_id), Err(AuthorityLeaseError::Unavailable)));
++    assert!(matches!(
++        verifier.read_lease(&original.lease_id),
++        Err(AuthorityLeaseError::Unavailable)
++    ));
+ }
+ 
+ #[test]
+@@ -217,11 +258,19 @@ fn original_clock_is_sampled_after_waiting_for_the_observation_fence() {
+     std::thread::scope(|scope| {
+         let worker = scope.spawn(|| {
+             attempt_tx.send(()).unwrap();
+-            matches!(verifier.observe_original_lease(&original), Err(AuthorityLeaseError::Expired))
++            matches!(
++                verifier.observe_original_lease(&original),
++                Err(AuthorityLeaseError::Expired)
++            )
+         });
+         attempt_rx.recv_timeout(WAIT).unwrap();
+-        assert!(matches!(called_rx.recv_timeout(Duration::from_millis(50)), Err(mpsc::RecvTimeoutError::Timeout)));
+-        clock.now.store(original.expires_at_unix_ms, Ordering::SeqCst);
++        assert!(matches!(
++            called_rx.recv_timeout(Duration::from_millis(50)),
++            Err(mpsc::RecvTimeoutError::Timeout)
++        ));
++        clock
++            .now
++            .store(original.expires_at_unix_ms, Ordering::SeqCst);
+         observation.finish_original_observation().unwrap();
+         assert!(worker.join().unwrap());
+     });
+@@ -258,22 +307,41 @@ impl AuthorityFrontierStore<AuthorityLeaseFrontier> for FailingFrontier {
+ fn actual_durable_frontier_failure_fences_both_original_and_metadata_entries() {
+     let directory = tempfile::tempdir().unwrap();
+     std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
+-    let clock = Arc::new(Clock { now: AtomicU64::new(2_000), calls: Mutex::new(None) });
++    let clock = Arc::new(Clock {
++        now: AtomicU64::new(2_000),
++        calls: Mutex::new(None),
++    });
+     let frontier = Arc::new(FailingFrontier {
+         head: Mutex::new(AuthorityLeaseFrontier::for_empty_epoch(7).unwrap()),
+         fail: AtomicBool::new(false),
+     });
+     let registry = AuthorityLeaseRegistry::open_state_dir_with_trust(
+-        directory.path(), "original-failed-owner".into(), clock, frontier.clone(),
+-    ).unwrap();
++        directory.path(),
++        "original-failed-owner".into(),
++        clock,
++        frontier.clone(),
++    )
++    .unwrap();
+     let original = lease();
+     registry.put_lease(original.clone(), 0).unwrap();
+     let verifier = registry.verifier();
+     frontier.fail.store(true, Ordering::SeqCst);
+-    assert!(matches!(registry.revoke(&original.lease_id, original.revision, [9; 32]), Err(AuthorityLeaseError::Unavailable)));
+-    assert!(matches!(verifier.observe_original_lease(&original), Err(AuthorityLeaseError::Unavailable)));
+-    assert!(matches!(verifier.verify_use(&original.lease_id, original.revision, &original.binding), Err(AuthorityLeaseError::Unavailable)));
+-    assert!(matches!(registry.frontier(), Err(AuthorityLeaseError::Unavailable)));
++    assert!(matches!(
++        registry.revoke(&original.lease_id, original.revision, [9; 32]),
++        Err(AuthorityLeaseError::Unavailable)
++    ));
++    assert!(matches!(
++        verifier.observe_original_lease(&original),
++        Err(AuthorityLeaseError::Unavailable)
++    ));
++    assert!(matches!(
++        verifier.verify_use(&original.lease_id, original.revision, &original.binding),
++        Err(AuthorityLeaseError::Unavailable)
++    ));
++    assert!(matches!(
++        registry.frontier(),
++        Err(AuthorityLeaseError::Unavailable)
++    ));
+ }
+ 
+ #[test]
+@@ -284,13 +352,29 @@ fn matching_id_and_revision_cannot_extend_or_replace_the_original_lease() {
+     let before = std::fs::read(directory.path().join("authority-leases.json")).unwrap();
+     let mut extended = original.clone();
+     extended.expires_at_unix_ms += 1;
+-    assert!(matches!(verifier.observe_original_lease(&extended), Err(AuthorityLeaseError::RevisionMismatch)));
++    assert!(matches!(
++        verifier.observe_original_lease(&extended),
++        Err(AuthorityLeaseError::RevisionMismatch)
++    ));
+     let mut rebound = original.clone();
+     rebound.binding.payload_sha256 = [9; 32];
+-    assert!(matches!(verifier.observe_original_lease(&rebound), Err(AuthorityLeaseError::RevisionMismatch)));
++    assert!(matches!(
++        verifier.observe_original_lease(&rebound),
++        Err(AuthorityLeaseError::RevisionMismatch)
++    ));
+     let mut foreign_epoch = original.clone();
+     foreign_epoch.authority_epoch += 1;
+-    assert!(matches!(verifier.observe_original_lease(&foreign_epoch), Err(AuthorityLeaseError::EpochMismatch)));
+-    verifier.observe_original_lease(&original).unwrap().finish_original_observation().unwrap();
+-    assert_eq!(std::fs::read(directory.path().join("authority-leases.json")).unwrap(), before);
++    assert!(matches!(
++        verifier.observe_original_lease(&foreign_epoch),
++        Err(AuthorityLeaseError::EpochMismatch)
++    ));
++    verifier
++        .observe_original_lease(&original)
++        .unwrap()
++        .finish_original_observation()
++        .unwrap();
++    assert_eq!(
++        std::fs::read(directory.path().join("authority-leases.json")).unwrap(),
++        before
++    );
+ }
+diff --git a/codex-rs/hepta-fleet/src/registry_readonly_tests.rs b/codex-rs/hepta-fleet/src/registry_readonly_tests.rs
+index 261fa7401034bbf26cabf410598c2febab66a35d..5baf71e8bf36bfb7e702c368d5dbb7624decdbb4 100644
+--- a/codex-rs/hepta-fleet/src/registry_readonly_tests.rs
++++ b/codex-rs/hepta-fleet/src/registry_readonly_tests.rs
+@@ -1,10 +1,10 @@
+ use super::*;
+-use codex_hepta_contracts::AgentId;
+ use crate::AgentLifecycle;
+ use crate::AgentManifest;
+ use crate::AgentRecord;
+ use crate::ResourceBudget;
+ use crate::WorkspaceBinding;
++use codex_hepta_contracts::AgentId;
+ use pretty_assertions::assert_eq;
+ 
+ struct ReadFixture {
+@@ -28,18 +28,34 @@ fn fixture() -> Result<ReadFixture, FleetRegistryError> {
+         WorkspaceBinding::new(workspace, &root)?,
+         ResourceBudget::local_default(),
+     )?)?;
+-    registry.compare_and_transition(&agent, /*expected_generation*/ 0, AgentLifecycle::Starting)?;
+-    Ok(ReadFixture { _directory: directory, root, registry, record })
++    registry.compare_and_transition(
++        &agent,
++        /*expected_generation*/ 0,
++        AgentLifecycle::Starting,
++    )?;
++    Ok(ReadFixture {
++        _directory: directory,
++        root,
++        registry,
++        record,
++    })
+ }
+ 
+ #[test]
+-fn original_readonly_snapshot_matches_full_registry_without_writer() -> Result<(), FleetRegistryError> {
++fn original_readonly_snapshot_matches_full_registry_without_writer()
++-> Result<(), FleetRegistryError> {
+     let fixture = fixture()?;
+     let expected = fixture.registry.load()?;
+     let manifest = std::fs::read(fixture.record.layout.agent_config())?;
+     assert!(!fixture.record.layout.writer_lock().exists());
+-    assert_eq!(FleetRegistry::read_existing_snapshot(fixture.root)?, expected);
+-    assert_eq!(std::fs::read(fixture.record.layout.agent_config())?, manifest);
++    assert_eq!(
++        FleetRegistry::read_existing_snapshot(fixture.root)?,
++        expected
++    );
++    assert_eq!(
++        std::fs::read(fixture.record.layout.agent_config())?,
++        manifest
++    );
+     assert!(!fixture.record.layout.writer_lock().exists());
+     Ok(())
+ }
+@@ -58,8 +74,8 @@ fn original_readonly_snapshot_refuses_missing_matrix_without_migration()
+ 
+ #[cfg(unix)]
+ #[test]
+-fn original_readonly_snapshot_refuses_unsafe_matrix_without_chmod()
+--> Result<(), FleetRegistryError> {
++fn original_readonly_snapshot_refuses_unsafe_matrix_without_chmod() -> Result<(), FleetRegistryError>
++{
+     use std::os::unix::fs::PermissionsExt;
+ 
+     let fixture = fixture()?;
+@@ -69,14 +85,16 @@ fn original_readonly_snapshot_refuses_unsafe_matrix_without_chmod()
+         FleetRegistry::read_existing_snapshot(fixture.root),
+         Err(FleetRegistryError::Corrupt(_))
+     ));
+-    assert_eq!(std::fs::symlink_metadata(matrix)?.permissions().mode() & 0o777, 0o750);
++    assert_eq!(
++        std::fs::symlink_metadata(matrix)?.permissions().mode() & 0o777,
++        0o750
++    );
+     Ok(())
+ }
+ 
+ #[cfg(unix)]
+ #[test]
+-fn original_readonly_snapshot_refuses_aliased_control_geometry()
+--> Result<(), FleetRegistryError> {
++fn original_readonly_snapshot_refuses_aliased_control_geometry() -> Result<(), FleetRegistryError> {
+     let fixture = fixture()?;
+     let run = fixture.record.layout.run_root();
+     let saved = run.with_file_name("original-run");

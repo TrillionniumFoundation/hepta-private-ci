@@ -158,10 +158,22 @@ impl LiveGenerationCurrent {
             .authorities
             .artifacts
             .lock()
+            .inspect_err(|_error| {
+                #[cfg(test)]
+                eprintln!(
+                    "ROOT_GENERATION_CURRENT_DIAGNOSTIC stage=live-artifact-lock error={_error:?}"
+                );
+            })
             .map_err(|_| CellGenerationErrorV2::Unavailable)?;
         let mut selected = self
             .selected
             .lock()
+            .inspect_err(|_error| {
+                #[cfg(test)]
+                eprintln!(
+                    "ROOT_GENERATION_CURRENT_DIAGNOSTIC stage=live-selection-lock error={_error:?}"
+                );
+            })
             .map_err(|_| CellGenerationErrorV2::Unavailable)?;
         selected
             .revalidate(
@@ -169,8 +181,20 @@ impl LiveGenerationCurrent {
                 self.authorities
                     .clock
                     .now_unix_ms()
+                    .inspect_err(|_error| {
+                        #[cfg(test)]
+                        eprintln!(
+                            "ROOT_GENERATION_CURRENT_DIAGNOSTIC stage=live-clock error={_error:?}"
+                        );
+                    })
                     .map_err(|_| CellGenerationErrorV2::Unavailable)?,
             )
+            .inspect_err(|_error| {
+                #[cfg(test)]
+                eprintln!(
+                    "ROOT_GENERATION_CURRENT_DIAGNOSTIC stage=live-selection error={_error:?}"
+                );
+            })
             .map_err(|_| CellGenerationErrorV2::Unavailable)?;
         self.authorities
             .final_use
@@ -179,6 +203,12 @@ impl LiveGenerationCurrent {
                 &self.expected,
                 self.publication.witness(),
             )
+            .inspect_err(|_error| {
+                #[cfg(test)]
+                eprintln!(
+                    "ROOT_GENERATION_CURRENT_DIAGNOSTIC stage=live-retained-final-use error={_error:?}"
+                );
+            })
             .map_err(|_| CellGenerationErrorV2::Unavailable)?;
         Ok(())
     }
@@ -200,10 +230,20 @@ impl CellGenerationCurrentV1 for LiveGenerationCurrent {
         if binding != self.publication.target() {
             return Err(CellGenerationErrorV2::InvalidBinding);
         }
-        self.current.check_current(binding)?;
+        self.current.check_current(binding).inspect_err(|_error| {
+            #[cfg(test)]
+            eprintln!(
+                "ROOT_GENERATION_CURRENT_DIAGNOSTIC stage=live-current-before error={_error:?}"
+            );
+        })?;
         self.check_live()?;
         // CURRENT/authority I/O cannot make an earlier Control sample fresh.
-        self.current.check_current(binding)
+        self.current.check_current(binding).inspect_err(|_error| {
+            #[cfg(test)]
+            eprintln!(
+                "ROOT_GENERATION_CURRENT_DIAGNOSTIC stage=live-current-after error={_error:?}"
+            );
+        })
     }
 }
 

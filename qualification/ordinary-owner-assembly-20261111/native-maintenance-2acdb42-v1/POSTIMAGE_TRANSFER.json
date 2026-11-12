@@ -1,0 +1,29 @@
+{
+  "bytes": 193634,
+  "sha256": "d87394cbdd12ea5413d8643839b0aee080652dad086a75ec3410a98197cb6bf9",
+  "git_blob": "c8845629d1321bb68a5b34544c86d2fd30417bca",
+  "version": "66306:55228342:193634:1794452886558723291:1794452886559900311",
+  "parts": [
+    {
+      "offset": 0,
+      "next_offset": 65536,
+      "chunk_sha256": "7c6e7c41f82dec6b16862e44f86f24e2232d5b86426fe5d3e5e0f9aeecc4ae9b",
+      "eof": false
+    },
+    {
+      "offset": 65536,
+      "next_offset": 131072,
+      "chunk_sha256": "e8d0eb12b6aeecabe9c1ad9410af8d8be79b773b91837d22b3fafe18afb77836",
+      "eof": false
+    },
+    {
+      "offset": 131072,
+      "next_offset": 193634,
+      "chunk_sha256": "0562c019a9d4523cc932712a2169e9abb92eae51892dbf383b564415a7dc3296",
+      "eof": true
+    }
+  ],
+  "source": "2acdb420ea3074d0ba54774d43f565827bf40fec",
+  "tree": "3df95630b251283faf3ff03e64ddbaae4f6134cb",
+  "analysis_note": "First local parser used wrong response field name; corrected to original data_base64. No original bytes, native request or run changed."
+}

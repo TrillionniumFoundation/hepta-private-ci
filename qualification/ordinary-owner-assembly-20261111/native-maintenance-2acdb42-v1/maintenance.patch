@@ -1,0 +1,482 @@
+diff --git a/codex-rs/hepta-agentd/src/authority_host_generation_initial_fixture_tests.rs b/codex-rs/hepta-agentd/src/authority_host_generation_initial_fixture_tests.rs
+index 66542ac41091faefba07f70dfb96535b064fd413..fd70cfc012684f66b6a14660d06a738c9904b5c9 100644
+--- a/codex-rs/hepta-agentd/src/authority_host_generation_initial_fixture_tests.rs
++++ b/codex-rs/hepta-agentd/src/authority_host_generation_initial_fixture_tests.rs
+@@ -3,7 +3,6 @@
+ //! completion or FileCAS is created.
+ 
+ use super::*;
+-use anyhow::Context;
+ use crate::DeploymentGrantPolicy;
+ use crate::HostAuthorityBootstrap;
+ use crate::HostAuthorityConsumerConfig;
+@@ -11,6 +10,7 @@ use crate::HostAuthorityConsumersConfig;
+ use crate::HostAuthoritySocketPaths;
+ use crate::HostAuthorityWriterRegistration;
+ use crate::HostIssuerRecordProfile;
++use anyhow::Context;
+ use codex_hepta_contracts::authority_lease::AuthorityLease;
+ use codex_hepta_contracts::authority_lease::AuthorityLeaseBinding;
+ use codex_hepta_fleet::AgentLifecycle;
+@@ -105,7 +105,10 @@ impl Fixture {
+             &workspace, /*uid*/ 0, /*gid*/ 60001, /*mode*/ 0o710,
+         )?;
+         owned_mode(
+-            fleet.as_path(), /*uid*/ 0, /*gid*/ 60001, /*mode*/ 0o710,
++            fleet.as_path(),
++            /*uid*/ 0,
++            /*gid*/ 60001,
++            /*mode*/ 0o710,
+         )?;
+         let agent = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12")?;
+         registry.register(AgentManifest::new(
+@@ -431,17 +434,20 @@ impl Fixture {
+         std::thread::scope(|scope| -> anyhow::Result<()> {
+             let registration = scope.spawn(|| -> anyhow::Result<()> {
+                 let timing = crate::root_authority_session::tests::component_phase_timing(
+-                    "initial.root.wait-original-inputs", phase,
++                    "initial.root.wait-original-inputs",
++                    phase,
+                 );
+-                control(&self.offer, b"ORIGINAL_INPUTS_READY")
+-                    .with_context(|| format!("initial parent {phase:?}: awaiting ORIGINAL_INPUTS_READY"))?;
++                control(&self.offer, b"ORIGINAL_INPUTS_READY").with_context(|| {
++                    format!("initial parent {phase:?}: awaiting ORIGINAL_INPUTS_READY")
++                })?;
+                 drop(timing);
+                 // The original child has now opened both real nonce owners.
+                 // The production loader invokes the original same-PID cap.
+                 let unchanged = support::protected_files(&self.current_path)?;
+                 let claims_before = std::fs::read(self.local.join("device/authority.claims"))?;
+                 let timing = crate::root_authority_session::tests::component_phase_timing(
+-                    "initial.root.deployment-register", phase,
++                    "initial.root.deployment-register",
++                    phase,
+                 );
+                 deployment.component_trigger_initial()?;
+                 assert_eq!(support::protected_files(&self.current_path)?, unchanged);
+@@ -460,14 +466,16 @@ impl Fixture {
+                     );
+                     send_data(&self.offer, &false)?;
+                 } else {
+-                    let registered = outcome
+-                        .with_context(|| format!("initial parent {phase:?}: registering original deployment"))?;
++                    let registered = outcome.with_context(|| {
++                        format!("initial parent {phase:?}: registering original deployment")
++                    })?;
+                     anyhow::ensure!(!registered.binding().parse::<Digest32>()?.is_zero());
+                     send_data(&self.offer, &true)?;
+                 }
+                 if phase == Phase::RetiredSession {
+-                    control(&self.offer, b"RETIRE_READY")
+-                        .with_context(|| format!("initial parent {phase:?}: awaiting RETIRE_READY"))?;
++                    control(&self.offer, b"RETIRE_READY").with_context(|| {
++                        format!("initial parent {phase:?}: awaiting RETIRE_READY")
++                    })?;
+                     assert_eq!(self.offer.send(b"RETIRE")?, 6);
+                 }
+                 control(&self.offer, b"STABLE")
+@@ -489,7 +497,9 @@ impl Fixture {
+             });
+             let served = prepared.serve_with_ready(move || {
+                 crate::send_root_production_handoff(send.try_clone()?, &sealed, &root_pin, TIMEOUT)
+-                    .with_context(|| format!("initial parent {phase:?}: sending original production handoff"))
++                    .with_context(|| {
++                        format!("initial parent {phase:?}: sending original production handoff")
++                    })
+                     .map_err(io::Error::other)?;
+                 crate::send_root_generation_initial_handoff(
+                     send.try_clone()?,
+@@ -497,13 +507,17 @@ impl Fixture {
+                     &root_pin,
+                     TIMEOUT,
+                 )
+-                .with_context(|| format!("initial parent {phase:?}: sending original initial handoff"))
++                .with_context(|| {
++                    format!("initial parent {phase:?}: sending original initial handoff")
++                })
+                 .map_err(io::Error::other)?;
+                 send_data(&send, &plan)
+                     .with_context(|| format!("initial parent {phase:?}: sending component plan"))
+                     .map_err(io::Error::other)?;
+                 send_target_files(&send, target_writer, witness_writer)
+-                    .with_context(|| format!("initial parent {phase:?}: sending original target descriptors"))
++                    .with_context(|| {
++                        format!("initial parent {phase:?}: sending original target descriptors")
++                    })
+                     .map_err(io::Error::other)
+             });
+             let registered = registration
+@@ -522,7 +536,8 @@ impl Fixture {
+                     "source refusal or controlled ACK loss closes original lane"
+                 );
+             } else {
+-                served.with_context(|| format!("initial parent {phase:?}: original Root serving"))?;
++                served
++                    .with_context(|| format!("initial parent {phase:?}: original Root serving"))?;
+             }
+             // CLOSED alone is insufficient: all original service threads and
+             // the original success/refusal result above must also be complete.
+diff --git a/codex-rs/hepta-agentd/src/authority_host_generation_publication_root_fixture_tests.rs b/codex-rs/hepta-agentd/src/authority_host_generation_publication_root_fixture_tests.rs
+index 54c1235b199b59e1bd66a7f398c2c786959f792c..8c85c70340ce1eb95e327869d40a22a4aacb8ce8 100644
+--- a/codex-rs/hepta-agentd/src/authority_host_generation_publication_root_fixture_tests.rs
++++ b/codex-rs/hepta-agentd/src/authority_host_generation_publication_root_fixture_tests.rs
+@@ -2,7 +2,6 @@
+ //! owner are production implementations; no FileCas/test authority is used.
+ 
+ use super::*;
+-use anyhow::Context;
+ use crate::DeploymentGrantPolicy;
+ use crate::HostAuthorityBootstrap;
+ use crate::HostAuthorityConsumerConfig;
+@@ -10,6 +9,7 @@ use crate::HostAuthorityConsumersConfig;
+ use crate::HostAuthoritySocketPaths;
+ use crate::HostAuthorityWriterRegistration;
+ use crate::HostIssuerRecordProfile;
++use anyhow::Context;
+ use codex_hepta_contracts::authority_lease::AuthorityLease;
+ use codex_hepta_contracts::authority_lease::AuthorityLeaseBinding;
+ use codex_hepta_fleet::AgentLifecycle;
+@@ -113,7 +113,10 @@ impl Fixture {
+             &workspace, /*uid*/ 0, /*gid*/ 60001, /*mode*/ 0o710,
+         )?;
+         owned_mode(
+-            &fleet_path, /*uid*/ 0, /*gid*/ 60001, /*mode*/ 0o710,
++            &fleet_path,
++            /*uid*/ 0,
++            /*gid*/ 60001,
++            /*mode*/ 0o710,
+         )?;
+         let agent = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12")?;
+         registry.register(AgentManifest::new(
+@@ -508,18 +511,20 @@ impl Fixture {
+         let snapshot = std::thread::scope(|scope| {
+             let registration = scope.spawn(|| -> anyhow::Result<_> {
+                 let timing = crate::root_authority_session::tests::component_phase_timing(
+-                    "publication.root.wait-learning-ready", phase,
++                    "publication.root.wait-learning-ready",
++                    phase,
+                 );
+                 control(&self.offer, b"LEARNING_AND_ORIGINAL_INPUTS_READY")?;
+                 drop(timing);
+                 let timing = crate::root_authority_session::tests::component_phase_timing(
+-                    "publication.root.deployment-register", phase,
++                    "publication.root.deployment-register",
++                    phase,
+                 );
+                 deployment.component_trigger_original(&late_material)?;
+                 let stopping = std::sync::atomic::AtomicBool::new(/*val*/ false);
+-                let registered = deployment
+-                    .wait_and_register(&stopping)
+-                    .with_context(|| format!("publication {phase:?}: original late registration"))?;
++                let registered = deployment.wait_and_register(&stopping).with_context(|| {
++                    format!("publication {phase:?}: original late registration")
++                })?;
+                 anyhow::ensure!(
+                     !registered.binding().parse::<Digest32>()?.is_zero(),
+                     "actual Root acknowledgement"
+@@ -541,7 +546,11 @@ impl Fixture {
+                         .ok_or_else(|| anyhow::anyhow!("same serving issuer"))?;
+                     let before = issuer.revocations()?;
+                     assert_eq!(before.authority_epoch, record.signed.grant.authority_epoch);
+-                    assert!(!before.revoked_grant_ids.contains(&record.signed.grant.grant_id));
++                    assert!(
++                        !before
++                            .revoked_grant_ids
++                            .contains(&record.signed.grant.grant_id)
++                    );
+                     let mut expected = before.clone();
+                     expected.revision = expected
+                         .revision
+diff --git a/codex-rs/hepta-agentd/src/neuron_generation_current_initial.rs b/codex-rs/hepta-agentd/src/neuron_generation_current_initial.rs
+index 01ea7514ea9b743dcd7b9729cf1c8832a33ce28c..a3967eabc57646dffde58ae6ff6c06a1156d81fa 100644
+--- a/codex-rs/hepta-agentd/src/neuron_generation_current_initial.rs
++++ b/codex-rs/hepta-agentd/src/neuron_generation_current_initial.rs
+@@ -62,23 +62,24 @@ impl NeuronGenerationCurrentOwnerV1 {
+                 eprintln!("ROOT_INITIAL_FAILURE stage=external-frontier error={error:?}");
+             })
+             .map_err(invalid)?;
+-        selected.revalidate(
+-            publication.artifacts,
+-            publication
+-                .clock
+-                .now_unix_ms()
+-                .inspect_err(|error| {
+-                    let _ = error;
+-                    #[cfg(test)]
+-                    eprintln!("ROOT_INITIAL_FAILURE stage=selection-clock error={error:?}");
+-                })
+-                .map_err(invalid)?,
+-        )
+-        .inspect_err(|error| {
+-            let _ = error;
+-            #[cfg(test)]
+-            eprintln!("ROOT_INITIAL_FAILURE stage=selection-revalidate error={error:?}");
+-        })?;
++        selected
++            .revalidate(
++                publication.artifacts,
++                publication
++                    .clock
++                    .now_unix_ms()
++                    .inspect_err(|error| {
++                        let _ = error;
++                        #[cfg(test)]
++                        eprintln!("ROOT_INITIAL_FAILURE stage=selection-clock error={error:?}");
++                    })
++                    .map_err(invalid)?,
++            )
++            .inspect_err(|error| {
++                let _ = error;
++                #[cfg(test)]
++                eprintln!("ROOT_INITIAL_FAILURE stage=selection-revalidate error={error:?}");
++            })?;
+         if selected.observation().digest().as_array() != &prepared.intent.selection
+             || selected.manifest().digest().map_err(invalid)?
+                 != prepared.intent.target.manifest_digest()
+@@ -86,12 +87,11 @@ impl NeuronGenerationCurrentOwnerV1 {
+             return Err(invalid("initial selection differs from prepared operation"));
+         }
+         if let NeuronGenerationInitialReadbackV1::Published(published) =
+-            self.read_initial_operation(prepared)
+-                .inspect_err(|error| {
+-                    let _ = error;
+-                    #[cfg(test)]
+-                    eprintln!("ROOT_INITIAL_FAILURE stage=prepared-current-readback error={error:?}");
+-                })?
++            self.read_initial_operation(prepared).inspect_err(|error| {
++                let _ = error;
++                #[cfg(test)]
++                eprintln!("ROOT_INITIAL_FAILURE stage=prepared-current-readback error={error:?}");
++            })?
+         {
+             if new.owner_binding() != Some(published.target()) {
+                 return Err(invalid("published initial generation readback differs"));
+@@ -100,7 +100,9 @@ impl NeuronGenerationCurrentOwnerV1 {
+                 .inspect_err(|error| {
+                     let _ = error;
+                     #[cfg(test)]
+-                    eprintln!("ROOT_INITIAL_FAILURE stage=published-generation-readback error={error:?}");
++                    eprintln!(
++                        "ROOT_INITIAL_FAILURE stage=published-generation-readback error={error:?}"
++                    );
+                 })
+                 .map_err(invalid)?;
+             return Ok(published);
+@@ -187,12 +189,11 @@ impl NeuronGenerationCurrentOwnerV1 {
+             eprintln!("ROOT_INITIAL_FAILURE stage=dispatch-final-use-boundary error={error:?}");
+         })
+         .map_err(invalid)?;
+-        result
+-            .inspect_err(|error| {
+-                let _ = error;
+-                #[cfg(test)]
+-                eprintln!("ROOT_INITIAL_FAILURE stage=dispatch-callback error={error:?}");
+-            })
++        result.inspect_err(|error| {
++            let _ = error;
++            #[cfg(test)]
++            eprintln!("ROOT_INITIAL_FAILURE stage=dispatch-callback error={error:?}");
++        })
+     }
+ 
+     /// Inspect only the retained original operation, without claiming or
+diff --git a/codex-rs/hepta-agentd/src/neuron_generation_initial.rs b/codex-rs/hepta-agentd/src/neuron_generation_initial.rs
+index a01cf875af9ff78945e13d73d8c5e519aa9168dc..cdce3889936f83e06d733124b1a840d2a265c4cf 100644
+--- a/codex-rs/hepta-agentd/src/neuron_generation_initial.rs
++++ b/codex-rs/hepta-agentd/src/neuron_generation_initial.rs
+@@ -145,12 +145,11 @@ impl<W: AnchorWitnessStore> PreparedAgentdGenerationInitialV1<W> {
+             #[cfg(test)]
+             eprintln!("ROOT_INITIAL_FAILURE stage=live-current-guard error={error:?}");
+         })?;
+-        ReadyAgentdGenerationInitialV1::new(self.journal, receipt, guard)
+-            .inspect_err(|error| {
+-                let _ = error;
+-                #[cfg(test)]
+-                eprintln!("ROOT_INITIAL_FAILURE stage=ready-initial-construction error={error:?}");
+-            })
++        ReadyAgentdGenerationInitialV1::new(self.journal, receipt, guard).inspect_err(|error| {
++            let _ = error;
++            #[cfg(test)]
++            eprintln!("ROOT_INITIAL_FAILURE stage=ready-initial-construction error={error:?}");
++        })
+     }
+ }
+ 
+diff --git a/codex-rs/hepta-agentd/src/root_authority_session.rs b/codex-rs/hepta-agentd/src/root_authority_session.rs
+index c36482e33fc43cd35b18f79740188eacf8e49558..bd11492035b4d508201d1e5a9f0a999ea177daed 100644
+--- a/codex-rs/hepta-agentd/src/root_authority_session.rs
++++ b/codex-rs/hepta-agentd/src/root_authority_session.rs
+@@ -152,14 +152,17 @@ impl LiveRoot {
+             || check_lifetime(self.root.get_ref())
+                 .inspect_err(|_error| {
+                     #[cfg(test)]
+-                    eprintln!("ROOT_SESSION_DIAGNOSTIC phase=current-post-lifetime error={_error:?}");
++                    eprintln!(
++                        "ROOT_SESSION_DIAGNOSTIC phase=current-post-lifetime error={_error:?}"
++                    );
+                 })
+                 .is_err()
+         {
+             #[cfg(test)]
+             eprintln!(
+                 "ROOT_SESSION_DIAGNOSTIC phase=current-final-check now_unix_ms={} lease_expiry_seconds={}",
+-                now, self.proof.authority().lease_expires_at_unix_seconds,
++                now,
++                self.proof.authority().lease_expires_at_unix_seconds,
+             );
+             self.cache.fence();
+             return Err(AgentdRootAuthorityError::Unavailable);
+@@ -286,7 +289,9 @@ impl AgentdRootAuthoritySession {
+                         .await
+                         .inspect_err(|_error| {
+                             #[cfg(test)]
+-                            eprintln!("ROOT_SESSION_DIAGNOSTIC phase=worker-refresh error={_error:?}");
++                            eprintln!(
++                                "ROOT_SESSION_DIAGNOSTIC phase=worker-refresh error={_error:?}"
++                            );
+                         })
+                         .is_err()
+                     {
+@@ -481,7 +486,11 @@ async fn refresh(
+     let head = observation.revocations.clone();
+     let changed = !live.cache.revocations_match(&head);
+     #[cfg(test)]
+-    timing.mark(if changed { "accept-changed-head" } else { "accept-same-head" });
++    timing.mark(if changed {
++        "accept-changed-head"
++    } else {
++        "accept-same-head"
++    });
+     if changed {
+         live.cache.begin_update();
+     }
+diff --git a/codex-rs/hepta-agentd/src/root_authority_session_tests.rs b/codex-rs/hepta-agentd/src/root_authority_session_tests.rs
+index 0ff0b07f606b3433194f97e3ac8aad7ae8f084a8..2871595caf737f443ec4c9a2ad5ef672ccdef109 100644
+--- a/codex-rs/hepta-agentd/src/root_authority_session_tests.rs
++++ b/codex-rs/hepta-agentd/src/root_authority_session_tests.rs
+@@ -421,7 +421,6 @@ pub(crate) fn original_config(
+ #[path = "root_authority_file_custody_tests.rs"]
+ mod file_custody;
+ 
+-
+ // A prior failed/cancelled refresh must not be misclassified as an intentional
+ // component shutdown merely because its worker has not returned yet.
+ pub(super) struct RefreshCompletion<'a> {
+@@ -459,11 +458,7 @@ pub(crate) async fn drop_original_production_after_idle(
+     let live = Arc::clone(&inputs.session.live);
+     let worker = inputs.session.worker.abort_handle();
+     tokio::time::timeout(timeout, async move {
+-        let _serial = live
+-            .serial
+-            .acquire()
+-            .await
+-            .map_err(std::io::Error::other)?;
++        let _serial = live.serial.acquire().await.map_err(std::io::Error::other)?;
+         if live.refresh_failed.load(Ordering::Acquire) || worker.is_finished() {
+             return Err(std::io::Error::other(
+                 "original Root observation worker failed or finished before deliberate Drop",
+@@ -493,7 +488,6 @@ pub(crate) async fn drop_original_production_after_idle(
+     })?
+ }
+ 
+-
+ #[cfg(test)]
+ impl AgentdRootAuthoritySession {
+     /// Wait only for the original feed and consumer barrier to observe one
+diff --git a/codex-rs/hepta-agentd/src/root_observation_cache.rs b/codex-rs/hepta-agentd/src/root_observation_cache.rs
+index ea2c4b75b6f95050f3f431a5e2d9febd4028c8e0..047c616692f9288077d7e289b8c2aeecc926e937 100644
+--- a/codex-rs/hepta-agentd/src/root_observation_cache.rs
++++ b/codex-rs/hepta-agentd/src/root_observation_cache.rs
+@@ -84,14 +84,11 @@ impl RootObservationCache {
+             return Err(AgentdRootAuthorityError::Unavailable);
+         }
+         let result = (|| {
+-            let mut slot = self
+-                .retained
+-                .lock()
+-                .map_err(|_| {
+-                    #[cfg(test)]
+-                    eprintln!("ROOT_OBSERVATION_CACHE phase=accept reason=retained-lock-poisoned");
+-                    AgentdRootAuthorityError::Unavailable
+-                })?;
++            let mut slot = self.retained.lock().map_err(|_| {
++                #[cfg(test)]
++                eprintln!("ROOT_OBSERVATION_CACHE phase=accept reason=retained-lock-poisoned");
++                AgentdRootAuthorityError::Unavailable
++            })?;
+             let clock = &observation.clock;
+             let head = &observation.revocations;
+             if observation.schema_version != 2
+@@ -181,17 +178,22 @@ impl RootObservationCache {
+                         observation.registered_agent_id != old.registered_agent_id,
+                         observation.spawn_generation != old.spawn_generation,
+                         observation.writer.authority_lease != old.writer.authority_lease,
+-                        observation.writer.authority_lease_sha256 != old.writer.authority_lease_sha256,
+-                        observation.writer.writer_authorization_sha256 != old.writer.writer_authorization_sha256,
++                        observation.writer.authority_lease_sha256
++                            != old.writer.authority_lease_sha256,
++                        observation.writer.writer_authorization_sha256
++                            != old.writer.writer_authorization_sha256,
+                         observation.writer.owner_epoch != old.writer.owner_epoch,
+                         observation.writer.local_lease_id != old.writer.local_lease_id,
+-                        observation.writer.local_lease_generation != old.writer.local_lease_generation,
++                        observation.writer.local_lease_generation
++                            != old.writer.local_lease_generation,
+                         old.writer.store_revision,
+                         observation.writer.store_revision,
+                         old.revocations.revision,
+                         head.revision,
+                         head.revision == old.revocations.revision && *head != old.revocations,
+-                        !head.revoked_grant_ids.is_superset(&old.revocations.revoked_grant_ids),
++                        !head
++                            .revoked_grant_ids
++                            .is_superset(&old.revocations.revoked_grant_ids),
+                         old.observed_unix_ms,
+                         observation.observed_unix_ms,
+                         old.clock.anchor_boottime_ns,
+@@ -239,21 +241,18 @@ impl RootObservationCache {
+         }
+         // Contention is a local unavailable read, never a wait behind a writer.
+         // Unlike invalid evidence, contention alone does not destroy the feed.
+-        let mut slot = self
+-            .retained
+-            .try_lock()
+-            .map_err(|_error| {
+-                #[cfg(test)]
+-                match _error {
+-                    std::sync::TryLockError::WouldBlock => eprintln!(
+-                        "ROOT_OBSERVATION_CACHE phase=current reason=retained-lock-contention now={now}"
+-                    ),
+-                    std::sync::TryLockError::Poisoned(_) => eprintln!(
+-                        "ROOT_OBSERVATION_CACHE phase=current reason=retained-lock-poisoned now={now}"
+-                    ),
+-                }
+-                AgentdRootAuthorityError::Unavailable
+-            })?;
++        let mut slot = self.retained.try_lock().map_err(|_error| {
++            #[cfg(test)]
++            match _error {
++                std::sync::TryLockError::WouldBlock => eprintln!(
++                    "ROOT_OBSERVATION_CACHE phase=current reason=retained-lock-contention now={now}"
++                ),
++                std::sync::TryLockError::Poisoned(_) => eprintln!(
++                    "ROOT_OBSERVATION_CACHE phase=current reason=retained-lock-poisoned now={now}"
++                ),
++            }
++            AgentdRootAuthorityError::Unavailable
++        })?;
+         let result = (|| {
+             let retained = slot
+                 .as_mut()
+@@ -312,9 +311,7 @@ fn project(
+         #[cfg(test)]
+         eprintln!(
+             "ROOT_OBSERVATION_CACHE phase=project reason=durable-ceiling now={now} projected_unix_ms={projected} ceiling_unix_ms={} anchor_boottime_ns={} anchor_unix_ms={}",
+-            value.clock.ceiling_unix_ms,
+-            value.clock.anchor_boottime_ns,
+-            value.clock.anchor_unix_ms,
++            value.clock.ceiling_unix_ms, value.clock.anchor_boottime_ns, value.clock.anchor_unix_ms,
+         );
+         return Err(AgentdRootAuthorityError::Unavailable);
+     }

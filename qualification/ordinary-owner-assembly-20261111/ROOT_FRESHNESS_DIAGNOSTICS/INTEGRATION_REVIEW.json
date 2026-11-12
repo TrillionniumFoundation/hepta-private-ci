@@ -1,0 +1,112 @@
+{
+  "schema": "hepta.root-freshness-diagnostics.integration-review.v1",
+  "source_before": "4e88a3adb244e8c8baca89e526637807c538e11c",
+  "tree_before": "9c2f9ba0876a858db49601f35c505fcc1439f644",
+  "original_failure": {
+    "source": "f9131ee6bfc514812096b3b72b7c3c70ff77278c",
+    "tree": "850c7e73f936b74c0c82e30c0907de11769d8cf1",
+    "executed": 17,
+    "passed": 15,
+    "failed": 2,
+    "root_uid": 0,
+    "age_ns": [
+      533636917,
+      603668108
+    ],
+    "time_regressed": false,
+    "full_qualification": false
+  },
+  "fixture_ops": "e83dba8a9611905ddb2351d643fa2ce00d06c1b2",
+  "fixture_review": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_root_child_tests.rs",
+      "ops": 14,
+      "postimage": "eaf9a9e313755e218e257dc32d58f818abaead77",
+      "exact_reversal": true,
+      "assertions_before": 38,
+      "assertions_after": 38
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_child_tests.rs",
+      "ops": 18,
+      "postimage": "01b5cd8e5c30ded50eb3b97f67c3e94c308697a0",
+      "exact_reversal": true,
+      "assertions_before": 31,
+      "assertions_after": 31
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_root_fixture_tests.rs",
+      "ops": 4,
+      "postimage": "54c1235b199b59e1bd66a7f398c2c786959f792c",
+      "exact_reversal": true,
+      "assertions_before": 9,
+      "assertions_after": 9
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_fixture_tests.rs",
+      "ops": 4,
+      "postimage": "66542ac41091faefba07f70dfb96535b064fd413",
+      "exact_reversal": true,
+      "assertions_before": 9,
+      "assertions_after": 9
+    }
+  ],
+  "production_source_review": [
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session.rs",
+      "ops": 7,
+      "exact_forward_reverse": true,
+      "postimage": "c36482e33fc43cd35b18f79740188eacf8e49558"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_writer.rs",
+      "ops": 4,
+      "exact_forward_reverse": true,
+      "postimage": "9ee06141aded0ac3effa8b8e6f716958d463a0e0"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_tests.rs",
+      "ops": 1,
+      "exact_forward_reverse": true,
+      "postimage": "0ff0b07f606b3433194f97e3ac8aad7ae8f084a8"
+    }
+  ],
+  "normal_build_projection": [
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session.rs",
+      "cfg_blocks": 7,
+      "normal_build_fragment_projection_exact": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_writer.rs",
+      "cfg_blocks": 7,
+      "normal_build_fragment_projection_exact": true
+    }
+  ],
+  "findings": [
+    "Original 500000000ns freshness threshold, BOOTTIME acceptance samples and sticky fencing unchanged.",
+    "Fixture operations are insertion-only: component_phase_timing construction and drop. All original calls, assertions, control messages, budgets and 17 selected Root tests unchanged.",
+    "Session diagnostic timing is declared before the original serial permit; completed/error/cancelled scope records print after permit release. The original sticky refresh-failure witness still drops before that permit.",
+    "Writer callback records only fixed diagnostic slots; outer scope prints after dispatch_authority_lease_with_witness returns and releases its original state guard.",
+    "Diagnostic BOOTTIME errors are captured as absent values; no diagnostic sample is used for authority, freshness, timeout, or retry decisions.",
+    "Each process reserves at most64 emitted records, with read-only writer success spans below20ms freeing unused slots. Missing traces beyond cap do not prove absence of execution.",
+    "Dispatch-to-callback interval includes original lock waiting and validation; callback interval is a lower bound on lock hold, not a pure mutex wait/hold measurement.",
+    "Agentd scenarios use dependency libraries without those libraries' cfg(test); diagnostics are on actual agentd wrappers, with no new build feature.",
+    "No functional timing fix or causal attribution is claimed by this instrumentation."
+  ],
+  "registry_changed": false,
+  "original_checker_blob": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+  "typed_helper_blob": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f",
+  "native_validation": "pending",
+  "business_acceptance": {
+    "ordinary_complete_chains": 0,
+    "positive_adoption_chains": 0,
+    "ordinary_no_update_rollback_chains": 0,
+    "independent_consumer_accepted": false,
+    "daemon_and_root_os_restart_accepted": false
+  },
+  "source_ops": "2f2c61a37440aa9767ac28bca01ce7c8e035ef3a",
+  "source_manifest": "1a0d1d00f58ce9a1ba02ee9e511391e91f22eccc",
+  "fixture_independent_review": "e7477ad5b7b10aa6158b91b80efbac7f3bd01085",
+  "source_independent_review": "Root independently applied all exact operations, read all source postimages and the original shared lease boundary, and verified normal-build projection and Drop order. Companion agent review receipt may be attached subsequently."
+}

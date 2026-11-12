@@ -1,0 +1,118 @@
+{
+  "schema": "hepta.original-learning-source-closure-qa-fix.v1",
+  "source": {
+    "commit": "0081b6b78fa1f0fb238a12aec814c93bdf2343a0",
+    "tree": "87e7ef749329b0f41481873a414cdd924d5971bf"
+  },
+  "status": "Exact one-literal QA retargeting, statically checked only. No QA/native/Cargo/checker execution, source worktree/ref mutation, h, permission or policy changes.",
+  "original_failure": {
+    "log": {
+      "git_blob": "15f19a1c30f69cfb595732292bbc17754daf1dd1",
+      "bytes": 67215,
+      "sha256": "3154d7e5e0ccf8d4f06b5cb9bdc918d8f92020adc650b96b86f1649b428abbe3"
+    },
+    "method": "OriginalLearningOwnerClosureTests.test_ordinary_assembly_uses_original_current_native_worker_and_normal_channel",
+    "subtest_marker": "source.readback()",
+    "exception": "ValueError: substring not found",
+    "failure_site": "rejects: source.index(marker, start, end + 1), before the baseline or mutation VerificationFailure assertion",
+    "scope": "Original B4 run 211 tests / 199 passed / 12 errors as reported by Root; this patch addresses only this one error. The other 11 CLI protected-baseline errors are owned separately."
+  },
+  "cause": {
+    "production_function": "circuit_q24_task_channel_v1<SW, CW>",
+    "production_path": "codex-rs/hepta-agentd/src/circuit_q24_task_profile.rs",
+    "production_pin": {
+      "git_blob": "eccc3de46f610576ee47b072da10d0f53daf5739",
+      "bytes": 7865,
+      "sha256": "4ee9b0ff4a842f3867ba65ebee6e83eea9ad33389685efbcf6ddc84e1cf35161"
+    },
+    "actual_statement": "let readback = Arc::new(DurableCircuitTaskSourceV1::readback(&source));",
+    "actual_source_line_at_pinned_commit": 195,
+    "finding": "The original read-only handoff still occurs in the same function after the normal channel is built and before returning the runtime. Earlier explicit-receiver/UFCS change altered spelling; the QA mutant retained the old method-call spelling.",
+    "readback_definition": {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_readback.rs",
+      "pin": {
+        "git_blob": "00746463d49ea655658ff7ba88210cb00c278cf3",
+        "bytes": 1849,
+        "sha256": "e0d49fdceddddd5c621130ee4df527b0c582090d006196756c1c13b4cf10cf26"
+      },
+      "actual_signature": "pub fn readback(&self) -> CircuitTaskSourceReadbackV1<W>",
+      "finding": "Returns the concrete original readback wrapper; it does not grant either task-source writer trait."
+    },
+    "registry": {
+      "path": "CALLERS.toml",
+      "pin": {
+        "git_blob": "7ec4df7edcb28c8ebef0037711d6c8f404eef014",
+        "bytes": 668746,
+        "sha256": "7bd6fae682b170dd268279d28f8cf3046289511c79d609c2c26b0eec8e5e7152"
+      },
+      "protected_path": "codex-rs/hepta-agentd/src/circuit_q24_task_profile.rs",
+      "actual_required_order_suffix": [
+        "circuit_task_channel_v1(",
+        "DurableCircuitTaskSourceV1::readback(&source)",
+        "Ok(CircuitQ24TaskRuntimeV1"
+      ],
+      "finding": "The registry already protects the current exact UFCS call. No weakening or registry change is required."
+    },
+    "checker": {
+      "path": "scripts/verify_hepta_callers.py",
+      "pin": {
+        "git_blob": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+        "bytes": 31701,
+        "sha256": "8899ec2b328125b2049b808cac0eeda3f57bfc6db89348512a58777101ae6dfa"
+      },
+      "fact": "Original _verify_required_order uses code.find for each required marker and raises VerificationFailure on missing/order mismatch. It is unchanged."
+    }
+  },
+  "patch": {
+    "path": "qa/b4-no-bypass/test_original_learning_owner_source_closure.py",
+    "preimage": {
+      "git_blob": "9c93ced86e71b2faccdb559c42fb0d911efdfb36",
+      "bytes": 11500,
+      "sha256": "ae332da50320d01baaaf283d6074f538cd0452c07adfe78301f93079988051c9"
+    },
+    "postimage": {
+      "git_blob": "85d46d3db23663d4b1ebe54980ea3ffe0e60b212",
+      "bytes": 11528,
+      "sha256": "cc65d676a2f7de668e05838d421d3caeda005a0545f7a8229aa156875a27644e"
+    },
+    "source_delta": {
+      "git_blob": "29d096eb5ae8b72bea773c8d32e93293e7ac9e37",
+      "bytes": 2373,
+      "sha256": "4640df635ca4c909eba687e6d2c7e46a91d32598ff44a79819335bc50fb400f5"
+    },
+    "exact_before": "\"source.readback()\"",
+    "exact_after": "\"DurableCircuitTaskSourceV1::readback(&source)\"",
+    "expected_occurrences": 1,
+    "old_new_function_marker": "fn circuit_q24_task_channel_v1<",
+    "tests_before_after": [
+      13,
+      13
+    ],
+    "target_samples_before_after": [
+      9,
+      9
+    ],
+    "all_other_file_bytes_identical": true,
+    "forward_and_reverse_replay_equal": true,
+    "postimage_and_delta_get_readback_equal": true,
+    "production_changes": 0,
+    "callers_changes": 0,
+    "checker_changes": 0,
+    "skips_or_catches_added": 0
+  },
+  "static_scope": {
+    "verified": [
+      "All five pinned input contents recompute to their declared Git blob IDs",
+      "Original 67215-byte failure log Git/SHA256 verified",
+      "One old literal occurrence; nine mutation samples remain nine",
+      "Actual new marker occurs once in the actual target function and in its existing protected row",
+      "Exact forward/reverse replay and uploaded source/delta readback"
+    ],
+    "not_run": [
+      "Python AST or unittest",
+      "_verify_protected_files or full caller checker",
+      "Cargo, just, native suite"
+    ],
+    "expected_negative": "The existing helper will now remove the actual protected UFCS call, then exercise the unchanged VerificationFailure assertion. This expectation is source-based; Root must execute the actual test on the newly fixed candidate."
+  }
+}

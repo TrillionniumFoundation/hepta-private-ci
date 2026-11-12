@@ -1,0 +1,811 @@
+{
+  "schema": "hepta.v6-original-archive-local-verification.v1",
+  "archive": {
+    "bytes": 1297388,
+    "sha256": "aaff3176e000652f54ac97308714aec0e94079ce6b731be5ec45f4622441394a",
+    "git_blob": "6535c15dcc3d795a22a26ced34861394ff98ec2e"
+  },
+  "tar_member_count": 88,
+  "payload_file_count": 87,
+  "original_manifest": {
+    "path": "MANIFEST.json",
+    "bytes": 40799,
+    "sha256": "a13b719d288a5766cde0c94176cf78e44a4827ab079d5b63f6be0f0648692584",
+    "git_blob": "54d1c3c20abee3ad26fb788cb484f6b1c88713ca"
+  },
+  "source_before": {
+    "head": "2d3a240d48aaa733775b134877c43981db50b702",
+    "status": "",
+    "tree": "ad39b87c16dd6799ba16015ec70b7021ac9c1e16"
+  },
+  "source_after": {
+    "head": "2d3a240d48aaa733775b134877c43981db50b702",
+    "status": "",
+    "tree": "ad39b87c16dd6799ba16015ec70b7021ac9c1e16"
+  },
+  "all_member_sets_sizes_sha256_git_blobs_match": true,
+  "source_clean_equal": true,
+  "business_acceptance": false,
+  "original_terminal_records": [
+    {
+      "path": "ordinary-2d3a240-root17-diagnostic-v3/progress.json",
+      "sha256": "850e2fb0a38f0ccdcd16ef12464d924dd984ad3055b79b28256c06827e3a744e",
+      "manifest_terminal_status": "root-component-diagnostic-failed",
+      "original_source_sha": "2d3a240d48aaa733775b134877c43981db50b702",
+      "raw_keys": [
+        "after_tests",
+        "before_tests",
+        "classification",
+        "cleanup",
+        "current_stage",
+        "errors",
+        "execution_records",
+        "expected_root_parents",
+        "external_tools_after",
+        "external_tools_before",
+        "format_base",
+        "full_qualification_accepted",
+        "helper_manifest_before",
+        "independent_consumer_accepted",
+        "known_failure_exemptions",
+        "maintenance_patch",
+        "not_run",
+        "operator_euid",
+        "operator_gid",
+        "operator_uid",
+        "ordinary_complete_chains",
+        "ordinary_no_update_rollback_chains",
+        "physical_daemon_root_restart_accepted",
+        "positive_adoption_chains",
+        "predecessor_results_used",
+        "reference_after",
+        "reference_before",
+        "reference_path",
+        "replaces_final_harness",
+        "root_completion",
+        "root_counts",
+        "root_packages",
+        "root_uid_proofs",
+        "scheduled_test_suites",
+        "schema",
+        "source_path",
+        "source_sha",
+        "source_tree",
+        "source_workflow_packages",
+        "status",
+        "steps"
+      ]
+    }
+  ],
+  "original_junit": [
+    {
+      "path": "ordinary-2d3a240-root17-diagnostic-v3/root.junit.xml",
+      "bytes": 8689,
+      "sha256": "4402806b645d9c993b96a7b3a98792347a569f1380e01a537bfad5ffe798d527",
+      "git_blob": "db50c213e12d5a759544f352eea77b36bcd96afa",
+      "testcases": 17,
+      "failed": 2,
+      "skipped": 0,
+      "passed": 15,
+      "failures": [
+        {
+          "name": "neuron_generation_current::initial_root_tests::root_initial_publication_uses_original_consumer_and_readonly_recovery",
+          "classname": "codex-hepta-agentd",
+          "failure_text": "Error: Permission denied (os error 13)\n\nROOT_COMPONENT_CHILD_OUTPUT_END\nError: initial parent Publish, controlled_ack_loss=false: original Root serve result: Err(Custom { kind: Other, error: \"owner process exited\" })\n\nCaused by:\n    0: initial parent Publish: awaiting ORIGINAL_INPUTS_READY\n    1: Resource temporarily unavailable (os error 11)",
+          "error_text": null
+        },
+        {
+          "name": "neuron_generation_current::publication_root_tests::root_broker_late_enrolls_publishes_and_recovers_original_current",
+          "classname": "codex-hepta-agentd",
+          "failure_text": "Error: Permission denied (os error 13)\n\nROOT_COMPONENT_CHILD_OUTPUT_END\nError: publication component Publish phase\n\nCaused by:\n    0: publication Publish: control worker failed; service=Err(Custom { kind: Other, error: \"owner process exited\" })\n    1: publication component control awaiting LEARNING_AND_ORIGINAL_INPUTS_READY\n    2: Resource temporarily unavailable (os error 11)",
+          "error_text": null
+        }
+      ]
+    }
+  ],
+  "verified_payload_members": [
+    {
+      "path": "ordinary-2d3a240-root17-diagnostic-v3/checkout-exact-source.launch.log",
+      "original_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2d3a240-root17-diagnostic-v3/records/checkout-exact-source.launch.log",
+      "bytes": 209,
+      "sha256": "901d37ba5c1672ec0d43453fe88955cfdfc1443242ddeb465d35a591d7b7c19b",
+      "git_blob": "98a82360bd24f53ea6d41ccbbef3c118b775c81b",
+      "matches_original_manifest": true
+    },
+    {
+      "path": "ordinary-2d3a240-root17-diagnostic-v3/cleanup-owned-fixture.launch.log",
+      "original_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2d3a240-root17-diagnostic-v3/records/cleanup-owned-fixture.launch.log",
+      "bytes": 102,
+      "sha256": "cdc289e94887d4434d3c7c336a60439c2c95f9adca548b1e978aa621b46d023c",
+      "git_blob": "af4ffada2fd3fb24cb5376a128045f8f59b54a10",
+      "matches_original_manifest": true
+    },
+    {
+      "path": "ordinary-2d3a240-root17-diagnostic-v3/cleanup-record-ownership.launch.log",
+      "original_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2d3a240-root17-diagnostic-v3/records/cleanup-record-ownership.launch.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "matches_original_manifest": true
+    },
+    {
+      "path": "ordinary-2d3a240-root17-diagnostic-v3/cleanup-unmount-bind.launch.log",
+      "original_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2d3a240-root17-diagnostic-v3/records/cleanup-unmount-bind.launch.log",
+      "bytes": 121,
+      "sha256": "ae90a083416b60296cb870ca65a6a685c2e5deca3ae882e5611eb93f1ed9cba6",
+      "git_blob": "fde0be80aaf2143f0b22497746cc0e4bc64c24b6",
+      "matches_original_manifest": true
+    },
+    {
+      "path": "ordinary-2d3a240-root17-diagnostic-v3/cleanup-unmount-witness-bind.launch.log",
+      "original_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2d3a240-root17-diagnostic-v3/records/cleanup-unmount-witness-bind.launch.log",
+      "bytes": 129,
+      "sha256": "1a63c39086d2a2adba0ab3ab9bd0e6c8f424af150e07f56e2735e4319c92d72d",
+      "git_blob": "a3e62b22dfef256fa712ae32136152f51eb8400c",
+      "matches_original_manifest": true
+    },
+    {
+      "path": "ordinary-2d3a240-root17-diagnostic-v3/configuration.json",
+      "original_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2d3a240-root17-diagnostic-v3/records/configuration.json",
+      "bytes": 3509,
+      "sha256": "b09efb5940b9427df874693b5f992f0f2cbfe69c2bdc30779c68b496376c0d11",
+      "git_blob": "fff8038bfb037dfc644ba961b377fd39139c0114",
+      "matches_original_manifest": true
+    },
+    {
+      "path": "ordinary-2d3a240-root17-diagnostic-v3/fetch-exact-source.launch.log",
+      "original_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2d3a240-root17-diagnostic-v3/records/fetch-exact-source.launch.log",
+      "bytes": 142,
+      "sha256": "ec60764ed199de8516e91b7fc219fdb35b12d6e5d5c75f27831dfad9949555fe",
+      "git_blob": "094538b9cf5a5f40f51ad4da8341bcb778825b13",
+      "matches_original_manifest": true
+    },
+    {
+      "path": "ordinary-2d3a240-root17-diagnostic-v3/final-source-identity.json",
+      "original_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2d3a240-root17-diagnostic-v3/records/final-source-identity.json",
+      "bytes": 127,
+      "sha256": "ae870eab60a1fc7e60a51830322c71b2952b77c254b40153e52e424e41138aeb",
+      "git_blob": "e2f5756553674a4aecff4dfe45a9617b33d17963",
+      "matches_original_manifest": true
+    },
+    {
+      "path": "ordinary-2d3a240-root17-diagnostic-v3/format-base-ancestry.launch.log",
+      "original_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2d3a240-root17-diagnostic-v3/records/format-base-ancestry.launch.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "matches_original_manifest": true
+    },
+    {
+      "path": "ordinary-2d3a240-root17-diagnostic-v3/helpers/codex-hepta-infer-worker-host.jsonl",
+      "original_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2d3a240-root17-diagnostic-v3/records/helpers/codex-hepta-infer-worker-host.jsonl",
+      "bytes": 1027120,
+      "sha256": "e83c8d8c6fbe4da713ab4d29dc2c065158a34afff182c0fa587b53e3b0751bc4",
+      "git_blob": "d488d4d5a4f85d8fb1e05b71d4597da21b98579c",
+      "matches_original_manifest": true
+    },
+    {
+      "path": "ordinary-2d3a240-root17-diagnostic-v3/helpers/codex-hepta-infer-worker-host.stderr.log",
+      "original_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2d3a240-root17-diagnostic-v3/records/helpers/codex-hepta-infer-worker-host.stderr.log",
+      "bytes": 41213,
+      "sha256": "0a926315281bd21ce636984d8bd49dc8708762d327fa3248bfb159a5775da229",
+      "git_blob": "eabee7a3fcd788faf79390a4b008a396d07b1cc8",
+      "matches_original_manifest": true
+    },
+    {
+      "path": "ordinary-2d3a240-root17-diagnostic-v3/helpers/env.json",
+      "original_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2d3a240-root17-diagnostic-v3/records/helpers/env.json",
+      "bytes": 337,
+      "sha256": "40ef9239d3a321e4f4467d7bb06ea14db4f953c856537410dccdbc8d65661ddd",
+      "git_blob": "4291f5c7a43b4423167adb35fb7be52a6655c2ce",
+      "matches_original_manifest": true
+    },
+    {
+      "path": "ordinary-2d3a240-root17-diagnostic-v3/helpers/manifest.json",
+      "original_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2d3a240-root17-diagnostic-v3/records/helpers/manifest.json",
+      "bytes": 2024,
+      "sha256": "487e88fdbdac6f40b3405141fc8cf585d67d71eff0b7dcc7edf121d7a286c22e",
+      "git_blob": "0296429a439d7a15e2f213779da9e7d4e7fe8ef3",
+      "matches_original_manifest": true
+    },
+    {
+      "path": "ordinary-2d3a240-root17-diagnostic-v3/isolated-clone.launch.log",
+      "original_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2d3a240-root17-diagnostic-v3/records/isolated-clone.launch.log",
+      "bytes": 110,
+      "sha256": "d025c2e40e0a59af3c27e98a4945a55678e0ddebff69ce017cf87d9a9a778f48",
+      "git_blob": "8aca25f404e5e02ce4cc874b2e44d577e6dd1054",
+      "matches_original_manifest": true
+    },
+    {
+      "path": "ordinary-2d3a240-root17-diagnostic-v3/maintenance.patch",
+      "original_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2d3a240-root17-diagnostic-v3/records/maintenance.patch",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "matches_original_manifest": true
+    },
+    {
+      "path": "ordinary-2d3a240-root17-diagnostic-v3/operator-toolchain.execution.json",
+      "original_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2d3a240-root17-diagnostic-v3/records/operator-toolchain.execution.json",
+      "bytes": 1446,
+      "sha256": "3fa833e642cc2cf9b98629cabc3d34adec26daf0849ca3d5499bfd6034790d3d",
+      "git_blob": "668de08dca862b025b7ea4dd4e99f02578eb3466",
+      "matches_original_manifest": true
+    },
+    {
+      "path": "ordinary-2d3a240-root17-diagnostic-v3/operator-toolchain.execution.json.174fd9c6380f4768a4859cf901de99cc.log",
+      "original_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2d3a240-root17-diagnostic-v3/records/operator-toolchain.execution.json.174fd9c6380f4768a4859cf901de99cc.log",
+      "bytes": 196,
+      "sha256": "f64c55ed9f210d80a9b248206104a47175faf5ec94a093e4ad132549209089fc",
+      "git_blob": "4b0852244672d9611e81367e960345736b255b8c",
+      "matches_original_manifest": true
+    },
+    {
+      "path": "ordinary-2d3a240-root17-diagnostic-v3/operator-toolchain.launch.log",
+      "original_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2d3a240-root17-diagnostic-v3/records/operator-toolchain.launch.log",
+      "bytes": 1510,
+      "sha256": "160a8a4987d59367fb8f4632bce2d80c6a2a8c6ac4d07d31da6bf3f32752aa1e",
+      "git_blob": "e3da01259eff8ffad356bb62c93dde3db27699d4",
+      "matches_original_manifest": true
+    },
+    {
+      "path": "ordinary-2d3a240-root17-diagnostic-v3/original-rust-idle-preflight.launch.log",
+      "original_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2d3a240-root17-diagnostic-v3/records/original-rust-idle-preflight.launch.log",
+      "bytes": 47,
+      "sha256": "b3037493cb353a98cda18e81fc0531326574001e7384a62fa84c8b7aded7f1f3",
+      "git_blob": "390f40f872279f9dbb386a38d392d2bb3d021f4c",
+      "matches_original_manifest": true
+    },
+    {
+      "path": "ordinary-2d3a240-root17-diagnostic-v3/progress.json",
+      "original_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2d3a240-root17-diagnostic-v3/records/progress.json",
+      "bytes": 70573,
+      "sha256": "850e2fb0a38f0ccdcd16ef12464d924dd984ad3055b79b28256c06827e3a744e",
+      "git_blob": "57d34ff1e2183efa6c039eda77ce634a12bbe760",
+      "matches_original_manifest": true
+    },
+    {
+      "path": "ordinary-2d3a240-root17-diagnostic-v3/root-binaries-after.json",
+      "original_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2d3a240-root17-diagnostic-v3/records/root-binaries-after.json",
+      "bytes": 711,
+      "sha256": "f892b5ea0a407c4c4bbd86b50c850be69eb9f695d7ad2af9fd9d7a4b5c87b00f",
+      "git_blob": "f233652912d2e12bb649a9ed3c608f65f771c655",
+      "matches_original_manifest": true
+    },
+    {
+      "path": "ordinary-2d3a240-root17-diagnostic-v3/root-binaries-before.json",
+      "original_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2d3a240-root17-diagnostic-v3/records/root-binaries-before.json",
+      "bytes": 711,
+      "sha256": "f892b5ea0a407c4c4bbd86b50c850be69eb9f695d7ad2af9fd9d7a4b5c87b00f",
+      "git_blob": "f233652912d2e12bb649a9ed3c608f65f771c655",
+      "matches_original_manifest": true
+    },
+    {
+      "path": "ordinary-2d3a240-root17-diagnostic-v3/root-binaries-metadata.json",
+      "original_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2d3a240-root17-diagnostic-v3/records/root-binaries-metadata.json",
+      "bytes": 252561,
+      "sha256": "05784ccdf67768c805eb0adc87af25259bd1fdb96dcf28db3d2255c1241693d5",
+      "git_blob": "8de2d23f2096d492b953e2ce97bd5469f440f395",
+      "matches_original_manifest": true
+    },
+    {
+      "path": "ordinary-2d3a240-root17-diagnostic-v3/root-binaries-metadata.json.provenance.json",
+      "original_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2d3a240-root17-diagnostic-v3/records/root-binaries-metadata.json.provenance.json",
+      "bytes": 594,
+      "sha256": "dac9031791e57e04195eba96306ab8fcdeaa015a9e21525527ca188362891c6c",
+      "git_blob": "893ca1dea5429c37981aa34705b7adb1b8cefb3d",
+      "matches_original_manifest": true
+    },
+    {
+      "path": "ordinary-2d3a240-root17-diagnostic-v3/root-binary-list-root-record-read.launch.log",
+      "original_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2d3a240-root17-diagnostic-v3/records/root-binary-list-root-record-read.launch.log",
+      "bytes": 4187,
+      "sha256": "c1bb87dd3b69f5e9bd89a87c22ad46f602d9dcbc2f34a5e67adfb1346497b1e8",
+      "git_blob": "1cf706869fb0f647c9d41402493bb1c2190fb1dc",
+      "matches_original_manifest": true
+    },
+    {
+      "path": "ordinary-2d3a240-root17-diagnostic-v3/root-binary-list-terminal-record-ownership.launch.log",
+      "original_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2d3a240-root17-diagnostic-v3/records/root-binary-list-terminal-record-ownership.launch.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "matches_original_manifest": true
+    },
+    {
+      "path": "ordinary-2d3a240-root17-diagnostic-v3/root-binary-list.execution.json",
+      "original_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2d3a240-root17-diagnostic-v3/records/root-binary-list.execution.json",
+      "bytes": 3998,
+      "sha256": "31174fe7866267a1d214486e111b5b1705667a63738be400a9ecca522263eac7",
+      "git_blob": "4795f677319cf200f95afc4538a974e5841f2515",
+      "matches_original_manifest": true
+    },
+    {
+      "path": "ordinary-2d3a240-root17-diagnostic-v3/root-binary-list.execution.json.bb097308cdcf424a84a4f299390fce5a.log",
+      "original_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2d3a240-root17-diagnostic-v3/records/root-binary-list.execution.json.bb097308cdcf424a84a4f299390fce5a.log",
+      "bytes": 308960,
+      "sha256": "1cd200aa1dbe36fb47b3cea646793b02d9e31e59665d8c95863dd53c83118537",
+      "git_blob": "bb25905d51bf2cfbbb9e836b920d302f7fa6ba4b",
+      "matches_original_manifest": true
+    },
+    {
+      "path": "ordinary-2d3a240-root17-diagnostic-v3/root-binary-list.launch.log",
+      "original_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2d3a240-root17-diagnostic-v3/records/root-binary-list.launch.log",
+      "bytes": 312778,
+      "sha256": "bf19c3575aee68a5722c6a176d38c4c3dfb5150daebeac5e95f3790f2ae8356d",
+      "git_blob": "306dfae2bf329a80353163ae41bcb815036e9664",
+      "matches_original_manifest": true
+    },
+    {
+      "path": "ordinary-2d3a240-root17-diagnostic-v3/root-binary-list.root-record-read.json",
+      "original_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2d3a240-root17-diagnostic-v3/records/root-binary-list.root-record-read.json",
+      "bytes": 4561,
+      "sha256": "7f9fabcf326035de125a73d2014717391b240864be4118b64af368310917703f",
+      "git_blob": "4ac8964e3640e715e2af25bd02379b5c6d346b73",
+      "matches_original_manifest": true
+    },
+    {
+      "path": "ordinary-2d3a240-root17-diagnostic-v3/root-binary-list.uid.json",
+      "original_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2d3a240-root17-diagnostic-v3/records/root-binary-list.uid.json",
+      "bytes": 47,
+      "sha256": "60afa2d4487fc4923d4ee728a722526bc481d0ea5160583a70a58a3c286b029e",
+      "git_blob": "da9be82ab1aa81faef0d8b649d9d41948e3c9262",
+      "matches_original_manifest": true
+    },
+    {
+      "path": "ordinary-2d3a240-root17-diagnostic-v3/root-cache.launch.log",
+      "original_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2d3a240-root17-diagnostic-v3/records/root-cache.launch.log",
+      "bytes": 86,
+      "sha256": "fb32d551b99487414e7a3fd2a20cc2b47cde487517dad02dff1e42b7097d06a2",
+      "git_blob": "979e5d7f80f581a79cc1d665e58be9ceaaf16d9b",
+      "matches_original_manifest": true
+    },
+    {
+      "path": "ordinary-2d3a240-root17-diagnostic-v3/root-cargo-metadata-root-record-read.launch.log",
+      "original_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2d3a240-root17-diagnostic-v3/records/root-cargo-metadata-root-record-read.launch.log",
+      "bytes": 1752,
+      "sha256": "8783c51c25c5b622e3ce5cb795dfaa50c0f3a444a5c8f0e9083f1fca16e0dc0c",
+      "git_blob": "3b03d721069a044edbfb0901a37095072f599618",
+      "matches_original_manifest": true
+    },
+    {
+      "path": "ordinary-2d3a240-root17-diagnostic-v3/root-cargo-metadata-terminal-record-ownership.launch.log",
+      "original_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2d3a240-root17-diagnostic-v3/records/root-cargo-metadata-terminal-record-ownership.launch.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "matches_original_manifest": true
+    },
+    {
+      "path": "ordinary-2d3a240-root17-diagnostic-v3/root-cargo-metadata.execution.json",
+      "original_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2d3a240-root17-diagnostic-v3/records/root-cargo-metadata.execution.json",
+      "bytes": 1512,
+      "sha256": "116194f2324dfa92cd0b7554217a02d61260cc566c56a44357fc4a82f2db7ddb",
+      "git_blob": "ec46b9cf140b797ce8bfeaca5195c709324ed396",
+      "matches_original_manifest": true
+    },
+    {
+      "path": "ordinary-2d3a240-root17-diagnostic-v3/root-cargo-metadata.execution.json.4e6f7996364a483ebda54f28e113d02c.log",
+      "original_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2d3a240-root17-diagnostic-v3/records/root-cargo-metadata.execution.json.4e6f7996364a483ebda54f28e113d02c.log",
+      "bytes": 1033563,
+      "sha256": "8ffea42f4441c56a728b4de2c04b2185c39649cc779307e219fb3cd785703e51",
+      "git_blob": "b6bf87d5ab60ce8e325c525d75069fbdf7031444",
+      "matches_original_manifest": true
+    },
+    {
+      "path": "ordinary-2d3a240-root17-diagnostic-v3/root-cargo-metadata.json",
+      "original_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2d3a240-root17-diagnostic-v3/records/root-cargo-metadata.json",
+      "bytes": 1033562,
+      "sha256": "dcb9b1f76575c0eee8fb6e35b48f43d49260bc7fad762b2b97d2fe91b159a337",
+      "git_blob": "d21db9fd7ecfb55a3531b569b4d68ff6e21d1032",
+      "matches_original_manifest": true
+    },
+    {
+      "path": "ordinary-2d3a240-root17-diagnostic-v3/root-cargo-metadata.json.provenance.json",
+      "original_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2d3a240-root17-diagnostic-v3/records/root-cargo-metadata.json.provenance.json",
+      "bytes": 596,
+      "sha256": "f929a7ad4e8bce541c2fde3d8e347dd7ced210399d20cb9a5c5d5346bcdbf755",
+      "git_blob": "fecd0070fc2144ea49fccf971391163fb4d6ba12",
+      "matches_original_manifest": true
+    },
+    {
+      "path": "ordinary-2d3a240-root17-diagnostic-v3/root-cargo-metadata.launch.log",
+      "original_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2d3a240-root17-diagnostic-v3/records/root-cargo-metadata.launch.log",
+      "bytes": 1034943,
+      "sha256": "6a20d68b576302e73425400ba34f41201e3c4792f2763c2ae799ab10c583326b",
+      "git_blob": "8d1a0828c976e655e2bbc04ad4ce7eb1fc8f2bb3",
+      "matches_original_manifest": true
+    },
+    {
+      "path": "ordinary-2d3a240-root17-diagnostic-v3/root-cargo-metadata.root-record-read.json",
+      "original_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2d3a240-root17-diagnostic-v3/records/root-cargo-metadata.root-record-read.json",
+      "bytes": 2054,
+      "sha256": "6c2db369e73da30da73186fe475d6238e649148111221e286736061e0babdcbf",
+      "git_blob": "beae533df14095041ba0271f083dd9879419be7d",
+      "matches_original_manifest": true
+    },
+    {
+      "path": "ordinary-2d3a240-root17-diagnostic-v3/root-cargo-metadata.uid.json",
+      "original_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2d3a240-root17-diagnostic-v3/records/root-cargo-metadata.uid.json",
+      "bytes": 47,
+      "sha256": "531d12905ed7d6a8056a0ec4cea69f75de93773d1eac74ccbb0c36be61951801",
+      "git_blob": "c7d6e1fa73401f0bd1d18c0fb94acbaf5bbdfb8e",
+      "matches_original_manifest": true
+    },
+    {
+      "path": "ordinary-2d3a240-root17-diagnostic-v3/root-environment.json",
+      "original_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2d3a240-root17-diagnostic-v3/records/root-environment.json",
+      "bytes": 1920,
+      "sha256": "d1ef4cbe62c669d905ffb9798deb8c54f05b8d69e0366d7e25181b1e969c1877",
+      "git_blob": "3962654cbf0d9724e77d308ee074a983a3a02ba7",
+      "matches_original_manifest": true
+    },
+    {
+      "path": "ordinary-2d3a240-root17-diagnostic-v3/root-fixture-created.json",
+      "original_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2d3a240-root17-diagnostic-v3/records/root-fixture-created.json",
+      "bytes": 137,
+      "sha256": "2edff40c3d99a52a1fb600bb2dcf626d7f4c020001988c76f8ba36d1a420b0f3",
+      "git_blob": "6e181e8cd5c7f1eb667b7020f901c6bdaaef67e4",
+      "matches_original_manifest": true
+    },
+    {
+      "path": "ordinary-2d3a240-root17-diagnostic-v3/root-fixture-setup.launch.log",
+      "original_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2d3a240-root17-diagnostic-v3/records/root-fixture-setup.launch.log",
+      "bytes": 282,
+      "sha256": "de805ac2d17414b8e8a08174e1a1b1ed11e3d9823d55cd24d671d0aeca73bd15",
+      "git_blob": "51e44e326e07f7bc953aa8f0c479d9f95010ca61",
+      "matches_original_manifest": true
+    },
+    {
+      "path": "ordinary-2d3a240-root17-diagnostic-v3/root-junit.launch.log",
+      "original_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2d3a240-root17-diagnostic-v3/records/root-junit.launch.log",
+      "bytes": 3203,
+      "sha256": "93dbfcac2eb8102bed160dd5c84173f0df33bddb0f3f6c5d39cb492bf8cb601b",
+      "git_blob": "164745edd8b8c4b728019cf90564ec163a3c79f4",
+      "matches_original_manifest": true
+    },
+    {
+      "path": "ordinary-2d3a240-root17-diagnostic-v3/root-parent-coverage.json",
+      "original_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2d3a240-root17-diagnostic-v3/records/root-parent-coverage.json",
+      "bytes": 4379,
+      "sha256": "4df33ef202b61e5bd64ea58a24cd2edc9fd57eaaadab7ca172f3d1fe1dcfd3e7",
+      "git_blob": "17e3a427d54a371bc2b592b4e7e0acff5bfe940a",
+      "matches_original_manifest": true
+    },
+    {
+      "path": "ordinary-2d3a240-root17-diagnostic-v3/root-parent-list.json",
+      "original_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2d3a240-root17-diagnostic-v3/records/root-parent-list.json",
+      "bytes": 4379,
+      "sha256": "4df33ef202b61e5bd64ea58a24cd2edc9fd57eaaadab7ca172f3d1fe1dcfd3e7",
+      "git_blob": "17e3a427d54a371bc2b592b4e7e0acff5bfe940a",
+      "matches_original_manifest": true
+    },
+    {
+      "path": "ordinary-2d3a240-root17-diagnostic-v3/root-record-ownership.launch.log",
+      "original_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2d3a240-root17-diagnostic-v3/records/root-record-ownership.launch.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "matches_original_manifest": true
+    },
+    {
+      "path": "ordinary-2d3a240-root17-diagnostic-v3/root-root-record-read.launch.log",
+      "original_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2d3a240-root17-diagnostic-v3/records/root-root-record-read.launch.log",
+      "bytes": 4132,
+      "sha256": "2bd9ebdffc02111c950f7a5573c6e7037be78d71ef9b09614959b25f7be7ef47",
+      "git_blob": "71fa88fc32e0fca5c2c473088e0ba9b2fa728e0c",
+      "matches_original_manifest": true
+    },
+    {
+      "path": "ordinary-2d3a240-root17-diagnostic-v3/root-terminal-record-ownership.launch.log",
+      "original_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2d3a240-root17-diagnostic-v3/records/root-terminal-record-ownership.launch.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "matches_original_manifest": true
+    },
+    {
+      "path": "ordinary-2d3a240-root17-diagnostic-v3/root-toolchain-root-record-read.launch.log",
+      "original_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2d3a240-root17-diagnostic-v3/records/root-toolchain-root-record-read.launch.log",
+      "bytes": 1693,
+      "sha256": "96a3c4fc537fe2de33aeb9e3c6c29e8d5bfade49264df4f829947015206b112a",
+      "git_blob": "4827045260e91f71ba85f9eeccd3154c516bd325",
+      "matches_original_manifest": true
+    },
+    {
+      "path": "ordinary-2d3a240-root17-diagnostic-v3/root-toolchain-terminal-record-ownership.launch.log",
+      "original_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2d3a240-root17-diagnostic-v3/records/root-toolchain-terminal-record-ownership.launch.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "matches_original_manifest": true
+    },
+    {
+      "path": "ordinary-2d3a240-root17-diagnostic-v3/root-toolchain.execution.json",
+      "original_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2d3a240-root17-diagnostic-v3/records/root-toolchain.execution.json",
+      "bytes": 1442,
+      "sha256": "583adf8e20134cc757490c12e55ab45daef2877e7e18d42126ccf830cbafd9b7",
+      "git_blob": "870e100054e9ffbe43280500ebb6c561a216c953",
+      "matches_original_manifest": true
+    },
+    {
+      "path": "ordinary-2d3a240-root17-diagnostic-v3/root-toolchain.execution.json.6d657f2718674e969ff94b9ab165571b.log",
+      "original_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2d3a240-root17-diagnostic-v3/records/root-toolchain.execution.json.6d657f2718674e969ff94b9ab165571b.log",
+      "bytes": 196,
+      "sha256": "f64c55ed9f210d80a9b248206104a47175faf5ec94a093e4ad132549209089fc",
+      "git_blob": "4b0852244672d9611e81367e960345736b255b8c",
+      "matches_original_manifest": true
+    },
+    {
+      "path": "ordinary-2d3a240-root17-diagnostic-v3/root-toolchain.launch.log",
+      "original_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2d3a240-root17-diagnostic-v3/records/root-toolchain.launch.log",
+      "bytes": 1522,
+      "sha256": "ecbaac2d3fd5e2932051897839c6f796704669f3c5f91aebc7522d9251022250",
+      "git_blob": "5f5f96489a5027374944f59e2e4763dd462e777f",
+      "matches_original_manifest": true
+    },
+    {
+      "path": "ordinary-2d3a240-root17-diagnostic-v3/root-toolchain.root-record-read.json",
+      "original_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2d3a240-root17-diagnostic-v3/records/root-toolchain.root-record-read.json",
+      "bytes": 1971,
+      "sha256": "1b3df7f8987425d6dd50a3c6d27a99c72263a086473caaf05d1696a5bb71b9cb",
+      "git_blob": "0c38ed646c2d3c02858774bd2608ae116363e4f9",
+      "matches_original_manifest": true
+    },
+    {
+      "path": "ordinary-2d3a240-root17-diagnostic-v3/root-toolchain.uid.json",
+      "original_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2d3a240-root17-diagnostic-v3/records/root-toolchain.uid.json",
+      "bytes": 47,
+      "sha256": "971b7d3a17d5cc3ff8016393745e3701c138c762b072bfef16788dd50ef22667",
+      "git_blob": "7171bbdf5f6e22fc3d25906f255b5239e8506320",
+      "matches_original_manifest": true
+    },
+    {
+      "path": "ordinary-2d3a240-root17-diagnostic-v3/root.collection-binding.json",
+      "original_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2d3a240-root17-diagnostic-v3/records/root.collection-binding.json",
+      "bytes": 558,
+      "sha256": "1f8b1ad1c1f4dc1eb67efa6340694282a9962ffd89d7e7e5b2887d6f190a34b0",
+      "git_blob": "75463388c0dd48ee8f06af39bc77f5ee60968524",
+      "matches_original_manifest": true
+    },
+    {
+      "path": "ordinary-2d3a240-root17-diagnostic-v3/root.counts.json",
+      "original_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2d3a240-root17-diagnostic-v3/records/root.counts.json",
+      "bytes": 98,
+      "sha256": "3aa7c5c63701c9c42c2ead17ac64a706c7646b96c6133cdc3c46a58fbeb39261",
+      "git_blob": "567ce64cba4a66a7e4f8c9d9d2875f8dbe94c3c8",
+      "matches_original_manifest": true
+    },
+    {
+      "path": "ordinary-2d3a240-root17-diagnostic-v3/root.execution.json",
+      "original_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2d3a240-root17-diagnostic-v3/records/root.execution.json",
+      "bytes": 3969,
+      "sha256": "983a946ba22600cb0f99e6ad33bf30ca437a8169ee9af70eb92ab9a8306ac437",
+      "git_blob": "4f0f4a97b2456961707f461e235f4690b56f005d",
+      "matches_original_manifest": true
+    },
+    {
+      "path": "ordinary-2d3a240-root17-diagnostic-v3/root.execution.json.8d3347250b034dbbbb938ca14b0d78af.log",
+      "original_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2d3a240-root17-diagnostic-v3/records/root.execution.json.8d3347250b034dbbbb938ca14b0d78af.log",
+      "bytes": 46464,
+      "sha256": "53769db3eb4751aef5c2a787103a24de715c096f6a571305196427eb3361137f",
+      "git_blob": "8c91ef3b6a19542023cacb29048b694bdae875f5",
+      "matches_original_manifest": true
+    },
+    {
+      "path": "ordinary-2d3a240-root17-diagnostic-v3/root.junit.summary.json",
+      "original_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2d3a240-root17-diagnostic-v3/records/root.junit.summary.json",
+      "bytes": 3331,
+      "sha256": "76e5b4540ca558eff2691958eef8bff29e7be0c74c3a84629a3c4a652acdfdd3",
+      "git_blob": "7e8cf64c954594aa0114664d40065b2676e0b551",
+      "matches_original_manifest": true
+    },
+    {
+      "path": "ordinary-2d3a240-root17-diagnostic-v3/root.junit.xml",
+      "original_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2d3a240-root17-diagnostic-v3/records/root.junit.xml",
+      "bytes": 8689,
+      "sha256": "4402806b645d9c993b96a7b3a98792347a569f1380e01a537bfad5ffe798d527",
+      "git_blob": "db50c213e12d5a759544f352eea77b36bcd96afa",
+      "matches_original_manifest": true
+    },
+    {
+      "path": "ordinary-2d3a240-root17-diagnostic-v3/root.launch.log",
+      "original_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2d3a240-root17-diagnostic-v3/records/root.launch.log",
+      "bytes": 50239,
+      "sha256": "ab6f2ee17fd0f10e4f6a7995dcd84fea4755b108ecb945eedf961859fb967dcb",
+      "git_blob": "b2310c8f430fbe00dab8a6e6bfafb82ad8868fab",
+      "matches_original_manifest": true
+    },
+    {
+      "path": "ordinary-2d3a240-root17-diagnostic-v3/root.root-record-read.json",
+      "original_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2d3a240-root17-diagnostic-v3/records/root.root-record-read.json",
+      "bytes": 4528,
+      "sha256": "8924b56d64dfaa3ef2ef5389f35c6a9015e7aa38481bdfee5920b58f6ebfb063",
+      "git_blob": "32fde992542425040be88febd8f720c6ec092f5b",
+      "matches_original_manifest": true
+    },
+    {
+      "path": "ordinary-2d3a240-root17-diagnostic-v3/root.uid.json",
+      "original_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2d3a240-root17-diagnostic-v3/records/root.uid.json",
+      "bytes": 47,
+      "sha256": "72bf627069d1c40dac41be7bf526a4cc52ef10284e37f1d7b853966375aeeed2",
+      "git_blob": "907d96148cfedd1fa31a4ac12c42acb50c6091d9",
+      "matches_original_manifest": true
+    },
+    {
+      "path": "ordinary-2d3a240-root17-diagnostic-v3/same-source-helper-build.execution.json",
+      "original_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2d3a240-root17-diagnostic-v3/records/same-source-helper-build.execution.json",
+      "bytes": 1637,
+      "sha256": "46fcc176881ccb0f69b7b75bea49fcbeced3af0b474f77f1f1e71053c2c1e6bc",
+      "git_blob": "28dba92573421bf95e6ec4af1dcc53f66ef66d07",
+      "matches_original_manifest": true
+    },
+    {
+      "path": "ordinary-2d3a240-root17-diagnostic-v3/same-source-helper-build.execution.json.446b542b2a034ad8b54d35a20bcd5f2d.log",
+      "original_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2d3a240-root17-diagnostic-v3/records/same-source-helper-build.execution.json.446b542b2a034ad8b54d35a20bcd5f2d.log",
+      "bytes": 218,
+      "sha256": "b732d3588fb68afc3a28fbadce438fc60264f7fb151641a628b606282a1ca936",
+      "git_blob": "94145a9dbf2502db815530bca79422b9ea466288",
+      "matches_original_manifest": true
+    },
+    {
+      "path": "ordinary-2d3a240-root17-diagnostic-v3/same-source-helper-build.launch.log",
+      "original_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2d3a240-root17-diagnostic-v3/records/same-source-helper-build.launch.log",
+      "bytes": 1707,
+      "sha256": "da054a1eb0cd778e67e5b67c6208ab483b0b0cb2c799e4e07571f068f5018340",
+      "git_blob": "ae9d72e85b26dbca20244f4438a31bdebfbbc9bf",
+      "matches_original_manifest": true
+    },
+    {
+      "path": "ordinary-2d3a240-root17-diagnostic-v3/same-source-helper-postverify.execution.json",
+      "original_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2d3a240-root17-diagnostic-v3/records/same-source-helper-postverify.execution.json",
+      "bytes": 1665,
+      "sha256": "6a248527a26860a77ab52ed2e6490822d3fac03d30f325d36ca5784b662f17d9",
+      "git_blob": "3a30de87c4de13169d62a1c8b4d424711edffff4",
+      "matches_original_manifest": true
+    },
+    {
+      "path": "ordinary-2d3a240-root17-diagnostic-v3/same-source-helper-postverify.execution.json.e4e4b21ddc114828866adfb08b23c55c.log",
+      "original_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2d3a240-root17-diagnostic-v3/records/same-source-helper-postverify.execution.json.e4e4b21ddc114828866adfb08b23c55c.log",
+      "bytes": 1198,
+      "sha256": "d94643c0ef66df5a88372bbf4a5a3d3367d7ab8f52fbc53e3dcdfbdef67cd24e",
+      "git_blob": "188a99a5c5a9c29c17849ca18193af89974fabac",
+      "matches_original_manifest": true
+    },
+    {
+      "path": "ordinary-2d3a240-root17-diagnostic-v3/same-source-helper-postverify.launch.log",
+      "original_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2d3a240-root17-diagnostic-v3/records/same-source-helper-postverify.launch.log",
+      "bytes": 2711,
+      "sha256": "625c7ee7b15364ba9d9fd5abec04547ae88cf450180a858d71d6748f4e365651",
+      "git_blob": "814e54063fe7e521b5a788116fe9acc1883b03bb",
+      "matches_original_manifest": true
+    },
+    {
+      "path": "ordinary-2d3a240-root17-diagnostic-v3/same-source-helper-preverify.execution.json",
+      "original_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2d3a240-root17-diagnostic-v3/records/same-source-helper-preverify.execution.json",
+      "bytes": 1664,
+      "sha256": "8c1a280fec80ee43138c2aa8fc33533270ca6258a34100432953b2c2f06058db",
+      "git_blob": "606adb5dc87956ae8b61ccd9ed93b4574cc64de6",
+      "matches_original_manifest": true
+    },
+    {
+      "path": "ordinary-2d3a240-root17-diagnostic-v3/same-source-helper-preverify.execution.json.6eaf0998d2f040af9a38b0548d141da2.log",
+      "original_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2d3a240-root17-diagnostic-v3/records/same-source-helper-preverify.execution.json.6eaf0998d2f040af9a38b0548d141da2.log",
+      "bytes": 1198,
+      "sha256": "d94643c0ef66df5a88372bbf4a5a3d3367d7ab8f52fbc53e3dcdfbdef67cd24e",
+      "git_blob": "188a99a5c5a9c29c17849ca18193af89974fabac",
+      "matches_original_manifest": true
+    },
+    {
+      "path": "ordinary-2d3a240-root17-diagnostic-v3/same-source-helper-preverify.launch.log",
+      "original_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2d3a240-root17-diagnostic-v3/records/same-source-helper-preverify.launch.log",
+      "bytes": 2710,
+      "sha256": "458de5b8ee1253998bf0e5de2463a4ff48ca81315cfcfb98cb28d46181105907",
+      "git_blob": "0f6371ff10ed5bdbb52a874cc84c16a5a3034aa3",
+      "matches_original_manifest": true
+    },
+    {
+      "path": "ordinary-2d3a240-root17-diagnostic-v3/source-before.inventory.json.gz",
+      "original_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2d3a240-root17-diagnostic-v3/records/source-before.inventory.json.gz",
+      "bytes": 1136915,
+      "sha256": "e886398e389f09311fa2d62b726c7eb379445fea5e7f64fc51df76bb9d9ad07a",
+      "git_blob": "64be6cbb4b9eaeacd9933fa9108f3692742de9cb",
+      "matches_original_manifest": true
+    },
+    {
+      "path": "ordinary-2d3a240-root17-diagnostic-v3/source-before.json",
+      "original_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2d3a240-root17-diagnostic-v3/records/source-before.json",
+      "bytes": 500,
+      "sha256": "8cc2f5afa61a7533c812d5ad71272fa90f7ac19fb23fb23b89fc746b2b7f64a9",
+      "git_blob": "f79505d822254d1ad898ba0ec788d81a9e5ddfba",
+      "matches_original_manifest": true
+    },
+    {
+      "path": "ordinary-2d3a240-root17-diagnostic-v3/source-commit-object.json",
+      "original_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2d3a240-root17-diagnostic-v3/records/source-commit-object.json",
+      "bytes": 586,
+      "sha256": "0638733f99437291fbb856d02e827106d2c2c20f87dd28240067741b8e5dc66a",
+      "git_blob": "134bb68fa695d97f5c0c963a5d2a521c382cc108",
+      "matches_original_manifest": true
+    },
+    {
+      "path": "ordinary-2d3a240-root17-diagnostic-v3/source-final.inventory.json.gz",
+      "original_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2d3a240-root17-diagnostic-v3/records/source-final.inventory.json.gz",
+      "bytes": 1136915,
+      "sha256": "e886398e389f09311fa2d62b726c7eb379445fea5e7f64fc51df76bb9d9ad07a",
+      "git_blob": "64be6cbb4b9eaeacd9933fa9108f3692742de9cb",
+      "matches_original_manifest": true
+    },
+    {
+      "path": "ordinary-2d3a240-root17-diagnostic-v3/source-final.json",
+      "original_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2d3a240-root17-diagnostic-v3/records/source-final.json",
+      "bytes": 499,
+      "sha256": "03642d2deedf7cdcbc8bdf5e1b80bd3aaaa0c68c2bc8635b9428b3f1ca3527be",
+      "git_blob": "ba294355a1beebd0651d8cc22d77c92e5edb45b4",
+      "matches_original_manifest": true
+    },
+    {
+      "path": "ordinary-2d3a240-root17-diagnostic-v3/toolchain.json",
+      "original_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2d3a240-root17-diagnostic-v3/records/toolchain.json",
+      "bytes": 253,
+      "sha256": "3c950ba0d5a5273b966fbdd7921ce3681472fe50c9e1e14c9fdd99bd7ef8cb42",
+      "git_blob": "6a7ddadc434fa0b7e2764f1524eedf2915cfcb63",
+      "matches_original_manifest": true
+    },
+    {
+      "path": "ordinary-2d3a240-root17-diagnostic-v3/tools-after.json",
+      "original_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2d3a240-root17-diagnostic-v3/records/tools-after.json",
+      "bytes": 3263,
+      "sha256": "4dced2fb14d75d7a419228bbc519e8b442f01c4761e35b7b1b9ce8e62549337b",
+      "git_blob": "a74ebaf442eb6de4d9fc17a10de68afccdd5c356",
+      "matches_original_manifest": true
+    },
+    {
+      "path": "ordinary-2d3a240-root17-diagnostic-v3/tools-before.json",
+      "original_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2d3a240-root17-diagnostic-v3/records/tools-before.json",
+      "bytes": 3263,
+      "sha256": "4dced2fb14d75d7a419228bbc519e8b442f01c4761e35b7b1b9ce8e62549337b",
+      "git_blob": "a74ebaf442eb6de4d9fc17a10de68afccdd5c356",
+      "matches_original_manifest": true
+    },
+    {
+      "path": "ordinary-2d3a240-root17-diagnostic-v3/workflow-contract.json",
+      "original_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-2d3a240-root17-diagnostic-v3/records/workflow-contract.json",
+      "bytes": 2851,
+      "sha256": "1a4b5dcb6a9d1721ac335324ac322207d2c26d17faf1ebf14420161b79750fd0",
+      "git_blob": "00d0f9cf7970e67f40306e11b7e49cc162d06b1e",
+      "matches_original_manifest": true
+    },
+    {
+      "path": "requests/root17DiagnosticV3Request.json",
+      "original_path": null,
+      "bytes": 55936,
+      "sha256": "57fb3cad1b5af4f8ea2bd3b7f178476a45852091ccd95a6b68c0ed647e37823a",
+      "git_blob": "a57b1821589b4a1cd0a110c8528bd96db49bf437",
+      "matches_original_manifest": true
+    },
+    {
+      "path": "observations/source_bound_result.json",
+      "original_path": null,
+      "bytes": 2672,
+      "sha256": "cbdd40c4c319eab86c831b04175276acbd09c0b473da394ab39750dc68584c28",
+      "git_blob": "70f12d0e796481f7306831bf17f53379b76eb1fd",
+      "matches_original_manifest": true
+    },
+    {
+      "path": "observations/scope.json",
+      "original_path": null,
+      "bytes": 470,
+      "sha256": "1e5c3ef3267867de55acb48e701681520dc4503b07ba81aef86d5fc65c560db7",
+      "git_blob": "ef9089afc67e8d8e99ab19581e9f407af4ba4307",
+      "matches_original_manifest": true
+    }
+  ],
+  "new_native_execution": false,
+  "unpacked_to_filesystem": false,
+  "terminal_record_body_location": "Unmodified originals remain inside original-records.tar.xz; this verification report stores their references, not duplicate bodies.",
+  "full_local_verification_report": {
+    "bytes": 122251,
+    "sha256": "ee8b035b2c36e1bc677f26b5fd8916b540349aac4c7b0778ab85e829bc9d9c94"
+  }
+}

@@ -23,6 +23,9 @@ use crate::FleetRegistryError;
 use crate::release::initialize_release_state;
 use crate::release::load_release_state;
 
+#[path = "registry_readonly.rs"]
+mod readonly;
+
 const LIFECYCLE_FILE_PREFIX: &str = "lifecycle-";
 const LIFECYCLE_FILE_SUFFIX: &str = ".json";
 static STAGING_SEQUENCE: AtomicU64 = AtomicU64::new(1);

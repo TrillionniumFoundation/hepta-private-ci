@@ -1,0 +1,326 @@
+diff --git a/codex-rs/hepta-agentd/src/neuron_generation_update_live.rs b/codex-rs/hepta-agentd/src/neuron_generation_update_live.rs
+index 6072a6cf1560a0d2ddb26abe1483a4adfa2b7f1a..23b86bf6aafc8fea35cc220fb987dbe2592b6f59 100644
+--- a/codex-rs/hepta-agentd/src/neuron_generation_update_live.rs
++++ b/codex-rs/hepta-agentd/src/neuron_generation_update_live.rs
+@@ -230,24 +230,20 @@ impl CellGenerationCurrentV1 for LiveGenerationCurrent {
+         if binding != self.publication.target() {
+             return Err(CellGenerationErrorV2::InvalidBinding);
+         }
+-        self.current
+-            .check_current(binding)
+-            .inspect_err(|_error| {
+-                #[cfg(test)]
+-                eprintln!(
+-                    "ROOT_GENERATION_CURRENT_DIAGNOSTIC stage=live-current-before error={_error:?}"
+-                );
+-            })?;
++        self.current.check_current(binding).inspect_err(|_error| {
++            #[cfg(test)]
++            eprintln!(
++                "ROOT_GENERATION_CURRENT_DIAGNOSTIC stage=live-current-before error={_error:?}"
++            );
++        })?;
+         self.check_live()?;
+         // CURRENT/authority I/O cannot make an earlier Control sample fresh.
+-        self.current
+-            .check_current(binding)
+-            .inspect_err(|_error| {
+-                #[cfg(test)]
+-                eprintln!(
+-                    "ROOT_GENERATION_CURRENT_DIAGNOSTIC stage=live-current-after error={_error:?}"
+-                );
+-            })
++        self.current.check_current(binding).inspect_err(|_error| {
++            #[cfg(test)]
++            eprintln!(
++                "ROOT_GENERATION_CURRENT_DIAGNOSTIC stage=live-current-after error={_error:?}"
++            );
++        })
+     }
+ }
+ 
+diff --git a/codex-rs/hepta-agentd/src/root_authority_session.rs b/codex-rs/hepta-agentd/src/root_authority_session.rs
+index 51035c1d84f831d0665581a2faf2c0a0bb1b96b7..13ef7d0943f056527f45a7805e07a3f89b302985 100644
+--- a/codex-rs/hepta-agentd/src/root_authority_session.rs
++++ b/codex-rs/hepta-agentd/src/root_authority_session.rs
+@@ -140,7 +140,9 @@ impl LiveRoot {
+         if boottime_ns()
+             .inspect_err(|_error| {
+                 #[cfg(test)]
+-                eprintln!("ROOT_SESSION_DIAGNOSTIC phase=current-post-cache-boottime error={_error:?}");
++                eprintln!(
++                    "ROOT_SESSION_DIAGNOSTIC phase=current-post-cache-boottime error={_error:?}"
++                );
+             })
+             .map_or(true, |checked| checked >= self.end_boottime_ns)
+         {
+diff --git a/codex-rs/hepta-agentd/src/root_authority_session_tests.rs b/codex-rs/hepta-agentd/src/root_authority_session_tests.rs
+index b9b8db0658a372c8bcbeaef7d6effb58f701957e..a0e27f8c747f8ef9f41bb0701caa77babd32950e 100644
+--- a/codex-rs/hepta-agentd/src/root_authority_session_tests.rs
++++ b/codex-rs/hepta-agentd/src/root_authority_session_tests.rs
+@@ -720,11 +720,16 @@ async fn original_session_end_is_rechecked_after_bounded_cache_admission() {
+         waiting.unwrap().join().unwrap(),
+         Err(AgentdRootAuthorityError::Unavailable)
+     ));
+-    let validated = crate::root_observation_cache::tests::component_last_validated_read(
+-        &live.cache,
++    let validated =
++        crate::root_observation_cache::tests::component_last_validated_read(&live.cache);
++    assert!(
++        validated >= end,
++        "cache validation did not cross the session end"
++    );
++    assert!(
++        validated - origin <= MAX_AGE_NS,
++        "the cache itself had already expired"
+     );
+-    assert!(validated >= end, "cache validation did not cross the session end");
+-    assert!(validated - origin <= MAX_AGE_NS, "the cache itself had already expired");
+     // The retained proof cannot authorize a new call after this original
+     // session end. This is a negative read, never a retry of an effect.
+     assert!(matches!(
+diff --git a/codex-rs/hepta-agentd/src/root_observation_cache.rs b/codex-rs/hepta-agentd/src/root_observation_cache.rs
+index 168fcbd0233e19d536bd4e86f21401cc504d1ec6..8bd1f6251b9fdbffc443155cdf5e88cec1daaf88 100644
+--- a/codex-rs/hepta-agentd/src/root_observation_cache.rs
++++ b/codex-rs/hepta-agentd/src/root_observation_cache.rs
+@@ -227,14 +227,12 @@ impl RootObservationCache {
+                 || observation.registered_agent_id != old.registered_agent_id
+                 || observation.spawn_generation != old.spawn_generation
+                 || observation.writer.authority_lease != old.writer.authority_lease
+-                || observation.writer.authority_lease_sha256
+-                    != old.writer.authority_lease_sha256
++                || observation.writer.authority_lease_sha256 != old.writer.authority_lease_sha256
+                 || observation.writer.writer_authorization_sha256
+                     != old.writer.writer_authorization_sha256
+                 || observation.writer.owner_epoch != old.writer.owner_epoch
+                 || observation.writer.local_lease_id != old.writer.local_lease_id
+-                || observation.writer.local_lease_generation
+-                    != old.writer.local_lease_generation
++                || observation.writer.local_lease_generation != old.writer.local_lease_generation
+                 || observation.writer.store_revision < old.writer.store_revision
+                 || head.revision < old.revocations.revision
+                 || (head.revision == old.revocations.revision && *head != old.revocations)
+@@ -255,14 +253,12 @@ impl RootObservationCache {
+                     observation.registered_agent_id != old.registered_agent_id,
+                     observation.spawn_generation != old.spawn_generation,
+                     observation.writer.authority_lease != old.writer.authority_lease,
+-                    observation.writer.authority_lease_sha256
+-                        != old.writer.authority_lease_sha256,
++                    observation.writer.authority_lease_sha256 != old.writer.authority_lease_sha256,
+                     observation.writer.writer_authorization_sha256
+                         != old.writer.writer_authorization_sha256,
+                     observation.writer.owner_epoch != old.writer.owner_epoch,
+                     observation.writer.local_lease_id != old.writer.local_lease_id,
+-                    observation.writer.local_lease_generation
+-                        != old.writer.local_lease_generation,
++                    observation.writer.local_lease_generation != old.writer.local_lease_generation,
+                     old.writer.store_revision,
+                     observation.writer.store_revision,
+                     old.revocations.revision,
+@@ -329,7 +325,10 @@ impl RootObservationCache {
+         now: u64,
+     ) -> Result<(Arc<HostAuthorityObservationResponseV2>, u64), AgentdRootAuthorityError> {
+         let admission = self.capture_read_admission()?;
+-        let mut slot = self.retained.try_lock().map_err(|_| AgentdRootAuthorityError::Unavailable)?;
++        let mut slot = self
++            .retained
++            .try_lock()
++            .map_err(|_| AgentdRootAuthorityError::Unavailable)?;
+         self.current_locked(&mut slot, now, admission.generation)
+     }
+ 
+@@ -344,7 +343,10 @@ impl RootObservationCache {
+         }
+         let deadline_ns = self.read_deadline_ns.load(Ordering::Acquire);
+         self.require_read_generation(generation)?;
+-        Ok(ReadAdmission { deadline_ns, generation })
++        Ok(ReadAdmission {
++            deadline_ns,
++            generation,
++        })
+     }
+ 
+     fn require_read_generation(&self, generation: u64) -> Result<(), AgentdRootAuthorityError> {
+@@ -410,7 +412,8 @@ impl RootObservationCache {
+                     }
+                     if now > admission.deadline_ns {
+                         #[cfg(test)]
+-                        self.expired_admission_deadline.store(admission.deadline_ns, Ordering::Release);
++                        self.expired_admission_deadline
++                            .store(admission.deadline_ns, Ordering::Release);
+                         #[cfg(test)]
+                         self.expired_admission_sample.store(now, Ordering::Release);
+                         #[cfg(test)]
+@@ -467,7 +470,8 @@ impl RootObservationCache {
+             let projected = project(&retained.observation, now)?;
+             retained.last_checked_ns = now;
+             if self.fenced.load(Ordering::Acquire)
+-                || self.update_generation.load(Ordering::Acquire) != generation {
++                || self.update_generation.load(Ordering::Acquire) != generation
++            {
+                 #[cfg(test)]
+                 eprintln!(
+                     "ROOT_OBSERVATION_CACHE phase=current reason=fenced-or-updating-after-projection now={now}"
+diff --git a/codex-rs/hepta-agentd/src/root_observation_cache_tests.rs b/codex-rs/hepta-agentd/src/root_observation_cache_tests.rs
+index 711c7195a63b8a7bdb9dfa3d70fcbccfc9a88d5f..d682858cef827fef34c982c8bb044506c30b6e94 100644
+--- a/codex-rs/hepta-agentd/src/root_observation_cache_tests.rs
++++ b/codex-rs/hepta-agentd/src/root_observation_cache_tests.rs
+@@ -161,14 +161,19 @@ fn actual_sample(origin: u64, observed: u64) -> HostAuthorityObservationResponse
+ fn actual_cache() -> (Arc<RootObservationCache>, u64) {
+     let origin = boottime_ns().unwrap();
+     let cache = Arc::new(cache());
+-    cache.accept(actual_sample(origin, origin), origin, origin).unwrap();
++    cache
++        .accept(actual_sample(origin, origin), origin, origin)
++        .unwrap();
+     (cache, origin)
+ }
+ 
+ fn require_actual_read_wait(cache: &RootObservationCache) {
+     let end = std::time::Instant::now() + std::time::Duration::from_secs(2);
+     while cache.admission_waits.load(Ordering::Acquire) == 0 {
+-        assert!(std::time::Instant::now() < end, "the original read never entered contention");
++        assert!(
++            std::time::Instant::now() < end,
++            "the original read never entered contention"
++        );
+         std::thread::yield_now();
+     }
+ }
+@@ -183,11 +188,13 @@ fn contended_current_samples_after_the_original_guard_without_losing_the_feed()
+     // Advance the real watermark AFTER the reader has already contended.
+     // Its production sample must occur after acquiring this same guard.
+     let now = boottime_ns().unwrap();
+-    let earlier = cache.current_locked(
+-        &mut held,
+-        now,
+-        cache.update_generation.load(Ordering::Acquire),
+-    ).unwrap();
++    let earlier = cache
++        .current_locked(
++            &mut held,
++            now,
++            cache.update_generation.load(Ordering::Acquire),
++        )
++        .unwrap();
+     drop(held);
+     let observed = waiting.join().unwrap().unwrap();
+     assert_eq!(*observed.0, *earlier.0);
+@@ -207,13 +214,15 @@ fn later_accept_cannot_renew_an_already_waiting_reads_original_budget() {
+     // call must retain its first deadline. The guard stays held until it fails.
+     std::thread::sleep(std::time::Duration::from_millis(200));
+     let accepted = boottime_ns().unwrap();
+-    cache.accept_locked(
+-        &mut held,
+-        actual_sample(origin, accepted),
+-        accepted,
+-        accepted,
+-        accepted,
+-    ).unwrap();
++    cache
++        .accept_locked(
++            &mut held,
++            actual_sample(origin, accepted),
++            accepted,
++            accepted,
++            accepted,
++        )
++        .unwrap();
+     let second_deadline = cache.read_deadline_ns.load(Ordering::Acquire);
+     assert!(second_deadline > first_deadline);
+     let result = waiting.join().unwrap();
+@@ -235,17 +244,27 @@ fn later_accept_cannot_renew_an_already_waiting_reads_original_budget() {
+ fn absent_budget_and_poison_cannot_turn_contention_into_authority() {
+     let empty = cache();
+     let held = empty.retained.lock().unwrap();
+-    assert!(matches!(empty.current(), Err(AgentdRootAuthorityError::Unavailable)));
++    assert!(matches!(
++        empty.current(),
++        Err(AgentdRootAuthorityError::Unavailable)
++    ));
+     assert_eq!(empty.admission_waits.load(Ordering::Acquire), 0);
+     drop(held);
+ 
+     let (cache, _) = actual_cache();
+     let poison = Arc::clone(&cache);
+-    assert!(std::thread::spawn(move || {
+-        let _held = poison.retained.lock().unwrap();
+-        panic!("poison the actual original retained mutex");
+-    }).join().is_err());
+-    assert!(matches!(cache.current(), Err(AgentdRootAuthorityError::Unavailable)));
++    assert!(
++        std::thread::spawn(move || {
++            let _held = poison.retained.lock().unwrap();
++            panic!("poison the actual original retained mutex");
++        })
++        .join()
++        .is_err()
++    );
++    assert!(matches!(
++        cache.current(),
++        Err(AgentdRootAuthorityError::Unavailable)
++    ));
+     assert!(cache.retained.is_poisoned());
+ }
+ 
+@@ -287,11 +306,16 @@ fn completed_consumer_barrier_and_generation_overflow_reject_old_admission() {
+     ));
+ 
+     let (cache, _) = actual_cache();
+-    cache.update_generation.store(u64::MAX - 1, Ordering::Release);
++    cache
++        .update_generation
++        .store(u64::MAX - 1, Ordering::Release);
+     cache.begin_update();
+     cache.end_update();
+     assert_eq!(cache.update_generation.load(Ordering::Acquire), u64::MAX);
+-    assert!(matches!(cache.current(), Err(AgentdRootAuthorityError::Unavailable)));
++    assert!(matches!(
++        cache.current(),
++        Err(AgentdRootAuthorityError::Unavailable)
++    ));
+ }
+ 
+ pub(crate) fn component_with_original_retained_lock(
+@@ -307,5 +331,11 @@ pub(crate) fn component_wait_for_original_read_admission(cache: &RootObservation
+ }
+ 
+ pub(crate) fn component_last_validated_read(cache: &RootObservationCache) -> u64 {
+-    cache.retained.lock().unwrap().as_ref().unwrap().last_checked_ns
++    cache
++        .retained
++        .lock()
++        .unwrap()
++        .as_ref()
++        .unwrap()
++        .last_checked_ns
+ }
+diff --git a/codex-rs/hepta-contracts/src/authority_lease_observation_tests.rs b/codex-rs/hepta-contracts/src/authority_lease_observation_tests.rs
+index 289fe030947ad2adc72d4fb5b8e88a4b466b7d4e..1906c14c52bb2996db67681cfeb1bff03bb9c805 100644
+--- a/codex-rs/hepta-contracts/src/authority_lease_observation_tests.rs
++++ b/codex-rs/hepta-contracts/src/authority_lease_observation_tests.rs
+@@ -133,7 +133,10 @@ fn original_observation_excludes_deadline_revoke_and_cannot_survive_revocation()
+         .revoke_exact_before(&original, [9; 32], Instant::now() + WAIT)
+         .unwrap();
+     assert_eq!(receipt.previous_lease_revision, original.revision);
+-    assert_eq!(receipt.lease_revision, original.revision.checked_add(1).unwrap());
++    assert_eq!(
++        receipt.lease_revision,
++        original.revision.checked_add(1).unwrap()
++    );
+     assert!(matches!(
+         verifier.observe_original_lease(&original),
+         Err(AuthorityLeaseError::Revoked)
+@@ -144,7 +147,11 @@ fn original_observation_excludes_deadline_revoke_and_cannot_survive_revocation()
+         Err(AuthorityLeaseError::RevisionMismatch)
+     ));
+     assert!(matches!(
+-        verifier.verify_use(&original.lease_id, receipt.lease_revision, &original.binding),
++        verifier.verify_use(
++            &original.lease_id,
++            receipt.lease_revision,
++            &original.binding
++        ),
+         Err(AuthorityLeaseError::Revoked)
+     ));
+ }

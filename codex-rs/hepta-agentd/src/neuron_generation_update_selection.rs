@@ -20,6 +20,10 @@ use codex_hepta_types::Digest32;
 
 use crate::AgentdError;
 
+#[cfg(target_os = "linux")]
+#[path = "neuron_generation_update_selection_root.rs"]
+mod original;
+
 const MAX_GENERATION_MANIFEST_BYTES: u64 = 64 * 1024;
 
 /// Independently opened immutable registry snapshot and selected payload.
@@ -108,6 +112,34 @@ impl AgentdSelectedGenerationV1 {
         }
         let current: VerifiedCurrentRegistryViewV1 =
             owner.current_registry_view(now).map_err(invalid)?;
+        Self::load_at_current(
+            verifier,
+            signed,
+            files,
+            now,
+            current,
+            owner.withdrawal_registry(),
+        )
+    }
+
+    fn load_at_current(
+        verifier: ArtifactSelectionVerifierV1,
+        signed: SignedArtifactSelectionV1,
+        files: AgentdGenerationSelectionFilesV1,
+        now: u64,
+        current: VerifiedCurrentRegistryViewV1,
+        withdrawal: &codex_hepta_learning_artifacts::DatasetWithdrawalRegistry,
+    ) -> Result<Self, AgentdError> {
+        if signed.artifact_kind != ArtifactKind::Model
+            || signed.encoded_size_bytes == 0
+            || signed.encoded_size_bytes > MAX_GENERATION_MANIFEST_BYTES
+        {
+            return Err(invalid("generation selection is not a bounded ready Model"));
+        }
+        let metadata = files.payload.metadata()?;
+        if !metadata.is_file() || metadata.len() != signed.encoded_size_bytes {
+            return Err(invalid("generation payload file differs from selection"));
+        }
         let verified = verifier.verify(&signed, &current, now).map_err(invalid)?;
         let selection = verified.selection_digest();
         let mut candidate =
@@ -131,7 +163,6 @@ impl AgentdSelectedGenerationV1 {
                 "selection does not bind the complete generation manifest",
             ));
         }
-        let withdrawal = owner.withdrawal_registry();
         let withdrawal_scope = withdrawal
             .scope_digest()
             .ok_or_else(|| invalid("missing authenticated withdrawal scope"))?;

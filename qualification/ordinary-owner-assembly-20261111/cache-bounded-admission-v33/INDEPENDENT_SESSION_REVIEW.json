@@ -1,0 +1,148 @@
+{
+  "schema": "hepta.static-review.original-session-end-and-bounded-cache-regressions.v1",
+  "reviewer": "/root/hepta_audit",
+  "base": {
+    "head": "5a2e9371814e9ee0ec55781a81844ef03434874b",
+    "tree": "22d55a327460ab4a835387a4a61332dbece6866d"
+  },
+  "scope": "Independent source review of LiveRoot::current's post-cache absolute-end check and five new cache plus one new session regression. Core cache admission semantics are assigned to chain_nextuse; this report is not a full second core audit.",
+  "conclusion": "No confirmed static blocking issue in the reviewed scope. Not compilation, formatter, checker, test, business or restart qualification.",
+  "session_findings": [
+    "The sole production session change is a 539-byte insertion immediately after the existing successful cache.current call; removing exactly this insertion reproduces all original session bytes.",
+    "The inserted check samples the original boottime_ns, maps every clock error to refusal, and treats checked>=self.end_boottime_ns as expired. Both paths call the existing cache.fence before returning the original Unavailable error.",
+    "The same end field remains computed once from the original created timestamp plus lifetime in connect_owned_stream. The patch neither rewrites it nor computes now+lifetime.",
+    "Existing pre-cache pidfd/lifetime and absolute-end checks, proof matching, lease-expiry check, final pidfd/lifetime check and output values are preserved byte-for-byte. The new post-cache sample is not substituted for the retained evidence's projected authority time.",
+    "No additional refresh, feed update, worker replacement, returned-error retry or client revival is introduced by the session insertion."
+  ],
+  "test_findings": [
+    "Both changed test files preserve their entire actual fixed5a predecessor as a byte-for-byte prefix, including original tests, helpers, assertions and timing.",
+    "The new successful-contention regression holds the actual retained mutex, observes the spawned reader reaching real contention, advances the real watermark while still owning that same mutex, then releases and checks the read succeeds without fencing.",
+    "The original-budget regression holds the actual mutex while a real reader waits, accepts a later sample under that guard, and checks the reader refuses against its captured first deadline. The final candidate removes only a newly introduced hard realtime assertion refused_at<second_deadline: exact first-deadline provenance, actual while-held refusal, refused_at>first_deadline and second_deadline>first_deadline all remain. The removed assertion is not an original test assertion.",
+    "Absence and poison tests use an actually held empty cache mutex and actual poisoning panic; fence/barrier tests alter the actual fence or generation while a real reader waits. Completed barrier and overflow tests exercise a captured admission across a full begin/end cycle and u64 generation overflow.",
+    "The session regression uses the existing explicitly synthetic signed proof and actual self pidfd, an actual retained mutex, an actual spawned read, and real BOOTTIME. It forces the original 200 ms session end to be crossed while cache age remains within 500 ms, requires failure, verifies a cache validation occurred beyond the end, and verifies the sticky cache refusal afterward.",
+    "The sibling test helpers are only in the existing cfg(test) child module and expose neither a production authority constructor nor mutable production payload."
+  ],
+  "type_and_waiting_findings": [
+    "Existing test imports already provide FromRawFd, AsyncFd, OwnedFd, Arc, Mutex, AtomicBool and the original fixture functions; explicit pretty_assertions::assert_eq remains.",
+    "Spawned threads move the original Arc rather than a MutexGuard. Parent-held guards stay on their original thread; &mut guard coercion targets the original Option<Retained>.",
+    "Contention observation has a two-second test-only assertion bound. Raw thread join has no independent timeout and relies on the production deadline/fence/generation paths to terminate; no indefinite wait is reachable in the reviewed candidate while those paths run, but this is not an executed scheduling guarantee.",
+    "Real 200 ms / 500 ms test windows can fail on a sufficiently stalled scheduler. This review does not label those tests scheduler-independent and does not relax the original freshness ceiling to make them pass.",
+    "The session regression does not inject a clock syscall failure; that failure path is verified statically by map_or(true) followed by fence and the original error."
+  ],
+  "exclusions": {
+    "native": false,
+    "cargo": false,
+    "checker": false,
+    "ref_mutation": false,
+    "host_read_for_review": false,
+    "independent_business_C": false,
+    "cold_restart": false,
+    "accepted_business_counts": [
+      0,
+      0,
+      0
+    ]
+  },
+  "source_files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/root_observation_cache.rs",
+      "ops": 8,
+      "pre": {
+        "git_blob": "047c616692f9288077d7e289b8c2aeecc926e937",
+        "bytes": 16596,
+        "sha256": "3f9ab8536bd153c64a2ebab1b7f89a68fa76a7bc0df47f91844054d57cf9e387",
+        "path": "codex-rs/hepta-agentd/src/root_observation_cache.rs",
+        "source": "5a2e9371814e9ee0ec55781a81844ef03434874b"
+      },
+      "post": {
+        "git_blob": "168fcbd0233e19d536bd4e86f21401cc504d1ec6",
+        "bytes": 23838,
+        "sha256": "9a3d4f9a47671ce5548bf78c669e3791e89ddb6348e7d693137a9be3edf8672f"
+      },
+      "unique_forward_reverse_exact": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_observation_cache_tests.rs",
+      "ops": 1,
+      "pre": {
+        "git_blob": "7573cc6064186aab16e4dab5c12dd0eb97b71a1d",
+        "bytes": 4883,
+        "sha256": "e2b6c9e6c255a310136a2e80c3aace6f4b0094a27821f869454ac3fdd20482f8",
+        "path": "codex-rs/hepta-agentd/src/root_observation_cache_tests.rs",
+        "source": "5a2e9371814e9ee0ec55781a81844ef03434874b"
+      },
+      "post": {
+        "git_blob": "711c7195a63b8a7bdb9dfa3d70fcbccfc9a88d5f",
+        "bytes": 10876,
+        "sha256": "5018aedd890ca47152df3bd441baa0f58eeae0540ed4f095132bfa486f3fb652"
+      },
+      "unique_forward_reverse_exact": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session.rs",
+      "ops": 1,
+      "pre": {
+        "git_blob": "bd11492035b4d508201d1e5a9f0a999ea177daed",
+        "bytes": 21031,
+        "sha256": "3b3b1d7d358c38545ee12dbaea5d5e23f64019cc60857b2cecf772e564569d94",
+        "path": "codex-rs/hepta-agentd/src/root_authority_session.rs",
+        "source": "5a2e9371814e9ee0ec55781a81844ef03434874b"
+      },
+      "post": {
+        "git_blob": "51035c1d84f831d0665581a2faf2c0a0bb1b96b7",
+        "bytes": 21570,
+        "sha256": "f18d97e08ab796d6566e09e2323f8189d6a3b3b21f45a17de2ae832b480140ba"
+      },
+      "unique_forward_reverse_exact": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_tests.rs",
+      "ops": 1,
+      "pre": {
+        "git_blob": "2871595caf737f443ec4c9a2ad5ef672ccdef109",
+        "bytes": 24356,
+        "sha256": "39393346218a9e40bde0291ff78751acfacd61c583838ab0b0ccdb06855c06dd",
+        "path": "codex-rs/hepta-agentd/src/root_authority_session_tests.rs",
+        "source": "5a2e9371814e9ee0ec55781a81844ef03434874b"
+      },
+      "post": {
+        "git_blob": "b9b8db0658a372c8bcbeaef7d6effb58f701957e",
+        "bytes": 26931,
+        "sha256": "951763353c7b8e5eccab7a9ae09bcfb9687ff8f868905071865661b366292c01"
+      },
+      "unique_forward_reverse_exact": true
+    }
+  ],
+  "exact_ops": {
+    "git_blob": "fc5f472aba57a4f8d373824d6dcb442df874d64c",
+    "bytes": 50673,
+    "sha256": "06dfa4a748cd2f379d5aab99e59ddb86a42337d0c9f56a75103e7ef6c9b06ab0"
+  },
+  "proof_fixture": {
+    "git_blob": "14cf7fec11a8f60d8b7c9f3e7b022a67bd02281a",
+    "bytes": 8939,
+    "sha256": "04d058ff48e5f41aed90d5f1e583211e8e38b9eb2bda78a16922f0075bbbb6a1",
+    "path": "codex-rs/hepta-agentd/src/root_writer_proof_tests.rs"
+  },
+  "metadata": {
+    "CALLERS": 0,
+    "QA": 0,
+    "checker": 0,
+    "dependency": 0,
+    "new_Root_parents": 0
+  },
+  "note": "The source projection is scoped to the production session insertion; the four-file exact replay is byte-integrity validation, not a second full semantic approval of the cache algorithm. Peer chain_nextuse owns the cache algorithm review.",
+  "static_checks": [
+    "All four actual fixed5a preimages personally fetched by pinned commit/path and hashed.",
+    "All final four Git blobs personally fetched and Git/SHA256/byte-length computed.",
+    "All 11 exact operations independently replayed uniquely in both directions over all four files; exact fullbytes matched.",
+    "539-byte session insertion removed independently; all other original production session bytes identical.",
+    "Both original test files preserved as exact byte prefixes.",
+    "Only pure in-isolate byte/string operations were run; no source, test or checker execution."
+  ],
+  "observed_source_limits": {
+    "final_cache_core_algorithm_peer_review": "chain_nextuse owns semantic audit",
+    "fixed_source_refs_unchanged": true,
+    "tar_or_native_transfer_claims": "This independent source review does not change or complete the paused V12 evidence transfer."
+  }
+}

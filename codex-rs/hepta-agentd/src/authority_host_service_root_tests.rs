@@ -35,6 +35,17 @@ mod consumer_fixture;
 #[path = "authority_host_service_bootstrap_root.rs"]
 mod bootstrap;
 
+#[cfg(test)]
+impl crate::HostAuthorityService {
+    /// Share this service's exact original issuer for component revocation.
+    /// This opens no second owner and creates no issuer, key or grant.
+    pub(crate) fn component_original_issuer_handle(
+        &self,
+    ) -> std::sync::Arc<crate::DeploymentFinalUseIssuer> {
+        std::sync::Arc::clone(&self.issuer)
+    }
+}
+
 fn expiry_qualification() -> bool {
     [
         "HEPTA_SERVICE_EXPECT_EXPIRED_FEED",

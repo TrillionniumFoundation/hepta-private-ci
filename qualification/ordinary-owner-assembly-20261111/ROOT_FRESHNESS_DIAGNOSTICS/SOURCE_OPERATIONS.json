@@ -1,0 +1,125 @@
+{
+  "schema_version": 1,
+  "scope": "cfg(test)-only bounded timing for original V7 stale observation failure; not a freshness or authority fix",
+  "base_commit": "f9131ee6bfc514812096b3b72b7c3c70ff77278c",
+  "base_tree": "850c7e73f936b74c0c82e30c0907de11769d8cf1",
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session.rs",
+      "preimage": {
+        "git_blob": "fa1379b2314ca98440ac52bf2aca2219edefeec8",
+        "bytes": 20232,
+        "sha256": "7f01918eb756db281067c87973779120be187fa3a9371a76aa4d49941baafb18"
+      },
+      "postimage": {
+        "git_blob": "c36482e33fc43cd35b18f79740188eacf8e49558",
+        "bytes": 20883,
+        "sha256": "2790341d9a9758caeee268f68e7c5e568a88e897d5730b2e0377250e0a9f39d6"
+      },
+      "operations": [
+        {
+          "old_text": "    let _serial = live\n        .serial\n        .acquire()\n",
+          "new_text": "    // Declared before the original permit: diagnostic output happens only\n    // after the unchanged refresh and consumer barrier release that permit.\n    #[cfg(test)]\n    let mut timing = tests::component_phase_timing(\"session.refresh\", \"original-feed\");\n    let _serial = live\n        .serial\n        .acquire()\n"
+        },
+        {
+          "old_text": "    let observation: HostAuthorityObservationResponseV2 = stream\n",
+          "new_text": "    #[cfg(test)]\n    timing.mark_original(\"request-started\", started);\n    let observation: HostAuthorityObservationResponseV2 = stream\n"
+        },
+        {
+          "old_text": "    live.proof.matches_observation(&observation).inspect_err(|_error| {\n",
+          "new_text": "    #[cfg(test)]\n    timing.mark_original(\"response-ended\", ended);\n    live.proof.matches_observation(&observation).inspect_err(|_error| {\n"
+        },
+        {
+          "old_text": "    let changed = !live.cache.revocations_match(&head);\n    if changed {\n",
+          "new_text": "    let changed = !live.cache.revocations_match(&head);\n    #[cfg(test)]\n    timing.mark(if changed { \"accept-changed-head\" } else { \"accept-same-head\" });\n    if changed {\n"
+        },
+        {
+          "old_text": "            \"ROOT_SESSION_DIAGNOSTIC phase=refresh-accept started_ns={started} ended_ns={ended} error={_error:?}\"\n        );\n    })?;\n    if changed {\n",
+          "new_text": "            \"ROOT_SESSION_DIAGNOSTIC phase=refresh-accept started_ns={started} ended_ns={ended} error={_error:?}\"\n        );\n    })?;\n    #[cfg(test)]\n    timing.mark(\"cache-accepted\");\n    if changed {\n"
+        },
+        {
+          "old_text": "        live.cache.end_update();\n    }\n    live.current().inspect_err(|_error| {\n",
+          "new_text": "        live.cache.end_update();\n    }\n    #[cfg(test)]\n    timing.mark(\"consumer-barrier-finished\");\n    live.current().inspect_err(|_error| {\n"
+        },
+        {
+          "old_text": "    refresh_completion.complete();\n    Ok(())\n}\nasync fn synchronize_consumers(\n",
+          "new_text": "    refresh_completion.complete();\n    #[cfg(test)]\n    timing.complete();\n    Ok(())\n}\nasync fn synchronize_consumers(\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_writer.rs",
+      "preimage": {
+        "git_blob": "364a161a83265cbc1b6e7c33a3b4098a7f534fc8",
+        "bytes": 12120,
+        "sha256": "5cdff81e698dc81f41930c7f07e49cacc12e10d5dd01c673a9c0fa34f1a35781"
+      },
+      "postimage": {
+        "git_blob": "9ee06141aded0ac3effa8b8e6f716958d463a0e0",
+        "bytes": 12990,
+        "sha256": "3928bc9c99a27b9de0b2d15e986cd3ec2739e89fc0058f1794fcd385ac61cfb3"
+      },
+      "operations": [
+        {
+          "old_text": "    ) -> io::Result<T> {\n        self.validate()?;\n        let lease = verifier\n",
+          "new_text": "    ) -> io::Result<T> {\n        #[cfg(test)]\n        let mut timing = crate::root_authority_session::tests::component_phase_timing(\n            \"writer.with_live\",\n            \"original-dispatch\",\n        );\n        #[cfg(test)]\n        {\n            timing.minimum_success_ns = Some(20_000_000);\n        }\n        self.validate()?;\n        #[cfg(test)]\n        timing.mark(\"read-lease-start\");\n        let lease = verifier\n"
+        },
+        {
+          "old_text": "            .lease;\n        if lease != self.authority_lease {\n",
+          "new_text": "            .lease;\n        #[cfg(test)]\n        timing.mark(\"read-lease-done\");\n        if lease != self.authority_lease {\n"
+        },
+        {
+          "old_text": "            .map_err(root::lease_error)?;\n        let (result, _) =\n            dispatch_authority_lease_with_witness(verifier, token, &lease.binding, |witness| {\n                match &witness.authority_ref {\n",
+          "new_text": "            .map_err(root::lease_error)?;\n        #[cfg(test)]\n        timing.mark(\"use-verified\");\n        let (result, _) =\n            dispatch_authority_lease_with_witness(verifier, token, &lease.binding, |witness| {\n                // Recording only: the outer timing guard writes after the\n                // original dispatch has released its original owner fence.\n                #[cfg(test)]\n                let _callback_timing = timing.callback();\n                match &witness.authority_ref {\n"
+        },
+        {
+          "old_text": "            })\n            .map_err(root::lease_error)?;\n        result\n    }\n",
+          "new_text": "            })\n            .map_err(root::lease_error)?;\n        #[cfg(test)]\n        {\n            timing.mark(\"dispatch-returned\");\n            if result.is_ok() {\n                timing.complete();\n            }\n        }\n        result\n    }\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_tests.rs",
+      "preimage": {
+        "git_blob": "804cb6b0e1c1cda0a8213408918e7fc92ea1f9a6",
+        "bytes": 20216,
+        "sha256": "e9f8aad0f3b89182f35a60962aa538d632dcb7cd3d0364ff10c578082f7c8871"
+      },
+      "postimage": {
+        "git_blob": "0ff0b07f606b3433194f97e3ac8aad7ae8f084a8",
+        "bytes": 24410,
+        "sha256": "6940d7099460bbd7804ee44959597a74ae845b71a738f3e8dc1e44233f0a8088"
+      },
+      "operations": [
+        {
+          "old_text": "inal Root revocation feed did not reach the expected head\",\n            )\n        })?\n    }\n}\n",
+          "new_text": "inal Root revocation feed did not reach the expected head\",\n            )\n        })?\n    }\n}\n\n// Bounded component diagnostics only. A reserved slot survives until this\n// scope ends, so nested feed work cannot consume its eventual record. No\n// sample below is returned to an authority, freshness or timeout decision.\nstatic COMPONENT_TIMING_RESERVED: std::sync::atomic::AtomicUsize =\n    std::sync::atomic::AtomicUsize::new(0);\nstatic COMPONENT_TIMING_SEQUENCE: std::sync::atomic::AtomicUsize =\n    std::sync::atomic::AtomicUsize::new(0);\n\npub(crate) struct ComponentPhaseTiming {\n    label: &'static str,\n    phase: String,\n    sequence: usize,\n    reserved: bool,\n    begin_ns: Option<u64>,\n    marks: [(&'static str, Option<u64>); 8],\n    used: usize,\n    reported_outcome: Option<&'static str>,\n    pub(crate) minimum_success_ns: Option<u64>,\n}\n\n/// Call before acquiring the original guard and drop after that guard. Marks\n/// only sample or copy diagnostic values; they never print while it is held.\npub(crate) fn component_phase_timing(\n    label: &'static str,\n    phase: impl std::fmt::Debug,\n) -> ComponentPhaseTiming {\n    let reserved = COMPONENT_TIMING_RESERVED\n        .fetch_update(Ordering::Relaxed, Ordering::Relaxed, |used| {\n            (used < 64).then_some(used + 1)\n        })\n        .is_ok();\n    ComponentPhaseTiming {\n        label,\n        phase: format!(\"{phase:?}\").chars().take(64).collect(),\n        sequence: COMPONENT_TIMING_SEQUENCE.fetch_add(1, Ordering::Relaxed),\n        reserved,\n        begin_ns: reserved.then(|| super::boottime_ns().ok()).flatten(),\n        marks: [(\"\", None); 8],\n        used: 0,\n        reported_outcome: None,\n        minimum_success_ns: None,\n    }\n}\n\nimpl ComponentPhaseTiming {\n    pub(crate) fn mark(&mut self, label: &'static str) {\n        if self.reserved {\n            self.record(label, super::boottime_ns().ok());\n        }\n    }\n\n    pub(crate) fn mark_original(&mut self, label: &'static str, original_ns: u64) {\n        if self.reserved {\n            self.record(label, Some(original_ns));\n        }\n    }\n\n    fn record(&mut self, label: &'static str, value: Option<u64>) {\n        if let Some(slot) = self.marks.get_mut(self.used) {\n            *slot = (label, value);\n            self.used += 1;\n        }\n    }\n\n    pub(crate) fn complete(&mut self) {\n        self.reported_outcome = Some(\"Ok\");\n        self.mark(\"complete\");\n    }\n\n    pub(crate) fn callback(&mut self) -> ComponentCallbackTiming<'_> {\n        self.mark(\"callback-entry\");\n        ComponentCallbackTiming { timing: self }\n    }\n}\n\n/// This nested guard only records. Its parent prints after the original\n/// dispatch function has released the original lease/revocation guard.\npub(crate) struct ComponentCallbackTiming<'a> {\n    timing: &'a mut ComponentPhaseTiming,\n}\n\nimpl Drop for ComponentCallbackTiming<'_> {\n    fn drop(&mut self) {\n        self.timing.mark(\"callback-exit\");\n    }\n}\n\nimpl Drop for ComponentPhaseTiming {\n    fn drop(&mut self) {\n        if !self.reserved {\n            return;\n        }\n        let end_ns = super::boottime_ns().ok();\n        let elapsed_ns = self\n            .begin_ns\n            .zip(end_ns)\n            .and_then(|(begin, end)| end.checked_sub(begin));\n        if self.reported_outcome == Some(\"Ok\")\n            && self\n                .minimum_success_ns\n                .zip(elapsed_ns)\n                .is_some_and(|(minimum, elapsed)| elapsed < minimum)\n        {\n            // This slot produced no bytes and can serve a later scope.\n            COMPONENT_TIMING_RESERVED.fetch_sub(1, Ordering::Relaxed);\n            return;\n        }\n        use std::io::Write as _;\n        let _ = writeln!(\n            std::io::stderr().lock(),\n            \"ROOT_COMPONENT_TIMING pid={} label={} phase={} sequence={} begin_ns={:?} end_ns={end_ns:?} elapsed_ns={elapsed_ns:?} reported_outcome={:?} marks={:?} record_cap=64\",\n            std::process::id(),\n            self.label,\n            self.phase,\n            self.sequence,\n            self.begin_ns,\n            self.reported_outcome,\n            &self.marks[..self.used],\n        );\n        // A printed slot is never returned. At most 64 records are emitted\n        // in this process, including scopes that were already in flight.\n    }\n}\n"
+        }
+      ]
+    }
+  ],
+  "callers_operations": [],
+  "new_test_methods": 0,
+  "projection_checks": [
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session.rs",
+      "added_cfg_blocks": 7,
+      "normal_build_projection_byte_equal": true,
+      "projection_sha256": "7f01918eb756db281067c87973779120be187fa3a9371a76aa4d49941baafb18"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_writer.rs",
+      "added_cfg_blocks": 7,
+      "normal_build_projection_byte_equal": true,
+      "projection_sha256": "5cdff81e698dc81f41930c7f07e49cacc12e10d5dd01c673a9c0fa34f1a35781"
+    }
+  ],
+  "validation": {
+    "forward_and_reverse_exact": true,
+    "all_postimage_blobs_readback_equal": true,
+    "compile": false,
+    "native": false,
+    "formatter": false,
+    "full_caller_checker": false
+  }
+}

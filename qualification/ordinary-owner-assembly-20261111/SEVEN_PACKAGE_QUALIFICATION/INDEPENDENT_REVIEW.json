@@ -1,0 +1,92 @@
+{
+  "schema": "hepta.independent-qualification-scope-extension-review.v1",
+  "reviewer": "runtime_access",
+  "status": "no-confirmed-static-gate-regression; unexecuted",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source_base": {
+    "commit": "7666bcc2c650298f2e1d47e615a25864fe792fa1",
+    "tree": "7495444ffe639ad28ac64aad5cc68e70c097c4aa"
+  },
+  "subject_manifest": {
+    "name": "fleet_harness_manifest",
+    "git_blob": "f2a6e48d23e0792b761141c22dc8a0694249c62e",
+    "bytes": 3726,
+    "sha256": "12fa1d8d2e79f771f61a218baa178a99e9e8a2a07c1a695205be1ea7599ac777"
+  },
+  "verification": [
+    {
+      "name": "harness",
+      "operations": 4,
+      "forward_reverse_equal": true,
+      "before": {
+        "git_blob": "90994f511820596ecceeb2ecc5ca4ecdafa8c653",
+        "bytes": 50110,
+        "sha256": "8f8886e4c7a15fb319a2bb9e587e3c948bb6f4d671d03ec5f1db11620e4e9e0b"
+      },
+      "after": {
+        "git_blob": "096b5b69c1295560f3a6c9e0da51e2708a0c996c",
+        "bytes": 50167,
+        "sha256": "1c9990189dde8cbf06ef4b234ada73376f8032d2f5dc40584ec2f3e53cd6e8a2"
+      }
+    },
+    {
+      "name": "workflow",
+      "operations": 3,
+      "forward_reverse_equal": true,
+      "before": {
+        "git_blob": "f5d21a533e68b515933476ba82b4e3175b92e4a5",
+        "bytes": 21012,
+        "sha256": "ea740f7faedc2bdce29f1683abd5a113608ee0c2042832b137791599a687a18a"
+      },
+      "after": {
+        "git_blob": "2375dcdc44f345840f5a40a8e04380efe789502d",
+        "bytes": 21147,
+        "sha256": "63bb95abc69fd383c7a4f76bc1a0bfbfa6e9b999a3d6ec45487668986c070547"
+      }
+    }
+  ],
+  "review": [
+    "All four original/final blob bodies were fetched, their Git object identities, lengths and SHA256 verified, and the seven declared exact operations replayed forward and backward to byte equality. This is a bounded source review, not execution.",
+    "The harness changes only the fixed package identifier (seven occurrences), appends codex-hepta-fleet after the unchanged first six packages, and adjusts the corresponding fixed-set error text and fix-step label. No package is removed and arbitrary configuration is not accepted.",
+    "All uses of the fixed package set continue to select the actual maintenance, bin-check and ordinary-test scopes. The execution CONFIG must now supply the exact seven-package set; a stale six-package CONFIG correctly refuses.",
+    "The workflow changes only Fleet's path trigger, its fixed package argument and the allowed maintenance postimage package prefix. This adds changed-source coverage and does not authorize source drift to count as a clean-source pass.",
+    "Exact reverse replay leaves every other harness/workflow byte intact. The four QA directories, original full caller scan and its allowed 3600-second configuration, original checker and typed helper identity checks, source/tree/cleanliness checks, original just test and zero-retry commands, original executor/collector records and fresh JUnit checks are unchanged.",
+    "The Root package set remains agentd plus contracts. All 17 original Root parents, actual UID0 execution checks, real bind fixtures, binary/tool/source identity checks, unknown-process stop/preservation rules and inode-limited cleanup remain byte-identical.",
+    "The new Fleet source has no inherited native result. Adding it to this harness is necessary coverage, not proof of successful compilation or behavior."
+  ],
+  "fixed_package_order": [
+    "codex-hepta-agentd",
+    "codex-hepta-learning-artifacts",
+    "codex-hepta-intelligence-eval",
+    "codex-hepta-contracts",
+    "codex-hepta-neuron",
+    "codex-hepta-learning-ledger",
+    "codex-hepta-fleet"
+  ],
+  "preserved": {
+    "root_packages": [
+      "codex-hepta-agentd",
+      "codex-hepta-contracts"
+    ],
+    "root_parents": 17,
+    "original_checker": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+    "typed_helper": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f",
+    "retries": 0,
+    "existing_timeouts": true,
+    "original_cleanup": true
+  },
+  "limitations": {
+    "python_ast_executed": false,
+    "native_or_cargo_executed": false,
+    "root_executed": false,
+    "full_gate_pass_claimed": false,
+    "ordinary_complete": 0,
+    "positive_adoption": 0,
+    "ordinary_no_update_or_rollback": 0
+  },
+  "actions": {
+    "source_modified": false,
+    "refs_modified": false,
+    "h_calls": 0
+  }
+}

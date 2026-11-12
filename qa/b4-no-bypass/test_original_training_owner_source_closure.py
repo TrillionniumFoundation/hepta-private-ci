@@ -1,5 +1,6 @@
 """Keep native Generator receipts on original keys, observations and journals."""
 
+from dataclasses import replace
 import importlib.util
 from pathlib import Path
 import sys
@@ -17,6 +18,11 @@ SPEC.loader.exec_module(PROOF)
 OWNER = "codex-rs/hepta-agentd/src/cell_q24_training_receipt_owner.rs"
 STAGE = "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs"
 SNAPSHOT = "codex-rs/hepta-agentd/src/cell_q24_training_snapshot_readback.rs"
+INPUTS = "codex-rs/hepta-agentd/src/cell_q24_learning_owner_inputs.rs"
+MODEL_MATERIAL = "codex-rs/hepta-agentd/src/cell_q24_model_proposal.rs"
+STAGE_OWNERS = "codex-rs/hepta-agentd/src/cell_q24_learning_stage_owners.rs"
+MODEL_DISPATCH = "codex-rs/hepta-agentd/src/cell_q24_learning_model_dispatch.rs"
+TRAINING_MATERIAL = "codex-rs/hepta-agentd/src/cell_q24_training_material.rs"
 
 
 class OriginalTrainingOwnerSourceClosureTests(unittest.TestCase):
@@ -43,14 +49,19 @@ class OriginalTrainingOwnerSourceClosureTests(unittest.TestCase):
             with self.assertRaises(PROOF.VerificationFailure):
                 PROOF._verify_protected_files(root, {"protected_file": rows})
 
-    def test_training_receipt_ports_remain_unassembled_and_caller_closed(self):
+    def test_training_receipt_ports_require_original_custody_callers(self):
         rows = {row.identifier: row for row in PROOF._boundary_rows(self.manifest)}
-        sources = {path: PROOF._strip_rust_non_code((ROOT / path).read_text()) for path in (OWNER, STAGE)}
+        sources = {
+            path: PROOF._strip_cfg_test_items(PROOF._strip_rust_non_code((ROOT / path).read_text()))
+            for path in (OWNER, STAGE, INPUTS)
+        }
         for suffix in ("create", "recover", "attest", "readback"):
             row = rows["learning_original_training_receipt_" + suffix]
             self.assertIn(row.identifier, self.manifest["privileged_inventory"]["required_boundary_ids"])
-            self.assertEqual(row.product_callers, (STAGE,) if suffix in ("attest", "readback") else ())
+            self.assertEqual(row.product_callers, (STAGE,) if suffix in ("attest", "readback") else (INPUTS,))
             PROOF._verify_boundary(ROOT, row, sources, ())
+            with self.assertRaises(PROOF.VerificationFailure):
+                PROOF._verify_boundary(ROOT, replace(row, product_callers=()), sources, ())
             method = row.symbol.rsplit("::", 1)[1]
             changed = dict(sources)
             changed["codex-rs/hepta-agentd/src/unregistered_training_signer.rs"] = (
@@ -60,24 +71,52 @@ class OriginalTrainingOwnerSourceClosureTests(unittest.TestCase):
                 PROOF._verify_boundary(ROOT, row, changed, ())
         self.assertEqual(rows["root_learning_original_stage_assembly"].product_callers, ())
 
-    def test_pair_consumer_is_the_only_native_execute_and_scope_caller(self):
+    def test_native_training_and_stage_ports_have_exact_registered_callers(self):
         native = "codex-rs/hepta-agentd/src/cell_composed_q24_training_owner.rs"
         rows = {row.identifier: row for row in PROOF._boundary_rows(self.manifest)}
-        sources = {path: PROOF._strip_rust_non_code((ROOT / path).read_text()) for path in (OWNER, STAGE, native, SNAPSHOT)}
-        for name in ("cell_q24_original_training_execute", "cell_q24_original_training_pair_binding"):
+        sources = {
+            path: PROOF._strip_cfg_test_items(PROOF._strip_rust_non_code((ROOT / path).read_text()))
+            for path in (OWNER, STAGE, native, SNAPSHOT, MODEL_MATERIAL, STAGE_OWNERS, MODEL_DISPATCH, TRAINING_MATERIAL)
+        }
+        for name, expected in (
+            ("cell_q24_original_training_execute", (STAGE,)),
+            ("cell_q24_original_training_pair_binding", (STAGE, MODEL_MATERIAL)),
+        ):
             row = rows[name]
             self.assertIn(name, self.manifest["privileged_inventory"]["required_boundary_ids"])
-            self.assertEqual(row.product_callers, (STAGE,))
+            self.assertEqual(row.product_callers, expected)
             PROOF._verify_boundary(ROOT, row, sources, ())
+            for caller in expected:
+                with self.assertRaises(PROOF.VerificationFailure):
+                    PROOF._verify_boundary(
+                        ROOT, replace(row, product_callers=tuple(path for path in expected if path != caller)), sources, ()
+                    )
             changed = dict(sources)
             method = row.symbol.rsplit("::", 1)[1]
             changed["codex-rs/hepta-agentd/src/unregistered_fit.rs"] = f"fn unexpected(owner: &CellQ24TrainingOwnerV1) {{ owner.{method}(); }}"
             with self.assertRaisesRegex(PROOF.VerificationFailure, "unexpected"):
                 PROOF._verify_boundary(ROOT, row, changed, ())
-        for suffix in ("constructor", "execute", "readback", "attestation"):
+        for suffix, expected in (
+            ("constructor", (STAGE_OWNERS,)),
+            ("execute", (STAGE_OWNERS,)),
+            ("readback", (SNAPSHOT, STAGE_OWNERS, MODEL_DISPATCH, TRAINING_MATERIAL)),
+            ("attestation", ()),
+        ):
             row = rows["learning_original_training_stage_" + suffix]
-            self.assertEqual(row.product_callers, (SNAPSHOT,) if suffix == "readback" else ())
+            self.assertEqual(row.product_callers, expected)
             PROOF._verify_boundary(ROOT, row, sources, ())
+            for caller in expected:
+                with self.assertRaises(PROOF.VerificationFailure):
+                    PROOF._verify_boundary(
+                        ROOT, replace(row, product_callers=tuple(path for path in expected if path != caller)), sources, ()
+                    )
+            changed = dict(sources)
+            method = row.symbol.rsplit("::", 1)[1]
+            changed["codex-rs/hepta-agentd/src/unregistered_training_stage.rs"] = (
+                f"fn unexpected(owner: &OriginalCellQ24TrainingStageV1) {{ owner.{method}(); }}"
+            )
+            with self.assertRaisesRegex(PROOF.VerificationFailure, "unexpected"):
+                PROOF._verify_boundary(ROOT, row, changed, ())
 
     def test_pair_requires_exact_missing_enrollment_and_retained_blocking_lane(self):
         for function, markers in (

@@ -1,0 +1,148 @@
+{
+  "schema": "hepta.original-native-evidence.git-publication-independent-review.v1",
+  "status": "static-review-no-blocker-found; execution-not-authorized-to-reviewer",
+  "reviewer": "hepta_audit",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "fixed_preparation": {
+    "final_script": {
+      "git_blob": "16f38e6f84330412e97fa38a9e8e6f7bdb7452dc",
+      "bytes": 19712,
+      "sha256": "15ed7219d860927b23a9e14ef9a7b8cda20b8780e9ea03b62854cbc026f8d294"
+    },
+    "final_request": {
+      "git_blob": "1656c3e5b3bf5664be8f6e78df1d47c625d6b5db",
+      "bytes": 251740,
+      "sha256": "8ad8c64d38f3f0da202bcaa28b4cd9c05100869fdee772f7d7c4ada7fa2517bf"
+    },
+    "author_manifest": {
+      "git_blob": "f20bff8a34bd27f57ff15215c5ba75f5b818aaf0",
+      "bytes": 10377,
+      "sha256": "4c8c7ee2f678002ab18c6715e9dc78aa0fd33396000a8add4c8963cd865bfb3b"
+    },
+    "exact_final_additions": [
+      "if not __debug__:\n    raise RuntimeError(\"Evidence publication requires enabled Python assertions\")\n",
+      "    allowlist_mode = git(\"parent-allowlist-mode\", \"ls-tree\", BASE, \"--\", allowlist_path).stdout\n    assert allowlist_mode == (\"100644 blob \" + C[\"allowlist\"][\"before_blob\"] + \"\\t\" + allowlist_path + \"\\n\").encode()\n"
+    ],
+    "all_other_script_bytes_equal": true,
+    "request_only_script_changed": true,
+    "final_script_embedded_byte_equal": true,
+    "config_values_equal": true,
+    "publication_json_reconstruction_byte_equal": true,
+    "original_export_request_join_byte_equal": true,
+    "maximum_argument_bytes": 48000
+  },
+  "config": {
+    "git_blob": "23570c017911da6b80ec5279733619e2f3ab8956",
+    "blob": "23570c017911da6b80ec5279733619e2f3ab8956",
+    "bytes": 1598,
+    "sha256": "48099b6b60bca06fa112aa8baf1271fddd6cb1c0ec03ed30ad6006793c99b267"
+  },
+  "original_export_request": {
+    "blob": "8e16a604428568c346fdba3cb1b961d5f626b523",
+    "bytes": 199062,
+    "sha256": "71478a60b9f41529044a9c066e7177df8ab9be9c19bb5a833daf8b78ea7d97b5",
+    "byte_identical": true,
+    "chunk_bytes": [
+      48000,
+      48000,
+      48000,
+      48000,
+      7062
+    ]
+  },
+  "allowlist": {
+    "original_blob": "5123c517dc59325e9bd103a6cb551b43e2e25e73",
+    "new_blob": "caa45dc038e2e4fd2da954243a272f709a1528b5",
+    "append_line": "sha256:b887df69055e182cae12aa6c588c91313c50c1761fb9c4323ed8621a5472e0e9 qualification/ordinary-owner-assembly-20261111/native-evidence/v5/original-records.tar.xz\n",
+    "original_bytes": 11418,
+    "new_bytes": 11580,
+    "original_sha256": "b81abcacd1f5db312caf677b190394b188dce94905cb5997d56949da7976b492",
+    "new_sha256": "543ebf55728ff2040a42f86fffc907d109ef74953ba3e45c941619b6edddbd3f",
+    "single_line_append_and_git_readback_equal": true
+  },
+  "scope": {
+    "parent": "715a5726f5031e50ad963812d2a1270e8d0cf769",
+    "parent_tree": "1122b8a0f3342b0944313a895b6f8838918fcddd",
+    "only_remote_ref": "refs/heads/codex/ordinary-native-evidence-v5-20261112-af52",
+    "evidence_prefix": "qualification/ordinary-owner-assembly-20261111/native-evidence/v5",
+    "additions": [
+      "original-records.tar.xz",
+      "export.json",
+      "exact-export-request.json",
+      "PUBLICATION.json"
+    ],
+    "only_modification": ".github/blob-size-allowlist.txt: one exact SHA256/path line appended to the complete original bytes",
+    "planned_archive": {
+      "bytes": 1894408,
+      "sha256": "b887df69055e182cae12aa6c588c91313c50c1761fb9c4323ed8621a5472e0e9",
+      "git_blob": "891109a74a5484451195bdaed03629de505dc131",
+      "members": 182,
+      "payload_members": 181
+    }
+  },
+  "independently_reviewed_boundaries": [
+    {
+      "name": "No accidental source repository mutation",
+      "finding": "Hard-coded source/parent/tree/work/remote/ref pins are asserted before side effects; inherited Git repository/index/object redirection variables are refused. A new private work directory and independent shared no-checkout clone hold the new index/objects/ref. Original source HEAD/tree/status and ref-list hash are observed before validation, before push and finally; no original-source write/ref command is present."
+    },
+    {
+      "name": "Archive and all members",
+      "finding": "The actual program will require the fixed archive length, SHA256 and Git blob id, parse without extracting paths to the filesystem, reject nonregular/absolute/noncanonical/traversal/duplicate members, apply member and aggregate bounds, require exactly 182 members and 181 unique manifest rows, and verify every payload length/SHA256/Git id and all seven original terminal outcomes. The old null terminal digest is not invented."
+    },
+    {
+      "name": "Original export request and metadata",
+      "finding": "The five bounded input arguments reconstruct the complete 199062-byte original request 8e16 exactly, including original Python and all seven historical request bodies. Script validates its SHA256/Git id and anchor. export.json must equal all recomputed original export metadata; both original files are reread with bytes and dev/inode/size/mtime/ctime equality before push and finally."
+    },
+    {
+      "name": "Complete parent tree preservation",
+      "finding": "read-tree begins with exact parent715. Only four new evidence paths are inserted, after rejecting existing paths under the exact prefix. The only modified path is the original allowlist, whose parent mode100644/blob/SHA and complete appended postimage are pinned. diff-tree must be exactly A4+M1, so code/checkers/CALLERS/other paths cannot silently change. New commit is verified to have exactly parent715 and the computed tree."
+    },
+    {
+      "name": "One new remote branch only",
+      "finding": "A read-only ls-remote requires the fixed ref to be absent. The sole push uses the exact full refspec, --force-with-lease=<fixed ref>:, --no-follow-tags and --recurse-submodules=no. A concurrent creation is refused by the empty lease. No old branch/ref or tag is supplied to push."
+    },
+    {
+      "name": "No credentials or network-policy changes",
+      "finding": "No direct credentials-file reads/writes, helper installation, URL rewrite, proxy change, hook disabling or global/local configuration mutation is present. Existing Git credential mechanisms/configuration are used as-is; terminal prompting is disabled. The only -c options are one-command machine commit author identity."
+    },
+    {
+      "name": "Failed or uncertain push",
+      "finding": "Only one push call exists. Failure or a Git command timeout records original stdout/stderr and failed-or-uncertain; subsequent remote activity is read-only reference observation, with no automatic push retry or ref cleanup. A post-push observation must equal the exact generated commit to claim published-and-reference-verified."
+    },
+    {
+      "name": "Metadata does not fabricate a tool receipt or push success",
+      "finding": "PUBLICATION is explicitly pre-push verification. Its invocation is labelled reconstructed from actual sys.orig_argv plus declared transport, not an MCP receipt. Independent pure reconstruction produced exactly the stored final request bytes. Actual push outcome stays in separate retained records/RESULT.json."
+    },
+    {
+      "name": "Assertions and source-size guard remain active",
+      "finding": "The final script explicitly rejects disabled Python assertions before any directory creation. The original global512000 limit is unchanged; only the fixed archive bytes/path receive a single exception, and all other new files must fit512000."
+    }
+  ],
+  "exact_push_command": [
+    "git",
+    "-C",
+    "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/repo",
+    "push",
+    "--porcelain",
+    "--no-follow-tags",
+    "--recurse-submodules=no",
+    "--force-with-lease=refs/heads/codex/ordinary-native-evidence-v5-20261112-af52:",
+    "https://github.com/TrillionniumFoundation/hepta-private-ci.git",
+    "refs/heads/codex/ordinary-native-evidence-v5-20261112-af52:refs/heads/codex/ordinary-native-evidence-v5-20261112-af52"
+  ],
+  "limits": [
+    "This reviewer read the complete fixed Python/config/request and original/post allowlist Git blobs, and performed code-mode UTF-8/hash/JSON/byte comparisons. The reviewer did not execute Python AST compilation, the program body, Git shell commands, h, native tests or push.",
+    "Archive1894408 bytes and its181 payloads were not transferred to or rehashed by this reviewer. Parent has reported its original verification; the fixed program's complete independent runtime validation remains pending.",
+    "Git command deadlines are transport supervision, not a new Rust/native supervisor. A timed-out push remains uncertain and is never automatically retried.",
+    "Preserved source identity observations are HEAD/tree/status/ref-list equality; this publication script does not claim a new full Rust-source fingerprint test. Original full source-before/after manifests remain inside the bound archive.",
+    "No new native, ordinary-learning, independent-C or cold-restart acceptance is inferred from archival publication."
+  ],
+  "execution": {
+    "h_tools_called": false,
+    "program_body_executed": false,
+    "local_or_remote_git_shell_run": false,
+    "cargo_or_native_run": false,
+    "branch_or_ref_modified_by_reviewer": false,
+    "git_blob_read_and_review_blob_creation_only": true
+  }
+}

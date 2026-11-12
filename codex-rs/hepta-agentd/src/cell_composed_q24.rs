@@ -62,6 +62,27 @@ pub use training_plan::CellQ24TrainingSampleV1;
 pub use training_plan::cell_q24_dataset_run_snapshot_digest_v1;
 pub use training_plan::cell_q24_single_head_update_rule_v1;
 
+#[cfg(target_os = "linux")]
+pub use training_plan::CellQ24DatasetFreezePreparationV1;
+#[cfg(target_os = "linux")]
+pub use training_plan::CellQ24FrozenDatasetV1;
+#[cfg(target_os = "linux")]
+pub use training_plan::CellQ24LearningPreparationConfigV1;
+#[cfg(target_os = "linux")]
+pub use training_plan::CellQ24LearningPreparationErrorV1;
+#[cfg(target_os = "linux")]
+pub use training_plan::CellQ24PreparedLearningFactsV1;
+#[cfg(target_os = "linux")]
+pub use training_plan::CellQ24PreparedLearningV1;
+#[cfg(target_os = "linux")]
+pub use training_plan::CellQ24PreparedTrainingMaterialV1;
+#[cfg(target_os = "linux")]
+pub use training_plan::OriginalCellQ24DatasetFreezeErrorV1;
+#[cfg(target_os = "linux")]
+pub use training_plan::OriginalCellQ24DatasetFreezeOwnerV1;
+#[cfg(target_os = "linux")]
+pub use training_plan::OriginalCellQ24DatasetFreezeSigningConfigV1;
+
 pub struct CellQ24ModelFilesV1 {
     pub base: File,
     pub organ_adapter: Option<File>,

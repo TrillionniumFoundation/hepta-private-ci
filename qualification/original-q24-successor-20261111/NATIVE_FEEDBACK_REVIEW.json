@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "title": "Successor v3 static review follow-up: first native type error and original guard cardinality",
+  "prior_static_review": "d4a5cc19ba56d96d98f3a85e682a46557a4b571d",
+  "no_prior_native_or_official_check_claim": true,
+  "findings": [
+    {
+      "kind": "first native compile feedback from root/author",
+      "source_before": "942991414cbe42361e46b6c27407b828ff652f15",
+      "source_after": "2e6b0945bfa5cbc7a802eb0a53b69adfa1fd33b5",
+      "function": "OriginalQ24SuccessorSession::writer_proof",
+      "old_expression": "self.original.writer_proof.sha256()?.to_string()",
+      "new_expression": "self.original.writer_proof.sha256()?.as_str().to_owned()",
+      "independent_review": "Fetched both exact blobs; sole source difference is this one expression. The original Sha256Digest canonical string is copied using its existing as_str API. No bootstrap, Arc, identity, session or authority binding changed.",
+      "native_retest": "pending; this reviewer did not execute compiler"
+    },
+    {
+      "kind": "confirmed metadata shape error found by original guard",
+      "source_file": "codex-rs/hepta-agentd/src/cell_q24_publication_successor.rs",
+      "function": "fn prepare_original_successor(",
+      "checker": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+      "actual_rule": "_verify_required_order rejects any sequence shorter than two; _verify_function_order delegates to it.",
+      "prior_metadata": "single marker handoff.prepare_from_original_root(self, predecessor, target, execution).await",
+      "repair": "Split the actual receiver-plus-full-call and its .await into two non-overlapping ordered code markers at the exact native rustfmt whitespace. Optionally pin the complete expression as a top_level marker; do not weaken to an unqualified method name or change checker.",
+      "cardinality_scan": {
+        "new_function_orders": 50,
+        "only_invalid": [
+          {
+            "path": "codex-rs/hepta-agentd/src/cell_q24_publication_successor.rs",
+            "function": "fn prepare_original_successor(",
+            "length": 1
+          }
+        ]
+      },
+      "integration_status": "Parent owns native-format exact metadata patch. No source or checker mutation by this review."
+    }
+  ],
+  "scope_note": "Earlier independent checks proved exact source identities and literal/function-bounded order presence. They were explicitly not the original checker's full schema or Rust typechecking. These new failures remain recorded; final integrated qualification must run original gates.",
+  "acceptance": {
+    "ordinary": 0,
+    "new_component_pass_count": 0,
+    "cold_restart": false
+  }
+}

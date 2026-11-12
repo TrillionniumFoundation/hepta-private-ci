@@ -1,0 +1,93 @@
+{
+  "schema_version": 1,
+  "kind": "first_three_original_boundary_diagnostic_receiver_fixes",
+  "base": "19894714403a97fcd58ca8c592e75761de95687c",
+  "tree": "8c64ab5145f279cafec363130d2a917075800e56",
+  "observed_run": {
+    "session": "dpty-fce4e1f1dc8fd86f4426bf514fb66bc81ce159d619bececbd7e286701a89375d",
+    "records": "/home/qq/af52-learning-local-decision-20261111/ordinary-198947-all-boundary-diagnostic-v1/records",
+    "observed_progress": "300/491, 3 failures, still running",
+    "not_official_complete_verify": true
+  },
+  "policy": "Apply exact semantic operations to the parent's current integration; full postimages are reference for fixed198947 only. Preserve native formatting elsewhere. No checker, source roots, ignores, authority or boundary caller sets changed.",
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_task_ledger.rs",
+      "preimage": "f606fa6e6e83a43674a8d811848897a8f8216ece",
+      "postimage": "a05394ff45a40024c1321368bedf3f1516818202",
+      "bytes": 22039,
+      "sha256": "2b3b95924fc0bdfb270fa1bed98e517bfe31105ca9f05f3805b7a92aed8f4a7b",
+      "operations": [
+        {
+          "old": "        prepared.revalidate_source()?;",
+          "new": "        crate::CellQ24PreparedLearningV1::revalidate_source(&prepared)?;",
+          "expected_count": 2
+        }
+      ],
+      "reason": "Both actual prepared values are CellQ24PreparedLearningV1; explicit inherent calls keep the same live source checks."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_task_ledger_test_support.rs",
+      "preimage": "53e3532c2cdbe43c8c75cac288608432d3338d50",
+      "postimage": "c301d389e2e5fa757273a0ff8d8d3dc64948c56f",
+      "bytes": 14979,
+      "sha256": "c645eabd0ceb945dfc8d75cbfb426329e01124bcfac42755378e3678c4a4f646",
+      "operations": [
+        {
+          "old": "    Ok(OpenOptions::new()\n        .read(true)\n        .write(true)\n        .create(true)\n        .truncate(false)\n        .open(root.join(name))?)",
+          "new": "    let mut options: std::fs::OpenOptions = OpenOptions::new();\n    options.read(true);\n    options.write(true);\n    options.create(true);\n    options.truncate(false);\n    Ok(options.open(root.join(name))?)",
+          "expected_count": 1
+        }
+      ],
+      "reason": "The file helper configures actual standard-library OpenOptions. Explicit receiver typing preserves every flag and ordering, with no test-mask or ignored-path change."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_publication_root_stage.rs",
+      "preimage": "36890c80ebb37e50909dc3ac4e9ea49dec1ed6ce",
+      "postimage": "02afdac18067a6f88b7e3cbfaebb6ff32994da20",
+      "bytes": 14441,
+      "sha256": "cfa18760b7d6ea17282d3acd35b7d64478809df84fa189e71a622c7b254da517",
+      "operations": [
+        {
+          "old": "        self.original.require_current().await?;",
+          "new": "        OriginalDecision::require_current(&self.original).await?;",
+          "expected_count": 2
+        }
+      ],
+      "reason": "These are the two OriginalDecision calls in connect_current; preserve the pre/post handoff validation on the same private decision."
+    }
+  ],
+  "protected_function_marker_edits": [
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_task_ledger.rs",
+      "function": "fn prepare_learning(",
+      "old": "prepared.revalidate_source()?",
+      "new": "crate::CellQ24PreparedLearningV1::revalidate_source(&prepared)?",
+      "expected_in_sequence": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_task_ledger.rs",
+      "function": "fn recover_learning(",
+      "old": "prepared.revalidate_source()?",
+      "new": "crate::CellQ24PreparedLearningV1::revalidate_source(&prepared)?",
+      "expected_in_sequence": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_publication_root_stage.rs",
+      "function": "fn connect_current(",
+      "old": "self.original.require_current().await?",
+      "new": "OriginalDecision::require_current(&self.original).await?",
+      "expected_in_sequence": 2
+    }
+  ],
+  "validation": {
+    "source_unique_replacement_checked": true,
+    "semantic_types_independently_read": true,
+    "checker_unchanged": true,
+    "original_targeted_checker_executed": false,
+    "native_executed": false,
+    "fmt_executed": false,
+    "boundary_diagnostic_still_running": true,
+    "qualification_pass": false
+  }
+}

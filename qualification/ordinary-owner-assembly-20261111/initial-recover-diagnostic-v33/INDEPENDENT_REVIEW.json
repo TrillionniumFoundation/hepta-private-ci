@@ -1,0 +1,130 @@
+{
+  "schema": "hepta.initial-recover-leaf-diagnostics.independent-static-review.v1",
+  "reviewer": "hepta_audit",
+  "scope": "Exactly the fixed three-file, nine-operation diagnostic candidate; no functional repair claim.",
+  "conclusion": "No confirmed static blocker in the reviewed candidate. It adds one test-only anyhow context and eight error-only diagnostic observers, preserves original authority calls and error mappings, and introduces no authority read, refresh, retry, budget change, or registry exception. Compilation and a new fixed-source run remain required.",
+  "source": {
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "head": "5a2e9371814e9ee0ec55781a81844ef03434874b",
+    "tree": "22d55a327460ab4a835387a4a61332dbece6866d"
+  },
+  "manifest": {
+    "git_blob": "3666fa6fcf3f706e658fab881fea7d4f3b8a664a",
+    "bytes": 10817,
+    "sha256": "840be0da29fcb44737fdc67acf5f1d2ebe9f79d682bf7e122080cfd381bee69e"
+  },
+  "exact_operations": {
+    "git_blob": "52ec4d1e9f07541dd2db836ef74f958cb82da16a",
+    "bytes": 8380,
+    "sha256": "a171bd15ca4d6cc01f928d3b25811aad23a308aa7deec42ed4b0a2e4002e5bb8"
+  },
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_child_tests.rs",
+      "ops": 1,
+      "forward_exact": true,
+      "reverse_exact": true,
+      "pre_pin": {
+        "git_blob": "01b5cd8e5c30ded50eb3b97f67c3e94c308697a0",
+        "bytes": 14759,
+        "sha256": "bbf718ced03553b902887631d33ff8f6454ff37de84fa81e88e07c5af911eccc"
+      },
+      "post_pin": {
+        "git_blob": "ed60831777e416b41eae33e265a090012781b618",
+        "bytes": 14877,
+        "sha256": "e6c0d02a659956ab4c2b14791af2a529826436e9429cb61401b8445217ef928b"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_current.rs",
+      "ops": 1,
+      "forward_exact": true,
+      "reverse_exact": true,
+      "pre_pin": {
+        "git_blob": "b73ed61ee4c611d7568276a092c1ba594ceb577f",
+        "bytes": 15239,
+        "sha256": "5a34eadea61f66573097f0a0cc6f3f5b5fdf84476e7fb2c084c5b675516c4106"
+      },
+      "post_pin": {
+        "git_blob": "2dab62e0e5cf57ff7d9432d833db166006b70a4b",
+        "bytes": 15464,
+        "sha256": "c1b42a47ed4e93d9b803ce7fe90bcbf6123090a047e7a19685ba034fff50f4fc"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_update_live.rs",
+      "ops": 7,
+      "forward_exact": true,
+      "reverse_exact": true,
+      "pre_pin": {
+        "git_blob": "3f83777f4f4a04ffc800d2be4eb5c8b4618bdc75",
+        "bytes": 7338,
+        "sha256": "094a50bcfc6c1e087ca1bc57213cad25e39fc0975cbd30ed077be8052d173cef"
+      },
+      "post_pin": {
+        "git_blob": "6072a6cf1560a0d2ddb26abe1483a4adfa2b7f1a",
+        "bytes": 8982,
+        "sha256": "64f7e0b2884b16ea2691b1d24e4ad930a931fc9afcd95e28ef550c83888a7964"
+      }
+    }
+  ],
+  "independent_checks": {
+    "actual_fixed_source_files_fetched": true,
+    "six_pre_and_post_blobs_git_size_sha_verified": true,
+    "all_nine_forward_and_reverse_replacements_unique_and_full_byte_equal": true,
+    "separate_projection": "Independently removed exactly 1 + 7 narrowly matched inspect_err closures whose only body is the cfg(test) diagnostic eprintln. Both complete production files then match their original files after whitespace normalization.",
+    "test_context": "The original task.require_bundle(&bundle) remains a single call in the actual Recover/RetiredSession branch. Context only names its existing failure; original nonce/claims checks, actual RetiredSession drop-before/after checks, task drop, CLOSED/PHASE_COMPLETE ordering, all assertions, alarm and time limits are outside the change.",
+    "import_and_types": "The child already imports anyhow::Context and formats Phase with Debug elsewhere. Diagnostic closures synchronously borrow the original Err via standard Result::inspect_err. Existing map_err and ? remain in place. Standard PoisonError formatting does not require exposing the protected owner value. No compiler was invoked.",
+    "all_existing_guards": "Existing CURRENT mode/binding tests, live artifact->selection->FinalUse order, actual clock sample, retained grant/witness check, and before/after CURRENT checks remain in the original order. The diagnostics consume no substitute capability.",
+    "no_added_product_api_or_test_method": true
+  },
+  "diagnostic_sites": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_child_tests.rs",
+      "change": "One lazy anyhow Context on existing recovered Feature bundle requirement.",
+      "scope": "Existing test child only."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_current.rs",
+      "change": "check_open: original CurrentStore::load Err observed before unchanged map_err(Unavailable).",
+      "scope": "One cfg(test) stderr site; no success output."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_update_live.rs",
+      "change": "check_live: artifact lock, selected lock, clock, selected revalidate, retained FinalUse errors; check_current: original current-before and current-after errors.",
+      "scope": "Seven cfg(test) stderr sites; no success output."
+    }
+  ],
+  "important_coverage_limits": [
+    "These are diagnostics, not proof that the Initial failure has been repaired or that Publication has the same cause.",
+    "Printing occurs after each observed callee has returned its error. Some check_live error prints still occur while its existing outer artifact/selected guards remain in scope. This is not represented as lock-free or timing-neutral test instrumentation. No such printing exists in non-test builds, no new guard is acquired, and no existing lock/return branch is removed.",
+    "An empty inspect_err closure remains in the non-test source after cfg removal; the review claims preserved Result/control behavior, not identical generated machine-code bytes.",
+    "No additional time sample is taken, no freshness interval is widened, and no missing/stale owner or consumed capability is revived."
+  ],
+  "registry": {
+    "git_blob": "d9478557509a1e70b7b32b02b86cfd2aa2babbd5",
+    "bytes": 669225,
+    "sha256": "f9a911c62f591f93f92833494bb83af828f31ac55d17a2b6b784c480424148fd",
+    "boundary_count": 504,
+    "protected_count": 366,
+    "changed": false,
+    "protected_rows_naming_reviewed_paths": 0,
+    "existing_references": "Only neuron_generation_current.rs appears, in existing final_use_claim and final_use_dispatch_witness caller lists. Their existing call sites lie outside modified check_open. The other two paths have no registry entry.",
+    "added_method_boundary_hits": 0,
+    "official_checker_or_typed_helper_executed": false,
+    "no_full_index_pass_claim": true
+  },
+  "original_result_attribution": "The author manifest and Root report V32 ordinary 1943 pass/1 fail and Root 15 pass/2 fail. This source review does not independently reparse those native logs, reclassify their failures, or inherit qualification for the candidate.",
+  "execution_limits": {
+    "diagnostic_review_git_reads_only": true,
+    "native_or_cargo_or_formatter": false,
+    "checker": false,
+    "h_or_pty_for_this_review": false,
+    "source_or_ref_mutation": false,
+    "new_tests": 0,
+    "ordinary_complete_chains": 0,
+    "positive_adoption": 0,
+    "ordinary_no_update_rollback": 0
+  },
+  "handoff": "Root owns later integration, formatting, exact registry checks and fixed-source qualification. V12 evidence transfer is a separate authorized read task and is not a test of this candidate."
+}

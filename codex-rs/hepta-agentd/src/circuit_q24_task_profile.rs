@@ -29,6 +29,15 @@ use crate::PublishedCircuitCellOwnerV1;
 use crate::PublishedCircuitFeatureTaskV1;
 use crate::circuit_task_channel_v1;
 
+#[path = "circuit_q24_successor_execution.rs"]
+pub(crate) mod successor;
+
+#[cfg(target_os = "linux")]
+#[path = "circuit_q24_task_ledger_install.rs"]
+mod learning;
+#[cfg(target_os = "linux")]
+pub use learning::AgentdQ24LearningTaskRuntimeV1;
+
 /// Source lifecycle is explicit. Recovery never replaces an acknowledged
 /// history with a fresh source or recreates an unresolved request.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -183,7 +192,7 @@ where
         move || (profile.clock)(),
         profile.queue_capacity,
     )?;
-    let readback = Arc::new(source.readback());
+    let readback = Arc::new(DurableCircuitTaskSourceV1::readback(&source));
     Ok(CircuitQ24TaskRuntimeV1 {
         bootstrap,
         invocation: Arc::new(source),

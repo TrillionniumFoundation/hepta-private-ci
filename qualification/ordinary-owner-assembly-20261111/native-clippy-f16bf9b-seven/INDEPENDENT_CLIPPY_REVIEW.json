@@ -1,0 +1,112 @@
+{
+  "schema": "hepta.independent-native-clippy-clone-review.v1",
+  "reviewer": "runtime_access",
+  "base": {
+    "commit": "f16bf9b8ee32cbe2d21c4fe6c1846dd6d54fd361",
+    "tree": "d0827337173581d74ec1903e0053967e01534c29"
+  },
+  "verdict": "No confirmed static blocker. Both native edits remove a redundant final-use data clone; they preserve all original authority operations, phase ordering, guards and assertions.",
+  "original_evidence": {
+    "patch": {
+      "git_blob": "cf689ca9ede7b29b8fb3d367906246e1b0822bbb",
+      "bytes": 1670,
+      "sha256": "d32e397986931d4a59eeb1195e42769fc90b55911bfd8d605c14dafbc6c64b50"
+    },
+    "postimages": {
+      "git_blob": "fde35683b5b011eba3065aec10c46ce0bc8dbb57",
+      "bytes": 51401,
+      "sha256": "8ec4b84fd51a4914276574c3681c1f3db530795bcdba9dc298824e2cd970f477"
+    },
+    "root_reported_run": "fmt clean; fix-seven-crates command exit 0 in 219.924 seconds; executor rejected the two changed test files with exit 1; zero tests executed; no timeout"
+  },
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_root_fixture_tests.rs",
+      "before": {
+        "git_blob": "8c85c70340ce1eb95e327869d40a22a4aacb8ce8",
+        "bytes": 32978,
+        "sha256": "ceb8dfb6e9374f644961c138b2d20cadc4ba1cd41ae5d46cdb880a27b5c37691"
+      },
+      "after": {
+        "git_blob": "e51e0c3ab997a1910435ef94b43ddd9facde2b30",
+        "bytes": 32970,
+        "sha256": "b406aaa6c7a55b0801e64e0b9281b3cb4b87a4732b33ce526137007888c7f14e"
+      },
+      "exact_ops": {
+        "old": "let mut expected = before.clone();",
+        "new": "let mut expected = before;"
+      },
+      "hunks": 1,
+      "forward_exact": true,
+      "reverse_exact": true,
+      "assertion_macros_preserved": 15
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config_late_writer_identity_tests.rs",
+      "before": {
+        "git_blob": "0201372436dbb6a4399eb8702fac15254037edb1",
+        "bytes": 5171,
+        "sha256": "2d94df49783b16cc5849b0424dcba5e512d6d9710228ec0715e9fa6f8d3ead04"
+      },
+      "after": {
+        "git_blob": "cdc7037f1e63c311c4354e7b3a9193e3ea81825c",
+        "bytes": 5163,
+        "sha256": "9157e2835903429f52171d0af4bebc3d823fe8993fc7ad7b2b839d9de4dcedb3"
+      },
+      "exact_ops": {
+        "old": "let mut aliased_home = fixture.input.clone();",
+        "new": "let mut aliased_home = fixture.input;"
+      },
+      "hunks": 1,
+      "forward_exact": true,
+      "reverse_exact": true,
+      "assertion_macros_preserved": 6
+    }
+  ],
+  "type_and_lifetime_review": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_root_fixture_tests.rs",
+      "binding": "before: FinalUseRevocations",
+      "definition": {
+        "path": "codex-rs/hepta-contracts/src/final_use.rs",
+        "git_blob": "ebbf7799623fd8993a6135f5ede63d00a8012b06",
+        "detail": "Derived Clone data struct: authority_epoch u64, revision u64, revoked_grant_ids BTreeSet<String>; no custom Clone or Drop."
+      },
+      "producer": {
+        "path": "codex-rs/hepta-agentd/src/deployment_issuer.rs",
+        "git_blob": "5fcc50d3ea59f6a0ed76dd990de17deabc4cd360",
+        "function": "DeploymentFinalUseIssuer::revocations",
+        "detail": "Returns the loaded owned state.head value, not a borrow, guard, owner or live issuer capability."
+      },
+      "conclusion": "The authority-epoch and not-already-revoked assertions inspect before prior to its final move into expected. The source binding has no later use. Revision checked_add, exact grant insertion, original issuer.revoke, complete actual==expected assertion and send_data remain byte-identical. Moving the standalone data eliminates a BTreeSet/String allocation; it does not mutate the original issuer state, release a lock/FD, change issuer custody, or skip the actual revoke."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config_late_writer_identity_tests.rs",
+      "binding": "fixture.input: OriginalStartingIdentityInput",
+      "definition": {
+        "path": "codex-rs/hepta-agentd/src/config_late_writer_identity.rs",
+        "git_blob": "2e28f98f7e9b952f0577cfed3d62b5aa0b3eb6b7",
+        "detail": "Private derived-Clone data: PathBuf roots/current_dir, AgentId, u64 generation; no custom Drop or owner/descriptor field."
+      },
+      "agent_id_definition": {
+        "path": "codex-rs/hepta-contracts/src/agent_id.rs",
+        "git_blob": "98c9426a2cd7da43cd07458b1472b79acda1f474",
+        "detail": "AgentId(String) has derived Clone and no custom Clone or Drop."
+      },
+      "conclusion": "All four other changed-input clones are complete before the move. The alias case takes the final input use, overwrites the same home_root and enters the unchanged five-case rejection loop. IdentityFixture has no custom Drop; its TempDir, registry and expected identity remain in place until the same function exit. Moving only plain input data does not move/drop the TempDir early, acquire a writer, mutate registry permissions, or bypass any assertion. The discarded original home_root allocation can be freed earlier, with no filesystem/authority effect."
+    }
+  ],
+  "verification": {
+    "two_original_patch_hunks_forward_reverse_exact": true,
+    "all_decoded_postimage_git_sha256_bytes_match": true,
+    "only_two_literal_dot_clone_removals": true,
+    "assertion_and_ensure_macro_sequence_preserved": 21,
+    "callers_change_required": false,
+    "source_or_refs_mutated": false,
+    "native_or_cargo_or_original_checker_executed_by_reviewer": false
+  },
+  "limits": [
+    "This static review does not turn the dirty-tree native attempt into PASS. Root must freeze these exact postimages in a new source and run the original qualification.",
+    "No production source, authority behavior, timeout, identity, revocation target, phase handshake, negative assertion or test inventory is changed by these two edits."
+  ]
+}

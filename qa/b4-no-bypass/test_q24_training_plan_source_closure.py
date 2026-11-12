@@ -21,9 +21,10 @@ AGENT = "codex-rs/hepta-agentd/src/"
 PLAN = AGENT + "cell_composed_q24_training_plan.rs"
 TRAINING = AGENT + "cell_composed_q24_training.rs"
 PROFILE = AGENT + "authority_host_learning_profile.rs"
+PREPARED = AGENT + "cell_q24_prepared_learning.rs"
 CALLERS = {
-    "learning_frozen_update_scope_constructor": (PROFILE, PLAN),
-    "cell_q24_single_head_training_plan": (TRAINING,),
+    "learning_frozen_update_scope_constructor": (PROFILE, PLAN, PREPARED),
+    "cell_q24_single_head_training_plan": (TRAINING, PREPARED),
     "cell_q24_single_head_candidate_validation": (),
 }
 

@@ -1,0 +1,351 @@
+{
+  "schema": "hepta.root-cache-original-read-admission.manifest.v1",
+  "status": "Frozen unreferenced source candidate; static review pending. Not formatted, compiled, or executed.",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "base": {
+    "commit": "5a2e9371814e9ee0ec55781a81844ef03434874b",
+    "tree": "22d55a327460ab4a835387a4a61332dbece6866d"
+  },
+  "diagnostic_design": {
+    "git_blob": "9bf9fa47c84329d38983e783b2381e3f6d78ca76",
+    "scope": "Pre-implementation diagnosis and conditional proposal. Root subsequently explicitly authorized the bounded first-acquisition local performance contract and post-cache session-end check."
+  },
+  "original_failure": {
+    "native_request": "ef0da4aaf894a87fedd2ab6771ae74bcc615c76f",
+    "root_log_container": {
+      "git_blob": "8093f7e43062e7a3c09f4e728f68f7ff3dd3864f",
+      "bytes": 320500,
+      "sha256": "06580387d9752d01f43b67d96192598300db27fab55d191bfecb865e3ec8b4cc"
+    },
+    "decoded_root_log": {
+      "bytes": 118773,
+      "sha256": "561db3f2230a74066d7c6ff8a987bcde2dcf773ab2cff5391a9a3086dd9b72b8",
+      "computed_git_blob": "154766583a04f3a93f4d4cd12f9b4ee6bc3e8f7b",
+      "raw_blob_uploaded": false
+    },
+    "root_result": {
+      "executed": 17,
+      "passed": 15,
+      "failed": 2,
+      "selected_skipped": 0,
+      "retries": 0,
+      "timeout": false,
+      "unselected_filter_exclusions": 1367,
+      "source_after_clean": true
+    },
+    "ordinary_result": {
+      "executed": 1944,
+      "passed": 1943,
+      "failed": 1,
+      "scope": "Separate frozen test-only correction; no prior result becomes a result for this candidate."
+    },
+    "publication": {
+      "test": "neuron_generation_current::publication_root_tests::root_broker_late_enrolls_publishes_and_recovers_original_current",
+      "child_pid": 3950370,
+      "root_pid": 3950366,
+      "phase": "Publish",
+      "foreground_error": "ROOT_OBSERVATION_CACHE phase=current reason=retained-lock-contention now=1493899373243375; ROOT_SESSION_DIAGNOSTIC phase=current-cache error=Unavailable",
+      "foreground_prepare_span": {
+        "begin_ns": 1493899372989474,
+        "end_ns": 1493899373291303
+      },
+      "concurrent_refresh": {
+        "sequence": 10,
+        "original_request_ns": 1493899366560816,
+        "response_ns": 1493899373239585,
+        "accept_same_head_ns": 1493899373244595,
+        "cache_accepted_ns": 1493899373255295,
+        "barrier_finished_ns": 1493899373255345,
+        "complete_ns": 1493899373257645,
+        "reported_outcome": "Ok"
+      },
+      "conclusion": "The foreground read returned Unavailable on original retained-mutex contention while the background refresh succeeded; this observed failure was not a request-age expiry. The original purpose then reported uncertain outcome and remains non-retryable.",
+      "limits": "The log does not uniquely identify the cache lock holder: revocations_match, accept, or another current read are possible. A cache read updates last_checked_ns, so readers also serialize. This evidence does not prove the Prepare request never reached Root or that no effect occurred."
+    },
+    "initial": {
+      "test": "neuron_generation_current::initial_root_tests::root_initial_publication_uses_original_consumer_and_readonly_recovery",
+      "independent_report": "0fbc3c1b848b02db737fb39f88ff696cc74c30f4",
+      "conclusion": "Recover's require_bundle error has not been assigned the Publication contention cause. Separate error-preserving instrumentation is not part of this four-file candidate."
+    }
+  },
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/root_observation_cache.rs",
+      "preimage": {
+        "git_blob": "047c616692f9288077d7e289b8c2aeecc926e937",
+        "bytes": 16596,
+        "sha256": "3f9ab8536bd153c64a2ebab1b7f89a68fa76a7bc0df47f91844054d57cf9e387"
+      },
+      "postimage": {
+        "git_blob": "168fcbd0233e19d536bd4e86f21401cc504d1ec6",
+        "bytes": 23838,
+        "sha256": "9a3d4f9a47671ce5548bf78c669e3791e89ddb6348e7d693137a9be3edf8672f"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_observation_cache_tests.rs",
+      "preimage": {
+        "git_blob": "7573cc6064186aab16e4dab5c12dd0eb97b71a1d",
+        "bytes": 4883,
+        "sha256": "e2b6c9e6c255a310136a2e80c3aace6f4b0094a27821f869454ac3fdd20482f8"
+      },
+      "postimage": {
+        "git_blob": "711c7195a63b8a7bdb9dfa3d70fcbccfc9a88d5f",
+        "bytes": 10876,
+        "sha256": "5018aedd890ca47152df3bd441baa0f58eeae0540ed4f095132bfa486f3fb652"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session.rs",
+      "preimage": {
+        "git_blob": "bd11492035b4d508201d1e5a9f0a999ea177daed",
+        "bytes": 21031,
+        "sha256": "3b3b1d7d358c38545ee12dbaea5d5e23f64019cc60857b2cecf772e564569d94"
+      },
+      "postimage": {
+        "git_blob": "51035c1d84f831d0665581a2faf2c0a0bb1b96b7",
+        "bytes": 21570,
+        "sha256": "f18d97e08ab796d6566e09e2323f8189d6a3b3b21f45a17de2ae832b480140ba"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_tests.rs",
+      "preimage": {
+        "git_blob": "2871595caf737f443ec4c9a2ad5ef672ccdef109",
+        "bytes": 24356,
+        "sha256": "39393346218a9e40bde0291ff78751acfacd61c583838ab0b0ccdb06855c06dd"
+      },
+      "postimage": {
+        "git_blob": "b9b8db0658a372c8bcbeaef7d6effb58f701957e",
+        "bytes": 26931,
+        "sha256": "951763353c7b8e5eccab7a9ae09bcfb9687ff8f868905071865661b366292c01"
+      }
+    }
+  ],
+  "exact_ops": {
+    "git_blob": "fc5f472aba57a4f8d373824d6dcb442df874d64c",
+    "bytes": 50673,
+    "sha256": "06dfa4a748cd2f379d5aab99e59ddb86a42337d0c9f56a75103e7ef6c9b06ab0"
+  },
+  "counts": {
+    "paths": 4,
+    "production_paths": 2,
+    "test_paths": 2,
+    "operations": 11,
+    "cache_operations": 8,
+    "cache_tests_append_operations": 1,
+    "session_operations": 1,
+    "session_tests_append_operations": 1,
+    "new_test_methods": 6,
+    "root_parent_roster": 17,
+    "root_parent_roster_changes": 0
+  },
+  "contract_changes": [
+    "The former immediate try_lock failure is intentionally changed to bounded first acquisition of this in-memory retained mutex. Only a local WouldBlock before authority evidence validation can wait; this is a local latency/CPU scheduling contract change, not a semantics-free refactor.",
+    "The read captures one original accepted request deadline before waiting. Later valid feed acceptance does not replace that captured deadline. The mirror is only an admission upper bound and never an authority proof.",
+    "Both production accept and production current sample real BOOTTIME after acquiring the original retained mutex. Explicit accept_at/current_at timestamps remain cfg(test)-only interfaces; production never uses test time.",
+    "The original Boolean consumer-update barrier becomes a checked monotonic even/odd generation. A completed update cycle cannot re-admit a read that captured an older generation. Invalid transitions and overflow fence; the counter never wraps.",
+    "LiveRoot::current gains a real post-cache BOOTTIME check against the same existing absolute end. Sampling failure or reaching that end fences and returns the original Unavailable before proof/lease/pidfd checks or any successful authority return. No lifetime is renewed."
+  ],
+  "safety_argument": {
+    "authority_evidence": "The sole authority evidence remains the original retained response under its original mutex, plus unchanged writer/epoch/binding/clock/age checks. No new owner, key, grant, nonce, mutable trust input, transport action, or generic callback is added.",
+    "mirror_publish_order": "accept_locked validates the complete observation and original predecessor, computes checked started+MAX_AGE_NS, writes the complete Retained value, then release-stores read_deadline_ns while still holding the same mutex. Readers acquire-load the mirror, then validate evidence under that mutex; an old mirror only shortens admission.",
+    "frozen_budget": "A read stores one ReadAdmission { deadline_ns, generation }. Each WouldBlock checks that generation, real time monotonicity and now > that frozen deadline. Success samples BOOTTIME while holding the mutex and rechecks generation. After full original current validation, the same captured deadline is checked again; a newly accepted response cannot renew this read.",
+    "maximum_age": "MAX_AGE_NS remains 500_000_000. Original age comparison remains age > MAX_AGE_NS; equality at 500 ms is not changed to >=. The session's separate original >= absolute-end rule is retained.",
+    "acceptance_monotonicity": "The full old acceptance validation and old retained clock/projection/epoch/owner/lease/store-revision/revocation-superset checks are retained. Acceptance still cannot refresh an already-expired predecessor into validity. Successful reads retain the single mutex-protected last_checked_ns watermark.",
+    "barrier_aba": "The captured even generation must match before admission, while waiting, after acquiring the mutex, before evidence use and after projection. begin_update changes even to odd; end_update changes odd to the next even. A complete cycle changes the captured value. Checked overflow and invalid parity fence instead of wrapping or silently reopening.",
+    "failure_rules": [
+      "Absent published budget permits no contention wait. Poison is immediately returned as Unavailable; the poisoned original mutex cannot subsequently provide successful evidence.",
+      "An observed permanent fence or active/changed update generation rejects this read. No loop catches an authority result and retries it; only original mutex WouldBlock is handled internally before evidence validation.",
+      "Clock sample failure or observed clock regression fences. Invalid retained evidence under the unchanged generation keeps the old cache fence behavior. Accept errors fence.",
+      "Expiry of an old captured admission while a newer valid response has already been accepted returns Unavailable for that read; this case does not necessarily fence the entire cache. A generation change is likewise a read refusal, not an invented authorization to clear a previous fence.",
+      "Original purpose/client error propagation, sticky client/session lifecycle behavior, typed uncertain effect outcome and no-retry/revival rules are unchanged. This candidate does not make all Unavailable errors globally permanent and does not revive any object that already returned such a failure."
+    ],
+    "locking_scope": "No I/O, network, owner callback, grant claim, dispatch, or refresh occurs while the retained mutex is held. Existing accept's writer lock remains blocking as before; only the foreground read's first acquisition loop changes. Internal yield_now is scheduling, not an authority/effect retry.",
+    "session_end": "Cache freshness and session lifetime are separate bounds. The added post-cache actual sample closes the interval where bounded admission could cross the unchanged session end after the old precheck. Original proof equality, lease expiration, second pidfd check and tuple API remain byte-for-byte in place.",
+    "performance_limits": "The implementation does not promise hard-real-time wakeups, fairness, or that arbitrary scheduler stalls cannot consume the 500 ms budget. A late wake still rejects under the original frozen deadline. Busy yielding can consume CPU under contention; it does not extend any authority window."
+  },
+  "regressions": {
+    "preserved_prefixes": {
+      "cache_original_bytes": 4883,
+      "session_original_bytes": 24356,
+      "all_existing_assertions_unchanged": true
+    },
+    "added": [
+      {
+        "path": "root_observation_cache_tests.rs",
+        "name": "contended_current_samples_after_the_original_guard_without_losing_the_feed",
+        "proof": "Uses the actual held mutex and a confirmed waiting reader, advances the original watermark while the reader is waiting, then releases. Production sampling after lock acquisition succeeds without falsely diagnosing time regression."
+      },
+      {
+        "path": "root_observation_cache_tests.rs",
+        "name": "later_accept_cannot_renew_an_already_waiting_reads_original_budget",
+        "proof": "Keeps the actual mutex held through the read's Unavailable; accepts a newer real sample under the held guard; asserts the recorded expiry deadline equals the first captured deadline, refusal sampled after it, and the newer mirror is later. No second current/authority/effect call follows failure.",
+        "scheduler_correction": "The superseded candidate required refusal before the second deadline. That newly introduced hard-real-time assertion is removed; late OS scheduling is not proof of budget renewal."
+      },
+      {
+        "path": "root_observation_cache_tests.rs",
+        "name": "absent_budget_and_poison_cannot_turn_contention_into_authority",
+        "proof": "An empty cache with a held mutex must refuse without waiting; an actual mutex poisoned by a joined panic must remain unavailable."
+      },
+      {
+        "path": "root_observation_cache_tests.rs",
+        "name": "waiting_read_refuses_a_real_fence_or_active_consumer_barrier",
+        "proof": "An actual waiting read returns Unavailable after a real fence or active consumer barrier while the mutex remains held."
+      },
+      {
+        "path": "root_observation_cache_tests.rs",
+        "name": "completed_consumer_barrier_and_generation_overflow_reject_old_admission",
+        "proof": "A complete begin/end cycle rejects the earlier captured admission; maximum-generation transition fences and cannot wrap."
+      },
+      {
+        "path": "root_authority_session_tests.rs",
+        "name": "original_session_end_is_rechecked_after_bounded_cache_admission",
+        "proof": "Explicit same-UID/synthetic-proof component with actual self pidfd and actual BOOTTIME. The original cache mutex is held across the same session's 200 ms absolute end while cache age remains <= 500 ms; cache validation is observed to have passed after session end, yet LiveRoot refuses and fences.",
+        "scope": "No Root UID0/ordinary business claim. Actual scheduling can still make a test fail; the test does not fake time or weaken the 500 ms guard."
+      }
+    ],
+    "controls": "Three component_* accessors live only in the cache's cfg(test) tests module. They hold/read the actual original cache mutex or wait for a test-only first-contention latch. No normal-build constructor, permission, clock replacement, or worker refresh is added.",
+    "no_new_mirror_tests": true,
+    "test_only_sleep_ms": 200,
+    "first_contention_observation_timeout_seconds": 2
+  },
+  "metadata_and_qualification": {
+    "CALLERS": "Unchanged: d9478557509a1e70b7b32b02b86cfd2aa2babbd5, 504 boundaries / 366 protected rows. No new authority call or privileged caller.",
+    "checker": "Unchanged: 7a6709691c372504ca11b5d2a74e14ba819fca8f; typed helper e23bb8aa42241b429ef5dbce5a4660853b66eb2f unchanged.",
+    "raw_dependency_inspection": {
+      "source": "5a2e9371814e9ee0ec55781a81844ef03434874b",
+      "files": [
+        {
+          "path": "qa/b4-no-bypass/test_cell_learning_evaluation_source_closure.py",
+          "git_blob": "2aad87cdd5ad46a8b0ec91ea7936d7ccf374bdc7"
+        },
+        {
+          "path": "qa/b4-no-bypass/test_current_caller_migrations.py",
+          "git_blob": "2572859b4f67298235d6573851d0ca6c6ffc5632"
+        },
+        {
+          "path": "qa/b4-no-bypass/test_generation_learning_evidence_source_closure.py",
+          "git_blob": "d0f9e0cfac21f64bd2d2998c99fc094eee7493d5"
+        },
+        {
+          "path": "qa/b4-no-bypass/test_kernel_authority_closed_world.py",
+          "git_blob": "b94fb21327b38015cd3bc7a973a100916397ba3d"
+        },
+        {
+          "path": "qa/b4-no-bypass/test_learning_checkpoint_source_closure.py",
+          "git_blob": "db2df6e8a3396effb6eae9a2f3f3229186d7f16f"
+        },
+        {
+          "path": "qa/b4-no-bypass/test_learning_evaluation_recovery_source_closure.py",
+          "git_blob": "8d607e733cf950165475cd80b9e3a080b13ed949"
+        },
+        {
+          "path": "qa/b4-no-bypass/test_original_evaluation_receipt_owner_source_closure.py",
+          "git_blob": "ee0f5225031f82edf413a7f4bed12f77ff479a7b"
+        },
+        {
+          "path": "qa/b4-no-bypass/test_original_late_writer_entry_source_closure.py",
+          "git_blob": "a09ec96ea064b35216e43b17dd4726d3a36afc7e"
+        },
+        {
+          "path": "qa/b4-no-bypass/test_original_learning_owner_source_closure.py",
+          "git_blob": "85d46d3db23663d4b1ebe54980ea3ffe0e60b212"
+        },
+        {
+          "path": "qa/b4-no-bypass/test_original_training_owner_source_closure.py",
+          "git_blob": "f6019ed2f5b9c2ae5924348fe7429aebaed12356"
+        },
+        {
+          "path": "qa/b4-no-bypass/test_original_training_snapshot_source_closure.py",
+          "git_blob": "b422159a6afc6524387f7442f116c0bf46d0ce70"
+        },
+        {
+          "path": "qa/b4-no-bypass/test_q24_model_proposal_source_closure.py",
+          "git_blob": "dd376c477770afae84963baf4a6f3b84b5deedf9"
+        },
+        {
+          "path": "qa/b4-no-bypass/test_q24_training_plan_source_closure.py",
+          "git_blob": "bfe51bdf1c0d1b25adc741ecf4a8bb3d7bb7ec93"
+        },
+        {
+          "path": "qa/b4-no-bypass/test_root_admin_source_closure.py",
+          "git_blob": "fdcabf49eb7aa7ac9827ce8ad5ace4ea62342982"
+        },
+        {
+          "path": "qa/b4-no-bypass/test_root_learning_bootstrap_source_closure.py",
+          "git_blob": "943e58340c85c52841d3451c2c19d0e0b7c4fec3"
+        },
+        {
+          "path": "qa/b4-no-bypass/test_root_learning_scope_source_closure.py",
+          "git_blob": "8d0de4f77b939c477376927021ded17e6e526dd8"
+        },
+        {
+          "path": "qa/b4-no-bypass/test_root_publication_existing_owner_source_closure.py",
+          "git_blob": "77d75cddf264cceaa7374dbbaa7b3f7f91654e43"
+        },
+        {
+          "path": "qa/b4-no-bypass/test_training_no_update_source_closure.py",
+          "git_blob": "83bb92cfca3d4724cb498730046bcfda3831631e"
+        },
+        {
+          "path": "qa/b4-no-bypass/test_verify_hepta_callers.py",
+          "git_blob": "a8a52d5ca4ba00d510eb24c763a32bc7c4771593"
+        }
+      ],
+      "terms": [
+        "root_observation_cache",
+        "MAX_AGE_NS",
+        "retained.try_lock",
+        "last_checked_ns"
+      ],
+      "raw_hits": [],
+      "registry_hits": [],
+      "scope": "Read-only raw literal dependency inspection; not checker or QA execution."
+    },
+    "session_protected_scope": "Original begin_update/end_update/update_revocations markers and Drop fence->abort->consumer clear ordering remain intact.",
+    "QA_changes": 0,
+    "checker_changes": 0,
+    "allowlist_changes": 0,
+    "dependency_changes": 0,
+    "workflow_changes": 0,
+    "root_roster_changes": 0,
+    "limitation": "Literal dependency inspection is not execution of QA, typed resolution or the full original closed-caller checker. Root must run the unchanged complete gates on its final fixed source."
+  },
+  "static_validation": {
+    "four_postimages_created_and_get_verified": true,
+    "eleven_operations_unique_forward_and_reverse": true,
+    "preservation": {
+      "original_accept_validation_nonwhitespace_equal": true,
+      "original_current_time_and_projection_nonwhitespace_equal": true,
+      "maximum_age_literal_unchanged": true,
+      "equality_boundary_unchanged": true,
+      "cache_original_test_prefix": true,
+      "session_original_test_prefix": true,
+      "session_only_exact_addition": true,
+      "original_projection_clock_functions": true
+    },
+    "forbidden_execution_performed": false,
+    "native_or_checker_run": false,
+    "source_ref_mutated": false
+  },
+  "superseded_candidate_material": {
+    "cache_tests": {
+      "git_blob": "e3f77996d6e7aa9ac0a84619e3f99c1e11ddd780",
+      "bytes": 10799,
+      "sha256": "5757f0bc6d99f78b282204cd068cb9e661d9a814e91b308356f92f152db5a846"
+    },
+    "exact_ops": {
+      "git_blob": "d6dfc715726ea150a1bd4fe5663cae270b096d5c",
+      "bytes": 50277,
+      "sha256": "e01a4cf9493288d65f237fa443fa44bc5d027a9546e75bc27436393169ba4e65"
+    },
+    "reason": "Only a new regression's hard-real-time assertion and its explanatory comment changed; other three source blobs and all product code remain identical."
+  },
+  "independent_review": {
+    "cache": "/root/chain_nextuse reviewing the frozen source and exact operations",
+    "session_and_regressions": "/root/hepta_audit reviewing the frozen source and exact operations",
+    "status": "Pending final fixed report pins; no execution claimed."
+  },
+  "integration": "Root alone may combine this candidate with the separate ordinary-revision test fix and the independent Initial error diagnostics. None of those artifacts assigns a passing result to the current candidate or to ordinary A->B->C / cold restart."
+}

@@ -1,0 +1,206 @@
+{
+  "schema_version": 1,
+  "kind": "independent-static-review-original-successor-feedback",
+  "reviewer": "runtime_access",
+  "status": "no-confirmed-remaining-static-blocker; not native or full-guard qualification",
+  "base": {
+    "commit": "7666bcc2c650298f2e1d47e615a25864fe792fa1",
+    "tree": "7495444ffe639ad28ac64aad5cc68e70c097c4aa"
+  },
+  "subject_manifest": {
+    "git_blob": "bcfbdf12482122cff129e7b914c5c7e5e28eb1ec",
+    "bytes": 19716,
+    "sha256": "74dda4c86d42b0653dff593323cf69fcf3171781d756495c897e161482386db5"
+  },
+  "subject_exact_ops": {
+    "git_blob": "e36a44dbb8b97a5ce2bcf6594190acb425c956a5",
+    "bytes": 38566,
+    "sha256": "d3759f9c6fce9b08940ade123b478b57fbe36a9b41a526a07faa61ee7e6f492d"
+  },
+  "reviewed_final_postimages": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_execution.rs",
+      "git_blob": "3263eb485459626f3cca29e5d90d58032121ae16",
+      "bytes": 8224,
+      "sha256": "91f12d9f1dbd0bcd478713768df227aef2e73bdcc1cad41c48b3b35d18603e9e"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor.rs",
+      "git_blob": "b16d0fd8d9ec24ab3603deae1e75bdaf5fa4241e",
+      "bytes": 8190,
+      "sha256": "77e815730b1db392738095cfb18b6e6c9d68afdfe3224652c1e133dcbe60f066"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_state.rs",
+      "git_blob": "d89d8ca0592089593c6ce6f870639e9b454435b6",
+      "bytes": 10615,
+      "sha256": "330c38dce7b9cc232f54308f400c923e8c6b923d0916a1b63b49dcca418d7f6f"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_worker.rs",
+      "git_blob": "00b0e2235e00c67086d7a9618223766ef1ff1cc7",
+      "bytes": 8420,
+      "sha256": "a4b394bc140cd1cb2020b03bafec387375823964bb0de8ab14e5c478ccb00d68"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_invocation.rs",
+      "git_blob": "235e6b1ce07063f854b54c202ee39c7cb54f514a",
+      "bytes": 2659,
+      "sha256": "1e2a2b6df6f534914a2a233f4106b4dbf78ec78776b0556cece935de4a4c061e"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "git_blob": "ed0c326180e2c32f59e8198cb230312015022b70",
+      "bytes": 63786,
+      "sha256": "c24981b60e7ec928e75e9634929d5829327bb9251f8f7eab72b2e228e67a2600"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_task_test_support.rs",
+      "git_blob": "dd802810439ed1e72f77f6d2126a0da48fd499b8",
+      "bytes": 19349,
+      "sha256": "b7f18e610a20a928b0c4c135888b2307a777330b5d4261be4086b928d216b709"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_task_ledger_test_support.rs",
+      "git_blob": "870305af6dddfc322271a2449d3d5e5c3b7d1488",
+      "bytes": 16164,
+      "sha256": "41ba3ce24150c842ff528a97922afdf0cb48de1467c8ad1b53b10e2bad84261a"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_task_ledger_tests.rs",
+      "git_blob": "c5b9267eaa8144e82a21f2059b1a249b7884a38d",
+      "bytes": 15650,
+      "sha256": "4e1a285e565fded976a2079d6aac30eb2023a7ff0df4297707114c2fe3eef76b"
+    },
+    {
+      "path": "CALLERS.toml",
+      "git_blob": "5c424d0b9dbc460725d13361972fc5628941f080",
+      "bytes": 652225,
+      "sha256": "6b1199a471db4e24bab17564150bfd12f8a6f5806de60110831c1e9fc4e3375f"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_feedback_tests.rs",
+      "git_blob": "959b773736e88a272bd61e23b420f8832c928358",
+      "bytes": 4348,
+      "sha256": "651a38f5ecd10025c43e7f7345394243566b4b1a8eba8ce9f37755c89db1f976"
+    }
+  ],
+  "verification": {
+    "fixed_base_files_fetched_independently": 10,
+    "original_base_file_hashes_recomputed": true,
+    "exact_ops": 39,
+    "forward_unique_and_reverse_byte_equal": true,
+    "all_11_postimages_get_readback_hash_and_length_verified": true,
+    "all_subject_manifest_postimage_values_equal_independent_results": true,
+    "original_contract_sources": [
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_task_ledger.rs",
+        "git_blob": "a05394ff45a40024c1321368bedf3f1516818202",
+        "bytes": 22039,
+        "sha256": "2b3b95924fc0bdfb270fa1bed98e517bfe31105ca9f05f3805b7a92aed8f4a7b"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_task_ledger_binding.rs",
+        "git_blob": "cc8241c10d4edec4171f468d372b362aea0ca1c1",
+        "bytes": 10926,
+        "sha256": "0d574498420f9cb2c812707a9b685e3410385507b4af09cb96d166bc435aa43b"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_task_learning_ready.rs",
+        "git_blob": "823485ded1966dd9f8a65d3b5197e9889c7eca71",
+        "bytes": 6874,
+        "sha256": "4836c7bb54730c576d2d54a1635455a3a411b4a2637201754acb4707ce71d981"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_task_learning.rs",
+        "git_blob": "6003965bbaab608b98719672b995eb5c33f8da70",
+        "bytes": 8643,
+        "sha256": "480f02056c3ec82cfa961a2100ca941161de9aaa51d56350e4a32db792b039dd"
+      }
+    ],
+    "registry": {
+      "old_boundaries": 492,
+      "new_boundaries": 493,
+      "deleted": [],
+      "added": [
+        "q24_successor_original_feedback_ledger"
+      ],
+      "old_protected": 358,
+      "new_protected": 358
+    },
+    "required_id_inventory": {
+      "count": 493,
+      "new_getter_required": true
+    },
+    "native": false,
+    "cargo": false,
+    "formatter": false,
+    "full_typed_checker": false,
+    "process_execution": false,
+    "source_or_ref_mutation": false
+  },
+  "findings": [
+    {
+      "id": "actual-input-custody",
+      "verdict": "preserved",
+      "detail": "Feedback is an explicit NonLearning | OriginalLedger(existing OriginalCellQ24TaskLedgerInputsV1) value consumed by the existing execution input. No Default/fallback or new issuer/role/key constructor is added. Caller-supplied inputs remain subject to the original Ledger verifier, actual Generator key binding and original signing/journal windows."
+    },
+    {
+      "id": "same-real-channel",
+      "verdict": "preserved",
+      "detail": "open_original_successor_channel first constructs the actual original Q24 channel. The existing producer.open_original receives Arc::clone(runtime.source), runtime.cell.clone(), task.clone() and identity.clone() from that exact channel/worker result. Installed result and concrete invocation retain clones of the same producer. No caller receipt, selected digest, reconstructed source or alternate identity stands in for these capabilities."
+    },
+    {
+      "id": "closed-invocation",
+      "verdict": "preserved",
+      "detail": "OriginalQ24SuccessorInvocationV1 is crate-private with private source/ledger fields. The slot stores only this concrete type. Build and publish_result delegate to the original durable source; observe_learning delegates to the existing producer when explicitly present, otherwise the previous source behavior. The getter exports only the already held Arc<OriginalCellQ24TaskLedgerProducerV1>, without mutable fields, keys or a serialization constructor."
+    },
+    {
+      "id": "original-learning-qualification",
+      "verdict": "preserved",
+      "detail": "Personally re-read original open_original, binding::configuration, observe_original_learning and Ready::require_task. Exact Generator/trust binding, original Task/RunStart/history/full identity, current source/Cell, once signature journal, witnessed Ledger cut and independent Outcome remain required. Task ACK/source publication alone cannot create Ready or a business label."
+    },
+    {
+      "id": "publication-and-cancel",
+      "verdict": "preserved",
+      "detail": "Worker diff only changes the concrete invocation return type. Actual Root CURRENT/FinalUse publication, original context/admission pre/post gates, task construction, installation work accounting and one-shot slot close remain in their existing order. A producer/channel failure after publication still flows through prepared_uncertain and permanent slot closure; no retry, rollback or NonLearning downgrade is introduced."
+    },
+    {
+      "id": "post-close-readiness",
+      "verdict": "review-finding-resolved",
+      "historical_draft": "d0643e8d7669c245fc0cf4b383175593a4d0bc69",
+      "final_invocation": "235e6b1ce07063f854b54c202ee39c7cb54f514a",
+      "detail": "The initial draft retained only the pre-observation slot check although the new producer can return positive Ready. Final source stores the result, rechecks the existing slot.require_open before return, and returns Pending(OwnerUnavailable) on observed close. This suppresses the returned readiness; it does not claim to cancel, roll back or atomically transact original durable Ledger work, and a close racing after the last check remains governed by the existing downstream owner checks."
+    },
+    {
+      "id": "business-outcome-and-next-root-scope",
+      "verdict": "still-external-or-unimplemented",
+      "detail": "The original independent Observer Outcome remains external. The existing Source origin/outbox gate still refuses to invent enrollment from a successful feedback observation. New Root Learning/Factory/source registration and old-A cross-incarnation custody are not supplied by this slice. Ordinary complete/adopt/NoUpdate-or-rollback/coldrestart acceptance is unchanged at zero."
+    },
+    {
+      "id": "registry",
+      "verdict": "bounded-source-delta",
+      "detail": "Independent text inventory found all original 492 boundary IDs retained, one actual getter boundary added (external product callers empty), 493 required IDs, and 358 protected rows unchanged in count. Existing open/observe boundaries add only their new actual execution caller. Original forbidden/phase guards are retained or strengthened; final invocation postcheck is pinned. No checker or ignored path file is changed. This is not an execution of the original full typed scanner."
+    },
+    {
+      "id": "component-tests",
+      "verdict": "source-reviewed-not-executed",
+      "detail": "Two tests are added. The positive component uses explicitly fixture-provided publication/roles and the real new channel/invocation plus ordinary ObjectiveStart path, checks Pending before independent Outcome, exact support rejection without bytes changing, witnessed Complete/HQ2 preparation, idempotent Outcome bytes, no invented outbox, and withdrawal rejection. The negative component supplies a non-enrolled Generator key and requires the original binding rejection rather than fallback. These do not exercise an actual Root Pending-slot success, new ordinary business loop or OS cold restart."
+    }
+  ],
+  "limitations": [
+    "No compiler, formatter, native test, Root parent, original full typed guard or QA was executed in this review.",
+    "The original source-to-Pending successor reachability/cross-incarnation gaps remain separate; a feedback path for an already legitimate installed C does not solve them.",
+    "Actual external Generator/Ledger/Observer/Evaluator capabilities and next Root admission remain necessary. Test roles and preexisting published Task are explicitly component fixtures.",
+    "Integration must merge the eight exact CALLERS operations with other slices, update actual required expected-caller tuples and exact registry allowlist digest as appropriate, and qualify the final common source.",
+    "No previous native or component result is inherited."
+  ],
+  "acceptance": {
+    "new_executed_tests": 0,
+    "root_parent_count_changed": false,
+    "ordinary_complete": 0,
+    "positive_adoption": 0,
+    "ordinary_no_update_or_rollback": 0,
+    "ordinary_cold_restart": 0
+  }
+}

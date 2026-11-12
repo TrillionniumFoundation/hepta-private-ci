@@ -1,0 +1,49 @@
+{
+  "schema": "hepta-v32-derived-result-precision-correction-v1",
+  "superseded_v1": {
+    "filename": "RESULT.json",
+    "git_blob": "5a9abca495743069217509ebd40efe4755742f29",
+    "bytes": 34894,
+    "sha256": "ab0d7da2290c8afac55b700c4a49c5c08534d5d44ff5e93466ee4e24cdb833b0"
+  },
+  "current_v2": {
+    "filename": "RESULT.json",
+    "git_blob": "84d2037f63bc1f85351d9408d854742a9c1b5d1b",
+    "bytes": 32828,
+    "sha256": "b24edd5af8cd4f9fd77f0903ad76a3299387c348e2feda4ef23c3d3f59deb9d6"
+  },
+  "correction": {
+    "previous_derived_result": {
+      "filename": "RESULT.json",
+      "git_blob": "5a9abca495743069217509ebd40efe4755742f29",
+      "bytes": 34894,
+      "sha256": "ab0d7da2290c8afac55b700c4a49c5c08534d5d44ff5e93466ee4e24cdb833b0"
+    },
+    "reason": "The v1 derived summary embedded two nanosecond integers after JSON.parse in V8, which rounded values beyond Number.MAX_SAFE_INTEGER. The native summary files were always retained as original complete UTF-8 bytes and were not modified.",
+    "fields": [
+      {
+        "field": "junit_collection.ordinary.summary.junit_mtime_ns",
+        "previous_derived_json_decimal": "1794467909046914000",
+        "exact_original_decimal": "1794467909046914025",
+        "original_summary_blob": "1616d52ed55fc42765be9d1eb32f7be686f04b02"
+      },
+      {
+        "field": "junit_collection.root.summary.junit_mtime_ns",
+        "previous_derived_json_decimal": "1794468147708128800",
+        "exact_original_decimal": "1794468147708128878",
+        "original_summary_blob": "7919c6b683512bce0c306da02fdf02fd88deecd9"
+      }
+    ],
+    "representation": "v2 references each original summary by exact Git/byte/SHA identity and quotes its original decimal nanoseconds as mtime_ns_decimal. It does not reserialize an unrepresentable native integer as a JavaScript number.",
+    "qualification_outcomes_unchanged": true,
+    "native_original_artifacts_changed": false
+  },
+  "verified": {
+    "original_summary_complete_bytes_retained": true,
+    "raw_decimal_extraction": true,
+    "v2_contains_no_unsafe_integer_numbers": true,
+    "native_result_and_assertions_unchanged": true,
+    "source_or_test_not_changed": true
+  },
+  "retention": "Keep v1 under an explicit superseded projection path; only v2 is the current Root-derived assessment. Native records remain the original files."
+}

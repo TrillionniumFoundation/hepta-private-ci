@@ -333,3 +333,9 @@ fn learning_handoff_alias_refuses_before_taking_original_rights() -> anyhow::Res
     }
     Ok(())
 }
+
+#[path = "production_launcher_publication_inputs_tests.rs"]
+mod publication;
+
+#[path = "production_launcher_initial_inputs_tests.rs"]
+mod initial;

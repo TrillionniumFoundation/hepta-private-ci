@@ -1,0 +1,82 @@
+{
+  "schema": "hepta.ordinary-owner.root-diagnostic.v1",
+  "status": "failed-source-bound-diagnostic-not-full-qualification",
+  "source": "7666bcc2c650298f2e1d47e615a25864fe792fa1",
+  "tree": "7495444ffe639ad28ac64aad5cc68e70c097c4aa",
+  "request_git_blob": "4f067827d99cc37cfa38769e45d9245fb55fc85d",
+  "harness_git_blob": "d109e6d532f1cce69d9afd03483b374d19092ed9",
+  "pty": {
+    "git_blob": "a6a592352ec2803a843b5fc5b1d960ea3f6cfa22",
+    "bytes": 42281,
+    "sha256": "bbae02497741af7b91fcc8a2069c9406386aadb26dbfa32377a80a2decdf8754"
+  },
+  "started_at": "2026-11-12T03:25:11.431068+00:00",
+  "finished_at": "2026-11-12T03:25:46.810304+00:00",
+  "elapsed_seconds": 35.378397912019864,
+  "native": {
+    "uid": 0,
+    "euid": 0,
+    "gid": 0,
+    "pid": 2462323,
+    "selected": 17,
+    "passed": 15,
+    "failed": 2,
+    "skipped": 0,
+    "retries": 0,
+    "timeout": false,
+    "truncated": false,
+    "command_exit_code": 100
+  },
+  "source_before": {
+    "commit": "7666bcc2c650298f2e1d47e615a25864fe792fa1",
+    "dirty": false,
+    "parents": [
+      "2acdb420ea3074d0ba54774d43f565827bf40fec"
+    ],
+    "tree": "7495444ffe639ad28ac64aad5cc68e70c097c4aa"
+  },
+  "source_after": {
+    "commit": "7666bcc2c650298f2e1d47e615a25864fe792fa1",
+    "dirty": false,
+    "parents": [
+      "2acdb420ea3074d0ba54774d43f565827bf40fec"
+    ],
+    "tree": "7495444ffe639ad28ac64aad5cc68e70c097c4aa"
+  },
+  "failed_tests": [
+    "neuron_generation_current::initial_root_tests::root_initial_publication_uses_original_consumer_and_readonly_recovery",
+    "neuron_generation_current::publication_root_tests::root_broker_late_enrolls_publishes_and_recovers_original_current"
+  ],
+  "findings": [
+    {
+      "path": "Initial Publish",
+      "original_callback_ns": 392741851,
+      "subsequent_callback_ns": 226346940,
+      "observation_read_lease_wait_and_read_ns": 290931910,
+      "original_current_age_ns": 540675410,
+      "time_regressed": false
+    },
+    {
+      "path": "Publication Publish",
+      "original_callback_ns": 390360248,
+      "observation_read_lease_wait_and_read_ns": 383345901,
+      "original_current_age_ns": 507945551,
+      "time_regressed": false
+    }
+  ],
+  "interpretation": "Original long guarded callbacks serialize observation through the same lease State Mutex. Timing establishes outer callback duration and blocking read span, not which internal Artifact/crypto/storage substep is expensive. The subsequent client refresh was in flight when the original current-age refusal fenced and dropped the session.",
+  "guardrails": {
+    "max_age_ns": 500000000,
+    "age_origin": "original request_started_ns",
+    "revival": false,
+    "manual_refresh": false,
+    "no_reclassification_as_noupdate": true
+  },
+  "cleanup_verification": "Full original progress/archive review still pending; printed cleanup stage names alone are not success evidence.",
+  "ordinary": {
+    "complete": 0,
+    "positive_adoption": 0,
+    "no_update_or_rollback": 0
+  },
+  "result_inheritance": false
+}

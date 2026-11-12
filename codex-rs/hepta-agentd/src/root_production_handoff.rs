@@ -16,6 +16,18 @@ use std::time::Duration;
 use crate::AgentdError;
 use crate::HOST_AUTHORITY_BOOTSTRAP_BOUND;
 
+#[path = "root_generation_initial_handoff.rs"]
+mod generation_initial;
+pub use generation_initial::RootGenerationInitialHandoffV1;
+pub use generation_initial::receive_root_generation_initial_handoff;
+pub use generation_initial::send_root_generation_initial_handoff;
+
+#[path = "root_generation_publication_handoff.rs"]
+mod generation_publication;
+pub use generation_publication::RootGenerationPublicationHandoffV1;
+pub use generation_publication::receive_root_generation_publication_handoff;
+pub use generation_publication::send_root_generation_publication_handoff;
+
 const FRAME: &[u8] = b"HEPTA_ROOT_PRODUCTION_INPUTS_V1";
 
 #[path = "root_production_writer_handoff.rs"]
@@ -29,6 +41,12 @@ mod learning;
 pub use learning::RootLearningHandoffV1;
 pub use learning::receive_root_learning_handoff;
 pub use learning::send_root_learning_handoff;
+
+#[path = "root_production_q24_model_handoff.rs"]
+mod q24_model;
+pub use q24_model::RootQ24ModelFactoryHandoffV1;
+pub use q24_model::receive_root_q24_model_factory_handoff;
+pub use q24_model::send_root_q24_model_factory_handoff;
 
 /// Consume exactly one inherited unnamed pair. The retained creator must be
 /// actual UID0, and the second transferred descriptor must pin that same Root.

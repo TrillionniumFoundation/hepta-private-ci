@@ -1,0 +1,100 @@
+{
+  "schema": "hepta-authority-observation-expectation-root-review-v1",
+  "source": {
+    "commit": "5a2e9371814e9ee0ec55781a81844ef03434874b",
+    "tree": "22d55a327460ab4a835387a4a61332dbece6866d"
+  },
+  "status": "accepted-for-later-fixed-candidate-static-only",
+  "delivery": {
+    "postimage": {
+      "path": "codex-rs/hepta-contracts/src/authority_lease_observation_tests.rs",
+      "git_blob": "289fe030947ad2adc72d4fb5b8e88a4b466b7d4e",
+      "bytes": 14195,
+      "sha256": "00a3e413e5d194e9209caca11515e3392a35811062f41f952c471b705977e89b"
+    },
+    "operations": "9da1ba8fc5078d12e496b7de7b7315a6e655d311",
+    "manifest": "58b31b40d3e0e437f5931b82695bd05f4f950e2a",
+    "independent_review": "2227eca24ad152e66f9eaaf999d1fdf6113c1af0"
+  },
+  "root_checks": {
+    "exact_all_pins": true,
+    "unique_forward_reverse": true,
+    "outside_one_existing_function_unchanged": true,
+    "seven_original_test_names_unchanged": true,
+    "new_tests": 0,
+    "baseline_compares": [
+      {
+        "marker": "pub fn verify_use(",
+        "byte_identical": true,
+        "bytes": 803,
+        "sha256": "67ec4736650e163f8bcdd3bddd603d0ceecc1d5cc3ef19b07fdb2bf16e543e4a",
+        "baseline_line": 639,
+        "current_line": 648,
+        "root_independently_checked": true
+      },
+      {
+        "marker": "fn validate_live(",
+        "byte_identical": true,
+        "bytes": 1112,
+        "sha256": "16213fcadf7b7d0a0012aca1c0b2924c4efd262e10072a072bbd2c01ec182f72",
+        "baseline_line": 828,
+        "current_line": 829,
+        "root_independently_checked": true
+      },
+      {
+        "marker": "fn receipt(",
+        "byte_identical": true,
+        "bytes": 468,
+        "sha256": "d0820981ae2bbf610e2eb9755d7ee2132ba33f9c4d0baa02675eeedbfff16f1b",
+        "baseline_line": 808,
+        "current_line": 809,
+        "root_independently_checked": true
+      },
+      {
+        "marker": "pub struct RevocationReceipt {",
+        "byte_identical": true,
+        "bytes": 250,
+        "sha256": "6451c34e3d0bed7eee12955b25795027dedbda901448db22bd02a21a5b7a048c",
+        "baseline_line": 153,
+        "current_line": 158,
+        "root_independently_checked": true
+      },
+      {
+        "marker": "fn lease_is_durable_verified_and_cas_revoked()",
+        "byte_identical": true,
+        "bytes": 979,
+        "sha256": "0f705050bd6c68f4ee9663e951c2555dec62f6c8cb1ad560c0ef5353cb7b8636",
+        "baseline_line": 1285,
+        "current_line": 1286,
+        "root_independently_checked": true
+      }
+    ],
+    "review_fully_read": true
+  },
+  "reason": "Original verify_use reads current persisted lease revision before checking tombstone. After actual revoke advances revision, the stale original revision must yield exact RevisionMismatch; the real returned receipt revision must yield exact Revoked. Retained original observation still requires exact Revoked. Product ordering is preserved.",
+  "original_failure": {
+    "proof": "20d2fda7a8c87d7dcadb22503e5a7429aade73cd",
+    "native_actual_error_variant_printed": false,
+    "classification_basis": "fixed-source reasoning, not an error variant observed in the failed matches assertion",
+    "ordinary": {
+      "executed": 1944,
+      "passed": 1943,
+      "failed": 1
+    },
+    "root": {
+      "executed": 17,
+      "passed": 15,
+      "failed": 2
+    }
+  },
+  "limits": {
+    "no_compile_or_native_run": true,
+    "no_product_or_checker_change_in_this_delta": true,
+    "no_ref_change": true,
+    "no_inherited_PASS": true,
+    "ordinary_complete_chains": 0,
+    "positive_adoption_chains": 0,
+    "ordinary_no_update_rollback_chains": 0
+  },
+  "decision": "Integrate only with reviewed later candidate changes; run unchanged full qualification on that exact source and retain the failed V32 originals."
+}

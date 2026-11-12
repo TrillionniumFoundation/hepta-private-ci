@@ -1,0 +1,159 @@
+{
+  "schema_version": 1,
+  "review": "Independent review of four actual native rustfmt postimages; runtime_access",
+  "baseline": {
+    "commit": "2acdb420ea3074d0ba54774d43f565827bf40fec",
+    "tree": "3df95630b251283faf3ff03e64ddbaae4f6134cb"
+  },
+  "original_records": {
+    "postimages": {
+      "git_blob": "c8845629d1321bb68a5b34544c86d2fd30417bca",
+      "bytes": 193634,
+      "sha256": "d87394cbdd12ea5413d8643839b0aee080652dad086a75ec3410a98197cb6bf9"
+    },
+    "patch": {
+      "git_blob": "bfe52e598ecff73026aca7ad37fce9d975016273",
+      "bytes": 24638,
+      "sha256": "ecb0ccd5db20e60de920b4230b201668a103281621fa591598507e6d6a4884fd"
+    },
+    "execution": {
+      "git_blob": "78e4dcf713b1241b180c20b1eefca7a514271dd6",
+      "bytes": 1522,
+      "sha256": "e468898ac6534985b4c47f61b80cb12e595f8819b18de249d23700c3f991b7f7"
+    }
+  },
+  "observed_execution": {
+    "command": [
+      "just",
+      "fmt",
+      "--base",
+      "5edc50004a25cc585851f4aa6009ccc0d8f87705"
+    ],
+    "command_exit_code": 0,
+    "executor_exit_code": 1,
+    "status": "failed",
+    "error": "source identity or bytes changed during execution",
+    "source_before_clean": true,
+    "source_after_dirty": true,
+    "observed_passed_tests": 0,
+    "observed_failed_tests": 0,
+    "timed_out": false,
+    "output_limit_exceeded": false,
+    "interpretation": "The original executor correctly stopped on formatting drift. This is not behavioral qualification or a test pass."
+  },
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_fixture_tests.rs",
+      "preimage": {
+        "git_blob": "66542ac41091faefba07f70dfb96535b064fd413",
+        "bytes": 24635,
+        "sha256": "a8f7a22744207eb8daaf4c4ddde592595d75d3122a3051d02c1dfb36f652d142"
+      },
+      "postimage": {
+        "git_blob": "fd70cfc012684f66b6a14660d06a738c9904b5c9",
+        "bytes": 24933,
+        "sha256": "90dcc5f3e5c6284bec14f1e1f5f1229a4d1a5d10daf5aa4fc095327f70f123ca"
+      },
+      "hunks": 8,
+      "patch_applies_exactly": true,
+      "normalized_lexemes_including_literals_and_comments_equal": true,
+      "import_order_change": "anyhow::Context moved after crate imports",
+      "added_single_format_expression_closure_blocks": 6,
+      "original_assertion_tokens": 9,
+      "timing_guard_count": 2
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_root_fixture_tests.rs",
+      "preimage": {
+        "git_blob": "54c1235b199b59e1bd66a7f398c2c786959f792c",
+        "bytes": 32800,
+        "sha256": "7e45bca121c9e2fbed6b84931e3edb38de7caab81f21393993dd02a83c4dc860"
+      },
+      "postimage": {
+        "git_blob": "8c85c70340ce1eb95e327869d40a22a4aacb8ce8",
+        "bytes": 32978,
+        "sha256": "ceb8dfb6e9374f644961c138b2d20cadc4ba1cd41ae5d46cdb880a27b5c37691"
+      },
+      "hunks": 5,
+      "patch_applies_exactly": true,
+      "normalized_lexemes_including_literals_and_comments_equal": true,
+      "import_order_change": "anyhow::Context moved after crate imports",
+      "added_single_format_expression_closure_blocks": 1,
+      "original_assertion_tokens": 9,
+      "timing_guard_count": 2
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_current_initial.rs",
+      "preimage": {
+        "git_blob": "01ea7514ea9b743dcd7b9729cf1c8832a33ce28c",
+        "bytes": 14342,
+        "sha256": "daa4fc02cc7e317ed35be72368c8dff84dc68c9fa47011f9670e64758e342b7e"
+      },
+      "postimage": {
+        "git_blob": "a3967eabc57646dffde58ae6ff6c06a1156d81fa",
+        "bytes": 14403,
+        "sha256": "7987a54f7cfa8735dd7d5db470e67f63d560a99cf258442d0550940ef71b4a8f"
+      },
+      "hunks": 4,
+      "patch_applies_exactly": true,
+      "normalized_lexemes_including_literals_and_comments_equal": true,
+      "import_order_change": "none",
+      "added_single_format_expression_closure_blocks": 0,
+      "original_assertion_tokens": 0,
+      "timing_guard_count": 0
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial.rs",
+      "preimage": {
+        "git_blob": "a01cf875af9ff78945e13d73d8c5e519aa9168dc",
+        "bytes": 9553,
+        "sha256": "7fc6523ff1fabe0815a3d1a01221ba1be5a4473a9d008eaee30fa90b1bf0d1d5"
+      },
+      "postimage": {
+        "git_blob": "cdce3889936f83e06d733124b1a840d2a265c4cf",
+        "bytes": 9524,
+        "sha256": "5268171d28a80c2953f03e6acd84f83f70164caa66b144eee6c2b2ad9255c676"
+      },
+      "hunks": 1,
+      "patch_applies_exactly": true,
+      "normalized_lexemes_including_literals_and_comments_equal": true,
+      "import_order_change": "none",
+      "added_single_format_expression_closure_blocks": 0,
+      "original_assertion_tokens": 0,
+      "timing_guard_count": 0
+    }
+  ],
+  "verification": {
+    "original_postimages_json_hash_verified": true,
+    "all_seven_embedded_object_hashes_verified": true,
+    "scoped_four_preimages_fetched_from_fixed_commit": true,
+    "four_patch_index_preimages_and_postimages_match": true,
+    "all_eighteen_scoped_hunks_replayed_to_exact_embedded_bytes": true,
+    "scoped_diff_read_in_full": true,
+    "normalizations": [
+      "Ignore whitespace outside literal and comment tokens.",
+      "For the two fixture files only, compare the unchanged top-level use declarations as an exact set; anyhow::Context moves after the crate imports.",
+      "Normalize only a zero-argument closure containing one format! macro with one unchanged string literal from || { format!(literal) } to || format!(literal). No statements, semicolon, control flow, nested authority call or new value is removed."
+    ],
+    "result": "With exactly these format-equivalent normalizations, each complete scoped file has identical ordered lexemes, including all remaining punctuation, literals and comments. This is not an AST/compiler claim."
+  },
+  "semantic_review": [
+    "Both fixture files retain every original assertion and negative branch. Identity, UID/GID/mode values, original configuration, timeout/lifetime values and control payloads are unchanged.",
+    "Initial ORIGINAL_INPUTS_READY, production registration, RetiredSession handshake, STABLE/CHECKED/DONE/STOP/CLOSED/PHASE_COMPLETE and original served result handling retain their original evaluation order.",
+    "Publication LEARNING_AND_ORIGINAL_INPUTS_READY, original deployment registration, same-serving-issuer revocation, original acknowledgement and subsequent control flow are unchanged.",
+    "Each fixture still has its two original outer component_phase_timing scopes and matching drops at exactly the same points relative to original calls, ? propagation and original owner lifetimes.",
+    "neuron_generation_current_initial.rs changes only expression/chain layout. Original external frontier, clock, selected artifact revalidation, prepared/published readback, claim/dispatch witness and all inspect_err bodies keep the same ordered tokens.",
+    "neuron_generation_initial.rs changes only the layout of the existing ReadyAgentdGenerationInitialV1::new(...).inspect_err(...) expression. The original live CURRENT guard, owner inputs and failure return are unchanged."
+  ],
+  "conclusion": "No confirmed semantic change or static blocker in these four actual native-format postimages. Accept the original native bytes as formatting output; do not hand-format or reinterpret this drift-stopped attempt as a completed native qualification.",
+  "scope_limits": {
+    "other_three_formatted_files_reviewed": false,
+    "callers_whitespace_alignment_owned_by": "root",
+    "source_changed_by_reviewer": false,
+    "native_or_cargo_executed_by_reviewer": false,
+    "new_tests": false,
+    "permissions_or_authority_relaxed": false,
+    "refs_changed": false,
+    "new_test_pass_claimed": false
+  }
+}

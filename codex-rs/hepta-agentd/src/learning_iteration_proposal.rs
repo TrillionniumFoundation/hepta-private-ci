@@ -40,6 +40,17 @@ pub(super) async fn submit_iteration_proposal_v1(
         return Err(LearningIterationRuntimeErrorV1::DeadlineExceeded);
     }
     let (composition_digest, disposition) = match prepared.payload {
+        #[cfg(target_os = "linux")]
+        LearningIterationProposalPayloadV1::Model(request) => {
+            let request: Box<crate::OriginalCellQ24ModelDispatchV1> = request;
+            let receipt = request.commit_for(snapshot).await?;
+            require_ready(state)?;
+            // The durable Model owner retains its original timestamp. This
+            // branch must not pass through the legacy receipt-stamping footer.
+            let mut check = coordinator.clone();
+            check.record(receipt.clone(), receipt.observed_unix_seconds)?;
+            return Ok(receipt);
+        }
         #[cfg(all(test, unix))]
         LearningIterationProposalPayloadV1::ResearchExternalTrainedArtifact(request) => {
             // This explicit research namespace has its own concrete durable

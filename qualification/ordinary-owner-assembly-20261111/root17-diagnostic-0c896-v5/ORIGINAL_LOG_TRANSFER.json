@@ -1,0 +1,213 @@
+{
+  "schema": "hepta.original-v5-root-log-immutable-operation-transfer.v1",
+  "generated_at_utc": "2026-11-12 02:41:32 UTC",
+  "status": "complete-original-file-and-native-payload-verified-and-uploaded",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "related_v7_archive": {
+    "git_blob": "ae30082e8132df598c6f1c4b2b66a788bd21ecd3",
+    "sha256": "2a42b2f2980b8c99d5d7b7b102334e2b51d95e29f1343559b67a1ccb42526d96",
+    "bytes": 1987064,
+    "transfer_receipt_git_blob": "d5fa98bf9ad3c1326933ab3a2979d25ef16ded78",
+    "original_export_git_blob": "2396211a6aa2eab5d241626305fd4ad25d136d50"
+  },
+  "retrieval_route": "Closed read_multiple_files via h_operation_start and immutable h_operation_result pages. The original file was read once by the completed operation. This is not a local tar extraction.",
+  "exact_request": {
+    "arguments": {
+      "idempotency_key": "af52-v7-original-v5-rootlog-read-v1",
+      "operation": {
+        "tool": "read_multiple_files",
+        "arguments": {
+          "host": "ai395",
+          "paths": [
+            "/home/qq/af52-learning-local-decision-20261111/ordinary-0c896bd-root17-diagnostic-v5/records/root.execution.json.e2d887ff3431418381b1611fe75d82b3.log"
+          ],
+          "max_file_bytes": 65536,
+          "max_response_bytes": 131072
+        }
+      }
+    },
+    "git_blob": "a68327e587cb8df43562d07caa19c50e84b5c02d",
+    "same_key_and_arguments_on_reconciliation": true
+  },
+  "original_start_attempts": [
+    {
+      "content": [
+        {
+          "type": "text",
+          "text": "tool call error: tool call failed for `codex_apps/h.operation_start`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out"
+        }
+      ],
+      "isError": true
+    },
+    {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\"admission_is_not_dispatch_completion\":true,\"async_state\":\"queued\",\"authenticated_chatgpt_caller_isolation\":false,\"automatic_retry\":false,\"credential_metadata_resume\":true,\"cross_session_resume\":true,\"delivery_proven\":false,\"execution_resume_after_restart\":false,\"idempotency_binding_retained\":true,\"operation_id\":\"430e46c501f2b678331af56af4095a7c0696db67b32b3fb50def4c9c08db6d51\",\"ownership_scope\":\"authenticated_private_operator_credential\",\"reused\":false,\"session_scope\":\"authenticated_private_operator_credential\",\"tool_name\":\"read_multiple_files\"}"
+        }
+      ],
+      "structuredContent": null,
+      "isError": false
+    }
+  ],
+  "operation_admission": {
+    "admission_is_not_dispatch_completion": true,
+    "async_state": "queued",
+    "authenticated_chatgpt_caller_isolation": false,
+    "automatic_retry": false,
+    "credential_metadata_resume": true,
+    "cross_session_resume": true,
+    "delivery_proven": false,
+    "execution_resume_after_restart": false,
+    "idempotency_binding_retained": true,
+    "operation_id": "430e46c501f2b678331af56af4095a7c0696db67b32b3fb50def4c9c08db6d51",
+    "ownership_scope": "authenticated_private_operator_credential",
+    "reused": false,
+    "session_scope": "authenticated_private_operator_credential",
+    "tool_name": "read_multiple_files"
+  },
+  "original_completed_status": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"async_state\":\"completed\",\"audit_metadata_available\":true,\"authenticated_chatgpt_caller_isolation\":false,\"automatic_retry\":false,\"cancellation_does_not_prove_remote_effect_stopped\":true,\"credential_metadata_resume\":true,\"cross_session_resume\":true,\"delivery_proven\":false,\"early_return_async_start_supported\":true,\"execution_resume_after_restart\":false,\"operation_id\":\"430e46c501f2b678331af56af4095a7c0696db67b32b3fb50def4c9c08db6d51\",\"original_payload_is_not_transport_delivery_proof\":true,\"owned_future_active\":false,\"ownership_scope\":\"authenticated_private_operator_credential\",\"payload_available\":true,\"remote_termination_confirmed\":false,\"result_state\":\"stored_observed\",\"retention_max_original_bytes\":1048576,\"session_scope\":\"authenticated_private_operator_credential\",\"tool_name\":\"read_multiple_files\"}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  },
+  "native_payload": {
+    "bytes": 50831,
+    "sha256": "34879a74de5674f284543d9e70bcbd64245fad9b078df7215e25dd93f588e78f",
+    "git_blob": "f5071be5b7cfa9afd5012831ea8e1e4943d62bde",
+    "upload": {
+      "content": [
+        {
+          "type": "text",
+          "text": "Action completed."
+        }
+      ],
+      "structuredContent": {
+        "sha": "f5071be5b7cfa9afd5012831ea8e1e4943d62bde"
+      },
+      "isError": false
+    },
+    "preserved_before_operation_metadata_and_transport_normalization": true,
+    "pages": [
+      {
+        "request": {
+          "operation_id": "430e46c501f2b678331af56af4095a7c0696db67b32b3fb50def4c9c08db6d51",
+          "offset": 0,
+          "limit": 16384
+        },
+        "offset": 0,
+        "next_offset": 16384,
+        "bytes": 16384,
+        "computed_page_sha256": "6634f29641464fc408f308c2a768d3ab46a9b3834a9fe76f3775ccb9c27eea04",
+        "reported_whole_result_sha256": "34879a74de5674f284543d9e70bcbd64245fad9b078df7215e25dd93f588e78f",
+        "total_bytes": 50831,
+        "immutable_snapshot": true,
+        "eof": false,
+        "payload_kind": "native_result",
+        "original_payload_format": "serialized_original_native_sdk_payload_before_operation_metadata_and_transport_normalization"
+      },
+      {
+        "request": {
+          "operation_id": "430e46c501f2b678331af56af4095a7c0696db67b32b3fb50def4c9c08db6d51",
+          "offset": 16384,
+          "limit": 16384
+        },
+        "offset": 16384,
+        "next_offset": 32768,
+        "bytes": 16384,
+        "computed_page_sha256": "b8bf116b30261ccd85a075f5314204687403a12be70f521cbe03b52c89e09925",
+        "reported_whole_result_sha256": "34879a74de5674f284543d9e70bcbd64245fad9b078df7215e25dd93f588e78f",
+        "total_bytes": 50831,
+        "immutable_snapshot": true,
+        "eof": false,
+        "payload_kind": "native_result",
+        "original_payload_format": "serialized_original_native_sdk_payload_before_operation_metadata_and_transport_normalization"
+      },
+      {
+        "request": {
+          "operation_id": "430e46c501f2b678331af56af4095a7c0696db67b32b3fb50def4c9c08db6d51",
+          "offset": 32768,
+          "limit": 16384
+        },
+        "offset": 32768,
+        "next_offset": 49152,
+        "bytes": 16384,
+        "computed_page_sha256": "0af3f0382a4bedfa5ad734068af685e746c4da72ab6c89eded284c8c8b16c306",
+        "reported_whole_result_sha256": "34879a74de5674f284543d9e70bcbd64245fad9b078df7215e25dd93f588e78f",
+        "total_bytes": 50831,
+        "immutable_snapshot": true,
+        "eof": false,
+        "payload_kind": "native_result",
+        "original_payload_format": "serialized_original_native_sdk_payload_before_operation_metadata_and_transport_normalization"
+      },
+      {
+        "request": {
+          "operation_id": "430e46c501f2b678331af56af4095a7c0696db67b32b3fb50def4c9c08db6d51",
+          "offset": 49152,
+          "limit": 16384
+        },
+        "offset": 49152,
+        "next_offset": 50831,
+        "bytes": 1679,
+        "computed_page_sha256": "4a1c838381c7001799044cfb15c833f2739460bb6c7768493d8867c857105a4c",
+        "reported_whole_result_sha256": "34879a74de5674f284543d9e70bcbd64245fad9b078df7215e25dd93f588e78f",
+        "total_bytes": 50831,
+        "immutable_snapshot": true,
+        "eof": true,
+        "payload_kind": "native_result",
+        "original_payload_format": "serialized_original_native_sdk_payload_before_operation_metadata_and_transport_normalization"
+      }
+    ],
+    "contiguous_complete_range_verified": true,
+    "reported_whole_sha256_matched": true,
+    "utf8_roundtrip_byte_exact": true
+  },
+  "original_file": {
+    "bytes": 48616,
+    "sha256": "3bee9168c4b56996a447642c9bf3e35d6b285f2b26664bd07d72f98b0717df40",
+    "git_blob": "123f52c4d63a2d82a71bbcd052c518d2fe4f3a03",
+    "version": "66306:74351959:48616:1794447644758528673:1794447645790048388",
+    "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-0c896bd-root17-diagnostic-v5/records/root.execution.json.e2d887ff3431418381b1611fe75d82b3.log",
+    "eof": true,
+    "upload": {
+      "content": [
+        {
+          "type": "text",
+          "text": "Action completed."
+        }
+      ],
+      "structuredContent": {
+        "sha": "123f52c4d63a2d82a71bbcd052c518d2fe4f3a03"
+      },
+      "isError": false
+    },
+    "expected_bytes": 48616,
+    "expected_sha256": "3bee9168c4b56996a447642c9bf3e35d6b285f2b26664bd07d72f98b0717df40",
+    "native_file_eof": true,
+    "native_batch_truncated": false,
+    "bytes_and_sha256_recomputed": true,
+    "newline_or_BOM_normalized": false,
+    "original_version_retained": true
+  },
+  "verifier_helpers_git_blob": "e8dc87e68c5241d244088fdad4a3302654b991db",
+  "scope": {
+    "new_native_execution": false,
+    "new_remote_process_started": false,
+    "new_remote_file_write": false,
+    "no_source_ref_pr_changes": true,
+    "no_push_or_credential_changes": true,
+    "independent_local_tar_parse": "not completed; local environment unavailable",
+    "original_V5_source": "0c896bdf941f4174797ff45378bc7439075c11e4",
+    "original_V5_tree": "fc41816656e41af926c868e6cc327f88e7ae1001",
+    "business_acceptance": false,
+    "ordinary_full_chain_count": 0,
+    "ordinary_positive_adoption_count": 0,
+    "ordinary_no_update_rollback_count": 0,
+    "original_failures_not_rewritten": true
+  }
+}

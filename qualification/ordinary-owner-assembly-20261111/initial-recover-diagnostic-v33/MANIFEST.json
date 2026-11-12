@@ -1,0 +1,231 @@
+{
+  "schema": "hepta.initial-recover-diagnostic-candidate.v1",
+  "candidate_status": "unexecuted diagnostic candidate; not an Initial repair",
+  "source": {
+    "head": "5a2e9371814e9ee0ec55781a81844ef03434874b",
+    "tree": "22d55a327460ab4a835387a4a61332dbece6866d",
+    "repository": "TrillionniumFoundation/hepta-private-ci"
+  },
+  "original_failed_run": {
+    "ordinary": {
+      "executed": 1944,
+      "passed": 1943,
+      "failed": 1
+    },
+    "root": {
+      "executed": 17,
+      "passed": 15,
+      "failed": 2
+    },
+    "status": "failed-native-components",
+    "source_qualification_not_inherited": true
+  },
+  "basis": {
+    "causal_review": "0fbc3c1b848b02db737fb39f88ff696cc74c30f4",
+    "raw_root_log": {
+      "bytes": 118773,
+      "sha256": "561db3f2230a74066d7c6ff8a987bcde2dcf773ab2cff5391a9a3086dd9b72b8",
+      "git_blob": "154766583a04f3a93f4d4cd12f9b4ee6bc3e8f7b",
+      "container": "8093f7e43062e7a3c09f4e728f68f7ff3dd3864f"
+    },
+    "container": "8093f7e43062e7a3c09f4e728f68f7ff3dd3864f"
+  },
+  "changes": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_child_tests.rs",
+      "preimage": {
+        "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_child_tests.rs",
+        "git_blob": "01b5cd8e5c30ded50eb3b97f67c3e94c308697a0",
+        "bytes": 14759,
+        "sha256": "bbf718ced03553b902887631d33ff8f6454ff37de84fa81e88e07c5af911eccc"
+      },
+      "postimage": {
+        "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_child_tests.rs",
+        "git_blob": "ed60831777e416b41eae33e265a090012781b618",
+        "bytes": 14877,
+        "sha256": "e6c0d02a659956ab4c2b14791af2a529826436e9429cb61401b8445217ef928b"
+      },
+      "operation_ids": [
+        "recovered-task-bundle-context"
+      ],
+      "operation_count": 1,
+      "static_checks": {
+        "forward_exact": true,
+        "reverse_exact": true,
+        "operation_unique_each_direction": true,
+        "added_cfg_test": 0,
+        "added_inspect_err": 0,
+        "unchanged_test_names": true,
+        "unchanged_assertions": true
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_current.rs",
+      "preimage": {
+        "path": "codex-rs/hepta-agentd/src/neuron_generation_current.rs",
+        "git_blob": "b73ed61ee4c611d7568276a092c1ba594ceb577f",
+        "bytes": 15239,
+        "sha256": "5a34eadea61f66573097f0a0cc6f3f5b5fdf84476e7fb2c084c5b675516c4106"
+      },
+      "postimage": {
+        "path": "codex-rs/hepta-agentd/src/neuron_generation_current.rs",
+        "git_blob": "2dab62e0e5cf57ff7d9432d833db166006b70a4b",
+        "bytes": 15464,
+        "sha256": "c1b42a47ed4e93d9b803ce7fe90bcbf6123090a047e7a19685ba034fff50f4fc"
+      },
+      "operation_ids": [
+        "current-store-load-original-error"
+      ],
+      "operation_count": 1,
+      "static_checks": {
+        "forward_exact": true,
+        "reverse_exact": true,
+        "operation_unique_each_direction": true,
+        "added_cfg_test": 1,
+        "added_inspect_err": 1,
+        "unchanged_test_names": true,
+        "unchanged_assertions": true
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_update_live.rs",
+      "preimage": {
+        "path": "codex-rs/hepta-agentd/src/neuron_generation_update_live.rs",
+        "git_blob": "3f83777f4f4a04ffc800d2be4eb5c8b4618bdc75",
+        "bytes": 7338,
+        "sha256": "094a50bcfc6c1e087ca1bc57213cad25e39fc0975cbd30ed077be8052d173cef"
+      },
+      "postimage": {
+        "path": "codex-rs/hepta-agentd/src/neuron_generation_update_live.rs",
+        "git_blob": "6072a6cf1560a0d2ddb26abe1483a4adfa2b7f1a",
+        "bytes": 8982,
+        "sha256": "64f7e0b2884b16ea2691b1d24e4ad930a931fc9afcd95e28ef550c83888a7964"
+      },
+      "operation_ids": [
+        "live-artifact-lock-original-error",
+        "live-selection-lock-original-error",
+        "live-clock-original-error",
+        "live-selection-original-error",
+        "live-retained-final-use-original-error",
+        "live-current-before-original-error",
+        "live-current-after-original-error"
+      ],
+      "operation_count": 7,
+      "static_checks": {
+        "forward_exact": true,
+        "reverse_exact": true,
+        "operation_unique_each_direction": true,
+        "added_cfg_test": 7,
+        "added_inspect_err": 7,
+        "unchanged_test_names": true,
+        "unchanged_assertions": true
+      }
+    }
+  ],
+  "exact_operations": {
+    "git_blob": "52ec4d1e9f07541dd2db836ef74f958cb82da16a",
+    "bytes": 8380,
+    "sha256": "a171bd15ca4d6cc01f928d3b25811aad23a308aa7deec42ed4b0a2e4002e5bb8"
+  },
+  "purpose": "Next fixed-source Initial execution can identify the original leaf refusal currently erased to Unavailable. Existing real CURRENT/clock/selection/FinalUse checks still run in exactly their original order and return their original errors.",
+  "diagnostic_sites": [
+    "child Recover/RetiredSession branch: existing task.require_bundle gets an anyhow Context; no new require_bundle call",
+    "CurrentOwner::check_open: original store.load Err before map_err(Unavailable)",
+    "LiveGenerationCurrent::check_live: original artifact and selected mutex Err before map_err(Unavailable)",
+    "LiveGenerationCurrent::check_live: original AuthorityClock::now_unix_ms Err before map_err(Unavailable)",
+    "LiveGenerationCurrent::check_live: original selected.revalidate Err before map_err(Unavailable)",
+    "LiveGenerationCurrent::check_live: original FinalUseAuthority::verify_retained_use Err before map_err(Unavailable)",
+    "LiveGenerationCurrent::check_current: original current-before and current-after Err before original propagation"
+  ],
+  "invariants": {
+    "product_guard_and_error_semantics": "All eight additions use std::result::Result::inspect_err, which borrows the already returned Err and returns the same Result. Printing is guarded by cfg(test); non-test closures are empty. No existing map_err, ?, guard, binding, permission, scope, nonce, deadline, TTL or request is removed/replaced.",
+    "diagnostic_return_value": "unchanged",
+    "additional_original_method_calls": 0,
+    "added_error_observers": 8,
+    "added_test_contexts": 1,
+    "added_named_helpers_or_api": 0,
+    "new_tests": 0,
+    "changed_test_names": 0,
+    "changed_assertions": 0,
+    "changed_timeouts_or_500ms_cache_rule": 0,
+    "refresh_warmup_retries_rearms": 0,
+    "changed_credentials_permissions_keys": 0,
+    "changed_refs": 0,
+    "additional_authority_file_socket_or_clock_reads": 0,
+    "test_only_stderr_diagnostic_sites_on_existing_error": 8
+  },
+  "static_verification": {
+    "exact_operations": "All nine exact text replacements matched uniquely in order; reverse operations reconstruct all three original source files byte-for-byte.",
+    "stripping_diagnostics": "Removing only the eight diagnostic inspect_err additions reconstructs both implementation files non-whitespace-token-for-token. The test Context is the unique separately reversible operation.",
+    "data": {
+      "files": [
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_child_tests.rs",
+          "diagnostic_removed_nonwhitespace_equal": null,
+          "raw_registry_path_occurrences": 0,
+          "diagnostic_count": 0
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/neuron_generation_current.rs",
+          "diagnostic_removed_nonwhitespace_equal": true,
+          "raw_registry_path_occurrences": 2,
+          "diagnostic_count": 1
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/neuron_generation_update_live.rs",
+          "diagnostic_removed_nonwhitespace_equal": true,
+          "raw_registry_path_occurrences": 0,
+          "diagnostic_count": 7
+        }
+      ],
+      "new_method_boundary_intersection": [],
+      "registry_counts": {
+        "boundaries": 504,
+        "protected_files": 366
+      },
+      "official_checker_executed": false
+    },
+    "type_check": "Not run. Error expressions use existing Debug-capable AgentdError/CellGenerationErrorV2/FinalUseError/AuthorityTrustError and standard PoisonError; closures are synchronous and borrow an already produced error.",
+    "formatting": "No rustfmt/just fix/Cargo performed in this agent. Root owns subsequent fixed-source maintenance."
+  },
+  "callers": {
+    "actual_original_registry": {
+      "path": "CALLERS.toml",
+      "git_blob": "d9478557509a1e70b7b32b02b86cfd2aa2babbd5",
+      "bytes": 669225,
+      "sha256": "f9a911c62f591f93f92833494bb83af828f31ac55d17a2b6b784c480424148fd"
+    },
+    "registry_mutation": false,
+    "bounded_check": "No protected-file row names any of the three files. neuron_generation_current.rs is present only in the existing claim_final_use and dispatch_final_use_with_witness product caller sets; those complete functions are outside the modified check_open body. No new inspect_err/with_context method matches a registered boundary symbol. All 504 boundary and 366 protected-file rows remain unchanged.",
+    "official_checker": {
+      "path": "scripts/verify_hepta_callers.py",
+      "git_blob": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+      "bytes": 31701,
+      "sha256": "8899ec2b328125b2049b808cac0eeda3f57bfc6db89348512a58777101ae6dfa"
+    },
+    "checker_executed": false,
+    "full_closed_set_pass_claim": false
+  },
+  "instructions": {
+    "root_agents": {
+      "path": "AGENTS.md",
+      "git_blob": "faa57cc0db48123e1011f1eb47692cd3bbbcfc3a",
+      "bytes": 22519,
+      "sha256": "c3f80e8386eb170b00af1e21de40d770c4941e464915687e728e2d14a7e79480"
+    },
+    "scoped_agents": "Git fixed-path reads returned 404 for codex-rs/AGENTS.md, codex-rs/hepta-agentd/AGENTS.md, and codex-rs/hepta-agentd/src/AGENTS.md.",
+    "delegated_verification": "Root instructed this agent not to execute native/formatter/checker; Root will qualify a later fixed candidate. No waiver of repository gates."
+  },
+  "limitations": [
+    "The inner Initial leaf cause remains unresolved in V32; this is diagnosis, not a claimed repair.",
+    "The additional diagnostics observe existing Err paths only. They do not make missing or stale authority usable.",
+    "This candidate does not change Publication's separate cache race; runtime_access owns that work.",
+    "No ordinary loop, independent consumer, or actual OS-restart qualification is added."
+  ],
+  "metadata_previous": {
+    "git_blob": "d7501d67925b5c47453510b277150232859173aa",
+    "bytes": 10292,
+    "sha256": "fd45ee54f199526c4bf6be91ed509efb3e4187d713a377bfd768e71920737a0e"
+  },
+  "metadata_correction": "Clarify that zero additional authority/file/socket/clock reads does not mean zero diagnostic stderr writes; all eight cfg(test) error print sites were already included in the unchanged source postimages and exact operations."
+}

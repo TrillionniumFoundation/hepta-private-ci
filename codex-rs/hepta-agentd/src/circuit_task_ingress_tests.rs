@@ -44,6 +44,9 @@ mod drain_tests;
 mod learning_source_tests;
 #[path = "circuit_q24_task_ingress_tests.rs"]
 mod q24_tests;
+#[path = "circuit_q24_successor_runtime_tests.rs"]
+mod successor_tests;
+
 #[path = "circuit_task_runtime_tests.rs"]
 mod runtime_tests;
 
@@ -435,7 +438,7 @@ async fn signed_objective_sink_ack_loss_replays_original_circuit_and_cell_result
         .objective_runtime
         .get()
         .expect("original objective owner")
-        .reconcile_learning_outbox(&f.store, state.circuit_learning_source())
+        .reconcile_learning_outbox(&f.store, state.circuit_learning_source(), &state)
         .await?;
     let pending = f.store.pending_circuit_learning(/*limit*/ 1).await.unwrap();
     assert_eq!(pending.len(), 1);
@@ -579,7 +582,7 @@ async fn historical_completion_repair_does_not_renew_revoked_objective_authority
         .objective_runtime
         .get()
         .expect("objective owner")
-        .reconcile_learning_outbox(&f.store, state.circuit_learning_source())
+        .reconcile_learning_outbox(&f.store, state.circuit_learning_source(), &state)
         .await?;
     let pending = f.store.pending_circuit_learning(/*limit*/ 1).await.unwrap();
     assert_eq!(pending.len(), 1);
@@ -641,7 +644,7 @@ async fn ordinary_completion_without_matching_learning_source_does_not_enqueue()
             .objective_runtime
             .get()
             .expect("original objective owner")
-            .reconcile_learning_outbox(&f.store, state.circuit_learning_source())
+            .reconcile_learning_outbox(&f.store, state.circuit_learning_source(), &state)
             .await?;
         assert!(
             f.store

@@ -1,0 +1,131 @@
+{
+  "schema": "hepta.exact-source-operations.v1",
+  "source_head": "5a2e9371814e9ee0ec55781a81844ef03434874b",
+  "source_tree": "22d55a327460ab4a835387a4a61332dbece6866d",
+  "scope": "Initial diagnostic candidate only; no root cause repair or execution claim",
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_child_tests.rs",
+      "pre": {
+        "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_child_tests.rs",
+        "git_blob": "01b5cd8e5c30ded50eb3b97f67c3e94c308697a0",
+        "bytes": 14759,
+        "sha256": "bbf718ced03553b902887631d33ff8f6454ff37de84fa81e88e07c5af911eccc"
+      },
+      "post": {
+        "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_child_tests.rs",
+        "git_blob": "ed60831777e416b41eae33e265a090012781b618",
+        "bytes": 14877,
+        "sha256": "e6c0d02a659956ab4c2b14791af2a529826436e9429cb61401b8445217ef928b"
+      },
+      "operations": [
+        {
+          "id": "recovered-task-bundle-context",
+          "before": "                drop(timing);\n                task.require_bundle(&bundle)?;\n                assert_eq!(production.device.capacity()?.used_nonces, 1);\n",
+          "after": "                drop(timing);\n                task.require_bundle(&bundle)\n                    .with_context(|| format!(\"initial child {phase:?}: checking recovered published Feature bundle\"))?;\n                assert_eq!(production.device.capacity()?.used_nonces, 1);\n"
+        }
+      ],
+      "static_checks": {
+        "forward_exact": true,
+        "reverse_exact": true,
+        "operation_unique_each_direction": true,
+        "added_cfg_test": 0,
+        "added_inspect_err": 0,
+        "unchanged_test_names": true,
+        "unchanged_assertions": true
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_current.rs",
+      "pre": {
+        "path": "codex-rs/hepta-agentd/src/neuron_generation_current.rs",
+        "git_blob": "b73ed61ee4c611d7568276a092c1ba594ceb577f",
+        "bytes": 15239,
+        "sha256": "5a34eadea61f66573097f0a0cc6f3f5b5fdf84476e7fb2c084c5b675516c4106"
+      },
+      "post": {
+        "path": "codex-rs/hepta-agentd/src/neuron_generation_current.rs",
+        "git_blob": "2dab62e0e5cf57ff7d9432d833db166006b70a4b",
+        "bytes": 15464,
+        "sha256": "c1b42a47ed4e93d9b803ce7fe90bcbf6123090a047e7a19685ba034fff50f4fc"
+      },
+      "operations": [
+        {
+          "id": "current-store-load-original-error",
+          "before": "            .store\n            .load()\n            .map_err(|_| CellGenerationErrorV2::Unavailable)?;",
+          "after": "            .store\n            .load()\n            .inspect_err(|_error| {\n                #[cfg(test)]\n                eprintln!(\n                    \"ROOT_GENERATION_CURRENT_DIAGNOSTIC stage=current-store-load error={_error:?}\"\n                );\n            })\n            .map_err(|_| CellGenerationErrorV2::Unavailable)?;"
+        }
+      ],
+      "static_checks": {
+        "forward_exact": true,
+        "reverse_exact": true,
+        "operation_unique_each_direction": true,
+        "added_cfg_test": 1,
+        "added_inspect_err": 1,
+        "unchanged_test_names": true,
+        "unchanged_assertions": true
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_update_live.rs",
+      "pre": {
+        "path": "codex-rs/hepta-agentd/src/neuron_generation_update_live.rs",
+        "git_blob": "3f83777f4f4a04ffc800d2be4eb5c8b4618bdc75",
+        "bytes": 7338,
+        "sha256": "094a50bcfc6c1e087ca1bc57213cad25e39fc0975cbd30ed077be8052d173cef"
+      },
+      "post": {
+        "path": "codex-rs/hepta-agentd/src/neuron_generation_update_live.rs",
+        "git_blob": "6072a6cf1560a0d2ddb26abe1483a4adfa2b7f1a",
+        "bytes": 8982,
+        "sha256": "64f7e0b2884b16ea2691b1d24e4ad930a931fc9afcd95e28ef550c83888a7964"
+      },
+      "operations": [
+        {
+          "id": "live-artifact-lock-original-error",
+          "before": "            .artifacts\n            .lock()\n            .map_err(|_| CellGenerationErrorV2::Unavailable)?;",
+          "after": "            .artifacts\n            .lock()\n            .inspect_err(|_error| {\n                #[cfg(test)]\n                eprintln!(\n                    \"ROOT_GENERATION_CURRENT_DIAGNOSTIC stage=live-artifact-lock error={_error:?}\"\n                );\n            })\n            .map_err(|_| CellGenerationErrorV2::Unavailable)?;"
+        },
+        {
+          "id": "live-selection-lock-original-error",
+          "before": "            .selected\n            .lock()\n            .map_err(|_| CellGenerationErrorV2::Unavailable)?;",
+          "after": "            .selected\n            .lock()\n            .inspect_err(|_error| {\n                #[cfg(test)]\n                eprintln!(\n                    \"ROOT_GENERATION_CURRENT_DIAGNOSTIC stage=live-selection-lock error={_error:?}\"\n                );\n            })\n            .map_err(|_| CellGenerationErrorV2::Unavailable)?;"
+        },
+        {
+          "id": "live-clock-original-error",
+          "before": "                    .now_unix_ms()\n                    .map_err(|_| CellGenerationErrorV2::Unavailable)?,",
+          "after": "                    .now_unix_ms()\n                    .inspect_err(|_error| {\n                        #[cfg(test)]\n                        eprintln!(\n                            \"ROOT_GENERATION_CURRENT_DIAGNOSTIC stage=live-clock error={_error:?}\"\n                        );\n                    })\n                    .map_err(|_| CellGenerationErrorV2::Unavailable)?,"
+        },
+        {
+          "id": "live-selection-original-error",
+          "before": "                    .map_err(|_| CellGenerationErrorV2::Unavailable)?,\n            )\n            .map_err(|_| CellGenerationErrorV2::Unavailable)?;",
+          "after": "                    .map_err(|_| CellGenerationErrorV2::Unavailable)?,\n            )\n            .inspect_err(|_error| {\n                #[cfg(test)]\n                eprintln!(\n                    \"ROOT_GENERATION_CURRENT_DIAGNOSTIC stage=live-selection error={_error:?}\"\n                );\n            })\n            .map_err(|_| CellGenerationErrorV2::Unavailable)?;"
+        },
+        {
+          "id": "live-retained-final-use-original-error",
+          "before": "                self.publication.witness(),\n            )\n            .map_err(|_| CellGenerationErrorV2::Unavailable)?;",
+          "after": "                self.publication.witness(),\n            )\n            .inspect_err(|_error| {\n                #[cfg(test)]\n                eprintln!(\n                    \"ROOT_GENERATION_CURRENT_DIAGNOSTIC stage=live-retained-final-use error={_error:?}\"\n                );\n            })\n            .map_err(|_| CellGenerationErrorV2::Unavailable)?;"
+        },
+        {
+          "id": "live-current-before-original-error",
+          "before": "        self.current.check_current(binding)?;\n        self.check_live()?;",
+          "after": "        self.current\n            .check_current(binding)\n            .inspect_err(|_error| {\n                #[cfg(test)]\n                eprintln!(\n                    \"ROOT_GENERATION_CURRENT_DIAGNOSTIC stage=live-current-before error={_error:?}\"\n                );\n            })?;\n        self.check_live()?;"
+        },
+        {
+          "id": "live-current-after-original-error",
+          "before": "        // CURRENT/authority I/O cannot make an earlier Control sample fresh.\n        self.current.check_current(binding)\n",
+          "after": "        // CURRENT/authority I/O cannot make an earlier Control sample fresh.\n        self.current\n            .check_current(binding)\n            .inspect_err(|_error| {\n                #[cfg(test)]\n                eprintln!(\n                    \"ROOT_GENERATION_CURRENT_DIAGNOSTIC stage=live-current-after error={_error:?}\"\n                );\n            })\n"
+        }
+      ],
+      "static_checks": {
+        "forward_exact": true,
+        "reverse_exact": true,
+        "operation_unique_each_direction": true,
+        "added_cfg_test": 7,
+        "added_inspect_err": 7,
+        "unchanged_test_names": true,
+        "unchanged_assertions": true
+      }
+    }
+  ]
+}

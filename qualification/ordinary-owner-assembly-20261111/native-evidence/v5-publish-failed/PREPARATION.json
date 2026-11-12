@@ -1,0 +1,174 @@
+{
+  "schema": "hepta.original-native-evidence.git-publication-preparation.v1",
+  "status": "prepared-not-executed",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "scope": "Publish only the already retained V5 original records. No V6, no tests, no source edits, no merge, and no existing remote reference update.",
+  "program": {
+    "name": "program",
+    "git_blob": "16f38e6f84330412e97fa38a9e8e6f7bdb7452dc",
+    "bytes": 19712,
+    "sha256": "15ed7219d860927b23a9e14ef9a7b8cda20b8780e9ea03b62854cbc026f8d294"
+  },
+  "config": {
+    "name": "config",
+    "git_blob": "23570c017911da6b80ec5279733619e2f3ab8956",
+    "bytes": 1598,
+    "sha256": "48099b6b60bca06fa112aa8baf1271fddd6cb1c0ec03ed30ad6006793c99b267"
+  },
+  "request": {
+    "name": "request",
+    "git_blob": "1656c3e5b3bf5664be8f6e78df1d47c625d6b5db",
+    "bytes": 251740,
+    "sha256": "8ad8c64d38f3f0da202bcaa28b4cd9c05100869fdee772f7d7c4ada7fa2517bf"
+  },
+  "static_check": {
+    "git_blob": "34c3fa4dd1d4a72cbf89ba599251bcf019df47ad",
+    "bytes": 1065,
+    "sha256": "d2542f3a9892957f297e411611da9a235b3db04297c3909e376a931edeb4e098"
+  },
+  "idempotency_key": "hepta-native-evidence-v5-git-publication-20261112-af52",
+  "target": {
+    "host": "ai395",
+    "work": "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52",
+    "independent_repository": "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/repo",
+    "independent_records": "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/records",
+    "remote": "https://github.com/TrillionniumFoundation/hepta-private-ci.git",
+    "branch_ref": "refs/heads/codex/ordinary-native-evidence-v5-20261112-af52",
+    "expected_remote_ref_before_push": null,
+    "fixed_parent": "715a5726f5031e50ad963812d2a1270e8d0cf769",
+    "fixed_parent_tree": "1122b8a0f3342b0944313a895b6f8838918fcddd",
+    "anchor_source": "/home/qq/af52-learning-local-decision-20261111/ordinary-715a572-root17-diagnostic-v2/source"
+  },
+  "original_archive": {
+    "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-715-and-caller-original-records-export-v5-20261112/original-records.tar.xz",
+    "bytes": 1894408,
+    "sha256": "b887df69055e182cae12aa6c588c91313c50c1761fb9c4323ed8621a5472e0e9",
+    "git_blob": "891109a74a5484451195bdaed03629de505dc131",
+    "members": 182,
+    "payload_files": 181,
+    "origin": "Parent-reported verified V5 output. This preparation did not read the remote archive; the exact program validates these pins and every member before any push."
+  },
+  "original_export_request": {
+    "git_blob": "8e16a604428568c346fdba3cb1b961d5f626b523",
+    "bytes": 199062,
+    "sha256": "71478a60b9f41529044a9c066e7177df8ab9be9c19bb5a833daf8b78ea7d97b5",
+    "transport_chunks": [
+      {
+        "index": 0,
+        "bytes": 48000,
+        "sha256": "f854c19a0f89ebbf44aff65d6e3795d27604a1d94794d6c4a8dacb04ef4b3e61"
+      },
+      {
+        "index": 1,
+        "bytes": 48000,
+        "sha256": "6578c8043be86e415f90caba2b637a66db50bdadf095702954987101e82003b0"
+      },
+      {
+        "index": 2,
+        "bytes": 48000,
+        "sha256": "617c861e3b0b0e74c19cf3538c5cb1b03f8f8c4181e001030c3289cca388313c"
+      },
+      {
+        "index": 3,
+        "bytes": 48000,
+        "sha256": "d6e33a07b00a2a4c4fcfca9dcced45becebccb64ac32233032639c44daeb934d"
+      },
+      {
+        "index": 4,
+        "bytes": 7062,
+        "sha256": "cebf86667cd0b95bc29a30dd449a076107f0384dffae098ca55548f85918dd4a"
+      }
+    ],
+    "max_arg_bytes": 48000,
+    "byte_identical_reconstruction_statically_verified": true
+  },
+  "original_preparation_review": {
+    "git_blob": "5e9e15c04821535c423dd5245c3bd579d9a6c665",
+    "bytes": 12213,
+    "sha256": "c1be1843c6cc0018cca268acb80136a3bb4a7f840bc3de9ce88a7ce7f7b79712"
+  },
+  "exact_tree_delta": {
+    "added": [
+      "qualification/ordinary-owner-assembly-20261111/native-evidence/v5/original-records.tar.xz",
+      "qualification/ordinary-owner-assembly-20261111/native-evidence/v5/export.json",
+      "qualification/ordinary-owner-assembly-20261111/native-evidence/v5/exact-export-request.json",
+      "qualification/ordinary-owner-assembly-20261111/native-evidence/v5/PUBLICATION.json"
+    ],
+    "modified": [
+      {
+        "path": ".github/blob-size-allowlist.txt",
+        "before_blob": "5123c517dc59325e9bd103a6cb551b43e2e25e73",
+        "before_bytes": 11418,
+        "before_sha256": "b81abcacd1f5db312caf677b190394b188dce94905cb5997d56949da7976b492",
+        "after_blob": "caa45dc038e2e4fd2da954243a272f709a1528b5",
+        "after_bytes": 11580,
+        "after_sha256": "543ebf55728ff2040a42f86fffc907d109ef74953ba3e45c941619b6edddbd3f",
+        "append_line": "sha256:b887df69055e182cae12aa6c588c91313c50c1761fb9c4323ed8621a5472e0e9 qualification/ordinary-owner-assembly-20261111/native-evidence/v5/original-records.tar.xz\n"
+      }
+    ],
+    "source_tree_rule": "Load the entire parent index, add exactly the four named evidence blobs and exact allowlist postimage, then require git diff-tree to equal A4 + M1. No checkout or parent source mutation.",
+    "archive_allowlist_rule": "The original 11418 bytes remain a prefix and exactly one 162-byte SHA256/path line is appended; no global 512000-byte limit or checker changes. The 715 allowlist postimage must not replace a different staging parent."
+  },
+  "validation_planned_by_request": [
+    "Require a fresh private work directory and the exact clean 715 source/head/tree; fingerprint all source refs before and after.",
+    "Reject redirected Git repository ownership environment and optimized Python execution that would skip assertions; do not change credentials, proxies, permissions, existing configuration, or AGENTS.",
+    "Read the existing archive/export.json as stable regular single-link files and preserve their original bytes; compare archive size/SHA256/Git blob to the fixed pins.",
+    "Read the archive without extracting files. Reject non-regular, duplicate, absolute or traversal member names. Verify 182 members, 181 manifest payloads, every complete payload byte length/SHA256/Git blob, and each of the seven original terminal statuses/digests.",
+    "Reconstruct every original export.json field from the pinned archive/manifest and compare full JSON values, while publishing its original raw bytes.",
+    "Use an independent shared no-checkout clone and original read-tree; all object/index/local-reference writes remain in that new repository.",
+    "Verify the original allowlist bytes, mode 100644 and exact one-line append; preserve all existing exceptions and reject oversized additional evidence metadata.",
+    "Create one commit with the fixed 715 parent and the exact five-path tree delta using the explicit machine author Hepta qualification evidence <qualification@local.invalid>.",
+    "Before push, require remote branch absence, unchanged source fingerprints and unchanged original archive/export bytes.",
+    "Make exactly one push attempt with empty expected lease, one full refspec, --no-follow-tags and --recurse-submodules=no. No --no-verify, credential fallback, automatic push retry, merge or other remote refspec.",
+    "Read only that exact remote ref after push; require its commit to match. On failure/unknown outcome retain original output and permit only a read-only same-ref reconciliation.",
+    "Recheck original source and archive/export bytes in finally; keep complete command argv, stdout/stderr, exit/status and hashes plus RESULT.json in the independent records directory."
+  ],
+  "exact_push_argv": [
+    "git",
+    "-C",
+    "/home/qq/af52-learning-local-decision-20261111/ordinary-native-evidence-v5-publish-20261112-af52/repo",
+    "push",
+    "--porcelain",
+    "--no-follow-tags",
+    "--recurse-submodules=no",
+    "--force-with-lease=refs/heads/codex/ordinary-native-evidence-v5-20261112-af52:",
+    "https://github.com/TrillionniumFoundation/hepta-private-ci.git",
+    "refs/heads/codex/ordinary-native-evidence-v5-20261112-af52:refs/heads/codex/ordinary-native-evidence-v5-20261112-af52"
+  ],
+  "command_wait_scope": "The new transport request bounds ordinary Git subprocesses at 180 seconds and its single push at 300 seconds. These are publication transport budgets; no existing native/test timeout is changed. A timed-out push remains uncertain and is never retried.",
+  "publication_metadata_semantics": {
+    "original_export_request": "The existing 199062-byte V5 operator request is copied byte-for-byte from its fixed Git blob.",
+    "current_publication_request": "PUBLICATION.json reconstructs the current full h request from actual sys.orig_argv and declared transport fields, explicitly labelled reconstructed and not an MCP response. The separately persisted request digest permits comparison.",
+    "no_self_hash_cycle": true,
+    "pre_push_only": "The evidence commit contains pre-push verification only. The final real push result and source-after check remain in the separate records/RESULT.json and may later be retained as another evidence artifact.",
+    "no_qualification_inheritance": true
+  },
+  "static_execution": {
+    "python_ast_parse_passed": true,
+    "exact_script_in_request_matches_local_ast_input": true,
+    "python_reconstruction_of_request_is_byte_equal": true,
+    "original_request_pinned_byte_reconstruction": true,
+    "single_push_call_checked_by_ast": true,
+    "git_blob_readback_equal": true,
+    "h_called": false,
+    "publication_program_executed": false,
+    "network_git_executed": false,
+    "native_or_tests_executed": false,
+    "refs_changed": false
+  },
+  "instructions_read": {
+    "root_agents_blob": "faa57cc0db48123e1011f1eb47692cd3bbbcfc3a",
+    "nested_agents_at_target_ancestors": "Four fixed-715 target-ancestor AGENTS reads returned NOT_FOUND; no instruction files changed."
+  },
+  "qualification": {
+    "authorityGranted": false,
+    "ordinary_complete_chains": 0,
+    "positive_adoption_chains": 0,
+    "ordinary_no_update_rollback_chains": 0
+  },
+  "superseded_preparation_only": {
+    "program": "df1a9bb1df9bf2b3409683bc42c3510fbb6bd1f3",
+    "request": "b17a22fea72b24dcd7edc366370882888d3655af",
+    "reason": "Final program additionally rejects Python optimization and checks original allowlist mode; do not start the superseded request."
+  }
+}

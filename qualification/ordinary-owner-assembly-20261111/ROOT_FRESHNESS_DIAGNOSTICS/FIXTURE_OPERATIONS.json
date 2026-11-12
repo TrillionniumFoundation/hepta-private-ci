@@ -1,0 +1,278 @@
+{
+  "schema_version": 1,
+  "scope": "Bounded read-only component phase timing for actual Root17 V7 freshness failure",
+  "base_commit": "f9131ee6bfc514812096b3b72b7c3c70ff77278c",
+  "base_tree": "850c7e73f936b74c0c82e30c0907de11769d8cf1",
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_root_child_tests.rs",
+      "preimage": {
+        "git_blob": "bb9f481e3e63be557a081963335f4b354458cfd5",
+        "bytes": 16052,
+        "sha256": "8a642ea51aa2f056964a3d9c5b742e0a34dd56eb7b342387071e378387c8560b"
+      },
+      "postimage": {
+        "git_blob": "eaf9a9e313755e218e257dc32d58f818abaead77",
+        "bytes": 17429,
+        "sha256": "2349d5a8483ed1a3feda4e2897167c9ffc7990643dfb5b577ec0cbb5593ad761"
+      },
+      "operations": [
+        {
+          "old_text": "            let mut production = crate::receive_root_production_inputs(",
+          "new_text": "            let timing = crate::root_authority_session::tests::component_phase_timing(\n                \"publication.child.five-lane-open\", phase,\n            );\n            let mut production = crate::receive_root_production_inputs(",
+          "reason": "Begin read-only bounded component timing before the unchanged original call(s)."
+        },
+        {
+          "old_text": "            ).await.with_context(|| format!(\"publication {phase:?}: connect original five-lane inputs\"))?;",
+          "new_text": "            ).await.with_context(|| format!(\"publication {phase:?}: connect original five-lane inputs\"))?;\n            drop(timing);",
+          "reason": "End only the timing scope after original call(s) return; original early ? still propagates and Drop logs scope termination."
+        },
+        {
+          "old_text": "            raw.clear();",
+          "new_text": "            let timing = crate::root_authority_session::tests::component_phase_timing(\n                \"publication.child.learning-checkpoint\", phase,\n            );\n            raw.clear();",
+          "reason": "Begin read-only bounded component timing before the unchanged original call(s)."
+        },
+        {
+          "old_text": "                Some(decision.snapshot().clone()));",
+          "new_text": "                Some(decision.snapshot().clone()));\n            drop(timing);",
+          "reason": "End only the timing scope after original call(s) return; original early ? still propagates and Drop logs scope termination."
+        },
+        {
+          "old_text": "            let intent: types::UpdateIntent = data(&socket)",
+          "new_text": "            let timing = crate::root_authority_session::tests::component_phase_timing(\n                \"publication.child.root-enrollment-wait\", phase,\n            );\n            let intent: types::UpdateIntent = data(&socket)",
+          "reason": "Begin read-only bounded component timing before the unchanged original call(s)."
+        },
+        {
+          "old_text": "                .with_context(|| format!(\"publication {phase:?}: receive registered original intent\"))?;",
+          "new_text": "                .with_context(|| format!(\"publication {phase:?}: receive registered original intent\"))?;\n            drop(timing);",
+          "reason": "End only the timing scope after original call(s) return; original early ? still propagates and Drop logs scope termination."
+        },
+        {
+          "old_text": "            let current = publication.connect(connection, TIMEOUT, LIFETIME).await",
+          "new_text": "            let timing = crate::root_authority_session::tests::component_phase_timing(\n                \"publication.child.current-connect\", phase,\n            );\n            let current = publication.connect(connection, TIMEOUT, LIFETIME).await",
+          "reason": "Begin read-only bounded component timing before the unchanged original call(s)."
+        },
+        {
+          "old_text": "                .with_context(|| format!(\"publication {phase:?}: connect original CURRENT purpose\"))?;",
+          "new_text": "                .with_context(|| format!(\"publication {phase:?}: connect original CURRENT purpose\"))?;\n            drop(timing);",
+          "reason": "End only the timing scope after original call(s) return; original early ? still propagates and Drop logs scope termination."
+        },
+        {
+          "old_text": "                current.store.replace(&before, &prepared)",
+          "new_text": "                let timing = crate::root_authority_session::tests::component_phase_timing(\n                    \"publication.child.prepare-current\", phase,\n                );\n                current.store.replace(&before, &prepared)",
+          "reason": "Begin read-only bounded component timing before the unchanged original call(s)."
+        },
+        {
+          "old_text": "                    .context(\"publication Publish: read original prepared CURRENT\")?, prepared);",
+          "new_text": "                    .context(\"publication Publish: read original prepared CURRENT\")?, prepared);\n                drop(timing);",
+          "reason": "End only the timing scope after original call(s) return; original early ? still propagates and Drop logs scope termination."
+        },
+        {
+          "old_text": "                let signed = production.grants.request_grant(&binding)",
+          "new_text": "                let timing = crate::root_authority_session::tests::component_phase_timing(\n                    \"publication.child.request-grant\", phase,\n                );\n                let signed = production.grants.request_grant(&binding)",
+          "reason": "Begin read-only bounded component timing before the unchanged original call(s)."
+        },
+        {
+          "old_text": "                    .context(\"publication Publish: request original grant\")?;",
+          "new_text": "                    .context(\"publication Publish: request original grant\")?;\n                drop(timing);",
+          "reason": "End only the timing scope after original call(s) return; original early ? still propagates and Drop logs scope termination."
+        },
+        {
+          "old_text": "                let token = claim_final_use(&production.device, &signed, &binding)",
+          "new_text": "                let timing = crate::root_authority_session::tests::component_phase_timing(\n                    \"publication.child.claim-dispatch-publish\", phase,\n                );\n                let token = claim_final_use(&production.device, &signed, &binding)",
+          "reason": "Begin read-only bounded component timing before the unchanged original call(s)."
+        },
+        {
+          "old_text": "                let published = result.context(\"publication Publish: original CURRENT dispatch effect\")?;",
+          "new_text": "                let published = result.context(\"publication Publish: original CURRENT dispatch effect\")?;\n                drop(timing);",
+          "reason": "End only the timing scope after original call(s) return; original early ? still propagates and Drop logs scope termination."
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_child_tests.rs",
+      "preimage": {
+        "git_blob": "7d9dc6d13e7997638b377c7dfc866d2c5f57ee3d",
+        "bytes": 13042,
+        "sha256": "a86ad24d9b80066bdd15da1f8ad852ed437e1f08b130b281ac08e231a4d33fb5"
+      },
+      "postimage": {
+        "git_blob": "01b5cd8e5c30ded50eb3b97f67c3e94c308697a0",
+        "bytes": 14759,
+        "sha256": "bbf718ced03553b902887631d33ff8f6454ff37de84fa81e88e07c5af911eccc"
+      },
+      "operations": [
+        {
+          "old_text": "            let mut production = crate::receive_root_production_inputs(",
+          "new_text": "            let timing = crate::root_authority_session::tests::component_phase_timing(\n                \"initial.child.five-lane-open\", phase,\n            );\n            let mut production = crate::receive_root_production_inputs(",
+          "reason": "Begin read-only bounded component timing before the unchanged original call(s)."
+        },
+        {
+          "old_text": "            ).await.with_context(|| format!(\"initial child {phase:?}: opening original five-lane inputs\"))?;",
+          "new_text": "            ).await.with_context(|| format!(\"initial child {phase:?}: opening original five-lane inputs\"))?;\n            drop(timing);",
+          "reason": "End only the timing scope after original call(s) return; original early ? still propagates and Drop logs scope termination."
+        },
+        {
+          "old_text": "            let (artifacts, selected) = plan.artifacts.reopen(now_ms()?)",
+          "new_text": "            let timing = crate::root_authority_session::tests::component_phase_timing(\n                \"initial.child.artifact-reopen\", phase,\n            );\n            let (artifacts, selected) = plan.artifacts.reopen(now_ms()?)",
+          "reason": "Begin read-only bounded component timing before the unchanged original call(s)."
+        },
+        {
+          "old_text": "                .with_context(|| format!(\"initial child {phase:?}: reopening original Artifact owner\"))?;",
+          "new_text": "                .with_context(|| format!(\"initial child {phase:?}: reopening original Artifact owner\"))?;\n            drop(timing);",
+          "reason": "End only the timing scope after original call(s) return; original early ? still propagates and Drop logs scope termination."
+        },
+        {
+          "old_text": "            let (model, bundle, definition) = material::load(&plan.model_directory)",
+          "new_text": "            let timing = crate::root_authority_session::tests::component_phase_timing(\n                \"initial.child.model-load\", phase,\n            );\n            let (model, bundle, definition) = material::load(&plan.model_directory)",
+          "reason": "Begin read-only bounded component timing before the unchanged original call(s)."
+        },
+        {
+          "old_text": "                .with_context(|| format!(\"initial child {phase:?}: loading actual model material\"))?;",
+          "new_text": "                .with_context(|| format!(\"initial child {phase:?}: loading actual model material\"))?;\n            drop(timing);",
+          "reason": "End only the timing scope after original call(s) return; original early ? still propagates and Drop logs scope termination."
+        },
+        {
+          "old_text": "            let enrolled: bool = data(&socket)",
+          "new_text": "            let timing = crate::root_authority_session::tests::component_phase_timing(\n                \"initial.child.root-enrollment-wait\", phase,\n            );\n            let enrolled: bool = data(&socket)",
+          "reason": "Begin read-only bounded component timing before the unchanged original call(s)."
+        },
+        {
+          "old_text": "                .with_context(|| format!(\"initial child {phase:?}: awaiting original enrollment result\"))?;",
+          "new_text": "                .with_context(|| format!(\"initial child {phase:?}: awaiting original enrollment result\"))?;\n            drop(timing);",
+          "reason": "End only the timing scope after original call(s) return; original early ? still propagates and Drop logs scope termination."
+        },
+        {
+          "old_text": "            let initial = initial.connect(connection, TIMEOUT, LIFETIME).await",
+          "new_text": "            let timing = crate::root_authority_session::tests::component_phase_timing(\n                \"initial.child.initial-connect\", phase,\n            );\n            let initial = initial.connect(connection, TIMEOUT, LIFETIME).await",
+          "reason": "Begin read-only bounded component timing before the unchanged original call(s)."
+        },
+        {
+          "old_text": "                .with_context(|| format!(\"initial child {phase:?}: connecting original initial lane\"))?;",
+          "new_text": "                .with_context(|| format!(\"initial child {phase:?}: connecting original initial lane\"))?;\n            drop(timing);",
+          "reason": "End only the timing scope after original call(s) return; original early ? still propagates and Drop logs scope termination."
+        },
+        {
+          "old_text": "                let prepared = initial.prepare_feature(authorities, selected, target)",
+          "new_text": "                let timing = crate::root_authority_session::tests::component_phase_timing(\n                    \"initial.child.prepare-feature\", phase,\n                );\n                let prepared = initial.prepare_feature(authorities, selected, target)",
+          "reason": "Begin read-only bounded component timing before the unchanged original call(s)."
+        },
+        {
+          "old_text": "                    .with_context(|| format!(\"initial child {phase:?}: preparing original Feature CURRENT\"))?;",
+          "new_text": "                    .with_context(|| format!(\"initial child {phase:?}: preparing original Feature CURRENT\"))?;\n                drop(timing);",
+          "reason": "End only the timing scope after original call(s) return; original early ? still propagates and Drop logs scope termination."
+        },
+        {
+          "old_text": "                let signed = production.grants.request_grant(&binding)",
+          "new_text": "                let timing = crate::root_authority_session::tests::component_phase_timing(\n                    \"initial.child.request-grant\", phase,\n                );\n                let signed = production.grants.request_grant(&binding)",
+          "reason": "Begin read-only bounded component timing before the unchanged original call(s)."
+        },
+        {
+          "old_text": "                    .with_context(|| format!(\"initial child {phase:?}: requesting original FinalUse grant\"))?;",
+          "new_text": "                    .with_context(|| format!(\"initial child {phase:?}: requesting original FinalUse grant\"))?;\n                drop(timing);",
+          "reason": "End only the timing scope after original call(s) return; original early ? still propagates and Drop logs scope termination."
+        },
+        {
+          "old_text": "                let result = prepared.publish(&signed);",
+          "new_text": "                let timing = crate::root_authority_session::tests::component_phase_timing(\n                    \"initial.child.publish-feature\", phase,\n                );\n                let result = prepared.publish(&signed);",
+          "reason": "Begin read-only bounded component timing before the unchanged original call(s)."
+        },
+        {
+          "old_text": "                let result = prepared.publish(&signed);",
+          "new_text": "                let result = prepared.publish(&signed);\n                drop(timing);",
+          "reason": "End only the timing scope after original call(s) return; original early ? still propagates and Drop logs scope termination."
+        },
+        {
+          "old_text": "                let task = initial.recover_feature(authorities, selected, target)",
+          "new_text": "                let timing = crate::root_authority_session::tests::component_phase_timing(\n                    \"initial.child.recover-feature\", phase,\n                );\n                let task = initial.recover_feature(authorities, selected, target)",
+          "reason": "Begin read-only bounded component timing before the unchanged original call(s)."
+        },
+        {
+          "old_text": "                    .with_context(|| format!(\"initial child {phase:?}: reading original published Feature\"))?;",
+          "new_text": "                    .with_context(|| format!(\"initial child {phase:?}: reading original published Feature\"))?;\n                drop(timing);",
+          "reason": "End only the timing scope after original call(s) return; original early ? still propagates and Drop logs scope termination."
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_root_fixture_tests.rs",
+      "preimage": {
+        "git_blob": "1b73fc06dba2a7afb620787d9ea0a3f9eaafffac",
+        "bytes": 32386,
+        "sha256": "20c2ad06db87ed4c97805d673945393fa373aacd93ed03be57149126f6b6242a"
+      },
+      "postimage": {
+        "git_blob": "54c1235b199b59e1bd66a7f398c2c786959f792c",
+        "bytes": 32800,
+        "sha256": "7e45bca121c9e2fbed6b84931e3edb38de7caab81f21393993dd02a83c4dc860"
+      },
+      "operations": [
+        {
+          "old_text": "                control(&self.offer, b\"LEARNING_AND_ORIGINAL_INPUTS_READY\")?;",
+          "new_text": "                let timing = crate::root_authority_session::tests::component_phase_timing(\n                    \"publication.root.wait-learning-ready\", phase,\n                );\n                control(&self.offer, b\"LEARNING_AND_ORIGINAL_INPUTS_READY\")?;",
+          "reason": "Begin read-only bounded component timing before the unchanged original call(s)."
+        },
+        {
+          "old_text": "                control(&self.offer, b\"LEARNING_AND_ORIGINAL_INPUTS_READY\")?;",
+          "new_text": "                control(&self.offer, b\"LEARNING_AND_ORIGINAL_INPUTS_READY\")?;\n                drop(timing);",
+          "reason": "End only the timing scope after original call(s) return; original early ? still propagates and Drop logs scope termination."
+        },
+        {
+          "old_text": "                deployment.component_trigger_original(&late_material)?;",
+          "new_text": "                let timing = crate::root_authority_session::tests::component_phase_timing(\n                    \"publication.root.deployment-register\", phase,\n                );\n                deployment.component_trigger_original(&late_material)?;",
+          "reason": "Begin read-only bounded component timing before the unchanged original call(s)."
+        },
+        {
+          "old_text": "                    \"actual Root acknowledgement\"\n                );",
+          "new_text": "                    \"actual Root acknowledgement\"\n                );\n                drop(timing);",
+          "reason": "End only the timing scope after original call(s) return; original early ? still propagates and Drop logs scope termination."
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_fixture_tests.rs",
+      "preimage": {
+        "git_blob": "9f8eba7e6e82d140fee6408e58dc7a1fee9291d5",
+        "bytes": 24228,
+        "sha256": "23f42d446cc731161c31fb25689f4d3ec831bedd9117ff8f40149cefb956bdcd"
+      },
+      "postimage": {
+        "git_blob": "66542ac41091faefba07f70dfb96535b064fd413",
+        "bytes": 24635,
+        "sha256": "a8f7a22744207eb8daaf4c4ddde592595d75d3122a3051d02c1dfb36f652d142"
+      },
+      "operations": [
+        {
+          "old_text": "                control(&self.offer, b\"ORIGINAL_INPUTS_READY\")",
+          "new_text": "                let timing = crate::root_authority_session::tests::component_phase_timing(\n                    \"initial.root.wait-original-inputs\", phase,\n                );\n                control(&self.offer, b\"ORIGINAL_INPUTS_READY\")",
+          "reason": "Begin read-only bounded component timing before the unchanged original call(s)."
+        },
+        {
+          "old_text": "                    .with_context(|| format!(\"initial parent {phase:?}: awaiting ORIGINAL_INPUTS_READY\"))?;",
+          "new_text": "                    .with_context(|| format!(\"initial parent {phase:?}: awaiting ORIGINAL_INPUTS_READY\"))?;\n                drop(timing);",
+          "reason": "End only the timing scope after original call(s) return; original early ? still propagates and Drop logs scope termination."
+        },
+        {
+          "old_text": "                deployment.component_trigger_initial()?;",
+          "new_text": "                let timing = crate::root_authority_session::tests::component_phase_timing(\n                    \"initial.root.deployment-register\", phase,\n                );\n                deployment.component_trigger_initial()?;",
+          "reason": "Begin read-only bounded component timing before the unchanged original call(s)."
+        },
+        {
+          "old_text": "                let outcome = deployment.wait_and_register_initial(&stopping);",
+          "new_text": "                let outcome = deployment.wait_and_register_initial(&stopping);\n                drop(timing);",
+          "reason": "End only the timing scope after original call(s) return; original early ? still propagates and Drop logs scope termination."
+        }
+      ]
+    }
+  ],
+  "shared_helper": {
+    "owner": "hepta_audit",
+    "path": "codex-rs/hepta-agentd/src/root_authority_session_tests.rs",
+    "symbol": "component_phase_timing",
+    "signature": "(label: &'static str, phase: impl std::fmt::Debug) -> ComponentPhaseTiming",
+    "status": "required; exact postimage supplied separately by helper owner"
+  },
+  "callers_operations": [],
+  "source_without_timing_byte_equal": true,
+  "new_test_methods": 0
+}

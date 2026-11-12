@@ -34,6 +34,10 @@ use crate::neuron_generation_update_bootstrap::learning_test_receipt;
 use crate::prepare_agentd_generation_same_model_task_v1;
 use crate::recover_agentd_generation_update_v1;
 
+#[cfg(target_os = "linux")]
+#[path = "neuron_generation_receipt_owner_tests.rs"]
+mod original_receipts;
+
 struct LearningRuntime {
     host: host::Fixture,
     publication: Fixture,

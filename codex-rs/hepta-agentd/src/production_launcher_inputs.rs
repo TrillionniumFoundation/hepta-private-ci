@@ -15,10 +15,13 @@ use std::time::Instant;
 use crate::AgentdError;
 use crate::calculator_deadline::Deadline;
 
-const FLAGS: [&str; 19] = [
+const FLAGS: [&str; 22] = [
     "--root-production-profile",
     "--root-production-handoff-fd",
     "--root-learning-handoff-fd",
+    "--root-q24-model-handoff-fd",
+    "--root-generation-publication-handoff-fd",
+    "--root-generation-initial-handoff-fd",
     "--root-production-uid",
     "--root-production-gid",
     "--root-production-control-fd",
@@ -47,6 +50,9 @@ enum Profile {
 pub(super) struct LaunchInputs {
     pub(super) handoff: UnixDatagram,
     pub(super) learning_handoff: Option<UnixDatagram>,
+    pub(super) q24_model_handoff: Option<UnixDatagram>,
+    pub(super) publication_handoff: Option<UnixDatagram>,
+    pub(super) initial_handoff: Option<UnixDatagram>,
     pub(super) uid: u32,
     pub(super) gid: u32,
     pub(super) control: OwnedFd,
@@ -148,6 +154,33 @@ pub(super) fn parse(
         .remove("--root-learning-handoff-fd")
         .map(descriptor_number)
         .transpose()?;
+    let q24_model_handoff = selected
+        .remove("--root-q24-model-handoff-fd")
+        .map(descriptor_number)
+        .transpose()?;
+    if q24_model_handoff.is_some() && learning_handoff.is_none() {
+        return Err(invalid(
+            "original Q24 Model factory requires its learning handoff",
+        ));
+    }
+    let publication_handoff = selected
+        .remove("--root-generation-publication-handoff-fd")
+        .map(descriptor_number)
+        .transpose()?;
+    if publication_handoff.is_some() && learning_handoff.is_none() {
+        return Err(invalid(
+            "original publication requires its learning handoff",
+        ));
+    }
+    let initial_handoff = selected
+        .remove("--root-generation-initial-handoff-fd")
+        .map(descriptor_number)
+        .transpose()?;
+    if initial_handoff.is_some() && publication_handoff.is_some() {
+        return Err(invalid(
+            "initial and learned publication require separate original Root sessions",
+        ));
+    }
     let notes = selected
         .remove("--notes-production-handoff-fd")
         .map(descriptor_number)
@@ -225,6 +258,9 @@ pub(super) fn parse(
     let numbers = [
         Some(handoff),
         learning_handoff,
+        q24_model_handoff,
+        publication_handoff,
+        initial_handoff,
         Some(control),
         Some(app_server),
         payload,
@@ -259,6 +295,18 @@ pub(super) fn parse(
     // inherited authority out of unrelated App Server helper re-executions.
     let handoff = UnixDatagram::from(take_descriptor(handoff)?);
     let learning_handoff = learning_handoff
+        .map(take_descriptor)
+        .transpose()?
+        .map(UnixDatagram::from);
+    let q24_model_handoff = q24_model_handoff
+        .map(take_descriptor)
+        .transpose()?
+        .map(UnixDatagram::from);
+    let publication_handoff = publication_handoff
+        .map(take_descriptor)
+        .transpose()?
+        .map(UnixDatagram::from);
+    let initial_handoff = initial_handoff
         .map(take_descriptor)
         .transpose()?
         .map(UnixDatagram::from);
@@ -305,6 +353,9 @@ pub(super) fn parse(
         Some(LaunchInputs {
             handoff,
             learning_handoff,
+            q24_model_handoff,
+            publication_handoff,
+            initial_handoff,
             uid,
             gid,
             control,

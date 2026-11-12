@@ -1,0 +1,87 @@
+{
+  "schema": "hepta.native-maintenance-source-drift.v1",
+  "source": "2acdb420ea3074d0ba54774d43f565827bf40fec",
+  "tree": "3df95630b251283faf3ff03e64ddbaae4f6134cb",
+  "status": "failed",
+  "classification": "formatter succeeded, exact-source qualification refused changed worktree",
+  "command": [
+    "just",
+    "fmt",
+    "--base",
+    "5edc50004a25cc585851f4aa6009ccc0d8f87705"
+  ],
+  "command_exit_code": 0,
+  "original_executor_exit_code": 1,
+  "native_tests_executed": 0,
+  "compilation_test_gates_not_reached": true,
+  "timed_out": false,
+  "output_limit_exceeded": false,
+  "exact_request": "9a5724485af8660f59087b5a2551785a88718ce2",
+  "harness": "90994f511820596ecceeb2ecc5ca4ecdafa8c653",
+  "original_execution": "78e4dcf713b1241b180c20b1eefca7a514271dd6",
+  "original_progress": "9081b1fa8cce4e2172a168ae07fb4c1d2cad2758",
+  "original_patch": "bfe52e598ecff73026aca7ad37fce9d975016273",
+  "original_postimages": "c8845629d1321bb68a5b34544c86d2fd30417bca",
+  "original_final_source": "1be15b7e4cbf3b20b0a5fae878119573005b26b9",
+  "postimage_transfer": "0a0e8dd4e77544a2e864bbc760450d9168a6971d",
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_fixture_tests.rs",
+      "preimage": "66542ac41091faefba07f70dfb96535b064fd413",
+      "postimage": "fd70cfc012684f66b6a14660d06a738c9904b5c9",
+      "bytes": 24933,
+      "sha256": "90dcc5f3e5c6284bec14f1e1f5f1229a4d1a5d10daf5aa4fc095327f70f123ca"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_root_fixture_tests.rs",
+      "preimage": "54c1235b199b59e1bd66a7f398c2c786959f792c",
+      "postimage": "8c85c70340ce1eb95e327869d40a22a4aacb8ce8",
+      "bytes": 32978,
+      "sha256": "ceb8dfb6e9374f644961c138b2d20cadc4ba1cd41ae5d46cdb880a27b5c37691"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_current_initial.rs",
+      "preimage": "01ea7514ea9b743dcd7b9729cf1c8832a33ce28c",
+      "postimage": "a3967eabc57646dffde58ae6ff6c06a1156d81fa",
+      "bytes": 14403,
+      "sha256": "7987a54f7cfa8735dd7d5db470e67f63d560a99cf258442d0550940ef71b4a8f"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial.rs",
+      "preimage": "a01cf875af9ff78945e13d73d8c5e519aa9168dc",
+      "postimage": "cdce3889936f83e06d733124b1a840d2a265c4cf",
+      "bytes": 9524,
+      "sha256": "5268171d28a80c2953f03e6acd84f83f70164caa66b144eee6c2b2ad9255c676"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session.rs",
+      "preimage": "c36482e33fc43cd35b18f79740188eacf8e49558",
+      "postimage": "bd11492035b4d508201d1e5a9f0a999ea177daed",
+      "bytes": 21031,
+      "sha256": "3b3b1d7d358c38545ee12dbaea5d5e23f64019cc60857b2cecf772e564569d94"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_tests.rs",
+      "preimage": "0ff0b07f606b3433194f97e3ac8aad7ae8f084a8",
+      "postimage": "2871595caf737f443ec4c9a2ad5ef672ccdef109",
+      "bytes": 24356,
+      "sha256": "39393346218a9e40bde0291ff78751acfacd61c583838ab0b0ccdb06855c06dd"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_observation_cache.rs",
+      "preimage": "ea2c4b75b6f95050f3f431a5e2d9febd4028c8e0",
+      "postimage": "047c616692f9288077d7e289b8c2aeecc926e937",
+      "bytes": 16596,
+      "sha256": "3f9ab8536bd153c64a2ebab1b7f89a68fa76a7bc0df47f91844054d57cf9e387"
+    }
+  ],
+  "caller_registry_unchanged": "f90e0cf6fe2f024961104821a0f3c1be6256995d",
+  "assertion_macro_sequences_unchanged": true,
+  "action": "Commit exact native postimages; new source must pass original required gates independently.",
+  "full_qualification": false,
+  "business_acceptance": {
+    "ordinary_complete_chains": 0,
+    "positive_adoption_chains": 0,
+    "ordinary_no_update_rollback_chains": 0
+  }
+}

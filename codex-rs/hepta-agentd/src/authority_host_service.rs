@@ -33,9 +33,29 @@ mod checkpoint;
 use checkpoint::RegisteredCheckpoint;
 #[path = "authority_host_consumers.rs"]
 mod consumers;
+#[path = "authority_host_generation_initial.rs"]
+pub(crate) mod generation_initial;
+pub use generation_initial::HostGenerationInitialDeploymentV1;
+pub use generation_initial::RootGenerationInitialEnrollmentV1;
+pub use generation_initial::RootGenerationInitialModeV1;
+pub use generation_initial::RootGenerationInitialOfferV1;
+#[path = "authority_host_generation_publication.rs"]
+pub(crate) mod generation_publication;
 #[path = "authority_host_learning_checkpoint.rs"]
 mod learning_checkpoint;
+#[path = "authority_host_q24_model.rs"]
+pub(crate) mod q24_model;
 use consumers::RegisteredConsumers;
+pub use generation_publication::RootArtifactPublicationInputsV1;
+pub use generation_publication::RootGenerationJournalInputsV1;
+pub use generation_publication::RootGenerationPublicationEnrollmentV1;
+pub use generation_publication::RootGenerationPublicationModeV1;
+pub use generation_publication::RootGenerationPublicationOfferV1;
+pub use generation_publication::RootPublicationFinalUseConsumerV1;
+pub use q24_model::HostAuthorityQ24ModelFactoryProfileV1;
+pub use q24_model::HostAuthorityQ24ModelFactoryReservationV1;
+pub use q24_model::RootQ24ModelFactoryOfferV1;
+pub use q24_model::register_host_q24_model_factory;
 #[path = "authority_host_text_ui.rs"]
 mod text_ui;
 pub use text_ui::HostAuthorityTextUiRegistration;

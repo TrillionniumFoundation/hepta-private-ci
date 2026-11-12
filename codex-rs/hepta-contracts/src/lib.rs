@@ -85,6 +85,8 @@ pub use final_use::FinalUseFrontier;
 pub use final_use::FinalUseGrant;
 pub use final_use::FinalUseIssuerTrustKey;
 pub use final_use::FinalUseRevocations;
+#[cfg(target_os = "linux")]
+pub use final_use::RootFinalUseObserverV1;
 pub use final_use::SignedFinalUseGrant;
 pub use final_use::VerifiedUseToken;
 pub use final_use::claim_final_use;

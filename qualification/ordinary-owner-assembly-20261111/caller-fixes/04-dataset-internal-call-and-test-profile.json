@@ -1,0 +1,109 @@
+{
+  "schema_version": 1,
+  "kind": "same-definition-boundary-correction-and-real-test-context",
+  "source_commit": "19894714403a97fcd58ca8c592e75761de95687c",
+  "source_tree": "8c64ab5145f279cafec363130d2a917075800e56",
+  "findings": [
+    {
+      "index": 374,
+      "id": "q24_task_original_dataset_prepare",
+      "reason": "The registry listed the method's definition file as an external caller. The unchanged original _verify_boundary explicitly skips definition_path before collecting product callers. The real prepare_learning -> prepare_dataset call remains in that same source file."
+    },
+    {
+      "index": 379,
+      "id": "q24_task_original_profile_install",
+      "reason": "The apparent AgentdConfig call is inside the private start_profile test helper, which inherits cfg(test) from the original runtime test module. Mirror that original compilation condition on the actual helper without changing its body."
+    }
+  ],
+  "source_files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_task_test_support.rs",
+      "preimage": "a6c8b936f5454636c404334cceff9568f943240b",
+      "postimage": "fc4740b284785c41c846baf55ed041fe981683be",
+      "bytes": 17203,
+      "sha256": "24841c46676511ab19c1dd00ad0f0debc73b2ac334e28ee78c58539c14e34681",
+      "operations": [
+        {
+          "old": "\nasync fn start_profile(\n",
+          "new": "\n#[cfg(test)]\nasync fn start_profile(\n",
+          "expected_count": 1
+        }
+      ]
+    }
+  ],
+  "callers_delta": {
+    "base_blob": "b15628bc8585a76996d3532838c0a5286b2e9a7b",
+    "boundary_sections": [
+      {
+        "id": "q24_task_original_dataset_prepare",
+        "old": "[[boundary]]\nid = \"q24_task_original_dataset_prepare\"\nsymbol = \"OriginalCellQ24TaskLedgerProducerV1::prepare_dataset\"\nreceiver_type = \"OriginalCellQ24TaskLedgerProducerV1\"\ndefinition_path = \"codex-rs/hepta-agentd/src/cell_q24_task_ledger.rs\"\ndefinition_markers = [\"fn prepare_dataset(\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/cell_q24_task_ledger.rs\"]\ncaller_markers = []\n",
+        "new": "[[boundary]]\nid = \"q24_task_original_dataset_prepare\"\nsymbol = \"OriginalCellQ24TaskLedgerProducerV1::prepare_dataset\"\nreceiver_type = \"OriginalCellQ24TaskLedgerProducerV1\"\ndefinition_path = \"codex-rs/hepta-agentd/src/cell_q24_task_ledger.rs\"\ndefinition_markers = [\"fn prepare_dataset(\"]\nproduct_callers = []\ncaller_markers = []\n",
+        "expected_count": 1,
+        "reason": "Correct only the external caller list to the actual empty set. No true external caller is removed; source-index diagnostics already observed unexpected=[] and the original scanner skips the definition."
+      }
+    ],
+    "protected_file_add": [
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_task_ledger.rs",
+        "text": "\n[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/cell_q24_task_ledger.rs\"\nrequired = [\"fn prepare_dataset(\"]\nforbidden = []\nrequired_function_order = [{ function = \"fn prepare_dataset(\", sequence = [\"self.capture(&mut state)?\",\"self.status(&mut state, &ledger, &captured)?\",\"OriginalCellQ24TaskLedgerStatusV1::Complete { .. }\",\"return Err(Error::PendingOutcome)\",\"config.projection.unit_profile_digest != self.config.unit_profile_digest\",\"original_history.push(captured.task.clone())\",\"CellQ24DatasetFreezePreparationV1::capture(\",\"self.require_source(&captured)?\",\"Ok(preparation)\"] }]\n",
+        "required_function_order": {
+          "function": "fn prepare_dataset(",
+          "sequence": [
+            "self.capture(&mut state)?",
+            "self.status(&mut state, &ledger, &captured)?",
+            "OriginalCellQ24TaskLedgerStatusV1::Complete { .. }",
+            "return Err(Error::PendingOutcome)",
+            "config.projection.unit_profile_digest != self.config.unit_profile_digest",
+            "original_history.push(captured.task.clone())",
+            "CellQ24DatasetFreezePreparationV1::capture(",
+            "self.require_source(&captured)?",
+            "Ok(preparation)"
+          ]
+        },
+        "reason": "Add a function-specific sequence for prepare_dataset's original capture, Complete outcome, unit check, actual history capability, original freeze capture and final live-source check. Keep the existing prepare_learning sequence which pins its internal prepare_dataset invocation before freeze owner/materialization/readback."
+      }
+    ],
+    "unchanged": [
+      "source_roots",
+      "ignored_path_fragments",
+      "checker source",
+      "all other external caller sets",
+      "all original protected conditions",
+      "all test helper bodies and assertions"
+    ]
+  },
+  "evidence": {
+    "original_checker": {
+      "blob": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+      "rule": "if relative == boundary.definition_path ...: continue"
+    },
+    "actual_internal_call": {
+      "source_blob": "f606fa6e6e83a43674a8d811848897a8f8216ece",
+      "function": "prepare_learning",
+      "expression": "let preparation = self.prepare_dataset(config, original_history)?;"
+    },
+    "test_parent_chain_manifest": "d4049ab85d0e15d05a0d4dc8edc8783fb9b59d78",
+    "added_test_parent": {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_task_ingress_tests.rs",
+      "blob": "55c2d89c062da5e5b85ea7fe65fc87b8af3c06b9",
+      "expression": "#[path = \"circuit_q24_task_test_support.rs\"] mod support;"
+    },
+    "original_reference_search": {
+      "blob": "fcf9654efff60b62218799dbf7b051a7e152319c",
+      "search_id": "43940f1451aca1d84f1f5bcf71de85e56edc3cf57e707b056fa11c3823336d71",
+      "files": 789,
+      "bytes": 7924878,
+      "coverage_complete": true,
+      "traversal_complete": true,
+      "skipped": 0,
+      "unreadable": 0,
+      "exact_target_reference_count": 1,
+      "scope": "All *.rs selected under the fixed agentd src. Broader query also returned unrelated runtime_tests suffix matches; no count is hidden or changed."
+    },
+    "local_original_guard_probe": "New prepare_dataset function-order entry accepted against the actual source by the unchanged original protected checker; only this new guard was tested.",
+    "local_original_receiver_probe": "Actual helper alone reproduces AgentdConfig receiver unresolved before cfg(test); original masker/receiver reports matched=false after cfg(test).",
+    "native_or_cargo": false,
+    "official_full_verification": false
+  },
+  "application": "Apply the single exact helper source operation and boundary section replacement; append the new protected row. Preserve the previous UFCS and format adjustments and every existing row. No wrapper, authority, key, scope, or product path is introduced."
+}

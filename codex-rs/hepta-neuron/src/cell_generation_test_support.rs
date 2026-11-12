@@ -54,8 +54,9 @@ impl Fixture {
     }
 
     pub(super) fn file(&self, name: &str) -> File {
+        let mut options: std::fs::OpenOptions = OpenOptions::new();
         checked(
-            OpenOptions::new()
+            options
                 .create(true)
                 .truncate(false)
                 .read(true)

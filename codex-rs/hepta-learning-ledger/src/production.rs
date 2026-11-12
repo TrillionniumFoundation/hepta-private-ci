@@ -368,6 +368,22 @@ impl LedgerWriter {
         self.commit(expected_predecessor, event)
     }
 
+    /// Validate a real Observer outcome against the current original trust and
+    /// active durable Decision, without appending or granting a write token.
+    /// Historical Generator validity is established by that accepted record;
+    /// the new Observer still needs its current role, window and independence.
+    /// A subsequent append repeats these checks under the original writer.
+    pub fn validate_observed_outcome(
+        &self,
+        outcome: &AuthenticatedOutcomeV1,
+        evidence: &SignedLearningEvidenceV1,
+        now: u64,
+    ) -> Result<(), ProductionLedgerError> {
+        let event = self.authenticated_outcome_event(outcome.clone(), evidence, now)?;
+        self.backend.core()?.prepare(event)?;
+        Ok(())
+    }
+
     pub fn append_outcome(
         &mut self,
         expected_predecessor: Digest32,
@@ -375,6 +391,16 @@ impl LedgerWriter {
         evidence: &SignedLearningEvidenceV1,
         now: u64,
     ) -> Result<AppendReceipt, ProductionLedgerError> {
+        let event = self.authenticated_outcome_event(outcome, evidence, now)?;
+        self.commit(expected_predecessor, event)
+    }
+
+    fn authenticated_outcome_event(
+        &self,
+        outcome: AuthenticatedOutcomeV1,
+        evidence: &SignedLearningEvidenceV1,
+        now: u64,
+    ) -> Result<LedgerEvent, ProductionLedgerError> {
         let payload = outcome_signing_payload_v2(&outcome);
         let verified = self.trust.verifier().verify(
             LearningEvidenceRoleV1::Observer,
@@ -420,7 +446,7 @@ impl LedgerWriter {
             finalized_at: outcome.watermark.finalized_at,
             authentication_digest: signed_evidence_digest(evidence),
         });
-        self.commit(expected_predecessor, event)
+        Ok(event)
     }
 
     pub fn append_credit_batch(

@@ -1,0 +1,79 @@
+{
+  "schema": "hepta.root-explicit-unrelated-source-receiver-review.v32",
+  "base": {
+    "commit": "894138ff2c34dc54b0f31d3883a840639d076ea5",
+    "tree": "3c7e0963f8c32701066071f354c626aa5283687d"
+  },
+  "exact_operations": "87cf6c044ea8a98a8ad53961a971ce7a818da122",
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_execution.rs",
+      "unique_forward_reverse": true,
+      "before": {
+        "git_blob": "3263eb485459626f3cca29e5d90d58032121ae16",
+        "bytes": 8224,
+        "sha256": "91f12d9f1dbd0bcd478713768df227aef2e73bdcc1cad41c48b3b35d18603e9e"
+      },
+      "after": {
+        "git_blob": "379439c76b0d8ea1cb123b92bc199b162d8676e5",
+        "bytes": 8346,
+        "sha256": "6751cd2e952bbd9a6c48aba92e9a082d3158a514cf6076bd20246970ee0391c5"
+      }
+    },
+    {
+      "path": "CALLERS.toml",
+      "unique_forward_reverse": true,
+      "before": {
+        "git_blob": "726a238d13e8d35771230ac24c6cee950a910674",
+        "bytes": 669144,
+        "sha256": "eb85a283658801cdb967e61a4fdbdbc062c654130f25b81f6b69b9fba38e37f3"
+      },
+      "after": {
+        "git_blob": "d9478557509a1e70b7b32b02b86cfd2aa2babbd5",
+        "bytes": 669225,
+        "sha256": "f9a911c62f591f93f92833494bb83af828f31ac55d17a2b6b784c480424148fd"
+      }
+    }
+  ],
+  "diagnosis": "Read original checker and typed helper. authority_fields retains fields whose type contains the current authority target; self.source is not in that Producer target field index. The unresolved fallback therefore fails closed even though the Some producer is already explicitly typed. The helper's explicit unrelated annotation path excludes the fallback without changing the authority caller set.",
+  "semantic_review": [
+    "Same original Arc field is borrowed as &DurableCircuitTaskSourceV1<FileAnchorWitnessStore>; no clone, open, new owner, new call, guard change or mutation occurs.",
+    "Same match arm and original argument order identity/record/trace. The real Some producer branch remains byte-identical.",
+    "Only the existing protected None sequence expands from one combined branch/call marker to the actual branch, exact same-field typed borrow, and original call."
+  ],
+  "registry": {
+    "boundaries": 504,
+    "required_ids": 504,
+    "protected_rows": 366,
+    "boundary_rows_byte_identical": true,
+    "other_365_protected_rows_byte_identical": true,
+    "changed_protected_path": "codex-rs/hepta-agentd/src/circuit_q24_successor_execution.rs",
+    "no_receiver_or_caller_set_change": true
+  },
+  "allowlist": {
+    "only_exact_callers_digest_changed": true,
+    "global_limit_unchanged": true
+  },
+  "original_tools": {
+    "checker": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+    "typed_helper": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f",
+    "unchanged": true,
+    "executed_by_review": false
+  },
+  "tests": {
+    "new": 0,
+    "qualification": "pending original full fixed-source gate; static review is not a caller/compile PASS"
+  },
+  "guards": {
+    "freshness_ms": 500,
+    "age_origin": "request_started_ns",
+    "root_roster": 17,
+    "retries": 0
+  },
+  "business_counts": [
+    0,
+    0,
+    0
+  ],
+  "draft_only": true
+}

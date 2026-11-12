@@ -1,0 +1,57 @@
+{
+  "schema": "hepta.original-records-export.v7.preparation-review.v1",
+  "scope": "Read terminal original V4 and V5 Root17 records, retain exact source identity and all failures; no native invocation and no qualification inheritance.",
+  "anchor_source": "0c896bdf941f4174797ff45378bc7439075c11e4",
+  "anchor_tree": "fc41816656e41af926c868e6cc327f88e7ae1001",
+  "sources": [
+    {
+      "name": "ordinary-903b6fb-root17-diagnostic-v4",
+      "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-903b6fb-root17-diagnostic-v4/records",
+      "terminal": "progress.json",
+      "sha256": null,
+      "expected": {
+        "status": "root-component-diagnostic-failed",
+        "source_sha": "903b6fbae86acff2db2ab0422b9852421d938032",
+        "source_tree": "b5b82d4e1fb422f8e1986e939764b79fd1be115f"
+      }
+    },
+    {
+      "name": "ordinary-0c896bd-root17-diagnostic-v5",
+      "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-0c896bd-root17-diagnostic-v5/records",
+      "terminal": "progress.json",
+      "sha256": null,
+      "expected": {
+        "status": "root-component-diagnostic-failed",
+        "source_sha": "0c896bdf941f4174797ff45378bc7439075c11e4",
+        "source_tree": "fc41816656e41af926c868e6cc327f88e7ae1001"
+      }
+    }
+  ],
+  "script": {
+    "blob": "79494fe659157c453d4f0804cb01581eecce6052",
+    "bytes": 4370,
+    "sha256": "2c0bd59e9d484c955831fa0ea61fd859c989c5747c68266f5fa7d978d7887815",
+    "unchanged": true
+  },
+  "wrapper": {
+    "blob": "e6560092b622a84e24c20ca7fb8b2589b0233cc4",
+    "bytes": 146,
+    "unchanged": true
+  },
+  "request": {
+    "blob": "756fa6d7b788651a87d0c702109f1ce0d28ce577",
+    "bytes": 133413,
+    "sha256": "3f3a3a85ad365fbf22bdf5fb9e02994f1fbec47a1ccbeecfa005471279c8fbad",
+    "idempotency_key": "af52-ordinary-root17-original-records-export-v7-20261112"
+  },
+  "config": {
+    "blob": "b64711999839062d410f596edebf4954c1f479a4",
+    "bytes": 118378,
+    "sha256": "c360a8b1c124090bb13f36f7a7fd6a885fbd0d474094e8baa1fc6e357e8482de"
+  },
+  "non_rust": true,
+  "source_write": false,
+  "credentials_changed": false,
+  "known_failure_exemptions": false,
+  "git_push": false
+}

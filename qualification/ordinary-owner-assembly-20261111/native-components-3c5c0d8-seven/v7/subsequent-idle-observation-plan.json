@@ -1,0 +1,22 @@
+{
+  "schema": "hepta-original-rust-readonly-admission-observation-v1",
+  "purpose": "Read-only observation after terminal V33 preflight refusal. No Rust/build/compiler/test process is started; no filesystem target, process or permission is modified.",
+  "original_harness": "096b5b69c1295560f3a6c9e0da51e2708a0c996c",
+  "original_script_exact_to_failed_step": true,
+  "request": {
+    "host": "ai395",
+    "executable": "/usr/bin/sudo",
+    "args": [
+      "-n",
+      "python3",
+      "-c",
+      "\nimport json,os,sys\nfrom pathlib import Path\nassert os.getuid()==os.geteuid()==0\nnames={'cargo','rustc','rustdoc','rustfmt','clippy-driver','cargo-clippy','cargo-nextest'}\nactive=[]\nfor p in Path('/proc').iterdir():\n    if not p.name.isdigit():\n        continue\n    try:\n        comm=(p/'comm').read_text().strip()\n        if comm in names:\n            try:\n                cwd=os.readlink(p/'cwd')\n            except OSError:\n                cwd=None\n            active.append({'pid':int(p.name),'comm':comm,'cwd':cwd})\n    except FileNotFoundError:\n        continue\nprint(json.dumps({'actual_preflight_uid':os.getuid(),'active_rust':active}),flush=True)\nraise SystemExit(1 if active else 0)\n"
+    ],
+    "cwd": "/home/qq/af52-learning-local-decision-20261111",
+    "idempotency_key": "af52-original-rust-readonly-20261112-0845",
+    "rows": 24,
+    "cols": 200
+  },
+  "does_not_change_failed_v33_outcome": true,
+  "no_native_launch_in_this_request": true
+}

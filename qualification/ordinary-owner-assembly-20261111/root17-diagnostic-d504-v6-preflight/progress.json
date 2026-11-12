@@ -1,0 +1,105 @@
+{
+  "classification": "ROOT_COMPONENT_DIAGNOSTIC_NOT_FULL_QUALIFICATION",
+  "cleanup": [
+    {
+      "error": "RuntimeError('read-only donor metadata changed during this attempt')",
+      "name": "read-only-reference",
+      "status": "failed"
+    }
+  ],
+  "current_stage": "finished-or-awaiting-original",
+  "errors": [
+    "cleanup read-only-reference: RuntimeError('read-only donor metadata changed during this attempt')"
+  ],
+  "expected_root_parents": [
+    "authority_host_service::writer::learning_registration::tests::root_learning_registration_reopens_without_replacing_original_history",
+    "authority_host_service::writer::learning_registration::tests::root_learning_sealed_pin_and_dedicated_uds_recover_original_checkpoint",
+    "authority_host_service::writer::learning_registration::tests::root_scoped_learning_reopens_exact_scope_and_refuses_legacy_client",
+    "authority_host_service::writer::learning_registration::tests::root_learning_scoped_sealed_pin_preserves_scope_on_cold_reopen",
+    "root_production_handoff::learning::tests::root_learning_handoff_reaches_dedicated_uid_with_original_root_pin",
+    "authority_host_learning_service_root_tests::root_learning_public_registration_serves_retained_writer_and_recovers_history",
+    "authority_host_service::q24_model::registration::tests::root_factory_record_reopens_bound_without_replacing_original_files",
+    "authority_host_service::q24_model::registration::tests::root_factory_file_pins_reject_alias_replacement_wrong_access_and_missing_witness",
+    "root_production_handoff::q24_model::tests::root_model_handoff_preserves_four_original_rights_and_cloexec",
+    "root_production_handoff::q24_model::tests::root_model_handoff_rejects_learning_purpose_and_reordered_rights",
+    "authority_host_q24_model_service_root_tests::root_q24_factory_registers_transfers_binds_and_recovers_original_custody",
+    "learning_iteration_evidence_client::tests::root::original_external_uid_returns_a_verified_receipt_through_held_pidfd",
+    "root_production_handoff::generation_publication::tests::root_publication_handoff_reaches_dedicated_uid_and_refuses_confused_rights",
+    "final_use::store::root_observer::tests::root_observer_reads_live_original_and_rejects_revocation_without_claiming",
+    "final_use::store::root_observer::tests::root_observer_fences_partial_rollback_schema_and_replaced_original_files",
+    "neuron_generation_current::publication_root_tests::root_broker_late_enrolls_publishes_and_recovers_original_current",
+    "neuron_generation_current::initial_root_tests::root_initial_publication_uses_original_consumer_and_readonly_recovery"
+  ],
+  "failure": "RuntimeError: original-rust-idle-preflight failed; original launch log retained",
+  "format_base": "5edc50004a25cc585851f4aa6009ccc0d8f87705",
+  "full_qualification_accepted": false,
+  "independent_consumer_accepted": false,
+  "known_failure_exemptions": false,
+  "not_run": [
+    "maintenance",
+    "product-bins-check",
+    "qa-four-folders",
+    "caller-self-test",
+    "caller-full-verify",
+    "ordinary-six-crate-tests"
+  ],
+  "operator_euid": 1000,
+  "operator_gid": 1000,
+  "operator_uid": 1000,
+  "ordinary_complete_chains": 0,
+  "ordinary_no_update_rollback_chains": 0,
+  "physical_daemon_root_restart_accepted": false,
+  "positive_adoption_chains": 0,
+  "predecessor_results_used": false,
+  "reference_after": {
+    "head": "3c8dabe46598599e91b2b8b80081e09069ff9426",
+    "status": "",
+    "tree": "6fe2c2426f22383416697016445cf444aafdd2ff"
+  },
+  "reference_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-control-completion-maintenance-v2/source",
+  "replaces_final_harness": false,
+  "root_packages": [
+    "codex-hepta-agentd",
+    "codex-hepta-contracts"
+  ],
+  "scheduled_test_suites": [
+    "root"
+  ],
+  "schema": "hepta.root17-component-diagnostic.v1",
+  "source_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-d50474f-root17-diagnostic-v6/source",
+  "source_sha": "d50474f93da462e278cf3ec95acef88701d16799",
+  "source_tree": "60a51518d2dd9e2a95510d24794fee4cbf3f8164",
+  "source_workflow_packages": [
+    "codex-hepta-agentd",
+    "codex-hepta-learning-artifacts",
+    "codex-hepta-intelligence-eval",
+    "codex-hepta-contracts",
+    "codex-hepta-neuron",
+    "codex-hepta-learning-ledger"
+  ],
+  "status": "failed",
+  "steps": [
+    {
+      "command": [
+        "sudo",
+        "-n",
+        "python3",
+        "-c",
+        "\nimport json,os,sys\nfrom pathlib import Path\nassert os.getuid()==os.geteuid()==0\nnames={'cargo','rustc','rustdoc','rustfmt','clippy-driver','cargo-clippy','cargo-nextest'}\nactive=[]\nfor p in Path('/proc').iterdir():\n    if not p.name.isdigit():\n        continue\n    try:\n        comm=(p/'comm').read_text().strip()\n        if comm in names:\n            try:\n                cwd=os.readlink(p/'cwd')\n            except OSError:\n                cwd=None\n            active.append({'pid':int(p.name),'comm':comm,'cwd':cwd})\n    except FileNotFoundError:\n        continue\nprint(json.dumps({'actual_preflight_uid':os.getuid(),'active_rust':active}),flush=True)\nraise SystemExit(1 if active else 0)\n"
+      ],
+      "cwd": "/home/qq/af52-learning-local-decision-20261111",
+      "elapsed_seconds": 0.06547768204472959,
+      "exit_code": 1,
+      "launcher_pid": 2310080,
+      "log": {
+        "bytes": 137,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-d50474f-root17-diagnostic-v6/records/original-rust-idle-preflight.launch.log",
+        "sha256": "7395f025de83ab883ce75d7f200016af1f871d6e781b56cb109516373764a847"
+      },
+      "name": "original-rust-idle-preflight",
+      "state": "completed",
+      "timed_out": false
+    }
+  ],
+  "traceback": "Traceback (most recent call last):\n  File \"<string>\", line 709, in <module>\n    raw(\"original-rust-idle-preflight\",[\"sudo\",\"-n\",\"python3\",\"-c\",RUST_PREFLIGHT],timeout=60)\n    ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<string>\", line 202, in raw\n    raise RuntimeError(name + \" failed; original launch log retained\")\nRuntimeError: original-rust-idle-preflight failed; original launch log retained\n"
+}

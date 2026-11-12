@@ -1,0 +1,74 @@
+{
+  "schema": "hepta.final-native-harness.source-manifest.v2",
+  "purpose": "Exact-source ordinary and actual UID0 component execution; parameters deliberately do not choose the final candidate",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "script": {
+    "path": "qualification/ordinary-final-native-harness-20261111/qualify.py",
+    "bytes": 50110,
+    "sha256": "8f8886e4c7a15fb319a2bb9e587e3c948bb6f4d671d03ec5f1db11620e4e9e0b",
+    "git_blob": "90994f511820596ecceeb2ecc5ca4ecdafa8c653"
+  },
+  "metadata": [
+    {
+      "path": "qualification/ordinary-final-native-harness-20261111/CONFIG.template.json",
+      "git_blob": "c0a3507beaf7842be4db4580150cca05bd78b715",
+      "bytes": 5025,
+      "sha256": "ad8e20689ff5057ef66e0d032886ff86a261c6dbde49fb676954c68a68dec40d"
+    },
+    {
+      "path": "qualification/ordinary-final-native-harness-20261111/PROCESS_REQUEST.template.json",
+      "git_blob": "cf14721cfeec08eabe637c36d327c60fdae5de70",
+      "bytes": 56659,
+      "sha256": "1cac7f0cac045f6a7775ab2023d8c222aecd434ea2e54e8daa1b8bf0f4495aae"
+    },
+    {
+      "path": "qualification/ordinary-final-native-harness-20261111/REVIEW.json",
+      "git_blob": "a76b7157813e22b863963ad9dbe059938347590a",
+      "bytes": 2415,
+      "sha256": "b9af6214747d3c19ecbd3926a51a7d43e7dfb6b3bd8f4e8b5c398b552fa22536"
+    }
+  ],
+  "independent_review": {
+    "git_blob": "a72d23a6bafc91a9a5943f51950bc495f3e0c303",
+    "scope": "Exact Root-record-read correction in full90994f and diagnosticd109; static review only, no native pass inferred."
+  },
+  "original_request": "a113448cd22e0d72d28f0745921dd7c03f7cf6f1",
+  "exact_source_roster_reference": "5daade9e4ce374ac169702d6b59490149ccefd34",
+  "head_and_tree_parameterized": true,
+  "ordinary_crates": 6,
+  "root_crates": 2,
+  "root_parents": 17,
+  "no_native_or_cargo_or_root_execution": true,
+  "local_ast_check_performed": true,
+  "parent_ast_and_parameter_preflight_required": true,
+  "original_checkers_and_test_contracts_unchanged": true,
+  "no_known_qa_exception": true,
+  "no_new_signal_or_process_kill": true,
+  "cleanup_requires_known_original_completion": true,
+  "budget_scope": "overall_timeout_seconds bounds admission of new stages. It is not a hard termination guarantee: after an outer deadline, the original launcher may be retained beyond that budget for reconciliation. The harness sends no kill signal, dispatches no follow-up Rust, and does no mutating cleanup in that unknown state. An external runtime timeout is not a source completion or cleanup proof.",
+  "ref_mutations": false,
+  "ordinary_acceptance_counts_unchanged": true,
+  "history": [
+    {
+      "path": "qualification/ordinary-final-native-harness-20261111/history/pre-root-record-read-fix.MANIFEST.json",
+      "git_blob": "fb1ea82a3defcf1dc81d13c2bcb6eda4e22ed1db",
+      "bytes": 2714,
+      "sha256": "56a78c71b461920438bba1cdd0229e03e1a62e16bf3adfa5073b668de148f94b",
+      "note": "Original manifest is retained byte-for-byte; its script/config/request/review remain historical objects and must not be executed as current."
+    }
+  ],
+  "correction": {
+    "exact_ops": "1ef010b6c6814d582c525e04db5eb1f7bb424a67",
+    "failure_and_fix": "b68df094720272d3a8bdce983a1eb9cb8a1ed09d",
+    "raw_failure_manifest": "5080991861a50639f7ab11877c48134dc19fd2ac",
+    "static_proof": "d2f0fb30d8399276df166d5fd0e4b90199d40214"
+  },
+  "request_binding": {
+    "stdin_git_blob": "90994f511820596ecceeb2ecc5ca4ecdafa8c653",
+    "stdin_sha256": "8f8886e4c7a15fb319a2bb9e587e3c948bb6f4d671d03ec5f1db11620e4e9e0b",
+    "configuration_matches_template": true,
+    "full_caller_timeout_seconds": 3600,
+    "source_head_and_tree_still_explicit_placeholders": true
+  },
+  "prepared_correction_executed_native_or_root": false
+}

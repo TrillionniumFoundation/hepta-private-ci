@@ -77,17 +77,7 @@ pub(super) fn selected(
     deadline.check()?;
     let mut state = match deadline {
         Deadline::Unbounded => registry.lock_state()?,
-        Deadline::Before(_) => {
-            let state = registry
-                .0
-                .state
-                .try_lock()
-                .map_err(|_| AuthorityLeaseError::Unavailable)?;
-            if state.failed {
-                return Err(AuthorityLeaseError::Unavailable);
-            }
-            state
-        }
+        Deadline::Before(_) => registry.try_lock_state()?,
     };
     deadline.check()?;
     // This comparison and the existing CAS/persistence below share one lock.

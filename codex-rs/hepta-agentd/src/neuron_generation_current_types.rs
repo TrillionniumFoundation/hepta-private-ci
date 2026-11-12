@@ -37,24 +37,24 @@ impl NeuronGenerationPredecessorCompletionV1 {
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
-pub(super) struct UpdateIntent {
-    pub(super) operation_id: String,
-    pub(super) supersedes: Option<[u8; 32]>,
-    pub(super) previous: CellGenerationOwnerBindingV1,
-    pub(super) previous_checkpoint: [u8; 32],
-    pub(super) previous_observation: [u8; 32],
-    pub(super) target: CellGenerationOwnerBindingV1,
-    pub(super) genesis_checkpoint: [u8; 32],
-    pub(super) selection: [u8; 32],
+pub(crate) struct UpdateIntent {
+    pub(crate) operation_id: String,
+    pub(crate) supersedes: Option<[u8; 32]>,
+    pub(crate) previous: CellGenerationOwnerBindingV1,
+    pub(crate) previous_checkpoint: [u8; 32],
+    pub(crate) previous_observation: [u8; 32],
+    pub(crate) target: CellGenerationOwnerBindingV1,
+    pub(crate) genesis_checkpoint: [u8; 32],
+    pub(crate) selection: [u8; 32],
     #[serde(
         default,
         skip_serializing_if = "NeuronGenerationPredecessorCompletionV1::is_model_stopped"
     )]
-    pub(super) completion: NeuronGenerationPredecessorCompletionV1,
+    pub(crate) completion: NeuronGenerationPredecessorCompletionV1,
 }
 
 impl UpdateIntent {
-    pub(super) fn digest(&self) -> Result<Digest32, AgentdError> {
+    pub(crate) fn digest(&self) -> Result<Digest32, AgentdError> {
         let bytes = serde_json::to_vec(self).map_err(invalid)?;
         Ok(Digest32::of_parts(&[
             b"hepta.agentd.generation-update-intent.v1\0",
@@ -62,7 +62,7 @@ impl UpdateIntent {
         ]))
     }
 
-    pub(super) fn binding(&self) -> Result<FinalUseBinding, AgentdError> {
+    pub(crate) fn binding(&self) -> Result<FinalUseBinding, AgentdError> {
         Ok(FinalUseBinding {
             subject_id: self.previous.scope().agent_id.clone(),
             destination_id: match self.completion {
@@ -86,22 +86,22 @@ impl UpdateIntent {
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
-pub(super) struct Published {
-    pub(super) intent: UpdateIntent,
-    pub(super) witness: VerifiedUseTokenWitnessV1,
-    pub(super) signed: SignedFinalUseGrant,
-    pub(super) signed_grant_digest: [u8; 32],
+pub(crate) struct Published {
+    pub(crate) intent: UpdateIntent,
+    pub(crate) witness: VerifiedUseTokenWitnessV1,
+    pub(crate) signed: SignedFinalUseGrant,
+    pub(crate) signed_grant_digest: [u8; 32],
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
-pub(super) struct CurrentHead {
-    pub(super) schema_version: u32,
-    pub(super) current: CellGenerationOwnerBindingV1,
-    pub(super) prepared: Option<UpdateIntent>,
-    pub(super) published: Option<Published>,
+pub(crate) struct CurrentHead {
+    pub(crate) schema_version: u32,
+    pub(crate) current: CellGenerationOwnerBindingV1,
+    pub(crate) prepared: Option<UpdateIntent>,
+    pub(crate) published: Option<Published>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub(super) initial: Option<InitialState>,
+    pub(crate) initial: Option<InitialState>,
 }
 
 /// Readback of the original durable preparation. It holds no nonce token and
@@ -110,7 +110,7 @@ pub(super) struct CurrentHead {
 #[derive(Debug)]
 pub struct PreparedNeuronGenerationUpdateV1 {
     pub(super) head: Option<CurrentHead>,
-    pub(super) intent: UpdateIntent,
+    pub(crate) intent: UpdateIntent,
     pub(super) binding: FinalUseBinding,
     pub(super) digest: Digest32,
 }
@@ -211,7 +211,7 @@ pub enum NeuronGenerationUpdateReadbackV1 {
     Published(PublishedNeuronGenerationUpdateV1),
 }
 
-pub(super) fn scope_digest(
+pub(crate) fn scope_digest(
     scope: &codex_hepta_neuron::CellGenerationScopeV2,
 ) -> Result<Digest32, AgentdError> {
     let bytes = serde_json::to_vec(&(&scope.agent_id, &scope.cell_id, scope.principal_digest))

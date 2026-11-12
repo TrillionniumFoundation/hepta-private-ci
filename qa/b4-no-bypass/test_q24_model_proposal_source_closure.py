@@ -1,5 +1,6 @@
 """Keep the Q24 material owner closed to unregistered production callers."""
 
+from dataclasses import replace
 import importlib.util
 from pathlib import Path
 import sys
@@ -19,6 +20,7 @@ SPEC.loader.exec_module(PROOF)
 AGENT = "codex-rs/hepta-agentd/src/"
 OWNER = AGENT + "cell_q24_model_proposal.rs"
 ADMISSION = AGENT + "cell_q24_model_proposal_admission.rs"
+FACTORY = AGENT + "root_q24_model_factory.rs"
 BOUNDARIES = tuple(
     "cell_q24_model_material_owner_" + method
     for method in ("create", "recover", "commit", "readback")
@@ -36,7 +38,7 @@ class Q24ModelProposalSourceClosureTests(unittest.TestCase):
             path: PROOF._strip_cfg_test_items(
                 PROOF._strip_rust_non_code((ROOT / path).read_text())
             )
-            for path in (OWNER, ADMISSION)
+            for path in (OWNER, ADMISSION, FACTORY)
         }
 
     def rejects(self, path, function, marker):
@@ -62,12 +64,16 @@ class Q24ModelProposalSourceClosureTests(unittest.TestCase):
             with self.assertRaises(PROOF.VerificationFailure):
                 PROOF._verify_protected_files(root, {"protected_file": rows})
 
-    def test_owner_entrypoints_have_no_production_callers(self):
+    def test_owner_entrypoints_require_original_root_factory(self):
         for identifier in BOUNDARIES:
             with self.subTest(boundary=identifier):
                 row = self.boundaries[identifier]
-                self.assertEqual(row.product_callers, ())
+                self.assertEqual(row.product_callers, (FACTORY,))
                 PROOF._verify_boundary(ROOT, row, self.sources, ())
+                with self.assertRaises(PROOF.VerificationFailure):
+                    PROOF._verify_boundary(
+                        ROOT, replace(row, product_callers=()), self.sources, ()
+                    )
                 sources = dict(self.sources)
                 method = row.symbol.rsplit("::", 1)[-1]
                 sources[AGENT + "unregistered_model_proposal.rs"] = (

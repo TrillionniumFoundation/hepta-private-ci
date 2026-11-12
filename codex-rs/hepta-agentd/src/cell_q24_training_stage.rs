@@ -60,6 +60,24 @@ pub struct OriginalCellQ24TrainingStageV1<TW: AnchorWitnessStore, RW: AnchorWitn
 impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 'static>
     OriginalCellQ24TrainingStageV1<TW, RW>
 {
+    /// Preflight an explicitly transferred pair before an aggregate can sign
+    /// or fit. Mixed genesis recovery does not waive the real Dataset cut.
+    #[cfg(target_os = "linux")]
+    pub(crate) fn require_original_pair(
+        training: &CellQ24TrainingOwnerV1<TW>,
+        receipts: &OriginalCellQ24TrainingReceiptOwnerV1<RW>,
+        dataset: &LearningIterationSnapshotV1,
+        scope: &codex_hepta_learning_artifacts::FrozenLearningScopeV2,
+    ) -> Result<(), Error> {
+        if &receipts.config.dataset != dataset || &receipts.config.scope != scope {
+            return Err(Error::Binding("exact original training pair Dataset"));
+        }
+        super::validate_config(&receipts.config, &receipts.key)?;
+        training.require_original_dataset_provenance()?;
+        training.require_original_dataset_scope(dataset, scope)?;
+        Ok(())
+    }
+
     /// Consume already authorized owners. No descriptor, key or trust is opened.
     pub async fn from_original_owners(
         training: CellQ24TrainingOwnerV1<TW>,
@@ -152,6 +170,26 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
         self.in_lane(Owners::read_original_completion).await
     }
 
+    /// Read the already completed original HQ24T002 owners in the same lane.
+    /// This separate path refuses legacy batches without changing their old
+    /// readback contract. Missing and Pending cannot fit or first-attest here.
+    #[cfg(target_os = "linux")]
+    pub(crate) async fn read_original_dataset_completion(
+        &self,
+        dataset: &LearningIterationSnapshotV1,
+    ) -> Result<OriginalCellQ24TrainingCompletionV1, Error> {
+        self.require_dataset(dataset)?;
+        self.in_lane(|owners| {
+            let training: &CellQ24TrainingOwnerV1<TW> = &owners.training;
+            training.require_original_dataset_provenance()?;
+            let completed = owners.read_original_completion()?;
+            let training: &CellQ24TrainingOwnerV1<TW> = &owners.training;
+            training.require_original_dataset_provenance()?;
+            Ok(completed)
+        })
+        .await
+    }
+
     /// The caller supplies only an equality check, never bytes to be signed.
     pub async fn receipt_attestation(
         &self,
@@ -170,6 +208,46 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
             return Err(Error::Binding("exact original Dataset cut"));
         }
         Ok(())
+    }
+
+    /// Used only inside the concrete ordinary aggregate's bounded blocking
+    /// lane. Keep this same trainer and its existing fit semaphore exclusively
+    /// held while the original Root Model factory performs its async readback.
+    /// No trainer reference or replacement owner escapes the closure.
+    #[cfg(target_os = "linux")]
+    pub(crate) fn with_original_trainer<T>(
+        &self,
+        dataset: &LearningIterationSnapshotV1,
+        work: impl FnOnce(
+            &mut CellQ24TrainingOwnerV1<TW>,
+        ) -> Result<T, crate::LearningIterationRuntimeErrorV1>,
+    ) -> Result<T, crate::LearningIterationRuntimeErrorV1> {
+        self.require_dataset(dataset)
+            .map_err(|_| crate::LearningIterationRuntimeErrorV1::WrongScope)?;
+        let _permit = Arc::clone(&self.lane)
+            .try_acquire_owned()
+            .map_err(|_| crate::LearningIterationRuntimeErrorV1::CommitUncertain)?;
+        let mut owners = self
+            .owners
+            .try_lock()
+            .map_err(|_| crate::LearningIterationRuntimeErrorV1::CommitUncertain)?;
+        let scope = owners.receipts.config.scope.clone();
+        let training: &mut CellQ24TrainingOwnerV1<TW> = &mut owners.training;
+        training
+            .require_original_dataset_provenance()
+            .map_err(|_| {
+                crate::LearningIterationRuntimeErrorV1::OwnerUnavailable("original training source")
+            })?;
+        training
+            .require_original_dataset_scope(dataset, &scope)
+            .map_err(|_| crate::LearningIterationRuntimeErrorV1::WrongScope)?;
+        let result = work(training)?;
+        training
+            .require_original_dataset_provenance()
+            .map_err(|_| {
+                crate::LearningIterationRuntimeErrorV1::OwnerUnavailable("original training source")
+            })?;
+        Ok(result)
     }
 
     async fn in_lane<T: Send + 'static>(

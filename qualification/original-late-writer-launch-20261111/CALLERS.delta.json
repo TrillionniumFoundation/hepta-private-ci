@@ -1,0 +1,86 @@
+{
+  "schema_version": 1,
+  "kind": "exact_additive_callers_delta",
+  "base_commit": "2125da36a0e49a19b725c28bb150900f20caac7b",
+  "base_callers_git_blob": "10c775207f196fe5b55b91d1572e5bc99cb66747",
+  "required_boundary_ids_add": [
+    "agentd_original_late_writer_launch"
+  ],
+  "amend_existing_boundary_rows": [
+    {
+      "id": "root_original_writer_purpose_receive",
+      "old": "[[boundary]]\nid = \"root_original_writer_purpose_receive\"\nsymbol = \"receive_root_production_writer_handoff\"\ndefinition_path = \"codex-rs/hepta-agentd/src/root_production_writer_handoff.rs\"\ndefinition_markers = [\"pub fn receive_root_production_writer_handoff(\", \"libc::MSG_CMSG_CLOEXEC\", \"libc::MSG_TRUNC | libc::MSG_CTRUNC\", \"descriptors.len() != 3\", \"&bytes[..WRITER_FRAME.len()] != WRITER_FRAME\", \"require_root_pin(&root, peer.pid as u32)?\", \"RootProductionWriterDescriptor(writer)\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/native_g2_entry/owner.rs\"]\ncaller_markers = []",
+      "new": "[[boundary]]\nid = \"root_original_writer_purpose_receive\"\nsymbol = \"receive_root_production_writer_handoff\"\ndefinition_path = \"codex-rs/hepta-agentd/src/root_production_writer_handoff.rs\"\ndefinition_markers = [\"pub fn receive_root_production_writer_handoff(\", \"libc::MSG_CMSG_CLOEXEC\", \"libc::MSG_TRUNC | libc::MSG_CTRUNC\", \"descriptors.len() != 3\", \"&bytes[..WRITER_FRAME.len()] != WRITER_FRAME\", \"require_root_pin(&root, peer.pid as u32)?\", \"RootProductionWriterDescriptor(writer)\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/native_g2_entry/owner.rs\",\"codex-rs/hepta-agentd/src/production_launcher_late_writer.rs\"]\ncaller_markers = []",
+      "add_product_callers": [
+        "codex-rs/hepta-agentd/src/production_launcher_late_writer.rs"
+      ]
+    },
+    {
+      "id": "agentd_original_root_writer_consume",
+      "old": "[[boundary]]\nid = \"agentd_original_root_writer_consume\"\nsymbol = \"AgentdConfig::from_root_writer_handoff\"\ndefinition_path = \"codex-rs/hepta-agentd/src/config_root_late_writer.rs\"\ndefinition_markers = [\"pub fn from_root_writer_handoff(\", \"writer: crate::RootProductionWriterDescriptor\", \"writer.into_file()\", \"bundle.consumer.pid != std::process::id()\", \"verify_sender_process_binding(\", \"(descriptor.dev(), descriptor.ino()) != (named.dev(), named.ino())\", \"WriterSource::RootDescriptor(writer)\", \"verify()?\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/native_g2_entry/owner.rs\"]\ncaller_markers = []",
+      "new": "[[boundary]]\nid = \"agentd_original_root_writer_consume\"\nsymbol = \"AgentdConfig::from_root_writer_handoff\"\ndefinition_path = \"codex-rs/hepta-agentd/src/config_root_late_writer.rs\"\ndefinition_markers = [\"pub fn from_root_writer_handoff(\", \"writer: crate::RootProductionWriterDescriptor\", \"writer.into_file()\", \"bundle.consumer.pid != std::process::id()\", \"verify_sender_process_binding(\", \"(descriptor.dev(), descriptor.ino()) != (named.dev(), named.ino())\", \"WriterSource::RootDescriptor(writer)\", \"verify()?\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/native_g2_entry/owner.rs\",\"codex-rs/hepta-agentd/src/production_launcher_late_writer.rs\"]\ncaller_markers = []",
+      "add_product_callers": [
+        "codex-rs/hepta-agentd/src/production_launcher_late_writer.rs"
+      ]
+    },
+    {
+      "id": "root_learning_original_purpose_receive",
+      "old": "[[boundary]]\nid = \"root_learning_original_purpose_receive\"\nsymbol = \"receive_root_learning_handoff\"\ndefinition_path = \"codex-rs/hepta-agentd/src/root_production_learning_handoff.rs\"\ndefinition_markers = [\"pub fn receive_root_learning_handoff(\", \"root_pair(&socket, timeout)?\", \"receive_learning_packet(&socket, timeout)?\", \"require_root_pin(&root_pidfd, peer.pid as u32)?\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/production_launcher.rs\"]\ncaller_markers = []",
+      "new": "[[boundary]]\nid = \"root_learning_original_purpose_receive\"\nsymbol = \"receive_root_learning_handoff\"\ndefinition_path = \"codex-rs/hepta-agentd/src/root_production_learning_handoff.rs\"\ndefinition_markers = [\"pub fn receive_root_learning_handoff(\", \"root_pair(&socket, timeout)?\", \"receive_learning_packet(&socket, timeout)?\", \"require_root_pin(&root_pidfd, peer.pid as u32)?\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/production_launcher.rs\",\"codex-rs/hepta-agentd/src/production_launcher_late_writer.rs\"]\ncaller_markers = []",
+      "add_product_callers": [
+        "codex-rs/hepta-agentd/src/production_launcher_late_writer.rs"
+      ]
+    },
+    {
+      "id": "root_q24_factory_purpose_receive",
+      "old": "[[boundary]]\nid = \"root_q24_factory_purpose_receive\"\nsymbol = \"receive_root_q24_model_factory_handoff\"\ndefinition_path = \"codex-rs/hepta-agentd/src/root_production_q24_model_handoff.rs\"\ndefinition_markers = [\"pub fn receive_root_q24_model_factory_handoff(\", \"rights.len() != 4\", \"require_root_pin(&root_pidfd, peer.pid as u32)?\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/production_launcher.rs\"]\ncaller_markers = []",
+      "new": "[[boundary]]\nid = \"root_q24_factory_purpose_receive\"\nsymbol = \"receive_root_q24_model_factory_handoff\"\ndefinition_path = \"codex-rs/hepta-agentd/src/root_production_q24_model_handoff.rs\"\ndefinition_markers = [\"pub fn receive_root_q24_model_factory_handoff(\", \"rights.len() != 4\", \"require_root_pin(&root_pidfd, peer.pid as u32)?\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/production_launcher.rs\",\"codex-rs/hepta-agentd/src/production_launcher_late_writer.rs\"]\ncaller_markers = []",
+      "add_product_callers": [
+        "codex-rs/hepta-agentd/src/production_launcher_late_writer.rs"
+      ]
+    },
+    {
+      "id": "root_generation_publication_purpose_receive",
+      "old": "[[boundary]]\nid = \"root_generation_publication_purpose_receive\"\nsymbol = \"receive_root_generation_publication_handoff\"\ndefinition_path = \"codex-rs/hepta-agentd/src/root_generation_publication_handoff.rs\"\ndefinition_markers = [\"pub fn receive_root_generation_publication_handoff(\", \"libc::MSG_CMSG_CLOEXEC\", \"descriptors.len() != 2\", \"require_root_pin(&root_pidfd, peer.pid as u32)?\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/production_launcher.rs\"]\ncaller_markers = []\ncall_pattern = \"\\\\breceive_root_generation_publication_handoff\\\\s*\\\\(\"",
+      "new": "[[boundary]]\nid = \"root_generation_publication_purpose_receive\"\nsymbol = \"receive_root_generation_publication_handoff\"\ndefinition_path = \"codex-rs/hepta-agentd/src/root_generation_publication_handoff.rs\"\ndefinition_markers = [\"pub fn receive_root_generation_publication_handoff(\", \"libc::MSG_CMSG_CLOEXEC\", \"descriptors.len() != 2\", \"require_root_pin(&root_pidfd, peer.pid as u32)?\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/production_launcher.rs\",\"codex-rs/hepta-agentd/src/production_launcher_late_writer.rs\"]\ncaller_markers = []\ncall_pattern = \"\\\\breceive_root_generation_publication_handoff\\\\s*\\\\(\"",
+      "add_product_callers": [
+        "codex-rs/hepta-agentd/src/production_launcher_late_writer.rs"
+      ]
+    },
+    {
+      "id": "root_initial_purpose_receive",
+      "old": "[[boundary]]\nid = \"root_initial_purpose_receive\"\nsymbol = \"receive_root_generation_initial_handoff\"\ndefinition_path = \"codex-rs/hepta-agentd/src/root_generation_initial_handoff.rs\"\ndefinition_markers = [\"fn receive_root_generation_initial_handoff(\",\"libc::MSG_CMSG_CLOEXEC\",\"descriptors.len() != 2\",\"require_root_pin(&root_pidfd, peer.pid as u32)?\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/production_launcher.rs\"]\ncaller_markers = []\ncall_pattern = \"\\\\breceive_root_generation_initial_handoff\\\\s*\\\\(\"",
+      "new": "[[boundary]]\nid = \"root_initial_purpose_receive\"\nsymbol = \"receive_root_generation_initial_handoff\"\ndefinition_path = \"codex-rs/hepta-agentd/src/root_generation_initial_handoff.rs\"\ndefinition_markers = [\"fn receive_root_generation_initial_handoff(\",\"libc::MSG_CMSG_CLOEXEC\",\"descriptors.len() != 2\",\"require_root_pin(&root_pidfd, peer.pid as u32)?\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/production_launcher.rs\",\"codex-rs/hepta-agentd/src/production_launcher_late_writer.rs\"]\ncaller_markers = []\ncall_pattern = \"\\\\breceive_root_generation_initial_handoff\\\\s*\\\\(\"",
+      "add_product_callers": [
+        "codex-rs/hepta-agentd/src/production_launcher_late_writer.rs"
+      ]
+    },
+    {
+      "id": "root_learning_original_handoff_consume",
+      "old": "[[boundary]]\nid = \"root_learning_original_handoff_consume\"\nsymbol = \"RootLearningHandoffV1::connect\"\ndefinition_path = \"codex-rs/hepta-agentd/src/root_production_learning_inputs.rs\"\ndefinition_markers = [\"pub(crate) async fn connect(\", \"validate_sealed(&self.bootstrap, length)?\", \"validate_binding(&bundle, &production.bootstrap, expected, self.root_pid)?\", \"AgentdLearningCheckpointClientV1::from_root_stream(\", \"client\\n            .restore(&initial.request)\\n            .await\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/production_launcher.rs\"]\ncaller_markers = []\nreceiver_type = \"RootLearningHandoffV1\"",
+      "new": "[[boundary]]\nid = \"root_learning_original_handoff_consume\"\nsymbol = \"RootLearningHandoffV1::connect\"\ndefinition_path = \"codex-rs/hepta-agentd/src/root_production_learning_inputs.rs\"\ndefinition_markers = [\"pub(crate) async fn connect(\", \"validate_sealed(&self.bootstrap, length)?\", \"validate_binding(&bundle, &production.bootstrap, expected, self.root_pid)?\", \"AgentdLearningCheckpointClientV1::from_root_stream(\", \"client\\n            .restore(&initial.request)\\n            .await\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/production_launcher.rs\",\"codex-rs/hepta-agentd/src/production_launcher_late_writer.rs\"]\ncaller_markers = []\nreceiver_type = \"RootLearningHandoffV1\"",
+      "add_product_callers": [
+        "codex-rs/hepta-agentd/src/production_launcher_late_writer.rs"
+      ]
+    },
+    {
+      "id": "root_q24_factory_original_handoff_connect",
+      "old": "[[boundary]]\nid = \"root_q24_factory_original_handoff_connect\"\nsymbol = \"RootQ24ModelFactoryHandoffV1::connect\"\ndefinition_path = \"codex-rs/hepta-agentd/src/root_production_q24_model_inputs.rs\"\ndefinition_markers = [\"pub(crate) async fn connect(\", \"bundle.root != original.root\", \"bundle.consumer != original.consumer\", \"bundle.profile.require_files(\", \"RootObservationStream::from_stream(\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/production_launcher.rs\"]\ncaller_markers = []\nreceiver_type = \"RootQ24ModelFactoryHandoffV1\"",
+      "new": "[[boundary]]\nid = \"root_q24_factory_original_handoff_connect\"\nsymbol = \"RootQ24ModelFactoryHandoffV1::connect\"\ndefinition_path = \"codex-rs/hepta-agentd/src/root_production_q24_model_inputs.rs\"\ndefinition_markers = [\"pub(crate) async fn connect(\", \"bundle.root != original.root\", \"bundle.consumer != original.consumer\", \"bundle.profile.require_files(\", \"RootObservationStream::from_stream(\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/production_launcher.rs\",\"codex-rs/hepta-agentd/src/production_launcher_late_writer.rs\"]\ncaller_markers = []\nreceiver_type = \"RootQ24ModelFactoryHandoffV1\"",
+      "add_product_callers": [
+        "codex-rs/hepta-agentd/src/production_launcher_late_writer.rs"
+      ]
+    },
+    {
+      "id": "root_learning_original_config_hold",
+      "old": "[[boundary]]\nid = \"root_learning_original_config_hold\"\nsymbol = \"AgentdConfig::with_root_learning_inputs\"\ndefinition_path = \"codex-rs/hepta-agentd/src/config_root_learning.rs\"\ndefinition_markers = [\"pub(crate) fn with_root_learning_inputs(\", \"inputs.require_identity(&self.identity)?\", \"self.root_learning_inputs.is_some() || self.learning_iteration_bootstrap.is_some()\", \"self.root_learning_inputs = Some(inputs)\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/production_launcher.rs\"]\ncaller_markers = []\ncall_pattern = \"(?:\\\\.\\\\s*|[A-Za-z_]\\\\w*\\\\s*::\\\\s*)with_root_learning_inputs\\\\s*\\\\(\"",
+      "new": "[[boundary]]\nid = \"root_learning_original_config_hold\"\nsymbol = \"AgentdConfig::with_root_learning_inputs\"\ndefinition_path = \"codex-rs/hepta-agentd/src/config_root_learning.rs\"\ndefinition_markers = [\"pub(crate) fn with_root_learning_inputs(\", \"inputs.require_identity(&self.identity)?\", \"self.root_learning_inputs.is_some() || self.learning_iteration_bootstrap.is_some()\", \"self.root_learning_inputs = Some(inputs)\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/production_launcher.rs\",\"codex-rs/hepta-agentd/src/production_launcher_late_writer.rs\"]\ncaller_markers = []\ncall_pattern = \"(?:\\\\.\\\\s*|[A-Za-z_]\\\\w*\\\\s*::\\\\s*)with_root_learning_inputs\\\\s*\\\\(\"",
+      "add_product_callers": [
+        "codex-rs/hepta-agentd/src/production_launcher_late_writer.rs"
+      ]
+    }
+  ],
+  "append_boundary_toml": "[[boundary]]\nid = \"agentd_original_late_writer_launch\"\nsymbol = \"AgentdProductionLaunch::receive_original_late_writer\"\ndefinition_path = \"codex-rs/hepta-agentd/src/production_launcher_late_writer.rs\"\ndefinition_markers = [\"pub async fn receive_original_late_writer(\", \"inputs::parse(arguments)?\", \"require_late_owner(uid, gid)?\", \"receive_root_production_writer_handoff(\", \"receive_root_production_inputs(\", \"AgentdConfig::from_root_writer_handoff(\", \"verify_sender_process_binding(\"]\nproduct_callers = []\ncaller_markers = []\n",
+  "append_protected_file_toml": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/production_launcher_late_writer.rs\"\nrequired = [\"crate::RootLearningHandoffV1\", \"crate::RootQ24ModelFactoryHandoffV1\", \"let session_end = Instant::now() + lifetime\", \"actual != (uid, uid, gid, gid)\", \"config.identity() != expected\", \"root.bootstrap.writer.local_lease_id\", \"config.identity().spawn_generation\", \"original_session_remaining(session_end)?\"]\nforbidden = [\"AllowVerifier\", \"permit_all\", \"SigningKey\", \"initialize_host_authority\", \"register_host_writer_authorization\", \"rotate_host_writer_authorization\", \"compare_and_transition\", \"drop_root_native_owner_credentials\", \"from_process_environment(\", \"from_raw_fd\"]\nrequired_function_order = [\n  {function = \"fn receive_original_late_writer(\", sequence = [\"inputs::parse(arguments)?\", \"require_late_owner(uid, gid)?\", \"receive_root_production_writer_handoff(\", \"receive_root_production_inputs(\", \"AgentdConfig::from_root_writer_handoff(\", \".with_root_bound_sockets(control, app_server)?\", \"config.identity() != expected\", \"let learning: crate::RootLearningHandoffV1\", \"let model: crate::RootQ24ModelFactoryHandoffV1\", \"config.with_root_learning_inputs(inputs)?\", \"require_late_owner(uid, gid)?\", \"verify_sender_process_binding(\", \"Ok((\"]},\n  {function = \"fn require_late_owner(\", sequence = [\"libc::getuid()\", \"libc::geteuid()\", \"libc::getgid()\", \"libc::getegid()\", \"actual != (uid, uid, gid, gid)\", \"return Err(\", \"Ok(())\"]},\n]\n",
+  "policy": "Union only these actual new callers into the corresponding existing rows; preserve every current caller, marker, inventory id and unrelated protected rule. Reference full postimage applies only to the fixed base."
+}

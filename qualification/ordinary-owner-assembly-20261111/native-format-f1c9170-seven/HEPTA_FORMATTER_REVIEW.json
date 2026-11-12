@@ -1,0 +1,643 @@
+{
+  "schema": "hepta.native-format-f1c-six-file-independent-review.v1",
+  "reviewer": "hepta_audit",
+  "status": "formatting-equivalent-for-the-six-reviewed-files; qualification-not-run-by-reviewer",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source": {
+    "commit": "f1c9170c891b58d9f059302e80be5d50265798d5",
+    "tree": "2ca384f8cc81f9bf934939060fefc31c6f237aa8",
+    "registry_blob": "5deb1b0c41bfa75a70abf50842395d38e584ca8c",
+    "registry_counts": {
+      "boundaries": 504,
+      "protected": 366
+    }
+  },
+  "original_artifacts": [
+    {
+      "kind": "native-format-postimages-json",
+      "blob": "9820c85befffda1120ce0ad7fb69e857c2502bd8",
+      "bytes": 120161,
+      "sha256": "33591f547e5c0fe7d52add072aefe87d74de8c4987b0f6e79c70aee8ae96140d",
+      "independently_fetched_and_outer_hash_verified": true,
+      "entries": 12,
+      "owned_entries_decoded_and_verified": 6
+    },
+    {
+      "kind": "native-full-index-patch",
+      "blob": "eb0961f95d784ddfcc3ed7c464d79f2642664c8e",
+      "bytes": 44866,
+      "sha256": "a98af1eeb103d599af7c9e5905a3a8043907049fc919007fc7f50555c4a71760",
+      "independently_fetched_and_outer_hash_verified": true,
+      "owned_hunks_verified": 25
+    }
+  ],
+  "original_attempt_scope": "Root reports just fmt exited 0 in 2.739 seconds; the original executor exited 1 for source drift across 12 paths. Tests executed: 0; no timeout. This review neither changes that terminal result nor treats it as a qualification pass.",
+  "method": [
+    "Read the twenty relevant frozen C-feedback/lease source files at exact f1c9170c before reviewing formatter output; each matched its original delivery manifest. Use the six corresponding exact source bytes as the patch base.",
+    "Fetch both original blobs independently and recompute Git blob SHA, SHA256 and UTF-8 byte length.",
+    "Decode the six assigned base64 entries; independently verify each embedded Git SHA, SHA256 and byte length.",
+    "Require original full-index patch preimage/postimage hashes and 100644 mode to match. Apply all twenty-five assigned hunks forward to get the exact actual native bytes, and backward to recover the exact fixed source.",
+    "Inspect every assigned hunk. Lex identifiers, punctuation, comments and literals; compare the full sequence after only two explicit import-order moves and six explicitly enumerated added trailing commas. No generic removal of parentheses, statements, imports, operators, comments or string contents is used.",
+    "The six allowed commas occur after one SigningKey function argument, three guard struct initializer fields, one existing dispatch closure function argument and one Clock struct initializer field. None changes tuple shape, argument count or control flow.",
+    "Independently retain literal sequence, assertion macro sequence and test names. Three actual guard declaration blocks are byte-identical, preserving field-drop order."
+  ],
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_task_ledger_test_support.rs",
+      "preimage": "870305af6dddfc322271a2449d3d5e5c3b7d1488",
+      "postimage": "360e99732ef2aa8a12abd01851960fe9e3d59658",
+      "post_bytes": 16247,
+      "post_sha256": "dc3199512ad76f0d0dbbc6c4b5242f95ea86a268ed82bd60f3591ae1e9ae5868",
+      "hunks": 1,
+      "exact_patch_forward_reverse": true,
+      "tokens_pre": 2783,
+      "tokens_post": 2784,
+      "import_reorder": false,
+      "added_trailing_commas": [
+        {
+          "postToken": 1358,
+          "closing": ")",
+          "before": [
+            "TaskProfile",
+            "::",
+            "Original",
+            "|",
+            "TaskProfile",
+            "::",
+            "SuccessorFeedback",
+            "=>",
+            "1",
+            ",",
+            "}",
+            ";",
+            "32",
+            "]"
+          ],
+          "after": [
+            ")",
+            ",",
+            "}",
+            ";",
+            "let",
+            "session",
+            "="
+          ]
+        }
+      ],
+      "literal_sequence_equal": true,
+      "guard_declaration_bytes_equal": [],
+      "tests": [],
+      "assertion_macro_sequence": [
+        "assert",
+        "assert_eq",
+        "assert_eq"
+      ],
+      "assertion_macro_sequence_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_feedback_tests.rs",
+      "preimage": "959b773736e88a272bd61e23b420f8832c928358",
+      "postimage": "2322c42eb7024b21a568afe550156339d720bc28",
+      "post_bytes": 4714,
+      "post_sha256": "7c8c767279a1e8937bea7c4bdf9f3d7c23f466c71acee1d53246fb23047bb654",
+      "hunks": 6,
+      "exact_patch_forward_reverse": true,
+      "tokens_pre": 800,
+      "tokens_post": 800,
+      "import_reorder": true,
+      "added_trailing_commas": [],
+      "literal_sequence_equal": true,
+      "guard_declaration_bytes_equal": [],
+      "tests": [
+        "successor_feedback_requires_original_outcome_before_real_dataset",
+        "successor_feedback_refusal_never_installs_a_nonlearning_fallback"
+      ],
+      "assertion_macro_sequence": [
+        "assert",
+        "assert",
+        "matches",
+        "assert",
+        "matches",
+        "assert",
+        "matches",
+        "assert",
+        "assert_eq",
+        "assert",
+        "matches",
+        "assert",
+        "matches",
+        "assert_eq",
+        "assert_eq",
+        "assert_eq",
+        "assert",
+        "assert",
+        "assert",
+        "ensure",
+        "bail"
+      ],
+      "assertion_macro_sequence_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_state.rs",
+      "preimage": "d89d8ca0592089593c6ce6f870639e9b454435b6",
+      "postimage": "58232d6e10de477c7a66da516a1607a2aab788fe",
+      "post_bytes": 10615,
+      "post_sha256": "14f72f35eda108d7e28be2f6a8cc76d2951fcb43d54e9c384954dbd06b01e7e2",
+      "hunks": 1,
+      "exact_patch_forward_reverse": true,
+      "tokens_pre": 2003,
+      "tokens_post": 2003,
+      "import_reorder": true,
+      "added_trailing_commas": [],
+      "literal_sequence_equal": true,
+      "guard_declaration_bytes_equal": [],
+      "tests": [],
+      "assertion_macro_sequence": [],
+      "assertion_macro_sequence_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_writer_observation_tests.rs",
+      "preimage": "79068ad0bf00068c8ed1fc778ad0895840aaf19f",
+      "postimage": "fbf038e27c7df8bafdb535f1d098731835330117",
+      "post_bytes": 3993,
+      "post_sha256": "388f256c71b01490daca0cf61da23e02e8a9d902cb9d04c46319539e055de365",
+      "hunks": 3,
+      "exact_patch_forward_reverse": true,
+      "tokens_pre": 789,
+      "tokens_post": 789,
+      "import_reorder": false,
+      "added_trailing_commas": [],
+      "literal_sequence_equal": true,
+      "guard_declaration_bytes_equal": [],
+      "tests": [
+        "metadata_keeps_one_actual_proof_and_head_until_same_issuer_revoke_can_commit",
+        "original_metadata_refuses_wrong_registration_and_original_clock_expiry_without_a_new_signature"
+      ],
+      "assertion_macro_sequence": [
+        "assert",
+        "matches",
+        "assert_eq",
+        "assert_eq",
+        "assert_eq",
+        "assert_eq",
+        "assert_eq",
+        "assert_eq",
+        "assert",
+        "assert_eq",
+        "assert_eq",
+        "assert",
+        "assert_eq",
+        "assert_eq",
+        "assert",
+        "assert_eq",
+        "assert_eq"
+      ],
+      "assertion_macro_sequence_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_lease_observation.rs",
+      "preimage": "2b7454e9257f0716ecfa62d0bfe5113adaf6f527",
+      "postimage": "86021913605baf2555ec89acaf869ca774e2b437",
+      "post_bytes": 5763,
+      "post_sha256": "702694577744b48ea7559ef9abb87e40d05d66868be3d032dc6318f108142ac7",
+      "hunks": 2,
+      "exact_patch_forward_reverse": true,
+      "tokens_pre": 824,
+      "tokens_post": 827,
+      "import_reorder": false,
+      "added_trailing_commas": [
+        {
+          "postToken": 453,
+          "closing": "}",
+          "before": [
+            "&",
+            "state",
+            ")",
+            "?",
+            ";",
+            "Ok",
+            "(",
+            "DispatchStateGuard",
+            "{",
+            "_serial",
+            ":",
+            "serial",
+            ",",
+            "state"
+          ],
+          "after": [
+            "}",
+            ")",
+            "}",
+            "pub",
+            "(",
+            "super",
+            ")"
+          ]
+        },
+        {
+          "postToken": 542,
+          "closing": "}",
+          "before": [
+            "&",
+            "state",
+            ")",
+            "?",
+            ";",
+            "Ok",
+            "(",
+            "MutationStateGuard",
+            "{",
+            "_serial",
+            ":",
+            "serial",
+            ",",
+            "state"
+          ],
+          "after": [
+            "}",
+            ")",
+            "}",
+            "pub",
+            "(",
+            "super",
+            ")"
+          ]
+        },
+        {
+          "postToken": 631,
+          "closing": "}",
+          "before": [
+            "&",
+            "state",
+            ")",
+            "?",
+            ";",
+            "Ok",
+            "(",
+            "MutationStateGuard",
+            "{",
+            "_serial",
+            ":",
+            "serial",
+            ",",
+            "state"
+          ],
+          "after": [
+            "}",
+            ")",
+            "}",
+            "}",
+            "impl",
+            "AuthorityLeaseVerifier",
+            "{"
+          ]
+        }
+      ],
+      "literal_sequence_equal": true,
+      "guard_declaration_bytes_equal": [
+        "AuthorityLeaseObservationV1",
+        "DispatchStateGuard",
+        "MutationStateGuard"
+      ],
+      "tests": [],
+      "assertion_macro_sequence": [],
+      "assertion_macro_sequence_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_lease_observation_tests.rs",
+      "preimage": "4b11ddb4433c4f0b8ed82c96091ffa8a12bdd7fb",
+      "postimage": "8b9a140054028e8246677ac0959064a59f81c51f",
+      "post_bytes": 13770,
+      "post_sha256": "30f43d4137ff404095609b6867176595ea8a055b1b2b27b88b6e19516a3cf33d",
+      "hunks": 12,
+      "exact_patch_forward_reverse": true,
+      "tokens_pre": 2805,
+      "tokens_post": 2807,
+      "import_reorder": false,
+      "added_trailing_commas": [
+        {
+          "postToken": 1280,
+          "closing": ")",
+          "before": [
+            ";",
+            "release_rx",
+            ".",
+            "recv_timeout",
+            "(",
+            "WAIT",
+            ")",
+            ".",
+            "unwrap",
+            "(",
+            ")",
+            ";",
+            "\"actual-entered-result\"",
+            "}"
+          ],
+          "after": [
+            ")",
+            "}",
+            ")",
+            ";",
+            "entered_rx",
+            ".",
+            "recv_timeout"
+          ]
+        },
+        {
+          "postToken": 2336,
+          "closing": "}",
+          "before": [
+            "::",
+            "new",
+            "(",
+            "2_000",
+            ")",
+            ",",
+            "calls",
+            ":",
+            "Mutex",
+            "::",
+            "new",
+            "(",
+            "None",
+            ")"
+          ],
+          "after": [
+            "}",
+            ")",
+            ";",
+            "let",
+            "frontier",
+            "=",
+            "Arc"
+          ]
+        }
+      ],
+      "literal_sequence_equal": true,
+      "guard_declaration_bytes_equal": [],
+      "tests": [
+        "metadata_progresses_during_dispatch_but_original_dispatch_remains_serial",
+        "original_observation_excludes_deadline_revoke_and_cannot_survive_revocation",
+        "observation_panic_fences_new_entries_without_discarding_an_entered_dispatch_result",
+        "original_dispatch_panic_prevents_pending_metadata_publication",
+        "original_clock_is_sampled_after_waiting_for_the_observation_fence",
+        "actual_durable_frontier_failure_fences_both_original_and_metadata_entries",
+        "matching_id_and_revision_cannot_extend_or_replace_the_original_lease"
+      ],
+      "assertion_macro_sequence": [
+        "assert_eq",
+        "assert",
+        "matches",
+        "assert_eq",
+        "assert_eq",
+        "assert",
+        "matches",
+        "assert_eq",
+        "assert",
+        "matches",
+        "assert",
+        "matches",
+        "panic",
+        "assert",
+        "assert_eq",
+        "assert",
+        "matches",
+        "assert",
+        "matches",
+        "assert",
+        "matches",
+        "assert",
+        "matches",
+        "assert",
+        "matches",
+        "assert",
+        "matches",
+        "panic",
+        "panic",
+        "assert",
+        "assert",
+        "matches",
+        "assert",
+        "matches",
+        "matches",
+        "assert",
+        "matches",
+        "assert",
+        "assert",
+        "matches",
+        "assert",
+        "matches",
+        "assert",
+        "matches",
+        "assert",
+        "matches",
+        "assert",
+        "matches",
+        "assert",
+        "matches",
+        "assert",
+        "matches",
+        "assert_eq"
+      ],
+      "assertion_macro_sequence_equal": true
+    }
+  ],
+  "semantic_review": [
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_task_ledger_test_support.rs",
+      "finding": "One generator-key match expression is wrapped across lines and gains a function-call trailing comma. All profile arms, byte values, key length, selected role inputs and branch order are unchanged. The negative Generator source is not converted to an accepted fixture."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_feedback_tests.rs",
+      "finding": "The same Arc import moves within the same top-level scope. Layout changes retain all two tests, original producer identity assertion, missing/wrong Outcome refusal, authenticated Outcome acceptance, duplicate readback, task-byte preservation, no-new-outbox assertion, real Dataset preparation and source-withdrawal refusal."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_state.rs",
+      "finding": "Only one same-scope import moves. All slot states, closed/cancellation checks, actual owner installation and readiness transitions are unchanged; no slot rearm or fallback is introduced."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_writer_observation_tests.rs",
+      "finding": "Formatting only. Both original test bodies preserve actual same-issuer proof/head retention, revocation wait and exact next head, wrong registration/clock expiry refusal, signature/sequence invariants and explicit drop(retained) before lease.finish_original_observation."
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_lease_observation.rs",
+      "finding": "Only method-chain layout and three struct initializer trailing commas change. The three guard declarations are byte-identical: MutexGuard is declared before the State guard. Serial acquisition, state read/write/try acquisition, require_available, complete original lease validation, owner-clock sample after the fence and final poison/failed check keep their exact token order. No new callback, token, clone, public timestamp, post-effect failure or dispatch path is added."
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_lease_observation_tests.rs",
+      "finding": "All seven behavior tests remain. Original channel synchronization, deadline durations, expiry and epoch values, actual entered-result/witness assertions, panic fencing, complete forged lease refusal and original persistent byte assertions are unchanged. Additional punctuation is only the two listed trailing commas."
+    }
+  ],
+  "caller_marker_review": {
+    "scope": "Local exact definition/required/forbidden/function-sequence literal comparison for nine boundary blocks and two protected blocks whose definitions are in these six files. This is not the original checker, not a full typed receiver proof and not a coverage claim for other registry rows.",
+    "definition_marker_drift": 0,
+    "old_required_or_forbidden_presence_drift": 0,
+    "protected_function_sequence_whitespace_drift": 8,
+    "rows": [
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_state.rs",
+        "id": "q24_successor_original_generation_installed",
+        "kind": "boundary",
+        "drift": []
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_state.rs",
+        "id": "q24_successor_wait_original_generation",
+        "kind": "boundary",
+        "drift": []
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_state.rs",
+        "id": "q24_successor_actual_owner_install",
+        "kind": "boundary",
+        "drift": []
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_state.rs",
+        "id": "q24_successor_effect_cancellation",
+        "kind": "boundary",
+        "drift": []
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_state.rs",
+        "id": "q24_successor_actual_task_handle",
+        "kind": "boundary",
+        "drift": []
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_state.rs",
+        "id": "q24_successor_slot_new",
+        "kind": "boundary",
+        "drift": []
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_state.rs",
+        "kind": "protected_file",
+        "drift": []
+      },
+      {
+        "path": "codex-rs/hepta-contracts/src/authority_lease_observation.rs",
+        "id": "authority_original_lease_metadata_observation",
+        "kind": "boundary",
+        "drift": []
+      },
+      {
+        "path": "codex-rs/hepta-contracts/src/authority_lease_observation.rs",
+        "id": "authority_original_lease_metadata_revision",
+        "kind": "boundary",
+        "drift": []
+      },
+      {
+        "path": "codex-rs/hepta-contracts/src/authority_lease_observation.rs",
+        "id": "authority_original_lease_metadata_finish",
+        "kind": "boundary",
+        "drift": []
+      },
+      {
+        "path": "codex-rs/hepta-contracts/src/authority_lease_observation.rs",
+        "kind": "protected_file",
+        "drift": [
+          {
+            "field": "required_function_order",
+            "function": "fn lock_dispatch_state(",
+            "marker": "self.serial.lock()",
+            "before": true,
+            "after": false,
+            "whitespaceEquivalentMatches": [
+              "self\n            .serial\n            .lock()",
+              "self\n            .serial\n            .lock()"
+            ]
+          },
+          {
+            "field": "required_function_order",
+            "function": "fn lock_dispatch_state(",
+            "marker": "self.state.read()",
+            "before": true,
+            "after": false,
+            "whitespaceEquivalentMatches": [
+              "self\n            .state\n            .read()"
+            ]
+          },
+          {
+            "field": "required_function_order",
+            "function": "fn lock_mutation_state(",
+            "marker": "self.serial.lock()",
+            "before": true,
+            "after": false,
+            "whitespaceEquivalentMatches": [
+              "self\n            .serial\n            .lock()",
+              "self\n            .serial\n            .lock()"
+            ]
+          },
+          {
+            "field": "required_function_order",
+            "function": "fn lock_mutation_state(",
+            "marker": "self.state.write()",
+            "before": true,
+            "after": false,
+            "whitespaceEquivalentMatches": [
+              "self\n            .state\n            .write()"
+            ]
+          },
+          {
+            "field": "required_function_order",
+            "function": "fn try_lock_mutation_state(",
+            "marker": "self.serial.try_lock()",
+            "before": true,
+            "after": false,
+            "whitespaceEquivalentMatches": [
+              "self\n            .serial\n            .try_lock()"
+            ]
+          },
+          {
+            "field": "required_function_order",
+            "function": "fn try_lock_mutation_state(",
+            "marker": "self.state.try_write()",
+            "before": true,
+            "after": false,
+            "whitespaceEquivalentMatches": [
+              "self\n            .state\n            .try_write()"
+            ]
+          },
+          {
+            "field": "required_function_order",
+            "function": "fn observe_original_lease(",
+            "marker": "self.0.observations.lock()",
+            "before": true,
+            "after": false,
+            "whitespaceEquivalentMatches": [
+              "self\n            .0\n            .observations\n            .lock()"
+            ]
+          },
+          {
+            "field": "required_function_order",
+            "function": "fn observe_original_lease(",
+            "marker": "self.0.state.read()",
+            "before": true,
+            "after": false,
+            "whitespaceEquivalentMatches": [
+              "self\n            .0\n            .state\n            .read()"
+            ]
+          }
+        ]
+      }
+    ],
+    "required_alignment": "In authority_lease_observation.rs's one protected row, update the eight specified sequence literals to their actual native multi-line receiver spans. Keep their exact functions, order, errors, forbidden markers and all other conditions. self.serial.lock has two file-wide matches but each belongs to its original distinct function; preserve function-scoped checking. No closed product caller list or boundary ID needs a change for these six files."
+  },
+  "restrictions": {
+    "source_edited": false,
+    "branch_or_ref_changed": false,
+    "h_or_native_run": false,
+    "checker_changed": false,
+    "tests_or_assertions_removed": false,
+    "timeout_or_freshness_changed": false,
+    "audit_limits": "No independent compiler, official CALLERS guard, QA or runtime test was executed by this review. Original V8 17/15/2 remains its own failure. This new formatting review does not validate concurrency behavior, business inputs or ordinary deployment.",
+    "acceptance": {
+      "ordinary_learning": 0,
+      "ordinary_adoption": 0,
+      "ordinary_consumption": 0
+    }
+  }
+}

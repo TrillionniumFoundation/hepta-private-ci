@@ -1,0 +1,117 @@
+{
+  "schema": "hepta.initial-daemon-fd.source.v1",
+  "base": {
+    "commit": "caa34b7e77f5aa134dc1335f5f143af948874157",
+    "tree": "a35d97d67493471b4c550c25f935e08272750491"
+  },
+  "prerequisite_initial_manifest": "94103a58371dda99f642e82f5e5f0ccabdc59cca",
+  "status": "FROZEN_DRAFT_NOT_NATIVE_QUALIFIED",
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_inputs.rs",
+      "mode": "100644",
+      "git_blob": "904b97a3a6664750da4157ad04dc9e72486ccb19",
+      "sha256": "1eee536e8c27043baec2f65aeb439571bad10a7e02ded2f82f329fab025ab5b4",
+      "bytes": 17959,
+      "before": {
+        "git_blob": "6711d29654c262d43d9aea98a09bafa4662f4d9d",
+        "sha256": "48b0870e28a5a1a0d356b097591be41947b67db28dbce28f026e734d61025cea",
+        "bytes": 17355
+      },
+      "additions": 16,
+      "deletions": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher.rs",
+      "mode": "100644",
+      "git_blob": "b402a8fdfbb8de34c02e2ea0480ccda39218dd10",
+      "sha256": "8eab2899cd9f20d7211e33a321d6557b49e19c1c9bfd405a87216217a65fdfc8",
+      "bytes": 25984,
+      "before": {
+        "git_blob": "3442c85323f3ec7314890edaebc9fdd4d1594365",
+        "sha256": "7979bcb62006e70cac4ceed43a9b0fbcb6fa12ac6ae686b202bea767721f801a",
+        "bytes": 24573
+      },
+      "additions": 32,
+      "deletions": 2
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_inputs_tests.rs",
+      "mode": "100644",
+      "git_blob": "2225995eff924716089f653fc191e28390f8d784",
+      "sha256": "c5474b5e3faeeff51585f3d2fb9cb136efdc9d22c0f7840a8989f29ab7b7dfc7",
+      "bytes": 12301,
+      "before": {
+        "git_blob": "bd260f8027970d17e07862d3eb2c40761e3a1ba2",
+        "sha256": "a8583f8244f53f59d62ff991885ab69e79c60fd3dcc988a36ee6fe378c5bb054",
+        "bytes": 12231
+      },
+      "additions": 3,
+      "deletions": 0
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_initial_inputs_tests.rs",
+      "mode": "100644",
+      "git_blob": "cbaaaabf3bcd128529de6822c17069deda1ce628",
+      "sha256": "22f63f1ea532784ea79f6bdbe5fa79048c1f1c0e5ae5a1685acde89403d3b8d6",
+      "bytes": 4319,
+      "before": null,
+      "additions": 93,
+      "deletions": 0
+    }
+  ],
+  "documents": {
+    "LINE_OPS.json": {
+      "git_blob": "192f549bb8ccc7a5dd2aba40338af290dd707124",
+      "sha256": "45dd96916b761b3c89fec82cc0fe99ab6cf52e50f3e1c3611f47d60b2448c427",
+      "bytes": 13173
+    },
+    "CALLERS_DELTA.json": {
+      "git_blob": "681db795e7dbe5e3c315b6ea0527739d97867a8a",
+      "sha256": "f140f49d5dab0bd3eddbcd19c1f69525640c102ce899d85530d4f129828d61af",
+      "bytes": 9095
+    }
+  },
+  "flags": {
+    "new": "--root-generation-initial-handoff-fd",
+    "distinct_descriptor_required": true,
+    "learning_required_for_initial": false,
+    "initial_and_learned_publication_mutually_exclusive": true
+  },
+  "product_contract": [
+    "All numeric, pairing and alias checks occur before any descriptor is adopted.",
+    "Startup receives only the original independent Initial purpose packet; it does not connect or prepare CURRENT.",
+    "Launch retains the actual opaque offer and exposes one-shot take_generation_initial_handoff.",
+    "The existing original connection capability remains a single take; it is neither cloned nor duplicated.",
+    "run refuses an untaken Initial offer before MCP/runtime initialization.",
+    "Config remains separately owned after receive, so an actual published Initial Feature task can be attached before run.",
+    "The generic default run still fails closed if the trusted host has not consumed and used the real typed capabilities; this FD slice is not a completed autonomous first-task orchestration."
+  ],
+  "tests": {
+    "new_methods": [
+      "production_launcher::inputs::tests::initial::initial_offer_transfers_once_without_learning_or_model_inputs",
+      "production_launcher::inputs::tests::initial::initial_and_learned_publication_refuse_before_any_descriptor_is_taken",
+      "production_launcher::inputs::tests::initial::initial_aliases_incomplete_and_duplicate_flags_preserve_original_rights"
+    ],
+    "scope": "Actual local Unix descriptors and pidfd parser fixtures only; no enrolled Root, CURRENT publication, grant or ordinary task.",
+    "executed": false,
+    "new_root_parents": []
+  },
+  "unchanged": [
+    "Existing B contract",
+    "Original Root/consumer permission requirements",
+    "Initial component's actual UID0 parent roster",
+    "Original live-session drop fencing",
+    "No default key/owner/grant"
+  ],
+  "remaining": "Default Root CLI Initial deployment still requires a separate same-PID descriptor/cap worker adapter; it is not claimed implemented in this slice.",
+  "compiler_executed": false,
+  "formatter_executed": false,
+  "official_caller_scan_executed": false,
+  "ordinary_acceptance": {
+    "complete_chain": 0,
+    "positive_adoption_chain": 0,
+    "no_update_or_rollback_chain": 0
+  },
+  "authority_granted": false
+}

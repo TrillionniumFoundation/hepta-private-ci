@@ -120,6 +120,23 @@ impl HostAuthorityLearningProfileV1 {
         decode_scope(self.schema_version, self.update_scope.as_ref(), initial)
     }
 
+    pub(crate) fn require_cell_scope(
+        &self,
+        initial: &LearningIterationSnapshotV1,
+    ) -> io::Result<FrozenLearningScopeV2> {
+        if self
+            .update_scope
+            .as_ref()
+            .is_none_or(|scope| scope.scope != "cell")
+        {
+            return Err(io::Error::other(
+                "Q24 factory requires the original scoped Cell profile",
+            ));
+        }
+        self.frozen_scope(initial)?
+            .ok_or_else(|| io::Error::other("Q24 factory cannot upgrade a legacy learning profile"))
+    }
+
     pub(crate) fn require_binding(
         &self,
         identity: &AgentdIdentity,

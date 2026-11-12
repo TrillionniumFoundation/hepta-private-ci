@@ -47,12 +47,25 @@ impl HostAuthorityWriterRegistration {
         verifier: &AuthorityLeaseVerifier,
         dispatch: impl FnOnce(u64) -> io::Result<T>,
     ) -> io::Result<T> {
+        #[cfg(test)]
+        let mut timing = crate::root_authority_session::tests::component_phase_timing(
+            "writer.with_live",
+            "original-dispatch",
+        );
+        #[cfg(test)]
+        {
+            timing.minimum_success_ns = Some(20_000_000);
+        }
         self.validate()?;
+        #[cfg(test)]
+        timing.mark("read-lease-start");
         let lease = verifier
             .read_lease(&self.authority_lease.lease_id)
             .map_err(root::lease_error)?
             .ok_or_else(|| io::Error::new(io::ErrorKind::PermissionDenied, "writer lease missing"))?
             .lease;
+        #[cfg(test)]
+        timing.mark("read-lease-done");
         if lease != self.authority_lease {
             return Err(io::Error::new(
                 io::ErrorKind::PermissionDenied,
@@ -62,8 +75,14 @@ impl HostAuthorityWriterRegistration {
         let token = verifier
             .verify_use(&lease.lease_id, lease.revision, &lease.binding)
             .map_err(root::lease_error)?;
+        #[cfg(test)]
+        timing.mark("use-verified");
         let (result, _) =
             dispatch_authority_lease_with_witness(verifier, token, &lease.binding, |witness| {
+                // Recording only: the outer timing guard writes after the
+                // original dispatch has released its original owner fence.
+                #[cfg(test)]
+                let _callback_timing = timing.callback();
                 match &witness.authority_ref {
                     // Metadata only. The original opaque token and owner fence,
                     // rather than the serializable witness, authorize this call.
@@ -76,11 +95,61 @@ impl HostAuthorityWriterRegistration {
                 }
             })
             .map_err(root::lease_error)?;
+        #[cfg(test)]
+        {
+            timing.mark("dispatch-returned");
+            if result.is_ok() {
+                timing.complete();
+            }
+        }
         result
     }
 }
 
+/// Borrowed metadata from one original issuer record. The private guard keeps
+/// proof rotation, issuer revocation and signing CAS serialized until the
+/// response's final trusted time and encoding are complete.
+pub(crate) struct OriginalHostWriterObservationV1<'a> {
+    _guard: std::sync::MutexGuard<'a, ()>,
+    proof: HostSignedWriterAuthorizationV1,
+    revocations: FinalUseRevocations,
+}
+
+impl OriginalHostWriterObservationV1<'_> {
+    pub(crate) fn original_writer_proof(&self) -> &HostSignedWriterAuthorizationV1 {
+        &self.proof
+    }
+
+    pub(crate) fn original_writer_revocations(&self) -> &FinalUseRevocations {
+        &self.revocations
+    }
+}
+
 impl DeploymentFinalUseIssuer {
+    /// Read only this issuer's existing proof and head from the same record.
+    /// The caller already holds the original lease observation state fence;
+    /// this method must never reenter that lease registry.
+    pub(crate) fn observe_original_writer_state(
+        &self,
+        registration: &HostAuthorityWriterRegistration,
+    ) -> io::Result<OriginalHostWriterObservationV1<'_>> {
+        let guard = self
+            .request_lock
+            .lock()
+            .map_err(|_| io::Error::other("issuer fenced"))?;
+        let state = self.store.load(STATE_OWNER).map_err(io::Error::other)?;
+        let proof = state
+            .writer_authorization
+            .as_ref()
+            .ok_or_else(|| io::Error::other("writer not provisioned"))?;
+        self.validate_writer_proof(&state, registration, proof)?;
+        Ok(OriginalHostWriterObservationV1 {
+            _guard: guard,
+            proof: proof.clone(),
+            revocations: state.head,
+        })
+    }
+
     /// The caller holds both original lease tokens through this local signing
     /// boundary. Check the exact retained proof under the same issuer lock as
     /// the original policy, durable sequence reservation and signature.

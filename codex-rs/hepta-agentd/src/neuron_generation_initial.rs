@@ -139,8 +139,17 @@ impl<W: AnchorWitnessStore> PreparedAgentdGenerationInitialV1<W> {
             self.selected,
             receipt.clone(),
             expected,
-        )?;
-        ReadyAgentdGenerationInitialV1::new(self.journal, receipt, guard)
+        )
+        .inspect_err(|error| {
+            let _ = error;
+            #[cfg(test)]
+            eprintln!("ROOT_INITIAL_FAILURE stage=live-current-guard error={error:?}");
+        })?;
+        ReadyAgentdGenerationInitialV1::new(self.journal, receipt, guard).inspect_err(|error| {
+            let _ = error;
+            #[cfg(test)]
+            eprintln!("ROOT_INITIAL_FAILURE stage=ready-initial-construction error={error:?}");
+        })
     }
 }
 
@@ -206,14 +215,22 @@ pub(crate) fn validate_initial_target<W: AnchorWitnessStore>(
     selected: &AgentdSelectedGenerationV1,
     target: &AgentdGenerationUpdateTargetV1<W>,
 ) -> Result<CellGenerationOwnerBindingV1, AgentdError> {
-    if selected.manifest() != &target.config.manifest
-        || target.config.initial.revision != 0
-        || !target.config.initial.prefix.is_empty()
-        || target.config.initial.stopped
+    validate_initial_configuration(selected, &target.config, target.max_records)
+}
+
+pub(crate) fn validate_initial_configuration(
+    selected: &AgentdSelectedGenerationV1,
+    config: &codex_hepta_neuron::CellGenerationConfigV2,
+    max_records: u64,
+) -> Result<CellGenerationOwnerBindingV1, AgentdError> {
+    if selected.manifest() != &config.manifest
+        || config.initial.revision != 0
+        || !config.initial.prefix.is_empty()
+        || config.initial.stopped
     {
         return Err(invalid("initial generation requires its selected genesis"));
     }
-    CellGenerationOwnerBindingV1::new(&target.config, target.max_records).map_err(invalid)
+    CellGenerationOwnerBindingV1::new(config, max_records).map_err(invalid)
 }
 
 fn invalid(error: impl std::fmt::Display) -> AgentdError {

@@ -10,7 +10,9 @@ use super::FinalUseBinding;
 use super::FinalUseError;
 use super::FinalUseFrontier;
 use super::FinalUseRevocations;
+use super::PinnedIssuerKey;
 use super::SignedFinalUseGrant;
+use super::State;
 use super::final_use_binding_witness_sha256;
 use super::frontier_for_state;
 use crate::VerifiedUseAuthorityRefV1;
@@ -47,13 +49,46 @@ impl FinalUseAuthority {
         if self.0.frontier_store.is_none() {
             return Err(FinalUseError::InvalidTrust);
         }
+        let retained: RetainedUse<'_> = RetainedUse::authenticate(
+            &self.0.signer_id,
+            &self.0.issuer_keys,
+            signed,
+            expected,
+            witness,
+        )?;
+        let state = self
+            .0
+            .state
+            .lock()
+            .map_err(|_| FinalUseError::Unavailable)?;
+        let state = self.0.ensure_current_effect_state(state)?;
+        retained.verify_state(&state)
+    }
+}
+
+/// Authentication shared by the original live owner and Root's read-only
+/// observer. Construction does not assert a consumed nonce or effect completion.
+pub(super) struct RetainedUse<'a> {
+    signed: &'a SignedFinalUseGrant,
+    witness: &'a VerifiedUseTokenWitnessV1,
+    revocation_revision: u64,
+}
+
+impl<'a> RetainedUse<'a> {
+    pub(super) fn authenticate(
+        signer_id: &str,
+        issuer_keys: &[PinnedIssuerKey],
+        signed: &'a SignedFinalUseGrant,
+        expected: &FinalUseBinding,
+        witness: &'a VerifiedUseTokenWitnessV1,
+    ) -> Result<Self, FinalUseError> {
         let input = signed.grant.signing_bytes()?;
-        if signed.grant.signer_id != self.0.signer_id || &signed.grant.binding != expected {
+        if signed.grant.signer_id != signer_id || &signed.grant.binding != expected {
             return Err(FinalUseError::BindingMismatch);
         }
         let signature = Signature::from_slice(&signed.signature)
             .map_err(|_| FinalUseError::InvalidSignature)?;
-        if !self.0.issuer_keys.iter().any(|key| {
+        if !issuer_keys.iter().any(|key| {
             signed.grant.authority_epoch >= key.not_before_authority_epoch
                 && signed.grant.authority_epoch <= key.not_after_authority_epoch
                 && key.key.verify_strict(&input, &signature).is_ok()
@@ -76,26 +111,28 @@ impl FinalUseAuthority {
         {
             return Err(FinalUseError::BindingMismatch);
         }
-        let state = self
-            .0
-            .state
-            .lock()
-            .map_err(|_| FinalUseError::Unavailable)?;
-        let state = self.0.ensure_current_effect_state(state)?;
-        if state.head.authority_epoch != witness.authority_epoch {
+        Ok(Self {
+            signed,
+            witness,
+            revocation_revision: reference.revocation_revision,
+        })
+    }
+
+    pub(super) fn verify_state(&self, state: &State) -> Result<FinalUseRevocations, FinalUseError> {
+        if state.head.authority_epoch != self.witness.authority_epoch {
             return Err(FinalUseError::EpochMismatch);
         }
-        if state.head.revision < reference.revocation_revision {
+        if state.head.revision < self.revocation_revision {
             return Err(FinalUseError::StaleRevocationHead);
         }
         if state
             .head
             .revoked_grant_ids
-            .contains(&signed.grant.grant_id)
+            .contains(&self.signed.grant.grant_id)
         {
             return Err(FinalUseError::Revoked);
         }
-        if !state.used_nonces.contains(&signed.grant.nonce) {
+        if !state.used_nonces.contains(&self.signed.grant.nonce) {
             return Err(FinalUseError::InvalidGrant);
         }
         Ok(state.head.clone())

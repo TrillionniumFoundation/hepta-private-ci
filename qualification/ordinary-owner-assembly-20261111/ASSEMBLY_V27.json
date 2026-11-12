@@ -1,0 +1,317 @@
+{
+  "schema": "hepta.ordinary-owner.assembled-candidate.v27",
+  "status": "assembled-unformatted-source; native qualification pending",
+  "parent": "7666bcc2c650298f2e1d47e615a25864fe792fa1",
+  "parent_tree": "7495444ffe639ad28ac64aad5cc68e70c097c4aa",
+  "scope": [
+    "Explicit actual late-writer CLI entry with owned descriptors and a genuine read-only Fleet snapshot; original full Root/Config/Starting checks remain.",
+    "Explicit successor OriginalLedger mode with original source/Cell/Task and independent Outcome requirements; positive Ready suppressed after observed slot close.",
+    "Original Root metadata observation can share the live lease state fence with an entered effect while old dispatch remains serial; same serving issuer proof/head snapshot remains locked."
+  ],
+  "source_slices": [
+    {
+      "manifest": "2ad17bf2bb4981b627d6c687b59bbf48e910aeca",
+      "ops": "e36a44dbb8b97a5ce2bcf6594190acb425c956a5",
+      "review": "6c3a334a6b356000a5664d73e69631d4d81b1983",
+      "operations": 39
+    },
+    {
+      "manifest": "694ef36699785cd9ada883c822089cd50f860953",
+      "ops": "f28b48d70b4902b7ad49b6496525ddf690fc5a29",
+      "review": "1ce5d93a06b4311b9f798e9f4c24c74a7cf0970a",
+      "operations": 18
+    },
+    {
+      "manifest": "6a198c68d7715436006a1939d6a5a0a8a53398ea",
+      "ops": "281a559512f0fba4c8584c031101fb854c483908",
+      "review": "d8616854ac8d301b5f7953b386a977cf4e22df2c",
+      "operations": 21
+    }
+  ],
+  "root_independent_integration": {
+    "boundaries": 504,
+    "protected": 366,
+    "required_ids": 504,
+    "original_boundary_changes": [
+      "q24_task_original_ledger_open",
+      "q24_task_original_ready_observe"
+    ],
+    "new_boundary_ids": [
+      "q24_successor_original_feedback_ledger",
+      "authority_original_lease_metadata_observation",
+      "authority_original_lease_metadata_revision",
+      "authority_original_lease_metadata_finish",
+      "root_original_issuer_metadata_observation",
+      "root_original_issuer_metadata_proof",
+      "root_original_issuer_metadata_revocations",
+      "agentd_original_late_writer_inputs_prepare",
+      "agentd_original_late_writer_inputs_consume",
+      "agentd_original_late_writer_cli_prepare",
+      "agentd_original_late_writer_cli_consume",
+      "fleet_original_readonly_snapshot"
+    ],
+    "registry": {
+      "git_blob": "5deb1b0c41bfa75a70abf50842395d38e584ca8c",
+      "bytes": 668466,
+      "sha256": "ff7177a112239415393738b67ab7dd86e7300e75fe0a4e1afceb66f377cb5b00"
+    },
+    "checker_changed": false,
+    "ignored_paths_changed": false,
+    "qa_changed": false,
+    "root_parent_roster": 17,
+    "new_test_methods": 21,
+    "rust_files": 30,
+    "all_forward_reverse_ops_verified": true
+  },
+  "source_postimages": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_execution.rs",
+      "git_blob": "3263eb485459626f3cca29e5d90d58032121ae16",
+      "bytes": 8224,
+      "sha256": "91f12d9f1dbd0bcd478713768df227aef2e73bdcc1cad41c48b3b35d18603e9e"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor.rs",
+      "git_blob": "b16d0fd8d9ec24ab3603deae1e75bdaf5fa4241e",
+      "bytes": 8190,
+      "sha256": "77e815730b1db392738095cfb18b6e6c9d68afdfe3224652c1e133dcbe60f066"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_state.rs",
+      "git_blob": "d89d8ca0592089593c6ce6f870639e9b454435b6",
+      "bytes": 10615,
+      "sha256": "330c38dce7b9cc232f54308f400c923e8c6b923d0916a1b63b49dcca418d7f6f"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_worker.rs",
+      "git_blob": "00b0e2235e00c67086d7a9618223766ef1ff1cc7",
+      "bytes": 8420,
+      "sha256": "a4b394bc140cd1cb2020b03bafec387375823964bb0de8ab14e5c478ccb00d68"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_invocation.rs",
+      "git_blob": "235e6b1ce07063f854b54c202ee39c7cb54f514a",
+      "bytes": 2659,
+      "sha256": "1e2a2b6df6f534914a2a233f4106b4dbf78ec78776b0556cece935de4a4c061e"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "git_blob": "ed0c326180e2c32f59e8198cb230312015022b70",
+      "bytes": 63786,
+      "sha256": "c24981b60e7ec928e75e9634929d5829327bb9251f8f7eab72b2e228e67a2600"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_task_test_support.rs",
+      "git_blob": "dd802810439ed1e72f77f6d2126a0da48fd499b8",
+      "bytes": 19349,
+      "sha256": "b7f18e610a20a928b0c4c135888b2307a777330b5d4261be4086b928d216b709"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_task_ledger_test_support.rs",
+      "git_blob": "870305af6dddfc322271a2449d3d5e5c3b7d1488",
+      "bytes": 16164,
+      "sha256": "41ba3ce24150c842ff528a97922afdf0cb48de1467c8ad1b53b10e2bad84261a"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_task_ledger_tests.rs",
+      "git_blob": "c5b9267eaa8144e82a21f2059b1a249b7884a38d",
+      "bytes": 15650,
+      "sha256": "4e1a285e565fded976a2079d6aac30eb2023a7ff0df4297707114c2fe3eef76b"
+    },
+    {
+      "path": "CALLERS.toml",
+      "git_blob": "5deb1b0c41bfa75a70abf50842395d38e584ca8c",
+      "bytes": 668466,
+      "sha256": "ff7177a112239415393738b67ab7dd86e7300e75fe0a4e1afceb66f377cb5b00"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_feedback_tests.rs",
+      "git_blob": "959b773736e88a272bd61e23b420f8832c928358",
+      "bytes": 4348,
+      "sha256": "651a38f5ecd10025c43e7f7345394243566b4b1a8eba8ce9f37755c89db1f976"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher.rs",
+      "git_blob": "9605d4c1f84292862e2b15bf6ff525e1a2337253",
+      "bytes": 27305,
+      "sha256": "d82f99428d4f95ae14dad69ed89fb6068d12ddf644e5ff7b8c6b8f907fb5ea68"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_late_writer.rs",
+      "git_blob": "8a4932c42201071baf5940d6cb1878539fddc142",
+      "bytes": 8040,
+      "sha256": "e20bc5545592dc973db8928ec2869197b9a0e23c4cfa6a2199866f08a3f04a28"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_late_startup.rs",
+      "git_blob": "4581a2604b7a34dcc75c852d34406bbc8f87076c",
+      "bytes": 2987,
+      "sha256": "f0b0be17e51753c6fd5a2ccda80b93fe7d6f17ce9a1fe30d841c6981c204f915"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config.rs",
+      "git_blob": "6142284d17c3e9808a2af0ae6f105c829d7e0d59",
+      "bytes": 39198,
+      "sha256": "9fff4256e5275a652cc4eec07bd8f704bbc748fed0f33f80d4684a33c9b94b19"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config_late_writer_identity.rs",
+      "git_blob": "8bbd85bf8af4f18635aff1a092a749a4cc4fc23d",
+      "bytes": 3955,
+      "sha256": "43691c799a8285d8e0a8254d04f39d9b024c2094463dd95cf2b9727d91f47022"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config_late_writer_identity_tests.rs",
+      "git_blob": "2816318bc469ce14cae03a744670b9531fa6f95f",
+      "bytes": 4909,
+      "sha256": "589b4d57d312dd8f1d8eb067f33886328407633abd93e88b5d6ff43fa4e36496"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_late_writer_tests.rs",
+      "git_blob": "5260b0e129476365f896979053c14d1a34779004",
+      "bytes": 8569,
+      "sha256": "c98f95e6f619f58ab4d2a87d790ff9b1eeb150b1e0196382fe4d393ed8ed845e"
+    },
+    {
+      "path": "codex-rs/hepta-fleet/src/registry.rs",
+      "git_blob": "1f52f8d39747dfe3718c5067d0970f8bd6dd3bc4",
+      "bytes": 24911,
+      "sha256": "6fa250502444563bafb8c2ede7421298e40388a3b5e72ee16d2bc777be04c6cf"
+    },
+    {
+      "path": "codex-rs/hepta-fleet/src/registry_readonly.rs",
+      "git_blob": "7a9d22b0e99f5835dd652c5a4abc77dfbcba8528",
+      "bytes": 1354,
+      "sha256": "ca8cde70f416490323ce4da2dceccfc77833b409e6da042b50d534a2b1855fdb"
+    },
+    {
+      "path": "codex-rs/hepta-fleet/src/registry_readonly_tests.rs",
+      "git_blob": "261fa7401034bbf26cabf410598c2febab66a35d",
+      "bytes": 3427,
+      "sha256": "361f72226d2fe9f6f3fe22d5e6dc37b6e2cde2e0624f8f2b07136a59c1c8b456"
+    },
+    {
+      "path": ".github/workflows/hepta-daemon-learning-native.yml",
+      "git_blob": "2375dcdc44f345840f5a40a8e04380efe789502d",
+      "bytes": 21147,
+      "sha256": "63bb95abc69fd383c7a4f76bc1a0bfbfa6e9b999a3d6ec45487668986c070547"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_lease.rs",
+      "git_blob": "a3495b587fb5d91e8581f5ccb64a84d586523de8",
+      "bytes": 61811,
+      "sha256": "77acda03cf3979ae3b1bebb578770fac2d81c6298c76a2a40a3916a33ca06023"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_lease_revoke.rs",
+      "git_blob": "8691a8725bad4c858589228015ee74cf75c266bb",
+      "bytes": 5176,
+      "sha256": "be8c22a07ade1fcd0a5b1e8023816053a05be16b515c16306c67d76c18b796b8"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_issuer.rs",
+      "git_blob": "5fcc50d3ea59f6a0ed76dd990de17deabc4cd360",
+      "bytes": 20614,
+      "sha256": "c76e95d3817ba6e640413100f5cfe51be3b7fcddde7b32bb660580ff965c5c17"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_writer.rs",
+      "git_blob": "8489d6f8e8da15936a9ccd16060d0b434f69e264",
+      "bytes": 14644,
+      "sha256": "d508894e496200f6334398e7cc94f282adbd2cfb58a501b34658bb5f3f28ab81"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_writer.rs",
+      "git_blob": "da842adff40dfa5f63403195643d7c49112bdcd3",
+      "bytes": 12575,
+      "sha256": "0ee8c79585d4275b5201a73509e42e4f359ca4c142c4f45f3a2d3bda07705891"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_writer_tests.rs",
+      "git_blob": "d4cc03578f8ae209f53b6285d0a7df5bacb2d304",
+      "bytes": 10102,
+      "sha256": "22d8d85fd667ab34814816781db90915168fe2753f7d9a1eccf524c13b46e097"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_lease_revoke_tests.rs",
+      "git_blob": "df32089dd116c7347beda560f72959d7cd9bc6b1",
+      "bytes": 9920,
+      "sha256": "7261a9ed81bc5785bc55799fa10f30a28e0d20b0c145e2c08a603b68585fbe5d"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_lease_observation.rs",
+      "git_blob": "2b7454e9257f0716ecfa62d0bfe5113adaf6f527",
+      "bytes": 5326,
+      "sha256": "5652b09f5238991752ccb54bfb5f138e90cc527408509659fa10579fa430b190"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_lease_observation_tests.rs",
+      "git_blob": "4b11ddb4433c4f0b8ed82c96091ffa8a12bdd7fb",
+      "bytes": 12981,
+      "sha256": "9a5f0833a1ab4e0d3ac45e5d9d0a136ef9e99f11a6f86d1425202ac7c297859e"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_writer_observation_tests.rs",
+      "git_blob": "79068ad0bf00068c8ed1fc778ad0895840aaf19f",
+      "bytes": 3605,
+      "sha256": "a36829bf0851d56a5de3b9dd36144693e570968e1d0409b95380aa586c61bf5e"
+    },
+    {
+      "path": ".github/blob-size-allowlist.txt",
+      "git_blob": "85eaaa1d4b7da48682b202172104086bc007cc89",
+      "bytes": 12066,
+      "sha256": "e457b91dd298b2bd36ee77351d7e6fbc7587904f2f114fd171283b7597b49129"
+    }
+  ],
+  "qualification": {
+    "packages": [
+      "codex-hepta-agentd",
+      "codex-hepta-learning-artifacts",
+      "codex-hepta-intelligence-eval",
+      "codex-hepta-contracts",
+      "codex-hepta-neuron",
+      "codex-hepta-learning-ledger",
+      "codex-hepta-fleet"
+    ],
+    "harness": "096b5b69c1295560f3a6c9e0da51e2708a0c996c",
+    "scope_extension": "f2a6e48d23e0792b761141c22dc8a0694249c62e",
+    "independent_review": "82563f0c954160aa092365c0339595c865fa4b46",
+    "root_parent_roster": 17,
+    "new_test_methods": 21,
+    "executed_for_this_source": 0,
+    "status": "pending; no predecessor result inherited"
+  },
+  "evidence": {
+    "root_7666_v8": "Original 17 selected,15 passed,2 failed; complete JUnit/log bytes and closed transport receipt retained.",
+    "maintenance_2ac": "Original formatter source-drift refusal with zero tests, exact native postimages already in parent; complete original PTY now attached.",
+    "independent_archive_reparse": "Frozen V7/V8 archives independently re-read and parsed on operator host; original failed outcomes retained, no new tests.",
+    "v9_archive": "New original 2ac/7666 combined archive was produced by unchanged exporter; complete transport still pending and not claimed attached."
+  },
+  "unchanged_guards": {
+    "max_age_ns": 500000000,
+    "age_origin": "request_started_ns",
+    "original_checker": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+    "typed_helper": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f",
+    "no_generic_metadata_callback": true,
+    "old_effect_result_and_witness_preserved": true,
+    "no_fenced_session_revival": true
+  },
+  "remaining_requirements": [
+    "Historical-source custody for a new incarnation, or a separately specified live-owner phase transition, is still not implemented.",
+    "A real independently enrolled Observer and actual task business Outcome remain required; task publication is not its label.",
+    "Feedback with origin=None does not enqueue a newly admitted Root learning source; original next-scope registration remains required.",
+    "Default Root CLI does not supply the existing trusted-host three-right late-writer sender or the complete actual Primary inputs.",
+    "Actual independent ordinary C and genuine business daemon+Root process restart remain unaccepted."
+  ],
+  "ordinary_acceptance": {
+    "complete": 0,
+    "positive_adoption": 0,
+    "no_update_or_rollback": 0
+  },
+  "publication": {
+    "draft_only": true,
+    "main_merge": false,
+    "public_draft_head_before": "3c8dabe46598599e91b2b8b80081e09069ff9426",
+    "advance_only_after_current_source_qualification": true
+  }
+}

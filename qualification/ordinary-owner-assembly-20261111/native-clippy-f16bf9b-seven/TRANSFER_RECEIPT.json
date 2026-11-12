@@ -1,0 +1,109 @@
+{
+  "schema": "hepta.complete-native-maintenance-transfer.v1",
+  "source": "f16bf9b8ee32cbe2d21c4fe6c1846dd6d54fd361",
+  "files": [
+    {
+      "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f16bf9b-seven-final-v2/records/fix-seven-crates.execution.json",
+      "size": 1791,
+      "sha256": "8b7694b114f2ac0294eb4b7cb5bd475cc3e20bcdf7cebb037f4fd8a6943f1924",
+      "version": "66306:55359584:1791:1794458610872927836:1794458610874069786",
+      "eof": true
+    },
+    {
+      "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f16bf9b-seven-final-v2/records/progress.json",
+      "size": 19054,
+      "sha256": "572b98c53429637fa9302599ce8dc4fd62eee506c87a0510ffdd78fbb04fcb9d",
+      "version": "66306:55359588:19054:1794458610987704677:1794458610988065331",
+      "eof": true
+    },
+    {
+      "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f16bf9b-seven-final-v2/records/final-source-identity.json",
+      "size": 284,
+      "sha256": "9947cec4ac0c3b643e4e3799eebaa147ef3cadcd59e0485c8a28112918b43579",
+      "version": "66306:55359578:284:1794458610900733318:1794458610901068731",
+      "eof": true
+    },
+    {
+      "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f16bf9b-seven-final-v2/records/maintenance.patch",
+      "size": 1670,
+      "sha256": "d32e397986931d4a59eeb1195e42769fc90b55911bfd8d605c14dafbc6c64b50",
+      "version": "66306:55359585:1670:1794458610905751225:1794458610905751225",
+      "eof": true
+    },
+    {
+      "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f16bf9b-seven-final-v2/records/maintenance-postimages.json",
+      "size": 51401,
+      "sha256": "8ec4b84fd51a4914276574c3681c1f3db530795bcdba9dc298824e2cd970f477",
+      "version": "66306:55359586:51401:1794458610909752011:1794458610910068379",
+      "eof": true
+    },
+    {
+      "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f16bf9b-seven-final-v2/records/fmt-before.execution.json",
+      "size": 1461,
+      "sha256": "5a4e20f3073b2835a5b220a2070ea14c04922b20972cbd1e48b6186c94722cec",
+      "version": "66306:55359581:1461:1794458390857750646:1794458390868750207",
+      "eof": true
+    },
+    {
+      "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f16bf9b-seven-final-v2/records/operator-toolchain.execution.json",
+      "size": 1439,
+      "sha256": "26797c38189fa5a6e39af8a56ef223c1d5950506a9a40bccea91a4eb7147b274",
+      "version": "66306:55359577:1439:1794458388009108554:1794458388009108554",
+      "eof": true
+    }
+  ],
+  "postimages": [
+    {
+      "bytes": 32970,
+      "git_blob": "e51e0c3ab997a1910435ef94b43ddd9facde2b30",
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_root_fixture_tests.rs",
+      "sha256": "b406aaa6c7a55b0801e64e0b9281b3cb4b87a4732b33ce526137007888c7f14e"
+    },
+    {
+      "bytes": 5163,
+      "git_blob": "cdc7037f1e63c311c4354e7b3a9193e3ea81825c",
+      "path": "codex-rs/hepta-agentd/src/config_late_writer_identity_tests.rs",
+      "sha256": "9157e2835903429f52171d0af4bebc3d823fe8993fc7ad7b2b839d9de4dcedb3"
+    }
+  ],
+  "log_transfer": {
+    "schema": "hepta.original-clippy-log-transfer.v1",
+    "source": "f16bf9b8ee32cbe2d21c4fe6c1846dd6d54fd361",
+    "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-f16bf9b-seven-final-v2/records/fix-seven-crates.execution.json.50dbd6ff3c6041408762cfb40c8b563e.log",
+    "version": "66306:55359583:83701:1794458610851070685:1794458610851070685",
+    "bytes": 83701,
+    "sha256": "3681daeba9a54a12d02623e314ad3c90ca44edf73419e0b607c82b214a2cc1da",
+    "git_blob": "87fc4f4a5a671598b40034df52fbe842e296887b",
+    "chunks": [
+      {
+        "offset": 0,
+        "next_offset": 65536,
+        "chunk_sha256": "aae6258be6ca67fdb8155e29d408eefa1a7f95750db54677264a72c885b8ff31",
+        "version": "66306:55359583:83701:1794458610851070685:1794458610851070685",
+        "eof": false
+      },
+      {
+        "offset": 65536,
+        "next_offset": 83701,
+        "chunk_sha256": "c24c0251774a159489384d57d4f8f329da1ccb10f54d6f5ad531f0c2c740368d",
+        "version": "66306:55359583:83701:1794458610851070685:1794458610851070685",
+        "eof": true
+      }
+    ],
+    "whole_verified_against_original_execution_record": true
+  },
+  "patch_forward_reverse": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_root_fixture_tests.rs",
+      "hunks": 1,
+      "forward_and_reverse": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config_late_writer_identity_tests.rs",
+      "hunks": 1,
+      "forward_and_reverse": true
+    }
+  ],
+  "exact_registry_unchanged": true,
+  "tests_executed": 0
+}

@@ -19,6 +19,16 @@ mod desktop;
 #[path = "config_circuit_task.rs"]
 mod circuit_task;
 
+#[cfg(target_os = "linux")]
+#[path = "config_q24_successor.rs"]
+mod q24_successor;
+
+#[cfg(target_os = "linux")]
+#[path = "config_late_writer_identity.rs"]
+mod late_writer_identity;
+#[cfg(target_os = "linux")]
+pub(crate) use late_writer_identity::read_original_late_writer_starting_identity;
+
 #[path = "config_q24_circuit_task.rs"]
 #[cfg(target_os = "linux")]
 mod q24_circuit_task;

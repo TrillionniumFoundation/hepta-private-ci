@@ -1,0 +1,41 @@
+{
+  "schema": "hepta.exact-source-operations.v1",
+  "base": {
+    "commit": "894138ff2c34dc54b0f31d3883a840639d076ea5",
+    "tree": "3c7e0963f8c32701066071f354c626aa5283687d"
+  },
+  "operations": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_execution.rs",
+      "before": "            None => self.source.observe_learning(identity, record, trace),",
+      "after": "            None => {\n                let source: &DurableCircuitTaskSourceV1<FileAnchorWitnessStore> = &self.source;\n                source.observe_learning(identity, record, trace)\n            }",
+      "preimage": {
+        "git_blob": "3263eb485459626f3cca29e5d90d58032121ae16",
+        "bytes": 8224,
+        "sha256": "91f12d9f1dbd0bcd478713768df227aef2e73bdcc1cad41c48b3b35d18603e9e"
+      },
+      "postimage": {
+        "git_blob": "379439c76b0d8ea1cb123b92bc199b162d8676e5",
+        "bytes": 8346,
+        "sha256": "6751cd2e952bbd9a6c48aba92e9a082d3158a514cf6076bd20246970ee0391c5"
+      },
+      "unique_forward_reverse": true
+    },
+    {
+      "path": "CALLERS.toml",
+      "before": "\"None => self.source.observe_learning(identity, record, trace)\"",
+      "after": "\"None => {\",\"let source: &DurableCircuitTaskSourceV1<FileAnchorWitnessStore> = &self.source;\",\"source.observe_learning(identity, record, trace)\"",
+      "preimage": {
+        "git_blob": "726a238d13e8d35771230ac24c6cee950a910674",
+        "bytes": 669144,
+        "sha256": "eb85a283658801cdb967e61a4fdbdbc062c654130f25b81f6b69b9fba38e37f3"
+      },
+      "postimage": {
+        "git_blob": "d9478557509a1e70b7b32b02b86cfd2aa2babbd5",
+        "bytes": 669225,
+        "sha256": "f9a911c62f591f93f92833494bb83af828f31ac55d17a2b6b784c480424148fd"
+      },
+      "unique_forward_reverse": true
+    }
+  ]
+}

@@ -2,12 +2,13 @@
 
 #[cfg(target_os = "linux")]
 fn main() -> Result<(), Box<dyn std::error::Error>> {
+    use std::io::Write;
     use std::os::fd::AsFd;
     use std::path::PathBuf;
     let mut args = std::env::args_os().skip(1);
     let command = args
         .next()
-        .ok_or("initialize, register-writer, register-learning, serve-session, serve-fresh-session, diagnose-native, launch-native, provider-status or provider-login required")?;
+        .ok_or("initialize, register-writer, register-learning, register-q24-model-factory, serve-session, serve-fresh-session, diagnose-native, launch-native, provider-status or provider-login required")?;
     let mut options = std::collections::BTreeMap::new();
     let mut pidfd_stdin = false;
     while let Some(option) = args.next() {
@@ -109,6 +110,26 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             &owner,
         )?;
         println!("{}", serde_json::to_string(&registered)?);
+    } else if command == "register-q24-model-factory" {
+        let config = take("--config")?;
+        let registration = take("--registration")?;
+        let learning_profile = take("--learning-profile")?;
+        let reservation = take("--q24-model-reservation")?;
+        if !options.is_empty() || !pidfd_stdin {
+            return Err(
+                "Model registration requires original Root inputs and pre-held consumer pidfd"
+                    .into(),
+            );
+        }
+        let owner = std::io::stdin().as_fd().try_clone_to_owned()?;
+        let registered = codex_hepta_agentd::register_host_q24_model_factory(
+            &config,
+            &registration,
+            &learning_profile,
+            &reservation,
+            &owner,
+        )?;
+        println!("{}", serde_json::to_string(&registered)?);
     } else if command == "serve-session" || command == "serve-fresh-session" {
         let config = take("--config")?;
         let registration = take("--registration")?;
@@ -125,6 +146,21 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             .remove(std::ffi::OsStr::new("--learning-profile"))
             .map(PathBuf::from);
         let learning_handoff = options.remove(std::ffi::OsStr::new("--root-learning-handoff-fd"));
+        let model_reservation = options
+            .remove(std::ffi::OsStr::new("--q24-model-reservation"))
+            .map(PathBuf::from);
+        let model_handoff = options.remove(std::ffi::OsStr::new("--root-q24-model-handoff-fd"));
+        let publication_deployment = options
+            .remove(std::ffi::OsStr::new("--generation-publication-deployment"))
+            .map(PathBuf::from);
+        let publication_handoff = options.remove(std::ffi::OsStr::new(
+            "--root-generation-publication-handoff-fd",
+        ));
+        let initial_deployment = options
+            .remove(std::ffi::OsStr::new("--generation-initial-deployment"))
+            .map(PathBuf::from);
+        let initial_handoff =
+            options.remove(std::ffi::OsStr::new("--root-generation-initial-handoff-fd"));
         let notes_profile = options
             .remove(std::ffi::OsStr::new("--notes-launch-profile"))
             .map(PathBuf::from);
@@ -133,6 +169,23 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         let notes_deployment = options.remove(std::ffi::OsStr::new("--notes-deployment-fd"));
         if !options.is_empty() || !pidfd_stdin {
             return Err("unknown option or missing pre-held owner pidfd".into());
+        }
+        if (initial_deployment.is_some() || initial_handoff.is_some())
+            && (publication_deployment.is_some() || publication_handoff.is_some())
+        {
+            return Err(
+                "initial and learned publication require separate original Root sessions".into(),
+            );
+        }
+        if initial_deployment.is_some() != initial_handoff.is_some()
+            || initial_deployment.is_some() && root_fd.is_none()
+        {
+            return Err("initial publication requires its explicit Root deployment, separate purpose handoff and original Root pidfd".into());
+        }
+        if publication_deployment.is_some() != publication_handoff.is_some()
+            || publication_deployment.is_some() && (learning_profile.is_none() || root_fd.is_none())
+        {
+            return Err("publication serving requires its explicit Root deployment, separate purpose handoff, original learning and Root pidfd".into());
         }
         // Claim every numeric inherited FD before any clone/open/runtime can
         // reuse a missing number. One slot owns each FD and closes the original.
@@ -149,6 +202,23 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             .as_deref()
             .map(|fd| inherited_descriptor(fd, &mut claimed))
             .transpose()?;
+        let model_handoff = model_handoff
+            .as_deref()
+            .map(|fd| inherited_descriptor(fd, &mut claimed))
+            .transpose()?;
+        let publication_handoff = publication_handoff
+            .as_deref()
+            .map(|fd| inherited_descriptor(fd, &mut claimed))
+            .transpose()?;
+        let initial_handoff = initial_handoff
+            .as_deref()
+            .map(|fd| inherited_descriptor(fd, &mut claimed))
+            .transpose()?;
+        if model_reservation.is_some() != model_handoff.is_some()
+            || model_handoff.is_some() && (learning_profile.is_none() || root_fd.is_none())
+        {
+            return Err("Model serving requires its reserved Root profile and separate handoff beside original learning".into());
+        }
         if learning_profile.is_some() != learning_handoff.is_some()
             || learning_profile.is_some() && root_fd.is_none()
         {
@@ -210,7 +280,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             )?;
             prepared
         } else {
-            if handoff.is_some() || root_fd.is_some() && learning_handoff.is_none() {
+            if handoff.is_some()
+                || root_fd.is_some() && learning_handoff.is_none() && initial_handoff.is_none()
+            {
                 return Err("open-only serving does not accept fresh handoff inputs".into());
             }
             codex_hepta_agentd::PreparedHostAuthoritySession::open(&config, &registration, owner)?
@@ -219,38 +291,189 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             Some(profile) => prepared.with_registered_learning(&profile)?,
             None => prepared,
         };
+        let mut prepared = match model_reservation {
+            Some(reservation) => prepared.with_registered_q24_model_factory(&reservation)?,
+            None => prepared,
+        };
+        let (deployment, publication_offer) = match (publication_deployment, publication_handoff) {
+            (Some(path), Some(handoff)) => {
+                let (capability, offer) = prepared.enable_generation_publication()?;
+                let capability: codex_hepta_agentd::RootGenerationPublicationEnrollmentCapabilityV1 = capability;
+                (
+                    Some(capability.with_original_deployment(&path)?),
+                    Some((handoff, offer)),
+                )
+            }
+            (None, None) => (None, None),
+            _ => return Err("publication deployment and inherited offer must be paired".into()),
+        };
+        let (initial_deployment, initial_offer) = match (initial_deployment, initial_handoff) {
+            (Some(path), Some(handoff)) => {
+                let files = codex_hepta_agentd::RootGenerationInitialDeploymentFilesV1::open_original_initial_deployment(&path)?;
+                let (capability, offer) =
+                    prepared.enable_generation_initial(files.deployment().clone())?;
+                let capability: codex_hepta_agentd::RootGenerationInitialEnrollmentCapabilityV1 =
+                    capability;
+                (
+                    Some(capability.with_original_initial_deployment(files)?),
+                    Some((handoff, offer)),
+                )
+            }
+            (None, None) => (None, None),
+            _ => return Err("initial deployment and inherited offer must be paired".into()),
+        };
+        let initial_ready = initial_deployment
+            .as_ref()
+            .map(|deployment| serde_json::to_string(deployment.session()))
+            .transpose()?;
+        let deployment_ready = deployment
+            .as_ref()
+            .map(|deployment| serde_json::to_string(deployment.session()))
+            .transpose()?;
+        let model_offer = model_handoff
+            .as_ref()
+            .map(|_| prepared.take_q24_model_factory_offer())
+            .transpose()?;
         let learning_bootstrap = learning_handoff
             .as_ref()
             .map(|_| prepared.seal_learning_bootstrap())
             .transpose()?;
         let ready = || {
             if let (Some(handoff), Some(bootstrap), Some(root)) =
-                (learning_handoff, learning_bootstrap, root_fd)
+                (learning_handoff, learning_bootstrap, root_fd.as_ref())
             {
                 codex_hepta_agentd::send_root_learning_handoff(
                     std::os::unix::net::UnixDatagram::from(handoff),
                     &bootstrap,
-                    &root,
+                    root,
                     std::time::Duration::from_secs(30),
                 )
                 .map_err(std::io::Error::other)?;
             }
+            if let (Some(handoff), Some(offer), Some(root)) =
+                (model_handoff, model_offer, root_fd.as_ref())
+            {
+                codex_hepta_agentd::send_root_q24_model_factory_handoff(
+                    std::os::unix::net::UnixDatagram::from(handoff),
+                    offer,
+                    root,
+                    std::time::Duration::from_secs(30),
+                )
+                .map_err(std::io::Error::other)?;
+            }
+            if let (Some((handoff, offer)), Some(root)) = (publication_offer, root_fd.as_ref()) {
+                codex_hepta_agentd::send_root_generation_publication_handoff(
+                    std::os::unix::net::UnixDatagram::from(handoff),
+                    offer,
+                    root,
+                    std::time::Duration::from_secs(30),
+                )
+                .map_err(std::io::Error::other)?;
+            }
+            if let (Some((handoff, offer)), Some(root)) = (initial_offer, root_fd.as_ref()) {
+                codex_hepta_agentd::send_root_generation_initial_handoff(
+                    std::os::unix::net::UnixDatagram::from(handoff),
+                    offer,
+                    root,
+                    std::time::Duration::from_secs(30),
+                )
+                .map_err(std::io::Error::other)?;
+            }
+            if let Some(session) = initial_ready {
+                println!("{{\"initial_deployment_session\":{session}}}");
+                std::io::stdout().flush()?;
+            }
+            if let Some(session) = deployment_ready {
+                println!("{{\"publication_deployment_session\":{session}}}");
+                std::io::stdout().flush()?;
+            }
             Ok(())
         };
-        match (native_profile, text) {
-            (Some(profile), None) => {
-                prepared.launch_native_with_ready(&config, &registration, &profile, ready)?
+        let stopping = std::sync::atomic::AtomicBool::new(/*val*/ false);
+        std::thread::scope(|scope| -> std::io::Result<()> {
+            // A failed ready callback or unwind also stops the read-only waiter
+            // before scope joins it. No second service/writer is opened.
+            let stop = PublicationDeploymentStop(&stopping);
+            let stop_ref = &stopping;
+            let worker = deployment.map(|deployment| scope.spawn(move || {
+                let deployment: codex_hepta_agentd::RootGenerationPublicationDeploymentV1 = deployment;
+                let registered = deployment.wait_and_register(stop_ref)?;
+                // Report the original completed registration while serving, so
+                // the trusted host can connect without racing its short timeout.
+                let stdout = std::io::stdout();
+                let mut output = stdout.lock();
+                writeln!(output, "{{\"publication_registered_binding\":\"{}\"}}", registered.binding())
+                    .and_then(|()| output.flush())
+                    .map_err(|error| std::io::Error::other(format!(
+                        "original publication registered; acknowledgement output uncertain: {error}",
+                    )))?;
+                Ok::<_, std::io::Error>(registered)
+            }));
+            let initial_worker = initial_deployment.map(|deployment| {
+                scope.spawn(move || {
+                let deployment: codex_hepta_agentd::RootGenerationInitialDeploymentV1 = deployment;
+                let registered = deployment.wait_and_register_initial(stop_ref)?;
+                let stdout = std::io::stdout();
+                let mut output = stdout.lock();
+                writeln!(output, "{{\"initial_registered_binding\":\"{}\"}}", registered.binding())
+                    .and_then(|()| output.flush())
+                    .map_err(|error| std::io::Error::other(format!(
+                        "original Initial registered; acknowledgement output uncertain: {error}",
+                    )))?;
+                Ok::<_, std::io::Error>(registered)
+            })
+            });
+            let served = match (native_profile, text) {
+                (Some(profile), None) => {
+                    prepared.launch_native_with_ready(&config, &registration, &profile, ready)
+                }
+                (None, Some((file, pidfd))) => {
+                    prepared.serve_with_text_and_ready(file, pidfd, ready)
+                }
+                (None, None) => prepared.serve_with_ready(ready),
+                (Some(_), Some(_)) => {
+                    Err(std::io::Error::other("exclusive native/text UI options"))
+                }
+            };
+            drop(stop);
+            let registered = match worker {
+                Some(worker) => Some(
+                    worker
+                        .join()
+                        .map_err(|_| std::io::Error::other("Root deployment worker panicked"))?,
+                ),
+                None => None,
+            };
+            let initial_registered = match initial_worker {
+                Some(worker) => Some(worker.join().map_err(|_| {
+                    std::io::Error::other("Root Initial deployment worker panicked")
+                })?),
+                None => None,
+            };
+            served?;
+            if let Some(registered) = initial_registered {
+                registered?;
             }
-            (None, Some((file, pidfd))) => {
-                prepared.serve_with_text_and_ready(file, pidfd, ready)?
+            if let Some(registered) = registered {
+                registered?;
             }
-            (None, None) => prepared.serve_with_ready(ready)?,
-            (Some(_), Some(_)) => return Err("exclusive native/text UI options".into()),
-        }
+            Ok(())
+        })?;
     } else {
         return Err("unknown authority command".into());
     }
     Ok(())
+}
+
+#[cfg(target_os = "linux")]
+struct PublicationDeploymentStop<'a>(&'a std::sync::atomic::AtomicBool);
+
+#[cfg(target_os = "linux")]
+impl Drop for PublicationDeploymentStop<'_> {
+    fn drop(&mut self) {
+        self.0
+            .store(/*val*/ true, std::sync::atomic::Ordering::Release);
+    }
 }
 
 #[cfg(target_os = "linux")]

@@ -9,6 +9,57 @@ use super::*;
 use crate::learning_iteration_channel_scoped_v2;
 
 #[tokio::test]
+async fn data_only_learning_profiles_do_not_acquire_original_model_admission() {
+    for scoped in [false, true] {
+        let daemon = AgentdFixture::new();
+        let request = iteration_request(&daemon);
+        let mut ports = IterationPorts::new(
+            /*proposal*/ None,
+            LearningEvaluationDispositionV1::NoUpdate,
+        );
+        let scope = ok(FrozenLearningScopeV2::freeze(
+            &request,
+            &ports.owners(),
+            LearningUpdateScopeV2::Cell,
+            digest("test-rule"),
+        ));
+        if scoped {
+            ports.scope_binding = Some(scope.binding());
+        }
+        let ports = Arc::new(ports);
+        let (_, owner) = ok(if scoped {
+            learning_iteration_channel_scoped_v2(
+                daemon.identity.agent_id.clone(),
+                /*spawn_generation*/ 1,
+                ports.owners(),
+                ports.clone(),
+                ports.verifier.clone(),
+                /*capacity*/ 2,
+                scope,
+            )
+        } else {
+            learning_iteration_channel_v1(
+                daemon.identity.agent_id.clone(),
+                /*spawn_generation*/ 1,
+                ports.owners(),
+                ports.clone(),
+                ports.verifier.clone(),
+                /*capacity*/ 2,
+            )
+        });
+        assert!(
+            owner
+                .require_proposal_owner(/*governed_plasticity_present*/ false)
+                .await
+                .is_err()
+        );
+        assert!(ok(ports.executed.lock()).is_empty());
+        assert!(ok(ports.attested.lock()).is_empty());
+        assert!(ok(ports.checkpoint_calls.lock()).is_empty());
+    }
+}
+
+#[tokio::test]
 async fn signed_training_profile_drift_stops_before_evaluation_in_both_scope_profiles() {
     for update_scope in [None, Some(LearningUpdateScopeV2::Cell)] {
         let daemon = AgentdFixture::new();

@@ -30,6 +30,11 @@ use crate::PlasticityRuntimeCallErrorV1;
 
 #[path = "learning_iteration_delivery_runtime.rs"]
 mod delivery;
+#[cfg(target_os = "linux")]
+#[path = "learning_iteration_retained_source.rs"]
+mod retained_source;
+pub(crate) use delivery::CircuitLearningDeliveryRuntimeV1;
+pub(crate) use delivery::CircuitLearningSourceV1;
 #[path = "circuit_learning_delivery_registry.rs"]
 mod registry;
 pub use registry::CircuitLearningDeliveryRegistryV1;
@@ -158,6 +163,12 @@ impl LearningIterationReservationV1<'_> {
 
 /// Consumed once by Agentd. No mutable writer or trust root reaches the sender.
 /// Trust rotation requires a newly admitted process-owner bootstrap.
+#[cfg(target_os = "linux")]
+#[path = "learning_iteration_successor.rs"]
+mod successor;
+#[cfg(target_os = "linux")]
+pub(crate) use successor::OriginalQ24SuccessorContext;
+
 pub struct LearningIterationRuntimeBootstrapV1 {
     agent_id: AgentId,
     spawn_generation: u64,
@@ -169,7 +180,13 @@ pub struct LearningIterationRuntimeBootstrapV1 {
     sender: mpsc::Sender<LearningIterationCommandV1>,
     circuit_delivery_registry: Option<CircuitLearningDeliveryRegistryV1>,
     circuit_delivery_source: delivery::CircuitLearningSourceV1,
+    #[cfg(target_os = "linux")]
+    retained_source: Option<Arc<crate::cell_q24_task_ledger::RegisteredCellQ24RetainedSourceV1>>,
     enforce_circuit_admission: bool,
+    #[cfg(target_os = "linux")]
+    original_q24: Option<Arc<crate::OriginalCellQ24LearningStageOwnersV1>>,
+    #[cfg(target_os = "linux")]
+    successor: Option<Arc<crate::circuit_q24_successor::SuccessorSlot>>,
 }
 
 pub fn learning_iteration_channel_v1(
@@ -265,12 +282,60 @@ fn learning_iteration_channel(
             sender,
             circuit_delivery_registry: None,
             circuit_delivery_source: delivery::CircuitLearningSourceV1::HostStageOwners,
+            #[cfg(target_os = "linux")]
+            retained_source: None,
             enforce_circuit_admission: false,
+            #[cfg(target_os = "linux")]
+            original_q24: None,
+            #[cfg(target_os = "linux")]
+            successor: None,
         },
     ))
 }
 
 impl LearningIterationRuntimeBootstrapV1 {
+    #[cfg(target_os = "linux")]
+    pub(crate) fn with_original_q24_stage_owners(
+        mut self,
+        owners: Arc<crate::OriginalCellQ24LearningStageOwnersV1>,
+    ) -> Result<Self, AgentdError> {
+        let prepared = owners.prepared();
+        if self.original_q24.is_some()
+            || self.owners != prepared.initial().owners
+            || self.scope.as_ref() != Some(prepared.scope())
+            || !self.enforce_circuit_admission
+            || !matches!(
+                self.circuit_delivery_source,
+                CircuitLearningSourceV1::OriginalObjective
+            )
+        {
+            return Err(AgentdError::Invalid(
+                "original Root Q24 learning profile differs".into(),
+            ));
+        }
+        self.original_q24 = Some(owners);
+        self.circuit_delivery_source = CircuitLearningSourceV1::OriginalQ24;
+        Ok(self)
+    }
+
+    pub(crate) async fn require_proposal_owner(
+        &self,
+        governed_plasticity_present: bool,
+    ) -> Result<(), AgentdError> {
+        #[cfg(target_os = "linux")]
+        if let Some(original) = &self.original_q24 {
+            let original: &Arc<crate::OriginalCellQ24LearningStageOwnersV1> = original;
+            return original
+                .require_current()
+                .await
+                .map_err(|error| AgentdError::GenerationFenced(error.to_string()));
+        }
+        if !governed_plasticity_present {
+            return Err(AgentdError::Invalid("learning iteration requires the governed plasticity owner or original Root Q24 owner assembly".into()));
+        }
+        Ok(())
+    }
+
     pub(crate) fn require_identity(&self, identity: &AgentdIdentity) -> Result<(), AgentdError> {
         if self.agent_id != identity.agent_id || self.spawn_generation != identity.spawn_generation
         {
@@ -452,6 +517,9 @@ impl LearningIterationRuntimeBootstrapV1 {
             if clock()? >= request.envelope.expiry_unix_seconds {
                 return Err(LearningIterationRuntimeErrorV1::DeadlineExceeded);
             }
+            #[cfg(target_os = "linux")]
+            self.wait_original_successor_stage(state, coordinator.snapshot(), stage)
+                .await?;
             // Check the current local authorization before asking an original
             // owner to publish or use its selected generation, not only after
             // that owner returns an observation of the side effect.

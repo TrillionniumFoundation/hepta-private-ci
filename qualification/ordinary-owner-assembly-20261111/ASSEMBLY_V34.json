@@ -1,0 +1,306 @@
+{
+  "schema": "hepta.ordinary-owner-assembly.v34",
+  "status": "actual formatter postimages assembled; original full source qualification pending",
+  "parent": "3c5c0d8e8323dc90709a0efb2f3bcafaac256439",
+  "parent_tree": "55d558880526306893bc21a9ac64c32d3c6f6f60",
+  "previous_assembly_manifest": "565c4508c69aeb87983d35844fe8eec3c09435e5",
+  "source_delta": "Only the six exact postimages of the original v8 formatter. No future same-session phase, getter, new protocol or behavior is included.",
+  "source_files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_update_live.rs",
+      "preimage": {
+        "git_blob": "6072a6cf1560a0d2ddb26abe1483a4adfa2b7f1a",
+        "bytes": 8982,
+        "sha256": "64f7e0b2884b16ea2691b1d24e4ad930a931fc9afcd95e28ef550c83888a7964"
+      },
+      "postimage": {
+        "git_blob": "23b86bf6aafc8fea35cc220fb987dbe2592b6f59",
+        "bytes": 8890,
+        "sha256": "62a1fd55f3be9d3b447f1ca4acfcac3826d87822ac0a6484972cd9b7f577fdfe"
+      },
+      "hunks": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session.rs",
+      "preimage": {
+        "git_blob": "51035c1d84f831d0665581a2faf2c0a0bb1b96b7",
+        "bytes": 21570,
+        "sha256": "f18d97e08ab796d6566e09e2323f8189d6a3b3b21f45a17de2ae832b480140ba"
+      },
+      "postimage": {
+        "git_blob": "13ef7d0943f056527f45a7805e07a3f89b302985",
+        "bytes": 21608,
+        "sha256": "56ea30f1ee4d1e529dc7abb0f5b800afb351fa8dc481ff67b0def5de010c146f"
+      },
+      "hunks": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_tests.rs",
+      "preimage": {
+        "git_blob": "b9b8db0658a372c8bcbeaef7d6effb58f701957e",
+        "bytes": 26931,
+        "sha256": "951763353c7b8e5eccab7a9ae09bcfb9687ff8f868905071865661b366292c01"
+      },
+      "postimage": {
+        "git_blob": "a0e27f8c747f8ef9f41bb0701caa77babd32950e",
+        "bytes": 26968,
+        "sha256": "1d7c228977479b79a97226d71e85a752e3539884aa3c09260d663fb5a3e02dc7"
+      },
+      "hunks": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_observation_cache.rs",
+      "preimage": {
+        "git_blob": "168fcbd0233e19d536bd4e86f21401cc504d1ec6",
+        "bytes": 23838,
+        "sha256": "9a3d4f9a47671ce5548bf78c669e3791e89ddb6348e7d693137a9be3edf8672f"
+      },
+      "postimage": {
+        "git_blob": "8bd1f6251b9fdbffc443155cdf5e88cec1daaf88",
+        "bytes": 23863,
+        "sha256": "4f733f028622d8944678350c59a505bb14a685ffa6651cd8c92bd2f87ec9737c"
+      },
+      "hunks": 6
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_observation_cache_tests.rs",
+      "preimage": {
+        "git_blob": "711c7195a63b8a7bdb9dfa3d70fcbccfc9a88d5f",
+        "bytes": 10876,
+        "sha256": "5018aedd890ca47152df3bd441baa0f58eeae0540ed4f095132bfa486f3fb652"
+      },
+      "postimage": {
+        "git_blob": "d682858cef827fef34c982c8bb044506c30b6e94",
+        "bytes": 11186,
+        "sha256": "cd1062d6c84f902a74c0a709c16886096f658acd63d0e7c0a89294381bd038f8"
+      },
+      "hunks": 6
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_lease_observation_tests.rs",
+      "preimage": {
+        "git_blob": "289fe030947ad2adc72d4fb5b8e88a4b466b7d4e",
+        "bytes": 14195,
+        "sha256": "00a3e413e5d194e9209caca11515e3392a35811062f41f952c471b705977e89b"
+      },
+      "postimage": {
+        "git_blob": "1906c14c52bb2996db67681cfeb1bff03bb9c805",
+        "bytes": 14263,
+        "sha256": "f12853ae44e36ef7937cbf731583943135d86487e0028d8d927520f2d5cd9984"
+      },
+      "hunks": 2
+    }
+  ],
+  "patch": "3af3e8c2bfe256e780a2ae870c8aefc2198f795a",
+  "root_review": "9d73cd75df529fc0264512f44069f1ac3da2468d",
+  "independent_review": "25a0b0eb64eaaca5312758e413398bec5da14de8",
+  "reconstruction": {
+    "files": 6,
+    "hunks": 17,
+    "exact_full_index_old_new_Git": true,
+    "Root_and_independent_reconstruction_equal": true,
+    "postimages_GET_exact": true,
+    "source": "Original full-index patch applied exactly to fixed committed preimages, not a second direct read of runtime full postimages.",
+    "changes": "Whitespace and two optional trailing commas only; all122 literals/all108 comments unchanged in independent token review."
+  },
+  "original_attempts": [
+    {
+      "attempt": "v7",
+      "request": "0c76669c1557d9ec40352dc00a91e54b69bdcc7d",
+      "result": "a5e9c96b78a4c936ec4c2b7f9525ea0881dd811d",
+      "supplement": "80c19e57c58f109782c020141e3ef4871fb3672e",
+      "classification": "Original global Rust idle preflight failed before clone/format/compiler/tests; original cleanup missing-before observation retained."
+    },
+    {
+      "attempt": "v8",
+      "request": "f1a07c5d380b91f98986ebd0341e4e6fd1c0d075",
+      "result": "beb29d30e9445c5a1f1092267894539e48986215",
+      "classification": "Idle/clone/source/toolchain passed; just fmt underlying command0 changed six files, executor1 clean-source refusal; later gates not reached; final physical source dirty.",
+      "cleanup": {
+        "passed": 4,
+        "failed": 1
+      },
+      "ordinary_executed": 0,
+      "Root_executed": 0
+    }
+  ],
+  "unchanged": {
+    "CALLERS": "d9478557509a1e70b7b32b02b86cfd2aa2babbd5",
+    "blob_allowlist": "8fd9bd5dde2f4b57fd7c3d44c41c47c46d93059b",
+    "checker": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+    "typed_helper": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f",
+    "harness": "096b5b69c1295560f3a6c9e0da51e2708a0c996c",
+    "max_age_ns": 500000000,
+    "age_origin": "request_started_ns",
+    "dependencies": true,
+    "QA": true,
+    "guard_Drop_order": true,
+    "all_assertions": true
+  },
+  "qualification": {
+    "ordinary_packages": [
+      "codex-hepta-agentd",
+      "codex-hepta-learning-artifacts",
+      "codex-hepta-intelligence-eval",
+      "codex-hepta-contracts",
+      "codex-hepta-neuron",
+      "codex-hepta-learning-ledger",
+      "codex-hepta-fleet"
+    ],
+    "Root_exact_parents": 17,
+    "retries": 0,
+    "new_tests_vs_parent": 0,
+    "V33_new_six_tests_still_unexecuted": true,
+    "executed_for_this_source": 0,
+    "no_PASS_inherited": true,
+    "status": "Run unchanged original fmt/fix/fmt and full seven-package/seventeen-Root qualification from scratch on the new exact commit."
+  },
+  "remaining_requirements": [
+    "Historical-source custody for a new incarnation, or a separately specified live-owner phase transition, is still not implemented.",
+    "A real independently enrolled Observer and actual task business Outcome remain required; task publication is not its label.",
+    "Feedback with origin=None does not enqueue a newly admitted Root learning source; original next-scope registration remains required.",
+    "Default Root CLI does not supply the existing trusted-host three-right late-writer sender or the complete actual Primary inputs.",
+    "Actual independent ordinary C and genuine business daemon+Root process restart remain unaccepted."
+  ],
+  "acceptance": {
+    "ordinary_complete": 0,
+    "positive_adoption": 0,
+    "no_update_rollback": 0,
+    "independent_C": "not accepted; existing successor still same actor across runs",
+    "real_daemon_and_Root_OS_restart": "not accepted",
+    "same_session_late_phase": "not implemented in this assembly",
+    "independent_consumer_contract": "not implemented",
+    "historical_A_custody_into_new_process_pair": "not implemented"
+  },
+  "publication": "Staging only; public Draft remains unmerged. New source requires its own original qualification assessment.",
+  "evidence_paths": [
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-3c5c0d8-seven/v7/exact-request.json",
+      "git_blob": "0c76669c1557d9ec40352dc00a91e54b69bdcc7d"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-3c5c0d8-seven/v7/frozen-config.json",
+      "git_blob": "1cff1b2e2da8d282db64007e3ded3e465f2d0ecc"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-3c5c0d8-seven/v7/configuration.json",
+      "git_blob": "54afa21ab36e696b05b811b01ea5c213523da6ad"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-3c5c0d8-seven/v7/PREPARATION.json",
+      "git_blob": "e1f669d38236e8e4bab9508ac4826a3b81c69ec4"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-3c5c0d8-seven/v7/ROOT_REVIEW.json",
+      "git_blob": "acefe7146d3218610780bd3cf43de41f5a65712c"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-3c5c0d8-seven/v7/ADMISSION.json",
+      "git_blob": "83982b2af1f6baee960daca9139a207af1e3c7d8"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-3c5c0d8-seven/v7/progress.json",
+      "git_blob": "e26d95a743f7587654473d6fbf5f2b68dddd26f6"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-3c5c0d8-seven/v7/original-rust-idle-preflight.launch.log",
+      "git_blob": "4ef93a98e8bcb23ee4a00a8618e853aa774ef34b"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-3c5c0d8-seven/v7/PTY.json",
+      "git_blob": "272115d58153c4a2add329c6032873e30057cef1"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-3c5c0d8-seven/v7/READS.json",
+      "git_blob": "118b138cf3340e0b7d1a17fee597a16caa364c10"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-3c5c0d8-seven/v7/RESULT.json",
+      "git_blob": "a5e9c96b78a4c936ec4c2b7f9525ea0881dd811d"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-3c5c0d8-seven/v7/SUPPLEMENT.json",
+      "git_blob": "80c19e57c58f109782c020141e3ef4871fb3672e"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-3c5c0d8-seven/v7/subsequent-idle-observation-plan.json",
+      "git_blob": "ed0cc107b2c0a0459551b35d2eb2da16f4222f3a"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-3c5c0d8-seven/v7/subsequent-idle-observation.json",
+      "git_blob": "8d0c1abb247a593c3f3c4d2973fbd72d5a225da6"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-3c5c0d8-seven/v8/exact-request.json",
+      "git_blob": "f1a07c5d380b91f98986ebd0341e4e6fd1c0d075"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-3c5c0d8-seven/v8/frozen-config.json",
+      "git_blob": "57257a8d910605f72f9d057f84cf450b36ed119f"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-3c5c0d8-seven/v8/PREPARATION_AND_ROOT_REVIEW.json",
+      "git_blob": "2071fb87197ee63af6818a587c6b8499b7ce68aa"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-3c5c0d8-seven/v8/EXACT_REQUEST_OPS.json",
+      "git_blob": "f5cb1def3f50468cae1568c7d5dde3e6f42ab6a1"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-3c5c0d8-seven/v8/ADMISSION.json",
+      "git_blob": "7fbace51c8b82ad624af9544a045188bab3e16ae"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-3c5c0d8-seven/v8/progress.json",
+      "git_blob": "4e8cc653a86afff3c801fce89ab28dd8daa51e51"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-3c5c0d8-seven/v8/maintenance.patch",
+      "git_blob": "3af3e8c2bfe256e780a2ae870c8aefc2198f795a"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-3c5c0d8-seven/v8/fmt-before.execution.json",
+      "git_blob": "cd7387165ac4d91f46ddb68bb75d459e13db836f"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-3c5c0d8-seven/v8/fmt-before.launch.log",
+      "git_blob": "0410c886152d84031334c8e14a29a9170b44a108"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-3c5c0d8-seven/v8/operator-toolchain.execution.json",
+      "git_blob": "df94b0fafb3d8bb560e9f323ee3d3fba00d58c34"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-3c5c0d8-seven/v8/original-rust-idle-preflight.launch.log",
+      "git_blob": "390f40f872279f9dbb386a38d392d2bb3d021f4c"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-3c5c0d8-seven/v8/PTY.json",
+      "git_blob": "93f01214590240aade3284ba392085f62ef6567e"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-3c5c0d8-seven/v8/READS.json",
+      "git_blob": "9e8cf5679ce32061bd86f904718bfdb1612da0ef"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-3c5c0d8-seven/v8/RESULT.json",
+      "git_blob": "beb29d30e9445c5a1f1092267894539e48986215"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-3c5c0d8-seven/ORIGINAL_INTEGRATION_REVIEW.json",
+      "git_blob": "477cb55bd729dc48883321764f33452ff4e684e8"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/native-components-3c5c0d8-seven/ORIGINAL_TREE_PROOF.json",
+      "git_blob": "c1318396ef5d9d8733fffba006a5bcdf79b38697"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/formatter-native-v34/INDEPENDENT_RECONSTRUCTION.json",
+      "git_blob": "25a0b0eb64eaaca5312758e413398bec5da14de8"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/formatter-native-v34/ROOT_REVIEW.json",
+      "git_blob": "9d73cd75df529fc0264512f44069f1ac3da2468d"
+    }
+  ]
+}

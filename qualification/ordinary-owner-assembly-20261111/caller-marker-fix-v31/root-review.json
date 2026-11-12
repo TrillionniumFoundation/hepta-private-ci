@@ -1,0 +1,35 @@
+{
+  "schema": "hepta.v31-root-marker-review.v1",
+  "base": "80871cc70dbde29e61aa655b18957bfcc36056d3",
+  "operations": "617e6a3ca0e1c8de4699ef8d15959e9b7367b09a",
+  "postimage": "726a238d13e8d35771230ac24c6cee950a910674",
+  "changes": [
+    {
+      "index": 219,
+      "kind": "[[boundary]]",
+      "id": "root_live_admin_original_bounded_lease_revoke",
+      "other_fields_identical": true
+    },
+    {
+      "index": 674,
+      "kind": "[[boundary]]",
+      "id": "q24_root_current_connect",
+      "other_fields_identical": true
+    }
+  ],
+  "protected_rows_byte_identical": true,
+  "required_inventory_prefix_identical": true,
+  "candidate_changed_source_definition_marker_checks": 532,
+  "candidate_missing_in_available_sources": [],
+  "actual_behavior": "revoke Before branch keeps cumulative deadline and calls actual registry.try_lock_state -> original serial.try_lock plus state.try_write; connect_current keeps original explicit OriginalDecision::require_current both before connect and after exact Root selection binding.",
+  "original_checker_unchanged": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+  "typed_helper_unchanged": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f",
+  "production_or_qa_source_changes": 0,
+  "caller_patterns_receiver_sets_inventory_changes": 0,
+  "qualification": "Static exact-source review only; new-source full native/caller execution pending.",
+  "ordinary": {
+    "complete": 0,
+    "adoption": 0,
+    "no_update_rollback": 0
+  }
+}

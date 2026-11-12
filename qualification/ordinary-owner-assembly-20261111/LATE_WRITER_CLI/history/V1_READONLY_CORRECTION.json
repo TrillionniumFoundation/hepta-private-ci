@@ -1,0 +1,83 @@
+{
+  "schema": "hepta.late-writer-cli-review-addendum.v1",
+  "status": "original-readonly-finding-corrected; followup-source-required-before-final-review",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "fixed_source": {
+    "commit": "7666bcc2c650298f2e1d47e615a25864fe792fa1",
+    "tree": "7495444ffe639ad28ac64aad5cc68e70c097c4aa"
+  },
+  "prior_review": "e3c9f6b65eebe9d4088dbedf8ef9f3cf0483bbd8",
+  "prior_subject_manifest": "d56a052f60bfc5fe3b5c5b45570bf85397464985",
+  "corrected_findings": [
+    {
+      "id": "readonly-expected-identity",
+      "prior_statement": "New preflight registry discovery is read-only.",
+      "correction": "False for the reviewed 1ca387e8 identity reader: FleetRegistry::open_existing is not a read-only constructor. It invokes migrate_legacy_matrix_roots before load. Existing Matrix directories are chmod0700 and their parents fsynced; missing paths can be created. Moving this call before the original five-lane authentication adds a pre-authentication side effect and the review cannot approve it as read-only.",
+      "direct_source": {
+        "path": "codex-rs/hepta-fleet/src/registry.rs",
+        "git_blob": "cadd646638f8393652b03d70be57b89c55e7da29",
+        "bytes": 24863,
+        "sha256": "f97f064a6b6577f39056057ae48e75f47544dec70d4e477853ea8fff09897718"
+      },
+      "locations": [
+        "open_existing:72-87",
+        "migrate_legacy_matrix_roots:156-181",
+        "migrate_private_directory:579-606",
+        "set_private_directory_permissions:629-635",
+        "sync_directory:661-665"
+      ],
+      "observed_execution": false
+    },
+    {
+      "id": "permission-feasibility",
+      "correction": "The Root17 five-lane fixture with limited0710 traversal and private inner directories is not a complete daemon filesystem handoff. The existing actual Root fresh-filesystem product operation deliberately establishes Root:dedicated-group02750 control directories and0640 immutable control records, while retaining Root0600 writer custody. Therefore a valid fully provisioned late Config does not necessarily fail pathname reading; an unprovisioned0700 layout must still refuse.",
+      "direct_source": {
+        "path": "codex-rs/hepta-agentd/src/root_agentd_filesystem.rs",
+        "git_blob": "3ff802ccbf081df5a4e85db40fd98cfa2151d762",
+        "bytes": 11001,
+        "sha256": "5cfb269bb0270a0098a52da89229249201f4194887399622983455146a51e7c8"
+      },
+      "functions": [
+        "handoff_fresh_filesystem",
+        "validate_outer_access",
+        "set_custody"
+      ],
+      "new_generation_rule": "registry.rs::preserve_root_reader_mode keeps new immutable generations0640 only under exact original Root:nonzero-gid02750 parent; it grants no group write."
+    },
+    {
+      "id": "original-late-loader",
+      "correction": "RootDescriptor only replaces the actual writer-lock open. The original config_root_late_writer.rs::from_root_writer_handoff still calls config.rs::load_with_writer_source, whose original lines220-225 perform open_existing/load before selecting RootDescriptor at247-255. Existing migration behavior after original five-lane/live checks is not authority to perform it earlier in new preflight.",
+      "source_pins": [
+        {
+          "path": "codex-rs/hepta-agentd/src/config_root_late_writer.rs",
+          "git_blob": "93f15f74c1b9134eb52489d3d8025255d67308b7"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/config.rs",
+          "git_blob": "6074dfea3af6c7f6862313f08c334bdf6cd60e99"
+        }
+      ]
+    }
+  ],
+  "unchanged_valid_review_results": [
+    "15 exact operations and 8 postimages passed independent forward/reverse and Git/SHA/length verification.",
+    "The original3679-byte receive body and original UID/deadline helpers remain byte-identical.",
+    "Original492 caller-boundary blocks and original2 tests remain byte-identical.",
+    "No native or original caller checker was executed."
+  ],
+  "pending_resolution": "Parent/chain selected a narrow data-only FleetSnapshot read API that preserves original physical validation and full snapshot loading but never constructs a migration-performing public owner or chmods/creates/syncs. No implementation or final acceptance is claimed here; exact new source/permissions/testing must be independently reviewed.",
+  "prohibited_workarounds": [
+    "Do not chmod/chown Root Registry or loosen private authority directories for this preflight.",
+    "Do not replace real Starting/complete identity checks with environment-only unchecked data.",
+    "Do not treat sealed preview or a Registry snapshot as live Root authorization.",
+    "Do not change original five-lane, writer FD, peer/lease or cancellation checks."
+  ],
+  "scope": {
+    "static_only": true,
+    "source_mutation": false,
+    "refs_mutated": false,
+    "native_executed": false,
+    "h_requests": false,
+    "ordinary_complete_chains": 0
+  }
+}

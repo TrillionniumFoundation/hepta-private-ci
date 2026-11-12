@@ -25,14 +25,20 @@ use crate::neuron_generation_update_selection::AgentdSelectedGenerationV1;
 
 #[path = "neuron_generation_current_initial.rs"]
 mod initial;
+#[cfg(target_os = "linux")]
+#[path = "neuron_generation_current_initial_root.rs"]
+pub(crate) mod initial_root;
 #[path = "neuron_generation_current_initial_types.rs"]
 mod initial_types;
 #[path = "neuron_generation_current_prepare.rs"]
 mod prepare;
+#[cfg(target_os = "linux")]
+#[path = "neuron_generation_current_root.rs"]
+mod root;
 #[path = "neuron_generation_current_store.rs"]
 mod store;
 #[path = "neuron_generation_current_types.rs"]
-mod types;
+pub(crate) mod types;
 
 use initial_types::InitialState;
 pub use initial_types::NeuronGenerationInitialReadbackV1;
@@ -322,6 +328,12 @@ impl CellGenerationCurrentV1 for NeuronGenerationCurrentOwnerV1 {
         let head = self
             .store
             .load()
+            .inspect_err(|_error| {
+                #[cfg(test)]
+                eprintln!(
+                    "ROOT_GENERATION_CURRENT_DIAGNOSTIC stage=current-store-load error={_error:?}"
+                );
+            })
             .map_err(|_| CellGenerationErrorV2::Unavailable)?;
         if matches!(head.initial.as_ref(), Some(InitialState::Prepared(_))) {
             if &head.current == binding {
@@ -353,7 +365,7 @@ impl CellGenerationCurrentV1 for NeuronGenerationCurrentOwnerV1 {
     }
 }
 
-fn signed_grant_digest(
+pub(crate) fn signed_grant_digest(
     signed: &SignedFinalUseGrant,
 ) -> Result<codex_hepta_types::Digest32, AgentdError> {
     let bytes = serde_json::to_vec(signed).map_err(invalid)?;
@@ -370,3 +382,11 @@ mod tests;
 #[cfg(test)]
 #[path = "neuron_generation_update_test_support.rs"]
 pub(crate) mod test_support;
+
+#[cfg(all(test, target_os = "linux"))]
+#[path = "authority_host_generation_publication_root_tests.rs"]
+mod publication_root_tests;
+
+#[cfg(all(test, target_os = "linux"))]
+#[path = "authority_host_generation_initial_root_tests.rs"]
+mod initial_root_tests;

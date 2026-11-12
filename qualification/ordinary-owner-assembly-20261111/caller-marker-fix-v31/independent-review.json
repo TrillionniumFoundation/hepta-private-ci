@@ -1,0 +1,385 @@
+{
+  "schema": "hepta.independent-definition-marker-reconciliation-review.v1",
+  "reviewer": "/root/runtime_access",
+  "conclusion": "No remaining confirmed static blocker for the exact two-marker metadata correction. This is not original full caller/typed verification or native qualification.",
+  "source": {
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "commit": "80871cc70dbde29e61aa655b18957bfcc36056d3",
+    "tree": "dd0234485d40f9109e46394c94d505952a07cb08"
+  },
+  "candidate": {
+    "operations": {
+      "git_blob": "617e6a3ca0e1c8de4699ef8d15959e9b7367b09a",
+      "bytes": 1910,
+      "sha256": "900e1b0dbec20f721b81fd882b158d852c607220b9c1581d4be43d0ce7a389e0"
+    },
+    "callers_before": {
+      "git_blob": "e6dcf7d4a71061772c720c9ba355ed646d1cc88e",
+      "bytes": 669111,
+      "sha256": "1b222ab62ddf5f3a808a18a922f5f0b9d804c49ff606956bfd8e2b1d1a9233e9"
+    },
+    "callers_after": {
+      "git_blob": "726a238d13e8d35771230ac24c6cee950a910674",
+      "bytes": 669144,
+      "sha256": "eb85a283658801cdb967e61a4fdbdbc062c654130f25b81f6b69b9fba38e37f3"
+    },
+    "allowlist_before": {
+      "git_blob": "504fe528aa7f2e879752d4e888f050c52fcd4fca",
+      "bytes": 12066,
+      "sha256": "11a76b0be1494d9c088f84c0ad4461f4e4606bbde7526b59175a4887f27712e0"
+    },
+    "allowlist_after": {
+      "git_blob": "cb427bb2161d67b87068beadb4c3dfed385612c6",
+      "bytes": 12066,
+      "sha256": "9b1cc5406755cf76c5c1128f7996bd58acafabf02cd23ccec65e133384b94e7a"
+    }
+  },
+  "review_method": [
+    "Personally fetched the exact candidate operations, CALLERS postimage, both allowlists and fixed V30 Rust sources through immutable Git reads.",
+    "Independently recomputed UTF-8 byte lengths, Git blob SHA-1 and SHA-256; each operation matched exactly once. Forward replay equals the complete candidate postimage, reverse replay equals the complete original CALLERS.",
+    "Compared all 504 boundary blocks and all 366 protected_file blocks. Only the two definition_markers lines differ; every other byte including symbols, receiver fields, call patterns, caller sets, caller markers, inventory and all protected rows is unchanged.",
+    "Both allowlists have identical length and all bytes except one exact CALLERS SHA-256 value. No path or broad exemption was added.",
+    "Read actual bounded revoke, mutation guard, persistent fencing and CURRENT connect implementations; checked that the existing unchanged protected rows still name their actual enforcement."
+  ],
+  "reconciliation": [
+    {
+      "boundary": "root_live_admin_original_bounded_lease_revoke",
+      "definition_path": "codex-rs/hepta-contracts/src/authority_lease_revoke.rs",
+      "old_marker": ".try_lock()",
+      "new_marker": "registry.try_lock_state()?",
+      "diagnosis": "The privileged definition delegates the bounded mutation lock to the original registry helper. The old literal no longer appears in this definition file; it appears in the separately protected actual helper implementation. Changing the definition marker names that real delegation and does not remove the lock requirement.",
+      "exact_trace": [
+        "AuthorityLeaseRegistry::revoke_before passes the supplied same cumulative Instant to selected as Deadline::Before(before).",
+        "selected checks the deadline before and after the original owner clock read, after choosing/acquiring the state guard, immediately before persistence, and after persistence: five unchanged checks.",
+        "Deadline::Before(_) calls registry.try_lock_state()?, which returns self.0.try_lock_mutation_state(); the unbounded branch remains lock_state().",
+        "Inner::try_lock_mutation_state first uses the original serial.try_lock(), then the same state.try_write(), then require_available(&state). Both Busy and poisoned lock errors still map to Unavailable; no blocking fallback or retry is introduced.",
+        "The returned MutationStateGuard retains the serial MutexGuard and state write guard across all original revision/epoch/exact-original checks, revocation construction and persist_or_fence.",
+        "persist_or_fence still performs the original external frontier compare_and_set before original durable store persistence; either failure marks the state failed, and the successful in-memory replacement remains last."
+      ],
+      "protected_evidence": [
+        "authority_lease_revoke.rs required already contains registry.try_lock_state()? and the exact selected-function order preserves the clock, deadline and persistence checks.",
+        "authority_lease.rs required already contains self.0.try_lock_mutation_state() and the typed MutationStateGuard persistence parameter; persist_or_fence has its unchanged exact failure/write order.",
+        "authority_lease_observation.rs required_function_order for fn try_lock_mutation_state( already explicitly requires the actual formatted serial.try_lock() -> state.try_write() -> require_available -> MutationStateGuard sequence.",
+        "The same file preserves both poison flags and state.failed, and the serial-before-state guard field order."
+      ],
+      "actual_closed_callers": [
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_admin_service.rs",
+          "fact": "The original checked_step still passes context.before() and rechecks the actual admin context."
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/deployment_notes_revoke.rs",
+          "fact": "The original effect lease revocation still uses the same before and retains pre/post actual_root_before checks; subsequent original grant revocation is separate and partial/unknown is not compensated."
+        }
+      ],
+      "limit": "The unchanged deadline checks do not interrupt already-entered durable IO. A late or failed post-IO result is not evidence that no effect occurred. This review neither strengthens that claim nor changes the original unknown/recovery contract."
+    },
+    {
+      "boundary": "q24_root_current_connect",
+      "definition_path": "codex-rs/hepta-agentd/src/cell_q24_publication_root_stage.rs",
+      "old_marker": "self.original.require_current().await?",
+      "new_marker": "OriginalDecision::require_current(&self.original).await?",
+      "diagnosis": "The exact current source uses explicit UFCS for the same OriginalDecision receiver. This is a marker spelling correction, not a change to invocation or authority.",
+      "exact_trace": [
+        "connect_current consumes the existing selected-artifact object, original purpose handoff and actual one-shot Root connection.",
+        "It awaits OriginalDecision::require_current(&self.original) before connecting the real handoff.",
+        "The returned actual NeuronGenerationCurrentOwnerV1 is checked with require_original_root_selection against the original snapshot, operation and selected observation digest.",
+        "It awaits the same original require_current again before returning the driver holding those same owners.",
+        "OriginalDecision::require_current itself validates original aggregate recovery, checks any retained full B manifest against the original publication material, and then calls the original owners.require_current()."
+      ],
+      "protected_evidence": [
+        "The unchanged exact fn connect_current( required_function_order already contains both complete UFCS calls around handoff.connect and require_original_root_selection.",
+        "The unchanged row still forbids Root directory reopening/initialization, replacement CURRENT initialization, SigningKey, permit_all and spawn_blocking."
+      ],
+      "caller_scope": "product_callers remains the existing empty external-host boundary; this correction adds no invented production caller."
+    }
+  ],
+  "independent_raw_marker_subset": {
+    "scope": "34 fixed V30 source paths, including 30 Rust paths from three recent changed-source manifests plus four directly related sources; raw marker existence only, not original checker/typed proof.",
+    "before": {
+      "source_paths_available": 34,
+      "source_paths_with_checks": 18,
+      "definition_rows": 61,
+      "checks": 185,
+      "definition_checks": 145,
+      "caller_checks": 40,
+      "missing": [
+        {
+          "id": "root_live_admin_original_bounded_lease_revoke",
+          "path": "codex-rs/hepta-contracts/src/authority_lease_revoke.rs",
+          "field": "definition_markers",
+          "marker": ".try_lock()",
+          "present": false
+        },
+        {
+          "id": "q24_root_current_connect",
+          "path": "codex-rs/hepta-agentd/src/cell_q24_publication_root_stage.rs",
+          "field": "definition_markers",
+          "marker": "self.original.require_current().await?",
+          "present": false
+        }
+      ],
+      "unparsed": []
+    },
+    "after": {
+      "source_paths_available": 34,
+      "source_paths_with_checks": 18,
+      "definition_rows": 61,
+      "checks": 185,
+      "definition_checks": 145,
+      "caller_checks": 40,
+      "missing": [],
+      "unparsed": []
+    },
+    "all_boundaries_except_exact_two_byte_identical": true,
+    "changedBoundaryFields": [
+      {
+        "id": "root_live_admin_original_bounded_lease_revoke",
+        "keys": []
+      },
+      {
+        "id": "q24_root_current_connect",
+        "keys": []
+      }
+    ],
+    "method": "Parsed only the necessary TOML string/array fields from all boundary blocks, including the two existing multiline caller arrays, and used literal source.includes for definition_markers and caller_markers whose source path is in the explicitly fetched subset.",
+    "changed_source_manifests": [
+      "6a198c68d7715436006a1939d6a5a0a8a53398ea",
+      "694ef36699785cd9ada883c822089cd50f860953",
+      "2ad17bf2bb4981b627d6c687b59bbf48e910aeca"
+    ],
+    "source_pins": [
+      {
+        "path": "codex-rs/hepta-contracts/src/authority_lease.rs",
+        "git_blob": "a3495b587fb5d91e8581f5ccb64a84d586523de8",
+        "bytes": 61811,
+        "sha256": "77acda03cf3979ae3b1bebb578770fac2d81c6298c76a2a40a3916a33ca06023"
+      },
+      {
+        "path": "codex-rs/hepta-contracts/src/authority_lease_revoke.rs",
+        "git_blob": "8691a8725bad4c858589228015ee74cf75c266bb",
+        "bytes": 5176,
+        "sha256": "be8c22a07ade1fcd0a5b1e8023816053a05be16b515c16306c67d76c18b796b8"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/deployment_issuer.rs",
+        "git_blob": "5fcc50d3ea59f6a0ed76dd990de17deabc4cd360",
+        "bytes": 20614,
+        "sha256": "c76e95d3817ba6e640413100f5cfe51be3b7fcddde7b32bb660580ff965c5c17"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/deployment_writer.rs",
+        "git_blob": "8489d6f8e8da15936a9ccd16060d0b434f69e264",
+        "bytes": 14644,
+        "sha256": "d508894e496200f6334398e7cc94f282adbd2cfb58a501b34658bb5f3f28ab81"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_writer.rs",
+        "git_blob": "da842adff40dfa5f63403195643d7c49112bdcd3",
+        "bytes": 12575,
+        "sha256": "0ee8c79585d4275b5201a73509e42e4f359ca4c142c4f45f3a2d3bda07705891"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/deployment_writer_tests.rs",
+        "git_blob": "d4cc03578f8ae209f53b6285d0a7df5bacb2d304",
+        "bytes": 10102,
+        "sha256": "22d8d85fd667ab34814816781db90915168fe2753f7d9a1eccf524c13b46e097"
+      },
+      {
+        "path": "codex-rs/hepta-contracts/src/authority_lease_observation.rs",
+        "git_blob": "86021913605baf2555ec89acaf869ca774e2b437",
+        "bytes": 5763,
+        "sha256": "702694577744b48ea7559ef9abb87e40d05d66868be3d032dc6318f108142ac7"
+      },
+      {
+        "path": "codex-rs/hepta-contracts/src/authority_lease_observation_tests.rs",
+        "git_blob": "8b9a140054028e8246677ac0959064a59f81c51f",
+        "bytes": 13770,
+        "sha256": "30f43d4137ff404095609b6867176595ea8a055b1b2b27b88b6e19516a3cf33d"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/deployment_writer_observation_tests.rs",
+        "git_blob": "fbf038e27c7df8bafdb535f1d098731835330117",
+        "bytes": 3993,
+        "sha256": "388f256c71b01490daca0cf61da23e02e8a9d902cb9d04c46319539e055de365"
+      },
+      {
+        "path": "codex-rs/hepta-contracts/src/authority_lease_revoke_tests.rs",
+        "git_blob": "df32089dd116c7347beda560f72959d7cd9bc6b1",
+        "bytes": 9920,
+        "sha256": "7261a9ed81bc5785bc55799fa10f30a28e0d20b0c145e2c08a603b68585fbe5d"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/production_launcher.rs",
+        "git_blob": "9605d4c1f84292862e2b15bf6ff525e1a2337253",
+        "bytes": 27305,
+        "sha256": "d82f99428d4f95ae14dad69ed89fb6068d12ddf644e5ff7b8c6b8f907fb5ea68"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/production_launcher_late_writer.rs",
+        "git_blob": "764a69f9b9f95a1971e42a2f9fe8dd75f64ebfad",
+        "bytes": 8132,
+        "sha256": "6e54854d52c602406e237bc2e16ddcce3494c0a3a92568f3a98cc204b59f4443"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/production_launcher_late_startup.rs",
+        "git_blob": "db398aa05e688dc9c455bacb8c7e065184fdbaf9",
+        "bytes": 3013,
+        "sha256": "717ced5a05fbd931822528fcd103891060ed86dcb21bf98fbf7519b2c06b1e31"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/config.rs",
+        "git_blob": "6142284d17c3e9808a2af0ae6f105c829d7e0d59",
+        "bytes": 39198,
+        "sha256": "9fff4256e5275a652cc4eec07bd8f704bbc748fed0f33f80d4684a33c9b94b19"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/config_late_writer_identity.rs",
+        "git_blob": "2e28f98f7e9b952f0577cfed3d62b5aa0b3eb6b7",
+        "bytes": 4059,
+        "sha256": "9de575c8ca63823dccfc2074456a84f2db48b35557209a12bed936fc9709a999"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/config_late_writer_identity_tests.rs",
+        "git_blob": "cdc7037f1e63c311c4354e7b3a9193e3ea81825c",
+        "bytes": 5163,
+        "sha256": "9157e2835903429f52171d0af4bebc3d823fe8993fc7ad7b2b839d9de4dcedb3"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/production_launcher_late_writer_tests.rs",
+        "git_blob": "934ea8a9a7fa0875db437b46b6c674689e03a597",
+        "bytes": 8696,
+        "sha256": "2568cd6e05194c8db59d3c15edc2fbbef8596ff0cc3a8f5ea748505c7d9165ae"
+      },
+      {
+        "path": "codex-rs/hepta-fleet/src/registry.rs",
+        "git_blob": "1f52f8d39747dfe3718c5067d0970f8bd6dd3bc4",
+        "bytes": 24911,
+        "sha256": "6fa250502444563bafb8c2ede7421298e40388a3b5e72ee16d2bc777be04c6cf"
+      },
+      {
+        "path": "codex-rs/hepta-fleet/src/registry_readonly.rs",
+        "git_blob": "7a9d22b0e99f5835dd652c5a4abc77dfbcba8528",
+        "bytes": 1354,
+        "sha256": "ca8cde70f416490323ce4da2dceccfc77833b409e6da042b50d534a2b1855fdb"
+      },
+      {
+        "path": "codex-rs/hepta-fleet/src/registry_readonly_tests.rs",
+        "git_blob": "5baf71e8bf36bfb7e702c368d5dbb7624decdbb4",
+        "bytes": 3561,
+        "sha256": "f0e99398e575b870c0fdba8b81a13541dfbe2da3bb3edeeb6a935484aa71bf95"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_execution.rs",
+        "git_blob": "3263eb485459626f3cca29e5d90d58032121ae16",
+        "bytes": 8224,
+        "sha256": "91f12d9f1dbd0bcd478713768df227aef2e73bdcc1cad41c48b3b35d18603e9e"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_q24_successor.rs",
+        "git_blob": "b16d0fd8d9ec24ab3603deae1e75bdaf5fa4241e",
+        "bytes": 8190,
+        "sha256": "77e815730b1db392738095cfb18b6e6c9d68afdfe3224652c1e133dcbe60f066"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_state.rs",
+        "git_blob": "58232d6e10de477c7a66da516a1607a2aab788fe",
+        "bytes": 10615,
+        "sha256": "14f72f35eda108d7e28be2f6a8cc76d2951fcb43d54e9c384954dbd06b01e7e2"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_worker.rs",
+        "git_blob": "00b0e2235e00c67086d7a9618223766ef1ff1cc7",
+        "bytes": 8420,
+        "sha256": "a4b394bc140cd1cb2020b03bafec387375823964bb0de8ab14e5c478ccb00d68"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_invocation.rs",
+        "git_blob": "235e6b1ce07063f854b54c202ee39c7cb54f514a",
+        "bytes": 2659,
+        "sha256": "1e2a2b6df6f534914a2a233f4106b4dbf78ec78776b0556cece935de4a4c061e"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/lib.rs",
+        "git_blob": "ed0c326180e2c32f59e8198cb230312015022b70",
+        "bytes": 63786,
+        "sha256": "c24981b60e7ec928e75e9634929d5829327bb9251f8f7eab72b2e228e67a2600"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_q24_task_test_support.rs",
+        "git_blob": "dd802810439ed1e72f77f6d2126a0da48fd499b8",
+        "bytes": 19349,
+        "sha256": "b7f18e610a20a928b0c4c135888b2307a777330b5d4261be4086b928d216b709"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_task_ledger_test_support.rs",
+        "git_blob": "360e99732ef2aa8a12abd01851960fe9e3d59658",
+        "bytes": 16247,
+        "sha256": "dc3199512ad76f0d0dbbc6c4b5242f95ea86a268ed82bd60f3591ae1e9ae5868"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_task_ledger_tests.rs",
+        "git_blob": "c5b9267eaa8144e82a21f2059b1a249b7884a38d",
+        "bytes": 15650,
+        "sha256": "4e1a285e565fded976a2079d6aac30eb2023a7ff0df4297707114c2fe3eef76b"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_feedback_tests.rs",
+        "git_blob": "2322c42eb7024b21a568afe550156339d720bc28",
+        "bytes": 4714,
+        "sha256": "7c8c767279a1e8937bea7c4bdf9f3d7c23f466c71acee1d53246fb23047bb654"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_publication_root_stage.rs",
+        "git_blob": "c7e97889f1775b5e192cf2efdb38cf9d8c1719c7",
+        "bytes": 14490,
+        "sha256": "6de415c3fb1ea166236c2d70d320ac5c32b8b46baf87daac9f1c1216502613ad"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_publication_driver.rs",
+        "git_blob": "9521f592575e9c68a3f93d8424c6c1295752cf1e",
+        "bytes": 12393,
+        "sha256": "d994d556f4f8362170dc18ad85bfb4fd4c49ba619feb2ea7fa426276f5463577"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_admin_service.rs",
+        "git_blob": "bb14ef568e7354d0df64d97b8d87c22a4add7ad7",
+        "bytes": 9793,
+        "sha256": "7b832467619cc1cffbbe1fbd0bd70f6d4bb4711e13ac51fe4c2e1b580982e50e"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/deployment_notes_revoke.rs",
+        "git_blob": "0385101b9eb0f23d6153327ee4794b7400b7b99c",
+        "bytes": 5694,
+        "sha256": "f54c5f71d95b031b02f6e938663caeaffaf207f02411b89b70c762eb5df8d163"
+      }
+    ],
+    "distinction": "This independent subset has 34 actual fixed-source paths: 30 Rust paths from the three recent slices plus root_stage, original publication driver and the two bounded revoke callers. Eighteen of those paths carry applicable raw checks: 61 definition rows, 145 definition marker checks and 40 caller marker checks, total 185. The original registry reproduces exactly the two reported missing literals; the candidate has zero missing literals in this subset. No typed receiver resolution, cfg masking, full source inventory scan, policy parser execution or native test was performed.",
+    "parent_audit": {
+      "blob": "76cd9ea43a7fff3486473390d0731431b7cd95b0",
+      "reported_paths": 178,
+      "reported_definition_rows": 232,
+      "reported_marker_checks": 619,
+      "scope": "Fetched and read as the parent's separate larger raw-presence receipt; not counted as this reviewer's own 34-path scan."
+    }
+  },
+  "original_checker": {
+    "git_blob": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+    "bytes": 31701,
+    "sha256": "8899ec2b328125b2049b808cac0eeda3f57bfc6db89348512a58777101ae6dfa",
+    "fact": "The actual _verify_boundary checks definition_markers by raw membership in definition_text before its caller-set/type resolution, and caller_markers by raw membership in the exact caller file after caller-set equality. Therefore the literal corrections address the observed failure mechanism without modifying the checker or replacing full verification."
+  },
+  "execution_and_limits": {
+    "rust_changes": 0,
+    "qa_changes": 0,
+    "checker_changes": 0,
+    "refs_changed": 0,
+    "h_or_pty_calls": 0,
+    "cargo_or_native_runs": 0,
+    "python_checker_runs": 0,
+    "observation": "This review used immutable Git retrieval and in-memory V8 text/hash/replay only.",
+    "native_status": "The V30 full7 stop at the old bounded-revoke definition marker is the parent's supplied original failure context. It remains a failed qualification attempt. The new metadata candidate has not been qualified by this reviewer.",
+    "next_gate": "Root must run the original complete caller/typed verification and the authorized final same-source pipeline; neither this subset nor the parent's raw-presence receipt is a substitute.",
+    "unchanged_acceptance": "No ordinary business, physical cold restart, independent C or new root-component acceptance is claimed."
+  }
+}

@@ -420,3 +420,320 @@ pub(crate) fn original_config(
 
 #[path = "root_authority_file_custody_tests.rs"]
 mod file_custody;
+
+// A prior failed/cancelled refresh must not be misclassified as an intentional
+// component shutdown merely because its worker has not returned yet.
+pub(super) struct RefreshCompletion<'a> {
+    failed: &'a AtomicBool,
+    complete: bool,
+}
+impl<'a> RefreshCompletion<'a> {
+    pub(super) fn new(failed: &'a AtomicBool) -> Self {
+        Self {
+            failed,
+            complete: false,
+        }
+    }
+
+    pub(super) fn complete(&mut self) {
+        self.complete = true;
+    }
+}
+impl Drop for RefreshCompletion<'_> {
+    fn drop(&mut self) {
+        if !self.complete {
+            self.failed.store(true, Ordering::Release);
+        }
+    }
+}
+
+/// End the original observation feed only when its whole original read and
+/// consumer barrier have finished. Actual inputs/session Drop performs the
+/// fencing and abort; this helper never refreshes or pre-aborts the worker.
+pub(crate) async fn drop_original_production_after_idle(
+    inputs: crate::AgentdRootProductionInputs,
+    timeout: Duration,
+    before_drop: impl FnOnce() -> std::io::Result<()>,
+) -> std::io::Result<()> {
+    let live = Arc::clone(&inputs.session.live);
+    let worker = inputs.session.worker.abort_handle();
+    tokio::time::timeout(timeout, async move {
+        let _serial = live.serial.acquire().await.map_err(std::io::Error::other)?;
+        if live.refresh_failed.load(Ordering::Acquire) || worker.is_finished() {
+            return Err(std::io::Error::other(
+                "original Root observation worker failed or finished before deliberate Drop",
+            ));
+        }
+        live.current().map_err(std::io::Error::other)?;
+        before_drop()?;
+        // The permit prevents any new refresh from starting during this check
+        // and the actual Drop. A retained task can now test that original Drop.
+        if live.refresh_failed.load(Ordering::Acquire) || worker.is_finished() {
+            return Err(std::io::Error::other(
+                "original Root observation worker failed or finished before deliberate Drop",
+            ));
+        }
+        drop(inputs);
+        while !worker.is_finished() {
+            tokio::task::yield_now().await;
+        }
+        Ok(())
+    })
+    .await
+    .map_err(|_| {
+        std::io::Error::new(
+            std::io::ErrorKind::TimedOut,
+            "original Root observation worker did not finish within deliberate Drop budget",
+        )
+    })?
+}
+
+#[cfg(test)]
+impl AgentdRootAuthoritySession {
+    /// Wait only for the original feed and consumer barrier to observe one
+    /// same-epoch revocation. This never refreshes, updates or grants authority.
+    pub(crate) async fn component_wait_for_original_revocations(
+        &self,
+        consumers: [&FinalUseAuthority; 2],
+        expected: &FinalUseRevocations,
+        timeout: Duration,
+    ) -> std::io::Result<()> {
+        tokio::time::timeout(timeout, async {
+            loop {
+                let serial = self
+                    .live
+                    .serial
+                    .acquire()
+                    .await
+                    .map_err(std::io::Error::other)?;
+                if self.live.refresh_failed.load(Ordering::Acquire) || self.worker.is_finished() {
+                    return Err(std::io::Error::other(
+                        "original Root observation worker failed or finished",
+                    ));
+                }
+                let device = consumers[0]
+                    .revocation_head()
+                    .map_err(std::io::Error::other)?;
+                let notes = consumers[1]
+                    .revocation_head()
+                    .map_err(std::io::Error::other)?;
+                let actual = self.revocations().map_err(std::io::Error::other)?;
+                if device != actual || notes != actual {
+                    return Err(std::io::Error::other(
+                        "original Root consumer barrier did not complete one exact head",
+                    ));
+                }
+                if &actual == expected {
+                    return Ok(());
+                }
+                if actual.authority_epoch != expected.authority_epoch
+                    || actual.revision >= expected.revision
+                    || !expected
+                        .revoked_grant_ids
+                        .is_superset(&actual.revoked_grant_ids)
+                {
+                    return Err(std::io::Error::other(
+                        "original Root revocation head cannot advance to the expected head",
+                    ));
+                }
+                drop(serial);
+                tokio::time::sleep(Duration::from_millis(10)).await;
+            }
+        })
+        .await
+        .map_err(|_| {
+            std::io::Error::new(
+                std::io::ErrorKind::TimedOut,
+                "original Root revocation feed did not reach the expected head",
+            )
+        })?
+    }
+}
+
+// Bounded component diagnostics only. A reserved slot survives until this
+// scope ends, so nested feed work cannot consume its eventual record. No
+// sample below is returned to an authority, freshness or timeout decision.
+static COMPONENT_TIMING_RESERVED: std::sync::atomic::AtomicUsize =
+    std::sync::atomic::AtomicUsize::new(0);
+static COMPONENT_TIMING_SEQUENCE: std::sync::atomic::AtomicUsize =
+    std::sync::atomic::AtomicUsize::new(0);
+
+pub(crate) struct ComponentPhaseTiming {
+    label: &'static str,
+    phase: String,
+    sequence: usize,
+    reserved: bool,
+    begin_ns: Option<u64>,
+    marks: [(&'static str, Option<u64>); 8],
+    used: usize,
+    reported_outcome: Option<&'static str>,
+    pub(crate) minimum_success_ns: Option<u64>,
+}
+
+/// Call before acquiring the original guard and drop after that guard. Marks
+/// only sample or copy diagnostic values; they never print while it is held.
+pub(crate) fn component_phase_timing(
+    label: &'static str,
+    phase: impl std::fmt::Debug,
+) -> ComponentPhaseTiming {
+    let reserved = COMPONENT_TIMING_RESERVED
+        .fetch_update(Ordering::Relaxed, Ordering::Relaxed, |used| {
+            (used < 64).then_some(used + 1)
+        })
+        .is_ok();
+    ComponentPhaseTiming {
+        label,
+        phase: format!("{phase:?}").chars().take(64).collect(),
+        sequence: COMPONENT_TIMING_SEQUENCE.fetch_add(1, Ordering::Relaxed),
+        reserved,
+        begin_ns: reserved.then(|| super::boottime_ns().ok()).flatten(),
+        marks: [("", None); 8],
+        used: 0,
+        reported_outcome: None,
+        minimum_success_ns: None,
+    }
+}
+
+impl ComponentPhaseTiming {
+    pub(crate) fn mark(&mut self, label: &'static str) {
+        if self.reserved {
+            self.record(label, super::boottime_ns().ok());
+        }
+    }
+
+    pub(crate) fn mark_original(&mut self, label: &'static str, original_ns: u64) {
+        if self.reserved {
+            self.record(label, Some(original_ns));
+        }
+    }
+
+    fn record(&mut self, label: &'static str, value: Option<u64>) {
+        if let Some(slot) = self.marks.get_mut(self.used) {
+            *slot = (label, value);
+            self.used += 1;
+        }
+    }
+
+    pub(crate) fn complete(&mut self) {
+        self.reported_outcome = Some("Ok");
+        self.mark("complete");
+    }
+
+    pub(crate) fn callback(&mut self) -> ComponentCallbackTiming<'_> {
+        self.mark("callback-entry");
+        ComponentCallbackTiming { timing: self }
+    }
+}
+
+/// This nested guard only records. Its parent prints after the original
+/// dispatch function has released the original lease/revocation guard.
+pub(crate) struct ComponentCallbackTiming<'a> {
+    timing: &'a mut ComponentPhaseTiming,
+}
+
+impl Drop for ComponentCallbackTiming<'_> {
+    fn drop(&mut self) {
+        self.timing.mark("callback-exit");
+    }
+}
+
+impl Drop for ComponentPhaseTiming {
+    fn drop(&mut self) {
+        if !self.reserved {
+            return;
+        }
+        let end_ns = super::boottime_ns().ok();
+        let elapsed_ns = self
+            .begin_ns
+            .zip(end_ns)
+            .and_then(|(begin, end)| end.checked_sub(begin));
+        if self.reported_outcome == Some("Ok")
+            && self
+                .minimum_success_ns
+                .zip(elapsed_ns)
+                .is_some_and(|(minimum, elapsed)| elapsed < minimum)
+        {
+            // This slot produced no bytes and can serve a later scope.
+            COMPONENT_TIMING_RESERVED.fetch_sub(1, Ordering::Relaxed);
+            return;
+        }
+        use std::io::Write as _;
+        let _ = writeln!(
+            std::io::stderr().lock(),
+            "ROOT_COMPONENT_TIMING pid={} label={} phase={} sequence={} begin_ns={:?} end_ns={end_ns:?} elapsed_ns={elapsed_ns:?} reported_outcome={:?} marks={:?} record_cap=64",
+            std::process::id(),
+            self.label,
+            self.phase,
+            self.sequence,
+            self.begin_ns,
+            self.reported_outcome,
+            &self.marks[..self.used],
+        );
+        // A printed slot is never returned. At most 64 records are emitted
+        // in this process, including scopes that were already in flight.
+    }
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn original_session_end_is_rechecked_after_bounded_cache_admission() {
+    let (trust, signed) = fixture();
+    let proof = VerifiedRootWriterProof::verify(signed.clone(), &trust).unwrap();
+    let cache = RootObservationCache::new("fixture-boot".into());
+    let origin = boottime_ns().unwrap();
+    let mut sample = observation(&signed);
+    sample.clock.anchor_boottime_ns = origin;
+    cache.accept(sample, origin, origin).unwrap();
+    // Same-UID/synthetic-proof component: an actual held pidfd is live, and
+    // only the original session's absolute end expires during cache admission.
+    // SAFETY: this process is live; pidfd_open returns a new owned descriptor.
+    let fd = unsafe { libc::syscall(libc::SYS_pidfd_open, std::process::id(), 0) };
+    assert!(fd >= 0);
+    // SAFETY: this syscall returned the exclusively owned test pidfd.
+    let pidfd = unsafe { OwnedFd::from_raw_fd(fd as i32) };
+    let root = Arc::new(AsyncFd::new(pidfd).unwrap());
+    let end = origin.checked_add(200_000_000).unwrap();
+    let live = Arc::new(LiveRoot {
+        proof,
+        cache,
+        root,
+        end_boottime_ns: end,
+        active: AtomicBool::new(false),
+        consumers: Mutex::new(Vec::new()),
+        serial: tokio::sync::Semaphore::new(1),
+        refresh_failed: AtomicBool::new(false),
+    });
+    let mut waiting = None;
+    crate::root_observation_cache::tests::component_with_original_retained_lock(
+        &live.cache,
+        || {
+            let reader = Arc::clone(&live);
+            waiting = Some(std::thread::spawn(move || reader.current()));
+            crate::root_observation_cache::tests::component_wait_for_original_read_admission(
+                &live.cache,
+            );
+            while boottime_ns().unwrap() < end {
+                std::thread::yield_now();
+            }
+        },
+    );
+    assert!(matches!(
+        waiting.unwrap().join().unwrap(),
+        Err(AgentdRootAuthorityError::Unavailable)
+    ));
+    let validated =
+        crate::root_observation_cache::tests::component_last_validated_read(&live.cache);
+    assert!(
+        validated >= end,
+        "cache validation did not cross the session end"
+    );
+    assert!(
+        validated - origin <= MAX_AGE_NS,
+        "the cache itself had already expired"
+    );
+    // The retained proof cannot authorize a new call after this original
+    // session end. This is a negative read, never a retry of an effect.
+    assert!(matches!(
+        live.cache.current(),
+        Err(AgentdRootAuthorityError::Unavailable)
+    ));
+}

@@ -1,0 +1,342 @@
+{
+  "schema_version": 1,
+  "scope": "Frozen four-file component phase timing for the actual Root17 V7 stale-observation failures; diagnostic only",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "baseline": {
+    "commit": "f9131ee6bfc514812096b3b72b7c3c70ff77278c",
+    "tree": "850c7e73f936b74c0c82e30c0907de11769d8cf1",
+    "rust_parent": "d50474f93da462e278cf3ec95acef88701d16799",
+    "later_evidence_only_base": "4e88a3adb244e8c8baca89e526637807c538e11c",
+    "evidence_only_tree": "9c2f9ba0876a858db49601f35c505fcc1439f644",
+    "application_rule": "Use the exact unique preimage fragments. This delta does not replace a shared source tree or any other agent's source. Parent owns integration, native scheduling and refs."
+  },
+  "original_evidence": {
+    "junit": {
+      "git_blob": "c1a7678e07626c99ef76ca0d115f83032774070d",
+      "bytes": 10126,
+      "sha256": "eabc21351aa241a8de861ba933e746a57617a4c3a22a98fefda33174d28fa5e7"
+    },
+    "original_result": {
+      "executed": 17,
+      "passed": 15,
+      "failed": 2
+    },
+    "initial": {
+      "phase": "Publish",
+      "failure": "original Feature CURRENT publication: Invalid(Unavailable)",
+      "request_started_ns": 1477205696090294,
+      "last_checked_ns": 1477205957602368,
+      "failing_now_ns": 1477206229727211,
+      "age_ns": 533636917,
+      "time_regressed": false
+    },
+    "publication": {
+      "phase": "Publish",
+      "failure": "connect original CURRENT purpose: original Root writer observation unavailable or fenced",
+      "request_started_ns": 1477218656901587,
+      "last_checked_ns": 1477219033706641,
+      "failing_now_ns": 1477219260569695,
+      "age_ns": 603668108,
+      "time_regressed": false
+    },
+    "original_freshness_limit_ns": 500000000,
+    "interpretation": "The original current() safety check rejected actual request-start age beyond the unchanged limit. Its failure precedes session and worker drop. Parent PeerDenied/EAGAIN is insufficient to identify the first cause. last_checked is advanced by each current() and is not the observation response completion timestamp.",
+    "limitations": "V7 does not contain successful per-phase timings that uniquely identify kernel scheduling, filesystem durability or a shared original owner callback as the budget consumer. Previous speculative clock-regression and contention theories are not treated as this run's cause."
+  },
+  "source_operations": {
+    "git_blob": "e83dba8a9611905ddb2351d643fa2ce00d06c1b2",
+    "bytes": 21331,
+    "sha256": "fcaa1df037768b6224f6c3835c61cbb438b8bc6638bb24646bb17a32dfe5c718",
+    "operations": 40,
+    "phase_spans": 20
+  },
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_root_child_tests.rs",
+      "preimage": {
+        "git_blob": "bb9f481e3e63be557a081963335f4b354458cfd5",
+        "bytes": 16052,
+        "sha256": "8a642ea51aa2f056964a3d9c5b742e0a34dd56eb7b342387071e378387c8560b"
+      },
+      "postimage": {
+        "git_blob": "eaf9a9e313755e218e257dc32d58f818abaead77",
+        "bytes": 17429,
+        "sha256": "2349d5a8483ed1a3feda4e2897167c9ffc7990643dfb5b577ec0cbb5593ad761"
+      },
+      "operation_count": 14,
+      "phase_spans": [
+        "publication.child.five-lane-open",
+        "publication.child.learning-checkpoint",
+        "publication.child.root-enrollment-wait",
+        "publication.child.current-connect",
+        "publication.child.prepare-current",
+        "publication.child.request-grant",
+        "publication.child.claim-dispatch-publish"
+      ],
+      "original_assertion_tokens": 38,
+      "exact_forward_reverse": true,
+      "source_without_new_timing_byte_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_child_tests.rs",
+      "preimage": {
+        "git_blob": "7d9dc6d13e7997638b377c7dfc866d2c5f57ee3d",
+        "bytes": 13042,
+        "sha256": "a86ad24d9b80066bdd15da1f8ad852ed437e1f08b130b281ac08e231a4d33fb5"
+      },
+      "postimage": {
+        "git_blob": "01b5cd8e5c30ded50eb3b97f67c3e94c308697a0",
+        "bytes": 14759,
+        "sha256": "bbf718ced03553b902887631d33ff8f6454ff37de84fa81e88e07c5af911eccc"
+      },
+      "operation_count": 18,
+      "phase_spans": [
+        "initial.child.five-lane-open",
+        "initial.child.artifact-reopen",
+        "initial.child.model-load",
+        "initial.child.root-enrollment-wait",
+        "initial.child.initial-connect",
+        "initial.child.prepare-feature",
+        "initial.child.request-grant",
+        "initial.child.publish-feature",
+        "initial.child.recover-feature"
+      ],
+      "original_assertion_tokens": 31,
+      "exact_forward_reverse": true,
+      "source_without_new_timing_byte_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_root_fixture_tests.rs",
+      "preimage": {
+        "git_blob": "1b73fc06dba2a7afb620787d9ea0a3f9eaafffac",
+        "bytes": 32386,
+        "sha256": "20c2ad06db87ed4c97805d673945393fa373aacd93ed03be57149126f6b6242a"
+      },
+      "postimage": {
+        "git_blob": "54c1235b199b59e1bd66a7f398c2c786959f792c",
+        "bytes": 32800,
+        "sha256": "7e45bca121c9e2fbed6b84931e3edb38de7caab81f21393993dd02a83c4dc860"
+      },
+      "operation_count": 4,
+      "phase_spans": [
+        "publication.root.wait-learning-ready",
+        "publication.root.deployment-register"
+      ],
+      "original_assertion_tokens": 9,
+      "exact_forward_reverse": true,
+      "source_without_new_timing_byte_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_fixture_tests.rs",
+      "preimage": {
+        "git_blob": "9f8eba7e6e82d140fee6408e58dc7a1fee9291d5",
+        "bytes": 24228,
+        "sha256": "23f42d446cc731161c31fb25689f4d3ec831bedd9117ff8f40149cefb956bdcd"
+      },
+      "postimage": {
+        "git_blob": "66542ac41091faefba07f70dfb96535b064fd413",
+        "bytes": 24635,
+        "sha256": "a8f7a22744207eb8daaf4c4ddde592595d75d3122a3051d02c1dfb36f652d142"
+      },
+      "operation_count": 4,
+      "phase_spans": [
+        "initial.root.wait-original-inputs",
+        "initial.root.deployment-register"
+      ],
+      "original_assertion_tokens": 9,
+      "exact_forward_reverse": true,
+      "source_without_new_timing_byte_equal": true
+    }
+  ],
+  "shared_dependency": {
+    "owner": "hepta_audit",
+    "helper_path": "codex-rs/hepta-agentd/src/root_authority_session_tests.rs",
+    "helper_symbol": "crate::root_authority_session::tests::component_phase_timing",
+    "helper_postimage": {
+      "git_blob": "0ff0b07f606b3433194f97e3ac8aad7ae8f084a8",
+      "bytes": 24410,
+      "sha256": "6940d7099460bbd7804ee44959597a74ae845b71a738f3e8dc1e44233f0a8088"
+    },
+    "signature": "(label: &'static str, phase: impl std::fmt::Debug) -> ComponentPhaseTiming",
+    "operations": {
+      "git_blob": "2f2c61a37440aa9767ac28bca01ce7c8e035ef3a",
+      "bytes": 11706,
+      "sha256": "9336455a92557e6a3c1f509d546320e020470e58cc246d7c8220ab0efd043886"
+    },
+    "manifest": {
+      "git_blob": "1a0d1d00f58ce9a1ba02ee9e511391e91f22eccc",
+      "bytes": 10140,
+      "sha256": "82a9353c3692d9a6b863e5f33e8068d9508881d59dd1df4436e559701e63ac44"
+    },
+    "session_postimage": {
+      "git_blob": "c36482e33fc43cd35b18f79740188eacf8e49558",
+      "bytes": 20883,
+      "sha256": "2790341d9a9758caeee268f68e7c5e568a88e897d5730b2e0377250e0a9f39d6"
+    },
+    "writer_postimage": {
+      "git_blob": "9ee06141aded0ac3effa8b8e6f716958d463a0e0",
+      "bytes": 12990,
+      "sha256": "3928bc9c99a27b9de0b2d15e986cd3ec2739e89fc0058f1794fcd385ac61cfb3"
+    },
+    "required_together": true,
+    "obsolete_dependencies_not_used": [
+      "9f96018c5689dbdda32b8f9e4fde663bce81cfef",
+      "01b0fd0378f7bf42283e971bbf45bea4306066b8"
+    ]
+  },
+  "independent_reviews": {
+    "fixture_delta_by_hepta_audit": {
+      "git_blob": "e7477ad5b7b10aa6158b91b80efbac7f3bd01085",
+      "bytes": 6063,
+      "sha256": "3d494aca540839a85edc456dfc926b7742bac082ec112df9b9d168e6ff1d4da8"
+    },
+    "shared_delta_by_runtime_access": {
+      "git_blob": "329f578123cc1546f41f6dad78a5d6cc75796cab",
+      "bytes": 8793,
+      "sha256": "d4bfa9730fe5c097051e4d5fb3e28478bcdbde362add8d4089653cbbe05d0730"
+    }
+  },
+  "diagnostics_contract": {
+    "source_shape": "Each span is a new timing guard immediately before unchanged existing work and an explicit drop immediately after it. Original ? paths drop the guard automatically. Removing just the new declarations and drops reproduces each entire old file byte for byte.",
+    "callback_boundary": "The fixture grant/claim/dispatch span wraps the whole original call. Its output occurs after that original call returns or unwinds. Parent registration spans likewise write after the original registration call returns or unwinds; they do not print inside a live authority callback.",
+    "observation_only": "The helper never calls live.current(), refresh(), cache acceptance, consumer synchronization or any authority API. Extra BOOTTIME samples are diagnostic only. Failure to sample becomes None and is neither returned nor used in an original decision.",
+    "bounded_output": "Shared helper reserves one of at most 64 output slots per process at construction, retains at most eight marks and 64 phase characters, and never returns an emitted slot. The shared writer may return an unused slot only for actual successful spans below its 20 ms logging threshold. Fixture spans do not apply that threshold.",
+    "outcome": "These fixture guards do not declare an Ok or error outcome. reported_outcome=None means scope termination, never a successful or failed test. Original error/assertion output remains the authority for the operation's actual result.",
+    "diagnostic_limits": "Instrumentation can perturb scheduling. Missing records or suppressed writer scopes do not prove inactivity. Timings combine CPU, scheduling, filesystem I/O and original locks; a span must not be labelled pure mutex waiting. New results belong only to the exact integrated source, not to the predecessor."
+  },
+  "static_source_trace": [
+    {
+      "paths": [
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_root_child_tests.rs",
+          "git_blob": "bb9f481e3e63be557a081963335f4b354458cfd5"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_child_tests.rs",
+          "git_blob": "7d9dc6d13e7997638b377c7dfc866d2c5f57ee3d"
+        }
+      ],
+      "fact": "Both children already construct Tokio new_multi_thread runtimes with OBSERVATION_WORKERS=2, enable_all and block_on. Neither failed child uses a current_thread runtime.",
+      "implication": "Synchronous child model/artifact work and control handshakes require observation, but source alone does not prove that they starved both runtime workers."
+    },
+    {
+      "paths": [
+        {
+          "path": "codex-rs/hepta-agentd/src/main.rs",
+          "git_blob": "133a0c12daa683e16cdb79f902dea88092ebfb52"
+        },
+        {
+          "path": "codex-rs/arg0/src/lib.rs",
+          "git_blob": "4e41e7affbb627df162b7b6780203b75a7dd839f"
+        }
+      ],
+      "fact": "The regular product dispatcher explicitly starts its codex-main OS thread and builds a new_multi_thread runtime before block_on. Other current_thread branches in arg0 are distinct helper dispatch paths.",
+      "implication": "The normal product and these fixtures use multithread runtimes, but their worker counts and scheduling are not asserted to be identical."
+    },
+    {
+      "paths": [
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_root_fixture_tests.rs",
+          "git_blob": "1b73fc06dba2a7afb620787d9ea0a3f9eaafffac"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_fixture_tests.rs",
+          "git_blob": "9f8eba7e6e82d140fee6408e58dc7a1fee9291d5"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_listeners.rs",
+          "git_blob": "50cbe55f7af1969f68d9c98e7ec9317b38b3c8dc"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_session.rs",
+          "git_blob": "3d7f65f119cc3aebb77fb8dc6931711f800daf50"
+        }
+      ],
+      "fact": "Parent registration runs on a scoped OS thread while the original prepared session serves. The original five-lane listener first accepts its fixed lanes and dispatches service lanes on separate scoped OS threads; optional purpose workers are separate from that fixed barrier.",
+      "implication": "There is no source evidence that a single parent registration thread directly owns all observation dispatch. Shared original authority or durability work remains a possible source of delay."
+    },
+    {
+      "paths": [
+        {
+          "path": "codex-rs/hepta-agentd/src/root_observation_stream.rs",
+          "git_blob": "9d3d24bd5104be99372c8a55859360e792120605"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/root_production_inputs.rs",
+          "git_blob": "60d210626d1bde702a7e848e21235d69c48611c0"
+        }
+      ],
+      "fact": "The original observation stream is a nonblocking Tokio UnixStream with exclusive framed exchange and the original Root peer/lifetime checks. Original consumer opening already uses spawn_blocking.",
+      "implication": "No new executor, unbounded parallel exchange, manual refresh or substitute consumer is introduced."
+    },
+    {
+      "paths": [
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_context.rs",
+          "git_blob": "4c7638bd3ffc433dde4cfd8aeb3293b5c57cea11"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_enrollment.rs",
+          "git_blob": "1b25f9ea01b847b9d88bf23e4ffb171865da7fb5"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_enrollment.rs",
+          "git_blob": "93f9e4bc85f79954ed70c2a7b7f5517766a2adee"
+        }
+      ],
+      "fact": "Original enrollment runs real material, target, consumer and profile work within the registered original writer context. The shared diagnostic separately brackets the original writer's read, verify and dispatch callback without releasing its original witness or lock.",
+      "implication": "The combined spans can correlate registration and original callback duration with observation request start/end. They cannot retroactively prove which phase caused V7's stale sample."
+    },
+    {
+      "paths": [
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_root_child_tests.rs",
+          "git_blob": "bb9f481e3e63be557a081963335f4b354458cfd5"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_child_tests.rs",
+          "git_blob": "7d9dc6d13e7997638b377c7dfc866d2c5f57ee3d"
+        }
+      ],
+      "fact": "These are existing UID0 component-parent child paths. They perform original five-lane admission, original purpose registration and CURRENT/FinalUse operations with their existing fixtures. They do not perform an ordinary A-to-training-to-B business fit.",
+      "implication": "No ordinary complete, adoption, no-update rollback or physical cold-restart acceptance is inferred."
+    }
+  ],
+  "unchanged_contract": {
+    "callers_operations": [],
+    "new_test_methods": 0,
+    "root_parent_count": 17,
+    "assertions_and_negative_controls_unchanged": true,
+    "freshness_limit_unchanged": true,
+    "original_budget_and_sleep_unchanged": true,
+    "control_messages_and_order_unchanged": true,
+    "permissions_and_peer_identity_unchanged": true,
+    "original_owner_and_dispatch_witness_unchanged": true,
+    "grants_and_nonce_flow_unchanged": true,
+    "harness_unchanged": true,
+    "checker_unchanged": true
+  },
+  "validation": {
+    "all_four_postimages_uploaded_and_api_git_sha_checked": true,
+    "fixed_preimages_and_postimages_readback_checked": true,
+    "unique_forward_reverse_replay": true,
+    "strip_only_new_timing_restores_entire_files": true,
+    "original_assertion_token_sequences_equal": true,
+    "independent_peer_static_review": true,
+    "rustfmt": false,
+    "rust_compile": false,
+    "native": false,
+    "full_official_caller_scan": false,
+    "h_requests": false,
+    "refs_changed": false,
+    "pr_changed": false,
+    "reason": "This agent prepared and reviewed source only. Parent exclusively owns the integrated-source maintenance and qualification."
+  },
+  "conclusion": "No functional change is proposed from the V7 evidence. The frozen four-file delta only supplies bounded original BOOTTIME phase context to correlate with the separately reviewed shared refresh/writer spans. It is ready for parent integration and actual qualification; no new test PASS is claimed.",
+  "ordinary_acceptance": {
+    "complete": 0,
+    "positive_adoption": 0,
+    "ordinary_no_update_or_rollback": 0,
+    "physical_cold_restart": 0
+  }
+}

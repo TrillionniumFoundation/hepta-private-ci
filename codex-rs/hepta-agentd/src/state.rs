@@ -40,6 +40,9 @@ mod control;
 
 #[path = "state_circuit_task.rs"]
 mod circuit_task;
+#[cfg(target_os = "linux")]
+#[path = "state_retained_learning_source.rs"]
+mod retained_learning_source;
 pub use circuit_task::AgentdCircuitTaskInvocationProviderV1;
 
 #[path = "notes_organ_state.rs"]
@@ -60,7 +63,8 @@ pub(crate) struct AgentdState {
     pub(crate) circuit_task: std::sync::OnceLock<crate::CircuitTaskHandleV1>,
     pub(crate) circuit_task_invocation:
         std::sync::OnceLock<Arc<dyn AgentdCircuitTaskInvocationProviderV1>>,
-    circuit_learning_source: std::sync::OnceLock<Vec<StableId>>,
+    circuit_learning_source:
+        std::sync::OnceLock<crate::circuit_task_learning::RegisteredCircuitLearningSourcesV1>,
     circuit_task_admissions: Arc<std::sync::atomic::AtomicUsize>,
     pub(crate) cognitive_ranker: std::sync::OnceLock<Arc<crate::PinnedCognitiveRanker>>,
     pub(crate) cognitive_retrieval_context:

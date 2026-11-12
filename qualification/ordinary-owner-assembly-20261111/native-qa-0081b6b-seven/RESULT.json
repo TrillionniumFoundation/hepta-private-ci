@@ -1,0 +1,165 @@
+{
+  "schema": "hepta.native-seven-package-qa-attempt.v1",
+  "source": {
+    "commit": "0081b6b78fa1f0fb238a12aec814c93bdf2343a0",
+    "tree": "87e7ef749329b0f41481873a414cdd924d5971bf"
+  },
+  "status": "failed-at-original-b4-qa",
+  "request": "0cf4a133769a12be314e6d48e5ff8f4d7effbf76",
+  "harness": "096b5b69c1295560f3a6c9e0da51e2708a0c996c",
+  "session": "dpty-b37c1458dc9bf48299f5404adda42859321e90ba2d6a0282594f7c76b3265bae",
+  "maintenance_and_compile": {
+    "fmt_before": "passed",
+    "clippy_seven": "passed",
+    "fmt_after": "passed",
+    "product_bins_seven": "passed",
+    "source_retained_clean": true
+  },
+  "qa": {
+    "command": [
+      "python3",
+      "-B",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "qa/b4-no-bypass",
+      "-p",
+      "test_*.py",
+      "-v"
+    ],
+    "started_at": "2026-11-12T04:55:04.383656+00:00",
+    "finished_at": "2026-11-12T04:55:19.144878+00:00",
+    "elapsed_seconds": 14.75996970385313,
+    "command_exit_code": 1,
+    "executor_exit_code": 1,
+    "runner_tests": 211,
+    "runner_errors": 12,
+    "recorder_observed_passed_tests": 199,
+    "recorder_observed_failed_tests": 12,
+    "timeout": false,
+    "output_limit_exceeded": false,
+    "log_bytes": 67215,
+    "log_sha256": "3154d7e5e0ccf8d4f06b5cb9bdc918d8f92020adc650b96b86f1649b428abbe3",
+    "log_git_blob": "15f19a1c30f69cfb595732292bbc17754daf1dd1",
+    "observed_error_groups": [
+      {
+        "count": 1,
+        "kind": "mutation lookup error",
+        "method": "test_ordinary_assembly_uses_original_current_native_worker_and_normal_channel",
+        "marker": "source.readback()",
+        "finding": "Real code uses explicit DurableCircuitTaskSourceV1::readback(&source) in the same function; original test had the old spelling."
+      },
+      {
+        "count": 11,
+        "kind": "shared unmodified original checker baseline rejection in RootAdmin tests",
+        "path": "codex-rs/hepta-agentd/src/production_launcher_late_startup.rs",
+        "function": "select_original_startup_entry",
+        "finding": "Literal-bearing full condition is currently placed in ordinary code sequence; original checker masks literals and supports exact literal_calls separately."
+      }
+    ]
+  },
+  "steps": [
+    {
+      "name": "original-rust-idle-preflight",
+      "state": "completed",
+      "exit_code": 0,
+      "timed_out": false
+    },
+    {
+      "name": "isolated-clone",
+      "state": "completed",
+      "exit_code": 0,
+      "timed_out": false
+    },
+    {
+      "name": "fetch-exact-source",
+      "state": "completed",
+      "exit_code": 0,
+      "timed_out": false
+    },
+    {
+      "name": "checkout-exact-source",
+      "state": "completed",
+      "exit_code": 0,
+      "timed_out": false
+    },
+    {
+      "name": "format-base-ancestry",
+      "state": "completed",
+      "exit_code": 0,
+      "timed_out": false
+    },
+    {
+      "name": "operator-toolchain",
+      "state": "completed",
+      "exit_code": 0,
+      "timed_out": false
+    },
+    {
+      "name": "fmt-before",
+      "state": "completed",
+      "exit_code": 0,
+      "timed_out": false
+    },
+    {
+      "name": "fix-seven-crates",
+      "state": "completed",
+      "exit_code": 0,
+      "timed_out": false
+    },
+    {
+      "name": "fmt-after",
+      "state": "completed",
+      "exit_code": 0,
+      "timed_out": false
+    },
+    {
+      "name": "bins-check",
+      "state": "completed",
+      "exit_code": 0,
+      "timed_out": false
+    },
+    {
+      "name": "qa-b4-no-bypass",
+      "state": "completed",
+      "exit_code": 1,
+      "timed_out": false
+    }
+  ],
+  "cleanup": [
+    {
+      "name": "retain-source-and-drift",
+      "status": "passed"
+    },
+    {
+      "name": "original-tool-sources",
+      "status": "passed"
+    },
+    {
+      "name": "final-physical-source",
+      "status": "passed"
+    },
+    {
+      "name": "read-only-reference",
+      "status": "passed"
+    },
+    {
+      "name": "external-tools",
+      "status": "passed"
+    }
+  ],
+  "ordinary_rust_tests_executed": 0,
+  "root_component_tests_executed": 0,
+  "full_caller_reached": false,
+  "other_qa_groups_reached": false,
+  "source_retained_clean": true,
+  "qualification_pass": false,
+  "ordinary_acceptance": {
+    "complete": 0,
+    "positive_adoption": 0,
+    "no_update_or_rollback": 0,
+    "independent_consumer": false,
+    "physical_daemon_root_restart": false
+  }
+}

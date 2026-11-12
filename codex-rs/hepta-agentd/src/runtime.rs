@@ -76,10 +76,11 @@ pub async fn run_with_shutdown(
         .and_then(crate::LearningIterationRuntimeBootstrapV1::take_circuit_delivery);
     let terminal_learning = config.take_terminal_learning_bootstrap();
     let neuron_generation = config.take_neuron_generation_bootstrap();
-    if learning_iteration.is_some() && plasticity_bootstrap.is_none() {
-        return Err(AgentdError::Invalid(
-            "learning iteration requires the governed plasticity owner".into(),
-        ));
+    if let Some(learning) = &learning_iteration {
+        let learning: &crate::LearningIterationRuntimeBootstrapV1 = learning;
+        learning
+            .require_proposal_owner(plasticity_bootstrap.is_some())
+            .await?;
     }
     if circuit_learning_delivery.is_some() && circuit_task.is_none() {
         return Err(AgentdError::Invalid(
@@ -156,13 +157,8 @@ pub async fn run_with_shutdown(
         EVENT_CAPACITY,
     )?);
     if let Some(delivery) = &circuit_learning_delivery {
-        state.attach_circuit_learning_sources(
-            delivery
-                .requests
-                .iter()
-                .map(|request| request.source_run_id.clone())
-                .collect(),
-        )?;
+        let delivery: &crate::learning_iteration::CircuitLearningDeliveryRuntimeV1 = delivery;
+        delivery.attach_sources(&state)?;
     }
     let circuit_task = if let Some((bootstrap, invocation)) = circuit_task {
         state
@@ -346,7 +342,8 @@ pub async fn run_with_shutdown(
         state.attach_automation_store(store.clone())?;
         if let Some(host) = state.objective_runtime.get() {
             for source in state.circuit_learning_sources() {
-                host.reconcile_learning_outbox(store, Some(source)).await?;
+                host.reconcile_learning_outbox(store, Some(source), &state)
+                    .await?;
             }
         }
     }
