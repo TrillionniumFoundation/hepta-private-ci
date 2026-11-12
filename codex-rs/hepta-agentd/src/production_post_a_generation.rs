@@ -10,10 +10,13 @@ use super::OriginalFiles;
 use super::owners::OpenMode;
 use super::owners::OriginalJournal;
 use super::owners::SigningFilesData;
+use super::refused;
 use crate::AgentdError;
 use crate::OriginalCircuitFeatureLearningHandoffV1;
 use crate::OriginalCircuitFeatureLearningSourcesV1;
 use crate::OriginalGenerationLearningSigningFilesV1;
+use crate::OriginalHistoricalCircuitFeatureLearningHandoffV1;
+use crate::OriginalHistoricalCircuitFeatureSourcesV1;
 use crate::root_historical_task_read_client::OriginalHistoricalStageAuthoritiesV1;
 
 #[derive(Deserialize)]
@@ -95,10 +98,20 @@ impl OriginalSigningFiles {
 }
 
 impl OriginalGenerationFiles {
+    pub(super) fn require_original_lifecycle(&self, recovering: bool) -> Result<(), AgentdError> {
+        for mode in [self.selection_mode, self.next_use_mode] {
+            if matches!(mode, OpenMode::Recover) != recovering {
+                return Err(refused("original C and Generation recovery modes differ"));
+            }
+        }
+        Ok(())
+    }
+
     pub(super) fn into_original_handoff(
         self,
         source: OriginalCircuitFeatureLearningSourcesV1,
     ) -> Result<OriginalCircuitFeatureLearningHandoffV1, AgentdError> {
+        self.require_original_lifecycle(false)?;
         Ok(OriginalCircuitFeatureLearningHandoffV1 {
             source,
             selection: self.selection.into_original_input()?,
@@ -106,6 +119,19 @@ impl OriginalGenerationFiles {
             verifier: self.verifier,
             selection_mode: self.selection_mode.original(),
             next_use_mode: self.next_use_mode.original(),
+        })
+    }
+
+    pub(super) fn into_original_historical_handoff(
+        self,
+        source: OriginalHistoricalCircuitFeatureSourcesV1,
+    ) -> Result<OriginalHistoricalCircuitFeatureLearningHandoffV1, AgentdError> {
+        self.require_original_lifecycle(true)?;
+        Ok(OriginalHistoricalCircuitFeatureLearningHandoffV1 {
+            source,
+            selection: self.selection.into_original_input()?,
+            next_use: self.next_use.into_original_input()?,
+            verifier: self.verifier,
         })
     }
 }

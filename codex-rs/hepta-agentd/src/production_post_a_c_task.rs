@@ -29,6 +29,7 @@ use crate::OriginalCellQ24FeatureTargetV1;
 use crate::OriginalCellQ24LearningStageOwnersV1;
 use crate::OriginalQ24SuccessorExecutionInputsV1;
 use crate::OriginalSingleQ24SourceConfigurationV1;
+use crate::OriginalSuccessorRecoveryModeV1;
 use crate::PublishedCircuitFeatureCompletionV1;
 use crate::authority_host_runtime::publication_data::ObserverData;
 use crate::cell_q24_publication_driver::validation::Decision;
@@ -37,6 +38,9 @@ use crate::root_historical_task_read_client::OriginalHistoricalTaskReadReceiptV1
 
 #[path = "production_post_a_c_files.rs"]
 mod files;
+#[path = "production_post_a_c_recovery.rs"]
+mod recovery;
+pub(super) use recovery::OriginalExistingCTask;
 
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -45,6 +49,7 @@ pub(super) struct CTaskData {
     target: PathBuf,
     signed_ingress: PathBuf,
     mode: OpenMode,
+    recovery: Option<OriginalSuccessorRecoveryModeV1>,
     clock_domain: String,
     files: files::ExecutionFilesData,
 }
@@ -54,6 +59,7 @@ pub(super) struct OriginalCTaskPlan {
     target: OriginalLateInput,
     ingress: OriginalLateInput,
     mode: OpenMode,
+    recovery: Option<OriginalSuccessorRecoveryModeV1>,
     execution: files::ExecutionFilesData,
     end: Instant,
 }
@@ -97,11 +103,15 @@ impl CTaskData {
             ));
         }
         self.files.require_bounds()?;
+        if matches!(self.mode, OpenMode::Recover) != self.recovery.is_some() {
+            return Err(refused("an explicit original C recovery phase is required"));
+        }
         Ok(OriginalCTaskPlan {
             source: OriginalLateInput::open_original(self.source, files, end)?,
             target: OriginalLateInput::open_original(self.target, files, end)?,
             ingress: OriginalLateInput::open_original(self.signed_ingress, files, end)?,
             mode: self.mode,
+            recovery: self.recovery,
             execution: self.files,
             end,
         })
@@ -109,6 +119,24 @@ impl CTaskData {
 }
 
 impl OriginalCTaskPlan {
+    pub(super) fn require_original_mode(
+        &self,
+        route: &OriginalPreparedPublicationRoute,
+    ) -> Result<bool, AgentdError> {
+        let recovering = matches!(self.mode, OpenMode::Recover);
+        route.with_original_data(|fixed| {
+            if matches!(
+                fixed.inputs.mode,
+                crate::authority_host_runtime::publication_data::Mode::Recover
+            ) != recovering
+                || self.recovery.is_some() != recovering
+            {
+                return Err(refused("original C and Root publication lifecycles differ"));
+            }
+            Ok(recovering)
+        })
+    }
+
     pub(super) async fn open_original_new_task(
         self,
         route: &OriginalPreparedPublicationRoute,

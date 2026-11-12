@@ -117,6 +117,15 @@ impl JournalData {
 
 impl OriginalJournal {
     pub(super) fn open_witness(self) -> Result<(File, FileAnchorWitnessStore), AgentdError> {
+        if matches!(self.mode, OpenMode::Recover) {
+            // Keep the same open descriptions locked through the actual owner
+            // open. A later empty witness must never select its initialize path.
+            self.journal.try_lock().map_err(refused)?;
+            self.witness.try_lock().map_err(refused)?;
+            if self.journal.metadata()?.len() == 0 || self.witness.metadata()?.len() == 0 {
+                return Err(refused("existing original journal and witness required"));
+            }
+        }
         let witness = FileAnchorWitnessStore::open(
             self.witness,
             self.scope,

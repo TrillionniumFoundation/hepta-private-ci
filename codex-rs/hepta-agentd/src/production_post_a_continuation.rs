@@ -14,6 +14,7 @@ use super::OriginalFiles;
 use super::artifacts::OriginalArtifactPlan;
 use super::artifacts::OriginalSelectedArtifacts;
 use super::c_task::OriginalCTaskPlan;
+use super::c_task::OriginalExistingCTask;
 use super::c_task::OriginalNewCTask;
 use super::generation::OriginalGenerationFiles;
 use super::material::OriginalMaterialWriter;
@@ -57,6 +58,27 @@ pub(crate) struct OriginalPostAContinuationV1 {
     original: OriginalContinuationInputs,
 }
 
+enum PreparedCTask {
+    New(OriginalNewCTask),
+    Existing(OriginalExistingCTask),
+}
+
+impl PreparedCTask {
+    fn target_data(&self) -> &codex_hepta_neuron::CellGenerationObserverConfigV1 {
+        match self {
+            Self::New(original) => &original.target_data,
+            Self::Existing(original) => &original.target_data,
+        }
+    }
+
+    fn require_original_custody(&self) -> Result<(), AgentdError> {
+        match self {
+            Self::New(original) => original.custody.require_original(),
+            Self::Existing(original) => original.require_original_custody(),
+        }
+    }
+}
+
 impl OriginalPostAContinuationV1 {
     pub(super) fn from_original_inputs(
         original: OriginalContinuationInputs,
@@ -64,6 +86,9 @@ impl OriginalPostAContinuationV1 {
         post_a_remaining(original.end)?;
         original.trust.require_original_receipt(&original.receipt)?;
         OriginalPreparedPublicationRoute::require_current(&original.publication)?;
+        let recovering =
+            OriginalCTaskPlan::require_original_mode(&original.task, &original.publication)?;
+        OriginalGenerationFiles::require_original_lifecycle(&original.generation, recovering)?;
         Ok(Self { original })
     }
 
@@ -154,35 +179,51 @@ impl OriginalPostAContinuationV1 {
             )
             .await?;
         require_continuation(&state, &identity, &cancelled, end)?;
-        let original: OriginalNewCTask = task
-            .open_original_new_task(
-                &publication,
-                &identity,
-                &decision,
-                selected.selected_manifest(),
-                baseline,
-                &owners,
-                &receipt,
-                &mut files,
-                &cancelled,
+        let recovering = OriginalCTaskPlan::require_original_mode(&task, &publication)?;
+        OriginalGenerationFiles::require_original_lifecycle(&generation, recovering)?;
+        let original = if recovering {
+            PreparedCTask::Existing(
+                OriginalCTaskPlan::open_original_existing_task(
+                    task,
+                    &publication,
+                    &identity,
+                    &decision,
+                    selected.selected_manifest(),
+                    baseline,
+                    &owners,
+                    &mut files,
+                    &cancelled,
+                )
+                .await?,
             )
-            .await?;
-        let OriginalNewCTask {
-            predecessor,
-            target,
-            target_data,
-            execution,
-            ingress,
-            custody: task_custody,
-        } = original;
+        } else {
+            PreparedCTask::New(
+                OriginalCTaskPlan::open_original_new_task(
+                    task,
+                    &publication,
+                    &identity,
+                    &decision,
+                    selected.selected_manifest(),
+                    baseline,
+                    &owners,
+                    &receipt,
+                    &mut files,
+                    &cancelled,
+                )
+                .await?,
+            )
+        };
         artifact_custody.require_original()?;
-        task_custody.require_original()?;
+        original.require_original_custody()?;
         OriginalPreparedPublicationRoute::require_current(&publication)?;
         require_continuation(&state, &identity, &cancelled, end)?;
-        // Only canonical target data and an already verified independent
-        // signature are committed. Root still performs its own enrollment.
-        let material =
-            OriginalMaterialWriter::commit_original_material(material, &target_data, &signed)?;
+        // Recover compares these exact existing bytes without writing. Reserve
+        // commits only the canonical target and verified independent selection.
+        let material = OriginalMaterialWriter::commit_original_material(
+            material,
+            original.target_data(),
+            &signed,
+        )?;
         let (handoff, connection, original_end) =
             OriginalPreparedPublicationRoute::into_original_connection(publication)?;
         if original_end != end {
@@ -199,56 +240,114 @@ impl OriginalPostAContinuationV1 {
         .map_err(refused)?;
         material.require_unchanged()?;
         require_continuation(&state, &identity, &cancelled, end)?;
-        let prepared = crate::OriginalCellQ24RootPublicationDriverV1::prepare_original_successor(
-            driver,
-            successor,
-            predecessor,
-            target,
-            execution,
-        )
-        .await
-        .map_err(refused)?;
-        // The required successor worker retains both original journals across
-        // this joined issuer call. Cancellation cannot spawn another attempt.
-        let binding = prepared.final_use_binding().clone();
-        let issuer_cancelled = cancelled.clone();
-        let signed = tokio::task::spawn_blocking(move || {
-            post_a_remaining(end)?;
-            if issuer_cancelled.is_cancelled() {
-                return Err(refused("original FinalUse request cancelled"));
-            }
-            let signed = grants.request_grant(&binding).map_err(refused)?;
-            post_a_remaining(end)?;
-            Ok::<_, AgentdError>(signed)
-        })
-        .await
-        .map_err(|_| refused("original FinalUse acknowledgement uncertain"))??;
-        require_continuation(&state, &identity, &cancelled, end)?;
-        let installed = crate::OriginalQ24PreparedSuccessorV1::publish(prepared, signed)
-            .await
-            .map_err(refused)?;
-        artifact_custody.require_original()?;
-        task_custody.require_original()?;
-        material.require_unchanged()?;
-        require_continuation(&state, &identity, &cancelled, end)?;
-        let original_ingress =
-            crate::OriginalQ24InstalledSuccessorV1::original_installed_successor_ingress(
-                &installed,
-            )?;
-        let completed =
-            crate::OriginalCircuitFeatureIngressV1::submit_until(&original_ingress, ingress, end)
+        let task_custody = match original {
+            PreparedCTask::New(original) => {
+                let OriginalNewCTask {
+                    predecessor,
+                    target,
+                    target_data: _,
+                    execution,
+                    ingress,
+                    custody: task_custody,
+                } = original;
+                let prepared =
+                    crate::OriginalCellQ24RootPublicationDriverV1::prepare_original_successor(
+                        driver,
+                        successor,
+                        predecessor,
+                        target,
+                        execution,
+                    )
+                    .await
+                    .map_err(refused)?;
+                // The required successor worker retains both original journals across
+                // this joined issuer call. Cancellation cannot spawn another attempt.
+                let binding = prepared.final_use_binding().clone();
+                let issuer_cancelled = cancelled.clone();
+                let signed = tokio::task::spawn_blocking(move || {
+                    post_a_remaining(end)?;
+                    if issuer_cancelled.is_cancelled() {
+                        return Err(refused("original FinalUse request cancelled"));
+                    }
+                    let signed = grants.request_grant(&binding).map_err(refused)?;
+                    post_a_remaining(end)?;
+                    Ok::<_, AgentdError>(signed)
+                })
+                .await
+                .map_err(|_| refused("original FinalUse acknowledgement uncertain"))??;
+                require_continuation(&state, &identity, &cancelled, end)?;
+                let installed = crate::OriginalQ24PreparedSuccessorV1::publish(prepared, signed)
+                    .await
+                    .map_err(refused)?;
+                artifact_custody.require_original()?;
+                task_custody.require_original()?;
+                material.require_unchanged()?;
+                require_continuation(&state, &identity, &cancelled, end)?;
+                let original_ingress =
+                    crate::OriginalQ24InstalledSuccessorV1::original_installed_successor_ingress(
+                        &installed,
+                    )?;
+                let completed = crate::OriginalCircuitFeatureIngressV1::submit_until(
+                    &original_ingress,
+                    ingress,
+                    end,
+                )
                 .await?;
-        require_continuation(&state, &identity, &cancelled, end)?;
-        task_custody.require_original()?;
-        artifact_custody.require_original()?;
-        material.require_unchanged()?;
-        let original = generation.into_original_handoff(completed)?;
-        OriginalCellQ24LearningStageOwnersV1::install_circuit_feature_generation(
-            &owners, snapshot, original,
-        )
-        .await
-        .map_err(refused)?;
-        require_continuation(&state, &identity, &cancelled, end)?;
+                require_continuation(&state, &identity, &cancelled, end)?;
+                task_custody.require_original()?;
+                artifact_custody.require_original()?;
+                material.require_unchanged()?;
+                let original = generation.into_original_handoff(completed)?;
+                OriginalCellQ24LearningStageOwnersV1::install_circuit_feature_generation(
+                    &owners, snapshot, original,
+                )
+                .await
+                .map_err(refused)?;
+                require_continuation(&state, &identity, &cancelled, end)?;
+                task_custody
+            }
+            PreparedCTask::Existing(original) => {
+                let intent =
+                    crate::OriginalCellQ24RootPublicationDriverV1::read_original_recovery_intent(
+                        &driver, &receipt,
+                    )
+                    .await
+                    .map_err(refused)?;
+                require_continuation(&state, &identity, &cancelled, end)?;
+                let (recovery, custody, mode) = OriginalExistingCTask::into_original_recovery(
+                    original,
+                    intent,
+                    Arc::clone(&receipt),
+                )?;
+                let recovered = crate::OriginalCellQ24RootPublicationDriverV1::recover_feature_from_historical_a(
+                    driver, recovery,
+                ).await.map_err(refused)?;
+                let original_a = Arc::clone(&receipt);
+                let completed = tokio::task::spawn_blocking(move || {
+                    post_a_remaining(end)?;
+                    let completed =
+                        crate::PublishedCircuitFeatureTaskV1::recover_original_completed_successor(
+                            &recovered, original_a, mode,
+                        )?;
+                    post_a_remaining(end)?;
+                    Ok::<_, AgentdError>(completed)
+                })
+                .await
+                .map_err(|_| refused("original completed C observation uncertain"))??;
+                require_continuation(&state, &identity, &cancelled, end)?;
+                custody.require_original()?;
+                artifact_custody.require_original()?;
+                material.require_unchanged()?;
+                let original = OriginalGenerationFiles::into_original_historical_handoff(
+                    generation, completed,
+                )?;
+                OriginalCellQ24LearningStageOwnersV1::install_historical_circuit_feature_generation(
+                    &owners, snapshot, original,
+                ).await.map_err(refused)?;
+                require_continuation(&state, &identity, &cancelled, end)?;
+                custody
+            }
+        };
         // Retain actual custody until the supervised daemon shuts down. The
         // learner completes Selection/NextUse through its existing owner lane.
         cancelled.cancelled().await;
