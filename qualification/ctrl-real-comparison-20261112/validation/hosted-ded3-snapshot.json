@@ -1,0 +1,83 @@
+{
+  "schema": "ctrl.hosted-snapshot.v1",
+  "observed_at": "2026-11-12 08:03:52 UTC",
+  "pull_request": 6159,
+  "head_sha": "ded3f65bd1f084d52e4cd14454f3469df549274c",
+  "workflows": [
+    {
+      "name": "Hepta CTRL critic and candidate contracts",
+      "run_id": 43178134101,
+      "status": "pending",
+      "conclusion": null,
+      "jobs": []
+    },
+    {
+      "name": "CTRL native content identity fixture",
+      "run_id": 43178134112,
+      "status": "pending",
+      "conclusion": null,
+      "jobs": []
+    },
+    {
+      "name": "blocking-ci",
+      "run_id": 43178134314,
+      "status": "pending",
+      "conclusion": null,
+      "jobs": []
+    },
+    {
+      "name": "Hepta architecture convergence",
+      "run_id": 43178134008,
+      "status": "pending",
+      "conclusion": null,
+      "jobs": []
+    },
+    {
+      "name": "Hepta EVOLVE-1 CPU contracts",
+      "run_id": 43178133990,
+      "status": "queued",
+      "conclusion": null,
+      "jobs": [
+        {
+          "id": 131047260630,
+          "name": "EVOLVE-1 inherited and transfer regressions",
+          "status": "queued",
+          "conclusion": null
+        }
+      ]
+    },
+    {
+      "name": "v8-canary",
+      "run_id": 43178133981,
+      "status": "completed",
+      "conclusion": "success",
+      "jobs": [
+        {
+          "id": 131047257909,
+          "name": "metadata",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "id": 131048376711,
+          "name": "Build ptrcomp-sandbox ${{ matrix.target }} from source",
+          "status": "completed",
+          "conclusion": "skipped"
+        },
+        {
+          "id": 131048377290,
+          "name": "Build ${{ matrix.variant }} ${{ matrix.target }}",
+          "status": "completed",
+          "conclusion": "skipped"
+        }
+      ]
+    }
+  ],
+  "cpu_unique_non_skipped_methods": null,
+  "native_unique_non_skipped_methods": null,
+  "cpu_test_log_evidence": null,
+  "native_test_log_evidence": null,
+  "codespell_result_observed": false,
+  "required_check_policy_verified": false,
+  "rerun_or_cancel_performed": false
+}

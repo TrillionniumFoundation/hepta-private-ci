@@ -1,0 +1,19 @@
+{
+  "host": "ai395",
+  "executable": "/home/qq/hepta-smollm2-weight-research-20261103/ci-env/bin/python",
+  "args": [
+    "-B",
+    "-"
+  ],
+  "cwd": "/home/qq/ctrl-real-policy-20261112-1333-v2",
+  "env": {
+    "PYTHONPATH": "/home/qq/ctrl-real-policy-20261112-1333-v2/scripts:/home/qq/ctrl-real-policy-20261112-1333-v2:/home/qq/ndu-real-runtime-20261107-bc2efaf10cd0/python-deps",
+    "OPENBLAS_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1",
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "idempotency_key": "ctrl-1333-normalization-diagnostic-v2",
+  "timeout_seconds": 120,
+  "stdin": "import json,hashlib\nfrom pathlib import Path\nfrom types import SimpleNamespace\nimport numpy as np\nimport ctrl_macro_study as study\ncode=Path.cwd()\nroot=Path('/home/qq/ctrl-real-study-20261112-1333/run-v1/frozen')\nentry=study.read(root.parent/'FROZEN_FREEZE_PIN.json')\nm=study.modules(code)\n_,frozen,context=study.thaw(SimpleNamespace(repository=str(code),run_dir=str(root),freeze_sha256=entry['freeze_sha256']),m)\nreport=study.read(root/'EXPORT.json')\npin=study.read(root/'EXPORT_PIN.json')['canonical_sha256']\nrows=m['macro_training_pairs'].fit_rows(report,'train',expected_export_sha256=pin,context=context)\np=m['macro_policy']\nknown=[r for r in rows if p._gain(r) is not None]\nx=np.asarray([p._state(r['state'])[0] for r in known])\nw=p._source_weights([r['source_id'] for r in known])\ncenter=np.average(x,axis=0,weights=w)\nminimum,maximum=x.min(axis=0),x.max(axis=0)\nscale=np.sqrt(np.average((x-center)**2,axis=0,weights=w))\nscale[scale<1e-8]=1\nbad=[{'coordinate':int(i),'minimum':float(minimum[i]),'center':float(center[i]),'maximum':float(maximum[i]),'scale':float(scale[i]),'below':float(minimum[i]-center[i]),'above':float(center[i]-maximum[i])} for i in range(len(center)) if minimum[i]>center[i] or center[i]>maximum[i] or scale[i]<1e-8]\nprint(json.dumps({'source_sha':'0696d242632bd1bad6668267c52b0bd791241504','freeze_sha256':entry['freeze_sha256'],'export_canonical_sha256':pin,'export_file_sha256':hashlib.sha256((root/'EXPORT.json').read_bytes()).hexdigest(),'planned_pairs':report['planned_pairs'],'exported_pairs':report['exported_pairs'],'unknown_pairs':report['unknown_pairs'],'fit_rows':len(rows),'fit_sources':len(set(r['source_id'] for r in known)),'width':len(center),'violations':bad,'clipped_center_inside_actual_observed_envelope':bool(np.all(np.clip(center,minimum,maximum)>=minimum) and np.all(np.clip(center,minimum,maximum)<=maximum)),'source_inventory_sha256':hashlib.sha256((root.parent/'preparation/SOURCE_INVENTORY.json').read_bytes()).hexdigest(),'actors_launched':False,'checkpoint_written':False},allow_nan=False),flush=True)\n"
+}
