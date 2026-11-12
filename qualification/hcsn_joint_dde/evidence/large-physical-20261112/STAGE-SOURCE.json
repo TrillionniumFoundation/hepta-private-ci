@@ -1,0 +1,55 @@
+{
+  "schema": "hcsn-large-physical-stage-source-freeze-v1",
+  "status": "UNQUALIFIED",
+  "base_commit": "d4e7ecd239988790936f21407be1ba05c318c6d8",
+  "change": "Actual per-partial sparse instantaneous support plus exact time-dependent linear Jacobian callback for BDF.",
+  "scope": "Fixed relative prior/content/phase; no migration derivative, history replay, continuum accuracy, network AD, training or production qualification.",
+  "execution": {
+    "exact_callback": "NOT_EXECUTED: scratch transport unavailable before patch verification",
+    "prior_numeric_pattern_attempt": {
+      "grid": 128,
+      "exit_code": 137,
+      "stdout_bytes": 0,
+      "stderr_bytes": 0,
+      "result_produced": false,
+      "cause": "Unknown; shell reported Killed, no authoritative OOM evidence."
+    },
+    "prior_numeric_pattern_preflight": {
+      "state_scalars": 3990,
+      "instantaneous_nnz": 23665,
+      "color_groups": 256,
+      "query": [
+        0,
+        0.02
+      ],
+      "first_segment": [
+        0,
+        0.02
+      ],
+      "source_endpoints": [
+        0,
+        0.025,
+        0.05,
+        0.075,
+        0.1,
+        0.125,
+        0.15,
+        0.175,
+        0.2
+      ],
+      "source_packets": 8,
+      "initial_rhs_finite": true,
+      "initial_rhs_max": 425.26166427630767,
+      "maximum_rss_kib": 63792
+    }
+  },
+  "format": "Not yet formatted or tested. This branch is a durable candidate freeze and is not a green qualification.",
+  "remaining": [
+    "Independent instantaneous-Jacobian versus captured RHS finite differences",
+    "Uniform/graded regression after source changes",
+    "Original migrated fixed-prior n128 full physical two-step finite differences and cost",
+    "Only after n128 passes, the same n512 new qualification",
+    "Preserve source/input original bytes and format AST receipts"
+  ],
+  "no_new_optimizer_calls": true
+}
