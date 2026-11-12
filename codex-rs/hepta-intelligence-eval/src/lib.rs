@@ -149,6 +149,7 @@ pub use product_execution_store::ProductEvaluationExecutionStoreErrorV1;
 pub use product_execution_store::ProductEvaluationExecutionStoreV1;
 pub use product_qualification_use::revalidate_product_qualification_v1;
 pub use product_runner::FinalHoldoutProviderV1;
+pub use product_runner::OriginalFinalHoldoutConsumptionV1;
 pub use product_runner::ProductEvaluationError;
 pub use product_runner::ProductEvaluationRunnerV1;
 pub use product_runner::ProductEvidenceSinkErrorV1;

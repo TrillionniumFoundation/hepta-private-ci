@@ -193,12 +193,26 @@ pub struct TemporalComparisonInputsV1 {
 pub trait FinalHoldoutProviderV1 {
     fn manifest_digest(&mut self) -> Result<Digest32, ProductProviderErrorV1>;
 
-    /// This method is invoked only after the authoritative fenced owner has
-    /// durably consumed the frozen final-holdout plan.
+    /// Compatibility entry for existing in-process providers. A public receipt
+    /// is data, not permission to release a production holdout. Production
+    /// providers implement the original-owner entry below and retain this
+    /// refusing default.
     fn release_after_consumption(
         &mut self,
-        receipt: &FinalHoldoutJournalReceiptV1,
-    ) -> Result<TemporalComparisonInputsV1, ProductProviderErrorV1>;
+        _receipt: &FinalHoldoutJournalReceiptV1,
+    ) -> Result<TemporalComparisonInputsV1, ProductProviderErrorV1> {
+        Err(ProductProviderErrorV1::Rejected)
+    }
+
+    /// The runner lends the actual owner only for its freshly recorded use.
+    /// Implementations release their separately admitted data inside the
+    /// borrowed observation; this does not grant a role or data-custody right.
+    fn release_after_original_consumption(
+        &mut self,
+        consumed: OriginalFinalHoldoutConsumptionV1<'_>,
+    ) -> Result<TemporalComparisonInputsV1, ProductProviderErrorV1> {
+        consumed.with_current_consumption(|_, _, receipt| self.release_after_consumption(receipt))
+    }
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -400,7 +414,12 @@ impl<S: FinalHoldoutCasStoreV1> ProductEvaluationRunnerV1<S> {
                 ));
             }
         }
-        let mut inputs = provider.release_after_consumption(&holdout)?;
+        let mut inputs = holdout_release::release_original_holdout(
+            &mut self.holdout,
+            &product_plan.frozen_plan,
+            &holdout,
+            provider,
+        )?;
         validate_released_inputs(&product_plan.frozen_plan, &inputs)?;
         validate_comparable_observations(
             &inputs.candidate_observations,
@@ -1007,3 +1026,7 @@ mod tests;
 pub(crate) mod execution;
 #[path = "product_execution_codec.rs"]
 mod execution_codec;
+
+#[path = "product_holdout_release.rs"]
+mod holdout_release;
+pub use holdout_release::OriginalFinalHoldoutConsumptionV1;
