@@ -38,6 +38,13 @@ mod operation;
 
 #[path = "authority_host_q24_evaluation_registration.rs"]
 mod registration;
+#[path = "authority_host_q24_evaluation_route.rs"]
+mod route;
+pub(crate) use route::BoundRootIndependentBEvaluationV1;
+pub(crate) use route::PreparedRootIndependentBEvaluationV1;
+pub use route::RootIndependentBEvaluationOfferV1;
+pub(crate) use route::RootIndependentBEvaluationRuntimeV1;
+pub(crate) use route::serve_optional_until;
 
 pub(crate) struct OriginalRootIndependentBEvaluationFilesV1 {
     record: OriginalBRecord,
