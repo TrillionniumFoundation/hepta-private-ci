@@ -63,6 +63,7 @@ try:
  report["state"]="verified-original-file-bytes";save()
  if remote("ls-remote","--heads","origin","refs/heads/"+branch):raise RuntimeError("export branch already exists; preserve it")
  remote("fetch","--no-tags","origin",parent)
+ original_index=env.get("GIT_INDEX_FILE")
  env["GIT_INDEX_FILE"]=str(out/"export.index")
  git("read-tree",parent)
  for name,path,b in pending:
@@ -84,6 +85,8 @@ try:
  result=remote("push","--porcelain","origin",commit+":refs/heads/"+branch);report["push_output"]=result
  observed=remote("ls-remote","--heads","origin","refs/heads/"+branch)
  if observed.split()[0]!=commit:raise RuntimeError("published exact ref differs")
+ if original_index is None:env.pop("GIT_INDEX_FILE",None)
+ else:env["GIT_INDEX_FILE"]=original_index
  report["source_after"]=git("rev-parse","HEAD");report["source_status_after"]=git("status","--porcelain=v1","--untracked-files=all")
  if report["source_after"]!=source or report["source_status_after"]:raise RuntimeError("source changed during evidence export")
  report["state"]="published-original-evidence";save()
