@@ -16,8 +16,8 @@ impl<S: FinalHoldoutCasStoreV1> CellEvaluationRunnerV1<S> {
             return Err(CellEvaluationErrorV1::Binding("original Cell material projection"));
         }
         receipt.require_original_signed_execution(&qualification.product().evaluator)?;
-        self.product.original_qualification_commitments(
-            receipt.temporal(), qualification.product(), request.context,
+        ProductEvaluationRunnerV1::original_qualification_commitments(
+            &self.product, receipt.temporal(), qualification.product(), request.context,
             request.evidence, request.verifier, request.now,
         ).map_err(CellEvaluationErrorV1::Product)
     }

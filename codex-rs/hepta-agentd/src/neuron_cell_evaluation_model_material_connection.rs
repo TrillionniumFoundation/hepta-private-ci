@@ -259,3 +259,7 @@ fn transfer(channel: &mut Channel, binding: Digest32, cancelled: &AtomicBool) ->
     }
     Err(Error::CommitUncertain)
 }
+
+#[cfg(test)]
+#[path = "neuron_cell_evaluation_model_material_connection_support_tests.rs"]
+mod tests;

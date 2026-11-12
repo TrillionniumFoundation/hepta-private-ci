@@ -1,6 +1,7 @@
 //! Read only the original completed Evaluator/Panel, then export original
 //! commitment bytes. No sink, provider release, signer or claim is reachable.
 use codex_hepta_intelligence_eval::ProductTimingEvidenceV1;
+use codex_hepta_intelligence_eval::OriginalProductEvaluationExecutionEvidenceV1;
 use codex_hepta_neuron::FileAnchorWitnessStore;
 use codex_hepta_types::Digest32;
 
@@ -71,7 +72,7 @@ fn member(
     let (cohort, freeze_payload, freeze_evidence) =
         OriginalCircuitEvaluationCohortReadbackV1::original_model_commitment(&owner.cohort, &observed.cohort)
             .map_err(crate::OriginalCellEvaluationPanelErrorV1::from)?;
-    let execution = observed.execution_evidence();
+    let execution: &OriginalProductEvaluationExecutionEvidenceV1 = observed.execution_evidence();
     Ok(Member {
         binding, execution_namespace: config.execution_namespace,
         qualification_namespace: config.qualification_namespace,
@@ -88,8 +89,10 @@ fn member(
         )?,
         evaluator: learning_owner_evidence::encode(projection.evaluator_payload(),
             &observed.product_evidence().evaluator_bundle)?,
-        execution: learning_owner_evidence::encode(execution.signing_payload(), execution.attestation())?,
-        execution_record: execution.original_record().to_vec(),
+        execution: learning_owner_evidence::encode(
+            OriginalProductEvaluationExecutionEvidenceV1::signing_payload(execution), execution.attestation(),
+        )?,
+        execution_record: OriginalProductEvaluationExecutionEvidenceV1::original_record(execution).to_vec(),
         cohort, freeze: learning_owner_evidence::encode(&freeze_payload, &freeze_evidence)?,
     })
 }
