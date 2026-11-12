@@ -10,9 +10,6 @@ use std::os::unix::net::UnixStream;
 #[path = "authority_host_historical_source_transport.rs"]
 mod source_capture;
 
-pub(crate) use source_capture::SOURCE_CAPTURE_PURPOSE;
-pub(crate) use source_capture::SourceCapturePhase;
-pub(crate) use source_capture::SourceCaptureResponse;
 use source_capture::OriginalSourceCaptureExchange;
 
 #[derive(Deserialize, Serialize)]
