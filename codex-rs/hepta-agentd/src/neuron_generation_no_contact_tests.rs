@@ -265,7 +265,10 @@ async fn fleet_drain_after_admission_settles_without_contact_and_cold_replays_ex
     assert_eq!(checked(handle.task_cost().await), receipt.cost);
     assert_eq!(checked(handle.snapshot().await), expected);
     assert!(checked(handle.drain().await));
-    assert_eq!(checked(GenerationFiles::new(&handle).read().await), drained_bytes);
+    assert_eq!(
+        checked(GenerationFiles::new(&handle).read().await),
+        drained_bytes
+    );
     assert_eq!(contacts.load(Ordering::SeqCst), 0);
     assert_eq!(worker.calls.load(Ordering::SeqCst), 0);
     tasks.shutdown().await;

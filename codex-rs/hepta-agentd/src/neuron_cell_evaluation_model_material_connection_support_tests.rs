@@ -336,7 +336,11 @@ impl OriginalCellEvaluationModelMaterialV1 {
             }
             // All original bytes remain, but a u32 prefix must not be accepted.
             let mut changed = Body::decode(&self.bytes)?;
-            drop(changed.members[0].execution_record.splice(start..start, [0, 0]));
+            drop(
+                changed.members[0]
+                    .execution_record
+                    .splice(start..start, [0, 0]),
+            );
             assert!(
                 verify::material(&self.context, &self.evaluation, &changed.encode()?, current)
                     .is_err()

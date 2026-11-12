@@ -289,17 +289,26 @@ mod remote_tests;
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn evaluated_c_refuses_each_actual_original_predecessor_without_claim() -> anyhow::Result<()>
 {
-    Box::pin(refuses_original_predecessor(OriginalPredecessorFault::Trainer)).await
+    Box::pin(refuses_original_predecessor(
+        OriginalPredecessorFault::Trainer,
+    ))
+    .await
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn evaluated_c_refuses_original_evaluator_without_claim() -> anyhow::Result<()> {
-    Box::pin(refuses_original_predecessor(OriginalPredecessorFault::Evaluator)).await
+    Box::pin(refuses_original_predecessor(
+        OriginalPredecessorFault::Evaluator,
+    ))
+    .await
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn evaluated_c_refuses_original_selector_without_claim() -> anyhow::Result<()> {
-    Box::pin(refuses_original_predecessor(OriginalPredecessorFault::Selector)).await
+    Box::pin(refuses_original_predecessor(
+        OriginalPredecessorFault::Selector,
+    ))
+    .await
 }
 
 #[derive(Clone, Copy, Eq, PartialEq)]

@@ -21,10 +21,7 @@ impl From<io::Error> for FileBytesError {
     }
 }
 
-pub(crate) fn file_bytes(
-    file: &mut File,
-    maximum_bytes: u64,
-) -> Result<Vec<u8>, FileBytesError> {
+pub(crate) fn file_bytes(file: &mut File, maximum_bytes: u64) -> Result<Vec<u8>, FileBytesError> {
     if maximum_bytes == 0 || maximum_bytes > MAXIMUM_BYTES {
         return Err(FileBytesError::Capacity);
     }

@@ -31,12 +31,7 @@ pub(super) fn begin_request(request_id: u64) {
     REQUEST_ID.set(request_id);
 }
 
-pub(super) fn capture(
-    action: wire::Action,
-    binding: Digest32,
-    elapsed: Duration,
-    error: &Error,
-) {
+pub(super) fn capture(action: wire::Action, binding: Digest32, elapsed: Duration, error: &Error) {
     let error = match error {
         Error::Panel(error) => match error {
             PanelError::Binding(reason) => format!("Panel::Binding({reason})"),

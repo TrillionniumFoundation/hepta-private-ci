@@ -130,7 +130,7 @@ class OriginalPanelTrainingTransactionClosureTests(unittest.TestCase):
 
     def test_original_effect_owner_and_transport_budgets_are_unchanged(self):
         self.assertEqual(hashlib.sha256((ROOT / RECEIPT).read_bytes()).hexdigest(), 'b69a53d8048deba5ef0f36bdb92f0d85362ff5e783ba9301ee74e6f35d5be4c7')
-        self.assertEqual(hashlib.sha256((ROOT / SERVICE).read_bytes()).hexdigest(), '806f44f2e3da47d09a307893b1daca5c0fa5c24217b6a5bb3a62adeb1a575c29')
+        self.assertEqual(hashlib.sha256((ROOT / SERVICE).read_bytes()).hexdigest(), 'd076b90cf0cfbb8a059681aa590b7a353b1d81df2bf440aa584e71ddb81e3640')
         self.verifies(SERVICE, (ROOT / SERVICE).read_text())
         self.rejects(HOST, 'fn completion(', 'self.fenced = true')
         for function, marker in (

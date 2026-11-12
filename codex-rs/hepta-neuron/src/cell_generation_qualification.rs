@@ -16,10 +16,11 @@ impl<W: AnchorWitnessStore> CellGenerationJournalV2<W> {
     ) -> Result<[Vec<u8>; 2], CellGenerationErrorV2> {
         self.require_healthy()?;
         let result = (|| {
-            let journal = file_bytes(&mut self.file, maximum_bytes).map_err(|error| match error {
-                FileBytesError::Capacity => CellGenerationErrorV2::Capacity,
-                FileBytesError::Io(_) => CellGenerationErrorV2::CommitUncertain,
-            })?;
+            let journal =
+                file_bytes(&mut self.file, maximum_bytes).map_err(|error| match error {
+                    FileBytesError::Capacity => CellGenerationErrorV2::Capacity,
+                    FileBytesError::Io(_) => CellGenerationErrorV2::CommitUncertain,
+                })?;
             let witness = self
                 .witness
                 .qualification_file_bytes(maximum_bytes)

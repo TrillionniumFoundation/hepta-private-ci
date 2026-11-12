@@ -125,6 +125,11 @@ pub struct NeuronGenerationRuntimeHandleV2 {
 }
 
 impl NeuronGenerationRuntimeHandleV2 {
+    #[cfg(test)]
+    pub(crate) fn qualification_file_sender(&self) -> mpsc::WeakSender<GenerationCommand> {
+        self.sender.downgrade()
+    }
+
     pub async fn step(
         &self,
         request: CellGenerationRequestV2,

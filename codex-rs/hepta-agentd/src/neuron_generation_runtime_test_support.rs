@@ -50,7 +50,7 @@ pub(super) struct GenerationFiles {
 impl GenerationFiles {
     pub(super) fn new(handle: &NeuronGenerationRuntimeHandleV2) -> Self {
         Self {
-            sender: handle.sender.downgrade(),
+            sender: handle.qualification_file_sender(),
         }
     }
 

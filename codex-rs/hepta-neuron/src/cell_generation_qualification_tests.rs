@@ -30,7 +30,10 @@ fn qualification_bytes_match_both_original_files_without_releasing_either_lock()
     checked(owner.file.seek(SeekFrom::Start(7)));
     let bytes = checked(owner.qualification_file_bytes(MAXIMUM_BYTES));
     assert_eq!(checked(owner.file.stream_position()), 7);
-    assert_eq!(owner.qualification_file_bytes(MAXIMUM_BYTES), Ok(bytes.clone()));
+    assert_eq!(
+        owner.qualification_file_bytes(MAXIMUM_BYTES),
+        Ok(bytes.clone())
+    );
     assert!(matches!(
         LockedFile::acquire(fixture.file("journal")),
         Err(JournalError::Busy)
@@ -109,7 +112,11 @@ fn failed_read_restores_the_original_cursor_and_keeps_contenders_excluded() {
     let mut created = fixture.file("read-error");
     checked(created.write_all(b"original locked file"));
     drop(created);
-    let file = checked(OpenOptions::new().write(true).open(fixture.0.join("read-error")));
+    let file = checked(
+        OpenOptions::new()
+            .write(true)
+            .open(fixture.0.join("read-error")),
+    );
     let mut locked = checked(LockedFile::acquire(file));
     checked(locked.seek(SeekFrom::Start(4)));
     assert!(matches!(
