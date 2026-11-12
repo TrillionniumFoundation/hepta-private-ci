@@ -166,7 +166,13 @@ def time_aligned_credit(
     target_ids: set[str] = set()
     accum = [0.0] * groups
     matched = expired = future_withheld = 0
-    for fb in feedback_list:
+    # The transcript digest sorts receipts by identity. Compute numerical credit
+    # in the same canonical order or equal digests can yield different updates
+    # under floating-point cancellation. Reject malformed types before sorting.
+    if any(type(fb) is not Feedback or not _valid_hash(fb.receipt_digest)
+           for fb in feedback_list):
+        raise ContractError("invalid feedback receipt")
+    for fb in sorted(feedback_list, key=lambda item: item.receipt_digest):
         if (not _valid_hash(fb.receipt_digest) or fb.receipt_digest in receipts
                 or fb.action_id in target_ids
                 or fb.action_id not in action_by_id
@@ -616,3 +622,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
