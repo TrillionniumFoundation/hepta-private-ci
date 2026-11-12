@@ -11,6 +11,7 @@ use codex_hepta_neuron::CellGenerationCurrentV1;
 mod files;
 pub(crate) use files::OriginalCellFiles;
 use files::OriginalCellObservation;
+pub(crate) use files::PreparedOriginalCellFiles;
 pub(crate) use files::RootHistoricalCellInputsV1;
 #[path = "authority_host_historical_cell_readback.rs"]
 mod readback;

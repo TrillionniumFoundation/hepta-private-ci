@@ -32,6 +32,38 @@ pub(crate) struct OriginalCellFiles {
     gid: u32,
 }
 
+/// Before the Initial offer, Root only holds the original descriptors. The
+/// actual daemon still has to initialize its witness and request enrollment.
+/// This holder cannot observe a Cell or represent an enrolled baseline.
+pub(crate) struct PreparedOriginalCellFiles {
+    files: OriginalCellFiles,
+}
+
+impl PreparedOriginalCellFiles {
+    pub(crate) fn retain_before_enrollment(
+        inputs: RootHistoricalCellInputsV1,
+        uid: u32,
+        gid: u32,
+    ) -> io::Result<Self> {
+        let files = OriginalCellFiles::retain_descriptors(inputs, uid, gid)?;
+        if files.inputs.journal.metadata()?.len() != 0 {
+            return Err(io::Error::other(
+                "original Initial Cell journal is not empty",
+            ));
+        }
+        files.require_descriptor_custody()?;
+        Ok(Self { files })
+    }
+
+    /// Consumed only inside the actual Initial enrollment's persistent arm.
+    /// Empty or missing witness bytes never become an initialized read view.
+    pub(super) fn into_initialized(self) -> io::Result<OriginalCellFiles> {
+        original_root()?;
+        self.files.require_original_files()?;
+        Ok(self.files)
+    }
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub(super) struct OriginalCellObservation {
     pub(super) anchor: JournalAnchor,
@@ -41,6 +73,16 @@ pub(super) struct OriginalCellObservation {
 
 impl OriginalCellFiles {
     pub(crate) fn retain_original_cell(
+        inputs: RootHistoricalCellInputsV1,
+        uid: u32,
+        gid: u32,
+    ) -> io::Result<Self> {
+        let retained = Self::retain_descriptors(inputs, uid, gid)?;
+        retained.require_original_files()?;
+        Ok(retained)
+    }
+
+    fn retain_descriptors(
         mut inputs: RootHistoricalCellInputsV1,
         uid: u32,
         gid: u32,
@@ -72,7 +114,7 @@ impl OriginalCellFiles {
             uid,
             gid,
         };
-        retained.require_original_files()?;
+        retained.require_descriptor_custody()?;
         Ok(retained)
     }
 
@@ -322,12 +364,18 @@ impl OriginalCellFiles {
     }
 
     fn require_original_files(&self) -> io::Result<()> {
-        if self.inputs.witness.metadata()?.len() == 0
-            || self.pins
-                != [
-                    FilePin::read(&self.inputs.journal, self.uid, self.gid)?,
-                    FilePin::read(&self.inputs.witness, self.uid, self.gid)?,
-                ]
+        if self.inputs.witness.metadata()?.len() == 0 {
+            return Err(io::Error::other("original Cell witness is uninitialized"));
+        }
+        self.require_descriptor_custody()
+    }
+
+    fn require_descriptor_custody(&self) -> io::Result<()> {
+        if self.pins
+            != [
+                FilePin::read(&self.inputs.journal, self.uid, self.gid)?,
+                FilePin::read(&self.inputs.witness, self.uid, self.gid)?,
+            ]
         {
             return Err(io::Error::other("original Cell descriptor custody changed"));
         }

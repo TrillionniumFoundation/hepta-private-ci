@@ -3,13 +3,13 @@
 //! Initial offer; only the post-drain worker consumes the resulting capability.
 
 use super::*;
-use crate::authority_host_service::generation_initial::cell_retention::OriginalCellFiles;
+use crate::authority_host_service::generation_initial::cell_retention::PreparedOriginalCellFiles;
 use crate::authority_host_service::generation_initial::cell_retention::RegisteredOriginalCellCaptureV1;
 use crate::authority_host_service::generation_initial::cell_retention::RootHistoricalCellInputsV1;
 
 pub(super) enum OriginalCellCustody {
     Absent,
-    Held(OriginalCellFiles),
+    Held(PreparedOriginalCellFiles),
     Registered(RegisteredOriginalCellCaptureV1),
 }
 
@@ -38,7 +38,7 @@ impl PreparedHostAuthoritySession {
             &self.registration,
             &self.owner_pidfd,
             |_| {
-                retained = Some(OriginalCellFiles::retain_original_cell(
+                retained = Some(PreparedOriginalCellFiles::retain_before_enrollment(
                     inputs,
                     self.config.peer_uid,
                     self.config.peer_gid,
