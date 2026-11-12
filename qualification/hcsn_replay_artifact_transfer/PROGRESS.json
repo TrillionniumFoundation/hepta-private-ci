@@ -1,22 +1,19 @@
 {
   "schema": "hcsn-original-c2-artifact-transfer-progress-v1",
+  "source_parent": "5cb83d9c76beedf4c1c917e4bf561f5f26261ce7",
+  "receipt_parent": "a832b028abdf1a1c9ab66534332457c6d76a91ca",
+  "source_version": "2050:49963775:11397159:1794465747885470553:1794465747955468536",
   "archive": {
     "bytes": 11397159,
     "sha256": "37d387507ec150abfdad4065c23612e18fca6643d489f3555874c8e57a514b75"
   },
-  "source": {
-    "host": "desktop",
-    "path": "/home/qian-qi/hcsn-real-replay-c06d-export-v1.zip",
-    "version": "2050:49963775:11397159:1794465747885470553:1794465747955468536",
-    "source_commit": "5cb83d9c76beedf4c1c917e4bf561f5f26261ce7",
-    "export_job": "1a1ce7e3837-2564-16c9"
-  },
   "expected_parts": 87,
-  "uploaded_parts": 7,
-  "uploaded_bytes": 917504,
+  "uploaded_parts": 11,
+  "uploaded_bytes": 1441792,
   "full_archive_verified": false,
   "canonical_export_manifest_published": false,
   "new_model_executions": 0,
+  "scientific_admission": "INCOMPLETE_TRANSFER_NOT_REPLAY_QUALIFICATION",
   "parts": [
     {
       "part": 0,
@@ -73,7 +70,38 @@
       "sha256": "d7721e85733b6b938dd3019c4b1020efd3b7116fd77984cc62f14bf725008bea",
       "git_blob_sha1": "f91190db36bb0ccf05dac2244ac7a39b177bc42a",
       "path": "parts/part-047.bin"
+    },
+    {
+      "part": 48,
+      "offset": 6291456,
+      "bytes": 131072,
+      "sha256": "9b4c0bb5b662ac52b26ef636e5944b145b7f46b1b3bc0673e8dd4e0fbc2b4ca6",
+      "git_blob_sha1": "cd63fd8e3fa8210c62f2d4db6a510ed58cefd9f4",
+      "path": "parts/part-048.bin"
+    },
+    {
+      "part": 49,
+      "offset": 6422528,
+      "bytes": 131072,
+      "sha256": "1dbbc895a3f668e89465ddec318f58365e99440d77424cbd11324296ae68a92a",
+      "git_blob_sha1": "4fe0e8932b4379f5134c46091245ccf3f5137127",
+      "path": "parts/part-049.bin"
+    },
+    {
+      "part": 50,
+      "offset": 6553600,
+      "bytes": 131072,
+      "sha256": "57c8a49ad502607650b411c6be744930a6725ce453a151a4cbc7e08500541c43",
+      "git_blob_sha1": "123e5d505fc4d76d948d89d5b74d17aaad8edc79",
+      "path": "parts/part-050.bin"
+    },
+    {
+      "part": 51,
+      "offset": 6684672,
+      "bytes": 131072,
+      "sha256": "2e06dd82dfa2c08abb43f1192499e6c7416283c0fdfd2f3fc8007aef64aa2a47",
+      "git_blob_sha1": "be29cf58f25bec2a875e054b5090c86af6e8a0eb",
+      "path": "parts/part-051.bin"
     }
-  ],
-  "scientific_admission": "INCOMPLETE_TRANSFER_HOLD_NO_GO"
+  ]
 }
