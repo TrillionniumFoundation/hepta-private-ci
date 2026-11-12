@@ -471,6 +471,7 @@ pub use learning_iteration_generation_evidence::read_generation_learning_stage_v
 
 mod cell_q24_material_receipt_owner;
 mod cell_q24_model_proposal;
+mod cell_q24_model_material;
 mod cell_q24_training_receipt_owner;
 mod cell_q24_training_snapshot_readback;
 #[cfg(target_os = "linux")]
@@ -1396,5 +1397,14 @@ pub use neuron_cell_evaluation_qualification_owner::OriginalCellEvaluationComman
 pub use neuron_cell_evaluation_qualification_owner::OriginalCellEvaluationCommandClientV1;
 #[cfg(target_os = "linux")]
 pub use neuron_cell_evaluation_qualification_owner::OriginalCellEvaluationCommandReceiptV1;
+#[cfg(target_os = "linux")]
+pub use neuron_cell_evaluation_qualification_owner::OriginalCellEvaluationModelMaterialV1;
+#[cfg(target_os = "linux")]
+pub use neuron_cell_evaluation_qualification_owner::OriginalCellEvaluationModelMaterialConnectionV1;
+#[cfg(target_os = "linux")]
+pub use neuron_cell_evaluation_qualification_owner::OriginalCellEvaluationModelMaterialClientV1;
+#[cfg(target_os = "linux")]
+pub(crate) use neuron_cell_evaluation_qualification_owner::OriginalCellEvaluationModelInputV1;
+
 #[cfg(target_os = "linux")]
 pub use neuron_cell_evaluation_qualification_owner::OriginalCellEvaluationCommandErrorV1;

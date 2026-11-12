@@ -31,6 +31,7 @@ pub struct OriginalCircuitEvaluationCohortCurrentV1 {
     manifest: Digest32,
     dataset: DatasetSnapshotReceiptV3,
     freeze_payload: Vec<u8>,
+    commitment: Vec<u8>,
 }
 
 impl OriginalCircuitEvaluationCohortCurrentV1 {
@@ -123,6 +124,7 @@ impl OriginalCircuitEvaluationCohortReadbackV1 {
             manifest: material.manifest,
             dataset: material.dataset,
             freeze_payload: material.freeze_payload,
+            commitment: bytes,
         };
         if self.last.as_ref().is_some_and(|last| last != &observed) {
             return Err(Error::Binding("same original cohort CURRENT and full signatures"));
@@ -212,6 +214,21 @@ impl OriginalCircuitEvaluationCohortReadbackV1 {
         self.original.last_observed_at = current;
         self.fenced = false;
         Ok(())
+    }
+
+    /// Closed readonly export of the last actually observed B cut. No owner,
+    /// rows, key or receipt seal can be reconstructed from these bytes.
+    pub(crate) fn original_model_commitment(
+        &self,
+        observed: &OriginalCircuitEvaluationCohortCurrentV1,
+    ) -> Result<(Vec<u8>, Vec<u8>, SignedLearningEvidenceV1), Error> {
+        if self.fenced || self.original.fenced || self.last.as_ref() != Some(observed)
+            || Digest32::of_bytes(&observed.commitment) != observed.binding
+        {
+            return Err(Error::Indeterminate);
+        }
+        Ok((observed.commitment.clone(), observed.freeze_payload.clone(),
+            self.original.config.freeze_evidence.clone()))
     }
 
     pub fn authority(&self) -> AuthorityPosture {
