@@ -10,6 +10,7 @@ mod objective_history;
 mod q24_completed_history;
 mod q24_outcome;
 mod q24_task_observation;
+mod q24_terminal_acceptance;
 pub use authbus::AuthBusObjectiveBody;
 pub use authbus::AuthBusObjectiveIngress;
 pub use authbus::AuthBusTextBody;
@@ -62,6 +63,7 @@ pub use q24_outcome::Q24OriginalTerminalOutcomeRequestV1;
 pub use q24_task_observation::AGENTD_Q24_ORIGINAL_TASK_OBSERVATION_CAPABILITY;
 pub use q24_task_observation::MAX_Q24_DECISION_PREIMAGE_BYTES;
 pub use q24_task_observation::Q24OriginalTaskObservationV1;
+pub use q24_terminal_acceptance::OriginalQ24TerminalAcceptanceDataV1;
 
 use std::path::PathBuf;
 
@@ -614,6 +616,7 @@ pub enum AgentdMethod {
     },
     Q24OriginalTaskObservation {},
     OriginalQ24CompletedHistory {},
+    OriginalQ24TerminalAcceptance {},
     Health,
     Lifecycle,
     Readiness,
@@ -788,6 +791,9 @@ pub enum AgentdPayload {
     Q24OriginalTaskObservation(Q24OriginalTaskObservationV1),
     OriginalQ24CompletedHistory {
         data: Option<OriginalQ24CompletedHistoryDataV1>,
+    },
+    OriginalQ24TerminalAcceptance {
+        data: Option<OriginalQ24TerminalAcceptanceDataV1>,
     },
     Health(HealthSnapshot),
     Lifecycle(LifecycleSnapshot),
