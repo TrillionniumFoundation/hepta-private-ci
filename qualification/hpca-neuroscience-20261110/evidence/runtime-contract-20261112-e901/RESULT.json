@@ -1,0 +1,3711 @@
+{
+  "authority": "DENY_ALL_HOLD_NO_GO",
+  "cost_scope": "first model load through final asset rehash/journal close; excludes imports, tokenizer, preflight and external lifecycle",
+  "cpu_only": true,
+  "decoding": "greedy_unconstrained",
+  "execution_contract_sha256": "94210824549976c4e2d252ff1fd89c58eca1376efdf8ea42ea29d643ba2a4fdd",
+  "finished_utc": "2026-11-12T00:45:11.843961+00:00",
+  "journal_sha256": "ceebabbcc323247c9afe2065f9f3be0fea7e09e2e261106cf524bf235c043e04",
+  "max_new_tokens": 8,
+  "measured_phase_cost": {
+    "io_delta": {
+      "cancelled_write_bytes": 0,
+      "rchar": 405782323,
+      "read_bytes": 21856256,
+      "syscr": 1209,
+      "syscw": 443,
+      "wchar": 136408,
+      "write_bytes": 1912832
+    },
+    "maxrss_kib_lifetime_peak": 1207508,
+    "process_cpu_seconds": 33.180033789,
+    "wall_seconds": 10.227863733889535
+  },
+  "model_identities": {
+    "config_sha256": "8eb740e8bbe4cff95ea7b4588d17a2432deb16e8075bc5828ff7ba9be94d982a",
+    "exposed_fixture_sha256": "01ec1a644f37b9fc7a4c6616f589768df97f8eed7a289b5de86afadaa7ce6165",
+    "model_safetensors_sha256": "5af571cbf074e6d21a03528d2330792e532ca608f24ac70a143f6b369968ab8c",
+    "script_sha256": "4dded105ac0477c9747b13d98ee1b57d46dcc322d034121a55a9c63a12250e5e",
+    "tokenizer_sha256": "9ca9acddb6525a194ec8ac7a87f24fbba7232a9a15ffa1af0c1224fcd888e47c"
+  },
+  "not_measured": [
+    "independent evaluator",
+    "native Owner signature",
+    "A-to-future-B-to-C decision",
+    "ACT/CTRL effect outcomes",
+    "NDU 2x2",
+    "energy and total owner costs"
+  ],
+  "original_ood_pr": 5995,
+  "original_training_pr": 5905,
+  "parse_rule": "leading_whitespace_then_yes_or_no_word_only",
+  "plan_sha256": "acb16047e5942d317262ddb8273a2d62e9131e758d6627dcf1c2f42081d98043",
+  "run_id": "ae7e08d4dd7f4e2792149b6e030c1b54",
+  "runs": [
+    {
+      "arm": null,
+      "condition": "base",
+      "cost": {
+        "cpu_seconds": 3.536494668,
+        "inference_wall_seconds": 0.8664291189052165,
+        "load_wall_seconds": 0.21122394502162933,
+        "maxrss_kib_lifetime_peak": 1137544
+      },
+      "predictions": [
+        {
+          "correct": false,
+          "family": "arithmetic",
+          "generate_wall_seconds": 0.061653560027480125,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "arithmetic-01",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "yes",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "arithmetic",
+          "generate_wall_seconds": 0.0349729391746223,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "arithmetic-02",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "yes",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "arithmetic",
+          "generate_wall_seconds": 0.0321572779212147,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "arithmetic-03",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "arithmetic",
+          "generate_wall_seconds": 0.031679804902523756,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "arithmetic-04",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "arithmetic",
+          "generate_wall_seconds": 0.03221095586195588,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "arithmetic-05",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "yes",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "arithmetic",
+          "generate_wall_seconds": 0.03063942096196115,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "arithmetic-06",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "taxonomy",
+          "generate_wall_seconds": 0.02922797086648643,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "taxonomy-01",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "taxonomy",
+          "generate_wall_seconds": 0.029977865051478148,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "taxonomy-02",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "taxonomy",
+          "generate_wall_seconds": 0.029602827038615942,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "taxonomy-03",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "taxonomy",
+          "generate_wall_seconds": 0.029677534941583872,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "taxonomy-04",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "taxonomy",
+          "generate_wall_seconds": 0.027716913959011436,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "taxonomy-05",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "taxonomy",
+          "generate_wall_seconds": 0.031017518136650324,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "taxonomy-06",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "negation",
+          "generate_wall_seconds": 0.03181197005324066,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "negation-01",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "negation",
+          "generate_wall_seconds": 0.03357716812752187,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "negation-02",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "negation",
+          "generate_wall_seconds": 0.03229345311410725,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "negation-03",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "yes",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "negation",
+          "generate_wall_seconds": 0.03185044904239476,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "negation-04",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "negation",
+          "generate_wall_seconds": 0.03164726588875055,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "negation-05",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "negation",
+          "generate_wall_seconds": 0.03148783091455698,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "negation-06",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "conditional",
+          "generate_wall_seconds": 0.03679120517335832,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "conditional-01",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "yes",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "conditional",
+          "generate_wall_seconds": 0.03437635884620249,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "conditional-02",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "yes",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "conditional",
+          "generate_wall_seconds": 0.038773844949901104,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "conditional-03",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "yes",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "conditional",
+          "generate_wall_seconds": 0.04110011295415461,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "conditional-04",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "conditional",
+          "generate_wall_seconds": 0.04288459988310933,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "conditional-05",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "conditional",
+          "generate_wall_seconds": 0.03607052005827427,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "conditional-06",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "no",
+          "valid": false
+        }
+      ],
+      "scores": {
+        "accuracy_including_invalid": 0.0,
+        "agreement_with_two_choice": 0.0,
+        "correct": 0,
+        "generated_tokens": 24,
+        "n": 24,
+        "valid": 0,
+        "valid_rate": 0.0
+      },
+      "seed": null
+    },
+    {
+      "arm": "interleaved",
+      "condition": "seed11 interleaved",
+      "cost": {
+        "cpu_seconds": 3.5236450600000007,
+        "inference_wall_seconds": 0.8608622751198709,
+        "load_wall_seconds": 0.12832206301391125,
+        "maxrss_kib_lifetime_peak": 1206288
+      },
+      "predictions": [
+        {
+          "correct": false,
+          "family": "arithmetic",
+          "generate_wall_seconds": 0.031340936897322536,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "arithmetic-01",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "yes",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "arithmetic",
+          "generate_wall_seconds": 0.03499226807616651,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "arithmetic-02",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "yes",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "arithmetic",
+          "generate_wall_seconds": 0.03280791616998613,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "arithmetic-03",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "arithmetic",
+          "generate_wall_seconds": 0.0326014319434762,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "arithmetic-04",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "arithmetic",
+          "generate_wall_seconds": 0.032996569061651826,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "arithmetic-05",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "yes",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "arithmetic",
+          "generate_wall_seconds": 0.030646391212940216,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "arithmetic-06",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "taxonomy",
+          "generate_wall_seconds": 0.031206731917336583,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "taxonomy-01",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "taxonomy",
+          "generate_wall_seconds": 0.03117597196251154,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "taxonomy-02",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "taxonomy",
+          "generate_wall_seconds": 0.03068362013436854,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "taxonomy-03",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "taxonomy",
+          "generate_wall_seconds": 0.030628480948507786,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "taxonomy-04",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "taxonomy",
+          "generate_wall_seconds": 0.028961699921637774,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "taxonomy-05",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "taxonomy",
+          "generate_wall_seconds": 0.031869297847151756,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "taxonomy-06",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "negation",
+          "generate_wall_seconds": 0.03364083589985967,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "negation-01",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "negation",
+          "generate_wall_seconds": 0.035070635145530105,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "negation-02",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "negation",
+          "generate_wall_seconds": 0.03314438299275935,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "negation-03",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "negation",
+          "generate_wall_seconds": 0.03289036196656525,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "negation-04",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "negation",
+          "generate_wall_seconds": 0.03323191008530557,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "negation-05",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "negation",
+          "generate_wall_seconds": 0.03260563197545707,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "negation-06",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "conditional",
+          "generate_wall_seconds": 0.037638484966009855,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "conditional-01",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "yes",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "conditional",
+          "generate_wall_seconds": 0.0347752848174423,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "conditional-02",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "yes",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "conditional",
+          "generate_wall_seconds": 0.041015496011823416,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "conditional-03",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "yes",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "conditional",
+          "generate_wall_seconds": 0.03930136701092124,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "conditional-04",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "conditional",
+          "generate_wall_seconds": 0.04467574809677899,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "conditional-05",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "conditional",
+          "generate_wall_seconds": 0.036941959988325834,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "conditional-06",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "no",
+          "valid": false
+        }
+      ],
+      "scores": {
+        "accuracy_including_invalid": 0.0,
+        "agreement_with_two_choice": 0.0,
+        "correct": 0,
+        "generated_tokens": 24,
+        "n": 24,
+        "valid": 0,
+        "valid_rate": 0.0
+      },
+      "seed": 11
+    },
+    {
+      "arm": "bursty",
+      "condition": "seed11 bursty",
+      "cost": {
+        "cpu_seconds": 3.5634222059999985,
+        "inference_wall_seconds": 0.8827307131141424,
+        "load_wall_seconds": 0.11345390579663217,
+        "maxrss_kib_lifetime_peak": 1207508
+      },
+      "predictions": [
+        {
+          "correct": false,
+          "family": "arithmetic",
+          "generate_wall_seconds": 0.032008443027734756,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "arithmetic-01",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "yes",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "arithmetic",
+          "generate_wall_seconds": 0.035835938062518835,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "arithmetic-02",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "yes",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "arithmetic",
+          "generate_wall_seconds": 0.033561058808118105,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "arithmetic-03",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "arithmetic",
+          "generate_wall_seconds": 0.034317891113460064,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "arithmetic-04",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "arithmetic",
+          "generate_wall_seconds": 0.03581229015253484,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "arithmetic-05",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "yes",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "arithmetic",
+          "generate_wall_seconds": 0.03293008101172745,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "arithmetic-06",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "taxonomy",
+          "generate_wall_seconds": 0.03026805492118001,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "taxonomy-01",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "taxonomy",
+          "generate_wall_seconds": 0.031985383946448565,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "taxonomy-02",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "taxonomy",
+          "generate_wall_seconds": 0.030615361873060465,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "taxonomy-03",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "taxonomy",
+          "generate_wall_seconds": 0.03120102104730904,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "taxonomy-04",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "taxonomy",
+          "generate_wall_seconds": 0.02875594701617956,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "taxonomy-05",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "taxonomy",
+          "generate_wall_seconds": 0.03357497788965702,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "taxonomy-06",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "negation",
+          "generate_wall_seconds": 0.03341405396349728,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "negation-01",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "negation",
+          "generate_wall_seconds": 0.035863556899130344,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "negation-02",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "negation",
+          "generate_wall_seconds": 0.032972668996080756,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "negation-03",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "negation",
+          "generate_wall_seconds": 0.034496444975957274,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "negation-04",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "negation",
+          "generate_wall_seconds": 0.032665539998561144,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "negation-05",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "negation",
+          "generate_wall_seconds": 0.03347607096657157,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "negation-06",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "conditional",
+          "generate_wall_seconds": 0.038322061067447066,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "conditional-01",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "yes",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "conditional",
+          "generate_wall_seconds": 0.03526354883797467,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "conditional-02",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "yes",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "conditional",
+          "generate_wall_seconds": 0.04045127588324249,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "conditional-03",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "yes",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "conditional",
+          "generate_wall_seconds": 0.0391613410320133,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "conditional-04",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "conditional",
+          "generate_wall_seconds": 0.04339603311382234,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "conditional-05",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "conditional",
+          "generate_wall_seconds": 0.03724160906858742,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "conditional-06",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "no",
+          "valid": false
+        }
+      ],
+      "scores": {
+        "accuracy_including_invalid": 0.0,
+        "agreement_with_two_choice": 0.0,
+        "correct": 0,
+        "generated_tokens": 24,
+        "n": 24,
+        "valid": 0,
+        "valid_rate": 0.0
+      },
+      "seed": 11
+    },
+    {
+      "arm": "interleaved",
+      "condition": "seed17 interleaved",
+      "cost": {
+        "cpu_seconds": 3.5283249639999976,
+        "inference_wall_seconds": 0.872527111088857,
+        "load_wall_seconds": 0.11686867591924965,
+        "maxrss_kib_lifetime_peak": 1207508
+      },
+      "predictions": [
+        {
+          "correct": false,
+          "family": "arithmetic",
+          "generate_wall_seconds": 0.031847048085182905,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "arithmetic-01",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "yes",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "arithmetic",
+          "generate_wall_seconds": 0.034702868200838566,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "arithmetic-02",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "yes",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "arithmetic",
+          "generate_wall_seconds": 0.03330317698419094,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "arithmetic-03",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "arithmetic",
+          "generate_wall_seconds": 0.03237092006020248,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "arithmetic-04",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "arithmetic",
+          "generate_wall_seconds": 0.03316835197620094,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "arithmetic-05",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "yes",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "arithmetic",
+          "generate_wall_seconds": 0.030394070083275437,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "arithmetic-06",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "taxonomy",
+          "generate_wall_seconds": 0.03075327700935304,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "taxonomy-01",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "taxonomy",
+          "generate_wall_seconds": 0.03085812320932746,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "taxonomy-02",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "taxonomy",
+          "generate_wall_seconds": 0.03078843606635928,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "taxonomy-03",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "taxonomy",
+          "generate_wall_seconds": 0.030740148155018687,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "taxonomy-04",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "taxonomy",
+          "generate_wall_seconds": 0.028645030921325088,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "taxonomy-05",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "taxonomy",
+          "generate_wall_seconds": 0.03340010391548276,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "taxonomy-06",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "negation",
+          "generate_wall_seconds": 0.03318536188453436,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "negation-01",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "negation",
+          "generate_wall_seconds": 0.03555361903272569,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "negation-02",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "negation",
+          "generate_wall_seconds": 0.03413062891922891,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "negation-03",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "negation",
+          "generate_wall_seconds": 0.032810805132612586,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "negation-04",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "negation",
+          "generate_wall_seconds": 0.032675539841875434,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "negation-05",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "negation",
+          "generate_wall_seconds": 0.03368568490259349,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "negation-06",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "conditional",
+          "generate_wall_seconds": 0.03820214490406215,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "conditional-01",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "yes",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "conditional",
+          "generate_wall_seconds": 0.0347866949159652,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "conditional-02",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "yes",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "conditional",
+          "generate_wall_seconds": 0.04002900095656514,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "conditional-03",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "yes",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "conditional",
+          "generate_wall_seconds": 0.039240908809006214,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "conditional-04",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "conditional",
+          "generate_wall_seconds": 0.04372933995909989,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "conditional-05",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "conditional",
+          "generate_wall_seconds": 0.03652744391001761,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "conditional-06",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "no",
+          "valid": false
+        }
+      ],
+      "scores": {
+        "accuracy_including_invalid": 0.0,
+        "agreement_with_two_choice": 0.0,
+        "correct": 0,
+        "generated_tokens": 24,
+        "n": 24,
+        "valid": 0,
+        "valid_rate": 0.0
+      },
+      "seed": 17
+    },
+    {
+      "arm": "bursty",
+      "condition": "seed17 bursty",
+      "cost": {
+        "cpu_seconds": 3.5324381430000003,
+        "inference_wall_seconds": 0.8712538641411811,
+        "load_wall_seconds": 0.11818974814377725,
+        "maxrss_kib_lifetime_peak": 1207508
+      },
+      "predictions": [
+        {
+          "correct": false,
+          "family": "arithmetic",
+          "generate_wall_seconds": 0.031885007163509727,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "arithmetic-01",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "yes",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "arithmetic",
+          "generate_wall_seconds": 0.03483799286186695,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "arithmetic-02",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "yes",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "arithmetic",
+          "generate_wall_seconds": 0.03306540590710938,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "arithmetic-03",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "arithmetic",
+          "generate_wall_seconds": 0.03203504206612706,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "arithmetic-04",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "arithmetic",
+          "generate_wall_seconds": 0.0333885548170656,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "arithmetic-05",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "yes",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "arithmetic",
+          "generate_wall_seconds": 0.030661319848150015,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "arithmetic-06",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "taxonomy",
+          "generate_wall_seconds": 0.030771516961976886,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "taxonomy-01",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "taxonomy",
+          "generate_wall_seconds": 0.030985778896138072,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "taxonomy-02",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "taxonomy",
+          "generate_wall_seconds": 0.03033672203309834,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "taxonomy-03",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "taxonomy",
+          "generate_wall_seconds": 0.030083751073107123,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "taxonomy-04",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "taxonomy",
+          "generate_wall_seconds": 0.029328637989237905,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "taxonomy-05",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "taxonomy",
+          "generate_wall_seconds": 0.0319227259606123,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "taxonomy-06",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "negation",
+          "generate_wall_seconds": 0.033048746176064014,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "negation-01",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "negation",
+          "generate_wall_seconds": 0.03600821178406477,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "negation-02",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "negation",
+          "generate_wall_seconds": 0.03373001213185489,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "negation-03",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "negation",
+          "generate_wall_seconds": 0.033126243855804205,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "negation-04",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "negation",
+          "generate_wall_seconds": 0.032706128899008036,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "negation-05",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "negation",
+          "generate_wall_seconds": 0.0326852488797158,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "negation-06",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "conditional",
+          "generate_wall_seconds": 0.03757592709735036,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "conditional-01",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "yes",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "conditional",
+          "generate_wall_seconds": 0.03552031982690096,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "conditional-02",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "yes",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "conditional",
+          "generate_wall_seconds": 0.04127569682896137,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "conditional-03",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "yes",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "conditional",
+          "generate_wall_seconds": 0.04078435408882797,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "conditional-04",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "conditional",
+          "generate_wall_seconds": 0.04361737403087318,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "conditional-05",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "conditional",
+          "generate_wall_seconds": 0.036434317007660866,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "conditional-06",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "no",
+          "valid": false
+        }
+      ],
+      "scores": {
+        "accuracy_including_invalid": 0.0,
+        "agreement_with_two_choice": 0.0,
+        "correct": 0,
+        "generated_tokens": 24,
+        "n": 24,
+        "valid": 0,
+        "valid_rate": 0.0
+      },
+      "seed": 17
+    },
+    {
+      "arm": "interleaved",
+      "condition": "seed23 interleaved",
+      "cost": {
+        "cpu_seconds": 3.5419269369999995,
+        "inference_wall_seconds": 0.877185903955251,
+        "load_wall_seconds": 0.11533989780582488,
+        "maxrss_kib_lifetime_peak": 1207508
+      },
+      "predictions": [
+        {
+          "correct": false,
+          "family": "arithmetic",
+          "generate_wall_seconds": 0.03203947190195322,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "arithmetic-01",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "yes",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "arithmetic",
+          "generate_wall_seconds": 0.03488831105642021,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "arithmetic-02",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "yes",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "arithmetic",
+          "generate_wall_seconds": 0.03271405794657767,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "arithmetic-03",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "arithmetic",
+          "generate_wall_seconds": 0.03244012803770602,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "arithmetic-04",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "arithmetic",
+          "generate_wall_seconds": 0.03318395186215639,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "arithmetic-05",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "yes",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "arithmetic",
+          "generate_wall_seconds": 0.03155321907252073,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "arithmetic-06",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "taxonomy",
+          "generate_wall_seconds": 0.030768206110224128,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "taxonomy-01",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "taxonomy",
+          "generate_wall_seconds": 0.03071935777552426,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "taxonomy-02",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "taxonomy",
+          "generate_wall_seconds": 0.03140226402319968,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "taxonomy-03",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "taxonomy",
+          "generate_wall_seconds": 0.030357511015608907,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "taxonomy-04",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "taxonomy",
+          "generate_wall_seconds": 0.029394295066595078,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "taxonomy-05",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "taxonomy",
+          "generate_wall_seconds": 0.033721302868798375,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "taxonomy-06",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "negation",
+          "generate_wall_seconds": 0.034058680990710855,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "negation-01",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "negation",
+          "generate_wall_seconds": 0.036192605970427394,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "negation-02",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "negation",
+          "generate_wall_seconds": 0.034875781973823905,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "negation-03",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "yes",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "negation",
+          "generate_wall_seconds": 0.033134642988443375,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "negation-04",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "negation",
+          "generate_wall_seconds": 0.03295790893025696,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "negation-05",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "negation",
+          "generate_wall_seconds": 0.032498985063284636,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "negation-06",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "conditional",
+          "generate_wall_seconds": 0.037604585057124496,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "conditional-01",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "yes",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "conditional",
+          "generate_wall_seconds": 0.03525080904364586,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "conditional-02",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "yes",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "conditional",
+          "generate_wall_seconds": 0.040048180148005486,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "conditional-03",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "yes",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "conditional",
+          "generate_wall_seconds": 0.039147000992670655,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "conditional-04",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "conditional",
+          "generate_wall_seconds": 0.04490050906315446,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "conditional-05",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "conditional",
+          "generate_wall_seconds": 0.03657241188921034,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "conditional-06",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "yes",
+          "valid": false
+        }
+      ],
+      "scores": {
+        "accuracy_including_invalid": 0.0,
+        "agreement_with_two_choice": 0.0,
+        "correct": 0,
+        "generated_tokens": 24,
+        "n": 24,
+        "valid": 0,
+        "valid_rate": 0.0
+      },
+      "seed": 23
+    },
+    {
+      "arm": "bursty",
+      "condition": "seed23 bursty",
+      "cost": {
+        "cpu_seconds": 3.5042995670000003,
+        "inference_wall_seconds": 0.863645879086107,
+        "load_wall_seconds": 0.11594224697910249,
+        "maxrss_kib_lifetime_peak": 1207508
+      },
+      "predictions": [
+        {
+          "correct": false,
+          "family": "arithmetic",
+          "generate_wall_seconds": 0.03184758895076811,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "arithmetic-01",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "yes",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "arithmetic",
+          "generate_wall_seconds": 0.03489141212776303,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "arithmetic-02",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "yes",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "arithmetic",
+          "generate_wall_seconds": 0.03272870811633766,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "arithmetic-03",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "arithmetic",
+          "generate_wall_seconds": 0.03193373512476683,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "arithmetic-04",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "arithmetic",
+          "generate_wall_seconds": 0.03279510512948036,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "arithmetic-05",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "yes",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "arithmetic",
+          "generate_wall_seconds": 0.030826434027403593,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "arithmetic-06",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "taxonomy",
+          "generate_wall_seconds": 0.030464567011222243,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "taxonomy-01",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "taxonomy",
+          "generate_wall_seconds": 0.03121090098284185,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "taxonomy-02",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "taxonomy",
+          "generate_wall_seconds": 0.03037792001850903,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "taxonomy-03",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "taxonomy",
+          "generate_wall_seconds": 0.030182647053152323,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "taxonomy-04",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "taxonomy",
+          "generate_wall_seconds": 0.028401710093021393,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "taxonomy-05",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "taxonomy",
+          "generate_wall_seconds": 0.03223138488829136,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "taxonomy-06",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "negation",
+          "generate_wall_seconds": 0.0328605929389596,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "negation-01",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "negation",
+          "generate_wall_seconds": 0.03444775706157088,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "negation-02",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "negation",
+          "generate_wall_seconds": 0.03323028003796935,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "negation-03",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "yes",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "negation",
+          "generate_wall_seconds": 0.03293257998302579,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "negation-04",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "negation",
+          "generate_wall_seconds": 0.03265826008282602,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "negation-05",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "negation",
+          "generate_wall_seconds": 0.03251234511844814,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "negation-06",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "conditional",
+          "generate_wall_seconds": 0.03762496588751674,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "conditional-01",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "yes",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "conditional",
+          "generate_wall_seconds": 0.03481185412965715,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "conditional-02",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "yes",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "conditional",
+          "generate_wall_seconds": 0.04009460797533393,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "conditional-03",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "yes",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "conditional",
+          "generate_wall_seconds": 0.03890097001567483,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "conditional-04",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "conditional",
+          "generate_wall_seconds": 0.043654622975736856,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "conditional-05",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "conditional",
+          "generate_wall_seconds": 0.036975038005039096,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "conditional-06",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "yes",
+          "valid": false
+        }
+      ],
+      "scores": {
+        "accuracy_including_invalid": 0.0,
+        "agreement_with_two_choice": 0.0,
+        "correct": 0,
+        "generated_tokens": 24,
+        "n": 24,
+        "valid": 0,
+        "valid_rate": 0.0
+      },
+      "seed": 23
+    },
+    {
+      "arm": "interleaved",
+      "condition": "seed29 interleaved",
+      "cost": {
+        "cpu_seconds": 3.5887273210000004,
+        "inference_wall_seconds": 0.8858890740666538,
+        "load_wall_seconds": 0.11639612098224461,
+        "maxrss_kib_lifetime_peak": 1207508
+      },
+      "predictions": [
+        {
+          "correct": false,
+          "family": "arithmetic",
+          "generate_wall_seconds": 0.03158472804352641,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "arithmetic-01",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "yes",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "arithmetic",
+          "generate_wall_seconds": 0.034964038990437984,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "arithmetic-02",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "yes",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "arithmetic",
+          "generate_wall_seconds": 0.03276721597649157,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "arithmetic-03",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "arithmetic",
+          "generate_wall_seconds": 0.031915666069835424,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "arithmetic-04",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "arithmetic",
+          "generate_wall_seconds": 0.032694109017029405,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "arithmetic-05",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "yes",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "arithmetic",
+          "generate_wall_seconds": 0.030386470956727862,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "arithmetic-06",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "taxonomy",
+          "generate_wall_seconds": 0.030426678946241736,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "taxonomy-01",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "taxonomy",
+          "generate_wall_seconds": 0.030925871105864644,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "taxonomy-02",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "taxonomy",
+          "generate_wall_seconds": 0.030438369140028954,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "taxonomy-03",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "taxonomy",
+          "generate_wall_seconds": 0.03004029206931591,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "taxonomy-04",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "taxonomy",
+          "generate_wall_seconds": 0.028290043817833066,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "taxonomy-05",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "taxonomy",
+          "generate_wall_seconds": 0.031841099029406905,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "taxonomy-06",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "negation",
+          "generate_wall_seconds": 0.03271769802086055,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "negation-01",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "negation",
+          "generate_wall_seconds": 0.03438031882978976,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "negation-02",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "negation",
+          "generate_wall_seconds": 0.03315681195817888,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "negation-03",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "yes",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "negation",
+          "generate_wall_seconds": 0.03684334200806916,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "negation-04",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "negation",
+          "generate_wall_seconds": 0.03584534698165953,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "negation-05",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "negation",
+          "generate_wall_seconds": 0.03456968301907182,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "negation-06",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "conditional",
+          "generate_wall_seconds": 0.04136989312246442,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "conditional-01",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "yes",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "conditional",
+          "generate_wall_seconds": 0.03520733001641929,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "conditional-02",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "yes",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "conditional",
+          "generate_wall_seconds": 0.04468420590274036,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "conditional-03",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "yes",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "conditional",
+          "generate_wall_seconds": 0.03983580693602562,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "conditional-04",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "conditional",
+          "generate_wall_seconds": 0.04717555898241699,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "conditional-05",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "conditional",
+          "generate_wall_seconds": 0.03778489003889263,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "conditional-06",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "no",
+          "valid": false
+        }
+      ],
+      "scores": {
+        "accuracy_including_invalid": 0.0,
+        "agreement_with_two_choice": 0.0,
+        "correct": 0,
+        "generated_tokens": 24,
+        "n": 24,
+        "valid": 0,
+        "valid_rate": 0.0
+      },
+      "seed": 29
+    },
+    {
+      "arm": "bursty",
+      "condition": "seed29 bursty",
+      "cost": {
+        "cpu_seconds": 3.566820632999999,
+        "inference_wall_seconds": 0.8742152028717101,
+        "load_wall_seconds": 0.12300356919877231,
+        "maxrss_kib_lifetime_peak": 1207508
+      },
+      "predictions": [
+        {
+          "correct": false,
+          "family": "arithmetic",
+          "generate_wall_seconds": 0.03148448094725609,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "arithmetic-01",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "yes",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "arithmetic",
+          "generate_wall_seconds": 0.03469149908050895,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "arithmetic-02",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "yes",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "arithmetic",
+          "generate_wall_seconds": 0.03412131802178919,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "arithmetic-03",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "arithmetic",
+          "generate_wall_seconds": 0.03374686208553612,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "arithmetic-04",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "arithmetic",
+          "generate_wall_seconds": 0.033488671062514186,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "arithmetic-05",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "yes",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "arithmetic",
+          "generate_wall_seconds": 0.030908632092177868,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "arithmetic-06",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "taxonomy",
+          "generate_wall_seconds": 0.030179047025740147,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "taxonomy-01",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "taxonomy",
+          "generate_wall_seconds": 0.031105714850127697,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "taxonomy-02",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "taxonomy",
+          "generate_wall_seconds": 0.030341930920258164,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "taxonomy-03",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "taxonomy",
+          "generate_wall_seconds": 0.03095245989970863,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "taxonomy-04",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "taxonomy",
+          "generate_wall_seconds": 0.028999469010159373,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "taxonomy-05",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "taxonomy",
+          "generate_wall_seconds": 0.03314214292913675,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "taxonomy-06",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "negation",
+          "generate_wall_seconds": 0.03378658997826278,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "negation-01",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "negation",
+          "generate_wall_seconds": 0.038726555882021785,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "negation-02",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "negation",
+          "generate_wall_seconds": 0.03345916117541492,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "negation-03",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "yes",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "negation",
+          "generate_wall_seconds": 0.03297066898085177,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "negation-04",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "negation",
+          "generate_wall_seconds": 0.03308184491470456,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "negation-05",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "negation",
+          "generate_wall_seconds": 0.032757417066022754,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "negation-06",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "conditional",
+          "generate_wall_seconds": 0.038305980851873755,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "conditional-01",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "yes",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "conditional",
+          "generate_wall_seconds": 0.035129572032019496,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "conditional-02",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "yes",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "conditional",
+          "generate_wall_seconds": 0.04007108905352652,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "conditional-03",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "yes",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "conditional",
+          "generate_wall_seconds": 0.038789593847468495,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "conditional-04",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "conditional",
+          "generate_wall_seconds": 0.04547207895666361,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "conditional-05",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "no",
+          "two_choice_prediction": "no",
+          "valid": false
+        },
+        {
+          "correct": false,
+          "family": "conditional",
+          "generate_wall_seconds": 0.03762934496626258,
+          "generated_text": "",
+          "generated_token_ids": [
+            2
+          ],
+          "id": "conditional-06",
+          "parsed": null,
+          "same_as_two_choice": false,
+          "tokens": 1,
+          "truth": "yes",
+          "two_choice_prediction": "no",
+          "valid": false
+        }
+      ],
+      "scores": {
+        "accuracy_including_invalid": 0.0,
+        "agreement_with_two_choice": 0.0,
+        "correct": 0,
+        "generated_tokens": 24,
+        "n": 24,
+        "valid": 0,
+        "valid_rate": 0.0
+      },
+      "seed": 29
+    }
+  ],
+  "schema": "HPCA-V2-REAL-CPU-GREEDY-GEN-2",
+  "script_sha256": "230d94cd184f6127d78d5c5671d8b7095307c61b366eb873a73fcc34c4c1056d",
+  "source_files_unchanged": true,
+  "source_plan_pr": 5960,
+  "source_training_sha256": "9512849b90964c35951bb8bb2226b3f2f6d3ec0da1e9a3b98467c8970afbe39c",
+  "source_two_choice_sha256": "3002553ec485b19247f510863e9c78d2cce7747434ad7737f68b7dd3f9a74a2a",
+  "started_utc": "2026-11-12T00:45:01.616248+00:00",
+  "status": "PUBLIC_OPERATOR_DIAGNOSTIC_NOT_INDEPENDENT",
+  "threads": 4,
+  "torch_version": "2.9.1+cpu",
+  "transformers_version": "4.57.3"
+}
