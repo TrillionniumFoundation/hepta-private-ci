@@ -3,11 +3,16 @@
 
 use super::*;
 
-const FRAME: &[u8] = b"HEPTA_ROOT_INDEPENDENT_B_SOURCE_V1";
+const FRAME: &[u8] = b"HEPTA_ROOT_INDEPENDENT_B_SOURCE_V2";
+
+#[path = "root_independent_b_source_rights.rs"]
+mod rights;
 
 pub struct RootIndependentBSourceHandoffV1 {
     pub(crate) bootstrap: File,
     pub(crate) source: Option<File>,
+    pub(crate) candidate_data: Option<File>,
+    pub(crate) candidate_notice: Option<File>,
     pub(crate) root_pidfd: OwnedFd,
     pub(crate) root_pid: u32,
 }
@@ -28,9 +33,24 @@ pub fn send_root_independent_b_source_handoff(
     }
     validate_bootstrap(&offer.bootstrap)?;
     require_root_pin(root_pidfd, std::process::id())?;
+    rights::require_exact_source_rights(
+        &offer.bootstrap,
+        offer.source.as_ref(),
+        offer.candidate_data.as_ref(),
+        offer.candidate_notice.as_ref(),
+        std::process::id(),
+    )?;
     let mut rights = vec![offer.bootstrap.as_raw_fd(), root_pidfd.as_raw_fd()];
-    if let Some(source) = &offer.source {
-        rights.push(source.as_raw_fd());
+    if let (Some(source), Some(candidate), Some(notice)) = (
+        &offer.source,
+        &offer.candidate_data,
+        &offer.candidate_notice,
+    ) {
+        rights.extend([
+            source.as_raw_fd(),
+            candidate.as_raw_fd(),
+            notice.as_raw_fd(),
+        ]);
     }
     send_packet(&socket, FRAME, &rights, timeout)
 }
@@ -63,20 +83,31 @@ pub fn receive_root_independent_b_source_handoff(
     let (mut rights, valid) = unsafe { crate::notes_bootstrap::received_descriptors(&message) };
     if !valid
         || message.msg_flags & (libc::MSG_TRUNC | libc::MSG_CTRUNC) != 0
-        || !matches!(rights.len(), 2 | 3)
+        || !matches!(rights.len(), 2 | 5)
         || size as usize != FRAME.len()
         || &bytes[..FRAME.len()] != FRAME
     {
         return Err(refused("exact original B source purpose rights required"));
     }
-    let source = if rights.len() == 3 {
-        Some(File::from(
+    let (source, candidate_data, candidate_notice) = if rights.len() == 5 {
+        let notice = File::from(
+            rights
+                .pop()
+                .ok_or_else(|| refused("B candidate notice absent"))?,
+        );
+        let candidate = File::from(
+            rights
+                .pop()
+                .ok_or_else(|| refused("B candidate readonly data absent"))?,
+        );
+        let source = File::from(
             rights
                 .pop()
                 .ok_or_else(|| refused("B source right absent"))?,
-        ))
+        );
+        (Some(source), Some(candidate), Some(notice))
     } else {
-        None
+        (None, None, None)
     };
     let root_pidfd = rights
         .pop()
@@ -88,9 +119,18 @@ pub fn receive_root_independent_b_source_handoff(
     );
     validate_bootstrap(&bootstrap)?;
     require_root_pin(&root_pidfd, peer.pid as u32)?;
+    rights::require_exact_source_rights(
+        &bootstrap,
+        source.as_ref(),
+        candidate_data.as_ref(),
+        candidate_notice.as_ref(),
+        peer.pid as u32,
+    )?;
     Ok(RootIndependentBSourceHandoffV1 {
         bootstrap,
         source,
+        candidate_data,
+        candidate_notice,
         root_pidfd,
         root_pid: peer.pid as u32,
     })

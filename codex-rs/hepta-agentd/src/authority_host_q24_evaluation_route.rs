@@ -26,11 +26,14 @@ use source_flow::OriginalBSourceFlow;
 pub struct RootIndependentBEvaluationOfferV1 {
     pub(crate) bootstrap: File,
     pub(crate) candidate_data: File,
+    pub(crate) source_admitted: File,
 }
 
 pub struct RootIndependentBSourceOfferV1 {
     pub(crate) bootstrap: File,
     pub(crate) source: Option<File>,
+    pub(crate) candidate_data: Option<File>,
+    pub(crate) candidate_notice: Option<File>,
 }
 
 pub(crate) struct PreparedRootIndependentBEvaluationV1 {
@@ -71,7 +74,7 @@ impl OriginalRootIndependentBEvaluationFilesV1 {
         }
         let end = request_end;
         self.require_original_learning(learning)?;
-        let (bootstrap, sealed, candidate_data, source, source_offer) =
+        let (bootstrap, sealed, candidate_data, source, source_offer, source_admitted) =
             OriginalBRecord::inspect(&self.record, end, |enrollment| {
                 let mut state = self
                     .state
@@ -140,14 +143,15 @@ impl OriginalRootIndependentBEvaluationFilesV1 {
                         let no_update = before
                             .as_ref()
                             .is_some_and(|current| current.training_no_update_v2().is_some());
-                        let (source, source_offer) = OriginalBSourceRoute::prepare(
-                            &mut state.files,
-                            enrollment,
-                            &bootstrap,
-                            config,
-                            self.end,
-                            no_update,
-                        )?;
+                        let (source, source_offer, source_admitted) =
+                            OriginalBSourceRoute::prepare(
+                                &mut state.files,
+                                enrollment,
+                                &bootstrap,
+                                config,
+                                self.end,
+                                no_update,
+                            )?;
                         if self
                             .backend
                             .restore(&initial.request)
@@ -158,7 +162,14 @@ impl OriginalRootIndependentBEvaluationFilesV1 {
                                 "original B checkpoint changed during route capture",
                             ));
                         }
-                        Ok((bootstrap, sealed, candidate_data, source, source_offer))
+                        Ok((
+                            bootstrap,
+                            sealed,
+                            candidate_data,
+                            source,
+                            source_offer,
+                            source_admitted,
+                        ))
                     },
                 )?;
                 owner_alive(owner, end)?;
@@ -181,6 +192,7 @@ impl OriginalRootIndependentBEvaluationFilesV1 {
             offer: RootIndependentBEvaluationOfferV1 {
                 bootstrap: sealed,
                 candidate_data,
+                source_admitted,
             },
         })
     }

@@ -21,6 +21,7 @@ use crate::root_independent_b_source_protocol::*;
 
 #[path = "root_independent_b_source_data.rs"]
 mod data;
+pub(crate) use data::require_original_source_file;
 
 /// Data supplied by the original independent owners. Root authenticates the
 /// two fixed roles; constructing this structure grants no authority.
@@ -58,7 +59,7 @@ pub async fn submit_original_root_b_source(
     let bootstrap: SourceBootstrap = serde_json::from_slice(&bytes)?;
     if bytes.len() != length as usize
         || serde_json::to_vec(&bootstrap)? != bytes
-        || bootstrap.schema != 1
+        || bootstrap.schema != 2
         || bootstrap.purpose != PURPOSE
         || bootstrap.root.uid != 0
         || bootstrap.root.pid != handoff.root_pid
@@ -66,6 +67,8 @@ pub async fn submit_original_root_b_source(
         || bootstrap.frame_timeout_ms == 0
         || bootstrap.frame_timeout_ms > 500
         || (bootstrap.mode == SourceMode::FreshInput) != handoff.source.is_some()
+        || (bootstrap.mode == SourceMode::FreshInput) != handoff.candidate_data.is_some()
+        || (bootstrap.mode == SourceMode::FreshInput) != handoff.candidate_notice.is_some()
     {
         return Err(refused("original B source bootstrap differs"));
     }

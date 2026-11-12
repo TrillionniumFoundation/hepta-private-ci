@@ -26,6 +26,20 @@ pub(super) struct OriginalBReleasedSource {
 }
 
 impl OriginalBReleasedSource {
+    pub(super) fn acknowledgement(
+        &self,
+        binding: Digest32,
+    ) -> crate::root_independent_b_source_protocol::SourceAcknowledgement {
+        crate::root_independent_b_source_protocol::SourceAcknowledgement {
+            schema: 1,
+            purpose: crate::root_independent_b_source_protocol::PURPOSE.into(),
+            binding: binding.to_string(),
+            source_digest: Digest32::from_array(self.source).to_string(),
+            observed_digest: Digest32::from_array(self.observed).to_string(),
+            policy_digest: Digest32::from_array(self.policy).to_string(),
+        }
+    }
+
     /// Hashes of already authenticated data, not a release capability.
     pub(super) fn from_original_digests(
         source: Digest32,
