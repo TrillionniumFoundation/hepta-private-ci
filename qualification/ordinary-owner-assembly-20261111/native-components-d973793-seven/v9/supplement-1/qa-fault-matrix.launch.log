@@ -1,0 +1,11 @@
+test_crash_after_authority_before_dispatch_is_not_success (test_fault_matrix.FaultMatrixTests.test_crash_after_authority_before_dispatch_is_not_success) ... ok
+test_crash_before_authority_replays_pending (test_fault_matrix.FaultMatrixTests.test_crash_before_authority_replays_pending) ... ok
+test_dispatch_ack_loss_stays_indeterminate_until_observed (test_fault_matrix.FaultMatrixTests.test_dispatch_ack_loss_stays_indeterminate_until_observed) ... ok
+test_stale_reconciler_and_payload_drift_fail_closed (test_fault_matrix.FaultMatrixTests.test_stale_reconciler_and_payload_drift_fail_closed) ... ok
+test_terminal_state_is_immutable (test_fault_matrix.FaultMatrixTests.test_terminal_state_is_immutable) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.000s
+
+OK
+{"after": {"commit": "d9737937eaccccf2ed2f1f79444ddec6c10d0eea", "dirty": false, "parents": ["3c5c0d8e8323dc90709a0efb2f3bcafaac256439"], "tree": "2402c0f7605c1e6d23430c5aaeea8d08743cac59"}, "base_sha": "", "before": {"commit": "d9737937eaccccf2ed2f1f79444ddec6c10d0eea", "dirty": false, "parents": ["3c5c0d8e8323dc90709a0efb2f3bcafaac256439"], "tree": "2402c0f7605c1e6d23430c5aaeea8d08743cac59"}, "command": ["python3", "-B", "-m", "unittest", "discover", "-s", "qa/fault-matrix", "-p", "test_*.py", "-v"], "command_exit_code": 0, "elapsed_seconds": 0.06694199400953948, "exit_code": 0, "finished_at": "2026-11-12T09:22:45.588792+00:00", "job": null, "lane": "source-head", "log_bytes": 808, "log_file": "qa-fault-matrix.execution.json.f54f54ac2b564f6e9e13349f576ed1e5.log", "log_sha256": "cdaac012b1e66926aec5bfc03b760a186f6caaddd9e27e64378f28dffafd5d81", "minimum_tests": 1, "observed_failed_tests": 0, "observed_passed_tests": 5, "output_limit_exceeded": false, "returncode": 0, "run_attempt": null, "run_id": null, "schema_version": 1, "source_sha": "d9737937eaccccf2ed2f1f79444ddec6c10d0eea", "started_at": "2026-11-12T09:22:45.520506+00:00", "status": "passed", "tested_sha": "d9737937eaccccf2ed2f1f79444ddec6c10d0eea", "timed_out": false, "working_directory": "/home/qq/af52-learning-local-decision-20261111/ordinary-d973793-seven-final-v9/source"}

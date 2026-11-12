@@ -1,0 +1,11 @@
+test_ack_loss_stays_open_until_reconciliation (test_vertical_slice.VerticalSliceTests.test_ack_loss_stays_open_until_reconciliation) ... ok
+test_generation_drift_fails_closed (test_vertical_slice.VerticalSliceTests.test_generation_drift_fails_closed) ... ok
+test_identity_or_home_mismatch_never_becomes_ready (test_vertical_slice.VerticalSliceTests.test_identity_or_home_mismatch_never_becomes_ready) ... ok
+test_stop_rejects_unreconciled_operations (test_vertical_slice.VerticalSliceTests.test_stop_rejects_unreconciled_operations) ... ok
+test_success_path_requires_independent_terminal_observation (test_vertical_slice.VerticalSliceTests.test_success_path_requires_independent_terminal_observation) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.000s
+
+OK
+{"after": {"commit": "d9737937eaccccf2ed2f1f79444ddec6c10d0eea", "dirty": false, "parents": ["3c5c0d8e8323dc90709a0efb2f3bcafaac256439"], "tree": "2402c0f7605c1e6d23430c5aaeea8d08743cac59"}, "base_sha": "", "before": {"commit": "d9737937eaccccf2ed2f1f79444ddec6c10d0eea", "dirty": false, "parents": ["3c5c0d8e8323dc90709a0efb2f3bcafaac256439"], "tree": "2402c0f7605c1e6d23430c5aaeea8d08743cac59"}, "command": ["python3", "-B", "-m", "unittest", "discover", "-s", "qa/vertical-slice", "-p", "test_*.py", "-v"], "command_exit_code": 0, "elapsed_seconds": 0.06406851694919169, "exit_code": 0, "finished_at": "2026-11-12T09:22:45.882894+00:00", "job": null, "lane": "source-head", "log_bytes": 806, "log_file": "qa-vertical-slice.execution.json.290f7a6f2ad7467fb3341bb608018a52.log", "log_sha256": "0d46a2574bff0a38b57da271f9c648090d3d6b2e9bce9c78b59e37c679694fe6", "minimum_tests": 1, "observed_failed_tests": 0, "observed_passed_tests": 5, "output_limit_exceeded": false, "returncode": 0, "run_attempt": null, "run_id": null, "schema_version": 1, "source_sha": "d9737937eaccccf2ed2f1f79444ddec6c10d0eea", "started_at": "2026-11-12T09:22:45.817976+00:00", "status": "passed", "tested_sha": "d9737937eaccccf2ed2f1f79444ddec6c10d0eea", "timed_out": false, "working_directory": "/home/qq/af52-learning-local-decision-20261111/ordinary-d973793-seven-final-v9/source"}
