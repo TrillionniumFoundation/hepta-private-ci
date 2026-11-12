@@ -71,7 +71,7 @@ impl RegisteredOriginalCellCaptureV1 {
         let Some(original) = original else {
             return action(None);
         };
-        original.refusal.inspect(|| {
+        RootDataRefusalV1::inspect(&original.refusal, || {
             if original
                 .store
                 .load(&original.owner)
