@@ -117,8 +117,8 @@ impl OriginalCellQ24CandidateStageOwnersV1 {
             // an unconfirmed dispatch. Recovery needs a new readonly handoff.
             lane.failed = true;
         }
-        let before = self.read_evaluation_in_operation(
-            &operation, super::evaluation::Action::Readback,
+        let before = OriginalCellQ24CandidateStageOwnersV1::read_evaluation_in_operation(
+            self, &operation, super::evaluation::Action::Readback,
         ).await?;
         if before.snapshot() != evaluation_cut.snapshot()
             || before.training_attestation() != operation.training.attestation()
@@ -165,13 +165,13 @@ impl OriginalCellQ24CandidateStageOwnersV1 {
         // This is an actual independent Evaluator read outside the Model
         // lane. Its own host checks T and the full B/retention panel; no
         // Candidate page or generic StageOwner recursively reopens that work.
-        let after = self.read_evaluation_in_operation(
-            &operation, super::evaluation::Action::Readback,
+        let after = OriginalCellQ24CandidateStageOwnersV1::read_evaluation_in_operation(
+            self, &operation, super::evaluation::Action::Readback,
         ).await?;
         if before != after {
             return Err(Error::CommitUncertain);
         }
-        let closed = operation.close().await?;
+        let closed = CandidateOriginalOperation::close(operation).await?;
         let current = {
             let lane = self.model.try_lock().map_err(|_| Error::QueueFull)?;
             let client = lane.client.as_ref().ok_or(Error::CommitUncertain)?;

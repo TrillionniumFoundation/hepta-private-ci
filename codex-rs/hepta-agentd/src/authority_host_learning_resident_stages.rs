@@ -134,7 +134,7 @@ impl ResidentOriginalStageOwnersV3 {
         observed: u64,
     ) -> Result<(Vec<SignedLearningEvidenceV1>, Option<crate::OriginalCellQ24ModelCommandReceiptV1>), Error> {
         match self {
-            Self::Candidate(stages) => original.into_original_parts(stages, snapshot, observed),
+            Self::Candidate(stages) => OriginalCandidateOperationEvidence::into_original_parts(original, stages, snapshot, observed),
             Self::NoUpdate(_) => Err(Error::WrongScope),
         }
     }

@@ -88,8 +88,8 @@ impl OriginalCellQ24CandidateStageOwnersV1 {
             .await?;
         }
         let operation = CandidateOriginalOperation::begin(self, snapshot).await?;
-        let material = self.read_candidate_in_operation(&operation).await?;
-        let operation = operation.close().await?;
+        let material = OriginalCellQ24CandidateStageOwnersV1::read_candidate_in_operation(self, &operation).await?;
+        let operation = CandidateOriginalOperation::close(operation).await?;
         if mode == CandidateRead::Dispatch {
             let gate = self.common.root.as_ref().ok_or(Error::CommitUncertain)?;
             RootResidentLearningEffectGateV3::require_current(

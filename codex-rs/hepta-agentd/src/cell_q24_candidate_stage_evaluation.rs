@@ -124,7 +124,7 @@ impl OriginalCellQ24CandidateStageOwnersV1 {
             return Err(Error::WrongScope);
         }
         let operation = CandidateOriginalOperation::begin(self, snapshot).await?;
-        let before = self.read_candidate_in_operation(&operation).await?;
+        let before = OriginalCellQ24CandidateStageOwnersV1::read_candidate_in_operation(self, &operation).await?;
         if action == Action::Execute {
             let gate = self.common.root.as_ref().ok_or(Error::OwnerUnavailable(
                 "fresh resident Evaluation continuation",
@@ -135,7 +135,7 @@ impl OriginalCellQ24CandidateStageOwnersV1 {
                 &self.common.material.scope,
             ).await?;
         }
-        let original = self.read_evaluation_in_operation(&operation, action).await?;
+        let original = OriginalCellQ24CandidateStageOwnersV1::read_evaluation_in_operation(self, &operation, action).await?;
         if action == Action::Execute {
             let gate = self.common.root.as_ref().ok_or(Error::CommitUncertain)?;
             RootResidentLearningEffectGateV3::require_current(
@@ -144,7 +144,7 @@ impl OriginalCellQ24CandidateStageOwnersV1 {
                 &self.common.material.scope,
             ).await?;
         }
-        let after = self.read_candidate_in_operation(&operation).await?;
+        let after = OriginalCellQ24CandidateStageOwnersV1::read_candidate_in_operation(self, &operation).await?;
         if before.bundle() != after.bundle()
             || before.heads() != after.heads()
             || before.receipt() != after.receipt()
@@ -152,7 +152,7 @@ impl OriginalCellQ24CandidateStageOwnersV1 {
         {
             return Err(Error::CommitUncertain);
         }
-        let closed = operation.close().await?;
+        let closed = CandidateOriginalOperation::close(operation).await?;
         if action == Action::Execute {
             let gate = self.common.root.as_ref().ok_or(Error::CommitUncertain)?;
             RootResidentLearningEffectGateV3::require_current(

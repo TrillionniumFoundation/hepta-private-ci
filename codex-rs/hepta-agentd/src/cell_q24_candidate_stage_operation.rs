@@ -91,7 +91,7 @@ impl<'a> CandidateOriginalOperation<'a> {
         Ok(ClosedCandidateOriginalOperation(self))
     }
 
-    fn authenticate(&self, observed: u64) -> Result<u64, Error> {
+    fn authenticate_prefix(&self, observed: u64) -> Result<u64, Error> {
         let fresh = auth::require_material(&self.owners.common.material, self.owners.common.initial_binding)?;
         auth::require_clock(self.started, observed)?;
         auth::require_clock(observed, fresh)?;
@@ -105,7 +105,7 @@ impl<'a> CandidateOriginalOperation<'a> {
 
 impl<'a> ClosedCandidateOriginalOperation<'a> {
     pub(super) fn candidate(mut self, material: OriginalCellQ24CandidateMaterialV1) -> Result<OriginalCellQ24CandidateMaterialV1, Error> {
-        let fresh = self.0.authenticate(auth::now()?)?;
+        let fresh = self.0.authenticate_prefix(auth::now()?)?;
         if material.receipt() != self.0.training.receipt()
             || material.attestation() != self.0.training.attestation()
         {
@@ -118,13 +118,13 @@ impl<'a> ClosedCandidateOriginalOperation<'a> {
 
     pub(super) fn evaluation(self, evaluation: OriginalCellEvaluationCommandReceiptV1) -> Result<OriginalCandidateOperationEvidence<'a>, Error> {
         let result = OriginalCandidateOperationEvidence { snapshot: evaluation.snapshot().clone(), operation: self, evaluation, model: None };
-        result.authenticate(result.snapshot(), auth::now()?)?;
+        result.authenticate_result(result.snapshot(), auth::now()?)?;
         Ok(result)
     }
 
     pub(super) fn model(self, evaluation: OriginalCellEvaluationCommandReceiptV1, model: OriginalCellQ24ModelCommandReceiptV1) -> Result<OriginalCandidateOperationEvidence<'a>, Error> {
         let result = OriginalCandidateOperationEvidence { snapshot: model.snapshot().clone(), operation: self, evaluation, model: Some(model) };
-        result.authenticate(result.snapshot(), auth::now()?)?;
+        result.authenticate_result(result.snapshot(), auth::now()?)?;
         Ok(result)
     }
 }
@@ -136,10 +136,10 @@ impl OriginalCandidateOperationEvidence<'_> {
         match &self.model { Some(model) => model.receipt(), None => self.evaluation.receipt() }
     }
 
-    fn authenticate(&self, snapshot: &LearningIterationSnapshotV1, observed: u64) -> Result<Vec<SignedLearningEvidenceV1>, Error> {
+    fn authenticate_result(&self, snapshot: &LearningIterationSnapshotV1, observed: u64) -> Result<Vec<SignedLearningEvidenceV1>, Error> {
         let operation = &self.operation.0;
         if snapshot != &self.snapshot { return Err(Error::WrongScope); }
-        let fresh = operation.authenticate(observed)?;
+        let fresh = operation.authenticate_prefix(observed)?;
         operation.owners.verify_original_evaluation(&operation.supplied, &operation.training_cut, &operation.training, &self.evaluation, fresh)?;
         let mut signatures: Vec<_> = operation.records.iter().map(|(_, signature)| signature.clone()).collect();
         signatures.push(self.evaluation.attestation().clone());
@@ -150,14 +150,14 @@ impl OriginalCandidateOperationEvidence<'_> {
                 || operation.supplied.receipts.get(4).is_some_and(|expected| expected != model.receipt())
             { return Err(Error::WrongScope); }
             operation.owners.common.material.scope.validate_snapshot(model.snapshot())?;
-            model.original_record_for_root(&signatures).map_err(|_| Error::WrongScope)?;
+            OriginalCellQ24ModelCommandReceiptV1::original_record_for_root(model, &signatures).map_err(|_| Error::WrongScope)?;
         } else if self.evaluation.snapshot() != snapshot { return Err(Error::WrongScope); }
         Ok(signatures)
     }
 
     pub(crate) fn into_original_parts(mut self, owners: &Owners, snapshot: &LearningIterationSnapshotV1, observed: u64) -> Result<(Vec<SignedLearningEvidenceV1>, Option<OriginalCellQ24ModelCommandReceiptV1>), Error> {
         self.operation.0.require_owner(owners)?;
-        let signatures = self.authenticate(snapshot, observed)?;
+        let signatures = self.authenticate_result(snapshot, observed)?;
         self.operation.0.lane.failed = false;
         Ok((signatures, self.model))
     }
