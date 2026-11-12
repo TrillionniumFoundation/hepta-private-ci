@@ -27,6 +27,8 @@ pub(crate) use deployment::PreparedPublicationData;
 pub(crate) use deployment::PublicationInputData;
 pub use deployment::RootGenerationPublicationDeploymentSessionV1;
 pub use deployment::RootGenerationPublicationDeploymentV1;
+pub(crate) use deployment::RootOriginalSuccessorFilesV1;
+pub(crate) use deployment::RootSuccessorTaskCutV1;
 pub(crate) use deployment::data as publication_data;
 
 #[path = "authority_host_original_publication_route.rs"]
@@ -40,6 +42,7 @@ const CLOSED: u8 = 3;
 
 struct Submission {
     inputs: crate::RootGenerationPublicationEnrollmentV1,
+    successor: Option<Arc<RootOriginalSuccessorFilesV1>>,
     acknowledgement: mpsc::SyncSender<Result<String, String>>,
     end: Instant,
 }
@@ -76,6 +79,7 @@ pub struct RootGenerationPublicationEnrollmentCapabilityV1 {
     lifetime: Duration,
     original_end: Option<Instant>,
     version: PublicationVersion,
+    successor: Option<Arc<RootOriginalSuccessorFilesV1>>,
 }
 
 impl RootGenerationPublicationEnrollmentCapabilityV1 {
@@ -117,6 +121,7 @@ impl RootGenerationPublicationEnrollmentCapabilityV1 {
         self.sender
             .try_send(Submission {
                 inputs,
+                successor: self.successor,
                 acknowledgement,
                 end,
             })

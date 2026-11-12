@@ -62,6 +62,10 @@ mod refusal;
 use refusal::PublicationRefusal;
 #[path = "authority_host_publication_registration.rs"]
 mod registration;
+#[path = "authority_host_publication_successor.rs"]
+mod successor;
+use successor::RegisteredSuccessorData;
+pub(crate) use successor::RootCompletedSuccessorDataV1;
 
 #[derive(Clone, Debug, Eq, PartialEq, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
@@ -147,6 +151,7 @@ pub(crate) struct RegisteredGenerationPublication {
     artifacts: LearningArtifactReadViewV1,
     selected: Mutex<AgentdSelectedGenerationV1>,
     consumer: RootFinalUseObserverV1,
+    successor: Option<RegisteredSuccessorData>,
 }
 
 impl RegisteredGenerationPublication {

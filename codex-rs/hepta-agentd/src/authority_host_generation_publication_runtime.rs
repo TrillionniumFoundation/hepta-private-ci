@@ -166,6 +166,7 @@ fn serve_optional_with_end(
                 submission.inputs,
                 publication.runtime.version,
                 operation_end,
+                submission.successor,
             );
             let slot = match slot {
                 Ok(slot) => {
