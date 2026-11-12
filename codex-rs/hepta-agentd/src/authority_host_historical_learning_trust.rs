@@ -10,9 +10,9 @@ use codex_hepta_neuron::CellGenerationOwnerBindingV1;
 use codex_hepta_types::Digest32;
 use serde::Deserialize;
 
-use super::HostAuthorityService;
-use super::generation_initial::original_root;
-use super::generation_publication::deployment::files::MetadataFile;
+use super::super::generation_publication::deployment::files::MetadataFile;
+use crate::HostAuthorityService;
+use crate::authority_host_service::generation_initial::original_root;
 use crate::root_historical_learning_trust_data::HistoricalLearningTrustPayloadV1;
 use crate::root_historical_learning_trust_data::HistoricalLearningTrustPinV1;
 use crate::root_historical_ledger_data::RootHistoricalLedgerReadDataV1;
@@ -32,17 +32,17 @@ struct Deployment {
     freeze_evaluator: LearningTrustRoleSelectionV1,
 }
 
-pub(crate) struct RootHistoricalLearningTrustV1 {
+pub(super) struct RootHistoricalLearningTrustV1 {
     metadata: MetadataFile,
     signed_file: MetadataFile,
     expected: Deployment,
     payload: HistoricalLearningTrustPayloadV1,
     initial: LearningIterationSnapshotV1,
-    pub(crate) pin: HistoricalLearningTrustPinV1,
+    pub(super) pin: HistoricalLearningTrustPinV1,
 }
 
 impl RootHistoricalLearningTrustV1 {
-    pub(crate) fn open_original(
+    pub(super) fn open_original(
         service: &HostAuthorityService,
         path: &Path,
         initial: &LearningIterationSnapshotV1,
@@ -78,12 +78,7 @@ impl RootHistoricalLearningTrustV1 {
                 "current recipient trust exceeds original lane bound",
             ));
         }
-        let now = service
-            .clock
-            .refresh_projection()
-            .map_err(io::Error::other)?
-            .observed_unix_ms
-            / 1_000;
+        let now = HostAuthorityService::original_learning_unix_seconds(service)?;
         let (activated, _) = payload.activate_for_recipient(initial, now)?;
         let pin = HistoricalLearningTrustPinV1 {
             initial: initial.head_digest.to_string(),
@@ -113,7 +108,7 @@ impl RootHistoricalLearningTrustV1 {
         Ok(held)
     }
 
-    pub(crate) fn revalidate(
+    pub(super) fn revalidate(
         &self,
         service: &HostAuthorityService,
         initial: &LearningIterationSnapshotV1,
@@ -127,12 +122,7 @@ impl RootHistoricalLearningTrustV1 {
         {
             return Err(io::Error::other("original recipient trust custody changed"));
         }
-        let now = service
-            .clock
-            .refresh_projection()
-            .map_err(io::Error::other)?
-            .observed_unix_ms
-            / 1_000;
+        let now = HostAuthorityService::original_learning_unix_seconds(service)?;
         let (activated, _) = self.payload.activate_for_recipient(initial, now)?;
         self.payload
             .require_activation_pin(initial, &activated, &self.pin)?;
@@ -140,7 +130,7 @@ impl RootHistoricalLearningTrustV1 {
         self.signed_file.require_metadata_unchanged()
     }
 
-    pub(crate) fn require_original_ledger(
+    pub(super) fn require_original_ledger(
         &self,
         ledger: &RootHistoricalLedgerReadDataV1,
     ) -> io::Result<()> {
@@ -156,7 +146,7 @@ impl RootHistoricalLearningTrustV1 {
         Ok(())
     }
 
-    pub(crate) fn read_original_payload(
+    pub(super) fn read_original_payload(
         &self,
         service: &HostAuthorityService,
         initial: &LearningIterationSnapshotV1,

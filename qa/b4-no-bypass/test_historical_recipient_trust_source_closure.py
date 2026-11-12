@@ -61,8 +61,13 @@ class HistoricalRecipientTrustSourceTests(unittest.TestCase):
                 self.reject_removal(FILES, "fn revalidate(", marker, occurrence)
         self.check_markers(FILES, "fn revalidate(", (
             "initial != &self.initial", "self.pin.payload != self.signed_file.digest().to_string()",
-            "service\n            .clock\n            .refresh_projection()",
+            "HostAuthorityService::original_learning_unix_seconds(service)?",
             "self.payload.activate_for_recipient(initial, now)?"))
+
+    def test_time_is_sampled_from_the_actual_root_service_only(self):
+        self.check_markers(AGENT + "authority_host_learning_time.rs", "fn original_learning_unix_seconds(", (
+            "original_root()?", "self\n            .clock\n            .refresh_projection()",
+            ".observed_unix_ms", "/ 1_000"))
 
     def test_read_payload_is_mapped_to_the_actual_original_ledger(self):
         self.check_markers(FILES, "fn require_original_ledger(", (
