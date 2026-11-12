@@ -1,0 +1,222 @@
+{
+  "earlier_readback": {
+    "jobs": [
+      {
+        "conclusion": "success",
+        "id": 130884857137,
+        "passed_non_skipped": 176,
+        "reported_ran_tests": 182,
+        "skipped": 6,
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "id": 130884857440,
+        "passed_non_skipped": 176,
+        "reported_ran_tests": 182,
+        "skipped": 6,
+        "status": "completed"
+      },
+      {
+        "conclusion": null,
+        "id": 130884857466,
+        "passed_non_skipped": null,
+        "reported_ran_tests": null,
+        "skipped": null,
+        "status": "queued"
+      }
+    ],
+    "observed_at_utc": "2026-11-12T00:40:34Z",
+    "workflow_run_readback": [
+      {
+        "conclusion": null,
+        "head_sha": null,
+        "html_url": null,
+        "id": 43127994167,
+        "name": "v8-canary",
+        "status": "queued"
+      },
+      {
+        "conclusion": null,
+        "head_sha": null,
+        "html_url": null,
+        "id": 43127994490,
+        "name": "blocking-ci",
+        "status": "queued"
+      },
+      {
+        "conclusion": null,
+        "head_sha": null,
+        "html_url": null,
+        "id": 43127994285,
+        "name": "Hepta architecture convergence",
+        "status": "queued"
+      },
+      {
+        "conclusion": null,
+        "head_sha": null,
+        "html_url": null,
+        "id": 43127994207,
+        "name": "Hepta PRED-1 CPU checks",
+        "status": "queued"
+      }
+    ]
+  },
+  "jobs": [
+    {
+      "completed_at": null,
+      "conclusion": "success",
+      "decoded_content_roundtrip_verified": true,
+      "html_url": null,
+      "id": 130884857137,
+      "log_bytes": 69433,
+      "log_file": "hosted-130884857137.log",
+      "log_sha256": "460ad31c8716fc467641973f215d48637364a54e0036100176971d1b3a554b13",
+      "name": "PRED-1 (windows-latest)",
+      "passed_non_skipped": 176,
+      "reported_ran_tests": 182,
+      "skip_lines": [
+        "2026-11-12T00:34:28.4701240Z test_actual_eight_fit_run_retains_exact_identity_bytes_and_create_only_output (hepta_pred1.test_reexecute_crossed.ReexecutionTests.test_actual_eight_fit_run_retains_exact_identity_bytes_and_create_only_output) ... skipped 'Linux research execution wrapper'",
+        "2026-11-12T00:34:28.4703801Z test_escalated_timeout_exit_race_still_writes_terminal_receipt (hepta_pred1.test_reexecute_crossed.ReexecutionTests.test_escalated_timeout_exit_race_still_writes_terminal_receipt) ... skipped 'Linux research execution wrapper'",
+        "2026-11-12T00:34:28.4705931Z test_launch_failure_is_retained_without_retry_or_fake_result (hepta_pred1.test_reexecute_crossed.ReexecutionTests.test_launch_failure_is_retained_without_retry_or_fake_result) ... skipped 'Linux research execution wrapper'",
+        "2026-11-12T00:34:28.4708008Z test_mismatched_registration_refuses_before_output_or_child_launch (hepta_pred1.test_reexecute_crossed.ReexecutionTests.test_mismatched_registration_refuses_before_output_or_child_launch) ... skipped 'Linux research execution wrapper'",
+        "2026-11-12T00:34:28.4710185Z test_successful_child_cannot_make_changed_or_unreadable_source_replayable (hepta_pred1.test_reexecute_crossed.ReexecutionTests.test_successful_child_cannot_make_changed_or_unreadable_source_replayable) ... skipped 'Linux research execution wrapper'",
+        "2026-11-12T00:34:28.4712396Z test_timeout_terminates_only_the_child_owned_session_and_retains_receipt (hepta_pred1.test_reexecute_crossed.ReexecutionTests.test_timeout_terminates_only_the_child_owned_session_and_retains_receipt) ... skipped 'Linux research execution wrapper'"
+      ],
+      "skip_reason": "Linux research execution wrapper",
+      "skipped": 6,
+      "source_commit_in_log": true,
+      "source_identity_lines": [
+        "2026-11-12T00:33:28.1228384Z   ref: 10629bab4d5f948854e7c59fed331213956fb974",
+        "2026-11-12T00:33:32.1100438Z [command]\"C:\\Program Files\\Git\\bin\\git.exe\" -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin 10629bab4d5f948854e7c59fed331213956fb974",
+        "2026-11-12T00:33:38.1875588Z  * branch            10629bab4d5f948854e7c59fed331213956fb974 -> FETCH_HEAD",
+        "2026-11-12T00:33:38.1919118Z [command]\"C:\\Program Files\\Git\\bin\\git.exe\" rev-parse --verify --quiet 10629bab4d5f948854e7c59fed331213956fb974^{object}",
+        "2026-11-12T00:33:38.2287014Z 10629bab4d5f948854e7c59fed331213956fb974",
+        "2026-11-12T00:33:38.3016837Z [command]\"C:\\Program Files\\Git\\bin\\git.exe\" checkout --progress --force 10629bab4d5f948854e7c59fed331213956fb974",
+        "2026-11-12T00:33:42.3476821Z Note: switching to '10629bab4d5f948854e7c59fed331213956fb974'.",
+        "2026-11-12T00:33:42.4235099Z 10629bab4d5f948854e7c59fed331213956fb974"
+      ],
+      "started_at": null,
+      "status": "completed",
+      "test_summary_lines": [
+        "2026-11-12T00:34:30.8493283Z Ran 182 tests in 37.973s",
+        "2026-11-12T00:34:30.8493554Z OK (skipped=6)"
+      ]
+    },
+    {
+      "completed_at": null,
+      "conclusion": "success",
+      "decoded_content_roundtrip_verified": true,
+      "html_url": null,
+      "id": 130884857440,
+      "log_bytes": 68502,
+      "log_file": "hosted-130884857440.log",
+      "log_sha256": "767b688b9ef2cb5a03f2fb96b5a400e62fa25a5bbab9dc7b104b129ca7c8a93d",
+      "name": "PRED-1 (macos-latest)",
+      "passed_non_skipped": 176,
+      "reported_ran_tests": 182,
+      "skip_lines": [
+        "2026-11-12T00:32:47.1952620Z test_actual_eight_fit_run_retains_exact_identity_bytes_and_create_only_output (hepta_pred1.test_reexecute_crossed.ReexecutionTests.test_actual_eight_fit_run_retains_exact_identity_bytes_and_create_only_output) ... skipped 'Linux research execution wrapper'",
+        "2026-11-12T00:32:47.1954120Z test_escalated_timeout_exit_race_still_writes_terminal_receipt (hepta_pred1.test_reexecute_crossed.ReexecutionTests.test_escalated_timeout_exit_race_still_writes_terminal_receipt) ... skipped 'Linux research execution wrapper'",
+        "2026-11-12T00:32:47.1955510Z test_launch_failure_is_retained_without_retry_or_fake_result (hepta_pred1.test_reexecute_crossed.ReexecutionTests.test_launch_failure_is_retained_without_retry_or_fake_result) ... skipped 'Linux research execution wrapper'",
+        "2026-11-12T00:32:47.1956810Z test_mismatched_registration_refuses_before_output_or_child_launch (hepta_pred1.test_reexecute_crossed.ReexecutionTests.test_mismatched_registration_refuses_before_output_or_child_launch) ... skipped 'Linux research execution wrapper'",
+        "2026-11-12T00:32:47.1958570Z test_successful_child_cannot_make_changed_or_unreadable_source_replayable (hepta_pred1.test_reexecute_crossed.ReexecutionTests.test_successful_child_cannot_make_changed_or_unreadable_source_replayable) ... skipped 'Linux research execution wrapper'",
+        "2026-11-12T00:32:47.1960090Z test_timeout_terminates_only_the_child_owned_session_and_retains_receipt (hepta_pred1.test_reexecute_crossed.ReexecutionTests.test_timeout_terminates_only_the_child_owned_session_and_retains_receipt) ... skipped 'Linux research execution wrapper'"
+      ],
+      "skip_reason": "Linux research execution wrapper",
+      "skipped": 6,
+      "source_commit_in_log": true,
+      "source_identity_lines": [
+        "2026-11-12T00:32:22.0933990Z   ref: 10629bab4d5f948854e7c59fed331213956fb974",
+        "2026-11-12T00:32:23.1365270Z [command]/opt/homebrew/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin 10629bab4d5f948854e7c59fed331213956fb974",
+        "2026-11-12T00:32:29.7872370Z  * branch            10629bab4d5f948854e7c59fed331213956fb974 -> FETCH_HEAD",
+        "2026-11-12T00:32:29.7932120Z [command]/opt/homebrew/bin/git rev-parse --verify --quiet 10629bab4d5f948854e7c59fed331213956fb974^{object}",
+        "2026-11-12T00:32:29.8151740Z 10629bab4d5f948854e7c59fed331213956fb974",
+        "2026-11-12T00:32:29.9263070Z [command]/opt/homebrew/bin/git checkout --progress --force 10629bab4d5f948854e7c59fed331213956fb974",
+        "2026-11-12T00:32:35.2770890Z 10629bab4d5f948854e7c59fed331213956fb974"
+      ],
+      "started_at": null,
+      "status": "completed",
+      "test_summary_lines": [
+        "2026-11-12T00:32:48.0747610Z Ran 182 tests in 6.264s",
+        "2026-11-12T00:32:48.0747810Z OK (skipped=6)"
+      ]
+    },
+    {
+      "completed_at": null,
+      "conclusion": "success",
+      "decoded_content_roundtrip_verified": true,
+      "html_url": null,
+      "id": 130884857466,
+      "log_bytes": 62486,
+      "log_file": "hosted-130884857466.log",
+      "log_sha256": "4e0f5a61f6b4113cbd0b1ba6d29bfeb5338f3eb1f7fd4afaed4291878e266b15",
+      "name": "PRED-1 (ubuntu-latest)",
+      "passed_non_skipped": 182,
+      "reported_ran_tests": 182,
+      "skip_lines": [],
+      "skip_reason": null,
+      "skipped": 0,
+      "source_commit_in_log": true,
+      "source_identity_lines": [
+        "2026-11-12T00:45:59.3802512Z   ref: 10629bab4d5f948854e7c59fed331213956fb974",
+        "2026-11-12T00:45:59.8371004Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin 10629bab4d5f948854e7c59fed331213956fb974",
+        "2026-11-12T00:46:05.7116224Z  * branch            10629bab4d5f948854e7c59fed331213956fb974 -> FETCH_HEAD",
+        "2026-11-12T00:46:05.7124303Z [command]/usr/bin/git rev-parse --verify --quiet 10629bab4d5f948854e7c59fed331213956fb974^{object}",
+        "2026-11-12T00:46:05.7153741Z 10629bab4d5f948854e7c59fed331213956fb974",
+        "2026-11-12T00:46:05.7260691Z [command]/usr/bin/git checkout --progress --force 10629bab4d5f948854e7c59fed331213956fb974",
+        "2026-11-12T00:46:06.6187585Z Note: switching to '10629bab4d5f948854e7c59fed331213956fb974'.",
+        "2026-11-12T00:46:06.6286261Z 10629bab4d5f948854e7c59fed331213956fb974"
+      ],
+      "started_at": null,
+      "status": "completed",
+      "test_summary_lines": [
+        "2026-11-12T00:46:23.7700850Z Ran 182 tests in 11.141s",
+        "2026-11-12T00:46:23.7701174Z OK"
+      ]
+    }
+  ],
+  "log_representation": "exact UTF-8 encoding of decoded log content returned by GitHub connector",
+  "observed_at_utc": "2026-11-12T00:47:25Z",
+  "pred_workflow_conclusion": "success",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "run_id": 43127994207,
+  "run_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43127994207",
+  "schema": "pred-history-hosted-ci-v1",
+  "scope": "PRED targeted CPU workflow; no repository-wide green assertion",
+  "source_commit": "10629bab4d5f948854e7c59fed331213956fb974",
+  "workflow_run_readback": [
+    {
+      "conclusion": null,
+      "head_sha": null,
+      "html_url": null,
+      "id": 43127994490,
+      "name": "blocking-ci",
+      "status": "queued"
+    },
+    {
+      "conclusion": null,
+      "head_sha": null,
+      "html_url": null,
+      "id": 43127994285,
+      "name": "Hepta architecture convergence",
+      "status": "queued"
+    },
+    {
+      "conclusion": "success",
+      "head_sha": null,
+      "html_url": null,
+      "id": 43127994167,
+      "name": "v8-canary",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "head_sha": null,
+      "html_url": null,
+      "id": 43127994207,
+      "name": "Hepta PRED-1 CPU checks",
+      "status": "completed"
+    }
+  ]
+}

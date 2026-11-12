@@ -1,0 +1,67 @@
+{
+  "schema": "pred-owner-source-observation-v1",
+  "observation_completed_at_utc": "2026-11-12 00:15:43 UTC",
+  "source_commit": "aeb34582ac8a6bbb6c1e79b0722daead1aadb377",
+  "source_files": [
+    "qualification/pred-owner-decision-20261110-9e31/SERVICE_SOURCE_ATTEMPT.json",
+    "qualification/pred-owner-decision-20261110-9e31/OWNER_SOURCE_PROBE.json",
+    "scripts/hepta_pred1/owner_capture.py",
+    "scripts/hepta_pred1/native_ledger.py"
+  ],
+  "current_read_attempts": [
+    {
+      "tool": "h.host_list",
+      "arguments": {},
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "tool call error: tool call failed for `codex_apps/h.host_list`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out"
+          }
+        ],
+        "isError": true
+      }
+    },
+    {
+      "tool": "h.effective_config",
+      "arguments": {},
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "tool call error: tool call failed for `codex_apps/h.effective_config`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out"
+          }
+        ],
+        "isError": true
+      }
+    }
+  ],
+  "historical_uncertain_attempt": {
+    "host": "pocket4",
+    "tool": "h.pty_start",
+    "idempotency_key": "pred-owner-audit-9e3156-service-source-pocket4-01",
+    "retained_source_sha256": "b7d55a1998a5126a203c193ffc0c40b6def280c8f7d1cb0275e7c1eea8593022",
+    "session_id": null,
+    "underlying_terminal_state": "UNKNOWN",
+    "identity_checked_against_original": true,
+    "live_reconciliation_completed": false,
+    "live_reconciliation_blocker": "Current host_list and effective_config both timed out; no session identity returned by historical attempt.",
+    "replay_or_retry_performed": false
+  },
+  "collected_real_owner_records": 0,
+  "business_effect_labels_created": 0,
+  "new_remote_processes_started": 0,
+  "owner_database_mutations": 0,
+  "live_owner_source_located": false,
+  "independent_effect_observer_located": false,
+  "source_absence_established": false,
+  "current_remote_execution_availability": "UNKNOWN",
+  "qualification": "HOLD",
+  "code_contract_findings": [
+    "owner_capture next_after is retrospective primary-key pagination, not a transactional live-change cursor.",
+    "clock_id and start_cursor are supplied by operator; this module does not authenticate owner or clock provenance.",
+    "collect_native reads attempts, observations and reconciliations under one read-only WAL-aware SQLite transaction, then stamps monotonic availability.",
+    "join_readback keeps owner settlements distinct from business outcome, duration and physical cost; missing effect labels remain unknown.",
+    "A database path alone will not establish an independent effect observer or a live arrival sequencer."
+  ]
+}
