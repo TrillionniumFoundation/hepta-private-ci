@@ -44,6 +44,8 @@ jobs:
         run: python3 -m unittest discover -s scripts -p 'test_hepta_cells_*.py' -v
       - name: Retain the fixed engineering probe without selecting a model
         run: python3 scripts/qualify_hepta_cells.py --output "$RUNNER_TEMP/stem-cell-probe"
+      - name: Execute the fixed task-conditioned parameter-layout control
+        run: PYTHONPATH=scripts python3 -m hepta_cells.differentiation_reference --output "$RUNNER_TEMP/stem-cell-probe/differentiation-layout"
       - name: Retain original results and any failed attempt
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
