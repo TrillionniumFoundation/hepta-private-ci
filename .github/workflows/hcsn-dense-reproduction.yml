@@ -1,0 +1,29 @@
+name: HCSN dense reproduction retained evidence
+on:
+  pull_request:
+    paths:
+      - 'qualification/hcsn_dense_reproduction/**'
+      - '.github/workflows/hcsn-dense-reproduction.yml'
+permissions:
+  contents: read
+jobs:
+  retained-evidence:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install numpy==2.3.5 scipy==1.17.0
+      - name: Verify retained source and arithmetic without model calls
+        run: python -m qualification.hcsn_dense_reproduction.verify_retained
+      - name: Check mechanisms on exact head
+        env:
+          OPENBLAS_NUM_THREADS: '1'
+          OMP_NUM_THREADS: '1'
+        run: python -m unittest qualification.hcsn_dense_reproduction.test_mechanism -v
+      - name: Check clean executing source
+        run: git diff --exit-code
