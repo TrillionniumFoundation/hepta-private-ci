@@ -73,8 +73,7 @@ impl AgentdState {
         completed: Arc<OriginalCompletedLearningHistoryV1>,
     ) -> Result<(), AgentdError> {
         OriginalCompletedLearningHistoryV1::require_original_current(&completed, &self.identity)?;
-        let result = completed
-            .data()
+        let result = OriginalCompletedLearningHistoryV1::data(&completed)
             .validate_data()
             .map_err(AgentdError::Protocol);
         OriginalCompletedLearningHistoryV1::require_original_current(&completed, &self.identity)?;
@@ -94,7 +93,7 @@ impl AgentdState {
             return Ok(None);
         };
         OriginalCompletedLearningHistoryV1::require_original_current(completed, &self.identity)?;
-        let data = completed.data().clone();
+        let data = OriginalCompletedLearningHistoryV1::data(completed).clone();
         let result = data.validate_data().map_err(AgentdError::Protocol);
         // Both postchecks run even when DATA validation or the Root postcheck
         // fails. No runtime mutex is held across the original Root exchange.

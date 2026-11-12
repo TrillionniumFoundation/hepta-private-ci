@@ -18,8 +18,7 @@ impl AgentdConfig {
             ));
         }
         OriginalCompletedLearningHistoryV1::require_original_current(&completed, self.identity())?;
-        let result = completed
-            .data()
+        let result = OriginalCompletedLearningHistoryV1::data(&completed)
             .validate_data()
             .map_err(AgentdError::Protocol);
         OriginalCompletedLearningHistoryV1::require_original_current(&completed, self.identity())?;
