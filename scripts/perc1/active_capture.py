@@ -190,6 +190,7 @@ def observe(
         "head_sha256": expected_head_sha256,
         "prefix": prefix,
         "catalog_sha256": sha(candidates),
+        "catalog": candidates,
         "mode": mode,
         "seed": seed,
         "selection": selection,
