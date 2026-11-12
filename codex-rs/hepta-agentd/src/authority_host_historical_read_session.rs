@@ -2,12 +2,93 @@
 //! registered Root service. No legacy learning owner is opened or upgraded.
 
 use codex_hepta_memory::CognitiveCheckpointPeerLifetime;
+use std::os::unix::net::UnixDatagram;
 
 use super::*;
 use crate::root_historical_task_read_protocol::HistoricalTaskReadBootstrapV1;
 use crate::root_historical_task_read_protocol::RootHistoricalTaskReadOfferV1;
 
 impl PreparedHostAuthoritySession {
+    /// Retain the protected post-A plan and two original anonymous handoffs
+    /// before sealing the historical route. Registration remains a late action.
+    pub fn enable_original_post_a_learning_from_deployment(
+        &mut self,
+        path: &Path,
+        learning_handoff: UnixDatagram,
+        model_handoff: UnixDatagram,
+        root_pidfd: OwnedFd,
+    ) -> io::Result<()> {
+        original_root()?;
+        if self.learning.is_some() || self.publication.is_some() {
+            return Err(io::Error::other(
+                "post-A owners cannot replace eager learning",
+            ));
+        }
+        let runtime = self.historical_read.as_mut().ok_or_else(|| {
+            io::Error::other("original historical route required before post-A setup")
+        })?;
+        if runtime.phase.load(Ordering::Acquire) != PREPARED
+            || runtime.post_a.is_some()
+            || runtime.post_a_worker.is_some()
+            || runtime
+                .post_a_submitter
+                .get_mut()
+                .map_err(|_| io::Error::other("original post-A submission slot poisoned"))?
+                .is_some()
+        {
+            return Err(io::Error::other("original post-A setup already consumed"));
+        }
+        let plan = self.service.with_learning_profile(
+            &self.config,
+            &self.registration,
+            &self.owner_pidfd,
+            &runtime.deployment.initial,
+            |initial, proof| {
+                runtime.metadata.require_metadata_unchanged()?;
+                let expected = HistoricalTaskReadProfileV1::require_original_context(
+                    &runtime.profile,
+                    &self.registration.registered_identity.identity()?,
+                    &proof,
+                    &runtime.deployment.initial,
+                )?;
+                if expected != initial {
+                    return Err(io::Error::other(
+                        "original post-A initial recipient changed",
+                    ));
+                }
+                RootHistoricalLearningTrustV1::revalidate(
+                    &runtime.learning_trust,
+                    &self.service,
+                    &initial,
+                )?;
+                let plan = post_a::PostALearningRuntime::retain_original_plan(
+                    path,
+                    &initial,
+                    &runtime.deployment.target,
+                    self.config.peer_uid,
+                    self.config.peer_gid,
+                )?;
+                runtime.metadata.require_metadata_unchanged()?;
+                RootHistoricalLearningTrustV1::revalidate(
+                    &runtime.learning_trust,
+                    &self.service,
+                    &initial,
+                )?;
+                Ok(plan)
+            },
+        )?;
+        let (submitter, worker) =
+            post_a_worker::prepare(learning_handoff, model_handoff, root_pidfd)?;
+        runtime.post_a = Some(plan);
+        runtime.post_a_worker = Some(worker);
+        *runtime
+            .post_a_submitter
+            .get_mut()
+            .map_err(|_| io::Error::other("original post-A submission slot poisoned"))? =
+            Some(submitter);
+        Ok(())
+    }
+
     pub fn enable_original_historical_task_read_from_deployment(
         &mut self,
         path: &Path,
