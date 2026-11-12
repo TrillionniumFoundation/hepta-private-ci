@@ -1,0 +1,1284 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+   Compiling hyper v1.12.0
+warning: hiding a lifetime that's elided elsewhere is confusing
+   --> third_party/i18n-config-0.4.8/src/lib.rs:144:9
+    |
+144 |         &self,
+    |         ^^^^^ the lifetime is elided here
+145 |     ) -> Result<Option<(&'_ Crate, &'_ I18nConfig)>, I18nConfigError> {
+    |                          ^^ ^^^^^   ^^ the same lifetime is elided here
+    |                          |  |
+    |                          |  the same lifetime is hidden here
+    |                          the same lifetime is elided here
+    |
+    = help: the same lifetime is referred to in inconsistent ways, making the signature confusing
+    = note: `#[warn(mismatched_lifetime_syntaxes)]` on by default
+help: use `'_` for type paths
+    |
+145 |     ) -> Result<Option<(&'_ Crate<'_>, &'_ I18nConfig)>, I18nConfigError> {
+    |                                  ++++
+
+warning: hiding a lifetime that's elided elsewhere is confusing
+   --> third_party/i18n-config-0.4.8/src/lib.rs:155:26
+    |
+155 |     pub fn active_config(&self) -> Result<Option<(&'_ Crate, &'_ I18nConfig)>, I18nConfigError> {
+    |                          ^^^^^                     ^^ ^^^^^   ^^ the same lifetime is elided here
+    |                          |                         |  |
+    |                          |                         |  the same lifetime is hidden here
+    |                          |                         the same lifetime is elided here
+    |                          the lifetime is elided here
+    |
+    = help: the same lifetime is referred to in inconsistent ways, making the signature confusing
+help: use `'_` for type paths
+    |
+155 |     pub fn active_config(&self) -> Result<Option<(&'_ Crate<'_>, &'_ I18nConfig)>, I18nConfigError> {
+    |                                                            ++++
+
+warning: `i18n-config` (lib) generated 2 warnings (run `cargo fix --lib -p i18n-config` to apply 2 suggestions)
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:204:55
+    |
+204 |     use time::format_description::BorrowedFormatItem::Literal;
+    |                                                       ^^^^^^^
+    |
+    = note: `#[warn(deprecated)]` on by default
+
+warning: use of deprecated tuple variant `time::format_description::Component::Year`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:208:52
+    |
+208 |     const YEAR: BorrowedFormatItem<'_> = Component(Year({
+    |                                                    ^^^^
+
+warning: use of deprecated struct `time::format_description::modifier::Year`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:209:35
+    |
+209 |         let mut value = modifier::Year::default();
+    |                                   ^^^^
+
+warning: use of deprecated unit variant `time::format_description::modifier::YearRepr::Full`: used only in the deprecated `Year` component
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:211:42
+    |
+211 |         value.repr = modifier::YearRepr::Full;
+    |                                          ^^^^
+
+warning: use of deprecated tuple variant `time::format_description::Component::Month`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:217:53
+    |
+217 |     const MONTH: BorrowedFormatItem<'_> = Component(Month({
+    |                                                     ^^^^^
+
+warning: use of deprecated struct `time::format_description::modifier::Month`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:218:35
+    |
+218 |         let mut value = modifier::Month::default();
+    |                                   ^^^^^
+
+warning: use of deprecated unit variant `time::format_description::modifier::MonthRepr::Numerical`: used only in the deprecated `Month` component
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:220:43
+    |
+220 |         value.repr = modifier::MonthRepr::Numerical;
+    |                                           ^^^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::Component::Hour`: use `Hour12` or `Hour24` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:231:52
+    |
+231 |     const HOUR: BorrowedFormatItem<'_> = Component(Hour({
+    |                                                    ^^^^
+
+warning: use of deprecated struct `time::format_description::modifier::Hour`: use `Hour12` or `Hour24` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:232:35
+    |
+232 |         let mut value = modifier::Hour::default();
+    |                                   ^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:272:13
+    |
+272 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:274:13
+    |
+274 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:276:23
+    |
+276 |             Optional(&Literal(b" ")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:277:23
+    |
+277 |             Optional(&Literal(b"T")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:279:13
+    |
+279 |             Literal(b":"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:281:23
+    |
+281 |             Optional(&Literal(b":")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:283:23
+    |
+283 |             Optional(&Literal(b".")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:286:23
+    |
+286 |             Optional(&Literal(b":")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:294:13
+    |
+294 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:296:13
+    |
+296 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:298:13
+    |
+298 |             Literal(b" "),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:300:13
+    |
+300 |             Literal(b":"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:302:23
+    |
+302 |             Optional(&Literal(b":")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:304:23
+    |
+304 |             Optional(&Literal(b".")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:306:23
+    |
+306 |             Optional(&Literal(b"Z")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:313:13
+    |
+313 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:315:13
+    |
+315 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:317:13
+    |
+317 |             Literal(b"T"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:319:13
+    |
+319 |             Literal(b":"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:321:23
+    |
+321 |             Optional(&Literal(b":")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:323:23
+    |
+323 |             Optional(&Literal(b".")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:325:23
+    |
+325 |             Optional(&Literal(b"Z")),
+    |                       ^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Year::padding`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:210:9
+    |
+210 |         value.padding = modifier::Padding::Zero;
+    |         ^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Year::repr`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:211:9
+    |
+211 |         value.repr = modifier::YearRepr::Full;
+    |         ^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Year::iso_week_based`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:212:9
+    |
+212 |         value.iso_week_based = false;
+    |         ^^^^^^^^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Year::sign_is_mandatory`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:213:9
+    |
+213 |         value.sign_is_mandatory = false;
+    |         ^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Month::padding`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:219:9
+    |
+219 |         value.padding = modifier::Padding::Zero;
+    |         ^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Month::repr`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:220:9
+    |
+220 |         value.repr = modifier::MonthRepr::Numerical;
+    |         ^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Month::case_sensitive`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:221:9
+    |
+221 |         value.case_sensitive = true;
+    |         ^^^^^^^^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Hour::padding`: use `Hour12` or `Hour24` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:233:9
+    |
+233 |         value.padding = modifier::Padding::Zero;
+    |         ^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Hour::is_12_hour_clock`: use `Hour12` or `Hour24` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:234:9
+    |
+234 |         value.is_12_hour_clock = false;
+    |         ^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `sqlx-sqlite` (lib) generated 40 warnings
+warning: `sqlx-sqlite` (lib) generated 40 warnings (40 duplicates)
+   Compiling codex-hepta-learning-ledger v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/hepta-learning-ledger)
+   Compiling predicates-core v1.0.10
+   Compiling num_cpus v1.17.0
+   Compiling dtor-proc-macro v0.0.6
+   Compiling yansi v1.0.1
+   Compiling termtree v0.5.1
+   Compiling difflib v0.4.0
+   Compiling assert_cmd v2.2.2
+   Compiling deadpool-runtime v0.1.4
+   Compiling diff v0.1.13
+   Compiling pretty_assertions v1.4.1
+   Compiling deadpool v0.12.3
+   Compiling hyper-util v0.1.21
+   Compiling predicates v3.1.4
+   Compiling predicates-tree v1.0.13
+   Compiling codex-hepta-intelligence-eval v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/hepta-intelligence-eval)
+   Compiling codex-hepta-prompt-optimizer v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/hepta-prompt-optimizer)
+   Compiling hyper-rustls v0.27.10
+   Compiling hyper-tls v0.6.0
+   Compiling hyper-timeout v0.5.2
+   Compiling aws-smithy-http-client v1.5.1
+   Compiling reqwest v0.12.28
+   Compiling tonic v0.14.6
+   Compiling axum v0.8.9
+   Compiling codex-http-client v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/http-client)
+   Compiling codex-protocol v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/protocol)
+   Compiling codex-websocket-client v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/websocket-client)
+   Compiling tonic-prost v0.14.6
+   Compiling codex-client v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/codex-client)
+   Compiling opentelemetry-proto v0.31.0
+   Compiling opentelemetry-http v0.31.0
+   Compiling aws-smithy-runtime v1.16.1
+   Compiling opentelemetry-otlp v0.31.1
+   Compiling codex-workload-identity v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/workload-identity)
+   Compiling oauth2 v5.0.0
+   Compiling aws-runtime v1.10.0
+   Compiling reqwest v0.13.5
+   Compiling rmcp v3.9.0
+   Compiling aws-sdk-sts v1.119.0
+   Compiling aws-sdk-sso v1.114.0
+   Compiling aws-sdk-signin v1.27.0
+   Compiling aws-sdk-ssooidc v1.116.0
+   Compiling aws-config v1.12.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/third_party/aws-config-1.12.0)
+   Compiling sentry v0.46.2
+   Compiling dtor v0.1.1
+   Compiling assert-json-diff v2.0.2
+   Compiling wait-timeout v0.2.1
+   Compiling ctor-proc-macro v0.0.7
+   Compiling ctor v0.6.3
+   Compiling wiremock v0.6.5
+   Compiling codex-file-system v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/file-system)
+   Compiling codex-git-utils v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/git-utils)
+   Compiling codex-api v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/codex-api)
+   Compiling codex-shell-command v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/shell-command)
+   Compiling codex-exec-server-protocol v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/exec-server-protocol)
+   Compiling codex-otel v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/otel)
+   Compiling codex-model-provider-info v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/model-provider-info)
+   Compiling codex-secrets v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/secrets)
+   Compiling codex-history v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/history)
+   Compiling codex-agent-identity v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/agent-identity)
+   Compiling codex-utils-output-truncation v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/utils/output-truncation)
+   Compiling codex-state v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/state)
+   Compiling codex-response-debug-context v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/response-debug-context)
+   Compiling codex-aws-auth v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/aws-auth)
+   Compiling codex-features v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/features)
+   Compiling codex-windows-sandbox v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/windows-sandbox-rs)
+   Compiling codex-sandboxing v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/sandboxing)
+   Compiling codex-config v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/config)
+   Compiling codex-code-mode-protocol v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/code-mode-protocol)
+   Compiling codex-context-fragments v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/context-fragments)
+   Compiling codex-skills v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/skills)
+   Compiling codex-rollout v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/rollout)
+   Compiling codex-code-mode v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/code-mode)
+   Compiling codex-shell-escalation v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/shell-escalation)
+   Compiling codex-agent-graph-store v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/agent-graph-store)
+   Compiling codex-rollout-trace v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/rollout-trace)
+   Compiling codex-app-server-protocol v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/app-server-protocol)
+   Compiling codex-exec-server v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/exec-server)
+   Compiling codex-login v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/login)
+   Compiling codex-models-manager v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/models-manager)
+   Compiling codex-feedback v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/feedback)
+   Compiling codex-model-provider v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/model-provider)
+   Compiling codex-utils-plugins v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/utils/plugins)
+   Compiling codex-plugin v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/plugin)
+   Compiling codex-connectors v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/connectors)
+   Compiling codex-exec-server-test-support v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/exec-server/tests/support)
+   Compiling codex-rmcp-client v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/rmcp-client)
+warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+ --> rmcp-client/src/elicitation_client_service.rs:4:18
+  |
+4 | use rmcp::model::ClientInfo;
+  |                  ^^^^^^^^^^
+  |
+  = note: `#[warn(deprecated)]` on by default
+
+warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+  --> rmcp-client/src/elicitation_client_service.rs:55:22
+   |
+55 |         client_info: ClientInfo,
+   |                      ^^^^^^^^^^
+
+warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+   --> rmcp-client/src/elicitation_client_service.rs:191:27
+    |
+191 |     fn get_info(&self) -> ClientInfo {
+    |                           ^^^^^^^^^^
+
+warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+ --> rmcp-client/src/logging_client_handler.rs:6:18
+  |
+6 | use rmcp::model::ClientInfo;
+  |                  ^^^^^^^^^^
+
+warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+  --> rmcp-client/src/logging_client_handler.rs:27:18
+   |
+27 |     client_info: ClientInfo,
+   |                  ^^^^^^^^^^
+
+warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+  --> rmcp-client/src/logging_client_handler.rs:32:36
+   |
+32 |     pub(crate) fn new(client_info: ClientInfo, send_elicitation: SendElicitation) -> Self {
+   |                                    ^^^^^^^^^^
+
+warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+  --> rmcp-client/src/logging_client_handler.rs:94:27
+   |
+94 |     fn get_info(&self) -> ClientInfo {
+   |                           ^^^^^^^^^^
+
+   Compiling codex-tools v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/tools)
+   Compiling codex-hooks v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/hooks)
+   Compiling codex-mcp v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/codex-mcp)
+   Compiling codex-apply-patch v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/apply-patch)
+warning: `codex-rmcp-client` (lib) generated 7 warnings
+   Compiling codex-prompts v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/prompts)
+   Compiling codex-memories-read v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/memories/read)
+   Compiling codex-utils-audio v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/utils/audio)
+   Compiling codex-hepta-operations v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/hepta-operations)
+   Compiling codex-analytics v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/analytics)
+   Compiling codex-thread-store v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/thread-store)
+   Compiling codex-extension-api v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/ext/extension-api)
+   Compiling codex-core-plugins v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/core-plugins)
+   Compiling codex-skills-extension v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/ext/skills)
+   Compiling codex-backend-client v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/backend-client)
+   Compiling codex-hepta-memory v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/hepta-memory)
+   Compiling codex-linux-sandbox v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/linux-sandbox)
+   Compiling codex-core v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/core)
+   Compiling codex-arg0 v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/arg0)
+   Compiling codex-home v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/codex-home)
+   Compiling codex-hepta-authbus v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/hepta-authbus)
+   Compiling codex-connectors-extension v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/ext/connectors)
+   Compiling codex-hepta-evidence v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/hepta-evidence)
+   Compiling codex-utils-cli v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/utils/cli)
+   Compiling codex-git-attribution v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/ext/git-attribution)
+   Compiling codex-hepta-prompt-extension v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/ext/hepta-prompt)
+   Compiling codex-hepta-governance v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/ext/hepta-governance)
+   Compiling codex-hepta-automation v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/hepta-automation)
+   Compiling codex-hepta-intelligence v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/hepta-intelligence)
+   Compiling codex-hepta-memory-extension v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/ext/hepta-memory)
+   Compiling codex-hepta-cognitive-store v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/hepta-cognitive-store)
+   Compiling codex-hepta-agent-protocol v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/hepta-agent-protocol)
+   Compiling codex-hepta-bellman-operator v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/hepta-bellman-operator)
+   Compiling codex-hepta-learning-artifacts v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/hepta-learning-artifacts)
+   Compiling codex-hepta-supervisor v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/hepta-supervisor)
+   Compiling codex-hepta-neuron v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/hepta-neuron)
+warning: variable does not need to be mutable
+   --> hepta-neuron/src/cell_generation_observation_tests.rs:310:9
+    |
+310 |     let mut reopened = fixture.open_with(configuration, /*max_records*/ 128);
+    |         ----^^^^^^^^
+    |         |
+    |         help: remove this `mut`
+    |
+    = note: `#[warn(unused_mut)]` (part of `#[warn(unused)]`) on by default
+
+warning: `codex-hepta-neuron` (lib test) generated 1 warning (run `cargo fix --lib -p codex-hepta-neuron --tests` to apply 1 suggestion)
+   Compiling codex-memories-write v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/memories/write)
+   Compiling codex-history-notes-extension v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/ext/history-notes)
+   Compiling codex-guardian-v2 v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/ext/guardian-v2)
+   Compiling codex-queue-extension v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/ext/queue)
+   Compiling codex-external-agent-migration v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/external-agent-migration)
+   Compiling codex-mcp-extension v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/ext/mcp)
+   Compiling codex-memories-extension v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/ext/memories)
+   Compiling codex-web-search-extension v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/ext/web-search)
+   Compiling codex-agent-extension v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/ext/agent)
+   Compiling codex-chatgpt v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/chatgpt)
+   Compiling codex-goal-extension v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/ext/goal)
+   Compiling codex-cloud-config v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/cloud-config)
+   Compiling codex-app-server-transport v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/app-server-transport)
+   Compiling codex-image-generation-extension v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/ext/image-generation)
+   Compiling core_test_support v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/core/tests/common)
+   Compiling codex-app-server v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/app-server)
+   Compiling app_test_support v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/app-server/tests/common)
+   Compiling codex-app-server-client v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/app-server-client)
+   Compiling codex-hepta-codex-adapter v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/hepta-codex-adapter)
+   Compiling codex-hepta-agentd v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/hepta-agentd)
+warning: unused import: `codex_hepta_learning_ledger::SignedLearningEvidenceV1`
+ --> hepta-agentd/src/neuron_cell_evaluation_model_material_member.rs:4:5
+  |
+4 | use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused import: `neuron_cell_evaluation_qualification_owner::OriginalCellEvaluationModelInputV1`
+    --> hepta-agentd/src/lib.rs:1479:16
+     |
+1479 | pub(crate) use neuron_cell_evaluation_qualification_owner::OriginalCellEvaluationModelInputV1;
+     |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: variable does not need to be mutable
+  --> hepta-agentd/src/cell_q24_model_current_owner.rs:11:9
+   |
+11 |         mut witness: W,
+   |         ----^^^^^^^
+   |         |
+   |         help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` (part of `#[warn(unused)]`) on by default
+
+warning: variable does not need to be mutable
+  --> hepta-agentd/src/cell_q24_model_current_owner.rs:47:9
+   |
+47 |         mut witness: W,
+   |         ----^^^^^^^
+   |         |
+   |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> hepta-agentd/src/cell_q24_model_proposal.rs:122:9
+    |
+122 |         mut witness: W,
+    |         ----^^^^^^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> hepta-agentd/src/cell_q24_model_proposal.rs:160:9
+    |
+160 |         mut witness: W,
+    |         ----^^^^^^^
+    |         |
+    |         help: remove this `mut`
+
+warning: associated function `bind_original_stage_channel` is never used
+   --> hepta-agentd/src/circuit_candidate_learning_read_capability.rs:244:19
+    |
+241 | impl OriginalCircuitCandidateLearningReadClientV1 {
+    | ------------------------------------------------- associated function in this implementation
+...
+244 |     pub(crate) fn bind_original_stage_channel(
+    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: method `read_original_model` is never used
+  --> hepta-agentd/src/cell_q24_candidate_stage_model.rs:82:25
+   |
+64 | impl OriginalCellQ24CandidateStageOwnersV1 {
+   | ------------------------------------------ method in this implementation
+...
+82 |     pub(crate) async fn read_original_model(
+   |                         ^^^^^^^^^^^^^^^^^^^
+
+warning: variant `Unavailable` is never constructed
+  --> hepta-agentd/src/artifact_original_head_wire.rs:26:5
+   |
+22 | pub(super) enum Status {
+   |                 ------ variant in this enum
+...
+26 |     Unavailable = 4,
+   |     ^^^^^^^^^^^
+   |
+   = note: `Status` has derived impls for the traits `Debug` and `Clone`, but these are intentionally ignored during dead code analysis
+
+warning: field `estimand` is never read
+  --> hepta-agentd/src/neuron_cell_evaluation_model_material_member.rs:24:9
+   |
+20 | pub(super) struct Checked {
+   |                   ------- field in this struct
+...
+24 |     pub estimand: Digest32,
+   |         ^^^^^^^^
+
+warning: method `context` is never used
+  --> hepta-agentd/src/neuron_cell_evaluation_model_material_wire.rs:53:19
+   |
+30 | impl Request {
+   | ------------ method in this implementation
+...
+53 |     pub(super) fn context(&self) -> Result<Digest32, Error> {
+   |                   ^^^^^^^
+
+   Compiling codex-hepta-infer-worker-host v0.0.0 (/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1/codex-rs/hepta-infer-worker-host)
+warning: `codex-hepta-agentd` (lib) generated 11 warnings (run `cargo fix --lib -p codex-hepta-agentd` to apply 6 suggestions)
+error[E0433]: cannot find module or crate `rustix` in this scope
+  --> hepta-agentd/src/neuron_cell_evaluation_model_material_connection_support_tests.rs:25:22
+   |
+25 |                 uid: rustix::process::geteuid().as_raw(),
+   |                      ^^^^^^ use of unresolved module or unlinked crate `rustix`
+   |
+   = help: if you wanted to use a crate named `rustix`, use `cargo add rustix` to add it to your `Cargo.toml`
+
+error[E0433]: cannot find module or crate `rustix` in this scope
+  --> hepta-agentd/src/neuron_cell_evaluation_model_material_connection_support_tests.rs:33:9
+   |
+33 |         rustix::process::pidfd_open(
+   |         ^^^^^^ use of unresolved module or unlinked crate `rustix`
+   |
+   = help: if you wanted to use a crate named `rustix`, use `cargo add rustix` to add it to your `Cargo.toml`
+
+error[E0433]: cannot find module or crate `rustix` in this scope
+  --> hepta-agentd/src/neuron_cell_evaluation_model_material_connection_support_tests.rs:34:13
+   |
+34 |             rustix::process::getpid(),
+   |             ^^^^^^ use of unresolved module or unlinked crate `rustix`
+   |
+   = help: if you wanted to use a crate named `rustix`, use `cargo add rustix` to add it to your `Cargo.toml`
+
+error[E0433]: cannot find module or crate `rustix` in this scope
+  --> hepta-agentd/src/neuron_cell_evaluation_model_material_connection_support_tests.rs:35:13
+   |
+35 |             rustix::process::PidfdFlags::empty(),
+   |             ^^^^^^ use of unresolved module or unlinked crate `rustix`
+   |
+   = help: if you wanted to use a crate named `rustix`, use `cargo add rustix` to add it to your `Cargo.toml`
+
+error[E0659]: `assert_ne` is ambiguous
+   --> hepta-agentd/src/cell_q24_training_source_operation_tests.rs:41:5
+    |
+ 41 |     assert_ne!(candidate.bundle(), &fixture.config.dataset.request.selected_bundle);
+    |     ^^^^^^^^^ ambiguous name
+    |
+    = note: ambiguous because of a conflict between a name from a glob import and an outer scope during import or macro resolution
+note: `assert_ne` could refer to the macro imported here
+   --> hepta-agentd/src/cell_q24_training_source_operation_tests.rs:11:5
+    |
+ 11 | use super::*;
+    |     ^^^^^^^^
+    = help: consider adding an explicit import of `assert_ne` to disambiguate
+    = help: or use `self::assert_ne` to refer to this macro unambiguously
+note: `assert_ne` could also refer to the macro defined here
+   --> /home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13
+    |
+162 |     pub use super::v1::*;
+    |             ^^^^^^^^^
+
+error[E0659]: `assert_eq` is ambiguous
+   --> hepta-agentd/src/cell_q24_training_source_operation_tests.rs:42:5
+    |
+ 42 |     assert_eq!(candidate.receipt(), &completed.receipt);
+    |     ^^^^^^^^^ ambiguous name
+    |
+    = note: ambiguous because of a conflict between a name from a glob import and an outer scope during import or macro resolution
+note: `assert_eq` could refer to the macro imported here
+   --> hepta-agentd/src/cell_q24_training_source_operation_tests.rs:11:5
+    |
+ 11 | use super::*;
+    |     ^^^^^^^^
+    = help: consider adding an explicit import of `assert_eq` to disambiguate
+    = help: or use `self::assert_eq` to refer to this macro unambiguously
+note: `assert_eq` could also refer to the macro defined here
+   --> /home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13
+    |
+162 |     pub use super::v1::*;
+    |             ^^^^^^^^^
+
+error[E0659]: `assert_eq` is ambiguous
+   --> hepta-agentd/src/cell_q24_training_source_operation_tests.rs:43:5
+    |
+ 43 |     assert_eq!(candidate.attestation(), &completed.attestation);
+    |     ^^^^^^^^^ ambiguous name
+    |
+    = note: ambiguous because of a conflict between a name from a glob import and an outer scope during import or macro resolution
+note: `assert_eq` could refer to the macro imported here
+   --> hepta-agentd/src/cell_q24_training_source_operation_tests.rs:11:5
+    |
+ 11 | use super::*;
+    |     ^^^^^^^^
+    = help: consider adding an explicit import of `assert_eq` to disambiguate
+    = help: or use `self::assert_eq` to refer to this macro unambiguously
+note: `assert_eq` could also refer to the macro defined here
+   --> /home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13
+    |
+162 |     pub use super::v1::*;
+    |             ^^^^^^^^^
+
+error[E0659]: `assert_eq` is ambiguous
+   --> hepta-agentd/src/cell_q24_training_source_operation_tests.rs:44:5
+    |
+ 44 |     assert_eq!(candidate.heads().len(), 12 + 64 * 64 * 8);
+    |     ^^^^^^^^^ ambiguous name
+    |
+    = note: ambiguous because of a conflict between a name from a glob import and an outer scope during import or macro resolution
+note: `assert_eq` could refer to the macro imported here
+   --> hepta-agentd/src/cell_q24_training_source_operation_tests.rs:11:5
+    |
+ 11 | use super::*;
+    |     ^^^^^^^^
+    = help: consider adding an explicit import of `assert_eq` to disambiguate
+    = help: or use `self::assert_eq` to refer to this macro unambiguously
+note: `assert_eq` could also refer to the macro defined here
+   --> /home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13
+    |
+162 |     pub use super::v1::*;
+    |             ^^^^^^^^^
+
+error[E0659]: `assert_eq` is ambiguous
+   --> hepta-agentd/src/cell_q24_training_source_operation_tests.rs:46:5
+    |
+ 46 |     assert_eq!(reread.receipt, completed.receipt);
+    |     ^^^^^^^^^ ambiguous name
+    |
+    = note: ambiguous because of a conflict between a name from a glob import and an outer scope during import or macro resolution
+note: `assert_eq` could refer to the macro imported here
+   --> hepta-agentd/src/cell_q24_training_source_operation_tests.rs:11:5
+    |
+ 11 | use super::*;
+    |     ^^^^^^^^
+    = help: consider adding an explicit import of `assert_eq` to disambiguate
+    = help: or use `self::assert_eq` to refer to this macro unambiguously
+note: `assert_eq` could also refer to the macro defined here
+   --> /home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13
+    |
+162 |     pub use super::v1::*;
+    |             ^^^^^^^^^
+
+error[E0659]: `assert_eq` is ambiguous
+   --> hepta-agentd/src/cell_q24_training_source_operation_tests.rs:47:5
+    |
+ 47 |     assert_eq!(reread.attestation, completed.attestation);
+    |     ^^^^^^^^^ ambiguous name
+    |
+    = note: ambiguous because of a conflict between a name from a glob import and an outer scope during import or macro resolution
+note: `assert_eq` could refer to the macro imported here
+   --> hepta-agentd/src/cell_q24_training_source_operation_tests.rs:11:5
+    |
+ 11 | use super::*;
+    |     ^^^^^^^^
+    = help: consider adding an explicit import of `assert_eq` to disambiguate
+    = help: or use `self::assert_eq` to refer to this macro unambiguously
+note: `assert_eq` could also refer to the macro defined here
+   --> /home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13
+    |
+162 |     pub use super::v1::*;
+    |             ^^^^^^^^^
+
+error[E0659]: `assert_eq` is ambiguous
+   --> hepta-agentd/src/cell_q24_training_source_operation_tests.rs:48:5
+    |
+ 48 |     assert_eq!(fixture.bytes()?, retained);
+    |     ^^^^^^^^^ ambiguous name
+    |
+    = note: ambiguous because of a conflict between a name from a glob import and an outer scope during import or macro resolution
+note: `assert_eq` could refer to the macro imported here
+   --> hepta-agentd/src/cell_q24_training_source_operation_tests.rs:11:5
+    |
+ 11 | use super::*;
+    |     ^^^^^^^^
+    = help: consider adding an explicit import of `assert_eq` to disambiguate
+    = help: or use `self::assert_eq` to refer to this macro unambiguously
+note: `assert_eq` could also refer to the macro defined here
+   --> /home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13
+    |
+162 |     pub use super::v1::*;
+    |             ^^^^^^^^^
+
+error[E0659]: `assert_eq` is ambiguous
+   --> hepta-agentd/src/cell_q24_training_source_operation_tests.rs:53:5
+    |
+ 53 |     assert_eq!(finish(peers)?, [20, 20]);
+    |     ^^^^^^^^^ ambiguous name
+    |
+    = note: ambiguous because of a conflict between a name from a glob import and an outer scope during import or macro resolution
+note: `assert_eq` could refer to the macro imported here
+   --> hepta-agentd/src/cell_q24_training_source_operation_tests.rs:11:5
+    |
+ 11 | use super::*;
+    |     ^^^^^^^^
+    = help: consider adding an explicit import of `assert_eq` to disambiguate
+    = help: or use `self::assert_eq` to refer to this macro unambiguously
+note: `assert_eq` could also refer to the macro defined here
+   --> /home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13
+    |
+162 |     pub use super::v1::*;
+    |             ^^^^^^^^^
+
+error[E0659]: `assert_eq` is ambiguous
+   --> hepta-agentd/src/cell_q24_training_source_operation_tests.rs:146:5
+    |
+146 |     assert_eq!(fixture.bytes()?, retained);
+    |     ^^^^^^^^^ ambiguous name
+    |
+    = note: ambiguous because of a conflict between a name from a glob import and an outer scope during import or macro resolution
+note: `assert_eq` could refer to the macro imported here
+   --> hepta-agentd/src/cell_q24_training_source_operation_tests.rs:11:5
+    |
+ 11 | use super::*;
+    |     ^^^^^^^^
+    = help: consider adding an explicit import of `assert_eq` to disambiguate
+    = help: or use `self::assert_eq` to refer to this macro unambiguously
+note: `assert_eq` could also refer to the macro defined here
+   --> /home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13
+    |
+162 |     pub use super::v1::*;
+    |             ^^^^^^^^^
+
+error[E0659]: `assert_eq` is ambiguous
+   --> hepta-agentd/src/cell_q24_training_source_operation_tests.rs:148:5
+    |
+148 |     assert_eq!(finish(peers)?, [16, 16]);
+    |     ^^^^^^^^^ ambiguous name
+    |
+    = note: ambiguous because of a conflict between a name from a glob import and an outer scope during import or macro resolution
+note: `assert_eq` could refer to the macro imported here
+   --> hepta-agentd/src/cell_q24_training_source_operation_tests.rs:11:5
+    |
+ 11 | use super::*;
+    |     ^^^^^^^^
+    = help: consider adding an explicit import of `assert_eq` to disambiguate
+    = help: or use `self::assert_eq` to refer to this macro unambiguously
+note: `assert_eq` could also refer to the macro defined here
+   --> /home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13
+    |
+162 |     pub use super::v1::*;
+    |             ^^^^^^^^^
+
+error[E0659]: `assert_eq` is ambiguous
+   --> hepta-agentd/src/cell_q24_training_source_operation_tests.rs:165:5
+    |
+165 |     assert_eq!(fixture.bytes()?, retained);
+    |     ^^^^^^^^^ ambiguous name
+    |
+    = note: ambiguous because of a conflict between a name from a glob import and an outer scope during import or macro resolution
+note: `assert_eq` could refer to the macro imported here
+   --> hepta-agentd/src/cell_q24_training_source_operation_tests.rs:11:5
+    |
+ 11 | use super::*;
+    |     ^^^^^^^^
+    = help: consider adding an explicit import of `assert_eq` to disambiguate
+    = help: or use `self::assert_eq` to refer to this macro unambiguously
+note: `assert_eq` could also refer to the macro defined here
+   --> /home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13
+    |
+162 |     pub use super::v1::*;
+    |             ^^^^^^^^^
+
+error[E0659]: `assert_eq` is ambiguous
+   --> hepta-agentd/src/cell_q24_training_source_operation_tests.rs:177:5
+    |
+177 |     assert_eq!(fixture.bytes()?, retained);
+    |     ^^^^^^^^^ ambiguous name
+    |
+    = note: ambiguous because of a conflict between a name from a glob import and an outer scope during import or macro resolution
+note: `assert_eq` could refer to the macro imported here
+   --> hepta-agentd/src/cell_q24_training_source_operation_tests.rs:11:5
+    |
+ 11 | use super::*;
+    |     ^^^^^^^^
+    = help: consider adding an explicit import of `assert_eq` to disambiguate
+    = help: or use `self::assert_eq` to refer to this macro unambiguously
+note: `assert_eq` could also refer to the macro defined here
+   --> /home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13
+    |
+162 |     pub use super::v1::*;
+    |             ^^^^^^^^^
+
+error[E0659]: `assert_eq` is ambiguous
+   --> hepta-agentd/src/cell_q24_training_source_operation_tests.rs:179:5
+    |
+179 |     assert_eq!(finish(peers)?, [16, 16]);
+    |     ^^^^^^^^^ ambiguous name
+    |
+    = note: ambiguous because of a conflict between a name from a glob import and an outer scope during import or macro resolution
+note: `assert_eq` could refer to the macro imported here
+   --> hepta-agentd/src/cell_q24_training_source_operation_tests.rs:11:5
+    |
+ 11 | use super::*;
+    |     ^^^^^^^^
+    = help: consider adding an explicit import of `assert_eq` to disambiguate
+    = help: or use `self::assert_eq` to refer to this macro unambiguously
+note: `assert_eq` could also refer to the macro defined here
+   --> /home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13
+    |
+162 |     pub use super::v1::*;
+    |             ^^^^^^^^^
+
+error[E0659]: `assert_eq` is ambiguous
+   --> hepta-agentd/src/cell_q24_training_source_operation_tests.rs:188:5
+    |
+188 |     assert_eq!(first.source_capture_binding(), second.source_capture_binding());
+    |     ^^^^^^^^^ ambiguous name
+    |
+    = note: ambiguous because of a conflict between a name from a glob import and an outer scope during import or macro resolution
+note: `assert_eq` could refer to the macro imported here
+   --> hepta-agentd/src/cell_q24_training_source_operation_tests.rs:11:5
+    |
+ 11 | use super::*;
+    |     ^^^^^^^^
+    = help: consider adding an explicit import of `assert_eq` to disambiguate
+    = help: or use `self::assert_eq` to refer to this macro unambiguously
+note: `assert_eq` could also refer to the macro defined here
+   --> /home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13
+    |
+162 |     pub use super::v1::*;
+    |             ^^^^^^^^^
+
+error[E0659]: `assert_eq` is ambiguous
+   --> hepta-agentd/src/cell_q24_training_source_operation_tests.rs:205:5
+    |
+205 |     assert_eq!(finish(first_peers)?, [3, 3]);
+    |     ^^^^^^^^^ ambiguous name
+    |
+    = note: ambiguous because of a conflict between a name from a glob import and an outer scope during import or macro resolution
+note: `assert_eq` could refer to the macro imported here
+   --> hepta-agentd/src/cell_q24_training_source_operation_tests.rs:11:5
+    |
+ 11 | use super::*;
+    |     ^^^^^^^^
+    = help: consider adding an explicit import of `assert_eq` to disambiguate
+    = help: or use `self::assert_eq` to refer to this macro unambiguously
+note: `assert_eq` could also refer to the macro defined here
+   --> /home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13
+    |
+162 |     pub use super::v1::*;
+    |             ^^^^^^^^^
+
+error[E0659]: `assert_eq` is ambiguous
+   --> hepta-agentd/src/cell_q24_training_source_operation_tests.rs:206:5
+    |
+206 |     assert_eq!(finish(second_peers)?, [4, 4]);
+    |     ^^^^^^^^^ ambiguous name
+    |
+    = note: ambiguous because of a conflict between a name from a glob import and an outer scope during import or macro resolution
+note: `assert_eq` could refer to the macro imported here
+   --> hepta-agentd/src/cell_q24_training_source_operation_tests.rs:11:5
+    |
+ 11 | use super::*;
+    |     ^^^^^^^^
+    = help: consider adding an explicit import of `assert_eq` to disambiguate
+    = help: or use `self::assert_eq` to refer to this macro unambiguously
+note: `assert_eq` could also refer to the macro defined here
+   --> /home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13
+    |
+162 |     pub use super::v1::*;
+    |             ^^^^^^^^^
+
+error[E0659]: `assert_eq` is ambiguous
+   --> hepta-agentd/src/cell_q24_training_source_operation_tests.rs:233:5
+    |
+233 |     assert_eq!(finish(peers)?, [7, 7]);
+    |     ^^^^^^^^^ ambiguous name
+    |
+    = note: ambiguous because of a conflict between a name from a glob import and an outer scope during import or macro resolution
+note: `assert_eq` could refer to the macro imported here
+   --> hepta-agentd/src/cell_q24_training_source_operation_tests.rs:11:5
+    |
+ 11 | use super::*;
+    |     ^^^^^^^^
+    = help: consider adding an explicit import of `assert_eq` to disambiguate
+    = help: or use `self::assert_eq` to refer to this macro unambiguously
+note: `assert_eq` could also refer to the macro defined here
+   --> /home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13
+    |
+162 |     pub use super::v1::*;
+    |             ^^^^^^^^^
+
+error[E0659]: `assert_ne` is ambiguous
+   --> hepta-agentd/src/cell_q24_training_source_operation_tests.rs:235:5
+    |
+235 |     assert_ne!(before[0], after[0]);
+    |     ^^^^^^^^^ ambiguous name
+    |
+    = note: ambiguous because of a conflict between a name from a glob import and an outer scope during import or macro resolution
+note: `assert_ne` could refer to the macro imported here
+   --> hepta-agentd/src/cell_q24_training_source_operation_tests.rs:11:5
+    |
+ 11 | use super::*;
+    |     ^^^^^^^^
+    = help: consider adding an explicit import of `assert_ne` to disambiguate
+    = help: or use `self::assert_ne` to refer to this macro unambiguously
+note: `assert_ne` could also refer to the macro defined here
+   --> /home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13
+    |
+162 |     pub use super::v1::*;
+    |             ^^^^^^^^^
+
+error[E0659]: `assert_ne` is ambiguous
+   --> hepta-agentd/src/cell_q24_training_source_operation_tests.rs:236:5
+    |
+236 |     assert_ne!(before[1], after[1]);
+    |     ^^^^^^^^^ ambiguous name
+    |
+    = note: ambiguous because of a conflict between a name from a glob import and an outer scope during import or macro resolution
+note: `assert_ne` could refer to the macro imported here
+   --> hepta-agentd/src/cell_q24_training_source_operation_tests.rs:11:5
+    |
+ 11 | use super::*;
+    |     ^^^^^^^^
+    = help: consider adding an explicit import of `assert_ne` to disambiguate
+    = help: or use `self::assert_ne` to refer to this macro unambiguously
+note: `assert_ne` could also refer to the macro defined here
+   --> /home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13
+    |
+162 |     pub use super::v1::*;
+    |             ^^^^^^^^^
+
+error[E0659]: `assert_eq` is ambiguous
+   --> hepta-agentd/src/cell_q24_training_source_operation_tests.rs:237:5
+    |
+237 |     assert_eq!(before[2..], after[2..], "no Generator receipt was claimed");
+    |     ^^^^^^^^^ ambiguous name
+    |
+    = note: ambiguous because of a conflict between a name from a glob import and an outer scope during import or macro resolution
+note: `assert_eq` could refer to the macro imported here
+   --> hepta-agentd/src/cell_q24_training_source_operation_tests.rs:11:5
+    |
+ 11 | use super::*;
+    |     ^^^^^^^^
+    = help: consider adding an explicit import of `assert_eq` to disambiguate
+    = help: or use `self::assert_eq` to refer to this macro unambiguously
+note: `assert_eq` could also refer to the macro defined here
+   --> /home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13
+    |
+162 |     pub use super::v1::*;
+    |             ^^^^^^^^^
+
+error[E0659]: `assert_eq` is ambiguous
+   --> hepta-agentd/src/cell_q24_training_source_operation_tests.rs:247:5
+    |
+247 |     assert_eq!(finish(peers)?, [2, 2]);
+    |     ^^^^^^^^^ ambiguous name
+    |
+    = note: ambiguous because of a conflict between a name from a glob import and an outer scope during import or macro resolution
+note: `assert_eq` could refer to the macro imported here
+   --> hepta-agentd/src/cell_q24_training_source_operation_tests.rs:11:5
+    |
+ 11 | use super::*;
+    |     ^^^^^^^^
+    = help: consider adding an explicit import of `assert_eq` to disambiguate
+    = help: or use `self::assert_eq` to refer to this macro unambiguously
+note: `assert_eq` could also refer to the macro defined here
+   --> /home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13
+    |
+162 |     pub use super::v1::*;
+    |             ^^^^^^^^^
+
+error[E0659]: `assert_eq` is ambiguous
+   --> hepta-agentd/src/cell_q24_training_source_operation_tests.rs:248:5
+    |
+248 |     assert_eq!(fixture.bytes()?, after);
+    |     ^^^^^^^^^ ambiguous name
+    |
+    = note: ambiguous because of a conflict between a name from a glob import and an outer scope during import or macro resolution
+note: `assert_eq` could refer to the macro imported here
+   --> hepta-agentd/src/cell_q24_training_source_operation_tests.rs:11:5
+    |
+ 11 | use super::*;
+    |     ^^^^^^^^
+    = help: consider adding an explicit import of `assert_eq` to disambiguate
+    = help: or use `self::assert_eq` to refer to this macro unambiguously
+note: `assert_eq` could also refer to the macro defined here
+   --> /home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13
+    |
+162 |     pub use super::v1::*;
+    |             ^^^^^^^^^
+
+error[E0659]: `assert_ne` is ambiguous
+   --> hepta-agentd/src/circuit_deep_training_readback_support_tests.rs:308:9
+    |
+308 |         assert_ne!(source_a.scope.run_id, source_c.scope.run_id);
+    |         ^^^^^^^^^ ambiguous name
+    |
+    = note: ambiguous because of a conflict between a name from a glob import and an outer scope during import or macro resolution
+note: `assert_ne` could refer to the macro imported here
+   --> hepta-agentd/src/circuit_deep_training_readback_support_tests.rs:4:5
+    |
+  4 | use super::*;
+    |     ^^^^^^^^
+    = help: consider adding an explicit import of `assert_ne` to disambiguate
+    = help: or use `self::assert_ne` to refer to this macro unambiguously
+note: `assert_ne` could also refer to the macro defined here
+   --> /home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13
+    |
+162 |     pub use super::v1::*;
+    |             ^^^^^^^^^
+
+error[E0659]: `assert_ne` is ambiguous
+   --> hepta-agentd/src/circuit_deep_training_readback_support_tests.rs:309:9
+    |
+309 |         assert_ne!(source_a.observation, source_c.observation);
+    |         ^^^^^^^^^ ambiguous name
+    |
+    = note: ambiguous because of a conflict between a name from a glob import and an outer scope during import or macro resolution
+note: `assert_ne` could refer to the macro imported here
+   --> hepta-agentd/src/circuit_deep_training_readback_support_tests.rs:4:5
+    |
+  4 | use super::*;
+    |     ^^^^^^^^
+    = help: consider adding an explicit import of `assert_ne` to disambiguate
+    = help: or use `self::assert_ne` to refer to this macro unambiguously
+note: `assert_ne` could also refer to the macro defined here
+   --> /home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13
+    |
+162 |     pub use super::v1::*;
+    |             ^^^^^^^^^
+
+error[E0603]: module `material` is private
+   --> hepta-agentd/src/circuit_deep_training_readback_support_tests.rs:31:48
+    |
+ 31 | use crate::learning_iteration_evidence_client::material::bootstrap_ports as material_ports;
+    |                                                ^^^^^^^^  --------------- module `bootstrap_ports` is not publicly re-exported
+    |                                                |
+    |                                                private module
+    |
+note: the module `material` is defined here
+   --> hepta-agentd/src/learning_iteration_evidence_client.rs:101:1
+    |
+101 | mod material;
+    | ^^^^^^^^^^^^^
+
+warning: unused import: `codex_hepta_contracts::HostAuthorityPeerChannel`
+  --> hepta-agentd/src/cell_q24_training_readback_tests.rs:12:5
+   |
+12 | use codex_hepta_contracts::HostAuthorityPeerChannel;
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused import: `super::super::evidence_wire`
+  --> hepta-agentd/src/circuit_next_use_command_support_tests.rs:29:5
+   |
+29 | use super::super::evidence_wire;
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused import: `crate::LearningIterationEvidenceClientV1`
+  --> hepta-agentd/src/circuit_original_evaluation_panel_member_support_tests.rs:16:5
+   |
+16 | use crate::LearningIterationEvidenceClientV1;
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused import: `codex_hepta_learning_ledger::SignedLearningEvidenceV1`
+ --> hepta-agentd/src/neuron_cell_evaluation_model_material_member.rs:4:5
+  |
+4 | use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused import: `codex_hepta_learning_ledger::LearningEvidenceRoleV1`
+  --> hepta-agentd/src/circuit_model_selection_owner_support_tests.rs:15:5
+   |
+15 | use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused import: `codex_hepta_learning_ledger::TrustedLearningSignerV1`
+  --> hepta-agentd/src/circuit_model_selection_owner_support_tests.rs:19:5
+   |
+19 | use codex_hepta_learning_ledger::TrustedLearningSignerV1;
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused import: `crate::circuit_original_evaluation_provider::*`
+ --> hepta-agentd/src/circuit_original_evaluation_source_support_tests.rs:5:5
+  |
+5 | use crate::circuit_original_evaluation_provider::*;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused import: `codex_hepta_intelligence_eval::*`
+ --> hepta-agentd/src/circuit_original_evaluation_source_support_tests.rs:8:5
+  |
+8 | use codex_hepta_intelligence_eval::*;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error[E0624]: method `command_response` is private
+   --> hepta-agentd/src/circuit_retained_version_issuer_host_tests.rs:35:33
+    |
+ 35 |             let response = self.command_response(&serde_json::to_vec(&request)?, 1)?;
+    |                                 ^^^^^^^^^^^^^^^^ private method
+    |
+   ::: hepta-agentd/src/circuit_retained_version_service.rs:166:5
+    |
+166 |     fn command_response(&self, bytes: &[u8], request_id: u64) -> Result<Vec<u8>, Error> {
+    |     ----------------------------------------------------------------------------------- private method defined here
+
+error[E0616]: field `experience` of struct `model_selection_owner::original::material::Credentials` is private
+   --> hepta-agentd/src/circuit_original_evaluation_host_tests.rs:257:29
+    |
+257 |                 credentials.experience.clone(),
+    |                             ^^^^^^^^^^ private field
+
+error[E0616]: field `dataset` of struct `model_selection_owner::original::material::Credentials` is private
+   --> hepta-agentd/src/circuit_original_evaluation_host_tests.rs:258:29
+    |
+258 |                 credentials.dataset.clone(),
+    |                             ^^^^^^^ private field
+
+error[E0277]: can't compare `codex_hepta_learning_artifacts::CellCompatibilityBundleV1` with `Box<codex_hepta_learning_artifacts::CellCompatibilityBundleV1>`
+  --> hepta-agentd/src/cell_q24_training_candidate_tests.rs:65:5
+   |
+65 |     assert_eq!(material.bundle(), candidate);
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ no implementation for `codex_hepta_learning_artifacts::CellCompatibilityBundleV1 == Box<codex_hepta_learning_artifacts::CellCompatibilityBundleV1>`
+   |
+help: the trait `PartialEq<Box<codex_hepta_learning_artifacts::CellCompatibilityBundleV1>>` is not implemented for `codex_hepta_learning_artifacts::CellCompatibilityBundleV1`
+      but trait `PartialEq<codex_hepta_learning_artifacts::CellCompatibilityBundleV1>` is implemented for it
+  --> hepta-learning-artifacts/src/cell_bundle.rs:42:28
+   |
+42 | #[derive(Clone, Debug, Eq, PartialEq)]
+   |                            ^^^^^^^^^
+   = help: for that trait implementation, expected `codex_hepta_learning_artifacts::CellCompatibilityBundleV1`, found `Box<codex_hepta_learning_artifacts::CellCompatibilityBundleV1>`
+   = note: required for `&codex_hepta_learning_artifacts::CellCompatibilityBundleV1` to implement `PartialEq<&Box<codex_hepta_learning_artifacts::CellCompatibilityBundleV1>>`
+
+error[E0277]: the trait bound `codex_hepta_types::Digest32: serde::de::DeserializeOwned` is not satisfied
+    --> hepta-agentd/src/neuron_cell_evaluation_model_material_connection_support_tests.rs:245:13
+     |
+ 245 |             serde_json::from_value(record["candidate"]["journal_cut"].clone())?;
+     |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ the trait `for<'de> authority_host_wire::_::_serde::Deserialize<'de>` is not implemented for `codex_hepta_types::Digest32`
+     |
+     = help: the following other types implement trait `authority_host_wire::_::_serde::Deserialize<'de>`:
+               `&'a JsonRawValue` implements `authority_host_wire::_::_serde::Deserialize<'de>`
+               `&'a [u8]` implements `authority_host_wire::_::_serde::Deserialize<'de>`
+               `&'a std::path::Path` implements `authority_host_wire::_::_serde::Deserialize<'de>`
+               `&'a str` implements `authority_host_wire::_::_serde::Deserialize<'de>`
+               `()` implements `authority_host_wire::_::_serde::Deserialize<'de>`
+               `(T,)` implements `authority_host_wire::_::_serde::Deserialize<'de>`
+               `(T0, T1)` implements `authority_host_wire::_::_serde::Deserialize<'de>`
+               `(T0, T1, T2)` implements `authority_host_wire::_::_serde::Deserialize<'de>`
+             and 4034 others
+     = note: required for `codex_hepta_types::Digest32` to implement `DeserializeOwned`
+note: required by a bound in `from_value`
+    --> /home/qian-qi/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde_json-1.0.154/src/value/mod.rs:1039:8
+     |
+1037 | pub fn from_value<T>(value: Value) -> Result<T, Error>
+     |        ---------- required by a bound in this function
+1038 | where
+1039 |     T: DeserializeOwned,
+     |        ^^^^^^^^^^^^^^^^ required by this bound in `from_value`
+     = note: the full name for the type has been written to '/data/hepta-learn-ce434-runtime-20261112-v1/target/debug/deps/codex_hepta_agentd-0bb720b95785b5fd.long-type-11000633389383590274.txt'
+     = note: consider using `--verbose` to print the full type name to the console
+
+error[E0277]: the trait bound `codex_hepta_types::Digest32: serde::de::DeserializeOwned` is not satisfied
+    --> hepta-agentd/src/neuron_cell_evaluation_model_material_connection_support_tests.rs:247:13
+     |
+ 247 |             serde_json::from_value(record["fixed_expert"]["journal_cut"].clone())?;
+     |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ the trait `for<'de> authority_host_wire::_::_serde::Deserialize<'de>` is not implemented for `codex_hepta_types::Digest32`
+     |
+     = help: the following other types implement trait `authority_host_wire::_::_serde::Deserialize<'de>`:
+               `&'a JsonRawValue` implements `authority_host_wire::_::_serde::Deserialize<'de>`
+               `&'a [u8]` implements `authority_host_wire::_::_serde::Deserialize<'de>`
+               `&'a std::path::Path` implements `authority_host_wire::_::_serde::Deserialize<'de>`
+               `&'a str` implements `authority_host_wire::_::_serde::Deserialize<'de>`
+               `()` implements `authority_host_wire::_::_serde::Deserialize<'de>`
+               `(T,)` implements `authority_host_wire::_::_serde::Deserialize<'de>`
+               `(T0, T1)` implements `authority_host_wire::_::_serde::Deserialize<'de>`
+               `(T0, T1, T2)` implements `authority_host_wire::_::_serde::Deserialize<'de>`
+             and 4034 others
+     = note: required for `codex_hepta_types::Digest32` to implement `DeserializeOwned`
+note: required by a bound in `from_value`
+    --> /home/qian-qi/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde_json-1.0.154/src/value/mod.rs:1039:8
+     |
+1037 | pub fn from_value<T>(value: Value) -> Result<T, Error>
+     |        ---------- required by a bound in this function
+1038 | where
+1039 |     T: DeserializeOwned,
+     |        ^^^^^^^^^^^^^^^^ required by this bound in `from_value`
+     = note: the full name for the type has been written to '/data/hepta-learn-ce434-runtime-20261112-v1/target/debug/deps/codex_hepta_agentd-0bb720b95785b5fd.long-type-11000633389383590274.txt'
+     = note: consider using `--verbose` to print the full type name to the console
+
+error[E0433]: cannot find type `AuthorityPosture` in this scope
+  --> hepta-agentd/src/circuit_retained_version_issuer_tests.rs:41:41
+   |
+41 |     assert_eq!(publication.authority(), AuthorityPosture::DENY_ALL);
+   |                                         ^^^^^^^^^^^^^^^^ use of undeclared type `AuthorityPosture`
+
+warning: variable does not need to be mutable
+   --> hepta-agentd/src/circuit_next_use_command_owner_tests.rs:386:9
+    |
+386 |     let mut f = CompletionFixture::ready(None).await?;
+    |         ----^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> hepta-agentd/src/circuit_completion_readiness_owner_tests.rs:59:9
+   |
+59 |     let mut f = CompletionFixture::ready(None).await?;
+   |         ----^
+   |         |
+   |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> hepta-agentd/src/circuit_original_evaluation_host_tests.rs:168:9
+    |
+168 |     let mut fixture = HostFixture::new(/*pending_claim*/ false).await?;
+    |         ----^^^^^^^
+    |         |
+    |         help: remove this `mut`
+
+Some errors have detailed explanations: E0277, E0433, E0603, E0616, E0624, E0659.
+For more information about an error, try `rustc --explain E0277`.
+warning: `codex-hepta-agentd` (lib test) generated 16 warnings (5 duplicates)
+error: could not compile `codex-hepta-agentd` (lib test) due to 36 previous errors; 16 warnings emitted
+error: command `/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/cargo test --no-run --message-format json-render-diagnostics --package codex-hepta-agentd --package codex-hepta-intelligence-eval --package codex-hepta-learning-artifacts --package codex-hepta-neuron --lib --locked --offline` exited with code 101
+error: recipe `test` failed on line 89 with exit code 101
