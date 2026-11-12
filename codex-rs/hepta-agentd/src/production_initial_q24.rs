@@ -52,7 +52,7 @@ impl AgentdProductionLaunch {
         let connection: crate::RootGenerationPublicationConnectionV1 =
             self.take_generation_publication_connection()?;
         let original: crate::OriginalRootGenerationInitialV1 = handoff
-            .connect_until(
+            .connect_ready_until(
                 connection,
                 initial_remaining(self.session_end)?.min(Duration::from_millis(500)),
                 self.session_end,

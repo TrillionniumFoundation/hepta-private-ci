@@ -15,18 +15,27 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
     let mut options = std::collections::BTreeMap::new();
     let mut pidfd_stdin = false;
+    let mut initial_peer_ready = false;
     while let Some(option) = args.next() {
         if option == "--owner-pidfd-stdin" {
             if pidfd_stdin {
                 return Err("duplicate owner pidfd option".into());
             }
             pidfd_stdin = true;
+        } else if option == "--initial-peer-ready" {
+            if initial_peer_ready {
+                return Err("duplicate Initial peer readiness option".into());
+            }
+            initial_peer_ready = true;
         } else {
             let value = args.next().ok_or("missing option value")?;
             if options.insert(option, value).is_some() {
                 return Err("duplicate option".into());
             }
         }
+    }
+    if initial_peer_ready && command != "serve-session" && command != "serve-fresh-session" {
+        return Err("Initial peer readiness requires the original serving command".into());
     }
     let mut take = |key: &str| {
         options
@@ -214,6 +223,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
         if initial_deployment.is_some() != initial_handoff.is_some()
             || initial_deployment.is_some() && root_fd.is_none()
+            || initial_peer_ready && initial_deployment.is_none()
         {
             return Err("initial publication requires its explicit Root deployment, separate purpose handoff and original Root pidfd".into());
         }
@@ -419,10 +429,16 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     prepared.enable_generation_initial(files.deployment().clone())?;
                 let capability: codex_hepta_agentd::RootGenerationInitialEnrollmentCapabilityV1 =
                     capability;
-                (
-                    Some(capability.with_original_initial_deployment(files)?),
-                    Some((handoff, offer)),
-                )
+                let deployment = capability.with_original_initial_deployment(files)?;
+                if initial_peer_ready {
+                    codex_hepta_agentd::PreparedHostAuthoritySession::enable_original_initial_peer_ready(
+                        &mut prepared,
+                        deployment,
+                    )?;
+                    (None, Some((handoff, offer)))
+                } else {
+                    (Some(deployment), Some((handoff, offer)))
+                }
             }
             (None, None) => (None, None),
             _ => return Err("initial deployment and inherited offer must be paired".into()),

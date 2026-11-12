@@ -25,6 +25,11 @@ use crate::authority_host_service::generation_initial::SOCKET;
 use crate::root_generation_current_client::OriginalPublicationStream;
 use crate::root_generation_initial_client::RootGenerationInitialClient;
 
+enum OriginalEnrollment {
+    RegisteredByRoot,
+    ReadyPeer,
+}
+
 impl RootGenerationInitialHandoffV1 {
     /// Receive the exact deployment profile from the same original Root. No
     /// initial grant, nonce owner, CURRENT or task completion is manufactured.
@@ -46,10 +51,38 @@ impl RootGenerationInitialHandoffV1 {
     /// Carry the original launch's absolute end through every file and peer
     /// check. This entry cannot renew time already consumed by startup.
     pub(crate) async fn connect_until(
+        self,
+        connection: RootGenerationPublicationConnectionV1,
+        timeout: Duration,
+        end: Instant,
+    ) -> Result<OriginalRootGenerationInitialV1, AgentdError> {
+        self.connect_original_until(
+            connection,
+            timeout,
+            end,
+            OriginalEnrollment::RegisteredByRoot,
+        )
+        .await
+    }
+
+    /// Ask the original Root to validate its pre-held deployment after this
+    /// daemon has opened its real nonce and first-A owners. No path is sent.
+    pub(crate) async fn connect_ready_until(
+        self,
+        connection: RootGenerationPublicationConnectionV1,
+        timeout: Duration,
+        end: Instant,
+    ) -> Result<OriginalRootGenerationInitialV1, AgentdError> {
+        self.connect_original_until(connection, timeout, end, OriginalEnrollment::ReadyPeer)
+            .await
+    }
+
+    async fn connect_original_until(
         mut self,
         connection: RootGenerationPublicationConnectionV1,
         timeout: Duration,
         end: Instant,
+        enrollment: OriginalEnrollment,
     ) -> Result<OriginalRootGenerationInitialV1, AgentdError> {
         remaining_until(end)?;
         // SAFETY: both calls only read the current process's credentials.
@@ -138,14 +171,24 @@ impl RootGenerationInitialHandoffV1 {
             timeout,
             end,
         )?;
-        // Only observation occurs during bootstrap. Cancellation discards the
-        // result and original stream; it never starts a CURRENT mutation.
+        // The selected readiness mode may register Root's exact existing
+        // inputs. Cancellation discards this stream and never retries; neither
+        // branch prepares or publishes CURRENT during connection.
         tokio::task::spawn_blocking(move || {
             remaining_until(end)?;
             connection.require_original_publication_session()?;
-            let client = RootGenerationInitialClient::from_original_initial_stream(
-                original, &bundle, connection,
-            )?;
+            let client = match enrollment {
+                OriginalEnrollment::RegisteredByRoot => {
+                    RootGenerationInitialClient::from_original_initial_stream(
+                        original, &bundle, connection,
+                    )?
+                }
+                OriginalEnrollment::ReadyPeer => {
+                    RootGenerationInitialClient::from_original_ready_stream(
+                        original, &bundle, connection,
+                    )?
+                }
+            };
             remaining_until(end)?;
             Ok(OriginalRootGenerationInitialV1 {
                 client: Arc::new(client),
