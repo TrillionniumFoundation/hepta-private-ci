@@ -13,6 +13,9 @@ use std::fs::OpenOptions;
 #[path = "run_start_read_only_frame_tests.rs"]
 mod frame;
 
+#[path = "run_start_read_only_prefix_tests.rs"]
+mod prefix;
+
 fn anchor(receipt: &RunStartAppendReceipt) -> RunStartAnchor {
     RunStartAnchor {
         sequence: receipt.sequence,

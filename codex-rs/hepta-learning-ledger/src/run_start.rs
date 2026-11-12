@@ -33,11 +33,15 @@ pub use publication::RunStartPublication;
 #[path = "run_start_read_only.rs"]
 mod read_only;
 #[cfg(unix)]
+pub use read_only::OriginalRunStartPrefixV1;
+#[cfg(unix)]
 pub use read_only::ReadOnlyRunStartViewV1;
 #[cfg(unix)]
 pub use read_only::RunStartReadOnlyFrameV1;
 #[cfg(unix)]
 pub use read_only::RunStartReadOnlyPublicationV1;
+#[cfg(unix)]
+pub use read_only::observe_original_run_start_prefix_v1;
 
 const MAGIC: &[u8; 8] = b"HEPTRS01";
 const HEADER: usize = 72;

@@ -125,6 +125,8 @@ pub use retrieval_assignment::retrieval_assignment_event_with_delivery;
 pub use retrieval_assignment::retrieval_assignment_event_with_delivery_policy;
 pub use run_start::DurableRunStartJournal;
 #[cfg(unix)]
+pub use run_start::OriginalRunStartPrefixV1;
+#[cfg(unix)]
 pub use run_start::ReadOnlyRunStartViewV1;
 pub use run_start::RunStartAdmissionBindingV1;
 pub use run_start::RunStartAnchor;
@@ -143,6 +145,8 @@ pub use run_start::RunStartRecordV1;
 pub use run_start::RunStartRecovery;
 pub use run_start::RunStartSnapshotV1;
 pub use run_start::RunStartStoreError;
+#[cfg(unix)]
+pub use run_start::observe_original_run_start_prefix_v1;
 pub use segments::LedgerSegmentCheckpoint;
 pub use segments::LedgerSegmentLimits;
 pub use segments::MAX_LEDGER_SEGMENTS;
