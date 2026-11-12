@@ -75,7 +75,7 @@ jobs:
             ndu_real_runtime.test_revocation_qualification
       - name: Check frozen protocol and source admission
         run: |
-          python scripts/hepta_ci_exec.py --timeout-seconds 60 --minimum-tests 5 \
+          python scripts/hepta_ci_exec.py --timeout-seconds 60 --minimum-tests 16 \
             --output "$RUNNER_TEMP/mem7-records/mem9-admission-tests.json" \
             -- python -B -m unittest -v ndu_real_runtime.test_episodic_causal_contract
       - name: Record the isolated revocation campaign
