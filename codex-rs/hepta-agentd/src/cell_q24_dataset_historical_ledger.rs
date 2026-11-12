@@ -121,9 +121,18 @@ impl OriginalDataset {
         &self,
         ledger: &HistoricalDatasetLedgerV1,
     ) -> Result<CellQ24TrainingBatchV1, Error> {
-        Ok(HistoricalDatasetLedgerV1::with_current(
-            ledger,
-            |data, verifier, evaluator, observed_at| {
+        self.ledger.with_original_ledger_operation(|operation| {
+            self.materialize_historical_in_operation(ledger, operation)
+        })?
+    }
+
+    pub(super) fn materialize_historical_in_operation(
+        &self,
+        ledger: &HistoricalDatasetLedgerV1,
+        operation: &OriginalDatasetOperationV1<'_>,
+    ) -> Result<CellQ24TrainingBatchV1, Error> {
+        Ok(
+            operation.read_historical(ledger, |data, verifier, evaluator, observed_at| {
                 let current = RootHistoricalLedgerReadDataV1::read_snapshot(data)?;
                 if current != self.frozen {
                     return Err(io::Error::other(
@@ -188,7 +197,7 @@ impl OriginalDataset {
                     observed_at,
                 )
                 .map_err(io::Error::other)
-            },
-        )?)
+            })?,
+        )
     }
 }

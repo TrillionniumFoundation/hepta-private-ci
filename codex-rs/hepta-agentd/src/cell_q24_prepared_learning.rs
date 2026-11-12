@@ -184,10 +184,7 @@ impl CellQ24PreparedLearningV1 {
     }
 
     pub fn read_validated_facts(&self) -> Result<CellQ24PreparedLearningFactsV1, Error> {
-        self.revalidate_source()?;
-        let facts = self.facts.clone();
-        self.revalidate_source()?;
-        Ok(facts)
+        self.with_original_prepared_operation(OriginalPreparedReadV1::read_validated_facts)?
     }
 
     pub fn require_initial(

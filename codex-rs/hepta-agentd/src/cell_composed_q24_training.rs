@@ -54,6 +54,8 @@ pub use preparation::OriginalCellQ24DatasetFreezeErrorV1;
 pub use preparation::OriginalCellQ24DatasetFreezeOwnerV1;
 #[cfg(target_os = "linux")]
 pub use preparation::OriginalCellQ24DatasetFreezeSigningConfigV1;
+#[cfg(target_os = "linux")]
+pub(crate) use preparation::OriginalPreparedReadV1;
 
 const LIMIT: i64 = 8 * codec::Q;
 
