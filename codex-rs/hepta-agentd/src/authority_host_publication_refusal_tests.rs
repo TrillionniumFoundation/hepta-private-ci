@@ -14,6 +14,8 @@ use super::*;
 
 #[path = "authority_host_publication_refusal_fixture_tests.rs"]
 mod fixture;
+#[path = "authority_host_publication_acceptance_tests.rs"]
+mod acceptance;
 
 const PRIMARY: &str = "publication-refusal-test-primary";
 const CHILD: &str = "authority_host_service::generation_publication::refusal::tests::original_publication_refusal_dedicated_root_child";
